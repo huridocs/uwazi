@@ -9,7 +9,7 @@ const CreateTemplateService = async () => {
   const transactionManager = TransactionManagerFactory.default();
 
   const templatesDataSource = TemplatesDataSourceFactory.default({ transactionManager });
-  const relTypesDataSource = RelationshipTypesDataSourceFactory.default(transactionManager);
+  const relTypesDataSource = RelationshipTypesDataSourceFactory.default({ transactionManager });
   const entitiesDataSource = DefaultDeprecatedEntitiesDataSource(transactionManager);
   const denormalizationService = await DenormalizationService(transactionManager);
 

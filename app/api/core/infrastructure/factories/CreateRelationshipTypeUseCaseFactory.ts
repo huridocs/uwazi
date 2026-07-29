@@ -8,7 +8,7 @@ class CreateRelationshipTypeUseCaseFactory {
     overrides?: Partial<ConstructorParameters<typeof CreateRelationshipTypeUseCase>[0]>
   ) {
     const transactionManager = TransactionManagerFactory.default();
-    const relationshipTypesDS = RelationshipTypesDataSourceFactory.default(transactionManager);
+    const relationshipTypesDS = RelationshipTypesDataSourceFactory.default({ transactionManager });
     const translationService = new LegacyRelationshipTypesTranslationService();
 
     return new CreateRelationshipTypeUseCase({

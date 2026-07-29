@@ -57,6 +57,11 @@ const sanitizeEntityForPostgres = (entity: Record<string, unknown>) => {
   return { ...ENTITY_POSTGRES_DEFAULTS, ...cleaned };
 };
 
+const PG_TABLE_BY_MONGO_COLLECTION: Record<string, string> = {
+  dictionaries: 'thesauri',
+  relationtypes: 'relationship_types',
+};
+
 type SetUpOptions = {
   elasticIndex?: string | boolean;
   postgres?: boolean;
@@ -180,14 +185,24 @@ const testingEnvironment = {
       await testingPG.setFixtures(
         Object.fromEntries(
           Object.entries(fixtures)
-            .filter(([table]) => ['dictionaries', 'templates', 'files', 'entities'].includes(table))
-            .map(([table, fixture]) => [
-              table === 'dictionaries' ? 'thesauri' : table,
-              fixture.map((f: any) => {
-                const sanitized = JSON.parse(JSON.stringify(ObjectUtils.sanitize(f, ['__v'])));
-                return table === 'entities' ? sanitizeEntityForPostgres(sanitized) : sanitized;
-              }),
-            ])
+            .filter(([table]) =>
+              ['dictionaries', 'templates', 'files', 'entities', 'relationtypes'].includes(table)
+            )
+            .map(([table, fixture]) => {
+              const pgTable = PG_TABLE_BY_MONGO_COLLECTION[table] ?? table;
+
+              return [
+                pgTable,
+                fixture.map((f: any) => {
+                  if (table === 'relationtypes') {
+                    const id = f._id?.toHexString?.() ?? String(f._id);
+                    return { _id: id, name: f.name };
+                  }
+                  const sanitized = JSON.parse(JSON.stringify(ObjectUtils.sanitize(f, ['__v'])));
+                  return table === 'entities' ? sanitizeEntityForPostgres(sanitized) : sanitized;
+                }),
+              ];
+            })
         )
       );
     }

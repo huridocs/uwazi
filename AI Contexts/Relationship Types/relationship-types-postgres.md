@@ -8,9 +8,28 @@ This document is the working context for the Postgres phase. The prior V2 archit
 
 ## Status
 
-- **Analysis / planning** — in progress (this document)
-- **Implementation** — not started
+- **Analysis / planning** — done (decisions locked below)
+- **Implementation** — in progress (first cut landed)
 - **Prerequisite** — V2 core ownership is done; legacy `.properties` cleanup is migration `200`
+
+### Implemented so far
+
+- [x] Schema `006-create_relationship_types_table.sql` (`relationship_types` + RLS in same migration)
+- [x] `PostgresRelationshipTypesDataSource` + mapper + `ArrayResultSet` + specs (incl. RLS isolation, case-insensitive `existsByName`)
+- [x] Feature flag `postgresRelationshipTypes` (config / tenantContext / tenantsModel)
+- [x] `RelationshipTypesDataSourceFactory` — Templates/Files-style EC + flag; PG TM from EC; call sites updated to overrides object
+- [x] `PostgresRelationshipTypesSyncHandler` + factory branch (sync namespace still `relationtypes`)
+- [x] `RelationshipTypesMigrationConfig` + CLI `--collection relationship_types`
+- [x] Name-collision audit script: `scripts/scripts.v2/auditRelationshipTypeNameCollisions.ts`
+
+### Still open
+
+- [x] Dual-backend use-case specs (Mongo + Postgres `describe.each`) for Create/Update/Delete/Get
+- [x] `PostgresRelationshipTypesSyncHandler` specs + factory flag branch
+- [ ] Run collision audit against real/staging tenants; record results here
+- [ ] Manual cutover dry-run: schema → data copy → flip flag → smoke CRUD/sync/translations
+- [ ] Optional: rename leftover `Relationtypes*` sync factory filename later
+
 
 ## Why this is a good next candidate
 
@@ -170,7 +189,7 @@ Earlier drafts split “open” (D1–D3, D7) vs “settled recommendations” (
 | D1 | Naming / feature flag / PG table | **Locked** — prefer `relationshipTypes` / deprecate `relationtypes` |
 | D2 | Name uniqueness | **Locked direction** — case-insensitive + trim in app; run collision diagnosis first |
 | D3 | RLS timing | **Locked** — RLS in the same schema migration as table create |
-| D4 | Sync / Mongo collection naming during cutover | **Locked with caveat** — see below |
+| D4 | Sync / Mongo collection naming during cutover | **Locked** — keep sync namespace `relationtypes` (thesauri pattern); PG table `relationship_types` |
 | D5 | Cutover / dual-write | **Locked** — copy once, then flag; no dual-write |
 | D6 | Translations | **Locked** — stay in Mongo this phase |
 | D7 | Factory / TM wiring | **Locked** — Templates/Files-style factory + flag; PG DS gets PG TM from EC; no Mongo TM inside PG DS unless ES hooks appear |
@@ -211,17 +230,19 @@ No DB unique expression index in v1 of the schema unless diagnosis + product say
 
 ### D4. Sync namespace + Mongo collection during cutover
 
-Unlike a greenfield rename, sync/`updatelogs` already use namespace **`relationtypes`**, and Mongo data lives in collection **`relationtypes`**.
+**Locked — same strategy as thesauri** (`dictionaries` sync ≠ `thesauri` PG table).
 
-Same pattern as thesauri: Mongo collection `dictionaries` → PG table `thesauri`, sync namespace stays `dictionaries`.
+Do **not** rename the sync namespace to `relationshiptypes`. Renaming would require updatelogs / `lastSyncs` / settings sync-config migrations and coordinated multi-instance cutover. Thesauri deliberately avoided that; we follow the same tradeoff.
 
-| Surface | Value during this phase |
-|---------|-------------------------|
-| Mongo source (data copy) | `relationtypes` (existing data) |
-| PG table | `relationship_types` (new name) |
-| Sync / updatelogs namespace | keep `relationtypes` for cluster compatibility |
+| Surface | Value |
+|---------|-------|
+| Mongo source collection (data copy / Mongo flag-off path) | `relationtypes` |
+| PG table | `relationship_types` |
+| Sync / updatelogs namespace | **`relationtypes`** (unchanged) |
+| Settings sync config key | `relationtypes` (unchanged) |
+| HTTP API | `/api/relationtypes` (unchanged) |
 
-A later dedicated rename of sync namespace / Mongo leftovers can happen after PG is source of truth and sync consumers are coordinated — **out of scope** for first PG cutover.
+New code uses `RelationshipType(s)` / `postgresRelationshipTypes` / `relationship_types` where we control naming; sync identity stays on the legacy string for compatibility.
 
 ### D5. Cutover / dual-write
 
@@ -341,9 +362,10 @@ No unique index on `name` in v1 (see D2). Do **not** store `properties`.
 - Do not reintroduce `properties` / `connections.metadata` in PG
 - Do not migrate translations to PG in this phase
 - Do not change `/api/relationtypes` HTTP contract in this phase
-- Do not rename sync namespace away from `relationtypes` in the first cutover
+- Do not rename sync namespace away from `relationtypes` (thesauri-style: leave legacy sync identity; PG table is already `relationship_types`)
 - Do not invent a new migration runner — use `PgMigrator` + `MigrateCollectionToPostgres` + existing CLI
 - Do not enable the flag by default
+- Do not attempt a cluster-wide rename of `updatelogs` / settings sync keys for relationship types in this phase
 
 ---
 
@@ -391,10 +413,9 @@ No unique index on `name` in v1 (see D2). Do **not** store `properties`.
 ## To keep an eye on
 
 - Run and record name-collision diagnosis before relying on case-insensitive uniqueness at scale.
-- Sync namespace stays `relationtypes` for now even though PG table is `relationship_types` (thesauri-style mismatch).
+- Sync namespace stays `relationtypes` by design (thesauri pattern), even though PG table is `relationship_types`. Do not “fix” this dual naming without a coordinated sync cutover plan.
 - When flipping flags in prod: **data copy before flag**, never the reverse.
 - Superusers / table owners bypass RLS — isolation tests must run as `app_user`.
 - Sync handler and DataSource must share the same tenant flag (`postgresRelationshipTypes`).
 - Data-copy mapper should ignore stray `properties` defensively.
 - Do not copy entities’ “table without RLS” pattern.
-- Later: optional rename of sync namespace / leftover `relationtypes` spellings after PG cutover is proven.

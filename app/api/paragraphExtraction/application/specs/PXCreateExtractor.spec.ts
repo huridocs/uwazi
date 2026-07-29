@@ -1,4 +1,3 @@
-/* eslint-disable max-statements */
 import { ObjectId } from 'mongodb';
 
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
@@ -31,7 +30,9 @@ const setUpUseCase = () => {
     connection,
     mongoTransactionManager,
   });
-  const relationshipTypeDS = RelationshipTypesDataSourceFactory.default(mongoTransactionManager);
+  const relationshipTypeDS = RelationshipTypesDataSourceFactory.default({
+    transactionManager: mongoTransactionManager,
+  });
 
   const mockDispatcher = TestUtils.mockClass<JobsDispatcher>({
     dispatch: jest.fn().mockResolvedValue(undefined),

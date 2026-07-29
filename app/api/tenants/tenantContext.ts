@@ -27,6 +27,7 @@ type Tenant = {
     postgresFiles?: boolean;
     postgresTemplates?: boolean;
     postgresEntities?: boolean;
+    postgresRelationshipTypes?: boolean;
     aiAssistant?: boolean;
     aiAssistantServiceUrl?: string;
     v2UsersCreate?: boolean;
