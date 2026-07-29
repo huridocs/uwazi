@@ -9,7 +9,7 @@ This document is the working context for the Postgres phase. The prior V2 archit
 ## Status
 
 - **Analysis / planning** — done (decisions locked below)
-- **Implementation** — in progress (first cut landed)
+- **Implementation** — first cut landed; local dry-run validated (CRUD, translations, delete-in-use, data-copy skip)
 - **Prerequisite** — V2 core ownership is done; legacy `.properties` cleanup is migration `200`
 
 ### Implemented so far
@@ -26,8 +26,9 @@ This document is the working context for the Postgres phase. The prior V2 archit
 
 - [x] Dual-backend use-case specs (Mongo + Postgres `describe.each`) for Create/Update/Delete/Get
 - [x] `PostgresRelationshipTypesSyncHandler` specs + factory flag branch
+- [x] Local cutover dry-run: schema → data copy → flip flag → CRUD / translations / delete-in-use / migrate skip
 - [ ] Run collision audit against real/staging tenants; record results here
-- [ ] Manual cutover dry-run: schema → data copy → flip flag → smoke CRUD/sync/translations
+- [ ] Sync not manually exercised in local dry-run (rely on specs / hope for now)
 - [ ] Optional: rename leftover `Relationtypes*` sync factory filename later
 
 
@@ -252,6 +253,8 @@ New code uses `RelationshipType(s)` / `postgresRelationshipTypes` / `relationshi
 
 **Locked:** one-time CLI copy → flip `postgresRelationshipTypes` → PG is source of truth. Still write Mongo `updatelogs` (namespace `relationtypes`) for sync. No ongoing dual-write of domain rows.
 
+**One-way after flip:** once the flag is on and any create/update/delete has run against Postgres, **do not turn the flag off**. Mongo `relationtypes` is no longer updated; connections/templates can reference IDs that only exist in PG (or miss renames/deletes). Rolling back by flipping the flag leaves the app reading a stale Mongo collection. Treat the flag as permanent for that tenant after cutover.
+
 ### D6. Translations
 
 **Locked:** translation contexts stay in Mongo this phase (`LegacyRelationshipTypesTranslationService`).
@@ -351,13 +354,14 @@ No unique index on `name` in v1 (see D2). Do **not** store `properties`.
 
 ### F. Tests / cutover checklist
 
-- [ ] Name-collision diagnosis reviewed
-- [ ] Schema + RLS as `app_user`
-- [ ] Data copy; second run skips
-- [ ] Flag off → Mongo; flag on → PG
-- [ ] Sync + translations parity
-- [ ] Dual-backend specs
-- [ ] Delete-in-use guards still in use cases
+- [ ] Name-collision diagnosis reviewed (real/staging)
+- [x] Schema + RLS as `app_user` (covered by DS specs + local dry-run CRUD)
+- [x] Data copy; second run skips (local dry-run)
+- [x] Flag off → Mongo; flag on → PG (factory specs + local dry-run with flag on)
+- [x] Translations parity (local dry-run; create/rename update Mongo translation contexts)
+- [ ] Sync parity (specs only; not manually exercised in local dry-run)
+- [x] Dual-backend specs
+- [x] Delete-in-use guards still in use cases (relationships + templates locally)
 
 ---
 
@@ -419,6 +423,7 @@ No unique index on `name` in v1 (see D2). Do **not** store `properties`.
 - Run and record name-collision diagnosis before relying on case-insensitive uniqueness at scale.
 - Sync namespace stays `relationtypes` by design (thesauri pattern), even though PG table is `relationship_types`. Do not “fix” this dual naming without a coordinated sync cutover plan.
 - When flipping flags in prod: **data copy before flag**, never the reverse.
+- **Flag flip is one-way** after any PG writes — do not turn `postgresRelationshipTypes` off; Mongo will be stale and relationship/template IDs can point at types missing from Mongo.
 - Superusers / table owners bypass RLS — isolation tests must run as `app_user`.
 - Sync handler and DataSource must share the same tenant flag (`postgresRelationshipTypes`).
 - Data-copy mapper should ignore stray `properties` defensively.
