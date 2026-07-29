@@ -13,7 +13,8 @@ type Overrides = {
 export class RelationshipTypesDataSourceFactory {
   static default(overrides?: Overrides): RelationshipTypesDataSource {
     const db = getConnection();
-    const { tenant } = ExecutionContext;
+    // currentTenant falls back to tenants.current() for legacy call sites outside EC
+    const tenant = ExecutionContext.currentTenant;
 
     if (tenant.featureFlags?.postgresRelationshipTypes) {
       return new PostgresRelationshipTypesDataSource({
