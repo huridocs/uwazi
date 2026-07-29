@@ -29,7 +29,7 @@ This document is the working context for the Postgres phase. The prior V2 archit
 - [x] Local cutover dry-run: schema → data copy → flip flag → CRUD / translations / delete-in-use / migrate skip
 - [ ] Run collision audit against real/staging tenants; record results here
 - [ ] Sync not manually exercised in local dry-run (rely on specs / hope for now)
-- [ ] Optional: rename leftover `Relationtypes*` sync factory filename later
+- [x] Optional: rename leftover `Relationtypes*` sync factory/handler filenames to `RelationshipTypes*`
 
 
 ## Why this is a good next candidate
@@ -180,7 +180,7 @@ Not a queue job; manual / ops-driven. Schema migration is separate.
 When PG is source of truth, sync handlers write into PG instead of Mongo for that namespace.
 
 - Thesauri: `ThesauriSyncHandlerFactory` branches on `postgresThesauri`
-- Relationtypes today: `RelationtypesSyncHandlerFactory` → always `MongoRelationtypesSyncHandler`
+- Relationtypes today: `RelationshipTypesSyncHandlerFactory` → Mongo or Postgres handler by flag
 - Registered as namespace `relationtypes` in `registerSyncHandlers.ts`
 
 ---
@@ -412,7 +412,7 @@ No unique index on `name` in v1 (see D2). Do **not** store `properties`.
 | CLI | `scripts/scripts.v2/migrateToPostgres.ts` |
 | Current RT Mongo DS | `…/mongodb/relationshipType/MongoRelationshipTypesDataSource.ts` |
 | Current RT factory | `…/factories/RelationshipTypesDataSourceFactory.ts` |
-| Current RT sync | `app/api/sync/RelationtypesSyncHandlerFactory.ts` |
+| Current RT sync | `app/api/sync/RelationshipTypesSyncHandlerFactory.ts` |
 | Tenant flags | `app/api/config.ts`, `tenants/tenantContext.ts`, `tenants/tenantsModel.ts` |
 | Prior V2 context | [`relationship-types-v2-migration.md`](./relationship-types-v2-migration.md) |
 

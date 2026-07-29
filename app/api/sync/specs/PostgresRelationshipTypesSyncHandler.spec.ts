@@ -8,8 +8,8 @@ import { PostgresDB } from '#api/infrastructure/PostgresDB.js';
 import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
 import { PostgresTransactionManager } from '#api/core/infrastructure/postgresql/common/PostgresTransactionManager.js';
 import { PostgresRelationshipTypesSyncHandler } from '../PostgresRelationshipTypesSyncHandler.js';
-import { RelationtypesSyncHandlerFactory } from '../RelationtypesSyncHandlerFactory.js';
-import { MongoRelationtypesSyncHandler } from '../MongoRelationtypesSyncHandler.js';
+import { RelationshipTypesSyncHandlerFactory } from '../RelationshipTypesSyncHandlerFactory.js';
+import { MongoRelationshipTypesSyncHandler } from '../MongoRelationshipTypesSyncHandler.js';
 
 describe('PostgresRelationshipTypesSyncHandler', () => {
   beforeAll(async () => {
@@ -97,18 +97,18 @@ describe('PostgresRelationshipTypesSyncHandler', () => {
     );
   });
 
-  describe('RelationtypesSyncHandlerFactory', () => {
+  describe('RelationshipTypesSyncHandlerFactory', () => {
     it('should return mongo handler when postgres flag is off', () => {
       const sut = testingEnvironment.runWithContext(() =>
-        RelationtypesSyncHandlerFactory.default()
+        RelationshipTypesSyncHandlerFactory.default()
       );
 
-      expect(sut).toBeInstanceOf(MongoRelationtypesSyncHandler);
+      expect(sut).toBeInstanceOf(MongoRelationshipTypesSyncHandler);
     });
 
     it('should return postgres handler when postgres flag is on', () => {
       const sut = testingEnvironment.runWithContext(
-        () => RelationtypesSyncHandlerFactory.default(),
+        () => RelationshipTypesSyncHandlerFactory.default(),
         {
           tenant: {
             ...testingTenants.current(),

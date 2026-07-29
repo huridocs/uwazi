@@ -1,10 +1,10 @@
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
-import { MongoRelationtypesSyncHandler } from './MongoRelationtypesSyncHandler.js';
+import { MongoRelationshipTypesSyncHandler } from './MongoRelationshipTypesSyncHandler.js';
 import { PostgresRelationshipTypesSyncHandler } from './PostgresRelationshipTypesSyncHandler.js';
 
-export class RelationtypesSyncHandlerFactory {
-  static default(): MongoRelationtypesSyncHandler | PostgresRelationshipTypesSyncHandler {
+export class RelationshipTypesSyncHandlerFactory {
+  static default(): MongoRelationshipTypesSyncHandler | PostgresRelationshipTypesSyncHandler {
     const tenant = ExecutionContext.currentTenant;
 
     if (tenant.featureFlags?.postgresRelationshipTypes) {
@@ -15,6 +15,6 @@ export class RelationtypesSyncHandlerFactory {
       });
     }
 
-    return new MongoRelationtypesSyncHandler();
+    return new MongoRelationshipTypesSyncHandler();
   }
 }
