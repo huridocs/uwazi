@@ -81,7 +81,7 @@
     "e2e-puppeteer": "yarn e2e-puppeteer-all --roots '<rootDir>/suite1' '<rootDir>/suite2'",
     "e2e-fixtures": "DATABASE_NAME=uwazi_e2e INDEX_NAME=uwazi_e2e ./uwazi-fixtures/restore.sh",
     "blank-e2e-fixtures": "DATABASE_NAME=uwazi_e2e INDEX_NAME=uwazi_e2e ./uwazi-fixtures/restore.blank-e2e.sh",
-    "eslint": "./node_modules/.bin/eslint e2e app cypress --quiet --concurrency=auto --cache",
+    "eslint": "node scripts/eslint.mjs",
     "eslint-fulldiff": "git diff-index --name-only origin/production | grep ^app/ | grep -v snap | grep -v '\\.css$' | xargs ls -d 2>/dev/null | xargs ./node_modules/.bin/eslint ",
     "eslint-diff-branch": "git diff --name-only HEAD | grep '^app/' | grep -v snap | xargs -r ls -d 2>/dev/null | xargs -r ./node_modules/.bin/eslint --cache",
     "prettier": "./node_modules/.bin/prettier --check --cache 'app/**/*.{js,ts,tsx}'",
