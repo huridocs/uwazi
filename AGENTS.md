@@ -19,7 +19,7 @@ Backend is in `app/api`
 - **Test:** `yarn test app/api`
 - **Suggested Jest invocation for targeted test runs:** `DEBUG=true node --no-experimental-fetch ./node_modules/.bin/jest <path-or-pattern> -w=4`
 - **Run:** `yarn hot`
-- **lint:** `yarn eslint`
+- **lint:** `yarn eslint <paths>` or `yarn eslint-diff-branch`
 - **formatting check:** `yarn prettier`
 - **formatting fix:** `yarn prettier --write`
 - **Translations CSV update:** never edit translation keys manually in CSV files; run `yarn update-translations-csv` instead.

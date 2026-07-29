@@ -1,7 +1,7 @@
 import { ObjectId } from 'mongodb';
 import ID from '#shared/uniqueID.js';
 import { PageType } from '#shared/types/pageType.js';
-import { validatePage, validatePageEditor } from '#shared/types/pageSchema.js';
+import { validatePage, validatePageEditor } from '#shared/types/pageSchemaValidator.js';
 import date from '#api/utils/date.js';
 import { User } from '#api/users/usersModel.js';
 import { AbstractUseCase } from '#api/core/libs/UseCase.js';

@@ -1,7 +1,7 @@
 import db from '#api/utils/testing_db.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
-import { validatePage } from '#shared/types/pageSchema.js';
+import { validatePage } from '#shared/types/pageSchemaValidator.js';
 import { PageType } from '#shared/types/pageType.js';
 
 describe('pageSchema', () => {
