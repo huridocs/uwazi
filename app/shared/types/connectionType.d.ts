@@ -33,7 +33,7 @@ export interface ConnectionSchema {
         width: number;
         height: number;
         page: string;
-      }[],
+      }[]
     ];
   };
 }

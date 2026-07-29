@@ -139,8 +139,7 @@ export interface Settings {
     newRelationships?:
       | boolean
       | {
-          updateStrategy:
-            'OnlineRelationshipPropertyUpdateStrategy' | 'QueuedRelationshipPropertyUpdateStrategy';
+          updateStrategy: 'OnlineRelationshipPropertyUpdateStrategy' | 'QueuedRelationshipPropertyUpdateStrategy';
         };
     automaticTranslation?: AutomaticTranslationConfig;
     [k: string]: unknown | undefined;
