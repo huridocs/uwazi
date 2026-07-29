@@ -1,9 +1,9 @@
 import { TemplatesDataSource } from '#api/core/application/contracts/TemplatesDataSource.js';
 import { IdGenerator } from '#api/core/application/contracts/IdGenerator.js';
-import relationshipTypeDS from '#api/relationtypes/index.js';
 import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
 import { UseCase } from '#api/core/libs/UseCase.js';
 import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
+import { RelationshipTypesDataSource } from '#api/core/application/contracts/RelationshipTypesDataSource.js';
 import { CreateParagraphExtractionEntityStatusesJob } from '../jobs/CreateParagraphExtractionEntityStatusesJob.js';
 
 import { PXExtractor } from '../domain/PXExtractor.js';
@@ -26,7 +26,7 @@ type Dependencies = {
   extractorDS: PXExtractorsDataSource;
   idGenerator: IdGenerator;
   transactionManager: TransactionManager;
-  relationshipTypeDS: typeof relationshipTypeDS;
+  relationshipTypeDS: Pick<RelationshipTypesDataSource, 'getById'>;
   dispatcher: JobsDispatcher;
 };
 
@@ -73,8 +73,8 @@ class PXCreateExtractor implements UseCase<Input, Output> {
     return {
       targetTemplate: targetTemplate.getData(),
       sourceTemplate: sourceTemplate.getData(),
-      sourceRelationshipTypeId: sourceRelationshipType._id.toString(),
-      targetRelationshipTypeId: targetRelationshipType._id.toString(),
+      sourceRelationshipTypeId: sourceRelationshipType.id,
+      targetRelationshipTypeId: targetRelationshipType.id,
     };
   }
 

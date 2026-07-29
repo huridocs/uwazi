@@ -1,8 +1,8 @@
 import { AuthorizationService } from '#api/authorization.v2/services/AuthorizationService.js';
 import { DeprecatedEntitiesDataSource } from '#api/entities.v2/contracts/DeprecatedEntitiesDataSource.js';
 import { DeprecatedEntity } from '#api/entities.v2/model/Entity.js';
-import { RelationshipTypesDataSource } from '#api/relationshiptypes.v2/contracts/RelationshipTypesDataSource.js';
-import { RelationshipType } from '#api/relationshiptypes.v2/model/RelationshipType.js';
+import { RelationshipTypesDataSource } from '#api/core/application/contracts/RelationshipTypesDataSource.js';
+import { RelationshipType } from '#api/core/domain/relationshipType/RelationshipType.js';
 import { TemplatesDataSource } from '#api/core/application/contracts/TemplatesDataSource.js';
 import { Template } from '#api/core/domain/template/Template.js';
 import { objectIndex } from '#shared/data_utils/objectIndex.js';

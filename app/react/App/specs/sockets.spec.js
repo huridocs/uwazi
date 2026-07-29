@@ -149,7 +149,7 @@ describe('sockets', () => {
       );
     });
 
-    it('should emit a thesauriChange event and update the stores', () => {
+    it('should emit a thesauriChange event and update the atom store', () => {
       const updatedThesaurus = {
         ...thesauri[0],
         name: 'Updated categories',
@@ -166,14 +166,14 @@ describe('sockets', () => {
 
       socket._callbacks.$thesauriChange[0](updatedThesaurus);
 
-      expect(store.dispatch).toHaveBeenCalledWith({
-        type: 'thesauris/UPDATE',
-        value: updatedThesaurus,
-      });
       expect(atomStore.set).toHaveBeenCalledWith(
         thesauriAtom,
         expect.arrayContaining([updatedThesaurus, thesauri[1]])
       );
+      expect(store.dispatch).not.toHaveBeenCalledWith({
+        type: 'thesauris/UPDATE',
+        value: updatedThesaurus,
+      });
     });
 
     it('should emit a thesauriChange event and add the thesaurus to the store', () => {
@@ -242,12 +242,11 @@ describe('sockets', () => {
         );
       });
 
-      it('should add a new language to the translations', () => {
+      it('should ignore translations for locales not already in the store', () => {
+        atomStore.set.mockClear?.();
+        atomStore.set.calls?.reset?.();
         socket._callbacks.$translationsChange[0](newLanguage);
-        expect(atomStore.set).toHaveBeenCalledWith(
-          translationsAtom,
-          expect.arrayContaining([...currentTranslations, newLanguage])
-        );
+        expect(atomStore.set).not.toHaveBeenCalled();
       });
     });
 
@@ -262,6 +261,27 @@ describe('sockets', () => {
       it('should emit a translationKeysChange event', () => {
         socket._callbacks.$translationKeysChange[0](translationKeysChangeArguments);
         expect(atomStore.set).toHaveBeenCalledWith(translationsAtom, translationKeysChangeResult);
+      });
+
+      it('should only update locales present in the store', () => {
+        const singleLocale = [
+          {
+            ...currentTranslations[0],
+            contexts: currentTranslations[0].contexts.map(context => ({
+              ...context,
+              values: { ...context.values },
+            })),
+          },
+        ];
+        atomStore.set(translationsAtom, singleLocale);
+        socket._callbacks.$translationKeysChange[0](translationKeysChangeArguments);
+
+        const setCalls = atomStore.set.mock?.calls ?? atomStore.set.calls?.allArgs() ?? [];
+        const lastCall = setCalls[setCalls.length - 1];
+        expect(lastCall[0]).toBe(translationsAtom);
+        expect(lastCall[1]).toHaveLength(1);
+        expect(lastCall[1][0].locale).toBe('en');
+        expect(lastCall[1][0].contexts[0].values.Select).toBe('Select');
       });
     });
 
