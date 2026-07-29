@@ -1,8 +1,8 @@
 import { ObjectId } from 'mongodb';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { TemplatesDataSourceFactory } from '#api/core/infrastructure/factories/TemplatesDataSourceFactory.js';
+import { RelationshipTypesDataSourceFactory } from '#api/core/infrastructure/factories/RelationshipTypesDataSourceFactory.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
-import { DefaultRelationshipTypesDataSource } from '#api/relationshiptypes.v2/database/data_source_defaults.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { V1RelationshipProperty } from '#api/core/domain/template/V1RelationshipProperty.js';
 import { PropertyTypeEnum } from '#api/core/domain/template/PropertyType.js';
@@ -21,7 +21,7 @@ const createSut = () => {
 
   const sut = new RelationshipPropertyCreatorService({
     templatesDS: TemplatesDataSourceFactory.default({ transactionManager: transactionManger }),
-    relationshipTypesDS: DefaultRelationshipTypesDataSource(transactionManger),
+    relationshipTypesDS: RelationshipTypesDataSourceFactory.default(transactionManger),
   });
 
   return { sut };

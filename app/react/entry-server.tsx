@@ -29,10 +29,12 @@ import { ClientSettings } from '#app/apiResponseTypes.js';
 import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import templatesApi from '#api/core/v1_layer/templates/templates.js';
+import { GetRelationshipTypesUseCaseFactory } from '#api/core/infrastructure/factories/GetRelationshipTypesUseCaseFactory.js';
 import thesauriApi from '../api/core/v1_layer/thesauri/thesauri.js';
-import relationtypes from '../api/relationtypes/relationtypes.js';
 import translationsApi, { IndexedTranslations } from '../api/i18n/translations.js';
 import settingsApi from '../api/settings/settings.js';
+import { shapeSettingsForSSR } from '../api/settings/publicSettings.js';
+import { omitInlineCustomization } from '#shared/settings/omitInlineCustomization.js';
 import { tenants } from '../api/tenants/index.js';
 import { CustomProvider } from './App/Provider.js';
 import { Root } from './App/Root.js';
@@ -49,6 +51,7 @@ import { ProtectedRoute } from './ProtectedRoute.js';
 import { isMobileDevice } from '../shared/detectDevice.js';
 import { loadIcons } from '#UI/Icon/library.js';
 import type { ClientFeatureFlags } from '#V2/shared/types.js';
+import type { LanguageISO6391 } from '#shared/types/commonTypes.js';
 
 loadIcons();
 
@@ -87,6 +90,9 @@ const onlySystemTranslations = (translations: IndexedTranslations[]) =>
     const systemTranslation = translation?.contexts?.find(c => c.id === 'System');
     return { ...translation, contexts: [systemTranslation] };
   });
+
+const toLegacyRelationshipTypesShape = (rows: { id: string; name: string }[]) =>
+  rows.map(row => ({ _id: row.id, name: row.name }));
 
 const createFetchHeaders = (requestHeaders: ExpressRequest['headers']): Headers => {
   const headers = new Headers();
@@ -177,7 +183,8 @@ const prepareStores = async (req: ExpressRequest, settings: ClientSettings, lang
   api.locale(locale);
   const userAgent = req.get('user-agent') || '';
 
-  const translations = await translationsApi.get();
+  // Only hydrate the active locale — language switches trigger a full navigation / SSR.
+  const translations = await translationsApi.get({ locale: locale as LanguageISO6391 });
 
   const [
     userApiResponse = {},
@@ -197,13 +204,17 @@ const prepareStores = async (req: ExpressRequest, settings: ClientSettings, lang
           Promise.resolve(settings),
           templatesApi.get(),
           thesauriApi.dictionaries(),
-          relationtypes.get(),
+          GetRelationshipTypesUseCaseFactory.default()
+            .execute({})
+            .then(toLegacyRelationshipTypesShape),
           Promise.resolve(translations),
         ])
       : [];
 
-  const themeCustomization = tenants.current().featureFlags?.themeCustomization ?? false;
-  const settingsWithFlag = { ...settingsApiResponse, themeCustomization };
+  // Match GET /api/settings: non-admins only get the public whitelist.
+  const shapedSettings = shapeSettingsForSSR(settingsApiResponse as any, req.user);
+  // Keep customCSS/JS in Redux for <head> inlining; omit them from the atom blob.
+  const atomSettings = omitInlineCustomization(shapedSettings as Record<string, unknown>);
 
   const storeData = convertObjectIdsToStrings({
     reduxData: {
@@ -213,12 +224,12 @@ const prepareStores = async (req: ExpressRequest, settings: ClientSettings, lang
       relationTypes: sortBy(relationTypesApiResponse, 'name'),
       translations: translationsApiResponse,
       settings: {
-        collection: { ...settingsWithFlag, links: settingsWithFlag.links || [] },
+        collection: { ...shapedSettings, links: shapedSettings.links || [] },
       },
     },
     atomStoreData: {
       locale,
-      settings: settingsWithFlag,
+      settings: atomSettings,
       thesauri: thesaurisApiResponse,
       templates: templatesApiResponse,
       user: userApiResponse,
@@ -489,12 +500,10 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
         language={atomStoreData.locale}
         content={componentHtml}
         head={Helmet.rewind()}
-        user={req.user}
         reduxData={initialState}
         documentHeadPageCss={documentHeadPageCss}
         assets={assets}
         loadingError={resolvedLoadingError || ssrError}
-        featureFlags={clientFeatureFlags}
         atomStoreData={{ ...atomStoreData, ...(globalMatomo && { globalMatomo }), ciMatomoActive }}
       />
     )

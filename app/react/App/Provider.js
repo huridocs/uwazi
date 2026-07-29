@@ -8,7 +8,11 @@ class CustomProvider extends Component {
     super(props);
     this.data = isClient && window.__reduxData__ ? window.__reduxData__ : props.initialData;
     this.renderedFromServer = true;
-    this.user = isClient && window.__user__ ? window.__user__ : props.user;
+    // User lives in __atomStoreData__ (same source as userAtom); keep getUser for legacy context.
+    this.user =
+      isClient && window.__atomStoreData__?.user !== undefined
+        ? window.__atomStoreData__.user
+        : props.user;
   }
 
   getChildContext() {
