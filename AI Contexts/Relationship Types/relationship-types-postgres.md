@@ -16,7 +16,7 @@ This document is the working context for the Postgres phase. The prior V2 archit
 
 - [x] Schema `006-create_relationship_types_table.sql` (`relationship_types` + RLS in same migration)
 - [x] `PostgresRelationshipTypesDataSource` + mapper + `ArrayResultSet` + specs (incl. RLS isolation, case-insensitive `existsByName`)
-- [x] Feature flag `postgresRelationshipTypes` (config / tenantContext / tenantsModel)
+- [x] Feature flag `postgresRelationshipTypes` (config / tenantContext / tenantsModel; local via `FEATURE_FLAG_POSTGRES_RELATIONSHIP_TYPES=true`)
 - [x] `RelationshipTypesDataSourceFactory` — Templates/Files-style EC + flag; PG TM from EC; call sites updated to overrides object
 - [x] `PostgresRelationshipTypesSyncHandler` + factory branch (sync namespace still `relationtypes`)
 - [x] `RelationshipTypesMigrationConfig` + CLI `--collection relationship_types`
@@ -149,6 +149,10 @@ Cutover order per tenant:
 2. Run one-time Mongo → PG data copy for that tenant
 3. Flip flag `true` on that tenant
 4. Smoke CRUD + sync + translations
+
+**Local single-tenant:** set `FEATURE_FLAG_POSTGRES_RELATIONSHIP_TYPES=true` in `.env` (do not edit `config.ts`). Restart the app. Other Postgres backends have matching `FEATURE_FLAG_POSTGRES_*` envs.
+
+**Multi-tenant / production:** set `featureFlags.postgresRelationshipTypes` on the tenant document in Mongo (ENV only seeds the default tenant from `config.ts`).
 
 ### 5. One-time Mongo → Postgres data copy
 
