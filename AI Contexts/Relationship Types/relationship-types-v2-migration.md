@@ -9,7 +9,7 @@ Migrate relationship types backend logic to v2 architecture so the module can la
 - Backend-only (`app/api`).
 - Keep endpoint names and response/request contracts identical for `/api/relationtypes`.
 - No runtime support for legacy `relationtypes.properties` behavior in the target v2 implementation.
-- Do not implement cleanup logic for legacy `relationtypes.properties` or `connections.metadata` in this migration scope.
+- Data cleanup of legacy `relationtypes.properties` and `connections.metadata` is handled by tenant migration `200-remove-legacy-relationshiptype-properties-and-connection-metadata`.
 - Internally split mutation flows into explicit `create` and `update` use cases (no internal upsert).
 
 ## Current Diagnosis
@@ -22,7 +22,7 @@ Migrate relationship types backend logic to v2 architecture so the module can la
 
 - Treat `relationtypes.properties` as deprecated legacy data.
 - Target implementation provides no first-class support for relationtype property semantics.
-- Assume production data cleanup is handled separately; migration code should not spend effort supporting or transforming `relationtypes.properties` or `connections.metadata`.
+- Production data cleanup is tenant migration `200`: `$unset` `relationtypes.properties` and `connections.metadata` where present (`requiresSchema: 5`, `reindex: false`).
 
 ## Architecture Reference
 
@@ -79,6 +79,7 @@ Migrate relationship types backend logic to v2 architecture so the module can la
 - [x] Revisit DELETE semantics for in-use relation types:
   - now returns `400` with `Cannot delete type being used in relationships` when linked to relationships
   - now returns `400` with `Cannot delete type being used in relationship queries` when referenced by relationship queries
+- [x] Add tenant data migration to remove legacy `relationtypes.properties` and `connections.metadata`.
 
 ## Current Implementation Notes
 
@@ -134,14 +135,12 @@ Migrate relationship types backend logic to v2 architecture so the module can la
 ## Explicit Non-Goals (Current Scope)
 
 - Do not reintroduce runtime support for `relationtypes.properties`.
-- Do not implement migration cleanup logic for legacy `relationtypes.properties`.
-- Do not implement migration cleanup logic for `connections.metadata`.
 - Do not start Postgres adapter work before v2 migration closure sign-off.
 
 ## To Keep an Eye On
 
 - Final confirmation that dropping relationtype property behavior is acceptable for all external consumers.
-- Database cleanup of old `relationtypes.properties` and `connections.metadata` is operational follow-up, not part of this implementation scope.
+- After migration `200` runs in prod, HubRelationshipMetadata extended metadata UI will no longer render connection `metadata` (by design).
 - Keep enforcing "no internal mocks" in relationshiptypes v2 tests unless crossing module/system boundaries (auth/socket/etc).
 - Remaining legacy relationtypes references are now test-only; runtime callers are migrated to core-based v2 implementation.
 - Keep temporary `notify: true` in relationship type controller error logs until monitoring validation is complete; then remove notify flag and keep logs.
