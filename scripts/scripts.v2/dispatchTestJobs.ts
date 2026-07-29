@@ -4,7 +4,7 @@ import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { TestJob } from '../../app/queueRegistry.js';
 
-(async () => {
+async function run() {
   await DB.connect(config.DBHOST, config.DBAUTH);
   const dispatcher = DefaultDispatcher(
     process.env.TENANT || 'default',
@@ -15,4 +15,10 @@ import { TestJob } from '../../app/queueRegistry.js';
     await dispatcher.dispatch(TestJob, undefined);
   }
   await DB.disconnect();
-})();
+}
+
+run().catch(async error => {
+  process.stderr.write(`dispatchTestJobs failed: ${error}\n`);
+  await DB.disconnect();
+  process.exit(1);
+});

@@ -54,7 +54,17 @@ const localRulesPlugin = {
 };
 
 export default defineConfig([
-  { ignores: ['**/__snapshots__/**', '**/*.snap', 'eslint.config.mjs'] },
+  {
+    ignores: [
+      '**/__snapshots__/**',
+      '**/*.snap',
+      'eslint.config.mjs',
+      // Ignore legacy scripts; re-include scripts.v2 (parent dirs must not be fully ignored).
+      'scripts/*',
+      '!scripts/scripts.v2/',
+      '!scripts/scripts.v2/**',
+    ],
+  },
   ...compat.extends('airbnb'),
   cypress.configs.recommended,
   ...storybook.configs['flat/recommended'],
@@ -378,7 +388,13 @@ export default defineConfig([
     },
   },
   {
-    files: ['app/**/*.ts*', 'database/**/*.ts', 'e2e/**/*.ts', 'playwright/**/*.ts'],
+    files: [
+      'app/**/*.ts*',
+      'database/**/*.ts',
+      'e2e/**/*.ts',
+      'playwright/**/*.ts',
+      'scripts/scripts.v2/**/*.ts',
+    ],
     ignores: ['**/*.cy.tsx'],
     plugins: { '@typescript-eslint': typescriptEslint },
     languageOptions: {
@@ -396,6 +412,14 @@ export default defineConfig([
       ],
 
       'no-useless-constructor': 'off',
+    },
+  },
+  {
+    files: ['scripts/scripts.v2/**/*.ts'],
+    rules: {
+      'no-console': 'off',
+      'max-statements': 'off',
+      'import/no-extraneous-dependencies': 'off',
     },
   },
   {
