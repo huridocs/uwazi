@@ -1,4 +1,4 @@
-import { RelationshipTypesDataSource } from '#api/relationshiptypes.v2/contracts/RelationshipTypesDataSource.js';
+import { RelationshipTypesDataSource } from '#api/core/application/contracts/RelationshipTypesDataSource.js';
 import { Context, Property } from '../../domain/template/Property.js';
 import {
   V1RelationshipProperty,

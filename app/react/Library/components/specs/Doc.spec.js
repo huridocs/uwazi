@@ -140,9 +140,6 @@ describe('Doc', () => {
         library: {
           ui: Immutable.fromJS({ selectedDocuments: [{ _id: 'docId' }] }),
         },
-        uploads: {
-          progress: Immutable.fromJS({}),
-        },
         user: Immutable.fromJS({ _id: 'batId' }),
       };
     });
