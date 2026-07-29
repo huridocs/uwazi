@@ -18,15 +18,11 @@ const fixtures: DBFixture = {
 describe('ServerRelationshipTypesService', () => {
   beforeAll(async () => {
     await testingEnvironment.setUp(fixtures);
-  });
-
-  afterEach(async () => {
-    await testingEnvironment.setFixtures(fixtures);
-  });
+  }, 30000);
 
   afterAll(async () => {
     await testingEnvironment.tearDown();
-  });
+  }, 30000);
 
   it('getAll returns rows with string _id', async () => {
     const [data, error] = await testingEnvironment.runWithContext(async () => service.getAll());
