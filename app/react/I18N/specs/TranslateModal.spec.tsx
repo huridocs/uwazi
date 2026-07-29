@@ -15,13 +15,17 @@ describe('TranslateModal', () => {
 
   beforeAll(() => {
     jest.spyOn(translationsAPI, 'postV2').mockImplementation(async () => Promise.resolve(200));
-    jest.spyOn(translationsAPI, 'get').mockImplementation(async () => Promise.resolve(translations));
+    jest
+      .spyOn(translationsAPI, 'get')
+      .mockImplementation(async () => Promise.resolve(translations));
   });
 
   afterEach(() => {
     jest.clearAllMocks();
     jest.spyOn(translationsAPI, 'postV2').mockImplementation(async () => Promise.resolve(200));
-    jest.spyOn(translationsAPI, 'get').mockImplementation(async () => Promise.resolve(translations));
+    jest
+      .spyOn(translationsAPI, 'get')
+      .mockImplementation(async () => Promise.resolve(translations));
   });
 
   const renderComponent = (

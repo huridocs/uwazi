@@ -85,13 +85,7 @@ const TranslateModal = () => {
       };
     });
     reset({ data: initialValues });
-  }, [
-    context,
-    contextTranslations,
-    inlineEditState.translationKey,
-    languages,
-    reset,
-  ]);
+  }, [context, contextTranslations, inlineEditState.translationKey, languages, reset]);
 
   const closeModal = () => {
     setInlineEditState({ inlineEdit: true, translationKey: '', context: '' });

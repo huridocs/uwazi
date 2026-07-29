@@ -123,7 +123,7 @@ socket.on('translationKeysChange', translationsEntries => {
   const translations = atomStore.get(translationsAtom);
   let hasUpdates = false;
   translationsEntries.forEach(item => {
-    const translation = translations.find(t => t.locale === item.language);
+    const translation = translations.find(language => language.locale === item.language);
     const modifiedContext = translation?.contexts.find(c => c.id && c.id === item.context.id);
     if (!modifiedContext) {
       return;

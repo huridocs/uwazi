@@ -9,7 +9,7 @@ import { thesauriAtom } from './thesauriAtom.js';
 import { relationshipTypesAtom } from './relationshipTypes.js';
 
 type AtomStore = ReturnType<typeof createStore>;
-type ReduxStore = { dispatch: Dispatch };
+type ReduxStore = { dispatch: Dispatch<any> };
 
 /**
  * Seed the deprecated Redux store from atoms (source of truth after SSR).
