@@ -1,12 +1,8 @@
 import React, { useMemo } from 'react';
 import sanitizeHtml from 'sanitize-html';
 import MarkdownIt from 'markdown-it';
-import { MetadataFieldProps } from './MetadataFieldPropsType.js';
-import { PropertyLabel } from './PropertyLabel.js';
-import { MetadataCard } from './MetadataCard.js';
-import { COMPACT_METADATA_FIELD_LAYOUT } from '../metadataPropertyLayout.js';
 
-type MarkdownProps = MetadataFieldProps & {
+type MarkdownProps = {
   values: {
     value: string;
   }[];
@@ -23,7 +19,7 @@ const sanitizeOptions = {
   },
 };
 
-const Markdown = ({ label, translationContext, values, hideLabel, className }: MarkdownProps) => {
+const Markdown = ({ values }: MarkdownProps) => {
   const safeHtmlList = useMemo(
     () =>
       (values ?? [])
@@ -37,21 +33,12 @@ const Markdown = ({ label, translationContext, values, hideLabel, className }: M
   }
 
   return (
-    <MetadataCard className={className ?? COMPACT_METADATA_FIELD_LAYOUT}>
-      <dt>
-        <PropertyLabel
-          label={label}
-          translationContext={translationContext}
-          hideLabel={hideLabel}
-        />
-      </dt>
-      <dd className="flex flex-col gap-1">
-        {safeHtmlList.map((safeHtml, index) => (
-          // eslint-disable-next-line react/no-array-index-key, react/no-danger
-          <div key={index} className="no-tailwind" dangerouslySetInnerHTML={{ __html: safeHtml }} />
-        ))}
-      </dd>
-    </MetadataCard>
+    <div className="flex flex-col gap-1">
+      {safeHtmlList.map((safeHtml, index) => (
+        // eslint-disable-next-line react/no-array-index-key, react/no-danger
+        <div key={index} className="no-tailwind" dangerouslySetInnerHTML={{ __html: safeHtml }} />
+      ))}
+    </div>
   );
 };
 

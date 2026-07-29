@@ -5,7 +5,7 @@ const tabListScrollClass =
   'min-w-0 max-w-full w-full shrink-0 overflow-x-auto overflow-y-visible [-webkit-overflow-scrolling:touch] [scrollbar-width:thin]';
 
 const tabListClass =
-  'inline-flex items-stretch w-max max-w-none shrink-0 rounded-md border border-border shadow-[0_1px_2px_rgba(0,0,0,0.08)] overflow-hidden';
+  'inline-flex items-stretch w-max max-w-none shrink-0 rounded-md border border-border shadow-soft';
 
 const tabTriggerBaseClass =
   'flex items-center justify-center gap-1 px-2.5 py-1.5 text-center text-tab font-medium transition-colors md:px-3 focus-visible:outline-hidden focus-visible:[box-shadow:0_0_0_4px_var(--color-theme-control-ring)]';
@@ -15,10 +15,10 @@ const getTabShapeClass = (index: number, totalTabs: number) => {
     return 'rounded-md';
   }
   if (index === 0) {
-    return 'rounded-l-md';
+    return 'rounded-s-md';
   }
   if (index === totalTabs - 1) {
-    return 'rounded-r-md';
+    return 'rounded-e-md';
   }
   return 'rounded-none';
 };

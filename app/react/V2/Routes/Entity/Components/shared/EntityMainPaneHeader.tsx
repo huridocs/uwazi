@@ -12,13 +12,19 @@ const EntityMainPaneHeader = ({
   entity,
   showDocumentViewMode = false,
 }: EntityMainPaneHeaderProps) => (
-  <div className="flex h-10 shrink-0 items-center gap-2 border-b border-border px-4">
-    <TemplateLabel templateId={entity.template} />
-    <h1 className="m-0 min-w-0 flex-1 truncate text-xs font-semibold text-ink" no-translate="true">
-      {entity.title}
-    </h1>
+  <div className="flex shrink-0 items-center gap-2 min-h-11 pt-1 pb-2 px-3 border-b border-border">
+    <div className="min-w-0 flex-1">
+      <TemplateLabel templateId={entity.template} variant="tag" />
+      <h2
+        className="m-0 mt-1 line-clamp-2 text-sm font-semibold leading-snug text-ink"
+        no-translate="true"
+        title={entity.title}
+      >
+        {entity.title}
+      </h2>
+    </div>
     {showDocumentViewMode ? (
-      <div className="shrink-0">
+      <div className="shrink-0 self-center">
         <DocumentViewModeSelect />
       </div>
     ) : null}

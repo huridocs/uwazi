@@ -17,7 +17,7 @@ const SQUARE_LOGO_ASPECT_RATIO = 1.5;
 type LogoSize = 'wordmark' | 'square' | 'rectangle';
 
 const LOGO_SIZE_CLASSES: Record<LogoSize, string> = {
-  wordmark: 'h-[14.7px]',
+  wordmark: 'h-logo',
   square: 'max-h-12',
   rectangle: 'max-h-7 sm:max-h-8',
 };

@@ -86,7 +86,7 @@ const HeaderView = ({ librarySearch, libraryFilters, setSidePanelView }: HeaderR
       >
         <Translate>Skip to main content</Translate>
       </a>
-      <div className="relative flex min-h-13 items-stretch justify-between gap-4 overflow-visible px-5">
+      <div className="relative flex h-13 items-stretch justify-between gap-4 overflow-visible px-3">
         <div className="flex min-w-0 flex-1 items-center gap-3">
           {isMobile ? <MobileMenuDropdown links={headerLinks} /> : null}
           <SiteName

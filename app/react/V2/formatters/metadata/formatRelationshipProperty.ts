@@ -44,6 +44,31 @@ const mapRelationshipValue = (metadataValue: MetadataValue) => {
 const isRelationshipLike = (t: BaseMetadataProperty['type']) =>
   t === 'relationship' || t === 'newRelationship';
 
+const toRelationshipProperty = (
+  property: BaseMetadataProperty,
+  values: MetadataValue[]
+): RelationshipMetadataProperty => ({
+  _id: property._id,
+  name: property.name,
+  label: property.label,
+  type: 'relationship',
+  mode: 'related',
+  values: values.map(mapRelationshipValue),
+  inherited: property.inherited,
+  inheritedType: property.inheritedType,
+  ...(property.relationShipTarget && { relationShipTarget: property.relationShipTarget }),
+});
+
+const formatRelationshipLinks = (
+  property: BaseMetadataProperty,
+  metadata?: Entity['metadata']
+): RelationshipMetadataProperty | null => {
+  if (!isRelationshipLike(property.type)) {
+    return null;
+  }
+  return toRelationshipProperty(property, (metadata?.[property.name] ?? []) as MetadataValue[]);
+};
+
 const formatRelationshipProperty = (
   property: BaseMetadataProperty,
   metadata?: Entity['metadata']
@@ -59,17 +84,7 @@ const formatRelationshipProperty = (
     return null;
   }
 
-  return {
-    _id: property._id,
-    name: property.name,
-    label: property.label,
-    type: 'relationship',
-    mode: 'related',
-    values: (resolvedValues as MetadataValue[]).map(mapRelationshipValue),
-    inherited: property.inherited,
-    inheritedType: property.inheritedType,
-    ...(property.relationShipTarget && { relationShipTarget: property.relationShipTarget }),
-  };
+  return toRelationshipProperty(property, resolvedValues as MetadataValue[]);
 };
 
-export { formatRelationshipProperty };
+export { formatRelationshipProperty, formatRelationshipLinks };

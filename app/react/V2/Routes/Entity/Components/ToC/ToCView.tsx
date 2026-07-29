@@ -100,7 +100,7 @@ const ToCView = ({ generatedToc, panel }: ToCViewProps) => {
         ) : null}
       </div>
 
-      <div className="min-h-0 flex-1 overflow-auto px-1">
+      <div className="min-h-0 flex-1 overflow-auto px-3">
         <ToC
           toc={tocState.toc}
           expanded={tocState.expanded}

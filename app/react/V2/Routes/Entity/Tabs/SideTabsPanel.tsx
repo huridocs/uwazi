@@ -74,7 +74,7 @@ const SideTabsPanel = ({
         />
       </div>
       <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
-        <div className="min-h-0 flex-1 grow overflow-hidden px-3">
+        <div className="min-h-0 flex-1 grow overflow-hidden">
           <SideTabsContent
             activeTabId={activeSideTab}
             entity={entity}

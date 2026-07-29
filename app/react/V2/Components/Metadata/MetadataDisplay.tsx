@@ -3,21 +3,11 @@ import { useAtomValue } from 'jotai';
 import { Translate } from '#app/I18N/index.js';
 import { templatesAtom } from '#V2/atoms/templatesAtom.js';
 import { Entity } from '#V2/api/entities/types.js';
-import {
-  Date,
-  SimpleValue,
-  Select,
-  Geolocation,
-  RelationshipCards,
-  Markdown,
-  LinkProperty,
-  Image,
-  Media,
-} from './Components/index.js';
+import { Date, RelationshipCards, PropertyValue, MasonryPropertyCard } from './Components/index.js';
 import type { MetadataProperty, RelationshipMetadataProperty } from '#V2/formatters/types.js';
 import { useFormatMetadata } from './hooks/useFormatMetadata.js';
 import { buildTemplatePropertyById } from './buildTemplatePropertyById.js';
-import { metadataGridClassForProperty } from './metadataPropertyLayout.js';
+import { renderMasonryField } from './Components/renderMasonryField.js';
 
 type MetadataDisplayProps = {
   entity: Entity;
@@ -54,122 +44,9 @@ const MetadataDisplay = ({ entity }: MetadataDisplayProps) => {
   const renderMetadataFields = useCallback(
     (fields: MetadataProperty[]) => {
       const translationContext = entityTemplate?._id || '';
-
-      return fields.map(data => {
-        if (data.type === 'text' || data.type === 'generatedid' || data.type === 'numeric') {
-          return (
-            <SimpleValue
-              key={data._id}
-              values={data.values}
-              label={data.label}
-              translationContext={translationContext}
-              hideLabel={data.hideLabel}
-              className={metadataGridClassForProperty(data, templatePropertyById.get(data._id))}
-            />
-          );
-        }
-
-        if (
-          data.type === 'date' ||
-          data.type === 'daterange' ||
-          data.type === 'multidate' ||
-          data.type === 'multidaterange'
-        ) {
-          return (
-            <Date
-              key={data._id}
-              values={data.values}
-              label={data.label}
-              translationContext={translationContext}
-              hideLabel={data.hideLabel}
-              className={metadataGridClassForProperty(data, templatePropertyById.get(data._id))}
-            />
-          );
-        }
-
-        if (data.type === 'geolocation') {
-          const isGroup = Boolean(data.propertyGroup?.length);
-          return (
-            <Geolocation
-              key={data._id}
-              markers={data.values}
-              label={data.label}
-              isGroup={isGroup}
-              translationContext={translationContext}
-              hideLabel={!isGroup && data.hideLabel}
-              className={metadataGridClassForProperty(data, templatePropertyById.get(data._id))}
-            />
-          );
-        }
-
-        if (data.type === 'select' || data.type === 'multiselect') {
-          return (
-            <Select
-              key={data._id}
-              values={data}
-              label={data.label}
-              translationContext={translationContext}
-              hideLabel={data.hideLabel}
-              className={metadataGridClassForProperty(data, templatePropertyById.get(data._id))}
-            />
-          );
-        }
-
-        if (data.type === 'markdown') {
-          return (
-            <Markdown
-              key={data._id}
-              values={data.values}
-              label={data.label}
-              translationContext={translationContext}
-              hideLabel={data.hideLabel}
-              className={metadataGridClassForProperty(data, templatePropertyById.get(data._id))}
-            />
-          );
-        }
-
-        if (data.type === 'link') {
-          return (
-            <LinkProperty
-              key={data._id}
-              values={data.values}
-              label={data.label}
-              translationContext={translationContext}
-              hideLabel={data.hideLabel}
-              className={metadataGridClassForProperty(data, templatePropertyById.get(data._id))}
-            />
-          );
-        }
-
-        if (data.type === 'media') {
-          return (
-            <Media
-              key={data._id}
-              values={data.values}
-              label={data.label}
-              translationContext={translationContext}
-              hideLabel={data.hideLabel}
-              className={metadataGridClassForProperty(data, templatePropertyById.get(data._id))}
-            />
-          );
-        }
-
-        if (data.type === 'image' || data.type === 'preview') {
-          return (
-            <Image
-              key={data._id}
-              values={data.values}
-              label={data.label}
-              translationContext={translationContext}
-              imageStyle={data.style}
-              hideLabel={data.hideLabel}
-              className={metadataGridClassForProperty(data, templatePropertyById.get(data._id))}
-            />
-          );
-        }
-
-        return undefined;
-      });
+      return fields.map(data =>
+        renderMasonryField(data, translationContext, templatePropertyById.get(data._id))
+      );
     },
     [entityTemplate?._id, templatePropertyById]
   );
@@ -181,30 +58,22 @@ const MetadataDisplay = ({ entity }: MetadataDisplayProps) => {
   const translationContext = entityTemplate._id || '';
 
   return (
-    <>
+    <div data-testid="metadata-display">
       <dl className="flex min-w-0 flex-wrap gap-3">
         {typeof entity.creationDate === 'number' && (
-          <Date
-            values={[
-              {
-                value: entity.creationDate,
-              },
-            ]}
-            label="Creation Date"
-            translationContext="System"
-          />
+          <MasonryPropertyCard label="Creation Date" translationContext="System">
+            <PropertyValue as="dd" className="flex flex-col gap-1">
+              <Date values={[{ value: entity.creationDate }]} />
+            </PropertyValue>
+          </MasonryPropertyCard>
         )}
 
         {typeof entity.editDate === 'number' && (
-          <Date
-            values={[
-              {
-                value: entity.editDate,
-              },
-            ]}
-            label="Edit Date"
-            translationContext="System"
-          />
+          <MasonryPropertyCard label="Edit Date" translationContext="System">
+            <PropertyValue as="dd" className="flex flex-col gap-1">
+              <Date values={[{ value: entity.editDate }]} />
+            </PropertyValue>
+          </MasonryPropertyCard>
         )}
 
         {renderMetadataFields(otherFields)}
@@ -213,8 +82,9 @@ const MetadataDisplay = ({ entity }: MetadataDisplayProps) => {
         fields={relationshipFields}
         translationContext={translationContext}
         templatePropertyById={templatePropertyById}
+        masonry
       />
-    </>
+    </div>
   );
 };
 

@@ -1,14 +1,21 @@
 import React from 'react';
 import { Translate } from '#app/I18N/index.js';
-import type { ClientProperty } from '#V2/shared/types.js';
+import type { ClientProperty, ClientTemplateSchema } from '#V2/shared/types.js';
 import type { RelationshipMetadataProperty } from '#V2/formatters/types.js';
-import { FULL_ROW_METADATA_FIELD_LAYOUT } from '../metadataPropertyLayout.js';
+import {
+  FULL_ROW_METADATA_FIELD_LAYOUT,
+  isInheritingRelationship,
+} from '../metadataPropertyLayout.js';
 import { Relationship } from './Relationship.js';
 
 type RelationshipCardsProps = {
   fields: RelationshipMetadataProperty[];
   translationContext: string;
   templatePropertyById: Map<string, ClientProperty>;
+  templates?: ClientTemplateSchema[];
+  /** Skip link-only connections — host renders those in the Details table. */
+  inheritingOnly?: boolean;
+  masonry?: boolean;
 };
 
 const hasLinkedEntities = (field: RelationshipMetadataProperty): boolean =>
@@ -16,40 +23,81 @@ const hasLinkedEntities = (field: RelationshipMetadataProperty): boolean =>
   field.values.length > 0 &&
   field.values.every(value => typeof value === 'object' && value !== null && 'title' in value);
 
+const inheritLabelForProperty = (
+  templateProperty: ClientProperty | undefined,
+  templates: ClientTemplateSchema[] | undefined
+): string | undefined => {
+  const inheritPropertyId = templateProperty?.inherit?.property;
+  if (!inheritPropertyId || !templates?.length) {
+    return undefined;
+  }
+  for (const template of templates) {
+    const match = template.properties?.find(property => property._id === inheritPropertyId);
+    if (match?.label) {
+      return match.label;
+    }
+  }
+  return undefined;
+};
+
 const RelationshipCards = ({
   fields,
   translationContext,
   templatePropertyById,
+  templates,
+  inheritingOnly = false,
+  masonry = false,
 }: RelationshipCardsProps) => {
-  const visibleFields = fields.filter(hasLinkedEntities);
+  const visibleFields = fields.filter(field => {
+    if (!hasLinkedEntities(field)) {
+      return false;
+    }
+    if (inheritingOnly && !isInheritingRelationship(field)) {
+      return false;
+    }
+    return true;
+  });
+
   if (!visibleFields.length) {
     return null;
   }
 
+  const list = visibleFields.map(data => {
+    const templateProperty = templatePropertyById.get(data._id);
+    return (
+      <div key={data._id} data-field-key={data._id}>
+        <Relationship
+          values={data.values}
+          label={data.label}
+          translationContext={translationContext}
+          hideLabel={data.hideLabel}
+          className={masonry ? FULL_ROW_METADATA_FIELD_LAYOUT : undefined}
+          relationTypeId={templateProperty?.relationType}
+          targetTemplateId={data.relationShipTarget || templateProperty?.content}
+          inheritLabel={
+            isInheritingRelationship(data)
+              ? inheritLabelForProperty(templateProperty, templates)
+              : undefined
+          }
+        />
+      </div>
+    );
+  });
+
   return (
     <>
-      <div className="mt-2 flex w-full min-w-0 basis-full items-center">
+      <div
+        className={`mt-2 flex w-full min-w-0 items-center ${masonry ? 'basis-full' : ''}`.trim()}
+      >
         <p className="text-xs font-semibold uppercase tracking-wide text-ink-tertiary">
           <Translate>Relationships</Translate>
         </p>
       </div>
-      <dl className="flex min-w-0 flex-wrap gap-3">
-        {visibleFields.map(data => {
-          const templateProperty = templatePropertyById.get(data._id);
-          return (
-            <Relationship
-              key={data._id}
-              values={data.values}
-              label={data.label}
-              translationContext={translationContext}
-              hideLabel={data.hideLabel}
-              className={FULL_ROW_METADATA_FIELD_LAYOUT}
-              relationTypeId={templateProperty?.relationType}
-              targetTemplateId={data.relationShipTarget || templateProperty?.content}
-            />
-          );
-        })}
-      </dl>
+      {masonry ? (
+        <dl className="flex min-w-0 flex-wrap gap-3">{list}</dl>
+      ) : (
+        <div className="flex flex-col gap-3">{list}</div>
+      )}
     </>
   );
 };

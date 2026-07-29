@@ -49,12 +49,14 @@ const SideTabsContent = ({
     case SIDE_TAB.DOCUMENT:
       if (mainDocument?.filename) {
         content = (
-          <DocumentTab
-            entity={entity}
-            mainDocument={mainDocument}
-            pagePlaintext={pagePlaintext}
-            showViewModeSelect
-          />
+          <div className="flex h-full min-h-0 flex-col px-3">
+            <DocumentTab
+              entity={entity}
+              mainDocument={mainDocument}
+              pagePlaintext={pagePlaintext}
+              showViewModeSelect
+            />
+          </div>
         );
       }
       break;
@@ -64,7 +66,11 @@ const SideTabsContent = ({
       content = <ToCTab mainDocument={mainDocument} />;
       break;
     case SIDE_TAB.RELATIONSHIPS:
-      content = <RelationshipsPanel />;
+      content = (
+        <div className="flex h-full min-h-0 flex-col px-3">
+          <RelationshipsPanel />
+        </div>
+      );
       break;
     case SIDE_TAB.SEARCH:
       content = <SearchTab />;

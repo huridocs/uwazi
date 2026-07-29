@@ -1,22 +1,11 @@
 import React, { useMemo } from 'react';
 import { LinkMetadataProperty } from '#V2/formatters/types.js';
-import { PropertyLabel } from './PropertyLabel.js';
-import { MetadataFieldProps } from './MetadataFieldPropsType.js';
-import { MetadataCard } from './MetadataCard.js';
-import { PropertyValue } from './PropertyValue.js';
-import { COMPACT_METADATA_FIELD_LAYOUT } from '../metadataPropertyLayout.js';
 
-type LinkPropertyProps = MetadataFieldProps & {
+type LinkPropertyProps = {
   values: LinkMetadataProperty['values'];
 };
 
-const LinkProperty = ({
-  values,
-  label,
-  translationContext,
-  hideLabel,
-  className,
-}: LinkPropertyProps) => {
+const LinkProperty = ({ values }: LinkPropertyProps) => {
   const noValues = useMemo(
     () => values.length === 0 || values.every(value => !value.value || value.value === ''),
     [values]
@@ -27,23 +16,20 @@ const LinkProperty = ({
   }
 
   return (
-    <MetadataCard className={className ?? COMPACT_METADATA_FIELD_LAYOUT}>
-      <dt>
-        <PropertyLabel
-          label={label}
-          translationContext={translationContext}
-          hideLabel={hideLabel}
-        />
-      </dt>
+    <div className="flex flex-col gap-1 font-medium leading-snug">
       {values.map((value, index) => (
-        // eslint-disable-next-line react/no-array-index-key
-        <PropertyValue key={`${index}-${value.value}`} as="dd" className="underline">
-          <a href={value.value} target="_blank" rel="noreferrer">
-            {value.label || value.value}
-          </a>
-        </PropertyValue>
+        <a
+          // eslint-disable-next-line react/no-array-index-key
+          key={`${index}-${value.value}`}
+          className="underline"
+          href={value.value}
+          target="_blank"
+          rel="noreferrer"
+        >
+          {value.label || value.value}
+        </a>
       ))}
-    </MetadataCard>
+    </div>
   );
 };
 

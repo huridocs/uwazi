@@ -85,6 +85,12 @@ const renderSession = async (upsert: jest.Mock) => {
 };
 
 describe('MetadataTab shared session', () => {
+  it('renders MetadataRecord on both side and main hosts when not editing', async () => {
+    await renderSession(jest.fn());
+    expect(screen.getAllByTestId('metadata-record')).toHaveLength(2);
+    expect(screen.queryByTestId('metadata-display')).not.toBeInTheDocument();
+  });
+
   it('does not abort in-flight save when form mount moves to the other host', async () => {
     let resolveUpsert: (value: [Entity, undefined]) => void = () => undefined;
     const upsert = jest.fn(

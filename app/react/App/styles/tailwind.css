@@ -195,6 +195,11 @@
   --spacing-nano: 10px;
   --spacing-micro: 11px;
   --border-width-arrow: 7px;
+
+  /* Concrete fallbacks: nested theme vars alone resolve invalid on :root (ink currentColor). */
+  --color-border: var(--color-theme-border-primary, #e0d9c8);
+  --color-warm: var(--color-theme-surface-warm, var(--color-theme-bg-warm, #FCFAF8));
+  --color-ink: var(--color-theme-action-primary, var(--color-theme-text-primary, #1c1917));
 }
 
 @layer theme {
@@ -202,7 +207,7 @@
     --radius-xs: 2px;
     --radius-sm: 3px;
     --radius: 4px;
-    --radius-md: 6px;
+    --radius-md: 8px;
     --radius-lg: 8px;
     --radius-xl: 10px;
     --radius-2xl: 12px;
@@ -400,7 +405,16 @@
 }
 
 @utility border-border {
-  border-color: var(--color-theme-border-primary);
+  border-color: var(--color-theme-border-primary, #e0d9c8);
+}
+
+/* TW opacity modifiers cannot mix nested theme vars — explicit soft chrome for cards. */
+@utility border-border-40 {
+  border-color: color-mix(
+    in srgb,
+    var(--color-theme-border-primary, #e0d9c8) 40%,
+    transparent
+  );
 }
 
 @utility border-border-soft {
@@ -421,6 +435,14 @@
 
 @utility border-emphasis-solid {
   border-color: var(--color-theme-accent-emphasis-solid);
+}
+
+@utility shadow-soft {
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+}
+
+@utility h-logo {
+  height: 14.7px;
 }
 
 @layer base {
