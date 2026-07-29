@@ -26,7 +26,9 @@ jest.mock('#app/I18N/index.js', () => ({
 }));
 
 jest.mock('#app/Map/index.js', () => ({
-  Map: () => <div data-testid="map" />,
+  Map: ({ markers }: { markers?: { latitude: number; longitude: number }[] }) => (
+    <div data-testid="map" data-marker-count={markers?.length ?? 0} />
+  ),
 }));
 
 const relatedTemplate = {
@@ -200,6 +202,237 @@ describe('MetadataRecord', () => {
     expect(screen.getAllByText(/inherits/).length).toBeGreaterThan(0);
 
     expect(screen.getByRole('heading', { level: 4, name: 'Relationshipc' })).toBeInTheDocument();
+  });
+
+  it('keeps inherited terminal content while showing entity link cards for inheriting relationships', () => {
+    renderRecord();
+
+    const relaCard = screen.getByText('Relationshipa').closest('[data-field-key="p-rela"]');
+    expect(relaCard).toBeInstanceOf(HTMLElement);
+    if (!(relaCard instanceof HTMLElement)) {
+      throw new Error('expected Relationshipa card');
+    }
+    expect(relaCard).toHaveTextContent('Inherited long text content for relationship a');
+
+    const relbCard = screen.getByText('Relationshipb').closest('[data-field-key="p-relb"]');
+    expect(relbCard).toBeInstanceOf(HTMLElement);
+    if (!(relbCard instanceof HTMLElement)) {
+      throw new Error('expected Relationshipb card');
+    }
+    expect(within(relbCard).getByTestId('map')).toBeInTheDocument();
+
+    expect(screen.getByRole('link', { name: /A1/i })).toBeInTheDocument();
+    expect(screen.getByText('Relationships')).toBeInTheDocument();
+    expect(
+      screen.queryByRole('heading', { level: 4, name: 'Relationshipa' })
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole('heading', { level: 4, name: 'Relationshipb' })
+    ).not.toBeInTheDocument();
+  });
+
+  it('attaches geo group terminals to inheriting relationships and keeps own markers as leading', () => {
+    const geoGroupTemplate = {
+      _id: 'tmpl-geo-group',
+      name: 'Geo group template',
+      properties: [
+        { _id: 'p-geo', name: 'ownloc', type: 'geolocation' as const, label: 'Own location' },
+        {
+          _id: 'p-rel-geo',
+          name: 'inheritedloc',
+          type: 'relationship' as const,
+          label: 'Inherited location',
+          content: 'related-tmpl',
+          relationType: 'rel-type-1',
+          inherit: { property: 'inherited-geo-prop', type: 'geolocation' as const },
+        },
+      ],
+    };
+
+    const geoGroupEntity: Entity = {
+      ...entity,
+      _id: 'e-geo-group',
+      template: 'tmpl-geo-group',
+      metadata: {
+        ownloc: [{ value: { lat: 3, lon: 4, label: 'Own' } }],
+        inheritedloc: [
+          {
+            value: 'linked-a',
+            label: 'A1',
+            type: 'entity',
+            inheritedType: 'geolocation',
+            inheritedValue: [{ value: { lat: 1, lon: 2, label: '' } }],
+          },
+        ],
+      },
+      documents: [],
+    };
+
+    render(
+      <TestAtomStoreProvider
+        initialValues={[
+          [templatesAtom, [geoGroupTemplate, relatedTemplate]],
+          [relationshipTypesAtom, [{ _id: 'rel-type-1', name: 'Relates to' }]],
+        ]}
+      >
+        <MetadataRecord entity={geoGroupEntity} />
+      </TestAtomStoreProvider>
+    );
+
+    expect(
+      screen.queryByRole('heading', { level: 4, name: 'Grouped geolocation properties' })
+    ).not.toBeInTheDocument();
+    expect(screen.getByRole('heading', { level: 4, name: 'Own location' })).toBeInTheDocument();
+    const ownCard = screen.getByRole('heading', { level: 4, name: 'Own location' }).closest(
+      '[data-field-key]'
+    );
+    expect(ownCard).toBeInstanceOf(HTMLElement);
+    if (!(ownCard instanceof HTMLElement)) {
+      throw new Error('expected Own location card');
+    }
+    expect(within(ownCard).getByTestId('map')).toHaveAttribute('data-marker-count', '1');
+
+    const relCard = screen.getByText('Inherited location').closest('[data-field-key="p-rel-geo"]');
+    expect(relCard).toBeInstanceOf(HTMLElement);
+    if (!(relCard instanceof HTMLElement)) {
+      throw new Error('expected Inherited location card');
+    }
+    expect(within(relCard).getByTestId('map')).toHaveAttribute('data-marker-count', '1');
+    expect(within(relCard).getByRole('link', { name: /A1/i })).toBeInTheDocument();
+  });
+
+  it('keeps own geo map when mixed group inheriting relationship has no linked entities', () => {
+    const geoGroupTemplate = {
+      _id: 'tmpl-geo-empty-links',
+      name: 'Geo empty links template',
+      properties: [
+        { _id: 'p-geo', name: 'ownloc', type: 'geolocation' as const, label: 'Own location' },
+        {
+          _id: 'p-rel-geo',
+          name: 'inheritedloc',
+          type: 'relationship' as const,
+          label: 'Inherited location',
+          content: 'related-tmpl',
+          relationType: 'rel-type-1',
+          inherit: { property: 'inherited-geo-prop', type: 'geolocation' as const },
+        },
+      ],
+    };
+
+    const geoGroupEntity: Entity = {
+      ...entity,
+      _id: 'e-geo-empty-links',
+      template: 'tmpl-geo-empty-links',
+      metadata: {
+        ownloc: [{ value: { lat: 3, lon: 4, label: 'Own' } }],
+        inheritedloc: [],
+      },
+      documents: [],
+    };
+
+    render(
+      <TestAtomStoreProvider
+        initialValues={[
+          [templatesAtom, [geoGroupTemplate, relatedTemplate]],
+          [relationshipTypesAtom, [{ _id: 'rel-type-1', name: 'Relates to' }]],
+        ]}
+      >
+        <MetadataRecord entity={geoGroupEntity} />
+      </TestAtomStoreProvider>
+    );
+
+    expect(screen.getByRole('heading', { level: 4, name: 'Own location' })).toBeInTheDocument();
+    expect(screen.getByTestId('map')).toBeInTheDocument();
+    expect(screen.queryByText('Relationships')).not.toBeInTheDocument();
+    expect(screen.queryByText('Inherited location')).not.toBeInTheDocument();
+  });
+
+  it('gives each inheriting geo relationship only its own markers from a mixed group', () => {
+    const geoGroupTemplate = {
+      _id: 'tmpl-geo-two-inh',
+      name: 'Geo two inheriting template',
+      properties: [
+        { _id: 'p-geo', name: 'ownloc', type: 'geolocation' as const, label: 'Own location' },
+        {
+          _id: 'p-rel-geo-a',
+          name: 'inheritedloca',
+          type: 'relationship' as const,
+          label: 'Inherited location A',
+          content: 'related-tmpl',
+          relationType: 'rel-type-1',
+          inherit: { property: 'inherited-geo-prop', type: 'geolocation' as const },
+        },
+        {
+          _id: 'p-rel-geo-b',
+          name: 'inheritedlocb',
+          type: 'relationship' as const,
+          label: 'Inherited location B',
+          content: 'related-tmpl',
+          relationType: 'rel-type-1',
+          inherit: { property: 'inherited-geo-prop', type: 'geolocation' as const },
+        },
+      ],
+    };
+
+    const geoGroupEntity: Entity = {
+      ...entity,
+      _id: 'e-geo-two-inh',
+      template: 'tmpl-geo-two-inh',
+      metadata: {
+        ownloc: [{ value: { lat: 3, lon: 4, label: 'Own' } }],
+        inheritedloca: [
+          {
+            value: 'linked-a',
+            label: 'A1',
+            type: 'entity',
+            inheritedType: 'geolocation',
+            inheritedValue: [{ value: { lat: 1, lon: 2, label: '' } }],
+          },
+        ],
+        inheritedlocb: [
+          {
+            value: 'linked-b',
+            label: 'B1',
+            type: 'entity',
+            inheritedType: 'geolocation',
+            inheritedValue: [
+              { value: { lat: 10, lon: 20, label: '' } },
+              { value: { lat: 11, lon: 21, label: '' } },
+            ],
+          },
+        ],
+      },
+      documents: [],
+    };
+
+    render(
+      <TestAtomStoreProvider
+        initialValues={[
+          [templatesAtom, [geoGroupTemplate, relatedTemplate]],
+          [relationshipTypesAtom, [{ _id: 'rel-type-1', name: 'Relates to' }]],
+        ]}
+      >
+        <MetadataRecord entity={geoGroupEntity} />
+      </TestAtomStoreProvider>
+    );
+
+    const relA = screen
+      .getByText('Inherited location A')
+      .closest('[data-field-key="p-rel-geo-a"]');
+    const relB = screen
+      .getByText('Inherited location B')
+      .closest('[data-field-key="p-rel-geo-b"]');
+    expect(relA).toBeInstanceOf(HTMLElement);
+    expect(relB).toBeInstanceOf(HTMLElement);
+    if (!(relA instanceof HTMLElement) || !(relB instanceof HTMLElement)) {
+      throw new Error('expected both inheriting geo cards');
+    }
+    expect(within(relA).getByTestId('map')).toHaveAttribute('data-marker-count', '1');
+    expect(within(relB).getByTestId('map')).toHaveAttribute('data-marker-count', '2');
+    expect(within(relA).getByRole('link', { name: /A1/i })).toBeInTheDocument();
+    expect(within(relB).getByRole('link', { name: /B1/i })).toBeInTheDocument();
+    expect(within(relA).queryByRole('link', { name: /B1/i })).not.toBeInTheDocument();
+    expect(within(relB).queryByRole('link', { name: /A1/i })).not.toBeInTheDocument();
   });
 
   it('shows external-link icons only on Details ConnectionPills, not Relationships cards', () => {

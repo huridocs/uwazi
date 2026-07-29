@@ -1,6 +1,9 @@
 import { Entity } from '#V2/api/entities/types.js';
 import { BaseMetadataProperty } from '../../types.js';
-import { formatRelationshipProperty } from '../formatRelationshipProperty.js';
+import {
+  formatRelationshipLinks,
+  formatRelationshipProperty,
+} from '../formatRelationshipProperty.js';
 
 const ids = {
   entity: {
@@ -316,6 +319,128 @@ describe('formatRelationshipProperty', () => {
       values: [],
       inherited: undefined,
       inheritedType: undefined,
+    });
+  });
+});
+
+describe('formatRelationshipLinks', () => {
+  const metadata = {
+    related_people: [
+      {
+        value: ids.entity.witnessMaria,
+        label: 'Maria Rodriguez - Witness',
+        icon: { _id: 'ECU', label: 'Ecuador', type: 'icon' },
+        inheritedValue: [
+          { value: ids.thesaurus.again, label: 'Again' },
+          { value: ids.thesaurus.acknowledging, label: 'Acknowledging' },
+        ],
+        inheritedType: 'multiselect',
+      },
+      {
+        value: ids.entity.reporterJohn,
+        label: 'John Smith - Reporter',
+        inheritedValue: [],
+        inheritedType: 'multiselect',
+      },
+    ],
+    nearby_incidents: [
+      {
+        value: ids.entity.incidentMainStreet,
+        label: 'Traffic Accident - Main Street',
+      },
+    ],
+  } as Entity['metadata'];
+
+  it('should return null for non-relationship properties', () => {
+    const property = {
+      _id: ids.property.simpleText,
+      name: 'simple_text',
+      label: 'Simple Text',
+      type: 'text',
+    } as BaseMetadataProperty;
+
+    expect(formatRelationshipLinks(property, metadata)).toBeNull();
+  });
+
+  it('should map top-level entity links for inheriting relationships without unwrapping terminals', () => {
+    const property = {
+      _id: ids.property.relatedPeople,
+      name: 'related_people',
+      label: 'Related people',
+      type: 'relationship',
+      inherited: true,
+      inheritedType: 'multiselect',
+      relationShipTarget: ids.template.people,
+    } as BaseMetadataProperty;
+
+    expect(formatRelationshipLinks(property, metadata)).toEqual({
+      _id: ids.property.relatedPeople,
+      name: 'related_people',
+      label: 'Related people',
+      mode: 'related',
+      type: 'relationship',
+      values: [
+        {
+          _id: ids.entity.witnessMaria,
+          title: 'Maria Rodriguez - Witness',
+          icon: { _id: 'ECU', label: 'Ecuador' },
+        },
+        {
+          _id: ids.entity.reporterJohn,
+          title: 'John Smith - Reporter',
+        },
+      ],
+      inherited: true,
+      inheritedType: 'multiselect',
+      relationShipTarget: ids.template.people,
+    });
+  });
+
+  it('should format newRelationship like relationship', () => {
+    const property = {
+      _id: ids.property.nearbyIncidentsNewRel,
+      name: 'nearby_incidents',
+      label: 'Nearby incidents',
+      type: 'newRelationship',
+      inherited: false,
+    } as BaseMetadataProperty;
+
+    expect(formatRelationshipLinks(property, metadata)).toEqual({
+      _id: ids.property.nearbyIncidentsNewRel,
+      name: 'nearby_incidents',
+      label: 'Nearby incidents',
+      mode: 'related',
+      type: 'relationship',
+      values: [
+        {
+          _id: ids.entity.incidentMainStreet,
+          title: 'Traffic Accident - Main Street',
+        },
+      ],
+      inherited: false,
+      inheritedType: undefined,
+    });
+  });
+
+  it('should return empty values when metadata is missing', () => {
+    const property = {
+      _id: ids.property.missingRelationships,
+      name: 'missing_relationships',
+      label: 'Missing Relationships',
+      type: 'relationship',
+      inherited: true,
+      inheritedType: 'text',
+    } as BaseMetadataProperty;
+
+    expect(formatRelationshipLinks(property, undefined)).toEqual({
+      _id: ids.property.missingRelationships,
+      name: 'missing_relationships',
+      label: 'Missing Relationships',
+      type: 'relationship',
+      mode: 'related',
+      values: [],
+      inherited: true,
+      inheritedType: 'text',
     });
   });
 });
