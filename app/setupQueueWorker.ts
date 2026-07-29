@@ -27,6 +27,7 @@ import { tenants } from '#api/tenants/index.js';
 import { prettifyError } from '#api/utils/handleError.js';
 import { initSentry } from './initSentry.js';
 import { registerJobs } from './queueRegistry.js';
+import { CleanupExpiredPasswordRecoveriesJob } from '#api/core/infrastructure/jobs/CleanupExpiredPasswordRecoveriesJob.js';
 import { IdGeneratorFactory } from '#api/core/infrastructure/factories/IdGeneratorFactory.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { PostgresTransactionManagerFactory } from '#api/core/infrastructure/factories/PostgresTransactionManagerFactory.js';
@@ -130,6 +131,18 @@ function setupQueueWorker(props?: Props) {
 
       registerJobs(register.bind(queueWorker));
       logger.info('Registered jobs', { jobs: queueWorker.getRegisteredJobs() });
+
+      const systemDispatcher = DefaultDispatcher(
+        'system',
+        TransactionManagerFactory.createForSharedDataBase()
+      );
+      const pendingCleanupJobs = await systemDispatcher.countByName(
+        CleanupExpiredPasswordRecoveriesJob
+      );
+      if (pendingCleanupJobs === 0) {
+        await systemDispatcher.dispatch(CleanupExpiredPasswordRecoveriesJob, {});
+        logger.info('Dispatched initial CleanupExpiredPasswordRecoveriesJob');
+      }
 
       if (standAloneProcess) {
         registerEventListeners(applicationEventsBus);

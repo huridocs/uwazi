@@ -83,6 +83,8 @@ import { SendPasswordRecoveryEmailHandler } from '#api/core/infrastructure/jobs/
 import { EmailSenderFactory } from '#api/core/infrastructure/factories/EmailSenderFactory.js';
 import { MigrationJob } from '#api/core/infrastructure/jobs/MigrationJob.js';
 import { MigrationJobFactory } from '#api/core/infrastructure/factories/MigrationJobFactory.js';
+import { CleanupExpiredPasswordRecoveriesJob } from '#api/core/infrastructure/jobs/CleanupExpiredPasswordRecoveriesJob.js';
+import { PostgresDB } from '#api/infrastructure/PostgresDB.js';
 import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
 import { withFeature } from '#api/core/libs/logger/infrastructure/StandardLogger.js';
 import { StandardJSONWriter } from '#api/core/libs/logger/infrastructure/writers/StandardJSONWriter.js';
@@ -355,5 +357,14 @@ export function registerJobs(register: Register) {
     MigrationJobFactory.create({
       logger: LoggerFactory.systemLogger(withFeature(StandardJSONWriter, 'migration')),
     })
+  );
+
+  register(
+    CleanupExpiredPasswordRecoveriesJob,
+    async () =>
+      new CleanupExpiredPasswordRecoveriesJob({
+        pool: PostgresDB.adminPool(),
+        jobsDispatcher: ExecutionContext.jobsDispatcher,
+      })
   );
 }
