@@ -118,9 +118,12 @@ const DocumentPreviewCard = ({ entity, previewField }: DocumentPreviewCardProps)
             ) : null}
           </div>
           {showPdfBadge ? (
-            <span className="absolute bottom-1 inset-e-1 rounded-xs bg-ink/70 px-1 py-px text-pico font-semibold uppercase leading-none tracking-wider text-parchment">
+            <Translate
+              key="pdf-badge"
+              className="absolute bottom-1 inset-e-1 rounded-xs bg-ink/70 px-1 py-px text-pico font-semibold uppercase leading-none tracking-wider text-parchment"
+            >
               PDF
-            </span>
+            </Translate>
           ) : null}
         </div>
         <div className="min-w-0 flex flex-1 flex-col gap-3">
