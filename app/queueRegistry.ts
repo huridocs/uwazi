@@ -83,7 +83,7 @@ import { SendPasswordRecoveryEmailHandler } from '#api/core/infrastructure/jobs/
 import { EmailSenderFactory } from '#api/core/infrastructure/factories/EmailSenderFactory.js';
 import { MigrationJob } from '#api/core/infrastructure/jobs/MigrationJob.js';
 import { MigrationJobFactory } from '#api/core/infrastructure/factories/MigrationJobFactory.js';
-import { CleanupExpiredPasswordRecoveriesJob } from '#api/core/infrastructure/jobs/CleanupExpiredPasswordRecoveriesJob.js';
+import { CleanupExpiredPasswordRecoveriesJob } from '#api/core/infrastructure/jobs/cleanupExpiredPasswordRecoveriesJob/CleanupExpiredPasswordRecoveriesJob.js';
 import { PostgresDB } from '#api/infrastructure/PostgresDB.js';
 import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
 import { withFeature } from '#api/core/libs/logger/infrastructure/StandardLogger.js';

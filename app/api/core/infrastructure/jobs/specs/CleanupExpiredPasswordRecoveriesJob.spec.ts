@@ -1,6 +1,6 @@
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { testingPG } from '#api/utils/testing_pg.js';
-import { CleanupExpiredPasswordRecoveriesJob } from '../CleanupExpiredPasswordRecoveriesJob.js';
+import { CleanupExpiredPasswordRecoveriesJob } from '../cleanupExpiredPasswordRecoveriesJob/CleanupExpiredPasswordRecoveriesJob.js';
 
 const TENANT_A = 'tenant-a';
 const TENANT_B = 'tenant-b';

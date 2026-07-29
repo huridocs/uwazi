@@ -29,11 +29,11 @@ class DeleteUserController extends AbstractController<DeleteUserRequest> {
           : this.request.query.ids,
     };
 
+    const input = DeleteUserInputSchema.parse(parsed);
+
     if (ExecutionContext.tenant.featureFlags?.v2UsersDelete) {
       const startTime = Date.now();
       try {
-        const input = DeleteUserInputSchema.parse(parsed);
-
         const useCase = DeleteUsersUseCaseFactory.default();
 
         const result = await useCase.execute(input);
@@ -62,10 +62,10 @@ class DeleteUserController extends AbstractController<DeleteUserRequest> {
         throw error;
       }
     } else {
-      const result = await users.delete(parsed.ids, this.request.user);
+      const result = await users.delete(input.ids, this.request.user);
       const response: DeleteUserResponse = {
         acknowledged: true,
-        deletedCount: result.deletedCount ?? parsed.ids.length,
+        deletedCount: result.deletedCount ?? input.ids.length,
       };
       this.response.json(response);
     }
