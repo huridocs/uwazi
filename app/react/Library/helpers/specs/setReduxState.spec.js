@@ -61,28 +61,4 @@ describe('setReduxState()', () => {
       });
     });
   });
-
-  describe('when the key is uploads', () => {
-    it('should dispatch uploads actions using uploads state key', () => {
-      const uploadsState = {
-        uploads: state.library,
-      };
-
-      setReduxState(uploadsState, 'uploads', addDocumentsInsteadOfSet)(context.store.dispatch);
-
-      expect(context.store.dispatch).toHaveBeenCalledWith({
-        type: actionTypes.ADD_DOCUMENTS,
-        documents,
-        __reducerKey: 'uploads',
-      });
-
-      expect(context.store.dispatch).toHaveBeenCalledWith({
-        type: actionTypes.INITIALIZE_FILTERS_FORM,
-        documentTypes: 'types',
-        libraryFilters: 'properties',
-        aggregations,
-        __reducerKey: 'uploads',
-      });
-    });
-  });
 });

@@ -23,7 +23,6 @@ describe('documentsAPI', () => {
       .get(`${APIURL}documents/list?keys=%5B%221%22%2C%222%22%5D`, {
         body: JSON.stringify({ rows: listResponse }),
       })
-      .get(`${APIURL}documents/uploads`, { body: JSON.stringify({ rows: 'uploads' }) })
       .get(`${APIURL}documents/count_by_template?templateId=templateId`, {
         body: JSON.stringify(1),
       })
@@ -37,18 +36,6 @@ describe('documentsAPI', () => {
   });
 
   afterEach(() => backend.restore());
-
-  describe('uploads', () => {
-    it('should request uploads', done => {
-      documentsAPI
-        .uploads()
-        .then(response => {
-          expect(response).toEqual('uploads');
-          done();
-        })
-        .catch(done.fail);
-    });
-  });
 
   describe('get()', () => {
     it('should request documents', done => {

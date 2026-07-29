@@ -4,7 +4,7 @@ import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/Se
 import { TemplatesDataSourceFactory } from '#api/core/infrastructure/factories/TemplatesDataSourceFactory.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { LegacyPageServiceFactory } from '#api/pages.v2/infrastructure/factories/LegacyPageServiceFactory.js';
-import { DefaultRelationshipTypesDataSource } from '#api/relationshiptypes.v2/database/data_source_defaults.js';
+import { RelationshipTypesDataSourceFactory } from '#api/core/infrastructure/factories/RelationshipTypesDataSourceFactory.js';
 import { LegacyTranslationService } from '../mongodb/template/LegacyTemplatesTranslationService.js';
 import { ThesauriDataSourceFactory } from './ThesauriDataSourceFactory.js';
 
@@ -17,7 +17,7 @@ class CreateTemplateUseCaseFactory {
     const settingsDS = SettingsDataSourceFactory.default({ transactionManager });
     const idGenerator = IdGeneratorFactory.default();
     const pageService = LegacyPageServiceFactory.default({ transactionManager });
-    const relationshipTypesDS = DefaultRelationshipTypesDataSource(transactionManager);
+    const relationshipTypesDS = RelationshipTypesDataSourceFactory.default(transactionManager);
 
     return new CreateTemplateUseCase({
       idGenerator,

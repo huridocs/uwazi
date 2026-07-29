@@ -26,7 +26,6 @@ describe('EntitiesAPI', () => {
       .get(`${APIURL}documents/page?sharedId=sharedId&page=1`, {
         body: JSON.stringify(page1Text),
       })
-      .get(`${APIURL}entities/uploads`, { body: JSON.stringify({ rows: 'uploads' }) })
       .get(`${APIURL}entities/count_by_template?templateId=templateId`, { body: JSON.stringify(1) })
       .get(`${APIURL}entities/search?searchTerm=Batman&joker=true`, {
         body: JSON.stringify(filteredSearchResult),
@@ -50,13 +49,6 @@ describe('EntitiesAPI', () => {
   });
 
   afterEach(() => backend.restore());
-
-  describe('uploads', () => {
-    it('should request uploads', async () => {
-      const response = await entitiesAPI.uploads();
-      expect(response).toEqual('uploads');
-    });
-  });
 
   describe('pageRawText', () => {
     it('should get page_raw_page and return the text', async () => {

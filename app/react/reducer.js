@@ -27,7 +27,6 @@ import { modelReducer, formReducer } from 'react-redux-form';
 const rootReducer = combineReducers({
   notifications,
   library: library('library'),
-  uploads: library('uploads'),
   progress,
   locale,
   inlineEdit,

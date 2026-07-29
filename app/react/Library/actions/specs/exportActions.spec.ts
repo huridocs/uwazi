@@ -82,7 +82,6 @@ describe('exportActions', () => {
 
     const state = {
       library: generateState(),
-      uploads: generateState(),
       exportSearchResults: {},
     };
 
@@ -115,7 +114,6 @@ describe('exportActions', () => {
           sort: 'creationDate',
           types: expectedTypes,
           limit: 10000,
-          unpublished: storeKey === 'uploads' ? true : undefined,
         });
         done();
       });
@@ -143,10 +141,6 @@ describe('exportActions', () => {
 
     it('should process the current filters, order and searchTerm', done => {
       testURL('library', done);
-    });
-
-    it('should add unpublished flag if using uploads store', done => {
-      testURL('uploads', done);
     });
 
     it('should append the entityids if the user selected any', done => {

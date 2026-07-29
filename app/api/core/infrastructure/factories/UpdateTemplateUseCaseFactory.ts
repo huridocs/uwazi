@@ -5,7 +5,7 @@ import { TemplatesDataSourceFactory } from '#api/core/infrastructure/factories/T
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { applicationEventsBus } from '#api/core/libs/eventsbus/index.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
-import { DefaultRelationshipTypesDataSource } from '#api/relationshiptypes.v2/database/data_source_defaults.js';
+import { RelationshipTypesDataSourceFactory } from '#api/core/infrastructure/factories/RelationshipTypesDataSourceFactory.js';
 import { DispatcherAdapter } from '../jobs/DispatcherAdapter.js';
 import { LegacyTranslationService } from '../mongodb/template/LegacyTemplatesTranslationService.js';
 import { ThesauriDataSourceFactory } from './ThesauriDataSourceFactory.js';
@@ -19,7 +19,7 @@ class UpdateTemplateUseCaseFactory {
     const thesauriDS = ThesauriDataSourceFactory.default({ transactionManager });
     const translationService = new LegacyTranslationService();
     const settingsDS = SettingsDataSourceFactory.default({ transactionManager });
-    const relationshipTypesDS = DefaultRelationshipTypesDataSource(transactionManager);
+    const relationshipTypesDS = RelationshipTypesDataSourceFactory.default(transactionManager);
     const idGenerator = IdGeneratorFactory.default();
     const eventBus = applicationEventsBus;
 

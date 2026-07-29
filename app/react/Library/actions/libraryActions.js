@@ -419,9 +419,6 @@ function getAggregationSuggestions(storeKey, property, searchTerm) {
 
   const query = processFilters(search, filters.toJS(), { limit: 0, encoding: false });
   query.searchTerm = search.searchTerm;
-  if (storeKey === 'uploads') {
-    query.unpublished = true;
-  }
   return searchAPI.getAggregationSuggestions(new RequestParams({ query, property, searchTerm }));
 }
 

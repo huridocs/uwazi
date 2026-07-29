@@ -144,7 +144,6 @@ export interface DocumentViewerUiStateReference {
 
 export interface IStore {
   library: EntityDisplayState;
-  uploads: EntityDisplayState;
   template: {
     data: TemplateSchema;
   };

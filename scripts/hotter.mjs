@@ -66,12 +66,16 @@ const findMainPort = async preferredPort => {
   throw new Error('Requested offset is occupied. Please choose another offset.');
 };
 
+// On Windows, spawn() cannot launch .cmd/.bat shims (yarn.cmd, etc.) without a shell.
+const spawnOptions = (env, extra = {}) => ({
+  env,
+  ...(process.platform === 'win32' ? { shell: true } : {}),
+  ...extra,
+});
+
 const runCommand = (command, args, env) =>
   new Promise((resolve, reject) => {
-    const child = spawn(command, args, {
-      stdio: 'inherit',
-      env,
-    });
+    const child = spawn(command, args, spawnOptions(env, { stdio: 'inherit' }));
 
     child.on('close', code => {
       if (code === 0) {
@@ -88,7 +92,7 @@ const runCommand = (command, args, env) =>
 
 const runCommandCapture = (command, args, env) =>
   new Promise((resolve, reject) => {
-    const child = spawn(command, args, { env });
+    const child = spawn(command, args, spawnOptions(env));
     let stdout = '';
     let stderr = '';
 
@@ -115,10 +119,7 @@ const runCommandCapture = (command, args, env) =>
 
 const runCommandObserve = (command, args, env) =>
   new Promise((resolve, reject) => {
-    const child = spawn(command, args, {
-      env,
-      stdio: ['inherit', 'pipe', 'pipe'],
-    });
+    const child = spawn(command, args, spawnOptions(env, { stdio: ['inherit', 'pipe', 'pipe'] }));
     let stdout = '';
     let stderr = '';
 

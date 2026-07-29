@@ -14,8 +14,8 @@ import { aggregationsReducer } from './aggregationsReducer.js';
 let templates = null;
 if (isClient) {
   templates =
-    window.__reduxData__ && window.__reduxData__.templates
-      ? Immutable.fromJS(window.__reduxData__.templates)
+    window.__atomStoreData__ && window.__atomStoreData__.templates
+      ? Immutable.fromJS(window.__atomStoreData__.templates)
       : null;
 }
 

@@ -1,30 +1,29 @@
-import { ObjectId } from 'mongodb';
-import relationtypes from '#api/relationtypes/relationtypes.js';
+import { GetRelationshipTypesUseCaseFactory } from '#api/core/infrastructure/factories/GetRelationshipTypesUseCaseFactory.js';
 import { createServerRelationshipTypesService } from '../ServerRelationshipTypesService.js';
 
-jest.mock('#api/relationtypes/relationtypes.js', () => ({
-  __esModule: true,
-  default: { get: jest.fn() },
-}));
-
-const mockGet = jest.mocked(relationtypes.get);
 const ctx = { headers: { cookie: 'session=1' } };
 const service = createServerRelationshipTypesService(ctx);
 
 describe('ServerRelationshipTypesService', () => {
-  beforeEach(() => {
-    jest.clearAllMocks();
+  afterEach(() => {
+    jest.restoreAllMocks();
   });
 
   it('getAll returns rows with string _id', async () => {
-    const id = new ObjectId();
-    mockGet.mockResolvedValue([{ _id: id, name: 'Related to' }] as never);
+    jest.spyOn(GetRelationshipTypesUseCaseFactory, 'default').mockReturnValue({
+      execute: async () => [
+        { id: 'rel1', name: 'Related to' },
+        { id: 'rel2', name: 'Part of' },
+      ],
+    } as never);
 
     const [data, error] = await service.getAll();
 
-    expect(mockGet).toHaveBeenCalledWith();
     expect(error).toBeUndefined();
-    expect(data).toEqual([{ _id: id.toString(), name: 'Related to' }]);
+    expect(data).toEqual([
+      { _id: 'rel1', name: 'Related to' },
+      { _id: 'rel2', name: 'Part of' },
+    ]);
   });
 
   it('upsert returns not implemented', async () => {

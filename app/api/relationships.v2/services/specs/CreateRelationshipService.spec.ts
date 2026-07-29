@@ -6,8 +6,8 @@ import { partialImplementation } from '#api/common.v2/testing/partialImplementat
 import { MongoDeprecatedEntitiesDataSource } from '#api/entities.v2/database/MongoDeprecatedEntitiesDataSource.js';
 import { MissingEntityError } from '#api/entities.v2/errors/entityErrors.js';
 import { MongoRelationshipsDataSource } from '#api/relationships.v2/database/MongoRelationshipsDataSource.js';
-import { MongoRelationshipTypesDataSource } from '#api/relationshiptypes.v2/database/MongoRelationshipTypesDataSource.js';
-import { MissingRelationshipTypeError } from '#api/relationshiptypes.v2/errors/relationshipTypeErrors.js';
+import { MongoRelationshipTypesDataSource } from '#api/core/infrastructure/mongodb/relationshipType/MongoRelationshipTypesDataSource.js';
+import { MissingRelationshipTypeError } from '#api/core/domain/relationshipType/errors.js';
 import { MongoTemplatesDataSource } from '#api/core/infrastructure/mongodb/template/MongoTemplatesDataSource.js';
 import { MongoTemplatesDAO } from '#api/core/infrastructure/mongodb/template/MongoTemplatesDAO.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';

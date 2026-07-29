@@ -1,0 +1,91 @@
+import type { Application, NextFunction, Request, Response } from 'express';
+import request from 'supertest';
+import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import type { DBFixture } from '#api/utils/testing_db.js';
+import { setUpApp } from '#api/utils/testingRoutes.js';
+import { DeleteRelationshipTypeController } from '../DeleteRelationshipTypeController.js';
+
+const factory = getFixturesFactory();
+
+const fixtures: DBFixture = {
+  settings: [{ languages: [{ key: 'en', label: 'English', default: true }] }],
+  relationtypes: [
+    { _id: factory.id('deletable'), name: 'Deletable', properties: [] },
+    { _id: factory.id('inConnections'), name: 'In Connections', properties: [] },
+    { _id: factory.id('inTemplateProp'), name: 'In Template Prop', properties: [] },
+  ],
+  templates: [
+    factory.template('Template using relation type', [
+      factory.relationshipProp('rel prop', 'some template', {
+        relationType: factory.id('inTemplateProp').toHexString(),
+      }),
+    ]),
+  ],
+  connections: [
+    {
+      _id: factory.id('connection1'),
+      title: 'used relation type',
+      sourceDocument: 'source1',
+      template: factory.id('inConnections'),
+    },
+  ],
+};
+
+const deleteRoute = (app: Application) => {
+  app.delete('/api/relationtypes', DeleteRelationshipTypeController.createHandler());
+};
+
+describe('DeleteRelationshipTypeController integration', () => {
+  const app: Application = setUpApp(
+    deleteRoute,
+    (req: Request, _res: Response, next: NextFunction) => {
+      req.user = { _id: 'admin', role: 'admin', username: 'admin' };
+      next();
+    }
+  );
+
+  beforeAll(async () => {
+    await testingEnvironment.setUp(fixtures);
+  });
+
+  afterEach(async () => {
+    await testingEnvironment.setFixtures(fixtures);
+  });
+
+  afterAll(async () => {
+    await testingEnvironment.tearDown();
+  });
+
+  it('should delete a relation type through the controller', async () => {
+    const response = await request(app).delete(
+      `/api/relationtypes?_id=${factory.id('deletable').toHexString()}`
+    );
+
+    expect(response).toHaveStatus(200);
+    expect(response.body).toBe(true);
+  });
+
+  it('should return 400 when relation type is used in relationships', async () => {
+    const response = await request(app).delete(
+      `/api/relationtypes?_id=${factory.id('inConnections').toHexString()}`
+    );
+
+    expect(response).toHaveStatus(400);
+    expect(response.body.error).toContain('Cannot delete type being used in relationships');
+  });
+
+  it('should return 400 when relation type is used in template properties', async () => {
+    const response = await request(app).delete(
+      `/api/relationtypes?_id=${factory.id('inTemplateProp').toHexString()}`
+    );
+
+    expect(response).toHaveStatus(400);
+    expect(response.body.error).toContain('Cannot delete type being used in templates');
+  });
+
+  it('should return 422 for invalid query', async () => {
+    const response = await request(app).delete('/api/relationtypes');
+    expect(response).toHaveStatus(422);
+  });
+});

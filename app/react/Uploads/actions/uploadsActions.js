@@ -12,13 +12,7 @@ import { UploadService } from '#V2/api/files/UploadService.js';
 import { APIURL } from '../../config.js';
 import { EntitiesAPI as EntitiesApi } from '../../Entities/EntitiesAPI.js';
 
-export function enterUploads() {
-  return {
-    type: types.ENTER_UPLOADS_SECTION,
-  };
-}
-
-export function newEntity(storeKey = 'uploads') {
+export function newEntity(storeKey = 'library') {
   return async (dispatch, getState) => {
     const newEntityMetadata = { title: '', type: 'entity' };
     dispatch(
