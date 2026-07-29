@@ -1,5 +1,5 @@
 import Mail from 'nodemailer/lib/mailer';
-import { SentMessageInfo } from 'nodemailer';
+import nodemailer, { SentMessageInfo } from 'nodemailer';
 import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js';
 import { EmailMessage } from '#api/core/application/contracts/EmailSender.js';
 import { NodemailerEmailSender } from '../NodemailerEmailSender.js';
@@ -30,8 +30,17 @@ describe('NodemailerEmailSender', () => {
   it('should send via the default sendmail transport when no tenant override is configured', async () => {
     jest.spyOn(Mail.prototype, 'sendMail').mockImplementation(mockedSendMail as any);
     const sender = new NodemailerEmailSender(fakeSettingsDS());
+    const createTransportSpy = jest.spyOn(nodemailer, 'createTransport');
 
     await sender.send(message);
+
+    expect(createTransportSpy).toHaveBeenCalledWith({
+      newline: 'unix',
+      path: '/usr/sbin/sendmail',
+      secure: false,
+      sendmail: true,
+      tls: { rejectUnauthorized: false },
+    });
 
     expect(Mail.prototype.sendMail).toHaveBeenCalledWith(
       expect.objectContaining({ to: message.to, subject: message.subject }),
@@ -82,6 +91,20 @@ describe('NodemailerEmailSender', () => {
     await sender.send(message);
 
     expect(sentOptions?.from).toBe('"Uwazi" <no-reply@uwazi.io>');
+  });
+
+  it('should reuse the transporter across instances when config is unchanged', async () => {
+    jest.spyOn(Mail.prototype, 'sendMail').mockImplementation(mockedSendMail as any);
+    const createTransportSpy = jest.spyOn(nodemailer, 'createTransport');
+    const uniqueConfig = 'smtp://unique:test@caching-test.example.com';
+
+    const sender1 = new NodemailerEmailSender(fakeSettingsDS({ mailerConfig: uniqueConfig }));
+    const sender2 = new NodemailerEmailSender(fakeSettingsDS({ mailerConfig: uniqueConfig }));
+
+    await sender1.send(message);
+    await sender2.send(message);
+
+    expect(createTransportSpy).toHaveBeenCalledTimes(1);
   });
 
   it('should reject when the transporter callback receives an error', async () => {
