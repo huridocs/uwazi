@@ -37,7 +37,11 @@ describe('Permissions actions', () => {
     });
 
     it.each([
-      { unpublished: false, includeUnpublished: false, permissions: [{ ...PUBLIC_PERMISSION, level: 'read' }] },
+      {
+        unpublished: false,
+        includeUnpublished: false,
+        permissions: [{ ...PUBLIC_PERMISSION, level: 'read' as const }],
+      },
       { unpublished: true, includeUnpublished: false, permissions: [] },
     ])(
       'should not remove nor update documents if publishing/unpublishing status not changing',

@@ -1,6 +1,6 @@
 import sortBy from 'lodash/sortBy.js';
 import type { createStore } from 'jotai';
-import type { Store } from 'redux';
+import type { Dispatch } from 'redux';
 import { settingsAtom } from './settingsAtom.js';
 import { templatesAtom } from './templatesAtom.js';
 import { translationsAtom, localeAtom } from './translationsAtoms.js';
@@ -9,7 +9,7 @@ import { thesauriAtom } from './thesauriAtom.js';
 import { relationshipTypesAtom } from './relationshipTypes.js';
 
 type AtomStore = ReturnType<typeof createStore>;
-type ReduxStore = Pick<Store, 'dispatch'>;
+type ReduxStore = { dispatch: Dispatch };
 
 /**
  * Seed the deprecated Redux store from atoms (source of truth after SSR).
