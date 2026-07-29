@@ -36,24 +36,31 @@ describe('Permissions actions', () => {
       expect(notificationActions.notify).toHaveBeenCalledWith('Update success', 'success');
     });
 
-    it.each([true, false])(
+    it.each([
+      {
+        unpublished: false,
+        includeUnpublished: false,
+        permissions: [{ ...PUBLIC_PERMISSION, level: 'read' as const }],
+      },
+      { unpublished: true, includeUnpublished: false, permissions: [] },
+    ])(
       'should not remove nor update documents if publishing/unpublishing status not changing',
-      async inLibrary => {
+      async ({ unpublished, includeUnpublished, permissions }) => {
         const permissionsData: PermissionsDataSchema = {
           ids: ['sharedId1'],
-          permissions: inLibrary ? [{ ...PUBLIC_PERMISSION, level: 'read' }] : [],
+          permissions,
         };
 
         const stateLibrary = {
-          [inLibrary ? 'library' : 'uploads']: {
+          library: {
             search: {
-              unpublished: !inLibrary,
-              includeUnpublished: false,
+              unpublished,
+              includeUnpublished,
             },
           },
         };
 
-        await actions.saveEntitiesPermissions(permissionsData, inLibrary ? 'library' : 'uploads')(
+        await actions.saveEntitiesPermissions(permissionsData, 'library')(
           dispatch,
           getStateMock(stateLibrary)
         );
@@ -75,22 +82,22 @@ describe('Permissions actions', () => {
 
     it.each([true, false])(
       'should not remove nor update documents if public permission has mixed access',
-      async inLibrary => {
+      async unpublished => {
         const permissionsData: PermissionsDataSchema = {
           ids: ['sharedId1'],
           permissions: [{ ...PUBLIC_PERMISSION, level: 'mixed' }],
         };
 
         const stateLibrary = {
-          [inLibrary ? 'library' : 'uploads']: {
+          library: {
             search: {
-              unpublished: !inLibrary,
+              unpublished,
               includeUnpublished: false,
             },
           },
         };
 
-        await actions.saveEntitiesPermissions(permissionsData, inLibrary ? 'library' : 'uploads')(
+        await actions.saveEntitiesPermissions(permissionsData, 'library')(
           dispatch,
           getStateMock(stateLibrary)
         );
@@ -196,26 +203,24 @@ describe('Permissions actions', () => {
           );
         }
       );
-    });
 
-    describe('for UPLOADS', () => {
-      it('should remove documents after publishing', async () => {
+      it('should remove documents after publishing when viewing unpublished only', async () => {
         const permissionsData: PermissionsDataSchema = {
           ids: ['sharedId1'],
           permissions: [{ ...PUBLIC_PERMISSION, level: 'read' }],
         };
 
-        const stateUploads = {
-          uploads: {
+        const stateLibrary = {
+          library: {
             search: {
               unpublished: true,
             },
           },
         };
 
-        await actions.saveEntitiesPermissions(permissionsData, 'uploads')(
+        await actions.saveEntitiesPermissions(permissionsData, 'library')(
           dispatch,
-          getStateMock(stateUploads)
+          getStateMock(stateLibrary)
         );
 
         expect(dispatch).toHaveBeenCalledWith(

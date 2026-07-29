@@ -52,13 +52,6 @@ describe('uploadsActions', () => {
 
   afterEach(() => backend.restore());
 
-  describe('enterUploads()', () => {
-    it('should return a ENTER_UPLOADS_SECTION', () => {
-      const action = actions.enterUploads();
-      expect(action).toEqual({ type: types.ENTER_UPLOADS_SECTION });
-    });
-  });
-
   describe('conversionComplete()', () => {
     it('should return a CONVERSION_COMPLETE with the document id', () => {
       const action = actions.conversionComplete('document_id');

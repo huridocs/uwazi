@@ -8,7 +8,7 @@ import { EntitySchema } from '#shared/types/entityType.js';
 
 interface TableRowsProps {
   columns: TableViewColumn[];
-  storeKey: 'library' | 'uploads';
+  storeKey: 'library';
   clickOnDocument: (e: React.SyntheticEvent, doc: EntitySchema, active: boolean) => any;
 }
 const mapStateToProps = (state: IStore, props: TableRowsProps) => ({

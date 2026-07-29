@@ -4,7 +4,7 @@ import { EntitySchema } from '#shared/types/entityType.js';
 export interface CollectionViewerProps {
   rowListZoomLevel: number;
   documents: IImmutable<{ rows: EntitySchema[] }>;
-  storeKey: 'library' | 'uploads';
+  storeKey: 'library';
   clickOnDocument: (e: React.SyntheticEvent, doc: EntitySchema, active: boolean) => any;
   onSnippetClick: () => void;
   deleteConnection: (connection: any) => void;

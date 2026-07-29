@@ -17,11 +17,20 @@ import { ErrorBoundary } from './V2/Components/ErrorHandling/index.js';
 import './App/sockets.js';
 import { CustomProvider } from './App/Provider.js';
 import { store } from './store.js';
+import { syncAtomStoreToRedux, subscribeAtomStoreToRedux } from './V2/atoms/syncReduxFromAtoms.js';
 import { getAppRoutes } from './appRoutes.js';
 import { resetChunkErrorFlag } from '#V2/shared/errorUtils.js';
 import { loadIcons } from '#UI/Icon/library.js';
 
 loadIcons();
+
+// Seed deprecated Redux from atoms after both stores finished initializing.
+// Must run before hydrateRoot so first paint matches SSR HTML.
+if (window.__atomStoreData__) {
+  const atomStore = getStore();
+  syncAtomStoreToRedux(atomStore, store);
+  subscribeAtomStoreToRedux(atomStore, store);
+}
 
 if (window.SENTRY_APP_DSN) {
   Sentry.init({

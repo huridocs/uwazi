@@ -11,11 +11,6 @@ const documentsAPI = {
     return api.get(url, requestParams).then(response => response.json);
   },
 
-  uploads() {
-    const url = 'documents/uploads';
-    return api.get(url).then(response => response.json.rows);
-  },
-
   search(requestParams) {
     const url = 'documents/search';
     return api.get(url, requestParams).then(response => response.json);

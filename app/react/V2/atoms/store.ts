@@ -1,7 +1,5 @@
 import { createStore } from 'jotai';
-import sortBy from 'lodash/sortBy.js';
 import { isClient } from '#app/utils/index.js';
-import { store as reduxStore } from '#app/store.js';
 import { ClientSettings, ClientThesaurus, ClientUserSchema } from '#app/apiResponseTypes.js';
 import {
   ClientTemplateSchema,
@@ -49,32 +47,11 @@ const hydrateAtomStore = (data: AtomStoreData, store: ReturnType<typeof createSt
   store.set(ixAcceptedSuggestions, new Set<string>());
 };
 
+// Hydrate atoms only — do not touch Redux here (circular import with #app/store).
 if (isClient && window.__atomStoreData__) {
-  const atomStore = getStore();
-  hydrateAtomStore(window.__atomStoreData__, atomStore);
-
-  //sync deprecated redux store
-  atomStore.sub(settingsAtom, () => {
-    const value = atomStore.get(settingsAtom);
-    reduxStore?.dispatch({ type: 'settings/collection/SET', value });
-  });
-  atomStore.sub(templatesAtom, () => {
-    const value = sortBy(atomStore.get(templatesAtom), 'name');
-    reduxStore?.dispatch({ type: 'templates/SET', value });
-  });
-  atomStore.sub(relationshipTypesAtom, () => {
-    const value = sortBy(atomStore.get(relationshipTypesAtom), 'name');
-    reduxStore?.dispatch({ type: 'relationTypes/SET', value });
-  });
-  atomStore.sub(thesauriAtom, () => {
-    const value = atomStore.get(thesauriAtom);
-    reduxStore?.dispatch({ type: 'dictionaries/SET', value });
-  });
-  atomStore.sub(translationsAtom, () => {
-    const value = atomStore.get(translationsAtom);
-    reduxStore?.dispatch({ type: 'translations/SET', value });
-  });
+  hydrateAtomStore(window.__atomStoreData__, getStore());
 }
 
 export type { AtomStoreData };
 export { hydrateAtomStore };
+export { syncAtomStoreToRedux, subscribeAtomStoreToRedux } from './syncReduxFromAtoms.js';
