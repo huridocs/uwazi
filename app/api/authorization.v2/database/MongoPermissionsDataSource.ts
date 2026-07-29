@@ -20,7 +20,8 @@ const mapPermissions = (entityPermissionInfo: EntityPermissionsDBO) => {
 export class MongoPermissionsDataSource
   extends MongoDataSource<EntityPermissionsDBO>
   implements PermissionsDataSource
-{ // eslint-disable-line
+{
+  // eslint-disable-line
   protected collectionName = 'entities';
 
   getByEntities(sharedIds: string[]) {
