@@ -59,8 +59,8 @@ export class PostgresRelationshipTypesDataSource
   async existsByName(name: string, excludeId?: string): Promise<boolean> {
     const normalized = name.trim().toLowerCase();
     const sql = excludeId
-      ? `SELECT 1 FROM relationship_types WHERE lower(btrim(name)) = ? AND _id <> ? LIMIT 1`
-      : `SELECT 1 FROM relationship_types WHERE lower(btrim(name)) = ? LIMIT 1`;
+      ? 'SELECT 1 FROM relationship_types WHERE lower(btrim(name)) = ? AND _id <> ? LIMIT 1'
+      : 'SELECT 1 FROM relationship_types WHERE lower(btrim(name)) = ? LIMIT 1';
     const bindings = excludeId ? [normalized, excludeId] : [normalized];
     const result = await this.table.raw<{ rows: unknown[] }>(sql, bindings);
     return (result.rows?.length ?? 0) > 0;
