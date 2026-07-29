@@ -408,6 +408,29 @@ describe('PostgresTable', () => {
       expect(rows).toHaveLength(2);
       expect(rows[0].name).toBe('b');
     });
+
+    it('should support whereRaw for conditions where* cannot express', async () => {
+      const table = createTable();
+      await table.insert({ _id: 'wr-1', name: 'alpha', values: jsonVal([]) });
+      await table.insert({ _id: 'wr-2', name: 'beta', values: jsonVal([]) });
+
+      const rows = await table.whereRaw('"name" = ?', ['alpha']).all();
+
+      expect(rows.map((r: TestRow) => r._id)).toEqual(['wr-1']);
+    });
+
+    it('should compose whereRaw with other where* conditions', async () => {
+      const table = createTable();
+      await table.insert({ _id: 'wrc-1', name: 'alpha-one', values: jsonVal([]) });
+      await table.insert({ _id: 'wrc-2', name: 'alpha-two', values: jsonVal([]) });
+
+      const rows = await table
+        .whereIn('name', ['alpha-one', 'alpha-two'])
+        .whereRaw('"_id" = ?', ['wrc-2'])
+        .all();
+
+      expect(rows.map((r: TestRow) => r._id)).toEqual(['wrc-2']);
+    });
   });
 
   describe('join with tenant isolation', () => {

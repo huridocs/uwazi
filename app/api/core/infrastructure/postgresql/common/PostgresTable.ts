@@ -114,6 +114,11 @@ export class PostgresTable<TRow = Record<string, unknown>> {
     return this.chain(this.qb.clone().whereNotIn(column, values));
   }
 
+  /** Escape hatch for conditions `where*` can't express, e.g. `"expiresAt" > now()`. */
+  whereRaw(sql: string, bindings: readonly Knex.RawBinding[] = []): PostgresTable<TRow> {
+    return this.chain(this.qb.clone().whereRaw(sql, bindings));
+  }
+
   orderBy(column: string, direction: 'asc' | 'desc' = 'asc'): PostgresTable<TRow> {
     return this.chain(this.qb.clone().orderBy(column, direction));
   }
