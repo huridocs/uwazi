@@ -1,3 +1,4 @@
+/* eslint-disable react/no-multi-comp */
 import React, { useMemo } from 'react';
 import { useAtomValue } from 'jotai';
 import { ArrowTopRightOnSquareIcon, LinkIcon } from '@heroicons/react/24/outline';

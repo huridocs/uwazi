@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-props-no-spreading */
 import React, { ReactNode } from 'react';
 import { Translate } from '#app/I18N/index.js';
 import { PropertyValue } from './PropertyValue.js';

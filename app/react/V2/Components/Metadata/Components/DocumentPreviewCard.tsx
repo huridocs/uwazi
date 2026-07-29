@@ -45,6 +45,7 @@ const isPdf = (mimetype?: string, filename?: string) => {
   return mime === 'application/pdf' || /\.pdf$/i.test(filename || '');
 };
 
+// eslint-disable-next-line max-statements
 const DocumentPreviewCard = ({ entity, previewField }: DocumentPreviewCardProps) => {
   const locale = useAtomValue(localeAtom);
   const settings = useAtomValue(settingsAtom);
@@ -99,8 +100,8 @@ const DocumentPreviewCard = ({ entity, previewField }: DocumentPreviewCardProps)
   return (
     <MetadataCard title={<Translate>Document</Translate>}>
       <div className="flex items-start gap-4">
-        <div className="group relative h-[118px] w-[104px] shrink-0 overflow-hidden rounded border border-border bg-vellum">
-          <div className="absolute inset-x-[16%] top-[10%] -bottom-[15%] overflow-hidden rounded-t-[3px] border border-border-soft bg-paper shadow-sm">
+        <div className="group relative h-29.5 w-26 shrink-0 overflow-hidden rounded border border-border bg-vellum">
+          <div className="absolute inset-x-[16%] top-[10%] bottom-[-15%] overflow-hidden rounded-t-[3px] border border-border-soft bg-paper shadow-sm">
             {thumbSrc ? (
               <img
                 src={thumbSrc}
@@ -117,7 +118,7 @@ const DocumentPreviewCard = ({ entity, previewField }: DocumentPreviewCardProps)
             ) : null}
           </div>
           {showPdfBadge ? (
-            <span className="absolute bottom-1 end-1 rounded-[2px] bg-ink/70 px-1 py-px text-pico font-semibold uppercase leading-none tracking-wider text-parchment">
+            <span className="absolute bottom-1 inset-e-1 rounded-xs bg-ink/70 px-1 py-px text-pico font-semibold uppercase leading-none tracking-wider text-parchment">
               PDF
             </span>
           ) : null}

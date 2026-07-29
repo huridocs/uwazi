@@ -19,7 +19,7 @@ const SimpleValue = ({ values, long = false }: SimpleValueProps) => {
       <div className="flex flex-col gap-1">
         {nonEmptyValues.map((v, index) => (
           // eslint-disable-next-line react/no-array-index-key
-          <p key={index} className="text-sm leading-relaxed text-ink">
+          <p key={`${index}-${v.value}`} className="text-sm leading-relaxed text-ink">
             {v.value}
           </p>
         ))}
@@ -31,7 +31,7 @@ const SimpleValue = ({ values, long = false }: SimpleValueProps) => {
     <div className="flex flex-col gap-1">
       {nonEmptyValues.map((v, index) => (
         // eslint-disable-next-line react/no-array-index-key
-        <span key={index} className="font-medium leading-snug">
+        <span key={`${index}-${v.value}`} className="font-medium leading-snug">
           {v.value}
         </span>
       ))}
