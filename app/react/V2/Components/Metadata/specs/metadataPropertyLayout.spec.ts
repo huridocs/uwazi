@@ -10,11 +10,7 @@ import {
   isLinkOnlyRelationship,
   isInheritingRelationship,
   LONG_FIELD_CHAR_THRESHOLD,
-  metadataGridClassForProperty,
-  COMPACT_METADATA_FIELD_LAYOUT,
-  FULL_ROW_METADATA_FIELD_LAYOUT,
   partitionMetadataRecord,
-  fieldShowsInCard,
 } from '../metadataPropertyLayout';
 
 const textField = (value: string, id = 't1'): SimpleMetadataProperty => ({
@@ -111,26 +107,7 @@ describe('metadataPropertyLayout', () => {
     expect(isInheritingRelationship(inheritingRel)).toBe(true);
   });
 
-  it('returns masonry grid classes for compact vs full-row fields', () => {
-    expect(metadataGridClassForProperty(textField('short'), undefined)).toBe(
-      COMPACT_METADATA_FIELD_LAYOUT
-    );
-    expect(metadataGridClassForProperty(markdownField('x'), undefined)).toBe(
-      FULL_ROW_METADATA_FIELD_LAYOUT
-    );
-    expect(
-      metadataGridClassForProperty(imageField, { fullWidth: true })
-    ).toBe(FULL_ROW_METADATA_FIELD_LAYOUT);
-  });
-
-  it('reads showInCard from template property map', () => {
-    const map = new Map<string, ClientProperty>([
-      ['t1', { _id: 't1', name: 'simple_text', type: 'text', label: 'Text', showInCard: true }],
-    ]);
-    expect(fieldShowsInCard('t1', map)).toBe(true);
-    expect(fieldShowsInCard('missing', map)).toBe(false);
-  });
-
+  // eslint-disable-next-line max-statements
   it('partitions preview first, leading cards, details, and inheriting relationships exclusively', () => {
     const short = textField('short', 'short1');
     const long = textField('x'.repeat(LONG_FIELD_CHAR_THRESHOLD + 1), 'long1');

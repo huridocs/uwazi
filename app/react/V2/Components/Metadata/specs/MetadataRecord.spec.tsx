@@ -136,6 +136,15 @@ const entity: Entity = {
   ],
 };
 
+const sectionForLabel = (label: string): HTMLElement => {
+  const labelEl = screen.getByText(label);
+  const section = labelEl.closest('div.overflow-hidden');
+  if (!(section instanceof HTMLElement)) {
+    throw new Error(`expected section for ${label}`);
+  }
+  return section;
+};
+
 const renderRecord = (entityOverride: Entity = entity) =>
   render(
     <TestAtomStoreProvider
@@ -149,7 +158,7 @@ const renderRecord = (entityOverride: Entity = entity) =>
   );
 
 describe('MetadataRecord', () => {
-  it('renders Document card, leading titled cards, Details table, and omits empty Relationships', () => {
+  it('shows Document, long fields, and Details, and hides Relationships when empty', () => {
     const withoutRels: Entity = {
       ...entity,
       metadata: {
@@ -161,11 +170,11 @@ describe('MetadataRecord', () => {
 
     renderRecord(withoutRels);
 
-    expect(screen.getByRole('heading', { level: 4, name: 'Document' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Document' })).toBeInTheDocument();
     expect(screen.getByText('Report.pdf')).toBeInTheDocument();
-    expect(screen.getByRole('heading', { level: 4, name: 'Summary' })).toBeInTheDocument();
-    expect(screen.getByRole('heading', { level: 4, name: 'Notes' })).toBeInTheDocument();
-    expect(screen.getByRole('heading', { level: 4, name: 'Details' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Summary' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Notes' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Details' })).toBeInTheDocument();
 
     const table = screen.getByRole('table');
     expect(within(table).getByRole('rowheader', { name: 'Creation Date' })).toBeInTheDocument();
@@ -175,63 +184,46 @@ describe('MetadataRecord', () => {
     expect(screen.queryByText('Relationships')).not.toBeInTheDocument();
   });
 
-  it('does not render empty specialized leading cards and keeps filled preview only in Document', () => {
+  it('hides empty preview field and still shows Document when entity has a file', () => {
     renderRecord();
 
-    expect(screen.queryByRole('heading', { level: 4, name: 'Previewg' })).not.toBeInTheDocument();
-    expect(screen.getByRole('heading', { level: 4, name: 'Document' })).toBeInTheDocument();
-    expect(screen.getByRole('heading', { level: 4, name: 'Notes' })).toBeInTheDocument();
+    expect(screen.queryByRole('heading', { name: 'Previewg' })).not.toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Document' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Notes' })).toBeInTheDocument();
   });
 
-  it('puts template-inheriting relationships under Relationships with LinkIcon chrome, not MetadataCard h4', () => {
+  it('shows inheriting connections under Relationships with via and inherits', () => {
     renderRecord();
 
     expect(screen.getByText('Relationships')).toBeInTheDocument();
-    expect(screen.getByRole('heading', { level: 4, name: 'Notes' })).toBeInTheDocument();
-    expect(
-      screen.queryByRole('heading', { level: 4, name: 'Relationshipa' })
-    ).not.toBeInTheDocument();
-    expect(
-      screen.queryByRole('heading', { level: 4, name: 'Relationshipb' })
-    ).not.toBeInTheDocument();
-
-    const rela = screen.getByText('Relationshipa');
-    expect(rela.closest('dt')).toBeTruthy();
-    expect(screen.getByText('Relationshipb').closest('dt')).toBeTruthy();
+    expect(screen.getByText('Relationshipa')).toBeInTheDocument();
+    expect(screen.getByText('Relationshipb')).toBeInTheDocument();
+    expect(screen.queryByRole('heading', { name: 'Relationshipa' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('heading', { name: 'Relationshipb' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('rowheader', { name: 'Relationshipa' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('rowheader', { name: 'Relationshipb' })).not.toBeInTheDocument();
     expect(screen.getAllByText(/via/).length).toBeGreaterThan(0);
     expect(screen.getAllByText(/inherits/).length).toBeGreaterThan(0);
-
-    expect(screen.getByRole('heading', { level: 4, name: 'Relationshipc' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Relationshipc' })).toBeInTheDocument();
   });
 
-  it('keeps inherited terminal content while showing entity link cards for inheriting relationships', () => {
+  it('shows inheriting connections under Relationships with inherited body and map', () => {
     renderRecord();
 
-    const relaCard = screen.getByText('Relationshipa').closest('[data-field-key="p-rela"]');
-    expect(relaCard).toBeInstanceOf(HTMLElement);
-    if (!(relaCard instanceof HTMLElement)) {
-      throw new Error('expected Relationshipa card');
-    }
-    expect(relaCard).toHaveTextContent('Inherited long text content for relationship a');
+    const rela = sectionForLabel('Relationshipa');
+    expect(rela).toHaveTextContent('Inherited long text content for relationship a');
+    expect(within(rela).getByRole('link', { name: /A1/i })).toBeInTheDocument();
 
-    const relbCard = screen.getByText('Relationshipb').closest('[data-field-key="p-relb"]');
-    expect(relbCard).toBeInstanceOf(HTMLElement);
-    if (!(relbCard instanceof HTMLElement)) {
-      throw new Error('expected Relationshipb card');
-    }
-    expect(within(relbCard).getByTestId('map')).toBeInTheDocument();
+    const relb = sectionForLabel('Relationshipb');
+    expect(within(relb).getByTestId('map')).toBeInTheDocument();
+    expect(within(relb).getByRole('link', { name: /A1/i })).toBeInTheDocument();
 
-    expect(screen.getByRole('link', { name: /A1/i })).toBeInTheDocument();
     expect(screen.getByText('Relationships')).toBeInTheDocument();
-    expect(
-      screen.queryByRole('heading', { level: 4, name: 'Relationshipa' })
-    ).not.toBeInTheDocument();
-    expect(
-      screen.queryByRole('heading', { level: 4, name: 'Relationshipb' })
-    ).not.toBeInTheDocument();
+    expect(screen.queryByRole('heading', { name: 'Relationshipa' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('heading', { name: 'Relationshipb' })).not.toBeInTheDocument();
   });
 
-  it('attaches geo group terminals to inheriting relationships and keeps own markers as leading', () => {
+  it('shows own map and inherited location under Relationships', () => {
     const geoGroupTemplate = {
       _id: 'tmpl-geo-group',
       name: 'Geo group template',
@@ -279,29 +271,20 @@ describe('MetadataRecord', () => {
       </TestAtomStoreProvider>
     );
 
-    expect(
-      screen.queryByRole('heading', { level: 4, name: 'Grouped geolocation properties' })
-    ).not.toBeInTheDocument();
-    expect(screen.getByRole('heading', { level: 4, name: 'Own location' })).toBeInTheDocument();
-    const ownCard = screen.getByRole('heading', { level: 4, name: 'Own location' }).closest(
-      '[data-field-key]'
+    expect(screen.queryByText('Grouped geolocation properties')).not.toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Own location' })).toBeInTheDocument();
+    expect(within(sectionForLabel('Own location')).getByTestId('map')).toHaveAttribute(
+      'data-marker-count',
+      '1'
     );
-    expect(ownCard).toBeInstanceOf(HTMLElement);
-    if (!(ownCard instanceof HTMLElement)) {
-      throw new Error('expected Own location card');
-    }
-    expect(within(ownCard).getByTestId('map')).toHaveAttribute('data-marker-count', '1');
 
-    const relCard = screen.getByText('Inherited location').closest('[data-field-key="p-rel-geo"]');
-    expect(relCard).toBeInstanceOf(HTMLElement);
-    if (!(relCard instanceof HTMLElement)) {
-      throw new Error('expected Inherited location card');
-    }
-    expect(within(relCard).getByTestId('map')).toHaveAttribute('data-marker-count', '1');
-    expect(within(relCard).getByRole('link', { name: /A1/i })).toBeInTheDocument();
+    expect(screen.getByText('Relationships')).toBeInTheDocument();
+    const inherited = sectionForLabel('Inherited location');
+    expect(within(inherited).getByTestId('map')).toHaveAttribute('data-marker-count', '1');
+    expect(within(inherited).getByRole('link', { name: /A1/i })).toBeInTheDocument();
   });
 
-  it('keeps own geo map when mixed group inheriting relationship has no linked entities', () => {
+  it('shows own map and hides empty inherited location', () => {
     const geoGroupTemplate = {
       _id: 'tmpl-geo-empty-links',
       name: 'Geo empty links template',
@@ -341,13 +324,13 @@ describe('MetadataRecord', () => {
       </TestAtomStoreProvider>
     );
 
-    expect(screen.getByRole('heading', { level: 4, name: 'Own location' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Own location' })).toBeInTheDocument();
     expect(screen.getByTestId('map')).toBeInTheDocument();
     expect(screen.queryByText('Relationships')).not.toBeInTheDocument();
     expect(screen.queryByText('Inherited location')).not.toBeInTheDocument();
   });
 
-  it('gives each inheriting geo relationship only its own markers from a mixed group', () => {
+  it('shows separate maps for each inherited location', () => {
     const geoGroupTemplate = {
       _id: 'tmpl-geo-two-inh',
       name: 'Geo two inheriting template',
@@ -416,17 +399,8 @@ describe('MetadataRecord', () => {
       </TestAtomStoreProvider>
     );
 
-    const relA = screen
-      .getByText('Inherited location A')
-      .closest('[data-field-key="p-rel-geo-a"]');
-    const relB = screen
-      .getByText('Inherited location B')
-      .closest('[data-field-key="p-rel-geo-b"]');
-    expect(relA).toBeInstanceOf(HTMLElement);
-    expect(relB).toBeInstanceOf(HTMLElement);
-    if (!(relA instanceof HTMLElement) || !(relB instanceof HTMLElement)) {
-      throw new Error('expected both inheriting geo cards');
-    }
+    const relA = sectionForLabel('Inherited location A');
+    const relB = sectionForLabel('Inherited location B');
     expect(within(relA).getByTestId('map')).toHaveAttribute('data-marker-count', '1');
     expect(within(relB).getByTestId('map')).toHaveAttribute('data-marker-count', '2');
     expect(within(relA).getByRole('link', { name: /A1/i })).toBeInTheDocument();
@@ -435,7 +409,7 @@ describe('MetadataRecord', () => {
     expect(within(relB).queryByRole('link', { name: /A1/i })).not.toBeInTheDocument();
   });
 
-  it('shows external-link icons only on Details ConnectionPills, not Relationships cards', () => {
+  it('shows external-link control only on Details relationship rows', () => {
     renderRecord();
 
     const table = screen.getByRole('table');

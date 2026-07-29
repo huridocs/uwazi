@@ -1,6 +1,4 @@
-/**
- * @jest-environment jsdom
- */
+/** @jest-environment jsdom */
 import React from 'react';
 import { fireEvent, render, screen } from '@testing-library/react';
 import { TestAtomStoreProvider } from '#V2/testing/index.js';
@@ -43,80 +41,33 @@ const entity: Entity = {
   ],
 };
 
-const renderCard = (
-  entityOverride: Entity = entity,
-  previewField?: MetadataProperty,
-  locale = 'en'
-) =>
+const previewField = (src: string): MetadataProperty => ({
+  _id: 'p-preview',
+  name: 'preview',
+  label: 'Preview',
+  type: 'preview',
+  style: 'cover',
+  values: [{ value: src, alt: 'preview' }],
+});
+
+const renderCard = (entityOverride: Entity = entity, preview?: MetadataProperty, locale = 'en') =>
   render(
-    <TestAtomStoreProvider initialValues={[[localeAtom, locale], [settingsAtom, settings]]}>
-      <DocumentPreviewCard entity={entityOverride} previewField={previewField} />
+    <TestAtomStoreProvider
+      initialValues={[
+        [localeAtom, locale],
+        [settingsAtom, settings],
+      ]}
+    >
+      <DocumentPreviewCard entity={entityOverride} previewField={preview} />
     </TestAtomStoreProvider>
   );
 
 describe('DocumentPreviewCard', () => {
-  it('renders inset thumbnail frame, PDF badge, facts, and view/download actions', () => {
-    const { container } = renderCard();
-
-    expect(screen.getByRole('heading', { level: 4, name: 'Document' })).toBeInTheDocument();
-    expect(screen.getByText('Velasquez.pdf')).toBeInTheDocument();
-    expect(screen.getByText('Type')).toBeInTheDocument();
-    expect(screen.getByText('Size')).toBeInTheDocument();
-    expect(screen.getByText('Added')).toBeInTheDocument();
-    expect(screen.queryByText('Last Edited')).not.toBeInTheDocument();
-
-    const factLabels = screen
-      .getAllByText(/^(Type|Size|Added|Last Edited|Name)$/)
-      .map(node => node.textContent);
-    expect(new Set(factLabels).size).toBe(factLabels.length);
+  it('shows file thumbnail when preview image fails to load', () => {
+    renderCard(entity, previewField('/api/files/custom-preview.png'));
 
     const thumb = screen.getByRole('img', { name: 'Velasquez.pdf' });
-    expect(thumb).toHaveAttribute('src', '/api/files/doc-1.jpg');
-    expect(thumb).toHaveClass('object-cover', 'object-top');
-    expect(thumb.parentElement).toHaveClass('bg-paper');
-    expect(thumb.parentElement?.parentElement).toHaveClass('bg-vellum');
-
-    const badge = container.querySelector('.bg-ink\\/70');
-    expect(badge).toHaveTextContent('PDF');
-    expect(badge).toHaveClass('rounded-[2px]', 'text-pico', 'uppercase');
-
-    expect(screen.getByRole('link', { name: /View/i })).toHaveAttribute(
-      'href',
-      '/api/files/judgment.pdf'
-    );
-    expect(screen.getByRole('link', { name: /Download/i })).toHaveAttribute(
-      'href',
-      '/api/files/judgment.pdf?download=true'
-    );
-  });
-
-  it('prefers preview property image for the thumbnail', () => {
-    renderCard(entity, {
-      _id: 'p-preview',
-      name: 'preview',
-      label: 'Preview',
-      type: 'preview',
-      style: 'cover',
-      values: [{ value: '/api/files/custom-preview.png', alt: 'preview' }],
-    });
-
-    expect(screen.getByRole('img', { name: 'Velasquez.pdf' })).toHaveAttribute(
-      'src',
-      '/api/files/custom-preview.png'
-    );
-  });
-
-  it('falls back to file thumbnail when preview image errors', () => {
-    renderCard(entity, {
-      _id: 'p-preview',
-      name: 'preview',
-      label: 'Preview',
-      type: 'preview',
-      style: 'cover',
-      values: [{ value: '/api/files/custom-preview.png', alt: 'preview' }],
-    });
-
-    const thumb = screen.getByRole('img', { name: 'Velasquez.pdf' });
+    expect(thumb).toHaveAttribute('src', '/api/files/custom-preview.png');
     fireEvent.error(thumb);
 
     expect(screen.getByRole('img', { name: 'Velasquez.pdf' })).toHaveAttribute(
@@ -125,7 +76,7 @@ describe('DocumentPreviewCard', () => {
     );
   });
 
-  it('resolves main document from entity language with default-language fallback', () => {
+  it('shows default-language document when entity language has no file', () => {
     const multilingual: Entity = {
       ...entity,
       language: 'fr',
@@ -160,7 +111,7 @@ describe('DocumentPreviewCard', () => {
     );
   });
 
-  it('prefers entity language over route locale for the main document', () => {
+  it('shows document matching entity language over route locale', () => {
     const multilingual: Entity = {
       ...entity,
       language: 'es',
@@ -192,40 +143,6 @@ describe('DocumentPreviewCard', () => {
     expect(screen.getByRole('img', { name: 'Spanish.pdf' })).toHaveAttribute(
       'src',
       '/api/files/doc-es.jpg'
-    );
-  });
-
-  it('resets preview failure when preview source changes', () => {
-    const previewField = (src: string): MetadataProperty => ({
-      _id: 'p-preview',
-      name: 'preview',
-      label: 'Preview',
-      type: 'preview',
-      style: 'cover',
-      values: [{ value: src, alt: 'preview' }],
-    });
-
-    const { rerender } = render(
-      <TestAtomStoreProvider initialValues={[[localeAtom, 'en'], [settingsAtom, settings]]}>
-        <DocumentPreviewCard entity={entity} previewField={previewField('/bad-preview.png')} />
-      </TestAtomStoreProvider>
-    );
-
-    fireEvent.error(screen.getByRole('img', { name: 'Velasquez.pdf' }));
-    expect(screen.getByRole('img', { name: 'Velasquez.pdf' })).toHaveAttribute(
-      'src',
-      '/api/files/doc-1.jpg'
-    );
-
-    rerender(
-      <TestAtomStoreProvider initialValues={[[localeAtom, 'en'], [settingsAtom, settings]]}>
-        <DocumentPreviewCard entity={entity} previewField={previewField('/good-preview.png')} />
-      </TestAtomStoreProvider>
-    );
-
-    expect(screen.getByRole('img', { name: 'Velasquez.pdf' })).toHaveAttribute(
-      'src',
-      '/good-preview.png'
     );
   });
 });

@@ -1,6 +1,4 @@
-/**
- * @jest-environment jsdom
- */
+/** @jest-environment jsdom */
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import { TestAtomStoreProvider } from '#V2/testing/index.js';
@@ -41,26 +39,15 @@ const renderHeader = () =>
   );
 
 describe('EntityMainPaneHeader', () => {
-  it('stacks quiet type tag above the entity title', () => {
-    const { container } = renderHeader();
+  it('shows the entity title under the type tag', () => {
+    renderHeader();
 
-    const strip = container.firstElementChild;
-    expect(strip).toHaveClass(
-      'flex',
-      'shrink-0',
-      'items-center',
-      'gap-2',
-      'min-h-11',
-      'pt-1',
-      'pb-2',
-      'px-3',
-      'border-b',
-      'border-border'
-    );
-    expect(screen.getByText('Court Case')).toBeInTheDocument();
-    const title = screen.getByRole('heading', { level: 2, name: entity.title });
+    const typeTag = screen.getByText('Court Case');
+    const title = screen.getByRole('heading', { name: entity.title });
     expect(title).toBeInTheDocument();
-    expect(title).toHaveClass('mt-1');
+    expect(typeTag.compareDocumentPosition(title) & Node.DOCUMENT_POSITION_FOLLOWING).toBe(
+      Node.DOCUMENT_POSITION_FOLLOWING
+    );
     expect(screen.queryByRole('heading', { level: 1 })).not.toBeInTheDocument();
   });
 });
