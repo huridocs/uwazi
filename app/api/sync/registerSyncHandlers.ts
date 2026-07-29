@@ -7,6 +7,8 @@ import { RelationshipTypesSyncHandlerFactory } from './RelationshipTypesSyncHand
 export function registerSyncHandlers(): void {
   SyncHandlerRegistry.register('templates', () => TemplatesSyncHandlerFactory.default());
   SyncHandlerRegistry.register('dictionaries', () => ThesauriSyncHandlerFactory.default());
-  SyncHandlerRegistry.register('relationtypes', () => RelationshipTypesSyncHandlerFactory.default());
+  SyncHandlerRegistry.register('relationtypes', () =>
+    RelationshipTypesSyncHandlerFactory.default()
+  );
   SyncHandlerRegistry.register('files', () => FilesSyncHandlerFactory.default());
 }
