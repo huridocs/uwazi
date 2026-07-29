@@ -20,16 +20,22 @@ class CleanupExpiredPasswordRecoveriesJob implements Dispatchable {
   async handleDispatch(
     _heartbeat: HeartbeatCallback,
     _params?: Params,
-    _jobInfo?: JobInfo
+    jobInfo?: JobInfo
   ): Promise<void> {
+    let succeeded = false;
     try {
       await this.deps.pool.query('DELETE FROM password_recoveries WHERE "expiresAt" < now()');
+      succeeded = true;
     } finally {
-      await this.deps.jobsDispatcher.dispatch(
-        CleanupExpiredPasswordRecoveriesJob,
-        {},
-        { lockedUntil: Date.now() + ONE_DAY_IN_MS }
-      );
+      const isFinalAttempt = !jobInfo || jobInfo.retryCount >= jobInfo.maxRetries;
+
+      if (succeeded || isFinalAttempt) {
+        await this.deps.jobsDispatcher.dispatch(
+          CleanupExpiredPasswordRecoveriesJob,
+          {},
+          { lockedUntil: Date.now() + ONE_DAY_IN_MS }
+        );
+      }
     }
   }
 }

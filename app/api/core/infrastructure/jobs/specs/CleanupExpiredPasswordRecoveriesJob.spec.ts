@@ -104,4 +104,38 @@ describe('CleanupExpiredPasswordRecoveriesJob', () => {
     await expect(job.handleDispatch(noopHeartbeat)).rejects.toThrow('db down');
     expect(jobsDispatcher.dispatch).toHaveBeenCalledTimes(1);
   });
+
+  it('should NOT re-dispatch when a failed attempt still has retries left', async () => {
+    const failingPool = { query: jest.fn().mockRejectedValue(new Error('db down')) };
+    const { job, jobsDispatcher } = makeJob(failingPool);
+
+    await expect(
+      job.handleDispatch(noopHeartbeat, {}, { retryCount: 1, maxRetries: 5, namespace: 'system' })
+    ).rejects.toThrow('db down');
+
+    expect(jobsDispatcher.dispatch).not.toHaveBeenCalled();
+  });
+
+  it('should re-dispatch when the final retry attempt still fails, so the chain survives', async () => {
+    const failingPool = { query: jest.fn().mockRejectedValue(new Error('db down')) };
+    const { job, jobsDispatcher } = makeJob(failingPool);
+
+    await expect(
+      job.handleDispatch(noopHeartbeat, {}, { retryCount: 5, maxRetries: 5, namespace: 'system' })
+    ).rejects.toThrow('db down');
+
+    expect(jobsDispatcher.dispatch).toHaveBeenCalledTimes(1);
+  });
+
+  it('should re-dispatch on success regardless of retry position', async () => {
+    const { job, jobsDispatcher } = makeJob(testingPG.pool!);
+
+    await job.handleDispatch(
+      noopHeartbeat,
+      {},
+      { retryCount: 2, maxRetries: 5, namespace: 'system' }
+    );
+
+    expect(jobsDispatcher.dispatch).toHaveBeenCalledTimes(1);
+  });
 });
