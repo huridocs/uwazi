@@ -25,7 +25,6 @@ export class MongoExtractorBuilder {
     const sourceRelationship = {
       _id: MongoExtractorBuilder.factory.id('source_relationship_type'),
       name: 'Source Relationship Type',
-      properties: [],
     };
 
     const paragraphProperty = MongoExtractorBuilder.factory.property(
@@ -54,7 +53,6 @@ export class MongoExtractorBuilder {
     const targetRelationship = {
       _id: MongoExtractorBuilder.factory.id('target_relationship_type'),
       name: 'Target Relationship Type',
-      properties: [],
     };
 
     return new MongoExtractorBuilder({

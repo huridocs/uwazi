@@ -41,7 +41,7 @@ describe('PostgresRelationshipTypesSyncHandler', () => {
     const handler = createHandler();
     const id = new ObjectId().toHexString();
 
-    await handler.save({ _id: id, name: 'Related to', properties: [] });
+    await handler.save({ _id: id, name: 'Related to' });
 
     const found = await handler.getById(id);
     expect(found).toEqual({ _id: id, name: 'Related to' });

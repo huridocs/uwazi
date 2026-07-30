@@ -16,10 +16,10 @@ const factory = getFixturesFactory();
 const fixtures: DBFixture = {
   settings: [{ languages: [{ key: 'en', label: 'English', default: true }] }],
   relationtypes: [
-    { _id: factory.id('rel1'), name: 'Type 1', properties: [] },
-    { _id: factory.id('rel2'), name: 'Type 2', properties: [] },
-    { _id: factory.id('inConnections'), name: 'In Connections', properties: [] },
-    { _id: factory.id('inTemplateProp'), name: 'In Template Prop', properties: [] },
+    { _id: factory.id('rel1'), name: 'Type 1' },
+    { _id: factory.id('rel2'), name: 'Type 2' },
+    { _id: factory.id('inConnections'), name: 'In Connections' },
+    { _id: factory.id('inTemplateProp'), name: 'In Template Prop' },
   ],
   templates: [
     factory.template('Template using relation type', [
@@ -107,7 +107,6 @@ describe('relationship type core routes', () => {
         .send({
           _id: factory.id('rel1').toHexString(),
           name: 'Updated Type 1',
-          properties: [{ ignored: true }],
         });
 
       expect(response).toHaveStatus(200);
@@ -167,7 +166,7 @@ describe('relationship type core routes', () => {
     const updateType = async (id: string, name: string) =>
       request(app)
         .post('/api/relationtypes')
-        .send({ _id: id, name, properties: [{ ignored: true }] })
+        .send({ _id: id, name })
         .expect(200);
 
     const deleteType = async (id: string) =>

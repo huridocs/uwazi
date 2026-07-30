@@ -381,7 +381,7 @@ No unique index on `name` in v1 (see D2). Do **not** store `properties`.
 ### E. Data migration config + CLI
 
 - Config: mongo `relationtypes` → pg `relationship_types`
-- Map `_id` + `name` only; ignore leftover `properties`
+- Map `_id` + `name` only; ignore leftover `properties` defensively in data-copy mapper (migration `200` already unset them in Mongo; fixtures no longer include them; testingEnvironment uses the generic sanitize path — no relationtypes special case)
 - CLI key e.g. `relationshipTypes` or `relationship_types` (pick one when implementing; prefer matching flag family)
 - Specs: batching, skip-if-exists, tenant isolation
 
@@ -400,7 +400,7 @@ No unique index on `name` in v1 (see D2). Do **not** store `properties`.
 
 ## Explicit non-goals
 
-- Do not reintroduce `properties` / `connections.metadata` in PG
+- Do not reintroduce `properties` / `connections.metadata` in PG or in the HTTP upsert schema (legacy field removed; migration `200` cleaned Mongo)
 - Do not migrate translations to PG in this phase
 - Do not change `/api/relationtypes` HTTP contract in this phase
 - Do not rename sync namespace away from `relationtypes` (thesauri-style: leave legacy sync identity; PG table is already `relationship_types`)
@@ -460,7 +460,8 @@ No unique index on `name` in v1 (see D2). Do **not** store `properties`.
 - **Flag flip is one-way** after any PG writes — do not turn `postgresRelationshipTypes` off; Mongo will be stale and relationship/template IDs can point at types missing from Mongo.
 - Superusers / table owners bypass RLS — isolation tests must run as `app_user`.
 - Sync handler and DataSource must share the same tenant flag (`postgresRelationshipTypes`).
-- Data-copy mapper should ignore stray `properties` defensively.
+- Data-copy mapper should ignore stray `properties` defensively (legacy payloads only; Mongo fixtures and sync handlers no longer carry the field).
+- testingEnvironment mirrors `relationtypes` → `relationship_types` via the shared sanitize path (ObjectId → string through JSON); no special-case branch.
 - Do not copy entities’ “table without RLS” pattern.
 - Schema delta must not collide with production migrations (relationship types is **`008`**, after entities RLS `006` and password recoveries `007`).
 - PG column is `_id` by shared adapter convention; do not rename to `id` without changing `PostgresTable` and all other modules.

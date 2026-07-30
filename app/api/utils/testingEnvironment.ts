@@ -194,10 +194,6 @@ const testingEnvironment = {
               return [
                 pgTable,
                 fixture.map((f: any) => {
-                  if (table === 'relationtypes') {
-                    const id = f._id?.toHexString?.() ?? String(f._id);
-                    return { _id: id, name: f.name };
-                  }
                   const sanitized = JSON.parse(JSON.stringify(ObjectUtils.sanitize(f, ['__v'])));
                   return table === 'entities' ? sanitizeEntityForPostgres(sanitized) : sanitized;
                 }),

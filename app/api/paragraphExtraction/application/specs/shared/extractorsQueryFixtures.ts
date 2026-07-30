@@ -25,13 +25,11 @@ const templateWithoutExtractor = f.template('Template');
 const sourceRelationshipType = {
   _id: new ObjectId(),
   name: 'Source Relationship Type',
-  properties: [],
 };
 
 const targetRelationshipType = {
   _id: new ObjectId(),
   name: 'Target Relationship Type',
-  properties: [],
 };
 
 const extractor1: MongoPXExtractorDBO = {

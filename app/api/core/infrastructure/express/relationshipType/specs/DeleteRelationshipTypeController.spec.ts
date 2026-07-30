@@ -11,9 +11,9 @@ const factory = getFixturesFactory();
 const fixtures: DBFixture = {
   settings: [{ languages: [{ key: 'en', label: 'English', default: true }] }],
   relationtypes: [
-    { _id: factory.id('deletable'), name: 'Deletable', properties: [] },
-    { _id: factory.id('inConnections'), name: 'In Connections', properties: [] },
-    { _id: factory.id('inTemplateProp'), name: 'In Template Prop', properties: [] },
+    { _id: factory.id('deletable'), name: 'Deletable' },
+    { _id: factory.id('inConnections'), name: 'In Connections' },
+    { _id: factory.id('inTemplateProp'), name: 'In Template Prop' },
   ],
   templates: [
     factory.template('Template using relation type', [

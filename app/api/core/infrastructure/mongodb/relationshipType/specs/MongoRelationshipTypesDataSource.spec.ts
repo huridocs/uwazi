@@ -11,8 +11,8 @@ const factory = getFixturesFactory();
 
 const fixtures = {
   relationtypes: [
-    { _id: factory.id('rel1'), name: 'Rel 1', properties: [] },
-    { _id: factory.id('rel2'), name: 'Rel 2', properties: [] },
+    { _id: factory.id('rel1'), name: 'Rel 1' },
+    { _id: factory.id('rel2'), name: 'Rel 2' },
   ],
 };
 

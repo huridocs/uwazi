@@ -7,7 +7,6 @@ import { SyncHandler } from './SyncHandler.js';
 type RelationshipTypeSyncDocument = {
   _id: ObjectId;
   name?: string;
-  properties?: unknown[];
 };
 
 const toObjectId = (id: RelationshipTypeSyncDocument['_id'] | string) =>
@@ -17,8 +16,10 @@ const toReplacementDocument = (
   document: Partial<RelationshipTypeSyncDocument>,
   id: ObjectId
 ): RelationshipTypeSyncDocument => {
-  const { _id: _ignored, ...rest } = document;
-  return { _id: id, ...rest };
+  if (typeof document.name !== 'string') {
+    throw new Error('MongoRelationshipTypesSyncHandler: document.name is required');
+  }
+  return { _id: id, name: document.name };
 };
 
 export class MongoRelationshipTypesSyncHandler

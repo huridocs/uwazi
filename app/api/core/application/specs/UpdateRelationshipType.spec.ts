@@ -12,8 +12,8 @@ const createTranslationDBO = factory.v2.database.translationDBO;
 const fixtures: DBFixture = {
   settings: [{ languages: [{ key: 'en', label: 'English', default: true }] }],
   relationtypes: [
-    { _id: factory.id('rel1'), name: 'Type 1', properties: [] },
-    { _id: factory.id('rel2'), name: 'Type 2', properties: [] },
+    { _id: factory.id('rel1'), name: 'Type 1' },
+    { _id: factory.id('rel2'), name: 'Type 2' },
   ],
   translationsV2: [
     createTranslationDBO('Type 1', 'Type 1', 'en', {

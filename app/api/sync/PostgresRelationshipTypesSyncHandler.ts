@@ -6,7 +6,6 @@ import { SyncHandler } from './SyncHandler.js';
 type RelationshipTypeSyncDocument = {
   _id: string;
   name?: string;
-  properties?: unknown[];
 };
 
 type RelationshipTypeRow = {

@@ -71,19 +71,16 @@ const invalidTargetTemplate = f.template('Invalid Target');
 const sourceRelationshipType = {
   _id: f.id('sourceRelationshipType'),
   name: 'Source Relationship Type',
-  properties: [],
 };
 
 const targetRelationshipType = {
   _id: f.id('targetRelationshipType'),
   name: 'Target Relationship Type',
-  properties: [],
 };
 
 const nonRelevantRelationshipType = {
   _id: f.id('nonRelevantRelationshipType'),
   name: 'Other Relationship Type',
-  properties: [],
 };
 
 const createFixtures = (): DBFixture => ({
