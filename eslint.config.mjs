@@ -5,7 +5,6 @@ import globals from 'globals';
 import react from 'eslint-plugin-react';
 import jest from 'eslint-plugin-jest';
 import typescriptEslint from '@typescript-eslint/eslint-plugin';
-import prettier from 'eslint-plugin-prettier';
 import node from 'eslint-plugin-node';
 import reactHooks from 'eslint-plugin-react-hooks';
 import cypress from 'eslint-plugin-cypress';
@@ -84,7 +83,6 @@ export default defineConfig([
       react,
       jest,
       '@typescript-eslint': typescriptEslint,
-      prettier,
       node,
       'react-hooks': reactHooks,
       cypress,
@@ -96,13 +94,6 @@ export default defineConfig([
         'single',
         {
           avoidEscape: true,
-        },
-      ],
-
-      'prettier/prettier': [
-        'error',
-        {
-          requirePragma: false,
         },
       ],
 
