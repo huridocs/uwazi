@@ -15,8 +15,9 @@ This document is the working context for the Postgres phase. The prior V2 archit
 ### Implemented so far
 
 - [x] Schema `008-create_relationship_types_table.sql` (`relationship_types` + RLS in same migration)
-- [x] `PostgresRelationshipTypesDataSource` + mapper + `ArrayResultSet` + specs (incl. RLS isolation, case-insensitive `existsByName`)
+- [x] `PostgresRelationshipTypesDataSource` + mapper + specs (incl. RLS isolation, case-insensitive `existsByName`)
 - [x] DS contract aligned with Thesauri/Templates/Files: `create`/`update` take a domain `RelationshipType`, return `Promise<void>`; id assigned in the use case via `idGenerator` (not in the Postgres DS)
+- [x] `getByIds` returns `Promise<RelationshipType[]>` (no `ResultSet` / no `ArrayResultSet` shim)
 - [x] Feature flag `postgresRelationshipTypes` (config / tenantContext / tenantsModel; local via `FEATURE_FLAG_POSTGRES_RELATIONSHIP_TYPES=true`)
 - [x] `RelationshipTypesDataSourceFactory` — Templates/Files-style EC + flag; PG TM from EC; call sites updated to overrides object
 - [x] `PostgresRelationshipTypesSyncHandler` + factory branch (sync namespace still `relationtypes`)
@@ -126,6 +127,7 @@ Pattern (thesauri / templates / files — **follow this for relationship types**
 | Method input | Domain model (`RelationshipType`, `Thesaurus`, `Template`, `BaseFile`, `Entity`) | Persistence must not invent domain state |
 | Method return | `Promise<void>` | Caller already holds the model; DS does not re-fetch / re-shape |
 | Id assignment | **Use case** (or domain factory called from the use case) via `this.idGenerator.generate()` / `IdGeneratorFactory` | Keeps ObjectId / id policy out of Postgres DS |
+| `getByIds` | `Promise<T[]>` (same as Templates/Files) — **not** `ResultSet` | Relation types are small; we load into memory. Do not add `ArrayResultSet` shims. |
 | PG column name | `"_id" TEXT` (not `id`) | Shared with all PG tables; `PostgresTable` upsert/sync assume `_id` |
 | Mapper | `domain.id` ↔ `row._id` | Only place that bridges naming |
 
@@ -321,6 +323,7 @@ New code uses `RelationshipType(s)` / `postgresRelationshipTypes` / `relationshi
 3. **Id is assigned before persistence**, in `CreateRelationshipTypeUseCase`, with `this.idGenerator.generate()` (wired via `IdGeneratorFactory` → currently `MongoIdHandler`). The Postgres DS must **not** import `ObjectId` or mint ids.
 4. PG table column remains `"_id"` (TEXT). Domain property is `id`. Mapper is the only bridge.
 5. Use case returns the domain model it already built; it does not rely on the DS to return created/updated data.
+6. `getByIds(ids): Promise<RelationshipType[]>` — same as Templates/Files. No `ResultSet` / `ArrayResultSet` for this domain.
 
 Wire `idGenerator` on `CreateRelationshipTypeUseCaseFactory` (required by `AbstractUseCase.idGenerator`).
 
@@ -450,7 +453,7 @@ No unique index on `name` in v1 (see D2). Do **not** store `properties`.
 
 ## To keep an eye on
 
-- When copying patterns from another module, verify **contract shape** (create/update inputs/returns, who mints ids) against Thesauri/Templates/Files — not only factory/flag/TM wiring.
+- When copying patterns from another module, verify **contract shape** (create/update inputs/returns, who mints ids, `getByIds` → array vs ResultSet) against Thesauri/Templates/Files — not only factory/flag/TM wiring.
 - Run and record name-collision diagnosis before relying on case-insensitive uniqueness at scale.
 - Sync namespace stays `relationtypes` by design (thesauri pattern), even though PG table is `relationship_types`. Do not “fix” this dual naming without a coordinated sync cutover plan.
 - When flipping flags in prod: **data copy before flag**, never the reverse.

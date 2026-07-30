@@ -1,3 +1,4 @@
+/* eslint-disable max-statements */
 import { ObjectId } from 'mongodb';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
@@ -106,11 +107,12 @@ describe('MongoRelationshipTypesDataSource', () => {
     );
   });
 
-  it('should get by ids result set', async () => {
+  it('should get by ids', async () => {
     const { sut } = createSut();
-    const items = await sut
-      .getByIds([factory.id('rel1').toHexString(), factory.id('rel2').toHexString()])
-      .all();
+    const items = await sut.getByIds([
+      factory.id('rel1').toHexString(),
+      factory.id('rel2').toHexString(),
+    ]);
 
     expect(items).toHaveLength(2);
     expect(items.map(i => i.name)).toEqual(expect.arrayContaining(['Rel 1', 'Rel 2']));

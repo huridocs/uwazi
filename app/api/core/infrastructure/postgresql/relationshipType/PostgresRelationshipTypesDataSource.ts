@@ -1,10 +1,8 @@
 import { Db } from 'mongodb';
 import { RelationshipTypesDataSource } from '#api/core/application/contracts/RelationshipTypesDataSource.js';
-import { ResultSet } from '#api/core/application/contracts/ResultSet.js';
 import { RelationshipType } from '#api/core/domain/relationshipType/RelationshipType.js';
 import { PostgresDataSource } from '../common/PostgresDataSource.js';
 import { PostgresTransactionManager } from '../common/PostgresTransactionManager.js';
-import { ArrayResultSet } from '../common/ArrayResultSet.js';
 import {
   PostgresRelationshipTypeMapper,
   RelationshipTypeRow,
@@ -74,14 +72,12 @@ export class PostgresRelationshipTypesDataSource
     return rows.map(row => row._id);
   }
 
-  getByIds(ids: string[]): ResultSet<RelationshipType> {
+  async getByIds(ids: string[]): Promise<RelationshipType[]> {
     const uniqueIds = Array.from(new Set(ids));
-    return new ArrayResultSet(async () => {
-      if (uniqueIds.length === 0) {
-        return [];
-      }
-      const rows = await this.table.whereIn('_id', uniqueIds).all();
-      return rows.map(PostgresRelationshipTypeMapper.toDomain);
-    });
+    if (uniqueIds.length === 0) {
+      return [];
+    }
+    const rows = await this.table.whereIn('_id', uniqueIds).all();
+    return rows.map(PostgresRelationshipTypeMapper.toDomain);
   }
 }

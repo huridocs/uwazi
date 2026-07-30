@@ -110,7 +110,7 @@ describe('PostgresRelationshipTypesDataSource', () => {
 
     expect(await ds.getRelationshipTypeIds()).toEqual(expect.arrayContaining([a.id, b.id]));
 
-    const items = await ds.getByIds([a.id, b.id]).all();
+    const items = await ds.getByIds([a.id, b.id]);
     expect(items.map(i => i.name).sort()).toEqual(['A', 'B']);
   });
 

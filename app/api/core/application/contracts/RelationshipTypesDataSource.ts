@@ -1,4 +1,3 @@
-import { ResultSet } from './ResultSet.js';
 import { RelationshipType } from '../../domain/relationshipType/RelationshipType.js';
 
 export interface RelationshipTypesDataSource {
@@ -10,5 +9,5 @@ export interface RelationshipTypesDataSource {
   existsByName(name: string, excludeId?: string): Promise<boolean>;
   typesExist(ids: string[]): Promise<boolean>;
   getRelationshipTypeIds(): Promise<string[]>;
-  getByIds(ids: string[]): ResultSet<RelationshipType>;
+  getByIds(ids: string[]): Promise<RelationshipType[]>;
 }

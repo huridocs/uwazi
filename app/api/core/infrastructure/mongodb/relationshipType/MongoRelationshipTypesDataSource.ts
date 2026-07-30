@@ -1,6 +1,5 @@
 import { MongoDataSource } from '#api/core/infrastructure/mongodb/common/MongoDataSource.js';
 import { MongoIdHandler } from '#api/core/infrastructure/mongodb/common/MongoIdGenerator.js';
-import { MongoResultSet } from '#api/core/infrastructure/mongodb/common/MongoResultSet.js';
 import { RelationshipTypesDataSource } from '#api/core/application/contracts/RelationshipTypesDataSource.js';
 import { RelationshipTypeDBO } from './schemas/RelationshipTypeDBO.js';
 import { mapRelationshipTypeToApp } from './mappings/RelationshipTypeMappers.js';
@@ -67,14 +66,16 @@ export class MongoRelationshipTypesDataSource
     );
   }
 
-  getByIds(ids: string[]): MongoResultSet<RelationshipTypeDBO, RelationshipType> {
+  async getByIds(ids: string[]): Promise<RelationshipType[]> {
     const uniqueIds = Array.from(new Set(ids));
-    const cursor = this.getCollection().find({
-      _id: { $in: uniqueIds.map(MongoIdHandler.mapToDb) },
-    });
-    return new MongoResultSet<RelationshipTypeDBO, RelationshipType>(
-      cursor,
-      mapRelationshipTypeToApp
-    );
+    if (uniqueIds.length === 0) {
+      return [];
+    }
+    const dbos = await this.getCollection()
+      .find({
+        _id: { $in: uniqueIds.map(MongoIdHandler.mapToDb) },
+      })
+      .toArray();
+    return dbos.map(mapRelationshipTypeToApp);
   }
 }
