@@ -1,6 +1,7 @@
 import React from 'react';
 import type { Meta, StoryObj } from '@storybook/react-webpack5';
 import { action } from 'storybook/actions';
+import { userEvent, within } from 'storybook/test';
 import { ThemedBeacon, LegacyBeacon } from '#V2/Components/UI/Notifications/Beacon.js';
 import type { StatusNotification, StatusTask } from '#V2/atoms/requestStatusAtom.js';
 
@@ -36,7 +37,7 @@ const baseArgs = {
 const Primary: Story = {
   render: args => (
     <div className="tw-content">
-      <div className="inline-flex rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
+      <div className="flex w-[20rem] justify-end rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
         <ThemedBeacon {...args} />
       </div>
     </div>
@@ -98,6 +99,10 @@ const WithNotifications: Story = {
       },
     ],
   },
+  play: async ({ canvasElement }) => {
+    const beacon = within(canvasElement).getByTestId('status-dot');
+    await userEvent.hover(beacon);
+  },
 };
 
 const WithFlash: Story = {
@@ -120,7 +125,7 @@ const WithFlashOnCustomHeader: StoryObj<typeof LegacyBeacon> = {
     <div className="tw-content">
       <div
         className="flex h-12 w-[24rem] items-center justify-end px-3"
-        style={{ background: 'linear-gradient(to right, #2f4f6f 0%, #ffffff 72%)' }}
+        style={{ background: '#2f4f6f' }}
       >
         <LegacyBeacon {...args} />
       </div>
@@ -130,7 +135,7 @@ const WithFlashOnCustomHeader: StoryObj<typeof LegacyBeacon> = {
     ...baseArgs,
     overallStatus: 'success',
     chromeForeground: '#ffffff',
-    chromeFadeColor: '#ffffff',
+    chromeFadeColor: '#2f4f6f',
     chromeFadeStartColor: '#2f4f6f',
     flash: { id: '1', type: 'success', title: 'Entity updated', phase: 'showing' },
   },

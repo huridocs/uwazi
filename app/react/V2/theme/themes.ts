@@ -80,7 +80,8 @@ type CompatibilityVarKey =
   | '--color-text-primary'
   | '--color-text-secondary'
   | '--color-text-muted'
-  | '--color-border-primary';
+  | '--color-border-primary'
+  | '--color-border';
 
 const THEME_ASSET_PRESETS: Record<
   ThemeAssetPresetId,
@@ -397,6 +398,7 @@ const COMPATIBILITY_VAR_ENTRIES: Array<
   ['--color-text-secondary', '--color-theme-text-secondary'],
   ['--color-text-muted', '--color-theme-text-muted'],
   ['--color-border-primary', '--color-theme-border-primary'],
+  ['--color-border', '--color-theme-border-primary'],
 ];
 
 const toCompatibilityVars = (resolved: ResolvedThemeVars): Record<string, string> =>

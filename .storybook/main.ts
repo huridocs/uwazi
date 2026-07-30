@@ -7,12 +7,18 @@ const uwaziConfig = uwaziWebpackConfig();
 const STORYBOOK_INCOMPATIBLE_PLUGINS = new Set([
   'CleanWebpackPlugin',
   'HotModuleReplacementPlugin',
+  'RtlCssPlugin',
 ]);
 
 const config: StorybookConfig = {
   framework: '@storybook/react-webpack5',
   stories: ['../app/react/stories/**/*.stories.tsx'],
-  staticDirs: ['../cypress/test_files'],
+  staticDirs: [
+    '../cypress/test_files',
+    { from: '../cypress/test_files', to: '/api/files' },
+    { from: '../public', to: '/public' },
+  ],
+  addons: ['@storybook/addon-a11y'],
   webpackFinal: async (storybookConfig: Configuration): Promise<Configuration> => {
     const uwaziPlugins = ((uwaziConfig.plugins ?? []) as WebpackPluginInstance[]).filter(
       plugin => plugin && !STORYBOOK_INCOMPATIBLE_PLUGINS.has(plugin.constructor?.name ?? '')

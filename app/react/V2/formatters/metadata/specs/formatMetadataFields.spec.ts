@@ -121,8 +121,8 @@ describe('formatMetadataFields ', () => {
           label: '__group1',
           type: 'geolocation',
           propertyGroup: [
-            { name: 'locationA', label: 'Location A' },
-            { name: 'locationB', label: 'Location B' },
+            { _id: 'geo-a', name: 'locationA', label: 'Location A' },
+            { _id: 'geo-b', name: 'locationB', label: 'Location B' },
           ],
           inherited: false,
           inheritedType: undefined,
@@ -173,8 +173,9 @@ describe('formatMetadataFields ', () => {
           inherited: false,
           inheritedType: undefined,
           propertyGroup: [
-            { name: 'locationA', label: 'Location A' },
+            { _id: 'geo-a', name: 'locationA', label: 'Location A' },
             {
+              _id: 'rel1',
               name: 'rel_1',
               label: 'Rel 1',
               inherited: true,
@@ -212,15 +213,16 @@ describe('formatMetadataFields ', () => {
           label: '__group1',
           type: 'geolocation',
           propertyGroup: [
-            { name: 'locationB', label: 'Location B' },
+            { _id: 'geo-b', name: 'locationB', label: 'Location B' },
             {
+              _id: 'rel1',
               name: 'rel_1',
               label: 'Rel 1',
               inherited: true,
               content: '69f0a4ac62c282d87ef5970f',
               property: 'x',
             },
-            { name: 'locationA', label: 'Location A' },
+            { _id: 'geo-a', name: 'locationA', label: 'Location A' },
           ],
           inherited: false,
           inheritedType: undefined,

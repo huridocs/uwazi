@@ -4,7 +4,7 @@ import { useAtomValue } from 'jotai';
 import type { Entity } from '#V2/api/entities/types.js';
 import { mediaContextFromTemplate } from '#shared/entitySave/mediaContext.js';
 import { templatesAtom } from '#V2/atoms/templatesAtom.js';
-import { MetadataDisplay } from '#V2/Components/Metadata/MetadataDisplay.js';
+import { MetadataRecord } from '#V2/Components/Metadata/MetadataRecord.js';
 import {
   EditEntity,
   apiValidationsToEditEntityErrors,
@@ -107,8 +107,8 @@ const MetadataTab = ({ entity, host }: MetadataTabProps) => {
   };
 
   return (
-    <div className="h-full min-h-0 flex-1 overflow-y-auto px-4 py-3">
-      {!showEditor && <MetadataDisplay entity={entity} />}
+    <div className="h-full min-h-0 flex-1 overflow-y-auto px-4 py-3 pb-8">
+      {!showEditor && <MetadataRecord entity={entity} />}
       {showEditor && (
         <>
           {saveError && (

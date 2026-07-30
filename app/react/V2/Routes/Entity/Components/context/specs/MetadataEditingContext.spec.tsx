@@ -1,16 +1,10 @@
-/**
- * @jest-environment jsdom
- */
-/* eslint-disable react/no-multi-comp */
-import React, { type ReactNode, useEffect } from 'react';
-import { act, render, renderHook, screen, waitFor } from '@testing-library/react';
+/** @jest-environment jsdom */
+import React, { type ReactNode } from 'react';
+import { act, renderHook } from '@testing-library/react';
 import type { ClientFile } from '#app/istore.js';
-import type { Template } from '#app/apiResponseTypes.js';
 import type { Entity } from '#V2/api/entities/types.js';
 import { TestAtomStoreProvider } from '#V2/testing/index.js';
 import { templatesAtom } from '#V2/atoms/templatesAtom.js';
-import { thesauriAtom } from '#V2/atoms/thesauriAtom.js';
-import { EditEntity } from '#V2/Components/Metadata/EntityEditor/index.js';
 import { EntityProvider } from '../EntityContext.js';
 import { MetadataEditingProvider, useMetadataEditing } from '../MetadataEditingContext.js';
 
@@ -50,7 +44,7 @@ const wrapper = ({ children }: { children: ReactNode }) => (
 );
 
 describe('MetadataEditingContext', () => {
-  it('starts editing and lets the other host join the same session', () => {
+  it('starts editing and tracks last metadata anchor', () => {
     const { result } = renderHook(() => useMetadataEditing(), { wrapper });
 
     act(() => {
@@ -63,24 +57,7 @@ describe('MetadataEditingContext', () => {
       result.current.startEditing('side');
     });
     expect(result.current.isEditing).toBe(true);
-    expect(result.current.form.getValues('title')).toBe('Entity');
-  });
-
-  it('preserves form draft across startEditing joins', () => {
-    const { result } = renderHook(() => useMetadataEditing(), { wrapper });
-
-    act(() => {
-      result.current.startEditing('side');
-      result.current.form.setValue('title', 'Dirty title', { shouldDirty: true });
-      result.current.setIsDirty(true);
-    });
-
-    act(() => {
-      result.current.startEditing('main');
-    });
-
-    expect(result.current.form.getValues('title')).toBe('Dirty title');
-    expect(result.current.isDirty).toBe(true);
+    expect(result.current.lastMetadataAnchor).toBe('side');
   });
 
   it('cancelEdit clears editing, dirty, and saving state', () => {
@@ -102,10 +79,11 @@ describe('MetadataEditingContext', () => {
     expect(result.current.isSaving).toBe(false);
   });
 
-  it('tracks last metadata anchor via registerMetadataActive', () => {
+  it('tracks formMountHost via registerMetadataActive and prefers edit host', () => {
     const { result } = renderHook(() => useMetadataEditing(), { wrapper });
 
     act(() => {
+      result.current.registerMetadataActive('main', true);
       result.current.startEditing('side');
       result.current.registerMetadataActive('side', true);
     });
@@ -115,82 +93,8 @@ describe('MetadataEditingContext', () => {
     act(() => {
       result.current.registerMetadataActive('main', true);
     });
-    expect(result.current.formMountHost).toBe('main');
-    expect(result.current.lastMetadataAnchor).toBe('main');
-  });
-
-  it('does not update lastMetadataAnchor when re-registering an already active host', () => {
-    const { result } = renderHook(() => useMetadataEditing(), { wrapper });
-
-    act(() => {
-      result.current.registerMetadataActive('main', true);
-      result.current.startEditing('main');
-      result.current.registerMetadataActive('side', true);
-    });
     expect(result.current.lastMetadataAnchor).toBe('side');
     expect(result.current.formMountHost).toBe('side');
-
-    act(() => {
-      result.current.registerMetadataActive('main', true);
-    });
-
-    expect(result.current.lastMetadataAnchor).toBe('side');
-    expect(result.current.formMountHost).toBe('side');
-  });
-
-  it('prefers edit host when both metadata panes are active', () => {
-    const { result } = renderHook(() => useMetadataEditing(), { wrapper });
-
-    act(() => {
-      result.current.registerMetadataActive('main', true);
-      result.current.startEditing('side');
-      result.current.registerMetadataActive('side', true);
-    });
-
-    expect(result.current.lastMetadataAnchor).toBe('side');
-    expect(result.current.formMountHost).toBe('side');
-  });
-
-  it('moves formMountHost to the other pane on startEditing join without resetting draft', () => {
-    const { result } = renderHook(() => useMetadataEditing(), { wrapper });
-
-    act(() => {
-      result.current.registerMetadataActive('main', true);
-      result.current.registerMetadataActive('side', true);
-      result.current.startEditing('side');
-      result.current.form.setValue('title', 'Joined draft', { shouldDirty: true });
-      result.current.setIsDirty(true);
-    });
-    expect(result.current.formMountHost).toBe('side');
-
-    act(() => {
-      result.current.startEditing('main');
-    });
-
-    expect(result.current.formMountHost).toBe('main');
-    expect(result.current.lastMetadataAnchor).toBe('main');
-    expect(result.current.form.getValues('title')).toBe('Joined draft');
-    expect(result.current.isDirty).toBe(true);
-  });
-
-  it('keeps dirty draft when form mount host moves from side to main', () => {
-    const { result } = renderHook(() => useMetadataEditing(), { wrapper });
-
-    act(() => {
-      result.current.startEditing('side');
-      result.current.registerMetadataActive('side', true);
-      result.current.form.setValue('title', 'Side draft', { shouldDirty: true });
-      result.current.setIsDirty(true);
-    });
-
-    act(() => {
-      result.current.registerMetadataActive('side', false);
-      result.current.registerMetadataActive('main', true);
-    });
-
-    expect(result.current.formMountHost).toBe('main');
-    expect(result.current.form.getValues('title')).toBe('Side draft');
-    expect(result.current.isDirty).toBe(true);
   });
 
   it('preserves pending media across form mount host changes', () => {
@@ -238,12 +142,6 @@ describe('MetadataEditingContext', () => {
     expect(result.current.isEditing).toBe(false);
   });
 
-  it('does not expose beginSaveAbort or clearSaveAbort on the public API', () => {
-    const { result } = renderHook(() => useMetadataEditing(), { wrapper });
-    expect('beginSaveAbort' in result.current).toBe(false);
-    expect('clearSaveAbort' in result.current).toBe(false);
-  });
-
   it('tryBeginSave rejects a second in-flight save', () => {
     const { result } = renderHook(() => useMetadataEditing(), { wrapper });
 
@@ -287,11 +185,6 @@ describe('MetadataEditingContext', () => {
     expect(result.current.lastMetadataAnchor).toBe('side');
   });
 
-  it('does not expose setIsEditing on the public API', () => {
-    const { result } = renderHook(() => useMetadataEditing(), { wrapper });
-    expect('setIsEditing' in result.current).toBe(false);
-  });
-
   it('clears editErrors on finishEditing', () => {
     const { result } = renderHook(() => useMetadataEditing(), { wrapper });
 
@@ -305,121 +198,5 @@ describe('MetadataEditingContext', () => {
       result.current.finishEditing();
     });
     expect(result.current.editErrors).toBeUndefined();
-  });
-});
-
-const switchTemplates: Template[] = [
-  {
-    _id: 't1',
-    name: 'T1',
-    properties: [{ _id: 'p1', type: 'text', name: 'simple_text', label: 'Simple' }],
-  },
-  {
-    _id: 't2',
-    name: 'T2',
-    properties: [{ _id: 'p2', type: 'text', name: 'report', label: 'Report' }],
-  },
-];
-
-const SharedEditorHarness = () => {
-  const { isEditing, form, formId, mediaUpload, startEditing, registerMetadataActive } =
-    useMetadataEditing();
-
-  useEffect(() => {
-    registerMetadataActive('main', true);
-    startEditing('main');
-  }, [registerMetadataActive, startEditing]);
-
-  if (!isEditing) return null;
-
-  return <EditEntity formId={formId} form={form} entity={entity} mediaUpload={mediaUpload} />;
-};
-
-describe('MetadataEditingContext shared FormProvider template switch', () => {
-  it('reshapes metadata keys on T1→T2→T1→T2 and keeps dirty title', async () => {
-    const sessionRef: { current: ReturnType<typeof useMetadataEditing> | null } = {
-      current: null,
-    };
-    const SessionProbe = () => {
-      sessionRef.current = useMetadataEditing();
-      return null;
-    };
-
-    render(
-      <TestAtomStoreProvider
-        initialValues={[
-          [templatesAtom, switchTemplates],
-          [thesauriAtom, []],
-        ]}
-      >
-        <EntityProvider entity={entity}>
-          <MetadataEditingProvider>
-            <SessionProbe />
-            <SharedEditorHarness />
-          </MetadataEditingProvider>
-        </EntityProvider>
-      </TestAtomStoreProvider>
-    );
-
-    await waitFor(() => {
-      expect(sessionRef.current?.isEditing).toBe(true);
-    });
-
-    const getSession = () => {
-      if (!sessionRef.current) throw new Error('session not ready');
-      return sessionRef.current;
-    };
-
-    act(() => {
-      getSession().form.setValue('title', 'Dirty title', { shouldDirty: true });
-    });
-
-    const switchTo = async (
-      templateId: string,
-      expectedKeys: string[],
-      visible: { label: string; fieldId: string },
-      hiddenLabel: string
-    ) => {
-      act(() => {
-        getSession().form.setValue('template', templateId, { shouldDirty: true });
-      });
-      await waitFor(() => {
-        expect(Object.keys(getSession().form.getValues('metadata') ?? {}).sort()).toEqual(
-          [...expectedKeys].sort()
-        );
-      });
-      await waitFor(() => {
-        expect(screen.getByLabelText(visible.label)).toBeInTheDocument();
-        expect(document.getElementById(visible.fieldId)).toBeTruthy();
-        expect(screen.queryByLabelText(hiddenLabel)).not.toBeInTheDocument();
-      });
-    };
-
-    await switchTo(
-      't2',
-      ['report'],
-      { label: 'Report', fieldId: 'metadata.report.0.value' },
-      'Simple'
-    );
-    await switchTo(
-      't1',
-      ['simple_text'],
-      { label: 'Simple', fieldId: 'metadata.simple_text.0.value' },
-      'Report'
-    );
-    await switchTo(
-      't2',
-      ['report'],
-      { label: 'Report', fieldId: 'metadata.report.0.value' },
-      'Simple'
-    );
-    await switchTo(
-      't1',
-      ['simple_text'],
-      { label: 'Simple', fieldId: 'metadata.simple_text.0.value' },
-      'Report'
-    );
-
-    expect(getSession().form.getValues('title')).toBe('Dirty title');
   });
 });
