@@ -90,8 +90,7 @@ const fixtures: DBFixture = {
     {
       _id: factory.id('relationTypeId'),
       name: 'Father -> Child',
-      properties: [],
-      __v: 0,
+      __v: 0
     },
   ],
 

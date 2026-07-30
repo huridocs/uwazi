@@ -461,7 +461,7 @@ No unique index on `name` in v1 (see D2). Do **not** store `properties`.
 - Superusers / table owners bypass RLS — isolation tests must run as `app_user`.
 - Sync handler and DataSource must share the same tenant flag (`postgresRelationshipTypes`).
 - Data-copy mapper should ignore stray `properties` defensively (legacy payloads only; Mongo fixtures and sync handlers no longer carry the field).
-- testingEnvironment mirrors `relationtypes` → `relationship_types` via the shared sanitize path (ObjectId → string through JSON); no special-case branch.
+- testingEnvironment mirrors `relationtypes` → `relationship_types` via the shared sanitize path (ObjectId → string through JSON); no special-case branch — fixtures must not include `properties`.
 - Do not copy entities’ “table without RLS” pattern.
 - Schema delta must not collide with production migrations (relationship types is **`008`**, after entities RLS `006` and password recoveries `007`).
 - PG column is `_id` by shared adapter convention; do not rename to `id` without changing `PostgresTable` and all other modules.

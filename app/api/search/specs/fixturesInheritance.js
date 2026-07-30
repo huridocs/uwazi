@@ -1,6 +1,4 @@
 /** @format */
-
-/* eslint-disable max-len */
 import db from '#api/utils/testing_db.js';
 
 const userId = db.id();
@@ -386,8 +384,7 @@ export default {
   relationtypes: [
     {
       _id: relationType1,
-      name: 'relation1',
-      properties: [],
+      name: 'relation1'
     },
   ],
   connections: [

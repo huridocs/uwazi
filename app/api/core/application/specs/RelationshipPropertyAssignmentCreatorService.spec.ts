@@ -17,8 +17,7 @@ const fixtures: DBFixture = {
     {
       _id: factory.id('Document A to Document B'),
       name: 'Document A to Document B',
-      properties: [],
-      __v: 0,
+      __v: 0
     },
   ],
 
