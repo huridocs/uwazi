@@ -2,6 +2,7 @@ import { PropertyAssignmentCreatorServiceStrategy } from '#api/core/application/
 import { PropertyAssignment } from '#api/core/domain/template/PropertyValue.js';
 import { Template } from '#api/core/domain/template/Template.js';
 import { InputFile } from '#api/core/infrastructure/files/InputFile.js';
+import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import { MappedAssignment } from '../services/CsvEntitiesImportMapper.js';
 import { CsvImportPropertyValidationError } from '../services/CsvImportRowProcessingError.js';
 
@@ -12,6 +13,11 @@ type CreatePropertyAssignmentsInput = {
   sanitizedHeaders: string[];
   rowValues: string[];
   attachments: InputFile[];
+};
+
+type LanguageScopedPropertyAssignment = {
+  language: LanguageISO6391;
+  assignment: PropertyAssignment;
 };
 
 const isEmptyRow = (rowValues: string[]) => rowValues.every(value => !value.trim());
@@ -42,7 +48,7 @@ const resolvePropertyInputContext = (params: {
 
 const createPropertyAssignments = async (
   input: CreatePropertyAssignmentsInput
-): Promise<PropertyAssignment[]> => {
+): Promise<LanguageScopedPropertyAssignment[]> => {
   const {
     propertyAssignmentCreatorServiceStrategy,
     template,
@@ -52,7 +58,7 @@ const createPropertyAssignments = async (
     attachments,
   } = input;
 
-  const createdAssignments: PropertyAssignment[] = [];
+  const createdAssignments: LanguageScopedPropertyAssignment[] = [];
 
   for (const assignment of assignments) {
     const inputContext = resolvePropertyInputContext({
@@ -68,7 +74,16 @@ const createPropertyAssignments = async (
         template,
         attachments
       );
-      createdAssignments.push(...created);
+      const { language } = assignment;
+      if (!language) {
+        throw new Error(`Missing language for property assignment "${assignment.name}"`);
+      }
+      created.forEach(createdAssignment => {
+        createdAssignments.push({
+          language,
+          assignment: createdAssignment,
+        });
+      });
     } catch (error) {
       throw new CsvImportPropertyValidationError({
         property: assignment.name,
@@ -83,3 +98,4 @@ const createPropertyAssignments = async (
 };
 
 export { createPropertyAssignments, isEmptyRow };
+export type { LanguageScopedPropertyAssignment };
