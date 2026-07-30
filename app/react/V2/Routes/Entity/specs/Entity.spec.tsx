@@ -68,15 +68,19 @@ type RenderEntityOptions = {
   withServices?: boolean;
 };
 
-const renderEntity = ({
-  entity = sampleEntity,
-  mainDocument = sampleMainDocument,
-  pagePlaintext = '',
-  initialEntries,
-  settings,
-  user,
-  withServices = false,
-}: RenderEntityOptions = {}) => {
+const renderEntity = (options: RenderEntityOptions = {}) => {
+  const {
+    entity = sampleEntity,
+    pagePlaintext = '',
+    initialEntries,
+    settings,
+    user,
+    withServices = false,
+  } = options;
+  const mainDocument = Object.hasOwn(options, 'mainDocument')
+    ? options.mainDocument
+    : sampleMainDocument;
+
   const atoms: Array<
     readonly [typeof templatesAtom | typeof settingsAtom | typeof userAtom, unknown]
   > = [[templatesAtom, sampleTemplate]];

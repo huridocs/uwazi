@@ -3,7 +3,7 @@
  */
 import type { Entity, FileType } from '#V2/api/entities/types.js';
 import { entityLoaderCache } from '../../../EntityLoaderCache.js';
-import { resolveMainDocument, resolveSyncMode } from '../entityLanguageUtils.js';
+import { resolveMainDocument, resolveSyncMode, seedLoaderCache } from '../entityLanguageUtils.js';
 
 describe('resolveSyncMode', () => {
   it('seeds only and marks pending adopt when dirty/saving', () => {
@@ -81,7 +81,27 @@ describe('resolveMainDocument', () => {
     expect(entityLoaderCache.getMainDocument(sharedId, 'en')).toEqual(freshDoc);
   });
 
-  it('falls back to cache when entity has no documents', () => {
-    expect(resolveMainDocument(sharedId, 'en', [])).toEqual(staleDoc);
+  it('clears cache when entity has no documents', () => {
+    expect(resolveMainDocument(sharedId, 'en', [])).toBeUndefined();
+    expect(entityLoaderCache.getMainDocument(sharedId, 'en')).toBeUndefined();
+  });
+});
+
+describe('seedLoaderCache', () => {
+  const sharedId = 'shared1';
+  const staleDoc = { _id: 'stale', filename: 'stale.pdf', language: 'eng' } as FileType;
+
+  beforeEach(() => {
+    entityLoaderCache.invalidateAll();
+    entityLoaderCache.setMainDocument(sharedId, 'en', staleDoc);
+  });
+
+  it('clears main document cache when seeded without a document', () => {
+    seedLoaderCache(
+      { _id: 'e1', sharedId, title: 'T', template: 't', language: 'en' } as Entity,
+      'en',
+      undefined
+    );
+    expect(entityLoaderCache.getMainDocument(sharedId, 'en')).toBeUndefined();
   });
 });

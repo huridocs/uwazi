@@ -14,8 +14,18 @@ const sanitizeOptions = {
   allowedTags: sanitizeHtml.defaults.allowedTags.concat(['img']),
   allowedAttributes: {
     ...sanitizeHtml.defaults.allowedAttributes,
-    a: ['href', 'name', 'target'],
+    a: ['href', 'name', 'target', 'rel'],
     img: ['src', 'srcset', 'alt', 'title', 'width', 'height', 'loading'],
+  },
+  transformTags: {
+    a: (tagName: string, attribs: sanitizeHtml.Attributes) => ({
+      tagName,
+      attribs: {
+        ...attribs,
+        target: '_blank',
+        rel: 'noreferrer noopener',
+      },
+    }),
   },
 };
 
