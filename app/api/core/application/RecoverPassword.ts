@@ -1,9 +1,11 @@
 import { z } from 'zod';
+import crypto from 'crypto';
 import { AbstractUseCase } from '../libs/UseCase.js';
-import users from '#api/users/users.js';
+import { UsersDataSource } from './contracts/UsersDataSource.js';
+import { PasswordRecoveriesDataSource } from './contracts/PasswordRecoveriesDataSource.js';
 
 const RecoverPasswordInputSchema = z.object({
-  email: z.string().min(3),
+  email: z.string().email(),
   domain: z.string(),
 });
 
@@ -11,9 +13,27 @@ type Input = z.infer<typeof RecoverPasswordInputSchema>;
 
 type Output = void;
 
-class RecoverPassword extends AbstractUseCase<Input, Output> {
+type Deps = {
+  usersDS: UsersDataSource;
+  passwordRecoveriesDS: PasswordRecoveriesDataSource;
+};
+
+class RecoverPassword extends AbstractUseCase<Input, Output, Deps> {
   async execute(input: Input): Promise<Output> {
-    await users.recoverPassword(input.email, input.domain);
+    const userResult = await this.deps.usersDS.getByEmail(input.email);
+    if (userResult.isError()) return;
+    const user = userResult.getDataOrThrow();
+
+    const token = crypto.randomBytes(32).toString('hex');
+
+    await this.transactionManager.run(async () => {
+      await this.deps.passwordRecoveriesDS.create({ userId: user._id, key: token });
+      await this.dispatcher.sendPasswordRecoveryEmail({
+        userId: user._id,
+        domain: input.domain,
+        key: token,
+      });
+    });
   }
 }
 

@@ -71,7 +71,7 @@ export const userRoutes = (app: Application) => {
           .get({}, '+groups +failedLogins +accountLocked')
           .then(response => {
             const filteredUsers = response.filter(
-              user => user._id.toString() !== PUBLIC_USER_ID.toString()
+              (user: any) => user._id.toString() !== PUBLIC_USER_ID.toString()
             );
             res.json(filteredUsers);
           })

@@ -78,8 +78,13 @@ import { DatavizScheduledRefreshJobHandler } from '#api/dataviz.v2/infrastructur
 import { DatavizScheduledRefreshJobLegacyToken } from '#api/dataviz.v2/application/contracts/DatavizScheduledRefreshJobHandlerToken.js';
 import { tenants } from '#api/tenants/tenantContext.js';
 import { SendWelcomeEmailHandler } from '#api/core/infrastructure/jobs/SendWelcomeEmailHandler.js';
+import { SendWelcomeEmailFactory } from '#api/core/infrastructure/factories/SendWelcomeEmailFactory.js';
+import { SendPasswordRecoveryEmailHandler } from '#api/core/infrastructure/jobs/SendPasswordRecoveryEmailHandler.js';
+import { EmailSenderFactory } from '#api/core/infrastructure/factories/EmailSenderFactory.js';
 import { MigrationJob } from '#api/core/infrastructure/jobs/MigrationJob.js';
 import { MigrationJobFactory } from '#api/core/infrastructure/factories/MigrationJobFactory.js';
+import { CleanupExpiredPasswordRecoveriesJob } from '#api/core/infrastructure/jobs/cleanupExpiredPasswordRecoveriesJob/CleanupExpiredPasswordRecoveriesJob.js';
+import { PostgresDB } from '#api/infrastructure/PostgresDB.js';
 import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
 import { withFeature } from '#api/core/libs/logger/infrastructure/StandardLogger.js';
 import { StandardJSONWriter } from '#api/core/libs/logger/infrastructure/writers/StandardJSONWriter.js';
@@ -338,11 +343,28 @@ export function registerJobs(register: Register) {
     DatavizFactory.scheduledRefreshJobHandler(namespace)
   );
 
-  register(SendWelcomeEmailHandler, async () => new SendWelcomeEmailHandler());
+  register(
+    SendWelcomeEmailHandler,
+    async () => new SendWelcomeEmailHandler({ sendWelcomeEmail: SendWelcomeEmailFactory.default() })
+  );
+
+  register(
+    SendPasswordRecoveryEmailHandler,
+    async () => new SendPasswordRecoveryEmailHandler({ emailSender: EmailSenderFactory.default() })
+  );
 
   register(MigrationJob, async () =>
     MigrationJobFactory.create({
       logger: LoggerFactory.systemLogger(withFeature(StandardJSONWriter, 'migration')),
     })
+  );
+
+  register(
+    CleanupExpiredPasswordRecoveriesJob,
+    async () =>
+      new CleanupExpiredPasswordRecoveriesJob({
+        pool: PostgresDB.adminPool(),
+        jobsDispatcher: ExecutionContext.jobsDispatcher,
+      })
   );
 }
