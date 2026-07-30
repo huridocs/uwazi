@@ -37,6 +37,7 @@ import { UserSchema } from '#shared/types/userType.js';
 import users from '#api/users/users.js';
 import { User } from '#api/users.v2/model/User.js';
 import { PostgresDB } from '#api/infrastructure/PostgresDB.js';
+import { CleanupExpiredPasswordRecoveriesJobScheduler } from '#api/core/infrastructure/jobs/cleanupExpiredPasswordRecoveriesJob/CleanupExpiredPasswordRecoveriesJobScheduler.js';
 
 type Props = {
   standAloneProcess?: boolean;
@@ -130,6 +131,9 @@ function setupQueueWorker(props?: Props) {
 
       registerJobs(register.bind(queueWorker));
       logger.info('Registered jobs', { jobs: queueWorker.getRegisteredJobs() });
+
+      await CleanupExpiredPasswordRecoveriesJobScheduler.default().ensureScheduled();
+      logger.info('Ensured CleanupExpiredPasswordRecoveriesJob is scheduled');
 
       if (standAloneProcess) {
         registerEventListeners(applicationEventsBus);

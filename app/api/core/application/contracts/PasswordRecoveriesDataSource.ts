@@ -6,9 +6,15 @@ type PasswordRecoveryLookup = {
   userId: string;
 };
 
+type CreateParams = {
+  userId: string;
+  key: string;
+};
+
 interface PasswordRecoveriesDataSource {
+  create(params: CreateParams): Promise<void>;
   findByKey(key: string): Promise<ResultType<PasswordRecoveryLookup, RecoveryKeyNotFound>>;
   deleteById(id: string): Promise<void>;
 }
 
-export type { PasswordRecoveriesDataSource, PasswordRecoveryLookup };
+export type { PasswordRecoveriesDataSource, PasswordRecoveryLookup, CreateParams };

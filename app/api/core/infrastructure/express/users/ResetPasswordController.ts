@@ -30,6 +30,7 @@ class ResetPasswordController extends AbstractController<ResetPasswordRequest> {
           {
             namespace: 'Users_Utilities',
             success: false,
+            notify: true,
             error: JSON.stringify(error),
           }
         );

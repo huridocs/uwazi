@@ -356,6 +356,18 @@ export default {
     );
   },
 
+  /**
+   * @deprecated
+   * v1 password recovery flow — writes the Mongo `passwordrecoveries`
+   * collection directly via `passwordRecoveriesModel`, bypassing
+   * `PasswordRecoveriesDataSourceFactory` entirely. Only reached while the
+   * tenant's `v2UsersUtilityRoutes` flag is off (see
+   * `RecoverPasswordController`), but note that reach is independent of
+   * `postgresPasswordRecoveries` — enabling that flag alone does not stop
+   * this method from hitting Mongo. Also called internally by `newUser`
+   * for the new-user welcome email. Use the v2 `RecoverPassword` use case
+   * (`RecoverPasswordUseCaseFactory`) instead.
+   */
   recoverPassword(email, domain, options = {}) {
     const key = generateUnlockCode();
     return Promise.all([model.get({ email, deletedAt: { $exists: false } }), settings.get()]).then(
@@ -382,6 +394,15 @@ export default {
     );
   },
 
+  /**
+   * @deprecated
+   * v1 password reset flow — reads/deletes the Mongo `passwordrecoveries`
+   * collection directly via `passwordRecoveriesModel`, bypassing
+   * `PasswordRecoveriesDataSourceFactory` entirely; see the note on
+   * `recoverPassword` above — the same `postgresPasswordRecoveries`
+   * caveat applies here. Use the v2 `ResetPassword` use case
+   * (`ResetPasswordUseCaseFactory`) instead.
+   */
   async resetPassword(credentials) {
     const [key] = await passwordRecoveriesModel.get({ key: credentials.key });
     if (key) {

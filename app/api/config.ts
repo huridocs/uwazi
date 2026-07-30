@@ -144,6 +144,7 @@ export const config = {
       postgresThesauri: false,
       postgresEntities: false,
       postgresTemplates: false,
+      postgresPasswordRecoveries: false,
       newHeader: NEW_HEADER === 'true' || false,
       aiAssistant: FEATURE_FLAG_AI_ASSISTANT === 'true' || false,
       aiAssistantServiceUrl: AI_ASSISTANT_SERVICE_URL || undefined,
