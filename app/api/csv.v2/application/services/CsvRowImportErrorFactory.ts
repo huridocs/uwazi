@@ -7,6 +7,7 @@ import {
   CsvImportPropertyValidationError,
   CsvImportRelationshipResolutionError,
   CsvImportRowEmptyError,
+  CsvImportValueRequiredError,
   CsvRelationshipUnresolvedToken,
 } from './CsvImportRowProcessingError.js';
 
@@ -114,6 +115,26 @@ const getValidationMessage = (source: unknown) => {
   return 'Invalid value format.';
 };
 
+const mapValueRequiredError = (input: BuildRowErrorInput) => {
+  const { importId, rowIndex, error } = input;
+  if (!(error instanceof CsvImportValueRequiredError)) {
+    return undefined;
+  }
+
+  return CsvImportRowError.create({
+    importId,
+    rowIndex,
+    code: RowErrorCode.ValueRequired,
+    message: `Value is required for "${error.column || error.property}".`,
+    property: error.property,
+    rawValue: error.rawValue,
+    details: {
+      column: error.column || error.property,
+      language: error.language,
+    },
+  });
+};
+
 const mapPropertyValidationError = (input: BuildRowErrorInput) => {
   const { importId, rowIndex, error } = input;
   if (!(error instanceof CsvImportPropertyValidationError)) {
@@ -181,6 +202,7 @@ const mapKnownError = (input: BuildRowErrorInput) => {
     mapRelationshipResolutionError,
     mapEntityNotFoundInTemplateError,
     mapEmptyRowError,
+    mapValueRequiredError,
     mapPropertyValidationError,
     mapZodError,
     mapDomainError,

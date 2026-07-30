@@ -7,6 +7,7 @@ import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { CsvImport } from '../../domain/CsvImport.js';
 import { CsvImportEntityNotFoundInTemplateError } from '../services/CsvImportRowProcessingError.js';
 import { BatchContext, BatchDeps, InsertContext } from './CsvImportEntitiesBatchTypes.js';
+import { LanguageScopedPropertyAssignment } from './CsvImportEntitiesPropertyAssignments.js';
 import { prepareRowImport } from './CsvImportEntitiesRowPreparation.js';
 
 const toEntityFiles = (params: {
@@ -39,10 +40,29 @@ const filterFilesToAppend = (params: { existingFiles: BaseFile[]; entityFiles: B
   return filesToInsert;
 };
 
+const groupAssignmentsByLanguage = (propertyAssignments: LanguageScopedPropertyAssignment[]) => {
+  const byLanguage = new Map<LanguageISO6391, PropertyAssignment[]>();
+  propertyAssignments.forEach(({ language, assignment }) => {
+    const existing = byLanguage.get(language) || [];
+    existing.push(assignment);
+    byLanguage.set(language, existing);
+  });
+  return byLanguage;
+};
+
+const applyPropertyAssignments = (
+  entity: Entity,
+  propertyAssignments: LanguageScopedPropertyAssignment[]
+) => {
+  groupAssignmentsByLanguage(propertyAssignments).forEach((assignments, language) => {
+    entity.setPropertyAssignments(assignments, language, false);
+  });
+};
+
 const createEntityForImportRow = async (params: {
   deps: BatchDeps;
   context: BatchContext;
-  propertyAssignments: PropertyAssignment[];
+  propertyAssignments: LanguageScopedPropertyAssignment[];
   files: Awaited<ReturnType<typeof prepareRowImport>>['files'];
   insertContext: InsertContext;
   updatedImport: CsvImport;
@@ -52,7 +72,7 @@ const createEntityForImportRow = async (params: {
     template: params.context.template,
     userId: params.context.csvImport.createdBy,
   });
-  entity.setPropertyAssignmentsInAllLanguages(params.propertyAssignments, false);
+  applyPropertyAssignments(entity, params.propertyAssignments);
   const entityFiles = toEntityFiles({
     files: params.files,
     sharedId: entity.sharedId,
@@ -71,7 +91,7 @@ const updateEntityForImportRow = async (params: {
   deps: BatchDeps;
   context: BatchContext;
   rowId: string;
-  propertyAssignments: PropertyAssignment[];
+  propertyAssignments: LanguageScopedPropertyAssignment[];
   files: Awaited<ReturnType<typeof prepareRowImport>>['files'];
   insertContext: { actorId: string; targetLanguage: LanguageISO6391 };
   updatedImport: CsvImport;
@@ -92,7 +112,7 @@ const updateEntityForImportRow = async (params: {
     Object.values(entity.template.createDefaultPropertyAssignments()),
     false
   );
-  entity.setPropertyAssignmentsInAllLanguages(params.propertyAssignments, false);
+  applyPropertyAssignments(entity, params.propertyAssignments);
 
   const entityFiles = toEntityFiles({
     files: params.files,

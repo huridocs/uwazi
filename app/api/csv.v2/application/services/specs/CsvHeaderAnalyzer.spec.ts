@@ -92,6 +92,35 @@ describe('CsvHeaderAnalyzer', () => {
       );
     });
 
+    it('should accept language-suffixed columns when every instance language is present', () => {
+      const template = buildTemplate();
+      const headers = [
+        'title__en',
+        'title__es',
+        'title__fr',
+        'text_label__en',
+        'text_label__es',
+        'text_label__fr',
+      ];
+
+      const analysis = CsvHeaderAnalyzer.analyze(headers, template, {
+        availableLanguages: ['en', 'es', 'fr'],
+        defaultLanguage: DEFAULT_LANGUAGE,
+        newNameGeneration: false,
+      });
+
+      expect(Array.from(analysis.languagesPerHeader.title ?? []).sort()).toEqual([
+        'en',
+        'es',
+        'fr',
+      ]);
+      expect(Array.from(analysis.languagesPerHeader.text_label ?? []).sort()).toEqual([
+        'en',
+        'es',
+        'fr',
+      ]);
+    });
+
     it('should sanitize headers using PropertyName rules with new name generation', () => {
       const template = buildTemplate();
       const headers = ['Complex@Prop__es', 'Complex@Prop__en'];
@@ -200,6 +229,36 @@ describe('CsvHeaderAnalyzer', () => {
       );
     });
 
+    it('should throw when language-suffixed columns omit any instance language', () => {
+      const template = buildTemplate();
+      const headers = ['title__en', 'title__es', 'text_label__en', 'text_label__es'];
+
+      expectAnalyzerError(
+        () =>
+          CsvHeaderAnalyzer.analyze(headers, template, {
+            availableLanguages: ['en', 'es', 'fr'],
+            defaultLanguage: DEFAULT_LANGUAGE,
+            newNameGeneration: false,
+          }),
+        error => {
+          expect(error.issues).toEqual(
+            expect.arrayContaining([
+              expect.objectContaining({
+                reason: 'MissingLanguageColumn',
+                property: 'title',
+                columns: expect.arrayContaining(['fr']),
+              }),
+              expect.objectContaining({
+                reason: 'MissingLanguageColumn',
+                property: 'text_label',
+                columns: expect.arrayContaining(['fr']),
+              }),
+            ])
+          );
+        }
+      );
+    });
+
     it('should throw when a language column does not belong to the template', () => {
       const template = buildTemplate();
       const headers = ['unknown_field__es', 'unknown_field__en'];
@@ -267,12 +326,21 @@ describe('CsvHeaderAnalyzer', () => {
             newNameGeneration: false,
           }),
         error => {
-          expect(error.issues).toHaveLength(5);
           expect(error.issues).toEqual(
             expect.arrayContaining([
               expect.objectContaining({ reason: 'MixedLanguageColumns' }),
               expect.objectContaining({ reason: 'UnsupportedLanguageColumn' }),
               expect.objectContaining({ reason: 'MissingDefaultLanguage' }),
+              expect.objectContaining({
+                reason: 'MissingLanguageColumn',
+                property: 'unknown_field',
+                columns: expect.arrayContaining(['es']),
+              }),
+              expect.objectContaining({
+                reason: 'MissingLanguageColumn',
+                property: 'another_unknown',
+                columns: expect.arrayContaining(['es']),
+              }),
               expect.objectContaining({ reason: 'UnknownProperty', property: 'unknown_field' }),
               expect.objectContaining({ reason: 'UnknownProperty', property: 'another_unknown' }),
             ])
