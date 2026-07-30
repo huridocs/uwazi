@@ -67,6 +67,12 @@ class TwoFactorAlreadyEnabled extends DomainError {
   }
 }
 
+class TwoFactorTokenInvalid extends DomainError {
+  constructor() {
+    super('Two-factor authentication failed', 'user.two_factor_token_invalid');
+  }
+}
+
 export {
   UsernameExists,
   EmailInUse,
@@ -79,4 +85,5 @@ export {
   InvalidUnlockCode,
   RecoveryKeyNotFound,
   TwoFactorAlreadyEnabled,
+  TwoFactorTokenInvalid,
 };

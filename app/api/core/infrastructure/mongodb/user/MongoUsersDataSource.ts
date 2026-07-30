@@ -136,6 +136,26 @@ class MongoUsersDataSource implements UsersDataSource {
       { $set: { secret } }
     );
   }
+
+  async getTwoFactorSecret(userId: string) {
+    const user = await this.dao.findOne(
+      { _id: ObjectId.createFromHexString(userId) },
+      { projection: { secret: 1 } }
+    );
+
+    if (!user) {
+      return Result.fail(new UserNotFound(userId));
+    }
+
+    return Result.ok(user.secret ?? null);
+  }
+
+  async enableTwoFactor(userId: string): Promise<void> {
+    await this.dao.updateOne(
+      { _id: ObjectId.createFromHexString(userId) },
+      { $set: { using2fa: true } }
+    );
+  }
 }
 
 export { MongoUsersDataSource };

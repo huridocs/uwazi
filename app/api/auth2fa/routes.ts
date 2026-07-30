@@ -6,6 +6,7 @@ import { ObjectIdAsString } from '#api/utils/ajvSchemas.js';
 import { validatePasswordMiddleWare } from '#api/auth/index.js';
 import { tenants } from '#api/tenants/index.js';
 import { GenerateTwoFactorSecretController } from '#api/core/infrastructure/express/users/GenerateTwoFactorSecretController.js';
+import { EnableTwoFactorAuthController } from '#api/core/infrastructure/express/users/EnableTwoFactorAuthController.js';
 
 export default (app: Application) => {
   app.post(
@@ -26,27 +27,26 @@ export default (app: Application) => {
   app.post(
     '/api/auth2fa-enable',
     needsAuthorization(['admin', 'editor', 'collaborator']),
-    validation.validateRequest({
-      type: 'object',
-      properties: {
-        body: {
+    async (req: Request, res: Response, next: NextFunction) => {
+      if (tenants.current().featureFlags?.v2Auth2fa) {
+        next();
+      } else {
+        await validation.validateRequest({
           type: 'object',
           properties: {
-            token: { type: 'string' },
+            body: {
+              type: 'object',
+              properties: {
+                token: { type: 'string' },
+              },
+              required: ['token'],
+            },
           },
-          required: ['token'],
-        },
-      },
-      required: ['body'],
-    }),
-    async (req, res, next) => {
-      try {
-        await usersUtils.enable2fa(req.user, req.body.token);
-        res.json({ success: true });
-      } catch (err) {
-        next(err);
+          required: ['body'],
+        })(req, res, next);
       }
-    }
+    },
+    EnableTwoFactorAuthController.createHandler()
   );
 
   app.post(

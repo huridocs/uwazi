@@ -27,6 +27,8 @@ interface UsersDataSource {
   updatePassword(userId: string, password: EncryptedPassword): Promise<void>;
   getTwoFactorStatus(userId: string): Promise<ResultType<TwoFactorStatus, UserNotFound>>;
   setTwoFactorSecret(userId: string, secret: string): Promise<void>;
+  getTwoFactorSecret(userId: string): Promise<ResultType<string | null, UserNotFound>>;
+  enableTwoFactor(userId: string): Promise<void>;
 }
 
 export type { UsersDataSource, TwoFactorStatus };

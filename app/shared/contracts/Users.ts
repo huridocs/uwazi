@@ -64,6 +64,10 @@ type ResetPasswordResponse = string;
 
 type GenerateTwoFactorSecretResponse = { secret: string; otpauth: string };
 
+type EnableTwoFactorAuthRequest = { token: string };
+
+type EnableTwoFactorAuthResponse = { success: boolean };
+
 export type {
   User,
   GetUsersResponse,
@@ -83,4 +87,6 @@ export type {
   ResetPasswordRequest,
   ResetPasswordResponse,
   GenerateTwoFactorSecretResponse,
+  EnableTwoFactorAuthRequest,
+  EnableTwoFactorAuthResponse,
 };

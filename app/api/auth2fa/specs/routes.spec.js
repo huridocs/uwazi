@@ -4,29 +4,23 @@ import * as usersUtils from '#api/auth2fa/usersUtils.js';
 
 import auth2faRoutes from '../routes.js';
 
-// POST /api/auth2fa-secret has been migrated to the v2 architecture and is
-// covered by ./GenerateTwoFactorSecret.spec.ts instead.
+// POST /api/auth2fa-secret and POST /api/auth2fa-enable have been migrated to the
+// v2 architecture and are covered by ./GenerateTwoFactorSecret.spec.ts and
+// ./EnableTwoFactorAuth.spec.ts instead.
 describe('Auth2fa Routes', () => {
   let routes;
   let req;
-  let user;
   const success = { success: true };
   const incorrectUser = new Error('Incorrect user passed');
 
   beforeEach(() => {
     routes = instrumentRoutes(auth2faRoutes);
-    jest.spyOn(usersUtils, 'enable2fa').mockImplementation(() => {});
     jest.spyOn(usersUtils, 'reset2fa').mockImplementation(() => {});
   });
 
   const validateAuthorizationAndValidation = (path, roles) => {
     expect(routes._post(path, req)).toNeedAuthorization(roles);
     expect(routes.post.validation(path)).toMatchSnapshot();
-  };
-
-  const enable2faMock = (passedUser, passedToken) => {
-    const enabled = passedUser === user && passedToken === 'correctToken';
-    return enabled ? Promise.resolve(success) : Promise.reject(incorrectUser);
   };
 
   const reset2faMock = passedUser =>
@@ -56,17 +50,6 @@ describe('Auth2fa Routes', () => {
     await expectResponseToMatch(util, url, mock);
     expectNextWithError(util, url);
   };
-
-  describe('auth2fa-enable', () => {
-    beforeEach(() => {
-      user = { username: 'admin' };
-      req = { body: { token: 'correctToken' }, user };
-    });
-
-    it('should conform the route with auth, validation, respond correctly and call next on error', async () => {
-      await validateRoute('enable2fa', '/api/auth2fa-enable', enable2faMock, ['admin', 'editor']);
-    });
-  });
 
   describe('auth2fa-reset', () => {
     beforeEach(() => {
