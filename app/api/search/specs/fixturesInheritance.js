@@ -384,7 +384,7 @@ export default {
   relationtypes: [
     {
       _id: relationType1,
-      name: 'relation1'
+      name: 'relation1',
     },
   ],
   connections: [

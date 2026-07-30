@@ -385,7 +385,7 @@ export default {
   relationtypes: [
     {
       _id: relation1,
-      name: 'relation 1'
+      name: 'relation 1',
     },
     { _id: relation2, name: 'relation 2' },
     { _id: friend, name: 'friend' },

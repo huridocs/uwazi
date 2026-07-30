@@ -718,7 +718,7 @@ export const fixtures = {
   relationtypes: [
     {
       _id: relationType,
-      name: 'relation'
+      name: 'relation',
     },
   ],
   connections: [

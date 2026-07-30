@@ -22,9 +22,7 @@ describe('static requestState()', () => {
       },
       { name: 'Ruling', _id: 'abc2', properties: [] },
     ];
-    const relationTypes = [
-      { name: 'Victim', _id: 'abc3' },
-    ];
+    const relationTypes = [{ name: 'Victim', _id: 'abc3' }];
 
     const thesauris = [{ name: 'countries', _id: '1', values: [] }];
     const documents = {
