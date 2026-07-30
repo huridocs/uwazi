@@ -4,6 +4,7 @@ type CsvHeaderAnalyzerErrorReason =
   | 'MixedLanguageColumns'
   | 'UnsupportedLanguageColumn'
   | 'MissingDefaultLanguage'
+  | 'MissingLanguageColumn'
   | 'UnknownProperty';
 
 type AnalyzerIssue = {

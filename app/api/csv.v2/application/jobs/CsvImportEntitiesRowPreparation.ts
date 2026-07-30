@@ -1,13 +1,16 @@
 import { FileStorage } from '#api/core/application/contracts/FileStorage.js';
 import { PropertyAssignmentCreatorServiceStrategy } from '#api/core/application/propertyAssignmentCreatorService/PropertyAssignmentCreatorServiceStrategy.js';
 import { Template } from '#api/core/domain/template/Template.js';
-import { PropertyAssignment } from '#api/core/domain/template/PropertyValue.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import { CsvImportRowFilesResolver } from '../services/CsvImportRowFilesResolver.js';
 import { CsvEntitiesImportMapper } from '../services/CsvEntitiesImportMapper.js';
 import { CsvHeaderAnalyzer } from '../services/CsvHeaderAnalyzer.js';
 import { CsvImportRowEmptyError } from '../services/CsvImportRowProcessingError.js';
-import { createPropertyAssignments, isEmptyRow } from './CsvImportEntitiesPropertyAssignments.js';
+import {
+  createPropertyAssignments,
+  isEmptyRow,
+  LanguageScopedPropertyAssignment,
+} from './CsvImportEntitiesPropertyAssignments.js';
 
 type RowFiles = Awaited<ReturnType<typeof CsvImportRowFilesResolver.resolve>>;
 
@@ -35,7 +38,7 @@ const prepareRowImport = async (params: {
   dateFormat?: string;
   fileStorage: FileStorage;
   propertyAssignmentCreatorServiceStrategy: PropertyAssignmentCreatorServiceStrategy;
-}): Promise<{ propertyAssignments: PropertyAssignment[]; files: RowFiles }> => {
+}): Promise<{ propertyAssignments: LanguageScopedPropertyAssignment[]; files: RowFiles }> => {
   if (isEmptyRow(params.rowValues)) {
     throw new CsvImportRowEmptyError();
   }
