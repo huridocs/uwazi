@@ -80,14 +80,14 @@ const EntityView = () => {
       <AddFileModal />
       <BlockDirtyNavigation when={isEditing && (isDirty || isSaving)} onDiscard={cancelEdit} />
       <div className="h-full min-h-0" dir={isRtl ? 'rtl' : 'ltr'}>
-        <PaneLayout defaultRatios={[0.62, 0.38]} className="bg-parchment text-ink">
+        <PaneLayout defaultRatios={[0.637, 0.363]} className="bg-parchment text-ink">
           <PaneLayout.Pane>
             <div
               className="flex h-full min-h-0 w-full min-w-0 flex-col overflow-hidden bg-paper"
               data-testid="entity-v2"
             >
               <div className="shrink-0">
-                <div className="px-4 py-2 md:py-2.5">
+                <div className="px-3 pt-2 pb-1 md:pt-2.5">
                   <TabsMainButtons
                     entity={entity}
                     mainDocument={mainDocument}

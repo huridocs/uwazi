@@ -1,10 +1,24 @@
-import React, { PropsWithChildren } from 'react';
+import React, { PropsWithChildren, ReactNode } from 'react';
 
-const MetadataCard = ({ children, className }: PropsWithChildren<{ className?: string }>) => (
+type MetadataCardProps = PropsWithChildren<{
+  title?: ReactNode;
+  icon?: ReactNode;
+  className?: string;
+}>;
+
+const MetadataCard = ({ title, icon, children, className = '' }: MetadataCardProps) => (
   <div
-    className={`flex min-w-0 w-full max-w-full flex-col gap-2 overflow-hidden rounded-md border border-border/40 bg-paper px-4 py-3 ${className ?? ''}`}
+    className={`overflow-hidden rounded-lg border border-border-40 bg-paper ${className}`.trim()}
   >
-    {children}
+    <div className="flex flex-col gap-3 px-4 py-3">
+      {title != null && (
+        <div className="flex items-center gap-1.5">
+          {icon}
+          <h4 className="text-sm font-bold leading-tight text-ink">{title}</h4>
+        </div>
+      )}
+      {children}
+    </div>
   </div>
 );
 
