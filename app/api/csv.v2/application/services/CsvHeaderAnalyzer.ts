@@ -7,11 +7,7 @@ import { CsvHeaderAnalyzerError, AnalyzerIssue } from './CsvHeaderAnalyzerError.
 const LANGUAGE_HEADER_SEPARATOR = '__';
 // Synced (non-translatable) properties that still accept language-suffixed CSV columns
 // (e.g. select labels). Translatable properties are allowed via property.isTranslatable.
-const LANGUAGE_SUPPORTED_SYNCED_TYPES = new Set<PropertyType>([
-  'select',
-  'multiselect',
-  'nested',
-]);
+const LANGUAGE_SUPPORTED_SYNCED_TYPES = new Set<PropertyType>(['select', 'multiselect', 'nested']);
 
 type LanguagesPerHeader = Record<string, Set<string>>;
 type SanitizedHeader = { original: string; sanitized: string };
@@ -74,8 +70,7 @@ const buildPropertiesByName = (template: Template) =>
   }, {});
 
 const shouldAllowLanguageColumn = (property: Property) =>
-  property.isTranslatable ||
-  LANGUAGE_SUPPORTED_SYNCED_TYPES.has(property.type as PropertyType);
+  property.isTranslatable || LANGUAGE_SUPPORTED_SYNCED_TYPES.has(property.type as PropertyType);
 
 const collectMixedColumnsIssues = (
   languagesPerHeader: LanguagesPerHeader,
@@ -166,6 +161,32 @@ const collectMissingLanguageColumnIssues = (
   });
 };
 
+const collectHeaderIssues = (params: {
+  template: Template;
+  headersWithoutLanguage: string[];
+  languagesPerHeader: LanguagesPerHeader;
+  propertiesByName: Record<string, Property>;
+  availableLanguages: string[];
+  defaultLanguage: string;
+}): AnalyzerIssue[] => {
+  const issues: AnalyzerIssue[] = [];
+  collectMixedColumnsIssues(params.languagesPerHeader, params.headersWithoutLanguage, issues);
+  collectUnsupportedLanguageIssues(
+    params.template,
+    params.languagesPerHeader,
+    params.propertiesByName,
+    issues
+  );
+  collectMissingDefaultLanguageIssues(params.languagesPerHeader, params.defaultLanguage, issues);
+  collectMissingLanguageColumnIssues(
+    params.languagesPerHeader,
+    params.availableLanguages,
+    params.defaultLanguage,
+    issues
+  );
+  return issues;
+};
+
 class CsvHeaderAnalyzer {
   static analyze(headers: string[], template: Template, options: AnalyzerOptions): HeaderAnalysis {
     const sanitizedHeaders = sanitizeHeaders(headers, options.newNameGeneration);
@@ -174,17 +195,14 @@ class CsvHeaderAnalyzer {
       options.availableLanguages
     );
     const propertiesByName = buildPropertiesByName(template);
-
-    const issues: AnalyzerIssue[] = [];
-    collectMixedColumnsIssues(languagesPerHeader, headersWithoutLanguage, issues);
-    collectUnsupportedLanguageIssues(template, languagesPerHeader, propertiesByName, issues);
-    collectMissingDefaultLanguageIssues(languagesPerHeader, options.defaultLanguage, issues);
-    collectMissingLanguageColumnIssues(
+    const issues = collectHeaderIssues({
+      template,
+      headersWithoutLanguage,
       languagesPerHeader,
-      options.availableLanguages,
-      options.defaultLanguage,
-      issues
-    );
+      propertiesByName,
+      availableLanguages: options.availableLanguages,
+      defaultLanguage: options.defaultLanguage,
+    });
 
     if (issues.length) {
       throw new CsvHeaderAnalyzerError(issues);
