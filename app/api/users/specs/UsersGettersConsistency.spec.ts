@@ -33,7 +33,7 @@ describe('V1 / V2 Users DAO consistency', () => {
 
         expect(result.length).toBeGreaterThan(0);
 
-        result.forEach(user => {
+        result.forEach((user: any) => {
           expect(user.password).toBeUndefined();
           expect(user.secret).toBeUndefined();
           expect(user.failedLogins).toBeUndefined();
@@ -45,23 +45,25 @@ describe('V1 / V2 Users DAO consistency', () => {
         await usersModel.db.updateOne({ _id: userToDelete }, { $set: { deletedAt: new Date() } });
 
         const result = await users.get({});
-        expect(result.find(u => u._id.toString() === userToDelete.toString())).toBeUndefined();
+        expect(
+          result.find((u: any) => u._id.toString() === userToDelete.toString())
+        ).toBeUndefined();
       });
 
       it('should return matching groups', async () => {
         const result = await users.get({});
 
         if (!v2) {
-          expect(result.some(u => u.groups)).toBe(false);
+          expect(result.some((u: any) => u.groups)).toBe(false);
           return;
         }
 
         expect(result.length).toBeGreaterThan(0);
 
-        const userWithGroups = result.find(u => u.groups && u.groups.length > 0);
+        const userWithGroups = result.find((u: any) => u.groups && u.groups.length > 0);
         expect(userWithGroups).toBeDefined();
 
-        const userWithoutGroups = result.find(u => u.groups && u.groups.length === 0);
+        const userWithoutGroups = result.find((u: any) => u.groups && u.groups.length === 0);
         expect(userWithoutGroups).toBeDefined();
       });
     });

@@ -34,6 +34,7 @@ class UnlockBlockedUserController extends AbstractController<UnlockBlockedUserRe
             namespace: 'Users_Utilities',
             success: false,
             error: JSON.stringify(error),
+            notify: true,
           }
         );
 
