@@ -1,4 +1,4 @@
-import { Db, Document, Filter, ObjectId } from 'mongodb';
+import { Db, Document, Filter, ObjectId, UpdateFilter } from 'mongodb';
 import { MongoDataSource } from '../common/MongoDataSource.js';
 import { Result } from '#api/core/libs/Result.js';
 import type { ResultType } from '#api/core/libs/Result.js';
@@ -7,11 +7,19 @@ import { UserDBO } from './UserDBO.js';
 import { PUBLIC_USER_ID } from '#api/core/domain/user/User.js';
 import { UserNotFound } from '#api/core/domain/user/errors.js';
 
+const NOT_DELETED_FILTER: Filter<UserDBO> = { deletedAt: { $exists: false } };
+const NOT_PUBLIC_USER_FILTER: Filter<UserDBO> = { _id: { $ne: PUBLIC_USER_ID } };
+
 type UserWithGroups = UserDBO & { groups: { _id: string; name: string }[] };
 
 type Deps = {
   db: Db;
   transactionManager: TransactionManager;
+};
+
+type QueryOptions = {
+  projection?: Document;
+  includeDeleted?: boolean;
 };
 
 type GetByIdOptions = {
@@ -29,7 +37,61 @@ class MongoUsersDAO extends MongoDataSource<UserDBO> {
     super(deps.db, deps.transactionManager);
   }
 
-  // eslint-disable-next-line max-statements
+  // eslint-disable-next-line class-methods-use-this
+  notDeletedFilter(): Filter<UserDBO> {
+    return NOT_DELETED_FILTER;
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  notPublicUserFilter(): Filter<UserDBO> {
+    return NOT_PUBLIC_USER_FILTER;
+  }
+
+  async findOne(filter: Filter<UserDBO>, options: QueryOptions = {}): Promise<UserDBO | null> {
+    const { projection, includeDeleted } = options;
+    const guardedFilter = includeDeleted ? filter : { ...filter, ...NOT_DELETED_FILTER };
+    return this.getCollection<UserDBO>().findOne(guardedFilter, { projection });
+  }
+
+  async exists(filter: Filter<UserDBO>): Promise<boolean> {
+    const user = await this.findOne(
+      { ...filter, ...NOT_PUBLIC_USER_FILTER },
+      { projection: { _id: 1 } }
+    );
+    return Boolean(user);
+  }
+
+  async count(filter: Filter<UserDBO> = {}): Promise<number> {
+    const guardedFilter = { ...filter, ...NOT_DELETED_FILTER } as Document;
+    return this.getCollection<UserDBO>().countDocuments(guardedFilter);
+  }
+
+  async updateOne(
+    filter: Filter<UserDBO>,
+    update: UpdateFilter<UserDBO> | Partial<UserDBO>,
+    options: { includeDeleted?: boolean } = {}
+  ): Promise<void> {
+    const guardedFilter = options.includeDeleted ? filter : { ...filter, ...NOT_DELETED_FILTER };
+    await this.getCollection<UserDBO>().updateOne(guardedFilter, update);
+  }
+
+  async insertOne(dbo: UserDBO): Promise<void> {
+    await this.getCollection<UserDBO>().insertOne(dbo);
+  }
+
+  async softDelete(ids: string[]): Promise<number> {
+    if (!ids.length) {
+      return 0;
+    }
+
+    const result = await this.getCollection<UserDBO>().updateMany(
+      { _id: { $in: ids.map(id => ObjectId.createFromHexString(id)) } },
+      { $set: { deletedAt: new Date() } }
+    );
+
+    return result.modifiedCount;
+  }
+
   async getById(
     id: string,
     options: GetByIdOptions = {}
@@ -41,11 +103,6 @@ class MongoUsersDAO extends MongoDataSource<UserDBO> {
       includeAccountUnlockCode,
       includeDeleted,
     } = options;
-    const filter: Filter<UserDBO> = { _id: new ObjectId(id) };
-
-    if (!includeDeleted) {
-      filter.deletedAt = { $exists: false };
-    }
 
     const projection: Document = {};
     if (!includePassword) projection.password = 0;
@@ -53,9 +110,10 @@ class MongoUsersDAO extends MongoDataSource<UserDBO> {
     if (!includeFailedLogins) projection.failedLogins = 0;
     if (!includeAccountUnlockCode) projection.accountUnlockCode = 0;
 
-    const user = await this.getCollection().findOne(filter, {
-      projection: Object.keys(projection).length ? projection : undefined,
-    });
+    const user = await this.findOne(
+      { _id: ObjectId.createFromHexString(id) },
+      { projection, includeDeleted }
+    );
 
     if (!user) {
       return Result.fail(new UserNotFound(id));
@@ -69,8 +127,8 @@ class MongoUsersDAO extends MongoDataSource<UserDBO> {
       {
         $match: {
           ...query,
-          _id: { $ne: PUBLIC_USER_ID },
-          deletedAt: { $exists: false },
+          ...NOT_PUBLIC_USER_FILTER,
+          ...NOT_DELETED_FILTER,
         },
       },
       {
@@ -89,9 +147,7 @@ class MongoUsersDAO extends MongoDataSource<UserDBO> {
       },
     ];
 
-    const results = await this.getCollection().aggregate<UserWithGroups>(aggregation).toArray();
-
-    return results;
+    return this.getCollection().aggregate<UserWithGroups>(aggregation).toArray();
   }
 }
 

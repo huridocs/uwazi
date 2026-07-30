@@ -3,7 +3,6 @@ import { AbstractUseCase } from '../libs/UseCase.js';
 import { UsersDataSource } from './contracts/UsersDataSource.js';
 import { PasswordRecoveriesDataSource } from './contracts/PasswordRecoveriesDataSource.js';
 import { EncryptedPassword } from '#api/core/domain/user/EncryptedPassword.js';
-import { UserNotFound } from '#api/core/domain/user/errors.js';
 
 const ResetPasswordInputSchema = z.object({
   key: z.string(),
@@ -25,11 +24,7 @@ class ResetPassword extends AbstractUseCase<Input, Output, Deps> {
       await this.deps.passwordRecoveriesDS.findByKey(input.key)
     ).getDataOrThrow();
 
-    const user = (await this.deps.usersDS.getById(userId)).getDataOrThrow();
-
-    if (!user) {
-      throw new UserNotFound(userId);
-    }
+    (await this.deps.usersDS.getById(userId)).getDataOrThrow();
 
     const hashedPassword = await EncryptedPassword.create(input.password);
 

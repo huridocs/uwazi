@@ -13,6 +13,7 @@ interface UsersDataSource {
   delete(userIds: string[]): Promise<number>;
   update(user: User): Promise<void>;
   getById(id: string): Promise<ResultType<User, UserNotFound>>;
+  getByEmail(email: string): Promise<ResultType<User, UserNotFound>>;
   countActiveUsers(): Promise<number>;
   checkUniqueUsername(user: User): Promise<ResultType<boolean, UsernameExists>>;
   checkUniqueEmail(user: User): Promise<ResultType<boolean, EmailInUse>>;

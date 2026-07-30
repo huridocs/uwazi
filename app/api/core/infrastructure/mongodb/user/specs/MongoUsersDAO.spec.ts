@@ -1,5 +1,6 @@
 /* eslint-disable max-statements */
 import { ObjectId } from 'mongodb';
+import { UserRole } from '#api/core/domain/user/User.js';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
@@ -24,169 +25,170 @@ describe('MongoUsersDAO', () => {
     await testingEnvironment.tearDown();
   });
 
-  describe('getById()', () => {
-    it('should return a user without sensitive fields by default', async () => {
+  describe('findOne()', () => {
+    it('should return the full user document by default, with no field stripping', async () => {
       const dao = getDao();
-      const result = await dao.getById(factory.idString('active1'));
+      const user = await dao.findOne({ email: 'active1@test.com' });
 
-      expect(result.isOk()).toBe(true);
-      const user = result.getDataOrThrow();
-      expect(user.username).toBe('active1');
-      expect(user.email).toBe('active1@test.com');
-      expect(user.role).toBe('admin');
-      expect(user.password).toBeUndefined();
-      expect(user.secret).toBeUndefined();
-      expect(user.failedLogins).toBeUndefined();
-      expect(user.accountUnlockCode).toBeUndefined();
+      expect(user?.username).toBe('active1');
+      expect(user?.role).toBe('admin');
+      expect(user?.password).toBeDefined();
     });
 
-    it('should include password when includePassword is true', async () => {
+    it('should apply the given projection', async () => {
       const dao = getDao();
-      const result = await dao.getById(factory.idString('active1'), {
-        includePassword: true,
-      });
+      const user = await dao.findOne(
+        { _id: withsensitiveId },
+        { projection: { password: 0, secret: 0, failedLogins: 0, accountUnlockCode: 0 } }
+      );
 
-      expect(result.isOk()).toBe(true);
-      const user = result.getDataOrThrow();
-      expect(user.password).toBeDefined();
-      expect(user.secret).toBeUndefined();
-      expect(user.failedLogins).toBeUndefined();
-      expect(user.accountUnlockCode).toBeUndefined();
+      expect(user?.username).toBe('withsensitive');
+      expect(user?.password).toBeUndefined();
+      expect(user?.secret).toBeUndefined();
+      expect(user?.failedLogins).toBeUndefined();
+      expect(user?.accountUnlockCode).toBeUndefined();
     });
 
-    it('should include individual sensitive fields when requested', async () => {
+    it('should return null for a soft-deleted user by default', async () => {
       const dao = getDao();
+      const user = await dao.findOne({ email: 'deleted@test.com' });
 
-      const result = await dao.getById(withsensitiveId.toString(), {
-        includeSecret: true,
-        includeFailedLogins: true,
-      });
-
-      expect(result.isOk()).toBe(true);
-      const user = result.getDataOrThrow();
-      expect(user.username).toBe('withsensitive');
-      expect(user.secret).toBe('mysecret');
-      expect(user.failedLogins).toBe(3);
-      expect(user.password).toBeUndefined();
-      expect(user.accountUnlockCode).toBeUndefined();
+      expect(user).toBeNull();
     });
 
-    it('should return all fields when all sensitive flags are true', async () => {
+    it('should return a soft-deleted user when includeDeleted is true', async () => {
       const dao = getDao();
+      const user = await dao.findOne({ email: 'deleted@test.com' }, { includeDeleted: true });
 
-      const result = await dao.getById(withsensitiveId.toString(), {
-        includePassword: true,
-        includeSecret: true,
-        includeFailedLogins: true,
-        includeAccountUnlockCode: true,
-      });
-
-      expect(result.isOk()).toBe(true);
-      const user = result.getDataOrThrow();
-      expect(user.password).toBe('hash');
-      expect(user.secret).toBe('mysecret');
-      expect(user.failedLogins).toBe(3);
-      expect(user.accountUnlockCode).toBe('abc123');
-      expect(user.accountLocked).toBe(false);
-      expect(user.using2fa).toBe(true);
+      expect(user?.username).toBe('deleted');
     });
 
-    it('should return error non-existent id', async () => {
+    it('should return null when no user matches', async () => {
       const dao = getDao();
-      const result = await dao.getById(new ObjectId().toHexString());
+      const user = await dao.findOne({ email: 'nobody@test.com' });
 
-      expect(result.isError()).toBe(true);
-    });
-
-    it('should return UserNotFound for a deleted user by default', async () => {
-      const dao = getDao();
-      const result = await dao.getById(factory.idString('deleted'));
-
-      expect(result.isError()).toBe(true);
-      expect(result.getError()?.message).toContain('not found');
-    });
-
-    it('should return a deleted user when includeDeleted is true', async () => {
-      const dao = getDao();
-      const result = await dao.getById(factory.idString('deleted'), {
-        includeDeleted: true,
-      });
-
-      expect(result.isOk()).toBe(true);
-      const user = result.getDataOrThrow();
-      expect(user.deletedAt).toBeDefined();
+      expect(user).toBeNull();
     });
   });
 
-  describe('get()', () => {
-    it('should return active users with public fields only', async () => {
+  describe('exists()', () => {
+    it('should return true when a matching active, non-public user exists', async () => {
       const dao = getDao();
-      const users = await dao.get();
+      expect(await dao.exists({ username: 'active1' })).toBe(true);
+    });
 
-      expect(users.length).toBe(3);
+    it('should return false for a soft-deleted user', async () => {
+      const dao = getDao();
+      expect(await dao.exists({ username: 'deleted' })).toBe(false);
+    });
 
-      users.forEach(user => {
-        expect(user).toHaveProperty('username');
-        expect(user).toHaveProperty('email');
-        expect(user).toHaveProperty('role');
-        expect(user).toHaveProperty('_id');
-        expect(user.password).toBeUndefined();
-        expect(user.secret).toBeUndefined();
-        expect(user.failedLogins).toBeUndefined();
-        expect(user.accountUnlockCode).toBeUndefined();
+    it('should return false for the system/public user', async () => {
+      const dao = getDao();
+      expect(await dao.exists({ username: 'public' })).toBe(false);
+    });
+
+    it('should return false when no user matches', async () => {
+      const dao = getDao();
+      expect(await dao.exists({ username: 'nonexistent' })).toBe(false);
+    });
+  });
+
+  describe('count()', () => {
+    it('should count users matching the filter, excluding soft-deleted users', async () => {
+      const dao = getDao();
+      const count = await dao.count(dao.notPublicUserFilter());
+
+      expect(count).toBe(3);
+    });
+  });
+
+  describe('updateOne()', () => {
+    it('should update the given fields for an active user', async () => {
+      const dao = getDao();
+      await dao.updateOne(
+        { _id: new ObjectId(factory.idString('active1')) },
+        { $set: { username: 'renamed' } }
+      );
+
+      const updated = await dao.findOne({ _id: new ObjectId(factory.idString('active1')) });
+      expect(updated?.username).toBe('renamed');
+    });
+
+    it('should unset fields', async () => {
+      const dao = getDao();
+      await dao.updateOne(
+        { _id: new ObjectId(withsensitiveId.toString()) },
+        { $unset: { accountLocked: 1, accountUnlockCode: 1, failedLogins: 1 } }
+      );
+
+      const updated = await dao.findOne({ _id: withsensitiveId });
+      expect(updated?.accountLocked).toBeUndefined();
+      expect(updated?.accountUnlockCode).toBeUndefined();
+      expect(updated?.failedLogins).toBeUndefined();
+    });
+
+    it('should not update a soft-deleted user by default', async () => {
+      const dao = getDao();
+      await dao.updateOne(
+        { _id: new ObjectId(factory.idString('deleted')) },
+        { $set: { username: 'renamed' } }
+      );
+
+      const updated = await dao.findOne(
+        { _id: new ObjectId(factory.idString('deleted')) },
+        { includeDeleted: true }
+      );
+      expect(updated?.username).toBe('deleted');
+    });
+
+    it('should update a soft-deleted user when includeDeleted is true', async () => {
+      const dao = getDao();
+      await dao.updateOne(
+        { _id: new ObjectId(factory.idString('deleted')) },
+        { $set: { username: 'renamed' } },
+        { includeDeleted: true }
+      );
+
+      const updated = await dao.findOne(
+        { _id: new ObjectId(factory.idString('deleted')) },
+        { includeDeleted: true }
+      );
+      expect(updated?.username).toBe('renamed');
+    });
+  });
+
+  describe('insertOne()', () => {
+    it('should insert a new user document', async () => {
+      const dao = getDao();
+      const newId = new ObjectId();
+      await dao.insertOne({
+        _id: newId,
+        username: 'brandnew',
+        role: UserRole.EDITOR,
+        email: 'brandnew@test.com',
       });
+
+      const user = await dao.findOne({ email: 'brandnew@test.com' });
+      expect(user?.username).toBe('brandnew');
+    });
+  });
+
+  describe('softDelete()', () => {
+    it('should set deletedAt on the given ids', async () => {
+      const dao = getDao();
+      const modifiedCount = await dao.softDelete([factory.idString('active1')]);
+
+      expect(modifiedCount).toBe(1);
+      const updated = await dao.findOne(
+        { _id: new ObjectId(factory.idString('active1')) },
+        { includeDeleted: true }
+      );
+      expect(updated?.deletedAt).toBeDefined();
     });
 
-    it('should exclude deleted users', async () => {
+    it('should return 0 for an empty list', async () => {
       const dao = getDao();
-      const users = await dao.get();
-
-      const deletedUser = users.find(u => u.username === 'deleted');
-      expect(deletedUser).toBeUndefined();
-    });
-
-    it('should exclude the system user', async () => {
-      const dao = getDao();
-      const users = await dao.get();
-
-      const publicUser = users.find(u => u.username === 'public');
-      expect(publicUser).toBeUndefined();
-    });
-
-    it('should return users with groups', async () => {
-      const dao = getDao();
-      const users = await dao.get();
-
-      const active1 = users.find(user => user.username === 'active1');
-      expect(active1).toBeDefined();
-      expect(active1!.groups).toEqual([
-        expect.objectContaining({ name: 'Group A' }),
-        expect.objectContaining({ name: 'Group B' }),
-      ]);
-
-      const active2 = users.find(user => user.username === 'active2');
-      expect(active2).toBeDefined();
-      expect(active2!.groups).toEqual([expect.objectContaining({ name: 'Group B' })]);
-    });
-
-    it('should filter by query', async () => {
-      const dao = getDao();
-      let users = await dao.get({ username: 'active2' });
-
-      expect(users.length).toBe(1);
-      expect(users[0].email).toBe('active2@test.com');
-
-      users = await dao.get({ email: 'sensitive@test.com' });
-
-      expect(users.length).toBe(1);
-      expect(users[0].username).toBe('withsensitive');
-    });
-
-    it('should return empty array when query matches nothing', async () => {
-      const dao = getDao();
-      const users = await dao.get({ username: 'nonexistent' });
-
-      expect(users).toEqual([]);
+      expect(await dao.softDelete([])).toBe(0);
     });
   });
 });

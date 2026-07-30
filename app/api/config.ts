@@ -150,6 +150,7 @@ export const config = {
       postgresEntities: FEATURE_FLAG_POSTGRES_ENTITIES === 'true' || false,
       postgresTemplates: FEATURE_FLAG_POSTGRES_TEMPLATES === 'true' || false,
       postgresRelationshipTypes: FEATURE_FLAG_POSTGRES_RELATIONSHIP_TYPES === 'true' || false,
+      postgresPasswordRecoveries: false,
       newHeader: NEW_HEADER === 'true' || false,
       aiAssistant: FEATURE_FLAG_AI_ASSISTANT === 'true' || false,
       aiAssistantServiceUrl: AI_ASSISTANT_SERVICE_URL || undefined,

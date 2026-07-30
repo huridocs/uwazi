@@ -2,8 +2,7 @@ import {
   UserAwareDispatchable,
   UserAwareDispatchableParams,
 } from '#api/core/libs/queue/application/contracts/UserAwareDispatchable.js';
-import users from '#api/users/users.js';
-import { UsersDAOFactory } from '#api/core/infrastructure/factories/UsersDAOFactory.js';
+import { SendWelcomeEmail } from '#api/core/application/SendWelcomeEmail.js';
 
 type SendWelcomeEmailHandlerParams = UserAwareDispatchableParams & {
   domain: string;
@@ -11,11 +10,15 @@ type SendWelcomeEmailHandlerParams = UserAwareDispatchableParams & {
 };
 
 class SendWelcomeEmailHandler extends UserAwareDispatchable<SendWelcomeEmailHandlerParams> {
+  constructor(private deps: { sendWelcomeEmail: SendWelcomeEmail }) {
+    super();
+  }
+
   async handle() {
-    const user = (await UsersDAOFactory.default().getById(this.params.userId)).getDataOrThrow();
-    if (user._id) {
-      await users.recoverPassword(user.email, this.params.domain, { newUser: true });
-    }
+    await this.deps.sendWelcomeEmail.execute({
+      userId: this.params.userId,
+      domain: this.params.domain,
+    });
   }
 }
 
