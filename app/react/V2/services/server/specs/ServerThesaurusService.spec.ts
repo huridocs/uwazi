@@ -2,7 +2,7 @@ import { ObjectId } from 'mongodb';
 import { ThesauriDAOFactory } from '#api/core/infrastructure/factories/ThesauriDAOFactory.js';
 import { createServerThesaurusService } from '../ServerThesaurusService.js';
 
-jest.mock('#api/core/infrastructure/factories/ThesauriDAOFactory.js', () => ({
+jest.mock('#api/core/infrastructure/factories/ThesauriDAOFactory.ts', () => ({
   ThesauriDAOFactory: { default: jest.fn() },
 }));
 
