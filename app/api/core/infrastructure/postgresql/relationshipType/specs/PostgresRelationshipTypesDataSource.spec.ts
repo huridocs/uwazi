@@ -4,6 +4,7 @@ import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { testingPG } from '#api/utils/testing_pg.js';
 import { PostgresDB } from '#api/infrastructure/PostgresDB.js';
 import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
+import { RelationshipType } from '#api/core/domain/relationshipType/RelationshipType.js';
 import { PostgresRelationshipTypesDataSource } from '../PostgresRelationshipTypesDataSource.js';
 import { PostgresTransactionManager } from '../../common/PostgresTransactionManager.js';
 
@@ -18,6 +19,9 @@ const makeDS = (tenantId = TENANT_ID) =>
     mongoDb: getConnection(),
     pgTransactionManager: managerFor(tenantId),
   });
+
+const createType = (name: string, id = new ObjectId().toHexString()) =>
+  new RelationshipType(id, name);
 
 beforeAll(async () => {
   await testingEnvironment.setUp({}, { postgres: true });
@@ -35,18 +39,19 @@ afterAll(async () => {
 describe('PostgresRelationshipTypesDataSource', () => {
   it('should create and get by id', async () => {
     const ds = makeDS();
-    const created = await ds.create({ name: 'Related to' });
+    const relationshipType = createType('Related to');
 
-    const loaded = await ds.getById(created.id);
+    await ds.create(relationshipType);
 
-    expect(loaded).toEqual(created);
-    expect(created.name).toBe('Related to');
+    const loaded = await ds.getById(relationshipType.id);
+
+    expect(loaded).toEqual(relationshipType);
   });
 
   it('should get all relationship types', async () => {
     const ds = makeDS();
-    await ds.create({ name: 'A' });
-    await ds.create({ name: 'B' });
+    await ds.create(createType('A'));
+    await ds.create(createType('B'));
 
     const all = await ds.getAll();
 
@@ -55,37 +60,42 @@ describe('PostgresRelationshipTypesDataSource', () => {
 
   it('should update a relationship type name', async () => {
     const ds = makeDS();
-    const created = await ds.create({ name: 'Old' });
+    const relationshipType = createType('Old');
+    await ds.create(relationshipType);
 
-    const updated = await ds.update({ id: created.id, name: 'New' });
+    const updated = createType('New', relationshipType.id);
+    await ds.update(updated);
 
-    expect(updated.name).toBe('New');
-    expect(await ds.getById(created.id)).toEqual(updated);
+    expect(await ds.getById(relationshipType.id)).toEqual(updated);
   });
 
   it('should delete a relationship type', async () => {
     const ds = makeDS();
-    const created = await ds.create({ name: 'Temp' });
+    const relationshipType = createType('Temp');
+    await ds.create(relationshipType);
 
-    await ds.delete(created.id);
+    await ds.delete(relationshipType.id);
 
-    expect(await ds.getById(created.id)).toBeNull();
+    expect(await ds.getById(relationshipType.id)).toBeNull();
   });
 
   it('should detect case-insensitive trimmed name collisions', async () => {
     const ds = makeDS();
-    const created = await ds.create({ name: 'Rel 1' });
+    const relationshipType = createType('Rel 1');
+    await ds.create(relationshipType);
 
     expect(await ds.existsByName('rel 1')).toBe(true);
     expect(await ds.existsByName('  REL 1  ')).toBe(true);
-    expect(await ds.existsByName('REL 1', created.id)).toBe(false);
+    expect(await ds.existsByName('REL 1', relationshipType.id)).toBe(false);
     expect(await ds.existsByName('unknown')).toBe(false);
   });
 
   it('should validate typesExist', async () => {
     const ds = makeDS();
-    const a = await ds.create({ name: 'A' });
-    const b = await ds.create({ name: 'B' });
+    const a = createType('A');
+    const b = createType('B');
+    await ds.create(a);
+    await ds.create(b);
 
     expect(await ds.typesExist([a.id, b.id])).toBe(true);
     expect(await ds.typesExist([a.id, new ObjectId().toHexString()])).toBe(false);
@@ -93,8 +103,10 @@ describe('PostgresRelationshipTypesDataSource', () => {
 
   it('should return relationship type ids and getByIds', async () => {
     const ds = makeDS();
-    const a = await ds.create({ name: 'A' });
-    const b = await ds.create({ name: 'B' });
+    const a = createType('A');
+    const b = createType('B');
+    await ds.create(a);
+    await ds.create(b);
 
     expect(await ds.getRelationshipTypeIds()).toEqual(expect.arrayContaining([a.id, b.id]));
 
@@ -106,7 +118,8 @@ describe('PostgresRelationshipTypesDataSource', () => {
     const tenantA = makeDS('tenant-a');
     const tenantB = makeDS('tenant-b');
 
-    const created = await tenantA.create({ name: 'Only A' });
+    const created = createType('Only A');
+    await tenantA.create(created);
 
     expect(await tenantA.getById(created.id)).not.toBeNull();
     expect(await tenantB.getById(created.id)).toBeNull();

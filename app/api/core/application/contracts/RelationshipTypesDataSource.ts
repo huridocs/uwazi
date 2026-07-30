@@ -4,8 +4,8 @@ import { RelationshipType } from '../../domain/relationshipType/RelationshipType
 export interface RelationshipTypesDataSource {
   getAll(): Promise<RelationshipType[]>;
   getById(id: string): Promise<RelationshipType | null>;
-  create(input: { name: string }): Promise<RelationshipType>;
-  update(input: { id: string; name: string }): Promise<RelationshipType>;
+  create(relationshipType: RelationshipType): Promise<void>;
+  update(relationshipType: RelationshipType): Promise<void>;
   delete(id: string): Promise<void>;
   existsByName(name: string, excludeId?: string): Promise<boolean>;
   typesExist(ids: string[]): Promise<boolean>;

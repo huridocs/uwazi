@@ -1,9 +1,9 @@
-/* eslint-disable max-statements */
 import { ObjectId } from 'mongodb';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { RelationshipType } from '#api/core/domain/relationshipType/RelationshipType.js';
 import { MongoRelationshipTypesDataSource } from '../MongoRelationshipTypesDataSource.js';
 
 const factory = getFixturesFactory();
@@ -52,21 +52,18 @@ describe('MongoRelationshipTypesDataSource', () => {
 
   it('should create', async () => {
     const { sut } = createSut();
-    const created = await sut.create({ name: 'Rel 3' });
+    const relationshipType = new RelationshipType(new ObjectId().toHexString(), 'Rel 3');
+    await sut.create(relationshipType);
 
-    expect(created.id).toBeDefined();
-    expect(created.name).toBe('Rel 3');
+    expect(await sut.getById(relationshipType.id)).toEqual(relationshipType);
   });
 
   it('should update', async () => {
     const { sut } = createSut();
-    const updated = await sut.update({
-      id: factory.id('rel1').toHexString(),
-      name: 'Rel 1 Updated',
-    });
+    const updated = new RelationshipType(factory.id('rel1').toHexString(), 'Rel 1 Updated');
+    await sut.update(updated);
 
-    expect(updated.id).toBe(factory.id('rel1').toHexString());
-    expect(updated.name).toBe('Rel 1 Updated');
+    expect(await sut.getById(updated.id)).toEqual(updated);
   });
 
   it('should delete', async () => {

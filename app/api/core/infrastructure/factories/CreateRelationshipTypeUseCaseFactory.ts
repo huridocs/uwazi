@@ -1,5 +1,6 @@
 import { CreateRelationshipTypeUseCase } from '#api/core/application/CreateRelationshipType.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { IdGeneratorFactory } from '#api/core/infrastructure/factories/IdGeneratorFactory.js';
 import { LegacyRelationshipTypesTranslationService } from '#api/core/infrastructure/mongodb/relationshipType/LegacyRelationshipTypesTranslationService.js';
 import { RelationshipTypesDataSourceFactory } from './RelationshipTypesDataSourceFactory.js';
 
@@ -15,6 +16,7 @@ class CreateRelationshipTypeUseCaseFactory {
       transactionManager,
       relationshipTypesDS,
       translationService,
+      idGenerator: IdGeneratorFactory.default(),
       ...overrides,
     });
   }

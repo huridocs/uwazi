@@ -14,8 +14,9 @@ This document is the working context for the Postgres phase. The prior V2 archit
 
 ### Implemented so far
 
-- [x] Schema `006-create_relationship_types_table.sql` (`relationship_types` + RLS in same migration)
+- [x] Schema `008-create_relationship_types_table.sql` (`relationship_types` + RLS in same migration)
 - [x] `PostgresRelationshipTypesDataSource` + mapper + `ArrayResultSet` + specs (incl. RLS isolation, case-insensitive `existsByName`)
+- [x] DS contract aligned with Thesauri/Templates/Files: `create`/`update` take a domain `RelationshipType`, return `Promise<void>`; id assigned in the use case via `idGenerator` (not in the Postgres DS)
 - [x] Feature flag `postgresRelationshipTypes` (config / tenantContext / tenantsModel; local via `FEATURE_FLAG_POSTGRES_RELATIONSHIP_TYPES=true`)
 - [x] `RelationshipTypesDataSourceFactory` — Templates/Files-style EC + flag; PG TM from EC; call sites updated to overrides object
 - [x] `PostgresRelationshipTypesSyncHandler` + factory branch (sync namespace still `relationtypes`)
@@ -110,7 +111,7 @@ CREATE POLICY tenant_isolation ON thesauri
 
 ### 3. Adapters / DataSources
 
-Pattern (thesauri):
+Pattern (thesauri / templates / files — **follow this for relationship types**):
 
 1. `Postgres*Mapper` — domain ↔ row (`_id` TEXT, scalars / JSON)
 2. `Postgres*DataSource` extends `PostgresDataSource` → implements application contract
@@ -118,11 +119,24 @@ Pattern (thesauri):
 4. Sync still writes Mongo `updatelogs` under the **Mongo collection / sync namespace** so cluster sync keeps working
 5. Factory branches on `tenant.featureFlags.postgres*`
 
-Relationship types already have:
+**Create / update contract (locked across V2 modules):**
 
-- Contract: `RelationshipTypesDataSource`
-- Mongo: `MongoRelationshipTypesDataSource` (collection `relationtypes`)
-- Factory: `RelationshipTypesDataSourceFactory` — **always Mongo today**
+| Concern | Convention | Why |
+|---------|------------|-----|
+| Method input | Domain model (`RelationshipType`, `Thesaurus`, `Template`, `BaseFile`, `Entity`) | Persistence must not invent domain state |
+| Method return | `Promise<void>` | Caller already holds the model; DS does not re-fetch / re-shape |
+| Id assignment | **Use case** (or domain factory called from the use case) via `this.idGenerator.generate()` / `IdGeneratorFactory` | Keeps ObjectId / id policy out of Postgres DS |
+| PG column name | `"_id" TEXT` (not `id`) | Shared with all PG tables; `PostgresTable` upsert/sync assume `_id` |
+| Mapper | `domain.id` ↔ `row._id` | Only place that bridges naming |
+
+**Anti-pattern (do not repeat):** first cut of `PostgresRelationshipTypesDataSource.create` generated `new ObjectId().toHexString()` inside the PG DS and returned a domain object. That diverged from Thesauri/Templates/Files and leaked Mongo identity into a Postgres adapter. Fixed: create/update take `RelationshipType`, return `void`; `CreateRelationshipTypeUseCase` builds `new RelationshipType(this.idGenerator.generate(), name)` before calling the DS.
+
+Relationship types now have:
+
+- Contract: `RelationshipTypesDataSource` — `create(rt)` / `update(rt)` → `Promise<void>`
+- Mongo: `MongoRelationshipTypesDataSource` (collection `relationtypes`) — same contract; inserts with provided `_id`
+- Postgres: `PostgresRelationshipTypesDataSource` — mapper `toDBO` / `toDomain`; no `ObjectId` import
+- Factory: `RelationshipTypesDataSourceFactory` — flag + EC (`currentTenant` for legacy callers)
 
 ### 4. Feature flags (per tenant)
 
@@ -195,9 +209,10 @@ Earlier drafts split “open” (D1–D3, D7) vs “settled recommendations” (
 | D2 | Name uniqueness | **Locked direction** — case-insensitive + trim in app; run collision diagnosis first |
 | D3 | RLS timing | **Locked** — RLS in the same schema migration as table create |
 | D4 | Sync / Mongo collection naming during cutover | **Locked** — keep sync namespace `relationtypes` (thesauri pattern); PG table `relationship_types` |
-| D5 | Cutover / dual-write | **Locked** — copy once, then flag; no dual-write |
+| D5 | Cutover / dual-write | **Locked** — copy once, then flag; no dual-write; **flag flip is one-way** after PG writes |
 | D6 | Translations | **Locked** — stay in Mongo this phase |
 | D7 | Factory / TM wiring | **Locked** — Templates/Files-style factory + flag; PG DS gets PG TM from EC; no Mongo TM inside PG DS unless ES hooks appear |
+| D8 | Create/update contract + id ownership | **Locked** — domain in / `void` out; id via use-case `idGenerator`; PG column `_id` TEXT |
 
 ---
 
@@ -269,7 +284,7 @@ New code uses `RelationshipType(s)` / `postgresRelationshipTypes` / `relationshi
 | **Files** | `postgresFiles` | Yes | Yes | **Yes** | `onCommitted` → search reindex |
 | **Thesauri** | `postgresThesauri` | Yes | Yes | **No** | No ES / post-commit hook in DS |
 | **Entities** | `postgresEntities` | Partial (query path only) | N/A for full DS | N/A | **No full PG DataSource yet** — not a cutover template |
-| **Relationship types (today)** | none | No | N/A | Required Mongo TM arg only | Mongo-only factory |
+| **Relationship types** | `postgresRelationshipTypes` | Yes (`currentTenant`) | Yes | **No** | Same as thesauri — no ES hooks |
 
 **What is shared (Templates + Files + Thesauri) — follow this**
 
@@ -297,6 +312,18 @@ New code uses `RelationshipType(s)` / `postgresRelationshipTypes` / `relationshi
 - Flag on → writes hit `relationship_types` under RLS via PG TM
 - Flag on without PG context → fail loudly (no silent Mongo fallback)
 
+### D8. Create / update contract + id ownership
+
+**Locked — same as Thesauri / Templates / Files / Entities:**
+
+1. `RelationshipTypesDataSource.create(relationshipType: RelationshipType): Promise<void>`
+2. `RelationshipTypesDataSource.update(relationshipType: RelationshipType): Promise<void>`
+3. **Id is assigned before persistence**, in `CreateRelationshipTypeUseCase`, with `this.idGenerator.generate()` (wired via `IdGeneratorFactory` → currently `MongoIdHandler`). The Postgres DS must **not** import `ObjectId` or mint ids.
+4. PG table column remains `"_id"` (TEXT). Domain property is `id`. Mapper is the only bridge.
+5. Use case returns the domain model it already built; it does not rely on the DS to return created/updated data.
+
+Wire `idGenerator` on `CreateRelationshipTypeUseCaseFactory` (required by `AbstractUseCase.idGenerator`).
+
 ---
 
 ## Proposed work for relationship types
@@ -308,7 +335,7 @@ New code uses `RelationshipType(s)` / `postgresRelationshipTypes` / `relationshi
 
 ### B. Schema + RLS
 
-Create schema migration `006-create_relationship_types_table.sql` (next delta after 005):
+Create schema migration `008-create_relationship_types_table.sql` (after password recoveries `007`):
 
 ```sql
 CREATE TABLE IF NOT EXISTS relationship_types (
@@ -331,12 +358,15 @@ No unique index on `name` in v1 (see D2). Do **not** store `properties`.
 ### C. Postgres adapter
 
 - `…/postgresql/relationshipType/PostgresRelationshipTypesDataSource.ts`
-- Mapper + specs
+- Mapper + specs — `toDBO` / `toDomain` map `id` ↔ `_id`
+- `create` / `update` take `RelationshipType`, return `void` (D8 — same as thesauri)
 - Preserve `existsByName` (case-insensitive + trim)
 - Extend `PostgresDataSource` with table `'relationship_types'`
 - `sync: { syncNamespace: 'relationtypes', syncDb }` (D4 — Mongo sync namespace kept)
 - Deps: `tenantId` + `mongoDb` + `pgTransactionManager` (no Mongo TM in DS unless we add ES hooks later)
+- **No `ObjectId` in the Postgres DS** — ids come from the use case
 - Translations remain Mongo
+- Mongo DS must accept the same contract (insert/update with caller-provided id)
 
 ### D. Feature flag + factories
 
@@ -380,7 +410,7 @@ No unique index on `name` in v1 (see D2). Do **not** store `properties`.
 ## Implementation order (when coding starts)
 
 1. Name-collision diagnosis (D2 prep)
-2. Schema migration `006` — `relationship_types` + RLS (D1, D3)
+2. Schema migration `008` — `relationship_types` + RLS (D1, D3)
 3. Mapper + Postgres DataSource + specs
 4. Feature flag `postgresRelationshipTypes` + factory ExecutionContext alignment (D7)
 5. Sync handler PG branch (namespace still `relationtypes`)
@@ -420,6 +450,7 @@ No unique index on `name` in v1 (see D2). Do **not** store `properties`.
 
 ## To keep an eye on
 
+- When copying patterns from another module, verify **contract shape** (create/update inputs/returns, who mints ids) against Thesauri/Templates/Files — not only factory/flag/TM wiring.
 - Run and record name-collision diagnosis before relying on case-insensitive uniqueness at scale.
 - Sync namespace stays `relationtypes` by design (thesauri pattern), even though PG table is `relationship_types`. Do not “fix” this dual naming without a coordinated sync cutover plan.
 - When flipping flags in prod: **data copy before flag**, never the reverse.
@@ -428,3 +459,5 @@ No unique index on `name` in v1 (see D2). Do **not** store `properties`.
 - Sync handler and DataSource must share the same tenant flag (`postgresRelationshipTypes`).
 - Data-copy mapper should ignore stray `properties` defensively.
 - Do not copy entities’ “table without RLS” pattern.
+- Schema delta must not collide with production migrations (relationship types is **`008`**, after entities RLS `006` and password recoveries `007`).
+- PG column is `_id` by shared adapter convention; do not rename to `id` without changing `PostgresTable` and all other modules.

@@ -1,4 +1,4 @@
-import { Db, ObjectId } from 'mongodb';
+import { Db } from 'mongodb';
 import { RelationshipTypesDataSource } from '#api/core/application/contracts/RelationshipTypesDataSource.js';
 import { ResultSet } from '#api/core/application/contracts/ResultSet.js';
 import { RelationshipType } from '#api/core/domain/relationshipType/RelationshipType.js';
@@ -37,19 +37,13 @@ export class PostgresRelationshipTypesDataSource
     return row ? PostgresRelationshipTypeMapper.toDomain(row) : null;
   }
 
-  async create(input: { name: string }): Promise<RelationshipType> {
-    const id = new ObjectId().toHexString();
-    await this.table.insert({ _id: id, name: input.name });
-    return new RelationshipType(id, input.name);
+  async create(relationshipType: RelationshipType): Promise<void> {
+    await this.table.insert(PostgresRelationshipTypeMapper.toDBO(relationshipType));
   }
 
-  async update(input: { id: string; name: string }): Promise<RelationshipType> {
-    await this.table.where({ _id: input.id }).update({ name: input.name });
-    const updated = await this.getById(input.id);
-    if (!updated) {
-      throw new Error('Relationship type update failed');
-    }
-    return updated;
+  async update(relationshipType: RelationshipType): Promise<void> {
+    const dbo = PostgresRelationshipTypeMapper.toDBO(relationshipType);
+    await this.table.where({ _id: dbo._id }).update({ name: dbo.name });
   }
 
   async delete(id: string): Promise<void> {

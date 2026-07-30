@@ -21,27 +21,18 @@ export class MongoRelationshipTypesDataSource
     return dbo ? mapRelationshipTypeToApp(dbo) : null;
   }
 
-  async create(input: { name: string }): Promise<RelationshipType> {
-    const response = await this.getCollection().insertOne({
-      name: input.name,
-    } as RelationshipTypeDBO);
-    const created = await this.getCollection().findOne({ _id: response.insertedId });
-    if (!created) {
-      throw new Error('Relationship type creation failed');
-    }
-    return mapRelationshipTypeToApp(created);
+  async create(relationshipType: RelationshipType): Promise<void> {
+    await this.getCollection().insertOne({
+      _id: MongoIdHandler.mapToDb(relationshipType.id),
+      name: relationshipType.name,
+    });
   }
 
-  async update(input: { id: string; name: string }): Promise<RelationshipType> {
+  async update(relationshipType: RelationshipType): Promise<void> {
     await this.getCollection().updateOne(
-      { _id: MongoIdHandler.mapToDb(input.id) },
-      { $set: { name: input.name } }
+      { _id: MongoIdHandler.mapToDb(relationshipType.id) },
+      { $set: { name: relationshipType.name } }
     );
-    const updated = await this.getCollection().findOne({ _id: MongoIdHandler.mapToDb(input.id) });
-    if (!updated) {
-      throw new Error('Relationship type update failed');
-    }
-    return mapRelationshipTypeToApp(updated);
   }
 
   async delete(id: string): Promise<void> {
