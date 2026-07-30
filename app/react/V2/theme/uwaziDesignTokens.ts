@@ -35,7 +35,7 @@ const UWAZI_DESIGN_LIGHT = {
   shadowXl: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.05)',
   cardShadow: '0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06)',
   radiusSm: '4px',
-  radiusMd: '6px',
+  radiusMd: '8px',
   radiusLg: '8px',
   radiusXl: '10px',
 } as const;
@@ -75,7 +75,7 @@ const UWAZI_DESIGN_DARK = {
   shadowXl: '0 20px 25px -5px rgba(0, 0, 0, 0.4), 0 8px 10px -6px rgba(0, 0, 0, 0.25)',
   cardShadow: '0 1px 3px rgba(0,0,0,0.25), 0 1px 2px rgba(0,0,0,0.15)',
   radiusSm: '4px',
-  radiusMd: '6px',
+  radiusMd: '8px',
   radiusLg: '8px',
   radiusXl: '10px',
 } as const;

@@ -12,7 +12,12 @@ const accentRgba = (hex: string, alpha: number): string => {
   return `rgba(${Math.round(r * 255)}, ${Math.round(g * 255)}, ${Math.round(b * 255)}, ${alpha})`;
 };
 
-const TemplateLabel = ({ templateId }: { templateId?: string }) => {
+type TemplateLabelProps = {
+  templateId?: string;
+  variant?: 'pill' | 'tag';
+};
+
+const TemplateLabel = ({ templateId, variant = 'pill' }: TemplateLabelProps) => {
   const templates = useAtomValue(templatesAtom);
   const settings = useAtomValue(settingsAtom);
   const themeMode = useAtomValue(effectiveThemeModeAtom);
@@ -38,6 +43,19 @@ const TemplateLabel = ({ templateId }: { templateId?: string }) => {
     themeMode,
     template.color
   );
+  const swatchStyle = { backgroundColor: accentHex } as const;
+
+  if (variant === 'tag') {
+    return (
+      <span title={template.name} className="inline-flex max-w-full min-w-0 items-center gap-1.5">
+        <span className="h-2 w-2 shrink-0 rounded-[2px]" style={swatchStyle} aria-hidden="true" />
+        <span className="truncate text-nano font-semibold uppercase tracking-[0.08em] text-ink-tertiary">
+          <Translate context={template._id}>{template.name}</Translate>
+        </span>
+      </span>
+    );
+  }
+
   const { background, foreground } = getTemplatePillColors(accentHex, tintBase);
   const pillStyle = {
     backgroundColor: background,
@@ -47,7 +65,6 @@ const TemplateLabel = ({ templateId }: { templateId?: string }) => {
     borderStyle: 'solid' as const,
     borderColor: accentRgba(accentHex, 0.25),
   } as const;
-  const swatchStyle = { backgroundColor: accentHex } as const;
 
   return (
     <span
