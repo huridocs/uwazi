@@ -353,6 +353,7 @@ Deletion success,Deletion success
 Density,Density
 Description,Description
 Deselect all,Deselect all
+Details,Details
 Direction,Direction
 Disable,Disable
 Disable highlights,Disable highlights
@@ -767,6 +768,7 @@ No Label,No Label
 No label,No label
 No matching entities.,No matching entities.
 No media selected,No media selected
+No metadata for this entity yet.,No metadata for this entity yet.
 No options,No options
 No options found,No options found
 No page,No page
