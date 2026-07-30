@@ -2,7 +2,7 @@ import { ValidationError } from '#api/common.v2/validation/ValidationError.js';
 import { DeprecatedEntitiesDataSource } from '#api/entities.v2/contracts/DeprecatedEntitiesDataSource.js';
 import { propertyTypes } from '#shared/propertyTypes.js';
 import { MatchQueryNode, TemplateRecordElement } from '../../model/MatchQueryNode.js';
-import { RelationshipTypesDataSource } from '#api/relationshiptypes.v2/contracts/RelationshipTypesDataSource.js';
+import { RelationshipTypesDataSource } from '#api/core/application/contracts/RelationshipTypesDataSource.js';
 import { RelationshipPropertyData } from '#shared/types/api.v2/templates.createTemplateRequest.js';
 import { createError } from '#api/utils/index.js';
 import { DenormalizationService } from '../../services/DenormalizationService.js';
