@@ -22,7 +22,6 @@ import {
 import translations from '#api/i18n/index.js';
 import { permissionsContext } from '#api/permissions/permissionsContext.js';
 import relationships from '#api/relationships/relationships.js';
-import relationtypes from '#api/relationtypes/index.js';
 import syncRoutes from '#api/sync/routes.js';
 import templates from '#api/core/v1_layer/templates/index.js';
 import { tenants } from '#api/tenants/index.js';
@@ -39,6 +38,7 @@ import { DefaultTranslationsDataSource } from '#api/i18n.v2/database/data_source
 import { CreateTranslationsService } from '#api/i18n.v2/services/CreateTranslationsService.js';
 import { ValidateTranslationsService } from '#api/i18n.v2/services/ValidateTranslationsService.js';
 import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
+import { RelationshipTypesDataSourceFactory } from '#api/core/infrastructure/factories/RelationshipTypesDataSourceFactory.js';
 import { FetchResponseError } from '#shared/JSONRequest.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
@@ -358,9 +358,12 @@ describe('syncWorker', () => {
   it('should sync relationTypes that match configured template properties', async () => {
     await runAllTenants();
     await tenants.run(async () => {
-      expect(await relationtypes.get()).toMatchObject([
+      const relationtypes = await RelationshipTypesDataSourceFactory.default(
+        TransactionManagerFactory.default()
+      ).getAll();
+      expect(relationtypes).toMatchObject([
         {
-          _id: expect.anything(),
+          id: expect.anything(),
           name: 'relationtype4',
         },
       ]);
