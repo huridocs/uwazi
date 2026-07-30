@@ -145,6 +145,10 @@ class EntityLoaderCache {
     }
   }
 
+  clearMainDocument(sharedId: string, language: string): void {
+    this.mainDocumentCache.delete(`${sharedId}:${language}`);
+  }
+
   getPlaintext(documentId: string): string | undefined {
     if (!isClient) {
       return undefined;

@@ -51,7 +51,6 @@ const createEntityLoader =
     let entity = entityLoaderCache.getEntity(entitySharedId, language, {
       requireRelationships: true,
     });
-    let mainDocument = entityLoaderCache.getMainDocument(entitySharedId, language);
     let pagePlaintext: string | undefined = '';
 
     if (!entity?._id) {
@@ -71,10 +70,17 @@ const createEntityLoader =
       entityLoaderCache.setEntity(entitySharedId, language, entity);
     }
 
-    if (!mainDocument && entity?.sharedId) {
-      mainDocument = getMainDocument(entity.documents, language, defaultLanguage);
-      if (mainDocument) {
-        entityLoaderCache.setMainDocument(entity.sharedId, language, mainDocument);
+    let mainDocument = entityLoaderCache.getMainDocument(entitySharedId, language);
+    if (entity?.sharedId) {
+      const derivedMainDocument = getMainDocument(entity.documents, language, defaultLanguage);
+      if (derivedMainDocument) {
+        if (mainDocument?._id !== derivedMainDocument._id) {
+          entityLoaderCache.setMainDocument(entity.sharedId, language, derivedMainDocument);
+        }
+        mainDocument = derivedMainDocument;
+      } else {
+        entityLoaderCache.clearMainDocument(entity.sharedId, language);
+        mainDocument = undefined;
       }
     }
 

@@ -1,40 +1,9 @@
 import React from 'react';
 import { Meta, StoryObj } from '@storybook/react-webpack5';
 import { TextSelection } from '@huridocs/react-text-selection-handler';
-import { ClientRelationshipType } from '#app/apiResponseTypes.js';
 import { CreateRelationshipModal } from '#V2/Routes/Entity/Components/relationships/index.js';
 import { useRelationshipsActions } from '#V2/Routes/Entity/Components/context/index.js';
-import { Entity } from '#V2/api/entities/types.js';
-import { searchByTitle } from '#V2/api/entities/index.js';
 import { RelationshipsStoryShell } from './relationshipsStoryShell.js';
-
-const mockEntities: Entity[] = [
-  {
-    _id: '1',
-    sharedId: 'shared-1',
-    title: 'Document about Human Rights',
-    language: 'en',
-    template: 'template-1',
-    creationDate: Date.now(),
-    user: 'user-1',
-    metadata: {},
-  },
-];
-
-const mockSearchFunction = async (searchString: string): ReturnType<typeof searchByTitle> => {
-  await new Promise<void>(resolve => {
-    setTimeout(resolve, 200);
-  });
-  return [
-    mockEntities.filter(entity => entity.title.toLowerCase().includes(searchString.toLowerCase())),
-    undefined,
-  ];
-};
-
-const mockRelationshipTypes: ClientRelationshipType[] = [
-  { _id: 'rel-1', name: 'Related to' },
-  { _id: 'rel-2', name: 'Mentions' },
-];
 
 const mockSelection: TextSelection = {
   text: 'This is a selected text from the document',
@@ -86,5 +55,5 @@ const EntityLevel: Story = {
   ),
 };
 
-export { WithSelection, EntityLevel, mockSearchFunction, mockRelationshipTypes };
+export { WithSelection, EntityLevel };
 export default meta;

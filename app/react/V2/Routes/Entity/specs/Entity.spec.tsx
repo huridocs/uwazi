@@ -1,6 +1,4 @@
-/**
- * @jest-environment jsdom
- */
+/** @jest-environment jsdom */
 import React from 'react';
 import { render, screen, fireEvent, waitFor, within } from '@testing-library/react';
 import { Entity as EntityType } from '#V2/api/entities/types.js';
@@ -20,7 +18,7 @@ import { entityLoaderCache } from '../EntityLoaderCache.js';
 
 jest.mock('#V2/Components/PDFViewer', () => ({
   ...jest.requireActual('#V2/Components/PDFViewer'),
-  PDF: ({ fileUrl }: any) => (
+  PDF: ({ fileUrl }: { fileUrl?: string }) => (
     <div data-testid="mock-pdf">
       PDF: {fileUrl}
       <div className="page" data-page-number="1" style={{ height: 800 }} />
@@ -56,11 +54,61 @@ const sampleTemplate = [
   { _id: 'template1', name: 'Template 1', properties: [], commonProperties: [] },
 ];
 
+const adminUser = { _id: '1', role: 'admin', name: 'admin' };
+
 let mediaMock = setupMatchMediaMock();
 
+type RenderEntityOptions = {
+  entity?: Partial<EntityType>;
+  mainDocument?: typeof sampleMainDocument | undefined;
+  pagePlaintext?: string;
+  initialEntries?: string[];
+  settings?: Record<string, unknown>;
+  user?: typeof adminUser;
+  withServices?: boolean;
+};
+
+const renderEntity = (options: RenderEntityOptions = {}) => {
+  const {
+    entity = sampleEntity,
+    pagePlaintext = '',
+    initialEntries,
+    settings,
+    user,
+    withServices = false,
+  } = options;
+  const mainDocument = Object.hasOwn(options, 'mainDocument')
+    ? options.mainDocument
+    : sampleMainDocument;
+
+  const atoms: Array<
+    readonly [typeof templatesAtom | typeof settingsAtom | typeof userAtom, unknown]
+  > = [[templatesAtom, sampleTemplate]];
+  if (settings !== undefined) {
+    atoms.push([settingsAtom, settings]);
+  }
+  if (user) {
+    atoms.push([userAtom, user]);
+  }
+
+  const tree = (
+    <TestRouterContext
+      loaderData={{ entity, mainDocument, pagePlaintext }}
+      initialEntries={initialEntries}
+    >
+      <TestAtomStoreProvider initialValues={atoms}>
+        <Entity />
+      </TestAtomStoreProvider>
+    </TestRouterContext>
+  );
+
+  return render(
+    withServices ? <ServicesProvider value={createTestServices()}>{tree}</ServicesProvider> : tree
+  );
+};
+
 const checkEntityRendered = async () => {
-  const titleElements = await screen.findAllByText('Sample Entity');
-  expect(titleElements.length).toBeGreaterThan(0);
+  expect((await screen.findAllByText('Sample Entity')).length).toBeGreaterThan(0);
 };
 
 const relationshipsSideTab = /^Relationships/;
@@ -71,6 +119,9 @@ const selectPlainTextView = (container?: HTMLElement) => {
   fireEvent.click(scope.getByRole('button', { name: 'View' }));
   fireEvent.click(scope.getByRole('menuitem', { name: 'Plain text' }));
 };
+
+const mainTablist = () => within(screen.getAllByTestId('tabs-comp')[0]);
+const sideTablist = () => within(screen.getAllByTestId('tabs-comp')[1]);
 
 describe('Entity view', () => {
   afterEach(() => {
@@ -91,16 +142,7 @@ describe('Entity view', () => {
   });
 
   it('should render PDF and metadata', async () => {
-    render(
-      <TestRouterContext
-        loaderData={{ entity: sampleEntity, mainDocument: sampleMainDocument, pagePlaintext: '' }}
-      >
-        <TestAtomStoreProvider initialValues={[[templatesAtom, sampleTemplate]]}>
-          <Entity />
-        </TestAtomStoreProvider>
-      </TestRouterContext>
-    );
-
+    renderEntity();
     await checkEntityRendered();
 
     const pdf = await screen.findByTestId('mock-pdf');
@@ -118,150 +160,68 @@ describe('Entity view', () => {
     });
 
     it('should not display the OCR button when the service is not availabe', async () => {
-      render(
-        <TestRouterContext
-          loaderData={{
-            entity: { ...sampleEntity },
-            mainDocument: sampleMainDocument,
-            pagePlaintext: '',
-          }}
-        >
-          <TestAtomStoreProvider
-            initialValues={[
-              [templatesAtom, sampleTemplate],
-              [settingsAtom, {}],
-              [userAtom, { _id: '1', role: 'admin', name: 'admin' }],
-            ]}
-          >
-            <Entity />
-          </TestAtomStoreProvider>
-        </TestRouterContext>
-      );
-
+      renderEntity({ settings: {}, user: adminUser });
       await checkEntityRendered();
-
       expect(screen.queryByText('OCR PDF')).not.toBeInTheDocument();
     });
 
     it('should not display if there is no user', async () => {
-      render(
-        <TestRouterContext
-          loaderData={{
-            entity: { ...sampleEntity },
-            mainDocument: sampleMainDocument,
-            pagePlaintext: '',
-          }}
-        >
-          <TestAtomStoreProvider
-            initialValues={[
-              [templatesAtom, sampleTemplate],
-              [settingsAtom, { ocrServiceEnabled: true }],
-            ]}
-          >
-            <Entity />
-          </TestAtomStoreProvider>
-        </TestRouterContext>
-      );
-
+      renderEntity({ settings: { ocrServiceEnabled: true } });
       await checkEntityRendered();
-
       expect(screen.queryByText('OCR PDF')).not.toBeInTheDocument();
     });
   });
 
   describe('Tabs', () => {
     beforeEach(async () => {
-      render(
-        <TestRouterContext
-          loaderData={{ entity: sampleEntity, mainDocument: sampleMainDocument, pagePlaintext: '' }}
-        >
-          <TestAtomStoreProvider initialValues={[[templatesAtom, sampleTemplate]]}>
-            <Entity />
-          </TestAtomStoreProvider>
-        </TestRouterContext>
-      );
-
+      renderEntity();
       await checkEntityRendered();
     });
 
-    it('should render the expected main tabs', () => {
-      const tablists = screen.getAllByTestId('tabs-comp');
-      const mainTabs = within(tablists[0]);
-      expect(mainTabs.getByRole('tab', { name: 'Document' })).toBeInTheDocument();
-      expect(mainTabs.getByRole('tab', { name: 'Document' })).toHaveAttribute(
+    it('renders main and side tabs; side tabs follow the active main tab', async () => {
+      expect(mainTablist().getByRole('tab', { name: 'Document' })).toHaveAttribute(
         'aria-selected',
         'true'
       );
-      expect(mainTabs.getByRole('tab', { name: 'Metadata' })).toBeInTheDocument();
-      expect(mainTabs.getByRole('tab', { name: relationshipsMainTab })).toBeInTheDocument();
-      expect(mainTabs.getByRole('tab', { name: /Files/ })).toBeInTheDocument();
-    });
+      expect(mainTablist().getByRole('tab', { name: 'Metadata' })).toBeInTheDocument();
+      expect(mainTablist().getByRole('tab', { name: relationshipsMainTab })).toBeInTheDocument();
+      expect(mainTablist().getByRole('tab', { name: /Files/ })).toBeInTheDocument();
 
-    it('should render files side panel tabs when Files is selected', async () => {
-      const tablists = screen.getAllByTestId('tabs-comp');
-      const mainTabs = within(tablists[0]);
-      fireEvent.click(mainTabs.getByRole('tab', { name: /Files/ }));
+      expect(sideTablist().getByRole('tab', { name: 'Metadata' })).toBeInTheDocument();
+      expect(sideTablist().getByRole('tab', { name: 'ToC' })).toBeInTheDocument();
+      expect(sideTablist().getByRole('tab', { name: relationshipsSideTab })).toBeInTheDocument();
+      expect(sideTablist().getByRole('tab', { name: 'Search' })).toBeInTheDocument();
 
+      fireEvent.click(mainTablist().getByRole('tab', { name: 'Metadata' }));
       await waitFor(() => {
-        const refreshedTablists = screen.getAllByTestId('tabs-comp');
-        const sideTabs = within(refreshedTablists[1]);
-        expect(sideTabs.getByRole('tab', { name: 'File' })).toBeInTheDocument();
-        expect(sideTabs.getByRole('tab', { name: 'Translations 1' })).toBeInTheDocument();
+        expect(sideTablist().getByRole('tab', { name: 'Document' })).toBeInTheDocument();
+        expect(sideTablist().queryByRole('tab', { name: 'Metadata' })).not.toBeInTheDocument();
+        expect(sideTablist().queryByRole('tab', { name: 'ToC' })).not.toBeInTheDocument();
+        expect(sideTablist().getByRole('tab', { name: relationshipsSideTab })).toBeInTheDocument();
+      });
+
+      fireEvent.click(mainTablist().getByRole('tab', { name: relationshipsMainTab }));
+      await waitFor(() => {
+        expect(sideTablist().getByRole('tab', { name: 'Document' })).toBeInTheDocument();
+        expect(sideTablist().getByRole('tab', { name: 'Metadata' })).toBeInTheDocument();
+        expect(sideTablist().getByRole('tab', { name: 'ToC' })).toBeInTheDocument();
+        expect(
+          sideTablist().queryByRole('tab', { name: relationshipsSideTab })
+        ).not.toBeInTheDocument();
+      });
+
+      fireEvent.click(mainTablist().getByRole('tab', { name: /Files/ }));
+      await waitFor(() => {
+        expect(sideTablist().getByRole('tab', { name: 'File' })).toBeInTheDocument();
+        expect(sideTablist().getByRole('tab', { name: 'Translations 1' })).toBeInTheDocument();
       });
     });
 
-    it('should render the expected side tabs', () => {
-      const tablists = screen.getAllByTestId('tabs-comp');
-      const sideTabs = within(tablists[1]);
-
-      expect(sideTabs.getByRole('tab', { name: 'Metadata' })).toBeInTheDocument();
-      expect(sideTabs.getByRole('tab', { name: 'ToC' })).toBeInTheDocument();
-      expect(sideTabs.getByRole('tab', { name: relationshipsSideTab })).toBeInTheDocument();
-      expect(sideTabs.getByRole('tab', { name: 'Search' })).toBeInTheDocument();
-    });
-
-    it('should update the side tabs when switching main tabs', async () => {
-      let tablists = screen.getAllByTestId('tabs-comp');
-      const mainTabs = within(tablists[0]);
-
-      const metadataMainTab = mainTabs.getByRole('tab', { name: 'Metadata' });
-      const relsMainTab = mainTabs.getByRole('tab', { name: relationshipsMainTab });
-
-      fireEvent.click(metadataMainTab);
+    it('hides the entity header when Document is shown in the side panel', async () => {
+      fireEvent.click(mainTablist().getByRole('tab', { name: 'Metadata' }));
 
       await waitFor(() => {
-        tablists = screen.getAllByTestId('tabs-comp');
-        const sideTabs = within(tablists[1]);
-        expect(sideTabs.getByRole('tab', { name: 'Document' })).toBeInTheDocument();
-        expect(sideTabs.queryByRole('tab', { name: 'Metadata' })).not.toBeInTheDocument();
-        expect(sideTabs.queryByRole('tab', { name: 'ToC' })).not.toBeInTheDocument();
-        expect(sideTabs.queryByRole('tab', { name: 'References' })).not.toBeInTheDocument();
-        expect(sideTabs.getByRole('tab', { name: relationshipsSideTab })).toBeInTheDocument();
-        expect(sideTabs.getByRole('tab', { name: 'Search' })).toBeInTheDocument();
-      });
-
-      fireEvent.click(relsMainTab);
-
-      await waitFor(() => {
-        tablists = screen.getAllByTestId('tabs-comp');
-        const sideTabs = within(tablists[1]);
-        expect(sideTabs.getByRole('tab', { name: 'Document' })).toBeInTheDocument();
-        expect(sideTabs.getByRole('tab', { name: 'Metadata' })).toBeInTheDocument();
-        expect(sideTabs.getByRole('tab', { name: 'ToC' })).toBeInTheDocument();
-        expect(sideTabs.getByRole('tab', { name: 'Search' })).toBeInTheDocument();
-        expect(sideTabs.queryByRole('tab', { name: relationshipsSideTab })).not.toBeInTheDocument();
-      });
-    });
-
-    it('should hide the entity header when Document is shown in the side panel', async () => {
-      let tablists = screen.getAllByTestId('tabs-comp');
-      const mainTabs = within(tablists[0]);
-
-      fireEvent.click(mainTabs.getByRole('tab', { name: 'Metadata' }));
-
-      await waitFor(() => {
-        tablists = screen.getAllByTestId('tabs-comp');
-        expect(within(tablists[1]).getByRole('tab', { name: 'Document' })).toHaveAttribute(
+        expect(sideTablist().getByRole('tab', { name: 'Document' })).toHaveAttribute(
           'aria-selected',
           'true'
         );
@@ -269,82 +229,55 @@ describe('Entity view', () => {
 
       const sideDocumentPanel = document.getElementById('entity-side-panel-document');
       expect(sideDocumentPanel).not.toBeNull();
-      expect(within(sideDocumentPanel as HTMLElement).queryByText('Sample Entity')).toBeNull();
-      expect(
-        within(sideDocumentPanel as HTMLElement).getByRole('button', { name: 'View' })
-      ).toBeInTheDocument();
-      expect(within(sideDocumentPanel as HTMLElement).getByTestId('mock-pdf')).toBeInTheDocument();
+      if (!(sideDocumentPanel instanceof HTMLElement)) {
+        throw new Error('expected side document panel');
+      }
+      expect(within(sideDocumentPanel).queryByText('Sample Entity')).toBeNull();
+      expect(within(sideDocumentPanel).getByRole('button', { name: 'View' })).toBeInTheDocument();
+      expect(within(sideDocumentPanel).getByTestId('mock-pdf')).toBeInTheDocument();
     });
 
-    it('should preserve active side tab when switching to a main tab that supports it', async () => {
-      let tablists = screen.getAllByTestId('tabs-comp');
-      let mainTabs = within(tablists[0]);
-      let sideTabs = within(tablists[1]);
-
-      const relsSideTab = sideTabs.getByRole('tab', { name: relationshipsSideTab });
-      fireEvent.click(relsSideTab);
-
+    it('preserves supported side tab and resets unsupported side tab across main switches', async () => {
+      fireEvent.click(sideTablist().getByRole('tab', { name: relationshipsSideTab }));
       await waitFor(() => {
-        expect(sideTabs.getByRole('tab', { name: relationshipsSideTab })).toHaveAttribute(
+        expect(sideTablist().getByRole('tab', { name: relationshipsSideTab })).toHaveAttribute(
           'aria-selected',
           'true'
         );
       });
 
-      const metadataMainTab = mainTabs.getByRole('tab', { name: 'Metadata' });
-      fireEvent.click(metadataMainTab);
-
+      fireEvent.click(mainTablist().getByRole('tab', { name: 'Metadata' }));
       await waitFor(() => {
-        tablists = screen.getAllByTestId('tabs-comp');
-        mainTabs = within(tablists[0]);
-        sideTabs = within(tablists[1]);
-
-        expect(mainTabs.getByRole('tab', { name: 'Metadata' })).toHaveAttribute(
+        expect(mainTablist().getByRole('tab', { name: 'Metadata' })).toHaveAttribute(
           'aria-selected',
           'true'
         );
-
-        expect(sideTabs.getByRole('tab', { name: relationshipsSideTab })).toHaveAttribute(
+        expect(sideTablist().getByRole('tab', { name: relationshipsSideTab })).toHaveAttribute(
           'aria-selected',
           'true'
         );
       });
-    });
 
-    it('should reset side tab when switching main tab drops an unsupported side id', async () => {
-      let tablists = screen.getAllByTestId('tabs-comp');
-      let mainTabs = within(tablists[0]);
-      let sideTabs = within(tablists[1]);
-
-      expect(mainTabs.getByRole('tab', { name: 'Document' })).toHaveAttribute(
-        'aria-selected',
-        'true'
-      );
-
-      fireEvent.click(sideTabs.getByRole('tab', { name: 'ToC' }));
-
+      fireEvent.click(mainTablist().getByRole('tab', { name: 'Document' }));
       await waitFor(() => {
-        tablists = screen.getAllByTestId('tabs-comp');
-        sideTabs = within(tablists[1]);
-        expect(sideTabs.getByRole('tab', { name: 'ToC' })).toHaveAttribute('aria-selected', 'true');
-      });
-
-      mainTabs = within(screen.getAllByTestId('tabs-comp')[0]);
-      const metadataMainTab = mainTabs.getByRole('tab', { name: 'Metadata' });
-      fireEvent.click(metadataMainTab);
-
-      await waitFor(() => {
-        tablists = screen.getAllByTestId('tabs-comp');
-        mainTabs = within(tablists[0]);
-        sideTabs = within(tablists[1]);
-
-        expect(mainTabs.getByRole('tab', { name: 'Metadata' })).toHaveAttribute(
+        expect(mainTablist().getByRole('tab', { name: 'Document' })).toHaveAttribute(
           'aria-selected',
           'true'
         );
+      });
 
-        expect(sideTabs.queryByRole('tab', { name: 'ToC' })).not.toBeInTheDocument();
-        expect(sideTabs.getByRole('tab', { name: 'Document' })).toHaveAttribute(
+      fireEvent.click(sideTablist().getByRole('tab', { name: 'ToC' }));
+      await waitFor(() => {
+        expect(sideTablist().getByRole('tab', { name: 'ToC' })).toHaveAttribute(
+          'aria-selected',
+          'true'
+        );
+      });
+
+      fireEvent.click(mainTablist().getByRole('tab', { name: 'Metadata' }));
+      await waitFor(() => {
+        expect(sideTablist().queryByRole('tab', { name: 'ToC' })).not.toBeInTheDocument();
+        expect(sideTablist().getByRole('tab', { name: 'Document' })).toHaveAttribute(
           'aria-selected',
           'true'
         );
@@ -354,56 +287,27 @@ describe('Entity view', () => {
 
   describe('metadata editing session', () => {
     it('keeps dirty draft when editing on side then opening main Metadata', async () => {
-      render(
-        <TestRouterContext
-          loaderData={{
-            entity: sampleEntity,
-            mainDocument: sampleMainDocument,
-            pagePlaintext: '',
-          }}
-        >
-          <ServicesProvider value={createTestServices()}>
-            <TestAtomStoreProvider
-              initialValues={[
-                [templatesAtom, sampleTemplate],
-                [userAtom, { _id: '1', role: 'admin', name: 'admin' }],
-              ]}
-            >
-              <Entity />
-            </TestAtomStoreProvider>
-          </ServicesProvider>
-        </TestRouterContext>
-      );
-
+      renderEntity({ user: adminUser, withServices: true });
       await checkEntityRendered();
 
-      let tablists = screen.getAllByTestId('tabs-comp');
-      const sideTabs = within(tablists[1]);
-      fireEvent.click(sideTabs.getByRole('tab', { name: 'Metadata' }));
-
+      fireEvent.click(sideTablist().getByRole('tab', { name: 'Metadata' }));
       await waitFor(() => {
         expect(screen.getByRole('button', { name: 'Edit' })).toBeInTheDocument();
       });
 
       fireEvent.click(screen.getByRole('button', { name: 'Edit' }));
-
       const titleInput = await screen.findByRole('textbox', { name: /Title/ });
       fireEvent.change(titleInput, { target: { value: 'Dirty from side' } });
       expect(titleInput).toHaveValue('Dirty from side');
 
-      tablists = screen.getAllByTestId('tabs-comp');
-      const mainTabs = within(tablists[0]);
-      fireEvent.click(mainTabs.getByRole('tab', { name: 'Metadata' }));
-
+      fireEvent.click(mainTablist().getByRole('tab', { name: 'Metadata' }));
       await waitFor(() => {
         expect(screen.getByTestId('entity-edit-form')).toBeInTheDocument();
         expect(screen.getByRole('textbox', { name: /Title/ })).toHaveValue('Dirty from side');
         expect(screen.getByRole('button', { name: 'Save' })).toBeInTheDocument();
       });
 
-      const metadataTab = within(screen.getAllByTestId('tabs-comp')[0]).getByRole('tab', {
-        name: /Metadata/,
-      });
+      const metadataTab = mainTablist().getByRole('tab', { name: /Metadata/ });
       expect(within(metadataTab).getByTestId('accent-dot')).toBeInTheDocument();
     });
   });
@@ -420,24 +324,10 @@ describe('Entity view', () => {
     });
 
     it('should switch to plain text view', async () => {
-      render(
-        <TestRouterContext
-          loaderData={{
-            entity: { ...sampleEntity },
-            mainDocument: sampleMainDocument,
-            pagePlaintext: pageText,
-          }}
-        >
-          <TestAtomStoreProvider initialValues={[[templatesAtom, sampleTemplate]]}>
-            <Entity />
-          </TestAtomStoreProvider>
-        </TestRouterContext>
-      );
-
+      renderEntity({ pagePlaintext: pageText });
       await checkEntityRendered();
 
       expect(screen.getByTestId('mock-pdf')).toBeInTheDocument();
-
       expect(
         screen.getByText('This is the plain text').closest('.overflow-auto')?.classList
       ).toContain('hidden');
@@ -453,20 +343,7 @@ describe('Entity view', () => {
     it('should render the plain text view on SSR', async () => {
       jest.replaceProperty(utils, 'isClient', false);
 
-      render(
-        <TestRouterContext
-          loaderData={{
-            entity: { ...sampleEntity },
-            mainDocument: sampleMainDocument,
-            pagePlaintext: pageText,
-          }}
-        >
-          <TestAtomStoreProvider initialValues={[[templatesAtom, sampleTemplate]]}>
-            <Entity />
-          </TestAtomStoreProvider>
-        </TestRouterContext>
-      );
-
+      renderEntity({ pagePlaintext: pageText });
       await checkEntityRendered();
 
       await waitFor(() => {
@@ -479,25 +356,13 @@ describe('Entity view', () => {
 
   describe('Entity without mainDocument', () => {
     it('does not render Document tab and defaults to Metadata', async () => {
-      const entityNoDoc = { ...sampleEntity, documents: undefined } as any;
+      const entityNoDoc = { ...sampleEntity, documents: undefined };
 
-      render(
-        <TestRouterContext
-          loaderData={{ entity: entityNoDoc, mainDocument: undefined, pagePlaintext: '' }}
-        >
-          <TestAtomStoreProvider initialValues={[[templatesAtom, sampleTemplate]]}>
-            <Entity />
-          </TestAtomStoreProvider>
-        </TestRouterContext>
-      );
-
+      renderEntity({ entity: entityNoDoc, mainDocument: undefined });
       await checkEntityRendered();
 
-      const tablists = screen.getAllByTestId('tabs-comp');
-      const mainTabs = within(tablists[0]);
-
-      expect(mainTabs.queryByRole('tab', { name: 'Document' })).not.toBeInTheDocument();
-      expect(mainTabs.getByRole('tab', { name: 'Metadata' })).toHaveAttribute(
+      expect(mainTablist().queryByRole('tab', { name: 'Document' })).not.toBeInTheDocument();
+      expect(mainTablist().getByRole('tab', { name: 'Metadata' })).toHaveAttribute(
         'aria-selected',
         'true'
       );
@@ -510,31 +375,14 @@ describe('Entity view', () => {
         attachments: [],
       } as EntityType;
 
-      render(
-        <TestRouterContext
-          loaderData={{ entity: entityNoFiles, mainDocument: undefined, pagePlaintext: '' }}
-        >
-          <TestAtomStoreProvider
-            initialValues={[
-              [templatesAtom, sampleTemplate],
-              [userAtom, { _id: '1', role: 'admin', name: 'admin' }],
-            ]}
-          >
-            <Entity />
-          </TestAtomStoreProvider>
-        </TestRouterContext>
-      );
-
+      renderEntity({ entity: entityNoFiles, mainDocument: undefined, user: adminUser });
       await checkEntityRendered();
 
-      const tablists = screen.getAllByTestId('tabs-comp');
-      const mainTabs = within(tablists[0]);
-      expect(mainTabs.getByRole('tab', { name: /Files/ })).toBeInTheDocument();
-
-      fireEvent.click(mainTabs.getByRole('tab', { name: /Files/ }));
+      expect(mainTablist().getByRole('tab', { name: /Files/ })).toBeInTheDocument();
+      fireEvent.click(mainTablist().getByRole('tab', { name: /Files/ }));
 
       await waitFor(() => {
-        expect(mainTabs.getByRole('tab', { name: /Files/ })).toHaveAttribute(
+        expect(mainTablist().getByRole('tab', { name: /Files/ })).toHaveAttribute(
           'aria-selected',
           'true'
         );
@@ -545,17 +393,10 @@ describe('Entity view', () => {
 
   describe('search tab', () => {
     it('should be shown by default when there is a search in the URL', async () => {
-      render(
-        <TestRouterContext
-          loaderData={{ entity: sampleEntity, pagePlaintext: '' }}
-          initialEntries={['/#s=search&searchTerm=term']}
-        >
-          <TestAtomStoreProvider initialValues={[[templatesAtom, sampleTemplate]]}>
-            <Entity />
-          </TestAtomStoreProvider>
-        </TestRouterContext>
-      );
-
+      renderEntity({
+        mainDocument: undefined,
+        initialEntries: ['/#s=search&searchTerm=term'],
+      });
       await checkEntityRendered();
 
       const input = screen.getByRole('searchbox');
@@ -579,21 +420,7 @@ describe('Entity view', () => {
       entityLoaderCache.setSearchResults('shared1', 'en:1', 'search', snippetsData);
       jest.spyOn(searchApi, 'snippets').mockResolvedValue(snippetsData);
 
-      render(
-        <TestRouterContext
-          loaderData={{
-            entity: sampleEntity,
-            mainDocument: sampleMainDocument,
-            pagePlaintext: '',
-          }}
-          initialEntries={['/#s=search&searchTerm=search']}
-        >
-          <TestAtomStoreProvider initialValues={[[templatesAtom, sampleTemplate]]}>
-            <Entity />
-          </TestAtomStoreProvider>
-        </TestRouterContext>
-      );
-
+      renderEntity({ initialEntries: ['/#s=search&searchTerm=search'] });
       await checkEntityRendered();
 
       expect(await screen.findByText('Match title')).toBeInTheDocument();
