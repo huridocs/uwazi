@@ -49,7 +49,7 @@ export async function requestViewerState(requestParams, globalResources) {
       documentViewer: {
         doc: {
           ...doc,
-          relations: references,
+          relations: [],
         },
         references,
         relationTypes,
