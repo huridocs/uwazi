@@ -14,12 +14,16 @@ jest.mock('#app/I18N/index.js', () => ({
     children,
     to,
     title,
+    target,
+    rel,
   }: {
     children: React.ReactNode;
     to: string;
     title?: string;
+    target?: string;
+    rel?: string;
   }) => (
-    <a href={to} title={title}>
+    <a href={to} title={title} target={target} rel={rel}>
       {children}
     </a>
   ),
