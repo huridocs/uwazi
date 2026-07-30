@@ -1,11 +1,8 @@
-import React from 'react';
+import React, { ReactNode } from 'react';
 import { Translate } from '#app/I18N/index.js';
 import type { ClientProperty, ClientTemplateSchema } from '#V2/shared/types.js';
 import type { MetadataProperty, RelationshipMetadataProperty } from '#V2/formatters/types.js';
-import {
-  FULL_ROW_METADATA_FIELD_LAYOUT,
-  isInheritingRelationship,
-} from '../metadataPropertyLayout.js';
+import { isInheritingRelationship } from '../metadataPropertyLayout.js';
 import { renderFieldContent } from './metadataFieldContent.js';
 import { Relationship } from './Relationship.js';
 
@@ -17,7 +14,16 @@ type RelationshipCardsProps = {
   inheritingTerminalById?: Map<string, MetadataProperty>;
   /** Skip link-only connections — host renders those in the Details table. */
   inheritingOnly?: boolean;
-  masonry?: boolean;
+};
+
+type BuildRelationshipCardNodesArgs = {
+  fields: RelationshipMetadataProperty[];
+  translationContext: string;
+  templatePropertyById: Map<string, ClientProperty>;
+  templates?: ClientTemplateSchema[];
+  inheritingTerminalById?: Map<string, MetadataProperty>;
+  inheritingOnly?: boolean;
+  relationshipClassName?: string;
 };
 
 const hasLinkedEntities = (field: RelationshipMetadataProperty): boolean =>
@@ -42,6 +48,50 @@ const inheritLabelForProperty = (
   return undefined;
 };
 
+const buildRelationshipCardNodes = ({
+  fields,
+  translationContext,
+  templatePropertyById,
+  templates,
+  inheritingTerminalById,
+  inheritingOnly = false,
+  relationshipClassName,
+}: BuildRelationshipCardNodesArgs): ReactNode[] =>
+  fields
+    .filter(field => {
+      if (!hasLinkedEntities(field)) {
+        return false;
+      }
+      if (inheritingOnly && !isInheritingRelationship(field)) {
+        return false;
+      }
+      return true;
+    })
+    .map(data => {
+      const templateProperty = templatePropertyById.get(data._id);
+      const terminal = inheritingTerminalById?.get(data._id);
+      const inheritedContent = terminal ? renderFieldContent(terminal, true) : null;
+      return (
+        <div key={data._id} data-field-key={data._id}>
+          <Relationship
+            values={data.values}
+            label={data.label}
+            translationContext={translationContext}
+            hideLabel={data.hideLabel}
+            className={relationshipClassName}
+            relationTypeId={templateProperty?.relationType}
+            targetTemplateId={data.relationShipTarget || templateProperty?.content}
+            inheritLabel={
+              isInheritingRelationship(data)
+                ? inheritLabelForProperty(templateProperty, templates)
+                : undefined
+            }
+            inheritedContent={inheritedContent || undefined}
+          />
+        </div>
+      );
+    });
+
 const RelationshipCards = ({
   fields,
   translationContext,
@@ -49,63 +99,31 @@ const RelationshipCards = ({
   templates,
   inheritingTerminalById,
   inheritingOnly = false,
-  masonry = false,
 }: RelationshipCardsProps) => {
-  const visibleFields = fields.filter(field => {
-    if (!hasLinkedEntities(field)) {
-      return false;
-    }
-    if (inheritingOnly && !isInheritingRelationship(field)) {
-      return false;
-    }
-    return true;
+  const list = buildRelationshipCardNodes({
+    fields,
+    translationContext,
+    templatePropertyById,
+    templates,
+    inheritingTerminalById,
+    inheritingOnly,
   });
 
-  if (!visibleFields.length) {
+  if (!list.length) {
     return null;
   }
 
-  const list = visibleFields.map(data => {
-    const templateProperty = templatePropertyById.get(data._id);
-    const terminal = inheritingTerminalById?.get(data._id);
-    const inheritedContent = terminal ? renderFieldContent(terminal, true) : null;
-    return (
-      <div key={data._id} data-field-key={data._id}>
-        <Relationship
-          values={data.values}
-          label={data.label}
-          translationContext={translationContext}
-          hideLabel={data.hideLabel}
-          className={masonry ? FULL_ROW_METADATA_FIELD_LAYOUT : undefined}
-          relationTypeId={templateProperty?.relationType}
-          targetTemplateId={data.relationShipTarget || templateProperty?.content}
-          inheritLabel={
-            isInheritingRelationship(data)
-              ? inheritLabelForProperty(templateProperty, templates)
-              : undefined
-          }
-          inheritedContent={inheritedContent || undefined}
-        />
-      </div>
-    );
-  });
-
   return (
     <>
-      <div
-        className={`mt-2 flex w-full min-w-0 items-center ${masonry ? 'basis-full' : ''}`.trim()}
-      >
+      <div className="mt-2 flex w-full min-w-0 items-center">
         <p className="text-xs font-semibold uppercase tracking-wide text-ink-tertiary">
           <Translate>Relationships</Translate>
         </p>
       </div>
-      {masonry ? (
-        <dl className="flex min-w-0 flex-wrap gap-3">{list}</dl>
-      ) : (
-        <div className="flex flex-col gap-3">{list}</div>
-      )}
+      <div className="flex flex-col gap-3">{list}</div>
     </>
   );
 };
 
-export { RelationshipCards };
+export { RelationshipCards, buildRelationshipCardNodes };
+export type { BuildRelationshipCardNodesArgs };

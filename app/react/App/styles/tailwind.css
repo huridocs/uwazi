@@ -240,6 +240,22 @@
   background-color: var(--color-theme-action-primary, var(--color-theme-text-primary));
 }
 
+@utility bg-ink-70 {
+  background-color: color-mix(
+    in srgb,
+    var(--color-theme-action-primary, var(--color-theme-text-primary, #1c1917)) 70%,
+    transparent
+  );
+}
+
+@utility bg-warm-30 {
+  background-color: color-mix(
+    in srgb,
+    var(--color-theme-surface-warm, var(--color-theme-bg-warm, #fcfaf8)) 30%,
+    transparent
+  );
+}
+
 @utility bg-ink-fade {
   background-color: color-mix(in srgb, var(--text-primary) 40%, transparent);
 }

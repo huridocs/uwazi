@@ -1,4 +1,3 @@
-/* eslint-disable react/no-multi-comp */
 import React, { useEffect, useState } from 'react';
 import { ArrowDownTrayIcon, EyeIcon } from '@heroicons/react/24/outline';
 import { useAtomValue } from 'jotai';
@@ -20,18 +19,16 @@ type DocumentPreviewCardProps = {
   previewField?: MetadataProperty;
 };
 
-type FactItem = { label: string; value: string; ltr?: boolean };
+type DocumentFact = { label: string; value: string; ltr?: boolean };
 
-const Fact = ({ label, value, ltr }: FactItem) => (
-  <div className="min-w-0 space-y-0.5">
-    <p className="text-nano font-medium uppercase tracking-wide text-ink-tertiary">
-      <Translate>{label}</Translate>
-    </p>
-    <p className="truncate text-sm text-ink" dir={ltr ? 'ltr' : undefined} title={value}>
-      {value}
-    </p>
-  </div>
-);
+type DocumentPreviewModelArgs = {
+  entity: Entity;
+  previewField?: MetadataProperty;
+  locale: string;
+  defaultLanguage?: string;
+  previewFailed: boolean;
+  thumbFailed: boolean;
+};
 
 const typeLabelFromMime = (mimetype?: string, filename?: string): string | undefined => {
   const mime = mimetype || (filename ? getMimetypeFromUrl(filename) : '');
@@ -45,13 +42,14 @@ const isPdf = (mimetype?: string, filename?: string) => {
   return mime === 'application/pdf' || /\.pdf$/i.test(filename || '');
 };
 
-// eslint-disable-next-line max-statements
-const DocumentPreviewCard = ({ entity, previewField }: DocumentPreviewCardProps) => {
-  const locale = useAtomValue(localeAtom);
-  const settings = useAtomValue(settingsAtom);
-  const defaultLanguage = settings?.languages?.find(language => language.default)?.key;
-  const [previewFailed, setPreviewFailed] = useState(false);
-  const [thumbFailed, setThumbFailed] = useState(false);
+const buildDocumentPreviewModel = ({
+  entity,
+  previewField,
+  locale,
+  defaultLanguage,
+  previewFailed,
+  thumbFailed,
+}: DocumentPreviewModelArgs) => {
   const document = getMainDocument(entity.documents, entity.language, defaultLanguage);
   const previewValues =
     previewField && (previewField.type === 'preview' || previewField.type === 'image')
@@ -59,13 +57,6 @@ const DocumentPreviewCard = ({ entity, previewField }: DocumentPreviewCardProps)
       : undefined;
   const previewSrc = previewValues?.find(value => Boolean(value.value))?.value;
   const hasPreview = Boolean(previewSrc);
-  const documentId = document?._id ? String(document._id) : undefined;
-
-  useEffect(() => {
-    setPreviewFailed(false);
-    setThumbFailed(false);
-  }, [previewSrc, documentId, entity._id, entity.sharedId, entity.language]);
-
   if (!document && !hasPreview) {
     return null;
   }
@@ -76,39 +67,91 @@ const DocumentPreviewCard = ({ entity, previewField }: DocumentPreviewCardProps)
     typeof document?.size === 'number' && document.size > 0
       ? formatBytes(document.size)
       : undefined;
-  const displayContext = { ...metadataDisplayPresets.rich, locale };
   const added =
     typeof document?.creationDate === 'number'
-      ? formatMetadataTimestamp(document.creationDate, displayContext)
+      ? formatMetadataTimestamp(document.creationDate, {
+          ...metadataDisplayPresets.rich,
+          locale,
+        })
       : undefined;
   const fileUrl = document?.filename
     ? `/api/files/${document.filename}`
     : document?.url || undefined;
   const downloadUrl = document?.filename && fileUrl ? `${fileUrl}?download=true` : fileUrl;
+  const activePreviewSrc = previewSrc && !previewFailed ? previewSrc : undefined;
   const fileThumbSrc =
     document?._id && !thumbFailed ? `/api/files/${String(document._id)}.jpg` : undefined;
-  const activePreviewSrc = previewSrc && !previewFailed ? previewSrc : undefined;
-  const thumbSrc = activePreviewSrc || fileThumbSrc;
-  const showPdfBadge = isPdf(document?.mimetype, document?.filename || document?.originalname);
-
-  const facts: FactItem[] = [
+  const facts: DocumentFact[] = [
     ...(type ? [{ label: 'Type', value: type }] : []),
     ...(size ? [{ label: 'Size', value: size, ltr: true }] : []),
     ...(added ? [{ label: 'Added', value: added, ltr: true }] : []),
   ];
+
+  return {
+    name,
+    facts,
+    fileUrl,
+    downloadUrl,
+    thumbSrc: activePreviewSrc || fileThumbSrc,
+    activePreviewSrc,
+    showPdfBadge: isPdf(document?.mimetype, document?.filename || document?.originalname),
+    hasFilename: Boolean(document?.filename),
+    documentId: document?._id ? String(document._id) : document?.filename,
+  };
+};
+
+const renderFact = (label: string, value: string, ltr?: boolean) => (
+  <div className="min-w-0 space-y-0.5">
+    <p className="text-nano font-medium uppercase tracking-wide text-ink-tertiary">
+      <Translate>{label}</Translate>
+    </p>
+    <p className="truncate text-sm text-ink" dir={ltr ? 'ltr' : undefined} title={value}>
+      {value}
+    </p>
+  </div>
+);
+
+const DocumentPreviewCard = ({ entity, previewField }: DocumentPreviewCardProps) => {
+  const locale = useAtomValue(localeAtom);
+  const settings = useAtomValue(settingsAtom);
+  const defaultLanguage = settings?.languages?.find(language => language.default)?.key;
+  const [previewFailed, setPreviewFailed] = useState(false);
+  const [thumbFailed, setThumbFailed] = useState(false);
+  const model = buildDocumentPreviewModel({
+    entity,
+    previewField,
+    locale,
+    defaultLanguage,
+    previewFailed,
+    thumbFailed,
+  });
+  const previewSrc =
+    previewField && (previewField.type === 'preview' || previewField.type === 'image')
+      ? previewField.values.find(value => Boolean(value.value))?.value
+      : undefined;
+  const documentId = model?.documentId;
+
+  useEffect(() => {
+    setPreviewFailed(false);
+    setThumbFailed(false);
+  }, [previewSrc, documentId, entity._id, entity.sharedId, entity.language]);
+
+  if (!model) {
+    return null;
+  }
 
   return (
     <MetadataCard title={<Translate>Document</Translate>}>
       <div className="flex items-start gap-4">
         <div className="group relative h-29.5 w-26 shrink-0 overflow-hidden rounded border border-border bg-vellum">
           <div className="absolute inset-x-[16%] top-[10%] bottom-[-15%] overflow-hidden rounded-t-[3px] border border-border-soft bg-paper shadow-sm">
-            {thumbSrc ? (
+            {model.thumbSrc ? (
               <img
-                src={thumbSrc}
-                alt={name || ''}
+                src={model.thumbSrc}
+                alt={model.name || ''}
                 className="h-full w-full object-cover object-top"
                 onError={() => {
-                  if (activePreviewSrc) {
+                  if (model.activePreviewSrc) {
                     setPreviewFailed(true);
                     return;
                   }
@@ -117,30 +160,32 @@ const DocumentPreviewCard = ({ entity, previewField }: DocumentPreviewCardProps)
               />
             ) : null}
           </div>
-          {showPdfBadge ? (
+          {model.showPdfBadge ? (
             <Translate
               key="pdf-badge"
-              className="absolute bottom-1 inset-e-1 rounded-xs bg-ink/70 px-1 py-px text-pico font-semibold uppercase leading-none tracking-wider text-parchment"
+              className="absolute bottom-1 inset-e-1 rounded-xs bg-ink-70 px-1 py-px text-pico font-semibold uppercase leading-none tracking-wider text-parchment"
             >
               PDF
             </Translate>
           ) : null}
         </div>
         <div className="min-w-0 flex flex-1 flex-col gap-3">
-          {name ? <Fact label="Name" value={name} /> : null}
-          {facts.length > 0 ? (
+          {model.name ? renderFact('Name', model.name) : null}
+          {model.facts.length > 0 ? (
             <div className="grid grid-cols-2 gap-x-6 gap-y-3 sm:grid-cols-4">
-              {facts.map(fact => (
-                <Fact key={fact.label} label={fact.label} value={fact.value} ltr={fact.ltr} />
+              {model.facts.map(fact => (
+                <React.Fragment key={fact.label}>
+                  {renderFact(fact.label, fact.value, fact.ltr)}
+                </React.Fragment>
               ))}
             </div>
           ) : null}
         </div>
       </div>
-      {fileUrl ? (
+      {model.fileUrl ? (
         <div className="flex items-center gap-2 pt-1">
           <a
-            href={fileUrl}
+            href={model.fileUrl}
             target="_blank"
             rel="noreferrer"
             className="inline-flex items-center gap-1.5 rounded-md bg-warm px-3 py-1.5 text-xs font-medium text-ink-secondary transition-colors hover:bg-parchment hover:text-ink"
@@ -148,10 +193,10 @@ const DocumentPreviewCard = ({ entity, previewField }: DocumentPreviewCardProps)
             <EyeIcon className="h-nano w-nano text-ink-tertiary" />
             <Translate>View</Translate>
           </a>
-          {downloadUrl ? (
+          {model.downloadUrl ? (
             <a
-              href={downloadUrl}
-              download={Boolean(document?.filename)}
+              href={model.downloadUrl}
+              download={model.hasFilename}
               className="inline-flex items-center gap-1.5 rounded-md bg-warm px-3 py-1.5 text-xs font-medium text-ink-secondary transition-colors hover:bg-parchment hover:text-ink"
             >
               <ArrowDownTrayIcon className="h-nano w-nano text-ink-tertiary" />

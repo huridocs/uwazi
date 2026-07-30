@@ -1,4 +1,5 @@
 /** @jest-environment jsdom */
+/* eslint-disable react/no-multi-comp */
 import React from 'react';
 import { render, screen, within } from '@testing-library/react';
 import { TestAtomStoreProvider } from '#V2/testing/index.js';
@@ -12,13 +13,13 @@ jest.mock('#app/I18N/index.js', () => ({
   I18NLinkV2: ({
     children,
     to,
-    ...rest
+    title,
   }: {
     children: React.ReactNode;
     to: string;
     title?: string;
   }) => (
-    <a href={to} {...rest}>
+    <a href={to} title={title}>
       {children}
     </a>
   ),

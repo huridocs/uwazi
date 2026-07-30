@@ -46,6 +46,9 @@ const isLongField = (data: MetadataProperty): boolean => {
   return text.length > LONG_FIELD_CHAR_THRESHOLD || text.includes('\n');
 };
 
+const isRelationshipProperty = (data: MetadataProperty): data is RelationshipMetadataProperty =>
+  data.type === 'relationship';
+
 const isLinkOnlyRelationship = (field: RelationshipMetadataProperty): boolean => !field.inherited;
 
 const isInheritingRelationship = (field: RelationshipMetadataProperty): boolean =>
@@ -173,6 +176,7 @@ export {
   FULL_ROW_METADATA_FIELD_LAYOUT,
   isSpecializedFullWidthField,
   isLongField,
+  isRelationshipProperty,
   isLinkOnlyRelationship,
   isInheritingRelationship,
   fieldShowsInCard,

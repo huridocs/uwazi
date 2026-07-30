@@ -10,8 +10,13 @@ export { MetadataItemsTable } from './MetadataItemsTable.js';
 export { MasonryPropertyCard } from './MasonryPropertyCard.js';
 export { PropertyLabel } from './PropertyLabel.js';
 export { PropertyValue } from './PropertyValue.js';
-export { Relationship, ConnectionPills, isEntityRelationshipValue } from './Relationship.js';
-export { RelationshipCards } from './RelationshipCards.js';
+export { Relationship } from './Relationship.js';
+export {
+  ConnectionPills,
+  connectionPillsForField,
+  isEntityRelationshipValue,
+} from './ConnectionPills.js';
+export { RelationshipCards, buildRelationshipCardNodes } from './RelationshipCards.js';
 export { RelationCaption } from './RelationCaption.js';
 export { TemplateLabel } from './TemplateLabel.js';
 export { SimpleValue } from './SimpleValue.js';

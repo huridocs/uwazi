@@ -25,7 +25,7 @@ const MetadataItemsTable = ({ items }: MetadataItemsTableProps) => {
             <tr
               key={item.id}
               data-field-key={item.id}
-              className="border-t border-border-40 transition-colors first:border-t-0 hover:bg-warm/30"
+              className="border-t border-border-40 transition-colors first:border-t-0 hover:bg-warm-30"
             >
               <th
                 scope="row"
