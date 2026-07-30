@@ -164,10 +164,7 @@ describe('relationship type core routes', () => {
       request(app).get(`/api/relationtypes?_id=${id}`).expect(200);
 
     const updateType = async (id: string, name: string) =>
-      request(app)
-        .post('/api/relationtypes')
-        .send({ _id: id, name })
-        .expect(200);
+      request(app).post('/api/relationtypes').send({ _id: id, name }).expect(200);
 
     const deleteType = async (id: string) =>
       request(app).delete(`/api/relationtypes?_id=${id}`).expect(200);
