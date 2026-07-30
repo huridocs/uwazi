@@ -253,7 +253,7 @@ describe('CsvPreflightJob (integration)', () => {
     await insertImport(csvImportsDS, { importId, templateId, userId });
     await stageRows(rowsDS, {
       importId,
-      csv: 'title,select_property__en\nrow,"Parent::Child::Extra"',
+      csv: 'title,select_property__en,select_property__es\nrow,"Parent::Child::Extra",Valor',
     });
 
     const callbacks = createCallbacks();
@@ -307,6 +307,56 @@ describe('CsvPreflightJob (integration)', () => {
     );
     expect(callbacks.onError).toHaveBeenCalledWith(
       expect.objectContaining({ importId, error: expect.any(Error) })
+    );
+  });
+
+  it('raises header validation errors when language-suffixed columns omit an instance language', async () => {
+    await testingEnvironment.setFixtures({
+      ...fixtures,
+      settings: [
+        {
+          ...fixtures.settings[0],
+          languages: [
+            { key: 'en' as LanguageISO6391, label: 'English', default: true },
+            { key: 'es' as LanguageISO6391, label: 'Spanish' },
+            { key: 'fr' as LanguageISO6391, label: 'French' },
+          ],
+        },
+      ],
+    });
+
+    const { useCase, csvImportsDS, rowsDS } = buildUseCase();
+    const importId = fixturesFactory.idString('preflight-missing-language-column');
+    createdImportIds.push(importId);
+    const userId = fixturesFactory.idString('preflight-missing-language-column-user');
+    const tenantName = tenants.current().name;
+
+    await insertImport(csvImportsDS, { importId, templateId, userId });
+    await stageRows(rowsDS, {
+      importId,
+      csv: 'title__en,title__es\nTitle EN,Title ES',
+    });
+
+    const callbacks = createCallbacks();
+    await expect(useCase.execute({ importId, tenantName, userId, callbacks })).rejects.toThrow(
+      'Header validation failed'
+    );
+
+    const failedImport = (await csvImportsDS.getById(importId)).getDataOrThrow();
+    expect(failedImport.status).toBe(CsvImportStatus.Failed);
+    expect(failedImport.failure).toEqual(
+      expect.objectContaining({
+        code: 'HEADER_VALIDATION_FAILED',
+        message: 'Header validation failed',
+        retryable: false,
+        issues: expect.arrayContaining([
+          expect.objectContaining({
+            reason: 'MissingLanguageColumn',
+            property: 'title',
+            columns: expect.arrayContaining(['fr']),
+          }),
+        ]),
+      })
     );
   });
 });

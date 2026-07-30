@@ -3,6 +3,7 @@ import { CsvImportEntityNotFoundInTemplateError } from './CsvImportEntityNotFoun
 import { CsvImportPropertyValidationError } from './CsvImportPropertyValidationError.js';
 import { CsvImportRelationshipResolutionError } from './CsvImportRelationshipResolutionError.js';
 import { CsvImportRowEmptyError } from './CsvImportRowEmptyError.js';
+import { CsvImportValueRequiredError } from './CsvImportValueRequiredError.js';
 import type {
   RelationshipResolutionReason,
   CsvImportFileNotFoundErrorParams,
@@ -26,4 +27,5 @@ export {
   CsvImportRelationshipResolutionError,
   CsvImportPropertyValidationError,
   CsvImportRowEmptyError,
+  CsvImportValueRequiredError,
 };

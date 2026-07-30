@@ -15,6 +15,7 @@ import { CsvImportRelationshipValuesDataSource } from '../contracts/CsvImportRel
 import { ANY_TEMPLATE_RELATIONSHIP_KEY } from './CsvPreflightRelationshipsService.js';
 import { normalizeCsvThesaurusLabel } from './CsvThesaurusLabelNormalizer.js';
 import { CsvImportRelationshipResolutionError } from './CsvImportRowProcessingError.js';
+import { CsvImportValueRequiredError } from './CsvImportValueRequiredError.js';
 
 type RelationshipUnresolvedToken = {
   token: string;
@@ -445,6 +446,18 @@ const buildAssignmentsForLanguage = ({
     sanitizedHeaders,
     rowValues,
   });
+
+  if (property.name === 'title' && !value?.trim()) {
+    const column = headerAnalysis.languagesPerHeader.title?.has(language)
+      ? `title__${language}`
+      : 'title';
+    throw new CsvImportValueRequiredError({
+      property: 'title',
+      column,
+      language,
+      rawValue: value,
+    });
+  }
 
   if (!value) {
     return [];
