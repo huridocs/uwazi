@@ -68,6 +68,10 @@ type EnableTwoFactorAuthRequest = { token: string };
 
 type EnableTwoFactorAuthResponse = { success: boolean };
 
+type ResetTwoFactorAuthRequest = { _id: string };
+
+type ResetTwoFactorAuthResponse = { success: boolean };
+
 export type {
   User,
   GetUsersResponse,
@@ -89,4 +93,6 @@ export type {
   GenerateTwoFactorSecretResponse,
   EnableTwoFactorAuthRequest,
   EnableTwoFactorAuthResponse,
+  ResetTwoFactorAuthRequest,
+  ResetTwoFactorAuthResponse,
 };

@@ -29,6 +29,7 @@ interface UsersDataSource {
   setTwoFactorSecret(userId: string, secret: string): Promise<void>;
   getTwoFactorSecret(userId: string): Promise<ResultType<string | null, UserNotFound>>;
   enableTwoFactor(userId: string): Promise<void>;
+  disableTwoFactor(userId: string): Promise<void>;
 }
 
 export type { UsersDataSource, TwoFactorStatus };

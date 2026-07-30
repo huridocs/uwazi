@@ -156,6 +156,13 @@ class MongoUsersDataSource implements UsersDataSource {
       { $set: { using2fa: true } }
     );
   }
+
+  async disableTwoFactor(userId: string): Promise<void> {
+    await this.dao.updateOne(
+      { _id: ObjectId.createFromHexString(userId) },
+      { $set: { using2fa: false, secret: null } }
+    );
+  }
 }
 
 export { MongoUsersDataSource };
