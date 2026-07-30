@@ -40,12 +40,8 @@ export const setSecret = async (user: User) => {
   throw createError('Unauthorized', 401);
 };
 
-/**
- * @deprecated v1 helper, only used by the deprecated enable2fa below.
- * Superseded by the token verification in EnableTwoFactorAuth
- * (app/api/core/application/EnableTwoFactorAuth.ts).
- * Remove once v2Auth2fa is enabled for all tenants.
- */
+// Not deprecated: also used by the login-time 2FA check in app/api/users/users.js
+// (validate2fa), which is outside the scope of the auth2fa route migration.
 export const verifyToken = async (user: User, token: string) => {
   const dbUser = await getUser({ _id: user._id }, '+secret');
   if (otplib.authenticator.verify({ token, secret: dbUser.secret || undefined })) {

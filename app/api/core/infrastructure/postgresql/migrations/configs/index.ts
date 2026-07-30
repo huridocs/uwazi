@@ -3,3 +3,4 @@ export { ThesaurusMigrationConfig } from './ThesaurusMigrationConfig.js';
 export { FilesMigrationConfig } from './FilesMigrationConfig.js';
 export { EntitiesMigrationConfig } from './EntitiesMigrationConfig.js';
 export { PasswordRecoveryMigrationConfig } from './PasswordRecoveryMigrationConfig.js';
+export { UsersMigrationConfig } from './UsersMigrationConfig.js';
