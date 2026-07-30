@@ -61,6 +61,12 @@ class RecoveryKeyNotFound extends DomainError {
   }
 }
 
+class TwoFactorAlreadyEnabled extends DomainError {
+  constructor() {
+    super('Two-factor authentication is already enabled', 'user.two_factor_already_enabled');
+  }
+}
+
 export {
   UsernameExists,
   EmailInUse,
@@ -72,4 +78,5 @@ export {
   UpdateUserError,
   InvalidUnlockCode,
   RecoveryKeyNotFound,
+  TwoFactorAlreadyEnabled,
 };

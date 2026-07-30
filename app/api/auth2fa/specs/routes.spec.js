@@ -4,6 +4,8 @@ import * as usersUtils from '#api/auth2fa/usersUtils.js';
 
 import auth2faRoutes from '../routes.js';
 
+// POST /api/auth2fa-secret has been migrated to the v2 architecture and is
+// covered by ./GenerateTwoFactorSecret.spec.ts instead.
 describe('Auth2fa Routes', () => {
   let routes;
   let req;
@@ -13,7 +15,6 @@ describe('Auth2fa Routes', () => {
 
   beforeEach(() => {
     routes = instrumentRoutes(auth2faRoutes);
-    jest.spyOn(usersUtils, 'setSecret').mockImplementation(() => {});
     jest.spyOn(usersUtils, 'enable2fa').mockImplementation(() => {});
     jest.spyOn(usersUtils, 'reset2fa').mockImplementation(() => {});
   });
@@ -21,11 +22,6 @@ describe('Auth2fa Routes', () => {
   const validateAuthorizationAndValidation = (path, roles) => {
     expect(routes._post(path, req)).toNeedAuthorization(roles);
     expect(routes.post.validation(path)).toMatchSnapshot();
-  };
-
-  const setSecretMock = passedUser => {
-    const respose = { otpauth: 'otpauthURL', secret: 'secretKey' };
-    return passedUser === user ? Promise.resolve(respose) : Promise.reject(incorrectUser);
   };
 
   const enable2faMock = (passedUser, passedToken) => {
@@ -60,17 +56,6 @@ describe('Auth2fa Routes', () => {
     await expectResponseToMatch(util, url, mock);
     expectNextWithError(util, url);
   };
-
-  describe('auth2fa-secret', () => {
-    beforeEach(() => {
-      user = { username: 'admin' };
-      req = { body: {}, user };
-    });
-
-    it('should conform the route with auth, validation, respond correctly and call next on error', async () => {
-      await validateRoute('setSecret', '/api/auth2fa-secret', setSecretMock, ['admin', 'editor']);
-    });
-  });
 
   describe('auth2fa-enable', () => {
     beforeEach(() => {

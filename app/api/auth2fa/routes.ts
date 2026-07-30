@@ -1,25 +1,26 @@
-import type { Application } from 'express';
+import type { Application, NextFunction, Request, Response } from 'express';
 import needsAuthorization from '#api/auth/authMiddleware.js';
 import * as usersUtils from '#api/auth2fa/usersUtils.js';
 import { validation } from '#api/utils/index.js';
 import { ObjectIdAsString } from '#api/utils/ajvSchemas.js';
 import { validatePasswordMiddleWare } from '#api/auth/index.js';
+import { tenants } from '#api/tenants/index.js';
+import { GenerateTwoFactorSecretController } from '#api/core/infrastructure/express/users/GenerateTwoFactorSecretController.js';
 
 export default (app: Application) => {
   app.post(
     '/api/auth2fa-secret',
     needsAuthorization(['admin', 'editor', 'collaborator']),
-    validation.validateRequest({
-      type: 'object',
-    }),
-    async (req, res, next) => {
-      try {
-        const { otpauth, secret } = await usersUtils.setSecret(req.user);
-        res.json({ otpauth, secret });
-      } catch (err) {
-        next(err);
+    async (req: Request, res: Response, next: NextFunction) => {
+      if (tenants.current().featureFlags?.v2Auth2fa) {
+        next();
+      } else {
+        await validation.validateRequest({
+          type: 'object',
+        })(req, res, next);
       }
-    }
+    },
+    GenerateTwoFactorSecretController.createHandler()
   );
 
   app.post(

@@ -62,6 +62,8 @@ type ResetPasswordRequest = { key: string; password: string };
 
 type ResetPasswordResponse = string;
 
+type GenerateTwoFactorSecretResponse = { secret: string; otpauth: string };
+
 export type {
   User,
   GetUsersResponse,
@@ -80,4 +82,5 @@ export type {
   RecoverPasswordResponse,
   ResetPasswordRequest,
   ResetPasswordResponse,
+  GenerateTwoFactorSecretResponse,
 };

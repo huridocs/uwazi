@@ -8,6 +8,7 @@ export default {
   settings: [
     {
       site_name: 'Uwazi Collection',
+      languages: [{ key: 'en', label: 'English', default: true }],
     },
   ],
   users: [

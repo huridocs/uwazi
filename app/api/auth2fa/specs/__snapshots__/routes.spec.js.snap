@@ -57,15 +57,3 @@ Object {
 }
 `;
 
-exports[`Auth2fa Routes auth2fa-secret should conform the route with auth, validation, respond correctly and call next on error 1`] = `
-Object {
-  "type": "object",
-}
-`;
-
-exports[`Auth2fa Routes auth2fa-secret should conform the route with auth, validation, respond correctly and call next on error 2`] = `
-Object {
-  "otpauth": "otpauthURL",
-  "secret": "secretKey",
-}
-`;
