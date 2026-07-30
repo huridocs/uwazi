@@ -2,6 +2,7 @@ enum RowErrorCode {
   RowEmptyOrMalformed = 'ROW_EMPTY_OR_MALFORMED',
   HeaderMissingRequiredColumn = 'HEADER_MISSING_REQUIRED_COLUMN',
   ValueInvalidFormat = 'VALUE_INVALID_FORMAT',
+  ValueRequired = 'VALUE_REQUIRED',
   ValueUnsupportedLanguageColumn = 'VALUE_UNSUPPORTED_LANGUAGE_COLUMN',
   ThesaurusValueNotFound = 'THESAURUS_VALUE_NOT_FOUND',
   RelationshipNotFound = 'RELATIONSHIP_NOT_FOUND',

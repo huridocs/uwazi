@@ -31,6 +31,17 @@ type ValueEntry = Extract<PropertyValueInput, { value: unknown }>;
 const isValueEntry = (entry: PropertyValueInput): entry is ValueEntry => 'value' in entry;
 const getValueEntries = (entries: PropertyValueInput[]) => entries.filter(isValueEntry);
 
+const withRequiredTitle = (headers: string[], rowValues: string[]) => {
+  const hasTitle = headers.some(header => header === 'title' || header.startsWith('title__'));
+  if (hasTitle) {
+    return { headers, rowValues };
+  }
+  return {
+    headers: ['title', ...headers],
+    rowValues: ['Entity title', ...rowValues],
+  };
+};
+
 const buildAssignments = (params: {
   properties: any[];
   headers: string[];
@@ -44,12 +55,11 @@ const buildAssignments = (params: {
 }) => {
   const {
     properties,
-    headers,
-    rowValues,
     thesaurusIndex = new Map(),
     relationshipIndex = new Map(),
     attachmentLookup,
   } = params;
+  const { headers, rowValues } = withRequiredTitle(params.headers, params.rowValues);
   const template = TemplateBuilder.aTemplate({
     id: TEMPLATE_ID,
     properties,
@@ -311,9 +321,9 @@ describe('CsvEntitiesImportMapper', () => {
       ]),
     });
 
-    expect(assignments).toHaveLength(1);
-    expect(assignments[0].name).toBe('relationship');
-    expect(assignments[0].value).toEqual([{ value: 'shared-any-1' }]);
+    const relationshipAssignments = assignments.filter(a => a.name === 'relationship');
+    expect(relationshipAssignments).toHaveLength(1);
+    expect(relationshipAssignments[0].value).toEqual([{ value: 'shared-any-1' }]);
   });
 
   it('should map multiple any-template relationship values separated by pipe', () => {
@@ -352,9 +362,12 @@ describe('CsvEntitiesImportMapper', () => {
       ]),
     });
 
-    expect(assignments).toHaveLength(1);
-    expect(assignments[0].name).toBe('relationship');
-    expect(assignments[0].value).toEqual([{ value: 'shared-any-a' }, { value: 'shared-any-b' }]);
+    const relationshipAssignments = assignments.filter(a => a.name === 'relationship');
+    expect(relationshipAssignments).toHaveLength(1);
+    expect(relationshipAssignments[0].value).toEqual([
+      { value: 'shared-any-a' },
+      { value: 'shared-any-b' },
+    ]);
   });
 
   it('should fail any-template relationships with multiple values when one token is missing', () => {
@@ -438,7 +451,7 @@ describe('CsvEntitiesImportMapper', () => {
 
     const assignments = buildAssignments({ properties: [generated], headers, rowValues });
 
-    expect(assignments).toHaveLength(0);
+    expect(assignments.filter(a => a.name === 'generatedid')).toHaveLength(0);
   });
 
   // eslint-disable-next-line max-statements
@@ -451,7 +464,9 @@ describe('CsvEntitiesImportMapper', () => {
     });
     const headers = ['date'];
     const rowValues = ['2020-01-01'];
-    const assignments = buildAssignments({ properties: [date], headers, rowValues });
+    const assignments = buildAssignments({ properties: [date], headers, rowValues }).filter(
+      a => a.name === 'date'
+    );
     expect(assignments).toHaveLength(2);
     const [assignment] = assignments;
     const timestamp = getValueEntries(assignment.value)[0].value as number;
@@ -475,12 +490,12 @@ describe('CsvEntitiesImportMapper', () => {
       properties: [link],
       headers: ['link'],
       rowValues: ['label|http://example.com'],
-    });
+    }).filter(a => a.name === 'link');
     const geoAssignments = buildAssignments({
       properties: [geo],
       headers: ['geolocation'],
       rowValues: ['1.2|3.4'],
-    });
+    }).filter(a => a.name === 'geolocation');
     expect(getValueEntries(linkAssignments[0].value)[0].value).toEqual({
       label: 'label',
       url: 'http://example.com',
@@ -516,17 +531,17 @@ describe('CsvEntitiesImportMapper', () => {
       properties: [multidate],
       headers: ['multidate'],
       rowValues: ['2020|2021'],
-    });
+    }).filter(a => a.name === 'multidate');
     const rangeAssignments = buildAssignments({
       properties: [daterange],
       headers: ['daterange'],
       rowValues: ['2020:2021'],
-    });
+    }).filter(a => a.name === 'daterange');
     const multiRangeAssignments = buildAssignments({
       properties: [multidaterange],
       headers: ['multidaterange'],
       rowValues: ['2020:2021|2022:2023'],
-    });
+    }).filter(a => a.name === 'multidaterange');
 
     const multiDates = getValueEntries(multiAssignments[0].value).map(entry => {
       const timestamp = entry.value as number;

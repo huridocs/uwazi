@@ -69,6 +69,13 @@ const fixtures = {
     fixturesFactory.template('csvImportDateTemplate', [
       fixturesFactory.property('published_date', 'date'),
     ]),
+    fixturesFactory.template('csvImportMultilingualTemplate', [
+      fixturesFactory.property('text_field', 'text'),
+      fixturesFactory.property('markdown_field', 'markdown'),
+      fixturesFactory.property('link_field', 'link'),
+      fixturesFactory.property('image_field', 'image'),
+      fixturesFactory.property('media_field', 'media'),
+    ]),
   ],
 };
 
@@ -219,6 +226,7 @@ describe('CsvImportEntitiesJob (integration)', () => {
   const templateId = template._id.toString();
   const relatedTemplateId = fixtures.templates[1]._id.toString();
   const dateTemplateId = fixtures.templates[2]._id.toString();
+  const multilingualTemplateId = fixtures.templates[3]._id.toString();
   const createdImportIds: string[] = [];
 
   beforeAll(async () => {
@@ -278,6 +286,314 @@ describe('CsvImportEntitiesJob (integration)', () => {
       const entities = await fetchEntitiesByTemplate(entitiesDS, templateId);
       expect(entities).toHaveLength(1);
       expectEntityContent(entities[0]);
+    });
+
+    it('should keep language-specific values for all non-synced properties', async () => {
+      await testingEnvironment.setFixtures({
+        ...fixtures,
+        settings: [
+          {
+            ...fixtures.settings[0],
+            languages: [
+              { key: 'en' as LanguageISO6391, label: 'English', default: true },
+              { key: 'es' as LanguageISO6391, label: 'Spanish' },
+              { key: 'fr' as LanguageISO6391, label: 'French' },
+            ],
+          },
+        ],
+      });
+
+      const { useCase, csvImportsDS, rowsDS, rowErrorsDS, entitiesDS } = buildUseCase();
+      const importId = fixturesFactory.idString('import-entities-multilingual-props');
+      createdImportIds.push(importId);
+      const userId = fixturesFactory.idString('import-entities-multilingual-props-user');
+
+      await insertImport(csvImportsDS, {
+        importId,
+        templateId: multilingualTemplateId,
+        userId,
+      });
+      await stageRows(rowsDS, {
+        importId,
+        csv: [
+          [
+            'title__en',
+            'title__es',
+            'title__fr',
+            'text_field__en',
+            'text_field__es',
+            'text_field__fr',
+            'markdown_field__en',
+            'markdown_field__es',
+            'markdown_field__fr',
+            'link_field__en',
+            'link_field__es',
+            'link_field__fr',
+            'image_field__en',
+            'image_field__es',
+            'image_field__fr',
+            'media_field__en',
+            'media_field__es',
+            'media_field__fr',
+          ].join(','),
+          [
+            'Promoting – test EN',
+            'Promoción – test ES',
+            'Promouvoir – test FR',
+            'Text EN',
+            'Texto ES',
+            'Texte FR',
+            '**Markdown EN**',
+            '**Markdown ES**',
+            '**Markdown FR**',
+            'Label EN|http://example.com/en',
+            'Label ES|http://example.com/es',
+            'Label FR|http://example.com/fr',
+            'http://example.com/en.png',
+            'http://example.com/es.png',
+            'http://example.com/fr.png',
+            'video-en.mp4',
+            'video-es.mp4',
+            'video-fr.mp4',
+          ].join(','),
+        ].join('\n'),
+      });
+
+      const callbacks = createCallbacks();
+      await useCase.execute({ importId, callbacks });
+
+      const updatedImport = (await csvImportsDS.getById(importId)).getDataOrThrow();
+      const rowErrorsCount = await rowErrorsDS.countByImport(importId);
+      const entities = await fetchEntitiesByTemplate(entitiesDS, multilingualTemplateId);
+
+      expectCallbacksForSingleRow(callbacks, importId);
+      expectImportState(updatedImport);
+      expect(rowErrorsCount).toBe(0);
+      expect(entities).toHaveLength(1);
+
+      const entity = entities[0];
+      expect(entity.getTitle('en')).toBe('Promoting – test EN');
+      expect(entity.getTitle('es')).toBe('Promoción – test ES');
+      expect(entity.getTitle('fr')).toBe('Promouvoir – test FR');
+
+      const expectedByLanguage = {
+        en: {
+          text: 'Text EN',
+          markdown: '**Markdown EN**',
+          link: { label: 'Label EN', url: 'http://example.com/en' },
+          image: 'http://example.com/en.png',
+          media: 'video-en.mp4',
+        },
+        es: {
+          text: 'Texto ES',
+          markdown: '**Markdown ES**',
+          link: { label: 'Label ES', url: 'http://example.com/es' },
+          image: 'http://example.com/es.png',
+          media: 'video-es.mp4',
+        },
+        fr: {
+          text: 'Texte FR',
+          markdown: '**Markdown FR**',
+          link: { label: 'Label FR', url: 'http://example.com/fr' },
+          image: 'http://example.com/fr.png',
+          media: 'video-fr.mp4',
+        },
+      } as const;
+
+      (['en', 'es', 'fr'] as const).forEach(language => {
+        const expected = expectedByLanguage[language];
+
+        expect(entity.getValue('text_field', language).value[0].value).toBe(expected.text);
+        expect(entity.getValue('markdown_field', language).value[0].value).toBe(expected.markdown);
+        expect(entity.getValue('link_field', language).value[0].value).toEqual(expected.link);
+        expect(entity.getValue('image_field', language).value[0].value).toBe(expected.image);
+        expect(entity.getValue('media_field', language).value[0].value).toBe(expected.media);
+      });
+    });
+
+    it('should copy an unsuffixed title to every instance language', async () => {
+      await testingEnvironment.setFixtures({
+        ...fixtures,
+        settings: [
+          {
+            ...fixtures.settings[0],
+            languages: [
+              { key: 'en' as LanguageISO6391, label: 'English', default: true },
+              { key: 'es' as LanguageISO6391, label: 'Spanish' },
+              { key: 'fr' as LanguageISO6391, label: 'French' },
+            ],
+          },
+        ],
+      });
+
+      const { useCase, csvImportsDS, rowsDS, rowErrorsDS, entitiesDS } = buildUseCase();
+      const importId = fixturesFactory.idString('import-entities-plain-title-all-languages');
+      createdImportIds.push(importId);
+      const userId = fixturesFactory.idString('import-entities-plain-title-all-languages-user');
+
+      await insertImport(csvImportsDS, {
+        importId,
+        templateId,
+        userId,
+      });
+      await stageRows(rowsDS, {
+        importId,
+        csv: 'title,description\nShared Title,Shared description',
+      });
+
+      const callbacks = createCallbacks();
+      await useCase.execute({ importId, callbacks });
+
+      const rowErrorsCount = await rowErrorsDS.countByImport(importId);
+      const entities = await fetchEntitiesByTemplate(entitiesDS, templateId);
+
+      expect(rowErrorsCount).toBe(0);
+      expect(entities).toHaveLength(1);
+      expect(entities[0].getTitle('en')).toBe('Shared Title');
+      expect(entities[0].getTitle('es')).toBe('Shared Title');
+      expect(entities[0].getTitle('fr')).toBe('Shared Title');
+      expect(callbacks.onSuccess).toHaveBeenCalledWith({ importId });
+    });
+
+    it('should fail the import when language-suffixed headers omit an instance language', async () => {
+      await testingEnvironment.setFixtures({
+        ...fixtures,
+        settings: [
+          {
+            ...fixtures.settings[0],
+            languages: [
+              { key: 'en' as LanguageISO6391, label: 'English', default: true },
+              { key: 'es' as LanguageISO6391, label: 'Spanish' },
+              { key: 'fr' as LanguageISO6391, label: 'French' },
+            ],
+          },
+        ],
+      });
+
+      const { useCase, csvImportsDS, rowsDS, entitiesDS } = buildUseCase();
+      const importId = fixturesFactory.idString('import-entities-partial-title-languages');
+      createdImportIds.push(importId);
+      const userId = fixturesFactory.idString('import-entities-partial-title-languages-user');
+
+      await insertImport(csvImportsDS, {
+        importId,
+        templateId,
+        userId,
+      });
+      await stageRows(rowsDS, {
+        importId,
+        csv: [
+          'title__en,title__es,description',
+          'Promoting – test EN,Promoción – test ES,Shared description',
+        ].join('\n'),
+      });
+
+      const callbacks = createCallbacks();
+      await expect(useCase.execute({ importId, callbacks })).rejects.toThrow();
+
+      const updatedImport = (await csvImportsDS.getById(importId)).getDataOrThrow();
+      const entities = await fetchEntitiesByTemplate(entitiesDS, templateId);
+
+      expect(updatedImport.status).toBe(CsvImportStatus.Failed);
+      expect(entities).toHaveLength(0);
+      expect(callbacks.onSuccess).not.toHaveBeenCalled();
+      expect(callbacks.onError).toHaveBeenCalled();
+    });
+
+    it('should fail a row when a language-specific title value is blank', async () => {
+      await testingEnvironment.setFixtures({
+        ...fixtures,
+        settings: [
+          {
+            ...fixtures.settings[0],
+            languages: [
+              { key: 'en' as LanguageISO6391, label: 'English', default: true },
+              { key: 'es' as LanguageISO6391, label: 'Spanish' },
+              { key: 'fr' as LanguageISO6391, label: 'French' },
+            ],
+          },
+        ],
+      });
+
+      const { useCase, csvImportsDS, rowsDS, rowErrorsDS, entitiesDS } = buildUseCase();
+      const importId = fixturesFactory.idString('import-entities-blank-title-language');
+      createdImportIds.push(importId);
+      const userId = fixturesFactory.idString('import-entities-blank-title-language-user');
+
+      await insertImport(csvImportsDS, {
+        importId,
+        templateId,
+        userId,
+      });
+      await stageRows(rowsDS, {
+        importId,
+        csv: [
+          'title__en,title__es,title__fr,description',
+          'Promoting – test EN,Promoción – test ES,,Shared description',
+        ].join('\n'),
+      });
+
+      const callbacks = createCallbacks();
+      await useCase.execute({ importId, callbacks });
+
+      const persistedErrors = await rowErrorsDS.getByImport(importId);
+      const entities = await fetchEntitiesByTemplate(entitiesDS, templateId);
+
+      expect(persistedErrors).toHaveLength(1);
+      expect(persistedErrors[0].code).toBe(RowErrorCode.ValueRequired);
+      expect(persistedErrors[0].property).toBe('title');
+      expect(persistedErrors[0].message.toLowerCase()).toContain('required');
+      expect(entities).toHaveLength(0);
+      expect(callbacks.onSuccess).toHaveBeenCalledWith({ importId });
+    });
+
+    it('should allow blank values for non-title language columns when all languages are present', async () => {
+      await testingEnvironment.setFixtures({
+        ...fixtures,
+        settings: [
+          {
+            ...fixtures.settings[0],
+            languages: [
+              { key: 'en' as LanguageISO6391, label: 'English', default: true },
+              { key: 'es' as LanguageISO6391, label: 'Spanish' },
+              { key: 'fr' as LanguageISO6391, label: 'French' },
+            ],
+          },
+        ],
+      });
+
+      const { useCase, csvImportsDS, rowsDS, rowErrorsDS, entitiesDS } = buildUseCase();
+      const importId = fixturesFactory.idString('import-entities-blank-text-language');
+      createdImportIds.push(importId);
+      const userId = fixturesFactory.idString('import-entities-blank-text-language-user');
+
+      await insertImport(csvImportsDS, {
+        importId,
+        templateId: multilingualTemplateId,
+        userId,
+      });
+      await stageRows(rowsDS, {
+        importId,
+        csv: [
+          'title__en,title__es,title__fr,text_field__en,text_field__es,text_field__fr',
+          'Title EN,Title ES,Title FR,Text EN,,Text FR',
+        ].join('\n'),
+      });
+
+      const callbacks = createCallbacks();
+      await useCase.execute({ importId, callbacks });
+
+      const rowErrorsCount = await rowErrorsDS.countByImport(importId);
+      const entities = await fetchEntitiesByTemplate(entitiesDS, multilingualTemplateId);
+
+      expect(rowErrorsCount).toBe(0);
+      expect(entities).toHaveLength(1);
+      expect(entities[0].getTitle('en')).toBe('Title EN');
+      expect(entities[0].getTitle('es')).toBe('Title ES');
+      expect(entities[0].getTitle('fr')).toBe('Title FR');
+      expect(entities[0].getValue('text_field', 'en').value[0].value).toBe('Text EN');
+      expect(entities[0].getValue('text_field', 'es').value).toEqual([]);
+      expect(entities[0].getValue('text_field', 'fr').value[0].value).toBe('Text FR');
     });
 
     it('should update an existing entity when id is provided and count entitiesUpdated', async () => {
