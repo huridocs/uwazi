@@ -9,7 +9,8 @@ import { mapConnectionToApp, mapConnectionsWithEntityInfoToApp } from './v1Conne
 export class MongoV1ConnectionsDataSource
   extends MongoDataSource<V1ConnectionDBO>
   implements V1ConnectionsDataSource
-{//eslint-disable-line
+{
+  //eslint-disable-line
   protected collectionName = 'connections';
 
   all(): MongoResultSet<V1ConnectionDBO, V1Connection> {

@@ -13,7 +13,7 @@ const TranslationsTab = () => {
   } = useEntityFiles();
 
   return (
-    <div className="min-h-0 flex-1 overflow-y-auto">
+    <div className="min-h-0 flex-1 overflow-y-auto px-3">
       {focusedRow ? (
         <div className="h-full overflow-auto">
           <TranslationsPanel

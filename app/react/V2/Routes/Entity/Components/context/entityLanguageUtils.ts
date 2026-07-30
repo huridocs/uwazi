@@ -29,7 +29,9 @@ const seedLoaderCache = (entity: Entity, language: string, mainDocument?: FileTy
   entityLoaderCache.setEntity(entity.sharedId, language, entity);
   if (mainDocument) {
     entityLoaderCache.setMainDocument(entity.sharedId, language, mainDocument);
+    return;
   }
+  entityLoaderCache.clearMainDocument(entity.sharedId, language);
 };
 
 const resolveMainDocument = (
@@ -38,13 +40,13 @@ const resolveMainDocument = (
   documents: Entity['documents'],
   defaultLanguage?: string
 ) => {
-  const nextMainDocument =
-    getMainDocument(documents, nextLanguage, defaultLanguage) ??
-    entityLoaderCache.getMainDocument(sharedId, nextLanguage);
+  const nextMainDocument = getMainDocument(documents, nextLanguage, defaultLanguage);
   if (nextMainDocument) {
     entityLoaderCache.setMainDocument(sharedId, nextLanguage, nextMainDocument);
+    return nextMainDocument;
   }
-  return nextMainDocument;
+  entityLoaderCache.clearMainDocument(sharedId, nextLanguage);
+  return undefined;
 };
 
 const fetchEntityForLanguage = async (sharedId: string, nextLanguage: string) => {

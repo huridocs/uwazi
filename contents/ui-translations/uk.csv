@@ -353,6 +353,7 @@ Deletion success,Успішність видалення
 Density,Density
 Description,Опис
 Deselect all,Deselect all
+Details,Details
 Direction,Direction
 Disable,Вимкнути
 Disable highlights,Вимкнути підсвічування
@@ -767,6 +768,7 @@ No Label,Немає мітки
 No label,Без етикетки
 No matching entities.,No matching entities.
 No media selected,No media selected
+No metadata for this entity yet.,No metadata for this entity yet.
 No options,Без варіантів
 No options found,Варіантів не знайдено
 No page,No page

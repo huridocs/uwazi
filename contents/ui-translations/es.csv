@@ -349,6 +349,7 @@ Deletion success,Eliminación exitosa
 Density,Densidad
 Description,Descripción
 Deselect all,Deselect all
+Details,Detalle
 Direction,Direction
 Disable,Disable
 Disable highlights,Disable highlights
@@ -763,6 +764,7 @@ No Label,No existe etiqueta
 No label,No label
 No matching entities.,Ninguna coincidencia encontrada.
 No media selected,No media selected
+No metadata for this entity yet.,Aún no hay metadatos para esta entidad.
 No options,No options
 No options found,Opciones no encontradas
 No page,No hay página

@@ -1,4 +1,4 @@
-name: eslint
+name: eslint/formatting
 
 on:
   push:
@@ -65,6 +65,7 @@ jobs:
       - name: install dependencies
         run: yarn install
       - run: yarn eslint
+      - run: yarn prettier
 
   build:
     needs: precheck
