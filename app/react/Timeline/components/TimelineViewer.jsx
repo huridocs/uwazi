@@ -6,7 +6,6 @@ import { Loader } from '#app/components/Elements/Loader.js';
 import { t as translate, I18NLink } from '#app/I18N/index.js';
 import { ShowIf } from '#app/App/ShowIf.js';
 
-import { documentsAPI } from '#app/Documents/DocumentsAPI.js';
 import { EntitiesAPI } from '#app/Entities/EntitiesAPI.js';
 import { ReferencesAPI } from '#app/Viewer/referencesAPI.js';
 import { formater } from '#app/Metadata/helpers/formater.js';
@@ -44,8 +43,7 @@ const getRelatedReferences = (references, template) => {
 
 const fetchReferenceData = references => {
   const fetchPromises = references.map(reference => {
-    const get = reference.entityData.type === 'document' ? documentsAPI.get : EntitiesAPI.get;
-    return get(new RequestParams({ sharedId: reference.entityData.sharedId }));
+    return EntitiesAPI.get(new RequestParams({ sharedId: reference.entityData.sharedId }));
   });
 
   return Promise.all(fetchPromises);

@@ -1,8 +1,7 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import { useForm, Controller } from 'react-hook-form';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useAtomValue } from 'jotai';
-import { MagnifyingGlassIcon } from '@heroicons/react/24/solid';
-import { t, Translate } from '#app/I18N/index.js';
+import { t } from '#app/I18N/index.js';
+import { QuerySearchBar } from '#V2/Components/UI/QuerySearchBar.js';
 import { templatesAtom } from '#V2/atoms/index.js';
 import {
   useDocumentPdf,
@@ -12,22 +11,22 @@ import {
 import { useEntityHashParams, useUpdateEntityUrl } from '../../entityUrlState.js';
 import { SEARCH_PARAM } from '../../urlParams.js';
 import { SearchResultsPanel } from './SearchResultsPanel.js';
+import { SearchTipsContent } from './SearchTipsContent.js';
 import { useEntitySearchSnippets } from './useEntitySearchSnippets.js';
 
-type FormValues = {
-  search: string;
-};
+const URL_SYNC_MS = 250;
 
 const SearchView = () => {
   const entity = useEntityScopedEntity();
   const { language, mainDocument } = useEntityLanguage();
   const hashParams = useEntityHashParams();
   const updateEntityUrl = useUpdateEntityUrl();
-  const initial = hashParams.get(SEARCH_PARAM) || '';
-  const searchTerm = initial.trim();
+  const urlTerm = hashParams.get(SEARCH_PARAM) || '';
+  const searchTerm = urlTerm.trim();
   const templates = useAtomValue(templatesAtom);
   const { pdfController: mainPdfController } = useDocumentPdf();
   const [activeSnippet, setActiveSnippet] = useState<string | null>(null);
+  const [draft, setDraft] = useState(urlTerm);
   const { searchResults, searchError } = useEntitySearchSnippets({
     searchTerm,
     sharedId: entity.sharedId,
@@ -41,30 +40,58 @@ const SearchView = () => {
     [entity.template, templates]
   );
 
-  const { control, handleSubmit, reset } = useForm<FormValues>({
-    defaultValues: { search: initial },
-  });
+  const writeSearchTerm = useCallback(
+    (value: string) => {
+      const trimmed = value.trim();
+      updateEntityUrl({
+        hash: next => {
+          if (trimmed) {
+            next.set(SEARCH_PARAM, trimmed);
+          } else {
+            next.delete(SEARCH_PARAM);
+          }
+        },
+      });
+    },
+    [updateEntityUrl]
+  );
 
   useEffect(() => {
-    reset({ search: initial });
-  }, [initial, reset]);
+    setDraft(urlTerm);
+  }, [urlTerm]);
+
+  useEffect(() => {
+    if (draft.trim() === searchTerm) return undefined;
+    const timer = setTimeout(() => writeSearchTerm(draft), URL_SYNC_MS);
+    return () => clearTimeout(timer);
+  }, [draft, searchTerm, writeSearchTerm]);
 
   useEffect(() => {
     setActiveSnippet(null);
     mainPdfController?.deactivateSnippet();
   }, [mainDocument?._id, mainPdfController]);
 
-  const onSubmit = async (data: FormValues) => {
-    const value = data.search.trim();
-    updateEntityUrl({
-      hash: next => {
-        if (value) {
-          next.set(SEARCH_PARAM, value);
-        } else {
-          next.delete(SEARCH_PARAM);
-        }
-      },
-    });
+  const onChange = (value: string) => {
+    setDraft(value);
+    if (!value.trim()) {
+      writeSearchTerm('');
+    }
+  };
+
+  const onClear = () => {
+    setDraft('');
+    writeSearchTerm('');
+  };
+
+  const onInsertTip = (example: string) => {
+    setDraft(example);
+    writeSearchTerm(example);
+  };
+
+  const flushOnEnter = (event: React.KeyboardEvent) => {
+    if (event.key !== 'Enter') return;
+    event.preventDefault();
+    writeSearchTerm(draft);
   };
 
   const activateSnippet = (snippetKey: string, pageText: { text: string; page: number }) => {
@@ -81,36 +108,23 @@ const SearchView = () => {
   };
 
   return (
-    <div className="flex h-full flex-col gap-3">
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <label htmlFor="entity-search" className="sr-only">
-          <Translate>Search</Translate>
-        </label>
-        <div className="relative">
-          <Controller
-            name="search"
-            control={control}
-            render={({ field }) => (
-              <input
-                id="entity-search"
-                type="search"
-                placeholder={t('System', 'Search', null, false)}
-                // eslint-disable-next-line react/jsx-props-no-spreading
-                {...field}
-                className="w-full rounded-md border border-border/40 bg-warm p-2 text-sm text-ink placeholder:text-ink-muted focus:border-border focus:outline-hidden"
-              />
-            )}
-          />
-          <button
-            type="submit"
-            aria-label="Search"
-            className="absolute top-1/2 right-3 -translate-y-1/2 transform"
-          >
-            <MagnifyingGlassIcon className="h-5 w-5 text-ink" aria-hidden="true" />
-          </button>
-        </div>
-      </form>
-      <div className="grow overflow-y-auto px-1">
+    <div className="flex h-full min-h-0 flex-col">
+      <div
+        className="shrink-0 border-b border-border py-2"
+        onKeyDown={flushOnEnter}
+        role="presentation"
+      >
+        <QuerySearchBar
+          value={draft}
+          onChange={onChange}
+          placeholder={t('System', 'Search this document', null, false)}
+          ariaLabel={t('System', 'Search this document', null, false)}
+          clearAriaLabel={t('System', 'Clear search', null, false)}
+          tipsAriaLabel={t('System', 'Search tips', null, false)}
+          tipsContent={<SearchTipsContent onInsert={onInsertTip} />}
+        />
+      </div>
+      <div className="min-h-0 flex-1 overflow-y-auto px-0 py-3">
         <SearchResultsPanel
           searchError={searchError}
           searchResults={searchResults}
@@ -119,6 +133,7 @@ const SearchView = () => {
           template={template}
           activeSnippet={activeSnippet}
           onActivate={activateSnippet}
+          onClear={onClear}
         />
       </div>
     </div>

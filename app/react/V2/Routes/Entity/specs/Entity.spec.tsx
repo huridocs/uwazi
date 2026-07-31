@@ -399,7 +399,7 @@ describe('Entity view', () => {
       });
       await checkEntityRendered();
 
-      const input = screen.getByRole('searchbox');
+      const input = screen.getByRole('textbox', { name: 'Search this document' });
       expect(input).toBeInTheDocument();
       expect(input).toHaveValue('term');
     });
@@ -424,7 +424,10 @@ describe('Entity view', () => {
       await checkEntityRendered();
 
       expect(await screen.findByText('Match title')).toBeInTheDocument();
-      expect(screen.getByText('Page 3')).toBeInTheDocument();
+      expect(screen.getByText('Properties')).toBeInTheDocument();
+      expect(screen.getByText('Document')).toBeInTheDocument();
+      expect(screen.getByText(/p\.3/)).toBeInTheDocument();
+      expect(screen.getByText(/2 matches for/)).toBeInTheDocument();
     });
   });
 });

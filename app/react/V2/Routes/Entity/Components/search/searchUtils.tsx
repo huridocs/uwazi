@@ -31,8 +31,8 @@ const createNode = (node: ChildNode, key: number): React.ReactNode => {
   if (node.type === 'tag') {
     const element = node;
     return React.createElement(
-      'b',
-      { key },
+      'mark',
+      { key, className: 'rounded-sm bg-highlight-active/70' },
       element.children &&
         element.children.map((child: ChildNode, index: number) => createNode(child, index))
     );
@@ -48,7 +48,7 @@ const parseSnippetToNodes = (html?: string) => {
   }
 
   const document = parseDocument(sanitized);
-  return document.children.map((node, i) => createNode(node as ChildNode, i));
+  return document.children.map((node, i) => createNode(node, i));
 };
 
 const isSnippetsResponse = (value: unknown): value is SnippetsSearchResponse =>
@@ -83,4 +83,13 @@ const scopeResultsToDocument = (
   };
 };
 
-export { getFieldName, parseSnippetToNodes, isSnippetsResponse, scopeResultsToDocument };
+const totalMatchCount = (results: SnippetsSearchResponse): number =>
+  results.data.reduce((sum, entry) => sum + (entry.snippets.count || 0), 0);
+
+export {
+  getFieldName,
+  parseSnippetToNodes,
+  isSnippetsResponse,
+  scopeResultsToDocument,
+  totalMatchCount,
+};

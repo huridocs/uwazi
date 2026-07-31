@@ -1,8 +1,9 @@
-import React, { useMemo } from 'react';
-import { useAtomValue } from 'jotai';
+import React, { useEffect, useMemo, useRef } from 'react';
+import { useAtomValue, useSetAtom } from 'jotai';
 import { Translate } from '#app/I18N/index.js';
 import { templatesAtom } from '#V2/atoms/templatesAtom.js';
 import { Entity } from '#V2/api/entities/types.js';
+import { focusMetadataFieldAtom } from '#V2/Routes/Entity/Components/metadata/focusMetadataFieldAtom.js';
 import {
   Date,
   RelationshipCards,
@@ -25,6 +26,25 @@ type MetadataRecordProps = {
 
 const MetadataRecord = ({ entity }: MetadataRecordProps) => {
   const templates = useAtomValue(templatesAtom);
+  const focusField = useAtomValue(focusMetadataFieldAtom);
+  const clearFocus = useSetAtom(focusMetadataFieldAtom);
+  const rootRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!focusField) return undefined;
+    const el = rootRef.current?.querySelector<HTMLElement>(
+      `[data-field-key="${CSS.escape(focusField.fieldKey)}"]`
+    );
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      el.classList.add('flash-highlight');
+      const timer = setTimeout(() => el.classList.remove('flash-highlight'), 1100);
+      clearFocus(null);
+      return () => clearTimeout(timer);
+    }
+    clearFocus(null);
+    return undefined;
+  }, [focusField, clearFocus]);
 
   const { entityTemplate, metadata } = useFormatMetadata(entity, templates, {
     groupGeolocationProperties: true,
@@ -81,7 +101,7 @@ const MetadataRecord = ({ entity }: MetadataRecordProps) => {
         return;
       }
       items.push({
-        id: field._id,
+        id: field.name,
         label: field.label,
         translationContext,
         content,
@@ -96,7 +116,7 @@ const MetadataRecord = ({ entity }: MetadataRecordProps) => {
         return;
       }
       items.push({
-        id: field._id,
+        id: field.name,
         label: field.label,
         translationContext,
         content,
@@ -136,7 +156,7 @@ const MetadataRecord = ({ entity }: MetadataRecordProps) => {
   }
 
   return (
-    <div className="flex flex-col gap-3" data-testid="metadata-record">
+    <div ref={rootRef} className="flex flex-col gap-3" data-testid="metadata-record">
       {partition.showDocumentPreview ? (
         <DocumentPreviewCard entity={entity} previewField={partition.previewField} />
       ) : null}
@@ -148,7 +168,7 @@ const MetadataRecord = ({ entity }: MetadataRecordProps) => {
           return null;
         }
         return (
-          <div key={field._id} data-field-key={field._id}>
+          <div key={field._id} data-field-key={field.name}>
             <MetadataCard title={specializedCardTitle(field, translationContext)}>
               {content}
             </MetadataCard>
@@ -162,7 +182,7 @@ const MetadataRecord = ({ entity }: MetadataRecordProps) => {
           return null;
         }
         return (
-          <div key={field._id} data-field-key={field._id}>
+          <div key={field._id} data-field-key={field.name}>
             <MetadataCard title={fieldTitle(field.label, translationContext, field.hideLabel)}>
               {content}
             </MetadataCard>

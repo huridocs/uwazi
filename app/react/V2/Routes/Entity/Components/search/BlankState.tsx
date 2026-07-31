@@ -1,41 +1,58 @@
 /* eslint-disable react/no-multi-comp */
 import React from 'react';
-import { MagnifyingGlassIcon } from '@heroicons/react/24/solid';
+import { MagnifyingGlassIcon } from '@heroicons/react/24/outline';
 import { Translate } from '#app/I18N/index.js';
-import { BlankState } from '#app/V2/Components/UI/index.js';
 
-const NoSearch = () => (
-  <BlankState
-    icon={
-      <MagnifyingGlassIcon className="h-7 w-7 text-ink rounded-full bg-[color-mix(in_srgb,var(--color-theme-border-default)_70%,transparent)] p-1" />
-    }
-    title={<Translate>Search text</Translate>}
-    description={
-      <Translate translationKey="Search text description">Search text description</Translate>
-    }
-  />
+const Centered = ({ children }: { children: React.ReactNode }) => (
+  <div className="flex flex-1 flex-col items-center justify-center gap-2 px-6 text-center">
+    {children}
+  </div>
 );
 
-const NoResults = () => (
-  <BlankState
-    icon={
-      <MagnifyingGlassIcon className="h-7 w-7 text-ink rounded-full bg-[color-mix(in_srgb,var(--color-theme-border-default)_70%,transparent)] p-1" />
-    }
-    title={<Translate>No text match</Translate>}
-    description={
-      <Translate translationKey="No text match description">No text match description</Translate>
-    }
-  />
+type NoResultsProps = {
+  searchTerm: string;
+  onClear: () => void;
+};
+
+const NoSearch = () => (
+  <Centered>
+    <MagnifyingGlassIcon className="h-5 w-5 text-ink-muted" aria-hidden="true" />
+    <span className="text-sm text-ink-tertiary">
+      <Translate>Search this document</Translate>
+    </span>
+    <span className="text-xs text-ink-muted">
+      <Translate translationKey="Search text description">
+        Matches show the passage and the page they are on.
+      </Translate>
+    </span>
+  </Centered>
+);
+
+const NoResults = ({ searchTerm, onClear }: NoResultsProps) => (
+  <Centered>
+    <span dir="ltr" className="text-sm text-ink-tertiary">
+      <Translate>No matches for</Translate>{' '}
+      <span className="font-medium text-ink-secondary">“{searchTerm}”</span>
+    </span>
+    <button
+      type="button"
+      onClick={onClear}
+      className="cursor-pointer rounded-md bg-warm px-3 py-1.5 text-xs font-medium text-ink-secondary transition-colors hover:bg-parchment hover:text-ink"
+    >
+      <Translate>Clear search</Translate>
+    </button>
+  </Centered>
 );
 
 const SearchError = () => (
-  <BlankState
-    icon={
-      <MagnifyingGlassIcon className="h-7 w-7 text-ink rounded-full bg-[color-mix(in_srgb,var(--color-theme-border-default)_70%,transparent)] p-1" />
-    }
-    title={<Translate>An error occurred</Translate>}
-    description={<Translate>This search could not be completed. Try again later.</Translate>}
-  />
+  <Centered>
+    <span className="text-sm text-ink-tertiary">
+      <Translate>An error occurred</Translate>
+    </span>
+    <span className="text-xs text-ink-muted">
+      <Translate>This search could not be completed. Try again later.</Translate>
+    </span>
+  </Centered>
 );
 
 export { NoSearch, NoResults, SearchError };
