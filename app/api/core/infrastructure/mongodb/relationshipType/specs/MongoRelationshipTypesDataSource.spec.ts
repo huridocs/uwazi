@@ -4,14 +4,15 @@ import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnec
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { RelationshipType } from '#api/core/domain/relationshipType/RelationshipType.js';
 import { MongoRelationshipTypesDataSource } from '../MongoRelationshipTypesDataSource.js';
 
 const factory = getFixturesFactory();
 
 const fixtures = {
   relationtypes: [
-    { _id: factory.id('rel1'), name: 'Rel 1', properties: [] },
-    { _id: factory.id('rel2'), name: 'Rel 2', properties: [] },
+    { _id: factory.id('rel1'), name: 'Rel 1' },
+    { _id: factory.id('rel2'), name: 'Rel 2' },
   ],
 };
 
@@ -52,21 +53,18 @@ describe('MongoRelationshipTypesDataSource', () => {
 
   it('should create', async () => {
     const { sut } = createSut();
-    const created = await sut.create({ name: 'Rel 3' });
+    const relationshipType = new RelationshipType(new ObjectId().toHexString(), 'Rel 3');
+    await sut.create(relationshipType);
 
-    expect(created.id).toBeDefined();
-    expect(created.name).toBe('Rel 3');
+    expect(await sut.getById(relationshipType.id)).toEqual(relationshipType);
   });
 
   it('should update', async () => {
     const { sut } = createSut();
-    const updated = await sut.update({
-      id: factory.id('rel1').toHexString(),
-      name: 'Rel 1 Updated',
-    });
+    const updated = new RelationshipType(factory.id('rel1').toHexString(), 'Rel 1 Updated');
+    await sut.update(updated);
 
-    expect(updated.id).toBe(factory.id('rel1').toHexString());
-    expect(updated.name).toBe('Rel 1 Updated');
+    expect(await sut.getById(updated.id)).toEqual(updated);
   });
 
   it('should delete', async () => {
@@ -109,11 +107,12 @@ describe('MongoRelationshipTypesDataSource', () => {
     );
   });
 
-  it('should get by ids result set', async () => {
+  it('should get by ids', async () => {
     const { sut } = createSut();
-    const items = await sut
-      .getByIds([factory.id('rel1').toHexString(), factory.id('rel2').toHexString()])
-      .all();
+    const items = await sut.getByIds([
+      factory.id('rel1').toHexString(),
+      factory.id('rel2').toHexString(),
+    ]);
 
     expect(items).toHaveLength(2);
     expect(items.map(i => i.name)).toEqual(expect.arrayContaining(['Rel 1', 'Rel 2']));

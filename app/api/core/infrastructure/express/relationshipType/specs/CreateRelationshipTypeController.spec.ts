@@ -10,7 +10,7 @@ const factory = getFixturesFactory();
 
 const fixtures: DBFixture = {
   settings: [{ languages: [{ key: 'en', label: 'English', default: true }] }],
-  relationtypes: [{ _id: factory.id('existing'), name: 'Existing', properties: [] }],
+  relationtypes: [{ _id: factory.id('existing'), name: 'Existing' }],
 };
 
 const createRoute = (app: Application) => {

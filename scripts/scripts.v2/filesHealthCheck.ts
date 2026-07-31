@@ -81,7 +81,12 @@ async function handleTenant(tenantName: string) {
   }, tenantName);
 }
 
-(async function run() {
+async function cleanup() {
+  await tenants.model?.closeChangeStream();
+  await DB.disconnect();
+}
+
+async function run() {
   await DB.connect(config.DBHOST, config.DBAUTH);
   await tenants.setupTenants();
 
@@ -93,6 +98,12 @@ async function handleTenant(tenantName: string) {
       await handleTenant(tenantName);
     }, Promise.resolve());
   }
-  await tenants.model?.closeChangeStream();
-  await DB.disconnect();
-})();
+
+  await cleanup();
+}
+
+run().catch(async error => {
+  print({ logType: 'error', error: String(error) }, 'error');
+  await cleanup();
+  process.exit(1);
+});

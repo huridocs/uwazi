@@ -358,9 +358,9 @@ describe('syncWorker', () => {
   it('should sync relationTypes that match configured template properties', async () => {
     await runAllTenants();
     await tenants.run(async () => {
-      const relationtypes = await RelationshipTypesDataSourceFactory.default(
-        TransactionManagerFactory.default()
-      ).getAll();
+      const relationtypes = await RelationshipTypesDataSourceFactory.default({
+        transactionManager: TransactionManagerFactory.default(),
+      }).getAll();
       expect(relationtypes).toMatchObject([
         {
           id: expect.anything(),

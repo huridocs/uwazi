@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 /* eslint-disable max-statements */
 import { DefaultPermissionsDataSource } from '#api/authorization.v2/database/data_source_defaults.js';
 import { AuthorizationService } from '#api/authorization.v2/services/AuthorizationService.js';
@@ -119,7 +120,7 @@ const GetRelationshipService = () => {
   const permissionsDS = DefaultPermissionsDataSource(transactionManager);
   const entitiesDS = DefaultDeprecatedEntitiesDataSource(transactionManager);
   const templatesDS = TemplatesDataSourceFactory.default({ transactionManager });
-  const relationshipTypeDS = RelationshipTypesDataSourceFactory.default(transactionManager);
+  const relationshipTypeDS = RelationshipTypesDataSourceFactory.default({ transactionManager });
 
   const authService = new AuthorizationService(permissionsDS, userFromRequest());
 
@@ -137,7 +138,7 @@ const GetRelationshipService = () => {
 const CreateRelationshipService = async () => {
   const transactionManager = TransactionManagerFactory.default();
   const relationshipsDS = DefaultRelationshipDataSource(transactionManager);
-  const relationshipTypesDS = RelationshipTypesDataSourceFactory.default(transactionManager);
+  const relationshipTypesDS = RelationshipTypesDataSourceFactory.default({ transactionManager });
   const entitiesDS = DefaultDeprecatedEntitiesDataSource(transactionManager);
   const idGenerator = IdGeneratorFactory.default();
   const permissionsDS = DefaultPermissionsDataSource(transactionManager);

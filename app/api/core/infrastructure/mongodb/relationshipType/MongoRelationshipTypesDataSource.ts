@@ -1,6 +1,5 @@
 import { MongoDataSource } from '#api/core/infrastructure/mongodb/common/MongoDataSource.js';
 import { MongoIdHandler } from '#api/core/infrastructure/mongodb/common/MongoIdGenerator.js';
-import { MongoResultSet } from '#api/core/infrastructure/mongodb/common/MongoResultSet.js';
 import { RelationshipTypesDataSource } from '#api/core/application/contracts/RelationshipTypesDataSource.js';
 import { RelationshipTypeDBO } from './schemas/RelationshipTypeDBO.js';
 import { mapRelationshipTypeToApp } from './mappings/RelationshipTypeMappers.js';
@@ -21,27 +20,18 @@ export class MongoRelationshipTypesDataSource
     return dbo ? mapRelationshipTypeToApp(dbo) : null;
   }
 
-  async create(input: { name: string }): Promise<RelationshipType> {
-    const response = await this.getCollection().insertOne({
-      name: input.name,
-    } as RelationshipTypeDBO);
-    const created = await this.getCollection().findOne({ _id: response.insertedId });
-    if (!created) {
-      throw new Error('Relationship type creation failed');
-    }
-    return mapRelationshipTypeToApp(created);
+  async create(relationshipType: RelationshipType): Promise<void> {
+    await this.getCollection().insertOne({
+      _id: MongoIdHandler.mapToDb(relationshipType.id),
+      name: relationshipType.name,
+    });
   }
 
-  async update(input: { id: string; name: string }): Promise<RelationshipType> {
+  async update(relationshipType: RelationshipType): Promise<void> {
     await this.getCollection().updateOne(
-      { _id: MongoIdHandler.mapToDb(input.id) },
-      { $set: { name: input.name } }
+      { _id: MongoIdHandler.mapToDb(relationshipType.id) },
+      { $set: { name: relationshipType.name } }
     );
-    const updated = await this.getCollection().findOne({ _id: MongoIdHandler.mapToDb(input.id) });
-    if (!updated) {
-      throw new Error('Relationship type update failed');
-    }
-    return mapRelationshipTypeToApp(updated);
   }
 
   async delete(id: string): Promise<void> {
@@ -76,14 +66,16 @@ export class MongoRelationshipTypesDataSource
     );
   }
 
-  getByIds(ids: string[]): MongoResultSet<RelationshipTypeDBO, RelationshipType> {
+  async getByIds(ids: string[]): Promise<RelationshipType[]> {
     const uniqueIds = Array.from(new Set(ids));
-    const cursor = this.getCollection().find({
-      _id: { $in: uniqueIds.map(MongoIdHandler.mapToDb) },
-    });
-    return new MongoResultSet<RelationshipTypeDBO, RelationshipType>(
-      cursor,
-      mapRelationshipTypeToApp
-    );
+    if (uniqueIds.length === 0) {
+      return [];
+    }
+    const dbos = await this.getCollection()
+      .find({
+        _id: { $in: uniqueIds.map(MongoIdHandler.mapToDb) },
+      })
+      .toArray();
+    return dbos.map(mapRelationshipTypeToApp);
   }
 }

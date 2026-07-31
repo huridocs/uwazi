@@ -719,10 +719,6 @@ export const fixtures = {
     {
       _id: relationType,
       name: 'relation',
-      properties: [
-        { name: 'status', type: 'select', filter: true },
-        { name: 'description', type: 'text', filter: true },
-      ],
     },
   ],
   connections: [

@@ -133,13 +133,11 @@ const segmentation: Segmentation = {
 const sourceRelationshipType = {
   _id: new ObjectId(),
   name: 'Source Relationship Type',
-  properties: [],
 };
 
 const targetRelationshipType = {
   _id: new ObjectId(),
   name: 'Target Relationship Type',
-  properties: [],
 };
 
 const segmentation2: Segmentation = {

@@ -17,7 +17,7 @@ class CreateTemplateUseCaseFactory {
     const settingsDS = SettingsDataSourceFactory.default({ transactionManager });
     const idGenerator = IdGeneratorFactory.default();
     const pageService = LegacyPageServiceFactory.default({ transactionManager });
-    const relationshipTypesDS = RelationshipTypesDataSourceFactory.default(transactionManager);
+    const relationshipTypesDS = RelationshipTypesDataSourceFactory.default({ transactionManager });
 
     return new CreateTemplateUseCase({
       idGenerator,
