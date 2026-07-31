@@ -33,7 +33,9 @@ function excludeRefs(template) {
 class RequiredParameters extends ValidationError {}
 
 const getRelationshipTypesDS = () =>
-  RelationshipTypesDataSourceFactory.default(TransactionManagerFactory.default());
+  RelationshipTypesDataSourceFactory.default({
+    transactionManager: TransactionManagerFactory.default(),
+  });
 
 export default {
   get(query, select, pagination) {

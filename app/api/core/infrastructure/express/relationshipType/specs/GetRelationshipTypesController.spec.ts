@@ -11,8 +11,8 @@ const factory = getFixturesFactory();
 const fixtures: DBFixture = {
   settings: [{ languages: [{ key: 'en', label: 'English', default: true }] }],
   relationtypes: [
-    { _id: factory.id('rel1'), name: 'Type 1', properties: [] },
-    { _id: factory.id('rel2'), name: 'Type 2', properties: [] },
+    { _id: factory.id('rel1'), name: 'Type 1' },
+    { _id: factory.id('rel2'), name: 'Type 2' },
   ],
 };
 

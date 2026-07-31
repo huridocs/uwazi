@@ -20,7 +20,9 @@ export class PXCreateExtractorFactory {
     const dispatcher = DefaultDispatcher(props.tenantName, mongoTransactionManager, {
       lockWindow: 1000 * 60,
     });
-    const relationshipTypeDS = RelationshipTypesDataSourceFactory.default(mongoTransactionManager);
+    const relationshipTypeDS = RelationshipTypesDataSourceFactory.default({
+      transactionManager: mongoTransactionManager,
+    });
 
     return new PXCreateExtractor({
       relationshipTypeDS,

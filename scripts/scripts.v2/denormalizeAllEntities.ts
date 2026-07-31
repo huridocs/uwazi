@@ -1,8 +1,9 @@
+import { inspect } from 'util';
 import yargs from 'yargs';
+import { hideBin } from 'yargs/helpers';
 import { config } from '#api/config.js';
 import { DB } from '#api/odm/index.js';
 import { tenants } from '#api/tenants/index.js';
-
 import { denormalizeMetadata } from '#api/entities/denormalize.js';
 import entities from '#api/entities/entities.js';
 import entitiesModel from '#api/entities/entitiesModel.js';
@@ -13,8 +14,6 @@ import templates from '#api/core/v1_layer/templates/index.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import { TemplateSchema } from '#shared/types/templateType.js';
 import { ThesaurusSchema } from '#shared/types/thesaurusType.js';
-import { inspect } from 'util';
-import { hideBin } from 'yargs/helpers';
 
 const { tenant, allTenants } = yargs(hideBin(process.argv))
   .option('tenant', {
@@ -28,7 +27,8 @@ const { tenant, allTenants } = yargs(hideBin(process.argv))
     type: 'boolean',
     describe: 'All tenants',
     default: false,
-  }).parseSync();
+  })
+  .parseSync();
 
 async function handleTenant(tenantName: string) {
   await tenants.run(async () => {
@@ -40,18 +40,19 @@ async function handleTenant(tenantName: string) {
     const indexedTemplates = await (
       await templates.get()
     ).reduce<Promise<{ [k: string]: TemplateSchema }>>(async (prev, t) => {
-      let memo = await prev;
+      const memo = await prev;
       memo[t._id.toString()] = t;
       templateRelatedThesauri[t._id.toString()] = await templates.getRelatedThesauri(t);
       return memo;
     }, Promise.resolve({}));
 
-    const translationsByLanguage = (
-      await translationsModel.get()
-    ).reduce<{ [language: string]: IndexedTranslations }>((memo, t) => {
+    const translationsByLanguage = (await translationsModel.get()).reduce<{
+      [language: string]: IndexedTranslations;
+    }>((memo, t) => {
       if (!t.locale) {
         throw new Error(`translation ${t._id} has no locale !`);
       }
+      // eslint-disable-next-line no-param-reassign
       memo[t.locale] = t;
       return memo;
     }, {});
@@ -64,7 +65,7 @@ async function handleTenant(tenantName: string) {
 
     await entityIds.reduce(async (prev, entity) => {
       await prev;
-      const _id = entity._id;
+      const { _id } = entity;
       const [entityToSave] = await entities.getUnrestricted({ _id });
       try {
         console.log(
@@ -111,13 +112,18 @@ async function handleTenant(tenantName: string) {
         correctlyProcessed: entitiesProcessed,
         notProcessed: errors.length,
         elapsedTime: `${elapsedTime.toFixed(3)} s`,
-        errors: errors,
+        errors,
       })
     );
   }, tenantName);
 }
 
-(async function run() {
+async function cleanup() {
+  await tenants.model?.closeChangeStream();
+  await DB.disconnect();
+}
+
+async function run() {
   await DB.connect(config.DBHOST, config.DBAUTH);
   await tenants.setupTenants();
 
@@ -129,6 +135,12 @@ async function handleTenant(tenantName: string) {
       await handleTenant(tenantName);
     }, Promise.resolve());
   }
-  await tenants.model?.closeChangeStream();
-  await DB.disconnect();
-})();
+
+  await cleanup();
+}
+
+run().catch(async error => {
+  console.error(`denormalize-all-entities failed: ${error}`);
+  await cleanup();
+  process.exit(1);
+});

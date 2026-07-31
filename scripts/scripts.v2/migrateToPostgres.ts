@@ -1,3 +1,10 @@
+/**
+ * Copies Mongo collections into Postgres for one tenant (idempotent per table).
+ *
+ * Usage:
+ *   node scripts/runner.js scripts/scripts.v2/migrateToPostgres.ts --tenant <name> --collection relationship_types
+ *   node scripts/runner.js scripts/scripts.v2/migrateToPostgres.ts --tenant <name> --all
+ */
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
 import { DB } from '#api/odm/index.js';
@@ -11,11 +18,13 @@ import { PostgresDB } from '#api/infrastructure/PostgresDB.js';
 import { TemplateMigrationConfig } from '#api/core/infrastructure/postgresql/migrations/configs/TemplateMigrationConfig.js';
 import { ThesaurusMigrationConfig } from '#api/core/infrastructure/postgresql/migrations/configs/ThesaurusMigrationConfig.js';
 import { FilesMigrationConfig } from '#api/core/infrastructure/postgresql/migrations/configs/FilesMigrationConfig.js';
+import { RelationshipTypesMigrationConfig } from '#api/core/infrastructure/postgresql/migrations/configs/RelationshipTypesMigrationConfig.js';
 
 const COLLECTIONS: Record<string, MigrationConfig> = {
   thesauri: ThesaurusMigrationConfig,
   templates: TemplateMigrationConfig,
-  files: FilesMigrationConfig
+  files: FilesMigrationConfig,
+  relationship_types: RelationshipTypesMigrationConfig,
 };
 
 function log(message: string) {
@@ -36,7 +45,7 @@ const argv = yargs(hideBin(process.argv))
   .option('collection', {
     alias: 'c',
     type: 'string',
-    describe: 'Collection to migrate (thesauri|templates)',
+    describe: 'Collection to migrate (thesauri|templates|files|relationship_types)',
   })
   .option('all', {
     alias: 'a',
@@ -64,49 +73,54 @@ async function migrateCollection(
   migrationConfig: MigrationConfig
 ): Promise<void> {
   await tenants.run(async () => {
-    const tenantConfig = tenants.current();
-    const mongoDb = DB.mongodb_Db(tenantConfig.dbName);
-
+    const mongoDb = DB.mongodb_Db(tenants.current().dbName);
     log(`[${tenantName}] Starting migration: ${collectionName}`);
     log(`[${tenantName}] MongoDB collection: ${migrationConfig.mongoCollection}`);
     log(`[${tenantName}] PostgreSQL table: ${migrationConfig.pgTable}`);
 
-    const migrator = new MigrateCollectionToPostgres(mongoDb, tenantName);
-    const result = await migrator.migrate(migrationConfig);
+    const result = await new MigrateCollectionToPostgres(mongoDb, tenantName).migrate(
+      migrationConfig
+    );
 
-    if (result.skipped) {
-      log(`[${tenantName}] Skipped ${collectionName}: PostgreSQL table already contains data for tenant`);
-    } else {
-      log(`[${tenantName}] Migrated ${result.migrated} rows for ${collectionName}`);
-    }
+    const summary = result.skipped
+      ? `Skipped ${collectionName}: PostgreSQL table already contains data for tenant`
+      : `Migrated ${result.migrated} rows for ${collectionName}`;
+    log(`[${tenantName}] ${summary}`);
   }, tenantName);
 }
 
-(async function run() {
-  try {
-    await DB.connect(config.DBHOST, config.DBAUTH);
-    await tenants.setupTenants();
+async function cleanup(): Promise<void> {
+  await tenants.model?.closeChangeStream();
+  await DB.disconnect();
+  await PostgresDB.disconnect();
+}
 
-    if (!tenants.tenants[argv.tenant]) {
-      logError(`Unknown tenant: ${argv.tenant}`);
-      logError(`Available tenants: ${Object.keys(tenants.tenants).join(', ')}`);
-      process.exit(1);
-    }
-
-    const collectionsToMigrate = argv.all ? Object.keys(COLLECTIONS) : [argv.collection!];
-
-    for (const collectionName of collectionsToMigrate) {
-      // eslint-disable-next-line no-await-in-loop
-      await migrateCollection(argv.tenant, collectionName, COLLECTIONS[collectionName]);
-    }
-
-    log('Migration completed successfully.');
-  } catch (error) {
-    logError(`Migration failed: ${error}`);
-    process.exit(1);
-  } finally {
-    await tenants.model?.closeChangeStream();
-    await DB.disconnect();
-    await PostgresDB.disconnect();
+function assertKnownTenant(tenantName: string): void {
+  if (tenants.tenants[tenantName]) {
+    return;
   }
-})();
+  logError(`Unknown tenant: ${tenantName}`);
+  logError(`Available tenants: ${Object.keys(tenants.tenants).join(', ')}`);
+  process.exit(1);
+}
+
+async function run(): Promise<void> {
+  await DB.connect(config.DBHOST, config.DBAUTH);
+  await tenants.setupTenants();
+  assertKnownTenant(argv.tenant);
+
+  const collectionsToMigrate = argv.all ? Object.keys(COLLECTIONS) : [argv.collection!];
+  for (const collectionName of collectionsToMigrate) {
+    // eslint-disable-next-line no-await-in-loop
+    await migrateCollection(argv.tenant, collectionName, COLLECTIONS[collectionName]);
+  }
+
+  log('Migration completed successfully.');
+  await cleanup();
+}
+
+run().catch(async error => {
+  logError(`Migration failed: ${error}`);
+  await cleanup();
+  process.exit(1);
+});

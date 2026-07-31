@@ -17,13 +17,11 @@ const targetTemplate = f.template('Target Template', [paragraphProperty, paragra
 const sourceRelationshipType = {
   _id: new ObjectId(),
   name: 'Source Relationship Type',
-  properties: [],
 };
 
 const targetRelationshipType = {
   _id: new ObjectId(),
   name: 'Target Relationship Type',
-  properties: [],
 };
 
 const langs = ['en', 'pt'];

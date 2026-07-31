@@ -1,11 +1,11 @@
+import yargs from 'yargs';
+import { hideBin } from 'yargs/helpers';
 import { config } from '#api/config.js';
 import { AutomaticTranslationFactory } from '#api/externalIntegrations.v2/automaticTranslation/AutomaticTranslationFactory.js';
 import { DB } from '#api/odm/index.js';
 import { tenants } from '#api/tenants/index.js';
-import yargs from 'yargs';
-import { hideBin } from 'yargs/helpers';
 
-(async () => {
+async function run() {
   const { configPath, tenant } = yargs(hideBin(process.argv))
     .option('configPath', {
       alias: 'c',
@@ -18,7 +18,8 @@ import { hideBin } from 'yargs/helpers';
       type: 'string',
       describe: 'Tenant to configure',
       default: 'default',
-    }).parseSync();
+    })
+    .parseSync();
 
   const semanticConfig = (await import(configPath)).default;
   await DB.connect(config.DBHOST, config.DBAUTH);
@@ -28,4 +29,10 @@ import { hideBin } from 'yargs/helpers';
   }, tenant);
   await tenants.tearDownTenants();
   await DB.disconnect();
-})();
+}
+
+run().catch(async error => {
+  process.stderr.write(`generateAutomaticTranslationConfig failed: ${error}\n`);
+  await DB.disconnect();
+  process.exit(1);
+});
