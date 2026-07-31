@@ -1,3 +1,4 @@
+/* eslint-disable max-statements */
 import { expect, Page, test } from '@playwright/test';
 import { loginAsAdmin } from './helpers/auth';
 import { createTemplate } from './helpers/setupData';
@@ -39,12 +40,12 @@ test('paragraph extraction lifecycle', async ({ page }) => {
   const targetTemplateName = `PX Target ${Date.now()}`;
   const sourceTemplateName = 'Heroes';
   await test.step('Create prerequisites and open PX settings', async () => {
-    const createdTemplate = await createTemplate(page.request, targetTemplateName, [
+    await createTemplate(page.request, targetTemplateName, [
       { name: 'paragraphBody', label: 'Paragraph body', type: 'markdown' },
       { name: 'paragraphNumber', label: 'Paragraph number', type: 'numeric' },
     ]);
     const secondRelationTypeResponse = await page.request.post('/api/relationtypes', {
-      data: { name: `px-ui-${Date.now()}`, properties: [] },
+      data: { name: `px-ui-${Date.now()}` },
       headers: { 'X-Requested-With': 'XMLHttpRequest' },
     });
     expect(secondRelationTypeResponse.ok()).toBeTruthy();
@@ -94,7 +95,7 @@ test('paragraph extraction lifecycle', async ({ page }) => {
   await page.getByRole('button', { name: 'Create' }).click();
   const createExtractorResult = await createExtractorResponse;
   const createExtractorPayload = await createExtractorResult.json();
-  const extractorId = createExtractorPayload.extractorId;
+  const { extractorId } = createExtractorPayload;
   expect(extractorId).toBeTruthy();
   await expect(
     page.getByTestId('notification-flash-title').getByText('Paragraph Extractor added')
@@ -105,11 +106,13 @@ test('paragraph extraction lifecycle', async ({ page }) => {
     await expect(page.getByText('Paragraphs').first()).toBeVisible();
     let hasEntityRows = false;
     for (let attempt = 0; attempt < 40; attempt += 1) {
+      // eslint-disable-next-line no-await-in-loop
       const rowCount = await page.locator('tbody tr').count();
       if (rowCount > 0) {
         hasEntityRows = true;
         break;
       }
+      // eslint-disable-next-line no-await-in-loop
       await page.waitForTimeout(1000);
     }
     expect(hasEntityRows).toBeTruthy();

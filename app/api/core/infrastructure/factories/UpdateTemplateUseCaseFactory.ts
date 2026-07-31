@@ -19,7 +19,7 @@ class UpdateTemplateUseCaseFactory {
     const thesauriDS = ThesauriDataSourceFactory.default({ transactionManager });
     const translationService = new LegacyTranslationService();
     const settingsDS = SettingsDataSourceFactory.default({ transactionManager });
-    const relationshipTypesDS = RelationshipTypesDataSourceFactory.default(transactionManager);
+    const relationshipTypesDS = RelationshipTypesDataSourceFactory.default({ transactionManager });
     const idGenerator = IdGeneratorFactory.default();
     const eventBus = applicationEventsBus;
 

@@ -12,13 +12,11 @@ const paragraphNumberProperty = factory.property('paragraph_number_property', 'n
 const sourceRelationshipType = {
   _id: factory.id('sourceRelationshipType'),
   name: 'Source Relationship Type',
-  properties: [],
 };
 
 const targetRelationshipType = {
   _id: factory.id('targetRelationshipType'),
   name: 'Target Relationship Type',
-  properties: [],
 };
 
 export const defaultTemplate = factory.template('Default Template');
