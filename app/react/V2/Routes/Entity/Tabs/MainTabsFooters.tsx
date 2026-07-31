@@ -1,7 +1,7 @@
 import React from 'react';
 import { useTabGroup } from '#V2/Components/UI/index.js';
 import type { FileType } from '#V2/api/entities/types.js';
-import { useMetadataEditing } from '../Components/context/index.js';
+import { useMetadataEditing, useEntityPageView } from '../Components/context/index.js';
 import { MAIN_TAB, isValidMainTab, type MainTabId } from './tabIds.js';
 import {
   keepMetadataTab,
@@ -22,7 +22,13 @@ const MainTabsFooters = ({ activeTabId: urlActiveTabId, mainDocument }: MainTabs
   const resolvedTabId = resolveActiveTabId(atomActiveTabId, urlActiveTabId);
   const activeTabId = isValidMainTab(resolvedTabId) ? resolvedTabId : urlActiveTabId;
   const { isEditing, formMountHost } = useMetadataEditing();
+  const { hasEntityPageView } = useEntityPageView();
   const metadataActive = activeTabId === MAIN_TAB.METADATA;
+
+  // Page view replaces metadata on main — no metadata edit footer there.
+  if (hasEntityPageView && metadataActive) {
+    return null;
+  }
 
   if (keepMetadataTab(metadataActive, isEditing, formMountHost, 'main')) {
     return <MetadataTabFooter host="main" />;

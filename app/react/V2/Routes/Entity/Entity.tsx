@@ -137,6 +137,7 @@ const Entity = () => {
   const entity = loaderData?.entity;
   const mainDocument = loaderData?.mainDocument;
   const pagePlaintext = loaderData?.pagePlaintext;
+  const entityPageView = loaderData?.entityPageView;
   const language = entity?.language || locale;
 
   if (!entity) {
@@ -151,6 +152,7 @@ const Entity = () => {
         language={language}
         mainDocument={mainDocument}
         pagePlaintext={pagePlaintext}
+        entityPageView={entityPageView}
       >
         <EntityFilesFromEntity>
           <EntityView />

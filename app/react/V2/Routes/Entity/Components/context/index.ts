@@ -35,3 +35,10 @@ export { useEntityOverlay } from './EntityOverlayContext.js';
 export type { RelationshipsPanelView, RelationshipsPanelZoom } from './types.js';
 export { useRelationshipsPanelData } from '../relationships/hooks/useRelationshipsPanelData.js';
 export { useEntityRelationshipMarkers } from '../relationships/hooks/useDocumentRelationships.js';
+export {
+  EntityPageViewProvider,
+  EntityPageViewer,
+  useEntityPageView,
+} from '../EntityPageView/index.js';
+export type { EntityPageViewData } from '../EntityPageView/index.js';
+
