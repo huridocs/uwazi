@@ -152,8 +152,11 @@ describe('PostgresUsersDataSource', () => {
       ['updatePassword', async () => makeDS().updatePassword('x', {} as never)],
     ];
 
-    it.each(notImplementedCases)('%s should throw "Method not implemented."', async (_name, run) => {
-      await expect(run()).rejects.toThrow('Method not implemented.');
-    });
+    it.each(notImplementedCases)(
+      '%s should throw "Method not implemented."',
+      async (_name, run) => {
+        await expect(run()).rejects.toThrow('Method not implemented.');
+      }
+    );
   });
 });

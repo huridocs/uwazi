@@ -1,4 +1,7 @@
-import type { ResetTwoFactorAuthRequest, ResetTwoFactorAuthResponse } from '#shared/contracts/Users.js';
+import type {
+  ResetTwoFactorAuthRequest,
+  ResetTwoFactorAuthResponse,
+} from '#shared/contracts/Users.js';
 import * as usersUtils from '#api/auth2fa/usersUtils.js';
 import { AbstractController } from '#api/common.v2/infrastructure/AbstractController.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';

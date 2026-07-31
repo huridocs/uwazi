@@ -19,7 +19,9 @@ describe('POST /api/auth2fa-enable', () => {
     await testingEnvironment.setUp(fixtures);
     jest
       .spyOn(otplib.authenticator, 'verify')
-      .mockImplementation(({ token, secret }) => token === 'correctToken' && secret === 'correctSecret');
+      .mockImplementation(
+        ({ token, secret }) => token === 'correctToken' && secret === 'correctSecret'
+      );
   });
 
   afterAll(async () => {

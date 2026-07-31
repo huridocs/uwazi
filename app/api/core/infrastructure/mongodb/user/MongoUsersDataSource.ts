@@ -131,10 +131,7 @@ class MongoUsersDataSource implements UsersDataSource {
   }
 
   async setTwoFactorSecret(userId: string, secret: string): Promise<void> {
-    await this.dao.updateOne(
-      { _id: ObjectId.createFromHexString(userId) },
-      { $set: { secret } }
-    );
+    await this.dao.updateOne({ _id: ObjectId.createFromHexString(userId) }, { $set: { secret } });
   }
 
   async getTwoFactorSecret(userId: string) {
