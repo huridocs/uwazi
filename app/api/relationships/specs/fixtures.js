@@ -386,11 +386,6 @@ export default {
     {
       _id: relation1,
       name: 'relation 1',
-      properties: [
-        { type: 'text', name: 'title' },
-        { type: 'multiselect', name: 'options' },
-        { type: 'date', name: 'date' },
-      ],
     },
     { _id: relation2, name: 'relation 2' },
     { _id: friend, name: 'friend' },

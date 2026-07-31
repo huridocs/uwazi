@@ -4,26 +4,27 @@ import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnec
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { SyncHandler } from './SyncHandler.js';
 
-type RelationtypeSyncDocument = {
+type RelationshipTypeSyncDocument = {
   _id: ObjectId;
   name?: string;
-  properties?: unknown[];
 };
 
-const toObjectId = (id: RelationtypeSyncDocument['_id'] | string) =>
+const toObjectId = (id: RelationshipTypeSyncDocument['_id'] | string) =>
   id instanceof ObjectId ? id : new ObjectId(id);
 
 const toReplacementDocument = (
-  document: Partial<RelationtypeSyncDocument>,
+  document: Partial<RelationshipTypeSyncDocument>,
   id: ObjectId
-): RelationtypeSyncDocument => {
-  const { _id: _ignored, ...rest } = document;
-  return { _id: id, ...rest };
+): RelationshipTypeSyncDocument => {
+  if (typeof document.name !== 'string') {
+    throw new Error('MongoRelationshipTypesSyncHandler: document.name is required');
+  }
+  return { _id: id, name: document.name };
 };
 
-export class MongoRelationtypesSyncHandler
-  extends MongoDataSource<RelationtypeSyncDocument>
-  implements SyncHandler<RelationtypeSyncDocument>
+export class MongoRelationshipTypesSyncHandler
+  extends MongoDataSource<RelationshipTypeSyncDocument>
+  implements SyncHandler<RelationshipTypeSyncDocument>
 {
   protected collectionName = 'relationtypes';
 
@@ -31,24 +32,26 @@ export class MongoRelationtypesSyncHandler
     super(getConnection(), TransactionManagerFactory.default(), { useSyncedCollection: false });
   }
 
-  async getById(id: string): Promise<RelationtypeSyncDocument | null> {
+  async getById(id: string): Promise<RelationshipTypeSyncDocument | null> {
     return this.getCollection().findOne({ _id: new ObjectId(id) });
   }
 
-  async save(document: Partial<RelationtypeSyncDocument>): Promise<RelationtypeSyncDocument> {
+  async save(
+    document: Partial<RelationshipTypeSyncDocument>
+  ): Promise<RelationshipTypeSyncDocument> {
     const rawId = document._id;
     if (!rawId) {
-      throw new Error('MongoRelationtypesSyncHandler: document._id is required');
+      throw new Error('MongoRelationshipTypesSyncHandler: document._id is required');
     }
     const id = toObjectId(rawId);
     const replacement = toReplacementDocument(document, id);
     await this.getCollection().replaceOne({ _id: id }, replacement, { upsert: true });
-    return this.getCollection().findOne({ _id: id }) as Promise<RelationtypeSyncDocument>;
+    return this.getCollection().findOne({ _id: id }) as Promise<RelationshipTypeSyncDocument>;
   }
 
   async saveMultiple(
-    documents: Partial<RelationtypeSyncDocument>[]
-  ): Promise<RelationtypeSyncDocument[]> {
+    documents: Partial<RelationshipTypeSyncDocument>[]
+  ): Promise<RelationshipTypeSyncDocument[]> {
     if (documents.length === 0) {
       return [];
     }
@@ -56,7 +59,7 @@ export class MongoRelationtypesSyncHandler
     const ids = documents.map(doc => {
       const rawId = doc._id;
       if (!rawId) {
-        throw new Error('MongoRelationtypesSyncHandler: document._id is required');
+        throw new Error('MongoRelationshipTypesSyncHandler: document._id is required');
       }
       return toObjectId(rawId);
     });

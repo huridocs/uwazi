@@ -8,7 +8,7 @@ class DeleteRelationshipTypeUseCaseFactory {
     overrides?: Partial<ConstructorParameters<typeof DeleteRelationshipTypeUseCase>[0]>
   ) {
     const transactionManager = TransactionManagerFactory.default();
-    const relationshipTypesDS = RelationshipTypesDataSourceFactory.default(transactionManager);
+    const relationshipTypesDS = RelationshipTypesDataSourceFactory.default({ transactionManager });
     const translationService = new LegacyRelationshipTypesTranslationService();
 
     return new DeleteRelationshipTypeUseCase({

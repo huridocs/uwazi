@@ -4,6 +4,8 @@
 
 Migrate relationship types backend logic to v2 architecture so the module can later move to Postgres with the same public API contract used today.
 
+**Postgres phase (next):** see [`relationship-types-postgres.md`](./relationship-types-postgres.md).
+
 ## Scope
 
 - Backend-only (`app/api`).
@@ -64,7 +66,8 @@ Migrate relationship types backend logic to v2 architecture so the module can la
    - move relationtypes behavior into v2-oriented module structure
    - keep `/api/relationtypes` contract stable
 2. Postgres phase:
-   - add Postgres adapter after v2 parity and cleanup
+   - tracked in [`relationship-types-postgres.md`](./relationship-types-postgres.md)
+   - schema + RLS, PG DataSource, per-tenant feature flag, sync handler, one-time Mongo→PG data copy
 
 ## TODOs
 
@@ -135,7 +138,7 @@ Migrate relationship types backend logic to v2 architecture so the module can la
 ## Explicit Non-Goals (Current Scope)
 
 - Do not reintroduce runtime support for `relationtypes.properties`.
-- Do not start Postgres adapter work before v2 migration closure sign-off.
+- Postgres implementation details live in [`relationship-types-postgres.md`](./relationship-types-postgres.md) (not in this V2 architecture doc).
 
 ## To Keep an Eye On
 
@@ -144,3 +147,4 @@ Migrate relationship types backend logic to v2 architecture so the module can la
 - Keep enforcing "no internal mocks" in relationshiptypes v2 tests unless crossing module/system boundaries (auth/socket/etc).
 - Remaining legacy relationtypes references are now test-only; runtime callers are migrated to core-based v2 implementation.
 - Keep temporary `notify: true` in relationship type controller error logs until monitoring validation is complete; then remove notify flag and keep logs.
+- Postgres follow-up: open decisions and implementation checklist in [`relationship-types-postgres.md`](./relationship-types-postgres.md).

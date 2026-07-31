@@ -21,13 +21,14 @@ class CreateRelationshipTypeUseCase extends AbstractUseCase<Input, Output, Deps>
       throw new Error('duplicated_entry');
     }
 
-    const created = await this.transactionManager.run(async () => {
-      const saved = await this.deps.relationshipTypesDS.create({ name: input.name });
-      await this.deps.translationService.create(saved);
-      return saved;
+    const relationshipType = new RelationshipType(this.idGenerator.generate(), input.name);
+
+    await this.transactionManager.run(async () => {
+      await this.deps.relationshipTypesDS.create(relationshipType);
+      await this.deps.translationService.create(relationshipType);
     });
 
-    return created;
+    return relationshipType;
   }
 }
 

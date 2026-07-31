@@ -21,7 +21,9 @@ const createSut = () => {
 
   const sut = new RelationshipPropertyCreatorService({
     templatesDS: TemplatesDataSourceFactory.default({ transactionManager: transactionManger }),
-    relationshipTypesDS: RelationshipTypesDataSourceFactory.default(transactionManger),
+    relationshipTypesDS: RelationshipTypesDataSourceFactory.default({
+      transactionManager: transactionManger,
+    }),
   });
 
   return { sut };
