@@ -439,9 +439,7 @@ describe('libraryActions', () => {
         store
           .dispatch(actions.deleteDocument(doc))
           .then(() => {
-            expect(api.delete).toHaveBeenCalledWith(
-              new RequestParams({ sharedId: doc.sharedId })
-            );
+            expect(api.delete).toHaveBeenCalledWith(new RequestParams({ sharedId: doc.sharedId }));
             expect(store.getActions()).toEqual(expectedActions);
           })
           .then(done)
