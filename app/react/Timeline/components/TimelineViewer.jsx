@@ -2,6 +2,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 
+import { DateTime } from 'luxon';
 import { Loader } from '#app/components/Elements/Loader.js';
 import { t as translate, I18NLink } from '#app/I18N/index.js';
 import { ShowIf } from '#app/App/ShowIf.js';
@@ -12,8 +13,6 @@ import { formater } from '#app/Metadata/helpers/formater.js';
 import { RequestParams } from '#app/utils/RequestParams.js';
 
 import { Icon } from '#app/UI/index.js';
-
-import { DateTime } from 'luxon';
 
 import {
   caseTemplate,
@@ -42,9 +41,9 @@ const getRelatedReferences = (references, template) => {
 };
 
 const fetchReferenceData = references => {
-  const fetchPromises = references.map(reference => {
-    return EntitiesAPI.get(new RequestParams({ sharedId: reference.entityData.sharedId }));
-  });
+  const fetchPromises = references.map(reference =>
+    EntitiesAPI.get(new RequestParams({ sharedId: reference.entityData.sharedId }))
+  );
 
   return Promise.all(fetchPromises);
 };

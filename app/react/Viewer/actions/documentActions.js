@@ -13,11 +13,11 @@ import { actions as relationshipActions } from '#app/Relationships/index.js';
 import { RequestParams } from '#app/utils/RequestParams.js';
 import { closePanel as closeConnectionPanel } from '#app/Connections/actions/uiActions.js';
 import { deletedEntityAtom } from '#V2/atoms/index.js';
+import { EntitiesAPI } from '#app/Entities/EntitiesAPI.js';
 import { saveEntityWithFiles } from '../../Library/actions/saveEntityWithFiles.js';
 import * as selectionActions from './selectionActions.js';
 import * as uiActions from './uiActions.js';
 import { sortTextSelections } from '../utils/sortTextSelections.js';
-import { EntitiesAPI as EntitiesApi } from '../../Entities/EntitiesAPI.js';
 
 function getEntityDoc(entity, filename, defaultLanguage) {
   let docByFilename = entity.documents.find(d => d.filename === filename);
@@ -96,7 +96,7 @@ export function saveToc(toc, fileId) {
 
 export function deleteDocument(doc) {
   return async dispatch => {
-    await EntitiesApi.delete(new RequestParams({ sharedId: doc.sharedId }));
+    await EntitiesAPI.delete(new RequestParams({ sharedId: doc.sharedId }));
     dispatch(notificationActions.notify('Document deleted', 'success'));
     dispatch(resetDocumentViewer());
     dispatch(removeDocument(doc));
@@ -106,7 +106,7 @@ export function deleteDocument(doc) {
 }
 
 export async function getDocument(requestParams, defaultLanguage, filename) {
-  const [entity] = await EntitiesApi.get(requestParams.add({ omitRelationships: true }));
+  const [entity] = await EntitiesAPI.get(requestParams.add({ omitRelationships: true }));
 
   entity.defaultDoc = getEntityDoc(entity, filename, defaultLanguage);
   return entity;

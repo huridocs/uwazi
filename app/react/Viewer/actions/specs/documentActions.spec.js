@@ -1,18 +1,18 @@
 /**
  * @jest-environment jsdom
  */
-/* eslint-disable max-nested-callbacks */
+
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import backend from 'fetch-mock';
 import Immutable from 'immutable';
+import { actions as formActions } from 'react-redux-form';
 import { api } from '#app/utils/api.js';
 import { mockID } from '#shared/uniqueID.js';
 import { getStore } from '#shared/atomStore/index.js';
-import { APIURL } from '#app/config.js';
 import { EntitiesAPI } from '#app/Entities/EntitiesAPI.js';
+import { APIURL } from '#app/config.js';
 import * as notificationsTypes from '#app/Notifications/actions/actionTypes.js';
-import { actions as formActions } from 'react-redux-form';
 import { actions as relationshipActions } from '#app/Relationships/index.js';
 import { RequestParams } from '#app/utils/RequestParams.js';
 import { deletedEntityAtom } from '#V2/atoms/index.js';
