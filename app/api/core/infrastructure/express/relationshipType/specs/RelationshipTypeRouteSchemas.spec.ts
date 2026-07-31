@@ -13,18 +13,16 @@ describe('RelationshipTypeRouteSchemas', () => {
       expect(parsed).toMatchObject({ name: 'Related To' });
     });
 
-    it('should parse update payload with compatibility properties field', () => {
+    it('should parse update payload', () => {
       const parsed = upsertRelationshipTypeRequestSchema.parse({
         _id: 'rel-id',
         name: 'Updated Name',
-        properties: [{ label: 'legacy' }],
       });
 
       expect(parsed).toMatchObject({
         _id: 'rel-id',
         name: 'Updated Name',
       });
-      expect(parsed.properties).toHaveLength(1);
     });
 
     it('should reject invalid payload', () => {

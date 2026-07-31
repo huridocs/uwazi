@@ -10,7 +10,7 @@ const factory = getFixturesFactory();
 
 const fixtures: DBFixture = {
   settings: [{ languages: [{ key: 'en', label: 'English', default: true }] }],
-  relationtypes: [{ _id: factory.id('rel1'), name: 'Type 1', properties: [] }],
+  relationtypes: [{ _id: factory.id('rel1'), name: 'Type 1' }],
 };
 
 const updateRoute = (app: Application) => {
@@ -44,7 +44,6 @@ describe('UpdateRelationshipTypeController integration', () => {
       .send({
         _id: factory.id('rel1').toHexString(),
         name: 'Type 1 Updated',
-        properties: [{ ignored: true }],
       });
 
     expect(response).toHaveStatus(200);
