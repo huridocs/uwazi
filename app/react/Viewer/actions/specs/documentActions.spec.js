@@ -1,18 +1,18 @@
 /**
  * @jest-environment jsdom
  */
-/* eslint-disable max-nested-callbacks */
+
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import backend from 'fetch-mock';
 import Immutable from 'immutable';
+import { actions as formActions } from 'react-redux-form';
 import { api } from '#app/utils/api.js';
 import { mockID } from '#shared/uniqueID.js';
 import { getStore } from '#shared/atomStore/index.js';
-import { documentsAPI } from '#app/Documents/index.js';
+import { EntitiesAPI } from '#app/Entities/EntitiesAPI.js';
 import { APIURL } from '#app/config.js';
 import * as notificationsTypes from '#app/Notifications/actions/actionTypes.js';
-import { actions as formActions } from 'react-redux-form';
 import { actions as relationshipActions } from '#app/Relationships/index.js';
 import { RequestParams } from '#app/utils/RequestParams.js';
 import { deletedEntityAtom } from '#V2/atoms/index.js';
@@ -488,7 +488,7 @@ describe('documentActions', () => {
     describe('deleteDocument', () => {
       const atomStore = getStore();
       it('should delete the document and dispatch a notification on success', done => {
-        spyOn(documentsAPI, 'delete').and.callFake(async () => Promise.resolve('response'));
+        spyOn(EntitiesAPI, 'delete').and.callFake(async () => Promise.resolve('response'));
         spyOn(atomStore, 'set');
         const doc = { sharedId: 'sharedId', name: 'doc' };
 
@@ -507,7 +507,7 @@ describe('documentActions', () => {
           .dispatch(actions.deleteDocument(doc))
           .then(() => {
             expect(atomStore.set).toHaveBeenCalledWith(deletedEntityAtom, 'sharedId');
-            expect(documentsAPI.delete).toHaveBeenCalledWith(
+            expect(EntitiesAPI.delete).toHaveBeenCalledWith(
               new RequestParams({ sharedId: 'sharedId' })
             );
             expect(store.getActions()).toEqual(expectedActions);

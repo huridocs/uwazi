@@ -7,7 +7,6 @@ import * as connectionsTypes from '#app/Connections/actions/actionTypes.js';
 import { entityDefaultDocument } from '#shared/entityDefaultDocument.js';
 import { actions } from '#app/BasicReducer/index.js';
 import { getStore } from '#shared/atomStore/index.js';
-import { documentsAPI } from '#app/Documents/index.js';
 import { notificationActions } from '#app/Notifications/index.js';
 import { removeDocument, unselectAllDocuments } from '#app/Library/actions/libraryActions.js';
 import { actions as relationshipActions } from '#app/Relationships/index.js';
@@ -97,7 +96,7 @@ export function saveToc(toc, fileId) {
 
 export function deleteDocument(doc) {
   return async dispatch => {
-    await documentsAPI.delete(new RequestParams({ sharedId: doc.sharedId }));
+    await EntitiesApi.delete(new RequestParams({ sharedId: doc.sharedId }));
     dispatch(notificationActions.notify('Document deleted', 'success'));
     dispatch(resetDocumentViewer());
     dispatch(removeDocument(doc));
