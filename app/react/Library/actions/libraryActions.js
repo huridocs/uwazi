@@ -6,7 +6,6 @@ import { t } from '#app/I18N/index.js';
 import { store } from '#app/store.js';
 import * as types from '#app/Library/actions/actionTypes.js';
 import { actions } from '#app/BasicReducer/index.js';
-import { documentsAPI } from '#app/Documents/index.js';
 import { api as entitiesAPI } from '#app/Entities/index.js';
 import { notificationActions } from '#app/Notifications/index.js';
 import { RequestParams } from '#app/utils/RequestParams.js';
@@ -304,7 +303,7 @@ function searchSnippets(searchString, sharedId, storeKey) {
 
 function saveDocument(doc, formKey) {
   return async dispatch => {
-    const updatedDoc = await documentsAPI.save(new RequestParams(doc));
+    const updatedDoc = await entitiesAPI.save(new RequestParams(doc));
     dispatch(notificationActions.notify(t('System', 'Entity updated', null, false), 'success'));
     dispatch(formActions.reset(formKey));
     dispatch(updateEntity(updatedDoc));
@@ -376,7 +375,7 @@ function removeDocuments(docs) {
 
 function deleteDocument(doc) {
   return async dispatch => {
-    await documentsAPI.delete(new RequestParams({ sharedId: doc.sharedId }));
+    await entitiesAPI.delete(new RequestParams({ sharedId: doc.sharedId }));
     dispatch(notificationActions.notify(t('System', 'Entity deleted', null, false), 'success'));
     await dispatch(unselectAllDocuments());
     dispatch(removeDocument(doc));
