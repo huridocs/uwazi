@@ -45,14 +45,14 @@ const analyzeHeaders = (
 
 describe('CsvThesauriPendingValuesBuilder', () => {
   it('should build pending entries for select properties', () => {
-    const headers = ['title', 'select_property__en'];
+    const headers = ['title', 'select_property__en', 'select_property__es'];
     const template = buildTemplate();
     const rows: CsvImportRow[] = [
       CsvImportRow.create({
         importId: IMPORT_ID,
         rowIndex: 0,
         headers,
-        values: ['entity-1', 'Apple'],
+        values: ['entity-1', 'Apple', 'Apple'],
       }),
     ];
 
@@ -78,14 +78,14 @@ describe('CsvThesauriPendingValuesBuilder', () => {
   });
 
   it('should include child labels when parsing parent::child syntax', () => {
-    const headers = ['title', 'select_property__en'];
+    const headers = ['title', 'select_property__en', 'select_property__es'];
     const template = buildTemplate();
     const rows: CsvImportRow[] = [
       CsvImportRow.create({
         importId: IMPORT_ID,
         rowIndex: 0,
         headers,
-        values: ['entity-1', 'Fruits::Apple'],
+        values: ['entity-1', 'Fruits::Apple', 'Fruits::Apple'],
       }),
     ];
 
@@ -104,14 +104,14 @@ describe('CsvThesauriPendingValuesBuilder', () => {
   });
 
   it('should aggregate parse errors as issues', () => {
-    const headers = ['title', 'select_property__en'];
+    const headers = ['title', 'select_property__en', 'select_property__es'];
     const template = buildTemplate();
     const rows: CsvImportRow[] = [
       CsvImportRow.create({
         importId: IMPORT_ID,
         rowIndex: 0,
         headers,
-        values: ['entity-1', 'Invalid::'],
+        values: ['entity-1', 'Invalid::', 'Invalid::'],
       }),
     ];
 

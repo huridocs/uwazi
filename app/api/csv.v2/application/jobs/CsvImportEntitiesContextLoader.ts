@@ -3,6 +3,7 @@ import { SettingsDataSource } from '#api/core/application/contracts/SettingsData
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import { NonRetryableJobError } from '#api/core/libs/queue/infrastructure/errors.js';
 import { CsvHeaderAnalyzer, AnalyzerOptions } from '../services/CsvHeaderAnalyzer.js';
+import { CsvHeaderAnalyzerError } from '../services/CsvHeaderAnalyzerError.js';
 import { CsvImportsDataSource } from '../contracts/CsvImportsDataSource.js';
 import { CsvImportRowsDataSource } from '../contracts/CsvImportRowsDataSource.js';
 import { CsvEntitiesImportMapper } from '../services/CsvEntitiesImportMapper.js';
@@ -50,6 +51,16 @@ const loadCsvImportEntitiesContext = async (
     newNameGeneration: Boolean(settings?.newNameGeneration),
   };
 
+  let headerAnalysis;
+  try {
+    headerAnalysis = CsvHeaderAnalyzer.analyze(firstStagedRow.headers, template, analyzerOptions);
+  } catch (error) {
+    if (error instanceof CsvHeaderAnalyzerError) {
+      throw new NonRetryableJobError(error);
+    }
+    throw error;
+  }
+
   return {
     csvImport,
     template,
@@ -63,7 +74,7 @@ const loadCsvImportEntitiesContext = async (
       firstStagedRow.headers,
       analyzerOptions.newNameGeneration
     ),
-    headerAnalysis: CsvHeaderAnalyzer.analyze(firstStagedRow.headers, template, analyzerOptions),
+    headerAnalysis,
   };
 };
 
