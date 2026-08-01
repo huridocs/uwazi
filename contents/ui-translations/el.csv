@@ -688,7 +688,10 @@ marked for training,επισημασμένο για εκπαίδευση
 Marked for training + all labeled entries,Επισημασμένα για εκπαίδευση + όλες οι καταχωρίσεις με ετικέτα
 Marked for training only,Μόνο επισημασμένα για εκπαίδευση
 Match,Αντιστοιχία
+match,match
 match verbatim,match verbatim
+matches,matches
+Matches show the passage and the page they are on.,Matches show the passage and the page they are on.
 Matching,Αντιστοίχιση
 matching,αντιστοίχιση
 Matomo,Matomo
@@ -765,6 +768,7 @@ No icon / flag,Χωρίς εικονίδιο/σημαία
 No items available,Δεν υπάρχουν διαθέσιμα στοιχεία
 No Label,Χωρίς ετικέτα
 No label,Χωρίς ετικέτα
+No matches for,No matches for
 No matching entities.,No matching entities.
 No media selected,No media selected
 No metadata for this entity yet.,No metadata for this entity yet.
@@ -1053,6 +1057,7 @@ Search relationships,Search relationships
 Search relevance,Συνάφεια αναζήτησης
 Search text,Aναζήτηση κείμενου
 Search text description,Πληκτρολογήστε κάτι στο πλαίσιο αναζήτησης για να λάβετε αποτελέσματα.
+Search this document,Search this document
 Search Tips,Συμβουλές αναζήτησης
 Search tips,Search tips
 Search Tips: boolean,"AND, OR και NOT για αναζητήσεις boolean. Δηλαδή ""status AND women NOT Nicaragua"" θα αντιστοιχίσει οτιδήποτε περιέχει και τις δύο λέξεις status και women, και κατ' ανάγκη δεν περιέχει τη λέξη Nicaragua."
@@ -1284,6 +1289,7 @@ Time,Χρόνος
 Time (UTC),Time (UTC)
 Timelinks,Χρονοσυνδέσμος
 Timestamp,Χρονοσφραγίδα
+tips,tips
 Title,Τίτλος
 To,Έως
 To add references you can start by selecting text in the document,"Για να προσθέσετε αναφορές, μπορείτε να ξεκινήσετε επιλέγοντας κείμενο στο έγγραφο."

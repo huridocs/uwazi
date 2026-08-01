@@ -1,79 +1,76 @@
-/* eslint-disable react/no-multi-comp */
 import React from 'react';
+import { LightBulbIcon } from '@heroicons/react/24/outline';
 import { Translate, t } from '#app/I18N/index.js';
 
-const TIPS: { example: string; proseKey: string; proseFallback: string }[] = [
-  { example: 'juris*', proseKey: 'Search Tips: wildcard', proseFallback: 'matches many characters' },
+// Entity Searchtab tips UI — Library keeps App/SearchTipsContent (intentional split).
+
+const TIPS: { example: string; proseKey: string; prose: string; wide?: boolean }[] = [
+  {
+    example: 'juris*',
+    proseKey: 'Search Tips: wildcard',
+    prose: 'matches jurisdiction, jurists, jurisprudence',
+  },
   {
     example: '198?',
     proseKey: 'Search Tips: one char wildcard',
-    proseFallback: 'any single character',
+    prose: 'any single character',
   },
   {
     example: '"Costa Rica"',
     proseKey: 'Search Tips: exact term',
-    proseFallback: 'the words together, in that order',
+    prose: 'the words together, in that order',
   },
   {
     example: '"the status"~5',
     proseKey: 'Search Tips: proximity',
-    proseFallback: 'the words within 5 of each other',
+    prose: 'the words within 5 of each other',
+  },
+  {
+    example: 'status AND women NOT Nicaragua',
+    proseKey: 'Search Tips: boolean',
+    prose: 'combine or exclude terms',
+    wide: true,
   },
 ];
 
-const BOOLEAN_TIP = {
-  example: 'status AND women NOT Nicaragua',
-  proseKey: 'Search Tips: boolean',
-  proseFallback: 'combine or exclude terms',
-};
+const ROW_CLASS =
+  'w-full cursor-pointer rounded-md px-2 py-2 text-left transition-colors hover:bg-parchment ' +
+  'focus:outline-none focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-ink/20';
+const EXAMPLE_CLASS = 'whitespace-nowrap font-mono text-micro leading-snug text-ink';
+const PROSE_CLASS = 'min-w-0 text-micro leading-snug text-ink-secondary';
 
 type SearchTipsContentProps = {
   onInsert: (example: string) => void;
 };
 
-const TipRow = ({
-  example,
-  prose,
-  onInsert,
-}: {
-  example: string;
-  prose: string;
-  onInsert: (example: string) => void;
-}) => (
-  <li>
-    <button
-      type="button"
-      onClick={() => onInsert(example)}
-      aria-label={`${t('System', 'Search', null, false)}: ${example}`}
-      className="w-full rounded-md px-1.5 py-1.5 text-start transition-colors hover:bg-parchment focus:outline-none focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-ink/20"
-    >
-      <code dir="ltr" className="font-mono text-nano text-ink">
-        {example}
-      </code>
-      <span className="mt-0.5 block text-nano leading-snug text-ink-secondary">{prose}</span>
-    </button>
-  </li>
-);
-
 const SearchTipsContent = ({ onInsert }: SearchTipsContentProps) => (
   <>
-    <div className="mb-1.5 text-xs font-semibold text-ink">
-      <Translate>Narrow your search</Translate>
+    <div className="mb-1 flex items-center gap-1.5 border-b border-border-soft px-2 pb-2 pt-1">
+      <LightBulbIcon className="h-3 w-3 text-ink-tertiary" aria-hidden="true" />
+      <span className="text-nano font-semibold uppercase tracking-wide text-ink-tertiary">
+        <Translate>Narrow your search</Translate>
+      </span>
     </div>
-    <ul className="flex flex-col gap-0.5">
+    <ul className="flex flex-col">
       {TIPS.map(tip => (
-        <TipRow
-          key={tip.example}
-          example={tip.example}
-          prose={t('System', tip.proseKey, null, false) || tip.proseFallback}
-          onInsert={onInsert}
-        />
+        <li key={tip.example}>
+          <button
+            type="button"
+            onClick={() => onInsert(tip.example)}
+            aria-label={`${t('System', 'Search', null, false)}: ${tip.example}`}
+            className={`${ROW_CLASS} ${
+              tip.wide
+                ? 'flex items-baseline gap-x-3'
+                : 'grid grid-cols-[7rem_1fr] items-baseline gap-x-3'
+            }`}
+          >
+            <span dir="ltr" className={EXAMPLE_CLASS}>
+              {tip.example}
+            </span>
+            <span className={PROSE_CLASS}>{t('System', tip.proseKey, tip.prose, false)}</span>
+          </button>
+        </li>
       ))}
-      <TipRow
-        example={BOOLEAN_TIP.example}
-        prose={t('System', BOOLEAN_TIP.proseKey, null, false) || BOOLEAN_TIP.proseFallback}
-        onInsert={onInsert}
-      />
     </ul>
   </>
 );

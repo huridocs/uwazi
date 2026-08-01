@@ -25,6 +25,9 @@ function useDocumentPdfPage({
   const pageSyncEnabledRef = useRef(false);
   const unlockTimeoutRef = useRef<ReturnType<typeof setTimeout>>();
   const documentIdRef = useRef(mainDocument._id);
+  const ownedControllerRef = useRef<PDFControls | null>(null);
+  const mainPdfControllerRef = useRef(mainPdfController);
+  mainPdfControllerRef.current = mainPdfController;
   const isRaw = !isClient || !ready || hashParams.get(VIEW_MODE_PARAM) === 'true';
 
   useEffect(() => {
@@ -34,8 +37,12 @@ function useDocumentPdfPage({
   useEffect(
     () => () => {
       if (unlockTimeoutRef.current) clearTimeout(unlockTimeoutRef.current);
+      if (mainPdfControllerRef.current === ownedControllerRef.current) {
+        setPdfController(null);
+      }
+      ownedControllerRef.current = null;
     },
-    []
+    [setPdfController]
   );
 
   useEffect(() => {
@@ -51,6 +58,7 @@ function useDocumentPdfPage({
     documentIdRef.current = mainDocument._id;
     targetPageRef.current = 1;
     pageSyncEnabledRef.current = false;
+    ownedControllerRef.current = null;
     setPdfController(null);
     if (hashParams.get(PAGE_PARAM) === '1' || !hashParams.get(PAGE_PARAM)) {
       return;
@@ -111,6 +119,7 @@ function useDocumentPdfPage({
   const onPdfReady = useCallback(
     (controls: PDFControls) => {
       const targetPage = targetPageRef.current || 1;
+      ownedControllerRef.current = controls;
       setPdfController(controls);
       if (targetPage === 1) {
         pageSyncEnabledRef.current = true;

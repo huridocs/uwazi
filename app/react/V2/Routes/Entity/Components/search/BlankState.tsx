@@ -21,7 +21,7 @@ const NoSearch = () => (
       <Translate>Search this document</Translate>
     </span>
     <span className="text-xs text-ink-muted">
-      <Translate translationKey="Search text description">
+      <Translate>
         Matches show the passage and the page they are on.
       </Translate>
     </span>

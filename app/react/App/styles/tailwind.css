@@ -200,6 +200,7 @@
   --color-border: var(--color-theme-border-primary, #e0d9c8);
   --color-warm: var(--color-theme-surface-warm, var(--color-theme-bg-warm, #FCFAF8));
   --color-ink: var(--color-theme-action-primary, var(--color-theme-text-primary, #1c1917));
+  --color-carbon: var(--color-theme-accent-supporting, #00B4F0);
 }
 
 @layer theme {

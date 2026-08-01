@@ -13,6 +13,7 @@ import { ToCTabFooter } from './footers/ToCTabFooter.js';
 import { RelationshipsTabFooter } from './footers/RelationshipsTabFooter.js';
 import { FileTabFooter } from './footers/FileTabFooter.js';
 import { TranslationsTabFooter } from './footers/TranslationsTabFooter.js';
+import { SearchTabFooter } from './footers/SearchTabFooter.js';
 
 type SideTabsFootersProps = {
   activeTabId?: SideTabId;
@@ -43,7 +44,7 @@ const SideTabsFooters = ({ activeTabId: urlActiveTabId, mainDocument }: SideTabs
     case SIDE_TAB.RELATIONSHIPS:
       return <RelationshipsTabFooter />;
     case SIDE_TAB.SEARCH:
-      return null;
+      return <SearchTabFooter />;
     case SIDE_TAB.FILE:
       return <FileTabFooter />;
     case SIDE_TAB.FILES:
