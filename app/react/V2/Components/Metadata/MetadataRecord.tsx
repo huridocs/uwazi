@@ -1,9 +1,13 @@
-import React, { useEffect, useMemo, useRef } from 'react';
+import React, { useEffect, useLayoutEffect, useMemo, useRef } from 'react';
 import { useAtomValue, useSetAtom } from 'jotai';
 import { Translate } from '#app/I18N/index.js';
 import { templatesAtom } from '#V2/atoms/templatesAtom.js';
 import { Entity } from '#V2/api/entities/types.js';
-import { focusMetadataFieldAtom } from '#V2/Routes/Entity/Components/metadata/focusMetadataFieldAtom.js';
+import {
+  applyMetadataFieldFocus,
+  FLASH_MS,
+  focusMetadataFieldAtom,
+} from './focusMetadataFieldAtom.js';
 import {
   Date,
   RelationshipCards,
@@ -24,26 +28,76 @@ type MetadataRecordProps = {
   entity: Entity;
 };
 
+const FOCUS_RETRY_MS = 50;
+const FOCUS_RETRY_MAX = 20;
+
 const MetadataRecord = ({ entity }: MetadataRecordProps) => {
   const templates = useAtomValue(templatesAtom);
   const focusField = useAtomValue(focusMetadataFieldAtom);
   const clearFocus = useSetAtom(focusMetadataFieldAtom);
   const rootRef = useRef<HTMLDivElement>(null);
+  const prevSharedIdRef = useRef(entity.sharedId);
+  const ownsFocusRef = useRef(false);
 
   useEffect(() => {
-    if (!focusField) return undefined;
-    const el = rootRef.current?.querySelector<HTMLElement>(
-      `[data-field-key="${CSS.escape(focusField.fieldKey)}"]`
-    );
-    if (el) {
-      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      el.classList.add('flash-highlight');
-      const timer = setTimeout(() => el.classList.remove('flash-highlight'), 1100);
+    if (prevSharedIdRef.current !== entity.sharedId) {
+      ownsFocusRef.current = false;
       clearFocus(null);
-      return () => clearTimeout(timer);
+      prevSharedIdRef.current = entity.sharedId;
     }
-    clearFocus(null);
-    return undefined;
+  }, [entity.sharedId, clearFocus]);
+
+  useEffect(
+    () => () => {
+      if (ownsFocusRef.current) {
+        ownsFocusRef.current = false;
+        clearFocus(null);
+      }
+    },
+    [clearFocus]
+  );
+
+  useLayoutEffect(() => {
+    if (!focusField) return undefined;
+    // Jump-while-unmounted keeps the atom until remount; owner unmount/sharedId clears stale focus.
+    let cancelled = false;
+    let flashCleanup: (() => void) | null = null;
+    let retryTimer: number | undefined;
+    let attempts = 0;
+
+    const tryApply = () => {
+      if (cancelled) return;
+      const root = rootRef.current;
+      const applied = root ? applyMetadataFieldFocus(root, focusField.fieldKey) : null;
+      if (applied) {
+        ownsFocusRef.current = true;
+        flashCleanup = applied;
+        // Delay clear so Strict Mode remount / tab settle can re-apply while atom is set.
+        retryTimer = window.setTimeout(() => {
+          if (!cancelled) {
+            ownsFocusRef.current = false;
+            clearFocus(null);
+          }
+        }, FLASH_MS);
+        return;
+      }
+      if (attempts >= FOCUS_RETRY_MAX) {
+        // Do not clear shared atom — another MetadataRecord may own/apply this focus.
+        return;
+      }
+      attempts += 1;
+      retryTimer = window.setTimeout(() => {
+        requestAnimationFrame(tryApply);
+      }, FOCUS_RETRY_MS);
+    };
+
+    tryApply();
+
+    return () => {
+      cancelled = true;
+      if (retryTimer !== undefined) window.clearTimeout(retryTimer);
+      flashCleanup?.();
+    };
   }, [focusField, clearFocus]);
 
   const { entityTemplate, metadata } = useFormatMetadata(entity, templates, {
@@ -75,7 +129,18 @@ const MetadataRecord = ({ entity }: MetadataRecordProps) => {
   );
 
   const detailItems = useMemo(() => {
-    const items: MetadataItem[] = [];
+    const items: MetadataItem[] = [
+      {
+        id: 'title',
+        label: 'Title',
+        translationContext,
+        content: (
+          <span className="font-medium text-ink" no-translate="true">
+            {entity.title}
+          </span>
+        ),
+      },
+    ];
 
     if (typeof entity.creationDate === 'number') {
       items.push({
@@ -125,6 +190,7 @@ const MetadataRecord = ({ entity }: MetadataRecordProps) => {
 
     return items;
   }, [
+    entity.title,
     entity.creationDate,
     entity.editDate,
     partition.detailFields,

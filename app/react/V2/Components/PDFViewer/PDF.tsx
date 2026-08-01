@@ -127,21 +127,52 @@ const PDF = ({
   }, []);
 
   const activateSnippet = useCallback((snippet: Snippet) => {
+    cancelAnimationFrame(snippetAnimationFrameIdRef.current);
+
+    const retryHighlight = (pageContainer: HTMLDivElement) => {
+      const deadline = Date.now() + 5000;
+
+      const attempt = (): void => {
+        if (tryHighlightAndScroll(pageContainer, snippet)) {
+          return;
+        }
+        if (Date.now() >= deadline) {
+          scrollIntoView(pageContainer, { block: 'start' });
+          return;
+        }
+        snippetAnimationFrameIdRef.current = requestAnimationFrame(attempt);
+      };
+
+      attempt();
+    };
+
+    const run = (pageContainer: HTMLDivElement) => {
+      if (tryHighlightAndScroll(pageContainer, snippet)) {
+        return;
+      }
+      scrollIntoView(pageContainer, { block: 'start' });
+      waitForElement(`#page-${snippet.page}-container .textLayer`, 5000)
+        .then(() => {
+          retryHighlight(pageContainer);
+        })
+        .catch(() => {
+          scrollIntoView(pageContainer, { block: 'start' });
+        });
+    };
+
     const pageContainer = pageRefsMap.current[snippet.page];
-
-    if (!pageContainer) {
+    if (pageContainer) {
+      run(pageContainer);
       return;
     }
 
-    if (tryHighlightAndScroll(pageContainer, snippet)) {
-      return;
-    }
-
-    scrollIntoView(pageContainer, { block: 'start' });
-
-    waitForElement(`#page-${snippet.page}-container .textLayer`, 5000)
-      .then(() => {
-        tryHighlightAndScroll(pageContainer, snippet);
+    waitForElement(`#page-${snippet.page}-container`, 5000)
+      .then(found => {
+        if (!(found instanceof HTMLDivElement)) {
+          return;
+        }
+        pageRefsMap.current[snippet.page] = found;
+        run(found);
       })
       .catch(() => {
         // ignore timeout
@@ -149,6 +180,7 @@ const PDF = ({
   }, []);
 
   const deactivateSnippet = useCallback(() => {
+    cancelAnimationFrame(snippetAnimationFrameIdRef.current);
     Object.values(pageRefsMap.current).forEach(container => {
       if (container) clearSnippets(container);
     });
