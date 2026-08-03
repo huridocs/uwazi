@@ -116,6 +116,50 @@ class MongoUsersDataSource implements UsersDataSource {
       { $set: { password: password.getValue() } }
     );
   }
+
+  async getTwoFactorStatus(userId: string) {
+    const user = await this.dao.findOne(
+      { _id: ObjectId.createFromHexString(userId) },
+      { projection: { username: 1, using2fa: 1 } }
+    );
+
+    if (!user) {
+      return Result.fail(new UserNotFound(userId));
+    }
+
+    return Result.ok({ username: user.username, using2fa: Boolean(user.using2fa) });
+  }
+
+  async setTwoFactorSecret(userId: string, secret: string): Promise<void> {
+    await this.dao.updateOne({ _id: ObjectId.createFromHexString(userId) }, { $set: { secret } });
+  }
+
+  async getTwoFactorSecret(userId: string) {
+    const user = await this.dao.findOne(
+      { _id: ObjectId.createFromHexString(userId) },
+      { projection: { secret: 1 } }
+    );
+
+    if (!user) {
+      return Result.fail(new UserNotFound(userId));
+    }
+
+    return Result.ok(user.secret ?? null);
+  }
+
+  async enableTwoFactor(userId: string): Promise<void> {
+    await this.dao.updateOne(
+      { _id: ObjectId.createFromHexString(userId) },
+      { $set: { using2fa: true } }
+    );
+  }
+
+  async disableTwoFactor(userId: string): Promise<void> {
+    await this.dao.updateOne(
+      { _id: ObjectId.createFromHexString(userId) },
+      { $set: { using2fa: false, secret: null } }
+    );
+  }
 }
 
 export { MongoUsersDataSource };
