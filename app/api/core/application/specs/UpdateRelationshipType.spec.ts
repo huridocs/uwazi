@@ -1,4 +1,5 @@
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { testingTenants } from '#api/utils/testingTenants.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import type { DBFixture } from '#api/utils/testing_db.js';
 import translations from '#api/i18n/translations.js';
@@ -11,8 +12,8 @@ const createTranslationDBO = factory.v2.database.translationDBO;
 const fixtures: DBFixture = {
   settings: [{ languages: [{ key: 'en', label: 'English', default: true }] }],
   relationtypes: [
-    { _id: factory.id('rel1'), name: 'Type 1', properties: [] },
-    { _id: factory.id('rel2'), name: 'Type 2', properties: [] },
+    { _id: factory.id('rel1'), name: 'Type 1' },
+    { _id: factory.id('rel2'), name: 'Type 2' },
   ],
   translationsV2: [
     createTranslationDBO('Type 1', 'Type 1', 'en', {
@@ -23,72 +24,109 @@ const fixtures: DBFixture = {
   ],
 };
 
+type TestConfig = {
+  name: string;
+  postgresRelationshipTypes: boolean;
+  getRelationshipTypes: () => Promise<Record<string, unknown>[]>;
+};
+
+const testConfigs: TestConfig[] = [
+  {
+    name: 'Mongo',
+    postgresRelationshipTypes: false,
+    getRelationshipTypes: async () => testingEnvironment.db.getAllFrom('relationtypes'),
+  },
+  {
+    name: 'Postgres',
+    postgresRelationshipTypes: true,
+    getRelationshipTypes: async () =>
+      testingEnvironment.pg
+        .getAllFrom('relationship_types')
+        .then(rows => rows.map(({ tenant_id: _, ...rest }) => rest)),
+  },
+];
+
 describe('UpdateRelationshipTypeUseCase', () => {
   beforeAll(async () => {
-    await testingEnvironment.setUp(fixtures);
-  });
-
-  afterEach(async () => {
-    await testingEnvironment.setFixtures(fixtures);
+    await testingEnvironment.setUp(fixtures, { postgres: true });
   });
 
   afterAll(async () => {
     await testingEnvironment.tearDown();
   });
 
-  it('should update an existing relationship type', async () => {
-    const updated = await testingEnvironment.runWithContext(async () =>
-      UpdateRelationshipTypeUseCaseFactory.default().execute({
-        id: factory.id('rel1').toHexString(),
-        name: 'Type 1 Updated',
-      })
-    );
+  describe.each(testConfigs)('$name', ({ postgresRelationshipTypes, getRelationshipTypes }) => {
+    const withFlag = <T>(fn: () => T) =>
+      testingEnvironment.runWithContext(
+        fn,
+        postgresRelationshipTypes
+          ? {
+              tenant: {
+                ...testingTenants.current(),
+                featureFlags: { postgresRelationshipTypes: true },
+              },
+            }
+          : undefined
+      );
 
-    expect(updated.name).toBe('Type 1 Updated');
-    const relationtypes = await testingEnvironment.db.getAllFrom('relationtypes');
-    expect(relationtypes).toContainEqual(expect.objectContaining({ name: 'Type 1 Updated' }));
-  });
+    beforeEach(async () => {
+      await testingEnvironment.setFixtures(fixtures);
+    });
 
-  it('should throw when relationship type does not exist', async () => {
-    await expect(
-      testingEnvironment.runWithContext(async () =>
-        UpdateRelationshipTypeUseCaseFactory.default().execute({
-          id: factory.id('unknown').toHexString(),
-          name: 'Updated',
-        })
-      )
-    ).rejects.toThrow('Relationship type not found');
-  });
-
-  it('should throw when new name already exists in another type', async () => {
-    await expect(
-      testingEnvironment.runWithContext(async () =>
+    it('should update an existing relationship type', async () => {
+      const updated = await withFlag(async () =>
         UpdateRelationshipTypeUseCaseFactory.default().execute({
           id: factory.id('rel1').toHexString(),
-          name: 'Type 2',
+          name: 'Type 1 Updated',
         })
-      )
-    ).rejects.toThrow('duplicated_entry');
-  });
+      );
 
-  it('should update translation context', async () => {
-    await testingEnvironment.runWithContext(async () =>
-      UpdateRelationshipTypeUseCaseFactory.default().execute({
+      expect(updated.name).toBe('Type 1 Updated');
+      const relationtypes = await getRelationshipTypes();
+      expect(relationtypes).toContainEqual(expect.objectContaining({ name: 'Type 1 Updated' }));
+    });
+
+    it('should throw when relationship type does not exist', async () => {
+      await expect(
+        withFlag(async () =>
+          UpdateRelationshipTypeUseCaseFactory.default().execute({
+            id: factory.id('unknown').toHexString(),
+            name: 'Updated',
+          })
+        )
+      ).rejects.toThrow('Relationship type not found');
+    });
+
+    it('should throw when new name already exists in another type', async () => {
+      await expect(
+        withFlag(async () =>
+          UpdateRelationshipTypeUseCaseFactory.default().execute({
+            id: factory.id('rel1').toHexString(),
+            name: 'Type 2',
+          })
+        )
+      ).rejects.toThrow('duplicated_entry');
+    });
+
+    it('should update translation context', async () => {
+      await withFlag(async () =>
+        UpdateRelationshipTypeUseCaseFactory.default().execute({
+          id: factory.id('rel1').toHexString(),
+          name: 'Type 1 Renamed',
+        })
+      );
+
+      const [translation] = await withFlag(async () =>
+        translations.get({ locale: 'en', context: factory.id('rel1').toHexString() })
+      );
+
+      expect(translation.contexts).toHaveLength(1);
+      expect(translation.contexts?.[0]).toMatchObject({
         id: factory.id('rel1').toHexString(),
-        name: 'Type 1 Renamed',
-      })
-    );
-
-    const [translation] = await testingEnvironment.runWithContext(async () =>
-      translations.get({ locale: 'en', context: factory.id('rel1').toHexString() })
-    );
-
-    expect(translation.contexts).toHaveLength(1);
-    expect(translation.contexts?.[0]).toMatchObject({
-      id: factory.id('rel1').toHexString(),
-      label: 'Type 1 Renamed',
-      type: ContextType.relationshipType,
-      values: { 'Type 1 Renamed': 'Type 1 Renamed' },
+        label: 'Type 1 Renamed',
+        type: ContextType.relationshipType,
+        values: { 'Type 1 Renamed': 'Type 1 Renamed' },
+      });
     });
   });
 });

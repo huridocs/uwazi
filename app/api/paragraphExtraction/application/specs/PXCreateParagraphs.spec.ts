@@ -24,13 +24,11 @@ const factory = getFixturesFactory();
 const sourceRelationshipType = {
   _id: factory.id('sourceRelationshipType'),
   name: 'Source Relationship Type',
-  properties: [],
 };
 
 const targetRelationshipType = {
   _id: factory.id('targetRelationshipType'),
   name: 'Target Relationship Type',
-  properties: [],
 };
 
 const paragraphProperty = factory.property('extracted_paragraph', 'markdown', {

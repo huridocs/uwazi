@@ -77,9 +77,9 @@ class GetRelationshipService {
     const allowedTemplates = await this.templatesDS.getByIds(
       allowedEntities.map(entity => entity.template)
     );
-    const allowedRelTypes = await this.relationshipTypesDS
-      .getByIds(allowedRelationships.map(relationship => relationship.type))
-      .all();
+    const allowedRelTypes = await this.relationshipTypesDS.getByIds(
+      allowedRelationships.map(relationship => relationship.type)
+    );
 
     const readableRelationships = resolveNames(
       allowedEntities,
