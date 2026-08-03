@@ -21,7 +21,7 @@ type ForParams = {
  *
  * Extends PostgresTable and overrides `applyPolicy`, `applyInsertPolicy`,
  * and `chain`. All other chain methods (where, select, join, orWhere, etc.)
- * are inherited and return PermissionEnforcedTable instances thanks to
+ * are inherited and return PostgresPermissionEnforcedTable instances thanks to
  * `chain()` propagating `accessContext` and `translator`.
  *
  * Read operations (all, first, count, sum):
@@ -42,7 +42,7 @@ type ForParams = {
  * Raw:
  *   Blocked entirely — cannot be meaningfully filtered.
  */
-class PermissionEnforcedTable<TRow = Record<string, unknown>> extends PostgresTable<TRow> {
+class PostgresPermissionEnforcedTable<TRow = Record<string, unknown>> extends PostgresTable<TRow> {
   private readonly accessContext: AccessContext;
 
   private readonly translator: PostgresPermissionTranslator;
@@ -58,7 +58,7 @@ class PermissionEnforcedTable<TRow = Record<string, unknown>> extends PostgresTa
     this.translator = translator;
   }
 
-  static for<TRow = Record<string, unknown>>(params: ForParams): PermissionEnforcedTable<TRow> {
+  static for<TRow = Record<string, unknown>>(params: ForParams): PostgresPermissionEnforcedTable<TRow> {
     const knexInstance = params.knex ?? PostgresDB.knex;
     const cfg: TableConfig = {
       knex: knexInstance,
@@ -67,7 +67,7 @@ class PermissionEnforcedTable<TRow = Record<string, unknown>> extends PostgresTa
       transactionManager: params.transactionManager,
       syncWriter: params.syncWriter,
     };
-    return new PermissionEnforcedTable<TRow>(
+    return new PostgresPermissionEnforcedTable<TRow>(
       cfg,
       knexInstance(params.tableName),
       params.accessContext,
@@ -76,7 +76,7 @@ class PermissionEnforcedTable<TRow = Record<string, unknown>> extends PostgresTa
   }
 
   protected chain(qb: Knex.QueryBuilder): this {
-    return new PermissionEnforcedTable(
+    return new PostgresPermissionEnforcedTable(
       this.cfg,
       qb,
       this.accessContext,
@@ -213,4 +213,4 @@ class PermissionDeniedError extends Error {
   }
 }
 
-export { PermissionEnforcedTable, PermissionDeniedError };
+export { PostgresPermissionEnforcedTable, PermissionDeniedError };

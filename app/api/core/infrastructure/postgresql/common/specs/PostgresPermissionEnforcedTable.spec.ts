@@ -6,7 +6,7 @@ import { PostgresDB } from '#api/infrastructure/PostgresDB.js';
 import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
 import { PostgresTransactionManager } from '../PostgresTransactionManager.js';
 import { PostgresTable } from '../PostgresTable.js';
-import { PermissionEnforcedTable } from '../PermissionEnforcedTable.js';
+import { PostgresPermissionEnforcedTable } from '../PostgresPermissionEnforcedTable.js';
 import { AccessContext } from '#api/core/domain/entityAccessPolicy/AccessContext.js';
 import { User } from '#api/users.v2/model/User.js';
 import type { PostgresPermissionTranslator } from '../PostgresPermissionTranslator.js';
@@ -64,7 +64,7 @@ class TestPermissionTranslator implements PostgresPermissionTranslator {
 }
 
 const createEnforcedTable = (accessContext: AccessContext, tenantId = DEFAULT_TENANT) =>
-  PermissionEnforcedTable.for<TestRow>({
+  PostgresPermissionEnforcedTable.for<TestRow>({
     tableName: TEST_TABLE,
     tenantId,
     transactionManager: managerFor(tenantId),
@@ -172,7 +172,7 @@ afterAll(async () => {
 
 // ── Tests ────────────────────────────────────────────────────────────────────
 
-describe('PermissionEnforcedTable', () => {
+describe('PostgresPermissionEnforcedTable', () => {
   describe('all() — read enforcement', () => {
     it('admin sees all rows', async () => {
       const table = createEnforcedTable(AccessContext.forActor(admin));
@@ -420,18 +420,18 @@ describe('PermissionEnforcedTable', () => {
   });
 
   describe('chain immutability', () => {
-    it('chain methods return PermissionEnforcedTable, not plain PostgresTable', async () => {
+    it('chain methods return PostgresPermissionEnforcedTable, not plain PostgresTable', async () => {
       const table = createEnforcedTable(AccessContext.forActor(admin));
       const chained = table.where({ _id: 'ent-pub' }).select(['_id']);
-      expect(chained).toBeInstanceOf(PermissionEnforcedTable);
+      expect(chained).toBeInstanceOf(PostgresPermissionEnforcedTable);
       const rows = await chained.all();
       expect(rows).toHaveLength(1);
     });
 
-    it('query() returns PermissionEnforcedTable, not plain PostgresTable', async () => {
+    it('query() returns PostgresPermissionEnforcedTable, not plain PostgresTable', async () => {
       const table = createEnforcedTable(AccessContext.forActor(admin));
       const queried = table.query();
-      expect(queried).toBeInstanceOf(PermissionEnforcedTable);
+      expect(queried).toBeInstanceOf(PostgresPermissionEnforcedTable);
       const rows = await queried.all();
       expect(rows).toHaveLength(6);
     });
