@@ -55,6 +55,12 @@ class UpdateUser extends AbstractUseCase<Input, Output, Deps> {
     }
 
     if (password) {
+      // Preserve lockout/2FA state: getById never hydrates credentials, so setPassword on
+      // `user` as-is would replace them with bare defaults instead of just the new password.
+      const priorCredentials = (
+        await this.deps.usersDS.getByUsername(existingUser.username)
+      ).getDataOrThrow().credentials;
+      user.restoreCredentials(priorCredentials);
       user.setPassword(await EncryptedPassword.create(password));
     }
 

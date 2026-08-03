@@ -4,6 +4,7 @@ import { PostgresDB } from '#api/infrastructure/PostgresDB.js';
 import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
 import { Credentials } from '#api/core/domain/user/Credentials.js';
 import { EncryptedPassword } from '#api/core/domain/user/EncryptedPassword.js';
+import { User, UserRole } from '#api/core/domain/user/User.js';
 import { PostgresTransactionManager } from '../../common/PostgresTransactionManager.js';
 import { PostgresUsersDataSource } from '../PostgresUsersDataSource.js';
 
@@ -184,7 +185,7 @@ describe('PostgresUsersDataSource', () => {
     });
   });
 
-  describe('updateCredentials', () => {
+  describe('update() with credentials', () => {
     it('should persist password, lockout and 2fa fields from the Credentials VO', async () => {
       await insertUser(TENANT_ID);
 
@@ -196,25 +197,39 @@ describe('PostgresUsersDataSource', () => {
         using2fa: true,
         secret: 'new-secret',
       });
+      const user = new User({
+        _id: 'user-1',
+        username: 'existinguser',
+        role: UserRole.EDITOR,
+        email: 'existing@test.com',
+        credentials,
+      });
 
-      await makeDS().updateCredentials('user-1', credentials);
+      await makeDS().update(user);
 
       const result = await makeDS().getByUsername('existinguser');
-      const user = result.getData()!;
-      expect(user.credentials?.password.getValue()).toBe('new-hash');
-      expect(user.credentials?.failedLogins).toBe(3);
-      expect(user.credentials?.accountLocked).toBe(true);
-      expect(user.credentials?.accountUnlockCode).toBe('new-unlock-code');
-      expect(user.credentials?.using2fa).toBe(true);
-      expect(user.credentials?.secret).toBe('new-secret');
+      const updated = result.getData()!;
+      expect(updated.credentials?.password.getValue()).toBe('new-hash');
+      expect(updated.credentials?.failedLogins).toBe(3);
+      expect(updated.credentials?.accountLocked).toBe(true);
+      expect(updated.credentials?.accountUnlockCode).toBe('new-unlock-code');
+      expect(updated.credentials?.using2fa).toBe(true);
+      expect(updated.credentials?.secret).toBe('new-secret');
     });
 
     it('should clear accountUnlockCode when the Credentials VO has none', async () => {
       await insertUser(TENANT_ID, { accountUnlockCode: 'old-code' });
 
       const credentials = new Credentials({ password: EncryptedPassword.fromHash('new-hash') });
+      const user = new User({
+        _id: 'user-1',
+        username: 'existinguser',
+        role: UserRole.EDITOR,
+        email: 'existing@test.com',
+        credentials,
+      });
 
-      await makeDS().updateCredentials('user-1', credentials);
+      await makeDS().update(user);
 
       const result = await makeDS().getByUsername('existinguser');
       expect(result.getData()!.credentials?.accountUnlockCode).toBeUndefined();
@@ -227,7 +242,6 @@ describe('PostgresUsersDataSource', () => {
     const notImplementedCases: [string, () => Promise<unknown>][] = [
       ['insert', async () => makeDS().insert(dummyUser)],
       ['delete', async () => makeDS().delete(['x'])],
-      ['update', async () => makeDS().update(dummyUser)],
       ['getById', async () => makeDS().getById('x')],
       ['getByEmail', async () => makeDS().getByEmail('x@test.com')],
       ['countActiveUsers', async () => makeDS().countActiveUsers()],

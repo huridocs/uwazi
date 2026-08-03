@@ -58,7 +58,7 @@ class Login extends AbstractUseCase<Input, Output, Deps> {
     await this.checkTwoFactor(user, input.token, input.domain);
 
     user.clearLockout();
-    await this.deps.usersDS.updateCredentials(user._id, user.credentials!);
+    await this.deps.usersDS.update(user);
 
     return this.sanitize(user);
   }
@@ -70,7 +70,7 @@ class Login extends AbstractUseCase<Input, Output, Deps> {
 
     if (validLegacySha256) {
       user.setPassword(await EncryptedPassword.create(password));
-      await this.deps.usersDS.updateCredentials(user._id, user.credentials!);
+      await this.deps.usersDS.update(user);
       return;
     }
 
@@ -103,7 +103,7 @@ class Login extends AbstractUseCase<Input, Output, Deps> {
     user.incrementFailedLogins();
 
     if (!user.credentials!.shouldLock()) {
-      await this.deps.usersDS.updateCredentials(user._id, user.credentials!);
+      await this.deps.usersDS.update(user);
       return;
     }
 
@@ -111,7 +111,7 @@ class Login extends AbstractUseCase<Input, Output, Deps> {
 
     user.lock(unlockCode);
 
-    await this.deps.usersDS.updateCredentials(user._id, user.credentials!);
+    await this.deps.usersDS.update(user);
     await this.dispatcher.sendAccountLockedEmail({
       userId: user._id,
       domain,

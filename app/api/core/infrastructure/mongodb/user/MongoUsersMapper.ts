@@ -18,6 +18,11 @@ export class MongoUsersMapper {
     }
 
     dbo.password = user.credentials.password.getValue();
+    dbo.failedLogins = user.credentials.failedLogins;
+    dbo.accountLocked = user.credentials.accountLocked;
+    dbo.accountUnlockCode = user.credentials.accountUnlockCode;
+    dbo.using2fa = user.credentials.using2fa;
+    dbo.secret = user.credentials.secret ?? null;
 
     return dbo;
   }

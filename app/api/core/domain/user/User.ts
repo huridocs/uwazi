@@ -46,6 +46,15 @@ class User {
     this.credentials = props.credentials;
   }
 
+  /**
+   * Attaches previously-persisted credentials that weren't loaded on this instance (e.g.
+   * getById never hydrates them) — for reconstructing full state before a mutation, not a
+   * business-rule transition like the methods below.
+   */
+  restoreCredentials(credentials?: Credentials): void {
+    this.credentials = credentials;
+  }
+
   setPassword(password: EncryptedPassword) {
     this.credentials = this.credentials
       ? this.credentials.withPassword(password)

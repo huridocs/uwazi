@@ -6,7 +6,6 @@ import {
 } from '#api/core/domain/user/errors.js';
 import { User } from '#api/core/domain/user/User.js';
 import { EncryptedPassword } from '#api/core/domain/user/EncryptedPassword.js';
-import { Credentials } from '#api/core/domain/user/Credentials.js';
 import { ResultType } from '#api/core/libs/Result.js';
 
 type TwoFactorStatus = { username: string; using2fa: boolean };
@@ -14,13 +13,19 @@ type TwoFactorStatus = { username: string; using2fa: boolean };
 interface UsersDataSource {
   insert(user: User): Promise<void>;
   delete(userIds: string[]): Promise<number>;
+  /**
+   * Persists identity fields (username/role/email). When `user.credentials` is set, also
+   * persists the whole Credentials VO in the same write (password, lockout, 2FA state) — callers
+   * that mutate credentials must load the prior full state first (e.g. via getByUsername) so
+   * this doesn't overwrite it with defaults.
+   */
   update(user: User): Promise<void>;
   getById(id: string): Promise<ResultType<User, UserNotFound>>;
   getByEmail(email: string): Promise<ResultType<User, UserNotFound>>;
   /**
-   * Only consumer today is the Login use case, so the returned User is always
-   * hydrated with `credentials` (password hash + lockout/2FA state) — unlike
-   * getById/getByEmail, which never expose it.
+   * Unlike getById/getByEmail, the returned User is always hydrated with `credentials`
+   * (password hash + lockout/2FA state) — needed by Login and by anyone else who must
+   * preserve that state across an `update()` call (see UpdateUser's password-reset path).
    */
   getByUsername(username: string): Promise<ResultType<User, UserNotFound>>;
   countActiveUsers(): Promise<number>;
@@ -32,8 +37,6 @@ interface UsersDataSource {
   ): Promise<ResultType<User, InvalidUnlockCode>>;
   clearLockFields(userId: string): Promise<void>;
   updatePassword(userId: string, password: EncryptedPassword): Promise<void>;
-  /** Persists the whole Credentials VO in one write (password, lockout, 2FA state). */
-  updateCredentials(userId: string, credentials: Credentials): Promise<void>;
   getTwoFactorStatus(userId: string): Promise<ResultType<TwoFactorStatus, UserNotFound>>;
   setTwoFactorSecret(userId: string, secret: string): Promise<void>;
   getTwoFactorSecret(userId: string): Promise<ResultType<string | null, UserNotFound>>;

@@ -205,7 +205,7 @@ describe('MongoUsersDataSource', () => {
     });
   });
 
-  describe('updateCredentials', () => {
+  describe('update() with credentials', () => {
     it('should persist password, lockout and 2fa fields from the Credentials VO', async () => {
       const { ds } = createDs();
       const existingUser = await testingEnvironment.db
@@ -220,8 +220,15 @@ describe('MongoUsersDataSource', () => {
         using2fa: true,
         secret: 'new-secret',
       });
+      const user = new User({
+        _id: existingUser!._id.toHexString(),
+        username: existingUser!.username,
+        role: existingUser!.role,
+        email: existingUser!.email,
+        credentials,
+      });
 
-      await ds.updateCredentials(existingUser!._id.toHexString(), credentials);
+      await ds.update(user);
 
       const updated = await testingEnvironment.db
         .getCollection('users')!
@@ -242,8 +249,15 @@ describe('MongoUsersDataSource', () => {
         .findOne({ username: 'lockeduser' });
 
       const credentials = new Credentials({ password: EncryptedPassword.fromHash('new-hash') });
+      const user = new User({
+        _id: existingUser!._id.toHexString(),
+        username: existingUser!.username,
+        role: existingUser!.role,
+        email: existingUser!.email,
+        credentials,
+      });
 
-      await ds.updateCredentials(existingUser!._id.toHexString(), credentials);
+      await ds.update(user);
 
       const updated = await testingEnvironment.db
         .getCollection('users')!

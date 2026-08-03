@@ -7,8 +7,9 @@ import { userRoutes } from '../routes.js';
 import { fixtures, f, PUBLIC_USER_ID } from './fixtures.js';
 import { UserRole } from '#api/core/domain/user/User.js';
 
-jest.mock('../../../../../auth/encryptPassword.ts', () => ({
-  encryptPassword: async () => Promise.resolve('hush hush super secret'),
+jest.mock('bcryptjs', () => ({
+  hash: async () => Promise.resolve('hush hush super secret'),
+  compare: async (plain: string, hashed: string) => plain === hashed,
 }));
 
 jest.mock('../../../../../auth/validatePasswordMiddleWare.ts', () => ({

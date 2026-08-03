@@ -2,7 +2,6 @@ import { ObjectId } from 'mongodb';
 import { UsersDataSource } from '#api/core/application/contracts/UsersDataSource.js';
 import { User } from '#api/core/domain/user/User.js';
 import { EncryptedPassword } from '#api/core/domain/user/EncryptedPassword.js';
-import { Credentials } from '#api/core/domain/user/Credentials.js';
 import {
   EmailInUse,
   UsernameExists,
@@ -84,7 +83,21 @@ class MongoUsersDataSource implements UsersDataSource {
 
   async update(user: User): Promise<void> {
     const { _id, ...updates } = MongoUsersMapper.toDBO(user);
-    await this.dao.updateOne({ _id }, { $set: updates });
+
+    if (!user.credentials) {
+      await this.dao.updateOne({ _id }, { $set: updates });
+      return;
+    }
+
+    // accountUnlockCode has no value once lockout is cleared — $set skips undefined keys, so
+    // it needs an explicit $unset or a stale unlock code lingers in the document.
+    const { accountUnlockCode, ...rest } = updates;
+    await this.dao.updateOne(
+      { _id },
+      accountUnlockCode
+        ? { $set: { ...rest, accountUnlockCode } }
+        : { $set: rest, $unset: { accountUnlockCode: 1 } }
+    );
   }
 
   async delete(userIds: string[]): Promise<number> {
@@ -125,23 +138,6 @@ class MongoUsersDataSource implements UsersDataSource {
     await this.dao.updateOne(
       { _id: ObjectId.createFromHexString(userId) },
       { $set: { password: password.getValue() } }
-    );
-  }
-
-  async updateCredentials(userId: string, credentials: Credentials): Promise<void> {
-    const set = {
-      password: credentials.password.getValue(),
-      failedLogins: credentials.failedLogins,
-      accountLocked: credentials.accountLocked,
-      using2fa: credentials.using2fa,
-      secret: credentials.secret ?? null,
-    };
-
-    await this.dao.updateOne(
-      { _id: ObjectId.createFromHexString(userId) },
-      credentials.accountUnlockCode
-        ? { $set: { ...set, accountUnlockCode: credentials.accountUnlockCode } }
-        : { $set: set, $unset: { accountUnlockCode: 1 } }
     );
   }
 

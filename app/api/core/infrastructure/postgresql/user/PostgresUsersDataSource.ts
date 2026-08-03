@@ -65,8 +65,23 @@ class PostgresUsersDataSource extends PostgresDataSource<UserRow> implements Use
     return notImplemented();
   }
 
-  async update(_user: User): Promise<void> {
-    return notImplemented();
+  async update(user: User): Promise<void> {
+    const row: Record<string, unknown> = {
+      username: user.username,
+      role: user.role,
+      email: user.email,
+    };
+
+    if (user.credentials) {
+      row.password = user.credentials.password.getValue();
+      row.failedLogins = user.credentials.failedLogins;
+      row.accountLocked = user.credentials.accountLocked;
+      row.accountUnlockCode = user.credentials.accountUnlockCode ?? null;
+      row.using2fa = user.credentials.using2fa;
+      row.secret = user.credentials.secret ?? null;
+    }
+
+    await this.table.where({ _id: user._id }).update(row);
   }
 
   async getById(_id: string): Promise<ResultType<User, UserNotFound>> {
@@ -129,16 +144,6 @@ class PostgresUsersDataSource extends PostgresDataSource<UserRow> implements Use
     return notImplemented();
   }
 
-  async updateCredentials(userId: string, credentials: Credentials): Promise<void> {
-    await this.table.where({ _id: userId }).update({
-      password: credentials.password.getValue(),
-      failedLogins: credentials.failedLogins,
-      accountLocked: credentials.accountLocked,
-      accountUnlockCode: credentials.accountUnlockCode ?? null,
-      using2fa: credentials.using2fa,
-      secret: credentials.secret ?? null,
-    });
-  }
 }
 
 export { PostgresUsersDataSource };
