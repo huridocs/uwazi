@@ -169,6 +169,7 @@ export const config = {
       },
       v2UsersUtilityRoutes: false,
       v2Auth2fa: false,
+      v2Login: false,
     },
   },
   externalServices: (process.env.EXTERNAL_SERVICES || '').toLowerCase() === 'true',

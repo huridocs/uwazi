@@ -46,6 +46,7 @@ type Tenant = {
     };
     v2UsersUtilityRoutes?: Boolean;
     v2Auth2fa?: boolean;
+    v2Login?: boolean;
   };
   globalMatomo?: { id: string; url: string };
   ciMatomoActive?: boolean;

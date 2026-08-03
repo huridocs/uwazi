@@ -10,6 +10,8 @@ import { config } from '#api/config.js';
 import cors from 'cors';
 import request from '#shared/JSONRequest.js';
 import { randomSleep } from '#shared/tsUtils.js';
+import { tenants } from '#api/tenants/index.js';
+import { LoginController } from '#api/core/infrastructure/express/users/LoginController.js';
 import { CaptchaModel } from './CaptchaModel.js';
 
 import { validation } from '#api/utils/index.js';
@@ -41,6 +43,17 @@ export default app => {
   app.post(
     '/api/login',
 
+    async (req, res, next) => {
+      await randomSleep(500, 1_000);
+
+      if (tenants.current().featureFlags?.v2Login) {
+        await LoginController.createHandler()(req, res);
+        return;
+      }
+
+      next();
+    },
+
     validation.validateRequest({
       type: 'object',
       properties: {
@@ -58,8 +71,6 @@ export default app => {
     }),
 
     async (req, res, next) => {
-      await randomSleep(500, 1_000);
-
       passport.authenticate('local', (err, user) => {
         if (err) {
           next(err);
