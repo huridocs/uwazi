@@ -1,5 +1,4 @@
 import { atom } from 'jotai';
-import { scrollIntoView } from '#V2/helpers/scrollIntoView.js';
 
 type FocusMetadataField = {
   fieldKey: string;
@@ -18,11 +17,12 @@ const esFieldToFocusKey = (field: string): string => {
 
 const FLASH_MS = 1100;
 const FOCUS_RETRY_MS = 100;
-const FOCUS_DEADLINE_MS = 1100;
+const FOCUS_DEADLINE_MS = 1500;
 
 /**
  * Find `[data-field-key]`, flash, and re-scroll until deadline (map/layout settle).
- * Returns cleanup; missing keys keep retrying until deadline without throwing.
+ * Uses native scrollIntoView so nested overflow (e.g. Details overflow-x-auto) does not
+ * trap scrolling above the Metadata panel that must move past geolocation maps.
  */
 const applyMetadataFieldFocus = (
   getRoot: () => ParentNode | null,
@@ -38,7 +38,7 @@ const applyMetadataFieldFocus = (
     const root = getRoot();
     const el = root?.querySelector<HTMLElement>(`[data-field-key="${CSS.escape(fieldKey)}"]`);
     if (el) {
-      scrollIntoView(el, { behavior: 'auto', block: 'center' });
+      el.scrollIntoView({ behavior: 'auto', block: 'center' });
       if (!flashedEl) {
         flashedEl = el;
         el.classList.add('flash-highlight');
