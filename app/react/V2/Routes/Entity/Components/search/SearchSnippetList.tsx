@@ -70,6 +70,7 @@ const SearchSnippetList = ({
                     </span>
                     {m.texts.map((text, textIndex) => (
                       <span
+                        // eslint-disable-next-line react/no-array-index-key
                         key={`${m.field}-${textIndex}-${text}`}
                         className="block text-sm leading-relaxed text-ink"
                       >

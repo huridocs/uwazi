@@ -43,6 +43,7 @@ const readLiveLocation = (fallback: LocationFallback): LocationFallback => {
   };
 };
 
+// eslint-disable-next-line max-statements
 const flushEntityUrlUpdates = (navigate: NavigateFunction, fallback: LocationFallback) => {
   flushScheduled = false;
   const batch = pendingBatch;
@@ -65,7 +66,8 @@ const flushEntityUrlUpdates = (navigate: NavigateFunction, fallback: LocationFal
   const search = nextSearch.toString();
   const hash = serializeEntityHash(nextHash);
 
-  navigate(
+  // eslint-disable-next-line no-void -- RR navigate may return a Promise; fire-and-forget flush
+  void navigate(
     {
       pathname: live.pathname,
       search: search ? `?${search}` : '',

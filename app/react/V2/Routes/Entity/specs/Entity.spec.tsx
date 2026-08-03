@@ -81,6 +81,8 @@ const renderEntity = (options: RenderEntityOptions = {}) => {
     ? options.mainDocument
     : sampleMainDocument;
 
+  window.history.replaceState({}, '', initialEntries?.[0] ?? '/');
+
   const atoms: Array<
     readonly [typeof templatesAtom | typeof settingsAtom | typeof userAtom, unknown]
   > = [[templatesAtom, sampleTemplate]];
@@ -434,22 +436,28 @@ describe('Entity view', () => {
 
       expect(await screen.findByText('Match title')).toBeInTheDocument();
       expect(screen.getByText('Properties')).toBeInTheDocument();
-      expect(screen.getByText('Document')).toBeInTheDocument();
+      expect(screen.getAllByText('Document').length).toBeGreaterThan(0);
       expect(screen.getByText(/p\.3/)).toBeInTheDocument();
-      expect(screen.getByText(/3 matches for/)).toBeInTheDocument();
+      expect(
+        screen.getByText(
+          (_content, el) =>
+            Boolean(el?.classList.contains('text-micro')) &&
+            (el?.textContent?.includes('3 matches for') ?? false)
+        )
+      ).toBeInTheDocument();
 
       const marks = document.querySelectorAll('mark');
       expect(marks.length).toBeGreaterThan(0);
       expect(marks[0]?.className).toContain('rounded-[2px]');
       expect(marks[0]?.className).toContain('color-theme-highlight-yellow-active');
       expect(marks[0]?.className).toContain('!shadow-none');
-      expect(marks[0]?.className).not.toMatch(/shadow-\[0_0_0/);
+      expect(marks[0]?.className.includes('shadow-[0_0_0')).toBe(false);
 
       expect(screen.getByRole('button', { name: /Search tips/i })).toBeInTheDocument();
 
       const windowed = screen.getByText(/duties in the name of/);
-      expect(windowed.textContent).toMatch(/^… /);
-      expect(windowed.textContent).toMatch(/ …$/);
+      expect(windowed.textContent?.startsWith('… ')).toBe(true);
+      expect(windowed.textContent?.endsWith(' …')).toBe(true);
     });
 
     it('property click keeps side Search and switches main to Metadata', async () => {

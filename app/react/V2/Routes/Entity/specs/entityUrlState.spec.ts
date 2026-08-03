@@ -40,10 +40,17 @@ describe('entityUrlState', () => {
       window.history.replaceState({}, '', '/entity/1?m=metadata#s=search&page=3');
     });
 
+    afterEach(() => {
+      window.history.replaceState({}, '', '/');
+    });
+
+    // eslint-disable-next-line max-statements
     it('merges same-tick tab and page hash updates into one navigate', async () => {
+      const initial = '/entity/1?m=metadata#s=search&page=3';
+      window.history.replaceState({}, '', initial);
       const { result } = renderHook(() => useUpdateEntityUrl(), {
         wrapper: ({ children }: { children: React.ReactNode }) =>
-          React.createElement(MemoryRouter, null, children),
+          React.createElement(MemoryRouter, { initialEntries: [initial] }, children),
       });
 
       act(() => {
@@ -76,10 +83,12 @@ describe('entityUrlState', () => {
     });
 
     it('does not call history.replaceState', async () => {
+      const initial = '/entity/1?m=metadata#s=search&page=3';
+      window.history.replaceState({}, '', initial);
       const replaceStateSpy = jest.spyOn(window.history, 'replaceState');
       const { result } = renderHook(() => useUpdateEntityUrl(), {
         wrapper: ({ children }: { children: React.ReactNode }) =>
-          React.createElement(MemoryRouter, null, children),
+          React.createElement(MemoryRouter, { initialEntries: [initial] }, children),
       });
 
       act(() => {

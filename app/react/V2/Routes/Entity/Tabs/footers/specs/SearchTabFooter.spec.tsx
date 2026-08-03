@@ -2,10 +2,11 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import type { UpdateEntityUrlOptions } from '../../../entityUrlState.js';
 import { SEARCH_PARAM } from '../../../urlParams.js';
 import { SearchTabFooter } from '../SearchTabFooter.js';
 
-const mockUpdateEntityUrl = jest.fn<(args: { hash: (next: URLSearchParams) => void }) => void>();
+const mockUpdateEntityUrl: jest.Mock<(args: UpdateEntityUrlOptions) => void> = jest.fn();
 
 jest.mock('#app/I18N/index.js', () => ({
   t: (_ctx: string, key: string) => key,
@@ -23,7 +24,11 @@ describe('SearchTabFooter', () => {
 
   it('inserts tip example into SEARCH_PARAM and closes the tips panel', async () => {
     const user = userEvent.setup();
-    render(<SearchTabFooter />);
+    render(
+      <div className="tw-content">
+        <SearchTabFooter />
+      </div>
+    );
 
     await user.click(screen.getByRole('button', { name: 'Search tips' }));
     expect(screen.getByRole('dialog', { name: 'Search tips' })).toBeInTheDocument();
@@ -37,7 +42,7 @@ describe('SearchTabFooter', () => {
       throw new Error('expected updateEntityUrl argument');
     }
     const params = new URLSearchParams();
-    updateArg.hash(params);
+    updateArg.hash?.(params);
     expect(params.get(SEARCH_PARAM)).toBe('juris*');
     expect(screen.queryByRole('dialog', { name: 'Search tips' })).not.toBeInTheDocument();
   });

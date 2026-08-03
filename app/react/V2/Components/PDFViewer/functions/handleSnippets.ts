@@ -246,6 +246,7 @@ const tryHighlightAndScroll = (container: HTMLDivElement, snippet: Snippet): boo
 
   const highlight = container.querySelector('.snippet-context') || container.querySelector('mark');
   if (highlight) {
+    // eslint-disable-next-line no-restricted-syntax -- required to scroll past map nesting
     highlight.scrollIntoView({ behavior: 'smooth', block: 'center' });
     return true;
   }

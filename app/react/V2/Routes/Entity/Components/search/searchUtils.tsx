@@ -69,7 +69,8 @@ const parseSnippetToNodes = (html?: string) => {
       const markMatch = part.match(FLAT_B_INNER);
       if (markMatch) {
         return (
-          <mark key={i} className={MARK_CLASS}>
+          // eslint-disable-next-line react/no-array-index-key
+          <mark key={`mark-${markMatch[1]}-${i}`} className={MARK_CLASS}>
             {decodeSnippetText(markMatch[1])}
           </mark>
         );

@@ -19,6 +19,7 @@ const URL_SYNC_MS = 250;
 
 type PendingSnippet = { text: string; page: number };
 
+// eslint-disable-next-line max-statements
 const SearchView = () => {
   const entity = useEntityScopedEntity();
   const { language, mainDocument } = useEntityLanguage();

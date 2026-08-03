@@ -20,8 +20,16 @@ const waitForElement = async <T extends Element = Element>(
     }
 
     let timer: ReturnType<typeof setTimeout>;
+    let observer: MutationObserver;
 
     const root = document.body || document.documentElement || document;
+
+    const onAbort = () => {
+      observer.disconnect();
+      clearTimeout(timer);
+      signal?.removeEventListener('abort', onAbort);
+      reject();
+    };
 
     const cleanup = () => {
       observer.disconnect();
@@ -29,12 +37,7 @@ const waitForElement = async <T extends Element = Element>(
       signal?.removeEventListener('abort', onAbort);
     };
 
-    const onAbort = () => {
-      cleanup();
-      reject();
-    };
-
-    const observer = new MutationObserver(() => {
+    observer = new MutationObserver(() => {
       const found = document.querySelector<T>(getter);
       if (found) {
         cleanup();

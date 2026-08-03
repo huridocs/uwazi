@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { isClient } from '#app/utils/index.js';
 import type { PDFControls } from '#V2/Components/PDFViewer/index.js';
 import type { FileType } from '#V2/api/entities/types.js';
-import { useEntityHashParams, useUpdateEntityUrl } from '../../entityUrlState.js';
+import { useEntityHashParams, useUpdateEntityUrl } from '#V2/Routes/Entity/entityUrlState.js';
 import { PAGE_PARAM, VIEW_MODE_PARAM } from '../../urlParams.js';
 
 type UseDocumentPdfPageParams = {

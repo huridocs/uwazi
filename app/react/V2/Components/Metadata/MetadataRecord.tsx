@@ -28,6 +28,7 @@ type MetadataRecordProps = {
   entity: Entity;
 };
 
+// eslint-disable-next-line max-statements
 const MetadataRecord = ({ entity }: MetadataRecordProps) => {
   const templates = useAtomValue(templatesAtom);
   const focusField = useAtomValue(focusMetadataFieldAtom);
@@ -56,15 +57,17 @@ const MetadataRecord = ({ entity }: MetadataRecordProps) => {
 
   useLayoutEffect(() => {
     if (!focusField) return undefined;
-    ownsFocusRef.current = true;
-    const cleanup = applyMetadataFieldFocus(() => rootRef.current, focusField.fieldKey);
-    const clearTimer = window.setTimeout(() => {
-      ownsFocusRef.current = false;
-      clearFocus(null);
-    }, FLASH_MS);
+    let clearTimer: number | undefined;
+    const cleanup = applyMetadataFieldFocus(() => rootRef.current, focusField.fieldKey, () => {
+      ownsFocusRef.current = true;
+      clearTimer = window.setTimeout(() => {
+        ownsFocusRef.current = false;
+        clearFocus(null);
+      }, FLASH_MS);
+    });
     return () => {
       cleanup();
-      window.clearTimeout(clearTimer);
+      if (clearTimer !== undefined) window.clearTimeout(clearTimer);
     };
   }, [focusField, clearFocus]);
 

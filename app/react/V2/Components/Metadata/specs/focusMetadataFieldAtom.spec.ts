@@ -1,7 +1,7 @@
-/* eslint-disable max-statements */
 /**
  * @jest-environment jsdom
  */
+/* eslint-disable max-statements */
 import {
   applyMetadataFieldFocus,
   esFieldToFocusKey,
@@ -22,9 +22,16 @@ describe('esFieldToFocusKey', () => {
 });
 
 describe('applyMetadataFieldFocus', () => {
+  let scrollIntoView: jest.Mock;
+
   beforeEach(() => {
     jest.useFakeTimers();
-    Element.prototype.scrollIntoView = jest.fn();
+    scrollIntoView = jest.fn();
+    Object.defineProperty(HTMLElement.prototype, 'scrollIntoView', {
+      configurable: true,
+      writable: true,
+      value: scrollIntoView,
+    });
   });
 
   afterEach(() => {
@@ -39,7 +46,7 @@ describe('applyMetadataFieldFocus', () => {
     document.body.appendChild(root);
 
     const cleanup = applyMetadataFieldFocus(() => root, 'description');
-    expect(Element.prototype.scrollIntoView).toHaveBeenCalledWith({
+    expect(scrollIntoView).toHaveBeenCalledWith({
       behavior: 'auto',
       block: 'center',
     });
@@ -60,14 +67,12 @@ describe('applyMetadataFieldFocus', () => {
     document.body.appendChild(root);
 
     applyMetadataFieldFocus(() => root, 'text');
-    expect(Element.prototype.scrollIntoView).toHaveBeenCalledTimes(1);
+    expect(scrollIntoView).toHaveBeenCalledTimes(1);
 
     jest.advanceTimersByTime(100);
-    expect(Element.prototype.scrollIntoView).toHaveBeenCalledTimes(2);
+    expect(scrollIntoView).toHaveBeenCalledTimes(2);
     jest.advanceTimersByTime(500);
-    expect(
-      (Element.prototype.scrollIntoView as jest.Mock).mock.calls.length
-    ).toBeGreaterThanOrEqual(6);
+    expect(scrollIntoView.mock.calls.length).toBeGreaterThanOrEqual(6);
 
     root.remove();
   });
@@ -77,14 +82,14 @@ describe('applyMetadataFieldFocus', () => {
     document.body.appendChild(root);
 
     applyMetadataFieldFocus(() => root, 'late');
-    expect(Element.prototype.scrollIntoView).not.toHaveBeenCalled();
+    expect(scrollIntoView).not.toHaveBeenCalled();
 
     const target = document.createElement('div');
     target.setAttribute('data-field-key', 'late');
     root.appendChild(target);
 
     jest.advanceTimersByTime(100);
-    expect(Element.prototype.scrollIntoView).toHaveBeenCalledWith({
+    expect(scrollIntoView).toHaveBeenCalledWith({
       behavior: 'auto',
       block: 'center',
     });
@@ -101,12 +106,12 @@ describe('applyMetadataFieldFocus', () => {
     document.body.appendChild(root);
 
     const cleanup = applyMetadataFieldFocus(() => root, 'text');
-    expect(Element.prototype.scrollIntoView).toHaveBeenCalledTimes(1);
+    expect(scrollIntoView).toHaveBeenCalledTimes(1);
 
     cleanup();
-    (Element.prototype.scrollIntoView as jest.Mock).mockClear();
+    scrollIntoView.mockClear();
     jest.advanceTimersByTime(500);
-    expect(Element.prototype.scrollIntoView).not.toHaveBeenCalled();
+    expect(scrollIntoView).not.toHaveBeenCalled();
 
     root.remove();
   });

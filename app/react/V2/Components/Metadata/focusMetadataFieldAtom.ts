@@ -26,21 +26,24 @@ const FOCUS_DEADLINE_MS = 1500;
  */
 const applyMetadataFieldFocus = (
   getRoot: () => ParentNode | null,
-  fieldKey: string
+  fieldKey: string,
+  onApplied?: () => void
 ): (() => void) => {
   let cancelled = false;
   let flashedEl: HTMLElement | null = null;
   const timers: number[] = [];
   const deadline = Date.now() + FOCUS_DEADLINE_MS;
 
+  // eslint-disable-next-line max-statements
   const attempt = () => {
     if (cancelled) return;
     const el = getRoot()?.querySelector<HTMLElement>(`[data-field-key="${CSS.escape(fieldKey)}"]`);
     if (el) {
-      // eslint-disable-next-line no-restricted-syntax -- requied to skip map scrollIntoView
+      // eslint-disable-next-line no-restricted-syntax -- required to scroll past map nesting
       el.scrollIntoView({ behavior: 'auto', block: 'center' });
       if (!flashedEl) {
         flashedEl = el;
+        onApplied?.();
         el.classList.add('flash-highlight');
         timers.push(
           window.setTimeout(() => {

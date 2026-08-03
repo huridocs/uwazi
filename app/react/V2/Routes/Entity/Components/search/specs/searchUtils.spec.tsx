@@ -57,34 +57,36 @@ describe('parseSnippetToNodes', () => {
 
   it('applies leading ellipsis for lowercase-start windowed snippets', () => {
     renderSnippet('lowercase start <b>hit</b>');
-    expect(screen.getByTestId('snippet').textContent).toMatch(/^… /);
+    expect(screen.getByTestId('snippet').textContent?.startsWith('… ')).toBe(true);
     expect(screen.getByText('hit').tagName).toBe('MARK');
   });
 
   it('applies trailing ellipsis for long windowed snippets without terminal punctuation', () => {
     const long = `${'word '.repeat(40)}<b>hit</b> more`;
     renderSnippet(long);
-    expect(screen.getByTestId('snippet').textContent).toMatch(/ …$/);
+    expect(screen.getByTestId('snippet').textContent?.endsWith(' …')).toBe(true);
   });
 
   it('does not add leading ellipsis when already present', () => {
     renderSnippet('… already windowed <b>hit</b>');
-    expect(screen.getByTestId('snippet').textContent).toMatch(/^… /);
-    expect(screen.getByTestId('snippet').textContent).not.toMatch(/^… …/);
+    const text = screen.getByTestId('snippet').textContent || '';
+    expect(text.startsWith('… ')).toBe(true);
+    expect(text.startsWith('… …')).toBe(false);
   });
 
   it('does not add trailing ellipsis when snippet ends with terminal punctuation', () => {
     const long = `${'word '.repeat(40)}ends with <b>hit</b>.`;
     renderSnippet(long);
-    expect(screen.getByTestId('snippet').textContent).toMatch(/\.$/);
-    expect(screen.getByTestId('snippet').textContent).not.toMatch(/ …$/);
+    const text = screen.getByTestId('snippet').textContent || '';
+    expect(text.endsWith('.')).toBe(true);
+    expect(text.endsWith(' …')).toBe(false);
   });
 
   it('does not add ellipsis for short uppercase-start snippets', () => {
     renderSnippet('Honduras <b>match</b> here');
     const text = screen.getByTestId('snippet').textContent || '';
-    expect(text).not.toMatch(/^…/);
-    expect(text).not.toMatch(/…$/);
+    expect(text.startsWith('…')).toBe(false);
+    expect(text.endsWith('…')).toBe(false);
   });
 });
 

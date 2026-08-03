@@ -9,7 +9,7 @@ import { useDocumentPdfPage } from '../useDocumentPdfPage.js';
 const mockUpdateEntityUrl = jest.fn();
 let mockHashParams = new URLSearchParams();
 
-jest.mock('../../../entityUrlState.js', () => ({
+jest.mock('#V2/Routes/Entity/entityUrlState.js', () => ({
   useEntityHashParams: () => mockHashParams,
   useUpdateEntityUrl: () => mockUpdateEntityUrl,
 }));
@@ -46,7 +46,7 @@ describe('useDocumentPdfPage', () => {
           mainPdfController: controller,
           setPdfController,
         }),
-      { initialProps: { controller: null } }
+      { initialProps: { controller: null as PDFControls | null } }
     );
 
     act(() => {
@@ -72,7 +72,7 @@ describe('useDocumentPdfPage', () => {
           mainPdfController: controller,
           setPdfController,
         }),
-      { initialProps: { controller: null } }
+      { initialProps: { controller: null as PDFControls | null } }
     );
 
     act(() => {
