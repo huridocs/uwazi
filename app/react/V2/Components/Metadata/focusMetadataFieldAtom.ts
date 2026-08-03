@@ -35,9 +35,9 @@ const applyMetadataFieldFocus = (
 
   const attempt = () => {
     if (cancelled) return;
-    const root = getRoot();
-    const el = root?.querySelector<HTMLElement>(`[data-field-key="${CSS.escape(fieldKey)}"]`);
+    const el = getRoot()?.querySelector<HTMLElement>(`[data-field-key="${CSS.escape(fieldKey)}"]`);
     if (el) {
+      // eslint-disable-next-line no-restricted-syntax -- requied to skip map scrollIntoView
       el.scrollIntoView({ behavior: 'auto', block: 'center' });
       if (!flashedEl) {
         flashedEl = el;
