@@ -1,4 +1,4 @@
--- Migration 008: create-users-table
+-- Migration 009: create-users-table
 -- Postgres-backed users table, starting with the two-factor authentication
 -- fields (using2fa, secret) behind the postgresUsers feature flag
 
