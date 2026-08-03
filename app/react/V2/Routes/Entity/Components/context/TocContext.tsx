@@ -47,7 +47,7 @@ const TocProvider = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   const setToc = useCallback((toc: TocSchema[] | undefined) => {
-    setTocState(current => ({ ...current, toc }));
+    setTocState(current => (current.toc === toc ? current : { ...current, toc }));
   }, []);
 
   const expandAll = useCallback(() => {

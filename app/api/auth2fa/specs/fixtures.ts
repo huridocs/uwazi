@@ -1,13 +1,14 @@
-import db from '#api/utils/testing_db.js';
+import db, { DBFixture } from '#api/utils/testing_db.js';
 import { UserRole } from '#shared/types/userSchema.js';
 
 const userId = db.id();
 const secretedUserId = db.id();
 
-export default {
+const fixtures: DBFixture = {
   settings: [
     {
       site_name: 'Uwazi Collection',
+      languages: [{ key: 'en', label: 'English', default: true }],
     },
   ],
   users: [
@@ -27,4 +28,5 @@ export default {
   ],
 };
 
+export default fixtures;
 export { userId, secretedUserId };
