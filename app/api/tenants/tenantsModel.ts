@@ -49,6 +49,7 @@ const mongoSchema = new mongoose.Schema({
     v2UsersDelete: Boolean,
     v2UsersGet: Boolean,
     postgresPasswordRecoveries: Boolean,
+    postgresUsers: Boolean,
     v2UsersUpdate: Boolean,
     telemetry: {
       enabled: Boolean,
@@ -59,6 +60,7 @@ const mongoSchema = new mongoose.Schema({
       sampleRate: Number,
     },
     v2UsersUtilityRoutes: Boolean,
+    v2Auth2fa: Boolean,
   },
   globalMatomo: { id: String, url: String },
   ciMatomoActive: Boolean,
