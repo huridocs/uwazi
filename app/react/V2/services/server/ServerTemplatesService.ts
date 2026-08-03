@@ -10,13 +10,30 @@ import { notImplemented } from './notImplemented.js';
 import type { ServerServiceContext } from './types.js';
 
 /** Mongo ObjectIds → strings, matching HTTP JSON serialization. */
-const serializeTemplates = (rows: unknown[]): Template[] => JSON.parse(JSON.stringify(rows));
+const serializeTemplate = (
+  template: { _id: { toString(): string } } & Record<string, unknown>
+): Template => {
+  const { _id, ...rest } = template;
+  return {
+    ...(rest as Omit<Template, '_id'>),
+    _id: _id.toString(),
+  };
+};
+
+const serializeTemplates = (
+  rows: Array<{ _id: { toString(): string } } & Record<string, unknown>>
+): Template[] => rows.map(serializeTemplate);
 
 const createServerTemplatesService = (ctx: ServerServiceContext): TemplatesService => ({
   getAll: async (_options?: ServiceRequestOptions): Promise<ApiResponse<Template[]>> => {
     try {
       const rows = await TemplatesDAOFactory.default().get();
-      return [serializeTemplates(rows), undefined];
+      return [
+        serializeTemplates(
+          rows as Array<{ _id: { toString(): string } } & Record<string, unknown>>
+        ),
+        undefined,
+      ];
     } catch (e) {
       return [undefined as never, toApiError(e)];
     }
@@ -28,7 +45,9 @@ const createServerTemplatesService = (ctx: ServerServiceContext): TemplatesServi
   ): Promise<ApiResponse<Template | undefined>> => {
     try {
       const rows = await TemplatesDAOFactory.default().get([id]);
-      const [serialized] = serializeTemplates(rows);
+      const [serialized] = serializeTemplates(
+        rows as Array<{ _id: { toString(): string } } & Record<string, unknown>>
+      );
       return [serialized, undefined];
     } catch (e) {
       return [undefined, toApiError(e)];

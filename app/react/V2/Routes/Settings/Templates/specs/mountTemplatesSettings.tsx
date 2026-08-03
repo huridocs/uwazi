@@ -53,7 +53,7 @@ const createTemplatesSettingsTree = (
     router,
     tree: (
       <ThemeProvider>
-        <TestAtomStoreProvider>
+        <TestAtomStoreProvider initialValues={[]}>
           <RouterProvider router={router} />
         </TestAtomStoreProvider>
       </ThemeProvider>

@@ -20,9 +20,7 @@ const createTemplatesEditorLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
   async ({ params }) => {
     const allPages = await pagesAPI.get(headers);
-    const pages = (Array.isArray(allPages) ? allPages : []).filter(
-      (page: Page) => page.entityView
-    );
+    const pages = (Array.isArray(allPages) ? allPages : []).filter((page: Page) => page.entityView);
     const pagesOptions = pages.map((page: Page) => ({
       value: page.sharedId,
       label: page.title,
