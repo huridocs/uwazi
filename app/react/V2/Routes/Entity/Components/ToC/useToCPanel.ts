@@ -98,9 +98,17 @@ const useToCPanelHandlers = ({
   revalidate,
   notify,
 }: ToCPanelHandlersParams) => {
-  const handleStateChange = (expanded: boolean, collapsed: boolean) => {
-    setTocState(current => ({ ...current, isAllExpanded: expanded, isAllCollapsed: collapsed }));
-  };
+  const handleStateChange = useCallback(
+    (expanded: boolean, collapsed: boolean) => {
+      setTocState(current => {
+        if (current.isAllExpanded === expanded && current.isAllCollapsed === collapsed) {
+          return current;
+        }
+        return { ...current, isAllExpanded: expanded, isAllCollapsed: collapsed };
+      });
+    },
+    [setTocState]
+  );
 
   const handleToCEntryClick = useCallback(
     (entry: ProcessedTocEntry) => {

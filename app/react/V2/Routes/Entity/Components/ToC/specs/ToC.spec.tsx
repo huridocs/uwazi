@@ -224,6 +224,36 @@ describe('ToC', () => {
         expect(handleStateChange).toHaveBeenCalled();
       });
     });
+
+    it('should not loop when onStateChange updates parent state with a new object each time', async () => {
+      const Parent = () => {
+        const [expanded, setExpanded] = useState<Record<number, boolean>>({});
+        const [, setFlags] = useState({ isAllExpanded: false, isAllCollapsed: true });
+
+        return (
+          <ToC
+            toc={nestedToc}
+            expanded={expanded}
+            onToggleExpand={index => {
+              setExpanded(prev => ({ ...prev, [index]: !prev[index] }));
+            }}
+            onStateChange={(isAllExpanded, isAllCollapsed) => {
+              // Mirrors the previous buggy pattern: always allocate a new state object.
+              setFlags(current => ({ ...current, isAllExpanded, isAllCollapsed }));
+            }}
+          />
+        );
+      };
+
+      expect(() => render(<Parent />)).not.toThrow();
+      expect(screen.getByText('Part I: Fundamentals')).toBeInTheDocument();
+
+      fireEvent.click(rowFor('Part I: Fundamentals'));
+
+      await waitFor(() => {
+        expect(screen.getByText('Chapter 1: Getting Started')).toBeInTheDocument();
+      });
+    });
   });
 
   describe('Empty and undefined ToC', () => {
