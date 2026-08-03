@@ -51,6 +51,18 @@ class User {
       ? this.credentials.withPassword(password)
       : new Credentials({ password });
   }
+
+  incrementFailedLogins(): void {
+    this.credentials = this.credentials!.withIncrementedFailedLogins();
+  }
+
+  lock(unlockCode: string): void {
+    this.credentials = this.credentials!.withLock(unlockCode);
+  }
+
+  clearLockout(): void {
+    this.credentials = this.credentials!.withClearedLockout();
+  }
 }
 
 export { User, UserRole, PUBLIC_USER_ID };

@@ -66,4 +66,66 @@ describe('User', () => {
       expect(user.credentials?.using2fa).toBe(true);
     });
   });
+
+  describe('incrementFailedLogins()', () => {
+    it('should delegate to Credentials.withIncrementedFailedLogins()', () => {
+      const credentials = new Credentials({
+        password: EncryptedPassword.fromHash('hash'),
+        failedLogins: 1,
+      });
+      const user = new User({
+        _id: 'user1',
+        username: 'user1',
+        role: UserRole.EDITOR,
+        email: 'user1@example.com',
+        credentials,
+      });
+
+      user.incrementFailedLogins();
+
+      expect(user.credentials?.failedLogins).toBe(2);
+    });
+  });
+
+  describe('lock()', () => {
+    it('should delegate to Credentials.withLock()', () => {
+      const credentials = new Credentials({ password: EncryptedPassword.fromHash('hash') });
+      const user = new User({
+        _id: 'user1',
+        username: 'user1',
+        role: UserRole.EDITOR,
+        email: 'user1@example.com',
+        credentials,
+      });
+
+      user.lock('unlock-code');
+
+      expect(user.credentials?.isLocked()).toBe(true);
+      expect(user.credentials?.accountUnlockCode).toBe('unlock-code');
+    });
+  });
+
+  describe('clearLockout()', () => {
+    it('should delegate to Credentials.withClearedLockout()', () => {
+      const credentials = new Credentials({
+        password: EncryptedPassword.fromHash('hash'),
+        failedLogins: 3,
+        accountLocked: true,
+        accountUnlockCode: 'unlock-code',
+      });
+      const user = new User({
+        _id: 'user1',
+        username: 'user1',
+        role: UserRole.EDITOR,
+        email: 'user1@example.com',
+        credentials,
+      });
+
+      user.clearLockout();
+
+      expect(user.credentials?.failedLogins).toBe(0);
+      expect(user.credentials?.isLocked()).toBe(false);
+      expect(user.credentials?.accountUnlockCode).toBeUndefined();
+    });
+  });
 });
