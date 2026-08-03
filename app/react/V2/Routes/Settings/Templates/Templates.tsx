@@ -1,56 +1,15 @@
 import React, { useState } from 'react';
-import { IncomingHttpHeaders } from 'http';
-import { LoaderFunction, useLoaderData, useRevalidator } from 'react-router';
+import { useLoaderData, useRevalidator } from 'react-router';
 import { Translate, I18NLinkV2 as I18NLink, t } from '#app/I18N/index.js';
 import { Table } from '#V2/Components/UI/Table/Table.js';
 import { Button } from '#V2/Components/UI/Button.js';
-import * as templatesApi from '#V2/api/templates/index.js';
-import { RequestParams } from '#app/utils/RequestParams.js';
 import { SettingsContent } from '#V2/Components/Layouts/SettingsContent.js';
 import { ColumnDef } from '@tanstack/react-table';
-import { Template } from '#app/apiResponseTypes.js';
-import { handleUnexpectedError } from '#app/V2/shared/errorUtils.js';
+import { useServices } from '#V2/services/index.js';
+import { useRequestStatus } from '#V2/atoms/requestStatusAtom.js';
 import { columns } from './components/TemplatesTableComponents.js';
 import { DeleteTemplatesConfirmationModal } from './components/DeleteTemplatesConfirmationModal.js';
 import { TemplateRow } from './types.js';
-import { useRequestStatus } from '#V2/atoms/requestStatusAtom.js';
-
-const templatesLoader =
-  (headers?: IncomingHttpHeaders): LoaderFunction<TemplateRow[]> =>
-  async () => {
-    const templates = await templatesApi.get(headers);
-    const templateIds = templates.map((template: Template) => template._id);
-    const entityCounts = await templatesApi.checkTemplatesEntityCount(headers, templateIds);
-    return templates.map((template: Template) => {
-      const reasons = [];
-      if (template.default) {
-        reasons.push(t('System', 'A default template cannot be deleted.', null, false));
-      }
-      if (entityCounts[template._id] > 0) {
-        reasons.push(
-          t(
-            'System',
-            'This template is in use by existing entities and cannot be deleted.',
-            null,
-            false
-          )
-        );
-      }
-      if (template.synced) {
-        reasons.push(t('System', 'Synced templates cannot be deleted.', null, false));
-      }
-
-      const disableRowSelection = reasons.length > 0 ? reasons.join(' ') : undefined;
-
-      return {
-        ...template,
-        rowId: template._id,
-        translation: template.name,
-        entityCount: entityCounts[template._id] || 0,
-        disableRowSelection,
-      };
-    });
-  };
 
 const Templates = () => {
   const templates = useLoaderData() as TemplateRow[];
@@ -58,17 +17,25 @@ const Templates = () => {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const revalidator = useRevalidator();
   const { notify } = useRequestStatus();
+  const { templates: templatesService } = useServices();
 
   const hasSyncedTemplates = templates.some(template => template.synced);
 
   const handleSetDefault = async (row: TemplateRow) => {
-    try {
-      await templatesApi.setDefault(new RequestParams({ _id: row._id }));
-      notify('success', t('System', 'Default template set successfully.', null, false));
-      await revalidator.revalidate();
-    } catch (e) {
-      handleUnexpectedError(e, 'Error setting default template');
+    const [, error] = await templatesService.setDefault(row._id!);
+
+    if (error) {
+      notify(
+        'error',
+        t('System', 'An error occurred', null, false),
+        undefined,
+        error.detail ?? error.message
+      );
+      return;
     }
+
+    notify('success', t('System', 'Default template set successfully.', null, false));
+    await revalidator.revalidate();
   };
 
   const handleDeleteClick = async () => {
@@ -77,18 +44,24 @@ const Templates = () => {
 
   const handleDelete = async (templatesToDelete: TemplateRow[]) => {
     setShowDeleteModal(false);
-    try {
-      await Promise.all(
-        templatesToDelete.map(async template =>
-          templatesApi.remove(new RequestParams({ _id: template._id }))
-        )
+    const ids = templatesToDelete
+      .map(template => template._id)
+      .filter((id): id is string => Boolean(id));
+    const [, error] = await templatesService.delete(ids);
+
+    if (error) {
+      notify(
+        'error',
+        t('System', 'An error occurred', null, false),
+        undefined,
+        error.detail ?? error.message
       );
-      setSelected([]);
-      notify('success', t('System', 'Template(s) deleted successfully.', null, false));
-      await revalidator.revalidate();
-    } catch (e) {
-      handleUnexpectedError(e, 'Error deleting template(s)');
+      return;
     }
+
+    setSelected([]);
+    notify('success', t('System', 'Template(s) deleted successfully.', null, false));
+    await revalidator.revalidate();
   };
 
   return (
@@ -132,10 +105,10 @@ const Templates = () => {
         open={showDeleteModal}
         onAccept={handleDelete}
         onCancel={() => setShowDeleteModal(false)}
-        templates={templates.filter(template => selected.includes(template._id))}
+        templates={templates.filter(template => selected.includes(template._id!))}
       />
     </div>
   );
 };
 
-export { Templates, templatesLoader };
+export { Templates };
