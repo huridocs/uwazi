@@ -10,7 +10,7 @@ import { AccessContext } from '#api/core/domain/entityAccessPolicy/AccessContext
  *
  * Each backend (Mongo, Postgres) will have its own translator implementation.
  */
-interface PostgresPermissionTranslator {
+export interface PostgresPermissionTranslator {
   /** Add read conditions to the query builder (all, first, count, sum). */
   applyReadCondition(qb: Knex.QueryBuilder, ac: AccessContext): Knex.QueryBuilder;
 
@@ -22,4 +22,46 @@ interface PostgresPermissionTranslator {
   requiredColumns(): string[];
 }
 
-export type { PostgresPermissionTranslator };
+/**
+ * Default implementation: checks `published` and `permissions` JSONB columns.
+ *
+ * - Admin / editor: no restriction (privileged).
+ * - Anonymous: published rows only.
+ * - Collaborator: published rows OR rows where `permissions` JSONB array
+ *   contains an entry with matching refId. For write, the entry must
+ *   also have `level: 'write'`.
+ */
+export class PostgresEntityPermissionTranslator implements PostgresPermissionTranslator {
+  requiredColumns(): string[] {
+    return ['published', 'permissions'];
+  }
+
+  applyReadCondition(qb: Knex.QueryBuilder, ac: AccessContext): Knex.QueryBuilder {
+    if (ac.isPrivileged()) return qb;
+    if (ac.isAnonymous()) return qb.where({ published: true });
+
+    return qb.where(function (this: Knex.QueryBuilder) {
+      this.where({ published: true });
+      for (const refId of ac.refIds) {
+        this.orWhereRaw('permissions @> ?::jsonb', [JSON.stringify([{ refId }])]);
+      }
+    });
+  }
+
+  applyWriteCondition(
+    qb: Knex.QueryBuilder,
+    ac: AccessContext,
+    tableName?: string,
+  ): Knex.QueryBuilder {
+    if (ac.isPrivileged()) return qb;
+    if (ac.isAnonymous()) return qb.where({ _id: null });
+
+    const refIds = ac.refIds;
+    if (refIds.length === 0) return qb.where({ _id: null });
+
+    const col = tableName ? `${tableName}.permissions` : 'permissions';
+    const sql = refIds.map(() => `${col} @> ?::jsonb`).join(' OR ');
+    const bindings = refIds.map(id => JSON.stringify([{ refId: id, level: 'write' }]));
+    return qb.whereRaw(`(${sql})`, bindings);
+  }
+}

@@ -9,7 +9,7 @@ import { PostgresTable } from '../PostgresTable.js';
 import { PostgresPermissionEnforcedTable } from '../PostgresPermissionEnforcedTable.js';
 import { AccessContext } from '#api/core/domain/entityAccessPolicy/AccessContext.js';
 import { User } from '#api/users.v2/model/User.js';
-import type { PostgresPermissionTranslator } from '../PostgresPermissionTranslator.js';
+import { PostgresEntityPermissionTranslator } from '../PostgresPermissionTranslator.js';
 
 // ── Test table ───────────────────────────────────────────────────────────────
 
@@ -26,50 +26,13 @@ type TestRow = {
   permissions: { refId: string; type: string; level: string }[];
 };
 
-// ── Test translator ──────────────────────────────────────────────────────────
-
-class TestPermissionTranslator implements PostgresPermissionTranslator {
-  requiredColumns(): string[] {
-    return ['published', 'permissions'];
-  }
-
-  applyReadCondition(qb: Knex.QueryBuilder, ac: AccessContext): Knex.QueryBuilder {
-    if (ac.isPrivileged()) return qb;
-    if (ac.isAnonymous()) return qb.where({ published: true });
-
-    return qb.where(function (this: Knex.QueryBuilder) {
-      this.where({ published: true });
-      for (const refId of ac.refIds) {
-        this.orWhereRaw('permissions @> ?::jsonb', [JSON.stringify([{ refId }])]);
-      }
-    });
-  }
-
-  applyWriteCondition(
-    qb: Knex.QueryBuilder,
-    ac: AccessContext,
-    tableName?: string
-  ): Knex.QueryBuilder {
-    if (ac.isPrivileged()) return qb;
-    if (ac.isAnonymous()) return qb.where({ _id: null });
-
-    const refIds = ac.refIds;
-    if (refIds.length === 0) return qb.where({ _id: null });
-
-    const col = tableName ? `${tableName}.permissions` : 'permissions';
-    const sql = refIds.map(() => `${col} @> ?::jsonb`).join(' OR ');
-    const bindings = refIds.map(id => JSON.stringify([{ refId: id, level: 'write' }]));
-    return qb.whereRaw(`(${sql})`, bindings);
-  }
-}
-
 const createEnforcedTable = (accessContext: AccessContext, tenantId = DEFAULT_TENANT) =>
   PostgresPermissionEnforcedTable.for<TestRow>({
     tableName: TEST_TABLE,
     tenantId,
     transactionManager: managerFor(tenantId),
     accessContext,
-    translator: new TestPermissionTranslator(),
+    translator: new PostgresEntityPermissionTranslator(),
   });
 
 // ── Test actors ──────────────────────────────────────────────────────────────
