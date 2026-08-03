@@ -18,15 +18,11 @@ const FLAT_B_SEGMENT = /(<b>[\s\S]*?<\/b>)/gi;
 const FLAT_B_INNER = /^<b>([\s\S]*?)<\/b>$/i;
 
 const getFieldName = (fieldName: string, template?: ClientTemplateSchema) => {
-  if (fieldName === 'title') {
+  const propertyName = esFieldToFocusKey(fieldName);
+  if (propertyName === 'title') {
     return 'Title';
   }
-
-  const propertyName = fieldName.split('.')[1];
-  const propertyLabel =
-    template?.properties?.find(property => property.name === propertyName)?.label || '';
-
-  return propertyLabel;
+  return template?.properties?.find(property => property.name === propertyName)?.label || '';
 };
 
 const decodeSnippetText = (segment: string) =>

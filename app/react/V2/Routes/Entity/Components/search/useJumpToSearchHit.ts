@@ -3,7 +3,8 @@ import { useSetAtom } from 'jotai';
 import { useTabGroup } from '#V2/Components/UI/index.js';
 import { useEntityLanguage } from '#V2/Routes/Entity/Components/context/index.js';
 import { useUpdateEntityUrl } from '../../entityUrlState.js';
-import { MAIN_TAB_PARAM, SIDE_TAB_PARAM } from '../../urlParams.js';
+import { SIDE_TAB_PARAM } from '../../urlParams.js';
+import { applyMainTabSearchParam } from '../../Tabs/applyMainTabSearchParam.js';
 import { MAIN_TAB, SIDE_TAB, type MainTabId } from '../../Tabs/tabIds.js';
 import {
   esFieldToFocusKey,
@@ -23,13 +24,7 @@ const useJumpToSearchHit = () => {
       selectMainTab(mainTab);
       selectSideTab(SIDE_TAB.SEARCH);
       updateEntityUrl({
-        search: next => {
-          if (mainTab === MAIN_TAB.DOCUMENT && hasMainDocument) {
-            next.delete(MAIN_TAB_PARAM);
-          } else {
-            next.set(MAIN_TAB_PARAM, mainTab);
-          }
-        },
+        search: next => applyMainTabSearchParam(next, mainTab, hasMainDocument),
         hash: next => {
           next.set(SIDE_TAB_PARAM, SIDE_TAB.SEARCH);
           options?.hash?.(next);

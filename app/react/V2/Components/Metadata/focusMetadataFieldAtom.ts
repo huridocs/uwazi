@@ -17,33 +17,48 @@ const esFieldToFocusKey = (field: string): string => {
 };
 
 const FLASH_MS = 1100;
-const SCROLL_RETRY_INTERVAL_MS = 100;
-const SCROLL_RETRY_COUNT = 6;
+const FOCUS_RETRY_MS = 100;
+const FOCUS_DEADLINE_MS = 1100;
 
 /**
- * Scroll/flash a `[data-field-key]` target under root.
- * Missing keys are a safe no-op for the caller.
- * Re-scrolls instantly while layout settles (e.g. geolocation map mount above target).
+ * Find `[data-field-key]`, flash, and re-scroll until deadline (map/layout settle).
+ * Returns cleanup; missing keys keep retrying until deadline without throwing.
  */
-const applyMetadataFieldFocus = (root: ParentNode, fieldKey: string): (() => void) | null => {
-  const el = root.querySelector<HTMLElement>(`[data-field-key="${CSS.escape(fieldKey)}"]`);
-  if (!el) return null;
+const applyMetadataFieldFocus = (
+  getRoot: () => ParentNode | null,
+  fieldKey: string
+): (() => void) => {
+  let cancelled = false;
+  let flashedEl: HTMLElement | null = null;
+  const timers: number[] = [];
+  const deadline = Date.now() + FOCUS_DEADLINE_MS;
 
-  const scrollToTarget = () => {
-    scrollIntoView(el, { behavior: 'auto', block: 'center' });
+  const attempt = () => {
+    if (cancelled) return;
+    const root = getRoot();
+    const el = root?.querySelector<HTMLElement>(`[data-field-key="${CSS.escape(fieldKey)}"]`);
+    if (el) {
+      scrollIntoView(el, { behavior: 'auto', block: 'center' });
+      if (!flashedEl) {
+        flashedEl = el;
+        el.classList.add('flash-highlight');
+        timers.push(
+          window.setTimeout(() => {
+            el.classList.remove('flash-highlight');
+          }, FLASH_MS)
+        );
+      }
+    }
+    if (Date.now() < deadline) {
+      timers.push(window.setTimeout(attempt, FOCUS_RETRY_MS));
+    }
   };
 
-  scrollToTarget();
-  el.classList.add('flash-highlight');
-
-  const timers: number[] = [
-    window.setTimeout(() => el.classList.remove('flash-highlight'), FLASH_MS),
-  ];
-  for (let i = 1; i <= SCROLL_RETRY_COUNT; i += 1) {
-    timers.push(window.setTimeout(scrollToTarget, i * SCROLL_RETRY_INTERVAL_MS));
-  }
-
-  return () => timers.forEach(t => window.clearTimeout(t));
+  attempt();
+  return () => {
+    cancelled = true;
+    timers.forEach(t => window.clearTimeout(t));
+  };
 };
 
 export { focusMetadataFieldAtom, esFieldToFocusKey, applyMetadataFieldFocus, FLASH_MS };

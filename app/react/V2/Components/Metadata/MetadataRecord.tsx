@@ -28,9 +28,6 @@ type MetadataRecordProps = {
   entity: Entity;
 };
 
-const FOCUS_RETRY_MS = 50;
-const FOCUS_RETRY_MAX = 20;
-
 const MetadataRecord = ({ entity }: MetadataRecordProps) => {
   const templates = useAtomValue(templatesAtom);
   const focusField = useAtomValue(focusMetadataFieldAtom);
@@ -59,44 +56,15 @@ const MetadataRecord = ({ entity }: MetadataRecordProps) => {
 
   useLayoutEffect(() => {
     if (!focusField) return undefined;
-    // Jump-while-unmounted keeps the atom until remount; owner unmount/sharedId clears stale focus.
-    let cancelled = false;
-    let flashCleanup: (() => void) | null = null;
-    let retryTimer: number | undefined;
-    let attempts = 0;
-
-    const tryApply = () => {
-      if (cancelled) return;
-      const root = rootRef.current;
-      const applied = root ? applyMetadataFieldFocus(root, focusField.fieldKey) : null;
-      if (applied) {
-        ownsFocusRef.current = true;
-        flashCleanup = applied;
-        // Delay clear so Strict Mode remount / tab settle can re-apply while atom is set.
-        retryTimer = window.setTimeout(() => {
-          if (!cancelled) {
-            ownsFocusRef.current = false;
-            clearFocus(null);
-          }
-        }, FLASH_MS);
-        return;
-      }
-      if (attempts >= FOCUS_RETRY_MAX) {
-        // Do not clear shared atom — another MetadataRecord may own/apply this focus.
-        return;
-      }
-      attempts += 1;
-      retryTimer = window.setTimeout(() => {
-        requestAnimationFrame(tryApply);
-      }, FOCUS_RETRY_MS);
-    };
-
-    tryApply();
-
+    ownsFocusRef.current = true;
+    const cleanup = applyMetadataFieldFocus(() => rootRef.current, focusField.fieldKey);
+    const clearTimer = window.setTimeout(() => {
+      ownsFocusRef.current = false;
+      clearFocus(null);
+    }, FLASH_MS);
     return () => {
-      cancelled = true;
-      if (retryTimer !== undefined) window.clearTimeout(retryTimer);
-      flashCleanup?.();
+      cleanup();
+      window.clearTimeout(clearTimer);
     };
   }, [focusField, clearFocus]);
 

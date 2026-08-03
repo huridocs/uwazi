@@ -402,6 +402,7 @@ describe('Entity view', () => {
       const input = screen.getByRole('textbox', { name: 'Search this document' });
       expect(input).toBeInTheDocument();
       expect(input).toHaveValue('term');
+      expect(screen.getByRole('button', { name: /Search tips/i })).toBeInTheDocument();
     });
 
     it('should show seach results', async () => {
@@ -410,8 +411,16 @@ describe('Entity view', () => {
           {
             _id: 's1',
             snippets: {
-              count: 2,
-              metadata: [{ field: 'title', texts: ['<b>Match title</b>'] }],
+              count: 3,
+              metadata: [
+                { field: 'title', texts: ['<b>Match title</b>'] },
+                {
+                  field: 'metadata.description.value',
+                  texts: [
+                    'duties in the name of <b>Honduras</b> who were reportedly carrying out their',
+                  ],
+                },
+              ],
               fullText: [{ page: 3, text: 'Excerpt <b>match</b>' }],
             },
           },
@@ -427,7 +436,88 @@ describe('Entity view', () => {
       expect(screen.getByText('Properties')).toBeInTheDocument();
       expect(screen.getByText('Document')).toBeInTheDocument();
       expect(screen.getByText(/p\.3/)).toBeInTheDocument();
-      expect(screen.getByText(/2 matches for/)).toBeInTheDocument();
+      expect(screen.getByText(/3 matches for/)).toBeInTheDocument();
+
+      const marks = document.querySelectorAll('mark');
+      expect(marks.length).toBeGreaterThan(0);
+      expect(marks[0]?.className).toContain('rounded-[2px]');
+      expect(marks[0]?.className).toContain('color-theme-highlight-yellow-active');
+      expect(marks[0]?.className).toContain('!shadow-none');
+      expect(marks[0]?.className).not.toMatch(/shadow-\[0_0_0/);
+
+      expect(screen.getByRole('button', { name: /Search tips/i })).toBeInTheDocument();
+
+      const windowed = screen.getByText(/duties in the name of/);
+      expect(windowed.textContent).toMatch(/^… /);
+      expect(windowed.textContent).toMatch(/ …$/);
+    });
+
+    it('property click keeps side Search and switches main to Metadata', async () => {
+      const snippetsData = {
+        data: [
+          {
+            _id: 's1',
+            snippets: {
+              count: 1,
+              metadata: [{ field: 'title', texts: ['<b>Match title</b>'] }],
+              fullText: [],
+            },
+          },
+        ],
+      };
+      entityLoaderCache.setSearchResults('shared1', 'en:1', 'search', snippetsData);
+      jest.spyOn(searchApi, 'snippets').mockResolvedValue(snippetsData);
+
+      renderEntity({ initialEntries: ['/?m=document#s=search&searchTerm=search'] });
+      await checkEntityRendered();
+
+      expect(await screen.findByText('Match title')).toBeInTheDocument();
+      fireEvent.click(screen.getByRole('button', { name: /Match title/i }));
+
+      await waitFor(() => {
+        expect(mainTablist().getByRole('tab', { name: 'Metadata' })).toHaveAttribute(
+          'aria-selected',
+          'true'
+        );
+        expect(sideTablist().getByRole('tab', { name: 'Search' })).toHaveAttribute(
+          'aria-selected',
+          'true'
+        );
+      });
+    });
+
+    it('document snippet click keeps side Search and switches main to Document', async () => {
+      const snippetsData = {
+        data: [
+          {
+            _id: 's1',
+            snippets: {
+              count: 1,
+              metadata: [],
+              fullText: [{ page: 3, text: 'Excerpt <b>match</b>' }],
+            },
+          },
+        ],
+      };
+      entityLoaderCache.setSearchResults('shared1', 'en:1', 'search', snippetsData);
+      jest.spyOn(searchApi, 'snippets').mockResolvedValue(snippetsData);
+
+      renderEntity({ initialEntries: ['/?m=metadata#s=search&searchTerm=search'] });
+      await checkEntityRendered();
+
+      expect(await screen.findByText(/p\.3/)).toBeInTheDocument();
+      fireEvent.click(screen.getByRole('button', { name: /Page 3/i }));
+
+      await waitFor(() => {
+        expect(mainTablist().getByRole('tab', { name: 'Document' })).toHaveAttribute(
+          'aria-selected',
+          'true'
+        );
+        expect(sideTablist().getByRole('tab', { name: 'Search' })).toHaveAttribute(
+          'aria-selected',
+          'true'
+        );
+      });
     });
   });
 });

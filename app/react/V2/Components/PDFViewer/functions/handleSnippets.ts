@@ -139,24 +139,14 @@ const highlightRegex = (
   return Array.from(markedSpans);
 };
 
-const highlightSearchTermsInSpans = (spans: HTMLElement[], searchTerms: string[]): void => {
-  if (spans.length === 0) {
-    return;
-  }
-
-  spans.forEach(span => {
-    searchTerms.forEach(term => highlightText(span, term, SEARCH_TERM_CLASS));
-  });
-};
-
-const highlightSearchTermsInLayer = (textLayer: HTMLElement, searchTerms: string[]): boolean => {
-  if (searchTerms.length === 0) {
+const highlightSearchTerms = (roots: HTMLElement[], searchTerms: string[]): boolean => {
+  if (!roots.length || !searchTerms.length) {
     return false;
   }
-
-  searchTerms.forEach(term => highlightText(textLayer, term, SEARCH_TERM_CLASS));
-
-  return textLayer.querySelector(`mark.${SEARCH_TERM_CLASS}`) !== null;
+  roots.forEach(root => {
+    searchTerms.forEach(term => highlightText(root, term, SEARCH_TERM_CLASS));
+  });
+  return roots.some(root => root.querySelector(`mark.${SEARCH_TERM_CLASS}`) !== null);
 };
 
 const tryHighlightWithFuzzyMatch = (
@@ -179,7 +169,7 @@ const tryHighlightWithFuzzyMatch = (
       SNIPPET_CONTEXT_CLASS
     );
     if (markedSpans.length > 0) {
-      highlightSearchTermsInSpans(markedSpans, searchTerms);
+      highlightSearchTerms(markedSpans, searchTerms);
       return true;
     }
 
@@ -221,7 +211,7 @@ const performHighlighting = (
   );
 
   if (markedSpans.length > 0) {
-    highlightSearchTermsInSpans(markedSpans, searchTerms);
+    highlightSearchTerms(markedSpans, searchTerms);
     return true;
   }
 
@@ -229,7 +219,7 @@ const performHighlighting = (
     return true;
   }
 
-  return highlightSearchTermsInLayer(textLayer, searchTerms);
+  return highlightSearchTerms([textLayer], searchTerms);
 };
 
 const highlightSnippetInPage = (container: HTMLElement | null, snippet: Snippet): boolean => {

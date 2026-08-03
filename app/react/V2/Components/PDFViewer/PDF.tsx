@@ -128,55 +128,33 @@ const PDF = ({
 
   const activateSnippet = useCallback((snippet: Snippet) => {
     cancelAnimationFrame(snippetAnimationFrameIdRef.current);
+    const deadline = Date.now() + 5000;
 
-    const retryHighlight = (pageContainer: HTMLDivElement) => {
-      const deadline = Date.now() + 5000;
-
-      const attempt = (): void => {
-        if (tryHighlightAndScroll(pageContainer, snippet)) {
-          return;
+    const attempt = (): void => {
+      let pageContainer = pageRefsMap.current[snippet.page];
+      if (!pageContainer) {
+        const found = document.querySelector(`#page-${snippet.page}-container`);
+        if (found instanceof HTMLDivElement) {
+          pageRefsMap.current[snippet.page] = found;
+          pageContainer = found;
         }
-        if (Date.now() >= deadline) {
-          scrollIntoView(pageContainer, { block: 'start' });
-          return;
-        }
-        snippetAnimationFrameIdRef.current = requestAnimationFrame(attempt);
-      };
+      }
 
-      attempt();
-    };
-
-    const run = (pageContainer: HTMLDivElement) => {
-      if (tryHighlightAndScroll(pageContainer, snippet)) {
+      if (pageContainer && tryHighlightAndScroll(pageContainer, snippet)) {
         return;
       }
-      scrollIntoView(pageContainer, { block: 'start' });
-      waitForElement(`#page-${snippet.page}-container .textLayer`, 5000)
-        .then(() => {
-          retryHighlight(pageContainer);
-        })
-        .catch(() => {
+
+      if (Date.now() >= deadline) {
+        if (pageContainer) {
           scrollIntoView(pageContainer, { block: 'start' });
-        });
+        }
+        return;
+      }
+
+      snippetAnimationFrameIdRef.current = requestAnimationFrame(attempt);
     };
 
-    const pageContainer = pageRefsMap.current[snippet.page];
-    if (pageContainer) {
-      run(pageContainer);
-      return;
-    }
-
-    waitForElement(`#page-${snippet.page}-container`, 5000)
-      .then(found => {
-        if (!(found instanceof HTMLDivElement)) {
-          return;
-        }
-        pageRefsMap.current[snippet.page] = found;
-        run(found);
-      })
-      .catch(() => {
-        // ignore timeout
-      });
+    attempt();
   }, []);
 
   const deactivateSnippet = useCallback(() => {
