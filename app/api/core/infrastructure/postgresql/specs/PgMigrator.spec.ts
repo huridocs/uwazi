@@ -122,6 +122,20 @@ describe('PgMigrator', () => {
       expect(records.rows.map((r: any) => r.delta)).toEqual([1, 2]);
     });
 
+    it('should reject duplicate migration deltas with a clear error', async () => {
+      createMigration('001-first.sql', 'SELECT 1');
+      createMigration('001-duplicate.sql', 'SELECT 1');
+
+      const pool = getPool();
+      const migrator = new PgMigrator(migrationsDir, pool as any);
+
+      await expect(migrator.migrate()).rejects.toThrow('Duplicate migration delta(s)');
+      await expect(migrator.status()).rejects.toThrow('Duplicate migration delta(s)');
+
+      const records = await pool.query('SELECT delta FROM pg_migrations ORDER BY delta ASC');
+      expect(records.rows).toHaveLength(0);
+    });
+
     it('should return empty array when no pending migrations', async () => {
       createMigration(
         '001-create_test_table.sql',

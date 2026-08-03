@@ -29,6 +29,7 @@ type Tenant = {
     postgresEntities?: boolean;
     postgresRelationshipTypes?: boolean;
     postgresPasswordRecoveries?: boolean;
+    postgresUsers?: boolean;
     aiAssistant?: boolean;
     aiAssistantServiceUrl?: string;
     v2UsersCreate?: boolean;
@@ -44,6 +45,7 @@ type Tenant = {
       sampleRate?: number;
     };
     v2UsersUtilityRoutes?: Boolean;
+    v2Auth2fa?: boolean;
   };
   globalMatomo?: { id: string; url: string };
   ciMatomoActive?: boolean;

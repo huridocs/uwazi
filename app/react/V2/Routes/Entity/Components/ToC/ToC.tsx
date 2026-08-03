@@ -1,5 +1,5 @@
 /* eslint-disable react/require-default-props */
-import React, { useMemo, useEffect } from 'react';
+import React, { useMemo, useEffect, useRef } from 'react';
 import { TocSchema } from '#shared/types/commonTypes.js';
 import { ToCItem } from './ToCItem.js';
 import type { ProcessedTocEntry } from './types.js';
@@ -59,11 +59,13 @@ const ToC = ({
     return itemsWithChildren.every(index => expanded[index] !== true);
   }, [itemsWithChildren, expanded]);
 
+  // Keep a ref so unstable parent callbacks do not re-trigger this effect every render.
+  const onStateChangeRef = useRef(onStateChange);
+  onStateChangeRef.current = onStateChange;
+
   useEffect(() => {
-    if (onStateChange) {
-      onStateChange(isAllExpanded, isAllCollapsed);
-    }
-  }, [expanded, isAllExpanded, isAllCollapsed, onStateChange]);
+    onStateChangeRef.current?.(isAllExpanded, isAllCollapsed);
+  }, [expanded, isAllExpanded, isAllCollapsed]);
 
   return (
     <div className="pb-8">
