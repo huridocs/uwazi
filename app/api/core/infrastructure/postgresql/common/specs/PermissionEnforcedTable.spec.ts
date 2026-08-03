@@ -1,14 +1,15 @@
 /* eslint-disable max-statements */
+import type { Knex } from 'knex';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { testingPG } from '#api/utils/testing_pg.js';
 import { PostgresDB } from '#api/infrastructure/PostgresDB.js';
 import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
 import { PostgresTransactionManager } from '../PostgresTransactionManager.js';
+import { PostgresTable } from '../PostgresTable.js';
 import { PermissionEnforcedTable } from '../PermissionEnforcedTable.js';
 import { AccessContext } from '#api/core/domain/entityAccessPolicy/AccessContext.js';
 import { User } from '#api/users.v2/model/User.js';
 import type { PostgresPermissionTranslator } from '../PostgresPermissionTranslator.js';
-import type { Knex } from 'knex';
 
 // ── Test table ───────────────────────────────────────────────────────────────
 
@@ -44,7 +45,11 @@ class TestPermissionTranslator implements PostgresPermissionTranslator {
     });
   }
 
-  applyWriteCondition(qb: Knex.QueryBuilder, ac: AccessContext, tableName?: string): Knex.QueryBuilder {
+  applyWriteCondition(
+    qb: Knex.QueryBuilder,
+    ac: AccessContext,
+    tableName?: string
+  ): Knex.QueryBuilder {
     if (ac.isPrivileged()) return qb;
     if (ac.isAnonymous()) return qb.where({ _id: null });
 
@@ -99,6 +104,19 @@ const fixtures: Array<{ _id: string; name: string; published: boolean; permissio
     name: 'private-none',
     published: false,
     permissions: JSON.stringify([{ refId: 'other-1', type: 'user', level: 'write' }]),
+  },
+  // Group-only permissions — no user-level grant
+  {
+    _id: 'ent-group-read',
+    name: 'group-read-only',
+    published: false,
+    permissions: JSON.stringify([{ refId: 'group-a', type: 'group', level: 'read' }]),
+  },
+  {
+    _id: 'ent-group-write',
+    name: 'group-write-only',
+    published: false,
+    permissions: JSON.stringify([{ refId: 'group-a', type: 'group', level: 'write' }]),
   },
 ];
 
@@ -159,20 +177,26 @@ describe('PermissionEnforcedTable', () => {
     it('admin sees all rows', async () => {
       const table = createEnforcedTable(AccessContext.forActor(admin));
       const rows = await table.all();
-      expect(rows).toHaveLength(4);
+      expect(rows).toHaveLength(6);
     });
 
     it('editor sees all rows', async () => {
       const table = createEnforcedTable(AccessContext.forActor(editor));
       const rows = await table.all();
-      expect(rows).toHaveLength(4);
+      expect(rows).toHaveLength(6);
     });
 
     it('collaborator sees published + rows where they are in permissions', async () => {
       const table = createEnforcedTable(AccessContext.forActor(collaborator));
       const rows = await table.all();
       const ids = rows.map(r => r._id).sort();
-      expect(ids).toEqual(['ent-pub', 'ent-read', 'ent-write']);
+      expect(ids).toEqual([
+        'ent-group-read',
+        'ent-group-write',
+        'ent-pub',
+        'ent-read',
+        'ent-write',
+      ]);
     });
 
     it('anonymous sees only published rows', async () => {
@@ -185,7 +209,7 @@ describe('PermissionEnforcedTable', () => {
     it('system bypass sees all rows', async () => {
       const table = createEnforcedTable(AccessContext.system());
       const rows = await table.all();
-      expect(rows).toHaveLength(4);
+      expect(rows).toHaveLength(6);
     });
   });
 
@@ -208,7 +232,7 @@ describe('PermissionEnforcedTable', () => {
     it('collaborator count excludes inaccessible rows', async () => {
       const table = createEnforcedTable(AccessContext.forActor(collaborator));
       const n = await table.count();
-      expect(n).toBe(3);
+      expect(n).toBe(5);
     });
 
     it('anonymous count only includes published rows', async () => {
@@ -251,7 +275,9 @@ describe('PermissionEnforcedTable', () => {
 
     it('update() returns matched _ids', async () => {
       const table = createEnforcedTable(AccessContext.forActor(collaborator));
-      const ids = await table.whereIn('_id', ['ent-write', 'ent-read', 'ent-none']).update({ name: 'x' });
+      const ids = await table
+        .whereIn('_id', ['ent-write', 'ent-read', 'ent-none'])
+        .update({ name: 'x' });
       expect(ids).toEqual(['ent-write']);
     });
   });
@@ -302,7 +328,12 @@ describe('PermissionEnforcedTable', () => {
   describe('upsert() — gate check', () => {
     it('collaborator can upsert (insert path)', async () => {
       const table = createEnforcedTable(AccessContext.forActor(collaborator));
-      await table.upsert({ _id: 'ent-upsert-new', name: 'upserted', published: true, permissions: '[]' });
+      await table.upsert({
+        _id: 'ent-upsert-new',
+        name: 'upserted',
+        published: true,
+        permissions: '[]',
+      });
       const row = await table.where({ _id: 'ent-upsert-new' }).first();
       expect(row).toBeDefined();
       expect(row!.name).toBe('upserted');
@@ -310,8 +341,12 @@ describe('PermissionEnforcedTable', () => {
 
     it('collaborator can upsert (update path — existing row)', async () => {
       const table = createEnforcedTable(AccessContext.forActor(collaborator));
-      // ent-write already exists and collaborator has write access
-      await table.upsert({ _id: 'ent-write', name: 'upserted-name', published: false, permissions: JSON.stringify([{ refId: 'collab-1', type: 'user', level: 'write' }]) });
+      await table.upsert({
+        _id: 'ent-write',
+        name: 'upserted-name',
+        published: false,
+        permissions: JSON.stringify([{ refId: 'collab-1', type: 'user', level: 'write' }]),
+      });
       const row = await table.where({ _id: 'ent-write' }).first();
       expect(row).toBeDefined();
       expect(row!.name).toBe('upserted-name');
@@ -323,8 +358,6 @@ describe('PermissionEnforcedTable', () => {
       expect(before!.name).toBe('private-none');
 
       const table = createEnforcedTable(AccessContext.forActor(collaborator));
-      // ent-none has permissions for other-1, not collab-1
-      // The ON CONFLICT DO UPDATE WHERE should not match → row unchanged
       await table.upsert({
         _id: 'ent-none',
         name: 'hacked',
@@ -338,7 +371,12 @@ describe('PermissionEnforcedTable', () => {
 
     it('admin can upsert any row', async () => {
       const table = createEnforcedTable(AccessContext.forActor(admin));
-      await table.upsert({ _id: 'ent-none', name: 'admin-upserted', published: false, permissions: '[]' });
+      await table.upsert({
+        _id: 'ent-none',
+        name: 'admin-upserted',
+        published: false,
+        permissions: '[]',
+      });
       const row = await table.where({ _id: 'ent-none' }).first();
       expect(row).toBeDefined();
       expect(row!.name).toBe('admin-upserted');
@@ -353,7 +391,12 @@ describe('PermissionEnforcedTable', () => {
 
     it('system bypass can upsert', async () => {
       const table = createEnforcedTable(AccessContext.system());
-      await table.upsert({ _id: 'ent-upsert-sys', name: 'sys-upsert', published: false, permissions: '[]' });
+      await table.upsert({
+        _id: 'ent-upsert-sys',
+        name: 'sys-upsert',
+        published: false,
+        permissions: '[]',
+      });
       const row = await table.where({ _id: 'ent-upsert-sys' }).first();
       expect(row).toBeDefined();
     });
@@ -362,11 +405,8 @@ describe('PermissionEnforcedTable', () => {
   describe('whereRaw — OR safety', () => {
     it('OR in whereRaw does not bypass read enforcement', async () => {
       const table = createEnforcedTable(AccessContext.forActor(collaborator));
-      const rows = await table
-        .whereRaw("_id = 'ent-none' OR _id = 'ent-read'")
-        .all();
+      const rows = await table.whereRaw("_id = 'ent-none' OR _id = 'ent-read'").all();
       const ids = rows.map(r => r._id).sort();
-      // ent-none is unreadable and in first OR position, but subquery contains it
       expect(ids).toEqual(['ent-read']);
     });
 
@@ -393,19 +433,15 @@ describe('PermissionEnforcedTable', () => {
       const queried = table.query();
       expect(queried).toBeInstanceOf(PermissionEnforcedTable);
       const rows = await queried.all();
-      expect(rows).toHaveLength(4);
+      expect(rows).toHaveLength(6);
     });
   });
 
   describe('orWhere — read enforcement', () => {
     it('OR does not bypass read enforcement', async () => {
       const table = createEnforcedTable(AccessContext.forActor(collaborator));
-      const rows = await table
-        .where({ _id: 'ent-read' })
-        .orWhere({ _id: 'ent-none' })
-        .all();
+      const rows = await table.where({ _id: 'ent-read' }).orWhere({ _id: 'ent-none' }).all();
       const ids = rows.map(r => r._id).sort();
-      // ent-read is readable, ent-none is not
       expect(ids).toEqual(['ent-read']);
     });
 
@@ -415,7 +451,6 @@ describe('PermissionEnforcedTable', () => {
         .where({ _id: 'ent-write' })
         .orWhere({ _id: 'ent-read' })
         .update({ name: 'hacked' });
-      // ent-write is writable, ent-read is only readable
       expect(ids).toEqual(['ent-write']);
     });
   });
@@ -423,81 +458,99 @@ describe('PermissionEnforcedTable', () => {
   describe('whereBetween', () => {
     it('range query does not bypass read enforcement', async () => {
       const table = createEnforcedTable(AccessContext.forActor(collaborator));
-      const rows = await table
-        .whereBetween('_id', ['ent-a', 'ent-z'])
-        .all();
+      const rows = await table.whereBetween('_id', ['ent-a', 'ent-z']).all();
       const ids = rows.map(r => r._id).sort();
-      // all 4 fixtures are in range, but ent-none is not readable
-      expect(ids).toEqual(['ent-pub', 'ent-read', 'ent-write']);
+      expect(ids).toEqual([
+        'ent-group-read',
+        'ent-group-write',
+        'ent-pub',
+        'ent-read',
+        'ent-write',
+      ]);
     });
   });
 
   describe('whereLike', () => {
     it('pattern match does not bypass read enforcement', async () => {
       const table = createEnforcedTable(AccessContext.forActor(collaborator));
-      const rows = await table
-        .whereLike('_id', 'ent-%')
-        .all();
+      const rows = await table.whereLike('_id', 'ent-%').all();
       const ids = rows.map(r => r._id).sort();
-      // all 4 match 'ent-%', but ent-none is not readable
-      expect(ids).toEqual(['ent-pub', 'ent-read', 'ent-write']);
+      expect(ids).toEqual([
+        'ent-group-read',
+        'ent-group-write',
+        'ent-pub',
+        'ent-read',
+        'ent-write',
+      ]);
     });
   });
 
   describe('whereExists', () => {
     it('subquery existence does not bypass read enforcement', async () => {
       const table = createEnforcedTable(AccessContext.forActor(collaborator));
-      // All rows exist in the same table, so WHERE EXISTS matches all.
-      // But ent-none should still be filtered by permissions.
       const rows = await table
         .whereExists(function (this: Knex.QueryBuilder) {
           this.select('*').from(TEST_TABLE).whereRaw('1=1');
         })
         .all();
       const ids = rows.map(r => r._id).sort();
-      expect(ids).toEqual(['ent-pub', 'ent-read', 'ent-write']);
+      expect(ids).toEqual([
+        'ent-group-read',
+        'ent-group-write',
+        'ent-pub',
+        'ent-read',
+        'ent-write',
+      ]);
     });
   });
 
   describe('having', () => {
     it('HAVING filter does not bypass read enforcement', async () => {
       const table = createEnforcedTable(AccessContext.forActor(collaborator));
-      const rows = await table
-        .select(['_id'])
-        .groupBy(['_id'])
-        .having('_id', '>', 'ent-a')
-        .all();
+      const rows = await table.select(['_id']).groupBy(['_id']).having('_id', '>', 'ent-a').all();
       const ids = rows.map(r => r._id).sort();
-      // ent-none is not readable even though it passes HAVING
-      expect(ids).toEqual(['ent-pub', 'ent-read', 'ent-write']);
+      expect(ids).toEqual([
+        'ent-group-read',
+        'ent-group-write',
+        'ent-pub',
+        'ent-read',
+        'ent-write',
+      ]);
     });
 
     it('GROUP BY + OR does not bypass read enforcement', async () => {
       const table = createEnforcedTable(AccessContext.forActor(collaborator));
       const rows = await table
         .select(['_id'])
-        .where({ _id: 'ent-none' })   // unreadable, in first OR position
-        .orWhere({ _id: 'ent-read' })  // readable
+        .where({ _id: 'ent-none' }) // unreadable, in first OR position
+        .orWhere({ _id: 'ent-read' }) // readable
         .groupBy(['_id'])
         .all();
       const ids = rows.map(r => r._id).sort();
-      // GROUP BY is on the outer query, OR is contained in the inner subquery.
-      // ent-none is filtered by the outer permission WHERE before grouping.
       expect(ids).toEqual(['ent-read']);
     });
 
     it('GROUP BY correctly collapses rows with same value', async () => {
-      // Insert rows that share a group key
       const raw = managerFor(DEFAULT_TENANT);
       await raw.withConnection(async trx => {
         await trx(TEST_TABLE).insert({
-          _id: 'grp-a1', name: 'group-a-1', published: true, permissions: '[]', tenant_id: DEFAULT_TENANT,
+          _id: 'grp-a1',
+          name: 'group-a-1',
+          published: true,
+          permissions: '[]',
+          tenant_id: DEFAULT_TENANT,
         });
         await trx(TEST_TABLE).insert({
-          _id: 'grp-a2', name: 'group-a-2', published: true, permissions: '[]', tenant_id: DEFAULT_TENANT,
+          _id: 'grp-a2',
+          name: 'group-a-2',
+          published: true,
+          permissions: '[]',
+          tenant_id: DEFAULT_TENANT,
         });
         await trx(TEST_TABLE).insert({
-          _id: 'grp-b1', name: 'group-b-1', published: false,
+          _id: 'grp-b1',
+          name: 'group-b-1',
+          published: false,
           permissions: JSON.stringify([{ refId: 'other-1', type: 'user', level: 'write' }]),
           tenant_id: DEFAULT_TENANT,
         });
@@ -510,7 +563,6 @@ describe('PermissionEnforcedTable', () => {
         .orderBy('published', 'asc')
         .all();
 
-      // 7 rows total: 3 published=true, 4 published=false → 2 groups
       expect(rows).toHaveLength(2);
       expect(rows.map(r => r.published)).toEqual([false, true]);
     });
@@ -519,11 +571,7 @@ describe('PermissionEnforcedTable', () => {
   describe('distinct', () => {
     it('distinct does not bypass read enforcement', async () => {
       const table = createEnforcedTable(AccessContext.forActor(collaborator));
-      const rows = await table
-        .distinct(['published'])
-        .all();
-      // collaborator sees 3 readable rows: published values are [true, false, false]
-      // DISTINCT collapses to [true, false]
+      const rows = await table.distinct(['published']).all();
       const vals = rows.map(r => r.published).sort();
       expect(vals).toEqual([false, true]);
     });
@@ -532,19 +580,23 @@ describe('PermissionEnforcedTable', () => {
       const raw = managerFor(DEFAULT_TENANT);
       await raw.withConnection(async trx => {
         await trx(TEST_TABLE).insert({
-          _id: 'dup-1', name: 'dup-1', published: true, permissions: '[]', tenant_id: DEFAULT_TENANT,
+          _id: 'dup-1',
+          name: 'dup-1',
+          published: true,
+          permissions: '[]',
+          tenant_id: DEFAULT_TENANT,
         });
         await trx(TEST_TABLE).insert({
-          _id: 'dup-2', name: 'dup-2', published: true, permissions: '[]', tenant_id: DEFAULT_TENANT,
+          _id: 'dup-2',
+          name: 'dup-2',
+          published: true,
+          permissions: '[]',
+          tenant_id: DEFAULT_TENANT,
         });
       });
 
       const table = createEnforcedTable(AccessContext.forActor(collaborator));
-      const rows = await table
-        .distinct(['published'])
-        .all();
-      // collaborator sees: ent-pub(pub), ent-write(!pub), ent-read(!pub), dup-1(pub), dup-2(pub)
-      // DISTINCT published → [true, false]
+      const rows = await table.distinct(['published']).all();
       expect(rows).toHaveLength(2);
     });
   });
@@ -552,10 +604,7 @@ describe('PermissionEnforcedTable', () => {
   describe('combined queries — select + sort preserved', () => {
     it('select fields are preserved with permission enforcement', async () => {
       const table = createEnforcedTable(AccessContext.forActor(collaborator));
-      const rows = await table
-        .where({ _id: 'ent-write' })
-        .select(['_id', 'name'])
-        .all();
+      const rows = await table.where({ _id: 'ent-write' }).select(['_id', 'name']).all();
       expect(rows).toHaveLength(1);
       expect(rows[0]).toHaveProperty('_id');
       expect(rows[0]).toHaveProperty('name');
@@ -565,12 +614,11 @@ describe('PermissionEnforcedTable', () => {
 
     it('sorting is preserved with permission enforcement', async () => {
       const table = createEnforcedTable(AccessContext.forActor(admin));
-      const rows = await table
-        .select(['_id', 'name'])
-        .orderBy('name', 'asc')
-        .all();
+      const rows = await table.select(['_id', 'name']).orderBy('name', 'asc').all();
       const names = rows.map(r => r.name);
       expect(names).toEqual([
+        'group-read-only',
+        'group-write-only',
         'private-none',
         'private-read',
         'private-write',
@@ -588,11 +636,9 @@ describe('PermissionEnforcedTable', () => {
         .orderBy('name', 'asc')
         .limit(2)
         .all();
-      // ent-none is filtered by permissions, ent-read and ent-write remain
       const ids = rows.map(r => r._id);
       expect(ids).toEqual(['ent-read', 'ent-write']);
       expect(rows).toHaveLength(2);
-      // select fields preserved
       rows.forEach(r => {
         expect(r).toHaveProperty('_id');
         expect(r).toHaveProperty('name');
@@ -604,12 +650,24 @@ describe('PermissionEnforcedTable', () => {
       const table = createEnforcedTable(AccessContext.forActor(collaborator));
       const rows = await table
         .select(['_id', 'name'])
-        .whereIn('_id', ['ent-pub', 'ent-read', 'ent-none', 'ent-write'])
+        .whereIn('_id', [
+          'ent-pub',
+          'ent-group-read',
+          'ent-group-write',
+          'ent-read',
+          'ent-none',
+          'ent-write',
+        ])
         .orderBy('_id', 'asc')
         .all();
       const ids = rows.map(r => r._id);
-      // ent-none filtered out
-      expect(ids).toEqual(['ent-pub', 'ent-read', 'ent-write']);
+      expect(ids).toEqual([
+        'ent-group-read',
+        'ent-group-write',
+        'ent-pub',
+        'ent-read',
+        'ent-write',
+      ]);
     });
 
     it('where + orderBy + first preserves sort and enforces permissions', async () => {
@@ -619,7 +677,6 @@ describe('PermissionEnforcedTable', () => {
         .whereIn('_id', ['ent-none', 'ent-read'])
         .orderBy('_id', 'asc')
         .first();
-      // ent-none is not readable, ent-read is first alphabetically among readable
       expect(row).toBeDefined();
       expect(row!._id).toBe('ent-read');
       expect(row!).toHaveProperty('name');
@@ -628,11 +685,7 @@ describe('PermissionEnforcedTable', () => {
 
     it('anonymous with select + orderBy + limit only sees published', async () => {
       const table = createEnforcedTable(AccessContext.forActor(anon));
-      const rows = await table
-        .select(['_id', 'name'])
-        .orderBy('_id', 'asc')
-        .limit(10)
-        .all();
+      const rows = await table.select(['_id', 'name']).orderBy('_id', 'asc').limit(10).all();
       expect(rows).toHaveLength(1);
       expect(rows[0]._id).toBe('ent-pub');
     });
@@ -646,17 +699,12 @@ describe('PermissionEnforcedTable', () => {
         .orWhere({ _id: 'ent-read' })
         .orWhere({ _id: 'ent-none' })
         .update({ name: 'hacked' });
-      // only ent-write is writable
       expect(ids).toEqual(['ent-write']);
     });
 
     it('where + orWhere + delete enforces permissions', async () => {
       const table = createEnforcedTable(AccessContext.forActor(collaborator));
-      const ids = await table
-        .where({ _id: 'ent-write' })
-        .orWhere({ _id: 'ent-read' })
-        .delete();
-      // only ent-write is writable
+      const ids = await table.where({ _id: 'ent-write' }).orWhere({ _id: 'ent-read' }).delete();
       expect(ids).toEqual(['ent-write']);
     });
   });
@@ -667,7 +715,6 @@ describe('PermissionEnforcedTable', () => {
       const n = await table
         .whereRaw("_id = 'ent-none' OR _id = 'ent-read' OR _id = 'ent-write'")
         .count();
-      // ent-none is unreadable → only 2 counted
       expect(n).toBe(2);
     });
 
@@ -676,7 +723,6 @@ describe('PermissionEnforcedTable', () => {
       const n = await table
         .whereIn('_id', ['ent-none', 'ent-read', 'ent-write', 'ent-pub'])
         .count();
-      // all 4 match, but ent-none is unreadable → 3 counted
       expect(n).toBe(3);
     });
   });
@@ -684,63 +730,40 @@ describe('PermissionEnforcedTable', () => {
   describe('edge cases — offset and limit', () => {
     it('offset skips rows after permission filtering', async () => {
       const table = createEnforcedTable(AccessContext.forActor(collaborator));
-      const rows = await table
-        .select(['_id'])
-        .orderBy('_id', 'asc')
-        .offset(1)
-        .limit(10)
-        .all();
-      // collaborator sees: ent-pub, ent-read, ent-write (sorted)
-      // offset 1 skips ent-pub → [ent-read, ent-write]
-      expect(rows.map(r => r._id)).toEqual(['ent-read', 'ent-write']);
+      const rows = await table.select(['_id']).orderBy('_id', 'asc').offset(1).limit(10).all();
+      expect(rows.map(r => r._id)).toEqual(['ent-group-write', 'ent-pub', 'ent-read', 'ent-write']);
     });
 
     it('limit smaller than readable rows returns only limit count', async () => {
       const table = createEnforcedTable(AccessContext.forActor(collaborator));
-      const rows = await table
-        .select(['_id'])
-        .orderBy('_id', 'asc')
-        .limit(1)
-        .all();
-      // 3 readable rows, limit 1 → first one only
+      const rows = await table.select(['_id']).orderBy('_id', 'asc').limit(1).all();
       expect(rows).toHaveLength(1);
-      expect(rows[0]._id).toBe('ent-pub');
+      expect(rows[0]._id).toBe('ent-group-read');
     });
 
     it('limit larger than readable rows returns all readable', async () => {
       const table = createEnforcedTable(AccessContext.forActor(collaborator));
-      const rows = await table
-        .select(['_id'])
-        .orderBy('_id', 'asc')
-        .limit(100)
-        .all();
-      // only 3 readable rows exist
-      expect(rows).toHaveLength(3);
+      const rows = await table.select(['_id']).orderBy('_id', 'asc').limit(100).all();
+      expect(rows).toHaveLength(5);
     });
   });
 
   describe('edge cases — empty results', () => {
     it('all() returns [] when all matched rows are unreadable', async () => {
       const table = createEnforcedTable(AccessContext.forActor(collaborator));
-      const rows = await table
-        .where({ _id: 'ent-none' })
-        .all();
+      const rows = await table.where({ _id: 'ent-none' }).all();
       expect(rows).toEqual([]);
     });
 
     it('first() returns undefined when all matched rows are unreadable', async () => {
       const table = createEnforcedTable(AccessContext.forActor(collaborator));
-      const row = await table
-        .where({ _id: 'ent-none' })
-        .first();
+      const row = await table.where({ _id: 'ent-none' }).first();
       expect(row).toBeUndefined();
     });
 
     it('count() returns 0 when all matched rows are unreadable', async () => {
       const table = createEnforcedTable(AccessContext.forActor(collaborator));
-      const n = await table
-        .where({ _id: 'ent-none' })
-        .count();
+      const n = await table.where({ _id: 'ent-none' }).count();
       expect(n).toBe(0);
     });
   });
@@ -751,23 +774,18 @@ describe('PermissionEnforcedTable', () => {
       const ids = await table
         .whereIn('_id', ['ent-write', 'ent-read', 'ent-none', 'ent-pub'])
         .update({ name: 'batch-update' });
-      // ent-write: writable, ent-read: read-only, ent-none: no access, ent-pub: read-only
       expect(ids).toEqual(['ent-write']);
     });
 
     it('delete with whereIn returns only writable IDs', async () => {
       const table = createEnforcedTable(AccessContext.forActor(collaborator));
-      const ids = await table
-        .whereIn('_id', ['ent-write', 'ent-read', 'ent-none'])
-        .delete();
+      const ids = await table.whereIn('_id', ['ent-write', 'ent-read', 'ent-none']).delete();
       expect(ids).toEqual(['ent-write']);
     });
 
     it('update with whereIn where none are writable returns []', async () => {
       const table = createEnforcedTable(AccessContext.forActor(collaborator));
-      const ids = await table
-        .whereIn('_id', ['ent-read', 'ent-none'])
-        .update({ name: 'nope' });
+      const ids = await table.whereIn('_id', ['ent-read', 'ent-none']).update({ name: 'nope' });
       expect(ids).toEqual([]);
     });
   });
@@ -775,22 +793,16 @@ describe('PermissionEnforcedTable', () => {
   describe('edge cases — whereAny and whereNot', () => {
     it('whereAny with unreadable first does not bypass', async () => {
       const table = createEnforcedTable(AccessContext.forActor(collaborator));
-      const rows = await table
-        .whereAny([{ _id: 'ent-none' }, { _id: 'ent-read' }])
-        .all();
+      const rows = await table.whereAny([{ _id: 'ent-none' }, { _id: 'ent-read' }]).all();
       const ids = rows.map(r => r._id).sort();
       expect(ids).toEqual(['ent-read']);
     });
 
     it('whereNot does not bypass permission enforcement', async () => {
       const table = createEnforcedTable(AccessContext.forActor(collaborator));
-      // whereNot _id = 'ent-write' matches everything except ent-write
-      // among readable: ent-pub, ent-read remain (ent-write excluded, ent-none not readable anyway)
-      const rows = await table
-        .whereNot('_id', 'ent-write')
-        .all();
+      const rows = await table.whereNot('_id', 'ent-write').all();
       const ids = rows.map(r => r._id).sort();
-      expect(ids).toEqual(['ent-pub', 'ent-read']);
+      expect(ids).toEqual(['ent-group-read', 'ent-group-write', 'ent-pub', 'ent-read']);
     });
   });
 
@@ -798,9 +810,15 @@ describe('PermissionEnforcedTable', () => {
     it('all() without select() returns rows with enforcement', async () => {
       const table = createEnforcedTable(AccessContext.forActor(collaborator));
       const rows = await table.all();
-      expect(rows).toHaveLength(3);
+      expect(rows).toHaveLength(5);
       const ids = rows.map(r => r._id).sort();
-      expect(ids).toEqual(['ent-pub', 'ent-read', 'ent-write']);
+      expect(ids).toEqual([
+        'ent-group-read',
+        'ent-group-write',
+        'ent-pub',
+        'ent-read',
+        'ent-write',
+      ]);
     });
 
     it('first() without select() returns a row with enforcement', async () => {
@@ -817,38 +835,127 @@ describe('PermissionEnforcedTable', () => {
         .whereRaw("_id = 'ent-none' OR _id = 'ent-read'")
         .whereRaw("_id = 'ent-write' OR _id = 'ent-read'")
         .all();
-      // First whereRaw: ent-none OR ent-read
-      // Second whereRaw: ent-write OR ent-read
-      // AND: only ent-read matches both
-      // Permission: ent-read is readable
+
       expect(rows.map(r => r._id)).toEqual(['ent-read']);
+    });
+  });
+
+  describe('group permissions — read enforcement', () => {
+    it('collaborator can read an entity with only group read permission', async () => {
+      const table = createEnforcedTable(AccessContext.forActor(collaborator));
+      const row = await table.where({ _id: 'ent-group-read' }).first();
+      expect(row).toBeDefined();
+      expect(row!._id).toBe('ent-group-read');
+    });
+
+    it('collaborator can read an entity with only group write permission (write implies read)', async () => {
+      const table = createEnforcedTable(AccessContext.forActor(collaborator));
+      const row = await table.where({ _id: 'ent-group-write' }).first();
+      expect(row).toBeDefined();
+      expect(row!._id).toBe('ent-group-write');
+    });
+
+    it('otherUser (not in group) cannot read group-only entities', async () => {
+      const table = createEnforcedTable(AccessContext.forActor(otherUser));
+      const rows = await table
+        .whereIn('_id', ['ent-group-read', 'ent-group-write', 'ent-pub'])
+        .all();
+      const ids = rows.map(r => r._id).sort();
+
+      expect(ids).toEqual(['ent-pub']);
+    });
+
+    it('group permissions work with orWhere chaining', async () => {
+      const table = createEnforcedTable(AccessContext.forActor(collaborator));
+      const rows = await table.where({ _id: 'ent-group-read' }).orWhere({ _id: 'ent-none' }).all();
+      const ids = rows.map(r => r._id).sort();
+
+      expect(ids).toEqual(['ent-group-read']);
+    });
+  });
+
+  describe('group permissions — write enforcement', () => {
+    it('collaborator can update an entity with group write permission', async () => {
+      const table = createEnforcedTable(AccessContext.forActor(collaborator));
+      const ids = await table.where({ _id: 'ent-group-write' }).update({ name: 'updated-group' });
+      expect(ids).toEqual(['ent-group-write']);
+    });
+
+    it('collaborator cannot update an entity with only group read permission', async () => {
+      const table = createEnforcedTable(AccessContext.forActor(collaborator));
+      const ids = await table.where({ _id: 'ent-group-read' }).update({ name: 'hacked' });
+      expect(ids).toEqual([]);
+    });
+
+    it('otherUser cannot update an entity with group write permission (not their group)', async () => {
+      const table = createEnforcedTable(AccessContext.forActor(otherUser));
+      const ids = await table.where({ _id: 'ent-group-write' }).update({ name: 'hacked' });
+      expect(ids).toEqual([]);
+    });
+
+    it('collaborator can delete an entity with group write permission', async () => {
+      const table = createEnforcedTable(AccessContext.forActor(collaborator));
+      const ids = await table.where({ _id: 'ent-group-write' }).delete();
+      expect(ids).toEqual(['ent-group-write']);
+    });
+
+    it('otherUser cannot delete an entity with group write permission', async () => {
+      const table = createEnforcedTable(AccessContext.forActor(otherUser));
+      const ids = await table.where({ _id: 'ent-group-write' }).delete();
+      expect(ids).toEqual([]);
+    });
+  });
+
+  describe('group permissions — upsert', () => {
+    it('collaborator can upsert an existing row with group write permission', async () => {
+      const table = createEnforcedTable(AccessContext.forActor(collaborator));
+      await table.upsert({
+        _id: 'ent-group-write',
+        name: 'upserted-group',
+        published: false,
+        permissions: JSON.stringify([{ refId: 'group-a', type: 'group', level: 'write' }]),
+      });
+      const row = await table.where({ _id: 'ent-group-write' }).first();
+      expect(row!.name).toBe('upserted-group');
+    });
+
+    it('otherUser cannot upsert a row with group write permission (not their group)', async () => {
+      const table = createEnforcedTable(AccessContext.forActor(otherUser));
+      await table.upsert({
+        _id: 'ent-group-write',
+        name: 'hacked-group',
+        published: false,
+        permissions: JSON.stringify([{ refId: 'group-a', type: 'group', level: 'write' }]),
+      });
+
+      const row = await PostgresTable.for<TestRow>({
+        tableName: TEST_TABLE,
+        tenantId: DEFAULT_TENANT,
+        transactionManager: managerFor(DEFAULT_TENANT),
+      })
+        .where({ _id: 'ent-group-write' })
+        .first();
+      expect(row!.name).not.toBe('hacked-group');
     });
   });
 
   describe('edge cases — anonymous with complex queries', () => {
     it('anonymous + whereBetween only sees published in range', async () => {
       const table = createEnforcedTable(AccessContext.forActor(anon));
-      const rows = await table
-        .whereBetween('_id', ['ent-a', 'ent-z'])
-        .all();
-      // all 4 are in range, but only ent-pub is published
+      const rows = await table.whereBetween('_id', ['ent-a', 'ent-z']).all();
+
       expect(rows.map(r => r._id)).toEqual(['ent-pub']);
     });
 
     it('anonymous + whereLike only sees published matches', async () => {
       const table = createEnforcedTable(AccessContext.forActor(anon));
-      const rows = await table
-        .whereLike('_id', 'ent-%')
-        .all();
+      const rows = await table.whereLike('_id', 'ent-%').all();
       expect(rows.map(r => r._id)).toEqual(['ent-pub']);
     });
 
     it('anonymous + orWhere only sees published', async () => {
       const table = createEnforcedTable(AccessContext.forActor(anon));
-      const rows = await table
-        .where({ _id: 'ent-none' })
-        .orWhere({ _id: 'ent-pub' })
-        .all();
+      const rows = await table.where({ _id: 'ent-none' }).orWhere({ _id: 'ent-pub' }).all();
       expect(rows.map(r => r._id)).toEqual(['ent-pub']);
     });
   });
@@ -856,25 +963,20 @@ describe('PermissionEnforcedTable', () => {
   describe('edge cases — privileged users with complex queries', () => {
     it('admin + whereRaw OR sees all matched rows', async () => {
       const table = createEnforcedTable(AccessContext.forActor(admin));
-      const rows = await table
-        .whereRaw("_id = 'ent-none' OR _id = 'ent-read'")
-        .all();
+      const rows = await table.whereRaw("_id = 'ent-none' OR _id = 'ent-read'").all();
       expect(rows.map(r => r._id).sort()).toEqual(['ent-none', 'ent-read']);
     });
 
     it('editor + orWhere sees all matched rows', async () => {
       const table = createEnforcedTable(AccessContext.forActor(editor));
-      const rows = await table
-        .where({ _id: 'ent-none' })
-        .orWhere({ _id: 'ent-read' })
-        .all();
+      const rows = await table.where({ _id: 'ent-none' }).orWhere({ _id: 'ent-read' }).all();
       expect(rows.map(r => r._id).sort()).toEqual(['ent-none', 'ent-read']);
     });
 
     it('system bypass + count sees all rows', async () => {
       const table = createEnforcedTable(AccessContext.system());
       const n = await table.count();
-      expect(n).toBe(4);
+      expect(n).toBe(6);
     });
   });
 
@@ -885,7 +987,7 @@ describe('PermissionEnforcedTable', () => {
         .where({ _id: 'ent-write' })
         .returning(['permissions'])
         .update({ name: 'updated' });
-      // update() always returns string[] of _ids, regardless of chained returning()
+
       expect(ids).toEqual(['ent-write']);
     });
   });
