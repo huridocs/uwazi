@@ -1,5 +1,6 @@
 import { ObjectId } from 'mongodb';
 import { EncryptedPassword } from './EncryptedPassword.js';
+import { Credentials } from './Credentials.js';
 
 const PUBLIC_USER_ID = new ObjectId('698c35e7cf8880419d91fe4d');
 
@@ -20,6 +21,7 @@ type UserProps = {
   role: UserRole;
   email: string;
   groups?: UserGroup[];
+  credentials?: Credentials;
 };
 
 class User {
@@ -33,6 +35,8 @@ class User {
 
   readonly groups: UserGroup[];
 
+  readonly credentials?: Credentials;
+
   password?: EncryptedPassword | null;
 
   constructor(props: UserProps) {
@@ -41,6 +45,7 @@ class User {
     this.role = props.role;
     this.email = props.email;
     this.groups = props.groups ?? [];
+    this.credentials = props.credentials;
   }
 
   setPassword(password: EncryptedPassword) {

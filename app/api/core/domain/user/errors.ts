@@ -73,6 +73,18 @@ class TwoFactorTokenInvalid extends DomainError {
   }
 }
 
+class InvalidCredentials extends DomainError {
+  constructor() {
+    super('Invalid username or password', 'user.invalid_credentials');
+  }
+}
+
+class AccountLocked extends DomainError {
+  constructor() {
+    super('Invalid username or password', 'user.account_locked');
+  }
+}
+
 export {
   UsernameExists,
   EmailInUse,
@@ -86,4 +98,6 @@ export {
   RecoveryKeyNotFound,
   TwoFactorAlreadyEnabled,
   TwoFactorTokenInvalid,
+  InvalidCredentials,
+  AccountLocked,
 };
