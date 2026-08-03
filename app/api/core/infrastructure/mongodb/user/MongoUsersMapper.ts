@@ -1,6 +1,7 @@
 import { ObjectId } from 'mongodb';
 import { User } from '#api/core/domain/user/User.js';
 import { EncryptedPassword } from '#api/core/domain/user/EncryptedPassword.js';
+import { Credentials } from '#api/core/domain/user/Credentials.js';
 import { UserDBO } from './UserDBO.js';
 
 export class MongoUsersMapper {
@@ -12,27 +13,37 @@ export class MongoUsersMapper {
       email: user.email,
     };
 
-    if (user.password === undefined) {
+    if (!user.credentials) {
       return dbo;
     }
 
-    dbo.password = user.password?.getValue() ?? undefined;
+    dbo.password = user.credentials.password.getValue();
 
     return dbo;
   }
 
   static toDomain(dbo: UserDBO): User {
-    const user = new User({
+    return new User({
       _id: dbo._id.toHexString(),
       username: dbo.username,
       role: dbo.role,
       email: dbo.email,
+      credentials: MongoUsersMapper.toCredentials(dbo),
     });
+  }
 
-    if (dbo.password) {
-      user.setPassword(EncryptedPassword.fromHash(dbo.password));
+  private static toCredentials(dbo: UserDBO): Credentials | undefined {
+    if (!dbo.password) {
+      return undefined;
     }
 
-    return user;
+    return new Credentials({
+      password: EncryptedPassword.fromHash(dbo.password),
+      failedLogins: dbo.failedLogins,
+      accountLocked: dbo.accountLocked,
+      accountUnlockCode: dbo.accountUnlockCode,
+      using2fa: dbo.using2fa,
+      secret: dbo.secret,
+    });
   }
 }

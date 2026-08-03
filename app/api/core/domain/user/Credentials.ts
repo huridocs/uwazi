@@ -45,6 +45,10 @@ class Credentials {
     });
   }
 
+  withPassword(password: EncryptedPassword): Credentials {
+    return this.clone({ password });
+  }
+
   withIncrementedFailedLogins(): Credentials {
     const failedLogins = this.failedLogins + 1;
     return this.clone({ failedLogins });

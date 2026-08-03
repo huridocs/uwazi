@@ -2,6 +2,7 @@ import { ObjectId } from 'mongodb';
 import { UsersDataSource } from '#api/core/application/contracts/UsersDataSource.js';
 import { User } from '#api/core/domain/user/User.js';
 import { EncryptedPassword } from '#api/core/domain/user/EncryptedPassword.js';
+import { Credentials } from '#api/core/domain/user/Credentials.js';
 import {
   EmailInUse,
   UsernameExists,
@@ -63,6 +64,16 @@ class MongoUsersDataSource implements UsersDataSource {
     return Result.ok(MongoUsersMapper.toDomain(user));
   }
 
+  async getByUsername(username: string): Promise<ResultType<User, UserNotFound>> {
+    const user = await this.dao.findOne({ username });
+
+    if (!user) {
+      return Result.fail(new UserNotFound(username));
+    }
+
+    return Result.ok(MongoUsersMapper.toDomain(user));
+  }
+
   async countActiveUsers(): Promise<number> {
     return this.dao.count(this.dao.notPublicUserFilter());
   }
@@ -114,6 +125,23 @@ class MongoUsersDataSource implements UsersDataSource {
     await this.dao.updateOne(
       { _id: ObjectId.createFromHexString(userId) },
       { $set: { password: password.getValue() } }
+    );
+  }
+
+  async updateCredentials(userId: string, credentials: Credentials): Promise<void> {
+    const set = {
+      password: credentials.password.getValue(),
+      failedLogins: credentials.failedLogins,
+      accountLocked: credentials.accountLocked,
+      using2fa: credentials.using2fa,
+      secret: credentials.secret ?? null,
+    };
+
+    await this.dao.updateOne(
+      { _id: ObjectId.createFromHexString(userId) },
+      credentials.accountUnlockCode
+        ? { $set: { ...set, accountUnlockCode: credentials.accountUnlockCode } }
+        : { $set: set, $unset: { accountUnlockCode: 1 } }
     );
   }
 

@@ -6,6 +6,7 @@ import {
 } from '#api/core/domain/user/errors.js';
 import { User } from '#api/core/domain/user/User.js';
 import { EncryptedPassword } from '#api/core/domain/user/EncryptedPassword.js';
+import { Credentials } from '#api/core/domain/user/Credentials.js';
 import { ResultType } from '#api/core/libs/Result.js';
 
 type TwoFactorStatus = { username: string; using2fa: boolean };
@@ -16,6 +17,12 @@ interface UsersDataSource {
   update(user: User): Promise<void>;
   getById(id: string): Promise<ResultType<User, UserNotFound>>;
   getByEmail(email: string): Promise<ResultType<User, UserNotFound>>;
+  /**
+   * Only consumer today is the Login use case, so the returned User is always
+   * hydrated with `credentials` (password hash + lockout/2FA state) — unlike
+   * getById/getByEmail, which never expose it.
+   */
+  getByUsername(username: string): Promise<ResultType<User, UserNotFound>>;
   countActiveUsers(): Promise<number>;
   checkUniqueUsername(user: User): Promise<ResultType<boolean, UsernameExists>>;
   checkUniqueEmail(user: User): Promise<ResultType<boolean, EmailInUse>>;
@@ -25,6 +32,8 @@ interface UsersDataSource {
   ): Promise<ResultType<User, InvalidUnlockCode>>;
   clearLockFields(userId: string): Promise<void>;
   updatePassword(userId: string, password: EncryptedPassword): Promise<void>;
+  /** Persists the whole Credentials VO in one write (password, lockout, 2FA state). */
+  updateCredentials(userId: string, credentials: Credentials): Promise<void>;
   getTwoFactorStatus(userId: string): Promise<ResultType<TwoFactorStatus, UserNotFound>>;
   setTwoFactorSecret(userId: string, secret: string): Promise<void>;
   getTwoFactorSecret(userId: string): Promise<ResultType<string | null, UserNotFound>>;

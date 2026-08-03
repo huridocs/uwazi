@@ -14,6 +14,21 @@ describe('Credentials', () => {
     expect(credentials.requiresTwoFactor()).toBe(false);
   });
 
+  describe('withPassword()', () => {
+    it('should return a new instance with the password replaced, leaving other fields untouched', () => {
+      const credentials = new Credentials({ password, failedLogins: 2, using2fa: true });
+      const newPassword = EncryptedPassword.fromHash('new-hashed-value');
+
+      const updated = credentials.withPassword(newPassword);
+
+      expect(updated).not.toBe(credentials);
+      expect(updated.password).toBe(newPassword);
+      expect(updated.failedLogins).toBe(2);
+      expect(updated.using2fa).toBe(true);
+      expect(credentials.password).toBe(password);
+    });
+  });
+
   describe('withIncrementedFailedLogins()', () => {
     it('should return a new instance with failedLogins incremented, leaving the original untouched', () => {
       const credentials = new Credentials({ password, failedLogins: 1 });

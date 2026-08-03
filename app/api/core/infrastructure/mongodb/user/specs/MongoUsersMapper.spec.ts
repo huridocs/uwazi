@@ -6,7 +6,7 @@ import type { UserDBO } from '../UserDBO.js';
 
 describe('MongoUsersMapper', () => {
   describe('toDBO', () => {
-    it('should exclude password when user.password is undefined', () => {
+    it('should exclude password when user.credentials is undefined', () => {
       const user = new User({
         _id: '507f191e810c19729de860ea',
         username: 'testuser',
@@ -25,7 +25,7 @@ describe('MongoUsersMapper', () => {
       expect(result).not.toHaveProperty('password');
     });
 
-    it('should include password hash when user.password is set', () => {
+    it('should include password hash from user.credentials when set', () => {
       const user = new User({
         _id: '507f191e810c19729de860ea',
         username: 'testuser',
@@ -42,13 +42,12 @@ describe('MongoUsersMapper', () => {
   });
 
   describe('toDomain', () => {
-    it('should map all fields and set password when it is present', () => {
+    it('should map identity fields', () => {
       const dbo: UserDBO = {
         _id: new ObjectId('507f191e810c19729de860ea'),
         username: 'testuser',
         role: UserRole.ADMIN,
         email: 'test@example.com',
-        password: '$2a$10$hashedvalue',
       };
 
       const result = MongoUsersMapper.toDomain(dbo);
@@ -57,10 +56,9 @@ describe('MongoUsersMapper', () => {
       expect(result.username).toBe('testuser');
       expect(result.role).toBe('admin');
       expect(result.email).toBe('test@example.com');
-      expect(result.password?.getValue()).toBe('$2a$10$hashedvalue');
     });
 
-    it('should not set password when dbo.password is undefined', () => {
+    it('should not hydrate credentials when dbo.password is absent (e.g. excluded by projection)', () => {
       const dbo: UserDBO = {
         _id: new ObjectId('507f191e810c19729de860ea'),
         username: 'testuser',
@@ -70,7 +68,31 @@ describe('MongoUsersMapper', () => {
 
       const result = MongoUsersMapper.toDomain(dbo);
 
-      expect(result.password).toBeUndefined();
+      expect(result.credentials).toBeUndefined();
+    });
+
+    it('should hydrate credentials whenever dbo.password is present', () => {
+      const dbo: UserDBO = {
+        _id: new ObjectId('507f191e810c19729de860ea'),
+        username: 'testuser',
+        role: UserRole.ADMIN,
+        email: 'test@example.com',
+        password: '$2a$10$hashedvalue',
+        failedLogins: 2,
+        accountLocked: true,
+        accountUnlockCode: 'unlock-code',
+        using2fa: true,
+        secret: 'a-secret',
+      };
+
+      const result = MongoUsersMapper.toDomain(dbo);
+
+      expect(result.credentials?.password.getValue()).toBe('$2a$10$hashedvalue');
+      expect(result.credentials?.failedLogins).toBe(2);
+      expect(result.credentials?.accountLocked).toBe(true);
+      expect(result.credentials?.accountUnlockCode).toBe('unlock-code');
+      expect(result.credentials?.using2fa).toBe(true);
+      expect(result.credentials?.secret).toBe('a-secret');
     });
   });
 });
