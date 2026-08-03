@@ -2,6 +2,7 @@ import type { Knex } from 'knex';
 import { PostgresDB } from '#api/infrastructure/PostgresDB.js';
 import { PostgresTable, type TableConfig } from './PostgresTable.js';
 import { PostgresTransactionManager } from './PostgresTransactionManager.js';
+import { SyncLogWriter } from './SyncLogWriter.js';
 import { AccessContext } from '#api/core/domain/entityAccessPolicy/AccessContext.js';
 import type { PostgresPermissionTranslator } from './PostgresPermissionTranslator.js';
 
@@ -12,6 +13,7 @@ type ForParams = {
   accessContext: AccessContext;
   translator: PostgresPermissionTranslator;
   knex?: Knex;
+  syncWriter?: SyncLogWriter;
 };
 
 /**
@@ -63,6 +65,7 @@ class PermissionEnforcedTable<TRow = Record<string, unknown>> extends PostgresTa
       tableName: params.tableName,
       tenantId: params.tenantId,
       transactionManager: params.transactionManager,
+      syncWriter: params.syncWriter,
     };
     return new PermissionEnforcedTable<TRow>(
       cfg,
@@ -96,17 +99,27 @@ class PermissionEnforcedTable<TRow = Record<string, unknown>> extends PostgresTa
     this.applyInsertPolicy();
 
     const rows = this.rowsWithTenant(doc);
-    await this.cfg.transactionManager.withConnection(async trx => {
+    const result = await this.cfg.transactionManager.withConnection(async trx => {
       const query = trx(this.cfg.tableName)
         .insert(rows)
         .onConflict(['_id', 'tenant_id'])
-        .merge();
+        .merge()
+        .returning(['_id']);
       // applyWriteCondition adds a WHERE to the ON CONFLICT DO UPDATE part.
       // For privileged/system users, the translator returns the qb unchanged.
       this.translator.applyWriteCondition(query, this.accessContext, this.cfg.tableName);
       return query;
     });
-    await this.notifySync(rows, false);
+    // Only sync rows that were actually inserted or updated.
+    // ON CONFLICT DO UPDATE WHERE filters out rows the user can't write to —
+    // those are not returned by RETURNING.
+    const affectedIds = PostgresTable.idsOf(result);
+    if (affectedIds.length > 0) {
+      await this.notifySync(
+        rows.filter(r => affectedIds.includes(r._id as string)),
+        false,
+      );
+    }
   }
 
   protected applyPolicy(

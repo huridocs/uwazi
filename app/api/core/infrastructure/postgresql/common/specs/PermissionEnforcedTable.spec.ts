@@ -877,4 +877,16 @@ describe('PermissionEnforcedTable', () => {
       expect(n).toBe(4);
     });
   });
+
+  describe('returning() before update() does not affect result', () => {
+    it('update returns only _id even if returning() was chained', async () => {
+      const table = createEnforcedTable(AccessContext.forActor(collaborator));
+      const ids = await table
+        .where({ _id: 'ent-write' })
+        .returning(['permissions'])
+        .update({ name: 'updated' });
+      // update() always returns string[] of _ids, regardless of chained returning()
+      expect(ids).toEqual(['ent-write']);
+    });
+  });
 });

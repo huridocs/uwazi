@@ -311,7 +311,7 @@ export class PostgresTable<TRow = Record<string, unknown>> {
     return rows.map(r => PostgresTable.serialize({ ...r, tenant_id: this.cfg.tenantId }));
   }
 
-  private static idsOf(result: unknown): string[] {
+  protected static idsOf(result: unknown): string[] {
     return (result as { _id: string }[]).map(r => r._id);
   }
 }
