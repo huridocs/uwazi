@@ -5,6 +5,10 @@ import { comparePasswords } from './encryptPassword.js';
 import { tenants } from '#api/tenants/index.js';
 import { ValidateCurrentPasswordUseCaseFactory } from '#api/core/infrastructure/factories/ValidateCurrentPasswordUseCaseFactory.js';
 
+/**
+ * @deprecated v1 fallback for the `v2PasswordReauth` flag, superseded by validatePasswordV2 below.
+ * Remove once v2PasswordReauth is enabled for all tenants.
+ */
 const validatePassword = async (submittedPassword: string, requestUser: User) => {
   const user = await usersModel.getById(requestUser._id, '+password');
   const currentPassword = user.password;

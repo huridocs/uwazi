@@ -74,6 +74,8 @@ export default app => {
       required: ['body'],
     }),
 
+    // @deprecated v1 fallback for the `v2Login` flag, superseded by LoginController above.
+    // Remove once v2Login is enabled for all tenants.
     async (req, res, next) => {
       passport.authenticate('local', (err, user) => {
         if (err) {
@@ -98,6 +100,8 @@ export default app => {
       return;
     }
 
+    // @deprecated v1 fallback for the `v2Login` flag, superseded by GetCurrentUserController above.
+    // Remove once v2Login is enabled for all tenants.
     res.json(req.user || {});
   });
 
@@ -107,6 +111,8 @@ export default app => {
       return;
     }
 
+    // @deprecated v1 fallback for the `v2Login` flag, superseded by LogoutController above.
+    // Remove once v2Login is enabled for all tenants.
     req.session.destroy();
     res.redirect('/');
   });
