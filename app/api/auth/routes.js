@@ -12,6 +12,7 @@ import request from '#shared/JSONRequest.js';
 import { randomSleep } from '#shared/tsUtils.js';
 import { tenants } from '#api/tenants/index.js';
 import { LoginController } from '#api/core/infrastructure/express/users/LoginController.js';
+import { LogoutController } from '#api/core/infrastructure/express/users/LogoutController.js';
 import { CaptchaModel } from './CaptchaModel.js';
 
 import { validation } from '#api/utils/index.js';
@@ -92,7 +93,12 @@ export default app => {
     res.json(req.user || {});
   });
 
-  app.get('/logout', (req, res) => {
+  app.get('/logout', async (req, res) => {
+    if (tenants.current().featureFlags?.v2Login) {
+      await LogoutController.createHandler()(req, res);
+      return;
+    }
+
     req.session.destroy();
     res.redirect('/');
   });
