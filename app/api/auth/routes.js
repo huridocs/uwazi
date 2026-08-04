@@ -13,6 +13,7 @@ import { randomSleep } from '#shared/tsUtils.js';
 import { tenants } from '#api/tenants/index.js';
 import { LoginController } from '#api/core/infrastructure/express/users/LoginController.js';
 import { LogoutController } from '#api/core/infrastructure/express/users/LogoutController.js';
+import { GetCurrentUserController } from '#api/core/infrastructure/express/users/GetCurrentUserController.js';
 import { CaptchaModel } from './CaptchaModel.js';
 
 import { validation } from '#api/utils/index.js';
@@ -89,7 +90,12 @@ export default app => {
     }
   );
 
-  app.get('/api/user', (req, res) => {
+  app.get('/api/user', async (req, res) => {
+    if (tenants.current().featureFlags?.v2Login) {
+      await GetCurrentUserController.createHandler()(req, res);
+      return;
+    }
+
     res.json(req.user || {});
   });
 
