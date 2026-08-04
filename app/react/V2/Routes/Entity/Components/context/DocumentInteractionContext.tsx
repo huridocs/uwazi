@@ -22,11 +22,6 @@ type DocumentRelationshipNavActions = {
   setScrollToRelationshipPanel: React.Dispatch<React.SetStateAction<string | null>>;
 };
 
-type SearchHintsState = { searchHintsModalOpen: boolean };
-type SearchHintsActions = {
-  setSearchHintsModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
-};
-
 const DocumentPdfStateContext = createContext<DocumentPdfState | null>(null);
 const DocumentPdfActionsContext = createContext<DocumentPdfActions | null>(null);
 const DocumentRelationshipNavStateContext = createContext<DocumentRelationshipNavState | null>(
@@ -35,15 +30,12 @@ const DocumentRelationshipNavStateContext = createContext<DocumentRelationshipNa
 const DocumentRelationshipNavActionsContext = createContext<DocumentRelationshipNavActions | null>(
   null
 );
-const SearchHintsStateContext = createContext<SearchHintsState | null>(null);
-const SearchHintsActionsContext = createContext<SearchHintsActions | null>(null);
 
 const DocumentInteractionProvider = ({ children }: { children: React.ReactNode }) => {
   const [pdfController, setPdfController] = useState<PDFControls | null>(null);
   const [documentPdfSelection, setDocumentPdfSelection] = useState<TextSelection>();
   const [activeRelationshipId, setActiveRelationshipId] = useState<string | null>(null);
   const [scrollToRelationshipPanel, setScrollToRelationshipPanel] = useState<string | null>(null);
-  const [searchHintsModalOpen, setSearchHintsModalOpen] = useState(false);
 
   const pdfState = useMemo(
     () => ({ pdfController, documentPdfSelection }),
@@ -61,19 +53,13 @@ const DocumentInteractionProvider = ({ children }: { children: React.ReactNode }
     () => ({ setActiveRelationshipId, setScrollToRelationshipPanel }),
     [setActiveRelationshipId, setScrollToRelationshipPanel]
   );
-  const hintsState = useMemo(() => ({ searchHintsModalOpen }), [searchHintsModalOpen]);
-  const hintsActions = useMemo(() => ({ setSearchHintsModalOpen }), [setSearchHintsModalOpen]);
 
   return (
     <DocumentPdfActionsContext.Provider value={pdfActions}>
       <DocumentPdfStateContext.Provider value={pdfState}>
         <DocumentRelationshipNavActionsContext.Provider value={navActions}>
           <DocumentRelationshipNavStateContext.Provider value={navState}>
-            <SearchHintsActionsContext.Provider value={hintsActions}>
-              <SearchHintsStateContext.Provider value={hintsState}>
-                {children}
-              </SearchHintsStateContext.Provider>
-            </SearchHintsActionsContext.Provider>
+            {children}
           </DocumentRelationshipNavStateContext.Provider>
         </DocumentRelationshipNavActionsContext.Provider>
       </DocumentPdfStateContext.Provider>
@@ -105,25 +91,11 @@ const useDocumentRelationshipNavActions = () => {
   return context;
 };
 
-const useSearchHintsState = () => {
-  const context = useContext(SearchHintsStateContext);
-  if (!context) throw new Error('Search hints state context not found');
-  return context;
-};
-
-const useSearchHintsActions = () => {
-  const context = useContext(SearchHintsActionsContext);
-  if (!context) throw new Error('Search hints actions context not found');
-  return context;
-};
-
 const useDocumentInteraction = () => ({
   ...useDocumentPdfState(),
   ...useDocumentPdfActions(),
   ...useDocumentRelationshipNavState(),
   ...useDocumentRelationshipNavActions(),
-  ...useSearchHintsState(),
-  ...useSearchHintsActions(),
 });
 
 const useDocumentPdf = () => ({ ...useDocumentPdfState(), ...useDocumentPdfActions() });
@@ -131,7 +103,6 @@ const useDocumentRelationshipNav = () => ({
   ...useDocumentRelationshipNavState(),
   ...useDocumentRelationshipNavActions(),
 });
-const useSearchHints = () => ({ ...useSearchHintsState(), ...useSearchHintsActions() });
 
 export {
   DocumentInteractionProvider,
@@ -139,5 +110,4 @@ export {
   useDocumentPdf,
   useDocumentPdfActions,
   useDocumentRelationshipNav,
-  useSearchHints,
 };

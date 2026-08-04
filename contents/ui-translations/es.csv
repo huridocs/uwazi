@@ -685,7 +685,10 @@ marked for training,marked for training
 Marked for training + all labeled entries,Marked for training + all labeled entries
 Marked for training only,Marked for training only
 Match,Match
+match,coincidencia
 match verbatim,match verbatim
+matches,condicencisas
+Matches show the passage and the page they are on.,Matches show the passage and the page they are on.
 Matching,Coincidencia
 matching,matching
 Matomo,Matomo
@@ -762,6 +765,7 @@ No icon / flag,Sin icono / bandera
 No items available,No items available
 No Label,No existe etiqueta
 No label,No label
+No matches for,Sin coincidencias para
 No matching entities.,Ninguna coincidencia encontrada.
 No media selected,No media selected
 No metadata for this entity yet.,Aún no hay metadatos para esta entidad.
@@ -1050,6 +1054,7 @@ Search relationships,Buscar relaciones
 Search relevance,Relevancia de la búsqueda
 Search text,Buscar texto
 Search text description,Escribe algo en la barra de búsqueda para obtener resultados.
+Search this document,Buscar en este documento
 Search Tips,Consejos de búsqueda
 Search tips,Search tips
 Search Tips: boolean,"AND, OR y NOT para búsquedas lógicas. Por ejemplo. ""estado AND mujer NOT Nicaragua"" coincidirá con cualquier cosa que contenga tanto las palabras estado como mujer, y que no contenga la palabra Nicaragua."
@@ -1280,6 +1285,7 @@ Time,Tiempo
 Time (UTC),Time (UTC)
 Timelinks,Líneas de tiempo
 Timestamp,Timestamp
+tips,consejos
 Title,Título
 To,To
 To add references you can start by selecting text in the document,To add references you can start by selecting text in the document

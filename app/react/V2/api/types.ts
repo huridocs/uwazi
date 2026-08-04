@@ -29,7 +29,7 @@ type SnippetsSearchResponse = SearchResponse<{
   snippets: {
     count: number;
     metadata?: { field: string; texts: string[] }[];
-    fullText?: { text: string; page: number }[];
+    fullText?: { text: string; page: number; filename?: string }[];
   };
 }>;
 

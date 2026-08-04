@@ -8,7 +8,6 @@ import { BlockDirtyNavigation, useTabGroup } from '#V2/Components/UI/index.js';
 import { ThemeProvider } from '#V2/theme/ThemeProvider.js';
 import { localeAtom } from '#V2/atoms/index.js';
 import {
-  SearchHintsModal,
   EntityScopedProvider,
   EntityFilesProvider,
   EntityMainPaneHeader,
@@ -155,7 +154,6 @@ const Entity = () => {
         <EntityFilesFromEntity>
           <EntityView />
         </EntityFilesFromEntity>
-        <SearchHintsModal />
         <EntityCreateRelationshipModal />
       </EntityScopedProvider>
     </ThemeProvider>
