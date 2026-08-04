@@ -9,12 +9,14 @@ import { DocumentInteractionProvider } from './DocumentInteractionContext.js';
 import { TocProvider } from './TocContext.js';
 import { MetadataEditingProvider } from './MetadataEditingContext.js';
 import { EntityOverlayProvider } from './EntityOverlayContext.js';
+import { EntityPageViewProvider, type EntityPageViewData } from '../EntityPageView/index.js';
 
 type EntityScopedProviderProps = {
   entity: Entity;
   language: string;
   mainDocument?: FileType;
   pagePlaintext?: string;
+  entityPageView?: EntityPageViewData;
   children: React.ReactNode;
 };
 
@@ -23,29 +25,32 @@ const EntityScopedProvider = ({
   language,
   mainDocument,
   pagePlaintext,
+  entityPageView,
   children,
 }: EntityScopedProviderProps) => (
   <EntityProvider entity={entity}>
-    <MetadataEditingProvider>
-      <EntityLanguageProvider
-        loaderEntity={entity}
-        initialLanguage={language}
-        initialMainDocument={mainDocument}
-        initialPagePlaintext={pagePlaintext}
-      >
-        <RelationshipsProvider>
-          <RelationshipsSelectionProvider>
-            <RelationshipsPanelFiltersProvider>
-              <DocumentInteractionProvider>
-                <TocProvider>
-                  <EntityOverlayProvider>{children}</EntityOverlayProvider>
-                </TocProvider>
-              </DocumentInteractionProvider>
-            </RelationshipsPanelFiltersProvider>
-          </RelationshipsSelectionProvider>
-        </RelationshipsProvider>
-      </EntityLanguageProvider>
-    </MetadataEditingProvider>
+    <EntityPageViewProvider entityPageView={entityPageView}>
+      <MetadataEditingProvider>
+        <EntityLanguageProvider
+          loaderEntity={entity}
+          initialLanguage={language}
+          initialMainDocument={mainDocument}
+          initialPagePlaintext={pagePlaintext}
+        >
+          <RelationshipsProvider>
+            <RelationshipsSelectionProvider>
+              <RelationshipsPanelFiltersProvider>
+                <DocumentInteractionProvider>
+                  <TocProvider>
+                    <EntityOverlayProvider>{children}</EntityOverlayProvider>
+                  </TocProvider>
+                </DocumentInteractionProvider>
+              </RelationshipsPanelFiltersProvider>
+            </RelationshipsSelectionProvider>
+          </RelationshipsProvider>
+        </EntityLanguageProvider>
+      </MetadataEditingProvider>
+    </EntityPageViewProvider>
   </EntityProvider>
 );
 
