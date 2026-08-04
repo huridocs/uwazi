@@ -25,7 +25,6 @@ export {
   useDocumentPdf,
   useDocumentPdfActions,
   useDocumentRelationshipNav,
-  useSearchHints,
 } from './DocumentInteractionContext.js';
 export { useToc, useTocActions, useTocStateActions } from './TocContext.js';
 export { useMetadataEditing } from './MetadataEditingContext.js';

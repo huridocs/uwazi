@@ -11,9 +11,9 @@ import { DocumentTabFooter } from './footers/DocumentTabFooter.js';
 import { MetadataTabFooter } from './footers/MetadataTabFooter.js';
 import { ToCTabFooter } from './footers/ToCTabFooter.js';
 import { RelationshipsTabFooter } from './footers/RelationshipsTabFooter.js';
-import { SearchTabFooter } from './footers/SearchTabFooter.js';
 import { FileTabFooter } from './footers/FileTabFooter.js';
 import { TranslationsTabFooter } from './footers/TranslationsTabFooter.js';
+import { SearchTabFooter } from './footers/SearchTabFooter.js';
 
 type SideTabsFootersProps = {
   activeTabId?: SideTabId;
