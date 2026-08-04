@@ -6,7 +6,9 @@ import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/Se
 class RemoteCaptchaController extends AbstractController {
   protected async handle(): Promise<void> {
     const { publicFormDestination } = await SettingsDataSourceFactory.default().get();
-    const remoteResponse = await request.get(urljoin(publicFormDestination as string, '/api/captcha'));
+    const remoteResponse = await request.get(
+      urljoin(publicFormDestination as string, '/api/captcha')
+    );
     this.response.json(remoteResponse.json);
   }
 }

@@ -143,7 +143,6 @@ class PostgresUsersDataSource extends PostgresDataSource<UserRow> implements Use
   async updatePassword(_userId: string, _password: EncryptedPassword): Promise<void> {
     return notImplemented();
   }
-
 }
 
 export { PostgresUsersDataSource };
