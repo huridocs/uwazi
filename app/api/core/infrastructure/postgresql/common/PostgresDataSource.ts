@@ -24,6 +24,11 @@ export abstract class PostgresDataSource<TRow = Record<string, unknown>> {
       this._syncWriter = new SyncLogWriter(sync.syncDb, sync.syncNamespace);
     }
 
+    // Plain PostgresTable does NOT set permission context. The default is
+    // no-bypass, meaning only published rows are visible on tables with
+    // permission RLS. Subclasses that need unrestricted access must opt in
+    // explicitly by calling setPermissionContext({ bypass: true }) on the
+    // transaction manager.
     this._table = PostgresTable.for<TRow>({
       tableName,
       tenantId,

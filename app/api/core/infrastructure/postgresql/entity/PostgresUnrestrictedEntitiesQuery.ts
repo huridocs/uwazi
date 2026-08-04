@@ -37,6 +37,10 @@ class PostgresUnrestrictedEntitiesQuery extends PostgresDataSource<EntityRow> {
   constructor(deps: Deps) {
     super('entities', deps);
     this.filesDAO = deps.filesDAO;
+
+    // Unrestricted query needs full access to all entities, regardless of
+    // permission-level RLS. Bypass is explicit opt-in (not the default).
+    this.table.cfg.transactionManager.setPermissionContext({ bypass: true });
   }
 
   private applyFilters(filters: EntityFilters) {

@@ -294,7 +294,13 @@ export class PostgresTable<TRow = Record<string, unknown>> {
 
   private static cleanRow(row: Record<string, unknown>): Record<string, unknown> {
     return Object.fromEntries(
-      Object.entries(row).filter(([k, v]) => k !== 'tenant_id' && v !== null)
+      Object.entries(row).filter(
+        ([k, v]) =>
+          k !== 'tenant_id' &&
+          k !== '_perm_read_refs' &&
+          k !== '_perm_write_refs' &&
+          v !== null
+      )
     );
   }
 
