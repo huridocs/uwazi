@@ -3,17 +3,19 @@ import MongoStore from 'connect-mongo';
 import passport from 'passport';
 import session from 'express-session';
 import svgCaptcha from 'svg-captcha';
-import settings from '#api/settings/index.js';
 import urljoin from 'url-join';
+import cors from 'cors';
+import settings from '#api/settings/index.js';
 import { DB } from '#api/odm/index.js';
 import { config } from '#api/config.js';
-import cors from 'cors';
 import request from '#shared/JSONRequest.js';
 import { randomSleep } from '#shared/tsUtils.js';
 import { tenants } from '#api/tenants/index.js';
 import { LoginController } from '#api/core/infrastructure/express/users/LoginController.js';
 import { LogoutController } from '#api/core/infrastructure/express/users/LogoutController.js';
 import { GetCurrentUserController } from '#api/core/infrastructure/express/users/GetCurrentUserController.js';
+import { CaptchaController } from '#api/core/infrastructure/express/captcha/CaptchaController.js';
+import { RemoteCaptchaController } from '#api/core/infrastructure/express/captcha/RemoteCaptchaController.js';
 import { CaptchaModel } from './CaptchaModel.js';
 
 import { validation } from '#api/utils/index.js';
@@ -116,7 +118,14 @@ export default app => {
     optionsSuccessStatus: 200,
   };
 
-  app.get('/api/captcha', cors(corsOptions), async (_req, res) => {
+  app.get('/api/captcha', cors(corsOptions), async (req, res) => {
+    if (tenants.current().featureFlags?.v2Captcha) {
+      await CaptchaController.createHandler()(req, res);
+      return;
+    }
+
+    // @deprecated v1 fallback for the `v2Captcha` flag, superseded by CaptchaController.
+    // Remove once v2Captcha is enabled for all tenants.
     const captcha = svgCaptcha.create({ ignoreChars: '0OoiILluvUV' });
     const text = process.env.DATABASE_NAME !== 'uwazi_e2e' ? captcha.text : '42hf';
     const storedCaptcha = await CaptchaModel.save({ text });
@@ -124,7 +133,14 @@ export default app => {
     res.json({ svg: captcha.data, id: storedCaptcha._id.toString() });
   });
 
-  app.get('/api/remotecaptcha', async (_req, res) => {
+  app.get('/api/remotecaptcha', async (req, res) => {
+    if (tenants.current().featureFlags?.v2Captcha) {
+      await RemoteCaptchaController.createHandler()(req, res);
+      return;
+    }
+
+    // @deprecated v1 fallback for the `v2Captcha` flag, superseded by RemoteCaptchaController.
+    // Remove once v2Captcha is enabled for all tenants.
     const { publicFormDestination } = await settings.get({}, { publicFormDestination: 1 });
     const remoteResponse = await request.get(urljoin(publicFormDestination, '/api/captcha'));
     res.json(remoteResponse.json);
