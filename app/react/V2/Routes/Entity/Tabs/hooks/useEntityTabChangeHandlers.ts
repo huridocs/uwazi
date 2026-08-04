@@ -2,6 +2,7 @@ import { useCallback } from 'react';
 import { Entity as EntityType } from '#V2/api/entities/types.js';
 import { useUpdateEntityUrl } from '../../entityUrlState.js';
 import { MAIN_TAB_PARAM, SIDE_TAB_PARAM } from '../../urlParams.js';
+import { applyMainTabSearchParam } from '../applyMainTabSearchParam.js';
 import { getSideTabButtons, type FilesSideTabsOptions } from '../sideTabSets.js';
 import { MAIN_TAB, isValidMainTab, isValidSideTab, type MainTabId } from '../tabIds.js';
 
@@ -29,13 +30,7 @@ const useEntityTabChangeHandlers = ({
       if (!isValidMainTab(selectedMainTab)) return;
 
       updateEntityUrl({
-        search: next => {
-          if (selectedMainTab === MAIN_TAB.DOCUMENT && hasMainDocument) {
-            next.delete(MAIN_TAB_PARAM);
-          } else {
-            next.set(MAIN_TAB_PARAM, selectedMainTab);
-          }
-        },
+        search: next => applyMainTabSearchParam(next, selectedMainTab, hasMainDocument),
         hash: next => {
           if (selectedMainTab === activeMainTab) return;
           const nextSideButtons = getSideTabButtons({

@@ -39,6 +39,7 @@ describe('Files tab', () => {
   it('should be accessible', () => {
     mountEntity();
     cy.contains('Files').click();
+    cy.contains('Primary documents').should('exist');
     cy.injectAxe();
     cy.checkA11y(undefined, undefined, logA11yViolations);
   });

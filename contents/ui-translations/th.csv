@@ -687,7 +687,10 @@ marked for training,marked for training
 Marked for training + all labeled entries,Marked for training + all labeled entries
 Marked for training only,Marked for training only
 Match,Match
+match,match
 match verbatim,match verbatim
+matches,matches
+Matches show the passage and the page they are on.,Matches show the passage and the page they are on.
 Matching,Matching
 matching,matching
 Matomo,Matomo
@@ -764,6 +767,7 @@ No icon / flag,ไม่พบ ไอค่อน / สิ่งที่ถู�
 No items available,No items available
 No Label,ไม่มีลาเบล
 No label,No label
+No matches for,No matches for
 No matching entities.,No matching entities.
 No media selected,No media selected
 No metadata for this entity yet.,No metadata for this entity yet.
@@ -1052,6 +1056,7 @@ Search relationships,Search relationships
 Search relevance,ความเกี่ยวข้องของการค้นหา
 Search text,ข้อความค้นหา
 Search text description,Type something in the search box to get some results.
+Search this document,Search this document
 Search Tips,เคล็ดลับการค้นหา
 Search tips,Search tips
 Search Tips: boolean,เคล็ดลับการค้นหา: บูลีน
@@ -1283,6 +1288,7 @@ Time,เวลา
 Time (UTC),Time (UTC)
 Timelinks,Timelinks
 Timestamp,Timestamp
+tips,tips
 Title,ชื่อหัวข้อ
 To,To
 To add references you can start by selecting text in the document,To add references you can start by selecting text in the document
