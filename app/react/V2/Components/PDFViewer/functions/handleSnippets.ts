@@ -25,7 +25,7 @@ const extractSearchTerms = (snippetText: string): string[] => {
   const sanitized = rawMatches
     ? rawMatches.map(match => sanitizeHtml(match, { allowedTags: [], allowedAttributes: {} }))
     : [];
-  return sanitized;
+  return sanitized.filter(term => term.trim().length > 0);
 };
 
 // eslint-disable-next-line max-statements
@@ -59,6 +59,10 @@ const wrapTextWithMark = (
 
 // eslint-disable-next-line max-statements
 const highlightTextInNode = (textNode: Text, searchText: string, className: string): void => {
+  if (!searchText) {
+    return;
+  }
+
   const parent = textNode.parentNode;
 
   if (!parent) {
@@ -83,6 +87,10 @@ const highlightTextInNode = (textNode: Text, searchText: string, className: stri
 };
 
 const highlightText = (container: HTMLElement, searchText: string, className: string): void => {
+  if (!searchText) {
+    return;
+  }
+
   const walker = document.createTreeWalker(container, NodeFilter.SHOW_TEXT, null);
   let node = walker.nextNode();
 
@@ -131,14 +139,14 @@ const highlightRegex = (
   return Array.from(markedSpans);
 };
 
-const highlightSearchTermsInSpans = (spans: HTMLElement[], searchTerms: string[]): void => {
-  if (spans.length === 0) {
-    return;
+const highlightSearchTerms = (roots: HTMLElement[], searchTerms: string[]): boolean => {
+  if (!roots.length || !searchTerms.length) {
+    return false;
   }
-
-  spans.forEach(span => {
-    searchTerms.forEach(term => highlightText(span, term, SEARCH_TERM_CLASS));
+  roots.forEach(root => {
+    searchTerms.forEach(term => highlightText(root, term, SEARCH_TERM_CLASS));
   });
+  return roots.some(root => root.querySelector(`mark.${SEARCH_TERM_CLASS}`) !== null);
 };
 
 const tryHighlightWithFuzzyMatch = (
@@ -161,7 +169,7 @@ const tryHighlightWithFuzzyMatch = (
       SNIPPET_CONTEXT_CLASS
     );
     if (markedSpans.length > 0) {
-      highlightSearchTermsInSpans(markedSpans, searchTerms);
+      highlightSearchTerms(markedSpans, searchTerms);
       return true;
     }
 
@@ -194,7 +202,7 @@ const performHighlighting = (
   textLayer: HTMLElement,
   snippet: Snippet,
   searchTerms: string[]
-): void => {
+): boolean => {
   const contextPattern = textToMatcherRegExp(snippet.text);
   const markedSpans = highlightRegex(
     textLayer,
@@ -203,15 +211,20 @@ const performHighlighting = (
   );
 
   if (markedSpans.length > 0) {
-    highlightSearchTermsInSpans(markedSpans, searchTerms);
-  } else if (searchTerms.length > 0) {
-    tryHighlightWithFuzzyMatch(textLayer, snippet.text, searchTerms);
+    highlightSearchTerms(markedSpans, searchTerms);
+    return true;
   }
+
+  if (tryHighlightWithFuzzyMatch(textLayer, snippet.text, searchTerms)) {
+    return true;
+  }
+
+  return highlightSearchTerms([textLayer], searchTerms);
 };
 
-const highlightSnippetInPage = (container: HTMLElement | null, snippet: Snippet): void => {
+const highlightSnippetInPage = (container: HTMLElement | null, snippet: Snippet): boolean => {
   if (!container || !snippet.text) {
-    return;
+    return false;
   }
 
   clearSnippets(container);
@@ -219,20 +232,25 @@ const highlightSnippetInPage = (container: HTMLElement | null, snippet: Snippet)
   const textLayer = container.querySelector('.textLayer') as HTMLElement;
 
   if (!textLayer) {
-    return;
+    return false;
   }
 
   const searchTerms = extractSearchTerms(snippet.text);
-  performHighlighting(textLayer, snippet, searchTerms);
+  return performHighlighting(textLayer, snippet, searchTerms);
 };
 
-const tryHighlightAndScroll = (container: HTMLDivElement, snippet: Snippet) => {
-  highlightSnippetInPage(container, snippet);
+const tryHighlightAndScroll = (container: HTMLDivElement, snippet: Snippet): boolean => {
+  if (!highlightSnippetInPage(container, snippet)) {
+    return false;
+  }
+
   const highlight = container.querySelector('.snippet-context') || container.querySelector('mark');
   if (highlight) {
+    // eslint-disable-next-line no-restricted-syntax -- required to scroll past map nesting
     highlight.scrollIntoView({ behavior: 'smooth', block: 'center' });
     return true;
   }
+
   return false;
 };
 

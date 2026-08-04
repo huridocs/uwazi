@@ -155,6 +155,48 @@ describe('snippetToHighlight', () => {
           }
         });
       });
+
+      it('falls back to search-term marks when context and fuzzy fail', () => {
+        container.innerHTML = `
+          <div class="textLayer">
+            <span>CUARTA SECCIÓN ESTADO MEXICANO</span>
+          </div>
+        `;
+
+        const snippet = {
+          text: 'CUARTA SECCIÓN\f ESTADO <b>MEXICANO</b> later page text not in layer',
+          page: 1,
+        };
+
+        highlightSnippetInPage(container, snippet);
+
+        const searchTermMarks = container.querySelectorAll('mark.snippet-search-term');
+        expect(searchTermMarks.length).toBeGreaterThan(0);
+        expect(joinText(searchTermMarks)).toContain('MEXICANO');
+
+        const contexts = container.querySelectorAll('.snippet-context');
+        expect(contexts.length).toBe(0);
+      });
+
+      it('does not recurse or hang on empty or whitespace-only bold terms', () => {
+        const cases = [
+          'Page 1 <b></b> some text',
+          'Page 1 <b>   </b> some text',
+          'Page 1 <b></b> contains <b>  </b> text',
+        ];
+
+        cases.forEach(snippetText => {
+          container.innerHTML = `
+            <div class="textLayer">
+              <span>Page 1 contains some text</span>
+            </div>
+          `;
+          expect(() =>
+            highlightSnippetInPage(container, { text: snippetText, page: 1 })
+          ).not.toThrow();
+          expect(container.querySelectorAll('mark.snippet-search-term').length).toBe(0);
+        });
+      });
     });
   });
 
@@ -232,6 +274,25 @@ describe('snippetToHighlight', () => {
 
       const didHighlight = tryHighlightAndScroll(container, {
         text: 'Page 1 <b>contains</b> some text',
+        page: 1,
+      });
+
+      expect(didHighlight).toBe(true);
+      expect(scrollIntoView).toHaveBeenCalledTimes(1);
+    });
+
+    it('should return true via search-term fallback when context is missing', () => {
+      container.innerHTML = `
+        <div class="textLayer">
+          <span>CUARTA SECCIÓN ESTADO MEXICANO</span>
+        </div>
+      `;
+
+      const scrollIntoView = jest.fn();
+      Element.prototype.scrollIntoView = scrollIntoView;
+
+      const didHighlight = tryHighlightAndScroll(container, {
+        text: 'missing context <b>MEXICANO</b> trailing text',
         page: 1,
       });
 

@@ -942,3 +942,23 @@ header button svg:not([class*='notification-kind-icon']),
   height: 3.25rem;
   background-color: var(--color-theme-chrome-app-bar, var(--color-theme-bg-surface, #ffffff));
 }
+
+@keyframes flash-highlight {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.3;
+  }
+}
+
+.flash-highlight {
+  animation: flash-highlight 0.3s ease-in-out 3;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .flash-highlight {
+    animation: none !important;
+  }
+}

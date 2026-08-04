@@ -35,4 +35,11 @@ describe('waitForElement', () => {
   it('rejects after the provided timeout', async () => {
     await expect(waitForElement('.never', 50)).rejects.toBeUndefined();
   });
+
+  it('rejects when aborted before the element appears', async () => {
+    const controller = new AbortController();
+    const promise = waitForElement('.aborted', 5000, controller.signal);
+    controller.abort();
+    await expect(promise).rejects.toBeUndefined();
+  });
 });
