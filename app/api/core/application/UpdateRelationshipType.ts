@@ -27,10 +27,11 @@ class UpdateRelationshipTypeUseCase extends AbstractUseCase<Input, Output, Deps>
       throw new Error('duplicated_entry');
     }
 
-    const updated = await this.transactionManager.run(async () => {
-      const saved = await this.deps.relationshipTypesDS.update({ id: input.id, name: input.name });
-      await this.deps.translationService.update(current, saved);
-      return saved;
+    const updated = new RelationshipType(input.id, input.name);
+
+    await this.transactionManager.run(async () => {
+      await this.deps.relationshipTypesDS.update(updated);
+      await this.deps.translationService.update(current, updated);
     });
 
     return updated;

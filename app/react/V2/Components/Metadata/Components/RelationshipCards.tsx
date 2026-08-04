@@ -72,7 +72,7 @@ const buildRelationshipCardNodes = ({
       const terminal = inheritingTerminalById?.get(data._id);
       const inheritedContent = terminal ? renderFieldContent(terminal, true) : null;
       return (
-        <div key={data._id} data-field-key={data._id}>
+        <div key={data._id} data-field-key={data.name}>
           <Relationship
             values={data.values}
             label={data.label}

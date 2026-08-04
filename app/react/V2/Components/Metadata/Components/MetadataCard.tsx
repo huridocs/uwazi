@@ -14,7 +14,7 @@ const MetadataCard = ({ title, icon, children, className = '' }: MetadataCardPro
       {title != null && (
         <div className="flex items-center gap-1.5">
           {icon}
-          <h4 className="text-sm font-bold leading-tight text-ink">{title}</h4>
+          <h2 className="text-sm font-bold leading-tight text-ink">{title}</h2>
         </div>
       )}
       {children}

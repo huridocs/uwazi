@@ -16,7 +16,6 @@ describe('Add relationship type button', () => {
         {
           _id: '62ed4e49e92138e9c879680a',
           name: 'Existing relationship type',
-          properties: [],
         },
       ]),
     };
@@ -77,7 +76,6 @@ describe('Add relationship type button', () => {
 
       expect(relationTypeActions.saveRelationType).toHaveBeenCalledWith({
         name: 'My new relationship type',
-        properties: [],
       });
 
       expect(screen.queryByText('Relationship')).not.toBeInTheDocument();

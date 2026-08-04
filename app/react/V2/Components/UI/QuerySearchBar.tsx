@@ -13,7 +13,7 @@ type QuerySearchBarProps = {
   placeholder: string;
   ariaLabel: string;
   clearAriaLabel: string;
-  tipsAriaLabel: string;
+  tipsAriaLabel?: string;
   inlineSlot?: ReactNode;
   rightSlot?: ReactNode;
   tipsContent?: ReactNode;
@@ -42,7 +42,7 @@ const QuerySearchBar = ({
   };
 
   return (
-    <div className={`flex flex-wrap items-center gap-2 pb-1 pt-0.5 ${className}`.trim()}>
+    <div className={`flex flex-wrap items-center gap-2 ${className || 'pb-1 pt-0.5'}`.trim()}>
       <div
         className="flex min-h-8 min-w-48 flex-1 cursor-text flex-wrap items-center gap-1.5 rounded-md border border-border bg-warm py-0.5 pl-2 pr-2 transition-all focus-within:border-ink/40 focus-within:ring-2 focus-within:ring-ink/20"
         onClick={() => inputRef.current?.focus()}
@@ -63,7 +63,7 @@ const QuerySearchBar = ({
             <XMarkIcon className="h-3 w-3" />
           </IconButton>
         )}
-        {tipsContent && (
+        {tipsContent && tipsAriaLabel && (
           <div ref={hintRef} className="relative shrink-0">
             <IconButton
               variant="subtle"

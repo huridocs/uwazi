@@ -1,8 +1,8 @@
+import Immutable from 'immutable';
+import rison from '@huridocs/rison';
 import { SearchAPI as searchAPI } from '#app/Search/SearchAPI.js';
 import { prioritySortingCriteria } from '#app/utils/prioritySortingCriteria.js';
 import { RequestParams } from '#app/utils/RequestParams.js';
-import Immutable from 'immutable';
-import rison from '@huridocs/rison';
 import { requestState, processQuery } from '../requestState.js';
 
 describe('static requestState()', () => {
@@ -22,9 +22,7 @@ describe('static requestState()', () => {
       },
       { name: 'Ruling', _id: 'abc2', properties: [] },
     ];
-    const relationTypes = [
-      { name: 'Victim', _id: 'abc3', properties: [{ name: 'p', filter: true, type: 'text' }] },
-    ];
+    const relationTypes = [{ name: 'Victim', _id: 'abc3' }];
 
     const thesauris = [{ name: 'countries', _id: '1', values: [] }];
     const documents = {

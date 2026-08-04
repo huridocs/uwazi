@@ -12,7 +12,6 @@ import { RequestParams } from '#app/utils/RequestParams.js';
 import * as types from '#app/Library/actions/actionTypes.js';
 import * as notificationsTypes from '#app/Notifications/actions/actionTypes.js';
 import * as actions from '#app/Library/actions/libraryActions.js';
-import { documentsAPI } from '#app/Documents/index.js';
 import { mockID } from '#shared/uniqueID.js';
 
 import { api } from '#app/Entities/index.js';
@@ -360,7 +359,7 @@ describe('libraryActions', () => {
     describe('saveDocument', () => {
       it('should save the document and dispatch a notification on success', done => {
         mockID();
-        spyOn(documentsAPI, 'save').and.callFake(async () => Promise.resolve('response'));
+        spyOn(api, 'save').and.callFake(async () => Promise.resolve('response'));
         const doc = { name: 'doc' };
 
         const expectedActions = [
@@ -378,7 +377,7 @@ describe('libraryActions', () => {
         store
           .dispatch(actions.saveDocument(doc, 'library.sidepanel.metadata'))
           .then(() => {
-            expect(documentsAPI.save).toHaveBeenCalledWith(new RequestParams(doc));
+            expect(api.save).toHaveBeenCalledWith(new RequestParams(doc));
             expect(store.getActions()).toEqual(expectedActions);
           })
           .then(done)
@@ -424,7 +423,7 @@ describe('libraryActions', () => {
     describe('deleteDocument', () => {
       it('should delete the document and dispatch a notification on success', done => {
         mockID();
-        spyOn(documentsAPI, 'delete').and.callFake(async () => Promise.resolve('response'));
+        spyOn(api, 'delete').and.callFake(async () => Promise.resolve('response'));
         const doc = { sharedId: 'sharedId', name: 'doc' };
 
         const expectedActions = [
@@ -440,9 +439,7 @@ describe('libraryActions', () => {
         store
           .dispatch(actions.deleteDocument(doc))
           .then(() => {
-            expect(documentsAPI.delete).toHaveBeenCalledWith(
-              new RequestParams({ sharedId: doc.sharedId })
-            );
+            expect(api.delete).toHaveBeenCalledWith(new RequestParams({ sharedId: doc.sharedId }));
             expect(store.getActions()).toEqual(expectedActions);
           })
           .then(done)

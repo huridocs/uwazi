@@ -50,7 +50,9 @@ describe('RelationshipType use case factories', () => {
 
   it('should build relationship types data source', () => {
     const sut = testingEnvironment.runWithContext(() =>
-      RelationshipTypesDataSourceFactory.default(TransactionManagerFactory.default())
+      RelationshipTypesDataSourceFactory.default({
+        transactionManager: TransactionManagerFactory.default(),
+      })
     );
     expect(sut).toBeInstanceOf(MongoRelationshipTypesDataSource);
   });

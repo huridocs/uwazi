@@ -686,7 +686,10 @@ marked for training,marked for training
 Marked for training + all labeled entries,Marked for training + all labeled entries
 Marked for training only,Marked for training only
 Match,Match
+match,match
 match verbatim,match verbatim
+matches,matches
+Matches show the passage and the page they are on.,Matches show the passage and the page they are on.
 Matching,Matching
 matching,matching
 Matomo,Matomo
@@ -763,6 +766,7 @@ No icon / flag,لا توجد أيقونة/ علامة
 No items available,No items available
 No Label,لا تسمية
 No label,No label
+No matches for,No matches for
 No matching entities.,No matching entities.
 No media selected,No media selected
 No metadata for this entity yet.,No metadata for this entity yet.
@@ -1051,6 +1055,7 @@ Search relationships,Search relationships
 Search relevance,ملائمة البحث
 Search text,بحث النص
 Search text description,اكتب نص في خانة البحث لتظهر بعض النتائج
+Search this document,Search this document
 Search Tips,نصائح البحث
 Search tips,Search tips
 Search Tips: boolean,نصائح البحث: Boolean
@@ -1282,6 +1287,7 @@ Time,زمن
 Time (UTC),Time (UTC)
 Timelinks,Timelinks
 Timestamp,Timestamp
+tips,tips
 Title,عنوان
 To,To
 To add references you can start by selecting text in the document,To add references you can start by selecting text in the document
