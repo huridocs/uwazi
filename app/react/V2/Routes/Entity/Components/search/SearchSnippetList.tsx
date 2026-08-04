@@ -21,8 +21,7 @@ type SearchSnippetListProps = {
   onActivate: (snippetKey: string, pageText: { text: string; page: number }) => void;
 };
 
-const sectionLabelClass =
-  'px-1 text-nano font-semibold uppercase tracking-wide text-ink-muted';
+const sectionLabelClass = 'px-1 text-nano font-semibold uppercase tracking-wide text-ink-muted';
 
 const SearchSnippetList = ({
   results,
@@ -40,8 +39,7 @@ const SearchSnippetList = ({
       <span dir="ltr" className="px-1 text-micro text-ink-tertiary">
         {matchCount.toLocaleString()}{' '}
         {matchCount === 1 ? <Translate>match</Translate> : <Translate>matches</Translate>}{' '}
-        <Translate>for</Translate>{' '}
-        <span className="font-medium text-ink">“{searchTerm}”</span>
+        <Translate>for</Translate> <span className="font-medium text-ink">“{searchTerm}”</span>
       </span>
 
       {results.data.map(entry => {

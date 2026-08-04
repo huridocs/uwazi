@@ -2,11 +2,7 @@
  * @jest-environment jsdom
  */
 /* eslint-disable max-statements */
-import {
-  applyMetadataFieldFocus,
-  esFieldToFocusKey,
-  FLASH_MS,
-} from '../focusMetadataFieldAtom.js';
+import { applyMetadataFieldFocus, esFieldToFocusKey, FLASH_MS } from '../focusMetadataFieldAtom.js';
 
 describe('esFieldToFocusKey', () => {
   it('maps title fields to title', () => {

@@ -4,11 +4,7 @@
 import React from 'react';
 import { act, renderHook } from '@testing-library/react';
 import { MemoryRouter } from 'react-router';
-import {
-  parseEntityHash,
-  serializeEntityHash,
-  useUpdateEntityUrl,
-} from '../entityUrlState.js';
+import { parseEntityHash, serializeEntityHash, useUpdateEntityUrl } from '../entityUrlState.js';
 
 const mockNavigate = jest.fn();
 
@@ -108,13 +104,10 @@ describe('entityUrlState', () => {
     });
 
     it('drops pending batch when pathname changes before flush', async () => {
+      window.history.replaceState({}, '', '/entity/1#s=search');
       const { result } = renderHook(() => useUpdateEntityUrl(), {
         wrapper: ({ children }: { children: React.ReactNode }) =>
-          React.createElement(
-            MemoryRouter,
-            { initialEntries: ['/entity/1#s=search'] },
-            children
-          ),
+          React.createElement(MemoryRouter, { initialEntries: ['/entity/1#s=search'] }, children),
       });
 
       act(() => {
@@ -132,6 +125,31 @@ describe('entityUrlState', () => {
       });
 
       expect(mockNavigate).not.toHaveBeenCalled();
+    });
+
+    it('applies against React location when window path differs but is stable (MemoryRouter)', async () => {
+      window.history.replaceState({}, '', '/__cypress/src/index.html');
+      const { result } = renderHook(() => useUpdateEntityUrl(), {
+        wrapper: ({ children }: { children: React.ReactNode }) =>
+          React.createElement(MemoryRouter, { initialEntries: ['/'] }, children),
+      });
+
+      act(() => {
+        result.current({
+          search: next => {
+            next.set('m', 'files');
+          },
+        });
+      });
+
+      await act(async () => {
+        await Promise.resolve();
+      });
+
+      expect(mockNavigate).toHaveBeenCalledTimes(1);
+      const [to] = mockNavigate.mock.calls[0];
+      expect(to.pathname).toBe('/');
+      expect(to.search).toContain('m=files');
     });
   });
 });

@@ -21,6 +21,7 @@ type PendingBatch = {
 
 let pendingBatch: PendingBatch | null = null;
 let flushScheduled = false;
+let pathnameAtEnqueue: string | null = null;
 
 const parseEntityHash = (hash: string = ''): URLSearchParams => {
   const raw = hash.startsWith('#') ? hash.slice(1) : hash;
@@ -47,20 +48,24 @@ const readLiveLocation = (fallback: LocationFallback): LocationFallback => {
 const flushEntityUrlUpdates = (navigate: NavigateFunction, fallback: LocationFallback) => {
   flushScheduled = false;
   const batch = pendingBatch;
+  const enqueuedPath = pathnameAtEnqueue;
   pendingBatch = null;
+  pathnameAtEnqueue = null;
   if (!batch) {
     return;
   }
 
   const live = readLiveLocation(fallback);
-  if (live.pathname !== fallback.pathname) {
+  // Drop only when the browser path changed during the microtask (left the page).
+  if (enqueuedPath !== null && live.pathname !== enqueuedPath) {
     return;
   }
 
+  const base = live.pathname === fallback.pathname ? live : fallback;
   const nextSearch = new URLSearchParams(
-    live.search.startsWith('?') ? live.search.slice(1) : live.search
+    base.search.startsWith('?') ? base.search.slice(1) : base.search
   );
-  const nextHash = parseEntityHash(live.hash);
+  const nextHash = parseEntityHash(base.hash);
   batch.searchPatches.forEach(patch => patch(nextSearch));
   batch.hashPatches.forEach(patch => patch(nextHash));
   const search = nextSearch.toString();
@@ -69,7 +74,7 @@ const flushEntityUrlUpdates = (navigate: NavigateFunction, fallback: LocationFal
   // eslint-disable-next-line no-void -- RR navigate may return a Promise; fire-and-forget flush
   void navigate(
     {
-      pathname: live.pathname,
+      pathname: fallback.pathname,
       search: search ? `?${search}` : '',
       hash,
     },
@@ -96,6 +101,7 @@ const enqueueEntityUrlUpdate = (
       searchPatches: [],
       hashPatches: [],
     };
+    pathnameAtEnqueue = typeof window !== 'undefined' ? window.location.pathname : fallback.pathname;
   }
   if (options.search) {
     pendingBatch.searchPatches.push(options.search);

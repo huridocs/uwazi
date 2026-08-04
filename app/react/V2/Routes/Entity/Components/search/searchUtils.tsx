@@ -28,8 +28,7 @@ const getFieldName = (fieldName: string, template?: ClientTemplateSchema) => {
 const decodeSnippetText = (segment: string) =>
   sanitizeHtml(segment, { allowedTags: [], allowedAttributes: {} });
 
-const plainSnippetText = (html: string) =>
-  decodeSnippetText(html).replace(/\s+/g, ' ').trim();
+const plainSnippetText = (html: string) => decodeSnippetText(html).replace(/\s+/g, ' ').trim();
 
 const startsWithLowercaseLetter = (text: string) => {
   const letter = text.match(/\p{L}/u)?.[0];
@@ -49,8 +48,7 @@ const ensureSnippetEllipsis = (html: string) => {
   const windowed = startsLower || core.length >= WINDOWED_MIN_LENGTH;
 
   const needsLeading = !hasLeading && startsLower;
-  const needsTrailing =
-    !hasTrailing && !endsWithTerminalPunctuation(core) && windowed;
+  const needsTrailing = !hasTrailing && !endsWithTerminalPunctuation(core) && windowed;
 
   if (!needsLeading && !needsTrailing) return html;
 

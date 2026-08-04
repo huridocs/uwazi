@@ -75,13 +75,7 @@ jest.mock('#V2/Routes/Entity/Components/search/useJumpToSearchHit.js', () => ({
 }));
 
 jest.mock('#V2/Components/UI/QuerySearchBar.js', () => ({
-  QuerySearchBar: ({
-    value,
-    onChange,
-  }: {
-    value: string;
-    onChange: (next: string) => void;
-  }) => (
+  QuerySearchBar: ({ value, onChange }: { value: string; onChange: (next: string) => void }) => (
     <input
       aria-label="Search this document"
       value={value}

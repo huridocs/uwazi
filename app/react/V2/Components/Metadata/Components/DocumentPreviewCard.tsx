@@ -163,7 +163,7 @@ const DocumentPreviewCard = ({ entity, previewField }: DocumentPreviewCardProps)
           {model.showPdfBadge ? (
             <Translate
               key="pdf-badge"
-              className="absolute bottom-1 inset-e-1 rounded-xs bg-ink-70 px-1 py-px text-pico font-semibold uppercase leading-none tracking-wider text-parchment"
+              className="absolute bottom-1 inset-e-1 rounded-xs bg-ink px-1 py-px text-pico font-semibold uppercase leading-none tracking-wider text-parchment"
             >
               PDF
             </Translate>

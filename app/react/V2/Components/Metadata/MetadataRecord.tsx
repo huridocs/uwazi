@@ -58,13 +58,17 @@ const MetadataRecord = ({ entity }: MetadataRecordProps) => {
   useLayoutEffect(() => {
     if (!focusField) return undefined;
     let clearTimer: number | undefined;
-    const cleanup = applyMetadataFieldFocus(() => rootRef.current, focusField.fieldKey, () => {
-      ownsFocusRef.current = true;
-      clearTimer = window.setTimeout(() => {
-        ownsFocusRef.current = false;
-        clearFocus(null);
-      }, FLASH_MS);
-    });
+    const cleanup = applyMetadataFieldFocus(
+      () => rootRef.current,
+      focusField.fieldKey,
+      () => {
+        ownsFocusRef.current = true;
+        clearTimer = window.setTimeout(() => {
+          ownsFocusRef.current = false;
+          clearFocus(null);
+        }, FLASH_MS);
+      }
+    );
     return () => {
       cleanup();
       if (clearTimer !== undefined) window.clearTimeout(clearTimer);
