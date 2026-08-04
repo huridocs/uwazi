@@ -23,12 +23,7 @@ class AccessContext {
     return new AccessContext(User.system());
   }
 
-  /** Permissions should not be enforced — every operation is allowed. */
-  get isBypassed(): boolean {
-    return this.actor.isSystem();
-  }
-
-  /** Actor can see and edit everything (admin / editor). */
+  /** Actor can see and edit everything (admin / editor / system). */
   isPrivileged(): boolean {
     return this.actor.isPrivileged();
   }

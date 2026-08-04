@@ -323,7 +323,7 @@ class MongoPermissionEnforcedCollection<TSchema extends Document = Document>
   }
 
   private applyInsertPolicy(): void {
-    if (this.accessContext.isBypassed) return;
+    if (this.accessContext.isPrivileged()) return;
     if (this.accessContext.isAnonymous()) {
       throw new PermissionDeniedError('Anonymous users cannot insert');
     }

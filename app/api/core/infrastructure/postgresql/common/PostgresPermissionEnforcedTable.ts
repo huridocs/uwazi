@@ -141,7 +141,7 @@ class PostgresPermissionEnforcedTable<TRow = Record<string, unknown>> extends Po
   }
 
   private upsertWriteCondition(): { sql: string; bindings: (string | string[])[] } | null {
-    if (this.accessContext.isBypassed || this.accessContext.isPrivileged()) {
+    if (this.accessContext.isPrivileged()) {
       return null;
     }
     const refIds = this.accessContext.refIds;
@@ -158,14 +158,14 @@ class PostgresPermissionEnforcedTable<TRow = Record<string, unknown>> extends Po
   }
 
   protected applyInsertPolicy(): void {
-    if (this.accessContext.isBypassed) return;
+    if (this.accessContext.isPrivileged()) return;
     if (this.accessContext.isAnonymous()) {
       throw new PermissionDeniedError('Anonymous users cannot insert');
     }
   }
 
   private setPermissionContext(): void {
-    if (this.accessContext.isBypassed || this.accessContext.isPrivileged()) {
+    if (this.accessContext.isPrivileged()) {
       this.cfg.transactionManager.setPermissionContext({ bypass: true });
     } else if (this.accessContext.isAnonymous()) {
       this.cfg.transactionManager.setPermissionContext({ bypass: false });
