@@ -6,7 +6,8 @@ import React from 'react';
 import { PDFDocumentLoadingTask, PDFDocumentProxy } from 'pdfjs-dist';
 import { act, render, screen, waitFor } from '@testing-library/react';
 import { mockEventBus } from './fixtures.js';
-import { PDF } from '../PDF.jsx';
+import { PDF, PDFControls } from '../PDF.jsx';
+import * as handleSnippets from '../functions/handleSnippets.js';
 
 const mockGetDocument = jest.fn();
 
@@ -322,5 +323,49 @@ describe('PDF', () => {
     });
 
     await waitFor(() => expect(onPageChange).toHaveBeenCalledWith(3));
+  });
+
+  it('retries activateSnippet highlight until textLayer content is ready', async () => {
+    jest.useFakeTimers({ advanceTimers: true });
+    const tryHighlightSpy = jest
+      .spyOn(handleSnippets, 'tryHighlightAndScroll')
+      .mockReturnValueOnce(false)
+      .mockReturnValueOnce(true);
+
+    mockGetDocument.mockReturnValueOnce(makeResolvedPdf(1));
+
+    let controls: PDFControls | undefined;
+
+    await act(async () => {
+      render(
+        <PDF
+          fileUrl="/file.pdf"
+          onPdfReady={pdfControls => {
+            controls = pdfControls;
+          }}
+        />
+      );
+    });
+
+    await waitFor(() => expect(controls).toBeDefined());
+
+    const pageContainer = document.querySelector('#page-1-container');
+    if (!(pageContainer instanceof HTMLDivElement)) {
+      throw new Error('expected #page-1-container');
+    }
+    pageContainer.innerHTML = '<div class="textLayer"></div>';
+
+    act(() => {
+      controls?.activateSnippet({ text: 'partial <b>term</b> context', page: 1 });
+    });
+
+    await act(async () => {
+      jest.advanceTimersByTime(16);
+    });
+
+    expect(tryHighlightSpy.mock.calls.length).toBeGreaterThanOrEqual(2);
+
+    tryHighlightSpy.mockRestore();
+    jest.useRealTimers();
   });
 });

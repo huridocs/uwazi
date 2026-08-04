@@ -3,10 +3,11 @@ import { isClient } from '#app/utils/index.js';
 
 const waitForElement = async <T extends Element = Element>(
   getter: string,
-  timeout = 5000
+  timeout = 5000,
+  signal?: AbortSignal
 ): Promise<T> =>
   new Promise((resolve, reject) => {
-    if (!isClient) {
+    if (!isClient || signal?.aborted) {
       reject();
       return;
     }
@@ -19,14 +20,27 @@ const waitForElement = async <T extends Element = Element>(
     }
 
     let timer: ReturnType<typeof setTimeout>;
+    let observer: MutationObserver;
 
     const root = document.body || document.documentElement || document;
 
-    const observer = new MutationObserver(() => {
+    const onAbort = () => {
+      observer.disconnect();
+      clearTimeout(timer);
+      signal?.removeEventListener('abort', onAbort);
+      reject();
+    };
+
+    const cleanup = () => {
+      observer.disconnect();
+      clearTimeout(timer);
+      signal?.removeEventListener('abort', onAbort);
+    };
+
+    observer = new MutationObserver(() => {
       const found = document.querySelector<T>(getter);
       if (found) {
-        observer.disconnect();
-        clearTimeout(timer);
+        cleanup();
         resolve(found);
       }
     });
@@ -34,9 +48,11 @@ const waitForElement = async <T extends Element = Element>(
     observer.observe(root, { childList: true, subtree: true });
 
     timer = setTimeout(() => {
-      observer.disconnect();
+      cleanup();
       reject();
     }, timeout);
+
+    signal?.addEventListener('abort', onAbort);
   });
 
 export { waitForElement };

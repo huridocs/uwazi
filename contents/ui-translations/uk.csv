@@ -689,7 +689,10 @@ marked for training,позначені для навчання
 Marked for training + all labeled entries,Позначено для навчання + всі позначені записи
 Marked for training only,Позначено тільки для навчання
 Match,Матч
+match,match
 match verbatim,match verbatim
+matches,matches
+Matches show the passage and the page they are on.,Matches show the passage and the page they are on.
 Matching,Відповідність
 matching,відповідність
 Matomo,Матомо.
@@ -766,6 +769,7 @@ No icon / flag,Немає піктограми / прапорця
 No items available,Немає товарів у наявності
 No Label,Немає мітки
 No label,Без етикетки
+No matches for,No matches for
 No matching entities.,No matching entities.
 No media selected,No media selected
 No metadata for this entity yet.,No metadata for this entity yet.
@@ -1054,6 +1058,7 @@ Search relationships,Search relationships
 Search relevance,Релевантність пошуку
 Search text,Пошук за текстом
 Search text description,"Введіть щось у вікні пошуку, щоб отримати результати."
+Search this document,Search this document
 Search Tips,Пошук порад
 Search tips,Search tips
 Search Tips: boolean,"AND, OR і NOT для логічного пошуку. Тобто ""статус І жінки НЕ Нікарагуа"" знайде все, що містить обидва слова ""статус"" і ""жінки"", і обов'язково не містить слова ""Нікарагуа""."
@@ -1285,6 +1290,7 @@ Time,Час
 Time (UTC),Time (UTC)
 Timelinks,Тимчасові посилання
 Timestamp,Відмітка часу
+tips,tips
 Title,Заголовок
 To,До
 To add references you can start by selecting text in the document,"Щоб додати посилання, спочатку виділіть текст у документі"

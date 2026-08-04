@@ -18,6 +18,7 @@ type GetSideTabButtonsParams = {
   mainDocumentId?: string;
   filesSideTabs?: FilesSideTabsOptions;
   metadataDirty?: boolean;
+  searchDirty?: boolean;
   filesCount?: number;
 };
 
@@ -28,6 +29,7 @@ const getSideTabButtons = ({
   mainDocumentId,
   filesSideTabs,
   metadataDirty,
+  searchDirty,
   filesCount: filesCountOverride,
 }: GetSideTabButtonsParams): TabButtonDef[] => {
   const buttons: TabButtonDef[] = [];
@@ -74,7 +76,7 @@ const getSideTabButtons = ({
       pushFilesList();
       buttons.push({
         id: SIDE_TAB.SEARCH,
-        label: <TabLabel text="Search" />,
+        label: <TabLabel text="Search" dirty={searchDirty} />,
       });
       break;
     case MAIN_TAB.METADATA:
@@ -86,7 +88,7 @@ const getSideTabButtons = ({
       pushFilesList();
       buttons.push({
         id: SIDE_TAB.SEARCH,
-        label: <TabLabel text="Search" />,
+        label: <TabLabel text="Search" dirty={searchDirty} />,
       });
       break;
     case MAIN_TAB.RELATIONSHIPS:
@@ -99,7 +101,7 @@ const getSideTabButtons = ({
         },
         {
           id: SIDE_TAB.SEARCH,
-          label: <TabLabel text="Search" />,
+          label: <TabLabel text="Search" dirty={searchDirty} />,
         }
       );
       break;

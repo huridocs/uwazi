@@ -687,7 +687,10 @@ marked for training,marked for training
 Marked for training + all labeled entries,Marked for training + all labeled entries
 Marked for training only,Marked for training only
 Match,Match
+match,match
 match verbatim,match verbatim
+matches,matches
+Matches show the passage and the page they are on.,Matches show the passage and the page they are on.
 Matching,Matching
 matching,matching
 Matomo,Matomo
@@ -764,6 +767,7 @@ No icon / flag,အိုင်ကွန် / အလံ မရှိပါ
 No items available,No items available
 No Label,တံဆိပ် မရှိပါ
 No label,No label
+No matches for,No matches for
 No matching entities.,No matching entities.
 No media selected,No media selected
 No metadata for this entity yet.,No metadata for this entity yet.
@@ -1052,6 +1056,7 @@ Search relationships,Search relationships
 Search relevance,ရှာဖွေမှု ဆီလျော်ခြင်း
 Search text,ရှာဖွေမှု စာသား
 Search text description,Type something in the search box to get some results.
+Search this document,Search this document
 Search Tips,ရှာဖွေမှု အကြံပြုချက်များ
 Search tips,Search tips
 Search Tips: boolean,ရှာဖွေမှု အကြံပြုချက်များ- မှန်မှားဒေတာ
@@ -1283,6 +1288,7 @@ Time,အချိန်
 Time (UTC),Time (UTC)
 Timelinks,Timelinks
 Timestamp,Timestamp
+tips,tips
 Title,ခေါင်းစဉ်
 To,To
 To add references you can start by selecting text in the document,To add references you can start by selecting text in the document
