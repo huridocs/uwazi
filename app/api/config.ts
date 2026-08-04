@@ -171,6 +171,7 @@ export const config = {
       v2Auth2fa: false,
       v2Login: false,
       v2PasswordReauth: false,
+      v2Captcha: false,
     },
   },
   externalServices: (process.env.EXTERNAL_SERVICES || '').toLowerCase() === 'true',
