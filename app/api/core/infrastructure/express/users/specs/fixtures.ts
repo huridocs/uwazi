@@ -17,6 +17,16 @@ const fixtures: DBFixture = {
       deletedAt: '1',
     }),
     {
+      ...f.user({
+        username: 'userwithstate',
+        role: UserRole.EDITOR,
+        email: 'userwithstate@test.com',
+      }),
+      failedLogins: 3,
+      using2fa: true,
+      secret: 'existing-secret',
+    },
+    {
       _id: new ObjectId(PUBLIC_USER_ID),
       username: 'public',
       role: UserRole.COLLABORATOR,

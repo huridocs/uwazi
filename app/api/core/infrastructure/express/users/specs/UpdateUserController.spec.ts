@@ -109,6 +109,29 @@ describe('POST /api/users', () => {
     expect(updatedUser!.password).toBe('hush hush super secret');
   });
 
+  it('should preserve lockout and 2FA state when an admin resets the password', async () => {
+    const response = await request(appWithAdminUser)
+      .post('/api/users')
+      .send({
+        _id: f.idString('userwithstate'),
+        username: 'userwithstate',
+        role: 'editor',
+        email: 'userwithstate@test.com',
+        password: 'newpass',
+      });
+
+    expect(response.status).toBe(201);
+
+    const updatedUser = await testingEnvironment.db
+      .getCollection('users')!
+      .findOne({ _id: f.id('userwithstate') });
+
+    expect(updatedUser!.password).toBe('hush hush super secret');
+    expect(updatedUser!.failedLogins).toBe(3);
+    expect(updatedUser!.using2fa).toBe(true);
+    expect(updatedUser!.secret).toBe('existing-secret');
+  });
+
   it.each([
     { case: 'username', username: 'admin', email: 'existing@test.com' },
     { case: 'email', username: 'existinguser', email: 'admin@test.com' },
