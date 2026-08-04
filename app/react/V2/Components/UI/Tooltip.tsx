@@ -13,7 +13,7 @@ type TooltipProps = Omit<FlowbiteTooltipProps, 'theme'> & {
 
 const sizeBase: Record<TooltipSize, string> = {
   sm: 'absolute z-10 inline-block rounded-lg px-3 py-2 text-sm font-medium',
-  nano: 'absolute z-10 inline-block rounded-md px-2 py-1 text-[10px] font-medium leading-snug',
+  nano: 'absolute z-10 inline-block rounded-md px-2 py-1 text-micro font-medium leading-snug',
 };
 
 const lightSurface = 'tooltip-light-surface';
