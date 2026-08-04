@@ -31,9 +31,7 @@ const EntityPageViewProvider = ({
     return () => setEntityPageViewAtom(null);
   }, [entityPageView, setEntityPageViewAtom]);
 
-  return (
-    <EntityPageViewContext.Provider value={value}>{children}</EntityPageViewContext.Provider>
-  );
+  return <EntityPageViewContext.Provider value={value}>{children}</EntityPageViewContext.Provider>;
 };
 
 const useEntityPageView = () => {

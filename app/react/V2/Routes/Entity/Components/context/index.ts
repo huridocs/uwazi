@@ -40,4 +40,3 @@ export {
   useEntityPageView,
 } from '../EntityPageView/index.js';
 export type { EntityPageViewData } from '../EntityPageView/index.js';
-

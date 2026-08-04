@@ -9,10 +9,7 @@ import { DocumentInteractionProvider } from './DocumentInteractionContext.js';
 import { TocProvider } from './TocContext.js';
 import { MetadataEditingProvider } from './MetadataEditingContext.js';
 import { EntityOverlayProvider } from './EntityOverlayContext.js';
-import {
-  EntityPageViewProvider,
-  type EntityPageViewData,
-} from '../EntityPageView/index.js';
+import { EntityPageViewProvider, type EntityPageViewData } from '../EntityPageView/index.js';
 
 type EntityScopedProviderProps = {
   entity: Entity;
