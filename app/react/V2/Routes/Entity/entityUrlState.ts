@@ -101,7 +101,8 @@ const enqueueEntityUrlUpdate = (
       searchPatches: [],
       hashPatches: [],
     };
-    pathnameAtEnqueue = typeof window !== 'undefined' ? window.location.pathname : fallback.pathname;
+    pathnameAtEnqueue =
+      typeof window !== 'undefined' ? window.location.pathname : fallback.pathname;
   }
   if (options.search) {
     pendingBatch.searchPatches.push(options.search);
