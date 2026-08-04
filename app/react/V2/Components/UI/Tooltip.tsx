@@ -3,44 +3,42 @@ import { useAtomValue } from 'jotai';
 import { Tooltip as FlowbiteTooltip } from 'flowbite-react';
 import { effectiveThemeModeAtom } from '#V2/atoms/index.js';
 
-type TooltipProps = React.ComponentProps<typeof FlowbiteTooltip>;
+type FlowbiteTooltipProps = React.ComponentProps<typeof FlowbiteTooltip>;
+type TooltipSize = 'sm' | 'nano';
 
-const arrowEdges: Record<string, string> = {
-  top: 'border-b border-r',
-  bottom: 'border-t border-l',
-  left: 'border-t border-r',
-  right: 'border-t border-l',
+type TooltipProps = Omit<FlowbiteTooltipProps, 'theme'> & {
+  size?: TooltipSize;
+  theme?: FlowbiteTooltipProps['theme'];
 };
 
-const arrowStyleFor = (placement: TooltipProps['placement']) => {
-  const side = (placement ?? 'top').split('-')[0] ?? 'top';
-  const edges = arrowEdges[side] ?? arrowEdges.top;
-  return {
-    light: `bg-white ${edges} border-gray-200`,
-    dark: `bg-gray-900 ${edges} border-gray-700 dark:bg-gray-700`,
-    auto: `bg-white ${edges} border-gray-200 dark:border-gray-600 dark:bg-gray-700`,
-  };
+const sizeBase: Record<TooltipSize, string> = {
+  sm: 'absolute z-10 inline-block rounded-lg px-3 py-2 text-sm font-medium',
+  nano: 'absolute z-10 inline-block rounded-md px-2 py-1 text-[10px] font-medium leading-snug',
 };
 
-const defaultTheme = {
-  base: 'absolute z-10 inline-block rounded-md px-2 py-1 text-[10px] font-medium leading-snug shadow-sm',
-};
+const lightSurface = 'tooltip-light-surface';
 
-const Tooltip = ({ style, theme, placement = 'top', ...props }: TooltipProps) => {
+const Tooltip = ({ style, theme, placement = 'top', size = 'sm', ...props }: TooltipProps) => {
   const themeMode = useAtomValue(effectiveThemeModeAtom);
-  const arrowStyle = arrowStyleFor(placement);
 
   return (
     <FlowbiteTooltip
       placement={placement}
       style={style ?? (themeMode === 'dark' ? 'dark' : 'light')}
       theme={{
-        ...defaultTheme,
         ...theme,
+        base: theme?.base ?? sizeBase[size],
+        style: {
+          light: lightSurface,
+          ...theme?.style,
+        },
         arrow: {
+          placement: '-6px',
           ...theme?.arrow,
           style: {
-            ...arrowStyle,
+            light: 'bg-white',
+            dark: 'bg-gray-900 dark:bg-gray-700',
+            auto: 'bg-white dark:bg-gray-700',
             ...theme?.arrow?.style,
           },
         },
@@ -52,4 +50,4 @@ const Tooltip = ({ style, theme, placement = 'top', ...props }: TooltipProps) =>
 };
 
 export { Tooltip };
-export type { TooltipProps };
+export type { TooltipProps, TooltipSize };
