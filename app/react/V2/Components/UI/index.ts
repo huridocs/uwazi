@@ -85,7 +85,7 @@ export { IconButton } from './IconButton.js';
 
 export type { PillColor } from './Pill.js';
 export type { TableProps, TableRow } from './Table/index.js';
-export type { TooltipProps } from './Tooltip.js';
+export type { TooltipProps, TooltipSize } from './Tooltip.js';
 export type { PortalTooltipProps, PortalTooltipPlacement } from './PortalTooltip.js';
 export type { ExpandableTextProps } from './ExpandableText.js';
 export type { FadeTruncateProps } from './FadeTruncate.js';

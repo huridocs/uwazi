@@ -191,7 +191,6 @@ Clear Filters,စစ်ထုတ်မှုများကို ရှင်�
 Clear PDF selection,Clear PDF selection
 Clear search,Clear search
 Click,Click
-Click here,ဒီမှာ နှိပ်ပါ
 Click to fill,ဖြည့်ရန် နှိပ်ပါ
 Close,ပိတ်ရန်
 Code,Code
@@ -631,7 +630,10 @@ Last updated,Last updated
 Last updated from collection:,Last updated from collection:
 Latitude,လတ္တီကျု
 Latitude must be between -90 and 90,Latitude must be between -90 and 90
+Learn how to add and configure a contact form on a webpage.,Learn how to add and configure a contact form on a webpage.
+Learn how to build your first collection,Learn how to build your first collection
 Learn more,ပိုမိုလေ့လာရန်
+Learn more about the components.,Learn more about the components.
 Legend,ဒဏ္ဍာရီ
 Lengthy reindex process,Lengthy reindex process
 Library,စာကြည့်တိုက်
@@ -1297,8 +1299,6 @@ To,To
 To add references you can start by selecting text in the document,To add references you can start by selecting text in the document
 "To bring you a better experience, this site uses cookies.",သင့်အား ပိုမိုကောင်းမွန်သော အတွေ့အကြုံ ရရှိစေရန် ဤဝက်ဘ်ဆိုက်တွင် ကွတ်ကီးများ အသုံးပြုသည်။
 "To complete the account creation process, please create a password for your account",အကောင့်ဖန်တီးခြင်း လုပ်ငန်းစဉ် ပြီးမြောက်စေရန် ကျေးဇူးပြု၍ သင့်အကောင့်အတွက် စကားဝှက် ဖန်တီးပါ
-to learn how to add and configure a contact form on a webpage.,to learn how to add and configure a contact form on a webpage.
-to learn more about the components.,အစိတ်အပိုင်းများအကြောင်း ပိုမိုလေ့လာရန်။
 to view your authentication code and verify your identity.,သင်၏ စစ်မှန်ကြောင်း အတည်ပြုကုဒ်ကို ကြည့်ရန်နှင့် သင့်ကိုယ်ပိုင်သင်္ကေတကို မှန်ကန်ကြောင်း စစ်ဆေးရန်။
 Today,Today
 Toggle timeline mode,Toggle timeline mode
@@ -1397,6 +1397,7 @@ Users & Groups,Users & Groups
 Using Authenticator,Using Authenticator
 Using URLs,Using URLs
 Uwazi,Uwazi
+Uwazi Docs,Uwazi Docs
 Uwazi is developed by,Uwazi ကို တီထွင်ရေးသားသူမှာ
 Uwazi UI,Uwazi UI
 Validating,Validating

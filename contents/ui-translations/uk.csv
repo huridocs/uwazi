@@ -193,7 +193,6 @@ Clear Filters,Очистити фільтри
 Clear PDF selection,Очистити вибір PDF
 Clear search,Clear search
 Click,Клац!
-Click here,Натисніть сюди
 Click to fill,"Натисніть, щоб заповнити"
 Close,Закрити
 Code,Code
@@ -633,7 +632,10 @@ Last updated,Останнє оновлення
 Last updated from collection:,Last updated from collection:
 Latitude,Широта
 Latitude must be between -90 and 90,Latitude must be between -90 and 90
+Learn how to add and configure a contact form on a webpage.,Learn how to add and configure a contact form on a webpage.
+Learn how to build your first collection,Learn how to build your first collection
 Learn more,Дізнатися більше
+Learn more about the components.,Learn more about the components.
 Legend,Підпис
 Lengthy reindex process,Тривалий процес реіндексації
 Library,Бібліотека
@@ -1299,8 +1301,6 @@ To,До
 To add references you can start by selecting text in the document,"Щоб додати посилання, спочатку виділіть текст у документі"
 "To bring you a better experience, this site uses cookies.",Цей сайт використовує файли cookie для покращення вашого досвіду взаємодії з сайтом.
 "To complete the account creation process, please create a password for your account","Будь ласка, створіть пароль, щоб завершити процес створення облікового запису."
-to learn how to add and configure a contact form on a webpage.,"дізнатися, як додати та налаштувати контактну форму на веб-сторінці."
-to learn more about the components.,"для того, щоб дізнатися більше про компоненти."
 to view your authentication code and verify your identity.,щоб переглянути свій код автентифікації та підтвердити свою особу.
 Today,Сьогодні
 Toggle timeline mode,Toggle timeline mode
@@ -1399,6 +1399,7 @@ Users & Groups,Користувачі та групи
 Using Authenticator,Використання автентифікатора
 Using URLs,Використання URL-адрес
 Uwazi,Uwazi
+Uwazi Docs,Uwazi Docs
 Uwazi is developed by,Uwazi розроблений
 Uwazi UI,Uwazi UI
 Validating,Validating

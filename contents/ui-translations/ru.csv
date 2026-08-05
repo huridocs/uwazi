@@ -188,7 +188,6 @@ Clear Filters,Очистить фильтры
 Clear PDF selection,Clear PDF selection
 Clear search,Clear search
 Click,Click
-Click here,Нажмите сюда
 Click to fill,"Нажмите, чтобы заполнить"
 Close,Закрыть
 Code,Code
@@ -628,7 +627,10 @@ Last updated,Last updated
 Last updated from collection:,Last updated from collection:
 Latitude,Широта
 Latitude must be between -90 and 90,Latitude must be between -90 and 90
+Learn how to add and configure a contact form on a webpage.,Learn how to add and configure a contact form on a webpage.
+Learn how to build your first collection,Learn how to build your first collection
 Learn more,Узнать больше
+Learn more about the components.,Learn more about the components.
 Legend,Подпись
 Lengthy reindex process,Lengthy reindex process
 Library,Библиотека
@@ -1294,8 +1296,6 @@ To,To
 To add references you can start by selecting text in the document,To add references you can start by selecting text in the document
 "To bring you a better experience, this site uses cookies.","Этот сайт использует файлы cookie для того, чтобы улучшить ваш опыт взаимодействия с сайтом."
 "To complete the account creation process, please create a password for your account","Пожалуйста, создайте пароль для того, чтобы завершить процесс создания своей учетной записи."
-to learn how to add and configure a contact form on a webpage.,to learn how to add and configure a contact form on a webpage.
-to learn more about the components.,"для того, чтобы узнать больше о компонентах."
 to view your authentication code and verify your identity.,чтобы просмотреть свой код аутентификации и подтвердить свою личность.
 Today,Today
 Toggle timeline mode,Toggle timeline mode
@@ -1394,6 +1394,7 @@ Users & Groups,Users & Groups
 Using Authenticator,Using Authenticator
 Using URLs,Using URLs
 Uwazi,Uwazi
+Uwazi Docs,Uwazi Docs
 Uwazi is developed by,Uwazi разработан
 Uwazi UI,Uwazi UI
 Validating,Validating

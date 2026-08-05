@@ -191,7 +191,6 @@ Clear Filters,Filtreleri Temizle
 Clear PDF selection,Clear PDF selection
 Clear search,Clear search
 Click,Click
-Click here,Buraya tıklayın
 Click to fill,Doldurmak için tıklayın
 Close,Kapat
 Code,Code
@@ -631,7 +630,10 @@ Last updated,Last updated
 Last updated from collection:,Last updated from collection:
 Latitude,Enlem
 Latitude must be between -90 and 90,Latitude must be between -90 and 90
+Learn how to add and configure a contact form on a webpage.,Learn how to add and configure a contact form on a webpage.
+Learn how to build your first collection,Learn how to build your first collection
 Learn more,Daha fazla bilgi edin
+Learn more about the components.,Learn more about the components.
 Legend,Gösterge
 Lengthy reindex process,Lengthy reindex process
 Library,Kütüphane
@@ -1297,8 +1299,6 @@ To,To
 To add references you can start by selecting text in the document,To add references you can start by selecting text in the document
 "To bring you a better experience, this site uses cookies.",Size daha iyi bir deneyim sunmak için bu site çerezleri kullanır.
 "To complete the account creation process, please create a password for your account",Hesap oluşturma işlemini tamamlamak için lütfen hesabınız için bir parola oluşturun
-to learn how to add and configure a contact form on a webpage.,to learn how to add and configure a contact form on a webpage.
-to learn more about the components.,bileşenleri hakkında daha fazla bilgi edinmek için.
 to view your authentication code and verify your identity.,kimlik doğrulama kodunuzu görüntülemek ve kimliğinizi doğrulamak için.
 Today,Today
 Toggle timeline mode,Toggle timeline mode
@@ -1397,6 +1397,7 @@ Users & Groups,Users & Groups
 Using Authenticator,Using Authenticator
 Using URLs,Using URLs
 Uwazi,Uwazi
+Uwazi Docs,Uwazi Docs
 Uwazi is developed by,Uwazi tarafından geliştirildi
 Uwazi UI,Uwazi UI
 Validating,Validating
