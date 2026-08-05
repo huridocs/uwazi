@@ -1,3 +1,4 @@
+/* eslint-disable max-statements */
 import express, { Application, NextFunction, Request, Response } from 'express';
 import { Response as SuperTestResponse } from 'supertest';
 
@@ -10,6 +11,7 @@ import { extendSupertest } from './supertestExtensions.js';
 import { dependenciesContextMiddleware } from '#api/core/infrastructure/express/middlewares/DependenciesMiddleware.js';
 import { requestTimingMiddleware } from '#api/core/infrastructure/express/middlewares/RequestTimingMiddleware.js';
 import { authenticatedUserMiddlewares } from '#api/auth/routes.js';
+import testingDB from '#api/utils/testing_db.js';
 
 extendSupertest();
 
@@ -21,29 +23,39 @@ enum TestEmitSources {
 }
 
 // setUpApp is routinely called at module scope, before testingEnvironment.setUp() has
-// connected to the DB, so authenticatedUserMiddlewares() (which needs that connection to
-// build its Mongo session store) can't be built eagerly here. Deferring construction to the
-// first actual request means it only runs once a DB connection is guaranteed to exist.
+// connected to the DB, and some specs never connect at all (they don't need one).
+// authenticatedUserMiddlewares() needs a live connection to build its Mongo session store,
+// so defer building it to the first actual request, self-connecting via the same idempotent
+// helper testingEnvironment uses if nothing has connected yet.
 const lazyAuthenticatedUserMiddlewares = () => {
   let middlewares: ((req: Request, res: Response, next: NextFunction) => void)[] | undefined;
+  let connecting: Promise<unknown> | undefined;
 
   return (req: Request, res: Response, next: NextFunction) => {
-    middlewares ??= authenticatedUserMiddlewares();
-
-    const runFrom = (index: number, error?: unknown): void => {
-      if (error) {
-        next(error);
-        return;
+    (async () => {
+      if (!middlewares) {
+        connecting ??= testingDB.connect();
+        await connecting;
+        middlewares = authenticatedUserMiddlewares();
       }
-      const middleware = middlewares![index];
-      if (!middleware) {
-        next();
-        return;
-      }
-      middleware(req, res, (err?: unknown) => runFrom(index + 1, err));
-    };
+    })()
+      .then(() => {
+        const runFrom = (index: number, error?: unknown): void => {
+          if (error) {
+            next(error);
+            return;
+          }
+          const middleware = middlewares![index];
+          if (!middleware) {
+            next();
+            return;
+          }
+          middleware(req, res, (err?: unknown) => runFrom(index + 1, err));
+        };
 
-    runFrom(0);
+        runFrom(0);
+      })
+      .catch(next);
   };
 };
 
