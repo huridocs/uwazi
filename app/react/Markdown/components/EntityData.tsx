@@ -1,6 +1,8 @@
 /* eslint-disable react/no-multi-comp */
 import React from 'react';
+import Immutable from 'immutable';
 import { connect, ConnectedProps } from 'react-redux';
+import { useAtomValue } from 'jotai';
 
 import { ClientTemplateSchema, IStore } from '#app/istore.js';
 import { formater as formatter } from '#app/Metadata/helpers/formater.js';
@@ -9,6 +11,7 @@ import { showByType } from '#app/Metadata/components/Metadata.js';
 import { Translate } from '#app/I18N/index.js';
 import { IImmutable } from '#shared/types/Immutable.js';
 import { ensure } from '#shared/tsUtils.js';
+import { entityPageViewAtom } from '#V2/atoms/entityPageViewAtom.js';
 import { errorCollector } from '../utils.js';
 
 interface Options {
@@ -106,13 +109,19 @@ const getMethod = (propValueOf: string | undefined, propertyName: string) => {
 };
 
 const EntityData = ({
-  entity,
+  entity: reduxEntity,
   templates,
   thesauri,
   'value-of': propValueOf,
   'label-of': propLabelOf,
   newNameGeneration,
 }: ComponentProps) => {
+  // Prefer entity from Entity V2 page-view atom (no Redux); fall back to V1 entityView.
+  const entityPageView = useAtomValue(entityPageViewAtom);
+  const entity = entityPageView?.entityRaw
+    ? Immutable.fromJS(entityPageView.entityRaw)
+    : reduxEntity;
+
   const formattedEntity = formatter.prepareMetadata(entity.toJS(), templates, thesauri);
   const template = templates.find(t => t?.get('_id') === entity.get('template'));
   // eslint-disable-next-line react/jsx-no-useless-fragment
