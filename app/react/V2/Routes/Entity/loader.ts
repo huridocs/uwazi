@@ -92,19 +92,12 @@ const createEntityLoader =
         const response = await getDocumentPlaintext(mainDocument._id, headers);
 
         if (response instanceof FetchResponseError) {
-          throw new Response(
-            JSON.stringify({
-              error: 'Failed to load plaintext',
-              message: response.message,
-              entityId: entitySharedId,
-            }),
-            {
+          throw apiErrorToRequestError(
+            new ApiError('Failed to load plaintext', {
+              kind: 'http',
               status: 404,
-              statusText: 'Failed to load plaintext',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-            }
+              detail: response.message,
+            })
           );
         } else {
           pagePlaintext = response;
