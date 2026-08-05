@@ -14,6 +14,8 @@ import {
   parseCoordinate,
 } from '#shared/geolocationCoordinates.js';
 
+const cx = (...classes: Array<string | false | undefined>) => classes.filter(Boolean).join(' ');
+
 interface GeolocationProps {
   name: string;
   onChange?: ({ lat, lon }: { lat?: number; lon?: number }) => void;
@@ -87,7 +89,7 @@ const Geolocation = ({
   };
 
   return (
-    <div className={className}>
+    <div className={cx('space-y-2', className)}>
       {label ? <Label htmlFor={name}>{label}</Label> : null}
       <Map
         onClick={mapClick}
@@ -97,7 +99,7 @@ const Geolocation = ({
         layers={layers}
         markers={markers}
       />
-      <div className="flex gap-4">
+      <div className="flex gap-2">
         <InputField
           className="grow"
           onChange={latChange}
@@ -106,6 +108,7 @@ const Geolocation = ({
           clearFieldAction={clearCoordinates}
           value={currentLatitude ?? ''}
           label={<Translate>Latitude</Translate>}
+          labelVariant="secondary"
           id={name}
           name={`${name}.lat`}
           type="number"
@@ -117,6 +120,7 @@ const Geolocation = ({
         <InputField
           className="grow"
           label={<Translate>Longitude</Translate>}
+          labelVariant="secondary"
           onChange={lonChange}
           disabled={disabled}
           hasErrors={hasErrors}

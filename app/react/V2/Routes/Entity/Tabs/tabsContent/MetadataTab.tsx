@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { useRevalidator } from 'react-router';
 import { useAtomValue } from 'jotai';
 import type { Entity } from '#V2/api/entities/types.js';
@@ -19,6 +19,7 @@ import {
 import { entityLoaderCache } from '#V2/Routes/Entity/EntityLoaderCache.js';
 import { useServices } from '#V2/services/index.js';
 import type { EntitySaveInput } from '#V2/services/index.js';
+import { useDocumentFieldMutations } from './useDocumentFieldMutations.js';
 
 type MetadataTabProps = {
   entity: Entity;
@@ -50,6 +51,15 @@ const MetadataTab = ({ entity, host }: MetadataTabProps) => {
   const { openEntityOverlayTarget } = useEntityOverlay();
   const revalidator = useRevalidator();
   const showEditor = isEditing && formMountHost === host;
+
+  const refreshEntity = useCallback(async () => {
+    entityLoaderCache.invalidateEntity(entity.sharedId);
+    await revalidator.revalidate();
+  }, [entity.sharedId, revalidator]);
+  const documentMutations = useDocumentFieldMutations({
+    entitySharedId: entity.sharedId,
+    refreshEntity,
+  });
 
   useEffect(() => {
     if (!showEditor) return undefined;
@@ -116,11 +126,20 @@ const MetadataTab = ({ entity, host }: MetadataTabProps) => {
               {saveError}
             </p>
           )}
+          <input
+            ref={documentMutations.fileInputRef}
+            type="file"
+            className="hidden"
+            onChange={documentMutations.handleFileInputChange}
+            aria-hidden
+            tabIndex={-1}
+          />
           <EditEntity
             formId={formId}
             form={form}
             entity={entity}
             mediaUpload={mediaUpload}
+            documentMutations={documentMutations}
             onSave={onSave}
             disabled={isSaving}
             errors={editErrors}

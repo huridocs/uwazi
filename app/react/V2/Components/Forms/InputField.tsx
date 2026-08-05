@@ -4,6 +4,7 @@ import { XMarkIcon } from '@heroicons/react/20/solid';
 import { Translate } from '#app/I18N/index.js';
 import { InputError } from './InputError.js';
 import { Label } from './Label.js';
+import type { LabelVariant } from './Label.js';
 
 type InputFieldType =
   'text' | 'email' | 'password' | 'number' | 'date' | 'datetime-local' | 'search' | 'url' | 'file';
@@ -13,6 +14,7 @@ type FieldState = { disabled?: boolean; hasError?: boolean };
 interface InputFieldProps {
   id: string;
   label?: string | React.ReactNode;
+  labelVariant?: LabelVariant;
   disabled?: boolean;
   hideLabel?: boolean;
   placeholder?: string;
@@ -63,6 +65,7 @@ const InputField = React.forwardRef(
     {
       id,
       label,
+      labelVariant,
       disabled,
       hideLabel,
       placeholder,
@@ -93,7 +96,12 @@ const InputField = React.forwardRef(
 
     return (
       <div className={className}>
-        <Label htmlFor={id} hideLabel={!label || hideLabel} hasErrors={state.hasError}>
+        <Label
+          htmlFor={id}
+          hideLabel={!label || hideLabel}
+          hasErrors={state.hasError}
+          variant={labelVariant}
+        >
           {label}
         </Label>
         <div className="relative flex w-full">
