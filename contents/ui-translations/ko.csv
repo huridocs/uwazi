@@ -190,7 +190,6 @@ Clear Filters,필터 초기화
 Clear PDF selection,Clear PDF selection
 Clear search,Clear search
 Click,Click
-Click here,여기를 클릭하십시오
 Click to fill,텍스트 자동 채우기
 Close,닫기
 Code,Code
@@ -630,7 +629,10 @@ Last updated,Last updated
 Last updated from collection:,Last updated from collection:
 Latitude,위도
 Latitude must be between -90 and 90,Latitude must be between -90 and 90
+Learn how to add and configure a contact form on a webpage.,Learn how to add and configure a contact form on a webpage.
+Learn how to build your first collection,Learn how to build your first collection
 Learn more,더 알아보기
+Learn more about the components.,Learn more about the components.
 Legend,범례
 Lengthy reindex process,Lengthy reindex process
 Library,라이브러리
@@ -1294,8 +1296,6 @@ To,To
 To add references you can start by selecting text in the document,To add references you can start by selecting text in the document
 "To bring you a better experience, this site uses cookies.",이 사이트는 사용자 편의를 위해 쿠키를 사용합니다.
 "To complete the account creation process, please create a password for your account",계정 생성을 마치려면 계정 비밀번호를 설정하십시오.
-to learn how to add and configure a contact form on a webpage.,to learn how to add and configure a contact form on a webpage.
-to learn more about the components.,구성 요소에 대해 더 자세히 알기
 to view your authentication code and verify your identity.,코드 확인하고 인증하기
 Today,Today
 Toggle timeline mode,Toggle timeline mode
@@ -1394,6 +1394,7 @@ Users & Groups,Users & Groups
 Using Authenticator,Using Authenticator
 Using URLs,Using URLs
 Uwazi,Uwazi
+Uwazi Docs,Uwazi Docs
 Uwazi is developed by,Uwazi 제작 및 개발:
 Uwazi UI,Uwazi UI
 Validating,Validating
