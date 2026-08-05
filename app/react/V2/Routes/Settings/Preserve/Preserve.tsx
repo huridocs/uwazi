@@ -43,14 +43,7 @@ const Preserve = () => {
             <div className="flex flex-col gap-4">
               <div>
                 <span>1. </span>
-                <a
-                  href="https://uwazi.io/page/9852italrtk/support"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-primary-700 font-semibold hover:text-primary-800 mt-2 inline"
-                >
-                  <Translate>Install the browser extension.</Translate>
-                </a>
+                <Translate>Install the browser extension.</Translate>
               </div>
               <div>
                 <span>2. </span>

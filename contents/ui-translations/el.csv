@@ -191,7 +191,6 @@ Clear Filters,Εκκαθάριση φίλτρων
 Clear PDF selection,Εκκαθάριση επιλογής PDF
 Clear search,Clear search
 Click,Κάντε κλικ
-Click here,Κάντε κλικ εδώ
 Click to fill,Κάντε κλικ για να συμπληρώσετε
 Close,Κλείσιμο
 Code,Code
@@ -631,7 +630,10 @@ Last updated,Τελευταία ενημέρωση
 Last updated from collection:,Last updated from collection:
 Latitude,Γεωγραφικό πλάτος
 Latitude must be between -90 and 90,Latitude must be between -90 and 90
+Learn how to add and configure a contact form on a webpage.,Learn how to add and configure a contact form on a webpage.
+Learn how to build your first collection,Learn how to build your first collection
 Learn more,Μάθετε περισσότερα
+Learn more about the components.,Learn more about the components.
 Legend,Υπόμνημα
 Lengthy reindex process,Χρονοβόρα διαδικασία επαναευρετηριοποίησης
 Library,Βιβλιοθήκη
@@ -1295,8 +1297,6 @@ To,Έως
 To add references you can start by selecting text in the document,"Για να προσθέσετε αναφορές, μπορείτε να ξεκινήσετε επιλέγοντας κείμενο στο έγγραφο."
 "To bring you a better experience, this site uses cookies.","Για να σας προσφέρουμε καλύτερη εμπειρία, αυτός ο ιστότοπος χρησιμοποιεί cookies."
 "To complete the account creation process, please create a password for your account","Για να ολοκληρώσετε τη διαδικασία δημιουργίας λογαριασμού, δημιουργήστε έναν κωδικό πρόσβασης για το λογαριασμό σας."
-to learn how to add and configure a contact form on a webpage.,για να μάθετε πώς να προσθέσετε και να ρυθμίσετε μια φόρμα επικοινωνίας σε μια ιστοσελίδα.
-to learn more about the components.,για να μάθετε περισσότερα για τα στοιχεία.
 to view your authentication code and verify your identity.,για να δείτε τον κωδικό πιστοποίησης και να επαληθεύσετε την ταυτότητά σας.
 Today,Σήμερα
 Toggle timeline mode,Toggle timeline mode
@@ -1395,6 +1395,7 @@ Users & Groups,Χρήστες & Ομάδες
 Using Authenticator,Χρήση της εφαρμογής πιστοποίησης ταυτότητας
 Using URLs,Χρήση URLs
 Uwazi,Uwazi
+Uwazi Docs,Uwazi Docs
 Uwazi is developed by,Το Uwazi έχει αναπτυχθεί από
 Uwazi UI,Uwazi UI
 Validating,Validating
