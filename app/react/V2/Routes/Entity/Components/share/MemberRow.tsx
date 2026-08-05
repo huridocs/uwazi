@@ -42,7 +42,7 @@ const IconAction = ({
   children: React.ReactNode;
 }) => (
   <ActionSlot>
-    <Tooltip content={label} placement="top">
+    <Tooltip content={label} placement="top" size="nano">
       <button
         type="button"
         aria-label={label}

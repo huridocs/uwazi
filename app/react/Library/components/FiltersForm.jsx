@@ -113,7 +113,7 @@ class FiltersForm extends Component {
                   </Translate>
                 </p>
                 <a
-                  href="https://github.com/huridocs/uwazi/wiki/Filter"
+                  href="https://docs.uwazi.io/docs/how-to/working-with-content/search-filter-and-sort-the-library/"
                   target="_blank"
                   rel="noopener noreferrer"
                 >

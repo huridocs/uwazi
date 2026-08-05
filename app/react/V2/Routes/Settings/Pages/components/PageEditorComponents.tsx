@@ -24,10 +24,10 @@ const HTMLNotification = ({ useLegacyMarkdown = true }: { useLegacyMarkdown?: bo
         <Link
           className="underline hover:text-primary-800"
           target="_blank"
-          to="https://uwazi.readthedocs.io/en/latest/admin-docs/analysing-and-visualising-your-collection.html"
+          to="https://docs.uwazi.io/docs/reference/page-visualization-components/"
           rel="noopener noreferrer"
         >
-          <Translate>Documentation</Translate>
+          <Translate>Learn more about the components.</Translate>
         </Link>
       </div>
     </div>
@@ -50,13 +50,11 @@ const HTMLNotification = ({ useLegacyMarkdown = true }: { useLegacyMarkdown?: bo
         <Link
           className="underline hover:text-primary-800"
           target="_blank"
-          to="https://uwazi.readthedocs.io/en/latest/admin-docs/analysing-and-visualising-your-collection.html"
+          to="https://docs.uwazi.io/docs/reference/page-visualization-components/"
           rel="noopener noreferrer"
         >
-          <Translate>Click here</Translate>
+          <Translate>Learn more about the components.</Translate>
         </Link>
-        &nbsp;
-        <Translate>to learn more about the components.</Translate>
       </div>
     </div>
   );
