@@ -1,6 +1,4 @@
 import { ObjectId } from 'mongodb';
-import { EncryptedPassword } from './EncryptedPassword.js';
-import { Credentials } from './Credentials.js';
 
 const PUBLIC_USER_ID = new ObjectId('698c35e7cf8880419d91fe4d');
 
@@ -21,21 +19,25 @@ type UserProps = {
   role: UserRole;
   email: string;
   groups?: UserGroup[];
-  credentials?: Credentials;
+};
+
+type UserProfile = {
+  username: string;
+  role: UserRole;
+  email: string;
+  groups?: UserGroup[];
 };
 
 class User {
   readonly _id: string;
 
-  readonly username: string;
+  username: string;
 
-  readonly role: UserRole;
+  role: UserRole;
 
-  readonly email: string;
+  email: string;
 
-  readonly groups: UserGroup[];
-
-  credentials?: Credentials;
+  groups: UserGroup[];
 
   constructor(props: UserProps) {
     this._id = props._id;
@@ -43,35 +45,15 @@ class User {
     this.role = props.role;
     this.email = props.email;
     this.groups = props.groups ?? [];
-    this.credentials = props.credentials;
   }
 
-  /**
-   * Attaches previously-persisted credentials that weren't loaded on this instance (e.g.
-   * getById never hydrates them) — for reconstructing full state before a mutation, not a
-   * business-rule transition like the methods below.
-   */
-  restoreCredentials(credentials?: Credentials): void {
-    this.credentials = credentials;
-  }
-
-  setPassword(password: EncryptedPassword) {
-    this.credentials = this.credentials
-      ? this.credentials.withPassword(password)
-      : new Credentials({ password });
-  }
-
-  incrementFailedLogins(): void {
-    this.credentials = this.credentials!.withIncrementedFailedLogins();
-  }
-
-  lock(unlockCode: string): void {
-    this.credentials = this.credentials!.withLock(unlockCode);
-  }
-
-  clearLockout(): void {
-    this.credentials = this.credentials!.withClearedLockout();
+  updateProfile(profile: UserProfile): void {
+    this.username = profile.username;
+    this.role = profile.role;
+    this.email = profile.email;
+    this.groups = profile.groups ?? [];
   }
 }
 
 export { User, UserRole, PUBLIC_USER_ID };
+export type { UserProps, UserGroup, UserProfile };

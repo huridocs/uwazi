@@ -12,6 +12,7 @@ import {
 import { UsersDAOFactory } from '#api/core/infrastructure/factories/UsersDAOFactory.js';
 import { MongoUsersDataSource } from '#api/core/infrastructure/mongodb/user/MongoUsersDataSource.js';
 import { UserRole } from '#api/core/domain/user/User.js';
+import { UserAccount } from '#api/core/domain/user/UserAccount.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { Login } from '../Login.js';
@@ -91,7 +92,7 @@ describe('Login', () => {
     });
 
     expect(user.username).toBe('validuser');
-    expect(user.credentials).toBeUndefined();
+    expect(user).not.toBeInstanceOf(UserAccount);
   });
 
   it('should clear a previous failed-login count on a valid login', async () => {

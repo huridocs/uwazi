@@ -1,5 +1,6 @@
 import { ObjectId } from 'mongodb';
 import { PUBLIC_USER_ID, User, UserRole } from '#api/core/domain/user/User.js';
+import { UserAccount } from '#api/core/domain/user/UserAccount.js';
 import { Credentials } from '#api/core/domain/user/Credentials.js';
 import { EncryptedPassword } from '#api/core/domain/user/EncryptedPassword.js';
 import { UsersDAOFactory } from '#api/core/infrastructure/factories/UsersDAOFactory.js';
@@ -140,7 +141,7 @@ describe('MongoUsersDataSource', () => {
       expect(result.isOk()).toBe(true);
       const user = result.getData()!;
       expect(user.username).toBe('existing1');
-      expect(user.credentials).toBeUndefined();
+      expect(user).not.toBeInstanceOf(UserAccount);
     });
 
     it('should return fail with UserNotFound when the id does not exist', async () => {
@@ -205,6 +206,30 @@ describe('MongoUsersDataSource', () => {
     });
   });
 
+  describe('getAccountById', () => {
+    it('should return the user hydrated with credentials when the id exists', async () => {
+      const { ds } = createDs();
+      const result = await ds.getAccountById(f.idString('lockeduser'));
+      expect(result.isOk()).toBe(true);
+      const user = result.getData()!;
+      expect(user.username).toBe('lockeduser');
+      expect(user.credentials.accountUnlockCode).toBe('code123');
+    });
+
+    it('should return fail with UserNotFound when the id does not exist', async () => {
+      const { ds } = createDs();
+      const result = await ds.getAccountById(new ObjectId().toHexString());
+      expect(result.isError()).toBe(true);
+      expect(result.getError()!.name).toBe('UserNotFound');
+    });
+
+    it('should return fail with UserNotFound when the user is soft-deleted', async () => {
+      const { ds } = createDs();
+      const result = await ds.getAccountById(f.idString('deleted1'));
+      expect(result.isError()).toBe(true);
+    });
+  });
+
   describe('update() with credentials', () => {
     it('should persist password, lockout and 2fa fields from the Credentials VO', async () => {
       const { ds } = createDs();
@@ -220,7 +245,7 @@ describe('MongoUsersDataSource', () => {
         using2fa: true,
         secret: 'new-secret',
       });
-      const user = new User({
+      const user = new UserAccount({
         _id: existingUser!._id.toHexString(),
         username: existingUser!.username,
         role: existingUser!.role,
@@ -249,7 +274,7 @@ describe('MongoUsersDataSource', () => {
         .findOne({ username: 'lockeduser' });
 
       const credentials = new Credentials({ password: EncryptedPassword.fromHash('new-hash') });
-      const user = new User({
+      const user = new UserAccount({
         _id: existingUser!._id.toHexString(),
         username: existingUser!.username,
         role: existingUser!.role,
@@ -270,11 +295,12 @@ describe('MongoUsersDataSource', () => {
   describe('insert', () => {
     it('should insert a user into the database', async () => {
       const { ds } = createDs();
-      const user = new User({
+      const user = new UserAccount({
         _id: new ObjectId().toHexString(),
         username: 'newuser',
         role: UserRole.EDITOR,
         email: 'new@test.com',
+        credentials: new Credentials({ password: EncryptedPassword.fromHash('hash') }),
       });
       await ds.insert(user);
       const users = await testingEnvironment.db.getAllFrom('users');

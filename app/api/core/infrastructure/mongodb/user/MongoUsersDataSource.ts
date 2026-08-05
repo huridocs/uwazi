@@ -1,6 +1,7 @@
 import { ObjectId } from 'mongodb';
 import { UsersDataSource } from '#api/core/application/contracts/UsersDataSource.js';
 import { User } from '#api/core/domain/user/User.js';
+import { UserAccount } from '#api/core/domain/user/UserAccount.js';
 import { EncryptedPassword } from '#api/core/domain/user/EncryptedPassword.js';
 import {
   EmailInUse,
@@ -63,28 +64,38 @@ class MongoUsersDataSource implements UsersDataSource {
     return Result.ok(MongoUsersMapper.toDomain(user));
   }
 
-  async getByUsername(username: string): Promise<ResultType<User, UserNotFound>> {
+  async getByUsername(username: string): Promise<ResultType<UserAccount, UserNotFound>> {
     const user = await this.dao.findOne({ username });
 
     if (!user) {
       return Result.fail(new UserNotFound(username));
     }
 
-    return Result.ok(MongoUsersMapper.toDomain(user));
+    return Result.ok(MongoUsersMapper.toAccountDomain(user));
+  }
+
+  async getAccountById(id: string): Promise<ResultType<UserAccount, UserNotFound>> {
+    const user = await this.dao.findOne({ _id: ObjectId.createFromHexString(id) });
+
+    if (!user) {
+      return Result.fail(new UserNotFound(id));
+    }
+
+    return Result.ok(MongoUsersMapper.toAccountDomain(user));
   }
 
   async countActiveUsers(): Promise<number> {
     return this.dao.count(this.dao.notPublicUserFilter());
   }
 
-  async insert(user: User): Promise<void> {
+  async insert(user: UserAccount): Promise<void> {
     await this.dao.insertOne(MongoUsersMapper.toDBO(user));
   }
 
   async update(user: User): Promise<void> {
     const { _id, ...updates } = MongoUsersMapper.toDBO(user);
 
-    if (!user.credentials) {
+    if (!(user instanceof UserAccount)) {
       await this.dao.updateOne({ _id }, { $set: updates });
       return;
     }

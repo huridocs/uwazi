@@ -6,6 +6,7 @@ import { z } from 'zod';
 import { AbstractUseCase } from '../libs/UseCase.js';
 import { UsersDataSource } from './contracts/UsersDataSource.js';
 import { User } from '../domain/user/User.js';
+import { UserAccount } from '../domain/user/UserAccount.js';
 import { EncryptedPassword } from '../domain/user/EncryptedPassword.js';
 import {
   InvalidCredentials,
@@ -47,7 +48,7 @@ class Login extends AbstractUseCase<Input, Output, Deps> {
     }
 
     const user = result.getDataOrThrow();
-    const wasLocked = user.credentials!.isLocked();
+    const wasLocked = user.credentials.isLocked();
 
     await this.checkPassword(user, input.password, input.domain);
 
@@ -63,8 +64,8 @@ class Login extends AbstractUseCase<Input, Output, Deps> {
     return this.sanitize(user);
   }
 
-  private async checkPassword(user: User, password: string, domain: string): Promise<void> {
-    const credentials = user.credentials!;
+  private async checkPassword(user: UserAccount, password: string, domain: string): Promise<void> {
+    const { credentials } = user;
     const validBcrypt = await credentials.password.compare(password);
     const validLegacySha256 = matchesLegacySha256Hash(password, credentials.password.getValue());
 
@@ -82,8 +83,8 @@ class Login extends AbstractUseCase<Input, Output, Deps> {
     }
   }
 
-  private async checkTwoFactor(user: User, token: string | undefined, domain: string) {
-    const credentials = user.credentials!;
+  private async checkTwoFactor(user: UserAccount, token: string | undefined, domain: string) {
+    const { credentials } = user;
     if (!credentials.requiresTwoFactor()) return;
 
     if (!token) {
@@ -99,10 +100,10 @@ class Login extends AbstractUseCase<Input, Output, Deps> {
     throw new TwoFactorTokenInvalid();
   }
 
-  private async registerFailedLogin(user: User, domain: string): Promise<void> {
+  private async registerFailedLogin(user: UserAccount, domain: string): Promise<void> {
     user.incrementFailedLogins();
 
-    if (!user.credentials!.shouldLock()) {
+    if (!user.credentials.shouldLock()) {
       await this.deps.usersDS.update(user);
       return;
     }
@@ -115,11 +116,11 @@ class Login extends AbstractUseCase<Input, Output, Deps> {
     await this.dispatcher.sendAccountLockedEmail({
       userId: user._id,
       domain,
-      unlockCode: user.credentials!.accountUnlockCode!,
+      unlockCode: user.credentials.accountUnlockCode!,
     });
   }
 
-  private sanitize(user: User): User {
+  private sanitize(user: UserAccount): User {
     return new User({
       _id: user._id,
       username: user.username,

@@ -4,7 +4,8 @@ import { PostgresDB } from '#api/infrastructure/PostgresDB.js';
 import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
 import { Credentials } from '#api/core/domain/user/Credentials.js';
 import { EncryptedPassword } from '#api/core/domain/user/EncryptedPassword.js';
-import { User, UserRole } from '#api/core/domain/user/User.js';
+import { UserRole } from '#api/core/domain/user/User.js';
+import { UserAccount } from '#api/core/domain/user/UserAccount.js';
 import { PostgresTransactionManager } from '../../common/PostgresTransactionManager.js';
 import { PostgresUsersDataSource } from '../PostgresUsersDataSource.js';
 
@@ -186,6 +187,7 @@ describe('PostgresUsersDataSource', () => {
   });
 
   describe('update() with credentials', () => {
+    // eslint-disable-next-line max-statements
     it('should persist password, lockout and 2fa fields from the Credentials VO', async () => {
       await insertUser(TENANT_ID);
 
@@ -197,7 +199,7 @@ describe('PostgresUsersDataSource', () => {
         using2fa: true,
         secret: 'new-secret',
       });
-      const user = new User({
+      const user = new UserAccount({
         _id: 'user-1',
         username: 'existinguser',
         role: UserRole.EDITOR,
@@ -221,7 +223,7 @@ describe('PostgresUsersDataSource', () => {
       await insertUser(TENANT_ID, { accountUnlockCode: 'old-code' });
 
       const credentials = new Credentials({ password: EncryptedPassword.fromHash('new-hash') });
-      const user = new User({
+      const user = new UserAccount({
         _id: 'user-1',
         username: 'existinguser',
         role: UserRole.EDITOR,

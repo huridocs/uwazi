@@ -1,5 +1,6 @@
 import { ObjectId } from 'mongodb';
 import { User } from '#api/core/domain/user/User.js';
+import { UserAccount } from '#api/core/domain/user/UserAccount.js';
 import { EncryptedPassword } from '#api/core/domain/user/EncryptedPassword.js';
 import { Credentials } from '#api/core/domain/user/Credentials.js';
 import { UserDBO } from './UserDBO.js';
@@ -13,7 +14,7 @@ export class MongoUsersMapper {
       email: user.email,
     };
 
-    if (!user.credentials) {
+    if (!(user instanceof UserAccount)) {
       return dbo;
     }
 
@@ -33,22 +34,23 @@ export class MongoUsersMapper {
       username: dbo.username,
       role: dbo.role,
       email: dbo.email,
-      credentials: MongoUsersMapper.toCredentials(dbo),
     });
   }
 
-  private static toCredentials(dbo: UserDBO): Credentials | undefined {
-    if (!dbo.password) {
-      return undefined;
-    }
-
-    return new Credentials({
-      password: EncryptedPassword.fromHash(dbo.password),
-      failedLogins: dbo.failedLogins,
-      accountLocked: dbo.accountLocked,
-      accountUnlockCode: dbo.accountUnlockCode,
-      using2fa: dbo.using2fa,
-      secret: dbo.secret,
+  static toAccountDomain(dbo: UserDBO): UserAccount {
+    return new UserAccount({
+      _id: dbo._id.toHexString(),
+      username: dbo.username,
+      role: dbo.role,
+      email: dbo.email,
+      credentials: new Credentials({
+        password: EncryptedPassword.fromHash(dbo.password!),
+        failedLogins: dbo.failedLogins,
+        accountLocked: dbo.accountLocked,
+        accountUnlockCode: dbo.accountUnlockCode,
+        using2fa: dbo.using2fa,
+        secret: dbo.secret,
+      }),
     });
   }
 }

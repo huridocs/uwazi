@@ -3,6 +3,7 @@ import {
   UsersDataSource,
 } from '#api/core/application/contracts/UsersDataSource.js';
 import { User, UserRole } from '#api/core/domain/user/User.js';
+import { UserAccount } from '#api/core/domain/user/UserAccount.js';
 import { EncryptedPassword } from '#api/core/domain/user/EncryptedPassword.js';
 import { Credentials } from '#api/core/domain/user/Credentials.js';
 import {
@@ -57,7 +58,7 @@ class PostgresUsersDataSource extends PostgresDataSource<UserRow> implements Use
     await this.table.where({ _id: userId }).update({ using2fa: false, secret: null });
   }
 
-  async insert(_user: User): Promise<void> {
+  async insert(_user: UserAccount): Promise<void> {
     return notImplemented();
   }
 
@@ -72,7 +73,7 @@ class PostgresUsersDataSource extends PostgresDataSource<UserRow> implements Use
       email: user.email,
     };
 
-    if (user.credentials) {
+    if (user instanceof UserAccount) {
       row.password = user.credentials.password.getValue();
       row.failedLogins = user.credentials.failedLogins;
       row.accountLocked = user.credentials.accountLocked;
@@ -92,7 +93,7 @@ class PostgresUsersDataSource extends PostgresDataSource<UserRow> implements Use
     return notImplemented();
   }
 
-  async getByUsername(username: string): Promise<ResultType<User, UserNotFound>> {
+  async getByUsername(username: string): Promise<ResultType<UserAccount, UserNotFound>> {
     const row = await this.table.where({ username }).whereNull('deletedAt').first();
 
     if (!row) {
@@ -100,7 +101,7 @@ class PostgresUsersDataSource extends PostgresDataSource<UserRow> implements Use
     }
 
     return Result.ok(
-      new User({
+      new UserAccount({
         _id: row._id,
         username: row.username,
         role: row.role as UserRole,
@@ -115,6 +116,10 @@ class PostgresUsersDataSource extends PostgresDataSource<UserRow> implements Use
         }),
       })
     );
+  }
+
+  async getAccountById(_id: string): Promise<ResultType<UserAccount, UserNotFound>> {
+    return notImplemented();
   }
 
   async countActiveUsers(): Promise<number> {

@@ -24,43 +24,39 @@ type Deps = { usersDS: UsersDataSource; usergroupsDS: UsergroupsDataSource };
 
 class UpdateUser extends AbstractUseCase<Input, Output, Deps> {
   async execute(input: Input): Promise<Output> {
-    const { password, ...userData } = input;
+    const { password, ...profile } = input;
 
-    if (userData._id === PUBLIC_USER_ID.toString()) {
+    if (profile._id === PUBLIC_USER_ID.toString()) {
       throw new UpdateUserError('Cannot modify system user');
     }
 
-    const user = new User(userData);
-
-    const existingUser = (await this.deps.usersDS.getById(input._id)).getDataOrThrow();
+    const user = (await this.deps.usersDS.getAccountById(profile._id)).getDataOrThrow();
 
     const actor = this.getActor();
-    const isRoleChanged = user.role !== existingUser.role;
-    const isEditingSelf = user._id === actor._id;
-
-    if (isRoleChanged && isEditingSelf) {
-      throw new UpdateUserError('Cannot change own role');
-    }
+    const isEditingSelf = profile._id === actor._id;
 
     if (!isEditingSelf && actor.role !== 'admin') {
       throw new UnauthorizedError();
     }
 
-    if (existingUser.username !== user.username) {
+    if (isEditingSelf && profile.role !== user.role) {
+      throw new UpdateUserError('Cannot change own role');
+    }
+
+    const usernameChanged = user.username !== profile.username;
+    const emailChanged = user.email !== profile.email;
+
+    user.updateProfile(profile);
+
+    if (usernameChanged) {
       (await this.deps.usersDS.checkUniqueUsername(user)).getDataOrThrow();
     }
 
-    if (existingUser.email !== user.email) {
+    if (emailChanged) {
       (await this.deps.usersDS.checkUniqueEmail(user)).getDataOrThrow();
     }
 
     if (password) {
-      // Preserve lockout/2FA state: getById never hydrates credentials, so setPassword on
-      // `user` as-is would replace them with bare defaults instead of just the new password.
-      const priorCredentials = (
-        await this.deps.usersDS.getByUsername(existingUser.username)
-      ).getDataOrThrow().credentials;
-      user.restoreCredentials(priorCredentials);
       user.setPassword(await EncryptedPassword.create(password));
     }
 

@@ -13,7 +13,7 @@ class ValidateCurrentPassword extends AbstractUseCase<Input, boolean, Deps> {
     }
 
     const user = result.getDataOrThrow();
-    return user.credentials!.password.compare(input.submittedPassword);
+    return user.credentials.password.compare(input.submittedPassword);
   }
 }
 
