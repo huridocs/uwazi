@@ -8,7 +8,7 @@ import { getDocumentPlaintext } from '#V2/api/files/index.js';
 import { ApiError } from '#shared/apiClient/index.js';
 import type { V2Services } from '#V2/services/types.js';
 import { httpServices } from '#V2/services/http/index.js';
-import { apiErrorToRequestError } from '#V2/shared/errorUtils.js';
+import { throwApiError } from '#V2/shared/errorUtils.js';
 import { getMainDocument } from '#V2/formatters/index.js';
 import { entityLoaderCache } from './EntityLoaderCache.js';
 import { parseEntityHash } from './entityUrlState.js';
@@ -61,13 +61,13 @@ const createEntityLoader =
         headers,
       });
 
-      if (error) throw apiErrorToRequestError(error);
+      if (error) throwApiError(error);
 
       if (!fetchedEntity?.[0]?._id) {
-        throw apiErrorToRequestError(entityNotFoundError(entitySharedId));
+        throwApiError(entityNotFoundError(entitySharedId));
       }
 
-      [entity] = fetchedEntity;
+      entity = fetchedEntity?.[0]!;
       entityLoaderCache.setEntity(entitySharedId, language, entity);
     }
 
@@ -92,7 +92,7 @@ const createEntityLoader =
         const response = await getDocumentPlaintext(mainDocument._id, headers);
 
         if (response instanceof FetchResponseError) {
-          throw apiErrorToRequestError(
+          throwApiError(
             new ApiError('Failed to load plaintext', {
               kind: 'http',
               status: 404,

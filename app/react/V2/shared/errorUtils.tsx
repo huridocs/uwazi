@@ -1,5 +1,5 @@
 import { captureException } from '@sentry/react';
-import { isRouteErrorResponse } from 'react-router';
+import { data as routeData, isRouteErrorResponse } from 'react-router';
 import { ApiError } from '#shared/apiClient/index.js';
 import { isClient } from '#app/utils/index.js';
 import { notify as notifyBridge } from '#V2/utils/notifyBridge.js';
@@ -98,6 +98,21 @@ const apiErrorToRequestError = (error: ApiError): RequestError => {
   return mapped;
 };
 
+const throwApiError = (error: ApiError): never => {
+  throw routeData(
+    {
+      message: error.detail ?? error.message,
+      error: error.code,
+      requestId: error.requestId,
+      validations: error.validations,
+    },
+    {
+      status: error.status,
+      statusText: handledErrors[error.status]?.name ?? error.title ?? error.name,
+    }
+  );
+};
+
 const messageFromRouteData = (data: unknown): string | undefined => {
   if (typeof data === 'string' && data.trim()) return data;
   if (typeof data === 'object' && data !== null) {
@@ -130,7 +145,12 @@ const responseToRequestError = (
       error: 'error' in data && typeof data.error === 'string' ? data.error : undefined,
       prettyMessage:
         'message' in data && typeof data.message === 'string' ? data.message : undefined,
+      requestId:
+        'requestId' in data && typeof data.requestId === 'string' ? data.requestId : undefined,
     };
+    if (mapped.json.requestId) {
+      mapped.requestId = mapped.json.requestId;
+    }
   }
   return mapped;
 };
@@ -170,6 +190,7 @@ export {
   isApiError,
   isRouteHttpError,
   apiErrorToRequestError,
+  throwApiError,
   normalizeRouteError,
 };
 export type { RequestError };
