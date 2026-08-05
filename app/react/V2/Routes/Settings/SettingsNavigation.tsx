@@ -126,12 +126,12 @@ const SettingsNavigation = () => {
           </NeedAuthorization>
           <li>
             <a
-              href="https://uwazi.io/page/9852italrtk/support"
+              href="https://docs.uwazi.io"
               target="_blank"
               rel="noopener noreferrer"
               className="settings-nav-link inline-flex items-center gap-1 whitespace-nowrap"
             >
-              <Translate>Documentation</Translate> <Icon icon="external-link-alt" />
+              <Translate>Uwazi Docs</Translate> <Icon icon="external-link-alt" />
             </a>
           </li>
         </ul>

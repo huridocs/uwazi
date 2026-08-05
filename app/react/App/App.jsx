@@ -55,7 +55,9 @@ const App = ({ customParams }) => {
 
   const isV2Route =
     location.pathname.includes('/entityv2') || location.pathname.includes('/settings');
+  const isSettingsRoute = location.pathname.includes('/settings');
   const shellSharedTheme = shouldShowNewHeader && isV2Route;
+  const settingsThemePath = isSettingsRoute ? 'settings' : undefined;
 
   const appMainTree = (
     <AppMainContext.Provider value={appContext}>
@@ -74,6 +76,7 @@ const App = ({ customParams }) => {
       <div className="content">
         {shellSharedTheme ? (
           <ThemeProvider
+            path={settingsThemePath}
             style={{
               flex: 1,
               minHeight: 0,
@@ -98,7 +101,7 @@ const App = ({ customParams }) => {
             )}
             <main id="main" className={`app-content ${isV2Route ? '' : 'container-fluid'}`}>
               {isV2Route ? (
-                <ThemeProvider style={{ width: '100%', height: '100%' }}>
+                <ThemeProvider path={settingsThemePath} style={{ width: '100%', height: '100%' }}>
                   {appMainTree}
                 </ThemeProvider>
               ) : (

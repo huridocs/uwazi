@@ -55,17 +55,14 @@ export const receivingEmail = (
       submissions.
     </Translate>
     &nbsp;
-    <Translate>Click</Translate>&nbsp;
     <a
-      href="https://uwazi.readthedocs.io/en/latest/admin-docs/managing-settings.html#how-to-configure-a-contact-form-or-submission-form"
+      href="https://docs.uwazi.io/docs/how-to/managing-your-instance/create-and-manage-pages/#add-a-contact-form-to-a-page"
       target="_blank"
       rel="noreferrer"
       className="underline text-(--color-theme-action-primary) hover:text-ink visited:text-(--color-theme-action-primary)"
     >
-      <Translate>here</Translate>
+      <Translate>Learn how to add and configure a contact form on a webpage.</Translate>
     </a>
-    &nbsp;
-    <Translate>to learn how to add and configure a contact form on a webpage.</Translate>
   </>
 );
 export const emails = [
