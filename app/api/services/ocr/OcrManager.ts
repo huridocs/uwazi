@@ -9,6 +9,7 @@ import { IdGeneratorFactory } from '#api/core/infrastructure/factories/IdGenerat
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { InputFile } from '#api/core/infrastructure/files/InputFile.js';
 import { EntitiesDAOFactory } from '#api/core/infrastructure/factories/EntitiesDAOFactory.js';
+import { AccessContext } from '#api/core/domain/entityAccessPolicy/AccessContext.js';
 import { storage } from '#api/files/index.js';
 import { permissionsContext } from '#api/permissions/permissionsContext.js';
 import relationships from '#api/relationships/relationships.js';
@@ -79,7 +80,7 @@ const setUserContextForFile = async (file: FileType): Promise<void> => {
   }
 
   const entity = await EntitiesDAOFactory.default({
-    user: User.createFrom(null),
+    accessContext: AccessContext.system(),
   }).getBySharedId(file.entity);
 
   if (!entity) {

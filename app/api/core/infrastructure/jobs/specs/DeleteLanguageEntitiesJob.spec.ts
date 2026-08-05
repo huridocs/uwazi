@@ -66,6 +66,7 @@ describe('DeleteLanguageEntitiesJob', () => {
         .getCollection('entities')!
         .find({ language: 'es' })
         .toArray();
+
       expect(remaining).toHaveLength(0);
     });
 

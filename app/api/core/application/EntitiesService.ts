@@ -13,7 +13,7 @@ import { TransactionManager } from './contracts/TransactionManager.js';
 import { Dispatcher } from './contracts/Dispatcher.js';
 import {
   EntityPermissionChecker,
-  Specification,
+  PermissionSpec,
 } from '../domain/entityAccessPolicy/EntityPermissionChecker.js';
 import { EntityUpdatedEvent } from '../domain/entity/EntityUpdatedEvent.js';
 import { MongoEntityMapper } from '../infrastructure/mongodb/entity/MongoEntityMapper.js';
@@ -117,7 +117,7 @@ class EntitiesService {
     if (context.authorize !== false) {
       const grantedIds = await this.deps.entityPermissionChecker.filterEntities(
         entities.map(e => e.sharedId),
-        Specification.createWriteSpecification(context.actor)
+        PermissionSpec.createWriteSpecification(context.actor)
       );
       authorized = entities.filter(e => grantedIds.includes(e.sharedId));
     }
@@ -167,7 +167,7 @@ class EntitiesService {
 
     const grantedSharedIds = await this.deps.entityPermissionChecker.filterEntities(
       sharedIds,
-      Specification.createDeleteSpecification(context.actor)
+      PermissionSpec.createDeleteSpecification(context.actor)
     );
 
     if (grantedSharedIds.length === 0) {

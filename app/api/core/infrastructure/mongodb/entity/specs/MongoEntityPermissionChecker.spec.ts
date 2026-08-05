@@ -4,9 +4,8 @@ import { DBFixture } from '#api/utils/testing_db.js';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { User } from '#api/users.v2/model/User.js';
-import { Specification } from '#api/core/domain/entityAccessPolicy/EntityPermissionChecker.js';
+import { PermissionSpec } from '#api/core/domain/entityAccessPolicy/PermissionSpec.js';
 import { MongoEntityPermissionChecker } from '../MongoEntityPermissionChecker.js';
-import { GrantType } from '#api/core/domain/entityAccessPolicy/GrantType.js';
 import { AccessLevel } from '#api/core/domain/entityAccessPolicy/AccessLevel.js';
 import { FileBuilder } from '#api/core/domain/files/specs/FileBuilder.js';
 
@@ -26,9 +25,9 @@ const entityFile = (entitySharedId: string) =>
 const customFile = () => FileBuilder.customUpload('custom-for-check');
 
 const readSpec = (actor: User) =>
-  new Specification({ type: GrantType.User, level: AccessLevel.Read, actor });
+  new PermissionSpec(actor, AccessLevel.Read);
 
-const writeSpec = (actor: User) => Specification.createDeleteSpecification(actor);
+const writeSpec = (actor: User) => PermissionSpec.createDeleteSpecification(actor);
 
 const fixtures: DBFixture = {
   settings: [

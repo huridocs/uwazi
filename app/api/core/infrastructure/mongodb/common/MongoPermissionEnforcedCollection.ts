@@ -33,11 +33,12 @@ import {
 import { AccessContext } from '#api/core/domain/entityAccessPolicy/AccessContext.js';
 import { CollectionWrapper } from './CollectionWrapper.js';
 import { MongoPermissionTranslator } from './MongoPermissionTranslator.js';
+import { MongoEntityPermissionTranslator } from './MongoPermissionTranslator.js';
 
 interface ForParams<TSchema extends Document = Document> {
   collection: Collection<TSchema>;
   accessContext: AccessContext;
-  translator: MongoPermissionTranslator;
+  translator?: MongoPermissionTranslator;
 }
 
 class PermissionDeniedError extends Error {
@@ -68,11 +69,11 @@ class MongoPermissionEnforcedCollection<TSchema extends Document = Document>
   constructor(
     collection: Collection<TSchema>,
     accessContext: AccessContext,
-    translator: MongoPermissionTranslator,
+    translator?: MongoPermissionTranslator,
   ) {
     super(collection);
     this.accessContext = accessContext;
-    this.translator = translator;
+    this.translator = translator ?? new MongoEntityPermissionTranslator();
   }
 
   static for<TSchema extends Document = Document>(

@@ -1,6 +1,8 @@
 import { Db, Document } from 'mongodb';
 import { DocumentTracker } from '#api/core/infrastructure/mongodb/documentTracker/DocumentTracker.js';
+import { AccessContext } from '#api/core/domain/entityAccessPolicy/AccessContext.js';
 import { BulkWriteStream } from './BulkWriteStream.js';
+import { MongoPermissionEnforcedCollection } from './MongoPermissionEnforcedCollection.js';
 import { MongoTransactionManager } from './MongoTransactionManager.js';
 import { SessionScopedCollection } from './SessionScopedCollection.js';
 import { SyncedCollection } from './SyncedCollection.js';
@@ -8,6 +10,7 @@ import { TransactionManager } from '#api/core/application/contracts/TransactionM
 
 export interface MongoDSOptions {
   useSyncedCollection?: boolean;
+  accessContext?: AccessContext;
 }
 
 export abstract class MongoDataSource<TSchema extends Document = Document> {
@@ -21,6 +24,8 @@ export abstract class MongoDataSource<TSchema extends Document = Document> {
 
   private useSyncedCollection: boolean;
 
+  protected accessContext?: AccessContext;
+
   constructor(
     db: Db,
     transactionManager: MongoTransactionManager | TransactionManager,
@@ -30,25 +35,33 @@ export abstract class MongoDataSource<TSchema extends Document = Document> {
     this.transactionManager = transactionManager as MongoTransactionManager;
     this.useSyncedCollection =
       options.useSyncedCollection !== undefined ? options.useSyncedCollection : true;
+    this.accessContext = options.accessContext;
     this.documentTracker = new DocumentTracker();
   }
 
   protected getCollection<Collection extends Document = TSchema>(
     collectionName = this.collectionName
   ) {
+    const raw = this.db.collection<Collection>(collectionName);
+    const sessionScoped = new SessionScopedCollection<Collection>(raw, this.transactionManager);
+
+    if (
+      collectionName === this.collectionName &&
+      this.accessContext
+    ) {
+      const permEnforced = MongoPermissionEnforcedCollection.for<Collection>({
+        collection: sessionScoped,
+        accessContext: this.accessContext,
+      });
+
+      return this.useSyncedCollection
+        ? new SyncedCollection<Collection>(permEnforced, this.transactionManager, this.db)
+        : permEnforced;
+    }
+
     return this.useSyncedCollection
-      ? new SyncedCollection<Collection>(
-          new SessionScopedCollection<Collection>(
-            this.db.collection<Collection>(collectionName),
-            this.transactionManager
-          ),
-          this.transactionManager,
-          this.db
-        )
-      : new SessionScopedCollection<Collection>(
-          this.db.collection<Collection>(collectionName),
-          this.transactionManager
-        );
+      ? new SyncedCollection<Collection>(sessionScoped, this.transactionManager, this.db)
+      : sessionScoped;
   }
 
   protected async collectionExists(): Promise<boolean> {

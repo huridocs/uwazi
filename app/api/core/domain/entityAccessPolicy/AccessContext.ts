@@ -9,7 +9,7 @@ import { User } from '#api/users.v2/model/User.js';
 class AccessContext {
   readonly actor: User;
 
-  private constructor(actor: User) {
+  protected constructor(actor: User) {
     this.actor = actor;
   }
 
