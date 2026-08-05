@@ -12,7 +12,7 @@ import { IImmutable } from '#shared/types/Immutable.js';
 interface TableRowProps {
   columns: TableViewColumn[];
   entity: IImmutable<EntitySchema>;
-  storeKey?: 'library' | 'uploads';
+  storeKey?: 'library';
   selected?: boolean;
   clickOnDocument: (...args: any[]) => void;
   multipleSelection: boolean;

@@ -51,7 +51,7 @@ const createRelationshipEntitiesBatch = async (params: {
     })
   );
   await transactionManager.run(async () => {
-    await entitiesService.bulkInsert(entities, {
+    await entitiesService.insert(entities, {
       tenantName,
       actorId: userId,
       targetLanguage: entities[0].languages[0],

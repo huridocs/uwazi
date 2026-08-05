@@ -1,7 +1,8 @@
 import React, { useId } from 'react';
-import { ArrowPathIcon, CheckCircleIcon, XCircleIcon, XMarkIcon } from '@heroicons/react/20/solid';
+import { CheckCircleIcon, XCircleIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import { ProgressBar } from '#V2/Components/UI/ProgressBar.js';
-import { StatusTask, TaskStatus } from '#V2/atoms/requestStatusAtom.js';
+import { UwaziLoader } from '#V2/Components/UI/UwaziLoader.js';
+import { type StatusTask, type TaskStatus } from '#V2/atoms/requestStatusAtom.js';
 
 interface TaskItemProps {
   task: StatusTask;
@@ -9,9 +10,13 @@ interface TaskItemProps {
 }
 
 const statusIcon: Record<TaskStatus, React.ReactNode> = {
-  running: <ArrowPathIcon className="w-4 h-4 text-indigo-500 animate-spin shrink-0" />,
-  completed: <CheckCircleIcon className="w-4 h-4 text-green-500 shrink-0" />,
-  failed: <XCircleIcon className="w-4 h-4 text-error-500 shrink-0" />,
+  running: (
+    <span className="flex shrink-0 items-center">
+      <UwaziLoader size="xs" color="carbon" animate />
+    </span>
+  ),
+  completed: <CheckCircleIcon className="h-4 w-4 shrink-0 text-success" />,
+  failed: <XCircleIcon className="h-4 w-4 shrink-0 text-emphasis" />,
 };
 
 const statusLabel: Record<TaskStatus, string> = {
@@ -21,9 +26,9 @@ const statusLabel: Record<TaskStatus, string> = {
 };
 
 const statusLabelColor: Record<TaskStatus, string> = {
-  running: 'text-indigo-600',
-  completed: 'text-green-600',
-  failed: 'text-error-600',
+  running: 'text-supporting',
+  completed: 'text-success',
+  failed: 'text-emphasis',
 };
 
 const progressColor: Record<TaskStatus, 'primary' | 'success' | 'error'> = {
@@ -38,22 +43,22 @@ const TaskItem = ({ task, onRemove }: TaskItemProps) => {
   const progressValueText = `${statusLabel[task.status]} - ${Math.round(progressValue)}%`;
 
   return (
-    <div className="flex flex-col gap-1.5 p-3 rounded-lg border border-gray-200 bg-gray-50">
+    <div className="flex flex-col gap-2 rounded-lg border border-border-soft bg-paper px-3 py-2.5">
       <div className="flex items-center gap-2">
         {statusIcon[task.status]}
-        <span id={taskLabelId} className="flex-1 text-sm font-medium text-gray-800 truncate">
+        <span id={taskLabelId} className="flex-1 truncate text-[13px] font-medium text-ink">
           {task.label}
         </span>
-        <span className={`text-xs font-medium ${statusLabelColor[task.status]}`}>
+        <span className={`shrink-0 text-[11px] font-medium ${statusLabelColor[task.status]}`}>
           {statusLabel[task.status]}
         </span>
         <button
           type="button"
           onClick={() => onRemove(task.id)}
           aria-label="Hide task"
-          className="ml-1 rounded p-0.5 text-gray-400 hover:text-gray-600 hover:bg-gray-200 transition-colors shrink-0"
+          className="flex h-5 w-5 shrink-0 items-center justify-center rounded text-ink-muted transition-colors hover:bg-warm hover:text-ink-secondary"
         >
-          <XMarkIcon className="w-3.5 h-3.5" aria-hidden="true" />
+          <XMarkIcon className="h-[13px] w-[13px]" aria-hidden="true" />
         </button>
       </div>
 
@@ -66,7 +71,9 @@ const TaskItem = ({ task, onRemove }: TaskItemProps) => {
             ariaLabelledby={taskLabelId}
             ariaValueText={progressValueText}
           />
-          <span className="text-xs text-gray-400 w-8 text-right shrink-0">{task.progress}%</span>
+          <span className="w-8 shrink-0 text-right text-[11px] font-semibold text-ink-tertiary">
+            {task.progress}%
+          </span>
         </div>
       )}
     </div>

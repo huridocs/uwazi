@@ -14,7 +14,6 @@ import { ocrManager } from '#api/services/ocr/OcrManager.js';
 import { PDFSegmentation } from '#api/services/pdfsegmentation/PDFSegmentation.js';
 import { preserveSync } from '#api/services/preserve/preserveSync.js';
 import { DistributedLoop } from '#api/services/tasksmanager/DistributedLoop.js';
-import { TwitterIntegration } from '#api/services/twitterintegration/TwitterIntegration.js';
 import { setupWorkerSockets } from '#api/socketio/setupSockets.js';
 import { syncWorker } from '#api/sync/syncWorker.js';
 import { registerSyncHandlers } from '#api/sync/registerSyncHandlers.js';
@@ -71,19 +70,12 @@ DB.connect(config.DBHOST, config.DBAUTH)
       }),
 
       pdf_segmentation: new PDFSegmentation(),
-      twitter_integration: new TwitterIntegration(),
     };
 
     services.segmentation_distributed_loop = new DistributedLoop(
       'segmentation_repeat',
       services.pdf_segmentation.segmentPdfs,
       { port: config.redis.port, host: config.redis.host, delayTimeBetweenTasks: 60000 }
-    );
-
-    services.twitter_distributed_loop = new DistributedLoop(
-      'twitter_repeat',
-      services.twitter_integration.addTweetsRequestsToQueue,
-      { port: config.redis.port, host: config.redis.host, delayTimeBetweenTasks: 120000 }
     );
 
     Object.values(services).forEach(service => service.start());

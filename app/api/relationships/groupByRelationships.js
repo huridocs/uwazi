@@ -1,13 +1,17 @@
+const getRelationshipTypeId = relationType =>
+  (relationType?._id || relationType?.id)?.toString?.() || null;
+
 function getGroupData(reference, groupedReferences, _templates, relationTypes) {
   const key = reference.template ? reference.template.toString() : null;
   let groupData = groupedReferences.find(ref => ref.key === key);
   if (!groupData) {
+    const relationshipType = relationTypes.find(
+      relationType => getRelationshipTypeId(relationType) === reference.template?.toString()
+    );
     groupData = {
       key,
       context: reference.template ? reference.template.toString() : null,
-      connectionLabel: reference.template
-        ? relationTypes.find(r => r._id.toString() === reference.template.toString()).name
-        : null,
+      connectionLabel: relationshipType?.name || null,
       templates: [],
     };
     groupedReferences.push(groupData);

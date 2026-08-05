@@ -374,7 +374,7 @@ export const tocSchema = {
   },
 };
 
-export const extractedMetadataSchema = {
+export const propertySelectionSchema = {
   type: 'object',
   additionalProperties: false,
   properties: {

@@ -52,10 +52,10 @@ const Tool = () => {
       }}
       title={
         !hasChecks
-          ? 'No accessibility checks apply to this story'
+          ? 'No theme contrast checks apply to this story'
           : passes
-          ? `Accessibility checks passing (${payload.preset} ${payload.mode})`
-          : `${failedChecks.length} accessibility checks failing`
+          ? `Theme contrast checks passing (${payload.preset} ${payload.mode})`
+          : `${failedChecks.length} theme contrast checks failing`
       }
       style={{
         border: !hasChecks ? '1px solid #d1d5db' : passes ? '1px solid #bbf7d0' : '1px solid #fecaca',
@@ -69,7 +69,11 @@ const Tool = () => {
         cursor: 'pointer',
       }}
     >
-      {!hasChecks ? 'A11y N/A' : passes ? 'A11y Pass' : `A11y Fail (${failedChecks.length})`}
+      {!hasChecks
+        ? 'Contrast N/A'
+        : passes
+          ? 'Contrast Pass'
+          : `Contrast Fail (${failedChecks.length})`}
     </button>
   );
 };
@@ -95,7 +99,7 @@ const Panel = ({ active }: { active: boolean }) => {
   return (
     <div style={{ padding: 16, background: '#ffffff', height: '100%', overflow: 'auto' }}>
       <div style={{ fontSize: 14, fontWeight: 700, color: '#111827', marginBottom: 6 }}>
-        {payload.checks.length > 0 ? 'Accessibility checks' : 'No applicable accessibility checks'}
+        {payload.checks.length > 0 ? 'Theme contrast checks' : 'No applicable theme contrast checks'}
       </div>
       <div style={{ fontSize: 12, color: '#6b7280', marginBottom: 12 }}>
         {payload.preset} theme, {payload.mode} mode
@@ -141,13 +145,13 @@ const Panel = ({ active }: { active: boolean }) => {
 addons.register(STORYBOOK_A11Y_ADDON_ID, () => {
   addons.add(TOOL_ID, {
     type: types.TOOL,
-    title: 'Accessibility',
+    title: 'Theme contrast',
     match: ({ viewMode }) => viewMode === 'story' || viewMode === 'docs',
     render: Tool,
   });
   addons.add(STORYBOOK_A11Y_PANEL_ID, {
     type: types.PANEL,
-    title: 'A11y checks',
+    title: 'Theme contrast',
     render: Panel,
   });
 });

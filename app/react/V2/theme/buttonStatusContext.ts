@@ -1,8 +1,18 @@
-import { getAccessibleColorPair, mixHex } from '#shared/utils/contrast.js';
+import {
+  getAccessibleForegroundOnBackground,
+  mixHex,
+  WCAG_AA_LARGE_UI,
+} from '#shared/utils/contrast.js';
 import { LEGACY_BUTTON_VALUES, getAccessibleForeground } from '#V2/theme/buttonThemeShared.js';
 import { getPresetValue } from '#V2/theme/themePresetUtils.js';
 import type { ThemeRoles } from '#V2/theme/themeRoles.js';
 import type { ThemePresetId } from '#V2/theme/themes.js';
+
+type DangerSolidPair = {
+  background: string;
+  foreground: string;
+  ratio: number;
+};
 
 type ButtonStatusContext = {
   successSolidBackground: string;
@@ -18,7 +28,7 @@ type ButtonStatusContext = {
   dangerBorderOnSurface: string;
   successOnSuccessTint: string;
   dangerOnDangerTint: string;
-  dangerSolid: ReturnType<typeof getAccessibleColorPair>;
+  dangerSolid: DangerSolidPair;
 };
 
 const getStatusSecondaryTheme = ({
@@ -44,10 +54,11 @@ const getStatusButtonContext = (
     LEGACY_BUTTON_VALUES.success,
     roles.feedback.success
   );
-  const successSolidForeground = getAccessibleForeground(
+  const successSolidForeground = getAccessibleForegroundOnBackground(
     successSolidBackground,
-    roles.text.onSolid
-  );
+    '#FFFFFF',
+    WCAG_AA_LARGE_UI
+  ).foreground;
   const successDisabledBackground = getPresetValue(
     presetId,
     LEGACY_BUTTON_VALUES.successDisabled,
@@ -89,7 +100,15 @@ const getStatusButtonContext = (
       roles.feedback.success
     ),
     dangerOnDangerTint: getAccessibleForeground(roles.feedback.dangerTint, roles.feedback.danger),
-    dangerSolid: getAccessibleColorPair(roles.feedback.danger),
+    dangerSolid: (() => {
+      const background = roles.feedback.danger;
+      const { foreground, ratio } = getAccessibleForegroundOnBackground(
+        background,
+        '#FFFFFF',
+        WCAG_AA_LARGE_UI
+      );
+      return { background, foreground, ratio };
+    })(),
   };
 };
 

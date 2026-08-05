@@ -3,11 +3,13 @@ import { Db } from 'mongodb';
 export default {
   delta: {{ nextMigrationDelta }},
 
-  name: '{{ name }}',
+  name: '{{dashName name}}',
 
   description: '{{ description }}',
 
   reindex: false,
+
+  requiresSchema: {{ latestPgSchemaDelta }},
 
   async up(db: Db) {
     process.stdout.write(`${this.name}...\r\n`);

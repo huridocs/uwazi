@@ -3,7 +3,6 @@ import Immutable from 'immutable';
 import { contextMenuReducer } from '#app/ContextMenu/reducers/contextMenuReducer.js';
 import * as types from '#app/ContextMenu/actions/actionTypes.js';
 import * as ViewerTypes from '#app/Viewer/actions/actionTypes.js';
-import * as UploadActions from '#app/Uploads/actions/actionTypes.js';
 import * as LibraryActions from '#app/Library/actions/actionTypes.js';
 
 describe('contextMenuReducer', () => {
@@ -120,19 +119,6 @@ describe('contextMenuReducer', () => {
       expect(newState.toJS()).toEqual(expected.toJS());
     });
   });
-  describe('ENTER_UPLOADS_SECTION', () => {
-    it('should set type to UploadsMenu', () => {
-      const currentState = Immutable.fromJS({ type: null });
-      const newState = contextMenuReducer(currentState, {
-        type: UploadActions.ENTER_UPLOADS_SECTION,
-      });
-      const expected = Immutable.fromJS({ type: 'UploadsMenu' });
-
-      expect(newState instanceof Immutable.Map).toBe(true);
-      expect(newState.toJS()).toEqual(expected.toJS());
-    });
-  });
-
   describe('ENTER_LIBRARY', () => {
     it('should set type to LibraryMenu', () => {
       const currentState = Immutable.fromJS({ type: null });

@@ -52,11 +52,8 @@ class NumericProperty extends FilterableProperty {
     };
   }
 
-  validatePropertyAssignment(
-    { value }: PropertyAssignment<NumericPropertyValue>,
-    shouldValidateForRequired = false
-  ): void {
-    createSchema(shouldValidateForRequired ? this.required : false).parse(value);
+  validatePropertyAssignment({ value }: PropertyAssignment<NumericPropertyValue>): void {
+    createSchema(this.required).parse(value);
   }
 }
 

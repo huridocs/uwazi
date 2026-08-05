@@ -1,0 +1,68 @@
+import React from 'react';
+
+type UwaziLoaderSize = 'xs' | 'sm' | 'md' | 'lg';
+type UwaziLoaderColor = 'default' | 'white' | 'muted' | 'carbon' | 'seal' | 'warning';
+
+type UwaziLoaderProps = {
+  size?: UwaziLoaderSize;
+  color?: UwaziLoaderColor;
+  /** When false, renders the static brand mark (no sweep). Default true. */
+  animate?: boolean;
+  className?: string;
+};
+
+const sizes: Record<UwaziLoaderSize, { cell: number; gap: number }> = {
+  xs: { cell: 4, gap: 1 },
+  sm: { cell: 6, gap: 2 },
+  md: { cell: 10, gap: 3 },
+  lg: { cell: 16, gap: 4 },
+};
+
+const gridCells = ['0-0', '1-0', '2-0', '0-1', '1-1', '2-1'] as const;
+
+const colors: Record<UwaziLoaderColor, string> = {
+  default: 'var(--color-theme-text-primary, #1a1a1a)',
+  white: '#ffffff',
+  muted: 'var(--color-theme-text-muted, #6b7280)',
+  carbon: 'var(--color-theme-accent-supporting, #00B4F0)',
+  seal: 'var(--color-theme-feedback-danger, #dc2626)',
+  warning: 'var(--color-theme-feedback-warning, #d97706)',
+};
+
+const UwaziLoader = ({
+  size = 'md',
+  color = 'default',
+  animate = true,
+  className = '',
+}: UwaziLoaderProps) => {
+  const { cell, gap } = sizes[size];
+  const backgroundColor = colors[color];
+
+  return (
+    <div
+      className={`inline-grid align-middle ${className}`.trim()}
+      style={{
+        gridTemplateColumns: `repeat(3, ${cell}px)`,
+        gridTemplateRows: `repeat(2, ${cell}px)`,
+        gap,
+      }}
+      role={animate ? 'status' : undefined}
+      aria-label={animate ? 'Loading' : undefined}
+    >
+      {gridCells.map(cellKey => (
+        <div
+          key={cellKey}
+          className={animate ? 'uwazi-loader-cell rounded-[1px]' : 'rounded-[1px]'}
+          style={{
+            width: cell,
+            height: cell,
+            backgroundColor,
+          }}
+        />
+      ))}
+    </div>
+  );
+};
+
+export { UwaziLoader };
+export type { UwaziLoaderProps, UwaziLoaderColor, UwaziLoaderSize };

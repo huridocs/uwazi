@@ -1,19 +1,18 @@
+/* eslint-disable max-statements */
 import multer from 'multer';
 
-import { models, WithId } from '#api/odm/index.js';
+import type { Application, Request } from 'express';
+import { models } from '#api/odm/index.js';
 import { search } from '#api/search/index.js';
 
 import { storage, uploadMiddleware } from '#api/files/index.js';
 import { updateMapping } from '#api/search/entitiesIndex.js';
-import type { Application, Request } from 'express';
 import { TranslationType } from '#shared/translationType.js';
-import { FileType } from '#shared/types/fileType.js';
-
-import { TemplateSchema } from '#shared/types/templateType.js';
 import { needsAuthorization } from '../auth/index.js';
+import { FilesDAOFactory } from '#api/core/infrastructure/factories/FilesDAOFactory.js';
 import { SyncHandlerRegistry } from './SyncHandlerRegistry.js';
 import { registerSyncHandlers } from './registerSyncHandlers.js';
-import { EntityIndexerServiceFactory } from '#api/core/infrastructure/factories/EntityIndexerServiceFactory.js';
+import { FileDBO } from '#api/core/infrastructure/mongodb/files/schemas/FilesTypes.js';
 
 const diskStorage = multer.diskStorage({
   filename(_req, file, cb) {
@@ -24,29 +23,16 @@ const diskStorage = multer.diskStorage({
 const indexEntities = async (req: Request) => {
   if (req.body.namespace === 'entities') {
     await search.indexEntities({ _id: req.body.data._id }, '+fullText');
-    if (req.body.data.sharedId) {
-      await EntityIndexerServiceFactory.default().sync([req.body.data.sharedId]);
-    }
   }
 
   if (req.body.namespace === 'files') {
     await search.indexEntities({ sharedId: req.body.data.entity }, '+fullText');
-    if (req.body.data.entity) {
-      await EntityIndexerServiceFactory.default().sync([req.body.data.entity]);
-    }
   }
 };
 
 const updateMappings = async (req: Request) => {
   if (req.body.namespace === 'templates') {
     await updateMapping(Array.isArray(req.body.data) ? req.body.data : [req.body.data]);
-  }
-};
-
-const deleteFileFromIndex = async (file: FileType) => {
-  await search.indexEntities({ sharedId: file.entity });
-  if (file.entity) {
-    await EntityIndexerServiceFactory.default().sync([file.entity]);
   }
 };
 
@@ -58,35 +44,6 @@ const deleteEntityFromIndex = async (entityId: string) => {
       throw err;
     }
   }
-};
-
-const deleteEntityFromV2Index = async (entitySharedId: string) => {
-  try {
-    await EntityIndexerServiceFactory.default().remove([entitySharedId]);
-  } catch (err) {
-    const isAlreadyDeleted =
-      err.statusCode === 409 && err.message?.includes('but no document was found');
-    if (!isAlreadyDeleted) throw err;
-  }
-};
-
-const deleteFromIndex = async (
-  req: Request<{}, {}, {}, { data: string; namespace: string }>,
-  entitySharedId: string
-) => {
-  if (req.query.namespace === 'entities') {
-    await deleteEntityFromIndex(JSON.parse(req.query.data)._id);
-    await deleteEntityFromV2Index(entitySharedId);
-  }
-};
-
-const deleteFile = async (fileId: string) => {
-  const file: WithId<FileType> | undefined = await models.files().getById(fileId);
-  if (file) {
-    await storage.removeFile(file.filename || '', file.type || 'document');
-    await deleteFileFromIndex(file);
-  }
-  return file;
 };
 
 const preserveTranslations = async (syncData: TranslationType): Promise<TranslationType> => {
@@ -107,29 +64,6 @@ const preserveTranslations = async (syncData: TranslationType): Promise<Translat
   return syncData;
 };
 
-const keepOnlyOneDefaultTemplate = async (
-  syncData: TemplateSchema | TemplateSchema[]
-): Promise<TemplateSchema | TemplateSchema[]> => {
-  const syncDataArray = Array.isArray(syncData) ? syncData : [syncData];
-  const syncedDefault = syncDataArray.find(template => template.default);
-  if (syncedDefault) {
-    const [otherDefault] = (await models
-      .templates()
-      .get({ _id: { $ne: syncedDefault._id }, default: true })) as TemplateSchema[];
-    if (otherDefault) {
-      return [
-        {
-          ...otherDefault,
-          default: false,
-        },
-        ...syncDataArray,
-      ];
-    }
-  }
-
-  return syncData;
-};
-
 export default (app: Application) => {
   registerSyncHandlers();
 
@@ -144,10 +78,6 @@ export default (app: Application) => {
         req.body.data = await preserveTranslations(req.body.data);
       }
 
-      if (req.body.namespace === 'templates') {
-        req.body.data = await keepOnlyOneDefaultTemplate(req.body.data);
-      }
-
       if (req.body.namespace === 'translationsV2') {
         await models[req.body.namespace]().delete(
           { _id: '' },
@@ -159,8 +89,8 @@ export default (app: Application) => {
         );
         await models[req.body.namespace]().save(req.body.data);
       } else {
-        const odmModel = models[req.body.namespace]?.();
-        const handler = odmModel ?? SyncHandlerRegistry.get(req.body.namespace);
+        const handler =
+          SyncHandlerRegistry.get(req.body.namespace) ?? models[req.body.namespace]?.();
         if (!handler) {
           throw new Error(`No sync handler for namespace: ${req.body.namespace}`);
         }
@@ -201,29 +131,34 @@ export default (app: Application) => {
     needsAuthorization(['admin']),
     async (req: Request<{}, {}, {}, { data: string; namespace: string }>, res, next) => {
       try {
-        if (SyncHandlerRegistry.has(req.query.namespace)) {
-          const handler = SyncHandlerRegistry.get(req.query.namespace)!;
-          await handler.delete(JSON.parse(req.query.data)._id);
-          res.json('ok');
-          return;
-        }
+        const data = JSON.parse(req.query.data);
+        const handler = SyncHandlerRegistry.get(req.query.namespace);
 
-        let entitySharedId: string | undefined;
-        if (req.query.namespace === 'entities') {
-          const entityDoc = await models.entities().getById(JSON.parse(req.query.data)._id);
-          entitySharedId = entityDoc?.sharedId;
-        }
-
-        await models[req.query.namespace]().delete(JSON.parse(req.query.data));
-
+        let fileInfo: FileDBO | undefined;
         if (req.query.namespace === 'files') {
-          await deleteFile(JSON.parse(req.query.data)._id);
+          const result = await FilesDAOFactory.default().getById(data._id, {
+            withFullText: false,
+          });
+          fileInfo = result.getData();
         }
 
-        if (req.query.namespace === 'entities' && entitySharedId) {
-          await deleteFromIndex(req, entitySharedId);
-        } else if (req.query.namespace === 'entities') {
-          await deleteEntityFromIndex(JSON.parse(req.query.data)._id);
+        if (handler) {
+          await handler.delete(data._id);
+        } else {
+          await models[req.query.namespace]().delete(data);
+        }
+
+        if (fileInfo) {
+          if (fileInfo.filename) {
+            await storage.removeFile(fileInfo.filename, fileInfo.type || 'document');
+          }
+          if (fileInfo.entity) {
+            await search.indexEntities({ sharedId: fileInfo.entity });
+          }
+        }
+
+        if (req.query.namespace === 'entities') {
+          await deleteEntityFromIndex(data._id);
         }
 
         res.json('ok');

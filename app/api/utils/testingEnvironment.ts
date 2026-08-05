@@ -1,9 +1,11 @@
+/* eslint-disable max-lines */
+/* eslint-disable max-statements */
 // eslint-disable-next-line node/no-restricted-import
 import { copyFile } from 'fs/promises';
-import { dirname } from 'path';
-import path from 'path';
+import path, { dirname } from 'path';
 import { fileURLToPath } from 'url';
 
+import { ObjectId } from 'mongodb';
 import {
   cleanupTestUploadedPaths,
   createDirIfNotExists,
@@ -14,7 +16,9 @@ import { ExecutionContext, ExecutionContextDeps } from '#api/core/libs/Execution
 import { EventEmitterFactory } from '#api/core/libs/eventEmitter/EventEmitterFactory.js';
 import { IdGeneratorFactory } from '#api/core/infrastructure/factories/IdGeneratorFactory.js';
 import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
+import { TelemetryCollector } from '#api/core/libs/logger/TelemetryCollector.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { PostgresTransactionManagerFactory } from '#api/core/infrastructure/factories/PostgresTransactionManagerFactory.js';
 import {
   DefaultDispatcher,
   DefaultTestingQueueAdapter,
@@ -24,9 +28,11 @@ import { elasticTesting } from '#api/utils/elastic_testing.js';
 import testingDB, { DBFixture } from '#api/utils/testing_db.js';
 import { testingTenants } from '#api/utils/testingTenants.js';
 import { UserInContextMockFactory } from '#api/utils/testingUserInContext.js';
+import { testingPG } from '#api/utils/testing_pg.js';
+import type { PGFixture } from '#api/utils/testing_pg.js';
 import { User } from '#api/users.v2/model/User.js';
 import { UserSchema } from '#shared/types/userType.js';
-import { ObjectId } from 'mongodb';
+import { ObjectUtils } from '#api/common.v2/utils/Object.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -34,12 +40,45 @@ const __dirname = dirname(__filename);
 let appContextGetMock: jest.SpyInstance<unknown, [key: string], any>;
 let appContextSetMock: jest.SpyInstance<unknown, [key: string, value: unknown], any>;
 
+const ENTITY_POSTGRES_DEFAULTS = {
+  published: false,
+  creationDate: 0,
+  editDate: 0,
+  template: '',
+};
+
+const sanitizeEntityForPostgres = (entity: Record<string, unknown>) => {
+  const cleaned = ObjectUtils.sanitize(entity, [
+    '__v',
+    'obsoleteMetadata',
+    'public',
+    'mongoLanguage',
+  ]);
+  return { ...ENTITY_POSTGRES_DEFAULTS, ...cleaned };
+};
+
+const PG_TABLE_BY_MONGO_COLLECTION: Record<string, string> = {
+  dictionaries: 'thesauri',
+  relationtypes: 'relationship_types',
+};
+
+type SetUpOptions = {
+  elasticIndex?: string | boolean;
+  postgres?: boolean;
+};
+
 const testingEnvironment = {
   elasticIndex: '',
   uploadSubPath: '',
+  pgEnabled: false,
   userInContextMockFactory: new UserInContextMockFactory(),
 
-  async setUp(fixtures?: DBFixture, elasticIndex?: string | boolean) {
+  async setUp(fixtures?: DBFixture, options?: string | boolean | SetUpOptions) {
+    const { elasticIndex, postgres } =
+      options === undefined || typeof options === 'string' || typeof options === 'boolean'
+        ? { elasticIndex: options, postgres: false }
+        : options;
+
     if (!elasticIndex) {
       this.elasticIndex = '';
     }
@@ -48,6 +87,10 @@ const testingEnvironment = {
     this.setFakeContext();
     await this.setFixtures(fixtures);
     await this.setElastic(elasticIndex);
+    if (postgres && !this.pgEnabled) {
+      await testingPG.connect();
+      this.pgEnabled = true;
+    }
   },
 
   testingFilesPath(fileName: string) {
@@ -130,9 +173,34 @@ const testingEnvironment = {
     }
   },
 
-  async setFixtures(fixtures?: DBFixture) {
+  async setFixtures(fixtures?: DBFixture, pgFixtures?: PGFixture) {
     if (fixtures) {
       await testingDB.setupFixturesAndContext(fixtures);
+    }
+    if (pgFixtures && this.pgEnabled) {
+      await testingPG.setFixtures(pgFixtures);
+    }
+
+    if (this.pgEnabled && fixtures) {
+      await testingPG.setFixtures(
+        Object.fromEntries(
+          Object.entries(fixtures)
+            .filter(([table]) =>
+              ['dictionaries', 'templates', 'files', 'entities', 'relationtypes'].includes(table)
+            )
+            .map(([table, fixture]) => {
+              const pgTable = PG_TABLE_BY_MONGO_COLLECTION[table] ?? table;
+
+              return [
+                pgTable,
+                fixture.map((f: any) => {
+                  const sanitized = JSON.parse(JSON.stringify(ObjectUtils.sanitize(f, ['__v'])));
+                  return table === 'entities' ? sanitizeEntityForPostgres(sanitized) : sanitized;
+                }),
+              ];
+            })
+        )
+      );
     }
   },
 
@@ -194,6 +262,7 @@ const testingEnvironment = {
 
     const defaultFactories: ExecutionContextDeps['factories'] = {
       transactionManager: TransactionManagerFactory.default,
+      postgresTransactionManager: PostgresTransactionManagerFactory.default,
       eventEmitter: EventEmitterFactory.forTesting,
       jobsDispatcher: () =>
         DefaultDispatcher(
@@ -204,14 +273,7 @@ const testingEnvironment = {
         ),
       idGenerator: IdGeneratorFactory.default,
       logger: LoggerFactory.default,
-      elasticClient: () => {
-        throw new Error('ExecutionContext: elasticClient not implemented in test context');
-      },
-      authorizedEntityESClient: () => {
-        throw new Error(
-          'ExecutionContext: authorizedEntityESClient not implemented in test context'
-        );
-      },
+      telemetryCollector: () => new TelemetryCollector('test'),
     };
 
     const context: ExecutionContextDeps = {
@@ -238,11 +300,22 @@ const testingEnvironment = {
         console.warn(`Failed to cleanup Elasticsearch index ${this.elasticIndex}:`, error.message);
       }
     }
+    if (this.pgEnabled) {
+      await testingPG.disconnect();
+      this.pgEnabled = false;
+    }
     await testingDB.disconnect();
   },
 
   db: {
     async getAllFrom(collectionName: string) {
+      if (
+        testingEnvironment.pgEnabled &&
+        testingTenants.current().featureFlags?.postgresFiles &&
+        ['files', 'templates', 'thesauri'].includes(collectionName)
+      ) {
+        return testingPG.getAllFrom(collectionName);
+      }
       if (!testingDB.mongodb) {
         throw new Error('Testing mongodb not connected');
       }
@@ -251,6 +324,18 @@ const testingEnvironment = {
 
     getCollection(collectionName: string) {
       return testingDB.mongodb?.collection(collectionName);
+    },
+  },
+
+  pg: {
+    async getAllFrom<T extends Record<string, unknown> = Record<string, unknown>>(
+      table: string
+    ): Promise<T[]> {
+      return testingPG.getAllFrom<T>(table);
+    },
+
+    get pool() {
+      return testingPG.pool;
     },
   },
 };

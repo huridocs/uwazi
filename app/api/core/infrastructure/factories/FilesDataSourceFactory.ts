@@ -1,10 +1,10 @@
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { MongoFilesDataSource } from '../mongodb/files/MongoFilesDataSource.js';
+import { PostgresFilesDataSource } from '../postgresql/files/PostgresFilesDataSource.js';
 import { FileStorageFactory } from '../files/FileStorageFactory.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
 import { MongoTransactionManager } from '../mongodb/common/MongoTransactionManager.js';
-import { FullTextIndexerServiceFactory } from './FullTextIndexerServiceFactory.js';
 
 type Overrides = {
   transactionManager?: TransactionManager;
@@ -13,14 +13,23 @@ type Overrides = {
 export class FilesDataSourceFactory {
   static default(overrides?: Overrides) {
     const db = getConnection();
+    const { tenant } = ExecutionContext;
 
-    const mongoTM = (overrides?.transactionManager ??
+    const tm = (overrides?.transactionManager ??
       ExecutionContext.transactionManager) as MongoTransactionManager;
 
-    const fullTextIndexer = FullTextIndexerServiceFactory.default();
+    if (tenant.featureFlags?.postgresFiles) {
+      const pgTM = ExecutionContext.postgresTransactionManager;
 
-    return new MongoFilesDataSource(db, mongoTM, FileStorageFactory.default(), {
-      fullTextIndexer,
-    });
+      return new PostgresFilesDataSource({
+        mongoDb: db,
+        tenantId: tenant.name,
+        transactionManager: tm,
+        pgTransactionManager: pgTM,
+        fileStorage: FileStorageFactory.default(),
+      });
+    }
+
+    return new MongoFilesDataSource(db, tm, FileStorageFactory.default());
   }
 }

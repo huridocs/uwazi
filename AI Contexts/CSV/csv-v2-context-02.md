@@ -87,7 +87,7 @@ Follow-up to csv-v2-context-01.md consolidating decisions for Job 1 (file extrac
 
 - Rationale for CSV copy:
   - Policy expects ZIPs to contain a flat root with `import.csv`. To keep downstream logic identical, when the upload is a single CSV we normalize by copying it to `extracted/import.csv` so the next stage always looks in one place.
-  - See Admin Guide for bulk CSV import conventions (root-level `import.csv` alongside supporting files) — reference: `https://uwazi.readthedocs.io/en/latest/admin-docs/working-with-entities-in-your-collection.html#how-to-add-entities-in-bulk-with-csv-import`.
+  - See Admin Guide for bulk CSV import conventions (root-level `import.csv` alongside supporting files) — reference: `https://docs.uwazi.io/docs/reference/csv-import/#files-inside-a-zip-upload`.
 
 ### Dispatch and transaction hook
 
@@ -376,4 +376,4 @@ Follow-up to csv-v2-context-01.md consolidating decisions for Job 1 (file extrac
 
 ### References
 
-- Admin guide re: CSV ZIP contents and `import.csv` naming: https://uwazi.readthedocs.io/en/latest/admin-docs/working-with-entities-in-your-collection.html#how-to-add-entities-in-bulk-with-csv-import
+- Admin guide re: CSV ZIP contents and `import.csv` naming: https://docs.uwazi.io/docs/reference/csv-import/#files-inside-a-zip-upload

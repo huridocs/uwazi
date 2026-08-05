@@ -21,12 +21,11 @@ import {
 } from '#api/files/index.js';
 import translations from '#api/i18n/index.js';
 import { permissionsContext } from '#api/permissions/permissionsContext.js';
-import relationships from '#api/relationships/index.js';
-import relationtypes from '#api/relationtypes/index.js';
+import relationships from '#api/relationships/relationships.js';
 import syncRoutes from '#api/sync/routes.js';
 import templates from '#api/core/v1_layer/templates/index.js';
 import { tenants } from '#api/tenants/index.js';
-import thesauri from '#api/thesauri/index.js';
+import thesauri from '#api/core/v1_layer/thesauri/index.js';
 import users from '#api/users/users.js';
 import { appContext } from '#api/utils/AppContext.js';
 import { appContextMiddleware } from '#api/utils/appContextMiddleware.js';
@@ -39,6 +38,7 @@ import { DefaultTranslationsDataSource } from '#api/i18n.v2/database/data_source
 import { CreateTranslationsService } from '#api/i18n.v2/services/CreateTranslationsService.js';
 import { ValidateTranslationsService } from '#api/i18n.v2/services/ValidateTranslationsService.js';
 import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
+import { RelationshipTypesDataSourceFactory } from '#api/core/infrastructure/factories/RelationshipTypesDataSourceFactory.js';
 import { FetchResponseError } from '#shared/JSONRequest.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
@@ -58,17 +58,8 @@ import {
   thesauri1Value2,
 } from './fixtures.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-
-jest.mock('#api/core/infrastructure/factories/EntityIndexerServiceFactory.js', () => ({
-  EntityIndexerServiceFactory: {
-    default: () => ({
-      sync: jest.fn().mockResolvedValue(undefined),
-      index: jest.fn().mockResolvedValue(undefined),
-      remove: jest.fn().mockResolvedValue(undefined),
-      removeByTemplateIds: jest.fn().mockResolvedValue(undefined),
-    }),
-  },
-}));
+import { dependenciesContextMiddleware } from '#api/core/infrastructure/express/middlewares/DependenciesMiddleware.js';
+import { requestTimingMiddleware } from '#api/core/infrastructure/express/middlewares/RequestTimingMiddleware.js';
 
 async function runAllTenants() {
   try {
@@ -154,6 +145,7 @@ describe('syncWorker', () => {
       name: 'target1',
       dbName: 'target1',
       indexName: 'target1',
+      featureFlags: { postgresThesauri: false },
       ...(await testingUploadPaths('syncWorker_target1_files')),
     });
 
@@ -181,6 +173,8 @@ describe('syncWorker', () => {
 
     //@ts-ignore
     app.use(multitenantMiddleware);
+    app.use(requestTimingMiddleware);
+    app.use(dependenciesContextMiddleware);
 
     authRoutes(app);
     syncRoutes(app);
@@ -261,14 +255,12 @@ describe('syncWorker', () => {
           attachments: [
             {
               _id: expect.anything(),
-              creationDate: expect.anything(),
               entity: 'newDoc1SharedId',
               filename: 'test2.txt',
               type: 'attachment',
             },
             {
               _id: expect.anything(),
-              creationDate: expect.anything(),
               entity: 'newDoc1SharedId',
               filename: `${newDoc1.toString()}.jpg`,
               type: 'attachment',
@@ -290,7 +282,6 @@ describe('syncWorker', () => {
           attachments: [
             {
               _id: expect.anything(),
-              creationDate: expect.anything(),
               entity: 'entitytest.txt',
               filename: 'test.txt',
               type: 'attachment',
@@ -353,21 +344,26 @@ describe('syncWorker', () => {
   it('should sync dictionaries that match template properties whitelist', async () => {
     await runAllTenants();
     await tenants.run(async () => {
-      expect(await thesauri.get()).toMatchObject([
-        {
-          name: 'thesauri1',
-          values: [{ label: 'th1value1' }, { label: 'th1value2' }],
-        },
-      ]);
+      await testingEnvironment.runWithContext(async () => {
+        expect(await thesauri.get()).toMatchObject([
+          {
+            name: 'thesauri1',
+            values: [{ label: 'th1value1' }, { label: 'th1value2' }],
+          },
+        ]);
+      });
     }, 'target1');
   });
 
   it('should sync relationTypes that match configured template properties', async () => {
     await runAllTenants();
     await tenants.run(async () => {
-      expect(await relationtypes.get()).toMatchObject([
+      const relationtypes = await RelationshipTypesDataSourceFactory.default({
+        transactionManager: TransactionManagerFactory.default(),
+      }).getAll();
+      expect(relationtypes).toMatchObject([
         {
-          _id: expect.anything(),
+          id: expect.anything(),
           name: 'relationtype4',
         },
       ]);
@@ -592,11 +588,10 @@ describe('syncWorker', () => {
     await runAndCheck('files', 'connections', [{ _id: orderedHostIds.files }], 30);
     await runAndCheck(
       'connections',
-      'elasticSlots',
+      'entities',
       [{ _id: orderedHostIds.connection1 }, { _id: orderedHostIds.connection2 }],
       20
     );
-    await runAndCheck('elasticSlots', 'entities', [{ _id: orderedHostIds.elasticSlots }], 10);
     await runAndCheck(
       'entities',
       undefined,

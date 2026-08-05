@@ -1,17 +1,17 @@
 /* eslint-disable max-statements */
+import urljoin from 'url-join';
 import { UseCase } from '#api/core/libs/UseCase.js';
 import { emitToTenant } from '#api/socketio/setupSockets.js';
 import { storage } from '#api/files/index.js';
-import urljoin from 'url-join';
 import request from '#shared/JSONRequest.js';
-import { ExtractedMetadataSchema } from '#shared/types/commonTypes.js';
+import { PropertySelectionSchema } from '#shared/types/commonTypes.js';
 import { EnforcedWithId } from '#api/odm/index.js';
 import { IXExtractorType } from '#shared/types/extractorType.js';
 import { Suggestions } from '#api/suggestions/suggestions.js';
 import {
   FileWithAggregation,
   NoFilesForTraining,
-  propertyTypeIsWithoutExtractedMetadata,
+  propertyTypeIsWithoutPropertySelections,
 } from './ixMaterials.js';
 import { getPdfTrainingProcess } from './FetchMaterialsForTraining.js';
 import { IXWebSocketEvents } from './WebSocketEvents.js';
@@ -33,7 +33,7 @@ type Dependencies = {
 type SendMaterialsToServiceInput = {
   file: FileWithAggregation;
   extractorId: string;
-  propertyLabeledData: ExtractedMetadataSchema | undefined;
+  propertyLabeledData: PropertySelectionSchema | undefined;
   propertyValue: FileWithAggregation['propertyValue'];
   propertyType: FileWithAggregation['propertyType'];
 };
@@ -50,12 +50,12 @@ export class TrainModelForPDF implements UseCase<Input, Output> {
         const xmlName = file.segmentation.xmlname!;
         const xmlExists = await storage.fileExists(xmlName, 'segmentation');
 
-        const propertyLabeledData = file.extractedMetadata?.find(
+        const propertyLabeledData = file.propertySelections?.find(
           (labeledData: any) => labeledData.name === extractor.property
         );
         const { propertyValue, propertyType } = file;
 
-        const missingData = propertyTypeIsWithoutExtractedMetadata(propertyType)
+        const missingData = propertyTypeIsWithoutPropertySelections(propertyType)
           ? !propertyValue
           : false;
 
@@ -134,7 +134,7 @@ export class TrainModelForPDF implements UseCase<Input, Output> {
 
   // eslint-disable-next-line max-params, class-methods-use-this
   private extendMaterialsWithLabeledData(
-    propertyLabeledData: ExtractedMetadataSchema | undefined,
+    propertyLabeledData: PropertySelectionSchema | undefined,
     propertyValue: FileWithAggregation['propertyValue'],
     propertyType: FileWithAggregation['propertyType'],
     file: FileWithAggregation,
@@ -142,9 +142,9 @@ export class TrainModelForPDF implements UseCase<Input, Output> {
   ): MaterialsData {
     let data: MaterialsData = { ..._data, language_iso: file.language };
 
-    const noExtractedData = propertyTypeIsWithoutExtractedMetadata(propertyType);
+    const noPropertySelectionsData = propertyTypeIsWithoutPropertySelections(propertyType);
 
-    if (!noExtractedData) {
+    if (!noPropertySelectionsData) {
       data = {
         ...data,
         label_text: propertyValue,
@@ -161,7 +161,7 @@ export class TrainModelForPDF implements UseCase<Input, Output> {
       }
     }
 
-    if (noExtractedData) {
+    if (noPropertySelectionsData) {
       if (!Array.isArray(propertyValue)) {
         throw new Error('Property value should be an array');
       }

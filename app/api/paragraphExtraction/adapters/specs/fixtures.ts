@@ -6,7 +6,7 @@ import { UserRole } from '#shared/types/userSchema.js';
 
 const f = getFixturesFactory();
 
-const user = f.user('admin', UserRole.ADMIN);
+const user = f.user({ username: 'admin', role: UserRole.ADMIN });
 
 const sourceTemplate = f.template('Source Template');
 
@@ -17,13 +17,11 @@ const targetTemplate = f.template('Target Template', [paragraphProperty, paragra
 const sourceRelationshipType = {
   _id: new ObjectId(),
   name: 'Source Relationship Type',
-  properties: [],
 };
 
 const targetRelationshipType = {
   _id: new ObjectId(),
   name: 'Target Relationship Type',
-  properties: [],
 };
 
 const langs = ['en', 'pt'];

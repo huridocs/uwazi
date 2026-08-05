@@ -83,6 +83,7 @@ export class CsvImportEntitiesJobHandler extends UserAwareDispatchable<Params> {
               batchIndex: info.batchIndex,
               batchCount: info.batchCount,
               entitiesCreatedInBatch: info.entitiesCreatedInBatch,
+              entitiesUpdatedInBatch: info.entitiesUpdatedInBatch,
             });
           },
           onError: ({ importId, error }: { importId: string; error: Error }) => {

@@ -53,11 +53,8 @@ class GenerateIdProperty extends FilterableProperty {
     };
   }
 
-  validatePropertyAssignment(
-    { value }: PropertyAssignment<GeneratedIdEntry>,
-    shouldValidateForRequired = false
-  ): void {
-    createSchema(shouldValidateForRequired ? this.required : false).parse(value);
+  validatePropertyAssignment({ value }: PropertyAssignment<GeneratedIdEntry>): void {
+    createSchema(this.required).parse(value);
   }
 }
 

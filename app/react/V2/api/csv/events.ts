@@ -102,6 +102,7 @@ type CsvImportEventPayloads = {
     batchIndex: number;
     batchCount: number;
     entitiesCreatedInBatch: number;
+    entitiesUpdatedInBatch: number;
   };
   [csvImportEvents.importSuccess]: {
     importId: string;

@@ -1,7 +1,2 @@
 export type FileType =
-  | 'custom'
-  | 'document'
-  | 'thumbnail'
-  | 'attachment'
-  | 'activitylog'
-  | 'segmentation';
+  'custom' | 'document' | 'thumbnail' | 'attachment' | 'activitylog' | 'segmentation';

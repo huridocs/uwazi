@@ -16,7 +16,9 @@ const GeneralError = () => {
   const { requestId } = searchParamsFromSearchParams(searchParams);
   const { status } =
     errorCode && has(handledErrors, errorCode) ? handledErrors[errorCode] : handledErrors[404];
-  const safeRequestId = /^[0-9-]{4}$/.exec(requestId);
+  const safeRequestId = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.exec(
+    requestId
+  );
   const error = handledErrors[status!];
   error.requestId = safeRequestId ? safeRequestId[0] : undefined;
 

@@ -18,9 +18,6 @@ import {
   type CsvImportTaskHandlers,
 } from './csvImportTaskProgress.js';
 
-const isV2CsvImportEnabled = () =>
-  typeof window !== 'undefined' && Boolean(window.__featureFlags__?.v2CSVImport);
-
 const CsvImportTasksSubscriber = () => {
   const user = useAtomValue(userAtom);
   const { registerTask, updateTask, endTask, notify } = useRequestStatus();
@@ -143,7 +140,7 @@ const CsvImportTasksSubscriber = () => {
   });
 
   useEffect(() => {
-    if (user?.role !== 'admin' || !isV2CsvImportEnabled()) {
+    if (user?.role !== 'admin') {
       return undefined;
     }
 

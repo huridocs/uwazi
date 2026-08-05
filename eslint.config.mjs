@@ -5,7 +5,6 @@ import globals from 'globals';
 import react from 'eslint-plugin-react';
 import jest from 'eslint-plugin-jest';
 import typescriptEslint from '@typescript-eslint/eslint-plugin';
-import prettier from 'eslint-plugin-prettier';
 import node from 'eslint-plugin-node';
 import reactHooks from 'eslint-plugin-react-hooks';
 import cypress from 'eslint-plugin-cypress';
@@ -54,7 +53,17 @@ const localRulesPlugin = {
 };
 
 export default defineConfig([
-  { ignores: ['**/__snapshots__/**', '**/*.snap', 'eslint.config.mjs'] },
+  {
+    ignores: [
+      '**/__snapshots__/**',
+      '**/*.snap',
+      'eslint.config.mjs',
+      // Ignore legacy scripts; re-include scripts.v2 (parent dirs must not be fully ignored).
+      'scripts/*',
+      '!scripts/scripts.v2/',
+      '!scripts/scripts.v2/**',
+    ],
+  },
   ...compat.extends('airbnb'),
   cypress.configs.recommended,
   ...storybook.configs['flat/recommended'],
@@ -74,7 +83,6 @@ export default defineConfig([
       react,
       jest,
       '@typescript-eslint': typescriptEslint,
-      prettier,
       node,
       'react-hooks': reactHooks,
       cypress,
@@ -86,13 +94,6 @@ export default defineConfig([
         'single',
         {
           avoidEscape: true,
-        },
-      ],
-
-      'prettier/prettier': [
-        'error',
-        {
-          requirePragma: false,
         },
       ],
 
@@ -364,17 +365,27 @@ export default defineConfig([
     rules: {
       'max-lines-per-function': 'off',
       'max-lines': 'off',
+      'global-require': 'off',
+      'import/no-dynamic-require': 'off',
     },
   },
   {
-    files: ['app/react/stories/*.stories.tsx'],
+    files: ['**/*.stories.{js,jsx,ts,tsx}', 'app/react/stories/**/*.{js,jsx,ts,tsx}'],
 
     rules: {
+      'import/no-default-export': 'off',
+      'react/jsx-props-no-spreading': 'off',
       'react/no-multi-comp': 'off',
     },
   },
   {
-    files: ['app/**/*.ts*', 'database/**/*.ts', 'e2e/**/*.ts'],
+    files: [
+      'app/**/*.ts*',
+      'database/**/*.ts',
+      'e2e/**/*.ts',
+      'playwright/**/*.ts',
+      'scripts/scripts.v2/**/*.ts',
+    ],
     ignores: ['**/*.cy.tsx'],
     plugins: { '@typescript-eslint': typescriptEslint },
     languageOptions: {
@@ -392,6 +403,14 @@ export default defineConfig([
       ],
 
       'no-useless-constructor': 'off',
+    },
+  },
+  {
+    files: ['scripts/scripts.v2/**/*.ts'],
+    rules: {
+      'no-console': 'off',
+      'max-statements': 'off',
+      'import/no-extraneous-dependencies': 'off',
     },
   },
   {

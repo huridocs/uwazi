@@ -57,16 +57,7 @@ afterAll(async () => {
   await testingEnvironment.tearDown();
 });
 
-describe.each([
-  {
-    title: 'POST /api/entities/multipleupdate - V1',
-    featureFlags: { v2MultipleUpdateEntity: false },
-  },
-  {
-    title: 'POST /api/entities/multipleupdate - V2',
-    featureFlags: { v2MultipleUpdateEntity: true },
-  },
-])('$title', ({ featureFlags }) => {
+describe('POST /api/entities/multipleupdate', () => {
   beforeEach(async () => {
     app = setUpApp(routes, (req: Request, _res: Response, next: NextFunction) => {
       (req as any).user = adminUser;
@@ -74,7 +65,6 @@ describe.each([
     });
 
     await testingEnvironment.setUp(fixtures);
-    testingTenants.changeCurrentTenant({ featureFlags });
     userInContext.mock(adminUser);
   });
 
@@ -155,19 +145,6 @@ describe.each([
       expect(result[0].template.toString()).toBe(basicTemplateId);
     });
   });
-
-  describe('empty ids', () => {
-    it('should return an empty array when no ids are provided (V1 only)', async () => {
-      if (featureFlags.v2MultipleUpdateEntity) return;
-      const body = {
-        ids: [],
-        values: { metadata: { numeric: [{ value: 1 }] } },
-      };
-
-      const result = await multipleUpdate(body);
-      expect(result).toEqual([]);
-    });
-  });
 });
 
 describe('POST /api/entities/multipleupdate - V2 only behaviours', () => {
@@ -178,7 +155,6 @@ describe('POST /api/entities/multipleupdate - V2 only behaviours', () => {
     });
 
     await testingEnvironment.setUp(fixtures);
-    testingTenants.changeCurrentTenant({ featureFlags: { v2MultipleUpdateEntity: true } });
     userInContext.mock(adminUser);
   });
 

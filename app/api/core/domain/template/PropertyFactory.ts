@@ -20,7 +20,6 @@ import { GenerateIdProperty, GenerateIdPropertyProps } from './GenerateIdPropert
 import { SelectProperty, SelectPropertyProps } from './select/SelectProperty.js';
 import { MultiSelectProperty, MultiSelectPropertyProps } from './select/MultiSelectProperty.js';
 import { NestedProperty, NestedPropertyProps } from './NestedProperty.js';
-import { RelationshipPropertyProps } from './RelationshipProperty.js';
 
 type CreateInput =
   | TextPropertyProps
@@ -39,8 +38,7 @@ type CreateInput =
   | V1RelationshipPropertyProps
   | NestedPropertyProps
   | ImagePropertyProps
-  | MediaPropertyProps
-  | RelationshipPropertyProps;
+  | MediaPropertyProps;
 
 class PropertyFactory {
   static create(input: CreateInput, context: Context): Property {

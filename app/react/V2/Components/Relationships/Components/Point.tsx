@@ -1,0 +1,98 @@
+import React, { useMemo } from 'react';
+import { useAtomValue } from 'jotai';
+import { useAnimateToPosition } from '../hooks/useAnimateToPosition.js';
+import { RelationshipMarker } from '../types.js';
+import { templatesAtom } from '#V2/atoms/templatesAtom.js';
+import { PortalTooltip } from '#V2/Components/UI/PortalTooltip.js';
+import { t, Translate } from '#app/I18N/index.js';
+import { RAIL_MARKER_ACTIVE_SIZE, RAIL_MARKER_SIZE, railMarkerZIndex } from '../markerMetrics.js';
+
+type PointProps = {
+  position: number;
+  stackOrder?: number;
+  marker: RelationshipMarker;
+  onClick: (marker: RelationshipMarker) => void;
+  isActive?: boolean;
+  representedCount?: number;
+  centerOnAxis?: boolean;
+};
+
+const activeMarkerShadow = (color: string): string =>
+  `0 0 0 1.5px var(--color-theme-surface-raised), 0 0 0 2.25px ${color}99`;
+
+const PointComponent = ({
+  position,
+  stackOrder = 1,
+  marker,
+  onClick,
+  isActive = false,
+  representedCount = 1,
+  centerOnAxis = false,
+}: PointProps) => {
+  const animatedPosition = useAnimateToPosition(position);
+  const templates = useAtomValue(templatesAtom);
+  const targetTemplate = useMemo(
+    () => templates.find(template => template._id === marker.target.templateId),
+    [marker, templates]
+  );
+  const color = targetTemplate?.color || '#000000';
+  const dotSize = isActive ? RAIL_MARKER_ACTIVE_SIZE : RAIL_MARKER_SIZE;
+  const activeOffset = (dotSize - RAIL_MARKER_SIZE) / 2;
+
+  return (
+    <PortalTooltip content={marker.target.title} placement="left">
+      <button
+        type="button"
+        data-testid="rail-marker"
+        data-marker-id={marker._id}
+        data-stack-order={stackOrder}
+        className="pointer-events-auto absolute cursor-pointer [transition-property:top] duration-500 ease-out"
+        style={{
+          top: `${animatedPosition - activeOffset}px`,
+          left: centerOnAxis ? `calc(50% - ${dotSize / 2}px)` : `${-activeOffset}px`,
+          width: dotSize,
+          height: dotSize,
+          zIndex: railMarkerZIndex(stackOrder, isActive ? 'point-active' : 'point'),
+        }}
+        onClick={() => {
+          onClick(marker);
+        }}
+      >
+        <span no-translate="true" className="sr-only">
+          {marker.target.title}
+        </span>
+        <span
+          className="relative flex items-center justify-center"
+          style={{ width: dotSize, height: dotSize }}
+        >
+          <span
+            data-testid="rail-marker-dot"
+            className={`block shrink-0 rounded-full transition-[opacity,box-shadow,transform] duration-150 ease-out ${
+              isActive ? '' : 'hover:scale-125'
+            }`}
+            style={{
+              width: dotSize,
+              height: dotSize,
+              backgroundColor: color,
+              opacity: isActive ? 1 : 0.7,
+              boxShadow: isActive ? activeMarkerShadow(color) : 'none',
+            }}
+          />
+          {representedCount > 1 && (
+            <span
+              aria-label={t('System', `${representedCount} matching references`, null, false)}
+              className="absolute left-2 top-1/2 rounded bg-parchment px-0.5 text-[8px] font-semibold leading-3 text-ink-tertiary"
+            >
+              <Translate>x</Translate>
+              {representedCount}
+            </span>
+          )}
+        </span>
+      </button>
+    </PortalTooltip>
+  );
+};
+
+const Point = React.memo(PointComponent);
+
+export { Point };

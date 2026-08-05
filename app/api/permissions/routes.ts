@@ -3,21 +3,12 @@ import { needsAuthorization } from '#api/auth/index.js';
 import { validation } from '#api/utils/index.js';
 import { entitiesPermissions } from '#api/permissions/entitiesPermissions.js';
 import { collaborators } from '#api/permissions/collaborators.js';
-import { permissionsDataSchema } from '#shared/types/permissionSchema.js';
 import { EntityPermissionsController } from '#api/core/infrastructure/express/entityPermissions/EntityPermissionsController.js';
 
 export const permissionRoutes = (app: Application) => {
   app.post(
     '/api/entities/permissions',
     needsAuthorization(['admin', 'editor', 'collaborator']),
-    validation.validateRequest({
-      type: 'object',
-      properties: {
-        body: {
-          ...permissionsDataSchema,
-        },
-      },
-    }),
     EntityPermissionsController.createHandler()
   );
 

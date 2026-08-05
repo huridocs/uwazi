@@ -1,5 +1,5 @@
 function getLocaleTranslation(translations, locale) {
-  return translations.find(d => d.locale === locale) || { contexts: [] };
+  return (translations ?? []).find(d => d.locale === locale) || { contexts: [] };
 }
 
 function getContext(translation, contextId = '') {

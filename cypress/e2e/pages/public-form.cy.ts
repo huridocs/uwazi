@@ -45,7 +45,7 @@ describe('Public Form', () => {
       cy.contains('a', 'Pages').click();
       cy.contains('a', 'Add page').click();
       cy.clearAndType('input[name="title"]', 'Public Form Page', { delay: 0 });
-      cy.contains('Markdown').click();
+      cy.contains('[role="tab"]', 'HTML').click();
       typeInEditor(
         'html',
         '<h1>Public form submition</h1><PublicForm template="58ada34c299e82674854504b" />',
@@ -61,7 +61,7 @@ describe('Public Form', () => {
         .click();
       cy.contains('Saved successfully');
       cy.get('[data-testid=modal]').should('not.exist');
-      cy.contains('Basic').click();
+      cy.contains('[role="tab"]', 'Config').click();
 
       //wait for /pages GET request
       cy.wait('@fetchPage');
@@ -121,7 +121,7 @@ describe('Public Form', () => {
         .within(() => {
           cy.contains('button', 'Edit').click();
         });
-      cy.contains('Markdown').click();
+      cy.contains('[role="tab"]', 'HTML').click();
       typeInEditor(
         'html',
         '<h1>Public form submition</h1><PublicForm template="624b29b432bdcda07b3854b9" />',
@@ -246,7 +246,7 @@ describe('Public Form', () => {
       cy.contains('a', 'Pages').click();
       cy.contains('a', 'Add page').click();
       cy.clearAndType('input[name="title"]', 'Public Form with error', { delay: 0 });
-      cy.contains('Markdown').click();
+      cy.contains('[role="tab"]', 'HTML').click();
       typeInEditor(
         'html',
         '<h1>Public form with error</h1><PublicForm template="invalid template" />',
@@ -260,7 +260,7 @@ describe('Public Form', () => {
         .contains('button', /^Save$/)
         .click();
       cy.contains('Saved successfully');
-      cy.contains('Basic').click();
+      cy.contains('[role="tab"]', 'Config').click();
       cy.get('input[id="page-url"]').then(url => {
         cy.visit(url.val() as string);
         cy.on('uncaught:exception', (_err, _runnable) => {

@@ -37,13 +37,21 @@ const SettingsHeaderTitle = ({
 }) => {
   if (typeof title === 'string') {
     return (
-      <Translate context={contextId || 'System'} className="max-w-xs truncate">
+      <Translate context={contextId || 'System'} className="max-w-xs truncate text-ink-secondary">
         {title}
       </Translate>
     );
   }
 
   return title;
+};
+
+const breadcrumbItemTheme = {
+  chevron: 'mx-1 h-4 w-4 text-ink-tertiary group-first:hidden md:mx-2',
+  href: {
+    off: 'flex items-center text-sm font-medium text-ink-secondary',
+    on: 'flex items-center text-sm font-medium text-ink-secondary hover:text-ink',
+  },
 };
 
 const SettingsHeader = ({ contextId, title, children, path, className }: SettingsHeaderProps) => (
@@ -59,14 +67,16 @@ const SettingsHeader = ({ contextId, title, children, path, className }: Setting
     </I18NLink>
     <Breadcrumb className="relative! p-1 flex right-0 bg-transparent! m-0 w-full! flex-wrap align-middle">
       {Array.from(path?.entries() || []).map(([key, value]) => (
-        <Breadcrumb.Item key={key} className="max-w-xs">
-          <I18NLink to={value} activeClassname="font-medium text-ink-secondary hover:text-ink">
-            <Translate className="max-w-xs truncate hover:underline">{key}</Translate>
+        <Breadcrumb.Item key={key} className="max-w-xs" theme={breadcrumbItemTheme}>
+          <I18NLink to={value} activeClassname="font-medium text-ink hover:text-ink">
+            <Translate className="max-w-xs truncate text-ink-secondary hover:underline hover:text-ink">
+              {key}
+            </Translate>
           </I18NLink>
         </Breadcrumb.Item>
       ))}
       {title !== undefined && (
-        <Breadcrumb.Item>
+        <Breadcrumb.Item theme={breadcrumbItemTheme}>
           <SettingsHeaderTitle title={title} contextId={contextId} />
         </Breadcrumb.Item>
       )}

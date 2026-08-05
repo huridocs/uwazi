@@ -424,7 +424,7 @@ const fixtures: DBFixture = {
       language: 'en',
       filename: pdfWithouTSegmentations,
       entity: 'entityWithoutSegmentation',
-      extractedMetadata: [
+      propertySelections: [
         {
           name: 'title',
           selection: {
@@ -438,7 +438,7 @@ const fixtures: DBFixture = {
       language: 'en',
       filename: 'extractor_target_rich_text_source_pdf_entity_1_f1_en',
       entity: 'extractor_target_rich_text_source_pdf_entity_1',
-      extractedMetadata: [
+      propertySelections: [
         {
           name: 'target_rich_text',
           selection: {
@@ -453,7 +453,7 @@ const fixtures: DBFixture = {
       language: 'es',
       filename: 'extractor_target_rich_text_source_pdf_entity_1_f1_es',
       entity: 'extractor_target_rich_text_source_pdf_entity_1',
-      extractedMetadata: [
+      propertySelections: [
         {
           name: 'target_rich_text',
           selection: {
@@ -469,7 +469,7 @@ const fixtures: DBFixture = {
       language: 'en',
       filename: 'extractor_source_pdf_target_text_entity_1_f1_en',
       entity: 'extractor_source_pdf_target_text_entity_1',
-      extractedMetadata: [
+      propertySelections: [
         {
           name: 'target_text',
           selection: {

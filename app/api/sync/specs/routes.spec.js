@@ -6,25 +6,17 @@ import '#api/utils/jasmineHelpers.js';
 import { ObjectId } from 'mongodb';
 
 import * as index from '#api/search/entitiesIndex.js';
+import { SyncHandlerRegistry } from '#api/sync/SyncHandlerRegistry.js';
 import { LanguageUtils } from '#shared/language/index.js';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { FilesDAOFactory } from '#api/core/infrastructure/factories/FilesDAOFactory.js';
 import instrumentRoutes from '../../utils/instrumentRoutes.js';
 import syncRoutes from '../routes.js';
 
-const mockIndexerSync = jest.fn().mockResolvedValue(undefined);
-const mockIndexerRemove = jest.fn().mockResolvedValue(undefined);
-jest.mock('#api/core/infrastructure/factories/EntityIndexerServiceFactory.js', () => ({
-  EntityIndexerServiceFactory: {
-    default: () => ({ sync: mockIndexerSync, remove: mockIndexerRemove }),
+jest.mock('#api/core/infrastructure/factories/FilesDAOFactory.js', () => ({
+  FilesDAOFactory: {
+    default: jest.fn(),
   },
-}));
-
-jest.mock('#api/sync/ElasticSlotsSyncHandler.js', () => ({
-  ElasticSlotsSyncHandler: jest.fn().mockImplementation(() => ({
-    save: jest.fn().mockResolvedValue(undefined),
-    saveMultiple: jest.fn().mockResolvedValue(undefined),
-    getById: jest.fn().mockResolvedValue(null),
-    delete: jest.fn().mockResolvedValue(undefined),
-  })),
 }));
 
 describe('sync', () => {
@@ -56,8 +48,6 @@ describe('sync', () => {
     jest.spyOn(search, 'delete').mockImplementation(() => {});
     jest.spyOn(search, 'indexEntities').mockImplementation(() => {});
     jest.spyOn(storage, 'removeFile').mockImplementation(() => {});
-
-    mockIndexerSync.mockClear();
   });
 
   describe('POST', () => {
@@ -94,8 +84,13 @@ describe('sync', () => {
     describe('when namespace is templates', () => {
       it('should update the mappings', async () => {
         jest.spyOn(index, 'updateMapping').mockImplementation(() => {});
-        const templates = { save: jest.fn() };
-        models.templates = () => templates;
+        const handler = {
+          save: jest.fn(),
+          saveMultiple: jest.fn(),
+          getById: jest.fn(),
+          delete: jest.fn(),
+        };
+        SyncHandlerRegistry.register('templates', () => handler);
 
         req.body = {
           namespace: 'templates',
@@ -103,14 +98,19 @@ describe('sync', () => {
         };
 
         await routes.post('/api/sync', req);
-        expect(templates.save).toHaveBeenCalledWith({ _id: 'id' });
+        expect(handler.save).toHaveBeenCalledWith({ _id: 'id' });
         expect(index.updateMapping).toHaveBeenCalledWith([req.body.data]);
       });
 
       it('should update the mappings if many templates are provided', async () => {
         jest.spyOn(index, 'updateMapping').mockImplementation(() => {});
-        const templates = { save: jest.fn(), saveMultiple: jest.fn() };
-        models.templates = () => templates;
+        const handler = {
+          save: jest.fn(),
+          saveMultiple: jest.fn(),
+          getById: jest.fn(),
+          delete: jest.fn(),
+        };
+        SyncHandlerRegistry.register('templates', () => handler);
 
         req.body = {
           namespace: 'templates',
@@ -118,23 +118,19 @@ describe('sync', () => {
         };
 
         await routes.post('/api/sync', req);
-        expect(templates.saveMultiple).toHaveBeenCalledWith([{ _id: 'id1' }, { _id: 'id2' }]);
+        expect(handler.saveMultiple).toHaveBeenCalledWith([{ _id: 'id1' }, { _id: 'id2' }]);
         expect(index.updateMapping).toHaveBeenCalledWith(req.body.data);
       });
 
-      it('should set the rest of the templates as non-default if the provided is default', async () => {
+      it('should delegate default template handling to the sync handler', async () => {
         jest.spyOn(index, 'updateMapping').mockImplementation(() => {});
-        const templates = {
+        const handler = {
+          save: jest.fn(),
           saveMultiple: jest.fn(),
-          get: jest.fn().mockResolvedValue([
-            {
-              _id: 'prevDefault',
-              name: 'Previous default',
-              default: true,
-            },
-          ]),
+          getById: jest.fn(),
+          delete: jest.fn(),
         };
-        models.templates = () => templates;
+        SyncHandlerRegistry.register('templates', () => handler);
 
         req.body = {
           namespace: 'templates',
@@ -142,15 +138,8 @@ describe('sync', () => {
         };
 
         await routes.post('/api/sync', req);
-        expect(templates.saveMultiple).toHaveBeenCalledWith([
-          {
-            _id: 'prevDefault',
-            name: 'Previous default',
-            default: false,
-          },
-          { _id: 'id', default: true },
-        ]);
-        expect(index.updateMapping).toHaveBeenCalledWith(req.body.data);
+        expect(handler.save).toHaveBeenCalledWith({ _id: 'id', default: true });
+        expect(index.updateMapping).toHaveBeenCalledWith([req.body.data]);
       });
     });
 
@@ -166,23 +155,51 @@ describe('sync', () => {
 
         await routes.post('/api/sync', req);
         expect(search.indexEntities).toHaveBeenCalledWith({ _id: 'id' }, '+fullText');
-        expect(mockIndexerSync).toHaveBeenCalledWith(['sharedId']);
       });
     });
 
     describe('when namespace is files', () => {
-      it('should index on elastic', async () => {
-        const files = { save: jest.fn(), delete: jest.fn() };
-        models.files = () => files;
+      let handler;
 
+      beforeEach(() => {
+        handler = {
+          save: jest.fn(),
+          saveMultiple: jest.fn(),
+          getById: jest.fn(),
+          delete: jest.fn(),
+        };
+        SyncHandlerRegistry.register('files', () => handler);
+      });
+
+      it('should delegate save to the sync handler', async () => {
+        req.body = {
+          namespace: 'files',
+          data: { _id: 'fileId', filename: 'test.pdf' },
+        };
+
+        await testingEnvironment.runWithContext(() => routes.post('/api/sync', req));
+        expect(handler.save).toHaveBeenCalledWith({ _id: 'fileId', filename: 'test.pdf' });
+      });
+
+      it('should call saveMultiple when data is an array', async () => {
+        req.body = {
+          namespace: 'files',
+          data: [{ _id: 'f1' }, { _id: 'f2' }],
+        };
+
+        await testingEnvironment.runWithContext(() => routes.post('/api/sync', req));
+        expect(handler.saveMultiple).toHaveBeenCalledWith([{ _id: 'f1' }, { _id: 'f2' }]);
+      });
+
+      it('should index on elastic after saving', async () => {
         req.body = {
           namespace: 'files',
           data: { entity: 'shared' },
         };
 
-        await routes.post('/api/sync', req);
+        await testingEnvironment.runWithContext(() => routes.post('/api/sync', req));
+        expect(handler.save).toHaveBeenCalledTimes(1);
         expect(search.indexEntities).toHaveBeenCalledWith({ sharedId: 'shared' }, '+fullText');
-        expect(mockIndexerSync).toHaveBeenCalledWith(['shared']);
       });
     });
 
@@ -309,30 +326,77 @@ describe('sync', () => {
     });
 
     describe('when namespace is files', () => {
+      let handler;
+
       beforeEach(() => {
-        const files = {
+        handler = {
           save: jest.fn(),
+          saveMultiple: jest.fn(),
+          getById: jest.fn(),
           delete: jest.fn(),
-          getById: () =>
-            Promise.resolve({ entity: 'entityId', filename: 'filename', type: 'custom' }),
         };
-        models.files = () => files;
+        SyncHandlerRegistry.register('files', () => handler);
+
+        FilesDAOFactory.default.mockReturnValue({
+          getById: jest.fn().mockResolvedValue({
+            isOk: () => true,
+            data: { entity: 'entityId', filename: 'filename', type: 'custom' },
+            getData(fallback) {
+              if (fallback !== undefined) {
+                return this.isOk() ? this.data : fallback;
+              }
+              return this.data;
+            },
+          }),
+        });
 
         req.query = {
           namespace: 'files',
           data: JSON.stringify({ _id: 'file_id' }),
         };
+
+        storage.removeFile.mockClear();
+        search.indexEntities.mockClear();
       });
 
-      it('should delete it from elastic', async () => {
-        await routes.delete('/api/sync', req);
+      it('should delegate delete to the sync handler', async () => {
+        await testingEnvironment.runWithContext(() => routes.delete('/api/sync', req));
+        expect(handler.delete).toHaveBeenCalledWith('file_id');
+      });
+
+      it('should delete it from elastic after the handler delete', async () => {
+        await testingEnvironment.runWithContext(() => routes.delete('/api/sync', req));
+        expect(handler.delete).toHaveBeenCalledWith('file_id');
         expect(search.indexEntities).toHaveBeenCalledWith({ sharedId: 'entityId' });
-        expect(mockIndexerSync).toHaveBeenCalledWith(['entityId']);
       });
 
-      it('should delete it from the file system', async () => {
-        await routes.delete('/api/sync', req);
+      it('should delete it from the file system after the handler delete', async () => {
+        await testingEnvironment.runWithContext(() => routes.delete('/api/sync', req));
+        expect(handler.delete).toHaveBeenCalledWith('file_id');
         expect(storage.removeFile).toHaveBeenCalledWith('filename', 'custom');
+      });
+
+      it('should skip cleanup when file is not found in the database', async () => {
+        storage.removeFile.mockClear();
+        search.indexEntities.mockClear();
+
+        FilesDAOFactory.default.mockReturnValue({
+          getById: jest.fn().mockResolvedValue({
+            isOk: () => false,
+            error: new Error('File not found'),
+            getData(fallback) {
+              if (fallback !== undefined) {
+                return this.isOk() ? this.data : fallback;
+              }
+              return this.data;
+            },
+          }),
+        });
+
+        await testingEnvironment.runWithContext(() => routes.delete('/api/sync', req));
+        expect(handler.delete).toHaveBeenCalledWith('file_id');
+        expect(storage.removeFile).not.toHaveBeenCalled();
+        expect(search.indexEntities).not.toHaveBeenCalled();
       });
     });
 
@@ -341,7 +405,6 @@ describe('sync', () => {
         const entities = {
           save: jest.fn(),
           delete: jest.fn(),
-          getById: jest.fn().mockResolvedValue({ _id: 'id', sharedId: 'sharedId1' }),
         };
         models.entities = () => entities;
 
@@ -354,7 +417,6 @@ describe('sync', () => {
       it('should delete it from elastic', async () => {
         await routes.delete('/api/sync', req);
         expect(search.delete).toHaveBeenCalledWith({ _id: 'id' });
-        expect(mockIndexerRemove).toHaveBeenCalledWith(['sharedId1']);
       });
 
       it('should not fail if elastic path has already been deleted (statusCode 404)', async () => {
@@ -364,40 +426,6 @@ describe('sync', () => {
         search.delete.mockReturnValue(Promise.reject(error));
         const response = await routes.delete('/api/sync', req);
         expect(response).toBe('ok');
-      });
-
-      it('should not fail if v2 elastic doc was already deleted (version conflict 409 with missing document)', async () => {
-        const error = new Error(
-          '[tenant__shared-1]: version conflict, required seqNo [0], primary term [1]. but no document was found'
-        );
-        error.statusCode = 409;
-
-        mockIndexerRemove.mockReturnValue(Promise.reject(error));
-        const response = await routes.delete('/api/sync', req);
-        expect(response).toBe('ok');
-      });
-
-      it('should rethrow a 409 that is not a missing document version conflict', async () => {
-        const error = new Error(
-          'version conflict, current version [2] is different than the one provided [1]'
-        );
-        error.statusCode = 409;
-
-        mockIndexerRemove.mockReturnValue(Promise.reject(error));
-        await expect(routes.delete('/api/sync', req)).rejects.toThrow(error);
-      });
-    });
-
-    describe('when namespace is elasticSlots', () => {
-      it('should return ok and not attempt model deletion', async () => {
-        req.query = {
-          namespace: 'elasticSlots',
-          data: JSON.stringify({ _id: 'slotId' }),
-        };
-
-        const response = await routes.delete('/api/sync', req);
-        expect(response).toBe('ok');
-        expect(mockIndexerSync).not.toHaveBeenCalled();
       });
     });
   });

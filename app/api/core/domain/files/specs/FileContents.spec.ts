@@ -27,7 +27,7 @@ describe('FileContents', () => {
 
   describe('constructor', () => {
     it('should create FileContents with callback object', () => {
-      const streamCallback = jest.fn(async function* streamCallback() {
+      const streamCallback = jest.fn(async function* contentStream() {
         yield new Uint8Array(Buffer.from('callback content'));
       });
 

@@ -75,11 +75,8 @@ class MultiDateRangeProperty extends FilterableProperty {
     };
   }
 
-  validatePropertyAssignment(
-    { value }: PropertyAssignment<DateRangeEntry>,
-    shouldValidateForRequired = false
-  ): void {
-    createSchema(shouldValidateForRequired ? this.required : false).parse(value);
+  validatePropertyAssignment({ value }: PropertyAssignment<DateRangeEntry>): void {
+    createSchema(this.required).parse(value);
   }
 }
 

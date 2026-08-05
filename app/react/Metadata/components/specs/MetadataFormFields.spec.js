@@ -103,7 +103,7 @@ describe('MetadataFormFields with one entity to edit ', () => {
       expect(inputField.length).toBe(1);
 
       const multiselect = component.find(LookupMultiSelect).at(0);
-      expect(multiselect.props().options).toEqual(props.thesauris.toJS()[0].values);
+      expect(multiselect.props().options).toEqual([{ value: '1', label: 'option1' }]);
       expect(multiselect.props().optionsValue).toEqual('value');
       expect(multiselect.props().lookup).toBeDefined();
 
@@ -142,6 +142,61 @@ describe('MetadataFormFields with one entity to edit ', () => {
 
     secondRelationshipField.simulate('change', ['123', '456']);
     expect(props.change).toHaveBeenCalledWith('publicform.metadata.field2', ['123', '456']);
+  });
+
+  describe('relationship LookupMultiSelect options', () => {
+    const relationshipIcon = { _id: 'flag-id', label: 'Flag', type: 'Flags' };
+
+    it('should pass icon from entityThesauris for relationship properties', () => {
+      render({
+        entityThesauris: Immutable.fromJS({
+          field2: [{ value: 'entity-id', label: 'Related entity', icon: relationshipIcon }],
+        }),
+      });
+
+      const multiselect = component.find(LookupMultiSelect).at(0);
+      expect(multiselect.props().options).toEqual([
+        { value: 'entity-id', label: 'Related entity', icon: relationshipIcon },
+      ]);
+    });
+
+    it('should pass icon from entityThesauris for newRelationship properties', () => {
+      fieldsTemplate = [
+        {
+          _id: 1,
+          name: 'relatedField',
+          label: 'Related',
+          type: 'newRelationship',
+          content: 'template2',
+          targetTemplates: ['template2'],
+        },
+      ];
+      metadata = [{ value: { relatedField: [] } }];
+
+      render({
+        entityThesauris: Immutable.fromJS({
+          relatedField: [{ value: 'entity-id', label: 'Related entity', icon: relationshipIcon }],
+        }),
+      });
+
+      const multiselect = component.find(LookupMultiSelect).at(0);
+      expect(multiselect.props().options).toEqual([
+        { id: 'entity-id', label: 'Related entity', icon: relationshipIcon },
+      ]);
+      expect(multiselect.props().optionsValue).toBe('id');
+    });
+
+    it('should omit icon when not set', () => {
+      render({
+        entityThesauris: Immutable.fromJS({
+          field2: [{ value: 'entity-id', label: 'Related entity' }],
+        }),
+      });
+
+      expect(component.find(LookupMultiSelect).at(0).props().options).toEqual([
+        { value: 'entity-id', label: 'Related entity' },
+      ]);
+    });
   });
 
   it('should render the add thesauri value when not on public form', () => {

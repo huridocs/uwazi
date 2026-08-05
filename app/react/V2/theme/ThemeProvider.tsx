@@ -19,6 +19,7 @@ import {
 type ThemeProviderProps = React.PropsWithChildren<{
   className?: string;
   controlledMode?: ThemeMode;
+  path?: string;
   style?: React.CSSProperties & Record<string, string>;
   /** Use legacy token preset only; still follows light/dark when customization is on. */
   legacyChrome?: boolean;
@@ -28,6 +29,7 @@ const ThemeProvider = ({
   children,
   className,
   controlledMode,
+  path,
   style,
   legacyChrome = false,
 }: ThemeProviderProps) => {
@@ -80,8 +82,10 @@ const ThemeProvider = ({
   return (
     <div
       className={mergedClassName}
+      data-path={path}
       data-theme-custom={useCustomizationPipeline ? true : undefined}
       data-theme-mode={effectiveThemeMode}
+      data-theme-preset={presetId}
       style={{
         colorScheme: effectiveThemeMode,
         fontFamily: 'var(--font-theme-sans)',

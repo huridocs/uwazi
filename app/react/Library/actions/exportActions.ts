@@ -110,7 +110,7 @@ const requestHandler = (
     });
 };
 
-export function exportDocuments(storeKey: string, captcha?: CaptchaValue) {
+export function exportDocuments(_storeKey: string, captcha?: CaptchaValue) {
   return async (dispatch: Dispatch<any>, getState: any) => {
     const state = getState().library;
     const { search, filters } = state;
@@ -128,8 +128,6 @@ export function exportDocuments(storeKey: string, captcha?: CaptchaValue) {
         .get('selectedDocuments')
         .map((entity: IImmutable<EntitySchema>) => entity.get('sharedId'));
     }
-
-    if (storeKey === 'uploads') finalSearchParams.unpublished = true;
 
     dispatch(actions.set('exportSearchResultsProcessing', true));
 

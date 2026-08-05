@@ -5,6 +5,7 @@ import { config } from '#api/config.js';
 import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
 import { applicationEventsBus } from '#api/core/libs/eventsbus/index.js';
 import { LogEntry } from '#api/core/libs/logger/infrastructure/LogEntry.js';
+import { TelemetryCollector } from '#api/core/libs/logger/TelemetryCollector.js';
 import { LogWriter } from '#api/core/libs/logger/infrastructure/LogWriter.js';
 import { withFeature } from '#api/core/libs/logger/infrastructure/StandardLogger.js';
 import { StandardJSONWriter } from '#api/core/libs/logger/infrastructure/writers/StandardJSONWriter.js';
@@ -26,15 +27,17 @@ import { tenants } from '#api/tenants/index.js';
 import { prettifyError } from '#api/utils/handleError.js';
 import { initSentry } from './initSentry.js';
 import { registerJobs } from './queueRegistry.js';
-import { ElasticSearchClientFactory } from '#api/core/infrastructure/elasticSearch/ElasticSearchClientFactory.js';
 import { IdGeneratorFactory } from '#api/core/infrastructure/factories/IdGeneratorFactory.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { PostgresTransactionManagerFactory } from '#api/core/infrastructure/factories/PostgresTransactionManagerFactory.js';
 import { ExecutionContext, ExecutionContextDeps } from '#api/core/libs/ExecutionContext.js';
 import { EventEmitterFactory } from '#api/core/libs/eventEmitter/EventEmitterFactory.js';
 import { Job } from '#api/core/libs/queue/infrastructure/QueueAdapter.js';
 import { UserSchema } from '#shared/types/userType.js';
 import users from '#api/users/users.js';
 import { User } from '#api/users.v2/model/User.js';
+import { PostgresDB } from '#api/infrastructure/PostgresDB.js';
+import { CleanupExpiredPasswordRecoveriesJobScheduler } from '#api/core/infrastructure/jobs/cleanupExpiredPasswordRecoveriesJob/CleanupExpiredPasswordRecoveriesJobScheduler.js';
 
 type Props = {
   standAloneProcess?: boolean;
@@ -44,7 +47,7 @@ const replaceTenantWithJobNamespace =
   (writer: LogWriter): LogWriter =>
   (log: LogEntry) => {
     writer(
-      new LogEntry(log.message, log.timestamp, log.level, log.tenant, {
+      new LogEntry(log.message, log.timestamp, log.level, log.tenant, log.correlationId, {
         ...log.metadata,
         ...(log.metadata?.job?.namespace ? { tenant: log.metadata.job.namespace } : {}),
       })
@@ -63,26 +66,27 @@ function register<T extends Dispatchable>(
   this.register(dispatchable, async (namespace, job) => {
     let deps!: ExecutionContextDeps;
     let instance!: T;
+    const tenantName = namespace === 'system' ? config.defaultTenant.name : namespace;
     await tenants.run(async () => {
       let actor: UserSchema | null = null;
       if (job.params.userId) {
-        actor = await users.getById(job.params.userId, '-password', true);
+        actor = await users.getById(job.params.userId, '-password', true, true);
       }
       deps = {
         actor: User.createFrom(actor),
         tenant: tenants.current(),
         factories: {
           transactionManager: TransactionManagerFactory.default,
+          postgresTransactionManager: PostgresTransactionManagerFactory.default,
           jobsDispatcher: () => DefaultDispatcher(namespace, ExecutionContext.transactionManager),
           eventEmitter: EventEmitterFactory.default,
           idGenerator: IdGeneratorFactory.default,
           logger: LoggerFactory.default,
-          elasticClient: ElasticSearchClientFactory.tenantAware,
-          authorizedEntityESClient: ElasticSearchClientFactory.authorizedEntityClient,
+          telemetryCollector: () => new TelemetryCollector('queue_job'),
         },
       };
       instance = await ExecutionContext.run(deps, async () => factory(namespace, job));
-    }, namespace);
+    }, tenantName);
 
     // v1 backwards compatibility only (probably)
     ExecutionContext.attachContext(instance, 'handleDispatch', deps);
@@ -128,6 +132,9 @@ function setupQueueWorker(props?: Props) {
       registerJobs(register.bind(queueWorker));
       logger.info('Registered jobs', { jobs: queueWorker.getRegisteredJobs() });
 
+      await CleanupExpiredPasswordRecoveriesJobScheduler.default().ensureScheduled();
+      logger.info('Ensured CleanupExpiredPasswordRecoveriesJob is scheduled');
+
       if (standAloneProcess) {
         registerEventListeners(applicationEventsBus);
         logger.info('Registered event listeners');
@@ -149,6 +156,8 @@ function setupQueueWorker(props?: Props) {
 
       await DB.disconnect();
       logger.info('Disconected from MongoDB');
+      await PostgresDB.disconnect();
+      logger.info('Disconected from postgres');
       await Redis.disconnect();
       logger.info('Disconected from redis');
     })

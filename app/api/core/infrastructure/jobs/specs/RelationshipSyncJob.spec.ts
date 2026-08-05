@@ -3,7 +3,7 @@ import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { DBFixture } from '#api/utils/testing_db.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
-import relationships from '#api/relationships/index.js';
+import relationships from '#api/relationships/relationships.js';
 import { tenants } from '#api/tenants/index.js';
 import { permissionsContext } from '#api/permissions/permissionsContext.js';
 import { NonRetryableJobError } from '#api/core/libs/queue/infrastructure/errors.js';
@@ -65,12 +65,14 @@ describe('RelationshipSyncJob', () => {
     const { sut, saveEntityBasedReferencesSpy } = createSut();
     const templateId = factory.id('Document');
 
-    await sut.handleDispatch(async () => Promise.resolve(), {
-      sharedId: 'entity_1',
-      targetLanguage: 'en',
-      templateId: templateId.toHexString(),
-      tenantName: tenants.current().name,
-      userId: permissionsContext.getUserInContext()!._id?.toString()!,
+    await testingEnvironment.runWithContext(async () => {
+      await sut.handleDispatch(async () => Promise.resolve(), {
+        sharedId: 'entity_1',
+        targetLanguage: 'en',
+        templateId: templateId.toHexString(),
+        tenantName: tenants.current().name,
+        userId: permissionsContext.getUserInContext()!._id?.toString()!,
+      });
     });
 
     const template = await testingEnvironment.db
@@ -89,13 +91,15 @@ describe('RelationshipSyncJob', () => {
     const templateId = factory.id('Document');
 
     await expect(
-      sut.handleDispatch(async () => Promise.resolve(), {
-        sharedId: 'non_existent_entity',
-        targetLanguage: 'en',
-        templateId: templateId.toHexString(),
-        tenantName: tenants.current().name,
-        userId: permissionsContext.getUserInContext()!._id?.toString()!,
-      })
+      testingEnvironment.runWithContext(async () =>
+        sut.handleDispatch(async () => Promise.resolve(), {
+          sharedId: 'non_existent_entity',
+          targetLanguage: 'en',
+          templateId: templateId.toHexString(),
+          tenantName: tenants.current().name,
+          userId: permissionsContext.getUserInContext()!._id?.toString()!,
+        })
+      )
     ).rejects.toThrow(new NonRetryableJobError(new EntityNotFoundError('non_existent_entity')));
 
     expect(saveEntityBasedReferencesSpy).not.toHaveBeenCalled();

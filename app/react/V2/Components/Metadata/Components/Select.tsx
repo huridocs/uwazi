@@ -1,52 +1,23 @@
 import React from 'react';
 import { SelectMetadataProperty, MultiSelectMetadataProperty } from '#V2/formatters/types.js';
-import { PropertyLabel } from './PropertyLabel.js';
-import { MetadataCard } from './MetadataCard.js';
-import { COMPACT_METADATA_FIELD_LAYOUT } from '../metadataPropertyLayout.js';
-import { MetadataFieldProps } from './MetadataFieldPropsType.js';
+import { formatMetadataSelectValue } from '#V2/Components/Metadata/display/index.js';
 
-type SelectProps = MetadataFieldProps & {
+type SelectProps = {
   values: SelectMetadataProperty | MultiSelectMetadataProperty;
 };
 
-const formatSelectValue = (
-  value: SelectMetadataProperty['values'][0] | MultiSelectMetadataProperty['values'][0]
-) => {
-  let displayValue = value.label || value.value;
-
-  if (value?.parent) {
-    const { parent } = value;
-    displayValue = `${parent.label}: ${value.label || value.value}`;
-  }
-
-  return displayValue;
-};
-
-const Select = ({ label, translationContext, values, hideLabel, className }: SelectProps) => {
+const Select = ({ values }: SelectProps) => {
   if (!values?.values?.length) {
     return null;
   }
 
   return (
-    <MetadataCard className={className ?? COMPACT_METADATA_FIELD_LAYOUT}>
-      <dt>
-        <PropertyLabel
-          label={label}
-          translationContext={translationContext}
-          hideLabel={hideLabel}
-        />
-      </dt>
-      <dd className="flex flex-col gap-1">
-        {values.values.map(value => {
-          const formatted = formatSelectValue(value);
-          return (
-            <span key={formatted} className="font-medium text-ink">
-              {formatted}
-            </span>
-          );
-        })}
-      </dd>
-    </MetadataCard>
+    <div className="flex flex-col gap-1 font-medium leading-snug">
+      {values.values.map(value => {
+        const formatted = formatMetadataSelectValue(value);
+        return <span key={formatted}>{formatted}</span>;
+      })}
+    </div>
   );
 };
 

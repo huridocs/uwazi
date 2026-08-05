@@ -1,26 +1,28 @@
-import { ProcessingPDF } from '#api/core/domain/files/ProcessingPDF.js';
+/* eslint-disable max-statements */
+import { ObjectId } from 'mongodb';
+import { Readable } from 'stream';
+import urljoin from 'url-join';
+import { PDFDocument } from '#api/core/domain/files/PDFDocument.js';
+import { FilesDAOFactory } from '#api/core/infrastructure/factories/FilesDAOFactory.js';
 import { FilesServiceFactory } from '#api/core/infrastructure/factories/FilesServiceFactory.js';
 import { IdGeneratorFactory } from '#api/core/infrastructure/factories/IdGeneratorFactory.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { InputFile } from '#api/core/infrastructure/files/InputFile.js';
-import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
-import { EntityDBO } from '#api/entities.v2/database/schemas/EntityTypes.js';
-import { files, storage } from '#api/files/index.js';
+import { EntitiesDAOFactory } from '#api/core/infrastructure/factories/EntitiesDAOFactory.js';
+import { storage } from '#api/files/index.js';
 import { permissionsContext } from '#api/permissions/permissionsContext.js';
 import relationships from '#api/relationships/relationships.js';
 import { ResultsMessage, TaskManager } from '#api/services/tasksmanager/TaskManager.js';
+import { User } from '#api/users.v2/model/User.js';
 import settings from '#api/settings/settings.js';
 import { emitToTenant } from '#api/socketio/setupSockets.js';
 import { tenants } from '#api/tenants/tenantContext.js';
 import users from '#api/users/users.js';
 import createError from '#api/utils/Error.js';
 import { handleError } from '#api/utils/handleError.js';
-import { ObjectId } from 'mongodb';
 import request from '#shared/JSONRequest.js';
 import { LanguageUtils } from '#shared/language/index.js';
 import { FileType } from '#shared/types/fileType.js';
-import { Readable } from 'stream';
-import urljoin from 'url-join';
 import { EnforcedWithId } from '../../odm/model.js';
 import { OcrRecord, OcrStatus } from './ocrModel.js';
 import {
@@ -76,10 +78,9 @@ const setUserContextForFile = async (file: FileType): Promise<void> => {
     throw new Error(`OCR cannot process file ${file.filename}: file has no entity association`);
   }
 
-  const db = getConnection();
-  const entity = await db
-    .collection<EntityDBO>('entities')
-    .findOne({ sharedId: file.entity }, { projection: { user: 1, sharedId: 1 } });
+  const entity = await EntitiesDAOFactory.default({
+    user: User.createFrom(null),
+  }).getBySharedId(file.entity);
 
   if (!entity) {
     throw new Error(`OCR cannot process file ${file.filename}: entity ${file.entity} not found`);
@@ -114,10 +115,16 @@ const saveResultFile = async (message: ResultsMessage, originalFile: FileType) =
   });
 
   const fileId = IdGeneratorFactory.default().generate();
-  const processingPDF = inputFile.toEntityFile(originalFile.entity!, fileId) as ProcessingPDF;
+  const processingPDF = inputFile.toEntityFile(originalFile.entity!, fileId) as PDFDocument;
 
   const transactionManager = TransactionManagerFactory.default();
-  const filesService = FilesServiceFactory.default();
+  const filesService = FilesServiceFactory.default(
+    {},
+    {
+      userId: permissionsContext.getUserInContext()?._id?.toString(),
+      tenantName: tenants.current().name,
+    }
+  );
 
   await filesService.storeFiles([processingPDF]);
 
@@ -142,7 +149,14 @@ const processFiles = async (
 
     const resultFile = await saveResultFile(message, originalFile);
 
-    await files.save({ _id: originalFile._id, type: 'attachment' });
+    const filesService = FilesServiceFactory.default(
+      {},
+      {
+        userId: permissionsContext.getUserInContext()?._id?.toString(),
+        tenantName: tenants.current().name,
+      }
+    );
+    await filesService.demoteToAttachment(originalFile._id.toHexString());
 
     await markReady(record, resultFile as EnforcedWithId<FileType>);
     await relationships.swapTextReferencesFile(
@@ -167,7 +181,9 @@ const handleOcrError = async (
 const processResults = async (message: ResultsMessage): Promise<void> => {
   await tenants.run(async () => {
     try {
-      const [originalFile] = await files.get({ filename: message.params!.filename });
+      const originalFile = (
+        await FilesDAOFactory.default().getByFilename(message.params!.filename)
+      ).getDataOrThrow();
       const [record] = await getForSourceFile(originalFile);
 
       if (!record) return;

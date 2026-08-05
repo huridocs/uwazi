@@ -1,6 +1,10 @@
+/* eslint-disable no-param-reassign */
+/* eslint-disable class-methods-use-this */
+/* eslint-disable max-params */
+/* eslint-disable max-lines */
 /* eslint-disable max-statements */
 import { User } from '#api/users.v2/model/User.js';
-import { EntityDBO } from '#api/entities.v2/database/schemas/EntityTypes.js';
+import { EntityDBO } from '#api/core/infrastructure/mongodb/entity/EntityDBO.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import { SettingsDataSource } from './contracts/SettingsDataSource.js';
 import { TemplatesDataSource } from './contracts/TemplatesDataSource.js';
@@ -10,73 +14,122 @@ import {
 } from '../domain/entityAccessPolicy/EntityPermissionChecker.js';
 import { PropertyTypeEnum } from '../domain/template/PropertyType.js';
 import { Template } from '../domain/template/Template.js';
-import {
+import type {
   EntityWithFiles,
-  MongoEntityDAO,
-} from '../infrastructure/mongodb/entity/MongoEntityDAO.js';
+  MongoEntitiesDAO,
+} from '../infrastructure/mongodb/entity/MongoEntitiesDAO.js';
 import { MongoRelationshipsV1DataSource } from '../infrastructure/mongodb/MongoRelationshipsV1DataSource.js';
+import { MongoEntityMapper } from '../infrastructure/mongodb/entity/MongoEntityMapper.js';
+import { FileDTO } from '../domain/files/domainTypes.js';
 import { GetEntityResponseDTO, RelationDTO } from './GetEntityResponseDTO.js';
 import { EntityNotFoundError } from '../domain/entity/errors.js';
 import { AccessLevel } from '../domain/entityAccessPolicy/AccessLevel.js';
 import { GrantType } from '../domain/entityAccessPolicy/GrantType.js';
+import { TimedMethod } from '../libs/logger/TimedMethodDecorator.js';
+import { ExecutionContext } from '../libs/ExecutionContext.js';
+import { TemplatesDAOFactory } from '../infrastructure/factories/TemplatesDAOFactory.js';
+
+type TemplatesDAO = Awaited<ReturnType<typeof TemplatesDAOFactory.default>>;
 
 type Deps = {
   templatesDS: TemplatesDataSource;
+  templatesDAO: TemplatesDAO;
   settingsDS: SettingsDataSource;
   entityPermissionChecker: EntityPermissionChecker;
-  entityDAO: MongoEntityDAO;
+  entityDAO: MongoEntitiesDAO;
   relationshipsDataSource: MongoRelationshipsV1DataSource;
 };
 
 class EntitiesQueryService {
   constructor(private deps: Deps) {}
 
+  private addTelemetry(metadata: Record<string, any>): void {
+    if (!ExecutionContext.isTelemetryEnabled) return;
+    ExecutionContext.telemetryCollector.add(metadata);
+  }
+
   /**
    * Gets a single entity with all computed fields (files, relationships, filtered metadata).
    */
+  @TimedMethod('EntitiesQueryService.getEntity')
   async getEntity(input: {
     sharedId: string;
     language: LanguageISO6391;
     includeRelationships: boolean;
     includePermissions: boolean;
+    scopeRelationshipsToMetadata?: boolean;
     user: User;
   }): Promise<GetEntityResponseDTO> {
-    const { sharedId, language, includeRelationships, includePermissions, user } = input;
+    const {
+      sharedId,
+      language,
+      includeRelationships,
+      includePermissions,
+      scopeRelationshipsToMetadata,
+      user,
+    } = input;
     const isAuthenticated = !user.isAnonymous();
 
-    const entity = await this.deps.entityDAO
-      .getWithFiles({
-        sharedId,
-        language,
-      })
-      .next();
+    const [entity] = await this.deps.entityDAO.getWithFiles({
+      sharedId,
+      language,
+    });
 
     if (!entity) {
       throw new EntityNotFoundError(sharedId);
     }
+
+    this.addTelemetry({
+      isAuthenticated,
+      includeRelationships,
+      includePermissions,
+      documentsCount: entity.documents.length,
+      attachmentsCount: entity.attachments.length,
+    });
 
     await this.applyRelationshipPermissions([entity], user);
 
     let filteredRelations: RelationDTO[] = [];
     if (includeRelationships) {
       const includeUnpublished = isAuthenticated;
-      const relations = (await this.deps.relationshipsDataSource.getByEntity(
-        sharedId,
-        language,
-        includeUnpublished
-      )) as RelationDTO[];
+      let relations: RelationDTO[];
+
+      if (scopeRelationshipsToMetadata) {
+        const [templateDBO] = await this.deps.templatesDAO.get([entity.template.toString()]);
+        if (!templateDBO) {
+          relations = [];
+        } else {
+          const domainEntity = MongoEntityMapper.toDomain([entity], templateDBO);
+          relations = (await this.deps.relationshipsDataSource.getEntityMetadataRelationships(
+            domainEntity,
+            language,
+            includeUnpublished
+          )) as RelationDTO[];
+        }
+      } else {
+        relations = (await this.deps.relationshipsDataSource.getByEntity(
+          sharedId,
+          language,
+          includeUnpublished
+        )) as RelationDTO[];
+      }
 
       filteredRelations = isAuthenticated
         ? relations
         : relations.filter(rel => rel.entityData?.published !== false);
+
+      this.addTelemetry({
+        relationsCount: relations.length,
+        filteredRelationsCount: filteredRelations.length,
+      });
     }
 
-    this.applyPermissionsFieldSecurity(entity, user, includePermissions);
+    await this.applyPermissionsFieldSecurity(entity, user, includePermissions);
 
     const response: GetEntityResponseDTO = {
       ...entity,
-      documents: entity.documents.map(doc => ({ ...doc, _id: doc._id.toString() })),
-      attachments: entity.attachments.map(doc => ({ ...doc, _id: doc._id.toString() })),
+      documents: entity.documents.map(doc => ({ ...doc, _id: doc._id.toString() }) as FileDTO),
+      attachments: entity.attachments.map(doc => ({ ...doc, _id: doc._id.toString() }) as FileDTO),
       ...(includeRelationships && { relations: filteredRelations }),
     };
 
@@ -87,15 +140,27 @@ class EntitiesQueryService {
    * Applies relationship permissions to entity metadata based on user permissions.
    * Mutates entity metadata in-place by filtering or marking inaccessible relationship references.
    */
+  @TimedMethod('EntitiesQueryService.applyRelationshipPermissions')
   async applyRelationshipPermissions(entityDBOs: EntityDBO[], user: User): Promise<void> {
     if (entityDBOs.length === 0) {
       return;
     }
 
     const templatePropsMap = await this.loadTemplateRelationshipProperties(entityDBOs);
+    const relationshipPropsCount = [...templatePropsMap.values()].reduce(
+      (count, props) => count + props.size,
+      0
+    );
     const referencedEntityIds = this.findAllReferencedEntities(entityDBOs, templatePropsMap);
     const accessibleEntityIds = await this.determineAccessibleEntities(referencedEntityIds, user);
     const filterUnauthorized = await this.deps.settingsDS.readFilterUnauthorizedRelated();
+
+    this.addTelemetry({
+      relationshipPropsCount,
+      referencedEntityIdsCount: referencedEntityIds.size,
+      accessibleEntityIdsCount: accessibleEntityIds.size,
+      filterUnauthorized,
+    });
 
     this.applyPermissionsToMetadata(
       entityDBOs,
@@ -106,11 +171,12 @@ class EntitiesQueryService {
     );
   }
 
-  private applyPermissionsFieldSecurity(
+  @TimedMethod('EntitiesQueryService.applyPermissionsFieldSecurity')
+  private async applyPermissionsFieldSecurity(
     entity: EntityWithFiles,
     user: User,
     includePermissions: boolean
-  ): void {
+  ): Promise<void> {
     if (!includePermissions || user.isAnonymous()) {
       delete entity.permissions;
       return;
@@ -131,11 +197,12 @@ class EntitiesQueryService {
     if (!hasWrite) delete entity.permissions;
   }
 
+  @TimedMethod('EntitiesQueryService.loadTemplateRelationshipProperties')
   private async loadTemplateRelationshipProperties(
     entityDBOs: EntityDBO[]
   ): Promise<Map<string, Set<string>>> {
     const templateIds = [...new Set(entityDBOs.map(e => e.template.toString()))];
-    const templates = await this.deps.templatesDS.getByIds(templateIds).all();
+    const templates = await this.deps.templatesDS.getByIds(templateIds);
 
     this.validateAllTemplatesLoaded(templates, templateIds);
 
@@ -186,6 +253,7 @@ class EntitiesQueryService {
     return allReferencedIds;
   }
 
+  @TimedMethod('EntitiesQueryService.determineAccessibleEntities')
   private async determineAccessibleEntities(
     referencedIds: Set<string>,
     user: User
@@ -236,7 +304,7 @@ class EntitiesQueryService {
     const templateId = entityDBO.template.toString();
     const relationshipProps = templatePropsMap.get(templateId);
 
-    if (!relationshipProps || relationshipProps.size === 0) {
+    if (!relationshipProps || relationshipProps.size === 0 || !entityDBO.metadata) {
       return;
     }
 

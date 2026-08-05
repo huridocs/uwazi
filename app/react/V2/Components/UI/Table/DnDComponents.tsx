@@ -83,11 +83,13 @@ const DraggableRow = <T extends TableRow<T>>({
   colSpan,
   groupColumnIndex,
   dndEnabled,
+  rowClassName = '',
 }: {
   row: Row<T>;
   colSpan: number;
   groupColumnIndex: number;
   dndEnabled: boolean;
+  rowClassName?: string;
 }) => {
   const expanded = row.getIsExpanded();
   const { disableRowDnD = false } = row.original;
@@ -124,7 +126,7 @@ const DraggableRow = <T extends TableRow<T>>({
     <>
       <tr
         ref={setNodeRef}
-        className={`border-b transition-colors hover:bg-(--color-theme-surface-warm) ${rowStyles}`}
+        className={`border-b transition-colors hover:bg-(--color-theme-surface-warm) ${rowStyles} ${rowClassName}`}
         style={{
           ...(isDragging ? draggingStyles : undefined),
           color: 'var(--color-theme-text-primary)',

@@ -1,11 +1,11 @@
 import { AuthorizationService } from '#api/authorization.v2/services/AuthorizationService.js';
 import { IdGenerator } from '#api/core/application/contracts/IdGenerator.js';
 import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
-import { EntitiesDataSource } from '#api/entities.v2/contracts/EntitiesDataSource.js';
+import { DeprecatedEntitiesDataSource } from '#api/entities.v2/contracts/DeprecatedEntitiesDataSource.js';
 import { MissingEntityError } from '#api/entities.v2/errors/entityErrors.js';
 import { FilesDataSource } from '#api/core/application/contracts/FilesDataSource.js';
-import { RelationshipTypesDataSource } from '#api/relationshiptypes.v2/contracts/RelationshipTypesDataSource.js';
-import { MissingRelationshipTypeError } from '#api/relationshiptypes.v2/errors/relationshipTypeErrors.js';
+import { RelationshipTypesDataSource } from '#api/core/application/contracts/RelationshipTypesDataSource.js';
+import { MissingRelationshipTypeError } from '#api/core/domain/relationshipType/errors.js';
 import { RelationshipsDataSource } from '../contracts/RelationshipsDataSource.js';
 import {
   EntityPointer,
@@ -75,7 +75,7 @@ function mapDataToRelationship(data: CreateRelationshipData, generateId: () => s
 export class CreateRelationshipService {
   private relationshipsDS: RelationshipsDataSource;
 
-  private entitiesDS: EntitiesDataSource;
+  private entitiesDS: DeprecatedEntitiesDataSource;
 
   private filesDS: FilesDataSource;
 
@@ -93,7 +93,7 @@ export class CreateRelationshipService {
   constructor(
     relationshipsDS: RelationshipsDataSource,
     relationshipTypesDS: RelationshipTypesDataSource,
-    entitiesDS: EntitiesDataSource,
+    entitiesDS: DeprecatedEntitiesDataSource,
     filesDS: FilesDataSource,
     transactionManager: TransactionManager,
     idGenerator: IdGenerator,

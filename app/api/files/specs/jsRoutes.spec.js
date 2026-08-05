@@ -1,8 +1,7 @@
-/*eslint-disable max-lines*/
 import express from 'express';
 import request from 'supertest';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
-import { PUBLIC_USER_ID } from '#api/users/publicUser.js';
+import { PUBLIC_USER_ID } from '#api/core/domain/user/User.js';
 import { setUpApp } from '#api/utils/testingRoutes.js';
 import { appContext } from '#api/utils/AppContext.js';
 import mailer from '#api/utils/mailer.js';

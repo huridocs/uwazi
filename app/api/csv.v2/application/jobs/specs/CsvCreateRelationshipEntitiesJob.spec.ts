@@ -29,7 +29,7 @@ const fixtures = {
     fixturesFactory.template('csvImportTemplate', []),
     fixturesFactory.template('relatedTemplate', []),
   ],
-  users: [fixturesFactory.user('relationship-user', UserRole.EDITOR)],
+  users: [fixturesFactory.user({ username: 'relationship-user', role: UserRole.EDITOR })],
 };
 
 const createCallbacks = () => ({

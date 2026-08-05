@@ -1,3 +1,4 @@
+import { ObjectId } from 'mongodb';
 import request from 'supertest';
 
 import { DBFixture } from '#api/utils/testing_db.js';
@@ -12,18 +13,21 @@ import settings from '../settings.js';
 let currentUser: UserSchema;
 
 const adminUser = {
+  _id: new ObjectId(),
   username: 'admin',
   role: UserRole.ADMIN,
   email: 'user@test.com',
 };
 
 const editor = {
+  _id: new ObjectId(),
   username: 'editor',
   role: UserRole.EDITOR,
   email: 'editor@test.com',
 };
 
 const collaborator = {
+  _id: new ObjectId(),
   username: 'collaborator',
   role: UserRole.COLLABORATOR,
   email: 'collab@test.com',

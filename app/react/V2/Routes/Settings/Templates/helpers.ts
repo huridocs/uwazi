@@ -94,6 +94,56 @@ const cleanProperty = (prop: PropertyRow) => {
   return rest;
 };
 
+const isEmptyValue = (value: unknown): boolean =>
+  value === null || value === undefined || value === '';
+
+const normalizeOptionalId = (value: string | null | undefined): string | undefined => {
+  if (isEmptyValue(value)) {
+    return undefined;
+  }
+
+  return value as string;
+};
+
+type InheritValue = { property: string; type: string } | string | null | undefined;
+
+const normalizeInherit = (
+  inherit: InheritValue
+): { property: string; type: string } | undefined => {
+  if (isEmptyValue(inherit) || typeof inherit !== 'object') {
+    return undefined;
+  }
+
+  const { property, type } = inherit as { property?: string; type?: string };
+  if (property && type) {
+    return { property, type };
+  }
+
+  return undefined;
+};
+
+const optionalIdMatches = (a: string | null | undefined, b: string | null | undefined): boolean =>
+  normalizeOptionalId(a) === normalizeOptionalId(b);
+
+const inheritMatches = (a: InheritValue, b: InheritValue): boolean =>
+  JSON.stringify(normalizeInherit(a)) === JSON.stringify(normalizeInherit(b));
+
+const relationshipConfigMatches = (
+  a: {
+    content?: string | null;
+    relationType?: string | null;
+    inherit?: InheritValue;
+  },
+  b: {
+    content?: string | null;
+    relationType?: string | null;
+    inherit?: InheritValue;
+  }
+): boolean =>
+  optionalIdMatches(a.content, b.content) &&
+  optionalIdMatches(a.relationType, b.relationType) &&
+  inheritMatches(a.inherit, b.inherit);
+
 export {
   processDefaultProperties,
   processProperties,
@@ -101,4 +151,7 @@ export {
   emptyTemplate,
   translationsKeys,
   confirmationMessages,
+  optionalIdMatches,
+  inheritMatches,
+  relationshipConfigMatches,
 };

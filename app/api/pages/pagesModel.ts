@@ -4,7 +4,6 @@ import { PageType } from '#shared/types/pageType.js';
 
 const propsWithDBSpecifics = {
   creationDate: { type: Number, select: false },
-  user: { type: mongoose.Schema.Types.ObjectId, ref: 'users', select: false },
 };
 
 const mongoSchema = new mongoose.Schema(propsWithDBSpecifics, {

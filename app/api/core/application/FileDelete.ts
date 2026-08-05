@@ -1,21 +1,23 @@
-import { fileDBO } from '#api/core/infrastructure/mongodb/files/schemas/filesTypes.js';
-import { MultiLanguageEntityDataSource } from '#api/entities.v2/contracts/MultiLanguageEntitiesDataSource.js';
-import { createError } from '#api/utils/index.js';
 import { z } from 'zod';
+import { FileDTO } from '#api/core/domain/files/domainTypes.js';
+import { EntitiesDataSource } from '#api/core/application/contracts/EntitiesDataSource.js';
+import { createError } from '#api/utils/index.js';
 import { EntityPermissionChecker } from '../domain/entityAccessPolicy/EntityPermissionChecker.js';
-import { ProcessedPDF } from '../domain/files/ProcessedPDF.js';
+import { PDFDocument } from '../domain/files/PDFDocument.js';
 import { AbstractUseCase } from '../libs/UseCase.js';
 import { FilesDataSource } from './contracts/FilesDataSource.js';
 import { SettingsDataSource } from './contracts/SettingsDataSource.js';
+import { EntitiesService } from './EntitiesService.js';
 import { FilesService } from './FilesService.js';
 
-type Output = Omit<fileDBO, '_id'> & { _id: string };
+type Output = FileDTO;
 
 type Deps = {
   filesDS: FilesDataSource;
   filesService: FilesService;
   entityPermissions: EntityPermissionChecker;
-  entitiesDS: MultiLanguageEntityDataSource;
+  entitiesDS: EntitiesDataSource;
+  entitiesService: EntitiesService;
   settingsDS: SettingsDataSource;
 };
 
@@ -42,15 +44,19 @@ class FileDelete extends AbstractUseCase<Input, Output, Deps> {
     await this.transactionManager.run(async () => {
       await this.deps.filesService.delete([file]);
 
-      if (file instanceof ProcessedPDF) {
+      if (file instanceof PDFDocument && file.isReady()) {
         const entity = (await this.deps.entitiesDS.getById(file.entity)).getDataOrThrow();
 
-        const allThumbnails = await this.deps.filesDS.getThumbnails([entity.sharedId]).all();
+        const allThumbnails = await this.deps.filesDS.getThumbnails([entity.sharedId]);
         const survivingThumbnails = allThumbnails.filter(t => t.filename !== `${file.id}.jpg`);
 
         entity.setPreview(survivingThumbnails, await this.deps.settingsDS.getDefaultLanguageKey());
 
-        await this.deps.entitiesDS.update(entity);
+        await this.deps.entitiesService.update([entity], {
+          actorId: this.actorId,
+          actor: this.getActor(),
+          targetLanguage: entity.languages[0],
+        });
       }
     });
 
@@ -59,3 +65,4 @@ class FileDelete extends AbstractUseCase<Input, Output, Deps> {
 }
 
 export { FileDelete };
+export type { Deps as DeleteFileDeps };

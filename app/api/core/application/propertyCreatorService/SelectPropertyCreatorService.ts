@@ -1,4 +1,4 @@
-import { ThesauriDataSource } from '#api/core/infrastructure/mongodb/thesauri/MongoThesauriDS.js';
+import { ThesauriDataSource } from '#api/core/application/contracts/ThesauriDataSource.js';
 import { Context, Property } from '../../domain/template/Property.js';
 import { SelectPropertyWithInvalidThesaurusError } from '../../domain/template/errors.js';
 import { IncorrectPropertyTypeError } from '../errors.js';
@@ -23,7 +23,7 @@ class SelectPropertyCreatorService extends AbstractPropertyCreatorService<Deps> 
   protected async createProperty(props: Props, context: Context): Promise<Property> {
     const select = this.createSelectOrMultiSelectProperty(props, context);
 
-    const thesaurusExists = await this.deps.thesauriDS.exists(select.content);
+    const thesaurusExists = await this.deps.thesauriDS.existsById(select.content);
 
     if (!thesaurusExists) {
       throw new SelectPropertyWithInvalidThesaurusError(select.content);

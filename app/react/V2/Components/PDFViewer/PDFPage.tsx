@@ -13,17 +13,19 @@ interface PDFPageProps {
   eventBus: EventBusType;
   intersectionObserver: IntersectionObserver | null | undefined;
   highlights?: TextHighlight[];
+  onHighlightClick?: (highlightKey: string) => void;
   containerWidth?: number;
   onScaleChange?: (scale: number) => void;
 }
 
-const PDFPage = ({
+const PDFPageComponent = ({
   pdf,
   page,
   eventBus,
   intersectionObserver,
   containerWidth,
   highlights,
+  onHighlightClick,
   onScaleChange,
 }: PDFPageProps) => {
   const [error, setError] = useState<string>();
@@ -173,17 +175,33 @@ const PDFPage = ({
           textSelection: adjustSelectionsToScale(highlight.textSelection, pdfScale),
         };
 
+        const highlightKey = `${page}-${scaledHightlight.key}`;
         return (
-          <div key={scaledHightlight.key} data-highlight-key={`${page}-${scaledHightlight.key}`}>
-            <Highlight
-              textSelection={scaledHightlight.textSelection}
-              color={scaledHightlight.color}
-            />
+          <div
+            key={scaledHightlight.key}
+            data-highlight-key={highlightKey}
+            className={onHighlightClick ? 'cursor-pointer' : undefined}
+            onClick={
+              onHighlightClick
+                ? () => {
+                    onHighlightClick(scaledHightlight.key);
+                  }
+                : undefined
+            }
+          >
+            <div style={{ pointerEvents: onHighlightClick ? 'auto' : 'none' }}>
+              <Highlight
+                textSelection={scaledHightlight.textSelection}
+                color={scaledHightlight.color}
+              />
+            </div>
           </div>
         );
       })}
     </div>
   );
 };
+
+const PDFPage = React.memo(PDFPageComponent);
 
 export { PDFPage };

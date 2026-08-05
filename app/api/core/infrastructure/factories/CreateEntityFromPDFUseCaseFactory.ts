@@ -11,6 +11,7 @@ import { MongoTransactionManager } from '../mongodb/common/MongoTransactionManag
 import { CreateEntityFromPDFUseCase } from '#api/core/application/CreateEntityFromPDF.js';
 import { permissionsContext } from '#api/permissions/permissionsContext.js';
 import { User } from '#api/users.v2/model/User.js';
+import { FilesServiceFactory } from './FilesServiceFactory.js';
 
 class CreateEntityFromPDFUseCaseFactory {
   static default(
@@ -47,6 +48,7 @@ class CreateEntityFromPDFUseCaseFactory {
       });
 
     const entitiesService = EntitiesServiceFactory.default();
+    const filesService = FilesServiceFactory.default();
 
     return new CreateEntityFromPDFUseCase(
       {
@@ -54,6 +56,7 @@ class CreateEntityFromPDFUseCaseFactory {
         propertyAssignmentCreatorServiceStrategy,
         idGenerator,
         transactionManager,
+        filesService,
         ...depsOverrides,
       },
       { actor, tenant, targetLanguage }

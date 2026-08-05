@@ -24,7 +24,7 @@ import {
 import { ThesaurusField } from './fields/ThesaurusField.js';
 import { RelationshipFields } from './fields/RelationshipFields.js';
 import { MatchingPropertiesTable } from './MatchingPropertiesTable.js';
-import { translationsKeys } from '../helpers.js';
+import { optionalIdMatches, relationshipConfigMatches, translationsKeys } from '../helpers.js';
 import { PropertyRow } from '../types.js';
 import { GeneratedIdField } from './fields/GeneratedIdField.js';
 
@@ -172,7 +172,7 @@ export const ConfigPropertyPanel: React.FC<ConfigPropertyPanelProps> = ({
 
     if (type === 'select' || type === 'multiselect') {
       const hasContentMismatch = matchingProperties.some(
-        (prop: ClientProperty) => prop.content !== content
+        (prop: ClientProperty) => !optionalIdMatches(prop.content, content)
       );
       if (hasContentMismatch) {
         return false;
@@ -182,9 +182,7 @@ export const ConfigPropertyPanel: React.FC<ConfigPropertyPanelProps> = ({
     if (type === 'relationship') {
       const hasRelationshipMismatch = matchingProperties.some(
         (prop: ClientProperty) =>
-          prop.content !== content ||
-          prop.relationType !== relationType ||
-          JSON.stringify(prop.inherit) !== JSON.stringify(inherit)
+          !relationshipConfigMatches(prop, { content, relationType, inherit })
       );
       if (hasRelationshipMismatch) {
         return false;

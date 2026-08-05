@@ -1,6 +1,6 @@
 /* eslint-disable max-statements */
 import { ArrayUtils } from '#api/common.v2/utils/Array.js'; // Todo
-import { MultiLanguageEntityDataSource } from '#api/entities.v2/contracts/MultiLanguageEntitiesDataSource.js';
+import { EntitiesDataSource } from '#api/core/application/contracts/EntitiesDataSource.js';
 import { EntityUpdatedEvent } from '#api/entities/events/EntityUpdatedEvent.js';
 import { FilesDataSource } from '#api/core/application/contracts/FilesDataSource.js';
 import { MongoRelationshipsV1DataSource } from '#api/core/infrastructure/mongodb/MongoRelationshipsV1DataSource.js';
@@ -31,7 +31,7 @@ type Input = {
 type Output = any;
 
 type Dependencies = {
-  entitiesDS: MultiLanguageEntityDataSource;
+  entitiesDS: EntitiesDataSource;
   relationshipsV1DS: MongoRelationshipsV1DataSource;
   templatesDS: TemplatesDataSource;
   filesDS: FilesDataSource;
@@ -62,11 +62,11 @@ export class TemplateUpdateDenormalizeEntitiesBatch implements UseCase<Input, Ou
         await this.dependencies.entitiesDS.touchEntitiesBySharedIds(entitiesIds);
       }
       if (Object.keys(renamedProperties).length) {
-        await this.dependencies.filesDS.renameExtractedMetadata(renamedProperties, entitiesIds);
+        await this.dependencies.filesDS.renamePropertySelections(renamedProperties, entitiesIds);
         await this.dependencies.entitiesDS.renameMetadataProperties(renamedProperties, entitiesIds);
       }
       if (deletedProperties.length) {
-        await this.dependencies.filesDS.deleteExtractedMetadata(deletedProperties, entitiesIds);
+        await this.dependencies.filesDS.deletePropertySelections(deletedProperties, entitiesIds);
         await this.dependencies.entitiesDS.deleteMetadataProperties(deletedProperties, entitiesIds);
       }
 
@@ -74,13 +74,13 @@ export class TemplateUpdateDenormalizeEntitiesBatch implements UseCase<Input, Ou
         const entities = await (
           await this.dependencies.entitiesDS.getEntitiesBySharedIds(entitiesIds)
         ).all();
-        const relationshipProps = await this.dependencies.templatesDS
-          .getV1RelationshipPropertiesByIds(modifiedRelationshipsProps)
-          .all();
+        const relationshipProps =
+          await this.dependencies.templatesDS.getV1RelationshipPropertiesByIds(
+            modifiedRelationshipsProps
+          );
 
-        const generatedIdProps = await this.dependencies.templatesDS
-          .getGeneratedIdPropertiesByIds(newGeneratedIdProps)
-          .all();
+        const generatedIdProps =
+          await this.dependencies.templatesDS.getGeneratedIdPropertiesByIds(newGeneratedIdProps);
         const modifiedEntities = cloneDeep(entities);
 
         if (relationshipProps.length) {

@@ -2,8 +2,8 @@ import { TemplatesDataSourceFactory } from '#api/core/infrastructure/factories/T
 import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
-import { MongoThesauriDataSource } from '#api/core/infrastructure/mongodb/thesauri/MongoThesauriDS.js';
-import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
+import { ThesauriDataSource } from '#api/core/application/contracts/ThesauriDataSource.js';
+import { ThesauriDataSourceFactory } from '#api/core/infrastructure/factories/ThesauriDataSourceFactory.js';
 import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
 import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
 import { tenants } from '#api/tenants/tenantContext.js';
@@ -23,7 +23,7 @@ type FactoryOptions = {
   rowsDS?: CsvImportRowsDataSource;
   templatesDS?: TemplatesDataSource;
   settingsDS?: SettingsDataSource;
-  thesauriDS?: MongoThesauriDataSource;
+  thesauriDS?: ThesauriDataSource;
   thesauriValuesDS?: CsvImportThesauriValuesDataSource;
   relationshipPendingValuesDS?: CsvImportRelationshipPendingValuesDataSource;
 };
@@ -44,7 +44,7 @@ class CsvPreflightJobFactory {
     const settingsDS =
       options.settingsDS ?? SettingsDataSourceFactory.default({ transactionManager });
     const thesauriDS =
-      options.thesauriDS ?? new MongoThesauriDataSource(getConnection(), transactionManager);
+      options.thesauriDS ?? ThesauriDataSourceFactory.default({ transactionManager });
     const thesauriValuesDS =
       options.thesauriValuesDS ??
       CSVImportEntitiesFactories.CSVImportThesauriValuesDSDefault(transactionManager);

@@ -15,6 +15,10 @@ const defaultState = {
   ]),
   settings: Immutable.fromJS({}),
   templates: Immutable.fromJS({}),
+  library: {
+    search: {},
+    filters: Immutable.fromJS({ properties: [], documentTypes: [] }),
+  },
 };
 
 const middlewares = [thunk];

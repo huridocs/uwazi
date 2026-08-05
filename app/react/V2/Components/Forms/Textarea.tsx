@@ -1,8 +1,11 @@
-import React, { ChangeEventHandler, CSSProperties } from 'react';
+/* eslint-disable react/require-default-props, react/jsx-props-no-spreading */
+import React, { ChangeEventHandler, CSSProperties, Ref } from 'react';
 import { XMarkIcon } from '@heroicons/react/20/solid';
 import { Translate } from '#app/I18N/index.js';
 import { InputError } from './InputError.js';
 import { Label } from './Label.js';
+
+type FieldState = { disabled?: boolean; hasError?: boolean };
 
 interface TextareaProps {
   id: string;
@@ -15,7 +18,6 @@ interface TextareaProps {
   value?: string;
   className?: string;
   name?: string;
-  ref?: React.Ref<HTMLTextAreaElement>;
   clearFieldAction?: () => void;
   onChange?: ChangeEventHandler<HTMLTextAreaElement>;
   onSelect?: ChangeEventHandler<HTMLTextAreaElement>;
@@ -24,93 +26,85 @@ interface TextareaProps {
   rows?: number;
 }
 
-const Textarea = ({
-  id,
-  label,
-  disabled,
-  hideLabel,
-  placeholder,
-  hasErrors,
-  errorMessage,
-  value,
-  className = '',
-  name = '',
-  ref,
-  clearFieldAction,
-  onChange = () => {},
-  onSelect = () => {},
-  onBlur = () => {},
-  resize = 'none',
-  rows = 4,
-}: TextareaProps) => {
-  const showError = Boolean(hasErrors || errorMessage);
-  let backgroundColor = 'var(--color-theme-control-bg)';
+const cx = (...classes: Array<string | false | undefined>) => classes.filter(Boolean).join(' ');
 
-  if (disabled) {
-    backgroundColor = 'var(--color-theme-control-bg-disabled)';
-  } else if (showError) {
-    backgroundColor = 'var(--color-theme-control-bg-error)';
-  }
+const textareaBase =
+  'w-full rounded-lg border border-border bg-paper px-3 py-2 text-sm text-ink placeholder:text-ink-muted focus:border-carbon/40 focus:outline-none focus:ring-2 focus:ring-carbon/20';
 
-  const fieldStyle: CSSProperties = {
-    borderColor: showError
-      ? 'var(--color-theme-control-border-error)'
-      : 'var(--color-theme-control-border)',
-    backgroundColor,
-    color: showError ? 'var(--color-theme-control-text-error)' : 'var(--color-theme-control-text)',
-    resize,
-  };
-
-  return (
-    <div className={className}>
-      <Label
-        htmlFor={id}
-        hideLabel={!label || hideLabel}
-        hasErrors={Boolean(hasErrors || errorMessage)}
-      >
-        {label}
-      </Label>
-      <div className="relative flex w-full">
-        <textarea
-          id={id}
-          onSelect={onSelect}
-          onChange={onChange}
-          onBlur={onBlur}
-          name={name}
-          ref={ref}
-          disabled={disabled}
-          value={value}
-          className={`block w-full flex-1 rounded-sm border text-sm placeholder:text-(--color-theme-control-placeholder) focus:outline-hidden ${
-            showError
-              ? 'focus:border-(--color-theme-control-border-error) focus:[box-shadow:0_0_0_4px_var(--color-theme-control-error-ring)]'
-              : 'focus:border-(--color-theme-control-border-focus) focus:[box-shadow:0_0_0_4px_var(--color-theme-control-ring)]'
-          } ${clearFieldAction ? 'pr-10' : ''}`}
-          rows={rows}
-          placeholder={placeholder}
-          style={fieldStyle}
-        />
-        {Boolean(clearFieldAction) && (
-          <button
-            type="button"
-            onClick={clearFieldAction}
-            disabled={disabled}
-            data-testid="clear-field-button"
-            className="absolute right-0 top-px rounded-r-lg p-2.5 text-sm font-medium focus:outline-hidden enabled:hover:text-(--color-theme-control-clear-hover-fg) disabled:text-(--color-theme-control-text-muted)"
-            style={{
-              color: showError
-                ? 'var(--color-theme-control-text-error)'
-                : 'var(--color-theme-control-clear-fg)',
-            }}
-          >
-            <XMarkIcon className="w-5" />
-            <Translate className="sr-only">Clear</Translate>
-          </button>
-        )}
-      </div>
-      {errorMessage && <InputError>{errorMessage}</InputError>}
-    </div>
+const textareaClass = (state: FieldState, hasClear: boolean) =>
+  cx(
+    textareaBase,
+    state.hasError && 'border-emphasis bg-seal-tint text-seal',
+    state.disabled && 'cursor-not-allowed bg-warm text-ink-muted',
+    hasClear && 'pr-10'
   );
-};
+
+const clearButtonClass =
+  'absolute right-0 top-px rounded-r-lg p-2.5 text-sm font-medium focus:outline-hidden enabled:hover:text-carbon disabled:text-ink-muted';
+
+const Textarea = React.forwardRef(
+  (
+    {
+      id,
+      label,
+      disabled,
+      hideLabel,
+      placeholder,
+      hasErrors,
+      errorMessage,
+      value,
+      className = '',
+      name = '',
+      clearFieldAction,
+      onChange,
+      onSelect,
+      onBlur,
+      resize = 'none',
+      rows = 4,
+    }: TextareaProps,
+    ref: Ref<HTMLTextAreaElement>
+  ) => {
+    const state: FieldState = { disabled, hasError: Boolean(hasErrors || errorMessage) };
+    const hasClear = Boolean(clearFieldAction);
+
+    return (
+      <div className={className}>
+        <Label htmlFor={id} hideLabel={!label || hideLabel} hasErrors={state.hasError}>
+          {label}
+        </Label>
+        <div className="relative flex w-full">
+          <textarea
+            id={id}
+            onSelect={onSelect}
+            onChange={onChange}
+            onBlur={onBlur}
+            name={name}
+            ref={ref}
+            disabled={disabled}
+            {...(value !== undefined ? { value } : {})}
+            className={textareaClass(state, hasClear)}
+            rows={rows}
+            placeholder={placeholder}
+            style={{ resize }}
+          />
+          {hasClear && (
+            <button
+              type="button"
+              onClick={clearFieldAction}
+              disabled={disabled}
+              data-testid="clear-field-button"
+              className={clearButtonClass}
+            >
+              <XMarkIcon className="w-5" />
+              <Translate className="sr-only">Clear</Translate>
+            </button>
+          )}
+        </div>
+        {errorMessage && <InputError>{errorMessage}</InputError>}
+      </div>
+    );
+  }
+);
 
 export type { TextareaProps };
 export { Textarea };

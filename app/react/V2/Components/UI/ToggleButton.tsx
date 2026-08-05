@@ -4,6 +4,7 @@ interface ToggleButtonProps {
   children: string | React.ReactNode;
   onToggle?: () => any;
   disabled?: boolean;
+  checked?: boolean;
   value?: any;
   className?: string;
   size?: 'regular' | 'small';
@@ -12,6 +13,7 @@ interface ToggleButtonProps {
 const ToggleButton = ({
   children,
   onToggle,
+  checked,
   value,
   disabled,
   className = '',
@@ -21,8 +23,8 @@ const ToggleButton = ({
     ['--toggle-track-bg' as string]:
       'var(--color-theme-toggle-track-bg, var(--color-theme-control-border, #e5e7eb))',
     ['--toggle-track-active' as string]: disabled
-      ? 'var(--color-theme-toggle-track-disabled-active-bg, var(--color-theme-button-primary-disabled-bg, #9ca3af))'
-      : 'var(--color-theme-toggle-track-active-bg, var(--color-theme-button-primary-bg, #2563eb))',
+      ? 'var(--color-theme-toggle-track-disabled-active-bg, var(--color-theme-bg-muted, #9ca3af))'
+      : 'var(--color-theme-toggle-track-active-bg, var(--color-theme-action-primary, #2563eb))',
     ['--toggle-thumb-bg' as string]:
       'var(--color-theme-toggle-thumb-bg, var(--color-theme-surface-raised, #ffffff))',
     ['--toggle-thumb-border' as string]:
@@ -53,6 +55,7 @@ const ToggleButton = ({
         value={value}
         className="sr-only peer"
         disabled={disabled}
+        checked={checked}
         onChange={onToggle}
         data-testid="toggle"
       />

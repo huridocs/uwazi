@@ -104,10 +104,10 @@ const PDFSidepanel = ({
   }, [showSidepanel, suggestion]);
 
   useEffect(() => {
-    if (showSidepanel && pdfFile?.extractedMetadata && suggestion) {
+    if (showSidepanel && pdfFile?.propertySelections && suggestion) {
       setHighlights(
         selectionHandlers.getHighlightsFromFile(
-          pdfFile.extractedMetadata,
+          pdfFile.propertySelections,
           suggestion.propertyName,
           HighlightColors.CURRENT
         )
@@ -130,7 +130,7 @@ const PDFSidepanel = ({
 
     if (fieldDirty && entity?._id) {
       const [savedEntity, error] = await handleEntitySave(
-        { ...entity, __extractedMetadata: { fileID: pdfFile?._id, selections } },
+        { ...entity, propertySelections: { fileID: pdfFile?._id, selections } },
         property,
         value.field,
         template
@@ -163,7 +163,7 @@ const PDFSidepanel = ({
         setSelections(
           selectionHandlers.updateFileSelection(
             { name: suggestion?.propertyName || '', id: property?._id as string },
-            pdfFile?.extractedMetadata,
+            pdfFile?.propertySelections,
             selectedText
           )
         );
@@ -222,7 +222,7 @@ const PDFSidepanel = ({
           />
         )}
       </Sidepanel.Body>
-      <Sidepanel.Footer className="sticky border-t shadow-[0_-6px_12px_-3px_rgba(0,0,0,0.15)] border-t-[color-mix(in_srgb,var(--color-theme-border-default)_45%,transparent)] !bg-(--color-theme-surface-raised)">
+      <Sidepanel.Footer className="sticky border-t shadow-[0_-6px_12px_-3px_rgba(0,0,0,0.15)] border-t-[color-mix(in_srgb,var(--color-theme-border-default)_45%,transparent)] bg-(--color-theme-surface-raised)!">
         {/* eslint-disable-next-line react/jsx-props-no-spreading */}
         <FormProvider {...formContext}>
           <form onSubmit={handleSubmit(onSubmit)}>
@@ -268,7 +268,7 @@ const PDFSidepanel = ({
                         setSelections(
                           selectionHandlers.deleteFileSelection(
                             { name: suggestion?.propertyName || '' },
-                            pdfFile?.extractedMetadata
+                            pdfFile?.propertySelections
                           )
                         );
                       }}

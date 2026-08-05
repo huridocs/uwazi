@@ -21,7 +21,7 @@ export function saveEntitiesPermissions(permissionsData: PermissionsDataSchema, 
 
     if (storeKey && !publicIsMixed) {
       const { unpublished: showingUnpublished, includeUnpublished } =
-        getState()[storeKey as 'library' | 'uploads'].search || {};
+        getState()[storeKey as 'library'].search || {};
 
       const notShowingPublicAndPrivate = showingUnpublished || !includeUnpublished;
       const toMoveFromCollection = showingUnpublished === !!publicPermission;

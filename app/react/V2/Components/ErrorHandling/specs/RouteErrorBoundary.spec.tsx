@@ -2,7 +2,9 @@
  * @jest-environment jsdom
  */
 import React from 'react';
+import { ApiError } from '#shared/apiClient/index.js';
 import { renderConnectedMount } from '#app/utils/test/renderConnected.js';
+import type { RequestError } from '#V2/shared/errorUtils.js';
 import { ErrorFallback } from '../ErrorFallback.js';
 import { RouteErrorBoundary } from '../RouteErrorBoundary.js';
 
@@ -22,6 +24,10 @@ describe('ErrorBoundary', () => {
     </RouteErrorBoundary>
   );
 
+  beforeEach(() => {
+    error = null;
+  });
+
   it('should show the nested children if no errors', () => {
     const component = renderConnectedMount(() => controlledComponent, {}, {}, true);
     expect(component.text()).toContain('Content');
@@ -33,5 +39,20 @@ describe('ErrorBoundary', () => {
     expect(component.text()).not.toContain('Content');
     const errorProps = component.find(ErrorFallback).at(0).props();
     expect(errorProps.error.message).toEqual('error at rendering');
+  });
+
+  it('should normalize ApiError for ErrorFallback', () => {
+    error = new ApiError('Not found', {
+      kind: 'http',
+      status: 404,
+      detail: 'Thesauri missing',
+      requestId: 'req-1',
+    });
+    const component = renderConnectedMount(() => controlledComponent, {}, {}, true);
+    const errorProps = component.find(ErrorFallback).at(0).props();
+    const normalized = errorProps.error as RequestError;
+    expect(normalized.status).toBe(404);
+    expect(normalized.message).toBe('Thesauri missing');
+    expect(normalized.name).toBe('Not Found');
   });
 });

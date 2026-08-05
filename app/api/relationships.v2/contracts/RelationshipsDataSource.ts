@@ -1,5 +1,5 @@
 import { ResultSet } from '#api/core/application/contracts/ResultSet.js';
-import { Entity } from '#api/entities.v2/model/Entity.js';
+import { DeprecatedEntity } from '#api/entities.v2/model/Entity.js';
 import { MatchQueryNode } from '../model/MatchQueryNode.js';
 import { Relationship } from '../model/Relationship.js';
 
@@ -14,5 +14,5 @@ export interface RelationshipsDataSource {
   deleteByEntities(sharedIds: string[]): Promise<void>;
   deleteByReferencedFiles(fileIds: string[]): Promise<void>;
   countByType(type: string): Promise<number>;
-  getByQuery(query: MatchQueryNode, language: string): ResultSet<Entity>;
+  getByQuery(query: MatchQueryNode, language: string): ResultSet<DeprecatedEntity>;
 }

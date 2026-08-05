@@ -1,25 +1,16 @@
-import * as pdfJsDist from 'pdfjs-dist';
-import * as viewer from 'pdfjs-dist/web/pdf_viewer.mjs';
+// Legacy build includes polyfills (e.g. Promise.try) required by older browsers.
+// See https://github.com/mozilla/pdf.js/wiki/Frequently-Asked-Questions#faq-support
+import * as pdfjs from 'pdfjs-dist/legacy/build/pdf.mjs';
+import * as viewer from 'pdfjs-dist/legacy/web/pdf_viewer.mjs';
 import type { PDFDocumentProxy } from 'pdfjs-dist';
 
-let pdfjs = pdfJsDist;
 const PDFJSViewer = viewer;
 const { EventBus: PDFJSEventBus } = viewer;
 
-const pdfjsLoader = async () => {
-  if (process.env.NODE_ENV === 'development') {
-    pdfjs.GlobalWorkerOptions.workerSrc = new URL(
-      'pdfjs-dist/build/pdf.worker.min.mjs',
-      import.meta.url
-    ).toString();
-  } else {
-    //@ts-ignore
-    //webpack bundled version for production, types are not needed.
-    pdfjs = await import('pdfjs-dist/webpack.mjs');
-  }
-};
-
-await pdfjsLoader();
+pdfjs.GlobalWorkerOptions.workerSrc = new URL(
+  'pdfjs-dist/legacy/build/pdf.worker.min.mjs',
+  import.meta.url
+).toString();
 
 type PDFEventMap = {
   pageready: { pageNumber: number };
@@ -46,6 +37,7 @@ type EventBusType = typeof EventBus.prototype;
 const PDFJS = pdfjs;
 const { PixelsPerInch } = pdfjs;
 const CMAP_URL = '/legacy_character_maps/';
+const WASM_URL = '/pdfjs_wasm/';
 
 export type { PDFDocumentProxy, PDFEventMap, EventBusType };
-export { PDFJS, PDFJSViewer, EventBus, CMAP_URL, PixelsPerInch };
+export { PDFJS, PDFJSViewer, EventBus, CMAP_URL, WASM_URL, PixelsPerInch };

@@ -2,6 +2,7 @@
 import { ValidationError } from '#api/common.v2/validation/ValidationError.js';
 import { TemplateUpdateDenormalizeEntitiesBatch } from '#api/core/application/TemplateUpdateDenormalizeEntitiesBatch.js';
 import { EntitiesDataSourceFactory } from '#api/core/infrastructure/factories/EntitiesDataSourceFactory.js';
+import { EntitiesDAOFactory } from '#api/core/infrastructure/factories/EntitiesDAOFactory.js';
 import { FilesDataSourceFactory } from '#api/core/infrastructure/factories/FilesDataSourceFactory.js';
 import { TemplatesDataSourceFactory } from '#api/core/infrastructure/factories/TemplatesDataSourceFactory.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
@@ -10,9 +11,9 @@ import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnec
 import { MongoRelationshipsV1DataSource } from '#api/core/infrastructure/mongodb/MongoRelationshipsV1DataSource.js';
 import { applicationEventsBus } from '#api/core/libs/eventsbus/index.js';
 import { SyncDispatcherForTests } from '#api/core/libs/queue/infrastructure/SyncDispatcherForTests.js';
-import entities from '#api/entities/entities.js';
 import { EntityUpdatedData, EntityUpdatedEvent } from '#api/entities/events/EntityUpdatedEvent.js';
 import { TemplateSchema } from '#api/migrations/migrations/143-parse-numeric-fields/types.js';
+import relationships from '#api/relationships/relationships.js';
 import * as setupSockets from '#api/socketio/setupSockets.js';
 import { elasticTesting } from '#api/utils/elastic_testing.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
@@ -23,8 +24,6 @@ import * as idGenerator from '#shared/IDGenerator.js';
 import { propertyTypes } from '#shared/propertyTypes.js';
 import { EntitySchema } from '#shared/types/entityType.js';
 import templates from '../templates.js';
-import { MongoSlotsBootstrapper } from '#api/core/infrastructure/elasticSearch/entities/MongoSlotsBootstrapper.js';
-import { MongoSlotsDAOFactory } from '#api/core/infrastructure/factories/MongoSlotsDAOFactory.js';
 
 const f = getFixturesFactory();
 
@@ -77,7 +76,8 @@ async function updateTemplate(template: TemplateSchema, fullReindex = false) {
           entitiesDS: EntitiesDataSourceFactory.default({ transactionManager }),
           relationshipsV1DS: new MongoRelationshipsV1DataSource(
             getConnection(),
-            transactionManager
+            transactionManager,
+            EntitiesDAOFactory.default()
           ),
           templatesDS: TemplatesDataSourceFactory.default({ transactionManager }),
           transactionManager,
@@ -101,22 +101,64 @@ const elasticIndex = 'templates_denorm_flow';
 describe('Templates Update', () => {
   async function setUpFixtures(_fixtures: DBFixture) {
     await testingEnvironment.setUp(_fixtures, elasticIndex);
-    await Promise.all(
-      (_fixtures.entities || []).map(async e => entities.save(e, { language: 'en', user: {} }))
+
+    const templatesById = new Map(
+      (_fixtures.templates || []).map((template: any) => [template._id?.toString?.(), template])
     );
+
+    await testingEnvironment.runWithContext(async () => {
+      const entitiesInDefaultLanguage = (_fixtures.entities || []).filter(
+        entity => entity.language === 'en' && entity.template
+      );
+
+      // Keep fixture metadata shape close to persisted entities.save output:
+      // ensure all template properties exist with empty array values.
+      await Promise.all(
+        (_fixtures.entities || []).map(async entity => {
+          if (!entity.template || !entity._id) {
+            return;
+          }
+          const template = templatesById.get(entity.template.toString()) as any;
+          if (!template?.properties) {
+            return;
+          }
+
+          const metadata = { ...(entity.metadata || {}) } as Record<string, any[]>;
+          template.properties.forEach((property: any) => {
+            if (!metadata[property.name]) {
+              metadata[property.name] = [];
+            }
+          });
+
+          await testingEnvironment.db
+            .getCollection('entities')
+            ?.updateOne({ _id: entity._id as any }, { $set: { metadata } });
+        })
+      );
+
+      await Promise.all(
+        entitiesInDefaultLanguage.map(async entity => {
+          if (!entity.template) {
+            return;
+          }
+          const template = templatesById.get(entity.template.toString());
+          if (template) {
+            await relationships.saveEntityBasedReferences(entity, 'en', template);
+          }
+        })
+      );
+
+      const sharedIds = Array.from(
+        new Set(entitiesInDefaultLanguage.map(entity => entity.sharedId))
+      );
+      await relationships.updateEntitiesMetadata(sharedIds, 'en');
+    });
 
     testingTenants.mockCurrentTenant({
       name: testingDB.dbName,
       dbName: testingDB.dbName,
       indexName: elasticIndex,
     });
-
-    if (testingTenants.current().featureFlags?.v2ElasticSearch) {
-      await new MongoSlotsBootstrapper({
-        database: getConnection(),
-        slotsDAO: MongoSlotsDAOFactory.default(),
-      }).reset();
-    }
   }
   const fixtures: DBFixture = {
     settings: [
@@ -260,7 +302,7 @@ describe('Templates Update', () => {
         const entitiesBefore = (await testingEnvironment.db.getAllFrom('entities')).filter(
           e => e.template?.toString() === f.idString('templateA') && e.language === 'en'
         );
-        const editDateBefore = entitiesBefore[0].editDate as number;
+        const editDateBefore = (entitiesBefore[0].editDate as number) || 0;
 
         await new Promise(r => {
           setTimeout(r, 10);

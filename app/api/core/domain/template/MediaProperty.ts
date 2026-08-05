@@ -60,11 +60,8 @@ class MediaProperty extends AbstractImageProperty {
     return timeLinks?.length ? `(${path}, ${timeLinks})` : path;
   }
 
-  validatePropertyAssignment(
-    { value }: PropertyAssignment<MediaEntry>,
-    shouldValidateForRequired = false
-  ): void {
-    createSchema(shouldValidateForRequired ? this.required : false).parse(value);
+  validatePropertyAssignment({ value }: PropertyAssignment<MediaEntry>): void {
+    createSchema(this.required).parse(value);
   }
 }
 

@@ -32,18 +32,20 @@ jobs:
       is_protected_push: ${{ github.ref_name == 'development' || github.ref_name == 'production' }}
       sha: ${{ github.sha }}
 
-  cypress-run:
-    name: Component testing
+  cypress-component-shards:
+    name: Component testing (shard ${{ matrix.shard }}/4)
     needs: precheck
     if: needs.precheck.outputs.should_run == 'true'
     runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2, 3, 4]
     env:
       CYPRESS_RETRIES: 2
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      # Install NPM dependencies, cache them correctly
-      # and run all Cypress tests
       - name: Setup Nodejs
         uses: actions/setup-node@v4
         with:
@@ -78,11 +80,54 @@ jobs:
       - name: Install Cypress
         if: steps.cypress-cache.outputs.cache-hit != 'true'
         run: npx cypress install
+      - name: Select specs for shard
+        id: shard-specs
+        shell: bash
+        run: |
+          set -euo pipefail
+          mapfile -t SPECS < <(find app/react -name '*.cy.tsx' | sort)
+          SHARD=${{ matrix.shard }}
+          SHARDS=4
+          SELECTED=()
+          for i in "${!SPECS[@]}"; do
+            if (( (i % SHARDS) + 1 == SHARD )); then
+              SELECTED+=("${SPECS[i]}")
+            fi
+          done
+          if [ ${#SELECTED[@]} -eq 0 ]; then
+            echo "has_specs=false" >> "$GITHUB_OUTPUT"
+          else
+            IFS=,
+            echo "specs=${SELECTED[*]}" >> "$GITHUB_OUTPUT"
+            echo "has_specs=true" >> "$GITHUB_OUTPUT"
+          fi
       - name: Cypress run
+        if: steps.shard-specs.outputs.has_specs == 'true'
         uses: cypress-io/github-action@v6
         with:
           browser: chrome
           component: true
           config-file: cypress.config.cjs
           headed: false
-        timeout-minutes: 15
+          spec: ${{ steps.shard-specs.outputs.specs }}
+        timeout-minutes: 20
+
+  cypress-component:
+    name: Component testing
+    needs:
+      - precheck
+      - cypress-component-shards
+    if: ${{ always() }}
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Aggregate shards result
+        if: needs.precheck.outputs.should_run == 'true'
+        run: |
+          if [ "${{ needs.cypress-component-shards.result }}" != "success" ]; then
+            echo "One or more component test shards failed"
+            exit 1
+          fi
+          echo "All component test shards succeeded"
+      - name: Mark skipped by precheck
+        if: needs.precheck.outputs.should_run != 'true'
+        run: echo "Component testing skipped by precheck"

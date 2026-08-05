@@ -8,8 +8,10 @@ export { ciMatomoActiveAtom } from './ciMatomoActiveAtom.js';
 export { userAtom } from './userAtom.js';
 export { relationshipTypesAtom } from './relationshipTypes.js';
 export { deletedEntityAtom } from './deletedEntityAtom.js';
-export { serverIsMobileAtom } from './isMobileAtom.js';
+export { entityPageViewAtom } from './entityPageViewAtom.js';
+export { serverIsMobileAtom, isMobileOverrideAtom } from './isMobileAtom.js';
 export { themeModeAtom } from './themeModeAtom.js';
+export { aiAssistantOpenAtom } from './aiAssistantOpenAtom.js';
 export {
   effectiveThemeModeAtom,
   getEffectiveThemeMode,

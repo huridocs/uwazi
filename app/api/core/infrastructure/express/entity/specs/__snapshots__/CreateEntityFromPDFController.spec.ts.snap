@@ -1,0 +1,38 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`CreateEntityFromPDFController when a non-PDF file is provided should throw a validation error matching snapshot 1`] = `
+[Error: [
+  {
+    "code": "custom",
+    "message": "Invalid file type. Only PDF files are allowed.",
+    "path": [
+      "file"
+    ]
+  }
+]]
+`;
+
+exports[`CreateEntityFromPDFController when an image file is provided should throw a validation error matching snapshot 1`] = `
+[Error: [
+  {
+    "code": "custom",
+    "message": "Invalid file type. Only PDF files are allowed.",
+    "path": [
+      "file"
+    ]
+  }
+]]
+`;
+
+exports[`CreateEntityFromPDFController when no file is provided should throw a validation error matching snapshot 1`] = `
+[Error: [
+  {
+    "code": "custom",
+    "message": "File is required",
+    "fatal": true,
+    "path": [
+      "file"
+    ]
+  }
+]]
+`;

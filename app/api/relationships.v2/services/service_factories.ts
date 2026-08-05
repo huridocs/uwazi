@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 /* eslint-disable max-statements */
 import { DefaultPermissionsDataSource } from '#api/authorization.v2/database/data_source_defaults.js';
 import { AuthorizationService } from '#api/authorization.v2/services/AuthorizationService.js';
@@ -5,10 +6,10 @@ import { IdGeneratorFactory } from '#api/core/infrastructure/factories/IdGenerat
 import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
 import { TemplatesDataSourceFactory } from '#api/core/infrastructure/factories/TemplatesDataSourceFactory.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
-import { DefaultEntitiesDataSource } from '#api/entities.v2/database/data_source_defaults.js';
+import { DefaultDeprecatedEntitiesDataSource } from '#api/entities.v2/database/data_source_defaults.js';
 import { FilesDataSourceFactory } from '#api/core/infrastructure/factories/FilesDataSourceFactory.js';
 import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
-import { DefaultRelationshipTypesDataSource } from '#api/relationshiptypes.v2/database/data_source_defaults.js';
+import { RelationshipTypesDataSourceFactory } from '#api/core/infrastructure/factories/RelationshipTypesDataSourceFactory.js';
 import { search } from '#api/search/index.js';
 import { User } from '#api/users.v2/model/User.js';
 import { UserRole } from '#shared/types/userSchema.js';
@@ -84,7 +85,7 @@ const createUpdateStrategy = async (
         indexEntitiesCallback,
         updater,
         transactionManager,
-        DefaultEntitiesDataSource(transactionManager)
+        DefaultDeprecatedEntitiesDataSource(transactionManager)
       );
     default:
       throw new Error(`${strategyKey} is not a valid DenormalizationStrategy`);
@@ -93,8 +94,7 @@ const createUpdateStrategy = async (
 
 const DenormalizationService = async (transactionManager: MongoTransactionManager) => {
   const relationshipsDS = DefaultRelationshipDataSource(transactionManager);
-  const entitiesDS = DefaultEntitiesDataSource(transactionManager);
-  const templatesDS = TemplatesDataSourceFactory.default({ transactionManager });
+  const entitiesDS = DefaultDeprecatedEntitiesDataSource(transactionManager);
   const settingsDS = SettingsDataSourceFactory.default({ transactionManager });
 
   const newRelationshipsSettings = await settingsDS.getNewRelationshipsConfiguration();
@@ -102,7 +102,6 @@ const DenormalizationService = async (transactionManager: MongoTransactionManage
   const service = new GenericDenormalizationService(
     relationshipsDS,
     entitiesDS,
-    templatesDS,
     settingsDS,
     transactionManager,
     indexEntitiesCallback,
@@ -119,9 +118,9 @@ const GetRelationshipService = () => {
   const transactionManager = TransactionManagerFactory.default();
   const relationshipsDS = DefaultRelationshipDataSource(transactionManager);
   const permissionsDS = DefaultPermissionsDataSource(transactionManager);
-  const entitiesDS = DefaultEntitiesDataSource(transactionManager);
+  const entitiesDS = DefaultDeprecatedEntitiesDataSource(transactionManager);
   const templatesDS = TemplatesDataSourceFactory.default({ transactionManager });
-  const relationshipTypeDS = DefaultRelationshipTypesDataSource(transactionManager);
+  const relationshipTypeDS = RelationshipTypesDataSourceFactory.default({ transactionManager });
 
   const authService = new AuthorizationService(permissionsDS, userFromRequest());
 
@@ -139,8 +138,8 @@ const GetRelationshipService = () => {
 const CreateRelationshipService = async () => {
   const transactionManager = TransactionManagerFactory.default();
   const relationshipsDS = DefaultRelationshipDataSource(transactionManager);
-  const relationshipTypesDS = DefaultRelationshipTypesDataSource(transactionManager);
-  const entitiesDS = DefaultEntitiesDataSource(transactionManager);
+  const relationshipTypesDS = RelationshipTypesDataSourceFactory.default({ transactionManager });
+  const entitiesDS = DefaultDeprecatedEntitiesDataSource(transactionManager);
   const idGenerator = IdGeneratorFactory.default();
   const permissionsDS = DefaultPermissionsDataSource(transactionManager);
   const filesDS = FilesDataSourceFactory.default({ transactionManager });
@@ -253,7 +252,7 @@ const UpdateRelationshipPropertiesJob = () => {
 const UpdateTemplateRelationshipPropertiesJob = async () => {
   const transactionManager = TransactionManagerFactory.default();
   return new GenericUpdateTemplateRelationshipPropertiesJob(
-    DefaultEntitiesDataSource(transactionManager),
+    DefaultDeprecatedEntitiesDataSource(transactionManager),
     await DefaultDispatcher(tenants.current().name, transactionManager)
   );
 };

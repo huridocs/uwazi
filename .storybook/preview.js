@@ -6,6 +6,7 @@ import { createStore, Provider as JotaiProvider } from 'jotai';
 import '../app/react/App/styles/tailwind.css';
 import { LEGACY_createStore as createReduxStore } from '../app/react/V2/testing/index.js';
 import {
+  isMobileOverrideAtom,
   localeAtom,
   settingsAtom,
   themeModeAtom,
@@ -41,6 +42,12 @@ export const parameters = {
       date: /Date$/,
     },
   },
+  a11y: {
+    context: '#tw-container',
+    config: {
+      rules: [{ id: 'region', enabled: false }],
+    },
+  },
 };
 
 export const globalTypes = {
@@ -66,12 +73,24 @@ export const globalTypes = {
       ],
     },
   },
+  uwaziViewport: {
+    name: 'Viewport',
+    defaultValue: 'desktop',
+    toolbar: {
+      icon: 'mobile',
+      items: [
+        { value: 'desktop', title: 'Desktop' },
+        { value: 'mobile', title: 'Mobile' },
+      ],
+    },
+  },
 };
 
 export const decorators = [
   (Story, context) => {
     const preset = normalizeStorybookThemePreset(context.globals.uwaziThemePreset);
     const mode = normalizeStorybookThemeMode(context.globals.uwaziThemeMode);
+    const isMobileViewport = context.globals.uwaziViewport === 'mobile';
     const themeFrame = getStorybookThemeFrame(preset, mode);
 
     const emitChecks = root => {
@@ -137,10 +156,12 @@ export const decorators = [
           themeVars: buildStorybookThemeVars(preset),
         });
         store.set(themeModeAtom, mode);
+        store.set(isMobileOverrideAtom, isMobileViewport);
         store.set(localeAtom, 'en');
         store.set(translationsAtom, []);
         return store;
-      }, [mode, preset]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps -- required for state management
+      }, [mode, preset, isMobileViewport]);
 
       React.useEffect(() => {
         const root = rootRef.current;
@@ -166,7 +187,8 @@ export const decorators = [
           cancelAnimationFrame(frame);
           observer.disconnect();
         };
-      }, [context.args, context.id, mode, preset]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps -- required for state management
+      }, [context.args, context.id, mode, preset, isMobileViewport]);
 
       return React.createElement(
         ReduxProvider,
@@ -181,6 +203,7 @@ export const decorators = [
               id: 'tw-container',
               className: themeFrame.className,
               'data-theme-custom': true,
+              dir: 'ltr',
               style: themeFrame.style,
             },
             React.createElement(Story)

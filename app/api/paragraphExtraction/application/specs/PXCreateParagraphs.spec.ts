@@ -24,13 +24,11 @@ const factory = getFixturesFactory();
 const sourceRelationshipType = {
   _id: factory.id('sourceRelationshipType'),
   name: 'Source Relationship Type',
-  properties: [],
 };
 
 const targetRelationshipType = {
   _id: factory.id('targetRelationshipType'),
   name: 'Target Relationship Type',
-  properties: [],
 };
 
 const paragraphProperty = factory.property('extracted_paragraph', 'markdown', {
@@ -124,12 +122,19 @@ const createFixtures = (): DBFixture => ({
   ],
 });
 
-const setUpUseCase = (batchSize?: number) =>
-  testingEnvironment.runWithContext(() => {
-    const createParagraphs = PXCreateParagraphsFactory.createDefault(batchSize);
-    (createParagraphs.createParagraphsBatch as any).dependencies.logger = createMockLogger();
-    return { createParagraphs };
+const setUpUseCase = (batchSize?: number) => {
+  const { createParagraphs } = testingEnvironment.runWithContext(() => {
+    const cp = PXCreateParagraphsFactory.createDefault(batchSize);
+    return { createParagraphs: cp };
   });
+  (createParagraphs.createParagraphsBatch as any).dependencies.logger = createMockLogger();
+  return {
+    createParagraphs: {
+      execute: async (input: PXCreateParagraphsInput) =>
+        testingEnvironment.runWithContext(async () => createParagraphs.execute(input)),
+    },
+  };
+};
 
 const filterAndSortParagraphs = (paragraphs: EntitySchema[], language: string) =>
   paragraphs

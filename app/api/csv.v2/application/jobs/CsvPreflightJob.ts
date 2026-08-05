@@ -2,6 +2,7 @@
 import { TemplatesDataSource } from '#api/core/application/contracts/TemplatesDataSource.js';
 import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js';
 import { NonRetryableJobError } from '#api/core/libs/queue/infrastructure/errors.js';
+import { ThesauriDataSource } from '#api/core/application/contracts/ThesauriDataSource.js';
 import { Template } from '#api/core/domain/template/Template.js';
 import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
 import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
@@ -27,14 +28,6 @@ import { collectRelationshipTitlesFromRows } from '../services/CsvPreflightRelat
 import { CsvImportRow } from '../../domain/CsvImportRow.js';
 import { CsvCleanupAwareJob } from './CsvCleanupAwareJob.js';
 
-type ThesauriWritePort = {
-  appendRootLabelsIfMissing(thesaurusId: string, labels: string[]): Promise<void>;
-  appendNestedLabelsIfMissing(
-    thesaurusId: string,
-    entries: Array<{ parent: string; child?: string }>
-  ): Promise<void>;
-};
-
 type Input = {
   importId: string;
   tenantName: string;
@@ -52,7 +45,7 @@ type Deps = {
   rowsDS: CsvImportRowsDataSource;
   templatesDS: TemplatesDataSource;
   settingsDS: SettingsDataSource;
-  thesauriDS: ThesauriWritePort;
+  thesauriDS: ThesauriDataSource;
   thesauriValuesDS: CsvImportThesauriValuesDataSource;
   relationshipPendingValuesDS: CsvImportRelationshipPendingValuesDataSource;
   transactionManager: TransactionManager;

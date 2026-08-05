@@ -6,7 +6,7 @@ import { PropertyAssignmentInput } from '#api/core/application/propertyAssignmen
 import { PropertyAssignmentCreatorServiceStrategy } from '#api/core/application/propertyAssignmentCreatorService/PropertyAssignmentCreatorServiceStrategy.js';
 import { Logger } from '#api/core/libs/logger/contracts/Logger.js';
 import { UseCase } from '#api/core/libs/UseCase.js';
-import relationshipsDS from '#api/relationships/index.js';
+import relationshipsDS from '#api/relationships/relationships.js';
 import { tenants } from '#api/tenants/tenantContext.js';
 import { EntitySchema } from '#shared/types/entityType.js';
 
@@ -87,7 +87,7 @@ class PXCreateParagraphsBatch implements UseCase<PXCreateParagraphsBatchInput, O
           []
         );
 
-        entity.setPropertyAssignments(processedAssignments, paragraphData.language, true);
+        entity.setPropertyAssignments(processedAssignments, paragraphData.language);
       });
 
       entities.push(entity);
@@ -95,7 +95,7 @@ class PXCreateParagraphsBatch implements UseCase<PXCreateParagraphsBatchInput, O
     });
 
     await this.dependencies.transactionManager.run(async () => {
-      await this.dependencies.entitiesService.bulkInsert(entities, {
+      await this.dependencies.entitiesService.insert(entities, {
         tenantName: tenants.current().name,
         actorId: user._id.toString(),
         targetLanguage: targetLanguage!.language,

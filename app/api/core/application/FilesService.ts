@@ -2,13 +2,11 @@ import { ObjectId } from 'mongodb';
 import { ArrayUtils } from '#api/common.v2/utils/Array.js';
 import { FilesDataSource } from '#api/core/application/contracts/FilesDataSource.js';
 import { FileStorage } from '#api/core/application/contracts/FileStorage.js';
-import { ProcessingPDF } from '#api/core/domain/files/ProcessingPDF.js';
-import { ProcessedPDF } from '#api/core/domain/files/ProcessedPDF.js';
+import { FileAttachment } from '#api/core/domain/files/FileAttachment.js';
+import { PDFDocument } from '#api/core/domain/files/PDFDocument.js';
 import { Thumbnail } from '#api/core/domain/files/Thumbnail.js';
 import { FilesDeletedEvent } from '#api/files/events/FilesDeletedEvent.js';
 import { FileCreatedEvent } from '#api/files/events/FileCreatedEvent.js';
-import { permissionsContext } from '#api/permissions/permissionsContext.js';
-import { tenants } from '#api/tenants/index.js';
 import date from '#api/utils/date.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import { FileUpdatedEvent } from '#api/files/events/FileUpdatedEvent.js';
@@ -23,7 +21,7 @@ import { Result } from '../libs/Result.js';
 import { IdGenerator } from './contracts/IdGenerator.js';
 import { TransactionManager } from './contracts/TransactionManager.js';
 import { PathManager } from '../infrastructure/files/PathManager.js';
-import { FileWithContents } from '../domain/files/FileWithContents.js';
+import { CannotTransformFileToAttachment } from '../domain/files/errors.js';
 
 type Deps = {
   idGenerator: IdGenerator;
@@ -38,18 +36,26 @@ type Deps = {
   pathManager: PathManager;
 };
 
+type FilesServiceContext = {
+  userId?: string;
+  tenantName?: string;
+};
+
 function isNonEmptyArray<T>(arr: T[]): arr is [T, ...T[]] {
   return arr.length > 0;
 }
 
 class FilesService {
-  constructor(protected deps: Deps) {}
+  constructor(
+    protected deps: Deps,
+    private context: FilesServiceContext = {}
+  ) {}
 
   async storeFiles(files: BaseFile[]) {
     await ArrayUtils.sequentialFor(
       files.filter(f => f.hasContent()),
       async file => {
-        await this.deps.fileStorage.storeFile(file as FileWithContents);
+        await this.deps.fileStorage.storeFile(file);
       }
     );
   }
@@ -64,42 +70,29 @@ class FilesService {
    * transactionManager.run(). Events are emitted only after the transaction
    * successfully commits to ensure data consistency.
    *
+   * Actor (userId) and tenant (tenantName) are injected at construction time via
+   * FilesServiceFactory, which reads them from ExecutionContext. Do not pass them
+   * as method arguments.
+   *
    * @param files - Array of BaseFile domain objects to insert
-   * @throws {Error} If PDFPostProcess is dispatched but no user context exists
-   *
-   * @example
-   * // For use cases (typical pattern):
-   * await this.transactionManager.run(async () => {
-   *   await this.deps.filesService.insert([file]);
-   * });
-   * // FileCreatedEvent is emitted automatically after commit
-   *
-   * @example
-   * // For external integrations (PreserveSync, etc.):
-   * const filesService = FilesServiceFactory.default();
-   *
-   * // 1. Store files to disk first
-   * await filesService.storeFiles([attachment]);
-   *
-   * // 2. Insert within transaction
-   * await transactionManager.run(async () => {
-   *   await filesService.insert([attachment]);
-   * });
-   * // FileCreatedEvent is emitted automatically after commit
+   * @throws {Error} If PDFDocument files in processing status are inserted but no userId/tenantName in context
    */
   async insert(files: BaseFile[]) {
     if (isNonEmptyArray<BaseFile>(files)) {
       await this.deps.filesDS.bulkCreate(files);
 
       const processingPDFs = files
-        .filter((f): f is ProcessingPDF => f instanceof ProcessingPDF)
+        .filter((f): f is PDFDocument => f instanceof PDFDocument && f.isProcessing())
         .map(f => {
-          const userId = permissionsContext.getUserInContext()?._id?.toString();
+          const { userId, tenantName } = this.context;
           if (!userId) {
             throw new Error('PDFPostProcess needs a user Id');
           }
+          if (!tenantName) {
+            throw new Error('PDFPostProcess needs a tenant name');
+          }
           return {
-            tenantName: tenants.current().name,
+            tenantName,
             documentId: f.id,
             userId,
           };
@@ -130,23 +123,14 @@ class FilesService {
     await this.deps.filesDS.bulkUpdate(_files);
 
     this.deps.transactionManager.onCommitted(async () => {
-      await ArrayUtils.sequentialFor(_files, async file => {
-        const after = file.toDTO();
-        const before = file.previousVersion?.toDTO();
-        if (!before) return;
-
-        await this.deps.eventBus.emit(
-          new FileUpdatedEvent({
-            after,
-            before,
-          })
-        );
-      });
+      await ArrayUtils.sequentialFor(_files, async file =>
+        this.deps.eventBus.emit(FileUpdatedEvent.create(file))
+      );
     });
   }
 
   async deleteEntityFiles(entitySharedIds: string[]) {
-    const files = await this.deps.filesDS.getByEntitiesIds(entitySharedIds).all();
+    const files = await this.deps.filesDS.getByEntitiesIds(entitySharedIds);
     if (isNonEmptyArray(files)) {
       await this.delete(files);
     }
@@ -154,29 +138,64 @@ class FilesService {
 
   async delete(files: BaseFile[]) {
     if (!files.length) return;
-    const processedPDFs = files.filter((f): f is ProcessedPDF => f instanceof ProcessedPDF);
-    const thumbnails = await this.deps.filesDS
-      .getThumbnailsForProcessedPDFs(processedPDFs.map(f => f.id))
-      .all();
+    const pdfDocuments = files.filter(
+      (f): f is PDFDocument => f instanceof PDFDocument && f.isReady()
+    );
+    const thumbnails = await this.deps.filesDS.getThumbnailsForProcessedPDFs(
+      pdfDocuments.map(f => f.id)
+    );
 
     const allFilesToDelete = [...files, ...thumbnails];
 
     const contentFiles = allFilesToDelete.filter(f => f.hasContent());
 
     await this.deps.filesDS.delete(allFilesToDelete);
-    await this.deps.relV1DS.deleteByFiles(contentFiles as FileWithContents[]);
+    await this.deps.relV1DS.deleteByFiles(contentFiles);
 
     this.deps.transactionManager.onCommitted(async () => {
-      await this.deps.eventBus.emit(
-        new FilesDeletedEvent({ files: allFilesToDelete.map(f => FileMappers.toDBO(f)) })
-      );
+      await this.deps.eventBus.emit(FilesDeletedEvent.create(allFilesToDelete));
       await this.deps.jobsDispatcher.deleteFilesFromStorage(
         contentFiles.map(file => this.deps.pathManager.createPath(file))
       );
     });
   }
 
-  async createThumbnail(doc: ProcessedPDF, language: LanguageISO6391) {
+  async demoteToAttachment(fileId: string): Promise<void> {
+    const file = (await this.deps.filesDS.getById(fileId)).getDataOrThrow();
+
+    if (file.type !== 'document') {
+      throw new CannotTransformFileToAttachment(fileId, file.type);
+    }
+
+    const pdfDoc = file as PDFDocument;
+
+    const attachment = new FileAttachment({
+      id: pdfDoc.id,
+      originalname: pdfDoc.originalname,
+      filename: pdfDoc.filename,
+      mimetype: pdfDoc.mimetype,
+      size: pdfDoc.size,
+      creationDate: pdfDoc.creationDate,
+      uploaded: pdfDoc.uploaded,
+      entity: pdfDoc.entity,
+      content: pdfDoc.content,
+    });
+
+    await this.deps.transactionManager.run(async () => {
+      await this.deps.filesDS.replaceFile(attachment);
+
+      this.deps.transactionManager.onCommitted(async () =>
+        this.deps.eventBus.emit(
+          new FileUpdatedEvent({
+            before: FileMappers.toDBO(pdfDoc),
+            after: FileMappers.toDBO(attachment),
+          })
+        )
+      );
+    });
+  }
+
+  async createThumbnail(doc: PDFDocument, language: LanguageISO6391) {
     const thumbnailResult = await this.deps.pdfService.createThumbnail(doc.content);
     if (thumbnailResult.isError()) {
       return thumbnailResult;
@@ -200,4 +219,4 @@ class FilesService {
 }
 
 export { FilesService };
-export type { Deps as FilesServiceDeps };
+export type { Deps as FilesServiceDeps, FilesServiceContext };

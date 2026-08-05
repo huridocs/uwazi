@@ -105,7 +105,9 @@ describe('Information Extraction: Extracting from text source', () => {
 
   describe('when training the model', () => {
     it('should not send xmls', async () => {
-      await informationExtraction.trainModel(factory.id('sourceTextExtractor1'));
+      await testingEnvironment.runWithContext(async () =>
+        informationExtraction.trainModel(factory.id('sourceTextExtractor1'))
+      );
 
       expect(IXExternalService.materialsFileParams).toEqual(undefined);
       expect(IXExternalService.files.length).toBe(0);
@@ -118,7 +120,9 @@ describe('Information Extraction: Extracting from text source', () => {
         language: 'other' as any,
       });
 
-      await informationExtraction.trainModel(factory.id('sourceTextExtractor1'));
+      await testingEnvironment.runWithContext(async () =>
+        informationExtraction.trainModel(factory.id('sourceTextExtractor1'))
+      );
 
       expect(IXExternalService.materials.length).toBe(2);
       expect(IXExternalService.materials.find(m => m.source_text === 'text 1')).toEqual({
@@ -144,8 +148,8 @@ describe('Information Extraction: Extracting from text source', () => {
       const extractionKeyA17 = ExtractionKey.create({ entitySharedId: 'A17', language: 'en' });
       const extractionKeyA18 = ExtractionKey.create({ entitySharedId: 'A18', language: 'en' });
 
-      await informationExtraction.trainModel(
-        factory.id('extractor_target_multiselect_source_text')
+      await testingEnvironment.runWithContext(async () =>
+        informationExtraction.trainModel(factory.id('extractor_target_multiselect_source_text'))
       );
 
       const suggestion1 = IXExternalService.materials.find(
@@ -198,7 +202,9 @@ describe('Information Extraction: Extracting from text source', () => {
 
       const extractorId = factory.id('extractor_target_select_source_text');
 
-      await informationExtraction.trainModel(extractorId);
+      await testingEnvironment.runWithContext(async () =>
+        informationExtraction.trainModel(extractorId)
+      );
 
       const suggestion3 = IXExternalService.materials.find(m => m.entity_name === extraction3.key);
 
@@ -226,7 +232,9 @@ describe('Information Extraction: Extracting from text source', () => {
 
       const extractorId = factory.id('extractor_target_title_source_text');
 
-      await informationExtraction.trainModel(extractorId);
+      await testingEnvironment.runWithContext(async () =>
+        informationExtraction.trainModel(extractorId)
+      );
 
       const suggestion1 = IXExternalService.materials.find(m => m.entity_name === extraction1.key);
 
@@ -246,8 +254,8 @@ describe('Information Extraction: Extracting from text source', () => {
       const extractionKeyA21 = ExtractionKey.create({ entitySharedId: 'A21', language: 'en' });
       const extractionKeyA22 = ExtractionKey.create({ entitySharedId: 'A22', language: 'en' });
 
-      await informationExtraction.trainModel(
-        factory.id('extractor_target_relationship_source_text')
+      await testingEnvironment.runWithContext(async () =>
+        informationExtraction.trainModel(factory.id('extractor_target_relationship_source_text'))
       );
 
       const suggestion1 = IXExternalService.materials.find(
@@ -299,7 +307,9 @@ describe('Information Extraction: Extracting from text source', () => {
         language: 'other' as any,
       });
 
-      await informationExtraction.trainModel(factory.id('extractor_target_date_source_text'));
+      await testingEnvironment.runWithContext(async () =>
+        informationExtraction.trainModel(factory.id('extractor_target_date_source_text'))
+      );
 
       const suggestion1 = IXExternalService.materials.find(
         m => m.entity_name === extractionKeyEn.key
@@ -341,7 +351,9 @@ describe('Information Extraction: Extracting from text source', () => {
       });
       const extractorId = factory.id('extractor_target_rich_text_source_text');
 
-      await informationExtraction.trainModel(extractorId);
+      await testingEnvironment.runWithContext(async () =>
+        informationExtraction.trainModel(extractorId)
+      );
 
       const suggestion1En = IXExternalService.materials.find(
         m => m.entity_name === extractionKey1En.key

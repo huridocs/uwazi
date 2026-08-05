@@ -1,0 +1,12 @@
+export { Tabs } from './Tabs.js';
+export { TabButtons } from './TabButtons.js';
+export { TabPanels } from './TabPanels.js';
+export { Tab } from './Tab.js';
+export { useTabGroup } from './useTabGroup.js';
+export { splitTabConfig } from './tabConfig.js';
+export type { TabsProps } from './Tabs.js';
+export type { TabButtonsProps } from './TabButtons.js';
+export type { TabPanelsProps } from './TabPanels.js';
+export type { TabProps } from './Tab.js';
+export type { TabConfig } from './tabConfig.js';
+export type { TabButtonDef, TabPanelDef, TabGroupState } from './tabsAtoms.js';

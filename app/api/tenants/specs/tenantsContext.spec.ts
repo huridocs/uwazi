@@ -1,4 +1,5 @@
 import { Db } from 'mongodb';
+import { appContext } from '#api/utils/AppContext.js';
 import testingDB from '#api/utils/testing_db.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { config } from '#api/config.js';
@@ -56,6 +57,7 @@ describe('tenantsContext', () => {
       await tenants.tearDownTenants();
       await db.collection('tenants').deleteMany({});
       await testingEnvironment.tearDown();
+      jest.spyOn(appContext, 'get').mockRestore();
     });
 
     it('should udpate tenants with DB data', async () => {
@@ -67,6 +69,49 @@ describe('tenantsContext', () => {
       expect(tenants.tenants['tenant two'].dbName).toBe('tenant_two');
       await model.closeChangeStream();
     });
+  });
+
+  it('should merge telemetry config with the default when only partially overridden', async () => {
+    tenants.add({
+      name: 'test-tenant-telemetry',
+      dbName: 'test-tenant-telemetry-db',
+      featureFlags: { telemetry: { enabled: true } },
+    });
+
+    await tenants.run(async () => {
+      expect(tenants.current().featureFlags?.telemetry).toEqual({
+        enabled: true,
+        sampleRate: config.defaultTenant.featureFlags!.telemetry!.sampleRate,
+      });
+    }, 'test-tenant-telemetry');
+  });
+
+  it('should default telemetry to disabled when not set on the tenant', async () => {
+    tenants.add({
+      name: 'test-tenant-no-telemetry',
+      dbName: 'test-tenant-no-telemetry-db',
+    });
+
+    await tenants.run(async () => {
+      expect(tenants.current().featureFlags?.telemetry).toEqual(
+        config.defaultTenant.featureFlags!.telemetry
+      );
+    }, 'test-tenant-no-telemetry');
+  });
+
+  it('should merge prometheus config with the default when only partially overridden', async () => {
+    tenants.add({
+      name: 'test-tenant-prometheus',
+      dbName: 'test-tenant-prometheus-db',
+      featureFlags: { prometheus: { enabled: true } },
+    });
+
+    await tenants.run(async () => {
+      expect(tenants.current().featureFlags?.prometheus).toEqual({
+        enabled: true,
+        sampleRate: config.defaultTenant.featureFlags!.prometheus!.sampleRate,
+      });
+    }, 'test-tenant-prometheus');
   });
 
   it('should only return tenants enabled for given feature flag', () => {

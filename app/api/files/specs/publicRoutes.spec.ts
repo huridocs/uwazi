@@ -8,7 +8,7 @@ import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { setupTestUploadedPaths, storage } from '#api/files/index.js';
 import { search } from '#api/search/index.js';
 import { setUpApp } from '#api/utils/testingRoutes.js';
-import { PUBLIC_USER_ID } from '#api/users/publicUser.js';
+import { PUBLIC_USER_ID } from '#api/core/domain/user/User.js';
 import { fixtures, templateId, writerUser } from './fixtures.js';
 import { routes } from '../jsRoutes.js';
 

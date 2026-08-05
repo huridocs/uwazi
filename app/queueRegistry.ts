@@ -26,11 +26,12 @@ import { RelationshipSyncJob } from '#api/core/infrastructure/jobs/RelationshipS
 import { TemplatePostProcessEntitiesJob } from '#api/core/infrastructure/jobs/TemplatePostProcessEntitiesJob.js';
 import { DenormalizeEntityUpdatedListener } from '#api/core/infrastructure/listeners/DenormalizeEntityUpdatedListener.js';
 import { ProcessRelationshipAfterEntityUpdatedListener } from '#api/core/infrastructure/listeners/ProcessRelationshipAfterEntityUpdatedListener.js';
-import { AddLanguagePagesListener } from '#api/pages/AddLanguagePagesListener.js';
-import { DeleteLanguagePagesListener } from '#api/pages/DeleteLanguagePagesListener.js';
+import { AddLanguagePagesListener } from '#api/pages.v2/infrastructure/listeners/AddLanguagePagesListener.js';
+import { DeleteLanguagePagesListener } from '#api/pages.v2/infrastructure/listeners/DeleteLanguagePagesListener.js';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
 import { MongoRelationshipsV1DataSource } from '#api/core/infrastructure/mongodb/MongoRelationshipsV1DataSource.js';
+import { EntitiesDAOFactory } from '#api/core/infrastructure/factories/EntitiesDAOFactory.js';
 import { V1WebSocketsWrapper } from '#api/core/infrastructure/services/V1WebSocketsWrapper.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import {
@@ -58,6 +59,8 @@ import { PXCreateParagraphsFactory } from '#api/paragraphExtraction/infrastructu
 import { PXCreateParagraphsJob } from '#api/paragraphExtraction/infrastructure/PXCreateParagraphsJob.js';
 import { PXExtractionServiceFactory } from '#api/paragraphExtraction/infrastructure/PXExtractionServiceFactory.js';
 import { PXExtractorsQueryServiceFactory } from '#api/paragraphExtraction/infrastructure/PXExtractorsQueryServiceFactory.js';
+import { AIAssistantFactory } from '#api/aiAssistant/infrastructure/AIAssistantFactory.js';
+import { AIAssistantPollRequestJob } from '#api/aiAssistant/infrastructure/jobs/AIAssistantPollRequestJob.js';
 import { PXExtractParagraphsFromEntityJob } from '#api/paragraphExtraction/infrastructure/PXExtractParagraphsFromEntityJob.js';
 import { CreateParagraphExtractionEntityStatusesJob } from '#api/paragraphExtraction/jobs/CreateParagraphExtractionEntityStatusesJob.js';
 import relationships from '#api/relationships/index.js';
@@ -70,7 +73,21 @@ import settings from '#api/settings/index.js';
 import { AcceptSuggestionsFactory } from '#api/suggestions/infrastructure/AcceptSuggestionsFactory.js';
 import { AcceptSuggestionsJob } from '#api/suggestions/jobs/AcceptSuggestionsJob.js';
 import { CreateBlankStateSuggestionsJob } from '#api/suggestions/jobs/CreateBlankStateSuggestionsJob.js';
+import { DatavizFactory } from '#api/dataviz.v2/infrastructure/factories/DatavizFactory.js';
+import { DatavizScheduledRefreshJobHandler } from '#api/dataviz.v2/infrastructure/jobHandlers/DatavizScheduledRefreshJobHandler.js';
+import { DatavizScheduledRefreshJobLegacyToken } from '#api/dataviz.v2/application/contracts/DatavizScheduledRefreshJobHandlerToken.js';
 import { tenants } from '#api/tenants/tenantContext.js';
+import { SendWelcomeEmailHandler } from '#api/core/infrastructure/jobs/SendWelcomeEmailHandler.js';
+import { SendWelcomeEmailFactory } from '#api/core/infrastructure/factories/SendWelcomeEmailFactory.js';
+import { SendPasswordRecoveryEmailHandler } from '#api/core/infrastructure/jobs/SendPasswordRecoveryEmailHandler.js';
+import { EmailSenderFactory } from '#api/core/infrastructure/factories/EmailSenderFactory.js';
+import { MigrationJob } from '#api/core/infrastructure/jobs/MigrationJob.js';
+import { MigrationJobFactory } from '#api/core/infrastructure/factories/MigrationJobFactory.js';
+import { CleanupExpiredPasswordRecoveriesJob } from '#api/core/infrastructure/jobs/cleanupExpiredPasswordRecoveriesJob/CleanupExpiredPasswordRecoveriesJob.js';
+import { PostgresDB } from '#api/infrastructure/PostgresDB.js';
+import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
+import { withFeature } from '#api/core/libs/logger/infrastructure/StandardLogger.js';
+import { StandardJSONWriter } from '#api/core/libs/logger/infrastructure/writers/StandardJSONWriter.js';
 
 type Register = <T extends Dispatchable>(
   dispatchable: DispatchableClass<T>,
@@ -117,6 +134,8 @@ export function registerJobs(register: Register) {
   register(CreateBlankStateSuggestionsJob, async () => new CreateBlankStateSuggestionsJob());
 
   register(PXExtractParagraphsFromEntityJob, async () => new PXExtractParagraphsFromEntityJob());
+
+  register(AIAssistantPollRequestJob, async () => AIAssistantFactory.createPollRequestJob());
 
   register(PXCreateParagraphsJob, async () => {
     const transactionManager = TransactionManagerFactory.default();
@@ -209,7 +228,11 @@ export function registerJobs(register: Register) {
       useCase: new TemplateUpdateDenormalizeEntitiesBatch({
         entitiesDS: EntitiesDataSourceFactory.default({ transactionManager }),
         filesDS: FilesDataSourceFactory.default(),
-        relationshipsV1DS: new MongoRelationshipsV1DataSource(getConnection(), transactionManager),
+        relationshipsV1DS: new MongoRelationshipsV1DataSource(
+          getConnection(),
+          transactionManager,
+          EntitiesDAOFactory.default()
+        ),
         templatesDS: TemplatesDataSourceFactory.default({ transactionManager }),
         transactionManager,
       }),
@@ -311,4 +334,37 @@ export function registerJobs(register: Register) {
   );
 
   register(DeleteLanguagePagesListener.asJob(), async () => new DeleteLanguagePagesListener({}));
+
+  register(DatavizScheduledRefreshJobHandler, async namespace =>
+    DatavizFactory.scheduledRefreshJobHandler(namespace)
+  );
+
+  register(DatavizScheduledRefreshJobLegacyToken, async namespace =>
+    DatavizFactory.scheduledRefreshJobHandler(namespace)
+  );
+
+  register(
+    SendWelcomeEmailHandler,
+    async () => new SendWelcomeEmailHandler({ sendWelcomeEmail: SendWelcomeEmailFactory.default() })
+  );
+
+  register(
+    SendPasswordRecoveryEmailHandler,
+    async () => new SendPasswordRecoveryEmailHandler({ emailSender: EmailSenderFactory.default() })
+  );
+
+  register(MigrationJob, async () =>
+    MigrationJobFactory.create({
+      logger: LoggerFactory.systemLogger(withFeature(StandardJSONWriter, 'migration')),
+    })
+  );
+
+  register(
+    CleanupExpiredPasswordRecoveriesJob,
+    async () =>
+      new CleanupExpiredPasswordRecoveriesJob({
+        pool: PostgresDB.adminPool(),
+        jobsDispatcher: ExecutionContext.jobsDispatcher,
+      })
+  );
 }

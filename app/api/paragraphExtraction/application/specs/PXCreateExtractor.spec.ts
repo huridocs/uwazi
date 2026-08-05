@@ -1,4 +1,3 @@
-/* eslint-disable max-statements */
 import { ObjectId } from 'mongodb';
 
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
@@ -7,12 +6,12 @@ import { MongoIdHandler } from '#api/core/infrastructure/mongodb/common/MongoIdG
 import { TemplatesDataSourceFactory } from '#api/core/infrastructure/factories/TemplatesDataSourceFactory.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-import relationshipTypeDS from '#api/relationtypes/index.js';
 import { PXErrorCode } from '#api/paragraphExtraction/domain/PXValidationError.js';
 import { DBFixture } from '#api/utils/testing_db.js';
 import { MongoPXExtractorDBO } from '#api/paragraphExtraction/infrastructure/MongoPXExtractorDBO.js';
 import { PXExtractorsDataSourceFactory } from '#api/paragraphExtraction/infrastructure/PXExtractorsDataSourceFactory.js';
 import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
+import { RelationshipTypesDataSourceFactory } from '#api/core/infrastructure/factories/RelationshipTypesDataSourceFactory.js';
 
 import { TestUtils } from '#api/common.v2/utils/Test.js';
 import { CreateParagraphExtractionEntityStatusesJob } from '../../jobs/CreateParagraphExtractionEntityStatusesJob.js';
@@ -30,6 +29,9 @@ const setUpUseCase = () => {
   const extractorDS = PXExtractorsDataSourceFactory.createDefault({
     connection,
     mongoTransactionManager,
+  });
+  const relationshipTypeDS = RelationshipTypesDataSourceFactory.default({
+    transactionManager: mongoTransactionManager,
   });
 
   const mockDispatcher = TestUtils.mockClass<JobsDispatcher>({
@@ -69,19 +71,16 @@ const invalidTargetTemplate = f.template('Invalid Target');
 const sourceRelationshipType = {
   _id: f.id('sourceRelationshipType'),
   name: 'Source Relationship Type',
-  properties: [],
 };
 
 const targetRelationshipType = {
   _id: f.id('targetRelationshipType'),
   name: 'Target Relationship Type',
-  properties: [],
 };
 
 const nonRelevantRelationshipType = {
   _id: f.id('nonRelevantRelationshipType'),
   name: 'Other Relationship Type',
-  properties: [],
 };
 
 const createFixtures = (): DBFixture => ({

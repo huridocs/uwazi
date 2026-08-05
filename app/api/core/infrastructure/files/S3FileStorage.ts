@@ -10,7 +10,7 @@ import {
 } from '@aws-sdk/client-s3';
 import { config } from '#api/config.js';
 import { BaseFile } from '#api/core/domain/files/BaseFile.js';
-import { FileWithContents } from '#api/core/domain/files/FileWithContents.js';
+import { FileWithContent } from '../../application/contracts/FileStorage.js';
 import { FileContentsIO } from '#api/core/infrastructure/files/FileContentIO.js';
 import { S3Error } from '#api/files/S3Storage.js';
 import { Tenant } from '#api/tenants/tenantContext.js';
@@ -20,7 +20,7 @@ import { FileStorage, GetFileInput } from '../../application/contracts/FileStora
 import { FileAttachment } from '../../domain/files/FileAttachment.js';
 import { CustomUpload } from '../../domain/files/CustomUpload.js';
 import { FileContents } from '../../domain/files/FileContents.js';
-import { StoredFile } from '../../domain/files/StoredFile.js';
+import { StoredFile } from './StoredFile.js';
 import { URLAttachment } from '../../domain/files/URLAttachment.js';
 import { PathManager } from './PathManager.js';
 
@@ -66,7 +66,7 @@ export class S3FileStorage implements FileStorage {
     );
   }
 
-  async storeFile(file: FileWithContents) {
+  async storeFile(file: FileWithContent) {
     await catchS3Errors(async () =>
       this.s3Client.send(
         new PutObjectCommand({
@@ -78,7 +78,7 @@ export class S3FileStorage implements FileStorage {
     );
   }
 
-  async removeFile(file: FileWithContents) {
+  async removeFile(file: FileWithContent) {
     await catchS3Errors(async () =>
       this.s3Client.send(
         new DeleteObjectCommand({

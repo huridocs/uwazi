@@ -1,24 +1,23 @@
 import omit from 'lodash/omit.js';
+import { actions as formActions } from 'react-redux-form';
 import { api } from '#app/utils/api.js';
 import { ReferencesAPI as referencesAPI } from '#app/Viewer/referencesAPI.js';
 import * as types from '#app/Viewer/actions/actionTypes.js';
 import * as connectionsTypes from '#app/Connections/actions/actionTypes.js';
 import { entityDefaultDocument } from '#shared/entityDefaultDocument.js';
 import { actions } from '#app/BasicReducer/index.js';
-import { actions as formActions } from 'react-redux-form';
 import { getStore } from '#shared/atomStore/index.js';
-import { documentsAPI } from '#app/Documents/index.js';
 import { notificationActions } from '#app/Notifications/index.js';
 import { removeDocument, unselectAllDocuments } from '#app/Library/actions/libraryActions.js';
 import { actions as relationshipActions } from '#app/Relationships/index.js';
 import { RequestParams } from '#app/utils/RequestParams.js';
 import { closePanel as closeConnectionPanel } from '#app/Connections/actions/uiActions.js';
 import { deletedEntityAtom } from '#V2/atoms/index.js';
+import { EntitiesAPI } from '#app/Entities/EntitiesAPI.js';
 import { saveEntityWithFiles } from '../../Library/actions/saveEntityWithFiles.js';
 import * as selectionActions from './selectionActions.js';
 import * as uiActions from './uiActions.js';
 import { sortTextSelections } from '../utils/sortTextSelections.js';
-import { EntitiesAPI as EntitiesApi } from '../../Entities/EntitiesAPI.js';
 
 function getEntityDoc(entity, filename, defaultLanguage) {
   let docByFilename = entity.documents.find(d => d.filename === filename);
@@ -60,9 +59,9 @@ export function loadDefaultViewerMenu() {
 export function saveDocument(doc, fileID) {
   const updateDoc = omit(doc, 'fullText', 'defaultDoc');
   return async (dispatch, getState) => {
-    const extractredMetadata = getState().documentViewer.metadataExtraction.toJS();
+    const propertySelections = getState().documentViewer.metadataExtraction.toJS();
     const entityFileId = fileID || getState().documentViewer.doc.toJS().defaultDoc._id;
-    updateDoc.__extractedMetadata = { fileID: entityFileId, ...extractredMetadata };
+    updateDoc.propertySelections = { fileID: entityFileId, ...propertySelections };
     const updatedDoc = await saveEntityWithFiles(updateDoc, dispatch);
 
     dispatchUpdatedDocument(dispatch, doc, updatedDoc, entityFileId);
@@ -97,7 +96,7 @@ export function saveToc(toc, fileId) {
 
 export function deleteDocument(doc) {
   return async dispatch => {
-    await documentsAPI.delete(new RequestParams({ sharedId: doc.sharedId }));
+    await EntitiesAPI.delete(new RequestParams({ sharedId: doc.sharedId }));
     dispatch(notificationActions.notify('Document deleted', 'success'));
     dispatch(resetDocumentViewer());
     dispatch(removeDocument(doc));
@@ -107,7 +106,7 @@ export function deleteDocument(doc) {
 }
 
 export async function getDocument(requestParams, defaultLanguage, filename) {
-  const [entity] = await EntitiesApi.get(requestParams.add({ omitRelationships: true }));
+  const [entity] = await EntitiesAPI.get(requestParams.add({ omitRelationships: true }));
 
   entity.defaultDoc = getEntityDoc(entity, filename, defaultLanguage);
   return entity;

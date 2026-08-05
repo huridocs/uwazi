@@ -5,6 +5,7 @@ import { CsvRowImportErrorFactory } from '../services/CsvRowImportErrorFactory.j
 
 type RowProcessingState = {
   created: number;
+  updated: number;
   errors: CsvImportRowError[];
   consecutiveFailures: number;
   maxConsecutiveFailures: number;
@@ -12,6 +13,7 @@ type RowProcessingState = {
 
 const createRowProcessingState = (): RowProcessingState => ({
   created: 0,
+  updated: 0,
   errors: [],
   consecutiveFailures: 0,
   maxConsecutiveFailures: 0,
@@ -20,6 +22,12 @@ const createRowProcessingState = (): RowProcessingState => ({
 const trackImportedRow = (state: RowProcessingState) => ({
   ...state,
   created: state.created + 1,
+  consecutiveFailures: 0,
+});
+
+const trackUpdatedRow = (state: RowProcessingState) => ({
+  ...state,
+  updated: state.updated + 1,
   consecutiveFailures: 0,
 });
 
@@ -44,5 +52,5 @@ const trackFailedRow = (params: {
   };
 };
 
-export { createRowProcessingState, trackImportedRow, trackFailedRow };
+export { createRowProcessingState, trackImportedRow, trackUpdatedRow, trackFailedRow };
 export type { RowProcessingState };

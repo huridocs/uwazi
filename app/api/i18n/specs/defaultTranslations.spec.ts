@@ -5,8 +5,9 @@ import waitForExpect from 'wait-for-expect';
 
 import { validateFormat, ValidateFormatError } from '#api/csv/csv.js';
 import { DBFixture } from '#api/utils/testing_db.js';
-import { iosocket, setUpApp } from '#api/utils/testingRoutes.js';
+import { iosocket, setUpApp, TestEmitSources } from '#api/utils/testingRoutes.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import { UserRole } from '#shared/types/userSchema.js';
 
 import { DefaultTranslations } from '../defaultTranslations.js';
@@ -16,7 +17,7 @@ import translations from '../translations.js';
 const TRANSLATION_FILES_DIR = DefaultTranslations.CONTENTS_DIRECTORY;
 
 type defaulTranslationInfo = {
-  key: string;
+  key: LanguageISO6391;
   longName: string;
 };
 
@@ -85,6 +86,9 @@ const fixtures: DBFixture = {
     },
   ],
 };
+const initialLanguageKeys = new Set(
+  fixtures.settings?.[0]?.languages?.map(language => language.key) || []
+);
 
 afterAll(async () => {
   await testingEnvironment.tearDown();
@@ -181,13 +185,37 @@ describe('translation files', () => {
       });
 
       it('should be able to be loaded through the api without error', async () => {
+        const shouldEmitTranslationsInstallDone = !initialLanguageKeys.has(key);
+
         await request(app)
           .post('/api/translations/languages')
-          .send([{ key, label: longName }]);
-        const emits = iosocket.emit.mock.calls;
+          .send([{ key, label: longName }])
+          .expect(204);
+
         await waitForExpect(() => {
-          expect(emits[emits.length - 1]).toEqual(['translationsInstallDone', 'session']);
+          const updateSettingsEvent = iosocket.emit.mock.calls.find(
+            ([eventName]) => eventName === 'updateSettings'
+          );
+          expect(updateSettingsEvent).toBeDefined();
+          expect(updateSettingsEvent![0]).toBe('updateSettings');
+          expect(updateSettingsEvent![1]).toBe(TestEmitSources.currentTenant);
         });
+
+        if (shouldEmitTranslationsInstallDone) {
+          await waitForExpect(() => {
+            const installDoneEvent = iosocket.emit.mock.calls.find(
+              ([eventName]) => eventName === 'translationsInstallDone'
+            );
+            expect(installDoneEvent).toBeDefined();
+            expect(installDoneEvent![0]).toBe('translationsInstallDone');
+            expect(installDoneEvent![1]).toBe(TestEmitSources.currentTenant);
+          });
+        }
+
+        const installDoneEvent = iosocket.emit.mock.calls.find(
+          ([eventName]) => eventName === 'translationsInstallDone'
+        );
+        expect(Boolean(installDoneEvent)).toBe(shouldEmitTranslationsInstallDone);
       });
     });
   });

@@ -83,6 +83,10 @@ class ExpressEntityMapper {
       }
     }
 
+    if (typeof props.dto.generatedToc !== 'undefined') {
+      input.generatedToc = props.dto.generatedToc;
+    }
+
     if (props.dto.metadata) {
       const properties = Object.entries(props.dto.metadata).map(([name, value]) => ({
         name,
@@ -92,6 +96,13 @@ class ExpressEntityMapper {
       input.propertyAssignments?.push(
         ...(properties as UpdateEntityUseCaseInput['propertyAssignments'])!
       );
+    }
+
+    if (props.dto.propertySelections) {
+      input.propertySelections = {
+        fileId: props.dto.propertySelections.fileID,
+        selections: props.dto.propertySelections.selections,
+      };
     }
 
     return input;

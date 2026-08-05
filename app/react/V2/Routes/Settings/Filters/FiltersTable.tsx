@@ -64,6 +64,7 @@ const FiltersTable = () => {
     const formattedFilters = formatFilters(loadedFilters || []);
     currentFilters.current = formattedFilters;
     setFilters(formattedFilters);
+    setHasChanges(false);
   }, [loadedFilters]);
 
   useEffect(() => {
@@ -71,6 +72,15 @@ const FiltersTable = () => {
       setConfirmNavigationModal(true);
     }
   }, [blocker, setConfirmNavigationModal]);
+
+  const filtersDifferFromLoaded = (rows: Filter[]) =>
+    JSON.stringify(rows) !== JSON.stringify(loadedFilters);
+
+  const applyFilters = (rows: Filter[]) => {
+    currentFilters.current = rows;
+    setFilters(rows);
+    setHasChanges(filtersDifferFromLoaded(rows));
+  };
 
   const cancel = () => {
     currentFilters.current = loadedFilters;
@@ -80,7 +90,7 @@ const FiltersTable = () => {
 
   const addNewFilters = (templatedIds: string[]) => {
     const newFilters = createNewFilters(templatedIds, templates);
-    setFilters([...currentFilters.current, ...newFilters]);
+    applyFilters([...(currentFilters.current || []), ...newFilters]);
   };
 
   const handleDelete = () => {
@@ -99,7 +109,8 @@ const FiltersTable = () => {
     });
 
     const updatedFilters = deleteFilters(currentFilters.current, idsToRemove);
-    setFilters(updatedFilters || []);
+    applyFilters(updatedFilters || []);
+    setSelectedFilters({});
   };
 
   const handleSave = async () => {
@@ -107,6 +118,7 @@ const FiltersTable = () => {
     const filtersToSave = sanitizeFilters(currentFilters.current);
     const [response, error] = await settingsAPI.save({ filters: filtersToSave });
     if (error) {
+      setDisabled(false);
       notify(
         'error',
         t('System', 'An error occurred', null, false),
@@ -131,11 +143,7 @@ const FiltersTable = () => {
   }) => {
     currentFilters.current = rows;
     setSelectedFilters(selectedRows);
-    if (JSON.stringify(currentFilters.current) !== JSON.stringify(loadedFilters)) {
-      setHasChanges(true);
-    } else {
-      setHasChanges(false);
-    }
+    setHasChanges(filtersDifferFromLoaded(rows));
   };
 
   return (
@@ -183,7 +191,7 @@ const FiltersTable = () => {
             enableSelections
             onSelect={handleSelect}
             onSort={({ rows }) => {
-              setFilters(rows);
+              applyFilters(rows);
             }}
             columns={createColumns(setShowSidepanel)}
             data={filters}
@@ -255,7 +263,7 @@ const FiltersTable = () => {
         setShowSidepanel={setShowSidepanel}
         onSave={newFilter => {
           if (newFilter) {
-            setFilters(updateFilters(newFilter, filters) || []);
+            applyFilters(updateFilters(newFilter, currentFilters.current) || []);
           }
         }}
         availableTemplates={templates}

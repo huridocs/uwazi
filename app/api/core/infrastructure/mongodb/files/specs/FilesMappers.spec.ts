@@ -1,22 +1,21 @@
 import { ObjectId } from 'mongodb';
 import { TestUtils } from '#api/common.v2/utils/Test.js';
 import { FileStorage } from '#api/core/application/contracts/FileStorage.js';
-import { ProcessedPDF } from '#api/core/domain/files/ProcessedPDF.js';
 import { Thumbnail } from '#api/core/domain/files/Thumbnail.js';
+import { PDFDocument } from '#api/core/domain/files/PDFDocument.js';
 import { FileBuilder } from '#api/core/domain/files/specs/FileBuilder.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { FileAttachment } from '../../../../domain/files/FileAttachment.js';
 import { CustomUpload } from '../../../../domain/files/CustomUpload.js';
-import { ProcessingPDF } from '../../../../domain/files/ProcessingPDF.js';
 import { URLAttachment } from '../../../../domain/files/URLAttachment.js';
 import { FileMappers } from '../FilesMappers.js';
 import {
   FileAttachmentDBO,
   ProcessingPDFDBO,
-  fileDBO,
+  FileDBO,
   ProcessedPDFDBO,
   ThumbnailDBO,
-} from '../schemas/filesTypes.js';
+} from '../schemas/FilesTypes.js';
 
 const f = getFixturesFactory();
 
@@ -140,11 +139,11 @@ describe('FileMappers', () => {
       },
     });
 
-    const toModel = (dbo: fileDBO) =>
+    const toModel = (dbo: FileDBO) =>
       FileMappers.toModel(dbo, { contentLoader: fileStorage.getFile.bind(fileStorage) });
 
     it('should map to URLAttachment when type is attachment and url is present', () => {
-      const dbo: fileDBO = {
+      const dbo: FileDBO = {
         _id: new ObjectId(),
         originalname: 'original.pdf',
         filename: 'file.pdf',
@@ -173,7 +172,7 @@ describe('FileMappers', () => {
     });
 
     it('should map to Attachment when type is attachment and url is not present', () => {
-      const dbo: fileDBO = {
+      const dbo: FileDBO = {
         _id: new ObjectId(),
         originalname: 'original.pdf',
         filename: 'file.pdf',
@@ -200,7 +199,7 @@ describe('FileMappers', () => {
     });
 
     it('should map to CustomUpload when type is custom', () => {
-      const dbo: fileDBO = {
+      const dbo: FileDBO = {
         _id: new ObjectId(),
         originalname: 'original.pdf',
         filename: 'file.pdf',
@@ -222,7 +221,7 @@ describe('FileMappers', () => {
     });
 
     it('should map to Thumbnail when type is thumbnail', () => {
-      const dbo: fileDBO = {
+      const dbo: FileDBO = {
         _id: new ObjectId(),
         originalname: 'original.pdf',
         filename: 'file.pdf',
@@ -251,7 +250,7 @@ describe('FileMappers', () => {
     });
 
     it('should map to Document when type is document', () => {
-      const dbo: fileDBO = {
+      const dbo: FileDBO = {
         _id: new ObjectId(),
         originalname: 'original.pdf',
         filename: 'file.pdf',
@@ -265,9 +264,9 @@ describe('FileMappers', () => {
 
       const result = toModel(dbo);
 
-      expect(result).toBeInstanceOf(ProcessingPDF);
+      expect(result).toBeInstanceOf(PDFDocument);
 
-      expect(result as ProcessingPDF).toMatchObject({
+      expect(result as PDFDocument).toMatchObject({
         id: dbo._id.toString(),
         entity: dbo.entity,
         originalname: dbo.originalname,
@@ -280,7 +279,7 @@ describe('FileMappers', () => {
     });
 
     it('should map to ProcessingDocument when type is document and status ready', () => {
-      const dbo: fileDBO = {
+      const dbo: FileDBO = {
         _id: new ObjectId(),
         originalname: 'original.pdf',
         filename: 'file.pdf',
@@ -298,8 +297,8 @@ describe('FileMappers', () => {
 
       const result = toModel(dbo);
 
-      expect(result).toBeInstanceOf(ProcessedPDF);
-      const document = result as ProcessingPDF;
+      expect(result).toBeInstanceOf(PDFDocument);
+      const document = result as PDFDocument;
 
       expect(document).toMatchObject({
         id: dbo._id.toString(),
@@ -316,7 +315,7 @@ describe('FileMappers', () => {
     });
 
     it('should handle different types correctly', () => {
-      const documentDBO: fileDBO = {
+      const documentDBO: FileDBO = {
         _id: new ObjectId(),
         originalname: 'original.pdf',
         filename: 'file.pdf',
@@ -330,7 +329,7 @@ describe('FileMappers', () => {
         status: 'ready',
         generatedToc: false,
       };
-      const anotherDocumentDBO: fileDBO = {
+      const anotherDocumentDBO: FileDBO = {
         _id: new ObjectId(),
         originalname: 'original.pdf',
         filename: 'file.pdf',
@@ -345,8 +344,8 @@ describe('FileMappers', () => {
       const documentResult = toModel(documentDBO);
       const anotherResult = toModel(anotherDocumentDBO);
 
-      expect(documentResult).toBeInstanceOf(ProcessedPDF);
-      expect(anotherResult).toBeInstanceOf(ProcessingPDF);
+      expect(documentResult).toBeInstanceOf(PDFDocument);
+      expect(anotherResult).toBeInstanceOf(PDFDocument);
     });
   });
 });

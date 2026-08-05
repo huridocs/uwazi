@@ -912,21 +912,6 @@ describe('Activitylog Parser', () => {
           );
         });
       });
-      describe('POST /api/import', () => {
-        it('should beautify as CREATE', async () => {
-          await testBeautified(
-            {
-              method: 'POST',
-              url: '/api/import',
-              body: '{}',
-            },
-            {
-              action: 'CREATE',
-              description: 'Imported entities from file',
-            }
-          );
-        });
-      });
       describe('POST /api/public', () => {
         it('should beautify as CREATE', async () => {
           await testBeautified(

@@ -97,7 +97,6 @@ const fixtures: DBFixture = {
     {
       _id: factory.id('relation_type'),
       name: 'relation_type',
-      properties: [],
       __v: 0,
     },
   ],
@@ -359,6 +358,7 @@ const fixtures: DBFixture = {
       entity: 'entity1',
       type: 'thumbnail',
       filename: `${factory.id('entity1_doc1').toHexString()}.jpg`,
+      originalname: 'thumbnail.jpg',
       language: 'eng',
       mimetype: 'image/jpeg',
       size: 10000,
@@ -378,6 +378,7 @@ const fixtures: DBFixture = {
       entity: 'entity1',
       type: 'thumbnail',
       filename: `${factory.id('entity1_doc2').toHexString()}.jpg`,
+      originalname: 'thumbnail.jpg',
       language: 'eng',
       mimetype: 'image/jpeg',
       size: 12000,

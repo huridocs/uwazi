@@ -48,7 +48,7 @@ const LegacyHeader = () => {
         </h1>
         {isMobile && (
           <div
-            className="tw-content"
+            className="tw-content tw-content--chrome"
             style={{
               height: '50px',
               display: 'flex',

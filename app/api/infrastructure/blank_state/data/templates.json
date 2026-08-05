@@ -1,0 +1,37 @@
+[
+  {
+    "_id": "5bfbb1a0471dd0fc16ada146",
+    "name": "Document",
+    "properties": [],
+    "commonProperties": [
+      {
+        "_id": "5bfbb1a0471dd0fc16ada148",
+        "name": "title",
+        "type": "text",
+        "label": "Title",
+        "prioritySorting": false,
+        "isCommonProperty": true
+      },
+      {
+        "_id": "5bfbb1a0471dd0fc16ada147",
+        "name": "creationDate",
+        "type": "date",
+        "label": "Date added",
+        "prioritySorting": false,
+        "isCommonProperty": true
+      },
+      {
+        "_id": "69bd70632cc060344ac6e2fb",
+        "name": "editDate",
+        "type": "date",
+        "label": "Date modified",
+        "isCommonProperty": true
+      }
+    ],
+    "color": "#c03b22",
+    "default": true,
+    "entityViewPage": null,
+    "processing": null,
+    "tenant_id": "__TENANT_ID__"
+  }
+]

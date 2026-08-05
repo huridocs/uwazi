@@ -56,6 +56,19 @@ services:
     environment:
       - REDIS_REPLICATION_MODE=master
 
+  postgres:
+    image: 'postgres:16'
+    container_name: uwazi-postgres
+    ports:
+      - '5432:5432'
+    environment:
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=admin
+      - POSTGRES_DB=uwazi_development
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./app/api/core/infrastructure/postgresql/provisioning:/docker-entrypoint-initdb.d
+
   minio:
     image: minio/minio
     container_name: uwazi-s3
@@ -70,4 +83,6 @@ volumes:
   esdata01:
     driver: local
   mongodata:
+    driver: local
+  pgdata:
     driver: local

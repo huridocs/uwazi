@@ -31,7 +31,7 @@ describe('Provider', () => {
 
   afterEach(() => {
     delete window.__reduxData__;
-    delete window.__user__;
+    delete window.__atomStoreData__;
   });
 
   describe('context', () => {
@@ -100,9 +100,9 @@ describe('Provider', () => {
         });
       });
 
-      describe('when is in window', () => {
+      describe('when is in atomStoreData', () => {
         beforeEach(() => {
-          window.__user__ = user;
+          window.__atomStoreData__ = { user, translations: [] };
           TestUtils.renderIntoDocument(
             <Provider initialData={initialData}>
               <TestController ref={ref => (component = ref)} />

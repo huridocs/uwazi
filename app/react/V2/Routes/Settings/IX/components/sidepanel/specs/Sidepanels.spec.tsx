@@ -512,7 +512,7 @@ describe('Sidepanel forms', () => {
       });
     });
 
-    it('should save with extracted metadata', async () => {
+    it('should save with property selections', async () => {
       const handleEntitySaveSpy = jest.spyOn(sidepanelFunctions, 'handleEntitySave');
 
       renderPDFSidepanel(suggestion1, textProperty);
@@ -530,7 +530,7 @@ describe('Sidepanel forms', () => {
         expect(handleEntitySaveSpy).toHaveBeenCalledWith(
           {
             ...entity1,
-            __extractedMetadata: {
+            propertySelections: {
               fileID: 'file1',
               selections: [
                 {

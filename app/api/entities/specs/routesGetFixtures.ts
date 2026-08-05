@@ -44,11 +44,31 @@ const permissions = [{ refId: 'userId', level: AccessLevels.WRITE, type: Permiss
 
 const fixtures: DBFixture = {
   users: [
-    fixtureFactory.user('admin', UserRole.ADMIN, 'admin@uwazi.com', 'hashedpass'),
-    fixtureFactory.user('user1', UserRole.EDITOR, 'user1@uwazi.com', 'hashedpass'),
-    fixtureFactory.user('user2', UserRole.EDITOR, 'user2@uwazi.com', 'hashedpass'),
+    fixtureFactory.user({
+      username: 'admin',
+      role: UserRole.ADMIN,
+      email: 'admin@uwazi.com',
+      password: 'hashedpass',
+    }),
+    fixtureFactory.user({
+      username: 'user1',
+      role: UserRole.EDITOR,
+      email: 'user1@uwazi.com',
+      password: 'hashedpass',
+    }),
+    fixtureFactory.user({
+      username: 'user2',
+      role: UserRole.EDITOR,
+      email: 'user2@uwazi.com',
+      password: 'hashedpass',
+    }),
     {
-      ...fixtureFactory.user('user3', UserRole.COLLABORATOR, 'user3@uwazi.com', 'hashedpass'),
+      ...fixtureFactory.user({
+        username: 'user3',
+        role: UserRole.COLLABORATOR,
+        email: 'user3@uwazi.com',
+        password: 'hashedpass',
+      }),
       groups: [{ _id: testGroup1Id, name: 'Test Group 1' }],
     } as any,
   ],
@@ -288,7 +308,11 @@ const fixtures: DBFixture = {
     fixtureFactory.entity(
       'getWithRelRoot',
       'templateForGetWithRelationships',
-      {},
+      {
+        relProp: [
+          { icon: null, label: 'public entity', type: 'entity', value: 'getWithRelPublic' },
+        ],
+      },
       {
         language: 'es',
         title: 'root entity',
@@ -463,7 +487,7 @@ const fixtures: DBFixture = {
         { key: 'pt', label: 'Portuguese' },
         { key: 'en', label: 'English' },
       ],
-      featureFlags: { v2UpdateEntity: true },
+      featureFlags: {},
       filterUnauthorizedRelated: false,
     } as any,
   ],
@@ -493,9 +517,17 @@ const fixtures: DBFixture = {
       fixtureFactory.property('field_nested', 'nested'),
       fixtureFactory.property('numeric', 'numeric'),
     ]),
-    fixtureFactory.template('templateForGetWithRelationships', [], {
-      _id: templateForGetWithRelationships,
-    }),
+    fixtureFactory.template(
+      'templateForGetWithRelationships',
+      [
+        fixtureFactory.relationshipProp('relProp', undefined, {
+          relationType: relationType4.toString(),
+        }),
+      ],
+      {
+        _id: templateForGetWithRelationships,
+      }
+    ),
   ],
 
   relationtypes: [
@@ -508,6 +540,7 @@ const fixtures: DBFixture = {
       { entity: 'getWithRelPublic', template: 'relationType4' },
       { entity: 'getWithRelPrivate', template: 'relationType4' },
     ]),
+    ...fixtureFactory.hub('hub9', 'shared', [{ entity: 'shared2', template: 'relationType1' }]),
   ],
 
   dictionaries: [

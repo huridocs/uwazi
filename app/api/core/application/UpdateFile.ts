@@ -4,14 +4,16 @@ import { AbstractUseCase } from '../libs/UseCase.js';
 import { FilesDataSource } from './contracts/FilesDataSource.js';
 import { FilesService } from './FilesService.js';
 import { BaseFile } from '../domain/files/BaseFile.js';
-import { LanguageISO6391 } from '#shared/types/commonTypes.js';
-import { TableOfContent } from '../domain/files/ProcessedPDF.js';
+import { LanguageISO6391, PropertySelectionSchema } from '#shared/types/commonTypes.js';
+import { TableOfContent } from '../domain/files/domainTypes.js';
 
 type Input = {
   fileId: string;
   originalname?: string;
   language?: LanguageISO6391;
   toc?: TableOfContent[];
+  url?: string;
+  propertySelections?: PropertySelectionSchema[];
 };
 type Output = BaseFile;
 
@@ -37,6 +39,8 @@ class UpdateFile extends AbstractUseCase<Input, Output, Deps> {
       originalname: input.originalname,
       language: input.language,
       toc: input.toc,
+      propertySelections: input.propertySelections,
+      url: input.url,
     });
 
     await this.transactionManager.run(async () => this.deps.filesService.bulkUpsert([updatedFile]));

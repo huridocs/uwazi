@@ -3,27 +3,26 @@ import isString from 'lodash/isString.js';
 import { Translate } from '#app/I18N/index.js';
 
 interface LabelProps {
-  htmlFor: string;
+  htmlFor?: string;
   children: string | React.ReactNode;
   hasErrors?: boolean;
   hideLabel?: boolean;
 }
 
+const cx = (...classes: Array<string | false | undefined>) => classes.filter(Boolean).join(' ');
+
 const renderChild = (child: string | React.ReactNode) =>
   isString(child) ? <Translate>{child}</Translate> : child;
 
-const Label = ({ htmlFor, children, hasErrors, hideLabel }: LabelProps) => {
-  const color = hasErrors ? 'text-emphasis' : 'text-ink-secondary';
-
-  return (
-    <label
-      htmlFor={htmlFor}
-      className={hideLabel ? 'sr-only' : 'mb-2 block text-sm font-medium'}
-      style={hideLabel ? undefined : { color }}
-    >
-      {renderChild(children)}
-    </label>
-  );
-};
+const Label = ({ htmlFor, children, hasErrors = false, hideLabel }: LabelProps) => (
+  <label
+    htmlFor={htmlFor}
+    className={
+      hideLabel ? 'sr-only' : cx('block text-sm font-bold', hasErrors ? 'text-seal' : 'text-ink')
+    }
+  >
+    {renderChild(children)}
+  </label>
+);
 
 export { Label };

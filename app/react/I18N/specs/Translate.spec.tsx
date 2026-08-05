@@ -46,6 +46,17 @@ describe('Translate', () => {
     expect(getByText('Fallback')).toBeInTheDocument();
   });
 
+  it('should render children when translations atom is undefined', () => {
+    initialValues = [
+      [translationsAtom, undefined],
+      [localeAtom, 'en'],
+      [inlineEditAtom, { inlineEdit: false, context: '', translationKey: '' }],
+    ];
+
+    const { getByText } = renderWithAtoms({ children: 'Save' });
+    expect(getByText('Save')).toBeInTheDocument();
+  });
+
   it('renders bold markdown', () => {
     const { getByText } = renderWithAtoms({
       context: 'System',

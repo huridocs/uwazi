@@ -13,7 +13,7 @@ import { TestUtils } from '#api/common.v2/utils/Test.js';
 import { config } from '#api/config.js';
 import { FileAttachment } from '#api/core/domain/files/FileAttachment.js';
 import { DiskFile } from '#api/core/infrastructure/files/DiskFile.js';
-import { ProcessedPDF } from '#api/core/domain/files/ProcessedPDF.js';
+import { PDFDocument } from '#api/core/domain/files/PDFDocument.js';
 import { FileBuilder } from '#api/core/domain/files/specs/FileBuilder.js';
 import { FileContentsIO } from '#api/core/infrastructure/files/FileContentIO.js';
 import { S3Error } from '#api/files/S3Storage.js';
@@ -140,7 +140,7 @@ describe('S3FileStorage', () => {
   describe('getPath', () => {
     it.each([
       {
-        file: new ProcessedPDF({
+        file: new PDFDocument({
           id: 'id',
           entity: 'entity',
           language: 'ab',
@@ -152,6 +152,7 @@ describe('S3FileStorage', () => {
           originalname: 'original.pdf',
           fullText: {},
           generatedToc: false,
+          status: 'ready',
           content: new DiskFile('fake/path').toContent(),
         }),
         expected: 'test-tenant/documents/document',

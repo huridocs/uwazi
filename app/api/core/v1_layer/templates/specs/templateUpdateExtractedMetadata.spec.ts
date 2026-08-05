@@ -7,18 +7,20 @@ import { TemplatePostProcessEntitiesJob } from '#api/core/infrastructure/jobs/Te
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { MongoRelationshipsV1DataSource } from '#api/core/infrastructure/mongodb/MongoRelationshipsV1DataSource.js';
 import { SyncDispatcherForTests } from '#api/core/libs/queue/infrastructure/SyncDispatcherForTests.js';
+import { EntitiesDAOFactory } from '#api/core/infrastructure/factories/EntitiesDAOFactory.js';
 import { files } from '#api/files/index.js';
 import * as setupSockets from '#api/socketio/setupSockets.js';
 import testingDB from '#api/utils/testing_db.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { TemplateSchema } from '#shared/types/templateType.js';
 import templates from '../templates.js';
-import fixtures, {
+import {
+  fixtures,
   propertyA,
   propertyB,
   propertyC,
   propertyD,
-  templateWithExtractedMetadata,
+  templateWithPropertySelections,
 } from './fixtures/fixtures.js';
 
 async function updateTemplate(template: TemplateSchema) {
@@ -32,7 +34,8 @@ async function updateTemplate(template: TemplateSchema) {
           entitiesDS: EntitiesDataSourceFactory.default({ transactionManager }),
           relationshipsV1DS: new MongoRelationshipsV1DataSource(
             getConnection(),
-            transactionManager
+            transactionManager,
+            EntitiesDAOFactory.default()
           ),
           templatesDS: TemplatesDataSourceFactory.default({ transactionManager }),
           transactionManager,
@@ -51,7 +54,7 @@ async function updateTemplate(template: TemplateSchema) {
   );
 }
 
-describe('updateExtractedMetadataProperties', () => {
+describe('updatePropertySelectionsProperties', () => {
   beforeEach(async () => {
     await testingEnvironment.setUp(fixtures, true);
   });
@@ -60,10 +63,10 @@ describe('updateExtractedMetadataProperties', () => {
     await testingEnvironment.tearDown();
   });
 
-  it('should remove deleted template properties from extracted metadata on files', async () => {
+  it('should remove deleted template properties from property selections on files', async () => {
     const templateToUpdate: TemplateSchema = {
-      _id: templateWithExtractedMetadata,
-      name: 'template_with_extracted_metadata',
+      _id: templateWithPropertySelections,
+      name: 'template_with_property_selections',
       commonProperties: [
         {
           _id: testingDB.id(),
@@ -117,7 +120,7 @@ describe('updateExtractedMetadataProperties', () => {
 
     expect((await files.get())[0]).toMatchObject({
       filename: 'file1.pdf',
-      extractedMetadata: [
+      propertySelections: [
         {
           name: 'property_a',
         },
@@ -125,7 +128,7 @@ describe('updateExtractedMetadataProperties', () => {
     });
     expect((await files.get())[1]).toMatchObject({
       filename: 'file2.pdf',
-      extractedMetadata: [
+      propertySelections: [
         {
           name: 'property_a',
         },
@@ -133,14 +136,14 @@ describe('updateExtractedMetadataProperties', () => {
     });
     expect((await files.get())[2]).toMatchObject({
       filename: 'file3.pdf',
-      extractedMetadata: [],
+      propertySelections: [],
     });
   });
 
   it('should rename properties when they get renamed in the templates', async () => {
     const templateWithRenamedProps: TemplateSchema = {
-      _id: templateWithExtractedMetadata,
-      name: 'template_with_extracted_metadata',
+      _id: templateWithPropertySelections,
+      name: 'template_with_property_selections',
       commonProperties: [
         {
           _id: testingDB.id(),
@@ -195,7 +198,7 @@ describe('updateExtractedMetadataProperties', () => {
 
     expect((await files.get())[0]).toMatchObject({
       filename: 'file1.pdf',
-      extractedMetadata: [
+      propertySelections: [
         {
           name: 'property_a',
         },
@@ -209,7 +212,7 @@ describe('updateExtractedMetadataProperties', () => {
     });
     expect((await files.get())[1]).toMatchObject({
       filename: 'file2.pdf',
-      extractedMetadata: [
+      propertySelections: [
         {
           name: 'property_a',
         },
@@ -217,7 +220,7 @@ describe('updateExtractedMetadataProperties', () => {
     });
     expect((await files.get())[2]).toMatchObject({
       filename: 'file3.pdf',
-      extractedMetadata: [],
+      propertySelections: [],
     });
   });
 });

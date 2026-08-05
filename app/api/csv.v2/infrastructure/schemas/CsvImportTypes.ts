@@ -35,6 +35,7 @@ export interface CsvImportDBO {
     thesaurusValuesCreated?: number;
     thesauriTouched?: number;
     entitiesCreated?: number;
+    entitiesUpdated?: number;
     rowsProcessed?: number;
     rowsFailed?: number;
   };

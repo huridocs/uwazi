@@ -68,7 +68,7 @@ const fixturesSnippetsSearch: DBFixture = {
       title: 'does not match fulltext search',
       language: 'en',
       metadata: {
-        thesaurus_property: [{ value: 'country_three' }],
+        thesaurus_property: [{ value: 'country_three', label: 'Republic of Rafa' }],
       },
     },
     {

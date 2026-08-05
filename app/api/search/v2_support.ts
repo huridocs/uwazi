@@ -1,6 +1,6 @@
 import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
-import { DefaultEntitiesDataSource } from '#api/entities.v2/database/data_source_defaults.js';
+import { DefaultDeprecatedEntitiesDataSource } from '#api/entities.v2/database/data_source_defaults.js';
 import { propertyTypes } from '#shared/propertyTypes.js';
 import { PropertySchema } from '#shared/types/commonTypes.js';
 
@@ -42,7 +42,9 @@ async function createObsoleteMetadataResponseProcessor(
     return () => undefined;
   }
 
-  const entitiesDataSource = DefaultEntitiesDataSource(TransactionManagerFactory.default());
+  const entitiesDataSource = DefaultDeprecatedEntitiesDataSource(
+    TransactionManagerFactory.default()
+  );
 
   const obsoleteMetadataByEntity = await entitiesDataSource
     .getObsoleteMetadata(

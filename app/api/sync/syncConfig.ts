@@ -1,5 +1,5 @@
 import { SyncConfig } from '#api/sync/syncWorker.js';
-import templatesModel from '#api/core/v1_layer/templates/templatesModel.js';
+import templates from '#api/core/v1_layer/templates/templates.js';
 import { model as updateLog, UpdateLog } from '#api/updatelogs/index.js';
 import { explicitOrdering } from '#shared/data_utils/arrayUtils.js';
 import { PropertySchema } from '#shared/types/commonTypes.js';
@@ -9,9 +9,7 @@ import syncsModel from './syncsModel.js';
 
 const removeDeletedTemplatesFromConfig = async (config: SyncConfig['config']) => {
   const newConfig = { ...config };
-  const templatesIds = (await templatesModel.get({}, { _id: 1 })).map(template =>
-    template._id.toString()
-  );
+  const templatesIds = await templates.getAllIds();
   newConfig.templates = Object.keys(newConfig.templates || {}).reduce(
     (newTemplatesConfig, templateId) => {
       if (newTemplatesConfig && templatesIds.includes(templateId)) {
@@ -35,7 +33,7 @@ const getValuesFromTemplateProperties = async (
   return Object.keys(templatesConfig).reduce(
     async (prev, templateId) => {
       const validList = await prev;
-      const template = await templatesModel.getById(templateId);
+      const template = await templates.getById(templateId);
       const templateConfigProperties = templatesConfig[templateId].properties;
       (template?.properties || []).forEach(property => {
         if (
@@ -63,7 +61,6 @@ const COLLECTION_SYNC_ORDER = [
   'templates',
   'files',
   'connections',
-  'elasticSlots',
   'entities',
 ];
 const TEMPLATE_DEPENDENCIES = [
@@ -74,7 +71,6 @@ const TEMPLATE_DEPENDENCIES = [
   'dictionaries',
   'translationsV2',
   'relationtypes',
-  'elasticSlots',
 ];
 
 const getApprovedCollections = (config: SyncConfig['config']) => {

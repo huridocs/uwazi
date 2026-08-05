@@ -1,16 +1,17 @@
 /* eslint-disable max-statements */
 /* eslint-disable max-lines */
 /* eslint-disable react/jsx-props-no-spreading */
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { useFetcher } from 'react-router';
-import { FetchResponseError } from '#shared/JSONRequest.js';
+import { useRevalidator } from 'react-router';
 import { t, Translate } from '#app/I18N/index.js';
 import { InputField, Select, MultiSelect } from '#V2/Components/Forms/index.js';
 import { Button, Card, ConfirmationModal, Sidepanel } from '#V2/Components/UI/index.js';
 import { validEmailFormat } from '#V2/shared/formatHelpers.js';
 import { UserRole } from '#shared/types/userSchema.js';
 import { QuestionMarkCircleIcon } from '@heroicons/react/20/solid';
+import { useRequestStatus } from '#V2/atoms/requestStatusAtom.js';
+import { useServices } from '#V2/services/index.js';
 import { PermissionsListModal } from './PermissionsListModal.js';
 import { User, Group } from '../types.js';
 
@@ -98,12 +99,13 @@ const UserFormSidepanel = ({
   users,
   groups,
 }: UserFormSidepanelProps) => {
-  const fetcher = useFetcher();
+  const { users: usersService } = useServices();
+  const revalidator = useRevalidator();
+  const { notify } = useRequestStatus();
   const [showModal, setShowModal] = useState(false);
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
   const password = useRef<string>();
   const actionType = useRef<SubmitType>();
-  const formSubmitRef = useRef<HTMLButtonElement>(null);
 
   const defaultValues =
     selectedUser ||
@@ -123,6 +125,7 @@ const UserFormSidepanel = ({
     formState: { errors },
     setValue,
     reset,
+    getValues,
   } = useForm({
     defaultValues,
     values: defaultValues,
@@ -134,37 +137,73 @@ const UserFormSidepanel = ({
     setShowSidepanel(false);
   };
 
-  useEffect(() => {
-    const { data: response, state } = fetcher;
-
-    if (
-      state === 'loading' &&
-      response &&
-      !(response instanceof FetchResponseError || response.status === 403)
-    ) {
-      closeSidepanel();
-    }
-  }, [fetcher]);
-
-  const formSubmit = async (data: User) => {
-    const formData = new FormData();
-    if (data._id) {
-      formData.set('intent', 'edit-user');
-    } else {
-      formData.set('intent', 'new-user');
-    }
-
-    formData.set('data', JSON.stringify(data));
-    formData.set('confirmation', password.current || '');
-    await fetcher.submit(formData, { method: 'post' });
+  const notifyMutationError = (error: { detail?: string; message: string }) => {
+    notify(
+      'error',
+      t('System', 'An error occurred', null, false),
+      undefined,
+      error.detail ?? error.message
+    );
   };
 
-  const onClickSubmit = async () => {
-    const formData = new FormData();
-    formData.set('intent', actionType.current || '');
-    formData.set('data', JSON.stringify(selectedUser));
-    formData.set('confirmation', password.current || '');
-    await fetcher.submit(formData, { method: 'post' });
+  const saveUser = async (data: User, confirmation: string) => {
+    const [, error] = await usersService.upsert(data, confirmation);
+
+    if (error) {
+      notifyMutationError(error);
+      return;
+    }
+
+    notify(
+      'success',
+      data._id
+        ? t('System', 'User updated', null, false)
+        : t('System', 'Added new user', null, false)
+    );
+    await revalidator.revalidate();
+    closeSidepanel();
+  };
+
+  const handleSecondaryAction = async (confirmation: string) => {
+    if (!selectedUser) return;
+
+    let error;
+
+    switch (actionType.current) {
+      case 'reset-password':
+        [, error] = await usersService.requestPasswordReset(selectedUser);
+        if (!error) {
+          notify(
+            'success',
+            t('System', 'Instructions to reset the password were sent to the user', null, false)
+          );
+        }
+        break;
+      case 'reset-2fa':
+        [, error] = await usersService.reset2FA(selectedUser, confirmation);
+        if (!error) {
+          notify('success', t('System', 'Disabled 2FA', null, false));
+        }
+        break;
+      case 'unlock-user':
+        [, error] = await usersService.unlockAccount(selectedUser, confirmation);
+        if (!error) {
+          notify('success', t('System', 'Account unlocked successfully', null, false));
+        }
+        break;
+      default:
+        return;
+    }
+
+    if (error) {
+      notifyMutationError(error);
+      return;
+    }
+
+    if (actionType.current !== 'reset-password') {
+      await revalidator.revalidate();
+      closeSidepanel();
+    }
   };
 
   const blockSidepanelPointer = showConfirmationModal || showModal;
@@ -179,7 +218,7 @@ const UserFormSidepanel = ({
           title={selectedUser ? <Translate>Edit user</Translate> : <Translate>New user</Translate>}
         >
           <form
-            onSubmit={handleSubmit(formSubmit)}
+            onSubmit={handleSubmit(async data => saveUser(data, password.current || ''))}
             className="flex flex-col h-full"
             autoComplete="off"
           >
@@ -270,7 +309,7 @@ const UserFormSidepanel = ({
                           variant="ghost"
                           onClick={async () => {
                             actionType.current = 'reset-password';
-                            await onClickSubmit();
+                            await handleSecondaryAction('');
                           }}
                         >
                           <Translate>Reset Password</Translate>
@@ -340,7 +379,6 @@ const UserFormSidepanel = ({
                 </Button>
               </div>
             </Sidepanel.Footer>
-            <button type="submit" hidden aria-hidden="true" disabled ref={formSubmitRef} />
           </form>
         </Sidepanel>
       </div>
@@ -354,12 +392,10 @@ const UserFormSidepanel = ({
           onAcceptClick={async value => {
             password.current = value;
 
-            if (actionType.current === 'formSubmit' && formSubmitRef.current) {
-              formSubmitRef.current.disabled = false;
-              formSubmitRef.current.click();
-              formSubmitRef.current.disabled = true;
+            if (actionType.current === 'formSubmit') {
+              await saveUser(getValues(), value);
             } else {
-              await onClickSubmit();
+              await handleSecondaryAction(value);
             }
 
             setShowConfirmationModal(false);

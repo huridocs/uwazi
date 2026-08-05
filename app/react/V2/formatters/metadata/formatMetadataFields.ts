@@ -15,6 +15,7 @@ const formatMetadataFields = (
   let groupedGeolocationIndex = 1;
 
   const formatGeolocationGroupEntry = (property: PropertySchema) => ({
+    ...(typeof property._id === 'string' ? { _id: property._id } : {}),
     name: property.name,
     label: property.label,
     ...(property.inherit?.type === 'geolocation' && {

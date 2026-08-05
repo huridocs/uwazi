@@ -2,11 +2,11 @@ import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnec
 import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
 import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
 import { TemplatesDataSourceFactory } from '#api/core/infrastructure/factories/TemplatesDataSourceFactory.js';
-import { MongoEntitiesDataSource } from './MongoEntitiesDataSource.js';
+import { MongoDeprecatedEntitiesDataSource } from './MongoDeprecatedEntitiesDataSource.js';
 
-const DefaultEntitiesDataSource = (transactionManager: MongoTransactionManager) => {
+const DefaultDeprecatedEntitiesDataSource = (transactionManager: MongoTransactionManager) => {
   const db = getConnection();
-  return new MongoEntitiesDataSource(
+  return new MongoDeprecatedEntitiesDataSource(
     db,
     TemplatesDataSourceFactory.default({ transactionManager }),
     SettingsDataSourceFactory.default({ transactionManager }),
@@ -14,4 +14,4 @@ const DefaultEntitiesDataSource = (transactionManager: MongoTransactionManager) 
   );
 };
 
-export { DefaultEntitiesDataSource };
+export { DefaultDeprecatedEntitiesDataSource };

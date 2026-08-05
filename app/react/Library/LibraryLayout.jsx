@@ -10,7 +10,6 @@ import { wrapDispatch } from '#app/Multireducer/index.js';
 import { LibraryFiltersConnected } from '#app/Library/components/LibraryFilters.js';
 import { ViewMetadataPanel } from '#app/Library/components/ViewMetadataPanel.js';
 import { SelectMultiplePanelContainer } from '#app/Library/containers/SelectMultiplePanelContainer.js';
-import { ImportPanelConnected } from '#app/Uploads/components/ImportPanel.js';
 import { LibraryFooter } from './components/LibraryFooter.js';
 
 class LibraryLayoutBase extends Component {
@@ -47,7 +46,6 @@ class LibraryLayoutBase extends Component {
           />
           {!quickLabelThesaurus && <ViewMetadataPanel storeKey="library" />}
           {!quickLabelThesaurus && <SelectMultiplePanelContainer storeKey="library" />}
-          <ImportPanelConnected />
         </div>
       </div>
     );

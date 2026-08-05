@@ -41,9 +41,10 @@ class CreateThesaurusController extends AbstractController<RequestDto> {
 
         const loader = new CSVLoader();
 
-        response = (await loader.loadThesauri(this.request.file.path, new ObjectId(output.id), {
+        const loaded = await loader.loadThesauri(this.request.file.path, output.id, {
           language: this.language,
-        })) as ThesaurusDBO;
+        });
+        response = { ...loaded, _id: new ObjectId(loaded._id) };
       }
 
       this.response.json(response);

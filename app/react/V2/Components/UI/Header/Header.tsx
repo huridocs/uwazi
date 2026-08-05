@@ -19,6 +19,7 @@ import { SiteName } from '#app/App/SiteName.js';
 import { useIsMobile } from '#app/V2/CustomHooks/useIsMobile.js';
 import { buildLibraryUrl } from './buildLibraryUrl.js';
 import { settingsAtom, themeModeAtom, userAtom } from '../../../atoms/index.js';
+import { AskBertButton } from '#V2/Components/AIAssistant/AskBertButton.js';
 import { RequestStatus } from '../Notifications/RequestStatus.js';
 import { LanguageDropdown } from './LanguageDropdown.js';
 import { MenuLinks } from './MenuLinks.js';
@@ -85,23 +86,24 @@ const HeaderView = ({ librarySearch, libraryFilters, setSidePanelView }: HeaderR
       >
         <Translate>Skip to main content</Translate>
       </a>
-      <div className="flex min-h-13 items-center justify-between gap-4 px-5">
-        <div className="flex min-w-0 items-center gap-3">
+      <div className="relative flex h-13 items-stretch justify-between gap-4 overflow-visible px-3">
+        <div className="flex min-w-0 flex-1 items-center gap-3">
           {isMobile ? <MobileMenuDropdown links={headerLinks} /> : null}
           <SiteName
-            className="header-bar-brand px-0 py-0 text-base font-semibold"
+            className="header-bar-brand shrink-0 px-0 py-0 text-base font-semibold"
             textClassName="truncate"
             hideTextWhenLogo
           />
-          {!isMobile ? <MenuLinks links={headerLinks} className="min-w-0 flex-wrap" /> : null}
+          {!isMobile ? <MenuLinks links={headerLinks} endOverlapPx={16} /> : null}
         </div>
-        <div className="flex shrink-0 items-center gap-2">
+        <div className="relative z-40 flex shrink-0 items-center gap-2 overflow-visible">
           <RequestStatus />
           <LanguageDropdown />
           <div
             className="header-bar-separator hidden h-8 w-px shrink-0 sm:block"
             aria-hidden="true"
           />
+          <AskBertButton />
           {shouldShowLibrary && (
             <I18NLink
               to={libraryUrl}

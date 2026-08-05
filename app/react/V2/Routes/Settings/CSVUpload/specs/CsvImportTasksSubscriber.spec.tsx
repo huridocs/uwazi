@@ -53,16 +53,9 @@ const TestWrapper = ({
 };
 
 describe('CsvImportTasksSubscriber', () => {
-  const originalFeatureFlags = window.__featureFlags__;
-
   beforeEach(() => {
     jest.clearAllMocks();
-    window.__featureFlags__ = { v2CSVImport: true };
     mockGet.mockResolvedValue([]);
-  });
-
-  afterEach(() => {
-    window.__featureFlags__ = originalFeatureFlags;
   });
 
   it('subscribes to csv import socket events for admins', async () => {

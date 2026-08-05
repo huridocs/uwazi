@@ -1,5 +1,8 @@
+import http from 'http';
+import https from 'https';
 import net from 'net';
 import { spawn } from 'child_process';
+import { URL } from 'url';
 
 const START_PORT = 3000;
 const END_PORT = 3100;
@@ -63,12 +66,16 @@ const findMainPort = async preferredPort => {
   throw new Error('Requested offset is occupied. Please choose another offset.');
 };
 
+// On Windows, spawn() cannot launch .cmd/.bat shims (yarn.cmd, etc.) without a shell.
+const spawnOptions = (env, extra = {}) => ({
+  env,
+  ...(process.platform === 'win32' ? { shell: true } : {}),
+  ...extra,
+});
+
 const runCommand = (command, args, env) =>
   new Promise((resolve, reject) => {
-    const child = spawn(command, args, {
-      stdio: 'inherit',
-      env,
-    });
+    const child = spawn(command, args, spawnOptions(env, { stdio: 'inherit' }));
 
     child.on('close', code => {
       if (code === 0) {
@@ -85,7 +92,7 @@ const runCommand = (command, args, env) =>
 
 const runCommandCapture = (command, args, env) =>
   new Promise((resolve, reject) => {
-    const child = spawn(command, args, { env });
+    const child = spawn(command, args, spawnOptions(env));
     let stdout = '';
     let stderr = '';
 
@@ -112,10 +119,7 @@ const runCommandCapture = (command, args, env) =>
 
 const runCommandObserve = (command, args, env) =>
   new Promise((resolve, reject) => {
-    const child = spawn(command, args, {
-      env,
-      stdio: ['inherit', 'pipe', 'pipe'],
-    });
+    const child = spawn(command, args, spawnOptions(env, { stdio: ['inherit', 'pipe', 'pipe'] }));
     let stdout = '';
     let stderr = '';
 
@@ -165,6 +169,47 @@ const databaseExists = async (dbName, env) => {
   );
   return output === 'true';
 };
+
+const getElasticsearchBaseUrl = env => {
+  const firstNode = (env.ELASTICSEARCH_URL || 'http://localhost:9200').split(',')[0].trim();
+  return firstNode.replace(/\/$/, '');
+};
+
+const elasticIndexExists = (indexName, env) =>
+  new Promise(resolve => {
+    const indexUrl = new URL(`${getElasticsearchBaseUrl(env)}/${encodeURIComponent(indexName)}`);
+    const transport = indexUrl.protocol === 'https:' ? https : http;
+    const headers = {};
+    if (env.ELASTICSEARCH_API_KEY) {
+      headers.Authorization = `ApiKey ${env.ELASTICSEARCH_API_KEY}`;
+    }
+
+    const request = transport.request(
+      {
+        method: 'HEAD',
+        hostname: indexUrl.hostname,
+        port: indexUrl.port || (indexUrl.protocol === 'https:' ? 443 : 80),
+        path: indexUrl.pathname,
+        headers,
+        timeout: 5000,
+      },
+      response => {
+        response.resume();
+        resolve(response.statusCode === 200);
+      }
+    );
+
+    request.on('timeout', () => {
+      request.destroy();
+      resolve(false);
+    });
+
+    request.on('error', () => {
+      resolve(false);
+    });
+
+    request.end();
+  });
 
 const parseMigrationResult = output => {
   const resultLine = output
@@ -232,14 +277,23 @@ const main = async () => {
     console.log(`Database ${tenantName} already exists. Skipping blank-state.`);
   } else {
     await runCommand('yarn', ['blank-state', '--force', tenantName], env);
+    await runCommand('yarn', ['admin-user', tenantName], env);
   }
-
-  await runCommand('yarn', ['admin-user', tenantName], env);
 
   const { stdout: migrateOutput } = await runCommandObserve('yarn', ['migrate'], env);
   const migrationResult = parseMigrationResult(migrateOutput);
+  const indexAlreadyExists = await elasticIndexExists(tenantName, env);
+
   if (migrationResult.migrated) {
+    console.log('Migrations applied. Running reindex...');
     await runCommand('yarn', ['reindex'], env);
+  } else if (!indexAlreadyExists) {
+    console.log(
+      `Elasticsearch index ${tenantName} does not exist. Creating index and running reindex...`
+    );
+    await runCommand('yarn', ['reindex'], env);
+  } else {
+    console.log(`Elasticsearch index ${tenantName} already exists. Skipping reindex.`);
   }
 
   await runCommand('yarn', ['hot'], env);

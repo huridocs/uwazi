@@ -145,42 +145,16 @@ const handleError = (e, endpoint) => {
   return Promise.reject(error);
 };
 
-const addSSRFlagToGetRequest = (req, method) => {
-  if (isClient || method !== 'get') {
-    return req;
-  }
-
-  if (typeof req.data === 'string') {
-    if (/(^|&)ssr=/.test(req.data)) {
-      return req;
-    }
-
-    return {
-      ...req,
-      data: `${req.data}${req.data ? '&' : ''}ssr=true`,
-    };
-  }
-
-  return {
-    ...req,
-    data: {
-      ...(req.data || {}),
-      ssr: true,
-    },
-  };
-};
-
 const _request = (url, req, method) => {
-  const requestConfig = addSSRFlagToGetRequest(req, method);
   const headers = {
     'Content-Language': language,
-    ...requestConfig.headers,
+    ...req.headers,
     'X-Requested-With': 'XMLHttpRequest',
   };
 
   loadingBar.start();
 
-  return request[method](API_URL + url, requestConfig.data, headers)
+  return request[method](API_URL + url, req.data, headers)
     .then(doneLoading)
     .catch(async e => {
       await handleError(e, { url, method });

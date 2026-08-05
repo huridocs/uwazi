@@ -48,6 +48,10 @@ const GaugeChart = loadable(
   { resolveComponent: m => m.GaugeChart }
 );
 
+const Dataviz = loadable(() => import(/* webpackChunkName: "LazyLoadDataviz" */ './Dataviz.tsx'), {
+  resolveComponent: m => m.Dataviz,
+});
+
 export {
   MarkdownMedia,
   ContactForm,
@@ -67,6 +71,7 @@ export {
   ListChart,
   Repeat,
   GaugeChart,
+  Dataviz,
   Value,
   Icon,
   Map,

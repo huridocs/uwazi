@@ -1,4 +1,4 @@
-import { DefaultEntitiesDataSource } from '#api/entities.v2/database/data_source_defaults.js';
+import { DefaultDeprecatedEntitiesDataSource } from '#api/entities.v2/database/data_source_defaults.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
@@ -35,7 +35,9 @@ describe('when handled', () => {
   beforeEach(async () => {
     adapter = DefaultTestingQueueAdapter();
 
-    const entitiesDataSource = DefaultEntitiesDataSource(TransactionManagerFactory.default());
+    const entitiesDataSource = DefaultDeprecatedEntitiesDataSource(
+      TransactionManagerFactory.default()
+    );
     const dispatcher = new NamespacedDispatcher(tenants.current().name, 'test queue', adapter);
 
     const job = new UpdateTemplateRelationshipPropertiesJob(entitiesDataSource, dispatcher);

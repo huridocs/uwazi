@@ -1,14 +1,12 @@
 import request from 'supertest';
-import { ObjectId } from 'mongodb';
 import type { Application, NextFunction, Request, Response } from 'express';
+import { ObjectId } from 'mongodb';
 import { setUpApp } from '#api/utils/testingRoutes.js';
 import { permissionRoutes } from '#api/permissions/routes.js';
-import { entitiesPermissions } from '#api/permissions/entitiesPermissions.js';
 import { collaborators } from '#api/permissions/collaborators.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-import { DomainError } from '#api/core/domain/error/DomainError.js';
-import { PUBLIC_PERMISSION } from '../publicPermission.js';
 import { MemberWithPermission } from '#shared/types/entityPermisions.js';
+import { entitiesPermissions } from '../entitiesPermissions.js';
 
 jest.mock(
   '../../utils/languageMiddleware.ts',
@@ -41,152 +39,60 @@ describe('permissions routes', () => {
     await testingEnvironment.tearDown();
   });
 
-  describe('entities', () => {
-    describe('POST', () => {
-      beforeEach(() => {
-        jest.spyOn(entitiesPermissions, 'set').mockImplementation(async () => Promise.resolve());
-      });
-      it('should save the permissions ', async () => {
-        user = { _id: new ObjectId().toString(), username: 'user 1', role: 'admin' };
-        const permissionsData = {
-          ids: ['shared1'],
-          permissions: [
-            { refId: 'user1', type: 'user', level: 'read' },
-            { ...PUBLIC_PERMISSION, level: 'read', label: undefined },
-          ],
-        };
-        const response = await request(app).post('/api/entities/permissions').send(permissionsData);
-
-        expect(response.status).toBe(200);
-        expect(entitiesPermissions.set).toHaveBeenCalledWith(permissionsData);
-      });
-
-      it('should invalidate if body does not fit the expected schema', async () => {
-        user = { _id: new ObjectId().toString(), username: 'user 1', role: 'admin' };
-        const permissionsData = { entities: [], permissions: [{}] };
-        const response = await request(app).post('/api/entities/permissions').send(permissionsData);
-        expect(response.status).toBe(400);
-      });
-
-      it('should not save if user is not authorized', async () => {
-        user = undefined;
-        const permissionsData = {
-          ids: ['shared1'],
-          permissions: [{ refId: 'user1', type: 'user', level: 'read' }],
-        };
-        const response = await request(app).post('/api/entities/permissions').send(permissionsData);
-        expect(response.unauthorized).toBe(true);
-      });
-
-      it.each(['admin', 'editor', 'collaborator'])('should authorized the role %s', async role => {
-        user = { _id: new ObjectId().toString(), username: 'user 1', role };
-        const permissionsData = {
-          ids: ['shared1'],
-          permissions: [{ refId: 'user1', type: 'user', level: 'read' }],
-        };
-        const response = await request(app).post('/api/entities/permissions').send(permissionsData);
-        expect(response.status).toBe(200);
-      });
+  describe('PUT', () => {
+    it('should get the permissions by an array of entities ids', async () => {
+      user = { _id: new ObjectId().toString(), username: 'user 1', role: 'admin' };
+      jest.spyOn(entitiesPermissions, 'get').mockReturnValue(
+        Promise.resolve([
+          {
+            refId: 'user1',
+            level: 'read',
+          } as MemberWithPermission,
+        ])
+      );
+      const response = await request(app)
+        .put('/api/entities/permissions')
+        .send({ sharedIds: ['sharedId1', 'sharedId2'] });
+      expect(response.status).toBe(200);
+      expect(response.body).toEqual([{ refId: 'user1', level: 'read' }]);
     });
 
-    describe('Error Handling', () => {
-      class ErrorSample extends DomainError {}
-
-      it('should handle errors on POST', async () => {
-        jest.spyOn(entitiesPermissions, 'set').mockImplementation(() => {
-          throw new ErrorSample('error on save', 'error_code');
-        });
-        user = { _id: new ObjectId().toString(), username: 'user 1', role: 'admin' };
-        const permissionsData = {
-          ids: ['shared1'],
-          permissions: [{ refId: 'user1', type: 'user', level: 'read' }],
-        };
-        const response = await request(app).post('/api/entities/permissions').send(permissionsData);
-        expect(response.status).toBe(400);
-        expect(response.body.error).toContain('error on save');
-      });
-      it('should handle errors on PUT', async () => {
-        jest.spyOn(entitiesPermissions, 'get').mockImplementation(() => {
-          throw new ErrorSample('error on get', 'error_code');
-        });
-        user = { _id: new ObjectId().toString(), username: 'user 1', role: 'admin' };
-        const response = await request(app)
-          .put('/api/entities/permissions')
-          .send({ sharedIds: ['sharedId1', 'sharedId2'] });
-        expect(response.status).toBe(400);
-        expect(response.body.error).toContain('error on get');
-      });
-      it('should handle errors on collaborators search', async () => {
-        jest.spyOn(collaborators, 'search').mockImplementation(() => {
-          throw new ErrorSample('error on get', 'error_code');
-        });
-        user = { _id: new ObjectId().toString(), username: 'user 1', role: 'admin' };
-        const response = await request(app)
-          .get('/api/collaborators')
-          .query({ filterTerm: 'username' });
-        expect(response.status).toBe(400);
-        expect(response.body.error).toContain('error on get');
-      });
-    });
-
-    describe('PUT', () => {
-      it('should get the permissions by an array of entities ids', async () => {
-        user = { _id: new ObjectId().toString(), username: 'user 1', role: 'admin' };
-        jest.spyOn(entitiesPermissions, 'get').mockReturnValue(
-          Promise.resolve([
-            {
-              refId: 'user1',
-              level: 'read',
-            } as MemberWithPermission,
-          ])
-        );
-        const response = await request(app)
-          .put('/api/entities/permissions')
-          .send({ sharedIds: ['sharedId1', 'sharedId2'] });
-        expect(response.status).toBe(200);
-        expect(response.body).toEqual([{ refId: 'user1', level: 'read' }]);
-      });
-
-      it('should invalidate if data is not valid', async () => {
-        user = { _id: new ObjectId().toString(), username: 'user 1', role: 'admin' };
-        jest.spyOn(entitiesPermissions, 'get').mockReturnValue(
-          Promise.resolve([
-            {
-              refId: 'user1',
-              level: 'read',
-            } as MemberWithPermission,
-          ])
-        );
-        const response = await request(app)
-          .put('/api/entities/permissions')
-          .send(['sharedId1', 'sharedId2']);
-        expect(response.status).toBe(400);
-      });
+    it('should invalidate if data is not valid', async () => {
+      user = { _id: new ObjectId().toString(), username: 'user 1', role: 'admin' };
+      jest.spyOn(entitiesPermissions, 'get').mockReturnValue(
+        Promise.resolve([
+          {
+            refId: 'user1',
+            level: 'read',
+          } as MemberWithPermission,
+        ])
+      );
+      const response = await request(app)
+        .put('/api/entities/permissions')
+        .send(['sharedId1', 'sharedId2']);
+      expect(response.status).toBe(400);
     });
   });
 
   describe('search for a collaborator to share with', () => {
-    describe('GET', () => {
-      beforeEach(() => {
-        jest
-          .spyOn(collaborators, 'search')
-          .mockReturnValue(
-            Promise.resolve([{ refId: 'user1', type: 'user' } as MemberWithPermission])
-          );
-      });
+    beforeEach(() => {
+      jest
+        .spyOn(collaborators, 'search')
+        .mockResolvedValue([{ refId: 'user1', type: 'user' } as MemberWithPermission]);
+    });
 
-      it('should return the matched user and group list', async () => {
-        const response = await request(app)
-          .get('/api/collaborators')
-          .query({ filterTerm: 'username' });
-        expect(response.status).toBe(200);
-        expect(response.body).toEqual([{ refId: 'user1', type: 'user' }]);
-      });
+    it('should return the matched user and group list', async () => {
+      const response = await request(app)
+        .get('/api/collaborators')
+        .query({ filterTerm: 'username' });
 
-      it('should not validate if no filterTerm is passed', async () => {
-        const response = await request(app).get('/api/collaborators').query({});
-        expect(response.status).toBe(400);
-      });
+      expect(response.status).toBe(200);
+      expect(response.body).toEqual([{ refId: 'user1', type: 'user' }]);
+    });
+
+    it('should not validate if no filterTerm is passed', async () => {
+      const response = await request(app).get('/api/collaborators').query({});
+      expect(response.status).toBe(400);
     });
   });
 });

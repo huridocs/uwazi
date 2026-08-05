@@ -4,7 +4,6 @@ import _ from 'lodash';
 import { OperationalError } from '#api/common.v2/errors/OperationalError.js';
 import translations from '#api/i18n/translations.js';
 import { permissionsContext } from '#api/permissions/permissionsContext.js';
-import dictionariesModel from '#api/thesauri/dictionariesModel.js';
 import userGroups from '#api/usergroups/userGroups.js';
 import usersModel from '#api/users/users.js';
 import { createError } from '#api/utils/index.js';
@@ -17,16 +16,16 @@ import { filterOptions } from '#shared/optionsUtils.js';
 import { checkWritePermissions } from '#shared/permissionsUtils.js';
 import { propertyTypes } from '#shared/propertyTypes.js';
 import { UserRole } from '#shared/types/userSchema.js';
-import templatesModel from '../core/v1_layer/templates/index.js';
+import templatesFacade from '../core/v1_layer/templates/index.js';
 import entitiesModel from '../entities/entitiesModel.js';
-import thesauri from '../thesauri/index.js';
+import thesauri from '../core/v1_layer/thesauri/index.js';
 import documentQueryBuilder from './documentQueryBuilder.js';
 import { elastic } from './elastic.js';
 import { bulkIndex, indexEntities, updateMapping } from './entitiesIndex.js';
 import * as v2 from './v2_support.js';
 import { EntitiesQueryServiceFactory } from '#api/core/infrastructure/factories/EntitiesQueryServiceFactory.js';
 import { User } from '#api/users.v2/model/User.js';
-import { tenants } from '#api/tenants/index.js';
+import { PostgresUnrestrictedEntitiesQueryFactory } from '#api/core/infrastructure/factories/PostgresUnrestrictedEntitiesQueryFactory.js';
 
 function processParentThesauri(property, values, dictionaries, properties) {
   if (!values) {
@@ -52,6 +51,25 @@ function processParentThesauri(property, values, dictionaries, properties) {
 
     return [...memo, ...dictionaryValue.values.map(dvv => dvv.id)];
   }, []);
+}
+
+function normalizeSelectFilterValue(value) {
+  if (Array.isArray(value)) {
+    return { values: value };
+  }
+
+  if (!_.isPlainObject(value)) {
+    return { values: _.isNil(value) ? [] : [value] };
+  }
+
+  if (Array.isArray(value.values)) {
+    return value;
+  }
+
+  return {
+    ...value,
+    values: _.isNil(value.values) ? [] : [value.values],
+  };
 }
 
 function processFilters(filters, properties, dictionaries) {
@@ -90,6 +108,7 @@ function processFilters(filters, properties, dictionaries) {
 
     if (['select', 'multiselect', 'relationship'].includes(type)) {
       type = 'multiselect';
+      value = normalizeSelectFilterValue(value);
       value.values = processParentThesauri(property, value.values, dictionaries, properties);
     }
 
@@ -285,17 +304,15 @@ const _getAggregationDictionary = async (
   if (property.type === 'relationship' || property.type === propertyTypes.newRelationship) {
     const entitiesSharedId = aggregation.buckets.map(bucket => bucket.key);
 
-    const bucketEntities = await entitiesModel.getUnrestricted(
-      {
-        sharedId: { $in: entitiesSharedId },
-        language,
-      },
-      {
-        sharedId: 1,
-        title: 1,
-        icon: 1,
-      }
-    );
+    const bucketEntities = PostgresUnrestrictedEntitiesQueryFactory.isEnabled()
+      ? await PostgresUnrestrictedEntitiesQueryFactory.default().getSharedIdLabelInfo(
+          entitiesSharedId,
+          language
+        )
+      : await entitiesModel.getUnrestricted(
+          { sharedId: { $in: entitiesSharedId }, language },
+          { sharedId: 1, title: 1, icon: 1 }
+        );
 
     const dictionary = thesauri.entitiesToThesauri(bucketEntities);
     return [dictionary, indexedDictionaryValues(dictionary)];
@@ -579,7 +596,8 @@ const _addAnyAggregation = (aggregations, filters, response) => {
 
     if (aggregation.buckets && aggregationKey !== '_types') {
       const missingBucket = aggregation.buckets.find(b => b.key === 'missing');
-      const keyFilters = ((filters || {})[aggregationKey.replace('.value', '')] || {}).values || [];
+      const keyFilter = (filters || {})[aggregationKey.replace('.value', '')];
+      const keyFilters = normalizeSelectFilterValue(keyFilter).values;
       const filterNoneOrMissing =
         !keyFilters.filter(v => v !== 'any').length || keyFilters.find(v => v === 'missing');
 
@@ -646,10 +664,8 @@ const processResponse = async (response, templates, dictionaries, language, filt
     return result;
   });
 
-  if (tenants.current()?.featureFlags?.v2GetEntity) {
-    const entitiesQueryService = EntitiesQueryServiceFactory.default(User.createFrom(user));
-    await entitiesQueryService.applyRelationshipPermissions(rows, User.createFrom(user));
-  }
+  const entitiesQueryService = EntitiesQueryServiceFactory.default(User.createFrom(user));
+  await entitiesQueryService.applyRelationshipPermissions(rows, User.createFrom(user));
 
   const aggregationsAll = response.body.aggregations?.all || {};
   const sanitizedAggregations = await _sanitizeAggregations(
@@ -804,11 +820,11 @@ const buildQuery = async (query, language, user, resources) => {
 const search = {
   // eslint-disable-next-line max-statements
   async search(query, language, user) {
-    const resources = await Promise.all([templatesModel.get(), dictionariesModel.get()]);
-    const [templates, dictionaries] = resources;
+    const resources = await Promise.all([templatesFacade.get(), thesauri.dictionaries()]);
+    const [templatesData, dictionaries] = resources;
     const queryBuilder = await buildQuery(query, language, user, resources);
     if (query.geolocation) {
-      searchGeolocation(queryBuilder, templates);
+      searchGeolocation(queryBuilder, templatesData);
     }
 
     if (query.aggregatePermissionsByLevel) {
@@ -834,7 +850,7 @@ const search = {
       .then(async response => {
         const processed = await processResponse(
           response,
-          templates,
+          templatesData,
           dictionaries,
           language,
           query.filters
@@ -857,13 +873,13 @@ const search = {
   },
 
   async searchSnippets(searchTerm, sharedId, language, user) {
-    const templates = await templatesModel.get();
+    const templatesData = await templatesFacade.get();
 
     const searchTextType = searchTerm
       ? await searchTypeFromSearchTermValidity(searchTerm)
       : 'query_string';
     const searchFields = propertiesHelper
-      .textFields(templates)
+      .textFields(templatesData)
       .map(prop => `metadata.${prop.name}.value`)
       .concat(['title', 'fullText']);
     const query = documentQueryBuilder()
@@ -946,34 +962,38 @@ const search = {
     });
   },
 
+  // eslint-disable-next-line max-params, max-statements
   async autocompleteAggregations(query, language, propertyName, _searchTerm, user) {
-    const [templates, dictionaries] = await Promise.all([
-      templatesModel.get(),
-      dictionariesModel.get(),
+    const [templatesData, dictionaries] = await Promise.all([
+      templatesFacade.get(),
+      thesauri.dictionaries(),
     ]);
 
     const searchTerm = _searchTerm || '';
 
     const queryBuilder = await buildQuery({ ...query, limit: 0 }, language, user, [
-      templates,
+      templatesData,
       dictionaries,
     ]);
 
     const property = propertiesHelper
-      .allUniqueProperties(templates)
+      .allUniqueProperties(templatesData)
       .find(p => p.name === propertyName);
 
     if (!property) {
       throw new OperationalError(`Property ${propertyName} not found`);
     }
 
+    const newRelationshipsEnabled = await v2.checkFeatureEnabled();
+    const aggregationPath = getAggregatedIndexedPropertyPath(property, newRelationshipsEnabled);
+
     queryBuilder
       .resetAggregations()
-      .aggregations([{ ...property, name: `${propertyName}.value` }], dictionaries);
+      .aggregations([{ ...property, name: aggregationPath }], dictionaries);
 
     const body = queryBuilder.query();
 
-    const aggregation = body.aggregations.all.aggregations[`${propertyName}.value`];
+    const aggregation = body.aggregations.all.aggregations[aggregationPath];
 
     this.appendAutoCompleteFilters(property, searchTerm || '', aggregation);
 
@@ -983,7 +1003,7 @@ const search = {
 
     const sanitizedAggregations = await _sanitizeAggregations(
       response.body.aggregations.all,
-      templates,
+      templatesData,
       dictionaries,
       language,
       preloadOptionsSearch()
@@ -1047,8 +1067,8 @@ const search = {
   },
 
   async updateTemplatesMapping() {
-    const templates = await templatesModel.get();
-    return updateMapping(templates);
+    const templatesData = await templatesFacade.get();
+    return updateMapping(templatesData);
   },
 
   async countPerTemplate(language) {

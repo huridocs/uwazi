@@ -55,7 +55,7 @@ const checkTypeIsAllowed = (type: string) => {
 };
 
 const templatePropertyExistenceCheck = async (propertyName: string, templateIds: string[]) => {
-  const tArray = await templates.get({ _id: { $in: templateIds } });
+  const tArray = await templates.get(templateIds);
   const usedTemplates = objectIndex(
     tArray,
     t => t._id.toString(),

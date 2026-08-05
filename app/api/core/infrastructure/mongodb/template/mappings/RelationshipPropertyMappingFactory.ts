@@ -21,7 +21,7 @@ export class RelationshipPropertyMappingFactory {
 
   private async getCachedProperty(name: string) {
     if (!this.propertiesCache) {
-      const properties = await this.templateDS.getAllProperties().all();
+      const properties = await this.templateDS.getAllProperties();
       this.propertiesCache = objectIndex(
         properties,
         p => p.name,

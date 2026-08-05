@@ -8,7 +8,7 @@ import { TestUtils } from '#api/common.v2/utils/Test.js';
 import { Dispatcher } from '#api/core/application/contracts/Dispatcher.js';
 import { BulkDeleteEntityUseCaseFactory } from '#api/core/infrastructure/factories/BulkDeleteEntityUseCaseFactory.js';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
-import { MultiLanguageEntityDataSource } from '#api/entities.v2/contracts/MultiLanguageEntitiesDataSource.js';
+import { EntitiesDataSource } from '#api/core/application/contracts/EntitiesDataSource.js';
 import { search } from '#api/search/index.js';
 import { tenants } from '#api/tenants/index.js';
 import { User } from '#api/users.v2/model/User.js';
@@ -31,7 +31,6 @@ const fixtures: DBFixture = {
     {
       _id: factory.id('relation_type'),
       name: 'relation_type',
-      properties: [],
       __v: 0,
     },
   ],
@@ -93,7 +92,7 @@ const fixtures: DBFixture = {
 type CreateSutProps = {
   dispatcher?: Dispatcher;
   actor?: User;
-  entitiesDS?: MultiLanguageEntityDataSource;
+  entitiesDS?: EntitiesDataSource;
 };
 
 const createSut = (props?: CreateSutProps) => {
@@ -222,7 +221,7 @@ describe('BulkDeleteEntityUseCase', () => {
   });
 
   it('should revert when deletion of entities on db fails', async () => {
-    const entitiesDS = TestUtils.mockClass<MultiLanguageEntityDataSource>({
+    const entitiesDS = TestUtils.mockClass<EntitiesDataSource>({
       bulkDelete: jest.fn().mockRejectedValue(new Error('Fail')),
     });
 

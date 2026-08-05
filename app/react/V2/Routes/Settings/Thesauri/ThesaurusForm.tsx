@@ -5,7 +5,7 @@ import { SubmitHandler, UseFormReturn } from 'react-hook-form';
 import { Row } from '@tanstack/react-table';
 import { t } from '#app/I18N/index.js';
 import { ClientThesaurus } from '#app/apiResponseTypes.js';
-import * as thesauriAPI from '#V2/api/thesauri/index.js';
+import { useServices } from '#V2/services/index.js';
 import { Table } from '#V2/Components/UI/index.js';
 import { InputField } from '#V2/Components/Forms/index.js';
 import { addSelection, sanitizeThesaurusValues } from './helpers.js';
@@ -38,6 +38,7 @@ const ThesaurusForm = ({
 
   const navigate = useNavigate();
   const revalidator = useRevalidator();
+  const { thesauri: thesaurusService } = useServices();
   const { notify } = useRequestStatus();
 
   const handleRevalidate = async (savedThesaurus: ClientThesaurus) => {
@@ -50,7 +51,13 @@ const ThesaurusForm = ({
 
   const saveThesaurus = async (data: ClientThesaurus) => {
     const thesaurusToUpdate = { ...data, values: sanitizeThesaurusValues(thesaurusValues) };
-    const savedThesaurus = await thesauriAPI.save(thesaurusToUpdate);
+    const [savedThesaurus, error] = await thesaurusService.upsert(thesaurusToUpdate);
+
+    if (error || !savedThesaurus) {
+      notify('error', t('System', 'Error updating thesauri.', null, false));
+      return;
+    }
+
     setValue('_id', savedThesaurus._id);
     notify(
       'success',
@@ -62,11 +69,7 @@ const ThesaurusForm = ({
   };
 
   const formSubmit: SubmitHandler<ClientThesaurus> = async data => {
-    try {
-      await saveThesaurus(data);
-    } catch (e) {
-      notify('error', t('System', 'Error updating thesauri.', null, false));
-    }
+    await saveThesaurus(data);
   };
 
   return (

@@ -7,13 +7,18 @@ import { MongoRelationshipsV1DataSource } from '../mongodb/MongoRelationshipsV1D
 import { MongoTransactionManager } from '../mongodb/common/MongoTransactionManager.js';
 import { EntitiesDataSourceFactory } from './EntitiesDataSourceFactory.js';
 import { FilesServiceFactory } from './FilesServiceFactory.js';
+import { EntitiesDAOFactory } from './EntitiesDAOFactory.js';
 
 class BulkCleanupEntityUseCaseFactory {
   static default(overrides?: Partial<ConstructorParameters<typeof BulkCleanupEntityUseCase>[0]>) {
     const transactionManager = ExecutionContext.transactionManager as MongoTransactionManager;
     const idGenerator = IdGeneratorFactory.default();
     const entitiesDS = EntitiesDataSourceFactory.default({ transactionManager });
-    const relationshipsDS = new MongoRelationshipsV1DataSource(getConnection(), transactionManager);
+    const relationshipsDS = new MongoRelationshipsV1DataSource(
+      getConnection(),
+      transactionManager,
+      EntitiesDAOFactory.default()
+    );
     const eventBus = applicationEventsBus;
     const filesService = FilesServiceFactory.default();
 

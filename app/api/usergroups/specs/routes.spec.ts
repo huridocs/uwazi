@@ -149,8 +149,7 @@ describe('usergroups routes', () => {
       'should reject with unauthorized when user has not admin role',
       async (
         endpointCall:
-          | (() => Promise<SuperTestResponse>)
-          | ((args?: any) => Promise<SuperTestResponse>)
+          (() => Promise<SuperTestResponse>) | ((args?: any) => Promise<SuperTestResponse>)
       ) => {
         user = { _id: new ObjectId().toString(), username: 'user 1', role: 'editor' };
         const response = await endpointCall();
@@ -162,8 +161,7 @@ describe('usergroups routes', () => {
       'should reject with unauthorized when there is no user',
       async (
         endpointCall:
-          | (() => Promise<SuperTestResponse>)
-          | ((args?: any) => Promise<SuperTestResponse>)
+          (() => Promise<SuperTestResponse>) | ((args?: any) => Promise<SuperTestResponse>)
       ) => {
         user = undefined;
         const response: request.Response = await endpointCall();
@@ -177,8 +175,7 @@ describe('usergroups routes', () => {
       'should handle server errors',
       async (
         endpointCall:
-          | (() => Promise<SuperTestResponse>)
-          | ((args?: any) => Promise<SuperTestResponse>)
+          (() => Promise<SuperTestResponse>) | ((args?: any) => Promise<SuperTestResponse>)
       ) => {
         user = { _id: new ObjectId().toString(), username: 'user 1', role: 'admin' };
         testingTenants.mockCurrentTenant({ name: 'default' });

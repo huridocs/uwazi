@@ -46,6 +46,7 @@ const customExtendedTags = [
   'entityinfo',
   'query',
   'dataset',
+  'dataviz',
   'entitydata',
   'entitysection',
   'piechart',

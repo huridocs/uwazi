@@ -22,7 +22,7 @@ class BulkDeleteEntityUseCase extends AbstractUseCase<Input, Output, Deps> {
 
   async execute({ sharedIds }: Input): Promise<Output> {
     const deletedSharedIds = await this.transactionManager.run(async () =>
-      this.deps.entitiesService.bulkDelete(sharedIds, {
+      this.deps.entitiesService.delete(sharedIds, {
         actor: this.getActor(),
         tenantName: this.tenant.name,
       })

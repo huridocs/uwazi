@@ -1,7 +1,13 @@
 import { FileContentsIO } from '#api/core/infrastructure/files/FileContentIO.js';
 import { FileContents } from '#api/core/domain/files/FileContents.js';
 import superagent from 'superagent';
-import type { GetInput, HttpClient, PostFormDataInput } from '../contracts/HttpClient.js';
+import type {
+  DeleteJsonInput,
+  GetInput,
+  HttpClient,
+  PostFormDataInput,
+  PostJsonInput,
+} from '../contracts/HttpClient.js';
 import type { HttpField } from '../contracts/HttpField.js';
 
 export class SuperAgentHttpClient implements HttpClient {
@@ -11,6 +17,20 @@ export class SuperAgentHttpClient implements HttpClient {
     const response = await this.client.get(input.url);
 
     return response.body as Response;
+  }
+
+  async postJson<Response>(input: PostJsonInput): Promise<Response> {
+    const response = await this.client.post(input.url).send(input.body);
+
+    return response.body as Response;
+  }
+
+  async delete(input: DeleteJsonInput): Promise<void> {
+    const request = this.client.delete(input.url);
+    if (input.body !== undefined) {
+      request.send(input.body);
+    }
+    await request;
   }
 
   async postFormData<T>(input: PostFormDataInput): Promise<T> {

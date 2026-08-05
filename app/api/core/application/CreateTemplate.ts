@@ -1,4 +1,4 @@
-import { RelationshipTypesDataSource } from '#api/relationshiptypes.v2/contracts/RelationshipTypesDataSource.js';
+import { RelationshipTypesDataSource } from '#api/core/application/contracts/RelationshipTypesDataSource.js';
 import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js';
 import { CommonPropertyFactory } from '../domain/template/CommonPropertyFactory.js';
 import { TemplateWithDuplicatedNameOnTheSystemError } from '../domain/template/errors.js';

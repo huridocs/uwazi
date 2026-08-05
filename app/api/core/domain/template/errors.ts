@@ -90,9 +90,13 @@ export class InvalidStyleTypeError extends DomainError {
 }
 
 export class TemplateWithDuplicatedPropertyError extends ValidationError {
-  constructor(property: Property) {
+  constructor(property: Property, conflictingProperty?: Property) {
+    const conflictDetails = conflictingProperty
+      ? ` Conflicts: "${conflictingProperty.label}" (${conflictingProperty.type}) and "${property.label}" (${property.type}).`
+      : '';
+
     super(
-      `Template contains duplicate property: [name=${property.name}, type=${property.type}]`,
+      `Template contains duplicate property name: [name=${property.name}].${conflictDetails}`,
       'template.template.template_with_duplicated_property_error'
     );
   }

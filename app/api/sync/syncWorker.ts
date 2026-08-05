@@ -38,6 +38,7 @@ interface SyncConfig {
       [k: string]: {
         properties: string[];
         filter?: string;
+        attachments?: boolean;
       };
     };
     relationtypes?: string[];

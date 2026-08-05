@@ -6,7 +6,8 @@ import React from 'react';
 import { PDFDocumentLoadingTask, PDFDocumentProxy } from 'pdfjs-dist';
 import { act, render, screen, waitFor } from '@testing-library/react';
 import { mockEventBus } from './fixtures.js';
-import { PDF } from '../PDF.jsx';
+import { PDF, PDFControls } from '../PDF.jsx';
+import * as handleSnippets from '../functions/handleSnippets.js';
 
 const mockGetDocument = jest.fn();
 
@@ -37,6 +38,7 @@ jest.mock('../pdfjs.ts', () => ({
     getDocument: (...args: any[]) => mockGetDocument(...args),
   },
   CMAP_URL: '/legacy_character_maps/',
+  WASM_URL: '/pdfjs_wasm/',
   EventBus: mockEventBus,
   PixelsPerInch: { PDF_TO_CSS_UNITS: 1 },
 }));
@@ -70,6 +72,10 @@ global.IntersectionObserver = jest.fn().mockImplementation((cb: IntersectionObse
 
 global.ResizeObserver = ResizeObserverMock;
 
+beforeEach(() => {
+  mockGetDocument.mockReset();
+});
+
 function makeResolvedPdf(numPages = 4) {
   return {
     promise: Promise.resolve({
@@ -79,6 +85,7 @@ function makeResolvedPdf(numPages = 4) {
         .mockResolvedValue({ getViewport: () => ({ width: 100, height: 200, scale: 1 }) }),
     }),
     onProgress: jest.fn(),
+    destroy: jest.fn(),
   };
 }
 
@@ -86,11 +93,12 @@ describe('PDF', () => {
   it('should show a loading message', async () => {
     let resolveDoc: (value: PDFDocumentProxy) => void;
 
-    const loadingTask: Partial<PDFDocumentLoadingTask> = {
+    const loadingTask: Partial<PDFDocumentLoadingTask> & { destroy: jest.Mock } = {
       promise: new Promise<PDFDocumentProxy>(res => {
         resolveDoc = res;
       }),
       onProgress: jest.fn() as PDFDocumentLoadingTask['onProgress'],
+      destroy: jest.fn(),
     };
 
     mockGetDocument.mockReturnValueOnce(loadingTask);
@@ -103,6 +111,7 @@ describe('PDF', () => {
       url: '/file.pdf',
       cMapUrl: '/legacy_character_maps/',
       cMapPacked: true,
+      wasmUrl: '/pdfjs_wasm/',
       isEvalSupported: false,
     });
 
@@ -314,5 +323,49 @@ describe('PDF', () => {
     });
 
     await waitFor(() => expect(onPageChange).toHaveBeenCalledWith(3));
+  });
+
+  it('retries activateSnippet highlight until textLayer content is ready', async () => {
+    jest.useFakeTimers({ advanceTimers: true });
+    const tryHighlightSpy = jest
+      .spyOn(handleSnippets, 'tryHighlightAndScroll')
+      .mockReturnValueOnce(false)
+      .mockReturnValueOnce(true);
+
+    mockGetDocument.mockReturnValueOnce(makeResolvedPdf(1));
+
+    let controls: PDFControls | undefined;
+
+    await act(async () => {
+      render(
+        <PDF
+          fileUrl="/file.pdf"
+          onPdfReady={pdfControls => {
+            controls = pdfControls;
+          }}
+        />
+      );
+    });
+
+    await waitFor(() => expect(controls).toBeDefined());
+
+    const pageContainer = document.querySelector('#page-1-container');
+    if (!(pageContainer instanceof HTMLDivElement)) {
+      throw new Error('expected #page-1-container');
+    }
+    pageContainer.innerHTML = '<div class="textLayer"></div>';
+
+    act(() => {
+      controls?.activateSnippet({ text: 'partial <b>term</b> context', page: 1 });
+    });
+
+    await act(async () => {
+      jest.advanceTimersByTime(16);
+    });
+
+    expect(tryHighlightSpy.mock.calls.length).toBeGreaterThanOrEqual(2);
+
+    tryHighlightSpy.mockRestore();
+    jest.useRealTimers();
   });
 });

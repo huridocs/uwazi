@@ -1,0 +1,110 @@
+import React, { useEffect, type ReactNode } from 'react';
+import { useTabGroup } from '#V2/Components/UI/index.js';
+import type { Entity as EntityType, FileType } from '#V2/api/entities/types.js';
+import { useMetadataEditing } from '../Components/context/index.js';
+import { SIDE_TAB, isValidSideTab, type SideTabId } from './tabIds.js';
+import {
+  keepMetadataTab,
+  resolveActiveTabId,
+} from '../Components/context/metadataEditingSession.js';
+import { DocumentTab } from './tabsContent/DocumentTab.js';
+import { MetadataTab } from './tabsContent/MetadataTab.js';
+import { ToCTab } from './tabsContent/ToCTab.js';
+import { RelationshipsPanel } from '../Components/relationships/index.js';
+import { SearchTab } from './tabsContent/SearchTab.js';
+import { FilesSideTab } from './tabsContent/FilesSideTab.js';
+import { FilesListSideTab } from './tabsContent/FilesListSideTab.js';
+import { TranslationsTab } from './tabsContent/TranslationsTab.js';
+
+type SideTabsContentProps = {
+  activeTabId?: SideTabId;
+  entity: EntityType;
+  mainDocument?: FileType;
+  pagePlaintext?: string;
+};
+
+const SideTabsContent = ({
+  activeTabId: urlActiveTabId,
+  entity,
+  mainDocument,
+  pagePlaintext,
+}: SideTabsContentProps) => {
+  const { activeTabId: atomActiveTabId } = useTabGroup('entity-side');
+  const resolvedTabId = resolveActiveTabId(atomActiveTabId, urlActiveTabId);
+  const activeTabId = isValidSideTab(resolvedTabId) ? resolvedTabId : urlActiveTabId;
+  const { isEditing, formMountHost, registerMetadataActive } = useMetadataEditing();
+  const metadataActive = activeTabId === SIDE_TAB.METADATA;
+  const keepMetadata = keepMetadataTab(Boolean(metadataActive), isEditing, formMountHost, 'side');
+
+  useEffect(() => {
+    registerMetadataActive('side', Boolean(metadataActive));
+    return () => registerMetadataActive('side', false);
+  }, [metadataActive, registerMetadataActive]);
+
+  if (!activeTabId && !keepMetadata) return null;
+
+  let content: ReactNode = null;
+
+  switch (activeTabId) {
+    case SIDE_TAB.DOCUMENT:
+      if (mainDocument?.filename) {
+        content = (
+          <div className="flex h-full min-h-0 flex-col px-3">
+            <DocumentTab
+              entity={entity}
+              mainDocument={mainDocument}
+              pagePlaintext={pagePlaintext}
+              showViewModeSelect
+            />
+          </div>
+        );
+      }
+      break;
+    case SIDE_TAB.METADATA:
+      break;
+    case SIDE_TAB.TOC:
+      content = <ToCTab mainDocument={mainDocument} />;
+      break;
+    case SIDE_TAB.RELATIONSHIPS:
+      content = (
+        <div className="flex h-full min-h-0 flex-col px-3">
+          <RelationshipsPanel />
+        </div>
+      );
+      break;
+    case SIDE_TAB.SEARCH:
+      content = <SearchTab />;
+      break;
+    case SIDE_TAB.FILE:
+      content = <FilesSideTab />;
+      break;
+    case SIDE_TAB.FILES:
+      content = <FilesListSideTab />;
+      break;
+    case SIDE_TAB.TRANSLATIONS:
+      content = <TranslationsTab />;
+      break;
+    default:
+      break;
+  }
+
+  if (!content && !keepMetadata) return null;
+
+  return (
+    <div
+      role="tabpanel"
+      id={`entity-side-panel-${activeTabId || SIDE_TAB.METADATA}`}
+      aria-labelledby={`entity-side-tab-${activeTabId || SIDE_TAB.METADATA}`}
+      className="flex h-full min-h-0 w-full flex-col"
+    >
+      {keepMetadata ? (
+        <div className={metadataActive ? 'flex h-full min-h-0 w-full flex-col' : 'hidden'}>
+          <MetadataTab entity={entity} host="side" />
+        </div>
+      ) : null}
+      {!metadataActive ? content : null}
+    </div>
+  );
+};
+
+export { SideTabsContent };

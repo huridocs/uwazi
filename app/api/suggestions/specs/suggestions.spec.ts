@@ -2,8 +2,6 @@
 /* eslint-disable max-statements */
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import db from '#api/utils/testing_db.js';
-
-import { ObjectId } from 'mongodb';
 import {
   EntitySuggestionType,
   IXSuggestionStateType,
@@ -11,6 +9,13 @@ import {
   IXSuggestionsFilter,
 } from '#shared/types/suggestionType.js';
 import { applicationEventsBus } from '#api/core/libs/eventsbus/index.js';
+import { FilesDataSourceFactory } from '#api/core/infrastructure/factories/FilesDataSourceFactory.js';
+import { FilesServiceFactory } from '#api/core/infrastructure/factories/FilesServiceFactory.js';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { EventEmitterFactory } from '#api/core/libs/eventEmitter/EventEmitterFactory.js';
+import { Listener } from '#api/core/libs/eventEmitter/Listener.js';
+import { DenormalizeEntityUpdatedListener } from '#api/core/infrastructure/listeners/DenormalizeEntityUpdatedListener.js';
+import { ProcessRelationshipAfterEntityUpdatedListener } from '#api/core/infrastructure/listeners/ProcessRelationshipAfterEntityUpdatedListener.js';
 import { Suggestions } from '../suggestions.js';
 import {
   factory,
@@ -49,6 +54,22 @@ const matchState = (match: boolean = true): IXSuggestionStateType => ({
   processing: false,
   error: false,
 });
+
+const runWithEntityUpdatedListeners = <T>(fn: () => T) =>
+  testingEnvironment.runWithContext(fn, {
+    factories: { eventEmitter: () => EventEmitterFactory.default() },
+  });
+
+const hasRegisteredListener = (
+  listeners: Set<typeof Listener> | undefined,
+  listenerClass: typeof Listener<any, any>
+) => {
+  if (!listeners) {
+    return false;
+  }
+
+  return Array.from(listeners).includes(listenerClass as typeof Listener);
+};
 
 type SuggestionBase = Pick<
   IXSuggestionType,
@@ -91,7 +112,9 @@ const prepareAndAcceptSuggestion = async (
     .suggestions[0];
   const { _id, sharedId, entityId } = savedSuggestion;
 
-  await Suggestions.accept([{ _id, sharedId, entityId, ...acceptanceParameters }]);
+  await runWithEntityUpdatedListeners(async () =>
+    Suggestions.accept([{ _id, sharedId, entityId, ...acceptanceParameters }])
+  );
   const acceptedSuggestion = (await getSuggestions({ extractorId: factory.id(extractorName) }))
     .suggestions[0];
   const entities = await db.mongodb?.collection('entities').find({ sharedId }).toArray();
@@ -126,13 +149,15 @@ const prepareAndAcceptSelectSuggestion = async (
     removedValues?: string[];
   } = {}
 ) =>
-  prepareAndAcceptSuggestion(
-    selectSuggestionBase(propertyName, extractorName, language),
-    suggestedValue,
-    language,
-    propertyName,
-    extractorName,
-    acceptanceParameters
+  runWithEntityUpdatedListeners(async () =>
+    prepareAndAcceptSuggestion(
+      selectSuggestionBase(propertyName, extractorName, language),
+      suggestedValue,
+      language,
+      propertyName,
+      extractorName,
+      acceptanceParameters
+    )
   );
 
 const relationshipSuggestionBase = (
@@ -173,6 +198,18 @@ const prepareAndAcceptRelationshipSuggestion = async (
 describe('suggestions', () => {
   beforeAll(() => {
     Suggestions.registerEventListeners(applicationEventsBus);
+
+    const currentListeners = EventEmitterFactory.registry.getListeners(
+      DenormalizeEntityUpdatedListener.eventName
+    );
+
+    if (!hasRegisteredListener(currentListeners, DenormalizeEntityUpdatedListener)) {
+      EventEmitterFactory.registry.register(DenormalizeEntityUpdatedListener);
+    }
+
+    if (!hasRegisteredListener(currentListeners, ProcessRelationshipAfterEntityUpdatedListener)) {
+      EventEmitterFactory.registry.register(ProcessRelationshipAfterEntityUpdatedListener);
+    }
   });
 
   afterAll(async () => {
@@ -195,12 +232,14 @@ describe('suggestions', () => {
 
         const ids = new Set(labelMismatchedSuggestions.map((sug: any) => sug._id.toString()));
 
-        await Suggestions.accept(
-          labelMismatchedSuggestions.map((sug: any) => ({
-            _id: sug._id,
-            sharedId: sug.sharedId,
-            entityId: sug.entityId,
-          }))
+        await runWithEntityUpdatedListeners(async () =>
+          Suggestions.accept(
+            labelMismatchedSuggestions.map((sug: any) => ({
+              _id: sug._id,
+              sharedId: sug.sharedId,
+              entityId: sug.entityId,
+            }))
+          )
         );
 
         const acceptedSuggestions = await _getSuggestions({
@@ -236,18 +275,20 @@ describe('suggestions', () => {
           })
         ).suggestions;
         await expect(
-          Suggestions.accept([
-            {
-              _id: ageSuggestion._id!,
-              sharedId: ageSuggestion.sharedId,
-              entityId: ageSuggestion.entityId,
-            },
-            {
-              _id: superPowersSuggestion._id!,
-              sharedId: superPowersSuggestion.sharedId,
-              entityId: superPowersSuggestion.entityId,
-            },
-          ])
+          runWithEntityUpdatedListeners(async () =>
+            Suggestions.accept([
+              {
+                _id: ageSuggestion._id!,
+                sharedId: ageSuggestion.sharedId,
+                entityId: ageSuggestion.entityId,
+              },
+              {
+                _id: superPowersSuggestion._id!,
+                sharedId: superPowersSuggestion.sharedId,
+                entityId: superPowersSuggestion.entityId,
+              },
+            ])
+          )
         ).rejects.toThrow('All suggestions must come from the same extractor');
       });
 
@@ -261,13 +302,15 @@ describe('suggestions', () => {
         );
 
         try {
-          await Suggestions.accept([
-            {
-              _id: errorSuggestion!._id!,
-              sharedId: errorSuggestion!.sharedId,
-              entityId: errorSuggestion!.entityId,
-            },
-          ]);
+          await runWithEntityUpdatedListeners(async () =>
+            Suggestions.accept([
+              {
+                _id: errorSuggestion!._id!,
+                sharedId: errorSuggestion!.sharedId,
+                entityId: errorSuggestion!.entityId,
+              },
+            ])
+          );
         } catch (e: any) {
           expect(e?.message).toBe('Some Suggestions have an error.');
         }
@@ -286,18 +329,20 @@ describe('suggestions', () => {
         const suggestionsToAccept = suggestions.filter(
           sug => sug.sharedId === 'shared2' || sug.sharedId === 'shared1'
         );
-        await Suggestions.accept([
-          {
-            _id: suggestionsToAccept[0]._id!,
-            sharedId: suggestionsToAccept[0].sharedId,
-            entityId: suggestionsToAccept[0].entityId,
-          },
-          {
-            _id: suggestionsToAccept[1]._id!,
-            sharedId: suggestionsToAccept[1].sharedId,
-            entityId: suggestionsToAccept[1].entityId,
-          },
-        ]);
+        await runWithEntityUpdatedListeners(async () =>
+          Suggestions.accept([
+            {
+              _id: suggestionsToAccept[0]._id!,
+              sharedId: suggestionsToAccept[0].sharedId,
+              entityId: suggestionsToAccept[0].entityId,
+            },
+            {
+              _id: suggestionsToAccept[1]._id!,
+              sharedId: suggestionsToAccept[1].sharedId,
+              entityId: suggestionsToAccept[1].entityId,
+            },
+          ])
+        );
 
         const entities1 = await db.mongodb
           ?.collection('entities')
@@ -850,7 +895,7 @@ describe('suggestions', () => {
         expect(allFiles).toEqual(relationshipAcceptanceFixtureBase.files);
       });
 
-      it('should remove or create connections as necessary', async () => {
+      it('should enqueue relationship synchronization after update', async () => {
         const { acceptedSuggestion, metadataValues, allFiles } =
           await prepareAndAcceptRelationshipSuggestion(
             ['S1_sId', 'S3_sId'],
@@ -871,28 +916,62 @@ describe('suggestions', () => {
         ]);
         expect(allFiles).toEqual(relationshipAcceptanceFixtureBase.files);
 
-        const removedConnection = await db.mongodb
-          ?.collection('connections')
-          .findOne({ entity: 'S2_sId', template: factory.id('related') });
-        expect(removedConnection).toBeNull();
-
-        const newConnection = await db.mongodb
-          ?.collection('connections')
-          .findOne({ entity: 'S3_sId' });
-        expect(newConnection).toMatchObject({
-          entity: 'S3_sId',
-          hub: expect.any(ObjectId),
-          template: factory.id('related'),
+        const relationshipSyncJob = await db.mongodb?.collection('jobs').findOne({
+          name: 'EntityUpdatedEvent:ProcessRelationshipAfterEntityUpdatedListener',
+          'params.after.sharedId': 'entityWithRelationships_sId',
+          'params.targetLanguage': 'en',
         });
-        const newHub = newConnection?.hub;
-        const pairedConnection = await db.mongodb
-          ?.collection('connections')
-          .findOne({ entity: 'entityWithRelationships_sId', hub: newHub });
-        expect(pairedConnection).toMatchObject({
-          entity: 'entityWithRelationships_sId',
-          hub: newHub,
+
+        expect(relationshipSyncJob).toMatchObject({
+          name: 'EntityUpdatedEvent:ProcessRelationshipAfterEntityUpdatedListener',
+          params: {
+            after: {
+              sharedId: 'entityWithRelationships_sId',
+            },
+            targetLanguage: 'en',
+          },
         });
       });
+    });
+  });
+
+  describe('updatePropertySelections (via accept)', () => {
+    beforeEach(async () => {
+      await testingEnvironment.setUp(fixtures);
+    });
+
+    it('should update file property selections directly via V2 infrastructure', async () => {
+      const fileId = factory.id('fileForentityWithSelects');
+
+      await testingEnvironment.runWithContext(async () => {
+        const filesDS = FilesDataSourceFactory.default();
+        const filesService = FilesServiceFactory.default();
+        const transactionManager = TransactionManagerFactory.default();
+
+        const [file] = await filesDS.getByIds([fileId.toString()]);
+        expect(file).toBeDefined();
+
+        const updated = file.update({
+          propertySelections: [
+            {
+              name: 'property_select',
+              timestamp: Date(),
+              selection: { text: '1A', selectionRectangles: [] },
+            },
+          ],
+        });
+
+        expect(updated.hasChanged).toBe(true);
+
+        await transactionManager.run(async () => {
+          await filesService.bulkUpsert([updated]);
+        });
+      });
+
+      const savedFile = await db.mongodb?.collection('files').findOne({ _id: fileId });
+      expect(savedFile?.propertySelections).toBeDefined();
+      expect(savedFile?.propertySelections).toHaveLength(1);
+      expect(savedFile?.propertySelections[0].name).toBe('property_select');
     });
   });
 

@@ -197,7 +197,7 @@ export const getLabeledValueStage = () => [
         $arrayElemAt: [
           {
             $filter: {
-              input: '$file.extractedMetadata',
+              input: '$file.propertySelections',
               as: 'label',
               cond: {
                 $eq: ['$propertyName', '$$label.name'],

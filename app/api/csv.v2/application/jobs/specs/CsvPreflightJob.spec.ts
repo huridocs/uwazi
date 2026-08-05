@@ -1,6 +1,8 @@
 /* eslint-disable max-statements, max-classes-per-file */
 import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { MongoThesauriDataSource } from '#api/core/infrastructure/mongodb/thesauri/MongoThesauriDataSource.js';
+import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { tenants } from '#api/tenants/tenantContext.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
@@ -68,6 +70,7 @@ const buildUseCase = () => {
   const { useCase, csvImportsDS, rowsDS, thesauriValuesDS } = CsvPreflightJobFactory.build({
     transactionManager,
     jobsDispatcher,
+    thesauriDS: new MongoThesauriDataSource(getConnection(), transactionManager),
   });
   return {
     useCase,
@@ -250,7 +253,7 @@ describe('CsvPreflightJob (integration)', () => {
     await insertImport(csvImportsDS, { importId, templateId, userId });
     await stageRows(rowsDS, {
       importId,
-      csv: 'title,select_property__en\nrow,"Parent::Child::Extra"',
+      csv: 'title,select_property__en,select_property__es\nrow,"Parent::Child::Extra",Valor',
     });
 
     const callbacks = createCallbacks();
@@ -304,6 +307,56 @@ describe('CsvPreflightJob (integration)', () => {
     );
     expect(callbacks.onError).toHaveBeenCalledWith(
       expect.objectContaining({ importId, error: expect.any(Error) })
+    );
+  });
+
+  it('raises header validation errors when language-suffixed columns omit an instance language', async () => {
+    await testingEnvironment.setFixtures({
+      ...fixtures,
+      settings: [
+        {
+          ...fixtures.settings[0],
+          languages: [
+            { key: 'en' as LanguageISO6391, label: 'English', default: true },
+            { key: 'es' as LanguageISO6391, label: 'Spanish' },
+            { key: 'fr' as LanguageISO6391, label: 'French' },
+          ],
+        },
+      ],
+    });
+
+    const { useCase, csvImportsDS, rowsDS } = buildUseCase();
+    const importId = fixturesFactory.idString('preflight-missing-language-column');
+    createdImportIds.push(importId);
+    const userId = fixturesFactory.idString('preflight-missing-language-column-user');
+    const tenantName = tenants.current().name;
+
+    await insertImport(csvImportsDS, { importId, templateId, userId });
+    await stageRows(rowsDS, {
+      importId,
+      csv: 'title__en,title__es\nTitle EN,Title ES',
+    });
+
+    const callbacks = createCallbacks();
+    await expect(useCase.execute({ importId, tenantName, userId, callbacks })).rejects.toThrow(
+      'Header validation failed'
+    );
+
+    const failedImport = (await csvImportsDS.getById(importId)).getDataOrThrow();
+    expect(failedImport.status).toBe(CsvImportStatus.Failed);
+    expect(failedImport.failure).toEqual(
+      expect.objectContaining({
+        code: 'HEADER_VALIDATION_FAILED',
+        message: 'Header validation failed',
+        retryable: false,
+        issues: expect.arrayContaining([
+          expect.objectContaining({
+            reason: 'MissingLanguageColumn',
+            property: 'title',
+            columns: expect.arrayContaining(['fr']),
+          }),
+        ]),
+      })
     );
   });
 });

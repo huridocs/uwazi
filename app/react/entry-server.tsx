@@ -22,15 +22,19 @@ import sortBy from 'lodash/sortBy.js';
 import { Provider as ReduxProvider } from 'react-redux';
 import { getStore } from '#shared/atomStore/index.js';
 import { api } from '#app/utils/api.js';
+import { apiClient } from '#V2/api/client.js';
 import { RequestParams } from '#app/utils/RequestParams.js';
 import { FetchResponseError } from '#shared/JSONRequest.js';
 import { ClientSettings } from '#app/apiResponseTypes.js';
 import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
+import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import templatesApi from '#api/core/v1_layer/templates/templates.js';
-import thesauriApi from '../api/thesauri/thesauri.js';
-import relationtypes from '../api/relationtypes/relationtypes.js';
+import { GetRelationshipTypesUseCaseFactory } from '#api/core/infrastructure/factories/GetRelationshipTypesUseCaseFactory.js';
+import thesauriApi from '../api/core/v1_layer/thesauri/thesauri.js';
 import translationsApi, { IndexedTranslations } from '../api/i18n/translations.js';
 import settingsApi from '../api/settings/settings.js';
+import { shapeSettingsForSSR } from '../api/settings/publicSettings.js';
+import { omitInlineCustomization } from '#shared/settings/omitInlineCustomization.js';
 import { tenants } from '../api/tenants/index.js';
 import { CustomProvider } from './App/Provider.js';
 import { Root } from './App/Root.js';
@@ -41,17 +45,34 @@ import { I18NUtils } from './I18N/index.js';
 import { IStore } from './istore.js';
 import type { IndexComponents } from './Routes.js';
 import { getRoutes } from './Routes.js';
+import { createServerServices } from '#V2/services/server/index.js';
 import { create as createReduxStore } from './store.js';
 import { ProtectedRoute } from './ProtectedRoute.js';
 import { isMobileDevice } from '../shared/detectDevice.js';
 import { loadIcons } from '#UI/Icon/library.js';
-import { ClientFeatureFlags } from './V2/shared/types.js';
+import type { ClientFeatureFlags } from '#V2/shared/types.js';
+import type { LanguageISO6391 } from '#shared/types/commonTypes.js';
 
 loadIcons();
 
+declare global {
+  namespace Express {
+    interface Request {
+      ssrRoutePattern?: string;
+    }
+  }
+}
+
 const convertObjectIdsToStrings = (data: any) => JSON.parse(JSON.stringify(data));
 
+// eslint-disable-next-line comma-spacing
+const withSpan = <T,>(operation: string, fn: () => T): T =>
+  ExecutionContext.isTelemetryEnabled
+    ? ExecutionContext.telemetryCollector.runSpan(operation, fn)
+    : fn();
+
 api.APIURL(`http://localhost:${process.env.PORT || 3000}/api/`);
+apiClient.setBaseUrl(`http://localhost:${process.env.PORT || 3000}/api/`);
 
 class ServerRenderingFetchError extends Error {
   status: number;
@@ -69,6 +90,9 @@ const onlySystemTranslations = (translations: IndexedTranslations[]) =>
     const systemTranslation = translation?.contexts?.find(c => c.id === 'System');
     return { ...translation, contexts: [systemTranslation] };
   });
+
+const toLegacyRelationshipTypesShape = (rows: { id: string; name: string }[]) =>
+  rows.map(row => ({ _id: row.id, name: row.name }));
 
 const createFetchHeaders = (requestHeaders: ExpressRequest['headers']): Headers => {
   const headers = new Headers();
@@ -159,7 +183,8 @@ const prepareStores = async (req: ExpressRequest, settings: ClientSettings, lang
   api.locale(locale);
   const userAgent = req.get('user-agent') || '';
 
-  const translations = await translationsApi.get();
+  // Only hydrate the active locale — language switches trigger a full navigation / SSR.
+  const translations = await translationsApi.get({ locale: locale as LanguageISO6391 });
 
   const [
     userApiResponse = {},
@@ -179,13 +204,17 @@ const prepareStores = async (req: ExpressRequest, settings: ClientSettings, lang
           Promise.resolve(settings),
           templatesApi.get(),
           thesauriApi.dictionaries(),
-          relationtypes.get(),
+          GetRelationshipTypesUseCaseFactory.default()
+            .execute({})
+            .then(toLegacyRelationshipTypesShape),
           Promise.resolve(translations),
         ])
       : [];
 
-  const themeCustomization = tenants.current().featureFlags?.themeCustomization ?? false;
-  const settingsWithFlag = { ...settingsApiResponse, themeCustomization };
+  // Match GET /api/settings: non-admins only get the public whitelist.
+  const shapedSettings = shapeSettingsForSSR(settingsApiResponse as any, req.user);
+  // Keep customCSS/JS in Redux for <head> inlining; omit them from the atom blob.
+  const atomSettings = omitInlineCustomization(shapedSettings as Record<string, unknown>);
 
   const storeData = convertObjectIdsToStrings({
     reduxData: {
@@ -195,12 +224,12 @@ const prepareStores = async (req: ExpressRequest, settings: ClientSettings, lang
       relationTypes: sortBy(relationTypesApiResponse, 'name'),
       translations: translationsApiResponse,
       settings: {
-        collection: { ...settingsWithFlag, links: settingsWithFlag.links || [] },
+        collection: { ...shapedSettings, links: shapedSettings.links || [] },
       },
     },
     atomStoreData: {
       locale,
-      settings: settingsWithFlag,
+      settings: atomSettings,
       thesauri: thesaurisApiResponse,
       templates: templatesApiResponse,
       user: userApiResponse,
@@ -314,19 +343,20 @@ const prepareRouteData = async (req: ExpressRequest, routes: RouteObject[]) => {
 const EntryServer = async (req: ExpressRequest, res: Response) => {
   const ssrStart = process.hrtime.bigint();
   RouteHandler.renderedFromServer = true;
-  const [settings, assets] = await Promise.all([
-    settingsApi.get() as Promise<ClientSettings>,
-    getAssets(),
-  ]);
+  const [settings, assets] = await withSpan('settings_and_assets', async () =>
+    Promise.all([settingsApi.get() as Promise<ClientSettings>, getAssets()])
+  );
   const { connection, ...headers } = req.headers;
 
-  const [lib, cards, table, map, login] = await Promise.all([
-    import('./Library/Library.js'),
-    import('./Library/LibraryCards.js'),
-    import('./Library/LibraryTable.js'),
-    import('./Library/LibraryMap.js'),
-    import('./Users/Login.js'),
-  ]);
+  const [lib, cards, table, map, login] = await withSpan('dynamic_imports', async () =>
+    Promise.all([
+      import('./Library/Library.js'),
+      import('./Library/LibraryCards.js'),
+      import('./Library/LibraryTable.js'),
+      import('./Library/LibraryMap.js'),
+      import('./Users/Login.js'),
+    ])
+  );
 
   const indexComponents: IndexComponents | undefined = {
     LibraryRoot: (lib as { LibraryRoot: IndexComponents['LibraryRoot'] }).LibraryRoot,
@@ -336,13 +366,30 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
     Login: (login as { Login: IndexComponents['Login'] }).Login,
   };
 
-  const routes = getRoutes(settings, req.user && req.user._id, headers, indexComponents);
+  const serverServices = createServerServices(req);
+  const routes = getRoutes(
+    settings,
+    req.user && req.user._id,
+    headers,
+    indexComponents,
+    serverServices
+  );
+
   const matched = matchRoutes(routes, req.path);
 
   if (matched === null) {
     res.redirect('/404');
     return;
   }
+
+  const languageKeys = (settings?.languages?.map(lang => lang.key) as string[]) || [];
+
+  req.ssrRoutePattern =
+    matched
+      .map(m => m.route.path)
+      .filter((segment): segment is string => Boolean(segment) && segment !== '/')
+      .filter(segment => !languageKeys.includes(segment))
+      .join('/') || 'home';
 
   if (req.aborted) {
     logSSRAborted(req, 'Matching routes', ssrStart);
@@ -366,7 +413,6 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
   //extract the language from the route pathName, i.e /en/library
   const pathPossibleLanguage = lastRouteMatched?.pathname.split('/')[1] || '';
 
-  const languageKeys = (settings?.languages?.map(lang => lang.key) as string[]) || [];
   const language = languageKeys.includes(pathPossibleLanguage)
     ? pathPossibleLanguage
     : req.language;
@@ -375,10 +421,9 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
   const { globalMatomo, ciMatomoActive, featureFlags } = tenants.current();
   const clientFeatureFlags: ClientFeatureFlags = {
     paragraphExtraction: featureFlags?.paragraphExtraction,
-    v2CSVImport: featureFlags?.v2CSVImport,
     newHeader: featureFlags?.newHeader,
     themeCustomization: featureFlags?.themeCustomization,
-    v2GetEntity: featureFlags?.v2GetEntity,
+    aiAssistant: featureFlags?.aiAssistant,
   };
   const settingsWithFeatureFlags = {
     ...settings,
@@ -393,10 +438,8 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
     return;
   }
 
-  const { reduxState, atomStore, atomStoreData } = await prepareStoreData(
-    req,
-    settingsWithFeatureFlags,
-    language
+  const { reduxState, atomStore, atomStoreData } = await withSpan('prepare_store_data', async () =>
+    prepareStoreData(req, settingsWithFeatureFlags, language)
   );
 
   if (req.aborted) {
@@ -404,64 +447,73 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
     return;
   }
 
-  const { staticHandleContext, router, ssrError } = await prepareRouteData(req, routes);
+  const { staticHandleContext, router, ssrError } = await withSpan('prepare_route_data', async () =>
+    prepareRouteData(req, routes)
+  );
 
   if (req.aborted) {
     logSSRAborted(req, 'Before requestStates', ssrStart, routeName);
     return;
   }
-  const { initialStore, initialState, loadingError } = await setReduxState(
-    req,
-    reduxState,
-    matched
+  const { initialStore, initialState, loadingError } = await withSpan('set_redux_state', async () =>
+    setReduxState(req, reduxState, matched)
   );
+
+  const resolvedLoadingError = loadingError;
+
+  const pageCssRaw = initialState.page?.pageView?.toJS?.()?.metadata?.css;
+  const documentHeadPageCss =
+    typeof pageCssRaw === 'string' && pageCssRaw.trim() ? pageCssRaw : undefined;
 
   if (req.aborted) {
     logSSRAborted(req, 'Component HTML', ssrStart, routeName);
     return;
   }
 
-  const componentHtml = ReactDOMServer.renderToString(
-    <ReduxProvider store={initialStore as any}>
-      <CustomProvider initialData={initialState} user={req.user} language={initialState.locale}>
-        <Provider store={atomStore}>
-          <React.StrictMode>
-            <ErrorBoundary error={loadingError || ssrError}>
-              <StaticRouterProvider
-                router={router}
-                context={staticHandleContext as any}
-                nonce="the-nonce"
-              />
-            </ErrorBoundary>
-          </React.StrictMode>
-        </Provider>
-      </CustomProvider>
-    </ReduxProvider>
+  const componentHtml = withSpan('render_component_html', () =>
+    ReactDOMServer.renderToString(
+      <ReduxProvider store={initialStore as any}>
+        <CustomProvider initialData={initialState} user={req.user} language={initialState.locale}>
+          <Provider store={atomStore}>
+            <React.StrictMode>
+              <ErrorBoundary error={resolvedLoadingError || ssrError}>
+                <StaticRouterProvider
+                  router={router}
+                  context={staticHandleContext as any}
+                  nonce="the-nonce"
+                />
+              </ErrorBoundary>
+            </React.StrictMode>
+          </Provider>
+        </CustomProvider>
+      </ReduxProvider>
+    )
   );
 
   if (req.aborted) {
     logSSRAborted(req, 'Root HTML', ssrStart, routeName);
     return;
   }
-  const html = ReactDOMServer.renderToString(
-    <Root
-      language={atomStoreData.locale}
-      content={componentHtml}
-      head={Helmet.rewind()}
-      user={req.user}
-      reduxData={initialState}
-      assets={assets}
-      loadingError={loadingError || ssrError}
-      featureFlags={clientFeatureFlags}
-      atomStoreData={{ ...atomStoreData, ...(globalMatomo && { globalMatomo }), ciMatomoActive }}
-    />
+  const html = withSpan('render_root_html', () =>
+    ReactDOMServer.renderToString(
+      <Root
+        language={atomStoreData.locale}
+        content={componentHtml}
+        head={Helmet.rewind()}
+        reduxData={initialState}
+        documentHeadPageCss={documentHeadPageCss}
+        assets={assets}
+        loadingError={resolvedLoadingError || ssrError}
+        atomStoreData={{ ...atomStoreData, ...(globalMatomo && { globalMatomo }), ciMatomoActive }}
+      />
+    )
   );
 
   if (req.aborted) {
     logSSRAborted(req, 'Aborted before response', ssrStart, routeName);
     return;
   }
-  const responseCode = loadingError?.status || (ssrError ? 500 : 200);
+  const responseCode = resolvedLoadingError?.status || (ssrError ? 500 : 200);
   const resStatus = isCatchAll ? 404 : responseCode;
   res.status(resStatus).send(`<!DOCTYPE html>${html}`);
 };

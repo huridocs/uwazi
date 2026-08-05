@@ -1,83 +1,95 @@
-import React, { ChangeEvent, Dispatch } from 'react';
+import React, { ChangeEvent, Dispatch, useState } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { useAtomValue } from 'jotai';
+import { CloudArrowUpIcon } from '@heroicons/react/24/solid';
 import { Translate } from '#app/I18N/index.js';
 import { Icon } from '#app/UI/index.js';
-import { EntitySchema } from '#shared/types/entityType.js';
-import { generateID } from '#shared/IDGenerator.js';
-import {
-  uploadDocument as uploadDocumentAction,
-  createDocument as createDocumentAction,
-} from '#app/Uploads/actions/uploadsActions.js';
-import { unselectAllDocuments as unselectAllDocumentsAction } from '#app/Library/actions/libraryActions.js';
-import { ClientEntitySchema } from '#app/istore.js';
-import { templatesAtom } from '#V2/atoms/index.js';
-import { ClientTemplateSchema } from '#V2/shared/types.js';
-
-const extractTitle = (file: File) => {
-  const title = file.name
-    .replace(/\.[^/.]+$/, '')
-    .replace(/_/g, ' ')
-    .replace(/-/g, ' ')
-    .replace(/ {2}/g, ' ');
-  return title.charAt(0).toUpperCase() + title.slice(1);
-};
+import { uploadAndCreate as uploadDocumentAction } from '#app/Uploads/actions/uploadsActions.js';
+import { Truncate } from '#V2/Components/UI/Truncate.js';
+import { Tooltip } from '#V2/Components/UI/index.js';
 
 interface PDFUploadActions {
-  createDocument: (e: EntitySchema) => any;
-  uploadDocument: (s: string, f: File) => void;
-  unselectAllDocuments: () => void;
+  uploadDocument: (
+    files: File[],
+    onProgress: (percent: number, filename: string) => void,
+    onFileComplete: () => void
+  ) => any;
 }
 
 type PDFUploadButtonProps = PDFUploadActions;
 
 const onChangePDFs =
   ({
-    createDocument,
     uploadDocument,
-    unselectAllDocuments,
-    templates,
-  }: PDFUploadActions & { templates: ClientTemplateSchema[] }) =>
+    onStart,
+    onProgress,
+    onFileComplete,
+    onDone,
+  }: PDFUploadActions & {
+    onStart: (filesCount: number) => void;
+    onProgress: (percent: number, filename: string) => void;
+    onFileComplete: () => void;
+    onDone: () => void;
+  }) =>
   async (event: ChangeEvent<HTMLInputElement>) => {
     const input = event.target as HTMLInputElement;
-    const { files } = input;
+    const filesToUpload = input.files ? Array.from(input.files) : [];
 
-    const hasGeneratedId = !!templates.some(
-      template =>
-        template.default &&
-        template.commonProperties?.some(
-          property => property.name === 'title' && property.generatedId
-        )
-    );
-
-    Array.from({ length: files?.length ?? 0 }).forEach(async (_, index) => {
-      const file = files?.[index];
-      if (file) {
-        try {
-          const newEntity = { title: hasGeneratedId ? generateID(3, 4, 4) : extractTitle(file) };
-          const entity = (await createDocument(newEntity)) as ClientEntitySchema;
-
-          if (entity.sharedId) {
-            uploadDocument(entity.sharedId, file);
-          }
-        } catch (_e) {}
-      }
-    });
-    //clear input
     input.value = '';
-    input.files = null;
-    unselectAllDocuments();
+
+    if (!filesToUpload.length) {
+      return;
+    }
+
+    onStart(filesToUpload.length);
+    await uploadDocument(filesToUpload, onProgress, onFileComplete);
+    onDone();
   };
 
-const PDFUploadButtonComponent = ({
-  createDocument,
-  uploadDocument,
-  unselectAllDocuments,
-}: PDFUploadButtonProps) => {
-  const templates = useAtomValue(templatesAtom);
+const PDFUploadButtonComponent = ({ uploadDocument }: PDFUploadButtonProps) => {
+  const [progress, setProgress] = useState(0);
+  const [fileName, setFilename] = useState('');
+  const [uploading, setUploading] = useState(false);
+  const [remainingFiles, setRemainingFiles] = useState(0);
 
-  return (
+  const onStart = (filesCount: number) => {
+    setRemainingFiles(filesCount);
+    setUploading(true);
+  };
+
+  const onProgress = (percent: number, filename: string) => {
+    setProgress(percent);
+    setFilename(filename);
+    setUploading(true);
+  };
+
+  const onFileComplete = () => {
+    setRemainingFiles(current => Math.max(0, current - 1));
+  };
+
+  const onDone = () => {
+    setProgress(0);
+    setFilename('');
+    setRemainingFiles(0);
+    setUploading(false);
+  };
+
+  return uploading ? (
+    <div className="tw-content">
+      <div className="bg-[#eceff1] border-[#cfd8dc] border py-1 px-2 rounded text-sm mr-3 flex flex-row gap-1 items-center">
+        <Tooltip
+          content={
+            <>
+              {remainingFiles} <Translate>remaining files</Translate>
+            </>
+          }
+        >
+          <CloudArrowUpIcon className="w-4 h-4" />
+        </Tooltip>
+        <Translate>Uploading</Translate>: <Truncate maxLength={20}>{fileName}</Truncate> {progress}%
+      </div>
+    </div>
+  ) : (
     <label htmlFor="pdf-upload-button" className="btn btn-default">
       <Icon icon="cloud-upload-alt" />
       <span className="btn-label">
@@ -90,10 +102,11 @@ const PDFUploadButtonComponent = ({
         accept="application/pdf"
         multiple
         onChange={onChangePDFs({
-          createDocument,
           uploadDocument,
-          unselectAllDocuments,
-          templates,
+          onStart,
+          onProgress,
+          onFileComplete,
+          onDone,
         })}
       />
     </label>
@@ -104,8 +117,6 @@ const mapDispatchToProps = (dispatch: Dispatch<any>) =>
   bindActionCreators(
     {
       uploadDocument: uploadDocumentAction,
-      unselectAllDocuments: unselectAllDocumentsAction,
-      createDocument: createDocumentAction,
     },
     dispatch
   );

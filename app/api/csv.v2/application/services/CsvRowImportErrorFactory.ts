@@ -3,9 +3,11 @@ import { DomainError } from '#api/core/domain/error/DomainError.js';
 import { CsvImportRowError, RowErrorCode } from '../../domain/CsvImportRowError.js';
 import {
   CsvImportFileNotFoundError,
+  CsvImportEntityNotFoundInTemplateError,
   CsvImportPropertyValidationError,
   CsvImportRelationshipResolutionError,
   CsvImportRowEmptyError,
+  CsvImportValueRequiredError,
   CsvRelationshipUnresolvedToken,
 } from './CsvImportRowProcessingError.js';
 
@@ -67,6 +69,25 @@ const mapRelationshipResolutionError = (input: BuildRowErrorInput) => {
   });
 };
 
+const mapEntityNotFoundInTemplateError = (input: BuildRowErrorInput) => {
+  const { importId, rowIndex, error } = input;
+  if (!(error instanceof CsvImportEntityNotFoundInTemplateError)) {
+    return undefined;
+  }
+
+  return CsvImportRowError.create({
+    importId,
+    rowIndex,
+    code: RowErrorCode.IdNotFoundInTemplate,
+    message: 'id not found in template',
+    property: 'id',
+    rawValue: error.sharedId,
+    details: {
+      templateId: error.templateId,
+    },
+  });
+};
+
 const mapEmptyRowError = (input: BuildRowErrorInput) => {
   const { importId, rowIndex, error } = input;
   if (!(error instanceof CsvImportRowEmptyError)) {
@@ -92,6 +113,26 @@ const getValidationMessage = (source: unknown) => {
     return source.message;
   }
   return 'Invalid value format.';
+};
+
+const mapValueRequiredError = (input: BuildRowErrorInput) => {
+  const { importId, rowIndex, error } = input;
+  if (!(error instanceof CsvImportValueRequiredError)) {
+    return undefined;
+  }
+
+  return CsvImportRowError.create({
+    importId,
+    rowIndex,
+    code: RowErrorCode.ValueRequired,
+    message: `Value is required for "${error.column || error.property}".`,
+    property: error.property,
+    rawValue: error.rawValue,
+    details: {
+      column: error.column || error.property,
+      language: error.language,
+    },
+  });
 };
 
 const mapPropertyValidationError = (input: BuildRowErrorInput) => {
@@ -159,7 +200,9 @@ const mapKnownError = (input: BuildRowErrorInput) => {
   const mappers = [
     mapFileNotFoundError,
     mapRelationshipResolutionError,
+    mapEntityNotFoundInTemplateError,
     mapEmptyRowError,
+    mapValueRequiredError,
     mapPropertyValidationError,
     mapZodError,
     mapDomainError,

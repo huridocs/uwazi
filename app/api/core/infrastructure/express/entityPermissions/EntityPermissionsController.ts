@@ -5,7 +5,6 @@ import { GrantEntityPermissionsUseCaseFactory } from '../../factories/GrantEntit
 import { BulkGrantEntityPermissionsUseCaseFactory } from '../../factories/BulkGrantEntityPermissionsUseCaseFactory.js';
 import { AccessGrantProps } from '#api/core/domain/entityAccessPolicy/AccessGrant.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
-import { entitiesPermissions } from '#api/permissions/entitiesPermissions.js';
 
 const RequestSchema = z
   .object({
@@ -32,16 +31,10 @@ type RequestDto = z.infer<typeof RequestSchema>;
 
 class EntityPermissionsController extends AbstractController<RequestDto> {
   protected async handle(): Promise<void> {
-    if (!ExecutionContext.tenant.featureFlags?.v2EntityPermission) {
-      await entitiesPermissions.set(this.request.body);
-      this.response.json(this.request.body);
-      return;
-    }
     const startTime = Date.now();
 
     try {
-      const body = RequestSchema.parse(this.request.body);
-      const { ids, permissions } = body;
+      const { ids, permissions } = RequestSchema.parse(this.request.body);
 
       const publicEntry = permissions.find(p => p.type === 'public');
       const nonPublicGrants = permissions.filter(p => p.type !== 'public');
@@ -74,7 +67,7 @@ class EntityPermissionsController extends AbstractController<RequestDto> {
         durationMs: Date.now() - startTime,
       });
 
-      this.response.json(body);
+      this.response.json({ ids, permissions });
     } catch (error: unknown) {
       ExecutionContext.logger.info(
         `Entity Permissions change failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
@@ -82,7 +75,6 @@ class EntityPermissionsController extends AbstractController<RequestDto> {
           namespace: 'Entity_Permissions_Changed',
           durationMs: Date.now() - startTime,
           success: false,
-          notify: true,
 
           error: JSON.stringify(error),
           dto: JSON.stringify(this.request.body),

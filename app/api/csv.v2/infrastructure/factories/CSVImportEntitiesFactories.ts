@@ -6,7 +6,7 @@ import { tenants } from '#api/tenants/tenantContext.js';
 import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
 import { TemplatesDataSourceFactory } from '#api/core/infrastructure/factories/TemplatesDataSourceFactory.js';
 import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
-import { MongoThesauriDataSource } from '#api/core/infrastructure/mongodb/thesauri/MongoThesauriDS.js';
+import { ThesauriDataSourceFactory } from '#api/core/infrastructure/factories/ThesauriDataSourceFactory.js';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
 import { CsvImportEntities } from '../../CsvImportEntities.js';
@@ -74,7 +74,7 @@ export class CSVImportEntitiesFactories {
     const csvImportsDS = this.CSVImportDSDefault(transactionManager);
     const templatesDS = TemplatesDataSourceFactory.default({ transactionManager });
     const settingsDS = SettingsDataSourceFactory.default({ transactionManager });
-    const thesauriDS = new MongoThesauriDataSource(getConnection(), transactionManager);
+    const thesauriDS = ThesauriDataSourceFactory.default({ transactionManager });
     const tenant = tenants.current();
     const jobsDispatcher = DefaultDispatcher(tenant.name, transactionManager);
     return new CsvPreflightJob({

@@ -1,4 +1,3 @@
-import { ObjectId } from 'mongodb';
 import { BaseFile, BaseFileProps } from '../BaseFile.js';
 import { FileContents } from '../FileContents.js';
 
@@ -152,12 +151,6 @@ describe('BaseFile', () => {
 
       const updated = file.update({
         originalname: 'new-name.pdf',
-        id: 'not_allowed',
-        creationDate: 9999,
-        mimetype: 'not_allowed/pdf',
-        size: 9999,
-        filename: 'not_allowed.pdf',
-        uploaded: false,
       });
 
       expect(updated.toDTO()).toEqual({ ...file.toDTO(), originalname: 'new-name.pdf' });
@@ -282,29 +275,6 @@ describe('BaseFile', () => {
         mimetype: 'application/pdf',
         size: 1024,
         creationDate: 1234567890,
-      });
-    });
-  });
-
-  describe('dboCommonFields()', () => {
-    it('maps DBO fields to domain fields', () => {
-      const _id = new ObjectId();
-      const dbo = {
-        _id,
-        originalname: 'doc.pdf',
-        filename: 'doc_abc.pdf',
-        mimetype: 'application/pdf',
-        size: 512,
-        creationDate: 9999,
-        type: 'custom' as const,
-      };
-      expect(BaseFile.dboCommonFields(dbo as any)).toEqual({
-        id: _id.toString(),
-        originalname: 'doc.pdf',
-        filename: 'doc_abc.pdf',
-        mimetype: 'application/pdf',
-        size: 512,
-        creationDate: 9999,
       });
     });
   });

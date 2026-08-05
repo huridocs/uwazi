@@ -3,7 +3,7 @@ import { APIURL } from '#app/config.js';
 import { FileType } from '#shared/types/fileType.js';
 import { FetchResponseError } from '#shared/JSONRequest.js';
 
-type Endpoint = 'attachment' | 'custom' | 'document';
+type Endpoint = 'attachment' | 'custom' | 'document' | 'createFromPDF';
 
 class UploadService {
   private requests: SuperAgentRequest[] = [];
@@ -11,8 +11,7 @@ class UploadService {
   private aborted: boolean = false;
 
   private onProgressCallback:
-    | ((filename: string, percent: number, total?: number) => void)
-    | undefined;
+    ((filename: string, percent: number, total?: number) => void) | undefined;
 
   private onUploadCompleteCallback: ((response: FileType | FetchResponseError) => void) | undefined;
 
@@ -20,8 +19,15 @@ class UploadService {
 
   private route: string;
 
-  constructor(endpoint: Endpoint) {
-    this.route = `${APIURL}files/upload/${endpoint}`;
+  private extraFields: Record<string, string>;
+
+  constructor(endpoint: Endpoint, extraFields: Record<string, string> = {}) {
+    if (endpoint === 'createFromPDF') {
+      this.route = `${APIURL}entities/create-from-pdf`;
+    } else {
+      this.route = `${APIURL}files/upload/${endpoint}`;
+    }
+    this.extraFields = extraFields;
   }
 
   // eslint-disable-next-line max-statements
@@ -34,18 +40,23 @@ class UploadService {
     if (files.length === 0) return;
 
     const file = files.shift()!;
+    const { originalname: customOriginalName, ...restFields } = this.extraFields;
 
     const request = superagent
       .post(this.route)
       .set('Accept', 'application/json')
       .set('X-Requested-With', 'XMLHttpRequest')
-      .field('originalname', file.name)
+      .field('originalname', customOriginalName ?? file.name)
       .attach('file', file as unknown as MultipartValueSingle)
       .on('progress', event => {
-        if (this.onProgressCallback && event.percent) {
-          this.onProgressCallback(file.name, Math.floor(event.percent), event.total);
+        const { percent } = event;
+        if (this.onProgressCallback && typeof percent === 'number' && Number.isFinite(percent)) {
+          this.onProgressCallback(file.name, Math.floor(percent), event.total);
         }
       });
+    Object.entries(restFields).forEach(([key, value]) => {
+      request.field(key, value);
+    });
 
     this.requests.push(request);
 

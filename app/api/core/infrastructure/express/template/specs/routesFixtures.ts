@@ -78,7 +78,6 @@ const fixtures: DBFixture = {
     {
       _id: fixtureFactory.id('relation_type'),
       name: 'A -> B',
-      properties: [],
       __v: 0,
     },
   ],

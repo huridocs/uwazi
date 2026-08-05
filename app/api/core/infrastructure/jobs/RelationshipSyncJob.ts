@@ -1,15 +1,14 @@
-import { ObjectId } from 'mongodb';
-import relationships from '#api/relationships/index.js';
+import relationships from '#api/relationships/relationships.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
-import { EntityDBO } from '#api/entities.v2/database/schemas/EntityTypes.js';
+import { User } from '#api/users.v2/model/User.js';
 import {
   UserAwareDispatchable,
   UserAwareDispatchableParams,
 } from '#api/core/libs/queue/application/contracts/UserAwareDispatchable.js';
 import { NonRetryableJobError } from '#api/core/libs/queue/infrastructure/errors.js';
 import { EntityNotFoundError } from '#api/core/application/errors.js';
-import { getConnection } from '../mongodb/common/getConnectionForCurrentTenant.js';
-import { TemplateDBO } from '../mongodb/template/DBOs/TemplateDBO.js';
+import { TemplatesDAOFactory } from '../factories/TemplatesDAOFactory.js';
+import { EntitiesDAOFactory } from '../factories/EntitiesDAOFactory.js';
 
 type Params = UserAwareDispatchableParams & {
   templateId: string;
@@ -27,16 +26,13 @@ class RelationshipSyncJob extends UserAwareDispatchable<Params> {
   }
 
   protected async handle(): Promise<void> {
-    const db = getConnection();
+    const dao = TemplatesDAOFactory.default();
+    const templates = await dao.get([this.params.templateId]);
+    const template = templates[0] || null;
 
-    const template = await db
-      .collection<TemplateDBO>('templates')
-      .findOne({ _id: ObjectId.createFromHexString(this.params.templateId) });
-
-    const entity = await db.collection<EntityDBO>('entities').findOne({
-      sharedId: this.params.sharedId,
-      language: this.params.targetLanguage,
-    });
+    const entity = await EntitiesDAOFactory.default({
+      user: User.createFrom({ _id: this.params.userId, role: 'admin' }),
+    }).getBySharedId(this.params.sharedId, this.params.targetLanguage);
 
     if (!entity) {
       throw new NonRetryableJobError(new EntityNotFoundError(this.params.sharedId));

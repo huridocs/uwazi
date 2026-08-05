@@ -1,0 +1,82 @@
+import React, { useState } from 'react';
+import { ChevronDownIcon } from '@heroicons/react/24/outline';
+
+type WarmSelectOption<T extends string = string> = {
+  value: T;
+  label: string;
+};
+
+type WarmSelectProps<T extends string = string> = {
+  value: T;
+  options: WarmSelectOption<T>[];
+  onChange: (value: T) => void;
+  ariaLabel?: string;
+  align?: 'start' | 'end';
+  disabled?: boolean;
+};
+
+const WarmSelect = <T extends string>({
+  value,
+  options,
+  onChange,
+  ariaLabel,
+  align = 'start',
+  disabled = false,
+}: WarmSelectProps<T>) => {
+  const [open, setOpen] = useState(false);
+  const current = options.find(option => option.value === value) ?? options[0];
+
+  return (
+    <div className="relative shrink-0">
+      <button
+        type="button"
+        disabled={disabled}
+        onClick={() => !disabled && setOpen(currentValue => !currentValue)}
+        aria-haspopup="listbox"
+        aria-expanded={open}
+        aria-label={ariaLabel}
+        className="inline-flex h-8 max-w-full cursor-pointer items-center gap-1.5 rounded-md bg-warm ps-2.5 pe-2 text-xs font-medium text-ink-secondary transition-colors hover:bg-parchment hover:text-ink focus:outline-none focus-visible:ring-2 focus-visible:ring-carbon/30 disabled:cursor-not-allowed disabled:opacity-60"
+      >
+        <span className="truncate">{current?.label}</span>
+        <ChevronDownIcon
+          className={`h-3.5 w-3.5 shrink-0 text-ink-tertiary transition-transform ${open ? 'rotate-180' : ''}`}
+          aria-hidden
+        />
+      </button>
+      {open && !disabled && (
+        <>
+          <div className="fixed inset-0 z-10" aria-hidden onClick={() => setOpen(false)} />
+          <div
+            role="listbox"
+            className={`absolute top-full z-20 mt-1 min-w-40 rounded-md border border-border bg-paper py-1 shadow-[0_6px_18px_rgba(0,0,0,0.12)] ${
+              align === 'end' ? 'inset-e-0' : 'inset-s-0'
+            }`}
+          >
+            {options.map(option => (
+              <button
+                key={option.value}
+                type="button"
+                role="option"
+                aria-selected={option.value === value}
+                onClick={() => {
+                  onChange(option.value);
+                  setOpen(false);
+                }}
+                className={`flex w-full cursor-pointer items-center px-3 py-1.5 text-start text-xs transition-colors ${
+                  option.value === value
+                    ? 'bg-vellum font-semibold text-ink'
+                    : 'text-ink-secondary hover:bg-warm'
+                }`}
+              >
+                {option.label}
+              </button>
+            ))}
+          </div>
+        </>
+      )}
+    </div>
+  );
+};
+
+export { WarmSelect };
+export type { WarmSelectOption, WarmSelectProps };

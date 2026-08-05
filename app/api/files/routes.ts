@@ -14,7 +14,8 @@ import { FileType } from '#shared/types/fileType.js';
 import { UserSchema } from '#shared/types/userType.js';
 import { validation } from '../utils/index.js';
 import { files } from './files.js';
-import { UpdateFileController } from '#api/core/infrastructure/express/files/UpdateFileController.js';
+import { MutateFileController } from '#api/core/infrastructure/express/files/MutateFileController.js';
+import { FilesDAOFactory } from '#api/core/infrastructure/factories/FilesDAOFactory.js';
 
 const checkEntityPermission = async (
   file: FileType,
@@ -22,7 +23,7 @@ const checkEntityPermission = async (
   level: 'read' | 'write' = 'read'
 ): Promise<boolean> => {
   if (['admin'].includes(user?.role || '')) return true;
-  const [fileInDB] = await files.get({ _id: file._id });
+  const fileInDB = (await FilesDAOFactory.default().getById(file._id!.toString())).getData(null);
 
   if (!fileInDB || (fileInDB.type === 'custom' && level === 'write')) {
     return false;
@@ -33,7 +34,7 @@ const checkEntityPermission = async (
   }
 
   const relatedEntities: EntitySchema[] = await entities.get(
-    { sharedId: fileInDB.entity },
+    { sharedId: fileInDB.entity! },
     '_id, permissions',
     { withoutDocuments: true }
   );
@@ -105,7 +106,7 @@ export default (app: Application) => {
         body: fileSchema,
       },
     }),
-    UpdateFileController.createHandler()
+    MutateFileController.createHandler()
   );
 
   app.post(
@@ -125,7 +126,7 @@ export default (app: Application) => {
     }),
     async (req, res, next) => {
       try {
-        res.json(await files.tocReviewed(req.body.fileId, req.language));
+        res.json(await files.tocReviewed(req.body.fileId));
       } catch (e) {
         next(e);
       }
@@ -171,7 +172,14 @@ export default (app: Application) => {
       },
     }),
     async (req, res) => {
-      res.json(await filterByEntityPermissions(await files.get(req.query)));
+      const query: Record<string, unknown> = {};
+      if (typeof req.query._id === 'string') {
+        query._id = req.query._id;
+      }
+      if (typeof req.query.type === 'string') {
+        query.type = req.query.type;
+      }
+      res.json(await filterByEntityPermissions(await FilesDAOFactory.default().getByQuery(query)));
     }
   );
 };

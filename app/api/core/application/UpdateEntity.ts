@@ -1,6 +1,6 @@
 import { Entity, EntityIcon } from '#api/core/domain/entity/Entity.js';
-import { LanguageISO6391 } from '#shared/types/commonTypes.js';
-import { MultiLanguageEntityDataSource } from '#api/entities.v2/contracts/MultiLanguageEntitiesDataSource.js';
+import { LanguageISO6391, PropertySelectionSchema } from '#shared/types/commonTypes.js';
+import { EntitiesDataSource } from '#api/core/application/contracts/EntitiesDataSource.js';
 import { ArrayUtils } from '#api/common.v2/utils/Array.js';
 import { AbstractUseCase } from '../libs/UseCase.js';
 import { PropertyAssignmentInput } from './propertyAssignmentCreatorService/PropertyAssignmentCreatorService.js';
@@ -11,7 +11,7 @@ import { TemplatesDataSource } from './contracts/TemplatesDataSource.js';
 import { FilesDataSource } from './contracts/FilesDataSource.js';
 import { SettingsDataSource } from './contracts/SettingsDataSource.js';
 import { BaseFile } from '../domain/files/BaseFile.js';
-import { ProcessedPDF } from '../domain/files/ProcessedPDF.js';
+import { PDFDocument } from '../domain/files/PDFDocument.js';
 import { EntitiesService } from './EntitiesService.js';
 
 type Input = {
@@ -20,16 +20,21 @@ type Input = {
   propertyAssignments: PropertyAssignmentInput[];
 
   icon?: EntityIcon;
+  generatedToc?: boolean;
   templateId?: string;
   uploadedFiles?: InputFile[];
   files?: { id: string; originalname: string }[];
+  propertySelections?: {
+    fileId: string;
+    selections: PropertySelectionSchema[];
+  };
 };
 
 type Output = Entity;
 
 type Deps = {
   propertyAssignmentCreatorServiceStrategy: PropertyAssignmentCreatorServiceStrategy;
-  entitiesDS: MultiLanguageEntityDataSource;
+  entitiesDS: EntitiesDataSource;
   entitiesService: EntitiesService;
   fileService: FilesService;
   templatesDS: TemplatesDataSource;
@@ -43,6 +48,7 @@ class UpdateEntityUseCase extends AbstractUseCase<Input, Output, Deps> {
 
     entity.update({
       icon: input.icon,
+      generatedToc: input.generatedToc,
     });
 
     const templateHasChanged = !!input.templateId && entity.template.id !== input.templateId;
@@ -64,7 +70,7 @@ class UpdateEntityUseCase extends AbstractUseCase<Input, Output, Deps> {
       f.toEntityFile(entity.sharedId, this.idGenerator.generate())
     );
 
-    const existingFiles = await this.deps.filesDS.getByEntitiesIds([entity.sharedId]).all();
+    const existingFiles = await this.deps.filesDS.getByEntitiesIds([entity.sharedId]);
 
     const [keptFiles, removedFiles] = ArrayUtils.splitInTwo(existingFiles, (f: BaseFile) =>
       (input.files || []).some(file => file.id === f.id)
@@ -77,27 +83,41 @@ class UpdateEntityUseCase extends AbstractUseCase<Input, Output, Deps> {
         const update = input.files!.find(file => file.id === keptFile.id);
         if (!update) return;
 
-        updatedFiles.push(keptFile.update({ originalname: update.originalname }));
+        const newProps: { originalname: string; propertySelections?: PropertySelectionSchema[] } = {
+          originalname: update.originalname,
+        };
+
+        if (keptFile.id === input.propertySelections?.fileId) {
+          newProps.propertySelections = input.propertySelections.selections;
+        }
+
+        updatedFiles.push(keptFile.update(newProps));
       });
     }
 
     const removedPDFIds = removedFiles
-      .filter((f): f is ProcessedPDF => f instanceof ProcessedPDF)
+      .filter((f): f is PDFDocument => f instanceof PDFDocument && f.isReady())
       .map(f => f.id);
 
-    const allEntityThumbnails = await this.deps.filesDS.getThumbnails([entity.sharedId]).all();
-    const remainingThumbnails = allEntityThumbnails.filter(
-      t => !removedPDFIds.some(id => t.filename === `${id}.jpg`)
-    );
+    const shouldRebuildPreview =
+      removedPDFIds.length > 0 || filesCreated.some(file => file instanceof PDFDocument);
 
-    const defaultLanguage = await this.deps.settingsDS.getDefaultLanguageKey();
-    entity.setPreview(remainingThumbnails, defaultLanguage);
+    if (shouldRebuildPreview) {
+      const allEntityThumbnails = await this.deps.filesDS.getThumbnails([entity.sharedId]);
+      const remainingThumbnails = allEntityThumbnails.filter(
+        t => !removedPDFIds.some(id => t.filename === `${id}.jpg`)
+      );
+
+      const defaultLanguage = await this.deps.settingsDS.getDefaultLanguageKey();
+      entity.setPreview(remainingThumbnails, defaultLanguage);
+    }
 
     await this.deps.fileService.storeFiles(filesCreated);
 
     await this.transactionManager.run(async () => {
-      await this.deps.entitiesService.update(entity, {
+      await this.deps.entitiesService.update([entity], {
         actorId: this.actorId,
+        actor: this.getActor(),
         targetLanguage: input.language,
       });
       await this.deps.fileService.insert(filesCreated);

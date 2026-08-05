@@ -20,22 +20,36 @@ type Tenant = {
     sync?: boolean;
     deactivateTestJob?: boolean;
     paragraphExtraction?: boolean;
-    v2UpdateEntity?: boolean;
     fileCacheHeaders?: boolean;
-    v2CSVImport?: boolean;
-    v2UpdateThesaurus?: boolean;
     themeCustomization?: boolean;
-    v2GetEntity?: boolean;
-    v2ElasticSearch?: boolean;
-    v2MultipleUpdateEntity?: boolean;
-    v2DeleteEntity?: boolean;
-    v2UpdateFile?: boolean;
-    v2EntityPermission?: boolean;
     newHeader?: boolean;
-    v2Languages?: boolean;
+    postgresThesauri?: boolean;
+    postgresFiles?: boolean;
+    postgresTemplates?: boolean;
+    postgresEntities?: boolean;
+    postgresRelationshipTypes?: boolean;
+    postgresPasswordRecoveries?: boolean;
+    postgresUsers?: boolean;
+    aiAssistant?: boolean;
+    aiAssistantServiceUrl?: string;
+    v2UsersCreate?: boolean;
+    v2UsersDelete?: boolean;
+    v2UsersGet?: boolean;
+    v2UsersUpdate?: boolean;
+    telemetry?: {
+      enabled?: boolean;
+      sampleRate?: number;
+    };
+    prometheus?: {
+      enabled?: boolean;
+      sampleRate?: number;
+    };
+    v2UsersUtilityRoutes?: Boolean;
+    v2Auth2fa?: boolean;
   };
   globalMatomo?: { id: string; url: string };
   ciMatomoActive?: boolean;
+  maintenance?: boolean;
 };
 
 class Tenants {
@@ -110,15 +124,65 @@ class Tenants {
     this.tenants[tenant.name] = {
       ...this.defaultTenant,
       ...tenant,
-      featureFlags: { ...this.defaultTenant.featureFlags, ...tenant.featureFlags },
+      featureFlags: {
+        ...this.defaultTenant.featureFlags,
+        ...tenant.featureFlags,
+        telemetry: {
+          ...this.defaultTenant.featureFlags?.telemetry,
+          ...tenant.featureFlags?.telemetry,
+        },
+        prometheus: {
+          ...this.defaultTenant.featureFlags?.prometheus,
+          ...tenant.featureFlags?.prometheus,
+        },
+      },
     };
   }
 
   getTenantsForFeatureFlag(featureFlag: TenantFeatureFlags) {
     return Object.values(this.tenants).filter(tenant => tenant?.featureFlags?.[featureFlag]);
   }
+
+  async setMaintenance(tenantName: string, maintenance: boolean) {
+    if (this.model) {
+      await this.model.setMaintenance(tenantName, maintenance);
+    }
+    if (this.tenants[tenantName]) {
+      this.tenants[tenantName].maintenance = maintenance;
+    }
+  }
+
+  async setTelemetryConfig(
+    tenantName: string,
+    telemetry: { enabled: boolean; sampleRate: number }
+  ) {
+    if (this.model) {
+      await this.model.setTelemetryConfig(tenantName, telemetry);
+    }
+    if (this.tenants[tenantName]) {
+      this.tenants[tenantName].featureFlags = {
+        ...this.tenants[tenantName].featureFlags,
+        telemetry,
+      };
+    }
+  }
+
+  async setPrometheusConfig(
+    tenantName: string,
+    prometheus: { enabled: boolean; sampleRate: number }
+  ) {
+    if (this.model) {
+      await this.model.setPrometheusConfig(tenantName, prometheus);
+    }
+    if (this.tenants[tenantName]) {
+      this.tenants[tenantName].featureFlags = {
+        ...this.tenants[tenantName].featureFlags,
+        prometheus,
+      };
+    }
+  }
 }
 
 const tenants = new Tenants(config.defaultTenant);
-export { tenants };
+export { tenants, Tenants };
 export type { Tenant, TenantFeatureFlags };

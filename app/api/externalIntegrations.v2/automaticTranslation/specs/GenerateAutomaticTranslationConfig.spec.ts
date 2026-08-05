@@ -3,6 +3,7 @@ import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { MongoTemplatesDataSource } from '#api/core/infrastructure/mongodb/template/MongoTemplatesDataSource.js';
+import { MongoTemplatesDAO } from '#api/core/infrastructure/mongodb/template/MongoTemplatesDAO.js';
 import { GenerateAutomaticTranslationsCofig } from '../GenerateAutomaticTranslationConfig.js';
 import { MongoATConfigDataSource } from '../infrastructure/MongoATConfigDataSource.js';
 import { GenerateATConfigError } from '../errors/generateATErrors.js';
@@ -11,8 +12,6 @@ import { ValidationError, Validator } from '../infrastructure/Validator.js';
 import { AutomaticTranslationFactory } from '../AutomaticTranslationFactory.js';
 import testingDB from '#api/utils/testing_db.js';
 import { Settings } from '#shared/types/settingsType.js';
-import { TestUtils } from '#api/common.v2/utils/Test.js';
-import { SlotsReconciler } from '#api/core/infrastructure/elasticSearch/entities/SlotsReconciler.js';
 
 const factory = getFixturesFactory();
 
@@ -89,7 +88,10 @@ describe('GenerateAutomaticTranslationConfig', () => {
       new MongoTemplatesDataSource({
         db: getConnection(),
         transactionManager: TransactionManagerFactory.default(),
-        slotsReconciler: TestUtils.mockClass<SlotsReconciler>({ execute: jest.fn() }),
+        dao: new MongoTemplatesDAO({
+          db: getConnection(),
+          transactionManager: TransactionManagerFactory.default(),
+        }),
       }),
       new Validator<SemanticConfig>(semanticConfigSchema)
     );

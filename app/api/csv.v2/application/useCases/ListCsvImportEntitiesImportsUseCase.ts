@@ -29,6 +29,7 @@ type CsvImportEntitiesImportListRow = {
     relationshipValuesObserved?: number;
     relationshipValuesCreated?: number;
     entitiesCreated?: number;
+    entitiesUpdated?: number;
     rowsProcessed?: number;
     rowsFailed?: number;
   };

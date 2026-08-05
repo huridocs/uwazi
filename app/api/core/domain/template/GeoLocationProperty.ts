@@ -62,11 +62,8 @@ class GeolocationProperty extends Property {
     };
   }
 
-  validatePropertyAssignment(
-    { value }: PropertyAssignment<GeolocationEntry>,
-    shouldValidateForRequired = false
-  ): void {
-    createSchema(shouldValidateForRequired ? this.required : false).parse(value);
+  validatePropertyAssignment({ value }: PropertyAssignment<GeolocationEntry>): void {
+    createSchema(this.required).parse(value);
   }
 }
 

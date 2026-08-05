@@ -2,9 +2,7 @@ import { AbstractController } from '#api/common.v2/infrastructure/AbstractContro
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { MultiUpdateEntity } from '#api/core/application/MultiUpdateEntity.js';
 import { MultiUpdateEntityUseCaseFactory } from '../../factories/MultiUpdateEntityUseCaseFactory.js';
-import { getConnection } from '../../mongodb/common/getConnectionForCurrentTenant.js';
-import { MongoEntityDAO } from '../../mongodb/entity/MongoEntityDAO.js';
-import { MongoTransactionManager } from '../../mongodb/common/MongoTransactionManager.js';
+import { EntitiesDAOFactory } from '../../factories/EntitiesDAOFactory.js';
 import { PropertyAssignmentInput } from '#api/core/application/propertyAssignmentCreatorService/PropertyAssignmentCreatorService.js';
 
 type RequestDto = {
@@ -44,15 +42,12 @@ class MultiUpdateEntityController extends AbstractController<RequestDto> {
 
       const sharedIds = [...new Set(output.map(e => e.sharedId))];
 
-      const entityDAO = new MongoEntityDAO(
-        getConnection(),
-        ExecutionContext.transactionManager as MongoTransactionManager,
-        this.user
-      );
+      const entityDAO = EntitiesDAOFactory.default({ user: this.user });
 
-      const updatedEntities = await entityDAO
-        .getWithFiles({ sharedId: { $in: sharedIds }, language: targetLanguage })
-        .toArray();
+      const updatedEntities = await entityDAO.getWithFiles({
+        sharedId: { $in: sharedIds },
+        language: targetLanguage,
+      });
 
       ExecutionContext.logger.info('MultiUpdateEntity executed successfully', {
         namespace: 'MultiUpdate_Entity',

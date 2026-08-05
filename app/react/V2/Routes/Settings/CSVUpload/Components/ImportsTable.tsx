@@ -61,7 +61,8 @@ const StatusHeader = () => <Translate>Status</Translate>;
 const FileHeader = () => <Translate>File</Translate>;
 const TemplateHeader = () => <Translate>Template</Translate>;
 const ProgressHeader = () => <Translate>Progress</Translate>;
-const EntitiesHeader = () => <Translate>Entities</Translate>;
+const EntitiesCreatedHeader = () => <Translate>Entities created</Translate>;
+const EntitiesUpdatedHeader = () => <Translate>Entities updated</Translate>;
 const FailedHeader = () => <Translate>Failed</Translate>;
 const DateHeader = () => <Translate>Date</Translate>;
 const ActionHeader = () => <Translate>Action</Translate>;
@@ -136,7 +137,13 @@ const columns = [
   columnHelper.accessor(row => row.stats?.entitiesCreated, {
     id: 'stats.entitiesCreated',
     enableSorting: false,
-    header: EntitiesHeader,
+    header: EntitiesCreatedHeader,
+    cell: NumericValueCell,
+  }),
+  columnHelper.accessor(row => row.stats?.entitiesUpdated, {
+    id: 'stats.entitiesUpdated',
+    enableSorting: false,
+    header: EntitiesUpdatedHeader,
     cell: NumericValueCell,
   }),
   columnHelper.accessor(row => row.stats?.rowsFailed, {

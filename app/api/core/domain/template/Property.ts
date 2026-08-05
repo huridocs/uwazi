@@ -130,10 +130,7 @@ class Property {
     return { name: this.name, value, type: this.type, isTranslatable: this.isTranslatable };
   }
 
-  validatePropertyAssignment(
-    _propertyAssignment: PropertyAssignment,
-    _shouldValidateForRequired: boolean
-  ) {}
+  validatePropertyAssignment(_propertyAssignment: PropertyAssignment) {}
 }
 
 export { Property };

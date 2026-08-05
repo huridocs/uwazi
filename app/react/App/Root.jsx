@@ -1,13 +1,19 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import serialize from 'serialize-javascript';
+import Immutable from 'immutable';
 
+import { PAGE_STYLE_ELEMENT_ID } from '#app/Pages/components/PageStyle.js';
 import { availableLanguages } from '#shared/language/index.js';
 import { getThemeAsset } from '#V2/theme/themes.js';
+import { omitSharedReduxCatalog } from './omitSharedReduxCatalog.js';
 
 const determineHotAssets = query => {
   const webpackPort = process.env.WEBPACK_PORT || 8080;
-  const webpackURL = process.env.WEBPACK_PUBLIC_URL || `http://localhost:${webpackPort}`;
+  const webpackURL =
+    typeof process.env.WEBPACK_PUBLIC_URL === 'string'
+      ? process.env.WEBPACK_PUBLIC_URL
+      : `http://localhost:${webpackPort}`;
   return {
     JS: [`${webpackURL}/nprogress.js`, `${webpackURL}/main.js`, `${webpackURL}/vendor.js`],
     CSS: [`${webpackURL}/CSS/vendor.css${query}`, `${webpackURL}/CSS/main.css${query}`],
@@ -111,44 +117,72 @@ const safeHelmet = result => {
   return result;
 };
 
-const headTag = (head, CSS, reduxData) => (
-  <head>
-    {safeHelmet(head.title?.toComponent?.())}
-    {safeHelmet(head.meta?.toComponent?.())}
-    {safeHelmet(head.link?.toComponent?.())}
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    {CSS.map((style, key) => (
-      <link key={key} href={style} rel="stylesheet" type="text/css" />
-    ))}
-    <style
-      type="text/css"
-      dangerouslySetInnerHTML={{ __html: reduxData.settings.collection.get('customCSS') }}
-    />
-    {reduxData.settings.collection.get('allowcustomJS') && (
-      <script dangerouslySetInnerHTML={{ __html: reduxData.settings.collection.get('customJS') }} />
-    )}
-    {googelFonts}
-    {getFaviconLinks(reduxData)}
-  </head>
-);
+const emptyReduxData = () => ({
+  settings: {
+    collection: Immutable.fromJS({
+      customCSS: '',
+      allowcustomJS: false,
+      customJS: '',
+    }),
+  },
+});
+
+const headTag = (head, CSS, reduxData, documentHeadPageCss) => {
+  const resolvedReduxData = reduxData ?? emptyReduxData();
+  const ssrPageCss =
+    typeof documentHeadPageCss === 'string' && documentHeadPageCss.trim()
+      ? documentHeadPageCss
+      : null;
+  return (
+    <head>
+      {safeHelmet(head.title?.toComponent?.())}
+      {safeHelmet(head.meta?.toComponent?.())}
+      {safeHelmet(head.link?.toComponent?.())}
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      {CSS.map((style, key) => (
+        <link key={key} href={style} rel="stylesheet" type="text/css" />
+      ))}
+      <style
+        type="text/css"
+        dangerouslySetInnerHTML={{
+          __html: resolvedReduxData.settings.collection.get('customCSS'),
+        }}
+      />
+      {ssrPageCss != null && (
+        <style
+          id={PAGE_STYLE_ELEMENT_ID}
+          key="uwazi-page-custom-css"
+          type="text/css"
+          data-uwazi-page-style="true"
+          dangerouslySetInnerHTML={{ __html: ssrPageCss }}
+        />
+      )}
+      {resolvedReduxData.settings.collection.get('allowcustomJS') && (
+        <script
+          dangerouslySetInnerHTML={{
+            __html: resolvedReduxData.settings.collection.get('customJS'),
+          }}
+        />
+      )}
+      {googelFonts}
+      {getFaviconLinks(resolvedReduxData)}
+    </head>
+  );
+};
 
 class Root extends Component {
   renderInitialData() {
     let innerHtml = '';
     if (this.props.reduxData) {
-      innerHtml += `window.__reduxData__ = ${serialize(this.props.reduxData, { isJSON: true })};`;
-    }
-    if (this.props.user) {
-      innerHtml += `window.__user__ = ${serialize(this.props.user, { isJSON: true })};`;
+      // Catalog data is serialized only in __atomStoreData__; Redux keeps route/UI state.
+      const reduxDataForClient = omitSharedReduxCatalog(this.props.reduxData);
+      innerHtml += `window.__reduxData__ = ${serialize(reduxDataForClient, { isJSON: true })};`;
     }
     if (this.props.loadingError) {
       innerHtml += `window.__loadingError__ = ${serialize(this.props.loadingError, { isJSON: true })};`;
     }
     if (this.props.atomStoreData) {
       innerHtml += `window.__atomStoreData__ = ${serialize(this.props.atomStoreData, { isJSON: true })};`;
-    }
-    if (this.props.featureFlags) {
-      innerHtml += `window.__featureFlags__ = ${serialize(this.props.featureFlags, { isJSON: true })};`;
     }
     return (
       <script dangerouslySetInnerHTML={{ __html: innerHtml }} /> //eslint-disable-line
@@ -157,7 +191,7 @@ class Root extends Component {
 
   render() {
     const isHotReload = process.env.HOT;
-    const { head, language, assets, reduxData, content } = this.props;
+    const { head, language, assets, reduxData, content, documentHeadPageCss } = this.props;
 
     const languageData = availableLanguages.find(l => l.key === language);
     const query = languageData && languageData.rtl ? '?rtl=true' : '';
@@ -168,7 +202,7 @@ class Root extends Component {
 
     return (
       <html lang={language} dir={!languageData.rtl ? 'ltr' : 'rtl'} style={{ fontSize: 'unset' }}>
-        {headTag(head, CSS, reduxData)}
+        {headTag(head, CSS, reduxData, documentHeadPageCss)}
         <body>
           <div id="root" dangerouslySetInnerHTML={{ __html: content }} />
           <script
@@ -197,16 +231,16 @@ class Root extends Component {
 }
 
 Root.propTypes = {
-  user: PropTypes.object,
   children: PropTypes.object,
   reduxData: PropTypes.object,
+  /** Custom page CSS for first paint (set by SSR from route data, not read from reduxData here). */
+  documentHeadPageCss: PropTypes.string,
   head: PropTypes.object,
   content: PropTypes.string,
   language: PropTypes.string,
   assets: PropTypes.object,
   loadingError: PropTypes.object,
   atomStoreData: PropTypes.object,
-  featureFlags: PropTypes.object,
   environment: PropTypes.string,
   version: PropTypes.string,
 };

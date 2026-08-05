@@ -62,7 +62,7 @@ export const convertPDF = async (
 
     const entity = (await entitiesDS.getById(entitySharedId)).getDataOrThrow();
     entity.setPreview(
-      await filesDS.getThumbnails([entitySharedId]).all(),
+      await filesDS.getThumbnails([entitySharedId]),
       await settingsDS.getDefaultLanguageKey()
     );
     await entitiesDS.update(entity);

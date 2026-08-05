@@ -1,0 +1,17 @@
+export const FILES_COLUMNS_WITHOUT_FULL_TEXT = [
+  '_id',
+  'originalname',
+  'filename',
+  'mimetype',
+  'size',
+  'creationDate',
+  'type',
+  'entity',
+  'status',
+  'totalPages',
+  'language',
+  'generatedToc',
+  'url',
+  'toc',
+  'propertySelections',
+];

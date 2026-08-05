@@ -114,8 +114,14 @@ const getThemeRoles = (presetId: ThemePresetId, resolved: ResolvedThemeVars): Th
       appBarActive: resolved['--color-theme-bg-muted'],
       appBarFg,
       separator: resolved['--color-theme-border-primary'],
-      settingsRailBg: resolved['--color-theme-bg-muted'],
-      settingsNavItemActiveBg: resolved['--color-theme-bg-selected'],
+      settingsRailBg:
+        presetId === 'legacy'
+          ? resolved['--color-theme-bg-muted']
+          : resolved['--color-theme-bg-surface'],
+      settingsNavItemActiveBg:
+        presetId === 'legacy'
+          ? resolved['--color-theme-bg-selected']
+          : resolved['--color-theme-bg-warm'],
     },
   };
 };

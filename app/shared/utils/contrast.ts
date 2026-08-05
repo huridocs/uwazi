@@ -52,6 +52,7 @@ const getRelativeLuminanceFromHex = (hex: string): number => {
 };
 
 const WCAG_AA = 4.5;
+const WCAG_AA_LARGE_UI = 3;
 const WCAG_AAA = 7;
 
 interface ContrastCheck {
@@ -118,6 +119,7 @@ const getContrastTextColor = (backgroundHex: string): string => {
   return ratioOnBlack >= ratioOnWhite ? '#1A1A1A' : '#FFFFFF';
 };
 
+// eslint-disable-next-line max-statements
 const getAccessibleColorPair = (backgroundHex: string) => {
   const foreground = getContrastTextColor(backgroundHex);
   const contrast = checkContrast(backgroundHex, foreground);
@@ -139,6 +141,7 @@ const getAccessibleColorPair = (backgroundHex: string) => {
   return { background: backgroundHex, foreground, ratio: contrast.ratio };
 };
 
+// eslint-disable-next-line max-statements
 const getAccessibleForegroundOnBackground = (
   backgroundHex: string,
   preferredHex: string,
@@ -197,4 +200,5 @@ export {
   getAccessibleForegroundOnBackground,
   getTemplatePillColors,
   getRelativeLuminanceFromHex,
+  WCAG_AA_LARGE_UI,
 };

@@ -1,13 +1,13 @@
 import { AsyncLocalStorage } from 'async_hooks';
-import { Tenant } from '#api/tenants/tenantContext.js';
+import { Tenant, tenants } from '#api/tenants/tenantContext.js';
 import { User } from '#api/users.v2/model/User.js';
 import { TransactionManager } from '../application/contracts/TransactionManager.js';
 import { JobsDispatcher } from './queue/application/contracts/JobsDispatcher.js';
 import { IdGenerator } from '../application/contracts/IdGenerator.js';
 import { EventEmitter } from './eventEmitter/EventEmitter.js';
 import { Logger } from './logger/contracts/Logger.js';
-import { TenantAwareESClient } from '../infrastructure/elasticSearch/TenantAwareESClient.js';
-import { AuthorizedEntityESClient } from '../infrastructure/elasticSearch/entities/AuthorizedElasticEntityClient.js';
+import { PostgresTransactionManager } from '../infrastructure/postgresql/common/PostgresTransactionManager.js';
+import { TelemetryCollector } from './logger/TelemetryCollector.js';
 
 type DependencyFactories = {
   [K in keyof Dependencies]: () => Dependencies[K];
@@ -16,11 +16,11 @@ type DependencyFactories = {
 type Dependencies = {
   eventEmitter: EventEmitter;
   transactionManager: TransactionManager;
+  postgresTransactionManager: PostgresTransactionManager;
   jobsDispatcher: JobsDispatcher;
   idGenerator: IdGenerator;
   logger: Logger;
-  elasticClient: TenantAwareESClient;
-  authorizedEntityESClient: AuthorizedEntityESClient;
+  telemetryCollector: TelemetryCollector;
 };
 
 type Context = {
@@ -28,9 +28,27 @@ type Context = {
   instances?: Partial<Dependencies>;
   tenant?: Tenant;
   actor?: User;
+  correlationId?: string;
+  telemetrySampled?: boolean;
+};
+
+const isTelemetrySampled = (tenant?: Tenant): boolean => {
+  const { enabled, sampleRate = 1 } = tenant?.featureFlags?.telemetry || {};
+  if (!enabled) return false;
+  if (sampleRate >= 1) return true;
+  if (sampleRate <= 0) return false;
+  return Math.random() < sampleRate;
 };
 
 class ExecutionContext extends AsyncLocalStorage<Context> {
+  run<R>(store: Context, callback: (...args: any[]) => R, ...args: any[]): R {
+    return super.run(
+      { ...store, telemetrySampled: isTelemetrySampled(store.tenant) },
+      callback,
+      ...args
+    );
+  }
+
   private getOrInitialize<K extends keyof DependencyFactories>(key: K): Dependencies[K] {
     const store = this.getStore();
     if (!store) {
@@ -52,12 +70,16 @@ class ExecutionContext extends AsyncLocalStorage<Context> {
     return this.getOrInitialize('transactionManager');
   }
 
-  get elasticClient() {
-    return this.getOrInitialize('elasticClient');
+  get telemetryCollector(): TelemetryCollector {
+    return this.getOrInitialize('telemetryCollector');
   }
 
-  get authorizedEntityESClient() {
-    return this.getOrInitialize('authorizedEntityESClient');
+  get isTelemetryEnabled(): boolean {
+    return Boolean(this.getStore()?.telemetrySampled);
+  }
+
+  get postgresTransactionManager(): PostgresTransactionManager {
+    return this.getOrInitialize('postgresTransactionManager');
   }
 
   get logger() {
@@ -84,6 +106,16 @@ class ExecutionContext extends AsyncLocalStorage<Context> {
     return store.tenant;
   }
 
+  /**
+   * Temporary compatibility bridge while legacy code paths are still being
+   * migrated from tenants.current() to ExecutionContext.tenant.
+   * Once all callers run inside an ExecutionContext, this helper can be removed
+   * and factories should use ExecutionContext.tenant directly.
+   */
+  get currentTenant(): Tenant {
+    return this.getStore()?.tenant ?? tenants.current();
+  }
+
   get actor(): User | undefined {
     return this.getStore()?.actor;
   }
@@ -94,6 +126,10 @@ class ExecutionContext extends AsyncLocalStorage<Context> {
       throw new Error('ExecutionContext is not initialized');
     }
     store.actor = user;
+  }
+
+  get correlationId() {
+    return this.getStore()?.correlationId;
   }
 
   attachContext<T extends Object>(anInstance: T, method: keyof T, deps: Context): void {

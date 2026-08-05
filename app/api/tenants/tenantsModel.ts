@@ -35,22 +35,36 @@ const mongoSchema = new mongoose.Schema({
     sync: Boolean,
     deactivateTestJob: Boolean,
     paragraphExtraction: Boolean,
-    v2UpdateEntity: Boolean,
-    v2CSVImport: Boolean,
     fileCacheHeaders: Boolean,
-    v2UpdateThesaurus: Boolean,
     themeCustomization: Boolean,
-    v2GetEntity: Boolean,
-    v2MultipleUpdateEntity: Boolean,
-    v2ElasticSearch: Boolean,
-    v2DeleteEntity: Boolean,
-    v2Languages: Boolean,
-    v2UpdateFile: Boolean,
     newHeader: Boolean,
-    v2EntityPermission: Boolean,
+    postgresThesauri: Boolean,
+    postgresTemplates: Boolean,
+    postgresEntities: Boolean,
+    postgresFiles: Boolean,
+    postgresRelationshipTypes: Boolean,
+    aiAssistant: Boolean,
+    aiAssistantServiceUrl: String,
+    v2UsersCreate: Boolean,
+    v2UsersDelete: Boolean,
+    v2UsersGet: Boolean,
+    postgresPasswordRecoveries: Boolean,
+    postgresUsers: Boolean,
+    v2UsersUpdate: Boolean,
+    telemetry: {
+      enabled: Boolean,
+      sampleRate: Number,
+    },
+    prometheus: {
+      enabled: Boolean,
+      sampleRate: Number,
+    },
+    v2UsersUtilityRoutes: Boolean,
+    v2Auth2fa: Boolean,
   },
   globalMatomo: { id: String, url: String },
   ciMatomoActive: Boolean,
+  maintenance: Boolean,
 });
 
 type DBTenant = Partial<Tenant> & { name: string };
@@ -142,6 +156,45 @@ class TenantsModel extends EventEmitter {
       );
     }
     return this.model.find({}, Object.keys(mongoSchema.paths)).lean();
+  }
+
+  async setMaintenance(tenantName: string, maintenance: boolean) {
+    if (!this.model) {
+      throw new Error(
+        'tenants model has not been initialized, make sure you called initialize() method'
+      );
+    }
+    await this.model.updateOne({ name: tenantName }, { $set: { maintenance } });
+  }
+
+  async setTelemetryConfig(
+    tenantName: string,
+    telemetry: { enabled: boolean; sampleRate: number }
+  ) {
+    if (!this.model) {
+      throw new Error(
+        'tenants model has not been initialized, make sure you called initialize() method'
+      );
+    }
+    await this.model.updateOne(
+      { name: tenantName },
+      { $set: { 'featureFlags.telemetry': telemetry } }
+    );
+  }
+
+  async setPrometheusConfig(
+    tenantName: string,
+    prometheus: { enabled: boolean; sampleRate: number }
+  ) {
+    if (!this.model) {
+      throw new Error(
+        'tenants model has not been initialized, make sure you called initialize() method'
+      );
+    }
+    await this.model.updateOne(
+      { name: tenantName },
+      { $set: { 'featureFlags.prometheus': prometheus } }
+    );
   }
 }
 

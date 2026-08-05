@@ -1,0 +1,57 @@
+import React from 'react';
+import { Translate } from '#app/I18N/index.js';
+import { Button } from '#V2/Components/UI/Button.js';
+import { createEmptyFilter } from '#V2/Dataviz/utils/createEmptyFilter.js';
+import type { DatavizFilter, DatavizSource } from '#V2/Dataviz/types/definition.js';
+import { FilterRow } from './FilterRow.js';
+
+type FiltersSectionProps = {
+  filters: DatavizFilter[];
+  sources: DatavizSource[];
+  onChange: (filters: DatavizFilter[]) => void;
+};
+
+const FiltersSection = ({ filters, sources, onChange }: FiltersSectionProps) => {
+  const updateFilter = (index: number, filter: DatavizFilter) => {
+    const next = [...filters];
+    next[index] = filter;
+    onChange(next);
+  };
+
+  const removeFilter = (index: number) => {
+    onChange(filters.filter((_, i) => i !== index));
+  };
+
+  return (
+    <section className="flex flex-col gap-3">
+      <h3 className="text-sm font-semibold text-ink">
+        <Translate>Filters</Translate>
+      </h3>
+      <p className="text-xs text-ink-secondary">
+        <Translate>
+          Narrow entities before aggregation. With multiple sources, pick the property under the
+          source alias so each filter applies only to that series.
+        </Translate>
+      </p>
+      {filters.map((filter, index) => (
+        <FilterRow
+          key={filter.id}
+          filter={filter}
+          sources={sources}
+          onChange={updated => updateFilter(index, updated)}
+          onRemove={() => removeFilter(index)}
+        />
+      ))}
+      <Button
+        type="button"
+        variant="secondary"
+        size="small"
+        onClick={() => onChange([...filters, createEmptyFilter()])}
+      >
+        <Translate>+ Add filter</Translate>
+      </Button>
+    </section>
+  );
+};
+
+export { FiltersSection };

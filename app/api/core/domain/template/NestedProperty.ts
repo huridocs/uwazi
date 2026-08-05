@@ -60,11 +60,8 @@ class NestedProperty extends FilterableProperty {
     };
   }
 
-  validatePropertyAssignment(
-    { value }: PropertyAssignment<NestedEntry>,
-    shouldValidateForRequired = false
-  ): void {
-    createSchema(shouldValidateForRequired ? this.required : false).parse(value);
+  validatePropertyAssignment({ value }: PropertyAssignment<NestedEntry>): void {
+    createSchema(this.required).parse(value);
   }
 }
 

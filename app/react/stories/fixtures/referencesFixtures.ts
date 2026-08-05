@@ -17,7 +17,7 @@ const PERSON_RELATION_TEMPLATE = '6a0c5d0784b3eaec97612923';
 
 const mainEntityDocuments: FileType[] = [
   {
-    _id: '1',
+    _id: FILE_ID,
     originalname: 'sample.pdf',
     filename: '1.pdf',
     mimetype: 'application/pdf',
@@ -147,7 +147,7 @@ const buildReferences = () => {
   ) => {
     const relations = createReference({
       id,
-      sourceEntitySharedId: 'ifk5lld93u',
+      sourceEntitySharedId: 'entity1',
       sourceFileId: FILE_ID,
       targetEntityData,
       relationTemplate: PERSON_RELATION_TEMPLATE,

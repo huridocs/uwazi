@@ -152,11 +152,8 @@ class V1RelationshipProperty extends FilterableProperty {
     };
   }
 
-  validatePropertyAssignment(
-    property: RelationshipPropertyAssignment,
-    shouldValidateForRequired = false
-  ): void {
-    createSchema(shouldValidateForRequired ? this.required : false).parse(property);
+  validatePropertyAssignment(property: RelationshipPropertyAssignment): void {
+    createSchema(this.required).parse(property);
   }
 
   static create(props: Omit<Props, 'type'>, context?: Context) {

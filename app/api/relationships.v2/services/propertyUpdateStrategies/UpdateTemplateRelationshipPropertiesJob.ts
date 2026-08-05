@@ -1,4 +1,4 @@
-import { EntitiesDataSource } from '#api/entities.v2/contracts/EntitiesDataSource.js';
+import { DeprecatedEntitiesDataSource } from '#api/entities.v2/contracts/DeprecatedEntitiesDataSource.js';
 import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
 import { Template } from '#api/core/domain/template/Template.js';
 import {
@@ -10,11 +10,11 @@ import { UpdateRelationshipPropertiesJob } from './UpdateRelationshipPropertiesJ
 export class UpdateTemplateRelationshipPropertiesJob implements Dispatchable {
   static BATCH_SIZE = 200;
 
-  private entitiesDataSource: EntitiesDataSource;
+  private entitiesDataSource: DeprecatedEntitiesDataSource;
 
   private dispatcher: JobsDispatcher;
 
-  constructor(entitiesDataSource: EntitiesDataSource, dispatcher: JobsDispatcher) {
+  constructor(entitiesDataSource: DeprecatedEntitiesDataSource, dispatcher: JobsDispatcher) {
     this.entitiesDataSource = entitiesDataSource;
     this.dispatcher = dispatcher;
   }

@@ -1,10 +1,6 @@
 import { z } from 'zod';
 import { Entity } from '#api/core/domain/entity/Entity.js';
-import {
-  EntityPermissionChecker,
-  Specification,
-} from '#api/core/domain/entityAccessPolicy/EntityPermissionChecker.js';
-import { MultiLanguageEntityDataSource } from '#api/entities.v2/contracts/MultiLanguageEntitiesDataSource.js';
+import { EntitiesDataSource } from '#api/core/application/contracts/EntitiesDataSource.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import { AbstractUseCase } from '../libs/UseCase.js';
 import { PropertyAssignmentInput } from './propertyAssignmentCreatorService/PropertyAssignmentCreatorService.js';
@@ -30,11 +26,10 @@ type Input = z.infer<typeof InputSchema> & {
 type Output = Entity[];
 
 type Deps = {
-  entitiesDS: MultiLanguageEntityDataSource;
+  entitiesDS: EntitiesDataSource;
   entitiesService: EntitiesService;
   templatesDS: TemplatesDataSource;
   propertyAssignmentCreatorServiceStrategy: PropertyAssignmentCreatorServiceStrategy;
-  entityPermissionChecker: EntityPermissionChecker;
 };
 
 class MultiUpdateEntity extends AbstractUseCase<Input, Output, Deps> {
@@ -45,14 +40,7 @@ class MultiUpdateEntity extends AbstractUseCase<Input, Output, Deps> {
 
     if (ids.length === 0) return [];
 
-    const grantedIds = await this.deps.entityPermissionChecker.filterEntities(
-      ids,
-      Specification.createDeleteSpecification(this.getActor())
-    );
-
-    if (grantedIds.length === 0) return [];
-
-    const entities = await (await this.deps.entitiesDS.getEntitiesBySharedIds(grantedIds)).all();
+    const entities = await (await this.deps.entitiesDS.getEntitiesBySharedIds(ids)).all();
 
     if (entities.length === 0) return [];
 
@@ -76,18 +64,19 @@ class MultiUpdateEntity extends AbstractUseCase<Input, Output, Deps> {
       }
 
       if (propertyAssignments.length > 0) {
-        entity.setPropertyAssignments(propertyAssignments, targetLanguage);
+        entity.setPropertyAssignments(propertyAssignments, targetLanguage, true);
       }
     }
 
-    await this.transactionManager.run(async () => {
-      await this.deps.entitiesService.updateMultiple(entities, {
+    return this.transactionManager.run(async () => {
+      const updatedIds = await this.deps.entitiesService.update(entities, {
         actorId: this.actorId,
+        actor: this.getActor(),
         targetLanguage,
       });
-    });
 
-    return entities;
+      return entities.filter(e => updatedIds.includes(e.sharedId));
+    });
   }
 }
 

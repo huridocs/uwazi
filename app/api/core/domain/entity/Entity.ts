@@ -91,10 +91,10 @@ class Entity {
     }, {});
   }
 
-  private validatePropertyAssignments(shouldValidateForRequired = false) {
+  private validatePropertyAssignments() {
     this.template.allProperties.forEach(property =>
       this.getPropertyAssignments(property.name).forEach(pa => {
-        property.validatePropertyAssignment(pa, shouldValidateForRequired);
+        property.validatePropertyAssignment(pa);
       })
     );
   }
@@ -214,7 +214,9 @@ class Entity {
   ) {
     propertyAssignments.forEach(pa => this.setValue(pa, targetLanguage));
 
-    this.validatePropertyAssignments(shouldValidateForRequired);
+    if (shouldValidateForRequired) {
+      this.validatePropertyAssignments();
+    }
   }
 
   /**
@@ -231,7 +233,9 @@ class Entity {
   ) {
     propertyAssignments.forEach(pa => this.setValueInAllLanguages(pa));
 
-    this.validatePropertyAssignments(shouldValidateForRequired);
+    if (shouldValidateForRequired) {
+      this.validatePropertyAssignments();
+    }
   }
 
   changeTemplate(template: Template) {
@@ -279,6 +283,19 @@ class Entity {
         this.setValue(property.createPropertyAssignment({ value, language }), language)
       );
     });
+  }
+
+  getReferencedRelationshipEntitySharedIds(language: LanguageISO6391): Set<string> {
+    const referenced = new Set<string>();
+    for (const property of this.template.getRelationshipProperties()) {
+      const assignment = this.getValue<RelationshipEntry>(property.name, language);
+      for (const entry of assignment.value) {
+        if (typeof entry.value === 'string') {
+          referenced.add(entry.value);
+        }
+      }
+    }
+    return referenced;
   }
 
   denormalizeRelationshipProps(relatedEntities: Record<IndexTypes, Entity | undefined>) {

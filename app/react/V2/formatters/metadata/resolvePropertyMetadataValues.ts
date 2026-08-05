@@ -1,17 +1,5 @@
 import type { Entity } from '#V2/api/entities/types.js';
-import type { BaseMetadataProperty } from '../types.js';
-
-type MetadataValue = {
-  value?: unknown;
-  label?: string;
-  parent?: { value?: unknown; label?: string };
-  type?: string;
-  icon?: unknown;
-  color?: string;
-  authorized?: false;
-  inheritedValue?: MetadataValue[];
-  inheritedType?: BaseMetadataProperty['inheritedType'];
-};
+import type { BaseMetadataProperty, MetadataValue } from '../types.js';
 
 const getInheritedChildren = (values: MetadataValue[]) =>
   values.flatMap(item => (Array.isArray(item?.inheritedValue) ? item.inheritedValue : []));

@@ -42,14 +42,17 @@ const fixtures: DBFixture = {
     ),
   ],
   files: [
-    fixturesFactory.fileDeprecated(
-      'fileToProcess',
-      'parentEntity',
-      'document',
-      fileNameToProcess,
-      'eng',
-      'fileNameToProcess.pdf'
-    ),
+    {
+      ...fixturesFactory.fileDeprecated(
+        'fileToProcess',
+        'parentEntity',
+        'document',
+        fileNameToProcess,
+        'eng',
+        'fileNameToProcess.pdf'
+      ),
+      mimetype: 'application/pdf',
+    },
     fixturesFactory.fileDeprecated(
       'unrelatedAttachment',
       'parentEntity',
@@ -57,7 +60,10 @@ const fixtures: DBFixture = {
       attachmentFile
     ),
   ],
-  users: [fixturesFactory.user('collab'), fixturesFactory.user('admin', UserRole.ADMIN)],
+  users: [
+    fixturesFactory.user({ username: 'collab', role: UserRole.COLLABORATOR }),
+    fixturesFactory.user({ username: 'admin', role: UserRole.ADMIN }),
+  ],
   connections: [{ entity: 'parentEntity', file: fixturesFactory.id('fileToProcess').toString() }],
   settings: [
     {

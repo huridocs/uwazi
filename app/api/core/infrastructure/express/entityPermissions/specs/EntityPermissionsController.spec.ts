@@ -1,18 +1,15 @@
 import type { Request, Response } from 'express';
 import { TestUtils } from '#api/common.v2/utils/Test.js';
-import { tenants } from '#api/tenants/index.js';
 import { GrantEntityPermissionsUseCaseFactory } from '#api/core/infrastructure/factories/GrantEntityPermissionsUseCaseFactory.js';
 import { BulkGrantEntityPermissionsUseCaseFactory } from '#api/core/infrastructure/factories/BulkGrantEntityPermissionsUseCaseFactory.js';
 import {
   EntityPermissionsController,
   EntityPermissionsRequestDto,
 } from '../EntityPermissionsController.js';
-import { entitiesPermissions } from '#api/permissions/entitiesPermissions.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { Logger } from '#api/core/libs/logger/contracts/Logger.js';
 
 type CreateSutProps = {
-  v2EntityPermissionEnabled?: boolean;
   requestDto?: Partial<EntityPermissionsRequestDto> | Record<string, unknown>;
 };
 
@@ -23,9 +20,6 @@ const createSut = (props?: CreateSutProps) => {
   const sut = new EntityPermissionsController({ request, response });
 
   ExecutionContext.attachContext(sut, 'handleAsync', {
-    tenant: {
-      featureFlags: { v2EntityPermission: props?.v2EntityPermissionEnabled ?? true },
-    } as any,
     factories: {
       logger: () => TestUtils.mockClass<Logger>({ info: jest.fn() }),
     } as any,
@@ -41,7 +35,6 @@ describe('EntityPermissionsController', () => {
   beforeEach(() => {
     grantSpy.mockResolvedValue(undefined);
     bulkGrantSpy.mockResolvedValue(undefined);
-    jest.spyOn(tenants, 'current').mockReturnValue({} as any);
 
     jest.spyOn(GrantEntityPermissionsUseCaseFactory, 'default').mockReturnValue({
       execute: grantSpy,
@@ -276,31 +269,6 @@ describe('EntityPermissionsController', () => {
       await sut.handleAsync();
 
       expect(response.json).toHaveBeenCalledWith(dto);
-    });
-  });
-
-  describe('v2EntityPermission feature flag', () => {
-    it('should call entitiesPermissions.set when the flag is not enabled', async () => {
-      const entitiesPermissionsSetSpy = jest
-        .spyOn(entitiesPermissions, 'set')
-        .mockImplementation(jest.fn());
-
-      const requestDto = {
-        ids: ['entity-1'],
-        permissions: [{ refId: 'user-1', type: 'user', level: 'read' }],
-      };
-
-      const { sut, response } = createSut({
-        requestDto,
-        v2EntityPermissionEnabled: false,
-      });
-
-      await sut.handleAsync();
-
-      expect(grantSpy).not.toHaveBeenCalled();
-      expect(bulkGrantSpy).not.toHaveBeenCalled();
-      expect(entitiesPermissionsSetSpy).toHaveBeenCalledWith(requestDto);
-      expect(response.json).toHaveBeenCalledWith(requestDto);
     });
   });
 });

@@ -1,0 +1,4 @@
+-- Migration {{nextSchemaDelta}}: {{dashName name}}
+-- {{description}}
+
+-- Add your schema changes here

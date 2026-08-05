@@ -1,10 +1,11 @@
+import { ObjectId } from 'mongodb';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { DBFixture } from '#api/utils/testing_db.js';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { User } from '#api/users.v2/model/User.js';
-import { MongoEntityDAO } from '../MongoEntityDAO.js';
+import { MongoEntitiesDAO } from '../MongoEntitiesDAO.js';
 
 const factory = getFixturesFactory();
 
@@ -130,9 +131,9 @@ const fixtures: DBFixture = {
 };
 
 const createSut = (user: User = adminUser) =>
-  new MongoEntityDAO(getConnection(), TransactionManagerFactory.default(), user);
+  new MongoEntitiesDAO(getConnection(), TransactionManagerFactory.default(), user);
 
-describe('MongoEntityDAO', () => {
+describe('MongoEntitiesDAO', () => {
   beforeAll(async () => {
     await testingEnvironment.setUp(fixtures);
   });
@@ -144,8 +145,7 @@ describe('MongoEntityDAO', () => {
     // eslint-disable-next-line max-statements
     it('should return entity with files separated as documents and attachments', async () => {
       const dao = createSut();
-      const result = dao.getWithFiles({ sharedId: 'entity_1', language: 'en' });
-      const entities = await result.toArray();
+      const entities = await dao.getWithFiles({ sharedId: 'entity_1', language: 'en' });
       const entity = entities[0];
 
       expect(entities).toHaveLength(1);
@@ -159,8 +159,7 @@ describe('MongoEntityDAO', () => {
 
     it('should return empty array when no entities match', async () => {
       const dao = createSut();
-      const result = dao.getWithFiles({ sharedId: 'non_existent', language: 'en' });
-      const entities = await result.toArray();
+      const entities = await dao.getWithFiles({ sharedId: 'non_existent', language: 'en' });
 
       expect(entities).toHaveLength(0);
     });
@@ -169,7 +168,7 @@ describe('MongoEntityDAO', () => {
   describe('permission filtering', () => {
     it('should return all entities for admin users', async () => {
       const dao = createSut(adminUser);
-      const entities = await dao.getWithFiles({ language: 'en' }).toArray();
+      const entities = await dao.getWithFiles({ language: 'en' });
       const sharedIds = entities.map(e => e.sharedId).sort();
 
       expect(sharedIds).toEqual(['entity_1', 'entity_2', 'entity_3', 'entity_4', 'entity_5']);
@@ -177,7 +176,7 @@ describe('MongoEntityDAO', () => {
 
     it('should return all entities for editor users', async () => {
       const dao = createSut(editorUser);
-      const entities = await dao.getWithFiles({ language: 'en' }).toArray();
+      const entities = await dao.getWithFiles({ language: 'en' });
       const sharedIds = entities.map(e => e.sharedId).sort();
 
       expect(sharedIds).toEqual(['entity_1', 'entity_2', 'entity_3', 'entity_4', 'entity_5']);
@@ -185,7 +184,7 @@ describe('MongoEntityDAO', () => {
 
     it('should return only published entities for public users', async () => {
       const dao = createSut(publicUser);
-      const entities = await dao.getWithFiles({ language: 'en' }).toArray();
+      const entities = await dao.getWithFiles({ language: 'en' });
       const sharedIds = entities.map(e => e.sharedId).sort();
 
       expect(sharedIds).toEqual(['entity_1', 'entity_5']);
@@ -193,7 +192,7 @@ describe('MongoEntityDAO', () => {
 
     it('should return published + explicitly shared entities for collaborator', async () => {
       const dao = createSut(collaboratorUser);
-      const entities = await dao.getWithFiles({ language: 'en' }).toArray();
+      const entities = await dao.getWithFiles({ language: 'en' });
       const sharedIds = entities.map(e => e.sharedId).sort();
 
       // entity_1: published + has user permission
@@ -205,7 +204,7 @@ describe('MongoEntityDAO', () => {
 
     it('should return only published entities for collaborator without matching permissions', async () => {
       const dao = createSut(otherCollaborator);
-      const entities = await dao.getWithFiles({ language: 'en' }).toArray();
+      const entities = await dao.getWithFiles({ language: 'en' });
       const sharedIds = entities.map(e => e.sharedId).sort();
 
       expect(sharedIds).toEqual(['entity_1', 'entity_5']);
@@ -213,14 +212,14 @@ describe('MongoEntityDAO', () => {
 
     it('should not return an unpublished entity to public user even when queried by sharedId', async () => {
       const dao = createSut(publicUser);
-      const entities = await dao.getWithFiles({ sharedId: 'entity_2', language: 'en' }).toArray();
+      const entities = await dao.getWithFiles({ sharedId: 'entity_2', language: 'en' });
 
       expect(entities).toHaveLength(0);
     });
 
     it('should return unpublished entity shared with collaborator via group permission', async () => {
       const dao = createSut(collaboratorUser);
-      const entities = await dao.getWithFiles({ sharedId: 'entity_4', language: 'en' }).toArray();
+      const entities = await dao.getWithFiles({ sharedId: 'entity_4', language: 'en' });
 
       expect(entities).toHaveLength(1);
       expect(entities[0].sharedId).toBe('entity_4');
@@ -229,7 +228,7 @@ describe('MongoEntityDAO', () => {
 
   describe('streamAll()', () => {
     it('returns all entity documents regardless of permissions or published status', async () => {
-      const dao = new MongoEntityDAO(
+      const dao = new MongoEntitiesDAO(
         getConnection(),
         TransactionManagerFactory.default(),
         User.createFrom(null)
@@ -240,7 +239,7 @@ describe('MongoEntityDAO', () => {
     });
 
     it('returns results sorted by sharedId so language variants are contiguous', async () => {
-      const dao = new MongoEntityDAO(
+      const dao = new MongoEntitiesDAO(
         getConnection(),
         TransactionManagerFactory.default(),
         User.createFrom(null)
@@ -251,7 +250,7 @@ describe('MongoEntityDAO', () => {
     });
 
     it('with afterSharedId returns only entities whose sharedId is lexically after the checkpoint', async () => {
-      const dao = new MongoEntityDAO(
+      const dao = new MongoEntitiesDAO(
         getConnection(),
         TransactionManagerFactory.default(),
         User.createFrom(null)
@@ -262,7 +261,7 @@ describe('MongoEntityDAO', () => {
     });
 
     it('with afterSharedId returns empty cursor when no entities follow the checkpoint', async () => {
-      const dao = new MongoEntityDAO(
+      const dao = new MongoEntitiesDAO(
         getConnection(),
         TransactionManagerFactory.default(),
         User.createFrom(null)
@@ -277,7 +276,7 @@ describe('MongoEntityDAO', () => {
       });
 
       it('returns an empty cursor', async () => {
-        const dao = new MongoEntityDAO(
+        const dao = new MongoEntitiesDAO(
           getConnection(),
           TransactionManagerFactory.default(),
           User.createFrom(null)
@@ -491,6 +490,25 @@ describe('MongoEntityDAO', () => {
       const dao = createSut();
       const entities = await dao.findBySharedIds(['non_existent']);
       expect(entities).toHaveLength(0);
+    });
+  });
+
+  describe('getByInternalId()', () => {
+    it('returns the entity matching the provided _id with the requested projection', async () => {
+      const dao = createSut();
+      const [entity] = await dao.findBySharedIds(['entity_1']);
+
+      const found = await dao.getByInternalId(entity._id.toString(), { sharedId: 1, language: 1 });
+
+      expect(found?.sharedId).toBe('entity_1');
+      expect(found?.language).toBe('en');
+    });
+
+    it('returns null when no entity matches the provided _id', async () => {
+      const dao = createSut();
+      const found = await dao.getByInternalId(new ObjectId().toString());
+
+      expect(found).toBeNull();
     });
   });
 });

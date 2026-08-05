@@ -19,8 +19,8 @@ const MetadataEntityHeader = ({
 }: MetadataEntityHeaderProps) => {
   const isStacked = layout === 'stacked';
   const cardClassName = isStacked
-    ? 'bg-(--color-theme-surface-warm) flex flex-col items-start gap-(--spacing-theme-2)'
-    : 'bg-(--color-theme-surface-warm) flex flex-row! flex-wrap items-center gap-(--spacing-theme-2)';
+    ? 'bg-(--color-theme-surface-warm) flex flex-col items-start gap-2'
+    : 'bg-(--color-theme-surface-warm) flex flex-row! flex-wrap items-center gap-2';
   const dlClassName = isStacked ? 'm-0 min-w-0 w-full' : 'm-0 min-w-0 flex-1';
 
   return (

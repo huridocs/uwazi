@@ -13,6 +13,7 @@ type Callbacks = BaseCallbacks & {
     batchIndex: number;
     batchCount: number;
     entitiesCreatedInBatch: number;
+    entitiesUpdatedInBatch: number;
   }) => void;
 };
 

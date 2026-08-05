@@ -1,12 +1,13 @@
 import { config } from '#api/config.js';
 import { DB } from '#api/odm/index.js';
+import { PostgresDB } from '#api/infrastructure/PostgresDB.js';
 import { permissionsContext } from '#api/permissions/permissionsContext.js';
 import { elastic, search } from '#api/search/index.js';
 import { IndexError } from '#api/search/entitiesIndex.js';
 import { tenants } from '#api/tenants/tenantContext.js';
 import elasticMapping from './elastic_mapping/elastic_mapping.js';
 import { legacyLogger } from '#api/log/index.js';
-import templatesModel from '#api/core/v1_layer/templates/templates.js';
+import templatesApi from '#api/core/v1_layer/templates/templates.js';
 import elasticMapFactory from './elastic_mapping/elasticMapFactory.js';
 import { tenantsModel } from '#api/tenants/tenantsModel.js';
 
@@ -43,6 +44,7 @@ const endScriptProcedures = async () =>
       try {
         await restoreSettings();
         await DB.disconnect();
+        await PostgresDB.disconnect();
         resolve();
       } catch (err) {
         reject(err);
@@ -86,7 +88,7 @@ const prepareIndex = async () => {
   await elastic.indices.create({ body: elasticMapping });
 
   process.stdout.write(' - Custom templates mapping\r\n');
-  const templates = await templatesModel.get();
+  const templates = await templatesApi.get();
   const templatesMapping = await elasticMapFactory.mapping(templates);
   await elastic.indices.putMapping({ body: templatesMapping });
   process.stdout.write(' [done]\n');

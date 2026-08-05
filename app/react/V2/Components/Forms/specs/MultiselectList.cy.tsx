@@ -372,7 +372,7 @@ describe('MultiselectList.cy.tsx', { viewportWidth: 450, viewportHeight: 650 }, 
           <MultiselectList onChange={() => {}} items={[]} />
         </div>
       );
-      cy.get('ul').should('have.class', 'w-full grow px-2 pt-2 overflow-y-auto');
+      cy.get('ul').should('have.class', 'w-full grow overflow-y-auto px-2 pt-2');
     });
   });
 

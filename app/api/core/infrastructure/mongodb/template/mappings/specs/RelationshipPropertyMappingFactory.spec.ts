@@ -1,7 +1,5 @@
-import { ResultSet } from '#api/core/application/contracts/ResultSet.js';
 import { partialImplementation } from '#api/common.v2/testing/partialImplementation.js';
 import { TemplatesDataSource } from '#api/core/application/contracts/TemplatesDataSource.js';
-import { Property } from '#api/core/domain/template/Property.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { propertyMappings } from 'database/elastic_mapping/mappings';
 import { RelationshipPropertyMappingFactory } from '../RelationshipPropertyMappingFactory.js';
@@ -16,10 +14,7 @@ describe('when creating mappings for denormalied properties', () => {
       fixtureFactory.v2.application.property('prop2', 'numeric', 'template2'),
     ]);
   const templatesDataSourceMock = partialImplementation<TemplatesDataSource>({
-    getAllProperties: () =>
-      partialImplementation<ResultSet<Property>>({
-        all: getAllPropertiesMock,
-      }),
+    getAllProperties: getAllPropertiesMock,
   });
   const propertiesMappingsMock = partialImplementation<typeof propertyMappings>({
     date: jest.fn().mockImplementation(() => 'date mapping'),

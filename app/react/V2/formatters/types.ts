@@ -38,9 +38,10 @@ interface BaseMetadataProperty {
   readonly label: string;
   readonly type: AllowedPropertyTypes;
   readonly propertyGroup?: Array<{
+    _id?: string;
     name: string;
     label: string;
-    inhertied?: boolean;
+    inherited?: boolean;
     content?: string;
     property?: string;
   }>;
@@ -172,8 +173,7 @@ interface EntityFile {
 }
 
 type RelationshipMetadataProperty =
-  | RelatedRelationshipMetadataProperty
-  | InheritedRelationshipMetadataProperty;
+  RelatedRelationshipMetadataProperty | InheritedRelationshipMetadataProperty;
 
 type MetadataProperty =
   | SimpleMetadataProperty
@@ -189,6 +189,18 @@ type MetadataProperty =
   | MultiSelectMetadataProperty
   | LinkMetadataProperty
   | RelationshipMetadataProperty;
+
+type MetadataValue = {
+  value?: unknown;
+  label?: string;
+  parent?: { value?: unknown; label?: string };
+  type?: string;
+  icon?: unknown;
+  color?: string;
+  authorized?: false;
+  inheritedValue?: MetadataValue[];
+  inheritedType?: BaseMetadataProperty['inheritedType'];
+};
 
 export type {
   MetadataProperty,
@@ -209,4 +221,5 @@ export type {
   PreviewMetadataProperty,
   EntityFile,
   RelatedRelationshipMetadataProperty,
+  MetadataValue,
 };

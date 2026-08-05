@@ -38,6 +38,10 @@ class Specification {
   static createDeleteSpecification(actor: User) {
     return new Specification({ type: GrantType.User, level: AccessLevel.Write, actor });
   }
+
+  static createWriteSpecification(actor: User) {
+    return new Specification({ type: GrantType.User, level: AccessLevel.Write, actor });
+  }
 }
 
 interface EntityPermissionChecker {

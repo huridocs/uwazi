@@ -1,18 +1,18 @@
 /**
  * @jest-environment jsdom
  */
-/* eslint-disable max-nested-callbacks */
+
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import backend from 'fetch-mock';
 import Immutable from 'immutable';
+import { actions as formActions } from 'react-redux-form';
 import { api } from '#app/utils/api.js';
 import { mockID } from '#shared/uniqueID.js';
 import { getStore } from '#shared/atomStore/index.js';
-import { documentsAPI } from '#app/Documents/index.js';
+import { EntitiesAPI } from '#app/Entities/EntitiesAPI.js';
 import { APIURL } from '#app/config.js';
 import * as notificationsTypes from '#app/Notifications/actions/actionTypes.js';
-import { actions as formActions } from 'react-redux-form';
 import { actions as relationshipActions } from '#app/Relationships/index.js';
 import { RequestParams } from '#app/utils/RequestParams.js';
 import { deletedEntityAtom } from '#V2/atoms/index.js';
@@ -314,13 +314,13 @@ describe('documentActions', () => {
     describe('saveDocument', () => {
       it('should save the document (omitting fullText) and dispatch a notification on success', done => {
         const defaultDocument = { _id: 'file1', originalName: 'File 1' };
-        const docWithExtractedMetadata = {
+        const docWithPropertySelections = {
           ...defaultDocument,
-          extractedMetadata: { title: 'Title' },
+          propertySelections: { title: 'Title' },
         };
         spyOn(libraryActions, 'saveEntityWithFiles').and.returnValue(
           Promise.resolve({
-            entity: { sharedId: 'responseId', documents: [docWithExtractedMetadata] },
+            entity: { sharedId: 'responseId', documents: [docWithPropertySelections] },
           })
         );
         spyOn(relationshipActions, 'reloadRelationships').and.returnValue({
@@ -352,8 +352,8 @@ describe('documentActions', () => {
             type: 'viewer/doc/UPDATE',
             value: {
               sharedId: 'responseId',
-              defaultDoc: docWithExtractedMetadata,
-              documents: [docWithExtractedMetadata],
+              defaultDoc: docWithPropertySelections,
+              documents: [docWithPropertySelections],
             },
           },
           { type: 'reloadRelationships' },
@@ -370,7 +370,7 @@ describe('documentActions', () => {
           .then(() => {
             expect(libraryActions.saveEntityWithFiles).toHaveBeenCalledWith(
               {
-                __extractedMetadata: { fileID: 'file1' },
+                propertySelections: { fileID: 'file1' },
                 attachments: [{ _id: '1', originalname: 'supportingFile' }],
                 name: 'doc',
               },
@@ -488,7 +488,7 @@ describe('documentActions', () => {
     describe('deleteDocument', () => {
       const atomStore = getStore();
       it('should delete the document and dispatch a notification on success', done => {
-        spyOn(documentsAPI, 'delete').and.callFake(async () => Promise.resolve('response'));
+        spyOn(EntitiesAPI, 'delete').and.callFake(async () => Promise.resolve('response'));
         spyOn(atomStore, 'set');
         const doc = { sharedId: 'sharedId', name: 'doc' };
 
@@ -507,7 +507,7 @@ describe('documentActions', () => {
           .dispatch(actions.deleteDocument(doc))
           .then(() => {
             expect(atomStore.set).toHaveBeenCalledWith(deletedEntityAtom, 'sharedId');
-            expect(documentsAPI.delete).toHaveBeenCalledWith(
+            expect(EntitiesAPI.delete).toHaveBeenCalledWith(
               new RequestParams({ sharedId: 'sharedId' })
             );
             expect(store.getActions()).toEqual(expectedActions);

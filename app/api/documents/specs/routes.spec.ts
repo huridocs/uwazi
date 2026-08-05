@@ -72,4 +72,26 @@ describe('document routes', () => {
       );
     });
   });
+
+  describe('GET/fulltext', () => {
+    it('should return concatenated document plaintext', async () => {
+      const res: SuperTestResponse = await request(app)
+        .get('/api/documents/fulltext')
+        .query({ _id: document1.toString() });
+
+      expect(res.body).toEqual({ data: 'page 1\fpage 2' });
+    });
+
+    it('should return error when file does not exists', async () => {
+      const res: SuperTestResponse = await request(app)
+        .get('/api/documents/fulltext')
+        .query({ _id: db.id().toString() });
+
+      expect(res.body).toEqual(
+        expect.objectContaining({
+          error: 'document does not exists',
+        })
+      );
+    });
+  });
 });

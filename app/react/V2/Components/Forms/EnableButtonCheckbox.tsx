@@ -53,7 +53,7 @@ const buttonStyles: Record<ButtonTone, CSSProperties> = {
   checked: {
     backgroundColor: 'var(--color-theme-feedback-success)',
     borderColor: 'var(--color-theme-feedback-success)',
-    color: 'var(--color-theme-button-success-fg)',
+    color: 'var(--color-theme-feedback-success-fg)',
   },
   disabled: {
     backgroundColor: 'transparent',
@@ -64,7 +64,7 @@ const buttonStyles: Record<ButtonTone, CSSProperties> = {
   hover: {
     backgroundColor: 'var(--color-theme-feedback-success)',
     borderColor: 'var(--color-theme-feedback-success)',
-    color: 'var(--color-theme-button-success-fg)',
+    color: 'var(--color-theme-feedback-success-fg)',
   },
   default: {
     backgroundColor: 'var(--color-theme-surface-raised)',

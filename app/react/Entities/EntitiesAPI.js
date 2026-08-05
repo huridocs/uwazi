@@ -31,11 +31,6 @@ const EntitiesAPI = {
     return response.json.data;
   },
 
-  uploads() {
-    const url = 'entities/uploads';
-    return api.get(url).then(response => response.json.rows);
-  },
-
   search(requestParams) {
     const url = 'entities/search';
     return api.get(url, requestParams).then(response => response.json);

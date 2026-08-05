@@ -1,5 +1,5 @@
 import { ArrayUtils } from '#api/common.v2/utils/Array.js'; // Todo
-import { MultiLanguageEntityDataSource } from '#api/entities.v2/contracts/MultiLanguageEntitiesDataSource.js';
+import { EntitiesDataSource } from '#api/core/application/contracts/EntitiesDataSource.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import { TemplateUpdatedEventContext } from '../domain/template/events/TemplateUpdatedEvent.js';
 import { TemplateDiff } from '../domain/template/TemplateDiff.js';
@@ -10,7 +10,7 @@ import { Template } from '../domain/template/Template.js';
 type Deps = {
   dispatcher: Dispatcher;
   templatesDS: TemplatesDataSource;
-  entitiesDS: MultiLanguageEntityDataSource;
+  entitiesDS: EntitiesDataSource;
 };
 
 type Input = {
@@ -62,7 +62,7 @@ class TemplatePostProcessService {
       }
 
       if (context?.fullReindex) {
-        let templates = await this.deps.templatesDS.getAll().all();
+        let templates = await this.deps.templatesDS.getAll();
         if (diff.hasAnyPostProcessChanges()) {
           templates = templates.filter(t => t.id !== after.id);
         }

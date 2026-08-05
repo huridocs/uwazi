@@ -17,7 +17,7 @@ const insertChart = (chart: string, chartName: string) => {
   cy.get('input[name="title"]').should('be.visible').click();
   cy.get('input[name="title"]').type('{selectAll}{backspace}', { delay: 0 });
   cy.get('input[name="title"]').type(chartName, { delay: 0 });
-  cy.contains('Markdown').click();
+  cy.contains('[role="tab"]', 'HTML').click();
   typeInEditor('html', `<Dataset />\n${chart}`, false, 'property', true);
   // eslint-disable-next-line cypress/no-unnecessary-waiting
   cy.wait(501);
@@ -104,7 +104,7 @@ describe('Graphs in Page ', () => {
       dismissModalIfVisible();
       cy.contains('tr', 'Bar chart graph').contains('button', 'Edit').click();
       cy.contains('[role="tab"]', 'Javascript').click();
-      cy.get('#panel-Advanced .monaco-editor textarea', { timeout: 10000 }).should('exist');
+      cy.get('#panel-Javascript .monaco-editor textarea', { timeout: 10000 }).should('exist');
       typeInEditor('javascript', updateDatasetScript, true, 'updatePageDatasets', true);
       cy.get('[data-testid="settings-content-footer"]')
         .contains('button', 'Save')

@@ -1,3 +1,3 @@
-import documents from './documents.js';
+import { documents } from './documents.js';
 
 export default documents;

@@ -1,6 +1,6 @@
 import { FilesDataSource } from '#api/core/application/contracts/FilesDataSource.js';
 import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js';
-import { MultiLanguageEntityDataSource } from '#api/entities.v2/contracts/MultiLanguageEntitiesDataSource.js';
+import { EntitiesDataSource } from '#api/core/application/contracts/EntitiesDataSource.js';
 import {
   HeartbeatCallback,
   JobInfo,
@@ -16,7 +16,7 @@ type Params = {
 
 type JobDependencies = {
   filesDS: FilesDataSource;
-  entitiesDS: MultiLanguageEntityDataSource;
+  entitiesDS: EntitiesDataSource;
   settingsDS: SettingsDataSource;
   transactionManager: TransactionManager;
 };
@@ -31,7 +31,7 @@ export class EntityPreviewBatchHandler extends V1CompatTenantDispatchable<Params
 
     await this.deps.transactionManager.run(async () => {
       const defaultLanguage = await this.deps.settingsDS.getDefaultLanguageKey();
-      const allThumbnails = await this.deps.filesDS.getThumbnails(sharedIds).all();
+      const allThumbnails = await this.deps.filesDS.getThumbnails(sharedIds);
       const entities = (await this.deps.entitiesDS.getAllBySharedId(sharedIds)).getDataOrThrow();
 
       const thumbnailsByEntity = allThumbnails.reduce<Map<string, typeof allThumbnails>>(

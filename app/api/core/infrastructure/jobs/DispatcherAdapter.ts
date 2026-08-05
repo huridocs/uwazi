@@ -17,6 +17,14 @@ import { DenormalizeThesaurusEntitiesHandler } from './DenormalizeThesaurusEntit
 import { PDFPostProcessJobHandler } from './PDFPostProcessJobHandler.js';
 import { RelationshipSyncJob } from './RelationshipSyncJob.js';
 import { TemplatePostProcessEntitiesJob } from './TemplatePostProcessEntitiesJob.js';
+import {
+  SendWelcomeEmailHandler,
+  SendWelcomeEmailHandlerParams,
+} from './SendWelcomeEmailHandler.js';
+import {
+  SendPasswordRecoveryEmailHandler,
+  SendPasswordRecoveryEmailHandlerParams,
+} from './SendPasswordRecoveryEmailHandler.js';
 
 class DispatcherAdapter implements Dispatcher {
   constructor(private jobsDispatcher: JobsDispatcher) {}
@@ -66,6 +74,14 @@ class DispatcherAdapter implements Dispatcher {
 
   async deleteLanguageEntities(params: DeleteLanguageEntitiesParams): Promise<void> {
     await this.jobsDispatcher.dispatch(DeleteLanguageEntitiesJob, params);
+  }
+
+  async sendWelcomeEmail(params: SendWelcomeEmailHandlerParams): Promise<void> {
+    await this.jobsDispatcher.dispatch(SendWelcomeEmailHandler, params);
+  }
+
+  async sendPasswordRecoveryEmail(params: SendPasswordRecoveryEmailHandlerParams): Promise<void> {
+    await this.jobsDispatcher.dispatch(SendPasswordRecoveryEmailHandler, params);
   }
 }
 

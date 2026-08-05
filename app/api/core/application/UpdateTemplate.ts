@@ -1,5 +1,5 @@
-import { MultiLanguageEntityDataSource } from '#api/entities.v2/contracts/MultiLanguageEntitiesDataSource.js';
-import { RelationshipTypesDataSource } from '#api/relationshiptypes.v2/contracts/RelationshipTypesDataSource.js';
+import { EntitiesDataSource } from '#api/core/application/contracts/EntitiesDataSource.js';
+import { RelationshipTypesDataSource } from '#api/core/application/contracts/RelationshipTypesDataSource.js';
 import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js'; // Todo
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import { CommonPropertyFactory } from '../domain/template/CommonPropertyFactory.js';
@@ -22,7 +22,7 @@ type Output = Template;
 type Deps = {
   templatesDS: TemplatesDataSource;
   thesauriDS: ThesauriDataSource;
-  entitiesDS: MultiLanguageEntityDataSource;
+  entitiesDS: EntitiesDataSource;
   translationService: TranslationService;
   settingsDS: SettingsDataSource;
   relationshipTypesDS: RelationshipTypesDataSource;

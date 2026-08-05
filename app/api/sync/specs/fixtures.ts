@@ -1,8 +1,7 @@
-/* eslint-disable max-lines */
+import { ObjectId } from 'mongodb';
 import db, { DBFixture } from '#api/utils/testing_db.js';
 import { UpdateLog } from '#api/updatelogs/index.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
-import { ObjectId } from 'mongodb';
 
 const oldDoc1 = db.id();
 const oldDoc2 = db.id();
@@ -922,7 +921,6 @@ const orderedHostIds = {
   connection1: db.id(),
   connection2: db.id(),
   hub: db.id(),
-  elasticSlots: db.id(),
   entity1: db.id(),
   entity2: db.id(),
   syncs: db.id(),
@@ -1015,16 +1013,6 @@ const orderedHostFixtures: DBFixture = {
       template: orderedHostIds.relationtypes,
     },
   ],
-  elasticSlots: [
-    {
-      _id: orderedHostIds.elasticSlots,
-      type: 'txt',
-      slotName: 'slot_txt_1',
-      assignedTo: null,
-      language: null,
-      rand: 0.5,
-    },
-  ],
   entities: [
     {
       _id: orderedHostIds.entity1,
@@ -1096,12 +1084,6 @@ const orderedHostFixtures: DBFixture = {
       timestamp: 20,
       namespace: 'connections',
       mongoId: orderedHostIds.connection2,
-      deleted: false,
-    },
-    {
-      timestamp: 10,
-      namespace: 'elasticSlots',
-      mongoId: orderedHostIds.elasticSlots,
       deleted: false,
     },
     {

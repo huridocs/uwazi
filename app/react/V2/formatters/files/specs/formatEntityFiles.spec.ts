@@ -323,9 +323,84 @@ describe('formatEntityFiles', () => {
     ]);
   });
 
+  it('should list a media/image metadata once in the attachments list', () => {
+    const entityWithLinkedMedia = {
+      ...entity2,
+      metadata: {
+        image: [{ value: '/api/files/1.jpg' }],
+        video: [{ value: '/api/files/2.mp4' }],
+      },
+    } as Entity;
+
+    const result = formatEntityFiles(entityWithLinkedMedia, templates, 'es');
+
+    expect(result).toEqual([
+      {
+        fileType: 'attachment',
+        file: entity2.attachments![0],
+      },
+      {
+        fileType: 'attachment',
+        file: entity2.attachments![1],
+      },
+    ]);
+  });
+
   it('should ignore media fields with link media', () => {
     const result = formatEntityFiles(entity3 as Entity, templates, 'es');
     expect(result).toEqual([]);
+  });
+
+  it('should parse media values with timelinks as the underlying file', () => {
+    const entityWithTimelinks = {
+      ...entity2,
+      metadata: {
+        ...entity2.metadata,
+        video: [
+          {
+            value: '(/api/files/17779031126523a3ak1uto9k.mp4, {"timelinks":{"00:01:02":"intro"}})',
+          },
+        ],
+      },
+    } as Entity;
+
+    const result = formatEntityFiles(entityWithTimelinks, templates, 'es');
+
+    expect(result).toEqual([
+      {
+        fileType: 'image',
+        file: { filename: '17779031126528fi9ngtnfu.jpg', mimetype: 'image/jpeg' },
+      },
+      {
+        fileType: 'media',
+        file: { filename: '17779031126523a3ak1uto9k.mp4', mimetype: 'video/mp4' },
+      },
+      {
+        fileType: 'attachment',
+        file: entity2.attachments![0],
+      },
+      {
+        fileType: 'attachment',
+        file: entity2.attachments![1],
+      },
+    ]);
+  });
+
+  it('should ignore remote media values wrapped with timelinks', () => {
+    const entityWithRemoteTimelinks = {
+      ...entity3,
+      metadata: {
+        ...entity3.metadata,
+        video: [
+          {
+            value:
+              '(https://www.youtube.com/watch?v=054Fkd3Bwjk, {"timelinks":{"00:00:10":"start"}})',
+          },
+        ],
+      },
+    } as Entity;
+
+    expect(formatEntityFiles(entityWithRemoteTimelinks, templates, 'es')).toEqual([]);
   });
 
   it('should include supporting files that are links', () => {

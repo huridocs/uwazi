@@ -1,11 +1,9 @@
 import { ObjectId } from 'mongodb';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { GrantEntityPermissionsUseCaseFactory } from '#api/core/infrastructure/factories/GrantEntityPermissionsUseCaseFactory.js';
-import { EntityAccessPolicyDataSourceFactory } from '#api/core/infrastructure/factories/EntityAccessPolicyDataSourceFactory.js';
 import { User } from '#api/users.v2/model/User.js';
 import { EntityAccessPolicyNotFoundError } from '#api/core/domain/entityAccessPolicy/errors.js';
 import { InsufficientPermissionsToPublishError } from '#api/core/application/errors.js';
-import { EntityIndexerServiceFactory } from '#api/core/infrastructure/factories/EntityIndexerServiceFactory.js';
 import { GrantType } from '#api/core/domain/entityAccessPolicy/GrantType.js';
 import { AccessLevel } from '#api/core/domain/entityAccessPolicy/AccessLevel.js';
 
@@ -35,20 +33,9 @@ const collaborator = new User('collab-id', 'collaborator', []);
 
 const createSut = (actor: User) => {
   const deps = testingEnvironment.runWithContext(
-    () => {
-      const entityIndexerService = EntityIndexerServiceFactory.forTests();
-
-      const entityAccessPolicyDS = EntityAccessPolicyDataSourceFactory.default({
-        entityIndexerService,
-      });
-
-      return {
-        sut: GrantEntityPermissionsUseCaseFactory.default({
-          entityAccessPolicyDS,
-        }),
-        entityIndexerService,
-      };
-    },
+    () => ({
+      sut: GrantEntityPermissionsUseCaseFactory.default(),
+    }),
     { actor }
   );
 

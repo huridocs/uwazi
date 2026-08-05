@@ -21,6 +21,15 @@ export class EntityNotFoundError extends DomainError {
   }
 }
 
+export class CannotCreateEntityFromNonPDFError extends DomainError {
+  constructor() {
+    super(
+      'Cannot create entity from non-PDF file.',
+      'entity.entity.cannot_create_entity_from_non_pdf_error'
+    );
+  }
+}
+
 export class AttachmentNotFoundError extends DomainError {
   constructor(index: number, available: InputFile[]) {
     super(

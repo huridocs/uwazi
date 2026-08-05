@@ -4,10 +4,25 @@ import { dirname } from 'path';
 // eslint-disable-next-line node/no-restricted-import
 import { readFileSync } from 'fs';
 import { hostname } from 'os';
+import { z } from 'zod';
 import { Tenant } from './tenants/tenantContext.js';
 import uniqueID from '#shared/uniqueID.js';
 
 dotenv.config();
+
+const PostgresEnvSchema = z
+  .object({
+    POSTGRES_HOST: z.string().default('127.0.0.1'),
+    POSTGRES_PORT: z.coerce.number().default(5432),
+    POSTGRES_DB: z.string().default('uwazi_development'),
+    POSTGRES_USER: z.string().default('migrator_user'),
+    POSTGRES_PASSWORD: z.string().default('migrator_user'),
+    POSTGRES_APP_USER: z.string().default('app_user'),
+    POSTGRES_APP_PASSWORD: z.string().default('app_user'),
+  })
+  .passthrough();
+
+const pgEnv = PostgresEnvSchema.parse(process.env);
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -23,7 +38,13 @@ const {
   FEATURE_FLAG_FILE_CACHE_HEADERS,
   FEATURE_FLAG_PARAGRAPH_EXTRACTION,
   FEATURE_FLAG_THEME_CUSTOMIZATION,
-  FEATURE_FLAG_V2_CSV_IMPORT,
+  FEATURE_FLAG_AI_ASSISTANT,
+  FEATURE_FLAG_POSTGRES_FILES,
+  FEATURE_FLAG_POSTGRES_THESAURI,
+  FEATURE_FLAG_POSTGRES_ENTITIES,
+  FEATURE_FLAG_POSTGRES_TEMPLATES,
+  FEATURE_FLAG_POSTGRES_RELATIONSHIP_TYPES,
+  AI_ASSISTANT_SERVICE_URL,
   DEV_FLAG_TESTING,
   FILES_ROOT_PATH,
   JSON_LOGS,
@@ -99,16 +120,6 @@ export const config = {
     },
   },
 
-  elasticSearchMultiTenant: {
-    nodes: process.env.ELASTIC_SEARCH_NODES
-      ? process.env.ELASTIC_SEARCH_NODES.split(',')
-      : ['http://localhost:9200'],
-    requestTimeout: 60000,
-    auth: {
-      apiKey: process.env.ELASTIC_SEARCH_API_KEY || '',
-    },
-  },
-
   SHARED_DB: process.env.NODE_ENV === 'test' ? 'uwazi_shared_db_testing' : 'uwazi_shared_db',
 
   multiTenant: process.env.MULTI_TENANT || false,
@@ -134,22 +145,36 @@ export const config = {
       fileCacheHeaders: FEATURE_FLAG_FILE_CACHE_HEADERS === 'true' || false,
       themeCustomization: FEATURE_FLAG_THEME_CUSTOMIZATION === 'true' || false,
       testing: DEV_FLAG_TESTING === 'true' || false,
-      v2UpdateEntity: false,
-      v2CSVImport: FEATURE_FLAG_V2_CSV_IMPORT === 'true' || false,
-      v2UpdateThesaurus: false,
-      v2GetEntity: false,
-      v2MultipleUpdateEntity: false,
-      v2ElasticSearch: false,
-      v2DeleteEntity: false,
-      v2UpdateFile: false,
-      v2Languages: false,
-      v2EntityPermission: false,
+      postgresFiles: FEATURE_FLAG_POSTGRES_FILES === 'true' || false,
+      postgresThesauri: FEATURE_FLAG_POSTGRES_THESAURI === 'true' || false,
+      postgresEntities: FEATURE_FLAG_POSTGRES_ENTITIES === 'true' || false,
+      postgresTemplates: FEATURE_FLAG_POSTGRES_TEMPLATES === 'true' || false,
+      postgresRelationshipTypes: FEATURE_FLAG_POSTGRES_RELATIONSHIP_TYPES === 'true' || false,
+      postgresPasswordRecoveries: false,
+      postgresUsers: false,
       newHeader: NEW_HEADER === 'true' || false,
+      aiAssistant: FEATURE_FLAG_AI_ASSISTANT === 'true' || false,
+      aiAssistantServiceUrl: AI_ASSISTANT_SERVICE_URL || undefined,
+      v2UsersCreate: false,
+      v2UsersDelete: false,
+      v2UsersGet: false,
+      v2UsersUpdate: false,
+      telemetry: {
+        enabled: false,
+        sampleRate: 0.5,
+      },
+      prometheus: {
+        enabled: false,
+        sampleRate: 0.5,
+      },
+      v2UsersUtilityRoutes: false,
+      v2Auth2fa: false,
     },
   },
   externalServices: (process.env.EXTERNAL_SERVICES || '').toLowerCase() === 'true',
   externalServicesUrls: {
     paragraphExtraction: process.env.PARAGRAPH_EXTRACTION_URL || 'http://localhost:5056',
+    aiAssistant: AI_ASSISTANT_SERVICE_URL || 'http://localhost:5051',
   },
 
   redis: {
@@ -173,4 +198,18 @@ export const config = {
   },
   githubToken: process.env.GITHUB_TOKEN || '',
   queueName: QUEUE_NAME || 'uwazi_jobs',
+
+  postgres: {
+    host: pgEnv.POSTGRES_HOST,
+    port: pgEnv.POSTGRES_PORT,
+    database: pgEnv.POSTGRES_DB,
+    admin: {
+      user: pgEnv.POSTGRES_USER,
+      password: pgEnv.POSTGRES_PASSWORD,
+    },
+    app: {
+      user: pgEnv.POSTGRES_APP_USER,
+      password: pgEnv.POSTGRES_APP_PASSWORD,
+    },
+  },
 };

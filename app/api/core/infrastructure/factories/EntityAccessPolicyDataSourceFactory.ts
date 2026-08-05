@@ -6,7 +6,6 @@ import {
   MongoEntityAccessPolicyDataSourceDeps,
 } from '../mongodb/entityAccessPolicy/MongoEntityAccessPolicyDataSource.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
-import { EntityIndexerServiceFactory } from './EntityIndexerServiceFactory.js';
 import { search } from '#api/search/search.js';
 
 export class EntityAccessPolicyDataSourceFactory {
@@ -17,12 +16,10 @@ export class EntityAccessPolicyDataSourceFactory {
     const transactionManager =
       overrides?.transactionManager ??
       (ExecutionContext.transactionManager as MongoTransactionManager);
-    const entityIndexerService = EntityIndexerServiceFactory.default();
 
     return new MongoEntityAccessPolicyDataSource({
       db,
       transactionManager,
-      entityIndexerService,
       searchV1: search,
       ...overrides,
     });

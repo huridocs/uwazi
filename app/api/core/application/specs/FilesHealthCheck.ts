@@ -1,4 +1,4 @@
-import { StoredFile } from '#api/core/domain/files/StoredFile.js';
+import { StoredFile } from '#api/core/infrastructure/files/StoredFile.js';
 import { URLAttachment } from '#api/core/domain/files/URLAttachment.js';
 import { FilesDataSource } from '../contracts/FilesDataSource.js';
 import { FileStorage } from '../contracts/FileStorage.js';
@@ -111,7 +111,7 @@ export class FilesHealthCheck {
       },
       {} as { [k: string]: number }
     );
-    const dbFiles = await this.filesDS.getAll().all();
+    const dbFiles = await this.filesDS.getAll();
     const storageFilesIndexedByPath = storageFiles.reduce(
       (memo, file) => {
         // eslint-disable-next-line no-param-reassign

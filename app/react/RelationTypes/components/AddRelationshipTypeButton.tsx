@@ -42,7 +42,6 @@ const AddRelationshipTypeButton = ({ relationshipTypeSave, relationshipTypes }: 
   const onSave: SubmitHandler<FormInputs> = data => {
     const relationship = {
       name: data.relationshipType,
-      properties: [],
     };
     relationshipTypeSave(relationship);
     setOpen(false);

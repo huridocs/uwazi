@@ -1,22 +1,23 @@
 /* eslint-disable max-lines */
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   SelectionRegion,
   HandleTextSelection,
   TextSelection,
 } from '@huridocs/react-text-selection-handler';
 import { ExclamationTriangleIcon } from '@heroicons/react/24/outline';
+import 'pdfjs-dist/web/pdf_viewer.css';
 import { Translate } from '#app/I18N/index.js';
 import { scrollIntoView } from '#V2/helpers/scrollIntoView.js';
 import { TextHighlight } from './types.js';
 import { triggerScroll } from './functions/helpers.js';
 import { clearSnippets, tryHighlightAndScroll } from './functions/handleSnippets.js';
 import { adjustSelectionsToScale } from './functions/handleTextSelection.js';
-import { PDFJS, CMAP_URL, EventBus, PDFDocumentProxy } from './pdfjs.js';
+import { waitForElement } from './functions/waitForElement.js';
+import { PDFJS, CMAP_URL, WASM_URL, EventBus, PDFDocumentProxy } from './pdfjs.js';
 import { useContainerWidth } from './hooks/useContainerWidth.js';
 import { PDFPage } from './PDFPage.js';
 import { BlankState, ProgressBar } from '../UI/index.js';
-import 'pdfjs-dist/web/pdf_viewer.css';
 import { reportErrorToSentry } from '#app/V2/shared/errorUtils.js';
 
 const CHANGE_PAGE_THRESHOLD: number = 0.4;
@@ -30,6 +31,7 @@ type PDFControls = {
   scrollToHighlight: (page: number, highlightKey: string) => void;
   activateSnippet: (snippet: Snippet) => void;
   deactivateSnippet: () => void;
+  toggleHighlights: (highlights?: { [page: number]: TextHighlight[] }[]) => void;
 };
 
 interface PDFProps {
@@ -40,7 +42,10 @@ interface PDFProps {
   onScaleChange?: (scale: number) => void;
   onPageChange?: (pageNumber: number) => void;
   onPdfReady?: (controls: PDFControls, maxPages: number) => void;
+  onHighlightClick?: (relationshipId: string) => void;
   size?: { height?: string; width?: string };
+  scrollRoot?: Element | null;
+  className?: string;
 }
 
 // eslint-disable-next-line max-statements
@@ -52,14 +57,21 @@ const PDF = ({
   onScaleChange,
   onPageChange,
   onPdfReady,
+  onHighlightClick,
   size,
+  scrollRoot,
+  className,
 }: PDFProps) => {
   const pageRefsMap = useRef<{ [key: number]: HTMLDivElement | null }>({});
   const animationFrameIdRef = useRef<number>(0);
   const snippetAnimationFrameIdRef = useRef<number>(0);
   const pdfContainerRef = useRef<HTMLDivElement | null>(null);
+  const pageVisibilityRef = useRef<Map<number, number>>(new Map());
+  const numPagesRef = useRef(0);
   const isReady = useRef(false);
-  const intersectionObserverRef = useRef<IntersectionObserver | null>();
+  const [intersectionObserver, setIntersectionObserver] = useState<IntersectionObserver | null>(
+    null
+  );
   const [currentScale, setCurrentScale] = useState(1);
   const [pdf, setPDF] = useState<PDFDocumentProxy>();
   const [error, setError] = useState<React.ReactNode>();
@@ -73,6 +85,9 @@ const PDF = ({
     progress: 0,
   });
   const onPageChangeRef = useRef(onPageChange);
+  const [internalHighlights, setInternalHighlights] = useState<
+    { [page: number]: TextHighlight[] }[]
+  >([]);
 
   const setPdfContainer = useCallback((element: HTMLDivElement | null) => {
     pdfContainerRef.current = element;
@@ -112,38 +127,69 @@ const PDF = ({
   }, []);
 
   const activateSnippet = useCallback((snippet: Snippet) => {
-    const pageContainer = pageRefsMap.current[snippet.page];
+    cancelAnimationFrame(snippetAnimationFrameIdRef.current);
+    const deadline = Date.now() + 5000;
 
-    if (!pageContainer) {
-      return;
-    }
-
-    let observerTimeoutId: string | number | NodeJS.Timeout | undefined;
-
-    if (tryHighlightAndScroll(pageContainer, snippet)) {
-      return;
-    }
-
-    scrollIntoView(pageContainer, { block: 'start' });
-
-    const observer = new MutationObserver(() => {
-      if (tryHighlightAndScroll(pageContainer, snippet)) {
-        observer.disconnect();
-        clearTimeout(observerTimeoutId);
+    const attempt = (): void => {
+      let pageContainer = pageRefsMap.current[snippet.page];
+      if (!pageContainer) {
+        const found = document.querySelector(`#page-${snippet.page}-container`);
+        if (found instanceof HTMLDivElement) {
+          pageRefsMap.current[snippet.page] = found;
+          pageContainer = found;
+        }
       }
-    });
 
-    observerTimeoutId = setTimeout(() => {
-      observer.disconnect();
-    }, 5000);
+      if (pageContainer && tryHighlightAndScroll(pageContainer, snippet)) {
+        return;
+      }
 
-    observer.observe(pageContainer, { childList: true, subtree: true });
+      if (Date.now() >= deadline) {
+        if (pageContainer) {
+          scrollIntoView(pageContainer, { block: 'start' });
+        }
+        return;
+      }
+
+      snippetAnimationFrameIdRef.current = requestAnimationFrame(attempt);
+    };
+
+    attempt();
   }, []);
 
   const deactivateSnippet = useCallback(() => {
+    cancelAnimationFrame(snippetAnimationFrameIdRef.current);
     Object.values(pageRefsMap.current).forEach(container => {
       if (container) clearSnippets(container);
     });
+  }, []);
+
+  const toggleHighlights = useCallback((newHighlights?: { [page: number]: TextHighlight[] }[]) => {
+    if (newHighlights?.length) {
+      setInternalHighlights(newHighlights);
+      const [firstHighlight] = Object.entries(newHighlights[0] || {});
+      if (firstHighlight) {
+        const [page, highlight] = firstHighlight;
+
+        const pageContainer = pageRefsMap.current[Number(page)];
+        if (pageContainer) {
+          const selector = `#page-${page}-container [data-highlight-key="${page}-${highlight[0].key}"]`;
+          waitForElement(selector, 5000)
+            .then(found => {
+              const highlightRectangle = found.querySelector('.highlight-rectangle');
+              scrollIntoView(highlightRectangle || found, {
+                block: 'center',
+                behavior: 'smooth',
+              });
+            })
+            .catch(() => {
+              // ignore timeout
+            });
+        }
+      }
+    } else {
+      setInternalHighlights([]);
+    }
   }, []);
 
   const pdfReadyCallback = useCallback(() => {
@@ -158,16 +204,30 @@ const PDF = ({
           scrollToHighlight,
           activateSnippet,
           deactivateSnippet,
+          toggleHighlights,
         },
         pdf?.numPages || 0
       );
     }
 
     isReady.current = true;
-  }, [onPdfReady, goToPage, scrollToHighlight, activateSnippet, deactivateSnippet, pdf]);
+  }, [
+    onPdfReady,
+    goToPage,
+    scrollToHighlight,
+    activateSnippet,
+    deactivateSnippet,
+    toggleHighlights,
+    pdf,
+  ]);
 
   useEffect(() => {
+    let cancelled = false;
+
     const handleLoading = (taskData: { loaded: number; total: number; percent: number }) => {
+      if (cancelled) {
+        return;
+      }
       if (taskData.percent < 100) {
         setLoading({ isLoading: true, progress: taskData.percent });
       } else {
@@ -175,10 +235,15 @@ const PDF = ({
       }
     };
 
+    setPDF(undefined);
+    setError(undefined);
+    setLoading({ isLoading: true, progress: 0 });
+
     const loadingTask = PDFJS.getDocument({
       url: fileUrl,
       cMapUrl: CMAP_URL,
       cMapPacked: true,
+      wasmUrl: WASM_URL,
       isEvalSupported: false,
     });
 
@@ -186,9 +251,14 @@ const PDF = ({
 
     loadingTask.promise
       .then(file => {
-        setPDF(file);
+        if (!cancelled) {
+          setPDF(file);
+        }
       })
       .catch(e => {
+        if (cancelled) {
+          return;
+        }
         if (e.status === 404) {
           setError(
             <Translate>
@@ -210,40 +280,76 @@ const PDF = ({
         }
       });
 
+    const pageVisibility = pageVisibilityRef.current;
     isReady.current = false;
+    pageVisibility.clear();
+    pageRefsMap.current = {};
 
     return () => {
+      cancelled = true;
       isReady.current = false;
+      pageVisibility.clear();
+      Promise.resolve(loadingTask.destroy?.()).catch(() => undefined);
     };
   }, [fileUrl]);
 
   useEffect(() => {
+    numPagesRef.current = pdf?.numPages ?? 0;
+    pageVisibilityRef.current.clear();
+  }, [pdf]);
+
+  useEffect(() => {
+    pageVisibilityRef.current.clear();
+
     const observerHandler: IntersectionObserverCallback = entries => {
       entries.forEach(entry => {
         const pageNumber = Number.parseInt(entry.target.getAttribute('data-pagenumber') || '0', 10);
 
-        if (isReady.current && entry.intersectionRatio >= CHANGE_PAGE_THRESHOLD) {
-          onPageChangeRef.current?.(pageNumber);
-        }
-
         if (entry.isIntersecting) {
+          pageVisibilityRef.current.set(pageNumber, entry.intersectionRatio);
           pdfEventBus.dispatch('renderpage', { pageNumber });
         } else {
+          pageVisibilityRef.current.delete(pageNumber);
           pdfEventBus.dispatch('unmountpage', { pageNumber });
         }
       });
+
+      if (!isReady.current) return;
+
+      let mostVisiblePage = 0;
+      let highestRatio = 0;
+      const maxPages = numPagesRef.current;
+      pageVisibilityRef.current.forEach((ratio, pageNumber) => {
+        if (pageNumber < 1 || pageNumber > maxPages) {
+          pageVisibilityRef.current.delete(pageNumber);
+          return;
+        }
+        const wins =
+          ratio > highestRatio || (ratio === highestRatio && pageNumber < mostVisiblePage);
+        if (ratio > 0 && (mostVisiblePage === 0 || wins)) {
+          highestRatio = ratio;
+          mostVisiblePage = pageNumber;
+        }
+      });
+
+      if (mostVisiblePage > 0 && highestRatio >= CHANGE_PAGE_THRESHOLD) {
+        onPageChangeRef.current?.(mostVisiblePage);
+      }
     };
 
-    intersectionObserverRef.current = new IntersectionObserver(observerHandler, {
-      root: null,
+    const observer = new IntersectionObserver(observerHandler, {
+      root: scrollRoot ?? null,
       rootMargin: '500px 0px 500px 0px',
       threshold: [0.1, CHANGE_PAGE_THRESHOLD],
     });
 
+    setIntersectionObserver(observer);
+
     return () => {
-      intersectionObserverRef.current?.disconnect();
+      observer.disconnect();
+      setIntersectionObserver(null);
     };
-  }, [pdfEventBus]);
+  }, [pdfEventBus, scrollRoot]);
 
   useEffect(() => {
     const readyHandler = ({ pageNumber }: { pageNumber: number }) => {
@@ -280,6 +386,54 @@ const PDF = ({
     []
   );
 
+  const pages = useMemo(() => {
+    if (!pdf) return null;
+    const allHighlights = [highlights, ...internalHighlights];
+
+    return Array.from({ length: pdf.numPages }, (_, index) => index + 1).map(number => {
+      const regionId = number;
+      const highlightsForPage = allHighlights.find(group => group && group[regionId]);
+      const pageHighlights = highlightsForPage?.[regionId];
+
+      return (
+        <div
+          key={`page-${regionId}`}
+          id={`page-${regionId}-container`}
+          ref={el => {
+            pageRefsMap.current[regionId] = el;
+          }}
+          className={[
+            'relative mb-4 border-solid',
+            `[border-width:${BORDER_WIDTH}px]`,
+            'border-[color-mix(in_srgb,var(--color-theme-border-default)_55%,transparent)]',
+          ].join(' ')}
+        >
+          <SelectionRegion regionId={regionId.toString()}>
+            <PDFPage
+              pdf={pdf}
+              page={number}
+              eventBus={pdfEventBus}
+              intersectionObserver={intersectionObserver}
+              highlights={pageHighlights}
+              onHighlightClick={onHighlightClick}
+              containerWidth={containerWidth}
+              onScaleChange={handleScaleChange}
+            />
+          </SelectionRegion>
+        </div>
+      );
+    });
+  }, [
+    pdf,
+    highlights,
+    internalHighlights,
+    pdfEventBus,
+    intersectionObserver,
+    onHighlightClick,
+    containerWidth,
+    handleScaleChange,
+  ]);
+
   const viewerStyle = {
     height: size?.height || '100%',
     width: size?.width || '100%',
@@ -303,7 +457,9 @@ const PDF = ({
 
   return (
     <HandleTextSelection onSelect={handleSelect} onDeselect={onDeselect}>
-      <div className="w-full flex flex-col gap-2 h-full">
+      <div
+        className={`w-full flex flex-col gap-2 h-full items-center justify-center p-3 ${className}`}
+      >
         {loading.isLoading || !pdf ? (
           <div className="w-full flex flex-col gap-2">
             <div className="flex justify-between mb-1">
@@ -316,39 +472,7 @@ const PDF = ({
           </div>
         ) : null}
         <div id="pdf-container" className="pdfViewer" ref={setPdfContainer} style={viewerStyle}>
-          {pdf
-            ? Array.from({ length: pdf.numPages }, (_, index) => index + 1).map(number => {
-                const regionId = number;
-                const pageHighlights = highlights ? highlights[regionId] : undefined;
-
-                return (
-                  <div
-                    key={`page-${regionId}`}
-                    id={`page-${regionId}-container`}
-                    ref={el => {
-                      pageRefsMap.current[regionId] = el;
-                    }}
-                    className={[
-                      'relative mb-4 border-solid',
-                      `[border-width:${BORDER_WIDTH}px]`,
-                      'border-[color-mix(in_srgb,var(--color-theme-border-default)_55%,transparent)]',
-                    ].join(' ')}
-                  >
-                    <SelectionRegion regionId={regionId.toString()}>
-                      <PDFPage
-                        pdf={pdf}
-                        page={number}
-                        eventBus={pdfEventBus}
-                        intersectionObserver={intersectionObserverRef.current}
-                        highlights={pageHighlights}
-                        containerWidth={containerWidth}
-                        onScaleChange={handleScaleChange}
-                      />
-                    </SelectionRegion>
-                  </div>
-                );
-              })
-            : null}
+          {pages}
         </div>
       </div>
     </HandleTextSelection>

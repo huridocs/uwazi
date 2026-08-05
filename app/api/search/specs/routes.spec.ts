@@ -3,6 +3,7 @@ import type { Application } from 'express';
 import request, { Response as SuperTestResponse } from 'supertest';
 
 import searchRoutes from '#api/search/routes.js';
+import deprecatedSearchRoutes from '#api/search/deprecatedRoutes.js';
 import { setUpApp } from '#api/utils/testingRoutes.js';
 
 import { UserRole } from '#shared/types/userSchema.js';
@@ -11,6 +12,7 @@ import { fixtures, fixturesTimeOut, ids } from './fixtures_elastic.js';
 
 describe('Search routes', () => {
   const app: Application = setUpApp(searchRoutes);
+  const deprecatedApp: Application = setUpApp(deprecatedSearchRoutes);
   const elasticIndex = 'search_lookup_index_test';
 
   beforeAll(async () => {
@@ -19,6 +21,29 @@ describe('Search routes', () => {
   }, fixturesTimeOut);
 
   afterAll(async () => testingEnvironment.tearDown());
+
+  describe('GET /api/search', () => {
+    const sharedIds = (res: SuperTestResponse) =>
+      res.body.rows.map((row: { sharedId: string }) => row.sharedId).sort();
+
+    it('should normalize malformed select filter values from HTTP requests', async () => {
+      const wellFormed = await request(deprecatedApp)
+        .get('/api/search')
+        .query({ filters: JSON.stringify({ groupedDictionary: { values: ['EuropeID'] } }) });
+      const bareArray = await request(deprecatedApp)
+        .get('/api/search')
+        .query({ filters: JSON.stringify({ groupedDictionary: ['EuropeID'] }) });
+      const bareScalar = await request(deprecatedApp)
+        .get('/api/search')
+        .query({ filters: JSON.stringify({ groupedDictionary: 'EuropeID' }) });
+
+      expect(wellFormed.status).toBe(200);
+      expect(bareArray.status).toBe(200);
+      expect(bareScalar.status).toBe(200);
+      expect(sharedIds(bareArray)).toEqual(sharedIds(wellFormed));
+      expect(sharedIds(bareScalar)).toEqual(sharedIds(wellFormed));
+    });
+  });
 
   describe('GET /search/lookup', () => {
     it('should return a list of entity options', async () => {

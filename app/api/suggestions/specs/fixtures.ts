@@ -1022,7 +1022,7 @@ const stateFilterFixtures: DBFixture = {
       'lmfen.pdf',
       'en',
       undefined,
-      [factory.fileExtractedMetadata('testprop', 'test-labeled-match')]
+      [factory.filePropertySelection('testprop', 'test-labeled-match')]
     ),
     factory.fileDeprecated(
       'label-match-file-es',
@@ -1031,7 +1031,7 @@ const stateFilterFixtures: DBFixture = {
       'lmfes.pdf',
       'es',
       undefined,
-      [factory.fileExtractedMetadata('testprop', 'test-labeled-match')]
+      [factory.filePropertySelection('testprop', 'test-labeled-match')]
     ),
     factory.fileDeprecated(
       'label-mismatch-file-en',
@@ -1040,7 +1040,7 @@ const stateFilterFixtures: DBFixture = {
       'lmismfen.pdf',
       'en',
       undefined,
-      [factory.fileExtractedMetadata('testprop', 'test-labeled-mismatch')]
+      [factory.filePropertySelection('testprop', 'test-labeled-mismatch')]
     ),
     factory.fileDeprecated(
       'label-mismatch-file-es',
@@ -1049,7 +1049,7 @@ const stateFilterFixtures: DBFixture = {
       'lmismfes.pdf',
       'es',
       undefined,
-      [factory.fileExtractedMetadata('testprop', 'test-labeled-mismatch')]
+      [factory.filePropertySelection('testprop', 'test-labeled-mismatch')]
     ),
     factory.fileDeprecated(
       'unlabeled-no-suggestion-file-en',

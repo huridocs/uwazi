@@ -2,12 +2,13 @@ import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { DBFixture } from '#api/utils/testing_db.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { DefaultTranslationsDataSource } from '#api/i18n.v2/database/data_source_defaults.js';
-import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { MongoTemplateMapper } from '#api/core/infrastructure/mongodb/template/MongoTemplateMapper.js';
 import { ObjectId } from 'mongodb';
 import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
 import { PropertyNotFoundError } from '#api/core/domain/template/errors.js';
 import { ThesauriDataSourceFactory } from '#api/core/infrastructure/factories/ThesauriDataSourceFactory.js';
+import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
+import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
 import { SelectPropertyAssignmentCreatorService } from '../propertyAssignmentCreatorService/SelectPropertyAssignmentCreatorService.js';
 
 const factory = getFixturesFactory();
@@ -273,20 +274,21 @@ const fixtures: DBFixture = {
   ],
 };
 
-const createSut = () => {
-  const transactionManager = TransactionManagerFactory.default();
-  const translationsDS = DefaultTranslationsDataSource(transactionManager);
-  const thesauriDS = ThesauriDataSourceFactory.default({ transactionManager });
-  const settingsDS = SettingsDataSourceFactory.default({ transactionManager });
+const createSut = () =>
+  testingEnvironment.runWithContext(() => {
+    const transactionManager = ExecutionContext.transactionManager as MongoTransactionManager;
+    const translationsDS = DefaultTranslationsDataSource(transactionManager);
+    const thesauriDS = ThesauriDataSourceFactory.default({ transactionManager });
+    const settingsDS = SettingsDataSourceFactory.default({ transactionManager });
 
-  const sut = new SelectPropertyAssignmentCreatorService({
-    thesauriDS,
-    translationsDS,
-    settingsDS,
+    const sut = new SelectPropertyAssignmentCreatorService({
+      thesauriDS,
+      translationsDS,
+      settingsDS,
+    });
+
+    return { sut };
   });
-
-  return { sut };
-};
 
 describe('SelectPropertyAssignmentCreatorService', () => {
   beforeAll(async () => {
@@ -300,7 +302,7 @@ describe('SelectPropertyAssignmentCreatorService', () => {
   });
 
   it('should create one property assignment per language with localized label using translations', async () => {
-    const { sut } = createSut();
+    const { sut } = await createSut();
     const templateDBO = await testingEnvironment.db
       .getCollection('templates')!
       .findOne({ _id: factory.id('Document') });
@@ -370,7 +372,7 @@ describe('SelectPropertyAssignmentCreatorService', () => {
       ],
     });
 
-    const { sut } = createSut();
+    const { sut } = await createSut();
     const templateDBO = await testingEnvironment.db
       .getCollection('templates')!
       .findOne({ _id: factory.id('Document') });
@@ -401,7 +403,7 @@ describe('SelectPropertyAssignmentCreatorService', () => {
   });
 
   it('should create property assignment for a MultiSelect property', async () => {
-    const { sut } = createSut();
+    const { sut } = await createSut();
     const templateDBO = await testingEnvironment.db
       .getCollection('templates')!
       .findOne({ _id: factory.id('Document') });
@@ -442,7 +444,7 @@ describe('SelectPropertyAssignmentCreatorService', () => {
   });
 
   it('should create property assignment for a select linked to a grouped thesaurus', async () => {
-    const { sut } = createSut();
+    const { sut } = await createSut();
 
     const templateDBO = await testingEnvironment.db
       .getCollection('templates')!
@@ -486,7 +488,7 @@ describe('SelectPropertyAssignmentCreatorService', () => {
   });
 
   it('should create property assignment for a multi select linked to a grouped thesaurus', async () => {
-    const { sut } = createSut();
+    const { sut } = await createSut();
 
     const templateDBO = await testingEnvironment.db
       .getCollection('templates')!
@@ -541,7 +543,7 @@ describe('SelectPropertyAssignmentCreatorService', () => {
   });
 
   it('throws if the property name does not exist in the template', async () => {
-    const { sut } = createSut();
+    const { sut } = await createSut();
     const templateDBO = await testingEnvironment.db
       .getCollection('templates')!
       .findOne({ _id: factory.id('Document') });
@@ -557,7 +559,7 @@ describe('SelectPropertyAssignmentCreatorService', () => {
   });
 
   it('should filter out values that do not exist in the referenced thesaurus', async () => {
-    const { sut } = createSut();
+    const { sut } = await createSut();
     const templateDBO = await testingEnvironment.db
       .getCollection('templates')!
       .findOne({ _id: factory.id('Document') });
@@ -602,15 +604,19 @@ describe('SelectPropertyAssignmentCreatorService', () => {
   });
 
   it('should throw when validateRequired is true and a required select property has no value', async () => {
-    const transactionManager = TransactionManagerFactory.default();
-    const translationsDS = DefaultTranslationsDataSource(transactionManager);
-    const thesauriDS = ThesauriDataSourceFactory.default({ transactionManager });
-    const settingsDS = SettingsDataSourceFactory.default({ transactionManager });
+    const { sut } = await testingEnvironment.runWithContext(() => {
+      const transactionManager = ExecutionContext.transactionManager as MongoTransactionManager;
+      const translationsDS = DefaultTranslationsDataSource(transactionManager);
+      const thesauriDS = ThesauriDataSourceFactory.default({ transactionManager });
+      const settingsDS = SettingsDataSourceFactory.default({ transactionManager });
 
-    const sut = new SelectPropertyAssignmentCreatorService(
-      { thesauriDS, translationsDS, settingsDS },
-      { validateRequired: true }
-    );
+      return {
+        sut: new SelectPropertyAssignmentCreatorService(
+          { thesauriDS, translationsDS, settingsDS },
+          { validateRequired: true }
+        ),
+      };
+    });
 
     const templateDBO = await testingEnvironment.db
       .getCollection('templates')!

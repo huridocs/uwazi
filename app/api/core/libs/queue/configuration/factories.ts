@@ -67,5 +67,9 @@ export function NoOpDispatcher(): JobsDispatcher {
       await callback(async () => {});
     },
     async deleteByParams() {},
+    async cancelByParams() {},
+    async countByName() {
+      return 0;
+    },
   };
 }

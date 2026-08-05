@@ -668,6 +668,34 @@ describe('ExpressEntityMapper', () => {
       expect(result.files).toEqual([]);
     });
 
+    it('should map property selections payload when provided', () => {
+      const dto = {
+        _id: 'entity123',
+        sharedId: 'shared123',
+        language: 'en',
+        title: 'Entity',
+        propertySelections: {
+          fileID: 'file123',
+          selections: [
+            {
+              name: 'title',
+              selection: {
+                text: 'Selected title',
+                selectionRectangles: [{ top: 1, left: 2, width: 3, height: 4, page: '1' }],
+              },
+            },
+          ],
+        },
+      };
+
+      const result = ExpressEntityMapper.toEntityUpdateInput({ dto });
+
+      expect(result.propertySelections).toEqual({
+        fileId: 'file123',
+        selections: dto.propertySelections.selections,
+      });
+    });
+
     it('should map icon when provided', () => {
       const result1 = ExpressEntityMapper.toEntityUpdateInput({
         dto: {

@@ -13,7 +13,7 @@ const URL = '/api/v2/relationships';
 
 const factory = getFixturesFactory();
 
-const adminUser = factory.user('admin', UserRole.ADMIN, 'admin');
+const adminUser = factory.user({ username: 'admin', role: UserRole.ADMIN, email: 'admin' });
 
 const fixtures: DBFixture = {
   templates: [factory.template('template1')],

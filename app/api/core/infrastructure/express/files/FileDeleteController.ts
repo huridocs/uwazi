@@ -4,16 +4,12 @@ import { FileDelete } from '#api/core/application/FileDelete.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
 import { SyncDispatcherForTests } from '#api/core/libs/queue/infrastructure/SyncDispatcherForTests.js';
-import { EntitiesDataSourceFactory } from '../../factories/EntitiesDataSourceFactory.js';
-import { FilesDataSourceFactory } from '../../factories/FilesDataSourceFactory.js';
+import { DeleteFileUseCaseFactory } from '../../factories/DeleteFileUseCaseFactory.js';
 import { FilesServiceFactory } from '../../factories/FilesServiceFactory.js';
 import { LoggerFactory } from '../../factories/LoggerFactory.js';
-import { SettingsDataSourceFactory } from '../../factories/SettingsDataSourceFactory.js';
 import { FileStorageFactory } from '../../files/FileStorageFactory.js';
 import { DeleteFileFromStorageJobHandler } from '../../jobs/DeleteFileFromStorageJobHandler.js';
 import { DispatcherAdapter } from '../../jobs/DispatcherAdapter.js';
-import { getConnection } from '../../mongodb/common/getConnectionForCurrentTenant.js';
-import { MongoEntityPermissionChecker } from '../../mongodb/entity/MongoEntityPermissionChecker.js';
 
 class FileDeleteController extends AbstractController {
   protected async handle(): Promise<void> {
@@ -62,17 +58,9 @@ class FileDeleteController extends AbstractController {
       );
     }
 
-    return new FileDelete(
-      {
-        filesDS: FilesDataSourceFactory.default(),
-        filesService: FilesServiceFactory.default({ jobsDispatcher }),
-        entityPermissions: new MongoEntityPermissionChecker(getConnection(), transactionManager),
-        entitiesDS: EntitiesDataSourceFactory.default(),
-        settingsDS: SettingsDataSourceFactory.default(),
-        transactionManager,
-      },
-      { actor: ExecutionContext.actor, tenant: ExecutionContext.tenant }
-    );
+    return DeleteFileUseCaseFactory.default({
+      filesService: FilesServiceFactory.default({ jobsDispatcher }),
+    });
   }
 }
 
