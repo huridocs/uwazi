@@ -189,7 +189,6 @@ Clear Filters,مسح عوامل التصفية
 Clear PDF selection,Clear PDF selection
 Clear search,Clear search
 Click,Click
-Click here,انقر هنا
 Click to fill,انقر للتعبئة
 Close,غلق
 Code,Code
@@ -629,7 +628,10 @@ Last updated,Last updated
 Last updated from collection:,Last updated from collection:
 Latitude,خط العرض
 Latitude must be between -90 and 90,Latitude must be between -90 and 90
+Learn how to add and configure a contact form on a webpage.,Learn how to add and configure a contact form on a webpage.
+Learn how to build your first collection,Learn how to build your first collection
 Learn more,اعرف المزيد
+Learn more about the components.,Learn more about the components.
 Legend,مفتاح مصطلحات الخريطة
 Lengthy reindex process,Lengthy reindex process
 Library,مكتبة
@@ -686,7 +688,10 @@ marked for training,marked for training
 Marked for training + all labeled entries,Marked for training + all labeled entries
 Marked for training only,Marked for training only
 Match,Match
+match,match
 match verbatim,match verbatim
+matches,matches
+Matches show the passage and the page they are on.,Matches show the passage and the page they are on.
 Matching,Matching
 matching,matching
 Matomo,Matomo
@@ -763,6 +768,7 @@ No icon / flag,لا توجد أيقونة/ علامة
 No items available,No items available
 No Label,لا تسمية
 No label,No label
+No matches for,No matches for
 No matching entities.,No matching entities.
 No media selected,No media selected
 No metadata for this entity yet.,No metadata for this entity yet.
@@ -1051,6 +1057,7 @@ Search relationships,Search relationships
 Search relevance,ملائمة البحث
 Search text,بحث النص
 Search text description,اكتب نص في خانة البحث لتظهر بعض النتائج
+Search this document,Search this document
 Search Tips,نصائح البحث
 Search tips,Search tips
 Search Tips: boolean,نصائح البحث: Boolean
@@ -1282,13 +1289,12 @@ Time,زمن
 Time (UTC),Time (UTC)
 Timelinks,Timelinks
 Timestamp,Timestamp
+tips,tips
 Title,عنوان
 To,To
 To add references you can start by selecting text in the document,To add references you can start by selecting text in the document
 "To bring you a better experience, this site uses cookies.",لكي تستمتع بتجربة أفضل، يستخدم هذا الموقع ملفات تعريف الارتباط
 "To complete the account creation process, please create a password for your account",لإكمال عملية إنشاء الحساب، يرجى إنشاء كلمة مرور لحسابك
-to learn how to add and configure a contact form on a webpage.,to learn how to add and configure a contact form on a webpage.
-to learn more about the components.,لمعرفة المزيد حول المكونات
 to view your authentication code and verify your identity.,لمعاينة رمز المصادقة الخاص بك والتحقق من هويتك.
 Today,Today
 Toggle timeline mode,Toggle timeline mode
@@ -1387,6 +1393,7 @@ Users & Groups,Users & Groups
 Using Authenticator,Using Authenticator
 Using URLs,Using URLs
 Uwazi,Uwazi
+Uwazi Docs,Uwazi Docs
 Uwazi is developed by,أوازي من إعداد:
 Uwazi UI,واجهة استخدام أوازي
 Validating,Validating

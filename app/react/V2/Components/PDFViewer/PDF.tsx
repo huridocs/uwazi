@@ -127,28 +127,38 @@ const PDF = ({
   }, []);
 
   const activateSnippet = useCallback((snippet: Snippet) => {
-    const pageContainer = pageRefsMap.current[snippet.page];
+    cancelAnimationFrame(snippetAnimationFrameIdRef.current);
+    const deadline = Date.now() + 5000;
 
-    if (!pageContainer) {
-      return;
-    }
+    const attempt = (): void => {
+      let pageContainer = pageRefsMap.current[snippet.page];
+      if (!pageContainer) {
+        const found = document.querySelector(`#page-${snippet.page}-container`);
+        if (found instanceof HTMLDivElement) {
+          pageRefsMap.current[snippet.page] = found;
+          pageContainer = found;
+        }
+      }
 
-    if (tryHighlightAndScroll(pageContainer, snippet)) {
-      return;
-    }
+      if (pageContainer && tryHighlightAndScroll(pageContainer, snippet)) {
+        return;
+      }
 
-    scrollIntoView(pageContainer, { block: 'start' });
+      if (Date.now() >= deadline) {
+        if (pageContainer) {
+          scrollIntoView(pageContainer, { block: 'start' });
+        }
+        return;
+      }
 
-    waitForElement(`#page-${snippet.page}-container .textLayer`, 5000)
-      .then(() => {
-        tryHighlightAndScroll(pageContainer, snippet);
-      })
-      .catch(() => {
-        // ignore timeout
-      });
+      snippetAnimationFrameIdRef.current = requestAnimationFrame(attempt);
+    };
+
+    attempt();
   }, []);
 
   const deactivateSnippet = useCallback(() => {
+    cancelAnimationFrame(snippetAnimationFrameIdRef.current);
     Object.values(pageRefsMap.current).forEach(container => {
       if (container) clearSnippets(container);
     });

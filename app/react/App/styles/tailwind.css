@@ -10,10 +10,19 @@
   --tw-shadow-color: rgba(15, 23, 42, 0.12);
   font-family: var(--font-theme-sans, var(--font-sans));
   color: var(--text-primary, var(--color-theme-text-primary, #1a1a1a));
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
   transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.tw-content:not([data-path='settings']) {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.tw-content[data-path='settings'] {
+  font-size: 14px;
+  -webkit-font-smoothing: auto;
+  -moz-osx-font-smoothing: auto;
 }
 
 /* Portals (.fixed) and header chrome embeds reuse .tw-content for theme vars —
@@ -258,6 +267,13 @@
 
 @utility bg-ink-fade {
   background-color: color-mix(in srgb, var(--text-primary) 40%, transparent);
+}
+
+@utility tooltip-light-surface {
+  background-color: #fff;
+  color: #111827;
+  filter: drop-shadow(0 1px 0 #e5e7eb) drop-shadow(0 -1px 0 #e5e7eb) drop-shadow(1px 0 0 #e5e7eb)
+    drop-shadow(-1px 0 0 #e5e7eb) drop-shadow(0 1px 2px rgb(0 0 0 / 0.08));
 }
 
 @utility bg-highlight {
@@ -941,4 +957,24 @@ header button svg:not([class*='notification-kind-icon']),
 .beacon-chrome-backing {
   height: 3.25rem;
   background-color: var(--color-theme-chrome-app-bar, var(--color-theme-bg-surface, #ffffff));
+}
+
+@keyframes flash-highlight {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.3;
+  }
+}
+
+.flash-highlight {
+  animation: flash-highlight 0.3s ease-in-out 3;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .flash-highlight {
+    animation: none !important;
+  }
 }

@@ -13,6 +13,7 @@ type SearchResultsPanelProps = {
   template?: ClientTemplateSchema;
   activeSnippet: string | null;
   onActivate: (snippetKey: string, pageText: { text: string; page: number }) => void;
+  onClear: () => void;
 };
 
 const SearchResultsPanel = ({
@@ -23,21 +24,25 @@ const SearchResultsPanel = ({
   template,
   activeSnippet,
   onActivate,
+  onClear,
 }: SearchResultsPanelProps) => {
   if (searchError) return <SearchError />;
   if (!searchResults && searchTerm) {
     return (
-      <p className="text-sm text-ink-muted">
+      <p className="px-1 text-sm text-ink-muted">
         <Translate>Loading</Translate>
       </p>
     );
   }
   if (!searchResults && !searchTerm) return <NoSearch />;
-  if (searchResults?.data && searchResults.data.length < 1) return <NoResults />;
+  if (searchResults?.data && searchResults.data.length < 1) {
+    return <NoResults searchTerm={searchTerm} onClear={onClear} />;
+  }
   if (searchResults && searchResults.data.length > 0) {
     return (
       <SearchSnippetList
         results={searchResults}
+        searchTerm={searchTerm}
         entityTemplateId={entityTemplateId}
         template={template}
         activeSnippet={activeSnippet}

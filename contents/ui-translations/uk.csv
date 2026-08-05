@@ -192,7 +192,6 @@ Clear Filters,Очистити фільтри
 Clear PDF selection,Очистити вибір PDF
 Clear search,Clear search
 Click,Клац!
-Click here,Натисніть сюди
 Click to fill,"Натисніть, щоб заповнити"
 Close,Закрити
 Code,Code
@@ -632,7 +631,10 @@ Last updated,Останнє оновлення
 Last updated from collection:,Last updated from collection:
 Latitude,Широта
 Latitude must be between -90 and 90,Latitude must be between -90 and 90
+Learn how to add and configure a contact form on a webpage.,Learn how to add and configure a contact form on a webpage.
+Learn how to build your first collection,Learn how to build your first collection
 Learn more,Дізнатися більше
+Learn more about the components.,Learn more about the components.
 Legend,Підпис
 Lengthy reindex process,Тривалий процес реіндексації
 Library,Бібліотека
@@ -689,7 +691,10 @@ marked for training,позначені для навчання
 Marked for training + all labeled entries,Позначено для навчання + всі позначені записи
 Marked for training only,Позначено тільки для навчання
 Match,Матч
+match,match
 match verbatim,match verbatim
+matches,matches
+Matches show the passage and the page they are on.,Matches show the passage and the page they are on.
 Matching,Відповідність
 matching,відповідність
 Matomo,Матомо.
@@ -766,6 +771,7 @@ No icon / flag,Немає піктограми / прапорця
 No items available,Немає товарів у наявності
 No Label,Немає мітки
 No label,Без етикетки
+No matches for,No matches for
 No matching entities.,No matching entities.
 No media selected,No media selected
 No metadata for this entity yet.,No metadata for this entity yet.
@@ -1054,6 +1060,7 @@ Search relationships,Search relationships
 Search relevance,Релевантність пошуку
 Search text,Пошук за текстом
 Search text description,"Введіть щось у вікні пошуку, щоб отримати результати."
+Search this document,Search this document
 Search Tips,Пошук порад
 Search tips,Search tips
 Search Tips: boolean,"AND, OR і NOT для логічного пошуку. Тобто ""статус І жінки НЕ Нікарагуа"" знайде все, що містить обидва слова ""статус"" і ""жінки"", і обов'язково не містить слова ""Нікарагуа""."
@@ -1285,13 +1292,12 @@ Time,Час
 Time (UTC),Time (UTC)
 Timelinks,Тимчасові посилання
 Timestamp,Відмітка часу
+tips,tips
 Title,Заголовок
 To,До
 To add references you can start by selecting text in the document,"Щоб додати посилання, спочатку виділіть текст у документі"
 "To bring you a better experience, this site uses cookies.",Цей сайт використовує файли cookie для покращення вашого досвіду взаємодії з сайтом.
 "To complete the account creation process, please create a password for your account","Будь ласка, створіть пароль, щоб завершити процес створення облікового запису."
-to learn how to add and configure a contact form on a webpage.,"дізнатися, як додати та налаштувати контактну форму на веб-сторінці."
-to learn more about the components.,"для того, щоб дізнатися більше про компоненти."
 to view your authentication code and verify your identity.,щоб переглянути свій код автентифікації та підтвердити свою особу.
 Today,Сьогодні
 Toggle timeline mode,Toggle timeline mode
@@ -1390,6 +1396,7 @@ Users & Groups,Користувачі та групи
 Using Authenticator,Використання автентифікатора
 Using URLs,Використання URL-адрес
 Uwazi,Uwazi
+Uwazi Docs,Uwazi Docs
 Uwazi is developed by,Uwazi розроблений
 Uwazi UI,Uwazi UI
 Validating,Validating

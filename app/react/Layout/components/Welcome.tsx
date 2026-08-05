@@ -10,8 +10,12 @@ export class Welcome extends Component {
         <h4>
           <Translate>Welcome to Uwazi</Translate>
         </h4>
-        <a href="https://uwazi.io/page/9852italrtk/support" target="_blank" rel="noreferrer">
-          <Translate>Learn more</Translate>
+        <a
+          href="https://docs.uwazi.io/docs/tutorials/build-your-first-collection/"
+          target="_blank"
+          rel="noreferrer"
+        >
+          <Translate>Learn how to build your first collection</Translate>
         </a>
       </div>
     );

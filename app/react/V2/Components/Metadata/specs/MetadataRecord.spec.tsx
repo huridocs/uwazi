@@ -1,11 +1,13 @@
 /** @jest-environment jsdom */
 /* eslint-disable react/no-multi-comp */
 import React from 'react';
+import { createStore, Provider } from 'jotai';
 import { render, screen, within } from '@testing-library/react';
 import { TestAtomStoreProvider } from '#V2/testing/index.js';
 import { templatesAtom } from '#V2/atoms/templatesAtom.js';
 import { relationshipTypesAtom } from '#V2/atoms/relationshipTypes.js';
 import type { Entity } from '#V2/api/entities/types.js';
+import { focusMetadataFieldAtom } from '../focusMetadataFieldAtom.js';
 import { MetadataRecord } from '../MetadataRecord';
 
 jest.mock('#app/I18N/index.js', () => ({
@@ -150,6 +152,15 @@ const sectionForLabel = (label: string): HTMLElement => {
   return section;
 };
 
+const withoutRels: Entity = {
+  ...entity,
+  metadata: {
+    summary: entity.metadata?.summary,
+    code: entity.metadata?.code,
+    notes: entity.metadata?.notes,
+  },
+};
+
 const renderRecord = (entityOverride: Entity = entity) =>
   render(
     <TestAtomStoreProvider
@@ -164,15 +175,6 @@ const renderRecord = (entityOverride: Entity = entity) =>
 
 describe('MetadataRecord', () => {
   it('shows Document, long fields, and Details, and hides Relationships when empty', () => {
-    const withoutRels: Entity = {
-      ...entity,
-      metadata: {
-        summary: entity.metadata?.summary,
-        code: entity.metadata?.code,
-        notes: entity.metadata?.notes,
-      },
-    };
-
     renderRecord(withoutRels);
 
     expect(screen.getByRole('heading', { name: 'Document' })).toBeInTheDocument();
@@ -182,11 +184,120 @@ describe('MetadataRecord', () => {
     expect(screen.getByRole('heading', { name: 'Details' })).toBeInTheDocument();
 
     const table = screen.getByRole('table');
+    expect(within(table).getByRole('rowheader', { name: 'Title' })).toBeInTheDocument();
+    expect(table.querySelector('[data-field-key="title"]')).toBeInTheDocument();
     expect(within(table).getByRole('rowheader', { name: 'Creation Date' })).toBeInTheDocument();
     expect(within(table).getByRole('rowheader', { name: 'Edit Date' })).toBeInTheDocument();
     expect(within(table).getByRole('rowheader', { name: 'Code' })).toBeInTheDocument();
     expect(within(table).getByText('ABC')).toBeInTheDocument();
     expect(screen.queryByText('Relationships')).not.toBeInTheDocument();
+  });
+
+  it('scrolls and flashes the title row when focusMetadataFieldAtom is title', () => {
+    jest.useFakeTimers();
+    Element.prototype.scrollIntoView = jest.fn();
+
+    render(
+      <TestAtomStoreProvider
+        initialValues={[
+          [templatesAtom, [template, relatedTemplate]],
+          [relationshipTypesAtom, [{ _id: 'rel-type-1', name: 'Relates to' }]],
+          [focusMetadataFieldAtom, { fieldKey: 'title' }],
+        ]}
+      >
+        <MetadataRecord entity={withoutRels} />
+      </TestAtomStoreProvider>
+    );
+
+    const titleRow = screen.getByRole('table').querySelector('[data-field-key="title"]');
+    expect(titleRow).toBeInstanceOf(HTMLElement);
+    expect(titleRow).toHaveClass('flash-highlight');
+    expect(Element.prototype.scrollIntoView).toHaveBeenCalled();
+    jest.advanceTimersByTime(1100);
+    expect(titleRow).not.toHaveClass('flash-highlight');
+    jest.useRealTimers();
+  });
+
+  it('retains focus atom while field is missing (does not clear shared atom early)', () => {
+    jest.useFakeTimers();
+
+    const store = createStore();
+    store.set(templatesAtom, [template, relatedTemplate]);
+    store.set(relationshipTypesAtom, [{ _id: 'rel-type-1', name: 'Relates to' }]);
+    store.set(focusMetadataFieldAtom, { fieldKey: 'missing-field' });
+
+    render(
+      <Provider store={store}>
+        <MetadataRecord entity={withoutRels} />
+      </Provider>
+    );
+
+    expect(store.get(focusMetadataFieldAtom)).toEqual({ fieldKey: 'missing-field' });
+
+    jest.advanceTimersByTime(500);
+    expect(store.get(focusMetadataFieldAtom)).toEqual({ fieldKey: 'missing-field' });
+
+    jest.useRealTimers();
+  });
+
+  it('clears focus atom when entity sharedId changes', () => {
+    jest.useFakeTimers();
+
+    const store = createStore();
+    store.set(templatesAtom, [template, relatedTemplate]);
+    store.set(relationshipTypesAtom, [{ _id: 'rel-type-1', name: 'Relates to' }]);
+    store.set(focusMetadataFieldAtom, { fieldKey: 'title' });
+
+    const { rerender } = render(
+      <Provider store={store}>
+        <MetadataRecord entity={withoutRels} />
+      </Provider>
+    );
+
+    expect(store.get(focusMetadataFieldAtom)).toEqual({ fieldKey: 'title' });
+
+    rerender(
+      <Provider store={store}>
+        <MetadataRecord entity={{ ...withoutRels, _id: 'e2', sharedId: 's2', title: 'Other' }} />
+      </Provider>
+    );
+
+    expect(store.get(focusMetadataFieldAtom)).toBeNull();
+    jest.useRealTimers();
+  });
+
+  it('clears focus atom on unmount only after this instance applied it', () => {
+    const store = createStore();
+    store.set(templatesAtom, [template, relatedTemplate]);
+    store.set(relationshipTypesAtom, [{ _id: 'rel-type-1', name: 'Relates to' }]);
+    store.set(focusMetadataFieldAtom, { fieldKey: 'title' });
+
+    const { unmount } = render(
+      <Provider store={store}>
+        <MetadataRecord entity={withoutRels} />
+      </Provider>
+    );
+
+    unmount();
+    expect(store.get(focusMetadataFieldAtom)).toBeNull();
+  });
+
+  it('does not clear focus on unmount when this instance never applied it', () => {
+    jest.useFakeTimers();
+    const store = createStore();
+    store.set(templatesAtom, [template, relatedTemplate]);
+    store.set(relationshipTypesAtom, [{ _id: 'rel-type-1', name: 'Relates to' }]);
+    store.set(focusMetadataFieldAtom, { fieldKey: 'missing-field' });
+
+    const { unmount } = render(
+      <Provider store={store}>
+        <MetadataRecord entity={withoutRels} />
+      </Provider>
+    );
+
+    unmount();
+    expect(store.get(focusMetadataFieldAtom)).toEqual({ fieldKey: 'missing-field' });
+    jest.useRealTimers();
   });
 
   it('hides empty preview field and still shows Document when entity has a file', () => {

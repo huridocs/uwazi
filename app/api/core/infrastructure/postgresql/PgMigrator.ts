@@ -51,6 +51,26 @@ export class PgMigrator {
       .filter((m): m is { delta: number; name: string; filePath: string } => m !== null)
       .sort((a, b) => a.delta - b.delta);
 
+    const seen = new Set<number>();
+    const duplicates = migrations
+      .map(m => {
+        if (seen.has(m.delta)) return m.delta;
+        seen.add(m.delta);
+        return null;
+      })
+      .filter((delta): delta is number => delta !== null);
+
+    if (duplicates.length > 0) {
+      const duplicateFiles = duplicates.map(delta =>
+        migrations.filter(m => m.delta === delta).map(m => m.name)
+      );
+      throw new Error(
+        `Duplicate migration delta(s) in ${this.migrationsDir}: ${duplicates
+          .map((delta, i) => `delta ${delta} (${duplicateFiles[i].join(', ')})`)
+          .join('; ')}`
+      );
+    }
+
     return migrations;
   }
 

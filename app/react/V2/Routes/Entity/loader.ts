@@ -13,6 +13,7 @@ import { getMainDocument } from '#V2/formatters/index.js';
 import { entityLoaderCache } from './EntityLoaderCache.js';
 import { parseEntityHash } from './entityUrlState.js';
 import { VIEW_MODE_PARAM } from './Components/index.js';
+import { loadEntityPageView } from './loadEntityPageView.js';
 import { LoaderResponse } from './types.js';
 
 const entityNotFoundError = (sharedId: string) =>
@@ -112,7 +113,9 @@ const createEntityLoader =
       }
     }
 
-    return { entity, mainDocument, pagePlaintext };
+    const entityPageView = entity ? await loadEntityPageView(entity, headers) : undefined;
+
+    return { entity, mainDocument, pagePlaintext, entityPageView };
   };
 
 const entityLoader = createEntityLoader(httpServices);

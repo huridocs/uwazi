@@ -189,7 +189,6 @@ Clear Filters,Effacer les filtres
 Clear PDF selection,Clear PDF selection
 Clear search,Clear search
 Click,Click
-Click here,Cliquez ici
 Click to fill,Cliquez pour remplir
 Close,Fermer
 Code,Code
@@ -629,7 +628,10 @@ Last updated,Last updated
 Last updated from collection:,Last updated from collection:
 Latitude,Latitude
 Latitude must be between -90 and 90,Latitude must be between -90 and 90
+Learn how to add and configure a contact form on a webpage.,Learn how to add and configure a contact form on a webpage.
+Learn how to build your first collection,Learn how to build your first collection
 Learn more,Learn more
+Learn more about the components.,Learn more about the components.
 Legend,Legend
 Lengthy reindex process,Lengthy reindex process
 Library,Bibliothèque
@@ -686,7 +688,10 @@ marked for training,marked for training
 Marked for training + all labeled entries,Marked for training + all labeled entries
 Marked for training only,Marked for training only
 Match,Match
+match,match
 match verbatim,match verbatim
+matches,matches
+Matches show the passage and the page they are on.,Matches show the passage and the page they are on.
 Matching,Matching
 matching,matching
 Matomo,Matomo
@@ -763,6 +768,7 @@ No icon / flag,No icon / flag
 No items available,No items available
 No Label,Aucune étiquettes
 No label,No label
+No matches for,No matches for
 No matching entities.,No matching entities.
 No media selected,No media selected
 No metadata for this entity yet.,No metadata for this entity yet.
@@ -1051,6 +1057,7 @@ Search relationships,Search relationships
 Search relevance,Pertinence de recherche
 Search text,Recherche de texte
 Search text description,Type something in the search box to get some results.
+Search this document,Search this document
 Search Tips,Astuces de recherche
 Search tips,Search tips
 Search Tips: boolean,Astuces de recherche: Booléen
@@ -1282,13 +1289,12 @@ Time,Temps
 Time (UTC),Time (UTC)
 Timelinks,Timelinks
 Timestamp,Timestamp
+tips,tips
 Title,Titre
 To,To
 To add references you can start by selecting text in the document,To add references you can start by selecting text in the document
 "To bring you a better experience, this site uses cookies.","Pour vous apporter une meilleure expérience, ce site utilise des cookies."
 "To complete the account creation process, please create a password for your account","Pour compléter le processus de création de compte, veuillez créer un mot de passe pour votre compte."
-to learn how to add and configure a contact form on a webpage.,to learn how to add and configure a contact form on a webpage.
-to learn more about the components.,Pour en savoir plus sur les composants.
 to view your authentication code and verify your identity.,Pour afficher votre code d'authentification et vérifier votre identité.
 Today,Today
 Toggle timeline mode,Toggle timeline mode
@@ -1387,6 +1393,7 @@ Users & Groups,Users & Groups
 Using Authenticator,Using Authenticator
 Using URLs,Using URLs
 Uwazi,Uwazi
+Uwazi Docs,Uwazi Docs
 Uwazi is developed by,Uwazi est développé par
 Uwazi UI,Interface utilisateur d'Uwazi
 Validating,Validating

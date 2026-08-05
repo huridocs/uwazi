@@ -21,6 +21,11 @@ const conformSiteName = async (): Promise<string> => {
   return siteName.length > 30 ? `${siteName.substring(0, 30)}...` : siteName;
 };
 
+/**
+ * @deprecated v1 fallback for the `v2Auth2fa` flag, used by GenerateTwoFactorSecretController.
+ * Superseded by GenerateTwoFactorSecret (app/api/core/application/GenerateTwoFactorSecret.ts).
+ * Remove once v2Auth2fa is enabled for all tenants.
+ */
 export const setSecret = async (user: User) => {
   const dbUser = await getUser({ _id: user._id });
   const siteName = await conformSiteName();
@@ -35,6 +40,8 @@ export const setSecret = async (user: User) => {
   throw createError('Unauthorized', 401);
 };
 
+// Not deprecated: also used by the login-time 2FA check in app/api/users/users.js
+// (validate2fa), which is outside the scope of the auth2fa route migration.
 export const verifyToken = async (user: User, token: string) => {
   const dbUser = await getUser({ _id: user._id }, '+secret');
   if (otplib.authenticator.verify({ token, secret: dbUser.secret || undefined })) {
@@ -44,6 +51,11 @@ export const verifyToken = async (user: User, token: string) => {
   throw createError('Two-factor authentication failed.', 401);
 };
 
+/**
+ * @deprecated v1 fallback for the `v2Auth2fa` flag, used by EnableTwoFactorAuthController.
+ * Superseded by EnableTwoFactorAuth (app/api/core/application/EnableTwoFactorAuth.ts).
+ * Remove once v2Auth2fa is enabled for all tenants.
+ */
 export const enable2fa = async (user: User, token: string) => {
   try {
     const { dbUser } = await verifyToken(user, token);
@@ -57,6 +69,11 @@ export const enable2fa = async (user: User, token: string) => {
   }
 };
 
+/**
+ * @deprecated v1 fallback for the `v2Auth2fa` flag, used by ResetTwoFactorAuthController.
+ * Superseded by ResetTwoFactorAuth (app/api/core/application/ResetTwoFactorAuth.ts).
+ * Remove once v2Auth2fa is enabled for all tenants.
+ */
 export const reset2fa = async (user: User) => {
   const dbUser = await getUser({ _id: user._id });
   return usersModel.save({ _id: dbUser._id, using2fa: false, secret: null });

@@ -1,7 +1,11 @@
 import React, { useEffect, type ReactNode } from 'react';
 import { useTabGroup } from '#V2/Components/UI/index.js';
 import type { Entity as EntityType, FileType } from '#V2/api/entities/types.js';
-import { useMetadataEditing } from '../Components/context/index.js';
+import {
+  useMetadataEditing,
+  useEntityPageView,
+  EntityPageViewer,
+} from '../Components/context/index.js';
 import { MAIN_TAB, isValidMainTab, type MainTabId } from './tabIds.js';
 import {
   keepMetadataTab,
@@ -34,13 +38,18 @@ const MainTabsContent = ({
   const activeTabId = isValidMainTab(resolvedTabId) ? resolvedTabId : urlActiveTabId;
   const { focusDocumentPanel, relationshipsOnMain } = useEntityTabNavigation();
   const { isEditing, formMountHost, registerMetadataActive } = useMetadataEditing();
+  const { hasEntityPageView } = useEntityPageView();
   const metadataActive = activeTabId === MAIN_TAB.METADATA;
   const keepMetadata = keepMetadataTab(metadataActive, isEditing, formMountHost, 'main');
+  // When the template uses an entity view page, the main Metadata tab shows the page
+  // instead of MetadataTab. Side panel Metadata is unchanged.
+  const showEntityPageOnMain = hasEntityPageView && metadataActive;
+  const showMetadataOnMain = keepMetadata && !hasEntityPageView;
 
   useEffect(() => {
-    registerMetadataActive('main', metadataActive);
+    registerMetadataActive('main', metadataActive && !hasEntityPageView);
     return () => registerMetadataActive('main', false);
-  }, [metadataActive, registerMetadataActive]);
+  }, [metadataActive, hasEntityPageView, registerMetadataActive]);
 
   let content: ReactNode = null;
 
@@ -71,7 +80,7 @@ const MainTabsContent = ({
       break;
   }
 
-  if (!content && !keepMetadata) return null;
+  if (!content && !showMetadataOnMain && !showEntityPageOnMain) return null;
 
   return (
     <div
@@ -80,11 +89,12 @@ const MainTabsContent = ({
       aria-labelledby={`entity-main-tab-${activeTabId}`}
       className={`flex h-full min-h-0 w-full flex-col ${metadataActive ? 'bg-paper' : 'bg-warm'}`}
     >
-      {keepMetadata ? (
+      {showMetadataOnMain ? (
         <div className={metadataActive ? 'flex min-h-0 flex-1 flex-col' : 'hidden'}>
           <MetadataTab entity={entity} host="main" />
         </div>
       ) : null}
+      {showEntityPageOnMain ? <EntityPageViewer /> : null}
       {!metadataActive ? content : null}
       {activeTabId === MAIN_TAB.RELATIONSHIPS && <RelationshipsFiltersDrawer />}
     </div>
