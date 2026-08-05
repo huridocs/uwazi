@@ -27,6 +27,7 @@ Actions,Actions
 Activate,Активувати
 Activated,Активовано
 Active languages,Активні мови
+Active primary,Active primary
 Activity,Діяльність
 Activity log,Журнал активності
 Activity Log,Журнал активності
@@ -904,6 +905,7 @@ Preview entity,Preview entity
 Preview updates automatically (300ms debounce),Preview updates automatically (300ms debounce)
 Preview updates when the JSON is valid.,Preview updates when the JSON is valid.
 Previous,Попередній
+Primary,Primary
 Primary button,Primary button
 Primary document,Primary document
 Primary Documents,Основні документи
@@ -1177,6 +1179,7 @@ Suggestions sent,Пропозиції надіслані
 Suggestions updated,Suggestions updated
 Supported chart types for manual data,Supported chart types for manual data
 Supported chart types for this configuration,Supported chart types for this configuration
+Supporting,Supporting
 Supporting file,Supporting file
 Supporting files,Супровідні файли
 Synced template,Синхронізований шаблон

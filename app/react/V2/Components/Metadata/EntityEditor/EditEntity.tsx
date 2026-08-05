@@ -190,7 +190,7 @@ const EditEntity = ({
     <form
       id={formId}
       onSubmit={submit}
-      className="flex w-full flex-col gap-3 font-sans text-base text-ink"
+      className="flex w-full min-w-0 flex-col gap-3 font-sans text-base text-ink"
       data-testid="entity-edit-form"
     >
       <TitleField<EditEntityFormValues>

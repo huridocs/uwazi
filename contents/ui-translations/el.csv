@@ -27,6 +27,7 @@ Actions,Actions
 Activate,Ενεργοποίηση
 Activated,Ενεργοποιημένο
 Active languages,Ενεργές γλώσσες
+Active primary,Active primary
 Activity,Δραστηριότητα
 Activity log,Ημερολόγιο δραστηριοτήτων
 Activity Log,Ημερολόγιο δραστηριοτήτων
@@ -903,6 +904,7 @@ Preview entity,Preview entity
 Preview updates automatically (300ms debounce),Preview updates automatically (300ms debounce)
 Preview updates when the JSON is valid.,Preview updates when the JSON is valid.
 Previous,Προηγούμενο
+Primary,Primary
 Primary button,Primary button
 Primary document,Primary document
 Primary Documents,Κύρια έγγραφα
@@ -1176,6 +1178,7 @@ Suggestions sent,Οι προτάσεις στάλθηκαν
 Suggestions updated,Suggestions updated
 Supported chart types for manual data,Supported chart types for manual data
 Supported chart types for this configuration,Supported chart types for this configuration
+Supporting,Supporting
 Supporting file,Supporting file
 Supporting files,Υποστηρικτικά αρχεία
 Synced template,Συγχρονισμένο πρότυπο

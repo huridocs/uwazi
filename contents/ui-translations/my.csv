@@ -27,6 +27,7 @@ Actions,Actions
 Activate,Activate
 Activated,Activated
 Active languages,Active languages
+Active primary,Active primary
 Activity,လုပ်ဆောင်မှု
 Activity log,လုပ်ဆောင်မှု မှတ်တမ်း
 Activity Log,လုပ်ဆောင်မှု မှတ်တမ်း
@@ -902,6 +903,7 @@ Preview entity,Preview entity
 Preview updates automatically (300ms debounce),Preview updates automatically (300ms debounce)
 Preview updates when the JSON is valid.,Preview updates when the JSON is valid.
 Previous,ယခင်
+Primary,Primary
 Primary button,Primary button
 Primary document,Primary document
 Primary Documents,အဓိက စာရွက်စာတမ်းများ
@@ -1175,6 +1177,7 @@ Suggestions sent,Suggestions sent
 Suggestions updated,Suggestions updated
 Supported chart types for manual data,Supported chart types for manual data
 Supported chart types for this configuration,Supported chart types for this configuration
+Supporting,Supporting
 Supporting file,Supporting file
 Supporting files,အထောက်အကူပြုဖိုင်များ
 Synced template,Synced template

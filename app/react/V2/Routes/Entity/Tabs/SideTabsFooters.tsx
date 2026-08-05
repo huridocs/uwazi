@@ -1,12 +1,8 @@
 import React from 'react';
 import { useTabGroup } from '#V2/Components/UI/index.js';
 import type { FileType } from '#V2/api/entities/types.js';
-import { useMetadataEditing } from '../Components/context/index.js';
 import { SIDE_TAB, isValidSideTab, type SideTabId } from './tabIds.js';
-import {
-  keepMetadataTab,
-  resolveActiveTabId,
-} from '../Components/context/metadataEditingSession.js';
+import { resolveActiveTabId } from '../Components/context/metadataEditingSession.js';
 import { DocumentTabFooter } from './footers/DocumentTabFooter.js';
 import { MetadataTabFooter } from './footers/MetadataTabFooter.js';
 import { ToCTabFooter } from './footers/ToCTabFooter.js';
@@ -24,12 +20,6 @@ const SideTabsFooters = ({ activeTabId: urlActiveTabId, mainDocument }: SideTabs
   const { activeTabId: atomActiveTabId } = useTabGroup('entity-side');
   const resolvedTabId = resolveActiveTabId(atomActiveTabId, urlActiveTabId);
   const activeTabId = isValidSideTab(resolvedTabId) ? resolvedTabId : urlActiveTabId;
-  const { isEditing, formMountHost } = useMetadataEditing();
-  const metadataActive = activeTabId === SIDE_TAB.METADATA;
-
-  if (keepMetadataTab(Boolean(metadataActive), isEditing, formMountHost, 'side')) {
-    return <MetadataTabFooter host="side" />;
-  }
 
   if (!activeTabId) return null;
 
