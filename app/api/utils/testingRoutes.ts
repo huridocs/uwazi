@@ -9,6 +9,7 @@ import { appContext } from './AppContext.js';
 import { extendSupertest } from './supertestExtensions.js';
 import { dependenciesContextMiddleware } from '#api/core/infrastructure/express/middlewares/DependenciesMiddleware.js';
 import { requestTimingMiddleware } from '#api/core/infrastructure/express/middlewares/RequestTimingMiddleware.js';
+import { authenticatedUserMiddlewares } from '#api/auth/routes.js';
 
 extendSupertest();
 
@@ -18,6 +19,33 @@ enum TestEmitSources {
   session = 'session',
   currentTenant = 'currentTenant',
 }
+
+// setUpApp is routinely called at module scope, before testingEnvironment.setUp() has
+// connected to the DB, so authenticatedUserMiddlewares() (which needs that connection to
+// build its Mongo session store) can't be built eagerly here. Deferring construction to the
+// first actual request means it only runs once a DB connection is guaranteed to exist.
+const lazyAuthenticatedUserMiddlewares = () => {
+  let middlewares: ((req: Request, res: Response, next: NextFunction) => void)[] | undefined;
+
+  return (req: Request, res: Response, next: NextFunction) => {
+    middlewares ??= authenticatedUserMiddlewares();
+
+    const runFrom = (index: number, error?: unknown): void => {
+      if (error) {
+        next(error);
+        return;
+      }
+      const middleware = middlewares![index];
+      if (!middleware) {
+        next();
+        return;
+      }
+      middleware(req, res, (err?: unknown) => runFrom(index + 1, err));
+    };
+
+    runFrom(0);
+  };
+};
 
 const setUpApp = (
   route: Function,
@@ -51,6 +79,7 @@ const setUpApp = (
       .catch(next);
   });
   app.use(languageMiddleware);
+  app.use(lazyAuthenticatedUserMiddlewares());
   customMiddleware.forEach(middlewareElement => app.use(middlewareElement));
   app.use(dependenciesContextMiddleware);
 

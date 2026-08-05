@@ -22,28 +22,32 @@ import { validation } from '#api/utils/index.js';
 
 import './passport_conf.js';
 
-export default app => {
-  app.use(cookieParser());
+// Must run before dependenciesContextMiddleware, which snapshots the authenticated
+// user into ExecutionContext.actor and therefore needs req.user already deserialized.
+const authenticatedUserMiddlewares = () => [
+  cookieParser(),
+  session({
+    secret: process.env.NODE_ENV === 'production' ? config.userSessionSecret : 'harvey&lola',
+    store: MongoStore.create({
+      touchAfter: 24 * 3600,
+      dbName: config.SHARED_DB,
+      client: DB.connectionForDB(config.SHARED_DB, {
+        useCache: true,
+        noListener: false,
+      }).getClient(),
+    }),
+    resave: false,
+    saveUninitialized: false,
+  }),
+  passport.initialize(),
+  passport.session(),
+];
 
-  app.use(
-    session({
-      secret: app.get('env') === 'production' ? config.userSessionSecret : 'harvey&lola',
-      store: MongoStore.create({
-        touchAfter: 24 * 3600,
-        dbName: config.SHARED_DB,
-        client: DB.connectionForDB(config.SHARED_DB, {
-          useCache: true,
-          noListener: false,
-        }).getClient(),
-      }),
-      resave: false,
-      saveUninitialized: false,
-    })
-  );
+const populateAuthenticatedUser = app => {
+  authenticatedUserMiddlewares().forEach(middleware => app.use(middleware));
+};
 
-  app.use(passport.initialize());
-  app.use(passport.session());
-
+const authRoutes = app => {
   app.post(
     '/api/login',
 
@@ -152,3 +156,6 @@ export default app => {
     res.json(remoteResponse.json);
   });
 };
+
+export { populateAuthenticatedUser, authenticatedUserMiddlewares };
+export default authRoutes;
