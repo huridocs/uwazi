@@ -7,7 +7,7 @@ import { templatesAtom } from '#V2/atoms/templatesAtom.js';
 import { thesauriAtom } from '#V2/atoms/thesauriAtom.js';
 import type { MetadataValue } from '#V2/formatters/types.js';
 import { MultiselectListOption } from '../../Forms/index.js';
-import { TitleField, IconField, DocumentField, TemplateField } from './Components/index.js';
+import { TitleField, IconField, EntityFileFields, TemplateField } from './Components/index.js';
 import { EditEntityPropertyField } from './EditEntityPropertyField.js';
 import type { EditEntityProps } from './editEntityTypes.js';
 import {
@@ -237,9 +237,7 @@ const EditEntity = ({
           ))}
         </Fragment>
       )}
-      {entity?.documents?.length && documentMutations ? (
-        <DocumentField entity={entity} disabled={disabled} mutations={documentMutations} />
-      ) : null}
+      <EntityFileFields entity={entity} disabled={disabled} mutations={documentMutations} />
 
     </form>
   );

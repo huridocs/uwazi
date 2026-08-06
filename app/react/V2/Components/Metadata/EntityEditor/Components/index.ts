@@ -3,6 +3,8 @@ export { TextField } from './TextField.js';
 export { TitleField } from './TitleField.js';
 export { IconField } from './IconField.js';
 export { DocumentField } from './DocumentField.js';
+export { AdditionalFilesField } from './AdditionalFilesField.js';
+export { EntityFileFields } from './EntityFileFields.js';
 export { TemplateField } from './TemplateField.js';
 export { SelectField } from './SelectField.js';
 export { MultiselectField } from './MultiselectField.js';
