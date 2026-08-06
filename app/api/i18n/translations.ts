@@ -19,6 +19,7 @@ import { TranslationContext, TranslationType, TranslationValue } from '#shared/t
 import { availableLanguages } from '#shared/language/index.js';
 import { ContextType } from '#shared/translationSchema.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
+import { TranslationContext as DomainTranslationContext } from '#api/core/domain/translation/Translation.js';
 import { TranslationSyO } from '#api/core/infrastructure/mongodb/translation/schemas/TranslationSyO.js';
 import {
   addLanguageV2,
@@ -96,23 +97,18 @@ function checkDuplicateKeys(
   });
 }
 
+function indexedValuesToList(indexedValues: IndexedContextValues): TranslationValue[] {
+  return Object.keys(indexedValues)
+    .filter(key => indexedValues[key])
+    .map(key => ({ key, value: indexedValues[key] }));
+}
+
 function processContextValues(context: TranslationContext | IndexedContext): TranslationContext {
-  const processedValues: TranslationValue[] = [];
+  let values: TranslationValue[] = [];
 
   if (context.values && !Array.isArray(context.values)) {
-    const indexedValues: IndexedContextValues = context.values;
-    Object.keys(indexedValues).forEach(key => {
-      if (indexedValues[key]) {
-        processedValues.push({ key, value: indexedValues[key] });
-      }
-    });
-  }
-
-  let values: TranslationValue[] = [];
-  if (processedValues.length) {
-    values = processedValues;
-  }
-  if (Array.isArray(context.values)) {
+    values = indexedValuesToList(context.values);
+  } else if (Array.isArray(context.values)) {
     values = context.values as TranslationValue[];
   }
 
@@ -323,7 +319,12 @@ export default {
     deletedProperties: string[],
     values: IndexedContextValues
   ) {
-    await updateContextV2(context, keyNamesChanges, deletedProperties, values);
+    const domainContext: DomainTranslationContext = {
+      id: context.id,
+      label: context.label,
+      type: context.type as DomainTranslationContext['type'],
+    };
+    await updateContextV2(domainContext, keyNamesChanges, deletedProperties, values);
     return 'ok';
   },
 

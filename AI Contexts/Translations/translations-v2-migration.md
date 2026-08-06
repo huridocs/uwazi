@@ -7,7 +7,7 @@ Move translations backend ownership into `app/api/core` hexagonal architecture s
 Keep:
 
 - Mongo collection **`translationsV2`** (by-item) as the only runtime store
-- Public HTTP contracts for `/api/translations*` (mammoth DTO shape) identical
+- Public HTTP contracts for `/api/translations*` (legacy locale DTO shape) identical
 - Public HTTP contracts for `/api/v2/translations` (by-item)
 
 Replace:
@@ -25,7 +25,7 @@ Replace:
 ## Scope
 
 - Backend (`app/api`), with a documented follow-up for FE cutover (Phase 1b) — not required to finish Phase 1.
-- Reimplement mammoth `/api/translations*` as **core V2 hex** controllers (same path/auth/I/O).
+- Reimplement legacy `/api/translations*` as **core V2 hex** controllers (same path/auth/I/O).
 - Keep `/api/v2/translations` under core as the by-item API.
 - Migrate all internal writers off `#api/i18n/translations` onto core mutation use cases / ports.
 - Mutations = UseCases; GETs = thin controller → QueryService/DAO (team direction).
@@ -140,11 +140,11 @@ RT deferred translations ownership: copied Templates’ port + `Legacy*Translati
 | ID | Decision | Status |
 |----|----------|--------|
 | D1 | Phase 1 = V2 hex in `app/api/core` on Mongo `translationsV2` only | Locked |
-| D2 | Keep mammoth `/api/translations*` **contracts** identical; reimplement as **core hex** | Locked |
+| D2 | Keep legacy `/api/translations*` **contracts** identical; reimplement as **core hex** | Locked |
 | D3 | Keep `/api/v2/translations` by-item API under core | Locked |
 | D4 | Internal callers migrate off `#api/i18n/translations` to core mutation use cases/ports; retire Legacy\* wrappers | Locked |
 | D5 | **No application Upsert.** Create / Update / Delete (+ ImportPredefined). HTTP may branch create vs update | Locked |
-| D6 | Sockets `translationsChange` (mammoth DTO) and `translationKeysChange` (by-item) stay until FE cutover | Locked |
+| D6 | Sockets `translationsChange` (legacy locale DTO) and `translationKeysChange` (by-item) stay until FE cutover | Locked |
 | D7 | FE Settings/atom cutover = Phase 1b follow-up, not required to close Phase 1 | Locked |
 | D8 | Postgres = later doc; one store; sync namespace `translationsV2` kept | Locked |
 | D9 | Tests: integration-first; parity with current behavior; auth mock OK at routes | Locked |
@@ -180,7 +180,7 @@ Translations GETs (mammoth get, by-item get, available languages) follow the thi
 ## Target hex architecture
 
 ```
-HTTP /api/translations* (mammoth DTO)     HTTP /api/v2/translations (by-item)
+HTTP /api/translations* (legacy locale DTO)     HTTP /api/v2/translations (by-item)
         │                                          │
         ▼                                          ▼
  core express controllers (Zod)
@@ -238,7 +238,7 @@ All writers must stop calling `#api/i18n/translations` and use core ports/use ca
 
 1. Introduce core domain/contracts/DS (move or re-home from `i18n.v2`).
 2. Mutation use cases (create/update/delete/import); no Upsert use case.
-3. Thin GET controllers + query/DAO; mammoth reshape mapper at delivery edge.
+3. Thin GET controllers + query/DAO; legacy DTO reshape mapper at delivery edge.
 4. Wire `/api/translations*` and `/api/v2/translations` to core controllers.
 5. Migrate callers (templates, RT, thesaurus, settings, CSV, languages); remove Legacy\* façade adapters.
 6. Remove runtime `app/api/i18n` façade / `i18n.v2` as home (leave only what must remain temporarily, then delete).
@@ -248,7 +248,7 @@ All writers must stop calling `#api/i18n/translations` and use core ports/use ca
 
 - Settings list/edit/import → by-item API (or client-side group)
 - Atom/sockets: prefer `translationKeysChange` / by-item hydration; retire mammoth `translationsChange` when safe
-- Then delete mammoth reshape delivery surface
+- Then delete legacy DTO reshape delivery surface
 
 ### Phase 2 — Postgres (later doc)
 
@@ -264,7 +264,7 @@ All writers must stop calling `#api/i18n/translations` and use core ports/use ca
 2. **Thesaurus label-as-key + metadata propagation** — translation value edits can rename denormalized entity select labels; easy to break.
 3. **AddLanguage TX boundary** — `importPredefined` / CSVLoader outside TX today; redesign carefully under ImportPredefined use case.
 4. **Sync legacy `translations` namespace leftovers** — live path is `translationsV2`; do not regress Menu/Filters preserve logic.
-5. **Mammoth reshape cost** — `resultsToV1TranslationType` stays until Phase 1b; acceptable for Phase 1.
+5. **Legacy DTO reshape cost** — `resultsToV1TranslationType` stays until Phase 1b; acceptable for Phase 1.
 6. **`core` must not depend on external modules** — moving DS/contracts into core (or core contracts + infra adapters) is required; today’s `#api/i18n.v2` imports from core are temporary debt.
 7. **CSV dual stacks** — v1 `updateEntries` validation vs v2 gateway upsert; align on create/update use cases.
 
@@ -274,7 +274,7 @@ All writers must stop calling `#api/i18n/translations` and use core ports/use ca
 
 - [x] Core domain + `TranslationsDataSource` contract + Mongo DS (+ cache) under `app/api/core`
 - [x] Mutation use cases: create/update/delete context & entries; language delete (ImportPredefined still via façade CSV path)
-- [x] Thin GET query service + mammoth DTO mapper (`TranslationsQueryService`)
+- [x] Thin GET query service + legacy locale DTO mapper (`TranslationsQueryService`)
 - [x] Core express routes for `/api/translations*` and `/api/v2/translations` (`api.js` → core `translationsRoutes`); GETs via QueryService; mutations still delegate façade for thesaurus/CSV side effects
 - [x] Migrate Templates / RelationshipTypes / Thesaurus / language factories onto core DS/use cases; Legacy\* no longer call façade for context CRUD
 - [ ] Remove runtime `#api/i18n` façade as module home (still compatibility delivery + importPredefined/CSV)
@@ -295,7 +295,7 @@ All writers must stop calling `#api/i18n/translations` and use core ports/use ca
 
 ## V2 complete checklist (Phase 1)
 
-- [x] Mammoth `/api/translations*` served by core controllers with unchanged contracts
+- [x] Legacy `/api/translations*` served by core controllers with unchanged contracts
 - [x] `/api/v2/translations` served by core controllers
 - [x] GETs use QueryService/DAO (no Get*UseCase)
 - [x] Mutations use Create/Update/Delete use cases — no application Upsert use case
@@ -309,7 +309,7 @@ All writers must stop calling `#api/i18n/translations` and use core ports/use ca
 - [ ] Settings Translations list/edit/import use by-item API
 - [ ] `translationsAtom` / `t()` hydration does not require mammoth GET
 - [ ] `translationsChange` removed or unused; `translationKeysChange` (or successor) sufficient
-- [ ] Mammoth reshape mapper deleted from backend
+- [ ] Legacy DTO reshape mapper deleted from backend
 
 ---
 

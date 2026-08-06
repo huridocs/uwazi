@@ -16,9 +16,9 @@ import { GetTranslationEntriesController } from './GetTranslationEntriesControll
 import { SaveTranslationsController } from './SaveTranslationsController.js';
 import { SaveTranslationEntriesController } from './SaveTranslationEntriesController.js';
 
-/**
- * Registers both mammoth `/api/translations*` and by-item `/api/v2/translations` routes.
- */
+type UploadedFileRequest = Request & { file?: Express.Multer.File };
+type DeleteTranslationRequest = Request & { query: { key: LanguageISO6391 } };
+
 const translationsRoutes = (app: Application) => {
   app.get(
     '/api/translations',
@@ -57,12 +57,15 @@ const translationsRoutes = (app: Application) => {
       },
     }),
 
-    async (req, res, next) => {
-      if (!req.file) throw new Error('File is not available on request object');
+    async (req: UploadedFileRequest, res, next) => {
+      const uploadedFile = req.file;
+      if (!uploadedFile) {
+        throw new Error('File is not available on request object');
+      }
       try {
         const { context } = req.body;
         const loader = new CSVLoader();
-        const response = await loader.loadTranslations(req.file.path, context);
+        const response = await loader.loadTranslations(uploadedFile.path, context);
         response.forEach(translation => {
           req.sockets.emitToCurrentTenant('translationsChange', translation);
         });
@@ -176,8 +179,6 @@ const translationsRoutes = (app: Application) => {
       await new AddLanguageController({ request: req, response: res }).handleAsync();
     }
   );
-
-  type DeleteTranslationRequest = Request & { query: { key: LanguageISO6391 } };
 
   app.delete(
     '/api/translations/languages',

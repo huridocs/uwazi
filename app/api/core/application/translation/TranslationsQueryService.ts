@@ -6,10 +6,6 @@ import { EnforcedWithId } from '#api/odm/index.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import { TranslationContext, TranslationType, TranslationValue } from '#shared/translationType.js';
 
-/**
- * Thin read/query API for translations. Controllers call this instead of a Get*UseCase.
- * Includes mammoth DTO reshape for compatibility delivery surfaces.
- */
 export class TranslationsQueryService {
   constructor(
     private translationsDS: TranslationsDataSource,
@@ -28,7 +24,7 @@ export class TranslationsQueryService {
     return this.translationsDS.getByContext(contextId);
   }
 
-  async toMammothDto(
+  async toLegacyDto(
     result: ResultSet<Translation>,
     onlyLanguage?: LanguageISO6391
   ): Promise<EnforcedWithId<TranslationType>[]> {
@@ -37,23 +33,17 @@ export class TranslationsQueryService {
       languageKeys = [onlyLanguage];
     }
 
-    const resultMap = languageKeys.reduce<{
-      [language: string]: TranslationType & { locale: string };
-    }>((memo, key) => {
-      // eslint-disable-next-line no-param-reassign
-      memo[key] = { locale: key, contexts: [] };
-      return memo;
-    }, {});
-
-    const contexts = languageKeys.reduce<{
+    const resultMap: { [language: string]: TranslationType & { locale: string } } = {};
+    const contexts: {
       [language: string]: {
         [context: string]: TranslationContext & { values: TranslationValue[] };
       };
-    }>((memo, key) => {
-      // eslint-disable-next-line no-param-reassign
-      memo[key] = {};
-      return memo;
-    }, {});
+    } = {};
+
+    languageKeys.forEach(key => {
+      resultMap[key] = { locale: key, contexts: [] };
+      contexts[key] = {};
+    });
 
     await result.forEach(translation => {
       if (!resultMap[translation.language]) {
@@ -77,20 +67,19 @@ export class TranslationsQueryService {
       });
     });
 
-    return Object.values(resultMap).map(translation => {
-      // eslint-disable-next-line no-param-reassign
-      translation.contexts = Object.values(contexts[translation.locale]);
-      return translation;
-    }) as EnforcedWithId<TranslationType>[];
+    return Object.values(resultMap).map(translation => ({
+      ...translation,
+      contexts: Object.values(contexts[translation.locale]),
+    })) as EnforcedWithId<TranslationType>[];
   }
 
-  async getMammoth(query: { locale?: LanguageISO6391; context?: string } = {}) {
+  async getLegacy(query: { locale?: LanguageISO6391; context?: string } = {}) {
     if (query.context) {
-      return this.toMammothDto(this.getByContext(query.context));
+      return this.toLegacyDto(this.getByContext(query.context));
     }
     if (query.locale) {
-      return this.toMammothDto(this.getByLanguage(query.locale), query.locale);
+      return this.toLegacyDto(this.getByLanguage(query.locale), query.locale);
     }
-    return this.toMammothDto(this.getAll());
+    return this.toLegacyDto(this.getAll());
   }
 }

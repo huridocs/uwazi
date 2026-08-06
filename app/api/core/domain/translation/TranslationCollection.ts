@@ -1,6 +1,20 @@
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import { Translation } from './Translation.js';
 
+function buildLanguageKeyMap(
+  translations: Translation[]
+): Map<LanguageISO6391, Map<string, string>> {
+  const map = new Map<LanguageISO6391, Map<string, string>>();
+
+  translations.forEach(translation => {
+    const byKey = map.get(translation.language) ?? new Map<string, string>();
+    byKey.set(translation.key, translation.value);
+    map.set(translation.language, byKey);
+  });
+
+  return map;
+}
+
 export class TranslationCollection {
   private readonly translations: Translation[];
 
@@ -8,19 +22,7 @@ export class TranslationCollection {
 
   constructor(translations: Translation[]) {
     this.translations = translations;
-    this.byLanguageAndKey = this.buildHashMaps(translations);
-  }
-
-  private buildHashMaps(translations: Translation[]): Map<LanguageISO6391, Map<string, string>> {
-    const map = new Map<LanguageISO6391, Map<string, string>>();
-
-    translations.forEach(translation => {
-      const byKey = map.get(translation.language) || new Map<string, string>();
-      byKey.set(translation.key, translation.value);
-      map.set(translation.language, byKey);
-    });
-
-    return map;
+    this.byLanguageAndKey = buildLanguageKeyMap(translations);
   }
 
   getTranslation(language: LanguageISO6391, key: string, fallback?: string): string {

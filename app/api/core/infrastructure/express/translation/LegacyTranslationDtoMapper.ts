@@ -19,13 +19,12 @@ export function prepareContexts(contexts: TranslationContext[] = []): IndexedCon
         ? 'Uwazi UI'
         : context.type,
     values: context.values
-      ? context.values.reduce((values, value) => {
+      ? context.values.reduce<IndexedContextValues>((values, value) => {
           if (value.key && value.value) {
-            // eslint-disable-next-line no-param-reassign
-            values[value.key] = value.value;
+            return { ...values, [value.key]: value.value };
           }
           return values;
-        }, {} as IndexedContextValues)
+        }, {})
       : {},
   }));
 }
@@ -33,13 +32,12 @@ export function prepareContexts(contexts: TranslationContext[] = []): IndexedCon
 export function toIndexedTranslations(
   translations?: EnforcedWithId<TranslationType>[]
 ): IndexedTranslations[] {
-  return translations
-    ? translations.map(
-        translation =>
-          ({
-            ...translation,
-            contexts: prepareContexts(translation.contexts),
-          }) as IndexedTranslations
-      )
-    : [];
+  if (!translations) {
+    return [];
+  }
+
+  return translations.map(translation => ({
+    ...translation,
+    contexts: prepareContexts(translation.contexts),
+  }));
 }

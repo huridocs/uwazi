@@ -1,4 +1,4 @@
-import { AnyBulkWriteOperation, MongoBulkWriteError, OptionalId } from 'mongodb';
+import { MongoBulkWriteError, OptionalId } from 'mongodb';
 import { MongoDataSource } from '#api/core/infrastructure/mongodb/common/MongoDataSource.js';
 import { MongoResultSet } from '#api/core/infrastructure/mongodb/common/MongoResultSet.js';
 import { DuplicatedKeyError } from '#api/common.v2/errors/DuplicatedKeyError.js';
@@ -12,6 +12,7 @@ import { TranslationMappers } from '#api/core/infrastructure/mongodb/translation
 import { Translation, TranslationContext } from '#api/core/domain/translation/Translation.js';
 import { TranslationDBO } from '#api/core/infrastructure/mongodb/translation/schemas/TranslationDBO.js';
 import { TranslationContextModel } from '#api/core/domain/translation/TranslationContextModel.js';
+import { buildTranslationContextBulkOps } from './buildTranslationContextBulkOps.js';
 
 export class MongoTranslationsDataSource
   extends MongoDataSource<OptionalId<TranslationDBO>>
@@ -175,10 +176,6 @@ export class MongoTranslationsDataSource
     return result?.notFoundKeys || keys;
   }
 
-  /**
-   * Fetches a TranslationContext domain model from the database.
-   * Returns an empty context if no translations exist yet (e.g., new template/thesaurus).
-   */
   async getContext(
     contextInfo: TranslationContext,
     languages: LanguageISO6391[],
@@ -189,66 +186,8 @@ export class MongoTranslationsDataSource
     return TranslationContextModel.create(contextInfo, translations, languages, defaultLanguage);
   }
 
-  /**
-   * Persists changes from a TranslationContext domain model to the database.
-   * Uses the diff to optimize database operations.
-   */
   async updateContext(context: TranslationContextModel): Promise<void> {
-    const diff = context.getDiff();
-
-    if (!diff.hasChanges()) {
-      return;
-    }
-
-    const bulkOps: AnyBulkWriteOperation<OptionalId<TranslationDBO>>[] = [];
-
-    if (diff.contextLabelChanged) {
-      const contextInfo = context.getContextInfo();
-      bulkOps.push({
-        updateMany: {
-          filter: { 'context.id': contextInfo.id },
-          update: { $set: { 'context.label': contextInfo.label } },
-        },
-      });
-    }
-
-    if (diff.addedTranslations.length > 0) {
-      diff.addedTranslations.forEach(translation => {
-        bulkOps.push({
-          insertOne: {
-            document: TranslationMappers.toDBO(translation),
-          },
-        });
-      });
-    }
-
-    if (diff.updatedTranslations.length > 0) {
-      diff.updatedTranslations.forEach(translation => {
-        bulkOps.push({
-          updateOne: {
-            filter: {
-              'context.id': translation.context.id,
-              key: translation.key,
-              language: translation.language,
-            },
-            update: { $set: TranslationMappers.toDBO(translation) },
-          },
-        });
-      });
-    }
-
-    if (diff.deletedKeys.length > 0) {
-      const contextInfo = context.getContextInfo();
-      bulkOps.push({
-        deleteMany: {
-          filter: {
-            'context.id': contextInfo.id,
-            key: { $in: diff.deletedKeys },
-          },
-        },
-      });
-    }
-
+    const bulkOps = buildTranslationContextBulkOps(context);
     if (bulkOps.length > 0) {
       await this.getCollection().bulkWrite(bulkOps);
     }

@@ -1,5 +1,6 @@
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
+import type { DBFixture } from '#api/utils/testing_db.js';
 import { CreateTranslationContextUseCaseFactory } from '#api/core/infrastructure/factories/CreateTranslationContextUseCaseFactory.js';
 import { DeleteTranslationContextUseCaseFactory } from '#api/core/infrastructure/factories/DeleteTranslationContextUseCaseFactory.js';
 import { UpdateTranslationContextUseCaseFactory } from '#api/core/infrastructure/factories/UpdateTranslationContextUseCaseFactory.js';
@@ -8,7 +9,7 @@ import { TransactionManagerFactory } from '#api/core/infrastructure/factories/Tr
 
 const factory = getFixturesFactory();
 
-const fixtures = {
+const fixtures: DBFixture = {
   settings: [
     {
       languages: [

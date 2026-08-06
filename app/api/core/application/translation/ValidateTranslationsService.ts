@@ -8,35 +8,41 @@ import { Translation, TranslationContext } from '#api/core/domain/translation/Tr
 import { objectIndex, objectIndexToArrays } from '#shared/data_utils/objectIndex.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 
-export type TranslationEntryInput = {
+type KeyContextLanguages = {
+  key: string;
+  contextId: string;
+  missingLanguages: LanguageISO6391[];
+};
+
+type TranslationEntryInput = {
   language: LanguageISO6391;
   key: string;
   value: string;
   context: TranslationContext;
 };
 
-const languagesForKeyContext = (
-  translations: Translation[]
-): { key: string; contextId: string; missingLanguages: LanguageISO6391[] }[] =>
+const languagesForKeyContext = (translations: Translation[]): KeyContextLanguages[] =>
   Object.values(
-    translations.reduce<
-      Record<string, { key: string; contextId: string; missingLanguages: LanguageISO6391[] }>
-    >((result, item) => {
-      const key = `${item.key}${item.context.id}`;
-      if (!result[key]) {
-        // eslint-disable-next-line no-param-reassign
-        result[key] = {
-          key: item.key,
-          contextId: item.context.id,
-          missingLanguages: [],
+    translations.reduce<Record<string, KeyContextLanguages>>((result, item) => {
+      const groupKey = `${item.key}${item.context.id}`;
+      const existing = result[groupKey];
+      if (!existing) {
+        return {
+          ...result,
+          [groupKey]: {
+            key: item.key,
+            contextId: item.context.id,
+            missingLanguages: [item.language],
+          },
         };
       }
-      result[key].missingLanguages.push(item.language);
+
+      existing.missingLanguages.push(item.language);
       return result;
     }, {})
   );
 
-export class ValidateTranslationsService {
+class ValidateTranslationsService {
   constructor(
     private translationsDS: TranslationsDataSource,
     private settingsDS: SettingsDataSource
@@ -86,20 +92,19 @@ export class ValidateTranslationsService {
       Promise.resolve()
     );
 
-    const translationsMissingLanguages = groupedByKeyContext.reduce(
+    const translationsMissingLanguages = groupedByKeyContext.reduce<KeyContextLanguages[]>(
       (memo, t) => {
-        const set = new Set(configuredLanguageKeys);
-        t.missingLanguages.forEach(key => {
-          set.delete(key);
-        });
-        if (set.size) {
-          // eslint-disable-next-line no-param-reassign
-          t.missingLanguages = Array.from(set);
-          memo.push(t);
+        const missing = configuredLanguageKeys.filter(key => !t.missingLanguages.includes(key));
+        if (missing.length) {
+          memo.push({
+            key: t.key,
+            contextId: t.contextId,
+            missingLanguages: missing,
+          });
         }
         return memo;
       },
-      [] as { key: string; contextId: string; missingLanguages: string[] }[]
+      []
     );
 
     if (translationsMissingLanguages.length) {
@@ -113,3 +118,6 @@ export class ValidateTranslationsService {
     }
   }
 }
+
+export { ValidateTranslationsService };
+export type { TranslationEntryInput };

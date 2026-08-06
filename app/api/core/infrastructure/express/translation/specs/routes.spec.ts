@@ -1,4 +1,5 @@
 import 'isomorphic-fetch';
+import type { Request } from 'express';
 import request from 'supertest';
 
 import { TranslationDBO } from '#api/core/infrastructure/mongodb/translation/schemas/TranslationDBO.js';
@@ -8,17 +9,18 @@ import { TestEmitSources, iosocket, setUpApp } from '#api/utils/testingRoutes.js
 import { UserRole } from '#shared/types/userSchema.js';
 import { translationsRoutes } from '../routes.js';
 
+type UploadedFileRequest = Request & { file?: Express.Multer.File };
+
 describe('core translations by-item routes', () => {
   const createTranslationDBO = getFixturesFactory().v2.database.translationDBO;
-  const app = setUpApp(translationsRoutes, (req, _res, next) => {
+  const app = setUpApp(translationsRoutes, (req: UploadedFileRequest, _res, next) => {
     req.user = {
       _id: 'admin',
       username: 'admin',
       role: UserRole.ADMIN,
       email: 'admin@test.com',
     };
-    // @ts-ignore
-    req.file = { path: 'filder/filename.ext' };
+    req.file = { path: 'filder/filename.ext' } as Express.Multer.File;
     next();
   });
 
