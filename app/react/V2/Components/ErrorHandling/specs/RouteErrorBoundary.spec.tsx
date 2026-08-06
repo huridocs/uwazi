@@ -55,4 +55,19 @@ describe('ErrorBoundary', () => {
     expect(normalized.message).toBe('Thesauri missing');
     expect(normalized.name).toBe('Not Found');
   });
+
+  it('should normalize route ErrorResponse for ErrorFallback', () => {
+    error = {
+      status: 404,
+      statusText: 'Failed to load plaintext',
+      data: { error: 'Failed to load plaintext', message: 'Plaintext missing' },
+      internal: true,
+    };
+    const component = renderConnectedMount(() => controlledComponent, {}, {}, true);
+    const errorProps = component.find(ErrorFallback).at(0).props();
+    const normalized = errorProps.error as RequestError;
+    expect(normalized.status).toBe(404);
+    expect(normalized.message).toBe('Plaintext missing');
+    expect(normalized.name).toBe('Not Found');
+  });
 });

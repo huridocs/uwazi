@@ -61,11 +61,11 @@ const flushEntityUrlUpdates = (navigate: NavigateFunction, fallback: LocationFal
     return;
   }
 
-  const base = live.pathname === fallback.pathname ? live : fallback;
+  // Prefer React location: window can lag MemoryRouter / RR navigate on search+hash.
   const nextSearch = new URLSearchParams(
-    base.search.startsWith('?') ? base.search.slice(1) : base.search
+    fallback.search.startsWith('?') ? fallback.search.slice(1) : fallback.search
   );
-  const nextHash = parseEntityHash(base.hash);
+  const nextHash = parseEntityHash(fallback.hash);
   batch.searchPatches.forEach(patch => patch(nextSearch));
   batch.hashPatches.forEach(patch => patch(nextHash));
   const search = nextSearch.toString();
