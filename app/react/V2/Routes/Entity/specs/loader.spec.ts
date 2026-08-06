@@ -161,8 +161,9 @@ describe('Entity loader with cache integration', () => {
       ]);
 
       await expect(loadEntity('http://localhost/entity/shared1')).rejects.toMatchObject({
-        status: 404,
-        message: 'Entity missing',
+        type: 'DataWithResponseInit',
+        data: { message: 'Entity missing' },
+        init: { status: 404 },
       });
     });
 
@@ -170,8 +171,9 @@ describe('Entity loader with cache integration', () => {
       getBySharedId.mockResolvedValue([[]]);
 
       await expect(loadEntity('http://localhost/entity/shared1')).rejects.toMatchObject({
-        status: 404,
-        message: 'Entity shared1 not found',
+        type: 'DataWithResponseInit',
+        data: { message: 'Entity shared1 not found' },
+        init: { status: 404 },
       });
     });
 

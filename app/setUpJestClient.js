@@ -32,6 +32,10 @@ if (typeof window !== 'undefined' && typeof window.matchMedia !== 'function') {
   }));
 }
 
+if (typeof Element !== 'undefined' && typeof Element.prototype.scrollIntoView !== 'function') {
+  Element.prototype.scrollIntoView = jest.fn();
+}
+
 process.on('unhandledRejection', err => {
   fail(err);
 });

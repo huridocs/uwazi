@@ -1,4 +1,5 @@
 import { captureException } from '@sentry/react';
+import { data as routeData, isRouteErrorResponse } from 'react-router';
 import { ApiError } from '#shared/apiClient/index.js';
 import { isClient } from '#app/utils/index.js';
 import { notify as notifyBridge } from '#V2/utils/notifyBridge.js';
@@ -97,9 +98,72 @@ const apiErrorToRequestError = (error: ApiError): RequestError => {
   return mapped;
 };
 
+const throwApiError = (error: ApiError): never => {
+  throw routeData(
+    {
+      message: error.detail ?? error.message,
+      error: error.code,
+      requestId: error.requestId,
+      validations: error.validations,
+    },
+    {
+      status: error.status,
+      statusText: handledErrors[error.status]?.name ?? error.title ?? error.name,
+    }
+  );
+};
+
+const messageFromRouteData = (data: unknown): string | undefined => {
+  if (typeof data === 'string' && data.trim()) return data;
+  if (typeof data === 'object' && data !== null) {
+    if ('message' in data && typeof data.message === 'string' && data.message.trim()) {
+      return data.message;
+    }
+    if ('error' in data && typeof data.error === 'string' && data.error.trim()) {
+      return data.error;
+    }
+  }
+  return undefined;
+};
+
+const responseToRequestError = (
+  status: number,
+  statusText: string,
+  data?: unknown
+): RequestError => {
+  const message =
+    messageFromRouteData(data) ||
+    statusText ||
+    handledErrors[status]?.message ||
+    'Something went wrong';
+  const mapped: RequestError = Object.assign(new Error(message), {
+    status,
+    name: handledErrors[status]?.name ?? (statusText || 'Error'),
+  });
+  if (typeof data === 'object' && data !== null) {
+    mapped.json = {
+      error: 'error' in data && typeof data.error === 'string' ? data.error : undefined,
+      prettyMessage:
+        'message' in data && typeof data.message === 'string' ? data.message : undefined,
+      requestId:
+        'requestId' in data && typeof data.requestId === 'string' ? data.requestId : undefined,
+    };
+    if (mapped.json.requestId) {
+      mapped.requestId = mapped.json.requestId;
+    }
+  }
+  return mapped;
+};
+
 const normalizeRouteError = (error: unknown): Error | RequestError => {
   if (isApiError(error)) {
     return apiErrorToRequestError(error);
+  }
+  if (isRouteErrorResponse(error)) {
+    return responseToRequestError(error.status, error.statusText, error.data);
+  }
+  if (typeof Response !== 'undefined' && error instanceof Response) {
+    return responseToRequestError(error.status, error.statusText);
   }
   if (error instanceof Error) {
     return error as RequestError;
@@ -126,6 +190,7 @@ export {
   isApiError,
   isRouteHttpError,
   apiErrorToRequestError,
+  throwApiError,
   normalizeRouteError,
 };
 export type { RequestError };
