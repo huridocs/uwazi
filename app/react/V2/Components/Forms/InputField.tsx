@@ -95,7 +95,7 @@ const InputField = React.forwardRef(
     const showIcon = icon && (!clearFieldAction || !hasValue);
 
     return (
-      <div className={className}>
+    <div className={cx('flex flex-col gap-1.5', className)}>
         <Label
           htmlFor={id}
           hideLabel={!label || hideLabel}
@@ -147,7 +147,7 @@ const InputField = React.forwardRef(
           )}
         </div>
         {errorMessage && <InputError>{errorMessage}</InputError>}
-      </div>
+    </div>
     );
   }
 );

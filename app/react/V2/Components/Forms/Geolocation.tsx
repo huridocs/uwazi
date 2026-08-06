@@ -89,7 +89,7 @@ const Geolocation = ({
   };
 
   return (
-    <div className={cx('space-y-2', className)}>
+    <div className={['flex flex-col gap-1.5', className].filter(Boolean).join(' ')}>
       {label ? <Label htmlFor={name}>{label}</Label> : null}
       <Map
         onClick={mapClick}

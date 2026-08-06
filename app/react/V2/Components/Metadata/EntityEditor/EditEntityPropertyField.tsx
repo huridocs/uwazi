@@ -135,9 +135,9 @@ const EditEntityPropertyField = ({
     return (
       <>
         {property._id === firstEditableRelationshipId ? (
-          <p className="pt-2 text-xs font-semibold uppercase tracking-wide text-ink-tertiary">
+          <div className="pt-2 text-xs font-semibold uppercase tracking-wide text-ink-tertiary">
             <Translate>Relationships</Translate>
-          </p>
+          </div>
         ) : null}
         <RelationshipField<EditEntityFormValues>
           context={context}

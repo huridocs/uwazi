@@ -152,7 +152,7 @@ const DateRangePickerComponent = React.forwardRef(
           className={`${className} absolute tw-datepicker z-50`}
           data-test-id={id}
         />
-        <div>
+        <div className="flex flex-col gap-1.5">
           <Label htmlFor={id} hideLabel={hideLabel} hasErrors={Boolean(hasErrors || errorMessage)}>
             {label}
           </Label>
