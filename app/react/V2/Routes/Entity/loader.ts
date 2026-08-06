@@ -73,7 +73,8 @@ const createEntityLoader =
 
     let mainDocument = entityLoaderCache.getMainDocument(entitySharedId, language);
     if (entity?.sharedId) {
-      const derivedMainDocument = getMainDocument(entity.documents, language, defaultLanguage);
+      const readyDocuments = entity.documents?.filter(document => document.status === 'ready');
+      const derivedMainDocument = getMainDocument(readyDocuments, language, defaultLanguage);
       if (derivedMainDocument) {
         if (mainDocument?._id !== derivedMainDocument._id) {
           entityLoaderCache.setMainDocument(entity.sharedId, language, derivedMainDocument);

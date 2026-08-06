@@ -40,7 +40,8 @@ const resolveMainDocument = (
   documents: Entity['documents'],
   defaultLanguage?: string
 ) => {
-  const nextMainDocument = getMainDocument(documents, nextLanguage, defaultLanguage);
+  const readyDocuments = documents?.filter(document => document.status === 'ready');
+  const nextMainDocument = getMainDocument(readyDocuments, nextLanguage, defaultLanguage);
   if (nextMainDocument) {
     entityLoaderCache.setMainDocument(sharedId, nextLanguage, nextMainDocument);
     return nextMainDocument;

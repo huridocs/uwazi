@@ -11,7 +11,12 @@ import { ViewerComponent } from '../components/ViewerComponent.js';
 
 describe('ViewerRoute', () => {
   describe('Entity views', () => {
-    const entity = { _id: 1, sharedId: 'sid', documents: [{}] };
+    const entity = {
+      _id: 1,
+      sharedId: 'sid',
+      language: 'en',
+      documents: [{ status: 'ready' }],
+    };
 
     beforeEach(() => {
       spyOn(EntitiesAPI, 'get').and.callFake(async () => Promise.resolve([entity]));
@@ -20,7 +25,7 @@ describe('ViewerRoute', () => {
     });
 
     describe('requestState', () => {
-      describe('when the entity has a pdf', () => {
+      describe('when the entity has a ready pdf', () => {
         it('should return the PDFView state', async () => {
           const request = new RequestParams({ sharedId: '123' }, 'headers');
           const state = await ViewerRoute.requestState(request, {
@@ -40,6 +45,22 @@ describe('ViewerRoute', () => {
           entity.documents = [];
           const request = new RequestParams({ sharedId: '123' }, 'headers');
           const state = await ViewerRoute.requestState(request, { templates: 'templates' });
+          expect(state).toBe('EntityView state');
+        });
+      });
+
+      describe('when the entity only has a non-ready pdf', () => {
+        it('should return the entityView state', async () => {
+          entity.documents = [{ status: 'processing' }];
+          const request = new RequestParams({ sharedId: '123' }, 'headers');
+          const state = await ViewerRoute.requestState(request, {
+            templates: 'templates',
+            settings: {
+              collection: Immutable.fromJS({
+                languages: [{ key: 'en', label: 'English', default: true }],
+              }),
+            },
+          });
           expect(state).toBe('EntityView state');
         });
       });

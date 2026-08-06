@@ -1,12 +1,15 @@
 import { FileType } from '#shared/types/fileType.js';
 import { LanguageUtils } from '#shared/language/index.js';
 
+const readyDocuments = (entityDocuments: Array<FileType> | undefined) =>
+  (entityDocuments || []).filter(document => document.status === 'ready');
+
 export const entityDefaultDocument = (
   entityDocuments: Array<FileType>,
   entityLanguage: string,
   defaultLanguage: string
 ) => {
-  const documents = entityDocuments || [];
+  const documents = readyDocuments(entityDocuments);
   const documentMatchingEntity = documents.find(
     (document: FileType) =>
       document.language &&
