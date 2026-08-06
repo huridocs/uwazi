@@ -10,8 +10,8 @@ import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import { UserRole } from '#shared/types/userSchema.js';
 
+import { translationsRoutes } from '#api/core/infrastructure/express/translation/routes.js';
 import { DefaultTranslations } from '../defaultTranslations.js';
-import i18nRoutes from '../routes.js';
 import translations from '../translations.js';
 
 const TRANSLATION_FILES_DIR = DefaultTranslations.CONTENTS_DIRECTORY;
@@ -158,7 +158,7 @@ describe(`${TRANSLATION_FILES_DIR}`, () => {
 });
 
 describe('translation files', () => {
-  const app = setUpApp(i18nRoutes, (req, _res, next) => {
+  const app = setUpApp(translationsRoutes, (req, _res, next) => {
     req.user = {
       _id: 'admin',
       username: 'admin',
