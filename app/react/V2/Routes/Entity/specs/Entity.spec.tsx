@@ -1,6 +1,7 @@
 /** @jest-environment jsdom */
 import React from 'react';
 import { render, screen, fireEvent, waitFor, within } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { Entity as EntityType } from '#V2/api/entities/types.js';
 import {
   TestAtomStoreProvider,
@@ -240,6 +241,7 @@ describe('Entity view', () => {
     });
 
     it('preserves supported side tab and resets unsupported side tab across main switches', async () => {
+      const user = userEvent.setup();
       fireEvent.click(sideTablist().getByRole('tab', { name: relationshipsSideTab }));
       await waitFor(() => {
         expect(sideTablist().getByRole('tab', { name: relationshipsSideTab })).toHaveAttribute(
@@ -266,10 +268,14 @@ describe('Entity view', () => {
           'aria-selected',
           'true'
         );
+        expect(sideTablist().getByRole('tab', { name: relationshipsSideTab })).toHaveAttribute(
+          'aria-selected',
+          'true'
+        );
         expect(sideTablist().getByRole('tab', { name: 'ToC' })).toBeInTheDocument();
       });
 
-      fireEvent.click(sideTablist().getByRole('tab', { name: 'ToC' }));
+      await user.click(sideTablist().getByRole('tab', { name: 'ToC' }));
       await waitFor(() => {
         expect(sideTablist().getByRole('tab', { name: 'ToC' })).toHaveAttribute(
           'aria-selected',
