@@ -8,11 +8,12 @@ import { pipeline } from 'stream/promises';
 import { CSVLoader } from '#api/csv/index.js';
 import { generateFileName } from '#api/files/index.js';
 import { CreateTranslationContextUseCaseFactory } from '#api/core/infrastructure/factories/CreateTranslationContextUseCaseFactory.js';
+import { PropagateThesaurusTranslationServiceFactory } from '#api/core/infrastructure/factories/PropagateThesaurusTranslationServiceFactory.js';
+import { SaveTranslationEntriesServiceFactory } from '#api/core/infrastructure/factories/SaveTranslationEntriesServiceFactory.js';
 import { DefaultTranslations } from '#api/i18n/defaultTranslations.js';
 import { legacyLogger } from '#api/log/index.js';
 import { EnforcedWithId, WithId } from '#api/odm/index.js';
 import settings from '#api/settings/settings.js';
-import thesauri from '#api/core/v1_layer/thesauri/thesauri.js';
 import { prettifyError } from '#api/utils/handleError.js';
 import { TranslationContext, TranslationType, TranslationValue } from '#shared/translationType.js';
 
@@ -29,21 +30,8 @@ import {
   getTranslationsV2ByContext,
   getTranslationsV2ByLanguage,
   updateContextV2,
-  upsertTranslationEntries,
   upsertTranslationsV2,
 } from './v2_support.js';
-
-type ThesaurusOption = {
-  id?: string;
-  label?: string;
-  values?: ThesaurusOption[];
-};
-
-const flattenThesaurusValues = (values: ThesaurusOption[] = []): ThesaurusOption[] =>
-  values.reduce<ThesaurusOption[]>(
-    (allValues, value) => [...allValues, value, ...flattenThesaurusValues(value.values)],
-    []
-  );
 
 function checkForMissingKeys(
   keyValuePairsPerLanguage: { [x: string]: { [k: string]: string } },
@@ -117,66 +105,13 @@ function processContextValues(context: TranslationContext | IndexedContext): Tra
   return { ...context, values };
 }
 
-const propagateTranslationInMetadata = async (
-  translation: TranslationType,
-  context: TranslationContext
-) => {
-  const isPresentInTheComingData = (translation.contexts || []).find(
-    _context => _context.id?.toString() === context.id?.toString()
-  );
-
-  if (isPresentInTheComingData && isPresentInTheComingData.type === 'Thesaurus') {
-    const thesaurus = await thesauri.getById(context.id);
-    const flattenedThesaurusValues = flattenThesaurusValues(
-      (thesaurus?.values || []) as ThesaurusOption[]
-    );
-
-    const valuesChanged: IndexedContextValues = (isPresentInTheComingData.values || []).reduce(
-      (changes, value) => {
-        const currentValue = (context.values || []).find(v => v.key === value.key);
-        if (currentValue?.key && currentValue.value !== value.value) {
-          return { ...changes, [currentValue.key]: value.value } as IndexedContextValues;
-        }
-        return changes;
-      },
-      {} as IndexedContextValues
-    );
-
-    const changesMatchingDictionaryId = Object.keys(valuesChanged).reduce(
-      (changes, valueChanged) => {
-        const matchingValues = flattenedThesaurusValues.filter(v => v.label === valueChanged);
-        const nextChanges = matchingValues
-          .filter(value => value.id)
-          .map(value => ({ id: value.id as string, value: valuesChanged[valueChanged] }));
-
-        return changes.concat(nextChanges);
-      },
-      [] as { id: string; value: string }[]
-    );
-
-    const uniqueChanges = changesMatchingDictionaryId.filter(
-      (change, index, allChanges) => allChanges.findIndex(c => c.id === change.id) === index
-    );
-
-    return Promise.all(
-      uniqueChanges.map(async change =>
-        thesauri.renameThesaurusInMetadata(change.id, change.value, context.id, translation.locale)
-      )
-    );
-  }
-  return Promise.resolve([]);
-};
-
 const propagateTranslation = async (
   translation: TranslationType,
   currentTranslationData: WithId<TranslationType>
 ) => {
-  await (currentTranslationData.contexts || ([] as TranslationContext[])).reduce(
-    async (promise: Promise<any>, context) => {
-      await promise;
-      return propagateTranslationInMetadata(translation, context);
-    },
-    Promise.resolve([])
+  await PropagateThesaurusTranslationServiceFactory.default().forLocale(
+    translation,
+    currentTranslationData.contexts || []
   );
 };
 
@@ -232,21 +167,7 @@ export default {
   },
 
   async v2StructureSave(translationsToSave: TranslationSyO[]) {
-    const { context } = translationsToSave[0];
-    const currentTranslations = await getTranslationsV2ByContext(context.id);
-    await upsertTranslationEntries(translationsToSave);
-    const thesaurusTranslations = currentTranslations[0].contexts?.[0].type === 'Thesaurus';
-    if (thesaurusTranslations) {
-      const updatedTranslations = await getTranslationsV2ByContext(context.id);
-      await Promise.all(
-        updatedTranslations.map(async translation => {
-          const originalContexts = currentTranslations.find(
-            t => t.locale === translation.locale
-          )?.contexts;
-          return propagateTranslationInMetadata(translation, (originalContexts || [context])[0]);
-        })
-      );
-    }
+    await SaveTranslationEntriesServiceFactory.default().execute(translationsToSave);
   },
 
   async updateEntries(

@@ -1,11 +1,13 @@
+/* eslint-disable import/exports-last, import/no-default-export, max-params */
 import { Writable } from 'stream';
 import { EventEmitter } from 'events';
 import * as csv from '@fast-csv/format';
 import templates from '#api/core/v1_layer/templates/index.js';
+import { TranslationsQueryServiceFactory } from '#api/core/infrastructure/factories/TranslationsQueryServiceFactory.js';
+import { toIndexedTranslations } from '#api/core/infrastructure/express/translation/LegacyTranslationDtoMapper.js';
 import { PropertySchema } from '#shared/types/commonTypes.js';
 import { TemplateSchema } from '#shared/types/templateType.js';
 import translate, { getLocaleTranslation, getContext } from '#shared/translate.js';
-import translations from '#api/i18n/translations.js';
 import {
   formatters,
   formatCreationDate,
@@ -22,9 +24,7 @@ export type SearchResults = {
       _types?: {
         buckets: {
           key: string;
-          // eslint-disable-next-line camelcase
           doc_count: number;
-          // eslint-disable-next-line camelcase
           filtered: { doc_count: number };
         }[];
       };
@@ -135,7 +135,9 @@ export const processCommonField = (
 };
 
 export const translateCommonHeaders = async (headers: ExportHeader[], language: string) => {
-  const _translations = await translations.get();
+  const _translations = toIndexedTranslations(
+    await TranslationsQueryServiceFactory.default().getLegacy()
+  );
   const locale = getLocaleTranslation(_translations, language);
   const context = getContext(locale, 'System');
   return headers.map(header => {

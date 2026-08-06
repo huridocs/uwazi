@@ -277,7 +277,7 @@ All writers must stop calling `#api/i18n/translations` and use core ports/use ca
 - [x] Thin GET query service + legacy locale DTO mapper (`TranslationsQueryService`)
 - [x] Core express routes for `/api/translations*` and `/api/v2/translations` (`api.js` → core `translationsRoutes`); GETs via QueryService; mutations still delegate façade for thesaurus/CSV side effects
 - [x] Migrate Templates / RelationshipTypes / Thesaurus / language factories onto core DS/use cases; Legacy\* no longer call façade for context CRUD
-- [ ] Remove runtime `#api/i18n` façade as module home (still compatibility delivery + importPredefined/CSV)
+- [ ] Remove runtime `#api/i18n` façade as module home (still compatibility delivery + importPredefined/CSV/`save` mammoth path)
 - [x] Parity tests for façade + RT/thesaurus/language + core DS/domain; expand syncWorker smoke as routes move
 - [ ] Document Phase 1b FE checklist; open `translations-postgres.md` when starting Postgres
 
@@ -286,12 +286,14 @@ All writers must stop calling `#api/i18n/translations` and use core ports/use ca
 - Domain/models/errors live in `app/api/core/domain/translation`
 - Contract: `app/api/core/application/contracts/TranslationsDataSource.ts`
 - Mongo DS/cache/sync + mappers under `app/api/core/infrastructure/mongodb/translation`
-- Factories: `TranslationsDataSourceFactory`, mutation use-case factories, `TranslationsQueryServiceFactory`
+- Factories: `TranslationsDataSourceFactory`, mutation use-case factories, `TranslationsQueryServiceFactory`, `PropagateThesaurusTranslationServiceFactory`, `SaveTranslationEntriesServiceFactory`
 - Use cases: `Create/Update/DeleteTranslationContext`, `Create/UpdateTranslationEntries`, `DeleteTranslationsByLanguage`
-- Express: `app/api/core/infrastructure/express/translation/` (GET controllers → QueryService; save controllers → façade until side effects extracted)
+- Application services: `PropagateThesaurusTranslationService` (thesaurus label → entity metadata), `SaveTranslationEntriesService` (by-item save + propagate)
+- Express: GET → QueryService; `SaveTranslationEntriesController` → `SaveTranslationEntriesServiceFactory`; mammoth `SaveTranslationsController` still façade (`save` + indexed DTO)
 - `app/api/i18n.v2/` removed — callers import core domain/DS/factories/schemas directly
 - `v2_support` + Legacy RT/Template translation adapters call core use cases (upsert bridge branches create vs update)
-- Remaining: peel façade (`translations.ts` / import/propagate/CSV), ImportPredefined use case, Settings/CSV direct callers
+- Peeled reads/updateContext: Settings Menu/Filters, AddLanguageController socket payload, denormalize, search, csvExporter
+- Remaining façade: mammoth `save` / `updateEntries` / `importPredefined` / `availableLanguages`; CSV loaders still call `updateEntries`
 
 ## V2 complete checklist (Phase 1)
 
@@ -299,10 +301,10 @@ All writers must stop calling `#api/i18n/translations` and use core ports/use ca
 - [x] `/api/v2/translations` served by core controllers
 - [x] GETs use QueryService/DAO (no Get*UseCase)
 - [x] Mutations use Create/Update/Delete use cases — no application Upsert use case
-- [ ] No runtime imports of `#api/i18n/translations` from domain callers (Settings/CSV/importPredefined/save controllers remain)
+- [ ] No runtime imports of `#api/i18n/translations` from domain callers (CSV/`save`/`importPredefined`/`availableLanguages` remain)
 - [x] LegacyTemplatesTranslationService / LegacyRelationshipTypesTranslationService call core use cases (not façade context CRUD)
 - [x] Translation side effects for relationship types / thesaurus / language covered by existing integration tests
-- [ ] Sync namespace `translationsV2` still green in syncWorker specs after route cutover
+- [x] Sync namespace `translationsV2` still green in syncWorker specs after route cutover
 
 ## Phase 1b checklist (FE — later)
 

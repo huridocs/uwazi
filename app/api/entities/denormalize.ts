@@ -1,6 +1,10 @@
 /* eslint-disable max-lines */
 import { WithId } from '#api/odm/index.js';
-import translationsModel, { IndexedTranslations } from '#api/i18n/translations.js';
+import { TranslationsQueryServiceFactory } from '#api/core/infrastructure/factories/TranslationsQueryServiceFactory.js';
+import {
+  IndexedTranslations,
+  toIndexedTranslations,
+} from '#api/core/infrastructure/express/translation/LegacyTranslationDtoMapper.js';
 import { search } from '#api/search/index.js';
 import templates from '#api/core/v1_layer/templates/index.js';
 import { EntitySchema } from '#shared/types/entityType.js';
@@ -13,9 +17,10 @@ import {
   PropertySchema,
   LanguageISO6391,
 } from '#shared/types/commonTypes.js';
-const isString = (val: unknown): val is string => typeof val === 'string';
 import model from './entitiesModel.js';
 import thesauri from '#api/core/v1_layer/thesauri/thesauri.js';
+
+const isString = (val: unknown): val is string => typeof val === 'string';
 
 interface DenormalizationUpdate {
   propertyName: string;
@@ -415,7 +420,10 @@ async function denormalizeMetadata(
 
   const allTemplates = preloadedData.allTemplates || (await templates.get());
   const translation =
-    preloadedData.translation || (await translationsModel.get({ locale: language }))[0];
+    preloadedData.translation ||
+    toIndexedTranslations(
+      await TranslationsQueryServiceFactory.default().getLegacy({ locale: language })
+    )[0];
 
   const denormalizedProperties: {
     propertyName: string;

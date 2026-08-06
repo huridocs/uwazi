@@ -2,7 +2,8 @@
 import _ from 'lodash';
 
 import { OperationalError } from '#api/common.v2/errors/OperationalError.js';
-import translations from '#api/i18n/translations.js';
+import { TranslationsQueryServiceFactory } from '#api/core/infrastructure/factories/TranslationsQueryServiceFactory.js';
+import { toIndexedTranslations } from '#api/core/infrastructure/express/translation/LegacyTranslationDtoMapper.js';
 import { permissionsContext } from '#api/permissions/permissionsContext.js';
 import userGroups from '#api/usergroups/userGroups.js';
 import usersModel from '#api/users/users.js';
@@ -322,8 +323,8 @@ const _getAggregationDictionary = async (
   if (!dictionaryCache[propContent]) {
     const dictionary = dictionariesById[propContent];
     const dictionaryTranslations =
-      (
-        await translations.get({
+      toIndexedTranslations(
+        await TranslationsQueryServiceFactory.default().getLegacy({
           locale: language,
           context: dictionary._id.toString(),
         })
