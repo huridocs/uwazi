@@ -1,9 +1,5 @@
 import { Translation } from './Translation.js';
 
-/**
- * Represents the differences between two states of a TranslationContext.
- * Used to optimize database persistence by only applying necessary changes.
- */
 export class TranslationContextDiff {
   readonly addedTranslations: Translation[];
 

@@ -17,10 +17,6 @@ type Deps = {
   validateTranslations: ValidateTranslationsService;
 };
 
-/**
- * Updates values for translation entries that already exist.
- * Rejects when any key/context is missing in the store for the requested languages.
- */
 class UpdateTranslationEntriesUseCase extends AbstractUseCase<Input, Output, Deps> {
   async execute({ translations }: Input): Promise<Output> {
     await this.deps.validateTranslations.languagesExist(translations);
@@ -56,7 +52,6 @@ class UpdateTranslationEntriesUseCase extends AbstractUseCase<Input, Output, Dep
         )
     );
 
-    // Persistence uses replace-by-unique-key for existing rows only (validated above).
     return this.transactionManager.run(async () => this.deps.translationsDS.upsert(models));
   }
 }

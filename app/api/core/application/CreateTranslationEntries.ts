@@ -17,10 +17,6 @@ type Deps = {
   validateTranslations: ValidateTranslationsService;
 };
 
-/**
- * Inserts new translation entries. Fails if keys already exist (DB unique index / DuplicatedKeyError).
- * Requires the batch to cover all configured languages for each key/context.
- */
 class CreateTranslationEntriesUseCase extends AbstractUseCase<Input, Output, Deps> {
   async execute({ translations }: Input): Promise<Output> {
     await this.deps.validateTranslations.languagesExist(translations);

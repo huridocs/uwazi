@@ -7,7 +7,6 @@ type Input = {
   context: TranslationContext;
   keyChanges: Record<string, string>;
   keysToDelete: string[];
-  /** Final key → default-language value map (source of truth for keys that should exist) */
   valueChanges: Record<string, string>;
 };
 
@@ -18,9 +17,6 @@ type Deps = {
   settingsDS: SettingsDataSource;
 };
 
-/**
- * Updates an existing translation context: renames, value changes, and deletions.
- */
 class UpdateTranslationContextUseCase extends AbstractUseCase<Input, Output, Deps> {
   async execute({ context, keyChanges, keysToDelete, valueChanges }: Input): Promise<Output> {
     const languages = await this.deps.settingsDS.getLanguageKeys();

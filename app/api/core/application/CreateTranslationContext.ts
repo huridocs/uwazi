@@ -5,7 +5,6 @@ import { SettingsDataSource } from './contracts/SettingsDataSource.js';
 
 type Input = {
   context: TranslationContext;
-  /** key → default value (typically the key itself for new contexts) */
   values: Record<string, string>;
 };
 
@@ -16,9 +15,6 @@ type Deps = {
   settingsDS: SettingsDataSource;
 };
 
-/**
- * Creates a full translation context for every installed language.
- */
 class CreateTranslationContextUseCase extends AbstractUseCase<Input, Output, Deps> {
   async execute({ context, values }: Input): Promise<Output> {
     const languages = await this.deps.settingsDS.getLanguageKeys();
