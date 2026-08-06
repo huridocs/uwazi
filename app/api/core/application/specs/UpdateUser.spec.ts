@@ -45,9 +45,9 @@ describe('UpdateUser', () => {
     });
     const sut = createSut(actor);
 
-    await expect(
-      sut.execute(buildInput('self', { role: UserRole.ADMIN }))
-    ).rejects.toThrow('Cannot change own role');
+    await expect(sut.execute(buildInput('self', { role: UserRole.ADMIN }))).rejects.toThrow(
+      'Cannot change own role'
+    );
   });
 
   it('should allow the actor to edit their own profile when the role is unchanged', async () => {
