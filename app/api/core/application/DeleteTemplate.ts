@@ -1,6 +1,6 @@
 import { ArrayUtils } from '#api/common.v2/utils/Array.js'; // Todo
 import { EntitiesDataSource } from '#api/core/application/contracts/EntitiesDataSource.js';
-import { TranslationsDataSource } from '#api/i18n.v2/contracts/TranslationsDataSource.js'; // Todo
+import { TranslationsDataSource } from '#api/core/application/contracts/TranslationsDataSource.js'; // Todo
 import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js'; // Todo
 import { DefaultTemplateDeletionError, TemplateInUseError } from '../domain/template/errors.js';
 import { TemplateDeletedEvent } from '../domain/template/events/TemplateDeletedEvent.js';

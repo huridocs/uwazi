@@ -1,21 +1,24 @@
 import { TranslationService } from '#api/core/domain/template/TranslationService.js';
-import translations from '#api/i18n/translations.js';
 import { UITranslationNotAvailable } from '#api/i18n/defaultTranslations.js';
 import { Template } from '#api/core/domain/template/Template.js';
-import { ContextType } from '#shared/translationSchema.js';
 import { TemplateSchema } from '#shared/types/templateType.js';
 import { MongoTemplateMapper } from './MongoTemplateMapper.js';
+import { CreateTranslationContextUseCaseFactory } from '#api/core/infrastructure/factories/CreateTranslationContextUseCaseFactory.js';
+import { UpdateTranslationContextUseCaseFactory } from '#api/core/infrastructure/factories/UpdateTranslationContextUseCaseFactory.js';
+import translations from '#api/i18n/translations.js';
 
 class LegacyTemplatesTranslationService implements TranslationService {
   async createTemplateTranslation(template: Template): Promise<void> {
     const schema = MongoTemplateMapper.toSchema(template);
 
-    await translations.addContext(
-      schema._id.toString(),
-      schema.name,
-      this.createTranslationContext(schema),
-      ContextType.entity
-    );
+    await CreateTranslationContextUseCaseFactory.default().execute({
+      context: {
+        id: schema._id.toString(),
+        label: schema.name,
+        type: 'Entity',
+      },
+      values: this.createTranslationContext(schema),
+    });
   }
 
   async updateTemplateTranslation(currentTemplate: Template, updatedTemplate: Template) {
@@ -32,12 +35,16 @@ class LegacyTemplatesTranslationService implements TranslationService {
       updatedLabels[change.oldProperty.label] = change.newProperty.label;
     });
 
-    await translations.updateContext(
-      { id: currentTemplate.id.toString(), label: updatedTemplate.name, type: 'Entity' },
-      updatedLabels,
-      currentTemplate.selectDeletedProperties(updatedTemplate).map(p => p.label),
-      this.createTranslationContext(MongoTemplateMapper.toSchema(updatedTemplate))
-    );
+    await UpdateTranslationContextUseCaseFactory.default().execute({
+      context: {
+        id: currentTemplate.id.toString(),
+        label: updatedTemplate.name,
+        type: 'Entity',
+      },
+      keyChanges: updatedLabels,
+      keysToDelete: currentTemplate.selectDeletedProperties(updatedTemplate).map(p => p.label),
+      valueChanges: this.createTranslationContext(MongoTemplateMapper.toSchema(updatedTemplate)),
+    });
   }
 
   // eslint-disable-next-line class-methods-use-this
@@ -53,6 +60,7 @@ class LegacyTemplatesTranslationService implements TranslationService {
     context[titleProperty!.label] = titleProperty!.label;
     return context;
   };
+
   // eslint-disable-next-line class-methods-use-this
   async importPredefined(locale: string): Promise<void> {
     try {

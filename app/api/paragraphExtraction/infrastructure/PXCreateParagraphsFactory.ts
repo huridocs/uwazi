@@ -4,7 +4,7 @@ import { PropertyAssignmentCreatorServiceStrategy } from '#api/core/application/
 import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
 import { TemplatesDataSourceFactory } from '#api/core/infrastructure/factories/TemplatesDataSourceFactory.js';
 import { applicationEventsBus } from '#api/core/libs/eventsbus/index.js';
-import { DefaultTranslationsDataSource } from '#api/i18n.v2/database/data_source_defaults.js';
+import { TranslationsDataSourceFactory } from '#api/core/infrastructure/factories/TranslationsDataSourceFactory.js';
 import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
 import { DispatcherAdapter } from '#api/core/infrastructure/jobs/DispatcherAdapter.js';
 import { tenants } from '#api/tenants/tenantContext.js';
@@ -31,7 +31,7 @@ export class PXCreateParagraphsFactory {
     const thesauriDS = ThesauriDataSourceFactory.default({
       transactionManager: mongoTransactionManager,
     });
-    const translationsDS = DefaultTranslationsDataSource(mongoTransactionManager);
+    const translationsDS = TranslationsDataSourceFactory.default({ transactionManager: mongoTransactionManager });
     const entitiesDS = EntitiesDataSourceFactory.default({
       transactionManager: mongoTransactionManager,
     });

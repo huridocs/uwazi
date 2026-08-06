@@ -12,7 +12,7 @@ import { ThesauriService } from '#api/core/application/ThesauriService.js';
 import { ThesauriDataSourceFactory } from '#api/core/infrastructure/factories/ThesauriDataSourceFactory.js';
 import { ThesaurusTranslationService } from '#api/core/application/thesaurusTranslationService/ThesaurusTranslationService.js';
 import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
-import { DefaultTranslationsDataSource } from '#api/i18n.v2/database/data_source_defaults.js';
+import { TranslationsDataSourceFactory } from '#api/core/infrastructure/factories/TranslationsDataSourceFactory.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { Thesaurus } from '#api/core/domain/thesaurus/Thesaurus.js';
 import { MongoThesaurusMapper } from '#api/core/infrastructure/mongodb/thesauri/MongoThesaurusMapper.js';
@@ -107,7 +107,7 @@ export const Preserve = {
       thesauriDS: ThesauriDataSourceFactory.default({ transactionManager }),
       thesaurusTranslationService: new ThesaurusTranslationService({
         settingsDS: SettingsDataSourceFactory.default({ transactionManager }),
-        translationsDS: DefaultTranslationsDataSource(transactionManager),
+        translationsDS: TranslationsDataSourceFactory.default({ transactionManager }),
       }),
       dispatcher: new DispatcherAdapter(
         DefaultDispatcher(tenants.current().name, transactionManager)

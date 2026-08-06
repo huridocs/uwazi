@@ -2,11 +2,11 @@
 import { ObjectId } from 'mongodb';
 import { TestUtils } from '#api/common.v2/utils/Test.js';
 import { Thesaurus } from '#api/core/domain/thesaurus/Thesaurus.js';
-import { Translation } from '#api/i18n.v2/model/Translation.js';
+import { Translation } from '#api/core/domain/translation/Translation.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-import { TranslationsDataSource } from '#api/i18n.v2/contracts/TranslationsDataSource.js';
+import { TranslationsDataSource } from '#api/core/application/contracts/TranslationsDataSource.js';
 import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
-import { DefaultTranslationsDataSource } from '#api/i18n.v2/database/data_source_defaults.js';
+import { TranslationsDataSourceFactory } from '#api/core/infrastructure/factories/TranslationsDataSourceFactory.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { MongoThesaurusMapper } from '#api/core/infrastructure/mongodb/thesauri/MongoThesaurusMapper.js';
 import { ThesaurusDBO } from '#api/core/infrastructure/mongodb/thesauri/ThesaurusDBO.js';
@@ -168,7 +168,7 @@ describe('ThesaurusTranslationService', () => {
     const createDefaultSut = () => {
       const transactionManager = TransactionManagerFactory.default();
       const settingsDS = SettingsDataSourceFactory.default({ transactionManager });
-      const translationsDS = DefaultTranslationsDataSource(transactionManager);
+      const translationsDS = TranslationsDataSourceFactory.default({ transactionManager });
 
       const { sut } = createSut({ settingsDS, translationsDS });
 

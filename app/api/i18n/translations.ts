@@ -1,23 +1,25 @@
+/* eslint-disable max-lines */
+import * as os from 'os';
+import path from 'path';
+// eslint-disable-next-line node/no-restricted-import
+import { createWriteStream } from 'fs';
+import { ObjectId } from 'mongodb';
+import { pipeline } from 'stream/promises';
 import { CSVLoader } from '#api/csv/index.js';
 import { generateFileName } from '#api/files/index.js';
-import { CreateTranslationsData } from '#api/i18n.v2/services/CreateTranslationsService.js';
+import { CreateTranslationContextUseCaseFactory } from '#api/core/infrastructure/factories/CreateTranslationContextUseCaseFactory.js';
 import { DefaultTranslations } from '#api/i18n/defaultTranslations.js';
 import { legacyLogger } from '#api/log/index.js';
 import { EnforcedWithId, WithId } from '#api/odm/index.js';
 import settings from '#api/settings/settings.js';
 import thesauri from '#api/core/v1_layer/thesauri/thesauri.js';
 import { prettifyError } from '#api/utils/handleError.js';
-import * as os from 'os';
-import path from 'path';
 import { TranslationContext, TranslationType, TranslationValue } from '#shared/translationType.js';
-// eslint-disable-next-line node/no-restricted-import
-import { createWriteStream } from 'fs';
-import { ObjectId } from 'mongodb';
+
 import { availableLanguages } from '#shared/language/index.js';
 import { ContextType } from '#shared/translationSchema.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
-import { pipeline } from 'stream/promises';
-import { TranslationSyO } from '#api/i18n.v2/schemas/TranslationSyO.js';
+import { TranslationSyO } from '#api/core/infrastructure/mongodb/translation/schemas/TranslationSyO.js';
 import {
   addLanguageV2,
   deleteTranslationsByContextIdV2,
@@ -298,25 +300,14 @@ export default {
     values: IndexedContextValues,
     type: ContextType
   ) {
-    const translatedValues: TranslationValue[] = [];
-    Object.keys(values).forEach(key => {
-      translatedValues.push({ key, value: values[key] });
+    await CreateTranslationContextUseCaseFactory.default().execute({
+      context: {
+        id: id.toString(),
+        label: contextName,
+        type: type as 'Entity' | 'Relationship Type' | 'Uwazi UI' | 'Thesaurus',
+      },
+      values,
     });
-
-    const result = await getTranslationsV2();
-    await upsertTranslationsV2(
-      result.map(translation => {
-        // eslint-disable-next-line no-param-reassign
-        translation.contexts = translation.contexts || [];
-        translation.contexts.push({
-          id: id.toString(),
-          label: contextName,
-          values: translatedValues,
-          type,
-        });
-        return translation;
-      })
-    );
 
     return 'ok';
   },
@@ -327,7 +318,7 @@ export default {
   },
 
   async updateContext(
-    context: CreateTranslationsData['context'],
+    context: { id: string; label: string; type: ContextType | string },
     keyNamesChanges: { [x: string]: string },
     deletedProperties: string[],
     values: IndexedContextValues

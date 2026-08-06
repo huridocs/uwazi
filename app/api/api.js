@@ -44,8 +44,9 @@ export default async (app, server) => {
   (await import('./files/exportRoutes.js')).default(app);
   (await import('./files/ocrRoutes.js')).ocrRoutes(app);
   (await import('./settings/routes.js')).default(app);
-  (await import('./i18n/routes.js')).default(app);
-  (await import('./i18n.v2/routes/index.js')).translationsRoutes(app);
+  (
+    await import('./core/infrastructure/express/translation/routes.js')
+  ).translationsRoutes(app);
   (await import('./sync/routes.js')).default(app);
   (await import('./tasks/routes.js')).default(app);
   (await import('./usergroups/routes.js')).default(app);

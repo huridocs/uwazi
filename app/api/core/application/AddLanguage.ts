@@ -1,6 +1,6 @@
 /* eslint-disable no-await-in-loop */
 import { LanguageSchema } from '#shared/types/commonTypes.js';
-import { TranslationsDataSource } from '#api/i18n.v2/contracts/TranslationsDataSource.js';
+import { TranslationsDataSource } from '#api/core/application/contracts/TranslationsDataSource.js';
 import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js';
 import { TranslationService } from '#api/core/domain/template/TranslationService.js';
 import { LanguageAddedEvent } from '#api/core/domain/language/events/LanguageAddedEvent.js';

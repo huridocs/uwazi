@@ -1,37 +1,36 @@
 import { ResultSet } from '#api/core/application/contracts/ResultSet.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
-import { MongoTranslationsSyncDataSource } from '#api/i18n.v2/database/MongoTranslationsSyncDataSource.js';
-import { DefaultTranslationsDataSource } from '#api/i18n.v2/database/data_source_defaults.js';
-import { Translation } from '#api/i18n.v2/model/Translation.js';
-import {
-  CreateTranslationsData,
-  CreateTranslationsService,
-} from '#api/i18n.v2/services/CreateTranslationsService.js';
-import { DeleteTranslationsService } from '#api/i18n.v2/services/DeleteTranslationsService.js';
-import { GetTranslationsService } from '#api/i18n.v2/services/GetTranslationsService.js';
-import { UpsertTranslationsService } from '#api/i18n.v2/services/UpsertTranslationsService.js';
-import { ValidateTranslationsService } from '#api/i18n.v2/services/ValidateTranslationsService.js';
+import { MongoTranslationsSyncDataSource } from '#api/core/infrastructure/mongodb/translation/MongoTranslationsSyncDataSource.js';
+import { CreateTranslationContextUseCaseFactory } from '#api/core/infrastructure/factories/CreateTranslationContextUseCaseFactory.js';
+import { CreateTranslationEntriesUseCaseFactory } from '#api/core/infrastructure/factories/CreateTranslationEntriesUseCaseFactory.js';
+import { DeleteTranslationContextUseCaseFactory } from '#api/core/infrastructure/factories/DeleteTranslationContextUseCaseFactory.js';
+import { DeleteTranslationsByLanguageUseCaseFactory } from '#api/core/infrastructure/factories/DeleteTranslationsByLanguageUseCaseFactory.js';
+import { UpdateTranslationContextUseCaseFactory } from '#api/core/infrastructure/factories/UpdateTranslationContextUseCaseFactory.js';
+import { UpdateTranslationEntriesUseCaseFactory } from '#api/core/infrastructure/factories/UpdateTranslationEntriesUseCaseFactory.js';
+import { TranslationsQueryServiceFactory } from '#api/core/infrastructure/factories/TranslationsQueryServiceFactory.js';
+import { TranslationsDataSourceFactory } from '#api/core/infrastructure/factories/TranslationsDataSourceFactory.js';
+import { Translation } from '#api/core/domain/translation/Translation.js';
+import { TranslationEntryInput } from '#api/core/application/translation/ValidateTranslationsService.js';
 import { EnforcedWithId, models } from '#api/odm/index.js';
-import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
-import { TranslationContext, TranslationType, TranslationValue } from '#shared/translationType.js';
+import { TranslationType } from '#shared/translationType.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import { IndexedContextValues } from './translations.js';
 
 models.translationsV2 = () =>
   new MongoTranslationsSyncDataSource(getConnection(), TransactionManagerFactory.default());
 
-const flattenTranslations = (translation: TranslationType): CreateTranslationsData[] => {
+const flattenTranslations = (translation: TranslationType): TranslationEntryInput[] => {
   if (translation.contexts?.length) {
-    return translation.contexts.reduce<CreateTranslationsData[]>((flatTranslations, context) => {
+    return translation.contexts.reduce<TranslationEntryInput[]>((flatTranslations, context) => {
       if (context.values) {
         context.values.forEach(contextValue => {
           flatTranslations.push({
-            language: translation.locale,
-            key: contextValue.key,
-            value: contextValue.value,
-            context: { type: context.type, label: context.label, id: context.id },
-          } as CreateTranslationsData);
+            language: translation.locale as LanguageISO6391,
+            key: contextValue.key!,
+            value: contextValue.value!,
+            context: { type: context.type!, label: context.label!, id: context.id! },
+          });
         });
       }
       return flatTranslations;
@@ -44,87 +43,65 @@ export const resultsToV1TranslationType = async (
   tranlationsResult: ResultSet<Translation>,
   onlyLanguage?: LanguageISO6391
 ) => {
-  const transactionManager = TransactionManagerFactory.default();
-  const settings = SettingsDataSourceFactory.default({ transactionManager });
-  let languageKeys = await settings.getLanguageKeys();
-  if (onlyLanguage) {
-    languageKeys = [onlyLanguage];
-  }
-
-  // const resultMap: { [language: string]: TranslationType & { locale: string } } = {};
-
-  const resultMap = languageKeys.reduce<{
-    [language: string]: TranslationType & { locale: string };
-  }>((memo, key) => {
-    // eslint-disable-next-line no-param-reassign
-    memo[key] = { locale: key, contexts: [] };
-    return memo;
-  }, {});
-
-  const contexts = languageKeys.reduce<{
-    [language: string]: { [context: string]: TranslationContext & { values: TranslationValue[] } };
-  }>((memo, key) => {
-    // eslint-disable-next-line no-param-reassign
-    memo[key] = {};
-    return memo;
-  }, {});
-
-  await tranlationsResult.forEach(translation => {
-    if (!resultMap[translation.language]) {
-      resultMap[translation.language] = {
-        locale: translation.language,
-        contexts: [],
-      };
-      contexts[translation.language] = {};
-    }
-    if (!contexts[translation.language][translation.context.id]) {
-      contexts[translation.language][translation.context.id] = {
-        id: translation.context.id,
-        label: translation.context.label,
-        type: translation.context.type,
-        values: [],
-      };
-    }
-    contexts[translation.language][translation.context.id].values.push({
-      key: translation.key,
-      value: translation.value,
-    });
-  });
-
-  return Object.values(resultMap).map(translation => {
-    // eslint-disable-next-line no-param-reassign
-    translation.contexts = Object.values(contexts[translation.locale]);
-    return translation;
-  }) as EnforcedWithId<TranslationType>[];
+  const query = TranslationsQueryServiceFactory.default();
+  return query.toMammothDto(tranlationsResult, onlyLanguage);
 };
 
 export const createTranslationsV2 = async (translation: TranslationType) => {
-  const transactionManager = TransactionManagerFactory.default();
-  await new CreateTranslationsService(
-    DefaultTranslationsDataSource(transactionManager),
-    new ValidateTranslationsService(
-      DefaultTranslationsDataSource(transactionManager),
-      SettingsDataSourceFactory.default({ transactionManager })
-    ),
-    transactionManager
-  ).create(flattenTranslations(translation));
+  await CreateTranslationEntriesUseCaseFactory.default().execute({
+    translations: flattenTranslations(translation),
+  });
 };
 
-export const upsertTranslationEntries = async (translations: CreateTranslationsData[]) => {
-  const transactionManager = TransactionManagerFactory.default();
-  await new UpsertTranslationsService(
-    DefaultTranslationsDataSource(transactionManager),
-    SettingsDataSourceFactory.default({ transactionManager }),
-    new ValidateTranslationsService(
-      DefaultTranslationsDataSource(transactionManager),
-      SettingsDataSourceFactory.default({ transactionManager })
-    ),
-    transactionManager
-  ).upsert(translations);
+/**
+ * Compatibility bridge for callers that previously "upserted" entries.
+ * Branches into create vs update use cases by whether keys already exist.
+ */
+export const upsertTranslationEntries = async (translations: TranslationEntryInput[]) => {
+  if (!translations.length) {
+    return;
+  }
+
+  const translationsDS = TranslationsDataSourceFactory.default({
+    transactionManager: TransactionManagerFactory.default(),
+  });
+
+  const byContext = new Map<string, TranslationEntryInput[]>();
+  translations.forEach(t => {
+    const list = byContext.get(t.context.id) || [];
+    list.push(t);
+    byContext.set(t.context.id, list);
+  });
+
+  const toCreate: TranslationEntryInput[] = [];
+  const toUpdate: TranslationEntryInput[] = [];
+
+  await Promise.all(
+    [...byContext.entries()].map(async ([contextId, entries]) => {
+      const keys = Array.from(new Set(entries.map(e => e.key)));
+      const missingKeys = new Set(
+        await translationsDS.calculateNonexistentKeys(contextId, keys)
+      );
+      entries.forEach(entry => {
+        if (missingKeys.has(entry.key)) {
+          toCreate.push(entry);
+        } else {
+          toUpdate.push(entry);
+        }
+      });
+    })
+  );
+
+  if (toCreate.length) {
+    await CreateTranslationEntriesUseCaseFactory.default().execute({ translations: toCreate });
+  }
+  if (toUpdate.length) {
+    await UpdateTranslationEntriesUseCaseFactory.default().execute({ translations: toUpdate });
+  }
 };
 
 export const upsertTranslationsV2 = async (translations: TranslationType[]) => {
-  const translationsToUpsert = translations.reduce<CreateTranslationsData[]>(
+  const translationsToUpsert = translations.reduce<TranslationEntryInput[]>(
     (flattened, t) => flattened.concat(flattenTranslations(t)),
     []
   );
@@ -132,74 +109,54 @@ export const upsertTranslationsV2 = async (translations: TranslationType[]) => {
 };
 
 export const deleteTranslationsByContextIdV2 = async (contextId: string) => {
-  const transactionManager = TransactionManagerFactory.default();
-  await new DeleteTranslationsService(
-    DefaultTranslationsDataSource(transactionManager),
-    transactionManager
-  ).deleteByContextId(contextId);
+  await DeleteTranslationContextUseCaseFactory.default().execute({ contextId });
 };
 
 export const deleteTranslationsByLanguageV2 = async (language: LanguageISO6391) => {
-  const transactionManager = TransactionManagerFactory.default();
-  return new DeleteTranslationsService(
-    DefaultTranslationsDataSource(transactionManager),
-    transactionManager
-  ).deleteByLanguage(language);
+  await DeleteTranslationsByLanguageUseCaseFactory.default().execute({ language });
 };
 
 export const getTranslationsV2ByContext = async (context: string) =>
-  resultsToV1TranslationType(
-    new GetTranslationsService(
-      DefaultTranslationsDataSource(TransactionManagerFactory.default())
-    ).getByContext(context)
-  );
+  TranslationsQueryServiceFactory.default().getMammoth({ context });
 
 export const getTranslationsV2ByLanguage = async (language: LanguageISO6391) =>
-  resultsToV1TranslationType(
-    new GetTranslationsService(
-      DefaultTranslationsDataSource(TransactionManagerFactory.default())
-    ).getByLanguage(language),
-    language
-  );
+  TranslationsQueryServiceFactory.default().getMammoth({ locale: language });
 
 export const getTranslationsEntriesV2 = async () =>
-  new GetTranslationsService(
-    DefaultTranslationsDataSource(TransactionManagerFactory.default())
-  ).getAll();
+  TranslationsQueryServiceFactory.default().getAll();
 
-export const getTranslationsV2 = async () =>
-  resultsToV1TranslationType(await getTranslationsEntriesV2());
+export const getTranslationsV2 = async () => TranslationsQueryServiceFactory.default().getMammoth();
 
 export const updateContextV2 = async (
-  context: CreateTranslationsData['context'],
+  context: TranslationEntryInput['context'],
   keyNamesChanges: { [x: string]: string },
   keysToDelete: string[],
   valueChanges: IndexedContextValues
 ) => {
-  const transactionManager = TransactionManagerFactory.default();
-  await new UpsertTranslationsService(
-    DefaultTranslationsDataSource(transactionManager),
-    SettingsDataSourceFactory.default({ transactionManager }),
-    new ValidateTranslationsService(
-      DefaultTranslationsDataSource(transactionManager),
-      SettingsDataSourceFactory.default({ transactionManager })
-    ),
-    transactionManager
-  ).updateContext(context, keyNamesChanges, valueChanges, keysToDelete);
+  await UpdateTranslationContextUseCaseFactory.default().execute({
+    context,
+    keyChanges: keyNamesChanges,
+    keysToDelete,
+    valueChanges,
+  });
 };
 
 export const addLanguageV2 = async (
   newLanguage: LanguageISO6391,
   defaultLanguage: LanguageISO6391
 ) => {
-  const [defaultTranslation] = (await getTranslationsV2ByLanguage(defaultLanguage)) || [];
-  const newLanguageTranslations = {
-    ...defaultTranslation,
-    locale: newLanguage,
-    contexts: (defaultTranslation.contexts || []).map(({ _id, ...context }) => context),
-  };
-
-  await createTranslationsV2(newLanguageTranslations);
+  const translationsDS = TranslationsDataSourceFactory.default({
+    transactionManager: TransactionManagerFactory.default(),
+  });
+  await translationsDS.cloneForLanguage(defaultLanguage, newLanguage);
   const [result] = (await getTranslationsV2ByLanguage(newLanguage)) || [];
-  return result;
+  return result as EnforcedWithId<TranslationType>;
+};
+
+/** @deprecated Prefer CreateTranslationContextUseCaseFactory */
+export const createTranslationContextV2 = async (
+  context: TranslationEntryInput['context'],
+  values: IndexedContextValues
+) => {
+  await CreateTranslationContextUseCaseFactory.default().execute({ context, values });
 };

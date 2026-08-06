@@ -1,9 +1,10 @@
+/* eslint-disable max-statements */
+import { ObjectId } from 'mongodb';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { DBFixture } from '#api/utils/testing_db.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-import { DefaultTranslationsDataSource } from '#api/i18n.v2/database/data_source_defaults.js';
+import { TranslationsDataSourceFactory } from '#api/core/infrastructure/factories/TranslationsDataSourceFactory.js';
 import { MongoTemplateMapper } from '#api/core/infrastructure/mongodb/template/MongoTemplateMapper.js';
-import { ObjectId } from 'mongodb';
 import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
 import { PropertyNotFoundError } from '#api/core/domain/template/errors.js';
 import { ThesauriDataSourceFactory } from '#api/core/infrastructure/factories/ThesauriDataSourceFactory.js';
@@ -277,7 +278,7 @@ const fixtures: DBFixture = {
 const createSut = () =>
   testingEnvironment.runWithContext(() => {
     const transactionManager = ExecutionContext.transactionManager as MongoTransactionManager;
-    const translationsDS = DefaultTranslationsDataSource(transactionManager);
+    const translationsDS = TranslationsDataSourceFactory.default({ transactionManager });
     const thesauriDS = ThesauriDataSourceFactory.default({ transactionManager });
     const settingsDS = SettingsDataSourceFactory.default({ transactionManager });
 
@@ -606,7 +607,7 @@ describe('SelectPropertyAssignmentCreatorService', () => {
   it('should throw when validateRequired is true and a required select property has no value', async () => {
     const { sut } = await testingEnvironment.runWithContext(() => {
       const transactionManager = ExecutionContext.transactionManager as MongoTransactionManager;
-      const translationsDS = DefaultTranslationsDataSource(transactionManager);
+      const translationsDS = TranslationsDataSourceFactory.default({ transactionManager });
       const thesauriDS = ThesauriDataSourceFactory.default({ transactionManager });
       const settingsDS = SettingsDataSourceFactory.default({ transactionManager });
 

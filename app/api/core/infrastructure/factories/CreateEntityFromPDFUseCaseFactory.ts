@@ -1,6 +1,6 @@
 import { PropertyAssignmentCreatorServiceStrategy } from '#api/core/application/propertyAssignmentCreatorService/PropertyAssignmentCreatorServiceStrategy.js';
 import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
-import { DefaultTranslationsDataSource } from '#api/i18n.v2/database/data_source_defaults.js';
+import { TranslationsDataSourceFactory } from '#api/core/infrastructure/factories/TranslationsDataSourceFactory.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import { IdGeneratorFactory } from './IdGeneratorFactory.js';
@@ -37,7 +37,7 @@ class CreateEntityFromPDFUseCaseFactory {
     const settingsDS = SettingsDataSourceFactory.default({ transactionManager });
     const thesauriDS = ThesauriDataSourceFactory.default({ transactionManager });
     const entitiesDS = EntitiesDataSourceFactory.default({ transactionManager });
-    const translationsDS = DefaultTranslationsDataSource(transactionManager);
+    const translationsDS = TranslationsDataSourceFactory.default({ transactionManager });
 
     const propertyAssignmentCreatorServiceStrategy =
       PropertyAssignmentCreatorServiceStrategy.create({

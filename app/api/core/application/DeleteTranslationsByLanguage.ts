@@ -1,0 +1,24 @@
+import { AbstractUseCase } from '../libs/UseCase.js';
+import { TranslationsDataSource } from './contracts/TranslationsDataSource.js';
+import { LanguageISO6391 } from '#shared/types/commonTypes.js';
+
+type Input = {
+  language: LanguageISO6391;
+};
+
+type Output = void;
+
+type Deps = {
+  translationsDS: TranslationsDataSource;
+};
+
+class DeleteTranslationsByLanguageUseCase extends AbstractUseCase<Input, Output, Deps> {
+  async execute({ language }: Input): Promise<Output> {
+    await this.transactionManager.run(async () => {
+      await this.deps.translationsDS.deleteByLanguage(language);
+    });
+  }
+}
+
+export { DeleteTranslationsByLanguageUseCase };
+export type { Input as DeleteTranslationsByLanguageInput };

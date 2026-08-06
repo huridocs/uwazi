@@ -1,5 +1,5 @@
 import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
-import { DefaultTranslationsDataSource } from '#api/i18n.v2/database/data_source_defaults.js';
+import { TranslationsDataSourceFactory } from '#api/core/infrastructure/factories/TranslationsDataSourceFactory.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { DeleteLanguageUseCase } from '#api/core/application/DeleteLanguage.js';
 import { SyncDispatcherForTests } from '#api/core/libs/queue/infrastructure/SyncDispatcherForTests.js';
@@ -17,7 +17,7 @@ class DeleteLanguageUseCaseFactory {
     const { actor, tenant, eventEmitter } = ExecutionContext;
     const transactionManager = ExecutionContext.transactionManager as MongoTransactionManager;
     const settingsDS = SettingsDataSourceFactory.default({ transactionManager });
-    const translationsDS = DefaultTranslationsDataSource(transactionManager);
+    const translationsDS = TranslationsDataSourceFactory.default({ transactionManager });
 
     const minutes60 = 60 * 60 * 1000;
     let jobsDispatcher: JobsDispatcher = DefaultDispatcher(tenant.name, transactionManager, {

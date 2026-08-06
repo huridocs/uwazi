@@ -3,8 +3,8 @@ import request from 'supertest';
 import waitForExpect from 'wait-for-expect';
 
 import * as csvApi from '#api/csv/csvLoader.js';
-import { TranslationDBO } from '#api/i18n.v2/schemas/TranslationDBO.js';
-import i18nRoutes from '#api/i18n/routes.js';
+import { TranslationDBO } from '#api/core/infrastructure/mongodb/translation/schemas/TranslationDBO.js';
+import { translationsRoutes as i18nRoutes } from '#api/core/infrastructure/express/translation/routes.js';
 import { MongoSettingsDataSource } from '#api/core/infrastructure/mongodb/MongoSettingsDataSource.js';
 import '#api/pages.v2/infrastructure/listeners/AddLanguagePagesListener.js';
 import '#api/pages.v2/infrastructure/listeners/DeleteLanguagePagesListener.js';

@@ -1,7 +1,7 @@
 /* eslint-disable max-statements */
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { applicationEventsBus } from '#api/core/libs/eventsbus/index.js';
-import { DefaultTranslationsDataSource } from '#api/i18n.v2/database/data_source_defaults.js';
+import { TranslationsDataSourceFactory } from '#api/core/infrastructure/factories/TranslationsDataSourceFactory.js';
 import { elasticClient } from '#api/search/elastic.js';
 import db from '#api/utils/testing_db.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
@@ -164,9 +164,9 @@ describe('templates', () => {
       testTemplate.name = 'changed name';
       await testingEnvironment.runWithContext(async () => updateTemplate(testTemplate));
 
-      const dbTranslations = await DefaultTranslationsDataSource(
-        TransactionManagerFactory.default()
-      )
+      const dbTranslations = await TranslationsDataSourceFactory.default({
+        transactionManager: TransactionManagerFactory.default(),
+      })
         .getContextAndKeys(testTemplate._id.toString(), ['changed name', 'new template'])
         .all();
 
@@ -182,9 +182,9 @@ describe('templates', () => {
       testTemplate!.commonProperties![0].label = 'Second New Title';
       await testingEnvironment.runWithContext(async () => updateTemplate(testTemplate));
 
-      const dbTranslations = await DefaultTranslationsDataSource(
-        TransactionManagerFactory.default()
-      )
+      const dbTranslations = await TranslationsDataSourceFactory.default({
+        transactionManager: TransactionManagerFactory.default(),
+      })
         .getContextAndKeys(testTemplate._id.toString(), ['First New Title', 'Second New Title'])
         .all();
 
@@ -201,7 +201,9 @@ describe('templates', () => {
       const template1 = await testingEnvironment.runWithContext(async () =>
         updateTemplate(newTemplate)
       );
-      let dbTranslations = await DefaultTranslationsDataSource(TransactionManagerFactory.default())
+      let dbTranslations = await TranslationsDataSourceFactory.default({
+        transactionManager: TransactionManagerFactory.default(),
+      })
         .getAll()
         .all();
       expect(dbTranslations.find(t => t.key === 'created template')).toBeTruthy();
@@ -216,7 +218,9 @@ describe('templates', () => {
       template1.commonProperties[0].label = 'new title label';
       await testingEnvironment.runWithContext(async () => updateTemplate(template1));
 
-      dbTranslations = await DefaultTranslationsDataSource(TransactionManagerFactory.default())
+      dbTranslations = await TranslationsDataSourceFactory.default({
+        transactionManager: TransactionManagerFactory.default(),
+      })
         .getAll()
         .all();
 
@@ -239,7 +243,9 @@ describe('templates', () => {
       let template1 = await testingEnvironment.runWithContext(async () =>
         updateTemplate(newTemplate)
       );
-      let dbTranslations = await DefaultTranslationsDataSource(TransactionManagerFactory.default())
+      let dbTranslations = await TranslationsDataSourceFactory.default({
+        transactionManager: TransactionManagerFactory.default(),
+      })
         .getAll()
         .all();
 
@@ -248,7 +254,9 @@ describe('templates', () => {
       template1.commonProperties![0].label = 'Country name';
       template1 = await testingEnvironment.runWithContext(async () => updateTemplate(template1));
 
-      dbTranslations = await DefaultTranslationsDataSource(TransactionManagerFactory.default())
+      dbTranslations = await TranslationsDataSourceFactory.default({
+        transactionManager: TransactionManagerFactory.default(),
+      })
         .getAll()
         .all();
 
@@ -260,7 +268,9 @@ describe('templates', () => {
       template1.commonProperties![0].label = 'Country';
       template1 = await testingEnvironment.runWithContext(async () => updateTemplate(template1));
 
-      dbTranslations = await DefaultTranslationsDataSource(TransactionManagerFactory.default())
+      dbTranslations = await TranslationsDataSourceFactory.default({
+        transactionManager: TransactionManagerFactory.default(),
+      })
         .getAll()
         .all();
 
@@ -272,7 +282,9 @@ describe('templates', () => {
       template1.name = 'Country template';
       template1 = await testingEnvironment.runWithContext(async () => updateTemplate(template1));
 
-      dbTranslations = await DefaultTranslationsDataSource(TransactionManagerFactory.default())
+      dbTranslations = await TranslationsDataSourceFactory.default({
+        transactionManager: TransactionManagerFactory.default(),
+      })
         .getAll()
         .all();
 

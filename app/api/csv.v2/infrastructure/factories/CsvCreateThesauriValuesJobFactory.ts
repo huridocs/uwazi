@@ -5,8 +5,8 @@ import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common
 import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
 import { ThesauriDataSourceFactory } from '#api/core/infrastructure/factories/ThesauriDataSourceFactory.js';
 import { ThesauriDataSource } from '#api/core/application/contracts/ThesauriDataSource.js';
-import { DefaultTranslationsDataSource } from '#api/i18n.v2/database/data_source_defaults.js';
-import { TranslationsDataSource } from '#api/i18n.v2/contracts/TranslationsDataSource.js';
+import { TranslationsDataSourceFactory } from '#api/core/infrastructure/factories/TranslationsDataSourceFactory.js';
+import { TranslationsDataSource } from '#api/core/application/contracts/TranslationsDataSource.js';
 import { ThesauriService } from '#api/core/application/ThesauriService.js';
 import { ThesaurusTranslationService } from '#api/core/application/thesaurusTranslationService/ThesaurusTranslationService.js';
 import { DispatcherAdapter } from '#api/core/infrastructure/jobs/DispatcherAdapter.js';
@@ -57,7 +57,8 @@ class CsvCreateThesauriValuesJobFactory {
       options.thesauriDS ??
       ThesauriDataSourceFactory.default({ transactionManager: getMongoTransactionManager() });
     const translationsDS =
-      options.translationsDS ?? DefaultTranslationsDataSource(getMongoTransactionManager());
+      options.translationsDS ??
+      TranslationsDataSourceFactory.default({ transactionManager: getMongoTransactionManager() });
     const settingsDS = SettingsDataSourceFactory.default({
       transactionManager: getMongoTransactionManager(),
     });

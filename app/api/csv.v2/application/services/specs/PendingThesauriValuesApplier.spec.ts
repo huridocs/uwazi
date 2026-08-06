@@ -1,7 +1,7 @@
 /* eslint-disable max-statements */
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { ThesauriDataSourceFactory } from '#api/core/infrastructure/factories/ThesauriDataSourceFactory.js';
-import { DefaultTranslationsDataSource } from '#api/i18n.v2/database/data_source_defaults.js';
+import { TranslationsDataSourceFactory } from '#api/core/infrastructure/factories/TranslationsDataSourceFactory.js';
 import { Thesaurus } from '#api/core/domain/thesaurus/Thesaurus.js';
 import { ThesauriService } from '#api/core/application/ThesauriService.js';
 import { ThesaurusTranslationService } from '#api/core/application/thesaurusTranslationService/ThesaurusTranslationService.js';
@@ -76,7 +76,7 @@ describe('PendingThesauriValuesApplier', () => {
     testingEnvironment.runWithContext(() => {
       const transactionManager = TransactionManagerFactory.default();
       const thesauriDS = ThesauriDataSourceFactory.default({ transactionManager });
-      const translationsDS = DefaultTranslationsDataSource(transactionManager);
+      const translationsDS = TranslationsDataSourceFactory.default({ transactionManager });
       const settingsDS = SettingsDataSourceFactory.default({ transactionManager });
       const thesauriService = new ThesauriService({
         dispatcher: new DispatcherAdapter(
@@ -188,7 +188,9 @@ describe('PendingThesauriValuesApplier', () => {
 
     expect(diff.valuesToAppend.length).toBeGreaterThan(0);
     expect(appliedValues).toHaveLength(2);
-    const translationsDS = DefaultTranslationsDataSource(TransactionManagerFactory.default());
+    const translationsDS = TranslationsDataSourceFactory.default({
+      transactionManager: TransactionManagerFactory.default(),
+    });
     const translations = await translationsDS.getByContext(thesaurusId).all();
     expect(translations.length).toBeGreaterThan(0);
     expect(appliedValues).toEqual(

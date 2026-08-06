@@ -1,5 +1,5 @@
 import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
-import { DefaultTranslationsDataSource } from '#api/i18n.v2/database/data_source_defaults.js';
+import { TranslationsDataSourceFactory } from '#api/core/infrastructure/factories/TranslationsDataSourceFactory.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { AddLanguageUseCase } from '#api/core/application/AddLanguage.js';
 import { SyncDispatcherForTests } from '#api/core/libs/queue/infrastructure/SyncDispatcherForTests.js';
@@ -18,7 +18,7 @@ class AddLanguageUseCaseFactory {
     const { actor, tenant, eventEmitter } = ExecutionContext;
     const transactionManager = ExecutionContext.transactionManager as MongoTransactionManager;
     const settingsDS = SettingsDataSourceFactory.default({ transactionManager });
-    const translationsDS = DefaultTranslationsDataSource(transactionManager);
+    const translationsDS = TranslationsDataSourceFactory.default({ transactionManager });
     const translationService = new LegacyTranslationService();
 
     const minutes60 = 60 * 60 * 1000;

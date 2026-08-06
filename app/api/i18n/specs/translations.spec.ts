@@ -5,7 +5,7 @@ import * as fs from 'fs';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
 import entities from '#api/entities/index.js';
-import { TranslationSyO } from '#api/i18n.v2/schemas/TranslationSyO.js';
+import { TranslationSyO } from '#api/core/infrastructure/mongodb/translation/schemas/TranslationSyO.js';
 import pages from '#api/pages/index.js';
 import settings from '#api/settings/index.js';
 import thesauri from '#api/core/v1_layer/thesauri/thesauri.js';
