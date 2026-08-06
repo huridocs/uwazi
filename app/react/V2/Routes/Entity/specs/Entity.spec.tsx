@@ -266,6 +266,7 @@ describe('Entity view', () => {
           'aria-selected',
           'true'
         );
+        expect(sideTablist().getByRole('tab', { name: 'ToC' })).toBeInTheDocument();
       });
 
       fireEvent.click(sideTablist().getByRole('tab', { name: 'ToC' }));
