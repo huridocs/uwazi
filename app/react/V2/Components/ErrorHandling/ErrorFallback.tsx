@@ -1,13 +1,19 @@
-import React from 'react';
+import React, { useId, useState } from 'react';
+import { ChevronDownIcon } from '@heroicons/react/24/outline';
 import { Translate } from '#app/I18N/index.js';
 import type { RequestError } from '#V2/shared/errorUtils.js';
 
 interface ErrorFallbackProps {
   error: Error | RequestError;
 }
+
 export const ErrorFallback = ({ error }: ErrorFallbackProps) => {
+  const [detailsOpen, setDetailsOpen] = useState(false);
+  const detailsId = useId();
+  const detailsToggleId = useId();
   const currentError = error as RequestError;
   const showRequestId = currentError.status === 500 && currentError.requestId;
+
   return (
     <div className="tw-content">
       <section className="h-full bg-white">
@@ -37,9 +43,35 @@ export const ErrorFallback = ({ error }: ErrorFallbackProps) => {
               </p>
             )}
             {currentError.stack && (
-              <pre className="mb-4 font-mono text-sm text-left text-gray-500 dark:text-gray-400">
-                {currentError.stack}
-              </pre>
+              <div className="mb-4 text-left grid justify-center">
+                <button
+                  type="button"
+                  id={detailsToggleId}
+                  aria-expanded={detailsOpen}
+                  aria-controls={detailsId}
+                  onClick={() => setDetailsOpen(open => !open)}
+                  className="inline-flex items-center gap-1 text-sm font-medium text-gray-500 hover:text-gray-700"
+                >
+                  <ChevronDownIcon
+                    className={`h-4 w-4 transition-transform ${detailsOpen ? 'rotate-180' : ''}`}
+                    aria-hidden="true"
+                  />
+                  {detailsOpen ? (
+                    <Translate>Hide details</Translate>
+                  ) : (
+                    <Translate>Show details</Translate>
+                  )}
+                </button>
+                {detailsOpen && (
+                  <pre
+                    id={detailsId}
+                    aria-labelledby={detailsToggleId}
+                    className="mt-2 overflow-x-auto whitespace-pre-wrap font-mono text-sm text-gray-500 dark:text-gray-400"
+                  >
+                    {currentError.stack}
+                  </pre>
+                )}
+              </div>
             )}
           </div>
         </div>
