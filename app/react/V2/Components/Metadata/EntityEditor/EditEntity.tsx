@@ -202,9 +202,6 @@ const EditEntity = ({
         disabled={disabled}
       />
       <IconField disabled={disabled} />
-      {entity?.documents?.length && documentMutations ? (
-        <DocumentField entity={entity} disabled={disabled} mutations={documentMutations} />
-      ) : null}
       <TemplateField<EditEntityFormValues>
         context="System"
         label="Template"
@@ -240,6 +237,10 @@ const EditEntity = ({
           ))}
         </Fragment>
       )}
+      {entity?.documents?.length && documentMutations ? (
+        <DocumentField entity={entity} disabled={disabled} mutations={documentMutations} />
+      ) : null}
+
     </form>
   );
 };
