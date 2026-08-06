@@ -295,7 +295,7 @@ const ImportsTable = () => {
           title={<Translate>No CSVs yet</Translate>}
           description={
             <Translate translationKey="csv blank state message">
-              Import CSV or ZIP files to create entities in bulk. Select &quot;**+ Import CSV**&quot; to
+              Import CSV or ZIP files to create entities in bulk. Select **+ Import CSV** to
               get started.
             </Translate>
           }
