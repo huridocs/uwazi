@@ -192,7 +192,6 @@ Clear Filters,Clear Filters
 Clear PDF selection,Clear PDF selection
 Clear search,Clear search
 Click,Click
-Click here,Click here
 Click to fill,Click to fill
 Close,Close
 Code,Code
@@ -632,7 +631,10 @@ Last updated,Last updated
 Last updated from collection:,Last updated from collection:
 Latitude,Latitude
 Latitude must be between -90 and 90,Latitude must be between -90 and 90
+Learn how to add and configure a contact form on a webpage.,Learn how to add and configure a contact form on a webpage.
+Learn how to build your first collection,Learn how to build your first collection
 Learn more,Learn more
+Learn more about the components.,Learn more about the components.
 Legend,Legend
 Lengthy reindex process,Lengthy reindex process
 Library,Library
@@ -1296,8 +1298,6 @@ To,To
 To add references you can start by selecting text in the document,To add references you can start by selecting text in the document
 "To bring you a better experience, this site uses cookies.","To bring you a better experience, this site uses cookies."
 "To complete the account creation process, please create a password for your account","To complete the account creation process, please create a password for your account"
-to learn how to add and configure a contact form on a webpage.,to learn how to add and configure a contact form on a webpage.
-to learn more about the components.,to learn more about the components.
 to view your authentication code and verify your identity.,to view your authentication code and verify your identity.
 Today,Today
 Toggle timeline mode,Toggle timeline mode
@@ -1396,6 +1396,7 @@ Users & Groups,Users & Groups
 Using Authenticator,Using Authenticator
 Using URLs,Using URLs
 Uwazi,Uwazi
+Uwazi Docs,Uwazi Docs
 Uwazi is developed by,Uwazi is developed by
 Uwazi UI,Uwazi UI
 Validating,Validating
