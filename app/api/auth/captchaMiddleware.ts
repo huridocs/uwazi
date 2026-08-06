@@ -1,4 +1,6 @@
 import type { Request, Response, NextFunction } from 'express';
+import { tenants } from '#api/tenants/index.js';
+import { VerifyCaptchaUseCaseFactory } from '#api/core/infrastructure/factories/CaptchaUseCaseFactories.js';
 import { CaptchaModel } from './CaptchaModel.js';
 import { CaptchaValue } from '#shared/types/Captcha.js';
 
@@ -27,6 +29,20 @@ export default () => async (req: Request, res: Response, next: NextFunction) => 
 
   if (!submitedCaptcha) return sendForbidden(res);
 
+  if (tenants.current().featureFlags?.v2Captcha) {
+    try {
+      await VerifyCaptchaUseCaseFactory.default().execute(submitedCaptcha);
+      delete req.body.captcha;
+      return next();
+    } catch (e) {
+      return sendForbidden(res);
+    }
+  }
+
+  /**
+   * @deprecated v1 fallback for the `v2Captcha` flag, superseded by the VerifyCaptcha use case
+   * above. Remove once v2Captcha is enabled for all tenants.
+   */
   const [captcha] = await CaptchaModel.get({ _id: submitedCaptcha.id });
 
   if (captcha && captcha.text === submitedCaptcha.text) {

@@ -1,3 +1,4 @@
+/* eslint-disable max-statements */
 import { Db, Document, Filter, ObjectId, UpdateFilter } from 'mongodb';
 import { MongoDataSource } from '../common/MongoDataSource.js';
 import { Result } from '#api/core/libs/Result.js';
@@ -27,6 +28,7 @@ type GetByIdOptions = {
   includeSecret?: boolean;
   includeFailedLogins?: boolean;
   includeAccountUnlockCode?: boolean;
+  includeAccountLocked?: boolean;
   includeDeleted?: boolean;
 };
 
@@ -101,6 +103,7 @@ class MongoUsersDAO extends MongoDataSource<UserDBO> {
       includeSecret,
       includeFailedLogins,
       includeAccountUnlockCode,
+      includeAccountLocked,
       includeDeleted,
     } = options;
 
@@ -109,6 +112,7 @@ class MongoUsersDAO extends MongoDataSource<UserDBO> {
     if (!includeSecret) projection.secret = 0;
     if (!includeFailedLogins) projection.failedLogins = 0;
     if (!includeAccountUnlockCode) projection.accountUnlockCode = 0;
+    if (!includeAccountLocked) projection.accountLocked = 0;
 
     const user = await this.findOne(
       { _id: ObjectId.createFromHexString(id) },

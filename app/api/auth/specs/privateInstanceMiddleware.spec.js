@@ -1,5 +1,7 @@
 import middleWare from '../privateInstanceMiddleware.js';
 import settings from '../../settings.js';
+import { testingEnvironment } from '../../utils/testingEnvironment.js';
+import { testingTenants } from '../../utils/testingTenants.js';
 
 describe('privateInstanceMiddleware', () => {
   let req;
@@ -37,6 +39,17 @@ describe('privateInstanceMiddleware', () => {
       redirect: jest.fn(),
     };
     next = jest.fn();
+    testingTenants.mockCurrentTenant({
+      name: 'test',
+      dbName: 'test',
+      indexName: 'index',
+      domain: '127.0.0.1',
+      featureFlags: { v2PrivateInstance: false },
+    });
+  });
+
+  afterAll(() => {
+    testingTenants.restoreCurrentFn();
   });
 
   describe('when there is an error', () => {
@@ -139,6 +152,40 @@ describe('privateInstanceMiddleware', () => {
     it('should call next when instance is private and the url matches unlockaccount', () => {
       req.url = 'url/unlockaccount/someAccount';
       expectNext();
+    });
+  });
+
+  describe('when v2PrivateInstance flag is on', () => {
+    beforeEach(async () => {
+      await testingEnvironment.setUp({ settings: [{ private: true }] });
+      testingTenants.changeCurrentTenant({ featureFlags: { v2PrivateInstance: true } });
+    });
+
+    afterAll(async () => testingEnvironment.tearDown());
+
+    it('should delegate to the v2 middleware and redirect to /login when unauthenticated', async () => {
+      req.url = 'host:port/some/page';
+      await testingEnvironment.runWithContext(() => middleWare(req, res, next));
+
+      expect(res.redirect).toHaveBeenCalledWith('/login');
+      expect(next).not.toHaveBeenCalled();
+    });
+
+    it('should delegate to the v2 middleware and call next for an allowed route', async () => {
+      req.url = 'url/login';
+      await testingEnvironment.runWithContext(() => middleWare(req, res, next));
+
+      expect(next).toHaveBeenCalled();
+      expect(res.redirect).not.toHaveBeenCalled();
+    });
+
+    it('should delegate to the v2 middleware and return 401 for a forbidden route', async () => {
+      req.url = 'host:port/api/someendpoint';
+      await testingEnvironment.runWithContext(() => middleWare(req, res, next));
+
+      expect(res.status).toHaveBeenCalledWith(401);
+      expect(res.json).toHaveBeenCalledWith({ error: 'Unauthorized' });
+      expect(next).not.toHaveBeenCalled();
     });
   });
 });

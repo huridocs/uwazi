@@ -1,5 +1,8 @@
 import { ObjectId } from 'mongodb';
 import { PUBLIC_USER_ID, User, UserRole } from '#api/core/domain/user/User.js';
+import { UserAccount } from '#api/core/domain/user/UserAccount.js';
+import { Credentials } from '#api/core/domain/user/Credentials.js';
+import { EncryptedPassword } from '#api/core/domain/user/EncryptedPassword.js';
 import { UsersDAOFactory } from '#api/core/infrastructure/factories/UsersDAOFactory.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
@@ -138,7 +141,7 @@ describe('MongoUsersDataSource', () => {
       expect(result.isOk()).toBe(true);
       const user = result.getData()!;
       expect(user.username).toBe('existing1');
-      expect(user.password).toBeUndefined();
+      expect(user).not.toBeInstanceOf(UserAccount);
     });
 
     it('should return fail with UserNotFound when the id does not exist', async () => {
@@ -179,14 +182,125 @@ describe('MongoUsersDataSource', () => {
     });
   });
 
+  describe('getByUsername', () => {
+    it('should return the user hydrated with credentials when the username exists', async () => {
+      const { ds } = createDs();
+      const result = await ds.getByUsername('lockeduser');
+      expect(result.isOk()).toBe(true);
+      const user = result.getData()!;
+      expect(user.username).toBe('lockeduser');
+      expect(user.credentials?.accountUnlockCode).toBe('code123');
+    });
+
+    it('should return fail with UserNotFound when the username does not exist', async () => {
+      const { ds } = createDs();
+      const result = await ds.getByUsername('nobody');
+      expect(result.isError()).toBe(true);
+      expect(result.getError()!.name).toBe('UserNotFound');
+    });
+
+    it('should return fail with UserNotFound when the username belongs to a soft-deleted user', async () => {
+      const { ds } = createDs();
+      const result = await ds.getByUsername('deleted1');
+      expect(result.isError()).toBe(true);
+    });
+  });
+
+  describe('getAccountById', () => {
+    it('should return the user hydrated with credentials when the id exists', async () => {
+      const { ds } = createDs();
+      const result = await ds.getAccountById(f.idString('lockeduser'));
+      expect(result.isOk()).toBe(true);
+      const user = result.getData()!;
+      expect(user.username).toBe('lockeduser');
+      expect(user.credentials.accountUnlockCode).toBe('code123');
+    });
+
+    it('should return fail with UserNotFound when the id does not exist', async () => {
+      const { ds } = createDs();
+      const result = await ds.getAccountById(new ObjectId().toHexString());
+      expect(result.isError()).toBe(true);
+      expect(result.getError()!.name).toBe('UserNotFound');
+    });
+
+    it('should return fail with UserNotFound when the user is soft-deleted', async () => {
+      const { ds } = createDs();
+      const result = await ds.getAccountById(f.idString('deleted1'));
+      expect(result.isError()).toBe(true);
+    });
+  });
+
+  describe('update() with credentials', () => {
+    it('should persist password, lockout and 2fa fields from the Credentials VO', async () => {
+      const { ds } = createDs();
+      const existingUser = await testingEnvironment.db
+        .getCollection('users')!
+        .findOne({ username: 'existing1' });
+
+      const credentials = new Credentials({
+        password: EncryptedPassword.fromHash('new-hash'),
+        failedLogins: 3,
+        accountLocked: true,
+        accountUnlockCode: 'new-unlock-code',
+        using2fa: true,
+        secret: 'new-secret',
+      });
+      const user = new UserAccount({
+        _id: existingUser!._id.toHexString(),
+        username: existingUser!.username,
+        role: existingUser!.role,
+        email: existingUser!.email,
+        credentials,
+      });
+
+      await ds.update(user);
+
+      const updated = await testingEnvironment.db
+        .getCollection('users')!
+        .findOne({ _id: existingUser!._id });
+
+      expect(updated!.password).toBe('new-hash');
+      expect(updated!.failedLogins).toBe(3);
+      expect(updated!.accountLocked).toBe(true);
+      expect(updated!.accountUnlockCode).toBe('new-unlock-code');
+      expect(updated!.using2fa).toBe(true);
+      expect(updated!.secret).toBe('new-secret');
+    });
+
+    it('should unset accountUnlockCode when the Credentials VO has none', async () => {
+      const { ds } = createDs();
+      const existingUser = await testingEnvironment.db
+        .getCollection('users')!
+        .findOne({ username: 'lockeduser' });
+
+      const credentials = new Credentials({ password: EncryptedPassword.fromHash('new-hash') });
+      const user = new UserAccount({
+        _id: existingUser!._id.toHexString(),
+        username: existingUser!.username,
+        role: existingUser!.role,
+        email: existingUser!.email,
+        credentials,
+      });
+
+      await ds.update(user);
+
+      const updated = await testingEnvironment.db
+        .getCollection('users')!
+        .findOne({ _id: existingUser!._id });
+
+      expect(updated!.accountUnlockCode).toBeUndefined();
+    });
+  });
+
   describe('insert', () => {
     it('should insert a user into the database', async () => {
       const { ds } = createDs();
-      const user = new User({
+      const user = new UserAccount({
         _id: new ObjectId().toHexString(),
         username: 'newuser',
         role: UserRole.EDITOR,
         email: 'new@test.com',
+        credentials: new Credentials({ password: EncryptedPassword.fromHash('hash') }),
       });
       await ds.insert(user);
       const users = await testingEnvironment.db.getAllFrom('users');

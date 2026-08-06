@@ -9,8 +9,9 @@ import { tenants } from '#api/tenants/tenantContext.js';
 import { userRoutes } from '../routes.js';
 import { fixtures, f } from './fixtures.js';
 
-jest.mock('../../../../../auth/encryptPassword.ts', () => ({
-  encryptPassword: async () => Promise.resolve('hush hush super secret'),
+jest.mock('bcryptjs', () => ({
+  hash: async () => Promise.resolve('hush hush super secret'),
+  compare: async (plain: string, hashed: string) => plain === hashed,
 }));
 
 jest.mock('../../../../../auth/validatePasswordMiddleWare.ts', () => ({

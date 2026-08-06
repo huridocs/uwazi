@@ -1,3 +1,4 @@
+/* eslint-disable max-statements */
 import express, { Application, NextFunction, Request, Response } from 'express';
 import { Response as SuperTestResponse } from 'supertest';
 
@@ -9,6 +10,8 @@ import { appContext } from './AppContext.js';
 import { extendSupertest } from './supertestExtensions.js';
 import { dependenciesContextMiddleware } from '#api/core/infrastructure/express/middlewares/DependenciesMiddleware.js';
 import { requestTimingMiddleware } from '#api/core/infrastructure/express/middlewares/RequestTimingMiddleware.js';
+import { authenticatedUserMiddlewares } from '#api/auth/routes.js';
+import { DB } from '#api/odm/index.js';
 
 extendSupertest();
 
@@ -18,6 +21,48 @@ enum TestEmitSources {
   session = 'session',
   currentTenant = 'currentTenant',
 }
+
+// setUpApp is routinely called at module scope, before testingEnvironment.setUp() has
+// connected to the DB, and some specs never connect at all (they don't need one).
+// authenticatedUserMiddlewares() needs a live connection to build its Mongo session store,
+// so defer building it to the first actual request, self-connecting with the bare DB.connect()
+// if nothing has connected yet. Deliberately not testingDB.connect(): that helper also mocks
+// the current tenant as a side effect, which would clobber tenant mocks specs set up themselves
+// (e.g. testingEnvironment.setTenant() with a specific `domain`) for specs that never otherwise
+// need a real DB connection.
+const lazyAuthenticatedUserMiddlewares = () => {
+  let middlewares: ((req: Request, res: Response, next: NextFunction) => void)[] | undefined;
+  let connecting: Promise<unknown> | undefined;
+
+  return (req: Request, res: Response, next: NextFunction) => {
+    (async () => {
+      if (!middlewares) {
+        if (!DB.getConnection()) {
+          connecting ??= DB.connect();
+          await connecting;
+        }
+        middlewares = authenticatedUserMiddlewares();
+      }
+    })()
+      .then(() => {
+        const runFrom = (index: number, error?: unknown): void => {
+          if (error) {
+            next(error);
+            return;
+          }
+          const middleware = middlewares![index];
+          if (!middleware) {
+            next();
+            return;
+          }
+          middleware(req, res, (err?: unknown) => runFrom(index + 1, err));
+        };
+
+        runFrom(0);
+      })
+      .catch(next);
+  };
+};
 
 const setUpApp = (
   route: Function,
@@ -51,6 +96,7 @@ const setUpApp = (
       .catch(next);
   });
   app.use(languageMiddleware);
+  app.use(lazyAuthenticatedUserMiddlewares());
   customMiddleware.forEach(middlewareElement => app.use(middlewareElement));
   app.use(dependenciesContextMiddleware);
 

@@ -54,6 +54,10 @@ type UnlockBlockedUserRequest = { _id: string };
 
 type UnlockBlockedUserResponse = string;
 
+type LoginRequest = { username: string; password: string; token?: string };
+
+type LoginResponse = { success: boolean };
+
 type RecoverPasswordRequest = { email: string };
 
 type RecoverPasswordResponse = string;
@@ -86,6 +90,8 @@ export type {
   UnlockAccountResponse,
   UnlockBlockedUserRequest,
   UnlockBlockedUserResponse,
+  LoginRequest,
+  LoginResponse,
   RecoverPasswordRequest,
   RecoverPasswordResponse,
   ResetPasswordRequest,

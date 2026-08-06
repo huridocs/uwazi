@@ -40,8 +40,12 @@ export const setSecret = async (user: User) => {
   throw createError('Unauthorized', 401);
 };
 
-// Not deprecated: also used by the login-time 2FA check in app/api/users/users.js
-// (validate2fa), which is outside the scope of the auth2fa route migration.
+/**
+ * @deprecated v1 fallback for the `v2Auth2fa` flag, used by EnableTwoFactorAuthController and
+ * ResetTwoFactorAuthController, and by the login-time 2FA check in app/api/users/users.js
+ * (validate2fa). Login-time usage is superseded by Login.checkTwoFactor
+ * (app/api/core/application/Login.ts:85). Remove once v2Auth2fa is enabled for all tenants.
+ */
 export const verifyToken = async (user: User, token: string) => {
   const dbUser = await getUser({ _id: user._id }, '+secret');
   if (otplib.authenticator.verify({ token, secret: dbUser.secret || undefined })) {

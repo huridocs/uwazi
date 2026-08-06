@@ -15,7 +15,7 @@ class CreateUserController extends AbstractController<CreateUserRequest> {
 
         const useCase = CreateUserUseCaseFactory.default();
 
-        const { password, ...user } = await useCase.execute(input);
+        const user = await useCase.execute(input);
         ExecutionContext.logger.info('User created successfully', {
           namespace: 'Users_Creation',
           success: true,

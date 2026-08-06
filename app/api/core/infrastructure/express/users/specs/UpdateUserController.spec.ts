@@ -7,8 +7,9 @@ import { userRoutes } from '../routes.js';
 import { fixtures, f, PUBLIC_USER_ID } from './fixtures.js';
 import { UserRole } from '#api/core/domain/user/User.js';
 
-jest.mock('../../../../../auth/encryptPassword.ts', () => ({
-  encryptPassword: async () => Promise.resolve('hush hush super secret'),
+jest.mock('bcryptjs', () => ({
+  hash: async () => Promise.resolve('hush hush super secret'),
+  compare: async (plain: string, hashed: string) => plain === hashed,
 }));
 
 jest.mock('../../../../../auth/validatePasswordMiddleWare.ts', () => ({
@@ -106,6 +107,29 @@ describe('POST /api/users', () => {
       .getCollection('users')!
       .findOne({ _id: f.id('existinguser') });
     expect(updatedUser!.password).toBe('hush hush super secret');
+  });
+
+  it('should preserve lockout and 2FA state when an admin resets the password', async () => {
+    const response = await request(appWithAdminUser)
+      .post('/api/users')
+      .send({
+        _id: f.idString('userwithstate'),
+        username: 'userwithstate',
+        role: 'editor',
+        email: 'userwithstate@test.com',
+        password: 'newpass',
+      });
+
+    expect(response.status).toBe(201);
+
+    const updatedUser = await testingEnvironment.db
+      .getCollection('users')!
+      .findOne({ _id: f.id('userwithstate') });
+
+    expect(updatedUser!.password).toBe('hush hush super secret');
+    expect(updatedUser!.failedLogins).toBe(3);
+    expect(updatedUser!.using2fa).toBe(true);
+    expect(updatedUser!.secret).toBe('existing-secret');
   });
 
   it.each([
