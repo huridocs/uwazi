@@ -1,4 +1,5 @@
 import { AbstractUseCase } from '../libs/UseCase.js';
+import { runInTransaction } from '../libs/runInTransaction.js';
 import { TranslationsDataSource } from './contracts/TranslationsDataSource.js';
 import { Translation, TranslationContext } from '../domain/translation/Translation.js';
 import { SettingsDataSource } from './contracts/SettingsDataSource.js';
@@ -26,7 +27,7 @@ class CreateTranslationContextUseCase extends AbstractUseCase<Input, Output, Dep
       });
     });
 
-    await this.transactionManager.run(async () => {
+    await runInTransaction(this.transactionManager, async () => {
       await this.deps.translationsDS.insert(entries);
     });
   }

@@ -1,4 +1,5 @@
 import { AbstractUseCase } from '../libs/UseCase.js';
+import { runInTransaction } from '../libs/runInTransaction.js';
 import { TranslationsDataSource } from './contracts/TranslationsDataSource.js';
 import { TranslationContext } from '../domain/translation/Translation.js';
 import { SettingsDataSource } from './contracts/SettingsDataSource.js';
@@ -22,7 +23,7 @@ class UpdateTranslationContextUseCase extends AbstractUseCase<Input, Output, Dep
     const languages = await this.deps.settingsDS.getLanguageKeys();
     const defaultLanguage = await this.deps.settingsDS.getDefaultLanguageKey();
 
-    await this.transactionManager.run(async () => {
+    await runInTransaction(this.transactionManager, async () => {
       const translationContext = await this.deps.translationsDS.getContext(
         context,
         languages,

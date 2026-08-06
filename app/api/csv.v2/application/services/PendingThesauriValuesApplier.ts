@@ -1,6 +1,6 @@
 import { ThesauriDataSource } from '#api/core/application/contracts/ThesauriDataSource.js';
 import { ThesauriService } from '#api/core/application/ThesauriService.js';
-import translations from '#api/i18n/translations.js';
+import { UpdateEntriesByContextServiceFactory } from '#api/core/infrastructure/factories/UpdateEntriesByContextServiceFactory.js';
 import {
   CsvImportThesauriAppliedValue,
   CsvImportThesauriValues,
@@ -51,7 +51,10 @@ class PendingThesauriValuesApplier {
       });
 
       if (Object.keys(diff.translations).length > 0) {
-        await translations.updateEntries(pendingDoc.thesaurusId, diff.translations);
+        await UpdateEntriesByContextServiceFactory.default().execute(
+          pendingDoc.thesaurusId,
+          diff.translations
+        );
       }
 
       updatedThesaurus = toSchema(updatedThesaurusDomain);

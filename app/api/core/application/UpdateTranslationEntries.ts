@@ -1,4 +1,5 @@
 import { AbstractUseCase } from '../libs/UseCase.js';
+import { runInTransaction } from '../libs/runInTransaction.js';
 import { TranslationsDataSource } from './contracts/TranslationsDataSource.js';
 import { Translation } from '../domain/translation/Translation.js';
 import {
@@ -52,7 +53,9 @@ class UpdateTranslationEntriesUseCase extends AbstractUseCase<Input, Output, Dep
         )
     );
 
-    return this.transactionManager.run(async () => this.deps.translationsDS.upsert(models));
+    return runInTransaction(this.transactionManager, async () =>
+      this.deps.translationsDS.upsert(models)
+    );
   }
 }
 

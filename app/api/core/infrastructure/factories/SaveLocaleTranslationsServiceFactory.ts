@@ -1,11 +1,11 @@
-import { SaveTranslationEntriesService } from '#api/core/application/translation/SaveTranslationEntriesService.js';
+import { SaveLocaleTranslationsService } from '#api/core/application/translation/SaveLocaleTranslationsService.js';
 import { createTranslationMutationDeps } from './translationMutationWiring.js';
 
-export class SaveTranslationEntriesServiceFactory {
+export class SaveLocaleTranslationsServiceFactory {
   static default() {
     const deps = createTranslationMutationDeps();
 
-    return new SaveTranslationEntriesService({
+    return new SaveLocaleTranslationsService({
       transactionManager: deps.transactionManager,
       translationsDS: deps.translationsDS,
       query: deps.query,

@@ -1,3 +1,4 @@
+import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
 import { TranslationsDataSource } from '#api/core/application/contracts/TranslationsDataSource.js';
 import { CreateTranslationEntriesUseCase } from '#api/core/application/CreateTranslationEntries.js';
 import { UpdateTranslationEntriesUseCase } from '#api/core/application/UpdateTranslationEntries.js';
@@ -11,6 +12,7 @@ import {
 import { Translation } from '#api/core/domain/translation/Translation.js';
 
 type Deps = {
+  transactionManager: TransactionManager;
   translationsDS: TranslationsDataSource;
   query: TranslationsQueryService;
   createTranslationEntries: CreateTranslationEntriesUseCase;
@@ -79,21 +81,6 @@ class SaveTranslationEntriesService {
     return { toCreate, toUpdate };
   }
 
-  private async upsert(translations: TranslationEntryInput[]) {
-    if (!translations.length) {
-      return;
-    }
-
-    const { toCreate, toUpdate } = await this.partitionByExistence(translations);
-
-    if (toCreate.length) {
-      await this.deps.createTranslationEntries.execute({ translations: toCreate });
-    }
-    if (toUpdate.length) {
-      await this.deps.updateTranslationEntries.execute({ translations: toUpdate });
-    }
-  }
-
   private async loadContextSnapshots(contextId: string): Promise<LocaleContextSnapshot[]> {
     const translations = await this.deps.query.getByContext(contextId).all();
     if (!translations.length) {
@@ -114,7 +101,17 @@ class SaveTranslationEntriesService {
 
     const { context } = translations[0];
     const previousSnapshots = await this.loadContextSnapshots(context.id);
-    await this.upsert(translations);
+
+    await this.deps.transactionManager.run(async () => {
+      const { toCreate, toUpdate } = await this.partitionByExistence(translations);
+
+      if (toCreate.length) {
+        await this.deps.createTranslationEntries.execute({ translations: toCreate });
+      }
+      if (toUpdate.length) {
+        await this.deps.updateTranslationEntries.execute({ translations: toUpdate });
+      }
+    });
 
     const isThesaurus = previousSnapshots[0]?.context.type === 'Thesaurus';
     if (!isThesaurus) {

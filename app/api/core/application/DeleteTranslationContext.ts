@@ -1,4 +1,5 @@
 import { AbstractUseCase } from '../libs/UseCase.js';
+import { runInTransaction } from '../libs/runInTransaction.js';
 import { TranslationsDataSource } from './contracts/TranslationsDataSource.js';
 
 type Input = {
@@ -13,7 +14,7 @@ type Deps = {
 
 class DeleteTranslationContextUseCase extends AbstractUseCase<Input, Output, Deps> {
   async execute({ contextId }: Input): Promise<Output> {
-    await this.transactionManager.run(async () => {
+    await runInTransaction(this.transactionManager, async () => {
       await this.deps.translationsDS.deleteByContextId(contextId);
     });
   }

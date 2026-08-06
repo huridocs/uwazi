@@ -1,4 +1,5 @@
 import { AbstractUseCase } from '../libs/UseCase.js';
+import { runInTransaction } from '../libs/runInTransaction.js';
 import { TranslationsDataSource } from './contracts/TranslationsDataSource.js';
 import { Translation } from '../domain/translation/Translation.js';
 import {
@@ -22,7 +23,7 @@ class CreateTranslationEntriesUseCase extends AbstractUseCase<Input, Output, Dep
     await this.deps.validateTranslations.languagesExist(translations);
     await this.deps.validateTranslations.translationsWillExistsInAllLanguages(translations);
 
-    return this.transactionManager.run(async () =>
+    return runInTransaction(this.transactionManager, async () =>
       this.deps.translationsDS.insert(
         translations.map(
           translation =>
