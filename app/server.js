@@ -22,7 +22,7 @@ import { elasticClient } from '#api/search/elastic.js';
 import uwaziMessage from '../message.js';
 import apiRoutes from './api/api.js';
 import privateInstanceMiddleware from './api/auth/privateInstanceMiddleware.js';
-import authRoutes from './api/auth/routes.js';
+import authRoutes, { populateAuthenticatedUser } from './api/auth/routes.js';
 import { config } from './api/config.js';
 
 import { versionRoutes } from './api/version/routes.js';
@@ -120,8 +120,9 @@ console.info('==> Connecting to', maskMongoPassword(config.DBHOST));
 DB.connect(config.DBHOST, config.DBAUTH).then(async () => {
   await Redis.connect();
   await tenants.setupTenants();
-  authRoutes(app);
+  populateAuthenticatedUser(app);
   app.use(dependenciesContextMiddleware);
+  authRoutes(app);
   versionRoutes(app);
   app.use(privateInstanceMiddleware);
   app.use('/flag-images', express.static(path.resolve(__dirname, '../dist/flags')));

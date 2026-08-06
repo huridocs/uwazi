@@ -9,7 +9,7 @@ import _ from 'lodash';
 
 import express, { NextFunction, Request, RequestHandler, Response } from 'express';
 import { Db, ObjectId } from 'mongodb';
-import authRoutes from '#api/auth/routes.js';
+import authRoutes, { populateAuthenticatedUser } from '#api/auth/routes.js';
 import entities from '#api/entities/index.js';
 import entitiesModel from '#api/entities/entitiesModel.js';
 import {
@@ -174,6 +174,7 @@ describe('syncWorker', () => {
     //@ts-ignore
     app.use(multitenantMiddleware);
     app.use(requestTimingMiddleware);
+    populateAuthenticatedUser(app);
     app.use(dependenciesContextMiddleware);
 
     authRoutes(app);

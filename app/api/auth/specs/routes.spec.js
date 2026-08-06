@@ -9,7 +9,7 @@ import svgCaptcha from 'svg-captcha';
 import instrumentRoutes from '../../utils/instrumentRoutes.js';
 import { CaptchaModel } from '../CaptchaModel.js';
 import { comparePasswords } from '../encryptPassword.js';
-import authRoutes from '../routes.js';
+import authRoutes, { populateAuthenticatedUser } from '../routes.js';
 import fixtures from './fixtures.js';
 
 describe('Auth Routes', () => {
@@ -29,6 +29,7 @@ describe('Auth Routes', () => {
     beforeEach(() => {
       app = express();
       app.use(bodyParser.json());
+      populateAuthenticatedUser(app);
       authRoutes(app);
     });
 
