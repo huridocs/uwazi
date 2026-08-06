@@ -272,7 +272,7 @@ Creating entities,Creating entities
 Creating relationships,Creating relationships
 Creating thesauri,Creating thesauri
 CSS,CSS
-csv blank state message,"Import CSV or ZIP files to create entities in bulk. Click ""New Import"" to get started."
+csv blank state message,"Import CSV or ZIP files to create entities in bulk. Select ""Import CSV"" to get started."
 CSV Import,CSV Import
 CSV import cancelled,CSV import cancelled
 CSV import completed,CSV import completed
