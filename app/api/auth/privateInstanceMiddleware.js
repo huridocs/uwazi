@@ -1,4 +1,6 @@
 import settings from '../settings/index.js';
+import { tenants } from '../tenants/index.js';
+import { privateInstanceMiddleware as privateInstanceMiddlewareV2 } from '../core/infrastructure/express/middlewares/PrivateInstanceMiddleware.js';
 
 const allowedRoutes = ['login', 'setpassword/', 'unlockaccount/', 'embed/'];
 const allowedRoutesMatch = new RegExp(allowedRoutes.join('|'));
@@ -15,6 +17,14 @@ const forbiddenRoutes = ['/api/', '/files/', '/assets/', '/uploaded_documents/']
 const forbiddenRoutesMatch = new RegExp(forbiddenRoutes.join('|'));
 
 export default function (req, res, next) {
+  if (tenants.current().featureFlags?.v2PrivateInstance) {
+    return privateInstanceMiddlewareV2(req, res, next);
+  }
+
+  /**
+   * @deprecated v1 fallback for the `v2PrivateInstance` flag, superseded by
+   * PrivateInstanceMiddleware above. Remove once v2PrivateInstance is enabled for all tenants.
+   */
   if (req.user || req.url.match(allowedRoutesMatch)) {
     return next();
   }
