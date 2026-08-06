@@ -5,10 +5,10 @@ import * as fs from 'fs';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
 import entities from '#api/entities/index.js';
+import * as denormalize from '#api/entities/denormalize.js';
 import { TranslationSyO } from '#api/core/infrastructure/mongodb/translation/schemas/TranslationSyO.js';
 import pages from '#api/pages/index.js';
 import settings from '#api/settings/index.js';
-import thesauri from '#api/core/v1_layer/thesauri/thesauri.js';
 import { AddLanguageUseCaseFactory } from '#api/core/infrastructure/factories/AddLanguageUseCaseFactory.js';
 import * as setupSockets from '#api/socketio/setupSockets.js';
 import { ContextType } from '#shared/translationSchema.js';
@@ -147,8 +147,8 @@ describe('translations', () => {
     describe('when saving a dictionary context', () => {
       it('should propagate translation changes to entities denormalized label', async () => {
         const renameSpy = jest
-          .spyOn(thesauri, 'renameThesaurusInMetadata')
-          .mockImplementation(async () => Promise.resolve());
+          .spyOn(denormalize, 'denormalizeThesauriLabelInMetadata')
+          .mockResolvedValue(undefined as never);
         renameSpy.mockClear();
 
         await translations.save({
@@ -168,7 +168,7 @@ describe('translations', () => {
           ],
         });
 
-        expect(thesauri.renameThesaurusInMetadata).toHaveBeenLastCalledWith(
+        expect(denormalize.denormalizeThesauriLabelInMetadata).toHaveBeenLastCalledWith(
           'age id',
           'Age changed',
           dictionaryId.toString(),
@@ -193,8 +193,8 @@ describe('translations', () => {
         );
 
         const renameSpy = jest
-          .spyOn(thesauri, 'renameThesaurusInMetadata')
-          .mockImplementation(async () => Promise.resolve());
+          .spyOn(denormalize, 'denormalizeThesauriLabelInMetadata')
+          .mockResolvedValue(undefined as never);
         renameSpy.mockClear();
 
         await translations.save({
@@ -210,7 +210,7 @@ describe('translations', () => {
           ],
         });
 
-        expect(thesauri.renameThesaurusInMetadata).toHaveBeenCalledWith(
+        expect(denormalize.denormalizeThesauriLabelInMetadata).toHaveBeenCalledWith(
           'child_id',
           'Age changed in child',
           dictionaryId.toString(),
@@ -246,8 +246,8 @@ describe('translations', () => {
         );
 
         const renameSpy = jest
-          .spyOn(thesauri, 'renameThesaurusInMetadata')
-          .mockImplementation(async () => Promise.resolve());
+          .spyOn(denormalize, 'denormalizeThesauriLabelInMetadata')
+          .mockResolvedValue(undefined as never);
         renameSpy.mockClear();
 
         await translations.save({

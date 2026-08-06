@@ -4,7 +4,6 @@ import { TestUtils } from '#api/common.v2/utils/Test.js';
 import { TranslationsQueryService } from '#api/core/application/translation/TranslationsQueryService.js';
 import templates from '#api/core/v1_layer/templates/index.js';
 import { TranslationsQueryServiceFactory } from '#api/core/infrastructure/factories/TranslationsQueryServiceFactory.js';
-import * as translate from '#shared/translate.js';
 import CSVExporter, {
   concatCommonHeaders,
   ExporterOptions,
@@ -169,22 +168,15 @@ describe('csvExporter', () => {
     });
 
     describe('translateCommonHeaders', () => {
-      let localeTranslationsMock: jest.SpyInstance;
-      let translateMock: jest.SpyInstance;
+      let getContextValueMap: jest.Mock;
 
       beforeEach(() => {
+        getContextValueMap = jest.fn().mockResolvedValue({ Header2: 'Header2T' });
         jest.spyOn(TranslationsQueryServiceFactory, 'default').mockReturnValue(
           TestUtils.mockClass<TranslationsQueryService>({
-            getLegacy: jest.fn().mockResolvedValue([]),
+            getContextValueMap,
           })
         );
-        localeTranslationsMock = jest
-          .spyOn(translate, 'getLocaleTranslation')
-          .mockReturnValue({});
-        jest.spyOn(translate, 'getContext').mockReturnValue({});
-        translateMock = jest
-          .spyOn(translate, 'default')
-          .mockImplementation((_context, _key, text) => `${text}T`);
       });
 
       afterEach(() => {
@@ -199,9 +191,8 @@ describe('csvExporter', () => {
         const translatedHeaders = await translateCommonHeaders(headers, 'es');
 
         expect(translatedHeaders[0].label).toBe(headers[0].label);
-        expect(translatedHeaders[1].label).toBe(`${headers[1].label}T`);
-        expect(localeTranslationsMock).toHaveBeenCalledWith([], 'es');
-        expect(translateMock).toHaveBeenCalledWith({}, headers[1].label, headers[1].label);
+        expect(translatedHeaders[1].label).toBe('Header2T');
+        expect(getContextValueMap).toHaveBeenCalledWith('es', 'System');
       });
     });
   });
@@ -458,7 +449,7 @@ describe('csvExporter', () => {
         );
       jest.spyOn(TranslationsQueryServiceFactory, 'default').mockReturnValue(
         TestUtils.mockClass<TranslationsQueryService>({
-          getLegacy: jest.fn().mockResolvedValue([]),
+          getContextValueMap: jest.fn().mockResolvedValue({}),
         })
       );
     });

@@ -4,10 +4,8 @@ import { EventEmitter } from 'events';
 import * as csv from '@fast-csv/format';
 import templates from '#api/core/v1_layer/templates/index.js';
 import { TranslationsQueryServiceFactory } from '#api/core/infrastructure/factories/TranslationsQueryServiceFactory.js';
-import { toIndexedTranslations } from '#api/core/infrastructure/express/translation/LegacyTranslationDtoMapper.js';
-import { PropertySchema } from '#shared/types/commonTypes.js';
+import { LanguageISO6391, PropertySchema } from '#shared/types/commonTypes.js';
 import { TemplateSchema } from '#shared/types/templateType.js';
-import translate, { getLocaleTranslation, getContext } from '#shared/translate.js';
 import {
   formatters,
   formatCreationDate,
@@ -135,17 +133,16 @@ export const processCommonField = (
 };
 
 export const translateCommonHeaders = async (headers: ExportHeader[], language: string) => {
-  const _translations = toIndexedTranslations(
-    await TranslationsQueryServiceFactory.default().getLegacy()
+  const systemValues = await TranslationsQueryServiceFactory.default().getContextValueMap(
+    language as LanguageISO6391,
+    'System'
   );
-  const locale = getLocaleTranslation(_translations, language);
-  const context = getContext(locale, 'System');
   return headers.map(header => {
     if (!header.common) {
       return header;
     }
 
-    return { ...header, label: translate(context, header.label, header.label) };
+    return { ...header, label: systemValues[header.label] || header.label };
   });
 };
 

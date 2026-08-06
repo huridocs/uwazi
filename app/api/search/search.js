@@ -3,7 +3,6 @@ import _ from 'lodash';
 
 import { OperationalError } from '#api/common.v2/errors/OperationalError.js';
 import { TranslationsQueryServiceFactory } from '#api/core/infrastructure/factories/TranslationsQueryServiceFactory.js';
-import { toIndexedTranslations } from '#api/core/infrastructure/express/translation/LegacyTranslationDtoMapper.js';
 import { permissionsContext } from '#api/permissions/permissionsContext.js';
 import userGroups from '#api/usergroups/userGroups.js';
 import usersModel from '#api/users/users.js';
@@ -323,14 +322,10 @@ const _getAggregationDictionary = async (
   if (!dictionaryCache[propContent]) {
     const dictionary = dictionariesById[propContent];
     const dictionaryTranslations =
-      toIndexedTranslations(
-        await TranslationsQueryServiceFactory.default().getLegacy({
-          locale: language,
-          context: dictionary._id.toString(),
-        })
-      )
-        .find(translation => translation.locale === language)
-        ?.contexts?.find(context => context.id === dictionary._id.toString())?.values || {};
+      await TranslationsQueryServiceFactory.default().getContextValueMap(
+        language,
+        dictionary._id.toString()
+      );
 
     const dictionaryValues = indexedDictionaryValues(dictionary, dictionaryTranslations);
     dictionaryCache[propContent] = [dictionary, dictionaryValues];

@@ -24,6 +24,33 @@ export class TranslationsQueryService {
     return this.translationsDS.getByContext(contextId);
   }
 
+  async getContextValueMap(
+    language: LanguageISO6391,
+    contextId: string
+  ): Promise<Record<string, string>> {
+    const values: Record<string, string> = {};
+    await this.getByContext(contextId).forEach(translation => {
+      if (translation.language === language) {
+        values[translation.key] = translation.value;
+      }
+    });
+    return values;
+  }
+
+  async getLanguageValueMaps(
+    language: LanguageISO6391
+  ): Promise<Record<string, Record<string, string>>> {
+    const byContext: Record<string, Record<string, string>> = {};
+    await this.getByLanguage(language).forEach(translation => {
+      const contextId = translation.context.id;
+      if (!byContext[contextId]) {
+        byContext[contextId] = {};
+      }
+      byContext[contextId][translation.key] = translation.value;
+    });
+    return byContext;
+  }
+
   async toLegacyDto(
     result: ResultSet<Translation>,
     onlyLanguage?: LanguageISO6391
