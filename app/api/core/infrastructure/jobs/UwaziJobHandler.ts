@@ -1,4 +1,6 @@
 import { tenants } from '#api/tenants/index.js';
+import { permissionsContext } from '#api/permissions/permissionsContext.js';
+import { isPrivilegedJob } from '#api/core/infrastructure/jobs/PrivilegedJob.js';
 import {
   Dispatchable,
   HeartbeatCallback,
@@ -21,13 +23,38 @@ export abstract class UwaziJobHandler<
     const extendedParams = params as ExtendedParams;
     const tenantName = jobInfo?.namespace;
 
-    if (tenantName) {
-      await tenants.run(async () => {
-        await this.handle(heartbeat, extendedParams, jobInfo);
-      }, tenantName);
-    } else {
+    const runHandle = async () => {
+      await this.setContext(extendedParams.userId);
       await this.handle(heartbeat, extendedParams, jobInfo);
+    };
+
+    if (tenantName) {
+      await tenants.run(runHandle, tenantName);
+    } else {
+      await runHandle();
     }
+  }
+
+  private async setContext(userId: string) {
+    if (isPrivilegedJob(this.constructor)) {
+      permissionsContext.setCommandContext();
+      return;
+    }
+
+    if (!userId) {
+      throw new Error(
+        'Missing userId: user-scoped jobs must include a userId parameter.',
+      );
+    }
+
+    const { default: users } = await import('#api/users/users.js');
+    const user = await users.getById(userId, '-password', true, true);
+
+    if (!user) {
+      throw new Error(`User not found: ${userId}`);
+    }
+
+    permissionsContext.setUserInContext(user);
   }
 
   protected abstract handle(
