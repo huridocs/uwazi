@@ -34,7 +34,7 @@ class Mocks {
         .mockResolvedValue(Buffer.from('file_content')),
       'request.uploadFile': jest.spyOn(request, 'uploadFile').mockReturnValue(Promise.resolve()),
       'date.now': jest.spyOn(Date, 'now').mockReturnValue(1000),
-      'sockets.emitToTenant': jest.spyOn(sockets, 'emitToTenant').mockImplementation(() => {}),
+      'sockets.emitToSession': jest.spyOn(sockets, 'emitToSession').mockImplementation(() => {}),
       'handleError.handleError': jest
         .spyOn(handleError, 'handleError')
         .mockImplementation(() => {}),
@@ -78,7 +78,7 @@ describe('OcrManager', () => {
       tenant: tenantName,
       task: 'ocr_results',
       file_url: 'protocol://link/to/result/file',
-      params: { filename: 'sourceFileName.pdf', language: 'en' },
+      params: { filename: 'sourceFileName.pdf', language: 'en', sessionId: 'ocr-session-id' },
       success: true,
     };
 
@@ -101,7 +101,7 @@ describe('OcrManager', () => {
   describe('on success', () => {
     beforeEach(async () => {
       const [sourceFile] = await files.get({ _id: fixturesFactory.id('sourceFile') });
-      await ocrManager.addToQueue(sourceFile);
+      await ocrManager.addToQueue(sourceFile, 'ocr-session-id');
       await storage.removeFile('generatedUwaziFilename', 'document');
     });
 
@@ -119,7 +119,7 @@ describe('OcrManager', () => {
         expect(mock).toHaveBeenCalledWith(
           expect.objectContaining({
             tenant: tenantName,
-            params: { filename: 'sourceFileName.pdf', language: 'en' },
+            params: { filename: 'sourceFileName.pdf', language: 'en', sessionId: 'ocr-session-id' },
             task: 'ocr',
           })
         );
@@ -189,8 +189,8 @@ describe('OcrManager', () => {
 
       it('should emit through the sockets', async () => {
         const [file] = await files.get({ _id: fixturesFactory.id('sourceFile') });
-        expect(sockets.emitToTenant).toHaveBeenCalledWith(
-          tenantName,
+        expect(sockets.emitToSession).toHaveBeenCalledWith(
+          'ocr-session-id',
           'ocr:ready',
           file._id.toHexString()
         );
@@ -211,7 +211,7 @@ describe('OcrManager', () => {
       const [attachmentFile] = await files.get({ _id: fixturesFactory.id('unrelatedAttachment') });
 
       try {
-        await ocrManager.addToQueue(attachmentFile);
+        await ocrManager.addToQueue(attachmentFile, 'ocr-session-id');
         fail('Should throw.');
       } catch (err) {
         expect(err).toMatchObject({
@@ -242,8 +242,8 @@ describe('OcrManager', () => {
 
       const [sourceFile] = await files.get({ _id: fixturesFactory.id('sourceFile') });
 
-      await ocrManager.addToQueue(sourceFile);
-      await expect(ocrManager.addToQueue(sourceFile)).rejects.toThrow('already in the queue');
+      await ocrManager.addToQueue(sourceFile, 'ocr-session-id');
+      await expect(ocrManager.addToQueue(sourceFile, 'ocr-session-id')).rejects.toThrow('already in the queue');
     });
 
     it('should throw an error when settings are missing from the database', async () => {
@@ -252,7 +252,7 @@ describe('OcrManager', () => {
 
       const [sourceFile] = await files.get({ _id: fixturesFactory.id('erroringSourceFile') });
 
-      await expect(ocrManager.addToQueue(sourceFile)).rejects.toThrow(
+      await expect(ocrManager.addToQueue(sourceFile, 'ocr-session-id')).rejects.toThrow(
         'Ocr settings are missing from the database'
       );
 
@@ -261,7 +261,7 @@ describe('OcrManager', () => {
 
     it('should throw an error when language is not supported', async () => {
       const [sourceFile] = await files.get({ _id: fixturesFactory.id('erroringSourceFile') });
-      await expect(ocrManager.addToQueue(sourceFile)).rejects.toThrow('Language not supported');
+      await expect(ocrManager.addToQueue(sourceFile, 'ocr-session-id')).rejects.toThrow('Language not supported');
     });
 
     it('should do nothing when record is missing', async () => {
@@ -285,7 +285,7 @@ describe('OcrManager', () => {
       await OcrModel.delete({ sourceFile: fixturesFactory.id('sourceFile') });
 
       const [sourceFile] = await files.get({ _id: fixturesFactory.id('sourceFile') });
-      await ocrManager.addToQueue(sourceFile);
+      await ocrManager.addToQueue(sourceFile, 'ocr-session-id');
       await mocks.taskManagerMock.trigger({
         ...mockedMessageFromRedis,
         success: false,
@@ -303,8 +303,8 @@ describe('OcrManager', () => {
         language: 'eng',
         lastUpdated: 1002,
       });
-      expect(sockets.emitToTenant).toHaveBeenCalledWith(
-        tenantName,
+      expect(sockets.emitToSession).toHaveBeenCalledWith(
+        'ocr-session-id',
         'ocr:error',
         sourceFile._id.toHexString()
       );
@@ -359,7 +359,7 @@ describe('OcrManager', () => {
       await entitiesCollection!.updateOne({ sharedId: 'parentEntity' }, { $unset: { user: '' } });
 
       const [sourceFile] = await files.get({ _id: fixturesFactory.id('sourceFile') });
-      await ocrManager.addToQueue(sourceFile);
+      await ocrManager.addToQueue(sourceFile, 'ocr-session-id');
 
       await mocks.taskManagerMock.trigger(mockedMessageFromRedis);
 
@@ -388,7 +388,7 @@ describe('OcrManager', () => {
       const [sourceFile] = await files.get({ _id: fixturesFactory.id('sourceFile') });
       await files.save({ _id: sourceFile._id, entity: 'nonExistentEntity' });
 
-      await ocrManager.addToQueue(sourceFile);
+      await ocrManager.addToQueue(sourceFile, 'ocr-session-id');
 
       const [updatedFile] = await files.get({ _id: fixturesFactory.id('sourceFile') });
       await mocks.taskManagerMock.trigger({

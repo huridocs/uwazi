@@ -2,19 +2,20 @@
 import request from 'supertest';
 import express, { Application } from 'express';
 import { Server } from 'http';
-import io from 'socket.io-client';
+import { io, Socket } from 'socket.io-client';
+import waitForExpect from 'wait-for-expect';
+import type { SessionData, Store as SessionStore } from 'express-session';
 import { multitenantMiddleware } from '#api/utils/multitenantMiddleware.js';
 import { tenants, Tenant } from '#api/tenants/tenantContext.js';
 import { appContextMiddleware } from '#api/utils/appContextMiddleware.js';
 import { config } from '#api/config.js';
-import waitForExpect from 'wait-for-expect';
-import type { SessionData, Store as SessionStore } from 'express-session';
 import users from '#api/users/users.js';
 
 import {
   endSocketServer,
   setupApiSockets,
   emitToTenantAdmins,
+  emitToTenantAdminsAndEditors,
   __testUtils,
 } from '../setupSockets.js';
 import { emitSocketEvent } from '../standaloneEmitSocketEvent.js';
@@ -26,15 +27,10 @@ const closeServer = async (httpServer: Server): Promise<void> =>
     });
   });
 
-const connectSocket = async (
-  port: number,
-  tenant: string,
-  session: string = ''
-): Promise<SocketIOClient.Socket> =>
+const connectSocket = async (port: number, tenant: string, session: string = ''): Promise<Socket> =>
   new Promise(resolve => {
-    const socket = io.connect(`http://localhost:${port}`, {
+    const socket = io(`http://localhost:${port}`, {
       transports: ['websocket'],
-      //@ts-ignore
       extraHeaders: {
         tenant,
         ...(session ? { Cookie: `connect.sid=session:${session}` } : {}),
@@ -60,10 +56,10 @@ const createServer = async (app: Application, port: number) => {
 };
 
 const port = 3051;
-let socket1Tenant1: SocketIOClient.Socket;
-let socket2Tenant1: SocketIOClient.Socket;
-let socket3Tenant2: SocketIOClient.Socket;
-let socket4TenantDefault: SocketIOClient.Socket;
+let socket1Tenant1: Socket;
+let socket2Tenant1: Socket;
+let socket3Tenant2: Socket;
+let socket4TenantDefault: Socket;
 const app: Application = express();
 
 describe('socket middlewares setup', () => {
@@ -252,9 +248,9 @@ describe('socket middlewares setup', () => {
   });
 
   describe('tenant admins room', () => {
-    let adminSocketTenant1: SocketIOClient.Socket;
-    let nonAdminSocketTenant1: SocketIOClient.Socket;
-    let adminSocketTenant2: SocketIOClient.Socket;
+    let adminSocketTenant1: Socket;
+    let nonAdminSocketTenant1: Socket;
+    let adminSocketTenant2: Socket;
 
     let sessionStore: SessionStore;
 
@@ -271,7 +267,7 @@ describe('socket middlewares setup', () => {
               httpOnly: true,
               path: '/',
             },
-            // eslint-disable-next-line @typescript-eslint/naming-convention
+
             passport: {
               user: `${userId}///${tenantName}`,
             } as any,
@@ -334,6 +330,34 @@ describe('socket middlewares setup', () => {
         expect(events).toEqual({
           adminTenant1: 'payload',
           nonAdminTenant1: '',
+          adminTenant2: '',
+        });
+      });
+    });
+
+    it('should emit to admin and editor sockets of the target tenant', async () => {
+      const events = {
+        adminTenant1: '',
+        editorTenant1: '',
+        adminTenant2: '',
+      };
+
+      adminSocketTenant1.once('staffEvent', (data: string) => {
+        events.adminTenant1 = data;
+      });
+      nonAdminSocketTenant1.once('staffEvent', (data: string) => {
+        events.editorTenant1 = data;
+      });
+      adminSocketTenant2.once('staffEvent', (data: string) => {
+        events.adminTenant2 = data;
+      });
+
+      emitToTenantAdminsAndEditors('tenant1', 'staffEvent', 'payload');
+
+      await waitForExpect(() => {
+        expect(events).toEqual({
+          adminTenant1: 'payload',
+          editorTenant1: 'payload',
           adminTenant2: '',
         });
       });

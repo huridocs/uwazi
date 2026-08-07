@@ -1,3 +1,9 @@
+/* eslint-disable max-statements */
+// eslint-disable-next-line node/no-restricted-import
+import { createReadStream } from 'fs';
+import { ObjectId } from 'mongodb';
+import RedisSMQ from 'rsmq';
+import waitForExpect from 'wait-for-expect';
 import { files, storage, testingUploadPaths } from '#api/files/index.js';
 import { Redis } from '#api/infrastructure/Redis.js';
 import { permissionsContext } from '#api/permissions/permissionsContext.js';
@@ -6,11 +12,7 @@ import { tenants } from '#api/tenants/index.js';
 import * as handleError from '#api/utils/handleError.js';
 import testingDB from '#api/utils/testing_db.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-// eslint-disable-next-line node/no-restricted-import
-import { createReadStream } from 'fs';
-import { ObjectId } from 'mongodb';
-import RedisSMQ from 'rsmq';
-import waitForExpect from 'wait-for-expect';
+
 import { convertToPDFService } from '../convertToPdfService.js';
 import { ConvertToPdfWorker } from '../ConvertToPdfWorker.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
@@ -38,7 +40,7 @@ describe('convertToPdfWorker', () => {
     worker = new ConvertToPdfWorker();
     redisSMQ = new RedisSMQ({ client: redisClient });
     await testingDB.connect({ defaultTenant: false });
-    jest.spyOn(setupSockets, 'emitToTenant').mockImplementation(() => {});
+    jest.spyOn(setupSockets, 'emitToSession').mockImplementation(() => {});
     jest.spyOn(search, 'indexEntities').mockImplementation(async () => Promise.resolve());
     await testingEnvironment.setUp({
       settings: [
@@ -92,6 +94,7 @@ describe('convertToPdfWorker', () => {
         params: {
           filename: 'attachment.docx',
           namespace: 'tenant',
+          sessionId: 'convert-session-id',
         },
         file_url: 'http://localhost:5060/download/converted_attachment.pdf',
       };
@@ -153,10 +156,10 @@ describe('convertToPdfWorker', () => {
       });
     });
 
-    it('should emit a documentProcessed socket event to the tenant', async () => {
+    it('should emit a documentProcessed socket event to the session', async () => {
       await waitForExpect(async () => {
-        expect(setupSockets.emitToTenant).toHaveBeenCalledWith(
-          'tenant',
+        expect(setupSockets.emitToSession).toHaveBeenCalledWith(
+          'convert-session-id',
           'documentProcessed',
           'entity'
         );

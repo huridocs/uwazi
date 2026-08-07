@@ -1,4 +1,5 @@
 import { Application, Request, Response, NextFunction } from 'express';
+import * as cookie from 'cookie';
 import { storage } from '#api/files/index.js';
 import needsAuthorization from '#api/auth/authMiddleware.js';
 import { isOcrEnabled, ocrManager, getOcrStatus } from '#api/services/ocr/OcrManager.js';
@@ -58,8 +59,17 @@ const ocrRoutes = (app: Application) => {
     validation.validateRequest(ocrRequestDecriptor),
     async (req, res) => {
       const file = await fileFromRequest(req);
+      if (file.type !== 'document') {
+        throw createError('The file is not a document.', 400);
+      }
 
-      await ocrManager().addToQueue(file);
+      const cookies = cookie.parse(req.get('cookie') || '');
+      const sessionId = cookies['connect.sid'];
+      if (!sessionId) {
+        throw createError('Session not found', 401);
+      }
+
+      await ocrManager().addToQueue(file, sessionId);
 
       res.sendStatus(200);
     }

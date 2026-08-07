@@ -59,6 +59,7 @@ describe('upload routes', () => {
   const uploadDocument = async (filepath: string): Promise<SuperTestResponse> =>
     request(app)
       .post('/api/files/upload/document')
+      .set('Cookie', 'connect.sid=upload-test-session')
       .field('entity', 'sharedId1')
       .attach('file', path.join(__dirname, filepath));
 
@@ -113,6 +114,7 @@ describe('upload routes', () => {
         const res = await socketEmit('documentProcessed', async () =>
           request(app)
             .post('/api/files/upload/document')
+              .set('Cookie', 'connect.sid=upload-test-session')
             .field('originalname', filename)
             .field('entity', 'sharedId1')
             .attach('file', path.join(__dirname, filename))
@@ -130,6 +132,7 @@ describe('upload routes', () => {
     it('should throw error if entity does not exist', async () => {
       const response = await request(app)
         .post('/api/files/upload/document')
+          .set('Cookie', 'connect.sid=upload-test-session')
         .field('entity', 'non_existent_shared_id')
         .attach('file', path.join(__dirname, 'testing_files/english_testing_file.pdf'));
 
@@ -259,6 +262,7 @@ describe('upload routes', () => {
           await socketEmit('conversionFailed', async () =>
             request(app)
               .post('/api/files/upload/document')
+                .set('Cookie', 'connect.sid=upload-test-session')
               .field('entity', 'sharedId1')
               .attach('file', path.join(__dirname, 'testing_files/invalid_document.txt'))
           );
@@ -279,6 +283,7 @@ describe('upload routes', () => {
           await socketEmit('conversionFailed', async () =>
             request(app)
               .post('/api/files/upload/document')
+                .set('Cookie', 'connect.sid=upload-test-session')
               .field('entity', 'sharedId1')
               .attach('file', path.join(__dirname, 'testing_files/invalid_document.txt'))
           );
@@ -290,9 +295,8 @@ describe('upload routes', () => {
 
         expect(iosocket.emit).toHaveBeenCalledWith(
           'conversionFailed',
-          TestEmitSources.currentTenant,
-          'sharedId1',
-          expect.objectContaining({ status: 'failed' })
+          TestEmitSources.session,
+          'sharedId1'
         );
       });
     });

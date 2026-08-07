@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import * as cookie from 'cookie';
 import { AbstractController } from '#api/common.v2/infrastructure/AbstractController.js';
 import { InputFile } from '../../files/InputFile.js';
 import { CreateEntityFromPDFUseCaseFactory } from '../../factories/CreateEntityFromPDFUseCaseFactory.js';
@@ -24,23 +25,31 @@ type Request = z.infer<typeof RequestBodySchema>;
 class CreateEntityFromPDFController extends AbstractController<Request> {
   protected async handle(): Promise<void> {
     const body = RequestBodySchema.parse({ ...this.request.body, file: this.request.inputFile });
+    const sessionId = this.resolveSessionId();
+    if (!sessionId) {
+      return;
+    }
 
-    const useCase = CreateEntityFromPDFUseCaseFactory.default();
-
+    const useCase = CreateEntityFromPDFUseCaseFactory.default({ sessionId });
     const output = await useCase.execute({ templateId: body.templateId, inputFile: body.file });
-
     const entitiesDAO = EntitiesDAOFactory.default();
-
     const [entityWithFiles] = await entitiesDAO.getWithFiles({
       sharedId: output.sharedId,
       language: this.language,
     });
 
-    const response: CreateEntityFromPDFResponse = {
+    this.response.status(201).json({
       data: entityWithFiles as any as EntityWithFilesSchema,
-    };
+    } satisfies CreateEntityFromPDFResponse);
+  }
 
-    this.response.status(201).json(response);
+  private resolveSessionId(): string | undefined {
+    const sessionId = cookie.parse(this.request.get('cookie') || '')['connect.sid'];
+    if (!sessionId) {
+      this.clientError('Session not found');
+      return undefined;
+    }
+    return sessionId;
   }
 }
 
