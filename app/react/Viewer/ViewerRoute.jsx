@@ -7,6 +7,7 @@ import { actions } from '#app/BasicReducer/index.js';
 import * as relationships from '#app/Relationships/utils/routeUtils.js';
 import { showTab } from '#app/Entities/actions/uiActions.js';
 import { trackPage } from '#app/App/GoogleAnalytics.js';
+import { entityDefaultDocument } from '#shared/entityDefaultDocument.js';
 import { ErrorBoundary } from '#V2/Components/ErrorHandling/index.js';
 import { PDFViewComponent } from './PDFView.js';
 import { Entity } from './EntityView.js';
@@ -19,7 +20,12 @@ class ViewerRouteComponent extends RouteHandler {
     const [entity] = await EntitiesAPI.get(
       requestParams.set({ sharedId, omitRelationships: true })
     );
-    return entity.documents.length
+    const defaultLanguage =
+      globalResources.settings?.collection
+        ?.get('languages')
+        ?.find(l => l.get('default'))
+        ?.get('key') || 'en';
+    return entityDefaultDocument(entity.documents, entity.language, defaultLanguage)
       ? PDFViewComponent.requestState(requestParams, globalResources)
       : Entity.requestState(requestParams, globalResources);
   }

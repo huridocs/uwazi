@@ -76,7 +76,7 @@ const FileRowKebab = ({
     if (showLanguageAction) {
       actions.push({
         id: 'language',
-        label: 'Change Language',
+        label: 'Change language',
         icon: LanguageIcon,
         onClick: () => onChangeLanguage(row),
       });
