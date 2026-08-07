@@ -2,7 +2,7 @@
 import request from 'supertest';
 import express, { Application } from 'express';
 import { Server } from 'http';
-import { io, Socket } from 'socket.io-client';
+import io from 'socket.io-client';
 import waitForExpect from 'wait-for-expect';
 import type { SessionData, Store as SessionStore } from 'express-session';
 import { multitenantMiddleware } from '#api/utils/multitenantMiddleware.js';
@@ -20,6 +20,8 @@ import {
 } from '../setupSockets.js';
 import { emitSocketEvent } from '../standaloneEmitSocketEvent.js';
 
+type ClientSocket = ReturnType<typeof io>;
+
 const closeServer = async (httpServer: Server): Promise<void> =>
   new Promise(resolve => {
     httpServer.close(() => {
@@ -27,7 +29,11 @@ const closeServer = async (httpServer: Server): Promise<void> =>
     });
   });
 
-const connectSocket = async (port: number, tenant: string, session: string = ''): Promise<Socket> =>
+const connectSocket = async (
+  port: number,
+  tenant: string,
+  session: string = ''
+): Promise<ClientSocket> =>
   new Promise(resolve => {
     const socket = io(`http://localhost:${port}`, {
       transports: ['websocket'],
@@ -35,7 +41,7 @@ const connectSocket = async (port: number, tenant: string, session: string = '')
         tenant,
         ...(session ? { Cookie: `connect.sid=session:${session}` } : {}),
       },
-    });
+    } as any);
 
     socket.on('connect', () => {
       resolve(socket);
@@ -56,10 +62,10 @@ const createServer = async (app: Application, port: number) => {
 };
 
 const port = 3051;
-let socket1Tenant1: Socket;
-let socket2Tenant1: Socket;
-let socket3Tenant2: Socket;
-let socket4TenantDefault: Socket;
+let socket1Tenant1: ClientSocket;
+let socket2Tenant1: ClientSocket;
+let socket3Tenant2: ClientSocket;
+let socket4TenantDefault: ClientSocket;
 const app: Application = express();
 
 describe('socket middlewares setup', () => {
@@ -248,9 +254,9 @@ describe('socket middlewares setup', () => {
   });
 
   describe('tenant admins room', () => {
-    let adminSocketTenant1: Socket;
-    let nonAdminSocketTenant1: Socket;
-    let adminSocketTenant2: Socket;
+    let adminSocketTenant1: ClientSocket;
+    let nonAdminSocketTenant1: ClientSocket;
+    let adminSocketTenant2: ClientSocket;
 
     let sessionStore: SessionStore;
 

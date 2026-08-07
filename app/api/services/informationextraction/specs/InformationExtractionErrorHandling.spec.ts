@@ -188,7 +188,10 @@ describe('InformationExtraction Error Handling', () => {
     it('should emit error status to tenant', async () => {
       const extractorId = factory.id('prop1extractor');
       const errorMessage = 'Task failed';
-      const emitToTenantAdminsAndEditorsSpy = jest.spyOn(setupSockets, 'emitToTenantAdminsAndEditors');
+      const emitToTenantAdminsAndEditorsSpy = jest.spyOn(
+        setupSockets,
+        'emitToTenantAdminsAndEditors'
+      );
 
       await IXModelsModel.save({
         extractorId,

@@ -709,7 +709,13 @@ class InformationExtraction {
 
   stopModelAndEmitReadyMessage = async (extractorId: ObjectIdSchema, message: string) => {
     await this.stopModel(extractorId);
-    emitToTenantAdminsAndEditors(tenants.current().name, 'ix_model_status', extractorId, 'ready', message);
+    emitToTenantAdminsAndEditors(
+      tenants.current().name,
+      'ix_model_status',
+      extractorId,
+      'ready',
+      message
+    );
   };
 
   getAndSendMaterialsForPDF = async ({
@@ -851,7 +857,12 @@ class InformationExtraction {
       });
     }
 
-    emitToTenantAdminsAndEditors(tenant.name, 'ix_model_status', extractorId.toString(), 'processing_model');
+    emitToTenantAdminsAndEditors(
+      tenant.name,
+      'ix_model_status',
+      extractorId.toString(),
+      'processing_model'
+    );
 
     const dispatcher = DefaultDispatcher(tenant.name, TransactionManagerFactory.default(), {
       lockWindow: 1000 * 60 * 20,
@@ -951,7 +962,12 @@ class InformationExtraction {
       /* empty */
     }
 
-    emitToTenantAdminsAndEditors(tenant.name, 'ix_model_status', extractorId, 'processing_auto_accept');
+    emitToTenantAdminsAndEditors(
+      tenant.name,
+      'ix_model_status',
+      extractorId,
+      'processing_auto_accept'
+    );
 
     const dispatcher = DefaultDispatcher(tenant.name, TransactionManagerFactory.default(), {
       lockWindow: 1000 * 60 * 10,
@@ -1014,7 +1030,13 @@ class InformationExtraction {
 
         const [updatedModel] = await IXModelsModel.get({ extractorId: message.params!.id });
         if (!updatedModel.findingSuggestions) {
-          emitToTenantAdminsAndEditors(message.tenant, 'ix_model_status', _message.params!.id, 'ready', 'Canceled');
+          emitToTenantAdminsAndEditors(
+            message.tenant,
+            'ix_model_status',
+            _message.params!.id,
+            'ready',
+            'Canceled'
+          );
           return;
         }
       } catch (error) {

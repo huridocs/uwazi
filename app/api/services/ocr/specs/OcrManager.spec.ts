@@ -243,7 +243,9 @@ describe('OcrManager', () => {
       const [sourceFile] = await files.get({ _id: fixturesFactory.id('sourceFile') });
 
       await ocrManager.addToQueue(sourceFile, 'ocr-session-id');
-      await expect(ocrManager.addToQueue(sourceFile, 'ocr-session-id')).rejects.toThrow('already in the queue');
+      await expect(ocrManager.addToQueue(sourceFile, 'ocr-session-id')).rejects.toThrow(
+        'already in the queue'
+      );
     });
 
     it('should throw an error when settings are missing from the database', async () => {
@@ -261,7 +263,9 @@ describe('OcrManager', () => {
 
     it('should throw an error when language is not supported', async () => {
       const [sourceFile] = await files.get({ _id: fixturesFactory.id('erroringSourceFile') });
-      await expect(ocrManager.addToQueue(sourceFile, 'ocr-session-id')).rejects.toThrow('Language not supported');
+      await expect(ocrManager.addToQueue(sourceFile, 'ocr-session-id')).rejects.toThrow(
+        'Language not supported'
+      );
     });
 
     it('should do nothing when record is missing', async () => {
