@@ -1,4 +1,3 @@
-/* eslint-disable max-statements */
 import React, { Fragment, ReactNode } from 'react';
 import { useAtom, useAtomValue } from 'jotai';
 import { translationsAtom, inlineEditAtom, localeAtom } from '#V2/atoms/index.js';
@@ -69,7 +68,7 @@ const Translate = ({
       return (
         <Fragment key={`${line}-${index.toString()}`}>
           {boldMatches ||
-            italicMatches || ( // eslint-disable-next-line react/jsx-no-useless-fragment
+            italicMatches || (
               <>{line}</>
             )}
           {index < lines.length - 1 && <br />}
