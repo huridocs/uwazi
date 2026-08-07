@@ -5,16 +5,22 @@ import React from 'react';
 import { render, waitFor } from '@testing-library/react';
 import { TestAtomStoreProvider } from '#V2/testing/index.js';
 import { translationsAtom, inlineEditAtom, localeAtom } from '#V2/atoms/index.js';
+import { TranslationLocaleProvider } from '../TranslationLocaleContext.js';
 import { Translate } from '../Translate.js';
 import { translations } from './fixtures.js';
 
 let initialValues: any[];
 
 describe('Translate', () => {
-  const renderWithAtoms = (props = {}) => {
+  const renderWithAtoms = (props = {}, localeOverride?: string) => {
+    const content = <Translate {...props} />;
     const { container, ...rest } = render(
       <TestAtomStoreProvider initialValues={initialValues}>
-        <Translate {...props} />
+        {localeOverride ? (
+          <TranslationLocaleProvider locale={localeOverride}>{content}</TranslationLocaleProvider>
+        ) : (
+          content
+        )}
       </TestAtomStoreProvider>
     );
     return { container, ...rest };
@@ -34,6 +40,23 @@ describe('Translate', () => {
       translationKey: 'Search',
       children: 'Search',
     });
+    expect(getByText('Buscar')).toBeInTheDocument();
+  });
+
+  it('uses TranslationLocaleProvider over route locale', () => {
+    initialValues = [
+      [translationsAtom, translations],
+      [localeAtom, 'en'],
+      [inlineEditAtom, { inlineEdit: false, context: '', translationKey: '' }],
+    ];
+    const { getByText } = renderWithAtoms(
+      {
+        context: 'System',
+        translationKey: 'Search',
+        children: 'Search',
+      },
+      'es'
+    );
     expect(getByText('Buscar')).toBeInTheDocument();
   });
 
