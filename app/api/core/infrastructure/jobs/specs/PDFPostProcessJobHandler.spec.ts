@@ -1,6 +1,8 @@
+/* eslint-disable max-statements */
 // eslint-disable-next-line node/no-restricted-import
 import { readFile } from 'fs/promises';
 
+import { createHash } from 'crypto';
 import { TestUtils } from '#api/common.v2/utils/Test.js';
 import { WebSockets } from '#api/core/application/contracts/WebSockets.js';
 import { PDFPostProcessJob } from '#api/core/application/PDFPostProcessJob.js';
@@ -16,7 +18,6 @@ import { permissionsContext } from '#api/permissions/permissionsContext.js';
 import { tenants } from '#api/tenants/index.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-import { createHash } from 'crypto';
 import { FilesServiceFactory } from '../../factories/FilesServiceFactory.js';
 import { IdGeneratorFactory } from '../../factories/IdGeneratorFactory.js';
 import { TransactionManagerFactory } from '../../factories/TransactionManagerFactory.js';
@@ -37,7 +38,7 @@ const setUpJob = (pdfService = new PDFService()) => {
   const transactionManager = TransactionManagerFactory.default();
 
   const wSockets = TestUtils.mockClass<WebSockets>({
-    emitToTenant: jest.fn(),
+    emitToSession: jest.fn(),
   });
 
   const eventBus = TestUtils.mockClass<EventsBus>({
@@ -112,6 +113,7 @@ describe('PDFPostProcessJob', () => {
         documentId,
         tenantName: tenants.current().name,
         userId: permissionsContext.getUserInContext()?._id?.toString() || '',
+        sessionId: 'test-session-id',
       },
       { namespace: tenants.current().name, ...jobInfo }
     );
@@ -198,7 +200,7 @@ describe('PDFPostProcessJob', () => {
       expect(files).toMatchObject([{ filename: 'english.pdf', status: 'failed' }]);
     });
 
-    it('should emit a "conversionFailed" event to tenant', async () => {
+    it('should emit a "conversionFailed" event to the uploader session', async () => {
       const { job, wSockets } = setUpJob(
         TestUtils.mockClass<PDFService>({
           extractText: jest
@@ -214,14 +216,10 @@ describe('PDFPostProcessJob', () => {
         })
       ).rejects.toThrow();
 
-      expect(wSockets.emitToTenant).toHaveBeenCalledWith(
-        tenants.current().name,
+      expect(wSockets.emitToSession).toHaveBeenCalledWith(
+        'test-session-id',
         'conversionFailed',
-        'fileEntity',
-        expect.objectContaining({
-          _id: f.idString('processing_doc'),
-          status: 'failed',
-        })
+        'fileEntity'
       );
     });
   });
@@ -241,7 +239,7 @@ describe('PDFPostProcessJob', () => {
       );
     });
 
-    it('should emit a "conversionFailed" event to tenant', async () => {
+    it('should emit a "conversionFailed" event to the uploader session', async () => {
       const { job, wSockets } = setUpJob(
         TestUtils.mockClass<PDFService>({
           extractText: jest
@@ -252,14 +250,10 @@ describe('PDFPostProcessJob', () => {
 
       await expect(async () => executeJob(job, f.idString('processing_doc'))).rejects.toThrow();
 
-      expect(wSockets.emitToTenant).toHaveBeenCalledWith(
-        tenants.current().name,
+      expect(wSockets.emitToSession).toHaveBeenCalledWith(
+        'test-session-id',
         'conversionFailed',
-        'fileEntity',
-        expect.objectContaining({
-          _id: f.idString('processing_doc'),
-          status: 'failed',
-        })
+        'fileEntity'
       );
     });
   });

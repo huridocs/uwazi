@@ -180,7 +180,7 @@ describe('InformationExtraction', () => {
     IXExternalService.reset();
     jest.clearAllMocks();
     // eslint-disable-next-line no-empty-function
-    jest.spyOn(setupSockets, 'emitToTenant').mockImplementation(() => {});
+    jest.spyOn(setupSockets, 'emitToTenantAdminsAndEditors').mockImplementation(() => {});
   });
 
   afterEach(async () => {
@@ -693,7 +693,7 @@ describe('InformationExtraction', () => {
     it('should emit error status and stop finding suggestions, when there is no labaled data', async () => {
       const promise1 = informationExtraction.trainModel(factory.id('prop3extractor'));
       await expect(promise1).rejects.toThrow();
-      expect(setupSockets.emitToTenant).toHaveBeenNthCalledWith(
+      expect(setupSockets.emitToTenantAdminsAndEditors).toHaveBeenNthCalledWith(
         2,
         'tenant1',
         IXWebSocketEvents.ErrorTrainingModel,
@@ -706,7 +706,7 @@ describe('InformationExtraction', () => {
         factory.id('extractorWithMultiselectWithoutTrainingData')
       );
       await expect(promise2).rejects.toThrow();
-      expect(setupSockets.emitToTenant).toHaveBeenNthCalledWith(
+      expect(setupSockets.emitToTenantAdminsAndEditors).toHaveBeenNthCalledWith(
         4,
         'tenant1',
         IXWebSocketEvents.ErrorTrainingModel,
@@ -721,7 +721,7 @@ describe('InformationExtraction', () => {
         factory.id('extractorWithEmptyRelationship')
       );
       await expect(promise3).rejects.toThrow();
-      expect(setupSockets.emitToTenant).toHaveBeenNthCalledWith(
+      expect(setupSockets.emitToTenantAdminsAndEditors).toHaveBeenNthCalledWith(
         6,
         'tenant1',
         IXWebSocketEvents.ErrorTrainingModel,
@@ -741,7 +741,7 @@ describe('InformationExtraction', () => {
       });
       expect(model.findingSuggestions).toBe(false);
 
-      expect(setupSockets.emitToTenant).toHaveBeenCalledWith(
+      expect(setupSockets.emitToTenantAdminsAndEditors).toHaveBeenCalledWith(
         'tenant1',
         IXWebSocketEvents.ErrorTrainingModel,
         { message: NoFilesForTraining.defaultMessage }
@@ -759,7 +759,7 @@ describe('InformationExtraction', () => {
 
       expect(model.findingSuggestions).toBe(false);
 
-      expect(setupSockets.emitToTenant).toHaveBeenCalledWith(
+      expect(setupSockets.emitToTenantAdminsAndEditors).toHaveBeenCalledWith(
         'tenant1',
         IXWebSocketEvents.ErrorTrainingModel,
         { message: NoFilesForTraining.defaultMessage }
@@ -1333,7 +1333,7 @@ describe('InformationExtraction', () => {
       const [model] = await IXModelsModel.get({ extractorId: factory.id('prop1extractor') });
       expect(model.findingSuggestions).toBe(false);
 
-      expect(setupSockets.emitToTenant).toHaveBeenCalledWith(
+      expect(setupSockets.emitToTenantAdminsAndEditors).toHaveBeenCalledWith(
         'tenant1',
         'ix_model_status',
         factory.id('prop1extractor'),
@@ -1700,7 +1700,7 @@ describe('InformationExtraction', () => {
         });
         expect(suggestionsInProcessing.length).toBe(1);
         expect(suggestionsInProcessing.map(s => s.entityId)).toContain('entity_without_label_data');
-        expect(setupSockets.emitToTenant).toHaveBeenNthCalledWith(
+        expect(setupSockets.emitToTenantAdminsAndEditors).toHaveBeenNthCalledWith(
           1,
           'tenant1',
           'ix_model_status',
@@ -1741,7 +1741,7 @@ describe('InformationExtraction', () => {
       };
 
       await informationExtraction.processResults(message);
-      expect(setupSockets.emitToTenant).toHaveBeenCalledWith(
+      expect(setupSockets.emitToTenantAdminsAndEditors).toHaveBeenCalledWith(
         message.tenant,
         'ix_model_status',
         message.params!.id,

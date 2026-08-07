@@ -116,7 +116,7 @@ describe('OCR service', () => {
     testingEnvironment.setPermissions(adminUser);
     requestMockedUser = adminUser;
     jest.spyOn(Date, 'now').mockReturnValue(1000);
-    jest.spyOn(setupSockets, 'emitToTenant').mockImplementation(() => {});
+    jest.spyOn(setupSockets, 'emitToSession').mockImplementation(() => {});
   });
 
   beforeAll(() => {
@@ -162,7 +162,10 @@ describe('OCR service', () => {
         { sendAsJson: false, overwriteRoutes: true }
       );
 
-      await request(app).post(`/api/files/${fileNameToProcess}/ocr`).expect(200);
+      await request(app)
+        .post(`/api/files/${fileNameToProcess}/ocr`)
+        .set('Cookie', 'connect.sid=ocr-route-session')
+        .expect(200);
     });
 
     it('should set the status to processing', async () => {
@@ -179,7 +182,7 @@ describe('OCR service', () => {
           tenant: 'defaultDB',
           task: 'ocr_results',
           file_url: 'protocol://link/to/result/file',
-          params: { filename: fileNameToProcess, language: 'en' },
+          params: { filename: fileNameToProcess, language: 'en', sessionId: 'ocr-route-session' },
           success: true,
         });
       });
@@ -204,8 +207,8 @@ describe('OCR service', () => {
       expect(connectionsForOrigFile.length).toBe(0);
       expect(connectionsForResultFile.length).toBe(1);
 
-      expect(setupSockets.emitToTenant).toHaveBeenCalledWith(
-        'defaultDB',
+      expect(setupSockets.emitToSession).toHaveBeenCalledWith(
+        'ocr-route-session',
         'ocr:ready',
         originalFile._id.toHexString()
       );

@@ -12,7 +12,7 @@ import { IXSuggestionsModel } from '#api/suggestions/IXSuggestionsModel.js';
 import { SegmentationModel } from '#api/services/pdfsegmentation/segmentationModel.js';
 import { EnforcedWithId } from '#api/odm/index.js';
 import { tenants } from '#api/tenants/index.js';
-import { emitToTenant } from '#api/socketio/setupSockets.js';
+import { emitToTenantAdminsAndEditors } from '#api/socketio/setupSockets.js';
 import { FilesDAOFactory } from '#api/core/infrastructure/factories/FilesDAOFactory.js';
 import entities from '#api/entities/entities.js';
 import settings from '#api/settings/settings.js';
@@ -195,7 +195,7 @@ class InformationExtraction {
         );
       }
 
-      emitToTenant(
+      emitToTenantAdminsAndEditors(
         message.tenant,
         'ix_model_status',
         message.params!.id.toString(),
@@ -230,7 +230,7 @@ class InformationExtraction {
     }
 
     // Inform UI the run ended without flipping model to error
-    emitToTenant(
+    emitToTenantAdminsAndEditors(
       message.tenant,
       'ix_model_status',
       message.params!.id.toString(),
@@ -680,7 +680,7 @@ class InformationExtraction {
       message.params!.id,
       currentModel || passedModel
     );
-    emitToTenant(
+    emitToTenantAdminsAndEditors(
       message.tenant,
       'ix_model_status',
       message.params!.id.toString(),
@@ -709,7 +709,13 @@ class InformationExtraction {
 
   stopModelAndEmitReadyMessage = async (extractorId: ObjectIdSchema, message: string) => {
     await this.stopModel(extractorId);
-    emitToTenant(tenants.current().name, 'ix_model_status', extractorId, 'ready', message);
+    emitToTenantAdminsAndEditors(
+      tenants.current().name,
+      'ix_model_status',
+      extractorId,
+      'ready',
+      message
+    );
   };
 
   getAndSendMaterialsForPDF = async ({
@@ -851,7 +857,12 @@ class InformationExtraction {
       });
     }
 
-    emitToTenant(tenant.name, 'ix_model_status', extractorId.toString(), 'processing_model');
+    emitToTenantAdminsAndEditors(
+      tenant.name,
+      'ix_model_status',
+      extractorId.toString(),
+      'processing_model'
+    );
 
     const dispatcher = DefaultDispatcher(tenant.name, TransactionManagerFactory.default(), {
       lockWindow: 1000 * 60 * 20,
@@ -951,7 +962,12 @@ class InformationExtraction {
       /* empty */
     }
 
-    emitToTenant(tenant.name, 'ix_model_status', extractorId, 'processing_auto_accept');
+    emitToTenantAdminsAndEditors(
+      tenant.name,
+      'ix_model_status',
+      extractorId,
+      'processing_auto_accept'
+    );
 
     const dispatcher = DefaultDispatcher(tenant.name, TransactionManagerFactory.default(), {
       lockWindow: 1000 * 60 * 10,
@@ -1014,7 +1030,13 @@ class InformationExtraction {
 
         const [updatedModel] = await IXModelsModel.get({ extractorId: message.params!.id });
         if (!updatedModel.findingSuggestions) {
-          emitToTenant(message.tenant, 'ix_model_status', _message.params!.id, 'ready', 'Canceled');
+          emitToTenantAdminsAndEditors(
+            message.tenant,
+            'ix_model_status',
+            _message.params!.id,
+            'ready',
+            'Canceled'
+          );
           return;
         }
       } catch (error) {

@@ -73,6 +73,11 @@ const setUpApp = (
     .mockImplementation((_tenant: string, event: string, ...args: any[]) => {
       iosocket.emit(event, TestEmitSources.currentTenant, ...args);
     });
+  jest
+    .spyOn(setupSockets, 'emitToSession')
+    .mockImplementation((_sessionId: string, event: string, ...args: any[]) => {
+      iosocket.emit(event, TestEmitSources.session, ...args);
+    });
   const app: Application = express();
   routesErrorHandler(app);
   app.use(requestTimingMiddleware);

@@ -66,6 +66,7 @@ describe('CsvExtractUploadedZipJob (integration)', () => {
       emitToSession: jest.fn(),
       emitToTenant: jest.fn(),
       emitToTenantAdmins: jest.fn(),
+      emitToTenantAdminsAndEditors: jest.fn(),
     });
     const job = new CsvExtractUploadedZipJobHandler({ useCase, sockets });
     return { csvImportsDS, pathManager, fileStorage, job, sockets, jobsDispatcher };
