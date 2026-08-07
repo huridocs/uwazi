@@ -18,7 +18,7 @@ jest.mock('#app/I18N/useEnsureLocaleTranslations.js', () => ({
   useEnsureLocaleTranslations: jest.fn(),
 }));
 
-jest.mock('../hooks/useEntityLanguageState.js', () => ({
+jest.mock('#V2/Routes/Entity/Components/context/hooks/useEntityLanguageState.js', () => ({
   useEntityLanguageState: () => ({
     language: 'es',
     mainDocument: undefined,

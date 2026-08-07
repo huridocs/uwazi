@@ -67,10 +67,7 @@ const Translate = ({
       const italicMatches = parseMarkdownItalicMarker(line);
       return (
         <Fragment key={`${line}-${index.toString()}`}>
-          {boldMatches ||
-            italicMatches || (
-              <>{line}</>
-            )}
+          {boldMatches || italicMatches || <>{line}</>}
           {index < lines.length - 1 && <br />}
         </Fragment>
       );
