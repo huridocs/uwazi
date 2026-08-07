@@ -67,8 +67,18 @@ describe('resolveSyncMode', () => {
 
 describe('resolveMainDocument', () => {
   const sharedId = 'shared1';
-  const staleDoc = { _id: 'stale', filename: 'stale.pdf', language: 'eng', status: 'ready' } as FileType;
-  const freshDoc = { _id: 'fresh', filename: 'fresh.pdf', language: 'eng', status: 'ready' } as FileType;
+  const staleDoc = {
+    _id: 'stale',
+    filename: 'stale.pdf',
+    language: 'eng',
+    status: 'ready',
+  } as FileType;
+  const freshDoc = {
+    _id: 'fresh',
+    filename: 'fresh.pdf',
+    language: 'eng',
+    status: 'ready',
+  } as FileType;
 
   beforeEach(() => {
     entityLoaderCache.invalidateAll();

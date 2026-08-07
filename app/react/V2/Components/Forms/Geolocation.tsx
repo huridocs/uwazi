@@ -14,8 +14,6 @@ import {
   parseCoordinate,
 } from '#shared/geolocationCoordinates.js';
 
-const cx = (...classes: Array<string | false | undefined>) => classes.filter(Boolean).join(' ');
-
 interface GeolocationProps {
   name: string;
   onChange?: ({ lat, lon }: { lat?: number; lon?: number }) => void;

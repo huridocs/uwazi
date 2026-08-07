@@ -34,11 +34,7 @@ describe('entityDefaultDocument', () => {
   it('should ignore documents that are not ready', () => {
     expect(
       entityDefaultDocument(
-        [
-          { language: 'eng', status: 'processing' },
-          { language: 'esp', status: 'failed' },
-          espDoc,
-        ],
+        [{ language: 'eng', status: 'processing' }, { language: 'esp', status: 'failed' }, espDoc],
         'en',
         'fr'
       )

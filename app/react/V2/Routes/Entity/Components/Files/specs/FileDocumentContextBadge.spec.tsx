@@ -8,6 +8,7 @@ import type { EntityFileRow } from '../types.js';
 
 const mockSetFocusedRowId = jest.fn();
 const mockRequestAddFile = jest.fn();
+let mockPrimaryRows: EntityFileRow[] = [];
 
 jest.mock('#V2/Routes/Entity/Components/context/index.js', () => ({
   EntityWriteAuthorization: ({ children }: { children: React.ReactNode }) => children,
@@ -21,8 +22,6 @@ jest.mock('../EntityFilesContext', () => ({
     requestAddFile: mockRequestAddFile,
   }),
 }));
-
-let mockPrimaryRows: EntityFileRow[] = [];
 
 const buildRow = (overrides: Partial<EntityFileRow>): EntityFileRow => ({
   rowId: 'f1',

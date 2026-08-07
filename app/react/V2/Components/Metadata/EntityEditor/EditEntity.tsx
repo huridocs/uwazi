@@ -238,7 +238,6 @@ const EditEntity = ({
         </Fragment>
       )}
       <EntityFileFields entity={entity} disabled={disabled} mutations={documentMutations} />
-
     </form>
   );
 };
