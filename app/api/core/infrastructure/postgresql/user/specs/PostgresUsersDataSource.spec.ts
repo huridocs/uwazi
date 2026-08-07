@@ -2,6 +2,10 @@ import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { testingPG } from '#api/utils/testing_pg.js';
 import { PostgresDB } from '#api/infrastructure/PostgresDB.js';
 import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
+import { Credentials } from '#api/core/domain/user/Credentials.js';
+import { EncryptedPassword } from '#api/core/domain/user/EncryptedPassword.js';
+import { UserRole } from '#api/core/domain/user/User.js';
+import { UserAccount } from '#api/core/domain/user/UserAccount.js';
 import { PostgresTransactionManager } from '../../common/PostgresTransactionManager.js';
 import { PostgresUsersDataSource } from '../PostgresUsersDataSource.js';
 
@@ -135,13 +139,111 @@ describe('PostgresUsersDataSource', () => {
     });
   });
 
+  describe('getByUsername', () => {
+    it('should return the user hydrated with credentials', async () => {
+      await insertUser(TENANT_ID, {
+        failedLogins: 2,
+        accountLocked: true,
+        accountUnlockCode: 'unlock-code',
+        using2fa: true,
+        secret: 'a-secret',
+      });
+
+      const result = await makeDS().getByUsername('existinguser');
+
+      expect(result.isOk()).toBe(true);
+      const user = result.getData()!;
+      expect(user.username).toBe('existinguser');
+      expect(user.credentials?.password.getValue()).toBe('hash');
+      expect(user.credentials?.failedLogins).toBe(2);
+      expect(user.credentials?.accountLocked).toBe(true);
+      expect(user.credentials?.accountUnlockCode).toBe('unlock-code');
+      expect(user.credentials?.using2fa).toBe(true);
+      expect(user.credentials?.secret).toBe('a-secret');
+    });
+
+    it('should return fail with UserNotFound when the username does not exist', async () => {
+      const result = await makeDS().getByUsername('missing-username');
+
+      expect(result.isError()).toBe(true);
+      expect(result.getError()!.name).toBe('UserNotFound');
+    });
+
+    it('should return fail with UserNotFound when the user is soft-deleted', async () => {
+      await insertUser(TENANT_ID, { deletedAt: new Date() });
+
+      const result = await makeDS().getByUsername('existinguser');
+
+      expect(result.isError()).toBe(true);
+    });
+
+    it('should not find a user created under a different tenant', async () => {
+      await insertUser(TENANT_ID);
+
+      const result = await makeDS(OTHER_TENANT_ID).getByUsername('existinguser');
+
+      expect(result.isError()).toBe(true);
+    });
+  });
+
+  describe('update() with credentials', () => {
+    // eslint-disable-next-line max-statements
+    it('should persist password, lockout and 2fa fields from the Credentials VO', async () => {
+      await insertUser(TENANT_ID);
+
+      const credentials = new Credentials({
+        password: EncryptedPassword.fromHash('new-hash'),
+        failedLogins: 3,
+        accountLocked: true,
+        accountUnlockCode: 'new-unlock-code',
+        using2fa: true,
+        secret: 'new-secret',
+      });
+      const user = new UserAccount({
+        _id: 'user-1',
+        username: 'existinguser',
+        role: UserRole.EDITOR,
+        email: 'existing@test.com',
+        credentials,
+      });
+
+      await makeDS().update(user);
+
+      const result = await makeDS().getByUsername('existinguser');
+      const updated = result.getData()!;
+      expect(updated.credentials?.password.getValue()).toBe('new-hash');
+      expect(updated.credentials?.failedLogins).toBe(3);
+      expect(updated.credentials?.accountLocked).toBe(true);
+      expect(updated.credentials?.accountUnlockCode).toBe('new-unlock-code');
+      expect(updated.credentials?.using2fa).toBe(true);
+      expect(updated.credentials?.secret).toBe('new-secret');
+    });
+
+    it('should clear accountUnlockCode when the Credentials VO has none', async () => {
+      await insertUser(TENANT_ID, { accountUnlockCode: 'old-code' });
+
+      const credentials = new Credentials({ password: EncryptedPassword.fromHash('new-hash') });
+      const user = new UserAccount({
+        _id: 'user-1',
+        username: 'existinguser',
+        role: UserRole.EDITOR,
+        email: 'existing@test.com',
+        credentials,
+      });
+
+      await makeDS().update(user);
+
+      const result = await makeDS().getByUsername('existinguser');
+      expect(result.getData()!.credentials?.accountUnlockCode).toBeUndefined();
+    });
+  });
+
   describe('methods not yet implemented', () => {
     const dummyUser = { _id: 'x' } as Parameters<PostgresUsersDataSource['insert']>[0];
 
     const notImplementedCases: [string, () => Promise<unknown>][] = [
       ['insert', async () => makeDS().insert(dummyUser)],
       ['delete', async () => makeDS().delete(['x'])],
-      ['update', async () => makeDS().update(dummyUser)],
       ['getById', async () => makeDS().getById('x')],
       ['getByEmail', async () => makeDS().getByEmail('x@test.com')],
       ['countActiveUsers', async () => makeDS().countActiveUsers()],
