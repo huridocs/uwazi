@@ -57,7 +57,6 @@ const MetadataTab = ({ entity, host }: MetadataTabProps) => {
     await revalidator.revalidate();
   }, [entity.sharedId, revalidator]);
   const documentMutations = useDocumentFieldMutations({
-    entitySharedId: entity.sharedId,
     refreshEntity,
   });
 
@@ -126,14 +125,6 @@ const MetadataTab = ({ entity, host }: MetadataTabProps) => {
               {saveError}
             </p>
           )}
-          <input
-            ref={documentMutations.fileInputRef}
-            type="file"
-            className="hidden"
-            onChange={documentMutations.handleFileInputChange}
-            aria-hidden
-            tabIndex={-1}
-          />
           <EditEntity
             formId={formId}
             form={form}

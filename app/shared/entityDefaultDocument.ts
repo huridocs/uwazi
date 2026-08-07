@@ -1,10 +1,13 @@
 import { FileType } from '#shared/types/fileType.js';
 import { LanguageUtils } from '#shared/language/index.js';
 
-const readyDocuments = (entityDocuments: Array<FileType> | undefined) =>
-  (entityDocuments || []).filter(document => document.status === 'ready');
+const isDocumentReady = (document: FileType) =>
+  document.status === undefined || document.status === 'ready';
 
-export const entityDefaultDocument = (
+const readyDocuments = <T extends FileType>(entityDocuments: Array<T> | undefined): T[] =>
+  (entityDocuments || []).filter(isDocumentReady);
+
+const entityDefaultDocument = (
   entityDocuments: Array<FileType>,
   entityLanguage: string,
   defaultLanguage: string
@@ -24,3 +27,5 @@ export const entityDefaultDocument = (
 
   return documentMatchingEntity || documentMatchingDefault || documents[0];
 };
+
+export { entityDefaultDocument, readyDocuments, isDocumentReady };

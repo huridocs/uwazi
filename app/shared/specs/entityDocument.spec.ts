@@ -46,4 +46,9 @@ describe('entityDefaultDocument', () => {
       entityDefaultDocument([{ language: 'eng', status: 'processing' }], 'en', 'fr')
     ).toBeUndefined();
   });
+
+  it('should treat missing status as ready for legacy files', () => {
+    const legacyEng: FileType = { language: 'eng' };
+    expect(entityDefaultDocument([legacyEng, espDoc], 'en', 'fr')).toEqual(legacyEng);
+  });
 });

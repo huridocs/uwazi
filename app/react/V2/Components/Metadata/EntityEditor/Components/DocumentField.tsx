@@ -1,13 +1,15 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { useAtomValue } from 'jotai';
 import { Translate } from '#app/I18N/index.js';
 import { settingsAtom } from '#V2/atoms/index.js';
-import { InputField } from '#V2/Components/Forms/index.js';
+import { readyDocuments } from '#shared/entityDefaultDocument.js';
 import { getMainDocument } from '#V2/formatters/index.js';
+import { InputField } from '#V2/Components/Forms/index.js';
 import type { Entity } from '#V2/api/entities/types.js';
-import type { FileType } from '#shared/types/fileType.js';
 import type { DocumentFieldMutations } from '../editEntityTypes.js';
 import { EntityField } from './EntityField.js';
+import { EntityFileNameRow } from './EntityFileNameRow.js';
+import { mimeSubtypeLabel } from './fileMimeLabels.js';
 
 type DocumentFieldProps = {
   entity?: Entity;
@@ -15,67 +17,43 @@ type DocumentFieldProps = {
   mutations: DocumentFieldMutations;
 };
 
-const typeLabelFromMime = (mainDocument: FileType) => {
-  const type = (mainDocument.mimetype || '').split('/').pop() || '';
-  return type.toUpperCase();
-};
-
 const DocumentField = ({ entity, disabled = false, mutations }: DocumentFieldProps) => {
   const settings = useAtomValue(settingsAtom);
   const defaultLanguage = settings?.languages?.find(language => language.default)?.key;
-  const mainDocument = getMainDocument(entity?.documents, entity?.language || '', defaultLanguage);
-  const [name, setName] = useState(mainDocument?.originalname ?? '');
-
-  useEffect(() => {
-    setName(mainDocument?.originalname ?? '');
-  }, [mainDocument?._id, mainDocument?.originalname]);
+  const mainDocument = getMainDocument(
+    readyDocuments(entity?.documents),
+    entity?.language || '',
+    defaultLanguage
+  );
 
   if (!mainDocument) {
     return null;
   }
 
-  const renameOnBlur = () => {
-    if (name.trim() && name !== mainDocument.originalname) {
-      mutations.renameDocument(mainDocument, name.trim()).catch(() => undefined);
-    }
-  };
+  const fileId = mainDocument._id ? String(mainDocument._id) : '';
 
   return (
     <EntityField>
       <div className="text-sm font-bold text-ink">
         <Translate context="System">Document</Translate>
       </div>
-      <div className="space-y-2 flex gap-2">
-        <InputField
-          id="document-name"
-          className="flex-1"
-          label="Name"
-          labelVariant="secondary"
-          value={name}
-          disabled={disabled}
-          onChange={event => setName(event.target.value)}
-          onBlur={renameOnBlur}
-        />
-        <InputField
-          id="document-type"
-          label="Type"
-          labelVariant="secondary"
-          value={typeLabelFromMime(mainDocument)}
-          disabled
-        />
-        <button
-          type="button"
-          disabled={disabled}
-          onClick={() => {
-            if (mainDocument._id) {
-              mutations.removeDocument(String(mainDocument._id)).catch(() => undefined);
-            }
-          }}
-          className="shrink-0 cursor-pointer rounded-md px-3 py-1.5 text-xs font-medium text-seal transition-colors hover:bg-seal-tint disabled:cursor-not-allowed disabled:opacity-60"
-        >
-          <Translate>Remove file</Translate>
-        </button>
-      </div>
+      <EntityFileNameRow
+        id="document-name"
+        className="flex-1"
+        originalname={mainDocument.originalname}
+        disabled={disabled}
+        onRename={async name => mutations.renameDocument(mainDocument, name)}
+        onRemove={fileId ? async () => mutations.removeDocument(fileId) : undefined}
+        trailing={
+          <InputField
+            id="document-type"
+            label="Type"
+            labelVariant="secondary"
+            value={mimeSubtypeLabel(mainDocument.mimetype, mainDocument.filename)}
+            disabled
+          />
+        }
+      />
     </EntityField>
   );
 };

@@ -9,6 +9,11 @@ import { AdditionalFilesField } from '../AdditionalFilesField.js';
 
 jest.mock('#app/I18N/index.js', () => ({
   Translate: ({ children }: { children: React.ReactNode }) => children,
+  t: (_context: string, key: string) => key,
+}));
+
+jest.mock('#V2/utils/notifyBridge.js', () => ({
+  notify: jest.fn(),
 }));
 
 const baseEntity: Entity = {
@@ -22,11 +27,8 @@ const baseEntity: Entity = {
 };
 
 const buildMutations = (): DocumentFieldMutations => ({
-  chooseDocument: jest.fn(),
   renameDocument: jest.fn().mockResolvedValue(undefined),
   removeDocument: jest.fn().mockResolvedValue(undefined),
-  fileInputRef: { current: null },
-  handleFileInputChange: jest.fn(),
 });
 
 describe('AdditionalFilesField', () => {

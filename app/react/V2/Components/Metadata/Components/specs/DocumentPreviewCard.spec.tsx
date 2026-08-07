@@ -145,4 +145,41 @@ describe('DocumentPreviewCard', () => {
       '/api/files/doc-es.jpg'
     );
   });
+
+  it('ignores non-ready documents when selecting the main document', () => {
+    const withProcessing: Entity = {
+      ...entity,
+      documents: [
+        {
+          _id: 'processing',
+          filename: 'busy.pdf',
+          originalname: 'Busy.pdf',
+          mimetype: 'application/pdf',
+          size: 100,
+          creationDate: 1710460800,
+          language: 'eng',
+          status: 'processing',
+        },
+        {
+          _id: 'ready',
+          filename: 'ready.pdf',
+          originalname: 'Ready.pdf',
+          mimetype: 'application/pdf',
+          size: 200,
+          creationDate: 1710460800,
+          language: 'eng',
+          status: 'ready',
+        },
+      ],
+    };
+
+    renderCard(withProcessing);
+
+    expect(screen.getByText('Ready.pdf')).toBeInTheDocument();
+    expect(screen.queryByText('Busy.pdf')).not.toBeInTheDocument();
+    expect(screen.getByRole('img', { name: 'Ready.pdf' })).toHaveAttribute(
+      'src',
+      '/api/files/ready.jpg'
+    );
+  });
 });

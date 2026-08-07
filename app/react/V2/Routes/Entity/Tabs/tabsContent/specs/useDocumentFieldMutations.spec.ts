@@ -18,9 +18,7 @@ describe('useDocumentFieldMutations', () => {
   });
 
   it('should rename the document and refresh the entity', async () => {
-    const { result } = renderHook(() =>
-      useDocumentFieldMutations({ entitySharedId: 'shared1', refreshEntity })
-    );
+    const { result } = renderHook(() => useDocumentFieldMutations({ refreshEntity }));
 
     await act(async () => {
       await result.current.renameDocument({ _id: 'doc1', originalname: 'old.pdf' }, 'new.pdf');
@@ -31,9 +29,7 @@ describe('useDocumentFieldMutations', () => {
   });
 
   it('should remove the document and refresh the entity', async () => {
-    const { result } = renderHook(() =>
-      useDocumentFieldMutations({ entitySharedId: 'shared1', refreshEntity })
-    );
+    const { result } = renderHook(() => useDocumentFieldMutations({ refreshEntity }));
 
     await act(async () => {
       await result.current.removeDocument('doc1');

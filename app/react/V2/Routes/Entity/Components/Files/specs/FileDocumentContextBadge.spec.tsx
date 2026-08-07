@@ -78,6 +78,31 @@ describe('FileDocumentContextBadge', () => {
     expect(mockSetFocusedRowId).toHaveBeenCalledWith('f2');
   });
 
+  it('renders Active primary when the row is the ready main document', () => {
+    const row = buildRow({
+      rowId: 'main',
+      raw: { _id: 'main', originalname: 'doc.pdf', filename: 'doc.pdf', fileType: 'document' },
+    });
+    mockPrimaryRows = [row];
+
+    render(<FileDocumentContextBadge row={row} />);
+
+    expect(screen.getByText('Active primary')).toBeInTheDocument();
+  });
+
+  it('renders Primary when the row is not the active main document', () => {
+    const row = buildRow({
+      rowId: 'other',
+      raw: { _id: 'other', originalname: 'other.pdf', filename: 'other.pdf', fileType: 'document' },
+    });
+    mockPrimaryRows = [row];
+
+    render(<FileDocumentContextBadge row={row} />);
+
+    expect(screen.getByText('Primary')).toBeInTheDocument();
+    expect(screen.queryByText('Active primary')).toBeNull();
+  });
+
   it('requests a translation upload when clicking Add translation', () => {
     const row = buildRow({ rowId: 'f1' });
     mockPrimaryRows = [row];
