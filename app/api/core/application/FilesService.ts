@@ -39,6 +39,7 @@ type Deps = {
 type FilesServiceContext = {
   userId?: string;
   tenantName?: string;
+  sessionId?: string;
 };
 
 function isNonEmptyArray<T>(arr: T[]): arr is [T, ...T[]] {
@@ -84,7 +85,7 @@ class FilesService {
       const processingPDFs = files
         .filter((f): f is PDFDocument => f instanceof PDFDocument && f.isProcessing())
         .map(f => {
-          const { userId, tenantName } = this.context;
+          const { userId, tenantName, sessionId } = this.context;
           if (!userId) {
             throw new Error('PDFPostProcess needs a user Id');
           }
@@ -95,6 +96,7 @@ class FilesService {
             tenantName,
             documentId: f.id,
             userId,
+            ...(sessionId ? { sessionId } : {}),
           };
         });
 
