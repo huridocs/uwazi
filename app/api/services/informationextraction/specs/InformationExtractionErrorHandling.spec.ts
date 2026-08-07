@@ -41,7 +41,7 @@ describe('InformationExtraction Error Handling', () => {
     });
     IXExternalService.reset();
     jest.resetAllMocks();
-    jest.spyOn(setupSockets, 'emitToTenant').mockImplementation(() => {});
+    jest.spyOn(setupSockets, 'emitToTenantAdminsAndEditors').mockImplementation(() => {});
   }, 30000);
 
   afterEach(async () => {
@@ -188,7 +188,10 @@ describe('InformationExtraction Error Handling', () => {
     it('should emit error status to tenant', async () => {
       const extractorId = factory.id('prop1extractor');
       const errorMessage = 'Task failed';
-      const emitToTenantSpy = jest.spyOn(setupSockets, 'emitToTenant');
+      const emitToTenantAdminsAndEditorsSpy = jest.spyOn(
+        setupSockets,
+        'emitToTenantAdminsAndEditors'
+      );
 
       await IXModelsModel.save({
         extractorId,
@@ -205,7 +208,7 @@ describe('InformationExtraction Error Handling', () => {
         error_message: errorMessage,
       });
 
-      expect(emitToTenantSpy).toHaveBeenCalledWith(
+      expect(emitToTenantAdminsAndEditorsSpy).toHaveBeenCalledWith(
         'tenant1',
         'ix_model_status',
         extractorId.toString(),
