@@ -4,7 +4,7 @@ import { tenants } from '#api/tenants/index.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { TransactionManagerFactory } from '../../factories/TransactionManagerFactory.js';
 import { PostgresTransactionManagerFactory } from '../../factories/PostgresTransactionManagerFactory.js';
-import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
+import { UwaziDispatcherFactory } from '#api/core/infrastructure/jobs/UwaziDispatcherFactory.js';
 import { EventEmitterFactory } from '#api/core/libs/eventEmitter/EventEmitterFactory.js';
 import { IdGeneratorFactory } from '../../factories/IdGeneratorFactory.js';
 import { LoggerFactory } from '../../factories/LoggerFactory.js';
@@ -48,7 +48,7 @@ const dependenciesContextMiddleware = (
       factories: {
         transactionManager: TransactionManagerFactory.default,
         postgresTransactionManager: PostgresTransactionManagerFactory.default,
-        jobsDispatcher: () => DefaultDispatcher(tenant.name, ExecutionContext.transactionManager),
+        jobsDispatcher: () => UwaziDispatcherFactory(tenant.name, ExecutionContext.transactionManager),
         eventEmitter: EventEmitterFactory.default,
         idGenerator: IdGeneratorFactory.default,
         logger: LoggerFactory.default,

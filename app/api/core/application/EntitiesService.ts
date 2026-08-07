@@ -96,7 +96,6 @@ class EntitiesService {
         targetLanguage: context.targetLanguage,
         templateId: entity.template.id,
         tenantName: context.tenantName,
-        userId: context.actorId,
       }))
     );
 
@@ -179,7 +178,6 @@ class EntitiesService {
     await this.deps.dispatcher.cleanupEntities(
       chunks.map(chunk => ({
         sharedIds: chunk,
-        userId: context.actor._id,
         tenantName: context.tenantName,
       }))
     );

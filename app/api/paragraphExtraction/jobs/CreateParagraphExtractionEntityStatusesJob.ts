@@ -1,40 +1,37 @@
 import {
-  Dispatchable,
-  HeartbeatCallback,
-  JobInfo,
-} from '#api/core/libs/queue/application/contracts/Dispatchable.js';
-import {
-  JobsDispatcher,
   DispatchableClass,
 } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
+import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
 import { PXCreateEntityStatuses } from '../application/PXCreateEntityStatuses.js';
+import { UwaziJobHandler, UwaziJobParams } from '#api/core/infrastructure/jobs/UwaziJobHandler.js';
+import { PrivilegedJob } from '#api/core/infrastructure/jobs/PrivilegedJob.js';
 
-interface SpecificJobParams {
+type SpecificJobParams = UwaziJobParams & {
   extractorId: string;
   sourceTemplateId: string;
-}
+};
 
 interface Dependencies {
   createEntityStatusesUseCase: PXCreateEntityStatuses;
   dispatcher: JobsDispatcher;
 }
 
-class CreateParagraphExtractionEntityStatusesJob implements Dispatchable {
+@PrivilegedJob()
+class CreateParagraphExtractionEntityStatusesJob extends UwaziJobHandler<SpecificJobParams> {
   private dependencies: Dependencies;
 
   private batchSize: number;
 
   constructor(dependencies: Dependencies, batchSize: number) {
+    super();
     this.dependencies = dependencies;
     this.batchSize = batchSize;
   }
 
-  async handleDispatch(
-    _heartbeat: HeartbeatCallback,
-    paramsFromDispatcher: Record<string, any>,
-    _jobInfo?: JobInfo
+  protected async handle(
+    _heartbeat: any,
+    params: SpecificJobParams
   ): Promise<void> {
-    const params = paramsFromDispatcher as SpecificJobParams;
     const { extractorId, sourceTemplateId } = params;
 
     const result = await this.dependencies.createEntityStatusesUseCase.execute({
@@ -45,7 +42,7 @@ class CreateParagraphExtractionEntityStatusesJob implements Dispatchable {
     if (result.processedEntities > 0 && result.processedEntities === this.batchSize) {
       await this.dependencies.dispatcher.dispatch(
         CreateParagraphExtractionEntityStatusesJob as DispatchableClass<any>,
-        { extractorId, sourceTemplateId }
+        { extractorId, sourceTemplateId, userId: params.userId }
       );
     }
   }

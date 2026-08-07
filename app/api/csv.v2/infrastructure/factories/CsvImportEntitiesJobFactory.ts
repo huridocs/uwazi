@@ -4,7 +4,7 @@ import { DefaultTranslationsDataSource } from '#api/i18n.v2/database/data_source
 import { FileStorageFactory } from '#api/core/infrastructure/files/FileStorageFactory.js';
 import { IdGeneratorFactory } from '#api/core/infrastructure/factories/IdGeneratorFactory.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
-import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
+import { UwaziDispatcherFactory } from '#api/core/infrastructure/jobs/UwaziDispatcherFactory.js';
 import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
 import { DispatcherAdapter } from '#api/core/infrastructure/jobs/DispatcherAdapter.js';
 import { TemplatesDataSourceFactory } from '#api/core/infrastructure/factories/TemplatesDataSourceFactory.js';
@@ -121,7 +121,7 @@ class CsvImportEntitiesJobFactory {
     const transactionManager = options.transactionManager ?? TransactionManagerFactory.default();
     const fileStorage = options.fileStorage ?? FileStorageFactory.default();
     const jobsDispatcher =
-      options.jobsDispatcher ?? DefaultDispatcher(tenants.current().name, transactionManager);
+      options.jobsDispatcher ?? UwaziDispatcherFactory(tenants.current().name, transactionManager);
     const dataSources = buildCsvDataSources(transactionManager);
     const services = buildEntityServices(transactionManager, fileStorage, jobsDispatcher);
     const mapper = new CsvEntitiesImportMapper(

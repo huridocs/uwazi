@@ -135,7 +135,6 @@ describe('FileUploadForEntity', () => {
       expect(schedulePDFPostProcessMock).toHaveBeenCalledWith([
         {
           documentId: result._id,
-          userId: actorId,
           tenantName,
         },
       ]);

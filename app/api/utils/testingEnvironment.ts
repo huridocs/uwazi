@@ -33,6 +33,7 @@ import type { PGFixture } from '#api/utils/testing_pg.js';
 import { User } from '#api/users.v2/model/User.js';
 import { UserSchema } from '#shared/types/userType.js';
 import { ObjectUtils } from '#api/common.v2/utils/Object.js';
+import { UwaziDispatcherFactory } from '#api/core/infrastructure/jobs/UwaziDispatcherFactory.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -265,7 +266,7 @@ const testingEnvironment = {
       postgresTransactionManager: PostgresTransactionManagerFactory.default,
       eventEmitter: EventEmitterFactory.forTesting,
       jobsDispatcher: () =>
-        DefaultDispatcher(
+        UwaziDispatcherFactory(
           tenant.name,
           ExecutionContext.transactionManager,
           undefined,

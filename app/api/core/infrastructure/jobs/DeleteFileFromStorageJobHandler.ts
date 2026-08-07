@@ -1,13 +1,15 @@
 import { HeartbeatCallback } from '#api/core/libs/queue/application/contracts/Dispatchable.js';
 
 import { FileStorage } from '#api/core/application/contracts/FileStorage.js';
-import { V1CompatTenantDispatchable } from '#api/core/libs/queue/application/contracts/V1CompatTenantDispatchable.js';
+import { UwaziJobHandler, UwaziJobParams } from '#api/core/infrastructure/jobs/UwaziJobHandler.js';
+import { PrivilegedJob } from '#api/core/infrastructure/jobs/PrivilegedJob.js';
 
-type Params = { filePath: string };
+type Params = UwaziJobParams & { filePath: string };
 
 type JobDependencies = { fileStorage: FileStorage };
 
-export class DeleteFileFromStorageJobHandler extends V1CompatTenantDispatchable<Params> {
+@PrivilegedJob()
+export class DeleteFileFromStorageJobHandler extends UwaziJobHandler<Params> {
   public constructor(private deps: JobDependencies) {
     super();
   }

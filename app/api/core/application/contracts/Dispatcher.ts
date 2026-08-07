@@ -5,19 +5,16 @@ type SyncRelationshipsParams = {
   targetLanguage: LanguageISO6391;
   templateId: string;
   tenantName: string;
-  userId: string;
 };
 
 type CleanupEntityParams = {
   sharedIds: string[];
-  userId: string;
   tenantName: string;
 };
 
 type PDFPostProcessParams = {
   tenantName: string;
   documentId: string;
-  userId: string;
 };
 
 type TemplatePostProcessParams = {
@@ -31,13 +28,11 @@ type TemplatePostProcessParams = {
   fullReindex: boolean;
   resaveForFilterChange: boolean;
   tenantName: string;
-  userId: string;
 };
 
 type DenormalizeThesaurusParams = {
   tenantName: string;
   thesaurusId: string;
-  userId: string;
 };
 
 type CloneLanguageEntitiesParams = {

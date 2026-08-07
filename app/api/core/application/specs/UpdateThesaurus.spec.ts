@@ -332,7 +332,6 @@ describe('UpdateThesaurusUseCase', () => {
           params: {
             tenantName: tenants.current().name,
             thesaurusId: before._id.toString(),
-            userId: factory.id('user1').toString(),
           },
         },
       ]);
@@ -360,7 +359,6 @@ describe('UpdateThesaurusUseCase', () => {
           params: {
             thesaurusId: factory.id('countries').toString(),
             tenantName: tenants.current().name,
-            userId: factory.id('user1').toString(),
           },
           createdAt: Date.now(),
           failed: false,
@@ -378,7 +376,6 @@ describe('UpdateThesaurusUseCase', () => {
           params: {
             thesaurusId: factory.id('countries').toString(),
             tenantName: tenants.current().name,
-            userId: factory.id('user1').toString(),
           },
           createdAt: Date.now(),
           failed: false,
@@ -397,7 +394,6 @@ describe('UpdateThesaurusUseCase', () => {
           params: {
             thesaurusId: factory.id('countries').toString(),
             tenantName: 'tenant_1',
-            userId: 'userId',
           },
           createdAt: Date.now(),
           failed: false,

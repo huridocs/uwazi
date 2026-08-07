@@ -2,7 +2,7 @@
 import { config } from '#api/config.js';
 import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
-import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
+import { UwaziDispatcherFactory } from '#api/core/infrastructure/jobs/UwaziDispatcherFactory.js';
 import { ATServiceListener } from '#api/externalIntegrations.v2/automaticTranslation/adapters/driving/ATServiceListener.js';
 import { Redis } from '#api/infrastructure/Redis.js';
 import { DB } from '#api/odm/index.js';
@@ -45,7 +45,7 @@ DB.connect(config.DBHOST, config.DBAUTH)
       ocr_manager: ocrManager(),
       at_service: new ATServiceListener(),
       px_paragraphs_results: new PXParagraphsResultListener((tenant, queueOptions) =>
-        DefaultDispatcher(tenant, TransactionManagerFactory.createForSharedDataBase(), queueOptions)
+        UwaziDispatcherFactory(tenant, TransactionManagerFactory.createForSharedDataBase(), queueOptions)
       ),
       information_extractor: new InformationExtraction(),
       convert_pdf: new ConvertToPdfWorker(),

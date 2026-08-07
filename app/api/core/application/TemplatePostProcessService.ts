@@ -22,7 +22,6 @@ type Input = {
 type CollectPostProcessJobProps = {
   diff: TemplateDiff;
   tenantName: string;
-  userId: string;
   language: LanguageISO6391;
   fullReindex: boolean;
   resaveForFilterChange: boolean;
@@ -39,7 +38,6 @@ class TemplatePostProcessService {
         await this.collectPostProcessJobParams(
           {
             tenantName: context!.tenantName,
-            userId: context!.userId,
             language: context!.language,
             fullReindex: false,
             resaveForFilterChange: false,
@@ -51,7 +49,6 @@ class TemplatePostProcessService {
         await this.collectPostProcessJobParams(
           {
             tenantName: context!.tenantName,
-            userId: context!.userId,
             language: context!.language,
             fullReindex: false,
             resaveForFilterChange: true,
@@ -73,7 +70,6 @@ class TemplatePostProcessService {
               language: context.language,
               fullReindex: true,
               resaveForFilterChange: false,
-              userId: context.userId,
               tenantName: context.tenantName,
               diff: new TemplateDiff(template, template),
             },
@@ -90,7 +86,6 @@ class TemplatePostProcessService {
       language,
       fullReindex,
       resaveForFilterChange,
-      userId,
       tenantName,
     }: CollectPostProcessJobProps,
     dispatch: (params: TemplatePostProcessParams) => void
@@ -118,7 +113,6 @@ class TemplatePostProcessService {
         fullReindex,
         resaveForFilterChange,
         tenantName,
-        userId,
       });
     }
   }

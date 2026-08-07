@@ -31,15 +31,15 @@ import {
 
 const mockDispatchMethod = jest.fn();
 
-// Mock DefaultDispatcher from the factories module
-jest.mock('api/core/libs/queue/configuration/factories', () => ({
-  ...jest.requireActual('api/core/libs/queue/configuration/factories'), // Preserve other exports
-  DefaultDispatcher: jest.fn().mockReturnValue({
-    // Mock DefaultDispatcher export - returns synchronously, not a Promise
-    // Use a getter to access mockDispatchMethod lazily, resolving the ReferenceError
+jest.mock('api/core/infrastructure/jobs/UwaziDispatcherFactory', () => ({
+  UwaziDispatcherFactory: jest.fn().mockReturnValue({
     get dispatch() {
       return mockDispatchMethod;
     },
+    dispatchMany: jest.fn(),
+    deleteByParams: jest.fn(),
+    cancelByParams: jest.fn(),
+    countByName: jest.fn(),
   }),
 }));
 

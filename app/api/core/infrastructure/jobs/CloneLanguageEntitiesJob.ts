@@ -8,20 +8,21 @@ import {
   HeartbeatCallback,
   JobInfo,
 } from '#api/core/libs/queue/application/contracts/Dispatchable.js';
-import { V1CompatTenantDispatchable } from '#api/core/libs/queue/application/contracts/V1CompatTenantDispatchable.js';
 import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
 import { WebSockets } from '#api/core/application/contracts/WebSockets.js';
 import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js';
 import { MongoEntitiesDAO } from '../mongodb/entity/MongoEntitiesDAO.js';
 import { EntityPreviewBatchHandler } from './EntityPreviewBatchHandler.js';
 import { MongoFilesDAO } from '../mongodb/files/MongoFilesDAO.js';
+import { UwaziJobHandler, UwaziJobParams } from '#api/core/infrastructure/jobs/UwaziJobHandler.js';
+import { PrivilegedJob } from '#api/core/infrastructure/jobs/PrivilegedJob.js';
 
 type Pair = {
   from: LanguageISO6391;
   to: LanguageISO6391;
 };
 
-type Params = {
+type Params = UwaziJobParams & {
   pairs: Pair[];
 };
 
@@ -33,7 +34,8 @@ type JobDependencies = {
   settingsDS: SettingsDataSource;
 };
 
-class CloneLanguageEntitiesJob extends V1CompatTenantDispatchable<Params> {
+@PrivilegedJob()
+class CloneLanguageEntitiesJob extends UwaziJobHandler<Params> {
   constructor(private deps: JobDependencies) {
     super();
   }

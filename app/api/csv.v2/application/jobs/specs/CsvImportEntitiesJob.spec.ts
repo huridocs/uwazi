@@ -810,7 +810,6 @@ describe('CsvImportEntitiesJob (integration)', () => {
         RelationshipSyncJob,
         expect.objectContaining({
           tenantName: tenants.current().name,
-          userId,
           templateId,
           targetLanguage: 'en',
           sharedId: expect.any(String),

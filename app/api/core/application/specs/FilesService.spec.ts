@@ -252,7 +252,6 @@ describe('FilesService', () => {
         expect(jobsDispatcher.postProcessPDFs).toHaveBeenCalledWith([
           {
             documentId: document.id,
-            userId: capturedUserId,
             tenantName: tenants.current().name,
           },
         ]);

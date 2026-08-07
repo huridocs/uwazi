@@ -7,13 +7,10 @@ import {
 } from '#api/core/libs/queue/application/contracts/Dispatchable.js';
 import { NonRetryableJobError } from '#api/core/libs/queue/infrastructure/errors.js';
 import { FileIsNotAPDF } from '../services/PDFService.js';
+import { UwaziJobHandler, UwaziJobParams } from '#api/core/infrastructure/jobs/UwaziJobHandler.js';
+import { PrivilegedJob } from '#api/core/infrastructure/jobs/PrivilegedJob.js';
 
-import {
-  UserAwareDispatchable,
-  UserAwareDispatchableParams,
-} from '#api/core/libs/queue/application/contracts/UserAwareDispatchable.js';
-
-type Params = UserAwareDispatchableParams & {
+type Params = UwaziJobParams & {
   documentId: string;
 };
 
@@ -22,15 +19,16 @@ type JobDependencies = {
   wSockets: WebSockets;
 };
 
-export class PDFPostProcessJobHandler extends UserAwareDispatchable<Params> {
+@PrivilegedJob()
+export class PDFPostProcessJobHandler extends UwaziJobHandler<Params> {
   public constructor(private deps: JobDependencies) {
     super();
   }
 
-  async handle(_heartbeat: HeartbeatCallback, jobInfo: JobInfo) {
+  async handle(_heartbeat: HeartbeatCallback, params: Params, jobInfo: JobInfo) {
     try {
       const processedDoc = await this.deps.useCase.execute(
-        this.params,
+        params,
         jobInfo.retryCount !== jobInfo.maxRetries
       );
       this.deps.wSockets.emitToTenant(

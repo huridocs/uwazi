@@ -137,6 +137,7 @@ describe('CreateParagraphExtractionEntityStatusesJob', () => {
     const params: CreateParagraphExtractionEntityStatusesJobParams = {
       extractorId: extractorId.toString(),
       sourceTemplateId: sourceTemplate._id.toString(),
+      userId: 'user1',
     };
     await expect(job.handleDispatch(mockHeartbeat, params)).rejects.toThrow(NonRetryableJobError);
   });
@@ -149,6 +150,7 @@ describe('CreateParagraphExtractionEntityStatusesJob', () => {
     const params: CreateParagraphExtractionEntityStatusesJobParams = {
       extractorId: extractorId.toString(),
       sourceTemplateId: sourceTemplate._id.toString(),
+      userId: 'user1',
     };
     await expect(job.handleDispatch(mockHeartbeat, params)).rejects.toThrow(NonRetryableJobError);
   });
@@ -168,6 +170,7 @@ describe('CreateParagraphExtractionEntityStatusesJob', () => {
     const params: CreateParagraphExtractionEntityStatusesJobParams = {
       extractorId: extractorId.toString(),
       sourceTemplateId: sourceTemplate._id.toString(),
+      userId: 'user1',
     };
 
     await job.handleDispatch(mockHeartbeat, params);
@@ -209,6 +212,7 @@ describe('CreateParagraphExtractionEntityStatusesJob', () => {
     const params: CreateParagraphExtractionEntityStatusesJobParams = {
       extractorId: extractorId.toString(),
       sourceTemplateId: sourceTemplate._id.toString(),
+      userId: 'user1',
     };
 
     // Simulate first run (processes 2, re-dispatches)
@@ -263,6 +267,7 @@ describe('CreateParagraphExtractionEntityStatusesJob', () => {
     const params: CreateParagraphExtractionEntityStatusesJobParams = {
       extractorId: extractorId.toString(),
       sourceTemplateId: sourceTemplate._id.toString(),
+      userId: 'user1',
     };
 
     await job.handleDispatch(mockHeartbeat, params);
@@ -310,6 +315,7 @@ describe('CreateParagraphExtractionEntityStatusesJob', () => {
     const params: CreateParagraphExtractionEntityStatusesJobParams = {
       extractorId: extractorId.toString(),
       sourceTemplateId: sourceTemplate._id.toString(),
+      userId: 'user1',
     };
 
     await job.handleDispatch(mockHeartbeat, params);
@@ -333,6 +339,7 @@ describe('CreateParagraphExtractionEntityStatusesJob', () => {
     const params: CreateParagraphExtractionEntityStatusesJobParams = {
       extractorId: extractorId.toString(),
       sourceTemplateId: otherSourceTemplate._id.toString(), // Use a template with no entities
+      userId: 'user1',
     };
 
     await job.handleDispatch(mockHeartbeat, params);
@@ -368,6 +375,7 @@ describe('CreateParagraphExtractionEntityStatusesJob', () => {
     const params: CreateParagraphExtractionEntityStatusesJobParams = {
       extractorId: extractorId.toString(),
       sourceTemplateId: sourceTemplate._id.toString(),
+      userId: 'user1',
     };
 
     await job.handleDispatch(mockHeartbeat, params);
