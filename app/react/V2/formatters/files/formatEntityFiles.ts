@@ -1,4 +1,5 @@
 import { parseMediaSourceUrl } from '#shared/entitySave/mediaMetadata.js';
+import { readyDocuments } from '#shared/entityDefaultDocument.js';
 import { Entity } from '#V2/api/entities/types.js';
 import { ClientTemplateSchema } from '#V2/shared/types.js';
 import { getMimetypeFromUrl } from '#V2/shared/formatHelpers.js';
@@ -21,7 +22,7 @@ const formatEntityFiles = (
     p => p.type === 'image' || p.type === 'media'
   );
 
-  const mainDocument = getMainDocument(entity.documents, locale, defaultLanguage);
+  const mainDocument = getMainDocument(readyDocuments(entity.documents), locale, defaultLanguage);
 
   const documents: EntityFile[] = (entity.documents || []).map(doc => ({
     fileType: doc._id === mainDocument?._id ? 'mainDocument' : 'document',

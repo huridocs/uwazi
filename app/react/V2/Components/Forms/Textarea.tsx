@@ -68,7 +68,7 @@ const Textarea = React.forwardRef(
     const hasClear = Boolean(clearFieldAction);
 
     return (
-      <div className={className}>
+      <div className={cx('flex flex-col gap-1.5', className)}>
         <Label htmlFor={id} hideLabel={!label || hideLabel} hasErrors={state.hasError}>
           {label}
         </Label>
