@@ -178,7 +178,7 @@ const DatePickerComponent = React.forwardRef(
     return (
       <div className="tw-content">
         <div id="tw-container" className={`absolute z-50 ${className} tw-datepicker`} />
-        <div className="tw-datepicker">
+        <div className="tw-datepicker flex flex-col gap-1.5">
           <Label htmlFor={id} hideLabel={hideLabel} hasErrors={Boolean(hasErrors || errorMessage)}>
             {label}
           </Label>

@@ -262,7 +262,7 @@ const SearchSelect = ({
   };
 
   return (
-    <div className={`relative ${className}`} ref={containerRef}>
+    <div className={cx('relative flex flex-col gap-1.5', className)} ref={containerRef}>
       <Label htmlFor={fieldId} hideLabel={hideLabel} hasErrors={hasErrors}>
         {label}
       </Label>
