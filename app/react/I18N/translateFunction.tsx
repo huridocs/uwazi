@@ -2,6 +2,7 @@ import React from 'react';
 import { getStore } from '#shared/atomStore/index.js';
 import { translationsAtom, localeAtom } from '#V2/atoms/index.js';
 import translate, { getLocaleTranslation, getContext } from '#shared/translate.js';
+import { getTranslationLocaleOverride } from './TranslationLocaleContext.js';
 import { Translate } from './Translate.js';
 
 //return type as any since there is no way to create conditional returns based on parameters
@@ -38,7 +39,7 @@ const t: TranslationFunction = (
   }
 
   const translations = atomStore.get(translationsAtom);
-  const locale = atomStore.get(localeAtom);
+  const locale = getTranslationLocaleOverride() || atomStore.get(localeAtom);
   const context = getContext(getLocaleTranslation(translations, locale), contextId);
   const translatedText = translate(context, key, text || key);
   const requiresTruncation = truncate && translatedText.length > truncate;

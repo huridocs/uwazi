@@ -12,7 +12,7 @@ import { DeleteLanguageController } from '#api/core/infrastructure/express/langu
 import needsAuthorization from '../auth/authMiddleware.js';
 import translations from './translations.js';
 
-type TranslationsRequest = Request & { query: { context: string } };
+type TranslationsRequest = Request & { query: { context?: string; locale?: LanguageISO6391 } };
 
 export default (app: Application) => {
   app.get(
@@ -24,13 +24,14 @@ export default (app: Application) => {
           type: 'object',
           properties: {
             context: { type: 'string' },
+            locale: LanguageISO6391Schema,
           },
         },
       },
     }),
     async (req: TranslationsRequest, res) => {
-      const { context } = req.query;
-      const response = await translations.get({ context });
+      const { context, locale } = req.query;
+      const response = await translations.get({ context, locale });
 
       res.json({ rows: response });
     }

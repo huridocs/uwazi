@@ -9,6 +9,10 @@ import { getStore } from '#shared/atomStore/index.js';
 import { localeAtom, translationsAtom } from '#V2/atoms/index.js';
 import { socket } from '#app/socket.js';
 import '#app/App/sockets.js';
+import {
+  getTranslationLocaleOverride,
+  TranslationLocaleProvider,
+} from '../TranslationLocaleContext.js';
 import { t } from '../translateFunction.js';
 import { translations } from './fixtures.js';
 
@@ -50,6 +54,40 @@ describe('t function', () => {
       expect(
         renderResult.getByText('¿Esta seguro que quiere borrar este documento?')
       ).toBeInTheDocument();
+    });
+
+    it('should use TranslationLocaleProvider override over route locale', () => {
+      atomStore.set(localeAtom, 'en');
+      const Scoped = () => (
+        <span data-testid="scoped">
+          {t(
+            'System',
+            'confirmDeleteDocument',
+            'Are you sure you want to delete this document?',
+            false
+          )}
+        </span>
+      );
+      const { unmount, getByTestId } = render(
+        <Provider store={atomStore}>
+          <TranslationLocaleProvider locale="es">
+            <Scoped />
+          </TranslationLocaleProvider>
+        </Provider>
+      );
+      expect(getByTestId('scoped').textContent).toBe(
+        '¿Esta seguro que quiere borrar este documento?'
+      );
+      unmount();
+      expect(getTranslationLocaleOverride()).toBeNull();
+      expect(
+        t(
+          'System',
+          'confirmDeleteDocument',
+          'Are you sure you want to delete this document?',
+          false
+        )
+      ).toBe('Are you sure you want to delete this document?');
     });
 
     it('should update translation when the atom is updated partially from the socket', async () => {
