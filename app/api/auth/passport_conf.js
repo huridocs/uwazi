@@ -26,6 +26,10 @@ passport.serializeUser((user, done) => {
   done(null, `${user._id}///${tenants.current().name}`);
 });
 
+// No v2Login-specific branch here: sessions established via LoginController (v2Login on) and
+// via the LocalStrategy above (v2Login off) both end up as passport sessions deserialized the
+// same way. users.getById already routes through UsersDAOFactory under the separate v2UsersGet
+// flag (see app/api/users/users.js:252-273) — deserialization isn't part of the login use case.
 passport.deserializeUser(async (serializeUser, done) => {
   try {
     const currentTenant = tenants.current().name;

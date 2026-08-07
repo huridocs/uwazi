@@ -192,6 +192,7 @@ const prepareStores = async (req: ExpressRequest, settings: ClientSettings, lang
       languages: settings.languages,
       private: settings.private,
       site_name: settings.site_name,
+      features: settings.features,
     },
     templatesApiResponse = [],
     thesaurisApiResponse = [],

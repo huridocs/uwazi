@@ -71,6 +71,36 @@ describe('MongoUsersDAO', () => {
     });
   });
 
+  describe('getById()', () => {
+    it('should exclude password, secret, failedLogins, accountUnlockCode and accountLocked by default', async () => {
+      const dao = getDao();
+      const result = await dao.getById(withsensitiveId.toString());
+
+      const user = result.getDataOrThrow();
+      expect(user.username).toBe('withsensitive');
+      expect(user.password).toBeUndefined();
+      expect(user.secret).toBeUndefined();
+      expect(user.failedLogins).toBeUndefined();
+      expect(user.accountUnlockCode).toBeUndefined();
+      expect('accountLocked' in user).toBe(false);
+    });
+
+    it('should include accountLocked when includeAccountLocked is true', async () => {
+      const dao = getDao();
+      const result = await dao.getById(withsensitiveId.toString(), { includeAccountLocked: true });
+
+      const user = result.getDataOrThrow();
+      expect(user.accountLocked).toBe(false);
+    });
+
+    it('should fail when no user matches', async () => {
+      const dao = getDao();
+      const result = await dao.getById(new ObjectId().toString());
+
+      expect(result.isError()).toBe(true);
+    });
+  });
+
   describe('exists()', () => {
     it('should return true when a matching active, non-public user exists', async () => {
       const dao = getDao();

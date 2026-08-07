@@ -17,6 +17,7 @@ import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { createError } from '#api/utils/index.js';
 import { FileNotFound as FileNotFoundV2 } from '../core/domain/files/errors.js';
 import { NonRetryableJobError } from '#api/core/libs/queue/infrastructure/errors.js';
+import { TwoFactorTokenRequired } from '#api/core/domain/user/errors.js';
 
 const ajvPrettifier = error => {
   const errorMessage = [error.message];
@@ -134,6 +135,12 @@ const prettifyError = (error, { req = {}, uncaught = false } = {}) => {
 
   if (error instanceof FileNotFound || error instanceof FileNotFoundV2) {
     result = { code: 404, message: error.message, logLevel: 'debug' };
+  }
+
+  // The frontend login form branches on this exact status to switch to the 2FA prompt
+  // (see app/react/Users/Login.jsx), matching the legacy `createError(..., 409)` behavior.
+  if (error instanceof TwoFactorTokenRequired) {
+    result = { code: 409, message: error.message, logLevel: 'debug' };
   }
 
   if (error instanceof URIError) {

@@ -2,11 +2,28 @@ import type { Request, Response, NextFunction } from 'express';
 import { User } from '#api/users/usersModel.js';
 import usersModel from '../users/users.js';
 import { comparePasswords } from './encryptPassword.js';
+import { tenants } from '#api/tenants/index.js';
+import { ValidateCurrentPasswordUseCaseFactory } from '#api/core/infrastructure/factories/ValidateCurrentPasswordUseCaseFactory.js';
 
+/**
+ * @deprecated v1 fallback for the `v2PasswordReauth` flag, superseded by validatePasswordV2 below.
+ * Remove once v2PasswordReauth is enabled for all tenants.
+ */
 const validatePassword = async (submittedPassword: string, requestUser: User) => {
   const user = await usersModel.getById(requestUser._id, '+password');
   const currentPassword = user.password;
   return comparePasswords(submittedPassword, currentPassword);
+};
+
+const validatePasswordV2 = async (submittedPassword: string, requestUser: User) => {
+  if (!requestUser.username) {
+    return false;
+  }
+
+  return ValidateCurrentPasswordUseCaseFactory.default().execute({
+    username: requestUser.username,
+    submittedPassword,
+  });
 };
 
 const validatePasswordMiddleWare = async (req: Request, res: Response, next: NextFunction) => {
@@ -15,7 +32,9 @@ const validatePasswordMiddleWare = async (req: Request, res: Response, next: Nex
 
   if (submittedPassword) {
     const decodedPassword = Buffer.from(submittedPassword, 'base64').toString('utf8');
-    const validPassword = await validatePassword(decodedPassword, user);
+    const validPassword = tenants.current().featureFlags?.v2PasswordReauth
+      ? await validatePasswordV2(decodedPassword, user)
+      : await validatePassword(decodedPassword, user);
 
     if (validPassword) {
       return next();
