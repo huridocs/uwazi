@@ -29,6 +29,7 @@ const translationsRoutes = (app: Application) => {
           type: 'object',
           properties: {
             context: { type: 'string' },
+            locale: LanguageISO6391Schema,
           },
         },
       },

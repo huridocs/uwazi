@@ -165,6 +165,25 @@ describe('i18n translations routes', () => {
           },
         ]);
       });
+
+      it('should only return the requested locale when locale is provided', async () => {
+        const response = await request(app).get('/api/translations?locale=es').expect(200);
+
+        expect(response.body.rows).toHaveLength(1);
+        expect(response.body.rows[0]).toMatchObject({
+          locale: 'es',
+          contexts: expect.arrayContaining([
+            expect.objectContaining({
+              id: 'contextID',
+              values: { title: 'Plantilla 1' },
+            }),
+            expect.objectContaining({
+              id: 'System',
+              values: { Search: 'Buscar' },
+            }),
+          ]),
+        });
+      });
     });
 
     describe('api/languages', () => {

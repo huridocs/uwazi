@@ -2,6 +2,8 @@ import React, { createContext, useContext, useMemo } from 'react';
 import { useAtomValue } from 'jotai';
 import type { LanguagesListSchema } from '#shared/types/commonTypes.js';
 import type { Entity, FileType } from '#V2/api/entities/types.js';
+import { TranslationLocaleProvider } from '#app/I18N/TranslationLocaleContext.js';
+import { useEnsureLocaleTranslations } from '#app/I18N/useEnsureLocaleTranslations.js';
 import { settingsAtom } from '#V2/atoms/index.js';
 import { resolveRtl } from './entityLanguageUtils.js';
 import { useEntityContext } from './EntityContext.js';
@@ -47,6 +49,7 @@ const EntityLanguageProvider = ({
     defaultLanguage,
     setEntity,
   });
+  const localeTranslationsReady = useEnsureLocaleTranslations(language);
 
   const value = useMemo(
     () => ({
@@ -61,7 +64,15 @@ const EntityLanguageProvider = ({
     [language, languages, isLoading, mainDocument, pagePlaintext, setLanguage]
   );
 
-  return <EntityLanguageContext.Provider value={value}>{children}</EntityLanguageContext.Provider>;
+  return (
+    <EntityLanguageContext.Provider value={value}>
+      {localeTranslationsReady ? (
+        <TranslationLocaleProvider locale={language}>{children}</TranslationLocaleProvider>
+      ) : (
+        children
+      )}
+    </EntityLanguageContext.Provider>
+  );
 };
 
 const useEntityLanguage = () => {
