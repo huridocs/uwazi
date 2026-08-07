@@ -65,10 +65,11 @@ describe('publicSettings', () => {
       expect(result.themeCustomization).toBe(true);
     });
 
-    it('should whitelist settings for anonymous users', () => {
+    it('should whitelist settings for anonymous users and preserve features', () => {
       const result = shapeSettingsForSSR(fullSettings, null);
       expect(result.mailerConfig).toBeUndefined();
       expect(result.site_name).toBe('Uwazi');
+      expect(result.features).toEqual({ newHeader: true, ocr: { url: 'http://ocr' } });
     });
   });
 
