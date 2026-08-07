@@ -14,6 +14,8 @@ jest.mock('#api/core/infrastructure/services/V1WebSocketsWrapper.js', () => ({
   V1WebSocketsWrapper: jest.fn().mockImplementation(() => ({
     emitToTenant: jest.fn(),
     emitToTenantAdmins: jest.fn(),
+    emitToTenantAdminsAndEditors: jest.fn(),
+    emitToSession: jest.fn(),
   })),
 }));
 

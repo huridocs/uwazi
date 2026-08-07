@@ -1,19 +1,19 @@
+/* eslint-disable max-lines */
 import { createAdapter } from '@socket.io/redis-adapter';
 import { Emitter } from '@socket.io/redis-emitter';
-import { config } from '#api/config.js';
-import { tenants } from '#api/tenants/index.js';
-import { handleError } from '#api/utils/index.js';
 import MongoStore from 'connect-mongo';
 import * as cookie from 'cookie';
 import type { Application, NextFunction, Request, Response } from 'express';
 import { Server } from 'http';
 import session, { type SessionData, type Store as SessionStore } from 'express-session';
-import { DB } from '#api/odm/index.js';
 import { RedisClient } from 'redis';
 import { Server as SocketIoServer } from 'socket.io';
+import { DB } from '#api/odm/index.js';
+import { handleError } from '#api/utils/index.js';
+import { tenants } from '#api/tenants/index.js';
+import { config } from '#api/config.js';
 import users from '#api/users/users.js';
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 declare global {
   namespace Express {
     export interface Request {
@@ -79,6 +79,15 @@ const emitToTenantAdmins = (tenantName: string, event: string, ...data: any[]) =
   io.to(room).emit(event, ...data);
 };
 
+const emitToTenantAdminsAndEditors = (tenantName: string, event: string, ...data: any[]) => {
+  if (!io) {
+    throw new Error('Socket.io Server not initialized');
+  }
+  const room = `${tenantName}:admins_editors`;
+  // @ts-ignore
+  io.to(room).emit(event, ...data);
+};
+
 const emitToSession = (sessionId: string, event: string, ...data: any[]) => {
   if (!io) {
     throw new Error('Socket.io Server not initialized');
@@ -87,7 +96,7 @@ const emitToSession = (sessionId: string, event: string, ...data: any[]) => {
   io.to(sessionId).emit(event, ...data);
 };
 
-const attachAdminRoomIfApplicable = (
+const attachRoleRoomsIfApplicable = (
   socket: any,
   socketCookie: Record<string, string | undefined>
 ) => {
@@ -132,12 +141,17 @@ const attachAdminRoomIfApplicable = (
       return;
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     tenants
       .run(async () => {
         const user = await users.getById(userId, '', false);
-        if (user && user.role === 'admin') {
+        if (!user) {
+          return;
+        }
+        if (user.role === 'admin') {
           socket.join(`${tenantName}:admins`);
+        }
+        if (user.role === 'admin' || user.role === 'editor') {
+          socket.join(`${tenantName}:admins_editors`);
         }
       }, tenantName)
       .catch(handleError);
@@ -158,7 +172,7 @@ const setupApiSockets = (server: Server, app: Application) => {
       socket.join(socketCookie['connect.sid'] || 'default-session-id');
     }
 
-    attachAdminRoomIfApplicable(socket, socketCookie);
+    attachRoleRoomsIfApplicable(socket, socketCookie);
   });
 
   const sockets = {
@@ -240,6 +254,7 @@ export {
   closeSockets,
   emitToTenant,
   emitToTenantAdmins,
+  emitToTenantAdminsAndEditors,
   emitToSession,
   endSocketServer,
   setupApiSockets,

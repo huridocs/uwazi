@@ -1,6 +1,6 @@
-import { emitToTenant } from '#api/socketio/setupSockets.js';
-import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
 import { ObjectId } from 'mongodb';
+import { emitToTenantAdminsAndEditors } from '#api/socketio/setupSockets.js';
+import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
 import ixmodels from '#api/services/informationextraction/ixmodels.js';
 import {
   UserAwareDispatchable,
@@ -49,7 +49,7 @@ export class AcceptSuggestionsJob extends UserAwareDispatchable<CustomParams> {
 
       if (progress) {
         const remaining = Math.max(0, (progress.total || 0) - (progress.processed || 0));
-        emitToTenant(
+        emitToTenantAdminsAndEditors(
           this.tenantName,
           'ix_model_status',
           extractorId,
@@ -60,11 +60,22 @@ export class AcceptSuggestionsJob extends UserAwareDispatchable<CustomParams> {
         // If completed, finish without redispatch
         if ((progress.total || 0) > 0 && progress.processed >= (progress.total || 0)) {
           await ixmodels.stopTraining(ObjectId.createFromHexString(extractorId));
-          emitToTenant(this.tenantName, 'ix_model_status', extractorId, 'ready', 'Completed');
+          emitToTenantAdminsAndEditors(
+            this.tenantName,
+            'ix_model_status',
+            extractorId,
+            'ready',
+            'Completed'
+          );
           return;
         }
       } else {
-        emitToTenant(this.tenantName, 'ix_model_status', extractorId, 'processing_auto_accept');
+        emitToTenantAdminsAndEditors(
+          this.tenantName,
+          'ix_model_status',
+          extractorId,
+          'processing_auto_accept'
+        );
       }
 
       if (processed > 0) {
@@ -78,7 +89,13 @@ export class AcceptSuggestionsJob extends UserAwareDispatchable<CustomParams> {
 
       // Auto-accept finished: cleanup model run and emit 'ready'
       await ixmodels.stopTraining(ObjectId.createFromHexString(extractorId));
-      emitToTenant(this.tenantName, 'ix_model_status', extractorId, 'ready', 'Completed');
+      emitToTenantAdminsAndEditors(
+        this.tenantName,
+        'ix_model_status',
+        extractorId,
+        'ready',
+        'Completed'
+      );
     } catch (e) {
       // On error, best-effort cleanup to avoid leaving model in processing state
       await ixmodels.unsetProcessRun(extractorId);

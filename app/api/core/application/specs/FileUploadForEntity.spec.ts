@@ -89,7 +89,14 @@ describe('FileUploadForEntity', () => {
 
       const { useCase, pathManager, actorId, tenantName } = testingEnvironment.runWithContext(
         () => {
-          const filesService = FilesServiceFactory.default({ jobsDispatcher, eventBus });
+          const filesService = FilesServiceFactory.default(
+            { jobsDispatcher, eventBus },
+            {
+              userId: ExecutionContext.actor?._id?.toString(),
+              tenantName: tenants.current().name,
+              sessionId: 'test-upload-session',
+            }
+          );
           const pm = new PathManager({ tenant: tenants.current() });
           const aId = ExecutionContext.actor?._id?.toString();
           const tName = tenants.current().name;
@@ -137,6 +144,7 @@ describe('FileUploadForEntity', () => {
           documentId: result._id,
           userId: actorId,
           tenantName,
+          sessionId: 'test-upload-session',
         },
       ]);
     });

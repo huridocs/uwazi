@@ -15,6 +15,7 @@ import {
 
 type Params = UserAwareDispatchableParams & {
   documentId: string;
+  sessionId?: string;
 };
 
 type JobDependencies = {
@@ -33,32 +34,35 @@ export class PDFPostProcessJobHandler extends UserAwareDispatchable<Params> {
         this.params,
         jobInfo.retryCount !== jobInfo.maxRetries
       );
-      this.deps.wSockets.emitToTenant(
-        jobInfo.namespace,
-        'documentProcessed',
-        processedDoc.entity,
-        processedDoc.toDTO()
-      );
+      this.emitToUploaderSession('documentProcessed', processedDoc.entity);
     } catch (e) {
-      if (e instanceof ProcessingFileNotFound) {
+      this.handleProcessingError(e, jobInfo);
+    }
+  }
+
+  private emitToUploaderSession(event: 'documentProcessed' | 'conversionFailed', entityId: string) {
+    if (!this.params.sessionId) {
+      return;
+    }
+    this.deps.wSockets.emitToSession(this.params.sessionId, event, entityId);
+  }
+
+  private handleProcessingError(e: unknown, jobInfo: JobInfo): never {
+    if (e instanceof ProcessingFileNotFound) {
+      throw new NonRetryableJobError(e);
+    }
+
+    if (e instanceof ProcessingFileFailed) {
+      const shouldNotifyFailure =
+        jobInfo.maxRetries === jobInfo.retryCount || e.cause instanceof FileIsNotAPDF;
+      if (shouldNotifyFailure) {
+        this.emitToUploaderSession('conversionFailed', e.file.entity);
+      }
+      if (e.cause instanceof FileIsNotAPDF) {
         throw new NonRetryableJobError(e);
       }
-
-      if (e instanceof ProcessingFileFailed) {
-        if (jobInfo.maxRetries === jobInfo.retryCount || e.cause instanceof FileIsNotAPDF) {
-          this.deps.wSockets.emitToTenant(
-            jobInfo.namespace,
-            'conversionFailed',
-            e.file.entity,
-            e.file.toDTO()
-          );
-        }
-        if (e.cause instanceof FileIsNotAPDF) {
-          throw new NonRetryableJobError(e);
-        }
-      }
-
-      throw e;
     }
+
+    throw e;
   }
 }

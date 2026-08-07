@@ -1,14 +1,16 @@
 import Ajv, { JTDDataType, ValidationError } from 'ajv/dist/jtd.js';
-import { files, generateFileName, storage } from '#api/files/index.js';
-import { processDocument } from '#api/files/processDocument.js';
-import { permissionsContext } from '#api/permissions/permissionsContext.js';
-import { emitToTenant } from '#api/socketio/setupSockets.js';
-import { tenants } from '#api/tenants/index.js';
 // eslint-disable-next-line node/no-restricted-import
 import { createWriteStream } from 'fs';
 import * as os from 'os';
 import path from 'path';
 import { pipeline } from 'stream/promises';
+import { files, generateFileName, storage } from '#api/files/index.js';
+import { processDocument } from '#api/files/processDocument.js';
+import { permissionsContext } from '#api/permissions/permissionsContext.js';
+import { emitToSession } from '#api/socketio/setupSockets.js';
+import { tenants } from '#api/tenants/index.js';
+import { FileType } from '#shared/types/fileType.js';
+
 import { TaskManager } from '../tasksmanager/TaskManager.js';
 import { convertToPDFService } from './convertToPdfService.js';
 
@@ -22,6 +24,9 @@ const resultSchema = {
         namespace: { type: 'string' },
         filename: { type: 'string' },
       },
+      optionalProperties: {
+        sessionId: { type: 'string' },
+      },
     },
   },
   additionalProperties: true,
@@ -32,6 +37,51 @@ const validateResult = ajv.compile<ConvertToPdfResult>(resultSchema);
 
 const chageFileExtesion = (fileName: string, extension: string) =>
   `${path.basename(fileName, path.extname(fileName))}.${extension}`;
+
+const resolveSessionId = (result: ConvertToPdfResult, attachment: FileType) =>
+  result.params.sessionId ||
+  (typeof (attachment as { socketSessionId?: string }).socketSessionId === 'string'
+    ? (attachment as { socketSessionId?: string }).socketSessionId
+    : undefined);
+
+const storeConvertedPdfLocally = async (filename: string, fileUrl: string) => {
+  await storage.storeFile(
+    filename,
+    await convertToPDFService.download(new URL(fileUrl)),
+    'document'
+  );
+  await pipeline(
+    await storage.readableFile(filename, 'document'),
+    createWriteStream(path.join(os.tmpdir(), filename))
+  );
+};
+
+const markAttachmentReady = async (filename: string) => {
+  const [attachment] = await files.get({ filename });
+  if (!attachment.entity) {
+    throw new Error('attachment does not have an entity');
+  }
+  await files.save({ ...attachment, status: 'ready' });
+  return attachment as FileType & { entity: string };
+};
+
+const processConvertToPdfResult = async (result: ConvertToPdfResult) => {
+  permissionsContext.setCommandContext();
+  const attachment = await markAttachmentReady(result.params.filename);
+  const filename = `${generateFileName({})}.pdf`;
+  await storeConvertedPdfLocally(filename, result.file_url);
+  await processDocument(attachment.entity, {
+    filename,
+    destination: os.tmpdir(),
+    originalname: chageFileExtesion(attachment.originalname || generateFileName({}), 'pdf'),
+    mimetype: 'application/pdf',
+  });
+
+  const sessionId = resolveSessionId(result, attachment);
+  if (sessionId) {
+    emitToSession(sessionId, 'documentProcessed', attachment.entity);
+  }
+};
 
 export class ConvertToPdfWorker {
   public readonly SERVICE_NAME = 'convert-to-pdf';
@@ -48,35 +98,7 @@ export class ConvertToPdfWorker {
         if (!validateResult(result)) {
           throw new ValidationError(validateResult.errors || [{ message: 'validation failed' }]);
         }
-        await tenants.run(async () => {
-          permissionsContext.setCommandContext();
-          const [attachment] = await files.get({ filename: result.params.filename });
-          if (!attachment.entity) {
-            throw new Error('attachment does not have an entity');
-          }
-          await files.save({ ...attachment, status: 'ready' });
-
-          const filename = `${generateFileName({})}.pdf`;
-
-          await storage.storeFile(
-            filename,
-            await convertToPDFService.download(new URL(result.file_url)),
-            'document'
-          );
-          await pipeline(
-            await storage.readableFile(filename, 'document'),
-            createWriteStream(path.join(os.tmpdir(), filename))
-          );
-
-          await processDocument(attachment.entity, {
-            filename,
-            destination: os.tmpdir(),
-            originalname: chageFileExtesion(attachment.originalname || generateFileName({}), 'pdf'),
-            mimetype: 'application/pdf',
-          });
-
-          emitToTenant(result.params.namespace, 'documentProcessed', attachment.entity);
-        }, result.params.namespace);
+        await tenants.run(async () => processConvertToPdfResult(result), result.params.namespace);
       },
     });
   }

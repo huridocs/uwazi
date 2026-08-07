@@ -17,9 +17,10 @@ class CreateEntityFromPDFUseCaseFactory {
   static default(
     overrides: Partial<ConstructorParameters<typeof CreateEntityFromPDFUseCase>[0]> & {
       targetLanguage?: LanguageISO6391;
+      sessionId?: string;
     } = {}
   ) {
-    const { targetLanguage = 'en', ...depsOverrides } = overrides;
+    const { targetLanguage = 'en', sessionId, ...depsOverrides } = overrides;
 
     const { tenant } = ExecutionContext;
 
@@ -48,7 +49,14 @@ class CreateEntityFromPDFUseCaseFactory {
       });
 
     const entitiesService = EntitiesServiceFactory.default();
-    const filesService = FilesServiceFactory.default();
+    const filesService = FilesServiceFactory.default(
+      {},
+      {
+        userId: actor?._id?.toString(),
+        tenantName: tenant.name,
+        sessionId,
+      }
+    );
 
     return new CreateEntityFromPDFUseCase(
       {

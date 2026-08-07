@@ -17,9 +17,10 @@ class CreateEntityUseCaseFactory {
   static default(
     overrides: Partial<ConstructorParameters<typeof CreateEntityUseCase>[0]> & {
       targetLanguage?: LanguageISO6391;
+      sessionId?: string;
     } = {}
   ) {
-    const { targetLanguage = 'en', ...depsOverrides } = overrides;
+    const { targetLanguage = 'en', sessionId, ...depsOverrides } = overrides;
 
     const { tenant } = ExecutionContext;
 
@@ -49,7 +50,14 @@ class CreateEntityUseCaseFactory {
 
     const entitiesService = EntitiesServiceFactory.default();
 
-    const fileService = FilesServiceFactory.default();
+    const fileService = FilesServiceFactory.default(
+      {},
+      {
+        userId: actor?._id?.toString(),
+        tenantName: tenant.name,
+        sessionId,
+      }
+    );
 
     return new CreateEntityUseCase(
       {
