@@ -16,11 +16,11 @@ jest.mock('#V2/api/translations/index.js', () => ({
   get: jest.fn(),
 }));
 
-const getMock = get as jest.MockedFunction<typeof get>;
+const getMock = jest.mocked(get);
 
 const Harness = ({ language }: { language: string }) => {
-  useEnsureLocaleTranslations(language);
-  return null;
+  const ready = useEnsureLocaleTranslations(language);
+  return <span data-testid="ready">{ready ? 'yes' : 'no'}</span>;
 };
 
 describe('mergeLocaleTranslations', () => {
@@ -66,15 +66,17 @@ describe('useEnsureLocaleTranslations', () => {
     store.set(localeAtom, 'en');
     getMock.mockResolvedValue([es]);
 
-    render(
+    const { getByTestId } = render(
       <Provider store={store}>
         <Harness language="es" />
       </Provider>
     );
 
+    expect(getByTestId('ready').textContent).toBe('no');
     await waitFor(() => {
       expect(store.get(translationsAtom).map(row => row.locale)).toEqual(['en', 'es']);
     });
+    expect(getByTestId('ready').textContent).toBe('yes');
     expect(getMock).toHaveBeenCalledWith(undefined, { locale: 'es' });
   });
 
@@ -83,12 +85,13 @@ describe('useEnsureLocaleTranslations', () => {
     store.set(translationsAtom, [en, es]);
     store.set(localeAtom, 'en');
 
-    render(
+    const { getByTestId } = render(
       <Provider store={store}>
         <Harness language="es" />
       </Provider>
     );
 
+    expect(getByTestId('ready').textContent).toBe('yes');
     await act(async () => undefined);
     expect(getMock).not.toHaveBeenCalled();
   });

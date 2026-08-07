@@ -17,12 +17,13 @@ const mergeLocaleTranslations = (
   return [...byLocale.values()];
 };
 
-const useEnsureLocaleTranslations = (language: string) => {
+const useEnsureLocaleTranslations = (language: string): boolean => {
   const store = useStore();
   const translations = useAtomValue(translationsAtom);
+  const ready = translations.some(translation => translation.locale === language);
 
   useEffect(() => {
-    if (translations.some(translation => translation.locale === language)) {
+    if (ready) {
       return undefined;
     }
 
@@ -37,7 +38,9 @@ const useEnsureLocaleTranslations = (language: string) => {
     return () => {
       cancelled = true;
     };
-  }, [language, translations, store]);
+  }, [language, ready, store]);
+
+  return ready;
 };
 
 export { useEnsureLocaleTranslations, mergeLocaleTranslations };

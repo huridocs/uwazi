@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useLayoutEffect, type ReactNode } from 'react';
+import { isClient } from '#app/utils/index.js';
 
 const TranslationLocaleContext = createContext<string | null>(null);
 
@@ -13,15 +14,20 @@ const TranslationLocaleProvider = ({
   locale: string;
   children: ReactNode;
 }) => {
-  renderLocaleOverride = locale;
-  useLayoutEffect(
-    () => () => {
+  // Imperative `t(..., false)` cannot use context; module bridge is client-only so SSR
+  // cannot leave a stale override across requests (effects do not run on the server).
+  if (isClient) {
+    renderLocaleOverride = locale;
+  }
+
+  useLayoutEffect(() => {
+    renderLocaleOverride = locale;
+    return () => {
       if (renderLocaleOverride === locale) {
         renderLocaleOverride = null;
       }
-    },
-    [locale]
-  );
+    };
+  }, [locale]);
 
   return (
     <TranslationLocaleContext.Provider value={locale}>{children}</TranslationLocaleContext.Provider>

@@ -49,7 +49,7 @@ const EntityLanguageProvider = ({
     defaultLanguage,
     setEntity,
   });
-  useEnsureLocaleTranslations(language);
+  const localeTranslationsReady = useEnsureLocaleTranslations(language);
 
   const value = useMemo(
     () => ({
@@ -66,7 +66,11 @@ const EntityLanguageProvider = ({
 
   return (
     <EntityLanguageContext.Provider value={value}>
-      <TranslationLocaleProvider locale={language}>{children}</TranslationLocaleProvider>
+      {localeTranslationsReady ? (
+        <TranslationLocaleProvider locale={language}>{children}</TranslationLocaleProvider>
+      ) : (
+        children
+      )}
     </EntityLanguageContext.Provider>
   );
 };
