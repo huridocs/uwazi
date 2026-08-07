@@ -40,7 +40,7 @@ class PostgresUnrestrictedEntitiesQuery extends PostgresDataSource<EntityRow> {
 
     // Unrestricted query needs full access to all entities, regardless of
     // permission-level RLS. Bypass is explicit opt-in (not the default).
-    this.table.cfg.transactionManager.setPermissionContext({ bypass: true });
+    this.table.byPassPermissions();
   }
 
   private applyFilters(filters: EntityFilters) {

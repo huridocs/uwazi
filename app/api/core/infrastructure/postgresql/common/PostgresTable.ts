@@ -59,8 +59,12 @@ export class PostgresTable<TRow = Record<string, unknown>> {
     return this.cfg.tenantId;
   }
 
-  query<T = TRow>(): this {
-    return this.chain(this.cfg.knex(this.cfg.tableName)) as this;
+  byPassPermissions(): void {
+    this.cfg.transactionManager.setPermissionContext({ bypass: true });
+  }
+
+  query<T = TRow>(): PostgresTable<T> {
+    return this.chain(this.cfg.knex(this.cfg.tableName)) as any;
   }
 
   protected chain(qb: Knex.QueryBuilder): this {
