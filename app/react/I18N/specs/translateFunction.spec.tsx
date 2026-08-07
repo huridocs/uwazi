@@ -3,8 +3,8 @@
  */
 import React from 'react';
 import { Provider } from 'jotai';
-import { getStore } from '#shared/atomStore/index.js';
 import { act, render, RenderResult } from '@testing-library/react';
+import { getStore } from '#shared/atomStore/index.js';
 
 import { localeAtom, translationsAtom } from '#V2/atoms/index.js';
 import { socket } from '#app/socket.js';

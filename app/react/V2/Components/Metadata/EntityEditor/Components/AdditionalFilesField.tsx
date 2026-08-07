@@ -45,8 +45,8 @@ const AdditionalFilesField = ({
                 originalname={file.originalname}
                 disabled={disabled}
                 hideLabel
-                onRename={name => mutations.renameDocument(file, name)}
-                onRemove={fileId ? () => mutations.removeDocument(fileId) : undefined}
+                onRename={async name => mutations.renameDocument(file, name)}
+                onRemove={fileId ? async () => mutations.removeDocument(fileId) : undefined}
               />
             </div>
           );
