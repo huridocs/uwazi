@@ -274,7 +274,7 @@ Creating entities,Creating entities
 Creating relationships,Creating relationships
 Creating thesauri,Creating thesauri
 CSS,CSS
-csv blank state message,Importa archivos CSV o ZIP para crear entidades en lote. Para empezar, selecciona **+ Importar CSV**.
+csv blank state message,"Importa archivos CSV o ZIP para crear entidades en lote. Para empezar, selecciona **+ Importar CSV**."
 CSV Import,CSV Import
 CSV import cancelled,CSV import cancelled
 CSV import completed,CSV import completed
