@@ -1,6 +1,6 @@
+import { IncomingHttpHeaders } from 'http';
 import { api } from '#app/utils/api.js';
 import { RequestParams } from '#app/utils/RequestParams.js';
-import { IncomingHttpHeaders } from 'http';
 import { FetchResponseError } from '#shared/JSONRequest.js';
 import { FileType } from '#shared/types/fileType.js';
 

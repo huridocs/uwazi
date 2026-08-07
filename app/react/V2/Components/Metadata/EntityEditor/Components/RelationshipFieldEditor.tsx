@@ -118,14 +118,16 @@ const RelationshipFieldEditor = ({
 
   return (
     <div className="space-y-1.5">
-      <div className="flex flex-col gap-0.5">
-        <div className="flex items-center gap-1.5">
-          <LinkIcon className="h-3.5 w-3.5 text-carbon" aria-hidden />
-          <span className="text-sm font-bold text-ink">
-            <Translate context={translationContext}>{title}</Translate>
-          </span>
-        </div>
-        {relationLabel ? <RelationCaption relationLabel={relationLabel} /> : null}
+      <div className="flex flex-wrap items-baseline gap-1.5">
+        <LinkIcon className="h-3.5 w-3.5 text-carbon" aria-hidden />
+        <span className="text-sm font-bold text-ink">
+          <Translate context={translationContext}>{title}</Translate>
+        </span>
+        {relationLabel ? (
+          <div className="mt-1">
+            <RelationCaption relationLabel={relationLabel} />
+          </div>
+        ) : null}
       </div>
 
       <div className="overflow-hidden rounded-md border border-border">
@@ -147,7 +149,10 @@ const RelationshipFieldEditor = ({
                     </span>
                   </th>
                 ))}
-                <th className="w-0 px-2" aria-label={t('System', 'Actions', null, false)} />
+                <th
+                  className="sticky right-0 w-0 bg-paper px-2"
+                  aria-label={t('System', 'Actions', null, false)}
+                />
               </tr>
             </thead>
             <tbody>
@@ -168,7 +173,7 @@ const RelationshipFieldEditor = ({
                       key={entityId}
                       className="border-t border-border/40 transition-colors hover:bg-warm/30"
                     >
-                      <td className="px-3 py-1.5 align-middle">
+                      <td className="min-w-0 max-w-40 px-3 py-1.5 align-middle">
                         <TemplatePill
                           templateId={targetTemplateId ?? ''}
                           label={row.label ?? entityId}
@@ -189,7 +194,7 @@ const RelationshipFieldEditor = ({
                           </td>
                         );
                       })}
-                      <td className="border-s border-border/40 px-2 py-1 align-middle">
+                      <td className="sticky right-0 border-s border-border/40 bg-paper px-2 py-1 align-middle">
                         <div className="flex items-center justify-end gap-0.5">
                           <button
                             type="button"

@@ -4,6 +4,7 @@ import { availableLanguages } from '#shared/language/index.js';
 import { FetchResponseError } from '#shared/JSONRequest.js';
 import type { Entity, FileType } from '#V2/api/entities/types.js';
 import { getDocumentPlaintext } from '#V2/api/files/index.js';
+import { readyDocuments } from '#shared/entityDefaultDocument.js';
 import { getMainDocument } from '#V2/formatters/index.js';
 import { httpServices } from '#V2/services/http/index.js';
 import { entityLoaderCache } from '../../EntityLoaderCache.js';
@@ -40,7 +41,11 @@ const resolveMainDocument = (
   documents: Entity['documents'],
   defaultLanguage?: string
 ) => {
-  const nextMainDocument = getMainDocument(documents, nextLanguage, defaultLanguage);
+  const nextMainDocument = getMainDocument(
+    readyDocuments(documents),
+    nextLanguage,
+    defaultLanguage
+  );
   if (nextMainDocument) {
     entityLoaderCache.setMainDocument(sharedId, nextLanguage, nextMainDocument);
     return nextMainDocument;

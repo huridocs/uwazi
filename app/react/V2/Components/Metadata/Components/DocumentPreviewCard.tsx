@@ -6,6 +6,7 @@ import { settingsAtom } from '#V2/atoms/index.js';
 import { localeAtom } from '#V2/atoms/translationsAtoms.js';
 import type { Entity } from '#V2/api/entities/types.js';
 import type { MetadataProperty } from '#V2/formatters/types.js';
+import { readyDocuments } from '#shared/entityDefaultDocument.js';
 import { getMainDocument } from '#V2/formatters/index.js';
 import {
   formatMetadataTimestamp,
@@ -50,7 +51,11 @@ const buildDocumentPreviewModel = ({
   previewFailed,
   thumbFailed,
 }: DocumentPreviewModelArgs) => {
-  const document = getMainDocument(entity.documents, entity.language, defaultLanguage);
+  const document = getMainDocument(
+    readyDocuments(entity.documents),
+    entity.language,
+    defaultLanguage
+  );
   const previewValues =
     previewField && (previewField.type === 'preview' || previewField.type === 'image')
       ? previewField.values
