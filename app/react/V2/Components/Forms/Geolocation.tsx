@@ -87,7 +87,7 @@ const Geolocation = ({
   };
 
   return (
-    <div className={className}>
+    <div className={['flex flex-col gap-1.5', className].filter(Boolean).join(' ')}>
       {label ? <Label htmlFor={name}>{label}</Label> : null}
       <Map
         onClick={mapClick}
@@ -97,7 +97,7 @@ const Geolocation = ({
         layers={layers}
         markers={markers}
       />
-      <div className="flex gap-4">
+      <div className="flex gap-2">
         <InputField
           className="grow"
           onChange={latChange}
@@ -106,6 +106,7 @@ const Geolocation = ({
           clearFieldAction={clearCoordinates}
           value={currentLatitude ?? ''}
           label={<Translate>Latitude</Translate>}
+          labelVariant="secondary"
           id={name}
           name={`${name}.lat`}
           type="number"
@@ -117,6 +118,7 @@ const Geolocation = ({
         <InputField
           className="grow"
           label={<Translate>Longitude</Translate>}
+          labelVariant="secondary"
           onChange={lonChange}
           disabled={disabled}
           hasErrors={hasErrors}

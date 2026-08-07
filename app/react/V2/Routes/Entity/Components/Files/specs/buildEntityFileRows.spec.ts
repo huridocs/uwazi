@@ -197,4 +197,40 @@ describe('buildEntityFileRows', () => {
     );
     expect(result.primaryRows.find(row => row.rowId === 'failed-doc')?.status).toBe('failed');
   });
+
+  it('should pick ready or legacy missing-status docs as mainDocumentId', () => {
+    const entity = {
+      sharedId: 'entity-5',
+      template: 'template-1',
+      documents: [
+        {
+          _id: 'processing-doc',
+          filename: 'busy.pdf',
+          originalname: 'Busy',
+          language: 'eng',
+          mimetype: 'application/pdf',
+          status: 'processing',
+        },
+        {
+          _id: 'legacy-doc',
+          filename: 'legacy.pdf',
+          originalname: 'Legacy',
+          language: 'eng',
+          mimetype: 'application/pdf',
+        },
+      ],
+      attachments: [],
+      metadata: {},
+    } as unknown as Entity;
+
+    const result = buildEntityFileRows(entity, templates, 'en', 'en');
+
+    expect(result.mainDocumentId).toBe('legacy-doc');
+    expect(result.primaryRows.find(row => row.rowId === 'legacy-doc')?.fileType).toBe(
+      'mainDocument'
+    );
+    expect(result.primaryRows.find(row => row.rowId === 'processing-doc')?.fileType).toBe(
+      'document'
+    );
+  });
 });

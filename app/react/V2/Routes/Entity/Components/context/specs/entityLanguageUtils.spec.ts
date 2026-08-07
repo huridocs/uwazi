@@ -67,8 +67,18 @@ describe('resolveSyncMode', () => {
 
 describe('resolveMainDocument', () => {
   const sharedId = 'shared1';
-  const staleDoc = { _id: 'stale', filename: 'stale.pdf', language: 'eng' } as FileType;
-  const freshDoc = { _id: 'fresh', filename: 'fresh.pdf', language: 'eng' } as FileType;
+  const staleDoc = {
+    _id: 'stale',
+    filename: 'stale.pdf',
+    language: 'eng',
+    status: 'ready',
+  } as FileType;
+  const freshDoc = {
+    _id: 'fresh',
+    filename: 'fresh.pdf',
+    language: 'eng',
+    status: 'ready',
+  } as FileType;
 
   beforeEach(() => {
     entityLoaderCache.invalidateAll();
@@ -83,6 +93,14 @@ describe('resolveMainDocument', () => {
 
   it('clears cache when entity has no documents', () => {
     expect(resolveMainDocument(sharedId, 'en', [])).toBeUndefined();
+    expect(entityLoaderCache.getMainDocument(sharedId, 'en')).toBeUndefined();
+  });
+
+  it('ignores non-ready documents', () => {
+    const documents = [
+      { _id: 'processing', filename: 'processing.pdf', language: 'eng', status: 'processing' },
+    ] as Entity['documents'];
+    expect(resolveMainDocument(sharedId, 'en', documents)).toBeUndefined();
     expect(entityLoaderCache.getMainDocument(sharedId, 'en')).toBeUndefined();
   });
 });

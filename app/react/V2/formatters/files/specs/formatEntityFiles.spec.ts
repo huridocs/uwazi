@@ -449,5 +449,36 @@ describe('formatEntityFiles', () => {
         { fileType: 'mainDocument', file: entityWithMultipleDocs.documents![1] },
       ]);
     });
+
+    it('should ignore non-ready documents when tagging mainDocument', () => {
+      const entityWithProcessing = {
+        ...entityWithMultipleDocs,
+        documents: [
+          {
+            _id: 'processing',
+            originalname: 'busy.pdf',
+            filename: 'busy.pdf',
+            mimetype: 'application/pdf',
+            size: 1000,
+            creationDate: 1,
+            entity: '5',
+            status: 'processing',
+            type: 'document',
+            language: 'spa',
+            totalPages: 1,
+          },
+          entityWithMultipleDocs.documents![0],
+          entityWithMultipleDocs.documents![1],
+        ],
+      } as Entity;
+
+      const result = formatEntityFiles(entityWithProcessing, templates, 'es');
+
+      expect(result).toEqual([
+        { fileType: 'document', file: entityWithProcessing.documents![0] },
+        { fileType: 'mainDocument', file: entityWithMultipleDocs.documents![0] },
+        { fileType: 'document', file: entityWithMultipleDocs.documents![1] },
+      ]);
+    });
   });
 });

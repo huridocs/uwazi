@@ -5,6 +5,8 @@ import { LanguageUtils } from '#shared/language/index.js';
 import { EntityWriteAuthorization } from '#V2/Routes/Entity/Components/context/index.js';
 import { fileLanguageSelectOptions, fileSupportsLanguage } from './fileHelpers.js';
 import { getRowIcon } from './fileRowIcon.js';
+import { FileDeleteAction } from './FileDeleteAction.js';
+import { FileDocumentContextBadge } from './FileDocumentContextBadge.js';
 import { EntityFileRow, FileEditFocus } from './types.js';
 
 const resolveFileLanguage = (rawLanguage?: string) => {
@@ -74,107 +76,112 @@ const FileDetailsEditor = ({
   };
 
   return (
-    <div className="space-y-3 rounded-md bg-warm p-4">
-      <div className="flex items-center justify-between">
-        <div className="text-xs font-semibold uppercase tracking-wider text-ink-tertiary">
-          <Translate>File details</Translate>
+    <div className="space-y-3">
+      <div className="space-y-3 rounded-md bg-warm p-4">
+        <div className="flex items-center justify-between">
+          <div className="text-xs font-semibold uppercase tracking-wider text-ink-tertiary">
+            <Translate>File details</Translate>
+          </div>
+          <EntityWriteAuthorization>
+            <button
+              type="button"
+              onClick={handleDone}
+              disabled={saving}
+              className="flex cursor-pointer items-center gap-1 rounded bg-ink px-2 py-0.5 text-micro font-medium text-parchment transition-colors hover:bg-ink/90 disabled:opacity-60"
+            >
+              <CheckIcon className="h-micro w-micro" />
+              <Translate>Done</Translate>
+            </button>
+          </EntityWriteAuthorization>
         </div>
-        <EntityWriteAuthorization>
-          <button
-            type="button"
-            onClick={handleDone}
-            disabled={saving}
-            className="flex cursor-pointer items-center gap-1 rounded bg-ink px-2 py-0.5 text-micro font-medium text-parchment transition-colors hover:bg-ink/90 disabled:opacity-60"
-          >
-            <CheckIcon className="h-micro w-micro" />
-            <Translate>Done</Translate>
-          </button>
-        </EntityWriteAuthorization>
-      </div>
 
-      <div className="min-w-0 space-y-1">
-        <span className="text-nano font-medium uppercase tracking-wide text-ink-muted">
-          <Translate>Name</Translate>
-        </span>
-        <div className="min-w-0">
-          <div className="flex items-center gap-2 rounded border border-border bg-paper focus-within:ring-1 focus-within:ring-carbon/30">
-            <span className="ml-2 shrink-0">{getRowIcon(row)}</span>
-            <input
-              ref={nameInputRef}
-              id={`file-name-${row.raw._id}`}
-              type="text"
-              value={originalname}
-              onChange={event => setOriginalname(event.target.value)}
-              onKeyDown={event => {
-                if (event.key === 'Enter') {
-                  event.currentTarget.blur();
-                }
-              }}
-              className="min-w-0 flex-1 bg-transparent px-1 py-1.5 text-sm text-ink focus:outline-none"
-              aria-label="File name"
-            />
+        <div className="min-w-0 space-y-1">
+          <span className="text-nano font-medium uppercase tracking-wide text-ink-muted">
+            <Translate>Name</Translate>
+          </span>
+          <div className="min-w-0">
+            <div className="flex items-center gap-2 rounded border border-border bg-paper focus-within:ring-1 focus-within:ring-carbon/30">
+              <span className="ml-2 shrink-0">{getRowIcon(row)}</span>
+              <input
+                ref={nameInputRef}
+                id={`file-name-${row.raw._id}`}
+                type="text"
+                value={originalname}
+                onChange={event => setOriginalname(event.target.value)}
+                onKeyDown={event => {
+                  if (event.key === 'Enter') {
+                    event.currentTarget.blur();
+                  }
+                }}
+                className="min-w-0 flex-1 bg-transparent px-1 py-1.5 text-sm text-ink focus:outline-none"
+                aria-label="File name"
+              />
+            </div>
           </div>
         </div>
-      </div>
 
-      <div className="grid grid-cols-2 gap-3">
-        {showLanguage ? (
+        <div className="grid grid-cols-2 gap-3">
+          {showLanguage ? (
+            <div className="min-w-0 space-y-1">
+              <span className="text-nano font-medium uppercase tracking-wide text-ink-muted">
+                <Translate>Language</Translate>
+              </span>
+              <div className="min-w-0">
+                <div className="relative flex w-full min-w-0 items-center overflow-hidden rounded border border-border bg-paper focus-within:ring-1 focus-within:ring-carbon/30">
+                  <select
+                    ref={languageSelectRef}
+                    id={`file-language-${row.raw._id}`}
+                    value={language}
+                    onChange={event => setLanguage(event.target.value)}
+                    className="w-full min-w-0 max-w-full cursor-pointer appearance-none bg-transparent py-0.5 pl-2 pr-6 text-xs font-medium text-ink focus:outline-none"
+                    aria-label="File language"
+                  >
+                    {languageOptions.map(option => (
+                      <option key={option.key ?? option.value} value={option.value}>
+                        {option.label}
+                      </option>
+                    ))}
+                  </select>
+                  <ChevronDownIcon className="pointer-events-none absolute right-1.5 h-micro w-micro text-ink-tertiary" />
+                </div>
+              </div>
+            </div>
+          ) : null}
+
           <div className="min-w-0 space-y-1">
             <span className="text-nano font-medium uppercase tracking-wide text-ink-muted">
-              <Translate>Language</Translate>
+              <Translate>Type</Translate>
             </span>
             <div className="min-w-0">
-              <div className="relative flex w-full min-w-0 items-center overflow-hidden rounded border border-border bg-paper focus-within:ring-1 focus-within:ring-carbon/30">
-                <select
-                  ref={languageSelectRef}
-                  id={`file-language-${row.raw._id}`}
-                  value={language}
-                  onChange={event => setLanguage(event.target.value)}
-                  className="w-full min-w-0 max-w-full cursor-pointer appearance-none bg-transparent py-0.5 pl-2 pr-6 text-xs font-medium text-ink focus:outline-none"
-                  aria-label="File language"
-                >
-                  {languageOptions.map(option => (
-                    <option key={option.key ?? option.value} value={option.value}>
-                      {option.label}
-                    </option>
-                  ))}
-                </select>
-                <ChevronDownIcon className="pointer-events-none absolute right-1.5 h-micro w-micro text-ink-tertiary" />
+              <div className="flex items-center gap-1.5 px-2 py-1.5 text-sm text-ink-secondary">
+                {getRowIcon(row)}
+                <span>{row.typeLabel}</span>
               </div>
             </div>
           </div>
-        ) : null}
 
-        <div className="min-w-0 space-y-1">
-          <span className="text-nano font-medium uppercase tracking-wide text-ink-muted">
-            <Translate>Type</Translate>
-          </span>
-          <div className="min-w-0">
-            <div className="flex items-center gap-1.5 px-2 py-1.5 text-sm text-ink-secondary">
-              {getRowIcon(row)}
-              <span>{row.typeLabel}</span>
+          <div className="min-w-0 space-y-1">
+            <span className="text-nano font-medium uppercase tracking-wide text-ink-muted">
+              <Translate>Size</Translate>
+            </span>
+            <div className="min-w-0">
+              <span className="text-sm text-ink-secondary">{row.sizeLabel}</span>
+            </div>
+          </div>
+
+          <div className="min-w-0 space-y-1">
+            <span className="text-nano font-medium uppercase tracking-wide text-ink-muted">
+              <Translate>Modified</Translate>
+            </span>
+            <div className="min-w-0">
+              <span className="text-sm text-ink-secondary">{row.modifiedLabel}</span>
             </div>
           </div>
         </div>
-
-        <div className="min-w-0 space-y-1">
-          <span className="text-nano font-medium uppercase tracking-wide text-ink-muted">
-            <Translate>Size</Translate>
-          </span>
-          <div className="min-w-0">
-            <span className="text-sm text-ink-secondary">{row.sizeLabel}</span>
-          </div>
-        </div>
-
-        <div className="min-w-0 space-y-1">
-          <span className="text-nano font-medium uppercase tracking-wide text-ink-muted">
-            <Translate>Modified</Translate>
-          </span>
-          <div className="min-w-0">
-            <span className="text-sm text-ink-secondary">{row.modifiedLabel}</span>
-          </div>
-        </div>
       </div>
+
+      <FileDocumentContextBadge row={row} />
+      <FileDeleteAction row={row} />
     </div>
   );
 };

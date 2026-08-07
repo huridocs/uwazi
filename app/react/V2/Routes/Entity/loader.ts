@@ -9,6 +9,7 @@ import { ApiError } from '#shared/apiClient/index.js';
 import type { V2Services } from '#V2/services/types.js';
 import { httpServices } from '#V2/services/http/index.js';
 import { throwApiError } from '#V2/shared/errorUtils.js';
+import { readyDocuments } from '#shared/entityDefaultDocument.js';
 import { getMainDocument } from '#V2/formatters/index.js';
 import { entityLoaderCache } from './EntityLoaderCache.js';
 import { parseEntityHash } from './entityUrlState.js';
@@ -73,7 +74,11 @@ const createEntityLoader =
 
     let mainDocument = entityLoaderCache.getMainDocument(entitySharedId, language);
     if (entity?.sharedId) {
-      const derivedMainDocument = getMainDocument(entity.documents, language, defaultLanguage);
+      const derivedMainDocument = getMainDocument(
+        readyDocuments(entity.documents),
+        language,
+        defaultLanguage
+      );
       if (derivedMainDocument) {
         if (mainDocument?._id !== derivedMainDocument._id) {
           entityLoaderCache.setMainDocument(entity.sharedId, language, derivedMainDocument);

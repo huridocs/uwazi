@@ -259,7 +259,7 @@ describe('documentActions', () => {
           `${APIURL}entities?sharedId=targetId&omitRelationships=true&include=%5B%22permissions%22%5D`,
           {
             body: JSON.stringify({
-              rows: [{ documents: [{ _id: 'fileId' }] }],
+              rows: [{ documents: [{ _id: 'fileId', status: 'ready' }] }],
             }),
           }
         )
@@ -275,6 +275,7 @@ describe('documentActions', () => {
                     {
                       _id: 'pdfCalledWithWrongFilename',
                       filename: 'filename',
+                      status: 'ready',
                     },
                   ],
                 },
@@ -286,7 +287,7 @@ describe('documentActions', () => {
           `${APIURL}entities?sharedId=docWithPDFRdy&omitRelationships=true&include=%5B%22permissions%22%5D`,
           {
             body: JSON.stringify({
-              rows: [{ documents: [{ _id: 'pdfReady' }] }],
+              rows: [{ documents: [{ _id: 'pdfReady', status: 'ready' }] }],
             }),
           }
         )
@@ -296,7 +297,7 @@ describe('documentActions', () => {
               {
                 _id: 'pdfNotReady',
                 sharedId: 'shared',
-                documents: [{ _id: 'pdfNotReady', filename: 'filename' }],
+                documents: [{ _id: 'pdfNotReady', filename: 'filename', status: 'processing' }],
               },
             ],
           }),
@@ -387,7 +388,7 @@ describe('documentActions', () => {
       it('should return the document requested', async () => {
         const requestParams = new RequestParams({ sharedId: 'docWithPDFRdy' });
         const doc = await actions.getDocument(requestParams);
-        expect(doc.documents[0]).toEqual({ _id: 'pdfReady' });
+        expect(doc.documents[0]).toEqual({ _id: 'pdfReady', status: 'ready' });
       });
       it('should return empty object if the document is requested with wrong file name', async () => {
         const requestParams = new RequestParams({ sharedId: 'docCalledWithWrongPDFFilename' });
@@ -524,7 +525,10 @@ describe('documentActions', () => {
         const expectedActions = [
           {
             type: 'viewer/targetDoc/SET',
-            value: { defaultDoc: { _id: 'fileId' }, documents: [{ _id: 'fileId' }] },
+            value: {
+              defaultDoc: { _id: 'fileId', status: 'ready' },
+              documents: [{ _id: 'fileId', status: 'ready' }],
+            },
           },
           { type: 'viewer/targetDocReferences/SET', value: [{ connectedDocument: '1' }] },
         ];
