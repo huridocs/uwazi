@@ -278,7 +278,7 @@ Creating entities,Creating entities
 Creating relationships,Creating relationships
 Creating thesauri,Creating thesauri
 CSS,CSS
-csv blank state message,"Import CSV or ZIP files to create entities in bulk. Select **+ Import CSV** to get started."
+csv blank state message,Import CSV or ZIP files to create entities in bulk. Select **+ Import CSV** to get started.
 CSV Import,CSV Import
 CSV import cancelled,CSV import cancelled
 CSV import completed,CSV import completed
@@ -854,6 +854,7 @@ or drop your files here.,або опустіть свої файли сюди.
 Order,Порядок
 Other,Інший
 other,Інший
+Other files,Other files
 Other users will be affected by this action!,Ця дія вплине на інших користувачів!
 Others,Інші
 Outgoing,Outgoing
@@ -1001,6 +1002,7 @@ Release message,Release message
 remaining files,решта файлів
 Remote Server Unreachable,Віддалений сервер недоступний
 Remove,Видалити
+Remove file,Remove file
 Remove from connection,Remove from connection
 Remove from training set,Видалити з тренувального набору
 remove icon,видалити піктограму

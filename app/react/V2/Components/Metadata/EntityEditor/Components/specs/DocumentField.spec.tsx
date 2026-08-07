@@ -21,6 +21,7 @@ jest.mock('#V2/atoms/index.js', () => ({
 }));
 
 jest.mock('jotai', () => ({
+  ...jest.requireActual('jotai'),
   useAtomValue: () => ({ languages: [{ key: 'en', default: true }] }),
 }));
 
