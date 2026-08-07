@@ -1,5 +1,7 @@
 import { z } from 'zod';
 import { User, UserRole } from '../domain/user/User.js';
+import { UserAccount } from '../domain/user/UserAccount.js';
+import { Credentials } from '../domain/user/Credentials.js';
 import { EncryptedPassword } from '../domain/user/EncryptedPassword.js';
 import { AbstractUseCase } from '../libs/UseCase.js';
 import { UsersDataSource } from './contracts/UsersDataSource.js';
@@ -24,13 +26,17 @@ class CreateUser extends AbstractUseCase<Input, Output, Deps> {
   async execute(input: Input): Promise<Output> {
     const { password, domain, ...userData } = input;
 
-    const user = new User({ _id: this.idGenerator.generate(), ...userData });
+    const identityProps = { _id: this.idGenerator.generate(), ...userData };
+    const identity = new User(identityProps);
 
-    (await this.deps.usersDS.checkUniqueUsername(user)).getDataOrThrow();
+    (await this.deps.usersDS.checkUniqueUsername(identity)).getDataOrThrow();
 
-    (await this.deps.usersDS.checkUniqueEmail(user)).getDataOrThrow();
+    (await this.deps.usersDS.checkUniqueEmail(identity)).getDataOrThrow();
 
-    user.setPassword(await EncryptedPassword.create(password));
+    const user = new UserAccount({
+      ...identityProps,
+      credentials: new Credentials({ password: await EncryptedPassword.create(password) }),
+    });
 
     await this.transactionManager.run(async () => {
       await this.deps.usersDS.insert(user);

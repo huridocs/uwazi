@@ -2,8 +2,10 @@ import {
   TwoFactorStatus,
   UsersDataSource,
 } from '#api/core/application/contracts/UsersDataSource.js';
-import { User } from '#api/core/domain/user/User.js';
+import { User, UserRole } from '#api/core/domain/user/User.js';
+import { UserAccount } from '#api/core/domain/user/UserAccount.js';
 import { EncryptedPassword } from '#api/core/domain/user/EncryptedPassword.js';
+import { Credentials } from '#api/core/domain/user/Credentials.js';
 import {
   EmailInUse,
   UsernameExists,
@@ -56,7 +58,7 @@ class PostgresUsersDataSource extends PostgresDataSource<UserRow> implements Use
     await this.table.where({ _id: userId }).update({ using2fa: false, secret: null });
   }
 
-  async insert(_user: User): Promise<void> {
+  async insert(_user: UserAccount): Promise<void> {
     return notImplemented();
   }
 
@@ -64,8 +66,23 @@ class PostgresUsersDataSource extends PostgresDataSource<UserRow> implements Use
     return notImplemented();
   }
 
-  async update(_user: User): Promise<void> {
-    return notImplemented();
+  async update(user: User): Promise<void> {
+    const row: Record<string, unknown> = {
+      username: user.username,
+      role: user.role,
+      email: user.email,
+    };
+
+    if (user instanceof UserAccount) {
+      row.password = user.credentials.password.getValue();
+      row.failedLogins = user.credentials.failedLogins;
+      row.accountLocked = user.credentials.accountLocked;
+      row.accountUnlockCode = user.credentials.accountUnlockCode ?? null;
+      row.using2fa = user.credentials.using2fa;
+      row.secret = user.credentials.secret ?? null;
+    }
+
+    await this.table.where({ _id: user._id }).update(row);
   }
 
   async getById(_id: string): Promise<ResultType<User, UserNotFound>> {
@@ -73,6 +90,35 @@ class PostgresUsersDataSource extends PostgresDataSource<UserRow> implements Use
   }
 
   async getByEmail(_email: string): Promise<ResultType<User, UserNotFound>> {
+    return notImplemented();
+  }
+
+  async getByUsername(username: string): Promise<ResultType<UserAccount, UserNotFound>> {
+    const row = await this.table.where({ username }).whereNull('deletedAt').first();
+
+    if (!row) {
+      return Result.fail(new UserNotFound(username));
+    }
+
+    return Result.ok(
+      new UserAccount({
+        _id: row._id,
+        username: row.username,
+        role: row.role as UserRole,
+        email: row.email,
+        credentials: new Credentials({
+          password: EncryptedPassword.fromHash(row.password),
+          failedLogins: row.failedLogins ?? undefined,
+          accountLocked: row.accountLocked ?? undefined,
+          accountUnlockCode: row.accountUnlockCode ?? undefined,
+          using2fa: row.using2fa,
+          secret: row.secret,
+        }),
+      })
+    );
+  }
+
+  async getAccountById(_id: string): Promise<ResultType<UserAccount, UserNotFound>> {
     return notImplemented();
   }
 

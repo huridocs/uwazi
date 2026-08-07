@@ -38,7 +38,7 @@ describe('GET /api/users (v2)', () => {
     const response = await request(app).get('/api/users');
 
     expect(response.status).toBe(200);
-    expect(response.body).toHaveLength(2);
+    expect(response.body).toHaveLength(3);
 
     expect(response.body[0]).toMatchObject({
       _id: expect.any(String),
