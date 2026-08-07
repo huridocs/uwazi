@@ -65,9 +65,6 @@ const ocrRoutes = (app: Application) => {
 
       const cookies = cookie.parse(req.get('cookie') || '');
       const sessionId = cookies['connect.sid'];
-      if (!sessionId) {
-        throw createError('Session not found', 401);
-      }
 
       await ocrManager().addToQueue(file, sessionId);
 

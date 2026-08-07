@@ -99,9 +99,6 @@ class EntityFileUploadController extends AbstractController {
 
     const cookies = cookie.parse(this.request.get('cookie') || '');
     const sessionId = cookies['connect.sid'];
-    if (this.fileType === 'document' && !sessionId) {
-      throw new Error('Session not found');
-    }
 
     return FileUploadForEntityFactory.default({
       transactionManager,

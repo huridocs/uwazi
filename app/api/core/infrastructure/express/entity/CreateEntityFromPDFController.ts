@@ -25,12 +25,10 @@ type Request = z.infer<typeof RequestBodySchema>;
 class CreateEntityFromPDFController extends AbstractController<Request> {
   protected async handle(): Promise<void> {
     const body = RequestBodySchema.parse({ ...this.request.body, file: this.request.inputFile });
-    const sessionId = this.resolveSessionId();
-    if (!sessionId) {
-      return;
-    }
-
-    const useCase = CreateEntityFromPDFUseCaseFactory.default({ sessionId });
+    const sessionId = cookie.parse(this.request.get('cookie') || '')['connect.sid'];
+    const useCase = CreateEntityFromPDFUseCaseFactory.default({
+      ...(sessionId ? { sessionId } : {}),
+    });
     const output = await useCase.execute({ templateId: body.templateId, inputFile: body.file });
     const entitiesDAO = EntitiesDAOFactory.default();
     const [entityWithFiles] = await entitiesDAO.getWithFiles({
@@ -41,15 +39,6 @@ class CreateEntityFromPDFController extends AbstractController<Request> {
     this.response.status(201).json({
       data: entityWithFiles as any as EntityWithFilesSchema,
     } satisfies CreateEntityFromPDFResponse);
-  }
-
-  private resolveSessionId(): string | undefined {
-    const sessionId = cookie.parse(this.request.get('cookie') || '')['connect.sid'];
-    if (!sessionId) {
-      this.clientError('Session not found');
-      return undefined;
-    }
-    return sessionId;
   }
 }
 

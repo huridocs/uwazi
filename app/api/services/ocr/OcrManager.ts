@@ -270,7 +270,7 @@ class OcrManager {
     await this.ocrTaskManager?.stop();
   }
 
-  async addToQueue(file: EnforcedWithId<FileType>, sessionId: string) {
+  async addToQueue(file: EnforcedWithId<FileType>, sessionId?: string) {
     if (!file.filename) {
       return;
     }
@@ -293,7 +293,7 @@ class OcrManager {
       params: {
         filename: file.filename,
         language: LanguageUtils.fromISO639_3(file.language!)?.ISO639_1,
-        sessionId,
+        ...(sessionId ? { sessionId } : {}),
       },
     });
 
