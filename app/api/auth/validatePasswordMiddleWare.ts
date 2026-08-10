@@ -4,6 +4,7 @@ import usersModel from '../users/users.js';
 import { comparePasswords } from './encryptPassword.js';
 import { tenants } from '#api/tenants/index.js';
 import { ValidateCurrentPasswordUseCaseFactory } from '#api/core/infrastructure/factories/ValidateCurrentPasswordUseCaseFactory.js';
+import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 
 /**
  * @deprecated v1 fallback for the `v2PasswordReauth` flag, superseded by validatePasswordV2 below.
@@ -16,14 +17,37 @@ const validatePassword = async (submittedPassword: string, requestUser: User) =>
 };
 
 const validatePasswordV2 = async (submittedPassword: string, requestUser: User) => {
-  if (!requestUser.username) {
-    return false;
-  }
+  const startTime = Date.now();
+  try {
+    if (!requestUser.username) {
+      return false;
+    }
 
-  return ValidateCurrentPasswordUseCaseFactory.default().execute({
-    username: requestUser.username,
-    submittedPassword,
-  });
+    const isValid = await ValidateCurrentPasswordUseCaseFactory.default().execute({
+      username: requestUser.username,
+      submittedPassword,
+    });
+
+    ExecutionContext.logger.info('Password reauthentication executed', {
+      namespace: 'Auth_PasswordReauth',
+      success: true,
+      durationMs: Date.now() - startTime,
+    });
+
+    return isValid;
+  } catch (error: unknown) {
+    ExecutionContext.logger.info(
+      `Password reauthentication failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
+      {
+        namespace: 'Auth_PasswordReauth',
+        success: false,
+        error: JSON.stringify(error),
+        notify: true,
+      }
+    );
+
+    throw error;
+  }
 };
 
 const validatePasswordMiddleWare = async (req: Request, res: Response, next: NextFunction) => {

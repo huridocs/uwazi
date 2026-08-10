@@ -1,3 +1,4 @@
+/* eslint-disable max-statements */
 import type { LoginRequest, LoginResponse } from '#shared/contracts/Users.js';
 import { AbstractController } from '#api/common.v2/infrastructure/AbstractController.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
@@ -11,14 +12,35 @@ type RequestWithLogin = { logIn: (user: User, done: (err: unknown) => void) => v
 class LoginController extends AbstractController<LoginRequest> {
   protected async handle(): Promise<void> {
     const domain = `${this.request.protocol}://${ExecutionContext.tenant.domain}`;
-    const input = LoginInputSchema.parse({ ...this.request.body, domain });
+    const startTime = Date.now();
+    try {
+      const input = LoginInputSchema.parse({ ...this.request.body, domain });
 
-    const user = await LoginUseCaseFactory.default().execute(input);
+      const user = await LoginUseCaseFactory.default().execute(input);
 
-    await this.establishSession(user);
+      await this.establishSession(user);
 
-    const response: LoginResponse = { success: true };
-    this.response.status(200).json(response);
+      ExecutionContext.logger.info('User logged in successfully', {
+        namespace: 'Auth_Login',
+        success: true,
+        durationMs: Date.now() - startTime,
+      });
+
+      const response: LoginResponse = { success: true };
+      this.response.status(200).json(response);
+    } catch (error: unknown) {
+      ExecutionContext.logger.info(
+        `Login failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        {
+          namespace: 'Auth_Login',
+          success: false,
+          error: JSON.stringify(error),
+          notify: true,
+        }
+      );
+
+      throw error;
+    }
   }
 
   private async establishSession(user: User): Promise<void> {

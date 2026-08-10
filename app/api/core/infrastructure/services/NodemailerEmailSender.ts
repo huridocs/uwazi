@@ -1,4 +1,5 @@
 import nodemailer, { Transporter } from 'nodemailer';
+import { config } from '#api/config.js';
 import { EmailSender, EmailMessage } from '#api/core/application/contracts/EmailSender.js';
 import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js';
 
@@ -38,9 +39,8 @@ class NodemailerEmailSender implements EmailSender {
 
     const transporter = NodemailerEmailSender.createTransporter(settings.mailerConfig as any);
 
-    const senderEmail =
-      settings.senderEmail !== undefined ? settings.senderEmail : 'no-reply@uwazi.io';
-    const siteName = settings.site_name !== undefined ? settings.site_name : 'Uwazi';
+    const senderEmail = settings.senderEmail || config.mail.defaultSenderEmail;
+    const siteName = settings.site_name || config.mail.defaultSiteName;
     const from = `"${siteName}" <${senderEmail}>`;
 
     await new Promise<void>((resolve, reject) => {
