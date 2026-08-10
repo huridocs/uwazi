@@ -52,17 +52,26 @@ export const documentsReducer = (state = initialState, action = {}) => {
 
     case types.UPDATE_DOCUMENT:
       docIndex = state.get('rows').findIndex(_doc => _doc.get('_id') === action.doc._id);
+      if (docIndex < 0) {
+        return state;
+      }
       return state.setIn(['rows', docIndex], Immutable.fromJS(action.doc));
 
     case types.UPDATE_DOCUMENTS:
       return action.docs.reduce((_state, document) => {
-        const index = state.get('rows').findIndex(_doc => _doc.get('_id') === document._id);
+        const index = _state.get('rows').findIndex(_doc => _doc.get('_id') === document._id);
+        if (index < 0) {
+          return _state;
+        }
         return _state.setIn(['rows', index], Immutable.fromJS(document));
       }, state);
 
     case types.UPDATE_DOCUMENTS_PUBLISHED:
       return action.sharedIds.reduce((_state, sharedId) => {
-        const index = state.get('rows').findIndex(_doc => _doc.get('sharedId') === sharedId);
+        const index = _state.get('rows').findIndex(_doc => _doc.get('sharedId') === sharedId);
+        if (index < 0) {
+          return _state;
+        }
         return _state.setIn(['rows', index, 'published'], action.published);
       }, state);
 

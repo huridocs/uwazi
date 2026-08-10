@@ -74,6 +74,21 @@ describe('documentsReducer', () => {
         ],
       });
     });
+
+    it('should not overwrite a row when the document is not in the list', () => {
+      const currentState = Immutable.fromJS({
+        rows: [
+          { title: '1', _id: 1 },
+          { title: '2', _id: 2 },
+        ],
+      });
+      const newState = documentsReducer(currentState, {
+        type: types.UPDATE_DOCUMENT,
+        doc: { _id: 999, title: 'missing' },
+      });
+
+      expect(newState.toJS()).toEqual(currentState.toJS());
+    });
   });
 
   describe('LIBRARY/UPDATE_DOCUMENTS', () => {

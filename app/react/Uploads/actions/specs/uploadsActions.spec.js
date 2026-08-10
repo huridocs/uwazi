@@ -270,15 +270,6 @@ describe('uploadsActions', () => {
           __reducerKey,
         },
         {
-          type: libraryTypes.UNSELECT_ALL_DOCUMENTS,
-          __reducerKey,
-        },
-        {
-          type: libraryTypes.SELECT_DOCUMENT,
-          doc,
-          __reducerKey,
-        },
-        {
           type: types.UPLOADS_COMPLETE,
           doc: sharedId,
           files: doc.documents,
@@ -289,6 +280,77 @@ describe('uploadsActions', () => {
       expectedActions.forEach(action => {
         expect(dispatch).toHaveBeenCalledWith(action);
       });
+    });
+  });
+
+  describe('updateMainDocument', () => {
+    const sharedId = 'abc1';
+    const processingFile = { _id: 'file1', filename: 'a.pdf', status: 'processing' };
+    const readyFile = { _id: 'file2', filename: 'b.pdf', status: 'ready' };
+    const apiReadyFile = { _id: 'file1', filename: 'a.pdf', status: 'ready' };
+
+    afterEach(() => {
+      jest.restoreAllMocks();
+    });
+
+    it('should fetch and dispatch UPDATE_MAIN_DOC only for docs whose status changed', async () => {
+      const dispatch = jasmine.createSpy('dispatch');
+      const getState = () => ({
+        library: {
+          ui: Immutable.fromJS({
+            selectedDocuments: [{ sharedId, documents: [processingFile, readyFile] }],
+          }),
+        },
+        entityView: { entity: Immutable.fromJS({ sharedId, documents: [processingFile] }) },
+        viewer: { doc: Immutable.fromJS({ sharedId: 'other', documents: [processingFile] }) },
+      });
+      jest.spyOn(entitiesApi, 'get').mockResolvedValue([
+        { sharedId, documents: [apiReadyFile, readyFile] },
+      ]);
+
+      await actions.updateMainDocument(sharedId)(dispatch, getState);
+
+      expect(entitiesApi.get).toHaveBeenCalled();
+      expect(dispatch).toHaveBeenCalledTimes(1);
+      expect(dispatch).toHaveBeenCalledWith({
+        type: types.UPDATE_MAIN_DOC,
+        doc: sharedId,
+        file: apiReadyFile,
+      });
+    });
+
+    it('should not dispatch when API status matches store', async () => {
+      const dispatch = jasmine.createSpy('dispatch');
+      const getState = () => ({
+        library: { ui: Immutable.fromJS({ selectedDocuments: [] }) },
+        entityView: { entity: { sharedId, documents: [readyFile] } },
+        viewer: { doc: {} },
+      });
+      jest.spyOn(entitiesApi, 'get').mockResolvedValue([{ sharedId, documents: [readyFile] }]);
+
+      await actions.updateMainDocument(sharedId)(dispatch, getState);
+
+      expect(entitiesApi.get).toHaveBeenCalled();
+      expect(dispatch).not.toHaveBeenCalled();
+    });
+
+    it('should skip get and dispatch when sharedId is not in store', async () => {
+      const dispatch = jasmine.createSpy('dispatch');
+      const getState = () => ({
+        library: {
+          ui: Immutable.fromJS({
+            selectedDocuments: [{ sharedId: 'other', documents: [processingFile] }],
+          }),
+        },
+        entityView: { entity: Immutable.fromJS({}) },
+        viewer: { doc: Immutable.fromJS({}) },
+      });
+      jest.spyOn(entitiesApi, 'get').mockResolvedValue([]);
+
+      await actions.updateMainDocument(sharedId)(dispatch, getState);
+
+      expect(entitiesApi.get).not.toHaveBeenCalled();
+      expect(dispatch).not.toHaveBeenCalled();
     });
   });
 });

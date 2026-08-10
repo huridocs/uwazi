@@ -73,9 +73,9 @@ class UploadButton extends Component {
     this.props.uploadDocument(this.props.entitySharedId, file);
   }
 
-  documentProcessed(docId, processedDoc) {
-    if (docId === this.props.entitySharedId) {
-      this.props.updateMainDocument(docId, processedDoc);
+  documentProcessed(sharedId) {
+    if (sharedId === this.props.entitySharedId) {
+      this.props.updateMainDocument(sharedId);
       this.setState({ processing: false, failed: false, completed: true }, () => {
         this.timeout = setTimeout(() => {
           this.setState({ processing: false, failed: false, completed: false });
@@ -90,10 +90,10 @@ class UploadButton extends Component {
     }
   }
 
-  conversionFailed(docId, failedFile) {
-    if (docId === this.props.entitySharedId) {
+  conversionFailed(sharedId) {
+    if (sharedId === this.props.entitySharedId) {
       this.setState({ processing: false, failed: true, completed: false });
-      this.props.updateMainDocument(docId, failedFile);
+      this.props.updateMainDocument(sharedId);
     }
   }
 

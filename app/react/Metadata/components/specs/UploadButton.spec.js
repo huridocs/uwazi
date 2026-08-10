@@ -112,4 +112,52 @@ describe('UploadButton', () => {
       expect(props.uploadDocument).toHaveBeenCalledWith('sharedabc1', file);
     });
   });
+
+  describe('documentProcessed', () => {
+    beforeEach(() => {
+      render();
+      component.setState({ processing: true });
+    });
+
+    it('should update main document with sharedId only and show success', () => {
+      component.instance().documentProcessed('sharedabc1', { _id: 'ignored-dto' });
+      expect(props.updateMainDocument).toHaveBeenCalledWith('sharedabc1');
+      expect(props.updateMainDocument).toHaveBeenCalledTimes(1);
+      expect(component.state().completed).toBe(true);
+      expect(component.state().processing).toBe(false);
+      expect(component.state().failed).toBe(false);
+      const icon = component.find(Icon).find('[icon="check"]');
+      expect(icon.length).toBe(1);
+    });
+
+    it('should ignore events for other entities', () => {
+      component.instance().documentProcessed('other');
+      expect(props.updateMainDocument).not.toHaveBeenCalled();
+      expect(component.state().processing).toBe(true);
+    });
+  });
+
+  describe('conversionFailed', () => {
+    beforeEach(() => {
+      render();
+      component.setState({ processing: true });
+    });
+
+    it('should update main document with sharedId only and show error', () => {
+      component.instance().conversionFailed('sharedabc1', { _id: 'ignored-dto' });
+      expect(props.updateMainDocument).toHaveBeenCalledWith('sharedabc1');
+      expect(props.updateMainDocument).toHaveBeenCalledTimes(1);
+      expect(component.state().failed).toBe(true);
+      expect(component.state().processing).toBe(false);
+      expect(component.state().completed).toBe(false);
+      const icon = component.find(Icon).find('[icon="exclamation-triangle"]');
+      expect(icon.length).toBe(1);
+    });
+
+    it('should ignore events for other entities', () => {
+      component.instance().conversionFailed('other');
+      expect(props.updateMainDocument).not.toHaveBeenCalled();
+      expect(component.state().processing).toBe(true);
+    });
+  });
 });
