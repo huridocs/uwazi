@@ -34,8 +34,11 @@ const buildCurrentQuery = (
   location: Pick<Location, 'search'>
 ): LibrarySearchQuery => {
   const urlQuery = searchParamsFromLocationSearch(location) || {};
-  const { treatAs: _treatAs, userSelectedSorting: _userSelectedSorting, ...reduxQuery } =
-    processFilters(search, filters.toJS());
+  const {
+    treatAs: _treatAs,
+    userSelectedSorting: _userSelectedSorting,
+    ...reduxQuery
+  } = processFilters(search, filters.toJS());
   const definedReduxQuery = Object.fromEntries(
     Object.entries(reduxQuery).filter(([, value]) => value !== undefined)
   );
