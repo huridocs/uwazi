@@ -81,13 +81,7 @@ class TemplatePostProcessService {
   }
 
   private async collectPostProcessJobParams(
-    {
-      diff,
-      language,
-      fullReindex,
-      resaveForFilterChange,
-      tenantName,
-    }: CollectPostProcessJobProps,
+    { diff, language, fullReindex, resaveForFilterChange, tenantName }: CollectPostProcessJobProps,
     dispatch: (params: TemplatePostProcessParams) => void
   ) {
     const limit = 50;

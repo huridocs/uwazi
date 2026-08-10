@@ -18,7 +18,7 @@ export abstract class UwaziJobHandler<
   async handleDispatch(
     heartbeat: HeartbeatCallback,
     params: Params,
-    jobInfo?: JobInfo,
+    jobInfo?: JobInfo
   ): Promise<void> {
     const extendedParams = params as ExtendedParams;
     const tenantName = jobInfo?.namespace;
@@ -42,9 +42,7 @@ export abstract class UwaziJobHandler<
     }
 
     if (!userId) {
-      throw new Error(
-        'Missing userId: user-scoped jobs must include a userId parameter.',
-      );
+      throw new Error('Missing userId: user-scoped jobs must include a userId parameter.');
     }
 
     const { default: users } = await import('#api/users/users.js');
@@ -60,6 +58,6 @@ export abstract class UwaziJobHandler<
   protected abstract handle(
     heartbeat: HeartbeatCallback,
     params: ExtendedParams,
-    jobInfo?: JobInfo,
+    jobInfo?: JobInfo
   ): Promise<void>;
 }

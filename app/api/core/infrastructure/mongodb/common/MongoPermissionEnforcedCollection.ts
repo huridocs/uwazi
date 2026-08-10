@@ -69,7 +69,7 @@ class MongoPermissionEnforcedCollection<TSchema extends Document = Document>
   constructor(
     collection: Collection<TSchema>,
     accessContext: AccessContext,
-    translator?: MongoPermissionTranslator,
+    translator?: MongoPermissionTranslator
   ) {
     super(collection);
     this.accessContext = accessContext;
@@ -77,12 +77,12 @@ class MongoPermissionEnforcedCollection<TSchema extends Document = Document>
   }
 
   static for<TSchema extends Document = Document>(
-    params: ForParams<TSchema>,
+    params: ForParams<TSchema>
   ): MongoPermissionEnforcedCollection<TSchema> {
     return new MongoPermissionEnforcedCollection<TSchema>(
       params.collection,
       params.accessContext,
-      params.translator,
+      params.translator
     );
   }
 
@@ -90,7 +90,7 @@ class MongoPermissionEnforcedCollection<TSchema extends Document = Document>
 
   find<T extends TSchema>(
     filter?: Filter<TSchema>,
-    options?: FindOptions<Document> | undefined,
+    options?: FindOptions<Document> | undefined
   ): FindCursor<WithId<TSchema>> | FindCursor<T> {
     const permFilter = this.buildReadFilter(filter);
     return this.collection.find(permFilter, options) as FindCursor<WithId<TSchema>> | FindCursor<T>;
@@ -98,7 +98,7 @@ class MongoPermissionEnforcedCollection<TSchema extends Document = Document>
 
   async findOne<T = TSchema>(
     filter?: Filter<TSchema>,
-    options?: FindOptions<Document> | undefined,
+    options?: FindOptions<Document> | undefined
   ): Promise<WithId<TSchema> | T | null> {
     const permFilter = this.buildReadFilter(filter);
     return this.collection.findOne(permFilter, options);
@@ -106,7 +106,7 @@ class MongoPermissionEnforcedCollection<TSchema extends Document = Document>
 
   async countDocuments(
     filter?: Filter<Document>,
-    options?: CountDocumentsOptions,
+    options?: CountDocumentsOptions
   ): Promise<number> {
     const permFilter = this.buildReadFilter(filter as Filter<TSchema>);
     return this.collection.countDocuments(permFilter, options);
@@ -115,7 +115,7 @@ class MongoPermissionEnforcedCollection<TSchema extends Document = Document>
   async distinct<Key extends '_id' | keyof EnhancedOmit<TSchema, '_id'>>(
     key: Key,
     filter: Filter<TSchema> = {},
-    options: DistinctOptions = {},
+    options: DistinctOptions = {}
   ): Promise<any[] | Flatten<WithId<TSchema>[Key]>[]> {
     const permFilter = this.buildReadFilter(filter);
     return this.collection.distinct(key, permFilter, options);
@@ -123,12 +123,13 @@ class MongoPermissionEnforcedCollection<TSchema extends Document = Document>
 
   aggregate<T extends Document = Document>(
     pipeline?: Document[] | undefined,
-    options?: AggregateOptions | undefined,
+    options?: AggregateOptions | undefined
   ): AggregationCursor<T> {
     const permMatch = this.buildReadFilter({});
-    const permPipeline = Object.keys(permMatch).length > 0
-      ? [{ $match: permMatch }, ...(pipeline || [])]
-      : (pipeline || []);
+    const permPipeline =
+      Object.keys(permMatch).length > 0
+        ? [{ $match: permMatch }, ...(pipeline || [])]
+        : pipeline || [];
     return this.collection.aggregate(permPipeline, options);
   }
 
@@ -136,7 +137,7 @@ class MongoPermissionEnforcedCollection<TSchema extends Document = Document>
 
   async insertOne(
     doc: OptionalUnlessRequiredId<TSchema>,
-    options?: InsertOneOptions | undefined,
+    options?: InsertOneOptions | undefined
   ): Promise<InsertOneResult<TSchema>> {
     this.applyInsertPolicy();
     return this.collection.insertOne(doc, options);
@@ -144,7 +145,7 @@ class MongoPermissionEnforcedCollection<TSchema extends Document = Document>
 
   async insertMany(
     docs: OptionalUnlessRequiredId<TSchema>[],
-    options?: BulkWriteOptions | undefined,
+    options?: BulkWriteOptions | undefined
   ): Promise<InsertManyResult<TSchema>> {
     this.applyInsertPolicy();
     return this.collection.insertMany(docs, options);
@@ -152,7 +153,7 @@ class MongoPermissionEnforcedCollection<TSchema extends Document = Document>
 
   async bulkWrite(
     operations: ReadonlyArray<AnyBulkWriteOperation<TSchema>>,
-    options?: BulkWriteOptions,
+    options?: BulkWriteOptions
   ): Promise<BulkWriteResult> {
     this.applyInsertPolicy();
     const permOperations = operations.map(op => this.applyBulkWritePermission(op));
@@ -164,7 +165,7 @@ class MongoPermissionEnforcedCollection<TSchema extends Document = Document>
   async updateOne(
     filter: Filter<TSchema>,
     update: UpdateFilter<TSchema> | Document[],
-    options?: UpdateOptions,
+    options?: UpdateOptions
   ): Promise<UpdateResult<TSchema>> {
     if (options?.upsert) this.applyInsertPolicy();
     if (this.isIdBasedUpsert(filter, options)) {
@@ -177,7 +178,7 @@ class MongoPermissionEnforcedCollection<TSchema extends Document = Document>
   async updateMany(
     filter: Filter<TSchema>,
     update: UpdateFilter<TSchema>,
-    options?: UpdateOptions | undefined,
+    options?: UpdateOptions | undefined
   ): Promise<UpdateResult<TSchema>> {
     if (options?.upsert) this.applyInsertPolicy();
     if (this.isIdBasedUpsert(filter, options)) {
@@ -190,7 +191,7 @@ class MongoPermissionEnforcedCollection<TSchema extends Document = Document>
   async replaceOne(
     filter: Filter<TSchema>,
     replacement: WithoutId<TSchema>,
-    options?: ReplaceOptions | undefined,
+    options?: ReplaceOptions | undefined
   ): Promise<Document | UpdateResult<TSchema>> {
     if (options?.upsert) this.applyInsertPolicy();
     if (this.isIdBasedUpsert(filter, options)) {
@@ -202,7 +203,7 @@ class MongoPermissionEnforcedCollection<TSchema extends Document = Document>
 
   async deleteOne(
     filter?: Filter<TSchema> | undefined,
-    options?: DeleteOptions | undefined,
+    options?: DeleteOptions | undefined
   ): Promise<DeleteResult> {
     const permFilter = this.buildWriteFilter(filter || {});
     return this.collection.deleteOne(permFilter, options);
@@ -210,7 +211,7 @@ class MongoPermissionEnforcedCollection<TSchema extends Document = Document>
 
   async deleteMany(
     filter?: Filter<TSchema> | undefined,
-    options?: DeleteOptions | undefined,
+    options?: DeleteOptions | undefined
   ): Promise<DeleteResult> {
     const permFilter = this.buildWriteFilter(filter || {});
     return this.collection.deleteMany(permFilter, options);
@@ -219,30 +220,30 @@ class MongoPermissionEnforcedCollection<TSchema extends Document = Document>
   findOneAndUpdate(
     filter: Filter<TSchema>,
     update: UpdateFilter<TSchema>,
-    options: FindOneAndUpdateOptions & { includeResultMetadata: true },
+    options: FindOneAndUpdateOptions & { includeResultMetadata: true }
   ): Promise<ModifyResult<TSchema>>;
 
   findOneAndUpdate(
     filter: Filter<TSchema>,
     update: UpdateFilter<TSchema>,
-    options: FindOneAndUpdateOptions & { includeResultMetadata: false },
+    options: FindOneAndUpdateOptions & { includeResultMetadata: false }
   ): Promise<WithId<TSchema> | null>;
 
   findOneAndUpdate(
     filter: Filter<TSchema>,
     update: UpdateFilter<TSchema>,
-    options: FindOneAndUpdateOptions,
+    options: FindOneAndUpdateOptions
   ): Promise<WithId<TSchema> | null>;
 
   findOneAndUpdate(
     filter: Filter<TSchema>,
-    update: UpdateFilter<TSchema>,
+    update: UpdateFilter<TSchema>
   ): Promise<WithId<TSchema> | null>;
 
   async findOneAndUpdate(
     filter: Filter<TSchema>,
     update: UpdateFilter<TSchema>,
-    options: FindOneAndUpdateOptions = {},
+    options: FindOneAndUpdateOptions = {}
   ): Promise<WithId<TSchema> | ModifyResult<TSchema> | null> {
     if (options.upsert) this.applyInsertPolicy();
     if (this.isIdBasedUpsert(filter, options)) {
@@ -254,24 +255,24 @@ class MongoPermissionEnforcedCollection<TSchema extends Document = Document>
 
   findOneAndDelete(
     filter: Filter<TSchema>,
-    options: FindOneAndDeleteOptions & { includeResultMetadata: true },
+    options: FindOneAndDeleteOptions & { includeResultMetadata: true }
   ): Promise<ModifyResult<TSchema>>;
 
   findOneAndDelete(
     filter: Filter<TSchema>,
-    options: FindOneAndDeleteOptions & { includeResultMetadata: false },
+    options: FindOneAndDeleteOptions & { includeResultMetadata: false }
   ): Promise<WithId<TSchema> | null>;
 
   findOneAndDelete(
     filter: Filter<TSchema>,
-    options: FindOneAndDeleteOptions,
+    options: FindOneAndDeleteOptions
   ): Promise<WithId<TSchema> | null>;
 
   findOneAndDelete(filter: Filter<TSchema>): Promise<WithId<TSchema> | null>;
 
   async findOneAndDelete(
     filter: Filter<TSchema>,
-    options: FindOneAndDeleteOptions = {},
+    options: FindOneAndDeleteOptions = {}
   ): Promise<ModifyResult<TSchema> | WithId<TSchema> | null> {
     const permFilter = this.buildWriteFilter(filter);
     return this.collection.findOneAndDelete(permFilter, options);
@@ -280,30 +281,30 @@ class MongoPermissionEnforcedCollection<TSchema extends Document = Document>
   findOneAndReplace(
     filter: Filter<TSchema>,
     replacement: WithoutId<TSchema>,
-    options: FindOneAndReplaceOptions & { includeResultMetadata: true },
+    options: FindOneAndReplaceOptions & { includeResultMetadata: true }
   ): Promise<ModifyResult<TSchema>>;
 
   findOneAndReplace(
     filter: Filter<TSchema>,
     replacement: WithoutId<TSchema>,
-    options: FindOneAndReplaceOptions & { includeResultMetadata: false },
+    options: FindOneAndReplaceOptions & { includeResultMetadata: false }
   ): Promise<WithId<TSchema> | null>;
 
   findOneAndReplace(
     filter: Filter<TSchema>,
     replacement: WithoutId<TSchema>,
-    options: FindOneAndReplaceOptions,
+    options: FindOneAndReplaceOptions
   ): Promise<WithId<TSchema> | null>;
 
   findOneAndReplace(
     filter: Filter<TSchema>,
-    replacement: WithoutId<TSchema>,
+    replacement: WithoutId<TSchema>
   ): Promise<WithId<TSchema> | null>;
 
   async findOneAndReplace(
     filter: Filter<TSchema>,
     replacement: WithoutId<TSchema>,
-    options: FindOneAndReplaceOptions = {},
+    options: FindOneAndReplaceOptions = {}
   ): Promise<ModifyResult<TSchema> | WithId<TSchema> | null> {
     if (options.upsert) this.applyInsertPolicy();
     if (this.isIdBasedUpsert(filter, options)) {
@@ -332,7 +333,7 @@ class MongoPermissionEnforcedCollection<TSchema extends Document = Document>
 
   private isIdBasedUpsert(
     filter: Filter<TSchema>,
-    options?: { upsert?: boolean },
+    options?: { upsert?: boolean }
   ): filter is { _id: any } & Filter<TSchema> {
     return !!options?.upsert && !!(filter as any)._id;
   }
@@ -340,7 +341,7 @@ class MongoPermissionEnforcedCollection<TSchema extends Document = Document>
   private async atomicIdUpsertUpdate(
     filter: Filter<TSchema>,
     update: UpdateFilter<TSchema> | Document[],
-    options: UpdateOptions,
+    options: UpdateOptions
   ): Promise<UpdateResult<TSchema>> {
     const id = (filter as any)._id;
 
@@ -348,7 +349,7 @@ class MongoPermissionEnforcedCollection<TSchema extends Document = Document>
       return await this.collection.updateOne(
         { _id: id, ...this.buildWriteFilter({}) } as Filter<TSchema>,
         update,
-        { ...options, upsert: true },
+        { ...options, upsert: true }
       );
     } catch (error) {
       if (this.isDuplicateKeyError(error)) {
@@ -367,7 +368,7 @@ class MongoPermissionEnforcedCollection<TSchema extends Document = Document>
   private async atomicIdUpsertReplace(
     filter: Filter<TSchema>,
     replacement: WithoutId<TSchema>,
-    options: ReplaceOptions,
+    options: ReplaceOptions
   ): Promise<Document | UpdateResult<TSchema>> {
     const id = (filter as any)._id;
 
@@ -375,7 +376,7 @@ class MongoPermissionEnforcedCollection<TSchema extends Document = Document>
       return await this.collection.replaceOne(
         { _id: id, ...this.buildWriteFilter({}) } as Filter<TSchema>,
         replacement,
-        { ...options, upsert: true },
+        { ...options, upsert: true }
       );
     } catch (error) {
       if (this.isDuplicateKeyError(error)) {
@@ -394,7 +395,7 @@ class MongoPermissionEnforcedCollection<TSchema extends Document = Document>
   private async atomicIdUpsertFindOneAndUpdate(
     filter: Filter<TSchema>,
     update: UpdateFilter<TSchema>,
-    options: FindOneAndUpdateOptions,
+    options: FindOneAndUpdateOptions
   ): Promise<WithId<TSchema> | ModifyResult<TSchema> | null> {
     const id = (filter as any)._id;
 
@@ -402,7 +403,7 @@ class MongoPermissionEnforcedCollection<TSchema extends Document = Document>
       return await this.collection.findOneAndUpdate(
         { _id: id, ...this.buildWriteFilter({}) } as Filter<TSchema>,
         update,
-        { ...options, upsert: true },
+        { ...options, upsert: true }
       );
     } catch (error) {
       if (this.isDuplicateKeyError(error)) {
@@ -417,7 +418,7 @@ class MongoPermissionEnforcedCollection<TSchema extends Document = Document>
   private async atomicIdUpsertFindOneAndReplace(
     filter: Filter<TSchema>,
     replacement: WithoutId<TSchema>,
-    options: FindOneAndReplaceOptions,
+    options: FindOneAndReplaceOptions
   ): Promise<ModifyResult<TSchema> | WithId<TSchema> | null> {
     const id = (filter as any)._id;
 
@@ -425,7 +426,7 @@ class MongoPermissionEnforcedCollection<TSchema extends Document = Document>
       return await this.collection.findOneAndReplace(
         { _id: id, ...this.buildWriteFilter({}) } as Filter<TSchema>,
         replacement,
-        { ...options, upsert: true },
+        { ...options, upsert: true }
       );
     } catch (error) {
       if (this.isDuplicateKeyError(error)) {
@@ -442,7 +443,7 @@ class MongoPermissionEnforcedCollection<TSchema extends Document = Document>
   }
 
   private applyBulkWritePermission(
-    op: AnyBulkWriteOperation<TSchema>,
+    op: AnyBulkWriteOperation<TSchema>
   ): AnyBulkWriteOperation<TSchema> {
     if ('updateOne' in op) {
       return {

@@ -210,7 +210,7 @@ describe('MongoPermissionEnforcedCollection', () => {
       const coll = createEnforcedCollection(AccessContext.forActor(collaborator), db);
       const result = await coll.updateMany(
         { _id: { $in: ['ent-write', 'ent-read', 'ent-none'] } },
-        { $set: { name: 'batch-updated' } },
+        { $set: { name: 'batch-updated' } }
       );
       expect(result.matchedCount).toBe(1);
       expect(result.modifiedCount).toBe(1);
@@ -258,7 +258,7 @@ describe('MongoPermissionEnforcedCollection', () => {
     it('anonymous cannot insert', async () => {
       const coll = createEnforcedCollection(AccessContext.forActor(anon), db);
       await expect(
-        coll.insertOne({ _id: 'ent-new', name: 'new-row', published: false, permissions: [] }),
+        coll.insertOne({ _id: 'ent-new', name: 'new-row', published: false, permissions: [] })
       ).rejects.toThrow('Anonymous users cannot insert');
     });
 
@@ -274,7 +274,7 @@ describe('MongoPermissionEnforcedCollection', () => {
     it('anonymous cannot insertMany', async () => {
       const coll = createEnforcedCollection(AccessContext.forActor(anon), db);
       await expect(
-        coll.insertMany([{ _id: 'ent-new', name: 'new-row', published: false, permissions: [] }]),
+        coll.insertMany([{ _id: 'ent-new', name: 'new-row', published: false, permissions: [] }])
       ).rejects.toThrow('Anonymous users cannot insert');
     });
   });
@@ -285,7 +285,7 @@ describe('MongoPermissionEnforcedCollection', () => {
       const result = await coll.updateOne(
         { _id: 'ent-upsert-new' },
         { $set: { name: 'upserted', published: true, permissions: [] } },
-        { upsert: true },
+        { upsert: true }
       );
       expect(result.upsertedCount).toBe(1);
       const row = await coll.findOne({ _id: 'ent-upsert-new' });
@@ -297,7 +297,7 @@ describe('MongoPermissionEnforcedCollection', () => {
       const result = await coll.updateOne(
         { _id: 'ent-write' },
         { $set: { name: 'upserted-name' } },
-        { upsert: true },
+        { upsert: true }
       );
       expect(result.matchedCount).toBe(1);
       expect(result.modifiedCount).toBe(1);
@@ -314,7 +314,7 @@ describe('MongoPermissionEnforcedCollection', () => {
       const result = await coll.updateOne(
         { _id: 'ent-none' },
         { $set: { name: 'hacked' } },
-        { upsert: true },
+        { upsert: true }
       );
       expect(result.matchedCount).toBe(0);
       expect(result.upsertedCount).toBe(0);
@@ -328,8 +328,8 @@ describe('MongoPermissionEnforcedCollection', () => {
         coll.updateOne(
           { name: 'not-found' },
           { $set: { name: 'injected', published: true, permissions: [] } },
-          { upsert: true },
-        ),
+          { upsert: true }
+        )
       ).rejects.toThrow('Anonymous users cannot insert');
     });
   });
@@ -341,8 +341,8 @@ describe('MongoPermissionEnforcedCollection', () => {
         coll.updateMany(
           { name: 'not-found' },
           { $set: { name: 'injected', published: true, permissions: [] } },
-          { upsert: true },
-        ),
+          { upsert: true }
+        )
       ).rejects.toThrow('Anonymous users cannot insert');
     });
   });
@@ -350,20 +350,14 @@ describe('MongoPermissionEnforcedCollection', () => {
   describe('findOneAndUpdate() — write enforcement', () => {
     it('collaborator can findOneAndUpdate a writable row', async () => {
       const coll = createEnforcedCollection(AccessContext.forActor(collaborator), db);
-      const row = await coll.findOneAndUpdate(
-        { _id: 'ent-write' },
-        { $set: { name: 'updated' } },
-      );
+      const row = await coll.findOneAndUpdate({ _id: 'ent-write' }, { $set: { name: 'updated' } });
       expect(row).toBeDefined();
       expect(row!._id).toBe('ent-write');
     });
 
     it('collaborator cannot findOneAndUpdate a read-only row', async () => {
       const coll = createEnforcedCollection(AccessContext.forActor(collaborator), db);
-      const row = await coll.findOneAndUpdate(
-        { _id: 'ent-read' },
-        { $set: { name: 'hacked' } },
-      );
+      const row = await coll.findOneAndUpdate({ _id: 'ent-read' }, { $set: { name: 'hacked' } });
       expect(row).toBeNull();
     });
     it('anonymous findOneAndUpdate upsert without _id is blocked', async () => {
@@ -372,8 +366,8 @@ describe('MongoPermissionEnforcedCollection', () => {
         coll.findOneAndUpdate(
           { name: 'not-found' },
           { $set: { name: 'injected', published: true, permissions: [] } },
-          { upsert: true },
-        ),
+          { upsert: true }
+        )
       ).rejects.toThrow('Anonymous users cannot insert');
     });
   });
@@ -396,20 +390,22 @@ describe('MongoPermissionEnforcedCollection', () => {
   describe('findOneAndReplace() — write enforcement', () => {
     it('collaborator can findOneAndReplace a writable row', async () => {
       const coll = createEnforcedCollection(AccessContext.forActor(collaborator), db);
-      const row = await coll.findOneAndReplace(
-        { _id: 'ent-write' },
-        { name: 'replaced', published: false, permissions: [] } as any,
-      );
+      const row = await coll.findOneAndReplace({ _id: 'ent-write' }, {
+        name: 'replaced',
+        published: false,
+        permissions: [],
+      } as any);
       expect(row).toBeDefined();
       expect(row!._id).toBe('ent-write');
     });
 
     it('collaborator cannot findOneAndReplace a read-only row', async () => {
       const coll = createEnforcedCollection(AccessContext.forActor(collaborator), db);
-      const row = await coll.findOneAndReplace(
-        { _id: 'ent-read' },
-        { name: 'hacked', published: false, permissions: [] } as any,
-      );
+      const row = await coll.findOneAndReplace({ _id: 'ent-read' }, {
+        name: 'hacked',
+        published: false,
+        permissions: [],
+      } as any);
       expect(row).toBeNull();
     });
 
@@ -422,7 +418,7 @@ describe('MongoPermissionEnforcedCollection', () => {
       const row = await coll.findOneAndReplace(
         { _id: 'ent-group-read' },
         { name: 'hacked', published: false, permissions: [] } as any,
-        { upsert: true },
+        { upsert: true }
       );
       expect(row).toBeNull();
 
@@ -434,19 +430,21 @@ describe('MongoPermissionEnforcedCollection', () => {
   describe('replaceOne() — write enforcement', () => {
     it('collaborator can replaceOne a writable row', async () => {
       const coll = createEnforcedCollection(AccessContext.forActor(collaborator), db);
-      const result = await coll.replaceOne(
-        { _id: 'ent-write' },
-        { name: 'replaced', published: false, permissions: [] } as any,
-      );
+      const result = await coll.replaceOne({ _id: 'ent-write' }, {
+        name: 'replaced',
+        published: false,
+        permissions: [],
+      } as any);
       expect(result.modifiedCount).toBe(1);
     });
 
     it('collaborator cannot replaceOne a read-only row', async () => {
       const coll = createEnforcedCollection(AccessContext.forActor(collaborator), db);
-      const result = await coll.replaceOne(
-        { _id: 'ent-read' },
-        { name: 'hacked', published: false, permissions: [] } as any,
-      );
+      const result = await coll.replaceOne({ _id: 'ent-read' }, {
+        name: 'hacked',
+        published: false,
+        permissions: [],
+      } as any);
       expect(result.matchedCount).toBe(0);
       expect(result.modifiedCount).toBe(0);
     });
@@ -456,8 +454,8 @@ describe('MongoPermissionEnforcedCollection', () => {
         coll.replaceOne(
           { name: 'not-found' },
           { name: 'injected', published: true, permissions: [] } as any,
-          { upsert: true },
-        ),
+          { upsert: true }
+        )
       ).rejects.toThrow('Anonymous users cannot insert');
     });
 
@@ -467,8 +465,8 @@ describe('MongoPermissionEnforcedCollection', () => {
         coll.findOneAndReplace(
           { name: 'not-found' },
           { name: 'injected', published: true, permissions: [] } as any,
-          { upsert: true },
-        ),
+          { upsert: true }
+        )
       ).rejects.toThrow('Anonymous users cannot insert');
     });
   });
@@ -479,9 +477,11 @@ describe('MongoPermissionEnforcedCollection', () => {
       await expect(
         coll.bulkWrite([
           {
-            insertOne: { document: { _id: 'ent-new', name: 'new', published: true, permissions: [] } },
+            insertOne: {
+              document: { _id: 'ent-new', name: 'new', published: true, permissions: [] },
+            },
           },
-        ]),
+        ])
       ).rejects.toThrow('Anonymous users cannot insert');
     });
 
@@ -511,9 +511,7 @@ describe('MongoPermissionEnforcedCollection', () => {
   describe('$or safety — read enforcement', () => {
     it('OR in find does not bypass read enforcement', async () => {
       const coll = createEnforcedCollection(AccessContext.forActor(collaborator), db);
-      const rows = await coll
-        .find({ $or: [{ _id: 'ent-none' }, { _id: 'ent-read' }] })
-        .toArray();
+      const rows = await coll.find({ $or: [{ _id: 'ent-none' }, { _id: 'ent-read' }] }).toArray();
       const ids = rows.map(r => r._id).sort();
       expect(ids).toEqual(['ent-read']);
     });
@@ -522,7 +520,7 @@ describe('MongoPermissionEnforcedCollection', () => {
       const coll = createEnforcedCollection(AccessContext.forActor(collaborator), db);
       const result = await coll.updateOne(
         { $or: [{ _id: 'ent-read' }, { _id: 'ent-write' }] },
-        { $set: { name: 'hacked' } },
+        { $set: { name: 'hacked' } }
       );
       expect(result.matchedCount).toBe(1);
       expect(result.modifiedCount).toBe(1);
@@ -544,10 +542,7 @@ describe('MongoPermissionEnforcedCollection', () => {
   describe('select + orderBy equivalents', () => {
     it('find with projection preserves permission enforcement', async () => {
       const coll = createEnforcedCollection(AccessContext.forActor(collaborator), db);
-      const row = await coll.findOne(
-        { _id: 'ent-write' },
-        { projection: { _id: 1, name: 1 } },
-      );
+      const row = await coll.findOne({ _id: 'ent-write' }, { projection: { _id: 1, name: 1 } });
       expect(row).toBeDefined();
       expect(row!).toHaveProperty('_id');
       expect(row!).toHaveProperty('name');
@@ -557,7 +552,10 @@ describe('MongoPermissionEnforcedCollection', () => {
 
     it('find with sort and cursor chain preserves permission enforcement', async () => {
       const coll = createEnforcedCollection(AccessContext.forActor(admin), db);
-      const rows = await coll.find({}, { projection: { _id: 1, name: 1 } }).sort({ name: 1 }).toArray();
+      const rows = await coll
+        .find({}, { projection: { _id: 1, name: 1 } })
+        .sort({ name: 1 })
+        .toArray();
       const names = rows.map(r => r.name);
       expect(names).toEqual([
         'group-read-only',
@@ -579,12 +577,7 @@ describe('MongoPermissionEnforcedCollection', () => {
     it('find with skip and limit after permission filtering', async () => {
       const coll = createEnforcedCollection(AccessContext.forActor(collaborator), db);
       const rows = await coll.find({}).sort({ _id: 1 }).skip(1).limit(10).toArray();
-      expect(rows.map(r => r._id)).toEqual([
-        'ent-group-write',
-        'ent-pub',
-        'ent-read',
-        'ent-write',
-      ]);
+      expect(rows.map(r => r._id)).toEqual(['ent-group-write', 'ent-pub', 'ent-read', 'ent-write']);
     });
   });
 
@@ -666,27 +659,21 @@ describe('MongoPermissionEnforcedCollection', () => {
       const coll = createEnforcedCollection(AccessContext.forActor(collaborator), db);
       const result = await coll.updateOne(
         { _id: 'ent-group-write' },
-        { $set: { name: 'updated' } },
+        { $set: { name: 'updated' } }
       );
       expect(result.modifiedCount).toBe(1);
     });
 
     it('collaborator cannot update an entity with only group read permission', async () => {
       const coll = createEnforcedCollection(AccessContext.forActor(collaborator), db);
-      const result = await coll.updateOne(
-        { _id: 'ent-group-read' },
-        { $set: { name: 'updated' } },
-      );
+      const result = await coll.updateOne({ _id: 'ent-group-read' }, { $set: { name: 'updated' } });
       expect(result.matchedCount).toBe(0);
       expect(result.modifiedCount).toBe(0);
     });
 
     it('otherUser cannot update a group-write entity', async () => {
       const coll = createEnforcedCollection(AccessContext.forActor(otherUser), db);
-      const result = await coll.updateOne(
-        { _id: 'ent-group-write' },
-        { $set: { name: 'hacked' } },
-      );
+      const result = await coll.updateOne({ _id: 'ent-group-write' }, { $set: { name: 'hacked' } });
       expect(result.matchedCount).toBe(0);
       expect(result.modifiedCount).toBe(0);
     });
@@ -704,7 +691,7 @@ describe('MongoPermissionEnforcedCollection', () => {
       const result = await coll.updateOne(
         { _id: 'ent-group-write' },
         { $set: { name: 'group-write-updated' } },
-        { upsert: true },
+        { upsert: true }
       );
       expect(result.matchedCount).toBe(1);
       expect(result.modifiedCount).toBe(1);
@@ -721,7 +708,7 @@ describe('MongoPermissionEnforcedCollection', () => {
       const result = await coll.updateOne(
         { _id: 'ent-group-read' },
         { $set: { name: 'hacked' } },
-        { upsert: true },
+        { upsert: true }
       );
       expect(result.matchedCount).toBe(0);
       expect(result.upsertedCount).toBe(0);
@@ -739,7 +726,7 @@ describe('MongoPermissionEnforcedCollection', () => {
       const result = await coll.updateOne(
         { _id: 'ent-group-write' },
         { $set: { name: 'hacked' } },
-        { upsert: true },
+        { upsert: true }
       );
       expect(result.matchedCount).toBe(0);
       expect(result.upsertedCount).toBe(0);

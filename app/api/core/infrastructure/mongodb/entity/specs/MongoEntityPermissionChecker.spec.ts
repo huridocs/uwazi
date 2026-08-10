@@ -24,8 +24,7 @@ const entityFile = (entitySharedId: string) =>
 
 const customFile = () => FileBuilder.customUpload('custom-for-check');
 
-const readSpec = (actor: User) =>
-  new PermissionSpec(actor, AccessLevel.Read);
+const readSpec = (actor: User) => new PermissionSpec(actor, AccessLevel.Read);
 
 const writeSpec = (actor: User) => PermissionSpec.createDeleteSpecification(actor);
 

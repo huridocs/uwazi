@@ -201,7 +201,11 @@ describe('CloneLanguageEntitiesJob', () => {
   describe('when jobInfo is not provided', () => {
     it('should not emit translationsInstallDone', async () => {
       const job = createSUT(mockWebSockets);
-      await job.handleDispatch(heartbeat, { pairs: [{ from: 'en', to: 'ja' }], userId: new ObjectId().toString() } as any, undefined);
+      await job.handleDispatch(
+        heartbeat,
+        { pairs: [{ from: 'en', to: 'ja' }], userId: new ObjectId().toString() } as any,
+        undefined
+      );
 
       expect(mockWebSockets.emitToTenant).not.toHaveBeenCalled();
     });

@@ -41,16 +41,14 @@ class PermissionDeniedError extends Error {
 class PostgresPermissionEnforcedTable<TRow = Record<string, unknown>> extends PostgresTable<TRow> {
   private readonly accessContext: AccessContext;
 
-  protected constructor(
-    cfg: TableConfig,
-    qb: Knex.QueryBuilder,
-    accessContext: AccessContext,
-  ) {
+  protected constructor(cfg: TableConfig, qb: Knex.QueryBuilder, accessContext: AccessContext) {
     super(cfg, qb);
     this.accessContext = accessContext;
   }
 
-  static for<TRow = Record<string, unknown>>(params: ForParams): PostgresPermissionEnforcedTable<TRow> {
+  static for<TRow = Record<string, unknown>>(
+    params: ForParams
+  ): PostgresPermissionEnforcedTable<TRow> {
     const knexInstance = params.knex ?? PostgresDB.knex;
     const cfg: TableConfig = {
       knex: knexInstance,
@@ -62,16 +60,12 @@ class PostgresPermissionEnforcedTable<TRow = Record<string, unknown>> extends Po
     return new PostgresPermissionEnforcedTable<TRow>(
       cfg,
       knexInstance(params.tableName),
-      params.accessContext,
+      params.accessContext
     );
   }
 
   protected chain(qb: Knex.QueryBuilder): this {
-    return new PostgresPermissionEnforcedTable(
-      this.cfg,
-      qb,
-      this.accessContext,
-    ) as any as this;
+    return new PostgresPermissionEnforcedTable(this.cfg, qb, this.accessContext) as any as this;
   }
 
   async all(): Promise<TRow[]> {
@@ -135,7 +129,7 @@ class PostgresPermissionEnforcedTable<TRow = Record<string, unknown>> extends Po
     if (affectedIds.length > 0) {
       await this.notifySync(
         rows.filter(r => affectedIds.includes(r._id as string)),
-        false,
+        false
       );
     }
   }

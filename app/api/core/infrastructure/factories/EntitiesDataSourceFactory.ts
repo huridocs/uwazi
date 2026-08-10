@@ -19,13 +19,17 @@ export class EntitiesDataSourceFactory {
     const mongoTM = (overrides?.transactionManager ??
       ExecutionContext.transactionManager) as MongoTransactionManager;
 
-    const { transactionManager: _ignored, options: overriddenOptions, ...restOverrides } =
-      overrides ?? {};
+    const {
+      transactionManager: _ignored,
+      options: overriddenOptions,
+      ...restOverrides
+    } = overrides ?? {};
 
     const templatesDAO = TemplatesDAOFactory.default();
 
     const actor = ExecutionContext.actor;
-    const accessContext = overriddenOptions?.accessContext ?? (actor ? AccessContext.forActor(actor) : undefined);
+    const accessContext =
+      overriddenOptions?.accessContext ?? (actor ? AccessContext.forActor(actor) : undefined);
 
     return new MongoEntitiesDataSource({
       db,

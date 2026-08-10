@@ -35,10 +35,7 @@ export class MongoEntityPermissionTranslator implements MongoPermissionTranslato
     }
 
     const readPerm = {
-      $or: [
-        { published: true },
-        { permissions: { $elemMatch: { refId: { $in: ac.refIds } } } },
-      ],
+      $or: [{ published: true }, { permissions: { $elemMatch: { refId: { $in: ac.refIds } } } }],
     };
 
     if (Object.keys(filter).length === 0) return readPerm;

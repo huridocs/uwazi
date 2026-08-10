@@ -7,7 +7,10 @@ import { denormalizeRelated } from '#api/entities/denormalize.js';
 import { TemplatesDataSource } from '#api/core/application/contracts/TemplatesDataSource.js';
 import { MongoEntityMapper } from '../mongodb/entity/MongoEntityMapper.js';
 import { MongoTemplateMapper } from '../mongodb/template/MongoTemplateMapper.js';
-import { HeartbeatCallback, JobInfo } from '#api/core/libs/queue/application/contracts/Dispatchable.js';
+import {
+  HeartbeatCallback,
+  JobInfo,
+} from '#api/core/libs/queue/application/contracts/Dispatchable.js';
 
 type Deps = {
   templatesDS: TemplatesDataSource;

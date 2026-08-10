@@ -1,6 +1,9 @@
 import { z } from 'zod';
 import { DispatchableClass } from '../queue/application/contracts/JobsDispatcher.js';
-import { PRIVILEGED_JOB_MARKER, isPrivilegedJob } from '#api/core/infrastructure/jobs/PrivilegedJob.js';
+import {
+  PRIVILEGED_JOB_MARKER,
+  isPrivilegedJob,
+} from '#api/core/infrastructure/jobs/PrivilegedJob.js';
 import { UwaziJobHandler } from '#api/core/infrastructure/jobs/UwaziJobHandler.js';
 import { Event } from './Event.js';
 

@@ -1,6 +1,4 @@
-import {
-  DispatchableClass,
-} from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
+import { DispatchableClass } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
 import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
 import { PXCreateEntityStatuses } from '../application/PXCreateEntityStatuses.js';
 import { UwaziJobHandler, UwaziJobParams } from '#api/core/infrastructure/jobs/UwaziJobHandler.js';
@@ -28,10 +26,7 @@ class CreateParagraphExtractionEntityStatusesJob extends UwaziJobHandler<Specifi
     this.batchSize = batchSize;
   }
 
-  protected async handle(
-    _heartbeat: any,
-    params: SpecificJobParams
-  ): Promise<void> {
+  protected async handle(_heartbeat: any, params: SpecificJobParams): Promise<void> {
     const { extractorId, sourceTemplateId } = params;
 
     const result = await this.dependencies.createEntityStatusesUseCase.execute({

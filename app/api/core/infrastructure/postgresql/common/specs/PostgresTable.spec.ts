@@ -441,10 +441,7 @@ describe('PostgresTable', () => {
       await table.insert({ _id: 'or-2', name: 'beta', values: jsonVal([]) });
       await table.insert({ _id: 'or-3', name: 'gamma', values: jsonVal([]) });
 
-      const rows = await table
-        .where({ name: 'alpha' })
-        .orWhere({ name: 'gamma' })
-        .all();
+      const rows = await table.where({ name: 'alpha' }).orWhere({ name: 'gamma' }).all();
 
       expect(rows.map((r: TestRow) => r._id).sort()).toEqual(['or-1', 'or-3']);
     });
@@ -455,10 +452,7 @@ describe('PostgresTable', () => {
       await table.insert({ _id: 'orw-2', name: 'beta', values: jsonVal([]) });
       await table.insert({ _id: 'orw-3', name: 'gamma', values: jsonVal([]) });
 
-      const rows = await table
-        .whereIn('_id', ['orw-1', 'orw-2'])
-        .orWhere({ name: 'gamma' })
-        .all();
+      const rows = await table.whereIn('_id', ['orw-1', 'orw-2']).orWhere({ name: 'gamma' }).all();
 
       expect(rows.map((r: TestRow) => r._id).sort()).toEqual(['orw-1', 'orw-2', 'orw-3']);
     });
@@ -471,9 +465,7 @@ describe('PostgresTable', () => {
       await table.insert({ _id: 'bt-2', name: 'b', values: jsonVal([]) });
       await table.insert({ _id: 'bt-3', name: 'c', values: jsonVal([]) });
 
-      const rows = await table
-        .whereBetween('_id', ['bt-1', 'bt-2'])
-        .all();
+      const rows = await table.whereBetween('_id', ['bt-1', 'bt-2']).all();
 
       expect(rows.map((r: TestRow) => r._id).sort()).toEqual(['bt-1', 'bt-2']);
     });
@@ -482,9 +474,7 @@ describe('PostgresTable', () => {
       const table = createTable();
       await table.insert({ _id: 'bt-4', name: 'a', values: jsonVal([]) });
 
-      const rows = await table
-        .whereBetween('_id', ['zz', 'zzz'])
-        .all();
+      const rows = await table.whereBetween('_id', ['zz', 'zzz']).all();
 
       expect(rows).toEqual([]);
     });
@@ -497,9 +487,7 @@ describe('PostgresTable', () => {
       await table.insert({ _id: 'lk-2', name: 'beta-test', values: jsonVal([]) });
       await table.insert({ _id: 'lk-3', name: 'gamma', values: jsonVal([]) });
 
-      const rows = await table
-        .whereLike('name', '%-test')
-        .all();
+      const rows = await table.whereLike('name', '%-test').all();
 
       expect(rows.map((r: TestRow) => r._id).sort()).toEqual(['lk-1', 'lk-2']);
     });
@@ -508,9 +496,7 @@ describe('PostgresTable', () => {
       const table = createTable();
       await table.insert({ _id: 'lk-4', name: 'alpha', values: jsonVal([]) });
 
-      const rows = await table
-        .whereLike('name', '%nomatch%')
-        .all();
+      const rows = await table.whereLike('name', '%nomatch%').all();
 
       expect(rows).toEqual([]);
     });
@@ -568,7 +554,9 @@ describe('PostgresTable', () => {
       await table.insert({ _id: 'up-1', name: 'old-1', values: jsonVal([]) });
       await table.insert({ _id: 'up-2', name: 'old-2', values: jsonVal([]) });
 
-      const ids = await table.whereIn('_id', ['up-1', 'up-2']).update({ values: jsonVal([{ id: 'v1' }]) });
+      const ids = await table
+        .whereIn('_id', ['up-1', 'up-2'])
+        .update({ values: jsonVal([{ id: 'v1' }]) });
 
       expect(ids.sort()).toEqual(['up-1', 'up-2']);
     });

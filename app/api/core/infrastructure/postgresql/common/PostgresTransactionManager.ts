@@ -75,7 +75,13 @@ export class PostgresTransactionManager implements TransactionManager {
    * @param refIds - Actor refIds checked by the overlap operator.
    *                 Omitted when bypass is true; pass empty array for anonymous.
    */
-  setPermissionContext({ bypass = false, refIds = [] }: { bypass?: boolean; refIds?: string[] }): void {
+  setPermissionContext({
+    bypass = false,
+    refIds = [],
+  }: {
+    bypass?: boolean;
+    refIds?: string[];
+  }): void {
     this.permissionContext = { bypass, refIds };
   }
 

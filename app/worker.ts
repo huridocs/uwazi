@@ -45,7 +45,11 @@ DB.connect(config.DBHOST, config.DBAUTH)
       ocr_manager: ocrManager(),
       at_service: new ATServiceListener(),
       px_paragraphs_results: new PXParagraphsResultListener((tenant, queueOptions) =>
-        UwaziDispatcherFactory(tenant, TransactionManagerFactory.createForSharedDataBase(), queueOptions)
+        UwaziDispatcherFactory(
+          tenant,
+          TransactionManagerFactory.createForSharedDataBase(),
+          queueOptions
+        )
       ),
       information_extractor: new InformationExtraction(),
       convert_pdf: new ConvertToPdfWorker(),

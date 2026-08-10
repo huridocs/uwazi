@@ -8,7 +8,10 @@ import { MongoEntityMapper } from '../mongodb/entity/MongoEntityMapper.js';
 import { MongoTemplateMapper } from '../mongodb/template/MongoTemplateMapper.js';
 import { TemplatesDataSourceFactory } from '../factories/TemplatesDataSourceFactory.js';
 import { TransactionManagerFactory } from '../factories/TransactionManagerFactory.js';
-import { HeartbeatCallback, JobInfo } from '#api/core/libs/queue/application/contracts/Dispatchable.js';
+import {
+  HeartbeatCallback,
+  JobInfo,
+} from '#api/core/libs/queue/application/contracts/Dispatchable.js';
 
 @PrivilegedJob()
 class ProcessRelationshipAfterEntityUpdatedListener extends Listener<EntityUpdatedEvent> {

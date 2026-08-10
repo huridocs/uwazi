@@ -49,7 +49,10 @@ const createBlankSuggestionsForPartialExtractor = async (
     extractorTemplates.has(template.toString())
   );
 
-  const dispatcher = UwaziDispatcherFactory(tenants.current().name, TransactionManagerFactory.default());
+  const dispatcher = UwaziDispatcherFactory(
+    tenants.current().name,
+    TransactionManagerFactory.default()
+  );
 
   await filteredTemplates.reduce(async (promise, template) => {
     await promise;

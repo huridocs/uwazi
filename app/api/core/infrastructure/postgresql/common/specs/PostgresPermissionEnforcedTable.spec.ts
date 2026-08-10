@@ -93,9 +93,7 @@ beforeAll(async () => {
     )
   `);
   await testingPG.pool!.query(`ALTER TABLE ${TEST_TABLE} ENABLE ROW LEVEL SECURITY`);
-  await testingPG.pool!.query(
-    `SELECT create_permission_rls_policies('${TEST_TABLE}')`
-  );
+  await testingPG.pool!.query(`SELECT create_permission_rls_policies('${TEST_TABLE}')`);
 });
 
 beforeEach(async () => {
@@ -373,9 +371,7 @@ describe('PostgresPermissionEnforcedTable', () => {
       const ids = rows.map(r => r._id).sort();
       expect(ids).toEqual(['ent-pub']);
 
-      const after = await adminTable()
-        .whereIn('_id', ['ent-group-read', 'ent-group-write'])
-        .all();
+      const after = await adminTable().whereIn('_id', ['ent-group-read', 'ent-group-write']).all();
       expect(after).toHaveLength(2);
     });
   });
@@ -460,9 +456,7 @@ describe('PostgresPermissionEnforcedTable', () => {
 
   describe('regression — OR does not bypass enforcement', () => {
     it('should not leak unreadable rows via orWhere', async () => {
-      const adminRows = await adminTable()
-        .whereIn('_id', ['ent-read', 'ent-none'])
-        .all();
+      const adminRows = await adminTable().whereIn('_id', ['ent-read', 'ent-none']).all();
       expect(adminRows).toHaveLength(2);
       expect(adminRows.every(r => !r.published)).toBe(true);
 
@@ -473,9 +467,7 @@ describe('PostgresPermissionEnforcedTable', () => {
     });
 
     it('should not leak unwritable rows via orWhere', async () => {
-      const adminRows = await adminTable()
-        .whereIn('_id', ['ent-write', 'ent-read'])
-        .all();
+      const adminRows = await adminTable().whereIn('_id', ['ent-write', 'ent-read']).all();
       expect(adminRows).toHaveLength(2);
       expect(adminRows.every(r => !r.published)).toBe(true);
 
@@ -491,9 +483,7 @@ describe('PostgresPermissionEnforcedTable', () => {
     });
 
     it('should not leak unreadable rows via whereRaw with OR', async () => {
-      const adminRows = await adminTable()
-        .whereIn('_id', ['ent-read', 'ent-none'])
-        .all();
+      const adminRows = await adminTable().whereIn('_id', ['ent-read', 'ent-none']).all();
       expect(adminRows).toHaveLength(2);
 
       const table = createEnforcedTable(AccessContext.forActor(collaborator));
@@ -503,9 +493,7 @@ describe('PostgresPermissionEnforcedTable', () => {
     });
 
     it('should not leak unwritable rows via whereRaw with OR', async () => {
-      const adminRows = await adminTable()
-        .whereIn('_id', ['ent-write', 'ent-read'])
-        .all();
+      const adminRows = await adminTable().whereIn('_id', ['ent-write', 'ent-read']).all();
       expect(adminRows).toHaveLength(2);
 
       const table = createEnforcedTable(AccessContext.forActor(collaborator));

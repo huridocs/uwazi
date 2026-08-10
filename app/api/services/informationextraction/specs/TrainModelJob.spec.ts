@@ -88,7 +88,10 @@ describe('TrainModelJob', () => {
       }),
     });
 
-    const promise = sut.handleDispatch(undefined as any, { extractorId: 'any_extractor_id', userId: 'user1' });
+    const promise = sut.handleDispatch(undefined as any, {
+      extractorId: 'any_extractor_id',
+      userId: 'user1',
+    });
 
     await expect(promise).rejects.toThrow(new NonRetryableJobError(error));
   });

@@ -1,5 +1,8 @@
 import { NonRetryableJobError } from '#api/core/libs/queue/infrastructure/errors.js';
-import { HeartbeatCallback, JobInfo } from '#api/core/libs/queue/application/contracts/Dispatchable.js';
+import {
+  HeartbeatCallback,
+  JobInfo,
+} from '#api/core/libs/queue/application/contracts/Dispatchable.js';
 import { PXCreateParagraphs } from '../application/PXCreateParagraphs.js';
 import { PXExtractionService } from '../domain/PXExtractionService.js';
 import { MongoPXEntitiesStatusDataSource } from './MongoPXEntitiesStatusDataSource.js';
@@ -28,7 +31,11 @@ class PXCreateParagraphsJob extends UwaziJobHandler<PXCreateParagraphsJobParams>
   }
 
   // eslint-disable-next-line max-statements
-  async handle(heartBeatCallBack: HeartbeatCallback, params: PXCreateParagraphsJobParams, jobInfo: JobInfo) {
+  async handle(
+    heartBeatCallBack: HeartbeatCallback,
+    params: PXCreateParagraphsJobParams,
+    jobInfo: JobInfo
+  ) {
     const isRetriable = jobInfo.retryCount < jobInfo.maxRetries;
     try {
       if (!params.results.success) {

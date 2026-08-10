@@ -22,10 +22,7 @@ const fixtures = {
 class TestUserJob extends UwaziJobHandler<{ userId: string; data: string }> {
   capturedParams: any;
 
-  protected async handle(
-    _heartbeat: HeartbeatCallback,
-    params: { userId: string; data: string }
-  ) {
+  protected async handle(_heartbeat: HeartbeatCallback, params: { userId: string; data: string }) {
     this.capturedParams = params;
   }
 }

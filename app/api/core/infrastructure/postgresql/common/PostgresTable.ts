@@ -201,7 +201,6 @@ export class PostgresTable<TRow = Record<string, unknown>> {
    */
   protected applyInsertPolicy(): void {}
 
-
   private async run<T>(fn: (qb: Knex.QueryBuilder) => Promise<T> | Knex.QueryBuilder): Promise<T> {
     return this.cfg.transactionManager.withConnection(async trx =>
       fn(this.qb.clone().transacting(trx))
@@ -262,9 +261,7 @@ export class PostgresTable<TRow = Record<string, unknown>> {
   }
 
   async delete(): Promise<string[]> {
-    const result = await this.run(qb =>
-      this.applyPolicy(qb, 'write').returning(['_id']).del()
-    );
+    const result = await this.run(qb => this.applyPolicy(qb, 'write').returning(['_id']).del());
     if (this.cfg.syncWriter) {
       await this.cfg.syncWriter.upsertSyncLogs(PostgresTable.idsOf(result), true);
     }
@@ -300,10 +297,7 @@ export class PostgresTable<TRow = Record<string, unknown>> {
     return Object.fromEntries(
       Object.entries(row).filter(
         ([k, v]) =>
-          k !== 'tenant_id' &&
-          k !== '_perm_read_refs' &&
-          k !== '_perm_write_refs' &&
-          v !== null
+          k !== 'tenant_id' && k !== '_perm_read_refs' && k !== '_perm_write_refs' && v !== null
       )
     );
   }

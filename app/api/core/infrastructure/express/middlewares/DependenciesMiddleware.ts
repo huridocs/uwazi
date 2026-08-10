@@ -48,7 +48,8 @@ const dependenciesContextMiddleware = (
       factories: {
         transactionManager: TransactionManagerFactory.default,
         postgresTransactionManager: PostgresTransactionManagerFactory.default,
-        jobsDispatcher: () => UwaziDispatcherFactory(tenant.name, ExecutionContext.transactionManager),
+        jobsDispatcher: () =>
+          UwaziDispatcherFactory(tenant.name, ExecutionContext.transactionManager),
         eventEmitter: EventEmitterFactory.default,
         idGenerator: IdGeneratorFactory.default,
         logger: LoggerFactory.default,

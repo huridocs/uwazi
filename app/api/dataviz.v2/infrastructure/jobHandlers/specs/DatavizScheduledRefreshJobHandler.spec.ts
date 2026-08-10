@@ -53,7 +53,9 @@ describe('DatavizScheduledRefreshJobHandler', () => {
 
     const handler = createJobHandler(job);
 
-    await expect((handler as any).handle(null, testParams)).rejects.toThrow(new NonRetryableJobError(notFound));
+    await expect((handler as any).handle(null, testParams)).rejects.toThrow(
+      new NonRetryableJobError(notFound)
+    );
     expect(rescheduleDatavizRefresh).toHaveBeenCalled();
   });
 
@@ -67,7 +69,9 @@ describe('DatavizScheduledRefreshJobHandler', () => {
 
     const handler = createJobHandler(job);
 
-    await expect((handler as any).handle(null, testParams)).rejects.toThrow(new NonRetryableJobError(invalidQuery));
+    await expect((handler as any).handle(null, testParams)).rejects.toThrow(
+      new NonRetryableJobError(invalidQuery)
+    );
     expect(rescheduleDatavizRefresh).toHaveBeenCalled();
   });
 
