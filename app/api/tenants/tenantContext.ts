@@ -51,6 +51,7 @@ type Tenant = {
     v2PasswordReauth?: boolean;
     v2Captcha?: boolean;
     v2PrivateInstance?: boolean;
+    v2Usergroups?: boolean;
   };
   globalMatomo?: { id: string; url: string };
   ciMatomoActive?: boolean;

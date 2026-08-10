@@ -66,6 +66,7 @@ const mongoSchema = new mongoose.Schema({
     v2PasswordReauth: Boolean,
     v2Captcha: Boolean,
     v2PrivateInstance: Boolean,
+    v2Usergroups: Boolean,
   },
   globalMatomo: { id: String, url: String },
   ciMatomoActive: Boolean,
