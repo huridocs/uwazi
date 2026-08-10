@@ -14,7 +14,6 @@ import { storage } from '#api/files/index.js';
 import { permissionsContext } from '#api/permissions/permissionsContext.js';
 import relationships from '#api/relationships/relationships.js';
 import { ResultsMessage, TaskManager } from '#api/services/tasksmanager/TaskManager.js';
-import { User } from '#api/users.v2/model/User.js';
 import settings from '#api/settings/settings.js';
 import { emitToTenant } from '#api/socketio/setupSockets.js';
 import { tenants } from '#api/tenants/tenantContext.js';

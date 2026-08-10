@@ -124,7 +124,7 @@ describe('FileUploadForEntity', () => {
     });
 
     it('should dispatch PDFPostProcessJobHandler for document files', async () => {
-      const { useCase, schedulePDFPostProcessMock, actorId, tenantName } = createSut();
+      const { useCase, schedulePDFPostProcessMock, tenantName } = createSut();
 
       const result = await useCase.execute({
         entityId: 'entity1',

@@ -19,10 +19,7 @@ import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.
 import { TelemetryCollector } from '#api/core/libs/logger/TelemetryCollector.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { PostgresTransactionManagerFactory } from '#api/core/infrastructure/factories/PostgresTransactionManagerFactory.js';
-import {
-  DefaultDispatcher,
-  DefaultTestingQueueAdapter,
-} from '#api/core/libs/queue/configuration/factories.js';
+import { DefaultTestingQueueAdapter } from '#api/core/libs/queue/configuration/factories.js';
 import { appContext } from '#api/utils/AppContext.js';
 import { elasticTesting } from '#api/utils/elastic_testing.js';
 import testingDB, { DBFixture } from '#api/utils/testing_db.js';

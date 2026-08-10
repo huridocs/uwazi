@@ -4,7 +4,6 @@ import { TransactionManager } from '#api/core/application/contracts/TransactionM
 import { UseCase } from '#api/core/libs/UseCase.js';
 import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
 import { RelationshipTypesDataSource } from '#api/core/application/contracts/RelationshipTypesDataSource.js';
-import { tenants } from '#api/tenants/index.js';
 import { CreateParagraphExtractionEntityStatusesJob } from '../jobs/CreateParagraphExtractionEntityStatusesJob.js';
 
 import { PXExtractor } from '../domain/PXExtractor.js';

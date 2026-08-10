@@ -9,7 +9,6 @@ import { DatavizDataSource } from '#api/dataviz.v2/application/contracts/Dataviz
 import { rescheduleDatavizRefresh } from '../services/rescheduleDatavizRefresh.js';
 import { isNonRetryableDatavizRefreshError } from './isNonRetryableDatavizRefreshError.js';
 import { UwaziJobHandler, UwaziJobParams } from '#api/core/infrastructure/jobs/UwaziJobHandler.js';
-import { PrivilegedJob } from '#api/core/infrastructure/jobs/PrivilegedJob.js';
 
 type Params = {
   datavizId: string;
@@ -22,7 +21,6 @@ type JobDependencies = {
   jobsDispatcher: JobsDispatcher;
 };
 
-@PrivilegedJob()
 class DatavizScheduledRefreshJobHandler extends UwaziJobHandler<Params> {
   public constructor(private deps: JobDependencies) {
     super();
