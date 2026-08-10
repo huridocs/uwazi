@@ -26,7 +26,7 @@ PGPORT="${POSTGRES_PORT:-5432}"
 PGDATABASE="${POSTGRES_DB:-uwazi_development}"
 PGUSER="${POSTGRES_USER:-migrator_user}"
 PGPASSWORD="${POSTGRES_PASSWORD:-migrator_user}"
-export PGPASSWORD
+export PGHOST PGPORT PGDATABASE PGUSER PGPASSWORD
 
 resolve_mongorestore() {
   if command -v mongorestore >/dev/null 2>&1; then
@@ -102,29 +102,59 @@ reset_mongo_users() {
   return 0
 }
 
+# Prefer host TCP via node/pg (works without local psql or docker socket access).
+# Falls back to psql / docker exec when node+pg is unavailable.
+postgres_reachable_via_node() {
+  node --input-type=module -e "
+    import pg from 'pg';
+    const client = new pg.Client({
+      host: process.env.PGHOST,
+      port: Number(process.env.PGPORT || 5432),
+      database: process.env.PGDATABASE,
+      user: process.env.PGUSER,
+      password: process.env.PGPASSWORD,
+    });
+    try {
+      await client.connect();
+      await client.query('SELECT 1');
+      process.exit(0);
+    } catch {
+      process.exit(1);
+    } finally {
+      await client.end().catch(() => {});
+    }
+  " >/dev/null 2>&1
+}
+
+resolve_docker() {
+  if command -v docker >/dev/null 2>&1 && docker ps >/dev/null 2>&1; then
+    echo docker
+    return 0
+  fi
+  if command -v sudo >/dev/null 2>&1 && sudo -n docker ps >/dev/null 2>&1; then
+    echo "sudo -n docker"
+    return 0
+  fi
+  return 1
+}
+
 run_psql() {
   if command -v psql >/dev/null 2>&1; then
-    psql -h "$PGHOST" -p "$PGPORT" -U "$PGUSER" -d "$PGDATABASE" -v ON_ERROR_STOP=1 "$@"
-    return
+    if psql -h "$PGHOST" -p "$PGPORT" -U "$PGUSER" -d "$PGDATABASE" -v ON_ERROR_STOP=1 -c "SELECT 1" >/dev/null 2>&1; then
+      psql -h "$PGHOST" -p "$PGPORT" -U "$PGUSER" -d "$PGDATABASE" -v ON_ERROR_STOP=1 "$@"
+      return
+    fi
   fi
 
-  if command -v docker >/dev/null 2>&1 && docker ps --format '{{.Names}}' | grep -q '^uwazi-postgres$'; then
-    docker exec -i -e PGPASSWORD="$PGPASSWORD" uwazi-postgres \
+  local docker_bin
+  docker_bin="$(resolve_docker || true)"
+  if [ -n "$docker_bin" ] && $docker_bin ps --format '{{.Names}}' | grep -q '^uwazi-postgres$'; then
+    $docker_bin exec -i -e PGPASSWORD="$PGPASSWORD" uwazi-postgres \
       psql -U "$PGUSER" -d "$PGDATABASE" -v ON_ERROR_STOP=1 "$@"
     return
   fi
 
   return 127
-}
-
-postgres_users_table_exists() {
-  local result
-  result="$(run_psql -At -c "SELECT to_regclass('public.users') IS NOT NULL;" 2>/dev/null || true)"
-  [ "$result" = "t" ]
-}
-
-sql_quote() {
-  printf "%s" "$1" | sed "s/'/''/g"
 }
 
 sync_postgres_users_from_mongo() {
@@ -133,14 +163,9 @@ sync_postgres_users_from_mongo() {
     return 1
   fi
 
-  if ! run_psql -c "SELECT 1" >/dev/null 2>&1; then
+  if ! postgres_reachable_via_node && ! run_psql -c "SELECT 1" >/dev/null 2>&1; then
     echo "Postgres not reachable; skipping Postgres users sync."
     return 1
-  fi
-
-  if ! postgres_users_table_exists; then
-    echo "Postgres users table not found in ${PGDATABASE}; skipping Postgres sync."
-    return 0
   fi
 
   if ! mongo_available; then
@@ -148,13 +173,12 @@ sync_postgres_users_from_mongo() {
     return 1
   fi
 
-  echo -e "\n\nSyncing Postgres users for tenant_id=${TENANT_ID} from Mongo DB ${DB}"
+  echo -e "\n\nChecking Postgres users table in ${PGDATABASE} for tenant_id=${TENANT_ID}"
 
-  local users_json_file sql_file
+  local users_json_file
   users_json_file="$(mktemp)"
-  sql_file="$(mktemp)"
   # shellcheck disable=SC2064
-  trap "rm -f '$users_json_file' '$sql_file'" EXIT
+  trap "rm -f '$users_json_file'" EXIT
 
   mongosh --quiet --host "$HOST" "$DB" --eval '
     JSON.stringify(
@@ -179,38 +203,71 @@ sync_postgres_users_from_mongo() {
     return 1
   fi
 
+  # Sync through node/pg over TCP so we do not depend on local psql or docker.sock perms.
   node --input-type=module -e "
     import fs from 'fs';
+    import pg from 'pg';
+
     const tenant = process.argv[1];
     const users = JSON.parse(fs.readFileSync(process.argv[2], 'utf8'));
-    const out = process.argv[3];
-    const q = v => {
-      if (v === null || v === undefined) return 'NULL';
-      if (typeof v === 'boolean') return v ? 'TRUE' : 'FALSE';
-      if (typeof v === 'number') return String(v);
-      return \"'\" + String(v).replace(/'/g, \"''\") + \"'\";
-    };
-    const lines = [
-      'BEGIN;',
-      \"SELECT set_config('app.current_tenant', \" + q(tenant) + \", true);\",
-      'DELETE FROM users WHERE tenant_id = current_tenant();',
-    ];
-    for (const u of users) {
-      if (!u._id || !u.username || !u.password || !u.email || !u.role) {
-        throw new Error('Mongo user is missing required fields for Postgres sync');
-      }
-      lines.push(
-        'INSERT INTO users (\"_id\", tenant_id, username, password, email, role, \"failedLogins\", \"accountLocked\", \"accountUnlockCode\", using2fa, secret, \"deletedAt\") VALUES (' +
-          [q(u._id), q(tenant), q(u.username), q(u.password), q(u.email), q(u.role), q(u.failedLogins), q(u.accountLocked), q(u.accountUnlockCode), q(Boolean(u.using2fa)), q(u.secret), q(u.deletedAt)].join(', ') +
-        ');'
-      );
-    }
-    lines.push('COMMIT;');
-    fs.writeFileSync(out, lines.join('\\n') + '\\n');
-  " "$TENANT_ID" "$users_json_file" "$sql_file"
+    const client = new pg.Client({
+      host: process.env.PGHOST,
+      port: Number(process.env.PGPORT || 5432),
+      database: process.env.PGDATABASE,
+      user: process.env.PGUSER,
+      password: process.env.PGPASSWORD,
+    });
 
-  run_psql <"$sql_file" >/dev/null
-  echo "Postgres users synced for tenant_id=${TENANT_ID}."
+    await client.connect();
+    try {
+      const table = await client.query(\"SELECT to_regclass('public.users') AS reg\");
+      if (!table.rows[0]?.reg) {
+        console.log('Postgres users table not found in ' + process.env.PGDATABASE + '; skipping Postgres sync.');
+        process.exit(0);
+      }
+
+      console.log('Syncing Postgres users for tenant_id=' + tenant + ' from Mongo');
+      await client.query('BEGIN');
+      await client.query(\"SELECT set_config('app.current_tenant', \$1, true)\", [tenant]);
+      await client.query('DELETE FROM users WHERE tenant_id = current_tenant()');
+
+      let synced = 0;
+      for (const u of users) {
+        if (!u._id || !u.username || !u.password || !u.role) {
+          console.log('Skipping incomplete Mongo user: ' + JSON.stringify({ username: u.username, _id: u._id }));
+          continue;
+        }
+        // blank_state/admin_user editor historically has no email; satisfy NOT NULL.
+        const email = u.email || (u.username + '@local');
+        await client.query(
+          'INSERT INTO users (\"_id\", tenant_id, username, password, email, role, \"failedLogins\", \"accountLocked\", \"accountUnlockCode\", using2fa, secret, \"deletedAt\") VALUES (\$1,\$2,\$3,\$4,\$5,\$6,\$7,\$8,\$9,\$10,\$11,\$12)',
+          [
+            u._id,
+            tenant,
+            u.username,
+            u.password,
+            email,
+            u.role,
+            u.failedLogins,
+            u.accountLocked,
+            u.accountUnlockCode,
+            Boolean(u.using2fa),
+            u.secret,
+            u.deletedAt,
+          ]
+        );
+        synced += 1;
+      }
+
+      await client.query('COMMIT');
+      console.log('Postgres users synced for tenant_id=' + tenant + ' (' + synced + ' rows).');
+    } catch (error) {
+      await client.query('ROLLBACK').catch(() => {});
+      throw error;
+    } finally {
+      await client.end();
+    }
+  " "$TENANT_ID" "$users_json_file" || return 1
   return 0
 }
 
