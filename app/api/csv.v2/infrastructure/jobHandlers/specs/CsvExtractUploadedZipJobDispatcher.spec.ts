@@ -93,7 +93,6 @@ describe('CsvExtractUploadedZipJob (integration)', () => {
 
   it('should emit start/progress/success to tenant admins and extract files', async () => {
     const { csvImportsDS, fileStorage, job, sockets, jobsDispatcher } = setUp();
-    const f = getFixturesFactory();
     const id = f.idString('zip-happy');
     const destination = `csv-imports/${id}`;
     const zipFilename = 'upload.zip';
@@ -177,7 +176,6 @@ describe('CsvExtractUploadedZipJob (integration)', () => {
 
   it('should mark failed on last retry after error', async () => {
     const { csvImportsDS, fileStorage, job, jobsDispatcher } = setUp();
-    const f = getFixturesFactory();
     const id = f.idString('zip-error-last-retry');
     const destination = `csv-imports/${id}`;
     const zipFilename = 'upload.zip';
