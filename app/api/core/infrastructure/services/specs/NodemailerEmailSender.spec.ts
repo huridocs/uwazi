@@ -93,6 +93,22 @@ describe('NodemailerEmailSender', () => {
     expect(sentOptions?.from).toBe('"Uwazi" <no-reply@uwazi.io>');
   });
 
+  it('should fall back to default from when senderEmail/site_name are empty strings', async () => {
+    let sentOptions: Mail.Options | undefined;
+    jest.spyOn(Mail.prototype, 'sendMail').mockImplementation(((
+      mailOptions: Mail.Options,
+      callback: (err: Error | null, info: SentMessageInfo) => void
+    ) => {
+      sentOptions = mailOptions;
+      callback(null, '');
+    }) as any);
+    const sender = new NodemailerEmailSender(fakeSettingsDS({ senderEmail: '', site_name: '' }));
+
+    await sender.send(message);
+
+    expect(sentOptions?.from).toBe('"Uwazi" <no-reply@uwazi.io>');
+  });
+
   it('should reuse the transporter across instances when config is unchanged', async () => {
     jest.spyOn(Mail.prototype, 'sendMail').mockImplementation(mockedSendMail as any);
     const createTransportSpy = jest.spyOn(nodemailer, 'createTransport');
