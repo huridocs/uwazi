@@ -2,6 +2,7 @@ import { z } from 'zod';
 import { AbstractController } from '#api/common.v2/infrastructure/AbstractController.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { DeleteUserGroupsUseCaseFactory } from '#api/core/infrastructure/factories/DeleteUserGroupsUseCaseFactory.js';
+import type { DeleteUserGroupsResponse } from '#shared/contracts/UserGroups.js';
 
 const DeleteUserGroupsQuerySchema = z.object({
   ids: z
@@ -15,7 +16,7 @@ class DeleteUserGroupsController extends AbstractController {
     try {
       const parsed = DeleteUserGroupsQuerySchema.parse(this.request.query);
 
-      const response = await DeleteUserGroupsUseCaseFactory.default().execute({
+      const response: DeleteUserGroupsResponse = await DeleteUserGroupsUseCaseFactory.default().execute({
         ids: parsed.ids,
       });
 

@@ -1,18 +1,4 @@
-type GroupSummary = {
-  _id: string;
-  name: string;
-};
-
-type GroupMember = {
-  refId: string;
-  username: string;
-};
-
-type UserGroup = {
-  _id?: string;
-  name: string;
-  members: GroupMember[];
-};
+import type { GroupSummary } from './UserGroups.js';
 
 type User = {
   _id?: string;
@@ -83,7 +69,6 @@ export type {
   CreateUserRequest,
   DeleteUserRequest,
   DeleteUserResponse,
-  UserGroup,
   UpdateUserRequest,
   UpdateUserResponse,
   UnlockAccountRequest,

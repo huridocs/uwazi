@@ -2,6 +2,10 @@ import { z } from 'zod';
 import { AbstractController } from '#api/common.v2/infrastructure/AbstractController.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { CreateUserGroupUseCaseFactory } from '#api/core/infrastructure/factories/CreateUserGroupUseCaseFactory.js';
+import type {
+  CreateUserGroupRequest,
+  CreateUserGroupResponse,
+} from '#shared/contracts/UserGroups.js';
 import { toUpsertDTO } from './UserGroupMapper.js';
 
 const CreateUserGroupRequestSchema = z
@@ -11,7 +15,7 @@ const CreateUserGroupRequestSchema = z
   })
   .strict();
 
-class CreateUserGroupController extends AbstractController {
+class CreateUserGroupController extends AbstractController<CreateUserGroupRequest> {
   protected async handle(): Promise<void> {
     const startTime = Date.now();
     try {
@@ -22,7 +26,8 @@ class CreateUserGroupController extends AbstractController {
         memberIds: dto.members.map(member => member.refId),
       });
 
-      this.response.json(toUpsertDTO(created));
+      const response: CreateUserGroupResponse = toUpsertDTO(created);
+      this.response.json(response);
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
       const errorStack = error instanceof Error ? error.stack : undefined;
