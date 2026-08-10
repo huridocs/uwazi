@@ -73,6 +73,24 @@ class TwoFactorTokenInvalid extends DomainError {
   }
 }
 
+class TwoFactorTokenRequired extends DomainError {
+  constructor() {
+    super('Two-step verification token required', 'user.two_factor_token_required');
+  }
+}
+
+class InvalidCredentials extends DomainError {
+  constructor() {
+    super('Invalid username or password', 'user.invalid_credentials');
+  }
+}
+
+class AccountLocked extends DomainError {
+  constructor() {
+    super('Invalid username or password', 'user.account_locked');
+  }
+}
+
 export {
   UsernameExists,
   EmailInUse,
@@ -86,4 +104,7 @@ export {
   RecoveryKeyNotFound,
   TwoFactorAlreadyEnabled,
   TwoFactorTokenInvalid,
+  TwoFactorTokenRequired,
+  InvalidCredentials,
+  AccountLocked,
 };

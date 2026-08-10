@@ -1,8 +1,8 @@
 /* eslint-disable max-statements */
+import { ObjectId } from 'mongodb';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { DBFixture } from '#api/utils/testing_db.js';
-import { ObjectId } from 'mongodb';
 import { ModelStatus } from '#shared/types/IXModelSchema.js';
 import { InformationExtraction } from '#api/services/informationextraction/InformationExtraction.js';
 import { ModelNotReadyError } from '#api/services/informationextraction/ixextractors.js';
@@ -17,6 +17,7 @@ jest.mock('api/services/tasksmanager/TaskManager.ts');
 // Mock socket emissions to avoid socket.io initialization error
 jest.mock('api/socketio/setupSockets', () => ({
   emitToTenant: jest.fn(),
+  emitToTenantAdminsAndEditors: jest.fn(),
 }));
 
 const factory = getFixturesFactory();

@@ -67,6 +67,7 @@ const LinkField = <TFormValues extends FieldValues = FieldValues>({
                     value={linkLabel}
                     hasErrors={showError}
                     onBlur={fieldValue.onBlur}
+                    labelVariant="secondary"
                     onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
                       fieldValue.onChange({ ...fieldValue.value, label: event.target.value })
                     }
@@ -84,6 +85,7 @@ const LinkField = <TFormValues extends FieldValues = FieldValues>({
                     placeholder="https://"
                     hasErrors={showError}
                     onBlur={fieldValue.onBlur}
+                    labelVariant="secondary"
                     onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
                       fieldValue.onChange({ ...fieldValue.value, url: event.target.value })
                     }

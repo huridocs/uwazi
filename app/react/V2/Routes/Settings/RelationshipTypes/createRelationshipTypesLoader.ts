@@ -1,7 +1,7 @@
 import { IncomingHttpHeaders } from 'http';
 import { LoaderFunction } from 'react-router';
 import type { V2Services } from '#V2/services/types.js';
-import { apiErrorToRequestError } from '#V2/shared/errorUtils.js';
+import { throwApiError } from '#V2/shared/errorUtils.js';
 
 /**
  * Loader factory for the Relationship types settings route.
@@ -14,7 +14,7 @@ const createRelationshipTypesLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
   async () => {
     const [data, error] = await services.relationshipTypes.getAll({ headers });
-    if (error) throw apiErrorToRequestError(error);
+    if (error) throwApiError(error);
     return data.map(rel => ({ ...rel, rowId: rel._id }));
   };
 

@@ -29,7 +29,7 @@ describe('Entity loader with cache integration', () => {
       template: 'template1',
       creationDate: 1,
       user: 'user1',
-      documents: [{ _id: 'doc1', filename: 'test.pdf' }],
+      documents: [{ _id: 'doc1', filename: 'test.pdf', status: 'ready' }],
       relations: [],
     };
 
@@ -143,13 +143,24 @@ describe('Entity loader with cache integration', () => {
 
     it('should use default language document when locale does not match', async () => {
       mockEntity.documents = [
-        { _id: 'doc-es', filename: 'es.pdf', language: 'spa' },
-        { _id: 'doc-en', filename: 'en.pdf', language: 'eng' },
+        { _id: 'doc-es', filename: 'es.pdf', language: 'spa', status: 'ready' },
+        { _id: 'doc-en', filename: 'en.pdf', language: 'eng', status: 'ready' },
       ];
 
       const result = (await loadEntity('http://localhost/entity/shared1', 'fr')) as any;
 
       expect(result.mainDocument).toEqual(mockEntity.documents[1]);
+    });
+
+    it('should ignore non-ready documents for mainDocument and plaintext', async () => {
+      mockEntity.documents = [
+        { _id: 'doc-processing', filename: 'processing.pdf', status: 'processing' },
+      ];
+
+      const result = (await loadEntity('http://localhost/entity/shared1#raw=true')) as any;
+
+      expect(result.mainDocument).toBeUndefined();
+      expect(files.getDocumentPlaintext).not.toHaveBeenCalled();
     });
   });
 
@@ -161,8 +172,9 @@ describe('Entity loader with cache integration', () => {
       ]);
 
       await expect(loadEntity('http://localhost/entity/shared1')).rejects.toMatchObject({
-        status: 404,
-        message: 'Entity missing',
+        type: 'DataWithResponseInit',
+        data: { message: 'Entity missing' },
+        init: { status: 404 },
       });
     });
 
@@ -170,8 +182,9 @@ describe('Entity loader with cache integration', () => {
       getBySharedId.mockResolvedValue([[]]);
 
       await expect(loadEntity('http://localhost/entity/shared1')).rejects.toMatchObject({
-        status: 404,
-        message: 'Entity shared1 not found',
+        type: 'DataWithResponseInit',
+        data: { message: 'Entity shared1 not found' },
+        init: { status: 404 },
       });
     });
 

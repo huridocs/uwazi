@@ -27,6 +27,7 @@ Actions,Acciones
 Activate,Activate
 Activated,Activated
 Active languages,Idiomas activos
+Active primary,Primario activo
 Activity,Actividad
 Activity log,Registro de actividad
 Activity Log,Registro de Actividad
@@ -273,7 +274,7 @@ Creating entities,Creating entities
 Creating relationships,Creating relationships
 Creating thesauri,Creating thesauri
 CSS,CSS
-csv blank state message,"Import CSV or ZIP files to create entities in bulk. Click ""New Import"" to get started."
+csv blank state message,"Importa archivos CSV o ZIP para crear entidades en lote. Para empezar, selecciona **+ Importar CSV**."
 CSV Import,CSV Import
 CSV import cancelled,CSV import cancelled
 CSV import completed,CSV import completed
@@ -847,6 +848,7 @@ or drop your files here.,o deposita tus archivos aquí
 Order,Orden
 Other,Otro
 other,Otro
+Other files,Otros archivos
 Other users will be affected by this action!,Otros usuarios pueden resultar afectados por ésta acción!
 Others,Others
 Outgoing,Saliente
@@ -900,8 +902,9 @@ Preview entity,Previsualizar entidad
 Preview updates automatically (300ms debounce),Preview updates automatically (300ms debounce)
 Preview updates when the JSON is valid.,Preview updates when the JSON is valid.
 Previous,Anterior
-Primary button,Primary button
-Primary document,Primary document
+Primary,Primario
+Primary button,Botón primario
+Primary document,Documento primario
 Primary Documents,Documentos primarios
 Priority sorting,Ordenamiento prioritario
 Priority sorting description,"Las propiedades marcadas como ordenamiento prioritaria se utilizarán como criterios de ordenamiento predeterminados. Si se marca más de una propiedad como ordenación prioritaria, el sistema intentará elegir la que mejor se ajuste. Al enumerar tipos de plantillas mixtas, el sistema seleccionará el mejor ordenamiento combinado."
@@ -985,7 +988,7 @@ Relationship type name,Nombre de tipo de relación
 Relationship type name already exists,El nombre de la relación ya existe
 Relationship types,Tipos de relación
 relationships,relaciones
-Relationships,relaciones
+Relationships,Relaciones
 Relationships saved,Relaciones guardadas
 relationships? This action cannot be undone.,relactiones? Esta acción no puede revertirse.
 RelationType saved,Tipo de Relación guardada
@@ -993,6 +996,7 @@ Release message,Release message
 remaining files,remaining files
 Remote Server Unreachable,Remote Server Unreachable
 Remove,Eliminar
+Remove file,Eliminar archivo
 Remove from connection,Eliminar de la conexión
 Remove from training set,Eliminar del conjunto de entrenamiento
 remove icon,eliminar ícono
@@ -1173,7 +1177,8 @@ Suggestions sent,Suggestions sent
 Suggestions updated,Suggestions updated
 Supported chart types for manual data,Supported chart types for manual data
 Supported chart types for this configuration,Supported chart types for this configuration
-Supporting file,Supporting file
+Supporting,Soporte
+Supporting file,Archivo de soporte
 Supporting files,Archivos de soporte
 Synced template,Plantilla sincronizada
 Synced Template,Synced Template

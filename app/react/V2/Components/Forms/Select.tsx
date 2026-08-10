@@ -60,11 +60,11 @@ const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
     };
 
     return (
-      <div className={className}>
+      <div className={`flex flex-col gap-1.5 ${className || ''}`.trim()}>
+        <Label htmlFor={id} hideLabel={hideLabel} hasErrors={Boolean(hasErrors)}>
+          {label}
+        </Label>
         <div className="relative w-full">
-          <Label htmlFor={id} hideLabel={hideLabel} hasErrors={Boolean(hasErrors)}>
-            {label}
-          </Label>
           <select
             className={`block w-full appearance-none rounded-lg border p-2.5 pr-10 text-sm focus:outline-hidden ${
               showError

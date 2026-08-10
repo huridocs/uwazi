@@ -27,6 +27,7 @@ Actions,Actions
 Activate,Activate
 Activated,Activated
 Active languages,Active languages
+Active primary,Active primary
 Activity,활동
 Activity log,활동 로그
 Activity Log,활동 로그
@@ -275,7 +276,7 @@ Creating entities,Creating entities
 Creating relationships,Creating relationships
 Creating thesauri,Creating thesauri
 CSS,CSS
-csv blank state message,"Import CSV or ZIP files to create entities in bulk. Click ""New Import"" to get started."
+csv blank state message,Import CSV or ZIP files to create entities in bulk. Select **+ Import CSV** to get started.
 CSV Import,CSV Import
 CSV import cancelled,CSV import cancelled
 CSV import completed,CSV import completed
@@ -849,6 +850,7 @@ or drop your files here.,혹은 여기에 파일을 드롭하십시오.
 Order,순서
 Other,기타
 other,기타
+Other files,Other files
 Other users will be affected by this action!,Other users will be affected by this action!
 Others,Others
 Outgoing,Outgoing
@@ -902,6 +904,7 @@ Preview entity,Preview entity
 Preview updates automatically (300ms debounce),Preview updates automatically (300ms debounce)
 Preview updates when the JSON is valid.,Preview updates when the JSON is valid.
 Previous,이전
+Primary,Primary
 Primary button,Primary button
 Primary document,Primary document
 Primary Documents,기본 문서
@@ -995,6 +998,7 @@ Release message,Release message
 remaining files,remaining files
 Remote Server Unreachable,Remote Server Unreachable
 Remove,제거
+Remove file,Remove file
 Remove from connection,Remove from connection
 Remove from training set,Remove from training set
 remove icon,아이콘 제거
@@ -1175,6 +1179,7 @@ Suggestions sent,Suggestions sent
 Suggestions updated,Suggestions updated
 Supported chart types for manual data,Supported chart types for manual data
 Supported chart types for this configuration,Supported chart types for this configuration
+Supporting,Supporting
 Supporting file,Supporting file
 Supporting files,추가 파일
 Synced template,Synced template

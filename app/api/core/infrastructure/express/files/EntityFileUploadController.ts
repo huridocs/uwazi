@@ -1,9 +1,11 @@
 import type { Request, Response } from 'express';
+import * as cookie from 'cookie';
 import { AbstractController } from '#api/common.v2/infrastructure/AbstractController.js';
 import { FileUploadForEntity } from '#api/core/application/FileUploadForEntity.js';
 import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
 import { SyncDispatcherForTests } from '#api/core/libs/queue/infrastructure/SyncDispatcherForTests.js';
 import { Dispatcher } from '#api/core/application/contracts/Dispatcher.js';
+import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { DispatcherAdapter } from '../../jobs/DispatcherAdapter.js';
 import { FilesServiceFactory } from '../../factories/FilesServiceFactory.js';
 import { FileUploadForEntityFactory } from '../../factories/FileUploadForEntityFactory.js';
@@ -95,9 +97,19 @@ class EntityFileUploadController extends AbstractController {
       );
     }
 
+    const cookies = cookie.parse(this.request.get('cookie') || '');
+    const sessionId = cookies['connect.sid'];
+
     return FileUploadForEntityFactory.default({
       transactionManager,
-      filesService: FilesServiceFactory.default({ jobsDispatcher, transactionManager }),
+      filesService: FilesServiceFactory.default(
+        { jobsDispatcher, transactionManager },
+        {
+          userId: ExecutionContext.actor?._id?.toString(),
+          tenantName: ExecutionContext.tenant.name,
+          ...(sessionId ? { sessionId } : {}),
+        }
+      ),
     });
   }
 }

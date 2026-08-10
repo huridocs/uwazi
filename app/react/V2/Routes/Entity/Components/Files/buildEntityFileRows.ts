@@ -2,7 +2,7 @@ import { DateTime } from 'luxon';
 import { t } from '#app/I18N/index.js';
 import { LanguageUtils } from '#shared/language/index.js';
 import { Entity } from '#V2/api/entities/types.js';
-import { formatEntityFiles, getMainDocument } from '#V2/formatters/index.js';
+import { formatEntityFiles } from '#V2/formatters/index.js';
 import { ClientTemplateSchema } from '#V2/shared/types.js';
 import { formatBytes, getMimetypeFromUrl } from '#V2/shared/formatHelpers.js';
 import { EntityFileRow, EntityFileForView, FileKind } from './types.js';
@@ -53,10 +53,9 @@ const buildEntityFileRows = (
   locale: string,
   defaultLanguage?: string
 ) => {
-  const mainDocument = getMainDocument(entity.documents, locale, defaultLanguage);
-  const files = formatEntityFiles(entity, templates, locale, defaultLanguage).map(
-    ({ file, fileType }) => ({ ...file, fileType })
-  );
+  const formattedFiles = formatEntityFiles(entity, templates, locale, defaultLanguage);
+  const mainDocument = formattedFiles.find(entry => entry.fileType === 'mainDocument')?.file;
+  const files = formattedFiles.map(({ file, fileType }) => ({ ...file, fileType }));
 
   const rows = files.map((file, index): EntityFileRow => {
     const entityFile: EntityFileForView = {

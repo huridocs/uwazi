@@ -18,6 +18,7 @@ type PDFPostProcessParams = {
   tenantName: string;
   documentId: string;
   userId: string;
+  sessionId?: string;
 };
 
 type TemplatePostProcessParams = {
@@ -59,6 +60,12 @@ type SendPasswordRecoveryEmailParams = {
   key: string;
 };
 
+type SendAccountLockedEmailParams = {
+  userId: string;
+  domain: string;
+  unlockCode: string;
+};
+
 interface Dispatcher {
   syncRelationships(items: SyncRelationshipsParams[]): Promise<void>;
   cleanupEntities(chunks: CleanupEntityParams[]): Promise<void>;
@@ -72,6 +79,7 @@ interface Dispatcher {
   deleteLanguageEntities(params: DeleteLanguageEntitiesParams): Promise<void>;
   sendWelcomeEmail(params: SendWelcomeEmailParams): Promise<void>;
   sendPasswordRecoveryEmail(params: SendPasswordRecoveryEmailParams): Promise<void>;
+  sendAccountLockedEmail(params: SendAccountLockedEmailParams): Promise<void>;
 }
 
 export type {
@@ -84,4 +92,5 @@ export type {
   CloneLanguageEntitiesParams,
   DeleteLanguageEntitiesParams,
   SendPasswordRecoveryEmailParams,
+  SendAccountLockedEmailParams,
 };

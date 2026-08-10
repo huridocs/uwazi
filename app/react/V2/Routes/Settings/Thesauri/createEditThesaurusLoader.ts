@@ -1,7 +1,7 @@
 import { IncomingHttpHeaders } from 'http';
 import { LoaderFunction } from 'react-router';
 import type { V2Services } from '#V2/services/types.js';
-import { apiErrorToRequestError } from '#V2/shared/errorUtils.js';
+import { throwApiError } from '#V2/shared/errorUtils.js';
 
 /**
  * Loader factory for the edit-thesaurus route.
@@ -14,7 +14,7 @@ const createEditThesaurusLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
   async ({ params: { _id } }) => {
     const [data, error] = await services.thesauri.getById(_id!, { headers });
-    if (error) throw apiErrorToRequestError(error);
+    if (error) throwApiError(error);
     return data;
   };
 

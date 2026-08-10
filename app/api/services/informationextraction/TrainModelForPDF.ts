@@ -1,7 +1,7 @@
 /* eslint-disable max-statements */
 import urljoin from 'url-join';
 import { UseCase } from '#api/core/libs/UseCase.js';
-import { emitToTenant } from '#api/socketio/setupSockets.js';
+import { emitToTenantAdminsAndEditors } from '#api/socketio/setupSockets.js';
 import { storage } from '#api/files/index.js';
 import request from '#shared/JSONRequest.js';
 import { PropertySelectionSchema } from '#shared/types/commonTypes.js';
@@ -89,7 +89,7 @@ export class TrainModelForPDF implements UseCase<Input, Output> {
     } catch (e) {
       await ixmodels.stopTraining(extractor._id);
 
-      emitToTenant(this.props.tenantName, IXWebSocketEvents.ErrorTrainingModel, {
+      emitToTenantAdminsAndEditors(this.props.tenantName, IXWebSocketEvents.ErrorTrainingModel, {
         message: e.message || 'An error occurred when sending Files for training',
       });
 

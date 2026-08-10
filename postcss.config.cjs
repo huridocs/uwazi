@@ -26,7 +26,7 @@ module.exports = ctx => {
         }
 
         const layerName = atRule.params?.trim();
-        if (['properties', 'theme', 'base', 'components', 'utilities'].includes(layerName)) {
+        if (['components', 'utilities'].includes(layerName)) {
           atRule.replaceWith(atRule.nodes);
         }
       },
