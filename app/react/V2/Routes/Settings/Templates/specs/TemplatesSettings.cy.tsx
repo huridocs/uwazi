@@ -3,6 +3,15 @@ import 'cypress-real-events';
 import { mount } from 'cypress/react';
 import { createTemplatesSettingsTree } from './mountTemplatesSettings.js';
 
+const suppressResizeObserverLoop = () => {
+  Cypress.on('uncaught:exception', error => {
+    if (error.message.includes('ResizeObserver loop completed with undelivered notifications.')) {
+      return false;
+    }
+    return true;
+  });
+};
+
 const selectRowCheckbox = (label: string) => {
   cy.contains('[data-testid="settings-templates"] tbody tr', label)
     .find('input[type="checkbox"]')
@@ -15,6 +24,7 @@ describe('Settings Templates section services', () => {
     let router: DataRouter;
 
     beforeEach(() => {
+      suppressResizeObserverLoop();
       const mounted = createTemplatesSettingsTree('/settings/templates');
       templates = mounted.templates;
       router = mounted.router;
@@ -40,7 +50,7 @@ describe('Settings Templates section services', () => {
     it('deletes a deletable template from the list', () => {
       selectRowCheckbox('Case');
       cy.get('[data-testid="settings-content-footer"]').should('contain', 'Selected');
-      cy.get('[data-testid="settings-content-footer"]').contains('button', 'Delete').realClick();
+      cy.get('[data-testid="templates-delete"]').realClick();
       cy.get('[data-testid="accept-button"]').click();
       cy.get('[data-testid="modal"]').should('not.exist');
 

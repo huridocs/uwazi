@@ -13,7 +13,7 @@ import { TemplateRow } from './types.js';
 
 const Templates = () => {
   const templates = useLoaderData() as TemplateRow[];
-  const [selected, setSelected] = useState<string[]>([]);
+  const [selectedItems, setSelectedItems] = useState<TemplateRow[]>([]);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const revalidator = useRevalidator();
   const { notify } = useRequestStatus();
@@ -59,7 +59,7 @@ const Templates = () => {
       return;
     }
 
-    setSelected([]);
+    setSelectedItems([]);
     notify('success', t('System', 'Template(s) deleted successfully.', null, false));
     await revalidator.revalidate();
   };
@@ -73,27 +73,29 @@ const Templates = () => {
             columns={columns(handleSetDefault, hasSyncedTemplates) as ColumnDef<TemplateRow, any>[]}
             data={templates}
             enableSelections
-            onSelect={({ selectedRows }) => setSelected(Object.keys(selectedRows))}
+            onSelect={({ selectedRows }) => {
+              setSelectedItems(templates.filter(template => template.rowId in selectedRows));
+            }}
             defaultSorting={[{ id: 'name', desc: false }]}
             className="bg-paper"
           />
         </SettingsContent.Body>
         <SettingsContent.Footer>
           <div className="flex justify-between w-full">
-            {selected.length === 0 && (
+            {selectedItems.length === 0 && (
               <I18NLink to="/settings/templates/new">
                 <Button variant="primary">
                   <Translate>Add template</Translate>
                 </Button>
               </I18NLink>
             )}
-            {selected.length > 0 && (
+            {selectedItems.length > 0 && (
               <div className="flex items-center gap-2">
-                <Button variant="danger" onClick={handleDeleteClick}>
+                <Button variant="danger" onClick={handleDeleteClick} data-testid="templates-delete">
                   <Translate>Delete</Translate>
                 </Button>
                 <span className="text-ink-secondary">
-                  <Translate>Selected</Translate> {selected.length} <Translate>of</Translate>{' '}
+                  <Translate>Selected</Translate> {selectedItems.length} <Translate>of</Translate>{' '}
                   {templates.length}
                 </span>
               </div>
@@ -105,7 +107,7 @@ const Templates = () => {
         open={showDeleteModal}
         onAccept={handleDelete}
         onCancel={() => setShowDeleteModal(false)}
-        templates={templates.filter(template => selected.includes(template._id!))}
+        templates={selectedItems}
       />
     </div>
   );
