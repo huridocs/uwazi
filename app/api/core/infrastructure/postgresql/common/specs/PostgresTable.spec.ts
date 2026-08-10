@@ -350,6 +350,46 @@ describe('PostgresTable', () => {
     });
   });
 
+  describe('query().where().updateReturningCount()', () => {
+    it('should return the number of rows actually updated', async () => {
+      const table = createTable();
+      await table.insert({ _id: 'urc-1', name: 'urc-alpha-1', values: jsonVal([]) });
+      await table.insert({ _id: 'urc-2', name: 'urc-alpha-2', values: jsonVal([]) });
+      await table.insert({ _id: 'urc-3', name: 'urc-beta', values: jsonVal([]) });
+
+      const count = await table
+        .whereIn('_id', ['urc-1', 'urc-2'])
+        .updateReturningCount({ values: jsonVal(['updated']) });
+
+      expect(count).toBe(2);
+      const rows = await table.whereIn('_id', ['urc-1', 'urc-2']).all();
+      expect(rows.every((r: TestRow) => r.values.length === 1)).toBe(true);
+    });
+
+    it('should return 0 when nothing matches', async () => {
+      const table = createTable();
+
+      const count = await table.where({ _id: 'nonexistent' }).updateReturningCount({ name: 'x' });
+
+      expect(count).toBe(0);
+    });
+
+    it('should enforce tenant_id — cannot update rows from other tenants', async () => {
+      const tableA = createTable('tenant-a');
+      const tableB = createTable('tenant-b');
+
+      await tableA.insert({ _id: 'urc-cross', name: 'original', values: jsonVal([]) });
+
+      const count = await tableB
+        .where({ _id: 'urc-cross' })
+        .updateReturningCount({ name: 'hacked' });
+
+      expect(count).toBe(0);
+      const row = await tableA.where({ _id: 'urc-cross' }).first();
+      expect(row!.name).toBe('original');
+    });
+  });
+
   describe('query().where().delete()', () => {
     it('should delete matching rows for the tenant', async () => {
       const table = createTable();
