@@ -19,12 +19,16 @@ import { CsvCleanupImportFilesJobHandler } from '../CsvCleanupImportFilesJobHand
 import { CsvImportDomain, CsvImportStatus } from '#api/csv.v2/domain/CsvImport.js';
 import { CsvExtractUploadedZipJobHandler } from '../CsvExtractUploadedZipJobHandler.js';
 import { CsvExtractUploadedZipJobFactory } from '../../factories/CsvExtractUploadedZipJobFactory.js';
+import { UserRole } from '#api/core/domain/user/User.js';
+
+const f = getFixturesFactory();
+const uploader = f.user({ username: 'uploader', role: UserRole.EDITOR });
 
 describe('CsvExtractUploadedZipJob (integration)', () => {
   const createdImportIds: string[] = [];
   const createdTempDirs: string[] = [];
   beforeEach(async () => {
-    await testingEnvironment.setUp({});
+    await testingEnvironment.setUp({ users: [uploader] });
     await testingEnvironment.setTenant(undefined, 'csvV2-job');
     await testingEnvironment.cleanupUploadPaths();
   });
@@ -77,7 +81,6 @@ describe('CsvExtractUploadedZipJob (integration)', () => {
     params: { importId: string },
     jobInfo: { maxRetries: number; retryCount: number } = { maxRetries: 5, retryCount: 1 }
   ) => {
-    const f = getFixturesFactory();
     const heartBeat = jest.fn();
     const userId = f.idString('uploader');
     await job.handleDispatch(
