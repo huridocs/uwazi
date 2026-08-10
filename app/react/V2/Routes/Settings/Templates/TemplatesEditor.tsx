@@ -9,26 +9,17 @@ import {
   ProgressBar,
 } from '#V2/Components/UI/index.js';
 import { Translate } from '#app/I18N/Translate.js';
-import { IncomingHttpHeaders } from 'http';
-import {
-  LoaderFunction,
-  useLoaderData,
-  useNavigate,
-  useBlocker,
-  useRevalidator,
-} from 'react-router';
-import * as templatesAPI from '#V2/api/templates/index.js';
-import * as pagesAPI from '#V2/api/pages/index.js';
+import { useLoaderData, useNavigate, useBlocker, useRevalidator } from 'react-router';
 import { PropertySchema } from '#shared/types/commonTypes.js';
-import { Page, ClientTemplateSchema } from '#V2/shared/types.js';
+import { ClientTemplateSchema } from '#V2/shared/types.js';
 import isEqual from 'lodash/isEqual.js';
 import { useAtomValue } from 'jotai';
 import { templatesAtom } from '#V2/atoms/index.js';
 import uniqueID from '#shared/uniqueID.js';
 import { socket } from '#app/socket.js';
+import { useServices } from '#V2/services/index.js';
 import {
   cleanProperty,
-  emptyTemplate,
   processDefaultProperties,
   processProperties,
   confirmationMessages,
@@ -39,41 +30,13 @@ import { AddRelationshipTypeModal } from './components/AddRelationshipTypeModal.
 import { AddThesaurusModal } from './components/AddThesaurusModal.js';
 import { TemplatesEditorFooter } from './components/TemplatesEditorFooter.js';
 import { ConfigPropertyPanel } from './components/ConfigPropertyPanel.js';
-import { getRandomColor } from './components/defaultTemplateColors.js';
 import { useRequestStatus } from '#V2/atoms/requestStatusAtom.js';
 import { t } from '#app/I18N/index.js';
-
-const templatesEditorLoader =
-  (headers?: IncomingHttpHeaders): LoaderFunction =>
-  async ({ params }) => {
-    const allPages = await pagesAPI.get(headers);
-    const pages = allPages.filter((page: any) => page.entityView);
-    const pagesOptions = pages.map((page: Page) => ({
-      value: page.sharedId,
-      label: page.title,
-    }));
-    let loadedTemplate: ClientTemplateSchema = { ...emptyTemplate, color: getRandomColor() };
-    const templates = await templatesAPI.get(headers);
-
-    let entityCount = 0;
-
-    if (params.templateId) {
-      const templateToEdit = templates.find(template => template._id === params.templateId);
-      if (templateToEdit) {
-        entityCount =
-          (await templatesAPI.checkTemplatesEntityCount(headers, [templateToEdit._id]))?.[
-            templateToEdit._id
-          ] || 0;
-        loadedTemplate = templateToEdit as ClientTemplateSchema;
-      }
-    }
-
-    return { loadedTemplate, pagesOptions, entityCount };
-  };
 
 const TemplatesEditor = () => {
   const navigate = useNavigate();
   const revalidator = useRevalidator();
+  const { templates: templatesService } = useServices();
   const { loadedTemplate, pagesOptions, entityCount } = useLoaderData() as {
     loadedTemplate: ClientTemplateSchema;
     pagesOptions: { value: string; label: string }[];
@@ -215,7 +178,26 @@ const TemplatesEditor = () => {
       templateToSave.reindex = true;
     }
 
-    const savedTemplate = await templatesAPI.save(templateToSave);
+    const [savedTemplate, error] = await templatesService.upsert(templateToSave);
+
+    if (error) {
+      if (error.status === 409) {
+        setShowReindexModal(true);
+        return;
+      }
+      notify(
+        'error',
+        t('System', 'Error saving template.', null, false),
+        undefined,
+        error.detail ?? error.message
+      );
+      return;
+    }
+
+    if (!savedTemplate) {
+      notify('error', t('System', 'Error saving template.', null, false));
+      return;
+    }
 
     if (savedTemplate.processing?.active) {
       notifyTemplateProcessing();
@@ -269,12 +251,6 @@ const TemplatesEditor = () => {
     try {
       setIsSaving(true);
       await save();
-    } catch (e) {
-      if (e.status === 409) {
-        setShowReindexModal(true);
-      } else {
-        notify('error', t('System', 'Error saving template.', null, false));
-      }
     } finally {
       setIsSaving(false);
     }
@@ -415,12 +391,6 @@ const TemplatesEditor = () => {
             try {
               setIsSaving(true);
               await save(true);
-            } catch (e) {
-              if (e.status === 409) {
-                setShowReindexModal(true);
-                return;
-              }
-              notify('error', t('System', 'Error saving template.', null, false));
             } finally {
               setIsSaving(false);
             }
@@ -435,4 +405,4 @@ const TemplatesEditor = () => {
   );
 };
 
-export { TemplatesEditor, templatesEditorLoader };
+export { TemplatesEditor };

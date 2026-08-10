@@ -27,6 +27,7 @@ Actions,Actions
 Activate,Activate
 Activated,Activated
 Active languages,Active languages
+Active primary,Active primary
 Activity,Activity
 Activity log,Activity log
 Activity Log,Activity Log
@@ -277,7 +278,7 @@ Creating entities,Creating entities
 Creating relationships,Creating relationships
 Creating thesauri,Creating thesauri
 CSS,CSS
-csv blank state message,"Import CSV or ZIP files to create entities in bulk. Select **+ Import CSV** to get started."
+csv blank state message,Import CSV or ZIP files to create entities in bulk. Select **+ Import CSV** to get started.
 CSV Import,CSV Import
 CSV import cancelled,CSV import cancelled
 CSV import completed,CSV import completed
@@ -440,10 +441,8 @@ Entity types,Entity types
 Entity updated,Entity updated
 Error,Error
 Error adding thesauri.,Error adding thesauri.
-Error deleting template(s),Error deleting template(s)
 Error loading your image,Error loading your image
 Error saving template.,Error saving template.
-Error setting default template,Error setting default template
 Error updating thesauri.,Error updating thesauri.
 exact phrase,exact phrase
 Expand all,Expand all
@@ -853,6 +852,7 @@ or drop your files here.,or drop your files here.
 Order,Order
 Other,Other
 other,other
+Other files,Other files
 Other users will be affected by this action!,Other users will be affected by this action!
 Others,Others
 Outgoing,Outgoing
@@ -906,6 +906,7 @@ Preview entity,Preview entity
 Preview updates automatically (300ms debounce),Preview updates automatically (300ms debounce)
 Preview updates when the JSON is valid.,Preview updates when the JSON is valid.
 Previous,Previous
+Primary,Primary
 Primary button,Primary button
 Primary document,Primary document
 Primary Documents,Primary Documents
@@ -999,6 +1000,7 @@ Release message,Release message
 remaining files,remaining files
 Remote Server Unreachable,Remote Server Unreachable
 Remove,Remove
+Remove file,Remove file
 Remove from connection,Remove from connection
 Remove from training set,Remove from training set
 remove icon,remove icon
@@ -1179,6 +1181,7 @@ Suggestions sent,Suggestions sent
 Suggestions updated,Suggestions updated
 Supported chart types for manual data,Supported chart types for manual data
 Supported chart types for this configuration,Supported chart types for this configuration
+Supporting,Supporting
 Supporting file,Supporting file
 Supporting files,Supporting files
 Synced template,Synced template

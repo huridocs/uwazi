@@ -105,7 +105,8 @@ export const processPDF = async (
 export const processDocument = async (
   entitySharedId: string,
   file: FileType & { destination?: string },
-  detectLanguage = true
+  detectLanguage = true,
+  sessionId?: string
 ) => {
   const { features } = await settings.get({}, 'features.convertToPdf');
 
@@ -115,6 +116,7 @@ export const processDocument = async (
       entity: entitySharedId,
       type: 'attachment',
       status: 'processing',
+      ...(sessionId ? { socketSessionId: sessionId } : {}),
     });
     try {
       await convertToPDFService.upload(upload, features.convertToPdf.url);

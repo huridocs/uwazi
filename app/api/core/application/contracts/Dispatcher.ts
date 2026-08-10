@@ -18,6 +18,7 @@ type PDFPostProcessParams = {
   tenantName: string;
   documentId: string;
   userId: string;
+  sessionId?: string;
 };
 
 type TemplatePostProcessParams = {

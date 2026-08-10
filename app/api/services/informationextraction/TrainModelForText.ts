@@ -1,12 +1,12 @@
 /* eslint-disable max-classes-per-file */
 /* eslint-disable max-statements */
+import urljoin from 'url-join';
+import moment from 'moment';
 import { UseCase } from '#api/core/libs/UseCase.js';
 import { ArrayUtils } from '#api/common.v2/utils/Array.js';
-import urljoin from 'url-join';
 import request from '#shared/JSONRequest.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
-import moment from 'moment';
-import { emitToTenant } from '#api/socketio/setupSockets.js';
+import { emitToTenantAdminsAndEditors } from '#api/socketio/setupSockets.js';
 import { EnforcedWithId } from '#api/odm/index.js';
 import { IXExtractorType } from '#shared/types/extractorType.js';
 import { Suggestions } from '#api/suggestions/suggestions.js';
@@ -133,7 +133,7 @@ class TrainModelForText implements UseCase<Input, Output> {
     } catch (e) {
       await ixmodels.stopTraining(extractor._id);
 
-      emitToTenant(this.props.tenantName, IXWebSocketEvents.ErrorTrainingModel, {
+      emitToTenantAdminsAndEditors(this.props.tenantName, IXWebSocketEvents.ErrorTrainingModel, {
         message: e.message || 'An error occurred when sending Entities for training',
       });
 

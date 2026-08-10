@@ -3,6 +3,8 @@ import { ClientTemplateSchema, ClientProperty } from '#V2/shared/types.js';
 type TemplateRow = ClientTemplateSchema & {
   rowId: string;
   translation?: React.ReactNode;
+  entityCount?: number;
+  disableRowSelection?: string;
 };
 
 type PropertyRow = ClientProperty & {

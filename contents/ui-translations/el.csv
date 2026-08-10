@@ -27,6 +27,7 @@ Actions,Actions
 Activate,Ενεργοποίηση
 Activated,Ενεργοποιημένο
 Active languages,Ενεργές γλώσσες
+Active primary,Active primary
 Activity,Δραστηριότητα
 Activity log,Ημερολόγιο δραστηριοτήτων
 Activity Log,Ημερολόγιο δραστηριοτήτων
@@ -276,7 +277,7 @@ Creating entities,Creating entities
 Creating relationships,Creating relationships
 Creating thesauri,Creating thesauri
 CSS,CSS
-csv blank state message,"Import CSV or ZIP files to create entities in bulk. Select **+ Import CSV** to get started."
+csv blank state message,Import CSV or ZIP files to create entities in bulk. Select **+ Import CSV** to get started.
 CSV Import,CSV Import
 CSV import cancelled,CSV import cancelled
 CSV import completed,CSV import completed
@@ -439,10 +440,8 @@ Entity types,Τύποι οντοτήτων
 Entity updated,Η οντότητα ενημερώθηκε
 Error,Σφάλμα
 Error adding thesauri.,Σφάλμα προσθήκης θησαυρών.
-Error deleting template(s),Σφάλμα διαγραφής προτύπου(ων)
 Error loading your image,Σφάλμα φόρτωσης της εικόνας σας
 Error saving template.,Σφάλμα αποθήκευσης προτύπου.
-Error setting default template,Σφάλμα ρύθμισης προεπιλεγμένου προτύπου
 Error updating thesauri.,Σφάλμα ενημέρωσης θησαυρών.
 exact phrase,exact phrase
 Expand all,Ανάπτυξη όλων
@@ -852,6 +851,7 @@ or drop your files here.,ή αποθέστε τα αρχεία σας εδώ.
 Order,Παραγγελία
 Other,Άλλα
 other,άλλα
+Other files,Other files
 Other users will be affected by this action!,Αυτή η ενέργεια θα επηρεάσει και άλλους χρήστες.
 Others,Άλλοι
 Outgoing,Outgoing
@@ -905,6 +905,7 @@ Preview entity,Preview entity
 Preview updates automatically (300ms debounce),Preview updates automatically (300ms debounce)
 Preview updates when the JSON is valid.,Preview updates when the JSON is valid.
 Previous,Προηγούμενο
+Primary,Primary
 Primary button,Primary button
 Primary document,Primary document
 Primary Documents,Κύρια έγγραφα
@@ -998,6 +999,7 @@ Release message,Release message
 remaining files,υπόλοιπα αρχεία
 Remote Server Unreachable,Απομακρυσμένος διακομιστής μη προσβάσιμος
 Remove,Αφαίρεση
+Remove file,Remove file
 Remove from connection,Remove from connection
 Remove from training set,Αφαίρεση από το σύνολο εκπαίδευσης
 remove icon,αφαιρέση εικονίδιου
@@ -1178,6 +1180,7 @@ Suggestions sent,Οι προτάσεις στάλθηκαν
 Suggestions updated,Suggestions updated
 Supported chart types for manual data,Supported chart types for manual data
 Supported chart types for this configuration,Supported chart types for this configuration
+Supporting,Supporting
 Supporting file,Supporting file
 Supporting files,Υποστηρικτικά αρχεία
 Synced template,Συγχρονισμένο πρότυπο

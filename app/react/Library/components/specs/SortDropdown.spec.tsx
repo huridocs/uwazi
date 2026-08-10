@@ -5,7 +5,7 @@ import React from 'react';
 import Immutable from 'immutable';
 import { RenderResult, screen } from '@testing-library/react';
 import { defaultState, renderConnectedContainer } from '#app/utils/test/renderConnected.js';
-import { SortDropdown } from '../SortDropdown.js';
+import { SortDropdown, buildCurrentQuery } from '../SortDropdown.js';
 
 describe('Sort dropdown', () => {
   let props: any;
@@ -43,27 +43,37 @@ describe('Sort dropdown', () => {
     },
   ];
 
+  const librarySearch = {
+    order: 'desc' as const,
+    sort: 'creationDate',
+    searchTerm: '',
+    filters: {},
+    publishedStatus: { values: ['published', 'restricted'] },
+  };
+
+  const libraryFilters = Immutable.fromJS({
+    properties: [],
+    documentTypes: [],
+  });
+
   beforeEach(() => {
     props = {
       locale: 'en',
       templates: Immutable.fromJS(templates),
-      search: {
-        order: 'asc',
-        sort: 'creationDate',
-        searchTerm: '',
-      },
+      search: librarySearch,
+      filters: libraryFilters,
     };
     search = '(from:0,includeUnpublished:!t,limit:30,order:desc)';
   });
 
-  const render = () => {
+  const render = (location = `/en/library/?q=${search}`) => {
     ({ renderResult } = renderConnectedContainer(
       <SortDropdown.WrappedComponent {...props} />,
       () => ({
         ...defaultState,
       }),
       'MemoryRouter',
-      [`/en/library/?q=${search}`]
+      [location]
     ));
   };
 
@@ -73,19 +83,19 @@ describe('Sort dropdown', () => {
     expect(sortButton.parentElement).toHaveClass('dropdown-button');
     expect(listOption.closest('a')).toHaveAttribute(
       'href',
-      '/en/library/?q=(from:0,includeUnpublished:!t,limit:30,order:desc,sort:creationDate)'
+      '/en/library/?q=(from:0,includeUnpublished:!t,limit:30,order:desc,sort:creationDate,unpublished:!f)'
     );
   });
 
   it.each`
     option             | link
-    ${'Title'}         | ${'/en/library/?q=(from:0,includeUnpublished:!t,limit:30,order:asc,sort:title)'}
-    ${'Date modified'} | ${'/en/library/?q=(from:0,includeUnpublished:!t,limit:30,order:desc,sort:editDate)'}
-    ${'Date'}          | ${'/en/library/?q=(from:0,includeUnpublished:!t,limit:30,order:desc,sort:metadata.date)'}
-    ${'Number'}        | ${'/en/library/?q=(from:0,includeUnpublished:!t,limit:30,order:desc,sort:metadata.number)'}
-    ${'My select'}     | ${'/en/library/?q=(from:0,includeUnpublished:!t,limit:30,order:asc,sort:metadata.my_select)'}
-    ${'Sortable name'} | ${'/en/library/?q=(from:0,includeUnpublished:!t,limit:30,order:asc,sort:metadata.sortable_name)'}
-    ${'Inherited 1'}   | ${'/en/library/?q=(from:0,includeUnpublished:!t,limit:30,order:desc,sort:metadata.inherited_1.inheritedValue)'}
+    ${'Title'}         | ${'/en/library/?q=(from:0,includeUnpublished:!t,limit:30,order:asc,sort:title,unpublished:!f)'}
+    ${'Date modified'} | ${'/en/library/?q=(from:0,includeUnpublished:!t,limit:30,order:desc,sort:editDate,unpublished:!f)'}
+    ${'Date'}          | ${'/en/library/?q=(from:0,includeUnpublished:!t,limit:30,order:desc,sort:metadata.date,unpublished:!f)'}
+    ${'Number'}        | ${'/en/library/?q=(from:0,includeUnpublished:!t,limit:30,order:desc,sort:metadata.number,unpublished:!f)'}
+    ${'My select'}     | ${'/en/library/?q=(from:0,includeUnpublished:!t,limit:30,order:asc,sort:metadata.my_select,unpublished:!f)'}
+    ${'Sortable name'} | ${'/en/library/?q=(from:0,includeUnpublished:!t,limit:30,order:asc,sort:metadata.sortable_name,unpublished:!f)'}
+    ${'Inherited 1'}   | ${'/en/library/?q=(from:0,includeUnpublished:!t,limit:30,order:desc,sort:metadata.inherited_1.inheritedValue,unpublished:!f)'}
   `(
     'should display the sortable option $option with the link, and correct sort and order',
     ({ option, link }) => {
@@ -135,6 +145,11 @@ describe('Sort dropdown', () => {
   describe('when there is an active search term', () => {
     it('should display sort by search relevance option in the button and in the list, and disable the sort button', () => {
       search = "(searchTerm:'my search',sort:_score)";
+      props.search = {
+        ...librarySearch,
+        searchTerm: 'my search',
+        sort: '_score',
+      };
       render();
       const byRelevanceText = screen.getAllByText('Search relevance');
       expect(byRelevanceText).toHaveLength(2);
@@ -147,15 +162,53 @@ describe('Sort dropdown', () => {
       render();
       expect(screen.getByText('Sort ascending').parentElement?.parentElement).toHaveAttribute(
         'href',
-        '/en/library/?q=(from:0,includeUnpublished:!t,limit:30,order:asc)'
+        '/en/library/?q=(from:0,includeUnpublished:!t,limit:30,order:asc,sort:creationDate,unpublished:!f)'
       );
 
       search = "(from:0,includeUnpublished:!t,limit:30,order:asc,searchTerm:'some search')";
+      props.search = {
+        ...librarySearch,
+        order: 'asc',
+        searchTerm: 'some search',
+      };
       render();
       expect(screen.getByText('Sort descending').parentElement?.parentElement).toHaveAttribute(
         'href',
-        "/en/library/?q=(from:0,includeUnpublished:!t,limit:30,order:desc,searchTerm:'some search')"
+        "/en/library/?q=(from:0,includeUnpublished:!t,limit:30,order:desc,searchTerm:'some search',sort:creationDate,unpublished:!f)"
       );
+    });
+
+    it('should preserve includeUnpublished from Redux when the home URL has no query params', () => {
+      render('/en/');
+      expect(screen.getByText('Sort ascending').parentElement?.parentElement).toHaveAttribute(
+        'href',
+        '/en/?q=(from:0,includeUnpublished:!t,order:asc,sort:creationDate,unpublished:!f)'
+      );
+      expect(screen.getByText('Title').closest('a')).toHaveAttribute(
+        'href',
+        '/en/?q=(from:0,includeUnpublished:!t,order:asc,sort:title,unpublished:!f)'
+      );
+    });
+  });
+
+  describe('buildCurrentQuery', () => {
+    it('should keep includeUnpublished from Redux when the location search is empty', () => {
+      const query = buildCurrentQuery(librarySearch, libraryFilters, { search: '' });
+      expect(query.includeUnpublished).toBe(true);
+      expect(query.unpublished).toBe(false);
+    });
+
+    it('should keep limit from the URL while taking published status from Redux', () => {
+      const query = buildCurrentQuery(librarySearch, libraryFilters, {
+        search: '?q=(from:0,limit:30,order:desc)',
+      });
+      expect(query).toMatchObject({
+        from: 0,
+        limit: 30,
+        includeUnpublished: true,
+        unpublished: false,
+        order: 'desc',
+      });
     });
   });
 });
