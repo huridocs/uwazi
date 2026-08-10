@@ -70,3 +70,4 @@ const getStats = async (
 };
 
 export { get, save, getLinks, saveLinks, getStats };
+export { getSync, saveSync } from './sync.js';

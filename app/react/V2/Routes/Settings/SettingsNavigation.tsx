@@ -99,6 +99,7 @@ const SettingsNavigation = () => {
                   )}
                 </li>
               </FeatureToggle>
+              <li>{renderLink('/settings/sync', <Translate>Sync</Translate>)}</li>
               <FeatureToggle feature="newRelationships">
                 <li>
                   {renderLink(

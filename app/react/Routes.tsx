@@ -79,6 +79,12 @@ import {
   TemplatesEditor,
   createTemplatesEditorLoader,
 } from '#V2/Routes/Settings/Templates/index.js';
+import {
+  SyncList,
+  syncListLoader,
+  SyncEditor,
+  syncEditorLoader,
+} from '#V2/Routes/Settings/Sync/index.js';
 import { Entity, entityLoader } from '#V2/Routes/Entity/index.js';
 import {
   loggedInUsersRoute,
@@ -250,6 +256,19 @@ const getRoutesLayout = (
         loader={createUsersLoader(services)(headers)}
       />
       <Route path="preserve" element={adminsOnlyRoute(<Preserve />)} />
+      <Route path="sync">
+        <Route index element={adminsOnlyRoute(<SyncList />)} loader={syncListLoader(headers)} />
+        <Route
+          path="new"
+          element={adminsOnlyRoute(<SyncEditor />)}
+          loader={syncEditorLoader(headers)}
+        />
+        <Route
+          path="edit/:name"
+          element={adminsOnlyRoute(<SyncEditor />)}
+          loader={syncEditorLoader(headers)}
+        />
+      </Route>
       <Route path="pages">
         <Route index element={adminsOnlyRoute(<PagesList />)} loader={pagesListLoader(headers)} />
         <Route

@@ -5,6 +5,7 @@ import {
   SettingsLinkSchema,
   SettingsFilterSchema,
   SettingsSublinkSchema,
+  SettingsSyncSchema,
 } from '#shared/types/settingsType.js';
 import { ensure } from '#shared/tsUtils.js';
 import { LanguageSchema, LatLonSchema, ObjectIdSchema } from '#shared/types/commonTypes.js';
@@ -18,6 +19,29 @@ import { TemplatesDAOFactory } from '#api/core/infrastructure/factories/Template
 import { TemplateDBO } from '#api/core/infrastructure/mongodb/template/DBOs/TemplateDBO.js';
 
 const DEFAULT_MAP_STARTING_POINT: LatLonSchema[] = [{ lon: 6, lat: 46 }];
+
+type PublicSyncConfig = Omit<SettingsSyncSchema, 'username' | 'password'>;
+
+type SyncConfigInput = Omit<SettingsSyncSchema, 'username' | 'password'> & {
+  username?: string;
+  password?: string;
+};
+
+const stripSyncCredentials = (sync: SettingsSyncSchema[] = []): PublicSyncConfig[] =>
+  sync.map(({ username: _username, password: _password, ...rest }) => rest);
+
+const mergeSyncCredentials = (
+  incoming: SyncConfigInput[],
+  current: SettingsSyncSchema[] = []
+): SettingsSyncSchema[] =>
+  incoming.map(config => {
+    const existing = current.find(item => item.name === config.name);
+    return {
+      ...config,
+      username: config.username || existing?.username || '',
+      password: config.password || existing?.password || '',
+    };
+  });
 
 type FilterOrLink = SettingsFilterSchema | SettingsLinkSchema | SettingsSublinkSchema;
 
@@ -152,14 +176,23 @@ export default {
   },
 
   async save(settings: Settings) {
-    await validateSettings(settings);
+    let settingsToSave = settings;
+    if (settings.sync) {
+      const { sync: currentSync = [] } = await this.get({}, '+sync');
+      settingsToSave = {
+        ...settings,
+        sync: mergeSyncCredentials(settings.sync, currentSync),
+      };
+    }
+
+    await validateSettings(settingsToSave);
     const currentSettings = await this.get();
-    await saveLinksTranslations(settings.links, currentSettings.links);
-    await saveFiltersTranslations(settings.filters, currentSettings.filters);
+    await saveLinksTranslations(settingsToSave.links, currentSettings.links);
+    await saveFiltersTranslations(settingsToSave.filters, currentSettings.filters);
 
-    const result = await settingsModel.save({ ...settings, _id: currentSettings._id });
+    const result = await settingsModel.save({ ...settingsToSave, _id: currentSettings._id });
 
-    if (!currentSettings.newNameGeneration && settings.newNameGeneration) {
+    if (!currentSettings.newNameGeneration && settingsToSave.newNameGeneration) {
       const dao = TemplatesDAOFactory.default();
       const templates = (await dao.get()) as TemplateDBO[];
       const defaultLanguage = currentSettings?.languages?.find(l => l.default)?.key!;
@@ -170,6 +203,16 @@ export default {
     }
 
     return result;
+  },
+
+  async getSync(): Promise<PublicSyncConfig[]> {
+    const { sync = [] } = await this.get({}, '+sync');
+    return stripSyncCredentials(sync);
+  },
+
+  async saveSync(sync: SyncConfigInput[]): Promise<PublicSyncConfig[]> {
+    await this.save({ sync: sync as SettingsSyncSchema[] });
+    return this.getSync();
   },
 
   async setDefaultLanguage(key: string) {
