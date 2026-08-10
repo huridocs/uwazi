@@ -17,7 +17,7 @@ class CreateUserGroupUseCase extends AbstractUseCase<Input, Output, Deps> {
   async execute(input: Input): Promise<Output> {
     (await this.deps.userGroupsDS.checkUniqueName(input.name)).getDataOrThrow();
 
-    return this.deps.userGroupsDS.create(input.name, input.memberIds);
+    return this.deps.userGroupsDS.create({ name: input.name, memberIds: input.memberIds });
   }
 }
 

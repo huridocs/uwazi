@@ -164,7 +164,10 @@ describe('MongoGroupsDataSource', () => {
     it('should create a group and make it findable via getAll', async () => {
       const { ds } = createDs();
 
-      const created = await ds.create('New group', [f.idString('existing1')]);
+      const created = await ds.create({
+        name: 'New group',
+        memberIds: [f.idString('existing1')],
+      });
 
       const all = await ds.getAll();
       const found = all.find(group => group._id === created.id);
@@ -179,9 +182,11 @@ describe('MongoGroupsDataSource', () => {
     it('should rename a group and replace its members', async () => {
       const { ds } = createDs();
 
-      await ds.update(f.id('With one member').toHexString(), 'Renamed', [
-        f.idString('existing2'),
-      ]);
+      await ds.update({
+        id: f.id('With one member').toHexString(),
+        name: 'Renamed',
+        memberIds: [f.idString('existing2')],
+      });
 
       const all = await ds.getAll();
       const updated = all.find(group => group._id === f.id('With one member').toHexString());
@@ -251,7 +256,11 @@ describe('MongoGroupsDataSource', () => {
     it('should fall back to a bare refId for an orphaned member reference', async () => {
       const { ds } = createDs();
 
-      await ds.update(f.id('Empty').toHexString(), 'Empty', [f.idString('deletedUser')]);
+      await ds.update({
+        id: f.id('Empty').toHexString(),
+        name: 'Empty',
+        memberIds: [f.idString('deletedUser')],
+      });
 
       const all = await ds.getAll();
       const emptyGroup = all.find(group => group.name === 'Empty');

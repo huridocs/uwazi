@@ -12,6 +12,8 @@ import { Result, ResultType } from '#api/core/libs/Result.js';
 import {
   UserGroupsDataSource,
   UserGroupWithMembers,
+  CreateUserGroupParams,
+  UpdateUserGroupParams,
 } from '#api/core/application/contracts/UserGroupsDataSource.js';
 import { UserGroupDBO } from './UserGroupDBO.js';
 import { UserDBO } from './UserDBO.js';
@@ -66,7 +68,7 @@ class MongoUserGroupsDataSource
     await collection.updateMany({}, { $pull: { members: { refId: { $in: userIds } } } });
   }
 
-  async create(name: string, memberIds: string[]): Promise<UserGroup> {
+  async create({ name, memberIds }: CreateUserGroupParams): Promise<UserGroup> {
     const id = this.idGenerator.generate();
     const collection = this.getCollection();
 
@@ -79,7 +81,7 @@ class MongoUserGroupsDataSource
     return new UserGroup(id, name, memberIds);
   }
 
-  async update(id: string, name: string, memberIds: string[]): Promise<UserGroup> {
+  async update({ id, name, memberIds }: UpdateUserGroupParams): Promise<UserGroup> {
     const collection = this.getCollection();
 
     await collection.updateOne(
