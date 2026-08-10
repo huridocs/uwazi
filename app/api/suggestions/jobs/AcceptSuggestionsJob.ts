@@ -1,10 +1,10 @@
-import { UwaziJobHandler, UwaziJobParams } from '#api/core/infrastructure/jobs/UwaziJobHandler.js';
-import { emitToTenant } from '#api/socketio/setupSockets.js';
-import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
 import { ObjectId } from 'mongodb';
+import { emitToTenantAdminsAndEditors } from '#api/socketio/setupSockets.js';
+import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
 import ixmodels from '#api/services/informationextraction/ixmodels.js';
 import { HeartbeatCallback } from '#api/core/libs/queue/application/contracts/Dispatchable.js';
 import { AcceptSuggestionsUseCase } from '../application/AcceptSuggestionsUseCase.js';
+import { UwaziJobParams, UwaziJobHandler } from '#api/core/infrastructure/jobs/UwaziJobHandler.js';
 
 type CustomParams = UwaziJobParams & {
   tenantName: string;
@@ -47,7 +47,7 @@ export class AcceptSuggestionsJob extends UwaziJobHandler<CustomParams> {
 
       if (progress) {
         const remaining = Math.max(0, (progress.total || 0) - (progress.processed || 0));
-        emitToTenant(
+        emitToTenantAdminsAndEditors(
           params.tenantName,
           'ix_model_status',
           extractorId,
@@ -58,11 +58,22 @@ export class AcceptSuggestionsJob extends UwaziJobHandler<CustomParams> {
         // If completed, finish without redispatch
         if ((progress.total || 0) > 0 && progress.processed >= (progress.total || 0)) {
           await ixmodels.stopTraining(ObjectId.createFromHexString(extractorId));
-          emitToTenant(params.tenantName, 'ix_model_status', extractorId, 'ready', 'Completed');
+          emitToTenantAdminsAndEditors(
+            params.tenantName,
+            'ix_model_status',
+            extractorId,
+            'ready',
+            'Completed'
+          );
           return;
         }
       } else {
-        emitToTenant(params.tenantName, 'ix_model_status', extractorId, 'processing_auto_accept');
+        emitToTenantAdminsAndEditors(
+          params.tenantName,
+          'ix_model_status',
+          extractorId,
+          'processing_auto_accept'
+        );
       }
 
       if (processed > 0) {
@@ -76,7 +87,13 @@ export class AcceptSuggestionsJob extends UwaziJobHandler<CustomParams> {
 
       // Auto-accept finished: cleanup model run and emit 'ready'
       await ixmodels.stopTraining(ObjectId.createFromHexString(extractorId));
-      emitToTenant(params.tenantName, 'ix_model_status', extractorId, 'ready', 'Completed');
+      emitToTenantAdminsAndEditors(
+        params.tenantName,
+        'ix_model_status',
+        extractorId,
+        'ready',
+        'Completed'
+      );
     } catch (e) {
       // On error, best-effort cleanup to avoid leaving model in processing state
       await ixmodels.unsetProcessRun(extractorId);

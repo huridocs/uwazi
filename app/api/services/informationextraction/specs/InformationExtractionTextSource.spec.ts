@@ -72,7 +72,7 @@ describe('Information Extraction: Extracting from text source', () => {
 
     await IXExternalService.start();
     // eslint-disable-next-line no-empty-function
-    jest.spyOn(setupSockets, 'emitToTenant').mockImplementation(() => {});
+    jest.spyOn(setupSockets, 'emitToTenantAdminsAndEditors').mockImplementation(() => {});
   });
 
   beforeEach(async () => {
@@ -401,7 +401,7 @@ describe('Information Extraction: Extracting from text source', () => {
         extractorId: factory.id('extract_source_text_no_entities'),
       });
 
-      expect(setupSockets.emitToTenant).toHaveBeenCalledWith(
+      expect(setupSockets.emitToTenantAdminsAndEditors).toHaveBeenCalledWith(
         'tenant1',
         IXWebSocketEvents.ErrorTrainingModel,
         { message: NoEntitiesForTraining.defaultMessage }

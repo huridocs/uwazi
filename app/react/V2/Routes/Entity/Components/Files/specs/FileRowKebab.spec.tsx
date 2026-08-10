@@ -49,7 +49,7 @@ describe('FileRowKebab', () => {
         onRename={jest.fn()}
         onChangeLanguage={jest.fn()}
         onDelete={jest.fn()}
-        showLanguageAction={false}
+        showLanguageAction
       />,
       { container: themed }
     );
@@ -57,6 +57,7 @@ describe('FileRowKebab', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Row actions' }));
     const menu = screen.getByRole('menu');
     expect(themed.contains(menu)).toBe(true);
+    expect(screen.getByText('Change language')).toBeInTheDocument();
 
     fireEvent.keyDown(document, { key: 'Escape' });
     expect(screen.queryByRole('menu')).toBeNull();

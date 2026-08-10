@@ -8,7 +8,7 @@ type EntityFieldProps = {
 };
 
 const EntityField = ({ children, className = '', ...rest }: EntityFieldProps) => (
-  <div className={`space-y-1.5 text-ink ${className}`.trim()} {...rest}>
+  <div className={`flex flex-col gap-1.5 text-ink ${className}`.trim()} {...rest}>
     {children}
   </div>
 );

@@ -44,7 +44,12 @@ describe('DeleteLanguageEntitiesJob', () => {
   let mockWebSockets: jest.Mocked<WebSockets>;
 
   beforeEach(async () => {
-    mockWebSockets = { emitToTenant: jest.fn(), emitToTenantAdmins: jest.fn() };
+    mockWebSockets = {
+      emitToTenant: jest.fn(),
+      emitToTenantAdmins: jest.fn(),
+      emitToTenantAdminsAndEditors: jest.fn(),
+      emitToSession: jest.fn(),
+    };
     heartbeat.mockClear();
     jest.spyOn(search, 'deleteLanguage').mockResolvedValue(undefined as any);
     await testingEnvironment.setUp(fixtures);

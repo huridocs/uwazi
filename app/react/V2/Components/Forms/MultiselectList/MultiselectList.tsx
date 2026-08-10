@@ -379,12 +379,12 @@ const MultiselectList = ({
 
   return (
     <div className={cx(panel ? 'flex flex-col' : 'flex h-full flex-col', className)}>
-      <div className={panel ? 'flex flex-col' : 'w-full bg-paper'}>
+      <div className={panel ? 'flex flex-col gap-1.5' : 'flex w-full flex-col gap-1.5 bg-paper'}>
         <Label htmlFor={id} hideLabel={!label} hasErrors={Boolean(hasErrors)}>
           {label}
         </Label>
         {panel ? (
-          <div className={cx(relationshipPanelClassName, 'mt-1.5')}>
+          <div className={relationshipPanelClassName}>
             {renderSearch()}
             {renderFilters()}
             {availableItems?.length === 0 ? (

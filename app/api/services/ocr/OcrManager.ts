@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 /* eslint-disable max-statements */
 import { ObjectId } from 'mongodb';
 import { Readable } from 'stream';
@@ -15,7 +16,7 @@ import { permissionsContext } from '#api/permissions/permissionsContext.js';
 import relationships from '#api/relationships/relationships.js';
 import { ResultsMessage, TaskManager } from '#api/services/tasksmanager/TaskManager.js';
 import settings from '#api/settings/settings.js';
-import { emitToTenant } from '#api/socketio/setupSockets.js';
+import { emitToSession } from '#api/socketio/setupSockets.js';
 import { tenants } from '#api/tenants/tenantContext.js';
 import users from '#api/users/users.js';
 import createError from '#api/utils/Error.js';
@@ -116,6 +117,8 @@ const saveResultFile = async (message: ResultsMessage, originalFile: FileType) =
 
   const fileId = IdGeneratorFactory.default().generate();
   const processingPDF = inputFile.toEntityFile(originalFile.entity!, fileId) as PDFDocument;
+  const sessionId =
+    typeof message.params?.sessionId === 'string' ? message.params.sessionId : undefined;
 
   const transactionManager = TransactionManagerFactory.default();
   const filesService = FilesServiceFactory.default(
@@ -123,6 +126,7 @@ const saveResultFile = async (message: ResultsMessage, originalFile: FileType) =
     {
       userId: permissionsContext.getUserInContext()?._id?.toString(),
       tenantName: tenants.current().name,
+      sessionId,
     }
   );
 
@@ -148,12 +152,15 @@ const processFiles = async (
     await setUserContextForFile(originalFile);
 
     const resultFile = await saveResultFile(message, originalFile);
+    const sessionId =
+      typeof message.params?.sessionId === 'string' ? message.params.sessionId : undefined;
 
     const filesService = FilesServiceFactory.default(
       {},
       {
         userId: permissionsContext.getUserInContext()?._id?.toString(),
         tenantName: tenants.current().name,
+        sessionId,
       }
     );
     await filesService.demoteToAttachment(originalFile._id.toHexString());
@@ -175,7 +182,11 @@ const handleOcrError = async (
   message: ResultsMessage
 ) => {
   await markError(record);
-  emitToTenant(message.tenant, 'ocr:error', originalFile._id.toHexString());
+  const sessionId =
+    typeof message.params?.sessionId === 'string' ? message.params.sessionId : undefined;
+  if (sessionId) {
+    emitToSession(sessionId, 'ocr:error', originalFile._id.toHexString());
+  }
 };
 
 const processResults = async (message: ResultsMessage): Promise<void> => {
@@ -194,7 +205,11 @@ const processResults = async (message: ResultsMessage): Promise<void> => {
       }
 
       await processFiles(record, message, originalFile);
-      emitToTenant(message.tenant, 'ocr:ready', originalFile._id.toHexString());
+      const sessionId =
+        typeof message.params?.sessionId === 'string' ? message.params.sessionId : undefined;
+      if (sessionId) {
+        emitToSession(sessionId, 'ocr:ready', originalFile._id.toHexString());
+      }
     } catch (e) {
       handleError(e);
     }
@@ -255,7 +270,7 @@ class OcrManager {
     await this.ocrTaskManager?.stop();
   }
 
-  async addToQueue(file: EnforcedWithId<FileType>) {
+  async addToQueue(file: EnforcedWithId<FileType>, sessionId?: string) {
     if (!file.filename) {
       return;
     }
@@ -278,6 +293,7 @@ class OcrManager {
       params: {
         filename: file.filename,
         language: LanguageUtils.fromISO639_3(file.language!)?.ISO639_1,
+        ...(sessionId ? { sessionId } : {}),
       },
     });
 
