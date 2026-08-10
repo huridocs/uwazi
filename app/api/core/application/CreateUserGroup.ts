@@ -15,10 +15,7 @@ type Deps = {
 
 class CreateUserGroupUseCase extends AbstractUseCase<Input, Output, Deps> {
   async execute(input: Input): Promise<Output> {
-    const duplicated = await this.deps.userGroupsDS.existsByName(input.name);
-    if (duplicated) {
-      throw new Error('duplicated_entry');
-    }
+    (await this.deps.userGroupsDS.checkUniqueName(input.name)).getDataOrThrow();
 
     return this.deps.userGroupsDS.create(input.name, input.memberIds);
   }

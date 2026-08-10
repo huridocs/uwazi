@@ -2,6 +2,7 @@ import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnec
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { IdGeneratorFactory } from '#api/core/infrastructure/factories/IdGeneratorFactory.js';
 import { MongoUserGroupsDataSource } from '#api/core/infrastructure/mongodb/user/MongoUserGroupsDataSource.js';
+import { UserGroupNameExists } from '#api/core/domain/userGroup/errors.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { CreateUserGroupUseCase } from '../CreateUserGroup.js';
@@ -37,8 +38,8 @@ describe('CreateUserGroupUseCase', () => {
   });
 
   it('should throw when the name already exists, case-insensitively', async () => {
-    await expect(createUseCase().execute({ name: 'existing', memberIds: [] })).rejects.toThrow(
-      'duplicated_entry'
-    );
+    await expect(
+      createUseCase().execute({ name: 'existing', memberIds: [] })
+    ).rejects.toThrow(UserGroupNameExists);
   });
 });

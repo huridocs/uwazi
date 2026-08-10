@@ -212,26 +212,26 @@ describe('MongoGroupsDataSource', () => {
     });
   });
 
-  describe('existsByName', () => {
+  describe('checkUniqueName', () => {
     it('should be case-insensitive', async () => {
       const { ds } = createDs();
 
-      expect(await ds.existsByName('empty')).toBe(true);
-      expect(await ds.existsByName('EMPTY')).toBe(true);
-      expect(await ds.existsByName('nonexistent')).toBe(false);
+      expect((await ds.checkUniqueName('empty')).isError()).toBe(true);
+      expect((await ds.checkUniqueName('EMPTY')).isError()).toBe(true);
+      expect((await ds.checkUniqueName('nonexistent')).isOk()).toBe(true);
     });
 
     it('should exclude the given id, so renaming to the current name is allowed', async () => {
       const { ds } = createDs();
 
-      const excludingSelf = await ds.existsByName('Empty', f.id('Empty').toHexString());
-      expect(excludingSelf).toBe(false);
+      const excludingSelf = await ds.checkUniqueName('Empty', f.id('Empty').toHexString());
+      expect(excludingSelf.isOk()).toBe(true);
 
-      const excludingOther = await ds.existsByName(
+      const excludingOther = await ds.checkUniqueName(
         'Empty',
         f.id('With one member').toHexString()
       );
-      expect(excludingOther).toBe(true);
+      expect(excludingOther.isError()).toBe(true);
     });
   });
 

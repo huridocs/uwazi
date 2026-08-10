@@ -7,6 +7,8 @@ import { TransactionManager } from '#api/core/application/contracts/TransactionM
 import { IdGenerator } from '#api/core/application/contracts/IdGenerator.js';
 import { User } from '#api/core/domain/user/User.js';
 import { UserGroup } from '#api/core/domain/userGroup/UserGroup.js';
+import { UserGroupNameExists } from '#api/core/domain/userGroup/errors.js';
+import { Result, ResultType } from '#api/core/libs/Result.js';
 import {
   UserGroupsDataSource,
   UserGroupWithMembers,
@@ -93,14 +95,21 @@ class MongoUserGroupsDataSource
     await collection.deleteMany({ _id: { $in: ids.map(ObjectId.createFromHexString) } });
   }
 
-  async existsByName(name: string, excludeId?: string): Promise<boolean> {
+  async checkUniqueName(
+    name: string,
+    excludeId?: string
+  ): Promise<ResultType<true, UserGroupNameExists>> {
     const collection = this.getCollection();
     const count = await collection.countDocuments({
       name: new RegExp(`^${name}$`, 'i'),
       ...(excludeId ? { _id: { $ne: ObjectId.createFromHexString(excludeId) } } : {}),
     });
 
-    return count > 0;
+    if (count > 0) {
+      return Result.fail(new UserGroupNameExists(name));
+    }
+
+    return Result.ok(true);
   }
 
   async getAll(): Promise<UserGroupWithMembers[]> {
@@ -110,6 +119,8 @@ class MongoUserGroupsDataSource
       (memo, group) => memo.concat(group.members.map(member => member.refId)),
       []
     );
+
+    // cc: I wonder why lookup aggregation was not implemented here ? is there a reason  ? let's discuss!
 
     const users = await this.getCollection<UserDBO>('users')
       .find(

@@ -16,10 +16,7 @@ type Deps = {
 
 class UpdateUserGroupUseCase extends AbstractUseCase<Input, Output, Deps> {
   async execute(input: Input): Promise<Output> {
-    const duplicated = await this.deps.userGroupsDS.existsByName(input.name, input.id);
-    if (duplicated) {
-      throw new Error('duplicated_entry');
-    }
+    (await this.deps.userGroupsDS.checkUniqueName(input.name, input.id)).getDataOrThrow();
 
     return this.deps.userGroupsDS.update(input.id, input.name, input.memberIds);
   }
