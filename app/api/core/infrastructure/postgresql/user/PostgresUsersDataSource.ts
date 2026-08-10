@@ -2,10 +2,9 @@ import {
   TwoFactorStatus,
   UsersDataSource,
 } from '#api/core/application/contracts/UsersDataSource.js';
-import { User, UserRole } from '#api/core/domain/user/User.js';
+import { User } from '#api/core/domain/user/User.js';
 import { UserAccount } from '#api/core/domain/user/UserAccount.js';
 import { EncryptedPassword } from '#api/core/domain/user/EncryptedPassword.js';
-import { Credentials } from '#api/core/domain/user/Credentials.js';
 import {
   EmailInUse,
   UsernameExists,
@@ -14,20 +13,119 @@ import {
 } from '#api/core/domain/user/errors.js';
 import { Result } from '#api/core/libs/Result.js';
 import type { ResultType } from '#api/core/libs/Result.js';
-import { PostgresDataSource, PostgresDataSourceDeps } from '../common/PostgresDataSource.js';
-import type { UserRow } from './PostgresUserRow.js';
+import type { PostgresDataSourceDeps } from '../common/PostgresDataSource.js';
+import { PostgresUsersDAO } from './PostgresUsersDAO.js';
+import { PostgresUsersMapper } from './PostgresUsersMapper.js';
 
-const notImplemented = (): never => {
-  throw new Error('Method not implemented.');
-};
+class PostgresUsersDataSource implements UsersDataSource {
+  private dao: PostgresUsersDAO;
 
-class PostgresUsersDataSource extends PostgresDataSource<UserRow> implements UsersDataSource {
   constructor(deps: PostgresDataSourceDeps) {
-    super('users', deps);
+    this.dao = new PostgresUsersDAO(deps);
+  }
+
+  async checkUniqueUsername(user: User): Promise<ResultType<boolean, UsernameExists>> {
+    const exists = await this.dao.exists({ username: user.username });
+
+    if (exists) {
+      return Result.fail(new UsernameExists(user.username));
+    }
+
+    return Result.ok(true);
+  }
+
+  async checkUniqueEmail(user: User): Promise<ResultType<boolean, EmailInUse>> {
+    const exists = await this.dao.exists({ email: user.email });
+
+    if (exists) {
+      return Result.fail(new EmailInUse(user.email));
+    }
+
+    return Result.ok(true);
+  }
+
+  async getById(id: string): Promise<ResultType<User, UserNotFound>> {
+    const row = await this.dao.findOne({ _id: id });
+
+    if (!row) {
+      return Result.fail(new UserNotFound(id));
+    }
+
+    return Result.ok(PostgresUsersMapper.toDomain(row));
+  }
+
+  async getByEmail(email: string): Promise<ResultType<User, UserNotFound>> {
+    const row = await this.dao.findOne({ email });
+
+    if (!row) {
+      return Result.fail(new UserNotFound(email));
+    }
+
+    return Result.ok(PostgresUsersMapper.toDomain(row));
+  }
+
+  async getByUsername(username: string): Promise<ResultType<UserAccount, UserNotFound>> {
+    const row = await this.dao.findOne({ username });
+
+    if (!row) {
+      return Result.fail(new UserNotFound(username));
+    }
+
+    return Result.ok(PostgresUsersMapper.toAccountDomain(row));
+  }
+
+  async getAccountById(id: string): Promise<ResultType<UserAccount, UserNotFound>> {
+    const row = await this.dao.findOne({ _id: id });
+
+    if (!row) {
+      return Result.fail(new UserNotFound(id));
+    }
+
+    return Result.ok(PostgresUsersMapper.toAccountDomain(row));
+  }
+
+  async countActiveUsers(): Promise<number> {
+    return this.dao.count(this.dao.notPublicUserFilter());
+  }
+
+  async insert(user: UserAccount): Promise<void> {
+    await this.dao.insertOne(PostgresUsersMapper.toRow(user));
+  }
+
+  async update(user: User): Promise<void> {
+    await this.dao.updateOne({ _id: user._id }, PostgresUsersMapper.toRow(user));
+  }
+
+  async delete(userIds: string[]): Promise<number> {
+    return this.dao.softDelete(userIds);
+  }
+
+  async findByUsernameAndUnlockCode(
+    username: string,
+    code: string
+  ): Promise<ResultType<User, InvalidUnlockCode>> {
+    const row = await this.dao.findOne({ username, accountUnlockCode: code });
+
+    if (!row) {
+      return Result.fail(new InvalidUnlockCode());
+    }
+
+    return Result.ok(PostgresUsersMapper.toDomain(row));
+  }
+
+  async clearLockFields(userId: string): Promise<void> {
+    await this.dao.updateOne(
+      { _id: userId },
+      { accountLocked: null, accountUnlockCode: null, failedLogins: null }
+    );
+  }
+
+  async updatePassword(userId: string, password: EncryptedPassword): Promise<void> {
+    await this.dao.updateOne({ _id: userId }, { password: password.getValue() });
   }
 
   async getTwoFactorStatus(userId: string): Promise<ResultType<TwoFactorStatus, UserNotFound>> {
-    const row = await this.table.where({ _id: userId }).first();
+    const row = await this.dao.findOne({ _id: userId });
 
     if (!row) {
       return Result.fail(new UserNotFound(userId));
@@ -37,11 +135,11 @@ class PostgresUsersDataSource extends PostgresDataSource<UserRow> implements Use
   }
 
   async setTwoFactorSecret(userId: string, secret: string): Promise<void> {
-    await this.table.where({ _id: userId }).update({ secret });
+    await this.dao.updateOne({ _id: userId }, { secret });
   }
 
   async getTwoFactorSecret(userId: string): Promise<ResultType<string | null, UserNotFound>> {
-    const row = await this.table.where({ _id: userId }).first();
+    const row = await this.dao.findOne({ _id: userId });
 
     if (!row) {
       return Result.fail(new UserNotFound(userId));
@@ -51,102 +149,11 @@ class PostgresUsersDataSource extends PostgresDataSource<UserRow> implements Use
   }
 
   async enableTwoFactor(userId: string): Promise<void> {
-    await this.table.where({ _id: userId }).update({ using2fa: true });
+    await this.dao.updateOne({ _id: userId }, { using2fa: true });
   }
 
   async disableTwoFactor(userId: string): Promise<void> {
-    await this.table.where({ _id: userId }).update({ using2fa: false, secret: null });
-  }
-
-  async insert(_user: UserAccount): Promise<void> {
-    return notImplemented();
-  }
-
-  async delete(_userIds: string[]): Promise<number> {
-    return notImplemented();
-  }
-
-  async update(user: User): Promise<void> {
-    const row: Record<string, unknown> = {
-      username: user.username,
-      role: user.role,
-      email: user.email,
-    };
-
-    if (user instanceof UserAccount) {
-      row.password = user.credentials.password.getValue();
-      row.failedLogins = user.credentials.failedLogins;
-      row.accountLocked = user.credentials.accountLocked;
-      row.accountUnlockCode = user.credentials.accountUnlockCode ?? null;
-      row.using2fa = user.credentials.using2fa;
-      row.secret = user.credentials.secret ?? null;
-    }
-
-    await this.table.where({ _id: user._id }).update(row);
-  }
-
-  async getById(_id: string): Promise<ResultType<User, UserNotFound>> {
-    return notImplemented();
-  }
-
-  async getByEmail(_email: string): Promise<ResultType<User, UserNotFound>> {
-    return notImplemented();
-  }
-
-  async getByUsername(username: string): Promise<ResultType<UserAccount, UserNotFound>> {
-    const row = await this.table.where({ username }).whereNull('deletedAt').first();
-
-    if (!row) {
-      return Result.fail(new UserNotFound(username));
-    }
-
-    return Result.ok(
-      new UserAccount({
-        _id: row._id,
-        username: row.username,
-        role: row.role as UserRole,
-        email: row.email,
-        credentials: new Credentials({
-          password: EncryptedPassword.fromHash(row.password),
-          failedLogins: row.failedLogins ?? undefined,
-          accountLocked: row.accountLocked ?? undefined,
-          accountUnlockCode: row.accountUnlockCode ?? undefined,
-          using2fa: row.using2fa,
-          secret: row.secret,
-        }),
-      })
-    );
-  }
-
-  async getAccountById(_id: string): Promise<ResultType<UserAccount, UserNotFound>> {
-    return notImplemented();
-  }
-
-  async countActiveUsers(): Promise<number> {
-    return notImplemented();
-  }
-
-  async checkUniqueUsername(_user: User): Promise<ResultType<boolean, UsernameExists>> {
-    return notImplemented();
-  }
-
-  async checkUniqueEmail(_user: User): Promise<ResultType<boolean, EmailInUse>> {
-    return notImplemented();
-  }
-
-  async findByUsernameAndUnlockCode(
-    _username: string,
-    _code: string
-  ): Promise<ResultType<User, InvalidUnlockCode>> {
-    return notImplemented();
-  }
-
-  async clearLockFields(_userId: string): Promise<void> {
-    return notImplemented();
-  }
-
-  async updatePassword(_userId: string, _password: EncryptedPassword): Promise<void> {
-    return notImplemented();
+    await this.dao.updateOne({ _id: userId }, { using2fa: false, secret: null });
   }
 }
 
