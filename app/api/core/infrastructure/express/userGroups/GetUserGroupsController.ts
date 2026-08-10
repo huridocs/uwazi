@@ -14,19 +14,13 @@ class GetUserGroupsController extends AbstractController {
       this.response.json(response);
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      const errorStack = error instanceof Error ? error.stack : undefined;
 
       ExecutionContext.logger.info(`User groups fetch failed: ${errorMessage}`, {
         namespace: 'UserGroup_Get',
         success: false,
         notify: true,
+        error: JSON.stringify(error),
         durationMs: Date.now() - startTime,
-        errorMessage,
-        errorStack,
-        errorType: error?.constructor?.name,
-        tenantName: ExecutionContext.currentTenant.name,
-        actorId: this.user._id,
-        correlationId: ExecutionContext.correlationId,
       });
 
       throw error;

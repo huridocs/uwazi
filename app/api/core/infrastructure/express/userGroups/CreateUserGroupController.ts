@@ -30,20 +30,13 @@ class CreateUserGroupController extends AbstractController<CreateUserGroupReques
       this.response.json(response);
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      const errorStack = error instanceof Error ? error.stack : undefined;
 
       ExecutionContext.logger.info(`User group create failed: ${errorMessage}`, {
         namespace: 'UserGroup_Create',
         success: false,
         notify: true,
         durationMs: Date.now() - startTime,
-        errorMessage,
-        errorStack,
-        errorType: error?.constructor?.name,
-        dto: JSON.stringify(this.request.body),
-        tenantName: ExecutionContext.currentTenant.name,
-        actorId: this.user._id,
-        correlationId: ExecutionContext.correlationId,
+        error: JSON.stringify(error),
       });
 
       throw error;

@@ -5,11 +5,6 @@ type UserGroupDTO = UserGroupWithMembers;
 
 const toDTO = (group: UserGroupWithMembers): UserGroupDTO => group;
 
-/**
- * Create/update responses aren't member-enriched (mirrors legacy save()'s response,
- * which persists and returns members as bare {refId} — enrichment only happens on
- * getAll()).
- */
 const toUpsertDTO = (group: UserGroup): UserGroupDTO => ({
   _id: group.id,
   name: group.name,

@@ -16,27 +16,21 @@ class DeleteUserGroupsController extends AbstractController {
     try {
       const parsed = DeleteUserGroupsQuerySchema.parse(this.request.query);
 
-      const response: DeleteUserGroupsResponse = await DeleteUserGroupsUseCaseFactory.default().execute({
-        ids: parsed.ids,
-      });
+      const response: DeleteUserGroupsResponse =
+        await DeleteUserGroupsUseCaseFactory.default().execute({
+          ids: parsed.ids,
+        });
 
       this.response.json(response);
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      const errorStack = error instanceof Error ? error.stack : undefined;
 
       ExecutionContext.logger.info(`User groups delete failed: ${errorMessage}`, {
         namespace: 'UserGroup_Delete',
         success: false,
         notify: true,
         durationMs: Date.now() - startTime,
-        errorMessage,
-        errorStack,
-        errorType: error?.constructor?.name,
-        query: JSON.stringify(this.request.query),
-        tenantName: ExecutionContext.currentTenant.name,
-        actorId: this.user._id,
-        correlationId: ExecutionContext.correlationId,
+        error: JSON.stringify(error),
       });
 
       throw error;

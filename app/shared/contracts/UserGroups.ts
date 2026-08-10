@@ -16,7 +16,6 @@ type UserGroup = {
   members: GroupMember[];
 };
 
-/** Create/update responses aren't member-enriched (mirrors legacy save()'s response). */
 type UnenrichedUserGroup = { _id: string; name: string; members: { refId: string }[] };
 
 type CreateUserGroupRequest = { name: string; members: { refId: string }[] };
@@ -31,12 +30,6 @@ type DeleteUserGroupsRequest = string[];
 
 type DeleteUserGroupsResponse = boolean;
 
-/**
- * username/role/email are absent when a member's refId no longer resolves to a live
- * user (e.g. the user was deleted without going through group cleanup) — unlike
- * GroupMember, which callers rely on always having a username (populated from a user
- * picker on write, never persisted/read back unhydrated).
- */
 type EnrichedGroupMember = { refId: string; username?: string; role?: string; email?: string };
 type EnrichedUserGroup = { _id: string; name: string; members: EnrichedGroupMember[] };
 
