@@ -14,6 +14,7 @@ import * as templatesAPI from '#V2/api/templates/index.js';
 import { SettingsContent } from '#V2/Components/Layouts/SettingsContent.js';
 import { Button, Table, ConfirmNavigationModal } from '#V2/Components/UI/index.js';
 import { useRequestStatus } from '#V2/atoms/requestStatusAtom.js';
+import { apiErrorToRequestError } from '#V2/shared/errorUtils.js';
 import {
   createColumns,
   AddTemplatesModal,
@@ -34,7 +35,8 @@ const filtersLoader =
   async () => {
     const [settings] = await settingsAPI.get(headers);
     const { filters } = settings || { filters: [] };
-    const templates = await templatesAPI.get(headers);
+    const [templates, templatesError] = await templatesAPI.getAll(headers);
+    if (templatesError) throw apiErrorToRequestError(templatesError);
     const tableFilters: LoaderData['filters'] = formatFilters(filters || []);
     return { filters: tableFilters, templates };
   };
