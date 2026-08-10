@@ -59,10 +59,6 @@ export class PostgresTable<TRow = Record<string, unknown>> {
     return this.cfg.tenantId;
   }
 
-  byPassPermissions(): void {
-    this.cfg.transactionManager.setPermissionContext({ bypass: true });
-  }
-
   query<T = TRow>(): PostgresTable<T> {
     return this.chain(this.cfg.knex(this.cfg.tableName)) as any;
   }
@@ -201,9 +197,13 @@ export class PostgresTable<TRow = Record<string, unknown>> {
    */
   protected applyInsertPolicy(): void {}
 
-  private async run<T>(fn: (qb: Knex.QueryBuilder) => Promise<T> | Knex.QueryBuilder): Promise<T> {
-    return this.cfg.transactionManager.withConnection(async trx =>
-      fn(this.qb.clone().transacting(trx))
+  protected async run<T>(
+    fn: (qb: Knex.QueryBuilder) => Promise<T> | Knex.QueryBuilder,
+    permissionContext?: { bypass: boolean; refIds: string[] }
+  ): Promise<T> {
+    return this.cfg.transactionManager.withConnection(
+      async trx => fn(this.qb.clone().transacting(trx)),
+      permissionContext
     );
   }
 

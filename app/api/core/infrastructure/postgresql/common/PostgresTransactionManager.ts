@@ -17,8 +17,6 @@ export class PostgresTransactionManager implements TransactionManager {
 
   private activeTransaction?: Knex.Transaction;
 
-  private permissionContext?: { bypass: boolean; refIds: string[] };
-
   private persistentOnCommitHandlers: CommitHandler[];
 
   private persistentOnRetryHandlers: RetryHandler[];
@@ -46,16 +44,19 @@ export class PostgresTransactionManager implements TransactionManager {
    * Case #1 — no active transaction: open a short-lived, self-scoped transaction
    * and set `app.current_tenant` for RLS.
    */
-  async withConnection<T>(fn: (executor: Knex.Transaction) => Promise<T>): Promise<T> {
+  async withConnection<T>(
+    fn: (executor: Knex.Transaction) => Promise<T>,
+    permissionContext?: { bypass: boolean; refIds: string[] }
+  ): Promise<T> {
     if (this.activeTransaction) {
       await this.setTenant(this.activeTransaction);
-      await this.setPermissionVars(this.activeTransaction);
+      await this.setPermissionVars(this.activeTransaction, permissionContext);
       return fn(this.activeTransaction);
     }
 
     return this.knex.transaction(async trx => {
       await this.setTenant(trx);
-      await this.setPermissionVars(trx);
+      await this.setPermissionVars(trx, permissionContext);
       return fn(trx);
     });
   }
@@ -64,37 +65,15 @@ export class PostgresTransactionManager implements TransactionManager {
     await trx.raw("SELECT set_config('app.current_tenant', ?, true)", [this.tenantId]);
   }
 
-  /**
-   * Configure the permission context for the next transaction.
-   * This is used by PostgresPermissionEnforcedTable to tell PostgreSQL
-   * whether the current actor bypasses entity-level permission policies and
-   * which refIds should be checked by the overlap operator.
-   *
-   * @param bypass - When true, actor sees all rows (admin/editor/system).
-   *                 When false (or omitted), actor is restricted.
-   * @param refIds - Actor refIds checked by the overlap operator.
-   *                 Omitted when bypass is true; pass empty array for anonymous.
-   */
-  setPermissionContext({
-    bypass = false,
-    refIds = [],
-  }: {
-    bypass?: boolean;
-    refIds?: string[];
-  }): void {
-    this.permissionContext = { bypass, refIds };
-  }
-
-  private async setPermissionVars(trx: Knex.Transaction): Promise<void> {
-    // Default to bypass=false, refIds=[] when no context has been set.
-    // This means every query — even through plain PostgresTable — is subject
-    // to entity-level permission policies. Only PostgresPermissionEnforcedTable
-    // (which explicitly sets a context) can grant access beyond published rows.
+  private async setPermissionVars(
+    trx: Knex.Transaction,
+    permissionContext?: { bypass: boolean; refIds: string[] }
+  ): Promise<void> {
     let bypass = 'false';
     let refIds = '';
-    if (this.permissionContext) {
-      bypass = this.permissionContext.bypass ? 'true' : 'false';
-      refIds = this.permissionContext.refIds.join(',');
+    if (permissionContext) {
+      bypass = permissionContext.bypass ? 'true' : 'false';
+      refIds = permissionContext.refIds.join(',');
     }
     await trx.raw("SELECT set_config('uwazi.bypass_rls', ?, true)", [bypass]);
     await trx.raw("SELECT set_config('uwazi.ref_ids', ?, true)", [refIds]);

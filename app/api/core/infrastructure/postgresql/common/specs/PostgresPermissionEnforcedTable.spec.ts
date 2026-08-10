@@ -5,6 +5,7 @@ import { PostgresDB } from '#api/infrastructure/PostgresDB.js';
 import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
 import { PostgresTransactionManager } from '../PostgresTransactionManager.js';
 import { PostgresPermissionEnforcedTable } from '../PostgresPermissionEnforcedTable.js';
+import { PostgresTable } from '../PostgresTable.js';
 import { AccessContext } from '#api/core/domain/entityAccessPolicy/AccessContext.js';
 import { User } from '#api/users.v2/model/User.js';
 
@@ -599,6 +600,68 @@ describe('PostgresPermissionEnforcedTable', () => {
         .having('name', '=', 'private-none')
         .all();
       expect(rows).toEqual([]);
+    });
+  });
+
+  describe('regression — concurrent operations on shared transaction manager', () => {
+    it('should not leak permission context between concurrent operations', async () => {
+      const sharedManager = managerFor(DEFAULT_TENANT);
+
+      const adminEnforced = PostgresPermissionEnforcedTable.for<TestRow>({
+        tableName: TEST_TABLE,
+        tenantId: DEFAULT_TENANT,
+        transactionManager: sharedManager,
+        accessContext: AccessContext.forActor(admin),
+      });
+
+      const collabEnforced = PostgresPermissionEnforcedTable.for<TestRow>({
+        tableName: TEST_TABLE,
+        tenantId: DEFAULT_TENANT,
+        transactionManager: sharedManager,
+        accessContext: AccessContext.forActor(collaborator),
+      });
+
+      // Run concurrently — admin reads all, collaborator reads restricted.
+      // With mutable permissionContext on the shared transaction manager,
+      // the last setPermissionContext() call wins and both operations see
+      // the same (wrong) view.
+      const [adminRows, collabRows] = await Promise.all([
+        adminEnforced.all(),
+        collabEnforced.all(),
+      ]);
+
+      // Admin should see all 6 rows regardless of interleaving.
+      expect(adminRows).toHaveLength(6);
+      // Collaborator should see only their 5 permitted rows.
+      expect(collabRows.map(r => r._id).sort()).toEqual([
+        'ent-group-read',
+        'ent-group-write',
+        'ent-pub',
+        'ent-read',
+        'ent-write',
+      ]);
+    });
+  });
+
+  describe('regression — stored context leaks through transactionManager.run()', () => {
+    it('should not leak permission context into an unrelated run() transaction', async () => {
+      const sharedManager = managerFor(DEFAULT_TENANT);
+
+      // A plain table inside run() has no way to set a permission context
+      // (setPermissionContext and byPassPermissions are gone).  It should
+      // always see only published rows — the safe default.
+      await sharedManager.run(async () => {
+        const innerTable = PostgresTable.for<TestRow>({
+          tableName: TEST_TABLE,
+          tenantId: DEFAULT_TENANT,
+          transactionManager: sharedManager,
+        });
+
+        const rows = await innerTable.all();
+
+        // A plain table with no bypass should only see published rows.
+        expect(rows.map(r => r._id).sort()).toEqual(['ent-pub']);
+      });
     });
   });
 });

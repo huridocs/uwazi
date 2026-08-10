@@ -68,36 +68,6 @@ class PostgresPermissionEnforcedTable<TRow = Record<string, unknown>> extends Po
     return new PostgresPermissionEnforcedTable(this.cfg, qb, this.accessContext) as any as this;
   }
 
-  async all(): Promise<TRow[]> {
-    this.setPermissionContext();
-    return super.all();
-  }
-
-  async first(): Promise<TRow | undefined> {
-    this.setPermissionContext();
-    return super.first();
-  }
-
-  async count(): Promise<number> {
-    this.setPermissionContext();
-    return super.count();
-  }
-
-  async sum(column: string): Promise<number> {
-    this.setPermissionContext();
-    return super.sum(column);
-  }
-
-  async update(changes: Record<string, unknown>): Promise<string[]> {
-    this.setPermissionContext();
-    return super.update(changes);
-  }
-
-  async delete(): Promise<string[]> {
-    this.setPermissionContext();
-    return super.delete();
-  }
-
   /**
    * Override upsert to keep the anonymous-insert gate and to preserve the
    * original "silent no-op" semantics for unauthorized updates.
@@ -111,20 +81,22 @@ class PostgresPermissionEnforcedTable<TRow = Record<string, unknown>> extends Po
    */
   async upsert(doc: Record<string, unknown> | Record<string, unknown>[]): Promise<void> {
     this.applyInsertPolicy();
-    this.cfg.transactionManager.setPermissionContext({ bypass: true });
     const rows = this.rowsWithTenant(doc);
-    const result = await this.cfg.transactionManager.withConnection(async trx => {
-      const query = trx(this.cfg.tableName)
-        .insert(rows)
-        .onConflict(['_id', 'tenant_id'])
-        .merge()
-        .returning(['_id']);
-      const writeCondition = this.upsertWriteCondition();
-      if (writeCondition) {
-        query.whereRaw(writeCondition.sql, writeCondition.bindings);
-      }
-      return query;
-    });
+    const result = await this.cfg.transactionManager.withConnection(
+      async trx => {
+        const query = trx(this.cfg.tableName)
+          .insert(rows)
+          .onConflict(['_id', 'tenant_id'])
+          .merge()
+          .returning(['_id']);
+        const writeCondition = this.upsertWriteCondition();
+        if (writeCondition) {
+          query.whereRaw(writeCondition.sql, writeCondition.bindings);
+        }
+        return query;
+      },
+      { bypass: true, refIds: [] }
+    );
     const affectedIds = PostgresTable.idsOf(result);
     if (affectedIds.length > 0) {
       await this.notifySync(
@@ -138,7 +110,7 @@ class PostgresPermissionEnforcedTable<TRow = Record<string, unknown>> extends Po
     if (this.accessContext.isPrivileged()) {
       return null;
     }
-    const refIds = this.accessContext.refIds;
+    const { refIds } = this.accessContext;
     if (refIds.length === 0) {
       return { sql: 'FALSE', bindings: [] };
     }
@@ -158,14 +130,20 @@ class PostgresPermissionEnforcedTable<TRow = Record<string, unknown>> extends Po
     }
   }
 
-  private setPermissionContext(): void {
+  protected async run<T>(
+    fn: (qb: Knex.QueryBuilder) => Promise<T> | Knex.QueryBuilder
+  ): Promise<T> {
+    return super.run(fn, this.buildPermissionContext());
+  }
+
+  private buildPermissionContext(): { bypass: boolean; refIds: string[] } {
     if (this.accessContext.isPrivileged()) {
-      this.cfg.transactionManager.setPermissionContext({ bypass: true });
-    } else if (this.accessContext.isAnonymous()) {
-      this.cfg.transactionManager.setPermissionContext({ bypass: false });
-    } else {
-      this.cfg.transactionManager.setPermissionContext({ refIds: this.accessContext.refIds });
+      return { bypass: true, refIds: [] };
     }
+    if (this.accessContext.isAnonymous()) {
+      return { bypass: false, refIds: [] };
+    }
+    return { bypass: false, refIds: this.accessContext.refIds };
   }
 }
 
