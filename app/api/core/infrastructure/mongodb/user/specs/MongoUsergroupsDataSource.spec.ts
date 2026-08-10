@@ -1,5 +1,6 @@
 import { User } from '#api/core/domain/user/User.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { IdGeneratorFactory } from '#api/core/infrastructure/factories/IdGeneratorFactory.js';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
@@ -25,7 +26,11 @@ const fixtures = {
 
 const createDs = () => {
   const transactionManager = TransactionManagerFactory.default();
-  const ds = new MongoUserGroupsDataSource(getConnection(), transactionManager);
+  const ds = new MongoUserGroupsDataSource(
+    getConnection(),
+    transactionManager,
+    IdGeneratorFactory.default()
+  );
   return { ds, transactionManager };
 };
 
@@ -152,6 +157,106 @@ describe('MongoGroupsDataSource', () => {
           name: 'With two members',
         },
       ]);
+    });
+  });
+
+  describe('create', () => {
+    it('should create a group and make it findable via getAll', async () => {
+      const { ds } = createDs();
+
+      const created = await ds.create('New group', [f.idString('existing1')]);
+
+      const all = await ds.getAll();
+      const found = all.find(group => group._id === created.id);
+      expect(found).toMatchObject({
+        name: 'New group',
+        members: [{ refId: f.idString('existing1'), username: 'existing1' }],
+      });
+    });
+  });
+
+  describe('update', () => {
+    it('should rename a group and replace its members', async () => {
+      const { ds } = createDs();
+
+      await ds.update(f.id('With one member').toHexString(), 'Renamed', [
+        f.idString('existing2'),
+      ]);
+
+      const all = await ds.getAll();
+      const updated = all.find(group => group._id === f.id('With one member').toHexString());
+      expect(updated).toMatchObject({
+        name: 'Renamed',
+        members: [{ refId: f.idString('existing2'), username: 'existing2' }],
+      });
+    });
+  });
+
+  describe('delete', () => {
+    it('should delete multiple groups by id', async () => {
+      const { ds } = createDs();
+
+      await ds.delete([f.id('Empty').toHexString(), f.id('With one member').toHexString()]);
+
+      const all = await ds.getAll();
+      expect(all.map(group => group.name)).toEqual(['With two members']);
+    });
+
+    it('should be a no-op for an unknown id', async () => {
+      const { ds } = createDs();
+
+      await expect(ds.delete([f.id('unknown').toHexString()])).resolves.not.toThrow();
+
+      const all = await ds.getAll();
+      expect(all).toHaveLength(3);
+    });
+  });
+
+  describe('existsByName', () => {
+    it('should be case-insensitive', async () => {
+      const { ds } = createDs();
+
+      expect(await ds.existsByName('empty')).toBe(true);
+      expect(await ds.existsByName('EMPTY')).toBe(true);
+      expect(await ds.existsByName('nonexistent')).toBe(false);
+    });
+
+    it('should exclude the given id, so renaming to the current name is allowed', async () => {
+      const { ds } = createDs();
+
+      const excludingSelf = await ds.existsByName('Empty', f.id('Empty').toHexString());
+      expect(excludingSelf).toBe(false);
+
+      const excludingOther = await ds.existsByName(
+        'Empty',
+        f.id('With one member').toHexString()
+      );
+      expect(excludingOther).toBe(true);
+    });
+  });
+
+  describe('getAll', () => {
+    it('should enrich members with username/role/email', async () => {
+      const { ds } = createDs();
+
+      const all = await ds.getAll();
+      const withTwoMembers = all.find(group => group.name === 'With two members');
+
+      expect(withTwoMembers?.members).toMatchObject([
+        { refId: f.idString('existing1'), username: 'existing1', role: UserRole.ADMIN },
+        { refId: f.idString('existing2'), username: 'existing2', role: UserRole.EDITOR },
+      ]);
+    });
+
+    it('should fall back to a bare refId for an orphaned member reference', async () => {
+      const { ds } = createDs();
+
+      await ds.update(f.id('Empty').toHexString(), 'Empty', [f.idString('deletedUser')]);
+
+      const all = await ds.getAll();
+      const emptyGroup = all.find(group => group.name === 'Empty');
+
+      expect(emptyGroup?.members).toEqual([{ refId: f.idString('deletedUser') }]);
     });
   });
 });

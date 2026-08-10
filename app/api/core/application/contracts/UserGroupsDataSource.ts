@@ -1,7 +1,7 @@
 import { User } from '#api/core/domain/user/User.js';
 import { UserGroup } from '#api/core/domain/userGroup/UserGroup.js';
 
-type UserGroupMember = { refId: string; username: string; role: string; email: string };
+type UserGroupMember = { refId: string; username?: string; role?: string; email?: string };
 type UserGroupWithMembers = { _id: string; name: string; members: UserGroupMember[] };
 
 interface UserGroupsDataSource {

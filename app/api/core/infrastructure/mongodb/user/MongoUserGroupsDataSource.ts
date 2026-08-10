@@ -4,9 +4,15 @@ import {
   MongoDSOptions,
 } from '#api/core/infrastructure/mongodb/common/MongoDataSource.js';
 import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
+import { IdGenerator } from '#api/core/application/contracts/IdGenerator.js';
 import { User } from '#api/core/domain/user/User.js';
-import { UserGroupsDataSource } from '#api/core/application/contracts/UserGroupsDataSource.js';
+import { UserGroup } from '#api/core/domain/userGroup/UserGroup.js';
+import {
+  UserGroupsDataSource,
+  UserGroupWithMembers,
+} from '#api/core/application/contracts/UserGroupsDataSource.js';
 import { UserGroupDBO } from './UserGroupDBO.js';
+import { UserDBO } from './UserDBO.js';
 
 class MongoUserGroupsDataSource
   extends MongoDataSource<UserGroupDBO>
@@ -14,8 +20,16 @@ class MongoUserGroupsDataSource
 {
   protected collectionName = 'usergroups';
 
-  constructor(db: Db, transactionManager: TransactionManager, options?: MongoDSOptions) {
+  private idGenerator: IdGenerator;
+
+  constructor(
+    db: Db,
+    transactionManager: TransactionManager,
+    idGenerator: IdGenerator,
+    options?: MongoDSOptions
+  ) {
     super(db, transactionManager, options);
+    this.idGenerator = idGenerator;
   }
 
   async getUserGroups(user: User): Promise<User['groups']> {
@@ -48,6 +62,72 @@ class MongoUserGroupsDataSource
   async removeUsersFromGroups(userIds: string[]): Promise<void> {
     const collection = this.getCollection();
     await collection.updateMany({}, { $pull: { members: { refId: { $in: userIds } } } });
+  }
+
+  async create(name: string, memberIds: string[]): Promise<UserGroup> {
+    const id = this.idGenerator.generate();
+    const collection = this.getCollection();
+
+    await collection.insertOne({
+      _id: ObjectId.createFromHexString(id),
+      name,
+      members: memberIds.map(refId => ({ refId })),
+    });
+
+    return new UserGroup(id, name, memberIds);
+  }
+
+  async update(id: string, name: string, memberIds: string[]): Promise<UserGroup> {
+    const collection = this.getCollection();
+
+    await collection.updateOne(
+      { _id: ObjectId.createFromHexString(id) },
+      { $set: { name, members: memberIds.map(refId => ({ refId })) } }
+    );
+
+    return new UserGroup(id, name, memberIds);
+  }
+
+  async delete(ids: string[]): Promise<void> {
+    const collection = this.getCollection();
+    await collection.deleteMany({ _id: { $in: ids.map(ObjectId.createFromHexString) } });
+  }
+
+  async existsByName(name: string, excludeId?: string): Promise<boolean> {
+    const collection = this.getCollection();
+    const count = await collection.countDocuments({
+      name: new RegExp(`^${name}$`, 'i'),
+      ...(excludeId ? { _id: { $ne: ObjectId.createFromHexString(excludeId) } } : {}),
+    });
+
+    return count > 0;
+  }
+
+  async getAll(): Promise<UserGroupWithMembers[]> {
+    const groups = await this.getCollection().find({}).toArray();
+
+    const memberIds = groups.reduce<string[]>(
+      (memo, group) => memo.concat(group.members.map(member => member.refId)),
+      []
+    );
+
+    const users = await this.getCollection<UserDBO>('users')
+      .find(
+        { _id: { $in: memberIds.map(ObjectId.createFromHexString) } },
+        { projection: { username: 1, role: 1, email: 1 } }
+      )
+      .toArray();
+
+    return groups.map(group => ({
+      _id: group._id.toString(),
+      name: group.name,
+      members: group.members.map(member => {
+        const user = users.find(u => u._id.toString() === member.refId);
+        return user
+          ? { refId: member.refId, username: user.username, role: user.role, email: user.email }
+          : { refId: member.refId };
+      }),
+    }));
   }
 }
 
