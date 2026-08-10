@@ -12,14 +12,13 @@ import { createLocalDraftDefinition } from './createDraftDatavizInput.js';
 import { ConfirmationModal } from '#V2/Components/UI/index.js';
 import { t, Translate } from '#app/I18N/index.js';
 import { useRequestStatus } from '#V2/atoms/requestStatusAtom.js';
+import { apiErrorToRequestError } from '#V2/shared/errorUtils.js';
 
 const datavizNewLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
   async () => {
-    const templates = await templatesAPI.get(headers);
-    if (templates instanceof FetchResponseError) {
-      throw templates;
-    }
+    const [templates, templatesError] = await templatesAPI.getAll(headers);
+    if (templatesError) throw apiErrorToRequestError(templatesError);
     const templateId = templates[0]?._id;
     return createLocalDraftDefinition({ templateId });
   };

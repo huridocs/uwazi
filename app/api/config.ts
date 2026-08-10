@@ -120,6 +120,11 @@ export const config = {
     },
   },
 
+  mail: {
+    defaultSenderEmail: process.env.DEFAULT_SENDER_EMAIL || 'no-reply@uwazi.io',
+    defaultSiteName: process.env.DEFAULT_SITE_NAME || 'Uwazi',
+  },
+
   SHARED_DB: process.env.NODE_ENV === 'test' ? 'uwazi_shared_db_testing' : 'uwazi_shared_db',
 
   multiTenant: process.env.MULTI_TENANT || false,

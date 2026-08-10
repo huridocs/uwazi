@@ -75,9 +75,9 @@ import { PXEntityDashboard } from '#V2/Routes/Settings/ParagraphExtraction/PXEnt
 import { PXParagraphDashboard } from '#V2/Routes/Settings/ParagraphExtraction/PXParagraphs.js';
 import {
   Templates,
-  templatesLoader,
+  createTemplatesLoader,
   TemplatesEditor,
-  templatesEditorLoader,
+  createTemplatesEditorLoader,
 } from '#V2/Routes/Settings/Templates/index.js';
 import { Entity, entityLoader } from '#V2/Routes/Entity/index.js';
 import {
@@ -281,16 +281,20 @@ const getRoutesLayout = (
         />
       </Route>
       <Route path="templates">
-        <Route index element={adminsOnlyRoute(<Templates />)} loader={templatesLoader(headers)} />
+        <Route
+          index
+          element={adminsOnlyRoute(<Templates />)}
+          loader={createTemplatesLoader(services)(headers)}
+        />
         <Route
           path="new"
           element={adminsOnlyRoute(<TemplatesEditor />)}
-          loader={templatesEditorLoader(headers)}
+          loader={createTemplatesEditorLoader(services)(headers)}
         />
         <Route
           path="edit/:templateId"
           element={adminsOnlyRoute(<TemplatesEditor />)}
-          loader={templatesEditorLoader(headers)}
+          loader={createTemplatesEditorLoader(services)(headers)}
         />
       </Route>
       <Route path="metadata_extraction">

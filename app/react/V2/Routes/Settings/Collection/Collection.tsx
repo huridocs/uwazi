@@ -17,6 +17,7 @@ import { settingsAtom } from '#V2/atoms/settingsAtom.js';
 import { SettingsContent } from '#V2/Components/Layouts/SettingsContent.js';
 import { Translate, t } from '#app/I18N/index.js';
 import { ClientSettings, Template } from '#app/apiResponseTypes.js';
+import { apiErrorToRequestError } from '#V2/shared/errorUtils.js';
 import * as tips from './collectionSettingsTips.js';
 import { CollectionOptionToggle } from './CollectionOptionToggle.js';
 import { CustomUploadImagePicker } from './Theming/CustomUploadImagePicker.js';
@@ -33,10 +34,11 @@ const collectionLoader =
     const [raw] = await SettingsAPI.get(headers);
     const { themeCustomization: themeCustomizationFlag, ...settings } =
       raw as SettingsWithThemeFlag;
-    const [templates, customFilesRaw] = await Promise.all([
-      TemplatesAPI.get(headers),
+    const [[templates, templatesError], customFilesRaw] = await Promise.all([
+      TemplatesAPI.getAll(headers),
       FilesAPI.getByType('custom', headers),
     ]);
+    if (templatesError) throw apiErrorToRequestError(templatesError);
     const customUploadFiles = Array.isArray(customFilesRaw) ? customFilesRaw : [];
     return {
       settings,
