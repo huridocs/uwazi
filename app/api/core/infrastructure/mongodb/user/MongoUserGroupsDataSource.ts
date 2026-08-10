@@ -5,12 +5,12 @@ import {
 } from '#api/core/infrastructure/mongodb/common/MongoDataSource.js';
 import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
 import { User } from '#api/core/domain/user/User.js';
-import { UsergroupsDataSource } from '#api/core/application/contracts/UsergroupsDataSource.js';
+import { UserGroupsDataSource } from '#api/core/application/contracts/UserGroupsDataSource.js';
 import { UserGroupDBO } from './UserGroupDBO.js';
 
-class MongoUsergroupsDataSource
+class MongoUserGroupsDataSource
   extends MongoDataSource<UserGroupDBO>
-  implements UsergroupsDataSource
+  implements UserGroupsDataSource
 {
   protected collectionName = 'usergroups';
 
@@ -51,4 +51,4 @@ class MongoUsergroupsDataSource
   }
 }
 
-export { MongoUsergroupsDataSource };
+export { MongoUserGroupsDataSource };

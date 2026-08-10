@@ -5,7 +5,7 @@ import { Credentials } from '../domain/user/Credentials.js';
 import { EncryptedPassword } from '../domain/user/EncryptedPassword.js';
 import { AbstractUseCase } from '../libs/UseCase.js';
 import { UsersDataSource } from './contracts/UsersDataSource.js';
-import { UsergroupsDataSource } from './contracts/UsergroupsDataSource.js';
+import { UserGroupsDataSource } from './contracts/UserGroupsDataSource.js';
 
 const CreateUserInputSchema = z.object({
   username: z.string().trim(),
@@ -20,7 +20,7 @@ type Input = z.infer<typeof CreateUserInputSchema>;
 
 type Output = User;
 
-type Deps = { usersDS: UsersDataSource; usergroupsDS: UsergroupsDataSource };
+type Deps = { usersDS: UsersDataSource; usergroupsDS: UserGroupsDataSource };
 
 class CreateUser extends AbstractUseCase<Input, Output, Deps> {
   async execute(input: Input): Promise<Output> {

@@ -3,7 +3,7 @@ import { PUBLIC_USER_ID, User, UserRole } from '../domain/user/User.js';
 import { EncryptedPassword } from '../domain/user/EncryptedPassword.js';
 import { AbstractUseCase } from '../libs/UseCase.js';
 import { UsersDataSource } from './contracts/UsersDataSource.js';
-import { UsergroupsDataSource } from './contracts/UsergroupsDataSource.js';
+import { UserGroupsDataSource } from './contracts/UserGroupsDataSource.js';
 import { UpdateUserError } from '../domain/user/errors.js';
 import { UnauthorizedError } from '#api/authorization.v2/errors/UnauthorizedError.js';
 
@@ -20,7 +20,7 @@ type Input = z.infer<typeof UpdateUserInputSchema>;
 
 type Output = User;
 
-type Deps = { usersDS: UsersDataSource; usergroupsDS: UsergroupsDataSource };
+type Deps = { usersDS: UsersDataSource; usergroupsDS: UserGroupsDataSource };
 
 class UpdateUser extends AbstractUseCase<Input, Output, Deps> {
   async execute(input: Input): Promise<Output> {
