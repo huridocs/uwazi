@@ -1,13 +1,11 @@
 import { UpdateUserGroupUseCase } from '#api/core/application/UpdateUserGroup.js';
-import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { UserGroupsDataSourceFactory } from './UserGroupsDataSourceFactory.js';
 
 class UpdateUserGroupUseCaseFactory {
-  static default(
-    overrides?: Partial<ConstructorParameters<typeof UpdateUserGroupUseCase>[0]>
-  ) {
+  static default(overrides?: Partial<ConstructorParameters<typeof UpdateUserGroupUseCase>[0]>) {
     return new UpdateUserGroupUseCase({
-      transactionManager: TransactionManagerFactory.default(),
+      transactionManager: ExecutionContext.transactionManager,
       userGroupsDS: UserGroupsDataSourceFactory.default(),
       ...overrides,
     });
