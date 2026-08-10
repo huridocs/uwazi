@@ -9,7 +9,7 @@ import { ClientTemplateSchema } from '#app/istore.js';
 import { Button, ConfirmationModal, Table } from '#V2/Components/UI/index.js';
 import { Translate, t } from '#app/I18N/index.js';
 import { ClientIXExtractorType } from '#V2/shared/types.js';
-import { handleUnexpectedError } from '#app/V2/shared/errorUtils.js';
+import { apiErrorToRequestError, handleUnexpectedError } from '#app/V2/shared/errorUtils.js';
 import { ExtractorModal } from './components/ExtractorModal.js';
 import { extractorsTableColumns } from './components/TableElements.js';
 import { List } from './components/List.js';
@@ -190,7 +190,8 @@ const IXdashboardLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
   async () => {
     const extractors = await extractorsAPI.get(headers);
-    const templates = await templatesAPI.get(headers);
+    const [templates, templatesError] = await templatesAPI.getAll(headers);
+    if (templatesError) throw apiErrorToRequestError(templatesError);
     return { extractors, templates };
   };
 

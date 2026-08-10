@@ -15,6 +15,7 @@ import {
 } from '#V2/shared/ParagraphExtractionTypes.js';
 import { searchParamsFromSearchParams } from '#app/utils/routeHelpers.js';
 import { ClientEntitySchema } from '#app/istore.js';
+import { apiErrorToRequestError } from '#V2/shared/errorUtils.js';
 
 const PAGE_SIZE = 30;
 
@@ -116,11 +117,13 @@ const PXParagraphLoader =
       page: { number: Number(page), size: PAGE_SIZE },
     };
 
-    const [paragraphs, entityResponse, templates] = await Promise.all([
+    const [paragraphs, entityResponse, [templates, templatesError]] = await Promise.all([
       pxParagraphApi.getByParagraphExtractorId(query, headers),
       entitiesApi.getBySharedId({ sharedId, language: defaultLanguage?.key || '' }, headers),
-      templatesApi.get(headers),
+      templatesApi.getAll(headers),
     ]);
+
+    if (templatesError) throw apiErrorToRequestError(templatesError);
 
     const [entities] = entityResponse;
     const [sourceEntity] = entities || [];
