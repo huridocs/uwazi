@@ -1,13 +1,13 @@
 import { AbstractController } from '#api/common.v2/infrastructure/AbstractController.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
-import { GetUserGroupsUseCaseFactory } from '#api/core/infrastructure/factories/GetUserGroupsUseCaseFactory.js';
+import { UserGroupsDataSourceFactory } from '#api/core/infrastructure/factories/UserGroupsDataSourceFactory.js';
 import { toDTO } from './UserGroupMapper.js';
 
 class GetUserGroupsController extends AbstractController {
   protected async handle(): Promise<void> {
     const startTime = Date.now();
     try {
-      const response = await GetUserGroupsUseCaseFactory.default().execute();
+      const response = await UserGroupsDataSourceFactory.default().getAll();
 
       this.response.json(response.map(toDTO));
     } catch (error: unknown) {
