@@ -506,6 +506,73 @@ describe('MongoPermissionEnforcedCollection', () => {
       ]);
       expect(result.deletedCount).toBe(1);
     });
+
+    it('bulkWrite updateMany applies write permission', async () => {
+      const coll = createEnforcedCollection(AccessContext.forActor(collaborator), db);
+      const result = await coll.bulkWrite([
+        {
+          updateMany: {
+            filter: { _id: { $in: ['ent-write', 'ent-read', 'ent-none'] } },
+            update: { $set: { name: 'bw-many-updated' } },
+          },
+        },
+      ]);
+      expect(result.modifiedCount).toBe(1);
+
+      const adminColl = createEnforcedCollection(AccessContext.forActor(admin), db);
+      const rows = await adminColl.find({ name: 'bw-many-updated' }).toArray();
+      expect(rows.map(r => r._id)).toEqual(['ent-write']);
+    });
+
+    it('bulkWrite deleteMany applies write permission', async () => {
+      const coll = createEnforcedCollection(AccessContext.forActor(collaborator), db);
+      const result = await coll.bulkWrite([
+        { deleteMany: { filter: { _id: { $in: ['ent-write', 'ent-read', 'ent-none'] } } } },
+      ]);
+      expect(result.deletedCount).toBe(1);
+
+      const adminColl = createEnforcedCollection(AccessContext.forActor(admin), db);
+      const rows = await adminColl.find({ _id: 'ent-write' }).toArray();
+      expect(rows).toHaveLength(0);
+    });
+
+    it('bulkWrite replaceOne applies write permission', async () => {
+      const coll = createEnforcedCollection(AccessContext.forActor(collaborator), db);
+      const result = await coll.bulkWrite([
+        {
+          replaceOne: {
+            filter: { _id: 'ent-write' },
+            replacement: { name: 'bw-replaced', published: false, permissions: [] } as any,
+          },
+        },
+        {
+          replaceOne: {
+            filter: { _id: 'ent-read' },
+            replacement: { name: 'bw-hacked', published: false, permissions: [] } as any,
+          },
+        },
+      ]);
+      expect(result.modifiedCount).toBe(1);
+
+      const adminColl = createEnforcedCollection(AccessContext.forActor(admin), db);
+      const rows = await adminColl.find({ name: 'bw-replaced' }).toArray();
+      expect(rows.map(r => r._id)).toEqual(['ent-write']);
+    });
+
+    it('bulkWrite insertOne is allowed for collaborator', async () => {
+      const coll = createEnforcedCollection(AccessContext.forActor(collaborator), db);
+      const result = await coll.bulkWrite([
+        {
+          insertOne: {
+            document: { _id: 'ent-bw-new', name: 'new', published: true, permissions: [] },
+          },
+        },
+      ]);
+      expect(result.insertedCount).toBe(1);
+
+      const row = await coll.findOne({ _id: 'ent-bw-new' });
+      expect(row).toBeDefined();
+    });
   });
 
   describe('$or safety — read enforcement', () => {

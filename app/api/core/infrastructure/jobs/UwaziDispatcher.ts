@@ -1,5 +1,3 @@
-import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
-import { User } from '#api/users.v2/model/User.js';
 import { Dispatchable } from '#api/core/libs/queue/application/contracts/Dispatchable.js';
 import {
   DispatchableClass,
@@ -13,9 +11,8 @@ import { QueueAdapter } from '#api/core/libs/queue/infrastructure/QueueAdapter.j
 
 function enrichParams(params: any, defaultUserId?: string): any {
   if (params?.userId) return params;
-  const actor = ExecutionContext.actor;
-  const userId = actor?._id ?? defaultUserId ?? User.system()._id;
-  return { ...(params || {}), userId };
+  if (!defaultUserId) return params || {};
+  return { ...(params || {}), userId: defaultUserId };
 }
 
 export class UwaziDispatcher extends NamespacedDispatcher {

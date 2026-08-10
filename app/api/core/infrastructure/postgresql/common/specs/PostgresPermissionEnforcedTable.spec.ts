@@ -19,6 +19,7 @@ type TestRow = {
   name: string;
   published: boolean;
   permissions: { refId: string; type: string; level: string }[];
+  value: number;
 };
 
 const createEnforcedTable = (accessContext: AccessContext, tenantId = DEFAULT_TENANT) =>
@@ -35,8 +36,14 @@ const collaborator = new User('collab-1', 'collaborator', ['group-a']);
 const otherUser = new User('other-1', 'collaborator', []);
 const anon = User.createFrom(null);
 
-const fixtures: Array<{ _id: string; name: string; published: boolean; permissions: string }> = [
-  { _id: 'ent-pub', name: 'published', published: true, permissions: '[]' },
+const fixtures: Array<{
+  _id: string;
+  name: string;
+  published: boolean;
+  permissions: string;
+  value: number;
+}> = [
+  { _id: 'ent-pub', name: 'published', published: true, permissions: '[]', value: 10 },
   {
     _id: 'ent-write',
     name: 'private-write',
@@ -45,30 +52,35 @@ const fixtures: Array<{ _id: string; name: string; published: boolean; permissio
       { refId: 'collab-1', type: 'user', level: 'write' },
       { refId: 'group-a', type: 'group', level: 'read' },
     ]),
+    value: 20,
   },
   {
     _id: 'ent-read',
     name: 'private-read',
     published: false,
     permissions: JSON.stringify([{ refId: 'collab-1', type: 'user', level: 'read' }]),
+    value: 30,
   },
   {
     _id: 'ent-none',
     name: 'private-none',
     published: false,
     permissions: JSON.stringify([{ refId: 'other-1', type: 'user', level: 'write' }]),
+    value: 40,
   },
   {
     _id: 'ent-group-read',
     name: 'group-read-only',
     published: false,
     permissions: JSON.stringify([{ refId: 'group-a', type: 'group', level: 'read' }]),
+    value: 50,
   },
   {
     _id: 'ent-group-write',
     name: 'group-write-only',
     published: false,
     permissions: JSON.stringify([{ refId: 'group-a', type: 'group', level: 'write' }]),
+    value: 60,
   },
 ];
 
@@ -88,6 +100,7 @@ beforeAll(async () => {
       "name"        TEXT NOT NULL,
       "published"   BOOLEAN NOT NULL DEFAULT false,
       "permissions" JSONB NOT NULL DEFAULT '[]',
+      "value"       INTEGER NOT NULL DEFAULT 0,
       "tenant_id"   TEXT NOT NULL,
       PRIMARY KEY ("_id", "tenant_id")
     )
@@ -155,6 +168,45 @@ describe('PostgresPermissionEnforcedTable', () => {
       const rows = await table.all();
       expect(rows).toHaveLength(6);
       assertIncludesNonPublished(rows);
+    });
+  });
+
+  describe('read enforcement — count', () => {
+    it('should count only visible rows for collaborator', async () => {
+      const table = createEnforcedTable(AccessContext.forActor(collaborator));
+      const n = await table.count();
+      expect(n).toBe(5);
+    });
+
+    it('should count only published rows for anonymous', async () => {
+      const table = createEnforcedTable(AccessContext.forActor(anon));
+      const n = await table.count();
+      expect(n).toBe(1);
+    });
+
+    it('should count all rows for admin', async () => {
+      const n = await adminTable().count();
+      expect(n).toBe(6);
+    });
+  });
+
+  describe('read enforcement — sum', () => {
+    it('should sum only visible rows for collaborator', async () => {
+      const table = createEnforcedTable(AccessContext.forActor(collaborator));
+      const total = await table.sum('value');
+      // ent-pub(10) + ent-write(20) + ent-read(30) + ent-group-read(50) + ent-group-write(60)
+      expect(total).toBe(170);
+    });
+
+    it('should sum only published rows for anonymous', async () => {
+      const table = createEnforcedTable(AccessContext.forActor(anon));
+      const total = await table.sum('value');
+      expect(total).toBe(10);
+    });
+
+    it('should sum all rows for admin', async () => {
+      const total = await adminTable().sum('value');
+      expect(total).toBe(210);
     });
   });
 
@@ -522,6 +574,31 @@ describe('PostgresPermissionEnforcedTable', () => {
         'ent-write',
       ]);
       assertIncludesNonPublished(rows);
+    });
+
+    it('should not leak unreadable rows via whereBetween', async () => {
+      const table = createEnforcedTable(AccessContext.forActor(collaborator));
+      const rows = await table.whereBetween('_id', ['ent-none', 'ent-read']).all();
+      const ids = rows.map(r => r._id).sort();
+      // ent-none is unreadable and must be excluded; ent-pub (published) and ent-read are visible.
+      expect(ids).toEqual(['ent-pub', 'ent-read']);
+    });
+
+    it('should not leak unreadable rows via whereLike', async () => {
+      const table = createEnforcedTable(AccessContext.forActor(collaborator));
+      const rows = await table.whereLike('name', '%-read').all();
+      const ids = rows.map(r => r._id).sort();
+      expect(ids).toEqual(['ent-read']);
+    });
+
+    it('should not leak unreadable rows via having', async () => {
+      const table = createEnforcedTable(AccessContext.forActor(collaborator));
+      const rows = await table
+        .select(['name'])
+        .groupBy(['name'])
+        .having('name', '=', 'private-none')
+        .all();
+      expect(rows).toEqual([]);
     });
   });
 });

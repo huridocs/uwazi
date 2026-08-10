@@ -1,6 +1,7 @@
 import { tenants } from '#api/tenants/index.js';
 import { permissionsContext } from '#api/permissions/permissionsContext.js';
 import { isPrivilegedJob } from '#api/core/infrastructure/jobs/PrivilegedJob.js';
+import { getUserById } from '#api/core/infrastructure/jobs/getUserById.js';
 import {
   Dispatchable,
   HeartbeatCallback,
@@ -45,8 +46,7 @@ export abstract class UwaziJobHandler<
       throw new Error('Missing userId: user-scoped jobs must include a userId parameter.');
     }
 
-    const { default: users } = await import('#api/users/users.js');
-    const user = await users.getById(userId, '-password', true, true);
+    const user = await getUserById(userId);
 
     if (!user) {
       throw new Error(`User not found: ${userId}`);

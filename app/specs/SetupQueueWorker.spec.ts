@@ -95,7 +95,7 @@ describe('Setup Queue Worker', () => {
     jest.restoreAllMocks();
   });
 
-  it('should set system actor for @SystemJob() plain Dispatchable jobs', async () => {
+  it('should set system actor for @PrivilegedJob() plain Dispatchable jobs', async () => {
     const worker = TestUtils.mockClass<QueueWorker>({
       register: jest.fn(),
       getRegisteredJobs: jest.fn().mockReturnValue([]),
@@ -120,7 +120,7 @@ describe('Setup Queue Worker', () => {
     expect(testJob.capturedActor).toMatchObject({ _id: '__system__', role: 'admin' });
   });
 
-  it('should throw for plain Dispatchable without @SystemJob() and without userId', async () => {
+  it('should throw for plain Dispatchable without @PrivilegedJob() and without userId', async () => {
     const worker = TestUtils.mockClass<QueueWorker>({
       register: jest.fn(),
       getRegisteredJobs: jest.fn().mockReturnValue([]),
@@ -138,7 +138,7 @@ describe('Setup Queue Worker', () => {
     };
 
     await expect(wrappedFactory(TENANT, job)).rejects.toThrow(
-      'Missing userId: UwaziJobHandler jobs must use UwaziDispatcherFactory. Plain jobs must use @SystemJob().'
+      'Missing userId: UwaziJobHandler jobs must use UwaziDispatcherFactory. Plain jobs must use @PrivilegedJob().'
     );
   });
 
@@ -160,11 +160,11 @@ describe('Setup Queue Worker', () => {
     };
 
     await expect(wrappedFactory(TENANT, job)).rejects.toThrow(
-      'Missing userId: UwaziJobHandler jobs must use UwaziDispatcherFactory. Plain jobs must use @SystemJob().'
+      'Missing userId: UwaziJobHandler jobs must use UwaziDispatcherFactory. Plain jobs must use @PrivilegedJob().'
     );
   });
 
-  it('should set system actor for @SystemJob() UwaziJobHandler jobs', async () => {
+  it('should set system actor for @PrivilegedJob() UwaziJobHandler jobs', async () => {
     const worker = TestUtils.mockClass<QueueWorker>({
       register: jest.fn(),
       getRegisteredJobs: jest.fn().mockReturnValue([]),

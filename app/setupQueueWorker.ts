@@ -94,7 +94,7 @@ function register<T extends Dispatchable>(
       } else {
         throw new Error(
           'Missing userId: UwaziJobHandler jobs must use UwaziDispatcherFactory. ' +
-            'Plain jobs must use @SystemJob().'
+            'Plain jobs must use @PrivilegedJob().'
         );
       }
 
