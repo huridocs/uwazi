@@ -1,2 +1,4 @@
-export { Templates, templatesLoader } from './Templates.js';
-export { TemplatesEditor, templatesEditorLoader } from './TemplatesEditor.js';
+export { Templates } from './Templates.js';
+export { TemplatesEditor } from './TemplatesEditor.js';
+export { createTemplatesLoader } from './createTemplatesLoader.js';
+export { createTemplatesEditorLoader } from './createTemplatesEditorLoader.js';
