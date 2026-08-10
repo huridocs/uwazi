@@ -16,7 +16,6 @@ import {
   UpdateUserGroupParams,
 } from '#api/core/application/contracts/UserGroupsDataSource.js';
 import { UserGroupDBO } from './UserGroupDBO.js';
-import { UserDBO } from './UserDBO.js';
 
 class MongoUserGroupsDataSource
   extends MongoDataSource<UserGroupDBO>
@@ -115,32 +114,62 @@ class MongoUserGroupsDataSource
   }
 
   async getAll(): Promise<UserGroupWithMembers[]> {
-    const groups = await this.getCollection().find({}).toArray();
+    const aggregation = [
+      {
+        $lookup: {
+          from: 'users',
+          let: { memberIds: '$members.refId' },
+          pipeline: [
+            { $match: { $expr: { $in: [{ $toString: '$_id' }, '$$memberIds'] } } },
+            { $project: { _id: { $toString: '$_id' }, username: 1, role: 1, email: 1 } },
+          ],
+          as: 'matchedUsers',
+        },
+      },
+      {
+        $project: {
+          _id: { $toString: '$_id' },
+          name: 1,
+          members: {
+            $map: {
+              input: '$members',
+              as: 'member',
+              in: {
+                $let: {
+                  vars: {
+                    matched: {
+                      $arrayElemAt: [
+                        {
+                          $filter: {
+                            input: '$matchedUsers',
+                            cond: { $eq: ['$$this._id', '$$member.refId'] },
+                          },
+                        },
+                        0,
+                      ],
+                    },
+                  },
+                  in: {
+                    $cond: [
+                      { $ifNull: ['$$matched', false] },
+                      {
+                        refId: '$$member.refId',
+                        username: '$$matched.username',
+                        role: '$$matched.role',
+                        email: '$$matched.email',
+                      },
+                      { refId: '$$member.refId' },
+                    ],
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    ];
 
-    const memberIds = groups.reduce<string[]>(
-      (memo, group) => memo.concat(group.members.map(member => member.refId)),
-      []
-    );
-
-    // cc: I wonder why lookup aggregation was not implemented here ? is there a reason  ? let's discuss!
-
-    const users = await this.getCollection<UserDBO>('users')
-      .find(
-        { _id: { $in: memberIds.map(ObjectId.createFromHexString) } },
-        { projection: { username: 1, role: 1, email: 1 } }
-      )
-      .toArray();
-
-    return groups.map(group => ({
-      _id: group._id.toString(),
-      name: group.name,
-      members: group.members.map(member => {
-        const user = users.find(u => u._id.toString() === member.refId);
-        return user
-          ? { refId: member.refId, username: user.username, role: user.role, email: user.email }
-          : { refId: member.refId };
-      }),
-    }));
+    return this.getCollection().aggregate<UserGroupWithMembers>(aggregation).toArray();
   }
 }
 
