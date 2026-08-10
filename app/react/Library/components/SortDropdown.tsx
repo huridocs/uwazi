@@ -10,7 +10,7 @@ import { wrapDispatch } from '#app/Multireducer/index.js';
 import { IStore } from '#app/istore.js';
 import { IImmutable } from '#shared/types/Immutable.js';
 import { useOnClickOutsideElement } from '#app/utils/useOnClickOutsideElementHook.js';
-import { encodeSearch } from '../actions/libraryActions.js';
+import { encodeSearch, processFilters } from '../actions/libraryActions.js';
 
 import {
   getCurrentSortOption,
@@ -26,8 +26,26 @@ interface SortDropdownOwnProps {
   selectedTemplates: IImmutable<string[]>;
 }
 
-const getOptionUrl = (option: SortType, path: string, location: Location) => {
-  const currentQuery: SearchOptions = searchParamsFromLocationSearch(location);
+type LibrarySearchQuery = SearchOptions & Record<string, unknown>;
+
+const buildCurrentQuery = (
+  search: IStore['library']['search'],
+  filters: IStore['library']['filters'],
+  location: Pick<Location, 'search'>
+): LibrarySearchQuery => {
+  const urlQuery = searchParamsFromLocationSearch(location) || {};
+  const { treatAs: _treatAs, userSelectedSorting: _userSelectedSorting, ...reduxQuery } =
+    processFilters(search, filters.toJS());
+  const definedReduxQuery = Object.fromEntries(
+    Object.entries(reduxQuery).filter(([, value]) => value !== undefined)
+  );
+
+  // Redux reflects the filters currently applied (including home defaults that are not in the URL).
+  // URL params still contribute values such as limit that are not stored in search state.
+  return { ...urlQuery, ...definedReduxQuery };
+};
+
+const getOptionUrl = (option: SortType, path: string, currentQuery: LibrarySearchQuery) => {
   const type = getPropertySortType(option);
   return `${path}${encodeSearch(
     { ...currentQuery, order: type === 'string' ? 'asc' : 'desc', sort: option.value, from: 0 },
@@ -45,6 +63,8 @@ const mapStateToProps = (state: IStore, ownProps: SortDropdownOwnProps) => {
   return {
     templates,
     locale: state.locale,
+    search: state.library.search,
+    filters: state.library.filters,
   };
 };
 
@@ -56,12 +76,12 @@ const connector = connect(mapStateToProps, mapDispatchToProps);
 type mappedProps = ConnectedProps<typeof connector>;
 
 // eslint-disable-next-line max-statements
-const SortDropdownComponent = ({ templates, locale }: mappedProps) => {
+const SortDropdownComponent = ({ templates, locale, search, filters }: mappedProps) => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const menuRef = useRef(null);
   const location = useLocation();
 
-  const currentQuery: SearchOptions = searchParamsFromLocationSearch(location);
+  const currentQuery = buildCurrentQuery(search, filters, location);
   const path = location.pathname.replace(new RegExp(`^/?${locale}/|^/?${locale}$`), '');
   const sortButtonLink = `${path}${encodeSearch(
     { ...currentQuery, order: currentQuery.order === 'asc' ? 'desc' : 'asc', from: 0 },
@@ -95,7 +115,7 @@ const SortDropdownComponent = ({ templates, locale }: mappedProps) => {
 
         <ul className={`dropdown-menu ${dropdownOpen ? 'expanded' : ''}`}>
           {sortOptions.map(option => {
-            const url = getOptionUrl(option, path, location);
+            const url = getOptionUrl(option, path, currentQuery);
             return (
               <li key={option.value}>
                 <I18NLink to={url} href={url}>
@@ -137,4 +157,4 @@ const SortDropdownComponent = ({ templates, locale }: mappedProps) => {
 };
 
 const container = connector(SortDropdownComponent);
-export { container as SortDropdown };
+export { container as SortDropdown, buildCurrentQuery };

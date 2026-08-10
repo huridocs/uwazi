@@ -38,7 +38,7 @@ exports[`Sort dropdown when there is an active search term should display sort b
           <a
             aria-current="page"
             data-discover="true"
-            href="/en/library/?q=(from:0,order:asc,searchTerm:'my search',sort:title)"
+            href="/en/library/?q=(from:0,includeUnpublished:!t,order:asc,searchTerm:'my search',sort:title,unpublished:!f)"
           >
             Title
           </a>
@@ -47,7 +47,7 @@ exports[`Sort dropdown when there is an active search term should display sort b
           <a
             aria-current="page"
             data-discover="true"
-            href="/en/library/?q=(from:0,order:desc,searchTerm:'my search',sort:creationDate)"
+            href="/en/library/?q=(from:0,includeUnpublished:!t,order:desc,searchTerm:'my search',sort:creationDate,unpublished:!f)"
           >
             Date added
           </a>
@@ -56,7 +56,7 @@ exports[`Sort dropdown when there is an active search term should display sort b
           <a
             aria-current="page"
             data-discover="true"
-            href="/en/library/?q=(from:0,order:desc,searchTerm:'my search',sort:editDate)"
+            href="/en/library/?q=(from:0,includeUnpublished:!t,order:desc,searchTerm:'my search',sort:editDate,unpublished:!f)"
           >
             Date modified
           </a>
@@ -65,7 +65,7 @@ exports[`Sort dropdown when there is an active search term should display sort b
           <a
             aria-current="page"
             data-discover="true"
-            href="/en/library/?q=(from:0,order:desc,searchTerm:'my search',sort:_score)"
+            href="/en/library/?q=(from:0,includeUnpublished:!t,order:desc,searchTerm:'my search',sort:_score,unpublished:!f)"
           >
             Search relevance
           </a>
@@ -74,7 +74,7 @@ exports[`Sort dropdown when there is an active search term should display sort b
           <a
             aria-current="page"
             data-discover="true"
-            href="/en/library/?q=(from:0,order:desc,searchTerm:'my search',sort:metadata.date)"
+            href="/en/library/?q=(from:0,includeUnpublished:!t,order:desc,searchTerm:'my search',sort:metadata.date,unpublished:!f)"
           >
             Date
           </a>
@@ -83,7 +83,7 @@ exports[`Sort dropdown when there is an active search term should display sort b
           <a
             aria-current="page"
             data-discover="true"
-            href="/en/library/?q=(from:0,order:desc,searchTerm:'my search',sort:metadata.number)"
+            href="/en/library/?q=(from:0,includeUnpublished:!t,order:desc,searchTerm:'my search',sort:metadata.number,unpublished:!f)"
           >
             Number
           </a>
@@ -92,7 +92,7 @@ exports[`Sort dropdown when there is an active search term should display sort b
           <a
             aria-current="page"
             data-discover="true"
-            href="/en/library/?q=(from:0,order:asc,searchTerm:'my search',sort:metadata.my_select)"
+            href="/en/library/?q=(from:0,includeUnpublished:!t,order:asc,searchTerm:'my search',sort:metadata.my_select,unpublished:!f)"
           >
             My select
           </a>
@@ -101,7 +101,7 @@ exports[`Sort dropdown when there is an active search term should display sort b
           <a
             aria-current="page"
             data-discover="true"
-            href="/en/library/?q=(from:0,order:asc,searchTerm:'my search',sort:metadata.sortable_name)"
+            href="/en/library/?q=(from:0,includeUnpublished:!t,order:asc,searchTerm:'my search',sort:metadata.sortable_name,unpublished:!f)"
           >
             Sortable name
           </a>
@@ -110,7 +110,7 @@ exports[`Sort dropdown when there is an active search term should display sort b
           <a
             aria-current="page"
             data-discover="true"
-            href="/en/library/?q=(from:0,order:desc,searchTerm:'my search',sort:metadata.inherited_1.inheritedValue)"
+            href="/en/library/?q=(from:0,includeUnpublished:!t,order:desc,searchTerm:'my search',sort:metadata.inherited_1.inheritedValue,unpublished:!f)"
           >
             Inherited 1
           </a>
@@ -121,7 +121,7 @@ exports[`Sort dropdown when there is an active search term should display sort b
       aria-current="page"
       data-discover="true"
       disable="true"
-      href="/en/library/?q=(from:0,order:asc,searchTerm:'my search',sort:_score)"
+      href="/en/library/?q=(from:0,includeUnpublished:!t,order:asc,searchTerm:'my search',sort:_score,unpublished:!f)"
     >
       <button
         class="sorting-toggle"
