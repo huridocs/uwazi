@@ -14,7 +14,7 @@ import { TranslationEntryInput } from '#api/core/application/translation/Validat
 import { EnforcedWithId, models } from '#api/odm/index.js';
 import { TranslationType } from '#shared/translationType.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
-import { IndexedContextValues } from './translations.js';
+import { IndexedContextValues } from '#api/core/infrastructure/express/translation/LegacyTranslationDtoMapper.js';
 
 models.translationsV2 = () =>
   new MongoTranslationsSyncDataSource(getConnection(), TransactionManagerFactory.default());

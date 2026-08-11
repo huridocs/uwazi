@@ -1,18 +1,18 @@
 import type { Application, Request } from 'express';
 
-import { createError, validation } from '#api/utils/index.js';
+import { validation } from '#api/utils/index.js';
 import settings from '#api/settings/index.js';
 import { CSVLoader } from '#api/csv/index.js';
 import { uploadMiddleware } from '#api/files/index.js';
 import { LanguageISO6391Schema, languageSchema } from '#shared/types/commonSchemas.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
-import { UITranslationNotAvailable } from '#api/i18n/defaultTranslations.js';
 import { AddLanguageController } from '#api/core/infrastructure/express/language/AddLanguageController.js';
 import { DeleteLanguageController } from '#api/core/infrastructure/express/language/DeleteLanguageController.js';
+import { AvailableLanguagesQueryServiceFactory } from '#api/core/infrastructure/factories/AvailableLanguagesQueryServiceFactory.js';
 import needsAuthorization from '#api/auth/authMiddleware.js';
-import translations from '#api/i18n/translations.js';
 import { GetTranslationsController } from './GetTranslationsController.js';
 import { GetTranslationEntriesController } from './GetTranslationEntriesController.js';
+import { PopulateTranslationsController } from './PopulateTranslationsController.js';
 import { SaveTranslationsController } from './SaveTranslationsController.js';
 import { SaveTranslationEntriesController } from './SaveTranslationEntriesController.js';
 
@@ -38,7 +38,7 @@ const translationsRoutes = (app: Application) => {
   );
 
   app.get('/api/languages', async (_req, res) => {
-    res.json(await translations.availableLanguages());
+    res.json(await AvailableLanguagesQueryServiceFactory.default().execute());
   });
 
   app.post(
@@ -128,18 +128,7 @@ const translationsRoutes = (app: Application) => {
       required: ['body'],
     }),
 
-    async (req, res, next) => {
-      const { locale } = req.body;
-      try {
-        await translations.importPredefined(locale);
-        res.json(await translations.get({ locale }));
-      } catch (error) {
-        if (error instanceof UITranslationNotAvailable) {
-          next(createError(error, 422));
-        }
-        next(error);
-      }
-    }
+    PopulateTranslationsController.createHandler()
   );
 
   app.post(

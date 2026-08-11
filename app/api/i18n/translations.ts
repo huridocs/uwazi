@@ -1,28 +1,19 @@
-import * as os from 'os';
-import path from 'path';
-// eslint-disable-next-line node/no-restricted-import
-import { createWriteStream } from 'fs';
 import { ObjectId } from 'mongodb';
-import { pipeline } from 'stream/promises';
-import { CSVLoader } from '#api/csv/index.js';
-import { generateFileName } from '#api/files/index.js';
 import { CreateTranslationContextUseCaseFactory } from '#api/core/infrastructure/factories/CreateTranslationContextUseCaseFactory.js';
 import { SaveLocaleTranslationsUseCaseFactory } from '#api/core/infrastructure/factories/SaveLocaleTranslationsUseCaseFactory.js';
 import { SaveTranslationEntriesUseCaseFactory } from '#api/core/infrastructure/factories/SaveTranslationEntriesUseCaseFactory.js';
 import { UpdateEntriesByContextUseCaseFactory } from '#api/core/infrastructure/factories/UpdateEntriesByContextUseCaseFactory.js';
+import { AvailableLanguagesQueryServiceFactory } from '#api/core/infrastructure/factories/AvailableLanguagesQueryServiceFactory.js';
+import { importPredefinedTranslations } from '#api/core/application/translation/ImportPredefinedTranslationsService.js';
 import {
   IndexedContextValues,
   IndexedTranslations,
   prepareContexts,
   toIndexedTranslations,
 } from '#api/core/infrastructure/express/translation/LegacyTranslationDtoMapper.js';
-import { DefaultTranslations } from '#api/i18n/defaultTranslations.js';
-import { legacyLogger } from '#api/log/index.js';
 import settings from '#api/settings/settings.js';
-import { prettifyError } from '#api/utils/handleError.js';
 import { TranslationType } from '#shared/translationType.js';
 
-import { availableLanguages } from '#shared/language/index.js';
 import { ContextType } from '#shared/translationSchema.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import { TranslationContext as DomainTranslationContext } from '#api/core/domain/translation/Translation.js';
@@ -37,6 +28,10 @@ import {
   updateContextV2,
 } from './v2_support.js';
 
+/**
+ * Thin test / legacy convenience façade over core translation factories.
+ * Production HTTP routes must not depend on this module.
+ */
 export default {
   prepareContexts,
 
@@ -130,25 +125,11 @@ export default {
   },
 
   async importPredefined(locale: string) {
-    const translationsCsv = await DefaultTranslations.retrievePredefinedTranslations(locale);
-    const tmpCsv = path.join(os.tmpdir(), generateFileName({ originalname: 'tmp-csv.csv' }));
-    await pipeline(translationsCsv, createWriteStream(tmpCsv));
-    const loader = new CSVLoader();
-    await loader.loadTranslations(tmpCsv, 'System');
+    return importPredefinedTranslations(locale);
   },
 
   async availableLanguages() {
-    let languagesWithTranslations: string[] = [];
-    try {
-      languagesWithTranslations = await DefaultTranslations.retrieveAvailablePredefinedLanguages();
-    } catch (e) {
-      legacyLogger.error(prettifyError(e));
-      return availableLanguages;
-    }
-    return availableLanguages.map(language => ({
-      ...language,
-      translationAvailable: languagesWithTranslations.includes(language.key),
-    }));
+    return AvailableLanguagesQueryServiceFactory.default().execute();
   },
 };
 

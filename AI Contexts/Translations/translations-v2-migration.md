@@ -280,9 +280,38 @@ All writers must stop calling `#api/i18n/translations` and use core ports/use ca
 - [x] Peel internal reads off `getLegacy` (csvExporter / denormalize / search / SaveTranslationEntries → by-item QueryService lookups)
 - [x] Peel mammoth `save` / `updateEntries` onto core orchestrator UseCases (`SaveLocaleTranslations`, `UpdateEntriesByContext`)
 - [x] TX ownership = Entities model: UseCases own `transactionManager.run()`; `TranslationsService` is ambient-TX / TX-free (no nested UCs, no `runInTransaction`)
-- [ ] Remove runtime `#api/i18n` façade as module home (still `importPredefined` / `availableLanguages` / thin wrappers + populate route)
+- [x] **Kill façade as module home** — no production imports of `#api/i18n/translations`
+  - [x] Move `availableLanguages` → `AvailableLanguagesQueryService`; wire `GET /api/languages`
+  - [x] Move real `importPredefined` into core `ImportPredefinedTranslationsService` (populate + AddLanguage)
+  - [x] Point populate / languages routes at core
+  - [x] Shrink façade to test/legacy convenience wrappers only (delegates to core)
+  - [ ] Untangle / delete `v2_support` when sync registration moves (still registers `models.translationsV2`)
+- [ ] **Optional polish (2A):** extend `TranslationsService` with thesaurus/DeleteTemplate DS ops (`deleteKeysByContext`, `bulkDeleteKeysByContext`, `updateKeysByContextV2`, `updateContextLabel`, ambient `insert`) then switch those callers — TX already correct; consistency only
 - [x] Parity tests for façade + RT/thesaurus/language + core DS/domain; expand syncWorker smoke as routes move
 - [ ] Document Phase 1b FE checklist; open `translations-postgres.md` when starting Postgres
+
+### Assessment — façade kill (1) vs write-API polish (2)
+
+**Façade remaining surface**
+
+| Surface | Today | Target |
+|--------|--------|--------|
+| `get` / `save` / `updateEntries` / `v2StructureSave` / `addContext` | Thin → core factories / `v2_support` | Controllers + QueryService / UseCases; specs follow |
+| `deleteContext` / `updateContext` / `addLanguage` / `removeLanguage` | `v2_support` UC factories | Call factories directly |
+| `availableLanguages` | GitHub FS + `#shared/language` | Core query helper |
+| `importPredefined` | tmp file + `CSVLoader` + System | Core service (ops-sensitive) |
+| Types re-exports | From mapper | Import mapper from core |
+
+**Effort (1):** ~1–2 days. Long poles: `importPredefined` + spec churn. Phase 1 bar = no **production** imports; specs may keep a thin test façade one PR longer.
+
+**Thesaurus / DeleteTemplate → `TranslationsService` (2)**
+
+| Caller | Needs | On `TranslationsService`? |
+|--------|--------|---------------------------|
+| Thesaurus create/update | insert, `deleteKeysByContext`, `updateKeysByContextV2`, `updateContextLabel` | Mostly missing (DS-only today) |
+| DeleteTemplate | `bulkDeleteKeysByContext`, `deleteByContextId` | Only delete-by-context |
+
+Already share parent TM via DS — boundaries OK. Prefer **2A** (extend service with same DS ops + `ensureTransaction`) over reshaping thesaurus into mammoth `updateContext`. Effort ~0.5–1 day after (1). Skip if only closing Phase 1.
 
 ## Implementation status (in progress)
 
@@ -301,16 +330,17 @@ All writers must stop calling `#api/i18n/translations` and use core ports/use ca
   - Thesaurus: `ThesaurusTranslationService` → `translationsDS` under ThesauriService TX
   - DeleteTemplate: `translationsDS` inside its `TM.run`
   - Settings Menu/Filters: standalone `UpdateTranslationContextUseCase` entry
-  - AddLanguage predefined CSV: temporary `ImportPredefinedTranslationsService` (façade FS path, outside TX)
+  - AddLanguage / populate predefined CSV: `ImportPredefinedTranslationsService` (core; FS+CSV; outside TX)
+  - `AvailableLanguagesQueryService` for `GET /api/languages`
 - Removed misleading `Legacy*TranslationService` adapters (they were domain sync services, not old translations)
 - Tests: unit `TranslationsService.spec` (ambient TX + partition/prepare); integration `SaveLocaleTranslations` / `SaveTranslationEntries` / `UpdateEntriesByContext` UseCase specs (+ existing context UC + façade/routes)
 - QueryService by-item lookups: `getContextValueMap`, `getLanguageValueMaps`; `getLegacy` / `LegacyTranslationDtoMapper` only at mammoth delivery edges
-- Express: GET → QueryService; Save* controllers → orchestrator UseCase factories; indexed GET for `translationsChange`
+- Express: GET → QueryService; languages → AvailableLanguagesQueryService; populate → ImportPredefined + QueryService; Save* → orchestrator UseCase factories
 - Thesaurus metadata rename: `ThesaurusMetadataRenamerAdapter` → `denormalizeThesauriLabelInMetadata`
 - `app/api/i18n.v2/` removed; `i18n/routes` deleted (specs import core `translationsRoutes`)
-- Façade `translations.ts` is thin: `save`/`updateEntries`/`v2StructureSave`/`addContext`/`updateContext` delegate to core factories; still owns `importPredefined` (FS+CSV) and `availableLanguages`
-- Peeled production callers: Settings `updateContext`; csvExporter / denormalize / search (by-item reads); csvLoader + PendingThesauriValuesApplier (`updateEntries`/`save`); Save* controllers
-- Remaining façade surface: `importPredefined`, `availableLanguages`, populate route, and thin get/save wrappers used by specs / sync smoke
+- Façade `translations.ts` is **test/legacy convenience only** (all methods delegate to core); **no production imports**
+- Peeled production callers: Settings; csvExporter / denormalize / search; csvLoader + PendingThesauri; Save* controllers; languages + populate routes
+- Remaining: optional delete of façade + migrate specs; `v2_support` sync registration; optional TranslationsService extension for thesaurus/DeleteTemplate (2A)
 
 ## V2 complete checklist (Phase 1)
 
@@ -320,7 +350,7 @@ All writers must stop calling `#api/i18n/translations` and use core ports/use ca
 - [x] Mutations use Create/Update/Delete use cases — no application Upsert use case
 - [x] Internal non-delivery callers do not use `getLegacy` (csvExporter / denormalize / search / SaveTranslationEntries)
 - [x] CSV / SaveTranslationsController / PendingThesauriValuesApplier do not call façade `save`/`updateEntries` (use core factories)
-- [ ] No runtime imports of `#api/i18n/translations` from domain callers (`importPredefined` / `availableLanguages` / populate remain)
+- [x] No runtime production imports of `#api/i18n/translations` (façade test-only; languages/populate/importPredefined in core)
 - [x] Template/RT sync via `TemplateTranslationService` / `RelationshipTypeTranslationService` → `TranslationsService` (no Legacy adapters; shared parent TM)
 - [x] Translation side effects for relationship types / thesaurus / language covered by existing integration tests
 - [x] Sync namespace `translationsV2` still green in syncWorker specs after route cutover
