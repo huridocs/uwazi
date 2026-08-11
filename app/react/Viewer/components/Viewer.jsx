@@ -20,6 +20,8 @@ import { ShowIf } from '#app/App/ShowIf.js';
 import { NeedAuthorization } from '#app/Auth/index.js';
 import { FeatureToggle } from '#app/components/Elements/FeatureToggle.js';
 import { V2NewRelationshipsBoard } from '#app/Entities/components/V2NewRelationshipsBoard.js';
+import { withRouter } from '#app/componentWrappers.js';
+import { getV1EntityBasePathFromLocation } from '#app/utils/entityViewerPaths.js';
 import { PaginatorWithPage } from './Paginator.js';
 import { addReference as addReferenceAction } from '../actions/referencesActions.js';
 import {
@@ -86,7 +88,9 @@ class Viewer extends Component {
               This entity has no document, you probably want to see the metadata
             </Translate>
             &nbsp;
-            <I18NLink to={`/entity/${doc.get('sharedId')}`}>
+            <I18NLink
+              to={`${getV1EntityBasePathFromLocation(this.props.location?.pathname || '')}/${doc.get('sharedId')}`}
+            >
               <Translate>view</Translate>
             </I18NLink>
           </div>
@@ -254,6 +258,9 @@ Viewer.propTypes = {
   locale: PropTypes.string.isRequired,
   file: PropTypes.object,
   user: PropTypes.instanceOf(Immutable.Map),
+  location: PropTypes.shape({
+    pathname: PropTypes.string,
+  }),
   // relationships v2
   newRelationshipsEnabled: PropTypes.bool,
   toggleReferences: PropTypes.func,
@@ -296,5 +303,5 @@ const mapDispatchToProps = dispatch =>
     dispatch
   );
 
-const ConnectedViewer = connect(mapStateToProps, mapDispatchToProps)(Viewer);
+const ConnectedViewer = connect(mapStateToProps, mapDispatchToProps)(withRouter(Viewer));
 export { ConnectedViewer };
