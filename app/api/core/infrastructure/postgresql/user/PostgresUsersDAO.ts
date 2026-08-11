@@ -84,6 +84,15 @@ class PostgresUsersDAO extends PostgresDataSource<UserRow> {
 
     return Result.ok(row);
   }
+
+  async findByIds(ids: string[], options: QueryOptions = {}): Promise<UserRow[]> {
+    if (!ids.length) {
+      return [];
+    }
+
+    const query = this.notPublicUser(this.table.whereIn('_id', ids));
+    return (options.includeDeleted ? query : this.notDeleted(query)).all();
+  }
 }
 
 export { PostgresUsersDAO };
