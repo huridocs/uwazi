@@ -78,51 +78,36 @@ const SyncTemplateCard = ({ templateId, config, onChange, onRemove }: SyncTempla
           <XMarkIcon className="h-5 w-5" />
         </button>
 
-        <div className="flex flex-col gap-4 pt-1">
-          <div className="flex flex-col gap-1 border-b border-border-40 pb-3">
-            <span className="text-xs text-ink-tertiary">
-              <Translate>Attachments</Translate>
-            </span>
-            <Checkbox
-              name={`${templateId}-attachments`}
-              checked={Boolean(config.attachments)}
-              onChange={event => onChange({ ...config, attachments: event.currentTarget.checked })}
-              label={<Translate>Sync attachments</Translate>}
-            />
-          </div>
+        <div className="flex flex-col gap-2 pt-1">
+          <Checkbox
+            name={`${templateId}-attachments`}
+            checked={Boolean(config.attachments)}
+            onChange={event => onChange({ ...config, attachments: event.currentTarget.checked })}
+            label={<Translate>Sync files</Translate>}
+          />
 
-          <div className="flex flex-col gap-3">
-            {allProperties.map(property => {
-              const propertyId = property._id!.toString();
-              return (
-                <div key={propertyId} className="flex flex-col gap-1">
-                  <span className="text-xs text-ink-tertiary">
+          {allProperties.map(property => {
+            const propertyId = property._id!.toString();
+            return (
+              <Checkbox
+                key={propertyId}
+                name={`${templateId}-${propertyId}`}
+                checked={config.properties.includes(propertyId)}
+                onChange={() => toggleProperty(propertyId)}
+                label={
+                  <span className="text-sm text-ink">
                     <Translate context={template._id}>{property.label}</Translate>
+                    <span className="ms-2 text-xs text-ink-tertiary">{property.type}</span>
                   </span>
-                  <Checkbox
-                    name={`${templateId}-${propertyId}`}
-                    checked={config.properties.includes(propertyId)}
-                    onChange={() => toggleProperty(propertyId)}
-                    label={
-                      <span className="text-sm text-ink">
-                        {config.properties.includes(propertyId) ? (
-                          <Translate>Sync</Translate>
-                        ) : (
-                          <Translate>Skip</Translate>
-                        )}
-                        <span className="ms-2 text-xs text-ink-tertiary">{property.type}</span>
-                      </span>
-                    }
-                  />
-                </div>
-              );
-            })}
-            {allProperties.length === 0 && (
-              <p className="text-sm text-ink-secondary">
-                <Translate>This template has no properties.</Translate>
-              </p>
-            )}
-          </div>
+                }
+              />
+            );
+          })}
+          {allProperties.length === 0 && (
+            <p className="text-sm text-ink-secondary">
+              <Translate>This template has no properties.</Translate>
+            </p>
+          )}
         </div>
       </MetadataCard>
     </div>
