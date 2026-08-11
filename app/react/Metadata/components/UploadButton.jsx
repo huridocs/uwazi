@@ -9,7 +9,6 @@ import { uploadDocument } from '#app/Uploads/actions/uploadsActions.js';
 import { wrapDispatch } from '#app/Multireducer/index.js';
 import { socket } from '#app/socket.js';
 import { Translate } from '#app/I18N/index.js';
-import { updateMainDocument } from '#app/Uploads/actions/uploadsActions.js';
 
 const renderProgress = progress => (
   <div className="upload-button btn btn-default btn-disabled">
@@ -75,7 +74,6 @@ class UploadButton extends Component {
 
   documentProcessed(sharedId) {
     if (sharedId === this.props.entitySharedId) {
-      this.props.updateMainDocument(sharedId);
       this.setState({ processing: false, failed: false, completed: true }, () => {
         this.timeout = setTimeout(() => {
           this.setState({ processing: false, failed: false, completed: false });
@@ -93,7 +91,6 @@ class UploadButton extends Component {
   conversionFailed(sharedId) {
     if (sharedId === this.props.entitySharedId) {
       this.setState({ processing: false, failed: true, completed: false });
-      this.props.updateMainDocument(sharedId);
     }
   }
 
@@ -138,12 +135,10 @@ UploadButton.defaultProps = {
   storeKey: '',
   entitySharedId: '',
   uploadDocument: () => {},
-  updateMainDocument: () => {},
 };
 
 UploadButton.propTypes = {
   uploadDocument: PropTypes.func,
-  updateMainDocument: PropTypes.func,
   entitySharedId: PropTypes.string,
   progress: PropTypes.instanceOf(Immutable.Map),
   storeKey: PropTypes.string, // eslint-disable-line
@@ -154,10 +149,7 @@ const mapStateToProps = ({ metadata, progress }) => ({
 });
 
 function mapDispatchToProps(dispatch, props) {
-  return bindActionCreators(
-    { uploadDocument, updateMainDocument },
-    wrapDispatch(dispatch, props.storeKey)
-  );
+  return bindActionCreators({ uploadDocument }, wrapDispatch(dispatch, props.storeKey));
 }
 
 const UploadButtonConnected = connect(mapStateToProps, mapDispatchToProps)(UploadButton);

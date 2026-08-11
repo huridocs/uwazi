@@ -22,7 +22,6 @@ describe('UploadButton', () => {
       progress: Immutable.fromJS({}),
       entitySharedId: 'sharedabc1',
       uploadDocument: jasmine.createSpy('uploadDocument'),
-      updateMainDocument: jasmine.createSpy('updateMainDocument'),
       storeKey: 'storeKey',
     };
   });
@@ -119,10 +118,8 @@ describe('UploadButton', () => {
       component.setState({ processing: true });
     });
 
-    it('should update main document with sharedId only and show success', () => {
+    it('should show success without refetching main document', () => {
       component.instance().documentProcessed('sharedabc1', { _id: 'ignored-dto' });
-      expect(props.updateMainDocument).toHaveBeenCalledWith('sharedabc1');
-      expect(props.updateMainDocument).toHaveBeenCalledTimes(1);
       expect(component.state().completed).toBe(true);
       expect(component.state().processing).toBe(false);
       expect(component.state().failed).toBe(false);
@@ -132,7 +129,6 @@ describe('UploadButton', () => {
 
     it('should ignore events for other entities', () => {
       component.instance().documentProcessed('other');
-      expect(props.updateMainDocument).not.toHaveBeenCalled();
       expect(component.state().processing).toBe(true);
     });
   });
@@ -143,10 +139,8 @@ describe('UploadButton', () => {
       component.setState({ processing: true });
     });
 
-    it('should update main document with sharedId only and show error', () => {
+    it('should show error without refetching main document', () => {
       component.instance().conversionFailed('sharedabc1', { _id: 'ignored-dto' });
-      expect(props.updateMainDocument).toHaveBeenCalledWith('sharedabc1');
-      expect(props.updateMainDocument).toHaveBeenCalledTimes(1);
       expect(component.state().failed).toBe(true);
       expect(component.state().processing).toBe(false);
       expect(component.state().completed).toBe(false);
@@ -156,7 +150,6 @@ describe('UploadButton', () => {
 
     it('should ignore events for other entities', () => {
       component.instance().conversionFailed('other');
-      expect(props.updateMainDocument).not.toHaveBeenCalled();
       expect(component.state().processing).toBe(true);
     });
   });

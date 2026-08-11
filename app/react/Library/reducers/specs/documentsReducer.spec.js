@@ -1,4 +1,3 @@
-/* eslint-disable max-lines */
 import Immutable from 'immutable';
 import * as types from '#app/Library/actions/actionTypes.js';
 
@@ -120,6 +119,29 @@ describe('documentsReducer', () => {
         ],
       });
     });
+
+    it('should not overwrite a row when a document is not in the list', () => {
+      const currentState = Immutable.fromJS({
+        rows: [
+          { title: '1', _id: 1 },
+          { title: '2', _id: 2 },
+        ],
+      });
+      const newState = documentsReducer(currentState, {
+        type: types.UPDATE_DOCUMENTS,
+        docs: [
+          { title: '1!', _id: 1 },
+          { title: 'missing', _id: 999 },
+        ],
+      });
+
+      expect(newState.toJS()).toEqual({
+        rows: [
+          { title: '1!', _id: 1 },
+          { title: '2', _id: 2 },
+        ],
+      });
+    });
   });
 
   describe('UPDATE_DOCUMENTS_PUBLISHED', () => {
@@ -145,6 +167,29 @@ describe('documentsReducer', () => {
           { title: '3', _id: 3, sharedId: 'shared3', published: true },
         ],
         totalRows: 3,
+      });
+    });
+
+    it('should ignore sharedIds that are not in the list', () => {
+      const currentState = Immutable.fromJS({
+        rows: [
+          { title: '1', _id: 1, sharedId: 'shared1', published: false },
+          { title: '2', _id: 2, sharedId: 'shared2', published: false },
+        ],
+        totalRows: 2,
+      });
+      const newState = documentsReducer(currentState, {
+        type: types.UPDATE_DOCUMENTS_PUBLISHED,
+        sharedIds: ['shared2', 'missing'],
+        published: true,
+      });
+
+      expect(newState.toJS()).toEqual({
+        rows: [
+          { title: '1', _id: 1, sharedId: 'shared1', published: false },
+          { title: '2', _id: 2, sharedId: 'shared2', published: true },
+        ],
+        totalRows: 2,
       });
     });
   });
