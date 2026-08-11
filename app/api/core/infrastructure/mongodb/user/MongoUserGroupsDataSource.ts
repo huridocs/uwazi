@@ -11,7 +11,6 @@ import { UserGroupNameExists } from '#api/core/domain/userGroup/errors.js';
 import { Result, ResultType } from '#api/core/libs/Result.js';
 import {
   UserGroupsDataSource,
-  UserGroupWithMembers,
   CreateUserGroupParams,
   UpdateUserGroupParams,
 } from '#api/core/application/contracts/UserGroupsDataSource.js';
@@ -111,65 +110,6 @@ class MongoUserGroupsDataSource
     }
 
     return Result.ok(true);
-  }
-
-  async getAll(): Promise<UserGroupWithMembers[]> {
-    const aggregation = [
-      {
-        $lookup: {
-          from: 'users',
-          let: { memberIds: '$members.refId' },
-          pipeline: [
-            { $match: { $expr: { $in: [{ $toString: '$_id' }, '$$memberIds'] } } },
-            { $project: { _id: { $toString: '$_id' }, username: 1, role: 1, email: 1 } },
-          ],
-          as: 'matchedUsers',
-        },
-      },
-      {
-        $project: {
-          _id: { $toString: '$_id' },
-          name: 1,
-          members: {
-            $map: {
-              input: '$members',
-              as: 'member',
-              in: {
-                $let: {
-                  vars: {
-                    matched: {
-                      $arrayElemAt: [
-                        {
-                          $filter: {
-                            input: '$matchedUsers',
-                            cond: { $eq: ['$$this._id', '$$member.refId'] },
-                          },
-                        },
-                        0,
-                      ],
-                    },
-                  },
-                  in: {
-                    $cond: [
-                      { $ifNull: ['$$matched', false] },
-                      {
-                        refId: '$$member.refId',
-                        username: '$$matched.username',
-                        role: '$$matched.role',
-                        email: '$$matched.email',
-                      },
-                      { refId: '$$member.refId' },
-                    ],
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
-    ];
-
-    return this.getCollection().aggregate<UserGroupWithMembers>(aggregation).toArray();
   }
 }
 

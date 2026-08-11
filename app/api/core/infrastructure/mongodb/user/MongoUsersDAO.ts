@@ -8,9 +8,6 @@ import { UserDBO } from './UserDBO.js';
 import { PUBLIC_USER_ID } from '#api/core/domain/user/User.js';
 import { UserNotFound } from '#api/core/domain/user/errors.js';
 
-const NOT_DELETED_FILTER: Filter<UserDBO> = { deletedAt: { $exists: false } };
-const NOT_PUBLIC_USER_FILTER: Filter<UserDBO> = { _id: { $ne: PUBLIC_USER_ID } };
-
 type UserWithGroups = UserDBO & { groups: { _id: string; name: string }[] };
 
 type Deps = {
@@ -35,36 +32,45 @@ type GetByIdOptions = {
 class MongoUsersDAO extends MongoDataSource<UserDBO> {
   protected collectionName = 'users';
 
+  private NOT_DELETED_FILTER: Filter<UserDBO> = { deletedAt: { $exists: false } };
+
+  private NOT_PUBLIC_USER_FILTER: Filter<UserDBO> = { _id: { $ne: PUBLIC_USER_ID } };
+
   constructor(deps: Deps) {
     super(deps.db, deps.transactionManager);
   }
 
-  // eslint-disable-next-line class-methods-use-this
   notDeletedFilter(): Filter<UserDBO> {
-    return NOT_DELETED_FILTER;
+    return this.NOT_DELETED_FILTER;
   }
 
-  // eslint-disable-next-line class-methods-use-this
   notPublicUserFilter(): Filter<UserDBO> {
-    return NOT_PUBLIC_USER_FILTER;
+    return this.NOT_PUBLIC_USER_FILTER;
+  }
+
+  getGuards() {
+    return {
+      ...this.notDeletedFilter(),
+      ...this.notPublicUserFilter(),
+    };
   }
 
   async findOne(filter: Filter<UserDBO>, options: QueryOptions = {}): Promise<UserDBO | null> {
     const { projection, includeDeleted } = options;
-    const guardedFilter = includeDeleted ? filter : { ...filter, ...NOT_DELETED_FILTER };
+    const guardedFilter = includeDeleted ? filter : { ...filter, ...this.NOT_DELETED_FILTER };
     return this.getCollection<UserDBO>().findOne(guardedFilter, { projection });
   }
 
   async exists(filter: Filter<UserDBO>): Promise<boolean> {
     const user = await this.findOne(
-      { ...filter, ...NOT_PUBLIC_USER_FILTER },
+      { ...filter, ...this.NOT_PUBLIC_USER_FILTER },
       { projection: { _id: 1 } }
     );
     return Boolean(user);
   }
 
   async count(filter: Filter<UserDBO> = {}): Promise<number> {
-    const guardedFilter = { ...filter, ...NOT_DELETED_FILTER } as Document;
+    const guardedFilter = { ...filter, ...this.NOT_DELETED_FILTER } as Document;
     return this.getCollection<UserDBO>().countDocuments(guardedFilter);
   }
 
@@ -73,7 +79,9 @@ class MongoUsersDAO extends MongoDataSource<UserDBO> {
     update: UpdateFilter<UserDBO> | Partial<UserDBO>,
     options: { includeDeleted?: boolean } = {}
   ): Promise<void> {
-    const guardedFilter = options.includeDeleted ? filter : { ...filter, ...NOT_DELETED_FILTER };
+    const guardedFilter = options.includeDeleted
+      ? filter
+      : { ...filter, ...this.NOT_DELETED_FILTER };
     await this.getCollection<UserDBO>().updateOne(guardedFilter, update);
   }
 
@@ -131,8 +139,7 @@ class MongoUsersDAO extends MongoDataSource<UserDBO> {
       {
         $match: {
           ...query,
-          ...NOT_PUBLIC_USER_FILTER,
-          ...NOT_DELETED_FILTER,
+          ...this.getGuards(),
         },
       },
       {

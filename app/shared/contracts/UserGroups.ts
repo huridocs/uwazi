@@ -46,4 +46,6 @@ export type {
   DeleteUserGroupsRequest,
   DeleteUserGroupsResponse,
   GetUserGroupsResponse,
+  EnrichedGroupMember,
+  EnrichedUserGroup,
 };

@@ -6,7 +6,6 @@ import type {
   CreateUserGroupRequest,
   CreateUserGroupResponse,
 } from '#shared/contracts/UserGroups.js';
-import { toUpsertDTO } from './UserGroupMapper.js';
 
 const CreateUserGroupRequestSchema = z
   .object({
@@ -26,7 +25,12 @@ class CreateUserGroupController extends AbstractController<CreateUserGroupReques
         memberIds: dto.members.map(member => member.refId),
       });
 
-      const response: CreateUserGroupResponse = toUpsertDTO(created);
+      const response: CreateUserGroupResponse = {
+        _id: created.id,
+        name: created.name,
+        members: created.memberIds.map(refId => ({ refId })),
+      };
+
       this.response.json(response);
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';

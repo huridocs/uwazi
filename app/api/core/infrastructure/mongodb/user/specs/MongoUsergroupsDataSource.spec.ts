@@ -161,7 +161,7 @@ describe('MongoGroupsDataSource', () => {
   });
 
   describe('create', () => {
-    it('should create a group and make it findable via getAll', async () => {
+    it('should create a group with the given name and members', async () => {
       const { ds } = createDs();
 
       const created = await ds.create({
@@ -169,11 +169,11 @@ describe('MongoGroupsDataSource', () => {
         memberIds: [f.idString('existing1')],
       });
 
-      const all = await ds.getAll();
-      const found = all.find(group => group._id === created.id);
+      const groups = await testingEnvironment.db.getAllFrom('usergroups');
+      const found = groups.find(group => group._id.toString() === created.id);
       expect(found).toMatchObject({
         name: 'New group',
-        members: [{ refId: f.idString('existing1'), username: 'existing1' }],
+        members: [{ refId: f.idString('existing1') }],
       });
     });
   });
@@ -188,11 +188,13 @@ describe('MongoGroupsDataSource', () => {
         memberIds: [f.idString('existing2')],
       });
 
-      const all = await ds.getAll();
-      const updated = all.find(group => group._id === f.id('With one member').toHexString());
+      const groups = await testingEnvironment.db.getAllFrom('usergroups');
+      const updated = groups.find(
+        group => group._id.toString() === f.id('With one member').toHexString()
+      );
       expect(updated).toMatchObject({
         name: 'Renamed',
-        members: [{ refId: f.idString('existing2'), username: 'existing2' }],
+        members: [{ refId: f.idString('existing2') }],
       });
     });
   });
@@ -203,8 +205,8 @@ describe('MongoGroupsDataSource', () => {
 
       await ds.delete([f.id('Empty').toHexString(), f.id('With one member').toHexString()]);
 
-      const all = await ds.getAll();
-      expect(all.map(group => group.name)).toEqual(['With two members']);
+      const groups = await testingEnvironment.db.getAllFrom('usergroups');
+      expect(groups.map(group => group.name)).toEqual(['With two members']);
     });
 
     it('should be a no-op for an unknown id', async () => {
@@ -212,8 +214,8 @@ describe('MongoGroupsDataSource', () => {
 
       await expect(ds.delete([f.id('unknown').toHexString()])).resolves.not.toThrow();
 
-      const all = await ds.getAll();
-      expect(all).toHaveLength(3);
+      const groups = await testingEnvironment.db.getAllFrom('usergroups');
+      expect(groups).toHaveLength(3);
     });
   });
 
@@ -237,35 +239,6 @@ describe('MongoGroupsDataSource', () => {
         f.id('With one member').toHexString()
       );
       expect(excludingOther.isError()).toBe(true);
-    });
-  });
-
-  describe('getAll', () => {
-    it('should enrich members with username/role/email', async () => {
-      const { ds } = createDs();
-
-      const all = await ds.getAll();
-      const withTwoMembers = all.find(group => group.name === 'With two members');
-
-      expect(withTwoMembers?.members).toMatchObject([
-        { refId: f.idString('existing1'), username: 'existing1', role: UserRole.ADMIN },
-        { refId: f.idString('existing2'), username: 'existing2', role: UserRole.EDITOR },
-      ]);
-    });
-
-    it('should fall back to a bare refId for an orphaned member reference', async () => {
-      const { ds } = createDs();
-
-      await ds.update({
-        id: f.id('Empty').toHexString(),
-        name: 'Empty',
-        memberIds: [f.idString('deletedUser')],
-      });
-
-      const all = await ds.getAll();
-      const emptyGroup = all.find(group => group.name === 'Empty');
-
-      expect(emptyGroup?.members).toEqual([{ refId: f.idString('deletedUser') }]);
     });
   });
 });
