@@ -11,6 +11,11 @@ import {
 } from '#V2/Routes/Entity/Components/context/index.js';
 import { EntityOverlayContent } from './EntityOverlayContent.js';
 import { useOverlayEntity } from './useOverlayEntity.js';
+import { settingsAtom } from '#V2/atoms/settingsAtom.js';
+import {
+  getEntityViewerV2Path,
+  isEntityViewerV2Enabled,
+} from '#app/utils/entityViewerPaths.js';
 
 const overlaySurfaceStyle = {
   backgroundColor: 'var(--color-theme-surface-raised, var(--color-theme-bg-surface, #ffffff))',
@@ -21,6 +26,7 @@ const EntityOverlay = () => {
   const selfEntity = useEntityScopedEntity();
   const sourceMarkers = useEntityRelationshipMarkers();
   const templates = useAtomValue(templatesAtom);
+  const settings = useAtomValue(settingsAtom);
   const panelRef = useRef<HTMLDivElement>(null);
   const titleId = useId();
   const [entered, setEntered] = useState(false);
@@ -156,7 +162,10 @@ const EntityOverlay = () => {
           </button>
           {target && (
             <I18NLinkV2
-              to={`entityv2/${target.sharedId}`}
+              to={getEntityViewerV2Path(
+                target.sharedId,
+                isEntityViewerV2Enabled(settings.features)
+              ).replace(/^\//, '')}
               onClick={closeEntityOverlay}
               className="cursor-pointer rounded-md px-3 py-1.5 text-tab font-medium text-parchment transition-colors"
               style={{ backgroundColor: 'var(--text-primary)' }}

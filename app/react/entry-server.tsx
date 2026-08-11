@@ -423,6 +423,7 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
   const clientFeatureFlags: ClientFeatureFlags = {
     paragraphExtraction: featureFlags?.paragraphExtraction,
     newHeader: featureFlags?.newHeader,
+    entityViewerV2: featureFlags?.entityViewerV2,
     themeCustomization: featureFlags?.themeCustomization,
     aiAssistant: featureFlags?.aiAssistant,
   };

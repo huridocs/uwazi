@@ -7,16 +7,23 @@ import { EntitySchema } from '#shared/types/entityType.js';
 
 import { ViewDocumentLink } from '../ViewDocumentLink.js';
 
-let pathname = 'entity/';
+let pathname = '/entity/sharedId';
+let mockFeatureFlags: { entityViewerV2?: boolean } = {};
 
 const mockUseLocation = jest.fn().mockImplementation(() => ({
-  pathname: `?page=${pathname}`,
+  pathname,
 }));
 
 jest.mock('react-router', () => ({
   ...jest.requireActual('react-router'),
   useLocation: () => mockUseLocation(),
 }));
+
+jest.mock('jotai', () => ({
+  ...jest.requireActual('jotai'),
+  useAtomValue: () => ({ features: mockFeatureFlags }),
+}));
+
 const renderComponent = (entity: EntitySchema) => {
   mockUseLocation.mockReturnValue({ pathname });
   return shallow(
@@ -30,7 +37,8 @@ describe('ViewDocumentLink', () => {
   const entity: EntitySchema = { _id: 'id', sharedId: 'sharedId' };
 
   beforeEach(() => {
-    pathname = 'entity/';
+    pathname = '/entity/sharedId';
+    mockFeatureFlags = {};
   });
 
   describe('when on viewer', () => {
@@ -56,6 +64,13 @@ describe('ViewDocumentLink', () => {
       pathname = 'outside';
       const component = renderComponent(entity);
       expect(component.find(Link).props().to).toEqual('/entity/sharedId?file=file.pdf');
+    });
+
+    it('should link to V2 entity path when feature flag is on', () => {
+      pathname = 'outside';
+      mockFeatureFlags = { entityViewerV2: true };
+      const component = renderComponent(entity);
+      expect(component.find(Link).props().to).toEqual('/entity/sharedId');
     });
   });
 });

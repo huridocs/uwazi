@@ -99,6 +99,12 @@ import {
   UploadStatus,
   uploadStatusLoader,
 } from './V2/Routes/Settings/CSVUpload/index.js';
+import {
+  RedirectDocumentToEntity,
+  RedirectEntityTabToEntity,
+} from './Viewer/entityViewerRedirects.js';
+import { isEntityViewerV2Enabled } from './utils/entityViewerPaths.js';
+
 const deconstructSearchQuery = (query?: string) => {
   if (!query) return '';
   if (query.startsWith('?q=')) return decodeURI(query.substring(1).split('=')[1]);
@@ -115,7 +121,8 @@ type IndexComponents = {
 
 const buildIndexElement = (
   descriptor: IndexDescriptor,
-  indexComponents?: IndexComponents
+  indexComponents?: IndexComponents,
+  settings?: ClientSettings
 ): React.ReactNode => {
   const Root = indexComponents?.LibraryRoot ?? LibraryRoot;
   const Cards = indexComponents?.LibraryCards ?? LibraryCards;
@@ -176,6 +183,9 @@ const buildIndexElement = (
     case 'page':
       return <PageView params={{ sharedId: descriptor.pageId }} />;
     case 'entity':
+      if (isEntityViewerV2Enabled(settings?.features)) {
+        return <Navigate to={`entity/${descriptor.entityId}`} replace />;
+      }
       return <ViewerRoute params={{ sharedId: descriptor.entityId }} />;
     case 'navigate':
       return <Navigate to={descriptor.navigateTo} />;
@@ -211,14 +221,31 @@ const getRoutesLayout = (
         handle={{ library: true }}
       />
     </Route>
-    <Route path="document/:sharedId" element={privateRoute(<ViewerRoute />, settings)}>
-      <Route path="*" element={privateRoute(<ViewerRoute />, settings)} />
-    </Route>
-    <Route path="entity/:sharedId" element={privateRoute(<ViewerRoute />, settings)}>
-      <Route path="*" element={privateRoute(<ViewerRoute />, settings)} />
-    </Route>
-    <Route path="entity/:sharedId/:tabView" element={privateRoute(<ViewerRoute />, settings)} />
-    <Route path="entityv2/:sharedId" element={<Entity />} loader={entityLoader(headers)} />
+    <Route path="document/:sharedId/*" element={<RedirectDocumentToEntity />} />
+    {isEntityViewerV2Enabled(settings?.features) ? (
+      <>
+        <Route path="entity/:sharedId" element={<Entity />} loader={entityLoader(headers)} />
+        <Route path="entity/:sharedId/:tabView" element={<RedirectEntityTabToEntity />} />
+        <Route path="legacy-entity/:sharedId" element={privateRoute(<ViewerRoute />, settings)}>
+          <Route path="*" element={privateRoute(<ViewerRoute />, settings)} />
+        </Route>
+        <Route
+          path="legacy-entity/:sharedId/:tabView"
+          element={privateRoute(<ViewerRoute />, settings)}
+        />
+      </>
+    ) : (
+      <>
+        <Route path="entity/:sharedId" element={privateRoute(<ViewerRoute />, settings)}>
+          <Route path="*" element={privateRoute(<ViewerRoute />, settings)} />
+        </Route>
+        <Route
+          path="entity/:sharedId/:tabView"
+          element={privateRoute(<ViewerRoute />, settings)}
+        />
+        <Route path="entityv2/:sharedId" element={<Entity />} loader={entityLoader(headers)} />
+      </>
+    )}
     <Route path="error/:errorCode" element={<GeneralError />} />
     <Route path="404" element={<GeneralError />} />
     <Route path="page/:sharedId" element={<PageView />} />
@@ -438,7 +465,7 @@ const getRoutes = (
   services: V2Services = httpServices
 ) => {
   const descriptor = getIndexDescriptor(settings, userId);
-  const indexElement = buildIndexElement(descriptor, indexComponents);
+  const indexElement = buildIndexElement(descriptor, indexComponents, settings);
   const { parameters } = descriptor;
   const { defaultToLibrary } = descriptor;
   const layout = getRoutesLayout(settings, indexElement, headers, defaultToLibrary, services);
@@ -459,7 +486,7 @@ const getRoutes = (
 const getIndexElement = (settings: ClientSettings | undefined, userId: string | undefined) => {
   const descriptor = getIndexDescriptor(settings, userId);
   return {
-    element: buildIndexElement(descriptor),
+    element: buildIndexElement(descriptor, undefined, settings),
     parameters: descriptor.parameters,
     defaultToLibrary: descriptor.defaultToLibrary,
   };

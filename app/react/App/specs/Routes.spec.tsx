@@ -2,6 +2,7 @@
  * @jest-environment jsdom
  */
 import React from 'react';
+import { Navigate } from 'react-router';
 import { getIndexElement } from '#app/Routes.js';
 import { ClientSettings } from '#app/apiResponseTypes.js';
 import { Login } from '#app/Users/Login.js';
@@ -59,6 +60,14 @@ describe('Routes', () => {
         const { element, parameters } = getIndexElement(settings, undefined);
         expect(parameters).toBeUndefined();
         expect(element).toMatchObject(<ViewerRoute params={{ sharedId: 'entitySharedId' }} />);
+      });
+
+      it('should redirect to entity route when V2 viewer flag is enabled', () => {
+        settings.home_page = '/entity/entitySharedId';
+        settings.features = { entityViewerV2: true };
+        const { element, parameters } = getIndexElement(settings, undefined);
+        expect(parameters).toBeUndefined();
+        expect(element).toMatchObject(<Navigate to="entity/entitySharedId" replace />);
       });
 
       it('should render a library view with the query', () => {

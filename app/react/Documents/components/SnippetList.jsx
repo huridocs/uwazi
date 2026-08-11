@@ -8,11 +8,26 @@ import { t, I18NLink } from '#app/I18N/index.js';
 import { SafeHTML } from '#app/utils/SafeHTML.js';
 import getFieldLabel from '#app/Templates/utils/getFieldLabel.js';
 import Immutable from 'immutable';
+import { buildEntitySnippetLink } from '#app/utils/entityViewerPaths.js';
 
-const MetadataFieldSnippets = ({ fieldSnippets, documentViewUrl, template, searchTerm = '' }) => (
+const MetadataFieldSnippets = ({
+  fieldSnippets,
+  sharedId,
+  template,
+  searchTerm = '',
+  entityViewerV2,
+  legacyBasePath,
+}) => (
   <>
     <li className="snippet-list-item-header metadata-snippet-header">
-      <I18NLink to={`${documentViewUrl}?searchTerm=${searchTerm}`}>
+      <I18NLink
+        to={buildEntitySnippetLink({
+          sharedId,
+          searchTerm,
+          entityViewerV2,
+          legacyBasePath,
+        })}
+      >
         {getFieldLabel(fieldSnippets.get('field'), template)}
       </I18NLink>
     </li>
@@ -28,19 +43,23 @@ const MetadataFieldSnippets = ({ fieldSnippets, documentViewUrl, template, searc
 
 MetadataFieldSnippets.propTypes = {
   fieldSnippets: PropTypes.instanceOf(Immutable.Map).isRequired,
-  documentViewUrl: PropTypes.string.isRequired,
+  sharedId: PropTypes.string.isRequired,
   searchTerm: PropTypes.string,
   template: PropTypes.shape({
     get: PropTypes.func,
   }),
+  entityViewerV2: PropTypes.bool,
+  legacyBasePath: PropTypes.string,
 };
 
 const DocumentContentSnippets = ({
   selectSnippet,
   documentSnippets,
-  documentViewUrl,
+  sharedId,
   searchTerm,
   selectedSnippet,
+  entityViewerV2,
+  legacyBasePath,
 }) => (
   <>
     <li className="snippet-list-item-header fulltext-snippet-header">
@@ -54,7 +73,14 @@ const DocumentContentSnippets = ({
         <li key={index} className={`snippet-list-item fulltext-snippet ${selected}`}>
           <I18NLink
             onClick={() => selectSnippet(page, snippet)}
-            to={`${documentViewUrl}?page=${page}&searchTerm=${searchTerm || ''}${filename ? `&file=${filename}` : ''}`}
+            to={buildEntitySnippetLink({
+              sharedId,
+              searchTerm,
+              page,
+              filename,
+              entityViewerV2,
+              legacyBasePath,
+            })}
           >
             <span className="page-number">{page}</span>
             <span className="snippet-text">
@@ -75,17 +101,21 @@ DocumentContentSnippets.propTypes = {
   selectedSnippet: PropTypes.shape({
     get: PropTypes.func,
   }).isRequired,
-  documentViewUrl: PropTypes.string.isRequired,
+  sharedId: PropTypes.string.isRequired,
   searchTerm: PropTypes.string.isRequired,
+  entityViewerV2: PropTypes.bool,
+  legacyBasePath: PropTypes.string,
 };
 
 const SnippetList = ({
   snippets,
-  documentViewUrl,
+  sharedId,
   searchTerm,
   selectSnippet,
   template,
   selectedSnippet,
+  entityViewerV2,
+  legacyBasePath,
 }) => {
   const safeSelectedSnippet =
     selectedSnippet && typeof selectedSnippet.get === 'function'
@@ -98,17 +128,21 @@ const SnippetList = ({
           key={fieldSnippets.get('field')}
           fieldSnippets={fieldSnippets}
           template={template}
-          documentViewUrl={documentViewUrl}
+          sharedId={sharedId}
           searchTerm={searchTerm}
+          entityViewerV2={entityViewerV2}
+          legacyBasePath={legacyBasePath}
         />
       ))}
       {snippets.get('fullText').size ? (
         <DocumentContentSnippets
           documentSnippets={snippets.get('fullText')}
-          documentViewUrl={documentViewUrl}
+          sharedId={sharedId}
           selectSnippet={selectSnippet}
-          selectedSnippet={safeSelectedSnippet}
           searchTerm={searchTerm}
+          selectedSnippet={safeSelectedSnippet}
+          entityViewerV2={entityViewerV2}
+          legacyBasePath={legacyBasePath}
         />
       ) : (
         ''
@@ -118,7 +152,7 @@ const SnippetList = ({
 };
 
 SnippetList.propTypes = {
-  documentViewUrl: PropTypes.string.isRequired,
+  sharedId: PropTypes.string.isRequired,
   selectSnippet: PropTypes.func.isRequired,
   searchTerm: PropTypes.string.isRequired,
   selectedSnippet: PropTypes.shape({
@@ -130,11 +164,15 @@ SnippetList.propTypes = {
   template: PropTypes.shape({
     get: PropTypes.func,
   }),
+  entityViewerV2: PropTypes.bool,
+  legacyBasePath: PropTypes.string,
 };
 
 const mapStateToProps = (state, ownProps) => ({
   template: state.templates.find(tmpl => tmpl.get('_id') === ownProps.doc.get('template')),
   selectedSnippet: state.documentViewer.uiState.get('snippet'),
+  entityViewerV2: Boolean(state.settings?.collection?.getIn(['features', 'entityViewerV2'])),
+  sharedId: ownProps.doc.get('sharedId'),
 });
 
 const SnippetListConnected = connect(mapStateToProps)(SnippetList);
