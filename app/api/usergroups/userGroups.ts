@@ -52,7 +52,7 @@ export default {
   },
 
   /**
-   * @deprecated V1 predecessor of MongoUserGroupsDataSource.updateUserGroups, used only by
+   * @deprecated V1 predecessor of MongoUserGroupsDataSource.assignGroupsToUser, used only by
    * the legacy user create/update/delete flow (app/api/users/users.js). Not moved as part of
    * the V2 route-level migration.
    */
