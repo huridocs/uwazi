@@ -225,7 +225,7 @@ const getRoutesLayout = (
     {isEntityViewerV2Enabled(settings?.features) ? (
       <>
         <Route path="entity/:sharedId" element={<Entity />} loader={entityLoader(headers)} />
-        <Route path="entity/:sharedId/:tabView" element={<RedirectEntityTabToEntity />} />
+        <Route path="entity/:sharedId/*" element={<RedirectEntityTabToEntity />} />
         <Route path="legacy-entity/:sharedId" element={privateRoute(<ViewerRoute />, settings)}>
           <Route path="*" element={privateRoute(<ViewerRoute />, settings)} />
         </Route>

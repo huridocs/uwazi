@@ -12,8 +12,9 @@ const RedirectDocumentToEntity = () => {
 };
 
 /**
- * When V2 owns /entity, old tab URLs (/entity/:id/info, /page, …) redirect to /entity/:id
- * and drop legacy query params.
+ * When V2 owns /entity, any unmatched trailing path
+ * (/entity/:id/info, /page, /relationships, /text-search, /foo/bar, …)
+ * redirects to /entity/:id and drops legacy query params.
  */
 const RedirectEntityTabToEntity = () => {
   const { sharedId } = useParams<{ sharedId: string }>();

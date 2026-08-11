@@ -44,8 +44,26 @@ describe('entityViewerRedirects', () => {
     render(
       <MemoryRouter initialEntries={['/en/entity/abc123/info?page=3&searchTerm=foo']}>
         <Routes>
-          <Route path="/en/entity/:sharedId/:tabView" element={<RedirectEntityTabToEntity />} />
           <Route path="/en/entity/:sharedId" element={<LocationProbe />} />
+          <Route path="/en/entity/:sharedId/*" element={<RedirectEntityTabToEntity />} />
+        </Routes>
+      </MemoryRouter>
+    );
+
+    await waitFor(() => {
+      const el = screen.getByTestId('location');
+      expect(el).toHaveAttribute('data-pathname', '/en/entity/abc123');
+      expect(el).toHaveAttribute('data-search', '');
+      expect(el).toHaveAttribute('data-hash', '');
+    });
+  });
+
+  it('redirects any unmatched nested path under /entity/:sharedId', async () => {
+    render(
+      <MemoryRouter initialEntries={['/en/entity/abc123/relationships/extra?ref=1']}>
+        <Routes>
+          <Route path="/en/entity/:sharedId" element={<LocationProbe />} />
+          <Route path="/en/entity/:sharedId/*" element={<RedirectEntityTabToEntity />} />
         </Routes>
       </MemoryRouter>
     );
