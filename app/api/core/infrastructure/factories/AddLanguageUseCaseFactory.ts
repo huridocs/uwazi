@@ -2,8 +2,8 @@ import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/Se
 import { TranslationsDataSourceFactory } from '#api/core/infrastructure/factories/TranslationsDataSourceFactory.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { AddLanguageUseCase } from '#api/core/application/AddLanguage.js';
+import { ImportPredefinedTranslationsService } from '#api/core/application/translation/ImportPredefinedTranslationsService.js';
 import { SyncDispatcherForTests } from '#api/core/libs/queue/infrastructure/SyncDispatcherForTests.js';
-import { LegacyTranslationService } from '../mongodb/template/LegacyTemplatesTranslationService.js';
 import { DispatcherAdapter } from '../jobs/DispatcherAdapter.js';
 import { MongoTransactionManager } from '../mongodb/common/MongoTransactionManager.js';
 import { CloneLanguageEntitiesJob } from '../jobs/CloneLanguageEntitiesJob.js';
@@ -19,7 +19,7 @@ class AddLanguageUseCaseFactory {
     const transactionManager = ExecutionContext.transactionManager as MongoTransactionManager;
     const settingsDS = SettingsDataSourceFactory.default({ transactionManager });
     const translationsDS = TranslationsDataSourceFactory.default({ transactionManager });
-    const translationService = new LegacyTranslationService();
+    const importPredefinedTranslations = ImportPredefinedTranslationsService;
 
     const minutes60 = 60 * 60 * 1000;
     let jobsDispatcher: JobsDispatcher = DefaultDispatcher(tenant.name, transactionManager, {
@@ -39,7 +39,7 @@ class AddLanguageUseCaseFactory {
         transactionManager,
         settingsDS,
         translationsDS,
-        translationService,
+        importPredefinedTranslations,
         eventEmitter,
         dispatcher,
         ...overrides,

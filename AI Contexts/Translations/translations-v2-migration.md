@@ -219,10 +219,10 @@ All writers must stop calling `#api/i18n/translations` and use core ports/use ca
 
 | Caller | Today | Target |
 |--------|-------|--------|
-| Create/Update Template | `LegacyTemplatesTranslationService` → façade `addContext` / `updateContext` | Core Create/Update translation context use cases (or port implemented in core, not façade) |
+| Create/Update Template | `TemplateTranslationService` → `TranslationsService` (shared TM) | Done |
 | Delete Template | `translationsDS.deleteByContextId` (+ bulk key cleanup) | Same DS/use case under core ownership |
 | Thesaurus create/update/delete | `ThesaurusTranslationService` → DS | Keep Thesaurus-style; DS/contract moves under core |
-| Create/Update/Delete RelationshipType | `LegacyRelationshipTypesTranslationService` → façade | Same as templates — real core mutations; delete Legacy adapter |
+| Create/Update/Delete RelationshipType | `RelationshipTypeTranslationService` → `TranslationsService` (shared TM) | Done |
 | Settings Menu / Filters | `translations.updateContext` | Core UpdateTranslationContext |
 | CSV v1/v2 thesauri translations | façade `updateEntries` / DS upsert | Create/Update entries use cases (branch at edge) |
 | AddLanguage | DS clone + façade `importPredefined` | Keep clone in use case; ImportPredefined as core use case (TX boundary to resolve) |
@@ -295,6 +295,14 @@ All writers must stop calling `#api/i18n/translations` and use core ports/use ca
 - Use cases (own `TM.run`): `SaveLocaleTranslations`, `SaveTranslationEntries`, `UpdateEntriesByContext`, `Create/Update/DeleteTranslationContext`, `Create/UpdateTranslationEntries`, `DeleteTranslationsByLanguage`
 - Application services: `TranslationsService` (write API, `ensureTransaction`), `TranslationsQueryService` (reads), `ValidateTranslationsService`, `PropagateThesaurusTranslationService` (post-commit)
 - Transaction boundaries: UseCases open one `transactionManager.run()` then call `TranslationsService`; no UC→UC nesting; thesaurus entity propagate runs **after** successful commit (outside TX)
+- Cross-aggregate writers (same shared TM as parent UseCase — Thesaurus pattern):
+  - Templates: `TemplateTranslationService` → `TranslationsService` (Create/Update Template factories)
+  - Relationship types: `RelationshipTypeTranslationService` → `TranslationsService`
+  - Thesaurus: `ThesaurusTranslationService` → `translationsDS` under ThesauriService TX
+  - DeleteTemplate: `translationsDS` inside its `TM.run`
+  - Settings Menu/Filters: standalone `UpdateTranslationContextUseCase` entry
+  - AddLanguage predefined CSV: temporary `ImportPredefinedTranslationsService` (façade FS path, outside TX)
+- Removed misleading `Legacy*TranslationService` adapters (they were domain sync services, not old translations)
 - Tests: unit `TranslationsService.spec` (ambient TX + partition/prepare); integration `SaveLocaleTranslations` / `SaveTranslationEntries` / `UpdateEntriesByContext` UseCase specs (+ existing context UC + façade/routes)
 - QueryService by-item lookups: `getContextValueMap`, `getLanguageValueMaps`; `getLegacy` / `LegacyTranslationDtoMapper` only at mammoth delivery edges
 - Express: GET → QueryService; Save* controllers → orchestrator UseCase factories; indexed GET for `translationsChange`
@@ -313,7 +321,7 @@ All writers must stop calling `#api/i18n/translations` and use core ports/use ca
 - [x] Internal non-delivery callers do not use `getLegacy` (csvExporter / denormalize / search / SaveTranslationEntries)
 - [x] CSV / SaveTranslationsController / PendingThesauriValuesApplier do not call façade `save`/`updateEntries` (use core factories)
 - [ ] No runtime imports of `#api/i18n/translations` from domain callers (`importPredefined` / `availableLanguages` / populate remain)
-- [x] LegacyTemplatesTranslationService / LegacyRelationshipTypesTranslationService call core use cases (not façade context CRUD)
+- [x] Template/RT sync via `TemplateTranslationService` / `RelationshipTypeTranslationService` → `TranslationsService` (no Legacy adapters; shared parent TM)
 - [x] Translation side effects for relationship types / thesaurus / language covered by existing integration tests
 - [x] Sync namespace `translationsV2` still green in syncWorker specs after route cutover
 

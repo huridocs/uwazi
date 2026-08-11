@@ -2,7 +2,7 @@
 import { LanguageSchema } from '#shared/types/commonTypes.js';
 import { TranslationsDataSource } from '#api/core/application/contracts/TranslationsDataSource.js';
 import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js';
-import { TranslationService } from '#api/core/domain/template/TranslationService.js';
+import { ImportPredefinedTranslations } from '#api/core/application/translation/ImportPredefinedTranslationsService.js';
 import { LanguageAddedEvent } from '#api/core/domain/language/events/LanguageAddedEvent.js';
 import { AbstractUseCase } from '../libs/UseCase.js';
 
@@ -15,7 +15,7 @@ type Output = LanguageSchema[];
 type Deps = {
   settingsDS: SettingsDataSource;
   translationsDS: TranslationsDataSource;
-  translationService: TranslationService;
+  importPredefinedTranslations: ImportPredefinedTranslations;
 };
 
 class AddLanguageUseCase extends AbstractUseCase<Input, Output, Deps> {
@@ -47,9 +47,9 @@ class AddLanguageUseCase extends AbstractUseCase<Input, Output, Deps> {
       });
     });
 
-    // Outside transaction — importPredefined uses v1 code that is not transaction-aware
+    // Outside transaction — predefined import uses FS/CSV path that is not transaction-aware
     for (const language of newLanguages) {
-      await this.deps.translationService.importPredefined(language.key);
+      await this.deps.importPredefinedTranslations.execute(language.key);
     }
 
     return newLanguages;

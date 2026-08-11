@@ -4,7 +4,9 @@ import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import type { DBFixture } from '#api/utils/testing_db.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { RelationshipType } from '#api/core/domain/relationshipType/RelationshipType.js';
-import { LegacyRelationshipTypesTranslationService } from '../LegacyRelationshipTypesTranslationService.js';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { TranslationsServiceFactory } from '#api/core/infrastructure/factories/TranslationsServiceFactory.js';
+import { RelationshipTypeTranslationService } from '../RelationshipTypeTranslationService.js';
 
 const factory = getFixturesFactory();
 const createTranslationDBO = factory.v2.database.translationDBO;
@@ -32,7 +34,17 @@ const fixtures: DBFixture = {
   ],
 };
 
-describe('LegacyRelationshipTypesTranslationService', () => {
+const createSut = () => {
+  const transactionManager = TransactionManagerFactory.default();
+  return {
+    transactionManager,
+    sut: new RelationshipTypeTranslationService({
+      translationsService: TranslationsServiceFactory.default({ transactionManager }),
+    }),
+  };
+};
+
+describe('RelationshipTypeTranslationService', () => {
   beforeAll(async () => {
     await testingEnvironment.setUp(fixtures);
   });
@@ -47,10 +59,12 @@ describe('LegacyRelationshipTypesTranslationService', () => {
 
   it('should create translation context', async () => {
     const relationshipType = new RelationshipType('type-id', 'Parent');
-    const sut = new LegacyRelationshipTypesTranslationService();
 
     await testingEnvironment.runWithContext(async () => {
-      await sut.create(relationshipType);
+      const { sut, transactionManager } = createSut();
+      await transactionManager.run(async () => {
+        await sut.create(relationshipType);
+      });
     });
 
     const translationWithContext = await testingEnvironment.runWithContext(async () => {
@@ -68,13 +82,15 @@ describe('LegacyRelationshipTypesTranslationService', () => {
   });
 
   it('should update translation context', async () => {
-    const sut = new LegacyRelationshipTypesTranslationService();
     await testingEnvironment.runWithContext(async () => {
-      await sut.create(new RelationshipType('type-id', 'Old'));
-      await sut.update(
-        new RelationshipType('type-id', 'Old'),
-        new RelationshipType('type-id', 'New')
-      );
+      const { sut, transactionManager } = createSut();
+      await transactionManager.run(async () => {
+        await sut.create(new RelationshipType('type-id', 'Old'));
+        await sut.update(
+          new RelationshipType('type-id', 'Old'),
+          new RelationshipType('type-id', 'New')
+        );
+      });
     });
 
     const translationWithContext = await testingEnvironment.runWithContext(async () => {
@@ -92,10 +108,12 @@ describe('LegacyRelationshipTypesTranslationService', () => {
   });
 
   it('should delete translation context', async () => {
-    const sut = new LegacyRelationshipTypesTranslationService();
     await testingEnvironment.runWithContext(async () => {
-      await sut.create(new RelationshipType('type-id', 'Parent'));
-      await sut.delete('type-id');
+      const { sut, transactionManager } = createSut();
+      await transactionManager.run(async () => {
+        await sut.create(new RelationshipType('type-id', 'Parent'));
+        await sut.delete('type-id');
+      });
     });
 
     const translationWithContext = await testingEnvironment.runWithContext(async () => {

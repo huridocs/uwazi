@@ -8,7 +8,7 @@ import { AddLanguageUseCaseFactory } from '#api/core/infrastructure/factories/Ad
 import { LanguageAddedEvent } from '#api/core/domain/language/events/LanguageAddedEvent.js';
 import { search } from '#api/search/index.js';
 import { Dispatcher } from '#api/core/application/contracts/Dispatcher.js';
-import { TranslationService } from '#api/core/domain/template/TranslationService.js';
+import { ImportPredefinedTranslations } from '#api/core/application/translation/ImportPredefinedTranslationsService.js';
 
 jest.mock('#api/core/infrastructure/services/V1WebSocketsWrapper.js', () => ({
   V1WebSocketsWrapper: jest.fn().mockImplementation(() => ({
@@ -46,15 +46,15 @@ const mockDispatcher = {
 } as unknown as Dispatcher;
 
 const importPredefinedSpy = jest.fn().mockResolvedValue(undefined);
-const mockTranslationService = {
-  importPredefined: importPredefinedSpy,
-} as unknown as TranslationService;
+const mockImportPredefinedTranslations: ImportPredefinedTranslations = {
+  execute: importPredefinedSpy,
+};
 
 const createSut = (overrides?: Partial<ConstructorParameters<typeof AddLanguageUseCase>[0]>) =>
   testingEnvironment.runWithContext(() =>
     AddLanguageUseCaseFactory.default({
       dispatcher: mockDispatcher,
-      translationService: mockTranslationService,
+      importPredefinedTranslations: mockImportPredefinedTranslations,
       ...overrides,
     })
   );
@@ -113,7 +113,7 @@ describe('AddLanguage use case', () => {
       expect(zhCount).toBe(2);
     });
 
-    it('should call importPredefined on the translation service for each new language', async () => {
+    it('should import predefined translations for each new language', async () => {
       await createSut().execute({
         languages: [
           { key: 'es', label: 'Spanish' },
@@ -125,22 +125,22 @@ describe('AddLanguage use case', () => {
       expect(importPredefinedSpy).toHaveBeenCalledWith('zh');
     });
 
-    it('should call importPredefined after the transaction commits', async () => {
+    it('should import predefined translations after the transaction commits', async () => {
       const callOrder: string[] = [];
       const trackingDispatcher = {
         cloneLanguageEntities: jest.fn().mockImplementation(async () => {
           callOrder.push('cloneLanguageEntities dispatched');
         }),
       } as unknown as Dispatcher;
-      const trackingTranslationService = {
-        importPredefined: jest.fn().mockImplementation(async () => {
+      const trackingImportPredefined: ImportPredefinedTranslations = {
+        execute: jest.fn().mockImplementation(async () => {
           callOrder.push('importPredefined called');
         }),
-      } as unknown as TranslationService;
+      };
 
       await createSut({
         dispatcher: trackingDispatcher,
-        translationService: trackingTranslationService,
+        importPredefinedTranslations: trackingImportPredefined,
       }).execute({ languages: [{ key: 'es', label: 'Spanish' }] });
 
       expect(callOrder).toEqual(['cloneLanguageEntities dispatched', 'importPredefined called']);
