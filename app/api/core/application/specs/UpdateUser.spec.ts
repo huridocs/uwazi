@@ -21,6 +21,7 @@ const buildInput = (username: string, overrides?: Partial<{ role: UserRole }>) =
   username,
   email: `${username}@provider.tld`,
   role: UserRole.EDITOR,
+  assignedGroupIds: [],
   ...overrides,
 });
 

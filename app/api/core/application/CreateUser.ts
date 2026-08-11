@@ -11,7 +11,7 @@ const CreateUserInputSchema = z.object({
   username: z.string().trim(),
   role: z.nativeEnum(UserRole),
   email: z.string().email(),
-  groups: z.array(z.object({ _id: z.string(), name: z.string() })).optional(),
+  assignedGroupIds: z.array(z.string()).default([]),
   password: z.string().optional(),
   domain: z.string(),
 });
@@ -24,7 +24,7 @@ type Deps = { usersDS: UsersDataSource; usergroupsDS: UserGroupsDataSource };
 
 class CreateUser extends AbstractUseCase<Input, Output, Deps> {
   async execute(input: Input): Promise<Output> {
-    const { password, domain, ...userData } = input;
+    const { password, domain, assignedGroupIds, ...userData } = input;
 
     const identityProps = { _id: this.idGenerator.generate(), ...userData };
     const identity = new User(identityProps);
@@ -40,7 +40,7 @@ class CreateUser extends AbstractUseCase<Input, Output, Deps> {
 
     await this.transactionManager.run(async () => {
       await this.deps.usersDS.insert(user);
-      await this.deps.usergroupsDS.updateUserGroups(user);
+      await this.deps.usergroupsDS.assignGroupsToUser(user._id, assignedGroupIds);
       await this.dispatcher.sendWelcomeEmail({
         userId: user._id,
         domain: input.domain,

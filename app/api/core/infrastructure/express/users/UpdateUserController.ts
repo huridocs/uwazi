@@ -11,11 +11,14 @@ class UpdateUserController extends AbstractController<UpdateUserRequest> {
     if (ExecutionContext.tenant.featureFlags?.v2UsersUpdate) {
       const startTime = Date.now();
       try {
-        const input = UpdateUserInputSchema.parse(this.request.body);
+        const parsed = UpdateUserInputSchema.parse({
+          ...this.request.body,
+          assignedGroupIds: this.request.body.groups?.map(g => g._id),
+        });
 
         const useCase = UpdateUserUseCaseFactory.default();
 
-        const user = await useCase.execute(input);
+        const user = await useCase.execute(parsed);
 
         ExecutionContext.logger.info('User updated successfully', {
           namespace: 'Users_Update',
@@ -47,9 +50,7 @@ class UpdateUserController extends AbstractController<UpdateUserRequest> {
         throw error;
       }
     } else {
-      const input = UpdateUserInputSchema.parse(this.request.body);
-
-      const response = await users.save(input, currentUser);
+      const response = await users.save(this.request.body, currentUser);
 
       this.response.json({
         user: {

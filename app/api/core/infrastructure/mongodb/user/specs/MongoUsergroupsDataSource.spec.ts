@@ -1,4 +1,3 @@
-import { User } from '#api/core/domain/user/User.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { IdGeneratorFactory } from '#api/core/infrastructure/factories/IdGeneratorFactory.js';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
@@ -43,19 +42,13 @@ describe('MongoGroupsDataSource', () => {
     await testingEnvironment.tearDown();
   });
 
-  describe('updateUserGroups', () => {
+  describe('assignGroupsToUser', () => {
     it('should add a user to a group', async () => {
       const { ds } = createDs();
 
-      const user = new User({
-        _id: f.id('newuser').toHexString(),
-        username: 'newuser',
-        role: UserRole.COLLABORATOR,
-        email: 'newuser@provider.tld',
-        groups: [{ _id: f.id('Empty').toHexString(), name: 'Empty' }],
-      });
+      const userId = f.id('newuser').toHexString();
 
-      await ds.updateUserGroups(user);
+      await ds.assignGroupsToUser(userId, [f.id('Empty').toHexString()]);
 
       const groups = await testingEnvironment.db.getAllFrom('usergroups');
       const emptyGroup = groups.find(g => g.name === 'Empty');
@@ -66,18 +59,12 @@ describe('MongoGroupsDataSource', () => {
     it('should add a user to multiple groups', async () => {
       const { ds } = createDs();
 
-      const user = new User({
-        _id: f.id('newuser').toHexString(),
-        username: 'newuser',
-        role: UserRole.COLLABORATOR,
-        email: 'newuser@provider.tld',
-        groups: [
-          { _id: f.id('Empty').toHexString(), name: 'Empty' },
-          { _id: f.id('With one member').toHexString(), name: 'With one member' },
-        ],
-      });
+      const userId = f.id('newuser').toHexString();
 
-      await ds.updateUserGroups(user);
+      await ds.assignGroupsToUser(userId, [
+        f.id('Empty').toHexString(),
+        f.id('With one member').toHexString(),
+      ]);
 
       const groups = await testingEnvironment.db.getAllFrom('usergroups');
       const emptyGroup = groups.find(group => group.name === 'Empty');
@@ -93,15 +80,9 @@ describe('MongoGroupsDataSource', () => {
     it('should remove a user if it is no longer in the group', async () => {
       const { ds } = createDs();
 
-      const user = new User({
-        _id: f.id('existing1').toHexString(),
-        username: 'existing1',
-        role: UserRole.ADMIN,
-        email: 'existing1@provider.tld',
-        groups: [],
-      });
+      const userId = f.id('existing1').toHexString();
 
-      await ds.updateUserGroups(user);
+      await ds.assignGroupsToUser(userId, []);
 
       const groups = await testingEnvironment.db.getAllFrom('usergroups');
       const oneMemberGroup = groups.find(group => group.name === 'With one member');
@@ -114,15 +95,9 @@ describe('MongoGroupsDataSource', () => {
     it('should add and remove a user from different groups', async () => {
       const { ds } = createDs();
 
-      const user = new User({
-        _id: f.id('existing1').toHexString(),
-        username: 'existing1',
-        role: UserRole.ADMIN,
-        email: 'existing1@provider.tld',
-        groups: [{ _id: f.id('Empty').toHexString(), name: 'Empty' }],
-      });
+      const userId = f.id('existing1').toHexString();
 
-      await ds.updateUserGroups(user);
+      await ds.assignGroupsToUser(userId, [f.id('Empty').toHexString()]);
 
       const groups = await testingEnvironment.db.getAllFrom('usergroups');
       const emptyGroup = groups.find(group => group.name === 'Empty');
@@ -139,14 +114,9 @@ describe('MongoGroupsDataSource', () => {
     it('return user groups', async () => {
       const { ds } = createDs();
 
-      const user = new User({
-        _id: f.id('existing1').toHexString(),
-        username: 'existing1',
-        role: UserRole.ADMIN,
-        email: 'existing1@provider.tld',
-      });
+      const userId = f.id('existing1').toHexString();
 
-      const foundGroups = await ds.getUserGroups(user);
+      const foundGroups = await ds.getUserGroups(userId);
       expect(foundGroups).toMatchObject([
         {
           _id: f.id('With one member').toHexString(),

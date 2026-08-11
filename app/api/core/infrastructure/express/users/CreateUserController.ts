@@ -11,7 +11,11 @@ class CreateUserController extends AbstractController<CreateUserRequest> {
     if (ExecutionContext.tenant.featureFlags?.v2UsersCreate) {
       const startTime = Date.now();
       try {
-        const input = CreateUserInputSchema.parse({ ...this.request.body, domain });
+        const input = CreateUserInputSchema.parse({
+          ...this.request.body,
+          assignedGroupIds: this.request.body.groups?.map(g => g._id),
+          domain,
+        });
 
         const useCase = CreateUserUseCaseFactory.default();
 

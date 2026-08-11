@@ -2,7 +2,6 @@ import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { testingPG } from '#api/utils/testing_pg.js';
 import { PostgresDB } from '#api/infrastructure/PostgresDB.js';
 import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
-import { User, UserRole } from '#api/core/domain/user/User.js';
 import { IdGeneratorFactory } from '#api/core/infrastructure/factories/IdGeneratorFactory.js';
 import { PostgresTransactionManager } from '../../common/PostgresTransactionManager.js';
 import { PostgresUserGroupsDataSource } from '../PostgresUserGroupsDataSource.js';
@@ -39,15 +38,6 @@ const setGroupFixtures = async () => {
   });
 };
 
-const newUser = (overrides: Partial<ConstructorParameters<typeof User>[0]>) =>
-  new User({
-    _id: 'newuser',
-    username: 'newuser',
-    role: UserRole.COLLABORATOR,
-    email: 'newuser@provider.tld',
-    ...overrides,
-  });
-
 beforeAll(async () => {
   await testingEnvironment.setUp({}, { postgres: true });
 });
@@ -62,12 +52,11 @@ afterAll(async () => {
 });
 
 describe('PostgresUserGroupsDataSource', () => {
-  describe('updateUserGroups', () => {
+  describe('assignGroupsToUser', () => {
     it('should add a user to a group', async () => {
       const ds = makeDS();
 
-      const user = newUser({ _id: 'newuser', groups: [{ _id: 'empty', name: 'Empty' }] });
-      await ds.updateUserGroups(user);
+      await ds.assignGroupsToUser('newuser', ['empty']);
 
       const groups = await testingPG.getAllFrom('usergroups');
       const emptyGroup = groups.find(g => g._id === 'empty');
@@ -78,14 +67,7 @@ describe('PostgresUserGroupsDataSource', () => {
     it('should add a user to multiple groups', async () => {
       const ds = makeDS();
 
-      const user = newUser({
-        _id: 'newuser',
-        groups: [
-          { _id: 'empty', name: 'Empty' },
-          { _id: 'with-one-member', name: 'With one member' },
-        ],
-      });
-      await ds.updateUserGroups(user);
+      await ds.assignGroupsToUser('newuser', ['empty', 'with-one-member']);
 
       const groups = await testingPG.getAllFrom('usergroups');
       const emptyGroup = groups.find(g => g._id === 'empty');
@@ -98,8 +80,7 @@ describe('PostgresUserGroupsDataSource', () => {
     it('should remove a user if it is no longer in the group', async () => {
       const ds = makeDS();
 
-      const user = newUser({ _id: 'existing1', groups: [] });
-      await ds.updateUserGroups(user);
+      await ds.assignGroupsToUser('existing1', []);
 
       const groups = await testingPG.getAllFrom('usergroups');
       const oneMemberGroup = groups.find(g => g._id === 'with-one-member');
@@ -112,8 +93,7 @@ describe('PostgresUserGroupsDataSource', () => {
     it('should add and remove a user from different groups', async () => {
       const ds = makeDS();
 
-      const user = newUser({ _id: 'existing1', groups: [{ _id: 'empty', name: 'Empty' }] });
-      await ds.updateUserGroups(user);
+      await ds.assignGroupsToUser('existing1', ['empty']);
 
       const groups = await testingPG.getAllFrom('usergroups');
       const emptyGroup = groups.find(g => g._id === 'empty');
@@ -130,8 +110,7 @@ describe('PostgresUserGroupsDataSource', () => {
     it('return user groups', async () => {
       const ds = makeDS();
 
-      const user = newUser({ _id: 'existing1' });
-      const foundGroups = await ds.getUserGroups(user);
+      const foundGroups = await ds.getUserGroups('existing1');
 
       expect(foundGroups).toMatchObject([
         { _id: 'with-one-member', name: 'With one member' },

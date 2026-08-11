@@ -8,24 +8,17 @@ enum UserRole {
   COLLABORATOR = 'collaborator',
 }
 
-type UserGroup = {
-  _id: string;
-  name: string;
-};
-
 type UserProps = {
   _id: string;
   username: string;
   role: UserRole;
   email: string;
-  groups?: UserGroup[];
 };
 
 type UserProfile = {
   username: string;
   role: UserRole;
   email: string;
-  groups?: UserGroup[];
 };
 
 class User {
@@ -37,23 +30,19 @@ class User {
 
   email: string;
 
-  groups: UserGroup[];
-
   constructor(props: UserProps) {
     this._id = props._id;
     this.username = props.username;
     this.role = props.role;
     this.email = props.email;
-    this.groups = props.groups ?? [];
   }
 
   updateProfile(profile: UserProfile): void {
     this.username = profile.username;
     this.role = profile.role;
     this.email = profile.email;
-    this.groups = profile.groups ?? [];
   }
 }
 
 export { User, UserRole, PUBLIC_USER_ID };
-export type { UserProps, UserGroup, UserProfile };
+export type { UserProps, UserProfile };

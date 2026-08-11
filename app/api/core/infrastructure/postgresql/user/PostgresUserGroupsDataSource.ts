@@ -1,4 +1,3 @@
-import { User } from '#api/core/domain/user/User.js';
 import { UserGroup } from '#api/core/domain/userGroup/UserGroup.js';
 import { UserGroupNameExists } from '#api/core/domain/userGroup/errors.js';
 import { IdGenerator } from '#api/core/application/contracts/IdGenerator.js';
@@ -28,9 +27,8 @@ class PostgresUserGroupsDataSource
     this.idGenerator = deps.idGenerator;
   }
 
-  async updateUserGroups(user: User): Promise<void> {
-    const targetGroupIds = user.groups.map(group => group._id);
-
+  async assignGroupsToUser(userId: string, groupIds: string[]): Promise<void> {
+    const targetGroupIds = groupIds;
     if (targetGroupIds.length > 0) {
       await this.table.raw(
         `UPDATE ?? SET members = (
@@ -38,7 +36,7 @@ class PostgresUserGroupsDataSource
            FROM jsonb_array_elements_text(members || to_jsonb(?::text)) v
          )
          WHERE "_id" IN (${placeholders(targetGroupIds)})`,
-        [this.table.tableName, user._id, ...targetGroupIds]
+        [this.table.tableName, userId, ...targetGroupIds]
       );
     }
 
@@ -53,7 +51,7 @@ class PostgresUserGroupsDataSource
          WHERE v != ?
        )
        ${excludeTargets} AND members @> to_jsonb(?::text)`,
-      [this.table.tableName, user._id, ...targetGroupIds, user._id]
+      [this.table.tableName, userId, ...targetGroupIds, userId]
     );
   }
 
@@ -70,8 +68,8 @@ class PostgresUserGroupsDataSource
     );
   }
 
-  async getUserGroups(user: User): Promise<User['groups']> {
-    const rows = await this.table.whereRaw('members @> to_jsonb(?::text)', [user._id]).all();
+  async getUserGroups(userId: string): Promise<{ _id: string; name: string }[]> {
+    const rows = await this.table.whereRaw('members @> to_jsonb(?::text)', [userId]).all();
     return rows.map(row => ({ _id: row._id, name: row.name }));
   }
 

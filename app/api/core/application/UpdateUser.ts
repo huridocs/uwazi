@@ -12,6 +12,7 @@ const UpdateUserInputSchema = z.object({
   username: z.string().trim(),
   role: z.nativeEnum(UserRole),
   email: z.string().email(),
+  assignedGroupIds: z.array(z.string()).default([]),
   groups: z.array(z.object({ _id: z.string(), name: z.string() })).optional(),
   password: z.string().optional(),
 });
@@ -24,7 +25,7 @@ type Deps = { usersDS: UsersDataSource; usergroupsDS: UserGroupsDataSource };
 
 class UpdateUser extends AbstractUseCase<Input, Output, Deps> {
   async execute(input: Input): Promise<Output> {
-    const { password, ...profile } = input;
+    const { password, assignedGroupIds, ...profile } = input;
 
     if (profile._id === PUBLIC_USER_ID.toString()) {
       throw new UpdateUserError('Cannot modify system user');
@@ -62,7 +63,7 @@ class UpdateUser extends AbstractUseCase<Input, Output, Deps> {
 
     await this.transactionManager.run(async () => {
       await this.deps.usersDS.update(user);
-      await this.deps.usergroupsDS.updateUserGroups(user);
+      await this.deps.usergroupsDS.assignGroupsToUser(user._id, assignedGroupIds);
     });
 
     return user;

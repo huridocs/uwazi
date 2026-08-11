@@ -1,4 +1,4 @@
-import { User, UserRole } from '#api/core/domain/user/User.js';
+import { UserRole } from '#api/core/domain/user/User.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { testingTenants } from '#api/utils/testingTenants.js';
@@ -95,39 +95,30 @@ describe('UserGroupsDataSource consistency', () => {
     const groupId = (name: string) => (usePostgres ? f.idString(name) : f.id(name).toHexString());
     const userId = (key: string) => (usePostgres ? f.idString(key) : f.id(key).toHexString());
 
-    const makeUser = (id: string, groups: { _id: string; name: string }[] = []) =>
-      new User({
-        _id: id,
-        username: 'test',
-        role: UserRole.COLLABORATOR,
-        email: 'test@provider.tld',
-        groups,
-      });
-
-    describe('updateUserGroups / getUserGroups', () => {
+    describe('assignGroupsToUser / getUserGroups', () => {
       it('should add a user to a group', async () => {
         const ds = getDS();
         const newUserId = usePostgres ? 'new-user' : f.id('newuser').toHexString();
 
-        await ds.updateUserGroups(makeUser(newUserId, [{ _id: groupId('Empty'), name: 'Empty' }]));
+        await ds.assignGroupsToUser(newUserId, [groupId('Empty')]);
 
-        const foundGroups = await ds.getUserGroups(makeUser(newUserId));
+        const foundGroups = await ds.getUserGroups(newUserId);
         expect(foundGroups.map(g => g.name)).toEqual(['Empty']);
       });
 
       it('should remove a user if it is no longer in the group', async () => {
         const ds = getDS();
 
-        await ds.updateUserGroups(makeUser(userId('existing1'), []));
+        await ds.assignGroupsToUser(userId('existing1'), []);
 
-        const remainingGroups = await ds.getUserGroups(makeUser(userId('existing1')));
+        const remainingGroups = await ds.getUserGroups(userId('existing1'));
         expect(remainingGroups).toEqual([]);
       });
 
       it('should return the groups a user belongs to', async () => {
         const ds = getDS();
 
-        const foundGroups = await ds.getUserGroups(makeUser(userId('existing1')));
+        const foundGroups = await ds.getUserGroups(userId('existing1'));
 
         expect(foundGroups.map(g => g.name).sort()).toEqual(
           ['With one member', 'With two members'].sort()
@@ -141,7 +132,7 @@ describe('UserGroupsDataSource consistency', () => {
 
         await ds.removeUsersFromGroups([userId('existing1')]);
 
-        const remainingGroups = await ds.getUserGroups(makeUser(userId('existing1')));
+        const remainingGroups = await ds.getUserGroups(userId('existing1'));
         expect(remainingGroups).toEqual([]);
       });
     });

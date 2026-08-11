@@ -5,7 +5,6 @@ import {
 } from '#api/core/infrastructure/mongodb/common/MongoDataSource.js';
 import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
 import { IdGenerator } from '#api/core/application/contracts/IdGenerator.js';
-import { User } from '#api/core/domain/user/User.js';
 import { UserGroup } from '#api/core/domain/userGroup/UserGroup.js';
 import { UserGroupNameExists } from '#api/core/domain/userGroup/errors.js';
 import { Result, ResultType } from '#api/core/libs/Result.js';
@@ -34,30 +33,30 @@ class MongoUserGroupsDataSource
     this.idGenerator = idGenerator;
   }
 
-  async getUserGroups(user: User): Promise<User['groups']> {
+  async getUserGroups(userId: string): Promise<{ _id: string; name: string }[]> {
     const collection = this.getCollection();
-    const groupDocuments = await collection.find({ 'members.refId': user._id }).toArray();
+    const groupDocuments = await collection.find({ 'members.refId': userId }).toArray();
     return groupDocuments.map(group => ({
       _id: group._id.toString(),
       name: group.name,
     }));
   }
 
-  async updateUserGroups(user: User): Promise<void> {
-    const targetGroupIds = user.groups.map(group => ObjectId.createFromHexString(group._id));
+  async assignGroupsToUser(userId: string, groupIds: string[]): Promise<void> {
+    const targetGroupIds = groupIds.map(id => ObjectId.createFromHexString(id));
 
     const collection = this.getCollection();
 
     if (targetGroupIds.length > 0) {
       await collection.updateMany(
         { _id: { $in: targetGroupIds } },
-        { $addToSet: { members: { refId: user._id } } }
+        { $addToSet: { members: { refId: userId } } }
       );
     }
 
     await collection.updateMany(
-      { _id: { $nin: targetGroupIds }, 'members.refId': user._id },
-      { $pull: { members: { refId: user._id } } }
+      { _id: { $nin: targetGroupIds }, 'members.refId': userId },
+      { $pull: { members: { refId: userId } } }
     );
   }
 

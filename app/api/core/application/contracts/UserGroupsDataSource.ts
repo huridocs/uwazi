@@ -1,4 +1,3 @@
-import { User } from '#api/core/domain/user/User.js';
 import { UserGroup } from '#api/core/domain/userGroup/UserGroup.js';
 import { UserGroupNameExists } from '#api/core/domain/userGroup/errors.js';
 import { ResultType } from '#api/core/libs/Result.js';
@@ -7,8 +6,8 @@ type CreateUserGroupParams = { name: string; memberIds: string[] };
 type UpdateUserGroupParams = { id: string; name: string; memberIds: string[] };
 
 interface UserGroupsDataSource {
-  updateUserGroups(user: User): Promise<void>;
-  getUserGroups(user: User): Promise<User['groups']>;
+  assignGroupsToUser(userId: string, groupIds: string[]): Promise<void>;
+  getUserGroups(userId: string): Promise<{ _id: string; name: string }[]>;
   removeUsersFromGroups(userIds: string[]): Promise<void>;
   create(params: CreateUserGroupParams): Promise<UserGroup>;
   update(params: UpdateUserGroupParams): Promise<UserGroup>;
