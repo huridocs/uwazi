@@ -277,8 +277,9 @@ All writers must stop calling `#api/i18n/translations` and use core ports/use ca
 - [x] Thin GET query service + legacy locale DTO mapper (`TranslationsQueryService`)
 - [x] Core express routes for `/api/translations*` and `/api/v2/translations` (`api.js` → core `translationsRoutes`); GETs via QueryService; mutations still delegate façade for thesaurus/CSV side effects
 - [x] Migrate Templates / RelationshipTypes / Thesaurus / language factories onto core DS/use cases; Legacy\* no longer call façade for context CRUD
-- [x] Peel internal reads off `getLegacy` (csvExporter / denormalize / search / SaveTranslationEntriesService → by-item QueryService lookups)
-- [x] Peel mammoth `save` / `updateEntries` onto core services (`SaveLocaleTranslationsService`, `UpdateEntriesByContextService`)
+- [x] Peel internal reads off `getLegacy` (csvExporter / denormalize / search / SaveTranslationEntries → by-item QueryService lookups)
+- [x] Peel mammoth `save` / `updateEntries` onto core orchestrator UseCases (`SaveLocaleTranslations`, `UpdateEntriesByContext`)
+- [x] TX ownership = Entities model: UseCases own `transactionManager.run()`; `TranslationsService` is ambient-TX / TX-free (no nested UCs, no `runInTransaction`)
 - [ ] Remove runtime `#api/i18n` façade as module home (still `importPredefined` / `availableLanguages` / thin wrappers + populate route)
 - [x] Parity tests for façade + RT/thesaurus/language + core DS/domain; expand syncWorker smoke as routes move
 - [ ] Document Phase 1b FE checklist; open `translations-postgres.md` when starting Postgres
@@ -290,12 +291,13 @@ All writers must stop calling `#api/i18n/translations` and use core ports/use ca
 - Domain/models/errors live in `app/api/core/domain/translation`
 - Contract: `app/api/core/application/contracts/TranslationsDataSource.ts`
 - Mongo DS/cache/sync + mappers under `app/api/core/infrastructure/mongodb/translation`
-- Factories: `TranslationsDataSourceFactory`, mutation use-case factories, `TranslationsQueryServiceFactory`, `PropagateThesaurusTranslationServiceFactory`, `SaveTranslationEntriesServiceFactory`, `SaveLocaleTranslationsServiceFactory`, `UpdateEntriesByContextServiceFactory`
-- Use cases: `Create/Update/DeleteTranslationContext`, `Create/UpdateTranslationEntries`, `DeleteTranslationsByLanguage`
-- Application services: `PropagateThesaurusTranslationService`, `SaveTranslationEntriesService` (by-item), `SaveLocaleTranslationsService` (mammoth locale DTO save + propagate), `UpdateEntriesByContextService`
-- Transaction boundaries (translations only): orchestrators own one `transactionManager.run()` for grouped writes; mutation UCs use `runInTransaction` (join ambient TX or start one). Factories share one TM across DS + create/update UCs via `translationMutationWiring`. Thesaurus entity propagate runs **after** successful commit (outside TX).
+- Factories: `TranslationsDataSourceFactory`, `TranslationsServiceFactory`, mutation + orchestrator UseCase factories, `TranslationsQueryServiceFactory`, `PropagateThesaurusTranslationServiceFactory`
+- Use cases (own `TM.run`): `SaveLocaleTranslations`, `SaveTranslationEntries`, `UpdateEntriesByContext`, `Create/Update/DeleteTranslationContext`, `Create/UpdateTranslationEntries`, `DeleteTranslationsByLanguage`
+- Application services: `TranslationsService` (write API, `ensureTransaction`), `TranslationsQueryService` (reads), `ValidateTranslationsService`, `PropagateThesaurusTranslationService` (post-commit)
+- Transaction boundaries: UseCases open one `transactionManager.run()` then call `TranslationsService`; no UC→UC nesting; thesaurus entity propagate runs **after** successful commit (outside TX)
+- Tests: unit `TranslationsService.spec` (ambient TX + partition/prepare); integration `SaveLocaleTranslations` / `SaveTranslationEntries` / `UpdateEntriesByContext` UseCase specs (+ existing context UC + façade/routes)
 - QueryService by-item lookups: `getContextValueMap`, `getLanguageValueMaps`; `getLegacy` / `LegacyTranslationDtoMapper` only at mammoth delivery edges
-- Express: GET → QueryService; `SaveTranslationEntriesController` → by-item save service; `SaveTranslationsController` → `SaveLocaleTranslationsServiceFactory` + indexed GET for `translationsChange`
+- Express: GET → QueryService; Save* controllers → orchestrator UseCase factories; indexed GET for `translationsChange`
 - Thesaurus metadata rename: `ThesaurusMetadataRenamerAdapter` → `denormalizeThesauriLabelInMetadata`
 - `app/api/i18n.v2/` removed; `i18n/routes` deleted (specs import core `translationsRoutes`)
 - Façade `translations.ts` is thin: `save`/`updateEntries`/`v2StructureSave`/`addContext`/`updateContext` delegate to core factories; still owns `importPredefined` (FS+CSV) and `availableLanguages`
@@ -308,7 +310,7 @@ All writers must stop calling `#api/i18n/translations` and use core ports/use ca
 - [x] `/api/v2/translations` served by core controllers
 - [x] GETs use QueryService/DAO (no Get*UseCase)
 - [x] Mutations use Create/Update/Delete use cases — no application Upsert use case
-- [x] Internal non-delivery callers do not use `getLegacy` (csvExporter / denormalize / search / SaveTranslationEntriesService)
+- [x] Internal non-delivery callers do not use `getLegacy` (csvExporter / denormalize / search / SaveTranslationEntries)
 - [x] CSV / SaveTranslationsController / PendingThesauriValuesApplier do not call façade `save`/`updateEntries` (use core factories)
 - [ ] No runtime imports of `#api/i18n/translations` from domain callers (`importPredefined` / `availableLanguages` / populate remain)
 - [x] LegacyTemplatesTranslationService / LegacyRelationshipTypesTranslationService call core use cases (not façade context CRUD)

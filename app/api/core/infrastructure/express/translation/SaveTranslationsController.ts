@@ -1,12 +1,12 @@
 import { AbstractController } from '#api/common.v2/infrastructure/AbstractController.js';
-import { SaveLocaleTranslationsServiceFactory } from '#api/core/infrastructure/factories/SaveLocaleTranslationsServiceFactory.js';
+import { SaveLocaleTranslationsUseCaseFactory } from '#api/core/infrastructure/factories/SaveLocaleTranslationsUseCaseFactory.js';
 import { TranslationsQueryServiceFactory } from '#api/core/infrastructure/factories/TranslationsQueryServiceFactory.js';
 import { toIndexedTranslations } from './LegacyTranslationDtoMapper.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 
 class SaveTranslationsController extends AbstractController {
   protected async handle(): Promise<void> {
-    const { locale } = await SaveLocaleTranslationsServiceFactory.default().execute(
+    const { locale } = await SaveLocaleTranslationsUseCaseFactory.default().execute(
       this.request.body
     );
     const [response] = toIndexedTranslations(

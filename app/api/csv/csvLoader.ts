@@ -1,6 +1,6 @@
 import { TranslationsQueryServiceFactory } from '#api/core/infrastructure/factories/TranslationsQueryServiceFactory.js';
-import { SaveLocaleTranslationsServiceFactory } from '#api/core/infrastructure/factories/SaveLocaleTranslationsServiceFactory.js';
-import { UpdateEntriesByContextServiceFactory } from '#api/core/infrastructure/factories/UpdateEntriesByContextServiceFactory.js';
+import { SaveLocaleTranslationsUseCaseFactory } from '#api/core/infrastructure/factories/SaveLocaleTranslationsUseCaseFactory.js';
+import { UpdateEntriesByContextUseCaseFactory } from '#api/core/infrastructure/factories/UpdateEntriesByContextUseCaseFactory.js';
 import {
   IndexedTranslations,
   toIndexedTranslations,
@@ -51,10 +51,10 @@ export class CSVLoader {
     const theaurusToSave = thesauri.appendValues(currentThesauri, thesaurusValues);
     const saved = await thesauri.save(theaurusToSave);
 
-    await UpdateEntriesByContextServiceFactory.default().execute(
-      thesaurusId.toString(),
-      thesauriTranslations
-    );
+    await UpdateEntriesByContextUseCaseFactory.default().execute({
+      contextId: thesaurusId.toString(),
+      keyValuePairsPerLanguage: thesauriTranslations,
+    });
 
     return saved;
   }
@@ -100,7 +100,7 @@ export class CSVLoader {
           });
         }
 
-        return SaveLocaleTranslationsServiceFactory.default().execute(dbTranslations);
+        return SaveLocaleTranslationsUseCaseFactory.default().execute(dbTranslations);
       },
       Promise.resolve({} as TranslationType)
     );

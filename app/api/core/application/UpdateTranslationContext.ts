@@ -1,8 +1,6 @@
 import { AbstractUseCase } from '../libs/UseCase.js';
-import { runInTransaction } from '../libs/runInTransaction.js';
-import { TranslationsDataSource } from './contracts/TranslationsDataSource.js';
 import { TranslationContext } from '../domain/translation/Translation.js';
-import { SettingsDataSource } from './contracts/SettingsDataSource.js';
+import { TranslationsService } from './translation/TranslationsService.js';
 
 type Input = {
   context: TranslationContext;
@@ -14,23 +12,18 @@ type Input = {
 type Output = void;
 
 type Deps = {
-  translationsDS: TranslationsDataSource;
-  settingsDS: SettingsDataSource;
+  translationsService: TranslationsService;
 };
 
 class UpdateTranslationContextUseCase extends AbstractUseCase<Input, Output, Deps> {
   async execute({ context, keyChanges, keysToDelete, valueChanges }: Input): Promise<Output> {
-    const languages = await this.deps.settingsDS.getLanguageKeys();
-    const defaultLanguage = await this.deps.settingsDS.getDefaultLanguageKey();
-
-    await runInTransaction(this.transactionManager, async () => {
-      const translationContext = await this.deps.translationsDS.getContext(
+    await this.transactionManager.run(async () => {
+      await this.deps.translationsService.updateContext({
         context,
-        languages,
-        defaultLanguage
-      );
-      translationContext.applyChanges(keyChanges, valueChanges, keysToDelete);
-      await this.deps.translationsDS.updateContext(translationContext);
+        keyChanges,
+        keysToDelete,
+        valueChanges,
+      });
     });
   }
 }

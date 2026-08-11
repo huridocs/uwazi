@@ -7,9 +7,9 @@ import { pipeline } from 'stream/promises';
 import { CSVLoader } from '#api/csv/index.js';
 import { generateFileName } from '#api/files/index.js';
 import { CreateTranslationContextUseCaseFactory } from '#api/core/infrastructure/factories/CreateTranslationContextUseCaseFactory.js';
-import { SaveLocaleTranslationsServiceFactory } from '#api/core/infrastructure/factories/SaveLocaleTranslationsServiceFactory.js';
-import { SaveTranslationEntriesServiceFactory } from '#api/core/infrastructure/factories/SaveTranslationEntriesServiceFactory.js';
-import { UpdateEntriesByContextServiceFactory } from '#api/core/infrastructure/factories/UpdateEntriesByContextServiceFactory.js';
+import { SaveLocaleTranslationsUseCaseFactory } from '#api/core/infrastructure/factories/SaveLocaleTranslationsUseCaseFactory.js';
+import { SaveTranslationEntriesUseCaseFactory } from '#api/core/infrastructure/factories/SaveTranslationEntriesUseCaseFactory.js';
+import { UpdateEntriesByContextUseCaseFactory } from '#api/core/infrastructure/factories/UpdateEntriesByContextUseCaseFactory.js';
 import {
   IndexedContextValues,
   IndexedTranslations,
@@ -55,11 +55,13 @@ export default {
   },
 
   async save(translation: TranslationType | IndexedTranslations) {
-    return SaveLocaleTranslationsServiceFactory.default().execute(translation);
+    return SaveLocaleTranslationsUseCaseFactory.default().execute(translation);
   },
 
   async v2StructureSave(translationsToSave: TranslationSyO[]) {
-    await SaveTranslationEntriesServiceFactory.default().execute(translationsToSave);
+    await SaveTranslationEntriesUseCaseFactory.default().execute({
+      translations: translationsToSave,
+    });
   },
 
   async updateEntries(
@@ -68,10 +70,10 @@ export default {
       [x: string]: { [k: string]: string };
     }
   ) {
-    return UpdateEntriesByContextServiceFactory.default().execute(
+    return UpdateEntriesByContextUseCaseFactory.default().execute({
       contextId,
-      keyValuePairsPerLanguage
-    );
+      keyValuePairsPerLanguage,
+    });
   },
 
   async addContext(

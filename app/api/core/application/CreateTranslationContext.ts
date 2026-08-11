@@ -1,8 +1,6 @@
 import { AbstractUseCase } from '../libs/UseCase.js';
-import { runInTransaction } from '../libs/runInTransaction.js';
-import { TranslationsDataSource } from './contracts/TranslationsDataSource.js';
-import { Translation, TranslationContext } from '../domain/translation/Translation.js';
-import { SettingsDataSource } from './contracts/SettingsDataSource.js';
+import { TranslationContext } from '../domain/translation/Translation.js';
+import { TranslationsService } from './translation/TranslationsService.js';
 
 type Input = {
   context: TranslationContext;
@@ -12,23 +10,13 @@ type Input = {
 type Output = void;
 
 type Deps = {
-  translationsDS: TranslationsDataSource;
-  settingsDS: SettingsDataSource;
+  translationsService: TranslationsService;
 };
 
 class CreateTranslationContextUseCase extends AbstractUseCase<Input, Output, Deps> {
   async execute({ context, values }: Input): Promise<Output> {
-    const languages = await this.deps.settingsDS.getLanguageKeys();
-    const entries: Translation[] = [];
-
-    languages.forEach(language => {
-      Object.entries(values).forEach(([key, value]) => {
-        entries.push(new Translation(key, value, language, context));
-      });
-    });
-
-    await runInTransaction(this.transactionManager, async () => {
-      await this.deps.translationsDS.insert(entries);
+    await this.transactionManager.run(async () => {
+      await this.deps.translationsService.createContext(context, values);
     });
   }
 }
