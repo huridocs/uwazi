@@ -117,8 +117,43 @@ export function publicSubmit(data, remote = false) {
     });
 }
 
-export function updateMainDocument(docId, file) {
-  return async dispatch => dispatch({ type: types.UPDATE_MAIN_DOC, doc: docId, file });
+const toPlain = value => (value && typeof value.toJS === 'function' ? value.toJS() : value);
+
+const entitiesForSharedId = (state, sharedId) =>
+  [
+    state.library?.ui?.getIn?.(['selectedDocuments', 0]),
+    state.entityView?.entity,
+    state.documentViewer?.doc,
+  ]
+    .map(toPlain)
+    .filter(entity => entity?.sharedId === sharedId);
+
+export function updateMainDocument(sharedId, prefetchedDoc) {
+  return async (dispatch, getState) => {
+    const matched = entitiesForSharedId(getState(), sharedId);
+    if (!matched.length) {
+      return;
+    }
+
+    const storeStatusById = new Map();
+    matched.forEach(entity => {
+      (entity.documents || []).forEach(file => {
+        if (file?._id) {
+          storeStatusById.set(file._id, file.status);
+        }
+      });
+    });
+
+    const doc = prefetchedDoc || (await EntitiesApi.get(new RequestParams({ sharedId })))[0];
+    (doc?.documents || []).forEach(file => {
+      if (!file?._id || !storeStatusById.has(file._id)) {
+        return;
+      }
+      if (storeStatusById.get(file._id) !== file.status) {
+        dispatch({ type: types.UPDATE_MAIN_DOC, doc: sharedId, file });
+      }
+    });
+  };
 }
 
 export function uploadDocument(docId, file) {
@@ -158,20 +193,18 @@ export function uploadAndCreate(files, onProgress, onFileComplete) {
 }
 
 export function documentProcessed(sharedId, __reducerKey) {
-  return dispatch => {
-    EntitiesApi.get(new RequestParams({ sharedId })).then(([doc]) => {
-      dispatch({ type: types.UPLOAD_PROGRESS, doc: sharedId, progress: 100 });
-      dispatch({ type: libraryTypes.UPDATE_DOCUMENT, doc, __reducerKey });
-      dispatch({ type: libraryTypes.UNSELECT_ALL_DOCUMENTS, __reducerKey });
-      dispatch({ type: libraryTypes.SELECT_DOCUMENT, doc, __reducerKey });
-      dispatch({
-        type: types.UPLOADS_COMPLETE,
-        doc: sharedId,
-        files: doc.documents,
-        __reducerKey: 'library',
-      });
-      dispatch({ type: types.BATCH_UPLOAD_COMPLETE, doc: sharedId });
+  return async dispatch => {
+    const [doc] = await EntitiesApi.get(new RequestParams({ sharedId }));
+    dispatch({ type: types.UPLOAD_PROGRESS, doc: sharedId, progress: 100 });
+    dispatch({ type: libraryTypes.UPDATE_DOCUMENT, doc, __reducerKey });
+    dispatch({
+      type: types.UPLOADS_COMPLETE,
+      doc: sharedId,
+      files: doc.documents,
+      __reducerKey: 'library',
     });
+    dispatch({ type: types.BATCH_UPLOAD_COMPLETE, doc: sharedId });
+    await dispatch(updateMainDocument(sharedId, doc));
   };
 }
 

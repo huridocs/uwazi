@@ -3,6 +3,7 @@ import type { UserSchema } from '#shared/types/userType.js';
 import { httpServices } from '../http/index.js';
 import type { V2Services } from '../types.js';
 import { createServerRelationshipTypesService } from './ServerRelationshipTypesService.js';
+import { createServerTemplatesService } from './ServerTemplatesService.js';
 import { createServerThesaurusService } from './ServerThesaurusService.js';
 import { createServerUserGroupsService } from './ServerUserGroupsService.js';
 import { createServerUsersService } from './ServerUsersService.js';
@@ -21,6 +22,7 @@ const createServerServices = (req: ExpressRequest): V2Services => {
   return {
     ...httpServices,
     thesauri: createServerThesaurusService(ctx),
+    templates: createServerTemplatesService(ctx),
     users: createServerUsersService(ctx),
     userGroups: createServerUserGroupsService(ctx),
     relationshipTypes: createServerRelationshipTypesService(ctx),

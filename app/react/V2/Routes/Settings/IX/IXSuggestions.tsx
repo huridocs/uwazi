@@ -19,7 +19,8 @@ import { SettingsContent } from '#V2/Components/Layouts/SettingsContent.js';
 import { Button, PaginationState, Paginator, Table } from '#V2/Components/UI/index.js';
 import { t, Translate } from '#app/I18N/index.js';
 import { ClientPropertySchema } from '#app/istore.js';
-import { handleUnexpectedError } from '#app/V2/shared/errorUtils.js';
+import { ClientTemplateSchema } from '#V2/shared/types.js';
+import { apiErrorToRequestError, handleUnexpectedError } from '#app/V2/shared/errorUtils.js';
 import { SuggestionsTitle } from './components/SuggestionsTitle.js';
 import { FiltersSidepanel } from './components/FiltersSidepanel.js';
 import { suggestionsTableColumnsBuilder } from './components/TableElements.js';
@@ -523,7 +524,8 @@ const IXSuggestionsLoader =
     const extractors = await extractorsAPI.getById(extractorId, headers);
     const aggregation = await suggestionsAPI.aggregation(extractorId, headers);
     const currentStatus = await suggestionsAPI.status(extractorId, headers);
-    const templates = await templatesAPI.get(headers);
+    const [templates, templatesError] = await templatesAPI.getAll(headers);
+    if (templatesError) throw apiErrorToRequestError(templatesError);
 
     const template = templates.find(temp => extractors[0].templates.includes(temp._id));
     const property =
@@ -538,11 +540,14 @@ const IXSuggestionsLoader =
       extractorSource: extractors[0].source,
     }));
 
+    // TemplatesService contract is structurally compatible for IX loader usage.
+    const clientTemplates = templates as ClientTemplateSchema[];
+
     if (property?.type === 'relationship') {
       const { allCurrentValueIds, targetProperty, allSuggestedValueIds } = getRelationshipInfo(
         suggestions,
         property,
-        templates
+        clientTemplates
       );
       extractors[0].inheritedProperty = targetProperty;
       const entityCurrentValuesMap = !isEmpty(allCurrentValueIds)
@@ -563,7 +568,7 @@ const IXSuggestionsLoader =
       suggestions,
       totalPages: suggestionsList.totalPages,
       extractor: extractors[0],
-      templates,
+      templates: clientTemplates,
       aggregation,
       currentStatus: currentStatus.status,
       activeFilters,

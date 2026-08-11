@@ -35,14 +35,18 @@ describe('V2 services infrastructure', () => {
   it('createTestServices merges partial overrides with defaults', () => {
     const upsertMock = jest.fn();
     const getAllMock = jest.fn();
+    const templatesGetAllMock = jest.fn();
     const testServices = createTestServices({
       entities: { upsert: upsertMock },
       thesauri: { getAll: getAllMock },
+      templates: { getAll: templatesGetAllMock },
     });
 
     expect(testServices.entities.upsert).toBe(upsertMock);
     expect(testServices.thesauri.getAll).toBe(getAllMock);
+    expect(testServices.templates.getAll).toBe(templatesGetAllMock);
     expect(typeof testServices.thesauri.upsert).toBe('function');
+    expect(typeof testServices.templates.upsert).toBe('function');
     expect(typeof testServices.users.getAll).toBe('function');
   });
 
