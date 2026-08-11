@@ -13,7 +13,6 @@ const UpdateUserInputSchema = z.object({
   role: z.nativeEnum(UserRole),
   email: z.string().email(),
   assignedGroupIds: z.array(z.string()).default([]),
-  groups: z.array(z.object({ _id: z.string(), name: z.string() })).optional(),
   password: z.string().optional(),
 });
 

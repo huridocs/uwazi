@@ -27,8 +27,7 @@ class MongoUsersQueryService extends MongoDataSource<UserDBO> {
       {
         $match: {
           ...query,
-          ...this.dao.notPublicUserFilter(),
-          ...this.dao.notDeletedFilter(),
+          ...this.dao.getGuards(),
         },
       },
       {
