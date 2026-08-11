@@ -1,7 +1,7 @@
 /* eslint-disable max-statements */
 import React, { useMemo, useState } from 'react';
 import { IncomingHttpHeaders } from 'http';
-import { LoaderFunction, useLoaderData, useNavigate, useParams } from 'react-router';
+import { LoaderFunction, useLoaderData, useRevalidator } from 'react-router';
 import { useForm } from 'react-hook-form';
 import { useAtomValue } from 'jotai';
 import { Translate, t } from '#app/I18N/index.js';
@@ -22,10 +22,8 @@ import {
 } from './components/SyncWarnings.js';
 import type { SyncConfigForm, SyncConfigPublic, SyncTemplateConfig } from './types.js';
 
-type SyncEditorLoaderData = {
-  configs: SyncConfigPublic[];
-  editing?: SyncConfigPublic;
-  isNew: boolean;
+type SyncSettingsLoaderData = {
+  config?: SyncConfigPublic;
 };
 
 type SyncFormValues = {
@@ -41,34 +39,24 @@ const emptyTemplateConfig = (): SyncTemplateConfig => ({
   attachments: false,
 });
 
-const syncEditorLoader =
+const syncSettingsLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
-  async ({ params }) => {
+  async () => {
     const [configs, error] = await SyncAPI.getSync(headers);
     if (error) throw apiErrorToRequestError(error);
-    const all = configs || [];
-    const isNew = !params.name;
-    const editing = isNew
-      ? undefined
-      : all.find(config => config.name === decodeURIComponent(params.name || ''));
-
-    if (!isNew && !editing) {
-      throw new Response('Sync target not found', { status: 404 });
-    }
-
-    return { configs: all, editing, isNew };
+    return { config: (configs || [])[0] };
   };
 
-const SyncEditor = () => {
-  const { configs, editing, isNew } = useLoaderData() as SyncEditorLoaderData;
-  const navigate = useNavigate();
-  const params = useParams();
+const SyncSettings = () => {
+  const { config } = useLoaderData() as SyncSettingsLoaderData;
+  const revalidator = useRevalidator();
   const { notify } = useRequestStatus();
   const templates = useAtomValue(templatesAtom);
   const relationshipTypes = useAtomValue(relationshipTypesAtom);
+  const isExisting = Boolean(config);
 
   const [templateConfig, setTemplateConfig] = useState<Record<string, SyncTemplateConfig>>(() => {
-    const initial = editing?.config.templates || {};
+    const initial = config?.config.templates || {};
     return Object.fromEntries(
       Object.entries(initial)
         .filter((entry): entry is [string, SyncTemplateConfig] => Boolean(entry[1]))
@@ -79,10 +67,10 @@ const SyncEditor = () => {
     );
   });
   const [selectedTemplateIds, setSelectedTemplateIds] = useState<string[]>(() =>
-    Object.keys(editing?.config.templates || {})
+    Object.keys(config?.config.templates || {})
   );
   const [relationtypes, setRelationtypes] = useState<string[]>(
-    () => editing?.config.relationtypes || []
+    () => config?.config.relationtypes || []
   );
   const [pendingRemovalIds, setPendingRemovalIds] = useState<string[] | null>(null);
   const [pendingNextTemplateIds, setPendingNextTemplateIds] = useState<string[] | null>(null);
@@ -98,11 +86,11 @@ const SyncEditor = () => {
     formState: { errors },
   } = useForm<SyncFormValues>({
     defaultValues: {
-      name: editing?.name || '',
-      url: editing?.url || '',
+      name: config?.name || '',
+      url: config?.url || '',
       username: '',
       password: '',
-      active: editing?.active ?? false,
+      active: config?.active ?? false,
     },
     mode: 'onSubmit',
   });
@@ -190,27 +178,17 @@ const SyncEditor = () => {
     return payload;
   };
 
-  const saveConfigs = async (values: SyncFormValues) => {
-    if (isNew && (!values.username.trim() || !values.password)) {
+  const saveConfig = async (values: SyncFormValues) => {
+    if (!isExisting && (!values.username.trim() || !values.password)) {
       notify(
         'error',
-        t('System', 'Username and password are required for new sync targets', null, false)
+        t('System', 'Username and password are required to create sync configuration', null, false)
       );
       return;
     }
 
     const nextConfig = buildPayload(values);
-    const withoutCurrent = configs.filter(
-      config => config.name !== (editing?.name || nextConfig.name)
-    );
-    const nameClash = withoutCurrent.some(config => config.name === nextConfig.name);
-    if (nameClash) {
-      notify('error', t('System', 'A sync target with this name already exists', null, false));
-      return;
-    }
-
-    const next = [...withoutCurrent, nextConfig];
-    const [, error] = await SyncAPI.saveSync(next);
+    const [, error] = await SyncAPI.saveSync([nextConfig]);
     if (error) {
       notify(
         'error',
@@ -222,11 +200,11 @@ const SyncEditor = () => {
     }
 
     notify('success', t('System', 'Saved successfully.', null, false));
-    await navigate('/settings/sync');
+    await revalidator.revalidate();
   };
 
   const onSubmit = async (values: SyncFormValues) => {
-    if (values.active !== (editing?.active ?? false)) {
+    if (values.active !== (config?.active ?? false)) {
       setPendingActive(values.active);
       return;
     }
@@ -235,7 +213,7 @@ const SyncEditor = () => {
 
   const confirmSave = async () => {
     setShowSaveWarning(false);
-    await saveConfigs(getValues());
+    await saveConfig(getValues());
   };
 
   const confirmActiveChange = async () => {
@@ -246,19 +224,16 @@ const SyncEditor = () => {
   };
 
   return (
-    <div className="h-full w-full overflow-y-auto" data-testid="settings-sync-editor">
+    <div className="h-full w-full overflow-y-auto" data-testid="settings-sync">
       <SettingsContent>
-        <SettingsContent.Header
-          title={isNew ? 'New sync target' : editing?.name || params.name}
-          path={new Map([['Sync', '/settings/sync']])}
-        />
+        <SettingsContent.Header title="Sync" />
         <SettingsContent.Body>
           <div className="mb-4">
             <SyncDangerWarning />
           </div>
 
           <form
-            id="sync-editor-form"
+            id="sync-settings-form"
             onSubmit={handleSubmit(onSubmit)}
             className="flex flex-col gap-4"
           >
@@ -267,7 +242,6 @@ const SyncEditor = () => {
                 <InputField
                   id="sync-name"
                   label={<Translate>Name</Translate>}
-                  disabled={!isNew}
                   hasErrors={Boolean(errors.name)}
                   {...register('name', { required: true })}
                 />
@@ -280,29 +254,29 @@ const SyncEditor = () => {
                 <InputField
                   id="sync-username"
                   label={
-                    isNew ? (
-                      <Translate>Username</Translate>
-                    ) : (
+                    isExisting ? (
                       <Translate>Username (leave blank to keep current)</Translate>
+                    ) : (
+                      <Translate>Username</Translate>
                     )
                   }
                   autoComplete="off"
                   hasErrors={Boolean(errors.username)}
-                  {...register('username', { required: isNew })}
+                  {...register('username', { required: !isExisting })}
                 />
                 <InputField
                   id="sync-password"
                   type="password"
                   label={
-                    isNew ? (
-                      <Translate>Password</Translate>
-                    ) : (
+                    isExisting ? (
                       <Translate>Password (leave blank to keep current)</Translate>
+                    ) : (
+                      <Translate>Password</Translate>
                     )
                   }
                   autoComplete="off"
                   hasErrors={Boolean(errors.password)}
-                  {...register('password', { required: isNew })}
+                  {...register('password', { required: !isExisting })}
                 />
               </div>
               <div className="mt-4">
@@ -312,9 +286,9 @@ const SyncEditor = () => {
                   onChange={event => setValue('active', event.currentTarget.checked)}
                   label={<Translate>Active</Translate>}
                 />
-                {!isNew && editing?.status && (
+                {config?.status && (
                   <p className="mt-2 text-sm text-ink-secondary">
-                    <Translate>Pending changes</Translate>: {editing.status.pendingChanges}
+                    <Translate>Pending changes</Translate>: {config.status.pendingChanges}
                   </p>
                 )}
               </div>
@@ -371,15 +345,8 @@ const SyncEditor = () => {
           </form>
         </SettingsContent.Body>
         <SettingsContent.Footer>
-          <div className="flex w-full justify-end gap-2">
-            <Button
-              type="button"
-              variant="secondary"
-              onClick={async () => navigate('/settings/sync')}
-            >
-              <Translate>Cancel</Translate>
-            </Button>
-            <Button type="submit" form="sync-editor-form">
+          <div className="flex w-full justify-end">
+            <Button type="submit" form="sync-settings-form">
               <Translate>Save</Translate>
             </Button>
           </div>
@@ -436,4 +403,4 @@ const SyncEditor = () => {
   );
 };
 
-export { SyncEditor, syncEditorLoader };
+export { SyncSettings, syncSettingsLoader };

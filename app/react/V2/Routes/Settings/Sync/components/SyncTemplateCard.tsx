@@ -3,18 +3,9 @@ import { useAtomValue } from 'jotai';
 import { XMarkIcon } from '@heroicons/react/20/solid';
 import { Translate } from '#app/I18N/index.js';
 import { templatesAtom } from '#V2/atoms/templatesAtom.js';
-import { effectiveThemeModeAtom, settingsAtom } from '#V2/atoms/index.js';
-import { ColorDot, Button } from '#V2/Components/UI/index.js';
 import { Checkbox } from '#V2/Components/Forms/index.js';
-import { getTemplatePillColors, hexToRgb } from '#shared/utils/contrast.js';
-import { appliedThemeAsInProvider } from '#V2/theme/themes.js';
-import { getTemplatePillThemeAnchors } from '#V2/theme/templatePillTheme.js';
+import { MetadataCard } from '#V2/Components/Metadata/Components/MetadataCard.js';
 import type { SyncTemplateConfig } from '../types.js';
-
-const accentRgba = (hex: string, alpha: number): string => {
-  const [r, g, b] = hexToRgb(hex);
-  return `rgba(${Math.round(r * 255)}, ${Math.round(g * 255)}, ${Math.round(b * 255)}, ${alpha})`;
-};
 
 type SyncTemplateCardProps = {
   templateId: string;
@@ -25,42 +16,32 @@ type SyncTemplateCardProps = {
 
 const SyncTemplateCard = ({ templateId, config, onChange, onRemove }: SyncTemplateCardProps) => {
   const templates = useAtomValue(templatesAtom);
-  const settings = useAtomValue(settingsAtom);
-  const themeMode = useAtomValue(effectiveThemeModeAtom);
   const template = useMemo(
     () => templates.find(item => item._id === templateId),
     [templateId, templates]
   );
 
-  const themeColors = useMemo(
-    () =>
-      appliedThemeAsInProvider(settings.themeVars ?? undefined, themeMode, {
-        customizationOn: Boolean(settings.themeCustomization),
-      }),
-    [settings, themeMode]
-  );
-
   if (!template) {
     return (
-      <div className="rounded-xl border border-border bg-paper p-4">
-        <div className="flex items-center justify-between gap-2">
-          <span className="text-sm text-ink-secondary">
+      <MetadataCard
+        title={
+          <span className="text-ink-secondary">
             <Translate>Unknown template</Translate>: {templateId}
           </span>
-          <Button type="button" variant="danger" size="small" onClick={onRemove}>
-            <Translate>Remove</Translate>
-          </Button>
-        </div>
-      </div>
+        }
+      >
+        <button
+          type="button"
+          onClick={onRemove}
+          className="text-sm font-medium text-seal hover:underline"
+        >
+          <Translate>Remove</Translate>
+        </button>
+      </MetadataCard>
     );
   }
 
-  const { tintBase, accentHex } = getTemplatePillThemeAnchors(
-    themeColors,
-    themeMode,
-    template.color
-  );
-  const { background, foreground } = getTemplatePillColors(accentHex, tintBase);
+  const accentHex = template.color || '#888888';
   const properties = template.properties || [];
   const commonProperties = template.commonProperties || [];
   const allProperties = [...commonProperties, ...properties].filter(property => property._id);
@@ -76,68 +57,60 @@ const SyncTemplateCard = ({ templateId, config, onChange, onRemove }: SyncTempla
   };
 
   return (
-    <div
-      className="overflow-hidden rounded-xl border"
-      style={{
-        borderColor: accentRgba(accentHex, 0.35),
-        backgroundColor: 'var(--color-theme-surface-raised, var(--color-theme-surface-muted))',
-      }}
-      data-testid={`sync-template-card-${templateId}`}
-    >
-      <div
-        className="flex items-center justify-between gap-3 px-4 py-3"
-        style={{
-          backgroundColor: background,
-          color: foreground,
-          borderBottom: `1px solid ${accentRgba(accentHex, 0.25)}`,
-        }}
+    <div className="relative" data-testid={`sync-template-card-${templateId}`}>
+      <MetadataCard
+        className="h-full"
+        icon={
+          <span
+            className="h-2.5 w-2.5 shrink-0 rounded-[2px]"
+            style={{ backgroundColor: accentHex }}
+            aria-hidden
+          />
+        }
+        title={<Translate context={template._id}>{template.name}</Translate>}
       >
-        <div className="flex min-w-0 items-center gap-2">
-          <ColorDot color={accentHex} size="md" />
-          <span className="truncate text-sm font-semibold">
-            <Translate context={template._id}>{template.name}</Translate>
-          </span>
-        </div>
         <button
           type="button"
           onClick={onRemove}
-          className="rounded-md p-1 hover:opacity-80"
+          className="absolute end-2 top-2 rounded-md p-1 text-ink-tertiary hover:bg-warm hover:text-ink"
           aria-label="Remove template from sync"
         >
           <XMarkIcon className="h-5 w-5" />
         </button>
-      </div>
 
-      <div className="flex flex-col gap-4 p-4">
-        <Checkbox
-          name={`${templateId}-attachments`}
-          checked={Boolean(config.attachments)}
-          onChange={event => onChange({ ...config, attachments: event.currentTarget.checked })}
-          label={<Translate>Sync attachments</Translate>}
-        />
+        <div className="flex flex-col gap-4 pt-1">
+          <div className="flex flex-col gap-1 border-b border-border-40 pb-3">
+            <span className="text-xs text-ink-tertiary">
+              <Translate>Attachments</Translate>
+            </span>
+            <Checkbox
+              name={`${templateId}-attachments`}
+              checked={Boolean(config.attachments)}
+              onChange={event => onChange({ ...config, attachments: event.currentTarget.checked })}
+              label={<Translate>Sync attachments</Translate>}
+            />
+          </div>
 
-        <div>
-          <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-ink-tertiary">
-            <Translate>Properties to sync</Translate>
-          </p>
-          <div className="grid gap-2 sm:grid-cols-2">
+          <div className="flex flex-col gap-3">
             {allProperties.map(property => {
               const propertyId = property._id!.toString();
               return (
-                <div
-                  key={propertyId}
-                  className="rounded-lg border border-border bg-paper px-3 py-2"
-                >
+                <div key={propertyId} className="flex flex-col gap-1">
+                  <span className="text-xs text-ink-tertiary">
+                    <Translate context={template._id}>{property.label}</Translate>
+                  </span>
                   <Checkbox
                     name={`${templateId}-${propertyId}`}
                     checked={config.properties.includes(propertyId)}
                     onChange={() => toggleProperty(propertyId)}
                     label={
-                      <span className="min-w-0">
-                        <span className="block truncate font-medium">
-                          <Translate context={template._id}>{property.label}</Translate>
-                        </span>
-                        <span className="text-xs text-ink-tertiary">{property.type}</span>
+                      <span className="text-sm text-ink">
+                        {config.properties.includes(propertyId) ? (
+                          <Translate>Sync</Translate>
+                        ) : (
+                          <Translate>Skip</Translate>
+                        )}
+                        <span className="ms-2 text-xs text-ink-tertiary">{property.type}</span>
                       </span>
                     }
                   />
@@ -151,7 +124,7 @@ const SyncTemplateCard = ({ templateId, config, onChange, onRemove }: SyncTempla
             )}
           </div>
         </div>
-      </div>
+      </MetadataCard>
     </div>
   );
 };

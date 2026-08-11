@@ -35,7 +35,9 @@ const mergeSyncCredentials = (
   current: SettingsSyncSchema[] = []
 ): SettingsSyncSchema[] =>
   incoming.map(config => {
-    const existing = current.find(item => item.name === config.name);
+    const existing =
+      current.find(item => item.name === config.name) ||
+      (current.length === 1 && incoming.length === 1 ? current[0] : undefined);
     return {
       ...config,
       username: config.username || existing?.username || '',
