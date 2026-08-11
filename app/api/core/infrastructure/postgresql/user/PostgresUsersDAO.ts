@@ -85,6 +85,11 @@ class PostgresUsersDAO extends PostgresDataSource<UserRow> {
     return Result.ok(row);
   }
 
+  async findMany(condition: Condition = {}, options: QueryOptions = {}): Promise<UserRow[]> {
+    const query = this.applyCondition(condition);
+    return (options.includeDeleted ? query : this.notDeleted(query)).all();
+  }
+
   async findByIds(ids: string[], options: QueryOptions = {}): Promise<UserRow[]> {
     if (!ids.length) {
       return [];
