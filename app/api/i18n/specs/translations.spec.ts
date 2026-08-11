@@ -28,9 +28,7 @@ const translations = Object.assign(
     save: async (...args: any[]) =>
       testingEnvironment.runWithContext(async () => translationsFn.save(args[0])),
     updateEntries: async (...args: any[]) =>
-      testingEnvironment.runWithContext(async () =>
-        translationsFn.updateEntries(args[0], args[1])
-      ),
+      testingEnvironment.runWithContext(async () => translationsFn.updateEntries(args[0], args[1])),
     v2StructureSave: async (...args: any[]) =>
       testingEnvironment.runWithContext(async () => translationsFn.v2StructureSave(args[0])),
     importPredefined: async (...args: any[]) =>

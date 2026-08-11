@@ -31,7 +31,9 @@ export class PXCreateParagraphsFactory {
     const thesauriDS = ThesauriDataSourceFactory.default({
       transactionManager: mongoTransactionManager,
     });
-    const translationsDS = TranslationsDataSourceFactory.default({ transactionManager: mongoTransactionManager });
+    const translationsDS = TranslationsDataSourceFactory.default({
+      transactionManager: mongoTransactionManager,
+    });
     const entitiesDS = EntitiesDataSourceFactory.default({
       transactionManager: mongoTransactionManager,
     });

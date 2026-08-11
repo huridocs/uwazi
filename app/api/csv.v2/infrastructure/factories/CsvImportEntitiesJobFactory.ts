@@ -50,7 +50,9 @@ const buildPropertyAssignmentCreator = (params: {
   settingsDS: ReturnType<typeof SettingsDataSourceFactory.default>;
   entitiesDS: ReturnType<typeof EntitiesDataSourceFactory.default>;
 }) => {
-  const translationsDS = TranslationsDataSourceFactory.default({ transactionManager: params.transactionManager });
+  const translationsDS = TranslationsDataSourceFactory.default({
+    transactionManager: params.transactionManager,
+  });
   const thesauriDS = ThesauriDataSourceFactory.default({
     transactionManager: params.transactionManager,
   });
