@@ -38,6 +38,87 @@ afterAll(async () => {
 });
 
 describe('PostgresUserGroupsDAO', () => {
+  describe('getGroupsByUserIds', () => {
+    it('should return each user mapped to the groups they belong to', async () => {
+      await testingPG.setFixtures({
+        users: [
+          userFixture({ _id: 'existing1', username: 'existing1', email: 'existing1@test.com' }),
+          userFixture({ _id: 'existing2', username: 'existing2', email: 'existing2@test.com' }),
+        ],
+        usergroups: [
+          { _id: 'group-a', tenant_id: TENANT_ID, name: 'Group A', members: ['existing1'] },
+          {
+            _id: 'group-b',
+            tenant_id: TENANT_ID,
+            name: 'Group B',
+            members: ['existing1', 'existing2'],
+          },
+        ],
+      });
+
+      const dao = makeDAO();
+      const map = await dao.getGroupsByUserIds(['existing1', 'existing2']);
+
+      expect(map.get('existing1')).toEqual(
+        expect.arrayContaining([
+          { _id: 'group-a', name: 'Group A' },
+          { _id: 'group-b', name: 'Group B' },
+        ])
+      );
+      expect(map.get('existing2')).toEqual([{ _id: 'group-b', name: 'Group B' }]);
+    });
+
+    it('should map a user in no groups to an empty array', async () => {
+      await testingPG.setFixtures({
+        users: [userFixture({ _id: 'lonely', username: 'lonely', email: 'lonely@test.com' })],
+      });
+
+      const dao = makeDAO();
+      const map = await dao.getGroupsByUserIds(['lonely']);
+
+      expect(map.get('lonely')).toEqual([]);
+    });
+
+    it('should not include a group member that was not passed in userIds', async () => {
+      await testingPG.setFixtures({
+        users: [
+          userFixture({ _id: 'existing1', username: 'existing1', email: 'existing1@test.com' }),
+          userFixture({ _id: 'existing2', username: 'existing2', email: 'existing2@test.com' }),
+        ],
+        usergroups: [
+          {
+            _id: 'group-a',
+            tenant_id: TENANT_ID,
+            name: 'Group A',
+            members: ['existing1', 'existing2'],
+          },
+        ],
+      });
+
+      const dao = makeDAO();
+      const map = await dao.getGroupsByUserIds(['existing1']);
+
+      expect(map.has('existing2')).toBe(false);
+      expect(map.get('existing1')).toEqual([{ _id: 'group-a', name: 'Group A' }]);
+    });
+
+    it('should return an empty map without querying when userIds is empty', async () => {
+      await testingPG.setFixtures({
+        users: [
+          userFixture({ _id: 'existing1', username: 'existing1', email: 'existing1@test.com' }),
+        ],
+        usergroups: [
+          { _id: 'group-a', tenant_id: TENANT_ID, name: 'Group A', members: ['existing1'] },
+        ],
+      });
+
+      const dao = makeDAO();
+      const map = await dao.getGroupsByUserIds([]);
+
+      expect(map.size).toBe(0);
+    });
+  });
+
   describe('getAll', () => {
     it('should return groups with empty members', async () => {
       await testingPG.setFixtures({
