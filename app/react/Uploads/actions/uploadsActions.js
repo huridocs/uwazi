@@ -144,8 +144,7 @@ export function updateMainDocument(sharedId, prefetchedDoc) {
       });
     });
 
-    const doc =
-      prefetchedDoc || (await EntitiesApi.get(new RequestParams({ sharedId })))[0];
+    const doc = prefetchedDoc || (await EntitiesApi.get(new RequestParams({ sharedId })))[0];
     (doc?.documents || []).forEach(file => {
       if (!file?._id || !storeStatusById.has(file._id)) {
         return;

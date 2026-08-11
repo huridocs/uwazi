@@ -401,9 +401,7 @@ describe('uploadsActions', () => {
           doc: Immutable.fromJS({ sharedId, documents: [processingFile] }),
         },
       });
-      jest
-        .spyOn(entitiesApi, 'get')
-        .mockResolvedValue([{ sharedId, documents: [apiReadyFile] }]);
+      jest.spyOn(entitiesApi, 'get').mockResolvedValue([{ sharedId, documents: [apiReadyFile] }]);
 
       await actions.updateMainDocument(sharedId)(dispatch, getState);
 
