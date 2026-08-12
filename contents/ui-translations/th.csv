@@ -192,6 +192,7 @@ Clear PDF selection,Clear PDF selection
 Clear search,Clear search
 Click,Click
 Click to fill,คลิกเพื่อใส่ค่า
+Click to select files,Click to select files
 Close,ปิด
 Code,Code
 Collaborator,ผู้ประสานงาน
@@ -371,6 +372,7 @@ Document and entity types,ประเภทเอกสารและราย
 Document contents,เนื้อหาของเอกสาร
 Document OCR trigger,Document OCR trigger
 Document Title,ชื่อเอกสาร
+Document updated,Document updated
 Documentation,เอกสาร
 documents,เอกสาร
 Documents,เอกสาร
@@ -442,6 +444,7 @@ Error adding thesauri.,Error adding thesauri.
 Error loading your image,Error loading your image
 Error saving template.,Error saving template.
 Error updating thesauri.,Error updating thesauri.
+evidence,evidence
 exact phrase,exact phrase
 Expand all,Expand all
 Expand All,Expand All
@@ -459,6 +462,7 @@ Extractor name,Extractor name
 Extractor/s deleted,Extractor/s deleted
 Extractors,Extractors
 Failed,Failed
+Failed to mark table of contents as reviewed,Failed to mark table of contents as reviewed
 Failed to save table of contents,Failed to save table of contents
 Failure details,Failure details
 Favicon description,"A favicon is a small icon that represents your collection in browser tabs and bookmarks. The default favicon is the Uwazi logo. To use your own:
@@ -762,6 +766,7 @@ No data,No data
 NO DATA AVAILABLE,NO DATA AVAILABLE
 NO EXTRACTORS,NO EXTRACTORS
 No files available,No files available
+No files queued yet.,No files queued yet.
 no filters for templates,The combination of entity types doesn't have any filters in common.
 No Group,No Group
 No icon / flag,ไม่พบ ไอค่อน / สิ่งที่ถูกคั่นหน้า
@@ -846,6 +851,7 @@ Open PDF,Open PDF
 Open the two-factor Authenticator app on your device,กรุณาเปิดแอป Authenticator สำหรับยืนยันรหัสสองทาง บนอุปกรณ์ของคุณ
 Options,Options
 or,หรือ
+or drag and drop here,or drag and drop here
 or drop your files here.,หรือวางไฟล์ของคุณที่นี่
 Order,คำสั่ง
 Other,อื่น
@@ -1129,6 +1135,7 @@ Show more,แสดงมากขึ้น
 Show remaining in panel,Show remaining in panel
 Show toolbar,Show toolbar
 Showing,Showing
+Showing the top,Showing the top
 shown of,แสดงโดย
 Sign in,เข้าสู่ระบบ
 Simple mode,Simple mode

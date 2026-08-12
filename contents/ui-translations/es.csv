@@ -190,6 +190,7 @@ Clear PDF selection,Limpiar la selección PDF
 Clear search,Limpiar búsqueda
 Click,Click
 Click to fill,Click para completar
+Click to select files,Click para seleccionar archivos
 Close,Cerrar
 Code,Code
 Collaborator,Colaboradora
@@ -369,6 +370,7 @@ Document and entity types,Tipos de documento y entidad
 Document contents,Contenidos del documento
 Document OCR trigger,Desencadenador de OCR de documento
 Document Title,Título del documento
+Document updated,Documento actualizado
 Documentation,Documentación
 documents,Documentos
 Documents,Documentos
@@ -440,6 +442,7 @@ Error adding thesauri.,Error adding thesauri.
 Error loading your image,Error loading your image
 Error saving template.,Error saving template.
 Error updating thesauri.,Error updating thesauri.
+evidence,evidencia
 exact phrase,exact phrase
 Expand all,Expandir todo
 Expand All,Expand All
@@ -457,6 +460,7 @@ Extractor name,Extractor name
 Extractor/s deleted,Extractor/s deleted
 Extractors,Extractors
 Failed,Failed
+Failed to mark table of contents as reviewed,Error al marcar la tabla de contenidos como revisada
 Failed to save table of contents,Failed to save table of contents
 Failure details,Failure details
 Favicon description,"Un favicon es un pequeño ícono que representa a tu colección en las pestañas y marcadores del navegador. El favicon predeterminado es el logo de Uwazi. Para usar el tuyo:
@@ -760,6 +764,7 @@ No data,No data
 NO DATA AVAILABLE,NO DATA AVAILABLE
 NO EXTRACTORS,NO EXTRACTORS
 No files available,No files available
+No files queued yet.,Sin archivos en cola.
 no filters for templates,La combinación de tipos de entidades no tiene filtros en común.
 No Group,No Group
 No icon / flag,Sin icono / bandera
@@ -844,6 +849,7 @@ Open PDF,Open PDF
 Open the two-factor Authenticator app on your device,Abre la app Authenticator de tu dispositivo móvil
 Options,Options
 or,o
+or drag and drop here,o arrastra y suelta aquí
 or drop your files here.,o deposita tus archivos aquí
 Order,Orden
 Other,Otro
@@ -1127,6 +1133,7 @@ Show more,Mostrar más
 Show remaining in panel,Mostrar los elementos restantes en el panel
 Show toolbar,Mostrar la barra de herramientas
 Showing,Showing
+Showing the top,Mostrando los principales
 shown of,listados de
 Sign in,Registrarse
 Simple mode,Simple mode

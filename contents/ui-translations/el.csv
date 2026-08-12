@@ -193,6 +193,7 @@ Clear PDF selection,Εκκαθάριση επιλογής PDF
 Clear search,Clear search
 Click,Κάντε κλικ
 Click to fill,Κάντε κλικ για να συμπληρώσετε
+Click to select files,Click to select files
 Close,Κλείσιμο
 Code,Code
 Collaborator,Συνεργάτης
@@ -372,6 +373,7 @@ Document and entity types,Τύποι εγγράφων και οντοτήτων
 Document contents,Περιεχόμενο εγγράφου
 Document OCR trigger,OCR εγγράφου
 Document Title,Τίτλος εγγράφου
+Document updated,Document updated
 Documentation,Τεκμηρίωση
 documents,έγγραφα
 Documents,Έγγραφα
@@ -443,6 +445,7 @@ Error adding thesauri.,Σφάλμα προσθήκης θησαυρών.
 Error loading your image,Σφάλμα φόρτωσης της εικόνας σας
 Error saving template.,Σφάλμα αποθήκευσης προτύπου.
 Error updating thesauri.,Σφάλμα ενημέρωσης θησαυρών.
+evidence,evidence
 exact phrase,exact phrase
 Expand all,Ανάπτυξη όλων
 Expand All,Expand All
@@ -460,6 +463,7 @@ Extractor name,Όνομα εξαγωγέα
 Extractor/s deleted,Εξαγωγέας/εις διαγράφηκε/καν
 Extractors,Εξαγωγείς
 Failed,Failed
+Failed to mark table of contents as reviewed,Failed to mark table of contents as reviewed
 Failed to save table of contents,Failed to save table of contents
 Failure details,Failure details
 Favicon description,"Το favicon είναι ένα μικρό εικονίδιο που αντιπροσωπεύει τη συλλογή σας στις καρτέλες του προγράμματος περιήγησης και στους σελιδοδείκτες. Το προεπιλεγμένο favicon είναι το λογότυπο του Uwazi. Για να χρησιμοποιήσετε το δικό σας:
@@ -763,6 +767,7 @@ No data,No data
 NO DATA AVAILABLE,ΔΕΝ ΥΠΑΡΧΟΥΝ ΔΙΑΘΕΣΙΜΑ ΔΕΔΟΜΕΝΑ
 NO EXTRACTORS,ΔΕΝ ΥΠΑΡΧΟΥΝ ΕΞΑΓΩΓΕΙΣ
 No files available,No files available
+No files queued yet.,No files queued yet.
 no filters for templates,Ο συνδυασμός τύπων οντοτήτων δεν έχει κοινά φίλτρα.
 No Group,Δεν υπάρχει ομάδα
 No icon / flag,Χωρίς εικονίδιο/σημαία
@@ -847,6 +852,7 @@ Open PDF,Άνοιγμα PDF
 Open the two-factor Authenticator app on your device,Ανοίξτε την εφαρμογή πιστοποίησης δύο παραγόντων στη συσκευή σας
 Options,Επιλογές
 or,ή
+or drag and drop here,or drag and drop here
 or drop your files here.,ή αποθέστε τα αρχεία σας εδώ.
 Order,Παραγγελία
 Other,Άλλα
@@ -1130,6 +1136,7 @@ Show more,Εμφάνιση περισσότερων
 Show remaining in panel,Show remaining in panel
 Show toolbar,Εμφάνιση γραμμής εργαλείων
 Showing,Εμφάνιση
+Showing the top,Showing the top
 shown of,εμφανιζόμενα από
 Sign in,Είσοδος
 Simple mode,Simple mode

@@ -194,6 +194,7 @@ Clear PDF selection,Clear PDF selection
 Clear search,Clear search
 Click,Click
 Click to fill,Click to fill
+Click to select files,Click to select files
 Close,Close
 Code,Code
 Collaborator,Collaborator
@@ -373,6 +374,7 @@ Document and entity types,Document and entity types
 Document contents,Document contents
 Document OCR trigger,Document OCR trigger
 Document Title,Document Title
+Document updated,Document updated
 Documentation,Documentation
 documents,documents
 Documents,Documents
@@ -444,6 +446,7 @@ Error adding thesauri.,Error adding thesauri.
 Error loading your image,Error loading your image
 Error saving template.,Error saving template.
 Error updating thesauri.,Error updating thesauri.
+evidence,evidence
 exact phrase,exact phrase
 Expand all,Expand all
 Expand All,Expand All
@@ -461,6 +464,7 @@ Extractor name,Extractor name
 Extractor/s deleted,Extractor/s deleted
 Extractors,Extractors
 Failed,Failed
+Failed to mark table of contents as reviewed,Failed to mark table of contents as reviewed
 Failed to save table of contents,Failed to save table of contents
 Failure details,Failure details
 Favicon description,"A favicon is a small icon that represents your collection in browser tabs and bookmarks. The default favicon is the Uwazi logo. To use your own:
@@ -764,6 +768,7 @@ No data,No data
 NO DATA AVAILABLE,NO DATA AVAILABLE
 NO EXTRACTORS,NO EXTRACTORS
 No files available,No files available
+No files queued yet.,No files queued yet.
 no filters for templates,The combination of entity types doesn't have any filters in common.
 No Group,No Group
 No icon / flag,No icon / flag
@@ -848,6 +853,7 @@ Open PDF,Open PDF
 Open the two-factor Authenticator app on your device,Open the two-factor Authenticator app on your device
 Options,Options
 or,or
+or drag and drop here,or drag and drop here
 or drop your files here.,or drop your files here.
 Order,Order
 Other,Other
@@ -1131,6 +1137,7 @@ Show more,Show more
 Show remaining in panel,Show remaining in panel
 Show toolbar,Show toolbar
 Showing,Showing
+Showing the top,Showing the top
 shown of,shown of
 Sign in,Sign in
 Simple mode,Simple mode

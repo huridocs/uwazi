@@ -192,6 +192,7 @@ Clear PDF selection,Clear PDF selection
 Clear search,Clear search
 Click,Click
 Click to fill,텍스트 자동 채우기
+Click to select files,Click to select files
 Close,닫기
 Code,Code
 Collaborator,협업자
@@ -371,6 +372,7 @@ Document and entity types,문서 및 엔티티 유형
 Document contents,문서 내용
 Document OCR trigger,Document OCR trigger
 Document Title,문서 제목
+Document updated,Document updated
 Documentation,기록
 documents,문서
 Documents,문서
@@ -442,6 +444,7 @@ Error adding thesauri.,Error adding thesauri.
 Error loading your image,Error loading your image
 Error saving template.,Error saving template.
 Error updating thesauri.,Error updating thesauri.
+evidence,evidence
 exact phrase,exact phrase
 Expand all,Expand all
 Expand All,Expand All
@@ -459,6 +462,7 @@ Extractor name,Extractor name
 Extractor/s deleted,Extractor/s deleted
 Extractors,Extractors
 Failed,Failed
+Failed to mark table of contents as reviewed,Failed to mark table of contents as reviewed
 Failed to save table of contents,Failed to save table of contents
 Failure details,Failure details
 Favicon description,"A favicon is a small icon that represents your collection in browser tabs and bookmarks. The default favicon is the Uwazi logo. To use your own:
@@ -762,6 +766,7 @@ No data,No data
 NO DATA AVAILABLE,NO DATA AVAILABLE
 NO EXTRACTORS,NO EXTRACTORS
 No files available,No files available
+No files queued yet.,No files queued yet.
 no filters for templates,The combination of entity types doesn't have any filters in common.
 No Group,No Group
 No icon / flag,아이콘/플래그 없음
@@ -846,6 +851,7 @@ Open PDF,Open PDF
 Open the two-factor Authenticator app on your device,기기에서 Authenticator 앱을 여십시오.
 Options,Options
 or,or
+or drag and drop here,or drag and drop here
 or drop your files here.,혹은 여기에 파일을 드롭하십시오.
 Order,순서
 Other,기타
@@ -1129,6 +1135,7 @@ Show more,자세히 보기
 Show remaining in panel,Show remaining in panel
 Show toolbar,Show toolbar
 Showing,Showing
+Showing the top,Showing the top
 shown of,/
 Sign in,로그인
 Simple mode,Simple mode
