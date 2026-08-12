@@ -175,7 +175,7 @@ describe('Entity PDF Click to fill', () => {
   it('ignores a second click while coerce is in flight', async () => {
     let resolveCoerce: (value: { success: string; value: number }) => void = () => undefined;
     jest.mocked(entitiesAPI.coerceValue).mockImplementation(
-      () =>
+      async () =>
         new Promise(resolve => {
           resolveCoerce = resolve;
         })
