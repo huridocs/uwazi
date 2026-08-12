@@ -35,15 +35,21 @@ type GraphSpoke = {
   nodeIds: string[];
 };
 
-const VIEW_W = 900;
-const VIEW_H = 700;
+const VIEW_W = 1200;
+const VIEW_H = 900;
 const CX = VIEW_W / 2;
 const CY = VIEW_H / 2;
-const SOURCE_R = 22;
-const LABEL_DIST = 72;
-const FIRST_RING_R = 140;
-const RING_GAP = 36;
-const ARC_GAP = 28;
+const SOURCE_R = 26;
+const LABEL_DIST = 122;
+const FIRST_RING_R = 200;
+const RING_GAP = 40;
+const ARC_GAP = 30;
+const GRAPH_CAP = 150;
+const FIT_PAD = 40;
+const FIT_SCALE_MIN = 0.4;
+const FIT_SCALE_MAX = 2.5;
+
+type GraphTransform = { tx: number; ty: number; scale: number };
 
 const aggregateGroupKey = (
   aggregate: RelationshipAggregate,
@@ -119,14 +125,14 @@ const graphNodeFromAggregate = (
   return {
     id: aggregate.id,
     title: aggregate.targetTitle,
-    color: context.groupContext.templateColor(aggregate.targetTemplateId),
+    color: context.groupContext.templateColor(aggregate.targetTemplateId) ?? '#9ca3af',
     typeName: context.groupContext.templateName(aggregate.targetTemplateId),
     evidenceCount: aggregate.markerIds.length,
     direction,
     markerIds: aggregate.markerIds,
     x: CX + Math.cos(nodeAngle) * radius,
     y: CY + Math.sin(nodeAngle) * radius,
-    r: Math.min(8, 4 + Math.sqrt(aggregate.markerIds.length) * 1.1),
+    r: Math.min(7, 4 + Math.sqrt(aggregate.markerIds.length) * 1.1),
     selected,
   };
 };
@@ -286,13 +292,25 @@ const buildSpoke = ({
   };
 };
 
+const capAggregates = (
+  aggregates: RelationshipAggregate[]
+): { capped: RelationshipAggregate[]; truncated: number } => {
+  if (aggregates.length <= GRAPH_CAP) return { capped: aggregates, truncated: 0 };
+  const capped = [...aggregates]
+    .sort((a, b) => b.markerIds.length - a.markerIds.length)
+    .slice(0, GRAPH_CAP);
+  return { capped, truncated: aggregates.length - GRAPH_CAP };
+};
+
 const buildGraphLayout = (
   markers: RelationshipMarker[],
   groupBy: RelationshipsPanelGroupBy,
   groupContext: GroupLabelContext,
   activeRelationshipId?: string
-): { spokes: GraphSpoke[]; nodes: GraphNode[] } => {
-  const aggregates = listAggregates(markers, groupContext.selfSharedId);
+): { spokes: GraphSpoke[]; nodes: GraphNode[]; truncated: number } => {
+  const { capped: aggregates, truncated } = capAggregates(
+    listAggregates(markers, groupContext.selfSharedId)
+  );
   const sorted = sortAggregateGroups(
     groupAggregatesByKey(aggregates, groupBy),
     groupBy,
@@ -300,7 +318,8 @@ const buildGraphLayout = (
     markers
   );
   const spokeCount = sorted.length;
-  const sectorSpan = spokeCount === 1 ? Math.PI * 1.4 : (Math.PI * 2) / spokeCount - 0.12;
+  const sectorSpan =
+    spokeCount === 1 ? Math.PI * 1.4 : Math.max(0.05, (Math.PI * 2) / spokeCount - 0.12);
   const nodes: GraphNode[] = [];
   const spokes: GraphSpoke[] = [];
 
@@ -320,8 +339,72 @@ const buildGraphLayout = (
     spokes.push(layout.spoke);
   });
 
-  return { spokes, nodes };
+  return { spokes, nodes, truncated };
 };
 
-export type { GraphNode, GraphSpoke };
-export { VIEW_W, VIEW_H, CX, CY, SOURCE_R, buildGraphLayout };
+const truncateForFit = (value: string, max: number): string =>
+  value.length > max ? `${value.slice(0, max - 1).trimEnd()}…` : value;
+
+const sourcePillWidth = (title: string, typeName: string): number => {
+  const sourceLabel = truncateForFit(title, 26);
+  return Math.max(72, Math.max(sourceLabel.length, typeName.length) * 5.6 + 18);
+};
+
+const computeFitTransform = (
+  nodes: GraphNode[],
+  spokes: GraphSpoke[],
+  sourceTitle: string,
+  typeName: string
+): GraphTransform => {
+  if (nodes.length === 0) return { tx: 0, ty: 0, scale: 1 };
+
+  const sourceLabelW = sourcePillWidth(sourceTitle, typeName);
+  let minX = CX - sourceLabelW / 2;
+  let maxX = CX + sourceLabelW / 2;
+  let minY = CY - SOURCE_R;
+  let maxY = CY + SOURCE_R + 36;
+
+  for (const node of nodes) {
+    minX = Math.min(minX, node.x - node.r);
+    maxX = Math.max(maxX, node.x + node.r);
+    minY = Math.min(minY, node.y - node.r);
+    maxY = Math.max(maxY, node.y + node.r);
+  }
+  for (const spoke of spokes) {
+    minX = Math.min(minX, spoke.labelX - 60);
+    maxX = Math.max(maxX, spoke.labelX + 60);
+    minY = Math.min(minY, spoke.labelY - 14);
+    maxY = Math.max(maxY, spoke.labelY + 14);
+  }
+
+  const width = Math.max(1, maxX - minX);
+  const height = Math.max(1, maxY - minY);
+  const scale = Math.max(
+    FIT_SCALE_MIN,
+    Math.min(FIT_SCALE_MAX, Math.min((VIEW_W - FIT_PAD * 2) / width, (VIEW_H - FIT_PAD * 2) / height))
+  );
+  const contentCx = (minX + maxX) / 2;
+  const contentCy = (minY + maxY) / 2;
+  return { scale, tx: scale * (CX - contentCx), ty: scale * (CY - contentCy) };
+};
+
+export type { GraphNode, GraphSpoke, GraphTransform };
+export {
+  VIEW_W,
+  VIEW_H,
+  CX,
+  CY,
+  SOURCE_R,
+  LABEL_DIST,
+  FIRST_RING_R,
+  RING_GAP,
+  ARC_GAP,
+  GRAPH_CAP,
+  FIT_PAD,
+  FIT_SCALE_MIN,
+  FIT_SCALE_MAX,
+  buildGraphLayout,
+  computeFitTransform,
+  sourcePillWidth,
+  truncateForFit,
+};

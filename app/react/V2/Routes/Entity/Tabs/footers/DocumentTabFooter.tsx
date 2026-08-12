@@ -8,14 +8,15 @@ import { useDocumentPdfView } from '../hooks/useDocumentPdfView.js';
 
 type DocumentTabFooterProps = {
   mainDocument: FileType;
+  inset?: 'side' | 'main';
 };
 
-const DocumentTabFooter = ({ mainDocument }: DocumentTabFooterProps) => {
+const DocumentTabFooter = ({ mainDocument, inset = 'main' }: DocumentTabFooterProps) => {
   const { pageNumber, totalPages, nextPage, ocrServiceEnabled, isRaw, handlePageNavigation } =
     useDocumentPdfView({ mainDocument });
 
   return (
-    <EntityTabFooter>
+    <EntityTabFooter inset={inset}>
       <div className="flex w-full flex-row items-center gap-3">
         <div className="grow justify-self-start">
           {ocrServiceEnabled && mainDocument ? (

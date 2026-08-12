@@ -9,6 +9,7 @@ import {
 } from '@heroicons/react/24/outline';
 import { t, Translate } from '#app/I18N/index.js';
 import { LanguageUtils } from '#shared/language/index.js';
+import { CloudUploadStrokeIcon } from '#V2/Components/CustomIcons/LucideStrokeIcons.js';
 import { Button, Modal } from '#V2/Components/UI/index.js';
 import { getFileNameAndExtension } from '#V2/shared/formatHelpers.js';
 import { fileLanguageSelectOptions, fileSupportsLanguage, isPdfFile } from './fileHelpers.js';
@@ -34,12 +35,61 @@ const getFileIcon = (file: File) => {
   return <DocumentIcon className={iconClass} />;
 };
 
+const AddFileDropzone = ({
+  onPick,
+  onDropFile,
+}: {
+  onPick: () => void;
+  onDropFile: (file: File | undefined) => void;
+}) => {
+  const [dragging, setDragging] = useState(false);
+
+  return (
+    <div className="flex flex-col gap-4">
+      <button
+        type="button"
+        onClick={onPick}
+        onDragEnter={event => {
+          event.preventDefault();
+          setDragging(true);
+        }}
+        onDragOver={event => event.preventDefault()}
+        onDragLeave={() => setDragging(false)}
+        onDrop={event => {
+          event.preventDefault();
+          setDragging(false);
+          onDropFile(event.dataTransfer.files?.[0]);
+        }}
+        className={[
+          'flex w-full cursor-pointer flex-col items-center justify-center rounded-lg bg-warm py-6 transition-colors hover:bg-parchment',
+          dragging ? 'border-ink/40' : 'border-border-soft',
+        ].join(' ')}
+        style={{ border: '2px dashed var(--color-theme-border-soft, var(--border-soft, #e5e7eb))' }}
+      >
+        <CloudUploadStrokeIcon className="mb-1.5 h-7 w-7 text-ink-tertiary/50" aria-hidden />
+        <span className="text-sm font-medium text-ink-secondary">
+          <Translate>Click to select files</Translate>
+        </span>
+        <span className="mt-0.5 text-xs text-ink-muted">
+          <Translate>or drag and drop here</Translate>
+        </span>
+      </button>
+      <p className="text-center text-xs text-ink-tertiary">
+        <Translate>No files queued yet.</Translate>
+      </p>
+    </div>
+  );
+};
+
 const AddFileModal = () => {
   const {
     pendingAddFile,
     addFileMode,
     closeAddFileModal,
     confirmAddFile,
+    openAddFilePicker,
+    acceptSelectedFile,
+    requestAddFile,
     defaultLanguageKey,
     uploadProgress,
   } = useEntityFiles();
@@ -82,11 +132,12 @@ const AddFileModal = () => {
     setIsSubmitting(false);
   }, [defaultLanguageIso, file]);
 
-  if (!file || !addFileMode) {
+  if (!addFileMode) {
     return null;
   }
 
   const handleConfirm = async () => {
+    if (!file) return;
     setIsSubmitting(true);
     try {
       await confirmAddFile({
@@ -107,106 +158,110 @@ const AddFileModal = () => {
         <Modal.CloseButton onClick={closeAddFileModal} disabled={isSubmitting} />
       </Modal.Header>
       <Modal.Body className="space-y-4">
-        <div className="rounded-md border border-border/50 bg-warm p-3">
-          <div className="space-y-2.5">
-            <div className="flex items-start gap-2">
-              <span className="mt-1 flex shrink-0 items-center">{getFileIcon(file)}</span>
-              <input
-                id="add-file-name"
-                type="text"
-                aria-label={t('System', 'Name', null, false)}
-                value={displayName}
-                onChange={event => setDisplayName(event.target.value)}
-                disabled={isSubmitting}
-                className="min-w-0 flex-1 rounded border border-border bg-paper px-2 py-1 text-sm text-ink focus:outline-none focus:ring-1 focus:ring-carbon/30 disabled:opacity-70"
-              />
-              <button
-                type="button"
-                onClick={closeAddFileModal}
-                disabled={isSubmitting}
-                className="shrink-0 cursor-pointer pt-1 text-xs text-ink-tertiary transition-colors hover:text-ink disabled:cursor-not-allowed disabled:opacity-50"
+        {!file ? (
+          <AddFileDropzone onPick={openAddFilePicker} onDropFile={acceptSelectedFile} />
+        ) : (
+          <div className="rounded-md border border-border/50 bg-warm p-3">
+            <div className="space-y-2.5">
+              <div className="flex items-start gap-2">
+                <span className="mt-1 flex shrink-0 items-center">{getFileIcon(file)}</span>
+                <input
+                  id="add-file-name"
+                  type="text"
+                  aria-label={t('System', 'Name', null, false)}
+                  value={displayName}
+                  onChange={event => setDisplayName(event.target.value)}
+                  disabled={isSubmitting}
+                  className="min-w-0 flex-1 rounded border border-border bg-paper px-2 py-1 text-sm text-ink focus:outline-none focus:ring-1 focus:ring-carbon/30 disabled:opacity-70"
+                />
+                <button
+                  type="button"
+                  onClick={() => requestAddFile(addFileMode)}
+                  disabled={isSubmitting}
+                  className="shrink-0 cursor-pointer pt-1 text-xs text-ink-tertiary transition-colors hover:text-ink disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  <Translate>Remove</Translate>
+                </button>
+              </div>
+
+              <div
+                className={[
+                  'grid gap-3',
+                  showLanguage && showAddAs ? 'grid-cols-2' : 'grid-cols-1',
+                ].join(' ')}
               >
-                <Translate>Remove</Translate>
-              </button>
+                {showLanguage ? (
+                  <label className="space-y-1" htmlFor="add-file-language">
+                    <span className={fieldLabelClass}>
+                      <Translate>Language</Translate>
+                    </span>
+                    <div className="relative">
+                      <select
+                        id="add-file-language"
+                        value={language}
+                        onChange={event => setLanguage(event.target.value)}
+                        disabled={isSubmitting}
+                        className={controlClass}
+                      >
+                        {languageOptions.map(option => (
+                          <option key={option.key ?? option.value} value={option.value}>
+                            {option.label}
+                          </option>
+                        ))}
+                      </select>
+                      <ChevronDownIcon className="pointer-events-none absolute right-2 top-1/2 h-3 w-3 -translate-y-1/2 text-ink-tertiary" />
+                    </div>
+                  </label>
+                ) : null}
+                {showAddAs ? (
+                  <label className="space-y-1" htmlFor="add-file-type">
+                    <span className={fieldLabelClass}>
+                      <Translate>Add as</Translate>
+                    </span>
+                    <div className="relative">
+                      <select
+                        id="add-file-type"
+                        value={addAs}
+                        onChange={event => setAddAs(event.target.value as AddAs)}
+                        disabled={isSubmitting}
+                        className={`${controlClass} truncate`}
+                      >
+                        {addAsOptions.map(option => (
+                          <option key={option.value} value={option.value} disabled={option.disabled}>
+                            {option.label}
+                          </option>
+                        ))}
+                      </select>
+                      <ChevronDownIcon className="pointer-events-none absolute right-2 top-1/2 h-3 w-3 -translate-y-1/2 text-ink-tertiary" />
+                    </div>
+                  </label>
+                ) : null}
+                {!showAddAs ? (
+                  <div className="space-y-1">
+                    <span className={fieldLabelClass}>
+                      <Translate>Add as</Translate>
+                    </span>
+                    <div className="text-xs text-ink">
+                      <Translate>Primary document</Translate>
+                    </div>
+                  </div>
+                ) : null}
+              </div>
             </div>
 
-            <div
-              className={[
-                'grid gap-3',
-                showLanguage && showAddAs ? 'grid-cols-2' : 'grid-cols-1',
-              ].join(' ')}
-            >
-              {showLanguage ? (
-                <label className="space-y-1" htmlFor="add-file-language">
-                  <span className={fieldLabelClass}>
-                    <Translate>Language</Translate>
-                  </span>
-                  <div className="relative">
-                    <select
-                      id="add-file-language"
-                      value={language}
-                      onChange={event => setLanguage(event.target.value)}
-                      disabled={isSubmitting}
-                      className={controlClass}
-                    >
-                      {languageOptions.map(option => (
-                        <option key={option.key ?? option.value} value={option.value}>
-                          {option.label}
-                        </option>
-                      ))}
-                    </select>
-                    <ChevronDownIcon className="pointer-events-none absolute right-2 top-1/2 h-3 w-3 -translate-y-1/2 text-ink-tertiary" />
-                  </div>
-                </label>
-              ) : null}
-              {showAddAs ? (
-                <label className="space-y-1" htmlFor="add-file-type">
-                  <span className={fieldLabelClass}>
-                    <Translate>Add as</Translate>
-                  </span>
-                  <div className="relative">
-                    <select
-                      id="add-file-type"
-                      value={addAs}
-                      onChange={event => setAddAs(event.target.value as AddAs)}
-                      disabled={isSubmitting}
-                      className={`${controlClass} truncate`}
-                    >
-                      {addAsOptions.map(option => (
-                        <option key={option.value} value={option.value} disabled={option.disabled}>
-                          {option.label}
-                        </option>
-                      ))}
-                    </select>
-                    <ChevronDownIcon className="pointer-events-none absolute right-2 top-1/2 h-3 w-3 -translate-y-1/2 text-ink-tertiary" />
-                  </div>
-                </label>
-              ) : null}
-              {!showAddAs ? (
-                <div className="space-y-1">
-                  <span className={fieldLabelClass}>
-                    <Translate>Add as</Translate>
-                  </span>
-                  <div className="text-xs text-ink">
-                    <Translate>Primary document</Translate>
-                  </div>
-                </div>
-              ) : null}
-            </div>
+            {isSubmitting ? (
+              <div className="mt-2">
+                <FileUploadProgressLine progress={uploadProgress ?? 0} />
+              </div>
+            ) : null}
           </div>
-
-          {isSubmitting ? (
-            <div className="mt-2">
-              <FileUploadProgressLine progress={uploadProgress ?? 0} />
-            </div>
-          ) : null}
-        </div>
+        )}
       </Modal.Body>
       <Modal.Footer className="flex justify-end gap-3 px-6! py-4!">
         <Button variant="secondary" onClick={closeAddFileModal} disabled={isSubmitting}>
           <Translate>Cancel</Translate>
         </Button>
-        <Button variant="primary" onClick={handleConfirm} disabled={isSubmitting}>
+        <Button variant="primary" onClick={handleConfirm} disabled={isSubmitting || !file}>
           <Translate>Add file</Translate>
         </Button>
       </Modal.Footer>

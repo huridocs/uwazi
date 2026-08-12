@@ -22,14 +22,18 @@ import { buildMetadataRecordFields } from './buildMetadataRecordFields.js';
 import { isLongField, partitionMetadataRecord } from './metadataPropertyLayout.js';
 import { renderFieldContent, renderScalarContent } from './Components/metadataFieldContent.js';
 import { fieldTitle, specializedCardTitle } from './Components/metadataFieldTitle.js';
-import { connectionPillsForField } from './Components/ConnectionPills.js';
+import {
+  connectionPillsForField,
+  type OpenEntityTarget,
+} from './Components/ConnectionPills.js';
 
 type MetadataRecordProps = {
   entity: Entity;
+  onOpenEntity?: (target: OpenEntityTarget) => void;
 };
 
 // eslint-disable-next-line max-statements
-const MetadataRecord = ({ entity }: MetadataRecordProps) => {
+const MetadataRecord = ({ entity, onOpenEntity }: MetadataRecordProps) => {
   const templates = useAtomValue(templatesAtom);
   const focusField = useAtomValue(focusMetadataFieldAtom);
   const clearFocus = useSetAtom(focusMetadataFieldAtom);
@@ -84,7 +88,7 @@ const MetadataRecord = ({ entity }: MetadataRecordProps) => {
     [entityTemplate?.properties]
   );
 
-  const { relationshipFields, otherFields, inheritingTerminalById } = useMemo(
+  const { relationshipFields, otherFields } = useMemo(
     () => buildMetadataRecordFields(metadata, templatePropertyById, entity, templates),
     [metadata, templatePropertyById, entity, templates]
   );
@@ -151,6 +155,7 @@ const MetadataRecord = ({ entity }: MetadataRecordProps) => {
     partition.detailLinkOnlyRels.forEach(field => {
       const content = connectionPillsForField(field, templatePropertyById.get(field._id), {
         showExternalLinkIcon: true,
+        onOpenEntity,
       });
       if (!content) {
         return;
@@ -168,6 +173,7 @@ const MetadataRecord = ({ entity }: MetadataRecordProps) => {
     entity.title,
     entity.creationDate,
     entity.editDate,
+    onOpenEntity,
     partition.detailFields,
     partition.detailLinkOnlyRels,
     templatePropertyById,
@@ -218,7 +224,9 @@ const MetadataRecord = ({ entity }: MetadataRecordProps) => {
       })}
 
       {partition.leadingLinkOnlyRels.map(field => {
-        const content = connectionPillsForField(field, templatePropertyById.get(field._id));
+        const content = connectionPillsForField(field, templatePropertyById.get(field._id), {
+          onOpenEntity,
+        });
         if (!content) {
           return null;
         }
@@ -242,7 +250,8 @@ const MetadataRecord = ({ entity }: MetadataRecordProps) => {
         translationContext={translationContext}
         templatePropertyById={templatePropertyById}
         templates={templates}
-        inheritingTerminalById={inheritingTerminalById}
+        entity={entity}
+        onOpenEntity={onOpenEntity}
         inheritingOnly
       />
     </div>

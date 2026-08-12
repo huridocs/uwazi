@@ -2,7 +2,7 @@ import React, { useEffect, type ReactNode } from 'react';
 import { useTabGroup } from '#V2/Components/UI/index.js';
 import type { Entity as EntityType, FileType } from '#V2/api/entities/types.js';
 import { useMetadataEditing } from '../Components/context/index.js';
-import { SIDE_TAB, isValidSideTab, type SideTabId } from './tabIds.js';
+import { MAIN_TAB, SIDE_TAB, isValidMainTab, isValidSideTab, type SideTabId } from './tabIds.js';
 import {
   keepMetadataTab,
   resolveActiveTabId,
@@ -30,8 +30,11 @@ const SideTabsContent = ({
   pagePlaintext,
 }: SideTabsContentProps) => {
   const { activeTabId: atomActiveTabId } = useTabGroup('entity-side');
+  const { activeTabId: mainAtomTabId } = useTabGroup('entity-main');
   const resolvedTabId = resolveActiveTabId(atomActiveTabId, urlActiveTabId);
   const activeTabId = isValidSideTab(resolvedTabId) ? resolvedTabId : urlActiveTabId;
+  const mainTabId = isValidMainTab(mainAtomTabId) ? mainAtomTabId : undefined;
+  const showDocumentRail = mainTabId !== MAIN_TAB.METADATA;
   const { isEditing, formMountHost, registerMetadataActive } = useMetadataEditing();
   const metadataActive = activeTabId === SIDE_TAB.METADATA;
   const keepMetadata = keepMetadataTab(Boolean(metadataActive), isEditing, formMountHost, 'side');
@@ -55,6 +58,7 @@ const SideTabsContent = ({
               mainDocument={mainDocument}
               pagePlaintext={pagePlaintext}
               showViewModeSelect
+              showRail={showDocumentRail}
             />
           </div>
         );

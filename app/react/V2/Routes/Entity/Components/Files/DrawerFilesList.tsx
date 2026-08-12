@@ -1,11 +1,23 @@
 /* eslint-disable react/no-multi-comp */
-import React, { useCallback } from 'react';
-import { EyeIcon, PencilIcon } from '@heroicons/react/24/outline';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import {
+  CheckIcon,
+  ChevronDownIcon,
+  EyeIcon,
+  PencilIcon,
+  XMarkIcon,
+} from '@heroicons/react/24/outline';
+import { LanguageUtils } from '#shared/language/index.js';
 import { Translate, t } from '#app/I18N/index.js';
 import { EntityWriteAuthorization } from '#V2/Routes/Entity/Components/context/index.js';
+import { AddTranslationButton } from './AddTranslationButton.js';
 import { useEntityFiles } from './EntityFilesContext.js';
 import { FileProcessStatusIndicator } from './FileProcessStatusIndicator.js';
-import { isFileRowSelectable } from './fileHelpers.js';
+import {
+  fileLanguageSelectOptions,
+  fileSupportsLanguage,
+  isFileRowSelectable,
+} from './fileHelpers.js';
 import { EntityFileRow, FileKind } from './types.js';
 
 const SectionHeader = ({ label }: { label: string }) => (
@@ -64,59 +76,172 @@ const ViewFileButton = ({ onClick }: { onClick: () => void }) => (
   </button>
 );
 
+const resolveFileLanguage = (rawLanguage?: string) => {
+  if (!rawLanguage) return 'other';
+  if (rawLanguage === 'other') return 'other';
+  return LanguageUtils.fromISO639_3(rawLanguage, false)?.ISO639_3 ?? 'other';
+};
+
 const DrawerFileRow = ({
   row,
   active,
+  editing,
   onView,
   onEdit,
+  onCancelEdit,
+  onCommit,
 }: {
   row: EntityFileRow;
   active?: boolean;
+  editing: boolean;
   onView: (row: EntityFileRow) => void;
   onEdit: (row: EntityFileRow) => void;
-}) => (
-  <div
-    className={`flex min-h-14.5 items-stretch overflow-hidden rounded-md border transition-colors ${
-      active
-        ? 'border-ink/30 bg-parchment hover:bg-parchment'
-        : 'border-border/50 bg-paper hover:bg-warm/50'
-    } ${row.status === 'processing' ? 'opacity-60' : ''}`}
-  >
-    <FileThumbnail kind={row.kind} />
-    <div className="flex min-w-0 flex-1 flex-col justify-center gap-0.5 px-3 py-2">
-      <div className="flex items-center gap-1.5">
-        <p className="truncate text-xs font-medium text-ink">{row.displayName}</p>
-        <FileProcessStatusIndicator status={row.status} />
-        {row.languageKey !== '—' ? (
-          <span className="shrink-0 rounded bg-vellum px-1 py-px text-tiny font-semibold text-ink-secondary">
-            {row.languageKey}
-          </span>
-        ) : null}
-      </div>
-      <div className="flex items-center gap-3">
-        <span className="text-nano text-ink-tertiary">{row.typeLabel.toUpperCase()}</span>
-        <span dir="ltr" className="text-nano text-ink-tertiary">
-          {row.sizeLabel}
-        </span>
+  onCancelEdit: () => void;
+  onCommit: (payload: { _id: string; originalname: string; language?: string }) => Promise<void>;
+}) => {
+  const [draftName, setDraftName] = useState(row.raw.originalname || row.displayName);
+  const [draftLanguage, setDraftLanguage] = useState(() => resolveFileLanguage(row.raw.language));
+  const [saving, setSaving] = useState(false);
+  const nameInputRef = useRef<HTMLInputElement>(null);
+  const languageOptions = useMemo(() => fileLanguageSelectOptions(), []);
+  const showLanguage = fileSupportsLanguage({
+    type: row.raw.mimetype || '',
+    name: row.raw.originalname || row.displayName,
+  });
+
+  useEffect(() => {
+    if (!editing) return;
+    setDraftName(row.raw.originalname || row.displayName);
+    setDraftLanguage(resolveFileLanguage(row.raw.language));
+    nameInputRef.current?.focus();
+    nameInputRef.current?.select();
+  }, [editing, row.displayName, row.raw.language, row.raw.originalname]);
+
+  const save = async () => {
+    if (!row.raw._id || saving) return;
+    setSaving(true);
+    try {
+      await onCommit({
+        _id: row.raw._id,
+        originalname: draftName.trim() || row.displayName,
+        language: showLanguage ? draftLanguage || undefined : undefined,
+      });
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <div
+      className={`flex min-h-14.5 items-stretch overflow-hidden rounded-md border transition-colors ${
+        active
+          ? 'border-ink/30 bg-parchment hover:bg-parchment'
+          : 'border-border/50 bg-paper hover:bg-warm/50'
+      } ${row.status === 'processing' ? 'opacity-60' : ''}`}
+    >
+      <FileThumbnail kind={row.kind} />
+      {editing ? (
+        <div className="flex min-w-0 flex-1 flex-col justify-center gap-1 px-3 py-2">
+          <input
+            ref={nameInputRef}
+            type="text"
+            value={draftName}
+            onChange={e => setDraftName(e.target.value)}
+            onKeyDown={e => {
+              if (e.key === 'Enter') void save();
+              if (e.key === 'Escape') onCancelEdit();
+            }}
+            className="w-full rounded border border-border bg-paper px-1.5 py-1 text-xs font-medium text-ink focus:outline-none focus:ring-1 focus:ring-carbon/30"
+            aria-label={t('System', 'Name', null, false)}
+            disabled={saving}
+          />
+          <div className="flex items-center gap-2">
+            {showLanguage ? (
+              <div className="relative inline-flex items-center overflow-hidden rounded border border-border bg-paper focus-within:ring-1 focus-within:ring-carbon/30">
+                <select
+                  value={draftLanguage}
+                  onChange={e => setDraftLanguage(e.target.value)}
+                  className="cursor-pointer appearance-none bg-transparent py-0.5 pl-2 pr-5 text-tiny font-semibold text-ink-secondary focus:outline-none"
+                  aria-label={t('System', 'Language', null, false)}
+                  disabled={saving}
+                >
+                  {languageOptions.map(option => (
+                    <option key={option.key ?? option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+                <ChevronDownIcon className="pointer-events-none absolute right-1 h-micro w-micro text-ink-tertiary" />
+              </div>
+            ) : null}
+            <span className="text-nano text-ink-tertiary">{row.typeLabel.toUpperCase()}</span>
+            <span dir="ltr" className="text-nano text-ink-tertiary">
+              {row.sizeLabel}
+            </span>
+          </div>
+        </div>
+      ) : (
+        <div className="flex min-w-0 flex-1 flex-col justify-center gap-0.5 px-3 py-2">
+          <div className="flex items-center gap-1.5">
+            <p className="truncate text-xs font-medium text-ink">{row.displayName}</p>
+            <FileProcessStatusIndicator status={row.status} />
+            {row.languageKey !== '—' ? (
+              <span className="shrink-0 rounded bg-vellum px-1 py-px text-tiny font-semibold text-ink-secondary">
+                {row.languageKey}
+              </span>
+            ) : null}
+          </div>
+          <div className="flex items-center gap-3">
+            <span className="text-nano text-ink-tertiary">{row.typeLabel.toUpperCase()}</span>
+            <span dir="ltr" className="text-nano text-ink-tertiary">
+              {row.sizeLabel}
+            </span>
+          </div>
+        </div>
+      )}
+      <div className="flex shrink-0 items-center gap-1 pr-2">
+        {editing ? (
+          <>
+            <button
+              type="button"
+              onClick={() => void save()}
+              disabled={saving}
+              aria-label={t('System', 'Save', null, false)}
+              className="flex h-7 w-7 cursor-pointer items-center justify-center rounded-md bg-warm text-ink-secondary transition-colors hover:bg-parchment hover:text-ink disabled:opacity-60"
+            >
+              <CheckIcon className="h-3 w-3" />
+            </button>
+            <button
+              type="button"
+              onClick={onCancelEdit}
+              disabled={saving}
+              aria-label={t('System', 'Cancel', null, false)}
+              className="flex h-7 w-7 cursor-pointer items-center justify-center rounded-md text-ink-tertiary transition-colors hover:bg-warm hover:text-ink disabled:opacity-60"
+            >
+              <XMarkIcon className="h-3 w-3" />
+            </button>
+          </>
+        ) : (
+          <>
+            {isFileRowSelectable(row) ? (
+              <EntityWriteAuthorization>
+                <button
+                  type="button"
+                  onClick={() => onEdit(row)}
+                  aria-label={t('System', 'Rename', null, false)}
+                  className="flex h-7 w-7 cursor-pointer items-center justify-center rounded-md text-ink-tertiary transition-colors hover:bg-warm hover:text-ink"
+                >
+                  <PencilIcon className="h-3 w-3" />
+                </button>
+              </EntityWriteAuthorization>
+            ) : null}
+            <ViewFileButton onClick={() => onView(row)} />
+          </>
+        )}
       </div>
     </div>
-    <div className="flex shrink-0 items-center gap-1 pr-2">
-      {isFileRowSelectable(row) ? (
-        <EntityWriteAuthorization>
-          <button
-            type="button"
-            onClick={() => onEdit(row)}
-            aria-label={t('System', 'Rename', null, false)}
-            className="flex h-7 w-7 cursor-pointer items-center justify-center rounded-md text-ink-tertiary transition-colors hover:bg-warm hover:text-ink"
-          >
-            <PencilIcon className="h-3 w-3" />
-          </button>
-        </EntityWriteAuthorization>
-      ) : null}
-      <ViewFileButton onClick={() => onView(row)} />
-    </div>
-  </div>
-);
+  );
+};
 
 const DrawerFilesList = () => {
   const {
@@ -125,8 +250,9 @@ const DrawerFilesList = () => {
     mainDocumentId,
     navigateToFilesSideTab,
     openFilePreviewForRow,
-    openFileEdit,
+    saveRow,
   } = useEntityFiles();
+  const [editingRowId, setEditingRowId] = useState<string | null>(null);
 
   const onView = useCallback(
     (row: EntityFileRow) => {
@@ -136,12 +262,20 @@ const DrawerFilesList = () => {
     [navigateToFilesSideTab, openFilePreviewForRow]
   );
 
-  const onEdit = useCallback(
-    (row: EntityFileRow) => {
-      openFileEdit(row.rowId, 'name');
-      navigateToFilesSideTab('file');
+  const onEdit = useCallback((row: EntityFileRow) => {
+    setEditingRowId(row.rowId);
+  }, []);
+
+  const onCancelEdit = useCallback(() => {
+    setEditingRowId(null);
+  }, []);
+
+  const onCommit = useCallback(
+    async (payload: { _id: string; originalname: string; language?: string }) => {
+      await saveRow(payload);
+      setEditingRowId(null);
     },
-    [navigateToFilesSideTab, openFileEdit]
+    [saveRow]
   );
 
   const primaryCountLabel =
@@ -152,32 +286,34 @@ const DrawerFilesList = () => {
   return (
     <div className="flex min-h-0 flex-1 flex-col">
       <div className="min-h-0 flex-1 overflow-auto px-3 py-4 pb-8">
+
+        <div className="mb-2 flex items-baseline justify-between px-1">
         <SectionHeader label="Primary documents" />
+              <span className="shrink-0 text-nano tabular-nums text-ink-tertiary">
+                {primaryCountLabel}
+              </span>
+        </div>
         {primaryRows.length === 0 ? (
           <p className="mb-5 px-1 text-xs italic text-ink-tertiary">
             <Translate>No primary documents</Translate>
           </p>
         ) : (
           <section className="mb-6">
-            <div className="mb-2 flex items-baseline justify-between px-1">
-              <div className="truncate text-sm font-semibold text-ink">
-                <Translate>Documents</Translate>
-              </div>
-              <span className="shrink-0 text-nano tabular-nums text-ink-tertiary">
-                {primaryCountLabel}
-              </span>
-            </div>
             <div className="space-y-2">
               {primaryRows.map(row => (
                 <DrawerFileRow
                   key={row.rowId}
                   row={row}
                   active={row.rowId === mainDocumentId}
+                  editing={editingRowId === row.rowId}
                   onView={onView}
                   onEdit={onEdit}
+                  onCancelEdit={onCancelEdit}
+                  onCommit={onCommit}
                 />
               ))}
             </div>
+            <AddTranslationButton />
           </section>
         )}
 
@@ -189,7 +325,15 @@ const DrawerFilesList = () => {
         ) : (
           <div className="mt-2 space-y-2">
             {supportingRows.map(row => (
-              <DrawerFileRow key={row.rowId} row={row} onView={onView} onEdit={onEdit} />
+              <DrawerFileRow
+                key={row.rowId}
+                row={row}
+                editing={editingRowId === row.rowId}
+                onView={onView}
+                onEdit={onEdit}
+                onCancelEdit={onCancelEdit}
+                onCommit={onCommit}
+              />
             ))}
           </div>
         )}

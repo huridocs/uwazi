@@ -49,6 +49,8 @@ type EntityFilesContextValue = {
   deleteRows: () => Promise<void>;
   saveRow: (payload: { _id: string; originalname: string; language?: string }) => Promise<void>;
   requestAddFile: (mode: AddFileMode) => void;
+  openAddFilePicker: () => void;
+  acceptSelectedFile: (file: File | undefined) => void;
   closeAddFileModal: () => void;
   confirmAddFile: (payload: ConfirmAddFilePayload) => Promise<void>;
 };
@@ -127,6 +129,8 @@ const EntityFilesProvider = ({
     uploadProgress,
     fileInputRef,
     requestAddFile,
+    openAddFilePicker,
+    acceptSelectedFile,
     closeAddFileModal,
     confirmAddFile,
     handleFileInputChange,
@@ -185,6 +189,8 @@ const EntityFilesProvider = ({
       deleteRows,
       saveRow,
       requestAddFile,
+      openAddFilePicker,
+      acceptSelectedFile,
       closeAddFileModal,
       confirmAddFile,
     }),
@@ -216,6 +222,8 @@ const EntityFilesProvider = ({
       deleteRows,
       saveRow,
       requestAddFile,
+      openAddFilePicker,
+      acceptSelectedFile,
       closeAddFileModal,
       confirmAddFile,
     ]

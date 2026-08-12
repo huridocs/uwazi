@@ -18,6 +18,7 @@ export { SplineIcon } from './SplineIcon.js';
 export { PencilStrokeIcon, Trash2StrokeIcon, PlusStrokeIcon } from './LucideStrokeIcons.js';
 export {
   CircleDotIcon,
+  GitForkIcon,
   LayoutListIcon,
   ListTreeIcon,
   NetworkIcon,

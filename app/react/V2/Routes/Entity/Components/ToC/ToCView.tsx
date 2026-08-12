@@ -57,7 +57,7 @@ const ToCView = ({ generatedToc, panel }: ToCViewProps) => {
 
   return (
     <div className="flex h-full min-h-0 flex-col">
-      <div className="flex shrink-0 items-center justify-between px-3 py-2.5">
+      <div className="flex shrink-0 items-center justify-between px-3 py-1">
         <div className="flex items-center gap-1.5">
           <span className="text-sm font-semibold text-ink">
             <Translate>Table of contents</Translate>
@@ -100,7 +100,7 @@ const ToCView = ({ generatedToc, panel }: ToCViewProps) => {
         ) : null}
       </div>
 
-      <div className="min-h-0 flex-1 overflow-auto px-3">
+      <div className="min-h-0 flex-1 overflow-auto px-1 mt-2">
         <ToC
           toc={tocState.toc}
           expanded={tocState.expanded}

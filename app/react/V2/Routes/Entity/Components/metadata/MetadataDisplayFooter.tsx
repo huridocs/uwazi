@@ -1,5 +1,10 @@
 import React, { useState } from 'react';
-import { PencilSquareIcon, ShareIcon, TrashIcon } from '@heroicons/react/24/outline';
+import {
+  DocumentDuplicateIcon,
+  PencilSquareIcon,
+  ShareIcon,
+  TrashIcon,
+} from '@heroicons/react/24/outline';
 import { Translate } from '#app/I18N/index.js';
 import { Button } from '#V2/Components/UI/index.js';
 import {
@@ -10,7 +15,7 @@ import {
 } from '#V2/Routes/Entity/Components/context/index.js';
 import { ShareEntityModal } from '#V2/Routes/Entity/Components/share/index.js';
 
-const iconClass = 'h-4 w-4 shrink-0';
+const iconClass = 'h-3 w-3 shrink-0';
 
 type MetadataDisplayFooterProps = {
   host: MetadataEditingHost;
@@ -18,15 +23,31 @@ type MetadataDisplayFooterProps = {
 
 const MetadataDisplayFooter = ({ host }: MetadataDisplayFooterProps) => {
   const entity = useEntityScopedEntity();
-  const { isEditing, isSaving, formMountHost, formId, cancelEdit, startEditing } =
-    useMetadataEditing();
+  const {
+    isEditing,
+    isSaving,
+    formMountHost,
+    formId,
+    cancelEdit,
+    startEditing,
+  } = useMetadataEditing();
   const [sharing, setSharing] = useState(false);
   const showSaveCancel = isEditing && formMountHost === host;
 
   return (
     <EntityWriteAuthorization>
       {showSaveCancel ? (
-        <div className="flex w-full items-center justify-end gap-3">
+        <div className="flex w-full items-center gap-3">
+          <Button
+            type="button"
+            variant="warm"
+            className="inline-flex items-center gap-1.5"
+            disabled={isSaving}
+          >
+            <DocumentDuplicateIcon className={iconClass} />
+            <Translate>Copy from</Translate>
+          </Button>
+          <div className="flex-1" />
           <Button type="button" variant="warm" onClick={cancelEdit}>
             <Translate>Cancel</Translate>
           </Button>
@@ -39,7 +60,7 @@ const MetadataDisplayFooter = ({ host }: MetadataDisplayFooterProps) => {
           <div className="flex gap-2">
             <Button
               variant="warm"
-              className="inline-flex items-center gap-1.5"
+              className="inline-flex items-center"
               onClick={() => startEditing(host)}
               disabled={isSaving}
             >
@@ -48,7 +69,7 @@ const MetadataDisplayFooter = ({ host }: MetadataDisplayFooterProps) => {
             </Button>
             <Button
               variant="warm"
-              className="inline-flex items-center gap-1.5"
+              className="inline-flex items-center"
               onClick={() => setSharing(true)}
             >
               <ShareIcon className={iconClass} />

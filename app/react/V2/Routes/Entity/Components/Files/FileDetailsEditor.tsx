@@ -6,6 +6,7 @@ import { EntityWriteAuthorization } from '#V2/Routes/Entity/Components/context/i
 import { fileLanguageSelectOptions, fileSupportsLanguage } from './fileHelpers.js';
 import { getRowIcon } from './fileRowIcon.js';
 import { FileDeleteAction } from './FileDeleteAction.js';
+import { FileDetailsField } from './FileDetailsField.js';
 import { FileDocumentContextBadge } from './FileDocumentContextBadge.js';
 import { EntityFileRow, FileEditFocus } from './types.js';
 
@@ -95,88 +96,60 @@ const FileDetailsEditor = ({
           </EntityWriteAuthorization>
         </div>
 
-        <div className="min-w-0 space-y-1">
-          <span className="text-nano font-medium uppercase tracking-wide text-ink-muted">
-            <Translate>Name</Translate>
-          </span>
-          <div className="min-w-0">
-            <div className="flex items-center gap-2 rounded border border-border bg-paper focus-within:ring-1 focus-within:ring-carbon/30">
-              <span className="ml-2 shrink-0">{getRowIcon(row)}</span>
-              <input
-                ref={nameInputRef}
-                id={`file-name-${row.raw._id}`}
-                type="text"
-                value={originalname}
-                onChange={event => setOriginalname(event.target.value)}
-                onKeyDown={event => {
-                  if (event.key === 'Enter') {
-                    event.currentTarget.blur();
-                  }
-                }}
-                className="min-w-0 flex-1 bg-transparent px-1 py-1.5 text-sm text-ink focus:outline-none"
-                aria-label="File name"
-              />
-            </div>
+        <FileDetailsField label={<Translate>Name</Translate>}>
+          <div className="flex items-center gap-2 rounded border border-border bg-paper focus-within:ring-1 focus-within:ring-carbon/30">
+            <span className="ml-2 shrink-0">{getRowIcon(row)}</span>
+            <input
+              ref={nameInputRef}
+              id={`file-name-${row.raw._id}`}
+              type="text"
+              value={originalname}
+              onChange={event => setOriginalname(event.target.value)}
+              onKeyDown={event => {
+                if (event.key === 'Enter') {
+                  event.currentTarget.blur();
+                }
+              }}
+              className="min-w-0 flex-1 bg-transparent px-1 py-1.5 text-sm text-ink focus:outline-none"
+              aria-label="File name"
+            />
           </div>
-        </div>
+        </FileDetailsField>
 
         <div className="grid grid-cols-2 gap-3">
           {showLanguage ? (
-            <div className="min-w-0 space-y-1">
-              <span className="text-nano font-medium uppercase tracking-wide text-ink-muted">
-                <Translate>Language</Translate>
-              </span>
-              <div className="min-w-0">
-                <div className="relative flex w-full min-w-0 items-center overflow-hidden rounded border border-border bg-paper focus-within:ring-1 focus-within:ring-carbon/30">
-                  <select
-                    ref={languageSelectRef}
-                    id={`file-language-${row.raw._id}`}
-                    value={language}
-                    onChange={event => setLanguage(event.target.value)}
-                    className="w-full min-w-0 max-w-full cursor-pointer appearance-none bg-transparent py-0.5 pl-2 pr-6 text-xs font-medium text-ink focus:outline-none"
-                    aria-label="File language"
-                  >
-                    {languageOptions.map(option => (
-                      <option key={option.key ?? option.value} value={option.value}>
-                        {option.label}
-                      </option>
-                    ))}
-                  </select>
-                  <ChevronDownIcon className="pointer-events-none absolute right-1.5 h-micro w-micro text-ink-tertiary" />
-                </div>
+            <FileDetailsField label={<Translate>Language</Translate>}>
+              <div className="relative flex w-full min-w-0 items-center overflow-hidden rounded border border-border bg-paper focus-within:ring-1 focus-within:ring-carbon/30">
+                <select
+                  ref={languageSelectRef}
+                  id={`file-language-${row.raw._id}`}
+                  value={language}
+                  onChange={event => setLanguage(event.target.value)}
+                  className="w-full min-w-0 max-w-full cursor-pointer appearance-none bg-transparent py-0.5 pl-2 pr-6 text-xs font-medium text-ink focus:outline-none"
+                  aria-label="File language"
+                >
+                  {languageOptions.map(option => (
+                    <option key={option.key ?? option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+                <ChevronDownIcon className="pointer-events-none absolute right-1.5 h-micro w-micro text-ink-tertiary" />
               </div>
-            </div>
+            </FileDetailsField>
           ) : null}
-
-          <div className="min-w-0 space-y-1">
-            <span className="text-nano font-medium uppercase tracking-wide text-ink-muted">
-              <Translate>Type</Translate>
-            </span>
-            <div className="min-w-0">
-              <div className="flex items-center gap-1.5 px-2 py-1.5 text-sm text-ink-secondary">
-                {getRowIcon(row)}
-                <span>{row.typeLabel}</span>
-              </div>
+          <FileDetailsField label={<Translate>Type</Translate>}>
+            <div className="flex h-7 items-center gap-1.5 text-sm text-ink-secondary">
+              {getRowIcon(row)}
+              <span>{row.typeLabel}</span>
             </div>
-          </div>
-
-          <div className="min-w-0 space-y-1">
-            <span className="text-nano font-medium uppercase tracking-wide text-ink-muted">
-              <Translate>Size</Translate>
-            </span>
-            <div className="min-w-0">
-              <span className="text-sm text-ink-secondary">{row.sizeLabel}</span>
-            </div>
-          </div>
-
-          <div className="min-w-0 space-y-1">
-            <span className="text-nano font-medium uppercase tracking-wide text-ink-muted">
-              <Translate>Modified</Translate>
-            </span>
-            <div className="min-w-0">
-              <span className="text-sm text-ink-secondary">{row.modifiedLabel}</span>
-            </div>
-          </div>
+          </FileDetailsField>
+          <FileDetailsField label={<Translate>Size</Translate>}>
+            <span className="text-sm text-ink-secondary">{row.sizeLabel}</span>
+          </FileDetailsField>
+          <FileDetailsField label={<Translate>Modified</Translate>}>
+            <span className="text-sm text-ink-secondary">{row.modifiedLabel}</span>
+          </FileDetailsField>
         </div>
       </div>
 

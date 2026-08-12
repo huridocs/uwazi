@@ -8,7 +8,7 @@ type MetadataTabFooterProps = {
 };
 
 const MetadataTabFooter = ({ host }: MetadataTabFooterProps) => (
-  <EntityTabFooter>
+  <EntityTabFooter inset={host === 'side' ? 'side' : 'main'}>
     <MetadataDisplayFooter host={host} />
   </EntityTabFooter>
 );

@@ -1,6 +1,7 @@
 import React, { useCallback, useMemo, useState } from 'react';
-import { Cog6ToothIcon, PencilIcon, PlusIcon } from '@heroicons/react/24/outline';
+import { PencilIcon, PlusIcon } from '@heroicons/react/24/outline';
 import { I18NLinkV2, Translate } from '#app/I18N/index.js';
+import { GitForkIcon } from '#V2/Components/CustomIcons/index.js';
 import {
   Button,
   ConfirmationModal,
@@ -17,6 +18,8 @@ import {
 import { useEntityTabNavigation } from '#V2/Routes/Entity/Tabs/hooks/useEntityTabNavigation.js';
 import { useRelationshipBulkDelete } from '../hooks/useRelationshipBulkDelete.js';
 import { useEntityRelationshipMarkers } from '../hooks/useDocumentRelationships.js';
+
+const iconClass = 'h-3 w-3 shrink-0';
 
 const RelationshipsActionBar = () => {
   const sourceMarkers = useEntityRelationshipMarkers();
@@ -74,23 +77,17 @@ const RelationshipsActionBar = () => {
       <div className="flex w-full items-center justify-between gap-2">
         {!editMode ? (
           <Button
-            variant="secondary"
-            size="small"
-            className="inline-flex items-center gap-1.5"
+            variant="warm"
+            className="inline-flex items-center"
             onClick={() => setEditMode(true)}
           >
-            <PencilIcon className="h-3 w-3" />
+            <PencilIcon className={iconClass} />
             <Translate>Edit</Translate>
           </Button>
         ) : (
           <div className="flex flex-wrap items-center gap-2">
-            <Button
-              variant="secondary"
-              size="small"
-              className="inline-flex items-center gap-1.5"
-              onClick={handleCreate}
-            >
-              <PlusIcon className="h-3 w-3" />
+            <Button variant="warm" className="inline-flex items-center" onClick={handleCreate}>
+              <PlusIcon className={iconClass} />
               <Translate>Create relationship</Translate>
             </Button>
             <NeedAuthorization roles={['admin']}>
@@ -98,7 +95,7 @@ const RelationshipsActionBar = () => {
                 to="/settings/relationship-types"
                 className="inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium text-ink-secondary transition-colors hover:bg-warm hover:text-ink"
               >
-                <Cog6ToothIcon className="h-3 w-3 text-ink-tertiary" />
+                <GitForkIcon className={`${iconClass} text-ink-tertiary`} />
                 <Translate>Manage types</Translate>
               </I18NLinkV2>
             </NeedAuthorization>
@@ -121,7 +118,6 @@ const RelationshipsActionBar = () => {
                 </span>
                 <Button
                   variant="danger"
-                  size="small"
                   onClick={() => setConfirmDelete(true)}
                   disabled={isDeleting}
                 >
@@ -129,10 +125,10 @@ const RelationshipsActionBar = () => {
                 </Button>
               </>
             )}
-            <Button variant="secondary" size="small" onClick={cancelEdit} disabled={isDeleting}>
+            <Button variant="warm" onClick={cancelEdit} disabled={isDeleting}>
               <Translate>Cancel</Translate>
             </Button>
-            <Button variant="primary" size="small" onClick={saveEdit} disabled={isDeleting}>
+            <Button variant="primary" onClick={saveEdit} disabled={isDeleting}>
               <Translate>Save</Translate>
             </Button>
           </div>

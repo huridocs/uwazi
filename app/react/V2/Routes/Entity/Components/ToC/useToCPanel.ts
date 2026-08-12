@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef } from 'react';
 import { useRevalidator } from 'react-router';
 import { t } from '#app/I18N/index.js';
 import type { TocSchema } from '#shared/types/commonTypes.js';
-import { update as updateFile } from '#V2/api/files/index.js';
+import { tocReviewed, update as updateFile } from '#V2/api/files/index.js';
 import type { FileType } from '#shared/types/fileType.js';
 import { FetchResponseError } from '#shared/JSONRequest.js';
 import { type ProcessedTocEntry, sortTocEntries } from './ToC.js';
@@ -157,6 +157,32 @@ const useToCPanelHandlers = ({
     setToc(toc);
   };
 
+  const handleMarkReviewed = useCallback(async () => {
+    const fileId = file?._id ? String(file._id) : undefined;
+    if (!fileId) return;
+
+    const markError = () =>
+      notify('error', t('System', 'Failed to mark table of contents as reviewed', null, false));
+
+    setTocState(current => ({ ...current, isSaving: true }));
+    try {
+      const result = await tocReviewed(fileId);
+      if (result instanceof FetchResponseError || result instanceof Error) {
+        markError();
+        return;
+      }
+      if (file?.entity) {
+        entityLoaderCache.invalidateEntity(file.entity);
+      }
+      await revalidate();
+      notify('success', t('System', 'Document updated', null, false));
+    } catch {
+      markError();
+    } finally {
+      setTocState(current => ({ ...current, isSaving: false }));
+    }
+  }, [file, notify, revalidate, setTocState]);
+
   const handleEntryUpdate = useCallback(
     (index: number, updates: Partial<TocSchema>) => {
       if (!tocState.toc) return;
@@ -193,6 +219,7 @@ const useToCPanelHandlers = ({
     handleEdit,
     handleSave,
     handleCancel,
+    handleMarkReviewed,
     handleIndentationChange,
     handleDelete,
     handleLabelChange,
@@ -237,6 +264,7 @@ const useToCPanel = ({ toc, file }: UseToCPanelParams) => {
     isAllExpanded: tocState.isAllExpanded,
     isAllCollapsed: tocState.isAllCollapsed,
     isSaving: tocState.isSaving,
+    canMarkReviewed: Boolean(file?.generatedToc),
     expandAll,
     collapseAll,
     toggleExpand,

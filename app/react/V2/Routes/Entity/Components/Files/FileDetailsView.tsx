@@ -5,6 +5,7 @@ import { EntityWriteAuthorization } from '#V2/Routes/Entity/Components/context/i
 import { fileSupportsLanguage } from './fileHelpers.js';
 import { getRowIcon } from './fileRowIcon.js';
 import { FileDeleteAction } from './FileDeleteAction.js';
+import { FileDetailsField } from './FileDetailsField.js';
 import { FileDocumentContextBadge } from './FileDocumentContextBadge.js';
 import { EntityFileRow } from './types.js';
 
@@ -33,61 +34,35 @@ const FileDetailsView = ({ row, onEdit }: { row: EntityFileRow; onEdit: () => vo
           </EntityWriteAuthorization>
         </div>
 
-        <div className="min-w-0 space-y-1">
-          <span className="text-nano font-medium uppercase tracking-wide text-ink-muted">
-            <Translate>Name</Translate>
-          </span>
-          <div className="min-w-0">
-            <div className="flex items-center gap-2 px-2 py-1.5">
-              {getRowIcon(row)}
-              <span className="truncate text-sm text-ink">{row.displayName}</span>
-            </div>
+        <FileDetailsField label={<Translate>Name</Translate>}>
+          <div className="flex items-center gap-2 px-2 py-1.5">
+            {getRowIcon(row)}
+            <span className="truncate text-sm text-ink">{row.displayName}</span>
           </div>
-        </div>
+        </FileDetailsField>
 
         <div className="grid grid-cols-2 gap-3">
           {showLanguage ? (
-            <div className="min-w-0 space-y-1">
-              <span className="text-nano font-medium uppercase tracking-wide text-ink-muted">
-                <Translate>Language</Translate>
-              </span>
-              <div className="min-w-0">
+            <FileDetailsField label={<Translate>Language</Translate>}>
+              <div className="flex h-7 items-center">
                 <span className="inline-block rounded bg-vellum px-2 py-0.5 text-xs font-medium text-ink-secondary">
                   {row.languageKey}
                 </span>
               </div>
-            </div>
+            </FileDetailsField>
           ) : null}
-
-          <div className="min-w-0 space-y-1">
-            <span className="text-nano font-medium uppercase tracking-wide text-ink-muted">
-              <Translate>Type</Translate>
-            </span>
-            <div className="min-w-0">
-              <div className="flex items-center gap-1.5 px-2 py-1.5 text-sm text-ink-secondary">
-                {getRowIcon(row)}
-                <span>{row.typeLabel}</span>
-              </div>
+          <FileDetailsField label={<Translate>Type</Translate>}>
+            <div className="flex h-7 items-center gap-1.5 text-sm text-ink-secondary">
+              {getRowIcon(row)}
+              <span>{row.typeLabel}</span>
             </div>
-          </div>
-
-          <div className="min-w-0 space-y-1">
-            <span className="text-nano font-medium uppercase tracking-wide text-ink-muted">
-              <Translate>Size</Translate>
-            </span>
-            <div className="min-w-0">
-              <span className="text-sm text-ink-secondary">{row.sizeLabel}</span>
-            </div>
-          </div>
-
-          <div className="min-w-0 space-y-1">
-            <span className="text-nano font-medium uppercase tracking-wide text-ink-muted">
-              <Translate>Modified</Translate>
-            </span>
-            <div className="min-w-0">
-              <span className="text-sm text-ink-secondary">{row.modifiedLabel}</span>
-            </div>
-          </div>
+          </FileDetailsField>
+          <FileDetailsField label={<Translate>Size</Translate>}>
+            <span className="text-sm text-ink-secondary">{row.sizeLabel}</span>
+          </FileDetailsField>
+          <FileDetailsField label={<Translate>Modified</Translate>}>
+            <span className="text-sm text-ink-secondary">{row.modifiedLabel}</span>
+          </FileDetailsField>
         </div>
       </div>
 

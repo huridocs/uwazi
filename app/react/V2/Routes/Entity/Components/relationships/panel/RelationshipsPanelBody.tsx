@@ -11,14 +11,12 @@ import { useRelationshipsPanelLayout } from '#V2/Routes/Entity/Components/contex
 type RelationshipsPanelBodyProps = RelationshipPanelRowHandlers & {
   markers: RelationshipMarker[];
   groupContext: GroupLabelContext;
-  selfTitle: string;
 };
 
 const RelationshipsPanelBody = ({
   markers,
   groupContext,
   selfSharedId,
-  selfTitle,
   activeRelationshipId,
   onClick,
   onView,
@@ -36,11 +34,10 @@ const RelationshipsPanelBody = ({
       <RelationshipsGraphView
         markers={markers}
         groupContext={groupContext}
-        selfTitle={selfTitle}
         activeRelationshipId={activeRelationshipId}
         onNodeClick={markerId => {
           const marker = markers.find(item => item._id === markerId);
-          if (marker) onClick(marker);
+          if (marker) onView(marker);
         }}
       />
     );

@@ -1,22 +1,20 @@
 import React from 'react';
-import { EyeIcon, PlusIcon, TrashIcon, DocumentTextIcon } from '@heroicons/react/24/outline';
+import { EyeIcon, TrashIcon } from '@heroicons/react/24/outline';
 import { Translate } from '#app/I18N/index.js';
-import { Button, Pill } from '#V2/Components/UI/index.js';
 import { EntityWriteAuthorization } from '#V2/Routes/Entity/Components/context/index.js';
+import { getRowIcon } from './fileRowIcon.js';
 import { EntityFileRow } from './types.js';
 
 const TranslationsPanel = ({
   focusedRow,
   primaryRows,
-  onFocusRow: _onFocusRow,
+  onFocusRow,
   onDeleteRow,
-  onAddTranslation,
 }: {
   focusedRow?: EntityFileRow;
   primaryRows: EntityFileRow[];
   onFocusRow: (row: EntityFileRow) => void;
   onDeleteRow: (row: EntityFileRow) => void;
-  onAddTranslation: () => void;
 }) => {
   if (!focusedRow) {
     return (
@@ -26,58 +24,61 @@ const TranslationsPanel = ({
     );
   }
 
-  const translations = primaryRows;
-
   return (
-    <div className="flex h-full min-h-0 flex-col">
-      <div className="flex gap-2 grow flex-col space-y-2 overflow-auto">
-        {translations.map(file => (
-          <div
-            key={file.rowId}
-            className="flex items-center gap-2 rounded-md border border-border-soft p-2"
-          >
-            <Pill className="text-nano">{file.languageKey}</Pill>
-            <DocumentTextIcon className="h-4 w-4" />
-            <div className="grow">
-              <div>
-                <span className="text-xs truncate text-ink">{file.displayName}</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="text-nano text-ink-muted">{file.typeLabel}</span>
-                <span className="text-nano text-ink-muted">{file.sizeLabel}</span>
-              </div>
+    <div className="flex h-full min-h-0 flex-col gap-2 overflow-auto">
+      {primaryRows.map(file => (
+        <div
+          key={file.rowId}
+          role="button"
+          tabIndex={0}
+          onClick={() => onFocusRow(file)}
+          onKeyDown={event => {
+            if (event.key === 'Enter' || event.key === ' ') {
+              event.preventDefault();
+              onFocusRow(file);
+            }
+          }}
+          className="flex cursor-pointer items-center gap-2 rounded-md border border-border/50 bg-paper px-3 py-2 transition-colors hover:bg-warm"
+        >
+          <span className="shrink-0 rounded bg-vellum px-1.5 py-0.5 text-tiny font-semibold text-ink-secondary">
+            {file.languageKey}
+          </span>
+          <span className="shrink-0">{getRowIcon(file)}</span>
+          <div className="min-w-0 flex-1">
+            <p className="truncate text-xs font-medium text-ink">{file.displayName}</p>
+            <div className="mt-0.5 flex items-center gap-2">
+              <span className="text-nano text-ink-muted">{file.typeLabel.toUpperCase()}</span>
+              <span className="text-nano text-ink-muted">{file.sizeLabel}</span>
             </div>
-
-            <a href={file.raw.url || (file.raw.filename ? `/api/files/${file.raw.filename}` : '')}>
-              <Button variant="ghost" size="small" className="inline-flex items-center gap-1">
-                <EyeIcon className="h-4 w-4" />
-                <Translate className="sr-only">View</Translate>
-              </Button>
-            </a>
-            <EntityWriteAuthorization>
-              <Button
-                variant="dangerSubtle"
-                size="small"
-                onClick={() => onDeleteRow(file)}
-                className="inline-flex items-center gap-1"
-              >
-                <TrashIcon className="h-4 w-4" />
-                <Translate className="sr-only">Delete</Translate>
-              </Button>
-            </EntityWriteAuthorization>
           </div>
-        ))}
-        <EntityWriteAuthorization>
-          <Button
-            variant="ghost"
-            onClick={onAddTranslation}
-            className="mt-3 inline-flex w-full items-center justify-center gap-1.5 rounded-md border border-dashed border-border-soft py-3 text-xs text-ink-muted hover:border-ink/20 hover:bg-paper hover:text-ink"
+          <button
+            type="button"
+            onClick={event => {
+              event.stopPropagation();
+              onFocusRow(file);
+            }}
+            aria-label={`View ${file.displayName}`}
+            className="rounded p-1 text-ink-tertiary transition-colors hover:bg-parchment"
           >
-            <PlusIcon className="h-3.5 w-3.5" aria-hidden />
-            <Translate>Add translation</Translate>
-          </Button>
-        </EntityWriteAuthorization>
-      </div>
+            <EyeIcon className="h-3.5 w-3.5" />
+            <Translate className="sr-only">View</Translate>
+          </button>
+          <EntityWriteAuthorization>
+            <button
+              type="button"
+              onClick={event => {
+                event.stopPropagation();
+                onDeleteRow(file);
+              }}
+              aria-label={`Delete ${file.displayName}`}
+              className="rounded p-1 text-ink-muted transition-colors hover:bg-seal-tint hover:text-seal"
+            >
+              <TrashIcon className="h-3.5 w-3.5" />
+              <Translate className="sr-only">Delete</Translate>
+            </button>
+          </EntityWriteAuthorization>
+        </div>
+      ))}
     </div>
   );
 };
