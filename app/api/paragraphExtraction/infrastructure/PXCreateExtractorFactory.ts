@@ -2,7 +2,7 @@ import { MongoIdHandler } from '#api/core/infrastructure/mongodb/common/MongoIdG
 import { TemplatesDataSourceFactory } from '#api/core/infrastructure/factories/TemplatesDataSourceFactory.js';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
-import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
+import { UwaziDispatcherFactory } from '#api/core/infrastructure/jobs/UwaziDispatcherFactory.js';
 import { RelationshipTypesDataSourceFactory } from '#api/core/infrastructure/factories/RelationshipTypesDataSourceFactory.js';
 
 import { PXCreateExtractor } from '../application/PXCreateExtractor.js';
@@ -17,7 +17,7 @@ export class PXCreateExtractorFactory {
     const connection = getConnection();
     const mongoTransactionManager = TransactionManagerFactory.default();
 
-    const dispatcher = DefaultDispatcher(props.tenantName, mongoTransactionManager, {
+    const dispatcher = UwaziDispatcherFactory(props.tenantName, mongoTransactionManager, {
       lockWindow: 1000 * 60,
     });
     const relationshipTypeDS = RelationshipTypesDataSourceFactory.default({

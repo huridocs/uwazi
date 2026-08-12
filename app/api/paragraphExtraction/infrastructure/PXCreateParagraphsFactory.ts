@@ -5,7 +5,7 @@ import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/Se
 import { TemplatesDataSourceFactory } from '#api/core/infrastructure/factories/TemplatesDataSourceFactory.js';
 import { applicationEventsBus } from '#api/core/libs/eventsbus/index.js';
 import { DefaultTranslationsDataSource } from '#api/i18n.v2/database/data_source_defaults.js';
-import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
+import { UwaziDispatcherFactory } from '#api/core/infrastructure/jobs/UwaziDispatcherFactory.js';
 import { DispatcherAdapter } from '#api/core/infrastructure/jobs/DispatcherAdapter.js';
 import { tenants } from '#api/tenants/tenantContext.js';
 
@@ -36,7 +36,7 @@ export class PXCreateParagraphsFactory {
       transactionManager: mongoTransactionManager,
     });
     const jobsDispatcher = new DispatcherAdapter(
-      DefaultDispatcher(tenant.name, mongoTransactionManager)
+      UwaziDispatcherFactory(tenant.name, mongoTransactionManager)
     );
 
     const propertyAssignmentStrategy = PropertyAssignmentCreatorServiceStrategy.create({

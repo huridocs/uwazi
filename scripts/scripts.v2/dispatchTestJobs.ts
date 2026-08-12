@@ -12,7 +12,7 @@ async function run() {
   );
   for (let i = 0; i < 100; i += 1) {
     // eslint-disable-next-line no-await-in-loop
-    await dispatcher.dispatch(TestJob, undefined);
+    await dispatcher.dispatch(TestJob, {});
   }
   await DB.disconnect();
 }

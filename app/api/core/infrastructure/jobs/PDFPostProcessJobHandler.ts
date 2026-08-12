@@ -7,13 +7,10 @@ import {
 } from '#api/core/libs/queue/application/contracts/Dispatchable.js';
 import { NonRetryableJobError } from '#api/core/libs/queue/infrastructure/errors.js';
 import { FileIsNotAPDF } from '../services/PDFService.js';
+import { UwaziJobHandler, UwaziJobParams } from '#api/core/infrastructure/jobs/UwaziJobHandler.js';
+import { PrivilegedJob } from '#api/core/infrastructure/jobs/PrivilegedJob.js';
 
-import {
-  UserAwareDispatchable,
-  UserAwareDispatchableParams,
-} from '#api/core/libs/queue/application/contracts/UserAwareDispatchable.js';
-
-type Params = UserAwareDispatchableParams & {
+type Params = UwaziJobParams & {
   documentId: string;
   sessionId?: string;
 };
@@ -23,31 +20,31 @@ type JobDependencies = {
   wSockets: WebSockets;
 };
 
-export class PDFPostProcessJobHandler extends UserAwareDispatchable<Params> {
+@PrivilegedJob()
+export class PDFPostProcessJobHandler extends UwaziJobHandler<Params> {
   public constructor(private deps: JobDependencies) {
     super();
   }
 
-  async handle(_heartbeat: HeartbeatCallback, jobInfo: JobInfo) {
+  async handle(_heartbeat: HeartbeatCallback, params: Params, jobInfo: JobInfo) {
     try {
       const processedDoc = await this.deps.useCase.execute(
-        this.params,
+        params,
         jobInfo.retryCount !== jobInfo.maxRetries
       );
-      this.emitToUploaderSession('documentProcessed', processedDoc.entity);
+      if (params.sessionId) {
+        this.deps.wSockets.emitToSession(
+          params.sessionId,
+          'documentProcessed',
+          processedDoc.entity
+        );
+      }
     } catch (e) {
-      this.handleProcessingError(e, jobInfo);
+      this.handleError(e, jobInfo, params);
     }
   }
 
-  private emitToUploaderSession(event: 'documentProcessed' | 'conversionFailed', entityId: string) {
-    if (!this.params.sessionId) {
-      return;
-    }
-    this.deps.wSockets.emitToSession(this.params.sessionId, event, entityId);
-  }
-
-  private handleProcessingError(e: unknown, jobInfo: JobInfo): never {
+  private handleError(e: any, jobInfo: JobInfo, params: Params) {
     if (e instanceof ProcessingFileNotFound) {
       throw new NonRetryableJobError(e);
     }
@@ -55,8 +52,8 @@ export class PDFPostProcessJobHandler extends UserAwareDispatchable<Params> {
     if (e instanceof ProcessingFileFailed) {
       const shouldNotifyFailure =
         jobInfo.maxRetries === jobInfo.retryCount || e.cause instanceof FileIsNotAPDF;
-      if (shouldNotifyFailure) {
-        this.emitToUploaderSession('conversionFailed', e.file.entity);
+      if (shouldNotifyFailure && params.sessionId) {
+        this.deps.wSockets.emitToSession(params.sessionId, 'conversionFailed', e.file.entity);
       }
       if (e.cause instanceof FileIsNotAPDF) {
         throw new NonRetryableJobError(e);

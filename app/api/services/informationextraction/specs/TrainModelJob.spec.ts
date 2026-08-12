@@ -15,7 +15,6 @@ type Props = {
 
 const createSut = ({ extractorsDS, trainModelForPDF, trainModelForText }: Props) => {
   const sut = new IXTrainModelJob({
-    tenantName: 'any_tenant',
     trainModelForPDF,
     trainModelForText,
     extractorsDS,
@@ -89,7 +88,10 @@ describe('TrainModelJob', () => {
       }),
     });
 
-    const promise = sut.handleDispatch(undefined as any, { extractorId: 'any_extractor_id' });
+    const promise = sut.handleDispatch(undefined as any, {
+      extractorId: 'any_extractor_id',
+      userId: 'user1',
+    });
 
     await expect(promise).rejects.toThrow(new NonRetryableJobError(error));
   });
@@ -108,7 +110,7 @@ describe('TrainModelJob', () => {
       }),
     });
 
-    const promise = sut.handleDispatch(undefined as any, { extractorId: 'any' });
+    const promise = sut.handleDispatch(undefined as any, { extractorId: 'any', userId: 'user1' });
 
     await expect(promise).rejects.toThrow(error);
   });

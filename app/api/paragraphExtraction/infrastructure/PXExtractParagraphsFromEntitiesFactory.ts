@@ -2,7 +2,7 @@ import { Db } from 'mongodb';
 
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
-import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
+import { UwaziDispatcherFactory } from '#api/core/infrastructure/jobs/UwaziDispatcherFactory.js';
 import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
 
 import { PXExtractParagraphsFromEntities } from '../application/PXExtractParagraphFromEntities.js';
@@ -29,7 +29,7 @@ export class PXExtractParagraphsFromEntitiesFactory {
         mongoTransactionManager,
       });
 
-    const dispatcher = DefaultDispatcher(props.tenantName, mongoTransactionManager, {
+    const dispatcher = UwaziDispatcherFactory(props.tenantName, mongoTransactionManager, {
       lockWindow: 1000 * 60,
     });
 

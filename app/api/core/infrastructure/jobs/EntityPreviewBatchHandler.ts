@@ -5,11 +5,12 @@ import {
   HeartbeatCallback,
   JobInfo,
 } from '#api/core/libs/queue/application/contracts/Dispatchable.js';
-import { V1CompatTenantDispatchable } from '#api/core/libs/queue/application/contracts/V1CompatTenantDispatchable.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
+import { UwaziJobHandler, UwaziJobParams } from '#api/core/infrastructure/jobs/UwaziJobHandler.js';
+import { PrivilegedJob } from '#api/core/infrastructure/jobs/PrivilegedJob.js';
 
-type Params = {
+type Params = UwaziJobParams & {
   languageKey: LanguageISO6391;
   sharedIds: string[];
 };
@@ -21,7 +22,8 @@ type JobDependencies = {
   transactionManager: TransactionManager;
 };
 
-export class EntityPreviewBatchHandler extends V1CompatTenantDispatchable<Params> {
+@PrivilegedJob()
+export class EntityPreviewBatchHandler extends UwaziJobHandler<Params> {
   public constructor(private deps: JobDependencies) {
     super();
   }
