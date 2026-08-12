@@ -15,8 +15,8 @@ describe('SnippetList', () => {
   beforeEach(() => {
     props = {
       doc: Immutable.fromJS({ _id: 'id', sharedId: 'sharedId', type: 'document' }),
+      sharedId: 'sharedId',
       searchTerm: 'snippet',
-      documentViewUrl: '/document/sharedId',
       selectSnippet: jest.fn(),
       selectedSnippet: Immutable.fromJS({ text: 'first <b>snippet 1</b> found', page: 1 }),
       snippets: Immutable.fromJS({
