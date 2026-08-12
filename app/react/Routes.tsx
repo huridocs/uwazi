@@ -244,10 +244,7 @@ const getRoutesLayout = (
         <Route path="entity/:sharedId" element={privateRoute(<ViewerRoute />, settings)}>
           <Route path="*" element={privateRoute(<ViewerRoute />, settings)} />
         </Route>
-        <Route
-          path="entity/:sharedId/:tabView"
-          element={privateRoute(<ViewerRoute />, settings)}
-        />
+        <Route path="entity/:sharedId/:tabView" element={privateRoute(<ViewerRoute />, settings)} />
         <Route path="entityv2/:sharedId" element={<Entity />} loader={entityLoader(headers)} />
       </>
     )}

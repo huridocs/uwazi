@@ -22,8 +22,7 @@ export const ViewDocumentLink = ({ filename, entity, children }: ViewDocumentLin
   const settings = useAtomValue(settingsAtom);
   const entityViewerV2 = isEntityViewerV2Enabled(settings.features);
   const onV1Viewer =
-    isLegacyEntityPath(location.pathname) ||
-    (!entityViewerV2 && isEntityPath(location.pathname));
+    isLegacyEntityPath(location.pathname) || (!entityViewerV2 && isEntityPath(location.pathname));
   const onRelationshipsViewer = location.pathname.match(/relationships/);
 
   if (onV1Viewer && !onRelationshipsViewer) {

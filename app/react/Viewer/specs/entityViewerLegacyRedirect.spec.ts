@@ -31,15 +31,14 @@ describe('getEntityViewerLegacyRedirect', () => {
 
   it('does not rewrite plain /entity/:sharedId', () => {
     expect(getEntityViewerLegacyRedirect('/entity/abc')).toBeNull();
-    expect(
-      getEntityViewerLegacyRedirect('/entity/abc/info', { entityViewerV2: false })
-    ).toBeNull();
+    expect(getEntityViewerLegacyRedirect('/entity/abc/info', { entityViewerV2: false })).toBeNull();
   });
 
   it('when V2 flag is on, redirects any /entity/:sharedId/<extra> path', () => {
-    expect(
-      getEntityViewerLegacyRedirect('/entity/abc/info', { entityViewerV2: true })
-    ).toEqual({ status: 301, pathname: '/entity/abc' });
+    expect(getEntityViewerLegacyRedirect('/entity/abc/info', { entityViewerV2: true })).toEqual({
+      status: 301,
+      pathname: '/entity/abc',
+    });
     expect(
       getEntityViewerLegacyRedirect('/en/entity/abc/relationships/extra', {
         entityViewerV2: true,
@@ -55,8 +54,6 @@ describe('getEntityViewerLegacyRedirect', () => {
     expect(
       getEntityViewerLegacyRedirect('/legacy-entity/abc/info', { entityViewerV2: true })
     ).toBeNull();
-    expect(
-      getEntityViewerLegacyRedirect('/entityv2/abc', { entityViewerV2: false })
-    ).toBeNull();
+    expect(getEntityViewerLegacyRedirect('/entityv2/abc', { entityViewerV2: false })).toBeNull();
   });
 });

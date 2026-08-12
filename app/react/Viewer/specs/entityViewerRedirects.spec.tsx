@@ -4,10 +4,7 @@
 import React from 'react';
 import { MemoryRouter, Route, Routes, useLocation } from 'react-router';
 import { render, screen, waitFor } from '@testing-library/react';
-import {
-  RedirectDocumentToEntity,
-  RedirectEntityTabToEntity,
-} from '../entityViewerRedirects.js';
+import { RedirectDocumentToEntity, RedirectEntityTabToEntity } from '../entityViewerRedirects.js';
 
 const LocationProbe = () => {
   const location = useLocation();

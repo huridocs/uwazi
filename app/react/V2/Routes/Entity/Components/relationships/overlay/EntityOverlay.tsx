@@ -12,10 +12,7 @@ import {
 import { EntityOverlayContent } from './EntityOverlayContent.js';
 import { useOverlayEntity } from './useOverlayEntity.js';
 import { settingsAtom } from '#V2/atoms/settingsAtom.js';
-import {
-  getEntityViewerV2Path,
-  isEntityViewerV2Enabled,
-} from '#app/utils/entityViewerPaths.js';
+import { getEntityViewerV2Path, isEntityViewerV2Enabled } from '#app/utils/entityViewerPaths.js';
 
 const overlaySurfaceStyle = {
   backgroundColor: 'var(--color-theme-surface-raised, var(--color-theme-bg-surface, #ffffff))',
