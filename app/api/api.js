@@ -42,9 +42,7 @@ export default async (app, server) => {
   (await import('./files/exportRoutes.js')).default(app);
   (await import('./files/ocrRoutes.js')).ocrRoutes(app);
   (await import('./settings/routes.js')).default(app);
-  (
-    await import('./core/infrastructure/express/translation/routes.js')
-  ).translationsRoutes(app);
+  (await import('./core/infrastructure/express/translation/routes.js')).translationsRoutes(app);
   (await import('./sync/routes.js')).default(app);
   (await import('./tasks/routes.js')).default(app);
   (await import('./usergroups/routes.js')).default(app);
@@ -58,7 +56,5 @@ export default async (app, server) => {
   (await import('./paragraphExtraction/adapters/PXRoutes.js')).paragraphExtractionRoutes(app);
   (await import('./csv.v2/infrastructure/http/routes.js')).csvImportRoutes(app);
   (await import('./customUploads/infrastructure/http/routes.js')).customUploadsRoutes(app);
-  (await import('./aiAssistant/infrastructure/express/AIAssistantRoutes.js')).aiAssistantRoutes(
-    app
-  );
+  (await import('./aiAssistant/infrastructure/express/AIAssistantRoutes.js')).aiAssistantRoutes(app);
 };
