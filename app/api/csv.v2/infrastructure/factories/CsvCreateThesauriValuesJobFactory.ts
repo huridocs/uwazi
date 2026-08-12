@@ -1,5 +1,5 @@
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
-import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
+import { UwaziDispatcherFactory } from '#api/core/infrastructure/jobs/UwaziDispatcherFactory.js';
 import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
 import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
 import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
@@ -52,7 +52,7 @@ class CsvCreateThesauriValuesJobFactory {
       options.thesauriValuesDS ??
       CSVImportEntitiesFactories.CSVImportThesauriValuesDSDefault(getMongoTransactionManager());
     const jobsDispatcher =
-      options.jobsDispatcher ?? DefaultDispatcher(tenants.current().name, transactionManager);
+      options.jobsDispatcher ?? UwaziDispatcherFactory(tenants.current().name, transactionManager);
     const thesauriDS =
       options.thesauriDS ??
       ThesauriDataSourceFactory.default({ transactionManager: getMongoTransactionManager() });

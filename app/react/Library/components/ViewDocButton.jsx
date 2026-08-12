@@ -7,20 +7,9 @@ import { connect } from 'react-redux';
 
 import { Translate, I18NLink } from '#app/I18N/index.js';
 import { Icon } from '#UI/index.js';
-import url from 'url';
 import { actions } from '#app/BasicReducer/index.js';
 import Immutable from 'immutable';
-
-function getDocumentUrlQuery(searchTerm, targetReference) {
-  const query = {};
-  if (searchTerm) {
-    query.searchTerm = searchTerm;
-  }
-  if (targetReference) {
-    query.ref = targetReference.get('_id');
-  }
-  return query;
-}
+import { buildEntityViewLink } from '#app/utils/entityViewerPaths.js';
 
 class ViewDocButton extends Component {
   constructor(props) {
@@ -37,14 +26,15 @@ class ViewDocButton extends Component {
   }
 
   render() {
-    const { sharedId, processed, searchTerm, file, targetReference, icon } = this.props;
+    const { sharedId, processed, searchTerm, file, targetReference, icon, entityViewerV2 } =
+      this.props;
     const isEntity = !file;
 
-    const pathname = `/entity/${sharedId}`;
-    const query = getDocumentUrlQuery(searchTerm, targetReference);
-    const documentViewUrl = url.format({
-      pathname,
-      query,
+    const documentViewUrl = buildEntityViewLink({
+      sharedId,
+      searchTerm,
+      entityViewerV2,
+      refId: targetReference ? targetReference.get('_id') : undefined,
     });
 
     if (!processed && !isEntity) {
@@ -68,6 +58,7 @@ ViewDocButton.defaultProps = {
   searchTerm: '',
   processed: false,
   targetReference: null,
+  entityViewerV2: false,
 };
 
 ViewDocButton.propTypes = {
@@ -78,11 +69,15 @@ ViewDocButton.propTypes = {
   targetReference: PropTypes.instanceOf(Immutable.Map),
   openReferencesTab: PropTypes.func.isRequired,
   icon: PropTypes.string,
+  entityViewerV2: PropTypes.bool,
 };
 
 export function mapStateToProps(state, props) {
   return {
     searchTerm: props.storeKey ? state[props.storeKey].search.searchTerm : '',
+    entityViewerV2: Boolean(
+      state.settings?.collection?.getIn(['features', 'featureFlagEntityViewerv2'])
+    ),
   };
 }
 

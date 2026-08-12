@@ -1,9 +1,5 @@
 import type { RefreshDatavizSnapshotJob } from '#api/dataviz.v2/application/jobs/RefreshDatavizSnapshotJob.js';
 import {
-  UserAwareDispatchable,
-  UserAwareDispatchableParams,
-} from '#api/core/libs/queue/application/contracts/UserAwareDispatchable.js';
-import {
   HeartbeatCallback,
   JobInfo,
 } from '#api/core/libs/queue/application/contracts/Dispatchable.js';
@@ -12,10 +8,12 @@ import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsD
 import { DatavizDataSource } from '#api/dataviz.v2/application/contracts/DatavizDataSource.js';
 import { rescheduleDatavizRefresh } from '../services/rescheduleDatavizRefresh.js';
 import { isNonRetryableDatavizRefreshError } from './isNonRetryableDatavizRefreshError.js';
+import { UwaziJobHandler, UwaziJobParams } from '#api/core/infrastructure/jobs/UwaziJobHandler.js';
 
 type Params = {
   datavizId: string;
-} & UserAwareDispatchableParams;
+  tenantName: string;
+} & UwaziJobParams;
 
 type JobDependencies = {
   job: RefreshDatavizSnapshotJob;
@@ -23,31 +21,31 @@ type JobDependencies = {
   jobsDispatcher: JobsDispatcher;
 };
 
-class DatavizScheduledRefreshJobHandler extends UserAwareDispatchable<Params> {
+class DatavizScheduledRefreshJobHandler extends UwaziJobHandler<Params> {
   public constructor(private deps: JobDependencies) {
     super();
   }
 
-  private async rescheduleIfNeeded() {
+  private async rescheduleIfNeeded(params: Params) {
     await rescheduleDatavizRefresh({
-      datavizId: this.params.datavizId,
-      tenantName: this.tenantName,
-      userId: this.userId,
+      datavizId: params.datavizId,
+      tenantName: params.tenantName,
+      userId: params.userId,
       datavizDS: this.deps.datavizDS,
       jobsDispatcher: this.deps.jobsDispatcher,
     });
   }
 
-  protected async handle(_heartbeat: HeartbeatCallback, _jobInfo?: JobInfo) {
+  protected async handle(_heartbeat: HeartbeatCallback, params: Params, _jobInfo?: JobInfo) {
     try {
-      await this.deps.job.execute({ datavizId: this.params.datavizId });
+      await this.deps.job.execute({ datavizId: params.datavizId });
     } catch (error) {
       if (isNonRetryableDatavizRefreshError(error)) {
         throw new NonRetryableJobError(error);
       }
       throw error;
     } finally {
-      await this.rescheduleIfNeeded();
+      await this.rescheduleIfNeeded(params);
     }
   }
 }

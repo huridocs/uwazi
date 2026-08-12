@@ -85,17 +85,13 @@ class FilesService {
       const processingPDFs = files
         .filter((f): f is PDFDocument => f instanceof PDFDocument && f.isProcessing())
         .map(f => {
-          const { userId, tenantName, sessionId } = this.context;
-          if (!userId) {
-            throw new Error('PDFPostProcess needs a user Id');
-          }
+          const { tenantName, sessionId } = this.context;
           if (!tenantName) {
             throw new Error('PDFPostProcess needs a tenant name');
           }
           return {
             tenantName,
             documentId: f.id,
-            userId,
             ...(sessionId ? { sessionId } : {}),
           };
         });

@@ -69,7 +69,6 @@ class ThesauriService {
     await this.deps.dispatcher.denormalizeThesaurus({
       tenantName: context.tenantName,
       thesaurusId: thesaurus.id,
-      userId: context.actorId,
     });
   }
 }

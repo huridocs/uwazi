@@ -10,7 +10,7 @@ import { SettingsDataSource } from './contracts/SettingsDataSource.js';
 import { TemplatesDataSource } from './contracts/TemplatesDataSource.js';
 import {
   EntityPermissionChecker,
-  Specification,
+  PermissionSpec,
 } from '../domain/entityAccessPolicy/EntityPermissionChecker.js';
 import { PropertyTypeEnum } from '../domain/template/PropertyType.js';
 import { Template } from '../domain/template/Template.js';
@@ -24,7 +24,6 @@ import { FileDTO } from '../domain/files/domainTypes.js';
 import { GetEntityResponseDTO, RelationDTO } from './GetEntityResponseDTO.js';
 import { EntityNotFoundError } from '../domain/entity/errors.js';
 import { AccessLevel } from '../domain/entityAccessPolicy/AccessLevel.js';
-import { GrantType } from '../domain/entityAccessPolicy/GrantType.js';
 import { TimedMethod } from '../libs/logger/TimedMethodDecorator.js';
 import { ExecutionContext } from '../libs/ExecutionContext.js';
 import { TemplatesDAOFactory } from '../infrastructure/factories/TemplatesDAOFactory.js';
@@ -262,15 +261,11 @@ class EntitiesQueryService {
       return new Set();
     }
 
-    const spec = new Specification({
-      type: GrantType.User,
-      level: AccessLevel.Read,
-      actor: user,
-    });
+    const permissionSpec = new PermissionSpec(user, AccessLevel.Read);
 
     const accessibleIds = await this.deps.entityPermissionChecker.filterEntities(
       Array.from(referencedIds),
-      spec
+      permissionSpec
     );
 
     return new Set(accessibleIds);

@@ -2,14 +2,12 @@ import { ObjectId } from 'mongodb';
 import { emitToTenantAdminsAndEditors } from '#api/socketio/setupSockets.js';
 import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
 import ixmodels from '#api/services/informationextraction/ixmodels.js';
-import {
-  UserAwareDispatchable,
-  UserAwareDispatchableParams,
-} from '#api/core/libs/queue/application/contracts/UserAwareDispatchable.js';
 import { HeartbeatCallback } from '#api/core/libs/queue/application/contracts/Dispatchable.js';
 import { AcceptSuggestionsUseCase } from '../application/AcceptSuggestionsUseCase.js';
+import { UwaziJobParams, UwaziJobHandler } from '#api/core/infrastructure/jobs/UwaziJobHandler.js';
 
-type CustomParams = UserAwareDispatchableParams & {
+type CustomParams = UwaziJobParams & {
+  tenantName: string;
   extractorId: string;
 };
 
@@ -20,7 +18,7 @@ type Props = {
   batchSize: number;
 };
 
-export class AcceptSuggestionsJob extends UserAwareDispatchable<CustomParams> {
+export class AcceptSuggestionsJob extends UwaziJobHandler<CustomParams> {
   private props: Required<
     Props & { useCase: AcceptSuggestionsUseCase; dispatcher: JobsDispatcher; batchSize: number }
   >;
@@ -39,8 +37,8 @@ export class AcceptSuggestionsJob extends UserAwareDispatchable<CustomParams> {
   }
 
   // eslint-disable-next-line max-statements
-  async handle(_heartBeatCallBack: HeartbeatCallback): Promise<void> {
-    const { extractorId } = this.params;
+  async handle(_heartBeatCallBack: HeartbeatCallback, params: CustomParams): Promise<void> {
+    const { extractorId } = params;
     try {
       const { processed, progress } = await this.props.useCase.execute({
         extractorId,
@@ -50,7 +48,7 @@ export class AcceptSuggestionsJob extends UserAwareDispatchable<CustomParams> {
       if (progress) {
         const remaining = Math.max(0, (progress.total || 0) - (progress.processed || 0));
         emitToTenantAdminsAndEditors(
-          this.tenantName,
+          params.tenantName,
           'ix_model_status',
           extractorId,
           'processing_auto_accept',
@@ -61,7 +59,7 @@ export class AcceptSuggestionsJob extends UserAwareDispatchable<CustomParams> {
         if ((progress.total || 0) > 0 && progress.processed >= (progress.total || 0)) {
           await ixmodels.stopTraining(ObjectId.createFromHexString(extractorId));
           emitToTenantAdminsAndEditors(
-            this.tenantName,
+            params.tenantName,
             'ix_model_status',
             extractorId,
             'ready',
@@ -71,7 +69,7 @@ export class AcceptSuggestionsJob extends UserAwareDispatchable<CustomParams> {
         }
       } else {
         emitToTenantAdminsAndEditors(
-          this.tenantName,
+          params.tenantName,
           'ix_model_status',
           extractorId,
           'processing_auto_accept'
@@ -81,8 +79,8 @@ export class AcceptSuggestionsJob extends UserAwareDispatchable<CustomParams> {
       if (processed > 0) {
         await this.props.dispatcher.dispatch(AcceptSuggestionsJob, {
           extractorId,
-          tenantName: this.tenantName,
-          userId: this.userId,
+          tenantName: params.tenantName,
+          userId: params.userId,
         });
         return;
       }
@@ -90,7 +88,7 @@ export class AcceptSuggestionsJob extends UserAwareDispatchable<CustomParams> {
       // Auto-accept finished: cleanup model run and emit 'ready'
       await ixmodels.stopTraining(ObjectId.createFromHexString(extractorId));
       emitToTenantAdminsAndEditors(
-        this.tenantName,
+        params.tenantName,
         'ix_model_status',
         extractorId,
         'ready',

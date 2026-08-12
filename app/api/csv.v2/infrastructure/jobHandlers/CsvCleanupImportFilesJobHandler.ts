@@ -1,7 +1,4 @@
-import {
-  UserAwareDispatchable,
-  UserAwareDispatchableParams,
-} from '#api/core/libs/queue/application/contracts/UserAwareDispatchable.js';
+import { UwaziJobHandler, UwaziJobParams } from '#api/core/infrastructure/jobs/UwaziJobHandler.js';
 import {
   HeartbeatCallback,
   JobInfo,
@@ -9,7 +6,8 @@ import {
 } from '#api/core/libs/queue/application/contracts/Dispatchable.js';
 import { CsvCleanupImportFilesJob } from '../../application/jobs/CsvCleanupImportFilesJob.js';
 
-type Params = UserAwareDispatchableParams & {
+type Params = UwaziJobParams & {
+  tenantName: string;
   importId: string;
 };
 
@@ -17,7 +15,7 @@ type Deps = {
   useCase: CsvCleanupImportFilesJob;
 };
 
-export class CsvCleanupImportFilesJobHandler extends UserAwareDispatchable<Params> {
+export class CsvCleanupImportFilesJobHandler extends UwaziJobHandler<Params> {
   constructor(private deps: Deps) {
     super();
   }
@@ -48,9 +46,9 @@ export class CsvCleanupImportFilesJobHandler extends UserAwareDispatchable<Param
     );
   }
 
-  async handle(): Promise<void> {
+  async handle(_heartbeat: HeartbeatCallback, params: Params): Promise<void> {
     await this.deps.useCase.execute({
-      importId: this.params.importId,
+      importId: params.importId,
     });
   }
 }
