@@ -223,9 +223,9 @@ const getRoutesLayout = (
     </Route>
     <Route path="document/:sharedId/*" element={<RedirectDocumentToEntity />} />
     {/*
-      TEMPORARY soft-deploy (issue #9522): when entityViewerV2 is on, V2 owns /entity and
-      unmatched /entity/:id/* paths redirect (SSR 301 + client Navigate). Remove with
-      FEATURE_FLAG_ENTITY_VIEWER_V2 / entityViewerLegacyRedirect.ts once V1 is gone.
+      TEMPORARY soft-deploy (issue #9522): when featureFlagEntityViewerv2 is on, V2 owns
+      /entity and unmatched /entity/:id/* paths redirect (SSR 301 + client Navigate).
+      Remove with FEATURE_FLAG_ENTITY_VIEWER_V2 / entityViewerLegacyRedirect.ts once V1 is gone.
     */}
     {isEntityViewerV2Enabled(settings?.features) ? (
       <>

@@ -171,7 +171,9 @@ SnippetList.propTypes = {
 const mapStateToProps = (state, ownProps) => ({
   template: state.templates.find(tmpl => tmpl.get('_id') === ownProps.doc.get('template')),
   selectedSnippet: state.documentViewer.uiState.get('snippet'),
-  entityViewerV2: Boolean(state.settings?.collection?.getIn(['features', 'entityViewerV2'])),
+  entityViewerV2: Boolean(
+    state.settings?.collection?.getIn(['features', 'featureFlagEntityViewerv2'])
+  ),
   sharedId: ownProps.doc.get('sharedId'),
 });
 

@@ -358,7 +358,7 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
   const clientFeatureFlags: ClientFeatureFlags = {
     paragraphExtraction: featureFlags?.paragraphExtraction,
     newHeader: featureFlags?.newHeader,
-    entityViewerV2: featureFlags?.entityViewerV2,
+    featureFlagEntityViewerv2: featureFlags?.featureFlagEntityViewerv2,
     themeCustomization: featureFlags?.themeCustomization,
     aiAssistant: featureFlags?.aiAssistant,
   };
@@ -374,7 +374,7 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
   // paths before route loaders / React render. Remove with entityViewerLegacyRedirect.ts.
   const legacyEntityRedirect = getEntityViewerLegacyRedirect(req.path, {
     languageKeys,
-    entityViewerV2: Boolean(clientFeatureFlags.entityViewerV2),
+    entityViewerV2: Boolean(clientFeatureFlags.featureFlagEntityViewerv2),
   });
   if (legacyEntityRedirect) {
     res.redirect(ENTITY_VIEWER_LEGACY_REDIRECT_STATUS, legacyEntityRedirect.pathname);

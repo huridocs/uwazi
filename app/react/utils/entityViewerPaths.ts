@@ -17,8 +17,9 @@ const ENTITY_PATH = '/entity';
 const ENTITY_V2_PATH = '/entityv2';
 const LEGACY_ENTITY_PATH = '/legacy-entity';
 
-const isEntityViewerV2Enabled = (features?: { entityViewerV2?: boolean } | null): boolean =>
-  Boolean(features?.entityViewerV2);
+const isEntityViewerV2Enabled = (
+  features?: { featureFlagEntityViewerv2?: boolean } | null
+): boolean => Boolean(features?.featureFlagEntityViewerv2);
 
 /** Default public path for the V2 entity viewer (depends on soft-deploy flag). */
 const getEntityViewerV2BasePath = (entityViewerV2: boolean): string =>

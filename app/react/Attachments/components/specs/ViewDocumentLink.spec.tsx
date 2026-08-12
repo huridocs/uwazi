@@ -8,7 +8,7 @@ import { EntitySchema } from '#shared/types/entityType.js';
 import { ViewDocumentLink } from '../ViewDocumentLink.js';
 
 let pathname = '/entity/sharedId';
-let mockFeatureFlags: { entityViewerV2?: boolean } = {};
+let mockFeatureFlags: { featureFlagEntityViewerv2?: boolean } = {};
 
 const mockUseLocation = jest.fn().mockImplementation(() => ({
   pathname,
@@ -68,7 +68,7 @@ describe('ViewDocumentLink', () => {
 
     it('should link to V2 entity path when feature flag is on', () => {
       pathname = 'outside';
-      mockFeatureFlags = { entityViewerV2: true };
+      mockFeatureFlags = { featureFlagEntityViewerv2: true };
       const component = renderComponent(entity);
       expect(component.find(Link).props().to).toEqual('/entity/sharedId');
     });

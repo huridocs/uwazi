@@ -64,7 +64,7 @@ describe('Routes', () => {
 
       it('should redirect to entity route when V2 viewer flag is enabled', () => {
         settings.home_page = '/entity/entitySharedId';
-        settings.features = { entityViewerV2: true };
+        settings.features = { featureFlagEntityViewerv2: true };
         const { element, parameters } = getIndexElement(settings, undefined);
         expect(parameters).toBeUndefined();
         expect(element).toMatchObject(<Navigate to="entity/entitySharedId" replace />);

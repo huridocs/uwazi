@@ -54,7 +54,7 @@ const App = ({ customParams }) => {
 
   const appClassName = shouldAddAppClassName && sharedId ? `pageId_${sharedId}` : '';
 
-  const entityViewerV2 = Boolean(settings.features?.entityViewerV2);
+  const entityViewerV2 = Boolean(settings.features?.featureFlagEntityViewerv2);
   const isV2Route =
     location.pathname.includes('/settings') ||
     isEntityV2Path(location.pathname) ||

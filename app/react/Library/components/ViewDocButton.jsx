@@ -75,7 +75,9 @@ ViewDocButton.propTypes = {
 export function mapStateToProps(state, props) {
   return {
     searchTerm: props.storeKey ? state[props.storeKey].search.searchTerm : '',
-    entityViewerV2: Boolean(state.settings?.collection?.getIn(['features', 'entityViewerV2'])),
+    entityViewerV2: Boolean(
+      state.settings?.collection?.getIn(['features', 'featureFlagEntityViewerv2'])
+    ),
   };
 }
 
