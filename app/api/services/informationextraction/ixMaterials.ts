@@ -192,6 +192,7 @@ async function getEntitiesForTraining(
   const entities = await entitiesDao().findByMetadataCriteria(
     entityForTrainingFilters(templates, toProperty, fromProperty),
     {
+      select: ['sharedId', 'title', 'language', 'metadata'],
       limit: MAX_TRAINING_ENTITIES_NUMBER,
     }
   );
@@ -274,13 +275,17 @@ async function getEntitiesForSuggestions(extractorId: ObjectIdSchema, limit?: nu
     if (!entityFilters) {
       return [];
     }
-    entities = await entitiesDao().find(entityFilters);
+    entities = await entitiesDao().find(entityFilters, {
+      select: ['sharedId', 'title', 'language', 'metadata'],
+    });
   } else {
     const pairsQuery = await getEntitiesForSuggestionsQuery(extractorId, model, BATCH_SIZE);
     if (!pairsQuery) {
       return [];
     }
-    entities = await entitiesDao().findByLanguagePairs(pairsQuery);
+    entities = await entitiesDao().findByLanguagePairs(pairsQuery, {
+      select: ['sharedId', 'title', 'language', 'metadata'],
+    });
   }
 
   return entities as unknown as EntitySchema[];

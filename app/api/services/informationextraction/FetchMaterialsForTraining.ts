@@ -50,7 +50,7 @@ const getPropertyTrainingEntities = async (extractor: EnforcedWithId<IXExtractor
   if (pairs.length) {
     stageA = (await entitiesDao().findByLanguagePairs(
       { pairs },
-      { limit: MAX_TRAINING_ENTITIES_NUMBER }
+      { select: ['sharedId', 'title', 'language', 'metadata'], limit: MAX_TRAINING_ENTITIES_NUMBER }
     )) as unknown as EntitySchema[];
   }
 
@@ -123,10 +123,13 @@ const buildPdfMaterialsForFiles = async (
       const lookupLang =
         LanguageUtils.fromISO639_3(ensure<string>(f.language), false)?.ISO639_1 ||
         ensure<string>(f.language);
-      const entityLang = await entitiesDao().findOne({
-        sharedId: f.entity,
-        language: lookupLang,
-      });
+      const entityLang = await entitiesDao().findOne(
+        {
+          sharedId: f.entity,
+          language: lookupLang,
+        },
+        { select: ['language', 'metadata'] }
+      );
       const entityValues = (entityLang?.metadata?.[extractor.property] || []) as Array<{
         value?: string;
         label?: string;
