@@ -33,12 +33,12 @@ import { PostgresTransactionManagerFactory } from '#api/core/infrastructure/fact
 import { ExecutionContext, ExecutionContextDeps } from '#api/core/libs/ExecutionContext.js';
 import { EventEmitterFactory } from '#api/core/libs/eventEmitter/EventEmitterFactory.js';
 import { Job } from '#api/core/libs/queue/infrastructure/QueueAdapter.js';
-import { UserSchema } from '#shared/types/userType.js';
-import users from '#api/users/users.js';
-import { User } from '#api/users.v2/model/User.js';
 import { PostgresDB } from '#api/infrastructure/PostgresDB.js';
 import { CleanupExpiredPasswordRecoveriesJobScheduler } from '#api/core/infrastructure/jobs/cleanupExpiredPasswordRecoveriesJob/CleanupExpiredPasswordRecoveriesJobScheduler.js';
 import { CleanupExpiredCaptchasJobScheduler } from '#api/core/infrastructure/jobs/cleanupExpiredCaptchasJob/CleanupExpiredCaptchasJobScheduler.js';
+import { isPrivilegedJob } from '#api/core/infrastructure/jobs/PrivilegedJob.js';
+import { User } from '#api/users.v2/model/User.js';
+import users from '#api/users/users.js';
 
 type Props = {
   standAloneProcess?: boolean;
@@ -68,13 +68,11 @@ function register<T extends Dispatchable>(
     let deps!: ExecutionContextDeps;
     let instance!: T;
     const tenantName = namespace === 'system' ? config.defaultTenant.name : namespace;
+
+    const isSystem = isPrivilegedJob(dispatchable);
+
     await tenants.run(async () => {
-      let actor: UserSchema | null = null;
-      if (job.params.userId) {
-        actor = await users.getById(job.params.userId, '-password', true, true);
-      }
       deps = {
-        actor: User.createFrom(actor),
         tenant: tenants.current(),
         factories: {
           transactionManager: TransactionManagerFactory.default,
@@ -86,6 +84,21 @@ function register<T extends Dispatchable>(
           telemetryCollector: () => new TelemetryCollector('queue_job'),
         },
       };
+
+      const { userId } = job.params as any;
+
+      if (isSystem) {
+        deps.actor = User.system();
+      } else if (userId) {
+        const user = await users.getById(userId, '-password', true, true);
+        deps.actor = User.createFrom(user);
+      } else {
+        throw new Error(
+          'Missing userId: UwaziJobHandler jobs must use UwaziDispatcherFactory. ' +
+            'Plain jobs must use @PrivilegedJob().'
+        );
+      }
+
       instance = await ExecutionContext.run(deps, async () => factory(namespace, job));
     }, tenantName);
 

@@ -1,6 +1,6 @@
 import { CreateUser, CreateUserDependencies } from '#api/core/application/CreateUser.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
-import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
+import { UwaziDispatcherFactory } from '#api/core/infrastructure/jobs/UwaziDispatcherFactory.js';
 import { DispatcherAdapter } from '../jobs/DispatcherAdapter.js';
 import { IdGeneratorFactory } from './IdGeneratorFactory.js';
 import { UserGroupsDataSourceFactory } from './UserGroupsDataSourceFactory.js';
@@ -14,7 +14,7 @@ export class CreateUserUseCaseFactory {
       idGenerator: IdGeneratorFactory.default(),
       transactionManager: ExecutionContext.transactionManager,
       dispatcher: new DispatcherAdapter(
-        DefaultDispatcher(ExecutionContext.tenant.name, ExecutionContext.transactionManager)
+        UwaziDispatcherFactory(ExecutionContext.tenant.name, ExecutionContext.transactionManager)
       ),
       ...overrides,
     });

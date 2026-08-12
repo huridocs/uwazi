@@ -1,23 +1,23 @@
-import {
-  UserAwareDispatchable,
-  UserAwareDispatchableParams,
-} from '#api/core/libs/queue/application/contracts/UserAwareDispatchable.js';
+import { HeartbeatCallback } from '#api/core/libs/queue/application/contracts/Dispatchable.js';
 import { SendWelcomeEmail } from '#api/core/application/SendWelcomeEmail.js';
+import { UwaziJobHandler, UwaziJobParams } from '#api/core/infrastructure/jobs/UwaziJobHandler.js';
+import { PrivilegedJob } from '#api/core/infrastructure/jobs/PrivilegedJob.js';
 
-type SendWelcomeEmailHandlerParams = UserAwareDispatchableParams & {
+type SendWelcomeEmailHandlerParams = UwaziJobParams & {
   domain: string;
   userId: string;
 };
 
-class SendWelcomeEmailHandler extends UserAwareDispatchable<SendWelcomeEmailHandlerParams> {
+@PrivilegedJob()
+class SendWelcomeEmailHandler extends UwaziJobHandler<SendWelcomeEmailHandlerParams> {
   constructor(private deps: { sendWelcomeEmail: SendWelcomeEmail }) {
     super();
   }
 
-  async handle() {
+  async handle(_heartbeat: HeartbeatCallback, params: SendWelcomeEmailHandlerParams) {
     await this.deps.sendWelcomeEmail.execute({
-      userId: this.params.userId,
-      domain: this.params.domain,
+      userId: params.userId,
+      domain: params.domain,
     });
   }
 }

@@ -39,7 +39,9 @@ import {
   HeartbeatCallback,
 } from '#api/core/libs/queue/application/contracts/Dispatchable.js';
 import { DispatchableClass } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
-import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
+import { UwaziJobHandler, UwaziJobParams } from '#api/core/infrastructure/jobs/UwaziJobHandler.js';
+import { PrivilegedJob } from '#api/core/infrastructure/jobs/PrivilegedJob.js';
+import { UwaziDispatcherFactory } from '#api/core/infrastructure/jobs/UwaziDispatcherFactory.js';
 import { CsvCleanupImportFilesJobFactory } from '#api/csv.v2/infrastructure/factories/CsvCleanupImportFilesJobFactory.js';
 import { CsvCreateRelationshipEntitiesJobFactory } from '#api/csv.v2/infrastructure/factories/CsvCreateRelationshipEntitiesJobFactory.js';
 import { CsvCreateThesauriValuesJobFactory } from '#api/csv.v2/infrastructure/factories/CsvCreateThesauriValuesJobFactory.js';
@@ -100,12 +102,12 @@ function randomIntFromInterval(min: number, max: number) {
   return Math.floor(Math.random() * (max - min + 1) + min);
 }
 
-export class TestJob implements Dispatchable {
+@PrivilegedJob()
+export class TestJob extends UwaziJobHandler<UwaziJobParams> {
   static BATCH_SIZE = 200;
 
-  // eslint-disable-next-line class-methods-use-this
-  async handleDispatch(_heartbeat: HeartbeatCallback) {
-    await new Promise((resolve, reject) => {
+  protected async handle(_heartbeat: HeartbeatCallback, _params: UwaziJobParams) {
+    await new Promise<void>((resolve, reject) => {
       setTimeout(
         () => {
           if (Math.floor(Math.random() * 5) === 0) {
@@ -121,7 +123,7 @@ export class TestJob implements Dispatchable {
           if (Math.floor(Math.random() * 5) === 0) {
             reject(new Error('Random error occurred'));
           }
-          resolve({});
+          resolve();
         },
         randomIntFromInterval(0, 1500)
       );
@@ -164,7 +166,7 @@ export function registerJobs(register: Register) {
     const useCase = PXCreateEntityStatusesFactory.createDefault({
       batchSize,
     });
-    const dispatcher = DefaultDispatcher(namespace, TransactionManagerFactory.default(), {
+    const dispatcher = UwaziDispatcherFactory(namespace, TransactionManagerFactory.default(), {
       lockWindow: 1000 * 60,
     });
 
@@ -191,7 +193,6 @@ export function registerJobs(register: Register) {
     }
 
     return new IXTrainModelJob({
-      tenantName,
       trainModelForPDF: new TrainModelForPDF({
         tenantName,
         serviceUrl,
@@ -308,7 +309,7 @@ export function registerJobs(register: Register) {
     const transactionManager = TransactionManagerFactory.default();
 
     const entitiesDS = EntitiesDataSourceFactory.default({ transactionManager });
-    const jobsDispatcher = DefaultDispatcher(tenants.current().name, transactionManager);
+    const jobsDispatcher = UwaziDispatcherFactory(tenants.current().name, transactionManager);
 
     return new DenormalizeThesaurusEntitiesHandler({ entitiesDS, jobsDispatcher });
   });

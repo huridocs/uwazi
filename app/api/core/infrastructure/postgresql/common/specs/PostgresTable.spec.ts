@@ -1,6 +1,7 @@
 /* eslint-disable max-statements */
 
 import { ObjectId } from 'mongodb';
+import type { Knex } from 'knex';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { testingPG } from '#api/utils/testing_pg.js';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
@@ -470,6 +471,162 @@ describe('PostgresTable', () => {
         .all();
 
       expect(rows.map((r: TestRow) => r._id)).toEqual(['wrc-2']);
+    });
+  });
+
+  describe('orWhere', () => {
+    it('should OR two conditions', async () => {
+      const table = createTable();
+      await table.insert({ _id: 'or-1', name: 'alpha', values: jsonVal([]) });
+      await table.insert({ _id: 'or-2', name: 'beta', values: jsonVal([]) });
+      await table.insert({ _id: 'or-3', name: 'gamma', values: jsonVal([]) });
+
+      const rows = await table.where({ name: 'alpha' }).orWhere({ name: 'gamma' }).all();
+
+      expect(rows.map((r: TestRow) => r._id).sort()).toEqual(['or-1', 'or-3']);
+    });
+
+    it('should compose orWhere with whereIn', async () => {
+      const table = createTable();
+      await table.insert({ _id: 'orw-1', name: 'alpha', values: jsonVal([]) });
+      await table.insert({ _id: 'orw-2', name: 'beta', values: jsonVal([]) });
+      await table.insert({ _id: 'orw-3', name: 'gamma', values: jsonVal([]) });
+
+      const rows = await table.whereIn('_id', ['orw-1', 'orw-2']).orWhere({ name: 'gamma' }).all();
+
+      expect(rows.map((r: TestRow) => r._id).sort()).toEqual(['orw-1', 'orw-2', 'orw-3']);
+    });
+  });
+
+  describe('whereBetween', () => {
+    it('should filter by range', async () => {
+      const table = createTable();
+      await table.insert({ _id: 'bt-1', name: 'a', values: jsonVal([]) });
+      await table.insert({ _id: 'bt-2', name: 'b', values: jsonVal([]) });
+      await table.insert({ _id: 'bt-3', name: 'c', values: jsonVal([]) });
+
+      const rows = await table.whereBetween('_id', ['bt-1', 'bt-2']).all();
+
+      expect(rows.map((r: TestRow) => r._id).sort()).toEqual(['bt-1', 'bt-2']);
+    });
+
+    it('should return nothing when range excludes all rows', async () => {
+      const table = createTable();
+      await table.insert({ _id: 'bt-4', name: 'a', values: jsonVal([]) });
+
+      const rows = await table.whereBetween('_id', ['zz', 'zzz']).all();
+
+      expect(rows).toEqual([]);
+    });
+  });
+
+  describe('whereLike', () => {
+    it('should filter by LIKE pattern', async () => {
+      const table = createTable();
+      await table.insert({ _id: 'lk-1', name: 'alpha-test', values: jsonVal([]) });
+      await table.insert({ _id: 'lk-2', name: 'beta-test', values: jsonVal([]) });
+      await table.insert({ _id: 'lk-3', name: 'gamma', values: jsonVal([]) });
+
+      const rows = await table.whereLike('name', '%-test').all();
+
+      expect(rows.map((r: TestRow) => r._id).sort()).toEqual(['lk-1', 'lk-2']);
+    });
+
+    it('should return nothing when pattern matches nothing', async () => {
+      const table = createTable();
+      await table.insert({ _id: 'lk-4', name: 'alpha', values: jsonVal([]) });
+
+      const rows = await table.whereLike('name', '%nomatch%').all();
+
+      expect(rows).toEqual([]);
+    });
+  });
+
+  describe('whereExists', () => {
+    it('should return all rows when subquery always matches', async () => {
+      const table = createTable();
+      await table.insert({ _id: 'ex-1', name: 'alpha', values: jsonVal([]) });
+      await table.insert({ _id: 'ex-2', name: 'beta', values: jsonVal([]) });
+
+      const rows = await table
+        .whereExists(function (this: Knex.QueryBuilder) {
+          this.select('*').from('thesauri').whereRaw('1=1');
+        })
+        .all();
+
+      expect(rows.map((r: TestRow) => r._id).sort()).toEqual(['ex-1', 'ex-2']);
+    });
+
+    it('should return no rows when subquery never matches', async () => {
+      const table = createTable();
+      await table.insert({ _id: 'ex-3', name: 'alpha', values: jsonVal([]) });
+
+      const rows = await table
+        .whereExists(function (this: Knex.QueryBuilder) {
+          this.select('*').from('thesauri').whereRaw('1=0');
+        })
+        .all();
+
+      expect(rows).toEqual([]);
+    });
+  });
+
+  describe('having', () => {
+    it('should filter groups by HAVING condition', async () => {
+      const table = createTable();
+      await table.insert({ _id: 'hv-1', name: 'group-a', values: jsonVal([]) });
+      await table.insert({ _id: 'hv-2', name: 'group-a-2', values: jsonVal([]) });
+      await table.insert({ _id: 'hv-3', name: 'group-b', values: jsonVal([]) });
+
+      const rows = await table
+        .select(['name'])
+        .groupBy(['name'])
+        .having('name', '=', 'group-a')
+        .all();
+
+      expect(rows.map((r: TestRow) => r.name)).toEqual(['group-a']);
+    });
+  });
+
+  describe('update() return value', () => {
+    it('should return matched _ids', async () => {
+      const table = createTable();
+      await table.insert({ _id: 'up-1', name: 'old-1', values: jsonVal([]) });
+      await table.insert({ _id: 'up-2', name: 'old-2', values: jsonVal([]) });
+
+      const ids = await table
+        .whereIn('_id', ['up-1', 'up-2'])
+        .update({ values: jsonVal([{ id: 'v1' }]) });
+
+      expect(ids.sort()).toEqual(['up-1', 'up-2']);
+    });
+
+    it('should return empty array when nothing matched', async () => {
+      const table = createTable();
+
+      const ids = await table.where({ _id: 'nonexistent' }).update({ name: 'x' });
+
+      expect(ids).toEqual([]);
+    });
+  });
+
+  describe('delete() return value', () => {
+    it('should return deleted _ids', async () => {
+      const table = createTable();
+      await table.insert({ _id: 'del-1', name: 'gone-1', values: jsonVal([]) });
+      await table.insert({ _id: 'del-2', name: 'gone-2', values: jsonVal([]) });
+
+      const ids = await table.whereIn('_id', ['del-1', 'del-2']).delete();
+
+      expect(ids.sort()).toEqual(['del-1', 'del-2']);
+    });
+
+    it('should return empty array when nothing matched', async () => {
+      const table = createTable();
+
+      const ids = await table.where({ _id: 'nonexistent' }).delete();
+
+      expect(ids).toEqual([]);
     });
   });
 

@@ -18,9 +18,8 @@ describe('SnippetList', () => {
 
   beforeEach(() => {
     props = {
-      doc: Immutable.fromJS({ _id: 'id', sharedId: 'sharedId', type: 'document' }),
+      sharedId: 'sharedId',
       searchTerm: 'snippet',
-      documentViewUrl: '/document/sharedId',
       selectSnippet: jest.fn(),
       selectedSnippet: Immutable.fromJS({ text: 'first <b>snippet 1</b> found', page: 1 }),
       documentSnippets: Immutable.fromJS([
@@ -38,12 +37,19 @@ describe('SnippetList', () => {
   });
 
   it('should selectSnippet when click on a snippet link', () => {
-    props.doc = Immutable.fromJS({ _id: 'id', sharedId: 'sharedId', type: 'document' });
     render();
     component.find(I18NLink).at(1).simulate('click');
     expect(props.selectSnippet).toHaveBeenCalledWith(
       2,
       Immutable.fromJS({ text: 'second <b>snippet 3</b> found', page: 2 })
+    );
+  });
+
+  it('should link snippets to V2 deep-links when flag is on', () => {
+    props.entityViewerV2 = true;
+    render();
+    expect(component.find(I18NLink).at(0).props().to).toBe(
+      '/entity/sharedId#s=search&searchTerm=snippet&page=1'
     );
   });
 });

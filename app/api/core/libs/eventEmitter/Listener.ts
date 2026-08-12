@@ -1,6 +1,10 @@
 import { z } from 'zod';
 import { DispatchableClass } from '../queue/application/contracts/JobsDispatcher.js';
-import { UserAwareDispatchable } from '../queue/application/contracts/UserAwareDispatchable.js';
+import {
+  PRIVILEGED_JOB_MARKER,
+  isPrivilegedJob,
+} from '#api/core/infrastructure/jobs/PrivilegedJob.js';
+import { UwaziJobHandler } from '#api/core/infrastructure/jobs/UwaziJobHandler.js';
 import { Event } from './Event.js';
 
 const JobSchema = z.object({
@@ -10,10 +14,10 @@ const JobSchema = z.object({
 
 type Dependencies<T> = {} & T;
 
-abstract class Listener<
+export abstract class Listener<
   Payload extends Event<any>,
   ExtendedDeps = {},
-> extends UserAwareDispatchable<Payload['payload']> {
+> extends UwaziJobHandler<Payload['payload']> {
   static readonly eventName: string;
 
   constructor(protected deps: Dependencies<ExtendedDeps>) {
@@ -26,10 +30,14 @@ abstract class Listener<
       eventName: this.eventName,
     });
 
-    return {
-      name: `${eventName}:${listenerName}`,
-    } as DispatchableClass<any>;
+    const result = { name: `${eventName}:${listenerName}` } as any;
+    if (isPrivilegedJob(this)) {
+      Object.defineProperty(result, PRIVILEGED_JOB_MARKER, {
+        value: true,
+        writable: false,
+        configurable: false,
+      });
+    }
+    return result as DispatchableClass<any>;
   }
 }
-
-export { Listener };

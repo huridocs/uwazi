@@ -6,7 +6,10 @@ import { TemplateBuilder } from '#api/core/domain/template/specs/TemplateBuilder
 import { TextProperty } from '#api/core/domain/template/TextProperty.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
+import { AccessContext } from '#api/core/domain/entityAccessPolicy/AccessContext.js';
+import { User } from '#api/users.v2/model/User.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
+import { DBFixture } from '#api/utils/testing_db.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { Template } from '#api/core/domain/template/Template.js';
 import { MongoEntitiesDataSource } from '../entity/MongoEntitiesDataSource.js';
@@ -74,7 +77,7 @@ const createEntity = (languages: string[], template: Template, userId?: string) 
   return entity;
 };
 
-const createSut = () => {
+const createSut = (accessContext?: AccessContext) => {
   const db = getConnection();
   const transactionManager = TransactionManagerFactory.default();
 
@@ -82,6 +85,7 @@ const createSut = () => {
     db,
     transactionManager,
     templatesDAO: new MongoTemplatesDAO({ db, transactionManager }),
+    options: accessContext ? { accessContext } : undefined,
   });
 
   return { sut, transactionManager };
@@ -478,6 +482,67 @@ describe('MongoEntitiesDataSource', () => {
 
       const [stored] = await testingEnvironment.db.getAllFrom('entities');
       expect(stored.preview).toBeUndefined();
+    });
+  });
+
+  describe('unrestricted', () => {
+    const collaboratorUser = new User(factory.id('collaborator').toString(), 'collaborator', []);
+
+    it('does not register a duplicate onCommitted search-index handler on the shared transaction manager', () => {
+      const { sut, transactionManager } = createSut();
+
+      const onCommittedSpy = jest.spyOn(transactionManager, 'onCommitted');
+      const unrestricted = sut.unrestricted();
+
+      expect(onCommittedSpy).not.toHaveBeenCalled();
+
+      // Cached — repeated calls return the same instance and never register
+      // an extra handler.
+      expect(sut.unrestricted()).toBe(unrestricted);
+      expect(onCommittedSpy).not.toHaveBeenCalled();
+    });
+
+    it('returns a view that sees entities the actor cannot read', async () => {
+      const fixturesWithPermissions: DBFixture = {
+        settings: [
+          {
+            languages: [{ key: 'en', label: 'English', default: true }],
+          },
+        ],
+        templates: [factory.template('Template1', [])],
+        entities: [
+          factory.entity(
+            'readable',
+            'Template1',
+            {},
+            {
+              language: 'en',
+              permissions: [factory.entityPermission('collaborator', 'user', 'write')],
+            }
+          ),
+          factory.entity(
+            'unreadable',
+            'Template1',
+            {},
+            {
+              language: 'en',
+              permissions: [],
+            }
+          ),
+        ],
+      };
+
+      await testingEnvironment.setFixtures(fixturesWithPermissions);
+
+      const { sut } = createSut(AccessContext.forActor(collaboratorUser));
+
+      const enforced = await (await sut.getEntitiesBySharedIds(['readable', 'unreadable'])).all();
+      expect(enforced.map(e => e.sharedId)).toEqual(['readable']);
+
+      const unrestricted = await (
+        await sut.unrestricted().getEntitiesBySharedIds(['readable', 'unreadable'])
+      ).all();
+      expect(unrestricted.map(e => e.sharedId).sort()).toEqual(['readable', 'unreadable']);
     });
   });
 });

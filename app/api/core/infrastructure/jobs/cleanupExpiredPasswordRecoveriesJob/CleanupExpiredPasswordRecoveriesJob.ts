@@ -1,4 +1,5 @@
 import pg from 'pg';
+import { PrivilegedJob } from '#api/core/infrastructure/jobs/PrivilegedJob.js';
 import {
   Dispatchable,
   HeartbeatCallback,
@@ -14,6 +15,7 @@ type Deps = {
   jobsDispatcher: JobsDispatcher;
 };
 
+@PrivilegedJob()
 class CleanupExpiredPasswordRecoveriesJob implements Dispatchable {
   constructor(private deps: Deps) {}
 
