@@ -8,7 +8,7 @@ import { UpdateUserGroupController } from './UpdateUserGroupController.js';
 import { DeleteUserGroupsController } from './DeleteUserGroupsController.js';
 import { GetUserGroupsController } from './GetUserGroupsController.js';
 
-const runMiddleware = (
+const runMiddleware = async (
   middleware: (req: Request, res: Response, next: NextFunction) => void,
   req: Request,
   res: Response
