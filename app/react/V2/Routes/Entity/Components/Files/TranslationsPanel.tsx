@@ -3,6 +3,7 @@ import { EyeIcon, TrashIcon } from '@heroicons/react/24/outline';
 import { Translate } from '#app/I18N/index.js';
 import { EntityWriteAuthorization } from '#V2/Routes/Entity/Components/context/index.js';
 import { getRowIcon } from './fileRowIcon.js';
+import { FileLanguageChip } from './FileLanguageChip.js';
 import { EntityFileRow } from './types.js';
 
 const TranslationsPanel = ({
@@ -40,9 +41,7 @@ const TranslationsPanel = ({
           }}
           className="flex cursor-pointer items-center gap-2 rounded-md border border-border/50 bg-paper px-3 py-2 transition-colors hover:bg-warm"
         >
-          <span className="shrink-0 rounded bg-vellum px-1.5 py-0.5 text-tiny font-semibold text-ink-secondary">
-            {file.languageKey}
-          </span>
+          <FileLanguageChip>{file.languageKey}</FileLanguageChip>
           <span className="shrink-0">{getRowIcon(file)}</span>
           <div className="min-w-0 flex-1">
             <p className="truncate text-xs font-medium text-ink">{file.displayName}</p>

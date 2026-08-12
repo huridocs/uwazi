@@ -10,7 +10,8 @@ import {
 import { getRowIcon } from './fileRowIcon.js';
 import { FileDeleteAction } from './FileDeleteAction.js';
 import { FileDetailsField } from './FileDetailsField.js';
-import { FileDetailsCard, FileDetailsReadonlyMeta } from './FileDetailsShared.js';
+import { FileDetailsCard } from './FileDetailsCard.js';
+import { FileDetailsReadonlyMeta } from './FileDetailsReadonlyMeta.js';
 import { FileDocumentContextBadge } from './FileDocumentContextBadge.js';
 import { FileLanguageSelect } from './FileLanguageSelect.js';
 import { EntityFileRow, FileEditFocus } from './types.js';

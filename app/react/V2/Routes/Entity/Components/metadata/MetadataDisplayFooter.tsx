@@ -1,10 +1,5 @@
 import React, { useState } from 'react';
-import {
-  DocumentDuplicateIcon,
-  PencilSquareIcon,
-  ShareIcon,
-  TrashIcon,
-} from '@heroicons/react/24/outline';
+import { PencilSquareIcon, ShareIcon, TrashIcon } from '@heroicons/react/24/outline';
 import { Translate } from '#app/I18N/index.js';
 import { Button } from '#V2/Components/UI/index.js';
 import {

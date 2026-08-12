@@ -3,6 +3,7 @@ import { Translate } from '#app/I18N/index.js';
 import { AddTranslationButton } from './AddTranslationButton.js';
 import { useEntityFiles } from './EntityFilesContext.js';
 import { fileFieldLabelClass } from './FileDetailsField.js';
+import { FileLanguageChip } from './FileLanguageChip.js';
 import { EntityFileRow } from './types.js';
 
 type BadgeVariant = 'active' | 'primary' | 'supporting';
@@ -22,10 +23,6 @@ const chipClass = (current: boolean) =>
   current
     ? 'flex items-center gap-1.5 rounded border border-ink/30 bg-parchment px-2 py-1 cursor-default'
     : 'flex items-center gap-1.5 rounded border border-border bg-paper px-2 py-1 hover:bg-parchment cursor-pointer';
-
-const LanguageBadge = ({ code }: { code: string }) => (
-  <span className="rounded bg-vellum px-1 text-nano font-semibold text-ink-secondary">{code}</span>
-);
 
 const FileDocumentContextBadge = ({ row }: { row: EntityFileRow }) => {
   const { mainDocumentId, primaryRows, setFocusedRowId } = useEntityFiles();
@@ -62,7 +59,7 @@ const FileDocumentContextBadge = ({ row }: { row: EntityFileRow }) => {
                         aria-current="true"
                         className={chipClass(true)}
                       >
-                        <LanguageBadge code={translationRow.languageKey} />
+                        <FileLanguageChip>{translationRow.languageKey}</FileLanguageChip>
                         <span className="max-w-[180px] truncate text-xs text-ink">
                           {translationRow.displayName}
                         </span>
@@ -76,7 +73,7 @@ const FileDocumentContextBadge = ({ row }: { row: EntityFileRow }) => {
                       onClick={() => setFocusedRowId(translationRow.rowId)}
                       className={chipClass(false)}
                     >
-                      <LanguageBadge code={translationRow.languageKey} />
+                      <FileLanguageChip>{translationRow.languageKey}</FileLanguageChip>
                       <span className="max-w-[180px] truncate text-xs text-ink">
                         {translationRow.displayName}
                       </span>

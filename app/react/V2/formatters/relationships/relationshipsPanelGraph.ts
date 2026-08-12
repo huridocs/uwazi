@@ -350,6 +350,43 @@ const sourcePillWidth = (title: string, typeName: string): number => {
   return Math.max(72, Math.max(sourceLabel.length, typeName.length) * 5.6 + 18);
 };
 
+type GraphBounds = { minX: number; maxX: number; minY: number; maxY: number };
+
+const expandBounds = (
+  bounds: GraphBounds,
+  point: { x: number; y: number; padX: number; padY: number }
+): GraphBounds => ({
+  minX: Math.min(bounds.minX, point.x - point.padX),
+  maxX: Math.max(bounds.maxX, point.x + point.padX),
+  minY: Math.min(bounds.minY, point.y - point.padY),
+  maxY: Math.max(bounds.maxY, point.y + point.padY),
+});
+
+const boundsFromGraph = (
+  nodes: GraphNode[],
+  spokes: GraphSpoke[],
+  sourceLabelW: number
+): GraphBounds => {
+  let bounds: GraphBounds = {
+    minX: CX - sourceLabelW / 2,
+    maxX: CX + sourceLabelW / 2,
+    minY: CY - SOURCE_R,
+    maxY: CY + SOURCE_R + 36,
+  };
+  for (const node of nodes) {
+    bounds = expandBounds(bounds, { x: node.x, y: node.y, padX: node.r, padY: node.r });
+  }
+  for (const spoke of spokes) {
+    bounds = expandBounds(bounds, {
+      x: spoke.labelX,
+      y: spoke.labelY,
+      padX: 60,
+      padY: 14,
+    });
+  }
+  return bounds;
+};
+
 const computeFitTransform = (
   nodes: GraphNode[],
   spokes: GraphSpoke[],
@@ -358,25 +395,11 @@ const computeFitTransform = (
 ): GraphTransform => {
   if (nodes.length === 0) return { tx: 0, ty: 0, scale: 1 };
 
-  const sourceLabelW = sourcePillWidth(sourceTitle, typeName);
-  let minX = CX - sourceLabelW / 2;
-  let maxX = CX + sourceLabelW / 2;
-  let minY = CY - SOURCE_R;
-  let maxY = CY + SOURCE_R + 36;
-
-  for (const node of nodes) {
-    minX = Math.min(minX, node.x - node.r);
-    maxX = Math.max(maxX, node.x + node.r);
-    minY = Math.min(minY, node.y - node.r);
-    maxY = Math.max(maxY, node.y + node.r);
-  }
-  for (const spoke of spokes) {
-    minX = Math.min(minX, spoke.labelX - 60);
-    maxX = Math.max(maxX, spoke.labelX + 60);
-    minY = Math.min(minY, spoke.labelY - 14);
-    maxY = Math.max(maxY, spoke.labelY + 14);
-  }
-
+  const { minX, maxX, minY, maxY } = boundsFromGraph(
+    nodes,
+    spokes,
+    sourcePillWidth(sourceTitle, typeName)
+  );
   const width = Math.max(1, maxX - minX);
   const height = Math.max(1, maxY - minY);
   const scale = Math.max(
@@ -386,9 +409,11 @@ const computeFitTransform = (
       Math.min((VIEW_W - FIT_PAD * 2) / width, (VIEW_H - FIT_PAD * 2) / height)
     )
   );
-  const contentCx = (minX + maxX) / 2;
-  const contentCy = (minY + maxY) / 2;
-  return { scale, tx: scale * (CX - contentCx), ty: scale * (CY - contentCy) };
+  return {
+    scale,
+    tx: scale * (CX - (minX + maxX) / 2),
+    ty: scale * (CY - (minY + maxY) / 2),
+  };
 };
 
 export type { GraphNode, GraphSpoke, GraphTransform };

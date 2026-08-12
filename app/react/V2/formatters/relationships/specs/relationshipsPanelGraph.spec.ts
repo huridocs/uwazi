@@ -45,8 +45,11 @@ const context = {
   selfTemplateId: 'tpl1',
   relationshipTypeName: (id: string) => id,
   templateName: (id: string) => (id === 'tpl2' ? 'Person' : 'Case'),
-  templateColor: (id: string) =>
-    id === 'tpl2' ? '#ff0000' : id === 'tpl1' ? '#00aa00' : undefined,
+  templateColor: (id: string) => {
+    if (id === 'tpl2') return '#ff0000';
+    if (id === 'tpl1') return '#00aa00';
+    return undefined;
+  },
 };
 
 describe('relationshipsPanelGraph', () => {
@@ -102,7 +105,8 @@ describe('relationshipsPanelGraph', () => {
   });
 
   it('sourcePillWidth uses max of title and type name', () => {
-    expect(truncateForFit('abcdefghijklmnopqrstuvwxyzXXXX', 26)).toMatch(/…$/);
+    const truncated = truncateForFit('abcdefghijklmnopqrstuvwxyzXXXX', 26);
+    expect(truncated.endsWith('…')).toBe(true);
     expect(sourcePillWidth('Short', 'VeryLongTemplateName')).toBe(
       Math.max(72, 'VeryLongTemplateName'.length * 5.6 + 18)
     );

@@ -6,8 +6,10 @@ import { fileSupportsLanguage } from './fileHelpers.js';
 import { getRowIcon } from './fileRowIcon.js';
 import { FileDeleteAction } from './FileDeleteAction.js';
 import { FileDetailsField } from './FileDetailsField.js';
-import { FileDetailsCard, FileDetailsReadonlyMeta } from './FileDetailsShared.js';
+import { FileDetailsCard } from './FileDetailsCard.js';
+import { FileDetailsReadonlyMeta } from './FileDetailsReadonlyMeta.js';
 import { FileDocumentContextBadge } from './FileDocumentContextBadge.js';
+import { FileLanguageChip } from './FileLanguageChip.js';
 import { EntityFileRow } from './types.js';
 
 const FileDetailsView = ({ row, onEdit }: { row: EntityFileRow; onEdit: () => void }) => {
@@ -43,9 +45,7 @@ const FileDetailsView = ({ row, onEdit }: { row: EntityFileRow; onEdit: () => vo
           {showLanguage ? (
             <FileDetailsField label={<Translate>Language</Translate>}>
               <div className="flex h-7 items-center">
-                <span className="inline-block rounded bg-vellum px-2 py-0.5 text-xs font-medium text-ink-secondary">
-                  {row.languageKey}
-                </span>
+                <FileLanguageChip>{row.languageKey}</FileLanguageChip>
               </div>
             </FileDetailsField>
           ) : null}

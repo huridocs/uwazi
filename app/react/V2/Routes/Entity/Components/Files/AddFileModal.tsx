@@ -1,19 +1,13 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import {
-  ChevronDownIcon,
-  DocumentIcon,
-  DocumentTextIcon,
-  MusicalNoteIcon,
-  PhotoIcon,
-  VideoCameraIcon,
-} from '@heroicons/react/24/outline';
+import { ChevronDownIcon } from '@heroicons/react/24/outline';
 import { t, Translate } from '#app/I18N/index.js';
 import { LanguageUtils } from '#shared/language/index.js';
-import { CloudUploadStrokeIcon } from '#V2/Components/CustomIcons/index.js';
 import { Button, Modal } from '#V2/Components/UI/index.js';
 import { getFileNameAndExtension } from '#V2/shared/formatHelpers.js';
+import { AddFileDropzone } from './AddFileDropzone.js';
 import { fileFieldLabelClass } from './FileDetailsField.js';
 import { fileLanguageSelectOptions, fileSupportsLanguage, isPdfFile } from './fileHelpers.js';
+import { getBrowserFileIcon } from './fileRowIcon.js';
 import { FileUploadProgressLine } from './FileUploadProgressLine.js';
 import { useEntityFiles } from './EntityFilesContext.js';
 
@@ -23,65 +17,6 @@ const isAddAs = (value: string): value is AddAs => value === 'supporting' || val
 
 const controlClass =
   'w-full appearance-none rounded border border-border bg-paper py-1 pl-2 pr-7 text-xs text-ink focus:outline-none focus:ring-1 focus:ring-ink/20 disabled:opacity-70';
-
-const getFileIcon = (file: File) => {
-  const mime = file.type;
-  const iconClass = 'h-4 w-4 shrink-0 text-ink-muted';
-
-  if (mime.startsWith('audio/')) return <MusicalNoteIcon className={iconClass} />;
-  if (mime.startsWith('video/')) return <VideoCameraIcon className={iconClass} />;
-  if (mime.startsWith('image/')) return <PhotoIcon className={iconClass} />;
-  if (mime === 'application/pdf' || isPdfFile(file)) {
-    return <DocumentTextIcon className={iconClass} />;
-  }
-  return <DocumentIcon className={iconClass} />;
-};
-
-const AddFileDropzone = ({
-  onPick,
-  onDropFile,
-}: {
-  onPick: () => void;
-  onDropFile: (file: File | undefined) => void;
-}) => {
-  const [dragging, setDragging] = useState(false);
-
-  return (
-    <div className="flex flex-col gap-4">
-      <button
-        type="button"
-        onClick={onPick}
-        onDragEnter={event => {
-          event.preventDefault();
-          setDragging(true);
-        }}
-        onDragOver={event => event.preventDefault()}
-        onDragLeave={() => setDragging(false)}
-        onDrop={event => {
-          event.preventDefault();
-          setDragging(false);
-          onDropFile(event.dataTransfer.files?.[0]);
-        }}
-        className={[
-          'flex w-full cursor-pointer flex-col items-center justify-center rounded-lg bg-warm py-6 transition-colors hover:bg-parchment',
-          dragging ? 'border-ink/40' : 'border-border-soft',
-        ].join(' ')}
-        style={{ border: '2px dashed var(--color-theme-border-soft, var(--border-soft, #e5e7eb))' }}
-      >
-        <CloudUploadStrokeIcon className="mb-1.5 h-7 w-7 text-ink-tertiary/50" aria-hidden />
-        <span className="text-sm font-medium text-ink-secondary">
-          <Translate>Click to select files</Translate>
-        </span>
-        <span className="mt-0.5 text-xs text-ink-muted">
-          <Translate>or drag and drop here</Translate>
-        </span>
-      </button>
-      <p className="text-center text-xs text-ink-tertiary">
-        <Translate>No files queued yet.</Translate>
-      </p>
-    </div>
-  );
-};
 
 const AddFileModal = () => {
   const {
@@ -166,7 +101,7 @@ const AddFileModal = () => {
           <div className="rounded-md border border-border/50 bg-warm p-3">
             <div className="space-y-2.5">
               <div className="flex items-start gap-2">
-                <span className="mt-1 flex shrink-0 items-center">{getFileIcon(file)}</span>
+                <span className="mt-1 flex shrink-0 items-center">{getBrowserFileIcon(file)}</span>
                 <input
                   id="add-file-name"
                   type="text"

@@ -8,23 +8,12 @@ import { useEntityFiles } from '../../Components/Files/EntityFilesContext.js';
 import { isFileRowSelectable } from '../../Components/Files/fileHelpers.js';
 import { EntityTabFooter } from '../EntityTabFooter.js';
 import { resolveFileTabFooterMode } from './fileTabFooterMode.js';
-
-const iconClass = 'h-3 w-3 shrink-0 text-ink-tertiary';
+import { FileDownloadButton, iconClass, triggerDownload } from './FileDownloadButton.js';
 
 const fileDownloadUrl = (row: EntityFileRow) => {
   const base = row.raw.url || (row.raw.filename ? `/api/files/${row.raw.filename}` : '');
   if (!base || row.kind === 'link') return '';
   return row.raw.filename ? `${base}?download=true` : base;
-};
-
-const triggerDownload = (url: string) => {
-  const link = document.createElement('a');
-  link.href = url;
-  link.download = '';
-  link.rel = 'noreferrer';
-  document.body.appendChild(link);
-  link.click();
-  link.remove();
 };
 
 const downloadRows = (rows: EntityFileRow[]) => {
@@ -33,13 +22,6 @@ const downloadRows = (rows: EntityFileRow[]) => {
     if (url) triggerDownload(url);
   });
 };
-
-const DownloadButton = ({ href }: { href: string }) => (
-  <Button variant="warm" className="inline-flex items-center" onClick={() => triggerDownload(href)}>
-    <ArrowDownTrayIcon className={iconClass} />
-    <Translate>Download</Translate>
-  </Button>
-);
 
 const FileTabFooter = () => {
   const {
@@ -110,7 +92,7 @@ const FileTabFooter = () => {
             <ArrowLeftIcon className={iconClass} />
             <Translate>Back to details</Translate>
           </Button>
-          {downloadUrl ? <DownloadButton href={downloadUrl} /> : <span />}
+          {downloadUrl ? <FileDownloadButton href={downloadUrl} /> : <span />}
         </div>
       </EntityTabFooter>
     );
@@ -124,7 +106,7 @@ const FileTabFooter = () => {
             <EyeIcon className={iconClass} />
             <Translate>View</Translate>
           </Button>
-          {downloadUrl ? <DownloadButton href={downloadUrl} /> : null}
+          {downloadUrl ? <FileDownloadButton href={downloadUrl} /> : null}
         </div>
         {canDelete ? (
           <EntityWriteAuthorization>
