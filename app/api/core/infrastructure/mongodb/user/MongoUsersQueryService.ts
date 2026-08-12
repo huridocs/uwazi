@@ -1,4 +1,5 @@
 import { Db, Filter } from 'mongodb';
+import escapeRegExp from 'lodash/escapeRegExp.js';
 import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
 import { MongoDataSource } from '../common/MongoDataSource.js';
 import { UserDBO } from './UserDBO.js';
@@ -47,6 +48,28 @@ class MongoUsersQueryService extends MongoDataSource<UserDBO> {
     ];
 
     return this.getCollection().aggregate<UserWithGroups>(aggregation).toArray();
+  }
+
+  async listBasicInfo(): Promise<{ _id: string; username: string }[]> {
+    const users = await this.dao.findMany(this.dao.notPublicUserFilter());
+
+    return users.map(user => ({ _id: user._id.toString(), username: user.username }));
+  }
+
+  async findByEmailOrUsername(
+    term: string
+  ): Promise<{ _id: string; username: string; email: string }[]> {
+    const exactRegex = new RegExp(`^${escapeRegExp(term)}$`, 'i');
+    const users = await this.dao.findMany({
+      $or: [{ username: exactRegex }, { email: exactRegex }],
+      ...this.dao.notPublicUserFilter(),
+    });
+
+    return users.map(user => ({
+      _id: user._id.toString(),
+      username: user.username,
+      email: user.email,
+    }));
   }
 }
 

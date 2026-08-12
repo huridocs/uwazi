@@ -124,6 +124,103 @@ describe('PostgresUsersDAO', () => {
 
       expect(users).toEqual([]);
     });
+
+    it('should exclude password, secret, failedLogins and accountUnlockCode, but keep accountLocked', async () => {
+      await testingPG.setFixtures({
+        users: [
+          userFixture({
+            _id: 'withsensitive',
+            username: 'withsensitive',
+            email: 'sensitive@test.com',
+            password: 'hash',
+            secret: 'mysecret',
+            failedLogins: 3,
+            accountUnlockCode: 'abc123',
+            accountLocked: false,
+          }),
+        ],
+      });
+
+      const dao = makeDAO();
+      const [user] = await dao.findMany();
+
+      expect(user.username).toBe('withsensitive');
+      expect(user.password).toBeUndefined();
+      expect(user.secret).toBeUndefined();
+      expect(user.failedLogins).toBeUndefined();
+      expect(user.accountUnlockCode).toBeUndefined();
+      expect(user.accountLocked).toBe(false);
+    });
+  });
+
+  describe('getById', () => {
+    it('should exclude password, secret, failedLogins and accountUnlockCode by default', async () => {
+      await testingPG.setFixtures({
+        users: [
+          userFixture({
+            _id: 'withsensitive',
+            username: 'withsensitive',
+            email: 'sensitive@test.com',
+            password: 'hash',
+            secret: 'mysecret',
+            failedLogins: 3,
+            accountUnlockCode: 'abc123',
+            accountLocked: false,
+          }),
+        ],
+      });
+
+      const dao = makeDAO();
+      const result = await dao.getById('withsensitive');
+
+      const user = result.getDataOrThrow();
+      expect(user.username).toBe('withsensitive');
+      expect(user.password).toBeUndefined();
+      expect(user.secret).toBeUndefined();
+      expect(user.failedLogins).toBeUndefined();
+      expect(user.accountUnlockCode).toBeUndefined();
+      expect('accountLocked' in user).toBe(false);
+    });
+
+    it('should include each sensitive field only when explicitly requested', async () => {
+      await testingPG.setFixtures({
+        users: [
+          userFixture({
+            _id: 'withsensitive',
+            username: 'withsensitive',
+            email: 'sensitive@test.com',
+            password: 'hash',
+            secret: 'mysecret',
+            failedLogins: 3,
+            accountUnlockCode: 'abc123',
+            accountLocked: false,
+          }),
+        ],
+      });
+
+      const dao = makeDAO();
+      const result = await dao.getById('withsensitive', {
+        includePassword: true,
+        includeSecret: true,
+        includeFailedLogins: true,
+        includeAccountUnlockCode: true,
+        includeAccountLocked: true,
+      });
+
+      const user = result.getDataOrThrow();
+      expect(user.password).toBe('hash');
+      expect(user.secret).toBe('mysecret');
+      expect(user.failedLogins).toBe(3);
+      expect(user.accountUnlockCode).toBe('abc123');
+      expect(user.accountLocked).toBe(false);
+    });
+
+    it('should fail when no user matches', async () => {
+      const dao = makeDAO();
+      const result = await dao.getById('nonexistent');
+
+      expect(result.isError()).toBe(true);
+    });
   });
 
   describe('findByIds', () => {
@@ -201,46 +298,45 @@ describe('PostgresUsersDAO', () => {
       const dao = makeDAO();
       expect(await dao.findByIds(['nonexistent'])).toEqual([]);
     });
-  });
 
-  describe('listBasicInfo', () => {
-    it('should return all non-deleted, non-public users with minimal shape', async () => {
-      const publicUserId = PUBLIC_USER_ID.toHexString();
+    it('should exclude password, secret, failedLogins and accountUnlockCode, but keep accountLocked', async () => {
       await testingPG.setFixtures({
         users: [
-          userFixture({ _id: 'active1', username: 'active1', email: 'active1@test.com' }),
           userFixture({
-            _id: 'deleted1',
-            username: 'deleted1',
-            email: 'deleted1@test.com',
-            deletedAt: new Date(),
+            _id: 'withsensitive',
+            username: 'withsensitive',
+            email: 'sensitive@test.com',
+            password: 'hash',
+            secret: 'mysecret',
+            failedLogins: 3,
+            accountUnlockCode: 'abc123',
+            accountLocked: false,
           }),
-          userFixture({ _id: publicUserId, username: 'public', email: 'public@test.com' }),
         ],
       });
 
       const dao = makeDAO();
-      const users = await dao.listBasicInfo();
+      const [user] = await dao.findByIds(['withsensitive']);
 
-      expect(users).toEqual([{ _id: 'active1', username: 'active1' }]);
-    });
-
-    it('should return an empty array when there are no users', async () => {
-      const dao = makeDAO();
-      expect(await dao.listBasicInfo()).toEqual([]);
+      expect(user.username).toBe('withsensitive');
+      expect(user.password).toBeUndefined();
+      expect(user.secret).toBeUndefined();
+      expect(user.failedLogins).toBeUndefined();
+      expect(user.accountUnlockCode).toBeUndefined();
+      expect(user.accountLocked).toBe(false);
     });
   });
 
-  describe('findByEmailOrUsername', () => {
+  describe('matchEmailOrUsername', () => {
     it('should match by exact username, case-insensitively', async () => {
       await testingPG.setFixtures({
         users: [userFixture({ _id: 'active1', username: 'active1', email: 'active1@test.com' })],
       });
 
       const dao = makeDAO();
-      const users = await dao.findByEmailOrUsername('ACTIVE1');
+      const users = await dao.matchEmailOrUsername('ACTIVE1');
 
-      expect(users).toEqual([{ _id: 'active1', username: 'active1', email: 'active1@test.com' }]);
+      expect(users.map(u => u.username)).toEqual(['active1']);
     });
 
     it('should match by exact email, case-insensitively', async () => {
@@ -249,7 +345,7 @@ describe('PostgresUsersDAO', () => {
       });
 
       const dao = makeDAO();
-      const users = await dao.findByEmailOrUsername('ACTIVE2@TEST.COM');
+      const users = await dao.matchEmailOrUsername('ACTIVE2@TEST.COM');
 
       expect(users.map(u => u.username)).toEqual(['active2']);
     });
@@ -260,7 +356,7 @@ describe('PostgresUsersDAO', () => {
       });
 
       const dao = makeDAO();
-      const users = await dao.findByEmailOrUsername('active');
+      const users = await dao.matchEmailOrUsername('active');
 
       expect(users).toEqual([]);
     });
@@ -278,7 +374,7 @@ describe('PostgresUsersDAO', () => {
       });
 
       const dao = makeDAO();
-      const users = await dao.findByEmailOrUsername('deleted1');
+      const users = await dao.matchEmailOrUsername('deleted1');
 
       expect(users).toEqual([]);
     });
@@ -290,14 +386,14 @@ describe('PostgresUsersDAO', () => {
       });
 
       const dao = makeDAO();
-      const users = await dao.findByEmailOrUsername('public');
+      const users = await dao.matchEmailOrUsername('public');
 
       expect(users).toEqual([]);
     });
 
     it('should return an empty array when nothing matches', async () => {
       const dao = makeDAO();
-      expect(await dao.findByEmailOrUsername('nonexistent')).toEqual([]);
+      expect(await dao.matchEmailOrUsername('nonexistent')).toEqual([]);
     });
   });
 });

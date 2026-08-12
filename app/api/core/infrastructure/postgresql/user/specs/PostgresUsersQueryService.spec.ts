@@ -180,4 +180,62 @@ describe('PostgresUsersQueryService', () => {
       expect(users).toEqual([]);
     });
   });
+
+  describe('listBasicInfo()', () => {
+    it('should return all non-deleted, non-public users with minimal shape', async () => {
+      await setupFixtures();
+      const queryService = getQueryService();
+      const users = await queryService.listBasicInfo();
+
+      expect(users.map(u => u.username).sort()).toEqual(['active1', 'active2', 'withsensitive']);
+    });
+  });
+
+  describe('findByEmailOrUsername()', () => {
+    it('should match by exact username, case-insensitively', async () => {
+      await setupFixtures();
+      const queryService = getQueryService();
+      const users = await queryService.findByEmailOrUsername('ACTIVE1');
+
+      expect(users.map(u => u.username)).toEqual(['active1']);
+    });
+
+    it('should match by exact email, case-insensitively', async () => {
+      await setupFixtures();
+      const queryService = getQueryService();
+      const users = await queryService.findByEmailOrUsername('ACTIVE2@TEST.COM');
+
+      expect(users.map(u => u.username)).toEqual(['active2']);
+    });
+
+    it('should not match a partial/prefix term', async () => {
+      await setupFixtures();
+      const queryService = getQueryService();
+      const users = await queryService.findByEmailOrUsername('active');
+
+      expect(users).toEqual([]);
+    });
+
+    it('should exclude soft-deleted users', async () => {
+      await setupFixtures();
+      const queryService = getQueryService();
+      const users = await queryService.findByEmailOrUsername('deleted');
+
+      expect(users).toEqual([]);
+    });
+
+    it('should exclude the public/system user', async () => {
+      await setupFixtures();
+      const queryService = getQueryService();
+      const users = await queryService.findByEmailOrUsername('public');
+
+      expect(users).toEqual([]);
+    });
+
+    it('should return an empty array when nothing matches', async () => {
+      await setupFixtures();
+      const queryService = getQueryService();
+      expect(await queryService.findByEmailOrUsername('nonexistent')).toEqual([]);
+    });
+  });
 });

@@ -8,6 +8,8 @@ import { UserGroupsDAOFactory } from './UserGroupsDAOFactory.js';
 import { UsersDAOFactory } from './UsersDAOFactory.js';
 
 class UsersQueryServiceFactory {
+  // Requires postgresUsers AND postgresUsergroups together — listWithGroups joins users and
+  // usergroups server-side, so both must live in the same backend for the join to be correct.
   static default(): MongoUsersQueryService {
     const tenant = ExecutionContext.currentTenant;
 

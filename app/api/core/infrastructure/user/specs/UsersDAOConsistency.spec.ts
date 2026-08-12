@@ -319,6 +319,75 @@ describe('UsersDAOConsistency', () => {
       });
     });
 
+    describe('findMany()', () => {
+      it('should return all users matching an empty filter', async () => {
+        const dao = getDao();
+        const users = await dao.findMany();
+
+        expect(users.map(u => u.username).sort()).toEqual([
+          'active1',
+          'active2',
+          'public',
+          'withsensitive',
+        ]);
+      });
+
+      it('should filter by an arbitrary field', async () => {
+        const dao = getDao();
+        const users = await dao.findMany({ username: 'active1' });
+
+        expect(users.map(u => u.username)).toEqual(['active1']);
+      });
+
+      it('should exclude soft-deleted users by default', async () => {
+        const dao = getDao();
+        const users = await dao.findMany();
+
+        expect(users.find(u => u.username === 'deleted')).toBeUndefined();
+      });
+
+      it('should include soft-deleted users when includeDeleted is true', async () => {
+        const dao = getDao();
+        const users = await dao.findMany({}, { includeDeleted: true });
+
+        expect(users.find(u => u.username === 'deleted')).toBeDefined();
+      });
+
+      it('should not exclude the public user unless the caller adds the guard', async () => {
+        const dao = getDao();
+        const users = await dao.findMany();
+
+        expect(users.find(u => u.username === 'public')).toBeDefined();
+      });
+
+      it('should exclude the public user when notPublicUserFilter() is applied', async () => {
+        const dao = getDao();
+        const users = await dao.findMany(dao.notPublicUserFilter());
+
+        expect(users.find(u => u.username === 'public')).toBeUndefined();
+      });
+
+      it('should exclude password, secret, failedLogins and accountUnlockCode, but keep accountLocked', async () => {
+        const dao = getDao();
+        const users = await dao.findMany(idCondition('withsensitive'));
+
+        const [user] = users;
+        expect(user.username).toBe('withsensitive');
+        expect(user.password).toBeUndefined();
+        expect(user.secret).toBeUndefined();
+        expect(user.failedLogins).toBeUndefined();
+        expect(user.accountUnlockCode).toBeUndefined();
+        expect(user.accountLocked).toBe(false);
+      });
+
+      it('should return an empty array when nothing matches', async () => {
+        const dao = getDao();
+        const users = await dao.findMany({ username: 'nonexistent' });
+
+        expect(users).toEqual([]);
+      });
+    });
+
     describe('findByIds()', () => {
       it('should return the matching, non-deleted, non-public users', async () => {
         const dao = getDao();
@@ -357,56 +426,17 @@ describe('UsersDAOConsistency', () => {
         const dao = getDao();
         expect(await dao.findByIds([new ObjectId().toHexString()])).toEqual([]);
       });
-    });
 
-    describe('listBasicInfo()', () => {
-      it('should return all non-deleted, non-public users with minimal shape', async () => {
+      it('should exclude password, secret, failedLogins and accountUnlockCode, but keep accountLocked', async () => {
         const dao = getDao();
-        const users = await dao.listBasicInfo();
+        const [user] = await dao.findByIds([f.idString('withsensitive')]);
 
-        expect(users.map(u => u.username).sort()).toEqual(['active1', 'active2', 'withsensitive']);
-      });
-    });
-
-    describe('findByEmailOrUsername()', () => {
-      it('should match by exact username, case-insensitively', async () => {
-        const dao = getDao();
-        const users = await dao.findByEmailOrUsername('ACTIVE1');
-
-        expect(users.map(u => u.username)).toEqual(['active1']);
-      });
-
-      it('should match by exact email, case-insensitively', async () => {
-        const dao = getDao();
-        const users = await dao.findByEmailOrUsername('ACTIVE2@TEST.COM');
-
-        expect(users.map(u => u.username)).toEqual(['active2']);
-      });
-
-      it('should not match a partial/prefix term', async () => {
-        const dao = getDao();
-        const users = await dao.findByEmailOrUsername('active');
-
-        expect(users).toEqual([]);
-      });
-
-      it('should exclude soft-deleted users', async () => {
-        const dao = getDao();
-        const users = await dao.findByEmailOrUsername('deleted');
-
-        expect(users).toEqual([]);
-      });
-
-      it('should exclude the public/system user', async () => {
-        const dao = getDao();
-        const users = await dao.findByEmailOrUsername('public');
-
-        expect(users).toEqual([]);
-      });
-
-      it('should return an empty array when nothing matches', async () => {
-        const dao = getDao();
-        expect(await dao.findByEmailOrUsername('nonexistent')).toEqual([]);
+        expect(user.username).toBe('withsensitive');
+        expect(user.password).toBeUndefined();
+        expect(user.secret).toBeUndefined();
+        expect(user.failedLogins).toBeUndefined();
+        expect(user.accountUnlockCode).toBeUndefined();
+        expect(user.accountLocked).toBe(false);
       });
     });
 

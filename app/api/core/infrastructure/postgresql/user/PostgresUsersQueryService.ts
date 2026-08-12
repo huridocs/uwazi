@@ -43,6 +43,20 @@ class PostgresUsersQueryService {
       groups: groupsByUser.get(user._id) ?? [],
     }));
   }
+
+  async listBasicInfo(): Promise<{ _id: string; username: string }[]> {
+    const users = await this.usersDAO.findMany(this.usersDAO.notPublicUserFilter());
+
+    return users.map(user => ({ _id: user._id, username: user.username }));
+  }
+
+  async findByEmailOrUsername(
+    term: string
+  ): Promise<{ _id: string; username: string; email: string }[]> {
+    const users = await this.usersDAO.matchEmailOrUsername(term);
+
+    return users.map(user => ({ _id: user._id, username: user.username, email: user.email }));
+  }
 }
 
 export { PostgresUsersQueryService };

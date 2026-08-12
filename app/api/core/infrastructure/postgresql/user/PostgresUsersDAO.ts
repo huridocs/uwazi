@@ -11,8 +11,39 @@ const PUBLIC_USER_ID_STRING = PUBLIC_USER_ID.toHexString();
 
 const EXCLUDE_PUBLIC_USER_KEY = '__excludePublicUser';
 
+// getById's default column set: excludes accountLocked too (no current caller needs it there).
+const GETBYID_SAFE_COLUMNS: (keyof UserRow)[] = [
+  '_id',
+  'username',
+  'email',
+  'role',
+  'using2fa',
+  'deletedAt',
+];
+
+// findMany/findByIds' default column set: accountLocked is a status flag consumed by
+// listWithGroups for the user-management UI, not credential data — only the true
+// credential fields are excluded here.
+const LIST_SAFE_COLUMNS: (keyof UserRow)[] = [
+  '_id',
+  'username',
+  'email',
+  'role',
+  'using2fa',
+  'accountLocked',
+  'deletedAt',
+];
+
 type Condition = Record<string, unknown>;
-type QueryOptions = { includeDeleted?: boolean };
+type QueryOptions = { includeDeleted?: boolean; columns?: (keyof UserRow)[] };
+
+type GetByIdOptions = QueryOptions & {
+  includePassword?: boolean;
+  includeSecret?: boolean;
+  includeFailedLogins?: boolean;
+  includeAccountUnlockCode?: boolean;
+  includeAccountLocked?: boolean;
+};
 
 class PostgresUsersDAO extends PostgresDataSource<UserRow> {
   constructor(deps: PostgresDataSourceDeps) {
@@ -39,7 +70,8 @@ class PostgresUsersDAO extends PostgresDataSource<UserRow> {
 
   async findOne(condition: Condition, options: QueryOptions = {}): Promise<UserRow | undefined> {
     const query = this.applyCondition(condition);
-    return (options.includeDeleted ? query : this.notDeleted(query)).first();
+    const filtered = options.includeDeleted ? query : this.notDeleted(query);
+    return (options.columns ? filtered.select(options.columns) : filtered).first();
   }
 
   async exists(condition: Condition): Promise<boolean> {
@@ -75,9 +107,19 @@ class PostgresUsersDAO extends PostgresDataSource<UserRow> {
 
   async getById(
     id: string,
-    options: QueryOptions = {}
+    options: GetByIdOptions = {}
   ): Promise<ResultType<UserRow, UserNotFound>> {
-    const row = await this.findOne({ _id: id }, options);
+    const columns = [...GETBYID_SAFE_COLUMNS];
+    if (options.includePassword) columns.push('password');
+    if (options.includeSecret) columns.push('secret');
+    if (options.includeFailedLogins) columns.push('failedLogins');
+    if (options.includeAccountUnlockCode) columns.push('accountUnlockCode');
+    if (options.includeAccountLocked) columns.push('accountLocked');
+
+    const row = await this.findOne(
+      { _id: id },
+      { includeDeleted: options.includeDeleted, columns }
+    );
 
     if (!row) {
       return Result.fail(new UserNotFound(id));
@@ -88,7 +130,8 @@ class PostgresUsersDAO extends PostgresDataSource<UserRow> {
 
   async findMany(condition: Condition = {}, options: QueryOptions = {}): Promise<UserRow[]> {
     const query = this.applyCondition(condition);
-    return (options.includeDeleted ? query : this.notDeleted(query)).all();
+    const filtered = options.includeDeleted ? query : this.notDeleted(query);
+    return filtered.select(options.columns ?? LIST_SAFE_COLUMNS).all();
   }
 
   async findByIds(ids: string[], options: QueryOptions = {}): Promise<UserRow[]> {
@@ -97,20 +140,18 @@ class PostgresUsersDAO extends PostgresDataSource<UserRow> {
     }
 
     const query = this.notPublicUser(this.table.whereIn('_id', ids));
-    return (options.includeDeleted ? query : this.notDeleted(query)).all();
+    const filtered = options.includeDeleted ? query : this.notDeleted(query);
+    return filtered.select(options.columns ?? LIST_SAFE_COLUMNS).all();
   }
 
-  async listBasicInfo(): Promise<{ _id: string; username: string }[]> {
-    const rows = await this.notPublicUser(this.notDeleted(this.table))
-      .select(['_id', 'username'])
-      .all();
-
-    return rows.map(row => ({ _id: row._id, username: row.username }));
-  }
-
-  async findByEmailOrUsername(
-    term: string
-  ): Promise<{ _id: string; username: string; email: string }[]> {
+  /**
+   * Generic primitive: case-insensitive exact match on username OR email, guarded +
+   * safe-columns. Not expressible via findMany's equality-only Condition (needs raw SQL
+   * OR + lower()), so it stays a DAO-level method; the read-shape/semantics documentation
+   * for "search collaborators by term" lives in PostgresUsersQueryService.findByEmailOrUsername,
+   * which is a thin pass-through to this.
+   */
+  async matchEmailOrUsername(term: string): Promise<UserRow[]> {
     const query = this.notPublicUser(
       this.notDeleted(
         this.table.whereRaw('lower(username) = lower(?) OR lower(email) = lower(?)', [
@@ -118,10 +159,9 @@ class PostgresUsersDAO extends PostgresDataSource<UserRow> {
           term,
         ])
       )
-    ).select(['_id', 'username', 'email']);
+    ).select(LIST_SAFE_COLUMNS);
 
-    const rows = await query.all();
-    return rows.map(row => ({ _id: row._id, username: row.username, email: row.email }));
+    return query.all();
   }
 }
 

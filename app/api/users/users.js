@@ -246,6 +246,14 @@ export default {
     return _user;
   },
 
+  /**
+   * @deprecated v1 Mongo-only query path, no longer routed through the postgresUsers flag
+   * (see UsersDAOFactory) since PostgresUsersDAO has no equivalent generic get(). Still the
+   * legitimate v1 fallback for routes.ts's /api/users GET route (v2UsersGet off) and for
+   * activitylog/helpers.js, entitiesPermissions.ts, collaborators.ts, userGroups.ts when
+   * postgresUsers is off — those call sites branch to dedicated UsersDAOFactory methods
+   * (findByIds/findByEmailOrUsername/listBasicInfo/getById) when postgresUsers is on.
+   */
   async get(query, select) {
     const users = await model.get({ ...query, deletedAt: { $exists: false } }, select);
     if (typeof select === 'string' && select.includes('+groups')) {

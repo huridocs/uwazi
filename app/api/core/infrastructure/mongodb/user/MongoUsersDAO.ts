@@ -1,6 +1,5 @@
 /* eslint-disable max-statements */
 import { Db, Document, Filter, ObjectId, UpdateFilter } from 'mongodb';
-import escapeRegExp from 'lodash/escapeRegExp.js';
 import { MongoDataSource } from '../common/MongoDataSource.js';
 import { Result } from '#api/core/libs/Result.js';
 import type { ResultType } from '#api/core/libs/Result.js';
@@ -36,6 +35,25 @@ class MongoUsersDAO extends MongoDataSource<UserDBO> {
   private NOT_DELETED_FILTER: Filter<UserDBO> = { deletedAt: { $exists: false } };
 
   private NOT_PUBLIC_USER_FILTER: Filter<UserDBO> = { _id: { $ne: PUBLIC_USER_ID } };
+
+  // getById's default projection: excludes accountLocked too (no current caller needs it there).
+  private GETBYID_FIELDS_EXCLUSION: Document = {
+    password: 0,
+    secret: 0,
+    failedLogins: 0,
+    accountUnlockCode: 0,
+    accountLocked: 0,
+  };
+
+  // findByIds/findMany's default projection: accountLocked is a status flag consumed by
+  // listWithGroups/get() for the user-management UI, not credential data — only the true
+  // credential fields are excluded here.
+  private CREDENTIAL_FIELDS_EXCLUSION: Document = {
+    password: 0,
+    secret: 0,
+    failedLogins: 0,
+    accountUnlockCode: 0,
+  };
 
   constructor(deps: Deps) {
     super(deps.db, deps.transactionManager);
@@ -116,12 +134,12 @@ class MongoUsersDAO extends MongoDataSource<UserDBO> {
       includeDeleted,
     } = options;
 
-    const projection: Document = {};
-    if (!includePassword) projection.password = 0;
-    if (!includeSecret) projection.secret = 0;
-    if (!includeFailedLogins) projection.failedLogins = 0;
-    if (!includeAccountUnlockCode) projection.accountUnlockCode = 0;
-    if (!includeAccountLocked) projection.accountLocked = 0;
+    const projection: Document = { ...this.GETBYID_FIELDS_EXCLUSION };
+    if (includePassword) delete projection.password;
+    if (includeSecret) delete projection.secret;
+    if (includeFailedLogins) delete projection.failedLogins;
+    if (includeAccountUnlockCode) delete projection.accountUnlockCode;
+    if (includeAccountLocked) delete projection.accountLocked;
 
     const user = await this.findOne(
       { _id: ObjectId.createFromHexString(id) },
@@ -133,6 +151,15 @@ class MongoUsersDAO extends MongoDataSource<UserDBO> {
     }
 
     return Result.ok(user);
+  }
+
+  async findMany(filter: Filter<UserDBO> = {}, options: QueryOptions = {}): Promise<UserDBO[]> {
+    const { includeDeleted } = options;
+    const guardedFilter = includeDeleted ? filter : { ...filter, ...this.NOT_DELETED_FILTER };
+
+    return this.getCollection<UserDBO>()
+      .find(guardedFilter, { projection: this.CREDENTIAL_FIELDS_EXCLUSION })
+      .toArray();
   }
 
   async findByIds(ids: string[], options: QueryOptions = {}): Promise<UserDBO[]> {
@@ -147,41 +174,9 @@ class MongoUsersDAO extends MongoDataSource<UserDBO> {
       ...(includeDeleted ? {} : this.NOT_DELETED_FILTER),
     };
 
-    return this.getCollection<UserDBO>().find(filter).toArray();
-  }
-
-  async listBasicInfo(): Promise<{ _id: string; username: string }[]> {
-    const filter: Filter<UserDBO> = {
-      ...this.NOT_DELETED_FILTER,
-      ...this.NOT_PUBLIC_USER_FILTER,
-    };
-
-    const users = await this.getCollection<UserDBO>()
-      .find(filter, { projection: { _id: 1, username: 1 } })
+    return this.getCollection<UserDBO>()
+      .find(filter, { projection: this.CREDENTIAL_FIELDS_EXCLUSION })
       .toArray();
-
-    return users.map(user => ({ _id: user._id.toString(), username: user.username }));
-  }
-
-  async findByEmailOrUsername(
-    term: string
-  ): Promise<{ _id: string; username: string; email: string }[]> {
-    const exactRegex = new RegExp(`^${escapeRegExp(term)}$`, 'i');
-    const filter: Filter<UserDBO> = {
-      $or: [{ username: exactRegex }, { email: exactRegex }],
-      ...this.NOT_DELETED_FILTER,
-      ...this.NOT_PUBLIC_USER_FILTER,
-    };
-
-    const users = await this.getCollection<UserDBO>()
-      .find(filter, { projection: { _id: 1, username: 1, email: 1 } })
-      .toArray();
-
-    return users.map(user => ({
-      _id: user._id.toString(),
-      username: user.username,
-      email: user.email,
-    }));
   }
 
   async get(query: Filter<UserDBO> = {}): Promise<UserWithGroups[]> {
