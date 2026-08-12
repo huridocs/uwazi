@@ -1,6 +1,6 @@
 /* eslint-disable max-statements */
 import { ObjectId } from 'mongodb';
-import { UserRole } from '#api/core/domain/user/User.js';
+import { PUBLIC_USER_ID, UserRole } from '#api/core/domain/user/User.js';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
@@ -200,6 +200,49 @@ describe('MongoUsersDAO', () => {
 
       const user = await dao.findOne({ email: 'brandnew@test.com' });
       expect(user?.username).toBe('brandnew');
+    });
+  });
+
+  describe('findByIds()', () => {
+    it('should return the matching, non-deleted, non-public users', async () => {
+      const dao = getDao();
+      const users = await dao.findByIds([
+        factory.idString('active1'),
+        factory.idString('active2'),
+      ]);
+
+      expect(users.map(u => u.username).sort()).toEqual(['active1', 'active2']);
+    });
+
+    it('should exclude soft-deleted users by default', async () => {
+      const dao = getDao();
+      const users = await dao.findByIds([factory.idString('deleted')]);
+
+      expect(users).toEqual([]);
+    });
+
+    it('should include soft-deleted users when includeDeleted is true', async () => {
+      const dao = getDao();
+      const users = await dao.findByIds([factory.idString('deleted')], { includeDeleted: true });
+
+      expect(users.map(u => u.username)).toEqual(['deleted']);
+    });
+
+    it('should exclude the public/system user even when explicitly requested', async () => {
+      const dao = getDao();
+      const users = await dao.findByIds([withsensitiveId.toString(), PUBLIC_USER_ID.toString()]);
+
+      expect(users.map(u => u.username)).toEqual(['withsensitive']);
+    });
+
+    it('should return an empty array for an empty id list', async () => {
+      const dao = getDao();
+      expect(await dao.findByIds([])).toEqual([]);
+    });
+
+    it('should return an empty array when no id matches', async () => {
+      const dao = getDao();
+      expect(await dao.findByIds([new ObjectId().toString()])).toEqual([]);
     });
   });
 

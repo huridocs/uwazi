@@ -134,6 +134,21 @@ class MongoUsersDAO extends MongoDataSource<UserDBO> {
     return Result.ok(user);
   }
 
+  async findByIds(ids: string[], options: QueryOptions = {}): Promise<UserDBO[]> {
+    if (!ids.length) {
+      return [];
+    }
+
+    const { includeDeleted } = options;
+    const filter: Filter<UserDBO> = {
+      _id: { $in: ids.map(id => ObjectId.createFromHexString(id)) },
+      ...this.NOT_PUBLIC_USER_FILTER,
+      ...(includeDeleted ? {} : this.NOT_DELETED_FILTER),
+    };
+
+    return this.getCollection<UserDBO>().find(filter).toArray();
+  }
+
   async get(query: Filter<UserDBO> = {}): Promise<UserWithGroups[]> {
     const aggregation = [
       {

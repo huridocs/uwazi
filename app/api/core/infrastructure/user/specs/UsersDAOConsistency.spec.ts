@@ -319,6 +319,46 @@ describe('UsersDAOConsistency', () => {
       });
     });
 
+    describe('findByIds()', () => {
+      it('should return the matching, non-deleted, non-public users', async () => {
+        const dao = getDao();
+        const users = await dao.findByIds([f.idString('active1'), f.idString('active2')]);
+
+        expect(users.map(u => u.username).sort()).toEqual(['active1', 'active2']);
+      });
+
+      it('should exclude soft-deleted users by default', async () => {
+        const dao = getDao();
+        const users = await dao.findByIds([f.idString('deleted')]);
+
+        expect(users).toEqual([]);
+      });
+
+      it('should include soft-deleted users when includeDeleted is true', async () => {
+        const dao = getDao();
+        const users = await dao.findByIds([f.idString('deleted')], { includeDeleted: true });
+
+        expect(users.map(u => u.username)).toEqual(['deleted']);
+      });
+
+      it('should exclude the public/system user even when explicitly requested', async () => {
+        const dao = getDao();
+        const users = await dao.findByIds([f.idString('active1'), PUBLIC_USER_ID.toHexString()]);
+
+        expect(users.map(u => u.username)).toEqual(['active1']);
+      });
+
+      it('should return an empty array for an empty id list', async () => {
+        const dao = getDao();
+        expect(await dao.findByIds([])).toEqual([]);
+      });
+
+      it('should return an empty array when no id matches', async () => {
+        const dao = getDao();
+        expect(await dao.findByIds([new ObjectId().toHexString()])).toEqual([]);
+      });
+    });
+
     describe('softDelete()', () => {
       it('should set deletedAt on the given ids and return the affected count', async () => {
         const dao = getDao();

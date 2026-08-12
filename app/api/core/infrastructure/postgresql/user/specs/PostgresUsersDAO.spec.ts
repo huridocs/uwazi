@@ -125,4 +125,81 @@ describe('PostgresUsersDAO', () => {
       expect(users).toEqual([]);
     });
   });
+
+  describe('findByIds', () => {
+    it('should return the matching, non-deleted, non-public users', async () => {
+      await testingPG.setFixtures({
+        users: [
+          userFixture({ _id: 'active1', username: 'active1', email: 'active1@test.com' }),
+          userFixture({ _id: 'active2', username: 'active2', email: 'active2@test.com' }),
+        ],
+      });
+
+      const dao = makeDAO();
+      const users = await dao.findByIds(['active1', 'active2']);
+
+      expect(users.map(u => u.username).sort()).toEqual(['active1', 'active2']);
+    });
+
+    it('should exclude soft-deleted users by default', async () => {
+      await testingPG.setFixtures({
+        users: [
+          userFixture({
+            _id: 'deleted1',
+            username: 'deleted1',
+            email: 'deleted1@test.com',
+            deletedAt: new Date(),
+          }),
+        ],
+      });
+
+      const dao = makeDAO();
+      const users = await dao.findByIds(['deleted1']);
+
+      expect(users).toEqual([]);
+    });
+
+    it('should include soft-deleted users when includeDeleted is true', async () => {
+      await testingPG.setFixtures({
+        users: [
+          userFixture({
+            _id: 'deleted1',
+            username: 'deleted1',
+            email: 'deleted1@test.com',
+            deletedAt: new Date(),
+          }),
+        ],
+      });
+
+      const dao = makeDAO();
+      const users = await dao.findByIds(['deleted1'], { includeDeleted: true });
+
+      expect(users.map(u => u.username)).toEqual(['deleted1']);
+    });
+
+    it('should exclude the public/system user even when explicitly requested', async () => {
+      const publicUserId = PUBLIC_USER_ID.toHexString();
+      await testingPG.setFixtures({
+        users: [
+          userFixture({ _id: publicUserId, username: 'public', email: 'public@test.com' }),
+          userFixture({ _id: 'active1', username: 'active1', email: 'active1@test.com' }),
+        ],
+      });
+
+      const dao = makeDAO();
+      const users = await dao.findByIds([publicUserId, 'active1']);
+
+      expect(users.map(u => u.username)).toEqual(['active1']);
+    });
+
+    it('should return an empty array for an empty id list', async () => {
+      const dao = makeDAO();
+      expect(await dao.findByIds([])).toEqual([]);
+    });
+
+    it('should return an empty array when no id matches', async () => {
+      const dao = makeDAO();
+      expect(await dao.findByIds(['nonexistent'])).toEqual([]);
+    });
+  });
 });
