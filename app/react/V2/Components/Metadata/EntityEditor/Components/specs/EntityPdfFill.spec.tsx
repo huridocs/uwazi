@@ -288,6 +288,24 @@ describe('Entity PDF Click to fill', () => {
     });
   });
 
+  it('places Click to fill beside the date input, not inside it', () => {
+    render(
+      <Host>
+        <DateField<EditEntityFormValues>
+          context="tpl-1"
+          label="Date"
+          field="metadata.date_prop.0.value"
+          pdfFill={{ name: 'date_prop', propertyId: 'date-1', coerceType: 'date' }}
+        />
+      </Host>
+    );
+
+    const input = screen.getByLabelText(/Date/);
+    const fill = screen.getByTestId('click-to-fill');
+    expect(input.parentElement?.contains(fill)).toBe(false);
+    expect(fill.className).not.toContain('absolute');
+  });
+
   it('notifies danger and skips upsert when coerce fails', async () => {
     mockSelection = {
       text: 'not-a-number',

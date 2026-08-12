@@ -26,8 +26,14 @@ const DateField = <TFormValues extends FieldValues = FieldValues>({
   const { control, setValue } = useFormContext<TFormValues>();
 
   return (
-    <EntityPdfFillField field={field} setValue={setValue} disabled={disabled} pdfFill={pdfFill}>
-      {overlay => (
+    <EntityPdfFillField
+      field={field}
+      setValue={setValue}
+      disabled={disabled}
+      pdfFill={pdfFill}
+      placement="beside"
+    >
+      {() => (
         <Controller
           control={control}
           name={field}
@@ -52,7 +58,6 @@ const DateField = <TFormValues extends FieldValues = FieldValues>({
                 onBlur={onBlur}
                 value={secondsToISODate(value) || ''}
                 className="max-w-48"
-                overlay={overlay}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                   const dateString = e.target.value;
                   const seconds = dateString ? parseLocalizedDate(dateString) : null;

@@ -32,9 +32,12 @@ type PdfFillHost = {
   setPdfSelectionMenuOpen: (open: boolean) => void;
 };
 
+type PdfFillPlacement = 'overlay' | 'beside';
+
 type EntityPdfFillProps = {
   target: PdfFillTarget;
   disabled?: boolean;
+  placement?: PdfFillPlacement;
   applyValue: (value: string | number) => void;
   children: (overlay: React.ReactNode) => React.ReactNode;
 };
@@ -43,6 +46,7 @@ type EntityPdfFillFieldProps<TFormValues extends FieldValues> = {
   field: Path<TFormValues>;
   setValue: UseFormSetValue<TFormValues>;
   disabled?: boolean;
+  placement?: PdfFillPlacement;
   pdfFill?: PdfFillTarget;
   children: (overlay?: React.ReactNode) => React.ReactNode;
 };
@@ -82,7 +86,13 @@ const applyPdfFillFormValue = <TFormValues extends FieldValues>(
 
 const sanitizeText = (text: string) => text.replace(/[\n\r]+/g, ' ');
 
-const EntityPdfFill = ({ target, disabled, applyValue, children }: EntityPdfFillProps) => {
+const EntityPdfFill = ({
+  target,
+  disabled,
+  placement = 'overlay',
+  applyValue,
+  children,
+}: EntityPdfFillProps) => {
   const {
     isEditing,
     language,
@@ -166,37 +176,54 @@ const EntityPdfFill = ({ target, disabled, applyValue, children }: EntityPdfFill
   }, [clearPropertySelection, propertyId, propertyName]);
 
   const fillDisabled = Boolean(disabled || isFilling);
+  const fillButton = showFill ? (
+    <button
+      type="button"
+      disabled={fillDisabled}
+      onClick={() => {
+        void onFill();
+      }}
+      className={
+        placement === 'beside'
+          ? 'shrink-0 border-0 bg-transparent p-0 text-carbon disabled:cursor-not-allowed disabled:opacity-50'
+          : 'absolute inset-y-0 right-2 z-1 my-auto h-fit border-0 bg-transparent p-0 text-carbon disabled:cursor-not-allowed disabled:opacity-50'
+      }
+      data-testid="click-to-fill"
+    >
+      <span className="inline-flex items-center gap-1 rounded-sm bg-paper px-0.5 py-px text-xs">
+        <Translate>Click to fill</Translate>
+        <ViewfinderCircleIcon className="size-3.5 shrink-0" aria-hidden />
+      </span>
+    </button>
+  ) : null;
+
+  const clearButton = showClear ? (
+    <button
+      type="button"
+      onClick={onClear}
+      className="w-fit border-0 bg-transparent p-0 text-left text-xs text-carbon hover:underline"
+      data-testid="clear-pdf-selection"
+    >
+      <Translate translationKey="Clear PDF selection">Clear PDF selection</Translate>
+    </button>
+  ) : null;
+
+  if (placement === 'beside') {
+    return (
+      <>
+        <div className="flex items-end gap-2">
+          <div className="min-w-0">{children(null)}</div>
+          {fillButton}
+        </div>
+        {clearButton}
+      </>
+    );
+  }
 
   return (
     <>
-      {children(
-        showFill ? (
-          <button
-            type="button"
-            disabled={fillDisabled}
-            onClick={() => {
-              void onFill();
-            }}
-            className="absolute inset-y-0 right-2 z-1 my-auto h-fit border-0 bg-transparent p-0 text-carbon disabled:cursor-not-allowed disabled:opacity-50"
-            data-testid="click-to-fill"
-          >
-            <span className="inline-flex items-center gap-1 rounded-sm bg-paper px-0.5 py-px text-xs">
-              <Translate>Click to fill</Translate>
-              <ViewfinderCircleIcon className="size-3.5 shrink-0" aria-hidden />
-            </span>
-          </button>
-        ) : null
-      )}
-      {showClear ? (
-        <button
-          type="button"
-          onClick={onClear}
-          className="w-fit border-0 bg-transparent p-0 text-left text-xs text-carbon hover:underline"
-          data-testid="clear-pdf-selection"
-        >
-          <Translate translationKey="Clear PDF selection">Clear PDF selection</Translate>
-        </button>
-      ) : null}
+      {children(fillButton)}
+      {clearButton}
     </>
   );
 };
@@ -205,6 +232,7 @@ const EntityPdfFillField = <TFormValues extends FieldValues>({
   field,
   setValue,
   disabled,
+  placement,
   pdfFill,
   children,
 }: EntityPdfFillFieldProps<TFormValues>) => (
@@ -213,6 +241,7 @@ const EntityPdfFillField = <TFormValues extends FieldValues>({
       <EntityPdfFill
         target={pdfFill}
         disabled={disabled}
+        placement={placement}
         applyValue={value => applyPdfFillFormValue(setValue, field, value)}
       >
         {overlay => children(overlay)}
@@ -231,4 +260,4 @@ export {
   defaultPdfFillHost,
   applyPdfFillFormValue,
 };
-export type { PdfFillTarget, PdfFillCoerceType, PdfFillHost };
+export type { PdfFillTarget, PdfFillCoerceType, PdfFillHost, PdfFillPlacement };
