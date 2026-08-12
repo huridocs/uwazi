@@ -99,6 +99,22 @@ class PostgresUsersDAO extends PostgresDataSource<UserRow> {
     const query = this.notPublicUser(this.table.whereIn('_id', ids));
     return (options.includeDeleted ? query : this.notDeleted(query)).all();
   }
+
+  async findByEmailOrUsername(
+    term: string
+  ): Promise<{ _id: string; username: string; email: string }[]> {
+    const query = this.notPublicUser(
+      this.notDeleted(
+        this.table.whereRaw('lower(username) = lower(?) OR lower(email) = lower(?)', [
+          term,
+          term,
+        ])
+      )
+    ).select(['_id', 'username', 'email']);
+
+    const rows = await query.all();
+    return rows.map(row => ({ _id: row._id, username: row.username, email: row.email }));
+  }
 }
 
 export { PostgresUsersDAO };

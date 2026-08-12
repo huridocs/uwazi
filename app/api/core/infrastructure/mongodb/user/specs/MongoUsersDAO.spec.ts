@@ -246,6 +246,50 @@ describe('MongoUsersDAO', () => {
     });
   });
 
+  describe('findByEmailOrUsername()', () => {
+    it('should match by exact username, case-insensitively', async () => {
+      const dao = getDao();
+      const users = await dao.findByEmailOrUsername('ACTIVE1');
+
+      expect(users).toEqual([
+        { _id: factory.idString('active1'), username: 'active1', email: 'active1@test.com' },
+      ]);
+    });
+
+    it('should match by exact email, case-insensitively', async () => {
+      const dao = getDao();
+      const users = await dao.findByEmailOrUsername('ACTIVE2@TEST.COM');
+
+      expect(users.map(u => u.username)).toEqual(['active2']);
+    });
+
+    it('should not match a partial/prefix term', async () => {
+      const dao = getDao();
+      const users = await dao.findByEmailOrUsername('active');
+
+      expect(users).toEqual([]);
+    });
+
+    it('should exclude soft-deleted users', async () => {
+      const dao = getDao();
+      const users = await dao.findByEmailOrUsername('deleted');
+
+      expect(users).toEqual([]);
+    });
+
+    it('should exclude the public/system user', async () => {
+      const dao = getDao();
+      const users = await dao.findByEmailOrUsername('public');
+
+      expect(users).toEqual([]);
+    });
+
+    it('should return an empty array when nothing matches', async () => {
+      const dao = getDao();
+      expect(await dao.findByEmailOrUsername('nonexistent')).toEqual([]);
+    });
+  });
+
   describe('softDelete()', () => {
     it('should set deletedAt on the given ids', async () => {
       const dao = getDao();

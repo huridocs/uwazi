@@ -1,5 +1,6 @@
 /* eslint-disable max-statements */
 import { Db, Document, Filter, ObjectId, UpdateFilter } from 'mongodb';
+import escapeRegExp from 'lodash/escapeRegExp.js';
 import { MongoDataSource } from '../common/MongoDataSource.js';
 import { Result } from '#api/core/libs/Result.js';
 import type { ResultType } from '#api/core/libs/Result.js';
@@ -147,6 +148,27 @@ class MongoUsersDAO extends MongoDataSource<UserDBO> {
     };
 
     return this.getCollection<UserDBO>().find(filter).toArray();
+  }
+
+  async findByEmailOrUsername(
+    term: string
+  ): Promise<{ _id: string; username: string; email: string }[]> {
+    const exactRegex = new RegExp(`^${escapeRegExp(term)}$`, 'i');
+    const filter: Filter<UserDBO> = {
+      $or: [{ username: exactRegex }, { email: exactRegex }],
+      ...this.NOT_DELETED_FILTER,
+      ...this.NOT_PUBLIC_USER_FILTER,
+    };
+
+    const users = await this.getCollection<UserDBO>()
+      .find(filter, { projection: { _id: 1, username: 1, email: 1 } })
+      .toArray();
+
+    return users.map(user => ({
+      _id: user._id.toString(),
+      username: user.username,
+      email: user.email,
+    }));
   }
 
   async get(query: Filter<UserDBO> = {}): Promise<UserWithGroups[]> {

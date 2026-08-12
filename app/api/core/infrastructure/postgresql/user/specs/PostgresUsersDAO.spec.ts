@@ -202,4 +202,74 @@ describe('PostgresUsersDAO', () => {
       expect(await dao.findByIds(['nonexistent'])).toEqual([]);
     });
   });
+
+  describe('findByEmailOrUsername', () => {
+    it('should match by exact username, case-insensitively', async () => {
+      await testingPG.setFixtures({
+        users: [userFixture({ _id: 'active1', username: 'active1', email: 'active1@test.com' })],
+      });
+
+      const dao = makeDAO();
+      const users = await dao.findByEmailOrUsername('ACTIVE1');
+
+      expect(users).toEqual([{ _id: 'active1', username: 'active1', email: 'active1@test.com' }]);
+    });
+
+    it('should match by exact email, case-insensitively', async () => {
+      await testingPG.setFixtures({
+        users: [userFixture({ _id: 'active2', username: 'active2', email: 'active2@test.com' })],
+      });
+
+      const dao = makeDAO();
+      const users = await dao.findByEmailOrUsername('ACTIVE2@TEST.COM');
+
+      expect(users.map(u => u.username)).toEqual(['active2']);
+    });
+
+    it('should not match a partial/prefix term', async () => {
+      await testingPG.setFixtures({
+        users: [userFixture({ _id: 'active1', username: 'active1', email: 'active1@test.com' })],
+      });
+
+      const dao = makeDAO();
+      const users = await dao.findByEmailOrUsername('active');
+
+      expect(users).toEqual([]);
+    });
+
+    it('should exclude soft-deleted users', async () => {
+      await testingPG.setFixtures({
+        users: [
+          userFixture({
+            _id: 'deleted1',
+            username: 'deleted1',
+            email: 'deleted1@test.com',
+            deletedAt: new Date(),
+          }),
+        ],
+      });
+
+      const dao = makeDAO();
+      const users = await dao.findByEmailOrUsername('deleted1');
+
+      expect(users).toEqual([]);
+    });
+
+    it('should exclude the public/system user', async () => {
+      const publicUserId = PUBLIC_USER_ID.toHexString();
+      await testingPG.setFixtures({
+        users: [userFixture({ _id: publicUserId, username: 'public', email: 'public@test.com' })],
+      });
+
+      const dao = makeDAO();
+      const users = await dao.findByEmailOrUsername('public');
+
+      expect(users).toEqual([]);
+    });
+
+    it('should return an empty array when nothing matches', async () => {
+      const dao = makeDAO();
+      expect(await dao.findByEmailOrUsername('nonexistent')).toEqual([]);
+    });
+  });
 });
