@@ -1,26 +1,32 @@
 import React from 'react';
 import { Navigate, useLocation, useParams } from 'react-router';
+import { getEntityViewerLegacyRedirect } from './entityViewerLegacyRedirect.js';
 
 /**
- * Always redirect /document/:sharedId(/*) → /entity/:sharedId (drop tabs + query).
+ * TEMPORARY client-side safety net (issue #9522).
+ * Prefer the SSR 301 in entry-server; these components cover in-app navigations
+ * that never hit SSR. Remove with entityViewerLegacyRedirect.ts when V2 soft-deploy ends.
  */
 const RedirectDocumentToEntity = () => {
   const { sharedId } = useParams<{ sharedId: string }>();
   const { pathname } = useLocation();
-  const to = pathname.replace(/\/document\/[^/]+.*/, `/entity/${sharedId}`);
-  return <Navigate to={{ pathname: to, search: '', hash: '' }} replace />;
+  const redirect =
+    getEntityViewerLegacyRedirect(pathname) ||
+    // Fallback if path helpers miss (should not happen for matched routes).
+    ({ pathname: pathname.replace(/\/document\/[^/]+.*/, `/entity/${sharedId}`) } as const);
+  return <Navigate to={{ pathname: redirect.pathname, search: '', hash: '' }} replace />;
 };
 
 /**
- * When V2 owns /entity, any unmatched trailing path
- * (/entity/:id/info, /page, /relationships, /text-search, /foo/bar, …)
- * redirects to /entity/:id and drops legacy query params.
+ * TEMPORARY client-side safety net (issue #9522) for /entity/:id/* when V2 owns /entity.
  */
 const RedirectEntityTabToEntity = () => {
   const { sharedId } = useParams<{ sharedId: string }>();
   const { pathname } = useLocation();
-  const to = pathname.replace(/\/entity\/[^/]+.*/, `/entity/${sharedId}`);
-  return <Navigate to={{ pathname: to, search: '', hash: '' }} replace />;
+  const redirect =
+    getEntityViewerLegacyRedirect(pathname, { entityViewerV2: true }) ||
+    ({ pathname: pathname.replace(/\/entity\/[^/]+.*/, `/entity/${sharedId}`) } as const);
+  return <Navigate to={{ pathname: redirect.pathname, search: '', hash: '' }} replace />;
 };
 
 export { RedirectDocumentToEntity, RedirectEntityTabToEntity };
