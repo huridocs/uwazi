@@ -135,11 +135,8 @@ describe('RelationshipTypeTranslationService', () => {
         })
       )
     );
-    expect(translationWithContext).toEqual(
-      expect.arrayContaining([
-        expect.objectContaining({ locale: 'en', contexts: [] }),
-        expect.objectContaining({ locale: 'es', contexts: [] }),
-      ])
-    );
+    expect(translationWithContext).toEqual([
+      expect.objectContaining({ locale: 'en', contexts: [] }),
+    ]);
   });
 });
