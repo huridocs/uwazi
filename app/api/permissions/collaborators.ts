@@ -1,6 +1,8 @@
 import escapeRegExp from 'lodash/escapeRegExp.js';
 import users from '#api/users/users.js';
 import userGroups from '#api/usergroups/userGroups.js';
+import { UsersDAOFactory } from '#api/core/infrastructure/factories/UsersDAOFactory.js';
+import { tenants } from '#api/tenants/index.js';
 import { PermissionType } from '#shared/types/permissionSchema.js';
 import { MemberWithPermission } from '#shared/types/entityPermisions.js';
 import { UserSchema } from '#shared/types/userType.js';
@@ -14,9 +16,11 @@ export const collaborators = {
     const exactFilterTerm = new RegExp(`^${escapedFilterTerm}$`, 'i');
     const partialFilterTerm = new RegExp(`^${escapedFilterTerm}`, 'i');
 
-    const matchedUsers = await users.get({
-      $or: [{ email: exactFilterTerm }, { username: exactFilterTerm }],
-    });
+    const matchedUsers = tenants.current().featureFlags?.postgresUsers
+      ? await UsersDAOFactory.default().findByEmailOrUsername(filterTerm)
+      : await users.get({
+          $or: [{ email: exactFilterTerm }, { username: exactFilterTerm }],
+        });
     const groups = await userGroups.get({ name: { $regex: partialFilterTerm } });
 
     const availableCollaborators: MemberWithPermission[] = [];

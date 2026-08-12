@@ -168,6 +168,12 @@ function unauthorizedAction(user, userInTheDatabase, currentUser) {
 }
 
 export default {
+  /**
+   * @deprecated
+   * v1 user update flow. Only reached while the tenant's `v2UsersUpdate` flag is
+   * off (see `UpdateUserController`). Use the v2 `UpdateUser` use case
+   * (`UpdateUserUseCaseFactory`) instead.
+   */
   async save(user, currentUser) {
     if (user._id && user._id.toString() === PUBLIC_USER_ID.toString()) {
       return Promise.reject(createError('Cannot modify system users', 403));
@@ -208,6 +214,12 @@ export default {
     return updatedUser;
   },
 
+  /**
+   * @deprecated
+   * v1 user creation flow. Only reached while the tenant's `v2UsersCreate` flag
+   * is off (see `CreateUserController`). Use the v2 `CreateUser` use case
+   * (`CreateUserUseCaseFactory`) instead.
+   */
   async newUser(user, domain) {
     const [userNameMatch, emailMatch] = await Promise.all([
       model.get({ username: user.username, deletedAt: { $exists: false } }),
@@ -235,11 +247,6 @@ export default {
   },
 
   async get(query, select) {
-    if (tenants.current().featureFlags?.v2UsersGet) {
-      const users = await UsersDAOFactory.default().get(query);
-      return users;
-    }
-
     const users = await model.get({ ...query, deletedAt: { $exists: false } }, select);
     if (typeof select === 'string' && select.includes('+groups')) {
       const userIds = users.map(user => user._id.toString());
@@ -285,6 +292,12 @@ export default {
     return user ?? null;
   },
 
+  /**
+   * @deprecated
+   * v1 user deletion flow. Only reached while the tenant's `v2UsersDelete` flag
+   * is off (see `DeleteUserController`). Use the v2 `DeleteUsers` use case
+   * (`DeleteUsersUseCaseFactory`) instead.
+   */
   async delete(_ids, currentUser) {
     const ids = _ids.map(id => id.toString());
 
@@ -304,6 +317,14 @@ export default {
     return Promise.reject(createError('Can not delete last user(s).', 403));
   },
 
+  /**
+   * @deprecated
+   * v1 login flow, invoked via Passport's `LocalStrategy` (see
+   * `passport_conf.js`). Only reached while the tenant's `v2Login` flag is off
+   * (see `app/api/auth/routes.js`, `@deprecated v1 fallback for the v2Login
+   * flag`). Use the v2 `Login` use case (`LoginUseCaseFactory`, exposed via
+   * `LoginController`) instead.
+   */
   async login({ username, password, token }, domain) {
     const [dbuser] = await model.get(
       { username, deletedAt: { $exists: false } },
@@ -331,6 +352,12 @@ export default {
     return sanitizeUser(user);
   },
 
+  /**
+   * @deprecated
+   * v1 self-service account unlock flow. Only reached while the tenant's
+   * `v2UsersUtilityRoutes` flag is off (see `UnlockAccountController`). Use the
+   * v2 `UnlockAccount` use case (`UnlockAccountUseCaseFactory`) instead.
+   */
   async unlockAccount({ username, code }) {
     const [user] = await model.get(
       { username, accountUnlockCode: code, deletedAt: { $exists: false } },
@@ -349,6 +376,13 @@ export default {
     });
   },
 
+  /**
+   * @deprecated
+   * v1 admin unlock flow. Only reached while the tenant's
+   * `v2UsersUtilityRoutes` flag is off (see `UnlockBlockedUserController`), and
+   * also called internally by the legacy `resetPassword` below. Use the v2
+   * `UnlockBlockedUser` use case (`UnlockBlockedUserUseCaseFactory`) instead.
+   */
   async simpleUnlock(_id) {
     await model.updateMany(
       { _id },

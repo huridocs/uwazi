@@ -3,6 +3,8 @@ import { UserGroupSchema } from '#shared/types/userGroupType.js';
 import { validateUserGroup } from './validateUserGroup.js';
 import { WithId } from '#api/odm/index.js';
 import { UserSchema } from '#shared/types/userType.js';
+import { UsersDAOFactory } from '#api/core/infrastructure/factories/UsersDAOFactory.js';
+import { tenants } from '#api/tenants/index.js';
 import model from './userGroupsModel.js';
 
 export default {
@@ -16,13 +18,12 @@ export default {
   async get(query: any, select: any = '', options = {}) {
     const userGroups = await model.get(query, select, options);
     const usersInGroups = userGroups.reduce(
-      (memo: Array<String>, group) => memo.concat(group.members.map(m => m.refId.toString())),
+      (memo: string[], group) => memo.concat(group.members.map(m => m.refId.toString())),
       []
     );
-    const usersFound: WithId<UserSchema>[] = await users.get(
-      { _id: { $in: usersInGroups } },
-      { username: 1, role: 1, email: 1 }
-    );
+    const usersFound: WithId<UserSchema>[] = tenants.current().featureFlags?.postgresUsers
+      ? await UsersDAOFactory.default().findByIds(usersInGroups)
+      : await users.get({ _id: { $in: usersInGroups } }, { username: 1, role: 1, email: 1 });
 
     const members = usersFound.map(u => ({
       refId: u._id,

@@ -2,6 +2,8 @@ import entities from '#api/entities/entities.js';
 
 import users from '#api/users/users.js';
 import userGroups from '#api/usergroups/userGroups.js';
+import { UsersDAOFactory } from '#api/core/infrastructure/factories/UsersDAOFactory.js';
+import { tenants } from '#api/tenants/index.js';
 import { unique } from '#api/utils/filters.js';
 import { EntitySchema } from '#shared/types/entityType.js';
 import { AccessLevels, PermissionType, MixedAccess } from '#shared/types/permissionSchema.js';
@@ -28,7 +30,9 @@ async function setAccessLevelAndPermissionData(
 ) {
   const grantedIds = Object.keys(grantedPermissions);
   const [usersData, groupsData] = await Promise.all([
-    users.get({ _id: { $in: grantedIds } }),
+    tenants.current().featureFlags?.postgresUsers
+      ? UsersDAOFactory.default().findByIds(grantedIds)
+      : users.get({ _id: { $in: grantedIds } }),
     userGroups.get({ _id: { $in: grantedIds } }),
   ]);
 

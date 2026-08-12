@@ -6,6 +6,8 @@ import users from '#api/users/users.js';
 import userGroups from '#api/usergroups/userGroups.js';
 import { PermissionType } from '#shared/types/permissionSchema.js';
 import { FilesDAOFactory } from '#api/core/infrastructure/factories/FilesDAOFactory.js';
+import { UsersDAOFactory } from '#api/core/infrastructure/factories/UsersDAOFactory.js';
+import { tenants } from '#api/tenants/index.js';
 import { Suggestions } from '#api/suggestions/suggestions.js';
 import { Extractors } from '#api/services/informationextraction/ixextractors.js';
 
@@ -104,7 +106,9 @@ const loadPermissionsData = async data => {
   const permissionsIds = data.permissions
     .filter(p => p.type !== PermissionType.PUBLIC)
     .map(pu => pu.refId);
-  const allowedUsers = await users.get({ _id: { $in: permissionsIds } }, { username: 1 });
+  const allowedUsers = tenants.current().featureFlags?.postgresUsers
+    ? await UsersDAOFactory.default().findByIds(permissionsIds)
+    : await users.get({ _id: { $in: permissionsIds } }, { username: 1 });
   const allowedGroups = await userGroups.get(
     { _id: { $in: permissionsIds } },
     { name: 1, members: 1 }
@@ -157,7 +161,13 @@ const loadExtractorData = async data => {
 };
 
 const loadUser = async data => {
-  let [user] = await users.get({ _id: data._id });
+  let user;
+  if (tenants.current().featureFlags?.postgresUsers) {
+    const result = await UsersDAOFactory.default().getById(data._id.toString());
+    user = result.isError() ? undefined : result.getData();
+  } else {
+    [user] = await users.get({ _id: data._id });
+  }
   user = user || { username: data._id.toString() };
   return { ...data, ...user };
 };

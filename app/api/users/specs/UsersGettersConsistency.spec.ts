@@ -50,21 +50,10 @@ describe('V1 / V2 Users DAO consistency', () => {
         ).toBeUndefined();
       });
 
-      it('should return matching groups', async () => {
+      it('should not include groups (get() no longer varies with v2UsersGet)', async () => {
         const result = await users.get({});
 
-        if (!v2) {
-          expect(result.some((u: any) => u.groups)).toBe(false);
-          return;
-        }
-
-        expect(result.length).toBeGreaterThan(0);
-
-        const userWithGroups = result.find((u: any) => u.groups && u.groups.length > 0);
-        expect(userWithGroups).toBeDefined();
-
-        const userWithoutGroups = result.find((u: any) => u.groups && u.groups.length === 0);
-        expect(userWithoutGroups).toBeDefined();
+        expect(result.some((u: any) => u.groups)).toBe(false);
       });
     });
 

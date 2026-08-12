@@ -6,6 +6,8 @@ import translations from '#api/i18n/translations.js';
 import { permissionsContext } from '#api/permissions/permissionsContext.js';
 import userGroups from '#api/usergroups/userGroups.js';
 import usersModel from '#api/users/users.js';
+import { UsersDAOFactory } from '#api/core/infrastructure/factories/UsersDAOFactory.js';
+import { tenants } from '#api/tenants/index.js';
 import { createError } from '#api/utils/index.js';
 import date from '#api/utils/date.js';
 import { sequentialPromises } from '#shared/asyncUtils.js';
@@ -455,7 +457,12 @@ const _denormalizeAndLimitAggregations = async (
     }
 
     if (PERMISSION_KEYS.has(key)) {
-      const [users, groups] = await Promise.all([usersModel.get(), userGroups.get()]);
+      const [users, groups] = await Promise.all([
+        tenants.current().featureFlags?.postgresUsers
+          ? UsersDAOFactory.default().listBasicInfo()
+          : usersModel.get(),
+        userGroups.get(),
+      ]);
 
       const info = [
         ...users.map(u => ({ type: 'user', refId: u._id, label: u.username })),
