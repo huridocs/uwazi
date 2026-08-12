@@ -2,7 +2,7 @@ import { AbstractController } from '#api/common.v2/infrastructure/AbstractContro
 import { Dispatcher } from '#api/core/application/contracts/Dispatcher.js';
 import { FileDelete } from '#api/core/application/FileDelete.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
-import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
+import { UwaziDispatcherFactory } from '#api/core/infrastructure/jobs/UwaziDispatcherFactory.js';
 import { SyncDispatcherForTests } from '#api/core/libs/queue/infrastructure/SyncDispatcherForTests.js';
 import { DeleteFileUseCaseFactory } from '../../factories/DeleteFileUseCaseFactory.js';
 import { FilesServiceFactory } from '../../factories/FilesServiceFactory.js';
@@ -47,7 +47,7 @@ class FileDeleteController extends AbstractController {
   private useCase() {
     const { transactionManager } = ExecutionContext;
     let jobsDispatcher: Dispatcher = new DispatcherAdapter(
-      DefaultDispatcher(this.tenantName, transactionManager)
+      UwaziDispatcherFactory(this.tenantName, transactionManager)
     );
     if (process.env.NODE_ENV === 'test') {
       jobsDispatcher = new DispatcherAdapter(

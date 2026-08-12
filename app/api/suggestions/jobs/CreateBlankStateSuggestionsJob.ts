@@ -1,13 +1,9 @@
-import {
-  Dispatchable,
-  HeartbeatCallback,
-  JobInfo,
-} from '#api/core/libs/queue/application/contracts/Dispatchable.js';
-import { tenants } from '#api/tenants/index.js';
+import { PrivilegedJob } from '#api/core/infrastructure/jobs/PrivilegedJob.js';
+import { UwaziJobHandler, UwaziJobParams } from '#api/core/infrastructure/jobs/UwaziJobHandler.js';
 import { BatchRange } from '../batchProcessing.js';
 import { createBlankStateSuggestionsBatch } from '../blankSuggestions.js';
 
-type SpecificJobParams = {
+type SpecificJobParams = UwaziJobParams & {
   batch: BatchRange;
   templateId: string;
   extractorId: string;
@@ -19,19 +15,11 @@ type SpecificJobParams = {
   isMultiValued: boolean;
 };
 
-class CreateBlankStateSuggestionsJob implements Dispatchable {
-  constructor() {}
-
-  // eslint-disable-next-line class-methods-use-this
-  async handleDispatch(
-    _heartbeat: HeartbeatCallback,
-    params: SpecificJobParams,
-    jobInfo: JobInfo
-  ): Promise<void> {
+@PrivilegedJob()
+class CreateBlankStateSuggestionsJob extends UwaziJobHandler<SpecificJobParams> {
+  protected async handle(_heartbeat: any, params: SpecificJobParams): Promise<void> {
     const { batch, templateId, extractorId } = params;
-    await tenants.run(async () => {
-      await createBlankStateSuggestionsBatch(batch, templateId, extractorId);
-    }, jobInfo.namespace);
+    await createBlankStateSuggestionsBatch(batch, templateId, extractorId);
   }
 }
 

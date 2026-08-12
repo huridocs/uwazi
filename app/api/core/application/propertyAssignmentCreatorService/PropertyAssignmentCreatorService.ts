@@ -1,6 +1,7 @@
 import { PropertyAssignment } from '#api/core/domain/template/PropertyValue.js';
 import { Template } from '#api/core/domain/template/Template.js';
 import { InputFile } from '#api/core/infrastructure/files/InputFile.js';
+import { Entity } from '#api/core/domain/entity/Entity.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 
 type PropertyValueInput =
@@ -23,6 +24,7 @@ type CreateInput<V = PropertyValueInput> = {
   template: Template;
   propertyAssignment: PropertyAssignmentInput<V>;
   attachments?: InputFile[];
+  entity?: Entity;
 };
 
 interface PropertyAssignmentCreatorService {

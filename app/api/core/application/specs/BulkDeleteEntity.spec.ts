@@ -159,8 +159,8 @@ describe('BulkDeleteEntityUseCase', () => {
         name: 'BulkCleanupEntityJob',
         params: {
           tenantName: tenants.current().name,
-          userId: actor!._id!.toString(),
           sharedIds: expect.arrayContaining(['A1', 'A2', 'B1']),
+          userId: actor._id.toString(),
         },
         queue: 'uwazi_jobs',
         namespace: tenants.current().name,
@@ -626,8 +626,8 @@ describe('BulkDeleteEntityUseCase', () => {
             name: 'BulkCleanupEntityJob',
             params: {
               tenantName: tenants.current().name,
-              userId: collaboratorUser!._id!.toString(),
               sharedIds: ['entity_with_write'],
+              userId: collaboratorUser!._id!.toString(),
             },
           }),
         ]);

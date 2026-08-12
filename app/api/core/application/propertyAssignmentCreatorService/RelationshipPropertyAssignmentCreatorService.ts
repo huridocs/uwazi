@@ -31,6 +31,7 @@ export class RelationshipPropertyAssignmentCreatorService extends AbstractProper
   async create({
     propertyAssignment,
     template,
+    entity,
   }: CreatePropertyAssignmentInput<{ value: string }>): Promise<PropertyAssignment[]> {
     const property = template
       .getPropertyByName<V1RelationshipProperty>(propertyAssignment.name)
@@ -40,21 +41,46 @@ export class RelationshipPropertyAssignmentCreatorService extends AbstractProper
       pa => pa.value
     );
 
+    // Existing relationship values are preserved as-is for entities the actor
+    // cannot read; readable entities are re-denormalized (icons, labels,
+    // inherited values). This means a collaborator updating an entity does not
+    // need read permission on entities that were already in the relationship.
+    const existingSharedIds = new Set(
+      entity ? entity.getRelationshipValues(property.name).map(v => v.value) : []
+    );
+
     const relatedEntities = await (
       await this.deps.entitiesDS.getEntitiesBySharedIds(sharedIds)
     ).all();
 
-    const bySharedId = new Map(relatedEntities.map(e => [e.sharedId, e] as const));
+    const readableById = new Map(relatedEntities.map(e => [e.sharedId, e] as const));
 
-    const missing = sharedIds.filter(id => !bySharedId.has(id));
-    if (missing.length) {
-      throw new RelationshipPropertyDoesNotExistError(property.name, missing);
+    // Entities that could not be read (missing from the permission-enforced
+    // fetch) may be unreadable or genuinely missing. Check existence against
+    // the UNRESTRICTED view to tell the two apart.
+    const unreadable = sharedIds.filter(id => !readableById.has(id));
+    if (unreadable.length) {
+      const all = await (
+        await this.deps.entitiesDS.unrestricted().getEntitiesBySharedIds(unreadable)
+      ).all();
+      const existingIds = new Set(all.map(e => e.sharedId));
+
+      const genuinelyMissing = unreadable.filter(id => !existingIds.has(id));
+      if (genuinelyMissing.length) {
+        throw new RelationshipPropertyDoesNotExistError(property.name, genuinelyMissing);
+      }
+
+      const unreadableNew = unreadable.filter(id => !existingSharedIds.has(id));
+      if (unreadableNew.length) {
+        throw new RelationshipPropertyDoesNotExistError(property.name, unreadableNew);
+      }
+      // Exists but unreadable + already in relationship → preserve existing value.
     }
 
     if (property.content) {
       const wrongTemplate = sharedIds.filter(id => {
-        const e = bySharedId.get(id)!;
-        return e.template.id.toString() !== property.content;
+        const e = readableById.get(id);
+        return e && e.template.id.toString() !== property.content;
       });
 
       if (wrongTemplate.length) {
@@ -67,8 +93,20 @@ export class RelationshipPropertyAssignmentCreatorService extends AbstractProper
     const assignments: PropertyAssignment[] = [];
 
     languages.forEach(language => {
+      const existingForLanguage = entity
+        ? entity
+            .getRelationshipValues(property.name, language)
+            .filter(v => sharedIds.includes(v.value))
+        : [];
+
       const value = sharedIds.map(id => {
-        const related = bySharedId.get(id)!;
+        const related = readableById.get(id);
+
+        if (!related) {
+          // Unreadable entity that was already in the relationship — preserve
+          // the existing value instead of failing the whole update.
+          return existingForLanguage.find(v => v.value === id)!;
+        }
 
         const base: RelationshipEntry = {
           value: id,
