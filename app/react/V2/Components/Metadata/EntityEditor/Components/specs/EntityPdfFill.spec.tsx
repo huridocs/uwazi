@@ -58,7 +58,7 @@ jest.mock('#V2/api/entities/index.js', () => ({
   coerceValue: jest.fn(),
 }));
 
-const pdfFillHost = (): PdfFillHost => ({
+const pdfFillHost = (overrides: Partial<PdfFillHost> = {}): PdfFillHost => ({
   isEditing: true,
   language: 'en',
   savedPropertySelections: mockSaved,
@@ -68,9 +68,16 @@ const pdfFillHost = (): PdfFillHost => ({
   clearPropertySelection,
   setDocumentPdfSelection,
   setPdfSelectionMenuOpen,
+  ...overrides,
 });
 
-const Host = ({ children }: { children: React.ReactNode }) => {
+const Host = ({
+  children,
+  pdfFillOverrides,
+}: {
+  children: React.ReactNode;
+  pdfFillOverrides?: Partial<PdfFillHost>;
+}) => {
   const form = useForm<EditEntityFormValues>({
     defaultValues: {
       title: '',
@@ -87,7 +94,7 @@ const Host = ({ children }: { children: React.ReactNode }) => {
   return (
     // eslint-disable-next-line react/jsx-props-no-spreading
     <FormProvider {...form}>
-      <PdfFillProvider value={pdfFillHost()}>{children}</PdfFillProvider>
+      <PdfFillProvider value={pdfFillHost(pdfFillOverrides)}>{children}</PdfFillProvider>
     </FormProvider>
   );
 };
@@ -255,9 +262,96 @@ describe('Entity PDF Click to fill', () => {
     });
   });
 
-  it('coerces date selection then upserts', async () => {
+  it('parses localized date client-side then upserts without API', async () => {
     mockSelection = {
-      text: '2020-01-15',
+      text: '18th July 2025',
+      selectionRectangles: [{ top: 1, left: 2, width: 10, height: 4, regionId: '1' }],
+    };
+
+    render(
+      <Host>
+        <DateField<EditEntityFormValues>
+          context="tpl-1"
+          label="Date"
+          field="metadata.date_prop.0.value"
+          pdfFill={{ name: 'date_prop', propertyId: 'date-1', coerceType: 'date' }}
+        />
+      </Host>
+    );
+
+    fireEvent.click(screen.getByTestId('click-to-fill'));
+
+    await waitFor(() => {
+      expect(entitiesAPI.coerceValue).not.toHaveBeenCalled();
+      expect(upsertPropertySelection).toHaveBeenCalledWith(
+        { name: 'date_prop', id: 'date-1' },
+        mockSelection
+      );
+      expect(screen.getByLabelText(/Date/)).toHaveValue('2025-07-18');
+    });
+  });
+
+  it('parses date with document language when entity language fails', async () => {
+    mockSelection = {
+      text: '18 de julio de 2025',
+      selectionRectangles: [{ top: 1, left: 2, width: 10, height: 4, regionId: '1' }],
+    };
+
+    render(
+      <Host pdfFillOverrides={{ language: 'en', documentLanguage: 'spa' }}>
+        <DateField<EditEntityFormValues>
+          context="tpl-1"
+          label="Date"
+          field="metadata.date_prop.0.value"
+          pdfFill={{ name: 'date_prop', propertyId: 'date-1', coerceType: 'date' }}
+        />
+      </Host>
+    );
+
+    fireEvent.click(screen.getByTestId('click-to-fill'));
+
+    await waitFor(() => {
+      expect(entitiesAPI.coerceValue).not.toHaveBeenCalled();
+      expect(upsertPropertySelection).toHaveBeenCalled();
+      expect(screen.getByLabelText(/Date/)).toHaveValue('2025-07-18');
+    });
+  });
+
+  it('tries API coerce with document language after entity language fails', async () => {
+    mockSelection = {
+      text: 'not-a-date',
+      selectionRectangles: [{ top: 1, left: 2, width: 10, height: 4, regionId: '1' }],
+    };
+    const epochSeconds = 1579046400;
+    jest
+      .mocked(entitiesAPI.coerceValue)
+      .mockResolvedValueOnce({ success: '', value: 0 })
+      .mockResolvedValueOnce({ success: 'true', value: epochSeconds });
+
+    render(
+      <Host pdfFillOverrides={{ language: 'en', documentLanguage: 'fra' }}>
+        <DateField<EditEntityFormValues>
+          context="tpl-1"
+          label="Date"
+          field="metadata.date_prop.0.value"
+          pdfFill={{ name: 'date_prop', propertyId: 'date-1', coerceType: 'date' }}
+        />
+      </Host>
+    );
+
+    fireEvent.click(screen.getByTestId('click-to-fill'));
+
+    await waitFor(() => {
+      expect(entitiesAPI.coerceValue).toHaveBeenNthCalledWith(1, 'not-a-date', 'date', 'en');
+      expect(entitiesAPI.coerceValue).toHaveBeenNthCalledWith(2, 'not-a-date', 'date', 'fra');
+      expect(upsertPropertySelection).toHaveBeenCalled();
+      expect(screen.getByLabelText(/Date/)).toHaveValue('2020-01-15');
+    });
+  });
+
+  it('falls back to API coerce when localized date parse fails', async () => {
+    mockSelection = {
+      text: 'not-a-date',
       selectionRectangles: [{ top: 1, left: 2, width: 10, height: 4, regionId: '1' }],
     };
     const epochSeconds = 1579046400;
@@ -279,12 +373,45 @@ describe('Entity PDF Click to fill', () => {
     fireEvent.click(screen.getByTestId('click-to-fill'));
 
     await waitFor(() => {
-      expect(entitiesAPI.coerceValue).toHaveBeenCalledWith('2020-01-15', 'date', 'en');
+      expect(entitiesAPI.coerceValue).toHaveBeenCalledWith('not-a-date', 'date', 'en');
       expect(upsertPropertySelection).toHaveBeenCalledWith(
         { name: 'date_prop', id: 'date-1' },
         mockSelection
       );
       expect(screen.getByLabelText(/Date/)).toHaveValue('2020-01-15');
+    });
+  });
+
+  it('notifies danger when date API fallback coerce fails', async () => {
+    mockSelection = {
+      text: 'not-a-date',
+      selectionRectangles: [{ top: 1, left: 2, width: 10, height: 4, regionId: '1' }],
+    };
+    jest.mocked(entitiesAPI.coerceValue).mockResolvedValue({
+      success: '',
+      value: 0,
+    });
+
+    render(
+      <Host>
+        <DateField<EditEntityFormValues>
+          context="tpl-1"
+          label="Date"
+          field="metadata.date_prop.0.value"
+          pdfFill={{ name: 'date_prop', propertyId: 'date-1', coerceType: 'date' }}
+        />
+      </Host>
+    );
+
+    fireEvent.click(screen.getByTestId('click-to-fill'));
+
+    await waitFor(() => {
+      expect(entitiesAPI.coerceValue).toHaveBeenCalledWith('not-a-date', 'date', 'en');
+      expect(notify).toHaveBeenCalledWith(
+        'Value cannot be transformed to the correct type',
+        'danger'
+      );
+      expect(upsertPropertySelection).not.toHaveBeenCalled();
     });
   });
 

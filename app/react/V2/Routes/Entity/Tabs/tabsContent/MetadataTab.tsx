@@ -79,6 +79,7 @@ const MetadataTab = ({ entity, host }: MetadataTabProps) => {
     () => ({
       isEditing,
       language,
+      documentLanguage: mainDocument?.language,
       savedPropertySelections: mainDocument?.propertySelections,
       documentPdfSelection,
       draftPropertySelections,
@@ -93,6 +94,7 @@ const MetadataTab = ({ entity, host }: MetadataTabProps) => {
       draftPropertySelections,
       isEditing,
       language,
+      mainDocument?.language,
       mainDocument?.propertySelections,
       setPdfMenuOpen,
       setPdfSelection,

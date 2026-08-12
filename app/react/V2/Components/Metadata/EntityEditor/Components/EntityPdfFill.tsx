@@ -5,6 +5,7 @@ import type { FieldValues, Path, PathValue, UseFormSetValue } from 'react-hook-f
 import { t, Translate } from '#app/I18N/index.js';
 import type { PropertySelectionSchema } from '#shared/types/commonTypes.js';
 import { coerceValue } from '#V2/api/entities/index.js';
+import { parseLocalizedDate } from '#V2/shared/dateHelpers.js';
 import { notify } from '#V2/utils/notifyBridge.js';
 import { propertyHasSelection } from '../functions/propertySelectionHelpers.js';
 import { EntityField } from './EntityField.js';
@@ -20,6 +21,7 @@ type PdfFillTarget = {
 type PdfFillHost = {
   isEditing: boolean;
   language: string;
+  documentLanguage?: string;
   savedPropertySelections?: PropertySelectionSchema[];
   documentPdfSelection: TextSelection | undefined;
   draftPropertySelections: PropertySelectionSchema[];
@@ -86,6 +88,32 @@ const applyPdfFillFormValue = <TFormValues extends FieldValues>(
 
 const sanitizeText = (text: string) => text.replace(/[\n\r]+/g, ' ');
 
+const dateCoerceLanguages = (entityLanguage: string, documentLanguage?: string) => {
+  const languages = [entityLanguage];
+  if (documentLanguage && documentLanguage !== entityLanguage) {
+    languages.push(documentLanguage);
+  }
+  return languages;
+};
+
+const coerceDateFromText = async (rawText: string, languages: string[]) => {
+  for (const lang of languages) {
+    const timestamp = parseLocalizedDate(rawText, lang);
+    if (timestamp !== null) {
+      return { success: true as const, value: timestamp };
+    }
+  }
+
+  for (const lang of languages) {
+    const coerced = await coerceValue(rawText, 'date', lang);
+    if (coerced?.success) {
+      return { success: true as const, value: coerced.value };
+    }
+  }
+
+  return { success: false as const };
+};
+
 const EntityPdfFill = ({
   target,
   disabled,
@@ -96,6 +124,7 @@ const EntityPdfFill = ({
   const {
     isEditing,
     language,
+    documentLanguage,
     savedPropertySelections,
     documentPdfSelection,
     draftPropertySelections,
@@ -134,13 +163,21 @@ const EntityPdfFill = ({
       const rawText = documentPdfSelection.text || '';
       if (coerceType === 'text') {
         applyValue(sanitizeText(rawText));
-      } else {
-        const coerced = await coerceValue(
-          coerceType === 'numeric' ? rawText.trim() : rawText,
-          coerceType,
-          language
+      } else if (coerceType === 'date') {
+        const coerced = await coerceDateFromText(
+          rawText,
+          dateCoerceLanguages(language, documentLanguage)
         );
-
+        if (!coerced.success) {
+          notify(
+            t('System', 'Value cannot be transformed to the correct type', null, false),
+            'danger'
+          );
+          return;
+        }
+        applyValue(coerced.value);
+      } else {
+        const coerced = await coerceValue(rawText.trim(), 'numeric', language);
         if (!coerced?.success) {
           notify(
             t('System', 'Value cannot be transformed to the correct type', null, false),
@@ -148,7 +185,6 @@ const EntityPdfFill = ({
           );
           return;
         }
-
         applyValue(coerced.value);
       }
 
@@ -162,6 +198,7 @@ const EntityPdfFill = ({
   }, [
     applyValue,
     coerceType,
+    documentLanguage,
     documentPdfSelection,
     language,
     propertyId,
