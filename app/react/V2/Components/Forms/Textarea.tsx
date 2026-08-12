@@ -19,6 +19,7 @@ interface TextareaProps {
   className?: string;
   name?: string;
   clearFieldAction?: () => void;
+  overlay?: React.ReactNode;
   onChange?: ChangeEventHandler<HTMLTextAreaElement>;
   onSelect?: ChangeEventHandler<HTMLTextAreaElement>;
   onBlur?: ChangeEventHandler<HTMLTextAreaElement>;
@@ -56,6 +57,7 @@ const Textarea = React.forwardRef(
       className = '',
       name = '',
       clearFieldAction,
+      overlay,
       onChange,
       onSelect,
       onBlur,
@@ -99,6 +101,7 @@ const Textarea = React.forwardRef(
               <Translate className="sr-only">Clear</Translate>
             </button>
           )}
+          {overlay}
         </div>
         {errorMessage && <InputError>{errorMessage}</InputError>}
       </div>

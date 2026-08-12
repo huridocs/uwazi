@@ -1,15 +1,38 @@
-import React, { createContext, useContext, useMemo, useState } from 'react';
+import React, {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import type { TextSelection } from '@huridocs/react-text-selection-handler';
+import type { PropertySelectionSchema } from '#shared/types/commonTypes.js';
 import type { PDFControls } from '#V2/Components/PDFViewer/index.js';
+import { useMetadataEditing } from './MetadataEditingContext.js';
+import {
+  clearDraftSelection,
+  upsertDraftSelection,
+} from '#V2/Components/Metadata/EntityEditor/functions/propertySelectionHelpers.js';
 
 type DocumentPdfState = {
   pdfController: PDFControls | null;
   documentPdfSelection: TextSelection | undefined;
+  pdfSelectionMenuOpen: boolean;
+  draftPropertySelections: PropertySelectionSchema[];
 };
 
 type DocumentPdfActions = {
   setPdfController: React.Dispatch<React.SetStateAction<PDFControls | null>>;
   setDocumentPdfSelection: React.Dispatch<React.SetStateAction<TextSelection | undefined>>;
+  setPdfSelectionMenuOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  upsertPropertySelection: (
+    property: { name: string; id?: string },
+    selection: TextSelection
+  ) => void;
+  clearPropertySelection: (property: { name: string; id?: string }) => void;
+  resetDraftPropertySelections: () => void;
 };
 
 type DocumentRelationshipNavState = {
@@ -31,19 +54,74 @@ const DocumentRelationshipNavActionsContext = createContext<DocumentRelationship
   null
 );
 
+const ResetPdfFillStateOnEditEnd = ({
+  resetDraftPropertySelections,
+  setDocumentPdfSelection,
+  setPdfSelectionMenuOpen,
+}: {
+  resetDraftPropertySelections: () => void;
+  setDocumentPdfSelection: React.Dispatch<React.SetStateAction<TextSelection | undefined>>;
+  setPdfSelectionMenuOpen: React.Dispatch<React.SetStateAction<boolean>>;
+}) => {
+  const { isEditing } = useMetadataEditing();
+  const wasEditing = useRef(false);
+
+  useEffect(() => {
+    if (wasEditing.current && !isEditing) {
+      resetDraftPropertySelections();
+      setDocumentPdfSelection(undefined);
+      setPdfSelectionMenuOpen(false);
+    }
+    wasEditing.current = isEditing;
+  }, [isEditing, resetDraftPropertySelections, setDocumentPdfSelection, setPdfSelectionMenuOpen]);
+
+  return null;
+};
+
 const DocumentInteractionProvider = ({ children }: { children: React.ReactNode }) => {
   const [pdfController, setPdfController] = useState<PDFControls | null>(null);
   const [documentPdfSelection, setDocumentPdfSelection] = useState<TextSelection>();
+  const [pdfSelectionMenuOpen, setPdfSelectionMenuOpen] = useState(false);
+  const [draftPropertySelections, setDraftPropertySelections] = useState<PropertySelectionSchema[]>(
+    []
+  );
   const [activeRelationshipId, setActiveRelationshipId] = useState<string | null>(null);
   const [scrollToRelationshipPanel, setScrollToRelationshipPanel] = useState<string | null>(null);
 
+  const resetDraftPropertySelections = useCallback(() => {
+    setDraftPropertySelections([]);
+  }, []);
+
+  const upsertPropertySelection = useCallback(
+    (property: { name: string; id?: string }, selection: TextSelection) => {
+      setDraftPropertySelections(prev => upsertDraftSelection(prev, property, selection));
+    },
+    []
+  );
+
+  const clearPropertySelection = useCallback((property: { name: string; id?: string }) => {
+    setDraftPropertySelections(prev => clearDraftSelection(prev, property));
+  }, []);
+
   const pdfState = useMemo(
-    () => ({ pdfController, documentPdfSelection }),
-    [pdfController, documentPdfSelection]
+    () => ({
+      pdfController,
+      documentPdfSelection,
+      pdfSelectionMenuOpen,
+      draftPropertySelections,
+    }),
+    [pdfController, documentPdfSelection, pdfSelectionMenuOpen, draftPropertySelections]
   );
   const pdfActions = useMemo(
-    () => ({ setPdfController, setDocumentPdfSelection }),
-    [setPdfController, setDocumentPdfSelection]
+    () => ({
+      setPdfController,
+      setDocumentPdfSelection,
+      setPdfSelectionMenuOpen,
+      upsertPropertySelection,
+      clearPropertySelection,
+      resetDraftPropertySelections,
+    }),
+    [upsertPropertySelection, clearPropertySelection, resetDraftPropertySelections]
   );
   const navState = useMemo(
     () => ({ activeRelationshipId, scrollToRelationshipPanel }),
@@ -59,6 +137,11 @@ const DocumentInteractionProvider = ({ children }: { children: React.ReactNode }
       <DocumentPdfStateContext.Provider value={pdfState}>
         <DocumentRelationshipNavActionsContext.Provider value={navActions}>
           <DocumentRelationshipNavStateContext.Provider value={navState}>
+            <ResetPdfFillStateOnEditEnd
+              resetDraftPropertySelections={resetDraftPropertySelections}
+              setDocumentPdfSelection={setDocumentPdfSelection}
+              setPdfSelectionMenuOpen={setPdfSelectionMenuOpen}
+            />
             {children}
           </DocumentRelationshipNavStateContext.Provider>
         </DocumentRelationshipNavActionsContext.Provider>

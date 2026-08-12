@@ -125,6 +125,44 @@ describe('buildEditEntitySaveInput', () => {
     });
     expect(saved.icon).toEqual(icon);
   });
+
+  it('should add propertySelections when mainDocument id and draft selections exist', () => {
+    const draft = [
+      {
+        name: 'simple_text',
+        propertyID: '1',
+        selection: {
+          text: 'from pdf',
+          selectionRectangles: [{ top: 1, left: 1, width: 2, height: 2, page: '1' }],
+        },
+      },
+    ];
+    const saved = buildEditEntitySaveInput({
+      entity,
+      values,
+      metadataProperties: properties,
+      pendingAttachments: [],
+      mediaPropertyNames: new Set(),
+      mainDocumentId: 'file-1',
+      draftPropertySelections: draft,
+    });
+    expect(saved.propertySelections).toEqual({
+      fileID: 'file-1',
+      selections: draft,
+    });
+  });
+
+  it('should omit propertySelections without a main document id', () => {
+    const saved = buildEditEntitySaveInput({
+      entity,
+      values,
+      metadataProperties: properties,
+      pendingAttachments: [],
+      mediaPropertyNames: new Set(),
+      draftPropertySelections: [{ name: 'simple_text', selection: { text: 'x' } }],
+    });
+    expect(saved.propertySelections).toBeUndefined();
+  });
 });
 
 const textProp = (name: string, id = name): FormMetadataProperty => ({

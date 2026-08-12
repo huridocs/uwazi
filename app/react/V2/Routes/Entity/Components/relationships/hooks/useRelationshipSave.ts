@@ -64,6 +64,7 @@ const persistRelationship = async ({
 type FinalizeSaveActions = {
   setActiveClusterRefIds: (value: null) => void;
   setDocumentPdfSelection: (value: undefined) => void;
+  setPdfSelectionMenuOpen: (value: false) => void;
   closeCreateRelationship: () => void;
 };
 
@@ -80,13 +81,14 @@ const finalizeSuccessfulSave = async (
 
   actions.setActiveClusterRefIds(null);
   actions.setDocumentPdfSelection(undefined);
+  actions.setPdfSelectionMenuOpen(false);
   actions.closeCreateRelationship();
 };
 
 const useRelationshipSave = (mainDocument?: FileType) => {
   const entity = useEntityScopedEntity();
   const { closeCreateRelationship } = useRelationshipsActions();
-  const { setDocumentPdfSelection } = useDocumentPdfActions();
+  const { setDocumentPdfSelection, setPdfSelectionMenuOpen } = useDocumentPdfActions();
   const { setActiveClusterRefIds } = useRelationshipsPanelFacetFilters();
   const revalidator = useRevalidator();
   const document = mainDocument ?? entity?.documents?.[0];
@@ -105,6 +107,7 @@ const useRelationshipSave = (mainDocument?: FileType) => {
       await finalizeSuccessfulSave(entity.sharedId, revalidator, {
         setActiveClusterRefIds,
         setDocumentPdfSelection,
+        setPdfSelectionMenuOpen,
         closeCreateRelationship,
       });
       return true;
@@ -116,6 +119,7 @@ const useRelationshipSave = (mainDocument?: FileType) => {
       revalidator,
       setActiveClusterRefIds,
       setDocumentPdfSelection,
+      setPdfSelectionMenuOpen,
     ]
   );
 

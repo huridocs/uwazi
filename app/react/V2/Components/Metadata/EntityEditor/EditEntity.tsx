@@ -6,6 +6,7 @@ import { extractUploadIdFromMediaValue } from '#shared/entitySave/mediaMetadata.
 import { templatesAtom } from '#V2/atoms/templatesAtom.js';
 import { thesauriAtom } from '#V2/atoms/thesauriAtom.js';
 import type { MetadataValue } from '#V2/formatters/types.js';
+import { useDocumentPdf, useEntityLanguage } from '#V2/Routes/Entity/Components/context/index.js';
 import { MultiselectListOption } from '../../Forms/index.js';
 import { TitleField, IconField, EntityFileFields, TemplateField } from './Components/index.js';
 import { EditEntityPropertyField } from './EditEntityPropertyField.js';
@@ -54,6 +55,9 @@ const EditEntity = ({
   const selectedTemplate = useWatch({ control, name: 'template' });
   const metadata = useWatch({ control, name: 'metadata' });
   const previousTemplateRef = useRef(selectedTemplate);
+  const { draftPropertySelections } = useDocumentPdf();
+  const { mainDocument } = useEntityLanguage();
+  const mainDocumentId = mainDocument?._id;
 
   useEffect(() => {
     onDirtyChange?.(formState.isDirty);
@@ -181,6 +185,8 @@ const EditEntity = ({
           metadataProperties,
           pendingAttachments,
           mediaPropertyNames,
+          mainDocumentId,
+          draftPropertySelections,
         })
       );
     },
