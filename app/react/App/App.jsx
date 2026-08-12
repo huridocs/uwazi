@@ -15,6 +15,7 @@ import { Confirm } from './Confirm.js';
 import { AppMainContext } from './AppMainContext.js';
 import { GoogleAnalytics } from './GoogleAnalytics.js';
 import { LegacyHeader } from './LegacyHeader.js';
+import { isEntityPath, isEntityV2Path } from '#app/utils/entityViewerPaths.js';
 import 'react-widgets/dist/css/react-widgets.css';
 import 'bootstrap/dist/css/bootstrap.css';
 import 'flag-icons/sass/flag-icons.scss';
@@ -53,8 +54,11 @@ const App = ({ customParams }) => {
 
   const appClassName = shouldAddAppClassName && sharedId ? `pageId_${sharedId}` : '';
 
+  const entityViewerV2 = Boolean(settings.features?.featureFlagEntityViewerv2);
   const isV2Route =
-    location.pathname.includes('/entityv2') || location.pathname.includes('/settings');
+    location.pathname.includes('/settings') ||
+    isEntityV2Path(location.pathname) ||
+    (entityViewerV2 && isEntityPath(location.pathname));
   const isSettingsRoute = location.pathname.includes('/settings');
   const shellSharedTheme = shouldShowNewHeader && isV2Route;
   const settingsThemePath = isSettingsRoute ? 'settings' : undefined;
