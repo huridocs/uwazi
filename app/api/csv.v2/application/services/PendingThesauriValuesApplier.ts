@@ -1,6 +1,5 @@
 import { ThesauriDataSource } from '#api/core/application/contracts/ThesauriDataSource.js';
 import { ThesauriService } from '#api/core/application/ThesauriService.js';
-import translations from '#api/i18n/translations.js';
 import {
   CsvImportThesauriAppliedValue,
   CsvImportThesauriValues,
@@ -24,6 +23,11 @@ type ApplyResult = {
   appliedValues: CsvImportThesauriAppliedValue[];
 };
 
+/**
+ * Ambient-TX service: callers (Job / UseCase) must open transactionManager.run()
+ * before apply() when values are appended (ThesauriService → TranslationsService).
+ * Translation value updates are orchestrated by the Job via UpdateEntriesByContext UC.
+ */
 class PendingThesauriValuesApplier {
   constructor(private deps: Deps) {}
 
@@ -49,10 +53,6 @@ class PendingThesauriValuesApplier {
         tenantName: executionContext.tenantName,
         actorId: executionContext.userId,
       });
-
-      if (Object.keys(diff.translations).length > 0) {
-        await translations.updateEntries(pendingDoc.thesaurusId, diff.translations);
-      }
 
       updatedThesaurus = toSchema(updatedThesaurusDomain);
     }

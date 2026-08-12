@@ -2,9 +2,9 @@ import { ThesauriService } from '#api/core/application/ThesauriService.js';
 import { ThesaurusTranslationService } from '#api/core/application/thesaurusTranslationService/ThesaurusTranslationService.js';
 import { UpdateThesaurusUseCase } from '#api/core/application/UpdateThesaurus.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { TranslationsServiceFactory } from '#api/core/infrastructure/factories/TranslationsServiceFactory.js';
 import { DispatcherAdapter } from '#api/core/infrastructure/jobs/DispatcherAdapter.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
-import { DefaultTranslationsDataSource } from '#api/i18n.v2/database/data_source_defaults.js';
 import { SettingsDataSourceFactory } from './SettingsDataSourceFactory.js';
 import { ThesauriDataSourceFactory } from './ThesauriDataSourceFactory.js';
 
@@ -14,11 +14,11 @@ class UpdateThesaurusUseCaseFactory {
     const thesauriDS = ThesauriDataSourceFactory.default({ transactionManager });
 
     const settingsDS = SettingsDataSourceFactory.default({ transactionManager });
-    const translationsDS = DefaultTranslationsDataSource(transactionManager);
+    const translationsService = TranslationsServiceFactory.default({ transactionManager });
 
     const thesaurusTranslationService = new ThesaurusTranslationService({
       settingsDS,
-      translationsDS,
+      translationsService,
     });
 
     const dispatcher = new DispatcherAdapter(ExecutionContext.jobsDispatcher);

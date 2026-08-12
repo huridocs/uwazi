@@ -1,6 +1,6 @@
 import { FileStorage } from '#api/core/application/contracts/FileStorage.js';
 import { PropertyAssignmentCreatorServiceStrategy } from '#api/core/application/propertyAssignmentCreatorService/PropertyAssignmentCreatorServiceStrategy.js';
-import { DefaultTranslationsDataSource } from '#api/i18n.v2/database/data_source_defaults.js';
+import { TranslationsDataSourceFactory } from '#api/core/infrastructure/factories/TranslationsDataSourceFactory.js';
 import { FileStorageFactory } from '#api/core/infrastructure/files/FileStorageFactory.js';
 import { IdGeneratorFactory } from '#api/core/infrastructure/factories/IdGeneratorFactory.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
@@ -50,7 +50,9 @@ const buildPropertyAssignmentCreator = (params: {
   settingsDS: ReturnType<typeof SettingsDataSourceFactory.default>;
   entitiesDS: ReturnType<typeof EntitiesDataSourceFactory.default>;
 }) => {
-  const translationsDS = DefaultTranslationsDataSource(params.transactionManager);
+  const translationsDS = TranslationsDataSourceFactory.default({
+    transactionManager: params.transactionManager,
+  });
   const thesauriDS = ThesauriDataSourceFactory.default({
     transactionManager: params.transactionManager,
   });

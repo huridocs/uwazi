@@ -1,5 +1,3 @@
-import translations from '#api/i18n/translations.js';
-
 import {
   Settings,
   SettingsLinkSchema,
@@ -10,9 +8,9 @@ import { ensure } from '#shared/tsUtils.js';
 import { LanguageSchema, LatLonSchema, ObjectIdSchema } from '#shared/types/commonTypes.js';
 
 import { validateSettings } from '#shared/types/settingsSchema.js';
-import { ContextType } from '#shared/translationSchema.js';
 import { ArrayUtils } from '#api/common.v2/utils/Array.js';
 import { TemplateFacade } from '#api/core/infrastructure/facades/TemplateFacade.js';
+import { UpdateTranslationContextUseCaseFactory } from '#api/core/infrastructure/factories/UpdateTranslationContextUseCaseFactory.js';
 import { settingsModel } from './settingsModel.js';
 import { TemplatesDAOFactory } from '#api/core/infrastructure/factories/TemplatesDAOFactory.js';
 import { TemplateDBO } from '#api/core/infrastructure/mongodb/template/DBOs/TemplateDBO.js';
@@ -88,12 +86,12 @@ const saveLinksTranslations = async (
     currentLinks
   );
 
-  return translations.updateContext(
-    { id: 'Menu', label: 'Menu', type: ContextType.uwaziUI },
-    updatedValues,
-    deletedValues,
-    values
-  );
+  return UpdateTranslationContextUseCaseFactory.default().execute({
+    context: { id: 'Menu', label: 'Menu', type: 'Uwazi UI' },
+    keyChanges: updatedValues,
+    keysToDelete: deletedValues,
+    valueChanges: values,
+  });
 };
 
 const saveFiltersTranslations = async (
@@ -113,12 +111,12 @@ const saveFiltersTranslations = async (
     newFilters,
     currentFilters
   );
-  return translations.updateContext(
-    { id: 'Filters', label: 'Filters', type: ContextType.uwaziUI },
-    updatedValues,
-    deletedValues,
-    values
-  );
+  return UpdateTranslationContextUseCaseFactory.default().execute({
+    context: { id: 'Filters', label: 'Filters', type: 'Uwazi UI' },
+    keyChanges: updatedValues,
+    keysToDelete: deletedValues,
+    valueChanges: values,
+  });
 };
 
 function removeTemplate(filters: SettingsFilterSchema[], templateId: ObjectIdSchema) {

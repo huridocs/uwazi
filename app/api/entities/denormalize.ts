@@ -1,21 +1,29 @@
 /* eslint-disable max-lines */
 import { WithId } from '#api/odm/index.js';
-import translationsModel, { IndexedTranslations } from '#api/i18n/translations.js';
+import { TranslationsQueryServiceFactory } from '#api/core/infrastructure/factories/TranslationsQueryServiceFactory.js';
 import { search } from '#api/search/index.js';
 import templates from '#api/core/v1_layer/templates/index.js';
 import { EntitySchema } from '#shared/types/entityType.js';
 import { TemplateSchema } from '#shared/types/templateType.js';
 import { ThesaurusSchema, ThesaurusValueSchema } from '#shared/types/thesaurusType.js';
-import translate, { getContext } from '#shared/translate.js';
 import {
   MetadataSchema,
   MetadataObjectSchema,
   PropertySchema,
   LanguageISO6391,
 } from '#shared/types/commonTypes.js';
-const isString = (val: unknown): val is string => typeof val === 'string';
 import model from './entitiesModel.js';
 import thesauri from '#api/core/v1_layer/thesauri/thesauri.js';
+
+type TranslationValueMaps = Record<string, Record<string, string>>;
+
+const translateLabel = (
+  valueMaps: TranslationValueMaps,
+  contextId: string | undefined,
+  key: string
+) => (contextId && valueMaps[contextId]?.[key]) || key;
+
+const isString = (val: unknown): val is string => typeof val === 'string';
 
 interface DenormalizationUpdate {
   propertyName: string;
@@ -226,7 +234,8 @@ const denormalizeThesauriLabelInMetadata = async (
   newLabel: string,
   thesaurusId: string,
   language: string,
-  parent: { id: string; label: string }
+  parent?: { id: string; label: string }
+  // eslint-disable-next-line max-params
 ) => {
   const updates = await denormalizationUpdates(thesaurusId.toString(), ['label']);
 
@@ -259,7 +268,7 @@ const denormalizeSelectProperty = async (
   property: PropertySchema,
   values: MetadataObjectSchema[],
   thesauriByKey?: Record<string, ThesaurusSchema>,
-  translation?: unknown
+  translationValueMaps: TranslationValueMaps = {}
 ) => {
   const thesaurus = thesauriByKey
     ? thesauriByKey[property.content!]
@@ -267,8 +276,6 @@ const denormalizeSelectProperty = async (
   if (!thesaurus) {
     return undefined;
   }
-
-  const context = getContext(translation, property.content);
 
   const flattenValues: (ThesaurusValueSchema & { parent?: ThesaurusValueSchema })[] = [];
   thesaurus.values?.forEach(dv => {
@@ -284,13 +291,17 @@ const denormalizeSelectProperty = async (
     const thesaurusValue = flattenValues.find(v => v.id === denormalizedValue.value);
 
     if (thesaurusValue && thesaurusValue.label) {
-      denormalizedValue.label = translate(context, thesaurusValue.label, thesaurusValue.label);
+      denormalizedValue.label = translateLabel(
+        translationValueMaps,
+        property.content,
+        thesaurusValue.label
+      );
     }
 
     if (thesaurusValue && thesaurusValue.parent && thesaurusValue.parent.id) {
       denormalizedValue.parent = {
         value: thesaurusValue.parent.id,
-        label: translate(context, thesaurusValue.parent.label, thesaurusValue.parent.label),
+        label: translateLabel(translationValueMaps, property.content, thesaurusValue.parent.label),
       };
     }
     return denormalizedValue;
@@ -374,11 +385,11 @@ const denormalizeProperty = async (
   language: string,
   {
     thesauriByKey,
-    translation,
+    translationValueMaps,
     allTemplates,
   }: {
     thesauriByKey?: Record<string, ThesaurusSchema>;
-    translation: unknown;
+    translationValueMaps: TranslationValueMaps;
     allTemplates: TemplateSchema[];
   }
 ) => {
@@ -389,7 +400,7 @@ const denormalizeProperty = async (
   }
 
   if (property.content && ['select', 'multiselect'].includes(property.type)) {
-    return denormalizeSelectProperty(property, values!, thesauriByKey, translation);
+    return denormalizeSelectProperty(property, values!, thesauriByKey, translationValueMaps);
   }
 
   if (property.type === 'relationship') {
@@ -405,7 +416,7 @@ async function denormalizeMetadata(
   template: TemplateSchema,
   preloadedData: {
     allTemplates?: TemplateSchema[];
-    translation?: IndexedTranslations;
+    translationValueMaps?: TranslationValueMaps;
     thesauriByKey?: Record<string, ThesaurusSchema>;
   } = {}
 ) {
@@ -414,8 +425,9 @@ async function denormalizeMetadata(
   }
 
   const allTemplates = preloadedData.allTemplates || (await templates.get());
-  const translation =
-    preloadedData.translation || (await translationsModel.get({ locale: language }))[0];
+  const translationValueMaps =
+    preloadedData.translationValueMaps ||
+    (await TranslationsQueryServiceFactory.default().getLanguageValueMaps(language));
 
   const denormalizedProperties: {
     propertyName: string;
@@ -427,7 +439,11 @@ async function denormalizeMetadata(
         template.properties?.find(p => p.name === propertyName),
         metadata[propertyName],
         language,
-        { thesauriByKey: preloadedData.thesauriByKey, translation, allTemplates }
+        {
+          thesauriByKey: preloadedData.thesauriByKey,
+          translationValueMaps,
+          allTemplates,
+        }
       ),
     }))
   );

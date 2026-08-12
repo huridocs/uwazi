@@ -1,10 +1,9 @@
 import type { ObjectId } from 'mongodb';
 import type { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js';
-import type { TranslationsDataSource } from '#api/i18n.v2/contracts/TranslationsDataSource.js';
-import { TranslationCollection } from '#api/i18n.v2/model/TranslationCollection.js';
+import type { TranslationsDataSource } from '#api/core/application/contracts/TranslationsDataSource.js';
+import { TranslationCollection } from '#api/core/domain/translation/TranslationCollection.js';
 import type { LanguageISO6391 } from '#shared/types/commonTypes.js';
-import type { LocalizedLabels } from '#shared/types/datavizSchema.js';
-import type { DatavizQuery, DimensionSpec } from '#shared/types/datavizSchema.js';
+import type { LocalizedLabels, DatavizQuery, DimensionSpec } from '#shared/types/datavizSchema.js';
 import { TEMPLATE_DIMENSION_PROPERTY } from '#shared/types/datavizSchema.js';
 import type { TemplateDBO } from '#api/core/infrastructure/mongodb/template/DBOs/TemplateDBO.js';
 import {
