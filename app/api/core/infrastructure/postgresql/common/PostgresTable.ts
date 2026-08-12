@@ -261,12 +261,6 @@ export class PostgresTable<TRow = Record<string, unknown>> {
     return PostgresTable.idsOf(result);
   }
 
-  async updateReturningCount(changes: Record<string, unknown>): Promise<number> {
-    const serialized = PostgresTable.serialize(changes);
-    const result = await this.run(qb => qb.returning(['_id']).update(serialized));
-    return (result as { _id: string }[]).length;
-  }
-
   async delete(): Promise<string[]> {
     const result = await this.run(qb => this.applyPolicy(qb, 'write').returning(['_id']).del());
     if (this.cfg.syncWriter) {

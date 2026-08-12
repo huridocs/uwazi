@@ -4,6 +4,8 @@ import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { testingTenants } from '#api/utils/testingTenants.js';
 import { testingPG } from '#api/utils/testing_pg.js';
 import { DBFixture } from '#api/utils/testing_db.js';
+import { UserGroup } from '#api/core/domain/userGroup/UserGroup.js';
+import { IdGeneratorFactory } from '#api/core/infrastructure/factories/IdGeneratorFactory.js';
 import { UserGroupsDataSourceFactory } from '#api/core/infrastructure/factories/UserGroupsDataSourceFactory.js';
 
 const f = getFixturesFactory();
@@ -140,9 +142,10 @@ describe('UserGroupsDataSource consistency', () => {
     describe('create / update / delete', () => {
       it('should create, then rename, then delete a group', async () => {
         const ds = getDS();
+        const id = IdGeneratorFactory.default().generate();
 
-        const created = await ds.create({ name: 'New group', memberIds: [] });
-        const updated = await ds.update({ id: created.id, name: 'Renamed', memberIds: [] });
+        const created = await ds.create(new UserGroup({ id, name: 'New group', memberIds: [] }));
+        const updated = await ds.update(created.update({ name: 'Renamed', memberIds: [] }));
         expect(updated.name).toBe('Renamed');
 
         await ds.delete([created.id]);

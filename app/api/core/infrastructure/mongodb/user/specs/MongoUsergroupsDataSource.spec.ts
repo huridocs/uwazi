@@ -4,6 +4,7 @@ import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnec
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { UserRole } from '#shared/types/userSchema.js';
+import { UserGroup } from '#api/core/domain/userGroup/UserGroup.js';
 import { MongoUserGroupsDataSource } from '../MongoUserGroupsDataSource.js';
 
 const f = getFixturesFactory();
@@ -25,11 +26,7 @@ const fixtures = {
 
 const createDs = () => {
   const transactionManager = TransactionManagerFactory.default();
-  const ds = new MongoUserGroupsDataSource(
-    getConnection(),
-    transactionManager,
-    IdGeneratorFactory.default()
-  );
+  const ds = new MongoUserGroupsDataSource(getConnection(), transactionManager);
   return { ds, transactionManager };
 };
 
@@ -130,14 +127,34 @@ describe('MongoGroupsDataSource', () => {
     });
   });
 
+  describe('findById', () => {
+    it('should return the group matching the given id', async () => {
+      const { ds } = createDs();
+
+      const found = await ds.findById(f.id('With one member').toHexString());
+
+      expect(found.getDataOrThrow()).toMatchObject({
+        id: f.id('With one member').toHexString(),
+        name: 'With one member',
+        memberIds: [f.idString('existing1')],
+      });
+    });
+
+    it('should fail with UserGroupNotFound for an unknown id', async () => {
+      const { ds } = createDs();
+
+      expect((await ds.findById(f.id('unknown').toHexString())).isError()).toBe(true);
+    });
+  });
+
   describe('create', () => {
     it('should create a group with the given name and members', async () => {
       const { ds } = createDs();
+      const id = IdGeneratorFactory.default().generate();
 
-      const created = await ds.create({
-        name: 'New group',
-        memberIds: [f.idString('existing1')],
-      });
+      const created = await ds.create(
+        new UserGroup({ id, name: 'New group', memberIds: [f.idString('existing1')] })
+      );
 
       const groups = await testingEnvironment.db.getAllFrom('usergroups');
       const found = groups.find(group => group._id.toString() === created.id);
@@ -152,11 +169,13 @@ describe('MongoGroupsDataSource', () => {
     it('should rename a group and replace its members', async () => {
       const { ds } = createDs();
 
-      await ds.update({
-        id: f.id('With one member').toHexString(),
-        name: 'Renamed',
-        memberIds: [f.idString('existing2')],
-      });
+      await ds.update(
+        new UserGroup({
+          id: f.id('With one member').toHexString(),
+          name: 'Renamed',
+          memberIds: [f.idString('existing2')],
+        })
+      );
 
       const groups = await testingEnvironment.db.getAllFrom('usergroups');
       const updated = groups.find(

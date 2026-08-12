@@ -7,12 +7,10 @@ import type {
   CreateUserGroupResponse,
 } from '#shared/contracts/UserGroups.js';
 
-const CreateUserGroupRequestSchema = z
-  .object({
-    name: z.string(),
-    members: z.array(z.object({ refId: z.string() }).strict()),
-  })
-  .strict();
+const CreateUserGroupRequestSchema = z.object({
+  name: z.string().trim(),
+  members: z.array(z.object({ refId: z.string() })),
+});
 
 class CreateUserGroupController extends AbstractController<CreateUserGroupRequest> {
   protected async handle(): Promise<void> {

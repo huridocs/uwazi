@@ -18,11 +18,11 @@ class UpdateUserGroupUseCase extends AbstractUseCase<Input, Output, Deps> {
   async execute(input: Input): Promise<Output> {
     (await this.deps.userGroupsDS.checkUniqueName(input.name, input.id)).getDataOrThrow();
 
-    return this.deps.userGroupsDS.update({
-      id: input.id,
-      name: input.name,
-      memberIds: input.memberIds,
-    });
+    const existing = (await this.deps.userGroupsDS.findById(input.id)).getDataOrThrow();
+
+    const updated = existing.update({ name: input.name, memberIds: input.memberIds });
+
+    return this.deps.userGroupsDS.update(updated);
   }
 }
 

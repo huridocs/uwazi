@@ -3,6 +3,7 @@ import { testingPG } from '#api/utils/testing_pg.js';
 import { PostgresDB } from '#api/infrastructure/PostgresDB.js';
 import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
 import { IdGeneratorFactory } from '#api/core/infrastructure/factories/IdGeneratorFactory.js';
+import { UserGroup } from '#api/core/domain/userGroup/UserGroup.js';
 import { PostgresTransactionManager } from '../../common/PostgresTransactionManager.js';
 import { PostgresUserGroupsDataSource } from '../PostgresUserGroupsDataSource.js';
 
@@ -15,7 +16,6 @@ const makeDS = (tenantId = TENANT_ID) =>
   new PostgresUserGroupsDataSource({
     tenantId,
     pgTransactionManager: managerFor(tenantId),
-    idGenerator: IdGeneratorFactory.default(),
   });
 
 const setGroupFixtures = async () => {
@@ -119,11 +119,34 @@ describe('PostgresUserGroupsDataSource', () => {
     });
   });
 
+  describe('findById', () => {
+    it('should return the group matching the given id', async () => {
+      const ds = makeDS();
+
+      const found = await ds.findById('with-one-member');
+
+      expect(found.getDataOrThrow()).toMatchObject({
+        id: 'with-one-member',
+        name: 'With one member',
+        memberIds: ['existing1'],
+      });
+    });
+
+    it('should fail with UserGroupNotFound for an unknown id', async () => {
+      const ds = makeDS();
+
+      expect((await ds.findById('unknown')).isError()).toBe(true);
+    });
+  });
+
   describe('create', () => {
     it('should create a group with the given name and members', async () => {
       const ds = makeDS();
+      const id = IdGeneratorFactory.default().generate();
 
-      const created = await ds.create({ name: 'New group', memberIds: ['existing1'] });
+      const created = await ds.create(
+        new UserGroup({ id, name: 'New group', memberIds: ['existing1'] })
+      );
 
       const groups = await testingPG.getAllFrom('usergroups');
       const found = groups.find(g => g._id === created.id);
@@ -135,7 +158,9 @@ describe('PostgresUserGroupsDataSource', () => {
     it('should rename a group and replace its members', async () => {
       const ds = makeDS();
 
-      await ds.update({ id: 'with-one-member', name: 'Renamed', memberIds: ['existing2'] });
+      await ds.update(
+        new UserGroup({ id: 'with-one-member', name: 'Renamed', memberIds: ['existing2'] })
+      );
 
       const groups = await testingPG.getAllFrom('usergroups');
       const updated = groups.find(g => g._id === 'with-one-member');

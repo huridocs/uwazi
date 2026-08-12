@@ -10,6 +10,13 @@ const mongoSchema = new mongoose.Schema(propsWithDBSpecifics, {
   strict: false,
 });
 
+/**
+ * @deprecated v1 Mongo model, used by app/api/usergroups/userGroups.ts,
+ * validateUserGroup.ts and userGroupsMembers.ts.
+ * Superseded by MongoUserGroupsDataSource / PostgresUserGroupsDataSource
+ * (app/api/core/infrastructure/{mongodb,postgresql}/user/).
+ * Remove once those v1 callers are migrated.
+ */
 const Model = instanceModel<UserGroupSchema>('usergroups', mongoSchema);
 
 export default Model;

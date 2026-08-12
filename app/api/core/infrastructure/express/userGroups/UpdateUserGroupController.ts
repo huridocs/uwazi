@@ -7,13 +7,11 @@ import type {
   UpdateUserGroupResponse,
 } from '#shared/contracts/UserGroups.js';
 
-const UpdateUserGroupRequestSchema = z
-  .object({
-    _id: z.string(),
-    name: z.string(),
-    members: z.array(z.object({ refId: z.string() }).strict()),
-  })
-  .strict();
+const UpdateUserGroupRequestSchema = z.object({
+  _id: z.string(),
+  name: z.string().trim(),
+  members: z.array(z.object({ refId: z.string() })),
+});
 
 class UpdateUserGroupController extends AbstractController<UpdateUserGroupRequest> {
   protected async handle(): Promise<void> {

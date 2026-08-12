@@ -3,7 +3,7 @@ import type { UserGroupRow } from './PostgresUserGroupRow.js';
 
 class PostgresUserGroupsMapper {
   static toDomain(row: UserGroupRow): UserGroup {
-    return new UserGroup(row._id, row.name, row.members);
+    return new UserGroup({ id: row._id, name: row.name, memberIds: row.members });
   }
 
   static toRow(id: string, name: string, memberIds: string[]): UserGroupRow {

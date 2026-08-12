@@ -7,7 +7,6 @@ import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnec
 import { MongoCaptchaDataSource } from '#api/core/infrastructure/mongodb/captcha/MongoCaptchaDataSource.js';
 import { PostgresDB } from '#api/infrastructure/PostgresDB.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-import { testingPG } from '#api/utils/testing_pg.js';
 import { PostgresTransactionManager } from '../../postgresql/common/PostgresTransactionManager.js';
 import { PostgresCaptchaDataSource } from '../../postgresql/captcha/PostgresCaptchaDataSource.js';
 
@@ -20,22 +19,18 @@ const testConfigs: TestConfig[] = [
   { name: 'Postgres', usePostgres: true },
 ];
 
-beforeAll(async () => {
-  await testingEnvironment.setUp({}, { postgres: true });
-});
-
-afterAll(async () => {
-  await testingEnvironment.tearDown();
-});
-
 describe('CaptchaDataSource consistency', () => {
+  beforeAll(async () => {
+    await testingEnvironment.setUp({}, { postgres: true });
+  });
+
+  afterAll(async () => {
+    await testingEnvironment.tearDown();
+  });
+
   describe.each(testConfigs)('$name', ({ usePostgres }) => {
     beforeEach(async () => {
-      if (usePostgres) {
-        await testingPG.clear(['captchas']);
-      } else {
-        await testingEnvironment.setFixtures({ captchas: [] });
-      }
+      await testingEnvironment.setFixtures({ captchas: [] });
     });
 
     const makeDS = (): CaptchaDataSource =>

@@ -4,7 +4,6 @@ import { MongoUsersQueryService } from '../mongodb/user/MongoUsersQueryService.j
 import { PostgresUserGroupsDAO } from '../postgresql/user/PostgresUserGroupsDAO.js';
 import { PostgresUsersDAO } from '../postgresql/user/PostgresUsersDAO.js';
 import { PostgresUsersQueryService } from '../postgresql/user/PostgresUsersQueryService.js';
-import { TransactionManagerFactory } from './TransactionManagerFactory.js';
 import { UserGroupsDAOFactory } from './UserGroupsDAOFactory.js';
 import { UsersDAOFactory } from './UsersDAOFactory.js';
 
@@ -21,7 +20,7 @@ class UsersQueryServiceFactory {
 
     return new MongoUsersQueryService({
       db: getConnection(),
-      transactionManager: TransactionManagerFactory.default(),
+      transactionManager: ExecutionContext.transactionManager,
       dao: UsersDAOFactory.default(),
     });
   }

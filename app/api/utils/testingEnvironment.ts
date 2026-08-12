@@ -184,7 +184,14 @@ const testingEnvironment = {
         Object.fromEntries(
           Object.entries(fixtures)
             .filter(([table]) =>
-              ['dictionaries', 'templates', 'files', 'entities', 'relationtypes'].includes(table)
+              [
+                'dictionaries',
+                'templates',
+                'files',
+                'entities',
+                'relationtypes',
+                'captchas',
+              ].includes(table)
             )
             .map(([table, fixture]) => {
               const pgTable = PG_TABLE_BY_MONGO_COLLECTION[table] ?? table;

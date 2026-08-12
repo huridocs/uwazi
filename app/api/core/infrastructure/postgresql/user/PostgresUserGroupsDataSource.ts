@@ -1,18 +1,11 @@
 import { UserGroup } from '#api/core/domain/userGroup/UserGroup.js';
-import { UserGroupNameExists } from '#api/core/domain/userGroup/errors.js';
-import { IdGenerator } from '#api/core/application/contracts/IdGenerator.js';
-import {
-  UserGroupsDataSource,
-  CreateUserGroupParams,
-  UpdateUserGroupParams,
-} from '#api/core/application/contracts/UserGroupsDataSource.js';
+import { UserGroupNameExists, UserGroupNotFound } from '#api/core/domain/userGroup/errors.js';
+import { UserGroupsDataSource } from '#api/core/application/contracts/UserGroupsDataSource.js';
 import { Result } from '#api/core/libs/Result.js';
 import type { ResultType } from '#api/core/libs/Result.js';
 import { PostgresDataSource, PostgresDataSourceDeps } from '../common/PostgresDataSource.js';
 import { PostgresUserGroupsMapper } from './PostgresUserGroupsMapper.js';
 import type { UserGroupRow } from './PostgresUserGroupRow.js';
-
-type Deps = PostgresDataSourceDeps & { idGenerator: IdGenerator };
 
 const placeholders = (values: unknown[]) => values.map(() => '?').join(', ');
 
@@ -20,11 +13,8 @@ class PostgresUserGroupsDataSource
   extends PostgresDataSource<UserGroupRow>
   implements UserGroupsDataSource
 {
-  private idGenerator: IdGenerator;
-
-  constructor(deps: Deps) {
+  constructor(deps: PostgresDataSourceDeps) {
     super('usergroups', deps);
-    this.idGenerator = deps.idGenerator;
   }
 
   async assignGroupsToUser(userId: string, groupIds: string[]): Promise<void> {
@@ -73,15 +63,25 @@ class PostgresUserGroupsDataSource
     return rows.map(row => ({ _id: row._id, name: row.name }));
   }
 
-  async create({ name, memberIds }: CreateUserGroupParams): Promise<UserGroup> {
-    const id = this.idGenerator.generate();
-    await this.table.insert(PostgresUserGroupsMapper.toRow(id, name, memberIds));
-    return new UserGroup(id, name, memberIds);
+  async findById(id: string): Promise<ResultType<UserGroup, UserGroupNotFound>> {
+    const row = await this.table.where({ _id: id }).first();
+    return row
+      ? Result.ok(PostgresUserGroupsMapper.toDomain(row))
+      : Result.fail(new UserGroupNotFound(id));
   }
 
-  async update({ id, name, memberIds }: UpdateUserGroupParams): Promise<UserGroup> {
-    await this.table.where({ _id: id }).update({ name, members: memberIds });
-    return new UserGroup(id, name, memberIds);
+  async create(userGroup: UserGroup): Promise<UserGroup> {
+    await this.table.insert(
+      PostgresUserGroupsMapper.toRow(userGroup.id, userGroup.name, userGroup.memberIds)
+    );
+    return userGroup;
+  }
+
+  async update(userGroup: UserGroup): Promise<UserGroup> {
+    await this.table
+      .where({ _id: userGroup.id })
+      .update({ name: userGroup.name, members: userGroup.memberIds });
+    return userGroup;
   }
 
   async delete(ids: string[]): Promise<void> {

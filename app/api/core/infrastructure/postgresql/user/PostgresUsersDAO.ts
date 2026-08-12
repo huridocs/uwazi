@@ -69,7 +69,8 @@ class PostgresUsersDAO extends PostgresDataSource<UserRow> {
       return 0;
     }
 
-    return this.table.whereIn('_id', ids).updateReturningCount({ deletedAt: new Date() });
+    const updatedIds = await this.table.whereIn('_id', ids).update({ deletedAt: new Date() });
+    return updatedIds.length;
   }
 
   async getById(

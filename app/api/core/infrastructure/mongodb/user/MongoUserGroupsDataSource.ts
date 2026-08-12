@@ -1,18 +1,9 @@
-import { Db, ObjectId } from 'mongodb';
-import {
-  MongoDataSource,
-  MongoDSOptions,
-} from '#api/core/infrastructure/mongodb/common/MongoDataSource.js';
-import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
-import { IdGenerator } from '#api/core/application/contracts/IdGenerator.js';
+import { ObjectId } from 'mongodb';
+import { MongoDataSource } from '#api/core/infrastructure/mongodb/common/MongoDataSource.js';
 import { UserGroup } from '#api/core/domain/userGroup/UserGroup.js';
-import { UserGroupNameExists } from '#api/core/domain/userGroup/errors.js';
+import { UserGroupNameExists, UserGroupNotFound } from '#api/core/domain/userGroup/errors.js';
 import { Result, ResultType } from '#api/core/libs/Result.js';
-import {
-  UserGroupsDataSource,
-  CreateUserGroupParams,
-  UpdateUserGroupParams,
-} from '#api/core/application/contracts/UserGroupsDataSource.js';
+import { UserGroupsDataSource } from '#api/core/application/contracts/UserGroupsDataSource.js';
 import { UserGroupDBO } from './UserGroupDBO.js';
 
 class MongoUserGroupsDataSource
@@ -20,18 +11,6 @@ class MongoUserGroupsDataSource
   implements UserGroupsDataSource
 {
   protected collectionName = 'usergroups';
-
-  private idGenerator: IdGenerator;
-
-  constructor(
-    db: Db,
-    transactionManager: TransactionManager,
-    idGenerator: IdGenerator,
-    options?: MongoDSOptions
-  ) {
-    super(db, transactionManager, options);
-    this.idGenerator = idGenerator;
-  }
 
   async getUserGroups(userId: string): Promise<{ _id: string; name: string }[]> {
     const collection = this.getCollection();
@@ -65,28 +44,42 @@ class MongoUserGroupsDataSource
     await collection.updateMany({}, { $pull: { members: { refId: { $in: userIds } } } });
   }
 
-  async create({ name, memberIds }: CreateUserGroupParams): Promise<UserGroup> {
-    const id = this.idGenerator.generate();
+  async findById(id: string): Promise<ResultType<UserGroup, UserGroupNotFound>> {
+    const collection = this.getCollection();
+    const doc = await collection.findOne({ _id: ObjectId.createFromHexString(id) });
+
+    if (!doc) return Result.fail(new UserGroupNotFound(id));
+
+    return Result.ok(
+      new UserGroup({
+        id: doc._id.toString(),
+        name: doc.name,
+        memberIds: doc.members.map(member => member.refId),
+      })
+    );
+  }
+
+  async create(userGroup: UserGroup): Promise<UserGroup> {
     const collection = this.getCollection();
 
     await collection.insertOne({
-      _id: ObjectId.createFromHexString(id),
-      name,
-      members: memberIds.map(refId => ({ refId })),
+      _id: ObjectId.createFromHexString(userGroup.id),
+      name: userGroup.name,
+      members: userGroup.memberIds.map(refId => ({ refId })),
     });
 
-    return new UserGroup(id, name, memberIds);
+    return userGroup;
   }
 
-  async update({ id, name, memberIds }: UpdateUserGroupParams): Promise<UserGroup> {
+  async update(userGroup: UserGroup): Promise<UserGroup> {
     const collection = this.getCollection();
 
     await collection.updateOne(
-      { _id: ObjectId.createFromHexString(id) },
-      { $set: { name, members: memberIds.map(refId => ({ refId })) } }
+      { _id: ObjectId.createFromHexString(userGroup.id) },
+      { $set: { name: userGroup.name, members: userGroup.memberIds.map(refId => ({ refId })) } }
     );
 
-    return new UserGroup(id, name, memberIds);
+    return userGroup;
   }
 
   async delete(ids: string[]): Promise<void> {

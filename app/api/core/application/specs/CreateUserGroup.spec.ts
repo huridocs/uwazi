@@ -1,11 +1,7 @@
-import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
-import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
-import { IdGeneratorFactory } from '#api/core/infrastructure/factories/IdGeneratorFactory.js';
-import { MongoUserGroupsDataSource } from '#api/core/infrastructure/mongodb/user/MongoUserGroupsDataSource.js';
 import { UserGroupNameExists } from '#api/core/domain/userGroup/errors.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-import { CreateUserGroupUseCase } from '../CreateUserGroup.js';
+import { CreateUserGroupUseCaseFactory } from '#api/core/infrastructure/factories/CreateUserGroupUseCaseFactory.js';
 
 const f = getFixturesFactory();
 
@@ -13,14 +9,8 @@ const fixtures = {
   usergroups: [f.usergroup('Existing')],
 };
 
-const createUseCase = () =>
-  new CreateUserGroupUseCase({
-    userGroupsDS: new MongoUserGroupsDataSource(
-      getConnection(),
-      TransactionManagerFactory.default(),
-      IdGeneratorFactory.default()
-    ),
-  });
+const createSut = () =>
+  testingEnvironment.runWithContext(() => CreateUserGroupUseCaseFactory.default());
 
 describe('CreateUserGroupUseCase', () => {
   beforeEach(async () => {
@@ -30,7 +20,7 @@ describe('CreateUserGroupUseCase', () => {
   afterAll(async () => testingEnvironment.tearDown());
 
   it('should create a group with the given name and members', async () => {
-    const created = await createUseCase().execute({ name: 'New group', memberIds: [] });
+    const created = await createSut().execute({ name: 'New group', memberIds: [] });
 
     expect(created.name).toBe('New group');
     const stored = await testingEnvironment.db.getAllFrom('usergroups');
@@ -38,8 +28,8 @@ describe('CreateUserGroupUseCase', () => {
   });
 
   it('should throw when the name already exists, case-insensitively', async () => {
-    await expect(
-      createUseCase().execute({ name: 'existing', memberIds: [] })
-    ).rejects.toThrow(UserGroupNameExists);
+    await expect(createSut().execute({ name: 'existing', memberIds: [] })).rejects.toThrow(
+      UserGroupNameExists
+    );
   });
 });
