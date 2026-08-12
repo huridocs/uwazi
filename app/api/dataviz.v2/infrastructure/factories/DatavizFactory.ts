@@ -7,7 +7,7 @@ import { GetDatavizDataUseCase } from '#api/dataviz.v2/application/useCases/GetD
 import { GetPublicDatavizEmbedUseCase } from '#api/dataviz.v2/application/useCases/GetPublicDatavizEmbed.js';
 import { RefreshDatavizSnapshotJob } from '#api/dataviz.v2/application/jobs/RefreshDatavizSnapshotJob.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
-import { CachedTranslationsDataSource } from '#api/i18n.v2/database/data_source_defaults.js';
+import { TranslationsDataSourceFactory } from '#api/core/infrastructure/factories/TranslationsDataSourceFactory.js';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
 import { IdGeneratorFactory } from '#api/core/infrastructure/factories/IdGeneratorFactory.js';
@@ -50,7 +50,7 @@ class DatavizFactory {
 
     return new MongoDatavizQueryExecutor(getConnection(), transactionManager, {
       settingsDS: SettingsDataSourceFactory.cached({ transactionManager }),
-      translationsDS: CachedTranslationsDataSource(transactionManager),
+      translationsDS: TranslationsDataSourceFactory.cached({ transactionManager }),
       templatesDAO: TemplatesDAOFactory.default() as TemplatesReadDAO,
       thesauriDAO: ThesauriDAOFactory.default(),
       entitiesDAO: EntitiesDAOFactory.default() as EntitiesReadDAO,

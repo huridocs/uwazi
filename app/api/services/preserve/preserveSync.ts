@@ -15,7 +15,7 @@ import { ThesauriDataSourceFactory } from '#api/core/infrastructure/factories/Th
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { InputFile } from '#api/core/infrastructure/files/InputFile.js';
 import templates from '#api/core/v1_layer/templates/index.js';
-import { DefaultTranslationsDataSource } from '#api/i18n.v2/database/data_source_defaults.js';
+import { TranslationsDataSourceFactory } from '#api/core/infrastructure/factories/TranslationsDataSourceFactory.js';
 import { runInJobContext } from '#api/services/tasksmanager/runInJobContext.js';
 import { legacyLogger } from '#api/log/index.js';
 import { EnforcedWithId } from '#api/odm/index.js';
@@ -107,7 +107,7 @@ const saveEvidence =
       const entitiesDS = EntitiesDataSourceFactory.default({ transactionManager });
       const settingsDS = SettingsDataSourceFactory.default({ transactionManager });
       const thesauriDS = ThesauriDataSourceFactory.default({ transactionManager });
-      const translationsDS = DefaultTranslationsDataSource(transactionManager);
+      const translationsDS = TranslationsDataSourceFactory.default({ transactionManager });
 
       const propertyAssignmentStrategy = PropertyAssignmentCreatorServiceStrategy.create({
         entitiesDS,

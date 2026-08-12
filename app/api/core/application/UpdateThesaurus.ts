@@ -30,7 +30,7 @@ class UpdateThesaurusUseCase extends AbstractUseCase<Input, Output, Deps> {
     await this.transactionManager.run(async () =>
       this.deps.thesauriService.update(updated, {
         tenantName: this.tenant.name,
-        actorId: this.actorId,
+        actorId: this.actor?.id,
       })
     );
 
