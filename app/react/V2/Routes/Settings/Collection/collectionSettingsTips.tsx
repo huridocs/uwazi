@@ -10,7 +10,7 @@ export const landingPageTip = (
       A page: */page/dicxg0oagy3xgr7ixef80k9*
       A filtered view in Uwazi: */library/?searchTerm=test*
       An entity: */entity/9htbkgpkyy7j5rk9*
-      A document: */document/4y9i99fadjp833di*
+      A document: */entity/4y9i99fadjp833di*
       
       Important: You must use relative URLs. These start with a forward slash and do not include the domain name. For example: In the address *https://yoursite.com/landingpage*, the relative URL is /landingpage
       `}

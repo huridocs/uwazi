@@ -30,6 +30,7 @@ import { SearchTextConnected as SearchText } from './SearchText.js';
 import { ShowToc } from './ShowToc.js';
 import { SnippetsTabConnected as SnippetsTab } from './SnippetsTab.js';
 import helpers from '../helpers.js';
+import { getV1EntityBasePathFromLocation } from '#app/utils/entityViewerPaths.js';
 
 class DocumentSidePanel extends Component {
   constructor(props) {
@@ -182,7 +183,7 @@ class DocumentSidePanel extends Component {
     );
 
     const linkTo = entityTab =>
-      `/entity/${doc.get('sharedId')}/${entityTab}${location?.search || ''}`;
+      `${getV1EntityBasePathFromLocation(location?.pathname || '')}/${doc.get('sharedId')}/${entityTab}${location?.search || ''}`;
 
     return (
       <>
