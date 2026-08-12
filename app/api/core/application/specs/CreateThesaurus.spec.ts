@@ -11,7 +11,7 @@ import { ThesauriDataSourceFactory } from '#api/core/infrastructure/factories/Th
 import { DispatcherAdapter } from '#api/core/infrastructure/jobs/DispatcherAdapter.js';
 import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
-import { DefaultTranslationsDataSource } from '#api/i18n.v2/database/data_source_defaults.js';
+import { TranslationsServiceFactory } from '#api/core/infrastructure/factories/TranslationsServiceFactory.js';
 import { ThesauriDataSource } from '../contracts/ThesauriDataSource.js';
 import { CreateThesaurusUseCase } from '../CreateThesaurus.js';
 import { ThesauriService } from '../ThesauriService.js';
@@ -92,12 +92,12 @@ describe('CreateThesaurusUseCase', () => {
           const thesauriDS =
             props?.thesauriDS ?? ThesauriDataSourceFactory.default({ transactionManager });
           const settingsDS = SettingsDataSourceFactory.default({ transactionManager });
-          const translationsDS = DefaultTranslationsDataSource(transactionManager);
+          const translationsService = TranslationsServiceFactory.default({ transactionManager });
           const thesaurusTranslationService =
             props?.thesaurusTranslationService ??
             new ThesaurusTranslationService({
               settingsDS,
-              translationsDS,
+              translationsService,
             });
 
           const thesauriService = new ThesauriService({

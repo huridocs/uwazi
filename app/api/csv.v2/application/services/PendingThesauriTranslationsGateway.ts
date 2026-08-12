@@ -1,6 +1,6 @@
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
-import { TranslationsDataSource } from '#api/i18n.v2/contracts/TranslationsDataSource.js';
-import { Translation } from '#api/i18n.v2/model/Translation.js';
+import { TranslationsDataSource } from '#api/core/application/contracts/TranslationsDataSource.js';
+import { Translation } from '#api/core/domain/translation/Translation.js';
 
 const resolveContextLabel = async (
   translationsDS: TranslationsDataSource,

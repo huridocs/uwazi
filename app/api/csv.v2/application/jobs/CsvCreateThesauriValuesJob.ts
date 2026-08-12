@@ -19,6 +19,7 @@ import {
 } from '../../domain/CsvImportThesauriValues.js';
 import { CsvCreateRelationshipEntitiesJobHandler } from '../../infrastructure/jobHandlers/CsvCreateRelationshipEntitiesJobHandler.js';
 import { PendingThesauriValuesApplier } from '../services/PendingThesauriValuesApplier.js';
+import { UpdateEntriesByContextUseCaseFactory } from '#api/core/infrastructure/factories/UpdateEntriesByContextUseCaseFactory.js';
 import { Callbacks as BaseCallbacks } from './types/UseCaseCallbacks.js';
 import { CsvCleanupAwareJob } from './CsvCleanupAwareJob.js';
 
@@ -115,10 +116,18 @@ class CsvCreateThesauriValuesJob extends CsvCleanupAwareJob<Input, void, Deps> {
     updatedDoc: CsvImportThesauriValues;
   }> {
     const { pendingDoc, index, total, callbacks, tenantName, userId } = params;
-    const { diff, appliedValues } = await this.pendingValuesApplier.apply(pendingDoc, {
-      tenantName,
-      userId,
-    });
+    const { diff, appliedValues } = await this.transactionManager.run(async () =>
+      this.pendingValuesApplier.apply(pendingDoc, {
+        tenantName,
+        userId,
+      })
+    );
+    if (diff.valuesToAppend.length && Object.keys(diff.translations).length) {
+      await UpdateEntriesByContextUseCaseFactory.default().execute({
+        contextId: pendingDoc.thesaurusId,
+        keyValuePairsPerLanguage: diff.translations,
+      });
+    }
 
     const summary: PendingValuesDiffSummary = {
       observedValues: diff.observedValues,

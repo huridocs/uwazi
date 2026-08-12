@@ -1,7 +1,8 @@
 import { DeleteRelationshipTypeUseCase } from '#api/core/application/DeleteRelationshipType.js';
+import { RelationshipTypeTranslationService } from '#api/core/application/relationshipTypeTranslationService/RelationshipTypeTranslationService.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
-import { LegacyRelationshipTypesTranslationService } from '#api/core/infrastructure/mongodb/relationshipType/LegacyRelationshipTypesTranslationService.js';
 import { RelationshipTypesDataSourceFactory } from './RelationshipTypesDataSourceFactory.js';
+import { TranslationsServiceFactory } from './TranslationsServiceFactory.js';
 
 class DeleteRelationshipTypeUseCaseFactory {
   static default(
@@ -9,7 +10,9 @@ class DeleteRelationshipTypeUseCaseFactory {
   ) {
     const transactionManager = TransactionManagerFactory.default();
     const relationshipTypesDS = RelationshipTypesDataSourceFactory.default({ transactionManager });
-    const translationService = new LegacyRelationshipTypesTranslationService();
+    const translationService = new RelationshipTypeTranslationService({
+      translationsService: TranslationsServiceFactory.default({ transactionManager }),
+    });
 
     return new DeleteRelationshipTypeUseCase({
       transactionManager,

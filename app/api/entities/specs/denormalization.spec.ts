@@ -8,7 +8,7 @@ import { search } from '#api/search/index.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import db, { DBFixture } from '#api/utils/testing_db.js';
 
-import translations from '#api/i18n/translations.js';
+import { SaveLocaleTranslationsUseCaseFactory } from '#api/core/infrastructure/factories/SaveLocaleTranslationsUseCaseFactory.js';
 import { elasticTesting } from '#api/utils/elastic_testing.js';
 import { EntitySchema } from '#shared/types/entityType.js';
 import { getFixturesFactory } from '../../utils/fixturesFactory.js';
@@ -349,7 +349,6 @@ describe('Denormalize relationships', () => {
 
   describe('inherited select/multiselect (thesauri)', () => {
     beforeEach(async () => {
-      jest.spyOn(translations, 'updateContext').mockImplementation(async () => 'ok');
       const fixtures: DBFixture = {
         relationtypes: [factory.relationType('rel1')],
         templates: [
@@ -685,7 +684,7 @@ describe('Denormalize relationships', () => {
 
     it('should update entities when translating thesauri values', async () => {
       await testingEnvironment.runWithContext(async () =>
-        translations.save({
+        SaveLocaleTranslationsUseCaseFactory.default().execute({
           locale: 'es',
           contexts: [
             {

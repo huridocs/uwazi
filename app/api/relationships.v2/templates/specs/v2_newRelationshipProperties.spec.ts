@@ -3,7 +3,6 @@ import { ObjectId } from 'mongodb';
 import { ValidationError } from '#api/common.v2/validation/ValidationError.js';
 import entities from '#api/entities/index.js';
 import { EntityRelationshipsUpdateService } from '#api/entities.v2/services/EntityRelationshipsUpdateService.js';
-import translations from '#api/i18n/index.js';
 import { TemplateSchema } from '#api/migrations/migrations/143-parse-numeric-fields/types.js';
 import * as setupSockets from '#api/socketio/setupSockets.js';
 import { elasticTesting } from '#api/utils/elastic_testing.js';
@@ -146,8 +145,6 @@ const newQueryInDb = [
 describe.skip('template.save()', () => {
   beforeEach(async () => {
     jest.spyOn(setupSockets, 'emitToTenant').mockImplementation(async () => Promise.resolve());
-    jest.spyOn(translations, 'updateContext').mockImplementation(async () => 'ok');
-    // jest.spyOn(translations, 'save').mockImplementation(async () => 'ok');
     await testingEnvironment.setUp(fixtures, 'v2_new_relationship_properties.index');
   });
 

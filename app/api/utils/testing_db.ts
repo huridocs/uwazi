@@ -2,7 +2,7 @@ import { Db, ObjectId } from 'mongodb';
 import mongoose, { Connection } from 'mongoose';
 import path from 'path';
 import { setupTestUploadedPaths } from '#api/files/filesystem.js';
-import { TranslationDBO } from '#api/i18n.v2/schemas/TranslationDBO.js';
+import { TranslationDBO } from '#api/core/infrastructure/mongodb/translation/schemas/TranslationDBO.js';
 import { DB } from '#api/odm/index.js';
 import { UserDBO } from '#api/core/infrastructure/mongodb/user/UserDBO.js';
 import { models } from '#api/odm/model.js';

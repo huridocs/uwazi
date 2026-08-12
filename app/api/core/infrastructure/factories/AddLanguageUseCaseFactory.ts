@@ -1,9 +1,9 @@
 import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
-import { DefaultTranslationsDataSource } from '#api/i18n.v2/database/data_source_defaults.js';
+import { TranslationsDataSourceFactory } from '#api/core/infrastructure/factories/TranslationsDataSourceFactory.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { AddLanguageUseCase } from '#api/core/application/AddLanguage.js';
+import { ImportPredefinedTranslationsService } from '#api/core/application/translation/ImportPredefinedTranslationsService.js';
 import { SyncDispatcherForTests } from '#api/core/libs/queue/infrastructure/SyncDispatcherForTests.js';
-import { LegacyTranslationService } from '../mongodb/template/LegacyTemplatesTranslationService.js';
 import { DispatcherAdapter } from '../jobs/DispatcherAdapter.js';
 import { MongoTransactionManager } from '../mongodb/common/MongoTransactionManager.js';
 import { CloneLanguageEntitiesJob } from '../jobs/CloneLanguageEntitiesJob.js';
@@ -18,8 +18,8 @@ class AddLanguageUseCaseFactory {
     const { actor, tenant, eventEmitter } = ExecutionContext;
     const transactionManager = ExecutionContext.transactionManager as MongoTransactionManager;
     const settingsDS = SettingsDataSourceFactory.default({ transactionManager });
-    const translationsDS = DefaultTranslationsDataSource(transactionManager);
-    const translationService = new LegacyTranslationService();
+    const translationsDS = TranslationsDataSourceFactory.default({ transactionManager });
+    const importPredefinedTranslations = ImportPredefinedTranslationsService;
 
     const minutes60 = 60 * 60 * 1000;
     let jobsDispatcher: JobsDispatcher = UwaziDispatcherFactory(tenant.name, transactionManager, {
@@ -39,7 +39,7 @@ class AddLanguageUseCaseFactory {
         transactionManager,
         settingsDS,
         translationsDS,
-        translationService,
+        importPredefinedTranslations,
         eventEmitter,
         dispatcher,
         ...overrides,
