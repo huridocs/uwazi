@@ -5,12 +5,11 @@ import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common
 import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
 import { ThesauriDataSourceFactory } from '#api/core/infrastructure/factories/ThesauriDataSourceFactory.js';
 import { ThesauriDataSource } from '#api/core/application/contracts/ThesauriDataSource.js';
-import { TranslationsDataSourceFactory } from '#api/core/infrastructure/factories/TranslationsDataSourceFactory.js';
-import { TranslationsDataSource } from '#api/core/application/contracts/TranslationsDataSource.js';
 import { ThesauriService } from '#api/core/application/ThesauriService.js';
 import { ThesaurusTranslationService } from '#api/core/application/thesaurusTranslationService/ThesaurusTranslationService.js';
 import { DispatcherAdapter } from '#api/core/infrastructure/jobs/DispatcherAdapter.js';
 import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
+import { TranslationsServiceFactory } from '#api/core/infrastructure/factories/TranslationsServiceFactory.js';
 import { tenants } from '#api/tenants/tenantContext.js';
 import { CsvCreateThesauriValuesJob } from '../../application/jobs/CsvCreateThesauriValuesJob.js';
 import { CsvImportsDataSource } from '../../application/contracts/CsvImportsDataSource.js';
@@ -23,7 +22,6 @@ type FactoryOptions = {
   csvImportsDS?: CsvImportsDataSource;
   thesauriValuesDS?: CsvImportThesauriValuesDataSource;
   thesauriDS?: ThesauriDataSource;
-  translationsDS?: TranslationsDataSource;
 };
 
 class CsvCreateThesauriValuesJobFactory {
@@ -40,8 +38,8 @@ class CsvCreateThesauriValuesJobFactory {
         return mongoTransactionManager;
       }
       mongoTransactionManager =
-        options.transactionManager instanceof MongoTransactionManager
-          ? options.transactionManager
+        transactionManager instanceof MongoTransactionManager
+          ? transactionManager
           : TransactionManagerFactory.default();
       return mongoTransactionManager;
     };
@@ -56,10 +54,10 @@ class CsvCreateThesauriValuesJobFactory {
     const thesauriDS =
       options.thesauriDS ??
       ThesauriDataSourceFactory.default({ transactionManager: getMongoTransactionManager() });
-    const translationsDS =
-      options.translationsDS ??
-      TranslationsDataSourceFactory.default({ transactionManager: getMongoTransactionManager() });
     const settingsDS = SettingsDataSourceFactory.default({
+      transactionManager: getMongoTransactionManager(),
+    });
+    const translationsService = TranslationsServiceFactory.default({
       transactionManager: getMongoTransactionManager(),
     });
     const thesauriService = new ThesauriService({
@@ -67,7 +65,7 @@ class CsvCreateThesauriValuesJobFactory {
       thesauriDS,
       thesaurusTranslationService: new ThesaurusTranslationService({
         settingsDS,
-        translationsDS,
+        translationsService,
       }),
     });
 

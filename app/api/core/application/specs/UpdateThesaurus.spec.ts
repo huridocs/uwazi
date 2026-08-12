@@ -14,7 +14,7 @@ import { ThesauriDataSourceFactory } from '#api/core/infrastructure/factories/Th
 import { DispatcherAdapter } from '#api/core/infrastructure/jobs/DispatcherAdapter.js';
 import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
-import { TranslationsDataSourceFactory } from '#api/core/infrastructure/factories/TranslationsDataSourceFactory.js';
+import { TranslationsServiceFactory } from '#api/core/infrastructure/factories/TranslationsServiceFactory.js';
 import { tenants } from '#api/tenants/index.js';
 import { User } from '#api/users.v2/model/User.js';
 import { ThesauriService } from '../ThesauriService.js';
@@ -74,12 +74,12 @@ describe('UpdateThesaurusUseCase', () => {
           const thesauriDS =
             props?.thesauriDS ?? ThesauriDataSourceFactory.default({ transactionManager });
           const settingsDS = SettingsDataSourceFactory.default({ transactionManager });
-          const translationsDS = TranslationsDataSourceFactory.default({ transactionManager });
+          const translationsService = TranslationsServiceFactory.default({ transactionManager });
           const thesaurusTranslationService =
             props?.thesaurusTranslationService ??
             new ThesaurusTranslationService({
               settingsDS,
-              translationsDS,
+              translationsService,
             });
           const thesauriService = new ThesauriService({
             dispatcher,

@@ -12,7 +12,7 @@ import { ThesauriService } from '#api/core/application/ThesauriService.js';
 import { ThesauriDataSourceFactory } from '#api/core/infrastructure/factories/ThesauriDataSourceFactory.js';
 import { ThesaurusTranslationService } from '#api/core/application/thesaurusTranslationService/ThesaurusTranslationService.js';
 import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
-import { TranslationsDataSourceFactory } from '#api/core/infrastructure/factories/TranslationsDataSourceFactory.js';
+import { TranslationsServiceFactory } from '#api/core/infrastructure/factories/TranslationsServiceFactory.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { Thesaurus } from '#api/core/domain/thesaurus/Thesaurus.js';
 import { MongoThesaurusMapper } from '#api/core/infrastructure/mongodb/thesauri/MongoThesaurusMapper.js';
@@ -107,7 +107,7 @@ export const Preserve = {
       thesauriDS: ThesauriDataSourceFactory.default({ transactionManager }),
       thesaurusTranslationService: new ThesaurusTranslationService({
         settingsDS: SettingsDataSourceFactory.default({ transactionManager }),
-        translationsDS: TranslationsDataSourceFactory.default({ transactionManager }),
+        translationsService: TranslationsServiceFactory.default({ transactionManager }),
       }),
       dispatcher: new DispatcherAdapter(
         UwaziDispatcherFactory(tenants.current().name, transactionManager)

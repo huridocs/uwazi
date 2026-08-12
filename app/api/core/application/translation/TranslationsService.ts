@@ -1,6 +1,10 @@
 import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js';
 import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
-import { TranslationsDataSource } from '#api/core/application/contracts/TranslationsDataSource.js';
+import {
+  BulkDeleteKeysByContext,
+  TranslationsDataSource,
+  UpdateKeysByContextProps,
+} from '#api/core/application/contracts/TranslationsDataSource.js';
 import { flattenLocaleTranslation } from '#api/core/application/translation/localeTranslationDto.js';
 import {
   TranslationEntryInput,
@@ -72,6 +76,12 @@ class TranslationsService {
     await this.deps.validateTranslations.languagesExist(translations);
     await this.deps.validateTranslations.translationsWillExistsInAllLanguages(translations);
     return this.deps.translationsDS.insert(toDomainModels(translations));
+  }
+
+  /** Ambient insert of already-built domain models (thesaurus create/update). */
+  async insert(translations: Translation[]): Promise<Translation[]> {
+    this.ensureTransaction();
+    return this.deps.translationsDS.insert(translations);
   }
 
   async upsertEntries(translations: TranslationEntryInput[]): Promise<Translation[]> {
@@ -165,6 +175,26 @@ class TranslationsService {
   async deleteByLanguage(language: LanguageISO6391): Promise<void> {
     this.ensureTransaction();
     await this.deps.translationsDS.deleteByLanguage(language);
+  }
+
+  async deleteKeysByContext(contextId: string, keysToDelete: string[]): Promise<void> {
+    this.ensureTransaction();
+    await this.deps.translationsDS.deleteKeysByContext(contextId, keysToDelete);
+  }
+
+  async bulkDeleteKeysByContext(props: BulkDeleteKeysByContext): Promise<void> {
+    this.ensureTransaction();
+    await this.deps.translationsDS.bulkDeleteKeysByContext(props);
+  }
+
+  async updateKeysByContextV2(props: UpdateKeysByContextProps): Promise<void> {
+    this.ensureTransaction();
+    await this.deps.translationsDS.updateKeysByContextV2(props);
+  }
+
+  async updateContextLabel(contextId: string, contextLabel: string): Promise<void> {
+    this.ensureTransaction();
+    await this.deps.translationsDS.updateContextLabel(contextId, contextLabel);
   }
 }
 
