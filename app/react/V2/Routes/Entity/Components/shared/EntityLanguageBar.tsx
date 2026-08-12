@@ -89,7 +89,7 @@ const EntityLanguageBar = () => {
           aria-expanded={open}
           disabled={languageDisabled}
           onClick={() => setOpen(value => !value)}
-          className="inline-flex items-center gap-1.5 h-8 rounded-md bg-warm ps-2.5 pe-2 text-xs font-medium text-ink-secondary transition-colors hover:bg-parchment hover:text-ink disabled:opacity-60"
+          className="inline-flex h-8 items-center gap-1.5 rounded-md border border-border bg-warm ps-2.5 pe-2 text-xs font-medium text-ink-secondary transition-colors hover:bg-parchment hover:text-ink disabled:opacity-60"
         >
           {language.toUpperCase()}
           <ChevronDownIcon className="size-3.5 text-ink-tertiary" />

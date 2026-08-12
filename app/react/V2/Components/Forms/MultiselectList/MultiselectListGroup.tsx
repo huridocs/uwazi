@@ -1,6 +1,6 @@
 import React from 'react';
-import { Translate } from '#app/I18N/index.js';
 import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/24/outline';
+import { Translate } from '#app/I18N/index.js';
 
 interface MultiselectListButtonItemProps {
   children: React.ReactNode;
@@ -23,31 +23,37 @@ const MultiselectListGroup = ({
 }: MultiselectListButtonItemProps) => {
   if (foldable) {
     return (
-      <li className={`${itemClassName ?? 'bg-gray-50 rounded-lg mb-4'}`}>
+      <li className={`${itemClassName ?? 'mb-2 rounded-md bg-warm'}`}>
         <div
-          className={`flex justify-between p-3 mb-4 rounded-lg ${isOpen ? 'bg-indigo-50' : 'bg-gray-50'}`}
+          className={`mb-1 flex cursor-pointer items-center justify-between gap-2 rounded-md px-2.5 py-2 ${
+            isOpen ? 'bg-parchment' : 'bg-warm'
+          }`}
           onClick={onClick}
         >
-          <span className="block text-sm font-bold text-gray-900">{label}</span>
+          <span className="block text-sm font-semibold text-ink">{label}</span>
           <button
-            className="text-indigo-800 bg-indigo-200 rounded-[6px] text-xs font-medium px-1.5 py-0.5 flex flex-row items-center justify-center gap-1"
+            className="flex flex-row items-center justify-center gap-1 rounded-md bg-carbon/10 px-1.5 py-0.5 text-xs font-medium text-ink-secondary"
             type="button"
+            onClick={event => {
+              event.stopPropagation();
+              onClick();
+            }}
           >
-            <div className="w-3 h-3 text-sm">
+            <div className="h-3 w-3 text-sm">
               {isOpen ? <ChevronUpIcon /> : <ChevronDownIcon />}
             </div>
             <Translate>Group</Translate>
           </button>
         </div>
-        {isOpen && <ul className={`${itemContainerClassName ?? 'pl-4 '}`}>{children}</ul>}
+        {isOpen && <ul className={`${itemContainerClassName ?? 'space-y-1 ps-3'}`}>{children}</ul>}
       </li>
     );
   }
 
   return (
-    <li className={`${itemClassName ?? 'bg-gray-50 rounded-lg mb-4'}`}>
-      <span className="block mb-4 text-sm font-bold text-gray-900">{label}</span>
-      <ul className={`${itemContainerClassName ?? ''}`}>{children}</ul>
+    <li className={`${itemClassName ?? 'mb-2 rounded-md bg-warm px-2.5 py-2'}`}>
+      <span className="mb-1.5 block text-sm font-semibold text-ink">{label}</span>
+      <ul className={`${itemContainerClassName ?? 'space-y-1'}`}>{children}</ul>
     </li>
   );
 };

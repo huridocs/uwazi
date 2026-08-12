@@ -45,6 +45,16 @@ const update = async (file: FileType): Promise<FileType | FetchResponseError> =>
   }
 };
 
+const tocReviewed = async (fileId: string): Promise<FileType | FetchResponseError> => {
+  try {
+    const requestParams = new RequestParams({ fileId });
+    const { json: response } = await api.post('files/tocReviewed', requestParams);
+    return response;
+  } catch (e) {
+    return e;
+  }
+};
+
 const remove = async (_id: FileType['_id']): Promise<FileType | FetchResponseError> => {
   try {
     const requestParams = new RequestParams({ _id });
@@ -111,6 +121,7 @@ export {
   getById,
   getByType,
   update,
+  tocReviewed,
   remove,
   getPagePlaintext,
   getDocumentPlaintext,

@@ -12,6 +12,7 @@ import { MetadataTabFooter } from './footers/MetadataTabFooter.js';
 import { ToCTabFooter } from './footers/ToCTabFooter.js';
 import { RelationshipsTabFooter } from './footers/RelationshipsTabFooter.js';
 import { FileTabFooter } from './footers/FileTabFooter.js';
+import { FilesListSideFooter } from './footers/FilesListSideFooter.js';
 import { TranslationsTabFooter } from './footers/TranslationsTabFooter.js';
 import { SearchTabFooter } from './footers/SearchTabFooter.js';
 
@@ -36,19 +37,19 @@ const SideTabsFooters = ({ activeTabId: urlActiveTabId, mainDocument }: SideTabs
   switch (activeTabId) {
     case SIDE_TAB.DOCUMENT:
       if (!mainDocument?.filename) return null;
-      return <DocumentTabFooter mainDocument={mainDocument} />;
+      return <DocumentTabFooter mainDocument={mainDocument} inset="side" />;
     case SIDE_TAB.METADATA:
       return <MetadataTabFooter host="side" />;
     case SIDE_TAB.TOC:
       return <ToCTabFooter mainDocument={mainDocument} />;
     case SIDE_TAB.RELATIONSHIPS:
-      return <RelationshipsTabFooter />;
+      return <RelationshipsTabFooter inset="side" />;
     case SIDE_TAB.SEARCH:
       return <SearchTabFooter />;
     case SIDE_TAB.FILE:
       return <FileTabFooter />;
     case SIDE_TAB.FILES:
-      return null;
+      return <FilesListSideFooter />;
     case SIDE_TAB.TRANSLATIONS:
       return <TranslationsTabFooter />;
     default:
