@@ -154,7 +154,10 @@ class PostgresUsersDAO extends PostgresDataSource<UserRow> {
   async matchEmailOrUsername(term: string): Promise<UserRow[]> {
     const query = this.notPublicUser(
       this.notDeleted(
-        this.table.whereRaw('lower(username) = lower(?) OR lower(email) = lower(?)', [
+        // The OR must stay parenthesised: knex does not wrap whereRaw, so without the
+        // parens `AND` would bind tighter and the notDeleted/notPublicUser guards below
+        // would only apply to the email branch.
+        this.table.whereRaw('(lower(username) = lower(?) OR lower(email) = lower(?))', [
           term,
           term,
         ])

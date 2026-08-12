@@ -8,8 +8,6 @@ import { UserDBO } from './UserDBO.js';
 import { PUBLIC_USER_ID } from '#api/core/domain/user/User.js';
 import { UserNotFound } from '#api/core/domain/user/errors.js';
 
-type UserWithGroups = UserDBO & { groups: { _id: string; name: string }[] };
-
 type Deps = {
   db: Db;
   transactionManager: TransactionManager;
@@ -169,41 +167,13 @@ class MongoUsersDAO extends MongoDataSource<UserDBO> {
 
     const { includeDeleted } = options;
     const filter: Filter<UserDBO> = {
-      _id: { $in: ids.map(id => ObjectId.createFromHexString(id)) },
-      ...this.NOT_PUBLIC_USER_FILTER,
+      _id: { $in: ids.map(id => ObjectId.createFromHexString(id)), $ne: PUBLIC_USER_ID },
       ...(includeDeleted ? {} : this.NOT_DELETED_FILTER),
     };
 
     return this.getCollection<UserDBO>()
       .find(filter, { projection: this.CREDENTIAL_FIELDS_EXCLUSION })
       .toArray();
-  }
-
-  async get(query: Filter<UserDBO> = {}): Promise<UserWithGroups[]> {
-    const aggregation = [
-      {
-        $match: {
-          ...query,
-          ...this.getGuards(),
-        },
-      },
-      {
-        $project: { _id: 1, username: 1, role: 1, email: 1, using2fa: 1, accountLocked: 1 },
-      },
-      {
-        $lookup: {
-          from: 'usergroups',
-          let: { userId: { $toString: '$_id' } },
-          pipeline: [
-            { $match: { $expr: { $in: ['$$userId', '$members.refId'] } } },
-            { $project: { _id: { $toString: '$_id' }, name: 1 } },
-          ],
-          as: 'groups',
-        },
-      },
-    ];
-
-    return this.getCollection().aggregate<UserWithGroups>(aggregation).toArray();
   }
 }
 

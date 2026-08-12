@@ -1,9 +1,7 @@
 import { HeartbeatCallback } from '#api/core/libs/queue/application/contracts/Dispatchable.js';
-import { ObjectId } from 'mongodb';
 import { UsersDAOFactory } from '#api/core/infrastructure/factories/UsersDAOFactory.js';
 import { EmailSender } from '#api/core/application/contracts/EmailSender.js';
 import { passwordRecoveryEmail } from '#api/core/domain/email/templates/passwordRecoveryEmail.js';
-import { UserNotFound } from '#api/core/domain/user/errors.js';
 import { UwaziJobHandler, UwaziJobParams } from '#api/core/infrastructure/jobs/UwaziJobHandler.js';
 import { PrivilegedJob } from '#api/core/infrastructure/jobs/PrivilegedJob.js';
 
@@ -20,13 +18,10 @@ class SendPasswordRecoveryEmailHandler extends UwaziJobHandler<SendPasswordRecov
   }
 
   async handle(_heartbeat: HeartbeatCallback, params: SendPasswordRecoveryEmailHandlerParams) {
-    const user = await UsersDAOFactory.default().findOne({
-      _id: ObjectId.createFromHexString(params.userId),
-    });
-
-    if (!user) {
-      throw new UserNotFound(params.userId);
-    }
+    // getById, not findOne: it takes a hex string and each DAO converts it for its own
+    // backend. Passing an ObjectId straight through matches in Mongo but silently matches
+    // nothing against Postgres' text `_id`. It also limits the row to non-credential columns.
+    const user = (await UsersDAOFactory.default().getById(params.userId)).getDataOrThrow();
 
     const message = passwordRecoveryEmail({
       to: user.email,
