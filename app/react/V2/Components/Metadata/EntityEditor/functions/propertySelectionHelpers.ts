@@ -83,6 +83,16 @@ const clearDraftSelection = (
   ];
 };
 
+const appendHighlights = (
+  target: PropertySelectionHighlights,
+  source: { [page: string]: TextHighlight[] } | PropertySelectionHighlights
+) => {
+  Object.entries(source).forEach(([page, pageHighlights]) => {
+    const pageNumber = Number(page);
+    target[pageNumber] = [...(target[pageNumber] || []), ...pageHighlights];
+  });
+};
+
 const buildPropertySelectionHighlights = (
   selections: LabeledPropertySelection[]
 ): PropertySelectionHighlights => {
@@ -95,13 +105,32 @@ const buildPropertySelectionHighlights = (
       selection.name || '',
       color
     );
-    Object.entries(fromFile).forEach(([page, pageHighlights]) => {
-      const pageNumber = Number(page);
-      highlights[pageNumber] = [...(highlights[pageNumber] || []), ...pageHighlights];
-    });
+    appendHighlights(highlights, fromFile);
   });
 
   return highlights;
+};
+
+const buildPendingPdfSelectionHighlights = (
+  selection: TextSelection | undefined
+): PropertySelectionHighlights | undefined => {
+  if (!selection?.selectionRectangles?.length) return undefined;
+  const highlights: PropertySelectionHighlights = {};
+  appendHighlights(
+    highlights,
+    selectionHandlers.getHighlightsFromSelection(selection, PDF_SELECTION_COLORS.draft)
+  );
+  return Object.keys(highlights).length ? highlights : undefined;
+};
+
+const mergeHighlightMaps = (
+  ...maps: (PropertySelectionHighlights | undefined)[]
+): PropertySelectionHighlights | undefined => {
+  const merged: PropertySelectionHighlights = {};
+  maps.forEach(map => {
+    if (map) appendHighlights(merged, map);
+  });
+  return Object.keys(merged).length ? merged : undefined;
 };
 
 export {
@@ -111,5 +140,7 @@ export {
   upsertDraftSelection,
   clearDraftSelection,
   buildPropertySelectionHighlights,
+  buildPendingPdfSelectionHighlights,
+  mergeHighlightMaps,
 };
 export type { LabeledPropertySelection, PropertySelectionHighlights };

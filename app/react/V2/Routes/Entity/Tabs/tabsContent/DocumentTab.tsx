@@ -11,7 +11,6 @@ import {
 } from '#V2/Routes/Entity/Components/document/index.js';
 import { useEntityLanguage } from '#V2/Routes/Entity/Components/context/index.js';
 import { useDocumentPdfView } from '../hooks/useDocumentPdfView.js';
-import { usePropertySelectionHighlights } from '../hooks/usePropertySelectionHighlights.js';
 import { useRailInset } from '../hooks/useRailInset.js';
 
 type DocumentTabProps = {
@@ -47,9 +46,8 @@ const DocumentTab = ({
     handleClusterClick,
     handleClusterMoreClick,
     onPdfReady,
+    propertySelectionHighlights,
   } = useDocumentPdfView({ mainDocument, entity });
-
-  const propertySelectionHighlights = usePropertySelectionHighlights();
 
   const isMobile = useIsMobile();
   const { isRtl } = useEntityLanguage();

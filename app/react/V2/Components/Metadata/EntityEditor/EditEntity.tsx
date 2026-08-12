@@ -6,7 +6,6 @@ import { extractUploadIdFromMediaValue } from '#shared/entitySave/mediaMetadata.
 import { templatesAtom } from '#V2/atoms/templatesAtom.js';
 import { thesauriAtom } from '#V2/atoms/thesauriAtom.js';
 import type { MetadataValue } from '#V2/formatters/types.js';
-import { useDocumentPdf, useEntityLanguage } from '#V2/Routes/Entity/Components/context/index.js';
 import { MultiselectListOption } from '../../Forms/index.js';
 import { TitleField, IconField, EntityFileFields, TemplateField } from './Components/index.js';
 import { EditEntityPropertyField } from './EditEntityPropertyField.js';
@@ -18,6 +17,7 @@ import {
 import {
   buildEditEntitySaveInput,
   planSharedMetadataSync,
+  isEntityEditorDirty,
 } from './functions/editEntityMetadata.js';
 import {
   applyEditEntityErrors,
@@ -34,6 +34,7 @@ import {
   defaultRelationshipLookup,
   mergeRelationshipLookupOptions,
 } from './functions/relationshipFieldHelpers.js';
+import { defaultPdfFillHost, PdfFillProvider } from './Components/EntityPdfFill.js';
 
 /* eslint-disable max-statements -- orchestrator: watches, sync effects, submit, lookup cache */
 const EditEntity = ({
@@ -48,6 +49,8 @@ const EditEntity = ({
   onEditSource,
   relationshipLookup = defaultRelationshipLookup,
   documentMutations,
+  pdfFill = defaultPdfFillHost,
+  mainDocumentId,
 }: EditEntityProps) => {
   const templates = useAtomValue(templatesAtom);
   const thesauri = useAtomValue(thesauriAtom);
@@ -55,13 +58,11 @@ const EditEntity = ({
   const selectedTemplate = useWatch({ control, name: 'template' });
   const metadata = useWatch({ control, name: 'metadata' });
   const previousTemplateRef = useRef(selectedTemplate);
-  const { draftPropertySelections } = useDocumentPdf();
-  const { mainDocument } = useEntityLanguage();
-  const mainDocumentId = mainDocument?._id;
+  const { draftPropertySelections } = pdfFill;
 
   useEffect(() => {
-    onDirtyChange?.(formState.isDirty);
-  }, [formState.isDirty, onDirtyChange]);
+    onDirtyChange?.(isEntityEditorDirty(formState.isDirty, draftPropertySelections.length));
+  }, [formState.isDirty, draftPropertySelections.length, onDirtyChange]);
 
   const availableTemplates = useMemo(
     () =>
@@ -194,58 +195,60 @@ const EditEntity = ({
   );
 
   return (
-    <form
-      id={formId}
-      onSubmit={submit}
-      className="flex w-full min-w-0 flex-col gap-3 font-sans text-base text-ink"
-      data-testid="entity-edit-form"
-    >
-      <TitleField<EditEntityFormValues>
-        context="System"
-        label="Title"
-        field="title"
-        registerOptions={{ required: true }}
-        disabled={disabled}
-      />
-      <IconField disabled={disabled} />
-      <TemplateField<EditEntityFormValues>
-        context="System"
-        label="Template"
-        field="template"
-        registerOptions={{ required: true }}
-        disabled={disabled}
-        options={availableTemplates}
-        hideFilters
-      />
-      {isMetadataReady && (
-        <Fragment key={selectedTemplate}>
-          {displayProperties.map(property => (
-            <div key={property._id} className="flex flex-col gap-1">
-              <EditEntityPropertyField
-                property={property}
-                disabled={disabled}
-                activeTemplateId={activeTemplate?._id ?? ''}
-                thesauri={thesauri}
-                templates={templates}
-                metadataProperties={metadataProperties}
-                metadata={metadata}
-                entityMetadata={entity?.metadata}
-                entitySharedId={entity?.sharedId ?? 'NEW_ENTITY'}
-                firstEditableRelationshipId={firstEditableRelationshipId}
-                entityAttachments={entityAttachments}
-                pendingAttachments={pendingAttachments}
-                registerPendingAttachment={registerPendingAttachment}
-                removePendingAttachmentIfUnused={removePendingAttachmentIfUnused}
-                onEditSource={onEditSource}
-                relationshipLookup={relationshipLookup}
-                relationshipLookupSearch={relationshipLookupSearch}
-              />
-            </div>
-          ))}
-        </Fragment>
-      )}
-      <EntityFileFields entity={entity} disabled={disabled} mutations={documentMutations} />
-    </form>
+    <PdfFillProvider value={pdfFill}>
+      <form
+        id={formId}
+        onSubmit={submit}
+        className="flex w-full min-w-0 flex-col gap-3 font-sans text-base text-ink"
+        data-testid="entity-edit-form"
+      >
+        <TitleField<EditEntityFormValues>
+          context="System"
+          label="Title"
+          field="title"
+          registerOptions={{ required: true }}
+          disabled={disabled}
+        />
+        <IconField disabled={disabled} />
+        <TemplateField<EditEntityFormValues>
+          context="System"
+          label="Template"
+          field="template"
+          registerOptions={{ required: true }}
+          disabled={disabled}
+          options={availableTemplates}
+          hideFilters
+        />
+        {isMetadataReady && (
+          <Fragment key={selectedTemplate}>
+            {displayProperties.map(property => (
+              <div key={property._id} className="flex flex-col gap-1">
+                <EditEntityPropertyField
+                  property={property}
+                  disabled={disabled}
+                  activeTemplateId={activeTemplate?._id ?? ''}
+                  thesauri={thesauri}
+                  templates={templates}
+                  metadataProperties={metadataProperties}
+                  metadata={metadata}
+                  entityMetadata={entity?.metadata}
+                  entitySharedId={entity?.sharedId ?? 'NEW_ENTITY'}
+                  firstEditableRelationshipId={firstEditableRelationshipId}
+                  entityAttachments={entityAttachments}
+                  pendingAttachments={pendingAttachments}
+                  registerPendingAttachment={registerPendingAttachment}
+                  removePendingAttachmentIfUnused={removePendingAttachmentIfUnused}
+                  onEditSource={onEditSource}
+                  relationshipLookup={relationshipLookup}
+                  relationshipLookupSearch={relationshipLookupSearch}
+                />
+              </div>
+            ))}
+          </Fragment>
+        )}
+        <EntityFileFields entity={entity} disabled={disabled} mutations={documentMutations} />
+      </form>
+    </PdfFillProvider>
   );
 };
 

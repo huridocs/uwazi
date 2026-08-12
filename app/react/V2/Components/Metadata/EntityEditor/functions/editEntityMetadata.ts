@@ -91,6 +91,9 @@ const buildEditEntitySaveInput = ({
   return saved;
 };
 
+const isEntityEditorDirty = (formIsDirty: boolean, draftPropertySelectionsCount: number) =>
+  formIsDirty || draftPropertySelectionsCount > 0;
+
 const mergeSharedFormMetadata = (
   current: Record<string, MetadataValue[] | undefined>,
   metadataProperties: FormMetadataProperty[],
@@ -147,5 +150,6 @@ export {
   buildEditEntitySaveInput,
   mergeSharedFormMetadata,
   planSharedMetadataSync,
+  isEntityEditorDirty,
 };
 export type { SharedMetadataSync };

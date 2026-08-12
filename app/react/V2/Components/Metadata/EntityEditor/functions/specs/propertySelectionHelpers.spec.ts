@@ -3,8 +3,10 @@
  */
 import type { TextSelection } from '@huridocs/react-text-selection-handler';
 import {
+  buildPendingPdfSelectionHighlights,
   buildPropertySelectionHighlights,
   clearDraftSelection,
+  mergeHighlightMaps,
   mergePropertySelections,
   propertyHasSelection,
   PDF_SELECTION_COLORS,
@@ -130,6 +132,39 @@ describe('propertySelectionHelpers', () => {
       ]);
 
       expect(highlights[1]?.map(h => h.color)).toEqual([
+        PDF_SELECTION_COLORS.saved,
+        PDF_SELECTION_COLORS.draft,
+      ]);
+    });
+  });
+
+  describe('pending pdf selection highlights', () => {
+    it('builds draft-colored highlights from the live selection', () => {
+      const highlights = buildPendingPdfSelectionHighlights(rectSelection('live'));
+      expect(highlights?.[1]?.[0]?.color).toBe(PDF_SELECTION_COLORS.draft);
+      expect(highlights?.[1]?.[0]?.textSelection.text).toBe('live');
+    });
+
+    it('returns undefined without rectangles', () => {
+      expect(
+        buildPendingPdfSelectionHighlights({ text: 'x', selectionRectangles: [] })
+      ).toBeUndefined();
+    });
+
+    it('merges pending selection onto property highlights', () => {
+      const property = buildPropertySelectionHighlights([
+        {
+          name: 'title',
+          isSaved: true,
+          selection: {
+            text: 'saved',
+            selectionRectangles: [{ top: 1, left: 1, width: 2, height: 2, page: '1' }],
+          },
+        },
+      ]);
+      const pending = buildPendingPdfSelectionHighlights(rectSelection('pending'));
+      const merged = mergeHighlightMaps(property, pending);
+      expect(merged?.[1]?.map(h => h.color)).toEqual([
         PDF_SELECTION_COLORS.saved,
         PDF_SELECTION_COLORS.draft,
       ]);

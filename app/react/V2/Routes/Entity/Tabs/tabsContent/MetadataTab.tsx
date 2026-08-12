@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
 import { useRevalidator } from 'react-router';
 import { useAtomValue } from 'jotai';
 import type { Entity } from '#V2/api/entities/types.js';
@@ -14,11 +14,13 @@ import {
   useEntityOverlay,
   useEntityContext,
   useEntityLanguage,
+  useDocumentPdf,
   type MetadataEditingHost,
 } from '#V2/Routes/Entity/Components/context/index.js';
 import { entityLoaderCache } from '#V2/Routes/Entity/EntityLoaderCache.js';
 import { useServices } from '#V2/services/index.js';
 import type { EntitySaveInput } from '#V2/services/index.js';
+import type { PdfFillHost } from '#V2/Components/Metadata/EntityEditor/Components/EntityPdfFill.js';
 import { useDocumentFieldMutations } from './useDocumentFieldMutations.js';
 
 type MetadataTabProps = {
@@ -30,7 +32,7 @@ const MetadataTab = ({ entity, host }: MetadataTabProps) => {
   const { entities } = useServices();
   const templates = useAtomValue(templatesAtom);
   const { setEntity } = useEntityContext();
-  const { language } = useEntityLanguage();
+  const { language, mainDocument } = useEntityLanguage();
   const {
     isEditing,
     isSaving,
@@ -48,9 +50,55 @@ const MetadataTab = ({ entity, host }: MetadataTabProps) => {
     tryBeginSave,
     endSave,
   } = useMetadataEditing();
+  const {
+    documentPdfSelection,
+    draftPropertySelections,
+    upsertPropertySelection,
+    clearPropertySelection,
+    setDocumentPdfSelection,
+    setPdfSelectionMenuOpen,
+  } = useDocumentPdf();
   const { openEntityOverlayTarget } = useEntityOverlay();
   const revalidator = useRevalidator();
   const showEditor = isEditing && formMountHost === host;
+
+  const setPdfSelection = useCallback(
+    (selection: Parameters<PdfFillHost['setDocumentPdfSelection']>[0]) => {
+      setDocumentPdfSelection(selection);
+    },
+    [setDocumentPdfSelection]
+  );
+  const setPdfMenuOpen = useCallback(
+    (open: boolean) => {
+      setPdfSelectionMenuOpen(open);
+    },
+    [setPdfSelectionMenuOpen]
+  );
+
+  const pdfFill: PdfFillHost = useMemo(
+    () => ({
+      isEditing,
+      language,
+      savedPropertySelections: mainDocument?.propertySelections,
+      documentPdfSelection,
+      draftPropertySelections,
+      upsertPropertySelection,
+      clearPropertySelection,
+      setDocumentPdfSelection: setPdfSelection,
+      setPdfSelectionMenuOpen: setPdfMenuOpen,
+    }),
+    [
+      clearPropertySelection,
+      documentPdfSelection,
+      draftPropertySelections,
+      isEditing,
+      language,
+      mainDocument?.propertySelections,
+      setPdfMenuOpen,
+      setPdfSelection,
+      upsertPropertySelection,
+    ]
+  );
 
   const refreshEntity = useCallback(async () => {
     entityLoaderCache.invalidateEntity(entity.sharedId);
@@ -139,6 +187,8 @@ const MetadataTab = ({ entity, host }: MetadataTabProps) => {
             disabled={isSaving}
             errors={editErrors}
             onDirtyChange={setIsDirty}
+            pdfFill={pdfFill}
+            mainDocumentId={mainDocument?._id}
             onEditSource={(sharedId, title, templateId) =>
               openEntityOverlayTarget({
                 sharedId,

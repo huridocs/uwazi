@@ -1,14 +1,13 @@
-import React, { useCallback } from 'react';
+import React, { createContext, useCallback, useContext, useRef, useState } from 'react';
 import { ViewfinderCircleIcon } from '@heroicons/react/20/solid';
+import type { TextSelection } from '@huridocs/react-text-selection-handler';
+import type { FieldValues, Path, PathValue, UseFormSetValue } from 'react-hook-form';
 import { t, Translate } from '#app/I18N/index.js';
+import type { PropertySelectionSchema } from '#shared/types/commonTypes.js';
 import { coerceValue } from '#V2/api/entities/index.js';
-import {
-  useDocumentPdf,
-  useEntityLanguage,
-  useMetadataEditing,
-} from '#V2/Routes/Entity/Components/context/index.js';
 import { notify } from '#V2/utils/notifyBridge.js';
 import { propertyHasSelection } from '../functions/propertySelectionHelpers.js';
+import { EntityField } from './EntityField.js';
 
 type PdfFillCoerceType = 'text' | 'date' | 'numeric';
 
@@ -18,6 +17,21 @@ type PdfFillTarget = {
   coerceType: PdfFillCoerceType;
 };
 
+type PdfFillHost = {
+  isEditing: boolean;
+  language: string;
+  savedPropertySelections?: PropertySelectionSchema[];
+  documentPdfSelection: TextSelection | undefined;
+  draftPropertySelections: PropertySelectionSchema[];
+  upsertPropertySelection: (
+    property: { name: string; id?: string },
+    selection: TextSelection
+  ) => void;
+  clearPropertySelection: (property: { name: string; id?: string }) => void;
+  setDocumentPdfSelection: (selection: TextSelection | undefined) => void;
+  setPdfSelectionMenuOpen: (open: boolean) => void;
+};
+
 type EntityPdfFillProps = {
   target: PdfFillTarget;
   disabled?: boolean;
@@ -25,64 +39,116 @@ type EntityPdfFillProps = {
   children: (overlay: React.ReactNode) => React.ReactNode;
 };
 
+type EntityPdfFillFieldProps<TFormValues extends FieldValues> = {
+  field: Path<TFormValues>;
+  setValue: UseFormSetValue<TFormValues>;
+  disabled?: boolean;
+  pdfFill?: PdfFillTarget;
+  children: (overlay?: React.ReactNode) => React.ReactNode;
+};
+
+const noop = () => undefined;
+
+const defaultPdfFillHost: PdfFillHost = {
+  isEditing: false,
+  language: 'en',
+  documentPdfSelection: undefined,
+  draftPropertySelections: [],
+  upsertPropertySelection: noop,
+  clearPropertySelection: noop,
+  setDocumentPdfSelection: noop,
+  setPdfSelectionMenuOpen: noop,
+};
+
+const PdfFillContext = createContext<PdfFillHost>(defaultPdfFillHost);
+
+const PdfFillProvider = ({
+  value,
+  children,
+}: {
+  value: PdfFillHost;
+  children: React.ReactNode;
+}) => <PdfFillContext.Provider value={value}>{children}</PdfFillContext.Provider>;
+
+const usePdfFill = () => useContext(PdfFillContext);
+
+const applyPdfFillFormValue = <TFormValues extends FieldValues>(
+  setValue: UseFormSetValue<TFormValues>,
+  field: Path<TFormValues>,
+  value: string | number
+) => {
+  setValue(field, value as PathValue<TFormValues, Path<TFormValues>>, { shouldDirty: true });
+};
+
 const sanitizeText = (text: string) => text.replace(/[\n\r]+/g, ' ');
 
 const EntityPdfFill = ({ target, disabled, applyValue, children }: EntityPdfFillProps) => {
-  const { isEditing } = useMetadataEditing();
-  const { language, mainDocument } = useEntityLanguage();
   const {
+    isEditing,
+    language,
+    savedPropertySelections,
     documentPdfSelection,
     draftPropertySelections,
     upsertPropertySelection,
     clearPropertySelection,
     setDocumentPdfSelection,
     setPdfSelectionMenuOpen,
-  } = useDocumentPdf();
+  } = usePdfFill();
+  const [isFilling, setIsFilling] = useState(false);
+  const fillInFlight = useRef(false);
 
   const { name: propertyName, propertyId, coerceType } = target;
   const showFill = Boolean(isEditing && documentPdfSelection && !disabled);
   const showClear =
     Boolean(isEditing && !disabled) &&
-    propertyHasSelection(mainDocument?.propertySelections, draftPropertySelections, {
+    propertyHasSelection(savedPropertySelections, draftPropertySelections, {
       name: propertyName,
       id: propertyId,
     });
 
   const onFill = useCallback(async () => {
-    if (!documentPdfSelection) return;
+    if (!documentPdfSelection || fillInFlight.current) return;
 
     if (!documentPdfSelection.selectionRectangles?.length) {
       notify(
         t('System', 'Could not detect the area for the selected text', null, false),
         'warning'
       );
+      return;
     }
 
-    upsertPropertySelection({ name: propertyName, id: propertyId }, documentPdfSelection);
+    fillInFlight.current = true;
+    setIsFilling(true);
 
-    const rawText = documentPdfSelection.text || '';
-    if (coerceType === 'text') {
-      applyValue(sanitizeText(rawText));
-    } else {
-      const coerced = await coerceValue(
-        coerceType === 'numeric' ? rawText.trim() : rawText,
-        coerceType,
-        language
-      );
-
-      if (!coerced?.success) {
-        notify(
-          t('System', 'Value cannot be transformed to the correct type', null, false),
-          'danger'
+    try {
+      const rawText = documentPdfSelection.text || '';
+      if (coerceType === 'text') {
+        applyValue(sanitizeText(rawText));
+      } else {
+        const coerced = await coerceValue(
+          coerceType === 'numeric' ? rawText.trim() : rawText,
+          coerceType,
+          language
         );
-        return;
+
+        if (!coerced?.success) {
+          notify(
+            t('System', 'Value cannot be transformed to the correct type', null, false),
+            'danger'
+          );
+          return;
+        }
+
+        applyValue(coerced.value);
       }
 
-      applyValue(coerced.value);
+      upsertPropertySelection({ name: propertyName, id: propertyId }, documentPdfSelection);
+      setDocumentPdfSelection(undefined);
+      setPdfSelectionMenuOpen(false);
+    } finally {
+      fillInFlight.current = false;
+      setIsFilling(false);
     }
-
-    setDocumentPdfSelection(undefined);
-    setPdfSelectionMenuOpen(false);
   }, [
     applyValue,
     coerceType,
@@ -99,13 +165,15 @@ const EntityPdfFill = ({ target, disabled, applyValue, children }: EntityPdfFill
     clearPropertySelection({ name: propertyName, id: propertyId });
   }, [clearPropertySelection, propertyId, propertyName]);
 
+  const fillDisabled = Boolean(disabled || isFilling);
+
   return (
     <>
       {children(
         showFill ? (
           <button
             type="button"
-            disabled={disabled}
+            disabled={fillDisabled}
             onClick={() => {
               void onFill();
             }}
@@ -133,5 +201,34 @@ const EntityPdfFill = ({ target, disabled, applyValue, children }: EntityPdfFill
   );
 };
 
-export { EntityPdfFill };
-export type { PdfFillTarget, PdfFillCoerceType };
+const EntityPdfFillField = <TFormValues extends FieldValues>({
+  field,
+  setValue,
+  disabled,
+  pdfFill,
+  children,
+}: EntityPdfFillFieldProps<TFormValues>) => (
+  <EntityField>
+    {pdfFill ? (
+      <EntityPdfFill
+        target={pdfFill}
+        disabled={disabled}
+        applyValue={value => applyPdfFillFormValue(setValue, field, value)}
+      >
+        {overlay => children(overlay)}
+      </EntityPdfFill>
+    ) : (
+      children()
+    )}
+  </EntityField>
+);
+
+export {
+  EntityPdfFill,
+  EntityPdfFillField,
+  PdfFillProvider,
+  usePdfFill,
+  defaultPdfFillHost,
+  applyPdfFillFormValue,
+};
+export type { PdfFillTarget, PdfFillCoerceType, PdfFillHost };

@@ -8,7 +8,9 @@ import * as entitiesAPI from '#V2/api/entities/index.js';
 import { notify } from '#V2/utils/notifyBridge.js';
 import { TitleField } from '../TitleField.js';
 import { TextField } from '../TextField.js';
+import { DateField } from '../DateField.js';
 import type { EditEntityFormValues } from '../../functions/buildEditEntityDefaultValues.js';
+import { PdfFillProvider, type PdfFillHost } from '../EntityPdfFill.js';
 
 const upsertPropertySelection = jest.fn();
 const clearPropertySelection = jest.fn();
@@ -31,7 +33,7 @@ let mockSelection:
   selectionRectangles: [{ top: 1, left: 2, width: 10, height: 4, regionId: '1' }],
 };
 
-let mockDraft: unknown[] = [];
+let mockDraft: PdfFillHost['draftPropertySelections'] = [];
 const mockSaved = [
   {
     name: 'simple_text',
@@ -56,21 +58,17 @@ jest.mock('#V2/api/entities/index.js', () => ({
   coerceValue: jest.fn(),
 }));
 
-jest.mock('#V2/Routes/Entity/Components/context/index.js', () => ({
-  useMetadataEditing: () => ({ isEditing: true }),
-  useEntityLanguage: () => ({
-    language: 'en',
-    mainDocument: { _id: 'file-1', propertySelections: mockSaved },
-  }),
-  useDocumentPdf: () => ({
-    documentPdfSelection: mockSelection,
-    draftPropertySelections: mockDraft,
-    upsertPropertySelection,
-    clearPropertySelection,
-    setDocumentPdfSelection,
-    setPdfSelectionMenuOpen,
-  }),
-}));
+const pdfFillHost = (): PdfFillHost => ({
+  isEditing: true,
+  language: 'en',
+  savedPropertySelections: mockSaved,
+  documentPdfSelection: mockSelection,
+  draftPropertySelections: mockDraft,
+  upsertPropertySelection,
+  clearPropertySelection,
+  setDocumentPdfSelection,
+  setPdfSelectionMenuOpen,
+});
 
 const Host = ({ children }: { children: React.ReactNode }) => {
   const form = useForm<EditEntityFormValues>({
@@ -79,12 +77,18 @@ const Host = ({ children }: { children: React.ReactNode }) => {
       template: 'tpl-1',
       showIcon: false,
       icon: { _id: null, type: '', label: '' },
-      metadata: { simple_text: [{ value: '' }] },
+      metadata: {
+        simple_text: [{ value: '' }],
+        numeric_prop: [{ value: '' }],
+        date_prop: [{ value: null }],
+      },
     },
   });
   return (
     // eslint-disable-next-line react/jsx-props-no-spreading
-    <FormProvider {...form}>{children}</FormProvider>
+    <FormProvider {...form}>
+      <PdfFillProvider value={pdfFillHost()}>{children}</PdfFillProvider>
+    </FormProvider>
   );
 };
 
@@ -147,7 +151,7 @@ describe('Entity PDF Click to fill', () => {
     });
   });
 
-  it('warns when selection has no rectangles', async () => {
+  it('warns and skips fill when selection has no rectangles', async () => {
     mockSelection = { text: 'no boxes', selectionRectangles: [] };
 
     render(
@@ -163,6 +167,48 @@ describe('Entity PDF Click to fill', () => {
         'Could not detect the area for the selected text',
         'warning'
       );
+      expect(upsertPropertySelection).not.toHaveBeenCalled();
+      expect(screen.getByRole('textbox')).toHaveValue('');
+    });
+  });
+
+  it('ignores a second click while coerce is in flight', async () => {
+    let resolveCoerce: (value: { success: string; value: number }) => void = () => undefined;
+    jest.mocked(entitiesAPI.coerceValue).mockImplementation(
+      () =>
+        new Promise(resolve => {
+          resolveCoerce = resolve;
+        })
+    );
+
+    mockSelection = {
+      text: '42',
+      selectionRectangles: [{ top: 1, left: 2, width: 10, height: 4, regionId: '1' }],
+    };
+
+    render(
+      <Host>
+        <TextField<EditEntityFormValues>
+          context="tpl-1"
+          label="Numeric"
+          field="metadata.numeric_prop.0.value"
+          type="number"
+          pdfFill={{ name: 'numeric_prop', propertyId: 'num-1', coerceType: 'numeric' }}
+        />
+      </Host>
+    );
+
+    const fill = screen.getByTestId('click-to-fill');
+    fireEvent.click(fill);
+    fireEvent.click(fill);
+
+    expect(entitiesAPI.coerceValue).toHaveBeenCalledTimes(1);
+
+    resolveCoerce({ success: 'true', value: 42 });
+
+    await waitFor(() => {
+      expect(upsertPropertySelection).toHaveBeenCalledTimes(1);
+      expect(screen.getByRole('spinbutton')).toHaveValue(42);
     });
   });
 
@@ -176,5 +222,103 @@ describe('Entity PDF Click to fill', () => {
     const fill = screen.getByTestId('click-to-fill');
     expect(fill.parentElement?.getAttribute('role')).not.toBe('button');
     expect(container.querySelectorAll('[role="button"]')).toHaveLength(0);
+  });
+
+  it('coerces numeric selection then upserts', async () => {
+    mockSelection = {
+      text: ' 42 ',
+      selectionRectangles: [{ top: 1, left: 2, width: 10, height: 4, regionId: '1' }],
+    };
+    jest.mocked(entitiesAPI.coerceValue).mockResolvedValue({ success: 'true', value: 42 });
+
+    render(
+      <Host>
+        <TextField<EditEntityFormValues>
+          context="tpl-1"
+          label="Numeric"
+          field="metadata.numeric_prop.0.value"
+          type="number"
+          pdfFill={{ name: 'numeric_prop', propertyId: 'num-1', coerceType: 'numeric' }}
+        />
+      </Host>
+    );
+
+    fireEvent.click(screen.getByTestId('click-to-fill'));
+
+    await waitFor(() => {
+      expect(entitiesAPI.coerceValue).toHaveBeenCalledWith('42', 'numeric', 'en');
+      expect(upsertPropertySelection).toHaveBeenCalledWith(
+        { name: 'numeric_prop', id: 'num-1' },
+        mockSelection
+      );
+      expect(screen.getByRole('spinbutton')).toHaveValue(42);
+    });
+  });
+
+  it('coerces date selection then upserts', async () => {
+    mockSelection = {
+      text: '2020-01-15',
+      selectionRectangles: [{ top: 1, left: 2, width: 10, height: 4, regionId: '1' }],
+    };
+    const epochSeconds = 1579046400;
+    jest
+      .mocked(entitiesAPI.coerceValue)
+      .mockResolvedValue({ success: 'true', value: epochSeconds });
+
+    render(
+      <Host>
+        <DateField<EditEntityFormValues>
+          context="tpl-1"
+          label="Date"
+          field="metadata.date_prop.0.value"
+          pdfFill={{ name: 'date_prop', propertyId: 'date-1', coerceType: 'date' }}
+        />
+      </Host>
+    );
+
+    fireEvent.click(screen.getByTestId('click-to-fill'));
+
+    await waitFor(() => {
+      expect(entitiesAPI.coerceValue).toHaveBeenCalledWith('2020-01-15', 'date', 'en');
+      expect(upsertPropertySelection).toHaveBeenCalledWith(
+        { name: 'date_prop', id: 'date-1' },
+        mockSelection
+      );
+      expect(screen.getByLabelText(/Date/)).toHaveValue('2020-01-15');
+    });
+  });
+
+  it('notifies danger and skips upsert when coerce fails', async () => {
+    mockSelection = {
+      text: 'not-a-number',
+      selectionRectangles: [{ top: 1, left: 2, width: 10, height: 4, regionId: '1' }],
+    };
+    jest.mocked(entitiesAPI.coerceValue).mockResolvedValue({
+      success: '',
+      value: 0,
+    });
+
+    render(
+      <Host>
+        <TextField<EditEntityFormValues>
+          context="tpl-1"
+          label="Numeric"
+          field="metadata.numeric_prop.0.value"
+          type="number"
+          pdfFill={{ name: 'numeric_prop', propertyId: 'num-1', coerceType: 'numeric' }}
+        />
+      </Host>
+    );
+
+    fireEvent.click(screen.getByTestId('click-to-fill'));
+
+    await waitFor(() => {
+      expect(notify).toHaveBeenCalledWith(
+        'Value cannot be transformed to the correct type',
+        'danger'
+      );
+      expect(upsertPropertySelection).not.toHaveBeenCalled();
+      expect(setDocumentPdfSelection).not.toHaveBeenCalled();
+    });
   });
 });

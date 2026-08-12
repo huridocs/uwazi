@@ -5,6 +5,7 @@ import type { EntitySaveInput } from '#V2/services/contracts/EntitiesService.js'
 import type { EditEntityFormValues } from './functions/buildEditEntityDefaultValues.js';
 import type { EditEntityErrors } from './functions/editEntityErrors.js';
 import type { EntityMediaUpload } from './hooks/useEntityMediaUpload.js';
+import type { PdfFillHost } from './Components/EntityPdfFill.js';
 
 type DocumentFieldMutations = {
   renameDocument: (document: FileType, originalname: string) => Promise<void>;
@@ -27,6 +28,8 @@ type EditEntityProps = {
     template?: string;
     limit?: number;
   }) => Promise<{ value: string; label: string }[]>;
+  pdfFill?: PdfFillHost;
+  mainDocumentId?: string;
 };
 
 export type { EditEntityProps, DocumentFieldMutations };
