@@ -91,6 +91,7 @@ import { PostgresDB } from '#api/infrastructure/PostgresDB.js';
 import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
 import { withFeature } from '#api/core/libs/logger/infrastructure/StandardLogger.js';
 import { StandardJSONWriter } from '#api/core/libs/logger/infrastructure/writers/StandardJSONWriter.js';
+import { SendAccountLockedEmailHandler } from '#api/core/infrastructure/jobs/SendAccountLockedEmailHandler.js';
 
 type Register = <T extends Dispatchable>(
   dispatchable: DispatchableClass<T>,
@@ -348,6 +349,11 @@ export function registerJobs(register: Register) {
   register(
     SendWelcomeEmailHandler,
     async () => new SendWelcomeEmailHandler({ sendWelcomeEmail: SendWelcomeEmailFactory.default() })
+  );
+
+  register(
+    SendAccountLockedEmailHandler,
+    async () => new SendAccountLockedEmailHandler({ emailSender: EmailSenderFactory.default() })
   );
 
   register(
