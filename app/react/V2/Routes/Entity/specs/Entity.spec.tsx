@@ -206,8 +206,8 @@ describe('Entity view', () => {
       fireEvent.click(mainTablist().getByRole('tab', { name: relationshipsMainTab }));
       await waitFor(() => {
         expect(sideTablist().getByRole('tab', { name: 'Document' })).toBeInTheDocument();
-        expect(sideTablist().getByRole('tab', { name: 'Metadata' })).toBeInTheDocument();
-        expect(sideTablist().getByRole('tab', { name: 'ToC' })).toBeInTheDocument();
+        expect(sideTablist().queryByRole('tab', { name: 'Metadata' })).not.toBeInTheDocument();
+        expect(sideTablist().queryByRole('tab', { name: 'ToC' })).not.toBeInTheDocument();
         expect(
           sideTablist().queryByRole('tab', { name: relationshipsSideTab })
         ).not.toBeInTheDocument();

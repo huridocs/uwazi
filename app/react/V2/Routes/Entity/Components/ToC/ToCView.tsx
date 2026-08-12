@@ -44,8 +44,9 @@ const ToCView = ({ generatedToc, panel }: ToCViewProps) => {
             <Translate>No Table of contents</Translate>
           </p>
           <p className="mt-1 text-xs text-ink-tertiary">
-            <Translate>
-              You can start by selecting text in the document and clicking the "Add to ToC" button.
+            <Translate translationKey="no-toc-description">
+              You can start by selecting text in the document and clicking the &quot;Add to
+              ToC&quot; button.
             </Translate>
           </p>
         </div>
@@ -57,7 +58,7 @@ const ToCView = ({ generatedToc, panel }: ToCViewProps) => {
 
   return (
     <div className="flex h-full min-h-0 flex-col">
-      <div className="flex shrink-0 items-center justify-between px-3 py-2.5">
+      <div className="flex shrink-0 items-center justify-between px-3 py-1">
         <div className="flex items-center gap-1.5">
           <span className="text-sm font-semibold text-ink">
             <Translate>Table of contents</Translate>
@@ -100,7 +101,7 @@ const ToCView = ({ generatedToc, panel }: ToCViewProps) => {
         ) : null}
       </div>
 
-      <div className="min-h-0 flex-1 overflow-auto px-3">
+      <div className="min-h-0 flex-1 overflow-auto px-1 mt-2">
         <ToC
           toc={tocState.toc}
           expanded={tocState.expanded}

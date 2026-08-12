@@ -23,7 +23,7 @@ const SearchTabFooter = () => {
   };
 
   return (
-    <EntityTabFooter>
+    <EntityTabFooter inset="side">
       <div className="flex w-full items-center justify-end">
         <div className="relative">
           <button

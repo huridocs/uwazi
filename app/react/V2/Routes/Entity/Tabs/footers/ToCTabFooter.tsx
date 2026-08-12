@@ -11,7 +11,7 @@ const ToCTabFooter = ({ mainDocument }: ToCTabFooterProps) => {
   const panel = useToCPanel({ toc: mainDocument?.toc, file: mainDocument });
 
   return (
-    <EntityTabFooter>
+    <EntityTabFooter inset="side">
       <ToCFooterBar panel={panel} />
     </EntityTabFooter>
   );

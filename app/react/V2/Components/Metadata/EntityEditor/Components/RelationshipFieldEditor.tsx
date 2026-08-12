@@ -1,4 +1,3 @@
-/* eslint-disable max-lines */
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
   InformationCircleIcon,
@@ -12,12 +11,14 @@ import { debounce } from '#app/utils/index.js';
 import { CompactSearchInput } from '#V2/Components/Forms/CompactSearchInput.js';
 import { TemplatePill } from '#V2/Components/UI/TemplatePill.js';
 import { RelationCaption } from '#V2/Components/Metadata/Components/RelationCaption.js';
+import {
+  RelationshipConnectionsTable,
+  type RelationshipTableRow,
+} from '#V2/Components/Metadata/Components/RelationshipConnectionsTable.js';
 import type { MetadataValue } from '#V2/formatters/types.js';
 import type { MultiselectListOption } from '#V2/Components/Forms/index.js';
-import {
-  inheritedCellText,
-  type RelationshipInheritColumn,
-} from '../functions/relationshipFieldHelpers.js';
+import { inheritedCellContent } from '../../Components/inheritedCellContent.js';
+import type { RelationshipInheritColumn } from '../functions/relationshipFieldHelpers.js';
 
 type RelationshipFieldEditorProps = {
   title: string;
@@ -33,16 +34,18 @@ type RelationshipFieldEditorProps = {
   searchId?: string;
 };
 
-const inheritedCellValue = (
-  row: MetadataValue,
-  column: RelationshipInheritColumn,
-  entityId: string
-): string | undefined => {
-  if (column.cellsByEntityId) {
-    return column.cellsByEntityId[entityId];
-  }
-  return inheritedCellText([row], entityId);
-};
+const toTableColumns = (columns: RelationshipInheritColumn[], values: MetadataValue[]) =>
+  columns.map(column => ({
+    label: column.label,
+    cellsByEntityId:
+      column.cellsByEntityId ??
+      Object.fromEntries(
+        values.map(row => {
+          const entityId = String(row.value ?? '');
+          return [entityId, inheritedCellContent([row], entityId)];
+        })
+      ),
+  }));
 
 const RelationshipFieldEditor = ({
   title,
@@ -65,6 +68,18 @@ const RelationshipFieldEditor = ({
     () => values.map(value => String(value.value ?? '')).filter(Boolean),
     [values]
   );
+
+  const rows: RelationshipTableRow[] = useMemo(
+    () =>
+      values.map(row => ({
+        id: String(row.value ?? ''),
+        label: row.label ?? String(row.value ?? ''),
+        templateId: targetTemplateId,
+      })),
+    [targetTemplateId, values]
+  );
+
+  const tableColumns = useMemo(() => toTableColumns(columns, values), [columns, values]);
 
   const runSearch = async (search: string) => {
     if (!lookupSearch) {
@@ -130,101 +145,35 @@ const RelationshipFieldEditor = ({
         ) : null}
       </div>
 
-      <div className="overflow-hidden rounded-md border border-border">
-        <div className="overflow-x-auto">
-          <table className="w-full border-collapse text-sm">
-            <thead>
-              <tr className="text-[11px] uppercase tracking-wide text-ink-tertiary">
-                <th className="px-3 py-1.5 text-start font-medium">
-                  <Translate>Entity</Translate>
-                </th>
-                {columns.map(column => (
-                  <th
-                    key={column.label}
-                    className="whitespace-nowrap px-3 py-1.5 text-start font-medium"
-                  >
-                    <span className="inline-flex items-center gap-1">
-                      <LinkIcon className="h-2.5 w-2.5 text-carbon" aria-hidden />
-                      <Translate context={translationContext}>{column.label}</Translate>
-                    </span>
-                  </th>
-                ))}
-                <th
-                  className="sticky right-0 w-0 bg-paper px-2"
-                  aria-label={t('System', 'Actions', null, false)}
-                />
-              </tr>
-            </thead>
-            <tbody>
-              {values.length === 0 ? (
-                <tr>
-                  <td
-                    colSpan={columns.length + 2}
-                    className="border-t border-border/40 px-3 py-2.5 text-xs text-ink-muted"
-                  >
-                    <Translate>No connected entities yet.</Translate>
-                  </td>
-                </tr>
-              ) : (
-                values.map(row => {
-                  const entityId = String(row.value ?? '');
-                  return (
-                    <tr
-                      key={entityId}
-                      className="border-t border-border/40 transition-colors hover:bg-warm/30"
-                    >
-                      <td className="min-w-0 max-w-40 px-3 py-1.5 align-middle">
-                        <TemplatePill
-                          templateId={targetTemplateId ?? ''}
-                          label={row.label ?? entityId}
-                        />
-                      </td>
-                      {columns.map(column => {
-                        const cell = inheritedCellValue(row, column, entityId);
-                        return (
-                          <td
-                            key={`${entityId}-${column.label}`}
-                            className="border-s border-border/40 px-3 py-1.5 align-middle whitespace-nowrap"
-                          >
-                            {cell ? (
-                              <span className="text-sm font-medium text-ink">{cell}</span>
-                            ) : (
-                              <span className="text-xs text-ink-muted">—</span>
-                            )}
-                          </td>
-                        );
-                      })}
-                      <td className="sticky right-0 border-s border-border/40 bg-paper px-2 py-1 align-middle">
-                        <div className="flex items-center justify-end gap-0.5">
-                          <button
-                            type="button"
-                            disabled={disabled || !onEditSource}
-                            onClick={() => onEditSource?.(entityId, row.label ?? entityId)}
-                            title={t('System', 'Edit at source', null, false)}
-                            className="flex h-6 cursor-pointer items-center gap-1 rounded px-1.5 text-[11px] font-medium text-ink-secondary transition-colors hover:bg-warm disabled:cursor-not-allowed disabled:opacity-60"
-                          >
-                            <PencilSquareIcon className="h-3 w-3" aria-hidden />
-                            <Translate>Source</Translate>
-                          </button>
-                          <button
-                            type="button"
-                            disabled={disabled}
-                            onClick={() => removeEntity(entityId)}
-                            title={t('System', 'Remove from connection', null, false)}
-                            className="flex h-6 w-6 cursor-pointer items-center justify-center rounded text-ink-muted transition-colors hover:bg-warm hover:text-seal disabled:cursor-not-allowed disabled:opacity-60"
-                          >
-                            <XMarkIcon className="h-3.5 w-3.5" aria-hidden />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })
-              )}
-            </tbody>
-          </table>
-        </div>
-      </div>
+      <RelationshipConnectionsTable
+        rows={rows}
+        columns={tableColumns}
+        translationContext={translationContext}
+        targetTemplateId={targetTemplateId}
+        renderActions={row => (
+          <div className="flex items-center justify-end gap-0.5">
+            <button
+              type="button"
+              disabled={disabled || !onEditSource}
+              onClick={() => onEditSource?.(row.id, row.label)}
+              title={t('System', 'Edit at source', null, false)}
+              className="flex h-6 cursor-pointer items-center gap-1 rounded px-1.5 text-[11px] font-medium text-ink-secondary transition-colors hover:bg-warm disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              <PencilSquareIcon className="h-3 w-3" aria-hidden />
+              <Translate>Source</Translate>
+            </button>
+            <button
+              type="button"
+              disabled={disabled}
+              onClick={() => removeEntity(row.id)}
+              title={t('System', 'Remove from connection', null, false)}
+              className="flex h-6 w-6 cursor-pointer items-center justify-center rounded text-ink-muted transition-colors hover:bg-warm hover:text-seal disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              <XMarkIcon className="h-3.5 w-3.5" aria-hidden />
+            </button>
+          </div>
+        )}
+      />
 
       {adding ? (
         <div className="overflow-hidden rounded-md border border-border">

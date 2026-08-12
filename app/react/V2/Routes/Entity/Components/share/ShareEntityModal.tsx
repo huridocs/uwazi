@@ -58,7 +58,7 @@ const ShareEntityModal = ({ sharedIds, onClose }: ShareEntityModalProps) => {
           onAdd={lookup.handleAdd}
         />
 
-        <section className="px-5 py-3" data-testid="share-members-list">
+        <section className="px-5 pt-2 pb-3" data-testid="share-members-list">
           <MembersList
             loading={members.loading}
             loadFailed={members.loadFailed}

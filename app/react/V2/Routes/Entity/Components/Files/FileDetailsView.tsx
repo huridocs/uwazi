@@ -5,7 +5,11 @@ import { EntityWriteAuthorization } from '#V2/Routes/Entity/Components/context/i
 import { fileSupportsLanguage } from './fileHelpers.js';
 import { getRowIcon } from './fileRowIcon.js';
 import { FileDeleteAction } from './FileDeleteAction.js';
+import { FileDetailsField } from './FileDetailsField.js';
+import { FileDetailsCard } from './FileDetailsCard.js';
+import { FileDetailsReadonlyMeta } from './FileDetailsReadonlyMeta.js';
 import { FileDocumentContextBadge } from './FileDocumentContextBadge.js';
+import { FileLanguageChip } from './FileLanguageChip.js';
 import { EntityFileRow } from './types.js';
 
 const FileDetailsView = ({ row, onEdit }: { row: EntityFileRow; onEdit: () => void }) => {
@@ -16,11 +20,8 @@ const FileDetailsView = ({ row, onEdit }: { row: EntityFileRow; onEdit: () => vo
 
   return (
     <div className="space-y-3">
-      <div className="space-y-3 rounded-md bg-warm p-4">
-        <div className="flex items-center justify-between">
-          <div className="text-xs font-semibold uppercase tracking-wider text-ink-tertiary">
-            <Translate>File details</Translate>
-          </div>
+      <FileDetailsCard
+        headerAction={
           <EntityWriteAuthorization>
             <button
               type="button"
@@ -31,65 +32,26 @@ const FileDetailsView = ({ row, onEdit }: { row: EntityFileRow; onEdit: () => vo
               <Translate>Edit</Translate>
             </button>
           </EntityWriteAuthorization>
-        </div>
-
-        <div className="min-w-0 space-y-1">
-          <span className="text-nano font-medium uppercase tracking-wide text-ink-muted">
-            <Translate>Name</Translate>
-          </span>
-          <div className="min-w-0">
-            <div className="flex items-center gap-2 px-2 py-1.5">
-              {getRowIcon(row)}
-              <span className="truncate text-sm text-ink">{row.displayName}</span>
-            </div>
+        }
+      >
+        <FileDetailsField label={<Translate>Name</Translate>}>
+          <div className="flex items-center gap-2 px-2 py-1.5">
+            {getRowIcon(row)}
+            <span className="truncate text-sm text-ink">{row.displayName}</span>
           </div>
-        </div>
+        </FileDetailsField>
 
         <div className="grid grid-cols-2 gap-3">
           {showLanguage ? (
-            <div className="min-w-0 space-y-1">
-              <span className="text-nano font-medium uppercase tracking-wide text-ink-muted">
-                <Translate>Language</Translate>
-              </span>
-              <div className="min-w-0">
-                <span className="inline-block rounded bg-vellum px-2 py-0.5 text-xs font-medium text-ink-secondary">
-                  {row.languageKey}
-                </span>
+            <FileDetailsField label={<Translate>Language</Translate>}>
+              <div className="flex h-7 items-center">
+                <FileLanguageChip>{row.languageKey}</FileLanguageChip>
               </div>
-            </div>
+            </FileDetailsField>
           ) : null}
-
-          <div className="min-w-0 space-y-1">
-            <span className="text-nano font-medium uppercase tracking-wide text-ink-muted">
-              <Translate>Type</Translate>
-            </span>
-            <div className="min-w-0">
-              <div className="flex items-center gap-1.5 px-2 py-1.5 text-sm text-ink-secondary">
-                {getRowIcon(row)}
-                <span>{row.typeLabel}</span>
-              </div>
-            </div>
-          </div>
-
-          <div className="min-w-0 space-y-1">
-            <span className="text-nano font-medium uppercase tracking-wide text-ink-muted">
-              <Translate>Size</Translate>
-            </span>
-            <div className="min-w-0">
-              <span className="text-sm text-ink-secondary">{row.sizeLabel}</span>
-            </div>
-          </div>
-
-          <div className="min-w-0 space-y-1">
-            <span className="text-nano font-medium uppercase tracking-wide text-ink-muted">
-              <Translate>Modified</Translate>
-            </span>
-            <div className="min-w-0">
-              <span className="text-sm text-ink-secondary">{row.modifiedLabel}</span>
-            </div>
-          </div>
+          <FileDetailsReadonlyMeta row={row} />
         </div>
-      </div>
+      </FileDetailsCard>
 
       <FileDocumentContextBadge row={row} />
       <FileDeleteAction row={row} />

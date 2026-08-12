@@ -10,7 +10,7 @@ import {
 } from '#V2/Routes/Entity/Components/context/index.js';
 import { ShareEntityModal } from '#V2/Routes/Entity/Components/share/index.js';
 
-const iconClass = 'h-4 w-4 shrink-0';
+const iconClass = 'h-3 w-3 shrink-0';
 
 type MetadataDisplayFooterProps = {
   host: MetadataEditingHost;
@@ -26,7 +26,8 @@ const MetadataDisplayFooter = ({ host }: MetadataDisplayFooterProps) => {
   return (
     <EntityWriteAuthorization>
       {showSaveCancel ? (
-        <div className="flex w-full items-center justify-end gap-3">
+        <div className="flex w-full items-center gap-3">
+          <div className="flex-1" />
           <Button type="button" variant="warm" onClick={cancelEdit}>
             <Translate>Cancel</Translate>
           </Button>
@@ -39,7 +40,7 @@ const MetadataDisplayFooter = ({ host }: MetadataDisplayFooterProps) => {
           <div className="flex gap-2">
             <Button
               variant="warm"
-              className="inline-flex items-center gap-1.5"
+              className="inline-flex items-center"
               onClick={() => startEditing(host)}
               disabled={isSaving}
             >
@@ -48,7 +49,7 @@ const MetadataDisplayFooter = ({ host }: MetadataDisplayFooterProps) => {
             </Button>
             <Button
               variant="warm"
-              className="inline-flex items-center gap-1.5"
+              className="inline-flex items-center"
               onClick={() => setSharing(true)}
             >
               <ShareIcon className={iconClass} />

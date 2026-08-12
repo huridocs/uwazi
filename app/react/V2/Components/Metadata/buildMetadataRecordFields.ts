@@ -9,7 +9,6 @@ type PropertyGroupMember = NonNullable<MetadataProperty['propertyGroup']>[number
 type MetadataRecordFields = {
   relationshipFields: RelationshipMetadataProperty[];
   otherFields: MetadataProperty[];
-  inheritingTerminalById: Map<string, MetadataProperty>;
 };
 
 type FieldBuckets = {
@@ -201,7 +200,6 @@ const buildMetadataRecordFields = (
   return {
     relationshipFields: buckets.relationships,
     otherFields: buckets.others,
-    inheritingTerminalById: buckets.terminals,
   };
 };
 
