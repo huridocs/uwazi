@@ -79,6 +79,13 @@ export class MongoTranslationsDataSource
     );
   }
 
+  getByLanguageAndContext(language: LanguageISO6391, contextId: string) {
+    return new MongoResultSet<TranslationDBO, Translation>(
+      this.getCollection().find({ language, 'context.id': contextId }),
+      TranslationMappers.toModel
+    );
+  }
+
   getContextAndKeys(contextId: string, keys: string[]) {
     return new MongoResultSet<TranslationDBO, Translation>(
       this.getCollection().find({ 'context.id': contextId, key: { $in: keys } }),

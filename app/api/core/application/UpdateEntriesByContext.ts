@@ -112,7 +112,7 @@ class UpdateEntriesByContextUseCase extends AbstractUseCase<Input, Output, Deps>
       languagesSet.has(l)
     ) as LanguageISO6391[];
 
-    const prepared = await Promise.all(
+    const results = await Promise.allSettled(
       languagesToUpdate.map(async language => {
         const [translation] = await this.deps.query.getLegacy({ locale: language });
         if (!translation) {
@@ -122,7 +122,16 @@ class UpdateEntriesByContextUseCase extends AbstractUseCase<Input, Output, Deps>
       })
     );
 
-    return prepared.filter((item): item is PreparedLocaleUpdate => Boolean(item));
+    const firstFailure = results.find(
+      (result): result is PromiseRejectedResult => result.status === 'rejected'
+    );
+    if (firstFailure) {
+      throw firstFailure.reason;
+    }
+
+    return results
+      .map(result => (result as PromiseFulfilledResult<PreparedLocaleUpdate | undefined>).value)
+      .filter((item): item is PreparedLocaleUpdate => Boolean(item));
   }
 
   async execute({ contextId, keyValuePairsPerLanguage }: Input): Promise<Output> {

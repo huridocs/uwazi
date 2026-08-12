@@ -195,6 +195,7 @@ const prepareStores = async (req: ExpressRequest, settings: ClientSettings, lang
   const translations = toIndexedTranslations(
     await TranslationsQueryServiceFactory.default().getLegacy({
       locale: locale as LanguageISO6391,
+      context: 'System',
     })
   );
 
