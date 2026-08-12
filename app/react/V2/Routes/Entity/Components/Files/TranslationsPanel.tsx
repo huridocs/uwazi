@@ -32,32 +32,26 @@ const TranslationsPanel = ({
       {primaryRows.map(file => (
         <div
           key={file.rowId}
-          role="button"
-          tabIndex={0}
-          onClick={() => onFocusRow(file)}
-          onKeyDown={event => {
-            if (event.key === 'Enter' || event.key === ' ') {
-              event.preventDefault();
-              onFocusRow(file);
-            }
-          }}
-          className="flex cursor-pointer items-center gap-2 rounded-md border border-border/50 bg-paper px-3 py-2 transition-colors hover:bg-warm"
+          className="flex items-center gap-2 rounded-md border border-border/50 bg-paper px-3 py-2 transition-colors hover:bg-warm"
         >
-          <FileLanguageChip>{file.languageKey}</FileLanguageChip>
-          <span className="shrink-0">{getRowIcon(file)}</span>
-          <div className="min-w-0 flex-1">
-            <p className="truncate text-xs font-medium text-ink">{file.displayName}</p>
-            <div className="mt-0.5 flex items-center gap-2">
-              <span className="text-nano text-ink-muted">{file.typeLabel.toUpperCase()}</span>
-              <span className="text-nano text-ink-muted">{file.sizeLabel}</span>
-            </div>
-          </div>
           <button
             type="button"
-            onClick={event => {
-              event.stopPropagation();
-              onViewRow(file);
-            }}
+            onClick={() => onFocusRow(file)}
+            className="flex min-w-0 flex-1 cursor-pointer items-center gap-2 text-start"
+          >
+            <FileLanguageChip>{file.languageKey}</FileLanguageChip>
+            <span className="shrink-0">{getRowIcon(file)}</span>
+            <div className="min-w-0 flex-1">
+              <p className="truncate text-xs font-medium text-ink">{file.displayName}</p>
+              <div className="mt-0.5 flex items-center gap-2">
+                <span className="text-nano text-ink-muted">{file.typeLabel.toUpperCase()}</span>
+                <span className="text-nano text-ink-muted">{file.sizeLabel}</span>
+              </div>
+            </div>
+          </button>
+          <button
+            type="button"
+            onClick={() => onViewRow(file)}
             aria-label={`View ${file.displayName}`}
             className="rounded p-1 text-ink-tertiary transition-colors hover:bg-parchment"
           >
@@ -67,10 +61,7 @@ const TranslationsPanel = ({
           <EntityWriteAuthorization>
             <button
               type="button"
-              onClick={event => {
-                event.stopPropagation();
-                onDeleteRow(file);
-              }}
+              onClick={() => onDeleteRow(file)}
               aria-label={`Delete ${file.displayName}`}
               className="rounded p-1 text-ink-muted transition-colors hover:bg-seal-tint hover:text-seal"
             >

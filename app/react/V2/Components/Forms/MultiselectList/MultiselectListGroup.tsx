@@ -29,19 +29,15 @@ const MultiselectListGroup = ({
             isOpen ? 'bg-parchment' : 'bg-warm'
           }`}
           onClick={onClick}
-          onKeyDown={event => {
-            if (event.key === 'Enter' || event.key === ' ') {
-              event.preventDefault();
-              onClick();
-            }
-          }}
-          role="button"
-          tabIndex={0}
         >
           <span className="block text-sm font-semibold text-ink">{label}</span>
           <button
             className="flex flex-row items-center justify-center gap-1 rounded-md bg-carbon/10 px-1.5 py-0.5 text-xs font-medium text-ink-secondary"
             type="button"
+            onClick={event => {
+              event.stopPropagation();
+              onClick();
+            }}
           >
             <div className="h-3 w-3 text-sm">
               {isOpen ? <ChevronUpIcon /> : <ChevronDownIcon />}
