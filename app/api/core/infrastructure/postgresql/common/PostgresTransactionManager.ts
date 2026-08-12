@@ -44,19 +44,39 @@ export class PostgresTransactionManager implements TransactionManager {
    * Case #1 — no active transaction: open a short-lived, self-scoped transaction
    * and set `app.current_tenant` for RLS.
    */
-  async withConnection<T>(fn: (executor: Knex.Transaction) => Promise<T>): Promise<T> {
+  async withConnection<T>(
+    fn: (executor: Knex.Transaction) => Promise<T>,
+    permissionContext?: { bypass: boolean; refIds: string[] }
+  ): Promise<T> {
     if (this.activeTransaction) {
+      await this.setTenant(this.activeTransaction);
+      await this.setPermissionVars(this.activeTransaction, permissionContext);
       return fn(this.activeTransaction);
     }
 
     return this.knex.transaction(async trx => {
       await this.setTenant(trx);
+      await this.setPermissionVars(trx, permissionContext);
       return fn(trx);
     });
   }
 
   private async setTenant(trx: Knex.Transaction): Promise<void> {
     await trx.raw("SELECT set_config('app.current_tenant', ?, true)", [this.tenantId]);
+  }
+
+  private async setPermissionVars(
+    trx: Knex.Transaction,
+    permissionContext?: { bypass: boolean; refIds: string[] }
+  ): Promise<void> {
+    let bypass = 'false';
+    let refIds = '';
+    if (permissionContext) {
+      bypass = permissionContext.bypass ? 'true' : 'false';
+      refIds = permissionContext.refIds.join(',');
+    }
+    await trx.raw("SELECT set_config('uwazi.bypass_rls', ?, true)", [bypass]);
+    await trx.raw("SELECT set_config('uwazi.ref_ids', ?, true)", [refIds]);
   }
 
   private async executeOnCommitHandlers(returnValue: unknown) {
@@ -97,6 +117,7 @@ export class PostgresTransactionManager implements TransactionManager {
       return await this.knex.transaction(async trx => {
         this.activeTransaction = trx;
         await this.setTenant(trx);
+        await this.setPermissionVars(trx);
         return callback();
       });
     } finally {

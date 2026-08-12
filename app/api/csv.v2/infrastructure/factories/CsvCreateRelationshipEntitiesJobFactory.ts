@@ -1,6 +1,6 @@
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
-import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
+import { UwaziDispatcherFactory } from '#api/core/infrastructure/jobs/UwaziDispatcherFactory.js';
 import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
 import { tenants } from '#api/tenants/tenantContext.js';
 import { EntitiesServiceFactory } from '#api/core/infrastructure/factories/EntitiesServiceFactory.js';
@@ -30,7 +30,7 @@ class CsvCreateRelationshipEntitiesJobFactory {
       CSVImportEntitiesFactories.CSVImportRelationshipPendingValuesDSDefault(transactionManager);
     const entitiesDS = EntitiesDataSourceFactory.default({ transactionManager });
     const jobsDispatcher =
-      options.jobsDispatcher ?? DefaultDispatcher(tenants.current().name, transactionManager);
+      options.jobsDispatcher ?? UwaziDispatcherFactory(tenants.current().name, transactionManager);
     const settingsDS = SettingsDataSourceFactory.cached({ transactionManager });
     const templatesDS = TemplatesDataSourceFactory.cached({ transactionManager });
     const entitiesService = EntitiesServiceFactory.default({

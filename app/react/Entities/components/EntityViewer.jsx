@@ -31,6 +31,7 @@ import { V2NewRelationshipsBoard } from './V2NewRelationshipsBoard.js';
 import { deleteEntity } from '../actions/actions.js';
 import { showTab } from '../actions/uiActions.js';
 import { EntityForm } from '../containers/EntityForm.js';
+import { getV1EntityBasePathFromLocation } from '#app/utils/entityViewerPaths.js';
 
 class EntityViewer extends Component {
   constructor(props, context) {
@@ -133,6 +134,7 @@ class EntityViewer extends Component {
     const mainClass = `entity-viewer ${hasHeader ? 'with-header' : ''} ${
       user.get('_id') && includeFooter ? 'with-footer' : ''
     } ${panelOpen ? 'with-panel' : ''}`;
+    const entityBasePath = getV1EntityBasePathFromLocation(this.props.location?.pathname || '');
 
     return (
       <div className="row">
@@ -255,7 +257,7 @@ class EntityViewer extends Component {
                     >
                       <I18NLink
                         className={this.linkClassNames(['page'])}
-                        to={`/entity/${rawEntity.sharedId}/page`}
+                        to={`${entityBasePath}/${rawEntity.sharedId}/page`}
                         replace
                       >
                         <Icon icon="file-image" />
@@ -272,11 +274,11 @@ class EntityViewer extends Component {
                     aria-label={t('System', 'Info', null, false)}
                     component="div"
                   >
-                    <I18NLink
-                      className={this.linkClassNames(['info', ''])}
-                      to={`/entity/${rawEntity.sharedId}/info`}
-                      replace
-                    >
+                      <I18NLink
+                        className={this.linkClassNames(['info', ''])}
+                        to={`${entityBasePath}/${rawEntity.sharedId}/info`}
+                        replace
+                      >
                       <Icon icon="info-circle" />
                       <span className="tab-link-tooltip">{t('System', 'Info')}</span>
                     </I18NLink>
@@ -290,11 +292,11 @@ class EntityViewer extends Component {
                     aria-label={t('System', 'Relationships', null, false)}
                     component="div"
                   >
-                    <I18NLink
-                      className={this.linkClassNames(['relationships'])}
-                      to={`/entity/${rawEntity.sharedId}/relationships`}
-                      replace
-                    >
+                      <I18NLink
+                        className={this.linkClassNames(['relationships'])}
+                        to={`${entityBasePath}/${rawEntity.sharedId}/relationships`}
+                        replace
+                      >
                       <Icon icon="exchange-alt" />
                       <span className="connectionsNumber">{summary.totalConnections}</span>
                       <span className="tab-link-tooltip">{t('System', 'Relationships')}</span>
@@ -312,7 +314,7 @@ class EntityViewer extends Component {
                     >
                       <I18NLink
                         className={this.linkClassNames(['newrelationships'])}
-                        to={`/entity/${rawEntity.sharedId}/newrelationships`}
+                        to={`${entityBasePath}/${rawEntity.sharedId}/newrelationships`}
                         replace
                       >
                         <Icon icon="exchange-alt" />*
@@ -413,6 +415,9 @@ EntityViewer.propTypes = {
     confirm: PropTypes.func,
   }).isRequired,
   navigate: PropTypes.func,
+  location: PropTypes.shape({
+    pathname: PropTypes.string,
+  }),
   // v2
   newRelationshipsEnabled: PropTypes.bool,
   formState: PropTypes.instanceOf(Object).isRequired,

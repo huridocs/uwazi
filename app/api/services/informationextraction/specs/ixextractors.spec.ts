@@ -16,16 +16,21 @@ jest.mock('api/core/libs/queue/configuration/factories', () => ({
   DefaultDispatcher: jest.fn().mockImplementation(() => {
     const {
       SyncDispatcherForTests,
-      // eslint-disable-next-line global-require
     } = require('api/core/libs/queue/infrastructure/SyncDispatcherForTests');
     const {
       CreateBlankStateSuggestionsJob,
-      // eslint-disable-next-line global-require
     } = require('api/suggestions/jobs/CreateBlankStateSuggestionsJob');
     return new SyncDispatcherForTests({
       CreateBlankStateSuggestionsJob: async () => new CreateBlankStateSuggestionsJob(),
     });
   }),
+}));
+
+jest.mock('api/core/infrastructure/jobs/UwaziDispatcherFactory', () => ({
+  UwaziDispatcherFactory: (...args: any[]) => {
+    const { DefaultDispatcher } = require('api/core/libs/queue/configuration/factories');
+    return DefaultDispatcher(...args);
+  },
 }));
 
 const fixtures: DBFixture = {

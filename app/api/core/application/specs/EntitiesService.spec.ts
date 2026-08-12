@@ -245,7 +245,6 @@ describe('EntitiesService', () => {
             targetLanguage: 'en',
             templateId: entity.template.id,
             tenantName: 'tenantName',
-            userId: 'actorId',
           },
         ]);
       });
@@ -297,21 +296,18 @@ describe('EntitiesService', () => {
             targetLanguage: 'en',
             templateId: entity1.template.id,
             tenantName: 'testTenant',
-            userId: 'testActor',
           },
           {
             sharedId: entity2.sharedId,
             targetLanguage: 'en',
             templateId: entity2.template.id,
             tenantName: 'testTenant',
-            userId: 'testActor',
           },
           {
             sharedId: entity3.sharedId,
             targetLanguage: 'en',
             templateId: entity3.template.id,
             tenantName: 'testTenant',
-            userId: 'testActor',
           },
         ]);
       });

@@ -38,6 +38,7 @@ const mongoSchema = new mongoose.Schema({
     fileCacheHeaders: Boolean,
     themeCustomization: Boolean,
     newHeader: Boolean,
+    featureFlagEntityViewerv2: Boolean,
     postgresThesauri: Boolean,
     postgresTemplates: Boolean,
     postgresEntities: Boolean,

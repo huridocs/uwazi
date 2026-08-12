@@ -1,4 +1,5 @@
 /* eslint-disable max-statements */
+import { ObjectId } from 'mongodb';
 import { TestUtils } from '#api/common.v2/utils/Test.js';
 import { EntityIcon } from '#api/core/domain/entity/Entity.js';
 import { FilesServiceFactory } from '#api/core/infrastructure/factories/FilesServiceFactory.js';
@@ -11,6 +12,8 @@ import { EventsBus } from '#api/core/libs/eventsbus/EventsBus.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { testingTenants } from '#api/utils/testingTenants.js';
 import { testingPG } from '#api/utils/testing_pg.js';
+import { DBFixture } from '#api/utils/testing_db.js';
+import { User } from '#api/users.v2/model/User.js';
 import { factory, fixtures, SampleListener } from './UpdateEntityFixtures.js';
 
 type TestConfig = {
@@ -24,7 +27,7 @@ const testConfigs: TestConfig[] = [
   { name: 'Postgres', postgresTemplates: true, postgresFiles: true },
 ];
 
-const createSut = (postgresTemplates = false, postgresFiles = false) => {
+const createSut = (postgresTemplates = false, postgresFiles = false, actor?: User) => {
   const fileStorage = TestUtils.mockClass<FileSystemStorage>({ storeFile: jest.fn() });
   const eventBus = TestUtils.mockClass<EventsBus>({ emit: jest.fn() });
 
@@ -45,7 +48,7 @@ const createSut = (postgresTemplates = false, postgresFiles = false) => {
 
       return { sut, fileStorage };
     },
-    { ...contextOverrides, factories: { eventEmitter: () => EventEmitterFactory.default() } }
+    { ...contextOverrides, actor, factories: { eventEmitter: () => EventEmitterFactory.default() } }
   );
 };
 
@@ -1182,6 +1185,103 @@ describe('UpdateEntityUseCase', () => {
           });
         });
       });
+    });
+  });
+
+  describe('Permissions', () => {
+    let collaboratorId: ObjectId;
+
+    beforeAll(() => {
+      collaboratorId = factory.id('collaborator');
+    });
+
+    const fixturesWithPermissions: DBFixture = {
+      settings: [
+        {
+          languages: [{ default: true, key: 'en', label: 'English' }],
+        },
+      ],
+      relationtypes: [
+        {
+          _id: factory.id('relation_type'),
+          name: 'relation_type',
+          __v: 0,
+        },
+      ],
+      templates: [
+        factory.template('Related Template', [factory.property('related_text', 'text')]),
+        factory.template('Full Template', [
+          factory.property('relationship', 'relationship', {
+            relationType: factory.id('relation_type').toHexString(),
+            content: factory.id('Related Template').toHexString(),
+          }),
+        ]),
+      ],
+      entities: [
+        factory.entity(
+          'related_entity',
+          'Related Template',
+          {},
+          {
+            language: 'en',
+            permissions: [factory.entityPermission('collaborator', 'user', 'write')],
+          }
+        ),
+        factory.entity(
+          'related_entity_2',
+          'Related Template',
+          {},
+          {
+            language: 'en',
+            permissions: [], // collaborator has no permission on this entity
+          }
+        ),
+        factory.entity(
+          'full_entity',
+          'Full Template',
+          {
+            relationship: [
+              { value: 'related_entity', label: 'Related Entity EN', type: 'entity' },
+              { value: 'related_entity_2', label: 'Related Entity 2 EN', type: 'entity' },
+            ],
+          },
+          {
+            language: 'en',
+            permissions: [factory.entityPermission('collaborator', 'user', 'write')],
+          }
+        ),
+      ],
+    };
+
+    beforeEach(async () => {
+      await testingEnvironment.setFixtures(fixturesWithPermissions);
+    });
+
+    it('should allow updating an entity with a relationship to entities the collaborator has no permission on, as long as no new unauthorized entity is added', async () => {
+      const collaboratorUser = User.createFrom({
+        _id: collaboratorId,
+        role: 'collaborator',
+        groups: [],
+      });
+
+      const { sut } = createSut(false, false, collaboratorUser);
+
+      await sut.execute({
+        sharedId: 'full_entity',
+        language: 'en',
+        propertyAssignments: [
+          { name: 'title', value: [{ value: 'Updated Title' }] },
+          {
+            name: 'relationship',
+            value: [{ value: 'related_entity' }, { value: 'related_entity_2' }],
+          },
+        ],
+      });
+
+      const entities = await getAllEntities('full_entity');
+      expect(entities).toMatchObject([
+        { sharedId: 'full_entity', title: 'Updated Title', language: 'en' },
+      ]);
     });
   });
 });

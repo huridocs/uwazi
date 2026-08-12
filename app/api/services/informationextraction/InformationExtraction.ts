@@ -40,7 +40,7 @@ import { LanguageUtils } from '#shared/language/index.js';
 import { IXModelType } from '#shared/types/IXModelType.js';
 import { ParagraphSchema } from '#shared/types/segmentationType.js';
 import { ArrayUtils } from '#api/common.v2/utils/Array.js';
-import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
+import { UwaziDispatcherFactory } from '#api/core/infrastructure/jobs/UwaziDispatcherFactory.js';
 import { retryWithBackoff, descriptiveError } from '#api/utils/retryWithBackoff.js';
 import { SuggestionFactory } from '#api/suggestions/suggestionFactory.js';
 import { AcceptSuggestionsFactory } from '#api/suggestions/infrastructure/AcceptSuggestionsFactory.js';
@@ -864,7 +864,7 @@ class InformationExtraction {
       'processing_model'
     );
 
-    const dispatcher = DefaultDispatcher(tenant.name, TransactionManagerFactory.default(), {
+    const dispatcher = UwaziDispatcherFactory(tenant.name, TransactionManagerFactory.default(), {
       lockWindow: 1000 * 60 * 20,
     });
 
@@ -969,7 +969,7 @@ class InformationExtraction {
       'processing_auto_accept'
     );
 
-    const dispatcher = DefaultDispatcher(tenant.name, TransactionManagerFactory.default(), {
+    const dispatcher = UwaziDispatcherFactory(tenant.name, TransactionManagerFactory.default(), {
       lockWindow: 1000 * 60 * 10,
     });
     const { job } = await AcceptSuggestionsFactory.createDefault({

@@ -1,19 +1,30 @@
-import type { Application, NextFunction, Request, Response } from 'express';
+import type { NextFunction, Request, Response } from 'express';
+import request from 'supertest';
 import { setUpApp } from '#api/utils/testingRoutes.js';
 import statsRoutes from '../routes.js';
-import request from 'supertest';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { fixtures } from './fixtures.js';
 
 jest.mock(
   '../../auth/authMiddleware.ts',
-  () => () => (_req: Request, _res: Response, next: NextFunction) => {
+  () => () => (req: Request, _res: Response, next: NextFunction) => {
+    (req as any).user = {
+      _id: 'admin-id',
+      username: 'admin',
+      email: 'admin@email.com',
+      role: 'admin',
+      groups: [],
+    };
     next();
   }
 );
 
 describe('Stats routes', () => {
-  const app: Application = setUpApp(statsRoutes);
+  const adminUser = fixtures.users?.[0];
+  const app = setUpApp(statsRoutes, (req: Request, _res: Response, next: NextFunction) => {
+    (req as any).user = adminUser;
+    next();
+  });
 
   beforeAll(async () => {
     await testingEnvironment.setUp(fixtures, 'stats.routes');

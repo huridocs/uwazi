@@ -9,6 +9,8 @@ import { MongoTemplateMapper } from '#api/core/infrastructure/mongodb/template/M
 import { Template } from '#api/core/domain/template/Template.js';
 import { RelationshipPropertyAssignmentCreatorService } from '../propertyAssignmentCreatorService/RelationshipPropertyAssignmentCreatorService.js';
 import { EntitiesDataSourceFactory } from '#api/core/infrastructure/factories/EntitiesDataSourceFactory.js';
+import { EntitiesDataSource } from '#api/core/application/contracts/EntitiesDataSource.js';
+import { User } from '#api/users.v2/model/User.js';
 
 const factory = getFixturesFactory();
 
@@ -370,20 +372,23 @@ const fixtures: DBFixture = {
   ],
 };
 
-const createSut = () => {
+const createSut = (actor?: User) => {
   const transactionManager = TransactionManagerFactory.default();
 
-  const { entitiesDS, settingsDS } = testingEnvironment.runWithContext(() => ({
-    entitiesDS: EntitiesDataSourceFactory.default({ transactionManager }),
-    settingsDS: SettingsDataSourceFactory.default({ transactionManager }),
-  }));
+  const { entitiesDS, settingsDS } = testingEnvironment.runWithContext(
+    () => ({
+      entitiesDS: EntitiesDataSourceFactory.default({ transactionManager }),
+      settingsDS: SettingsDataSourceFactory.default({ transactionManager }),
+    }),
+    { actor }
+  );
 
   const sut = new RelationshipPropertyAssignmentCreatorService({
     entitiesDS,
     settingsDS,
   });
 
-  return { sut };
+  return { sut, entitiesDS };
 };
 
 describe('RelationshipPropertyAssignmentCreatorService', () => {
@@ -1455,5 +1460,207 @@ describe('RelationshipPropertyAssignmentCreatorService', () => {
         propertyAssignment: { name: 'required_rel', value: [] },
       })
     ).rejects.toThrow('Relationship Property is required');
+  });
+
+  describe('Permissions', () => {
+    let collaboratorId: ObjectId;
+
+    beforeAll(() => {
+      collaboratorId = factory.id('collaborator');
+    });
+
+    const fixturesWithPermissions: DBFixture = {
+      settings: [
+        {
+          languages: [
+            { default: true, key: 'en', label: 'English' },
+            { key: 'pt', label: 'Portuguese' },
+          ],
+        },
+      ],
+      relationtypes: [
+        {
+          _id: factory.id('relation_type'),
+          name: 'relation_type',
+          __v: 0,
+        },
+      ],
+      templates: [
+        factory.template('Related Template', [factory.property('related_text', 'text')]),
+        factory.template('Full Template', [
+          factory.property('relationship', 'relationship', {
+            relationType: factory.id('relation_type').toHexString(),
+            content: factory.id('Related Template').toHexString(),
+          }),
+        ]),
+      ],
+      entities: [
+        ...factory.entityInMultipleLanguages(
+          ['en', 'pt'],
+          'readable_entity',
+          'Related Template',
+          {},
+          {
+            permissions: [factory.entityPermission('collaborator', 'user', 'write')],
+          },
+          {
+            en: { title: 'Readable Entity EN' },
+            pt: { title: 'Readable Entity PT' },
+          }
+        ),
+        factory.entity(
+          'unreadable_entity',
+          'Related Template',
+          {},
+          {
+            language: 'en',
+            permissions: [], // collaborator has no permission on this entity
+          }
+        ),
+        factory.entity(
+          'unreadable_entity_2',
+          'Related Template',
+          {},
+          {
+            language: 'en',
+            permissions: [], // collaborator has no permission on this entity
+          }
+        ),
+        ...factory.entityInMultipleLanguages(
+          ['en', 'pt'],
+          'full_entity',
+          'Full Template',
+          {},
+          {
+            permissions: [factory.entityPermission('collaborator', 'user', 'write')],
+          },
+          {
+            en: {
+              title: 'Full Entity EN',
+              metadata: {
+                relationship: [
+                  { value: 'unreadable_entity', label: 'Unreadable Entity EN', type: 'entity' },
+                ],
+              },
+            },
+            pt: {
+              title: 'Full Entity PT',
+              metadata: {
+                relationship: [
+                  { value: 'unreadable_entity', label: 'Unreadable Entity PT', type: 'entity' },
+                ],
+              },
+            },
+          }
+        ),
+      ],
+    };
+
+    const getFullTemplate = async () => {
+      const templateDBO = await testingEnvironment.db
+        .getCollection('templates')!
+        .findOne({ _id: factory.id('Full Template') });
+      return MongoTemplateMapper.toDomain(templateDBO as any);
+    };
+
+    const getFullEntity = async (entitiesDS: EntitiesDataSource) => {
+      const result = await entitiesDS.getById('full_entity');
+      return result.getDataOrThrow();
+    };
+
+    beforeEach(async () => {
+      await testingEnvironment.setFixtures(fixturesWithPermissions);
+    });
+
+    it('should preserve an existing relationship value for an entity the actor cannot read', async () => {
+      const collaboratorUser = User.createFrom({
+        _id: collaboratorId,
+        role: 'collaborator',
+        groups: [],
+      });
+
+      const { sut, entitiesDS } = createSut(collaboratorUser);
+      const template = await getFullTemplate();
+      const entity = await getFullEntity(entitiesDS);
+
+      const assignments = await sut.create({
+        template,
+        entity,
+        propertyAssignment: {
+          name: 'relationship',
+          value: [{ value: 'readable_entity' }, { value: 'unreadable_entity' }],
+        },
+      });
+
+      expect(assignments).toEqual([
+        {
+          isTranslatable: false,
+          language: 'en',
+          name: 'relationship',
+          type: 'relationship',
+          value: [
+            { value: 'readable_entity', label: 'Readable Entity EN', type: 'entity' },
+            // Unreadable entity keeps its existing (already-visible) value.
+            { value: 'unreadable_entity', label: 'Unreadable Entity EN', type: 'entity' },
+          ],
+        },
+        {
+          isTranslatable: false,
+          language: 'pt',
+          name: 'relationship',
+          type: 'relationship',
+          value: [
+            { value: 'readable_entity', label: 'Readable Entity PT', type: 'entity' },
+            { value: 'unreadable_entity', label: 'Unreadable Entity PT', type: 'entity' },
+          ],
+        },
+      ]);
+    });
+
+    it('should throw when a referenced sharedId does not exist at all, even if it was already in the relationship', async () => {
+      const collaboratorUser = User.createFrom({
+        _id: collaboratorId,
+        role: 'collaborator',
+        groups: [],
+      });
+
+      const { sut, entitiesDS } = createSut(collaboratorUser);
+      const template = await getFullTemplate();
+      const entity = await getFullEntity(entitiesDS);
+
+      await expect(
+        sut.create({
+          template,
+          entity,
+          propertyAssignment: {
+            name: 'relationship',
+            value: [{ value: 'readable_entity' }, { value: 'ghost_entity' }],
+          },
+        })
+      ).rejects.toThrow('references non-existent entities: ghost_entity');
+    });
+
+    it('should throw when adding a relationship to an entity that exists but the actor cannot read', async () => {
+      const collaboratorUser = User.createFrom({
+        _id: collaboratorId,
+        role: 'collaborator',
+        groups: [],
+      });
+
+      const { sut, entitiesDS } = createSut(collaboratorUser);
+      const template = await getFullTemplate();
+      const entity = await getFullEntity(entitiesDS);
+
+      await expect(
+        sut.create({
+          template,
+          entity,
+          propertyAssignment: {
+            name: 'relationship',
+            value: [{ value: 'readable_entity' }, { value: 'unreadable_entity_2' }],
+          },
+        })
+      ).rejects.toThrow('references non-existent entities: unreadable_entity_2');
+    });
   });
 });

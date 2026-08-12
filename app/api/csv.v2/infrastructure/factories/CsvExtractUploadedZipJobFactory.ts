@@ -1,5 +1,5 @@
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
-import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
+import { UwaziDispatcherFactory } from '#api/core/infrastructure/jobs/UwaziDispatcherFactory.js';
 import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
 import { FileContentsIO } from '#api/core/infrastructure/files/FileContentIO.js';
 import { FileStorage } from '#api/core/application/contracts/FileStorage.js';
@@ -34,7 +34,7 @@ class CsvExtractUploadedZipJobFactory {
     });
     const rowsStager = new CsvImportRowsStager({ fileStorage }, { batchSize: options.batchSize });
     const jobsDispatcher =
-      options.jobsDispatcher ?? DefaultDispatcher(tenants.current().name, transactionManager);
+      options.jobsDispatcher ?? UwaziDispatcherFactory(tenants.current().name, transactionManager);
 
     const useCase = new CsvExtractUploadedZipJob({
       csvImportsDS,

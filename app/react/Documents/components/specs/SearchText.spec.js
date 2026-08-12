@@ -63,14 +63,21 @@ describe('SearchText', () => {
     expect(snippets.props().doc).toBe(props.doc);
     expect(snippets.props().snippets).toBe(props.snippets);
     expect(snippets.props().searchTerm).toBe('');
-    expect(snippets.props().documentViewUrl).toBe('/entity/sharedId/text-search');
+    expect(snippets.props().legacyBasePath).toBe('/entity');
   });
 
   it('should use entity view url if doc type is entity', () => {
     props.doc = Immutable.fromJS({ _id: 'id', sharedId: 'sharedId', type: 'entity' });
     render();
     const snippets = component.find(SnippetList);
-    expect(snippets.props().documentViewUrl).toBe('/entity/sharedId/text-search');
+    expect(snippets.props().legacyBasePath).toBe('/entity');
+  });
+
+  it('should use legacy-entity base path when on legacy viewer', () => {
+    props.location = { pathname: '/en/legacy-entity/sharedId/info' };
+    render();
+    const snippets = component.find(SnippetList);
+    expect(snippets.props().legacyBasePath).toBe('/legacy-entity');
   });
 
   describe('blankState', () => {

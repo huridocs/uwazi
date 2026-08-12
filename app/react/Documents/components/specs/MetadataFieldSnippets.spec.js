@@ -14,9 +14,8 @@ describe('SnippetList', () => {
 
   beforeEach(() => {
     props = {
-      doc: Immutable.fromJS({ _id: 'id', sharedId: 'sharedId', type: 'document' }),
+      sharedId: 'sharedId',
       searchTerm: 'snippet',
-      documentViewUrl: '/document/sharedId',
       fieldSnippets: Immutable.fromJS({
         field: 'metadata.summary',
         texts: ['metadata <b>snippet m1</b> found', 'metadata <b>snippet m2</b> found'],
