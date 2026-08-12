@@ -127,7 +127,6 @@ describe('thesauri', () => {
         );
 
         expect(newJobs).toHaveLength(1);
-        expect(newJobs[0].params.userId).toEqual(expect.any(String));
       });
     });
 

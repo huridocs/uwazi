@@ -1,4 +1,3 @@
-import { User } from '#api/users.v2/model/User.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
@@ -15,7 +14,6 @@ class CloneLanguageEntitiesJobFactory {
     const transactionManager = TransactionManagerFactory.default() as MongoTransactionManager;
     const entityDAO = EntitiesDAOFactory.default({
       transactionManager,
-      user: User.createFrom(null),
     });
     const filesDAO = FilesDAOFactory.default();
     const { jobsDispatcher } = ExecutionContext;

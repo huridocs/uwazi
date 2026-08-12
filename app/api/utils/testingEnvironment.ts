@@ -19,10 +19,7 @@ import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.
 import { TelemetryCollector } from '#api/core/libs/logger/TelemetryCollector.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { PostgresTransactionManagerFactory } from '#api/core/infrastructure/factories/PostgresTransactionManagerFactory.js';
-import {
-  DefaultDispatcher,
-  DefaultTestingQueueAdapter,
-} from '#api/core/libs/queue/configuration/factories.js';
+import { DefaultTestingQueueAdapter } from '#api/core/libs/queue/configuration/factories.js';
 import { appContext } from '#api/utils/AppContext.js';
 import { elasticTesting } from '#api/utils/elastic_testing.js';
 import testingDB, { DBFixture } from '#api/utils/testing_db.js';
@@ -33,6 +30,7 @@ import type { PGFixture } from '#api/utils/testing_pg.js';
 import { User } from '#api/users.v2/model/User.js';
 import { UserSchema } from '#shared/types/userType.js';
 import { ObjectUtils } from '#api/common.v2/utils/Object.js';
+import { UwaziDispatcherFactory } from '#api/core/infrastructure/jobs/UwaziDispatcherFactory.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -265,7 +263,7 @@ const testingEnvironment = {
       postgresTransactionManager: PostgresTransactionManagerFactory.default,
       eventEmitter: EventEmitterFactory.forTesting,
       jobsDispatcher: () =>
-        DefaultDispatcher(
+        UwaziDispatcherFactory(
           tenant.name,
           ExecutionContext.transactionManager,
           undefined,

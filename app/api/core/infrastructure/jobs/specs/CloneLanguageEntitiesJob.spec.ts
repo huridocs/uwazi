@@ -1,4 +1,5 @@
 /* eslint-disable max-statements */
+import { ObjectId } from 'mongodb';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { DBFixture } from '#api/utils/testing_db.js';
@@ -200,7 +201,11 @@ describe('CloneLanguageEntitiesJob', () => {
   describe('when jobInfo is not provided', () => {
     it('should not emit translationsInstallDone', async () => {
       const job = createSUT(mockWebSockets);
-      await job.handleDispatch(heartbeat, { pairs: [{ from: 'en', to: 'ja' }] } as any, undefined);
+      await job.handleDispatch(
+        heartbeat,
+        { pairs: [{ from: 'en', to: 'ja' }], userId: new ObjectId().toString() } as any,
+        undefined
+      );
 
       expect(mockWebSockets.emitToTenant).not.toHaveBeenCalled();
     });
