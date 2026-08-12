@@ -1,9 +1,9 @@
-import { registerTranslationsV2SyncModel } from '#api/core/infrastructure/mongodb/translation/registerTranslationsV2SyncModel.js';
 import { SyncHandlerRegistry } from './SyncHandlerRegistry.js';
 import { TemplatesSyncHandlerFactory } from './TemplatesSyncHandlerFactory.js';
 import { ThesauriSyncHandlerFactory } from './ThesauriSyncHandlerFactory.js';
 import { FilesSyncHandlerFactory } from './FilesSyncHandlerFactory.js';
 import { RelationshipTypesSyncHandlerFactory } from './RelationshipTypesSyncHandlerFactory.js';
+import { TranslationsSyncHandlerFactory } from './TranslationsSyncHandlerFactory.js';
 
 export function registerSyncHandlers(): void {
   SyncHandlerRegistry.register('templates', () => TemplatesSyncHandlerFactory.default());
@@ -12,5 +12,5 @@ export function registerSyncHandlers(): void {
     RelationshipTypesSyncHandlerFactory.default()
   );
   SyncHandlerRegistry.register('files', () => FilesSyncHandlerFactory.default());
-  registerTranslationsV2SyncModel();
+  SyncHandlerRegistry.register('translationsV2', () => TranslationsSyncHandlerFactory.default());
 }

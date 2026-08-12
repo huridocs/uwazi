@@ -45,16 +45,16 @@ Replace:
 
 These are architecture rules to reuse — not RelationshipType-specific detail:
 
-| Principle | Apply to translations |
-|-----------|------------------------|
-| Stable external contract, internal rewrite | Mammoth + by-item HTTP stay; ownership moves to core |
-| Hex layers in `app/api/core` | Domain → application (use cases + contracts) → infrastructure |
-| Explicit mutations; no application upsert | Create / Update / Delete (+ ImportPredefined orchestration) |
-| Contract-driven side effects | Templates/thesaurus/RT/settings call translation ports/use cases |
-| Facades optional | Prefer controllers → factories/use cases (or thin query services for GET) |
-| Integration-first tests | Prefer DB assertions; auth middleware mock OK at route boundary |
-| Postgres later, separate doc | One store only; no dual-write; flag/copy/cutover when that phase starts |
-| Avoid incomplete peer patterns | Do not copy Entities partial cutover; do not copy RT Get*UseCase |
+| Principle                                  | Apply to translations                                                     |
+| ------------------------------------------ | ------------------------------------------------------------------------- |
+| Stable external contract, internal rewrite | Mammoth + by-item HTTP stay; ownership moves to core                      |
+| Hex layers in `app/api/core`               | Domain → application (use cases + contracts) → infrastructure             |
+| Explicit mutations; no application upsert  | Create / Update / Delete (+ ImportPredefined orchestration)               |
+| Contract-driven side effects               | Templates/thesaurus/RT/settings call translation ports/use cases          |
+| Facades optional                           | Prefer controllers → factories/use cases (or thin query services for GET) |
+| Integration-first tests                    | Prefer DB assertions; auth middleware mock OK at route boundary           |
+| Postgres later, separate doc               | One store only; no dual-write; flag/copy/cutover when that phase starts   |
+| Avoid incomplete peer patterns             | Do not copy Entities partial cutover; do not copy RT Get*UseCase          |
 
 ---
 
@@ -62,11 +62,11 @@ These are architecture rules to reuse — not RelationshipType-specific detail:
 
 ### Naming (three different “v2”s)
 
-| Name | Meaning |
-|------|---------|
+| Name                     | Meaning                                                    |
+| ------------------------ | ---------------------------------------------------------- |
 | **translations v2 (DB)** | By-item Mongo collection `translationsV2` (migration 144+) |
-| **`app/api/i18n.v2`** | Proto-hexagonal module (contract, DS, services, models) |
-| **Core V2 hex** | Target home under `app/api/core` (this migration) |
+| **`app/api/i18n.v2`**    | Proto-hexagonal module (contract, DS, services, models)    |
+| **Core V2 hex**          | Target home under `app/api/core` (this migration)          |
 
 Unrelated: `EntityTranslation`, `externalIntegrations.v2/automaticTranslation`.
 
@@ -99,17 +99,17 @@ HTTP /api/translations*          HTTP /api/v2/translations
 
 ### Public HTTP (must stay stable for Phase 1)
 
-| Method | Path | Shape | Auth |
-|--------|------|-------|------|
-| GET | `/api/translations` | Mammoth `{ rows: [{ locale, contexts[] }] }` | public |
-| POST | `/api/translations` | Mammoth locale doc | admin |
-| POST | `/api/translations/import` | multipart + context | admin |
-| POST | `/api/translations/populate` | `{ locale }` | admin |
-| POST | `/api/translations/setasdeafult` | `{ key }` (typo is stable) | admin |
-| POST/DELETE | `/api/translations/languages` | language install/delete | admin |
-| GET | `/api/languages` | available languages | public |
-| GET | `/api/v2/translations` | flat by-item list | public |
-| POST | `/api/v2/translations` | by-item array | admin |
+| Method      | Path                             | Shape                                        | Auth   |
+| ----------- | -------------------------------- | -------------------------------------------- | ------ |
+| GET         | `/api/translations`              | Mammoth `{ rows: [{ locale, contexts[] }] }` | public |
+| POST        | `/api/translations`              | Mammoth locale doc                           | admin  |
+| POST        | `/api/translations/import`       | multipart + context                          | admin  |
+| POST        | `/api/translations/populate`     | `{ locale }`                                 | admin  |
+| POST        | `/api/translations/setasdeafult` | `{ key }` (typo is stable)                   | admin  |
+| POST/DELETE | `/api/translations/languages`    | language install/delete                      | admin  |
+| GET         | `/api/languages`                 | available languages                          | public |
+| GET         | `/api/v2/translations`           | flat by-item list                            | public |
+| POST        | `/api/v2/translations`           | by-item array                                | admin  |
 
 Sockets:
 
@@ -137,18 +137,18 @@ RT deferred translations ownership: copied Templates’ port + `Legacy*Translati
 
 ## Decision record (locked)
 
-| ID | Decision | Status |
-|----|----------|--------|
-| D1 | Phase 1 = V2 hex in `app/api/core` on Mongo `translationsV2` only | Locked |
-| D2 | Keep legacy `/api/translations*` **contracts** identical; reimplement as **core hex** | Locked |
-| D3 | Keep `/api/v2/translations` by-item API under core | Locked |
-| D4 | Internal callers migrate off `#api/i18n/translations` to core mutation use cases/ports; retire Legacy\* wrappers | Locked |
-| D5 | **No application Upsert.** Create / Update / Delete (+ ImportPredefined). HTTP may branch create vs update | Locked |
-| D6 | Sockets `translationsChange` (legacy locale DTO) and `translationKeysChange` (by-item) stay until FE cutover | Locked |
-| D7 | FE Settings/atom cutover = Phase 1b follow-up, not required to close Phase 1 | Locked |
-| D8 | Postgres = later doc; one store; sync namespace `translationsV2` kept | Locked |
-| D9 | Tests: integration-first; parity with current behavior; auth mock OK at routes | Locked |
-| D10 | **GETs = thin controller → QueryService/DAO; mutations = UseCases.** No `GetTranslationsUseCase` | Locked |
+| ID  | Decision                                                                                                         | Status |
+| --- | ---------------------------------------------------------------------------------------------------------------- | ------ |
+| D1  | Phase 1 = V2 hex in `app/api/core` on Mongo `translationsV2` only                                                | Locked |
+| D2  | Keep legacy `/api/translations*` **contracts** identical; reimplement as **core hex**                            | Locked |
+| D3  | Keep `/api/v2/translations` by-item API under core                                                               | Locked |
+| D4  | Internal callers migrate off `#api/i18n/translations` to core mutation use cases/ports; retire Legacy\* wrappers | Locked |
+| D5  | **No application Upsert.** Create / Update / Delete (+ ImportPredefined). HTTP may branch create vs update       | Locked |
+| D6  | Sockets `translationsChange` (legacy locale DTO) and `translationKeysChange` (by-item) stay until FE cutover     | Locked |
+| D7  | FE Settings/atom cutover = Phase 1b follow-up, not required to close Phase 1                                     | Locked |
+| D8  | Postgres = later doc; one store; sync namespace `translationsV2` kept                                            | Locked |
+| D9  | Tests: integration-first; parity with current behavior; auth mock OK at routes                                   | Locked |
+| D10 | **GETs = thin controller → QueryService/DAO; mutations = UseCases.** No `GetTranslationsUseCase`                 | Locked |
 
 ### D5 detail — upsert is convenience, not unavoidable
 
@@ -165,12 +165,12 @@ Idempotent sync writes may remain at sync/DS infrastructure without an applicati
 
 ### D10 detail — getter pattern to follow
 
-| Module | GET approach |
-|--------|----------------|
-| Templates | `GetTemplatesController` → `TemplatesDAOFactory` |
-| Thesauri | `GetThesauriController` → `ThesauriDAOFactory` |
-| Users | `GetUsersController` → `UsersQueryServiceFactory` |
-| Entities | `GetEntityController` → query service / DAO |
+| Module             | GET approach                                                |
+| ------------------ | ----------------------------------------------------------- |
+| Templates          | `GetTemplatesController` → `TemplatesDAOFactory`            |
+| Thesauri           | `GetThesauriController` → `ThesauriDAOFactory`              |
+| Users              | `GetUsersController` → `UsersQueryServiceFactory`           |
+| Entities           | `GetEntityController` → query service / DAO                 |
 | Relationship types | `GetRelationshipTypesUseCase` — **known debt; do not copy** |
 
 Translations GETs (mammoth get, by-item get, available languages) follow the thin controller pattern from day one.
@@ -217,18 +217,18 @@ HTTP /api/translations* (legacy locale DTO)     HTTP /api/v2/translations (by-it
 
 All writers must stop calling `#api/i18n/translations` and use core ports/use cases.
 
-| Caller | Today | Target |
-|--------|-------|--------|
-| Create/Update Template | `TemplateTranslationService` → `TranslationsService` (shared TM) | Done |
-| Delete Template | `translationsDS.deleteByContextId` (+ bulk key cleanup) | Same DS/use case under core ownership |
-| Thesaurus create/update/delete | `ThesaurusTranslationService` → DS | Keep Thesaurus-style; DS/contract moves under core |
-| Create/Update/Delete RelationshipType | `RelationshipTypeTranslationService` → `TranslationsService` (shared TM) | Done |
-| Settings Menu / Filters | `translations.updateContext` | Core UpdateTranslationContext |
-| CSV v1/v2 thesauri translations | façade `updateEntries` / DS upsert | Create/Update entries use cases (branch at edge) |
-| AddLanguage | DS clone + façade `importPredefined` | Keep clone in use case; ImportPredefined as core use case (TX boundary to resolve) |
-| DeleteLanguage | DS `deleteByLanguage` | Core delete-by-language |
-| Sync | `translationsV2` + sync DS | Keep namespace; handler uses core DS/sync adapter |
-| Denorm / search / dataviz (reads) | façade get or cached DS | Thin query / cached query under core |
+| Caller                                | Today                                                                    | Target                                                                             |
+| ------------------------------------- | ------------------------------------------------------------------------ | ---------------------------------------------------------------------------------- |
+| Create/Update Template                | `TemplateTranslationService` → `TranslationsService` (shared TM)         | Done                                                                               |
+| Delete Template                       | `translationsDS.deleteByContextId` (+ bulk key cleanup)                  | Same DS/use case under core ownership                                              |
+| Thesaurus create/update/delete        | `ThesaurusTranslationService` → DS                                       | Keep Thesaurus-style; DS/contract moves under core                                 |
+| Create/Update/Delete RelationshipType | `RelationshipTypeTranslationService` → `TranslationsService` (shared TM) | Done                                                                               |
+| Settings Menu / Filters               | `translations.updateContext`                                             | Core UpdateTranslationContext                                                      |
+| CSV v1/v2 thesauri translations       | façade `updateEntries` / DS upsert                                       | Create/Update entries use cases (branch at edge)                                   |
+| AddLanguage                           | DS clone + façade `importPredefined`                                     | Keep clone in use case; ImportPredefined as core use case (TX boundary to resolve) |
+| DeleteLanguage                        | DS `deleteByLanguage`                                                    | Core delete-by-language                                                            |
+| Sync                                  | `translationsV2` + sync DS                                               | Keep namespace; handler uses core DS/sync adapter                                  |
+| Denorm / search / dataviz (reads)     | façade get or cached DS                                                  | Thin query / cached query under core                                               |
 
 ---
 
@@ -290,77 +290,41 @@ All writers must stop calling `#api/i18n/translations` and use core ports/use ca
   - [x] Delete `i18n/translations.ts` façade; migrate remaining specs to core factories / QueryService (no façade-shaped helper module)
 - [x] **2A polish:** extend `TranslationsService` with thesaurus/DeleteTemplate DS ops (`deleteKeysByContext`, `bulkDeleteKeysByContext`, `updateKeysByContextV2`, `updateContextLabel`, ambient `insert`) then switch those callers — TX already correct; consistency only
 - [x] Parity tests for façade + RT/thesaurus/language + core DS/domain; expand syncWorker smoke as routes move
-- [ ] **Sync handler factory peel (motor seam)** — see dedicated section below
-- [ ] `preserve.createEmptyThesauri` → `CreateThesaurusUseCase` (stop ad-hoc `TM.run` around `ThesauriService`)
+- [x] **Sync handler factory peel (motor seam)** — see dedicated section below
+- [x] `preserve.createEmptyThesauri` → `CreateThesaurusUseCase` (stop ad-hoc `TM.run` around `ThesauriService`)
 - [ ] Document Phase 1b FE checklist; open `translations-postgres.md` when starting Postgres
 
-### Pending — Sync `translationsV2` → SyncHandlerFactory + registry
+### Done — Sync `translationsV2` → SyncHandlerFactory + registry
 
-**Why this is pending (not done in the current commit slice)**
+**Implemented**
 
-Today sync registration is an interim peel of the old `i18n/v2_support` side-effect:
-
-- `app/api/core/infrastructure/mongodb/translation/registerTranslationsV2SyncModel.ts` assigns `models.translationsV2 = () => new MongoTranslationsSyncDataSource(...)`
-- `registerSyncHandlers()` calls that registrar
-- `POST /api/sync` still has a **special-case** branch for `namespace === 'translationsV2'`: compound-key `delete({ _id: '' }, { language, key, 'context.id' })` then `save(data)` via `models.translationsV2()`
-
-That works for Mongo-only Phase 1, but it is **not** the motor-swappable pattern used by peers.
-
-**Peer pattern (target)**
-
-| Namespace | Wiring today |
-|-----------|----------------|
-| `templates` | `SyncHandlerRegistry` ← `TemplatesSyncHandlerFactory.default()` (Mongo / Postgres via feature flag) |
-| `dictionaries` | `ThesauriSyncHandlerFactory` |
-| `relationtypes` | `RelationshipTypesSyncHandlerFactory` |
-| `files` | `FilesSyncHandlerFactory` |
-| `translationsV2` | **`models.translationsV2` + special-case in `sync/routes.ts`** (interim) |
-
-**What to implement**
-
-1. Add `app/api/sync/TranslationsSyncHandlerFactory.ts` (same shape as templates/thesauri):
-   - `static default()` returns the sync handler for the current tenant
-   - Today: always Mongo implementation
-   - Later (Postgres phase): branch on a translations Postgres feature flag (documented in `translations-postgres.md`, not invented here)
-2. Implement `MongoTranslationsSyncHandler` under `app/api/sync/` (or thin adapter over existing `MongoTranslationsSyncDataSource`) that implements the sync **handler** contract used by the registry — including the **compound-key delete + save** behavior currently inline in `sync/routes.ts` (language + key + `context.id`). Do not leave that logic in the Express route.
-3. Register in `registerSyncHandlers()`:
-   - `SyncHandlerRegistry.register('translationsV2', () => TranslationsSyncHandlerFactory.default())`
-4. Remove the `translationsV2` special-case from `sync/routes.ts` so it uses the same path as other namespaces (`SyncHandlerRegistry.get(namespace)` → `save` / `saveMultiple`).
-5. Delete `registerTranslationsV2SyncModel.ts` and stop assigning `models.translationsV2` for production sync (specs that stub `models.translationsV2` must move to registry / handler mocks).
-6. Keep sync namespace name **`translationsV2`** stable (sync workers / lastSyncs / fixtures).
-
-**Why not only “wrap Mongo in a factory” without registry**
-
-A factory that still only feeds `models.translationsV2` would hide the `new Mongo…` call but would **not** unlock Postgres or remove the route special-case. The registry + handler is the real seam; Postgres handler comes in the Postgres phase once the factory/registry path exists.
-
-**Out of scope for that peel**
-
-- Postgres translations schema / dual-read / data copy (separate doc)
-- Changing the public sync payload shape for translation entries
-- FE / mammoth HTTP contracts
-
-**Effort:** ~0.5–1 day (handler + route cleanup + sync route/spec updates). Low risk if compound-key delete semantics are preserved and `syncWorker` / `sync/routes` specs stay green.
+1. `TranslationsSyncHandlerFactory` + `MongoTranslationsSyncHandler` under `app/api/sync/`
+2. Handler `save` preserves historical semantics: delete by natural key (`language` + `key` + `context.id`) then upsert
+3. Registered in `registerSyncHandlers()` as `translationsV2`
+4. Removed `translationsV2` special-case from `POST /api/sync` (uses registry like peers)
+5. Deleted `registerTranslationsV2SyncModel.ts` / `models.translationsV2` production registration
+6. Postgres branch deferred to `translations-postgres.md` (factory seam is ready)
 
 ### Assessment — façade kill (1) vs write-API polish (2)
 
 **Façade remaining surface**
 
-| Surface | Today | Target |
-|--------|--------|--------|
-| `get` / `save` / `updateEntries` / `v2StructureSave` / `addContext` | Thin → core factories / `v2_support` | Controllers + QueryService / UseCases; specs follow |
-| `deleteContext` / `updateContext` / `addLanguage` / `removeLanguage` | `v2_support` UC factories | Call factories directly |
-| `availableLanguages` | GitHub FS + `#shared/language` | Core query helper |
-| `importPredefined` | tmp file + `CSVLoader` + System | Core service (ops-sensitive) |
-| Types re-exports | From mapper | Import mapper from core |
+| Surface                                                              | Today                                | Target                                              |
+| -------------------------------------------------------------------- | ------------------------------------ | --------------------------------------------------- |
+| `get` / `save` / `updateEntries` / `v2StructureSave` / `addContext`  | Thin → core factories / `v2_support` | Controllers + QueryService / UseCases; specs follow |
+| `deleteContext` / `updateContext` / `addLanguage` / `removeLanguage` | `v2_support` UC factories            | Call factories directly                             |
+| `availableLanguages`                                                 | GitHub FS + `#shared/language`       | Core query helper                                   |
+| `importPredefined`                                                   | tmp file + `CSVLoader` + System      | Core service (ops-sensitive)                        |
+| Types re-exports                                                     | From mapper                          | Import mapper from core                             |
 
 **Effort (1):** ~1–2 days. Long poles: `importPredefined` + spec churn. Phase 1 bar = no **production** imports; specs may keep a thin test façade one PR longer.
 
 **Thesaurus / DeleteTemplate → `TranslationsService` (2)**
 
-| Caller | Needs | On `TranslationsService`? |
-|--------|--------|---------------------------|
+| Caller                  | Needs                                                                        | On `TranslationsService`?      |
+| ----------------------- | ---------------------------------------------------------------------------- | ------------------------------ |
 | Thesaurus create/update | insert, `deleteKeysByContext`, `updateKeysByContextV2`, `updateContextLabel` | Mostly missing (DS-only today) |
-| DeleteTemplate | `bulkDeleteKeysByContext`, `deleteByContextId` | Only delete-by-context |
+| DeleteTemplate          | `bulkDeleteKeysByContext`, `deleteByContextId`                               | Only delete-by-context         |
 
 Already share parent TM via DS — boundaries OK. Prefer **2A** (extend service with same DS ops + `ensureTransaction`) over reshaping thesaurus into mammoth `updateContext`. Effort ~0.5–1 day after (1). Skip if only closing Phase 1.
 
@@ -389,14 +353,12 @@ Already share parent TM via DS — boundaries OK. Prefer **2A** (extend service 
 - Express: GET → QueryService; languages → AvailableLanguagesQueryService; populate → PopulateTranslationsController; Save* → orchestrator UseCase factories
 - Thesaurus metadata rename: `ThesaurusMetadataRenamerAdapter` → `denormalizeThesauriLabelInMetadata`
 - `app/api/i18n.v2/` removed; `i18n/routes` deleted; **`i18n/translations.ts` + `i18n/v2_support.ts` deleted**
-- Sync (**interim**): `registerTranslationsV2SyncModel()` → `models.translationsV2` = direct `MongoTranslationsSyncDataSource`. **Pending:** peel to `TranslationsSyncHandlerFactory` + `SyncHandlerRegistry` and remove route special-case (see TODOs).
-- Peeled production callers: Settings; csvExporter / denormalize / search; csvLoader + PendingThesauri; Save* controllers; languages + populate; denormalizeAllEntities; **entry-server SSR**
+- Sync: `TranslationsSyncHandlerFactory` + `MongoTranslationsSyncHandler` on `SyncHandlerRegistry` (`translationsV2`); compound-key delete lives in handler `save`; no `models.translationsV2` / route special-case
+- Peeled production callers: Settings; csvExporter / denormalize / search; csvLoader + PendingThesauri; Save* controllers; languages + populate; denormalizeAllEntities; **entry-server SSR**; **preserve → CreateThesaurusUseCase**
 - TX ownership: UseCases / Jobs open `TM.run()`; ambient services (`TranslationsService`, `ThesauriService`, `PendingThesauriValuesApplier.apply`) do not. CSV job owns TX around thesaurus append; translation value updates via `UpdateEntriesByContext` UC after commit.
-- Follow-ups deferred to after this review/commit:
-  - Sync handler factory + registry peel (above)
-  - `preserve.createEmptyThesauri` → `CreateThesaurusUseCase`
-  - Phase 1b FE checklist + `translations-postgres.md`
-- Phase 1 remaining for “module home killed”: done for HTTP/app writers; sync motor seam still interim as above
+- Follow-ups deferred:
+  - Phase 1b FE checklist + `translations-postgres.md` (Postgres sync handler branch when that phase starts)
+- Phase 1 “module home killed” + sync motor seam: done for current Mongo runtime
 
 ## V2 complete checklist (Phase 1)
 
@@ -410,7 +372,7 @@ Already share parent TM via DS — boundaries OK. Prefer **2A** (extend service 
 - [x] Template/RT sync via `TemplateTranslationService` / `RelationshipTypeTranslationService` → `TranslationsService` (no Legacy adapters; shared parent TM)
 - [x] Translation side effects for relationship types / thesaurus / language covered by existing integration tests
 - [x] Sync namespace `translationsV2` still green in syncWorker specs after route cutover
-- [ ] Sync `translationsV2` served via `TranslationsSyncHandlerFactory` + registry (no `models.translationsV2` / route special-case) — motor seam for Postgres later
+- [x] Sync `translationsV2` served via `TranslationsSyncHandlerFactory` + registry (no `models.translationsV2` / route special-case) — motor seam for Postgres later
 
 ## Phase 1b checklist (FE — later)
 

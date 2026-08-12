@@ -8,17 +8,8 @@ import { PreserveConfig } from '#shared/types/settingsType.js';
 import { ObjectIdSchema } from '#shared/types/commonTypes.js';
 import { PropertyTypeEnum } from '#api/core/domain/template/PropertyType.js';
 import { TemplateFacade } from '#api/core/infrastructure/facades/TemplateFacade.js';
-import { ThesauriService } from '#api/core/application/ThesauriService.js';
-import { ThesauriDataSourceFactory } from '#api/core/infrastructure/factories/ThesauriDataSourceFactory.js';
-import { ThesaurusTranslationService } from '#api/core/application/thesaurusTranslationService/ThesaurusTranslationService.js';
-import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
-import { TranslationsServiceFactory } from '#api/core/infrastructure/factories/TranslationsServiceFactory.js';
-import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
-import { Thesaurus } from '#api/core/domain/thesaurus/Thesaurus.js';
+import { CreateThesaurusUseCaseFactory } from '#api/core/infrastructure/factories/CreateThesaurusUseCaseFactory.js';
 import { MongoThesaurusMapper } from '#api/core/infrastructure/mongodb/thesauri/MongoThesaurusMapper.js';
-import { UwaziDispatcherFactory } from '#api/core/infrastructure/jobs/UwaziDispatcherFactory.js';
-import { DispatcherAdapter } from '#api/core/infrastructure/jobs/DispatcherAdapter.js';
-import { tenants } from '../tenants/index.js';
 
 export const Preserve = {
   async setup(language: string, user: User) {
@@ -80,8 +71,8 @@ export const Preserve = {
    * it is expected that this should be a use case the control the transaction, so it's up to this use case
    * decide either or not have creation of Template, Thesaurus transactional consistent (inside same transaction).
    *
-   * For now, we are creating separated transaction for Thesaurus creation inside `createEmptyThesauri` method and
-   * another for Template creation here - this is not ideal at all.
+   * For now, Thesaurus creation goes through CreateThesaurusUseCase (owns its TM.run) and Template
+   * creation is a separate transaction — this is not ideal at all.
    */
 
   async createTemplate(_language: string) {
@@ -101,25 +92,10 @@ export const Preserve = {
   },
 
   async createEmptyThesauri(name?: string): Promise<WithId<ThesaurusSchema>> {
-    const transactionManager = TransactionManagerFactory.default();
-
-    const thesauriService = new ThesauriService({
-      thesauriDS: ThesauriDataSourceFactory.default({ transactionManager }),
-      thesaurusTranslationService: new ThesaurusTranslationService({
-        settingsDS: SettingsDataSourceFactory.default({ transactionManager }),
-        translationsService: TranslationsServiceFactory.default({ transactionManager }),
-      }),
-      dispatcher: new DispatcherAdapter(
-        UwaziDispatcherFactory(tenants.current().name, transactionManager)
-      ),
-    });
-
-    const thesaurus = Thesaurus.create({
+    const thesaurus = await CreateThesaurusUseCaseFactory.default().execute({
       name: name || 'Preserve',
       values: [],
     });
-
-    await transactionManager.run(async () => thesauriService.insert(thesaurus));
 
     return MongoThesaurusMapper.toDBO(thesaurus) as WithId<ThesaurusSchema>;
   },
