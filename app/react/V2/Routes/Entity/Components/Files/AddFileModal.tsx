@@ -19,8 +19,7 @@ import { useEntityFiles } from './EntityFilesContext.js';
 
 type AddAs = 'supporting' | 'primary';
 
-const isAddAs = (value: string): value is AddAs =>
-  value === 'supporting' || value === 'primary';
+const isAddAs = (value: string): value is AddAs => value === 'supporting' || value === 'primary';
 
 const controlClass =
   'w-full appearance-none rounded border border-border bg-paper py-1 pl-2 pr-7 text-xs text-ink focus:outline-none focus:ring-1 focus:ring-ink/20 disabled:opacity-70';
@@ -233,7 +232,11 @@ const AddFileModal = () => {
                         className={`${controlClass} truncate`}
                       >
                         {addAsOptions.map(option => (
-                          <option key={option.value} value={option.value} disabled={option.disabled}>
+                          <option
+                            key={option.value}
+                            value={option.value}
+                            disabled={option.disabled}
+                          >
                             {option.label}
                           </option>
                         ))}

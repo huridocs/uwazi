@@ -45,7 +45,8 @@ const context = {
   selfTemplateId: 'tpl1',
   relationshipTypeName: (id: string) => id,
   templateName: (id: string) => (id === 'tpl2' ? 'Person' : 'Case'),
-  templateColor: (id: string) => (id === 'tpl2' ? '#ff0000' : id === 'tpl1' ? '#00aa00' : undefined),
+  templateColor: (id: string) =>
+    id === 'tpl2' ? '#ff0000' : id === 'tpl1' ? '#00aa00' : undefined,
 };
 
 describe('relationshipsPanelGraph', () => {
@@ -125,12 +126,7 @@ describe('relationshipsPanelGraph', () => {
     expect(Number.isFinite(fitted.tx)).toBe(true);
     expect(Number.isFinite(fitted.ty)).toBe(true);
 
-    const wideType = computeFitTransform(
-      nodes,
-      spokes,
-      'Hi',
-      'WWWWWWWWWWWWWWWWWWWWWWWWWWWW'
-    );
+    const wideType = computeFitTransform(nodes, spokes, 'Hi', 'WWWWWWWWWWWWWWWWWWWWWWWWWWWW');
     expect(wideType.scale).toBeLessThanOrEqual(fitted.scale);
   });
 });

@@ -49,9 +49,7 @@ const MultiselectListGroup = ({
             <Translate>Group</Translate>
           </button>
         </div>
-        {isOpen && (
-          <ul className={`${itemContainerClassName ?? 'space-y-1 ps-3'}`}>{children}</ul>
-        )}
+        {isOpen && <ul className={`${itemContainerClassName ?? 'space-y-1 ps-3'}`}>{children}</ul>}
       </li>
     );
   }

@@ -27,10 +27,8 @@ type RelationshipConnectionsTableProps = {
   emptyLabel?: string;
 };
 
-const cellText = (
-  column: RelationshipTableColumn,
-  entityId: string
-): string | undefined => column.cellsByEntityId?.[entityId];
+const cellText = (column: RelationshipTableColumn, entityId: string): string | undefined =>
+  column.cellsByEntityId?.[entityId];
 
 const RelationshipConnectionsTable = ({
   rows,
@@ -64,9 +62,7 @@ const RelationshipConnectionsTable = ({
                   </span>
                 </th>
               ))}
-              {actionCol ? (
-                <th className="sticky right-0 w-0 bg-paper px-2" aria-hidden />
-              ) : null}
+              {actionCol ? <th className="sticky right-0 w-0 bg-paper px-2" aria-hidden /> : null}
             </tr>
           </thead>
           <tbody>
@@ -142,8 +138,4 @@ const RelationshipConnectionsTable = ({
 };
 
 export { RelationshipConnectionsTable };
-export type {
-  RelationshipConnectionsTableProps,
-  RelationshipTableColumn,
-  RelationshipTableRow,
-};
+export type { RelationshipConnectionsTableProps, RelationshipTableColumn, RelationshipTableRow };

@@ -121,9 +121,7 @@ const MetadataTab = ({ entity, host }: MetadataTabProps) => {
         host === 'side' ? 'px-3' : 'px-4'
       }`}
     >
-      {!showEditor && (
-        <MetadataRecord entity={entity} onOpenEntity={openEntityOverlayTarget} />
-      )}
+      {!showEditor && <MetadataRecord entity={entity} onOpenEntity={openEntityOverlayTarget} />}
       {showEditor && (
         <>
           {saveError && (

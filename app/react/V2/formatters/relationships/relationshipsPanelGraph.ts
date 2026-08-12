@@ -381,7 +381,10 @@ const computeFitTransform = (
   const height = Math.max(1, maxY - minY);
   const scale = Math.max(
     FIT_SCALE_MIN,
-    Math.min(FIT_SCALE_MAX, Math.min((VIEW_W - FIT_PAD * 2) / width, (VIEW_H - FIT_PAD * 2) / height))
+    Math.min(
+      FIT_SCALE_MAX,
+      Math.min((VIEW_W - FIT_PAD * 2) / width, (VIEW_H - FIT_PAD * 2) / height)
+    )
   );
   const contentCx = (minX + maxX) / 2;
   const contentCy = (minY + maxY) / 2;

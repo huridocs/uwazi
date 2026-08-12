@@ -79,7 +79,11 @@ const FileTabFooter = () => {
           </Button>
           {deletableSelectedRows.length > 0 ? (
             <EntityWriteAuthorization>
-              <Button variant="dangerSubtle" className="inline-flex items-center gap-1.5" onClick={requestDeleteSelected}>
+              <Button
+                variant="dangerSubtle"
+                className="inline-flex items-center gap-1.5"
+                onClick={requestDeleteSelected}
+              >
                 <TrashIcon className="h-3 w-3 shrink-0" />
                 <Translate>Delete</Translate> {deletableSelectedRows.length}
               </Button>

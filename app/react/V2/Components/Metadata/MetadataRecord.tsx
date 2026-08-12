@@ -22,10 +22,7 @@ import { buildMetadataRecordFields } from './buildMetadataRecordFields.js';
 import { isLongField, partitionMetadataRecord } from './metadataPropertyLayout.js';
 import { renderFieldContent, renderScalarContent } from './Components/metadataFieldContent.js';
 import { fieldTitle, specializedCardTitle } from './Components/metadataFieldTitle.js';
-import {
-  connectionPillsForField,
-  type OpenEntityTarget,
-} from './Components/ConnectionPills.js';
+import { connectionPillsForField, type OpenEntityTarget } from './Components/ConnectionPills.js';
 
 type MetadataRecordProps = {
   entity: Entity;

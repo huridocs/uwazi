@@ -267,12 +267,11 @@ const DrawerFilesList = () => {
   return (
     <div className="flex min-h-0 flex-1 flex-col">
       <div className="min-h-0 flex-1 overflow-auto px-3 py-4 pb-8">
-
         <div className="mb-2 flex items-baseline justify-between px-1">
-        <SectionHeader label="Primary documents" />
-              <span className="shrink-0 text-nano tabular-nums text-ink-tertiary">
-                {primaryCountLabel}
-              </span>
+          <SectionHeader label="Primary documents" />
+          <span className="shrink-0 text-nano tabular-nums text-ink-tertiary">
+            {primaryCountLabel}
+          </span>
         </div>
         {primaryRows.length === 0 ? (
           <p className="mb-5 px-1 text-xs italic text-ink-tertiary">

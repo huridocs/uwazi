@@ -33,11 +33,13 @@ const fileSupportsLanguage = (file: FileLike) => {
 };
 
 const fileLanguageSelectOptions = (): OptionSchema[] => [
-  ...availableLanguages.map(item => ({
-    key: item.ISO639_3,
-    value: item.ISO639_3,
-    label: item.ISO639_1.toUpperCase(),
-  })).sort((a, b) => a.label.localeCompare(b.label)),
+  ...availableLanguages
+    .map(item => ({
+      key: item.ISO639_3,
+      value: item.ISO639_3,
+      label: item.ISO639_1.toUpperCase(),
+    }))
+    .sort((a, b) => a.label.localeCompare(b.label)),
   { key: 'other', value: 'other', label: t('System', 'other', 'other', false) },
 ];
 

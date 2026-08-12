@@ -8,7 +8,11 @@ import type { Entity } from '#V2/api/entities/types.js';
 import { inheritedCellText } from '../EntityEditor/functions/relationshipFieldHelpers.js';
 import { MetadataCard } from './MetadataCard.js';
 import { RelationCaption } from './RelationCaption.js';
-import { ConnectionPills, isEntityRelationshipValue, type OpenEntityTarget } from './ConnectionPills.js';
+import {
+  ConnectionPills,
+  isEntityRelationshipValue,
+  type OpenEntityTarget,
+} from './ConnectionPills.js';
 import { RelationshipConnectionsTable } from './RelationshipConnectionsTable.js';
 
 type RelationshipProps = {

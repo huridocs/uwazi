@@ -23,14 +23,8 @@ type MetadataDisplayFooterProps = {
 
 const MetadataDisplayFooter = ({ host }: MetadataDisplayFooterProps) => {
   const entity = useEntityScopedEntity();
-  const {
-    isEditing,
-    isSaving,
-    formMountHost,
-    formId,
-    cancelEdit,
-    startEditing,
-  } = useMetadataEditing();
+  const { isEditing, isSaving, formMountHost, formId, cancelEdit, startEditing } =
+    useMetadataEditing();
   const [sharing, setSharing] = useState(false);
   const showSaveCancel = isEditing && formMountHost === host;
 
