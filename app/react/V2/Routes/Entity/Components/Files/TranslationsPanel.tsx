@@ -10,11 +10,13 @@ const TranslationsPanel = ({
   focusedRow,
   primaryRows,
   onFocusRow,
+  onViewRow,
   onDeleteRow,
 }: {
   focusedRow?: EntityFileRow;
   primaryRows: EntityFileRow[];
   onFocusRow: (row: EntityFileRow) => void;
+  onViewRow: (row: EntityFileRow) => void;
   onDeleteRow: (row: EntityFileRow) => void;
 }) => {
   if (!focusedRow) {
@@ -54,7 +56,7 @@ const TranslationsPanel = ({
             type="button"
             onClick={event => {
               event.stopPropagation();
-              onFocusRow(file);
+              onViewRow(file);
             }}
             aria-label={`View ${file.displayName}`}
             className="rounded p-1 text-ink-tertiary transition-colors hover:bg-parchment"

@@ -5,7 +5,6 @@ import { Translate } from '#app/I18N/index.js';
 import { relationshipTypesAtom } from '#V2/atoms/relationshipTypes.js';
 import { RelationshipMetadataProperty } from '#V2/formatters/types.js';
 import type { Entity } from '#V2/api/entities/types.js';
-import { inheritedCellText } from '../EntityEditor/functions/relationshipFieldHelpers.js';
 import { MetadataCard } from './MetadataCard.js';
 import { RelationCaption } from './RelationCaption.js';
 import {
@@ -14,6 +13,7 @@ import {
   type OpenEntityTarget,
 } from './ConnectionPills.js';
 import { RelationshipConnectionsTable } from './RelationshipConnectionsTable.js';
+import { inheritedCellContent } from './inheritedCellContent.js';
 
 type RelationshipProps = {
   label: string;
@@ -63,7 +63,7 @@ const Relationship = ({
         {
           label: inheritLabel,
           cellsByEntityId: Object.fromEntries(
-            rows.map(row => [row.id, inheritedCellText(sourceMetadata, row.id)])
+            rows.map(row => [row.id, inheritedCellContent(sourceMetadata, row.id)])
           ),
         },
       ]

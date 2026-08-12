@@ -1,12 +1,14 @@
 import React, { type ReactNode } from 'react';
 import { LinkIcon } from '@heroicons/react/24/outline';
-import { Translate } from '#app/I18N/index.js';
+import { I18NLinkV2, Translate } from '#app/I18N/index.js';
 import { TemplatePill } from '#V2/Components/UI/TemplatePill.js';
 import { CountryFlag } from '../../CustomIcons/index.js';
 
+const DEFAULT_ENTITY_BASE_PATH = '/entityv2/';
+
 type RelationshipTableColumn = {
   label: string;
-  cellsByEntityId?: Record<string, string | undefined>;
+  cellsByEntityId?: Record<string, ReactNode>;
 };
 
 type RelationshipTableRow = {
@@ -27,8 +29,53 @@ type RelationshipConnectionsTableProps = {
   emptyLabel?: string;
 };
 
-const cellText = (column: RelationshipTableColumn, entityId: string): string | undefined =>
+const cellContent = (column: RelationshipTableColumn, entityId: string): ReactNode =>
   column.cellsByEntityId?.[entityId];
+
+const renderInheritedCell = (cell: ReactNode): ReactNode => {
+  if (!cell) {
+    return <span className="text-xs text-ink-muted">—</span>;
+  }
+  if (typeof cell === 'string') {
+    return <span className="whitespace-nowrap text-sm font-medium text-ink">{cell}</span>;
+  }
+  return cell;
+};
+
+const entityCellForRow = (
+  row: RelationshipTableRow,
+  pill: ReactNode,
+  onEntityClick?: (row: RelationshipTableRow) => void
+): ReactNode => {
+  if (row.authorized === false) {
+    return pill;
+  }
+  const title = row.label || row.id;
+  if (onEntityClick) {
+    return (
+      <button
+        type="button"
+        className="inline-flex max-w-full cursor-pointer items-center rounded-md transition-opacity hover:opacity-80"
+        title={title}
+        onClick={() => onEntityClick(row)}
+      >
+        {pill}
+      </button>
+    );
+  }
+  return (
+    <I18NLinkV2
+      className="inline-flex max-w-full items-center rounded-md transition-opacity hover:opacity-80"
+      to={`${DEFAULT_ENTITY_BASE_PATH}${row.id}`}
+      target="_blank"
+      rel="noreferrer"
+      localized={false}
+      title={title}
+    >
+      {pill}
+    </I18NLinkV2>
+  );
+};
 
 const RelationshipConnectionsTable = ({
   rows,
@@ -86,41 +133,22 @@ const RelationshipConnectionsTable = ({
                     />
                   </span>
                 );
-                const canOpen = row.authorized !== false && onEntityClick;
                 return (
                   <tr
                     key={row.id}
                     className="border-t border-border/40 transition-colors hover:bg-warm/30"
                   >
                     <td className="min-w-0 max-w-40 px-3 py-1.5 align-middle">
-                      {canOpen ? (
-                        <button
-                          type="button"
-                          className="inline-flex max-w-full cursor-pointer items-center rounded-md transition-opacity hover:opacity-80"
-                          title={row.label || row.id}
-                          onClick={() => onEntityClick(row)}
-                        >
-                          {pill}
-                        </button>
-                      ) : (
-                        pill
-                      )}
+                      {entityCellForRow(row, pill, onEntityClick)}
                     </td>
-                    {columns.map(column => {
-                      const cell = cellText(column, row.id);
-                      return (
-                        <td
-                          key={`${row.id}-${column.label}`}
-                          className="whitespace-nowrap border-s border-border/40 px-3 py-1.5 align-middle"
-                        >
-                          {cell ? (
-                            <span className="text-sm font-medium text-ink">{cell}</span>
-                          ) : (
-                            <span className="text-xs text-ink-muted">—</span>
-                          )}
-                        </td>
-                      );
-                    })}
+                    {columns.map(column => (
+                      <td
+                        key={`${row.id}-${column.label}`}
+                        className="border-s border-border/40 px-3 py-1.5 align-middle"
+                      >
+                        {renderInheritedCell(cellContent(column, row.id))}
+                      </td>
+                    ))}
                     {actionCol ? (
                       <td className="sticky right-0 border-s border-border/40 bg-paper px-2 py-1 align-middle">
                         {renderActions?.(row)}

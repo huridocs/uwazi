@@ -37,7 +37,10 @@ const RelationshipsPanelBody = ({
         activeRelationshipId={activeRelationshipId}
         onNodeClick={markerId => {
           const marker = markers.find(item => item._id === markerId);
-          if (marker) onView(marker);
+          if (marker) {
+            onClick(marker);
+            onView(marker);
+          }
         }}
       />
     );

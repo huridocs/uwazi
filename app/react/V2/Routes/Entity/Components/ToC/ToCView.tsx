@@ -45,8 +45,7 @@ const ToCView = ({ generatedToc, panel }: ToCViewProps) => {
           </p>
           <p className="mt-1 text-xs text-ink-tertiary">
             <Translate>
-              You can start by selecting text in the document and clicking the &quot;Add to
-              ToC&quot; button.
+              You can start by selecting text in the document and clicking the &quot;Add to ToC&quot; button.
             </Translate>
           </p>
         </div>

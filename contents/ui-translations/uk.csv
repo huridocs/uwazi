@@ -916,6 +916,7 @@ Primary,Primary
 Primary button,Primary button
 Primary document,Primary document
 Primary Documents,Основні документи
+Primary documents,Primary documents
 Priority sorting,Пріоритетне сортування
 Priority sorting description,"Властивості, позначені як пріоритетні, будуть використані як критерії сортування за замовчуванням. Якщо більше однієї властивості позначено як пріоритетне сортування, система спробує підібрати найкращий варіант. При перерахуванні змішаних типів шаблонів система підбере найкращий комбінований варіант сортування за пріоритетами."
 Private,Private
@@ -1449,9 +1450,9 @@ You can add one or many items in this form.,Ви можете додати од�
 You can also enter this secret key into your Authenticator app.,Ви також можете ввести цей секретний ключ у вашому додатку Authenticator.
 You can create metadata templates in,Ви можете створювати шаблони метаданих у
 "You can embed advanced components like maps, charts and entity lists in your page.","You can embed advanced components like maps, charts and entity lists in your page."
-"You can start by selecting text in the document and clicking the ""Add to ToC""
-                  button.","You can start by selecting text in the document and clicking the ""Add to ToC""
-                  button."
+"You can start by selecting text in the document and clicking the ""Add to
+              ToC"" button.","You can start by selecting text in the document and clicking the ""Add to
+              ToC"" button."
 You do not have write permission on all entities,You do not have write permission on all entities
 You have unsaved changes. Discard them and leave this page? This action cannot be undone.,You have unsaved changes. Discard them and leave this page? This action cannot be undone.
 "You have unsaved changes. Discard them and switch language? This action cannot be

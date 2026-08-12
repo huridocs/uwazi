@@ -914,6 +914,7 @@ Primary,Primary
 Primary button,Primary button
 Primary document,Primary document
 Primary Documents,အဓိက စာရွက်စာတမ်းများ
+Primary documents,Primary documents
 Priority sorting,ဦးစားပေးမှု ခွဲခြားခြင်း
 Priority sorting description,"Properties marked as priority sorting will be used as default sorting criteria. If more than one property is marked as priority sorting the system will try to pick-up the best fit. When listing mixed template types, the system will pick-up the best combined priority sorting."
 Private,Private
@@ -1447,9 +1448,9 @@ You can add one or many items in this form.,You can add one or many items in thi
 You can also enter this secret key into your Authenticator app.,You can also enter this secret key into your Authenticator app.
 You can create metadata templates in,သင်သည် ဤနေရာတွင် မီတာဒေတာ ပုံစံပြားများကို ဖန်တီးနိုင်သည်
 "You can embed advanced components like maps, charts and entity lists in your page.","You can embed advanced components like maps, charts and entity lists in your page."
-"You can start by selecting text in the document and clicking the ""Add to ToC""
-                  button.","You can start by selecting text in the document and clicking the ""Add to ToC""
-                  button."
+"You can start by selecting text in the document and clicking the ""Add to
+              ToC"" button.","You can start by selecting text in the document and clicking the ""Add to
+              ToC"" button."
 You do not have write permission on all entities,You do not have write permission on all entities
 You have unsaved changes. Discard them and leave this page? This action cannot be undone.,You have unsaved changes. Discard them and leave this page? This action cannot be undone.
 "You have unsaved changes. Discard them and switch language? This action cannot be
