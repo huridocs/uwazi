@@ -1,27 +1,19 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { CheckIcon, ChevronDownIcon } from '@heroicons/react/24/outline';
+import { CheckIcon } from '@heroicons/react/24/outline';
 import { Translate } from '#app/I18N/index.js';
-import { LanguageUtils } from '#shared/language/index.js';
 import { EntityWriteAuthorization } from '#V2/Routes/Entity/Components/context/index.js';
-import { fileLanguageSelectOptions, fileSupportsLanguage } from './fileHelpers.js';
+import {
+  fileLanguageSelectOptions,
+  fileSupportsLanguage,
+  resolveFileLanguage,
+} from './fileHelpers.js';
 import { getRowIcon } from './fileRowIcon.js';
 import { FileDeleteAction } from './FileDeleteAction.js';
 import { FileDetailsField } from './FileDetailsField.js';
+import { FileDetailsCard, FileDetailsReadonlyMeta } from './FileDetailsShared.js';
 import { FileDocumentContextBadge } from './FileDocumentContextBadge.js';
+import { FileLanguageSelect } from './FileLanguageSelect.js';
 import { EntityFileRow, FileEditFocus } from './types.js';
-
-const resolveFileLanguage = (rawLanguage?: string) => {
-  if (!rawLanguage) {
-    return 'other';
-  }
-
-  if (rawLanguage === 'other') {
-    return 'other';
-  }
-
-  const known = LanguageUtils.fromISO639_3(rawLanguage, false);
-  return known?.ISO639_3 ?? 'other';
-};
 
 const FileDetailsEditor = ({
   row,
@@ -78,11 +70,8 @@ const FileDetailsEditor = ({
 
   return (
     <div className="space-y-3">
-      <div className="space-y-3 rounded-md bg-warm p-4">
-        <div className="flex items-center justify-between">
-          <div className="text-xs font-semibold uppercase tracking-wider text-ink-tertiary">
-            <Translate>File details</Translate>
-          </div>
+      <FileDetailsCard
+        headerAction={
           <EntityWriteAuthorization>
             <button
               type="button"
@@ -94,8 +83,8 @@ const FileDetailsEditor = ({
               <Translate>Done</Translate>
             </button>
           </EntityWriteAuthorization>
-        </div>
-
+        }
+      >
         <FileDetailsField label={<Translate>Name</Translate>}>
           <div className="flex items-center gap-2 rounded border border-border bg-paper focus-within:ring-1 focus-within:ring-carbon/30">
             <span className="ml-2 shrink-0">{getRowIcon(row)}</span>
@@ -119,39 +108,19 @@ const FileDetailsEditor = ({
         <div className="grid grid-cols-2 gap-3">
           {showLanguage ? (
             <FileDetailsField label={<Translate>Language</Translate>}>
-              <div className="relative flex w-full min-w-0 items-center overflow-hidden rounded border border-border bg-paper focus-within:ring-1 focus-within:ring-carbon/30">
-                <select
-                  ref={languageSelectRef}
-                  id={`file-language-${row.raw._id}`}
-                  value={language}
-                  onChange={event => setLanguage(event.target.value)}
-                  className="w-full min-w-0 max-w-full cursor-pointer appearance-none bg-transparent py-0.5 pl-2 pr-6 text-xs font-medium text-ink focus:outline-none"
-                  aria-label="File language"
-                >
-                  {languageOptions.map(option => (
-                    <option key={option.key ?? option.value} value={option.value}>
-                      {option.label}
-                    </option>
-                  ))}
-                </select>
-                <ChevronDownIcon className="pointer-events-none absolute right-1.5 h-micro w-micro text-ink-tertiary" />
-              </div>
+              <FileLanguageSelect
+                selectRef={languageSelectRef}
+                id={`file-language-${row.raw._id}`}
+                value={language}
+                onChange={setLanguage}
+                options={languageOptions}
+                aria-label="File language"
+              />
             </FileDetailsField>
           ) : null}
-          <FileDetailsField label={<Translate>Type</Translate>}>
-            <div className="flex h-7 items-center gap-1.5 text-sm text-ink-secondary">
-              {getRowIcon(row)}
-              <span>{row.typeLabel}</span>
-            </div>
-          </FileDetailsField>
-          <FileDetailsField label={<Translate>Size</Translate>}>
-            <span className="text-sm text-ink-secondary">{row.sizeLabel}</span>
-          </FileDetailsField>
-          <FileDetailsField label={<Translate>Modified</Translate>}>
-            <span className="text-sm text-ink-secondary">{row.modifiedLabel}</span>
-          </FileDetailsField>
+          <FileDetailsReadonlyMeta row={row} />
         </div>
-      </div>
+      </FileDetailsCard>
 
       <FileDocumentContextBadge row={row} />
       <FileDeleteAction row={row} />

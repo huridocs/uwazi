@@ -100,21 +100,14 @@ const filesDataTableColumns = ({
     },
   ];
 
-  if (showLanguageColumn) {
-    columns.push({
-      id: 'languageKey',
-      header: 'Lang',
-      width: '3.5rem',
-      cell: row => <span className="text-xs text-ink-tertiary">{row.languageKey}</span>,
-    });
-  } else {
-    columns.push({
-      id: 'languageKey',
-      header: '',
-      width: '3.5rem',
-      cell: () => null,
-    });
-  }
+  columns.push({
+    id: 'languageKey',
+    header: showLanguageColumn ? 'Lang' : '',
+    width: '3.5rem',
+    cell: showLanguageColumn
+      ? row => <span className="text-xs text-ink-tertiary">{row.languageKey}</span>
+      : () => null,
+  });
 
   columns.push(
     {

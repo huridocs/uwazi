@@ -38,15 +38,6 @@ const MetadataDisplayFooter = ({ host }: MetadataDisplayFooterProps) => {
     <EntityWriteAuthorization>
       {showSaveCancel ? (
         <div className="flex w-full items-center gap-3">
-          <Button
-            type="button"
-            variant="warm"
-            className="inline-flex items-center gap-1.5"
-            disabled={isSaving}
-          >
-            <DocumentDuplicateIcon className={iconClass} />
-            <Translate>Copy from</Translate>
-          </Button>
           <div className="flex-1" />
           <Button type="button" variant="warm" onClick={cancelEdit}>
             <Translate>Cancel</Translate>

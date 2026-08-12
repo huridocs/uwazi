@@ -1,6 +1,7 @@
 import React from 'react';
 import { ArrowDownTrayIcon, ArrowLeftIcon, EyeIcon, TrashIcon } from '@heroicons/react/24/outline';
 import { Translate } from '#app/I18N/index.js';
+import { Button } from '#V2/Components/UI/index.js';
 import { EntityWriteAuthorization } from '#V2/Routes/Entity/Components/context/index.js';
 import type { EntityFileRow } from '../../Components/Files/types.js';
 import { useEntityFiles } from '../../Components/Files/EntityFilesContext.js';
@@ -9,10 +10,6 @@ import { EntityTabFooter } from '../EntityTabFooter.js';
 import { resolveFileTabFooterMode } from './fileTabFooterMode.js';
 
 const iconClass = 'h-3 w-3 shrink-0 text-ink-tertiary';
-const warmBtnClass =
-  'inline-flex cursor-pointer items-center gap-1.5 rounded-md bg-warm px-3 py-1.5 text-xs font-medium text-ink-secondary transition-colors hover:bg-parchment hover:text-ink';
-const deleteBtnClass =
-  'inline-flex cursor-pointer items-center gap-1.5 rounded-md border-transparent bg-emphasis-tint px-3 py-1.5 text-xs font-medium text-emphasis transition-colors hover:opacity-90';
 
 const fileDownloadUrl = (row: EntityFileRow) => {
   const base = row.raw.url || (row.raw.filename ? `/api/files/${row.raw.filename}` : '');
@@ -20,25 +17,28 @@ const fileDownloadUrl = (row: EntityFileRow) => {
   return row.raw.filename ? `${base}?download=true` : base;
 };
 
+const triggerDownload = (url: string) => {
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = '';
+  link.rel = 'noreferrer';
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+};
+
 const downloadRows = (rows: EntityFileRow[]) => {
   rows.forEach(row => {
     const url = fileDownloadUrl(row);
-    if (!url) return;
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = '';
-    link.rel = 'noreferrer';
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
+    if (url) triggerDownload(url);
   });
 };
 
-const DownloadLink = ({ href }: { href: string }) => (
-  <a href={href} download rel="noreferrer" className={warmBtnClass}>
+const DownloadButton = ({ href }: { href: string }) => (
+  <Button variant="warm" className="inline-flex items-center" onClick={() => triggerDownload(href)}>
     <ArrowDownTrayIcon className={iconClass} />
     <Translate>Download</Translate>
-  </a>
+  </Button>
 );
 
 const FileTabFooter = () => {
@@ -69,16 +69,20 @@ const FileTabFooter = () => {
     return (
       <EntityTabFooter highlighted inset="side">
         <div className="flex w-full items-center justify-between gap-2">
-          <button type="button" onClick={() => downloadRows(selectedRows)} className={warmBtnClass}>
+          <Button
+            variant="warm"
+            className="inline-flex items-center"
+            onClick={() => downloadRows(selectedRows)}
+          >
             <ArrowDownTrayIcon className={iconClass} />
             <Translate>Download all</Translate>
-          </button>
+          </Button>
           {deletableSelectedRows.length > 0 ? (
             <EntityWriteAuthorization>
-              <button type="button" onClick={requestDeleteSelected} className={deleteBtnClass}>
+              <Button variant="dangerSubtle" className="inline-flex items-center gap-1.5" onClick={requestDeleteSelected}>
                 <TrashIcon className="h-3 w-3 shrink-0" />
                 <Translate>Delete</Translate> {deletableSelectedRows.length}
-              </button>
+              </Button>
             </EntityWriteAuthorization>
           ) : null}
         </div>
@@ -98,11 +102,11 @@ const FileTabFooter = () => {
     return (
       <EntityTabFooter inset="side">
         <div className="flex w-full items-center justify-between gap-2">
-          <button type="button" onClick={closeFilePreview} className={warmBtnClass}>
+          <Button variant="warm" className="inline-flex items-center" onClick={closeFilePreview}>
             <ArrowLeftIcon className={iconClass} />
             <Translate>Back to details</Translate>
-          </button>
-          {downloadUrl ? <DownloadLink href={downloadUrl} /> : <span />}
+          </Button>
+          {downloadUrl ? <DownloadButton href={downloadUrl} /> : <span />}
         </div>
       </EntityTabFooter>
     );
@@ -112,22 +116,22 @@ const FileTabFooter = () => {
     <EntityTabFooter inset="side">
       <div className="flex w-full items-center justify-between gap-2">
         <div className="flex items-center gap-2">
-          <button type="button" onClick={openFilePreview} className={warmBtnClass}>
+          <Button variant="warm" className="inline-flex items-center" onClick={openFilePreview}>
             <EyeIcon className={iconClass} />
             <Translate>View</Translate>
-          </button>
-          {downloadUrl ? <DownloadLink href={downloadUrl} /> : null}
+          </Button>
+          {downloadUrl ? <DownloadButton href={downloadUrl} /> : null}
         </div>
         {canDelete ? (
           <EntityWriteAuthorization>
-            <button
-              type="button"
+            <Button
+              variant="dangerSubtle"
+              className="inline-flex items-center gap-1.5"
               onClick={() => requestDeleteRow(focusedRow)}
-              className={deleteBtnClass}
             >
               <TrashIcon className="h-3 w-3 shrink-0" />
               <Translate>Delete</Translate>
-            </button>
+            </Button>
           </EntityWriteAuthorization>
         ) : null}
       </div>

@@ -56,7 +56,7 @@ const RelationshipsGraphView = ({
     moved: false,
   });
 
-  const selfTitle = groupContext.selfTitle;
+  const { selfTitle } = groupContext;
   const selfTypeName = groupContext.templateName(groupContext.selfTemplateId);
   const selfColor = groupContext.templateColor(groupContext.selfTemplateId) ?? '#9ca3af';
   const sourceLabel = truncateForFit(selfTitle, 26);

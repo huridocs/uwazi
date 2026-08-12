@@ -1,5 +1,7 @@
 import React from 'react';
 
+const fileFieldLabelClass = 'text-nano font-medium uppercase tracking-wide text-ink-muted';
+
 const FileDetailsField = ({
   label,
   children,
@@ -8,9 +10,9 @@ const FileDetailsField = ({
   children: React.ReactNode;
 }) => (
   <div className="min-w-0 space-y-1">
-    <span className="text-nano font-medium uppercase tracking-wide text-ink-muted">{label}</span>
+    <span className={fileFieldLabelClass}>{label}</span>
     <div>{children}</div>
   </div>
 );
 
-export { FileDetailsField };
+export { FileDetailsField, fileFieldLabelClass };

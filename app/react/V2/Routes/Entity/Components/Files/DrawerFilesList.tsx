@@ -1,22 +1,17 @@
 /* eslint-disable react/no-multi-comp */
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import {
-  CheckIcon,
-  ChevronDownIcon,
-  EyeIcon,
-  PencilIcon,
-  XMarkIcon,
-} from '@heroicons/react/24/outline';
-import { LanguageUtils } from '#shared/language/index.js';
+import { CheckIcon, EyeIcon, PencilIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import { Translate, t } from '#app/I18N/index.js';
 import { EntityWriteAuthorization } from '#V2/Routes/Entity/Components/context/index.js';
 import { AddTranslationButton } from './AddTranslationButton.js';
 import { useEntityFiles } from './EntityFilesContext.js';
+import { FileLanguageSelect } from './FileLanguageSelect.js';
 import { FileProcessStatusIndicator } from './FileProcessStatusIndicator.js';
 import {
   fileLanguageSelectOptions,
   fileSupportsLanguage,
   isFileRowSelectable,
+  resolveFileLanguage,
 } from './fileHelpers.js';
 import { EntityFileRow, FileKind } from './types.js';
 
@@ -75,12 +70,6 @@ const ViewFileButton = ({ onClick }: { onClick: () => void }) => (
     <Translate>View</Translate>
   </button>
 );
-
-const resolveFileLanguage = (rawLanguage?: string) => {
-  if (!rawLanguage) return 'other';
-  if (rawLanguage === 'other') return 'other';
-  return LanguageUtils.fromISO639_3(rawLanguage, false)?.ISO639_3 ?? 'other';
-};
 
 const DrawerFileRow = ({
   row,
@@ -157,22 +146,14 @@ const DrawerFileRow = ({
           />
           <div className="flex items-center gap-2">
             {showLanguage ? (
-              <div className="relative inline-flex items-center overflow-hidden rounded border border-border bg-paper focus-within:ring-1 focus-within:ring-carbon/30">
-                <select
-                  value={draftLanguage}
-                  onChange={e => setDraftLanguage(e.target.value)}
-                  className="cursor-pointer appearance-none bg-transparent py-0.5 pl-2 pr-5 text-tiny font-semibold text-ink-secondary focus:outline-none"
-                  aria-label={t('System', 'Language', null, false)}
-                  disabled={saving}
-                >
-                  {languageOptions.map(option => (
-                    <option key={option.key ?? option.value} value={option.value}>
-                      {option.label}
-                    </option>
-                  ))}
-                </select>
-                <ChevronDownIcon className="pointer-events-none absolute right-1 h-micro w-micro text-ink-tertiary" />
-              </div>
+              <FileLanguageSelect
+                compact
+                value={draftLanguage}
+                onChange={setDraftLanguage}
+                options={languageOptions}
+                aria-label={t('System', 'Language', null, false)}
+                disabled={saving}
+              />
             ) : null}
             <span className="text-nano text-ink-tertiary">{row.typeLabel.toUpperCase()}</span>
             <span dir="ltr" className="text-nano text-ink-tertiary">

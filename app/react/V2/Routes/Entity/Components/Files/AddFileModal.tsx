@@ -9,16 +9,19 @@ import {
 } from '@heroicons/react/24/outline';
 import { t, Translate } from '#app/I18N/index.js';
 import { LanguageUtils } from '#shared/language/index.js';
-import { CloudUploadStrokeIcon } from '#V2/Components/CustomIcons/LucideStrokeIcons.js';
+import { CloudUploadStrokeIcon } from '#V2/Components/CustomIcons/index.js';
 import { Button, Modal } from '#V2/Components/UI/index.js';
 import { getFileNameAndExtension } from '#V2/shared/formatHelpers.js';
+import { fileFieldLabelClass } from './FileDetailsField.js';
 import { fileLanguageSelectOptions, fileSupportsLanguage, isPdfFile } from './fileHelpers.js';
 import { FileUploadProgressLine } from './FileUploadProgressLine.js';
 import { useEntityFiles } from './EntityFilesContext.js';
 
 type AddAs = 'supporting' | 'primary';
 
-const fieldLabelClass = 'text-nano font-medium uppercase tracking-wide text-ink-muted';
+const isAddAs = (value: string): value is AddAs =>
+  value === 'supporting' || value === 'primary';
+
 const controlClass =
   'w-full appearance-none rounded border border-border bg-paper py-1 pl-2 pr-7 text-xs text-ink focus:outline-none focus:ring-1 focus:ring-ink/20 disabled:opacity-70';
 
@@ -192,7 +195,7 @@ const AddFileModal = () => {
               >
                 {showLanguage ? (
                   <label className="space-y-1" htmlFor="add-file-language">
-                    <span className={fieldLabelClass}>
+                    <span className={fileFieldLabelClass}>
                       <Translate>Language</Translate>
                     </span>
                     <div className="relative">
@@ -215,14 +218,17 @@ const AddFileModal = () => {
                 ) : null}
                 {showAddAs ? (
                   <label className="space-y-1" htmlFor="add-file-type">
-                    <span className={fieldLabelClass}>
+                    <span className={fileFieldLabelClass}>
                       <Translate>Add as</Translate>
                     </span>
                     <div className="relative">
                       <select
                         id="add-file-type"
                         value={addAs}
-                        onChange={event => setAddAs(event.target.value as AddAs)}
+                        onChange={event => {
+                          const next = event.target.value;
+                          if (isAddAs(next)) setAddAs(next);
+                        }}
                         disabled={isSubmitting}
                         className={`${controlClass} truncate`}
                       >
@@ -238,7 +244,7 @@ const AddFileModal = () => {
                 ) : null}
                 {!showAddAs ? (
                   <div className="space-y-1">
-                    <span className={fieldLabelClass}>
+                    <span className={fileFieldLabelClass}>
                       <Translate>Add as</Translate>
                     </span>
                     <div className="text-xs text-ink">

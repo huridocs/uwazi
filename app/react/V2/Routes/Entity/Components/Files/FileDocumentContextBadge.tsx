@@ -1,7 +1,8 @@
 import React from 'react';
 import { Translate } from '#app/I18N/index.js';
-import { EntityWriteAuthorization } from '#V2/Routes/Entity/Components/context/index.js';
+import { AddTranslationButton } from './AddTranslationButton.js';
 import { useEntityFiles } from './EntityFilesContext.js';
+import { fileFieldLabelClass } from './FileDetailsField.js';
 import { EntityFileRow } from './types.js';
 
 type BadgeVariant = 'active' | 'primary' | 'supporting';
@@ -27,7 +28,7 @@ const LanguageBadge = ({ code }: { code: string }) => (
 );
 
 const FileDocumentContextBadge = ({ row }: { row: EntityFileRow }) => {
-  const { mainDocumentId, primaryRows, setFocusedRowId, requestAddFile } = useEntityFiles();
+  const { mainDocumentId, primaryRows, setFocusedRowId } = useEntityFiles();
   const variant = resolveVariant(row, mainDocumentId);
   const isPrimary = row.category === 'primary';
   const showChips = isPrimary && primaryRows.length > 1;
@@ -48,7 +49,7 @@ const FileDocumentContextBadge = ({ row }: { row: EntityFileRow }) => {
         <>
           {showChips ? (
             <div className="space-y-1.5">
-              <p className="text-nano font-medium uppercase tracking-wide text-ink-muted">
+              <p className={fileFieldLabelClass}>
                 <Translate>Translations</Translate>
               </p>
               <div className="flex flex-wrap gap-1.5">
@@ -86,15 +87,7 @@ const FileDocumentContextBadge = ({ row }: { row: EntityFileRow }) => {
             </div>
           ) : null}
           <div className="flex items-center pt-1">
-            <EntityWriteAuthorization>
-              <button
-                type="button"
-                onClick={() => requestAddFile('translation')}
-                className="ml-auto cursor-pointer text-micro font-medium text-ink-secondary transition-colors hover:text-ink"
-              >
-                + <Translate>Add translation</Translate>
-              </button>
-            </EntityWriteAuthorization>
+            <AddTranslationButton className="ml-auto inline-flex cursor-pointer items-center gap-1.5 text-micro font-medium text-ink-secondary transition-colors hover:text-ink" />
           </div>
         </>
       )}
