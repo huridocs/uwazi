@@ -256,7 +256,7 @@
     "reselect": "^4.1.8",
     "rsmq": "^0.13.0",
     "rtlcss": "^4.3.0",
-    "sanitize-html": "^2.17.6",
+    "sanitize-html": "2.17.5",
     "serialize-javascript": "^6.0.1",
     "sift": "^17.1.3",
     "socket.io": "4.8.3",
