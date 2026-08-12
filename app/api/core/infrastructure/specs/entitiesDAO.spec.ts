@@ -5,6 +5,7 @@ import { testingTenants } from '#api/utils/testingTenants.js';
 import { DBFixture } from '#api/utils/testing_db.js';
 import { EntitiesDAOFactory } from '#api/core/infrastructure/factories/EntitiesDAOFactory.js';
 import { EntitiesDAO } from '#api/core/application/contracts/EntitiesDAO.js';
+import { EntityDBO } from '#api/core/infrastructure/mongodb/entity/EntityDBO.js';
 import { User } from '#api/users.v2/model/User.js';
 
 const factory = getFixturesFactory();
@@ -158,7 +159,7 @@ describe('EntitiesDAO', () => {
       it('does not return an unpublished entity to anonymous even when queried by sharedId', async () => {
         const dao = createDao(publicUser);
         expect(await dao.findOne({ sharedId: 'entity2' })).toBeNull();
-        expect(await dao.getBySharedId('entity2')).toBeNull();
+        expect(await dao.getBySharedId('entity2')).toEqual([]);
       });
 
       it('count honors the access context', async () => {
@@ -198,16 +199,6 @@ describe('EntitiesDAO', () => {
         ).toHaveLength(allEntityCount);
       });
 
-      it('filters by languagePairs (OR of sharedId+language)', async () => {
-        const entities = await createDao().find({
-          languagePairs: [
-            { sharedId: 'entity1', language: 'en' },
-            { sharedId: 'entity4', language: 'es' },
-          ],
-        });
-        expect(entities).toHaveLength(2);
-      });
-
       it('filters by _id and ids', async () => {
         expect(await createDao().find({ _id: factory.idString('entity1-en') })).toHaveLength(1);
         expect(
@@ -215,19 +206,6 @@ describe('EntitiesDAO', () => {
             ids: [factory.idString('entity1-en'), factory.idString('entity2-en')],
           })
         ).toHaveLength(2);
-      });
-
-      it('filters by idRange', async () => {
-        const result = await createDao().find({
-          idRange: {
-            from: factory.idString('entity1-en'),
-            to: factory.idString('entity4-es'),
-          },
-        });
-        const sharedIds = result.map(e => e.sharedId);
-        expect(sharedIds).toContain('entity1');
-        expect(sharedIds).toContain('entity4');
-        expect(result.length).toBeGreaterThanOrEqual(2);
       });
 
       it('filters by title', async () => {
@@ -252,27 +230,6 @@ describe('EntitiesDAO', () => {
         });
         expect(entities).toHaveLength(2);
         expect(entities.every(e => e.sharedId === 'entity1')).toBe(true);
-      });
-
-      it('filters by metadata exists', async () => {
-        const entities = await createDao().find({
-          metadata: [{ property: 'text_prop', exists: true }],
-        });
-        expect(entities).toHaveLength(3);
-      });
-
-      it('filters by metadata nonEmpty', async () => {
-        const entities = await createDao().find({
-          metadata: [{ property: 'text_prop', nonEmpty: true }],
-        });
-        expect(entities).toHaveLength(3);
-      });
-
-      it('filters by metadata hasValues', async () => {
-        const entities = await createDao().find({
-          metadata: [{ property: 'text_prop', hasValues: true }],
-        });
-        expect(entities).toHaveLength(3);
       });
 
       it('combines multiple filters', async () => {
@@ -361,6 +318,152 @@ describe('EntitiesDAO', () => {
       });
     });
 
+    describe('findByLanguagePairs()', () => {
+      it('matches (sharedId, language) tuples as an OR', async () => {
+        const entities = await createDao().findByLanguagePairs({
+          pairs: [
+            { sharedId: 'entity1', language: 'en' },
+            { sharedId: 'entity4', language: 'es' },
+          ],
+        });
+        expect(entities).toHaveLength(2);
+      });
+
+      it('returns empty array for empty pairs', async () => {
+        expect(await createDao().findByLanguagePairs({ pairs: [] })).toEqual([]);
+      });
+
+      it('returns empty array when nothing matches', async () => {
+        expect(
+          await createDao().findByLanguagePairs({
+            pairs: [{ sharedId: 'nonexistent', language: 'en' }],
+          })
+        ).toEqual([]);
+      });
+
+      it('supports limit', async () => {
+        const entities = await createDao().findByLanguagePairs(
+          {
+            pairs: [
+              { sharedId: 'entity1', language: 'en' },
+              { sharedId: 'entity1', language: 'es' },
+              { sharedId: 'entity4', language: 'es' },
+            ],
+          },
+          { limit: 2 }
+        );
+        expect(entities).toHaveLength(2);
+      });
+    });
+
+    describe('findByTemplateIdRange()', () => {
+      it('returns entities within the inclusive _id range for the given template', async () => {
+        const result = await createDao().findByTemplateIdRange({
+          templateId: factory.idString('t1'),
+          from: factory.idString('entity1-en'),
+          to: factory.idString('entity4-es'),
+        });
+        const sharedIds = result.map(e => e.sharedId);
+        expect(sharedIds).toContain('entity1');
+        expect(sharedIds).toContain('entity2');
+        expect(sharedIds).not.toContain('entity5');
+        expect(result.every(e => e.template.toString() === factory.idString('t1'))).toBe(true);
+      });
+
+      it('supports a from-only range', async () => {
+        const result = await createDao().findByTemplateIdRange({
+          templateId: factory.idString('t1'),
+          from: factory.idString('entity2-en'),
+        });
+        const sharedIds = result.map(e => e.sharedId);
+        expect(sharedIds).toContain('entity2');
+        expect(sharedIds).toContain('entity5');
+        expect(sharedIds).not.toContain('entity1');
+      });
+
+      it('supports a to-only range', async () => {
+        const result = await createDao().findByTemplateIdRange({
+          templateId: factory.idString('t1'),
+          to: factory.idString('entity2-en'),
+        });
+        const sharedIds = result.map(e => e.sharedId);
+        expect(sharedIds).toContain('entity1');
+        expect(sharedIds).toContain('entity2');
+        expect(sharedIds).not.toContain('entity5');
+      });
+
+      it('filters by language within the range', async () => {
+        const result = await createDao().findByTemplateIdRange({
+          templateId: factory.idString('t1'),
+          from: factory.idString('entity1-en'),
+          to: factory.idString('entity4-es'),
+          language: 'en',
+        });
+        expect(result).toHaveLength(2);
+        expect(result.every(e => e.language === 'en')).toBe(true);
+      });
+
+      it('returns empty array when nothing matches', async () => {
+        expect(
+          await createDao().findByTemplateIdRange({
+            templateId: factory.idString('nonexistent'),
+            from: factory.idString('entity1-en'),
+            to: factory.idString('entity4-es'),
+          })
+        ).toEqual([]);
+      });
+    });
+
+    describe('findByMetadataCriteria()', () => {
+      it('filters by metadata exists', async () => {
+        const entities = await createDao().findByMetadataCriteria({
+          criteria: [{ property: 'text_prop', exists: true }],
+        });
+        expect(entities).toHaveLength(3);
+      });
+
+      it('filters by metadata nonEmpty', async () => {
+        const entities = await createDao().findByMetadataCriteria({
+          criteria: [{ property: 'text_prop', nonEmpty: true }],
+        });
+        expect(entities).toHaveLength(3);
+      });
+
+      it('filters by metadata hasValues', async () => {
+        const entities = await createDao().findByMetadataCriteria({
+          criteria: [{ property: 'text_prop', hasValues: true }],
+        });
+        expect(entities).toHaveLength(3);
+      });
+
+      it('combines multiple criteria as an AND', async () => {
+        const entities = await createDao().findByMetadataCriteria({
+          criteria: [
+            { property: 'text_prop', exists: true },
+            { property: 'rel_prop', exists: true },
+          ],
+        });
+        expect(entities).toHaveLength(2);
+        expect(entities.every(e => e.sharedId === 'entity1')).toBe(true);
+      });
+
+      it('supports anchor filters combined with criteria', async () => {
+        const entities = await createDao().findByMetadataCriteria({
+          criteria: [{ property: 'text_prop', exists: true }],
+          filters: { templateIds: [factory.idString('t1')], titleNotEmpty: true },
+        });
+        expect(entities).toHaveLength(3);
+      });
+
+      it('supports limit', async () => {
+        const entities = await createDao().findByMetadataCriteria(
+          { criteria: [{ property: 'text_prop', exists: true }] },
+          { limit: 2 }
+        );
+        expect(entities).toHaveLength(2);
+      });
+    });
+
     describe('getWithFiles()', () => {
       it('returns entity with documents and attachments separated', async () => {
         const entities = await createDao().getWithFiles({ sharedId: 'entity1', language: 'en' });
@@ -430,17 +533,22 @@ describe('EntitiesDAO', () => {
       it('returns the entity for the given sharedId and language', async () => {
         const entity = await createDao().getBySharedId('entity1', 'en');
         expect(entity).not.toBeNull();
-        expect(entity!.language).toBe('en');
+        expect((entity as EntityDBO).language).toBe('en');
       });
 
-      it('returns one variant when no language is given', async () => {
-        const entity = await createDao().getBySharedId('entity1');
-        expect(entity).not.toBeNull();
-        expect(entity!.sharedId).toBe('entity1');
+      it('returns all language variants when no language is given', async () => {
+        const entities = await createDao().getBySharedId('entity1');
+        expect(Array.isArray(entities)).toBe(true);
+        expect(entities).toHaveLength(2);
+        expect(entities.every((e: EntityDBO) => e.sharedId === 'entity1')).toBe(true);
       });
 
-      it('returns null when nothing matches', async () => {
-        expect(await createDao().getBySharedId('nonexistent')).toBeNull();
+      it('returns null when language is given and nothing matches', async () => {
+        expect(await createDao().getBySharedId('nonexistent', 'en')).toBeNull();
+      });
+
+      it('returns empty array when no language is given and nothing matches', async () => {
+        expect(await createDao().getBySharedId('nonexistent')).toEqual([]);
       });
     });
 
@@ -463,26 +571,6 @@ describe('EntitiesDAO', () => {
 
       it('returns null when nothing matches', async () => {
         expect(await createDao().getByInternalId(factory.idString('nonexistent'))).toBeNull();
-      });
-    });
-
-    describe('findBySharedIds()', () => {
-      it('returns all language variants for the given sharedIds', async () => {
-        const entities = await createDao().findBySharedIds(['entity1', 'entity4']);
-        expect(entities).toHaveLength(4);
-      });
-
-      it('filters by language', async () => {
-        const entities = await createDao().findBySharedIds(['entity1', 'entity4'], 'en');
-        expect(entities).toHaveLength(2);
-      });
-
-      it('returns empty array for empty sharedIds', async () => {
-        expect(await createDao().findBySharedIds([])).toEqual([]);
-      });
-
-      it('returns empty array when nothing matches', async () => {
-        expect(await createDao().findBySharedIds(['nonexistent'])).toEqual([]);
       });
     });
 

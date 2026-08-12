@@ -17,6 +17,9 @@ import {
   EntitiesDAO,
   EntityFilters,
   EntityWithFiles,
+  FindByLanguagePairsQuery,
+  FindByMetadataCriteriaQuery,
+  FindByTemplateIdRangeQuery,
   FindOptions,
   GetByIdsWithDocumentsOptions,
   GetWithFilesMatch,
@@ -91,8 +94,13 @@ class PostgresEntitiesDAO extends PostgresDataSource<EntityRow> implements Entit
   }
 
   private applyFilters(filters: EntityFilters) {
-    let q = this.table;
+    return this.applyFilterBranches(this.table, filters);
+  }
 
+  private applyFilterBranches(
+    q: ReturnType<typeof this.table.where>,
+    filters: EntityFilters
+  ): ReturnType<typeof this.table.where> {
     if (filters._id) {
       q = q.where({ _id: filters._id });
     }
@@ -125,22 +133,6 @@ class PostgresEntitiesDAO extends PostgresDataSource<EntityRow> implements Entit
       q = q.whereIn('template', filters.templateIds);
     }
 
-    if (filters.languagePairs && filters.languagePairs.length > 0) {
-      q = q.whereAny(
-        filters.languagePairs.map(pair => ({ sharedId: pair.sharedId, language: pair.language }))
-      );
-    }
-
-    if (filters.idRange) {
-      if (filters.idRange.from && filters.idRange.to) {
-        q = q.whereBetween('_id', [filters.idRange.from, filters.idRange.to]);
-      } else if (filters.idRange.from) {
-        q = q.whereRaw('?? >= ?', ['_id', filters.idRange.from]);
-      } else if (filters.idRange.to) {
-        q = q.whereRaw('?? <= ?', ['_id', filters.idRange.to]);
-      }
-    }
-
     if (filters.title) {
       q = q.where({ title: filters.title });
     }
@@ -160,24 +152,30 @@ class PostgresEntitiesDAO extends PostgresDataSource<EntityRow> implements Entit
       );
     }
 
-    if (filters.metadata && filters.metadata.length > 0) {
-      filters.metadata.forEach(criteria => {
-        if (criteria.exists) {
-          q = q.whereRaw('?? @> ?', ['metadata', JSON.stringify({ [criteria.property]: [] })]);
-        }
-        if (criteria.nonEmpty) {
-          q = q.whereRaw('jsonb_array_length(??->?) > 0', ['metadata', criteria.property]);
-        }
-        if (criteria.hasValues) {
-          q = q.whereRaw(
-            "EXISTS (SELECT 1 FROM jsonb_array_elements(??->?) AS elem WHERE elem->>'value' IS NOT NULL AND elem->>'value' NOT IN ('', 'null'))",
-            ['metadata', criteria.property]
-          );
-        }
+    return q;
+  }
+
+  private applyFindOptions(
+    q: ReturnType<typeof this.table.where>,
+    options: FindOptions
+  ): ReturnType<typeof this.table.where> {
+    let result = q;
+
+    if (options.select && options.select.length > 0) {
+      result = result.select(options.select);
+    }
+
+    if (options.sort && options.sort.length > 0) {
+      options.sort.forEach(({ field, direction }) => {
+        result = result.orderBy(field, direction);
       });
     }
 
-    return q;
+    if (options.limit) {
+      result = result.limit(options.limit);
+    }
+
+    return result;
   }
 
   async getIds(filters: EntityFilters = {}): Promise<string[]> {
@@ -186,24 +184,73 @@ class PostgresEntitiesDAO extends PostgresDataSource<EntityRow> implements Entit
     return rows.map(r => r._id);
   }
 
+  async findByLanguagePairs(
+    query: FindByLanguagePairsQuery,
+    options: FindOptions = {}
+  ): Promise<EntityDBO[]> {
+    if (query.pairs.length === 0) {
+      return [];
+    }
+    const q = this.table.whereAny(
+      query.pairs.map(pair => ({ sharedId: pair.sharedId, language: pair.language }))
+    );
+    const rows = await this.applyFindOptions(q, options).all();
+    return rows.map(toDBO);
+  }
+
+  async findByTemplateIdRange(
+    query: FindByTemplateIdRangeQuery,
+    options: FindOptions = {}
+  ): Promise<EntityDBO[]> {
+    let q = this.table.where({ template: query.templateId });
+
+    if (query.from && query.to) {
+      q = q.whereBetween('_id', [query.from, query.to]);
+    } else if (query.from) {
+      q = q.whereRaw('?? >= ?', ['_id', query.from]);
+    } else if (query.to) {
+      q = q.whereRaw('?? <= ?', ['_id', query.to]);
+    }
+
+    if (query.language) {
+      q = q.where({ language: query.language });
+    }
+
+    const rows = await this.applyFindOptions(q, options).all();
+    return rows.map(toDBO);
+  }
+
+  async findByMetadataCriteria(
+    query: FindByMetadataCriteriaQuery,
+    options: FindOptions = {}
+  ): Promise<EntityDBO[]> {
+    let q: ReturnType<typeof this.table.where> = this.table;
+
+    query.criteria.forEach(criteria => {
+      if (criteria.exists) {
+        q = q.whereRaw('?? @> ?', ['metadata', JSON.stringify({ [criteria.property]: [] })]);
+      }
+      if (criteria.nonEmpty) {
+        q = q.whereRaw('jsonb_array_length(??->?) > 0', ['metadata', criteria.property]);
+      }
+      if (criteria.hasValues) {
+        q = q.whereRaw(
+          "EXISTS (SELECT 1 FROM jsonb_array_elements(??->?) AS elem WHERE elem->>'value' IS NOT NULL AND elem->>'value' NOT IN ('', 'null'))",
+          ['metadata', criteria.property]
+        );
+      }
+    });
+
+    if (query.filters) {
+      q = this.applyFilterBranches(q, query.filters);
+    }
+
+    const rows = await this.applyFindOptions(q, options).all();
+    return rows.map(toDBO);
+  }
+
   async find(filters: EntityFilters = {}, options: FindOptions = {}): Promise<EntityDBO[]> {
-    let q = this.applyFilters(filters);
-
-    if (options.select && options.select.length > 0) {
-      q = q.select(options.select);
-    }
-
-    if (options.sort && options.sort.length > 0) {
-      options.sort.forEach(({ field, direction }) => {
-        q = q.orderBy(field, direction);
-      });
-    }
-
-    if (options.limit) {
-      q = q.limit(options.limit);
-    }
-
-    const rows = await q.all();
+    const rows = await this.applyFindOptions(this.applyFilters(filters), options).all();
     return rows.map(toDBO);
   }
 
@@ -283,12 +330,16 @@ class PostgresEntitiesDAO extends PostgresDataSource<EntityRow> implements Entit
     return this.getByIdsWithDocuments(ids);
   }
 
-  async getBySharedId(sharedId: string, language?: LanguageISO6391): Promise<EntityDBO | null> {
-    const filters: EntityFilters = { sharedId };
+  async getBySharedId(sharedId: string): Promise<EntityDBO[]>;
+  async getBySharedId(sharedId: string, language: LanguageISO6391): Promise<EntityDBO | null>;
+  async getBySharedId(
+    sharedId: string,
+    language?: LanguageISO6391
+  ): Promise<EntityDBO[] | EntityDBO | null> {
     if (language) {
-      filters.language = language;
+      return this.findOne({ sharedId, language });
     }
-    return this.findOne(filters);
+    return this.find({ sharedId });
   }
 
   async getByInternalId(
@@ -297,17 +348,6 @@ class PostgresEntitiesDAO extends PostgresDataSource<EntityRow> implements Entit
   ): Promise<EntityDBO | null> {
     const select = Object.keys(projection).length > 0 ? Object.keys(projection) : undefined;
     return this.findOne({ _id: id }, select ? { select } : undefined);
-  }
-
-  async findBySharedIds(sharedIds: string[], language?: LanguageISO6391): Promise<EntityDBO[]> {
-    if (sharedIds.length === 0) {
-      return [];
-    }
-    const filters: EntityFilters = { sharedIds };
-    if (language) {
-      filters.language = language;
-    }
-    return this.find(filters);
   }
 
   async countByTemplate(templateId: string): Promise<number> {

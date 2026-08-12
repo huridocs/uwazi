@@ -15,6 +15,7 @@ import {
 } from '#shared/types/commonTypes.js';
 const isString = (val: unknown): val is string => typeof val === 'string';
 import model from './entitiesModel.js';
+import { EntitiesDAOFactory } from '#api/core/infrastructure/factories/EntitiesDAOFactory.js';
 import thesauri from '#api/core/v1_layer/thesauri/thesauri.js';
 
 interface DenormalizationUpdate {
@@ -324,10 +325,12 @@ const denormalizeRelationshipProperty = async (
   language: string,
   allTemplates: TemplateSchema[]
 ) => {
-  const partners = await model.getUnrestricted({
-    sharedId: { $in: values.map(value => value.value as string) },
-    language,
-  });
+  const partners = (await EntitiesDAOFactory.default()
+    .unrestricted()
+    .find({
+      sharedIds: values.map(value => value.value as string),
+      language,
+    })) as unknown as EntitySchema[];
 
   const partnersBySharedId: Record<string, EntitySchema> = {};
   partners.forEach(partner => {

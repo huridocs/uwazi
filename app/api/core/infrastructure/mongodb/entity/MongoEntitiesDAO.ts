@@ -13,6 +13,9 @@ import { AccessContext } from '#api/core/domain/entityAccessPolicy/AccessContext
 import {
   EntitiesDAO,
   EntityFilters,
+  FindByLanguagePairsQuery,
+  FindByMetadataCriteriaQuery,
+  FindByTemplateIdRangeQuery,
   FindOptions,
   LabelInfo,
 } from '#api/core/application/contracts/EntitiesDAO.js';
@@ -255,21 +258,18 @@ class MongoEntitiesDAO extends MongoDataSource<EntityDBO> implements EntitiesDAO
     }
   }
 
-  async findBySharedIds(sharedIds: string[], language?: LanguageISO6391): Promise<EntityDBO[]> {
-    if (sharedIds.length === 0) return [];
-    const filter: Record<string, unknown> = { sharedId: { $in: sharedIds } };
-    if (language) {
-      filter.language = language;
-    }
-    return this.getCollection().find(filter).toArray();
-  }
-
-  async getBySharedId(sharedId: string, language?: LanguageISO6391): Promise<EntityDBO | null> {
+  async getBySharedId(sharedId: string): Promise<EntityDBO[]>;
+  async getBySharedId(sharedId: string, language: LanguageISO6391): Promise<EntityDBO | null>;
+  async getBySharedId(
+    sharedId: string,
+    language?: LanguageISO6391
+  ): Promise<EntityDBO[] | EntityDBO | null> {
     const filter: Record<string, unknown> = { sharedId };
     if (language) {
       filter.language = language;
+      return this.getCollection().findOne(filter);
     }
-    return this.getCollection().findOne(filter);
+    return this.getCollection().find(filter).toArray();
   }
 
   async getByInternalId(
@@ -367,26 +367,7 @@ class MongoEntitiesDAO extends MongoDataSource<EntityDBO> implements EntitiesDAO
   // ── Generic reads (contract) ──────────────────────────────────────────────
 
   async find(filters: EntityFilters = {}, options: FindOptions = {}): Promise<EntityDBO[]> {
-    const query = this.translateFilters(filters);
-    let cursor = this.getCollection().find(query);
-
-    if (options.select && options.select.length > 0) {
-      cursor = cursor.project(Object.fromEntries(options.select.map(s => [s, 1])));
-    }
-
-    if (options.sort && options.sort.length > 0) {
-      const sort: Record<string, 1 | -1> = {};
-      options.sort.forEach(s => {
-        sort[s.field] = s.direction === 'asc' ? 1 : -1;
-      });
-      cursor = cursor.sort(sort);
-    }
-
-    if (options.limit) {
-      cursor = cursor.limit(options.limit);
-    }
-
-    return cursor.toArray();
+    return this.executeFind(this.translateFilters(filters), options);
   }
 
   async findOne(filters: EntityFilters = {}, options: FindOptions = {}): Promise<EntityDBO | null> {
@@ -429,7 +410,121 @@ class MongoEntitiesDAO extends MongoDataSource<EntityDBO> implements EntitiesDAO
     }));
   }
 
+  // ── Named query shapes (contract) ─────────────────────────────────────────
+
+  async findByLanguagePairs(
+    query: FindByLanguagePairsQuery,
+    options: FindOptions = {}
+  ): Promise<EntityDBO[]> {
+    if (query.pairs.length === 0) {
+      return [];
+    }
+    return this.executeFind(
+      {
+        $or: query.pairs.map(pair => ({
+          sharedId: pair.sharedId,
+          language: pair.language,
+        })),
+      },
+      options
+    );
+  }
+
+  async findByTemplateIdRange(
+    query: FindByTemplateIdRangeQuery,
+    options: FindOptions = {}
+  ): Promise<EntityDBO[]> {
+    const conditions: Record<string, unknown>[] = [{ template: new ObjectId(query.templateId) }];
+
+    const range: Record<string, unknown> = {};
+    if (query.from && ObjectId.isValid(query.from)) {
+      range.$gte = new ObjectId(query.from);
+    }
+    if (query.to && ObjectId.isValid(query.to)) {
+      range.$lte = new ObjectId(query.to);
+    }
+    if (Object.keys(range).length > 0) {
+      conditions.push({ _id: range });
+    }
+
+    if (query.language) {
+      conditions.push({ language: query.language });
+    }
+
+    return this.executeFind(
+      conditions.length === 1 ? conditions[0] : { $and: conditions },
+      options
+    );
+  }
+
+  async findByMetadataCriteria(
+    query: FindByMetadataCriteriaQuery,
+    options: FindOptions = {}
+  ): Promise<EntityDBO[]> {
+    const conditions: Record<string, unknown>[] = query.criteria.map(criteria => {
+      const path = `metadata.${criteria.property}`;
+      const condition: Record<string, unknown> = {};
+      if (criteria.exists) {
+        condition.$exists = true;
+      }
+      if (criteria.nonEmpty) {
+        condition.$exists = true;
+        condition.$ne = [];
+      }
+      if (criteria.hasValues) {
+        condition.$elemMatch = { value: { $exists: true, $nin: ['', null] } };
+      }
+      return { [path]: condition };
+    });
+
+    conditions.push(...this.translateFilterConditions(query.filters ?? {}));
+
+    return this.executeFind(
+      conditions.length === 1 ? conditions[0] : { $and: conditions },
+      options
+    );
+  }
+
+  private async executeFind(
+    query: Record<string, unknown>,
+    options: FindOptions
+  ): Promise<EntityDBO[]> {
+    let cursor = this.getCollection().find(query);
+
+    if (options.select && options.select.length > 0) {
+      cursor = cursor.project(Object.fromEntries(options.select.map(s => [s, 1])));
+    }
+
+    if (options.sort && options.sort.length > 0) {
+      const sort: Record<string, 1 | -1> = {};
+      options.sort.forEach(s => {
+        sort[s.field] = s.direction === 'asc' ? 1 : -1;
+      });
+      cursor = cursor.sort(sort);
+    }
+
+    if (options.limit) {
+      cursor = cursor.limit(options.limit);
+    }
+
+    return cursor.toArray();
+  }
+
   private translateFilters(filters: EntityFilters): Record<string, unknown> {
+    const conditions = this.translateFilterConditions(filters);
+
+    if (conditions.length === 0) {
+      return {};
+    }
+
+    if (conditions.length === 1) {
+      return conditions[0];
+    }
+
+    return { $and: conditions };
+  }
+
+  private translateFilterConditions(filters: EntityFilters): Record<string, unknown>[] {
     const conditions: Record<string, unknown>[] = [];
 
     if (filters._id) {
@@ -469,28 +564,6 @@ class MongoEntitiesDAO extends MongoDataSource<EntityDBO> implements EntitiesDAO
       conditions.push({ template: { $in: filters.templateIds.map(id => new ObjectId(id)) } });
     }
 
-    if (filters.languagePairs && filters.languagePairs.length > 0) {
-      conditions.push({
-        $or: filters.languagePairs.map(pair => ({
-          sharedId: pair.sharedId,
-          language: pair.language,
-        })),
-      });
-    }
-
-    if (filters.idRange) {
-      const range: Record<string, unknown> = {};
-      if (filters.idRange.from && ObjectId.isValid(filters.idRange.from)) {
-        range.$gte = new ObjectId(filters.idRange.from);
-      }
-      if (filters.idRange.to && ObjectId.isValid(filters.idRange.to)) {
-        range.$lte = new ObjectId(filters.idRange.to);
-      }
-      if (Object.keys(range).length > 0) {
-        conditions.push({ _id: range });
-      }
-    }
-
     if (filters.title) {
       conditions.push({ title: filters.title });
     }
@@ -511,33 +584,7 @@ class MongoEntitiesDAO extends MongoDataSource<EntityDBO> implements EntitiesDAO
       });
     }
 
-    if (filters.metadata && filters.metadata.length > 0) {
-      filters.metadata.forEach(criteria => {
-        const path = `metadata.${criteria.property}`;
-        const condition: Record<string, unknown> = {};
-        if (criteria.exists) {
-          condition.$exists = true;
-        }
-        if (criteria.nonEmpty) {
-          condition.$exists = true;
-          condition.$ne = [];
-        }
-        if (criteria.hasValues) {
-          condition.$elemMatch = { value: { $exists: true, $nin: ['', null] } };
-        }
-        conditions.push({ [path]: condition });
-      });
-    }
-
-    if (conditions.length === 0) {
-      return {};
-    }
-
-    if (conditions.length === 1) {
-      return conditions[0];
-    }
-
-    return { $and: conditions };
+    return conditions;
   }
 }
 

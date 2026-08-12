@@ -20,7 +20,7 @@ class IndexError extends Error {}
 class UnsupportedQueryError extends Error {}
 
 const FLAT_FILTER_KEYS = ['language', 'template', 'sharedId', '_id', 'title'];
-const METADATA_VALUE_PATH = /^metadata\.([^.]+)\.value$/;
+const METADATA_VALUE_PATH = /^metadata\.(.+)\.value$/;
 
 const flatFiltersFrom = query => {
   const filters = {};

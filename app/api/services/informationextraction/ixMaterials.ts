@@ -11,7 +11,6 @@ import {
 } from '#shared/types/commonTypes.js';
 import { FilesDAOFactory } from '#api/core/infrastructure/factories/FilesDAOFactory.js';
 import { SegmentationType } from '#shared/types/segmentationType.js';
-import entitiesModel from '#api/entities/entitiesModel.js';
 import { SegmentationModel } from '#api/services/pdfsegmentation/segmentationModel.js';
 import { IXSuggestionsModel } from '#api/suggestions/IXSuggestionsModel.js';
 import ixmodels from '#api/services/informationextraction/ixmodels.js';
@@ -19,15 +18,26 @@ import { FileType } from '#shared/types/fileType.js';
 import templatesService from '#api/core/v1_layer/templates/templates.js';
 import { propertyTypes } from '#shared/propertyTypes.js';
 import { EnforcedWithId, UwaziFilterQuery } from '#api/odm/index.js';
-import { DeprecatedEntity } from '#api/entities.v2/model/Entity.js';
+import { EntitiesDAOFactory } from '#api/core/infrastructure/factories/EntitiesDAOFactory.js';
+import { EntityDBO } from '#api/core/infrastructure/mongodb/entity/EntityDBO.js';
+import {
+  EntityFilters,
+  FindByLanguagePairsQuery,
+  FindByMetadataCriteriaQuery,
+  LanguagePair,
+  MetadataCriteria,
+} from '#api/core/application/contracts/EntitiesDAO.js';
 import { IXModelType } from '#shared/types/IXModelType.js';
 import { IXSuggestionType } from '#shared/types/suggestionType.js';
 import { PipelineBuilder } from '#api/suggestions/queryBuilder.js';
 import { IXExtractorType } from '#shared/types/extractorType.js';
 import { Suggestions } from '#api/suggestions/suggestions.js';
 import { Extractors } from './ixextractors.js';
+import { EntitySchema } from '#shared/types/entityType.js';
 import { IXServices } from './IXServices.js';
 import { deriveTrainingPropertyValue } from './propertyValue.js';
+
+const entitiesDao = () => EntitiesDAOFactory.default().unrestricted();
 
 const BATCH_SIZE_FOR_PDF = 50;
 const BATCH_SIZE_FOR_PROPERTY = 1000;
@@ -143,38 +153,35 @@ async function getPropertyType(templates: ObjectIdSchema[], property: string) {
   return type;
 }
 
-function entityForTrainingQuery(
+function entityForTrainingFilters(
   templates: ObjectIdSchema[],
   toProperty: string,
   fromProperty?: string
-): UwaziFilterQuery<DeprecatedEntity> {
-  const query: UwaziFilterQuery<any> = { template: { $in: templates } };
+): FindByMetadataCriteriaQuery {
+  const filters: EntityFilters = { templateIds: templates.map(t => t.toString()) };
+  const criteria: MetadataCriteria[] = [];
 
   if (fromProperty) {
     // This new logic is not tested
     if (fromProperty === 'title') {
-      query.title = { $ne: '' };
+      filters.titleNotEmpty = true;
     } else {
-      query[`metadata.${fromProperty}`] = { $exists: true, $ne: [] };
+      criteria.push({ property: fromProperty, exists: true, nonEmpty: true });
     }
   }
 
   if (toProperty === 'title') {
-    query.title = { $ne: '' };
+    filters.titleNotEmpty = true;
   } else {
-    query[`metadata.${toProperty}`] = {
-      $exists: true,
-      $not: { $eq: [] },
-      $elemMatch: {
-        value: {
-          $exists: true,
-          $nin: ['', null, undefined],
-        },
-      },
-    };
+    criteria.push({
+      property: toProperty,
+      exists: true,
+      nonEmpty: true,
+      hasValues: true,
+    });
   }
 
-  return query;
+  return { criteria, filters };
 }
 
 async function getEntitiesForTraining(
@@ -182,14 +189,13 @@ async function getEntitiesForTraining(
   toProperty: string,
   fromProperty: string
 ) {
-  const entities = await entitiesModel.getUnrestricted(
-    entityForTrainingQuery(templates, toProperty, fromProperty),
-    `sharedId title metadata.${toProperty} metadata.${fromProperty} language`,
+  const entities = await entitiesDao().findByMetadataCriteria(
+    entityForTrainingFilters(templates, toProperty, fromProperty),
     {
       limit: MAX_TRAINING_ENTITIES_NUMBER,
     }
   );
-  return entities;
+  return entities as unknown as EntitySchema[];
 }
 
 async function getEntitiesForIdsQuery(model: EnforcedWithId<IXModelType>, BATCH_SIZE: number) {
@@ -206,16 +212,16 @@ async function getEntitiesForIdsQuery(model: EnforcedWithId<IXModelType>, BATCH_
     { $set: { 'processRun.findSuggestionsSharedIds': runIds.slice(BATCH_SIZE) } }
   );
 
-  const entityQuery = { sharedId: { $in: sharedIdsToProcess } };
+  const entityFilters: EntityFilters = { sharedIds: sharedIdsToProcess };
 
-  return entityQuery;
+  return entityFilters;
 }
 
 async function getEntitiesForSuggestionsQuery(
   extractorId: ObjectIdSchema,
   model: EnforcedWithId<IXModelType>,
   BATCH_SIZE: number
-) {
+): Promise<FindByLanguagePairsQuery | null> {
   // Use process-aware sampling when filters are set; otherwise balanced sampling
   const suggestions = await Suggestions.getSampleForProcess(extractorId, model, BATCH_SIZE);
 
@@ -229,13 +235,11 @@ async function getEntitiesForSuggestionsQuery(
   )
     .map(key => {
       const [sharedId, language] = key.split('::');
-      return { sharedId, language } as { sharedId: string; language: string };
+      return { sharedId, language } as LanguagePair;
     })
     .filter(p => p.sharedId && p.language);
 
-  const entityQuery = { $or: uniquePairs } as UwaziFilterQuery<any>;
-
-  return entityQuery;
+  return { pairs: uniquePairs };
 }
 
 async function getEntitiesForSuggestions(extractorId: ObjectIdSchema, limit?: number) {
@@ -263,32 +267,23 @@ async function getEntitiesForSuggestions(extractorId: ObjectIdSchema, limit?: nu
     return [];
   }
 
-  let entityQuery: UwaziFilterQuery<any> | null = {};
+  let entities: EntityDBO[];
 
   if (model.processRun?.findSuggestionsSharedIds?.length) {
-    entityQuery = await getEntitiesForIdsQuery(model, BATCH_SIZE);
+    const entityFilters = await getEntitiesForIdsQuery(model, BATCH_SIZE);
+    if (!entityFilters) {
+      return [];
+    }
+    entities = await entitiesDao().find(entityFilters);
   } else {
-    entityQuery = await getEntitiesForSuggestionsQuery(extractorId, model, BATCH_SIZE);
+    const pairsQuery = await getEntitiesForSuggestionsQuery(extractorId, model, BATCH_SIZE);
+    if (!pairsQuery) {
+      return [];
+    }
+    entities = await entitiesDao().findByLanguagePairs(pairsQuery);
   }
 
-  if (!entityQuery) {
-    return [];
-  }
-
-  const projection = new Set([
-    'sharedId',
-    'title',
-    `metadata.${extractor.property}`,
-    'language',
-    `metadata.${extractor.source.property}`,
-  ]);
-
-  const entities = await entitiesModel.getUnrestricted(
-    entityQuery,
-    Array.from(projection).join(' ')
-  );
-
-  return entities;
+  return entities as unknown as EntitySchema[];
 }
 
 async function getFilesForTraining(extractor: IXExtractorType) {

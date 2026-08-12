@@ -13,6 +13,11 @@ type MetadataCriteria = {
 /**
  * DB-agnostic entity query filters. No Mongo operators, no ObjectId —
  * implementations translate these into backend-specific conditions.
+ *
+ * Only "boring" filters live here: equality/IN and trivial predicates that
+ * compose freely across find/findOne/count/getIds and translate cheaply on
+ * both backends. Semantically distinct query shapes (language pairs, id
+ * ranges, metadata shape criteria) are promoted to named methods.
  */
 type EntityFilters = {
   _id?: string;
@@ -23,13 +28,40 @@ type EntityFilters = {
   languages?: string[];
   template?: string;
   templateIds?: string[];
-  languagePairs?: { sharedId: string; language: string }[];
-  idRange?: { from?: string; to?: string };
   title?: string;
   titleNotEmpty?: boolean;
   published?: boolean;
+  /**
+   * OR-match on (property, value) presence in metadata. Kept in the bag
+   * because indexing needs it through getIds() and count() as well as find().
+   */
   metadataValueIn?: { property: string; value: string }[];
-  metadata?: MetadataCriteria[];
+};
+
+type LanguagePair = { sharedId: string; language: string };
+
+/** OR-match on (sharedId, language) tuples. Pairs must be non-empty. */
+type FindByLanguagePairsQuery = { pairs: LanguagePair[] };
+
+/**
+ * Inclusive range scan on _id (hex strings) within a template.
+ * Template is required: encodes the invariant that _id range scans are
+ * always template-scoped (bulk batch jobs), preventing unbounded scans.
+ */
+type FindByTemplateIdRangeQuery = {
+  templateId: string;
+  from?: string;
+  to?: string;
+  language?: string;
+};
+
+/**
+ * AND-composed metadata shape checks (exists / nonEmpty / hasValues),
+ * anchored to optional boring filters (templateIds, titleNotEmpty, ...).
+ */
+type FindByMetadataCriteriaQuery = {
+  criteria: MetadataCriteria[];
+  filters?: EntityFilters;
 };
 
 type FindOptions = {
@@ -74,15 +106,26 @@ interface EntitiesDAO {
   count(filters?: EntityFilters): Promise<number>;
   getIds(filters?: EntityFilters): Promise<string[]>;
 
+  findByLanguagePairs(query: FindByLanguagePairsQuery, options?: FindOptions): Promise<EntityDBO[]>;
+  findByTemplateIdRange(
+    query: FindByTemplateIdRangeQuery,
+    options?: FindOptions
+  ): Promise<EntityDBO[]>;
+  findByMetadataCriteria(
+    query: FindByMetadataCriteriaQuery,
+    options?: FindOptions
+  ): Promise<EntityDBO[]>;
+
   getWithFiles(match: GetWithFilesMatch): Promise<EntityWithFiles[]>;
   getByIdsWithDocuments(
     ids: string[],
     options?: GetByIdsWithDocumentsOptions
   ): Promise<EntityWithFiles[]>;
 
-  getBySharedId(sharedId: string, language?: LanguageISO6391): Promise<EntityDBO | null>;
+  /** Returns all language variants when no language is given; the specific variant (or null) when language is provided. */
+  getBySharedId(sharedId: string): Promise<EntityDBO[]>;
+  getBySharedId(sharedId: string, language: LanguageISO6391): Promise<EntityDBO | null>;
   getByInternalId(id: string, projection?: Record<string, number>): Promise<EntityDBO | null>;
-  findBySharedIds(sharedIds: string[], language?: LanguageISO6391): Promise<EntityDBO[]>;
 
   countByTemplate(templateId: string): Promise<number>;
   countDistinctSharedIds(): Promise<number>;
@@ -108,10 +151,14 @@ export type {
   EntityFile,
   EntityFilters,
   EntityWithFiles,
+  FindByLanguagePairsQuery,
+  FindByMetadataCriteriaQuery,
+  FindByTemplateIdRangeQuery,
   FindOptions,
   GetByIdsWithDocumentsOptions,
   GetWithFilesMatch,
   LabelInfo,
+  LanguagePair,
   MetadataCriteria,
 };
 export type { EntitiesDAO };
