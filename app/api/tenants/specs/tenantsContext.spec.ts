@@ -133,4 +133,29 @@ describe('tenantsContext', () => {
     expect(result[0].name).toBe('test-tenant');
     expect(result[0].featureFlags?.s3Storage).toBeTruthy();
   });
+
+  it('should default newHeader to the default tenant value when unset', async () => {
+    tenants.add({
+      name: 'test-tenant-new-header-default',
+      dbName: 'test-tenant-new-header-default-db',
+    });
+
+    await tenants.run(async () => {
+      expect(tenants.current().featureFlags?.newHeader).toBe(
+        config.defaultTenant.featureFlags!.newHeader
+      );
+    }, 'test-tenant-new-header-default');
+  });
+
+  it('should keep an explicit newHeader false override', async () => {
+    tenants.add({
+      name: 'test-tenant-new-header-false',
+      dbName: 'test-tenant-new-header-false-db',
+      featureFlags: { newHeader: false },
+    });
+
+    await tenants.run(async () => {
+      expect(tenants.current().featureFlags?.newHeader).toBe(false);
+    }, 'test-tenant-new-header-false');
+  });
 });
