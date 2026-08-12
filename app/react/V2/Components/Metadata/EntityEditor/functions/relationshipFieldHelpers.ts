@@ -1,7 +1,9 @@
+import type { ReactNode } from 'react';
 import type { ClientThesaurus } from '#app/apiResponseTypes.js';
 import type { Entity } from '#V2/api/entities/types.js';
 import { lookup as lookupEntities } from '#V2/api/search/index.js';
 import type { MetadataValue } from '#V2/formatters/types.js';
+import { inheritedCellContent } from '../../Components/inheritedCellContent.js';
 import type { MultiselectListOption } from '../../../Forms/index.js';
 import type { FormMetadataProperty } from './formatMetadataForForm.js';
 import { relationshipGroupKey, type DisplayProperty } from './relationshipGrouping.js';
@@ -13,7 +15,7 @@ type InheritColumnTemplate = {
 
 type InheritColumn = {
   label: string;
-  cellsByEntityId?: Record<string, string | undefined>;
+  cellsByEntityId?: Record<string, ReactNode>;
 };
 
 type MergeRelationshipLookupArgs = {
@@ -114,21 +116,6 @@ const defaultRelationshipLookup = async ({
   });
 };
 
-const inheritedCellText = (
-  values: { value?: unknown; inheritedValue?: { label?: string; value?: unknown }[] }[] | undefined,
-  entityId: string
-): string | undefined => {
-  const row = values?.find(value => String(value.value ?? '') === entityId);
-  if (!row?.inheritedValue?.length) return undefined;
-  const parts = row.inheritedValue
-    .map(item => {
-      if (typeof item.label === 'string' && item.label.length > 0) return item.label;
-      return typeof item.value === 'string' ? item.value : undefined;
-    })
-    .filter((part): part is string => Boolean(part));
-  return parts.length > 0 ? parts.join(', ') : undefined;
-};
-
 const inheritColumnLabel = (
   property: FormMetadataProperty,
   templates: InheritColumnTemplate[]
@@ -160,11 +147,11 @@ const buildInheritColumns = (
     )
     .map(candidate => {
       const values = sourceMetadata?.[candidate.name];
-      const cellsByEntityId: Record<string, string | undefined> = {};
+      const cellsByEntityId: Record<string, ReactNode> = {};
       (values ?? []).forEach(row => {
         const entityId = String(row.value ?? '');
         if (entityId) {
-          cellsByEntityId[entityId] = inheritedCellText(values, entityId);
+          cellsByEntityId[entityId] = inheritedCellContent(values, entityId);
         }
       });
       return {
@@ -179,7 +166,6 @@ export {
   DEFAULT_RELATIONSHIP_LOOKUP_LIMIT,
   defaultRelationshipLookup,
   buildInheritColumns,
-  inheritedCellText,
   inheritColumnLabel,
 };
 export type { InheritColumn as RelationshipInheritColumn, InheritColumn, InheritColumnTemplate };

@@ -1,5 +1,5 @@
 import { t } from '#app/I18N/index.js';
-import { availableLanguages } from '#shared/language/index.js';
+import { availableLanguages, LanguageUtils } from '#shared/language/index.js';
 import { OptionSchema } from '#V2/Components/Forms/index.js';
 import type { EntityFileRow } from './types.js';
 
@@ -33,12 +33,25 @@ const fileSupportsLanguage = (file: FileLike) => {
 };
 
 const fileLanguageSelectOptions = (): OptionSchema[] => [
-  ...availableLanguages.map(item => ({
-    key: item.ISO639_3,
-    value: item.ISO639_3,
-    label: `${item.localized_label} (${item.label})`,
-  })),
+  ...availableLanguages
+    .map(item => ({
+      key: item.ISO639_3,
+      value: item.ISO639_3,
+      label: item.ISO639_1.toUpperCase(),
+    }))
+    .sort((a, b) => a.label.localeCompare(b.label)),
   { key: 'other', value: 'other', label: t('System', 'other', 'other', false) },
 ];
 
-export { isFileRowSelectable, isPdfFile, fileSupportsLanguage, fileLanguageSelectOptions };
+const resolveFileLanguage = (rawLanguage?: string) => {
+  if (!rawLanguage || rawLanguage === 'other') return 'other';
+  return LanguageUtils.fromISO639_3(rawLanguage, false)?.ISO639_3 ?? 'other';
+};
+
+export {
+  isFileRowSelectable,
+  isPdfFile,
+  fileSupportsLanguage,
+  fileLanguageSelectOptions,
+  resolveFileLanguage,
+};

@@ -120,7 +120,7 @@ describe('RelationshipsDisplay WithPanel', () => {
     it('selects a relationship when a graph node is clicked', () => {
       cy.get('[aria-label="Graph"]').click();
       cy.get('[data-node="true"]').first().click({ force: true });
-      cy.get('[data-node="true"]').first().find('circle').should('have.attr', 'stroke-width', '2');
+      cy.get('[data-node="true"]').first().should('have.attr', 'stroke-width', '2');
       cy.get('div[data-highlight-key]', { timeout: 20000 }).should('exist');
     });
   });

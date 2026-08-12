@@ -1,0 +1,226 @@
+import { useCallback } from 'react';
+import { t } from '#app/I18N/index.js';
+import type { TocSchema } from '#shared/types/commonTypes.js';
+import { tocReviewed, update as updateFile } from '#V2/api/files/index.js';
+import type { FileType } from '#shared/types/fileType.js';
+import { FetchResponseError } from '#shared/JSONRequest.js';
+import { type ProcessedTocEntry, sortTocEntries } from './ToC.js';
+import { entityLoaderCache } from '../../EntityLoaderCache.js';
+import {
+  useDocumentPdf,
+  useToc,
+  useTocActions,
+  useTocStateActions,
+} from '#V2/Routes/Entity/Components/context/index.js';
+import { getPageNumber } from './utils.js';
+import { useRequestStatus } from '#V2/atoms/requestStatusAtom.js';
+
+type SaveTocParams = {
+  file: FileType;
+  toc: TocSchema[];
+  revalidate: () => Promise<void>;
+  onError: () => void;
+  onSuccess: () => void;
+};
+
+type ToCPanelHandlersParams = {
+  toc?: TocSchema[];
+  file?: FileType;
+  tocState: ReturnType<typeof useToc>;
+  setToc: ReturnType<typeof useTocActions>['setToc'];
+  setEditMode: ReturnType<typeof useTocActions>['setEditMode'];
+  updateEntry: ReturnType<typeof useTocActions>['updateEntry'];
+  deleteEntry: ReturnType<typeof useTocActions>['deleteEntry'];
+  setTocState: ReturnType<typeof useTocStateActions>['setTocState'];
+  mainPdfController: ReturnType<typeof useDocumentPdf>['pdfController'];
+  revalidate: () => Promise<void>;
+  notify: ReturnType<typeof useRequestStatus>['notify'];
+};
+
+const saveToc = async ({ file, toc, revalidate, onError, onSuccess }: SaveTocParams) => {
+  const result = await updateFile({
+    ...file,
+    toc: sortTocEntries(toc),
+  });
+
+  if (result instanceof FetchResponseError || result instanceof Error) {
+    onError();
+    return;
+  }
+
+  if (file.entity) {
+    entityLoaderCache.invalidateEntity(file.entity);
+  }
+  await revalidate();
+  onSuccess();
+};
+
+const markTocReviewed = async ({
+  file,
+  revalidate,
+  onError,
+  onSuccess,
+}: {
+  file?: FileType;
+  revalidate: () => Promise<void>;
+  onError: () => void;
+  onSuccess: () => void;
+}) => {
+  const fileId = file?._id ? String(file._id) : undefined;
+  if (!fileId) return;
+
+  const result = await tocReviewed(fileId);
+  if (result instanceof FetchResponseError || result instanceof Error) {
+    onError();
+    return;
+  }
+  if (file?.entity) {
+    entityLoaderCache.invalidateEntity(file.entity);
+  }
+  await revalidate();
+  onSuccess();
+};
+
+const useToCEntryHandlers = ({
+  tocState,
+  updateEntry,
+  deleteEntry,
+}: Pick<ToCPanelHandlersParams, 'tocState' | 'updateEntry' | 'deleteEntry'>) => {
+  const handleEntryUpdate = useCallback(
+    (index: number, updates: Partial<TocSchema>) => {
+      if (!tocState.toc) return;
+      updateEntry(index, updates);
+    },
+    [tocState.toc, updateEntry]
+  );
+
+  const handleIndentationChange = useCallback(
+    (index: number, newIndentation: number) => {
+      handleEntryUpdate(index, { indentation: newIndentation });
+    },
+    [handleEntryUpdate]
+  );
+
+  const handleDelete = useCallback(
+    (index: number) => {
+      if (!tocState.toc) return;
+      deleteEntry(index);
+    },
+    [tocState.toc, deleteEntry]
+  );
+
+  const handleLabelChange = useCallback(
+    (index: number, newLabel: string) => {
+      handleEntryUpdate(index, { label: newLabel });
+    },
+    [handleEntryUpdate]
+  );
+
+  return { handleIndentationChange, handleDelete, handleLabelChange };
+};
+
+const useToCPanelHandlers = ({
+  toc,
+  file,
+  tocState,
+  setToc,
+  setEditMode,
+  updateEntry,
+  deleteEntry,
+  setTocState,
+  mainPdfController,
+  revalidate,
+  notify,
+}: ToCPanelHandlersParams) => {
+  const handleStateChange = useCallback(
+    (expanded: boolean, collapsed: boolean) => {
+      setTocState(current => {
+        if (current.isAllExpanded === expanded && current.isAllCollapsed === collapsed) {
+          return current;
+        }
+        return { ...current, isAllExpanded: expanded, isAllCollapsed: collapsed };
+      });
+    },
+    [setTocState]
+  );
+
+  const handleToCEntryClick = useCallback(
+    (entry: ProcessedTocEntry) => {
+      const pageNumber = getPageNumber(entry.entry);
+      if (pageNumber !== null) {
+        mainPdfController?.goToPage(pageNumber);
+      }
+    },
+    [mainPdfController]
+  );
+
+  const handleEdit = () => {
+    setEditMode(true);
+  };
+
+  const handleSave = async () => {
+    if (!file?._id || !tocState.toc) {
+      setEditMode(false);
+      return;
+    }
+
+    const saveError = () =>
+      notify('error', t('System', 'Failed to save table of contents', null, false));
+
+    setTocState(current => ({ ...current, isSaving: true }));
+    try {
+      await saveToc({
+        file,
+        toc: tocState.toc,
+        revalidate,
+        onError: saveError,
+        onSuccess: () => {
+          notify('success', t('System', 'Table of contents saved successfully', null, false));
+          setEditMode(false);
+        },
+      });
+    } catch {
+      saveError();
+    } finally {
+      setTocState(current => ({ ...current, isSaving: false }));
+    }
+  };
+
+  const handleCancel = () => {
+    setEditMode(false);
+    setToc(toc);
+  };
+
+  const handleMarkReviewed = useCallback(async () => {
+    const markError = () =>
+      notify('error', t('System', 'Failed to mark table of contents as reviewed', null, false));
+
+    setTocState(current => ({ ...current, isSaving: true }));
+    try {
+      await markTocReviewed({
+        file,
+        revalidate,
+        onError: markError,
+        onSuccess: () => notify('success', t('System', 'Document updated', null, false)),
+      });
+    } catch {
+      markError();
+    } finally {
+      setTocState(current => ({ ...current, isSaving: false }));
+    }
+  }, [file, notify, revalidate, setTocState]);
+
+  const entryHandlers = useToCEntryHandlers({ tocState, updateEntry, deleteEntry });
+
+  return {
+    handleStateChange,
+    handleToCEntryClick,
+    handleEdit,
+    handleSave,
+    handleCancel,
+    handleMarkReviewed,
+    ...entryHandlers,
+  };
+};
+
+export { useToCPanelHandlers };
