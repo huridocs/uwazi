@@ -62,9 +62,9 @@ Add thesaurus value,Añadir valor del tesauro
 Add timelink,Añadir línea de tiempo
 Add to all languages,Añadir a todos los idiomas
 Add to table of contents,Añadir a la tabla de contenidos
-Add to ToC,Add to ToC
-Add to training set,Add to training set
-Add translation,Add translation
+Add to ToC,Añadir a TdC
+Add to training set,Añadir a conjunto de entrenamiento
+Add translation,Añadir traducción
 Add user,Añadir usuario
 add value,añadir valor
 Add/delete users and assign roles,Añadir / Eliminar usuarios y asignar roles
@@ -806,6 +806,7 @@ No value,Sin valor
 No Value,Sin valor
 No visualization data available.,No visualization data available.
 "No, cancel","No, cancelar"
+no-toc-description,"Puedes empezar seleccionando texto en el documento y haciendo clic en el botón ""Añadir a TdC""."
 Non processed,No procesados
 Non-labeled,Non-labeled
 Non-latin characters support,Soporte de caracteres no latinos
@@ -1445,9 +1446,6 @@ You can add one or many items in this form.,You can add one or many items in thi
 You can also enter this secret key into your Authenticator app.,You can also enter this secret key into your Authenticator app.
 You can create metadata templates in,Puedes crear plantillas de metadatos en
 "You can embed advanced components like maps, charts and entity lists in your page.","You can embed advanced components like maps, charts and entity lists in your page."
-"You can start by selecting text in the document and clicking the ""Add to
-              ToC"" button.","You can start by selecting text in the document and clicking the ""Add to
-              ToC"" button."
 You do not have write permission on all entities,You do not have write permission on all entities
 You have unsaved changes. Discard them and leave this page? This action cannot be undone.,Hay cambios sin guardar. ¿Desecharlos y salir de esta página? Esta acción no puede revertirse.
 "You have unsaved changes. Discard them and switch language? This action cannot be

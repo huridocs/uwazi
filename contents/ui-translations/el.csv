@@ -809,6 +809,8 @@ No value,Χωρίς τιμή
 No Value,Χωρίς τιμή
 No visualization data available.,No visualization data available.
 "No, cancel","Όχι, ακύρωση"
+no-toc-description,"You can start by selecting text in the document and clicking the ""Add to
+              ToC"" button."
 Non processed,Μη επεξεργασμένο
 Non-labeled,Χωρίς ετικέτα
 Non-latin characters support,Non-latin characters support
@@ -1449,9 +1451,6 @@ You can add one or many items in this form.,Μπορείτε να προσθέσ
 You can also enter this secret key into your Authenticator app.,Μπορείτε επίσης να εισαγάγετε αυτό το μυστικό κλειδί στην εφαρμογή πιστοποίησης ταυτότητας.
 You can create metadata templates in,Μπορείτε να δημιουργήσετε πρότυπα μεταδεδομένων στο
 "You can embed advanced components like maps, charts and entity lists in your page.","You can embed advanced components like maps, charts and entity lists in your page."
-"You can start by selecting text in the document and clicking the ""Add to
-              ToC"" button.","You can start by selecting text in the document and clicking the ""Add to
-              ToC"" button."
 You do not have write permission on all entities,You do not have write permission on all entities
 You have unsaved changes. Discard them and leave this page? This action cannot be undone.,You have unsaved changes. Discard them and leave this page? This action cannot be undone.
 "You have unsaved changes. Discard them and switch language? This action cannot be
