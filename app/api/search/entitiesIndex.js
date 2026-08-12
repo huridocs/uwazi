@@ -1,7 +1,6 @@
 import PromisePoolModule from '@supercharge/promise-pool';
 import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
 import { detectLanguage } from '#shared/detectLanguage.js';
-import entities from '#api/entities/index.js';
 import { legacyLogger } from '#api/log/index.js';
 import { entityDefaultDocument } from '#shared/entityDefaultDocument.js';
 import { ElasticEntityMapper } from '#api/entities.v2/database/ElasticEntityMapper.js';
@@ -12,7 +11,7 @@ import { getTenantESMapping } from '#api/tenants/tenantESMapping.js';
 import elasticMapFactory from '../../../database/elastic_mapping/elasticMapFactory.js';
 import { elastic } from './elastic.js';
 import { TemplatesDataSourceFactory } from '#api/core/infrastructure/factories/TemplatesDataSourceFactory.js';
-import { PostgresUnrestrictedEntitiesQueryFactory } from '#api/core/infrastructure/factories/PostgresUnrestrictedEntitiesQueryFactory.js';
+import { EntitiesDAOFactory } from '#api/core/infrastructure/factories/EntitiesDAOFactory.js';
 
 const PromisePool = PromisePoolModule.default ?? PromisePoolModule;
 
@@ -20,13 +19,14 @@ class IndexError extends Error {}
 
 class UnsupportedQueryError extends Error {}
 
-const FLAT_FILTER_KEYS = ['language', 'template', 'sharedId', '_id'];
+const FLAT_FILTER_KEYS = ['language', 'template', 'sharedId', '_id', 'title'];
 const METADATA_VALUE_PATH = /^metadata\.([^.]+)\.value$/;
 
 const flatFiltersFrom = query => {
   const filters = {};
   if (query.language) filters.language = query.language;
   if (query.template) filters.template = query.template;
+  if (query.title) filters.title = query.title;
   if (query.sharedId?.$in) filters.sharedIds = query.sharedId.$in;
   else if (query.sharedId) filters.sharedId = query.sharedId;
   if (query._id?.$in) filters.ids = query._id.$in;
@@ -168,19 +168,10 @@ const bulkIndex = async (docs, _action = 'index') => {
   return results;
 };
 
-const getEntitiesToIndex = async (query, stepBach, limit, select) => {
+const getEntitiesToIndex = async (_query, stepBach, limit, select) => {
   const documentsFullText = Boolean(select && select.includes('+fullText'));
 
-  if (PostgresUnrestrictedEntitiesQueryFactory.isEnabled()) {
-    return PostgresUnrestrictedEntitiesQueryFactory.default().getByIdsWithDocuments(stepBach, {
-      limit,
-      documentsFullText,
-    });
-  }
-
-  const thisQuery = { ...query };
-  thisQuery._id = { $in: stepBach };
-  return entities.getUnrestrictedWithDocuments(thisQuery, '+permissions', {
+  return EntitiesDAOFactory.default().unrestricted().getByIdsWithDocuments(stepBach, {
     limit,
     documentsFullText,
   });
@@ -193,9 +184,9 @@ const bulkIndexAndCallback = async assets => {
 };
 
 const getSteps = async (query, limit) => {
-  const allIds = PostgresUnrestrictedEntitiesQueryFactory.isEnabled()
-    ? await PostgresUnrestrictedEntitiesQueryFactory.default().getIds(entityFiltersFromQuery(query))
-    : await entities.getWithoutDocuments(query, '_id');
+  const allIds = await EntitiesDAOFactory.default()
+    .unrestricted()
+    .getIds(entityFiltersFromQuery(query));
   return [...Array(Math.ceil(allIds.length / limit))].map((_v, i) =>
     allIds.slice(i * limit, (i + 1) * limit)
   );
@@ -242,9 +233,9 @@ const indexEntities = async ({
   batchCallback = () => {},
   searchInstance,
 }) => {
-  const totalRows = PostgresUnrestrictedEntitiesQueryFactory.isEnabled()
-    ? await PostgresUnrestrictedEntitiesQueryFactory.default().count(entityFiltersFromQuery(query))
-    : await entities.count(query);
+  const totalRows = await EntitiesDAOFactory.default()
+    .unrestricted()
+    .count(entityFiltersFromQuery(query));
   return indexBatch(totalRows, {
     query,
     select,

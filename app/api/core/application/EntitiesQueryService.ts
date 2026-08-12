@@ -14,10 +14,8 @@ import {
 } from '../domain/entityAccessPolicy/EntityPermissionChecker.js';
 import { PropertyTypeEnum } from '../domain/template/PropertyType.js';
 import { Template } from '../domain/template/Template.js';
-import type {
-  EntityWithFiles,
-  MongoEntitiesDAO,
-} from '../infrastructure/mongodb/entity/MongoEntitiesDAO.js';
+import type { EntityWithFiles } from '../infrastructure/mongodb/entity/MongoEntitiesDAO.js';
+import { EntitiesDAO } from './contracts/EntitiesDAO.js';
 import { MongoRelationshipsV1DataSource } from '../infrastructure/mongodb/MongoRelationshipsV1DataSource.js';
 import { MongoEntityMapper } from '../infrastructure/mongodb/entity/MongoEntityMapper.js';
 import { FileDTO } from '../domain/files/domainTypes.js';
@@ -35,7 +33,7 @@ type Deps = {
   templatesDAO: TemplatesDAO;
   settingsDS: SettingsDataSource;
   entityPermissionChecker: EntityPermissionChecker;
-  entityDAO: MongoEntitiesDAO;
+  entityDAO: EntitiesDAO;
   relationshipsDataSource: MongoRelationshipsV1DataSource;
 };
 

@@ -8,7 +8,7 @@ import { Entity } from '#api/core/domain/entity/Entity.js';
 import type { Relation } from '../../../relationships/RelationsV1Collection.js';
 import type { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import { TimedMethod } from '#api/core/libs/logger/TimedMethodDecorator.js';
-import { MongoEntitiesDAO } from './entity/MongoEntitiesDAO.js';
+import { EntitiesDAO } from '#api/core/application/contracts/EntitiesDAO.js';
 
 export class MongoRelationshipsV1DataSource extends MongoDataSource<Relation> {
   protected collectionName = 'connections';
@@ -16,7 +16,7 @@ export class MongoRelationshipsV1DataSource extends MongoDataSource<Relation> {
   constructor(
     db: any,
     transactionManager: any,
-    private entitiesDAO: MongoEntitiesDAO
+    private entitiesDAO: EntitiesDAO
   ) {
     super(db, transactionManager);
   }
