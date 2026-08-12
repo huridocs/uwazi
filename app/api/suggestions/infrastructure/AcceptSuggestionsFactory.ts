@@ -1,4 +1,4 @@
-import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
+import { UwaziDispatcherFactory } from '#api/core/infrastructure/jobs/UwaziDispatcherFactory.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
 import { tenants } from '#api/tenants/index.js';
@@ -10,7 +10,7 @@ type Props = { tenantName?: string; batchSize?: number };
 export class AcceptSuggestionsFactory {
   static async createDefault({ tenantName, batchSize = 50 }: Props) {
     const tName = tenantName || tenants.current().name;
-    const dispatcher: JobsDispatcher = DefaultDispatcher(
+    const dispatcher: JobsDispatcher = UwaziDispatcherFactory(
       tName,
       TransactionManagerFactory.default(),
       {

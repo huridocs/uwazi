@@ -1,7 +1,4 @@
-import {
-  UserAwareDispatchable,
-  UserAwareDispatchableParams,
-} from '#api/core/libs/queue/application/contracts/UserAwareDispatchable.js';
+import { UwaziJobHandler, UwaziJobParams } from '#api/core/infrastructure/jobs/UwaziJobHandler.js';
 import {
   HeartbeatCallback,
   JobInfo,
@@ -14,7 +11,8 @@ import {
   handleTerminalFailureCleanup,
 } from './CsvCleanupDispatch.js';
 
-type Params = UserAwareDispatchableParams & {
+type Params = UwaziJobParams & {
+  tenantName: string;
   importId: string;
 };
 
@@ -23,7 +21,7 @@ type Deps = {
   sockets: V1WebSocketsWrapper;
 };
 
-export class CsvImportEntitiesJobHandler extends UserAwareDispatchable<Params> {
+export class CsvImportEntitiesJobHandler extends UwaziJobHandler<Params> {
   constructor(private deps: Deps) {
     super();
   }
@@ -54,14 +52,14 @@ export class CsvImportEntitiesJobHandler extends UserAwareDispatchable<Params> {
     );
   }
 
-  async handle(heartbeat: HeartbeatCallback, jobInfo?: JobInfo): Promise<void> {
-    const { tenantName } = this;
+  async handle(heartbeat: HeartbeatCallback, params: Params, jobInfo?: JobInfo): Promise<void> {
+    const { tenantName } = params;
 
     try {
       await this.deps.useCase.execute({
-        importId: this.params.importId,
+        importId: params.importId,
         tenantName,
-        userId: this.params.userId,
+        userId: params.userId,
         callbacks: {
           onStart: ({ importId }) => {
             this.deps.sockets.emitToTenantAdmins(tenantName, 'csvImport:import:start', {
@@ -96,16 +94,16 @@ export class CsvImportEntitiesJobHandler extends UserAwareDispatchable<Params> {
       });
       await dispatchCleanupAfterCancelledStage({
         useCase: this.deps.useCase,
-        importId: this.params.importId,
+        importId: params.importId,
         tenantName,
-        userId: this.params.userId,
+        userId: params.userId,
       });
     } catch (error) {
       await handleTerminalFailureCleanup({
         useCase: this.deps.useCase,
-        importId: this.params.importId,
+        importId: params.importId,
         tenantName,
-        userId: this.params.userId,
+        userId: params.userId,
         error,
         jobInfo,
       });

@@ -298,6 +298,13 @@ class Entity {
     return referenced;
   }
 
+  getRelationshipValues(propertyName: string, language?: LanguageISO6391): RelationshipEntry[] {
+    const lang = language ?? this.languages[0];
+    const translation = this.translationsList.find(([l]) => l === lang)?.[1];
+    const assignment = translation?.metadata[propertyName];
+    return (assignment?.value as RelationshipEntry[] | undefined) ?? [];
+  }
+
   denormalizeRelationshipProps(relatedEntities: Record<IndexTypes, Entity | undefined>) {
     this.template.getRelationshipProperties().forEach(property => {
       this.languages.forEach(language => {

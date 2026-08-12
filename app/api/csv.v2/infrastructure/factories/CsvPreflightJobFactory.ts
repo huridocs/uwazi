@@ -1,7 +1,7 @@
 import { TemplatesDataSourceFactory } from '#api/core/infrastructure/factories/TemplatesDataSourceFactory.js';
 import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
-import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
+import { UwaziDispatcherFactory } from '#api/core/infrastructure/jobs/UwaziDispatcherFactory.js';
 import { ThesauriDataSource } from '#api/core/application/contracts/ThesauriDataSource.js';
 import { ThesauriDataSourceFactory } from '#api/core/infrastructure/factories/ThesauriDataSourceFactory.js';
 import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
@@ -52,7 +52,7 @@ class CsvPreflightJobFactory {
       options.relationshipPendingValuesDS ??
       CSVImportEntitiesFactories.CSVImportRelationshipPendingValuesDSDefault(transactionManager);
     const jobsDispatcher =
-      options.jobsDispatcher ?? DefaultDispatcher(tenants.current().name, transactionManager);
+      options.jobsDispatcher ?? UwaziDispatcherFactory(tenants.current().name, transactionManager);
 
     const useCase = new CsvPreflightJob({
       csvImportsDS,

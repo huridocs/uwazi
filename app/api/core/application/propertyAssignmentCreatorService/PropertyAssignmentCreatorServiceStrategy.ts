@@ -5,6 +5,7 @@ import { PropertyType } from '#api/core/domain/template/PropertyType.js';
 import { PropertyAssignment } from '#api/core/domain/template/PropertyValue.js';
 import { EntitiesDataSource } from '#api/core/application/contracts/EntitiesDataSource.js';
 import { InputFile } from '#api/core/infrastructure/files/InputFile.js';
+import { Entity } from '#api/core/domain/entity/Entity.js';
 import { SettingsDataSource } from '../contracts/SettingsDataSource.js';
 import { ThesauriDataSource } from '../contracts/ThesauriDataSource.js';
 import { DefaultPropertyAssignmentCreatorService } from './DefaultPropertyAssignmentCreatorService.js';
@@ -54,7 +55,8 @@ class PropertyAssignmentCreatorServiceStrategy {
   async bulkCreate(
     propertyAssignments: PropertyAssignmentInput[],
     template: Template,
-    attachments: InputFile[] = []
+    attachments: InputFile[] = [],
+    entity?: Entity
   ): Promise<PropertyAssignment[]> {
     const created = await ArrayUtils.sequentialFor(
       propertyAssignments,
@@ -62,7 +64,7 @@ class PropertyAssignmentCreatorServiceStrategy {
         const property = template.getPropertyByName(propertyAssignment.name).getDataOrThrow();
         const strategy = this.getStrategy(property.type);
 
-        return strategy.create({ propertyAssignment, template, attachments });
+        return strategy.create({ propertyAssignment, template, attachments, entity });
       }
     );
 

@@ -4,21 +4,29 @@ import { getConnection } from '../mongodb/common/getConnectionForCurrentTenant.j
 import { MongoEntitiesDAO } from '../mongodb/entity/MongoEntitiesDAO.js';
 import { FilesDAOFactory } from './FilesDAOFactory.js';
 import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
+import { AccessContext } from '#api/core/domain/entityAccessPolicy/AccessContext.js';
 
 export class EntitiesDAOFactory {
   static default(overrides?: {
     user?: User;
     transactionManager?: TransactionManager;
+    accessContext?: AccessContext;
   }): MongoEntitiesDAO {
     const filesDAO = ExecutionContext.tenant.featureFlags?.postgresFiles
       ? FilesDAOFactory.default()
       : undefined;
 
+    const user = overrides?.user ?? ExecutionContext.actor ?? User.createFrom(null);
+    const accessContext = overrides?.accessContext ?? AccessContext.forActor(user);
+
     return new MongoEntitiesDAO(
       getConnection(),
       overrides?.transactionManager ?? ExecutionContext.transactionManager,
-      overrides?.user ?? ExecutionContext.actor ?? User.createFrom(null),
-      { filesDAO }
+      user,
+      {
+        filesDAO,
+        accessContext,
+      }
     );
   }
 }

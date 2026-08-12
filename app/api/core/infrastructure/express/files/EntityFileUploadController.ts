@@ -2,7 +2,7 @@ import type { Request, Response } from 'express';
 import * as cookie from 'cookie';
 import { AbstractController } from '#api/common.v2/infrastructure/AbstractController.js';
 import { FileUploadForEntity } from '#api/core/application/FileUploadForEntity.js';
-import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
+import { UwaziDispatcherFactory } from '#api/core/infrastructure/jobs/UwaziDispatcherFactory.js';
 import { SyncDispatcherForTests } from '#api/core/libs/queue/infrastructure/SyncDispatcherForTests.js';
 import { Dispatcher } from '#api/core/application/contracts/Dispatcher.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
@@ -82,7 +82,7 @@ class EntityFileUploadController extends AbstractController {
   private useCase() {
     let transactionManager = TransactionManagerFactory.default();
     let jobsDispatcher: Dispatcher = new DispatcherAdapter(
-      DefaultDispatcher(this.tenantName, transactionManager)
+      UwaziDispatcherFactory(this.tenantName, transactionManager)
     );
     if (process.env.NODE_ENV === 'test') {
       transactionManager = TransactionManagerFactory.fake();

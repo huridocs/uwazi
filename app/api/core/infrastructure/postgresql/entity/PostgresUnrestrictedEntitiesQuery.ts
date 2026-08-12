@@ -1,6 +1,9 @@
 /* eslint-disable max-statements */
 import { PostgresDataSource } from '../common/PostgresDataSource.js';
 import type { PostgresDataSourceDeps } from '../common/PostgresDataSource.js';
+import { PostgresPermissionEnforcedTable } from '../common/PostgresPermissionEnforcedTable.js';
+import { PostgresTable } from '../common/PostgresTable.js';
+import { AccessContext } from '#api/core/domain/entityAccessPolicy/AccessContext.js';
 import type { EntityRow } from './PostgresEntityRow.js';
 import type { PostgresFilesDAO } from '../files/PostgresFilesDAO.js';
 import type { FilesRow } from '../files/PostgresFilesRow.js';
@@ -34,9 +37,26 @@ type Deps = PostgresDataSourceDeps & {
 class PostgresUnrestrictedEntitiesQuery extends PostgresDataSource<EntityRow> {
   private filesDAO: PostgresFilesDAO;
 
+  private unrestrictedTable: PostgresPermissionEnforcedTable<EntityRow>;
+
   constructor(deps: Deps) {
     super('entities', deps);
     this.filesDAO = deps.filesDAO;
+
+    // Unrestricted query needs full access to all entities, regardless of
+    // permission-level RLS. Uses PostgresPermissionEnforcedTable with
+    // AccessContext.system() so the bypass context is passed directly to
+    // each operation — no mutable shared state on the transaction manager.
+    this.unrestrictedTable = PostgresPermissionEnforcedTable.for<EntityRow>({
+      tableName: 'entities',
+      tenantId: deps.tenantId,
+      transactionManager: deps.pgTransactionManager,
+      accessContext: AccessContext.system(),
+    });
+  }
+
+  protected override get table(): PostgresTable<EntityRow> {
+    return this.unrestrictedTable;
   }
 
   private applyFilters(filters: EntityFilters) {

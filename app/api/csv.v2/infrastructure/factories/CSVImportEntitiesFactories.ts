@@ -3,7 +3,7 @@ import { TransactionManagerFactory } from '#api/core/infrastructure/factories/Tr
 import { IdGeneratorFactory } from '#api/core/infrastructure/factories/IdGeneratorFactory.js';
 import { FileStorageFactory } from '#api/core/infrastructure/files/FileStorageFactory.js';
 import { tenants } from '#api/tenants/tenantContext.js';
-import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
+import { UwaziDispatcherFactory } from '#api/core/infrastructure/jobs/UwaziDispatcherFactory.js';
 import { TemplatesDataSourceFactory } from '#api/core/infrastructure/factories/TemplatesDataSourceFactory.js';
 import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
 import { ThesauriDataSourceFactory } from '#api/core/infrastructure/factories/ThesauriDataSourceFactory.js';
@@ -59,7 +59,7 @@ export class CSVImportEntitiesFactories {
     const tenant = tenants.current();
     const fileStorage = FileStorageFactory.default();
     const idGenerator = IdGeneratorFactory.default();
-    const jobsDispatcher = DefaultDispatcher(tenant.name, transactionManager);
+    const jobsDispatcher = UwaziDispatcherFactory(tenant.name, transactionManager);
     return new CsvImportEntities({
       csvImportsDS,
       fileStorage,
@@ -76,7 +76,7 @@ export class CSVImportEntitiesFactories {
     const settingsDS = SettingsDataSourceFactory.default({ transactionManager });
     const thesauriDS = ThesauriDataSourceFactory.default({ transactionManager });
     const tenant = tenants.current();
-    const jobsDispatcher = DefaultDispatcher(tenant.name, transactionManager);
+    const jobsDispatcher = UwaziDispatcherFactory(tenant.name, transactionManager);
     return new CsvPreflightJob({
       csvImportsDS,
       rowsDS: this.CSVImportRowsDSDefault(transactionManager),
