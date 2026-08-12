@@ -44,8 +44,16 @@ class User {
     return this._id === '__anonymous__';
   }
 
+  isSystem() {
+    return this._id === '__system__';
+  }
+
   private static anonymous() {
     return new User('__anonymous__', 'collaborator', []);
+  }
+
+  static system(): User {
+    return new User('__system__', 'admin', []);
   }
 
   static createFrom(props: { [key: string]: any } | null): User {

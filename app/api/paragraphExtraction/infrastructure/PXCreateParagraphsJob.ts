@@ -1,7 +1,3 @@
-import {
-  UserAwareDispatchable,
-  UserAwareDispatchableParams,
-} from '#api/core/libs/queue/application/contracts/UserAwareDispatchable.js';
 import { NonRetryableJobError } from '#api/core/libs/queue/infrastructure/errors.js';
 import {
   HeartbeatCallback,
@@ -10,8 +6,10 @@ import {
 import { PXCreateParagraphs } from '../application/PXCreateParagraphs.js';
 import { PXExtractionService } from '../domain/PXExtractionService.js';
 import { MongoPXEntitiesStatusDataSource } from './MongoPXEntitiesStatusDataSource.js';
+import { UwaziJobHandler, UwaziJobParams } from '#api/core/infrastructure/jobs/UwaziJobHandler.js';
+import { PrivilegedJob } from '#api/core/infrastructure/jobs/PrivilegedJob.js';
 
-type PXCreateParagraphsJobParams = UserAwareDispatchableParams & {
+type PXCreateParagraphsJobParams = UwaziJobParams & {
   results: {
     success: boolean;
     data_url: string | undefined;
@@ -26,35 +24,40 @@ type Dependencies = {
   pxEntitiesStatusDS: MongoPXEntitiesStatusDataSource;
 };
 
-class PXCreateParagraphsJob extends UserAwareDispatchable<PXCreateParagraphsJobParams> {
+@PrivilegedJob()
+class PXCreateParagraphsJob extends UwaziJobHandler<PXCreateParagraphsJobParams> {
   public constructor(private dependencies: Dependencies) {
     super();
   }
 
   // eslint-disable-next-line max-statements
-  async handle(heartBeatCallBack: HeartbeatCallback, jobInfo: JobInfo) {
+  async handle(
+    heartBeatCallBack: HeartbeatCallback,
+    params: PXCreateParagraphsJobParams,
+    jobInfo: JobInfo
+  ) {
     const isRetriable = jobInfo.retryCount < jobInfo.maxRetries;
     try {
-      if (!this.params.results.success) {
+      if (!params.results.success) {
         throw new NonRetryableJobError(
-          new Error(`Paragraph Extraction failed with error: ${this.params.results.error_message}`)
+          new Error(`Paragraph Extraction failed with error: ${params.results.error_message}`)
         );
       }
-      if (!this.params.results.data_url) {
+      if (!params.results.data_url) {
         throw new NonRetryableJobError(new Error('data_url for paragraph extraction is missing'));
       }
       const paragraphsResult = await this.dependencies.extractionService.getParagraphsResult(
-        this.params.results.data_url
+        params.results.data_url
       );
       await this.dependencies.useCase.execute({
-        userId: this.params.userId,
-        entityStatusId: this.params.entityStatusId,
+        userId: params.userId,
+        entityStatusId: params.entityStatusId,
         paragraphs: paragraphsResult.paragraphs,
         onParagraphBatchCreated: heartBeatCallBack,
       });
     } catch (e) {
       if (!isRetriable) {
-        await this.dependencies.pxEntitiesStatusDS.markAsError(this.params.entityStatusId);
+        await this.dependencies.pxEntitiesStatusDS.markAsError(params.entityStatusId);
       }
       throw e;
     }

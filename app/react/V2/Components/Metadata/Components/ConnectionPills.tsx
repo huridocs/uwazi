@@ -1,16 +1,19 @@
 import React, { ReactNode } from 'react';
+import { useAtomValue } from 'jotai';
 import { ArrowTopRightOnSquareIcon } from '@heroicons/react/24/outline';
 import { I18NLinkV2 } from '#app/I18N/index.js';
+import {
+  getEntityViewerV2BasePath,
+  isEntityViewerV2Enabled,
+} from '#app/utils/entityViewerPaths.js';
 import { TemplatePill } from '#V2/Components/UI/TemplatePill.js';
 import type { ClientProperty } from '#V2/shared/types.js';
 import {
   RelationshipMetadataProperty,
   RelatedRelationshipMetadataProperty,
 } from '#V2/formatters/types.js';
+import { settingsAtom } from '#V2/atoms/settingsAtom.js';
 import { CountryFlag } from '../../CustomIcons/index.js';
-
-const DEFAULT_ENTITY_BASE_PATH = '/entityv2/';
-
 type RelationshipEntityValue = RelatedRelationshipMetadataProperty['values'][number];
 
 type OpenEntityTarget = {
@@ -42,6 +45,9 @@ const ConnectionPills = ({
   showExternalLinkIcon = false,
   onOpenEntity,
 }: ConnectionPillsProps) => {
+  const settings = useAtomValue(settingsAtom);
+  const entityBasePath = `${getEntityViewerV2BasePath(isEntityViewerV2Enabled(settings.features))}/`;
+
   if (!values.length) {
     return null;
   }
@@ -97,7 +103,7 @@ const ConnectionPills = ({
           <I18NLinkV2
             key={itemKey}
             className="inline-flex max-w-full items-center gap-1 rounded-md transition-opacity hover:opacity-80"
-            to={`${DEFAULT_ENTITY_BASE_PATH}${value._id}`}
+            to={`${entityBasePath}${value._id}`}
             target="_blank"
             rel="noreferrer"
             localized={false}

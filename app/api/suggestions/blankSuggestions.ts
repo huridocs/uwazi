@@ -1,5 +1,5 @@
 /* eslint-disable max-statements */
-import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
+import { UwaziDispatcherFactory } from '#api/core/infrastructure/jobs/UwaziDispatcherFactory.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { propertyTypeIsMultiValued } from '#api/services/informationextraction/ixMaterials.js';
 import templates from '#api/core/v1_layer/templates/index.js';
@@ -49,7 +49,10 @@ const createBlankSuggestionsForPartialExtractor = async (
     extractorTemplates.has(template.toString())
   );
 
-  const dispatcher = DefaultDispatcher(tenants.current().name, TransactionManagerFactory.default());
+  const dispatcher = UwaziDispatcherFactory(
+    tenants.current().name,
+    TransactionManagerFactory.default()
+  );
 
   await filteredTemplates.reduce(async (promise, template) => {
     await promise;

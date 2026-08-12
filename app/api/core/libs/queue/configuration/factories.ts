@@ -48,7 +48,7 @@ export function DefaultDispatcher(
   transactionManager: TransactionManager,
   queueOptions?: QueueOptions,
   queueAdapter?: QueueAdapter
-) {
+): JobsDispatcher {
   return new JobsRouter(
     queueName =>
       new NamespacedDispatcher(

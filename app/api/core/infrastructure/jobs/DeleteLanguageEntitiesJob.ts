@@ -4,11 +4,12 @@ import {
   HeartbeatCallback,
   JobInfo,
 } from '#api/core/libs/queue/application/contracts/Dispatchable.js';
-import { V1CompatTenantDispatchable } from '#api/core/libs/queue/application/contracts/V1CompatTenantDispatchable.js';
 import { WebSockets } from '#api/core/application/contracts/WebSockets.js';
 import { MongoEntitiesDAO } from '../mongodb/entity/MongoEntitiesDAO.js';
+import { UwaziJobHandler, UwaziJobParams } from '#api/core/infrastructure/jobs/UwaziJobHandler.js';
+import { PrivilegedJob } from '#api/core/infrastructure/jobs/PrivilegedJob.js';
 
-type Params = {
+type Params = UwaziJobParams & {
   language: LanguageISO6391;
 };
 
@@ -17,7 +18,8 @@ type JobDependencies = {
   webSockets: WebSockets;
 };
 
-class DeleteLanguageEntitiesJob extends V1CompatTenantDispatchable<Params> {
+@PrivilegedJob()
+class DeleteLanguageEntitiesJob extends UwaziJobHandler<Params> {
   constructor(private deps: JobDependencies) {
     super();
   }

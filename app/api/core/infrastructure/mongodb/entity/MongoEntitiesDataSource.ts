@@ -10,6 +10,7 @@ import {
 import { MongoResultSet } from '#api/core/infrastructure/mongodb/common/MongoResultSet.js';
 import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
 import { MongoEntityMapper } from '#api/core/infrastructure/mongodb/entity/MongoEntityMapper.js';
+import { AccessContext } from '#api/core/domain/entityAccessPolicy/AccessContext.js';
 import { Result, ResultType } from '#api/core/libs/Result.js';
 import { search } from '#api/search/index.js';
 import { Settings as SettingsType } from '#shared/types/settingsType.js';
@@ -36,6 +37,8 @@ export class MongoEntitiesDataSource
 
   private modifiedSharedIds = new Set<string>();
 
+  private unrestrictedInstance?: EntitiesDataSource;
+
   private templatesDAO: TemplatesDAO;
 
   constructor(deps: Deps) {
@@ -43,9 +46,28 @@ export class MongoEntitiesDataSource
 
     this.templatesDAO = deps.templatesDAO;
 
-    this.transactionManager.onCommitted(async () => {
-      await search.indexEntities({ sharedId: { $in: Array.from(this.modifiedSharedIds) } });
-    });
+    if (!deps.options?.skipOnCommits) {
+      this.transactionManager.onCommitted(async () => {
+        await search.indexEntities({ sharedId: { $in: Array.from(this.modifiedSharedIds) } });
+      });
+    }
+  }
+
+  /**
+   * Returns a cached instance with a system access context, so permission
+   * enforcement is a no-op. Cached (not per-call) to avoid accumulating
+   * `onCommitted` search-index handlers on the shared transaction manager.
+   */
+  unrestricted(): EntitiesDataSource {
+    if (!this.unrestrictedInstance) {
+      this.unrestrictedInstance = new MongoEntitiesDataSource({
+        db: this.db,
+        transactionManager: this.transactionManager,
+        templatesDAO: this.templatesDAO,
+        options: { accessContext: AccessContext.system(), skipOnCommits: true },
+      });
+    }
+    return this.unrestrictedInstance;
   }
 
   async getById(id: string): Promise<ResultType<Entity, EntityNotFoundError>> {

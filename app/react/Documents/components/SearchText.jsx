@@ -13,6 +13,7 @@ import { ModalTips } from '#app/App/ModalTips.js';
 import { toUrlParams } from '#shared/JSONRequest.js';
 import { SearchTipsContent } from '#app/App/SearchTipsContent.js';
 import { searchParamsFromSearchParams } from '#app/utils/routeHelpers.js';
+import { getV1EntityBasePathFromLocation } from '#app/utils/entityViewerPaths.js';
 import { SnippetListConnected as SnippetList } from './SnippetList.js';
 
 class SearchText extends Component {
@@ -63,9 +64,7 @@ class SearchText extends Component {
 
   render() {
     const { doc } = this.props;
-    const documentViewUrl = doc.get('file')
-      ? `/document/${doc.get('sharedId')}/text-search`
-      : `/entity/${doc.get('sharedId')}/text-search`;
+    const legacyBasePath = getV1EntityBasePathFromLocation(this.props.location?.pathname || '');
     const snippets =
       this.props.snippets && typeof this.props.snippets.get === 'function'
         ? this.props.snippets
@@ -123,8 +122,8 @@ class SearchText extends Component {
             snippets={snippets}
             selectSnippet={this.props.selectSnippet}
             searchTerm={this.props.searchTerm}
-            documentViewUrl={documentViewUrl}
             selectedSnippet={this.props.selectedSnippet}
+            legacyBasePath={legacyBasePath}
           />
         ) : (
           ''

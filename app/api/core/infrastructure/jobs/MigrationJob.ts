@@ -1,3 +1,4 @@
+import { PrivilegedJob } from '#api/core/infrastructure/jobs/PrivilegedJob.js';
 import { tenants } from '#api/tenants/index.js';
 import { Tenant, Tenants } from '#api/tenants/tenantContext.js';
 import {
@@ -30,6 +31,7 @@ type MigrationJobDeps = {
   tenantsManager: Tenants;
 };
 
+@PrivilegedJob()
 class MigrationJob implements Dispatchable {
   constructor(private deps: MigrationJobDeps) {}
 

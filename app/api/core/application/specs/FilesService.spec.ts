@@ -23,7 +23,6 @@ import { DiskFile } from '#api/core/infrastructure/files/DiskFile.js';
 import { EventsBus } from '#api/core/libs/eventsbus/index.js';
 import { FileMappers } from '#api/core/infrastructure/mongodb/files/FilesMappers.js';
 import { FileUpdatedEvent } from '#api/files/events/FileUpdatedEvent.js';
-import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { tenants } from '#api/tenants/index.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { DBFixture } from '#api/utils/testing_db.js';
@@ -219,11 +218,9 @@ describe('FilesService', () => {
 
       it('should insert uwazi files in the db and dispatch pdf post process jobs', async () => {
         const transactionManager = TransactionManagerFactory.fake();
-        let capturedUserId: string | undefined;
 
         const { service } = testingEnvironment.runWithContext(
           () => {
-            capturedUserId = ExecutionContext.actor?._id?.toString();
             const filesDataSource = FilesDataSourceFactory.default();
             return {
               service: FilesServiceFactory.default({
@@ -252,7 +249,6 @@ describe('FilesService', () => {
         expect(jobsDispatcher.postProcessPDFs).toHaveBeenCalledWith([
           {
             documentId: document.id,
-            userId: capturedUserId,
             tenantName: tenants.current().name,
           },
         ]);
