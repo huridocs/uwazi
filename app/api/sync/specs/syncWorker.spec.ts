@@ -19,7 +19,6 @@ import {
   storage,
   testingUploadPaths,
 } from '#api/files/index.js';
-import translations from '#api/i18n/index.js';
 import { permissionsContext } from '#api/permissions/permissionsContext.js';
 import relationships from '#api/relationships/relationships.js';
 import syncRoutes from '#api/sync/routes.js';
@@ -36,6 +35,8 @@ import db, { DBFixture } from '#api/utils/testing_db.js';
 import { advancedSort } from '#app/utils/advancedSort.js';
 import { CreateTranslationEntriesUseCaseFactory } from '#api/core/infrastructure/factories/CreateTranslationEntriesUseCaseFactory.js';
 import { RelationshipTypesDataSourceFactory } from '#api/core/infrastructure/factories/RelationshipTypesDataSourceFactory.js';
+import { TranslationsQueryServiceFactory } from '#api/core/infrastructure/factories/TranslationsQueryServiceFactory.js';
+import { toIndexedTranslations } from '#api/core/infrastructure/express/translation/LegacyTranslationDtoMapper.js';
 import { FetchResponseError } from '#shared/JSONRequest.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
@@ -447,7 +448,9 @@ describe('syncWorker', () => {
         .collection('translationsV2')
         .find({})
         .toArray();
-      const syncedTranslations = await translations.get({});
+      const syncedTranslations = await testingEnvironment.runWithContext(async () =>
+        toIndexedTranslations(await TranslationsQueryServiceFactory.default().getLegacy({}))
+      );
 
       expect(syncedTranslationsV2.filter(i => i.key === 'System Key')).toEqual([
         {

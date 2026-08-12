@@ -1,19 +1,48 @@
+/* eslint-disable max-statements */
 import { ObjectId } from 'mongodb';
 
-import translations from '#api/i18n/index.js';
-import { IndexedContextValues } from '#api/i18n/translations.js';
+import {
+  IndexedContextValues,
+  toIndexedTranslations,
+} from '#api/core/infrastructure/express/translation/LegacyTranslationDtoMapper.js';
+import { TranslationsQueryServiceFactory } from '#api/core/infrastructure/factories/TranslationsQueryServiceFactory.js';
+import { TranslationsDataSourceFactory } from '#api/core/infrastructure/factories/TranslationsDataSourceFactory.js';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { UpdateEntriesByContextUseCaseFactory } from '#api/core/infrastructure/factories/UpdateEntriesByContextUseCaseFactory.js';
 import settings from '#api/settings/index.js';
 import thesauri from '#api/core/v1_layer/thesauri/index.js';
 import { saveThesauri } from '#api/core/v1_layer/thesauri/specs/testHelpers.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import { CSVLoader } from '../csvLoader.js';
 import { fixtures, thesauri1Id } from './fixtures.js';
 import { mockCsvFileReadStream } from './helpers.js';
 
 const getTranslation = async (lang: string, id: string | ObjectId) =>
-  ((await translations.get()).find(t => t.locale === lang)?.contexts || []).find(
-    c => c?.id === id?.toString()
-  )?.values || ({} as IndexedContextValues);
+  testingEnvironment.runWithContext(async () => {
+    const indexed = toIndexedTranslations(
+      await TranslationsQueryServiceFactory.default().getLegacy()
+    );
+    return (
+      (indexed.find(t => t.locale === lang)?.contexts || []).find(c => c?.id === id?.toString())
+        ?.values || ({} as IndexedContextValues)
+    );
+  });
+
+const addLanguageTranslations = async (newLanguage: LanguageISO6391) =>
+  testingEnvironment.runWithContext(async () => {
+    const [existing] = await TranslationsQueryServiceFactory.default().getLegacy({
+      locale: newLanguage,
+    });
+    if (existing?.contexts?.length) {
+      return;
+    }
+    const defaultLanguage = await settings.getDefaultLanguage();
+    const translationsDS = TranslationsDataSourceFactory.default({
+      transactionManager: TransactionManagerFactory.default(),
+    });
+    await translationsDS.cloneForLanguage(defaultLanguage.key, newLanguage);
+  });
 
 describe('csvLoader thesauri', () => {
   const loader = new CSVLoader();
@@ -30,10 +59,10 @@ describe('csvLoader thesauri', () => {
       await testingEnvironment.setUp(fixtures);
 
       await settings.addLanguage({ key: 'es', label: 'spanish' });
-      await translations.addLanguage('es');
+      await addLanguageTranslations('es');
 
       await settings.addLanguage({ key: 'fr', label: 'french' });
-      await translations.addLanguage('fr');
+      await addLanguageTranslations('fr');
 
       const { _id } = await saveThesauri({
         name: 'thesauri2Id',
@@ -325,7 +354,7 @@ describe('csvLoader thesauri', () => {
         const { _id } = await saveThesauri({ name: 'sanitizedNestedThesauri' });
 
         const csv = `English, Spanish, French
-          parent with spaces  ,   padre con espacios  ,   parent avec espaces  
+          parent with spaces  ,   padre con espacios  ,   parent avec espaces
         -   child with spaces  , -   hijo con espacios  , -   enfant avec espaces  `;
 
         const mockedFile = mockCsvFileReadStream(csv);
@@ -382,14 +411,17 @@ describe('csvLoader thesauri', () => {
         });
 
         await testingEnvironment.runWithContext(async () =>
-          translations.updateEntries(_id.toString(), {
-            es: {
-              value11: 'valor11',
-              value2: 'valor2',
-            },
-            fr: {
-              value11: 'valeur11',
-              value2: 'valeur2',
+          UpdateEntriesByContextUseCaseFactory.default().execute({
+            contextId: _id.toString(),
+            keyValuePairsPerLanguage: {
+              es: {
+                value11: 'valor11',
+                value2: 'valor2',
+              },
+              fr: {
+                value11: 'valeur11',
+                value2: 'valeur2',
+              },
             },
           })
         );

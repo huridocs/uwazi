@@ -1,43 +1,120 @@
 /* eslint-disable max-statements */
 // eslint-disable-next-line node/no-restricted-import
 import * as fs from 'fs';
+import { ObjectId } from 'mongodb';
 
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
 import entities from '#api/entities/index.js';
 import * as denormalize from '#api/entities/denormalize.js';
+import { importPredefinedTranslations } from '#api/core/application/translation/ImportPredefinedTranslationsService.js';
 import { TranslationSyO } from '#api/core/infrastructure/mongodb/translation/schemas/TranslationSyO.js';
 import pages from '#api/pages/index.js';
 import settings from '#api/settings/index.js';
 import { AddLanguageUseCaseFactory } from '#api/core/infrastructure/factories/AddLanguageUseCaseFactory.js';
+import { CreateTranslationContextUseCaseFactory } from '#api/core/infrastructure/factories/CreateTranslationContextUseCaseFactory.js';
+import { DeleteTranslationContextUseCaseFactory } from '#api/core/infrastructure/factories/DeleteTranslationContextUseCaseFactory.js';
+import { DeleteTranslationsByLanguageUseCaseFactory } from '#api/core/infrastructure/factories/DeleteTranslationsByLanguageUseCaseFactory.js';
+import { SaveLocaleTranslationsUseCaseFactory } from '#api/core/infrastructure/factories/SaveLocaleTranslationsUseCaseFactory.js';
+import { SaveTranslationEntriesUseCaseFactory } from '#api/core/infrastructure/factories/SaveTranslationEntriesUseCaseFactory.js';
+import { TranslationsQueryServiceFactory } from '#api/core/infrastructure/factories/TranslationsQueryServiceFactory.js';
+import { UpdateEntriesByContextUseCaseFactory } from '#api/core/infrastructure/factories/UpdateEntriesByContextUseCaseFactory.js';
+import { UpdateTranslationContextUseCaseFactory } from '#api/core/infrastructure/factories/UpdateTranslationContextUseCaseFactory.js';
+import {
+  IndexedContextValues,
+  IndexedTranslations,
+  toIndexedTranslations,
+} from '#api/core/infrastructure/express/translation/LegacyTranslationDtoMapper.js';
 import * as setupSockets from '#api/socketio/setupSockets.js';
 import { ContextType } from '#shared/translationSchema.js';
-import { LanguageSchema } from '#shared/types/commonTypes.js';
+import { LanguageISO6391, LanguageSchema } from '#shared/types/commonTypes.js';
+import { TranslationType } from '#shared/translationType.js';
 import { UITranslationNotAvailable } from '../defaultTranslations.js';
-import translationsFn from '../translations.js';
 
-import { getTranslationsV2ByContext } from '../v2_support.js';
 import fixtures, { dictionaryId } from './fixtures.js';
 import { sortByLocale } from './sortByLocale.js';
 
-const translations = Object.assign(
-  async (...args: any[]) =>
-    testingEnvironment.runWithContext(async () => translationsFn.save(args[0])),
-  {
-    ...translationsFn,
-    save: async (...args: any[]) =>
-      testingEnvironment.runWithContext(async () => translationsFn.save(args[0])),
-    updateEntries: async (...args: any[]) =>
-      testingEnvironment.runWithContext(async () => translationsFn.updateEntries(args[0], args[1])),
-    v2StructureSave: async (...args: any[]) =>
-      testingEnvironment.runWithContext(async () => translationsFn.v2StructureSave(args[0])),
-    importPredefined: async (...args: any[]) =>
-      testingEnvironment.runWithContext(async () => translationsFn.importPredefined(args[0])),
-  }
-);
+const withContext = async <T>(fn: () => Promise<T>) => testingEnvironment.runWithContext(fn);
+
+const getLegacyTranslations = async (query: { locale?: LanguageISO6391; context?: string } = {}) =>
+  withContext(async () =>
+    toIndexedTranslations(await TranslationsQueryServiceFactory.default().getLegacy(query))
+  );
+
+const saveLocaleTranslations = async (translation: TranslationType | IndexedTranslations) =>
+  withContext(async () => SaveLocaleTranslationsUseCaseFactory.default().execute(translation));
+
+const updateEntriesByContext = async (
+  contextId: string,
+  keyValuePairsPerLanguage: { [x: string]: { [k: string]: string } }
+) =>
+  withContext(async () =>
+    UpdateEntriesByContextUseCaseFactory.default().execute({
+      contextId,
+      keyValuePairsPerLanguage,
+    })
+  );
+
+const saveTranslationEntries = async (translations: TranslationSyO[]) =>
+  withContext(async () => SaveTranslationEntriesUseCaseFactory.default().execute({ translations }));
+
+const createTranslationContext = async (
+  id: string | ObjectId,
+  label: string,
+  values: IndexedContextValues,
+  type: ContextType
+) =>
+  withContext(async () => {
+    await CreateTranslationContextUseCaseFactory.default().execute({
+      context: {
+        id: id.toString(),
+        label,
+        type: type as 'Entity' | 'Relationship Type' | 'Uwazi UI' | 'Thesaurus',
+      },
+      values,
+    });
+    return 'ok';
+  });
+
+const deleteTranslationContext = async (contextId: string) =>
+  withContext(async () => {
+    await DeleteTranslationContextUseCaseFactory.default().execute({ contextId });
+    return 'ok';
+  });
+
+const updateTranslationContext = async (
+  context: { id: string; label: string; type: ContextType | string },
+  keyChanges: { [x: string]: string },
+  keysToDelete: string[],
+  valueChanges: IndexedContextValues
+) =>
+  withContext(async () => {
+    await UpdateTranslationContextUseCaseFactory.default().execute({
+      context: {
+        id: context.id,
+        label: context.label,
+        type: context.type as 'Entity' | 'Relationship Type' | 'Uwazi UI' | 'Thesaurus',
+      },
+      keyChanges,
+      keysToDelete,
+      valueChanges,
+    });
+    return 'ok';
+  });
+
+const deleteTranslationsByLanguage = async (locale: LanguageISO6391) =>
+  withContext(async () =>
+    DeleteTranslationsByLanguageUseCaseFactory.default().execute({ language: locale })
+  );
+
+const importPredefined = async (locale: string) =>
+  withContext(async () => importPredefinedTranslations(locale));
+
+const getTranslationsByContext = async (context: string) =>
+  withContext(async () => TranslationsQueryServiceFactory.default().getLegacy({ context }));
 
 const addLanguage = async (language: LanguageSchema) =>
-  testingEnvironment.runWithContext(async () => {
+  withContext(async () => {
     await AddLanguageUseCaseFactory.default().execute({ languages: [language] });
   });
 
@@ -53,7 +130,7 @@ describe('translations', () => {
 
   describe('get()', () => {
     it('should return the translations', async () => {
-      const [result] = await translations.get({ locale: 'en' });
+      const [result] = await getLegacyTranslations({ locale: 'en' });
 
       expect(result).toMatchObject({
         contexts: [
@@ -87,7 +164,7 @@ describe('translations', () => {
 
   describe('v2StructureSave', () => {
     it('should save changed translations and propagate the changes', async () => {
-      const initialTranslations = await getTranslationsV2ByContext(dictionaryId.toString());
+      const initialTranslations = await getTranslationsByContext(dictionaryId.toString());
       const initialEntity = (await entities.get({ language: 'es', sharedId: 'entity1' }))[0];
       const translationsToSave = [
         {
@@ -103,8 +180,8 @@ describe('translations', () => {
         },
       ];
 
-      await translations.v2StructureSave(translationsToSave);
-      const updatedTranslations = await getTranslationsV2ByContext(dictionaryId.toString());
+      await saveTranslationEntries(translationsToSave);
+      const updatedTranslations = await getTranslationsByContext(dictionaryId.toString());
       initialTranslations![0]!.contexts![0]!.values!.find(v => v.key === 'Password')!.value =
         'Changed Password ES';
       expect(updatedTranslations).toEqual(initialTranslations);
@@ -117,12 +194,12 @@ describe('translations', () => {
 
   describe('save()', () => {
     it('should save the translation and return it', async () => {
-      const result = await translations.save({ locale: 'fr' });
+      const result = await saveLocaleTranslations({ locale: 'fr' });
       expect(result.locale).toBe('fr');
     });
 
     it('should accept partial updates in both, array format and map format', async () => {
-      await translations.save({
+      await saveLocaleTranslations({
         locale: 'en',
         contexts: [
           {
@@ -137,7 +214,7 @@ describe('translations', () => {
         ],
       });
 
-      const [result] = await translations.get({ locale: 'en' });
+      const [result] = await getLegacyTranslations({ locale: 'en' });
       expect(result.contexts!.find(c => c.id === dictionaryId.toString())?.values.Age).toBe(
         'edited Age'
       );
@@ -153,7 +230,7 @@ describe('translations', () => {
           .mockResolvedValue(undefined as never);
         renameSpy.mockClear();
 
-        await translations.save({
+        await saveLocaleTranslations({
           locale: 'en',
           contexts: [
             {
@@ -199,7 +276,7 @@ describe('translations', () => {
           .mockResolvedValue(undefined as never);
         renameSpy.mockClear();
 
-        await translations.save({
+        await saveLocaleTranslations({
           locale: 'en',
           contexts: [
             {
@@ -252,7 +329,7 @@ describe('translations', () => {
           .mockResolvedValue(undefined as never);
         renameSpy.mockClear();
 
-        await translations.save({
+        await saveLocaleTranslations({
           locale: 'en',
           contexts: [
             {
@@ -297,7 +374,7 @@ describe('translations', () => {
 
   it('should not allow duplicate keys', async () => {
     try {
-      await translations.save({
+      await saveLocaleTranslations({
         locale: 'fr',
         contexts: [
           {
@@ -315,7 +392,7 @@ describe('translations', () => {
     }
 
     try {
-      await translations.save({
+      await saveLocaleTranslations({
         locale: 'en',
         contexts: [
           {
@@ -337,11 +414,11 @@ describe('translations', () => {
 
   describe('updateEntries', () => {
     it('should update the entries', async () => {
-      await translations.updateEntries('System', {
+      await updateEntriesByContext('System', {
         en: { Password: 'Passphrase', Age: 'Years Old' },
       });
 
-      const result = await translations.get({ locale: 'en' });
+      const result = await getLegacyTranslations({ locale: 'en' });
 
       expect(result[0].contexts?.[1].values).toMatchObject({
         Password: 'Passphrase',
@@ -353,7 +430,7 @@ describe('translations', () => {
 
     it('should throw an error on if trying to update missing keys', async () => {
       try {
-        await translations.updateEntries('System', {
+        await updateEntriesByContext('System', {
           en: { Key: 'english_value', OtherKey: 'other_english_value' },
           es: { Key: 'spanish_value' },
         });
@@ -366,14 +443,14 @@ describe('translations', () => {
     });
 
     it('should not fail when trying to update a nonexisting language', async () => {
-      await translations.updateEntries('System', {
+      await updateEntriesByContext('System', {
         en: { Password: 'Passphrase', Age: 'Years Old' },
         es: { Password: 'Password in Spanish', Age: 'Age in Spanish' },
         fr: { Password: 'mot de masse', Age: 'âge' },
       });
 
-      const [en] = await translations.get({ locale: 'en' });
-      const [es] = await translations.get({ locale: 'es' });
+      const [en] = await getLegacyTranslations({ locale: 'en' });
+      const [es] = await getLegacyTranslations({ locale: 'es' });
 
       expect(en.contexts?.[1].values).toMatchObject({
         Password: 'Passphrase',
@@ -393,7 +470,7 @@ describe('translations', () => {
   describe('addContext()', () => {
     it('should add a context with its values', async () => {
       const values = { Name: 'Name', Surname: 'Surname' };
-      const result = await translations.addContext(
+      const result = await createTranslationContext(
         'context_id',
         'context_name',
         values,
@@ -402,7 +479,7 @@ describe('translations', () => {
 
       expect(result).toBe('ok');
 
-      const translated = await translations.get();
+      const translated = await getLegacyTranslations();
 
       expect(translated.find(t => t.locale === 'en')?.contexts?.[2].values).toEqual(values);
       expect(translated.find(t => t.locale === 'en')?.contexts?.[2].type).toEqual(
@@ -417,11 +494,11 @@ describe('translations', () => {
 
   describe('deleteContext()', () => {
     it('should delete a context and its values', async () => {
-      const result = await translations.deleteContext('System');
+      const result = await deleteTranslationContext('System');
 
       expect(result).toBe('ok');
 
-      const translated = await translations.get();
+      const translated = await getLegacyTranslations();
 
       expect(translated[0].contexts?.length).toBe(1);
       expect(translated[0].contexts?.[0].type).toBe('Thesaurus');
@@ -432,40 +509,40 @@ describe('translations', () => {
 
   describe('updateContext()', () => {
     it('should change the value of a translation when changing the key if the locale is the default one', async () => {
-      await translations.updateContext(
+      await updateTranslationContext(
         { id: dictionaryId.toString(), label: 'new context name', type: 'Thesaurus' },
         { 'property should only change value on default languge': 'new property name' },
         [],
         {}
       );
 
-      const [esTranslations] = await translations.get({ locale: 'es' });
+      const [esTranslations] = await getLegacyTranslations({ locale: 'es' });
       const esThesauriContext = (esTranslations.contexts || []).find(c => c.type === 'Thesaurus');
       expect(esThesauriContext?.values).toMatchObject({
         'new property name': 'property',
       });
 
-      const [zhTranslations] = await translations.get({ locale: 'zh' });
+      const [zhTranslations] = await getLegacyTranslations({ locale: 'zh' });
       const zhThesauriContext = (zhTranslations.contexts || []).find(c => c.type === 'Thesaurus');
       expect(zhThesauriContext?.values).toMatchObject({
         'new property name': 'property',
       });
 
-      const [enTranslations] = await translations.get({ locale: 'en' });
+      const [enTranslations] = await getLegacyTranslations({ locale: 'en' });
       const enThesauriContext = (enTranslations.contexts || []).find(c => c.type === 'Thesaurus');
       expect(enThesauriContext?.values).toMatchObject({
         'new property name': 'new property name',
       });
     });
     it('should properly change context name, key names, values for the keys changed and deleteProperties, and create new values as new translations if key does not exists', async () => {
-      await translations.updateContext(
+      await updateTranslationContext(
         { id: dictionaryId.toString(), label: 'new context name', type: 'Thesaurus' },
         { Account: 'New Account Key', Password: 'New Password key' },
         ['Age', 'Email'],
         { 'new key': 'new value' }
       );
 
-      const [enTranslations] = await translations.get({ locale: 'en' });
+      const [enTranslations] = await getLegacyTranslations({ locale: 'en' });
       const enThesauriContext = (enTranslations.contexts || []).find(c => c.type === 'Thesaurus');
 
       expect(enThesauriContext?.label).toBe('new context name');
@@ -477,7 +554,7 @@ describe('translations', () => {
         'dictionary 2': 'dictionary 2',
       });
 
-      const [esTranslations] = await translations.get({ locale: 'es' });
+      const [esTranslations] = await getLegacyTranslations({ locale: 'es' });
       const esThesauriContext = (esTranslations.contexts || []).find(c => c.type === 'Thesaurus');
 
       expect(esThesauriContext?.label).toBe('new context name');
@@ -500,7 +577,7 @@ describe('translations', () => {
         Interface: 'Interfaces',
       };
 
-      const result = await translations.updateContext(
+      const result = await updateTranslationContext(
         { id: 'System', label: 'Interface', type: 'Uwazi UI' },
         keyNameChanges,
         deletedProperties,
@@ -509,7 +586,7 @@ describe('translations', () => {
 
       expect(result).toBe('ok');
 
-      const translated = await translations.get();
+      const translated = await getLegacyTranslations();
       const en = translated.find(t => t.locale === 'en');
       const es = translated.find(t => t.locale === 'es');
 
@@ -531,7 +608,7 @@ describe('translations', () => {
   describe('addLanguage', () => {
     it('should clone translations of default language and change language to the one added', async () => {
       await addLanguage({ key: 'fr', label: 'french' });
-      const allTranslations = await translations.get();
+      const allTranslations = await getLegacyTranslations();
 
       const frTranslation = allTranslations.find(t => t.locale === 'fr');
       const defaultTranslation = allTranslations.find(t => t.locale === 'en') || { contexts: [] };
@@ -551,7 +628,7 @@ describe('translations', () => {
         const settingsLanguages = (await settings.get()).languages?.map(l => l.key);
         expect(settingsLanguages).toEqual(['es', 'en', 'zh', 'fr']);
 
-        const allTranslations = await translations.get();
+        const allTranslations = await getLegacyTranslations();
         const frTranslations = allTranslations.filter(t => t.locale === 'fr');
         expect(frTranslations.length).toBe(1);
 
@@ -566,8 +643,8 @@ describe('translations', () => {
   describe('removeLanguage', () => {
     it('should remove translation for the language passed', async () => {
       await settings.deleteLanguage('es');
-      await translations.removeLanguage('es');
-      const allTranslations = await translations.get();
+      await deleteTranslationsByLanguage('es');
+      const allTranslations = await getLegacyTranslations();
 
       expect(allTranslations.sort(sortByLocale)).toMatchObject([
         { locale: 'en' },
@@ -585,9 +662,9 @@ describe('translations', () => {
         Age, Age traducida`)
       );
 
-      await translations.importPredefined('es');
+      await importPredefined('es');
 
-      const result = await translations.get();
+      const result = await getLegacyTranslations();
       const ESTranslations =
         (result.find(t => t.locale === 'es')?.contexts || []).find(c => c.label === 'System')
           ?.values || {};
@@ -600,11 +677,11 @@ describe('translations', () => {
     });
 
     it('should throw error when translation is not available', async () => {
-      await expect(translations.importPredefined('non-existent')).rejects.toBeInstanceOf(
+      await expect(importPredefined('non-existent')).rejects.toBeInstanceOf(
         UITranslationNotAvailable
       );
 
-      const result = await translations.get();
+      const result = await getLegacyTranslations();
       const ZHTranslations =
         (result.find(t => t.locale === 'zh')?.contexts || []).find(c => c.label === 'System')
           ?.values || {};

@@ -1,4 +1,3 @@
-import translations from '#api/i18n/translations.js';
 import { ContextType } from '#shared/translationSchema.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import type { DBFixture } from '#api/utils/testing_db.js';
@@ -6,6 +5,8 @@ import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { RelationshipType } from '#api/core/domain/relationshipType/RelationshipType.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { TranslationsServiceFactory } from '#api/core/infrastructure/factories/TranslationsServiceFactory.js';
+import { TranslationsQueryServiceFactory } from '#api/core/infrastructure/factories/TranslationsQueryServiceFactory.js';
+import { toIndexedTranslations } from '#api/core/infrastructure/express/translation/LegacyTranslationDtoMapper.js';
 import { RelationshipTypeTranslationService } from '../RelationshipTypeTranslationService.js';
 
 const factory = getFixturesFactory();
@@ -68,7 +69,12 @@ describe('RelationshipTypeTranslationService', () => {
     });
 
     const translationWithContext = await testingEnvironment.runWithContext(async () => {
-      const [translation] = await translations.get({ locale: 'en', context: 'type-id' });
+      const [translation] = toIndexedTranslations(
+        await TranslationsQueryServiceFactory.default().getLegacy({
+          locale: 'en',
+          context: 'type-id',
+        })
+      );
       return translation;
     });
 
@@ -94,7 +100,12 @@ describe('RelationshipTypeTranslationService', () => {
     });
 
     const translationWithContext = await testingEnvironment.runWithContext(async () => {
-      const [translation] = await translations.get({ locale: 'en', context: 'type-id' });
+      const [translation] = toIndexedTranslations(
+        await TranslationsQueryServiceFactory.default().getLegacy({
+          locale: 'en',
+          context: 'type-id',
+        })
+      );
       return translation;
     });
 
@@ -116,10 +127,14 @@ describe('RelationshipTypeTranslationService', () => {
       });
     });
 
-    const translationWithContext = await testingEnvironment.runWithContext(async () => {
-      const results = await translations.get({ locale: 'en', context: 'type-id' });
-      return results;
-    });
+    const translationWithContext = await testingEnvironment.runWithContext(async () =>
+      toIndexedTranslations(
+        await TranslationsQueryServiceFactory.default().getLegacy({
+          locale: 'en',
+          context: 'type-id',
+        })
+      )
+    );
     expect(translationWithContext).toEqual(
       expect.arrayContaining([
         expect.objectContaining({ locale: 'en', contexts: [] }),

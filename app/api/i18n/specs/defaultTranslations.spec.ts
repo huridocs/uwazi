@@ -10,9 +10,9 @@ import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import { UserRole } from '#shared/types/userSchema.js';
 
+import { importPredefinedTranslations } from '#api/core/application/translation/ImportPredefinedTranslationsService.js';
 import { translationsRoutes } from '#api/core/infrastructure/express/translation/routes.js';
 import { DefaultTranslations } from '../defaultTranslations.js';
-import translations from '../translations.js';
 
 const TRANSLATION_FILES_DIR = DefaultTranslations.CONTENTS_DIRECTORY;
 
@@ -108,24 +108,24 @@ describe('translations.importPredefined()', () => {
   it.each([{ key: 'en' }, { key: 'ar' }])(
     'should expect the file to have 2 columns',
     async ({ key }) => {
-      await expect(async () => translations.importPredefined(key)).rejects.toThrow(
+      await expect(async () => importPredefinedTranslations(key)).rejects.toThrow(
         new ValidateFormatError('Expected 2 columns, but found 3.')
       );
     }
   );
 
   it('should expect the file to have the columns "Key" and the long name of the language', async () => {
-    await expect(async () => translations.importPredefined('es')).rejects.toThrow(
+    await expect(async () => importPredefinedTranslations('es')).rejects.toThrow(
       new ValidateFormatError('Missing required headers: Spanish.')
     );
 
-    await expect(async () => translations.importPredefined('fr')).rejects.toThrow(
+    await expect(async () => importPredefinedTranslations('fr')).rejects.toThrow(
       new ValidateFormatError('Missing required headers: Key.')
     );
   });
 
   it('should expect the file to have no empty values', async () => {
-    await expect(async () => translations.importPredefined('ru')).rejects.toThrow(
+    await expect(async () => importPredefinedTranslations('ru')).rejects.toThrow(
       new ValidateFormatError('Empty value at row 3, column "Russian".')
     );
   });
