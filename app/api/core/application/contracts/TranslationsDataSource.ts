@@ -21,6 +21,7 @@ export interface TranslationsDataSource {
   getAll(): ResultSet<Translation>;
   getByLanguage(language: string): ResultSet<Translation>;
   getByContext(context: string): ResultSet<Translation>;
+  getByLanguageAndContext(language: string, contextId: string): ResultSet<Translation>;
   getContextAndKeys(contextId: string, keys: string[]): ResultSet<Translation>;
 
   deleteByContextId(contextId: string): Promise<void>;
