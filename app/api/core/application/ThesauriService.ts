@@ -11,7 +11,7 @@ type Deps = {
 
 type UpdateContext = {
   tenantName: string;
-  actorId: string;
+  actorId?: string;
 };
 
 class ThesauriService {

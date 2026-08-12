@@ -27,11 +27,14 @@ class CreateThesaurusUseCaseFactory {
       dispatcher: new DispatcherAdapter(ExecutionContext.jobsDispatcher),
     });
 
-    return new CreateThesaurusUseCase({
-      transactionManager,
-      thesauriService,
-      ...overrides,
-    });
+    return new CreateThesaurusUseCase(
+      {
+        transactionManager,
+        thesauriService,
+        ...overrides,
+      },
+      { tenant: ExecutionContext.tenant, actor: ExecutionContext.actor }
+    );
   }
 }
 
