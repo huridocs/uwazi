@@ -100,6 +100,14 @@ class PostgresUsersDAO extends PostgresDataSource<UserRow> {
     return (options.includeDeleted ? query : this.notDeleted(query)).all();
   }
 
+  async listBasicInfo(): Promise<{ _id: string; username: string }[]> {
+    const rows = await this.notPublicUser(this.notDeleted(this.table))
+      .select(['_id', 'username'])
+      .all();
+
+    return rows.map(row => ({ _id: row._id, username: row.username }));
+  }
+
   async findByEmailOrUsername(
     term: string
   ): Promise<{ _id: string; username: string; email: string }[]> {

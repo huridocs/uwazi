@@ -246,6 +246,19 @@ describe('MongoUsersDAO', () => {
     });
   });
 
+  describe('listBasicInfo()', () => {
+    it('should return all non-deleted, non-public users with minimal shape', async () => {
+      const dao = getDao();
+      const users = await dao.listBasicInfo();
+
+      expect(users.sort((a, b) => a.username.localeCompare(b.username))).toEqual([
+        { _id: factory.idString('active1'), username: 'active1' },
+        { _id: factory.idString('active2'), username: 'active2' },
+        { _id: withsensitiveId.toString(), username: 'withsensitive' },
+      ]);
+    });
+  });
+
   describe('findByEmailOrUsername()', () => {
     it('should match by exact username, case-insensitively', async () => {
       const dao = getDao();

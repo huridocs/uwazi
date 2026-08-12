@@ -359,6 +359,15 @@ describe('UsersDAOConsistency', () => {
       });
     });
 
+    describe('listBasicInfo()', () => {
+      it('should return all non-deleted, non-public users with minimal shape', async () => {
+        const dao = getDao();
+        const users = await dao.listBasicInfo();
+
+        expect(users.map(u => u.username).sort()).toEqual(['active1', 'active2', 'withsensitive']);
+      });
+    });
+
     describe('findByEmailOrUsername()', () => {
       it('should match by exact username, case-insensitively', async () => {
         const dao = getDao();

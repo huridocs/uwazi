@@ -150,6 +150,19 @@ class MongoUsersDAO extends MongoDataSource<UserDBO> {
     return this.getCollection<UserDBO>().find(filter).toArray();
   }
 
+  async listBasicInfo(): Promise<{ _id: string; username: string }[]> {
+    const filter: Filter<UserDBO> = {
+      ...this.NOT_DELETED_FILTER,
+      ...this.NOT_PUBLIC_USER_FILTER,
+    };
+
+    const users = await this.getCollection<UserDBO>()
+      .find(filter, { projection: { _id: 1, username: 1 } })
+      .toArray();
+
+    return users.map(user => ({ _id: user._id.toString(), username: user.username }));
+  }
+
   async findByEmailOrUsername(
     term: string
   ): Promise<{ _id: string; username: string; email: string }[]> {

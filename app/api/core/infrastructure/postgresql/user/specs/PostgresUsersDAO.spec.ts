@@ -203,6 +203,34 @@ describe('PostgresUsersDAO', () => {
     });
   });
 
+  describe('listBasicInfo', () => {
+    it('should return all non-deleted, non-public users with minimal shape', async () => {
+      const publicUserId = PUBLIC_USER_ID.toHexString();
+      await testingPG.setFixtures({
+        users: [
+          userFixture({ _id: 'active1', username: 'active1', email: 'active1@test.com' }),
+          userFixture({
+            _id: 'deleted1',
+            username: 'deleted1',
+            email: 'deleted1@test.com',
+            deletedAt: new Date(),
+          }),
+          userFixture({ _id: publicUserId, username: 'public', email: 'public@test.com' }),
+        ],
+      });
+
+      const dao = makeDAO();
+      const users = await dao.listBasicInfo();
+
+      expect(users).toEqual([{ _id: 'active1', username: 'active1' }]);
+    });
+
+    it('should return an empty array when there are no users', async () => {
+      const dao = makeDAO();
+      expect(await dao.listBasicInfo()).toEqual([]);
+    });
+  });
+
   describe('findByEmailOrUsername', () => {
     it('should match by exact username, case-insensitively', async () => {
       await testingPG.setFixtures({
