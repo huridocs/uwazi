@@ -3,6 +3,7 @@ import { TemplatesSyncHandlerFactory } from './TemplatesSyncHandlerFactory.js';
 import { ThesauriSyncHandlerFactory } from './ThesauriSyncHandlerFactory.js';
 import { FilesSyncHandlerFactory } from './FilesSyncHandlerFactory.js';
 import { RelationshipTypesSyncHandlerFactory } from './RelationshipTypesSyncHandlerFactory.js';
+import { TranslationsSyncHandlerFactory } from './TranslationsSyncHandlerFactory.js';
 
 export function registerSyncHandlers(): void {
   SyncHandlerRegistry.register('templates', () => TemplatesSyncHandlerFactory.default());
@@ -11,4 +12,5 @@ export function registerSyncHandlers(): void {
     RelationshipTypesSyncHandlerFactory.default()
   );
   SyncHandlerRegistry.register('files', () => FilesSyncHandlerFactory.default());
+  SyncHandlerRegistry.register('translationsV2', () => TranslationsSyncHandlerFactory.default());
 }

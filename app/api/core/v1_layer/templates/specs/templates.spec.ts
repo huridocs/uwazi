@@ -7,7 +7,7 @@ import {
   TemplateWithDuplicatedPropertyError,
 } from '#api/core/domain/template/errors.js';
 import { TemplateFacade } from '#api/core/infrastructure/facades/TemplateFacade.js';
-import { DefaultTranslationsDataSource } from '#api/i18n.v2/database/data_source_defaults.js';
+import { TranslationsDataSourceFactory } from '#api/core/infrastructure/factories/TranslationsDataSourceFactory.js';
 import { TemplateSchema } from '#api/migrations/migrations/143-parse-numeric-fields/types.js';
 import templates from '../templates.js';
 import {
@@ -98,9 +98,9 @@ describe('templates', () => {
         templates.save(newTemplate, 'en')
       );
 
-      const dbTranslations = await DefaultTranslationsDataSource(
-        TransactionManagerFactory.default()
-      )
+      const dbTranslations = await TranslationsDataSourceFactory.default({
+        transactionManager: TransactionManagerFactory.default(),
+      })
         .getContextAndKeys(response._id.toString(), [
           'created template',
           'Title',
