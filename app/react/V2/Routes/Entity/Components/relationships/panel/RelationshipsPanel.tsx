@@ -94,7 +94,6 @@ const RelationshipsPanel = ({
         markers={markers}
         groupContext={groupContext}
         selfSharedId={groupContext.selfSharedId}
-        selfTitle={groupContext.selfTitle}
         activeRelationshipId={activeRelationshipId ?? undefined}
         onClick={handleRelationshipClick}
         onView={handleViewClick}

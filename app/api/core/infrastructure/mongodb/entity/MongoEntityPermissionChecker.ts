@@ -1,6 +1,6 @@
 import {
   EntityPermissionChecker,
-  Specification,
+  PermissionSpec,
 } from '#api/core/domain/entityAccessPolicy/EntityPermissionChecker.js';
 import { EntityDBO } from '#api/core/infrastructure/mongodb/entity/EntityDBO.js';
 import { Result, ResultType } from '#api/core/libs/Result.js';
@@ -14,18 +14,18 @@ class MongoEntityPermissionChecker
 {
   protected collectionName = 'entities';
 
-  async filterEntities(sharedIds: string[], specification: Specification): Promise<string[]> {
+  async filterEntities(sharedIds: string[], permissionSpec: PermissionSpec): Promise<string[]> {
     if (sharedIds.length === 0) return [];
-    if (specification.isWriteLevel && specification.actor.isAnonymous()) return [];
+    if (permissionSpec.isWriteLevel && permissionSpec.isAnonymous()) return [];
 
     let match: object = { sharedId: { $in: sharedIds }, published: true };
 
-    if (specification.isPrivileged) {
+    if (permissionSpec.isPrivileged()) {
       match = { sharedId: { $in: sharedIds } };
     } else {
-      const userRefIds = [specification.actor._id, ...specification.actor.groups];
+      const userRefIds = permissionSpec.refIds;
 
-      if (specification.isWriteLevel) {
+      if (permissionSpec.isWriteLevel) {
         match = {
           sharedId: { $in: sharedIds },
           permissions: { $elemMatch: { refId: { $in: userRefIds }, level: 'write' } },

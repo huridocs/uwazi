@@ -380,7 +380,6 @@ describe('UpdateTemplateUseCase', () => {
           fullReindex: false,
           resaveForFilterChange: false,
           tenantName: expect.any(String),
-          userId: expect.any(String),
         })
       );
     });

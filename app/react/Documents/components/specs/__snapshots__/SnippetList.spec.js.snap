@@ -5,7 +5,6 @@ exports[`SnippetList should render metadata snippets and document content snippe
   className="snippet-list"
 >
   <MetadataFieldSnippets
-    documentViewUrl="/document/sharedId"
     fieldSnippets={
       Immutable.Map {
         "field": "title",
@@ -16,6 +15,7 @@ exports[`SnippetList should render metadata snippets and document content snippe
     }
     key="title"
     searchTerm="snippet"
+    sharedId="sharedId"
     template={
       Immutable.Map {
         "_id": "template",
@@ -35,7 +35,6 @@ exports[`SnippetList should render metadata snippets and document content snippe
     }
   />
   <MetadataFieldSnippets
-    documentViewUrl="/document/sharedId"
     fieldSnippets={
       Immutable.Map {
         "field": "metadata.summary",
@@ -46,6 +45,7 @@ exports[`SnippetList should render metadata snippets and document content snippe
     }
     key="metadata.summary"
     searchTerm="snippet"
+    sharedId="sharedId"
     template={
       Immutable.Map {
         "_id": "template",
@@ -81,7 +81,6 @@ exports[`SnippetList should render metadata snippets and document content snippe
         },
       ]
     }
-    documentViewUrl="/document/sharedId"
     searchTerm="snippet"
     selectSnippet={[MockFunction]}
     selectedSnippet={
@@ -90,6 +89,7 @@ exports[`SnippetList should render metadata snippets and document content snippe
         "page": 1,
       }
     }
+    sharedId="sharedId"
   />
 </ul>
 `;
@@ -115,7 +115,6 @@ exports[`SnippetList should render only document snippets if there are no metada
         },
       ]
     }
-    documentViewUrl="/document/sharedId"
     searchTerm="snippet"
     selectSnippet={[MockFunction]}
     selectedSnippet={
@@ -124,6 +123,7 @@ exports[`SnippetList should render only document snippets if there are no metada
         "page": 1,
       }
     }
+    sharedId="sharedId"
   />
 </ul>
 `;
@@ -133,7 +133,6 @@ exports[`SnippetList should render only metadata snippets if there are no docume
   className="snippet-list"
 >
   <MetadataFieldSnippets
-    documentViewUrl="/document/sharedId"
     fieldSnippets={
       Immutable.Map {
         "field": "title",
@@ -144,6 +143,7 @@ exports[`SnippetList should render only metadata snippets if there are no docume
     }
     key="title"
     searchTerm="snippet"
+    sharedId="sharedId"
     template={
       Immutable.Map {
         "_id": "template",
@@ -163,7 +163,6 @@ exports[`SnippetList should render only metadata snippets if there are no docume
     }
   />
   <MetadataFieldSnippets
-    documentViewUrl="/document/sharedId"
     fieldSnippets={
       Immutable.Map {
         "field": "metadata.summary",
@@ -174,6 +173,7 @@ exports[`SnippetList should render only metadata snippets if there are no docume
     }
     key="metadata.summary"
     searchTerm="snippet"
+    sharedId="sharedId"
     template={
       Immutable.Map {
         "_id": "template",

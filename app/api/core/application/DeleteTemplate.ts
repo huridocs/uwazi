@@ -78,7 +78,6 @@ class DeleteTemplateUseCase extends AbstractUseCase<Input, Output, Deps> {
         language: defaultLanguage,
         fullReindex: false,
         tenantName: this.tenant.name,
-        userId: this.actorId,
       };
 
       await this.eventBus.emit(

@@ -48,13 +48,35 @@ const useEntityFilesAdd = ({ entitySharedId, refreshEntity }: UseEntityFilesAddA
     setUploadProgress(null);
   }, [clearAddFileMode]);
 
-  const requestAddFile = useCallback((mode: AddFileMode) => {
-    addFileModeRef.current = mode;
-    setAddFileMode(mode);
+  const syncInputAccept = useCallback((mode: AddFileMode) => {
     if (fileInputRef.current) {
       fileInputRef.current.accept = mode === 'translation' ? '.pdf,application/pdf' : '';
-      fileInputRef.current.click();
     }
+  }, []);
+
+  const requestAddFile = useCallback(
+    (mode: AddFileMode) => {
+      addFileModeRef.current = mode;
+      setAddFileMode(mode);
+      setPendingAddFile(null);
+      setUploadProgress(null);
+      syncInputAccept(mode);
+    },
+    [syncInputAccept]
+  );
+
+  const openAddFilePicker = useCallback(() => {
+    const mode = addFileModeRef.current;
+    if (!mode || !fileInputRef.current) return;
+    syncInputAccept(mode);
+    fileInputRef.current.click();
+  }, [syncInputAccept]);
+
+  const acceptSelectedFile = useCallback((selectedFile: File | undefined) => {
+    const mode = addFileModeRef.current;
+    if (!selectedFile || !mode) return;
+    if (mode === 'translation' && !isPdfFile(selectedFile)) return;
+    setPendingAddFile(selectedFile);
   }, []);
 
   const handleFileInputChange = useCallback(
@@ -64,16 +86,9 @@ const useEntityFilesAdd = ({ entitySharedId, refreshEntity }: UseEntityFilesAddA
       if (input) {
         input.value = '';
       }
-
-      const mode = addFileModeRef.current;
-      if (!selectedFile || !mode || (mode === 'translation' && !isPdfFile(selectedFile))) {
-        clearAddFileMode();
-        return;
-      }
-
-      setPendingAddFile(selectedFile);
+      acceptSelectedFile(selectedFile);
     },
-    [clearAddFileMode]
+    [acceptSelectedFile]
   );
 
   const confirmAddFile = useCallback(
@@ -105,6 +120,8 @@ const useEntityFilesAdd = ({ entitySharedId, refreshEntity }: UseEntityFilesAddA
     uploadProgress,
     fileInputRef,
     requestAddFile,
+    openAddFilePicker,
+    acceptSelectedFile,
     closeAddFileModal,
     confirmAddFile,
     handleFileInputChange,

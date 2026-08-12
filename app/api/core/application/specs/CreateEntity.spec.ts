@@ -275,7 +275,7 @@ describe('CreateEntityUseCase', () => {
         _id: factory.id('user1').toString(),
         username: 'username',
         email: 'email@email.com',
-        role: 'collaborator',
+        role: 'admin',
       });
 
       const { sut, fileService } = createSut({ actor, targetLanguage: 'en' }, postgresTemplates);

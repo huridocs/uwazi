@@ -18,6 +18,7 @@ type DocumentTabProps = {
   mainDocument: FileType;
   pagePlaintext?: string;
   showViewModeSelect?: boolean;
+  showRail?: boolean;
 };
 
 const DocumentTab = ({
@@ -25,6 +26,7 @@ const DocumentTab = ({
   mainDocument,
   pagePlaintext,
   showViewModeSelect = false,
+  showRail = true,
 }: DocumentTabProps) => {
   const {
     filename,
@@ -49,7 +51,7 @@ const DocumentTab = ({
   const { isRtl } = useEntityLanguage();
   const [pdfScrollRoot, setPdfScrollRoot] = useState<HTMLDivElement | null>(null);
   const [pageHeight, setPageHeight] = useState<number | undefined>();
-  const { railInsetRight, measureRailInset } = useRailInset(pdfScrollRoot, !isRaw);
+  const { railInsetRight, measureRailInset } = useRailInset(pdfScrollRoot, !isRaw && showRail);
 
   useEffect(() => {
     if (isRaw) {
@@ -104,7 +106,9 @@ const DocumentTab = ({
           <div
             ref={setPdfScrollRoot}
             data-testid="pdf-scroll-container"
-            className="absolute inset-0 overflow-y-auto pl-1 pr-[60px] scrollbar-gutter-stable"
+            className={`absolute inset-0 overflow-y-auto pl-1 scrollbar-gutter-stable ${
+              showRail ? 'pr-15' : ''
+            }`}
           >
             <PDF
               key={mainDocument._id || filename}
@@ -125,6 +129,7 @@ const DocumentTab = ({
               currentPage={pageNumber}
               pageHeight={pageHeight}
               railInsetRight={railInsetRight}
+              showRail={showRail}
               activeRelationshipId={activeRelationshipId}
               onPointClick={handleRailPointClick}
               onClusterClick={handleClusterClick}

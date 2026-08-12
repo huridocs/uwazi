@@ -65,7 +65,7 @@ const MemberRow = ({ member, onChange, onRemove, showCanSee = true }: MemberRowP
   const canEditLabel = t('System', 'Can edit', null, false);
 
   return (
-    <div className="flex items-center gap-3 px-1 pb-2.5">
+    <div className="flex items-center gap-3 px-1 py-2.5">
       <span className="min-w-0 flex-1 truncate text-sm text-ink">{member.label}</span>
       <div className="flex shrink-0 items-center">
         <div

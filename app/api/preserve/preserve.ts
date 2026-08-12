@@ -16,7 +16,7 @@ import { TranslationsDataSourceFactory } from '#api/core/infrastructure/factorie
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { Thesaurus } from '#api/core/domain/thesaurus/Thesaurus.js';
 import { MongoThesaurusMapper } from '#api/core/infrastructure/mongodb/thesauri/MongoThesaurusMapper.js';
-import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
+import { UwaziDispatcherFactory } from '#api/core/infrastructure/jobs/UwaziDispatcherFactory.js';
 import { DispatcherAdapter } from '#api/core/infrastructure/jobs/DispatcherAdapter.js';
 import { tenants } from '../tenants/index.js';
 
@@ -110,7 +110,7 @@ export const Preserve = {
         translationsDS: TranslationsDataSourceFactory.default({ transactionManager }),
       }),
       dispatcher: new DispatcherAdapter(
-        DefaultDispatcher(tenants.current().name, transactionManager)
+        UwaziDispatcherFactory(tenants.current().name, transactionManager)
       ),
     });
 

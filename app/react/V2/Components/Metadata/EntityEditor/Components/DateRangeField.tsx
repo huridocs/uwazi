@@ -49,7 +49,7 @@ const DateRangeField = <TFormValues extends FieldValues = FieldValues>({
           const { showError, message } = getFieldErrorState(fieldState);
 
           return (
-            <div>
+            <div className="flex flex-col gap-1.5">
               <EntityFieldLabel
                 htmlFor={`${field}.from`}
                 context={context}
@@ -57,8 +57,8 @@ const DateRangeField = <TFormValues extends FieldValues = FieldValues>({
                 required={Boolean(registerOptions?.required)}
                 showError={showError}
               />
-              <div className="flex gap-2 md:flex-row md:gap-4">
-                <div className="flex w-full flex-row items-center gap-1 md:w-1/2">
+              <div className="flex flex-wrap gap-2 md:flex-row md:gap-4">
+                <div className="flex max-w-48 flex-row items-center gap-1">
                   <label htmlFor={`${field}.from`} aria-hidden>
                     <Translate>From</Translate>:
                   </label>
@@ -72,13 +72,14 @@ const DateRangeField = <TFormValues extends FieldValues = FieldValues>({
                     value={fromISODate || ''}
                     hasErrors={showError}
                     max={toISODate ?? undefined}
+                    className="min-w-0 flex-1"
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                       const seconds = e.target.value ? parseLocalizedDate(e.target.value) : null;
                       onChange({ from: seconds, to });
                     }}
                   />
                 </div>
-                <div className="flex w-full flex-row items-center gap-1 md:w-1/2">
+                <div className="flex max-w-48 flex-row items-center gap-1">
                   <label htmlFor={`${field}.to`} aria-hidden>
                     <Translate>To</Translate>:
                   </label>
@@ -91,6 +92,7 @@ const DateRangeField = <TFormValues extends FieldValues = FieldValues>({
                     value={toISODate || ''}
                     hasErrors={showError}
                     min={fromISODate ?? undefined}
+                    className="min-w-0 flex-1"
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                       const seconds = e.target.value ? parseLocalizedDate(e.target.value) : null;
                       onChange({ from, to: seconds });

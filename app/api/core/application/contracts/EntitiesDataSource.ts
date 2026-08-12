@@ -6,6 +6,11 @@ import { Entity } from '#api/core/domain/entity/Entity.js';
 import { EntityNotFoundError } from '#api/core/application/errors.js';
 
 export interface EntitiesDataSource {
+  /**
+   * Returns a view of this data source that bypasses permission enforcement.
+   */
+  unrestricted(): EntitiesDataSource;
+
   bulkUpdateDeprecated(entitiesToSave: Entity[], properties: Property[]): Promise<void>;
   bulkUpdate(entities: Entity[]): Promise<void>;
   update(entity: Entity): Promise<void>;

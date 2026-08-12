@@ -1,6 +1,6 @@
 import { RecoverPassword } from '#api/core/application/RecoverPassword.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
-import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
+import { UwaziDispatcherFactory } from '#api/core/infrastructure/jobs/UwaziDispatcherFactory.js';
 import { DispatcherAdapter } from '../jobs/DispatcherAdapter.js';
 import { UsersDataSourceFactory } from './UsersDataSourceFactory.js';
 import { PasswordRecoveriesDataSourceFactory } from './PasswordRecoveriesDataSourceFactory.js';
@@ -13,7 +13,7 @@ export class RecoverPasswordUseCaseFactory {
         passwordRecoveriesDS: PasswordRecoveriesDataSourceFactory.default(),
         transactionManager: ExecutionContext.transactionManager,
         dispatcher: new DispatcherAdapter(
-          DefaultDispatcher(ExecutionContext.tenant.name, ExecutionContext.transactionManager)
+          UwaziDispatcherFactory(ExecutionContext.tenant.name, ExecutionContext.transactionManager)
         ),
       },
       { tenant: ExecutionContext.tenant }

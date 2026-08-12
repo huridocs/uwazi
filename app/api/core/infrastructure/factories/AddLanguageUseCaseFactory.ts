@@ -8,7 +8,7 @@ import { DispatcherAdapter } from '../jobs/DispatcherAdapter.js';
 import { MongoTransactionManager } from '../mongodb/common/MongoTransactionManager.js';
 import { CloneLanguageEntitiesJob } from '../jobs/CloneLanguageEntitiesJob.js';
 import { CloneLanguageEntitiesJobFactory } from './CloneLanguageEntitiesJobFactory.js';
-import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
+import { UwaziDispatcherFactory } from '#api/core/infrastructure/jobs/UwaziDispatcherFactory.js';
 import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
 
 class AddLanguageUseCaseFactory {
@@ -22,7 +22,7 @@ class AddLanguageUseCaseFactory {
     const importPredefinedTranslations = ImportPredefinedTranslationsService;
 
     const minutes60 = 60 * 60 * 1000;
-    let jobsDispatcher: JobsDispatcher = DefaultDispatcher(tenant.name, transactionManager, {
+    let jobsDispatcher: JobsDispatcher = UwaziDispatcherFactory(tenant.name, transactionManager, {
       lockWindow: minutes60,
     });
     if (process.env.NODE_ENV === 'test') {

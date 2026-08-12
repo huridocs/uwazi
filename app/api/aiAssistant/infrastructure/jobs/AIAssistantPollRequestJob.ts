@@ -1,3 +1,4 @@
+import { PrivilegedJob } from '#api/core/infrastructure/jobs/PrivilegedJob.js';
 import { emitToSession } from '#api/socketio/setupSockets.js';
 import {
   Dispatchable,
@@ -20,6 +21,7 @@ type Dependencies = {
 const isLastRetry = (jobInfo?: JobInfo) =>
   Boolean(jobInfo && jobInfo.retryCount >= jobInfo.maxRetries);
 
+@PrivilegedJob()
 class AIAssistantPollRequestJob implements Dispatchable {
   constructor(private deps: Dependencies) {}
 
