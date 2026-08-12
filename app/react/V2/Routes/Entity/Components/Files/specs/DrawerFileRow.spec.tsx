@@ -15,11 +15,11 @@ jest.mock('#app/I18N/index.js', () => ({
   t: (_ctx: string, key: string) => key,
 }));
 
-jest.mock('../FileThumbnail.js', () => ({
+jest.mock('../FileThumbnail', () => ({
   FileThumbnail: () => <div data-testid="thumb" />,
 }));
 
-jest.mock('../ViewFileButton.js', () => ({
+jest.mock('../ViewFileButton', () => ({
   ViewFileButton: ({ onClick }: { onClick: () => void }) => (
     <button type="button" onClick={onClick}>
       View
@@ -27,7 +27,7 @@ jest.mock('../ViewFileButton.js', () => ({
   ),
 }));
 
-jest.mock('../FileLanguageSelect.js', () => ({
+jest.mock('../FileLanguageSelect', () => ({
   FileLanguageSelect: ({
     value,
     onChange,

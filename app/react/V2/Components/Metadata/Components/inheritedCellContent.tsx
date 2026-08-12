@@ -1,4 +1,5 @@
 import { type ReactNode } from 'react';
+import type { PropertyTypeSchema } from '#shared/types/commonTypes.js';
 import type {
   DateMetadataProperty,
   DateRangeMetadataProperty,
@@ -17,13 +18,82 @@ import type {
 import { resolveInheritedRelationship } from '#V2/formatters/metadata/resolvePropertyMetadataValues.js';
 import { renderFieldContent } from './metadataFieldContent.js';
 
-type InheritedSourceRows = {
-  value?: unknown;
-  inheritedType?: MetadataValue['inheritedType'];
-  inheritedValue?: MetadataValue[];
-}[];
-
 const base = { _id: 'inherited', name: 'inherited', label: '' };
+
+type InheritedRow = {
+  value?: unknown;
+  label?: string;
+  parent?: MetadataValue['parent'];
+  inheritedType?: unknown;
+  inheritedValue?: InheritedRow[];
+};
+
+const isPropertyType = (value: string): value is PropertyTypeSchema => {
+  switch (value) {
+    case 'date':
+    case 'daterange':
+    case 'geolocation':
+    case 'image':
+    case 'link':
+    case 'markdown':
+    case 'media':
+    case 'multidate':
+    case 'multidaterange':
+    case 'multiselect':
+    case 'nested':
+    case 'numeric':
+    case 'preview':
+    case 'relationship':
+    case 'select':
+    case 'text':
+    case 'generatedid':
+    case 'newRelationship':
+      return true;
+    default:
+      return false;
+  }
+};
+
+const readInheritedRows = (input: unknown): InheritedRow[] => {
+  if (!Array.isArray(input)) return [];
+  return input.flatMap(item => {
+    if (!item || typeof item !== 'object') return [];
+    const label = 'label' in item && typeof item.label === 'string' ? item.label : undefined;
+    const inheritedType = 'inheritedType' in item ? item.inheritedType : undefined;
+    const parent =
+      'parent' in item && item.parent && typeof item.parent === 'object'
+        ? {
+            value: 'value' in item.parent ? item.parent.value : undefined,
+            label:
+              'label' in item.parent && typeof item.parent.label === 'string'
+                ? item.parent.label
+                : undefined,
+          }
+        : undefined;
+    return [
+      {
+        value: 'value' in item ? item.value : undefined,
+        label,
+        parent,
+        inheritedType,
+        inheritedValue:
+          'inheritedValue' in item ? readInheritedRows(item.inheritedValue) : undefined,
+      },
+    ];
+  });
+};
+
+const toMetadataValues = (rows: InheritedRow[]): MetadataValue[] =>
+  rows.map(row => ({
+    value: row.value,
+    label: row.label,
+    parent: row.parent,
+    inheritedType:
+      typeof row.inheritedType === 'string' && isPropertyType(row.inheritedType)
+        ? row.inheritedType
+        : undefined,
+    inheritedValue: row.inheritedValue?.length ? toMetadataValues(row.inheritedValue) : undefined,
+  }));
 
 const isLatLon = (value: unknown): value is { lat: number; lon: number; label?: string } => {
   if (!value || typeof value !== 'object') return false;
@@ -171,14 +241,19 @@ const toInheritedField = (
   }
 };
 
-const inheritedCellContent = (
-  values: InheritedSourceRows | undefined,
-  entityId: string
-): ReactNode => {
-  const row = values?.find(value => String(value.value ?? '') === entityId);
+const inheritedCellContent = (values: unknown, entityId: string): ReactNode => {
+  const rows = readInheritedRows(values);
+  const row = rows.find(value => String(value.value ?? '') === entityId);
   if (!row?.inheritedValue?.length) return undefined;
 
-  const flattened = resolveInheritedRelationship(row.inheritedValue, row.inheritedType);
+  const inheritedType =
+    typeof row.inheritedType === 'string' && isPropertyType(row.inheritedType)
+      ? row.inheritedType
+      : undefined;
+  const flattened = resolveInheritedRelationship(
+    toMetadataValues(row.inheritedValue),
+    inheritedType
+  );
   if (!flattened.values.length) return undefined;
 
   if (flattened.inheritedType && flattened.inheritedType !== 'relationship') {
