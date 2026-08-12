@@ -2,7 +2,7 @@ import { TestUtils } from '#api/common.v2/utils/Test.js';
 import { TemplateWithDuplicatedNameOnTheSystemError } from '#api/core/domain/template/errors.js';
 import { PropertyTypeEnum } from '#api/core/domain/template/PropertyType.js';
 import { CreateTemplateUseCaseFactory } from '#api/core/infrastructure/factories/CreateTemplateUseCaseFactory.js';
-import { LegacyTranslationService } from '#api/core/infrastructure/mongodb/template/LegacyTemplatesTranslationService.js';
+import { TranslationService } from '#api/core/domain/template/TranslationService.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { DBFixture } from '#api/utils/testing_db.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
@@ -33,7 +33,7 @@ const testConfigs: TestConfig[] = [
 
 type CreateProps = {
   thesauriDS?: ThesauriDataSource;
-  translationService?: LegacyTranslationService;
+  translationService?: TranslationService;
 };
 
 const createSut = (props?: CreateProps, postgresTemplates = false) =>
@@ -602,7 +602,7 @@ describe('CreateTemplateUseCase', () => {
 
     if (postgresTemplates) {
       it('should NOT revert the PG write when the Mongo transaction rolls back', async () => {
-        const translationService = TestUtils.mockClass<LegacyTranslationService>({
+        const translationService = TestUtils.mockClass<TranslationService>({
           createTemplateTranslation: jest.fn().mockRejectedValue(new Error('Creation failed')),
         });
 

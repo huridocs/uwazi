@@ -1,9 +1,11 @@
-import { TestUtils } from '#api/common.v2/utils/Test.js';
 import type { Request, Response } from 'express';
+import { TestUtils } from '#api/common.v2/utils/Test.js';
 import { tenants } from '#api/tenants/index.js';
 import { AddLanguageUseCaseFactory } from '#api/core/infrastructure/factories/AddLanguageUseCaseFactory.js';
+import { AddLanguageUseCase } from '#api/core/application/AddLanguage.js';
 import settings from '#api/settings/index.js';
-import translations from '#api/i18n/translations.js';
+import { TranslationsQueryServiceFactory } from '#api/core/infrastructure/factories/TranslationsQueryServiceFactory.js';
+import { TranslationsQueryService } from '#api/core/application/translation/TranslationsQueryService.js';
 import { AddLanguageController } from '../AddLanguageController.js';
 
 const createSut = (body?: unknown) => {
@@ -22,14 +24,23 @@ const createSut = (body?: unknown) => {
 };
 
 describe('AddLanguageController', () => {
-  const useCaseExecuteSpy: jest.SpyInstance = jest.fn();
+  let useCaseExecuteSpy: jest.Mock;
+  const getLegacySpy = jest.fn().mockResolvedValue([]);
 
   beforeEach(() => {
+    useCaseExecuteSpy = jest.fn();
+    getLegacySpy.mockReset().mockResolvedValue([]);
     jest.spyOn(tenants, 'current').mockReturnValue({} as any);
-    jest.spyOn(AddLanguageUseCaseFactory, 'default').mockReturnValue({
-      execute: useCaseExecuteSpy,
-    } as any);
-    jest.spyOn(translations, 'get').mockResolvedValue([] as any);
+    jest.spyOn(AddLanguageUseCaseFactory, 'default').mockReturnValue(
+      TestUtils.mockClass<AddLanguageUseCase>({
+        execute: useCaseExecuteSpy,
+      })
+    );
+    jest.spyOn(TranslationsQueryServiceFactory, 'default').mockReturnValue(
+      TestUtils.mockClass<TranslationsQueryService>({
+        getLegacy: getLegacySpy,
+      })
+    );
     jest.spyOn(settings, 'get').mockResolvedValue({ languages: [] } as any);
   });
 
@@ -66,7 +77,7 @@ describe('AddLanguageController', () => {
 
     await sut.handleAsync();
 
-    expect(translations.get).not.toHaveBeenCalled();
+    expect(getLegacySpy).not.toHaveBeenCalled();
     expect(emitToCurrentTenant).not.toHaveBeenCalledWith('translationsChange', expect.anything());
     expect(emitToCurrentTenant).toHaveBeenCalledWith('updateSettings', expect.anything());
     expect(response.sendStatus).toHaveBeenCalledWith(204);
@@ -76,7 +87,7 @@ describe('AddLanguageController', () => {
     const addedLanguage = { key: 'es', label: 'Spanish' };
     useCaseExecuteSpy.mockResolvedValue([addedLanguage]);
     const fakeTranslations = { locale: 'es', contexts: [] };
-    jest.spyOn(translations, 'get').mockResolvedValue([fakeTranslations] as any);
+    getLegacySpy.mockResolvedValue([fakeTranslations]);
 
     // request body contains two languages but execute only returns one (the new one)
     const { sut, emitToCurrentTenant } = createSut([
@@ -86,8 +97,8 @@ describe('AddLanguageController', () => {
 
     await sut.handleAsync();
 
-    expect(translations.get).toHaveBeenCalledTimes(1);
-    expect(translations.get).toHaveBeenCalledWith({ locale: 'es' });
+    expect(getLegacySpy).toHaveBeenCalledTimes(1);
+    expect(getLegacySpy).toHaveBeenCalledWith({ locale: 'es' });
     expect(emitToCurrentTenant).toHaveBeenCalledWith('translationsChange', fakeTranslations);
     expect(emitToCurrentTenant).not.toHaveBeenCalledWith(
       'translationsChange',

@@ -1,6 +1,6 @@
 import { PropertyAssignmentCreatorServiceStrategy } from '#api/core/application/propertyAssignmentCreatorService/PropertyAssignmentCreatorServiceStrategy.js';
 import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
-import { DefaultTranslationsDataSource } from '#api/i18n.v2/database/data_source_defaults.js';
+import { TranslationsDataSourceFactory } from '#api/core/infrastructure/factories/TranslationsDataSourceFactory.js';
 import { UpdateEntityUseCase } from '#api/core/application/UpdateEntity.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { FilesServiceFactory } from './FilesServiceFactory.js';
@@ -21,7 +21,7 @@ class UpdateEntityUseCaseFactory {
     const settingsDS = SettingsDataSourceFactory.default();
     const thesauriDS = ThesauriDataSourceFactory.default();
     const entitiesDS = EntitiesDataSourceFactory.default();
-    const translationsDS = DefaultTranslationsDataSource(transactionManager);
+    const translationsDS = TranslationsDataSourceFactory.default({ transactionManager });
     const templatesDS = TemplatesDataSourceFactory.default();
 
     const propertyAssignmentCreatorServiceStrategy =

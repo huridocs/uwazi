@@ -7,9 +7,10 @@ import { tenants } from '#api/tenants/index.js';
 import { denormalizeMetadata } from '#api/entities/denormalize.js';
 import entities from '#api/entities/entities.js';
 import entitiesModel from '#api/entities/entitiesModel.js';
-import translationsModel, { IndexedTranslations } from '#api/i18n/translations.js';
+import { TranslationsQueryServiceFactory } from '#api/core/infrastructure/factories/TranslationsQueryServiceFactory.js';
 import { permissionsContext } from '#api/permissions/permissionsContext.js';
 import { search } from '#api/search/index.js';
+import settings from '#api/settings/settings.js';
 import templates from '#api/core/v1_layer/templates/index.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import { TemplateSchema } from '#shared/types/templateType.js';
@@ -46,16 +47,15 @@ async function handleTenant(tenantName: string) {
       return memo;
     }, Promise.resolve({}));
 
-    const translationsByLanguage = (await translationsModel.get()).reduce<{
-      [language: string]: IndexedTranslations;
-    }>((memo, t) => {
-      if (!t.locale) {
-        throw new Error(`translation ${t._id} has no locale !`);
-      }
-      // eslint-disable-next-line no-param-reassign
-      memo[t.locale] = t;
-      return memo;
-    }, {});
+    const translationsQuery = TranslationsQueryServiceFactory.default();
+    const { languages = [] } = await settings.get();
+    const translationValueMapsByLanguage: {
+      [language: string]: Record<string, Record<string, string>>;
+    } = {};
+    await languages.reduce(async (prev, { key }) => {
+      await prev;
+      translationValueMapsByLanguage[key] = await translationsQuery.getLanguageValueMaps(key);
+    }, Promise.resolve());
 
     const allTemplates = Object.values(indexedTemplates);
     const entityIds = await entities.getUnrestricted({}, '_id', {});
@@ -87,7 +87,7 @@ async function handleTenant(tenantName: string) {
           {
             thesauriByKey: templateRelatedThesauri[entityToSave.template.toString()],
             allTemplates,
-            translation: translationsByLanguage[entityToSave.language],
+            translationValueMaps: translationValueMapsByLanguage[entityToSave.language],
           }
         );
         await entitiesModel.save(entityToSave);

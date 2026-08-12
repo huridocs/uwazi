@@ -1,5 +1,5 @@
+import { IndexedTranslations } from '#api/core/infrastructure/express/translation/LegacyTranslationDtoMapper.js';
 import { TranslationType } from '#shared/translationType.js';
-import { IndexedTranslations } from '../translations.js';
 
 export function sortByLocale(
   a: TranslationType | IndexedTranslations,

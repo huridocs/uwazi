@@ -1,7 +1,7 @@
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { DBFixture } from '#api/utils/testing_db.js';
-import { TranslationDBO } from '#api/i18n.v2/schemas/TranslationDBO.js';
+import { TranslationDBO } from '#api/core/infrastructure/mongodb/translation/schemas/TranslationDBO.js';
 import { DeleteLanguageUseCase } from '#api/core/application/DeleteLanguage.js';
 import { DeleteLanguageUseCaseFactory } from '#api/core/infrastructure/factories/DeleteLanguageUseCaseFactory.js';
 import { LanguageDeletedEvent } from '#api/core/domain/language/events/LanguageDeletedEvent.js';
