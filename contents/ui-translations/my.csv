@@ -192,6 +192,7 @@ Clear PDF selection,Clear PDF selection
 Clear search,Clear search
 Click,Click
 Click to fill,ဖြည့်ရန် နှိပ်ပါ
+Click to select files,Click to select files
 Close,ပိတ်ရန်
 Code,Code
 Collaborator,ပူးပေါင်းဆောင်ရွက်သူ
@@ -371,6 +372,7 @@ Document and entity types,စာရွက်စာတမ်းနှင့် �
 Document contents,စာရွက်စာတမ်း မာတိကာ
 Document OCR trigger,Document OCR trigger
 Document Title,စာရွက်စာတမ်း ခေါင်းစဉ်
+Document updated,Document updated
 Documentation,စာရွက်စာတမ်း
 documents,စာရွက်စာတမ်းများ
 Documents,စာရွက်စာတမ်းများ
@@ -442,6 +444,7 @@ Error adding thesauri.,Error adding thesauri.
 Error loading your image,Error loading your image
 Error saving template.,Error saving template.
 Error updating thesauri.,Error updating thesauri.
+evidence,evidence
 exact phrase,exact phrase
 Expand all,Expand all
 Expand All,Expand All
@@ -459,6 +462,7 @@ Extractor name,Extractor name
 Extractor/s deleted,Extractor/s deleted
 Extractors,Extractors
 Failed,Failed
+Failed to mark table of contents as reviewed,Failed to mark table of contents as reviewed
 Failed to save table of contents,Failed to save table of contents
 Failure details,Failure details
 Favicon description,"A favicon is a small icon that represents your collection in browser tabs and bookmarks. The default favicon is the Uwazi logo. To use your own:
@@ -762,6 +766,7 @@ No data,No data
 NO DATA AVAILABLE,NO DATA AVAILABLE
 NO EXTRACTORS,NO EXTRACTORS
 No files available,No files available
+No files queued yet.,No files queued yet.
 no filters for templates,The combination of entity types doesn't have any filters in common.
 No Group,No Group
 No icon / flag,အိုင်ကွန် / အလံ မရှိပါ
@@ -803,6 +808,8 @@ No value,တန်ဖိုးမရှိပါ
 No Value,တန်ဖိုးမရှိပါ
 No visualization data available.,No visualization data available.
 "No, cancel","No, cancel"
+no-toc-description,"You can start by selecting text in the document and clicking the ""Add to
+              ToC"" button."
 Non processed,Non processed
 Non-labeled,Non-labeled
 Non-latin characters support,Non-latin characters support
@@ -846,6 +853,7 @@ Open PDF,Open PDF
 Open the two-factor Authenticator app on your device,သင့်စက်ပေါ်ရှိ နှစ်ဆင့်ခံ Authenticator အက်ပ်ကို ဖွင့်ပါ
 Options,Options
 or,သို့မဟုတ်
+or drag and drop here,or drag and drop here
 or drop your files here.,သို့မဟုတ် သင့်ဖိုင်များကို ဒီမှာ ချပါ။
 Order,အစဉ်
 Other,အခြား
@@ -908,6 +916,7 @@ Primary,Primary
 Primary button,Primary button
 Primary document,Primary document
 Primary Documents,အဓိက စာရွက်စာတမ်းများ
+Primary documents,Primary documents
 Priority sorting,ဦးစားပေးမှု ခွဲခြားခြင်း
 Priority sorting description,"Properties marked as priority sorting will be used as default sorting criteria. If more than one property is marked as priority sorting the system will try to pick-up the best fit. When listing mixed template types, the system will pick-up the best combined priority sorting."
 Private,Private
@@ -1129,6 +1138,7 @@ Show more,ပိုမိုပြသရန်
 Show remaining in panel,Show remaining in panel
 Show toolbar,Show toolbar
 Showing,Showing
+Showing the top,Showing the top
 shown of,ပြသထားသည််
 Sign in,လက်မှတ်ထိုးဝင်ရန်
 Simple mode,Simple mode
@@ -1440,9 +1450,6 @@ You can add one or many items in this form.,You can add one or many items in thi
 You can also enter this secret key into your Authenticator app.,You can also enter this secret key into your Authenticator app.
 You can create metadata templates in,သင်သည် ဤနေရာတွင် မီတာဒေတာ ပုံစံပြားများကို ဖန်တီးနိုင်သည်
 "You can embed advanced components like maps, charts and entity lists in your page.","You can embed advanced components like maps, charts and entity lists in your page."
-"You can start by selecting text in the document and clicking the ""Add to ToC""
-                  button.","You can start by selecting text in the document and clicking the ""Add to ToC""
-                  button."
 You do not have write permission on all entities,You do not have write permission on all entities
 You have unsaved changes. Discard them and leave this page? This action cannot be undone.,You have unsaved changes. Discard them and leave this page? This action cannot be undone.
 "You have unsaved changes. Discard them and switch language? This action cannot be

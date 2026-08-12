@@ -31,7 +31,11 @@ import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import templatesApi from '#api/core/v1_layer/templates/templates.js';
 import { GetRelationshipTypesUseCaseFactory } from '#api/core/infrastructure/factories/GetRelationshipTypesUseCaseFactory.js';
 import thesauriApi from '../api/core/v1_layer/thesauri/thesauri.js';
-import translationsApi, { IndexedTranslations } from '../api/i18n/translations.js';
+import { TranslationsQueryServiceFactory } from '#api/core/infrastructure/factories/TranslationsQueryServiceFactory.js';
+import {
+  IndexedTranslations,
+  toIndexedTranslations,
+} from '#api/core/infrastructure/express/translation/LegacyTranslationDtoMapper.js';
 import settingsApi from '../api/settings/settings.js';
 import { shapeSettingsForSSR } from '../api/settings/publicSettings.js';
 import { omitInlineCustomization } from '#shared/settings/omitInlineCustomization.js';
@@ -188,7 +192,11 @@ const prepareStores = async (req: ExpressRequest, settings: ClientSettings, lang
   const userAgent = req.get('user-agent') || '';
 
   // Only hydrate the active locale — language switches trigger a full navigation / SSR.
-  const translations = await translationsApi.get({ locale: locale as LanguageISO6391 });
+  const translations = toIndexedTranslations(
+    await TranslationsQueryServiceFactory.default().getLegacy({
+      locale: locale as LanguageISO6391,
+    })
+  );
 
   const [
     userApiResponse = {},

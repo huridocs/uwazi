@@ -19,7 +19,6 @@ import {
   storage,
   testingUploadPaths,
 } from '#api/files/index.js';
-import translations from '#api/i18n/index.js';
 import { permissionsContext } from '#api/permissions/permissionsContext.js';
 import relationships from '#api/relationships/relationships.js';
 import syncRoutes from '#api/sync/routes.js';
@@ -34,11 +33,10 @@ import errorHandlingMiddleware from '#api/utils/error_handling_middleware.js';
 import mailer from '#api/utils/mailer.js';
 import db, { DBFixture } from '#api/utils/testing_db.js';
 import { advancedSort } from '#app/utils/advancedSort.js';
-import { DefaultTranslationsDataSource } from '#api/i18n.v2/database/data_source_defaults.js';
-import { CreateTranslationsService } from '#api/i18n.v2/services/CreateTranslationsService.js';
-import { ValidateTranslationsService } from '#api/i18n.v2/services/ValidateTranslationsService.js';
-import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
+import { CreateTranslationEntriesUseCaseFactory } from '#api/core/infrastructure/factories/CreateTranslationEntriesUseCaseFactory.js';
 import { RelationshipTypesDataSourceFactory } from '#api/core/infrastructure/factories/RelationshipTypesDataSourceFactory.js';
+import { TranslationsQueryServiceFactory } from '#api/core/infrastructure/factories/TranslationsQueryServiceFactory.js';
+import { toIndexedTranslations } from '#api/core/infrastructure/express/translation/LegacyTranslationDtoMapper.js';
 import { FetchResponseError } from '#shared/JSONRequest.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
@@ -381,70 +379,66 @@ describe('syncWorker', () => {
     });
 
     await tenants.run(async () => {
-      const transactionManager = TransactionManagerFactory.default();
-      await new CreateTranslationsService(
-        DefaultTranslationsDataSource(transactionManager),
-        new ValidateTranslationsService(
-          DefaultTranslationsDataSource(transactionManager),
-          SettingsDataSourceFactory.default({ transactionManager })
-        ),
-        transactionManager
-      ).create([
-        {
-          language: 'en',
-          key: 'System Key',
-          value: 'System Value',
-          context: { id: 'System', type: 'Uwazi UI', label: 'System' },
-        },
-        {
-          language: 'en',
-          key: 'template1',
-          value: 'template1T',
-          context: { id: template1.toString(), type: 'Entity', label: 'Entity' },
-        },
-        {
-          language: 'en',
-          key: 't1Property1L',
-          value: 't1Property1T',
-          context: { id: template1.toString(), type: 'Entity', label: 'Entity' },
-        },
-        {
-          language: 'en',
-          key: 't1Relationship1L',
-          value: 't1Relationship1T',
-          context: { id: template1.toString(), type: 'Entity', label: 'Entity' },
-        },
-        {
-          language: 'en',
-          key: 't1Relationship2L',
-          value: 't1Relationship2T',
-          context: { id: template1.toString(), type: 'Entity', label: 'Entity' },
-        },
-        {
-          language: 'en',
-          key: 't1Thesauri2SelectL',
-          value: 't1Thesauri2SelectT',
-          context: { id: template1.toString(), type: 'Entity', label: 'Entity' },
-        },
-        {
-          language: 'en',
-          key: 't1Thesauri3MultiSelectL',
-          value: 't1Thesauri3MultiSelectT',
-          context: { id: template1.toString(), type: 'Entity', label: 'Entity' },
-        },
-        {
-          language: 'en',
-          key: 't1Relationship1',
-          value: 't1Relationship1',
-          context: { id: template1.toString(), type: 'Entity', label: 'Entity' },
-        },
-        {
-          language: 'en',
-          key: 'Template Title',
-          value: 'Template Title translated',
-          context: { id: template1.toString(), type: 'Entity', label: 'Entity' },
-        },
-      ]);
+      await testingEnvironment.runWithContext(async () => {
+        await CreateTranslationEntriesUseCaseFactory.default().execute({
+          translations: [
+            {
+              language: 'en',
+              key: 'System Key',
+              value: 'System Value',
+              context: { id: 'System', type: 'Uwazi UI', label: 'System' },
+            },
+            {
+              language: 'en',
+              key: 'template1',
+              value: 'template1T',
+              context: { id: template1.toString(), type: 'Entity', label: 'Entity' },
+            },
+            {
+              language: 'en',
+              key: 't1Property1L',
+              value: 't1Property1T',
+              context: { id: template1.toString(), type: 'Entity', label: 'Entity' },
+            },
+            {
+              language: 'en',
+              key: 't1Relationship1L',
+              value: 't1Relationship1T',
+              context: { id: template1.toString(), type: 'Entity', label: 'Entity' },
+            },
+            {
+              language: 'en',
+              key: 't1Relationship2L',
+              value: 't1Relationship2T',
+              context: { id: template1.toString(), type: 'Entity', label: 'Entity' },
+            },
+            {
+              language: 'en',
+              key: 't1Thesauri2SelectL',
+              value: 't1Thesauri2SelectT',
+              context: { id: template1.toString(), type: 'Entity', label: 'Entity' },
+            },
+            {
+              language: 'en',
+              key: 't1Thesauri3MultiSelectL',
+              value: 't1Thesauri3MultiSelectT',
+              context: { id: template1.toString(), type: 'Entity', label: 'Entity' },
+            },
+            {
+              language: 'en',
+              key: 't1Relationship1',
+              value: 't1Relationship1',
+              context: { id: template1.toString(), type: 'Entity', label: 'Entity' },
+            },
+            {
+              language: 'en',
+              key: 'Template Title',
+              value: 'Template Title translated',
+              context: { id: template1.toString(), type: 'Entity', label: 'Entity' },
+            },
+          ],
+        });
+      });
     }, 'host1');
 
     await runAllTenants();
@@ -454,7 +448,9 @@ describe('syncWorker', () => {
         .collection('translationsV2')
         .find({})
         .toArray();
-      const syncedTranslations = await translations.get({});
+      const syncedTranslations = await testingEnvironment.runWithContext(async () =>
+        toIndexedTranslations(await TranslationsQueryServiceFactory.default().getLegacy({}))
+      );
 
       expect(syncedTranslationsV2.filter(i => i.key === 'System Key')).toEqual([
         {

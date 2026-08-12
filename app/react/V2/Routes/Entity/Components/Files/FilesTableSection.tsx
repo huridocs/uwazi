@@ -10,6 +10,7 @@ type FilesTableSectionProps = {
   rows: EntityFileRow[];
   selectedRowIds: string[];
   focusedRowId?: string;
+  showLanguageColumn?: boolean;
   onSelectRows: (ids: string[]) => void;
   onFocusRow: (row: EntityFileRow) => void;
   onViewRow: (row: EntityFileRow) => void;
@@ -23,6 +24,7 @@ const FilesTableSection = ({
   rows,
   selectedRowIds,
   focusedRowId,
+  showLanguageColumn = true,
   onSelectRows,
   onFocusRow,
   onViewRow,
@@ -68,6 +70,7 @@ const FilesTableSection = ({
       filesDataTableColumns({
         selectedIds,
         allSelected,
+        showLanguageColumn,
         onToggleRow,
         onToggleAll,
         onViewRow,
@@ -84,6 +87,7 @@ const FilesTableSection = ({
       onToggleRow,
       onViewRow,
       selectedIds,
+      showLanguageColumn,
     ]
   );
 

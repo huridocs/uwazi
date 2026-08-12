@@ -1,9 +1,15 @@
-import translations from '#api/i18n/index.js';
+import { TranslationsQueryServiceFactory } from '#api/core/infrastructure/factories/TranslationsQueryServiceFactory.js';
+import { SaveLocaleTranslationsUseCaseFactory } from '#api/core/infrastructure/factories/SaveLocaleTranslationsUseCaseFactory.js';
+import { UpdateEntriesByContextUseCaseFactory } from '#api/core/infrastructure/factories/UpdateEntriesByContextUseCaseFactory.js';
+import {
+  IndexedTranslations,
+  toIndexedTranslations,
+} from '#api/core/infrastructure/express/translation/LegacyTranslationDtoMapper.js';
 import settings from '#api/settings/index.js';
 import thesauri from '#api/core/v1_layer/thesauri/index.js';
 import { TranslationType } from '#shared/translationType.js';
 import { ensure } from '#shared/tsUtils.js';
-import { LanguageSchema, ObjectIdSchema } from '#shared/types/commonTypes.js';
+import { LanguageISO6391, LanguageSchema, ObjectIdSchema } from '#shared/types/commonTypes.js';
 import { ThesaurusSchema } from '#shared/types/thesaurusType.js';
 
 import csv, { CSVRow, validateFormat, ValidateFormatOptions } from './csv.js';
@@ -17,7 +23,7 @@ export class CSVLoader {
     this.stopOnError = options.stopOnError;
   }
 
-  /* eslint-disable class-methods-use-this */
+  /* eslint-disable class-methods-use-this, max-statements */
   async loadThesauri(
     csvPath: string,
     thesaurusId: ObjectIdSchema,
@@ -45,14 +51,18 @@ export class CSVLoader {
     const theaurusToSave = thesauri.appendValues(currentThesauri, thesaurusValues);
     const saved = await thesauri.save(theaurusToSave);
 
-    await translations.updateEntries(thesaurusId.toString(), thesauriTranslations);
+    await UpdateEntriesByContextUseCaseFactory.default().execute({
+      contextId: thesaurusId.toString(),
+      keyValuePairsPerLanguage: thesauriTranslations,
+    });
 
     return saved;
   }
-  /* eslint-enable class-methods-use-this */
+  /* eslint-enable class-methods-use-this, max-statements */
 
   async loadTranslations(csvPath: string, translationContext: string) {
     const file = importFile(csvPath);
+    const query = TranslationsQueryServiceFactory.default();
 
     const intermediateTranslation: { [k: string]: { [k: string]: string } } = {};
 
@@ -74,10 +84,12 @@ export class CSVLoader {
         await prev;
         const trans = intermediateTranslation[lang.label];
 
-        const [dbTranslations] = await translations.get({ locale: lang.language });
+        const [dbTranslations] = toIndexedTranslations(
+          await query.getLegacy({ locale: lang.language as LanguageISO6391 })
+        ) as IndexedTranslations[];
 
         const context = (dbTranslations.contexts || []).find(
-          (ctxt: any) => ctxt.id === translationContext
+          ctxt => ctxt.id === translationContext
         );
 
         if (trans && context) {
@@ -88,12 +100,12 @@ export class CSVLoader {
           });
         }
 
-        return translations.save(dbTranslations);
+        return SaveLocaleTranslationsUseCaseFactory.default().execute(dbTranslations);
       },
       Promise.resolve({} as TranslationType)
     );
 
-    return translations.get();
+    return toIndexedTranslations(await query.getLegacy());
   }
 
   // eslint-disable-next-line class-methods-use-this

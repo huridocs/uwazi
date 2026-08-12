@@ -7,7 +7,6 @@ import {
   buildInheritColumns,
   defaultRelationshipLookup,
   inheritColumnLabel,
-  inheritedCellText,
   mergeRelationshipLookupOptions,
   thesaurusToOptions,
 } from '../relationshipFieldHelpers.js';
@@ -139,20 +138,6 @@ describe('buildInheritColumns', () => {
     ...metadataProperties[0],
     groupedRelationshipNames: ['related'],
   };
-
-  it('should prefer inherited value labels when building cell text', () => {
-    expect(
-      inheritedCellText(
-        [
-          {
-            value: 'entity-1',
-            inheritedValue: [{ label: 'Tag A', value: null }, { value: 'raw-b' }],
-          },
-        ],
-        'entity-1'
-      )
-    ).toBe('Tag A, raw-b');
-  });
 
   it('should resolve the inherited property label from the target template', () => {
     expect(inheritColumnLabel(metadataProperties[1], templates)).toBe('Inherited label');

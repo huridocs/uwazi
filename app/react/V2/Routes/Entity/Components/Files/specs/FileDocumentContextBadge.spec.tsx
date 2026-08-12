@@ -69,6 +69,7 @@ describe('FileDocumentContextBadge', () => {
 
     render(<FileDocumentContextBadge row={currentRow} />);
 
+    expect(screen.getByText('Translations')).toBeInTheDocument();
     expect(screen.getByText('doc-en.pdf')).toBeInTheDocument();
     expect(screen.getByText('doc-es.pdf')).toBeInTheDocument();
     expect(screen.getByText('doc-en.pdf').closest('button')).toBeNull();

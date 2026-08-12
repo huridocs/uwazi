@@ -1,5 +1,5 @@
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
-import { TranslationsDataSource } from '#api/i18n.v2/contracts/TranslationsDataSource.js';
+import { TranslationsDataSource } from '#api/core/application/contracts/TranslationsDataSource.js';
 import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js';
 import { LanguageDeletedEvent } from '#api/core/domain/language/events/LanguageDeletedEvent.js';
 import { AbstractUseCase } from '../libs/UseCase.js';

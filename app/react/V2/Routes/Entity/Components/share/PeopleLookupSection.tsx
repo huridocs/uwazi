@@ -27,7 +27,7 @@ const PeopleLookupSection = ({
   onToggleHint,
   onAdd,
 }: PeopleLookupSectionProps) => (
-  <section className="space-y-3 px-5 pt-3">
+  <section className="space-y-2 px-5 pt-3">
     <div className="flex items-center gap-1.5">
       <h4 className="text-xs font-medium text-ink-secondary">
         <Translate>People and groups</Translate>

@@ -1,9 +1,9 @@
 /* eslint-disable max-statements */
+import { ObjectId } from 'mongodb';
 import { models } from '#api/odm/index.js';
 import { search } from '#api/search/index.js';
 import { storage } from '#api/files/storage.js';
 import '#api/utils/jasmineHelpers.js';
-import { ObjectId } from 'mongodb';
 
 import * as index from '#api/search/entitiesIndex.js';
 import { SyncHandlerRegistry } from '#api/sync/SyncHandlerRegistry.js';
@@ -265,12 +265,13 @@ describe('sync', () => {
 
     describe('when namespace is translationsV2', () => {
       it('should correctly save for one document', async () => {
-        const translationsV2 = {
+        const handler = {
           save: jest.fn(),
           saveMultiple: jest.fn(),
+          getById: jest.fn(),
           delete: jest.fn(),
         };
-        models.translationsV2 = () => translationsV2;
+        SyncHandlerRegistry.register('translationsV2', () => handler);
 
         const translationInput = {
           _id: new ObjectId(),
@@ -291,16 +292,8 @@ describe('sync', () => {
 
         await routes.post('/api/sync', req);
 
-        expect(translationsV2.delete).toHaveBeenCalledWith(
-          { _id: '' },
-          {
-            language: translationInput.language,
-            key: translationInput.key,
-            'context.id': translationInput.context.id,
-          }
-        );
-        expect(translationsV2.save).toHaveBeenCalledWith(translationInput);
-        expect(translationsV2.saveMultiple).not.toHaveBeenCalled();
+        expect(handler.save).toHaveBeenCalledWith(translationInput);
+        expect(handler.saveMultiple).not.toHaveBeenCalled();
       });
     });
   });

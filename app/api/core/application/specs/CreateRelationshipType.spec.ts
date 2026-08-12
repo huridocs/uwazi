@@ -2,7 +2,8 @@ import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { testingTenants } from '#api/utils/testingTenants.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import type { DBFixture } from '#api/utils/testing_db.js';
-import translations from '#api/i18n/translations.js';
+import { TranslationsQueryServiceFactory } from '#api/core/infrastructure/factories/TranslationsQueryServiceFactory.js';
+import { toIndexedTranslations } from '#api/core/infrastructure/express/translation/LegacyTranslationDtoMapper.js';
 import { ContextType } from '#shared/translationSchema.js';
 import { CreateRelationshipTypeUseCaseFactory } from '#api/core/infrastructure/factories/CreateRelationshipTypeUseCaseFactory.js';
 
@@ -95,7 +96,12 @@ describe('CreateRelationshipTypeUseCase', () => {
       );
 
       const [translation] = await withFlag(async () =>
-        translations.get({ locale: 'en', context: created.id })
+        toIndexedTranslations(
+          await TranslationsQueryServiceFactory.default().getLegacy({
+            locale: 'en',
+            context: created.id,
+          })
+        )
       );
 
       expect(translation.contexts).toHaveLength(1);

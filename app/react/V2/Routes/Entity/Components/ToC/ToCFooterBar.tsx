@@ -9,31 +9,39 @@ type ToCFooterBarProps = {
 };
 
 const ToCFooterBar = ({ panel }: ToCFooterBarProps) => {
-  const { tocState, isSaving, handleEdit, handleSave, handleCancel } = panel;
+  const {
+    tocState,
+    isSaving,
+    canMarkReviewed,
+    handleEdit,
+    handleSave,
+    handleCancel,
+    handleMarkReviewed,
+  } = panel;
 
   return (
     <EntityWriteAuthorization>
-      <div className="flex gap-2">
-        {!tocState.isEditMode ? (
-          <>
-            <Button variant="secondary" onClick={handleEdit}>
-              <Translate>Edit</Translate>
-            </Button>
-            <Button variant="secondary">
+      {!tocState.isEditMode ? (
+        <div className="flex w-full items-center justify-between gap-2">
+          <Button variant="secondary" onClick={handleEdit} disabled={isSaving}>
+            <Translate>Edit</Translate>
+          </Button>
+          {canMarkReviewed ? (
+            <Button variant="secondary" onClick={handleMarkReviewed} disabled={isSaving}>
               <Translate>Mark as reviewed</Translate>
             </Button>
-          </>
-        ) : (
-          <>
-            <Button variant="success" onClick={handleSave} disabled={isSaving}>
-              {isSaving ? <Translate>Saving...</Translate> : <Translate>Save</Translate>}
-            </Button>
-            <Button variant="secondary" onClick={handleCancel}>
-              <Translate>Cancel</Translate>
-            </Button>
-          </>
-        )}
-      </div>
+          ) : null}
+        </div>
+      ) : (
+        <div className="flex w-full items-center gap-2">
+          <Button variant="success" onClick={handleSave} disabled={isSaving}>
+            {isSaving ? <Translate>Saving...</Translate> : <Translate>Save</Translate>}
+          </Button>
+          <Button variant="secondary" onClick={handleCancel} disabled={isSaving}>
+            <Translate>Cancel</Translate>
+          </Button>
+        </div>
+      )}
     </EntityWriteAuthorization>
   );
 };

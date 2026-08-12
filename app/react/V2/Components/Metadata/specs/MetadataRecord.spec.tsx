@@ -528,8 +528,12 @@ describe('MetadataRecord', () => {
   it('shows external-link control only on Details relationship rows', () => {
     renderRecord();
 
-    const table = screen.getByRole('table');
-    expect(within(table).getByRole('rowheader', { name: 'Relationshipd' })).toBeInTheDocument();
+    const relationshipd = screen.getByRole('rowheader', { name: 'Relationshipd' });
+    const table = relationshipd.closest('table');
+    expect(table).not.toBeNull();
+    if (!table) {
+      return;
+    }
     const diana = within(table).getByRole('link', { name: /Diana/i });
     expect(diana).toHaveAttribute('target', '_blank');
     expect(within(diana).getByTestId('connection-external-link-icon')).toBeInTheDocument();
