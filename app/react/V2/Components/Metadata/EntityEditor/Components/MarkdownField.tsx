@@ -25,12 +25,7 @@ const MarkdownField = <TFormValues extends FieldValues = FieldValues>({
   const { control, setValue } = useFormContext<TFormValues>();
 
   return (
-    <EntityPdfFillField
-      field={field}
-      setValue={setValue}
-      disabled={disabled}
-      pdfFill={pdfFill}
-    >
+    <EntityPdfFillField field={field} setValue={setValue} disabled={disabled} pdfFill={pdfFill}>
       {overlay => (
         <Controller
           control={control}

@@ -21,8 +21,12 @@ type UseDocumentPdfViewParams = {
 };
 
 function useDocumentPdfView({ mainDocument, entity }: UseDocumentPdfViewParams) {
-  const { pdfController: mainPdfController, setPdfController, draftPropertySelections, documentPdfSelection } =
-    useDocumentPdf();
+  const {
+    pdfController: mainPdfController,
+    setPdfController,
+    draftPropertySelections,
+    documentPdfSelection,
+  } = useDocumentPdf();
   const { isEditing } = useMetadataEditing();
   const { mainDocument: languageMainDocument } = useEntityLanguage();
   const page = useDocumentPdfPage({ mainDocument, mainPdfController, setPdfController });

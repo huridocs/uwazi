@@ -29,12 +29,7 @@ const TextField = <TFormValues extends FieldValues = FieldValues>({
   const { showError, message } = getFieldErrorState(fieldState);
 
   return (
-    <EntityPdfFillField
-      field={field}
-      setValue={setValue}
-      disabled={disabled}
-      pdfFill={pdfFill}
-    >
+    <EntityPdfFillField field={field} setValue={setValue} disabled={disabled} pdfFill={pdfFill}>
       {overlay => (
         <InputField
           id={field}
