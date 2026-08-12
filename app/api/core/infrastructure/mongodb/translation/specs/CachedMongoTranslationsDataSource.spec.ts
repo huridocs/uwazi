@@ -108,6 +108,20 @@ describe('CachedMongoTranslationsDataSource', () => {
       expect(all2).toHaveLength(1);
     });
 
+    it('should cache language+context queries separately from full context', async () => {
+      const dataSource = new CachedMongoTranslationsDataSource(
+        getConnection(),
+        TransactionManagerFactory.default()
+      );
+
+      const byLanguageAndContext = await dataSource.getByLanguageAndContext('en', 'context1').all();
+      const byContext = await dataSource.getByContext('context1').all();
+
+      expect(byLanguageAndContext).toHaveLength(2);
+      expect(byContext).toHaveLength(3);
+      expect(byLanguageAndContext.every(t => t.language === 'en')).toBe(true);
+    });
+
     it('should return correct translation data from cache', async () => {
       const transactionManager = TransactionManagerFactory.default();
       const dataSource = new CachedMongoTranslationsDataSource(getConnection(), transactionManager);

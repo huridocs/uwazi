@@ -50,6 +50,15 @@ describe('csvLoader thesauri', () => {
   const loadThesauri = async (...args: Parameters<CSVLoader['loadThesauri']>) =>
     testingEnvironment.runWithContext(async () => loader.loadThesauri(...args));
 
+  const withDefaultLanguage = async (key: LanguageISO6391, fn: () => Promise<void>) => {
+    await settings.setDefaultLanguage(key);
+    try {
+      await fn();
+    } finally {
+      await settings.setDefaultLanguage('en');
+    }
+  };
+
   afterAll(async () => testingEnvironment.tearDown());
 
   let thesauriId: string;
@@ -186,117 +195,115 @@ describe('csvLoader thesauri', () => {
     });
 
     it('should use default language for internal values', async () => {
-      await settings.setDefaultLanguage('es');
+      await withDefaultLanguage('es', async () => {
+        const { _id } = await saveThesauri({
+          name: 'colorsThesaurus',
+          values: [{ label: 'existing color' }],
+        });
 
-      const { _id } = await saveThesauri({
-        name: 'colorsThesaurus',
-        values: [{ label: 'existing color' }],
-      });
-
-      const csv = `Spanish, English
+        const csv = `Spanish, English
                    Blanco, White
                    Negro, Black
                    Rojo, Red`;
 
-      const mockedFile = mockCsvFileReadStream(csv);
+        const mockedFile = mockCsvFileReadStream(csv);
 
-      result = await loadThesauri('mockedFileFromString', _id, {
-        language: 'en',
+        result = await loadThesauri('mockedFileFromString', _id, {
+          language: 'en',
+        });
+
+        expect(result!.values!.map((v: { label: string }) => v.label)).toEqual([
+          'existing color',
+          'Blanco',
+          'Negro',
+          'Rojo',
+        ]);
+
+        const spanishTranslations = await getTranslation('es', _id);
+        expect(spanishTranslations).toMatchObject({
+          colorsThesaurus: 'colorsThesaurus',
+          'existing color': 'existing color',
+          Blanco: 'Blanco',
+          Negro: 'Negro',
+          Rojo: 'Rojo',
+        });
+
+        const englishTranslations = await getTranslation('en', _id);
+        expect(englishTranslations).toMatchObject({
+          colorsThesaurus: 'colorsThesaurus',
+          'existing color': 'existing color',
+          Blanco: 'White',
+          Negro: 'Black',
+          Rojo: 'Red',
+        });
+
+        mockedFile.mockRestore();
       });
-
-      expect(result!.values!.map((v: { label: string }) => v.label)).toEqual([
-        'existing color',
-        'Blanco',
-        'Negro',
-        'Rojo',
-      ]);
-
-      const spanishTranslations = await getTranslation('es', _id);
-      expect(spanishTranslations).toMatchObject({
-        colorsThesaurus: 'colorsThesaurus',
-        'existing color': 'existing color',
-        Blanco: 'Blanco',
-        Negro: 'Negro',
-        Rojo: 'Rojo',
-      });
-
-      const englishTranslations = await getTranslation('en', _id);
-      expect(englishTranslations).toMatchObject({
-        colorsThesaurus: 'colorsThesaurus',
-        'existing color': 'existing color',
-        Blanco: 'White',
-        Negro: 'Black',
-        Rojo: 'Red',
-      });
-
-      mockedFile.mockRestore();
-
-      await settings.setDefaultLanguage('en');
     });
 
     it('should fall back to request language when default language is not in CSV', async () => {
-      await settings.setDefaultLanguage('fr');
+      await withDefaultLanguage('fr', async () => {
+        const { _id } = await saveThesauri({
+          name: 'fallbackThesaurus2',
+          values: [{ label: 'existing value' }],
+        });
 
-      const { _id } = await saveThesauri({
-        name: 'fallbackThesaurus2',
-        values: [{ label: 'existing value' }],
-      });
-
-      const csv = `Spanish, English
+        const csv = `Spanish, English
                    Blanco, White
                    Negro, Black
                    Rojo, Red`;
 
-      const mockedFile = mockCsvFileReadStream(csv);
+        const mockedFile = mockCsvFileReadStream(csv);
 
-      result = await loadThesauri('mockedFileFromString', _id, {
-        language: 'en',
+        result = await loadThesauri('mockedFileFromString', _id, {
+          language: 'en',
+        });
+
+        expect(result!.values!.map((v: { label: string }) => v.label)).toEqual([
+          'existing value',
+          'White',
+          'Black',
+          'Red',
+        ]);
+
+        mockedFile.mockRestore();
       });
-
-      expect(result!.values!.map((v: { label: string }) => v.label)).toEqual([
-        'existing value',
-        'White',
-        'Black',
-        'Red',
-      ]);
-
-      mockedFile.mockRestore();
-
-      await settings.setDefaultLanguage('en');
     });
 
     it('should fall back to first available column when neither default nor request language is in CSV', async () => {
-      await settings.setDefaultLanguage('fr');
+      await withDefaultLanguage('fr', async () => {
+        const { _id } = await saveThesauri({
+          name: 'fallbackThesaurus3',
+          values: [{ label: 'existing value' }],
+        });
 
-      const { _id } = await saveThesauri({
-        name: 'fallbackThesaurus3',
-        values: [{ label: 'existing value' }],
-      });
-
-      const csv = `Spanish, Portuguese
+        const csv = `Spanish, Portuguese
                    Blanco, Branco
                    Negro, Negro
                    Rojo, Vermelho`;
 
-      const mockedFile = mockCsvFileReadStream(csv);
+        const mockedFile = mockCsvFileReadStream(csv);
 
-      result = await loadThesauri('mockedFileFromString', _id, {
-        language: 'en',
+        result = await loadThesauri('mockedFileFromString', _id, {
+          language: 'en',
+        });
+
+        expect(result!.values!.map((v: { label: string }) => v.label)).toEqual([
+          'existing value',
+          'Blanco',
+          'Negro',
+          'Rojo',
+        ]);
+
+        mockedFile.mockRestore();
       });
-
-      expect(result!.values!.map((v: { label: string }) => v.label)).toEqual([
-        'existing value',
-        'Blanco',
-        'Negro',
-        'Rojo',
-      ]);
-
-      mockedFile.mockRestore();
-
-      await settings.setDefaultLanguage('en');
     });
 
     describe('nesting', () => {
+      beforeEach(async () => {
+        await settings.setDefaultLanguage('en');
+      });
+
       it('should allow nesting thesauri by prefixing the children', async () => {
         const { _id } = await saveThesauri({ name: 'nestedThesauri' });
 
