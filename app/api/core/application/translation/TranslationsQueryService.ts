@@ -56,7 +56,7 @@ export class TranslationsQueryService {
   }
 
   async toLegacyDto(
-    result: ResultSet<Translation>,
+    load: () => ResultSet<Translation>,
     onlyLanguage?: LanguageISO6391
   ): Promise<EnforcedWithId<TranslationType>[]> {
     let languageKeys = await this.settingsDS.getLanguageKeys();
@@ -76,7 +76,7 @@ export class TranslationsQueryService {
       contexts[key] = {};
     });
 
-    const translations = await result.all();
+    const translations = await load().all();
     translations.forEach(translation => {
       if (!resultMap[translation.language]) {
         resultMap[translation.language] = {
@@ -108,16 +108,16 @@ export class TranslationsQueryService {
   async getLegacy(query: { locale?: LanguageISO6391; context?: string } = {}) {
     if (query.locale && query.context) {
       return this.toLegacyDto(
-        this.getByLanguageAndContext(query.locale, query.context),
+        () => this.getByLanguageAndContext(query.locale!, query.context!),
         query.locale
       );
     }
     if (query.context) {
-      return this.toLegacyDto(this.getByContext(query.context));
+      return this.toLegacyDto(() => this.getByContext(query.context!));
     }
     if (query.locale) {
-      return this.toLegacyDto(this.getByLanguage(query.locale), query.locale);
+      return this.toLegacyDto(() => this.getByLanguage(query.locale!), query.locale);
     }
-    return this.toLegacyDto(this.getAll());
+    return this.toLegacyDto(() => this.getAll());
   }
 }
