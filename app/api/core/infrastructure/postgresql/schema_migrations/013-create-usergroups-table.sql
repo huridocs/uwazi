@@ -1,4 +1,4 @@
--- Migration 011: create-usergroups-table
+-- Migration 013: create-usergroups-table
 -- Create usergroups table for Postgres-backed UserGroups
 
 CREATE TABLE IF NOT EXISTS usergroups (

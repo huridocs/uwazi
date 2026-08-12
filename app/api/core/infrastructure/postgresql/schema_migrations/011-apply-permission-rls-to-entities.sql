@@ -1,4 +1,4 @@
--- Migration 010: apply permission-level RLS to the entities table
+-- Migration 011: apply permission-level RLS to the entities table
 --
 -- Calls the shared create_permission_rls_policies function (defined in
 -- migration 009) which adds the array columns, creates GIN indexes, attaches

@@ -1,4 +1,4 @@
--- Migration 010: create-captchas-table
+-- Migration 012: create-captchas-table
 -- Creates the captchas table (postgresCaptchas flag)
 
 -- Replaces the Mongo `captchas` collection behind the postgresCaptchas feature flag.
