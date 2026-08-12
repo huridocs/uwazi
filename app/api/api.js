@@ -28,7 +28,9 @@ export default async (app, server) => {
   (await import('./search/routes.js')).default(app);
   (await import('./search.v2/routes.js')).searchRoutes(app);
   (await import('./core/v1_layer/thesauri/routes.js')).default(app);
-  (await import('./core/infrastructure/express/relationshipType/routes.js')).relationshipTypesRoutes(app);
+  (
+    await import('./core/infrastructure/express/relationshipType/routes.js')
+  ).relationshipTypesRoutes(app);
   (await import('./documents/deprecatedRoutes.js')).default(app);
   (await import('./documents/routes.js')).documentRoutes(app);
   (await import('./contact/routes.js')).default(app);
@@ -56,5 +58,7 @@ export default async (app, server) => {
   (await import('./paragraphExtraction/adapters/PXRoutes.js')).paragraphExtractionRoutes(app);
   (await import('./csv.v2/infrastructure/http/routes.js')).csvImportRoutes(app);
   (await import('./customUploads/infrastructure/http/routes.js')).customUploadsRoutes(app);
-  (await import('./aiAssistant/infrastructure/express/AIAssistantRoutes.js')).aiAssistantRoutes(app);
+  (await import('./aiAssistant/infrastructure/express/AIAssistantRoutes.js')).aiAssistantRoutes(
+    app
+  );
 };
