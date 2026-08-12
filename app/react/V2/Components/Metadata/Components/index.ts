@@ -11,6 +11,7 @@ export { MasonryPropertyCard } from './MasonryPropertyCard.js';
 export { PropertyLabel } from './PropertyLabel.js';
 export { PropertyValue } from './PropertyValue.js';
 export { Relationship } from './Relationship.js';
+export { inheritedCellContent } from './inheritedCellContent.js';
 export {
   ConnectionPills,
   connectionPillsForField,

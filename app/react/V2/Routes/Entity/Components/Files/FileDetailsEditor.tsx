@@ -1,12 +1,7 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { CheckIcon } from '@heroicons/react/24/outline';
 import { Translate } from '#app/I18N/index.js';
 import { EntityWriteAuthorization } from '#V2/Routes/Entity/Components/context/index.js';
-import {
-  fileLanguageSelectOptions,
-  fileSupportsLanguage,
-  resolveFileLanguage,
-} from './fileHelpers.js';
 import { getRowIcon } from './fileRowIcon.js';
 import { FileDeleteAction } from './FileDeleteAction.js';
 import { FileDetailsField } from './FileDetailsField.js';
@@ -14,6 +9,7 @@ import { FileDetailsCard } from './FileDetailsCard.js';
 import { FileDetailsReadonlyMeta } from './FileDetailsReadonlyMeta.js';
 import { FileDocumentContextBadge } from './FileDocumentContextBadge.js';
 import { FileLanguageSelect } from './FileLanguageSelect.js';
+import { useFileRowDraft } from './useFileRowDraft.js';
 import { EntityFileRow, FileEditFocus } from './types.js';
 
 const FileDetailsEditor = ({
@@ -25,21 +21,22 @@ const FileDetailsEditor = ({
   onSave: (payload: { _id: string; originalname: string; language?: string }) => Promise<void>;
   focusField?: FileEditFocus;
 }) => {
-  const [originalname, setOriginalname] = useState(row.raw.originalname || row.displayName);
-  const [language, setLanguage] = useState(() => resolveFileLanguage(row.raw.language));
-  const [saving, setSaving] = useState(false);
-  const nameInputRef = useRef<HTMLInputElement>(null);
+  const {
+    draftName,
+    setDraftName,
+    draftLanguage,
+    setDraftLanguage,
+    saving,
+    nameInputRef,
+    languageOptions,
+    showLanguage,
+    resetDraft,
+    commit,
+  } = useFileRowDraft(row);
   const languageSelectRef = useRef<HTMLSelectElement>(null);
 
-  const languageOptions = useMemo(() => fileLanguageSelectOptions(), []);
-  const showLanguage = fileSupportsLanguage({
-    type: row.raw.mimetype || '',
-    name: row.raw.originalname || row.displayName,
-  });
-
   useEffect(() => {
-    setOriginalname(row.raw.originalname || row.displayName);
-    setLanguage(resolveFileLanguage(row.raw.language));
+    resetDraft();
     // Reset draft only when switching rows; keep in-progress edits across unrelated row prop churn.
     // eslint-disable-next-line react-hooks/exhaustive-deps -- intentional rowId-only reset
   }, [row.rowId]);
@@ -53,22 +50,6 @@ const FileDetailsEditor = ({
     nameInputRef.current?.select();
   }, [focusField, row.rowId, showLanguage]);
 
-  const handleDone = async () => {
-    if (!row.raw._id || saving) {
-      return;
-    }
-    setSaving(true);
-    try {
-      await onSave({
-        _id: row.raw._id,
-        originalname,
-        language: showLanguage ? language || undefined : undefined,
-      });
-    } finally {
-      setSaving(false);
-    }
-  };
-
   return (
     <div className="space-y-3">
       <FileDetailsCard
@@ -76,7 +57,9 @@ const FileDetailsEditor = ({
           <EntityWriteAuthorization>
             <button
               type="button"
-              onClick={handleDone}
+              onClick={() => {
+                commit(onSave).catch(() => undefined);
+              }}
               disabled={saving}
               className="flex cursor-pointer items-center gap-1 rounded bg-ink px-2 py-0.5 text-micro font-medium text-parchment transition-colors hover:bg-ink/90 disabled:opacity-60"
             >
@@ -93,8 +76,8 @@ const FileDetailsEditor = ({
               ref={nameInputRef}
               id={`file-name-${row.raw._id}`}
               type="text"
-              value={originalname}
-              onChange={event => setOriginalname(event.target.value)}
+              value={draftName}
+              onChange={event => setDraftName(event.target.value)}
               onKeyDown={event => {
                 if (event.key === 'Enter') {
                   event.currentTarget.blur();
@@ -112,8 +95,8 @@ const FileDetailsEditor = ({
               <FileLanguageSelect
                 selectRef={languageSelectRef}
                 id={`file-language-${row.raw._id}`}
-                value={language}
-                onChange={setLanguage}
+                value={draftLanguage}
+                onChange={setDraftLanguage}
                 options={languageOptions}
                 aria-label="File language"
               />

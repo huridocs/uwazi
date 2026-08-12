@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect } from 'react';
 import { CheckIcon, PencilIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import { t } from '#app/I18N/index.js';
 import { EntityWriteAuthorization } from '#V2/Routes/Entity/Components/context/index.js';
@@ -7,12 +7,8 @@ import { FileLanguageSelect } from './FileLanguageSelect.js';
 import { FileProcessStatusIndicator } from './FileProcessStatusIndicator.js';
 import { FileThumbnail } from './FileThumbnail.js';
 import { ViewFileButton } from './ViewFileButton.js';
-import {
-  fileLanguageSelectOptions,
-  fileSupportsLanguage,
-  isFileRowSelectable,
-  resolveFileLanguage,
-} from './fileHelpers.js';
+import { isFileRowSelectable } from './fileHelpers.js';
+import { useFileRowDraft } from './useFileRowDraft.js';
 import { EntityFileRow } from './types.js';
 
 const DrawerFileRow = ({
@@ -32,37 +28,27 @@ const DrawerFileRow = ({
   onCancelEdit: () => void;
   onCommit: (payload: { _id: string; originalname: string; language?: string }) => Promise<void>;
 }) => {
-  const [draftName, setDraftName] = useState(row.raw.originalname || row.displayName);
-  const [draftLanguage, setDraftLanguage] = useState(() => resolveFileLanguage(row.raw.language));
-  const [saving, setSaving] = useState(false);
-  const nameInputRef = useRef<HTMLInputElement>(null);
-  const languageOptions = useMemo(() => fileLanguageSelectOptions(), []);
-  const showLanguage = fileSupportsLanguage({
-    type: row.raw.mimetype || '',
-    name: row.raw.originalname || row.displayName,
-  });
+  const {
+    draftName,
+    setDraftName,
+    draftLanguage,
+    setDraftLanguage,
+    saving,
+    nameInputRef,
+    languageOptions,
+    showLanguage,
+    resetDraft,
+    commit,
+  } = useFileRowDraft(row);
 
   useEffect(() => {
     if (!editing) return;
-    setDraftName(row.raw.originalname || row.displayName);
-    setDraftLanguage(resolveFileLanguage(row.raw.language));
+    resetDraft();
     nameInputRef.current?.focus();
     nameInputRef.current?.select();
   }, [editing, row.displayName, row.raw.language, row.raw.originalname]);
 
-  const save = async () => {
-    if (!row.raw._id || saving) return;
-    setSaving(true);
-    try {
-      await onCommit({
-        _id: row.raw._id,
-        originalname: draftName.trim() || row.displayName,
-        language: showLanguage ? draftLanguage || undefined : undefined,
-      });
-    } finally {
-      setSaving(false);
-    }
-  };
+  const save = async () => commit(onCommit, { trimName: true });
 
   return (
     <div

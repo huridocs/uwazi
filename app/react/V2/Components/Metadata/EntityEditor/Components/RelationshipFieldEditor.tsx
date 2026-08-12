@@ -17,10 +17,8 @@ import {
 } from '#V2/Components/Metadata/Components/RelationshipConnectionsTable.js';
 import type { MetadataValue } from '#V2/formatters/types.js';
 import type { MultiselectListOption } from '#V2/Components/Forms/index.js';
-import {
-  inheritedCellText,
-  type RelationshipInheritColumn,
-} from '../functions/relationshipFieldHelpers.js';
+import { inheritedCellContent } from '../../Components/inheritedCellContent.js';
+import type { RelationshipInheritColumn } from '../functions/relationshipFieldHelpers.js';
 
 type RelationshipFieldEditorProps = {
   title: string;
@@ -44,7 +42,7 @@ const toTableColumns = (columns: RelationshipInheritColumn[], values: MetadataVa
       Object.fromEntries(
         values.map(row => {
           const entityId = String(row.value ?? '');
-          return [entityId, inheritedCellText([row], entityId)];
+          return [entityId, inheritedCellContent([row], entityId)];
         })
       ),
   }));
