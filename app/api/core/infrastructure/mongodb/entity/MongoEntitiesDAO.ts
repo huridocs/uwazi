@@ -1,68 +1,126 @@
 /* eslint-disable no-continue */
 /* eslint-disable max-statements */
-import { Db, FindCursor, ObjectId } from 'mongodb';
+import { Db, ObjectId } from 'mongodb';
 import { EntityDBO } from '#api/core/infrastructure/mongodb/entity/EntityDBO.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import type { LocalizedLabels } from '#shared/types/datavizSchema.js';
-import { User } from '#api/users.v2/model/User.js';
 import { MongoDataSource, MongoDSOptions } from '../common/MongoDataSource.js';
 import { FileDBO } from '../files/schemas/FilesTypes.js';
 import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
 import { MongoFilesDAO } from '../files/MongoFilesDAO.js';
 import { TimedMethod } from '#api/core/libs/logger/TimedMethodDecorator.js';
+import { AccessContext } from '#api/core/domain/entityAccessPolicy/AccessContext.js';
+import {
+  EntitiesDAO,
+  EntityFilters,
+  FindByLanguagePairsQuery,
+  FindByMetadataCriteriaQuery,
+  FindByTemplateIdRangeQuery,
+  FindOptions,
+  LabelInfo,
+} from '#api/core/application/contracts/EntitiesDAO.js';
+import type {
+  EntityWithFiles,
+  GetWithFilesMatch,
+} from '#api/core/application/contracts/EntitiesDAO.js';
 
-type GetWithFilesMatch = {
-  language?: LanguageISO6391;
-  sharedId?: string | { $in: string[] };
-  published?: boolean;
-};
+type EntityWithFilesInternal = EntityDBO & { documents: FileDBO[]; attachments: FileDBO[] };
 
-type EntityWithFiles = EntityDBO & { documents: FileDBO[]; attachments: FileDBO[] };
-
-class MongoEntitiesDAO extends MongoDataSource<EntityDBO> {
+class MongoEntitiesDAO extends MongoDataSource<EntityDBO> implements EntitiesDAO {
   protected collectionName = 'entities';
 
-  private user: User;
-
   private filesDAO?: MongoFilesDAO;
+
+  private unrestrictedInstance?: EntitiesDAO;
 
   constructor(
     db: Db,
     transactionManager: TransactionManager,
-    user: User,
     options?: MongoDSOptions & { filesDAO?: MongoFilesDAO }
   ) {
     super(db, transactionManager, options);
-    this.user = user;
     this.filesDAO = options?.filesDAO;
   }
 
-  private buildPermissionMatch(): Record<string, unknown> {
-    if (this.user.isPrivileged()) {
-      return {};
+  unrestricted(): EntitiesDAO {
+    if (!this.unrestrictedInstance) {
+      this.unrestrictedInstance = new MongoEntitiesDAO(this.db, this.transactionManager, {
+        accessContext: AccessContext.system(),
+      });
     }
-
-    const userIds = [this.user._id, ...this.user.groups];
-
-    return {
-      $or: [{ permissions: { $elemMatch: { refId: { $in: userIds } } } }, { published: true }],
-    };
+    return this.unrestrictedInstance;
   }
 
   @TimedMethod('MongoEntitiesDAO.getWithFiles')
-  async getWithFiles($match: GetWithFilesMatch): Promise<EntityWithFiles[]> {
+  async getWithFiles(match: GetWithFilesMatch): Promise<EntityWithFiles[]> {
     if (this.filesDAO) {
-      return this.getWithFilesInMemory($match);
+      return this.getWithFilesInMemory(match);
     }
-    return this.getWithFilesAggregation($match).toArray();
+    return this.getWithFilesAggregation(match).toArray();
   }
 
-  private getWithFilesAggregation($match: GetWithFilesMatch) {
-    const permissionMatch = this.buildPermissionMatch();
+  async getByIdsWithDocuments(
+    ids: string[],
+    options: { limit?: number; documentsFullText?: boolean } = {}
+  ): Promise<EntityWithFiles[]> {
+    const validIds = ids.filter(id => ObjectId.isValid(id));
+    if (validIds.length === 0) {
+      return [];
+    }
 
-    return this.getCollection().aggregate<EntityWithFiles>([
+    const $match: Record<string, unknown> = {
+      _id: { $in: validIds.map(id => new ObjectId(id)) },
+    };
+
+    const pipeline: Record<string, unknown>[] = [
+      { $match },
       {
-        $match: { ...$match, ...permissionMatch },
+        $lookup: {
+          from: 'files',
+          localField: 'sharedId',
+          foreignField: 'entity',
+          as: 'files',
+          pipeline: [
+            {
+              $project: options.documentsFullText ? { __v: 0 } : { fullText: 0, __v: 0 },
+            },
+          ],
+        },
+      },
+      {
+        $addFields: {
+          documents: {
+            $filter: {
+              input: '$files',
+              as: 'document',
+              cond: { $eq: ['$$document.type', 'document'] },
+            },
+          },
+          attachments: {
+            $filter: {
+              input: '$files',
+              as: 'attachment',
+              cond: { $eq: ['$$attachment.type', 'attachment'] },
+            },
+          },
+        },
+      },
+      { $unset: 'files' },
+    ];
+
+    if (options.limit) {
+      pipeline.push({ $limit: options.limit });
+    }
+
+    return this.getCollection().aggregate<EntityWithFilesInternal>(pipeline).toArray();
+  }
+
+  private getWithFilesAggregation(match: GetWithFilesMatch) {
+    const $match = this.translateGetWithFilesMatch(match);
+
+    return this.getCollection().aggregate<EntityWithFilesInternal>([
+      {
+        $match,
       },
       {
         $lookup: {
@@ -104,11 +162,9 @@ class MongoEntitiesDAO extends MongoDataSource<EntityDBO> {
     ]);
   }
 
-  private async getWithFilesInMemory($match: GetWithFilesMatch): Promise<EntityWithFiles[]> {
-    const permissionMatch = this.buildPermissionMatch();
-    const entities = await this.getCollection()
-      .aggregate<EntityDBO>([{ $match: { ...$match, ...permissionMatch } }])
-      .toArray();
+  private async getWithFilesInMemory(match: GetWithFilesMatch): Promise<EntityWithFiles[]> {
+    const $match = this.translateGetWithFilesMatch(match);
+    const entities = await this.getCollection().aggregate<EntityDBO>([{ $match }]).toArray();
 
     if (entities.length === 0) return [];
 
@@ -130,22 +186,21 @@ class MongoEntitiesDAO extends MongoDataSource<EntityDBO> {
     })) as unknown as EntityWithFiles[];
   }
 
-  streamAll(options?: { afterSharedId?: string }): FindCursor<EntityDBO> {
-    const filter = options?.afterSharedId ? { sharedId: { $gt: options.afterSharedId } } : {};
-    return this.getCollection().find(filter).sort({ sharedId: 1 });
-  }
-
-  streamSharedIds(options?: { afterSharedId?: string }): FindCursor<{ sharedId: string }> {
-    const filter = options?.afterSharedId ? { sharedId: { $gt: options.afterSharedId } } : {};
-    return this.getCollection()
-      .find(filter, { projection: { sharedId: 1, _id: 0 } })
-      .sort({ sharedId: 1 });
-  }
-
-  streamModifiedSince(date: Date): FindCursor<EntityDBO> {
-    return this.getCollection()
-      .find({ editDate: { $gte: date.getTime() } })
-      .sort({ sharedId: 1 });
+  private translateGetWithFilesMatch(match: GetWithFilesMatch): Record<string, unknown> {
+    const $match: Record<string, unknown> = {};
+    if (match.sharedId) {
+      $match.sharedId = match.sharedId;
+    }
+    if (match.sharedIds && match.sharedIds.length > 0) {
+      $match.sharedId = { $in: match.sharedIds };
+    }
+    if (match.language) {
+      $match.language = match.language;
+    }
+    if (match.published !== undefined) {
+      $match.published = match.published;
+    }
+    return $match;
   }
 
   async getEntityIdsBySharedId(
@@ -203,27 +258,27 @@ class MongoEntitiesDAO extends MongoDataSource<EntityDBO> {
     }
   }
 
-  async findBySharedIds(sharedIds: string[], language?: LanguageISO6391): Promise<EntityDBO[]> {
-    if (sharedIds.length === 0) return [];
-    const filter: Record<string, unknown> = { sharedId: { $in: sharedIds } };
-    if (language) {
-      filter.language = language;
-    }
-    return this.getCollection().find(filter).toArray();
-  }
-
-  async getBySharedId(sharedId: string, language?: LanguageISO6391): Promise<EntityDBO | null> {
+  async getBySharedId(sharedId: string): Promise<EntityDBO[]>;
+  async getBySharedId(sharedId: string, language: LanguageISO6391): Promise<EntityDBO | null>;
+  async getBySharedId(
+    sharedId: string,
+    language?: LanguageISO6391
+  ): Promise<EntityDBO[] | EntityDBO | null> {
     const filter: Record<string, unknown> = { sharedId };
     if (language) {
       filter.language = language;
+      return this.getCollection().findOne(filter);
     }
-    return this.getCollection().findOne(filter);
+    return this.getCollection().find(filter).toArray();
   }
 
   async getByInternalId(
     id: string,
     projection: Record<string, number> = {}
   ): Promise<EntityDBO | null> {
+    if (!ObjectId.isValid(id)) {
+      return null;
+    }
     return this.getCollection().findOne({ _id: new ObjectId(id) }, { projection });
   }
 
@@ -308,7 +363,231 @@ class MongoEntitiesDAO extends MongoDataSource<EntityDBO> {
       await cursor.close();
     }
   }
+
+  // ── Generic reads (contract) ──────────────────────────────────────────────
+
+  async find(filters: EntityFilters = {}, options: FindOptions = {}): Promise<EntityDBO[]> {
+    return this.executeFind(this.translateFilters(filters), options);
+  }
+
+  async findOne(filters: EntityFilters = {}, options: FindOptions = {}): Promise<EntityDBO | null> {
+    const query = this.translateFilters(filters);
+    const projection =
+      options.select && options.select.length > 0
+        ? Object.fromEntries(options.select.map(s => [s, 1]))
+        : undefined;
+
+    return this.getCollection().findOne(query, projection ? { projection } : undefined);
+  }
+
+  async count(filters: EntityFilters = {}): Promise<number> {
+    return this.getCollection().countDocuments(this.translateFilters(filters));
+  }
+
+  async getIds(filters: EntityFilters = {}): Promise<string[]> {
+    const docs = await this.getCollection()
+      .find(this.translateFilters(filters), { projection: { _id: 1 } })
+      .toArray();
+    return docs.map(doc => doc._id.toHexString());
+  }
+
+  async getSharedIdLabelInfo(sharedIds: string[], language: string): Promise<LabelInfo[]> {
+    if (sharedIds.length === 0) {
+      return [];
+    }
+
+    const docs = await this.getCollection()
+      .find(
+        { sharedId: { $in: sharedIds }, language },
+        { projection: { sharedId: 1, title: 1, icon: 1 } }
+      )
+      .toArray();
+
+    return docs.map(doc => ({
+      sharedId: doc.sharedId,
+      title: doc.title,
+      icon: doc.icon,
+    }));
+  }
+
+  // ── Named query shapes (contract) ─────────────────────────────────────────
+
+  async findByLanguagePairs(
+    query: FindByLanguagePairsQuery,
+    options: FindOptions = {}
+  ): Promise<EntityDBO[]> {
+    if (query.pairs.length === 0) {
+      return [];
+    }
+    return this.executeFind(
+      {
+        $or: query.pairs.map(pair => ({
+          sharedId: pair.sharedId,
+          language: pair.language,
+        })),
+      },
+      options
+    );
+  }
+
+  async findByTemplateIdRange(
+    query: FindByTemplateIdRangeQuery,
+    options: FindOptions = {}
+  ): Promise<EntityDBO[]> {
+    const conditions: Record<string, unknown>[] = [{ template: new ObjectId(query.templateId) }];
+
+    const range: Record<string, unknown> = {};
+    if (query.from && ObjectId.isValid(query.from)) {
+      range.$gte = new ObjectId(query.from);
+    }
+    if (query.to && ObjectId.isValid(query.to)) {
+      range.$lte = new ObjectId(query.to);
+    }
+    if (Object.keys(range).length > 0) {
+      conditions.push({ _id: range });
+    }
+
+    if (query.language) {
+      conditions.push({ language: query.language });
+    }
+
+    return this.executeFind(
+      conditions.length === 1 ? conditions[0] : { $and: conditions },
+      options
+    );
+  }
+
+  async findByMetadataCriteria(
+    query: FindByMetadataCriteriaQuery,
+    options: FindOptions = {}
+  ): Promise<EntityDBO[]> {
+    const conditions: Record<string, unknown>[] = query.criteria.map(criteria => {
+      const path = `metadata.${criteria.property}`;
+      const condition: Record<string, unknown> = {};
+      if (criteria.exists) {
+        condition.$exists = true;
+      }
+      if (criteria.nonEmpty) {
+        condition.$exists = true;
+        condition.$ne = [];
+      }
+      if (criteria.hasValues) {
+        condition.$elemMatch = { value: { $exists: true, $nin: ['', null] } };
+      }
+      return { [path]: condition };
+    });
+
+    conditions.push(...this.translateFilterConditions(query.filters ?? {}));
+
+    return this.executeFind(
+      conditions.length === 1 ? conditions[0] : { $and: conditions },
+      options
+    );
+  }
+
+  private async executeFind(
+    query: Record<string, unknown>,
+    options: FindOptions
+  ): Promise<EntityDBO[]> {
+    let cursor = this.getCollection().find(query);
+
+    if (options.select && options.select.length > 0) {
+      cursor = cursor.project(Object.fromEntries(options.select.map(s => [s, 1])));
+    }
+
+    if (options.sort && options.sort.length > 0) {
+      const sort: Record<string, 1 | -1> = {};
+      options.sort.forEach(s => {
+        sort[s.field] = s.direction === 'asc' ? 1 : -1;
+      });
+      cursor = cursor.sort(sort);
+    }
+
+    if (options.limit) {
+      cursor = cursor.limit(options.limit);
+    }
+
+    return cursor.toArray();
+  }
+
+  private translateFilters(filters: EntityFilters): Record<string, unknown> {
+    const conditions = this.translateFilterConditions(filters);
+
+    if (conditions.length === 0) {
+      return {};
+    }
+
+    if (conditions.length === 1) {
+      return conditions[0];
+    }
+
+    return { $and: conditions };
+  }
+
+  private translateFilterConditions(filters: EntityFilters): Record<string, unknown>[] {
+    const conditions: Record<string, unknown>[] = [];
+
+    if (filters._id) {
+      if (ObjectId.isValid(filters._id)) {
+        conditions.push({ _id: new ObjectId(filters._id) });
+      }
+    }
+
+    if (filters.ids && filters.ids.length > 0) {
+      const validIds = filters.ids.filter(id => ObjectId.isValid(id));
+      if (validIds.length > 0) {
+        conditions.push({ _id: { $in: validIds.map(id => new ObjectId(id)) } });
+      }
+    }
+
+    if (filters.sharedId) {
+      conditions.push({ sharedId: filters.sharedId });
+    }
+
+    if (filters.sharedIds && filters.sharedIds.length > 0) {
+      conditions.push({ sharedId: { $in: filters.sharedIds } });
+    }
+
+    if (filters.language) {
+      conditions.push({ language: filters.language });
+    }
+
+    if (filters.languages && filters.languages.length > 0) {
+      conditions.push({ language: { $in: filters.languages } });
+    }
+
+    if (filters.template) {
+      conditions.push({ template: new ObjectId(filters.template) });
+    }
+
+    if (filters.templateIds && filters.templateIds.length > 0) {
+      conditions.push({ template: { $in: filters.templateIds.map(id => new ObjectId(id)) } });
+    }
+
+    if (filters.title) {
+      conditions.push({ title: filters.title });
+    }
+
+    if (filters.titleNotEmpty) {
+      conditions.push({ title: { $ne: '' } });
+    }
+
+    if (filters.published !== undefined) {
+      conditions.push({ published: filters.published });
+    }
+
+    if (filters.metadataValueIn && filters.metadataValueIn.length > 0) {
+      conditions.push({
+        $or: filters.metadataValueIn.map(({ property, value }) => ({
+          [`metadata.${property}`]: { $elemMatch: { value } },
+        })),
+      });
+    }
+
+    return conditions;
+  }
 }
 
 export { MongoEntitiesDAO };
-export type { EntityWithFiles };
+export type { EntityWithFilesInternal };
+export type { EntityWithFiles } from '#api/core/application/contracts/EntitiesDAO.js';

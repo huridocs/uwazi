@@ -8,6 +8,7 @@ import { testingTenants } from '#api/utils/testingTenants.js';
 import { FilesDAOFactory } from '#api/core/infrastructure/factories/FilesDAOFactory.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { MongoEntitiesDAO } from '#api/core/infrastructure/mongodb/entity/MongoEntitiesDAO.js';
+import { AccessContext } from '#api/core/domain/entityAccessPolicy/AccessContext.js';
 import { User } from '#api/users.v2/model/User.js';
 
 type TestConfig = {
@@ -52,11 +53,9 @@ describe('RetrieveStats', () => {
 
     const createSut = () =>
       testingEnvironment.runWithContext(() => {
-        const entitiesDAO = new MongoEntitiesDAO(
-          db,
-          TransactionManagerFactory.default(),
-          new User('admin', 'admin', [])
-        );
+        const entitiesDAO = new MongoEntitiesDAO(db, TransactionManagerFactory.default(), {
+          accessContext: AccessContext.forActor(new User('admin', 'admin', [])),
+        });
         return new RetrieveStatsService(db, FilesDAOFactory.default(), entitiesDAO);
       });
 

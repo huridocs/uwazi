@@ -565,9 +565,12 @@ describe('files routes', () => {
       );
       jest.restoreAllMocks();
       jest.spyOn(process.stdout, 'write').mockImplementation(() => true);
-      jest.spyOn(entities, 'getUnrestrictedWithDocuments').mockImplementationOnce(() => {
-        throw new Error('error at the end of the saveEntity');
+
+      const { FilesService } = require('#api/core/application/FilesService.js');
+      jest.spyOn(FilesService.prototype, 'insert').mockImplementationOnce(() => {
+        throw new Error('error inside transaction');
       });
+
       await request(jsRoutesApp)
         .post('/api/public')
         .set('Bypass-Captcha', 'true')

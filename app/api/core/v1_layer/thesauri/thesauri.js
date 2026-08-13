@@ -1,4 +1,4 @@
-/* eslint-disable max-lines */
+/* eslint-disable max-statements */
 import cloneDeep from 'lodash/cloneDeep.js';
 import partition from 'lodash/partition.js';
 import flatMapDeep from 'lodash/flatMapDeep.js';
@@ -10,10 +10,8 @@ import { search } from '#api/search/index.js';
 import { objectIndex } from '#shared/data_utils/objectIndex.js';
 import { sanitizeThesaurusLabel } from '#shared/sanitizationUtils.js';
 import { ThesauriDAOFactory } from '#api/core/infrastructure/factories/ThesauriDAOFactory.js';
-import { ThesauriServiceFactory } from '#api/core/infrastructure/factories/ThesauriServiceFactory.js';
-import { ThesauriDataSourceFactory } from '#api/core/infrastructure/factories/ThesauriDataSourceFactory.js';
-import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
-import { Thesaurus } from '#api/core/domain/thesaurus/Thesaurus.js';
+import { CreateThesaurusUseCaseFactory } from '#api/core/infrastructure/factories/CreateThesaurusUseCaseFactory.js';
+import { UpdateThesaurusUseCaseFactory } from '#api/core/infrastructure/factories/UpdateThesaurusUseCaseFactory.js';
 
 function normalizeThesaurusLabel(label) {
   const trimmed = label.trim().toLowerCase();
@@ -72,22 +70,16 @@ const thesauri = {
     const { _id: rawId, name, values = [] } = t;
     const _id = rawId ? rawId.toString() : undefined;
 
-    const dataSource = ThesauriDataSourceFactory.default();
-    const service = ThesauriServiceFactory.default();
-
     if (!_id) {
-      const created = Thesaurus.create({ name, values });
-      await service.insert(created);
+      const created = await CreateThesaurusUseCaseFactory.default().execute({ name, values });
       return { _id: created.id, name: created.name, values: created.values };
     }
 
-    const existing = (await dataSource.getById(_id)).getDataOrThrow();
-    const updated = existing.update({ name, values });
-    await service.update(updated, {
-      tenantName: ExecutionContext.tenant.name,
-      actorId: ExecutionContext.actor?._id,
+    const updated = await UpdateThesaurusUseCaseFactory.default().execute({
+      id: _id,
+      name,
+      values,
     });
-
     return { _id: updated.id, name: updated.name, values: updated.values };
   },
 

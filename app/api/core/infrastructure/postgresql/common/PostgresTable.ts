@@ -207,6 +207,39 @@ export class PostgresTable<TRow = Record<string, unknown>> {
     );
   }
 
+  /**
+   * Streams query rows through an async iterable backed by a server-side
+   * cursor (pg-query-stream). The connection is held open for the duration
+   * of iteration and released when the iterable is exhausted or the loop
+   * exits (including break / error).
+   *
+   * Writes issued from within the loop go through `withConnection` again,
+   * opening a separate short transaction when no outer `run()` is active.
+   */
+  async *stream(permissionContext?: {
+    bypass: boolean;
+    refIds: string[];
+  }): AsyncGenerator<TRow, void, unknown> {
+    const handle = await this.cfg.transactionManager.beginTransaction(permissionContext);
+    let completed = false;
+    try {
+      const readable = this.qb.clone().transacting(handle.trx).stream();
+      for await (const row of readable) {
+        yield PostgresTable.cleanRow(row) as TRow;
+      }
+      await handle.commit();
+      completed = true;
+    } finally {
+      if (!completed) {
+        try {
+          await handle.rollback();
+        } catch {
+          // propagate original error, not rollback error
+        }
+      }
+    }
+  }
+
   async first(): Promise<TRow | undefined> {
     const row = await this.run(qb => this.applyPolicy(qb, 'read').first());
     return row ? (PostgresTable.cleanRow(row) as TRow) : undefined;

@@ -1,4 +1,4 @@
-import { TranslationCollection } from '#api/i18n.v2/model/TranslationCollection.js';
+import { TranslationCollection } from '#api/core/domain/translation/TranslationCollection.js';
 import type { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import {
   formatDatavizDateLabel,

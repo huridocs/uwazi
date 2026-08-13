@@ -1,7 +1,7 @@
 import { ArrayUtils } from '#api/common.v2/utils/Array.js'; // Todo
 import { EntitiesDataSource } from '#api/core/application/contracts/EntitiesDataSource.js';
-import { TranslationsDataSource } from '#api/i18n.v2/contracts/TranslationsDataSource.js'; // Todo
 import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js'; // Todo
+import { TranslationsService } from '#api/core/application/translation/TranslationsService.js';
 import { DefaultTemplateDeletionError, TemplateInUseError } from '../domain/template/errors.js';
 import { TemplateDeletedEvent } from '../domain/template/events/TemplateDeletedEvent.js';
 import { TemplateUpdatedEvent } from '../domain/template/events/TemplateUpdatedEvent.js';
@@ -18,7 +18,7 @@ type Output = Input;
 
 type Deps = {
   templatesDS: TemplatesDataSource;
-  translationsDS: TranslationsDataSource;
+  translationsService: TranslationsService;
   settingsDS: SettingsDataSource;
   multiLanguageEntitiesDS: EntitiesDataSource;
 };
@@ -54,7 +54,7 @@ class DeleteTemplateUseCase extends AbstractUseCase<Input, Output, Deps> {
       if (templates.length) {
         await this.deps.templatesDS.bulkUpdate(editedTemplates);
 
-        await this.deps.translationsDS.bulkDeleteKeysByContext(
+        await this.deps.translationsService.bulkDeleteKeysByContext(
           templates.map(template => ({
             contextId: template.id,
             keysToDelete: template
@@ -64,7 +64,7 @@ class DeleteTemplateUseCase extends AbstractUseCase<Input, Output, Deps> {
         );
       }
 
-      await this.deps.translationsDS.deleteByContextId(templateToBeDeleted.id);
+      await this.deps.translationsService.deleteByContextId(templateToBeDeleted.id);
       await this.deps.templatesDS.delete(templateToBeDeleted.id);
     });
 
