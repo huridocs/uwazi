@@ -27,6 +27,7 @@ type EditEntityProps = {
     template?: string;
     limit?: number;
   }) => Promise<{ value: string; label: string }[]>;
+  mainDocumentId?: string;
 };
 
 export type { EditEntityProps, DocumentFieldMutations };

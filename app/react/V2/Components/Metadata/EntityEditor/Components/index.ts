@@ -21,3 +21,6 @@ export { NestedField } from './NestedField.js';
 export { MediaField } from './MediaField.js';
 export { MediaPickerModal } from './MediaPickerModal.js';
 export { PreviewField } from './PreviewField.js';
+export { EntityPdfFill, PdfFillProvider, defaultPdfFillHost } from './EntityPdfFill.js';
+export { EntityPdfFillField } from './EntityPdfFillField.js';
+export type { PdfFillTarget, PdfFillCoerceType, PdfFillHost } from './pdfFillTypes.js';
