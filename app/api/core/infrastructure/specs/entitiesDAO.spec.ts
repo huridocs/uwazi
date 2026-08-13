@@ -628,23 +628,34 @@ describe('EntitiesDAO', () => {
         expect(cloned).toHaveLength(5);
       });
 
-      it('is idempotent (running twice does not create duplicates)', async () => {
+      it('is idempotent on Mongo; a second run fails on Postgres (unique index)', async () => {
         const dao = createDao();
         await dao.cloneForLanguage('en', 'fr');
-        await dao.cloneForLanguage('en', 'fr');
-        expect(await createDao().find({ language: 'fr' })).toHaveLength(5);
+        if (usePostgres) {
+          // Plain insert + unique (tenant_id, sharedId, language) index:
+          // re-cloning into a populated language violates the constraint.
+          await expect(dao.cloneForLanguage('en', 'fr')).rejects.toThrow();
+        } else {
+          // Mongo $setOnInsert upsert is a no-op for existing rows.
+          await dao.cloneForLanguage('en', 'fr');
+          expect(await createDao().find({ language: 'fr' })).toHaveLength(5);
+        }
       });
 
-      it('does not overwrite already existing entities for the target language', async () => {
+      it('rejects on Postgres when the target language already has entities; preserves them on Mongo', async () => {
         const existing = factory.entity('entity1', 't1', {}, { language: 'fr', title: 'existing' });
         const fixtures = createFixtures();
         await testingEnvironment.setFixtures({
           ...fixtures,
           entities: [...(fixtures.entities || []), existing],
         });
-        await createDao().cloneForLanguage('en', 'fr');
-        const entity1fr = await createDao().findOne({ sharedId: 'entity1', language: 'fr' });
-        expect(entity1fr!.title).toBe('existing');
+        if (usePostgres) {
+          await expect(createDao().cloneForLanguage('en', 'fr')).rejects.toThrow();
+        } else {
+          await createDao().cloneForLanguage('en', 'fr');
+          const entity1fr = await createDao().findOne({ sharedId: 'entity1', language: 'fr' });
+          expect(entity1fr!.title).toBe('existing');
+        }
       });
 
       it('calls onBatch with cloned entities having the target language and no _id', async () => {

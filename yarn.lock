@@ -20043,6 +20043,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"pg-cursor@npm:^2.22.0":
+  version: 2.22.0
+  resolution: "pg-cursor@npm:2.22.0"
+  peerDependencies:
+    pg: ^8
+  checksum: 10c0/546e06337376beef805fe17495a1b427aba55c67c1c916048f4476070554d03583a440106a9ea09fd6263cf76dfa23965bd9098f5d94c53df307d699394c0850
+  languageName: node
+  linkType: hard
+
 "pg-int8@npm:1.0.1":
   version: 1.0.1
   resolution: "pg-int8@npm:1.0.1"
@@ -20063,6 +20072,17 @@ __metadata:
   version: 1.15.0
   resolution: "pg-protocol@npm:1.15.0"
   checksum: 10c0/f1acad1e693d23ce70f8a5fec108cb960d6b8546b3a3fb2cf9113211069ef0f8890e2cc26b5f94e11bf81ff6d851b11c0643de12327cd07e0d1127ae1cb80791
+  languageName: node
+  linkType: hard
+
+"pg-query-stream@npm:^4.17.0":
+  version: 4.17.0
+  resolution: "pg-query-stream@npm:4.17.0"
+  dependencies:
+    pg-cursor: "npm:^2.22.0"
+  peerDependencies:
+    pg: ^8
+  checksum: 10c0/0503020bd3c7e85b6ac8fb2717994e43034d0b43d72f2e7d719a3822e8967b282eca18a6ffe557f3700d7c44ea67a018ae8983891e6c5422945df7f41f523098
   languageName: node
   linkType: hard
 
@@ -25230,6 +25250,7 @@ __metadata:
     passport-local: "npm:^1.0.0"
     pdfjs-dist: "npm:5.4.624"
     pg: "npm:^8.22.0"
+    pg-query-stream: "npm:^4.17.0"
     plop: "npm:^4.0.5"
     postcss: "npm:8.5.23"
     postcss-loader: "npm:^8.2.1"

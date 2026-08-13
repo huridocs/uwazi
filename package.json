@@ -218,6 +218,7 @@
     "passport-local": "^1.0.0",
     "pdfjs-dist": "5.4.624",
     "pg": "^8.22.0",
+    "pg-query-stream": "^4.17.0",
     "postcss-loader": "^8.2.1",
     "postcss-prefix-selector": "^2.1.1",
     "prom-client": "^15.1.3",

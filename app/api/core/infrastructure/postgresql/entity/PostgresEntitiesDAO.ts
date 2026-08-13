@@ -409,29 +409,36 @@ class PostgresEntitiesDAO extends PostgresDataSource<EntityRow> implements Entit
     onBatch?: (clonedEntities: Omit<EntityDBO, '_id'>[]) => Promise<void>
   ): Promise<void> {
     const BATCH_SIZE = 500;
-    const rows = await this.table.where({ language: from }).all();
 
-    const existing = await this.table.select(['sharedId']).where({ language: to }).all();
-    const existingSharedIds = new Set(existing.map(r => r.sharedId));
-
-    const toInsert = rows
-      .filter(row => !existingSharedIds.has(row.sharedId))
-      .map(({ _id: _discarded, ...rest }) => ({
-        ...rest,
-        _id: MongoIdHandler.generate(),
-        language: to,
-      }));
-
-    for (let i = 0; i < toInsert.length; i += BATCH_SIZE) {
-      const batch = toInsert.slice(i, i + BATCH_SIZE);
-      // eslint-disable-next-line no-await-in-loop
-      await this.table.insert(batch);
-      if (onBatch) {
-        // eslint-disable-next-line no-await-in-loop
-        await onBatch(
-          batch.map(({ _id: _discarded, ...rest }) => rest as unknown as Omit<EntityDBO, '_id'>)
-        );
+    let batch: EntityRow[] = [];
+    for await (const row of this.table.where({ language: from }).stream()) {
+      batch.push(row);
+      if (batch.length >= BATCH_SIZE) {
+        await this.insertClonedBatch(batch, to, onBatch);
+        batch = [];
       }
+    }
+    if (batch.length > 0) {
+      await this.insertClonedBatch(batch, to, onBatch);
+    }
+  }
+
+  private async insertClonedBatch(
+    rows: EntityRow[],
+    to: LanguageISO6391,
+    onBatch?: (clonedEntities: Omit<EntityDBO, '_id'>[]) => Promise<void>
+  ): Promise<void> {
+    const toInsert = rows.map(({ _id: _discarded, ...rest }) => ({
+      ...rest,
+      _id: MongoIdHandler.generate(),
+      language: to,
+    }));
+
+    await this.table.insert(toInsert);
+    if (onBatch) {
+      await onBatch(
+        toInsert.map(({ _id: _discarded, ...rest }) => rest as unknown as Omit<EntityDBO, '_id'>)
+      );
     }
   }
 
@@ -440,17 +447,33 @@ class PostgresEntitiesDAO extends PostgresDataSource<EntityRow> implements Entit
     onBatch?: (sharedIds: string[]) => Promise<void>
   ): Promise<void> {
     const BATCH_SIZE = 500;
-    const rows = await this.table.select(['_id', 'sharedId']).where({ language }).all();
 
-    for (let i = 0; i < rows.length; i += BATCH_SIZE) {
-      const batch = rows.slice(i, i + BATCH_SIZE);
-      const sharedIds = batch.map(r => r.sharedId);
-      // eslint-disable-next-line no-await-in-loop
-      await this.table.where({ language }).whereIn('sharedId', sharedIds).delete();
-      if (onBatch) {
-        // eslint-disable-next-line no-await-in-loop
-        await onBatch(sharedIds);
+    let batch: { _id: string; sharedId: string }[] = [];
+    for await (const row of this.table
+      .select(['_id', 'sharedId'])
+      .where({ language })
+      .stream()) {
+      batch.push(row);
+      if (batch.length >= BATCH_SIZE) {
+        await this.deleteBatch(batch, language, onBatch);
+        batch = [];
       }
+    }
+    if (batch.length > 0) {
+      await this.deleteBatch(batch, language, onBatch);
+    }
+  }
+
+  private async deleteBatch(
+    rows: { _id: string; sharedId: string }[],
+    language: LanguageISO6391,
+    onBatch?: (sharedIds: string[]) => Promise<void>
+  ): Promise<void> {
+    const sharedIds = rows.map(r => r.sharedId);
+    // eslint-disable-next-line no-await-in-loop
+    await this.table.where({ language }).whereIn('sharedId', sharedIds).delete();
+    if (onBatch) {
+      await onBatch(sharedIds);
     }
   }
 }
