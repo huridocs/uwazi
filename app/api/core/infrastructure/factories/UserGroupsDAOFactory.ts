@@ -6,11 +6,11 @@ import { PostgresUsersDAO } from '../postgresql/user/PostgresUsersDAO.js';
 import { UsersDAOFactory } from './UsersDAOFactory.js';
 
 class UserGroupsDAOFactory {
-  // Requires postgresUsergroups and postgresUsers to agree: both DAOs below are handed the
-  // users DAO that UsersDAOFactory picks off postgresUsers, and neither survives a mismatch.
-  // MongoUserGroupsDAO calls usersDAO.getGuards(), which PostgresUsersDAO does not implement;
-  // PostgresUserGroupsDAO calls usersDAO.findByIds(), which on a MongoUsersDAO would silently
-  // resolve members against the wrong database.
+  // Requires postgresUsergroups and postgresUsers to agree. PostgresUserGroupsDAO is handed
+  // the users DAO that UsersDAOFactory picks off postgresUsers, and calls
+  // usersDAO.findManyByIds() on it — a MongoUsersDAO there would silently resolve members
+  // against the wrong database. MongoUserGroupsDAO takes no users DAO: it reads the users
+  // guards from UserReadOptions directly, so the two branches are asymmetric by design.
   static default(): MongoUserGroupsDAO | PostgresUserGroupsDAO {
     const tenant = ExecutionContext.currentTenant;
     const postgresUsergroups = Boolean(tenant.featureFlags?.postgresUsergroups);
@@ -24,17 +24,15 @@ class UserGroupsDAOFactory {
       );
     }
 
-    const usersDAO = UsersDAOFactory.default();
-
     if (postgresUsergroups) {
       return new PostgresUserGroupsDAO({
         tenantId: tenant.name,
         pgTransactionManager: ExecutionContext.postgresTransactionManager,
-        usersDAO: usersDAO as any as PostgresUsersDAO,
+        usersDAO: UsersDAOFactory.default() as any as PostgresUsersDAO,
       });
     }
 
-    return new MongoUserGroupsDAO(getConnection(), ExecutionContext.transactionManager, usersDAO);
+    return new MongoUserGroupsDAO(getConnection(), ExecutionContext.transactionManager);
   }
 }
 

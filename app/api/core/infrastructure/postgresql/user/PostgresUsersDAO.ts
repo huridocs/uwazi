@@ -105,11 +105,11 @@ class PostgresUsersDAO extends PostgresDataSource<UserRow> {
    * does column equality and cannot express the membership relation.
    *
    * Shape matters here. The obvious form — a LATERAL subquery per user doing
-   * `ug."members" @> to_jsonb(u."_id")` — is O(users x groups), because the planner will
-   * not use the usergroups_members_gin index: RLS's `tenant_id = current_setting(...)`
-   * predicate is unestimable, so it guesses a handful of rows and takes the primary key
-   * instead, filtering the whole tenant's groups once per user. Measured at 300 users and
-   * 5000 groups that is ~500ms, which is *slower* than the JS-side join it replaced.
+   * `ug."members" @> to_jsonb(u."_id")` — is O(users x groups), and no index rescues it:
+   * RLS's `tenant_id = current_setting(...)` predicate is unestimable, so the planner
+   * guesses a handful of rows, takes the primary key, and filters the whole tenant's groups
+   * once per user. Measured at 300 users and 5000 groups that is ~500ms, which is *slower*
+   * than the JS-side join it replaced.
    *
    * Unnesting members once and aggregating by member id scans usergroups a single time and
    * hash-joins to users — O(users + groups), ~25ms on the same data, with identical results.

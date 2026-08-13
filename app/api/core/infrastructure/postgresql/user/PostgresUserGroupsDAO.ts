@@ -22,8 +22,9 @@ class PostgresUserGroupsDAO extends PostgresDataSource<UserGroupRow> {
     const map = new Map<string, { _id: string; name: string }[]>(userIds.map(id => [id, []]));
     if (!userIds.length) return map;
 
-    // Filtered in SQL, served by the usergroups_members_gin index (migration 015). This
-    // previously called `this.table.all()`, loading every group in the tenant to join in JS.
+    // Filtered in SQL rather than by loading every group in the tenant and joining in JS.
+    // Postgres scans the tenant's groups and filters (no index is chosen for `@>` here —
+    // see A6 in plans/users-refactor-00-decisions.md), which is fine for a single lookup.
     const groups = await this.table.whereJsonSupersetOfAny('members', userIds).all();
     groups.forEach(group => {
       group.members.forEach(memberId => {

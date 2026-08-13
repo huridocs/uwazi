@@ -102,9 +102,8 @@ describe('PostgresUserGroupsDAO', () => {
       expect(map.get('existing1')).toEqual([{ _id: 'group-a', name: 'Group A' }]);
     });
 
-    // The filter moved from JS into SQL (JSONB containment, served by the
-    // usergroups_members_gin index). These pin the behaviour that used to fall out of
-    // loading every group in the tenant and filtering in memory.
+    // The filter moved from JS into SQL (JSONB containment). These pin the behaviour that
+    // used to fall out of loading every group in the tenant and filtering in memory.
     it('should ignore groups the requested users do not belong to', async () => {
       await testingPG.setFixtures({
         users: [

@@ -311,10 +311,15 @@ A composite `GIN (tenant_id, members jsonb_path_ops)` would be usable, but it ne
 So `PostgresUsersDAO.findWithGroups` unnests instead, which needs no index at all. D7's
 "both backends join server-side" still holds — only the SQL shape changed.
 
-**Migration 015 is currently dead weight.** `getGroupsByUserIds` still uses `@>` (step 4)
-but the planner prefers the primary key there too (~0.9 ms at 5000 groups, acceptable for a
-single lookup). Options: drop the migration, or keep it as a cheap hedge. Not decided —
-flagged for review.
+**Migration 015 is dropped** (decided at review). Nothing uses it: `findWithGroups` no
+longer contains a `@>` at all, and `getGroupsByUserIds` still uses one but the planner
+prefers the primary key there too (~0.9 ms at 5000 groups, fine for a single lookup). An
+index no query chooses is write amplification on every `usergroups` write, so it goes.
+
+This supersedes **plan 01 step 2**, whose premise ("without an index that is a sequential
+scan per user") turned out not to hold under RLS. A local database that already applied
+delta 015 keeps the index until dropped by hand; `PgMigrator` tracks applied deltas and
+ignores ones with no matching file, so nothing breaks.
 
 ### A5 — Migration renumbering (unplanned, blocking)
 
