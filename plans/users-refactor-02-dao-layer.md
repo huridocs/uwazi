@@ -1,5 +1,9 @@
 # Plan 02: DAO layer
 
+> **DONE**, steps 1-7 (through commit `26010042a2`). What it actually delivered differs
+> from this text in a few places -- see A7 in the decision record before relying on the
+> skeletons below.
+
 Redesign both users DAOs into genuine building blocks: uniform guards, named field
 groups, no `Result`, no business knowledge, plus the server-side groups join. The write
 side (`UsersDataSource`) adapts to the new surface in the same plan — that is what

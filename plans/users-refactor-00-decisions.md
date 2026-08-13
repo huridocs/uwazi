@@ -10,6 +10,25 @@ de-facto interface.
 
 ---
 
+## Status
+
+| Plan | State |
+|---|---|
+| 01 — Foundations | **Done** (commit `2094a900f2`), except step 4, deferred by [A1](#a1--plan-01-step-4-public_user_id--string-is-deferred). Step 2 later reverted by [A6](#a6--the-gin-index-is-not-used-findwithgroups-joins-by-unnesting-instead). |
+| 02 — DAO layer | **Done**, steps 1–7 (through commit `26010042a2`). See [A7](#a7--the-surface-plan-03-will-actually-find) for what it delivered. |
+| 03 — Read contracts | Not started. Read [A7](#a7--the-surface-plan-03-will-actually-find) before step 4 and step 6 — the plan text predates the DAO rewrite in three places. |
+| 04 — Contract suites | Not started. Also owns deleting `UsersDAOConsistency.spec.ts`, which is **currently failing** (see [A8](#a8--open-items)). |
+| 05 — Rollout | Not started. Extended by [A2](#a2--the-fence-hits-nine-files-not-five). |
+
+Working state: tree clean, everything committed. `tsc --noEmit` reports 9 errors, all in
+`UsersDAOConsistency.spec.ts` ([A8](#a8--open-items)). Every other suite is green.
+
+**Running tests:** use `yarn jest -i`. In parallel, 2–8 suites fail per run with
+Elasticsearch `index_not_found_exception`, and the failing set changes run to run — local ES
+contention, not real failures. Serial runs are reliable.
+
+---
+
 ## D1 — Three consumers, three roles
 
 There will be a `getById` on three components. This is CQRS, not duplication. Do not
@@ -320,6 +339,67 @@ This supersedes **plan 01 step 2**, whose premise ("without an index that is a s
 scan per user") turned out not to hold under RLS. A local database that already applied
 delta 015 keeps the index until dropped by hand; `PgMigrator` tracks applied deltas and
 ignores ones with no matching file, so nothing breaks.
+
+### A7 — The surface plan 03 will actually find
+
+Plan 02 delivered a DAO surface that differs from what plans 03–05 assume in a few places.
+These are the deltas, not a full listing.
+
+**Both DAOs**
+
+```
+findOne(filter, options?: ReadOptions)          // null / undefined, never Result
+findMany(filter?, options?: ReadOptions)
+findWithGroups(filter?, options?: ReadOptions)  // rows + groups: {_id, name}[]
+exists / count / insertOne / updateOne / softDelete
+```
+
+`ReadOptions = { scope?: UserScope; fields?: UserFieldGroup[] }`, declared once per backend
+in `mongodb/user/UserReadOptions.ts` and `postgresql/user/UserReadOptions.ts`.
+
+- `findWithGroups` needs **`{ fields: ['status'] }`** to carry `using2fa` / `accountLocked`.
+  With the default `identity` it returns neither, and `UserProfile` requires both.
+- Guard helpers live in `UserReadOptions`, not on the DAO: Mongo exports `scopeFilters` /
+  `applyScope`, Postgres exports `scopePredicates` / `scopeSql`. `getGuards()`,
+  `notDeletedFilter()` and `notPublicUserFilter()` are gone on both.
+
+**Postgres-only**
+
+- `findManyByIds(ids, options?)` — plan 03 step 4's table says `getManyByIds` maps to
+  `findMany({_id: {$in: ids}})`, which is Mongo-only phrasing. Postgres's `Condition` is
+  equality-only and cannot express `IN`; use `findManyByIds`.
+- `matchEmailOrUsername(term, options?)` — not `matchUsernameOrEmail` ([A3](#a3--matchemailorusername-keeps-its-existing-name)).
+- `Condition` keys are validated against the known column set; an unknown key throws.
+
+**Legacy shims on both DAOs** — `getById(id, {includePassword?, includeDeleted?})` returning
+`Result`, and `findByIds(ids)`. They exist only for the `app/api/**` call sites plan 05
+migrates ([A2](#a2--the-fence-hits-nine-files-not-five)) and are fenced off in a commented block. **Plan 03 must leave them
+alone**; plan 05 deletes them. Removing them also clears the `max-lines` lint warning on
+`PostgresUsersDAO.ts`.
+
+**Constructor changes plan 03's factories must match**
+
+- `MongoUserGroupsDAO(db, transactionManager, options?)` — no longer takes a users DAO; it
+  reads the users guards from `UserReadOptions` directly.
+- `PostgresUsersQueryService({ usersDAO })` — no longer takes a user-groups DAO; the join is
+  in SQL. `UsersQueryServiceFactory` therefore no longer calls `UserGroupsDAOFactory`.
+- `MongoUsersQueryService({ dao })` — a plain class, no longer a `MongoDataSource`.
+- Both query services still expose `listWithGroups` / `listBasicInfo` /
+  `findByEmailOrUsername` and both `as any` casts remain in the factory, exactly as plan 02
+  step 7 intended. Plan 03 steps 5–6 are what remove them.
+
+**Shared helper changed:** `PostgresTable.whereJsonSupersetOfAny` now accepts strings and
+JSON-encodes them. A bare `'u1'` reached Postgres as invalid JSON and threw.
+
+### A8 — Open items
+
+1. **`UsersDAOConsistency.spec.ts` is failing** (9 typecheck errors) — it asserts parity on
+   `getById` / `findByIds` / `notPublicUserFilter`, the surface D4 says is no longer a
+   contract. Plan 04 step 3 deletes it for exactly that reason; only the timing slipped, and
+   plan 02's "Done when" contradicts itself by listing it as a gate. Either delete it early
+   so the branch typechecks clean, or leave it red until plan 04. Not decided.
+2. **`PostgresUsersDAO.ts` exceeds the 250-line lint max** (270). Entirely the shim block;
+   resolves itself in plan 05.
 
 ### A5 — Migration renumbering (unplanned, blocking)
 

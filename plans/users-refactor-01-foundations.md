@@ -1,5 +1,8 @@
 # Plan 01: Foundations
 
+> **DONE** (commit `2094a900f2`). Step 4 deferred (A1); step 2's index later
+> reverted (A6). See the Status table in the decision record.
+
 Prerequisites for everything else. No behaviour change, no new components — this plan
 exists so plans 02–05 don't each carry their own infrastructure detour.
 

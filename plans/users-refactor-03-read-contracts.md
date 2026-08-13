@@ -9,7 +9,10 @@ Decisions in play: [D1](./users-refactor-00-decisions.md#d1--three-consumers-thr
 [D4](./users-refactor-00-decisions.md#d4--daos-are-private-building-blocks),
 [D8](./users-refactor-00-decisions.md#d8--one-flag-per-contract).
 
-**Depends on:** plan 02 (DAO surface, `findWithGroups`, `getGroupsByUserIds` on both).
+**Depends on:** plan 02 (DAO surface, `findWithGroups`, `getGroupsByUserIds` on both) --
+**done**. Read [A7](./users-refactor-00-decisions.md#a7--the-surface-plan-03-will-actually-find)
+first: step 4's DAO-call table and step 6's factory wiring both predate the rewrite, and the
+legacy DAO shims must survive this plan.
 
 **Must not touch:** call sites in `app/api/**` outside `core/infrastructure`; `users.js`;
 `permissionsContext`.
