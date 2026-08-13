@@ -6,6 +6,7 @@ import users from '#api/users/users.js';
 import userGroups from '#api/usergroups/userGroups.js';
 import { PermissionType } from '#shared/types/permissionSchema.js';
 import { FilesDAOFactory } from '#api/core/infrastructure/factories/FilesDAOFactory.js';
+// eslint-disable-next-line no-restricted-imports -- removed in plan 05
 import { UsersDAOFactory } from '#api/core/infrastructure/factories/UsersDAOFactory.js';
 import { tenants } from '#api/tenants/index.js';
 import { Suggestions } from '#api/suggestions/suggestions.js';

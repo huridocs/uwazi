@@ -12,6 +12,7 @@ import {
 } from '#api/usergroups/userGroupsMembers.js';
 import { PUBLIC_USER_ID } from '#api/core/domain/user/User.js';
 import { tenants } from '#api/tenants/index.js';
+// eslint-disable-next-line no-restricted-imports -- removed in plan 05
 import { UsersDAOFactory } from '#api/core/infrastructure/factories/UsersDAOFactory.js';
 import mailer from '../utils/mailer.js';
 import model from './usersModel.js';

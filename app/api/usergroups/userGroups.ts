@@ -3,6 +3,7 @@ import { UserGroupSchema } from '#shared/types/userGroupType.js';
 import { validateUserGroup } from './validateUserGroup.js';
 import { WithId } from '#api/odm/index.js';
 import { UserSchema } from '#shared/types/userType.js';
+// eslint-disable-next-line no-restricted-imports -- removed in plan 05
 import { UsersDAOFactory } from '#api/core/infrastructure/factories/UsersDAOFactory.js';
 import { tenants } from '#api/tenants/index.js';
 import model from './userGroupsModel.js';

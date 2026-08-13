@@ -23,10 +23,10 @@ describe('MongoUsersQueryService', () => {
     await testingEnvironment.tearDown();
   });
 
-  describe('listWithGroups()', () => {
+  describe('listUsers()', () => {
     it('should return active users with public fields only', async () => {
       const queryService = getQueryService();
-      const users = await queryService.listWithGroups();
+      const users = await queryService.listUsers();
 
       expect(users.length).toBe(3);
 
@@ -35,16 +35,16 @@ describe('MongoUsersQueryService', () => {
         expect(user).toHaveProperty('email');
         expect(user).toHaveProperty('role');
         expect(user).toHaveProperty('_id');
-        expect(user.password).toBeUndefined();
-        expect(user.secret).toBeUndefined();
-        expect(user.failedLogins).toBeUndefined();
-        expect(user.accountUnlockCode).toBeUndefined();
+        expect(user).not.toHaveProperty('password');
+        expect(user).not.toHaveProperty('secret');
+        expect(user).not.toHaveProperty('failedLogins');
+        expect(user).not.toHaveProperty('accountUnlockCode');
       });
     });
 
     it('should exclude deleted users', async () => {
       const queryService = getQueryService();
-      const users = await queryService.listWithGroups();
+      const users = await queryService.listUsers();
 
       const deletedUser = users.find(u => u.username === 'deleted');
       expect(deletedUser).toBeUndefined();
@@ -52,7 +52,7 @@ describe('MongoUsersQueryService', () => {
 
     it('should exclude the system user', async () => {
       const queryService = getQueryService();
-      const users = await queryService.listWithGroups();
+      const users = await queryService.listUsers();
 
       const publicUser = users.find(u => u.username === 'public');
       expect(publicUser).toBeUndefined();
@@ -60,7 +60,7 @@ describe('MongoUsersQueryService', () => {
 
     it('should return users with groups', async () => {
       const queryService = getQueryService();
-      const users = await queryService.listWithGroups();
+      const users = await queryService.listUsers();
 
       const active1 = users.find(user => user.username === 'active1');
       expect(active1).toBeDefined();
@@ -72,26 +72,6 @@ describe('MongoUsersQueryService', () => {
       const active2 = users.find(user => user.username === 'active2');
       expect(active2).toBeDefined();
       expect(active2!.groups).toEqual([expect.objectContaining({ name: 'Group B' })]);
-    });
-
-    it('should filter by query', async () => {
-      const queryService = getQueryService();
-      let users = await queryService.listWithGroups({ username: 'active2' });
-
-      expect(users.length).toBe(1);
-      expect(users[0].email).toBe('active2@test.com');
-
-      users = await queryService.listWithGroups({ email: 'sensitive@test.com' });
-
-      expect(users.length).toBe(1);
-      expect(users[0].username).toBe('withsensitive');
-    });
-
-    it('should return empty array when query matches nothing', async () => {
-      const queryService = getQueryService();
-      const users = await queryService.listWithGroups({ username: 'nonexistent' });
-
-      expect(users).toEqual([]);
     });
   });
 

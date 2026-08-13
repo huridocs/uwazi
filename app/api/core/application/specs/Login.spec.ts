@@ -9,8 +9,7 @@ import {
   TwoFactorTokenInvalid,
   TwoFactorTokenRequired,
 } from '#api/core/domain/user/errors.js';
-import { UsersDAOFactory } from '#api/core/infrastructure/factories/UsersDAOFactory.js';
-import { MongoUsersDataSource } from '#api/core/infrastructure/mongodb/user/MongoUsersDataSource.js';
+import { UsersDataSourceFactory } from '#api/core/infrastructure/factories/UsersDataSourceFactory.js';
 import { UserRole } from '#api/core/domain/user/User.js';
 import { UserAccount } from '#api/core/domain/user/UserAccount.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
@@ -64,7 +63,10 @@ const buildFixtures = async () => {
 };
 
 const createSut = () => {
-  const usersDS = new MongoUsersDataSource({ dao: UsersDAOFactory.default() });
+  // The factory's mongo branch builds exactly this data source, and these fixtures run
+  // with postgresUsers off — so the wiring is unchanged, without the spec reaching past
+  // UsersDataSource into the private DAO (D4).
+  const usersDS = UsersDataSourceFactory.default();
   const dispatcher = { sendAccountLockedEmail: jest.fn() } as unknown as Dispatcher;
   const sut = new Login({ usersDS, dispatcher }, { tenant: {} as any });
   return { sut, dispatcher };

@@ -16,12 +16,11 @@ de-facto interface.
 |---|---|
 | 01 — Foundations | **Done** (commit `2094a900f2`), except step 4, deferred by [A1](#a1--plan-01-step-4-public_user_id--string-is-deferred). Step 2 later reverted by [A6](#a6--the-gin-index-is-not-used-findwithgroups-joins-by-unnesting-instead). |
 | 02 — DAO layer | **Done**, steps 1–7 (through commit `26010042a2`). See [A7](#a7--the-surface-plan-03-will-actually-find) for what it delivered. |
-| 03 — Read contracts | Not started. Read [A7](#a7--the-surface-plan-03-will-actually-find) before step 4 and step 6 — the plan text predates the DAO rewrite in three places. |
-| 04 — Contract suites | Not started. Also owns deleting `UsersDAOConsistency.spec.ts`, which is **currently failing** (see [A8](#a8--open-items)). |
-| 05 — Rollout | Not started. Extended by [A2](#a2--the-fence-hits-nine-files-not-five). |
+| 03 — Read contracts | **Done**, steps 1–7. See [A9](#a9--what-plan-03-actually-did) for the six deltas from the plan text. |
+| 04 — Contract suites | Not started. `UsersDAOConsistency.spec.ts` is already deleted ([A9](#a9--what-plan-03-actually-did)); step 3 has five files left, not six. |
+| 05 — Rollout | Not started. Extended by [A2](#a2--the-fence-hits-nine-files-not-five) and [A9](#a9--what-plan-03-actually-did) (step 1 also deletes the query services' legacy block). |
 
-Working state: tree clean, everything committed. `tsc --noEmit` reports 9 errors, all in
-`UsersDAOConsistency.spec.ts` ([A8](#a8--open-items)). Every other suite is green.
+Working state: `tsc --noEmit` clean, `eslint` clean on the changed files, every suite green.
 
 **Running tests:** use `yarn jest -i`. In parallel, 2–8 suites fail per run with
 Elasticsearch `index_not_found_exception`, and the failing set changes run to run — local ES
@@ -393,13 +392,65 @@ JSON-encodes them. A bare `'u1'` reached Postgres as invalid JSON and threw.
 
 ### A8 — Open items
 
-1. **`UsersDAOConsistency.spec.ts` is failing** (9 typecheck errors) — it asserts parity on
-   `getById` / `findByIds` / `notPublicUserFilter`, the surface D4 says is no longer a
-   contract. Plan 04 step 3 deletes it for exactly that reason; only the timing slipped, and
-   plan 02's "Done when" contradicts itself by listing it as a gate. Either delete it early
-   so the branch typechecks clean, or leave it red until plan 04. Not decided.
+1. ~~**`UsersDAOConsistency.spec.ts` is failing**~~ — **resolved**: deleted during plan 03
+   step 7 (see [A9](#a9--what-plan-03-actually-did)). Plan 04 step 3 no longer has to.
 2. **`PostgresUsersDAO.ts` exceeds the 250-line lint max** (270). Entirely the shim block;
    resolves itself in plan 05.
+
+### A9 — What plan 03 actually did
+
+Six deltas from the plan text, agreed before execution. Plans 04 and 05 inherit them.
+
+**1. The query services keep a legacy read block; the factory return type is widened.**
+Plan 03 step 5 deletes `listBasicInfo` / `findByEmailOrUsername` outright, but their call
+sites (`search.js`, `collaborators.ts`) are explicitly out of plan 03's scope and belong to
+plan 05 step 1. Both methods therefore survive on `MongoUsersQueryService` /
+`PostgresUsersQueryService` in a fenced `// removed in plan 05 step 1` block, mirroring the
+DAO shims from [A7](#a7--the-surface-plan-03-will-actually-find), and
+`UsersQueryServiceFactory.default()` returns `UsersQueryService & LegacyUsersReads`.
+
+Plan 05 step 1 deletes the block, the `LegacyUsersReads` type and the intersection, leaving
+`default(): UsersQueryService`. The rename (`listWithGroups` → `listUsers`, filter dropped)
+did happen, so `GetUsersController` and `ServerUsersService.mapUsers` were updated now
+rather than in plan 05 step 8 — compile-forced. What remains for step 8 is the `password?`
+split in the shared contract.
+
+**2. `UsersDAOFactory` keeps its `as any as MongoUsersDAO`.** Plan 03's "Done when" grep
+(`as any as MongoUsers` returns nothing) cannot be satisfied while the legacy shims exist:
+a union return type breaks `userGroups.ts:25`, which annotates `findByIds`'s result
+`WithId<UserSchema>[]` and is a file plan 03 must not touch. The gate for plan 03 is
+therefore **no `as any` in `UsersQueryServiceFactory`**, which holds. The last cast dies in
+plan 05 with the shims.
+
+**3. `resolveUsersBackend(contract)` is shared by three factories, not two.**
+`UserGroupsDAOFactory` carried a third copy of the both-flags-must-agree check. All three
+now call `factories/usersBackendFlags.ts`. The message is canonicalised to the
+`UsersQueryService` wording with the contract name substituted, so `UserGroupsDAO`'s
+message now names the flags in the order `postgresUsers`, `postgresUsergroups` (it used to
+name them the other way round). No spec asserted the old text.
+
+**4. The domain's `UserProfile` was renamed to `UserProfileProps`.** It is `updateProfile`'s
+argument type in `domain/user/User.ts`, and having it share a name with the `UserProfile`
+read model in `application/contracts/UserReadModels.ts` — one a write-side input, the other
+a read projection with account state — is a trap. Used in one place; renamed.
+
+**5. The write-side specs go through `UsersDataSourceFactory`,** resolving
+[A2](#a2--the-fence-hits-nine-files-not-five)'s open question. `Login.spec.ts` and
+`ValidateCurrentPassword.spec.ts` built `new MongoUsersDataSource({ dao:
+UsersDAOFactory.default() })`, which is byte-for-byte what the factory's mongo branch
+returns, and both suites run with `postgresUsers` off. No fence exemption for
+`core/application/specs/**` was needed. The fence's remaining six violations
+(`activitylog/helpers.js`, `entitiesPermissions.ts`, `userGroups.ts`, `users.js`, the two
+email job handlers) each carry `// eslint-disable-next-line no-restricted-imports --
+removed in plan 05` on the import line, so the branch lints clean.
+
+**6. Both Directory implementations treat a malformed id as a miss, not an exception.**
+`MongoUsersDirectory` checks `/^[0-9a-fA-F]{24}$/` before `ObjectId.createFromHexString`
+and returns `UserNotFound` — deliberately *not* `ObjectId.isValid`, which also accepts any
+12-character string and then throws inside the constructor. `getManyByIds` filters
+malformed ids out of the batch rather than failing the whole call. This is what makes the
+two backends agree: Postgres's `_id` is text and simply matches nothing. Plan 04's
+"`UserNotFound` for an unknown id" case can use any string.
 
 ### A5 — Migration renumbering (unplanned, blocking)
 

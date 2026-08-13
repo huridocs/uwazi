@@ -15,7 +15,13 @@ type UserProps = {
   email: string;
 };
 
-type UserProfile = {
+/**
+ * The editable identity fields, i.e. `updateProfile`'s argument. Named `...Props` rather
+ * than `UserProfile` so it does not read as a sibling of the `UserProfile` read model in
+ * `application/contracts/UserReadModels.ts` — that one is a read projection carrying
+ * account state, this one is a write-side input.
+ */
+type UserProfileProps = {
   username: string;
   role: UserRole;
   email: string;
@@ -37,7 +43,7 @@ class User {
     this.email = props.email;
   }
 
-  updateProfile(profile: UserProfile): void {
+  updateProfile(profile: UserProfileProps): void {
     this.username = profile.username;
     this.role = profile.role;
     this.email = profile.email;
@@ -45,4 +51,4 @@ class User {
 }
 
 export { User, UserRole, PUBLIC_USER_ID };
-export type { UserProps, UserProfile };
+export type { UserProps, UserProfileProps };

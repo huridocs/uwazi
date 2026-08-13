@@ -2,6 +2,7 @@ import entities from '#api/entities/entities.js';
 
 import users from '#api/users/users.js';
 import userGroups from '#api/usergroups/userGroups.js';
+// eslint-disable-next-line no-restricted-imports -- removed in plan 05
 import { UsersDAOFactory } from '#api/core/infrastructure/factories/UsersDAOFactory.js';
 import { tenants } from '#api/tenants/index.js';
 import { unique } from '#api/utils/filters.js';

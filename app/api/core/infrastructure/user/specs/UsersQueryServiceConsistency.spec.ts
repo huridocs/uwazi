@@ -35,10 +35,7 @@ const fixtures: DBFixture = {
   ],
   usergroups: [
     f.usergroup('Group A', [{ refId: f.idString('active1') }]),
-    f.usergroup('Group B', [
-      { refId: f.idString('active1') },
-      { refId: f.idString('active2') },
-    ]),
+    f.usergroup('Group B', [{ refId: f.idString('active1') }, { refId: f.idString('active2') }]),
   ],
 };
 
@@ -71,10 +68,10 @@ describe('UsersQueryService consistency', () => {
     const getQueryService = () =>
       testingEnvironment.runWithContext(() => UsersQueryServiceFactory.default());
 
-    describe('listWithGroups()', () => {
+    describe('listUsers()', () => {
       it('should return active users with public fields only', async () => {
         const queryService = getQueryService();
-        const users = await queryService.listWithGroups();
+        const users = await queryService.listUsers();
 
         expect(users.length).toBe(3);
 
@@ -89,42 +86,27 @@ describe('UsersQueryService consistency', () => {
 
       it('should exclude deleted users', async () => {
         const queryService = getQueryService();
-        const users = await queryService.listWithGroups();
+        const users = await queryService.listUsers();
 
         expect(users.find(u => u.username === 'deleted')).toBeUndefined();
       });
 
       it('should exclude the system user', async () => {
         const queryService = getQueryService();
-        const users = await queryService.listWithGroups();
+        const users = await queryService.listUsers();
 
         expect(users.find(u => u.username === 'public')).toBeUndefined();
       });
 
       it('should return users with groups', async () => {
         const queryService = getQueryService();
-        const users = await queryService.listWithGroups();
+        const users = await queryService.listUsers();
 
         const active1 = users.find(user => user.username === 'active1');
         expect(active1!.groups.map(g => g.name).sort()).toEqual(['Group A', 'Group B']);
 
         const active2 = users.find(user => user.username === 'active2');
         expect(active2!.groups.map(g => g.name)).toEqual(['Group B']);
-      });
-
-      it('should filter by query', async () => {
-        const queryService = getQueryService();
-        const users = await queryService.listWithGroups({ username: 'active2' });
-
-        expect(users.length).toBe(1);
-        expect(users[0].email).toBe('active2@test.com');
-      });
-
-      it('should return empty array when query matches nothing', async () => {
-        const queryService = getQueryService();
-        const users = await queryService.listWithGroups({ username: 'nonexistent' });
-
-        expect(users).toEqual([]);
       });
     });
 

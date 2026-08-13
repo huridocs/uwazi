@@ -1,5 +1,8 @@
 # Plan 03: Read contracts
 
+> **DONE**, steps 1-7. What it actually delivered differs from this text in six places --
+> see A9 in the decision record before relying on the skeletons below.
+
 Introduce the two ports, their four implementations, the read models, and the fence that
 keeps DAOs private. Nothing consumes any of it yet — that is plan 05.
 

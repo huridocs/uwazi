@@ -4,6 +4,7 @@ import { UserAccount } from '#api/core/domain/user/UserAccount.js';
 import { Credentials } from '#api/core/domain/user/Credentials.js';
 import { EncryptedPassword } from '#api/core/domain/user/EncryptedPassword.js';
 import type { UserRow } from '../PostgresUserRow.js';
+import type { UserWithGroupsRow } from '../PostgresUsersDAO.js';
 
 describe('PostgresUsersMapper', () => {
   describe('toRow', () => {
@@ -132,6 +133,79 @@ describe('PostgresUsersMapper', () => {
       const result = PostgresUsersMapper.toAccountDomain(row);
 
       expect(result.credentials.accountUnlockCode).toBeUndefined();
+    });
+  });
+
+  /**
+   * The read models. These two cases are the last line of defence on field leakage — the
+   * mappers are the only way a read model comes into existence (D2), so a field that does
+   * not survive them cannot reach a caller. Plan 04 deletes most of the users specs; these
+   * stay for exactly that reason.
+   */
+  const sensitiveRow: UserWithGroupsRow = {
+    _id: 'user-1',
+    username: 'testuser',
+    role: UserRole.ADMIN,
+    email: 'test@example.com',
+    password: '$2a$10$hashedvalue',
+    secret: 'a-secret',
+    failedLogins: 3,
+    accountUnlockCode: 'unlock-code',
+    accountLocked: true,
+    using2fa: true,
+    deletedAt: new Date(),
+    groups: [{ _id: 'group-1', name: 'Group A' }],
+  };
+
+  const SENSITIVE_FIELDS = ['password', 'secret', 'failedLogins', 'accountUnlockCode', 'deletedAt'];
+
+  describe('toView', () => {
+    it('should map identity fields only', () => {
+      expect(PostgresUsersMapper.toView(sensitiveRow)).toEqual({
+        _id: 'user-1',
+        username: 'testuser',
+        role: 'admin',
+        email: 'test@example.com',
+      });
+    });
+
+    it('should not carry any sensitive field through', () => {
+      const result = PostgresUsersMapper.toView(sensitiveRow);
+
+      SENSITIVE_FIELDS.forEach(field => expect(result).not.toHaveProperty(field));
+    });
+  });
+
+  describe('toProfile', () => {
+    it('should add groups and account state', () => {
+      expect(PostgresUsersMapper.toProfile(sensitiveRow)).toEqual({
+        _id: 'user-1',
+        username: 'testuser',
+        role: 'admin',
+        email: 'test@example.com',
+        groups: [{ _id: 'group-1', name: 'Group A' }],
+        using2fa: true,
+        accountLocked: true,
+      });
+    });
+
+    it('should coerce missing account state to false rather than undefined', () => {
+      const result = PostgresUsersMapper.toProfile({
+        _id: 'user-1',
+        username: 'testuser',
+        role: UserRole.ADMIN,
+        email: 'test@example.com',
+        groups: [],
+      });
+
+      expect(result.using2fa).toBe(false);
+      expect(result.accountLocked).toBe(false);
+    });
+
+    it('should not carry any sensitive field through', () => {
+      const result = PostgresUsersMapper.toProfile(sensitiveRow);
+
+      SENSITIVE_FIELDS.forEach(field => expect(result).not.toHaveProperty(field));
     });
   });
 });

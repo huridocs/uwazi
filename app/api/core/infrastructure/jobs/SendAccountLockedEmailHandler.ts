@@ -1,4 +1,5 @@
 import { HeartbeatCallback } from '#api/core/libs/queue/application/contracts/Dispatchable.js';
+// eslint-disable-next-line no-restricted-imports -- removed in plan 05
 import { UsersDAOFactory } from '#api/core/infrastructure/factories/UsersDAOFactory.js';
 import { EmailSender } from '#api/core/application/contracts/EmailSender.js';
 import { UwaziJobHandler, UwaziJobParams } from '#api/core/infrastructure/jobs/UwaziJobHandler.js';
