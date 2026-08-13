@@ -1,6 +1,6 @@
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useNavigate, type NavigateFunction } from 'react-router';
-import { useSetAtom } from 'jotai';
+import { atom, useAtom, useSetAtom } from 'jotai';
 import { t } from '#app/I18N/index.js';
 import { deletedEntityAtom } from '#V2/atoms/index.js';
 import { useRequestStatus } from '#V2/atoms/requestStatusAtom.js';
@@ -44,6 +44,10 @@ const runDeleteEntity = async ({
   await navigate(-1);
 };
 
+const entityDeleteInFlightRef = { current: false };
+const entityDeleteInFlightAtom = atom(false);
+let entityDeleteSubscribers = 0;
+
 const useDeleteEntity = () => {
   const entity = useEntityScopedEntity();
   const { entities } = useServices();
@@ -51,8 +55,18 @@ const useDeleteEntity = () => {
   const navigate = useNavigate();
   const setDeletedEntity = useSetAtom(deletedEntityAtom);
   const [confirming, setConfirming] = useState(false);
-  const [isDeleting, setIsDeleting] = useState(false);
-  const inFlight = useRef(false);
+  const [isDeleting, setIsDeleting] = useAtom(entityDeleteInFlightAtom);
+
+  useEffect(() => {
+    entityDeleteSubscribers += 1;
+    return () => {
+      entityDeleteSubscribers -= 1;
+      if (entityDeleteSubscribers === 0) {
+        entityDeleteInFlightRef.current = false;
+        setIsDeleting(false);
+      }
+    };
+  }, [setIsDeleting]);
 
   const requestDelete = () => {
     if (!isDeleting) setConfirming(true);
@@ -63,8 +77,8 @@ const useDeleteEntity = () => {
   };
 
   const confirmDelete = useCallback(async () => {
-    if (inFlight.current) return;
-    inFlight.current = true;
+    if (entityDeleteInFlightRef.current) return;
+    entityDeleteInFlightRef.current = true;
     setIsDeleting(true);
     await runDeleteEntity({
       deleteEntity: entities.delete,
@@ -73,11 +87,11 @@ const useDeleteEntity = () => {
       setDeletedEntity,
       navigate,
       onFail: () => {
-        inFlight.current = false;
+        entityDeleteInFlightRef.current = false;
         setIsDeleting(false);
       },
     });
-  }, [entities.delete, entity.sharedId, navigate, notify, setDeletedEntity]);
+  }, [entities.delete, entity.sharedId, navigate, notify, setDeletedEntity, setIsDeleting]);
 
   return { confirming, isDeleting, requestDelete, cancelDelete, confirmDelete };
 };

@@ -134,6 +134,37 @@ describe('MetadataDisplayFooter', () => {
     expect(mockNavigate).toHaveBeenCalledWith(-1);
   });
 
+  it('shares in-flight across twin hosts so overlapping delete cannot run', async () => {
+    let resolveDelete: (value: [undefined]) => void = () => undefined;
+    const deleteFn = jest.fn(
+      async () =>
+        new Promise<[undefined]>(resolve => {
+          resolveDelete = resolve;
+        })
+    );
+    renderFooters(deleteFn);
+    fireEvent.click(screen.getAllByRole('button', { name: 'Delete' })[0]);
+    fireEvent.click(screen.getAllByRole('button', { name: 'Delete' })[1]);
+    const accepts = screen.getAllByTestId('accept-button');
+    expect(accepts).toHaveLength(2);
+    fireEvent.click(accepts[0]);
+    fireEvent.click(accepts[1]);
+    await waitFor(() => expect(deleteFn).toHaveBeenCalledTimes(1));
+    screen.getAllByRole('button', { name: 'Edit' }).forEach(button => {
+      expect(button).toBeDisabled();
+    });
+    screen.getAllByRole('button', { name: 'Share' }).forEach(button => {
+      expect(button).toBeDisabled();
+    });
+    screen.getAllByRole('button', { name: 'Delete' }).forEach(button => {
+      expect(button).toBeDisabled();
+    });
+    await act(async () => {
+      resolveDelete([undefined]);
+    });
+    await waitFor(() => expect(mockNavigate).toHaveBeenCalledWith(-1));
+  });
+
   it('disables the modal while delete is in flight', async () => {
     let resolveDelete: (value: [undefined]) => void = () => undefined;
     const deleteFn = jest.fn(

@@ -14,6 +14,7 @@ import {
 } from '#V2/formatters/types.js';
 import { settingsAtom } from '#V2/atoms/settingsAtom.js';
 import { CountryFlag } from '../../CustomIcons/index.js';
+
 type RelationshipEntityValue = RelatedRelationshipMetadataProperty['values'][number];
 
 type OpenEntityTarget = {
@@ -56,13 +57,11 @@ const ConnectionPills = ({
     <div className="flex flex-wrap items-center gap-1.5">
       {values.map((value, index) => {
         const itemKey = value._id || `rel-${index}`;
+        const templateId = value.templateId || targetTemplateId || '';
         const pill = (
           <span className="inline-flex max-w-full items-center gap-1.5">
             {value.icon?._id && <CountryFlag id={value.icon._id} />}
-            <TemplatePill
-              templateId={value.templateId || targetTemplateId || ''}
-              label={value.title}
-            />
+            <TemplatePill templateId={templateId} label={value.title} />
           </span>
         );
 
@@ -89,7 +88,7 @@ const ConnectionPills = ({
                 onOpenEntity({
                   sharedId: value._id,
                   title: value.title,
-                  templateId: value.templateId || targetTemplateId || '',
+                  templateId,
                 })
               }
             >

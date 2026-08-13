@@ -40,6 +40,8 @@ export { PaginationState } from './PaginationState.js';
 export { ProgressBar } from './ProgressBar.js';
 export { MediaPlayer } from './MediaPlayer.js';
 export { FileIcon } from './FileIcon.js';
+export { DashedUploadDropzone } from './DashedUploadDropzone.js';
+export type { DashedUploadDropzoneProps } from './DashedUploadDropzone.js';
 export { NeedAuthorization } from './NeedAuthorization.js';
 export { ConfirmNavigationModal } from './ConfirmNavigationModal.js';
 export { BlockDirtyNavigation } from './BlockDirtyNavigation.js';
