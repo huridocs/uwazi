@@ -1,11 +1,9 @@
 import users from '#api/users/users.js';
 import { UserGroupSchema } from '#shared/types/userGroupType.js';
 import { validateUserGroup } from './validateUserGroup.js';
-import { WithId } from '#api/odm/index.js';
-import { UserSchema } from '#shared/types/userType.js';
-// eslint-disable-next-line no-restricted-imports -- removed in plan 05
-import { UsersDAOFactory } from '#api/core/infrastructure/factories/UsersDAOFactory.js';
-import { tenants } from '#api/tenants/index.js';
+import type { UserView } from '#api/core/application/contracts/UserReadModels.js';
+import { UsersDirectoryFactory } from '#api/core/infrastructure/factories/UsersDirectoryFactory.js';
+import { usersDirectoryEnabled } from '#api/core/infrastructure/factories/usersBackendFlags.js';
 import model from './userGroupsModel.js';
 
 export default {
@@ -22,10 +20,11 @@ export default {
       (memo: string[], group) => memo.concat(group.members.map(m => m.refId.toString())),
       []
     );
-    const usersFound: WithId<UserSchema>[] = tenants.current().featureFlags?.postgresUsers
-      ? await UsersDAOFactory.default().findByIds(usersInGroups)
+    const usersFound: UserView[] = usersDirectoryEnabled()
+      ? await UsersDirectoryFactory.default().getManyByIds(usersInGroups)
       : await users.get({ _id: { $in: usersInGroups } }, { username: 1, role: 1, email: 1 });
 
+    // UserView carries exactly these four fields, so the mapping is a rename of `_id`.
     const members = usersFound.map(u => ({
       refId: u._id,
       username: u.username,

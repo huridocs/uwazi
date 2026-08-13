@@ -1,6 +1,6 @@
 import escapeRegExp from 'lodash/escapeRegExp.js';
 import userGroups from '#api/usergroups/userGroups.js';
-import { UsersQueryServiceFactory } from '#api/core/infrastructure/factories/UsersQueryServiceFactory.js';
+import { UsersDirectoryFactory } from '#api/core/infrastructure/factories/UsersDirectoryFactory.js';
 import { PermissionType } from '#shared/types/permissionSchema.js';
 import { MemberWithPermission } from '#shared/types/entityPermisions.js';
 import { permissionsContext } from './permissionsContext.js';
@@ -8,11 +8,11 @@ import { PUBLIC_PERMISSION } from './publicPermission.js';
 
 export const collaborators = {
   search: async (filterTerm: string) => {
+    // Users are matched exactly and case-insensitively; groups by prefix. That asymmetry is
+    // long-standing and deliberate — this term is only for the groups query.
     const partialFilterTerm = new RegExp(`^${escapeRegExp(filterTerm)}`, 'i');
 
-    const matchedUsers = await UsersQueryServiceFactory.default().findByEmailOrUsername(
-      filterTerm
-    );
+    const matchedUsers = await UsersDirectoryFactory.default().searchByUsernameOrEmail(filterTerm);
     const groups = await userGroups.get({ name: { $regex: partialFilterTerm } });
 
     const availableCollaborators: MemberWithPermission[] = [];

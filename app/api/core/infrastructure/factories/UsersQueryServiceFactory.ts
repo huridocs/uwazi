@@ -8,18 +8,6 @@ import { PostgresUsersQueryService } from '../postgresql/user/PostgresUsersQuery
 import { TransactionManagerFactory } from './TransactionManagerFactory.js';
 import { resolveUsersBackend } from './usersBackendFlags.js';
 
-/**
- * The two reads that still live on the query services and belong to UsersDirectory (D3).
- * Their call sites (`search.js`, `collaborators.ts`) move in plan 05 step 1; when they do,
- * this type and the intersection below go, leaving `default(): UsersQueryService`.
- */
-type LegacyUsersReads = {
-  /** @deprecated use `UsersDirectory.list()`. Removed in plan 05. */
-  listBasicInfo(): Promise<{ _id: string; username: string }[]>;
-  /** @deprecated use `UsersDirectory.searchByUsernameOrEmail()`. Removed in plan 05. */
-  findByEmailOrUsername(term: string): Promise<{ _id: string; username: string; email: string }[]>;
-};
-
 class UsersQueryServiceFactory {
   /**
    * Returns the contract, not an implementation type. Callers must not be able to tell
@@ -30,7 +18,7 @@ class UsersQueryServiceFactory {
    * returns `MongoUsersDAO` with a cast for its legacy shims, and routing through it is how
    * a mixed configuration used to reach a query service as the wrong DAO type.
    */
-  static default(): UsersQueryService & LegacyUsersReads {
+  static default(): UsersQueryService {
     const tenant = ExecutionContext.currentTenant;
 
     if (resolveUsersBackend('UsersQueryService') === 'postgres') {

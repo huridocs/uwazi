@@ -2,8 +2,9 @@ import { files, storage } from '#api/files/index.js';
 import { tenants } from '#api/tenants/index.js';
 import { testingDB } from '#api/utils/testing_db.js';
 import request from '#shared/JSONRequest.js';
+import type { DBTenant } from '#api/tenants/tenantsModel.js';
 import { tocService } from '../tocService.js';
-import { fixtures } from './fixtures.js';
+import { fixtures, userId } from './fixtures.js';
 
 describe('tocService', () => {
   let requestMock: jest.SpyInstance;
@@ -84,6 +85,74 @@ describe('tocService', () => {
         expect(fileProcessed.toc).toEqual([]);
         expect(fileProcessed.generatedToc).not.toBeDefined();
       }, 'tenant2');
+    });
+  });
+
+  /**
+   * tocService has no actor of its own, so it resolves the entity's author and runs the
+   * update on their behalf. That lookup goes through UsersDirectory.getActor when
+   * `usersDirectory` is on and through the legacy users.getById otherwise (plan 05 step 3).
+   *
+   * `getActor` is the only read that resolves a soft-deleted user (D3/D9), which is exactly
+   * what this path needs: an author who has since left must still be attributable, or a
+   * background job that was working yesterday starts throwing "Entity actor not found".
+   */
+  describe('actor attribution', () => {
+    const tenantWithFlag = (usersDirectory: boolean) => {
+      tenants.add(<DBTenant>{
+        name: 'tenant1',
+        dbName: 'tenant1',
+        indexName: 'tenant1',
+        featureFlags: { usersDirectory },
+      });
+    };
+
+    // testingDB.mongodb is the default connection, not tenant1's — this suite runs with
+    // `defaultTenant: false` and seeds each tenant's own database.
+    const softDeleteAuthor = async () => {
+      const result = await testingDB
+        .db('tenant1')
+        .collection('users')
+        .updateOne({ _id: userId }, { $set: { deletedAt: new Date() } });
+
+      expect(result.modifiedCount).toBe(1);
+    };
+
+    beforeEach(() => {
+      requestMock.mockImplementation(async () =>
+        Promise.resolve({ text: JSON.stringify([{ label: 'section1 pdf1' }]) })
+      );
+    });
+
+    afterAll(() => {
+      tenantWithFlag(false);
+    });
+
+    it.each([
+      { path: 'legacy users.getById', usersDirectory: false },
+      { path: 'UsersDirectory.getActor', usersDirectory: true },
+    ])('should still resolve a soft-deleted author ($path)', async ({ usersDirectory }) => {
+      tenantWithFlag(usersDirectory);
+      await softDeleteAuthor();
+
+      await expect(tocService.processAllTenants()).resolves.not.toThrow();
+
+      await tenants.run(async () => {
+        const [fileProcessed] = await files.get({ filename: 'pdf1.pdf' });
+        expect(fileProcessed.toc).toEqual([{ label: 'section1 pdf1' }]);
+        expect(fileProcessed.generatedToc).toEqual(true);
+      }, 'tenant1');
+    });
+
+    it('should generate the toc for a live author through UsersDirectory', async () => {
+      tenantWithFlag(true);
+
+      await expect(tocService.processAllTenants()).resolves.not.toThrow();
+
+      await tenants.run(async () => {
+        const [fileProcessed] = await files.get({ filename: 'pdf1.pdf' });
+        expect(fileProcessed.toc).toEqual([{ label: 'section1 pdf1' }]);
+      }, 'tenant1');
     });
   });
 

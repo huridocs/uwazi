@@ -32,5 +32,24 @@ const resolveUsersBackend = (contract: string): UsersBackend => {
   return postgresUsers ? 'postgres' : 'mongo';
 };
 
-export { resolveUsersBackend };
+/**
+ * Whether a call site reads users through `UsersDirectory` instead of its legacy v1 path
+ * (D8). The rollout switch for plan 05, and it disappears with the flag in the follow-up PR.
+ *
+ * `postgresUsers` is part of the condition on purpose. The sites this gates used to branch
+ * on that flag themselves, routing to `UsersDAOFactory` when it was on — so for a tenant
+ * already on Postgres the Directory *is* the current path, not a new one. Gating on
+ * `usersDirectory` alone would silently move those reads back to Mongo, which reads as data
+ * loss to anyone mid-migration. Mongo tenants keep the rollback lever the flag exists for;
+ * Postgres tenants never had one here.
+ *
+ * It lives beside `resolveUsersBackend` so no call site has to name a backend flag itself.
+ */
+const usersDirectoryEnabled = (): boolean => {
+  const flags = ExecutionContext.currentTenant.featureFlags;
+
+  return Boolean(flags?.usersDirectory || flags?.postgresUsers);
+};
+
+export { resolveUsersBackend, usersDirectoryEnabled };
 export type { UsersBackend };

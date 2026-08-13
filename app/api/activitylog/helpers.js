@@ -6,8 +6,10 @@ import users from '#api/users/users.js';
 import userGroups from '#api/usergroups/userGroups.js';
 import { PermissionType } from '#shared/types/permissionSchema.js';
 import { FilesDAOFactory } from '#api/core/infrastructure/factories/FilesDAOFactory.js';
-// eslint-disable-next-line no-restricted-imports -- removed in plan 05
+// eslint-disable-next-line no-restricted-imports -- removed in plan 05 step 2b (loadUser)
 import { UsersDAOFactory } from '#api/core/infrastructure/factories/UsersDAOFactory.js';
+import { UsersDirectoryFactory } from '#api/core/infrastructure/factories/UsersDirectoryFactory.js';
+import { usersDirectoryEnabled } from '#api/core/infrastructure/factories/usersBackendFlags.js';
 import { tenants } from '#api/tenants/index.js';
 import { Suggestions } from '#api/suggestions/suggestions.js';
 import { Extractors } from '#api/services/informationextraction/ixextractors.js';
@@ -107,8 +109,10 @@ const loadPermissionsData = async data => {
   const permissionsIds = data.permissions
     .filter(p => p.type !== PermissionType.PUBLIC)
     .map(pu => pu.refId);
-  const allowedUsers = tenants.current().featureFlags?.postgresUsers
-    ? await UsersDAOFactory.default().findByIds(permissionsIds)
+  // Soft-deleted permission holders stay excluded on both paths (D9): the log falls back to
+  // printing the raw refId for them, which is intended, not an accident to fix here.
+  const allowedUsers = usersDirectoryEnabled()
+    ? await UsersDirectoryFactory.default().getManyByIds(permissionsIds)
     : await users.get({ _id: { $in: permissionsIds } }, { username: 1 });
   const allowedGroups = await userGroups.get(
     { _id: { $in: permissionsIds } },

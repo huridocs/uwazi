@@ -136,4 +136,4 @@ const fixtures: DBFixture = {
   ],
 };
 
-export { fixtures };
+export { fixtures, userId };
