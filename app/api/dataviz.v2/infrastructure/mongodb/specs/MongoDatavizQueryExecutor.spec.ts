@@ -5,7 +5,7 @@ import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { User } from '#api/users.v2/model/User.js';
-import { CachedTranslationsDataSource } from '#api/i18n.v2/database/data_source_defaults.js';
+import { TranslationsDataSourceFactory } from '#api/core/infrastructure/factories/TranslationsDataSourceFactory.js';
 import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
 import { TemplatesDAOFactory } from '#api/core/infrastructure/factories/TemplatesDAOFactory.js';
 import { ThesauriDAOFactory } from '#api/core/infrastructure/factories/ThesauriDAOFactory.js';
@@ -21,7 +21,7 @@ const createExecutor = () =>
     const tm = ExecutionContext.transactionManager as MongoTransactionManager;
     return new MongoDatavizQueryExecutor(getConnection(), tm, {
       settingsDS: SettingsDataSourceFactory.cached({ transactionManager: tm }),
-      translationsDS: CachedTranslationsDataSource(tm),
+      translationsDS: TranslationsDataSourceFactory.cached({ transactionManager: tm }),
       templatesDAO: TemplatesDAOFactory.default() as TemplatesReadDAO,
       thesauriDAO: ThesauriDAOFactory.default(),
       entitiesDAO: EntitiesDAOFactory.default() as EntitiesReadDAO,

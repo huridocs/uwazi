@@ -3,7 +3,7 @@ import { InheritedPropertyCanNotBeDeleted } from '#api/core/domain/template/erro
 import { TemplateUpdatedEvent } from '#api/core/domain/template/events/TemplateUpdatedEvent.js';
 import { PropertyTypeEnum } from '#api/core/domain/template/PropertyType.js';
 import { UpdateTemplateUseCaseFactory } from '#api/core/infrastructure/factories/UpdateTemplateUseCaseFactory.js';
-import { LegacyTranslationService } from '#api/core/infrastructure/mongodb/template/LegacyTemplatesTranslationService.js';
+import { TranslationService } from '#api/core/domain/template/TranslationService.js';
 import { spyOnEmit } from '#api/core/libs/eventsbus/eventTesting.js';
 import { Dispatcher } from '#api/core/application/contracts/Dispatcher.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
@@ -138,7 +138,7 @@ const testConfigs: TestConfig[] = [
 ];
 
 const createSut = (
-  overrides?: { translationService?: LegacyTranslationService; dispatcher?: Dispatcher },
+  overrides?: { translationService?: TranslationService; dispatcher?: Dispatcher },
   postgresTemplates = false
 ) =>
   testingEnvironment.runWithContext(
@@ -439,7 +439,7 @@ describe('UpdateTemplateUseCase', () => {
 
     if (postgresTemplates) {
       it('should NOT revert the PG write when the Mongo transaction rolls back', async () => {
-        const translationService = TestUtils.mockClass<LegacyTranslationService>({
+        const translationService = TestUtils.mockClass<TranslationService>({
           updateTemplateTranslation: jest.fn().mockRejectedValue(new Error('Update failed')),
         });
 

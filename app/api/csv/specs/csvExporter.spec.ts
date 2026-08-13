@@ -1,8 +1,9 @@
 import { ObjectWritableMock } from 'stream-mock';
-import templates from '#api/core/v1_layer/templates/index.js';
-import translations from '#api/i18n/translations.js';
-import * as translate from '#shared/translate.js';
 import moment from 'moment-timezone';
+import { TestUtils } from '#api/common.v2/utils/Test.js';
+import { TranslationsQueryService } from '#api/core/application/translation/TranslationsQueryService.js';
+import templates from '#api/core/v1_layer/templates/index.js';
+import { TranslationsQueryServiceFactory } from '#api/core/infrastructure/factories/TranslationsQueryServiceFactory.js';
 import CSVExporter, {
   concatCommonHeaders,
   ExporterOptions,
@@ -166,37 +167,33 @@ describe('csvExporter', () => {
       ]);
     });
 
-    it('should translate only the common headers', async () => {
-      jest.spyOn(translations, 'get').mockResolvedValue([]);
-      const localeTranslationsMock = jest
-        .spyOn(translate, 'getLocaleTranslation')
-        .mockReturnValue({});
-      jest.spyOn(translate, 'getContext').mockReturnValue({});
-      const translateMock = jest
-        .spyOn(translate, 'default')
-        .mockImplementation((_context, _key, text) => `${text}T`);
+    describe('translateCommonHeaders', () => {
+      let getContextValueMap: jest.Mock;
 
-      const headers: ExportHeader[] = [
-        {
-          name: 'header1',
-          label: 'Header1',
-          common: false,
-        },
-        {
-          name: 'header2',
-          label: 'Header2',
-          common: true,
-        },
-      ];
+      beforeEach(() => {
+        getContextValueMap = jest.fn().mockResolvedValue({ Header2: 'Header2T' });
+        jest.spyOn(TranslationsQueryServiceFactory, 'default').mockReturnValue(
+          TestUtils.mockClass<TranslationsQueryService>({
+            getContextValueMap,
+          })
+        );
+      });
 
-      const translatedHeaders = await translateCommonHeaders(headers, 'es');
+      afterEach(() => {
+        jest.restoreAllMocks();
+      });
 
-      expect(translatedHeaders[0].label).toBe(headers[0].label);
-      expect(translatedHeaders[1].label).toBe(`${headers[1].label}T`);
-      expect(localeTranslationsMock).toHaveBeenCalledWith([], 'es');
-      expect(translateMock).toHaveBeenCalledWith({}, headers[1].label, headers[1].label);
+      it('should translate only the common headers', async () => {
+        const headers: ExportHeader[] = [
+          { name: 'header1', label: 'Header1', common: false },
+          { name: 'header2', label: 'Header2', common: true },
+        ];
+        const translatedHeaders = await translateCommonHeaders(headers, 'es');
 
-      jest.restoreAllMocks();
+        expect(translatedHeaders[0].label).toBe(headers[0].label);
+        expect(translatedHeaders[1].label).toBe('Header2T');
+        expect(getContextValueMap).toHaveBeenCalledWith('es', 'System');
+      });
     });
   });
 
@@ -450,7 +447,11 @@ describe('csvExporter', () => {
         .mockImplementation(async id =>
           Promise.resolve(id === 'notValid' ? null : testTemplates[id.toString()])
         );
-      jest.spyOn(translations, 'get').mockResolvedValue([]);
+      jest.spyOn(TranslationsQueryServiceFactory, 'default').mockReturnValue(
+        TestUtils.mockClass<TranslationsQueryService>({
+          getContextValueMap: jest.fn().mockResolvedValue({}),
+        })
+      );
     });
 
     afterAll(() => {

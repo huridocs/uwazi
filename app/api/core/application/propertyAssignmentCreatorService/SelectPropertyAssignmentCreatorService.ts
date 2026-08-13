@@ -1,8 +1,8 @@
 import { PropertyAssignment, SelectionEntry } from '#api/core/domain/template/PropertyValue.js';
 import { SelectProperty } from '#api/core/domain/template/select/SelectProperty.js';
-import { TranslationsDataSource } from '#api/i18n.v2/contracts/TranslationsDataSource.js';
+import { TranslationsDataSource } from '#api/core/application/contracts/TranslationsDataSource.js';
 import { ThesaurusValue } from '#api/core/domain/thesaurus/Thesaurus.js';
-import { TranslationCollection } from '#api/i18n.v2/model/TranslationCollection.js';
+import { TranslationCollection } from '#api/core/domain/translation/TranslationCollection.js';
 import { SettingsDataSource } from '../contracts/SettingsDataSource.js';
 import { ThesauriDataSource } from '../contracts/ThesauriDataSource.js';
 import { CreatePropertyAssignmentInput } from './PropertyAssignmentCreatorService.js';
@@ -26,7 +26,6 @@ export class SelectPropertyAssignmentCreatorService extends AbstractPropertyAssi
     super(context);
   }
 
-  // eslint-disable-next-line max-statements
   async create({
     propertyAssignment,
     template,

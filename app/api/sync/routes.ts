@@ -78,26 +78,13 @@ export default (app: Application) => {
         req.body.data = await preserveTranslations(req.body.data);
       }
 
-      if (req.body.namespace === 'translationsV2') {
-        await models[req.body.namespace]().delete(
-          { _id: '' },
-          {
-            language: req.body.data.language,
-            key: req.body.data.key,
-            'context.id': req.body.data.context.id,
-          }
-        );
-        await models[req.body.namespace]().save(req.body.data);
-      } else {
-        const handler =
-          SyncHandlerRegistry.get(req.body.namespace) ?? models[req.body.namespace]?.();
-        if (!handler) {
-          throw new Error(`No sync handler for namespace: ${req.body.namespace}`);
-        }
-        await (Array.isArray(req.body.data)
-          ? handler.saveMultiple(req.body.data)
-          : handler.save(req.body.data));
+      const handler = SyncHandlerRegistry.get(req.body.namespace) ?? models[req.body.namespace]?.();
+      if (!handler) {
+        throw new Error(`No sync handler for namespace: ${req.body.namespace}`);
       }
+      await (Array.isArray(req.body.data)
+        ? handler.saveMultiple(req.body.data)
+        : handler.save(req.body.data));
 
       await updateMappings(req);
       await indexEntities(req);

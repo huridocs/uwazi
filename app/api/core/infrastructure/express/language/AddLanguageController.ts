@@ -2,7 +2,8 @@ import { z } from 'zod';
 import { AbstractController } from '#api/common.v2/infrastructure/AbstractController.js';
 import { LanguageSchema } from '#shared/types/commonTypes.js';
 import settings from '#api/settings/index.js';
-import translations from '#api/i18n/translations.js';
+import { TranslationsQueryServiceFactory } from '#api/core/infrastructure/factories/TranslationsQueryServiceFactory.js';
+import { toIndexedTranslations } from '#api/core/infrastructure/express/translation/LegacyTranslationDtoMapper.js';
 import { AddLanguageUseCaseFactory } from '../../factories/AddLanguageUseCaseFactory.js';
 import { LoggerFactory } from '../../factories/LoggerFactory.js';
 
@@ -27,8 +28,10 @@ class AddLanguageController extends AbstractController<RequestDto> {
       const addedLanguages = await AddLanguageUseCaseFactory.default().execute({ languages });
 
       for (const language of addedLanguages) {
-        // eslint-disable-next-line no-await-in-loop
-        const [newTranslations] = await translations.get({ locale: language.key });
+        const [newTranslations] = toIndexedTranslations(
+          // eslint-disable-next-line no-await-in-loop
+          await TranslationsQueryServiceFactory.default().getLegacy({ locale: language.key })
+        );
         this.request.sockets.emitToCurrentTenant('translationsChange', newTranslations);
       }
       const newSettings = await settings.get();

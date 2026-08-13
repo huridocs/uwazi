@@ -1,4 +1,5 @@
 import { UpdateTemplateUseCase } from '#api/core/application/UpdateTemplate.js';
+import { TemplateTranslationService } from '#api/core/application/templateTranslationService/TemplateTranslationService.js';
 import { IdGeneratorFactory } from '#api/core/infrastructure/factories/IdGeneratorFactory.js';
 import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
 import { TemplatesDataSourceFactory } from '#api/core/infrastructure/factories/TemplatesDataSourceFactory.js';
@@ -7,9 +8,9 @@ import { applicationEventsBus } from '#api/core/libs/eventsbus/index.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { RelationshipTypesDataSourceFactory } from '#api/core/infrastructure/factories/RelationshipTypesDataSourceFactory.js';
 import { DispatcherAdapter } from '../jobs/DispatcherAdapter.js';
-import { LegacyTranslationService } from '../mongodb/template/LegacyTemplatesTranslationService.js';
 import { ThesauriDataSourceFactory } from './ThesauriDataSourceFactory.js';
 import { EntitiesDataSourceFactory } from './EntitiesDataSourceFactory.js';
+import { TranslationsServiceFactory } from './TranslationsServiceFactory.js';
 
 class UpdateTemplateUseCaseFactory {
   static default(overrides?: Partial<ConstructorParameters<typeof UpdateTemplateUseCase>[0]>) {
@@ -17,7 +18,9 @@ class UpdateTemplateUseCaseFactory {
     const templatesDS = TemplatesDataSourceFactory.default({ transactionManager });
     const entitiesDS = EntitiesDataSourceFactory.default({ transactionManager });
     const thesauriDS = ThesauriDataSourceFactory.default({ transactionManager });
-    const translationService = new LegacyTranslationService();
+    const translationService = new TemplateTranslationService({
+      translationsService: TranslationsServiceFactory.default({ transactionManager }),
+    });
     const settingsDS = SettingsDataSourceFactory.default({ transactionManager });
     const relationshipTypesDS = RelationshipTypesDataSourceFactory.default({ transactionManager });
     const idGenerator = IdGeneratorFactory.default();
