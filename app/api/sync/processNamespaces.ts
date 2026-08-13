@@ -1,7 +1,7 @@
 /* eslint-disable max-statements */
 /* eslint-disable max-lines */
 import sift from 'sift';
-import entitiesModel from '#api/entities/entitiesModel.js';
+import { EntitiesDAOFactory } from '#api/core/infrastructure/factories/EntitiesDAOFactory.js';
 import { DataType, models, WithId } from '#api/odm/index.js';
 import { settingsModel } from '#api/settings/settingsModel.js';
 import templates from '#api/core/v1_layer/templates/templates.js';
@@ -18,6 +18,8 @@ import {
 import { TemplateSchema } from '#shared/types/templateType.js';
 
 const noDataFound = 'NO_DATA_FOUND';
+
+const entitiesDao = () => EntitiesDAOFactory.default().unrestricted();
 
 const namespaces = [
   'settings',
@@ -57,7 +59,7 @@ const getTemplate = async (template: string) => {
 };
 
 const getEntityTemplate = async (sharedId: string) => {
-  const entitiesData = await entitiesModel.get({ sharedId });
+  const entitiesData = await entitiesDao().find({ sharedId });
   return entitiesData[0].template?.toString();
 };
 
@@ -166,9 +168,9 @@ class ProcessNamespaces {
       _id: { $ne: data._id },
     });
 
-    const hubOtherEntities = await entitiesModel.get(
-      { sharedId: { $in: hubOtherConnections.map(h => h.entity) } },
-      'template'
+    const hubOtherEntities = await entitiesDao().find(
+      { sharedIds: hubOtherConnections.map(h => h.entity) },
+      { select: ['template'] }
     );
 
     const hubWhitelistedTemplateIds: Array<string> = hubOtherEntities
@@ -244,7 +246,7 @@ class ProcessNamespaces {
 
   private async entities() {
     const data = ensure<WithId<EntitySchema>>(
-      await entitiesModel.getById(this.change.mongoId),
+      await entitiesDao().getByInternalId(this.change.mongoId.toString()),
       noDataFound
     );
 
@@ -303,7 +305,7 @@ class ProcessNamespaces {
     }
 
     if (data.entity) {
-      const [entity] = await entitiesModel.get({ sharedId: data.entity });
+      const [entity] = await entitiesDao().find({ sharedId: data.entity });
       if (!entity) {
         return { skip: true };
       }
@@ -311,7 +313,7 @@ class ProcessNamespaces {
       if (template && !this.templatesConfig[template.toString()]?.attachments) {
         return { skip: true };
       }
-      if (!(await this.entityIsAllowed(entity))) {
+      if (!(await this.entityIsAllowed(entity as unknown as WithId<EntitySchema>))) {
         return { skip: true };
       }
     }

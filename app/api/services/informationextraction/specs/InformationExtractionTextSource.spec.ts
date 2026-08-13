@@ -6,7 +6,7 @@ import { testingTenants } from '#api/utils/testingTenants.js';
 import { ExternalDummyService } from '#api/services/tasksmanager/specs/ExternalDummyService.js';
 import * as setupSockets from '#api/socketio/setupSockets.js';
 import { IXSuggestionsModel } from '#api/suggestions/IXSuggestionsModel.js';
-import entitiesModel from '#api/entities/entitiesModel.js';
+import { EntitiesDAOFactory } from '#api/core/infrastructure/factories/EntitiesDAOFactory.js';
 import { InformationExtraction } from '../InformationExtraction.js';
 import { factory, fixtures } from './fixtures.js';
 import { IXModelsModel } from '../IXModelsModel.js';
@@ -414,19 +414,22 @@ describe('Information Extraction: Extracting from text source', () => {
       const templates = [factory.id('template1')];
       const toProperty = 'property1';
 
-      const getUnrestrictedSpy = jest.spyOn(entitiesModel, 'getUnrestricted');
-      getUnrestrictedSpy.mockResolvedValue([]);
+      const findMock = jest.fn().mockResolvedValue([]);
+      const factorySpy = jest.spyOn(EntitiesDAOFactory, 'default').mockReturnValue({
+        unrestricted: () => ({ findByMetadataCriteria: findMock }),
+      } as any);
 
-      await getEntitiesForTraining(templates, toProperty, 'sourceProperty');
-      expect(getUnrestrictedSpy).toHaveBeenCalledWith(
-        expect.any(Object),
-        expect.any(String),
-        expect.objectContaining({
-          limit: 15000,
-        })
-      );
-
-      getUnrestrictedSpy.mockRestore();
+      try {
+        await getEntitiesForTraining(templates, toProperty, 'sourceProperty');
+        expect(findMock).toHaveBeenCalledWith(
+          expect.any(Object),
+          expect.objectContaining({
+            limit: 15000,
+          })
+        );
+      } finally {
+        factorySpy.mockRestore();
+      }
     });
   });
 

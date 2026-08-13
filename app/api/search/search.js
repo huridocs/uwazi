@@ -17,7 +17,6 @@ import { checkWritePermissions } from '#shared/permissionsUtils.js';
 import { propertyTypes } from '#shared/propertyTypes.js';
 import { UserRole } from '#shared/types/userSchema.js';
 import templatesFacade from '../core/v1_layer/templates/index.js';
-import entitiesModel from '../entities/entitiesModel.js';
 import thesauri from '../core/v1_layer/thesauri/index.js';
 import documentQueryBuilder from './documentQueryBuilder.js';
 import { elastic } from './elastic.js';
@@ -25,7 +24,7 @@ import { bulkIndex, indexEntities, updateMapping } from './entitiesIndex.js';
 import * as v2 from './v2_support.js';
 import { EntitiesQueryServiceFactory } from '#api/core/infrastructure/factories/EntitiesQueryServiceFactory.js';
 import { User } from '#api/users.v2/model/User.js';
-import { PostgresUnrestrictedEntitiesQueryFactory } from '#api/core/infrastructure/factories/PostgresUnrestrictedEntitiesQueryFactory.js';
+import { EntitiesDAOFactory } from '#api/core/infrastructure/factories/EntitiesDAOFactory.js';
 
 function processParentThesauri(property, values, dictionaries, properties) {
   if (!values) {
@@ -304,15 +303,9 @@ const _getAggregationDictionary = async (
   if (property.type === 'relationship' || property.type === propertyTypes.newRelationship) {
     const entitiesSharedId = aggregation.buckets.map(bucket => bucket.key);
 
-    const bucketEntities = PostgresUnrestrictedEntitiesQueryFactory.isEnabled()
-      ? await PostgresUnrestrictedEntitiesQueryFactory.default().getSharedIdLabelInfo(
-          entitiesSharedId,
-          language
-        )
-      : await entitiesModel.getUnrestricted(
-          { sharedId: { $in: entitiesSharedId }, language },
-          { sharedId: 1, title: 1, icon: 1 }
-        );
+    const bucketEntities = await EntitiesDAOFactory.default()
+      .unrestricted()
+      .getSharedIdLabelInfo(entitiesSharedId, language);
 
     const dictionary = thesauri.entitiesToThesauri(bucketEntities);
     return [dictionary, indexedDictionaryValues(dictionary)];

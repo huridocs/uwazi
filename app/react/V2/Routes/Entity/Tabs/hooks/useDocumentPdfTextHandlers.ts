@@ -6,6 +6,7 @@ import { useTabGroup } from '#V2/Components/UI/index.js';
 import { convertTextSelectionToTocEntry } from '#V2/Routes/Entity/Components/ToC/index.js';
 import {
   useDocumentPdf,
+  useMetadataEditing,
   useRelationshipsActions,
   useTocActions,
 } from '#V2/Routes/Entity/Components/context/index.js';
@@ -19,8 +20,13 @@ function useDocumentPdfTextHandlers() {
   const { ocrServiceEnabled } = useAtomValue(settingsAtom);
   const user = useAtomValue(userAtom);
   const [userIsAdminOrEditor, setUserIsAdminOrEditor] = useState(false);
-  const { documentPdfSelection: selectedText, setDocumentPdfSelection: setSelectedText } =
-    useDocumentPdf();
+  const {
+    documentPdfSelection: selectedText,
+    pdfSelectionMenuOpen,
+    setDocumentPdfSelection: setSelectedText,
+    setPdfSelectionMenuOpen,
+  } = useDocumentPdf();
+  const { isEditing } = useMetadataEditing();
   const { addEntry } = useTocActions();
   const { openCreateRelationship } = useRelationshipsActions();
   const { focusRelationshipsPanel } = useEntityTabNavigation();
@@ -30,27 +36,25 @@ function useDocumentPdfTextHandlers() {
     setUserIsAdminOrEditor((user?._id && ['admin', 'editor'].includes(user.role)) || false);
   }, [user]);
 
-  useEffect(
-    () => () => {
-      setSelectedText(undefined);
-    },
-    [setSelectedText]
-  );
-
   const handleTextSelect = useCallback(
     (selection: TextSelection) => {
       if (selection.selectionRectangles && selection.selectionRectangles.length > 0) {
         setSelectedText(selection);
+        setPdfSelectionMenuOpen(true);
       } else {
         setSelectedText(undefined);
+        setPdfSelectionMenuOpen(false);
       }
     },
-    [setSelectedText]
+    [setPdfSelectionMenuOpen, setSelectedText]
   );
 
   const handleTextDeselect = useCallback(() => {
-    setSelectedText(undefined);
-  }, [setSelectedText]);
+    setPdfSelectionMenuOpen(false);
+    if (!isEditing) {
+      setSelectedText(undefined);
+    }
+  }, [isEditing, setPdfSelectionMenuOpen, setSelectedText]);
 
   const handleCreateRelationship = useCallback(
     (selection: TextSelection) => {
@@ -76,6 +80,7 @@ function useDocumentPdfTextHandlers() {
 
   return {
     selectedText,
+    pdfSelectionMenuOpen,
     userIsAdminOrEditor,
     ocrServiceEnabled,
     handleTextSelect,
