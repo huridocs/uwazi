@@ -189,6 +189,8 @@ Clear PDF selection,Clear PDF selection
 Clear search,Clear search
 Click,Click
 Click to fill,"Нажмите, чтобы заполнить"
+Click to select an image,Click to select an image
+Click to select audio or video,Click to select audio or video
 Click to select files,Click to select files
 Close,Закрыть
 Code,Code
@@ -506,8 +508,6 @@ Forgot Password?,Забыли пароль?
 Forms and email configuration,Настройка форм и электронной почты
 From,From
 From all suggestions,From all suggestions
-From computer,From computer
-From files,From files
 From previous step,From previous step
 From selection,From selection
 From:,From:
@@ -752,6 +752,7 @@ New user,New user
 Next,Следующий
 No,Нет
 No attachments,Нет вложений
+No audio or video on this entity,No audio or video on this entity
 No chart types match your search.,No chart types match your search.
 No common filters,Нет общих фильтров
 No connected entities yet.,No connected entities yet.
@@ -767,6 +768,7 @@ No files queued yet.,No files queued yet.
 no filters for templates,The combination of entity types doesn't have any filters in common.
 No Group,No Group
 No icon / flag,Нет иконки/флажка
+No images on this entity,No images on this entity
 No items available,No items available
 No Label,Нет метки
 No label,No label
@@ -831,6 +833,7 @@ OCR PDF,Оптическое распознавание символов PDF
 of,из
 Ok,Окей
 OK,Окей
+On this entity,On this entity
 one character,one character
 "Only properties with the same name and configuration in every data source are available
             for both dimensions.","Only properties with the same name and configuration in every data source are available
@@ -852,6 +855,7 @@ Options,Options
 or,или
 or drag and drop here,or drag and drop here
 or drop your files here.,или опустите свои файлы сюда.
+Or paste a URL,Or paste a URL
 Order,Последовательность
 Other,Другой
 other,Другой
@@ -879,6 +883,8 @@ Password Error,Неверный пароль
 Password is too long,Пароль слишком длинный
 Password updated,Пароль обновлен
 Passwords do not match,Passwords do not match
+Paste an audio or video URL to use it as this property without uploading a file. Press Enter to apply.,Paste an audio or video URL to use it as this property without uploading a file. Press Enter to apply.
+Paste an image URL to use it as this property without uploading a file. Press Enter to apply.,Paste an image URL to use it as this property without uploading a file. Press Enter to apply.
 Paste this tag in a page HTML. The chart uses the page language.,Paste this tag in a page HTML. The chart uses the page language.
 Paste URL,Paste URL
 Paste URL here,Paste URL here
@@ -1088,6 +1094,8 @@ Select an existing image,Select an existing image
 Select favicon image,Select favicon image
 Select files on your device,Выбрать файлы на вашем устройстве
 Select from computer,Select from computer
+Select image,Select image
+Select media,Select media
 Select relationship,Select relationship
 Select relationship type,Выберите тип взаимосвязей
 Select site logo image,Select site logo image
