@@ -16,6 +16,10 @@ import type { ResultType } from '#api/core/libs/Result.js';
 import type { PostgresDataSourceDeps } from '../common/PostgresDataSource.js';
 import { PostgresUsersDAO } from './PostgresUsersDAO.js';
 import { PostgresUsersMapper } from './PostgresUsersMapper.js';
+import type { UserFieldGroup } from './UserReadOptions.js';
+
+/** Everything UserAccount's Credentials need: password, secret, lockout state and using2fa. */
+const ACCOUNT_FIELDS: UserFieldGroup[] = ['identity', 'status', 'credentials', 'security'];
 
 class PostgresUsersDataSource implements UsersDataSource {
   private dao: PostgresUsersDAO;
@@ -45,7 +49,7 @@ class PostgresUsersDataSource implements UsersDataSource {
   }
 
   async getById(id: string): Promise<ResultType<User, UserNotFound>> {
-    const row = await this.dao.findOne({ _id: id });
+    const row = await this.dao.findOne({ _id: id }, { fields: ['identity', 'status'] });
 
     if (!row) {
       return Result.fail(new UserNotFound(id));
@@ -65,7 +69,7 @@ class PostgresUsersDataSource implements UsersDataSource {
   }
 
   async getByUsername(username: string): Promise<ResultType<UserAccount, UserNotFound>> {
-    const row = await this.dao.findOne({ username });
+    const row = await this.dao.findOne({ username }, { fields: ACCOUNT_FIELDS });
 
     if (!row) {
       return Result.fail(new UserNotFound(username));
@@ -75,7 +79,7 @@ class PostgresUsersDataSource implements UsersDataSource {
   }
 
   async getAccountById(id: string): Promise<ResultType<UserAccount, UserNotFound>> {
-    const row = await this.dao.findOne({ _id: id });
+    const row = await this.dao.findOne({ _id: id }, { fields: ACCOUNT_FIELDS });
 
     if (!row) {
       return Result.fail(new UserNotFound(id));
@@ -85,7 +89,9 @@ class PostgresUsersDataSource implements UsersDataSource {
   }
 
   async countActiveUsers(): Promise<number> {
-    return this.dao.count(this.dao.notPublicUserFilter());
+    // The default scope already excludes both soft-deleted and system users (D5), so this
+    // no longer passes a guard filter of its own.
+    return this.dao.count();
   }
 
   async insert(user: UserAccount): Promise<void> {
@@ -104,7 +110,10 @@ class PostgresUsersDataSource implements UsersDataSource {
     username: string,
     code: string
   ): Promise<ResultType<User, InvalidUnlockCode>> {
-    const row = await this.dao.findOne({ username, accountUnlockCode: code });
+    const row = await this.dao.findOne(
+      { username, accountUnlockCode: code },
+      { fields: ['identity'] }
+    );
 
     if (!row) {
       return Result.fail(new InvalidUnlockCode());
@@ -125,7 +134,7 @@ class PostgresUsersDataSource implements UsersDataSource {
   }
 
   async getTwoFactorStatus(userId: string): Promise<ResultType<TwoFactorStatus, UserNotFound>> {
-    const row = await this.dao.findOne({ _id: userId });
+    const row = await this.dao.findOne({ _id: userId }, { fields: ['identity', 'status'] });
 
     if (!row) {
       return Result.fail(new UserNotFound(userId));
@@ -139,7 +148,7 @@ class PostgresUsersDataSource implements UsersDataSource {
   }
 
   async getTwoFactorSecret(userId: string): Promise<ResultType<string | null, UserNotFound>> {
-    const row = await this.dao.findOne({ _id: userId });
+    const row = await this.dao.findOne({ _id: userId }, { fields: ['security'] });
 
     if (!row) {
       return Result.fail(new UserNotFound(userId));
