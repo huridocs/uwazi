@@ -31,7 +31,11 @@ import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import templatesApi from '#api/core/v1_layer/templates/templates.js';
 import { GetRelationshipTypesUseCaseFactory } from '#api/core/infrastructure/factories/GetRelationshipTypesUseCaseFactory.js';
 import thesauriApi from '../api/core/v1_layer/thesauri/thesauri.js';
-import translationsApi, { IndexedTranslations } from '../api/i18n/translations.js';
+import { TranslationsQueryServiceFactory } from '#api/core/infrastructure/factories/TranslationsQueryServiceFactory.js';
+import {
+  IndexedTranslations,
+  toIndexedTranslations,
+} from '#api/core/infrastructure/express/translation/LegacyTranslationDtoMapper.js';
 import settingsApi from '../api/settings/settings.js';
 import { shapeSettingsForSSR } from '../api/settings/publicSettings.js';
 import { omitInlineCustomization } from '#shared/settings/omitInlineCustomization.js';
@@ -52,6 +56,10 @@ import { isMobileDevice } from '../shared/detectDevice.js';
 import { loadIcons } from '#UI/Icon/library.js';
 import type { ClientFeatureFlags } from '#V2/shared/types.js';
 import type { LanguageISO6391 } from '#shared/types/commonTypes.js';
+import {
+  ENTITY_VIEWER_LEGACY_REDIRECT_STATUS,
+  getEntityViewerLegacyRedirect,
+} from './Viewer/entityViewerLegacyRedirect.js';
 
 loadIcons();
 
@@ -184,7 +192,12 @@ const prepareStores = async (req: ExpressRequest, settings: ClientSettings, lang
   const userAgent = req.get('user-agent') || '';
 
   // Only hydrate the active locale — language switches trigger a full navigation / SSR.
-  const translations = await translationsApi.get({ locale: locale as LanguageISO6391 });
+  const translations = toIndexedTranslations(
+    await TranslationsQueryServiceFactory.default().getLegacy({
+      locale: locale as LanguageISO6391,
+      context: 'System',
+    })
+  );
 
   const [
     userApiResponse = {},
@@ -349,6 +362,34 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
   );
   const { connection, ...headers } = req.headers;
 
+  const languageKeys = (settings?.languages?.map(lang => lang.key) as string[]) || [];
+  const { globalMatomo, ciMatomoActive, featureFlags } = tenants.current();
+  const clientFeatureFlags: ClientFeatureFlags = {
+    paragraphExtraction: featureFlags?.paragraphExtraction,
+    newHeader: featureFlags?.newHeader,
+    featureFlagEntityViewerv2: featureFlags?.featureFlagEntityViewerv2,
+    themeCustomization: featureFlags?.themeCustomization,
+    aiAssistant: featureFlags?.aiAssistant,
+  };
+  const settingsWithFeatureFlags = {
+    ...settings,
+    features: {
+      ...(settings.features || {}),
+      ...clientFeatureFlags,
+    },
+  };
+
+  // TEMPORARY (issue #9522): early 301 for deprecated /document and V1 /entity/:id/<tab>
+  // paths before route loaders / React render. Remove with entityViewerLegacyRedirect.ts.
+  const legacyEntityRedirect = getEntityViewerLegacyRedirect(req.path, {
+    languageKeys,
+    entityViewerV2: Boolean(clientFeatureFlags.featureFlagEntityViewerv2),
+  });
+  if (legacyEntityRedirect) {
+    res.redirect(ENTITY_VIEWER_LEGACY_REDIRECT_STATUS, legacyEntityRedirect.pathname);
+    return;
+  }
+
   const [lib, cards, table, map, login] = await withSpan('dynamic_imports', async () =>
     Promise.all([
       import('./Library/Library.js'),
@@ -369,7 +410,7 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
 
   const serverServices = createServerServices(req);
   const routes = getRoutes(
-    settings,
+    settingsWithFeatureFlags,
     req.user && req.user._id,
     headers,
     indexComponents,
@@ -382,8 +423,6 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
     res.redirect('/404');
     return;
   }
-
-  const languageKeys = (settings?.languages?.map(lang => lang.key) as string[]) || [];
 
   req.ssrRoutePattern =
     matched
@@ -419,20 +458,6 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
     : req.language;
 
   const isCatchAll = matched ? matched[matched.length - 1].route.path === '*' : true;
-  const { globalMatomo, ciMatomoActive, featureFlags } = tenants.current();
-  const clientFeatureFlags: ClientFeatureFlags = {
-    paragraphExtraction: featureFlags?.paragraphExtraction,
-    newHeader: featureFlags?.newHeader,
-    themeCustomization: featureFlags?.themeCustomization,
-    aiAssistant: featureFlags?.aiAssistant,
-  };
-  const settingsWithFeatureFlags = {
-    ...settings,
-    features: {
-      ...(settings.features || {}),
-      ...clientFeatureFlags,
-    },
-  };
 
   if (req.aborted) {
     logSSRAborted(req, 'Store data', ssrStart, routeName);

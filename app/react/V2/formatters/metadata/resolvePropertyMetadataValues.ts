@@ -64,4 +64,4 @@ const resolvePropertyType = (
   return (inheritedRelationship.inheritedType || property.type) as BaseMetadataProperty['type'];
 };
 
-export { resolvePropertyMetadataValues, resolvePropertyType };
+export { resolveInheritedRelationship, resolvePropertyMetadataValues, resolvePropertyType };

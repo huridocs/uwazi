@@ -9,7 +9,7 @@ import { MongoTemplatesDataSource } from '#api/core/infrastructure/mongodb/templ
 import { MongoTemplatesDAO } from '#api/core/infrastructure/mongodb/template/MongoTemplatesDAO.js';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
-import { DefaultTranslationsDataSource } from '#api/i18n.v2/database/data_source_defaults.js';
+import { TranslationsDataSourceFactory } from '#api/core/infrastructure/factories/TranslationsDataSourceFactory.js';
 import { User } from '#api/users.v2/model/User.js';
 import { DeleteThesaurusUseCase } from '../DeleteThesaurus.js';
 import { ThesaurusNotFoundError, ThesaurusInUseError } from '#api/core/domain/thesaurus/errors.js';
@@ -130,7 +130,7 @@ describe('DeleteThesaurusUseCase', () => {
           const transactionManager = ExecutionContext.transactionManager as MongoTransactionManager;
 
           const thesauriDS = ThesauriDataSourceFactory.default({ transactionManager });
-          const translationsDS = DefaultTranslationsDataSource(transactionManager);
+          const translationsDS = TranslationsDataSourceFactory.default({ transactionManager });
           const templatesDS = new MongoTemplatesDataSource({
             db: getConnection(),
             transactionManager,

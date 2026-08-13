@@ -71,6 +71,7 @@ const FilesTab = () => {
         rows={supportingRows}
         selectedRowIds={selectedRowIds}
         focusedRowId={focusedRow?.rowId}
+        showLanguageColumn={false}
         onSelectRows={setSelectedRowIds}
         onFocusRow={onFocus}
         onViewRow={onView}

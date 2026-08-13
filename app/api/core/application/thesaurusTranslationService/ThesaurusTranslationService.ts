@@ -1,45 +1,155 @@
 import { Thesaurus } from '#api/core/domain/thesaurus/Thesaurus.js';
-import { Translation } from '#api/i18n.v2/model/Translation.js';
-import { TranslationsDataSource } from '#api/i18n.v2/contracts/TranslationsDataSource.js';
+import { Translation } from '#api/core/domain/translation/Translation.js';
 import { ThesaurusDiff } from '#api/core/domain/thesaurus/ThesaurusDiff.js';
 import { SettingsDataSource } from '../contracts/SettingsDataSource.js';
+import { TranslationsService } from '../translation/TranslationsService.js';
 
 type Deps = {
   settingsDS: SettingsDataSource;
-  translationsDS: TranslationsDataSource;
+  translationsService: TranslationsService;
 };
+
+type LabelChanges = {
+  labelsToBeRemoved: Set<string>;
+  labelsToBeAdded: Set<string>;
+  labelsToBeUpdated: { [from: string]: string };
+};
+
+function emptyLabelChanges(): LabelChanges {
+  return {
+    labelsToBeRemoved: new Set<string>(),
+    labelsToBeAdded: new Set<string>(),
+    labelsToBeUpdated: {},
+  };
+}
+
+function mergeLabelChanges(left: LabelChanges, right: LabelChanges): LabelChanges {
+  return {
+    labelsToBeRemoved: new Set([...left.labelsToBeRemoved, ...right.labelsToBeRemoved]),
+    labelsToBeAdded: new Set([...left.labelsToBeAdded, ...right.labelsToBeAdded]),
+    labelsToBeUpdated: { ...left.labelsToBeUpdated, ...right.labelsToBeUpdated },
+  };
+}
+
+function labelExistsInOtherValues(thesaurus: Thesaurus, label: string, excludeId: string) {
+  return thesaurus.values.some(value => {
+    if (value.label === label && value.id !== excludeId) return true;
+
+    if (value.values) {
+      return value.values.some(nested => nested.label === label && nested.id !== excludeId);
+    }
+
+    return false;
+  });
+}
+
+function createLabelsFromThesaurusValues(thesaurusValues: Thesaurus['values']) {
+  const labels = new Set<string>();
+
+  thesaurusValues.forEach(value => {
+    labels.add(value.label);
+    value.values?.forEach(nestedValue => {
+      labels.add(nestedValue.label);
+    });
+  });
+
+  return labels;
+}
+
+function collectRemovedLabels(diff: ThesaurusDiff): LabelChanges {
+  const changes = emptyLabelChanges();
+  diff.removedValues.forEach(value => {
+    if (!diff.after.getValueByLabel(value.label)) {
+      changes.labelsToBeRemoved.add(value.label);
+    }
+  });
+  return changes;
+}
+
+function collectAddedLabels(diff: ThesaurusDiff): LabelChanges {
+  const changes = emptyLabelChanges();
+  diff.addedValues.forEach(value => {
+    if (!diff.before.getValueByLabel(value.label)) {
+      changes.labelsToBeAdded.add(value.label);
+    }
+  });
+  return changes;
+}
+
+function resolveUpdatedLabelChange(
+  beforeLabel: string,
+  afterLabel: string,
+  oldLabelExistsInOtherValues: boolean,
+  newLabelExistedInOtherValues: boolean
+): LabelChanges {
+  if (!oldLabelExistsInOtherValues && !newLabelExistedInOtherValues) {
+    return {
+      ...emptyLabelChanges(),
+      labelsToBeUpdated: { [beforeLabel]: afterLabel },
+    };
+  }
+
+  const changes = emptyLabelChanges();
+  if (!oldLabelExistsInOtherValues && newLabelExistedInOtherValues) {
+    changes.labelsToBeRemoved.add(beforeLabel);
+  }
+  if (oldLabelExistsInOtherValues && !newLabelExistedInOtherValues) {
+    changes.labelsToBeAdded.add(afterLabel);
+  }
+  return changes;
+}
+
+function labelChangeForUpdatedValue(
+  diff: ThesaurusDiff,
+  value: Thesaurus['values'][number]
+): LabelChanges {
+  const beforeValue = diff.before.getValueById(value.id)!;
+  if (beforeValue.label === value.label) {
+    return emptyLabelChanges();
+  }
+
+  return resolveUpdatedLabelChange(
+    beforeValue.label,
+    value.label,
+    labelExistsInOtherValues(diff.after, beforeValue.label, value.id),
+    labelExistsInOtherValues(diff.before, value.label, value.id)
+  );
+}
+
+function collectUpdatedLabelChanges(diff: ThesaurusDiff): LabelChanges {
+  return diff.updatedValues.reduce(
+    (memo, value) => mergeLabelChanges(memo, labelChangeForUpdatedValue(diff, value)),
+    emptyLabelChanges()
+  );
+}
+
+function collectLabelChanges(diff: ThesaurusDiff): LabelChanges {
+  let changes = emptyLabelChanges();
+
+  if (diff.removedValues.length) {
+    changes = mergeLabelChanges(changes, collectRemovedLabels(diff));
+  }
+  if (diff.addedValues.length) {
+    changes = mergeLabelChanges(changes, collectAddedLabels(diff));
+  }
+  if (diff.updatedValues.length) {
+    changes = mergeLabelChanges(changes, collectUpdatedLabelChanges(diff));
+  }
+  if (diff.updatedName) {
+    changes = mergeLabelChanges(changes, {
+      ...emptyLabelChanges(),
+      labelsToBeUpdated: { [diff.before.name]: diff.after.name },
+    });
+  }
+
+  return changes;
+}
 
 class ThesaurusTranslationService {
   constructor(private deps: Deps) {}
 
-  private labelExistsInOtherValues(thesaurus: Thesaurus, label: string, excludeId: string) {
-    return thesaurus.values.some(value => {
-      if (value.label === label && value.id !== excludeId) return true;
-
-      if (value.values) {
-        return value.values.some(nested => nested.label === label && nested.id !== excludeId);
-      }
-
-      return false;
-    });
-  }
-
-  private createLabelsFromThesaurusValues(thesaurusValues: Thesaurus['values']) {
-    const labels = new Set<string>();
-
-    thesaurusValues.forEach(value => {
-      labels.add(value.label);
-      value.values?.forEach(nestedValue => {
-        labels.add(nestedValue.label);
-      });
-    });
-
-    return labels;
-  }
-
   private async createTranslations(id: string, name: string, labels: Set<string>) {
     const installedLanguages = await this.deps.settingsDS.getInstalledLanguages();
-
     const context = {
       type: 'Thesaurus' as const,
       label: name,
@@ -47,7 +157,6 @@ class ThesaurusTranslationService {
     };
 
     const translations: Translation[] = [];
-
     installedLanguages.forEach(language => {
       labels.forEach(label => {
         translations.push(new Translation(label, label, language.key, context));
@@ -58,103 +167,47 @@ class ThesaurusTranslationService {
   }
 
   async create(thesaurus: Thesaurus) {
-    const labels = this.createLabelsFromThesaurusValues(thesaurus.values);
+    const labels = createLabelsFromThesaurusValues(thesaurus.values);
     labels.add(thesaurus.name);
 
     const translations = await this.createTranslations(thesaurus.id, thesaurus.name, labels);
-
-    await this.deps.translationsDS.insert(translations);
+    await this.deps.translationsService.insert(translations);
   }
 
-  async update(diff: ThesaurusDiff) {
-    const labelsToBeRemoved = new Set<string>();
-    const labelsToBeAdded = new Set<string>();
-    const labelsToBeUpdated: { [from: string]: string } = {};
-
-    if (diff.removedValues.length) {
-      diff.removedValues.forEach(value => {
-        const stillExisting = diff.after.getValueByLabel(value.label);
-
-        if (!stillExisting) {
-          labelsToBeRemoved.add(value.label);
-        }
-      });
+  private async persistLabelChanges(diff: ThesaurusDiff, changes: LabelChanges) {
+    if (changes.labelsToBeRemoved.size) {
+      await this.deps.translationsService.deleteKeysByContext(
+        diff.id,
+        Array.from(changes.labelsToBeRemoved)
+      );
     }
 
-    if (diff.addedValues.length) {
-      diff.addedValues.forEach(value => {
-        const alreadyExists = diff.before.getValueByLabel(value.label);
-
-        if (!alreadyExists) {
-          labelsToBeAdded.add(value.label);
-        }
-      });
+    if (changes.labelsToBeAdded.size) {
+      const translations = await this.createTranslations(
+        diff.id,
+        diff.name,
+        changes.labelsToBeAdded
+      );
+      await this.deps.translationsService.insert(translations);
     }
 
-    if (diff.updatedValues.length) {
-      diff.updatedValues.forEach(value => {
-        const beforeValue = diff.before.getValueById(value.id)!;
-        const labelChanged = beforeValue.label !== value.label;
-
-        if (!labelChanged) return;
-
-        const oldLabelExistsInOtherValues = this.labelExistsInOtherValues(
-          diff.after,
-          beforeValue.label,
-          value.id
-        );
-
-        const newLabelExistedInOtherValues = this.labelExistsInOtherValues(
-          diff.before,
-          value.label,
-          value.id
-        );
-
-        const isSimpleRename = !oldLabelExistsInOtherValues && !newLabelExistedInOtherValues;
-        const shouldRemoveOldLabel = !oldLabelExistsInOtherValues && newLabelExistedInOtherValues;
-        const shouldAddNewLabel = oldLabelExistsInOtherValues && !newLabelExistedInOtherValues;
-
-        if (isSimpleRename) {
-          labelsToBeUpdated[beforeValue.label] = value.label;
-        }
-
-        if (shouldRemoveOldLabel) {
-          labelsToBeRemoved.add(beforeValue.label);
-        }
-
-        if (shouldAddNewLabel) {
-          labelsToBeAdded.add(value.label);
-        }
-      });
-    }
-
-    if (labelsToBeRemoved.size) {
-      await this.deps.translationsDS.deleteKeysByContext(diff.id, Array.from(labelsToBeRemoved));
-    }
-
-    if (labelsToBeAdded.size) {
-      const translations = await this.createTranslations(diff.id, diff.name, labelsToBeAdded);
-
-      await this.deps.translationsDS.insert(translations);
-    }
-
-    if (diff.updatedName) {
-      labelsToBeUpdated[diff.before.name] = diff.after.name;
-    }
-
-    if (Object.keys(labelsToBeUpdated).length > 0) {
+    if (Object.keys(changes.labelsToBeUpdated).length > 0) {
       const defaultLanguage = await this.deps.settingsDS.getDefaultLanguageKey();
-
-      await this.deps.translationsDS.updateKeysByContextV2({
+      await this.deps.translationsService.updateKeysByContextV2({
         contextId: diff.id,
-        keyChanges: labelsToBeUpdated,
+        keyChanges: changes.labelsToBeUpdated,
         defaultLanguage,
       });
     }
 
     if (diff.updatedName) {
-      await this.deps.translationsDS.updateContextLabel(diff.id, diff.after.name);
+      await this.deps.translationsService.updateContextLabel(diff.id, diff.after.name);
     }
+  }
+
+  async update(diff: ThesaurusDiff) {
+    const changes = collectLabelChanges(diff);
+    await this.persistLabelChanges(diff, changes);
   }
 }
 

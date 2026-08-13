@@ -4,9 +4,16 @@ import { LinkIcon } from '@heroicons/react/24/outline';
 import { Translate } from '#app/I18N/index.js';
 import { relationshipTypesAtom } from '#V2/atoms/relationshipTypes.js';
 import { RelationshipMetadataProperty } from '#V2/formatters/types.js';
+import type { Entity } from '#V2/api/entities/types.js';
 import { MetadataCard } from './MetadataCard.js';
 import { RelationCaption } from './RelationCaption.js';
-import { ConnectionPills, isEntityRelationshipValue } from './ConnectionPills.js';
+import {
+  ConnectionPills,
+  isEntityRelationshipValue,
+  type OpenEntityTarget,
+} from './ConnectionPills.js';
+import { RelationshipConnectionsTable } from './RelationshipConnectionsTable.js';
+import { inheritedCellContent } from './inheritedCellContent.js';
 
 type RelationshipProps = {
   label: string;
@@ -17,7 +24,8 @@ type RelationshipProps = {
   relationTypeId?: string;
   targetTemplateId?: string;
   inheritLabel?: string;
-  inheritedContent?: React.ReactNode;
+  sourceMetadata?: NonNullable<Entity['metadata']>[string];
+  onOpenEntity?: (target: OpenEntityTarget) => void;
 };
 
 const Relationship = ({
@@ -29,7 +37,8 @@ const Relationship = ({
   relationTypeId,
   targetTemplateId,
   inheritLabel,
-  inheritedContent,
+  sourceMetadata,
+  onOpenEntity,
 }: RelationshipProps) => {
   const relationshipTypes = useAtomValue(relationshipTypesAtom);
   const relationLabel = useMemo(() => {
@@ -40,6 +49,25 @@ const Relationship = ({
   if (!Array.isArray(values) || !values.length || !values.every(isEntityRelationshipValue)) {
     return null;
   }
+
+  const rows = values.map(value => ({
+    id: value._id,
+    label: value.title,
+    templateId: value.templateId,
+    authorized: value.authorized,
+    iconId: value.icon?._id,
+  }));
+
+  const columns = inheritLabel
+    ? [
+        {
+          label: inheritLabel,
+          cellsByEntityId: Object.fromEntries(
+            rows.map(row => [row.id, inheritedCellContent(sourceMetadata, row.id)])
+          ),
+        },
+      ]
+    : [];
 
   return (
     <MetadataCard className={className}>
@@ -54,8 +82,30 @@ const Relationship = ({
       </dt>
       <dd className="mt-1 flex flex-col gap-1.5">
         <RelationCaption relationLabel={relationLabel} inheritLabel={inheritLabel} />
-        <ConnectionPills values={values} targetTemplateId={targetTemplateId} />
-        {inheritedContent || null}
+        {inheritLabel ? (
+          <RelationshipConnectionsTable
+            rows={rows}
+            columns={columns}
+            translationContext={translationContext}
+            targetTemplateId={targetTemplateId}
+            onEntityClick={
+              onOpenEntity
+                ? row =>
+                    onOpenEntity({
+                      sharedId: row.id,
+                      title: row.label,
+                      templateId: row.templateId || targetTemplateId || '',
+                    })
+                : undefined
+            }
+          />
+        ) : (
+          <ConnectionPills
+            values={values}
+            targetTemplateId={targetTemplateId}
+            onOpenEntity={onOpenEntity}
+          />
+        )}
       </dd>
     </MetadataCard>
   );

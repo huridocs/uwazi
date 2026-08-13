@@ -1,5 +1,5 @@
-import { TranslationCollection } from '#api/i18n.v2/model/TranslationCollection.js';
-import { Translation } from '#api/i18n.v2/model/Translation.js';
+import { TranslationCollection } from '#api/core/domain/translation/TranslationCollection.js';
+import { Translation } from '#api/core/domain/translation/Translation.js';
 import {
   buildMissingBucketLabels,
   createMultilingualLabelResolver,

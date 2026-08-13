@@ -5,6 +5,11 @@ import { localeAtom, templatesAtom } from '#V2/atoms/index.js';
 import { Entity } from '#V2/api/entities/types.js';
 import type { MetadataProperty } from '#V2/formatters/types.js';
 import { useFormatMetadata } from '#V2/Components/Metadata/hooks/useFormatMetadata.js';
+import { settingsAtom } from '#V2/atoms/settingsAtom.js';
+import {
+  getEntityViewerV2BasePath,
+  isEntityViewerV2Enabled,
+} from '#app/utils/entityViewerPaths.js';
 
 type EntitySeoProps = {
   entity: Entity;
@@ -59,6 +64,7 @@ const relatedEntityTitles = (entity: Entity, limit = 30): string[] => {
 const EntitySeo = ({ entity }: EntitySeoProps) => {
   const locale = useAtomValue(localeAtom);
   const templates = useAtomValue(templatesAtom);
+  const settings = useAtomValue(settingsAtom);
   const { metadata, entityTemplate } = useFormatMetadata(entity, templates, {
     groupGeolocationProperties: true,
   });
@@ -91,7 +97,7 @@ const EntitySeo = ({ entity }: EntitySeoProps) => {
     return parts.join(' — ').slice(0, 160);
   }, [entity.title, entityTemplate?.name, summaryRows]);
 
-  const canonicalPath = `/${locale}/entityv2/${entity.sharedId}`;
+  const canonicalPath = `/${locale}${getEntityViewerV2BasePath(isEntityViewerV2Enabled(settings?.features))}/${entity.sharedId}`;
 
   const jsonLd = useMemo(
     () => ({

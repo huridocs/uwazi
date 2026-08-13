@@ -214,26 +214,27 @@ const EditEntity = ({
       {isMetadataReady && (
         <Fragment key={selectedTemplate}>
           {displayProperties.map(property => (
-            <EditEntityPropertyField
-              key={property._id}
-              property={property}
-              disabled={disabled}
-              activeTemplateId={activeTemplate?._id ?? ''}
-              thesauri={thesauri}
-              templates={templates}
-              metadataProperties={metadataProperties}
-              metadata={metadata}
-              entityMetadata={entity?.metadata}
-              entitySharedId={entity?.sharedId ?? 'NEW_ENTITY'}
-              firstEditableRelationshipId={firstEditableRelationshipId}
-              entityAttachments={entityAttachments}
-              pendingAttachments={pendingAttachments}
-              registerPendingAttachment={registerPendingAttachment}
-              removePendingAttachmentIfUnused={removePendingAttachmentIfUnused}
-              onEditSource={onEditSource}
-              relationshipLookup={relationshipLookup}
-              relationshipLookupSearch={relationshipLookupSearch}
-            />
+            <div key={property._id} className="flex flex-col gap-1">
+              <EditEntityPropertyField
+                property={property}
+                disabled={disabled}
+                activeTemplateId={activeTemplate?._id ?? ''}
+                thesauri={thesauri}
+                templates={templates}
+                metadataProperties={metadataProperties}
+                metadata={metadata}
+                entityMetadata={entity?.metadata}
+                entitySharedId={entity?.sharedId ?? 'NEW_ENTITY'}
+                firstEditableRelationshipId={firstEditableRelationshipId}
+                entityAttachments={entityAttachments}
+                pendingAttachments={pendingAttachments}
+                registerPendingAttachment={registerPendingAttachment}
+                removePendingAttachmentIfUnused={removePendingAttachmentIfUnused}
+                onEditSource={onEditSource}
+                relationshipLookup={relationshipLookup}
+                relationshipLookupSearch={relationshipLookupSearch}
+              />
+            </div>
           ))}
         </Fragment>
       )}

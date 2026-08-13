@@ -93,17 +93,6 @@ const getSideTabButtons = ({
       break;
     case MAIN_TAB.RELATIONSHIPS:
       pushDocument();
-      pushMetadata();
-      buttons.push(
-        {
-          id: SIDE_TAB.TOC,
-          label: <TabLabel text="ToC" />,
-        },
-        {
-          id: SIDE_TAB.SEARCH,
-          label: <TabLabel text="Search" dirty={searchDirty} />,
-        }
-      );
       break;
     case MAIN_TAB.FILES:
       buttons.push({

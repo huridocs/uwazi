@@ -25,6 +25,26 @@ Backend is in `app/api`
 - **formatting fix:** `yarn prettier --write`
 - **Translations CSV update:** never edit translation keys manually in CSV files; run `yarn update-translations-csv` instead.
 
+### Running tests (agents)
+
+Integration tests talk to whatever Mongo/Postgres the developer already has (local install **or** Docker). Prefer not to start/restart those services unless the developer asks or nothing is reachable.
+
+**Try Jest invocations in this order** (different environments need different shapes):
+
+1. **Bare allowlisted form** (often works on local WSL/desktop; stays out of the Cursor sandbox):
+   ```bash
+   DEBUG=true node --no-experimental-fetch ./node_modules/.bin/jest <path-or-pattern> -w=4
+   ```
+2. **With Node 20 on PATH** (often needed on Cursor Cloud VM, where default `node` may be v22):
+   ```bash
+   export PATH="$HOME/.nvm/versions/node/v20.19.6/bin:$PATH"
+   DEBUG=true node --no-experimental-fetch ./node_modules/.bin/jest <path-or-pattern> -w=4
+   ```
+3. **If you still get `ECONNREFUSED 127.0.0.1:27017`**, try again with unrestricted/host network permissions for the shell (`required_permissions: ["all"]`). That error is often sandbox isolation, not a missing Mongo. Do not jump straight to starting Docker.
+4. **Only if Mongo/Postgres are actually down** and this is a compose-based env (e.g. Cursor Cloud VM): bring up services per “Cursor Cloud specific instructions” below. Never assume every developer uses Docker.
+
+Paths may be relative to `app/api` (e.g. `csv/specs/csvLoaderThesauri.spec.ts`) or under `app/api/...`; both work from the repo root.
+
 ### Architecture Status
 
 The backend is currently a mix of V1 (legacy) and V2 (new core) code. The migration is in progress.
@@ -144,7 +164,7 @@ Code shared between frontend and backend is in `app/shared/`:
 
 ## Cursor Cloud specific instructions
 
-Non-obvious caveats for running this repo in the Cursor Cloud VM. Standard commands (`yarn hot`, `yarn test`, lint) live in the sections above and in `package.json`.
+Non-obvious caveats for running this repo in the Cursor Cloud VM. Standard commands (`yarn hot`, `yarn test`, lint) live in the sections above and in `package.json`. For Jest, see **Running tests (agents)** — try the bare form and the PATH-prefixed form; use Docker bring-up only when services are actually missing.
 
 ### Node version
 - Use Node **20.19.6** via nvm. The VM has a default `/exec-daemon/node` (v22) that wins on `PATH` in non-interactive shells, so prefix commands with `export PATH="$HOME/.nvm/versions/node/v20.19.6/bin:$PATH"` (already done in interactive shells via `~/.bashrc`). The update script also does this before `yarn install`.

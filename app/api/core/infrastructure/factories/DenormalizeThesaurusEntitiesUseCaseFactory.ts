@@ -1,6 +1,6 @@
 import { PropertyAssignmentCreatorServiceStrategy } from '#api/core/application/propertyAssignmentCreatorService/PropertyAssignmentCreatorServiceStrategy.js';
 import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
-import { CachedTranslationsDataSource } from '#api/i18n.v2/database/data_source_defaults.js';
+import { TranslationsDataSourceFactory } from '#api/core/infrastructure/factories/TranslationsDataSourceFactory.js';
 import { DenormalizeThesaurusEntitiesUseCase } from '#api/core/application/DenormalizeThesaurusEntities.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { MongoTransactionManager } from '../mongodb/common/MongoTransactionManager.js';
@@ -17,7 +17,7 @@ class DenormalizeThesaurusEntitiesUseCaseFactory {
     const settingsDS = SettingsDataSourceFactory.cached({ transactionManager });
     const thesauriDS = ThesauriDataSourceFactory.cached({ transactionManager });
     const entitiesDS = EntitiesDataSourceFactory.default({ transactionManager });
-    const translationsDS = CachedTranslationsDataSource(transactionManager);
+    const translationsDS = TranslationsDataSourceFactory.cached({ transactionManager });
 
     const propertyAssignmentCreatorServiceStrategy =
       PropertyAssignmentCreatorServiceStrategy.create({
