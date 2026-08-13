@@ -1,0 +1,230 @@
+# Users Refactor — Decision Record
+
+Not executable. This is the shared preamble for plans 01–05; every plan references
+decisions by number instead of restating them. If a plan seems to contradict something
+here, this file wins.
+
+Goal: give users a **defined public contract** so the ~12 modules that depend on users
+stop reaching into persistence, and make the DAOs genuine building blocks instead of a
+de-facto interface.
+
+---
+
+## D1 — Three consumers, three roles
+
+There will be a `getById` on three components. This is CQRS, not duplication. Do not
+"consolidate" them.
+
+| Component | Question it answers | Returns | Consumers |
+|---|---|---|---|
+| `UsersDataSource` *(exists)* | "load the user so I can **change** it" | `User` / `UserAccount` aggregate, credentials hydrated | v2 use cases only |
+| `UsersDirectory` *(new)* | "who is user X, so I can **act on their behalf or name them**" | `UserView` / `UserProfile` | any internal module |
+| `UsersQueryService` *(exists, retyped)* | "what does the **users settings screen** render" | `UserProfile[]` | HTTP controllers, SSR loaders |
+
+Write side loads aggregates and mutates them. Read sides never touch a domain object —
+they project rows straight to read models. The mapper is the only bridge.
+
+## D2 — Two read models, no more
+
+Earlier drafts had five. Three didn't earn their place: the settings-list model and the
+session model are field-identical, "actor" and "view" are field-identical (the difference
+is provenance, which belongs in the method name), and a `{_id, username}` type is a strict
+subset of `UserView`.
+
+```ts
+type UserView = { _id: string; username: string; role: UserRole; email: string };
+
+type UserProfile = UserView & {
+  groups: GroupSummary[];   // from #shared/contracts/UserGroups.js
+  using2fa: boolean;
+  accountLocked: boolean;
+};
+```
+
+They partition on a real question: **does the reader get to know account state?**
+`UserView` is identity — who is this, what may I call them. `UserProfile` adds account
+state and group membership, which only two audiences need: the authenticated subject
+itself (session, `getCurrent`, job actors — group membership drives permissions) and an
+admin managing accounts. Nobody else may see whether a colleague has 2FA on.
+
+- `role` uses the domain `UserRole` enum from `app/api/core/domain/user/User.ts`, not the
+  string unions redeclared in `#shared/contracts/Users.ts` and `app/api/users.v2/model/User.ts`.
+- `using2fa` / `accountLocked` are **required** on `UserProfile`; the mappers coerce the
+  optional DBO/row fields with `Boolean(...)`.
+- Declared as exact object types. Never `UserDBO & { groups }` — that is what leaks
+  `password?`/`secret?`/`deletedAt` into `ServerUsersService` today.
+- Built **only** by the backend mappers. No structural construction at call sites.
+
+## D3 — Contracts
+
+```ts
+interface UsersDirectory {
+  getById(id: string): Promise<ResultType<UserView, UserNotFound>>;
+  getProfile(id: string): Promise<ResultType<UserProfile, UserNotFound>>;
+  getActor(id: string): Promise<ResultType<UserProfile, UserNotFound>>;  // sees soft-deleted
+  getManyByIds(ids: string[]): Promise<UserView[]>;
+  searchByUsernameOrEmail(term: string): Promise<UserView[]>;
+  list(): Promise<UserView[]>;
+}
+
+interface UsersQueryService {
+  listUsers(): Promise<UserProfile[]>;
+}
+```
+
+- `ResultType` for the three single-user lookups (absence is a distinct outcome); plain
+  arrays for the collection methods (empty is not a failure, and wrapping forces every
+  caller to unwrap something that cannot fail).
+- **`getActor` is the only method that resolves soft-deleted users.** Four call sites
+  need this deliberately — actor attribution on historical records. Keeping it to one
+  named method makes those call sites self-documenting and stops every other path from
+  opting in.
+- `getActor` returns `UserProfile`, not `UserView`, because `setupQueueWorker.ts:93`
+  feeds `User.createFrom`, whose `groups` field drives permission checks — an actor
+  resolved without groups silently *loses* access inside jobs. Attribution call sites
+  ignore the extra fields.
+- `UsersQueryService` legitimately has one method. `findByEmailOrUsername` and
+  `listBasicInfo` move to the Directory: `collaborators.ts` and `search.js` are internal
+  modules composing their own shapes, not HTTP responses. The QueryService owns *the
+  settings screen read*, and that is where pagination/sorting/filtering will land — which
+  is what the currently-unused `query` parameter was reaching for.
+- `listUsers()` takes **no filter argument**. Both current call sites pass `{}`, and the
+  parameter is a backend-specific filter type leaking through a public signature.
+
+## D4 — DAOs are private building blocks
+
+Only three components may touch a DAO: `UsersDataSource`, `UsersDirectory`,
+`UsersQueryService` — plus the factories that construct them. Enforced by an eslint
+`no-restricted-imports` fence (plan 03), because the four duplicated feature-flag
+ternaries in `app/api/**` are proof that direct factory access spreads.
+
+`UsersDAOFactory` is demoted to infrastructure-internal. It is not deleted — the three
+adapter factories still use it.
+
+**No shared DAO interface.** That is what forces a lowest-common-denominator query
+vocabulary and produces the `as any as MongoUsersDAO` casts. Each DAO speaks its own
+backend: `Filter<UserDBO>` for Mongo, knex conditions for Postgres.
+
+**DAOs are not required to have matching signatures. They are required to enforce
+matching policy** (D5 guards + D6 field groups). Parity is proven at the contract level
+in plan 04, not at the DAO level — which is why `UsersDAOConsistency.spec.ts` is deleted
+rather than extended.
+
+**DAOs return raw nullable rows, never `Result`.** `Result.fail(new UserNotFound(...))`
+is a domain concern; it belongs in the adapter above. Today's `MongoUsersDAO.getById`
+returning `ResultType<UserDBO, UserNotFound>` is business leaking into infrastructure.
+
+## D5 — Guards live in the DAO, in exactly one place per backend
+
+Two orthogonal axes, applied **uniformly on every read**, both defaulting to `exclude`:
+
+```ts
+type UserScope = { deleted?: 'exclude' | 'include'; systemUser?: 'exclude' | 'include' };
+```
+
+Today's DAO applies these five different ways across six methods (`findOne` guards
+deleted but not system user, `exists` guards both, `count` guards deleted only,
+`findByIds` bakes system-user in, `findMany` makes the *caller* pass a filter,
+`softDelete` guards nothing). That is folklore, not policy — you cannot reason about
+safety at a call site without reading the DAO.
+
+`getGuards()`, `notDeletedFilter()` and `notPublicUserFilter()` are **deleted**. Nothing
+outside the DAO composes guards any more; see D7.
+
+## D6 — Sensitive fields are named groups, not booleans
+
+`getById`'s five independent `includeX` booleans are 32 combinations of which ~4 are real,
+and there are two rival default projections whose difference is justified by a comment
+about the user-management UI — a business justification inside an infrastructure class.
+Replace both with:
+
+```ts
+type UserFieldGroup = 'identity' | 'status' | 'credentials' | 'security';
+```
+
+| group | fields | opts in |
+|---|---|---|
+| `identity` *(default)* | `_id, username, role, email` | everyone |
+| `status` | `using2fa, accountLocked, deletedAt` | `UserProfile` readers |
+| `credentials` | `password` | Login, ValidateCurrentPassword |
+| `security` | `secret, failedLogins, accountUnlockCode` | 2FA + lockout flows |
+
+The DAO does not know *why* anyone wants a group. That is what keeps it business-agnostic
+while still safe-by-default. Every write-side need is expressible in this vocabulary
+(`getByUsername` = all four, `findByUsernameAndUnlockCode` = identity, etc.).
+
+## D7 — The users↔groups join belongs to the DAO
+
+Both backends join server-side. Mongo keeps its `$lookup`; Postgres gets real SQL via
+`.raw()` (its current implementation loads **every group in the tenant** and joins in JS —
+`PostgresUserGroupsDAO.getGroupsByUserIds` calls `this.table.all()`).
+
+Once both join server-side, the join is a persistence concern, so it lives on the DAO as
+`findWithGroups(...)`. Consequences:
+
+- The QueryService becomes a pure projection (`rows → UserProfile[]`) with no query
+  language in it at all.
+- Guards stay in one place per backend — the aggregation reads them from the inside
+  instead of having `dao.getGuards()` injected from outside.
+- The same primitive serves `UsersDirectory.getProfile` and `getActor`.
+
+## D8 — One flag per contract
+
+| Contract | Flag | Rolls out |
+|---|---|---|
+| `UsersQueryService` | `v2UsersGet` *(exists)* | API/controller reads |
+| `UsersDirectory` | `usersDirectory` *(new)* | internal module reads |
+
+`v2UsersGet` already means "v2 user reads" and already gates `GET /api/users`
+(`express/users/routes.ts:67`) and `users.getById` (`users/users.js:266`), default `false`.
+Reusing it for the QueryService is exact. It is **not** reused for the Directory: that
+would put the API route and twelve internal modules — sockets, jobs, session
+deserialization — behind one switch, so a defect in the socket path could not be rolled
+back without also reverting the API route. It would also change what
+`GetUsersController.spec.ts` and `UsersGettersConsistency.spec.ts` currently assert.
+
+Backend selection stays orthogonal on `postgresUsers` + `postgresUsergroups`. Because
+`getProfile`/`getActor` carry groups, `UsersDirectoryFactory` needs the same
+both-flags-must-agree check as `UsersQueryServiceFactory:25`; extract it and share it.
+
+## D9 — Deleted users stay invisible except to `getActor`
+
+`getManyByIds` excludes soft-deleted users, preserving today's behaviour: activitylog
+falls back to printing the raw refId when a permission-holder was deleted. This is
+intended, not an accident to fix here.
+
+## D10 — Scope boundaries
+
+**In:** DAO redesign on both backends including the write path (`UsersDataSource` adapts
+to the new DAO surface); the two read contracts and their four implementations; the
+factories; the eslint fence; the fixture-mirroring test infrastructure; the two contract
+suites; all 12 call sites behind `usersDirectory`.
+
+**Out, deliberately:**
+- `app/api/users/users.js` getters keep their signatures and behaviour. The only edit is
+  repointing the `v2UsersGet` branch at line 271 from `UsersDAOFactory` to
+  `UsersDirectoryFactory` — required because the eslint fence would otherwise flag it.
+  `UsersGettersConsistency.spec.ts` is the safety net for that change and **must not be
+  deleted**.
+- `permissionsContext.setUserInContext(user: UserSchema)` keeps its legacy typing.
+  `UserProfile` is structurally assignable to `UserSchema`, so producers can move to the
+  Directory without touching it. Retyping it to `UserProfile` is a **follow-up PR**, once
+  every producer is on the Directory — otherwise the session type and the persistence
+  routing change in one shot.
+- `app/api/users.v2/model/User.ts` (the second domain User) stays.
+- Postgres migration of anything beyond the `usergroups.members` index.
+
+## D11 — Sequencing property
+
+**Plan 04 goes green before plan 05 starts.** Parity between backends is proven while the
+old path is still live, so the flag flip is a revertable one-line change rather than a bet.
+
+Single PR, but land the plans in order; the flag flip is the final commit.
+
+## D12 — `password` is split out of the shared contract, not deleted
+
+`UpdateUserRequest = User` and `NewUser = Omit<User,'_id'> & {password?}`, and the
+settings form genuinely posts a password (`UserFormSidepanel.tsx:301`). So: `User`
+(response shape) loses `password?`; `CreateUserRequest` / `UpdateUserRequest` declare it
+explicitly. Same end state — a response type that cannot express a credential — without
+breaking password changes.
