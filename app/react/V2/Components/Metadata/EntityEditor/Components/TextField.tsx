@@ -3,7 +3,7 @@ import { FieldValues, Path, RegisterOptions, useFormContext } from 'react-hook-f
 import { Translate } from '#app/I18N/index.js';
 import { InputField } from '#V2/Components/Forms/index.js';
 import { getFieldErrorState } from '../functions/fieldErrorState.js';
-import { EntityPdfFillField, type PdfFillTarget } from './EntityPdfFill.js';
+import { EntityPdfFillField, type PdfFillTarget } from './EntityPdfFillField.js';
 
 type TextFieldProps<TFormValues extends FieldValues = FieldValues> = {
   context: string;

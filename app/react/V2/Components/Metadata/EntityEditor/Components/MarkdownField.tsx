@@ -3,7 +3,7 @@ import { Controller, FieldValues, Path, RegisterOptions, useFormContext } from '
 import { Translate } from '#app/I18N/index.js';
 import { Textarea } from '#V2/Components/Forms/index.js';
 import { getFieldErrorState } from '../functions/fieldErrorState.js';
-import { EntityPdfFillField, type PdfFillTarget } from './EntityPdfFill.js';
+import { EntityPdfFillField, type PdfFillTarget } from './EntityPdfFillField.js';
 
 type MarkdownFieldProps<TFormValues extends FieldValues = FieldValues> = {
   context: string;

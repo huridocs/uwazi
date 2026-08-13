@@ -20,7 +20,10 @@ import {
 import { entityLoaderCache } from '#V2/Routes/Entity/EntityLoaderCache.js';
 import { useServices } from '#V2/services/index.js';
 import type { EntitySaveInput } from '#V2/services/index.js';
-import type { PdfFillHost } from '#V2/Components/Metadata/EntityEditor/Components/EntityPdfFill.js';
+import {
+  PdfFillProvider,
+  type PdfFillHost,
+} from '#V2/Components/Metadata/EntityEditor/Components/EntityPdfFill.js';
 import { useDocumentFieldMutations } from './useDocumentFieldMutations.js';
 
 type MetadataTabProps = {
@@ -179,26 +182,27 @@ const MetadataTab = ({ entity, host }: MetadataTabProps) => {
               {saveError}
             </p>
           )}
-          <EditEntity
-            formId={formId}
-            form={form}
-            entity={entity}
-            mediaUpload={mediaUpload}
-            documentMutations={documentMutations}
-            onSave={onSave}
-            disabled={isSaving}
-            errors={editErrors}
-            onDirtyChange={setIsDirty}
-            pdfFill={pdfFill}
-            mainDocumentId={mainDocument?._id}
-            onEditSource={(sharedId, title, templateId) =>
-              openEntityOverlayTarget({
-                sharedId,
-                title,
-                templateId: templateId ?? '',
-              })
-            }
-          />
+          <PdfFillProvider value={pdfFill}>
+            <EditEntity
+              formId={formId}
+              form={form}
+              entity={entity}
+              mediaUpload={mediaUpload}
+              documentMutations={documentMutations}
+              onSave={onSave}
+              disabled={isSaving}
+              errors={editErrors}
+              onDirtyChange={setIsDirty}
+              mainDocumentId={mainDocument?._id}
+              onEditSource={(sharedId, title, templateId) =>
+                openEntityOverlayTarget({
+                  sharedId,
+                  title,
+                  templateId: templateId ?? '',
+                })
+              }
+            />
+          </PdfFillProvider>
         </>
       )}
     </div>

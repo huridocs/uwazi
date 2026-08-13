@@ -466,4 +466,55 @@ describe('Entity PDF Click to fill', () => {
       expect(setDocumentPdfSelection).not.toHaveBeenCalled();
     });
   });
+
+  it('notifies danger when coerce throws', async () => {
+    mockSelection = {
+      text: '42',
+      selectionRectangles: [{ top: 1, left: 2, width: 10, height: 4, regionId: '1' }],
+    };
+    jest.mocked(entitiesAPI.coerceValue).mockRejectedValue(new Error('network'));
+
+    render(
+      <Host>
+        <TextField<EditEntityFormValues>
+          context="tpl-1"
+          label="Numeric"
+          field="metadata.numeric_prop.0.value"
+          type="number"
+          pdfFill={{ name: 'numeric_prop', propertyId: 'num-1', coerceType: 'numeric' }}
+        />
+      </Host>
+    );
+
+    fireEvent.click(screen.getByTestId('click-to-fill'));
+
+    await waitFor(() => {
+      expect(notify).toHaveBeenCalledWith(
+        'Value cannot be transformed to the correct type',
+        'danger'
+      );
+      expect(upsertPropertySelection).not.toHaveBeenCalled();
+    });
+  });
+
+  it('exposes an accessible name on the fill button', () => {
+    mockSelection = {
+      text: 'hello',
+      selectionRectangles: [{ top: 1, left: 2, width: 10, height: 4, regionId: '1' }],
+    };
+
+    render(
+      <Host>
+        <TextField<EditEntityFormValues>
+          context="tpl-1"
+          label="Text"
+          field="metadata.simple_text.0.value"
+          type="text"
+          pdfFill={{ name: 'simple_text', propertyId: 'prop-1', coerceType: 'text' }}
+        />
+      </Host>
+    );
+
+    expect(screen.getByTestId('click-to-fill')).toHaveAttribute('aria-label', 'Click to fill');
+  });
 });

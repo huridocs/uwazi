@@ -4,7 +4,7 @@ import { Translate } from '#app/I18N/index.js';
 import { InputField } from '#V2/Components/Forms/index.js';
 import { secondsToISODate, parseLocalizedDate } from '#V2/shared/dateHelpers.js';
 import { getFieldErrorState } from '../functions/fieldErrorState.js';
-import { EntityPdfFillField, type PdfFillTarget } from './EntityPdfFill.js';
+import { EntityPdfFillField, type PdfFillTarget } from './EntityPdfFillField.js';
 
 type DateFieldProps<TFormValues extends FieldValues = FieldValues> = {
   context: string;

@@ -1,40 +1,11 @@
-import React, { createContext, useCallback, useContext, useRef, useState } from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 import { ViewfinderCircleIcon } from '@heroicons/react/20/solid';
-import type { TextSelection } from '@huridocs/react-text-selection-handler';
-import type { FieldValues, Path, PathValue, UseFormSetValue } from 'react-hook-form';
 import { t, Translate } from '#app/I18N/index.js';
-import type { PropertySelectionSchema } from '#shared/types/commonTypes.js';
-import { coerceValue } from '#V2/api/entities/index.js';
-import { parseLocalizedDate } from '#V2/shared/dateHelpers.js';
 import { notify } from '#V2/utils/notifyBridge.js';
 import { propertyHasSelection } from '../functions/propertySelectionHelpers.js';
-import { EntityField } from './EntityField.js';
-
-type PdfFillCoerceType = 'text' | 'date' | 'numeric';
-
-type PdfFillTarget = {
-  name: string;
-  propertyId?: string;
-  coerceType: PdfFillCoerceType;
-};
-
-type PdfFillHost = {
-  isEditing: boolean;
-  language: string;
-  documentLanguage?: string;
-  savedPropertySelections?: PropertySelectionSchema[];
-  documentPdfSelection: TextSelection | undefined;
-  draftPropertySelections: PropertySelectionSchema[];
-  upsertPropertySelection: (
-    property: { name: string; id?: string },
-    selection: TextSelection
-  ) => void;
-  clearPropertySelection: (property: { name: string; id?: string }) => void;
-  setDocumentPdfSelection: (selection: TextSelection | undefined) => void;
-  setPdfSelectionMenuOpen: (open: boolean) => void;
-};
-
-type PdfFillPlacement = 'overlay' | 'beside';
+import { usePdfFill } from './PdfFillContext.js';
+import type { PdfFillPlacement, PdfFillTarget } from './pdfFillTypes.js';
+import { resolveFillValue } from './resolvePdfFillValue.js';
 
 type EntityPdfFillProps = {
   target: PdfFillTarget;
@@ -42,90 +13,6 @@ type EntityPdfFillProps = {
   placement?: PdfFillPlacement;
   applyValue: (value: string | number) => void;
   children: (overlay: React.ReactNode) => React.ReactNode;
-};
-
-type EntityPdfFillFieldProps<TFormValues extends FieldValues> = {
-  field: Path<TFormValues>;
-  setValue: UseFormSetValue<TFormValues>;
-  disabled?: boolean;
-  placement?: PdfFillPlacement;
-  pdfFill?: PdfFillTarget;
-  children: (overlay?: React.ReactNode) => React.ReactNode;
-};
-
-const noop = () => undefined;
-
-const defaultPdfFillHost: PdfFillHost = {
-  isEditing: false,
-  language: 'en',
-  documentPdfSelection: undefined,
-  draftPropertySelections: [],
-  upsertPropertySelection: noop,
-  clearPropertySelection: noop,
-  setDocumentPdfSelection: noop,
-  setPdfSelectionMenuOpen: noop,
-};
-
-const PdfFillContext = createContext<PdfFillHost>(defaultPdfFillHost);
-
-const PdfFillProvider = ({
-  value,
-  children,
-}: {
-  value: PdfFillHost;
-  children: React.ReactNode;
-}) => <PdfFillContext.Provider value={value}>{children}</PdfFillContext.Provider>;
-
-const usePdfFill = () => useContext(PdfFillContext);
-
-const applyPdfFillFormValue = <TFormValues extends FieldValues>(
-  setValue: UseFormSetValue<TFormValues>,
-  field: Path<TFormValues>,
-  value: string | number
-) => {
-  setValue(field, value as PathValue<TFormValues, Path<TFormValues>>, { shouldDirty: true });
-};
-
-const sanitizeText = (text: string) => text.replace(/[\n\r]+/g, ' ');
-
-const tryParseLocalizedDate = (rawText: string, languages: string[]) => {
-  for (const lang of languages) {
-    const timestamp = parseLocalizedDate(rawText, lang);
-    if (timestamp !== null) {
-      return timestamp;
-    }
-  }
-  return null;
-};
-
-const coerceDateFromText = async (
-  rawText: string,
-  entityLanguage: string,
-  documentLanguage?: string
-) => {
-  const parseLanguages =
-    documentLanguage && documentLanguage !== entityLanguage
-      ? [entityLanguage, documentLanguage]
-      : [entityLanguage];
-
-  const timestamp = tryParseLocalizedDate(rawText, parseLanguages);
-  if (timestamp !== null) {
-    return { success: true as const, value: timestamp };
-  }
-
-  const fromEntity = await coerceValue(rawText, 'date', entityLanguage);
-  if (fromEntity?.success) {
-    return { success: true as const, value: fromEntity.value };
-  }
-
-  if (documentLanguage && documentLanguage !== entityLanguage) {
-    const fromDocument = await coerceValue(rawText, 'date', documentLanguage);
-    if (fromDocument?.success) {
-      return { success: true as const, value: fromDocument.value };
-    }
-  }
-
-  return { success: false as const };
 };
 
 const EntityPdfFill = ({
@@ -174,34 +61,25 @@ const EntityPdfFill = ({
     setIsFilling(true);
 
     try {
-      const rawText = documentPdfSelection.text || '';
-      if (coerceType === 'text') {
-        applyValue(sanitizeText(rawText));
-      } else if (coerceType === 'date') {
-        const coerced = await coerceDateFromText(rawText, language, documentLanguage);
-        if (!coerced.success) {
-          notify(
-            t('System', 'Value cannot be transformed to the correct type', null, false),
-            'danger'
-          );
-          return;
-        }
-        applyValue(coerced.value);
-      } else {
-        const coerced = await coerceValue(rawText.trim(), 'numeric', language);
-        if (!coerced?.success) {
-          notify(
-            t('System', 'Value cannot be transformed to the correct type', null, false),
-            'danger'
-          );
-          return;
-        }
-        applyValue(coerced.value);
+      const filled = await resolveFillValue(
+        coerceType,
+        documentPdfSelection.text || '',
+        language,
+        documentLanguage
+      );
+      if (!filled.success) {
+        notify(
+          t('System', 'Value cannot be transformed to the correct type', null, false),
+          'danger'
+        );
+        return;
       }
-
+      applyValue(filled.value);
       upsertPropertySelection({ name: propertyName, id: propertyId }, documentPdfSelection);
       setDocumentPdfSelection(undefined);
       setPdfSelectionMenuOpen(false);
+    } catch {
+      notify(t('System', 'Value cannot be transformed to the correct type', null, false), 'danger');
     } finally {
       fillInFlight.current = false;
       setIsFilling(false);
@@ -228,6 +106,7 @@ const EntityPdfFill = ({
     <button
       type="button"
       disabled={fillDisabled}
+      aria-label={t('System', 'Click to fill', null, false)}
       onClick={() => {
         onFill().catch(() => undefined);
       }}
@@ -276,36 +155,11 @@ const EntityPdfFill = ({
   );
 };
 
-const EntityPdfFillField = <TFormValues extends FieldValues>({
-  field,
-  setValue,
-  disabled,
-  placement,
-  pdfFill,
-  children,
-}: EntityPdfFillFieldProps<TFormValues>) => (
-  <EntityField>
-    {pdfFill ? (
-      <EntityPdfFill
-        target={pdfFill}
-        disabled={disabled}
-        placement={placement}
-        applyValue={value => applyPdfFillFormValue(setValue, field, value)}
-      >
-        {overlay => children(overlay)}
-      </EntityPdfFill>
-    ) : (
-      children()
-    )}
-  </EntityField>
-);
-
-export {
-  EntityPdfFill,
-  EntityPdfFillField,
-  PdfFillProvider,
-  usePdfFill,
-  defaultPdfFillHost,
-  applyPdfFillFormValue,
-};
-export type { PdfFillTarget, PdfFillCoerceType, PdfFillHost, PdfFillPlacement };
+export { EntityPdfFill };
+export { PdfFillProvider, usePdfFill, defaultPdfFillHost } from './PdfFillContext.js';
+export type {
+  PdfFillTarget,
+  PdfFillCoerceType,
+  PdfFillHost,
+  PdfFillPlacement,
+} from './pdfFillTypes.js';
