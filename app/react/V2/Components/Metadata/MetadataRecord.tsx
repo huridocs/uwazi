@@ -1,13 +1,8 @@
-import React, { useEffect, useLayoutEffect, useMemo, useRef } from 'react';
-import { useAtomValue, useSetAtom } from 'jotai';
+import React, { useMemo, useRef } from 'react';
+import { useAtomValue } from 'jotai';
 import { Translate } from '#app/I18N/index.js';
 import { templatesAtom } from '#V2/atoms/templatesAtom.js';
 import { Entity } from '#V2/api/entities/types.js';
-import {
-  applyMetadataFieldFocus,
-  FLASH_MS,
-  focusMetadataFieldAtom,
-} from './focusMetadataFieldAtom.js';
 import {
   Date,
   RelationshipCards,
@@ -22,58 +17,18 @@ import { buildMetadataRecordFields } from './buildMetadataRecordFields.js';
 import { isLongField, partitionMetadataRecord } from './metadataPropertyLayout.js';
 import { renderFieldContent, renderScalarContent } from './Components/metadataFieldContent.js';
 import { fieldTitle, specializedCardTitle } from './Components/metadataFieldTitle.js';
-import { connectionPillsForField } from './Components/ConnectionPills.js';
+import { connectionPillsForField, type OpenEntityTarget } from './Components/ConnectionPills.js';
+import { useMetadataRecordFocus } from './useMetadataRecordFocus.js';
 
 type MetadataRecordProps = {
   entity: Entity;
+  onOpenEntity?: (target: OpenEntityTarget) => void;
 };
 
-// eslint-disable-next-line max-statements
-const MetadataRecord = ({ entity }: MetadataRecordProps) => {
+const MetadataRecord = ({ entity, onOpenEntity }: MetadataRecordProps) => {
   const templates = useAtomValue(templatesAtom);
-  const focusField = useAtomValue(focusMetadataFieldAtom);
-  const clearFocus = useSetAtom(focusMetadataFieldAtom);
   const rootRef = useRef<HTMLDivElement>(null);
-  const prevSharedIdRef = useRef(entity.sharedId);
-  const ownsFocusRef = useRef(false);
-
-  useEffect(() => {
-    if (prevSharedIdRef.current !== entity.sharedId) {
-      ownsFocusRef.current = false;
-      clearFocus(null);
-      prevSharedIdRef.current = entity.sharedId;
-    }
-  }, [entity.sharedId, clearFocus]);
-
-  useEffect(
-    () => () => {
-      if (ownsFocusRef.current) {
-        ownsFocusRef.current = false;
-        clearFocus(null);
-      }
-    },
-    [clearFocus]
-  );
-
-  useLayoutEffect(() => {
-    if (!focusField) return undefined;
-    let clearTimer: number | undefined;
-    const cleanup = applyMetadataFieldFocus(
-      () => rootRef.current,
-      focusField.fieldKey,
-      () => {
-        ownsFocusRef.current = true;
-        clearTimer = window.setTimeout(() => {
-          ownsFocusRef.current = false;
-          clearFocus(null);
-        }, FLASH_MS);
-      }
-    );
-    return () => {
-      cleanup();
-      if (clearTimer !== undefined) window.clearTimeout(clearTimer);
-    };
-  }, [focusField, clearFocus]);
+  useMetadataRecordFocus(entity.sharedId, rootRef);
 
   const { entityTemplate, metadata } = useFormatMetadata(entity, templates, {
     groupGeolocationProperties: true,
@@ -84,7 +39,7 @@ const MetadataRecord = ({ entity }: MetadataRecordProps) => {
     [entityTemplate?.properties]
   );
 
-  const { relationshipFields, otherFields, inheritingTerminalById } = useMemo(
+  const { relationshipFields, otherFields } = useMemo(
     () => buildMetadataRecordFields(metadata, templatePropertyById, entity, templates),
     [metadata, templatePropertyById, entity, templates]
   );
@@ -151,6 +106,7 @@ const MetadataRecord = ({ entity }: MetadataRecordProps) => {
     partition.detailLinkOnlyRels.forEach(field => {
       const content = connectionPillsForField(field, templatePropertyById.get(field._id), {
         showExternalLinkIcon: true,
+        onOpenEntity,
       });
       if (!content) {
         return;
@@ -168,6 +124,7 @@ const MetadataRecord = ({ entity }: MetadataRecordProps) => {
     entity.title,
     entity.creationDate,
     entity.editDate,
+    onOpenEntity,
     partition.detailFields,
     partition.detailLinkOnlyRels,
     templatePropertyById,
@@ -218,7 +175,9 @@ const MetadataRecord = ({ entity }: MetadataRecordProps) => {
       })}
 
       {partition.leadingLinkOnlyRels.map(field => {
-        const content = connectionPillsForField(field, templatePropertyById.get(field._id));
+        const content = connectionPillsForField(field, templatePropertyById.get(field._id), {
+          onOpenEntity,
+        });
         if (!content) {
           return null;
         }
@@ -242,7 +201,8 @@ const MetadataRecord = ({ entity }: MetadataRecordProps) => {
         translationContext={translationContext}
         templatePropertyById={templatePropertyById}
         templates={templates}
-        inheritingTerminalById={inheritingTerminalById}
+        entity={entity}
+        onOpenEntity={onOpenEntity}
         inheritingOnly
       />
     </div>

@@ -16,23 +16,21 @@ const MultiselectListButtonItem = ({
   onClick,
   itemClassName,
 }: MultiselectListButtonItemProps) => {
-  const borderSyles = selected
+  const borderStyles = selected
     ? 'border-success-200'
     : 'border-transparent hover:border-primary-300';
 
   return (
-    <li key={item.value} className={`${itemClassName ?? 'bg-gray-50 rounded-lg mb-4'}`}>
+    <li key={item.value} className={`${itemClassName ?? 'mb-1.5 rounded-md bg-warm'}`}>
       <button
         type="button"
-        className={`w-full flex gap-4 text-left p-2.5 border ${borderSyles} rounded-lg items-center`}
+        className={`flex w-full items-center gap-3 rounded-md border p-2 text-left ${borderStyles}`}
         onClick={onClick}
       >
-        <span className="grow">{item.label}</span>
-        <div className="flex-1">
-          <Pill className="float-right" color={selected ? 'green' : 'primary'}>
-            {selected ? <Translate>Selected</Translate> : <Translate>Select</Translate>}
-          </Pill>
-        </div>
+        <span className="min-w-0 flex-1">{item.label}</span>
+        <Pill color={selected ? 'green' : 'primary'}>
+          {selected ? <Translate>Selected</Translate> : <Translate>Select</Translate>}
+        </Pill>
       </button>
     </li>
   );

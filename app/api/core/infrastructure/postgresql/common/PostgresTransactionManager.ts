@@ -8,6 +8,12 @@ type RetryHandler = () => Promise<void>;
 const SERIALIZATION_FAILURE = '40001';
 const DEADLOCK_DETECTED = '40P01';
 
+export interface TransactionHandle {
+  trx: Knex.Transaction;
+  commit: () => Promise<void>;
+  rollback: () => Promise<void>;
+}
+
 export class PostgresTransactionManager implements TransactionManager {
   private knex: Knex;
 
@@ -36,6 +42,48 @@ export class PostgresTransactionManager implements TransactionManager {
   }
 
   /**
+   * Opens or reuses a transaction and returns a handle the caller MUST
+   * explicitly commit or roll back.
+   *
+   * When a `run()` transaction is already active the handle reuses it and
+   * commit/rollback are no-ops — the outer `run()` owns the lifecycle.
+   *
+   * Otherwise a new knex transaction is opened and the caller is responsible
+   * for calling `commit()` or `rollback()` to release it.
+   */
+  async beginTransaction(permissionContext?: {
+    bypass: boolean;
+    refIds: string[];
+  }): Promise<TransactionHandle> {
+    if (this.activeTransaction) {
+      await this.setTenant(this.activeTransaction);
+      const saved = await this.getPermissionVars(this.activeTransaction);
+      await this.setPermissionVars(this.activeTransaction, permissionContext);
+      const restore = async () => {
+        await this.setPermissionVars(this.activeTransaction!, saved);
+      };
+      return {
+        trx: this.activeTransaction,
+        commit: restore,
+        rollback: restore,
+      };
+    }
+
+    const trx = await this.knex.transaction();
+    await this.setTenant(trx);
+    await this.setPermissionVars(trx, permissionContext);
+    return {
+      trx,
+      commit: async () => {
+        await trx.commit();
+      },
+      rollback: async () => {
+        await trx.rollback();
+      },
+    };
+  }
+
+  /**
    * Runs `fn` with a tenant-scoped Knex executor.
    *
    * Case #2 — a `run()` transaction is already active: reuse it so multiple
@@ -54,11 +102,19 @@ export class PostgresTransactionManager implements TransactionManager {
       return fn(this.activeTransaction);
     }
 
-    return this.knex.transaction(async trx => {
-      await this.setTenant(trx);
-      await this.setPermissionVars(trx, permissionContext);
-      return fn(trx);
-    });
+    const handle = await this.beginTransaction(permissionContext);
+    try {
+      const result = await fn(handle.trx);
+      await handle.commit();
+      return result;
+    } catch (error) {
+      try {
+        await handle.rollback();
+      } catch {
+        // propagate original error, not rollback error
+      }
+      throw error;
+    }
   }
 
   private async setTenant(trx: Knex.Transaction): Promise<void> {
@@ -77,6 +133,19 @@ export class PostgresTransactionManager implements TransactionManager {
     }
     await trx.raw("SELECT set_config('uwazi.bypass_rls', ?, true)", [bypass]);
     await trx.raw("SELECT set_config('uwazi.ref_ids', ?, true)", [refIds]);
+  }
+
+  private async getPermissionVars(
+    trx: Knex.Transaction
+  ): Promise<{ bypass: boolean; refIds: string[] }> {
+    const result = await trx.raw(
+      "SELECT current_setting('uwazi.bypass_rls', true) AS bypass, current_setting('uwazi.ref_ids', true) AS ref_ids"
+    );
+    const row = result.rows[0];
+    return {
+      bypass: row.bypass === 'true',
+      refIds: row.ref_ids ? row.ref_ids.split(',').filter(Boolean) : [],
+    };
   }
 
   private async executeOnCommitHandlers(returnValue: unknown) {
@@ -113,13 +182,19 @@ export class PostgresTransactionManager implements TransactionManager {
   }
 
   private async runInTransaction<T>(callback: () => Promise<T>): Promise<T> {
+    const handle = await this.beginTransaction();
+    this.activeTransaction = handle.trx;
     try {
-      return await this.knex.transaction(async trx => {
-        this.activeTransaction = trx;
-        await this.setTenant(trx);
-        await this.setPermissionVars(trx);
-        return callback();
-      });
+      const result = await callback();
+      await handle.commit();
+      return result;
+    } catch (error) {
+      try {
+        await handle.rollback();
+      } catch {
+        // propagate original error, not rollback error
+      }
+      throw error;
     } finally {
       this.activeTransaction = undefined;
     }

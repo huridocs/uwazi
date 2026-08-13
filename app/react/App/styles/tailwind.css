@@ -14,6 +14,12 @@
   transition: background-color 0.2s ease, color 0.2s ease;
 }
 
+/* Beat Bootstrap/vendor.css h1–h6/p margins; :where() stays overrideable by utilities */
+.tw-content :where(h1, h2, h3, h4, h5, h6, p) {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
 .tw-content:not([data-path='settings']) {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;

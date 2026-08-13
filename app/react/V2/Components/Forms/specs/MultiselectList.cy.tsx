@@ -301,7 +301,7 @@ describe('MultiselectList.cy.tsx', { viewportWidth: 450, viewportHeight: 650 }, 
           />
         </div>
       );
-      cy.get('li').should('have.class', 'bg-gray-50');
+      cy.get('li').should('have.class', 'bg-warm');
     });
 
     it('should apply a custom class name to each checkbox item', () => {

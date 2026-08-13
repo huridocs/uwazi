@@ -82,7 +82,7 @@ const MultiDateRangeField = <TFormValues extends FieldValues = FieldValues>({
           const { showError, message } = getFieldErrorState(fieldState);
 
           return (
-            <div>
+            <div className="flex flex-col gap-1.5">
               <EntityFieldLabel
                 htmlFor={`${field}.0.value.from`}
                 context={context}
@@ -101,7 +101,7 @@ const MultiDateRangeField = <TFormValues extends FieldValues = FieldValues>({
                       key={`${field}-${from ?? 'empty'}-${to ?? 'empty'}-${entries.length}`}
                       className="flex flex-col gap-2 md:flex-row md:items-center"
                     >
-                      <div className="flex w-full items-center gap-2 md:w-1/2">
+                      <div className="flex max-w-48 items-center gap-2">
                         <label htmlFor={`${field}.${index}.value.from`} aria-hidden>
                           <Translate>From</Translate>:
                         </label>
@@ -115,6 +115,7 @@ const MultiDateRangeField = <TFormValues extends FieldValues = FieldValues>({
                           value={fromISODate}
                           hasErrors={showError}
                           max={toISODate || undefined}
+                          className="min-w-0 flex-1"
                           onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                             const nextFrom = e.target.value
                               ? parseLocalizedDate(e.target.value)
@@ -128,7 +129,7 @@ const MultiDateRangeField = <TFormValues extends FieldValues = FieldValues>({
                           }}
                         />
                       </div>
-                      <div className="flex w-full items-center gap-2 md:w-1/2">
+                      <div className="flex max-w-48 items-center gap-2">
                         <label htmlFor={`${field}.${index}.value.to`} aria-hidden>
                           <Translate>To</Translate>:
                         </label>
@@ -141,6 +142,7 @@ const MultiDateRangeField = <TFormValues extends FieldValues = FieldValues>({
                           value={toISODate}
                           hasErrors={showError}
                           min={fromISODate || undefined}
+                          className="min-w-0 flex-1"
                           onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                             const nextTo = e.target.value
                               ? parseLocalizedDate(e.target.value)

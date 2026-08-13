@@ -21,7 +21,7 @@ const FileDeleteAction = ({ row }: { row: EntityFileRow }) => {
           onClick={() => requestDeleteRow(row)}
           className="flex cursor-pointer items-center gap-1.5 rounded px-2.5 py-1 text-micro font-medium text-seal transition-colors hover:bg-seal-tint disabled:cursor-not-allowed disabled:opacity-60"
         >
-          <TrashIcon className="h-3 w-3" />
+          <TrashIcon className="h-3.5 w-3.5" />
           <Translate>Delete file</Translate>
         </button>
       </div>

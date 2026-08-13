@@ -1,6 +1,6 @@
 import { ObjectId } from 'mongodb';
 
-import { TranslationDBO } from '#api/i18n.v2/schemas/TranslationDBO.js';
+import { TranslationDBO } from '#api/core/infrastructure/mongodb/translation/schemas/TranslationDBO.js';
 import { Property } from '#api/core/domain/template/Property.js';
 import { RelationshipProperty } from '#api/relationships.v2/model/RelationshipProperty.js';
 import { RelationshipDBOType } from '#api/relationships.v2/database/schemas/relationshipTypes.js';

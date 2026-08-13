@@ -48,6 +48,7 @@ const DateField = <TFormValues extends FieldValues = FieldValues>({
               ref={ref}
               onBlur={onBlur}
               value={secondsToISODate(value) || ''}
+              className="max-w-48"
               onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                 const dateString = e.target.value;
                 const seconds = dateString ? parseLocalizedDate(dateString) : null;

@@ -8,24 +8,18 @@ import { useEntityFiles } from '../../Components/Files/EntityFilesContext.js';
 import { isFileRowSelectable } from '../../Components/Files/fileHelpers.js';
 import { EntityTabFooter } from '../EntityTabFooter.js';
 import { resolveFileTabFooterMode } from './fileTabFooterMode.js';
+import { FileDownloadButton, iconClass, triggerDownload } from './FileDownloadButton.js';
 
 const fileDownloadUrl = (row: EntityFileRow) => {
   const base = row.raw.url || (row.raw.filename ? `/api/files/${row.raw.filename}` : '');
-  if (!base) return '';
+  if (!base || row.kind === 'link') return '';
   return row.raw.filename ? `${base}?download=true` : base;
 };
 
 const downloadRows = (rows: EntityFileRow[]) => {
   rows.forEach(row => {
     const url = fileDownloadUrl(row);
-    if (!url) return;
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = '';
-    link.rel = 'noreferrer';
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
+    if (url) triggerDownload(url);
   });
 };
 
@@ -40,6 +34,7 @@ const FileTabFooter = () => {
     openFilePreview,
     closeFilePreview,
     requestDeleteSelected,
+    requestDeleteRow,
   } = useEntityFiles();
 
   const allRows = [...primaryRows, ...supportingRows];
@@ -54,24 +49,24 @@ const FileTabFooter = () => {
 
   if (mode === 'multi') {
     return (
-      <EntityTabFooter highlighted>
+      <EntityTabFooter highlighted inset="side">
         <div className="flex w-full items-center justify-between gap-2">
           <Button
             variant="warm"
+            className="inline-flex items-center"
             onClick={() => downloadRows(selectedRows)}
-            className="inline-flex items-center gap-1.5"
           >
-            <ArrowDownTrayIcon className="h-3 w-3 text-ink-tertiary" />
+            <ArrowDownTrayIcon className={iconClass} />
             <Translate>Download all</Translate>
           </Button>
           {deletableSelectedRows.length > 0 ? (
             <EntityWriteAuthorization>
               <Button
                 variant="dangerSubtle"
-                onClick={requestDeleteSelected}
                 className="inline-flex items-center gap-1.5"
+                onClick={requestDeleteSelected}
               >
-                <TrashIcon className="h-3 w-3" />
+                <TrashIcon className="h-3 w-3 shrink-0" />
                 <Translate>Delete</Translate> {deletableSelectedRows.length}
               </Button>
             </EntityWriteAuthorization>
@@ -82,47 +77,49 @@ const FileTabFooter = () => {
   }
 
   if (mode !== 'focused' || !focusedRow) {
-    return <EntityTabFooter />;
+    return <EntityTabFooter inset="side" />;
   }
 
-  const fileUrl =
-    focusedRow.raw.url || (focusedRow.raw.filename ? `/api/files/${focusedRow.raw.filename}` : '');
+  const downloadUrl = fileDownloadUrl(focusedRow);
+  const canDelete = isFileRowSelectable(focusedRow);
+  const isPreview = filePanelMode === 'preview';
 
-  if (!fileUrl) {
-    return <EntityTabFooter />;
+  if (isPreview) {
+    return (
+      <EntityTabFooter inset="side">
+        <div className="flex w-full items-center justify-between gap-2">
+          <Button variant="warm" className="inline-flex items-center" onClick={closeFilePreview}>
+            <ArrowLeftIcon className={iconClass} />
+            <Translate>Back to details</Translate>
+          </Button>
+          {downloadUrl ? <FileDownloadButton href={downloadUrl} /> : <span />}
+        </div>
+      </EntityTabFooter>
+    );
   }
 
   return (
-    <EntityTabFooter>
-      <div className="flex w-full items-center gap-2">
-        {filePanelMode === 'preview' ? (
-          <Button
-            variant="warm"
-            onClick={closeFilePreview}
-            className="inline-flex items-center gap-1.5"
-          >
-            <ArrowLeftIcon className="h-3 w-3 text-ink-tertiary" />
-            <Translate>Back to details</Translate>
-          </Button>
-        ) : (
-          <Button
-            variant="warm"
-            onClick={openFilePreview}
-            className="inline-flex items-center gap-1.5"
-          >
-            <EyeIcon className="h-3 w-3 text-ink-tertiary" />
+    <EntityTabFooter inset="side">
+      <div className="flex w-full items-center justify-between gap-2">
+        <div className="flex items-center gap-2">
+          <Button variant="warm" className="inline-flex items-center" onClick={openFilePreview}>
+            <EyeIcon className={iconClass} />
             <Translate>View</Translate>
           </Button>
-        )}
-        <a
-          href={focusedRow.raw.filename ? `${fileUrl}?download=true` : fileUrl}
-          className="inline-flex"
-        >
-          <Button variant="warm" className="inline-flex items-center gap-1.5">
-            <ArrowDownTrayIcon className="h-3 w-3 text-ink-tertiary" />
-            <Translate>Download</Translate>
-          </Button>
-        </a>
+          {downloadUrl ? <FileDownloadButton href={downloadUrl} /> : null}
+        </div>
+        {canDelete ? (
+          <EntityWriteAuthorization>
+            <Button
+              variant="dangerSubtle"
+              className="inline-flex items-center gap-1.5"
+              onClick={() => requestDeleteRow(focusedRow)}
+            >
+              <TrashIcon className="h-3 w-3 shrink-0" />
+              <Translate>Delete</Translate>
+            </Button>
+          </EntityWriteAuthorization>
+        ) : null}
       </div>
     </EntityTabFooter>
   );

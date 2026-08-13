@@ -16,15 +16,23 @@ import { settingsAtom } from '#V2/atoms/settingsAtom.js';
 import { CountryFlag } from '../../CustomIcons/index.js';
 type RelationshipEntityValue = RelatedRelationshipMetadataProperty['values'][number];
 
+type OpenEntityTarget = {
+  sharedId: string;
+  title: string;
+  templateId: string;
+};
+
 type ConnectionPillsProps = {
   values: RelationshipEntityValue[];
   targetTemplateId?: string;
   /** Details table only — not Relationships section / leading cards. */
   showExternalLinkIcon?: boolean;
+  onOpenEntity?: (target: OpenEntityTarget) => void;
 };
 
 type ConnectionPillsForFieldOptions = {
   showExternalLinkIcon?: boolean;
+  onOpenEntity?: (target: OpenEntityTarget) => void;
 };
 
 const isEntityRelationshipValue = (
@@ -35,6 +43,7 @@ const ConnectionPills = ({
   values,
   targetTemplateId,
   showExternalLinkIcon = false,
+  onOpenEntity,
 }: ConnectionPillsProps) => {
   const settings = useAtomValue(settingsAtom);
   const entityBasePath = `${getEntityViewerV2BasePath(isEntityViewerV2Enabled(settings.features))}/`;
@@ -61,6 +70,35 @@ const ConnectionPills = ({
           return <span key={itemKey}>{pill}</span>;
         }
 
+        const openIcon = showExternalLinkIcon ? (
+          <ArrowTopRightOnSquareIcon
+            className="h-3 w-3 shrink-0 text-ink-tertiary"
+            aria-hidden="true"
+            data-testid="connection-external-link-icon"
+          />
+        ) : null;
+
+        if (onOpenEntity) {
+          return (
+            <button
+              key={itemKey}
+              type="button"
+              className="inline-flex max-w-full cursor-pointer items-center gap-1 rounded-md transition-opacity hover:opacity-80"
+              title={value.title}
+              onClick={() =>
+                onOpenEntity({
+                  sharedId: value._id,
+                  title: value.title,
+                  templateId: value.templateId || targetTemplateId || '',
+                })
+              }
+            >
+              {pill}
+              {openIcon}
+            </button>
+          );
+        }
+
         return (
           <I18NLinkV2
             key={itemKey}
@@ -72,13 +110,7 @@ const ConnectionPills = ({
             title={value.title}
           >
             {pill}
-            {showExternalLinkIcon ? (
-              <ArrowTopRightOnSquareIcon
-                className="h-3 w-3 shrink-0 text-ink-tertiary"
-                aria-hidden="true"
-                data-testid="connection-external-link-icon"
-              />
-            ) : null}
+            {openIcon}
           </I18NLinkV2>
         );
       })}
@@ -99,9 +131,10 @@ const connectionPillsForField = (
       values={field.values}
       targetTemplateId={field.relationShipTarget || templateProperty?.content}
       showExternalLinkIcon={options.showExternalLinkIcon}
+      onOpenEntity={options.onOpenEntity}
     />
   );
 };
 
 export { ConnectionPills, connectionPillsForField, isEntityRelationshipValue };
-export type { ConnectionPillsProps, RelationshipEntityValue };
+export type { ConnectionPillsProps, OpenEntityTarget, RelationshipEntityValue };

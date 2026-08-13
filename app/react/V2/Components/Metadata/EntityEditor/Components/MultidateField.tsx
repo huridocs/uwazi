@@ -56,7 +56,7 @@ const MultidateField = <TFormValues extends FieldValues = FieldValues>({
           const { showError, message } = getFieldErrorState(fieldState);
 
           return (
-            <div>
+            <div className="flex flex-col gap-1.5">
               <EntityFieldLabel
                 htmlFor={`${field}.0.value`}
                 context={context}
@@ -79,6 +79,7 @@ const MultidateField = <TFormValues extends FieldValues = FieldValues>({
                       onBlur={onBlur}
                       value={entry.value !== null ? (secondsToISODate(entry.value) ?? '') : ''}
                       hasErrors={showError}
+                      className="max-w-48"
                       onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                         const seconds = e.target.value ? parseLocalizedDate(e.target.value) : null;
                         const nextEntries = entries.map((current, indexToUpdate) =>

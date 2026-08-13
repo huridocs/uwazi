@@ -1,8 +1,9 @@
 import { CreateRelationshipTypeUseCase } from '#api/core/application/CreateRelationshipType.js';
+import { RelationshipTypeTranslationService } from '#api/core/application/relationshipTypeTranslationService/RelationshipTypeTranslationService.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { IdGeneratorFactory } from '#api/core/infrastructure/factories/IdGeneratorFactory.js';
-import { LegacyRelationshipTypesTranslationService } from '#api/core/infrastructure/mongodb/relationshipType/LegacyRelationshipTypesTranslationService.js';
 import { RelationshipTypesDataSourceFactory } from './RelationshipTypesDataSourceFactory.js';
+import { TranslationsServiceFactory } from './TranslationsServiceFactory.js';
 
 class CreateRelationshipTypeUseCaseFactory {
   static default(
@@ -10,7 +11,9 @@ class CreateRelationshipTypeUseCaseFactory {
   ) {
     const transactionManager = TransactionManagerFactory.default();
     const relationshipTypesDS = RelationshipTypesDataSourceFactory.default({ transactionManager });
-    const translationService = new LegacyRelationshipTypesTranslationService();
+    const translationService = new RelationshipTypeTranslationService({
+      translationsService: TranslationsServiceFactory.default({ transactionManager }),
+    });
 
     return new CreateRelationshipTypeUseCase({
       transactionManager,

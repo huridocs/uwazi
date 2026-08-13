@@ -1,4 +1,4 @@
-import { TranslationsDataSource } from '#api/i18n.v2/contracts/TranslationsDataSource.js';
+import { TranslationsDataSource } from '#api/core/application/contracts/TranslationsDataSource.js';
 import { Template } from '#api/core/domain/template/Template.js';
 import { ArrayUtils } from '#api/common.v2/utils/Array.js';
 import { PropertyType } from '#api/core/domain/template/PropertyType.js';

@@ -1,4 +1,6 @@
-import translations from '#api/i18n/translations.js';
+import { TestUtils } from '#api/common.v2/utils/Test.js';
+import { UpdateTranslationContextUseCase } from '#api/core/application/UpdateTranslationContext.js';
+import { UpdateTranslationContextUseCaseFactory } from '#api/core/infrastructure/factories/UpdateTranslationContextUseCaseFactory.js';
 import { WithId } from '#api/odm/index.js';
 import db from '#api/utils/testing_db.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
@@ -7,9 +9,16 @@ import settings from '../settings.js';
 import fixtures, { linkFixtures, newLinks } from './fixtures.js';
 
 describe('settings', () => {
+  let updateContextExecute: jest.Mock;
+
   beforeEach(async () => {
     jest.restoreAllMocks();
-    jest.spyOn(translations, 'updateContext').mockImplementation(async () => Promise.resolve('ok'));
+    updateContextExecute = jest.fn().mockResolvedValue(undefined);
+    jest.spyOn(UpdateTranslationContextUseCaseFactory, 'default').mockReturnValue(
+      TestUtils.mockClass<UpdateTranslationContextUseCase>({
+        execute: updateContextExecute,
+      })
+    );
     await testingEnvironment.setUp(fixtures);
   });
 
@@ -45,12 +54,12 @@ describe('settings', () => {
 
       it('should create a translation context for the passed links', async () => {
         await settings.save(baseConfig);
-        expect(translations.updateContext).toHaveBeenCalledWith(
-          { id: 'Menu', label: 'Menu', type: 'Uwazi UI' },
-          {},
-          [],
-          { 'Page one': 'Page one' }
-        );
+        expect(updateContextExecute).toHaveBeenCalledWith({
+          context: { id: 'Menu', label: 'Menu', type: 'Uwazi UI' },
+          keyChanges: {},
+          keysToDelete: [],
+          valueChanges: { 'Page one': 'Page one' },
+        });
       });
 
       it('should create a translation context for passed links with sublinks', async () => {
@@ -65,12 +74,12 @@ describe('settings', () => {
           ],
         };
         await settings.save(config);
-        expect(translations.updateContext).toHaveBeenCalledWith(
-          { id: 'Menu', label: 'Menu', type: 'Uwazi UI' },
-          {},
-          [],
-          { 'Page one': 'Page one', 'Page two': 'Page two' }
-        );
+        expect(updateContextExecute).toHaveBeenCalledWith({
+          context: { id: 'Menu', label: 'Menu', type: 'Uwazi UI' },
+          keyChanges: {},
+          keysToDelete: [],
+          valueChanges: { 'Page one': 'Page one', 'Page two': 'Page two' },
+        });
       });
 
       describe('updating the links', () => {
@@ -96,12 +105,12 @@ describe('settings', () => {
             ],
           };
           await settings.save(config2);
-          expect(translations.updateContext).toHaveBeenCalledWith(
-            { id: 'Menu', label: 'Menu', type: 'Uwazi UI' },
-            { 'Page one': 'Page 1' },
-            ['Page two'],
-            { 'Page 1': 'Page 1', 'Page three': 'Page three' }
-          );
+          expect(updateContextExecute).toHaveBeenCalledWith({
+            context: { id: 'Menu', label: 'Menu', type: 'Uwazi UI' },
+            keyChanges: { 'Page one': 'Page 1' },
+            keysToDelete: ['Page two'],
+            valueChanges: { 'Page 1': 'Page 1', 'Page three': 'Page three' },
+          });
         });
 
         it('should update the translation context for the links with sublinks', async () => {
@@ -131,12 +140,12 @@ describe('settings', () => {
           };
           await settings.save(finalConfig);
 
-          expect(translations.updateContext).toHaveBeenCalledWith(
-            { id: 'Menu', label: 'Menu', type: 'Uwazi UI' },
-            { 'Page one': 'Page 1' },
-            ['Subpage two', 'Page two'],
-            { 'Page 1': 'Page 1', 'Page three': 'Page three' }
-          );
+          expect(updateContextExecute).toHaveBeenCalledWith({
+            context: { id: 'Menu', label: 'Menu', type: 'Uwazi UI' },
+            keyChanges: { 'Page one': 'Page 1' },
+            keysToDelete: ['Subpage two', 'Page two'],
+            valueChanges: { 'Page 1': 'Page 1', 'Page three': 'Page three' },
+          });
         });
 
         it('should update the translation for links moving to groups', async () => {
@@ -181,12 +190,12 @@ describe('settings', () => {
           jest.clearAllMocks();
           await settings.save(finalConfig);
 
-          expect(translations.updateContext).toHaveBeenCalledWith(
-            { id: 'Menu', label: 'Menu', type: 'Uwazi UI' },
-            { 'Page two': 'Page 2' },
-            [],
-            { 'Page one': 'Page one', 'Group one': 'Group one', 'Page 2': 'Page 2' }
-          );
+          expect(updateContextExecute).toHaveBeenCalledWith({
+            context: { id: 'Menu', label: 'Menu', type: 'Uwazi UI' },
+            keyChanges: { 'Page two': 'Page 2' },
+            keysToDelete: [],
+            valueChanges: { 'Page one': 'Page one', 'Group one': 'Group one', 'Page 2': 'Page 2' },
+          });
         });
       });
     });
@@ -201,12 +210,12 @@ describe('settings', () => {
           ],
         };
         await settings.save(config);
-        expect(translations.updateContext).toHaveBeenCalledWith(
-          { id: 'Filters', label: 'Filters', type: 'Uwazi UI' },
-          {},
-          [],
-          { Documents: 'Documents' }
-        );
+        expect(updateContextExecute).toHaveBeenCalledWith({
+          context: { id: 'Filters', label: 'Filters', type: 'Uwazi UI' },
+          keyChanges: {},
+          keysToDelete: [],
+          valueChanges: { Documents: 'Documents' },
+        });
       });
 
       it('should update them', async () => {
@@ -227,20 +236,19 @@ describe('settings', () => {
           ],
         };
         await settings.save(config);
-        expect(translations.updateContext).toHaveBeenCalledWith(
-          { id: 'Filters', label: 'Filters', type: 'Uwazi UI' },
-          { Documents: 'Important Documents' },
-          ['Files'],
-          { 'Important Documents': 'Important Documents' }
-        );
+        expect(updateContextExecute).toHaveBeenCalledWith({
+          context: { id: 'Filters', label: 'Filters', type: 'Uwazi UI' },
+          keyChanges: { Documents: 'Important Documents' },
+          keysToDelete: ['Files'],
+          valueChanges: { 'Important Documents': 'Important Documents' },
+        });
       });
     });
 
     describe('when no links or filters are present', () => {
       it('should not update contexts translations', async () => {
         await settings.save({ custom: 'something that does not have links' });
-        await translations.get();
-        expect(translations.updateContext).not.toHaveBeenCalled();
+        expect(updateContextExecute).not.toHaveBeenCalled();
       });
     });
   });
