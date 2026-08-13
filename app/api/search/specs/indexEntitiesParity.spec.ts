@@ -2,7 +2,7 @@ import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { testingTenants } from '#api/utils/testingTenants.js';
 import { elasticTesting } from '#api/utils/elastic_testing.js';
-import { PostgresUnrestrictedEntitiesQueryFactory } from '#api/core/infrastructure/factories/PostgresUnrestrictedEntitiesQueryFactory.js';
+import { EntitiesDAOFactory } from '#api/core/infrastructure/factories/EntitiesDAOFactory.js';
 import { search } from '../search.js';
 
 const factory = getFixturesFactory({ convertIdToString: true });
@@ -21,6 +21,7 @@ const commonProps = {
   creationDate: 0,
   editDate: 0,
   permissions: [],
+  obsoleteMetadata: [],
 };
 
 const fixtures = {
@@ -126,14 +127,12 @@ describe('indexEntities parity: Mongo vs Postgres', () => {
     expect(postgresResult).toEqual(mongoResult);
   });
 
-  it('PostgresUnrestrictedEntitiesQueryFactory throws when postgresEntities is on but postgresFiles is off', async () => {
+  it('EntitiesDAOFactory throws when postgresEntities is on but postgresFiles is off', async () => {
     testingTenants.changeCurrentTenant({
       featureFlags: { postgresEntities: true, postgresFiles: false },
     });
 
-    expect(() =>
-      testingEnvironment.runWithContext(() => PostgresUnrestrictedEntitiesQueryFactory.default())
-    ).toThrow();
+    expect(() => testingEnvironment.runWithContext(() => EntitiesDAOFactory.default())).toThrow();
   });
 
   it('rejects an unrecognized query shape under Postgres instead of silently sweeping the tenant', async () => {

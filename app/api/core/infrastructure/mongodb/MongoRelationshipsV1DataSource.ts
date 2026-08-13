@@ -8,7 +8,7 @@ import { Entity } from '#api/core/domain/entity/Entity.js';
 import type { Relation } from '../../../relationships/RelationsV1Collection.js';
 import type { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import { TimedMethod } from '#api/core/libs/logger/TimedMethodDecorator.js';
-import { MongoEntitiesDAO } from './entity/MongoEntitiesDAO.js';
+import { EntitiesDAO } from '#api/core/application/contracts/EntitiesDAO.js';
 
 export class MongoRelationshipsV1DataSource extends MongoDataSource<Relation> {
   protected collectionName = 'connections';
@@ -16,7 +16,7 @@ export class MongoRelationshipsV1DataSource extends MongoDataSource<Relation> {
   constructor(
     db: any,
     transactionManager: any,
-    private entitiesDAO: MongoEntitiesDAO
+    private entitiesDAO: EntitiesDAO
   ) {
     super(db, transactionManager);
   }
@@ -34,10 +34,10 @@ export class MongoRelationshipsV1DataSource extends MongoDataSource<Relation> {
       })
       .toArray();
 
-    const _connectedDocuments = await this.entitiesDAO.findBySharedIds(
-      dbRelationships.map(r => r.entity),
-      (await settings.getDefaultLanguage()).key
-    );
+    const _connectedDocuments = await this.entitiesDAO.find({
+      sharedIds: dbRelationships.map(r => r.entity),
+      language: (await settings.getDefaultLanguage()).key,
+    });
 
     const connectedDocuments = _connectedDocuments.reduce((res, doc) => {
       // @ts-ignore sharedId can not be null, this is a misstype on v1 types
@@ -122,10 +122,10 @@ export class MongoRelationshipsV1DataSource extends MongoDataSource<Relation> {
 
     const connectedSharedIds = [...new Set(relevantConnections.map(r => r.entity))];
 
-    const _connectedDocuments = await this.entitiesDAO.findBySharedIds(
-      connectedSharedIds,
-      language
-    );
+    const _connectedDocuments = await this.entitiesDAO.find({
+      sharedIds: connectedSharedIds,
+      language,
+    });
 
     const connectedDocuments = _connectedDocuments.reduce((res, doc) => {
       // @ts-ignore sharedId can not be null, this is a misstype on v1 types

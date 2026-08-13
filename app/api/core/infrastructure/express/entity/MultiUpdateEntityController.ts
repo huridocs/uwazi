@@ -45,7 +45,7 @@ class MultiUpdateEntityController extends AbstractController<RequestDto> {
       const entityDAO = EntitiesDAOFactory.default({ user: this.user });
 
       const updatedEntities = await entityDAO.getWithFiles({
-        sharedId: { $in: sharedIds },
+        sharedIds,
         language: targetLanguage,
       });
 

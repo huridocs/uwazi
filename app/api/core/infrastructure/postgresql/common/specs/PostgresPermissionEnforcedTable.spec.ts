@@ -507,6 +507,75 @@ describe('PostgresPermissionEnforcedTable', () => {
     });
   });
 
+  describe('stream — read enforcement', () => {
+    it('should let admin stream all rows', async () => {
+      const rows: TestRow[] = [];
+      for await (const row of adminTable().stream()) {
+        rows.push(row);
+      }
+      expect(rows).toHaveLength(6);
+      assertIncludesNonPublished(rows);
+    });
+
+    it('should let collaborator stream only permitted rows', async () => {
+      const table = createEnforcedTable(AccessContext.forActor(collaborator));
+      const rows: TestRow[] = [];
+      for await (const row of table.stream()) {
+        rows.push(row);
+      }
+      const ids = rows.map(r => r._id).sort();
+      expect(ids).toEqual([
+        'ent-group-read',
+        'ent-group-write',
+        'ent-pub',
+        'ent-read',
+        'ent-write',
+      ]);
+      assertIncludesNonPublished(rows);
+    });
+
+    it('should let anonymous stream only published rows', async () => {
+      const table = createEnforcedTable(AccessContext.forActor(anon));
+      const rows: TestRow[] = [];
+      for await (const row of table.stream()) {
+        rows.push(row);
+      }
+      const ids = rows.map(r => r._id);
+      expect(ids).toEqual(['ent-pub']);
+      expect(rows.every(r => r.published)).toBe(true);
+    });
+
+    it('should let system bypass stream all rows', async () => {
+      const table = createEnforcedTable(AccessContext.system());
+      const rows: TestRow[] = [];
+      for await (const row of table.stream()) {
+        rows.push(row);
+      }
+      expect(rows).toHaveLength(6);
+      assertIncludesNonPublished(rows);
+    });
+
+    it('should respect where conditions with enforcement', async () => {
+      const table = createEnforcedTable(AccessContext.forActor(collaborator));
+      const rows: TestRow[] = [];
+      for await (const row of table.where({ _id: 'ent-none' }).stream()) {
+        rows.push(row);
+      }
+      // ent-none is not visible to collaborator
+      expect(rows).toEqual([]);
+    });
+
+    it('should handle early break without hanging', async () => {
+      const table = createEnforcedTable(AccessContext.forActor(admin));
+      const rows: TestRow[] = [];
+      for await (const row of table.stream()) {
+        rows.push(row);
+        if (rows.length === 3) break;
+      }
+      expect(rows).toHaveLength(3);
+    });
+  });
+
   describe('regression — OR does not bypass enforcement', () => {
     it('should not leak unreadable rows via orWhere', async () => {
       const adminRows = await adminTable().whereIn('_id', ['ent-read', 'ent-none']).all();
