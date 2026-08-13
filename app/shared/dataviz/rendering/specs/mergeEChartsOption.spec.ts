@@ -9,8 +9,8 @@ describe('mergeEChartsOption', () => {
 
   it('should deep-merge nested objects like lodash merge', () => {
     const base = {
-      legend: { show: true, orient: 'vertical' },
-      series: [{ type: 'pie', radius: '70%' }],
+      legend: { show: true, orient: 'vertical' as const },
+      series: [{ type: 'pie' as const, radius: '70%' }],
     };
     const merged = mergeEChartsOption(base, {
       legend: { show: false },
