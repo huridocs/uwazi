@@ -449,10 +449,7 @@ class PostgresEntitiesDAO extends PostgresDataSource<EntityRow> implements Entit
     const BATCH_SIZE = 500;
 
     let batch: { _id: string; sharedId: string }[] = [];
-    for await (const row of this.table
-      .select(['_id', 'sharedId'])
-      .where({ language })
-      .stream()) {
+    for await (const row of this.table.select(['_id', 'sharedId']).where({ language }).stream()) {
       batch.push(row);
       if (batch.length >= BATCH_SIZE) {
         await this.deleteBatch(batch, language, onBatch);

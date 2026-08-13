@@ -285,14 +285,10 @@ describe('PostgresTransactionManager', () => {
         const manager = createManager();
 
         await manager.run(async () => {
-          await manager.withConnection(async executor =>
-            insertRow(executor, 'outer-write')
-          );
+          await manager.withConnection(async executor => insertRow(executor, 'outer-write'));
 
           const handle = await manager.beginTransaction();
-          const row = await handle.trx('thesauri')
-            .where({ _id: 'outer-write' })
-            .first();
+          const row = await handle.trx('thesauri').where({ _id: 'outer-write' }).first();
           await handle.commit();
 
           expect(row).toMatchObject({ _id: 'outer-write' });
@@ -322,9 +318,7 @@ describe('PostgresTransactionManager', () => {
         const manager = createManager();
 
         await manager.run(async () => {
-          await manager.withConnection(async executor =>
-            insertRow(executor, 'keep-me')
-          );
+          await manager.withConnection(async executor => insertRow(executor, 'keep-me'));
 
           const handle = await manager.beginTransaction();
           await insertRow(handle.trx, 'nested-rollback');

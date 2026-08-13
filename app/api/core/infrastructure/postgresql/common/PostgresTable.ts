@@ -216,9 +216,10 @@ export class PostgresTable<TRow = Record<string, unknown>> {
    * Writes issued from within the loop go through `withConnection` again,
    * opening a separate short transaction when no outer `run()` is active.
    */
-  async *stream(
-    permissionContext?: { bypass: boolean; refIds: string[] }
-  ): AsyncGenerator<TRow, void, unknown> {
+  async *stream(permissionContext?: {
+    bypass: boolean;
+    refIds: string[];
+  }): AsyncGenerator<TRow, void, unknown> {
     const handle = await this.cfg.transactionManager.beginTransaction(permissionContext);
     let completed = false;
     try {

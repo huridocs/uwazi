@@ -51,9 +51,10 @@ export class PostgresTransactionManager implements TransactionManager {
    * Otherwise a new knex transaction is opened and the caller is responsible
    * for calling `commit()` or `rollback()` to release it.
    */
-  async beginTransaction(
-    permissionContext?: { bypass: boolean; refIds: string[] }
-  ): Promise<TransactionHandle> {
+  async beginTransaction(permissionContext?: {
+    bypass: boolean;
+    refIds: string[];
+  }): Promise<TransactionHandle> {
     if (this.activeTransaction) {
       await this.setTenant(this.activeTransaction);
       const saved = await this.getPermissionVars(this.activeTransaction);
