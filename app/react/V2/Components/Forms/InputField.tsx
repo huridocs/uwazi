@@ -28,6 +28,7 @@ interface InputFieldProps {
   name?: string;
   clearFieldAction?: () => void;
   icon?: React.ReactNode;
+  overlay?: React.ReactNode;
   onChange?: ChangeEventHandler<HTMLInputElement>;
   onSelect?: ChangeEventHandler<HTMLInputElement>;
   onBlur?: ChangeEventHandler<HTMLInputElement>;
@@ -79,6 +80,7 @@ const InputField = React.forwardRef(
       name = '',
       clearFieldAction,
       icon,
+      overlay,
       onChange = noop,
       onSelect = noop,
       onBlur = noop,
@@ -145,6 +147,7 @@ const InputField = React.forwardRef(
               {icon}
             </div>
           )}
+          {overlay}
         </div>
         {errorMessage && <InputError>{errorMessage}</InputError>}
       </div>
