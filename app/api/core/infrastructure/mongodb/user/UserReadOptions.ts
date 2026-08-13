@@ -1,4 +1,6 @@
-import type { Document } from 'mongodb';
+import type { Document, Filter } from 'mongodb';
+import { PUBLIC_USER_ID } from '#api/core/domain/user/User.js';
+import type { UserDBO } from './UserDBO.js';
 
 /**
  * The read vocabulary for MongoUsersDAO.
@@ -67,5 +69,43 @@ const resolveProjection = (fields: UserFieldGroup[] = DEFAULT_FIELDS): Document 
   );
 };
 
+/**
+ * The guard predicates for a resolved scope — the single definition of what "excluded"
+ * means on this backend (D5). Returned as a list rather than one merged object because
+ * the system-user guard constrains `_id`, and merging it into a caller filter that also
+ * constrains `_id` would silently *replace* the caller's predicate. Compose with `$and`.
+ */
+const scopeFilters = (scope?: UserScope): Filter<UserDBO>[] => {
+  const { deleted, systemUser } = resolveScope(scope);
+
+  return [
+    ...(deleted === 'exclude' ? [{ deletedAt: { $exists: false } }] : []),
+    ...(systemUser === 'exclude' ? [{ _id: { $ne: PUBLIC_USER_ID } }] : []),
+  ] as Filter<UserDBO>[];
+};
+
+/**
+ * Merges caller filter and guards into a single filter, `$and`-composed so neither can
+ * clobber the other. Used by every read on MongoUsersDAO and by MongoUserGroupsDAO's
+ * users `$lookup`, which needs the same guards inside its sub-pipeline.
+ */
+const applyScope = (filter: Filter<UserDBO>, scope?: UserScope): Filter<UserDBO> => {
+  const clauses = [filter, ...scopeFilters(scope)].filter(
+    clause => Object.keys(clause).length > 0
+  );
+
+  if (clauses.length === 0) return {};
+  if (clauses.length === 1) return clauses[0];
+  return { $and: clauses };
+};
+
 export type { UserScope, UserFieldGroup, ReadOptions };
-export { DEFAULT_SCOPE, DEFAULT_FIELDS, FIELDS_BY_GROUP, resolveScope, resolveProjection };
+export {
+  DEFAULT_SCOPE,
+  DEFAULT_FIELDS,
+  FIELDS_BY_GROUP,
+  resolveScope,
+  resolveProjection,
+  scopeFilters,
+  applyScope,
+};

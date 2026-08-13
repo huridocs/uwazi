@@ -1,4 +1,7 @@
+import { PUBLIC_USER_ID } from '#api/core/domain/user/User.js';
 import type { UserRow } from './PostgresUserRow.js';
+
+const PUBLIC_USER_ID_STRING = PUBLIC_USER_ID.toHexString();
 
 /**
  * The read vocabulary for PostgresUsersDAO.
@@ -66,5 +69,50 @@ const resolveColumns = (fields: UserFieldGroup[] = DEFAULT_FIELDS): (keyof UserR
   return [...new Set([...groups].flatMap(group => COLUMNS_BY_GROUP[group]))];
 };
 
+/**
+ * The guard policy, in the two renderings this backend needs. They are declared adjacent
+ * on purpose: `findWithGroups` cannot go through the query builder (JSONB containment is
+ * not expressible in it), so the policy has to exist as SQL as well — and two renderings
+ * that drift are exactly the failure D5 exists to prevent. Change one, change the other.
+ */
+
+/** Builder rendering: chained onto a PostgresTable by the DAO's `scoped()`. */
+const scopePredicates = (
+  scope?: UserScope
+): { excludeDeleted: boolean; excludeSystemUser: boolean } => {
+  const { deleted, systemUser } = resolveScope(scope);
+  return { excludeDeleted: deleted === 'exclude', excludeSystemUser: systemUser === 'exclude' };
+};
+
+/**
+ * Raw-SQL rendering, for `findWithGroups`. `prefix` is the table alias including its dot
+ * (`'u.'`), or empty for an unaliased table. Emits `TRUE` rather than an empty string so
+ * it is always safe to drop into a `WHERE`.
+ */
+const scopeSql = (scope?: UserScope, prefix = ''): { sql: string; bindings: unknown[] } => {
+  const { excludeDeleted, excludeSystemUser } = scopePredicates(scope);
+  const clauses: string[] = [];
+  const bindings: unknown[] = [];
+
+  if (excludeDeleted) {
+    clauses.push(`${prefix}"deletedAt" IS NULL`);
+  }
+  if (excludeSystemUser) {
+    clauses.push(`${prefix}"_id" <> ?`);
+    bindings.push(PUBLIC_USER_ID_STRING);
+  }
+
+  return { sql: clauses.length ? clauses.join(' AND ') : 'TRUE', bindings };
+};
+
 export type { UserScope, UserFieldGroup, ReadOptions };
-export { DEFAULT_SCOPE, DEFAULT_FIELDS, COLUMNS_BY_GROUP, resolveScope, resolveColumns };
+export {
+  PUBLIC_USER_ID_STRING,
+  DEFAULT_SCOPE,
+  DEFAULT_FIELDS,
+  COLUMNS_BY_GROUP,
+  resolveScope,
+  resolveColumns,
+  scopePredicates,
+  scopeSql,
+};

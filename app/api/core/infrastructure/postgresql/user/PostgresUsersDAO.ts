@@ -1,124 +1,224 @@
 /* eslint-disable class-methods-use-this */
-import { PUBLIC_USER_ID } from '#api/core/domain/user/User.js';
 import { UserNotFound } from '#api/core/domain/user/errors.js';
 import { Result } from '#api/core/libs/Result.js';
 import type { ResultType } from '#api/core/libs/Result.js';
 import { PostgresDataSource, PostgresDataSourceDeps } from '../common/PostgresDataSource.js';
 import { PostgresTable } from '../common/PostgresTable.js';
 import type { UserRow } from './PostgresUserRow.js';
-
-const PUBLIC_USER_ID_STRING = PUBLIC_USER_ID.toHexString();
-
-const EXCLUDE_PUBLIC_USER_KEY = '__excludePublicUser';
-
-// getById's default column set: excludes accountLocked too (no current caller needs it there).
-const GETBYID_SAFE_COLUMNS: (keyof UserRow)[] = [
-  '_id',
-  'username',
-  'email',
-  'role',
-  'using2fa',
-  'deletedAt',
-];
-
-// findMany/findByIds' default column set: accountLocked is a status flag consumed by
-// listWithGroups for the user-management UI, not credential data — only the true
-// credential fields are excluded here.
-const LIST_SAFE_COLUMNS: (keyof UserRow)[] = [
-  '_id',
-  'username',
-  'email',
-  'role',
-  'using2fa',
-  'accountLocked',
-  'deletedAt',
-];
+import {
+  PUBLIC_USER_ID_STRING,
+  COLUMNS_BY_GROUP,
+  resolveColumns,
+  scopePredicates,
+  scopeSql,
+} from './UserReadOptions.js';
+import type { ReadOptions, UserScope } from './UserReadOptions.js';
 
 type Condition = Record<string, unknown>;
-type QueryOptions = { includeDeleted?: boolean; columns?: (keyof UserRow)[] };
 
-type GetByIdOptions = QueryOptions & {
-  includePassword?: boolean;
-  includeSecret?: boolean;
-  includeFailedLogins?: boolean;
-  includeAccountUnlockCode?: boolean;
-  includeAccountLocked?: boolean;
-};
+type UserWithGroupsRow = UserRow & { groups: { _id: string; name: string }[] };
 
+/** Every column the users table exposes, used to reject unknown keys before they reach raw SQL. */
+const KNOWN_COLUMNS = new Set<string>(Object.values(COLUMNS_BY_GROUP).flat());
+
+/**
+ * A private building block, not an interface (D4). Only UsersDataSource, UsersDirectory and
+ * UsersQueryService may hold one; an eslint fence enforces that.
+ *
+ * Two invariants make this safe to use without reading it:
+ *   - every read applies the same guards, via `scoped()` (D5)
+ *   - every read selects the same named field groups, defaulting to `identity` (D6)
+ *
+ * It returns raw nullable rows and never a `Result` — absence is not a domain error down
+ * here, and wrapping it is the adapter's job.
+ *
+ * Its method set deliberately does not match MongoUsersDAO's. Each backend speaks its own
+ * query language; parity is proven at the contract level, not here.
+ */
 class PostgresUsersDAO extends PostgresDataSource<UserRow> {
   constructor(deps: PostgresDataSourceDeps) {
     super('users', deps);
   }
 
-  private notDeleted(table: PostgresTable<UserRow>): PostgresTable<UserRow> {
-    return table.whereNull('deletedAt');
+  private scoped(table: PostgresTable<UserRow>, scope?: UserScope): PostgresTable<UserRow> {
+    const { excludeDeleted, excludeSystemUser } = scopePredicates(scope);
+
+    let query = table;
+    if (excludeDeleted) {
+      query = query.whereNull('deletedAt');
+    }
+    if (excludeSystemUser) {
+      query = query.whereNot('_id', PUBLIC_USER_ID_STRING);
+    }
+
+    return query;
   }
 
-  private notPublicUser(table: PostgresTable<UserRow>): PostgresTable<UserRow> {
-    return table.whereNot('_id', PUBLIC_USER_ID_STRING);
+  private read(condition: Condition, options: ReadOptions): PostgresTable<UserRow> {
+    return this.scoped(this.table.where(condition), options.scope).select(
+      resolveColumns(options.fields)
+    );
   }
 
-  private applyCondition(condition: Condition): PostgresTable<UserRow> {
-    const { [EXCLUDE_PUBLIC_USER_KEY]: excludePublicUser, ...rest } = condition;
-    const query = this.table.where(rest);
-    return excludePublicUser ? this.notPublicUser(query) : query;
+  async findOne(condition: Condition, options: ReadOptions = {}): Promise<UserRow | undefined> {
+    return this.read(condition, options).first();
   }
 
-  notPublicUserFilter(): Condition {
-    return { [EXCLUDE_PUBLIC_USER_KEY]: true };
+  async findMany(condition: Condition = {}, options: ReadOptions = {}): Promise<UserRow[]> {
+    return this.read(condition, options).all();
   }
 
-  async findOne(condition: Condition, options: QueryOptions = {}): Promise<UserRow | undefined> {
-    const query = this.applyCondition(condition);
-    const filtered = options.includeDeleted ? query : this.notDeleted(query);
-    return (options.columns ? filtered.select(options.columns) : filtered).first();
+  /**
+   * Case-insensitive exact match on username OR email. Stays a DAO method because
+   * `lower(x) = lower(?)` across two columns is not expressible in the equality-only
+   * Condition object. Mongo has no counterpart — it builds an equivalent `Filter` in the
+   * adapter instead, and D4 permits that asymmetry.
+   */
+  async matchEmailOrUsername(term: string, options: ReadOptions = {}): Promise<UserRow[]> {
+    // The OR must stay parenthesised: knex does not wrap whereRaw, so without the parens
+    // `AND` would bind tighter and the guards would only apply to the email branch.
+    const matched = this.table.whereRaw('(lower(username) = lower(?) OR lower(email) = lower(?))', [
+      term,
+      term,
+    ]);
+
+    return this.scoped(matched, options.scope).select(resolveColumns(options.fields)).all();
   }
 
-  async exists(condition: Condition): Promise<boolean> {
-    const row = await this.notPublicUser(this.notDeleted(this.applyCondition(condition))).first();
+  /**
+   * The users<->usergroups join, server-side (D7). Raw SQL because PostgresTable.join only
+   * does column equality and cannot express JSONB containment; the previous implementation
+   * loaded every group in the tenant and joined in JS.
+   *
+   * `'["a","b"]'::jsonb @> '"a"'::jsonb` is scalar-in-array containment, which the
+   * usergroups_members_gin index (migration 015) accelerates.
+   *
+   * RLS scopes both tables: `raw()` runs inside `withConnection`, which sets
+   * `app.current_tenant`, and both `users` and `usergroups` carry a `tenant_isolation`
+   * policy. The explicit `ug."tenant_id" = u."tenant_id"` correlation is redundant under
+   * RLS and kept as defence in depth — a cross-tenant leak here would be severe, and it
+   * still holds if the query ever runs on a connection that bypasses RLS.
+   */
+  async findWithGroups(
+    condition: Condition = {},
+    options: ReadOptions = {}
+  ): Promise<UserWithGroupsRow[]> {
+    const columns = resolveColumns(options.fields)
+      .map(column => `u."${column}"`)
+      .join(', ');
+
+    const scope = scopeSql(options.scope, 'u.');
+    const filter = this.conditionSql(condition, 'u.');
+
+    const result = await this.table.raw<{ rows: UserWithGroupsRow[] }>(
+      `SELECT ${columns}, COALESCE(g.groups, '[]'::jsonb) AS groups
+         FROM users u
+         LEFT JOIN LATERAL (
+           SELECT jsonb_agg(jsonb_build_object('_id', ug."_id", 'name', ug."name")) AS groups
+             FROM usergroups ug
+            WHERE ug."tenant_id" = u."tenant_id"
+              AND ug."members" @> to_jsonb(u."_id")
+         ) g ON TRUE
+        WHERE ${scope.sql} AND ${filter.sql}`,
+      [...scope.bindings, ...filter.bindings]
+    );
+
+    return result.rows;
+  }
+
+  /**
+   * Renders the equality-only Condition into SQL. Column names are interpolated, not bound,
+   * so they are checked against the known column set first — a caller-supplied key must
+   * never reach the statement text.
+   */
+  private conditionSql(
+    condition: Condition,
+    prefix: string
+  ): { sql: string; bindings: unknown[] } {
+    const entries = Object.entries(condition);
+
+    entries.forEach(([column]) => {
+      if (!KNOWN_COLUMNS.has(column)) {
+        throw new Error(`PostgresUsersDAO: unknown column "${column}" in condition`);
+      }
+    });
+
+    if (!entries.length) {
+      return { sql: 'TRUE', bindings: [] };
+    }
+
+    return {
+      sql: entries.map(([column]) => `${prefix}"${column}" = ?`).join(' AND '),
+      bindings: entries.map(([, value]) => value),
+    };
+  }
+
+  async exists(condition: Condition, options: ReadOptions = {}): Promise<boolean> {
+    const row = await this.scoped(this.table.where(condition), options.scope)
+      .select(['_id'])
+      .first();
+
     return Boolean(row);
   }
 
-  async count(condition: Condition = {}): Promise<number> {
-    return this.notDeleted(this.applyCondition(condition)).count();
-  }
-
-  async updateOne(
-    condition: Condition,
-    changes: Condition,
-    options: QueryOptions = {}
-  ): Promise<void> {
-    const query = this.applyCondition(condition);
-    await (options.includeDeleted ? query : this.notDeleted(query)).update(changes);
+  async count(condition: Condition = {}, options: ReadOptions = {}): Promise<number> {
+    return this.scoped(this.table.where(condition), options.scope).count();
   }
 
   async insertOne(row: UserRow): Promise<void> {
     await this.table.insert(row);
   }
 
-  async softDelete(ids: string[]): Promise<number> {
+  async updateOne(
+    condition: Condition,
+    changes: Condition,
+    options: { scope?: UserScope } = {}
+  ): Promise<void> {
+    await this.scoped(this.table.where(condition), options.scope).update(changes);
+  }
+
+  /**
+   * Guarded like the reads. It is a write, but the system-user guard matters most here:
+   * the previous implementation guarded nothing at all.
+   */
+  async softDelete(ids: string[], options: { scope?: UserScope } = {}): Promise<number> {
     if (!ids.length) {
       return 0;
     }
 
-    const updatedIds = await this.table.whereIn('_id', ids).update({ deletedAt: new Date() });
+    const updatedIds = await this.scoped(this.table.whereIn('_id', ids), options.scope).update({
+      deletedAt: new Date(),
+    });
+
     return updatedIds.length;
   }
 
+  /* ------------------------------------------------------------------------------------
+   * Legacy surface — removed in plan 05.
+   *
+   * These exist only so the call sites in `app/api/**` that plan 05 migrates to
+   * UsersDirectory keep working meanwhile (activitylog/helpers.js, entitiesPermissions.ts,
+   * userGroups.ts, users.js, the two email job handlers) — they reach both DAOs through
+   * UsersDAOFactory. Plan 02 must not touch those files, and D11 requires the old path to
+   * stay live until parity is proven in plan 04.
+   *
+   * Kept signature-compatible with MongoUsersDAO's shims, because UsersDAOFactory casts
+   * between them. Do not call these from new code, and do not extend them.
+   * ---------------------------------------------------------------------------------- */
+
+  /** @deprecated use `findOne` and wrap absence in the adapter. Removed in plan 05. */
   async getById(
     id: string,
-    options: GetByIdOptions = {}
+    options: { includePassword?: boolean; includeDeleted?: boolean } = {}
   ): Promise<ResultType<UserRow, UserNotFound>> {
-    const columns = [...GETBYID_SAFE_COLUMNS];
-    if (options.includePassword) columns.push('password');
-    if (options.includeSecret) columns.push('secret');
-    if (options.includeFailedLogins) columns.push('failedLogins');
-    if (options.includeAccountUnlockCode) columns.push('accountUnlockCode');
-    if (options.includeAccountLocked) columns.push('accountLocked');
-
     const row = await this.findOne(
       { _id: id },
-      { includeDeleted: options.includeDeleted, columns }
+      {
+        fields: options.includePassword
+          ? ['identity', 'status', 'credentials']
+          : ['identity', 'status'],
+        scope: { deleted: options.includeDeleted ? 'include' : 'exclude' },
+      }
     );
 
     if (!row) {
@@ -128,44 +228,17 @@ class PostgresUsersDAO extends PostgresDataSource<UserRow> {
     return Result.ok(row);
   }
 
-  async findMany(condition: Condition = {}, options: QueryOptions = {}): Promise<UserRow[]> {
-    const query = this.applyCondition(condition);
-    const filtered = options.includeDeleted ? query : this.notDeleted(query);
-    return filtered.select(options.columns ?? LIST_SAFE_COLUMNS).all();
-  }
-
-  async findByIds(ids: string[], options: QueryOptions = {}): Promise<UserRow[]> {
+  /** @deprecated use `findMany` with a whereIn condition. Removed in plan 05. */
+  async findByIds(ids: string[]): Promise<UserRow[]> {
     if (!ids.length) {
       return [];
     }
 
-    const query = this.notPublicUser(this.table.whereIn('_id', ids));
-    const filtered = options.includeDeleted ? query : this.notDeleted(query);
-    return filtered.select(options.columns ?? LIST_SAFE_COLUMNS).all();
-  }
-
-  /**
-   * Generic primitive: case-insensitive exact match on username OR email, guarded +
-   * safe-columns. Not expressible via findMany's equality-only Condition (needs raw SQL
-   * OR + lower()), so it stays a DAO-level method; the read-shape/semantics documentation
-   * for "search collaborators by term" lives in PostgresUsersQueryService.findByEmailOrUsername,
-   * which is a thin pass-through to this.
-   */
-  async matchEmailOrUsername(term: string): Promise<UserRow[]> {
-    const query = this.notPublicUser(
-      this.notDeleted(
-        // The OR must stay parenthesised: knex does not wrap whereRaw, so without the
-        // parens `AND` would bind tighter and the notDeleted/notPublicUser guards below
-        // would only apply to the email branch.
-        this.table.whereRaw('(lower(username) = lower(?) OR lower(email) = lower(?))', [
-          term,
-          term,
-        ])
-      )
-    ).select(LIST_SAFE_COLUMNS);
-
-    return query.all();
+    return this.scoped(this.table.whereIn('_id', ids))
+      .select(resolveColumns(['identity', 'status']))
+      .all();
   }
 }
 
 export { PostgresUsersDAO };
+export type { UserWithGroupsRow, Condition };

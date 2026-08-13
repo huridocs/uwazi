@@ -7,6 +7,7 @@ import { TransactionManager } from '#api/core/application/contracts/TransactionM
 import type { EnrichedUserGroup } from '#shared/contracts/UserGroups.js';
 import { UserGroupDBO } from './UserGroupDBO.js';
 import { MongoUsersDAO } from './MongoUsersDAO.js';
+import { scopeFilters } from './UserReadOptions.js';
 
 class MongoUserGroupsDAO extends MongoDataSource<UserGroupDBO> {
   protected collectionName = 'usergroups';
@@ -31,9 +32,14 @@ class MongoUserGroupsDAO extends MongoDataSource<UserGroupDBO> {
           let: { memberIds: '$members.refId' },
           pipeline: [
             {
+              // The users guards come from UserReadOptions, the single definition of what
+              // "excluded" means on this backend (D5) — not from a getGuards() method on
+              // MongoUsersDAO, which would put guard composition back outside the DAO.
               $match: {
-                $expr: { $in: [{ $toString: '$_id' }, '$$memberIds'] },
-                ...this.usersDAO.getGuards(),
+                $and: [
+                  { $expr: { $in: [{ $toString: '$_id' }, '$$memberIds'] } },
+                  ...scopeFilters(),
+                ],
               },
             },
             { $project: { _id: { $toString: '$_id' }, username: 1, role: 1, email: 1 } },
