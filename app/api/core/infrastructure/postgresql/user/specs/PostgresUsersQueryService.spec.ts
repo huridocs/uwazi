@@ -5,7 +5,6 @@ import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.
 import { PUBLIC_USER_ID } from '#api/core/domain/user/User.js';
 import { PostgresTransactionManager } from '../../common/PostgresTransactionManager.js';
 import { PostgresUsersDAO } from '../PostgresUsersDAO.js';
-import { PostgresUserGroupsDAO } from '../PostgresUserGroupsDAO.js';
 import { PostgresUsersQueryService } from '../PostgresUsersQueryService.js';
 
 const TENANT_ID = 'test-tenant';
@@ -13,12 +12,10 @@ const TENANT_ID = 'test-tenant';
 const managerFor = (tenantId: string) =>
   new PostgresTransactionManager(PostgresDB.knex, tenantId, LoggerFactory.forTests());
 
-const getQueryService = (tenantId = TENANT_ID) => {
-  const deps = { tenantId, pgTransactionManager: managerFor(tenantId) };
-  const usersDAO = new PostgresUsersDAO(deps);
-  const userGroupsDAO = new PostgresUserGroupsDAO({ ...deps, usersDAO });
-  return new PostgresUsersQueryService({ usersDAO, userGroupsDAO });
-};
+const getQueryService = (tenantId = TENANT_ID) =>
+  new PostgresUsersQueryService({
+    usersDAO: new PostgresUsersDAO({ tenantId, pgTransactionManager: managerFor(tenantId) }),
+  });
 
 beforeAll(async () => {
   await testingEnvironment.setUp({}, { postgres: true });

@@ -7,10 +7,11 @@ import { fixtures } from './fixtures.js';
 
 const getQueryService = () =>
   testingEnvironment.runWithContext(() => {
-    const db = getConnection();
-    const transactionManager = TransactionManagerFactory.default();
-    const dao = new MongoUsersDAO({ db, transactionManager });
-    return new MongoUsersQueryService({ db, transactionManager, dao });
+    const dao = new MongoUsersDAO({
+      db: getConnection(),
+      transactionManager: TransactionManagerFactory.default(),
+    });
+    return new MongoUsersQueryService({ dao });
   });
 
 describe('MongoUsersQueryService', () => {

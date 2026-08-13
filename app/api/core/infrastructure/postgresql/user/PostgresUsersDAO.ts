@@ -146,7 +146,16 @@ class PostgresUsersDAO extends PostgresDataSource<UserRow> {
       [...scope.bindings, ...filter.bindings]
     );
 
-    return result.rows;
+    // `raw()` bypasses PostgresTable.cleanRow, which strips nulls for builder reads. Without
+    // this, findWithGroups would return `deletedAt: null` where findOne/findMany omit the key
+    // — two shapes for the same row out of one DAO, and a false diff against the Mongo side.
+    return result.rows.map(row => PostgresUsersDAO.withoutNulls(row));
+  }
+
+  private static withoutNulls(row: UserWithGroupsRow): UserWithGroupsRow {
+    return Object.fromEntries(
+      Object.entries(row).filter(([, value]) => value !== null)
+    ) as UserWithGroupsRow;
   }
 
   /**
