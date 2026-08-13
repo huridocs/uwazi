@@ -39,6 +39,7 @@ type Tenant = {
     v2UsersDelete?: boolean;
     v2UsersGet?: boolean;
     v2UsersUpdate?: boolean;
+    usersDirectory?: boolean;
     telemetry?: {
       enabled?: boolean;
       sampleRate?: number;

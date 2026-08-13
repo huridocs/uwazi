@@ -168,6 +168,7 @@ export const config = {
       v2UsersDelete: false,
       v2UsersGet: false,
       v2UsersUpdate: false,
+      usersDirectory: false,
       telemetry: {
         enabled: false,
         sampleRate: 0.5,

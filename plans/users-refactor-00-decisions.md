@@ -228,3 +228,80 @@ settings form genuinely posts a password (`UserFormSidepanel.tsx:301`). So: `Use
 (response shape) loses `password?`; `CreateUserRequest` / `UpdateUserRequest` declare it
 explicitly. Same end state — a response type that cannot express a credential — without
 breaking password changes.
+
+---
+
+## Amendments (agreed at execution time, 2026-08-13)
+
+These override the plan text where they conflict.
+
+### A1 — Plan 01 step 4 (`PUBLIC_USER_ID` → string) is deferred
+
+Not in this PR. `PUBLIC_USER_ID` stays a Mongo `ObjectId` in `domain/user/User.ts` and
+`PostgresUsersDAO` keeps its `PUBLIC_USER_ID.toHexString()` line. Nothing in plans 02–05
+depends on the change — it is a layering cleanup, and it touches ~20 files including
+fixtures and a `$match` in `RetrieveStatsService`, which is risk this PR does not need to
+carry.
+
+Knock-on: plan 04's fixture skeleton uses `PUBLIC_USER_OBJECT_ID`; that becomes plain
+`PUBLIC_USER_ID`, which is already an `ObjectId`. Fixture mirroring (plan 01 step 1) is
+unaffected — `JSON.parse(JSON.stringify(ObjectId))` already emits the hex string Postgres
+wants.
+
+### A2 — The fence hits nine files, not five
+
+Plan 03 step 7 expects "four legacy call sites and `users.js:271`". The actual non-exempt
+importers of `UsersDAOFactory` are:
+
+| File | Use | Handled in |
+|---|---|---|
+| `activitylog/helpers.js:110` | `findByIds` | plan 05 step 2 |
+| `permissions/entitiesPermissions.ts:34` | `findByIds` | plan 05 step 2 |
+| `usergroups/userGroups.ts:25` | `findByIds` | plan 05 step 2 |
+| `users/users.js:271` | `getById` | plan 05 step 7 |
+| `activitylog/helpers.js:166` (`loadUser`) | `getById` | **plan 05 step 2b (new)** |
+| `core/infrastructure/jobs/SendPasswordRecoveryEmailHandler.ts:24` | `getById` | **plan 05 step 2b (new)** |
+| `core/infrastructure/jobs/SendAccountLockedEmailHandler.ts:27` | `getById` | **plan 05 step 2b (new)** |
+| `core/application/specs/Login.spec.ts:67` | write-side test wiring | see below |
+| `core/application/specs/ValidateCurrentPassword.spec.ts:22` | write-side test wiring | see below |
+
+The three new production sites read only `username`/`email`, so `getById` → `UserView`
+covers all of them. The two email handlers currently `getDataOrThrow()` and should keep
+throwing. `activitylog`'s `loadUser` keeps its `result.isError() ? undefined : getData()`
+fallback and its `user || { username: data._id.toString() }` default.
+
+The two specs legitimately construct `MongoUsersDataSource` for the write side; route them
+through `UsersDataSourceFactory` if that preserves the Mongo-specific wiring, otherwise add
+`app/api/core/application/specs/**` to the fence's `ignores` with a comment. Decide in plan
+03 step 7, do not leave a bare disable.
+
+`UsersDAOConsistency.spec.ts` also imports it and is deleted in plan 04 — no action.
+
+### A3 — `matchEmailOrUsername` keeps its existing name
+
+Plan 02 step 3 writes it as `matchUsernameOrEmail`. The method already exists on
+`PostgresUsersDAO` as `matchEmailOrUsername`; keep that spelling and do not rename. The
+Directory method is still `searchByUsernameOrEmail` per D3.
+
+### A4 — Execution cadence
+
+One plan per pass. Each plan's stated "Done when" suites run and are reported before the
+next plan starts.
+
+### A5 — Migration renumbering (unplanned, blocking)
+
+The merge in `6a704642a4` left two migrations numbered `012`: production's
+`012-add-entities-sharedid-language-unique-index.sql` and this branch's
+`012-create-captchas-table.sql`. `PgMigrator.readMigrationFiles` throws on duplicate
+deltas, so **every Postgres spec on the branch was red** before plan 01 started (baseline:
+27 suites / 564 tests failing).
+
+Fixed by renumbering the two branch-local migrations, keeping production's numbering:
+
+- `012-create-captchas-table.sql` → `013-create-captchas-table.sql`
+- `013-create-usergroups-table.sql` → `014-create-usergroups-table.sql`
+- plan 01's new GIN index lands at `015-index-usergroups-members.sql`, not `014`
+
+Header comments updated to match. No code references migration filenames. `PgMigrator`
+tracks applied migrations by delta and both renumbered files are `CREATE TABLE IF NOT
+EXISTS`, so a dev database that already applied them re-runs them harmlessly.

@@ -2,14 +2,15 @@ import { PUBLIC_USER_ID, UserRole } from '#api/core/domain/user/User.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { testingTenants } from '#api/utils/testingTenants.js';
-import { testingPG } from '#api/utils/testing_pg.js';
 import { DBFixture } from '#api/utils/testing_db.js';
 import { UsersQueryServiceFactory } from '#api/core/infrastructure/factories/UsersQueryServiceFactory.js';
 
 const f = getFixturesFactory();
 const TENANT_ID = 'users-query-service-consistency';
 
-const mongoFixtures: DBFixture = {
+// One declaration for both backends: setFixtures mirrors `users`/`usergroups` into
+// Postgres, shape-converting members and filling the NOT NULL columns Mongo omits.
+const fixtures: DBFixture = {
   users: [
     f.user({ username: 'active1', role: UserRole.ADMIN, email: 'active1@test.com' }),
     f.user({ username: 'active2', role: UserRole.EDITOR, email: 'active2@test.com' }),
@@ -41,60 +42,6 @@ const mongoFixtures: DBFixture = {
   ],
 };
 
-const pgFixtures = () => ({
-  users: [
-    {
-      _id: f.idString('active1'),
-      username: 'active1',
-      role: 'admin',
-      email: 'active1@test.com',
-      password: 'hash',
-      using2fa: false,
-    },
-    {
-      _id: f.idString('active2'),
-      username: 'active2',
-      role: 'editor',
-      email: 'active2@test.com',
-      password: 'hash',
-      using2fa: false,
-    },
-    {
-      _id: f.idString('deleted'),
-      username: 'deleted',
-      role: 'editor',
-      email: 'deleted@test.com',
-      password: 'hash',
-      using2fa: false,
-      deletedAt: new Date(),
-    },
-    {
-      _id: PUBLIC_USER_ID.toHexString(),
-      username: 'public',
-      role: 'collaborator',
-      email: 'public@uwazi.local',
-      password: 'hash',
-      using2fa: false,
-    },
-    {
-      _id: f.idString('withsensitive'),
-      username: 'withsensitive',
-      role: 'admin',
-      email: 'sensitive@test.com',
-      password: 'hash',
-      using2fa: false,
-    },
-  ],
-  usergroups: [
-    { _id: f.idString('Group A'), name: 'Group A', members: [f.idString('active1')] },
-    {
-      _id: f.idString('Group B'),
-      name: 'Group B',
-      members: [f.idString('active1'), f.idString('active2')],
-    },
-  ],
-});
-
 type TestConfig = { name: string; usePostgres: boolean };
 
 const testConfigs: TestConfig[] = [
@@ -118,11 +65,7 @@ describe('UsersQueryService consistency', () => {
         featureFlags: { postgresUsers: usePostgres, postgresUsergroups: usePostgres },
       });
 
-      if (usePostgres) {
-        await testingPG.setFixtures(pgFixtures());
-      } else {
-        await testingEnvironment.setFixtures(mongoFixtures);
-      }
+      await testingEnvironment.setFixtures(fixtures);
     });
 
     const getQueryService = () =>
