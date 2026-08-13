@@ -10,6 +10,4 @@ export { I18NLink as I18NLinkV2 } from './I18NLinkV2.js';
 export { Translate } from './Translate.js';
 export { t } from './translateFunction.js';
 export { TranslateModal } from './TranslateModal.js';
-export { TranslationLocaleProvider } from './TranslationLocaleContext.js';
-export { useEnsureLocaleTranslations } from './useEnsureLocaleTranslations.js';
 export { I18NLink, I18NUtils };
