@@ -134,28 +134,45 @@ describe('tenantsContext', () => {
     expect(result[0].featureFlags?.s3Storage).toBeTruthy();
   });
 
-  it('should default newHeader to the default tenant value when unset', async () => {
+  it('should inherit feature flag defaults when unset on the tenant', async () => {
+    const featureFlag = 'themeCustomization' as const;
+
     tenants.add({
-      name: 'test-tenant-new-header-default',
-      dbName: 'test-tenant-new-header-default-db',
+      name: 'test-tenant-flag-default',
+      dbName: 'test-tenant-flag-default-db',
     });
 
     await tenants.run(async () => {
-      expect(tenants.current().featureFlags?.newHeader).toBe(
-        config.defaultTenant.featureFlags!.newHeader
+      expect(tenants.current().featureFlags?.[featureFlag]).toBe(
+        config.defaultTenant.featureFlags![featureFlag]
       );
-    }, 'test-tenant-new-header-default');
+    }, 'test-tenant-flag-default');
   });
 
-  it('should keep an explicit newHeader false override', async () => {
-    tenants.add({
-      name: 'test-tenant-new-header-false',
-      dbName: 'test-tenant-new-header-false-db',
-      featureFlags: { newHeader: false },
-    });
+  it('should keep an explicit false feature flag even when the default is true', async () => {
+    const featureFlag = 'themeCustomization' as const;
+    const previousDefault = tenants.defaultTenant.featureFlags?.[featureFlag];
 
-    await tenants.run(async () => {
-      expect(tenants.current().featureFlags?.newHeader).toBe(false);
-    }, 'test-tenant-new-header-false');
+    tenants.defaultTenant.featureFlags = {
+      ...tenants.defaultTenant.featureFlags,
+      [featureFlag]: true,
+    };
+
+    try {
+      tenants.add({
+        name: 'test-tenant-flag-false',
+        dbName: 'test-tenant-flag-false-db',
+        featureFlags: { [featureFlag]: false },
+      });
+
+      await tenants.run(async () => {
+        expect(tenants.current().featureFlags?.[featureFlag]).toBe(false);
+      }, 'test-tenant-flag-false');
+    } finally {
+      tenants.defaultTenant.featureFlags = {
+        ...tenants.defaultTenant.featureFlags,
+        [featureFlag]: previousDefault,
+      };
+    }
   });
 });
