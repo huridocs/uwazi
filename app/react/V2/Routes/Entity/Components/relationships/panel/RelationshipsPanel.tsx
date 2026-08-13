@@ -111,7 +111,13 @@ const RelationshipsPanel = ({
             {view !== 'graph' && <RelationshipsListInfoRow stats={stats} />}
           </div>
         )}
-        <Panel.Body className="pr-1 pb-2">{renderBody()}</Panel.Body>
+        <Panel.Body
+          className={
+            view === 'graph' ? 'flex min-h-0 flex-col overflow-hidden! pr-1' : 'pr-1 pb-2'
+          }
+        >
+          {renderBody()}
+        </Panel.Body>
       </Panel>
       {relationshipToDelete && (
         <ConfirmationModal

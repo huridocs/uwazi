@@ -13,7 +13,6 @@ import {
   useMetadataEditing,
   useEntityOverlay,
   useEntityContext,
-  useEntityLanguage,
   type MetadataEditingHost,
 } from '#V2/Routes/Entity/Components/context/index.js';
 import { entityLoaderCache } from '#V2/Routes/Entity/EntityLoaderCache.js';
@@ -30,7 +29,6 @@ const MetadataTab = ({ entity, host }: MetadataTabProps) => {
   const { entities } = useServices();
   const templates = useAtomValue(templatesAtom);
   const { setEntity } = useEntityContext();
-  const { language } = useEntityLanguage();
   const {
     isEditing,
     isSaving,
@@ -78,9 +76,7 @@ const MetadataTab = ({ entity, host }: MetadataTabProps) => {
   };
 
   const completeSave = async (saved: Entity) => {
-    const savedLanguage = saved.language || language;
     entityLoaderCache.invalidateEntity(entity.sharedId);
-    entityLoaderCache.setEntity(entity.sharedId, savedLanguage, saved);
     setEntity(saved);
     await revalidator.revalidate();
     finishEditing();
