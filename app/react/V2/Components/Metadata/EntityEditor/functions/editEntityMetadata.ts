@@ -1,5 +1,6 @@
 import type { ClientFile } from '#app/istore.js';
 import { filterReferencedPendingAttachments } from '#shared/entitySave/mediaMetadata.js';
+import type { PropertySelectionSchema } from '#shared/types/commonTypes.js';
 import type { Entity } from '#V2/api/entities/types.js';
 import type { MetadataValue } from '#V2/formatters/types.js';
 import type { EntitySaveInput } from '#V2/services/contracts/EntitiesService.js';
@@ -18,6 +19,8 @@ type BuildEditEntitySaveInputArgs = {
   metadataProperties: FormMetadataProperty[];
   pendingAttachments: ClientFile[];
   mediaPropertyNames: Set<string>;
+  mainDocumentId?: string;
+  draftPropertySelections?: PropertySelectionSchema[];
 };
 
 type SharedMetadataSync =
@@ -58,9 +61,11 @@ const buildEditEntitySaveInput = ({
   metadataProperties,
   pendingAttachments,
   mediaPropertyNames,
+  mainDocumentId,
+  draftPropertySelections,
 }: BuildEditEntitySaveInputArgs): EntitySaveInput => {
   const formattedMetadata = formatMetadataForEntity(values.metadata, metadataProperties);
-  return {
+  const saved: EntitySaveInput = {
     ...entity,
     title: values.title || entity.title,
     template: values.template || entity.template,
@@ -75,7 +80,19 @@ const buildEditEntitySaveInput = ({
       ),
     ],
   };
+
+  if (mainDocumentId && draftPropertySelections && draftPropertySelections.length > 0) {
+    saved.propertySelections = {
+      fileID: mainDocumentId,
+      selections: draftPropertySelections,
+    };
+  }
+
+  return saved;
 };
+
+const isEntityEditorDirty = (formIsDirty: boolean, draftPropertySelectionsCount: number) =>
+  formIsDirty || draftPropertySelectionsCount > 0;
 
 const mergeSharedFormMetadata = (
   current: Record<string, MetadataValue[] | undefined>,
@@ -133,5 +150,6 @@ export {
   buildEditEntitySaveInput,
   mergeSharedFormMetadata,
   planSharedMetadataSync,
+  isEntityEditorDirty,
 };
 export type { SharedMetadataSync };
