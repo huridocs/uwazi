@@ -104,13 +104,26 @@ export class PostgresTable<TRow = Record<string, unknown>> {
     return this.chain(this.qb.clone().having(column, operator, value));
   }
 
-  /** OR-groups a JSONB superset (`@>`) check across multiple candidate values for one column. */
-  whereJsonSupersetOfAny(column: string, values: Record<string, unknown>[]): PostgresTable<TRow> {
+  /**
+   * OR-groups a JSONB superset (`@>`) check across multiple candidate values for one column.
+   *
+   * String values are JSON-encoded first. Knex binds them verbatim, so a bare `'u1'` would
+   * reach Postgres as invalid JSON and throw at runtime; `'"u1"'` is the scalar-in-array
+   * containment check callers actually want (`'["u1","u2"]'::jsonb @> '"u1"'::jsonb`).
+   */
+  whereJsonSupersetOfAny(
+    column: string,
+    values: (Record<string, unknown> | string)[]
+  ): PostgresTable<TRow> {
+    const encoded = values.map(value =>
+      typeof value === 'string' ? JSON.stringify(value) : value
+    );
+
     const qb = this.qb.clone().where(builder => {
-      values.forEach((value, i) =>
+      encoded.forEach((value, i) =>
         i === 0
-          ? builder.whereJsonSupersetOf(column, value)
-          : builder.orWhereJsonSupersetOf(column, value)
+          ? builder.whereJsonSupersetOf(column, value as Record<string, unknown>)
+          : builder.orWhereJsonSupersetOf(column, value as Record<string, unknown>)
       );
     });
     return this.chain(qb);

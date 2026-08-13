@@ -102,6 +102,41 @@ describe('PostgresUserGroupsDAO', () => {
       expect(map.get('existing1')).toEqual([{ _id: 'group-a', name: 'Group A' }]);
     });
 
+    // The filter moved from JS into SQL (JSONB containment, served by the
+    // usergroups_members_gin index). These pin the behaviour that used to fall out of
+    // loading every group in the tenant and filtering in memory.
+    it('should ignore groups the requested users do not belong to', async () => {
+      await testingPG.setFixtures({
+        users: [
+          userFixture({ _id: 'existing1', username: 'existing1', email: 'existing1@test.com' }),
+          userFixture({ _id: 'other', username: 'other', email: 'other@test.com' }),
+        ],
+        usergroups: [
+          { _id: 'group-a', tenant_id: TENANT_ID, name: 'Group A', members: ['existing1'] },
+          { _id: 'group-x', tenant_id: TENANT_ID, name: 'Group X', members: ['other'] },
+          { _id: 'group-empty', tenant_id: TENANT_ID, name: 'Group Empty', members: [] },
+        ],
+      });
+
+      const map = await makeDAO().getGroupsByUserIds(['existing1']);
+
+      expect(map.get('existing1')).toEqual([{ _id: 'group-a', name: 'Group A' }]);
+    });
+
+    it('should match member ids exactly, not as substrings', async () => {
+      await testingPG.setFixtures({
+        users: [userFixture({ _id: 'abc', username: 'abc', email: 'abc@test.com' })],
+        usergroups: [
+          { _id: 'group-a', tenant_id: TENANT_ID, name: 'Group A', members: ['abcdef'] },
+          { _id: 'group-b', tenant_id: TENANT_ID, name: 'Group B', members: ['abc'] },
+        ],
+      });
+
+      const map = await makeDAO().getGroupsByUserIds(['abc']);
+
+      expect(map.get('abc')).toEqual([{ _id: 'group-b', name: 'Group B' }]);
+    });
+
     it('should return an empty map without querying when userIds is empty', async () => {
       await testingPG.setFixtures({
         users: [

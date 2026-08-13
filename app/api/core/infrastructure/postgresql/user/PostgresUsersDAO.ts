@@ -69,6 +69,21 @@ class PostgresUsersDAO extends PostgresDataSource<UserRow> {
   }
 
   /**
+   * `_id IN (...)`, which the equality-only Condition object cannot express, so it is its
+   * own method here. Mongo says `findMany({ _id: { $in: ids } })` instead; D4 permits the
+   * asymmetry rather than forcing a shared query vocabulary.
+   */
+  async findManyByIds(ids: string[], options: ReadOptions = {}): Promise<UserRow[]> {
+    if (!ids.length) {
+      return [];
+    }
+
+    return this.scoped(this.table.whereIn('_id', ids), options.scope)
+      .select(resolveColumns(options.fields))
+      .all();
+  }
+
+  /**
    * Case-insensitive exact match on username OR email. Stays a DAO method because
    * `lower(x) = lower(?)` across two columns is not expressible in the equality-only
    * Condition object. Mongo has no counterpart — it builds an equivalent `Filter` in the
@@ -87,17 +102,22 @@ class PostgresUsersDAO extends PostgresDataSource<UserRow> {
 
   /**
    * The users<->usergroups join, server-side (D7). Raw SQL because PostgresTable.join only
-   * does column equality and cannot express JSONB containment; the previous implementation
-   * loaded every group in the tenant and joined in JS.
+   * does column equality and cannot express the membership relation.
    *
-   * `'["a","b"]'::jsonb @> '"a"'::jsonb` is scalar-in-array containment, which the
-   * usergroups_members_gin index (migration 015) accelerates.
+   * Shape matters here. The obvious form — a LATERAL subquery per user doing
+   * `ug."members" @> to_jsonb(u."_id")` — is O(users x groups), because the planner will
+   * not use the usergroups_members_gin index: RLS's `tenant_id = current_setting(...)`
+   * predicate is unestimable, so it guesses a handful of rows and takes the primary key
+   * instead, filtering the whole tenant's groups once per user. Measured at 300 users and
+   * 5000 groups that is ~500ms, which is *slower* than the JS-side join it replaced.
+   *
+   * Unnesting members once and aggregating by member id scans usergroups a single time and
+   * hash-joins to users — O(users + groups), ~25ms on the same data, with identical results.
    *
    * RLS scopes both tables: `raw()` runs inside `withConnection`, which sets
    * `app.current_tenant`, and both `users` and `usergroups` carry a `tenant_isolation`
-   * policy. The explicit `ug."tenant_id" = u."tenant_id"` correlation is redundant under
-   * RLS and kept as defence in depth — a cross-tenant leak here would be severe, and it
-   * still holds if the query ever runs on a connection that bypasses RLS.
+   * policy. The `tenant_id` correlation in the join is redundant under RLS and kept as
+   * defence in depth — a cross-tenant leak here would be severe, and it costs nothing.
    */
   async findWithGroups(
     condition: Condition = {},
@@ -113,12 +133,15 @@ class PostgresUsersDAO extends PostgresDataSource<UserRow> {
     const result = await this.table.raw<{ rows: UserWithGroupsRow[] }>(
       `SELECT ${columns}, COALESCE(g.groups, '[]'::jsonb) AS groups
          FROM users u
-         LEFT JOIN LATERAL (
-           SELECT jsonb_agg(jsonb_build_object('_id', ug."_id", 'name', ug."name")) AS groups
+         LEFT JOIN (
+           SELECT ug."tenant_id",
+                  m.member_id,
+                  jsonb_agg(jsonb_build_object('_id', ug."_id", 'name', ug."name")) AS groups
              FROM usergroups ug
-            WHERE ug."tenant_id" = u."tenant_id"
-              AND ug."members" @> to_jsonb(u."_id")
-         ) g ON TRUE
+             CROSS JOIN LATERAL jsonb_array_elements_text(ug."members") AS m(member_id)
+            WHERE jsonb_typeof(ug."members") = 'array'
+            GROUP BY ug."tenant_id", m.member_id
+         ) g ON g.member_id = u."_id" AND g."tenant_id" = u."tenant_id"
         WHERE ${scope.sql} AND ${filter.sql}`,
       [...scope.bindings, ...filter.bindings]
     );
@@ -228,15 +251,9 @@ class PostgresUsersDAO extends PostgresDataSource<UserRow> {
     return Result.ok(row);
   }
 
-  /** @deprecated use `findMany` with a whereIn condition. Removed in plan 05. */
+  /** @deprecated use `findManyByIds`. Removed in plan 05. */
   async findByIds(ids: string[]): Promise<UserRow[]> {
-    if (!ids.length) {
-      return [];
-    }
-
-    return this.scoped(this.table.whereIn('_id', ids))
-      .select(resolveColumns(['identity', 'status']))
-      .all();
+    return this.findManyByIds(ids, { fields: ['identity', 'status'] });
   }
 }
 

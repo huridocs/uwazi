@@ -288,6 +288,34 @@ Directory method is still `searchByUsernameOrEmail` per D3.
 One plan per pass. Each plan's stated "Done when" suites run and are reported before the
 next plan starts.
 
+### A6 — The GIN index is not used; `findWithGroups` joins by unnesting instead
+
+Measured during plan 02 step 4, at 300 users / 5000 groups in one tenant:
+
+| Query shape | Execution |
+|---|---|
+| `LEFT JOIN LATERAL ... WHERE ug."members" @> to_jsonb(u."_id")` (as planned) | ~500 ms |
+| Unnest members once, aggregate by member id, hash-join to users | ~26 ms |
+
+Identical results; 20x apart. **The planner never chooses `usergroups_members_gin`.** RLS's
+`tenant_id = current_setting('app.current_tenant')` predicate is unestimable, so Postgres
+guesses ~11 rows, takes the `(tenant_id, _id)` primary key, and applies `members @>` as a
+filter over the whole tenant's groups — once per user. That makes the LATERAL form
+O(users x groups), i.e. *slower* than the JS-side join D7 replaced. Verified this is not
+caused by the defence-in-depth `ug."tenant_id" = u."tenant_id"` correlation: removing it
+produces the same plan (473 ms vs 475 ms), so the correlation stays.
+
+A composite `GIN (tenant_id, members jsonb_path_ops)` would be usable, but it needs the
+`btree_gin` extension and `CREATE EXTENSION` is **permission denied** for the migrator role.
+
+So `PostgresUsersDAO.findWithGroups` unnests instead, which needs no index at all. D7's
+"both backends join server-side" still holds — only the SQL shape changed.
+
+**Migration 015 is currently dead weight.** `getGroupsByUserIds` still uses `@>` (step 4)
+but the planner prefers the primary key there too (~0.9 ms at 5000 groups, acceptable for a
+single lookup). Options: drop the migration, or keep it as a cheap hedge. Not decided —
+flagged for review.
+
 ### A5 — Migration renumbering (unplanned, blocking)
 
 The merge in `6a704642a4` left two migrations numbered `012`: production's
