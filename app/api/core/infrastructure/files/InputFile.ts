@@ -3,13 +3,17 @@ import { createReadStream, createWriteStream } from 'fs';
 // eslint-disable-next-line node/no-restricted-import
 import { stat } from 'fs/promises';
 
-import { DiskFile } from '#api/core/infrastructure/files/DiskFile.js';
-import { mimeTypeFromUrl } from '#api/files/extensionHelper.js';
-import { generateFileName, temporalFilesPath } from '#api/files/filesystem.js';
-import date from '#api/utils/date.js';
 import path from 'path';
 import { Readable } from 'stream';
 import { pipeline } from 'stream/promises';
+import { DiskFile } from '#api/core/infrastructure/files/DiskFile.js';
+import { mimeTypeFromUrl } from '#api/files/extensionHelper.js';
+import {
+  generateFileName,
+  getMimetypeFromOriginalName,
+  temporalFilesPath,
+} from '#api/files/filesystem.js';
+import date from '#api/utils/date.js';
 import { CustomUpload } from '../../domain/files/CustomUpload.js';
 import { FileAttachment } from '../../domain/files/FileAttachment.js';
 import { FileContents } from '../../domain/files/FileContents.js';
@@ -169,7 +173,8 @@ export class InputFile {
         fieldname,
         originalname,
         encoding: '',
-        mimetype: mimetype || mimeTypeFromUrl(originalname),
+        mimetype:
+          mimetype || getMimetypeFromOriginalName(originalname) || 'application/octet-stream',
         destination,
         filename,
         path: filepath,
