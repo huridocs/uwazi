@@ -112,9 +112,7 @@ const RelationshipsPanel = ({
           </div>
         )}
         <Panel.Body
-          className={
-            view === 'graph' ? 'flex min-h-0 flex-col overflow-hidden! pr-1' : 'pr-1 pb-2'
-          }
+          className={view === 'graph' ? 'flex min-h-0 flex-col overflow-hidden! pr-1' : 'pr-1 pb-2'}
         >
           {renderBody()}
         </Panel.Body>
