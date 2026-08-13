@@ -11,7 +11,7 @@ import {
 import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
 import { WebSockets } from '#api/core/application/contracts/WebSockets.js';
 import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js';
-import { MongoEntitiesDAO } from '../mongodb/entity/MongoEntitiesDAO.js';
+import { EntitiesDAO } from '#api/core/application/contracts/EntitiesDAO.js';
 import { EntityPreviewBatchHandler } from './EntityPreviewBatchHandler.js';
 import { MongoFilesDAO } from '../mongodb/files/MongoFilesDAO.js';
 import { UwaziJobHandler, UwaziJobParams } from '#api/core/infrastructure/jobs/UwaziJobHandler.js';
@@ -27,7 +27,7 @@ type Params = UwaziJobParams & {
 };
 
 type JobDependencies = {
-  entityDAO: MongoEntitiesDAO;
+  entityDAO: EntitiesDAO;
   filesDAO: MongoFilesDAO;
   jobsDispatcher: JobsDispatcher;
   webSockets: WebSockets;

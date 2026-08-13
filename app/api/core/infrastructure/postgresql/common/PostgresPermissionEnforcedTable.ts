@@ -136,6 +136,10 @@ class PostgresPermissionEnforcedTable<TRow = Record<string, unknown>> extends Po
     return super.run(fn, this.buildPermissionContext());
   }
 
+  stream(): AsyncGenerator<TRow, void, unknown> {
+    return super.stream(this.buildPermissionContext());
+  }
+
   private buildPermissionContext(): { bypass: boolean; refIds: string[] } {
     if (this.accessContext.isPrivileged()) {
       return { bypass: true, refIds: [] };
