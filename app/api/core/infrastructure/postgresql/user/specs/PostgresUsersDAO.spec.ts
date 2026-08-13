@@ -8,11 +8,24 @@ import { PostgresUsersDAO } from '../PostgresUsersDAO.js';
 import type { UserScope } from '../UserReadOptions.js';
 
 /**
- * A development-time spec for the new DAO surface. Plan 04 replaces most of it with the
- * UsersDirectory / UsersQueryService contract suites, so it stays deliberately thin —
- * except for two things that must survive: the guard-uniformity table (the property that
- * used to be folklore, D5) and the cross-tenant case on findWithGroups, which is the only
- * place raw SQL relies on RLS rather than the query builder.
+ * What is left of this spec after plan 04 is what the contract suites cannot reach.
+ *
+ * Read projections and Mongo/Postgres parity moved to `application/specs/UsersDirectory`
+ * and `application/specs/UsersQueryService`, where they are asserted once against both
+ * backends. Parity is deliberately *not* asserted here: the two DAOs are private building
+ * blocks and are not required to have matching signatures (D4).
+ *
+ * What stays is DAO-level policy, which no contract exercises:
+ *   - the guard-uniformity table — every read applies the same two guards the same way,
+ *     the property that used to be folklore (D5). `exists` and `count` have no contract
+ *     caller at all, and no contract asks for a non-default scope except `getActor`.
+ *   - the field-group table (D6). The contracts pin `identity` and `identity + status`;
+ *     `credentials` and `security` belong to the write side.
+ *   - the write path, including the guards that used to be missing from it.
+ *   - two things unique to this backend: that an unknown condition key is rejected rather
+ *     than interpolated, and that RLS scopes `raw()` statements directly. The end-to-end
+ *     cross-tenant case now lives in the QueryService contract suite, but it cannot tell
+ *     "RLS works" from "the defence-in-depth tenant correlation works" — this can.
  */
 
 const TENANT_ID = 'test-tenant';
@@ -159,40 +172,15 @@ describe('PostgresUsersDAO', () => {
     });
   });
 
-  describe('matchEmailOrUsername()', () => {
-    it('should match either column, case-insensitively and exactly', async () => {
-      const dao = makeDAO();
-
-      expect((await dao.matchEmailOrUsername('ACTIVE1')).map(u => u.username)).toEqual(['active1']);
-      expect((await dao.matchEmailOrUsername('ACTIVE2@TEST.COM')).map(u => u.username)).toEqual([
-        'active2',
-      ]);
-      expect(await dao.matchEmailOrUsername('active')).toEqual([]);
-    });
-  });
+  // matchEmailOrUsername's matching rules — exact, case-insensitive, on either column — are
+  // asserted on both backends at once in application/specs/UsersDirectory.spec.ts, via
+  // searchByUsernameOrEmail. Only its guards and field groups are exercised above.
+  //
+  // The same goes for findWithGroups's projection: group attachment, the empty array for a
+  // user in no groups, and the exact { _id, name } shape live in
+  // application/specs/UsersQueryService.spec.ts, along with the end-to-end cross-tenant case.
 
   describe('findWithGroups()', () => {
-    it('should attach the groups each user belongs to', async () => {
-      const users = await makeDAO().findWithGroups();
-      const active1 = users.find(user => user.username === 'active1');
-      const active2 = users.find(user => user.username === 'active2');
-
-      expect(active1!.groups.map(group => group.name).sort()).toEqual(['Group A', 'Group B']);
-      expect(active2!.groups.map(group => group.name)).toEqual(['Group B']);
-    });
-
-    it('should return an empty array, not null, for a user in no groups', async () => {
-      const users = await makeDAO().findWithGroups({ _id: 'withsensitive' });
-
-      expect(users[0].groups).toEqual([]);
-    });
-
-    it('should return group objects of exactly { _id, name }', async () => {
-      const users = await makeDAO().findWithGroups({ _id: 'active1' });
-
-      expect(Object.keys(users[0].groups[0]).sort()).toEqual(['_id', 'name']);
-    });
-
     it('should reject an unknown column in the condition rather than interpolate it', async () => {
       await expect(makeDAO().findWithGroups({ 'bogus"; DROP TABLE users; --': 1 })).rejects.toThrow(
         'unknown column'
@@ -204,8 +192,9 @@ describe('PostgresUsersDAO', () => {
      * isolation rests entirely on RLS — PostgresTable adds no tenant_id predicate to reads.
      *
      * This asserts RLS *directly*, on the same connection machinery `raw()` uses, because
-     * the end-to-end case below cannot distinguish "RLS works" from "the defence-in-depth
-     * ug.tenant_id = u.tenant_id correlation works". Both matter; only one is load-bearing.
+     * the end-to-end case — now in application/specs/UsersQueryService.spec.ts — cannot
+     * distinguish "RLS works" from "the defence-in-depth ug.tenant_id = u.tenant_id
+     * correlation works". Both matter; only one is load-bearing.
      */
     it('should have RLS scope raw statements on both tables', async () => {
       await testingPG.setFixtures({
@@ -235,43 +224,6 @@ describe('PostgresUsersDAO', () => {
       expect(seen.users.rows.map((row: { _id: string }) => row._id)).not.toContain('intruder');
       expect(seen.groups.rows.map((row: { _id: string }) => row._id)).not.toContain('otherGroup');
       expect(seen.groups.rows).toHaveLength(2);
-    });
-
-    it('should never return another tenant users or groups', async () => {
-      await testingPG.setFixtures({
-        users: [
-          ...baseUsers,
-          {
-            tenant_id: OTHER_TENANT_ID,
-            _id: 'intruder',
-            username: 'intruder',
-            email: 'intruder@other.com',
-            password: 'hash',
-            role: 'admin',
-            using2fa: false,
-          },
-        ],
-        usergroups: [
-          ...baseGroups,
-          {
-            tenant_id: OTHER_TENANT_ID,
-            _id: 'otherGroup',
-            name: 'Other Group',
-            members: ['active1', 'intruder'],
-          },
-        ],
-      });
-
-      const users = await makeDAO().findWithGroups();
-
-      expect(users.map(user => user.username).sort()).toEqual([
-        'active1',
-        'active2',
-        'withsensitive',
-      ]);
-
-      const allGroupNames = users.flatMap(user => user.groups.map(group => group.name));
-      expect(allGroupNames).not.toContain('Other Group');
     });
   });
 

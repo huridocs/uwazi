@@ -1,5 +1,9 @@
 # Plan 04: Contract suites
 
+> **DONE**, steps 1-3. What it delivered differs from this text in seven places -- see A10
+> in the decision record. Most importantly, step 3 **trims** the two DAO specs rather than
+> deleting them, so three files went, not six.
+
 One suite per contract, proving Mongo and Postgres accept and return exactly the same
 thing. Replaces six per-implementation and consistency suites.
 

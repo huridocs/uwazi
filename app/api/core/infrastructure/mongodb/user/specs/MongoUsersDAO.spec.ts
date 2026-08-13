@@ -8,10 +8,20 @@ import type { UserScope } from '../UserReadOptions.js';
 import { fixtures, factory, withsensitiveId } from './fixtures.js';
 
 /**
- * A development-time spec for the new DAO surface. Plan 04 replaces it with the
- * UsersDirectory / UsersQueryService contract suites, so it stays deliberately thin —
- * except for the guard-uniformity table, which asserts the property that used to be
- * folklore: every read applies the same two guards the same way (D5).
+ * What is left of this spec after plan 04 is what the contract suites cannot reach.
+ *
+ * Read projections and Mongo/Postgres parity moved to `application/specs/UsersDirectory`
+ * and `application/specs/UsersQueryService`, where they are asserted once against both
+ * backends. Parity is deliberately *not* asserted here: the two DAOs are private building
+ * blocks and are not required to have matching signatures (D4).
+ *
+ * What stays is DAO-level policy, which no contract exercises:
+ *   - the guard-uniformity table — every read applies the same two guards the same way,
+ *     the property that used to be folklore (D5). `exists` and `count` have no contract
+ *     caller at all, and no contract asks for a non-default scope except `getActor`.
+ *   - the field-group table (D6). The contracts pin `identity` and `identity + status`;
+ *     `credentials` and `security` belong to the write side.
+ *   - the write path, including the guards that used to be missing from it.
  */
 
 const getDao = () =>
@@ -93,7 +103,9 @@ describe('MongoUsersDAO', () => {
     ])('should add the %s group on request, keeping identity', async (group, added) => {
       const user = await getDao().findOne({ _id: withsensitiveId }, { fields: [group] });
 
-      expect(Object.keys(user!)).toEqual(expect.arrayContaining(['_id', 'username', 'role', 'email']));
+      expect(Object.keys(user!)).toEqual(
+        expect.arrayContaining(['_id', 'username', 'role', 'email'])
+      );
       added.forEach(field => expect(user).toHaveProperty(field));
     });
 
@@ -114,29 +126,10 @@ describe('MongoUsersDAO', () => {
     });
   });
 
-  describe('findWithGroups()', () => {
-    it('should attach the groups each user belongs to', async () => {
-      const users = await getDao().findWithGroups();
-      const active1 = users.find(user => user.username === 'active1');
-      const active2 = users.find(user => user.username === 'active2');
-
-      expect(active1!.groups.map(group => group.name).sort()).toEqual(['Group A', 'Group B']);
-      expect(active2!.groups.map(group => group.name)).toEqual(['Group B']);
-    });
-
-    it('should return an empty array, not undefined, for a user in no groups', async () => {
-      const users = await getDao().findWithGroups({ _id: withsensitiveId });
-
-      expect(users[0].groups).toEqual([]);
-    });
-
-    it('should return group ids as strings alongside their names only', async () => {
-      const users = await getDao().findWithGroups({ _id: activeId });
-
-      expect(Object.keys(users[0].groups[0]).sort()).toEqual(['_id', 'name']);
-      expect(typeof users[0].groups[0]._id).toBe('string');
-    });
-  });
+  // findWithGroups's projection — group attachment, the empty array for a user in no
+  // groups, and the exact { _id, name } shape — is asserted on both backends at once in
+  // application/specs/UsersQueryService.spec.ts. Only its guard and field-group behaviour
+  // is exercised above, where it belongs.
 
   describe('writes', () => {
     it('should insert a user', async () => {

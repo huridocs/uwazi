@@ -17,7 +17,7 @@ de-facto interface.
 | 01 — Foundations | **Done** (commit `2094a900f2`), except step 4, deferred by [A1](#a1--plan-01-step-4-public_user_id--string-is-deferred). Step 2 later reverted by [A6](#a6--the-gin-index-is-not-used-findwithgroups-joins-by-unnesting-instead). |
 | 02 — DAO layer | **Done**, steps 1–7 (through commit `26010042a2`). See [A7](#a7--the-surface-plan-03-will-actually-find) for what it delivered. |
 | 03 — Read contracts | **Done**, steps 1–7. See [A9](#a9--what-plan-03-actually-did) for the six deltas from the plan text. |
-| 04 — Contract suites | Not started. `UsersDAOConsistency.spec.ts` is already deleted ([A9](#a9--what-plan-03-actually-did)); step 3 has five files left, not six. |
+| 04 — Contract suites | **Done**, steps 1–3. See [A10](#a10--what-plan-04-actually-did) for the seven deltas from the plan text. |
 | 05 — Rollout | Not started. Extended by [A2](#a2--the-fence-hits-nine-files-not-five) and [A9](#a9--what-plan-03-actually-did) (step 1 also deletes the query services' legacy block). |
 
 Working state: `tsc --noEmit` clean, `eslint` clean on the changed files, every suite green.
@@ -25,6 +25,11 @@ Working state: `tsc --noEmit` clean, `eslint` clean on the changed files, every 
 **Running tests:** use `yarn jest -i`. In parallel, 2–8 suites fail per run with
 Elasticsearch `index_not_found_exception`, and the failing set changes run to run — local ES
 contention, not real failures. Serial runs are reliable.
+
+The stack must be up first (`docker compose up -d mongo postgres mongoreplicaset_start_script`,
+plus `elasticsearch` for anything that indexes). With Postgres down, every Postgres suite
+fails as a 5s `beforeAll` hook timeout rather than a connection error — which reads exactly
+like a broken spec. Check the containers before believing a red run.
 
 ---
 
@@ -451,6 +456,64 @@ and returns `UserNotFound` — deliberately *not* `ObjectId.isValid`, which also
 malformed ids out of the batch rather than failing the whole call. This is what makes the
 two backends agree: Postgres's `_id` is text and simply matches nothing. Plan 04's
 "`UserNotFound` for an unknown id" case can use any string.
+
+### A10 — What plan 04 actually did
+
+Seven deltas from the plan text. Plan 05 inherits them.
+
+**1. Step 3 trims the two DAO specs instead of deleting them.** The plan lists six files to
+delete; three went (`MongoUsersQueryService.spec.ts`, `PostgresUsersQueryService.spec.ts`,
+`UsersQueryServiceConsistency.spec.ts`) and `UsersDAOConsistency.spec.ts` was already gone
+([A9](#a9--what-plan-03-actually-did)). The two DAO specs stay, reduced to what the contracts
+cannot reach — which is what step 3's own instruction ("anything not covered is either a
+missing case or dead assertion, decide which, do not drop it silently") points at:
+
+| Kept in the DAO specs | Why no contract reaches it |
+|---|---|
+| The guard-uniformity table (D5) | `exists`/`count` have no contract caller; no contract requests a non-default scope except `getActor` |
+| The field-group table (D6) | The contracts pin `identity` and `identity + status`; `credentials`/`security` are write-side |
+| The write path and its guards | These are read contracts |
+| Postgres: unknown condition key is rejected, not interpolated | Not expressible through a contract |
+| Postgres: RLS scopes `raw()` statements directly | The end-to-end case cannot tell RLS from the defence-in-depth tenant correlation |
+
+Removed from them: the `findWithGroups` projection cases and Postgres's
+`matchEmailOrUsername` matching cases, now asserted against both backends at once, plus the
+end-to-end cross-tenant case, which moved to the QueryService suite as the plan intended.
+D4 says parity is not asserted at DAO level; it does not say DAOs go untested.
+
+**2. The fixture is shared between the two suites,** in
+`app/api/core/application/specs/UsersContractFixtures.ts` — one declaration for both
+backends *and* both suites, so a field added for one cannot leave the other testing
+something else. It also exports the sort helpers and the credential-field sweep.
+
+**3. The two-tenant case is Postgres-only and sits outside `describe.each`.** Mongo tenancy
+is a separate database, which the harness cannot straddle inside one suite. It also seeds the
+foreign tenant through `testingEnvironment.pg.pool` rather than `testingPG.setFixtures`,
+which truncates each table it writes and would take the mirrored fixture with it. The foreign
+group lists one of *our* users as a member, so a failure of either defence surfaces as a
+local user gaining a group it never joined; an assertion that the admin pool (which bypasses
+RLS) can see the foreign rows keeps the case from passing vacuously.
+
+**4. The soft-deleted fixture user is a member of Group B.** The plan's fixture left them in
+no group, which makes "`getActor` carries groups" untestable on the only path that matters —
+D3's argument is that a job actor resolved without groups silently loses permissions, and
+that actor is by definition soft-deleted.
+
+**5. `searchByUsernameOrEmail('.*')` is the regex-metacharacter case,** not the plan's
+`a.b*`: `^a.b*$` matches nothing in this fixture even unescaped, so it cannot fail. `^.*$`
+matches every user. Verified by mutation — removing `escapeRegExp` from
+`MongoUsersDirectory` fails the Mongo branch and leaves Postgres green, which is exactly the
+drift the suites exist to catch.
+
+**6. "Without touching the database" is not asserted** for `getManyByIds([])`. It is not
+observable through a factory-built SUT; the short-circuit stays covered by the DAO specs.
+
+**7. `app/api/core/infrastructure/user/specs/` is not empty and stays.**
+`UserGroupsDAOConsistency.spec.ts` and `UserGroupsDataSourceConsistency.spec.ts` still live
+there.
+
+No production file was touched and no defect was exposed: both backends agreed on every
+case on the first green run.
 
 ### A5 — Migration renumbering (unplanned, blocking)
 
