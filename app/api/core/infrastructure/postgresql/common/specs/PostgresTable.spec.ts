@@ -1018,6 +1018,124 @@ describe('PostgresTable', () => {
     });
   });
 
+  describe('stream', () => {
+    it('should stream all rows for the tenant', async () => {
+      const table = createTable();
+      await table.insert({ _id: 's-1', name: 'alpha', values: jsonVal([]) });
+      await table.insert({ _id: 's-2', name: 'beta', values: jsonVal([]) });
+      await table.insert({ _id: 's-3', name: 'gamma', values: jsonVal([]) });
+
+      const rows: TestRow[] = [];
+      for await (const row of table.stream()) {
+        rows.push(row);
+      }
+
+      expect(rows.map(r => r._id).sort()).toEqual(['s-1', 's-2', 's-3']);
+    });
+
+    it('should respect where conditions', async () => {
+      const table = createTable();
+      await table.insert({ _id: 'sw-1', name: 'alpha', values: jsonVal([]) });
+      await table.insert({ _id: 'sw-2', name: 'beta', values: jsonVal([]) });
+
+      const rows: TestRow[] = [];
+      for await (const row of table.where({ name: 'alpha' }).stream()) {
+        rows.push(row);
+      }
+
+      expect(rows.map(r => r._id)).toEqual(['sw-1']);
+    });
+
+    it('should respect select projection', async () => {
+      const table = createTable();
+      await table.insert({ _id: 'ss-1', name: 'alpha', values: jsonVal([]) });
+
+      const rows: Partial<TestRow>[] = [];
+      for await (const row of table.where({ _id: 'ss-1' }).select(['_id']).stream()) {
+        rows.push(row);
+      }
+
+      expect(rows).toHaveLength(1);
+      expect(rows[0]._id).toBe('ss-1');
+      expect((rows[0] as any).name).toBeUndefined();
+    });
+
+    it('should enforce tenant isolation', async () => {
+      const tableA = createTable('tenant-a');
+      const tableB = createTable('tenant-b');
+
+      await tableA.insert({ _id: 'st-a', name: 'A', values: jsonVal([]) });
+      await tableB.insert({ _id: 'st-b', name: 'B', values: jsonVal([]) });
+
+      const rows: TestRow[] = [];
+      for await (const row of tableA.stream()) {
+        rows.push(row);
+      }
+
+      expect(rows.map(r => r._id)).toEqual(['st-a']);
+    });
+
+    it('should yield nothing when no rows match', async () => {
+      const table = createTable();
+
+      const rows: TestRow[] = [];
+      for await (const row of table.where({ _id: 'nonexistent' }).stream()) {
+        rows.push(row);
+      }
+
+      expect(rows).toEqual([]);
+    });
+
+    it('should handle early break without hanging', async () => {
+      const table = createTable();
+      await table.insert({ _id: 'eb-1', name: 'first', values: jsonVal([]) });
+      await table.insert({ _id: 'eb-2', name: 'second', values: jsonVal([]) });
+      await table.insert({ _id: 'eb-3', name: 'third', values: jsonVal([]) });
+
+      const rows: TestRow[] = [];
+      for await (const row of table.stream()) {
+        rows.push(row);
+        if (rows.length === 2) break;
+      }
+
+      expect(rows).toHaveLength(2);
+    });
+
+    it('should propagate the original error when rollback also throws', async () => {
+      const manager = managerFor(DEFAULT_TENANT);
+      const origBeginTx = manager.beginTransaction.bind(manager);
+
+      jest.spyOn(manager, 'beginTransaction').mockImplementation(async pc => {
+        const handle = await origBeginTx(pc);
+        const origRollback = handle.rollback;
+        handle.rollback = async () => {
+          await origRollback();
+          throw new Error('rollback failed');
+        };
+        return handle;
+      });
+
+      const table = PostgresTable.for<TestRow>({
+        tableName: 'nonexistent_table',
+        tenantId: DEFAULT_TENANT,
+        transactionManager: manager,
+      });
+
+      let error: Error | undefined;
+      try {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        for await (const _row of table.stream()) {
+          // should not reach here
+        }
+      } catch (e) {
+        error = e as Error;
+      }
+
+      expect(error).toBeDefined();
+      expect(error!.message).not.toBe('rollback failed');
+    });
+  });
+
   describe('case #2 — shared transaction via pgTransactionManager.run()', () => {
     it('should roll back when the run callback throws', async () => {
       const manager = managerFor('tenant-a');
