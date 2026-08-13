@@ -13,9 +13,7 @@ const factory = getFixturesFactory();
 const fixtures: DBFixture = {
   settings: [{ languages: [{ key: 'en', label: 'English', default: true }] }],
   users: [factory.user({ username: 'existing1', role: UserRole.ADMIN })],
-  usergroups: [
-    factory.usergroup('Existing', [{ refId: factory.idString('existing1') }]),
-  ],
+  usergroups: [factory.usergroup('Existing', [{ refId: factory.idString('existing1') }])],
 };
 
 const app: Application = setUpApp(

@@ -60,12 +60,14 @@ describe('UpdateUserGroupController integration', () => {
   });
 
   it('should return 422 for an unexpected extra field', async () => {
-    const response = await request(app).post('/api/usergroups').send({
-      _id: factory.id('Existing').toHexString(),
-      name: 'Renamed',
-      members: [],
-      other: 'invalid',
-    });
+    const response = await request(app)
+      .post('/api/usergroups')
+      .send({
+        _id: factory.id('Existing').toHexString(),
+        name: 'Renamed',
+        members: [],
+        other: 'invalid',
+      });
 
     expect(response).toHaveStatus(422);
   });

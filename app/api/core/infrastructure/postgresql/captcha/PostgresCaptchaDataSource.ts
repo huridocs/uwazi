@@ -12,7 +12,10 @@ const TEN_HOURS_IN_MS = 10 * 60 * 60 * 1000;
 
 type Deps = PostgresDataSourceDeps & { idGenerator: IdGenerator };
 
-class PostgresCaptchaDataSource extends PostgresDataSource<CaptchaRow> implements CaptchaDataSource {
+class PostgresCaptchaDataSource
+  extends PostgresDataSource<CaptchaRow>
+  implements CaptchaDataSource
+{
   private idGenerator: IdGenerator;
 
   constructor(deps: Deps) {

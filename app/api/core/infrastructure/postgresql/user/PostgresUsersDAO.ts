@@ -163,10 +163,7 @@ class PostgresUsersDAO extends PostgresDataSource<UserRow> {
    * so they are checked against the known column set first — a caller-supplied key must
    * never reach the statement text.
    */
-  private conditionSql(
-    condition: Condition,
-    prefix: string
-  ): { sql: string; bindings: unknown[] } {
+  private conditionSql(condition: Condition, prefix: string): { sql: string; bindings: unknown[] } {
     const entries = Object.entries(condition);
 
     entries.forEach(([column]) => {

@@ -221,9 +221,7 @@ describe('PostgresUserGroupsDAO', () => {
             deletedAt: new Date(),
           }),
         ],
-        usergroups: [
-          { _id: 'empty', tenant_id: TENANT_ID, name: 'Empty', members: ['deleted1'] },
-        ],
+        usergroups: [{ _id: 'empty', tenant_id: TENANT_ID, name: 'Empty', members: ['deleted1'] }],
       });
 
       const dao = makeDAO();
@@ -236,9 +234,7 @@ describe('PostgresUserGroupsDAO', () => {
     it('should fall back to a bare refId for the public user', async () => {
       const publicUserId = PUBLIC_USER_ID.toHexString();
       await testingPG.setFixtures({
-        users: [
-          userFixture({ _id: publicUserId, username: 'public', email: 'public@test.com' }),
-        ],
+        users: [userFixture({ _id: publicUserId, username: 'public', email: 'public@test.com' })],
         usergroups: [
           { _id: 'empty', tenant_id: TENANT_ID, name: 'Empty', members: [publicUserId] },
         ],

@@ -90,9 +90,7 @@ const scopeFilters = (scope?: UserScope): Filter<UserDBO>[] => {
  * users `$lookup`, which needs the same guards inside its sub-pipeline.
  */
 const applyScope = (filter: Filter<UserDBO>, scope?: UserScope): Filter<UserDBO> => {
-  const clauses = [filter, ...scopeFilters(scope)].filter(
-    clause => Object.keys(clause).length > 0
-  );
+  const clauses = [filter, ...scopeFilters(scope)].filter(clause => Object.keys(clause).length > 0);
 
   if (clauses.length === 0) return {};
   if (clauses.length === 1) return clauses[0];
