@@ -5,7 +5,7 @@ import {
   JobInfo,
 } from '#api/core/libs/queue/application/contracts/Dispatchable.js';
 import { WebSockets } from '#api/core/application/contracts/WebSockets.js';
-import { MongoEntitiesDAO } from '../mongodb/entity/MongoEntitiesDAO.js';
+import { EntitiesDAO } from '#api/core/application/contracts/EntitiesDAO.js';
 import { UwaziJobHandler, UwaziJobParams } from '#api/core/infrastructure/jobs/UwaziJobHandler.js';
 import { PrivilegedJob } from '#api/core/infrastructure/jobs/PrivilegedJob.js';
 
@@ -14,7 +14,7 @@ type Params = UwaziJobParams & {
 };
 
 type JobDependencies = {
-  entityDAO: MongoEntitiesDAO;
+  entityDAO: EntitiesDAO;
   webSockets: WebSockets;
 };
 
