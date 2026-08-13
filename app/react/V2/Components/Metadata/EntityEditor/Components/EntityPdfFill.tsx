@@ -88,26 +88,40 @@ const applyPdfFillFormValue = <TFormValues extends FieldValues>(
 
 const sanitizeText = (text: string) => text.replace(/[\n\r]+/g, ' ');
 
-const dateCoerceLanguages = (entityLanguage: string, documentLanguage?: string) => {
-  const languages = [entityLanguage];
-  if (documentLanguage && documentLanguage !== entityLanguage) {
-    languages.push(documentLanguage);
-  }
-  return languages;
-};
-
-const coerceDateFromText = async (rawText: string, languages: string[]) => {
+const tryParseLocalizedDate = (rawText: string, languages: string[]) => {
   for (const lang of languages) {
     const timestamp = parseLocalizedDate(rawText, lang);
     if (timestamp !== null) {
-      return { success: true as const, value: timestamp };
+      return timestamp;
     }
   }
+  return null;
+};
 
-  for (const lang of languages) {
-    const coerced = await coerceValue(rawText, 'date', lang);
-    if (coerced?.success) {
-      return { success: true as const, value: coerced.value };
+const coerceDateFromText = async (
+  rawText: string,
+  entityLanguage: string,
+  documentLanguage?: string
+) => {
+  const parseLanguages =
+    documentLanguage && documentLanguage !== entityLanguage
+      ? [entityLanguage, documentLanguage]
+      : [entityLanguage];
+
+  const timestamp = tryParseLocalizedDate(rawText, parseLanguages);
+  if (timestamp !== null) {
+    return { success: true as const, value: timestamp };
+  }
+
+  const fromEntity = await coerceValue(rawText, 'date', entityLanguage);
+  if (fromEntity?.success) {
+    return { success: true as const, value: fromEntity.value };
+  }
+
+  if (documentLanguage && documentLanguage !== entityLanguage) {
+    const fromDocument = await coerceValue(rawText, 'date', documentLanguage);
+    if (fromDocument?.success) {
+      return { success: true as const, value: fromDocument.value };
     }
   }
 
@@ -164,10 +178,7 @@ const EntityPdfFill = ({
       if (coerceType === 'text') {
         applyValue(sanitizeText(rawText));
       } else if (coerceType === 'date') {
-        const coerced = await coerceDateFromText(
-          rawText,
-          dateCoerceLanguages(language, documentLanguage)
-        );
+        const coerced = await coerceDateFromText(rawText, language, documentLanguage);
         if (!coerced.success) {
           notify(
             t('System', 'Value cannot be transformed to the correct type', null, false),
@@ -218,7 +229,7 @@ const EntityPdfFill = ({
       type="button"
       disabled={fillDisabled}
       onClick={() => {
-        void onFill();
+        onFill().catch(() => undefined);
       }}
       className={
         placement === 'beside'
