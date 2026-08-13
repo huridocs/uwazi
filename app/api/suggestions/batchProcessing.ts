@@ -1,5 +1,6 @@
 import { LanguageISO6391, ObjectIdSchema } from '#shared/types/commonTypes.js';
-import entitiesModel from '#api/entities/entitiesModel.js';
+import { EntitiesDAOFactory } from '#api/core/infrastructure/factories/EntitiesDAOFactory.js';
+import { EntityFilters } from '#api/core/application/contracts/EntitiesDAO.js';
 import { EntitySchema } from '#shared/types/entityType.js';
 
 type BatchRange = {
@@ -8,39 +9,45 @@ type BatchRange = {
   totalCount: number;
 };
 
+const entitiesDao = () => EntitiesDAOFactory.default().unrestricted();
+
 const calculateBatches = async (
   template: ObjectIdSchema,
   defaultLanguage?: string,
   batchSize = 500
 ): Promise<BatchRange[]> => {
-  const query = {
-    template,
-    ...(defaultLanguage && { language: defaultLanguage }),
-  };
+  const filters: EntityFilters = { template: template.toString() };
+  if (defaultLanguage) {
+    filters.language = defaultLanguage;
+  }
 
   const batches: BatchRange[] = [];
-  let currentFromId: ObjectIdSchema | null = null;
+  let currentFromId: string | null = null;
   let count = 0;
-  let lastId: ObjectIdSchema | null = null;
+  let lastId: string | null = null;
 
-  const entities = await entitiesModel.db.find(query).select('_id').sort({ _id: 1 }).lean();
+  const entities = await entitiesDao().find(filters, {
+    select: ['_id'],
+    sort: [{ field: '_id', direction: 'asc' }],
+  });
 
-  entities.forEach((entity: { _id: ObjectIdSchema }) => {
+  entities.forEach(entity => {
+    const entityId = entity._id.toString();
     if (!currentFromId) {
-      currentFromId = entity._id;
+      currentFromId = entityId;
     }
 
     count += 1;
     if (count >= batchSize) {
       batches.push({
-        fromId: currentFromId.toString(),
-        toId: entity._id.toString(),
+        fromId: currentFromId,
+        toId: entityId,
         totalCount: count,
       });
       currentFromId = null;
       count = 0;
     }
-    lastId = entity._id;
+    lastId = entityId;
   });
 
   // Handle remaining entities in last batch
@@ -61,17 +68,18 @@ const fetchEntitiesDataForBatch = async (
   toId: ObjectIdSchema,
   defaultLanguage?: string
 ) => {
-  const query = {
-    template,
-    ...(defaultLanguage && { language: defaultLanguage }),
-    _id: { $gte: fromId, $lte: toId },
-  };
-
-  const entities = await entitiesModel.db
-    .find(query)
-    .select(['sharedId', 'title', 'language', 'metadata', 'template'])
-    .sort({ _id: 1 })
-    .lean();
+  const entities = await entitiesDao().findByTemplateIdRange(
+    {
+      templateId: template.toString(),
+      from: fromId.toString(),
+      to: toId.toString(),
+      ...(defaultLanguage && { language: defaultLanguage }),
+    },
+    {
+      select: ['sharedId', 'title', 'language', 'metadata', 'template'],
+      sort: [{ field: '_id', direction: 'asc' }],
+    }
+  );
 
   return entities as Required<
     Pick<EntitySchema, '_id' | 'sharedId' | 'language' | 'metadata' | 'title' | 'template'>
@@ -79,9 +87,10 @@ const fetchEntitiesDataForBatch = async (
 };
 
 const getDefaultEntity = async (sharedId: string, defaultLanguage: LanguageISO6391) => {
-  const [defaultEntity] = await entitiesModel.db
-    .find({ sharedId, language: defaultLanguage })
-    .select(['sharedId', 'title', 'language', 'metadata']);
+  const [defaultEntity] = await entitiesDao().find(
+    { sharedId, language: defaultLanguage },
+    { select: ['sharedId', 'title', 'language', 'metadata'] }
+  );
 
   if (!defaultEntity) {
     throw new Error(

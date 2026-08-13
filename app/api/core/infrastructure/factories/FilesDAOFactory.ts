@@ -2,6 +2,7 @@ import { getConnection } from '../mongodb/common/getConnectionForCurrentTenant.j
 import { MongoFilesDAO } from '../mongodb/files/MongoFilesDAO.js';
 import { PostgresFilesDAO } from '../postgresql/files/PostgresFilesDAO.js';
 import { TransactionManagerFactory } from './TransactionManagerFactory.js';
+import { PostgresTransactionManagerFactory } from './PostgresTransactionManagerFactory.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 
 class FilesDAOFactory {
@@ -9,7 +10,9 @@ class FilesDAOFactory {
     const tenant = ExecutionContext.currentTenant;
 
     if (tenant.featureFlags?.postgresFiles) {
-      const pgTM = ExecutionContext.postgresTransactionManager;
+      const pgTM = ExecutionContext.getStore()
+        ? ExecutionContext.postgresTransactionManager
+        : PostgresTransactionManagerFactory.default();
 
       return new PostgresFilesDAO({
         tenantId: tenant.name,
