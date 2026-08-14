@@ -190,6 +190,8 @@ Clear PDF selection,Limpiar la selección PDF
 Clear search,Limpiar búsqueda
 Click,Click
 Click to fill,Click para completar
+Click to select an image,Click para seleccionar una imagen
+Click to select audio or video,Click para seleccionar audio o video
 Click to select files,Click para seleccionar archivos
 Close,Cerrar
 Code,Code
@@ -507,9 +509,7 @@ Forgot Password?,¿Has olvidado tu contraseña?
 Forms and email configuration,Configuración de formularios y correo electrónico
 From,From
 From all suggestions,From all suggestions
-From computer,Desde el dispositivo
-From files,Desde archivos
-From previous step,From previous step
+From previous step,Desde el paso anterior
 From selection,From selection
 From:,Desde:
 Full mode,Full mode
@@ -753,6 +753,7 @@ New user,New user
 Next,Próximo
 No,No
 No attachments,Sin adjuntos
+No audio or video on this entity,Sin audio o video en esta entidad
 No chart types match your search.,No chart types match your search.
 No common filters,No existen filtros comunes
 No connected entities yet.,Todavía no hay entidades conectadas.
@@ -768,6 +769,7 @@ No files queued yet.,Sin archivos en cola.
 no filters for templates,La combinación de tipos de entidades no tiene filtros en común.
 No Group,No Group
 No icon / flag,Sin icono / bandera
+No images on this entity,Sin imágenes en esta entidad
 No items available,No items available
 No Label,No existe etiqueta
 No label,No label
@@ -831,6 +833,7 @@ OCR PDF,ROC PDF
 of,de
 Ok,De acuerdo
 OK,OK
+On this entity,En esta entidad
 one character,one character
 "Only properties with the same name and configuration in every data source are available
             for both dimensions.","Only properties with the same name and configuration in every data source are available
@@ -852,6 +855,7 @@ Options,Options
 or,o
 or drag and drop here,o arrastra y suelta aquí
 or drop your files here.,o deposita tus archivos aquí
+Or paste a URL,O pega una URL
 Order,Orden
 Other,Otro
 other,Otro
@@ -879,6 +883,8 @@ Password Error,¡Error de contraseña! Ambos campos son obligatorios y deben coi
 Password is too long,La contraseña es demasiado larga
 Password updated,Contraseña actualizada
 Passwords do not match,Passwords do not match
+Paste an audio or video URL to use it as this property without uploading a file. Press Enter to apply.,Pega una URL de audio o video para usarlo como esta propiedad sin subir un archivo. Pulsa ENTER para aplicar.
+Paste an image URL to use it as this property without uploading a file. Press Enter to apply.,Pega una URL de imagen para usarlo como esta propiedad sin subir un archivo. Pulsa ENTER para aplicar.
 Paste this tag in a page HTML. The chart uses the page language.,Paste this tag in a page HTML. The chart uses the page language.
 Paste URL,Paste URL
 Paste URL here,Pega el URL aquí
@@ -1088,6 +1094,8 @@ Select an existing image,Seleccionar una imagen existente
 Select favicon image,Seleccionar imagen del favicon
 Select files on your device,Seleccionar archivos de tu dispositivo
 Select from computer,Seleccionar desde la computadora
+Select image,Seleccionar imagen
+Select media,Seleccionar media
 Select relationship,Seleccionar relación
 Select relationship type,Seleccionar tipo de relación
 Select site logo image,Seleccionar imagen del logotipo del sitio

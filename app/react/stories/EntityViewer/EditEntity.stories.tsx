@@ -21,6 +21,7 @@ import {
 } from '#V2/Components/Metadata/EntityEditor/functions/buildEditEntityDefaultValues.js';
 import { useEntityMediaUpload } from '#V2/Components/Metadata/EntityEditor/hooks/useEntityMediaUpload.js';
 import { Button } from '#V2/Components/UI/index.js';
+import { EntityScopedProvider } from '#V2/Routes/Entity/Components/context/index.js';
 import { apiEntity, templates, thesauri } from '../fixtures/EditEntityFixtures.js';
 
 const newEntity: Entity = {
@@ -162,34 +163,36 @@ const EditEntityComponent = ({
     <div className="tw-content">
       <BrowserRouter>
         <Provider store={store}>
-          <div className="border rounded p-4 bg-(--bg-surface) text-ink mb-2">
-            <h2 className="text-lg font-bold py-2">Entity editor</h2>
-            <div className="mb-4">
-              <FormProvider {...form}>
-                <EditEntity
-                  entity={entity}
-                  formId={formId}
-                  form={form}
-                  mediaUpload={mediaUpload}
-                  onSave={handleSave}
-                  errors={errors}
-                  relationshipLookup={relationshipLookup ?? mockedRelationshipLookup}
-                />
-              </FormProvider>
+          <EntityScopedProvider entity={entity} language={locale}>
+            <div className="border rounded p-4 bg-(--bg-surface) text-ink mb-2">
+              <h2 className="text-lg font-bold py-2">Entity editor</h2>
+              <div className="mb-4">
+                <FormProvider {...form}>
+                  <EditEntity
+                    entity={entity}
+                    formId={formId}
+                    form={form}
+                    mediaUpload={mediaUpload}
+                    onSave={handleSave}
+                    errors={errors}
+                    relationshipLookup={relationshipLookup ?? mockedRelationshipLookup}
+                  />
+                </FormProvider>
+              </div>
+              <div className="flex flex-row items-center gap-2">
+                <Button variant="secondary">
+                  <Translate>Cancel</Translate>
+                </Button>
+                <Button variant="primary" type="submit" form={formId}>
+                  <Translate>Save</Translate>
+                </Button>
+              </div>
             </div>
-            <div className="flex flex-row items-center gap-2">
-              <Button variant="secondary">
-                <Translate>Cancel</Translate>
-              </Button>
-              <Button variant="primary" type="submit" form={formId}>
-                <Translate>Save</Translate>
-              </Button>
+            <div className="border rounded p-4 bg-(--bg-surface) text-ink mt-2">
+              <h2 className="text-lg font-bold py-2">Saved entity</h2>
+              <pre data-testid="resulting-entity">{JSON.stringify(savedEntity, null, 2)}</pre>
             </div>
-          </div>
-          <div className="border rounded p-4 bg-(--bg-surface) text-ink mt-2">
-            <h2 className="text-lg font-bold py-2">Saved entity</h2>
-            <pre data-testid="resulting-entity">{JSON.stringify(savedEntity, null, 2)}</pre>
-          </div>
+          </EntityScopedProvider>
         </Provider>
       </BrowserRouter>
     </div>

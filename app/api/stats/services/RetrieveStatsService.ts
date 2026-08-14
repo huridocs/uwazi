@@ -3,7 +3,7 @@ import { elastic } from '#api/search/index.js';
 import { PUBLIC_USER_ID } from '#api/core/domain/user/User.js';
 import { UserSchema } from '#shared/types/userType.js';
 import { MongoFilesDAO } from '#api/core/infrastructure/mongodb/files/MongoFilesDAO.js';
-import { MongoEntitiesDAO } from '#api/core/infrastructure/mongodb/entity/MongoEntitiesDAO.js';
+import { EntitiesDAO } from '#api/core/application/contracts/EntitiesDAO.js';
 
 type RoleCount = {
   _id: UserSchema['role'];
@@ -15,9 +15,9 @@ export class RetrieveStatsService {
 
   private readonly filesDAO: MongoFilesDAO;
 
-  private readonly entitiesDAO: MongoEntitiesDAO;
+  private readonly entitiesDAO: EntitiesDAO;
 
-  constructor(db: Db, filesDAO: MongoFilesDAO, entitiesDAO: MongoEntitiesDAO) {
+  constructor(db: Db, filesDAO: MongoFilesDAO, entitiesDAO: EntitiesDAO) {
     this.db = db;
     this.filesDAO = filesDAO;
     this.entitiesDAO = entitiesDAO;

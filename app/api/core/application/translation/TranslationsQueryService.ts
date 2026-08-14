@@ -24,15 +24,18 @@ export class TranslationsQueryService {
     return this.translationsDS.getByContext(contextId);
   }
 
+  getByLanguageAndContext(language: LanguageISO6391, contextId: string): ResultSet<Translation> {
+    return this.translationsDS.getByLanguageAndContext(language, contextId);
+  }
+
   async getContextValueMap(
     language: LanguageISO6391,
     contextId: string
   ): Promise<Record<string, string>> {
+    const translations = await this.getByLanguageAndContext(language, contextId).all();
     const values: Record<string, string> = {};
-    await this.getByContext(contextId).forEach(translation => {
-      if (translation.language === language) {
-        values[translation.key] = translation.value;
-      }
+    translations.forEach(translation => {
+      values[translation.key] = translation.value;
     });
     return values;
   }
@@ -40,8 +43,9 @@ export class TranslationsQueryService {
   async getLanguageValueMaps(
     language: LanguageISO6391
   ): Promise<Record<string, Record<string, string>>> {
+    const translations = await this.getByLanguage(language).all();
     const byContext: Record<string, Record<string, string>> = {};
-    await this.getByLanguage(language).forEach(translation => {
+    translations.forEach(translation => {
       const contextId = translation.context.id;
       if (!byContext[contextId]) {
         byContext[contextId] = {};
@@ -52,7 +56,7 @@ export class TranslationsQueryService {
   }
 
   async toLegacyDto(
-    result: ResultSet<Translation>,
+    load: () => ResultSet<Translation>,
     onlyLanguage?: LanguageISO6391
   ): Promise<EnforcedWithId<TranslationType>[]> {
     let languageKeys = await this.settingsDS.getLanguageKeys();
@@ -72,7 +76,8 @@ export class TranslationsQueryService {
       contexts[key] = {};
     });
 
-    await result.forEach(translation => {
+    const translations = await load().all();
+    translations.forEach(translation => {
       if (!resultMap[translation.language]) {
         resultMap[translation.language] = {
           locale: translation.language,
@@ -101,12 +106,18 @@ export class TranslationsQueryService {
   }
 
   async getLegacy(query: { locale?: LanguageISO6391; context?: string } = {}) {
+    if (query.locale && query.context) {
+      return this.toLegacyDto(
+        () => this.getByLanguageAndContext(query.locale!, query.context!),
+        query.locale
+      );
+    }
     if (query.context) {
-      return this.toLegacyDto(this.getByContext(query.context));
+      return this.toLegacyDto(() => this.getByContext(query.context!));
     }
     if (query.locale) {
-      return this.toLegacyDto(this.getByLanguage(query.locale), query.locale);
+      return this.toLegacyDto(() => this.getByLanguage(query.locale!), query.locale);
     }
-    return this.toLegacyDto(this.getAll());
+    return this.toLegacyDto(() => this.getAll());
   }
 }

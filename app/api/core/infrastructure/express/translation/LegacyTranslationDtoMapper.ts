@@ -12,21 +12,22 @@ export type IndexedTranslations = Omit<TranslationType, 'contexts'> & {
 };
 
 export function prepareContexts(contexts: TranslationContext[] = []): IndexedContext[] {
-  return contexts.map(context => ({
-    ...context,
-    type:
-      context.id === 'System' || context.id === 'Filters' || context.id === 'Menu'
-        ? 'Uwazi UI'
-        : context.type,
-    values: context.values
-      ? context.values.reduce<IndexedContextValues>((values, value) => {
-          if (value.key && value.value) {
-            return { ...values, [value.key]: value.value };
-          }
-          return values;
-        }, {})
-      : {},
-  }));
+  return contexts.map(context => {
+    const values: IndexedContextValues = {};
+    context.values?.forEach(value => {
+      if (value.key && value.value) {
+        values[value.key] = value.value;
+      }
+    });
+    return {
+      ...context,
+      type:
+        context.id === 'System' || context.id === 'Filters' || context.id === 'Menu'
+          ? 'Uwazi UI'
+          : context.type,
+      values,
+    };
+  });
 }
 
 export function toIndexedTranslations(

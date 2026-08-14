@@ -90,7 +90,7 @@ const EditEntityPropertyField = ({
   const registerOptions = { required: property.required };
   const context = activeTemplateId;
 
-  if (property.type === 'text' || property.type === 'generatedid' || property.type === 'numeric') {
+  if (property.type === 'text' || property.type === 'numeric') {
     return (
       <TextField<EditEntityFormValues>
         context={context}
@@ -99,6 +99,24 @@ const EditEntityPropertyField = ({
         registerOptions={registerOptions}
         disabled={disabled}
         type={property.type === 'numeric' ? 'number' : 'text'}
+        pdfFill={{
+          name: property.name,
+          propertyId: property._id,
+          coerceType: property.type === 'numeric' ? 'numeric' : 'text',
+        }}
+      />
+    );
+  }
+
+  if (property.type === 'generatedid') {
+    return (
+      <TextField<EditEntityFormValues>
+        context={context}
+        label={property.label}
+        field={field}
+        registerOptions={registerOptions}
+        disabled={disabled}
+        type="text"
       />
     );
   }
@@ -194,6 +212,11 @@ const EditEntityPropertyField = ({
         field={field}
         registerOptions={registerOptions}
         disabled={disabled}
+        pdfFill={{
+          name: property.name,
+          propertyId: property._id,
+          coerceType: 'date',
+        }}
       />
     );
   }
@@ -266,6 +289,11 @@ const EditEntityPropertyField = ({
         field={field}
         registerOptions={registerOptions}
         disabled={disabled}
+        pdfFill={{
+          name: property.name,
+          propertyId: property._id,
+          coerceType: 'text',
+        }}
       />
     );
   }

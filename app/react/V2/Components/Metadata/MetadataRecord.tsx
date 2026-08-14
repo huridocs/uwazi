@@ -105,7 +105,6 @@ const MetadataRecord = ({ entity, onOpenEntity }: MetadataRecordProps) => {
 
     partition.detailLinkOnlyRels.forEach(field => {
       const content = connectionPillsForField(field, templatePropertyById.get(field._id), {
-        showExternalLinkIcon: true,
         onOpenEntity,
       });
       if (!content) {

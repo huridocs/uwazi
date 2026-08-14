@@ -3,6 +3,7 @@ import type { EditEntityFormValues } from '../buildEditEntityDefaultValues.js';
 import {
   buildEditEntitySaveInput,
   formatMetadataForEntity,
+  isEntityEditorDirty,
   mergeSharedFormMetadata,
   planSharedMetadataSync,
 } from '../editEntityMetadata.js';
@@ -124,6 +125,82 @@ describe('buildEditEntitySaveInput', () => {
       mediaPropertyNames: new Set(),
     });
     expect(saved.icon).toEqual(icon);
+  });
+
+  it('should add propertySelections when mainDocument id and draft selections exist', () => {
+    const draft = [
+      {
+        name: 'simple_text',
+        propertyID: '1',
+        selection: {
+          text: 'from pdf',
+          selectionRectangles: [{ top: 1, left: 1, width: 2, height: 2, page: '1' }],
+        },
+      },
+    ];
+    const saved = buildEditEntitySaveInput({
+      entity,
+      values,
+      metadataProperties: properties,
+      pendingAttachments: [],
+      mediaPropertyNames: new Set(),
+      mainDocumentId: 'file-1',
+      draftPropertySelections: draft,
+    });
+    expect(saved.propertySelections).toEqual({
+      fileID: 'file-1',
+      selections: draft,
+    });
+  });
+
+  it('should include deleteSelection drafts in propertySelections payload', () => {
+    const draft = [
+      {
+        name: 'simple_text',
+        propertyID: '1',
+        selection: { text: '', selectionRectangles: [] },
+        deleteSelection: true,
+      },
+    ];
+    const saved = buildEditEntitySaveInput({
+      entity,
+      values,
+      metadataProperties: properties,
+      pendingAttachments: [],
+      mediaPropertyNames: new Set(),
+      mainDocumentId: 'file-1',
+      draftPropertySelections: draft,
+    });
+    expect(saved.propertySelections).toEqual({
+      fileID: 'file-1',
+      selections: draft,
+    });
+  });
+
+  it('should omit propertySelections without a main document id', () => {
+    const saved = buildEditEntitySaveInput({
+      entity,
+      values,
+      metadataProperties: properties,
+      pendingAttachments: [],
+      mediaPropertyNames: new Set(),
+      draftPropertySelections: [{ name: 'simple_text', selection: { text: 'x' } }],
+    });
+    expect(saved.propertySelections).toBeUndefined();
+  });
+});
+
+describe('isEntityEditorDirty', () => {
+  it('is dirty when only draft property selections exist (e.g. Clear PDF)', () => {
+    expect(isEntityEditorDirty(false, 1)).toBe(true);
+  });
+
+  it('is dirty when the form is dirty without drafts', () => {
+    expect(isEntityEditorDirty(true, 0)).toBe(true);
+  });
+
+  it('is clean when form and drafts are empty', () => {
+    expect(isEntityEditorDirty(false, 0)).toBe(false);
   });
 });
 

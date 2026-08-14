@@ -25,7 +25,7 @@ class UpdateEntityController extends AbstractController<Request> {
         parsed = UpdateEntitySchema.parse(this.request.body);
       }
 
-      const currentDocs = await entityDAO.findBySharedIds([parsed.sharedId]);
+      const currentDocs = await entityDAO.getBySharedId(parsed.sharedId);
       const currentDoc = currentDocs.find(d => d.language === parsed.language);
       if (currentDoc) {
         const resolver = new ATConflictSolver(

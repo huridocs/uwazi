@@ -1,10 +1,10 @@
 /* eslint-disable max-statements */
 import { ObjectId } from 'mongodb';
-import { EnforcedWithId, UwaziFilterQuery } from '#api/odm/index.js';
+import { EnforcedWithId } from '#api/odm/index.js';
 import { ArrayUtils } from '#api/common.v2/utils/Array.js';
 import { IXExtractorType } from '#shared/types/extractorType.js';
 import { IXSuggestionsModel } from '#api/suggestions/IXSuggestionsModel.js';
-import entitiesModel from '#api/entities/entitiesModel.js';
+import { EntitiesDAOFactory } from '#api/core/infrastructure/factories/EntitiesDAOFactory.js';
 import { FilesDAOFactory } from '#api/core/infrastructure/factories/FilesDAOFactory.js';
 import { SegmentationModel } from '#api/services/pdfsegmentation/segmentationModel.js';
 import { ensure } from '#shared/tsUtils.js';
@@ -37,6 +37,8 @@ async function getMarkedEntityPairs(extractorId: ObjectId) {
   return unique as { sharedId: string; language: string }[];
 }
 
+const entitiesDao = () => EntitiesDAOFactory.default().unrestricted();
+
 const getPropertyTrainingEntities = async (extractor: EnforcedWithId<IXExtractorType>) => {
   const extractorId = extractor._id as ObjectId;
   const [model] = await IXModelsModel.get({ extractorId });
@@ -46,12 +48,10 @@ const getPropertyTrainingEntities = async (extractor: EnforcedWithId<IXExtractor
   // Stage A: marked cohort (bypass labeled guard)
   let stageA: EntitySchema[] = [];
   if (pairs.length) {
-    const entityQuery = { $or: pairs } as UwaziFilterQuery<any>;
-    stageA = await entitiesModel.getUnrestricted(
-      entityQuery,
-      `sharedId title metadata.${extractor.property} metadata.${extractor.source.property} language`,
-      { limit: MAX_TRAINING_ENTITIES_NUMBER }
-    );
+    stageA = (await entitiesDao().findByLanguagePairs(
+      { pairs },
+      { select: ['sharedId', 'title', 'language', 'metadata'], limit: MAX_TRAINING_ENTITIES_NUMBER }
+    )) as unknown as EntitySchema[];
   }
 
   // Stage B: existing logic with adjusted limit
@@ -123,9 +123,12 @@ const buildPdfMaterialsForFiles = async (
       const lookupLang =
         LanguageUtils.fromISO639_3(ensure<string>(f.language), false)?.ISO639_1 ||
         ensure<string>(f.language);
-      const [entityLang] = await entitiesModel.getUnrestricted(
-        { sharedId: f.entity, language: lookupLang },
-        `language metadata.${extractor.property}`
+      const entityLang = await entitiesDao().findOne(
+        {
+          sharedId: f.entity,
+          language: lookupLang,
+        },
+        { select: ['language', 'metadata'] }
       );
       const entityValues = (entityLang?.metadata?.[extractor.property] || []) as Array<{
         value?: string;

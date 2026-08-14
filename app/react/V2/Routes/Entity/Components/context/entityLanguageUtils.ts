@@ -24,7 +24,7 @@ type PlaintextQuery = {
 };
 
 const seedLoaderCache = (entity: Entity, language: string, mainDocument?: FileType) => {
-  if (!entity.sharedId) {
+  if (!entity.sharedId || entityLoaderCache.isRefetchPending(entity.sharedId)) {
     return;
   }
   entityLoaderCache.setEntity(entity.sharedId, language, entity);

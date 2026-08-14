@@ -79,7 +79,7 @@ const setUserContextForFile = async (file: FileType): Promise<void> => {
     throw new Error(`OCR cannot process file ${file.filename}: file has no entity association`);
   }
 
-  const entity = await EntitiesDAOFactory.default({
+  const [entity] = await EntitiesDAOFactory.default({
     accessContext: AccessContext.system(),
   }).getBySharedId(file.entity);
 

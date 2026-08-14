@@ -45,7 +45,30 @@ describe('CsvImportRowFilesResolver', () => {
 
     expect(resolved.documents).toHaveLength(1);
     expect(resolved.documents[0].metadata.originalname).toBe('main.pdf');
+    expect(resolved.documents[0].metadata.mimetype).toBe('application/pdf');
     expect(resolved.attachments).toHaveLength(0);
+  });
+
+  it('should assign real mimetypes for imported documents and attachments', async () => {
+    const fileStorage = createFileStorage({
+      'report.pdf': 'pdf-content',
+      'notes.docx': 'docx-content',
+      'photo.jpg': 'jpg-content',
+    });
+
+    const resolved = await CsvImportRowFilesResolver.resolve({
+      importId: 'import-id',
+      rowValues: ['report.pdf', 'notes.docx|photo.jpg'],
+      sanitizedHeaders: ['file', 'attachments'],
+      headerAnalysis: buildHeaderAnalysis(),
+      fileStorage,
+    });
+
+    expect(resolved.documents[0].metadata.mimetype).toBe('application/pdf');
+    expect(resolved.attachments.map(file => file.metadata.mimetype)).toEqual([
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+      'image/jpeg',
+    ]);
   });
 
   it('should resolve default-language file when file language columns exist', async () => {
