@@ -164,7 +164,6 @@ export const config = {
       featureFlagEntityViewerv2: FEATURE_FLAG_ENTITY_VIEWER_V2 === 'true' || false,
       aiAssistant: FEATURE_FLAG_AI_ASSISTANT === 'true' || false,
       aiAssistantServiceUrl: AI_ASSISTANT_SERVICE_URL || undefined,
-      v2UsersGet: false,
       usersDirectory: false,
       telemetry: {
         enabled: false,

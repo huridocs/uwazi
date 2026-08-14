@@ -15,12 +15,12 @@ const populateGroupsOfUsers = async (user, groups) => {
 export default {
   /**
    * @deprecated v1 Mongo-only query path, no longer routed through the postgresUsers flag
-   * (see UsersDAOFactory) since PostgresUsersDAO has no equivalent generic get(). Still the
-   * legitimate v1 fallback for routes.ts's /api/users GET route (v2UsersGet off) and for
-   * activitylog/helpers.js, entitiesPermissions.ts, userGroups.ts when `usersDirectory` is
-   * off — those call sites read through UsersDirectory when it is on. `collaborators.ts` and
-   * `search.js` no longer appear here: they went to UsersDirectory unconditionally, which
-   * resolves the backend itself (plan 05 step 1).
+   * (see UsersDAOFactory) since PostgresUsersDAO has no equivalent generic get(). The
+   * /api/users GET route no longer reaches it — that read is `UsersQueryService`'s now. What
+   * is left is activitylog/helpers.js, entitiesPermissions.ts and userGroups.ts when
+   * `usersDirectory` is off; those call sites read through UsersDirectory when it is on.
+   * `collaborators.ts` and `search.js` no longer appear here: they went to UsersDirectory
+   * unconditionally, which resolves the backend itself (plan 05 step 1).
    */
   async get(query, select) {
     const users = await model.get({ ...query, deletedAt: { $exists: false } }, select);
@@ -45,9 +45,10 @@ export default {
    * | `getById(id, '+password')` | **nothing** — no read model carries a password, and no
    *   caller asks for one any more. Load the aggregate through `UsersDataSource` instead. |
    *
-   * Every production caller has moved; what is left is the `v2UsersGet` fallback for
-   * routes.ts's /api/users GET route, and this method's own consistency spec
-   * (`UsersGettersConsistency.spec.ts`), which pins its behaviour across that flag.
+   * Every production caller has a UsersDirectory path already and reaches this one only when
+   * `usersDirectory` is off (passport_conf.js, jobs/getUserById.ts, files.ts, OcrManager.ts,
+   * preserveSync.ts, setupSockets.ts, suggestions/updateEntities.ts, tocService.ts). Retiring
+   * that flag retires this method; `UsersGettersConsistency.spec.ts` pins it until then.
    */
   async getById(id, select = '', includeGroups = false, includeDeleted = false) {
     const [user] = await model.get(
