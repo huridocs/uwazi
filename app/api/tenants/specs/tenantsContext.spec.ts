@@ -133,4 +133,46 @@ describe('tenantsContext', () => {
     expect(result[0].name).toBe('test-tenant');
     expect(result[0].featureFlags?.s3Storage).toBeTruthy();
   });
+
+  it('should inherit feature flag defaults when unset on the tenant', async () => {
+    const featureFlag = 'themeCustomization' as const;
+
+    tenants.add({
+      name: 'test-tenant-flag-default',
+      dbName: 'test-tenant-flag-default-db',
+    });
+
+    await tenants.run(async () => {
+      expect(tenants.current().featureFlags?.[featureFlag]).toBe(
+        config.defaultTenant.featureFlags![featureFlag]
+      );
+    }, 'test-tenant-flag-default');
+  });
+
+  it('should keep an explicit false feature flag even when the default is true', async () => {
+    const featureFlag = 'themeCustomization' as const;
+    const previousDefault = tenants.defaultTenant.featureFlags?.[featureFlag];
+
+    tenants.defaultTenant.featureFlags = {
+      ...tenants.defaultTenant.featureFlags,
+      [featureFlag]: true,
+    };
+
+    try {
+      tenants.add({
+        name: 'test-tenant-flag-false',
+        dbName: 'test-tenant-flag-false-db',
+        featureFlags: { [featureFlag]: false },
+      });
+
+      await tenants.run(async () => {
+        expect(tenants.current().featureFlags?.[featureFlag]).toBe(false);
+      }, 'test-tenant-flag-false');
+    } finally {
+      tenants.defaultTenant.featureFlags = {
+        ...tenants.defaultTenant.featureFlags,
+        [featureFlag]: previousDefault,
+      };
+    }
+  });
 });
