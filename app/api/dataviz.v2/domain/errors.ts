@@ -62,3 +62,9 @@ export class DatavizSnapshotUnavailableError extends DatavizError {
     });
   }
 }
+
+export class DatavizDuplicateNameError extends DatavizError {
+  constructor(name: string) {
+    super('DATAVIZ_DUPLICATE_NAME', `A dataviz named "${name}" already exists`, { name });
+  }
+}
