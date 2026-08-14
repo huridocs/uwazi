@@ -65,7 +65,9 @@ test('menu contract persists a link in nav and landing page setting', async ({ p
 
   await test.step('Visit the home page and verify the link is rendered in the primary nav', async () => {
     await gotoWithRetry('/', page);
-    await expect(page.getByText(MENU_LINK_TITLE).first()).toBeVisible();
+    await expect(
+      page.getByRole('navigation', { name: 'Primary' }).getByRole('link', { name: MENU_LINK_TITLE })
+    ).toBeVisible();
   });
 
   await test.step('Set a custom landing page in Collection settings', async () => {
@@ -96,6 +98,8 @@ test('menu contract persists a link in nav and landing page setting', async ({ p
       'input[aria-label="Type something in the search box to get some results."]'
     );
     await expect(searchInput).toBeVisible();
-    await expect(page.getByText(MENU_LINK_TITLE).first()).toBeVisible();
+    await expect(
+      page.getByRole('navigation', { name: 'Primary' }).getByRole('link', { name: MENU_LINK_TITLE })
+    ).toBeVisible();
   });
 });
