@@ -41,6 +41,15 @@ import fixtures, {
 
 const saveEntity = (doc, options = {}) => saveEntityV2Adapter(doc, options);
 
+const getEntityById = async (id, language) => {
+  const docs = await testingEnvironment.db.getAllFrom('entities');
+  return docs.find(entity =>
+    language
+      ? entity.sharedId === id && entity.language === language
+      : entity._id.toString() === id.toString()
+  );
+};
+
 const saveEntityWithEventing = (doc, options = {}) => {
   const jobsDispatcher = new SyncDispatcherForTests({
     [ProcessRelationshipAfterEntityUpdatedListener.asJob().name]: async () =>
@@ -277,7 +286,7 @@ describe('entities', () => {
       expect(savedEntity.metadata.friends).toEqual([
         { label: 'shared2title', type: 'entity', value: 'shared2' },
       ]);
-      const refetchedEntity = await entities.getById(batmanFinishesId);
+      const refetchedEntity = await getEntityById(batmanFinishesId);
       expect(refetchedEntity.title).toBe('Updated title');
       expect(refetchedEntity.metadata.property1).toEqual([{ value: 'value1' }]);
       expect(refetchedEntity.metadata.friends).toEqual([
@@ -298,9 +307,9 @@ describe('entities', () => {
         const updatedDoc = await saveEntity(doc, { language: 'en' });
         expect(updatedDoc.language).toBe('en');
         const [docES, docEN, docPT] = await Promise.all([
-          entities.getById('shared', 'es'),
-          entities.getById('shared', 'en'),
-          entities.getById('shared', 'pt'),
+          getEntityById('shared', 'es'),
+          getEntityById('shared', 'en'),
+          getEntityById('shared', 'pt'),
         ]);
         expect(docEN.published).toBe(true);
         expect(docES.published).toBe(true);
@@ -326,8 +335,8 @@ describe('entities', () => {
         const updatedDoc = await saveEntity(doc, { language: 'en' });
         expect(updatedDoc.language).toBe('en');
         const [docES, docEN] = await Promise.all([
-          entities.getById('shared', 'es'),
-          entities.getById('shared', 'en'),
+          getEntityById('shared', 'es'),
+          getEntityById('shared', 'en'),
         ]);
         expect(docEN.template).toBeDefined();
         expect(docES.template).toBeDefined();
@@ -363,8 +372,8 @@ describe('entities', () => {
         await saveEntity(doc, { language: 'en' });
         await saveEntity({ _id: batmanFinishesId, sharedId: 'shared' }, { language: 'en' });
         const [docES, docEN] = await Promise.all([
-          entities.getById('shared', 'es'),
-          entities.getById('shared', 'en'),
+          getEntityById('shared', 'es'),
+          getEntityById('shared', 'en'),
         ]);
 
         expect(docES.generatedToc).toBe(true);
@@ -392,9 +401,9 @@ describe('entities', () => {
       const updatedDoc = await saveEntity(doc, { language: 'en' });
       expect(updatedDoc.language).toBe('en');
       const [docEN, docES, docPT] = await Promise.all([
-        entities.getById('shared1', 'en'),
-        entities.getById('shared1', 'es'),
-        entities.getById('shared1', 'pt'),
+        getEntityById('shared1', 'en'),
+        getEntityById('shared1', 'es'),
+        getEntityById('shared1', 'pt'),
       ]);
       expect(docEN.metadata.text[0].value).toBe('changedText');
       expect(docEN.metadata.select[0]).toEqual({ value: 'country_one', label: 'Country1' });
@@ -477,7 +486,7 @@ describe('entities', () => {
       it('should add references on update', async () => {
         const user = { _id: adminId };
 
-        const existing = await entities.getById('relSaveTest', 'en');
+        const existing = await getEntityById('relSaveTest', 'en');
         const existingRelationships = await relationships.getByDocument('relSaveTest', 'en');
         expect(existingRelationships.length).toBe(4);
         expect(existingRelationships.map(r => r.entityData.title).sort()).toEqual([
@@ -507,7 +516,7 @@ describe('entities', () => {
       it('should delete references on update', async () => {
         const user = { _id: adminId };
 
-        const existing = await entities.getById('relSaveTest', 'en');
+        const existing = await getEntityById('relSaveTest', 'en');
         const existingRelationships = await relationships.getByDocument('relSaveTest', 'en');
         expect(existingRelationships.length).toBe(4);
         expect(existingRelationships.map(r => r.entityData.title).sort()).toEqual([
@@ -531,7 +540,7 @@ describe('entities', () => {
         jest.spyOn(date, 'currentUTC').mockReturnValue(10);
         const modifiedDoc = { _id: batmanFinishesId, sharedId: 'shared' };
         await saveEntity(modifiedDoc, { user: 'another_user', language: 'en' });
-        const doc = await entities.getById('shared', 'en');
+        const doc = await getEntityById('shared', 'en');
         expect(doc.user).not.toBe('another_user');
         expect(doc.creationDate).not.toBe(10);
       });
@@ -655,8 +664,8 @@ describe('entities', () => {
 
         const editedEn = await saveEntity(input, { language: 'en' });
         const [editedEs, editedPt] = await Promise.all([
-          entities.getById(entityEs.sharedId, 'es'),
-          entities.getById(entityEs.sharedId, 'pt'),
+          getEntityById(entityEs.sharedId, 'es'),
+          getEntityById(entityEs.sharedId, 'pt'),
         ]);
 
         expect(editedEn.metadata).toEqual({
@@ -698,8 +707,8 @@ describe('entities', () => {
       const updatedDoc = await saveEntity(doc, { language: 'en' });
       expect(updatedDoc.language).toBe('en');
       const [docES, docEN] = await Promise.all([
-        entities.getById('shared', 'es'),
-        entities.getById('shared', 'en'),
+        getEntityById('shared', 'es'),
+        getEntityById('shared', 'en'),
       ]);
       expect(docES.metadata.multidate).toEqual([{ value: 1234 }, { value: 5678 }]);
       expect(docEN.metadata.multidate).toEqual([{ value: 1234 }, { value: 5678 }]);
@@ -717,8 +726,8 @@ describe('entities', () => {
       const updatedDoc = await saveEntity(doc, { language: 'en' });
       expect(updatedDoc.language).toBe('en');
       const [docES, docEN] = await Promise.all([
-        entities.getById('shared', 'es'),
-        entities.getById('shared', 'en'),
+        getEntityById('shared', 'es'),
+        getEntityById('shared', 'en'),
       ]);
       expect(docES.metadata.select).toEqual([]);
       expect(docEN.metadata.select).toEqual([]);
@@ -751,16 +760,16 @@ describe('entities', () => {
       };
 
       await saveEntity(doc1, { language: 'en' });
-      const doc = await entities.getById('shared', 'en');
+      const doc = await getEntityById('shared', 'en');
       expect(doc.metadata.daterange).toEqual(doc1.metadata.daterange);
       await saveEntity(doc2, { language: 'en' });
-      const doc1db = await entities.getById('shared', 'en');
+      const doc1db = await getEntityById('shared', 'en');
       expect(doc1db.metadata.daterange).toEqual(doc2.metadata.daterange);
       await saveEntity(doc3, { language: 'en' });
-      const doc2db = await entities.getById('shared', 'en');
+      const doc2db = await getEntityById('shared', 'en');
       expect(doc2db.metadata.daterange).toEqual(doc3.metadata.daterange);
       await saveEntity(doc4, { language: 'en' });
-      const doc3db = await entities.getById('shared', 'en');
+      const doc3db = await getEntityById('shared', 'en');
       expect(doc3db.metadata.daterange).toEqual([]);
     });
 
@@ -784,8 +793,8 @@ describe('entities', () => {
       const updatedDoc = await saveEntity(doc, { language: 'en' });
       expect(updatedDoc.language).toBe('en');
       const [docES, docEN] = await Promise.all([
-        entities.getById('shared', 'es'),
-        entities.getById('shared', 'en'),
+        getEntityById('shared', 'es'),
+        getEntityById('shared', 'en'),
       ]);
       expect(docES.metadata.multidaterange).toEqual([
         { value: { from: 1, to: 2 } },
@@ -814,10 +823,10 @@ describe('entities', () => {
       };
 
       await saveEntity(doc1, { language: 'en' });
-      const doc = await entities.getById('shared', 'en');
+      const doc = await getEntityById('shared', 'en');
       expect(doc.metadata.numeric).toEqual([{ value: 10 }]);
       await saveEntity(doc2, { language: 'en' });
-      const doc1db = await entities.getById('shared', 'en');
+      const doc1db = await getEntityById('shared', 'en');
       expect(doc1db.metadata.numeric).toEqual([{ value: 10.5 }]);
     });
 
@@ -830,7 +839,7 @@ describe('entities', () => {
       };
 
       await saveEntity(doc1, { language: 'en' });
-      const doc = await entities.getById('shared', 'en');
+      const doc = await getEntityById('shared', 'en');
       // Empty metadata values are represented as [] in normalized entity payloads.
       expect(doc.metadata.numeric).toEqual([]);
     });

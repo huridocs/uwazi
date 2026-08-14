@@ -82,13 +82,8 @@ export default {
     return withoutDocuments ? entities : withDocuments(entities, documentsFullText);
   },
 
-  async getById(sharedId, language) {
-    let doc;
-    if (!language) {
-      doc = await model.getById(sharedId);
-    } else {
-      doc = await model.get({ sharedId, language }).then(result => result[0]);
-    }
-    return doc;
+  async getById(id, language) {
+    const dao = EntitiesDAOFactory.default();
+    return language ? dao.getBySharedId(id, language) : dao.getByInternalId(id);
   },
 };

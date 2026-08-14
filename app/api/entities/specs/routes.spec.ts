@@ -22,6 +22,11 @@ jest.mock(
   }
 );
 
+const getEntityById = async (id: string, language: string) =>
+  (await testingEnvironment.db.getAllFrom('entities')).find(
+    entity => entity.sharedId === id && entity.language === language
+  );
+
 async function filesForEntity(sharedId: any) {
   const files = (await testingEnvironment.db.getAllFrom('files')).filter(
     f => f.entity === sharedId
@@ -411,7 +416,7 @@ describe('entities routes', () => {
           sharedId: 'shared',
         });
 
-        const updatedEntity = await entities.getById('shared', 'en');
+        const updatedEntity = await getEntityById('shared', 'en');
         expect(updatedEntity?.title).toBe(`${SaveEntityTranslations.AITranslatedText} Hello`);
       });
 
@@ -490,7 +495,7 @@ describe('entities routes', () => {
           error: expect.any(String),
         });
 
-        const updatedEntity = await entities.getById('shared', 'en');
+        const updatedEntity = await getEntityById('shared', 'en');
         expect(updatedEntity?.title).toBe('Batman finishes');
 
         updateSpy.mockRestore();
