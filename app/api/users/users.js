@@ -157,62 +157,7 @@ const populateGroupsOfUsers = async (user, groups) => {
   return { ...user, groups: memberships };
 };
 
-function unauthorizedAction(user, userInTheDatabase, currentUser) {
-  return (
-    (user.hasOwnProperty('role') &&
-      user.role !== userInTheDatabase.role &&
-      currentUser.role !== 'admin') ||
-    (user._id !== currentUser._id.toString() && currentUser.role !== 'admin')
-  );
-}
-
 export default {
-  /**
-   * @deprecated
-   * v1 user update flow. Only reached while the tenant's `v2UsersUpdate` flag is
-   * off (see `UpdateUserController`). Use the v2 `UpdateUser` use case
-   * (`UpdateUserUseCaseFactory`) instead.
-   */
-  async save(user, currentUser) {
-    if (user._id && user._id.toString() === PUBLIC_USER_ID.toString()) {
-      return Promise.reject(createError('Cannot modify system users', 403));
-    }
-
-    const [userInTheDatabase] = await model.get(
-      { _id: user._id, deletedAt: { $exists: false } },
-      '+password'
-    );
-
-    if (!userInTheDatabase) {
-      return Promise.reject(createError('User not found', 404));
-    }
-
-    if (unauthorizedAction(user, userInTheDatabase, currentUser)) {
-      return Promise.reject(createError('Unauthorized', 403));
-    }
-
-    if (user._id === currentUser._id.toString() && user.role !== currentUser.role) {
-      return Promise.reject(createError('Can not change your own role', 403));
-    }
-
-    if (user.username && user.username.includes(' ')) {
-      return Promise.reject(createError('Usernames can not contain spaces.', 400));
-    }
-
-    const { using2fa, secret, ...userToSave } = user;
-
-    const updatedUser = await model.save({
-      ...userToSave,
-      password: user.password ? await encryptPassword(user.password) : userInTheDatabase.password,
-    });
-
-    if (currentUser.role === 'admin' && user.groups) {
-      await updateUserMemberships(updatedUser, user.groups);
-    }
-
-    return updatedUser;
-  },
-
   /**
    * @deprecated
    * v1 user creation flow. Only reached while the tenant's `v2UsersCreate` flag

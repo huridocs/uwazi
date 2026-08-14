@@ -53,7 +53,6 @@ const mongoSchema = new mongoose.Schema({
     postgresUsers: Boolean,
     postgresCaptchas: Boolean,
     postgresUsergroups: Boolean,
-    v2UsersUpdate: Boolean,
     usersDirectory: Boolean,
     telemetry: {
       enabled: Boolean,

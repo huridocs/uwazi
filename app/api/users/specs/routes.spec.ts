@@ -89,37 +89,6 @@ describe('users routes', () => {
   });
 
   describe('POST', () => {
-    describe('/users', () => {
-      beforeEach(() => {
-        jest
-          .spyOn(users, 'save')
-          .mockImplementation(async () => Promise.resolve({} as WithId<User> & { __v: number }));
-      });
-
-      it('should call users save with the body', async () => {
-        await request(app).post('/api/users').send(userToUpdate);
-
-        expect(users.save).toHaveBeenCalledWith(
-          userToUpdate,
-          expect.objectContaining({ _id: 'admin1', groups: [], role: 'admin' })
-        );
-      });
-
-      describe('validation', () => {
-        it.each(invalidUserProperties)(
-          'should invalidate if there is an invalid property',
-          async ({ field, value, instancePath, keyword }) => {
-            // @ts-ignore
-            const invalidUser = { ...userToUpdate, [field]: value };
-            const response = await request(app).post('/api/users').send(invalidUser);
-            expect(response.status).toBe(400);
-            expect(response.body.errors[0].instancePath).toEqual(instancePath);
-            expect(response.body.errors[0].keyword).toEqual(keyword);
-          }
-        );
-      });
-    });
-
     describe('/users/new', () => {
       it('should call users newUser with the body', async () => {
         jest

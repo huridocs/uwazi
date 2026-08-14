@@ -37,266 +37,145 @@ describe('Users', () => {
     await testingEnvironment.tearDown();
   });
 
-  describe('save', () => {
-    let currentUser = { _id: userId };
+  describe('newUser', () => {
+    const domain = 'http://localhost';
 
-    it('should save user matching id', async () => {
-      await users.save({ _id: userId.toString(), password: 'new_password' }, currentUser);
-      const [user1] = await users.get({ _id: userId }, '+password');
-      expect(await comparePasswords('new_password', user1.password)).toBe(true);
-      expect(user1.username).toBe('username');
-    });
-
-    it('should not save a null password on update', async () => {
-      const user = { _id: recoveryUserId, role: 'admin' };
-
-      const [userInDb] = await users.get({ _id: recoveryUserId }, '+password');
-      await users.save(user, { _id: userId, role: 'admin' });
-      const [updatedUser] = await users.get({ _id: recoveryUserId }, '+password');
-
-      expect(updatedUser.password.toString()).toBe(userInDb.password.toString());
-    });
-
-    it('should not change the "using2fa" or "secret" properties through this method', async () => {
-      const user = { _id: recoveryUserId, using2fa: true, secret: 'UNAUTHORIZED ENTRY POINT' };
-      await users.save(user, { _id: userId, role: 'admin' });
-      const [updatedUser] = await usersModel.get({ _id: recoveryUserId }, '+secret');
-      expect(updatedUser.using2fa).toBe(false);
-      expect(updatedUser.secret).toBeUndefined();
-    });
-
-    const assertUserMembership = async updatedUser => {
+    const assertUserMembership = async createdUser => {
       const groups = await userGroups.get();
       const membership1 = groups[0].members.find(
-        m => m.refId.toString() === updatedUser._id.toString()
+        m => m.refId.toString() === createdUser._id.toString()
       );
       const membership2 = groups[1].members.find(
-        m => m.refId.toString() === updatedUser._id.toString()
+        m => m.refId.toString() === createdUser._id.toString()
       );
       expect(membership1).not.toBeUndefined();
       expect(membership2).not.toBeUndefined();
     };
 
-    it('should update the membership of the saved user', async () => {
-      currentUser = { _id: 'user2', role: 'admin' };
-      const userToUpdate = {
-        _id: userId.toString(),
-        groups: [{ _id: group1Id.toString() }, { _id: group2Id.toString() }],
-      };
-      const updatedUser = await users.save(userToUpdate, currentUser);
-      await assertUserMembership(updatedUser);
+    beforeEach(() => {
+      jest.spyOn(users, 'recoverPassword').mockImplementation(async () => Promise.resolve());
+      jest.spyOn(random, 'default').mockReturnValue('mypass');
     });
 
-    it('should remove all groups if user has not any', async () => {
-      currentUser = { _id: 'user2', role: 'admin' };
-      const userToUpdate = {
-        _id: userId.toString(),
-        groups: [],
-      };
-      const updatedUser = await users.save(userToUpdate, currentUser);
-      const groups = await userGroups.get({ 'members._id': updatedUser._id.toString() });
-      expect(groups.length).toBe(0);
+    it('should do the recover password process (as a new user)', async () => {
+      await users.newUser(
+        {
+          username: 'spidey',
+          email: 'peter@parker.com',
+          password: 'mypass',
+          role: 'editor',
+        },
+        domain
+      );
+      const [user] = await users.get({ username: 'spidey' });
+      expect(user.username).toBe('spidey');
+      expect(users.recoverPassword).toHaveBeenCalledWith('peter@parker.com', domain, {
+        newUser: true,
+      });
     });
 
-    it.each(['collaborator', 'editor'])(
-      'should throw an unauthorized error if a %s user tries to update another user',
-      async role => {
-        try {
-          currentUser = { _id: 'user3', role };
-          const userToUpdate = {
-            _id: userId,
-            username: 'otherName',
-          };
-          await users.save(userToUpdate, currentUser);
-          fail('Should throw error');
-        } catch (e) {
-          expect(e.code).toBe(403);
-          expect(e.message).toEqual('Unauthorized');
-        }
+    it('should create a random password when none is provided', async () => {
+      await users.newUser(
+        {
+          username: 'someone',
+          email: 'someone@mailer.com',
+          role: 'admin',
+        },
+        domain
+      );
+
+      expect(random.default).toHaveBeenCalled();
+      const [user] = await users.get({ username: 'someone' }, '+password');
+      expect(await comparePasswords('mypass', user.password)).toBe(true);
+    });
+
+    it('should not allow repeat username', async () => {
+      try {
+        await users.newUser(
+          { username: 'username', email: 'peter@parker.com', role: 'editor' },
+          domain
+        );
+        throw new Error('should throw an error');
+      } catch (error) {
+        expect(error).toEqual(createError('Username already exists', 409));
       }
-    );
+    });
+
+    it('should not allow repeat email', async () => {
+      try {
+        await users.newUser(
+          { username: 'spidey', email: 'test@email.com', role: 'editor' },
+          domain
+        );
+        throw new Error('should throw an error');
+      } catch (error) {
+        expect(error).toEqual(createError('Email already exists', 409));
+      }
+    });
+
+    it('should not allow sending two-step verification data on creation', async () => {
+      await users.newUser(
+        {
+          username: 'without2fa',
+          email: 'another@email.com',
+          password: 'mypass',
+          role: 'editor',
+          using2fa: true,
+          secret: 'UNAUTHORIZED SECRET',
+        },
+        domain
+      );
+
+      const [createdUser] = await usersModel.get({ username: 'without2fa' }, '+secret');
+      expect(createdUser.using2fa).toBe(false);
+      expect(createdUser.secret).toBeUndefined();
+    });
+
+    it('should add the new user to the specified userGroups', async () => {
+      const createdUser = await users.newUser(
+        {
+          username: 'spidey',
+          email: 'peter@parker.com',
+          password: 'mypass',
+          role: 'editor',
+          groups: [{ _id: group1Id.toString() }, { _id: group2Id.toString() }],
+        },
+        domain
+      );
+
+      await assertUserMembership(createdUser);
+    });
 
     it('should not allow spaces in username', async () => {
-      currentUser = { _id: 'user2', role: 'admin' };
       const userdata = {
-        _id: userId.toString(),
-        username: 'user name',
+        username: 'Peter Parker',
+        email: 'peter@parker.com',
+        password: 'mypass',
+        role: 'editor',
+        groups: [],
       };
-      await expect(users.save(userdata, currentUser)).rejects.toMatchObject({
+      await expect(users.newUser(userdata, domain)).rejects.toMatchObject({
         code: 400,
         message: 'Usernames can not contain spaces.',
       });
     });
 
-    describe('when you try to change role', () => {
-      it('should be an admin', async () => {
-        currentUser = { _id: userId, role: 'editor' };
-        const user = { _id: recoveryUserId, role: 'admin' };
-        try {
-          await users.save(user, currentUser);
-          throw new Error('should throw an error');
-        } catch (error) {
-          expect(error).toEqual(createError('Unauthorized', 403));
-        }
-      });
-
-      it('should not modify yourself', async () => {
-        currentUser = { _id: userId, role: 'admin' };
-        const user = { _id: userId.toString(), role: 'editor' };
-        try {
-          await users.save(user, currentUser);
-          throw new Error('should throw an error');
-        } catch (error) {
-          expect(error).toEqual(createError('Can not change your own role', 403));
-        }
-      });
-    });
-
-    it('should not allow saving to a deleted user', async () => {
+    it('should allow creating a user with the same username as a soft-deleted user', async () => {
       await usersModel.db.updateOne({ _id: userId }, { $set: { deletedAt: new Date() } });
-
-      try {
-        await users.save(
-          { _id: userId.toString(), username: 'updated' },
-          { _id: 'user2', role: 'admin' }
-        );
-        fail('should throw error');
-      } catch (error) {
-        expect(error).toEqual(createError('User not found', 404));
-      }
+      const newUser = await users.newUser(
+        { username: 'username', email: 'unique@email.com', role: 'editor' },
+        domain
+      );
+      expect(newUser.username).toBe('username');
     });
 
-    describe('newUser', () => {
-      const domain = 'http://localhost';
-
-      beforeEach(() => {
-        jest.spyOn(users, 'recoverPassword').mockImplementation(async () => Promise.resolve());
-        jest.spyOn(random, 'default').mockReturnValue('mypass');
-      });
-
-      it('should do the recover password process (as a new user)', async () => {
-        await users.newUser(
-          {
-            username: 'spidey',
-            email: 'peter@parker.com',
-            password: 'mypass',
-            role: 'editor',
-          },
-          domain
-        );
-        const [user] = await users.get({ username: 'spidey' });
-        expect(user.username).toBe('spidey');
-        expect(users.recoverPassword).toHaveBeenCalledWith('peter@parker.com', domain, {
-          newUser: true,
-        });
-      });
-
-      it('should create a random password when none is provided', async () => {
-        await users.newUser(
-          {
-            username: 'someone',
-            email: 'someone@mailer.com',
-            role: 'admin',
-          },
-          domain
-        );
-
-        expect(random.default).toHaveBeenCalled();
-        const [user] = await users.get({ username: 'someone' }, '+password');
-        expect(await comparePasswords('mypass', user.password)).toBe(true);
-      });
-
-      it('should not allow repeat username', async () => {
-        try {
-          await users.newUser(
-            { username: 'username', email: 'peter@parker.com', role: 'editor' },
-            currentUser,
-            domain
-          );
-          throw new Error('should throw an error');
-        } catch (error) {
-          expect(error).toEqual(createError('Username already exists', 409));
-        }
-      });
-
-      it('should not allow repeat email', async () => {
-        try {
-          await users.newUser(
-            { username: 'spidey', email: 'test@email.com', role: 'editor' },
-            currentUser,
-            domain
-          );
-          throw new Error('should throw an error');
-        } catch (error) {
-          expect(error).toEqual(createError('Email already exists', 409));
-        }
-      });
-
-      it('should not allow sending two-step verification data on creation', async () => {
-        await users.newUser(
-          {
-            username: 'without2fa',
-            email: 'another@email.com',
-            password: 'mypass',
-            role: 'editor',
-            using2fa: true,
-            secret: 'UNAUTHORIZED SECRET',
-          },
-          currentUser,
-          domain
-        );
-
-        const [createdUser] = await usersModel.get({ username: 'without2fa' }, '+secret');
-        expect(createdUser.using2fa).toBe(false);
-        expect(createdUser.secret).toBeUndefined();
-      });
-
-      it('should add the new user to the specified userGroups', async () => {
-        const createdUser = await users.newUser(
-          {
-            username: 'spidey',
-            email: 'peter@parker.com',
-            password: 'mypass',
-            role: 'editor',
-            groups: [{ _id: group1Id.toString() }, { _id: group2Id.toString() }],
-          },
-          domain
-        );
-
-        await assertUserMembership(createdUser);
-      });
-
-      it('should not allow spaces in username', async () => {
-        const userdata = {
-          username: 'Peter Parker',
-          email: 'peter@parker.com',
-          password: 'mypass',
-          role: 'editor',
-          groups: [],
-        };
-        await expect(users.newUser(userdata, domain)).rejects.toMatchObject({
-          code: 400,
-          message: 'Usernames can not contain spaces.',
-        });
-      });
-
-      it('should allow creating a user with the same username as a soft-deleted user', async () => {
-        await usersModel.db.updateOne({ _id: userId }, { $set: { deletedAt: new Date() } });
-        const newUser = await users.newUser(
-          { username: 'username', email: 'unique@email.com', role: 'editor' },
-          domain
-        );
-        expect(newUser.username).toBe('username');
-      });
-
-      it('should allow creating a user with the same email as a soft-deleted user', async () => {
-        await usersModel.db.updateOne({ _id: userId }, { $set: { deletedAt: new Date() } });
-        const newUser = await users.newUser(
-          { username: 'unique_username', email: 'test@email.com', role: 'editor' },
-          domain
-        );
-        expect(newUser.email).toBe('test@email.com');
-      });
+    it('should allow creating a user with the same email as a soft-deleted user', async () => {
+      await usersModel.db.updateOne({ _id: userId }, { $set: { deletedAt: new Date() } });
+      const newUser = await users.newUser(
+        { username: 'unique_username', email: 'test@email.com', role: 'editor' },
+        domain
+      );
+      expect(newUser.email).toBe('test@email.com');
     });
   });
 
@@ -976,21 +855,6 @@ describe('Users', () => {
           const userAfterAttempt = await users.getById(userId);
           expect(userAfterAttempt).toBeDefined();
           expect(userAfterAttempt.username).toBe('username');
-        }
-      });
-    });
-
-    describe('save', () => {
-      it('should prevent updates to the Public user', async () => {
-        try {
-          await users.save(
-            { _id: PUBLIC_USER_ID.toString(), username: 'Modified' },
-            { _id: userId, role: 'admin' }
-          );
-          fail('should have thrown an error');
-        } catch (error) {
-          expect(error.message).toBe('Cannot modify system users');
-          expect(error.code).toBe(403);
         }
       });
     });

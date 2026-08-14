@@ -39,19 +39,6 @@ export const userRoutes = (app: Application) => {
     '/api/users',
     needsAuthorization(['admin', 'editor', 'collaborator']),
     validatePasswordMiddleWare,
-    async (req: Request, res: Response, next: NextFunction) => {
-      if (tenants.current().featureFlags?.v2UsersUpdate) {
-        next();
-      } else {
-        await validation.validateRequest({
-          type: 'object',
-          properties: {
-            body: userSchema,
-          },
-          required: ['body'],
-        })(req, res, next);
-      }
-    },
     UpdateUserController.createHandler()
   );
   app.delete(
