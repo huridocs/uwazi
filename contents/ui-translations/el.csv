@@ -48,7 +48,6 @@ Add from web,Προσθήκη από το διαδίκτυο
 Add group,Προσθήκη ομάδας
 add icon,προσθήκη εικονιδίου
 Add item,Προσθήκη αντικειμένου
-Add language,Προσθήκη γλώσσας
 Add link,Προσθήκη συνδέσμου
 Add page,Προσθήκη σελίδας
 Add PDF,Προσθήκη PDF
@@ -163,7 +162,6 @@ Cards,Κάρτες
 Cards view,Προβολή καρτών
 Category,Category
 Change,Change
-Change password,Αλλαγή κωδικού πρόσβασης
 Change Password,Αλλαγή κωδικού πρόσβασης
 Changes in the thesaurus will impact all the entities using these values.,Οι αλλαγές στο θησαυρό θα επηρεάσουν όλες τις οντότητες που χρησιμοποιούν αυτές τις τιμές.
 Changing the type will erase all relationships to this entity.,Η αλλαγή του τύπου θα διαγράψει όλες τις σχέσεις με αυτή την οντότητα.
@@ -254,11 +252,9 @@ Create,Δημιουργία
 CREATE,ΔΗΜΙΟΥΡΓΙΑ
 Create and edit thesauri,Δημιουργία και επεξεργασία θησαυρών
 Create Connection,Δημιουργία σύνδεσης
-Create dictionaries,Δημιουργία λεξικών
 Create entity,Δημιουργία οντότητας
 Create Entity,Δημιουργία οντότητας
 Create Extractor,Δημιουργία εξαγωγέα
-Create group,Δημιουργία ομάδας
 Create new entities and upload documents,Δημιουργία νέων οντοτήτων και μεταφόρτωση εγγράφων
 Create new entity from selection,Create new entity from selection
 Create Reference,Δημιουργία αναφοράς
@@ -310,7 +306,6 @@ Data visualizations,Data visualizations
 Data was updated recently. You can refresh again in a few seconds.,Data was updated recently. You can refresh again in a few seconds.
 Date,Date
 Date added,Ημερομηνία προσθήκης
-Date format,Μορφή ημερομηνίας
 Date modified,Ημερομηνία τροποποίησης
 "Date or numeric × numeric enables scatter and heatmap. Line, area, and bar plot the
                 measure over the primary dimension (e.g. max engine size per registration date).","Date or numeric × numeric enables scatter and heatmap. Line, area, and bar plot the
@@ -334,7 +329,6 @@ Delete,Διαγραφή
 DELETE,ΔΙΑΓΡΑΦΗ
 Delete entities and documents,Διαγραφή οντοτήτων και εγγράφων
 Delete file,Διαγραφή αρχείου
-Delete language,Διαγραφή γλώσσας
 Delete relationship,Delete relationship
 Delete relationships,Delete relationships
 Delete?,Delete?
@@ -371,7 +365,6 @@ Do you want disable 2FA for the following users?,Θέλετε να απενερ�
 Do you want reset the password for the following users?,Θέλετε να επαναφέρετε τον κωδικό πρόσβασης για τους ακόλουθους χρήστες;
 Do you want to delete the following items?,Θέλετε να διαγράψετε τα ακόλουθα στοιχεία;
 Document,Έγγραφο
-Document and entity types,Τύποι εγγράφων και οντοτήτων
 Document contents,Περιεχόμενο εγγράφου
 Document OCR trigger,OCR εγγράφου
 Document Title,Τίτλος εγγράφου
@@ -415,8 +408,6 @@ Editor,Επιμελητής
 editor,Επιμελητής
 Editors,Επιμελητές
 Email,Email
-Email address,Διεύθυνση email
-Email updated,Το email ενημερώθηκε
 Embed,Embed
 Embed in pages,Embed in pages
 Empty,Κενό
@@ -508,7 +499,6 @@ for,για
 For all entities,Για όλες τις οντότητες
 For entities with blank values,Για οντότητες με κενές τιμές
 Forgot Password or Username?,Forgot Password or Username?
-Forgot Password?,Ξεχάσατε τον κωδικό πρόσβασης;
 Forms and email configuration,Διαμόρφωση φορμών και email
 From,Από
 From all suggestions,Από όλες τις προτάσεις
@@ -526,7 +516,6 @@ Global CSS & JS,Καθολικό CSS και JS
 Global JS,Global JS
 Google,Google
 Google Analytics,Google Analytics
-Google Analytics ID,Αναγνωριστικό Google Analytics
 Google Maps,Χάρτες Google
 Group,Ομάδα
 Group by,Group by
@@ -883,9 +872,7 @@ parties,parties
 Password,Κωδικός πρόσβασης
 Password + 2fa,Κωδικός πρόσβασης + 2fa
 Password changed success,Ο κωδικός πρόσβασης άλλαξε επιτυχώς
-Password Error,Σφάλμα κωδικού πρόσβασης. Και τα δύο πεδία είναι υποχρεωτικά και πρέπει να ταιριάζουν
 Password is too long,Ο κωδικός πρόσβασης είναι πολύ μεγάλος
-Password updated,Ο κωδικός πρόσβασης ενημερώθηκε
 Passwords do not match,Οι κωδικοί πρόσβασης δεν ταιριάζουν
 Paste an audio or video URL to use it as this property without uploading a file. Press Enter to apply.,Paste an audio or video URL to use it as this property without uploading a file. Press Enter to apply.
 Paste an image URL to use it as this property without uploading a file. Press Enter to apply.,Paste an image URL to use it as this property without uploading a file. Press Enter to apply.
@@ -928,7 +915,6 @@ Priority sorting,Ταξινόμηση προτεραιότητας
 Priority sorting description,"Οι ιδιότητες που έχουν επισημανθεί ως ταξινόμηση προτεραιότητας θα χρησιμοποιούνται ως προεπιλεγμένα κριτήρια ταξινόμησης. Εάν περισσότερες από μία ιδιότητες έχουν επισημανθεί ως ταξινόμηση προτεραιότητας, το σύστημα θα προσπαθήσει να επιλέξει την καταλληλότερη. Κατά την εμφάνιση μεικτών τύπων προτύπων, το σύστημα θα επιλέξει τον καλύτερο συνδυασμό ταξινόμησης προτεραιότητας."
 Private,Private
 Private entities description,Προσοχή: οι επιλεγμένες οντότητες θα είναι **ιδιωτικές**. Μόνο οι εξουσιοδοτημένοι χρήστες θα μπορούν να τις δουν.
-Private instance,Ιδιωτική εγκατάσταση
 Process,Επεξεργασία
 Process extractor,Επεξεργασία εξαγωγέα
 Process selected,Επεξεργασία επιλεγμένων
@@ -1163,7 +1149,6 @@ Some tasks may take a while. Bert will reply when it's done.,Some tasks may take
 Something went wrong,Κάτι πήγε στραβά
 Sort,Ταξινόμηση
 Sort ascending,Ταξινόμηση αύξουσα
-Sort by,Ταξινόμηση κατά
 Sort descending,Ταξινόμηση φθίνουσα
 Sort:,Sort:
 sorted by,Ταξινόμηση κατά
