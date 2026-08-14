@@ -391,6 +391,7 @@ Single DS writes do not belong on `TranslationsService`. Callers that already sh
 - [x] Sync namespace `translationsV2` still green in syncWorker specs after route cutover
 - [x] Sync `translationsV2` served via `TranslationsSyncHandlerFactory` + registry (no `models.translationsV2` / route special-case) — motor seam for Postgres later
 - [x] Dead translation files/deps deleted (C1); parity/routes specs live under `core/application/translation/specs/`; `i18n/` is predefined CSV only (C2)
+- [x] Writes use domain `Translation` (no `TranslationEntryInput`); GET `IndexedTranslations` defined once in `localeTranslationDto` (C3)
 
 ## Phase 1b checklist (FE — later)
 
@@ -460,7 +461,7 @@ HTTP `POST /api/translations` AJV already requires `values` as object/map. Array
 - `csvLoader.loadTranslations` patches **one** context per language column (`getByLanguageAndContext` + `SaveLocaleTranslations` with that context only). Final HTTP return can still `getLegacy()` (import contract)
 - Empty-string skip on flatten/propagate kept for parity
 
-**Not this slice:** C3–C4 (`toIndexedTranslations` still exists for array `TranslationType` in the mapper spec).
+**Not this slice:** C4 (`toIndexedTranslations` still exists for array `TranslationType` in the mapper spec).
 
 ### A2 — one context-update engine
 
@@ -542,6 +543,16 @@ HTTP `POST /api/translations` AJV already requires `values` as object/map. Array
 - `app/api/i18n/` keeps `defaultTranslations.ts`, `specs/defaultTranslations.spec.ts`, and `specs/test_contents/`
 - Local `withTranslationWrites` stayed with the parity spec (D11)
 
+### C3 — no parallel write DTO for a Translation row
+
+**Request (diagnosis):** `TranslationEntryInput` was the same four fields as domain `Translation`, then immediately `new Translation(...)`. `IndexedTranslations` was defined in the mapper and the locale DTO. `ContextLike` was already gone (A1).
+
+**Landed:**
+
+- Deleted `TranslationEntryInput`. `flattenLocaleTranslation`, `saveEntries`, the validator, `UpdateEntriesByContext`, and by-item POST construct `Translation`
+- `IndexedTranslations` / `IndexedContext` / `IndexedContextValues` live in `localeTranslationDto`. Mapper re-exports for delivery. Write `LocaleTranslationInput` is that GET shape with optional `values` (partial locale save)
+- Did not rename shared `TranslationContext` or FE `TranslationValue`. Did not merge write input into GET
+
 ### Production SSR CPU (keep these; do not regress)
 
 Root cause was not Mongo. Every SSR HTML request:
@@ -589,3 +600,5 @@ Explicitly **not** shipped: process/tenant-wide translations read cache. Topolog
 - Do not put translation parity/routes specs back in `app/api/i18n/`
 - Do not wire `thesaurusTranslationService` onto `UpdateThesaurusUseCase` — `ThesauriService` already has it
 - Do not implement `MongoTranslationsSyncDataSource.get` unless the generic `SyncDBDataSource` contract changes
+- Do not reintroduce `TranslationEntryInput` (or another write DTO that is immediately `new Translation(...)`)
+- Do not merge `LocaleTranslationInput` into `IndexedTranslations` — GET is complete maps; locale POST is a partial write

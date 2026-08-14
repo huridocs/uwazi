@@ -4,7 +4,7 @@ import {
   LanguageDoesNotExist,
   TranslationMissingLanguages,
 } from '#api/core/domain/translation/errors.js';
-import { Translation, TranslationContext } from '#api/core/domain/translation/Translation.js';
+import { Translation } from '#api/core/domain/translation/Translation.js';
 import { objectIndex, objectIndexToArrays } from '#shared/data_utils/objectIndex.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 
@@ -12,13 +12,6 @@ type KeyContextLanguages = {
   key: string;
   contextId: string;
   missingLanguages: LanguageISO6391[];
-};
-
-type TranslationEntryInput = {
-  language: LanguageISO6391;
-  key: string;
-  value: string;
-  context: TranslationContext;
 };
 
 const languagesForKeyContext = (translations: Translation[]): KeyContextLanguages[] =>
@@ -48,7 +41,7 @@ class ValidateTranslationsService {
     private settingsDS: SettingsDataSource
   ) {}
 
-  async languagesExist(translations: TranslationEntryInput[]) {
+  async languagesExist(translations: Translation[]) {
     const allowedLanguageKeys = await this.settingsDS.getLanguageKeys();
     const difference = translations
       .map(t => t.language)
@@ -59,11 +52,9 @@ class ValidateTranslationsService {
     }
   }
 
-  async translationsWillExistsInAllLanguages(translations: TranslationEntryInput[]) {
+  async translationsWillExistsInAllLanguages(translations: Translation[]) {
     const configuredLanguageKeys = await this.settingsDS.getLanguageKeys();
-    const groupedByKeyContext = languagesForKeyContext(
-      translations.map(t => new Translation(t.key, t.value, t.language, t.context))
-    );
+    const groupedByKeyContext = languagesForKeyContext(translations);
 
     const translationsByContext = objectIndexToArrays(
       groupedByKeyContext,
@@ -120,4 +111,3 @@ class ValidateTranslationsService {
 }
 
 export { ValidateTranslationsService };
-export type { TranslationEntryInput };

@@ -1,5 +1,4 @@
 import { AbstractUseCase } from '../libs/UseCase.js';
-import { TranslationEntryInput } from './translation/ValidateTranslationsService.js';
 import { TranslationsService } from './translation/TranslationsService.js';
 import { PropagateThesaurusTranslationService } from './translation/PropagateThesaurusTranslationService.js';
 import { toValueMap } from './translation/localeTranslationDto.js';
@@ -7,7 +6,7 @@ import { Translation } from '../domain/translation/Translation.js';
 import { TranslationsDataSource } from './contracts/TranslationsDataSource.js';
 
 type Input = {
-  translations: TranslationEntryInput[];
+  translations: Translation[];
 };
 
 type Output = void;

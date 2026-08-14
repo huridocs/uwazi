@@ -8,12 +8,13 @@ import { Translation } from '#api/core/domain/translation/Translation.js';
 
 const context = { id: 'ctx-1', label: 'Context', type: 'Entity' as const };
 
-const entry = (overrides: Partial<{ key: string; value: string; language: 'en' | 'es' }> = {}) => ({
-  language: overrides.language ?? ('en' as const),
-  key: overrides.key ?? 'Title',
-  value: overrides.value ?? 'Title',
-  context,
-});
+const entry = (overrides: Partial<{ key: string; value: string; language: 'en' | 'es' }> = {}) =>
+  new Translation(
+    overrides.key ?? 'Title',
+    overrides.value ?? 'Title',
+    overrides.language ?? 'en',
+    context
+  );
 
 const createSut = (isRunning = true) => {
   const transactionManager = TestUtils.mockClass<TransactionManager>({

@@ -4,7 +4,7 @@ import { TranslationsDataSource } from './contracts/TranslationsDataSource.js';
 import { toValueMap } from './translation/localeTranslationDto.js';
 import { TranslationsService } from './translation/TranslationsService.js';
 import { PropagateThesaurusTranslationService } from './translation/PropagateThesaurusTranslationService.js';
-import { TranslationEntryInput } from './translation/ValidateTranslationsService.js';
+import { Translation } from '../domain/translation/Translation.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 
 type KeyValuePairsPerLanguage = {
@@ -30,7 +30,7 @@ type PreparedLocaleUpdate = {
   type: string;
   previous: Record<string, string>;
   next: Record<string, string>;
-  entries: TranslationEntryInput[];
+  entries: Translation[];
 };
 
 function checkForMissingKeys(
@@ -74,12 +74,9 @@ class UpdateEntriesByContextUseCase extends AbstractUseCase<Input, Output, Deps>
 
         const { context } = rows[0];
         const next = { ...previous, ...incoming };
-        const entries: TranslationEntryInput[] = Object.entries(next).map(([key, value]) => ({
-          language: locale,
-          key,
-          value,
-          context,
-        }));
+        const entries = Object.entries(next).map(
+          ([key, value]) => new Translation(key, value, locale, context)
+        );
 
         return {
           locale,

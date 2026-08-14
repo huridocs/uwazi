@@ -1,4 +1,4 @@
-import { TranslationEntryInput } from '#api/core/application/translation/ValidateTranslationsService.js';
+import { Translation } from '#api/core/domain/translation/Translation.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import {
   TranslationContext as LocaleTranslationContext,
@@ -15,15 +15,15 @@ type IndexedTranslations = Omit<TranslationType, 'contexts'> & {
   contexts?: IndexedContext[];
 };
 
-type LocaleContextInput = Omit<LocaleTranslationContext, 'values'> & {
+type LocaleContextInput = Omit<IndexedContext, 'values'> & {
   values?: IndexedContextValues;
 };
 
-type LocaleTranslationInput = Omit<TranslationType, 'contexts'> & {
+type LocaleTranslationInput = Omit<IndexedTranslations, 'contexts'> & {
   contexts?: LocaleContextInput[];
 };
 
-function flattenLocaleTranslation(translation: LocaleTranslationInput): TranslationEntryInput[] {
+function flattenLocaleTranslation(translation: LocaleTranslationInput): Translation[] {
   if (!translation.locale) {
     throw new Error('translation to save should have a locale');
   }
@@ -37,16 +37,14 @@ function flattenLocaleTranslation(translation: LocaleTranslationInput): Translat
   return translation.contexts.flatMap(context =>
     Object.entries(context.values || {})
       .filter(([, value]) => value)
-      .map(([key, value]) => ({
-        language,
-        key,
-        value,
-        context: {
-          type: context.type!,
-          label: context.label!,
-          id: context.id!,
-        },
-      }))
+      .map(
+        ([key, value]) =>
+          new Translation(key, value, language, {
+            type: context.type!,
+            label: context.label!,
+            id: context.id!,
+          })
+      )
   );
 }
 
@@ -59,4 +57,4 @@ function toValueMap(translations: { key: string; value: string }[]): Record<stri
 }
 
 export { flattenLocaleTranslation, toValueMap };
-export type { IndexedContext, IndexedTranslations, LocaleTranslationInput };
+export type { IndexedContext, IndexedContextValues, IndexedTranslations, LocaleTranslationInput };

@@ -1,10 +1,7 @@
 import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js';
 import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
 import { TranslationsDataSource } from '#api/core/application/contracts/TranslationsDataSource.js';
-import {
-  TranslationEntryInput,
-  ValidateTranslationsService,
-} from '#api/core/application/translation/ValidateTranslationsService.js';
+import { ValidateTranslationsService } from '#api/core/application/translation/ValidateTranslationsService.js';
 import { Translation, TranslationContext } from '#api/core/domain/translation/Translation.js';
 
 type Deps = {
@@ -13,13 +10,6 @@ type Deps = {
   settingsDS: SettingsDataSource;
   validateTranslations: ValidateTranslationsService;
 };
-
-function toDomainModels(translations: TranslationEntryInput[]): Translation[] {
-  return translations.map(
-    translation =>
-      new Translation(translation.key, translation.value, translation.language, translation.context)
-  );
-}
 
 /**
  * Multi-step translation writes (EntitiesService-style).
@@ -34,16 +24,16 @@ class TranslationsService {
     }
   }
 
-  private async partitionByExistence(translations: TranslationEntryInput[]) {
-    const byContext = new Map<string, TranslationEntryInput[]>();
+  private async partitionByExistence(translations: Translation[]) {
+    const byContext = new Map<string, Translation[]>();
     translations.forEach(t => {
       const list = byContext.get(t.context.id) || [];
       list.push(t);
       byContext.set(t.context.id, list);
     });
 
-    const toCreate: TranslationEntryInput[] = [];
-    const toUpdate: TranslationEntryInput[] = [];
+    const toCreate: Translation[] = [];
+    const toUpdate: Translation[] = [];
 
     await Promise.all(
       [...byContext.entries()].map(async ([contextId, entries]) => {
@@ -64,14 +54,14 @@ class TranslationsService {
     return { toCreate, toUpdate };
   }
 
-  private async insertEntries(translations: TranslationEntryInput[]): Promise<Translation[]> {
+  private async insertEntries(translations: Translation[]): Promise<Translation[]> {
     this.ensureTransaction();
     await this.deps.validateTranslations.languagesExist(translations);
     await this.deps.validateTranslations.translationsWillExistsInAllLanguages(translations);
-    return this.deps.translationsDS.insert(toDomainModels(translations));
+    return this.deps.translationsDS.insert(translations);
   }
 
-  private async upsertEntries(translations: TranslationEntryInput[]): Promise<Translation[]> {
+  private async upsertEntries(translations: Translation[]): Promise<Translation[]> {
     this.ensureTransaction();
     await this.deps.validateTranslations.languagesExist(translations);
 
@@ -96,13 +86,13 @@ class TranslationsService {
       })
     );
 
-    return this.deps.translationsDS.upsert(toDomainModels(translations));
+    return this.deps.translationsDS.upsert(translations);
   }
 
   /**
    * Batch write for mixed new and existing keys. Not an Upsert UseCase — HTTP does not branch create vs update.
    */
-  async saveEntries(translations: TranslationEntryInput[]): Promise<void> {
+  async saveEntries(translations: Translation[]): Promise<void> {
     this.ensureTransaction();
     if (!translations.length) {
       return;

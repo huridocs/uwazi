@@ -2,12 +2,11 @@ import { EnforcedWithId } from '#api/odm/index.js';
 import { TranslationContext, TranslationType } from '#shared/translationType.js';
 import type {
   IndexedContext,
+  IndexedContextValues,
   IndexedTranslations,
 } from '#api/core/application/translation/localeTranslationDto.js';
 
-export type IndexedContextValues = { [k: string]: string };
-
-export type { IndexedContext, IndexedTranslations };
+export type { IndexedContext, IndexedContextValues, IndexedTranslations };
 
 export function prepareContexts(contexts: TranslationContext[] = []): IndexedContext[] {
   return contexts.map(context => {

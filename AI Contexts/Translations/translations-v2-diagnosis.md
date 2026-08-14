@@ -1,7 +1,7 @@
 # Translations V2 — critical diagnosis
 
 **Date:** 2026-08-14  
-**Mode:** originally a read-only audit. A1 + A3, A2, B1 + B5, B2, B3, B4, and C1–C2 from the work order below have since landed (see [`translations-v2-migration.md`](./translations-v2-migration.md)). This file stays the post-mortem of what was wrong; strike-throughs mark what those slices fixed.  
+**Mode:** originally a read-only audit. A1 + A3, A2, B1 + B5, B2, B3, B4, C1–C2, and C3 from the work order below have since landed (see [`translations-v2-migration.md`](./translations-v2-migration.md)). This file stays the post-mortem of what was wrong; strike-throughs mark what those slices fixed.  
 **Companion:** [`translations-v2-migration.md`](./translations-v2-migration.md) (intent, locked decisions, peel history).
 
 ---
@@ -40,7 +40,7 @@ Read in full (not grepped only):
 
 The **storage model is right**: one by-item collection (`translationsV2`), domain `Translation`, unique `{ language, key, context.id }`. The **HTTP contracts were kept** (D2/D3). The **façade is gone**. Template / RT / Thesaurus own their sync (not core translations knowing how to translate templates). SSR no longer loads the whole tenant.
 
-What is **not** right yet is the **interior leftover types and DS quality** (C3–C4). Dead files, the unused UpdateThesaurus dep, and leftover i18n specs have been removed or moved (C1–C2). GET mammoth assembly, the second thesaurus update engine, the Settings TX shell UseCase, public `insertEntries`/`upsertEntries`, duplicated keys×languages fan-out, and QueryService DS pass-throughs have been removed (A1–A3, A2, B1+B5, B2, B3, B4).
+What is **not** right yet is **DS quality** (C4). Duplicate application types for the same write row are gone (C3). Dead files, the unused UpdateThesaurus dep, and leftover i18n specs have been removed or moved (C1–C2). GET mammoth assembly, the second thesaurus update engine, the Settings TX shell UseCase, public `insertEntries`/`upsertEntries`, duplicated keys×languages fan-out, and QueryService DS pass-throughs have been removed (A1–A3, A2, B1+B5, B2, B3, B4).
 
 None of that is “MVP leftover we can live with.” It is the kind of interior that the next person will copy.
 
@@ -60,7 +60,7 @@ None of that is “MVP leftover we can live with.” It is the kind of interior 
 | B5 | **P1 — landed** | Settings TX | ~~Menu/Filters translations commit in their own UC TX **before** `settingsModel.save`~~ Same `TM.run` as settings save (`dbSessionContext.setTransactionManager`). No `translationsChange` socket (routes already emit `updateSettings`). |
 | C1 | **P2 — landed** | Dead code | ~~`ContextDoesNotExist`; `i18n/systemKeys.js`; `PendingThesauriTranslationsGateway`; unused UpdateThesaurus translation-service dep~~ Deleted. Sync `get()` stub **kept** (`SyncDBDataSource` obligation; handler never calls it). |
 | C2 | **P2 — landed** | Test / folder pollution | ~~`app/api/i18n/specs/*` hosted the parity suite~~ Moved under `core/application/translation/specs/`. `i18n/` is predefined CSV only. GET assertions are maps. |
-| C3 | **P2** | Type duplicates | `TranslationEntryInput` ≈ domain `Translation`; `ContextLike` / `LocaleTranslationLike` ≈ shared types; `IndexedTranslations` defined twice (mapper + locale DTO) |
+| C3 | **P2 — landed** | Type duplicates | ~~`TranslationEntryInput` ≈ domain `Translation`~~ Writes use `Translation`. GET `IndexedTranslations` lives in `localeTranslationDto`; mapper re-exports. Write `LocaleTranslationInput` stays partial (optional `values`). Shared/FE `TranslationContext` / `TranslationValue` name collisions left (out of scope). |
 | C4 | **P2** | DS quality | `upsert` is sequential `reduce` of `updateOne`s; `calculateNonexistentKeys` is `findOne` + aggregate |
 | D1 | Keep | Correct | By-item store; façade gone; D11 leftover UCs deleted; service no longer proxies delete/insert; locale **input** is map-only; aggregate-owned translation services; SSR scoped to System |
 | D2 | Do not “fix” | Contract | Unauthenticated `GET /api/translations` and `GET /api/v2/translations` are the **stable public contract** (public `t()`, Settings). Missing auth is not a regression. Unbounded load **is** a problem. |
@@ -304,10 +304,11 @@ Translations can commit, then settings save fails. No `translationsChange` socke
 
 ### Duplicate types
 
-- `TranslationEntryInput` (ValidateTranslationsService) vs domain `Translation` — always `new Translation(...)` immediately.
-- `LocaleTranslationInput` vs `IndexedTranslations` (LegacyTranslationDtoMapper) — same map-shaped locale doc.
-- Domain `TranslationContext` vs shared `TranslationContext` (the latter has `values[]`). Same name, different shapes.
-- FE V2 `TranslationValue` (`language, key, value`) vs shared `TranslationValue` (`key, value`). Same name.
+- ~~`TranslationEntryInput` (ValidateTranslationsService) vs domain `Translation`~~ **Deleted (C3).** `saveEntries`, flatten, validator, and by-item POST construct `Translation`.
+- ~~`ContextLike` / `LocaleTranslationLike`~~ **Deleted (A1).** Propagate takes `{ locale, contextId, previous, next }` maps.
+- `LocaleTranslationInput` vs `IndexedTranslations` — same map-shaped locale doc; write keeps optional `values` (partial PATCH). GET type lives in `localeTranslationDto`; mapper re-exports.
+- Domain `TranslationContext` vs shared `TranslationContext` (the latter has `values[]`). Same name, different shapes. Left; renaming shared is a contract blast.
+- FE V2 `TranslationValue` (`language, key, value`) vs shared `TranslationValue` (`key, value`). Same name. Phase 1b.
 - `EntityTranslation` is **unrelated** (per-language entity metadata). Leave it; do not “namespace” it into i18n. The name collision is real but out of scope.
 
 ### Folder / test pollution
@@ -461,6 +462,7 @@ When this gets fixed, do it in this order so we do not invent another dual type:
 5. **B3 — done:** `Translation.forLanguages` for Template/RT (`createContext`) and Thesaurus create. Validator stays on `saveEntries`; create-context paths skip it because they fan out.
 6. **B4 — done:** QueryService = aggregations + legacy GET mapper. Controllers/DS for the rest. Removed unused `cached` option.
 7. **C1–C2 — done:** deleted dead files/deps (`ContextDoesNotExist`, `systemKeys.js`, `PendingThesauriTranslationsGateway`, unused UpdateThesaurus translation-service dep). Kept sync `get()` stub (`SyncDBDataSource`). Moved i18n parity/routes specs under `core/application/translation/specs/`. `i18n/` is predefined CSV only.
+8. **C3 — done:** deleted `TranslationEntryInput`; writes are domain `Translation`. `IndexedTranslations` defined once (`localeTranslationDto`); mapper re-exports. Did not merge write `LocaleTranslationInput` into GET, rename shared `TranslationContext`, or touch FE `TranslationValue`.
 
 Do **not** start with renaming more services or adding `ensureTransaction` to the DS.
 

@@ -10,7 +10,7 @@ import { importPredefinedTranslations } from '#api/core/application/translation/
 import { TranslationsDataSource } from '#api/core/application/contracts/TranslationsDataSource.js';
 import { LocaleTranslationInput } from '#api/core/application/translation/localeTranslationDto.js';
 import { TranslationsService } from '#api/core/application/translation/TranslationsService.js';
-import { TranslationSyO } from '#api/core/infrastructure/mongodb/translation/schemas/TranslationSyO.js';
+import { Translation } from '#api/core/domain/translation/Translation.js';
 import pages from '#api/pages/index.js';
 import settings from '#api/settings/index.js';
 import { AddLanguageUseCaseFactory } from '#api/core/infrastructure/factories/AddLanguageUseCaseFactory.js';
@@ -61,7 +61,7 @@ const updateEntriesByContext = async (
     })
   );
 
-const saveTranslationEntries = async (translations: TranslationSyO[]) =>
+const saveTranslationEntries = async (translations: Translation[]) =>
   withContext(async () => SaveTranslationEntriesUseCaseFactory.default().execute({ translations }));
 
 const importPredefined = async (locale: string) =>
@@ -124,17 +124,16 @@ describe('translations', () => {
       const initialTranslations = await getTranslationsByContext(dictionaryId.toString());
       const initialEntity = (await entities.get({ language: 'es', sharedId: 'entity1' }))[0];
       const translationsToSave = [
-        {
-          _id: '1',
-          language: initialTranslations[0].locale!,
-          key: 'Password',
-          value: 'Changed Password ES',
-          context: {
+        new Translation(
+          'Password',
+          'Changed Password ES',
+          initialTranslations[0].locale as LanguageISO6391,
+          {
             id: dictionaryId.toString(),
-            type: 'Thesaurus' as TranslationSyO['context']['type'],
+            type: 'Thesaurus',
             label: '',
-          },
-        },
+          }
+        ),
       ];
 
       await saveTranslationEntries(translationsToSave);
