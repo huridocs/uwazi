@@ -1,13 +1,15 @@
-import { UsersDirectoryFactory } from '#api/core/infrastructure/factories/UsersDirectoryFactory.js';
 import { usersDirectoryEnabled } from '#api/core/infrastructure/factories/usersBackendFlags.js';
 
 /**
- * Temporary V1 bridge: loads the legacy `users` module lazily.
+ * Temporary V1 bridge: loads the legacy `users` module (and UsersDirectoryFactory) lazily.
  *
  * A static import of `#api/users/users.js` from UwaziJobHandler creates a
  * circular dependency (users.js → mailer → settings → ... → DispatcherAdapter
  * → job handlers → UwaziJobHandler → users.js), which breaks module
- * evaluation. Deferring the load to call time breaks the cycle.
+ * evaluation. UsersDirectoryFactory closes the same loop one hop later, via its
+ * static import of getConnectionForCurrentTenant (odm → entities → ... →
+ * DispatcherAdapter → ... → UwaziJobHandler → getUserById → UsersDirectoryFactory).
+ * Deferring both loads to call time breaks the cycle.
  *
  * The `users` module is legacy V1 code that will disappear once the V2 users
  * module is complete; this bridge can be removed together with it.
@@ -18,6 +20,9 @@ export async function getUserById(userId: string) {
   // (D3/D9). `getData()` yields undefined on a miss so UwaziJobHandler keeps throwing its
   // own "User not found" rather than a UserNotFound.
   if (usersDirectoryEnabled()) {
+    const { UsersDirectoryFactory } = await import(
+      '#api/core/infrastructure/factories/UsersDirectoryFactory.js'
+    );
     return (await UsersDirectoryFactory.default().getActor(userId)).getData() ?? null;
   }
 
