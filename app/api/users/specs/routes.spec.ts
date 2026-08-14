@@ -1,7 +1,6 @@
 import type { NextFunction, Request, Response } from 'express';
 import request from 'supertest';
 import { setUpApp } from '#api/utils/testingRoutes.js';
-import { WithId } from '#api/odm/model.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { DomainError } from '#api/core/domain/error/DomainError.js';
 import { UserRole } from '#shared/types/userSchema.js';
@@ -9,7 +8,6 @@ import { PUBLIC_USER_ID } from '#api/core/domain/user/User.js';
 import { UserSchema } from '#shared/types/userType.js';
 import { userRoutes } from '#api/core/infrastructure/express/users/routes.js';
 import users from '../users.js';
-import { User } from '../usersModel.js';
 
 const combinedRoutes = (app: any) => {
   userRoutes(app);
@@ -172,27 +170,6 @@ describe('users routes', () => {
           .send({ key: 'key', password: 'pass' });
         expect(response.status).toBe(200);
         expect(users.resetPassword).toHaveBeenCalledWith({ key: 'key', password: 'pass' });
-      });
-    });
-
-    describe('/unlockaccount', () => {
-      it.each([
-        { username: 'name', code: undefined, keyword: 'required' },
-        { username: undefined, code: 'code', keyword: 'required' },
-      ])('should invalidate if the schema is not matched', async ({ username, code, keyword }) => {
-        const response = await request(app).post('/api/unlockaccount').send({ username, code });
-        expect(response.status).toBe(400);
-        expect(response.body.errors[0].keyword).toEqual(keyword);
-      });
-      it('should call users.unlockAccount with the body', async () => {
-        jest
-          .spyOn(users, 'unlockAccount')
-          .mockImplementation(async () => Promise.resolve({} as WithId<User> & { __v: number }));
-        const response = await request(app)
-          .post('/api/unlockAccount')
-          .send({ username: 'user1', code: 'code' });
-        expect(response.status).toBe(200);
-        expect(users.unlockAccount).toHaveBeenCalledWith({ username: 'user1', code: 'code' });
       });
     });
   });

@@ -3,7 +3,6 @@ import type { Application, NextFunction, Request, Response } from 'express';
 import request from 'supertest';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { setUpApp } from '#api/utils/testingRoutes.js';
-import { testingTenants } from '#api/utils/testingTenants.js';
 import { userRoutes } from '../routes.js';
 import { fixtures, f } from './fixtures.js';
 import { UserRole } from '#shared/types/userSchema.js';
@@ -46,9 +45,6 @@ const unlockFixtures = {
 describe('POST /api/unlockaccount', () => {
   beforeEach(async () => {
     await testingEnvironment.setUp(unlockFixtures);
-    testingTenants.changeCurrentTenant({
-      featureFlags: { v2UsersUtilityRoutes: true },
-    });
   });
 
   afterAll(async () => {

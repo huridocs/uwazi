@@ -431,6 +431,15 @@ describe('PostgresUsersDataSource', () => {
       expect(result.isError()).toBe(true);
       expect(result.getError()!.name).toBe('InvalidUnlockCode');
     });
+
+    it('should fail with InvalidUnlockCode when the user is soft-deleted', async () => {
+      await insertUser(TENANT_ID, { accountUnlockCode: 'the-code', deletedAt: new Date() });
+
+      const result = await makeDS().findByUsernameAndUnlockCode('existinguser', 'the-code');
+
+      expect(result.isError()).toBe(true);
+      expect(result.getError()!.name).toBe('InvalidUnlockCode');
+    });
   });
 
   describe('clearLockFields', () => {

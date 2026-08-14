@@ -107,30 +107,6 @@ export default {
 
   /**
    * @deprecated
-   * v1 self-service account unlock flow. Only reached while the tenant's
-   * `v2UsersUtilityRoutes` flag is off (see `UnlockAccountController`). Use the
-   * v2 `UnlockAccount` use case (`UnlockAccountUseCaseFactory`) instead.
-   */
-  async unlockAccount({ username, code }) {
-    const [user] = await model.get(
-      { username, accountUnlockCode: code, deletedAt: { $exists: false } },
-      '_id'
-    );
-
-    if (!user) {
-      throw createError('Invalid username or unlock code', 403);
-    }
-
-    return model.save({
-      ...user,
-      accountLocked: false,
-      accountUnlockCode: false,
-      failedLogins: false,
-    });
-  },
-
-  /**
-   * @deprecated
    * v1 admin unlock flow. Only reached while the tenant's
    * `v2UsersUtilityRoutes` flag is off (see `UnlockBlockedUserController`), and
    * also called internally by the legacy `resetPassword` below. Use the v2

@@ -80,30 +80,7 @@ export const userRoutes = (app: Application) => {
     UnlockBlockedUserController.createHandler()
   );
 
-  app.post(
-    '/api/unlockaccount',
-    async (req: Request, res: Response, next: NextFunction) => {
-      if (tenants.current().featureFlags?.v2UsersUtilityRoutes) {
-        next();
-      } else {
-        await validation.validateRequest({
-          type: 'object',
-          properties: {
-            body: {
-              type: 'object',
-              properties: {
-                username: { type: 'string' },
-                code: { type: 'string' },
-              },
-              required: ['username', 'code'],
-            },
-          },
-          required: ['body'],
-        })(req, res, next);
-      }
-    },
-    UnlockAccountController.createHandler()
-  );
+  app.post('/api/unlockaccount', UnlockAccountController.createHandler());
 
   app.post(
     '/api/recoverpassword',
