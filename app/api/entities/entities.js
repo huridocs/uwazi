@@ -44,11 +44,46 @@ const extendSelect = select => {
   return Object.keys(select).length > 0 ? { sharedId: 1, ...select } : select;
 };
 
+const selectToArray = select => {
+  if (Array.isArray(select)) {
+    return select;
+  }
+  if (typeof select === 'string') {
+    return [select];
+  }
+  return Object.keys(select);
+};
+
 export default {
-  async getUnrestricted(query, select, options) {
-    const extendedSelect = extendSelect(select);
-    const entities = await model.getUnrestricted(query, extendedSelect, options);
-    return entities;
+  async getUnrestricted(query, select) {
+    const safeQuery = query || {};
+    const filters = {};
+    if (safeQuery._id) {
+      filters._id = safeQuery._id.toString();
+    }
+    if (safeQuery.sharedId !== undefined) {
+      if (safeQuery.sharedId.$in) {
+        filters.sharedIds = safeQuery.sharedId.$in;
+      } else {
+        filters.sharedId = safeQuery.sharedId;
+      }
+    }
+    if (safeQuery.language) {
+      filters.language = safeQuery.language;
+    }
+    if (safeQuery.template) {
+      filters.template = safeQuery.template.toString();
+    }
+
+    const findOptions = select
+      ? {
+          select: [
+            ...new Set([...selectToArray(select), 'sharedId', '_id']),
+          ],
+        }
+      : undefined;
+
+    return EntitiesDAOFactory.default().unrestricted().find(filters, findOptions);
   },
 
   async getUnrestrictedWithDocuments(query, select, options = {}) {

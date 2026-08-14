@@ -14,6 +14,7 @@ import { EnforcedWithId } from '#api/odm/index.js';
 import { tenants } from '#api/tenants/index.js';
 import { emitToTenantAdminsAndEditors } from '#api/socketio/setupSockets.js';
 import { FilesDAOFactory } from '#api/core/infrastructure/factories/FilesDAOFactory.js';
+import { EntityDBO } from '#api/core/infrastructure/mongodb/entity/EntityDBO.js';
 import entities from '#api/entities/entities.js';
 import settings from '#api/settings/settings.js';
 import request from '#shared/JSONRequest.js';
@@ -485,7 +486,7 @@ class InformationExtraction {
     return entity;
   };
 
-  _getEntityFromSuggestion = async (rawSuggestion: RawSuggestion): Promise<null | EntitySchema> => {
+  _getEntityFromSuggestion = async (rawSuggestion: RawSuggestion): Promise<null | EntityDBO> => {
     const [segmentation] = await SegmentationModel.get({
       xmlname: rawSuggestion.xml_file_name,
     });
@@ -598,7 +599,7 @@ class InformationExtraction {
           targetProperty,
           rawSuggestion,
           currentSuggestion,
-          entity,
+          entity as unknown as EntitySchema,
           message
         );
 

@@ -551,16 +551,11 @@ class MongoEntitiesDAO extends MongoDataSource<EntityDBO> implements EntitiesDAO
     const conditions: Record<string, unknown>[] = [];
 
     if (filters._id) {
-      if (ObjectId.isValid(filters._id)) {
-        conditions.push({ _id: new ObjectId(filters._id) });
-      }
+      conditions.push({ _id: new ObjectId(filters._id) });
     }
 
     if (filters.ids && filters.ids.length > 0) {
-      const validIds = filters.ids.filter(id => ObjectId.isValid(id));
-      if (validIds.length > 0) {
-        conditions.push({ _id: { $in: validIds.map(id => new ObjectId(id)) } });
-      }
+      conditions.push({ _id: { $in: filters.ids.map(id => new ObjectId(id)) } });
     }
 
     if (filters.sharedId) {

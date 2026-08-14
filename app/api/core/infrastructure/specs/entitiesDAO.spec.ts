@@ -208,6 +208,17 @@ describe('EntitiesDAO', () => {
         ).toHaveLength(2);
       });
 
+      it('throws on invalid _id/ids filters on Mongo; returns empty on Postgres', async () => {
+        const dao = createDao();
+        if (usePostgres) {
+          expect(await dao.find({ _id: 'not-a-valid-id' })).toEqual([]);
+          expect(await dao.find({ ids: ['not-a-valid-id'] })).toEqual([]);
+          return;
+        }
+        await expect(dao.find({ _id: 'not-a-valid-id' })).rejects.toThrow();
+        await expect(dao.find({ ids: ['not-a-valid-id'] })).rejects.toThrow();
+      });
+
       it('filters by title', async () => {
         const entities = await createDao().find({ title: 'entity1' });
         expect(entities).toHaveLength(2);
