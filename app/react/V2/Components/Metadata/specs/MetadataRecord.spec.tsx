@@ -47,9 +47,17 @@ const relatedTemplate = {
   ],
 };
 
+const relatedEntityTemplate = {
+  _id: 'person-tmpl',
+  name: 'Person',
+  color: '#2563eb',
+  properties: [],
+};
+
 const template = {
   _id: 'tmpl1',
   name: 'Template',
+  color: '#c03b22',
   properties: [
     { _id: 'p-text', name: 'summary', type: 'text' as const, label: 'Summary', showInCard: true },
     { _id: 'p-short', name: 'code', type: 'text' as const, label: 'Code' },
@@ -132,6 +140,16 @@ const entity: Entity = {
     relationshipc: [{ value: 'linked-c', label: 'Charles', type: 'entity' }],
     relationshipd: [{ value: 'linked-d', label: 'Diana', type: 'entity' }],
   },
+  relations: [
+    {
+      entity: 'linked-c',
+      entityData: { title: 'Charles', template: 'person-tmpl' },
+    },
+    {
+      entity: 'linked-d',
+      entityData: { title: 'Diana', template: 'person-tmpl' },
+    },
+  ],
   documents: [
     {
       _id: 'd1',
@@ -165,7 +183,7 @@ const renderRecord = (entityOverride: Entity = entity) =>
   render(
     <TestAtomStoreProvider
       initialValues={[
-        [templatesAtom, [template, relatedTemplate]],
+        [templatesAtom, [template, relatedTemplate, relatedEntityTemplate]],
         [relationshipTypesAtom, [{ _id: 'rel-type-1', name: 'Relates to' }]],
       ]}
     >
@@ -200,7 +218,7 @@ describe('MetadataRecord', () => {
     render(
       <TestAtomStoreProvider
         initialValues={[
-          [templatesAtom, [template, relatedTemplate]],
+          [templatesAtom, [template, relatedTemplate, relatedEntityTemplate]],
           [relationshipTypesAtom, [{ _id: 'rel-type-1', name: 'Relates to' }]],
           [focusMetadataFieldAtom, { fieldKey: 'title' }],
         ]}
@@ -525,7 +543,7 @@ describe('MetadataRecord', () => {
     expect(within(relB).queryByRole('link', { name: /A1/i })).not.toBeInTheDocument();
   });
 
-  it('shows external-link control only on Details relationship rows', () => {
+  it('colors unconstrained relationship pills from the related entity template', () => {
     renderRecord();
 
     const relationshipd = screen.getByRole('rowheader', { name: 'Relationshipd' });
@@ -535,13 +553,8 @@ describe('MetadataRecord', () => {
       return;
     }
     const diana = within(table).getByRole('link', { name: /Diana/i });
-    expect(diana).toHaveAttribute('target', '_blank');
-    expect(within(diana).getByTestId('connection-external-link-icon')).toBeInTheDocument();
-
-    const icons = screen.queryAllByTestId('connection-external-link-icon');
-    expect(icons.length).toBeGreaterThan(0);
-    icons.forEach(icon => {
-      expect(icon.closest('table')).toBeTruthy();
-    });
+    const pill = diana.querySelector('span[title="Diana"]');
+    expect(pill?.firstElementChild).toHaveStyle({ backgroundColor: '#2563eb' });
+    expect(pill?.firstElementChild).not.toHaveStyle({ backgroundColor: '#c03b22' });
   });
 });

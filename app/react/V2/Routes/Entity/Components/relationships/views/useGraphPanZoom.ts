@@ -1,10 +1,20 @@
-import { useRef, useState, type PointerEvent, type WheelEvent } from 'react';
+import { useEffect, useRef, useState, type PointerEvent, type WheelEvent } from 'react';
+import type { GraphTransform } from '#V2/formatters/relationships/relationshipsPanelGraph.js';
 
 const STEP = 0.25;
-const IDENTITY = { tx: 0, ty: 0, scale: 1 };
 
-const useGraphPanZoom = () => {
-  const [transform, setTransform] = useState(IDENTITY);
+const useGraphPanZoom = (fit: GraphTransform, fitKey: string) => {
+  const [transform, setTransform] = useState(fit);
+  const fitRef = useRef(fit);
+  const lastFitKey = useRef(fitKey);
+  fitRef.current = fit;
+
+  useEffect(() => {
+    if (lastFitKey.current === fitKey) return;
+    lastFitKey.current = fitKey;
+    setTransform(fitRef.current);
+  }, [fitKey]);
+
   const dragRef = useRef({
     active: false,
     startX: 0,
@@ -60,7 +70,7 @@ const useGraphPanZoom = () => {
   const zoomIn = () => setTransform(prev => ({ ...prev, scale: Math.min(prev.scale + STEP, 4) }));
   const zoomOut = () =>
     setTransform(prev => ({ ...prev, scale: Math.max(prev.scale - STEP, 0.25) }));
-  const reset = () => setTransform(IDENTITY);
+  const reset = () => setTransform(fitRef.current);
 
   return {
     transform,

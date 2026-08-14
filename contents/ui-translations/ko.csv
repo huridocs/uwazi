@@ -192,6 +192,8 @@ Clear PDF selection,Clear PDF selection
 Clear search,Clear search
 Click,Click
 Click to fill,텍스트 자동 채우기
+Click to select an image,Click to select an image
+Click to select audio or video,Click to select audio or video
 Click to select files,Click to select files
 Close,닫기
 Code,Code
@@ -509,8 +511,6 @@ Forgot Password?,비밀번호를 잊으셨나요?
 Forms and email configuration,양식 및 이메일 구성
 From,From
 From all suggestions,From all suggestions
-From computer,From computer
-From files,From files
 From previous step,From previous step
 From selection,From selection
 From:,From:
@@ -755,6 +755,7 @@ New user,New user
 Next,다음
 No,아니오
 No attachments,첨부파일 없음
+No audio or video on this entity,No audio or video on this entity
 No chart types match your search.,No chart types match your search.
 No common filters,공통 필터 없음
 No connected entities yet.,No connected entities yet.
@@ -770,6 +771,7 @@ No files queued yet.,No files queued yet.
 no filters for templates,The combination of entity types doesn't have any filters in common.
 No Group,No Group
 No icon / flag,아이콘/플래그 없음
+No images on this entity,No images on this entity
 No items available,No items available
 No Label,라벨 없음
 No label,No label
@@ -834,6 +836,7 @@ OCR PDF,PDF OCR 읽기
 of,의
 Ok,확인
 OK,확인
+On this entity,On this entity
 one character,one character
 "Only properties with the same name and configuration in every data source are available
             for both dimensions.","Only properties with the same name and configuration in every data source are available
@@ -855,6 +858,7 @@ Options,Options
 or,or
 or drag and drop here,or drag and drop here
 or drop your files here.,혹은 여기에 파일을 드롭하십시오.
+Or paste a URL,Or paste a URL
 Order,순서
 Other,기타
 other,기타
@@ -882,6 +886,8 @@ Password Error,암호 오류
 Password is too long,암호가 너무 깁니다.
 Password updated,암호 업데이트 완료
 Passwords do not match,Passwords do not match
+Paste an audio or video URL to use it as this property without uploading a file. Press Enter to apply.,Paste an audio or video URL to use it as this property without uploading a file. Press Enter to apply.
+Paste an image URL to use it as this property without uploading a file. Press Enter to apply.,Paste an image URL to use it as this property without uploading a file. Press Enter to apply.
 Paste this tag in a page HTML. The chart uses the page language.,Paste this tag in a page HTML. The chart uses the page language.
 Paste URL,Paste URL
 Paste URL here,Paste URL here
@@ -1091,6 +1097,8 @@ Select an existing image,Select an existing image
 Select favicon image,Select favicon image
 Select files on your device,기기에서 파일을 선택하십시오.
 Select from computer,Select from computer
+Select image,Select image
+Select media,Select media
 Select relationship,Select relationship
 Select relationship type,연결 유형 선택
 Select site logo image,Select site logo image

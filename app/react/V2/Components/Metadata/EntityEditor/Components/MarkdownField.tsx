@@ -3,7 +3,7 @@ import { Controller, FieldValues, Path, RegisterOptions, useFormContext } from '
 import { Translate } from '#app/I18N/index.js';
 import { Textarea } from '#V2/Components/Forms/index.js';
 import { getFieldErrorState } from '../functions/fieldErrorState.js';
-import { EntityField } from './EntityField.js';
+import { EntityPdfFillField, type PdfFillTarget } from './EntityPdfFillField.js';
 
 type MarkdownFieldProps<TFormValues extends FieldValues = FieldValues> = {
   context: string;
@@ -11,6 +11,7 @@ type MarkdownFieldProps<TFormValues extends FieldValues = FieldValues> = {
   field: Path<TFormValues>;
   registerOptions?: RegisterOptions<TFormValues, Path<TFormValues>>;
   disabled?: boolean;
+  pdfFill?: PdfFillTarget;
 };
 
 const MarkdownField = <TFormValues extends FieldValues = FieldValues>({
@@ -19,41 +20,45 @@ const MarkdownField = <TFormValues extends FieldValues = FieldValues>({
   field,
   registerOptions,
   disabled,
+  pdfFill,
 }: MarkdownFieldProps<TFormValues>) => {
-  const { control } = useFormContext<TFormValues>();
+  const { control, setValue } = useFormContext<TFormValues>();
 
   return (
-    <EntityField>
-      <Controller
-        control={control}
-        name={field}
-        rules={registerOptions}
-        render={({ field: fieldController, fieldState }) => {
-          const { showError, message } = getFieldErrorState(fieldState);
+    <EntityPdfFillField field={field} setValue={setValue} disabled={disabled} pdfFill={pdfFill}>
+      {overlay => (
+        <Controller
+          control={control}
+          name={field}
+          rules={registerOptions}
+          render={({ field: fieldController, fieldState }) => {
+            const { showError, message } = getFieldErrorState(fieldState);
 
-          return (
-            <Textarea
-              id={field}
-              label={
-                <>
-                  <Translate context={context}>{label}</Translate>
-                  {registerOptions?.required && '*'}
-                </>
-              }
-              value={fieldController.value || ''}
-              onChange={fieldController.onChange}
-              onBlur={fieldController.onBlur}
-              name={fieldController.name}
-              ref={fieldController.ref}
-              disabled={disabled}
-              hasErrors={showError}
-              errorMessage={message}
-              rows={6}
-            />
-          );
-        }}
-      />
-    </EntityField>
+            return (
+              <Textarea
+                id={field}
+                label={
+                  <>
+                    <Translate context={context}>{label}</Translate>
+                    {registerOptions?.required && '*'}
+                  </>
+                }
+                value={fieldController.value || ''}
+                onChange={fieldController.onChange}
+                onBlur={fieldController.onBlur}
+                name={fieldController.name}
+                ref={fieldController.ref}
+                disabled={disabled}
+                hasErrors={showError}
+                errorMessage={message}
+                rows={6}
+                overlay={overlay}
+              />
+            );
+          }}
+        />
+      )}
+    </EntityPdfFillField>
   );
 };
 

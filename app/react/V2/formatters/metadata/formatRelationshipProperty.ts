@@ -9,8 +9,24 @@ import {
   resolvePropertyType,
 } from './resolvePropertyMetadataValues.js';
 
+const TYPE_NAMES = new Set(['entity', 'document', 'relationship', 'newRelationship']);
+
 const readOptionalString = (value: unknown): string | undefined =>
-  typeof value === 'string' ? value : undefined;
+  typeof value === 'string' && value ? value : undefined;
+
+const templateIdBySharedId = (
+  relations: Entity['relations'] | undefined
+): ReadonlyMap<string, string> => {
+  const map = new Map<string, string>();
+  relations?.forEach(relation => {
+    const sharedId = relation.entity;
+    const templateId = relation.entityData?.template;
+    if (sharedId && templateId) {
+      map.set(sharedId, templateId);
+    }
+  });
+  return map;
+};
 
 const readRelationshipIcon = (icon: unknown): { _id: string; label?: string } | undefined => {
   if (!icon || typeof icon !== 'object') {
@@ -27,16 +43,20 @@ const readRelationshipIcon = (icon: unknown): { _id: string; label?: string } | 
   return label ? { _id: id, label } : { _id: id };
 };
 
-const mapRelationshipValue = (metadataValue: MetadataValue) => {
+const templateIdFromType = (type: string | undefined): string | undefined =>
+  type && !TYPE_NAMES.has(type) ? type : undefined;
+
+const mapRelationshipValue = (
+  metadataValue: MetadataValue,
+  templateIds: ReadonlyMap<string, string>
+) => {
   const icon = readRelationshipIcon(metadataValue.icon);
-  const type = readOptionalString(metadataValue.type);
+  const sharedId = String(metadataValue.value || '');
   const templateId =
-    type && type !== 'entity' && type !== 'relationship' && type !== 'newRelationship'
-      ? type
-      : undefined;
+    templateIds.get(sharedId) || templateIdFromType(readOptionalString(metadataValue.type));
 
   return {
-    _id: String(metadataValue.value || ''),
+    _id: sharedId,
     title: metadataValue.label || '',
     ...(templateId && { templateId }),
     ...(metadataValue.authorized === false && { authorized: false as const }),
@@ -73,14 +93,15 @@ const resolveLinkMetadataValues = (
 
 const toRelationshipProperty = (
   property: BaseMetadataProperty,
-  values: MetadataValue[]
+  values: MetadataValue[],
+  templateIds: ReadonlyMap<string, string>
 ): RelationshipMetadataProperty => ({
   _id: property._id,
   name: property.name,
   label: property.label,
   type: 'relationship',
   mode: 'related',
-  values: values.map(mapRelationshipValue),
+  values: values.map(value => mapRelationshipValue(value, templateIds)),
   inherited: property.inherited,
   inheritedType: property.inheritedType,
   ...(property.relationShipTarget && { relationShipTarget: property.relationShipTarget }),
@@ -88,17 +109,23 @@ const toRelationshipProperty = (
 
 const formatRelationshipLinks = (
   property: BaseMetadataProperty,
-  metadata?: Entity['metadata']
+  metadata?: Entity['metadata'],
+  relations?: Entity['relations']
 ): RelationshipMetadataProperty | null => {
   if (!isRelationshipLike(property.type)) {
     return null;
   }
-  return toRelationshipProperty(property, resolveLinkMetadataValues(property, metadata));
+  return toRelationshipProperty(
+    property,
+    resolveLinkMetadataValues(property, metadata),
+    templateIdBySharedId(relations)
+  );
 };
 
 const formatRelationshipProperty = (
   property: BaseMetadataProperty,
-  metadata?: Entity['metadata']
+  metadata?: Entity['metadata'],
+  relations?: Entity['relations']
 ): RelationshipMetadataProperty | null => {
   if (!isRelationshipLike(property.type)) {
     return null;
@@ -111,7 +138,7 @@ const formatRelationshipProperty = (
     return null;
   }
 
-  return toRelationshipProperty(property, resolvedValues);
+  return toRelationshipProperty(property, resolvedValues, templateIdBySharedId(relations));
 };
 
 export { formatRelationshipProperty, formatRelationshipLinks };

@@ -38,6 +38,7 @@ const DocumentTab = ({
     handleCreateRelationship,
     handleAddToToC,
     selectedText,
+    pdfSelectionMenuOpen,
     userIsAdminOrEditor,
     handlePageChange,
     handleHighlightClick,
@@ -45,6 +46,7 @@ const DocumentTab = ({
     handleClusterClick,
     handleClusterMoreClick,
     onPdfReady,
+    propertySelectionHighlights,
   } = useDocumentPdfView({ mainDocument, entity });
 
   const isMobile = useIsMobile();
@@ -120,6 +122,7 @@ const DocumentTab = ({
               onPageChange={handlePageChange}
               onHighlightClick={handleHighlightClick}
               onPdfReady={handlePdfReady}
+              highlights={propertySelectionHighlights}
             />
           </div>
           {!isMobile && (
@@ -136,7 +139,7 @@ const DocumentTab = ({
               onMoreClick={handleClusterMoreClick}
             />
           )}
-          {selectedText && userIsAdminOrEditor && !isRaw ? (
+          {selectedText && pdfSelectionMenuOpen && userIsAdminOrEditor && !isRaw ? (
             <DocumentSelectionFloatingMenu
               selection={selectedText}
               onCreateRelationship={() => handleCreateRelationship(selectedText)}

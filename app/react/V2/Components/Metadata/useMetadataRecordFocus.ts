@@ -6,6 +6,8 @@ import {
   focusMetadataFieldAtom,
 } from './focusMetadataFieldAtom.js';
 
+const useIsomorphicLayoutEffect = typeof document !== 'undefined' ? useLayoutEffect : useEffect;
+
 const useMetadataRecordFocus = (sharedId: string, rootRef: RefObject<HTMLDivElement | null>) => {
   const focusField = useAtomValue(focusMetadataFieldAtom);
   const clearFocus = useSetAtom(focusMetadataFieldAtom);
@@ -30,7 +32,7 @@ const useMetadataRecordFocus = (sharedId: string, rootRef: RefObject<HTMLDivElem
     [clearFocus]
   );
 
-  useLayoutEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     if (!focusField) return undefined;
     let clearTimer: number | undefined;
     const cleanup = applyMetadataFieldFocus(

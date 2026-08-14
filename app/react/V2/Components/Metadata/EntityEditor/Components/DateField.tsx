@@ -4,7 +4,7 @@ import { Translate } from '#app/I18N/index.js';
 import { InputField } from '#V2/Components/Forms/index.js';
 import { secondsToISODate, parseLocalizedDate } from '#V2/shared/dateHelpers.js';
 import { getFieldErrorState } from '../functions/fieldErrorState.js';
-import { EntityField } from './EntityField.js';
+import { EntityPdfFillField, type PdfFillTarget } from './EntityPdfFillField.js';
 
 type DateFieldProps<TFormValues extends FieldValues = FieldValues> = {
   context: string;
@@ -12,6 +12,7 @@ type DateFieldProps<TFormValues extends FieldValues = FieldValues> = {
   field: Path<TFormValues>;
   registerOptions?: RegisterOptions<TFormValues, Path<TFormValues>>;
   disabled?: boolean;
+  pdfFill?: PdfFillTarget;
 };
 
 const DateField = <TFormValues extends FieldValues = FieldValues>({
@@ -20,45 +21,54 @@ const DateField = <TFormValues extends FieldValues = FieldValues>({
   field,
   registerOptions,
   disabled,
+  pdfFill,
 }: DateFieldProps<TFormValues>) => {
-  const { control } = useFormContext<TFormValues>();
+  const { control, setValue } = useFormContext<TFormValues>();
 
   return (
-    <EntityField>
-      <Controller
-        control={control}
-        name={field}
-        rules={registerOptions}
-        render={({ field: { onChange, onBlur, value, ref }, fieldState }) => {
-          const { showError, message } = getFieldErrorState(fieldState);
+    <EntityPdfFillField
+      field={field}
+      setValue={setValue}
+      disabled={disabled}
+      pdfFill={pdfFill}
+      placement="beside"
+    >
+      {() => (
+        <Controller
+          control={control}
+          name={field}
+          rules={registerOptions}
+          render={({ field: { onChange, onBlur, value, ref }, fieldState }) => {
+            const { showError, message } = getFieldErrorState(fieldState);
 
-          return (
-            <InputField
-              id={field}
-              label={
-                <>
-                  <Translate context={context}>{label}</Translate>
-                  {registerOptions?.required && '*'}
-                </>
-              }
-              type="date"
-              disabled={disabled}
-              hasErrors={showError}
-              errorMessage={message}
-              ref={ref}
-              onBlur={onBlur}
-              value={secondsToISODate(value) || ''}
-              className="max-w-48"
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                const dateString = e.target.value;
-                const seconds = dateString ? parseLocalizedDate(dateString) : null;
-                onChange(seconds);
-              }}
-            />
-          );
-        }}
-      />
-    </EntityField>
+            return (
+              <InputField
+                id={field}
+                label={
+                  <>
+                    <Translate context={context}>{label}</Translate>
+                    {registerOptions?.required && '*'}
+                  </>
+                }
+                type="date"
+                disabled={disabled}
+                hasErrors={showError}
+                errorMessage={message}
+                ref={ref}
+                onBlur={onBlur}
+                value={secondsToISODate(value) || ''}
+                className="max-w-48"
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                  const dateString = e.target.value;
+                  const seconds = dateString ? parseLocalizedDate(dateString) : null;
+                  onChange(seconds);
+                }}
+              />
+            );
+          }}
+        />
+      )}
+    </EntityPdfFillField>
   );
 };
 

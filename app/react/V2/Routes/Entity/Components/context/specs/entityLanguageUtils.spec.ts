@@ -122,4 +122,35 @@ describe('seedLoaderCache', () => {
     );
     expect(entityLoaderCache.getMainDocument(sharedId, 'en')).toBeUndefined();
   });
+
+  it('does not reseed a stale entity while a refetch is pending', () => {
+    entityLoaderCache.setEntity(sharedId, 'en', {
+      _id: 'e1',
+      sharedId,
+      title: 'Cached',
+      template: 't',
+      language: 'en',
+      creationDate: 1,
+      user: 'user1',
+      relations: [{ entity: 'old' }],
+    } as Entity);
+    entityLoaderCache.invalidateEntity(sharedId);
+    seedLoaderCache(
+      {
+        _id: 'e1',
+        sharedId,
+        title: 'Stale',
+        template: 't',
+        language: 'en',
+        creationDate: 1,
+        user: 'user1',
+        relations: [{ entity: 'old' }],
+      } as Entity,
+      'en'
+    );
+
+    expect(entityLoaderCache.getEntity(sharedId, 'en', { requireRelationships: true })).toBe(
+      undefined
+    );
+  });
 });

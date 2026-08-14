@@ -160,7 +160,7 @@ export const config = {
       postgresUsers: false,
       postgresCaptchas: false,
       postgresUsergroups: false,
-      newHeader: NEW_HEADER === 'true' || false,
+      newHeader: NEW_HEADER !== 'false',
       featureFlagEntityViewerv2: FEATURE_FLAG_ENTITY_VIEWER_V2 === 'true' || false,
       aiAssistant: FEATURE_FLAG_AI_ASSISTANT === 'true' || false,
       aiAssistantServiceUrl: AI_ASSISTANT_SERVICE_URL || undefined,

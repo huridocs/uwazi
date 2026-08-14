@@ -17,6 +17,7 @@ import {
 import {
   buildEditEntitySaveInput,
   planSharedMetadataSync,
+  isEntityEditorDirty,
 } from './functions/editEntityMetadata.js';
 import {
   applyEditEntityErrors,
@@ -33,8 +34,9 @@ import {
   defaultRelationshipLookup,
   mergeRelationshipLookupOptions,
 } from './functions/relationshipFieldHelpers.js';
+import { usePdfFill } from './Components/EntityPdfFill.js';
 
-/* eslint-disable max-statements -- orchestrator: watches, sync effects, submit, lookup cache */
+/* eslint-disable max-statements, max-lines -- orchestrator: watches, sync effects, submit, lookup cache */
 const EditEntity = ({
   formId,
   entity,
@@ -47,6 +49,7 @@ const EditEntity = ({
   onEditSource,
   relationshipLookup = defaultRelationshipLookup,
   documentMutations,
+  mainDocumentId,
 }: EditEntityProps) => {
   const templates = useAtomValue(templatesAtom);
   const thesauri = useAtomValue(thesauriAtom);
@@ -54,10 +57,11 @@ const EditEntity = ({
   const selectedTemplate = useWatch({ control, name: 'template' });
   const metadata = useWatch({ control, name: 'metadata' });
   const previousTemplateRef = useRef(selectedTemplate);
+  const { draftPropertySelections } = usePdfFill();
 
   useEffect(() => {
-    onDirtyChange?.(formState.isDirty);
-  }, [formState.isDirty, onDirtyChange]);
+    onDirtyChange?.(isEntityEditorDirty(formState.isDirty, draftPropertySelections.length));
+  }, [formState.isDirty, draftPropertySelections.length, onDirtyChange]);
 
   const availableTemplates = useMemo(
     () =>
@@ -181,6 +185,8 @@ const EditEntity = ({
           metadataProperties,
           pendingAttachments,
           mediaPropertyNames,
+          mainDocumentId,
+          draftPropertySelections,
         })
       );
     },
