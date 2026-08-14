@@ -34,6 +34,7 @@ export class MongoTranslationsSyncDataSource
     return translations;
   }
 
+  // Required by SyncDBDataSource. MongoTranslationsSyncHandler never calls get.
   // eslint-disable-next-line class-methods-use-this
   async get(_query: any, _select?: any, _options?: any): Promise<TranslationDBO[]> {
     throw new Error('MongoTranslationsSyncDataSource.get is not implemented');

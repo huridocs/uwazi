@@ -63,6 +63,13 @@ describe('UpdateThesaurusUseCase', () => {
   describe.each(testConfigs)('$name', ({ postgresThesauri, getThesauri }) => {
     const getJobs = async () => testingEnvironment.db.getCollection('jobs')!.find().toArray();
 
+    const sortByLanguageAndKey = <T>(rows: T[]) =>
+      [...rows].sort((left, right) => {
+        const a = left as { language?: string; key?: string };
+        const b = right as { language?: string; key?: string };
+        return `${a.language}:${a.key}`.localeCompare(`${b.language}:${b.key}`);
+      });
+
     const createSut = (props?: CreateSutProps) =>
       testingEnvironment.runWithContext(
         () => {
@@ -90,7 +97,6 @@ describe('UpdateThesaurusUseCase', () => {
           const sut = new UpdateThesaurusUseCase(
             {
               thesauriDS,
-              thesaurusTranslationService,
               dispatcher,
               transactionManager,
               thesauriService,
@@ -167,162 +173,164 @@ describe('UpdateThesaurusUseCase', () => {
         ],
       });
 
-      expect(translations).toEqual([
-        {
-          _id: expect.any(ObjectId),
-          context: {
-            type: 'Thesaurus',
-            label: 'Updated Countries',
-            id: before._id.toString(),
+      expect(sortByLanguageAndKey(translations)).toEqual(
+        sortByLanguageAndKey([
+          {
+            _id: expect.any(ObjectId),
+            context: {
+              type: 'Thesaurus',
+              label: 'Updated Countries',
+              id: before._id.toString(),
+            },
+            key: 'Updated Countries',
+            language: 'en',
+            value: 'Updated Countries',
           },
-          key: 'Updated Countries',
-          language: 'en',
-          value: 'Updated Countries',
-        },
-        {
-          _id: expect.any(ObjectId),
-          context: {
-            type: 'Thesaurus',
-            label: 'Updated Countries',
-            id: before._id.toString(),
+          {
+            _id: expect.any(ObjectId),
+            context: {
+              type: 'Thesaurus',
+              label: 'Updated Countries',
+              id: before._id.toString(),
+            },
+            key: 'USA Updated',
+            language: 'en',
+            value: 'USA Updated',
           },
-          key: 'USA Updated',
-          language: 'en',
-          value: 'USA Updated',
-        },
-        {
-          _id: expect.any(ObjectId),
-          context: {
-            type: 'Thesaurus',
-            label: 'Updated Countries',
-            id: before._id.toString(),
+          {
+            _id: expect.any(ObjectId),
+            context: {
+              type: 'Thesaurus',
+              label: 'Updated Countries',
+              id: before._id.toString(),
+            },
+            key: 'Europe Updated',
+            language: 'en',
+            value: 'Europe Updated',
           },
-          key: 'Europe Updated',
-          language: 'en',
-          value: 'Europe Updated',
-        },
-        {
-          _id: expect.any(ObjectId),
-          context: {
-            type: 'Thesaurus',
-            label: 'Updated Countries',
-            id: before._id.toString(),
+          {
+            _id: expect.any(ObjectId),
+            context: {
+              type: 'Thesaurus',
+              label: 'Updated Countries',
+              id: before._id.toString(),
+            },
+            key: 'France',
+            language: 'en',
+            value: 'France',
           },
-          key: 'France',
-          language: 'en',
-          value: 'France',
-        },
-        {
-          _id: expect.any(ObjectId),
-          context: {
-            type: 'Thesaurus',
-            label: 'Updated Countries',
-            id: before._id.toString(),
+          {
+            _id: expect.any(ObjectId),
+            context: {
+              type: 'Thesaurus',
+              label: 'Updated Countries',
+              id: before._id.toString(),
+            },
+            key: 'Updated Countries',
+            language: 'es',
+            value: 'Countries ES',
           },
-          key: 'Updated Countries',
-          language: 'es',
-          value: 'Countries ES',
-        },
-        {
-          _id: expect.any(ObjectId),
-          context: {
-            type: 'Thesaurus',
-            label: 'Updated Countries',
-            id: before._id.toString(),
+          {
+            _id: expect.any(ObjectId),
+            context: {
+              type: 'Thesaurus',
+              label: 'Updated Countries',
+              id: before._id.toString(),
+            },
+            key: 'USA Updated',
+            language: 'es',
+            value: 'USA ES',
           },
-          key: 'USA Updated',
-          language: 'es',
-          value: 'USA ES',
-        },
-        {
-          _id: expect.any(ObjectId),
-          context: {
-            type: 'Thesaurus',
-            label: 'Updated Countries',
-            id: before._id.toString(),
+          {
+            _id: expect.any(ObjectId),
+            context: {
+              type: 'Thesaurus',
+              label: 'Updated Countries',
+              id: before._id.toString(),
+            },
+            key: 'Europe Updated',
+            language: 'es',
+            value: 'Europe ES',
           },
-          key: 'Europe Updated',
-          language: 'es',
-          value: 'Europe ES',
-        },
-        {
-          _id: expect.any(ObjectId),
-          context: {
-            type: 'Thesaurus',
-            label: 'Updated Countries',
-            id: before._id.toString(),
+          {
+            _id: expect.any(ObjectId),
+            context: {
+              type: 'Thesaurus',
+              label: 'Updated Countries',
+              id: before._id.toString(),
+            },
+            key: 'France',
+            language: 'es',
+            value: 'France ES',
           },
-          key: 'France',
-          language: 'es',
-          value: 'France ES',
-        },
-        {
-          _id: expect.any(ObjectId),
-          key: 'Brazil Created',
-          value: 'Brazil Created',
-          language: 'en',
-          context: {
-            type: 'Thesaurus',
-            label: 'Updated Countries',
-            id: before._id.toString(),
+          {
+            _id: expect.any(ObjectId),
+            key: 'Brazil Created',
+            value: 'Brazil Created',
+            language: 'en',
+            context: {
+              type: 'Thesaurus',
+              label: 'Updated Countries',
+              id: before._id.toString(),
+            },
           },
-        },
-        {
-          _id: expect.any(ObjectId),
-          key: 'France Created',
-          value: 'France Created',
-          language: 'en',
-          context: {
-            type: 'Thesaurus',
-            label: 'Updated Countries',
-            id: before._id.toString(),
+          {
+            _id: expect.any(ObjectId),
+            key: 'France Created',
+            value: 'France Created',
+            language: 'en',
+            context: {
+              type: 'Thesaurus',
+              label: 'Updated Countries',
+              id: before._id.toString(),
+            },
           },
-        },
-        {
-          _id: expect.any(ObjectId),
-          key: 'Created on the client',
-          value: 'Created on the client',
-          language: 'en',
-          context: {
-            type: 'Thesaurus',
-            label: 'Updated Countries',
-            id: before._id.toString(),
+          {
+            _id: expect.any(ObjectId),
+            key: 'Created on the client',
+            value: 'Created on the client',
+            language: 'en',
+            context: {
+              type: 'Thesaurus',
+              label: 'Updated Countries',
+              id: before._id.toString(),
+            },
           },
-        },
-        {
-          _id: expect.any(ObjectId),
-          key: 'Brazil Created',
-          value: 'Brazil Created',
-          language: 'es',
-          context: {
-            type: 'Thesaurus',
-            label: 'Updated Countries',
-            id: before._id.toString(),
+          {
+            _id: expect.any(ObjectId),
+            key: 'Brazil Created',
+            value: 'Brazil Created',
+            language: 'es',
+            context: {
+              type: 'Thesaurus',
+              label: 'Updated Countries',
+              id: before._id.toString(),
+            },
           },
-        },
-        {
-          _id: expect.any(ObjectId),
-          key: 'France Created',
-          value: 'France Created',
-          language: 'es',
-          context: {
-            type: 'Thesaurus',
-            label: 'Updated Countries',
-            id: before._id.toString(),
+          {
+            _id: expect.any(ObjectId),
+            key: 'France Created',
+            value: 'France Created',
+            language: 'es',
+            context: {
+              type: 'Thesaurus',
+              label: 'Updated Countries',
+              id: before._id.toString(),
+            },
           },
-        },
-        {
-          _id: expect.any(ObjectId),
-          key: 'Created on the client',
-          value: 'Created on the client',
-          language: 'es',
-          context: {
-            type: 'Thesaurus',
-            label: 'Updated Countries',
-            id: before._id.toString(),
+          {
+            _id: expect.any(ObjectId),
+            key: 'Created on the client',
+            value: 'Created on the client',
+            language: 'es',
+            context: {
+              type: 'Thesaurus',
+              label: 'Updated Countries',
+              id: before._id.toString(),
+            },
           },
-        },
-      ]);
+        ])
+      );
 
       expect(jobs.length).toBe(1);
       expect(jobs).toMatchObject([

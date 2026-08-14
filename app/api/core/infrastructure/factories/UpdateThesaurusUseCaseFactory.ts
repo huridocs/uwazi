@@ -33,7 +33,6 @@ class UpdateThesaurusUseCaseFactory {
       {
         transactionManager,
         thesauriDS,
-        thesaurusTranslationService,
         thesauriService,
         ...overrides,
       },

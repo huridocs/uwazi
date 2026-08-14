@@ -365,10 +365,10 @@ Single DS writes do not belong on `TranslationsService`. Callers that already sh
   - AddLanguage / populate predefined CSV: `ImportPredefinedTranslationsService` (core; FS+CSV; outside TX)
   - `AvailableLanguagesQueryService` for `GET /api/languages`
 - Removed misleading `Legacy*TranslationService` adapters (they were domain sync services, not old translations)
-- Tests: unit `TranslationsService.spec`; integration specs for real UseCases only; `i18n/specs/translations.spec.ts` uses QueryService / remaining UC factories / in-file `TranslationsService` + DS (no façade, no test-only UCs, no core test-helper module)
+- Tests: unit `TranslationsService.spec`; integration specs for real UseCases only; `application/translation/specs/translations.spec.ts` uses QueryService / remaining UC factories / in-file `TranslationsService` + DS (no façade, no test-only UCs, no core test-helper module)
 - Express: GET mammoth → QueryService `getLegacy`; GET v2 → DS; languages → AvailableLanguagesQueryService; populate → PopulateTranslationsController; Save* → orchestrator UseCase factories
 - Thesaurus metadata rename: `ThesaurusMetadataRenamerAdapter` → `denormalizeThesauriLabelInMetadata`
-- `app/api/i18n.v2/` removed; `i18n/routes` deleted; **`i18n/translations.ts` + `i18n/v2_support.ts` deleted**
+- `app/api/i18n.v2/` removed; `i18n/routes` deleted; **`i18n/translations.ts` + `i18n/v2_support.ts` deleted**. `app/api/i18n/` is predefined CSV lookup (`defaultTranslations.ts`) plus its spec and CSV fixtures.
 - Sync: `TranslationsSyncHandlerFactory` + `MongoTranslationsSyncHandler` on `SyncHandlerRegistry` (`translationsV2`); compound-key delete lives in handler `save`; no `models.translationsV2` / route special-case
 - Peeled production callers: Settings; csvExporter / denormalize / search; csvLoader + PendingThesauri; Save* controllers; languages + populate; denormalizeAllEntities; **entry-server SSR**; **preserve → CreateThesaurusUseCase**
 - TX ownership: UseCases / Jobs open `TM.run()`; ambient services (`TranslationsService`, `ThesauriService`, `PendingThesauriValuesApplier.apply`) do not. CSV job owns TX around thesaurus append; translation value updates via `UpdateEntriesByContext` UC after commit.
@@ -390,6 +390,7 @@ Single DS writes do not belong on `TranslationsService`. Callers that already sh
 - [x] Translation side effects for relationship types / thesaurus / language covered by existing integration tests
 - [x] Sync namespace `translationsV2` still green in syncWorker specs after route cutover
 - [x] Sync `translationsV2` served via `TranslationsSyncHandlerFactory` + registry (no `models.translationsV2` / route special-case) — motor seam for Postgres later
+- [x] Dead translation files/deps deleted (C1); parity/routes specs live under `core/application/translation/specs/`; `i18n/` is predefined CSV only (C2)
 
 ## Phase 1b checklist (FE — later)
 
@@ -428,7 +429,7 @@ Critical pass after the V2 hex peel and the production SSR CPU outage. Further s
 
 - Setup/seed → `translationsV2` fixtures or collection insert (`SaveLocaleTranslations.spec`, `syncWorker.spec` host data already in fixtures)
 - Sync tests that need a change to be picked up must seed `updatelogs` (that is the sync contract), not call `TranslationsService`
-- Behavior under test in the leftover i18n parity suite → file-local `withTranslationWrites` (`TM.run()` + `TranslationsService` and/or `TranslationsDataSource`). Dies with that spec.
+- Behavior under test in the leftover parity suite → file-local `withTranslationWrites` (`TM.run()` + `TranslationsService` and/or `TranslationsDataSource`) in `application/translation/specs/translations.spec.ts`
 
 ### D12 / D13 — service vs DS; map-only locale writes
 
@@ -459,7 +460,7 @@ HTTP `POST /api/translations` AJV already requires `values` as object/map. Array
 - `csvLoader.loadTranslations` patches **one** context per language column (`getByLanguageAndContext` + `SaveLocaleTranslations` with that context only). Final HTTP return can still `getLegacy()` (import contract)
 - Empty-string skip on flatten/propagate kept for parity
 
-**Not this slice:** C1–C2 (`toIndexedTranslations` still exists for array `TranslationType` in the mapper spec).
+**Not this slice:** C3–C4 (`toIndexedTranslations` still exists for array `TranslationType` in the mapper spec).
 
 ### A2 — one context-update engine
 
@@ -518,6 +519,29 @@ HTTP `POST /api/translations` AJV already requires `values` as object/map. Array
 - `GET /api/v2/translations` uses the DS
 - Removed QueryServiceFactory `cached` option. Cache remains `TranslationsDataSourceFactory.cached()` for denormalize/dataviz
 
+### C1 — dead files and unused deps
+
+**Request (diagnosis):** delete unused translation leftovers without rewriting sync `get` or collapsing duplicate types.
+
+**Landed:**
+
+- Deleted `ContextDoesNotExist` (never thrown/imported)
+- Deleted `app/api/i18n/systemKeys.js` (no importers; migrations keep local arrays)
+- Deleted `PendingThesauriTranslationsGateway.ts` (csv.v2 already uses `UpdateEntriesByContext`)
+- Removed unused `UpdateThesaurusUseCase.thesaurusTranslationService` dep. Factory still constructs the service for `ThesauriService`
+- Kept `MongoTranslationsSyncDataSource.get` stub — `SyncDBDataSource` requires it; the translations sync handler never calls it
+
+### C2 — i18n folder is predefined CSV only
+
+**Request (diagnosis):** leftover parity/routes specs lived under `app/api/i18n/` after the façade died.
+
+**Landed:**
+
+- Moved `translations.spec.ts`, `routes.spec.ts`, `fixtures.ts`, `sortByLocale.ts` to `app/api/core/application/translation/specs/`
+- `sortByLocale` is `IndexedTranslations` only
+- `app/api/i18n/` keeps `defaultTranslations.ts`, `specs/defaultTranslations.spec.ts`, and `specs/test_contents/`
+- Local `withTranslationWrites` stayed with the parity spec (D11)
+
 ### Production SSR CPU (keep these; do not regress)
 
 Root cause was not Mongo. Every SSR HTML request:
@@ -560,4 +584,8 @@ Explicitly **not** shipped: process/tenant-wide translations read cache. Topolog
 - Do not reintroduce `UpdateTranslationContextUseCase` — Settings Menu/Filters stay in the parent `settings.save` TX via `TranslationsService.updateContext`
 - Do not make `insertEntries` / `upsertEntries` public again — `saveEntries` is the batch API; that is not an Upsert UseCase
 - Do not re-duplicate keys × languages fan-out — use `Translation.forLanguages`. Do not force Thesaurus create through `TranslationsService.createContext` just to share insert
-- Do not put DS pass-throughs (`getAll` / `getBy*`) back on `TranslationsQueryService`, and do not add a unused `cached` flag on that factory.
+- Do not put DS pass-throughs (`getAll` / `getBy*`) back on `TranslationsQueryService`, and do not add a unused `cached` flag on that factory
+- Do not restore `ContextDoesNotExist`, `i18n/systemKeys.js`, or `PendingThesauriTranslationsGateway`
+- Do not put translation parity/routes specs back in `app/api/i18n/`
+- Do not wire `thesaurusTranslationService` onto `UpdateThesaurusUseCase` — `ThesauriService` already has it
+- Do not implement `MongoTranslationsSyncDataSource.get` unless the generic `SyncDBDataSource` contract changes

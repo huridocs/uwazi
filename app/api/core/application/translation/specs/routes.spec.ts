@@ -16,8 +16,10 @@ import { availableLanguages } from '#shared/language/index.js';
 import { LanguageSchema } from '#shared/types/commonTypes.js';
 import { UserRole } from '#shared/types/userSchema.js';
 import { search } from '#api/search/index.js';
-import { DefaultTranslations } from '../defaultTranslations.js';
+import { DefaultTranslations } from '#api/i18n/defaultTranslations.js';
 import { sortByLocale } from './sortByLocale.js';
+
+const I18N_SPECS_DIR = 'app/api/i18n/specs';
 
 describe('i18n translations routes', () => {
   const createTranslationDBO = getFixturesFactory().v2.database.translationDBO;
@@ -188,7 +190,7 @@ describe('i18n translations routes', () => {
 
     describe('api/languages', () => {
       it('should return the available languages', async () => {
-        DefaultTranslations.CONTENTS_DIRECTORY = `${__dirname}/test_contents/1`;
+        DefaultTranslations.CONTENTS_DIRECTORY = `${I18N_SPECS_DIR}/test_contents/1`;
 
         const response = await request(app).get('/api/languages').expect(200);
 
@@ -205,7 +207,7 @@ describe('i18n translations routes', () => {
 
       describe('when github returns any error', () => {
         it('should return an unaltered version of the languages list', async () => {
-          DefaultTranslations.CONTENTS_DIRECTORY = `${__dirname}/non_valid`;
+          DefaultTranslations.CONTENTS_DIRECTORY = `${I18N_SPECS_DIR}/non_valid`;
 
           const responseLanguages = await request(app).get('/api/languages').expect(200);
 
@@ -268,7 +270,7 @@ describe('i18n translations routes', () => {
 
         beforeAll(async () => {
           testingTenants.changeCurrentTenant({});
-          DefaultTranslations.CONTENTS_DIRECTORY = `${__dirname}/test_contents/3`;
+          DefaultTranslations.CONTENTS_DIRECTORY = `${I18N_SPECS_DIR}/test_contents/3`;
 
           iosocket.emit.mockReset();
           response = await request(app)
@@ -366,7 +368,7 @@ describe('i18n translations routes', () => {
 
         beforeAll(async () => {
           testingTenants.changeCurrentTenant({});
-          DefaultTranslations.CONTENTS_DIRECTORY = `${__dirname}/test_contents/3`;
+          DefaultTranslations.CONTENTS_DIRECTORY = `${I18N_SPECS_DIR}/test_contents/3`;
           iosocket.emit.mockReset();
 
           errorMock = jest
@@ -392,7 +394,7 @@ describe('i18n translations routes', () => {
 
     describe('api/translations/populate', () => {
       it('should save the translations', async () => {
-        DefaultTranslations.CONTENTS_DIRECTORY = `${__dirname}/test_contents/2`;
+        DefaultTranslations.CONTENTS_DIRECTORY = `${I18N_SPECS_DIR}/test_contents/2`;
 
         const response = await request(app)
           .post('/api/translations/populate')
@@ -591,7 +593,7 @@ describe('i18n translations routes', () => {
 
         beforeAll(async () => {
           testingTenants.changeCurrentTenant({});
-          DefaultTranslations.CONTENTS_DIRECTORY = `${__dirname}/test_contents/3`;
+          DefaultTranslations.CONTENTS_DIRECTORY = `${I18N_SPECS_DIR}/test_contents/3`;
           iosocket.emit.mockReset();
 
           settingsDeleteLanguageMock = jest

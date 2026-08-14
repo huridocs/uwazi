@@ -24,9 +24,9 @@ import { UpdateEntriesByContextUseCaseFactory } from '#api/core/infrastructure/f
 import * as setupSockets from '#api/socketio/setupSockets.js';
 import { ContextType } from '#shared/translationSchema.js';
 import { LanguageISO6391, LanguageSchema } from '#shared/types/commonTypes.js';
-import { UITranslationNotAvailable } from '../defaultTranslations.js';
+import { UITranslationNotAvailable } from '#api/i18n/defaultTranslations.js';
 
-import fixtures, { dictionaryId } from './fixtures.js';
+import { fixtures, dictionaryId } from './fixtures.js';
 import { sortByLocale } from './sortByLocale.js';
 
 const withContext = async <T>(fn: () => Promise<T>) => testingEnvironment.runWithContext(fn);
