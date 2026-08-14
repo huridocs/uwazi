@@ -22,7 +22,6 @@ import fixtures, {
   hub11,
   hub12,
   hub2,
-  hub5,
   hub7,
   hub8,
   hub9,

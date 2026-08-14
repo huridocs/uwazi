@@ -73,6 +73,7 @@ type FindOptions = {
 type GetByIdsWithDocumentsOptions = {
   limit?: number;
   documentsFullText?: boolean;
+  select?: string[];
 };
 
 type GetWithFilesMatch = {
@@ -80,6 +81,10 @@ type GetWithFilesMatch = {
   sharedId?: string;
   sharedIds?: string[];
   published?: boolean;
+};
+
+type GetWithFilesOptions = {
+  select?: string[];
 };
 
 type LabelInfo = {
@@ -116,7 +121,7 @@ interface EntitiesDAO {
     options?: FindOptions
   ): Promise<EntityDBO[]>;
 
-  getWithFiles(match: GetWithFilesMatch): Promise<EntityWithFiles[]>;
+  getWithFiles(match: GetWithFilesMatch, options?: GetWithFilesOptions): Promise<EntityWithFiles[]>;
   getByIdsWithDocuments(
     ids: string[],
     options?: GetByIdsWithDocumentsOptions
@@ -157,6 +162,7 @@ export type {
   FindOptions,
   GetByIdsWithDocumentsOptions,
   GetWithFilesMatch,
+  GetWithFilesOptions,
   LabelInfo,
   LanguagePair,
   MetadataCriteria,

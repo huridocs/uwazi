@@ -489,6 +489,22 @@ describe('EntitiesDAO', () => {
         expect(entities[0].documents).toEqual([]);
         expect(entities[0].attachments).toEqual([]);
       });
+
+      it('projects only selected fields plus sharedId, documents and attachments', async () => {
+        const entities = await createDao().getWithFiles(
+          { sharedId: 'entity1', language: 'en' },
+          { select: ['title', 'template'] }
+        );
+        expect(entities).toHaveLength(1);
+        const entity = entities[0];
+        expect(entity.title).toBe('entity1');
+        expect(entity.template?.toString()).toBe(factory.idString('t1'));
+        expect(entity.sharedId).toBe('entity1');
+        expect(entity.documents).toHaveLength(1);
+        expect(entity.attachments).toHaveLength(1);
+        expect((entity as any).metadata).toBeUndefined();
+        expect((entity as any).published).toBeUndefined();
+      });
     });
 
     describe('getByIdsWithDocuments()', () => {
@@ -513,6 +529,19 @@ describe('EntitiesDAO', () => {
           { limit: 1 }
         );
         expect(entities).toHaveLength(1);
+      });
+
+      it('projects only selected fields plus sharedId, documents and attachments', async () => {
+        const entities = await createDao().getByIdsWithDocuments(
+          [factory.idString('entity1-en')],
+          { select: ['title'] }
+        );
+        expect(entities).toHaveLength(1);
+        expect(entities[0].title).toBe('entity1');
+        expect(entities[0].sharedId).toBe('entity1');
+        expect(entities[0].documents).toHaveLength(1);
+        expect(entities[0].attachments).toHaveLength(1);
+        expect((entities[0] as any).metadata).toBeUndefined();
       });
 
       it('includes fullText when documentsFullText is true and excludes it by default', async () => {

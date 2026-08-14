@@ -21,7 +21,9 @@ import {
 } from '#api/core/application/contracts/EntitiesDAO.js';
 import type {
   EntityWithFiles,
+  GetByIdsWithDocumentsOptions,
   GetWithFilesMatch,
+  GetWithFilesOptions,
 } from '#api/core/application/contracts/EntitiesDAO.js';
 
 type EntityWithFilesInternal = EntityDBO & { documents: FileDBO[]; attachments: FileDBO[] };
@@ -52,16 +54,16 @@ class MongoEntitiesDAO extends MongoDataSource<EntityDBO> implements EntitiesDAO
   }
 
   @TimedMethod('MongoEntitiesDAO.getWithFiles')
-  async getWithFiles(match: GetWithFilesMatch): Promise<EntityWithFiles[]> {
+  async getWithFiles(match: GetWithFilesMatch, options: GetWithFilesOptions = {}): Promise<EntityWithFiles[]> {
     if (this.filesDAO) {
-      return this.getWithFilesInMemory(match);
+      return this.getWithFilesInMemory(match, options.select);
     }
-    return this.getWithFilesAggregation(match).toArray();
+    return this.getWithFilesAggregation(match, options.select).toArray();
   }
 
   async getByIdsWithDocuments(
     ids: string[],
-    options: { limit?: number; documentsFullText?: boolean } = {}
+    options: GetByIdsWithDocumentsOptions = {}
   ): Promise<EntityWithFiles[]> {
     const validIds = ids.filter(id => ObjectId.isValid(id));
     if (validIds.length === 0) {
@@ -108,6 +110,14 @@ class MongoEntitiesDAO extends MongoDataSource<EntityDBO> implements EntitiesDAO
       { $unset: 'files' },
     ];
 
+    if (options.select?.length) {
+      const projection: Record<string, 1> = { sharedId: 1, documents: 1, attachments: 1 };
+      options.select.forEach(field => {
+        projection[field] = 1;
+      });
+      pipeline.push({ $project: projection });
+    }
+
     if (options.limit) {
       pipeline.push({ $limit: options.limit });
     }
@@ -115,28 +125,20 @@ class MongoEntitiesDAO extends MongoDataSource<EntityDBO> implements EntitiesDAO
     return this.getCollection().aggregate<EntityWithFilesInternal>(pipeline).toArray();
   }
 
-  private getWithFilesAggregation(match: GetWithFilesMatch) {
+  private getWithFilesAggregation(match: GetWithFilesMatch, select?: string[]) {
     const $match = this.translateGetWithFilesMatch(match);
 
-    return this.getCollection().aggregate<EntityWithFilesInternal>([
-      {
-        $match,
-      },
+    const pipeline: Record<string, unknown>[] = [
+      { $match },
       {
         $lookup: {
           from: 'files',
           localField: 'sharedId',
           foreignField: 'entity',
           as: 'files',
-
-          pipeline: [
-            {
-              $project: { fullText: 0, __v: 0 },
-            },
-          ],
+          pipeline: [{ $project: { fullText: 0, __v: 0 } }],
         },
       },
-
       {
         $addFields: {
           documents: {
@@ -155,16 +157,37 @@ class MongoEntitiesDAO extends MongoDataSource<EntityDBO> implements EntitiesDAO
           },
         },
       },
+      { $unset: 'files' },
+    ];
 
-      {
-        $unset: 'files',
-      },
-    ]);
+    if (select?.length) {
+      const projection: Record<string, 1> = { sharedId: 1, documents: 1, attachments: 1 };
+      select.forEach(field => {
+        projection[field] = 1;
+      });
+      pipeline.push({ $project: projection });
+    }
+
+    return this.getCollection().aggregate<EntityWithFilesInternal>(pipeline);
   }
 
-  private async getWithFilesInMemory(match: GetWithFilesMatch): Promise<EntityWithFiles[]> {
+  private async getWithFilesInMemory(match: GetWithFilesMatch, select?: string[]): Promise<EntityWithFiles[]> {
     const $match = this.translateGetWithFilesMatch(match);
-    const entities = await this.getCollection().aggregate<EntityDBO>([{ $match }]).toArray();
+    const entities = await this.getCollection()
+      .aggregate<EntityDBO>([
+        { $match },
+        ...(select?.length
+          ? [
+              {
+                $project: Object.fromEntries([
+                  ['sharedId', 1],
+                  ...select.map(field => [field, 1]),
+                ]),
+              } as Record<string, unknown>,
+            ]
+          : []),
+      ])
+      .toArray();
 
     if (entities.length === 0) return [];
 

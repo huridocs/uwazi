@@ -22,6 +22,16 @@ jest.mock(
   }
 );
 
+async function filesForEntity(sharedId: any) {
+  const files = (await testingEnvironment.db.getAllFrom('files')).filter(
+    f => f.entity === sharedId
+  );
+  const documents = files.filter(f => f.type === 'document');
+  const attachments = files.filter(f => f.type === 'attachment');
+
+  return { documents, attachments };
+}
+
 describe('entities routes', () => {
   const user = {
     _id: db.id(),
@@ -236,28 +246,22 @@ describe('entities routes', () => {
         const response = await createEntityWithFiles();
         const { sharedId } = response.body.entity;
 
-        const [entityWithFiles] = await entities.getUnrestrictedWithDocuments({
-          sharedId,
-          language: 'en',
-        });
+        const { documents, attachments } = await filesForEntity(sharedId);
 
-        expect(entityWithFiles.documents).toHaveLength(2);
-        expect(entityWithFiles.attachments).toHaveLength(2);
+        expect(documents).toHaveLength(2);
+        expect(attachments).toHaveLength(2);
       });
 
       it('should preserve custom originalnames from body fields', async () => {
         const response = await createEntityWithFiles();
         const { sharedId } = response.body.entity;
 
-        const [entityWithFiles] = await entities.getUnrestrictedWithDocuments({
-          sharedId,
-          language: 'en',
-        });
+        const { documents, attachments } = await filesForEntity(sharedId);
 
-        expect(entityWithFiles.documents?.[0].originalname).toBe('Custom Doc 1.pdf');
-        expect(entityWithFiles.documents?.[1].originalname).toBe('Custom Doc 2.pdf');
-        expect(entityWithFiles.attachments?.[0].originalname).toBe('Custom Att 1.pdf');
-        expect(entityWithFiles.attachments?.[1].originalname).toBe('Custom Att 2.pdf');
+        expect(documents?.[0].originalname).toBe('Custom Doc 1.pdf');
+        expect(documents?.[1].originalname).toBe('Custom Doc 2.pdf');
+        expect(attachments?.[0].originalname).toBe('Custom Att 1.pdf');
+        expect(attachments?.[1].originalname).toBe('Custom Att 2.pdf');
       });
     });
 
@@ -280,15 +284,12 @@ describe('entities routes', () => {
       const { sharedId } = response.body.entity;
 
       // Verify files use fallback originalnames from multipart header
-      const [entityWithFiles] = await entities.getUnrestrictedWithDocuments({
-        sharedId,
-        language: 'en',
-      });
+      const { documents, attachments } = await filesForEntity(sharedId);
 
-      expect(entityWithFiles.documents).toHaveLength(1);
-      expect(entityWithFiles.attachments).toHaveLength(1);
-      expect(entityWithFiles.documents?.[0].originalname).toBe('Fallback Doc.pdf');
-      expect(entityWithFiles.attachments?.[0].originalname).toBe('Fallback Att.pdf');
+      expect(documents).toHaveLength(1);
+      expect(attachments).toHaveLength(1);
+      expect(documents?.[0].originalname).toBe('Fallback Doc.pdf');
+      expect(attachments?.[0].originalname).toBe('Fallback Att.pdf');
     });
 
     it('should create entity with only documents (no attachments)', async () => {
@@ -310,13 +311,10 @@ describe('entities routes', () => {
 
       const { sharedId } = response.body.entity;
 
-      const [entityWithFiles] = await entities.getUnrestrictedWithDocuments({
-        sharedId,
-        language: 'en',
-      });
+      const { documents, attachments } = await filesForEntity(sharedId);
 
-      expect(entityWithFiles.documents).toHaveLength(2);
-      expect(entityWithFiles.attachments || []).toHaveLength(0);
+      expect(documents).toHaveLength(2);
+      expect(attachments || []).toHaveLength(0);
     });
 
     it('should create entity with only attachments (no documents)', async () => {
@@ -338,13 +336,10 @@ describe('entities routes', () => {
 
       const { sharedId } = response.body.entity;
 
-      const [entityWithFiles] = await entities.getUnrestrictedWithDocuments({
-        sharedId,
-        language: 'en',
-      });
+      const { documents, attachments } = await filesForEntity(sharedId);
 
-      expect(entityWithFiles.documents || []).toHaveLength(0);
-      expect(entityWithFiles.attachments).toHaveLength(2);
+      expect(documents).toHaveLength(0);
+      expect(attachments).toHaveLength(2);
     });
 
     describe('V2 entity update', () => {

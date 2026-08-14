@@ -1,6 +1,6 @@
 /* eslint-disable max-statements */
 
-import Ajv from 'ajv';
+import { ZodError } from 'zod';
 
 import entitiesModel from '#api/entities/entitiesModel.js';
 import relationships from '#api/relationships/relationships.js';
@@ -10,33 +10,33 @@ import db from '#api/utils/testing_db.js';
 import { UserInContextMockFactory } from '#api/utils/testingUserInContext.js';
 import { UserRole } from '#shared/types/userSchema.js';
 
-import { applicationEventsBus } from '#api/core/libs/eventsbus/index.js';
+import { RelationshipSyncJob } from '#api/core/infrastructure/jobs/RelationshipSyncJob.js';
+import { ProcessRelationshipAfterEntityUpdatedListener } from '#api/core/infrastructure/listeners/ProcessRelationshipAfterEntityUpdatedListener.js';
 import { EventEmitterFactory } from '#api/core/libs/eventEmitter/EventEmitterFactory.js';
+import { applicationEventsBus } from '#api/core/libs/eventsbus/index.js';
 import { SyncDispatcherForTests } from '#api/core/libs/queue/infrastructure/SyncDispatcherForTests.js';
+import { permissionsContext } from '#api/permissions/permissionsContext.js';
+import { elasticTesting } from '#api/utils/elastic_testing.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { testingTenants } from '#api/utils/testingTenants.js';
-import { elasticTesting } from '#api/utils/elastic_testing.js';
-import { permissionsContext } from '#api/permissions/permissionsContext.js';
-import { ProcessRelationshipAfterEntityUpdatedListener } from '#api/core/infrastructure/listeners/ProcessRelationshipAfterEntityUpdatedListener.js';
-import { RelationshipSyncJob } from '#api/core/infrastructure/jobs/RelationshipSyncJob.js';
 import entities from '../entities.js';
 import {
-  denormalizeEntityV2Adapter,
-  saveEntityV2Adapter,
-  toActorFromUser,
+    denormalizeEntityV2Adapter,
+    saveEntityV2Adapter,
+    toActorFromUser,
 } from './saveEntityV2Adapter.js';
 
 import { EntityCreatedEvent } from '../events/EntityCreatedEvent.js';
 import { EntityUpdatedEvent } from '../events/EntityUpdatedEvent.js';
 import fixtures, {
-  adminId,
-  batmanFinishesId,
-  entityGetTestTemplateId,
-  fixtureFactory,
-  syncPropertiesEntityId,
-  templateChangingNames,
-  templateId,
-  unpublishedDocId,
+    adminId,
+    batmanFinishesId,
+    entityGetTestTemplateId,
+    fixtureFactory,
+    syncPropertiesEntityId,
+    templateChangingNames,
+    templateId,
+    unpublishedDocId,
 } from './fixtures.js';
 
 const saveEntity = (doc, options = {}) => saveEntityV2Adapter(doc, options);
@@ -1008,7 +1008,7 @@ describe('entities', () => {
         await saveEntity(entity, options);
         fail('should throw validation error');
       } catch (error) {
-        expect(error).toBeInstanceOf(Ajv.ValidationError);
+        expect(error).toBeInstanceOf(ZodError);
       }
     });
   });

@@ -23,6 +23,7 @@ import {
   FindOptions,
   GetByIdsWithDocumentsOptions,
   GetWithFilesMatch,
+  GetWithFilesOptions,
   LabelInfo,
 } from '#api/core/application/contracts/EntitiesDAO.js';
 
@@ -275,6 +276,10 @@ class PostgresEntitiesDAO extends PostgresDataSource<EntityRow> implements Entit
   ): Promise<EntityWithFiles[]> {
     let q: ReturnType<typeof this.table.whereIn> = this.table.whereIn('_id', ids);
 
+    if (options.select?.length) {
+      q = q.select([...new Set([...options.select, '_id', 'sharedId'])]);
+    }
+
     if (options.limit) {
       q = q.limit(options.limit);
     }
@@ -311,7 +316,10 @@ class PostgresEntitiesDAO extends PostgresDataSource<EntityRow> implements Entit
     });
   }
 
-  async getWithFiles(match: GetWithFilesMatch): Promise<EntityWithFiles[]> {
+  async getWithFiles(
+    match: GetWithFilesMatch,
+    options: GetWithFilesOptions = {}
+  ): Promise<EntityWithFiles[]> {
     const filters: EntityFilters = {};
     if (match.sharedId) {
       filters.sharedId = match.sharedId;
@@ -327,7 +335,7 @@ class PostgresEntitiesDAO extends PostgresDataSource<EntityRow> implements Entit
     }
 
     const ids = await this.getIds(filters);
-    return this.getByIdsWithDocuments(ids);
+    return this.getByIdsWithDocuments(ids, { select: options.select });
   }
 
   async getBySharedId(sharedId: string): Promise<EntityDBO[]>;

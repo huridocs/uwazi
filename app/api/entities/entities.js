@@ -1,5 +1,6 @@
 /* eslint-disable no-param-reassign */
 
+import { EntitiesDAOFactory } from '#api/core/infrastructure/factories/EntitiesDAOFactory.js';
 import { FilesDAOFactory } from '#api/core/infrastructure/factories/FilesDAOFactory.js';
 import model from './entitiesModel.js';
 
@@ -51,9 +52,26 @@ export default {
   },
 
   async getUnrestrictedWithDocuments(query, select, options = {}) {
-    const { documentsFullText, ...restOfOptions } = options;
-    const entities = await this.getUnrestricted(query, select, restOfOptions);
-    return withDocuments(entities, documentsFullText);
+    const match = {};
+    if (query.sharedId !== undefined) {
+      if (query.sharedId.$in) {
+        match.sharedIds = query.sharedId.$in;
+      } else {
+        match.sharedId = query.sharedId;
+      }
+    }
+    if (query.language) {
+      match.language = query.language;
+    }
+
+    const entities = await EntitiesDAOFactory.default()
+      .unrestricted()
+      .getWithFiles(
+        match,
+        Array.isArray(select) && select.length ? { select } : undefined
+      );
+
+    return options.limit ? entities.slice(0, options.limit) : entities;
   },
 
   async get(query, select, options = {}) {
