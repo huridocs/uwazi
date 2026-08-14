@@ -61,4 +61,16 @@ describe('DeleteUserGroupsController integration', () => {
     const usergroups = await testingEnvironment.db.getAllFrom('usergroups');
     expect(usergroups).toHaveLength(0);
   });
+
+  it('should delete groups when ids is sent as a JSON-stringified array', async () => {
+    const response = await request(app)
+      .delete('/api/usergroups')
+      .query({ ids: JSON.stringify([factory.id('One').toHexString()]) });
+
+    expect(response).toHaveStatus(200);
+    expect(response.body).toBe(true);
+
+    const usergroups = await testingEnvironment.db.getAllFrom('usergroups');
+    expect(usergroups.map((g: any) => g.name)).toEqual(['Two']);
+  });
 });
