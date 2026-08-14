@@ -4,7 +4,7 @@ import { CommonPropertyFactory } from '../domain/template/CommonPropertyFactory.
 import { TemplateWithDuplicatedNameOnTheSystemError } from '../domain/template/errors.js';
 import { PageService } from '../domain/template/PageService.js';
 import { TemplatesDataSource } from './contracts/TemplatesDataSource.js';
-import { TranslationService } from '../domain/template/TranslationService.js';
+import { TemplateTranslationService } from '../domain/template/TemplateTranslationService.js';
 import { AbstractUseCase } from '../libs/UseCase.js';
 import { PropertyCreatorServiceStrategy } from './propertyCreatorService/PropertyCreatorServiceStrategy.js';
 import { ThesauriDataSource } from './propertyCreatorService/SelectPropertyCreatorService.js';
@@ -18,7 +18,7 @@ type Output = Template;
 type Deps = {
   templatesDS: TemplatesDataSource;
   thesauriDS: ThesauriDataSource;
-  translationService: TranslationService;
+  templateTranslationService: TemplateTranslationService;
   settingsDS: SettingsDataSource;
   relationshipTypesDS: RelationshipTypesDataSource;
   pageService: PageService;
@@ -65,7 +65,7 @@ class CreateTemplateUseCase extends AbstractUseCase<Input, Output, Deps> {
 
     await this.transactionManager.run(async () => {
       await this.deps.templatesDS.create(template);
-      await this.deps.translationService.createTemplateTranslation(template);
+      await this.deps.templateTranslationService.createTemplateTranslation(template);
     });
 
     return template;

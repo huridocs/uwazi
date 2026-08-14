@@ -18,7 +18,7 @@ class UpdateTemplateUseCaseFactory {
     const templatesDS = TemplatesDataSourceFactory.default({ transactionManager });
     const entitiesDS = EntitiesDataSourceFactory.default({ transactionManager });
     const thesauriDS = ThesauriDataSourceFactory.default({ transactionManager });
-    const translationService = new TemplateTranslationService({
+    const templateTranslationService = new TemplateTranslationService({
       translationsService: TranslationsServiceFactory.default({ transactionManager }),
     });
     const settingsDS = SettingsDataSourceFactory.default({ transactionManager });
@@ -34,7 +34,7 @@ class UpdateTemplateUseCaseFactory {
         templatesDS,
         entitiesDS,
         thesauriDS,
-        translationService,
+        templateTranslationService,
         settingsDS,
         relationshipTypesDS,
         dispatcher: new DispatcherAdapter(ExecutionContext.jobsDispatcher),

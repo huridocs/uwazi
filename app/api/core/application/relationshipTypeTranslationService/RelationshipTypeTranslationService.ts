@@ -1,7 +1,7 @@
-import type { RelationshipTypesTranslationService } from '#api/core/application/contracts/RelationshipTypesTranslationService.js';
 import { TranslationsDataSource } from '#api/core/application/contracts/TranslationsDataSource.js';
 import { TranslationsService } from '#api/core/application/translation/TranslationsService.js';
 import { RelationshipType } from '#api/core/domain/relationshipType/RelationshipType.js';
+import type { RelationshipTypeTranslationService as RelationshipTypeTranslationServicePort } from '#api/core/domain/relationshipType/RelationshipTypeTranslationService.js';
 
 type Deps = {
   translationsService: TranslationsService;
@@ -12,7 +12,7 @@ type Deps = {
  * Syncs RelationshipType names into translation contexts.
  * Must run inside the parent RelationshipType UseCase transaction (shared TM).
  */
-class RelationshipTypeTranslationService implements RelationshipTypesTranslationService {
+class RelationshipTypeTranslationService implements RelationshipTypeTranslationServicePort {
   constructor(private deps: Deps) {}
 
   async create(relationshipType: RelationshipType): Promise<void> {

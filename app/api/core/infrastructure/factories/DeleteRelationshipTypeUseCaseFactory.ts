@@ -11,7 +11,7 @@ class DeleteRelationshipTypeUseCaseFactory {
   ) {
     const transactionManager = TransactionManagerFactory.default();
     const relationshipTypesDS = RelationshipTypesDataSourceFactory.default({ transactionManager });
-    const translationService = new RelationshipTypeTranslationService({
+    const relationshipTypeTranslationService = new RelationshipTypeTranslationService({
       translationsService: TranslationsServiceFactory.default({ transactionManager }),
       translationsDS: TranslationsDataSourceFactory.default({ transactionManager }),
     });
@@ -19,7 +19,7 @@ class DeleteRelationshipTypeUseCaseFactory {
     return new DeleteRelationshipTypeUseCase({
       transactionManager,
       relationshipTypesDS,
-      translationService,
+      relationshipTypeTranslationService,
       ...overrides,
     });
   }

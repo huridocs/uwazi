@@ -216,6 +216,7 @@ HTTP /api/translations* (legacy locale DTO)     HTTP /api/v2/translations (by-it
 - Mutation split / HTTP branch: templates mutation controller + relationtypes create/update POST split
 - Thin GET: `GetTemplatesController`, `GetThesauriController`, `GetUsersController`
 - Thesaurus-style direct DS usage for **single** writes; `TranslationsService` only when the method orchestrates multiple steps (Entities-style `saveEntries` / `createContext` / `updateContext`)
+- **Aggregate-owned translation sync:** Template / RelationshipType / Thesaurus know how to write their own translation contexts. Ports live on the aggregate (`domain/template/TemplateTranslationService`, `domain/relationshipType/RelationshipTypeTranslationService`); implementations stay in `application/templateTranslationService` / `application/relationshipTypeTranslationService` / `application/thesaurusTranslationService`. Do **not** move them into `application/translation`. UseCase deps are `templateTranslationService` / `relationshipTypeTranslationService` / `thesaurusTranslationService` — never a generic `translationService` next to `TranslationsService`.
 - Folder/module structure: other `app/api/core` domains (relationshipType, thesaurus, template)
 
 ---
@@ -477,4 +478,5 @@ Explicitly **not** shipped: process/tenant-wide translations read cache. Topolog
 - Do not reintroduce process-wide / tenant-wide translations read cache (12 Node processes × 3 servers, 500+ tenants, 5 workers; in-process invalidation cannot be consistent)
 - When Postgres starts: data copy before flag; one-way flag; RLS in same schema migration; keep sync namespace `translationsV2`
 - Do not leave sync on direct `new MongoTranslationsSyncDataSource` / `models.translationsV2` once the SyncHandlerFactory peel lands — that blocks motor swap
+- Do not move Template / RelationshipType / Thesaurus translation sync into `application/translation`. Those aggregates own their ports and services; core translations stays generic (`TranslationsService` / DS)
 - Align thesaurus vs template context-update semantics before freezing the Update use case contract
