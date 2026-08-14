@@ -191,6 +191,8 @@ Clear PDF selection,Clear PDF selection
 Clear search,Clear search
 Click,Click
 Click to fill,Cliquez pour remplir
+Click to select an image,Click to select an image
+Click to select audio or video,Click to select audio or video
 Click to select files,Click to select files
 Close,Fermer
 Code,Code
@@ -508,8 +510,6 @@ Forgot Password?,Mot de passe oublié?
 Forms and email configuration,Configuration des formulaires et des e-mails
 From,From
 From all suggestions,From all suggestions
-From computer,From computer
-From files,From files
 From previous step,From previous step
 From selection,From selection
 From:,From:
@@ -754,6 +754,7 @@ New user,New user
 Next,Next
 No,Non
 No attachments,No attachments
+No audio or video on this entity,No audio or video on this entity
 No chart types match your search.,No chart types match your search.
 No common filters,Pas de filtres communs
 No connected entities yet.,No connected entities yet.
@@ -769,6 +770,7 @@ No files queued yet.,No files queued yet.
 no filters for templates,The combination of entity types doesn't have any filters in common.
 No Group,No Group
 No icon / flag,No icon / flag
+No images on this entity,No images on this entity
 No items available,No items available
 No Label,Aucune étiquettes
 No label,No label
@@ -833,6 +835,7 @@ OCR PDF,OCR PDF
 of,de
 Ok,Ok
 OK,OK
+On this entity,On this entity
 one character,one character
 "Only properties with the same name and configuration in every data source are available
             for both dimensions.","Only properties with the same name and configuration in every data source are available
@@ -854,6 +857,7 @@ Options,Options
 or,ou
 or drag and drop here,or drag and drop here
 or drop your files here.,ou déposez vos fichiers ici.
+Or paste a URL,Or paste a URL
 Order,Organiser par
 Other,Autre
 other,Autre
@@ -881,6 +885,8 @@ Password Error,Erreur de mot de passe
 Password is too long,Le mot de passe est trop long
 Password updated,Mot de passe mis à jour
 Passwords do not match,Passwords do not match
+Paste an audio or video URL to use it as this property without uploading a file. Press Enter to apply.,Paste an audio or video URL to use it as this property without uploading a file. Press Enter to apply.
+Paste an image URL to use it as this property without uploading a file. Press Enter to apply.,Paste an image URL to use it as this property without uploading a file. Press Enter to apply.
 Paste this tag in a page HTML. The chart uses the page language.,Paste this tag in a page HTML. The chart uses the page language.
 Paste URL,Paste URL
 Paste URL here,Paste URL here
@@ -1090,6 +1096,8 @@ Select an existing image,Select an existing image
 Select favicon image,Sélectionner l'image du favicon
 Select files on your device,Sélectionnez les fichiers sur votre appareil
 Select from computer,Select from computer
+Select image,Select image
+Select media,Select media
 Select relationship,Select relationship
 Select relationship type,Sélectionner le type de relation
 Select site logo image,Sélectionner l'image du logo du site

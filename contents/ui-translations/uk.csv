@@ -194,6 +194,8 @@ Clear PDF selection,Очистити вибір PDF
 Clear search,Clear search
 Click,Клац!
 Click to fill,"Натисніть, щоб заповнити"
+Click to select an image,Click to select an image
+Click to select audio or video,Click to select audio or video
 Click to select files,Click to select files
 Close,Закрити
 Code,Code
@@ -511,8 +513,6 @@ Forgot Password?,Забули пароль?
 Forms and email configuration,Налаштування форм та електронної пошти
 From,Від
 From all suggestions,З усіх пропозицій
-From computer,From computer
-From files,From files
 From previous step,З попереднього кроку
 From selection,From selection
 From:,From:
@@ -757,6 +757,7 @@ New user,Новий користувач
 Next,Наступний
 No,Ні
 No attachments,Немає вкладень
+No audio or video on this entity,No audio or video on this entity
 No chart types match your search.,No chart types match your search.
 No common filters,Немає спільних фільтрів
 No connected entities yet.,No connected entities yet.
@@ -772,6 +773,7 @@ No files queued yet.,No files queued yet.
 no filters for templates,Комбінація типів сутностей не має спільних фільтрів.
 No Group,Немає групи
 No icon / flag,Немає піктограми / прапорця
+No images on this entity,No images on this entity
 No items available,Немає товарів у наявності
 No Label,Немає мітки
 No label,Без етикетки
@@ -836,6 +838,7 @@ OCR PDF,Оптичне розпізнавання символів PDF
 of,з
 Ok,Гаразд
 OK,ГАРАЗД.
+On this entity,On this entity
 one character,one character
 "Only properties with the same name and configuration in every data source are available
             for both dimensions.","Only properties with the same name and configuration in every data source are available
@@ -857,6 +860,7 @@ Options,Параметри
 or,або
 or drag and drop here,or drag and drop here
 or drop your files here.,або опустіть свої файли сюди.
+Or paste a URL,Or paste a URL
 Order,Порядок
 Other,Інший
 other,Інший
@@ -884,6 +888,8 @@ Password Error,Помилка при введенні пароля!  Обидв�
 Password is too long,Пароль занадто довгий
 Password updated,Пароль оновлено
 Passwords do not match,Паролі не збігаються
+Paste an audio or video URL to use it as this property without uploading a file. Press Enter to apply.,Paste an audio or video URL to use it as this property without uploading a file. Press Enter to apply.
+Paste an image URL to use it as this property without uploading a file. Press Enter to apply.,Paste an image URL to use it as this property without uploading a file. Press Enter to apply.
 Paste this tag in a page HTML. The chart uses the page language.,Paste this tag in a page HTML. The chart uses the page language.
 Paste URL,Paste URL
 Paste URL here,Вставте URL-адресу сюди
@@ -1093,6 +1099,8 @@ Select an existing image,Select an existing image
 Select favicon image,Вибрати зображення фавікону
 Select files on your device,Вибрати файли на вашому пристрої
 Select from computer,Виберіть з комп'ютера
+Select image,Select image
+Select media,Select media
 Select relationship,Select relationship
 Select relationship type,Виберіть тип взаємозв'язків
 Select site logo image,Вибрати зображення логотипу сайту
