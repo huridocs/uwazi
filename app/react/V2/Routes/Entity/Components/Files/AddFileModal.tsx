@@ -91,7 +91,7 @@ const AddFileModal = () => {
   return (
     <Modal size="xl">
       <Modal.Header>
-        <Translate>Add file</Translate>
+        <Translate className="text-md font-bold">Add file</Translate>
         <Modal.CloseButton onClick={closeAddFileModal} disabled={isSubmitting} />
       </Modal.Header>
       <Modal.Body className="space-y-4">

@@ -3,7 +3,6 @@ import { useAtom, useAtomValue } from 'jotai';
 import { translationsAtom, inlineEditAtom, localeAtom } from '#V2/atoms/index.js';
 import { Truncate } from '#V2/Components/UI/Truncate.js';
 import type { ClientTranslationContextSchema } from '#app/istore.js';
-import { useTranslationLocale } from './TranslationLocaleContext.js';
 
 const parseMarkdownMarker = (
   line: string,
@@ -46,8 +45,7 @@ const Translate = ({
   truncate,
 }: TranslateProps) => {
   const translations = useAtomValue(translationsAtom);
-  const routeLocale = useAtomValue(localeAtom);
-  const locale = useTranslationLocale(routeLocale);
+  const locale = useAtomValue(localeAtom);
   const [inlineEditState, setInlineEditState] = useAtom(inlineEditAtom);
 
   const language = (translations ?? []).find(

@@ -109,7 +109,8 @@ const pushInheritingLinkFields = (
         inheritedType: tpl.inherit?.type,
         relationShipTarget: tpl.content || '',
       },
-      entity.metadata
+      entity.metadata,
+      entity.relations
     );
     if (formatted) {
       relationships.push(formatted);

@@ -55,10 +55,12 @@ register(['media'], withMetadata(formatMediaProperty));
 register(['image', 'preview'], ctx =>
   formatImageProperty(ctx.field, ctx.metadata, ctx.entityTemplate)
 );
-register(['relationship'], withMetadata(formatRelationshipProperty));
+register(['relationship'], ctx =>
+  formatRelationshipProperty(ctx.field, ctx.metadata, ctx.entity.relations)
+);
 register(['newRelationship'], ctx => {
   const denorm = formatDenormalizedNewRelationship(ctx);
-  return denorm ?? formatRelationshipProperty(ctx.field, ctx.metadata);
+  return denorm ?? formatRelationshipProperty(ctx.field, ctx.metadata, ctx.entity.relations);
 });
 register(['nested'], ctx => formatNestedProperty(ctx.field, ctx.metadata, ctx.entity.language));
 

@@ -1,9 +1,11 @@
 import React, { useMemo, useRef, useState } from 'react';
-import { Translate } from '#app/I18N/index.js';
+import { QuestionMarkCircleIcon } from '@heroicons/react/20/solid';
+import { LinkIcon, MusicalNoteIcon, VideoCameraIcon } from '@heroicons/react/24/outline';
+import { t, Translate } from '#app/I18N/index.js';
 import type { ClientFile } from '#app/istore.js';
 import { FileType } from '#shared/types/fileType.js';
 import { validateAndSanitizeUrl } from '#shared/urlValidationUtils.js';
-import { Button, FileIcon, Modal } from '#V2/Components/UI/index.js';
+import { Button, DashedUploadDropzone, FileIcon, Modal, Tooltip } from '#V2/Components/UI/index.js';
 import { formatBytes } from '#V2/shared/formatHelpers.js';
 import {
   attachmentKey,
@@ -21,6 +23,32 @@ type MediaPickerModalProps = {
   mode: MediaPickerMode;
   attachments: Array<FileType | ClientFile>;
   currentValue?: string;
+};
+
+const urlInputClass =
+  'min-w-0 flex-1 rounded border border-border bg-paper px-2 py-1.5 text-sm text-ink focus:outline-none focus:ring-1 focus:ring-ink/20';
+
+const AttachmentPreview = ({
+  mode,
+  filename,
+  mimetype,
+  url,
+}: {
+  mode: MediaPickerMode;
+  filename: string;
+  mimetype: string;
+  url?: string;
+}) => {
+  if (mode === 'image') {
+    return (
+      <FileIcon filename={filename} mimetype={mimetype} altText="" className="h-full w-full" />
+    );
+  }
+
+  const iconClass = 'h-8 w-8 text-ink-muted';
+  if (url) return <LinkIcon className={iconClass} aria-hidden />;
+  if (mimetype.includes('audio')) return <MusicalNoteIcon className={iconClass} aria-hidden />;
+  return <VideoCameraIcon className={iconClass} aria-hidden />;
 };
 
 const MediaPickerModal = ({
@@ -43,6 +71,10 @@ const MediaPickerModal = ({
   );
 
   const selectedUrl = extractMediaUrl(currentValue);
+  const isImage = mode === 'image';
+  const title = isImage ? 'Select image' : 'Select media';
+  const urlAriaLabel = isImage ? 'Image URL' : 'Media URL';
+  const fileAriaLabel = isImage ? 'Image file' : 'Media file';
 
   const resetState = () => {
     setUrlInput('');
@@ -69,16 +101,14 @@ const MediaPickerModal = ({
     }
   };
 
-  const handleLocalFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-
-    if (!file) {
-      return;
-    }
-
+  const pickLocalFile = (file: File | undefined) => {
+    if (!file) return;
     handleSelect('', file).catch(() => undefined);
-    const { target } = event;
-    target.value = '';
+  };
+
+  const handleLocalFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    pickLocalFile(event.target.files?.[0]);
+    event.target.value = '';
   };
 
   const handleUrlSubmit = () => {
@@ -97,142 +127,166 @@ const MediaPickerModal = ({
   }
 
   return (
-    <Modal size="xl" ariaLabel="Media picker">
+    <Modal size="xl" ariaLabel={title}>
       <Modal.Header>
-        <Translate>Supporting files</Translate>
+        {isImage ? (
+          <Translate className="text-md font-bold">Select image</Translate>
+        ) : (
+          <Translate className="text-md font-bold">Select media</Translate>
+        )}
         <Modal.CloseButton onClick={handleClose} />
       </Modal.Header>
-      <Modal.Body>
-        <div className="flex flex-col gap-6">
-          <section className="flex flex-col gap-3">
-            <h3 className="text-sm font-semibold">
-              <Translate>From computer</Translate>
-            </h3>
-            <div>
-              <Button
-                type="button"
-                variant="secondary"
-                data-testid="media-picker-select-file"
-                disabled={selecting}
-                onClick={() => fileInputRef.current?.click()}
-              >
-                <Translate>Select from computer</Translate>
-              </Button>
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept={getFileInputAccept(mode)}
-                className="sr-only"
-                data-testid="media-picker-file-input"
-                disabled={selecting}
-                onChange={handleLocalFileChange}
-              />
-              {selectError ? (
-                <p className="mt-2 text-sm text-(--color-theme-control-text-error)">
-                  <Translate>Could not add media. Please try again.</Translate>
-                </p>
-              ) : null}
-            </div>
-          </section>
-
-          <section className="flex flex-col gap-3">
-            <h3 className="text-sm font-semibold">
-              <Translate>Paste URL</Translate>
-            </h3>
-            <div className="flex flex-col gap-2 sm:flex-row sm:items-start">
-              <input
-                type="url"
-                value={urlInput}
-                disabled={selecting}
-                onChange={event => {
-                  setUrlInput(event.target.value);
-                  setUrlError(false);
-                }}
-                onKeyDown={event => {
-                  if (event.key === 'Enter') {
-                    event.preventDefault();
-                    handleUrlSubmit();
-                  }
-                }}
-                placeholder="https://"
-                className="block w-full rounded-lg border border-(--color-theme-control-border) bg-(--color-theme-control-bg) p-2.5 text-sm"
-              />
-              <Button
-                type="button"
-                variant="secondary"
-                data-testid="media-picker-use-url"
-                disabled={selecting}
-                onClick={handleUrlSubmit}
-              >
-                <Translate>Use URL</Translate>
-              </Button>
-            </div>
-            {urlError ? (
-              <p className="text-sm text-(--color-theme-control-text-error)">
-                <Translate>Invalid URL</Translate>
-              </p>
-            ) : null}
-          </section>
-
-          <section className="flex flex-col gap-3">
-            <h3 className="text-sm font-semibold">
-              <Translate>From files</Translate>
-            </h3>
-            {filteredAttachments.length === 0 ? (
-              <p className="text-sm text-ink-secondary">
-                <Translate>No attachments</Translate>
-              </p>
+      <Modal.Body className="space-y-4">
+        <DashedUploadDropzone
+          onPick={() => fileInputRef.current?.click()}
+          onDropFile={pickLocalFile}
+          disabled={selecting}
+          title={
+            isImage ? (
+              <Translate>Click to select an image</Translate>
             ) : (
-              <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-                {filteredAttachments.map(attachment => {
-                  const selectionValue = getAttachmentSelectionValue(attachment);
-                  const isSelected = selectionValue === selectedUrl;
+              <Translate>Click to select audio or video</Translate>
+            )
+          }
+          subtitle={<Translate>or drag and drop here</Translate>}
+        />
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept={getFileInputAccept(mode)}
+          aria-label={fileAriaLabel}
+          className="sr-only"
+          tabIndex={-1}
+          disabled={selecting}
+          onChange={handleLocalFileChange}
+        />
+        {selectError ? (
+          <p className="text-sm text-seal">
+            <Translate>Could not add media. Please try again.</Translate>
+          </p>
+        ) : null}
 
-                  return (
-                    <li key={attachmentKey(attachment, selectionValue)}>
-                      <button
-                        type="button"
-                        disabled={selecting}
-                        data-testid={`media-picker-attachment-${attachment._id || attachment.filename || selectionValue}`}
-                        className={[
-                          'flex w-full flex-col overflow-hidden rounded-md border text-left',
-                          isSelected
-                            ? 'border-(--color-theme-control-border-active) bg-(--color-theme-surface-warm)'
-                            : 'border-(--color-theme-control-border) bg-(--color-theme-control-bg)',
-                          selecting ? 'cursor-not-allowed opacity-60' : '',
-                        ].join(' ')}
-                        onClick={() => {
-                          handleSelect(selectionValue).catch(() => undefined);
-                        }}
-                      >
-                        <div className="border-b border-(--color-theme-control-border) px-2 py-1">
-                          <span className="block truncate text-xs font-medium">
-                            {attachment.originalname || attachment.filename}
+        <div className="flex flex-col gap-2">
+          <div className="flex items-center gap-1.5">
+            <span className="text-nano font-medium uppercase tracking-wide text-ink-muted">
+              <Translate>Or paste a URL</Translate>
+            </span>
+            <Tooltip
+              content={
+                isImage
+                  ? t(
+                      'System',
+                      'Paste an image URL to use it as this property without uploading a file. Press Enter to apply.',
+                      null,
+                      false
+                    )
+                  : t(
+                      'System',
+                      'Paste an audio or video URL to use it as this property without uploading a file. Press Enter to apply.',
+                      null,
+                      false
+                    )
+              }
+              placement="top"
+              size="sm"
+            >
+              <QuestionMarkCircleIcon className="h-4 w-4 text-ink-muted" aria-hidden />
+            </Tooltip>
+          </div>
+          <div className="flex items-center gap-2">
+            <input
+              type="url"
+              value={urlInput}
+              disabled={selecting}
+              aria-label={urlAriaLabel}
+              onChange={event => {
+                setUrlInput(event.target.value);
+                setUrlError(false);
+              }}
+              onKeyDown={event => {
+                if (event.key === 'Enter') {
+                  event.preventDefault();
+                  handleUrlSubmit();
+                }
+              }}
+              placeholder="https://"
+              className={urlInputClass}
+            />
+            <Button
+              type="button"
+              variant="secondary"
+              className="shrink-0 whitespace-nowrap"
+              disabled={selecting}
+              onClick={handleUrlSubmit}
+            >
+              <Translate>Use URL</Translate>
+            </Button>
+          </div>
+        </div>
+        {urlError ? (
+          <p className="text-sm text-seal">
+            <Translate>Invalid URL</Translate>
+          </p>
+        ) : null}
+
+        <div className="flex flex-col gap-3">
+          <span className="text-nano font-medium uppercase tracking-wide text-ink-muted">
+            <Translate>On this entity</Translate>
+          </span>
+          {filteredAttachments.length === 0 ? (
+            <p className="text-sm text-ink-secondary">
+              {isImage ? (
+                <Translate>No images on this entity</Translate>
+              ) : (
+                <Translate>No audio or video on this entity</Translate>
+              )}
+            </p>
+          ) : (
+            <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+              {filteredAttachments.map(attachment => {
+                const selectionValue = getAttachmentSelectionValue(attachment);
+                const isSelected = selectionValue === selectedUrl;
+                const filename = attachment.originalname || attachment.filename || '';
+
+                return (
+                  <li key={attachmentKey(attachment, selectionValue)}>
+                    <button
+                      type="button"
+                      disabled={selecting}
+                      className={[
+                        'flex w-full flex-col overflow-hidden rounded-md border text-left',
+                        isSelected ? 'border-border bg-parchment' : 'border-border/50 bg-paper',
+                        selecting ? 'cursor-not-allowed opacity-60' : '',
+                      ].join(' ')}
+                      onClick={() => {
+                        handleSelect(selectionValue).catch(() => undefined);
+                      }}
+                    >
+                      <div className="border-b border-border/50 px-2 py-1">
+                        <span className="block truncate text-xs font-medium">{filename}</span>
+                        {attachment.size ? (
+                          <span className="text-xs text-ink-secondary">
+                            {formatBytes(attachment.size)}
                           </span>
-                          {attachment.size ? (
-                            <span className="text-xs text-ink-secondary">
-                              {formatBytes(attachment.size)}
-                            </span>
-                          ) : null}
-                        </div>
-                        <div className="flex h-24 items-center justify-center p-2">
-                          <FileIcon
-                            filename={attachment.filename || attachment.originalname || ''}
-                            mimetype={attachment.mimetype || ''}
-                            altText={attachment.originalname}
-                            className="h-full w-full"
-                          />
-                        </div>
-                      </button>
-                    </li>
-                  );
-                })}
-              </ul>
-            )}
-          </section>
+                        ) : null}
+                      </div>
+                      <div className="flex h-24 items-center justify-center p-2">
+                        <AttachmentPreview
+                          mode={mode}
+                          filename={attachment.filename || attachment.originalname || ''}
+                          mimetype={attachment.mimetype || ''}
+                          url={attachment.url}
+                        />
+                      </div>
+                    </button>
+                  </li>
+                );
+              })}
+            </ul>
+          )}
         </div>
       </Modal.Body>
-      <Modal.Footer>
+      <Modal.Footer className="flex justify-end gap-3 px-6! py-4!">
         <Button type="button" variant="secondary" onClick={handleClose}>
           <Translate>Cancel</Translate>
         </Button>
