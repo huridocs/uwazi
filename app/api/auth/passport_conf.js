@@ -1,6 +1,8 @@
 import passport from 'passport';
 import LocalStrategy from 'passport-local';
 import users from '#api/users/users.js';
+import { UsersDirectoryFactory } from '#api/core/infrastructure/factories/UsersDirectoryFactory.js';
+import { usersDirectoryEnabled } from '#api/core/infrastructure/factories/usersBackendFlags.js';
 import { tenants } from '#api/tenants/tenantContext.js';
 import { appContext } from '#api/utils/AppContext.js';
 
@@ -28,8 +30,8 @@ passport.serializeUser((user, done) => {
 
 // No v2Login-specific branch here: sessions established via LoginController (v2Login on) and
 // via the LocalStrategy above (v2Login off) both end up as passport sessions deserialized the
-// same way. users.getById already routes through UsersDAOFactory under the separate v2UsersGet
-// flag (see app/api/users/users.js:252-273) — deserialization isn't part of the login use case.
+// same way — deserialization isn't part of the login use case. Which backend answers is
+// UsersDirectory's business, under the separate `usersDirectory` rollout flag (D8).
 passport.deserializeUser(async (serializeUser, done) => {
   try {
     const currentTenant = tenants.current().name;
@@ -37,7 +39,14 @@ passport.deserializeUser(async (serializeUser, done) => {
     if (serializedTenant !== currentTenant) {
       return done(null, false);
     }
-    const user = await users.getById(id, '-password', true);
+    // getProfile, not getById: the session user carries `groups` (permissionsContext
+    // derives permission refIds from them) plus `using2fa` and `accountLocked`, which
+    // ServerUsersService.mapCurrentUser reads off the context user. `?? null` preserves the
+    // exact `done(null, null)` a vanished user produces today.
+    const user = usersDirectoryEnabled()
+      ? ((await UsersDirectoryFactory.default().getProfile(id)).getData() ?? null)
+      : await users.getById(id, '-password', true);
+
     appContext.set('user', user);
     done(null, user);
   } catch (e) {
