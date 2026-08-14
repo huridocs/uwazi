@@ -358,7 +358,7 @@ Single DS writes do not belong on `TranslationsService`. Callers that already sh
   - Templates create/update: `TemplateTranslationService` → `TranslationsService.createContext` / `updateContext`
   - Relationship types create/update: `RelationshipTypeTranslationService` → `TranslationsService.createContext` / `updateContext`
   - Relationship types delete: `RelationshipTypeTranslationService.delete` → `translationsDS.deleteByContextId`
-  - Thesaurus create: `ThesaurusTranslationService` → `translationsDS.insert`
+  - Thesaurus create: `ThesaurusTranslationService` → `Translation.forLanguages` + `translationsDS.insert`
   - Thesaurus update: `ThesaurusTranslationService` diffs labels (nested / duplicate-label rules) then `translationsDS.getContext` + `TranslationContextModel.applyChanges` + `updateContext`
   - Thesaurus delete / DeleteTemplate / DeleteLanguage: `translationsDS` inside parent `TM.run()`
   - Settings Menu/Filters: V1 `settings.ts` → `TranslationsService.updateContext` inside the same `TM.run` as `settingsModel.save` (`dbSessionContext.setTransactionManager`; no translation UseCase)
@@ -459,7 +459,7 @@ HTTP `POST /api/translations` AJV already requires `values` as object/map. Array
 - `csvLoader.loadTranslations` patches **one** context per language column (`getByLanguageAndContext` + `SaveLocaleTranslations` with that context only). Final HTTP return can still `getLegacy()` (import contract)
 - Empty-string skip on flatten/propagate kept for parity
 
-**Not this slice:** B3–B4, C1–C2 (`toIndexedTranslations` still exists for array `TranslationType` in the mapper spec).
+**Not this slice:** B4, C1–C2 (`toIndexedTranslations` still exists for array `TranslationType` in the mapper spec).
 
 ### A2 — one context-update engine
 
@@ -495,6 +495,17 @@ HTTP `POST /api/translations` AJV already requires `values` as object/map. Array
 - `insertEntries` / `upsertEntries` are **private**. Public write API is `saveEntries` / `createContext` / `updateContext`
 - `saveEntries` is the named batch write for mixed new/existing keys — not an Upsert UseCase (HTTP still does not branch create vs update)
 - `TranslationsService.spec` only calls the public methods
+
+### B3 — one keys × languages helper
+
+**Request (diagnosis):** Template/RT `createContext` and Thesaurus `createTranslations` both fanned out keys × languages with two language APIs (`getLanguageKeys` vs `getInstalledLanguages().key`). `createContext` skipped the all-languages validator without saying why.
+
+**Landed:**
+
+- `Translation.forLanguages(context, values, languages)` is the cartesian product
+- `createContext` and Thesaurus create use it; Thesaurus still `translationsDS.insert` (D12)
+- Both create paths read `settingsDS.getLanguageKeys()`
+- `createContext` documents that the all-languages validator does not apply because it fans out. `saveEntries` still validates (locale POST can be one language)
 
 ### Production SSR CPU (keep these; do not regress)
 
@@ -537,3 +548,4 @@ Explicitly **not** shipped: process/tenant-wide translations read cache. Topolog
 - Do not reintroduce `updateKeysByContext` / `updateKeysByContextV2` / `updateContextLabel` / `deleteKeysByContext` — context mutation goes through `TranslationContextModel` + `updateContext`
 - Do not reintroduce `UpdateTranslationContextUseCase` — Settings Menu/Filters stay in the parent `settings.save` TX via `TranslationsService.updateContext`
 - Do not make `insertEntries` / `upsertEntries` public again — `saveEntries` is the batch API; that is not an Upsert UseCase
+- Do not re-duplicate keys × languages fan-out — use `Translation.forLanguages`. Do not force Thesaurus create through `TranslationsService.createContext` just to share insert.

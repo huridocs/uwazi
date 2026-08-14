@@ -170,21 +170,9 @@ class ThesaurusTranslationService {
   constructor(private deps: Deps) {}
 
   private async createTranslations(id: string, name: string, labels: Set<string>) {
-    const installedLanguages = await this.deps.settingsDS.getInstalledLanguages();
-    const context = {
-      type: 'Thesaurus' as const,
-      label: name,
-      id,
-    };
-
-    const translations: Translation[] = [];
-    installedLanguages.forEach(language => {
-      labels.forEach(label => {
-        translations.push(new Translation(label, label, language.key, context));
-      });
-    });
-
-    return translations;
+    const languages = await this.deps.settingsDS.getLanguageKeys();
+    const values = Object.fromEntries([...labels].map(label => [label, label]));
+    return Translation.forLanguages({ type: 'Thesaurus', label: name, id }, values, languages);
   }
 
   async create(thesaurus: Thesaurus) {

@@ -118,18 +118,13 @@ class TranslationsService {
     }
   }
 
+  /**
+   * Fans out keys × installed languages, so the saveEntries all-languages validator does not apply.
+   */
   async createContext(context: TranslationContext, values: Record<string, string>): Promise<void> {
-    const languages = await this.deps.settingsDS.getLanguageKeys();
-    const entries: Translation[] = [];
-
-    languages.forEach(language => {
-      Object.entries(values).forEach(([key, value]) => {
-        entries.push(new Translation(key, value, language, context));
-      });
-    });
-
     this.ensureTransaction();
-    await this.deps.translationsDS.insert(entries);
+    const languages = await this.deps.settingsDS.getLanguageKeys();
+    await this.deps.translationsDS.insert(Translation.forLanguages(context, values, languages));
   }
 
   async updateContext(input: {

@@ -1,7 +1,7 @@
 # Translations V2 — critical diagnosis
 
 **Date:** 2026-08-14  
-**Mode:** originally a read-only audit. A1 + A3, A2, B1 + B5, and B2 from the work order below have since landed (see [`translations-v2-migration.md`](./translations-v2-migration.md)). This file stays the post-mortem of what was wrong; strike-throughs mark what those slices fixed.  
+**Mode:** originally a read-only audit. A1 + A3, A2, B1 + B5, B2, and B3 from the work order below have since landed (see [`translations-v2-migration.md`](./translations-v2-migration.md)). This file stays the post-mortem of what was wrong; strike-throughs mark what those slices fixed.  
 **Companion:** [`translations-v2-migration.md`](./translations-v2-migration.md) (intent, locked decisions, peel history).
 
 ---
@@ -40,7 +40,7 @@ Read in full (not grepped only):
 
 The **storage model is right**: one by-item collection (`translationsV2`), domain `Translation`, unique `{ language, key, context.id }`. The **HTTP contracts were kept** (D2/D3). The **façade is gone**. Template / RT / Thesaurus own their sync (not core translations knowing how to translate templates). SSR no longer loads the whole tenant.
 
-What is **not** right yet is the **interior**: QueryService is half a real query API and half a DS proxy; create-rows has three doors; dead files and leftover i18n specs remain. GET mammoth assembly, the second thesaurus update engine, the Settings TX shell UseCase, and public `insertEntries`/`upsertEntries` have been removed (A1–A3, A2, B1+B5, B2).
+What is **not** right yet is the **interior**: QueryService is half a real query API and half a DS proxy; dead files and leftover i18n specs remain. GET mammoth assembly, the second thesaurus update engine, the Settings TX shell UseCase, public `insertEntries`/`upsertEntries`, and duplicated keys×languages fan-out have been removed (A1–A3, A2, B1+B5, B2, B3).
 
 None of that is “MVP leftover we can live with.” It is the kind of interior that the next person will copy.
 
@@ -55,7 +55,7 @@ None of that is “MVP leftover we can live with.” It is the kind of interior 
 | A3 | **P0 — landed** | Write cost | ~~`SaveLocaleTranslations` and `UpdateEntriesByContext` call `getLegacy({ locale })`~~ Saves snapshot scoped reads. CSV import writes one context. Controllers still `getLegacy` **after** save for the HTTP/socket contract. |
 | B1 | **P1 — landed** | Not a UseCase | ~~`UpdateTranslationContextUseCase` is `TM.run` + `translationsService.updateContext`~~ Deleted. V1 `settings.ts` calls `TranslationsService.updateContext` inside the same `TM.run` as `settingsModel.save`. |
 | B2 | **P1 — landed** | D5 tension | ~~`insertEntries` / `upsertEntries` public~~ Private internals of `saveEntries`. Batch save is not an Upsert UseCase; HTTP still does not branch create vs update. |
-| B3 | **P1** | Validation gap | `insertEntries` enforces “key exists in all languages.” `createContext` and Thesaurus `insert` skip that service entirely. Same invariant, three doors. |
+| B3 | **P1 — landed** | Validation gap | ~~Three doors into create-rows~~ `Translation.forLanguages` is the keys × languages helper. `createContext` and Thesaurus create use it (Thesaurus still `DS.insert`). `saveEntries` still validates all-languages because locale POST can send one language. |
 | B4 | **P1** | QueryService | Four methods are DS pass-throughs. `cached: true` on the factory is unused. |
 | B5 | **P1 — landed** | Settings TX | ~~Menu/Filters translations commit in their own UC TX **before** `settingsModel.save`~~ Same `TM.run` as settings save (`dbSessionContext.setTransactionManager`). No `translationsChange` socket (routes already emit `updateSettings`). |
 | C1 | **P2** | Dead code | `ContextDoesNotExist`; `i18n/systemKeys.js`; `PendingThesauriTranslationsGateway`; sync `get()` stub; unused `UpdateThesaurusUseCase.thesaurusTranslationService` dep |
@@ -245,6 +245,8 @@ A new key saved through locale POST in **one** language hits `insertEntries` and
 
 `ValidateTranslationsService.translationsWillExistsInAllLanguages` is also named backwards: `missingLanguages` is populated with languages **present** in the payload/DB, then the real missing set is computed. Copied from `i18n.v2`. Unreadable.
 
+**Landed:** `Translation.forLanguages(context, values, languages)` is the one cartesian product. `TranslationsService.createContext` and `ThesaurusTranslationService.create` use it. Template/RT already went through `createContext`. Thesaurus create still `DS.insert` (D12). Both create paths use `settingsDS.getLanguageKeys()`. They skip `translationsWillExistsInAllLanguages` **because they fan out every installed language**. `saveEntries` (locale/by-item/CSV) still runs that validator: a one-language payload is a real incomplete create.
+
 ### B4. `TranslationsQueryService` is two components in one coat
 
 **Keep:** `getLegacy` / `toLegacyDto` (legacy delivery), `getContextValueMap`, `getLanguageValueMaps` (real aggregations used by csvExporter, denormalize, search).
@@ -415,7 +417,7 @@ No unused UseCases remain. The failure mode now is **thin UseCases with a produc
 
 ### Thesaurus
 
-Thesaurus is the **better** local pattern for “I am an aggregate and I write my translation rows”: concrete service, DS, parent TM. Template going through `TranslationsService.createContext` is also fine (fan-out is shared). The mistake would be forcing Thesaurus through `createContext`/`updateContext` and losing nested-label diffs — or the reverse, duplicating fan-out forever (today: `createContext` vs `createTranslations`).
+Thesaurus is the **better** local pattern for “I am an aggregate and I write my translation rows”: concrete service, DS, parent TM. Template going through `TranslationsService.createContext` is also fine (fan-out is shared via `Translation.forLanguages`). The mistake would be forcing Thesaurus through `createContext`/`updateContext` and losing nested-label diffs — or duplicating the cartesian product (B3 removed that).
 
 ### Users
 
@@ -457,7 +459,7 @@ When this gets fixed, do it in this order so we do not invent another dual type:
 2. **A2 — done:** one rename/delete/create primitive for a context (`TranslationContextModel` + `updateContext`); Thesaurus label diffs call it. Deleted `updateKeysByContext` v1/v2, `updateContextLabel`, `deleteKeysByContext`.
 3. **B1 + B5 — done:** Settings Menu/Filters in the same TX as settings save. Dropped `UpdateTranslationContextUseCase`. No `SaveSettingsUseCase` this slice.
 4. **B2 — done:** `insertEntries`/`upsertEntries` private; `saveEntries` is the batch API. Documented vs D5 (no Upsert UseCase; mixed bodies still partition).
-5. **B3:** one create-rows helper (keys × languages) used by Template, RT, Thesaurus. Validator in one place or explicitly “createContext does not need it because it fans out.”
+5. **B3 — done:** `Translation.forLanguages` for Template/RT (`createContext`) and Thesaurus create. Validator stays on `saveEntries`; create-context paths skip it because they fan out.
 6. **B4:** QueryService = aggregations + legacy GET mapper. Controllers/DS for the rest. Remove unused `cached` option or wire it.
 7. **C1–C2:** delete dead files/methods; move i18n specs under core.
 

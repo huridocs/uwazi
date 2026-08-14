@@ -24,7 +24,7 @@ const createSut = (props?: Props) => {
   const settingsDS =
     props?.settingsDS ??
     TestUtils.mockClass<SettingsDataSource>({
-      getInstalledLanguages: jest.fn().mockResolvedValue([{ key: 'en' }, { key: 'es' }]),
+      getLanguageKeys: jest.fn().mockResolvedValue(['en', 'es']),
       getDefaultLanguageKey: jest.fn().mockResolvedValue('en'),
     });
 

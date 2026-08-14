@@ -12,4 +12,17 @@ describe('Translation', () => {
       new Error('context.id is of type "object", should be a string')
     );
   });
+
+  it('should create one row per key and language', () => {
+    const context: TranslationContext = { id: 'ctx', label: 'Context', type: 'Entity' };
+
+    expect(
+      Translation.forLanguages(context, { Title: 'Title', Name: 'Nombre' }, ['en', 'es'])
+    ).toEqual([
+      new Translation('Title', 'Title', 'en', context),
+      new Translation('Name', 'Nombre', 'en', context),
+      new Translation('Title', 'Title', 'es', context),
+      new Translation('Name', 'Nombre', 'es', context),
+    ]);
+  });
 });

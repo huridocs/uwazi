@@ -29,4 +29,14 @@ export class Translation {
     this.language = language;
     this.context = context;
   }
+
+  static forLanguages(
+    context: TranslationContext,
+    values: Record<string, string>,
+    languages: LanguageISO6391[]
+  ): Translation[] {
+    return languages.flatMap(language =>
+      Object.entries(values).map(([key, value]) => new Translation(key, value, language, context))
+    );
+  }
 }
