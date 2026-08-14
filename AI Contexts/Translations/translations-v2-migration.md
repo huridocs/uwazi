@@ -150,7 +150,7 @@ RT deferred translations ownership: copied Templates’ port + `Legacy*Translati
 | D9  | Tests: integration-first; parity with current behavior; auth mock OK at routes                                   | Locked |
 | D10 | **GETs = thin controller → QueryService/DAO; mutations = UseCases.** No `GetTranslationsUseCase`                 | Locked |
 | D11 | **A UseCase exists only if a controller or job needs it.** Tests must not invent UseCases; they orchestrate via helpers that call `TranslationsService` (or the DS) inside `TM.run()` | Locked |
-| D12 | **`TranslationsService` is orchestration-only.** Keep `insertEntries` / `upsertEntries` / `saveEntries` / `createContext` / `updateContext`. Single DS writes (`insert`, `deleteBy*`, `updateContext`, …) stay on `TranslationsDataSource` inside the parent `TM.run()`. `ensureTransaction` only on remaining service methods — not on the DS | Locked |
+| D12 | **`TranslationsService` is orchestration-only.** Public: `saveEntries` / `createContext` / `updateContext`. `insertEntries` / `upsertEntries` are private internals of `saveEntries` (B2). Single DS writes (`insert`, `deleteBy*`, `updateContext`, …) stay on `TranslationsDataSource` inside the parent `TM.run()`. `ensureTransaction` only on remaining service methods — not on the DS | Locked |
 | D13 | **Locale write input is map-only** `{ [key]: string }`. Indexed maps are a GET mapper. Flatten at the UseCase edge. Do not accept `TranslationValue[]` on `SaveLocaleTranslations` | Locked |
 
 ### D5 detail — upsert is convenience, not unavoidable
@@ -299,7 +299,7 @@ All writers must stop calling `#api/i18n/translations` and use core ports/use ca
   - [x] Peel SSR `entry-server.tsx` off façade → QueryService + mapper
   - [x] Register `models.translationsV2` from sync (`registerSyncHandlers` → `registerTranslationsV2SyncModel`); delete `i18n/v2_support`
   - [x] Delete `i18n/translations.ts` façade; migrate remaining specs to core factories / QueryService (no façade-shaped helper module)
-- [x] **2A polish (superseded by D12):** do **not** extend `TranslationsService` with pass-through DS ops. Thesaurus / DeleteTemplate / RT delete / DeleteLanguage call `TranslationsDataSource` directly inside the parent `TM.run()`. Service keeps only multi-step orchestration (`insertEntries` / `upsertEntries` / `saveEntries` / `createContext` / `updateContext`)
+- [x] **2A polish (superseded by D12):** do **not** extend `TranslationsService` with pass-through DS ops. Thesaurus / DeleteTemplate / RT delete / DeleteLanguage call `TranslationsDataSource` directly inside the parent `TM.run()`. Service public API is `saveEntries` / `createContext` / `updateContext` (`insertEntries` / `upsertEntries` private, B2)
 - [x] **D13:** locale save input is map-only; `flattenLocaleTranslation` at the UseCase write edge. HTTP AJV already `values: object`. Removed array-input / duplicate-key tests (maps cannot duplicate keys)
 - [x] **A1 + A3 (diagnosis):** `getLegacy` / `toLegacyDto` emit maps (GET-only); writes snapshot with `getByLanguageAndContext` / `getByContext`; propagate diffs maps; CSV import patches one context. No array layover; no `prepareLocaleTranslation`; controllers/SSR no longer wrap `toIndexedTranslations`
 - [x] **A2 (diagnosis):** Thesaurus update persists through `TranslationContextModel.applyChanges` + `translationsDS.updateContext` (same primitive as Template/RT/Settings). Label identity diffs stay in `ThesaurusTranslationService`. Removed `updateKeysByContext` / `updateKeysByContextV2` / `updateContextLabel` / `deleteKeysByContext`. `bulkDeleteKeysByContext` stays (DeleteTemplate)
@@ -438,7 +438,7 @@ Critical pass after the V2 hex peel and the production SSR CPU outage. Further s
 
 Kept on `TranslationsService` (with `ensureTransaction`):
 
-- `insertEntries` / `upsertEntries` / `saveEntries` (validation + partition)
+- `saveEntries` (partition + private `insertEntries` / `upsertEntries`)
 - `createContext` (keys × languages then insert)
 - `updateContext` (load `TranslationContextModel`, `applyChanges`, persist)
 
@@ -459,7 +459,7 @@ HTTP `POST /api/translations` AJV already requires `values` as object/map. Array
 - `csvLoader.loadTranslations` patches **one** context per language column (`getByLanguageAndContext` + `SaveLocaleTranslations` with that context only). Final HTTP return can still `getLegacy()` (import contract)
 - Empty-string skip on flatten/propagate kept for parity
 
-**Not this slice:** B2–B4, C1–C2 (`toIndexedTranslations` still exists for array `TranslationType` in the mapper spec).
+**Not this slice:** B3–B4, C1–C2 (`toIndexedTranslations` still exists for array `TranslationType` in the mapper spec).
 
 ### A2 — one context-update engine
 
@@ -485,6 +485,16 @@ HTTP `POST /api/translations` AJV already requires `values` as object/map. Array
 - `newNameGeneration` template updates stay **after** the TX (same as before)
 - Specs mock `TranslationsServiceFactory`; one unmocked test asserts Menu keys in `translationsV2`
 - No `translationsChange` on settings save (routes already emit `updateSettings`)
+
+### B2 — `saveEntries` is the batch API
+
+**Request (diagnosis):** `insertEntries` / `upsertEntries` were public so unit tests could call them. No UseCase did. D5 forbade an Upsert *UseCase*; the service still partitioned create vs update because locale/by-item/CSV bodies are mixed.
+
+**Landed:**
+
+- `insertEntries` / `upsertEntries` are **private**. Public write API is `saveEntries` / `createContext` / `updateContext`
+- `saveEntries` is the named batch write for mixed new/existing keys — not an Upsert UseCase (HTTP still does not branch create vs update)
+- `TranslationsService.spec` only calls the public methods
 
 ### Production SSR CPU (keep these; do not regress)
 
@@ -526,3 +536,4 @@ Explicitly **not** shipped: process/tenant-wide translations read cache. Topolog
 - Do not move Template / RelationshipType / Thesaurus translation sync into `application/translation`. Those aggregates own their ports and services; core translations stays generic (`TranslationsService` / DS)
 - Do not reintroduce `updateKeysByContext` / `updateKeysByContextV2` / `updateContextLabel` / `deleteKeysByContext` — context mutation goes through `TranslationContextModel` + `updateContext`
 - Do not reintroduce `UpdateTranslationContextUseCase` — Settings Menu/Filters stay in the parent `settings.save` TX via `TranslationsService.updateContext`
+- Do not make `insertEntries` / `upsertEntries` public again — `saveEntries` is the batch API; that is not an Upsert UseCase

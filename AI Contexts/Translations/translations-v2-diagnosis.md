@@ -1,7 +1,7 @@
 # Translations V2 — critical diagnosis
 
 **Date:** 2026-08-14  
-**Mode:** originally a read-only audit. A1 + A3, A2, and B1 + B5 from the work order below have since landed (see [`translations-v2-migration.md`](./translations-v2-migration.md)). This file stays the post-mortem of what was wrong; strike-throughs mark what those slices fixed.  
+**Mode:** originally a read-only audit. A1 + A3, A2, B1 + B5, and B2 from the work order below have since landed (see [`translations-v2-migration.md`](./translations-v2-migration.md)). This file stays the post-mortem of what was wrong; strike-throughs mark what those slices fixed.  
 **Companion:** [`translations-v2-migration.md`](./translations-v2-migration.md) (intent, locked decisions, peel history).
 
 ---
@@ -40,7 +40,7 @@ Read in full (not grepped only):
 
 The **storage model is right**: one by-item collection (`translationsV2`), domain `Translation`, unique `{ language, key, context.id }`. The **HTTP contracts were kept** (D2/D3). The **façade is gone**. Template / RT / Thesaurus own their sync (not core translations knowing how to translate templates). SSR no longer loads the whole tenant.
 
-What is **not** right yet is the **interior**: QueryService is half a real query API and half a DS proxy; `insertEntries`/`upsertEntries` are still public; create-rows has three doors; dead files and leftover i18n specs remain. GET mammoth assembly, the second thesaurus update engine, and the Settings TX shell UseCase have been removed (A1–A3, A2, B1+B5).
+What is **not** right yet is the **interior**: QueryService is half a real query API and half a DS proxy; create-rows has three doors; dead files and leftover i18n specs remain. GET mammoth assembly, the second thesaurus update engine, the Settings TX shell UseCase, and public `insertEntries`/`upsertEntries` have been removed (A1–A3, A2, B1+B5, B2).
 
 None of that is “MVP leftover we can live with.” It is the kind of interior that the next person will copy.
 
@@ -54,7 +54,7 @@ None of that is “MVP leftover we can live with.” It is the kind of interior 
 | A2 | **P0 — landed** | Two update engines | ~~Thesaurus used `deleteKeysByContext` + `updateKeysByContextV2` + `updateContextLabel`~~ Update now goes through `TranslationContextModel.applyChanges` + `updateContext`. Thesaurus still owns label-identity diffs. |
 | A3 | **P0 — landed** | Write cost | ~~`SaveLocaleTranslations` and `UpdateEntriesByContext` call `getLegacy({ locale })`~~ Saves snapshot scoped reads. CSV import writes one context. Controllers still `getLegacy` **after** save for the HTTP/socket contract. |
 | B1 | **P1 — landed** | Not a UseCase | ~~`UpdateTranslationContextUseCase` is `TM.run` + `translationsService.updateContext`~~ Deleted. V1 `settings.ts` calls `TranslationsService.updateContext` inside the same `TM.run` as `settingsModel.save`. |
-| B2 | **P1** | D5 tension | `saveEntries` is an application-layer upsert (partition create vs update). D5 forbade an Upsert *UseCase*; the *service* still is one. Locale POST never branches create vs update at the HTTP edge. |
+| B2 | **P1 — landed** | D5 tension | ~~`insertEntries` / `upsertEntries` public~~ Private internals of `saveEntries`. Batch save is not an Upsert UseCase; HTTP still does not branch create vs update. |
 | B3 | **P1** | Validation gap | `insertEntries` enforces “key exists in all languages.” `createContext` and Thesaurus `insert` skip that service entirely. Same invariant, three doors. |
 | B4 | **P1** | QueryService | Four methods are DS pass-throughs. `cached: true` on the factory is unused. |
 | B5 | **P1 — landed** | Settings TX | ~~Menu/Filters translations commit in their own UC TX **before** `settingsModel.save`~~ Same `TM.run` as settings save (`dbSessionContext.setTransactionManager`). No `translationsChange` socket (routes already emit `updateSettings`). |
@@ -229,6 +229,8 @@ So we deleted the Upsert *UseCase* and kept an Upsert *service method*, then mad
 
 Current state is the worst of both: D5 in the doc, upsert in the service, extra public methods that exist so `TranslationsService.spec.ts` can call them.
 
+**Landed:** first option. `insertEntries` / `upsertEntries` are private. Public API is `saveEntries` / `createContext` / `updateContext`. Specs call `saveEntries`. D5 still holds: there is no Upsert *UseCase*; mixed HTTP bodies still need one partitioner.
+
 ### B3. Three doors into “create translation rows”
 
 | Door | Validates languages exist? | Validates all-languages completeness? | `ensureTransaction`? |
@@ -399,7 +401,7 @@ Filesystem + `availableLanguages` list. Could live in the controller. Harmless.
 
 No unused UseCases remain. The failure mode now is **thin UseCases with a production caller**, not test-only ones.
 
-`insertEntries` / `upsertEntries` are not UseCases but they are **test-shaped public API** on the service.
+`insertEntries` / `upsertEntries` are private internals of `saveEntries` (B2).
 
 ---
 
@@ -438,7 +440,7 @@ The hex folders are new. A lot of the *behavior graph* is a move, not a redesign
 
 **Distorting:**
 
-- `TranslationsService.spec` unit-tests `insertEntries`/`upsertEntries` as if they were the product.
+- `TranslationsService.spec` covers public `saveEntries` / `createContext` / `updateContext` (B2).
 - `i18n/specs/translations.spec.ts` still mixes map GET assertions with array `getLegacy` navigation.
 - `denormalization.spec` calling `SaveLocaleTranslations` with a map is **correct** (HTTP shape). It looked surprising only because the test had been using the internal array shape.
 - Settings tests still mock `TranslationsServiceFactory` for most cases; one unmocked spec asserts Menu rows in `translationsV2`.
@@ -454,7 +456,7 @@ When this gets fixed, do it in this order so we do not invent another dual type:
 1. **A1 + A3 — done:** flatten writes from maps; snapshot with `getByLanguageAndContext` / `getByContext`; stop `getLegacy` on save; make propagate map-based. `toLegacyDto` is GET-only maps.
 2. **A2 — done:** one rename/delete/create primitive for a context (`TranslationContextModel` + `updateContext`); Thesaurus label diffs call it. Deleted `updateKeysByContext` v1/v2, `updateContextLabel`, `deleteKeysByContext`.
 3. **B1 + B5 — done:** Settings Menu/Filters in the same TX as settings save. Dropped `UpdateTranslationContextUseCase`. No `SaveSettingsUseCase` this slice.
-4. **B2:** make `insertEntries`/`upsertEntries` private (or delete and keep `saveEntries` only). Document batch-save vs D5.
+4. **B2 — done:** `insertEntries`/`upsertEntries` private; `saveEntries` is the batch API. Documented vs D5 (no Upsert UseCase; mixed bodies still partition).
 5. **B3:** one create-rows helper (keys × languages) used by Template, RT, Thesaurus. Validator in one place or explicitly “createContext does not need it because it fans out.”
 6. **B4:** QueryService = aggregations + legacy GET mapper. Controllers/DS for the rest. Remove unused `cached` option or wire it.
 7. **C1–C2:** delete dead files/methods; move i18n specs under core.

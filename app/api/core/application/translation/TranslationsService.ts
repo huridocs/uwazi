@@ -64,14 +64,14 @@ class TranslationsService {
     return { toCreate, toUpdate };
   }
 
-  async insertEntries(translations: TranslationEntryInput[]): Promise<Translation[]> {
+  private async insertEntries(translations: TranslationEntryInput[]): Promise<Translation[]> {
     this.ensureTransaction();
     await this.deps.validateTranslations.languagesExist(translations);
     await this.deps.validateTranslations.translationsWillExistsInAllLanguages(translations);
     return this.deps.translationsDS.insert(toDomainModels(translations));
   }
 
-  async upsertEntries(translations: TranslationEntryInput[]): Promise<Translation[]> {
+  private async upsertEntries(translations: TranslationEntryInput[]): Promise<Translation[]> {
     this.ensureTransaction();
     await this.deps.validateTranslations.languagesExist(translations);
 
@@ -99,6 +99,9 @@ class TranslationsService {
     return this.deps.translationsDS.upsert(toDomainModels(translations));
   }
 
+  /**
+   * Batch write for mixed new and existing keys. Not an Upsert UseCase — HTTP does not branch create vs update.
+   */
   async saveEntries(translations: TranslationEntryInput[]): Promise<void> {
     this.ensureTransaction();
     if (!translations.length) {
