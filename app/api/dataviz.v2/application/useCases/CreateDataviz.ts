@@ -10,6 +10,7 @@ import { normalizeDatavizRefresh } from '#shared/dataviz/normalizeDatavizRefresh
 import type { TemplatesDataSource } from '#api/core/application/contracts/TemplatesDataSource.js';
 import { planSnapshotPersistence } from '#api/dataviz.v2/application/services/persistDatavizSnapshot.js';
 import { createDatavizInputSchema } from '#api/dataviz.v2/application/contracts/datavizInputSchemas.js';
+import { DatavizDuplicateNameError } from '#api/dataviz.v2/domain/errors.js';
 
 type Input = z.infer<typeof createDatavizInputSchema>;
 
@@ -31,7 +32,7 @@ class CreateDatavizUseCase extends AbstractUseCase<Input, Output, Deps> {
 
     const exists = await this.deps.datavizDS.existsByName(input.name);
     if (exists) {
-      throw new Error(`A dataviz named "${input.name}" already exists`);
+      throw new DatavizDuplicateNameError(input.name);
     }
 
     const dataviz = new Dataviz({

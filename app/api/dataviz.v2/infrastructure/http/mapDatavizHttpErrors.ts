@@ -1,5 +1,6 @@
 import type { Response } from 'express';
 import {
+  DatavizDuplicateNameError,
   DatavizInvalidQueryError,
   DatavizNotFoundError,
   DatavizProcessingError,
@@ -25,6 +26,11 @@ const mapDatavizHttpErrors = (error: unknown, response: Response): boolean => {
 
   if (error instanceof DatavizInvalidQueryError) {
     response.status(400).json({ error: error.message, code: error.code });
+    return true;
+  }
+
+  if (error instanceof DatavizDuplicateNameError) {
+    response.status(409).json({ error: error.message, code: error.code });
     return true;
   }
 
