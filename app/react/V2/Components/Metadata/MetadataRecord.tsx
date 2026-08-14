@@ -19,6 +19,7 @@ import { renderFieldContent, renderScalarContent } from './Components/metadataFi
 import { fieldTitle, specializedCardTitle } from './Components/metadataFieldTitle.js';
 import { connectionPillsForField, type OpenEntityTarget } from './Components/ConnectionPills.js';
 import { useMetadataRecordFocus } from './useMetadataRecordFocus.js';
+import { EntityIcon } from '../CustomIcons/EntityIcon.js';
 
 type MetadataRecordProps = {
   entity: Entity;
@@ -65,8 +66,11 @@ const MetadataRecord = ({ entity, onOpenEntity }: MetadataRecordProps) => {
         label: 'Title',
         translationContext,
         content: (
-          <span className="font-medium text-ink" no-translate="true">
-            {entity.title}
+          <span className="inline-flex min-w-0 items-center gap-1.5 font-medium text-ink">
+            <EntityIcon data={entity.icon} />
+            <span className="min-w-0" no-translate="true">
+              {entity.title}
+            </span>
           </span>
         ),
       },
@@ -121,6 +125,7 @@ const MetadataRecord = ({ entity, onOpenEntity }: MetadataRecordProps) => {
     return items;
   }, [
     entity.title,
+    entity.icon,
     entity.creationDate,
     entity.editDate,
     onOpenEntity,

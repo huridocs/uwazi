@@ -1,11 +1,12 @@
 import React, { type ReactNode } from 'react';
 import { Translate } from '#app/I18N/index.js';
 import { MetadataCard, TemplateLabel, Title } from './Components/index.js';
+import type { EntityIconData } from '../CustomIcons/EntityIcon.js';
 
 type MetadataEntityHeaderProps = {
   templateId: string;
   title: string;
-  iconId?: string;
+  icon?: EntityIconData | null;
   layout: 'inline' | 'stacked';
   trailing?: ReactNode;
 };
@@ -13,7 +14,7 @@ type MetadataEntityHeaderProps = {
 const MetadataEntityHeader = ({
   templateId,
   title,
-  iconId,
+  icon,
   layout,
   trailing,
 }: MetadataEntityHeaderProps) => {
@@ -33,7 +34,7 @@ const MetadataEntityHeader = ({
         <Title
           label="Title"
           title={title}
-          iconId={iconId}
+          icon={icon}
           translationContext={templateId}
           variant={layout}
         />
