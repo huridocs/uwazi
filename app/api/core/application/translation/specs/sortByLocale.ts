@@ -1,4 +1,4 @@
-import { IndexedTranslations } from '#api/core/infrastructure/express/translation/LegacyTranslationDtoMapper.js';
+import { IndexedTranslations } from '#api/core/application/translation/localeTranslationDto.js';
 
 export function sortByLocale(a: IndexedTranslations, b: IndexedTranslations) {
   if (!a.locale || !b.locale) {

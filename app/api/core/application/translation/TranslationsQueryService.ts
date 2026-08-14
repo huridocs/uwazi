@@ -86,6 +86,7 @@ export class TranslationsQueryService {
           values: {},
         };
       }
+      // Mutating assignment. Object-spread-per-key in reduce was ~16s CPU per SSR on large thesauri.
       if (translation.key && translation.value) {
         contexts[translation.language][translation.context.id].values[translation.key] =
           translation.value;

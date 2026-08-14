@@ -1,7 +1,7 @@
 /* eslint-disable max-statements */
 import { ObjectId } from 'mongodb';
 
-import { IndexedContextValues } from '#api/core/infrastructure/express/translation/LegacyTranslationDtoMapper.js';
+import { IndexedContextValues } from '#api/core/application/translation/localeTranslationDto.js';
 import { TranslationsQueryServiceFactory } from '#api/core/infrastructure/factories/TranslationsQueryServiceFactory.js';
 import { TranslationsDataSourceFactory } from '#api/core/infrastructure/factories/TranslationsDataSourceFactory.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';

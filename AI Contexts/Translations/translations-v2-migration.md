@@ -350,7 +350,7 @@ Single DS writes do not belong on `TranslationsService`. Callers that already sh
 - Tests: seed writes with `translationsV2` fixtures (or collection insert). Do **not** add a core test-helper write API. The leftover i18n parity spec may call `TranslationsService` and/or `TranslationsDataSource` in-file inside `TM.run()`
 - Application services: `TranslationsService` (orchestration only + `ensureTransaction` on remaining methods), `TranslationsQueryService` (reads), `ValidateTranslationsService`, `PropagateThesaurusTranslationService` (post-commit)
 - Transaction boundaries: UseCases open one `transactionManager.run()` then call `TranslationsService` **or** `TranslationsDataSource`; no UC→UC nesting; thesaurus entity propagate runs **after** successful commit (outside TX)
-- Locale write DTO: `LocaleTranslationInput` is map-only. Writes flatten maps → entries (`flattenLocaleTranslation` → `saveEntries`). GET mammoth is maps (`getLegacy` / `toLegacyDto`); `toIndexedTranslations` remains only for leftover array `TranslationType` (mapper spec). `prepareLocaleTranslation` deleted
+- Locale write DTO: `LocaleTranslationInput` is map-only. Writes flatten maps → entries (`flattenLocaleTranslation` → `saveEntries`). GET mammoth is maps (`getLegacy` / `toLegacyDto`). `prepareLocaleTranslation` and `toIndexedTranslations` / `LegacyTranslationDtoMapper` deleted
 - QueryService: `getLegacy` (GET mapper), `getContextValueMap`, `getLanguageValueMaps`. Save/CSV snapshots use `TranslationsDataSource.getByLanguageAndContext` / `getByContext`. GET `/api/v2/translations` uses the DS. Factory has no `cached` option (`TranslationsDataSourceFactory.cached()` stays for denormalize/dataviz)
 - `PropagateThesaurusTranslationService.propagate({ locale, contextId, type, previous, next })` diffs maps
 - CSV `loadTranslations` reads one context per language column and saves only that context
@@ -393,13 +393,14 @@ Single DS writes do not belong on `TranslationsService`. Callers that already sh
 - [x] Dead translation files/deps deleted (C1); parity/routes specs live under `core/application/translation/specs/`; `i18n/` is predefined CSV only (C2)
 - [x] Writes use domain `Translation` (no `TranslationEntryInput`); GET `IndexedTranslations` defined once in `localeTranslationDto` (C3)
 - [x] `upsert` is one `bulkWrite`; `calculateNonexistentKeys` is `find` + set difference (C4)
+- [x] `toIndexedTranslations` / `LegacyTranslationDtoMapper` deleted; GET maps are built only in QueryService `toLegacyDto`
 
 ## Phase 1b checklist (FE — later)
 
 - [ ] Settings Translations list/edit/import use by-item API
 - [ ] `translationsAtom` / `t()` hydration does not require mammoth GET
 - [ ] `translationsChange` removed or unused; `translationKeysChange` (or successor) sufficient
-- [ ] Legacy DTO reshape mapper deleted from backend
+- [x] Legacy DTO reshape mapper deleted from backend (`toIndexedTranslations` / `prepareContexts` / `LegacyTranslationDtoMapper`)
 
 ---
 
@@ -455,14 +456,14 @@ HTTP `POST /api/translations` AJV already requires `values` as object/map. Array
 
 **Landed:**
 
-- `TranslationsQueryService.toLegacyDto` / `getLegacy` emit `IndexedTranslations` (maps) and coerce System/Menu/Filters → `Uwazi UI`. GET controllers, Save response/socket, populate, AddLanguage socket, SSR, and CSV import return call `getLegacy` directly — no `toIndexedTranslations` wrap
+- `TranslationsQueryService.toLegacyDto` / `getLegacy` emit `IndexedTranslations` (maps) and coerce System/Menu/Filters → `Uwazi UI`. GET controllers, Save response/socket, populate, AddLanguage socket, SSR, and CSV import return call `getLegacy` directly
 - `prepareLocaleTranslation` deleted. Writes: maps → `flattenLocaleTranslation` → `saveEntries`
 - `PropagateThesaurusTranslationService.propagate` diffs `previous`/`next` maps (new keys absent from previous still do not rename metadata)
 - `SaveLocaleTranslations` snapshots only payload contexts via `getByLanguageAndContext`. `UpdateEntriesByContext` loads that context per locale, not the whole language. `SaveTranslationEntries` still uses `getByContext`
 - `csvLoader.loadTranslations` patches **one** context per language column (`getByLanguageAndContext` + `SaveLocaleTranslations` with that context only). Final HTTP return can still `getLegacy()` (import contract)
 - Empty-string skip on flatten/propagate kept for parity
 
-**Not this slice:** `toIndexedTranslations` still exists for array `TranslationType` in the mapper spec.
+**Follow-up (after C4):** deleted `LegacyTranslationDtoMapper` (`toIndexedTranslations` / `prepareContexts`). Types (`IndexedTranslations`) live in `localeTranslationDto`. csvLoader / SSR / sortByLocale import from there.
 
 ### A2 — one context-update engine
 
@@ -551,7 +552,7 @@ HTTP `POST /api/translations` AJV already requires `values` as object/map. Array
 **Landed:**
 
 - Deleted `TranslationEntryInput`. `flattenLocaleTranslation`, `saveEntries`, the validator, `UpdateEntriesByContext`, and by-item POST construct `Translation`
-- `IndexedTranslations` / `IndexedContext` / `IndexedContextValues` live in `localeTranslationDto`. Mapper re-exports for delivery. Write `LocaleTranslationInput` is that GET shape with optional `values` (partial locale save)
+- `IndexedTranslations` / `IndexedContext` / `IndexedContextValues` live in `localeTranslationDto`. Write `LocaleTranslationInput` is that GET shape with optional `values` (partial locale save)
 - Did not rename shared `TranslationContext` or FE `TranslationValue`. Did not merge write input into GET
 
 ### C4 — Mongo write quality
@@ -563,6 +564,12 @@ HTTP `POST /api/translations` AJV already requires `values` as object/map. Array
 - `upsert` is one `bulkWrite` of natural-key `updateOne` + `upsert: true`. Empty input skips the write
 - `calculateNonexistentKeys` is `find({ context.id, key: { $in } })` plus a JS set difference. A key exists if it is present in any language. Dropped the extra `findOne`
 - Left `cloneForLanguage` as cursor + bulk stream. Did not implement `MongoTranslationsSyncDataSource.get`
+
+### Dead GET reshape mapper
+
+**Request:** after A1, `toIndexedTranslations` / `prepareContexts` only served leftover array `TranslationType` in the mapper spec. Production GET already builds maps in `TranslationsQueryService.toLegacyDto`.
+
+**Landed:** deleted `LegacyTranslationDtoMapper` and its spec. `IndexedTranslations` importers use `localeTranslationDto`. Linear mutating assignment stays in `toLegacyDto` (the O(n²) spread-in-reduce lived in the deleted mapper).
 
 ### Production SSR CPU (keep these; do not regress)
 
@@ -576,7 +583,7 @@ On a large tenant (~24k `translationsV2` docs, ~9.6k thesaurus keys/language) `t
 
 Shipped:
 
-- Linear `prepareContexts` in `LegacyTranslationDtoMapper` (mutating assignment)
+- Linear mutating assignment in `TranslationsQueryService.toLegacyDto` (the O(n²) spread lived in deleted `prepareContexts`)
 - SSR `entry-server.tsx` calls `getLegacy({ locale, context: 'System' })`
 - `getByLanguageAndContext` on the DS; `getLegacy` honors both `locale` and `context`
 - `toLegacyDto` loads the result set **after** `getLanguageKeys()` (thunk) so the Mongo cursor is not opened across that await (session/TX mismatch)
@@ -614,3 +621,4 @@ Explicitly **not** shipped: process/tenant-wide translations read cache. Topolog
 - Do not reintroduce `TranslationEntryInput` (or another write DTO that is immediately `new Translation(...)`)
 - Do not merge `LocaleTranslationInput` into `IndexedTranslations` — GET is complete maps; locale POST is a partial write
 - Do not go back to sequential `reduce` of `updateOne`s for `upsert`, or `findOne` + `$setDifference` for missing keys
+- Do not reintroduce `toIndexedTranslations` / `prepareContexts` / `LegacyTranslationDtoMapper` — GET maps are built in QueryService `toLegacyDto`
