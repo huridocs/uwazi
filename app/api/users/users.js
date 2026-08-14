@@ -2,14 +2,9 @@
 /* eslint-disable max-statements */
 import SHA256 from 'crypto-js/sha256.js';
 import { createError } from '#api/utils/index.js';
-import random from '#shared/uniqueID.js';
 import { encryptPassword, comparePasswords } from '#api/auth/encryptPassword.js';
 import * as usersUtils from '#api/auth2fa/usersUtils.js';
-import {
-  getByMemberIdList,
-  updateUserMemberships,
-  removeUsersFromAllGroups,
-} from '#api/usergroups/userGroupsMembers.js';
+import { getByMemberIdList, removeUsersFromAllGroups } from '#api/usergroups/userGroupsMembers.js';
 import { PUBLIC_USER_ID } from '#api/core/domain/user/User.js';
 
 import mailer from '../utils/mailer.js';
@@ -158,38 +153,6 @@ const populateGroupsOfUsers = async (user, groups) => {
 };
 
 export default {
-  /**
-   * @deprecated
-   * v1 user creation flow. Only reached while the tenant's `v2UsersCreate` flag
-   * is off (see `CreateUserController`). Use the v2 `CreateUser` use case
-   * (`CreateUserUseCaseFactory`) instead.
-   */
-  async newUser(user, domain) {
-    const [userNameMatch, emailMatch] = await Promise.all([
-      model.get({ username: user.username, deletedAt: { $exists: false } }),
-      model.get({ email: user.email, deletedAt: { $exists: false } }),
-    ]);
-    if (user.username && user.username.includes(' ')) {
-      return Promise.reject(createError('Usernames can not contain spaces.', 400));
-    }
-    if (userNameMatch.length || emailMatch.length) {
-      const message = userNameMatch.length ? 'Username already exists' : 'Email already exists';
-      return Promise.reject(createError(message, 409));
-    }
-    const password = user.password ? user.password : random();
-    const _user = await model.save({
-      ...user,
-      password: await encryptPassword(password),
-      using2fa: undefined,
-      secret: undefined,
-    });
-    if (user.groups && user.groups.length > 0) {
-      await updateUserMemberships(_user, user.groups);
-    }
-    await this.recoverPassword(user.email, domain, { newUser: true });
-    return _user;
-  },
-
   /**
    * @deprecated v1 Mongo-only query path, no longer routed through the postgresUsers flag
    * (see UsersDAOFactory) since PostgresUsersDAO has no equivalent generic get(). Still the
@@ -346,9 +309,11 @@ export default {
    * tenant's `v2UsersUtilityRoutes` flag is off (see
    * `RecoverPasswordController`), but note that reach is independent of
    * `postgresPasswordRecoveries` — enabling that flag alone does not stop
-   * this method from hitting Mongo. Also called internally by `newUser`
-   * for the new-user welcome email. Use the v2 `RecoverPassword` use case
+   * this method from hitting Mongo. Use the v2 `RecoverPassword` use case
    * (`RecoverPasswordUseCaseFactory`) instead.
+   *
+   * Its `options.newUser` branch is now only reachable from specs: the welcome email is
+   * dispatched as a `SendWelcomeEmailHandler` job by the v2 `CreateUser` use case.
    */
   recoverPassword(email, domain, options = {}) {
     const key = generateUnlockCode();

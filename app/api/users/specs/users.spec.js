@@ -2,11 +2,9 @@
 import { createError } from '#api/utils/index.js';
 import mailer from '#api/utils/mailer.js';
 import db from '#api/utils/testing_db.js';
-import * as random from '#shared/uniqueID.js';
 import { comparePasswords, encryptPassword } from '#api/auth/encryptPassword.js';
 import * as usersUtils from '#api/auth2fa/usersUtils.js';
 import { settingsModel } from '#api/settings/settingsModel.js';
-import userGroups from '#api/usergroups/userGroups.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { PUBLIC_USER_ID } from '#api/core/domain/user/User.js';
 import * as unlockCode from '../generateUnlockCode.js';
@@ -16,8 +14,6 @@ import usersModel from '../usersModel.js';
 import fixtures, {
   blockedUserId,
   expectedKey,
-  group1Id,
-  group2Id,
   recoveryUserId,
   userId,
   userToDelete,
@@ -35,148 +31,6 @@ describe('Users', () => {
 
   afterAll(async () => {
     await testingEnvironment.tearDown();
-  });
-
-  describe('newUser', () => {
-    const domain = 'http://localhost';
-
-    const assertUserMembership = async createdUser => {
-      const groups = await userGroups.get();
-      const membership1 = groups[0].members.find(
-        m => m.refId.toString() === createdUser._id.toString()
-      );
-      const membership2 = groups[1].members.find(
-        m => m.refId.toString() === createdUser._id.toString()
-      );
-      expect(membership1).not.toBeUndefined();
-      expect(membership2).not.toBeUndefined();
-    };
-
-    beforeEach(() => {
-      jest.spyOn(users, 'recoverPassword').mockImplementation(async () => Promise.resolve());
-      jest.spyOn(random, 'default').mockReturnValue('mypass');
-    });
-
-    it('should do the recover password process (as a new user)', async () => {
-      await users.newUser(
-        {
-          username: 'spidey',
-          email: 'peter@parker.com',
-          password: 'mypass',
-          role: 'editor',
-        },
-        domain
-      );
-      const [user] = await users.get({ username: 'spidey' });
-      expect(user.username).toBe('spidey');
-      expect(users.recoverPassword).toHaveBeenCalledWith('peter@parker.com', domain, {
-        newUser: true,
-      });
-    });
-
-    it('should create a random password when none is provided', async () => {
-      await users.newUser(
-        {
-          username: 'someone',
-          email: 'someone@mailer.com',
-          role: 'admin',
-        },
-        domain
-      );
-
-      expect(random.default).toHaveBeenCalled();
-      const [user] = await users.get({ username: 'someone' }, '+password');
-      expect(await comparePasswords('mypass', user.password)).toBe(true);
-    });
-
-    it('should not allow repeat username', async () => {
-      try {
-        await users.newUser(
-          { username: 'username', email: 'peter@parker.com', role: 'editor' },
-          domain
-        );
-        throw new Error('should throw an error');
-      } catch (error) {
-        expect(error).toEqual(createError('Username already exists', 409));
-      }
-    });
-
-    it('should not allow repeat email', async () => {
-      try {
-        await users.newUser(
-          { username: 'spidey', email: 'test@email.com', role: 'editor' },
-          domain
-        );
-        throw new Error('should throw an error');
-      } catch (error) {
-        expect(error).toEqual(createError('Email already exists', 409));
-      }
-    });
-
-    it('should not allow sending two-step verification data on creation', async () => {
-      await users.newUser(
-        {
-          username: 'without2fa',
-          email: 'another@email.com',
-          password: 'mypass',
-          role: 'editor',
-          using2fa: true,
-          secret: 'UNAUTHORIZED SECRET',
-        },
-        domain
-      );
-
-      const [createdUser] = await usersModel.get({ username: 'without2fa' }, '+secret');
-      expect(createdUser.using2fa).toBe(false);
-      expect(createdUser.secret).toBeUndefined();
-    });
-
-    it('should add the new user to the specified userGroups', async () => {
-      const createdUser = await users.newUser(
-        {
-          username: 'spidey',
-          email: 'peter@parker.com',
-          password: 'mypass',
-          role: 'editor',
-          groups: [{ _id: group1Id.toString() }, { _id: group2Id.toString() }],
-        },
-        domain
-      );
-
-      await assertUserMembership(createdUser);
-    });
-
-    it('should not allow spaces in username', async () => {
-      const userdata = {
-        username: 'Peter Parker',
-        email: 'peter@parker.com',
-        password: 'mypass',
-        role: 'editor',
-        groups: [],
-      };
-      await expect(users.newUser(userdata, domain)).rejects.toMatchObject({
-        code: 400,
-        message: 'Usernames can not contain spaces.',
-      });
-    });
-
-    it('should allow creating a user with the same username as a soft-deleted user', async () => {
-      await usersModel.db.updateOne({ _id: userId }, { $set: { deletedAt: new Date() } });
-      const newUser = await users.newUser(
-        { username: 'username', email: 'unique@email.com', role: 'editor' },
-        domain
-      );
-      expect(newUser.username).toBe('username');
-    });
-
-    it('should allow creating a user with the same email as a soft-deleted user', async () => {
-      await usersModel.db.updateOne({ _id: userId }, { $set: { deletedAt: new Date() } });
-      const newUser = await users.newUser(
-        { username: 'unique_username', email: 'test@email.com', role: 'editor' },
-        domain
-      );
-      expect(newUser.email).toBe('test@email.com');
-    });
   });
 
   describe('login', () => {
@@ -538,10 +392,12 @@ describe('Users', () => {
       const key = unlockCode.generateUnlockCode();
       const settings = await settingsModel.get();
 
-      const newUser = await users.newUser(
-        { username: 'spidey', email: 'peter@parker.com', password: 'mypass', role: 'editor' },
-        'http://localhost'
-      );
+      const newUser = await usersModel.save({
+        username: 'spidey',
+        email: 'peter@parker.com',
+        password: await encryptPassword('mypass'),
+        role: 'editor',
+      });
       const newUserId = newUser._id.toString();
       const response = await users.recoverPassword('peter@parker.com', 'http://localhost', {
         newUser: true,

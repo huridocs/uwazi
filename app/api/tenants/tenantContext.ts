@@ -35,7 +35,6 @@ type Tenant = {
     postgresUsergroups?: boolean;
     aiAssistant?: boolean;
     aiAssistantServiceUrl?: string;
-    v2UsersCreate?: boolean;
     v2UsersDelete?: boolean;
     v2UsersGet?: boolean;
     usersDirectory?: boolean;

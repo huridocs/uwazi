@@ -8,11 +8,19 @@ import { UsersDataSource } from './contracts/UsersDataSource.js';
 import { UserGroupsDataSource } from './contracts/UserGroupsDataSource.js';
 
 const CreateUserInputSchema = z.object({
-  username: z.string().trim(),
+  // kept in step with UpdateUserInputSchema: a username this schema accepts but that one
+  // rejects would create a user who can never be edited.
+  username: z
+    .string()
+    .trim()
+    .min(1)
+    .refine(username => !username.includes(' '), 'Usernames can not contain spaces.'),
   role: z.nativeEnum(UserRole),
   email: z.string().email(),
   assignedGroupIds: z.array(z.string()).default([]),
-  password: z.string().optional(),
+  // `.min(1)`: an empty string is not nullish, so it would reach EncryptedPassword.create
+  // and be hashed as a real password instead of falling back to a random one.
+  password: z.string().min(1).optional(),
   domain: z.string(),
 });
 

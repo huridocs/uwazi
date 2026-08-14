@@ -25,7 +25,8 @@ import syncRoutes from '#api/sync/routes.js';
 import templates from '#api/core/v1_layer/templates/index.js';
 import { tenants } from '#api/tenants/index.js';
 import thesauri from '#api/core/v1_layer/thesauri/index.js';
-import users from '#api/users/users.js';
+import { encryptPassword } from '#api/auth/encryptPassword.js';
+import { UserRole } from '#shared/types/userSchema.js';
 import { appContext } from '#api/utils/AppContext.js';
 import { appContextMiddleware } from '#api/utils/appContextMiddleware.js';
 import { elasticTesting } from '#api/utils/elastic_testing.js';
@@ -70,34 +71,50 @@ async function runAllTenants() {
   }
 }
 
+/**
+ * The admin `syncWorker.login` authenticates with on each target. Credentials must match the
+ * sync config in the host fixtures; the password is stored hashed because the target answers
+ * a real `POST api/login`.
+ */
+async function targetFixtures(username: string, password: string): Promise<DBFixture> {
+  return {
+    settings: [{}],
+    users: [
+      {
+        _id: db.id(),
+        username,
+        password: await encryptPassword(password),
+        role: UserRole.ADMIN,
+        email: `${username}@testing`,
+      },
+    ],
+  };
+}
+
 async function applyFixtures(
   _host1Fixtures: DBFixture = host1Fixtures,
   _host2Fixtures = host2Fixtures
 ) {
   const host1db = await db.setupFixturesAndContext(_host1Fixtures, undefined, 'host1');
   const host2db = await db.setupFixturesAndContext(_host2Fixtures, undefined, 'host2');
-  const target1db = await db.setupFixturesAndContext({ settings: [{}] }, undefined, 'target1');
-  const target2db = await db.setupFixturesAndContext({ settings: [{}] }, undefined, 'target2');
+  const target1db = await db.setupFixturesAndContext(
+    await targetFixtures('user', 'password'),
+    undefined,
+    'target1'
+  );
+  const target2db = await db.setupFixturesAndContext(
+    await targetFixtures('user2', 'password2'),
+    undefined,
+    'target2'
+  );
   db.UserInContextMockFactory.restore();
 
   await tenants.run(async () => {
     await elasticTesting.reindex();
-    await users.newUser({
-      username: 'user',
-      password: 'password',
-      role: 'admin',
-      email: 'user@testing',
-    });
   }, 'target1');
 
   await tenants.run(async () => {
     await elasticTesting.reindex();
-    await users.newUser({
-      username: 'user2',
-      password: 'password2',
-      role: 'admin',
-      email: 'user2@testing',
-    });
   }, 'target2');
 
   return { host1db, host2db, target1db, target2db };
