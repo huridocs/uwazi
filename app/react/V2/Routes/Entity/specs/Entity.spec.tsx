@@ -373,13 +373,16 @@ describe('Entity view', () => {
   });
 
   describe('Relationships SSR index', () => {
+    const mainDocument = { filename: 'file.pdf', _id: 'f1', language: 'eng' };
     const entity = {
       ...entityWithRelations,
       title: 'Sample Entity',
-      documents: sampleEntity.documents,
+      documents: [mainDocument],
       metadata: {},
     };
     const relationshipTypes = [{ _id: 'relA', name: 'Related' }];
+    const renderRelationshipsEntity = (options: Omit<RenderEntityOptions, 'entity'> = {}) =>
+      renderEntity({ entity, mainDocument, relationshipTypes, ...options });
 
     afterEach(() => {
       jest.restoreAllMocks();
@@ -387,9 +390,7 @@ describe('Entity view', () => {
 
     it('paints grouped relationship links on SSR and not the interactive panel', async () => {
       jest.replaceProperty(utils, 'isClient', false);
-      renderEntity({
-        entity,
-        relationshipTypes,
+      renderRelationshipsEntity({
         initialEntries: ['/?m=relationships'],
       });
 
@@ -406,7 +407,7 @@ describe('Entity view', () => {
 
     it('keeps crawlable relationship links on the default entity page', async () => {
       jest.replaceProperty(utils, 'isClient', false);
-      renderEntity({ entity, relationshipTypes });
+      renderRelationshipsEntity();
 
       await checkEntityRendered();
 
@@ -418,16 +419,15 @@ describe('Entity view', () => {
     });
 
     it('replaces the SSR list with the interactive panel on the client', async () => {
-      renderEntity({
-        entity,
-        relationshipTypes,
-        initialEntries: ['/?m=relationships'],
-      });
+      renderRelationshipsEntity();
 
       await checkEntityRendered();
+      fireEvent.click(mainTablist().getByRole('tab', { name: relationshipsMainTab }));
 
+      await waitFor(() => {
+        expect(screen.getByRole('button', { name: 'Expand all' })).toBeInTheDocument();
+      });
       expect(screen.queryByTestId('entity-relationships-ssr-index')).not.toBeInTheDocument();
-      expect(screen.getByRole('button', { name: 'Expand all' })).toBeInTheDocument();
       expect(screen.getByTestId('entity-seo-relationships-index')).toBeInTheDocument();
     });
   });
