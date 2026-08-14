@@ -4,10 +4,10 @@ import {
   flattenLocaleTranslation,
   toValueMap,
 } from './translation/localeTranslationDto.js';
-import { TranslationsQueryService } from './translation/TranslationsQueryService.js';
 import { TranslationsService } from './translation/TranslationsService.js';
 import { PropagateThesaurusTranslationService } from './translation/PropagateThesaurusTranslationService.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
+import { TranslationsDataSource } from './contracts/TranslationsDataSource.js';
 
 type Input = LocaleTranslationInput;
 
@@ -15,7 +15,7 @@ type Output = LocaleTranslationInput;
 
 type Deps = {
   translationsService: TranslationsService;
-  query: TranslationsQueryService;
+  translationsDS: TranslationsDataSource;
   propagateThesaurusTranslation: PropagateThesaurusTranslationService;
 };
 
@@ -31,7 +31,9 @@ class SaveLocaleTranslationsUseCase extends AbstractUseCase<Input, Output, Deps>
 
     const snapshots = await Promise.all(
       thesaurusContexts.map(async context => {
-        const rows = await this.deps.query.getByLanguageAndContext(locale, context.id!).all();
+        const rows = await this.deps.translationsDS
+          .getByLanguageAndContext(locale, context.id!)
+          .all();
         const type = context.type || rows[0]?.context.type;
         return {
           contextId: context.id!,

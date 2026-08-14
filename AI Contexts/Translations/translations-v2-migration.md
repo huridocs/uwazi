@@ -351,7 +351,7 @@ Single DS writes do not belong on `TranslationsService`. Callers that already sh
 - Application services: `TranslationsService` (orchestration only + `ensureTransaction` on remaining methods), `TranslationsQueryService` (reads), `ValidateTranslationsService`, `PropagateThesaurusTranslationService` (post-commit)
 - Transaction boundaries: UseCases open one `transactionManager.run()` then call `TranslationsService` **or** `TranslationsDataSource`; no UC→UC nesting; thesaurus entity propagate runs **after** successful commit (outside TX)
 - Locale write DTO: `LocaleTranslationInput` is map-only. Writes flatten maps → entries (`flattenLocaleTranslation` → `saveEntries`). GET mammoth is maps (`getLegacy` / `toLegacyDto`); `toIndexedTranslations` remains only for leftover array `TranslationType` (mapper spec). `prepareLocaleTranslation` deleted
-- QueryService by-item lookups: `getContextValueMap`, `getLanguageValueMaps`; `getLegacy` is GET-only (maps + System/Menu/Filters → `Uwazi UI`). Save paths snapshot with `getByLanguageAndContext` / `getByContext`, not `getLegacy`
+- QueryService: `getLegacy` (GET mapper), `getContextValueMap`, `getLanguageValueMaps`. Save/CSV snapshots use `TranslationsDataSource.getByLanguageAndContext` / `getByContext`. GET `/api/v2/translations` uses the DS. Factory has no `cached` option (`TranslationsDataSourceFactory.cached()` stays for denormalize/dataviz)
 - `PropagateThesaurusTranslationService.propagate({ locale, contextId, type, previous, next })` diffs maps
 - CSV `loadTranslations` reads one context per language column and saves only that context
 - Cross-aggregate writers (same shared TM as parent UseCase):
@@ -366,7 +366,7 @@ Single DS writes do not belong on `TranslationsService`. Callers that already sh
   - `AvailableLanguagesQueryService` for `GET /api/languages`
 - Removed misleading `Legacy*TranslationService` adapters (they were domain sync services, not old translations)
 - Tests: unit `TranslationsService.spec`; integration specs for real UseCases only; `i18n/specs/translations.spec.ts` uses QueryService / remaining UC factories / in-file `TranslationsService` + DS (no façade, no test-only UCs, no core test-helper module)
-- Express: GET → QueryService; languages → AvailableLanguagesQueryService; populate → PopulateTranslationsController; Save* → orchestrator UseCase factories
+- Express: GET mammoth → QueryService `getLegacy`; GET v2 → DS; languages → AvailableLanguagesQueryService; populate → PopulateTranslationsController; Save* → orchestrator UseCase factories
 - Thesaurus metadata rename: `ThesaurusMetadataRenamerAdapter` → `denormalizeThesauriLabelInMetadata`
 - `app/api/i18n.v2/` removed; `i18n/routes` deleted; **`i18n/translations.ts` + `i18n/v2_support.ts` deleted**
 - Sync: `TranslationsSyncHandlerFactory` + `MongoTranslationsSyncHandler` on `SyncHandlerRegistry` (`translationsV2`); compound-key delete lives in handler `save`; no `models.translationsV2` / route special-case
@@ -459,7 +459,7 @@ HTTP `POST /api/translations` AJV already requires `values` as object/map. Array
 - `csvLoader.loadTranslations` patches **one** context per language column (`getByLanguageAndContext` + `SaveLocaleTranslations` with that context only). Final HTTP return can still `getLegacy()` (import contract)
 - Empty-string skip on flatten/propagate kept for parity
 
-**Not this slice:** B4, C1–C2 (`toIndexedTranslations` still exists for array `TranslationType` in the mapper spec).
+**Not this slice:** C1–C2 (`toIndexedTranslations` still exists for array `TranslationType` in the mapper spec).
 
 ### A2 — one context-update engine
 
@@ -507,6 +507,17 @@ HTTP `POST /api/translations` AJV already requires `values` as object/map. Array
 - Both create paths read `settingsDS.getLanguageKeys()`
 - `createContext` documents that the all-languages validator does not apply because it fans out. `saveEntries` still validates (locale POST can be one language)
 
+### B4 — QueryService is aggregations + legacy GET
+
+**Request (diagnosis):** `getAll` / `getByLanguage` / `getByContext` / `getByLanguageAndContext` were DS pass-throughs. `cached: true` on the QueryService factory was never passed.
+
+**Landed:**
+
+- QueryService public API: `getLegacy`, `getContextValueMap`, `getLanguageValueMaps`. `toLegacyDto` is private
+- Save* / UpdateEntriesByContext / csvLoader snapshots use `TranslationsDataSource`
+- `GET /api/v2/translations` uses the DS
+- Removed QueryServiceFactory `cached` option. Cache remains `TranslationsDataSourceFactory.cached()` for denormalize/dataviz
+
 ### Production SSR CPU (keep these; do not regress)
 
 Root cause was not Mongo. Every SSR HTML request:
@@ -548,4 +559,5 @@ Explicitly **not** shipped: process/tenant-wide translations read cache. Topolog
 - Do not reintroduce `updateKeysByContext` / `updateKeysByContextV2` / `updateContextLabel` / `deleteKeysByContext` — context mutation goes through `TranslationContextModel` + `updateContext`
 - Do not reintroduce `UpdateTranslationContextUseCase` — Settings Menu/Filters stay in the parent `settings.save` TX via `TranslationsService.updateContext`
 - Do not make `insertEntries` / `upsertEntries` public again — `saveEntries` is the batch API; that is not an Upsert UseCase
-- Do not re-duplicate keys × languages fan-out — use `Translation.forLanguages`. Do not force Thesaurus create through `TranslationsService.createContext` just to share insert.
+- Do not re-duplicate keys × languages fan-out — use `Translation.forLanguages`. Do not force Thesaurus create through `TranslationsService.createContext` just to share insert
+- Do not put DS pass-throughs (`getAll` / `getBy*`) back on `TranslationsQueryService`, and do not add a unused `cached` flag on that factory.

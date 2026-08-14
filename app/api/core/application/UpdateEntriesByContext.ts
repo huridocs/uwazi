@@ -1,6 +1,6 @@
 import { AbstractUseCase } from '../libs/UseCase.js';
 import { SettingsDataSource } from './contracts/SettingsDataSource.js';
-import { TranslationsQueryService } from './translation/TranslationsQueryService.js';
+import { TranslationsDataSource } from './contracts/TranslationsDataSource.js';
 import { toValueMap } from './translation/localeTranslationDto.js';
 import { TranslationsService } from './translation/TranslationsService.js';
 import { PropagateThesaurusTranslationService } from './translation/PropagateThesaurusTranslationService.js';
@@ -20,7 +20,7 @@ type Output = LanguageISO6391[];
 
 type Deps = {
   settingsDS: SettingsDataSource;
-  query: TranslationsQueryService;
+  translationsDS: TranslationsDataSource;
   translationsService: TranslationsService;
   propagateThesaurusTranslation: PropagateThesaurusTranslationService;
 };
@@ -61,7 +61,9 @@ class UpdateEntriesByContextUseCase extends AbstractUseCase<Input, Output, Deps>
 
     const results = await Promise.allSettled(
       languagesToUpdate.map(async locale => {
-        const rows = await this.deps.query.getByLanguageAndContext(locale, contextId).all();
+        const rows = await this.deps.translationsDS
+          .getByLanguageAndContext(locale, contextId)
+          .all();
         if (!rows.length) {
           return undefined;
         }

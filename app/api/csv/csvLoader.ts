@@ -1,4 +1,6 @@
 import { TranslationsQueryServiceFactory } from '#api/core/infrastructure/factories/TranslationsQueryServiceFactory.js';
+import { TranslationsDataSourceFactory } from '#api/core/infrastructure/factories/TranslationsDataSourceFactory.js';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { SaveLocaleTranslationsUseCaseFactory } from '#api/core/infrastructure/factories/SaveLocaleTranslationsUseCaseFactory.js';
 import { UpdateEntriesByContextUseCaseFactory } from '#api/core/infrastructure/factories/UpdateEntriesByContextUseCaseFactory.js';
 import { IndexedTranslations } from '#api/core/infrastructure/express/translation/LegacyTranslationDtoMapper.js';
@@ -61,6 +63,8 @@ export class CSVLoader {
     translationContext: string
   ): Promise<IndexedTranslations[]> {
     const file = importFile(csvPath);
+    const transactionManager = TransactionManagerFactory.default();
+    const translationsDS = TranslationsDataSourceFactory.default({ transactionManager });
     const query = TranslationsQueryServiceFactory.default();
 
     const intermediateTranslation: { [k: string]: { [k: string]: string } } = {};
@@ -87,7 +91,7 @@ export class CSVLoader {
       }
 
       const locale = lang.language as LanguageISO6391;
-      const rows = await query.getByLanguageAndContext(locale, translationContext).all();
+      const rows = await translationsDS.getByLanguageAndContext(locale, translationContext).all();
       if (!rows.length) {
         return;
       }

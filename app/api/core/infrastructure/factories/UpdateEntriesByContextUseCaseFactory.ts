@@ -1,7 +1,7 @@
 import { UpdateEntriesByContextUseCase } from '#api/core/application/UpdateEntriesByContext.js';
 import { PropagateThesaurusTranslationServiceFactory } from './PropagateThesaurusTranslationServiceFactory.js';
 import { SettingsDataSourceFactory } from './SettingsDataSourceFactory.js';
-import { TranslationsQueryServiceFactory } from './TranslationsQueryServiceFactory.js';
+import { TranslationsDataSourceFactory } from './TranslationsDataSourceFactory.js';
 import { TranslationsServiceFactory } from './TranslationsServiceFactory.js';
 import { TransactionManagerFactory } from './TransactionManagerFactory.js';
 
@@ -12,7 +12,7 @@ export class UpdateEntriesByContextUseCaseFactory {
     return new UpdateEntriesByContextUseCase({
       transactionManager,
       settingsDS: SettingsDataSourceFactory.default({ transactionManager }),
-      query: TranslationsQueryServiceFactory.default(),
+      translationsDS: TranslationsDataSourceFactory.default({ transactionManager }),
       translationsService: TranslationsServiceFactory.default({ transactionManager }),
       propagateThesaurusTranslation: PropagateThesaurusTranslationServiceFactory.default(),
     });

@@ -21,27 +21,13 @@ export class TranslationsQueryService {
     private settingsDS: SettingsDataSource
   ) {}
 
-  getAll(): ResultSet<Translation> {
-    return this.translationsDS.getAll();
-  }
-
-  getByLanguage(language: LanguageISO6391): ResultSet<Translation> {
-    return this.translationsDS.getByLanguage(language);
-  }
-
-  getByContext(contextId: string): ResultSet<Translation> {
-    return this.translationsDS.getByContext(contextId);
-  }
-
-  getByLanguageAndContext(language: LanguageISO6391, contextId: string): ResultSet<Translation> {
-    return this.translationsDS.getByLanguageAndContext(language, contextId);
-  }
-
   async getContextValueMap(
     language: LanguageISO6391,
     contextId: string
   ): Promise<Record<string, string>> {
-    const translations = await this.getByLanguageAndContext(language, contextId).all();
+    const translations = await this.translationsDS
+      .getByLanguageAndContext(language, contextId)
+      .all();
     const values: Record<string, string> = {};
     translations.forEach(translation => {
       values[translation.key] = translation.value;
@@ -52,7 +38,7 @@ export class TranslationsQueryService {
   async getLanguageValueMaps(
     language: LanguageISO6391
   ): Promise<Record<string, Record<string, string>>> {
-    const translations = await this.getByLanguage(language).all();
+    const translations = await this.translationsDS.getByLanguage(language).all();
     const byContext: Record<string, Record<string, string>> = {};
     translations.forEach(translation => {
       const contextId = translation.context.id;
@@ -64,7 +50,7 @@ export class TranslationsQueryService {
     return byContext;
   }
 
-  async toLegacyDto(
+  private async toLegacyDto(
     load: () => ResultSet<Translation>,
     onlyLanguage?: LanguageISO6391
   ): Promise<IndexedTranslations[]> {
@@ -115,16 +101,19 @@ export class TranslationsQueryService {
   async getLegacy(query: { locale?: LanguageISO6391; context?: string } = {}) {
     if (query.locale && query.context) {
       return this.toLegacyDto(
-        () => this.getByLanguageAndContext(query.locale!, query.context!),
+        () => this.translationsDS.getByLanguageAndContext(query.locale!, query.context!),
         query.locale
       );
     }
     if (query.context) {
-      return this.toLegacyDto(() => this.getByContext(query.context!));
+      return this.toLegacyDto(() => this.translationsDS.getByContext(query.context!));
     }
     if (query.locale) {
-      return this.toLegacyDto(() => this.getByLanguage(query.locale!), query.locale);
+      return this.toLegacyDto(
+        () => this.translationsDS.getByLanguage(query.locale!),
+        query.locale
+      );
     }
-    return this.toLegacyDto(() => this.getAll());
+    return this.toLegacyDto(() => this.translationsDS.getAll());
   }
 }

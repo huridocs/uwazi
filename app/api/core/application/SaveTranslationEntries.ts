@@ -1,10 +1,10 @@
 import { AbstractUseCase } from '../libs/UseCase.js';
 import { TranslationEntryInput } from './translation/ValidateTranslationsService.js';
-import { TranslationsQueryService } from './translation/TranslationsQueryService.js';
 import { TranslationsService } from './translation/TranslationsService.js';
 import { PropagateThesaurusTranslationService } from './translation/PropagateThesaurusTranslationService.js';
 import { toValueMap } from './translation/localeTranslationDto.js';
 import { Translation } from '../domain/translation/Translation.js';
+import { TranslationsDataSource } from './contracts/TranslationsDataSource.js';
 
 type Input = {
   translations: TranslationEntryInput[];
@@ -14,7 +14,7 @@ type Output = void;
 
 type Deps = {
   translationsService: TranslationsService;
-  query: TranslationsQueryService;
+  translationsDS: TranslationsDataSource;
   propagateThesaurusTranslation: PropagateThesaurusTranslationService;
 };
 
@@ -36,7 +36,7 @@ const groupByLanguage = (translations: Translation[]): Map<string, Translation[]
 
 class SaveTranslationEntriesUseCase extends AbstractUseCase<Input, Output, Deps> {
   private async loadContextSnapshots(contextId: string): Promise<LocaleValueSnapshot[]> {
-    const translations = await this.deps.query.getByContext(contextId).all();
+    const translations = await this.deps.translationsDS.getByContext(contextId).all();
     if (!translations.length) {
       return [];
     }
