@@ -150,7 +150,7 @@ RT deferred translations ownership: copied Templates’ port + `Legacy*Translati
 | D9  | Tests: integration-first; parity with current behavior; auth mock OK at routes                                   | Locked |
 | D10 | **GETs = thin controller → QueryService/DAO; mutations = UseCases.** No `GetTranslationsUseCase`                 | Locked |
 | D11 | **A UseCase exists only if a controller or job needs it.** Tests must not invent UseCases; they orchestrate via helpers that call `TranslationsService` (or the DS) inside `TM.run()` | Locked |
-| D12 | **`TranslationsService` is orchestration-only.** Keep `insertEntries` / `upsertEntries` / `saveEntries` / `createContext` / `updateContext`. Single DS writes (`insert`, `deleteBy*`, `updateKeysByContextV2`, `updateContextLabel`, …) stay on `TranslationsDataSource` inside the parent `TM.run()`. `ensureTransaction` only on remaining service methods — not on the DS | Locked |
+| D12 | **`TranslationsService` is orchestration-only.** Keep `insertEntries` / `upsertEntries` / `saveEntries` / `createContext` / `updateContext`. Single DS writes (`insert`, `deleteBy*`, `updateContext`, …) stay on `TranslationsDataSource` inside the parent `TM.run()`. `ensureTransaction` only on remaining service methods — not on the DS | Locked |
 | D13 | **Locale write input is map-only** `{ [key]: string }`. Indexed maps are a GET mapper. Flatten at the UseCase edge. Do not accept `TranslationValue[]` on `SaveLocaleTranslations` | Locked |
 
 ### D5 detail — upsert is convenience, not unavoidable
@@ -229,7 +229,7 @@ All writers must stop calling `#api/i18n/translations` and use core ports/use ca
 | ------------------------------------- | ------------------------------------------------------------------------ | ---------------------------------------------------------------------------------- |
 | Create/Update Template                | `TemplateTranslationService` → `TranslationsService.createContext` / `updateContext` (shared TM) | Done |
 | Delete Template                       | `translationsDS.deleteByContextId` (+ `bulkDeleteKeysByContext`)                                 | DS inside parent `TM.run()` (D12) |
-| Thesaurus create/update               | `ThesaurusTranslationService` → DS (`insert` / `deleteKeysByContext` / `updateKeysByContextV2` / `updateContextLabel`) | Keep Thesaurus-style; do not proxy through `TranslationsService` (D12) |
+| Thesaurus create/update               | `ThesaurusTranslationService` → DS `insert` (create); label diffs then `getContext` / `applyChanges` / `updateContext` (update) | Keep Thesaurus-style; do not proxy through `TranslationsService` (D12) |
 | Thesaurus delete                      | `DeleteThesaurusUseCase` → `translationsDS.deleteByContextId`                                    | DS inside parent `TM.run()` (D12) |
 | Create/Update RelationshipType        | `RelationshipTypeTranslationService` → `TranslationsService.createContext` / `updateContext`     | Done |
 | Delete RelationshipType               | `RelationshipTypeTranslationService.delete` → `translationsDS.deleteByContextId`                 | DS inside parent `TM.run()` (D12) |
@@ -270,7 +270,7 @@ All writers must stop calling `#api/i18n/translations` and use core ports/use ca
 
 ## Risks / hard edges
 
-1. **Dual `updateContext` semantics** — template path (`UpsertTranslationsService.updateContext` / ContextModel) vs thesaurus (`updateKeysByContextV2`). Must converge under one domain model.
+1. **~~Dual `updateContext` semantics~~ (A2 landed)** — Template/RT/Settings and Thesaurus update now share `TranslationContextModel.applyChanges` + `translationsDS.updateContext`. Thesaurus still owns *which* labels changed (nested / duplicate-label identity). Create of a new thesaurus still uses `insert` (B3).
 2. **Thesaurus label-as-key + metadata propagation** — translation value edits can rename denormalized entity select labels; easy to break.
 3. **AddLanguage TX boundary** — `importPredefined` / CSVLoader outside TX today; redesign carefully under ImportPredefined use case.
 4. **Sync legacy `translations` namespace leftovers** — live path is `translationsV2`; do not regress Menu/Filters preserve logic.
@@ -302,6 +302,7 @@ All writers must stop calling `#api/i18n/translations` and use core ports/use ca
 - [x] **2A polish (superseded by D12):** do **not** extend `TranslationsService` with pass-through DS ops. Thesaurus / DeleteTemplate / RT delete / DeleteLanguage call `TranslationsDataSource` directly inside the parent `TM.run()`. Service keeps only multi-step orchestration (`insertEntries` / `upsertEntries` / `saveEntries` / `createContext` / `updateContext`)
 - [x] **D13:** locale save input is map-only; `flattenLocaleTranslation` at the UseCase write edge. HTTP AJV already `values: object`. Removed array-input / duplicate-key tests (maps cannot duplicate keys)
 - [x] **A1 + A3 (diagnosis):** `getLegacy` / `toLegacyDto` emit maps (GET-only); writes snapshot with `getByLanguageAndContext` / `getByContext`; propagate diffs maps; CSV import patches one context. No array layover; no `prepareLocaleTranslation`; controllers/SSR no longer wrap `toIndexedTranslations`
+- [x] **A2 (diagnosis):** Thesaurus update persists through `TranslationContextModel.applyChanges` + `translationsDS.updateContext` (same primitive as Template/RT/Settings). Label identity diffs stay in `ThesaurusTranslationService`. Removed `updateKeysByContext` / `updateKeysByContextV2` / `updateContextLabel` / `deleteKeysByContext`. `bulkDeleteKeysByContext` stays (DeleteTemplate)
 - [x] Parity tests for façade + RT/thesaurus/language + core DS/domain; expand syncWorker smoke as routes move
 - [x] **Sync handler factory peel (motor seam)** — see dedicated section below
 - [x] `preserve.createEmptyThesauri` → `CreateThesaurusUseCase` (stop ad-hoc `TM.run` around `ThesauriService`)
@@ -357,7 +358,8 @@ Single DS writes do not belong on `TranslationsService`. Callers that already sh
   - Templates create/update: `TemplateTranslationService` → `TranslationsService.createContext` / `updateContext`
   - Relationship types create/update: `RelationshipTypeTranslationService` → `TranslationsService.createContext` / `updateContext`
   - Relationship types delete: `RelationshipTypeTranslationService.delete` → `translationsDS.deleteByContextId`
-  - Thesaurus create/update: `ThesaurusTranslationService` → `translationsDS` (insert / key rename-delete / label)
+  - Thesaurus create: `ThesaurusTranslationService` → `translationsDS.insert`
+  - Thesaurus update: `ThesaurusTranslationService` diffs labels (nested / duplicate-label rules) then `translationsDS.getContext` + `TranslationContextModel.applyChanges` + `updateContext`
   - Thesaurus delete / DeleteTemplate / DeleteLanguage: `translationsDS` inside parent `TM.run()`
   - Settings Menu/Filters: standalone `UpdateTranslationContextUseCase` from V1 `settings.ts` (D11 follow-up)
   - AddLanguage / populate predefined CSV: `ImportPredefinedTranslationsService` (core; FS+CSV; outside TX)
@@ -458,7 +460,19 @@ HTTP `POST /api/translations` AJV already requires `values` as object/map. Array
 - `csvLoader.loadTranslations` patches **one** context per language column (`getByLanguageAndContext` + `SaveLocaleTranslations` with that context only). Final HTTP return can still `getLegacy()` (import contract)
 - Empty-string skip on flatten/propagate kept for parity
 
-**Not this slice:** A2 (two context-update engines), B1/B5 (Settings TX / thin `UpdateTranslationContextUseCase`), B2–B4, C1–C2 (`toIndexedTranslations` still exists for array `TranslationType` in the mapper spec).
+**Not this slice:** B1/B5 (Settings TX / thin `UpdateTranslationContextUseCase`), B2–B4, C1–C2 (`toIndexedTranslations` still exists for array `TranslationType` in the mapper spec).
+
+### A2 — one context-update engine
+
+**Request (diagnosis):** one rename/delete/create primitive for a context. Do not wrap Thesaurus DS calls in `TranslationsService`. Thesaurus label identity stays on the thesaurus module.
+
+**Landed:**
+
+- `ThesaurusTranslationService.update` still computes `LabelChanges` (nested labels, duplicate labels across parents, name-as-key)
+- Persist is `translationsDS.getContext` → `applyChanges(keyChanges, valueChanges, keysToDelete)` → `updateContext` — the same path Template/RT/Settings already use
+- Removed from the DS contract and Mongo adapter: `updateKeysByContext`, `updateKeysByContextV2`, `updateContextLabel`, `deleteKeysByContext`
+- `bulkDeleteKeysByContext` remains for DeleteTemplate (delete keys across many contexts without loading a model)
+- Rename persistence is insert-new-key + delete-old-key (same as Template). Specs that compared collection order now sort by language+key
 
 ### Production SSR CPU (keep these; do not regress)
 
@@ -491,11 +505,11 @@ Explicitly **not** shipped: process/tenant-wide translations read cache. Topolog
 - Do not reintroduce application Upsert “because the old service had it”
 - Do not add `GetTranslationsUseCase` “because relationship types still have Get*”
 - Do not add a translations UseCase because a spec needs to create/update/delete data — seed fixtures, or call `TranslationsService` / `TranslationsDataSource` inside `TM.run()` in that spec. Do not add a core `translationsTestHelpers` module
-- Do not put pass-through DS methods (`insert`, `deleteBy*`, `updateKeysByContextV2`, `updateContextLabel`, …) back on `TranslationsService`, and do not add `ensureTransaction` to the DS
+- Do not put pass-through DS methods (`insert`, `deleteBy*`, `updateContext`, …) back on `TranslationsService`, and do not add `ensureTransaction` to the DS
 - Do not re-widen `LocaleTranslationInput` / `SaveLocaleTranslations` to accept `TranslationValue[]` — HTTP and CSV already send maps; `getLegacy` already returns maps
 - Do not put `getLegacy` back on save/propagate/CSV import writes — snapshot with `getByLanguageAndContext` / `getByContext`
 - Do not reintroduce process-wide / tenant-wide translations read cache (12 Node processes × 3 servers, 500+ tenants, 5 workers; in-process invalidation cannot be consistent)
 - When Postgres starts: data copy before flag; one-way flag; RLS in same schema migration; keep sync namespace `translationsV2`
 - Do not leave sync on direct `new MongoTranslationsSyncDataSource` / `models.translationsV2` once the SyncHandlerFactory peel lands — that blocks motor swap
 - Do not move Template / RelationshipType / Thesaurus translation sync into `application/translation`. Those aggregates own their ports and services; core translations stays generic (`TranslationsService` / DS)
-- Align thesaurus vs template context-update semantics before freezing the Update use case contract
+- Do not reintroduce `updateKeysByContext` / `updateKeysByContextV2` / `updateContextLabel` / `deleteKeysByContext` — context mutation goes through `TranslationContextModel` + `updateContext`

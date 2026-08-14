@@ -1,7 +1,7 @@
 # Translations V2 — critical diagnosis
 
 **Date:** 2026-08-14  
-**Mode:** originally a read-only audit. A1 + A3 from the work order below have since landed (see [`translations-v2-migration.md`](./translations-v2-migration.md) “A1 + A3”). This file stays the post-mortem of what was wrong; strike-throughs mark what that slice fixed.  
+**Mode:** originally a read-only audit. A1 + A3 and A2 from the work order below have since landed (see [`translations-v2-migration.md`](./translations-v2-migration.md)). This file stays the post-mortem of what was wrong; strike-throughs mark what those slices fixed.  
 **Companion:** [`translations-v2-migration.md`](./translations-v2-migration.md) (intent, locked decisions, peel history).
 
 ---
@@ -51,14 +51,14 @@ None of that is “MVP leftover we can live with.” It is the kind of interior 
 | ID | Severity | Kind | Finding |
 | --- | --- | --- | --- |
 | A1 | **P0 — landed** | Interior dual shape | ~~`getLegacy` / `toLegacyDto` still build `values: {key,value}[]`~~ GET now emits maps. Writes flatten maps. Propagate diffs maps. `toIndexedTranslations` is unused on production GET. |
-| A2 | **P0** | Two update engines | Template/RT/Settings go through `TranslationContextModel.applyChanges`. Thesaurus goes through `deleteKeysByContext` + `updateKeysByContextV2` + `updateContextLabel`. Same problem, two implementations, two default-language rename semantics. |
+| A2 | **P0 — landed** | Two update engines | ~~Thesaurus used `deleteKeysByContext` + `updateKeysByContextV2` + `updateContextLabel`~~ Update now goes through `TranslationContextModel.applyChanges` + `updateContext`. Thesaurus still owns label-identity diffs. |
 | A3 | **P0 — landed** | Write cost | ~~`SaveLocaleTranslations` and `UpdateEntriesByContext` call `getLegacy({ locale })`~~ Saves snapshot scoped reads. CSV import writes one context. Controllers still `getLegacy` **after** save for the HTTP/socket contract. |
 | B1 | **P1** | Not a UseCase | `UpdateTranslationContextUseCase` is `TM.run` + `translationsService.updateContext`. Diff logic lives in V1 `settings.ts`. Template/RT call the service from the parent UC. |
 | B2 | **P1** | D5 tension | `saveEntries` is an application-layer upsert (partition create vs update). D5 forbade an Upsert *UseCase*; the *service* still is one. Locale POST never branches create vs update at the HTTP edge. |
 | B3 | **P1** | Validation gap | `insertEntries` enforces “key exists in all languages.” `createContext` and Thesaurus `insert` skip that service entirely. Same invariant, three doors. |
 | B4 | **P1** | QueryService | Four methods are DS pass-throughs. `cached: true` on the factory is unused. |
 | B5 | **P1** | Settings TX | Menu/Filters translations commit in their own UC TX **before** `settingsModel.save`. Settings save can fail after translations already changed. No socket. |
-| C1 | **P2** | Dead code | `updateKeysByContext` (v1) on the DS contract; `ContextDoesNotExist`; `i18n/systemKeys.js`; `PendingThesauriTranslationsGateway`; sync `get()` stub; unused `UpdateThesaurusUseCase.thesaurusTranslationService` dep |
+| C1 | **P2** | Dead code | `ContextDoesNotExist`; `i18n/systemKeys.js`; `PendingThesauriTranslationsGateway`; sync `get()` stub; unused `UpdateThesaurusUseCase.thesaurusTranslationService` dep |
 | C2 | **P2** | Test / folder pollution | `app/api/i18n/specs/*` still host the parity suite after the module died. Tests still assert `getLegacy` array `.values.find(v => v.key)`. |
 | C3 | **P2** | Type duplicates | `TranslationEntryInput` ≈ domain `Translation`; `ContextLike` / `LocaleTranslationLike` ≈ shared types; `IndexedTranslations` defined twice (mapper + locale DTO) |
 | C4 | **P2** | DS quality | `upsert` is sequential `reduce` of `updateOne`s; `calculateNonexistentKeys` is `findOne` + aggregate |
@@ -285,7 +285,7 @@ Translations can commit, then settings save fails. No `translationsChange` socke
 
 | Item | Evidence |
 | --- | --- |
-| `TranslationsDataSource.updateKeysByContext` (v1) | Implemented on Mongo DS; **zero callers**. Superseded by `updateKeysByContextV2`. |
+| `TranslationsDataSource.updateKeysByContext` (v1/v2) + `updateContextLabel` + `deleteKeysByContext` | **Deleted (A2).** Context mutation is `getContext` / `applyChanges` / `updateContext`. |
 | `ContextDoesNotExist` | Exported from `domain/translation/errors.ts`; **never thrown or imported**. |
 | `app/api/i18n/systemKeys.js` | ~274-line static list; **no importers**. Predefined keys live in CSV via `defaultTranslations.ts`. |
 | `PendingThesauriTranslationsGateway.ts` | `upsertThesaurusTranslations` — **no production importer**. csv.v2 uses `UpdateEntriesByContext`. |
@@ -448,7 +448,7 @@ Do not add UseCases or widen types to make a spec compile.
 When this gets fixed, do it in this order so we do not invent another dual type:
 
 1. **A1 + A3 — done:** flatten writes from maps; snapshot with `getByLanguageAndContext` / `getByContext`; stop `getLegacy` on save; make propagate map-based. `toLegacyDto` is GET-only maps.
-2. **A2:** one rename/delete/create primitive for a context; Thesaurus and `TranslationContextModel` both use it. Delete `updateKeysByContext` v1.
+2. **A2 — done:** one rename/delete/create primitive for a context (`TranslationContextModel` + `updateContext`); Thesaurus label diffs call it. Deleted `updateKeysByContext` v1/v2, `updateContextLabel`, `deleteKeysByContext`.
 3. **B1 + B5:** Settings Menu/Filters in the same TX as settings save (or a real SaveSettings UC). Drop `UpdateTranslationContextUseCase` if it stays a shell.
 4. **B2:** make `insertEntries`/`upsertEntries` private (or delete and keep `saveEntries` only). Document batch-save vs D5.
 5. **B3:** one create-rows helper (keys × languages) used by Template, RT, Thesaurus. Validator in one place or explicitly “createContext does not need it because it fans out.”

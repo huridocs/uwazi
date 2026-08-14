@@ -32,9 +32,6 @@ const createSut = (props?: Props) => {
     props?.translationsDS ??
     TestUtils.mockClass<TranslationsDataSource>({
       insert: jest.fn(),
-      deleteKeysByContext: jest.fn(),
-      updateKeysByContextV2: jest.fn(),
-      updateContextLabel: jest.fn(),
     });
 
   const sut = new ThesaurusTranslationService({
@@ -182,6 +179,13 @@ describe('ThesaurusTranslationService', () => {
       return { sut, transactionManager };
     };
 
+    const sortByLanguageAndKey = <T>(rows: T[]) =>
+      [...rows].sort((left, right) => {
+        const a = left as { language?: string; key?: string };
+        const b = right as { language?: string; key?: string };
+        return `${a.language}:${a.key}`.localeCompare(`${b.language}:${b.key}`);
+      });
+
     beforeAll(async () => {
       await testingEnvironment.setUp(fixtures);
     });
@@ -298,92 +302,94 @@ describe('ThesaurusTranslationService', () => {
 
       const translationsAfter = await testingEnvironment.db.getAllFrom('translationsV2');
 
-      expect(translationsAfter).toEqual([
-        {
-          _id: expect.any(ObjectId),
-          context: { type: 'Thesaurus', label: 'Countries', id: diff.id },
-          key: 'Countries',
-          language: 'en',
-          value: 'Countries',
-        },
-        {
-          _id: expect.any(ObjectId),
-          context: { type: 'Thesaurus', label: 'Countries', id: diff.id },
-          key: 'USA Updated',
-          language: 'en',
-          value: 'USA Updated',
-        },
-        {
-          _id: expect.any(ObjectId),
-          context: { type: 'Thesaurus', label: 'Countries', id: diff.id },
-          key: 'Canada',
-          language: 'en',
-          value: 'Canada',
-        },
-        {
-          _id: expect.any(ObjectId),
-          context: { type: 'Thesaurus', label: 'Countries', id: diff.id },
-          key: 'Europe Updated',
-          language: 'en',
-          value: 'Europe Updated',
-        },
-        {
-          _id: expect.any(ObjectId),
-          context: { type: 'Thesaurus', label: 'Countries', id: diff.id },
-          key: 'France Updated',
-          language: 'en',
-          value: 'France Updated',
-        },
-        {
-          _id: expect.any(ObjectId),
-          context: { type: 'Thesaurus', label: 'Countries', id: diff.id },
-          key: 'Germany',
-          language: 'en',
-          value: 'Germany',
-        },
-        {
-          _id: expect.any(ObjectId),
-          context: { type: 'Thesaurus', label: 'Countries', id: diff.id },
-          key: 'Countries',
-          language: 'es',
-          value: 'Countries ES',
-        },
-        {
-          _id: expect.any(ObjectId),
-          context: { type: 'Thesaurus', label: 'Countries', id: diff.id },
-          key: 'USA Updated',
-          language: 'es',
-          value: 'USA ES',
-        },
-        {
-          _id: expect.any(ObjectId),
-          context: { type: 'Thesaurus', label: 'Countries', id: diff.id },
-          key: 'Canada',
-          language: 'es',
-          value: 'Canada ES',
-        },
-        {
-          _id: expect.any(ObjectId),
-          context: { type: 'Thesaurus', label: 'Countries', id: diff.id },
-          key: 'Europe Updated',
-          language: 'es',
-          value: 'Europe ES',
-        },
-        {
-          _id: expect.any(ObjectId),
-          context: { type: 'Thesaurus', label: 'Countries', id: diff.id },
-          key: 'France Updated',
-          language: 'es',
-          value: 'France ES',
-        },
-        {
-          _id: expect.any(ObjectId),
-          context: { type: 'Thesaurus', label: 'Countries', id: diff.id },
-          key: 'Germany',
-          language: 'es',
-          value: 'Germany ES',
-        },
-      ]);
+      expect(sortByLanguageAndKey(translationsAfter)).toEqual(
+        sortByLanguageAndKey([
+          {
+            _id: expect.any(ObjectId),
+            context: { type: 'Thesaurus', label: 'Countries', id: diff.id },
+            key: 'Canada',
+            language: 'en',
+            value: 'Canada',
+          },
+          {
+            _id: expect.any(ObjectId),
+            context: { type: 'Thesaurus', label: 'Countries', id: diff.id },
+            key: 'Countries',
+            language: 'en',
+            value: 'Countries',
+          },
+          {
+            _id: expect.any(ObjectId),
+            context: { type: 'Thesaurus', label: 'Countries', id: diff.id },
+            key: 'Europe Updated',
+            language: 'en',
+            value: 'Europe Updated',
+          },
+          {
+            _id: expect.any(ObjectId),
+            context: { type: 'Thesaurus', label: 'Countries', id: diff.id },
+            key: 'France Updated',
+            language: 'en',
+            value: 'France Updated',
+          },
+          {
+            _id: expect.any(ObjectId),
+            context: { type: 'Thesaurus', label: 'Countries', id: diff.id },
+            key: 'Germany',
+            language: 'en',
+            value: 'Germany',
+          },
+          {
+            _id: expect.any(ObjectId),
+            context: { type: 'Thesaurus', label: 'Countries', id: diff.id },
+            key: 'USA Updated',
+            language: 'en',
+            value: 'USA Updated',
+          },
+          {
+            _id: expect.any(ObjectId),
+            context: { type: 'Thesaurus', label: 'Countries', id: diff.id },
+            key: 'Canada',
+            language: 'es',
+            value: 'Canada ES',
+          },
+          {
+            _id: expect.any(ObjectId),
+            context: { type: 'Thesaurus', label: 'Countries', id: diff.id },
+            key: 'Countries',
+            language: 'es',
+            value: 'Countries ES',
+          },
+          {
+            _id: expect.any(ObjectId),
+            context: { type: 'Thesaurus', label: 'Countries', id: diff.id },
+            key: 'Europe Updated',
+            language: 'es',
+            value: 'Europe ES',
+          },
+          {
+            _id: expect.any(ObjectId),
+            context: { type: 'Thesaurus', label: 'Countries', id: diff.id },
+            key: 'France Updated',
+            language: 'es',
+            value: 'France ES',
+          },
+          {
+            _id: expect.any(ObjectId),
+            context: { type: 'Thesaurus', label: 'Countries', id: diff.id },
+            key: 'Germany',
+            language: 'es',
+            value: 'Germany ES',
+          },
+          {
+            _id: expect.any(ObjectId),
+            context: { type: 'Thesaurus', label: 'Countries', id: diff.id },
+            key: 'USA Updated',
+            language: 'es',
+            value: 'USA ES',
+          },
+        ])
+      );
     });
 
     it('should update translations for updated thesaurus name', async () => {
@@ -460,150 +466,149 @@ describe('ThesaurusTranslationService', () => {
 
       await transactionManager.run(async () => sut.update(diff));
 
-      const translationsAfter = await testingEnvironment.db
-        .getCollection('translationsV2')!
-        .find({ 'context.id': diff.id })
-        .toArray();
+      const translationsAfter = await testingEnvironment.db.getAllFrom('translationsV2');
 
-      expect(translationsAfter).toEqual([
-        {
-          _id: expect.any(ObjectId),
-          context: {
-            id: diff.id,
-            label: 'Countries Updated',
-            type: 'Thesaurus',
+      expect(sortByLanguageAndKey(translationsAfter)).toEqual(
+        sortByLanguageAndKey([
+          {
+            _id: expect.any(ObjectId),
+            context: {
+              id: diff.id,
+              label: 'Countries Updated',
+              type: 'Thesaurus',
+            },
+            key: 'Brazil',
+            language: 'en',
+            value: 'Brazil',
           },
-          key: 'Brazil',
-          language: 'en',
-          value: 'Brazil',
-        },
-        {
-          _id: expect.any(ObjectId),
-          context: {
-            id: diff.id,
-            label: 'Countries Updated',
-            type: 'Thesaurus',
+          {
+            _id: expect.any(ObjectId),
+            context: {
+              id: diff.id,
+              label: 'Countries Updated',
+              type: 'Thesaurus',
+            },
+            key: 'Brazil',
+            language: 'es',
+            value: 'Brazil',
           },
-          key: 'Brazil',
-          language: 'es',
-          value: 'Brazil',
-        },
 
-        {
-          _id: expect.any(ObjectId),
-          context: {
-            id: diff.id,
-            label: 'Countries Updated',
-            type: 'Thesaurus',
+          {
+            _id: expect.any(ObjectId),
+            context: {
+              id: diff.id,
+              label: 'Countries Updated',
+              type: 'Thesaurus',
+            },
+            key: 'Countries Updated',
+            language: 'en',
+            value: 'Countries Updated',
           },
-          key: 'Countries Updated',
-          language: 'en',
-          value: 'Countries Updated',
-        },
-        {
-          _id: expect.any(ObjectId),
-          context: {
-            id: diff.id,
-            label: 'Countries Updated',
-            type: 'Thesaurus',
+          {
+            _id: expect.any(ObjectId),
+            context: {
+              id: diff.id,
+              label: 'Countries Updated',
+              type: 'Thesaurus',
+            },
+            key: 'Countries Updated',
+            language: 'es',
+            value: 'Countries ES',
           },
-          key: 'Countries Updated',
-          language: 'es',
-          value: 'Countries ES',
-        },
 
-        {
-          _id: expect.any(ObjectId),
-          context: {
-            id: diff.id,
-            label: 'Countries Updated',
-            type: 'Thesaurus',
+          {
+            _id: expect.any(ObjectId),
+            context: {
+              id: diff.id,
+              label: 'Countries Updated',
+              type: 'Thesaurus',
+            },
+            key: 'Europe Updated',
+            language: 'en',
+            value: 'Europe Updated',
           },
-          key: 'Europe Updated',
-          language: 'en',
-          value: 'Europe Updated',
-        },
-        {
-          _id: expect.any(ObjectId),
-          context: {
-            id: diff.id,
-            label: 'Countries Updated',
-            type: 'Thesaurus',
+          {
+            _id: expect.any(ObjectId),
+            context: {
+              id: diff.id,
+              label: 'Countries Updated',
+              type: 'Thesaurus',
+            },
+            key: 'Europe Updated',
+            language: 'es',
+            value: 'Europe ES',
           },
-          key: 'Europe Updated',
-          language: 'es',
-          value: 'Europe ES',
-        },
 
-        {
-          _id: expect.any(ObjectId),
-          context: {
-            id: diff.id,
-            label: 'Countries Updated',
-            type: 'Thesaurus',
+          {
+            _id: expect.any(ObjectId),
+            context: {
+              id: diff.id,
+              label: 'Countries Updated',
+              type: 'Thesaurus',
+            },
+            key: 'Italy',
+            language: 'en',
+            value: 'Italy',
           },
-          key: 'Italy',
-          language: 'en',
-          value: 'Italy',
-        },
-        {
-          _id: expect.any(ObjectId),
-          context: {
-            id: diff.id,
-            label: 'Countries Updated',
-            type: 'Thesaurus',
+          {
+            _id: expect.any(ObjectId),
+            context: {
+              id: diff.id,
+              label: 'Countries Updated',
+              type: 'Thesaurus',
+            },
+            key: 'Italy',
+            language: 'es',
+            value: 'Italy',
           },
-          key: 'Italy',
-          language: 'es',
-          value: 'Italy',
-        },
 
-        {
-          _id: expect.any(ObjectId),
-          context: {
-            id: diff.id,
-            label: 'Countries Updated',
-            type: 'Thesaurus',
+          {
+            _id: expect.any(ObjectId),
+            context: {
+              id: diff.id,
+              label: 'Countries Updated',
+              type: 'Thesaurus',
+            },
+            key: 'USA',
+            language: 'en',
+            value: 'USA',
           },
-          key: 'USA',
-          language: 'en',
-          value: 'USA',
-        },
-        {
-          _id: expect.any(ObjectId),
-          context: {
-            id: diff.id,
-            label: 'Countries Updated',
-            type: 'Thesaurus',
+          {
+            _id: expect.any(ObjectId),
+            context: {
+              id: diff.id,
+              label: 'Countries Updated',
+              type: 'Thesaurus',
+            },
+            key: 'USA',
+            language: 'es',
+            value: 'USA ES',
           },
-          key: 'USA',
-          language: 'es',
-          value: 'USA ES',
-        },
 
-        {
-          _id: expect.any(ObjectId),
-          context: {
-            id: diff.id,
-            label: 'Countries Updated',
-            type: 'Thesaurus',
+          {
+            _id: expect.any(ObjectId),
+            context: {
+              id: diff.id,
+              label: 'Countries Updated',
+              type: 'Thesaurus',
+            },
+            key: 'USA Updated',
+            language: 'en',
+            value: 'USA Updated',
           },
-          key: 'USA Updated',
-          language: 'en',
-          value: 'USA Updated',
-        },
-        {
-          _id: expect.any(ObjectId),
-          context: {
-            id: diff.id,
-            label: 'Countries Updated',
-            type: 'Thesaurus',
+          {
+            _id: expect.any(ObjectId),
+            context: {
+              id: diff.id,
+              label: 'Countries Updated',
+              type: 'Thesaurus',
+            },
+            key: 'USA Updated',
+            language: 'es',
+            value: 'USA Updated',
           },
-          key: 'USA Updated',
-          language: 'es',
-          value: 'USA Updated',
-        },
-      ]);
+        ])
+      );
 
       // // Verify all changes were applied correctly
       // expect(

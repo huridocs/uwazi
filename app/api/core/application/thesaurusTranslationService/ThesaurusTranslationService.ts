@@ -145,6 +145,27 @@ function collectLabelChanges(diff: ThesaurusDiff): LabelChanges {
   return changes;
 }
 
+function toContextMutation(changes: LabelChanges, contextLabelChanged: boolean) {
+  const valueChanges: Record<string, string> = {};
+  changes.labelsToBeAdded.forEach(label => {
+    valueChanges[label] = label;
+  });
+  Object.values(changes.labelsToBeUpdated).forEach(newKey => {
+    valueChanges[newKey] = newKey;
+  });
+
+  return {
+    keyChanges: changes.labelsToBeUpdated,
+    valueChanges,
+    keysToDelete: Array.from(changes.labelsToBeRemoved),
+    hasChanges:
+      contextLabelChanged ||
+      changes.labelsToBeRemoved.size > 0 ||
+      Object.keys(changes.labelsToBeUpdated).length > 0 ||
+      Object.keys(valueChanges).length > 0,
+  };
+}
+
 class ThesaurusTranslationService {
   constructor(private deps: Deps) {}
 
@@ -175,34 +196,29 @@ class ThesaurusTranslationService {
   }
 
   private async persistLabelChanges(diff: ThesaurusDiff, changes: LabelChanges) {
-    if (changes.labelsToBeRemoved.size) {
-      await this.deps.translationsDS.deleteKeysByContext(
-        diff.id,
-        Array.from(changes.labelsToBeRemoved)
-      );
+    const mutation = toContextMutation(changes, Boolean(diff.updatedName));
+    if (!mutation.hasChanges) {
+      return;
     }
 
-    if (changes.labelsToBeAdded.size) {
-      const translations = await this.createTranslations(
-        diff.id,
-        diff.name,
-        changes.labelsToBeAdded
-      );
-      await this.deps.translationsDS.insert(translations);
-    }
+    const languages = await this.deps.settingsDS.getLanguageKeys();
+    const defaultLanguage = await this.deps.settingsDS.getDefaultLanguageKey();
+    const translationContext = await this.deps.translationsDS.getContext(
+      {
+        type: 'Thesaurus',
+        label: diff.after.name,
+        id: diff.id,
+      },
+      languages,
+      defaultLanguage
+    );
 
-    if (Object.keys(changes.labelsToBeUpdated).length > 0) {
-      const defaultLanguage = await this.deps.settingsDS.getDefaultLanguageKey();
-      await this.deps.translationsDS.updateKeysByContextV2({
-        contextId: diff.id,
-        keyChanges: changes.labelsToBeUpdated,
-        defaultLanguage,
-      });
-    }
-
-    if (diff.updatedName) {
-      await this.deps.translationsDS.updateContextLabel(diff.id, diff.after.name);
-    }
+    translationContext.applyChanges(
+      mutation.keyChanges,
+      mutation.valueChanges,
+      mutation.keysToDelete
+    );
+    await this.deps.translationsDS.updateContext(translationContext);
   }
 
   async update(diff: ThesaurusDiff) {

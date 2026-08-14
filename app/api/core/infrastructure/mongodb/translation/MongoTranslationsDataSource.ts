@@ -6,7 +6,6 @@ import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import {
   BulkDeleteKeysByContext,
   TranslationsDataSource,
-  UpdateKeysByContextProps,
 } from '#api/core/application/contracts/TranslationsDataSource.js';
 import { TranslationMappers } from '#api/core/infrastructure/mongodb/translation/mappings/TranslationMappers.js';
 import { Translation, TranslationContext } from '#api/core/domain/translation/Translation.js';
@@ -91,57 +90,6 @@ export class MongoTranslationsDataSource
       this.getCollection().find({ 'context.id': contextId, key: { $in: keys } }),
       TranslationMappers.toModel
     );
-  }
-
-  async updateContextLabel(contextId: string, contextLabel: string): Promise<void> {
-    await this.getCollection().updateMany(
-      { 'context.id': contextId },
-      { $set: { 'context.label': contextLabel } }
-    );
-  }
-
-  async updateKeysByContext(contextId: string, keyChanges: { [k: string]: string }) {
-    const stream = this.createBulkStream();
-
-    await Object.entries(keyChanges).reduce(async (previous, [keyName, newKeyName]) => {
-      await previous;
-      await stream.updateMany(
-        { 'context.id': contextId, key: keyName },
-        { $set: { key: newKeyName } }
-      );
-    }, Promise.resolve());
-    await stream.flush();
-  }
-
-  async updateKeysByContextV2(props: UpdateKeysByContextProps): Promise<void> {
-    await this.getCollection().bulkWrite(
-      Object.entries(props.keyChanges).map(([from, to]) => ({
-        updateMany: {
-          filter: {
-            'context.id': props.contextId,
-            key: from,
-          },
-          update: [
-            {
-              $set: {
-                key: to,
-                value: {
-                  $cond: [{ $eq: ['$language', props.defaultLanguage] }, to, '$value'],
-                },
-              },
-            },
-          ],
-          upsert: false,
-        },
-      }))
-    );
-  }
-
-  async deleteKeysByContext(contextId: string, keysToDelete: string[]): Promise<void> {
-    await this.getCollection().deleteMany({
-      'context.id': contextId,
-      key: { $in: keysToDelete },
-    });
   }
 
   async bulkDeleteKeysByContext(props: BulkDeleteKeysByContext) {
