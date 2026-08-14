@@ -10,12 +10,13 @@ import {
 } from '#V2/testing/index.js';
 import { createTestServices } from '#V2/testing/createTestServices.js';
 import { ServicesProvider } from '#V2/services/ServicesProvider.js';
-import { settingsAtom, templatesAtom, userAtom } from '#V2/atoms/index.js';
+import { settingsAtom, templatesAtom, userAtom, relationshipTypesAtom } from '#V2/atoms/index.js';
 import * as utils from '#app/utils/index.js';
 import * as files from '#V2/api/files/index.js';
 import * as searchApi from '#V2/api/search/index.js';
 import { Entity } from '../Entity.js';
 import { entityLoaderCache } from '../EntityLoaderCache.js';
+import { entityWithRelations } from '../Components/relationships/specs/fixtures/entityWithRelations.js';
 
 jest.mock('#V2/Components/PDFViewer', () => ({
   ...jest.requireActual('#V2/Components/PDFViewer'),
@@ -67,6 +68,7 @@ type RenderEntityOptions = {
   settings?: Record<string, unknown>;
   user?: typeof adminUser;
   withServices?: boolean;
+  relationshipTypes?: Array<{ _id: string; name: string }>;
 };
 
 const renderEntity = (options: RenderEntityOptions = {}) => {
@@ -77,6 +79,7 @@ const renderEntity = (options: RenderEntityOptions = {}) => {
     settings,
     user,
     withServices = false,
+    relationshipTypes,
   } = options;
   const mainDocument = Object.hasOwn(options, 'mainDocument')
     ? options.mainDocument
@@ -85,13 +88,19 @@ const renderEntity = (options: RenderEntityOptions = {}) => {
   window.history.replaceState({}, '', initialEntries?.[0] ?? '/');
 
   const atoms: Array<
-    readonly [typeof templatesAtom | typeof settingsAtom | typeof userAtom, unknown]
+    readonly [
+      typeof templatesAtom | typeof settingsAtom | typeof userAtom | typeof relationshipTypesAtom,
+      unknown,
+    ]
   > = [[templatesAtom, sampleTemplate]];
   if (settings !== undefined) {
     atoms.push([settingsAtom, settings]);
   }
   if (user) {
     atoms.push([userAtom, user]);
+  }
+  if (relationshipTypes) {
+    atoms.push([relationshipTypesAtom, relationshipTypes]);
   }
 
   const tree = (
@@ -360,6 +369,66 @@ describe('Entity view', () => {
       });
 
       jest.restoreAllMocks();
+    });
+  });
+
+  describe('Relationships SSR index', () => {
+    const entity = {
+      ...entityWithRelations,
+      title: 'Sample Entity',
+      documents: sampleEntity.documents,
+      metadata: {},
+    };
+    const relationshipTypes = [{ _id: 'relA', name: 'Related' }];
+
+    afterEach(() => {
+      jest.restoreAllMocks();
+    });
+
+    it('paints grouped relationship links on SSR and not the interactive panel', async () => {
+      jest.replaceProperty(utils, 'isClient', false);
+      renderEntity({
+        entity,
+        relationshipTypes,
+        initialEntries: ['/?m=relationships'],
+      });
+
+      await checkEntityRendered();
+
+      expect(screen.getByTestId('entity-relationships-ssr-index')).toBeInTheDocument();
+      expect(screen.getByRole('heading', { name: 'Related' })).toBeInTheDocument();
+      expect(screen.getByRole('link', { name: 'Related Entity' })).toHaveAttribute(
+        'href',
+        '/entityv2/target-entity'
+      );
+      expect(screen.queryByRole('button', { name: 'Expand all' })).not.toBeInTheDocument();
+    });
+
+    it('keeps crawlable relationship links on the default entity page', async () => {
+      jest.replaceProperty(utils, 'isClient', false);
+      renderEntity({ entity, relationshipTypes });
+
+      await checkEntityRendered();
+
+      const seoIndex = screen.getByTestId('entity-seo-relationships-index');
+      expect(
+        within(seoIndex).getByRole('link', { name: 'Related Entity', hidden: true })
+      ).toHaveAttribute('href', '/entityv2/target-entity');
+      expect(screen.queryByTestId('entity-relationships-ssr-index')).not.toBeInTheDocument();
+    });
+
+    it('replaces the SSR list with the interactive panel on the client', async () => {
+      renderEntity({
+        entity,
+        relationshipTypes,
+        initialEntries: ['/?m=relationships'],
+      });
+
+      await checkEntityRendered();
+
+      expect(screen.queryByTestId('entity-relationships-ssr-index')).not.toBeInTheDocument();
+      expect(screen.getByRole('button', { name: 'Expand all' })).toBeInTheDocument();
+      expect(screen.getByTestId('entity-seo-relationships-index')).toBeInTheDocument();
     });
   });
 

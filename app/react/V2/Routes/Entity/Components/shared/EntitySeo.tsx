@@ -1,15 +1,16 @@
 import React, { useMemo } from 'react';
 import { Helmet } from 'react-helmet';
 import { useAtomValue } from 'jotai';
-import { localeAtom, templatesAtom } from '#V2/atoms/index.js';
-import { Entity } from '#V2/api/entities/types.js';
-import type { MetadataProperty } from '#V2/formatters/types.js';
-import { useFormatMetadata } from '#V2/Components/Metadata/hooks/useFormatMetadata.js';
-import { settingsAtom } from '#V2/atoms/settingsAtom.js';
 import {
   getEntityViewerV2BasePath,
   isEntityViewerV2Enabled,
 } from '#app/utils/entityViewerPaths.js';
+import { localeAtom, relationshipTypesAtom, settingsAtom, templatesAtom } from '#V2/atoms/index.js';
+import { Entity } from '#V2/api/entities/types.js';
+import type { MetadataProperty } from '#V2/formatters/types.js';
+import { useFormatMetadata } from '#V2/Components/Metadata/hooks/useFormatMetadata.js';
+import { buildRelationshipsSsrIndex } from '#V2/formatters/relationships/buildRelationshipsSsrIndex.js';
+import { RelationshipsSsrIndex } from '../relationships/panel/RelationshipsSsrIndex.js';
 
 type EntitySeoProps = {
   entity: Entity;
@@ -49,21 +50,10 @@ const formatPropertyValues = (property: MetadataProperty): string => {
   }
 };
 
-const relatedEntityTitles = (entity: Entity, limit = 30): string[] => {
-  const titles = new Set<string>();
-  for (const relation of entity.relations || []) {
-    const title = relation.entityData?.title;
-    if (title && relation.entity !== entity.sharedId) {
-      titles.add(title);
-      if (titles.size >= limit) break;
-    }
-  }
-  return [...titles];
-};
-
 const EntitySeo = ({ entity }: EntitySeoProps) => {
   const locale = useAtomValue(localeAtom);
   const templates = useAtomValue(templatesAtom);
+  const relationshipTypes = useAtomValue(relationshipTypesAtom);
   const settings = useAtomValue(settingsAtom);
   const { metadata, entityTemplate } = useFormatMetadata(entity, templates, {
     groupGeolocationProperties: true,
@@ -80,7 +70,13 @@ const EntitySeo = ({ entity }: EntitySeoProps) => {
     [metadata]
   );
 
-  const relationTitles = useMemo(() => relatedEntityTitles(entity), [entity]);
+  const relationTitles = useMemo(
+    () =>
+      buildRelationshipsSsrIndex(entity, relationshipTypes)
+        .flatMap(group => group.entities.map(related => related.title))
+        .slice(0, 30),
+    [entity, relationshipTypes]
+  );
 
   const description = useMemo(() => {
     const parts = [entity.title];
@@ -133,13 +129,11 @@ const EntitySeo = ({ entity }: EntitySeoProps) => {
             ))}
           </dl>
         ) : null}
-        {relationTitles.length > 0 ? (
-          <ul>
-            {relationTitles.map(title => (
-              <li key={title}>{title}</li>
-            ))}
-          </ul>
-        ) : null}
+        <RelationshipsSsrIndex
+          entity={entity}
+          className="p-0"
+          testId="entity-seo-relationships-index"
+        />
       </aside>
     </>
   );

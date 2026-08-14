@@ -4,6 +4,7 @@
 import { screen, within } from '@testing-library/react';
 import userEvent, { type UserEvent } from '@testing-library/user-event';
 import { defaultPdf, renderRelationshipsPanel } from './helpers/renderRelationshipsPanel.js';
+import * as utils from '#app/utils/index.js';
 
 beforeAll(() => {
   Element.prototype.scrollIntoView = jest.fn();
@@ -143,6 +144,29 @@ describe('Relationships panel', () => {
       expect(screen.getByText(/target quoted text/)).toBeInTheDocument();
       expect(screen.getByText('Other Entity')).toBeInTheDocument();
       expect(filtersButton()).toHaveAttribute('aria-pressed', 'false');
+    });
+  });
+
+  describe('SSR index', () => {
+    afterEach(() => {
+      jest.restoreAllMocks();
+    });
+
+    it('renders a plain grouped list instead of the interactive panel', () => {
+      jest.replaceProperty(utils, 'isClient', false);
+      renderRelationshipsPanel();
+
+      expect(screen.getByTestId('entity-relationships-ssr-index')).toBeInTheDocument();
+      expect(screen.getByRole('heading', { name: 'Related' })).toBeInTheDocument();
+      expect(screen.getByRole('link', { name: 'Related Entity' })).toHaveAttribute(
+        'href',
+        '/entityv2/target-entity'
+      );
+      expect(screen.getByRole('link', { name: 'Other Entity' })).toHaveAttribute(
+        'href',
+        '/entityv2/other-entity'
+      );
+      expect(screen.queryByRole('button', { name: 'Expand all' })).not.toBeInTheDocument();
     });
   });
 });

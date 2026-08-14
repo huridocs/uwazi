@@ -1,0 +1,57 @@
+import React, { useMemo } from 'react';
+import { useAtomValue } from 'jotai';
+import { I18NLinkV2, Translate } from '#app/I18N/index.js';
+import { getEntityViewerV2Path, isEntityViewerV2Enabled } from '#app/utils/entityViewerPaths.js';
+import { relationshipTypesAtom, settingsAtom } from '#V2/atoms/index.js';
+import type { Entity } from '#V2/api/entities/types.js';
+import { buildRelationshipsSsrIndex } from '#V2/formatters/relationships/buildRelationshipsSsrIndex.js';
+
+type RelationshipsSsrIndexProps = {
+  entity: Entity;
+  className?: string;
+  testId?: string;
+};
+
+const RelationshipsSsrIndex = ({
+  entity,
+  className = '',
+  testId = 'entity-relationships-ssr-index',
+}: RelationshipsSsrIndexProps) => {
+  const relationshipTypes = useAtomValue(relationshipTypesAtom);
+  const settings = useAtomValue(settingsAtom);
+  const groups = useMemo(
+    () => buildRelationshipsSsrIndex(entity, relationshipTypes),
+    [entity, relationshipTypes]
+  );
+  const entityViewerV2 = isEntityViewerV2Enabled(settings?.features);
+
+  if (groups.length === 0) return null;
+
+  return (
+    <nav
+      className={`flex flex-col gap-4 p-4 text-sm text-ink ${className}`.trim()}
+      data-testid={testId}
+      data-entity-relationships-ssr-index=""
+    >
+      {groups.map(group => (
+        <section key={group.typeId}>
+          <h2 className="mb-2 text-xs font-semibold uppercase tracking-wide text-ink-tertiary">
+            {group.typeName ? group.typeName : <Translate>No label</Translate>}
+          </h2>
+          <ul className="flex flex-col gap-1">
+            {group.entities.map(related => (
+              <li key={related.sharedId}>
+                <I18NLinkV2 to={getEntityViewerV2Path(related.sharedId, entityViewerV2)}>
+                  {related.title}
+                </I18NLinkV2>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ))}
+    </nav>
+  );
+};
+
+export { RelationshipsSsrIndex };
+export type { RelationshipsSsrIndexProps };
