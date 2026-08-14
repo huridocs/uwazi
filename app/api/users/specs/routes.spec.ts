@@ -2,7 +2,6 @@ import type { NextFunction, Request, Response } from 'express';
 import request from 'supertest';
 import { setUpApp } from '#api/utils/testingRoutes.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-import { DomainError } from '#api/core/domain/error/DomainError.js';
 import { UserRole } from '#shared/types/userSchema.js';
 import { PUBLIC_USER_ID } from '#api/core/domain/user/User.js';
 import { UserSchema } from '#shared/types/userType.js';
@@ -67,65 +66,6 @@ describe('users routes', () => {
 
   beforeEach(() => {
     currentUser = adminUser;
-  });
-
-  describe('POST', () => {
-    describe('/recoverpassword', () => {
-      it.each([
-        { value: undefined, keyword: 'required' },
-        { value: 'a', keyword: 'minLength' },
-      ])('should invalidate if the schema is not matched', async ({ value, keyword }) => {
-        const response = await request(app).post('/api/recoverpassword').send({ email: value });
-        expect(response.status).toBe(400);
-        expect(response.body.errors[0].keyword).toEqual(keyword);
-      });
-
-      it('should call recoverPassword with the body email', async () => {
-        jest.spyOn(users, 'recoverPassword').mockImplementation(async () => Promise.resolve());
-        const response = await request(app)
-          .post('/api/recoverpassword')
-          .send({ email: 'recover@me.com' });
-        expect(response.status).toBe(200);
-        expect(users.recoverPassword).toHaveBeenCalledWith(
-          'recover@me.com',
-          expect.stringContaining('http://127.0.0.1')
-        );
-      });
-
-      it('should return an error if recover password fails', async () => {
-        class ErrorSample extends DomainError {}
-
-        jest.spyOn(users, 'recoverPassword').mockImplementation(() => {
-          throw new ErrorSample('error on recoverPassword', 'error_code');
-        });
-        const response = await request(app)
-          .post('/api/recoverpassword')
-          .send({ email: 'recover@me.com' });
-        expect(response.status).toBe(400);
-        expect(response.body.prettyMessage).toContain('error on recoverPassword');
-      });
-    });
-
-    describe('/resetpassword', () => {
-      it.each([
-        { key: 'key', password: undefined, keyword: 'required' },
-        { key: undefined, password: 'pass', keyword: 'required' },
-      ])('should invalidate if the schema is not matched', async ({ key, password, keyword }) => {
-        const response = await request(app).post('/api/resetpassword').send({ key, password });
-        expect(response.status).toBe(400);
-        expect(response.body.errors[0].keyword).toEqual(keyword);
-      });
-
-      it('should call users update with the body', async () => {
-        //@ts-ignore
-        jest.spyOn(users, 'resetPassword').mockImplementation(async () => Promise.resolve({}));
-        const response = await request(app)
-          .post('/api/resetpassword')
-          .send({ key: 'key', password: 'pass' });
-        expect(response.status).toBe(200);
-        expect(users.resetPassword).toHaveBeenCalledWith({ key: 'key', password: 'pass' });
-      });
-    });
   });
 
   describe('GET', () => {

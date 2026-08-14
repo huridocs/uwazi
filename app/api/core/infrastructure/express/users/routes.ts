@@ -1,6 +1,5 @@
 import type { Application, NextFunction, Request, Response } from 'express';
 import { validatePasswordMiddleWare, needsAuthorization } from '#api/auth/index.js';
-import { validation } from '#api/utils/index.js';
 import { tenants } from '#api/tenants/index.js';
 import users from '#api/users/users.js';
 import { CreateUserController } from './CreateUserController.js';
@@ -62,52 +61,7 @@ export const userRoutes = (app: Application) => {
 
   app.post('/api/unlockaccount', UnlockAccountController.createHandler());
 
-  app.post(
-    '/api/recoverpassword',
-    async (req: Request, res: Response, next: NextFunction) => {
-      if (tenants.current().featureFlags?.v2UsersUtilityRoutes) {
-        next();
-      } else {
-        await validation.validateRequest({
-          type: 'object',
-          properties: {
-            body: {
-              type: 'object',
-              properties: {
-                email: { type: 'string', minLength: 3 },
-              },
-              required: ['email'],
-            },
-          },
-          required: ['body'],
-        })(req, res, next);
-      }
-    },
-    RecoverPasswordController.createHandler()
-  );
+  app.post('/api/recoverpassword', RecoverPasswordController.createHandler());
 
-  app.post(
-    '/api/resetpassword',
-    async (req: Request, res: Response, next: NextFunction) => {
-      if (tenants.current().featureFlags?.v2UsersUtilityRoutes) {
-        next();
-      } else {
-        await validation.validateRequest({
-          type: 'object',
-          properties: {
-            body: {
-              type: 'object',
-              properties: {
-                key: { type: 'string' },
-                password: { type: 'string' },
-              },
-              required: ['key', 'password'],
-            },
-          },
-          required: ['body'],
-        })(req, res, next);
-      }
-    },
-    ResetPasswordController.createHandler()
-  );
+  app.post('/api/resetpassword', ResetPasswordController.createHandler());
 };

@@ -174,7 +174,6 @@ export const config = {
         enabled: false,
         sampleRate: 0.5,
       },
-      v2UsersUtilityRoutes: false,
       v2Auth2fa: false,
       v2PasswordReauth: false,
       v2Captcha: false,
