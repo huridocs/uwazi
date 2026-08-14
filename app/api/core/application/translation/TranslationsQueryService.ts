@@ -110,10 +110,7 @@ export class TranslationsQueryService {
       return this.toLegacyDto(() => this.translationsDS.getByContext(query.context!));
     }
     if (query.locale) {
-      return this.toLegacyDto(
-        () => this.translationsDS.getByLanguage(query.locale!),
-        query.locale
-      );
+      return this.toLegacyDto(() => this.translationsDS.getByLanguage(query.locale!), query.locale);
     }
     return this.toLegacyDto(() => this.translationsDS.getAll());
   }
