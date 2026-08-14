@@ -11,9 +11,7 @@ import {
   removeUsersFromAllGroups,
 } from '#api/usergroups/userGroupsMembers.js';
 import { PUBLIC_USER_ID } from '#api/core/domain/user/User.js';
-import { tenants } from '#api/tenants/index.js';
-// eslint-disable-next-line no-restricted-imports -- removed in plan 05
-import { UsersDAOFactory } from '#api/core/infrastructure/factories/UsersDAOFactory.js';
+
 import mailer from '../utils/mailer.js';
 import model from './usersModel.js';
 import passwordRecoveriesModel from './passwordRecoveriesModel.js';
@@ -284,28 +282,6 @@ export default {
    * (`UsersGettersConsistency.spec.ts`), which pins its behaviour across that flag.
    */
   async getById(id, select = '', includeGroups = false, includeDeleted = false) {
-    if (tenants.current().featureFlags?.v2UsersGet) {
-      const includePassword = typeof select === 'string' && select.includes('+password');
-
-      const result = await UsersDAOFactory.default().getById(id.toString(), {
-        includePassword,
-        includeDeleted,
-      });
-
-      if (result.isError()) {
-        return null;
-      }
-
-      const user = result.getData();
-
-      if (includeGroups) {
-        const groups = await getByMemberIdList([user._id.toString()]);
-        return populateGroupsOfUsers(user, groups);
-      }
-
-      return user;
-    }
-
     const [user] = await model.get(
       { _id: id, ...(!includeDeleted && { deletedAt: { $exists: false } }) },
       select
