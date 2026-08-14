@@ -60,7 +60,6 @@ const mongoSchema = new mongoose.Schema({
       enabled: Boolean,
       sampleRate: Number,
     },
-    v2PasswordReauth: Boolean,
     v2Captcha: Boolean,
     v2PrivateInstance: Boolean,
     v2Usergroups: Boolean,

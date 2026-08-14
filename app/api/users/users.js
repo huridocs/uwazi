@@ -42,8 +42,8 @@ export default {
    * | `getById(id)` | `getById` → `UserView` |
    * | `getById(id, '', true)` | `getProfile` → adds `groups`, `using2fa`, `accountLocked` |
    * | `getById(id, '', _, true)` | `getActor` → the only read that resolves a soft-deleted user |
-   * | `getById(id, '+password')` | **nothing** — no read model carries a password. Load the
-   *   aggregate through `UsersDataSource` instead. |
+   * | `getById(id, '+password')` | **nothing** — no read model carries a password, and no
+   *   caller asks for one any more. Load the aggregate through `UsersDataSource` instead. |
    *
    * Every production caller has moved; what is left is the `v2UsersGet` fallback for
    * routes.ts's /api/users GET route, and this method's own consistency spec
