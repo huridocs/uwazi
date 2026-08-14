@@ -45,7 +45,6 @@ type Tenant = {
       enabled?: boolean;
       sampleRate?: number;
     };
-    v2Auth2fa?: boolean;
     v2PasswordReauth?: boolean;
     v2Captcha?: boolean;
     v2PrivateInstance?: boolean;

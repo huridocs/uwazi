@@ -62,9 +62,7 @@ const TwoFactorSetup = ({ closePanel, isOpen }: TwoFactorSetupProps) => {
     const [, error] = await usersService.enable2FA(token);
 
     if (error) {
-      // 409 is the legacy invalid-token status; 400 is used by the v2 auth2fa endpoint
-      // (gated by the v2Auth2fa tenant flag), so both must be handled here until v1 is removed.
-      if (error.status === 409 || error.status === 400) {
+      if (error.status === 400) {
         setTokenError(true);
         return;
       }
