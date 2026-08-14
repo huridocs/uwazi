@@ -275,7 +275,7 @@ All writers must stop calling `#api/i18n/translations` and use core ports/use ca
 
 - [x] Core domain + `TranslationsDataSource` contract + Mongo DS (+ cache) under `app/api/core`
 - [x] Mutation use cases: create/update/delete context & entries; language delete (ImportPredefined still via façade CSV path)
-- [x] **D11 peel:** deleted test-only translation UseCases (`Create/DeleteTranslationContext`, `Create/UpdateTranslationEntries`, `DeleteTranslationsByLanguage`); specs use `translationsTestHelpers`
+- [x] **D11 peel:** deleted test-only translation UseCases (`Create/DeleteTranslationContext`, `Create/UpdateTranslationEntries`, `DeleteTranslationsByLanguage`). Specs seed via fixtures; the i18n parity suite calls `TranslationsService` locally inside `TM.run()`
 - [x] Thin GET query service + legacy locale DTO mapper (`TranslationsQueryService`)
 - [x] Core express routes for `/api/translations*` and `/api/v2/translations` (`api.js` → core `translationsRoutes`); GETs via QueryService; mutations still delegate façade for thesaurus/CSV side effects
 - [x] Migrate Templates / RelationshipTypes / Thesaurus / language factories onto core DS/use cases; Legacy\* no longer call façade for context CRUD
@@ -340,7 +340,7 @@ Already share parent TM via DS — boundaries OK. Prefer **2A** (extend service 
 - Factories: `TranslationsDataSourceFactory`, `TranslationsServiceFactory`, mutation + orchestrator UseCase factories, `TranslationsQueryServiceFactory`, `PropagateThesaurusTranslationServiceFactory`
 - Use cases (own `TM.run`, controller/job only — D11): `SaveLocaleTranslations`, `SaveTranslationEntries`, `UpdateEntriesByContext`, `UpdateTranslationContext` (settings.ts), `AddLanguage`, `DeleteLanguage`
 - Deleted test-only UseCases (were thin `TM.run` wrappers around `TranslationsService`): `CreateTranslationContext`, `DeleteTranslationContext`, `CreateTranslationEntries`, `UpdateTranslationEntries`, `DeleteTranslationsByLanguage`
-- Test orchestration: `app/api/core/testing/translationsTestHelpers.ts` — `TM.run()` + `TranslationsService`; do not add UseCases for specs
+- Tests: seed writes with `translationsV2` fixtures (or collection insert). Do **not** add a core test-helper write API. The leftover i18n parity spec may call `TranslationsService` in-file inside `TM.run()`
 - Application services: `TranslationsService` (write API, `ensureTransaction`), `TranslationsQueryService` (reads), `ValidateTranslationsService`, `PropagateThesaurusTranslationService` (post-commit)
 - Transaction boundaries: UseCases open one `transactionManager.run()` then call `TranslationsService`; no UC→UC nesting; thesaurus entity propagate runs **after** successful commit (outside TX)
 - Cross-aggregate writers (same shared TM as parent UseCase — Thesaurus pattern):
@@ -352,7 +352,7 @@ Already share parent TM via DS — boundaries OK. Prefer **2A** (extend service 
   - AddLanguage / populate predefined CSV: `ImportPredefinedTranslationsService` (core; FS+CSV; outside TX)
   - `AvailableLanguagesQueryService` for `GET /api/languages`
 - Removed misleading `Legacy*TranslationService` adapters (they were domain sync services, not old translations)
-- Tests: unit `TranslationsService.spec`; integration specs for real UseCases only; `i18n/specs/translations.spec.ts` uses QueryService / remaining UC factories / `translationsTestHelpers` (no façade, no test-only UCs)
+- Tests: unit `TranslationsService.spec`; integration specs for real UseCases only; `i18n/specs/translations.spec.ts` uses QueryService / remaining UC factories / in-file `TranslationsService` (no façade, no test-only UCs, no core test-helper module)
 - QueryService by-item lookups: `getContextValueMap`, `getLanguageValueMaps`; `getLegacy` / `LegacyTranslationDtoMapper` only at mammoth delivery edges (HTTP + SSR)
 - Express: GET → QueryService; languages → AvailableLanguagesQueryService; populate → PopulateTranslationsController; Save* → orchestrator UseCase factories
 - Thesaurus metadata rename: `ThesaurusMetadataRenamerAdapter` → `denormalizeThesauriLabelInMetadata`
@@ -413,7 +413,11 @@ Critical pass after the V2 hex peel and the production SSR CPU outage. Further s
 
 `CreateTranslationContext.spec.ts` existed only to exercise the deleted wrappers; `TranslationsService.spec.ts` already covers create/update/delete context.
 
-**Test helper:** `app/api/core/testing/translationsTestHelpers.ts` opens `TM.run()` and calls `TranslationsService` (`insertEntries`, `createContext`, `updateContext`, `deleteByContextId`, `deleteByLanguage`). Specs must not grow new UseCases for this.
+**Tests (not a core helper module):** a shared `core/testing/translationsTestHelpers` write API was the same mistake as the UseCases (named production-shaped surface for specs). Do not put it back.
+
+- Setup/seed → `translationsV2` fixtures or collection insert (`SaveLocaleTranslations.spec`, `syncWorker.spec` host data already in fixtures)
+- Sync tests that need a change to be picked up must seed `updatelogs` (that is the sync contract), not call `TranslationsService`
+- Behavior under test in the leftover i18n parity suite → file-local `withTranslationsService` (`TM.run()` + `TranslationsService`). Dies with that spec.
 
 ### Production SSR CPU (keep these; do not regress)
 
@@ -445,7 +449,7 @@ Explicitly **not** shipped: process/tenant-wide translations read cache. Topolog
 - Temporary mammoth delivery surface must not become permanent without a scheduled Phase 1b
 - Do not reintroduce application Upsert “because the old service had it”
 - Do not add `GetTranslationsUseCase` “because relationship types still have Get*”
-- Do not add a translations UseCase because a spec needs to create/update/delete data — use `translationsTestHelpers` (or call `TranslationsService` inside an existing parent `TM.run()`)
+- Do not add a translations UseCase because a spec needs to create/update/delete data — seed fixtures, or call `TranslationsService` inside `TM.run()` in that spec. Do not add a core `translationsTestHelpers` module
 - Do not reintroduce process-wide / tenant-wide translations read cache (12 Node processes × 3 servers, 500+ tenants, 5 workers; in-process invalidation cannot be consistent)
 - When Postgres starts: data copy before flag; one-way flag; RLS in same schema migration; keep sync namespace `translationsV2`
 - Do not leave sync on direct `new MongoTranslationsSyncDataSource` / `models.translationsV2` once the SyncHandlerFactory peel lands — that blocks motor swap

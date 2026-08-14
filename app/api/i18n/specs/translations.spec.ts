@@ -7,20 +7,17 @@ import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import entities from '#api/entities/index.js';
 import * as denormalize from '#api/entities/denormalize.js';
 import { importPredefinedTranslations } from '#api/core/application/translation/ImportPredefinedTranslationsService.js';
+import { TranslationsService } from '#api/core/application/translation/TranslationsService.js';
 import { TranslationSyO } from '#api/core/infrastructure/mongodb/translation/schemas/TranslationSyO.js';
 import pages from '#api/pages/index.js';
 import settings from '#api/settings/index.js';
 import { AddLanguageUseCaseFactory } from '#api/core/infrastructure/factories/AddLanguageUseCaseFactory.js';
 import { SaveLocaleTranslationsUseCaseFactory } from '#api/core/infrastructure/factories/SaveLocaleTranslationsUseCaseFactory.js';
 import { SaveTranslationEntriesUseCaseFactory } from '#api/core/infrastructure/factories/SaveTranslationEntriesUseCaseFactory.js';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { TranslationsQueryServiceFactory } from '#api/core/infrastructure/factories/TranslationsQueryServiceFactory.js';
+import { TranslationsServiceFactory } from '#api/core/infrastructure/factories/TranslationsServiceFactory.js';
 import { UpdateEntriesByContextUseCaseFactory } from '#api/core/infrastructure/factories/UpdateEntriesByContextUseCaseFactory.js';
-import {
-  createTranslationContext,
-  deleteTranslationContext,
-  deleteTranslationsByLanguage,
-  updateTranslationContext,
-} from '#api/core/testing/translationsTestHelpers.js';
 import {
   IndexedTranslations,
   toIndexedTranslations,
@@ -35,6 +32,13 @@ import fixtures, { dictionaryId } from './fixtures.js';
 import { sortByLocale } from './sortByLocale.js';
 
 const withContext = async <T>(fn: () => Promise<T>) => testingEnvironment.runWithContext(fn);
+
+const withTranslationsService = async (fn: (service: TranslationsService) => Promise<void>) =>
+  withContext(async () => {
+    const transactionManager = TransactionManagerFactory.default();
+    const translationsService = TranslationsServiceFactory.default({ transactionManager });
+    await transactionManager.run(async () => fn(translationsService));
+  });
 
 const getLegacyTranslations = async (query: { locale?: LanguageISO6391; context?: string } = {}) =>
   withContext(async () =>
@@ -421,9 +425,8 @@ describe('translations', () => {
   describe('addContext()', () => {
     it('should add a context with its values', async () => {
       const values = { Name: 'Name', Surname: 'Surname' };
-      await createTranslationContext(
-        { id: 'context_id', label: 'context_name', type: 'Entity' },
-        values
+      await withTranslationsService(async service =>
+        service.createContext({ id: 'context_id', label: 'context_name', type: 'Entity' }, values)
       );
 
       const translated = await getLegacyTranslations();
@@ -441,7 +444,7 @@ describe('translations', () => {
 
   describe('deleteContext()', () => {
     it('should delete a context and its values', async () => {
-      await deleteTranslationContext('System');
+      await withTranslationsService(async service => service.deleteByContextId('System'));
 
       const translated = await getLegacyTranslations();
 
@@ -454,12 +457,16 @@ describe('translations', () => {
 
   describe('updateContext()', () => {
     it('should change the value of a translation when changing the key if the locale is the default one', async () => {
-      await updateTranslationContext({
-        context: { id: dictionaryId.toString(), label: 'new context name', type: 'Thesaurus' },
-        keyChanges: { 'property should only change value on default languge': 'new property name' },
-        keysToDelete: [],
-        valueChanges: {},
-      });
+      await withTranslationsService(async service =>
+        service.updateContext({
+          context: { id: dictionaryId.toString(), label: 'new context name', type: 'Thesaurus' },
+          keyChanges: {
+            'property should only change value on default languge': 'new property name',
+          },
+          keysToDelete: [],
+          valueChanges: {},
+        })
+      );
 
       const [esTranslations] = await getLegacyTranslations({ locale: 'es' });
       const esThesauriContext = (esTranslations.contexts || []).find(c => c.type === 'Thesaurus');
@@ -480,12 +487,14 @@ describe('translations', () => {
       });
     });
     it('should properly change context name, key names, values for the keys changed and deleteProperties, and create new values as new translations if key does not exists', async () => {
-      await updateTranslationContext({
-        context: { id: dictionaryId.toString(), label: 'new context name', type: 'Thesaurus' },
-        keyChanges: { Account: 'New Account Key', Password: 'New Password key' },
-        keysToDelete: ['Age', 'Email'],
-        valueChanges: { 'new key': 'new value' },
-      });
+      await withTranslationsService(async service =>
+        service.updateContext({
+          context: { id: dictionaryId.toString(), label: 'new context name', type: 'Thesaurus' },
+          keyChanges: { Account: 'New Account Key', Password: 'New Password key' },
+          keysToDelete: ['Age', 'Email'],
+          valueChanges: { 'new key': 'new value' },
+        })
+      );
 
       const [enTranslations] = await getLegacyTranslations({ locale: 'en' });
       const enThesauriContext = (enTranslations.contexts || []).find(c => c.type === 'Thesaurus');
@@ -522,12 +531,14 @@ describe('translations', () => {
         Interface: 'Interfaces',
       };
 
-      await updateTranslationContext({
-        context: { id: 'System', label: 'Interface', type: 'Uwazi UI' },
-        keyChanges: keyNameChanges,
-        keysToDelete: deletedProperties,
-        valueChanges: values,
-      });
+      await withTranslationsService(async service =>
+        service.updateContext({
+          context: { id: 'System', label: 'Interface', type: 'Uwazi UI' },
+          keyChanges: keyNameChanges,
+          keysToDelete: deletedProperties,
+          valueChanges: values,
+        })
+      );
 
       const translated = await getLegacyTranslations();
       const en = translated.find(t => t.locale === 'en');
@@ -586,7 +597,7 @@ describe('translations', () => {
   describe('removeLanguage', () => {
     it('should remove translation for the language passed', async () => {
       await settings.deleteLanguage('es');
-      await deleteTranslationsByLanguage('es');
+      await withTranslationsService(async service => service.deleteByLanguage('es'));
       const allTranslations = await getLegacyTranslations();
 
       expect(allTranslations.sort(sortByLocale)).toMatchObject([

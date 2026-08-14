@@ -33,7 +33,6 @@ import errorHandlingMiddleware from '#api/utils/error_handling_middleware.js';
 import mailer from '#api/utils/mailer.js';
 import db, { DBFixture } from '#api/utils/testing_db.js';
 import { advancedSort } from '#app/utils/advancedSort.js';
-import { insertTranslationEntries } from '#api/core/testing/translationsTestHelpers.js';
 import { RelationshipTypesDataSourceFactory } from '#api/core/infrastructure/factories/RelationshipTypesDataSourceFactory.js';
 import { TranslationsQueryServiceFactory } from '#api/core/infrastructure/factories/TranslationsQueryServiceFactory.js';
 import { toIndexedTranslations } from '#api/core/infrastructure/express/translation/LegacyTranslationDtoMapper.js';
@@ -370,6 +369,29 @@ describe('syncWorker', () => {
   });
 
   it('should syncronize translations v2 that match configured properties', async () => {
+    const systemKeyId = new ObjectId();
+    await testingDbs.host1db!.collection('translationsV2').insertOne({
+      _id: systemKeyId,
+      language: 'en',
+      key: 'System Key',
+      value: 'System Value',
+      context: { id: 'System', type: 'Uwazi UI', label: 'System' },
+    });
+    const hostTranslations = await testingDbs
+      .host1db!.collection('translationsV2')
+      .find({
+        $or: [{ _id: systemKeyId }, { 'context.id': template1.toString() }],
+      })
+      .toArray();
+    await testingDbs.host1db!.collection('updatelogs').insertMany(
+      hostTranslations.map(translation => ({
+        timestamp: 20000,
+        namespace: 'translationsV2',
+        mongoId: translation._id,
+        deleted: false,
+      }))
+    );
+
     await testingDbs.target1db!.collection('translationsV2').insertOne({
       _id: new ObjectId(),
       language: 'en',
@@ -377,67 +399,6 @@ describe('syncWorker', () => {
       value: 'System Value',
       context: { id: 'System', type: 'Uwazi UI', label: 'System' },
     });
-
-    await tenants.run(async () => {
-      await testingEnvironment.runWithContext(async () => {
-        await insertTranslationEntries([
-          {
-            language: 'en',
-            key: 'System Key',
-            value: 'System Value',
-            context: { id: 'System', type: 'Uwazi UI', label: 'System' },
-          },
-          {
-            language: 'en',
-            key: 'template1',
-            value: 'template1T',
-            context: { id: template1.toString(), type: 'Entity', label: 'Entity' },
-          },
-          {
-            language: 'en',
-            key: 't1Property1L',
-            value: 't1Property1T',
-            context: { id: template1.toString(), type: 'Entity', label: 'Entity' },
-          },
-          {
-            language: 'en',
-            key: 't1Relationship1L',
-            value: 't1Relationship1T',
-            context: { id: template1.toString(), type: 'Entity', label: 'Entity' },
-          },
-          {
-            language: 'en',
-            key: 't1Relationship2L',
-            value: 't1Relationship2T',
-            context: { id: template1.toString(), type: 'Entity', label: 'Entity' },
-          },
-          {
-            language: 'en',
-            key: 't1Thesauri2SelectL',
-            value: 't1Thesauri2SelectT',
-            context: { id: template1.toString(), type: 'Entity', label: 'Entity' },
-          },
-          {
-            language: 'en',
-            key: 't1Thesauri3MultiSelectL',
-            value: 't1Thesauri3MultiSelectT',
-            context: { id: template1.toString(), type: 'Entity', label: 'Entity' },
-          },
-          {
-            language: 'en',
-            key: 't1Relationship1',
-            value: 't1Relationship1',
-            context: { id: template1.toString(), type: 'Entity', label: 'Entity' },
-          },
-          {
-            language: 'en',
-            key: 'Template Title',
-            value: 'Template Title translated',
-            context: { id: template1.toString(), type: 'Entity', label: 'Entity' },
-          },
-        ]);
-      });
-    }, 'host1');
 
     await runAllTenants();
 
@@ -460,32 +421,32 @@ describe('syncWorker', () => {
         },
       ]);
 
-      expect(syncedTranslations).toEqual([
-        {
-          contexts: [
-            {
-              id: 'System',
-              label: 'System',
-              type: 'Uwazi UI',
-              values: {
-                'System Key': 'System Value',
-              },
+      expect(syncedTranslations).toHaveLength(1);
+      expect(syncedTranslations[0].locale).toBe('en');
+      expect(syncedTranslations[0].contexts).toEqual(
+        expect.arrayContaining([
+          {
+            id: 'System',
+            label: 'System',
+            type: 'Uwazi UI',
+            values: {
+              'System Key': 'System Value',
             },
-            {
-              id: template1.toString(),
-              type: 'Entity',
-              label: 'Entity',
-              values: {
-                'Template Title': 'Template Title translated',
-                t1Property1L: 't1Property1T',
-                t1Relationship1L: 't1Relationship1T',
-                template1: 'template1T',
-              },
+          },
+          {
+            id: template1.toString(),
+            type: 'Entity',
+            label: 'Entity',
+            values: {
+              'Template Title': 'Template Title translated',
+              t1Property1L: 't1Property1T',
+              t1Relationship1L: 't1Relationship1T',
+              template1: 'template1T',
             },
-          ],
-          locale: 'en',
-        },
-      ]);
+          },
+        ])
+      );
+      expect(syncedTranslations[0].contexts).toHaveLength(2);
     }, 'target1');
   });
 
