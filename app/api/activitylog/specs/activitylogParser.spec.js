@@ -1,4 +1,3 @@
-/* eslint-disable max-lines */
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { testingTenants } from '#api/utils/testingTenants.js';
 /* eslint-disable max-statements */

@@ -20,9 +20,8 @@ export async function getUserById(userId: string) {
   // (D3/D9). `getData()` yields undefined on a miss so UwaziJobHandler keeps throwing its
   // own "User not found" rather than a UserNotFound.
   if (usersDirectoryEnabled()) {
-    const { UsersDirectoryFactory } = await import(
-      '#api/core/infrastructure/factories/UsersDirectoryFactory.js'
-    );
+    const { UsersDirectoryFactory } =
+      await import('#api/core/infrastructure/factories/UsersDirectoryFactory.js');
     return (await UsersDirectoryFactory.default().getActor(userId)).getData() ?? null;
   }
 
