@@ -8,20 +8,15 @@ import {
 
 type IndexedContextValues = Record<string, string>;
 
-type IndexedContext = Omit<LocaleTranslationContext, 'values'> & {
-  values: IndexedContextValues;
+type LocaleContextInput = Omit<LocaleTranslationContext, 'values'> & {
+  values?: TranslationValue[] | IndexedContextValues;
 };
 
-type IndexedLocaleTranslation = Omit<TranslationType, 'contexts'> & {
-  contexts?: IndexedContext[];
+type LocaleTranslationInput = Omit<TranslationType, 'contexts'> & {
+  contexts?: LocaleContextInput[];
 };
 
-type LocaleTranslationInput = TranslationType | IndexedLocaleTranslation;
-
-function checkDuplicateKeys(
-  context: LocaleTranslationContext | IndexedContext,
-  values: TranslationValue[]
-) {
+function checkDuplicateKeys(context: LocaleContextInput, values: TranslationValue[]) {
   if (!values) return;
 
   const seen = new Set<string | undefined>();
@@ -41,9 +36,7 @@ function indexedValuesToList(indexedValues: Record<string, string>): Translation
     .map(key => ({ key, value: indexedValues[key] }));
 }
 
-function processContextValues(
-  context: LocaleTranslationContext | IndexedContext
-): LocaleTranslationContext {
+function processContextValues(context: LocaleContextInput): LocaleTranslationContext {
   let values: TranslationValue[] = [];
 
   if (context.values && !Array.isArray(context.values)) {

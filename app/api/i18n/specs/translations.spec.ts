@@ -7,6 +7,7 @@ import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import entities from '#api/entities/index.js';
 import * as denormalize from '#api/entities/denormalize.js';
 import { importPredefinedTranslations } from '#api/core/application/translation/ImportPredefinedTranslationsService.js';
+import { LocaleTranslationInput } from '#api/core/application/translation/localeTranslationDto.js';
 import { TranslationsService } from '#api/core/application/translation/TranslationsService.js';
 import { TranslationSyO } from '#api/core/infrastructure/mongodb/translation/schemas/TranslationSyO.js';
 import pages from '#api/pages/index.js';
@@ -18,14 +19,10 @@ import { TransactionManagerFactory } from '#api/core/infrastructure/factories/Tr
 import { TranslationsQueryServiceFactory } from '#api/core/infrastructure/factories/TranslationsQueryServiceFactory.js';
 import { TranslationsServiceFactory } from '#api/core/infrastructure/factories/TranslationsServiceFactory.js';
 import { UpdateEntriesByContextUseCaseFactory } from '#api/core/infrastructure/factories/UpdateEntriesByContextUseCaseFactory.js';
-import {
-  IndexedTranslations,
-  toIndexedTranslations,
-} from '#api/core/infrastructure/express/translation/LegacyTranslationDtoMapper.js';
+import { toIndexedTranslations } from '#api/core/infrastructure/express/translation/LegacyTranslationDtoMapper.js';
 import * as setupSockets from '#api/socketio/setupSockets.js';
 import { ContextType } from '#shared/translationSchema.js';
 import { LanguageISO6391, LanguageSchema } from '#shared/types/commonTypes.js';
-import { TranslationType } from '#shared/translationType.js';
 import { UITranslationNotAvailable } from '../defaultTranslations.js';
 
 import fixtures, { dictionaryId } from './fixtures.js';
@@ -45,7 +42,7 @@ const getLegacyTranslations = async (query: { locale?: LanguageISO6391; context?
     toIndexedTranslations(await TranslationsQueryServiceFactory.default().getLegacy(query))
   );
 
-const saveLocaleTranslations = async (translation: TranslationType | IndexedTranslations) =>
+const saveLocaleTranslations = async (translation: LocaleTranslationInput) =>
   withContext(async () => SaveLocaleTranslationsUseCaseFactory.default().execute(translation));
 
 const updateEntriesByContext = async (
@@ -159,7 +156,6 @@ describe('translations', () => {
         contexts: [
           {
             id: 'System',
-            // @ts-ignore
             values: [{ key: 'Password', value: 'edited Password' }],
           },
           {
