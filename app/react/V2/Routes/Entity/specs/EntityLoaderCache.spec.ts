@@ -66,4 +66,28 @@ describe('EntityLoaderCache entity entries', () => {
     expect(cached?.title).toBe('Updated metadata');
     expect(cached?.relations).toEqual([{ entity: 'other' }]);
   });
+
+  it('does not serve relationships after invalidate until a full entity is stored', () => {
+    entityLoaderCache.setEntity(sharedId, language, {
+      ...baseEntity,
+      relations: [{ entity: 'old' }],
+    });
+    entityLoaderCache.invalidateEntity(sharedId);
+
+    expect(entityLoaderCache.isRefetchPending(sharedId)).toBe(true);
+    expect(entityLoaderCache.getEntity(sharedId, language, { requireRelationships: true })).toBe(
+      undefined
+    );
+
+    entityLoaderCache.setEntity(sharedId, language, {
+      ...baseEntity,
+      title: 'Fresh',
+      relations: [{ entity: 'new' }],
+    });
+
+    expect(entityLoaderCache.isRefetchPending(sharedId)).toBe(false);
+    expect(
+      entityLoaderCache.getEntity(sharedId, language, { requireRelationships: true })?.relations
+    ).toEqual([{ entity: 'new' }]);
+  });
 });

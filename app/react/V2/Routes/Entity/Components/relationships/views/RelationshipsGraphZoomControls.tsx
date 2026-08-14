@@ -14,7 +14,7 @@ const RelationshipsGraphZoomControls = ({
   onZoomOut,
   onReset,
 }: ZoomControlsProps) => (
-  <div className="absolute bottom-3 right-3 z-10 flex items-center gap-1 rounded-md border border-border bg-paper px-1 py-0.5 shadow-[0_1px_2px_rgba(0,0,0,0.08)]">
+  <div className="absolute bottom-1 right-3 z-10 flex items-center gap-1 rounded-md border border-border bg-paper px-1 py-0.5 shadow-[0_1px_2px_rgba(0,0,0,0.08)]">
     <button
       type="button"
       aria-label={t('System', 'Zoom out', null, false)}

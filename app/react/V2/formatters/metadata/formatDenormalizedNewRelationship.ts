@@ -144,7 +144,7 @@ function formatInnerImageRelationship(
     return formatImageProperty(field, d.meta, d.entityTemplate);
   }
   if (t === 'relationship') {
-    return formatRelationshipProperty(field, d.meta);
+    return formatRelationshipProperty(field, d.meta, d.entity.relations);
   }
   return null;
 }

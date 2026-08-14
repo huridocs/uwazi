@@ -169,8 +169,10 @@ describe('Entity edit', () => {
         .contains('button', 'Change')
         .click();
       cy.get('[data-testid="modal"]').should('exist');
-      cy.get('[data-testid="modal"] input[type="url"]').type('https://example.com/image.jpg');
-      cy.get('[data-testid="media-picker-use-url"]').click();
+      cy.get('[data-testid="modal"] input[aria-label="Image URL"]').type(
+        'https://example.com/image.jpg'
+      );
+      cy.get('[data-testid="modal"]').contains('button', 'Use URL').click();
       cy.get('img[alt="Media with an image"]').should(
         'have.attr',
         'src',

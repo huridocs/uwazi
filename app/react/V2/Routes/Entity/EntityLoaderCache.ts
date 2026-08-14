@@ -67,6 +67,8 @@ class EntityLoaderCache {
   // Full fetches replace the entry; partial fetches merge metadata without dropping relations.
   private entityCache = new Map<string, CachedItem<Entity>>();
 
+  private refetchSharedIds = new Set<string>();
+
   private mainDocumentCache = new Map<string, CachedItem<FileType>>();
 
   private plaintextCache = new Map<string, CachedItem<string>>();
@@ -103,7 +105,10 @@ class EntityLoaderCache {
       return undefined;
     }
 
-    if (requireRelationships && !entityIncludesRelationships(entity)) {
+    if (
+      requireRelationships &&
+      (this.refetchSharedIds.has(sharedId) || !entityIncludesRelationships(entity))
+    ) {
       return undefined;
     }
 
@@ -121,12 +126,20 @@ class EntityLoaderCache {
       entityIncludesRelationships(data) || !existing ? data : mergeEntityCacheEntry(existing, data);
 
     setCachedItem(this.entityCache, key, next, this.limits.entity);
+    if (entityIncludesRelationships(data)) {
+      this.refetchSharedIds.delete(sharedId);
+    }
+  }
+
+  isRefetchPending(sharedId: string): boolean {
+    return this.refetchSharedIds.has(sharedId);
   }
 
   invalidateEntity(sharedId: string): void {
     invalidateByPrefix(this.entityCache, `${sharedId}:`);
     invalidateByPrefix(this.mainDocumentCache, `${sharedId}:`);
     this.invalidateSearchResults(sharedId);
+    this.refetchSharedIds.add(sharedId);
   }
 
   getMainDocument(sharedId: string, language: string): FileType | undefined {
@@ -201,6 +214,7 @@ class EntityLoaderCache {
     this.mainDocumentCache.clear();
     this.plaintextCache.clear();
     this.searchResultsCache.clear();
+    this.refetchSharedIds.clear();
   }
 }
 

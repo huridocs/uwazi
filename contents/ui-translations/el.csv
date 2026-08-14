@@ -193,6 +193,8 @@ Clear PDF selection,Εκκαθάριση επιλογής PDF
 Clear search,Clear search
 Click,Κάντε κλικ
 Click to fill,Κάντε κλικ για να συμπληρώσετε
+Click to select an image,Click to select an image
+Click to select audio or video,Click to select audio or video
 Click to select files,Click to select files
 Close,Κλείσιμο
 Code,Code
@@ -510,8 +512,6 @@ Forgot Password?,Ξεχάσατε τον κωδικό πρόσβασης;
 Forms and email configuration,Διαμόρφωση φορμών και email
 From,Από
 From all suggestions,Από όλες τις προτάσεις
-From computer,From computer
-From files,From files
 From previous step,Από το προηγούμενο βήμα
 From selection,From selection
 From:,From:
@@ -756,6 +756,7 @@ New user,Νέος χρήστης
 Next,Επόμενο
 No,Όχι
 No attachments,Δεν υπάρχουν συνημμένα αρχεία
+No audio or video on this entity,No audio or video on this entity
 No chart types match your search.,No chart types match your search.
 No common filters,Δεν υπάρχουν κοινά φίλτρα
 No connected entities yet.,No connected entities yet.
@@ -771,6 +772,7 @@ No files queued yet.,No files queued yet.
 no filters for templates,Ο συνδυασμός τύπων οντοτήτων δεν έχει κοινά φίλτρα.
 No Group,Δεν υπάρχει ομάδα
 No icon / flag,Χωρίς εικονίδιο/σημαία
+No images on this entity,No images on this entity
 No items available,Δεν υπάρχουν διαθέσιμα στοιχεία
 No Label,Χωρίς ετικέτα
 No label,Χωρίς ετικέτα
@@ -835,6 +837,7 @@ OCR PDF,OCR PDF
 of,από
 Ok,Εντάξει
 OK,Εντάξει
+On this entity,On this entity
 one character,one character
 "Only properties with the same name and configuration in every data source are available
             for both dimensions.","Only properties with the same name and configuration in every data source are available
@@ -856,6 +859,7 @@ Options,Επιλογές
 or,ή
 or drag and drop here,or drag and drop here
 or drop your files here.,ή αποθέστε τα αρχεία σας εδώ.
+Or paste a URL,Or paste a URL
 Order,Παραγγελία
 Other,Άλλα
 other,άλλα
@@ -883,6 +887,8 @@ Password Error,Σφάλμα κωδικού πρόσβασης. Και τα δύ�
 Password is too long,Ο κωδικός πρόσβασης είναι πολύ μεγάλος
 Password updated,Ο κωδικός πρόσβασης ενημερώθηκε
 Passwords do not match,Οι κωδικοί πρόσβασης δεν ταιριάζουν
+Paste an audio or video URL to use it as this property without uploading a file. Press Enter to apply.,Paste an audio or video URL to use it as this property without uploading a file. Press Enter to apply.
+Paste an image URL to use it as this property without uploading a file. Press Enter to apply.,Paste an image URL to use it as this property without uploading a file. Press Enter to apply.
 Paste this tag in a page HTML. The chart uses the page language.,Paste this tag in a page HTML. The chart uses the page language.
 Paste URL,Paste URL
 Paste URL here,Επικολλήστε το URL εδώ
@@ -1092,6 +1098,8 @@ Select an existing image,Select an existing image
 Select favicon image,Επιλογή εικόνας favicon
 Select files on your device,Επιλογή αρχείων στη συσκευή σας
 Select from computer,Επιλογή από τον υπολογιστή
+Select image,Select image
+Select media,Select media
 Select relationship,Select relationship
 Select relationship type,Επιλογή τύπου σχέσης
 Select site logo image,Επιλογή εικόνας λογότυπου ιστότοπου

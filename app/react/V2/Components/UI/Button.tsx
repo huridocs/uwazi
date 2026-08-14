@@ -100,8 +100,9 @@ const Button = ({
   const textStyles = size ? sizeClasses[variant][size] : sizeClasses[variant].default;
 
   const variantClasses: Record<ButtonVariant, string> = {
-    primary:
-      'border-ink bg-ink text-parchment enabled:hover:opacity-90 disabled:border-[color-mix(in_srgb,var(--color-theme-action-primary)_45%,transparent)]! disabled:bg-[color-mix(in_srgb,var(--color-theme-action-primary)_45%,var(--color-theme-bg-surface))]! disabled:text-ink!',
+    primary: disabled
+      ? 'border-border-soft bg-warm text-ink-muted'
+      : 'border-ink bg-ink text-parchment enabled:hover:opacity-90',
     secondary:
       'border-border bg-paper text-ink enabled:hover:bg-warm disabled:border-border-soft disabled:bg-paper disabled:text-ink-muted',
     danger:
