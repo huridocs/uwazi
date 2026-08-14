@@ -752,7 +752,22 @@ describe('Activitylog Parser', () => {
         );
       });
 
-      describe('method: POST /api/users/unlock', () => {
+      // The unlocked user's name is resolved through UsersDirectory when `usersDirectory` is
+      // on and through the legacy users.get otherwise (plan 05 step 2, loadUser). Both must
+      // name the same user, and both must fall back to the raw id when it resolves to nobody
+      // — which is also what a soft-deleted user gets, since neither path sees them (D9).
+      describe.each([
+        { path: 'legacy users.get', usersDirectory: false },
+        { path: 'UsersDirectory', usersDirectory: true },
+      ])('method: POST /api/users/unlock ($path)', ({ usersDirectory }) => {
+        beforeEach(() => {
+          testingTenants.changeCurrentTenant({ featureFlags: { usersDirectory } });
+        });
+
+        afterAll(() => {
+          testingTenants.changeCurrentTenant({ featureFlags: {} });
+        });
+
         it('should beautify as UPDATE', async () => {
           await testBeautified(
             {

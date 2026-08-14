@@ -1,11 +1,15 @@
 import type { GroupSummary } from './UserGroups.js';
 
+/**
+ * The **response** shape. It carries no `password`, and must not grow one: a type the server
+ * serialises to a client cannot be able to express a credential (D12). The two requests that
+ * legitimately post one declare it themselves, below.
+ */
 type User = {
   _id?: string;
   username: string;
   role: 'admin' | 'editor' | 'collaborator';
   email: string;
-  password?: string;
   using2fa?: boolean;
   accountLocked?: boolean;
   groups?: GroupSummary[];
@@ -28,7 +32,8 @@ type DeleteUserResponse = {
 
 type GetUsersResponse = User[];
 
-type UpdateUserRequest = User;
+/** The settings form genuinely posts a password change (`UserFormSidepanel.tsx:301`). */
+type UpdateUserRequest = User & { password?: string };
 
 type UpdateUserResponse = { user: Required<Pick<User, '_id' | 'email' | 'role' | 'username'>> };
 

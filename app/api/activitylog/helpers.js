@@ -6,11 +6,8 @@ import users from '#api/users/users.js';
 import userGroups from '#api/usergroups/userGroups.js';
 import { PermissionType } from '#shared/types/permissionSchema.js';
 import { FilesDAOFactory } from '#api/core/infrastructure/factories/FilesDAOFactory.js';
-// eslint-disable-next-line no-restricted-imports -- removed in plan 05 step 2b (loadUser)
-import { UsersDAOFactory } from '#api/core/infrastructure/factories/UsersDAOFactory.js';
 import { UsersDirectoryFactory } from '#api/core/infrastructure/factories/UsersDirectoryFactory.js';
 import { usersDirectoryEnabled } from '#api/core/infrastructure/factories/usersBackendFlags.js';
-import { tenants } from '#api/tenants/index.js';
 import { Suggestions } from '#api/suggestions/suggestions.js';
 import { Extractors } from '#api/services/informationextraction/ixextractors.js';
 
@@ -166,15 +163,14 @@ const loadExtractorData = async data => {
 };
 
 const loadUser = async data => {
-  let user;
-  if (tenants.current().featureFlags?.postgresUsers) {
-    const result = await UsersDAOFactory.default().getById(data._id.toString());
-    user = result.isError() ? undefined : result.getData();
-  } else {
-    [user] = await users.get({ _id: data._id });
-  }
-  user = user || { username: data._id.toString() };
-  return { ...data, ...user };
+  // getById, not getActor: this only names the subject of a `POST /api/users/unlock` entry,
+  // and both legacy paths excluded soft-deleted users — the log falls back to printing the
+  // raw id for them, exactly as loadPermissionsData does (D9).
+  const [user] = usersDirectoryEnabled()
+    ? [(await UsersDirectoryFactory.default().getById(data._id.toString())).getData()]
+    : await users.get({ _id: data._id });
+
+  return { ...data, ...(user || { username: data._id.toString() }) };
 };
 
 export {

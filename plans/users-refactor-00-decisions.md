@@ -12,13 +12,13 @@ de-facto interface.
 
 ## Status
 
-| Plan | State |
-|---|---|
-| 01 — Foundations | **Done** (commit `2094a900f2`), except step 4, deferred by [A1](#a1--plan-01-step-4-public_user_id--string-is-deferred). Step 2 later reverted by [A6](#a6--the-gin-index-is-not-used-findwithgroups-joins-by-unnesting-instead). |
-| 02 — DAO layer | **Done**, steps 1–7 (through commit `26010042a2`). See [A7](#a7--the-surface-plan-03-will-actually-find) for what it delivered. |
-| 03 — Read contracts | **Done**, steps 1–7. See [A9](#a9--what-plan-03-actually-did) for the six deltas from the plan text. |
-| 04 — Contract suites | **Done**, steps 1–3. See [A10](#a10--what-plan-04-actually-did) for the seven deltas from the plan text. |
-| 05 — Rollout | Not started. Extended by [A2](#a2--the-fence-hits-nine-files-not-five) and [A9](#a9--what-plan-03-actually-did) (step 1 also deletes the query services' legacy block). |
+| Plan                 | State                                                                                                                                                                                                                             |
+| -------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 01 — Foundations     | **Done** (commit `2094a900f2`), except step 4, deferred by [A1](#a1--plan-01-step-4-public_user_id--string-is-deferred). Step 2 later reverted by [A6](#a6--the-gin-index-is-not-used-findwithgroups-joins-by-unnesting-instead). |
+| 02 — DAO layer       | **Done**, steps 1–7 (through commit `26010042a2`). See [A7](#a7--the-surface-plan-03-will-actually-find) for what it delivered.                                                                                                   |
+| 03 — Read contracts  | **Done**, steps 1–7. See [A9](#a9--what-plan-03-actually-did) for the six deltas from the plan text.                                                                                                                              |
+| 04 — Contract suites | **Done**, steps 1–3. See [A10](#a10--what-plan-04-actually-did) for the seven deltas from the plan text.                                                                                                                          |
+| 05 — Rollout         | Not started. Extended by [A2](#a2--the-fence-hits-nine-files-not-five) and [A9](#a9--what-plan-03-actually-did) (step 1 also deletes the query services' legacy block).                                                           |
 
 Working state: `tsc --noEmit` clean, `eslint` clean on the changed files, every suite green.
 
@@ -38,11 +38,11 @@ like a broken spec. Check the containers before believing a red run.
 There will be a `getById` on three components. This is CQRS, not duplication. Do not
 "consolidate" them.
 
-| Component | Question it answers | Returns | Consumers |
-|---|---|---|---|
-| `UsersDataSource` *(exists)* | "load the user so I can **change** it" | `User` / `UserAccount` aggregate, credentials hydrated | v2 use cases only |
-| `UsersDirectory` *(new)* | "who is user X, so I can **act on their behalf or name them**" | `UserView` / `UserProfile` | any internal module |
-| `UsersQueryService` *(exists, retyped)* | "what does the **users settings screen** render" | `UserProfile[]` | HTTP controllers, SSR loaders |
+| Component                               | Question it answers                                            | Returns                                                | Consumers                     |
+| --------------------------------------- | -------------------------------------------------------------- | ------------------------------------------------------ | ----------------------------- |
+| `UsersDataSource` _(exists)_            | "load the user so I can **change** it"                         | `User` / `UserAccount` aggregate, credentials hydrated | v2 use cases only             |
+| `UsersDirectory` _(new)_                | "who is user X, so I can **act on their behalf or name them**" | `UserView` / `UserProfile`                             | any internal module           |
+| `UsersQueryService` _(exists, retyped)_ | "what does the **users settings screen** render"               | `UserProfile[]`                                        | HTTP controllers, SSR loaders |
 
 Write side loads aggregates and mutates them. Read sides never touch a domain object —
 they project rows straight to read models. The mapper is the only bridge.
@@ -58,7 +58,7 @@ subset of `UserView`.
 type UserView = { _id: string; username: string; role: UserRole; email: string };
 
 type UserProfile = UserView & {
-  groups: GroupSummary[];   // from #shared/contracts/UserGroups.js
+  groups: GroupSummary[]; // from #shared/contracts/UserGroups.js
   using2fa: boolean;
   accountLocked: boolean;
 };
@@ -84,7 +84,7 @@ admin managing accounts. Nobody else may see whether a colleague has 2FA on.
 interface UsersDirectory {
   getById(id: string): Promise<ResultType<UserView, UserNotFound>>;
   getProfile(id: string): Promise<ResultType<UserProfile, UserNotFound>>;
-  getActor(id: string): Promise<ResultType<UserProfile, UserNotFound>>;  // sees soft-deleted
+  getActor(id: string): Promise<ResultType<UserProfile, UserNotFound>>; // sees soft-deleted
   getManyByIds(ids: string[]): Promise<UserView[]>;
   searchByUsernameOrEmail(term: string): Promise<UserView[]>;
   list(): Promise<UserView[]>;
@@ -104,12 +104,12 @@ interface UsersQueryService {
   opting in.
 - `getActor` returns `UserProfile`, not `UserView`, because `setupQueueWorker.ts:93`
   feeds `User.createFrom`, whose `groups` field drives permission checks — an actor
-  resolved without groups silently *loses* access inside jobs. Attribution call sites
+  resolved without groups silently _loses_ access inside jobs. Attribution call sites
   ignore the extra fields.
 - `UsersQueryService` legitimately has one method. `findByEmailOrUsername` and
   `listBasicInfo` move to the Directory: `collaborators.ts` and `search.js` are internal
-  modules composing their own shapes, not HTTP responses. The QueryService owns *the
-  settings screen read*, and that is where pagination/sorting/filtering will land — which
+  modules composing their own shapes, not HTTP responses. The QueryService owns _the
+  settings screen read_, and that is where pagination/sorting/filtering will land — which
   is what the currently-unused `query` parameter was reaching for.
 - `listUsers()` takes **no filter argument**. Both current call sites pass `{}`, and the
   parameter is a backend-specific filter type leaking through a public signature.
@@ -147,7 +147,7 @@ type UserScope = { deleted?: 'exclude' | 'include'; systemUser?: 'exclude' | 'in
 
 Today's DAO applies these five different ways across six methods (`findOne` guards
 deleted but not system user, `exists` guards both, `count` guards deleted only,
-`findByIds` bakes system-user in, `findMany` makes the *caller* pass a filter,
+`findByIds` bakes system-user in, `findMany` makes the _caller_ pass a filter,
 `softDelete` guards nothing). That is folklore, not policy — you cannot reason about
 safety at a call site without reading the DAO.
 
@@ -165,14 +165,14 @@ Replace both with:
 type UserFieldGroup = 'identity' | 'status' | 'credentials' | 'security';
 ```
 
-| group | fields | opts in |
-|---|---|---|
-| `identity` *(default)* | `_id, username, role, email` | everyone |
-| `status` | `using2fa, accountLocked, deletedAt` | `UserProfile` readers |
-| `credentials` | `password` | Login, ValidateCurrentPassword |
-| `security` | `secret, failedLogins, accountUnlockCode` | 2FA + lockout flows |
+| group                  | fields                                    | opts in                        |
+| ---------------------- | ----------------------------------------- | ------------------------------ |
+| `identity` _(default)_ | `_id, username, role, email`              | everyone                       |
+| `status`               | `using2fa, accountLocked, deletedAt`      | `UserProfile` readers          |
+| `credentials`          | `password`                                | Login, ValidateCurrentPassword |
+| `security`             | `secret, failedLogins, accountUnlockCode` | 2FA + lockout flows            |
 
-The DAO does not know *why* anyone wants a group. That is what keeps it business-agnostic
+The DAO does not know _why_ anyone wants a group. That is what keeps it business-agnostic
 while still safe-by-default. Every write-side need is expressible in this vocabulary
 (`getByUsername` = all four, `findByUsernameAndUnlockCode` = identity, etc.).
 
@@ -193,10 +193,10 @@ Once both join server-side, the join is a persistence concern, so it lives on th
 
 ## D8 — One flag per contract
 
-| Contract | Flag | Rolls out |
-|---|---|---|
-| `UsersQueryService` | `v2UsersGet` *(exists)* | API/controller reads |
-| `UsersDirectory` | `usersDirectory` *(new)* | internal module reads |
+| Contract            | Flag                     | Rolls out             |
+| ------------------- | ------------------------ | --------------------- |
+| `UsersQueryService` | `v2UsersGet` _(exists)_  | API/controller reads  |
+| `UsersDirectory`    | `usersDirectory` _(new)_ | internal module reads |
 
 `v2UsersGet` already means "v2 user reads" and already gates `GET /api/users`
 (`express/users/routes.ts:67`) and `users.getById` (`users/users.js:266`), default `false`.
@@ -224,6 +224,7 @@ factories; the eslint fence; the fixture-mirroring test infrastructure; the two 
 suites; all 12 call sites behind `usersDirectory`.
 
 **Out, deliberately:**
+
 - `app/api/users/users.js` getters keep their signatures and behaviour. The only edit is
   repointing the `v2UsersGet` branch at line 271 from `UsersDAOFactory` to
   `UsersDirectoryFactory` — required because the eslint fence would otherwise flag it.
@@ -276,17 +277,17 @@ wants.
 Plan 03 step 7 expects "four legacy call sites and `users.js:271`". The actual non-exempt
 importers of `UsersDAOFactory` are:
 
-| File | Use | Handled in |
-|---|---|---|
-| `activitylog/helpers.js:110` | `findByIds` | plan 05 step 2 |
-| `permissions/entitiesPermissions.ts:34` | `findByIds` | plan 05 step 2 |
-| `usergroups/userGroups.ts:25` | `findByIds` | plan 05 step 2 |
-| `users/users.js:271` | `getById` | plan 05 step 7 |
-| `activitylog/helpers.js:166` (`loadUser`) | `getById` | **plan 05 step 2b (new)** |
-| `core/infrastructure/jobs/SendPasswordRecoveryEmailHandler.ts:24` | `getById` | **plan 05 step 2b (new)** |
-| `core/infrastructure/jobs/SendAccountLockedEmailHandler.ts:27` | `getById` | **plan 05 step 2b (new)** |
-| `core/application/specs/Login.spec.ts:67` | write-side test wiring | see below |
-| `core/application/specs/ValidateCurrentPassword.spec.ts:22` | write-side test wiring | see below |
+| File                                                              | Use                    | Handled in                |
+| ----------------------------------------------------------------- | ---------------------- | ------------------------- |
+| `activitylog/helpers.js:110`                                      | `findByIds`            | plan 05 step 2            |
+| `permissions/entitiesPermissions.ts:34`                           | `findByIds`            | plan 05 step 2            |
+| `usergroups/userGroups.ts:25`                                     | `findByIds`            | plan 05 step 2            |
+| `users/users.js:271`                                              | `getById`              | plan 05 step 7            |
+| `activitylog/helpers.js:166` (`loadUser`)                         | `getById`              | **plan 05 step 2b (new)** |
+| `core/infrastructure/jobs/SendPasswordRecoveryEmailHandler.ts:24` | `getById`              | **plan 05 step 2b (new)** |
+| `core/infrastructure/jobs/SendAccountLockedEmailHandler.ts:27`    | `getById`              | **plan 05 step 2b (new)** |
+| `core/application/specs/Login.spec.ts:67`                         | write-side test wiring | see below                 |
+| `core/application/specs/ValidateCurrentPassword.spec.ts:22`       | write-side test wiring | see below                 |
 
 The three new production sites read only `username`/`email`, so `getById` → `UserView`
 covers all of them. The two email handlers currently `getDataOrThrow()` and should keep
@@ -315,16 +316,16 @@ next plan starts.
 
 Measured during plan 02 step 4, at 300 users / 5000 groups in one tenant:
 
-| Query shape | Execution |
-|---|---|
-| `LEFT JOIN LATERAL ... WHERE ug."members" @> to_jsonb(u."_id")` (as planned) | ~500 ms |
-| Unnest members once, aggregate by member id, hash-join to users | ~26 ms |
+| Query shape                                                                  | Execution |
+| ---------------------------------------------------------------------------- | --------- |
+| `LEFT JOIN LATERAL ... WHERE ug."members" @> to_jsonb(u."_id")` (as planned) | ~500 ms   |
+| Unnest members once, aggregate by member id, hash-join to users              | ~26 ms    |
 
 Identical results; 20x apart. **The planner never chooses `usergroups_members_gin`.** RLS's
 `tenant_id = current_setting('app.current_tenant')` predicate is unestimable, so Postgres
 guesses ~11 rows, takes the `(tenant_id, _id)` primary key, and applies `members @>` as a
 filter over the whole tenant's groups — once per user. That makes the LATERAL form
-O(users x groups), i.e. *slower* than the JS-side join D7 replaced. Verified this is not
+O(users x groups), i.e. _slower_ than the JS-side join D7 replaced. Verified this is not
 caused by the defence-in-depth `ug."tenant_id" = u."tenant_id"` correlation: removing it
 produces the same plan (473 ms vs 475 ms), so the correlation stays.
 
@@ -451,7 +452,7 @@ removed in plan 05` on the import line, so the branch lints clean.
 
 **6. Both Directory implementations treat a malformed id as a miss, not an exception.**
 `MongoUsersDirectory` checks `/^[0-9a-fA-F]{24}$/` before `ObjectId.createFromHexString`
-and returns `UserNotFound` — deliberately *not* `ObjectId.isValid`, which also accepts any
+and returns `UserNotFound` — deliberately _not_ `ObjectId.isValid`, which also accepts any
 12-character string and then throws inside the constructor. `getManyByIds` filters
 malformed ids out of the batch rather than failing the whole call. This is what makes the
 two backends agree: Postgres's `_id` is text and simply matches nothing. Plan 04's
@@ -468,13 +469,13 @@ delete; three went (`MongoUsersQueryService.spec.ts`, `PostgresUsersQueryService
 cannot reach — which is what step 3's own instruction ("anything not covered is either a
 missing case or dead assertion, decide which, do not drop it silently") points at:
 
-| Kept in the DAO specs | Why no contract reaches it |
-|---|---|
-| The guard-uniformity table (D5) | `exists`/`count` have no contract caller; no contract requests a non-default scope except `getActor` |
-| The field-group table (D6) | The contracts pin `identity` and `identity + status`; `credentials`/`security` are write-side |
-| The write path and its guards | These are read contracts |
-| Postgres: unknown condition key is rejected, not interpolated | Not expressible through a contract |
-| Postgres: RLS scopes `raw()` statements directly | The end-to-end case cannot tell RLS from the defence-in-depth tenant correlation |
+| Kept in the DAO specs                                         | Why no contract reaches it                                                                           |
+| ------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| The guard-uniformity table (D5)                               | `exists`/`count` have no contract caller; no contract requests a non-default scope except `getActor` |
+| The field-group table (D6)                                    | The contracts pin `identity` and `identity + status`; `credentials`/`security` are write-side        |
+| The write path and its guards                                 | These are read contracts                                                                             |
+| Postgres: unknown condition key is rejected, not interpolated | Not expressible through a contract                                                                   |
+| Postgres: RLS scopes `raw()` statements directly              | The end-to-end case cannot tell RLS from the defence-in-depth tenant correlation                     |
 
 Removed from them: the `findWithGroups` projection cases and Postgres's
 `matchEmailOrUsername` matching cases, now asserted against both backends at once, plus the
@@ -483,14 +484,14 @@ D4 says parity is not asserted at DAO level; it does not say DAOs go untested.
 
 **2. The fixture is shared between the two suites,** in
 `app/api/core/application/specs/UsersContractFixtures.ts` — one declaration for both
-backends *and* both suites, so a field added for one cannot leave the other testing
+backends _and_ both suites, so a field added for one cannot leave the other testing
 something else. It also exports the sort helpers and the credential-field sweep.
 
 **3. The two-tenant case is Postgres-only and sits outside `describe.each`.** Mongo tenancy
 is a separate database, which the harness cannot straddle inside one suite. It also seeds the
 foreign tenant through `testingEnvironment.pg.pool` rather than `testingPG.setFixtures`,
 which truncates each table it writes and would take the mirrored fixture with it. The foreign
-group lists one of *our* users as a member, so a failure of either defence surfaces as a
+group lists one of _our_ users as a member, so a failure of either defence surfaces as a
 local user gaining a group it never joined; an assertion that the admin pool (which bypasses
 RLS) can see the foreign rows keeps the case from passing vacuously.
 

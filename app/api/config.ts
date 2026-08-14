@@ -165,9 +165,9 @@ export const config = {
       aiAssistant: FEATURE_FLAG_AI_ASSISTANT === 'true' || false,
       aiAssistantServiceUrl: AI_ASSISTANT_SERVICE_URL || undefined,
       v2UsersCreate: false,
+      v2UsersUpdate: false,
       v2UsersDelete: false,
       v2UsersGet: false,
-      v2UsersUpdate: false,
       usersDirectory: false,
       telemetry: {
         enabled: false,
