@@ -1,6 +1,5 @@
-import { ClientSession, ObjectId } from 'mongodb';
+import { ObjectId } from 'mongodb';
 
-import entities from '#api/entities/index.js';
 import createError from '#api/utils/Error.js';
 import { LanguageISO6391, PropertySchema } from '#shared/types/commonTypes.js';
 import { TemplateSchema } from '#shared/types/templateType.js';
@@ -119,10 +118,6 @@ export default {
 
   async delete(template: Partial<TemplateSchema>) {
     return TemplateFacade.delete({ _id: template._id!.toString() });
-  },
-
-  async countByTemplate(template: string, session?: ClientSession) {
-    return entities.countByTemplate(template, session);
   },
 
   async countByThesauri(thesauriId: string) {

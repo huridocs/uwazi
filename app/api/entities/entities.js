@@ -91,9 +91,4 @@ export default {
     }
     return doc;
   },
-
-  async countByTemplate(template, language) {
-    const query = language ? { template, language } : { template };
-    return model.count(query);
-  },
 };

@@ -979,22 +979,6 @@ describe('entities', () => {
     });
   });
 
-  describe('countByTemplate', () => {
-    it('should return how many entities using the template passed', async () => {
-      const count = await entities.countByTemplate(templateId);
-      expect(count).toBe(10);
-    });
-
-    it('should return 0 when no count found', done => {
-      entities
-        .countByTemplate(db.id())
-        .then(count => {
-          expect(count).toBe(0);
-          done();
-        })
-        .catch(done.fail);
-    });
-  });
   describe('validation', () => {
     it('should validate on save', async () => {
       const entity = {
