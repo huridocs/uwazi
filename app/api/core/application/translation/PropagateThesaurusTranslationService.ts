@@ -2,20 +2,12 @@ import { ThesauriDataSource } from '#api/core/application/contracts/ThesauriData
 import { ThesaurusMetadataRenamer } from '#api/core/application/contracts/ThesaurusMetadataRenamer.js';
 import { Thesaurus } from '#api/core/domain/thesaurus/Thesaurus.js';
 
-type TranslationValueLike = {
-  key?: string;
-  value?: string;
-};
-
-type ContextLike = {
-  id?: string;
+type ThesaurusValueChange = {
+  locale: string;
+  contextId: string;
   type?: string;
-  values?: TranslationValueLike[];
-};
-
-type LocaleTranslationLike = {
-  locale?: string;
-  contexts?: ContextLike[];
+  previous: Record<string, string>;
+  next: Record<string, string>;
 };
 
 type ThesaurusOption = {
@@ -35,47 +27,31 @@ const flattenThesaurusValues = (values: ThesaurusOption[] = []): ThesaurusOption
     []
   );
 
+function diffChangedValues(previous: Record<string, string>, next: Record<string, string>) {
+  const changes: Record<string, string> = {};
+  Object.entries(next).forEach(([key, value]) => {
+    if (value && previous[key] !== undefined && previous[key] !== value) {
+      changes[key] = value;
+    }
+  });
+  return changes;
+}
+
 class PropagateThesaurusTranslationService {
   constructor(private deps: Deps) {}
 
-  async forLocale(
-    translation: LocaleTranslationLike,
-    previousContexts: ContextLike[] = []
-  ): Promise<void> {
-    await previousContexts.reduce(async (promise, context) => {
-      await promise;
-      return this.forContext(translation, context);
-    }, Promise.resolve());
-  }
-
-  async forContext(
-    translation: LocaleTranslationLike,
-    previousContext: ContextLike
-  ): Promise<void> {
-    const incomingContext = (translation.contexts || []).find(
-      context => context.id?.toString() === previousContext.id?.toString()
-    );
-
-    if (!incomingContext || incomingContext.type !== 'Thesaurus' || !previousContext.id) {
+  async propagate(change: ThesaurusValueChange): Promise<void> {
+    if (change.type !== 'Thesaurus' || !change.contextId || !change.locale) {
       return;
     }
 
-    const thesaurusResult = await this.deps.thesauriDS.getById(previousContext.id);
+    const thesaurusResult = await this.deps.thesauriDS.getById(change.contextId);
     const thesaurusValues = thesaurusResult.isOk()
       ? (thesaurusResult.getDataOrThrow() as Thesaurus).values
       : [];
     const flattenedThesaurusValues = flattenThesaurusValues(thesaurusValues as ThesaurusOption[]);
 
-    const valuesChanged = (incomingContext.values || []).reduce<Record<string, string>>(
-      (changes, value) => {
-        const currentValue = (previousContext.values || []).find(v => v.key === value.key);
-        if (currentValue?.key && currentValue.value !== value.value && value.value) {
-          return { ...changes, [currentValue.key]: value.value };
-        }
-        return changes;
-      },
-      {}
-    );
+    const valuesChanged = diffChangedValues(change.previous, change.next);
 
     const changesMatchingDictionaryId = Object.keys(valuesChanged).reduce(
       (changes, valueChanged) => {
@@ -90,16 +66,16 @@ class PropagateThesaurusTranslationService {
     );
 
     const uniqueChanges = changesMatchingDictionaryId.filter(
-      (change, index, allChanges) => allChanges.findIndex(c => c.id === change.id) === index
+      (item, index, allChanges) => allChanges.findIndex(c => c.id === item.id) === index
     );
 
     await Promise.all(
-      uniqueChanges.map(async change =>
+      uniqueChanges.map(async item =>
         this.deps.metadataRenamer.renameInMetadata(
-          change.id,
-          change.value,
-          previousContext.id!,
-          translation.locale!
+          item.id,
+          item.value,
+          change.contextId,
+          change.locale
         )
       )
     );
@@ -107,4 +83,4 @@ class PropagateThesaurusTranslationService {
 }
 
 export { PropagateThesaurusTranslationService };
-export type { ContextLike, LocaleTranslationLike };
+export type { ThesaurusValueChange };

@@ -1,10 +1,7 @@
 /* eslint-disable max-statements */
 import { ObjectId } from 'mongodb';
 
-import {
-  IndexedContextValues,
-  toIndexedTranslations,
-} from '#api/core/infrastructure/express/translation/LegacyTranslationDtoMapper.js';
+import { IndexedContextValues } from '#api/core/infrastructure/express/translation/LegacyTranslationDtoMapper.js';
 import { TranslationsQueryServiceFactory } from '#api/core/infrastructure/factories/TranslationsQueryServiceFactory.js';
 import { TranslationsDataSourceFactory } from '#api/core/infrastructure/factories/TranslationsDataSourceFactory.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
@@ -20,9 +17,7 @@ import { mockCsvFileReadStream } from './helpers.js';
 
 const getTranslation = async (lang: string, id: string | ObjectId) =>
   testingEnvironment.runWithContext(async () => {
-    const indexed = toIndexedTranslations(
-      await TranslationsQueryServiceFactory.default().getLegacy()
-    );
+    const indexed = await TranslationsQueryServiceFactory.default().getLegacy();
     return (
       (indexed.find(t => t.locale === lang)?.contexts || []).find(c => c?.id === id?.toString())
         ?.values || ({} as IndexedContextValues)

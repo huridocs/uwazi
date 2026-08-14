@@ -2,17 +2,16 @@ import { AbstractUseCase } from '../libs/UseCase.js';
 import {
   LocaleTranslationInput,
   flattenLocaleTranslation,
-  prepareLocaleTranslation,
+  toValueMap,
 } from './translation/localeTranslationDto.js';
 import { TranslationsQueryService } from './translation/TranslationsQueryService.js';
 import { TranslationsService } from './translation/TranslationsService.js';
 import { PropagateThesaurusTranslationService } from './translation/PropagateThesaurusTranslationService.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
-import { TranslationType } from '#shared/translationType.js';
 
 type Input = LocaleTranslationInput;
 
-type Output = TranslationType;
+type Output = LocaleTranslationInput;
 
 type Deps = {
   translationsService: TranslationsService;
@@ -22,21 +21,44 @@ type Deps = {
 
 class SaveLocaleTranslationsUseCase extends AbstractUseCase<Input, Output, Deps> {
   async execute(translation: Input): Promise<Output> {
-    const translationToSave = prepareLocaleTranslation(translation);
-    const [currentTranslationData] = await this.deps.query.getLegacy({
-      locale: translationToSave.locale as LanguageISO6391,
-    });
+    const locale = translation.locale as LanguageISO6391 | undefined;
+    if (!locale) {
+      throw new Error('translation to save should have a locale');
+    }
 
-    await this.transactionManager.run(async () => {
-      await this.deps.translationsService.saveEntries(flattenLocaleTranslation(translationToSave));
-    });
+    const entries = flattenLocaleTranslation(translation);
+    const thesaurusContexts = (translation.contexts || []).filter(context => context.id);
 
-    await this.deps.propagateThesaurusTranslation.forLocale(
-      translationToSave,
-      currentTranslationData?.contexts || []
+    const snapshots = await Promise.all(
+      thesaurusContexts.map(async context => {
+        const rows = await this.deps.query.getByLanguageAndContext(locale, context.id!).all();
+        const type = context.type || rows[0]?.context.type;
+        return {
+          contextId: context.id!,
+          type,
+          previous: toValueMap(rows),
+          next: context.values || {},
+        };
+      })
     );
 
-    return translationToSave;
+    await this.transactionManager.run(async () => {
+      await this.deps.translationsService.saveEntries(entries);
+    });
+
+    await Promise.all(
+      snapshots.map(async snapshot =>
+        this.deps.propagateThesaurusTranslation.propagate({
+          locale,
+          contextId: snapshot.contextId,
+          type: snapshot.type,
+          previous: snapshot.previous,
+          next: snapshot.next,
+        })
+      )
+    );
+
+    return translation;
   }
 }
 

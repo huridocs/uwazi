@@ -2,7 +2,6 @@ import { TestUtils } from '#api/common.v2/utils/Test.js';
 import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js';
 import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
 import { TranslationsDataSource } from '#api/core/application/contracts/TranslationsDataSource.js';
-import { prepareLocaleTranslation } from '#api/core/application/translation/localeTranslationDto.js';
 import { TranslationsService } from '#api/core/application/translation/TranslationsService.js';
 import { ValidateTranslationsService } from '#api/core/application/translation/ValidateTranslationsService.js';
 import { Translation } from '#api/core/domain/translation/Translation.js';
@@ -52,23 +51,6 @@ const createSut = (isRunning = true) => {
 };
 
 describe('TranslationsService', () => {
-  describe('prepareLocaleTranslation', () => {
-    it('should require a locale', () => {
-      expect(() => prepareLocaleTranslation({ contexts: [] })).toThrow(
-        'translation to save should have a locale'
-      );
-    });
-
-    it('should convert indexed context values to a list', () => {
-      const prepared = prepareLocaleTranslation({
-        locale: 'en',
-        contexts: [{ id: 'ctx-1', label: 'Context', type: 'Entity', values: { Title: 'Title' } }],
-      });
-
-      expect(prepared.contexts?.[0].values).toEqual([{ key: 'Title', value: 'Title' }]);
-    });
-  });
-
   describe('ambient transaction requirement', () => {
     it.each([
       ['insertEntries', async (sut: TranslationsService) => sut.insertEntries([entry()])],

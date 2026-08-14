@@ -2,11 +2,8 @@ import { AbstractUseCase } from '../libs/UseCase.js';
 import { TranslationEntryInput } from './translation/ValidateTranslationsService.js';
 import { TranslationsQueryService } from './translation/TranslationsQueryService.js';
 import { TranslationsService } from './translation/TranslationsService.js';
-import {
-  ContextLike,
-  LocaleTranslationLike,
-  PropagateThesaurusTranslationService,
-} from './translation/PropagateThesaurusTranslationService.js';
+import { PropagateThesaurusTranslationService } from './translation/PropagateThesaurusTranslationService.js';
+import { toValueMap } from './translation/localeTranslationDto.js';
 import { Translation } from '../domain/translation/Translation.js';
 
 type Input = {
@@ -21,9 +18,10 @@ type Deps = {
   propagateThesaurusTranslation: PropagateThesaurusTranslationService;
 };
 
-type LocaleContextSnapshot = {
+type LocaleValueSnapshot = {
   locale: string;
-  context: ContextLike;
+  type: string;
+  values: Record<string, string>;
 };
 
 const groupByLanguage = (translations: Translation[]): Map<string, Translation[]> => {
@@ -36,30 +34,17 @@ const groupByLanguage = (translations: Translation[]): Map<string, Translation[]
   return byLanguage;
 };
 
-const toContextSnapshot = (
-  contextId: string,
-  contextMeta: Translation['context'],
-  translations: Translation[]
-): ContextLike => ({
-  id: contextId,
-  type: contextMeta.type,
-  values: translations.map(translation => ({
-    key: translation.key,
-    value: translation.value,
-  })),
-});
-
 class SaveTranslationEntriesUseCase extends AbstractUseCase<Input, Output, Deps> {
-  private async loadContextSnapshots(contextId: string): Promise<LocaleContextSnapshot[]> {
+  private async loadContextSnapshots(contextId: string): Promise<LocaleValueSnapshot[]> {
     const translations = await this.deps.query.getByContext(contextId).all();
     if (!translations.length) {
       return [];
     }
 
-    const byLanguage = groupByLanguage(translations);
-    return [...byLanguage.entries()].map(([locale, languageTranslations]) => ({
+    return [...groupByLanguage(translations).entries()].map(([locale, languageTranslations]) => ({
       locale,
-      context: toContextSnapshot(contextId, languageTranslations[0].context, languageTranslations),
+      type: languageTranslations[0].context.type,
+      values: toValueMap(languageTranslations),
     }));
   }
 
@@ -75,23 +60,26 @@ class SaveTranslationEntriesUseCase extends AbstractUseCase<Input, Output, Deps>
       await this.deps.translationsService.saveEntries(translations);
     });
 
-    const isThesaurus = previousSnapshots[0]?.context.type === 'Thesaurus';
-    if (!isThesaurus) {
+    if (previousSnapshots[0]?.type !== 'Thesaurus') {
       return;
     }
 
-    const updatedSnapshots = await this.loadContextSnapshots(context.id);
+    const incomingByLocale: Record<string, Record<string, string>> = {};
+    translations.forEach(entry => {
+      incomingByLocale[entry.language] = incomingByLocale[entry.language] || {};
+      incomingByLocale[entry.language][entry.key] = entry.value;
+    });
+
     await Promise.all(
-      updatedSnapshots.map(async updated => {
-        const previous =
-          previousSnapshots.find(snapshot => snapshot.locale === updated.locale)?.context ||
-          context;
-        const localeTranslation: LocaleTranslationLike = {
-          locale: updated.locale,
-          contexts: [updated.context],
-        };
-        return this.deps.propagateThesaurusTranslation.forContext(localeTranslation, previous);
-      })
+      previousSnapshots.map(async snapshot =>
+        this.deps.propagateThesaurusTranslation.propagate({
+          locale: snapshot.locale,
+          contextId: context.id,
+          type: snapshot.type,
+          previous: snapshot.values,
+          next: { ...snapshot.values, ...(incomingByLocale[snapshot.locale] || {}) },
+        })
+      )
     );
   }
 }

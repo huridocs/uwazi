@@ -7,7 +7,6 @@ import { TransactionManagerFactory } from '#api/core/infrastructure/factories/Tr
 import { TranslationsDataSourceFactory } from '#api/core/infrastructure/factories/TranslationsDataSourceFactory.js';
 import { TranslationsServiceFactory } from '#api/core/infrastructure/factories/TranslationsServiceFactory.js';
 import { TranslationsQueryServiceFactory } from '#api/core/infrastructure/factories/TranslationsQueryServiceFactory.js';
-import { toIndexedTranslations } from '#api/core/infrastructure/express/translation/LegacyTranslationDtoMapper.js';
 import { RelationshipTypeTranslationService } from '../RelationshipTypeTranslationService.js';
 
 const factory = getFixturesFactory();
@@ -71,12 +70,10 @@ describe('RelationshipTypeTranslationService', () => {
     });
 
     const translationWithContext = await testingEnvironment.runWithContext(async () => {
-      const [translation] = toIndexedTranslations(
-        await TranslationsQueryServiceFactory.default().getLegacy({
-          locale: 'en',
-          context: 'type-id',
-        })
-      );
+      const [translation] = await TranslationsQueryServiceFactory.default().getLegacy({
+        locale: 'en',
+        context: 'type-id',
+      });
       return translation;
     });
 
@@ -102,12 +99,10 @@ describe('RelationshipTypeTranslationService', () => {
     });
 
     const translationWithContext = await testingEnvironment.runWithContext(async () => {
-      const [translation] = toIndexedTranslations(
-        await TranslationsQueryServiceFactory.default().getLegacy({
-          locale: 'en',
-          context: 'type-id',
-        })
-      );
+      const [translation] = await TranslationsQueryServiceFactory.default().getLegacy({
+        locale: 'en',
+        context: 'type-id',
+      });
       return translation;
     });
 
@@ -130,12 +125,10 @@ describe('RelationshipTypeTranslationService', () => {
     });
 
     const translationWithContext = await testingEnvironment.runWithContext(async () =>
-      toIndexedTranslations(
-        await TranslationsQueryServiceFactory.default().getLegacy({
-          locale: 'en',
-          context: 'type-id',
-        })
-      )
+      TranslationsQueryServiceFactory.default().getLegacy({
+        locale: 'en',
+        context: 'type-id',
+      })
     );
     expect(translationWithContext).toEqual([
       expect.objectContaining({ locale: 'en', contexts: [] }),

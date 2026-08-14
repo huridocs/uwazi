@@ -3,10 +3,17 @@ import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import {
   TranslationContext as LocaleTranslationContext,
   TranslationType,
-  TranslationValue,
 } from '#shared/translationType.js';
 
 type IndexedContextValues = Record<string, string>;
+
+type IndexedContext = Omit<LocaleTranslationContext, 'values'> & {
+  values: IndexedContextValues;
+};
+
+type IndexedTranslations = Omit<TranslationType, 'contexts'> & {
+  contexts?: IndexedContext[];
+};
 
 type LocaleContextInput = Omit<LocaleTranslationContext, 'values'> & {
   values?: IndexedContextValues;
@@ -16,49 +23,40 @@ type LocaleTranslationInput = Omit<TranslationType, 'contexts'> & {
   contexts?: LocaleContextInput[];
 };
 
-function indexedValuesToList(indexedValues: Record<string, string>): TranslationValue[] {
-  return Object.keys(indexedValues)
-    .filter(key => indexedValues[key])
-    .map(key => ({ key, value: indexedValues[key] }));
-}
-
-function processContextValues(context: LocaleContextInput): LocaleTranslationContext {
-  return {
-    ...context,
-    values: indexedValuesToList(context.values || {}),
-  };
-}
-
-function prepareLocaleTranslation(translation: LocaleTranslationInput): TranslationType {
+function flattenLocaleTranslation(translation: LocaleTranslationInput): TranslationEntryInput[] {
   if (!translation.locale) {
     throw new Error('translation to save should have a locale');
   }
 
-  return {
-    ...translation,
-    contexts: translation.contexts && translation.contexts.map(processContextValues),
-  };
-}
-
-function flattenLocaleTranslation(translation: TranslationType): TranslationEntryInput[] {
-  if (!translation.contexts?.length || !translation.locale) {
+  if (!translation.contexts?.length) {
     return [];
   }
 
-  return translation.contexts.reduce<TranslationEntryInput[]>((flatTranslations, context) => {
-    if (context.values) {
-      context.values.forEach(contextValue => {
-        flatTranslations.push({
-          language: translation.locale as LanguageISO6391,
-          key: contextValue.key!,
-          value: contextValue.value!,
-          context: { type: context.type!, label: context.label!, id: context.id! },
-        });
-      });
-    }
-    return flatTranslations;
-  }, []);
+  const language = translation.locale as LanguageISO6391;
+
+  return translation.contexts.flatMap(context =>
+    Object.entries(context.values || {})
+      .filter(([, value]) => value)
+      .map(([key, value]) => ({
+        language,
+        key,
+        value,
+        context: {
+          type: context.type!,
+          label: context.label!,
+          id: context.id!,
+        },
+      }))
+  );
 }
 
-export { prepareLocaleTranslation, flattenLocaleTranslation };
-export type { LocaleTranslationInput };
+function toValueMap(translations: { key: string; value: string }[]): Record<string, string> {
+  const values: Record<string, string> = {};
+  translations.forEach(translation => {
+    values[translation.key] = translation.value;
+  });
+  return values;
+}
+
+export { flattenLocaleTranslation, toValueMap };
+export type { IndexedContext, IndexedTranslations, LocaleTranslationInput };

@@ -300,7 +300,8 @@ All writers must stop calling `#api/i18n/translations` and use core ports/use ca
   - [x] Register `models.translationsV2` from sync (`registerSyncHandlers` → `registerTranslationsV2SyncModel`); delete `i18n/v2_support`
   - [x] Delete `i18n/translations.ts` façade; migrate remaining specs to core factories / QueryService (no façade-shaped helper module)
 - [x] **2A polish (superseded by D12):** do **not** extend `TranslationsService` with pass-through DS ops. Thesaurus / DeleteTemplate / RT delete / DeleteLanguage call `TranslationsDataSource` directly inside the parent `TM.run()`. Service keeps only multi-step orchestration (`insertEntries` / `upsertEntries` / `saveEntries` / `createContext` / `updateContext`)
-- [x] **D13:** locale save input is map-only; `prepareLocaleTranslation` converts maps → list for propagate/return; `flattenLocaleTranslation` at the UseCase write edge. HTTP AJV already `values: object`. Removed array-input / duplicate-key tests (maps cannot duplicate keys)
+- [x] **D13:** locale save input is map-only; `flattenLocaleTranslation` at the UseCase write edge. HTTP AJV already `values: object`. Removed array-input / duplicate-key tests (maps cannot duplicate keys)
+- [x] **A1 + A3 (diagnosis):** `getLegacy` / `toLegacyDto` emit maps (GET-only); writes snapshot with `getByLanguageAndContext` / `getByContext`; propagate diffs maps; CSV import patches one context. No array layover; no `prepareLocaleTranslation`; controllers/SSR no longer wrap `toIndexedTranslations`
 - [x] Parity tests for façade + RT/thesaurus/language + core DS/domain; expand syncWorker smoke as routes move
 - [x] **Sync handler factory peel (motor seam)** — see dedicated section below
 - [x] `preserve.createEmptyThesauri` → `CreateThesaurusUseCase` (stop ad-hoc `TM.run` around `ThesauriService`)
@@ -348,7 +349,10 @@ Single DS writes do not belong on `TranslationsService`. Callers that already sh
 - Tests: seed writes with `translationsV2` fixtures (or collection insert). Do **not** add a core test-helper write API. The leftover i18n parity spec may call `TranslationsService` and/or `TranslationsDataSource` in-file inside `TM.run()`
 - Application services: `TranslationsService` (orchestration only + `ensureTransaction` on remaining methods), `TranslationsQueryService` (reads), `ValidateTranslationsService`, `PropagateThesaurusTranslationService` (post-commit)
 - Transaction boundaries: UseCases open one `transactionManager.run()` then call `TranslationsService` **or** `TranslationsDataSource`; no UC→UC nesting; thesaurus entity propagate runs **after** successful commit (outside TX)
-- Locale write DTO: `LocaleTranslationInput` is map-only. Indexed maps stay a GET mapper (`toIndexedTranslations` / `prepareLocaleTranslation`). Writes flatten at the UseCase (`flattenLocaleTranslation` → `saveEntries`)
+- Locale write DTO: `LocaleTranslationInput` is map-only. Writes flatten maps → entries (`flattenLocaleTranslation` → `saveEntries`). GET mammoth is maps (`getLegacy` / `toLegacyDto`); `toIndexedTranslations` remains only for leftover array `TranslationType` (mapper spec). `prepareLocaleTranslation` deleted
+- QueryService by-item lookups: `getContextValueMap`, `getLanguageValueMaps`; `getLegacy` is GET-only (maps + System/Menu/Filters → `Uwazi UI`). Save paths snapshot with `getByLanguageAndContext` / `getByContext`, not `getLegacy`
+- `PropagateThesaurusTranslationService.propagate({ locale, contextId, type, previous, next })` diffs maps
+- CSV `loadTranslations` reads one context per language column and saves only that context
 - Cross-aggregate writers (same shared TM as parent UseCase):
   - Templates create/update: `TemplateTranslationService` → `TranslationsService.createContext` / `updateContext`
   - Relationship types create/update: `RelationshipTypeTranslationService` → `TranslationsService.createContext` / `updateContext`
@@ -360,7 +364,6 @@ Single DS writes do not belong on `TranslationsService`. Callers that already sh
   - `AvailableLanguagesQueryService` for `GET /api/languages`
 - Removed misleading `Legacy*TranslationService` adapters (they were domain sync services, not old translations)
 - Tests: unit `TranslationsService.spec`; integration specs for real UseCases only; `i18n/specs/translations.spec.ts` uses QueryService / remaining UC factories / in-file `TranslationsService` + DS (no façade, no test-only UCs, no core test-helper module)
-- QueryService by-item lookups: `getContextValueMap`, `getLanguageValueMaps`; `getLegacy` / `LegacyTranslationDtoMapper` only at mammoth delivery edges (HTTP + SSR)
 - Express: GET → QueryService; languages → AvailableLanguagesQueryService; populate → PopulateTranslationsController; Save* → orchestrator UseCase factories
 - Thesaurus metadata rename: `ThesaurusMetadataRenamerAdapter` → `denormalizeThesauriLabelInMetadata`
 - `app/api/i18n.v2/` removed; `i18n/routes` deleted; **`i18n/translations.ts` + `i18n/v2_support.ts` deleted**
@@ -379,7 +382,7 @@ Single DS writes do not belong on `TranslationsService`. Callers that already sh
 - [x] GETs use QueryService/DAO (no Get*UseCase)
 - [x] Mutations use Create/Update/Delete use cases — no application Upsert use case
 - [x] Translation UseCases exist only for controller/job (or current settings.ts) callers — no test-only UCs
-- [x] Internal non-delivery callers do not use `getLegacy` (csvExporter / denormalize / search / SaveTranslationEntries)
+- [x] Internal non-delivery callers do not use `getLegacy` (csvExporter / denormalize / search / Save* writes / CSV import). `getLegacy` is GET-only maps (HTTP, SSR, socket body, CSV import return)
 - [x] CSV / SaveTranslationsController / PendingThesauriValuesApplier do not call façade `save`/`updateEntries` (use core factories)
 - [x] No runtime production imports of `#api/i18n/translations` (façade deleted; SSR uses QueryService)
 - [x] Template/RT **create/update** via `TemplateTranslationService` / `RelationshipTypeTranslationService` → `TranslationsService` (no Legacy adapters; shared parent TM). RT **delete**, Thesaurus, DeleteTemplate, DeleteLanguage → `TranslationsDataSource` (D12)
@@ -440,7 +443,22 @@ Kept on `TranslationsService` (with `ensureTransaction`):
 
 Callers of pass-through methods now use the DS: Thesaurus, DeleteTemplate, DeleteThesaurus, RT delete, DeleteLanguage, i18n parity deletes.
 
-HTTP `POST /api/translations` AJV already requires `values` as object/map. Array / `TranslationValue[]` was a façade leftover. `LocaleTranslationInput` is map-only; `prepareLocaleTranslation` is the GET-shaped list conversion for propagate/return; `flattenLocaleTranslation` is the write edge. Duplicate-key checks are gone (maps cannot duplicate keys).
+HTTP `POST /api/translations` AJV already requires `values` as object/map. Array / `TranslationValue[]` was a façade leftover. `LocaleTranslationInput` is map-only; `flattenLocaleTranslation` is the write edge. Duplicate-key checks are gone (maps cannot duplicate keys).
+
+### A1 + A3 — no third shape; saves do not load the locale mammoth
+
+**Request (diagnosis):** persistence and domain stay flat `Translation`. HTTP legacy stays maps. Stop assembling `TranslationValue[]` as an internal interchange. Snapshot writes with `getByLanguageAndContext` / `getByContext`, not `getLegacy({ locale })`.
+
+**Landed:**
+
+- `TranslationsQueryService.toLegacyDto` / `getLegacy` emit `IndexedTranslations` (maps) and coerce System/Menu/Filters → `Uwazi UI`. GET controllers, Save response/socket, populate, AddLanguage socket, SSR, and CSV import return call `getLegacy` directly — no `toIndexedTranslations` wrap
+- `prepareLocaleTranslation` deleted. Writes: maps → `flattenLocaleTranslation` → `saveEntries`
+- `PropagateThesaurusTranslationService.propagate` diffs `previous`/`next` maps (new keys absent from previous still do not rename metadata)
+- `SaveLocaleTranslations` snapshots only payload contexts via `getByLanguageAndContext`. `UpdateEntriesByContext` loads that context per locale, not the whole language. `SaveTranslationEntries` still uses `getByContext`
+- `csvLoader.loadTranslations` patches **one** context per language column (`getByLanguageAndContext` + `SaveLocaleTranslations` with that context only). Final HTTP return can still `getLegacy()` (import contract)
+- Empty-string skip on flatten/propagate kept for parity
+
+**Not this slice:** A2 (two context-update engines), B1/B5 (Settings TX / thin `UpdateTranslationContextUseCase`), B2–B4, C1–C2 (`toIndexedTranslations` still exists for array `TranslationType` in the mapper spec).
 
 ### Production SSR CPU (keep these; do not regress)
 
@@ -474,7 +492,8 @@ Explicitly **not** shipped: process/tenant-wide translations read cache. Topolog
 - Do not add `GetTranslationsUseCase` “because relationship types still have Get*”
 - Do not add a translations UseCase because a spec needs to create/update/delete data — seed fixtures, or call `TranslationsService` / `TranslationsDataSource` inside `TM.run()` in that spec. Do not add a core `translationsTestHelpers` module
 - Do not put pass-through DS methods (`insert`, `deleteBy*`, `updateKeysByContextV2`, `updateContextLabel`, …) back on `TranslationsService`, and do not add `ensureTransaction` to the DS
-- Do not re-widen `LocaleTranslationInput` / `SaveLocaleTranslations` to accept `TranslationValue[]` — HTTP and CSV already send maps; indexed maps are a GET mapper
+- Do not re-widen `LocaleTranslationInput` / `SaveLocaleTranslations` to accept `TranslationValue[]` — HTTP and CSV already send maps; `getLegacy` already returns maps
+- Do not put `getLegacy` back on save/propagate/CSV import writes — snapshot with `getByLanguageAndContext` / `getByContext`
 - Do not reintroduce process-wide / tenant-wide translations read cache (12 Node processes × 3 servers, 500+ tenants, 5 workers; in-process invalidation cannot be consistent)
 - When Postgres starts: data copy before flag; one-way flag; RLS in same schema migration; keep sync namespace `translationsV2`
 - Do not leave sync on direct `new MongoTranslationsSyncDataSource` / `models.translationsV2` once the SyncHandlerFactory peel lands — that blocks motor swap

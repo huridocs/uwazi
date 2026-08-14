@@ -2,9 +2,18 @@ import { ResultSet } from '#api/core/application/contracts/ResultSet.js';
 import { TranslationsDataSource } from '#api/core/application/contracts/TranslationsDataSource.js';
 import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js';
 import { Translation } from '#api/core/domain/translation/Translation.js';
-import { EnforcedWithId } from '#api/odm/index.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
-import { TranslationContext, TranslationType, TranslationValue } from '#shared/translationType.js';
+import {
+  IndexedContext,
+  IndexedTranslations,
+} from '#api/core/application/translation/localeTranslationDto.js';
+
+function legacyContextType(context: Translation['context']): IndexedContext['type'] {
+  if (context.id === 'System' || context.id === 'Filters' || context.id === 'Menu') {
+    return 'Uwazi UI';
+  }
+  return context.type;
+}
 
 export class TranslationsQueryService {
   constructor(
@@ -58,17 +67,15 @@ export class TranslationsQueryService {
   async toLegacyDto(
     load: () => ResultSet<Translation>,
     onlyLanguage?: LanguageISO6391
-  ): Promise<EnforcedWithId<TranslationType>[]> {
+  ): Promise<IndexedTranslations[]> {
     let languageKeys = await this.settingsDS.getLanguageKeys();
     if (onlyLanguage) {
       languageKeys = [onlyLanguage];
     }
 
-    const resultMap: { [language: string]: TranslationType & { locale: string } } = {};
+    const resultMap: { [language: string]: IndexedTranslations & { locale: string } } = {};
     const contexts: {
-      [language: string]: {
-        [context: string]: TranslationContext & { values: TranslationValue[] };
-      };
+      [language: string]: { [context: string]: IndexedContext };
     } = {};
 
     languageKeys.forEach(key => {
@@ -89,20 +96,20 @@ export class TranslationsQueryService {
         contexts[translation.language][translation.context.id] = {
           id: translation.context.id,
           label: translation.context.label,
-          type: translation.context.type,
-          values: [],
+          type: legacyContextType(translation.context),
+          values: {},
         };
       }
-      contexts[translation.language][translation.context.id].values.push({
-        key: translation.key,
-        value: translation.value,
-      });
+      if (translation.key && translation.value) {
+        contexts[translation.language][translation.context.id].values[translation.key] =
+          translation.value;
+      }
     });
 
     return Object.values(resultMap).map(translation => ({
       ...translation,
-      contexts: Object.values(contexts[translation.locale]),
-    })) as EnforcedWithId<TranslationType>[];
+      contexts: Object.values(contexts[translation.locale as string]),
+    }));
   }
 
   async getLegacy(query: { locale?: LanguageISO6391; context?: string } = {}) {

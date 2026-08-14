@@ -21,7 +21,6 @@ import { TranslationsDataSourceFactory } from '#api/core/infrastructure/factorie
 import { TranslationsQueryServiceFactory } from '#api/core/infrastructure/factories/TranslationsQueryServiceFactory.js';
 import { TranslationsServiceFactory } from '#api/core/infrastructure/factories/TranslationsServiceFactory.js';
 import { UpdateEntriesByContextUseCaseFactory } from '#api/core/infrastructure/factories/UpdateEntriesByContextUseCaseFactory.js';
-import { toIndexedTranslations } from '#api/core/infrastructure/express/translation/LegacyTranslationDtoMapper.js';
 import * as setupSockets from '#api/socketio/setupSockets.js';
 import { ContextType } from '#shared/translationSchema.js';
 import { LanguageISO6391, LanguageSchema } from '#shared/types/commonTypes.js';
@@ -46,9 +45,7 @@ const withTranslationWrites = async (
   });
 
 const getLegacyTranslations = async (query: { locale?: LanguageISO6391; context?: string } = {}) =>
-  withContext(async () =>
-    toIndexedTranslations(await TranslationsQueryServiceFactory.default().getLegacy(query))
-  );
+  withContext(async () => TranslationsQueryServiceFactory.default().getLegacy(query));
 
 const saveLocaleTranslations = async (translation: LocaleTranslationInput) =>
   withContext(async () => SaveLocaleTranslationsUseCaseFactory.default().execute(translation));
@@ -142,8 +139,7 @@ describe('translations', () => {
 
       await saveTranslationEntries(translationsToSave);
       const updatedTranslations = await getTranslationsByContext(dictionaryId.toString());
-      initialTranslations![0]!.contexts![0]!.values!.find(v => v.key === 'Password')!.value =
-        'Changed Password ES';
+      initialTranslations![0]!.contexts![0]!.values!.Password = 'Changed Password ES';
       expect(updatedTranslations).toEqual(initialTranslations);
 
       const updatedEntity = (await entities.get({ language: 'es', sharedId: 'entity1' }))[0];

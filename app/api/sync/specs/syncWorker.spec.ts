@@ -35,7 +35,6 @@ import db, { DBFixture } from '#api/utils/testing_db.js';
 import { advancedSort } from '#app/utils/advancedSort.js';
 import { RelationshipTypesDataSourceFactory } from '#api/core/infrastructure/factories/RelationshipTypesDataSourceFactory.js';
 import { TranslationsQueryServiceFactory } from '#api/core/infrastructure/factories/TranslationsQueryServiceFactory.js';
-import { toIndexedTranslations } from '#api/core/infrastructure/express/translation/LegacyTranslationDtoMapper.js';
 import { FetchResponseError } from '#shared/JSONRequest.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
@@ -408,7 +407,7 @@ describe('syncWorker', () => {
         .find({})
         .toArray();
       const syncedTranslations = await testingEnvironment.runWithContext(async () =>
-        toIndexedTranslations(await TranslationsQueryServiceFactory.default().getLegacy({}))
+        TranslationsQueryServiceFactory.default().getLegacy({})
       );
 
       expect(syncedTranslationsV2.filter(i => i.key === 'System Key')).toEqual([
