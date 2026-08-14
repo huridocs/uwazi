@@ -611,9 +611,9 @@
       the trailing one.
     </p>
     <div class="stamp">
-      <span>Verified against <b>5aa966931b</b></span>
+      <span>Verified against <b>f27be07ca7</b></span>
       <span>Branch <b>migrate-users-to-postgresql</b></span>
-      <span>Last reviewed <b>2026-08-12</b></span>
+      <span>Last reviewed <b>2026-08-14</b></span>
     </div>
   </header>
 
@@ -776,9 +776,11 @@
             <td><span class="pill done">Done</span></td>
             <td><span class="flag off">postgresUsers</span></td>
             <td class="note">
-              Login, 2FA, lockout, recovery and CRUD all run as V2 use cases with routes in core.
-              Postgres DAO, mapper, all 17 data-source methods, query service and backfill config
-              are in place, with a cross-backend consistency suite. Flag ships off — needs tenant
+              Login, 2FA, lockout, recovery and CRUD all run as V2 use cases with routes in core;
+              the V1 module now serves only reads and the login / unlock / recovery fallbacks, with
+              every user write unflagged. Postgres DAO, mapper, all 17 data-source methods, query
+              service and backfill config are in place, but the two data sources are specced
+              separately — there is no shared cross-backend suite. Flag ships off — needs tenant
               rollout.
             </td>
           </tr>
@@ -1092,8 +1094,9 @@
         <h3>Retire the legacy user-groups consumers</h3>
         <p>
           <code>collaborators.ts</code>, <code>entitiesPermissions.ts</code>,
-          <code>search.js</code> and <code>userGroupsMembers.ts</code> still call the deprecated V1
-          module, so it cannot be deleted and can drift from the V2 path.
+          <code>search.js</code>, <code>activitylog/helpers.js</code>,
+          <code>userGroupsMembers.ts</code> and <code>ServerUserGroupsService.ts</code> still call
+          the deprecated V1 module, so it cannot be deleted and can drift from the V2 path.
         </p>
       </li>
       <li>
@@ -1140,9 +1143,10 @@
         <span class="tag">Uneven parity</span>
         <h3>Only half the areas have a consistency suite</h3>
         <p>
-          Files, users, user groups and captcha run the same assertions against both backends, and
-          have already caught real divergences. Templates, thesauri, relationship types and password
-          recoveries shipped without one.
+          Files, user groups and captcha run the same assertions against both backends, and have
+          already caught real divergences. Users, templates, thesauri, relationship types and
+          password recoveries shipped without one — users has a spec per backend instead, which
+          cannot catch the two drifting apart.
         </p>
       </article>
       <article class="card">
@@ -1203,7 +1207,7 @@
 
   <footer>
     <p>
-      Derived by reading the tree at 5aa966931b: <code>app/api/core</code>,
+      Derived by reading the tree at f27be07ca7: <code>app/api/core</code>,
       <code>app/api/*.v2</code>, the legacy <code>app/api</code> modules,
       <code>postgresql/schema_migrations</code>, <code>postgresql/migrations/configs</code>, the
       factories, and the feature flags in <code>tenantsModel.ts</code> / <code>config.ts</code>.

@@ -1,6 +1,5 @@
 import type { NextFunction, Request, Response } from 'express';
 import request from 'supertest';
-import { DeleteResult } from 'mongodb';
 import { setUpApp } from '#api/utils/testingRoutes.js';
 import { WithId } from '#api/odm/model.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
@@ -230,31 +229,12 @@ describe('users routes', () => {
   });
 
   describe('DELETE', () => {
-    beforeEach(() => {
-      jest
-        .spyOn(users, 'delete')
-        .mockImplementation(async () => Promise.resolve({} as DeleteResult));
-    });
-
-    it('should invalidate if the schema is not matched', async () => {
-      const response = await request(app).delete('/api/users');
-      expect(response.status).toBe(422);
-    });
-
     it('should need authorization', async () => {
       currentUser = editorUser;
       const response = await request(app)
         .delete('/api/users')
         .query({ ids: JSON.stringify(['user1']) });
       expect(response.status).toBe(401);
-    });
-
-    it('should use users to delete it', async () => {
-      const response = await request(app)
-        .delete('/api/users')
-        .query({ ids: JSON.stringify(['userToDeleteId']) });
-      expect(response.status).toBe(200);
-      expect(users.delete).toHaveBeenCalledWith(['userToDeleteId'], currentUser);
     });
   });
 });

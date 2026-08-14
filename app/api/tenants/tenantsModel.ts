@@ -46,7 +46,6 @@ const mongoSchema = new mongoose.Schema({
     postgresRelationshipTypes: Boolean,
     aiAssistant: Boolean,
     aiAssistantServiceUrl: String,
-    v2UsersDelete: Boolean,
     v2UsersGet: Boolean,
     postgresPasswordRecoveries: Boolean,
     postgresUsers: Boolean,

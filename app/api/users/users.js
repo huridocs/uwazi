@@ -4,8 +4,7 @@ import SHA256 from 'crypto-js/sha256.js';
 import { createError } from '#api/utils/index.js';
 import { encryptPassword, comparePasswords } from '#api/auth/encryptPassword.js';
 import * as usersUtils from '#api/auth2fa/usersUtils.js';
-import { getByMemberIdList, removeUsersFromAllGroups } from '#api/usergroups/userGroupsMembers.js';
-import { PUBLIC_USER_ID } from '#api/core/domain/user/User.js';
+import { getByMemberIdList } from '#api/usergroups/userGroupsMembers.js';
 
 import mailer from '../utils/mailer.js';
 import model from './usersModel.js';
@@ -201,31 +200,6 @@ export default {
     }
 
     return user ?? null;
-  },
-
-  /**
-   * @deprecated
-   * v1 user deletion flow. Only reached while the tenant's `v2UsersDelete` flag
-   * is off (see `DeleteUserController`). Use the v2 `DeleteUsers` use case
-   * (`DeleteUsersUseCaseFactory`) instead.
-   */
-  async delete(_ids, currentUser) {
-    const ids = _ids.map(id => id.toString());
-
-    if (ids.includes(PUBLIC_USER_ID.toString())) {
-      return Promise.reject(createError('Cannot delete system users', 403));
-    }
-
-    if (_ids.find(id => id.toString() === currentUser._id.toString())) {
-      return Promise.reject(createError('Can not delete yourself', 403));
-    }
-
-    const count = await model.count({ _id: { $ne: PUBLIC_USER_ID } });
-    if (count > _ids.length) {
-      await removeUsersFromAllGroups(ids);
-      return model.delete({ _id: { $in: _ids } });
-    }
-    return Promise.reject(createError('Can not delete last user(s).', 403));
   },
 
   /**

@@ -23,12 +23,12 @@ class DeleteUsers extends AbstractUseCase<Input, Output, Deps> {
       throw new IsDeleteOfPublicUser();
     }
 
-    if ((await this.deps.usersDS.countActiveUsers()) === 1) {
-      throw new IsDeleteOfLastUser();
-    }
-
     if (ids.includes(this.actorId)) {
       throw new IsDeletingSelf();
+    }
+
+    if ((await this.deps.usersDS.countActiveUsers()) === 1) {
+      throw new IsDeleteOfLastUser();
     }
 
     let deletedCount = 0;
