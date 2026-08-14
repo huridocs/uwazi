@@ -12,7 +12,7 @@ import { normalizeLegacyEntityForFacade, sanitizeForTemplate } from '../legacyMu
 
 const getEntityWithDocs = async ({ sharedId, language }) => {
   const entity = (await testingEnvironment.db.getAllFrom('entities')).find(
-    e => e.sharedId === sharedId && (language && e.language === language)
+    e => e.sharedId === sharedId && language && e.language === language
   );
   entity.documents = (await testingEnvironment.db.getAllFrom('files')).filter(
     f => f.entity === sharedId

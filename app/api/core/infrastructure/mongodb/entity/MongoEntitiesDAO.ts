@@ -54,7 +54,10 @@ class MongoEntitiesDAO extends MongoDataSource<EntityDBO> implements EntitiesDAO
   }
 
   @TimedMethod('MongoEntitiesDAO.getWithFiles')
-  async getWithFiles(match: GetWithFilesMatch, options: GetWithFilesOptions = {}): Promise<EntityWithFiles[]> {
+  async getWithFiles(
+    match: GetWithFilesMatch,
+    options: GetWithFilesOptions = {}
+  ): Promise<EntityWithFiles[]> {
     if (this.filesDAO) {
       return this.getWithFilesInMemory(match, options.select);
     }
@@ -171,7 +174,10 @@ class MongoEntitiesDAO extends MongoDataSource<EntityDBO> implements EntitiesDAO
     return this.getCollection().aggregate<EntityWithFilesInternal>(pipeline);
   }
 
-  private async getWithFilesInMemory(match: GetWithFilesMatch, select?: string[]): Promise<EntityWithFiles[]> {
+  private async getWithFilesInMemory(
+    match: GetWithFilesMatch,
+    select?: string[]
+  ): Promise<EntityWithFiles[]> {
     const $match = this.translateGetWithFilesMatch(match);
     const entities = await this.getCollection()
       .aggregate<EntityDBO>([
@@ -179,10 +185,7 @@ class MongoEntitiesDAO extends MongoDataSource<EntityDBO> implements EntitiesDAO
         ...(select?.length
           ? [
               {
-                $project: Object.fromEntries([
-                  ['sharedId', 1],
-                  ...select.map(field => [field, 1]),
-                ]),
+                $project: Object.fromEntries([['sharedId', 1], ...select.map(field => [field, 1])]),
               } as Record<string, unknown>,
             ]
           : []),

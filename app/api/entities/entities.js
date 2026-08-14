@@ -77,9 +77,7 @@ export default {
 
     const findOptions = select
       ? {
-          select: [
-            ...new Set([...selectToArray(select), 'sharedId', '_id']),
-          ],
+          select: [...new Set([...selectToArray(select), 'sharedId', '_id'])],
         }
       : undefined;
 
@@ -101,10 +99,7 @@ export default {
 
     const entities = await EntitiesDAOFactory.default()
       .unrestricted()
-      .getWithFiles(
-        match,
-        Array.isArray(select) && select.length ? { select } : undefined
-      );
+      .getWithFiles(match, Array.isArray(select) && select.length ? { select } : undefined);
 
     return options.limit ? entities.slice(0, options.limit) : entities;
   },

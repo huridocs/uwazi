@@ -543,10 +543,9 @@ describe('EntitiesDAO', () => {
       });
 
       it('projects only selected fields plus sharedId, documents and attachments', async () => {
-        const entities = await createDao().getByIdsWithDocuments(
-          [factory.idString('entity1-en')],
-          { select: ['title'] }
-        );
+        const entities = await createDao().getByIdsWithDocuments([factory.idString('entity1-en')], {
+          select: ['title'],
+        });
         expect(entities).toHaveLength(1);
         expect(entities[0].title).toBe('entity1');
         expect(entities[0].sharedId).toBe('entity1');

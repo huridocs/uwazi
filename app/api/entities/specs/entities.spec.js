@@ -21,22 +21,22 @@ import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { testingTenants } from '#api/utils/testingTenants.js';
 import entities from '../entities.js';
 import {
-    denormalizeEntityV2Adapter,
-    saveEntityV2Adapter,
-    toActorFromUser,
+  denormalizeEntityV2Adapter,
+  saveEntityV2Adapter,
+  toActorFromUser,
 } from './saveEntityV2Adapter.js';
 
 import { EntityCreatedEvent } from '../events/EntityCreatedEvent.js';
 import { EntityUpdatedEvent } from '../events/EntityUpdatedEvent.js';
 import fixtures, {
-    adminId,
-    batmanFinishesId,
-    entityGetTestTemplateId,
-    fixtureFactory,
-    syncPropertiesEntityId,
-    templateChangingNames,
-    templateId,
-    unpublishedDocId,
+  adminId,
+  batmanFinishesId,
+  entityGetTestTemplateId,
+  fixtureFactory,
+  syncPropertiesEntityId,
+  templateChangingNames,
+  templateId,
+  unpublishedDocId,
 } from './fixtures.js';
 
 const saveEntity = (doc, options = {}) => saveEntityV2Adapter(doc, options);
