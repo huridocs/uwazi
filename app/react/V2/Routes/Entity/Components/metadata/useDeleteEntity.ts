@@ -16,7 +16,6 @@ type RunDeleteEntityArgs = {
   notify: Notify;
   setDeletedEntity: (sharedId: string) => void;
   navigate: NavigateFunction;
-  onFail: () => void;
 };
 
 const runDeleteEntity = async ({
@@ -25,7 +24,6 @@ const runDeleteEntity = async ({
   notify,
   setDeletedEntity,
   navigate,
-  onFail,
 }: RunDeleteEntityArgs) => {
   const [, error] = await deleteEntity([sharedId]);
   if (error) {
@@ -35,13 +33,13 @@ const runDeleteEntity = async ({
       undefined,
       error.detail ?? error.message
     );
-    onFail();
-    return;
+    return false;
   }
   notify('success', t('System', 'Entity deleted', null, false));
   entityLoaderCache.invalidateEntity(sharedId);
   setDeletedEntity(sharedId);
   await navigate(-1);
+  return true;
 };
 
 const entityDeleteInFlightRef = { current: false };
@@ -80,17 +78,19 @@ const useDeleteEntity = () => {
     if (entityDeleteInFlightRef.current) return;
     entityDeleteInFlightRef.current = true;
     setIsDeleting(true);
-    await runDeleteEntity({
-      deleteEntity: entities.delete,
-      sharedId: entity.sharedId,
-      notify,
-      setDeletedEntity,
-      navigate,
-      onFail: () => {
-        entityDeleteInFlightRef.current = false;
-        setIsDeleting(false);
-      },
-    });
+    try {
+      const deleted = await runDeleteEntity({
+        deleteEntity: entities.delete,
+        sharedId: entity.sharedId,
+        notify,
+        setDeletedEntity,
+        navigate,
+      });
+      if (deleted) setConfirming(false);
+    } finally {
+      entityDeleteInFlightRef.current = false;
+      setIsDeleting(false);
+    }
   }, [entities.delete, entity.sharedId, navigate, notify, setDeletedEntity, setIsDeleting]);
 
   return { confirming, isDeleting, requestDelete, cancelDelete, confirmDelete };

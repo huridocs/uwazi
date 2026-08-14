@@ -1,6 +1,5 @@
 import React, { ReactNode } from 'react';
 import { useAtomValue } from 'jotai';
-import { ArrowTopRightOnSquareIcon } from '@heroicons/react/24/outline';
 import { I18NLinkV2 } from '#app/I18N/index.js';
 import {
   getEntityViewerV2BasePath,
@@ -26,13 +25,10 @@ type OpenEntityTarget = {
 type ConnectionPillsProps = {
   values: RelationshipEntityValue[];
   targetTemplateId?: string;
-  /** Details table only — not Relationships section / leading cards. */
-  showExternalLinkIcon?: boolean;
   onOpenEntity?: (target: OpenEntityTarget) => void;
 };
 
 type ConnectionPillsForFieldOptions = {
-  showExternalLinkIcon?: boolean;
   onOpenEntity?: (target: OpenEntityTarget) => void;
 };
 
@@ -40,12 +36,7 @@ const isEntityRelationshipValue = (
   value: RelationshipMetadataProperty['values'][number]
 ): value is RelationshipEntityValue => 'title' in value;
 
-const ConnectionPills = ({
-  values,
-  targetTemplateId,
-  showExternalLinkIcon = false,
-  onOpenEntity,
-}: ConnectionPillsProps) => {
+const ConnectionPills = ({ values, targetTemplateId, onOpenEntity }: ConnectionPillsProps) => {
   const settings = useAtomValue(settingsAtom);
   const entityBasePath = `${getEntityViewerV2BasePath(isEntityViewerV2Enabled(settings.features))}/`;
 
@@ -69,14 +60,6 @@ const ConnectionPills = ({
           return <span key={itemKey}>{pill}</span>;
         }
 
-        const openIcon = showExternalLinkIcon ? (
-          <ArrowTopRightOnSquareIcon
-            className="h-3 w-3 shrink-0 text-ink-tertiary"
-            aria-hidden="true"
-            data-testid="connection-external-link-icon"
-          />
-        ) : null;
-
         if (onOpenEntity) {
           return (
             <button
@@ -93,7 +76,6 @@ const ConnectionPills = ({
               }
             >
               {pill}
-              {openIcon}
             </button>
           );
         }
@@ -109,7 +91,6 @@ const ConnectionPills = ({
             title={value.title}
           >
             {pill}
-            {openIcon}
           </I18NLinkV2>
         );
       })}
@@ -129,7 +110,6 @@ const connectionPillsForField = (
     <ConnectionPills
       values={field.values}
       targetTemplateId={field.relationShipTarget || templateProperty?.content}
-      showExternalLinkIcon={options.showExternalLinkIcon}
       onOpenEntity={options.onOpenEntity}
     />
   );

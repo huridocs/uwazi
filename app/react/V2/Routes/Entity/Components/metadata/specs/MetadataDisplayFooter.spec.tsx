@@ -57,7 +57,7 @@ const NotificationsProbe = () => {
   );
 };
 
-const renderFooters = (deleteFn: jest.Mock) => {
+const renderFooters = async (deleteFn: jest.Mock) => {
   const services = createTestServices({ entities: { delete: deleteFn } });
   render(
     <TestRouterContext loaderData={{ entity, mainDocument: undefined, pagePlaintext: '' }}>
@@ -75,6 +75,9 @@ const renderFooters = (deleteFn: jest.Mock) => {
       </ServicesProvider>
     </TestRouterContext>
   );
+  await waitFor(() => {
+    expect(screen.getAllByRole('button', { name: 'Delete' })).toHaveLength(2);
+  });
 };
 
 describe('MetadataDisplayFooter', () => {
@@ -89,17 +92,17 @@ describe('MetadataDisplayFooter', () => {
     invalidateSpy.mockRestore();
   });
 
-  it('renders sibling Edit, Share, and Delete buttons per host', () => {
-    renderFooters(jest.fn().mockResolvedValue([undefined]));
+  it('renders sibling Edit, Share, and Delete buttons per host', async () => {
+    await renderFooters(jest.fn().mockResolvedValue([undefined]));
     expect(screen.getAllByRole('button', { name: 'Edit' })).toHaveLength(2);
     expect(screen.getAllByRole('button', { name: 'Share' })).toHaveLength(2);
     expect(screen.getAllByRole('button', { name: 'Delete' })).toHaveLength(2);
     expect(screen.queryByTestId('accept-button')).not.toBeInTheDocument();
   });
 
-  it('opens a danger confirmation with locked copy and cancels without deleting', () => {
+  it('opens a danger confirmation with locked copy and cancels without deleting', async () => {
     const deleteFn = jest.fn().mockResolvedValue([undefined]);
-    renderFooters(deleteFn);
+    await renderFooters(deleteFn);
     fireEvent.click(screen.getAllByRole('button', { name: 'Delete' })[0]);
     expect(screen.getByText('Delete entity?')).toBeInTheDocument();
     expect(
@@ -111,8 +114,8 @@ describe('MetadataDisplayFooter', () => {
     expect(deleteFn).not.toHaveBeenCalled();
   });
 
-  it('keeps confirmation per footer instance', () => {
-    renderFooters(jest.fn().mockResolvedValue([undefined]));
+  it('keeps confirmation per footer instance', async () => {
+    await renderFooters(jest.fn().mockResolvedValue([undefined]));
     fireEvent.click(screen.getAllByRole('button', { name: 'Delete' })[0]);
     expect(screen.getAllByTestId('accept-button')).toHaveLength(1);
     fireEvent.click(screen.getByTestId('cancel-button'));
@@ -122,7 +125,7 @@ describe('MetadataDisplayFooter', () => {
 
   it('deletes, notifies, invalidates, records the atom, and navigates away', async () => {
     const deleteFn = jest.fn().mockResolvedValue([undefined]);
-    renderFooters(deleteFn);
+    await renderFooters(deleteFn);
     fireEvent.click(screen.getAllByRole('button', { name: 'Delete' })[0]);
     fireEvent.click(screen.getByTestId('accept-button'));
     await waitFor(() => {
@@ -132,6 +135,13 @@ describe('MetadataDisplayFooter', () => {
     expect(invalidateSpy).toHaveBeenCalledWith('s1');
     expect(screen.getByTestId('deleted-entity').textContent).toBe('s1');
     expect(mockNavigate).toHaveBeenCalledWith(-1);
+    expect(screen.queryByTestId('accept-button')).not.toBeInTheDocument();
+    screen.getAllByRole('button', { name: 'Edit' }).forEach(button => {
+      expect(button).not.toBeDisabled();
+    });
+    screen.getAllByRole('button', { name: 'Delete' }).forEach(button => {
+      expect(button).not.toBeDisabled();
+    });
   });
 
   it('shares in-flight across twin hosts so overlapping delete cannot run', async () => {
@@ -142,9 +152,10 @@ describe('MetadataDisplayFooter', () => {
           resolveDelete = resolve;
         })
     );
-    renderFooters(deleteFn);
-    fireEvent.click(screen.getAllByRole('button', { name: 'Delete' })[0]);
-    fireEvent.click(screen.getAllByRole('button', { name: 'Delete' })[1]);
+    await renderFooters(deleteFn);
+    const deletes = screen.getAllByRole('button', { name: 'Delete' });
+    fireEvent.click(deletes[0]);
+    fireEvent.click(deletes[1]);
     const accepts = screen.getAllByTestId('accept-button');
     expect(accepts).toHaveLength(2);
     fireEvent.click(accepts[0]);
@@ -163,6 +174,9 @@ describe('MetadataDisplayFooter', () => {
       resolveDelete([undefined]);
     });
     await waitFor(() => expect(mockNavigate).toHaveBeenCalledWith(-1));
+    screen.getAllByRole('button', { name: 'Edit' }).forEach(button => {
+      expect(button).not.toBeDisabled();
+    });
   });
 
   it('disables the modal while delete is in flight', async () => {
@@ -173,7 +187,7 @@ describe('MetadataDisplayFooter', () => {
           resolveDelete = resolve;
         })
     );
-    renderFooters(deleteFn);
+    await renderFooters(deleteFn);
     fireEvent.click(screen.getAllByRole('button', { name: 'Delete' })[0]);
     fireEvent.click(screen.getByTestId('accept-button'));
     await waitFor(() => expect(deleteFn).toHaveBeenCalledTimes(1));
@@ -192,7 +206,7 @@ describe('MetadataDisplayFooter', () => {
         undefined,
         new ApiError('failed', { kind: 'http', status: 500, detail: 'cannot delete' }),
       ]);
-    renderFooters(deleteFn);
+    await renderFooters(deleteFn);
     fireEvent.click(screen.getAllByRole('button', { name: 'Delete' })[0]);
     fireEvent.click(screen.getByTestId('accept-button'));
     await waitFor(() => {

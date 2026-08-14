@@ -543,26 +543,6 @@ describe('MetadataRecord', () => {
     expect(within(relB).queryByRole('link', { name: /A1/i })).not.toBeInTheDocument();
   });
 
-  it('shows external-link control only on Details relationship rows', () => {
-    renderRecord();
-
-    const relationshipd = screen.getByRole('rowheader', { name: 'Relationshipd' });
-    const table = relationshipd.closest('table');
-    expect(table).not.toBeNull();
-    if (!table) {
-      return;
-    }
-    const diana = within(table).getByRole('link', { name: /Diana/i });
-    expect(diana).toHaveAttribute('target', '_blank');
-    expect(within(diana).getByTestId('connection-external-link-icon')).toBeInTheDocument();
-
-    const icons = screen.queryAllByTestId('connection-external-link-icon');
-    expect(icons.length).toBeGreaterThan(0);
-    icons.forEach(icon => {
-      expect(icon.closest('table')).toBeTruthy();
-    });
-  });
-
   it('colors unconstrained relationship pills from the related entity template', () => {
     renderRecord();
 
