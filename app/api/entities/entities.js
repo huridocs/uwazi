@@ -1,6 +1,5 @@
 /* eslint-disable no-param-reassign */
 
-import relationships from '#api/relationships/relationships.js';
 import { FilesDAOFactory } from '#api/core/infrastructure/factories/FilesDAOFactory.js';
 import model from './entitiesModel.js';
 
@@ -45,11 +44,6 @@ const extendSelect = select => {
 };
 
 export default {
-  async getWithoutDocuments(query, select, options = {}) {
-    const entities = await model.getUnrestricted(query, select, options);
-    return entities;
-  },
-
   async getUnrestricted(query, select, options) {
     const extendedSelect = extendSelect(select);
     const entities = await model.getUnrestricted(query, extendedSelect, options);
@@ -70,23 +64,6 @@ export default {
     return withoutDocuments ? entities : withDocuments(entities, documentsFullText);
   },
 
-  async getWithRelationships(query, select, pagination) {
-    const entities = await this.get(query, select, pagination);
-    return Promise.all(
-      entities.map(async entity => {
-        entity.relations = await relationships.getByDocument(
-          entity.sharedId,
-          entity.language,
-          undefined,
-          undefined,
-          undefined,
-          false
-        );
-        return entity;
-      })
-    );
-  },
-
   async getById(sharedId, language) {
     let doc;
     if (!language) {
@@ -95,11 +72,6 @@ export default {
       doc = await model.get({ sharedId, language }).then(result => result[0]);
     }
     return doc;
-  },
-
-  async getAllLanguages(sharedId, options = {}) {
-    const entities = await model.get({ sharedId }, null, options);
-    return entities;
   },
 
   async countByTemplate(template, language) {
@@ -117,6 +89,4 @@ export default {
     const entities = await model.get(query, ['title', 'icon', 'file', 'sharedId'], queryLimit);
     return entities;
   },
-
-  count: model.count.bind(model),
 };

@@ -810,40 +810,4 @@ describe('relationships', () => {
       });
     });
   });
-
-  describe('deleteTextReferences()', () => {
-    it('should delete the entity text relationships (that match language)', async () => {
-      await relationships.deleteTextReferences('doc2', 'en');
-
-      const [relationshipsInEnglish, relationshipsInPT] = await Promise.all([
-        relationships.getByDocument('doc2', 'en'),
-        relationships.getByDocument('doc2', 'pt'),
-      ]);
-
-      expect(relationshipsInEnglish.length).toBe(4);
-      expect(relationshipsInPT.length).toBe(8);
-    });
-
-    it('should not delete text relationships if filename also used in other languages', async () => {
-      await relationships.deleteTextReferences('doc5', 'en');
-      const doc5Relationships = await relationships.get({ entity: 'doc5', hub: hub5 });
-      expect(doc5Relationships.length).toBe(1);
-    });
-
-    it('should not leave a lone connection in the hub', async () => {
-      await relationships.delete({ entity: 'entity_id' }, 'en');
-      await relationships.deleteTextReferences('doc2', 'en');
-      await relationships.deleteTextReferences('doc2', 'pt');
-
-      const hubRelationships = await relationships.get({ hub: hub8 });
-
-      expect(hubRelationships).toEqual([]);
-    });
-
-    it('should not delete any relationships if entity.file.filename if undefined', async () => {
-      await relationships.deleteTextReferences('entity1', 'en');
-      const hubRelationships = await relationships.getByDocument('entity1', 'en');
-      expect(hubRelationships.length).toEqual(5);
-    });
-  });
 });

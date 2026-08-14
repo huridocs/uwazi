@@ -31,6 +31,10 @@ const load = async (data: DBFixture, index?: string) =>
     index
   );
 
+async function getEntitiesBySharedId(sharedId: string) {
+  return (await testingEnvironment.db.getAllFrom('entities')).filter(e => e.sharedId === sharedId);
+}
+
 describe('Denormalize relationships', () => {
   const factory = getFixturesFactory();
   const createTranslationDBO = factory.v2.database.translationDBO;
@@ -39,7 +43,7 @@ describe('Denormalize relationships', () => {
   const ensureEntityLanguages = async (sharedIds: string[]) => {
     await Promise.all(
       sharedIds.map(async sharedId => {
-        const docs = await entities.getAllLanguages(sharedId);
+        const docs = await getEntitiesBySharedId(sharedId);
         if (!docs.length) {
           return;
         }
@@ -70,11 +74,11 @@ describe('Denormalize relationships', () => {
           .filter((value): value is string => typeof value === 'string');
         await ensureEntityLanguages([...new Set(relationshipValues)]);
 
-        const beforeByLanguage = await entities.getAllLanguages(id);
+        const beforeByLanguage = await getEntitiesBySharedId(id);
         const doc = { _id: factory.id(`${id}-${language}`), sharedId: id, ...entityData, language };
         await saveEntityV2Adapter(doc, { language, user: { _id: db.id() } });
 
-        const afterByLanguage = await entities.getAllLanguages(id);
+        const afterByLanguage = await getEntitiesBySharedId(id);
         if (!afterByLanguage[0]?.template) {
           throw new Error(`Missing template for entity ${id}`);
         }
