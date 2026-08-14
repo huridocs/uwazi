@@ -33,7 +33,7 @@ import errorHandlingMiddleware from '#api/utils/error_handling_middleware.js';
 import mailer from '#api/utils/mailer.js';
 import db, { DBFixture } from '#api/utils/testing_db.js';
 import { advancedSort } from '#app/utils/advancedSort.js';
-import { CreateTranslationEntriesUseCaseFactory } from '#api/core/infrastructure/factories/CreateTranslationEntriesUseCaseFactory.js';
+import { insertTranslationEntries } from '#api/core/testing/translationsTestHelpers.js';
 import { RelationshipTypesDataSourceFactory } from '#api/core/infrastructure/factories/RelationshipTypesDataSourceFactory.js';
 import { TranslationsQueryServiceFactory } from '#api/core/infrastructure/factories/TranslationsQueryServiceFactory.js';
 import { toIndexedTranslations } from '#api/core/infrastructure/express/translation/LegacyTranslationDtoMapper.js';
@@ -380,64 +380,62 @@ describe('syncWorker', () => {
 
     await tenants.run(async () => {
       await testingEnvironment.runWithContext(async () => {
-        await CreateTranslationEntriesUseCaseFactory.default().execute({
-          translations: [
-            {
-              language: 'en',
-              key: 'System Key',
-              value: 'System Value',
-              context: { id: 'System', type: 'Uwazi UI', label: 'System' },
-            },
-            {
-              language: 'en',
-              key: 'template1',
-              value: 'template1T',
-              context: { id: template1.toString(), type: 'Entity', label: 'Entity' },
-            },
-            {
-              language: 'en',
-              key: 't1Property1L',
-              value: 't1Property1T',
-              context: { id: template1.toString(), type: 'Entity', label: 'Entity' },
-            },
-            {
-              language: 'en',
-              key: 't1Relationship1L',
-              value: 't1Relationship1T',
-              context: { id: template1.toString(), type: 'Entity', label: 'Entity' },
-            },
-            {
-              language: 'en',
-              key: 't1Relationship2L',
-              value: 't1Relationship2T',
-              context: { id: template1.toString(), type: 'Entity', label: 'Entity' },
-            },
-            {
-              language: 'en',
-              key: 't1Thesauri2SelectL',
-              value: 't1Thesauri2SelectT',
-              context: { id: template1.toString(), type: 'Entity', label: 'Entity' },
-            },
-            {
-              language: 'en',
-              key: 't1Thesauri3MultiSelectL',
-              value: 't1Thesauri3MultiSelectT',
-              context: { id: template1.toString(), type: 'Entity', label: 'Entity' },
-            },
-            {
-              language: 'en',
-              key: 't1Relationship1',
-              value: 't1Relationship1',
-              context: { id: template1.toString(), type: 'Entity', label: 'Entity' },
-            },
-            {
-              language: 'en',
-              key: 'Template Title',
-              value: 'Template Title translated',
-              context: { id: template1.toString(), type: 'Entity', label: 'Entity' },
-            },
-          ],
-        });
+        await insertTranslationEntries([
+          {
+            language: 'en',
+            key: 'System Key',
+            value: 'System Value',
+            context: { id: 'System', type: 'Uwazi UI', label: 'System' },
+          },
+          {
+            language: 'en',
+            key: 'template1',
+            value: 'template1T',
+            context: { id: template1.toString(), type: 'Entity', label: 'Entity' },
+          },
+          {
+            language: 'en',
+            key: 't1Property1L',
+            value: 't1Property1T',
+            context: { id: template1.toString(), type: 'Entity', label: 'Entity' },
+          },
+          {
+            language: 'en',
+            key: 't1Relationship1L',
+            value: 't1Relationship1T',
+            context: { id: template1.toString(), type: 'Entity', label: 'Entity' },
+          },
+          {
+            language: 'en',
+            key: 't1Relationship2L',
+            value: 't1Relationship2T',
+            context: { id: template1.toString(), type: 'Entity', label: 'Entity' },
+          },
+          {
+            language: 'en',
+            key: 't1Thesauri2SelectL',
+            value: 't1Thesauri2SelectT',
+            context: { id: template1.toString(), type: 'Entity', label: 'Entity' },
+          },
+          {
+            language: 'en',
+            key: 't1Thesauri3MultiSelectL',
+            value: 't1Thesauri3MultiSelectT',
+            context: { id: template1.toString(), type: 'Entity', label: 'Entity' },
+          },
+          {
+            language: 'en',
+            key: 't1Relationship1',
+            value: 't1Relationship1',
+            context: { id: template1.toString(), type: 'Entity', label: 'Entity' },
+          },
+          {
+            language: 'en',
+            key: 'Template Title',
+            value: 'Template Title translated',
+            context: { id: template1.toString(), type: 'Entity', label: 'Entity' },
+          },
+        ]);
       });
     }, 'host1');
 

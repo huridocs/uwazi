@@ -149,6 +149,7 @@ RT deferred translations ownership: copied Templates’ port + `Legacy*Translati
 | D8  | Postgres = later doc; one store; sync namespace `translationsV2` kept                                            | Locked |
 | D9  | Tests: integration-first; parity with current behavior; auth mock OK at routes                                   | Locked |
 | D10 | **GETs = thin controller → QueryService/DAO; mutations = UseCases.** No `GetTranslationsUseCase`                 | Locked |
+| D11 | **A UseCase exists only if a controller or job needs it.** Tests must not invent UseCases; they orchestrate via helpers that call `TranslationsService` (or the DS) inside `TM.run()` | Locked |
 
 ### D5 detail — upsert is convenience, not unavoidable
 
@@ -188,11 +189,11 @@ HTTP /api/translations* (legacy locale DTO)     HTTP /api/v2/translations (by-it
    POST/DELETE → mutation use cases (create vs update branch at edge)
         │
         ▼
- Mutation use cases (examples — names flexible):
-   CreateTranslationContext / UpdateTranslationContext / DeleteTranslationContext
-   CreateTranslationEntries / UpdateTranslationEntries
-   DeleteTranslationsByLanguage / ImportPredefinedTranslations
-   (language clone already partly owned by AddLanguageUseCase)
+ Mutation use cases (only those with a controller or job caller):
+   SaveLocaleTranslations / SaveTranslationEntries / UpdateEntriesByContext
+   UpdateTranslationContext (V1 settings Menu/Filters — not a controller; see D11 follow-up)
+   AddLanguage / DeleteLanguage (language clone + DS deleteByLanguage; no extra translation UCs)
+   ImportPredefined is a service (populate + AddLanguage), not a UseCase
         │
         ▼
  TranslationsDataSource (+ Cached*) → Mongo translationsV2
@@ -223,10 +224,10 @@ All writers must stop calling `#api/i18n/translations` and use core ports/use ca
 | Delete Template                       | `translationsDS.deleteByContextId` (+ bulk key cleanup)                  | Same DS/use case under core ownership                                              |
 | Thesaurus create/update/delete        | `ThesaurusTranslationService` → DS                                       | Keep Thesaurus-style; DS/contract moves under core                                 |
 | Create/Update/Delete RelationshipType | `RelationshipTypeTranslationService` → `TranslationsService` (shared TM) | Done                                                                               |
-| Settings Menu / Filters               | `translations.updateContext`                                             | Core UpdateTranslationContext                                                      |
-| CSV v1/v2 thesauri translations       | façade `updateEntries` / DS upsert                                       | Create/Update entries use cases (branch at edge)                                   |
-| AddLanguage                           | DS clone + façade `importPredefined`                                     | Keep clone in use case; ImportPredefined as core use case (TX boundary to resolve) |
-| DeleteLanguage                        | DS `deleteByLanguage`                                                    | Core delete-by-language                                                            |
+| Settings Menu / Filters               | `translations.updateContext`                                             | `UpdateTranslationContextUseCase` from V1 `settings.ts` (D11 follow-up: not a controller/job) |
+| CSV v1/v2 thesauri translations       | façade `updateEntries` / DS upsert                                       | `UpdateEntriesByContext` (job + csvLoader); no Create/Update-entries UseCases      |
+| AddLanguage                           | DS clone + façade `importPredefined`                                     | Keep clone in use case; `ImportPredefinedTranslationsService` (outside TX)         |
+| DeleteLanguage                        | DS `deleteByLanguage`                                                    | Same: `DeleteLanguageUseCase` → `translationsDS.deleteByLanguage` (no extra UC)    |
 | Sync                                  | `translationsV2` + sync DS                                               | Keep namespace; handler uses core DS/sync adapter                                  |
 | Denorm / search / dataviz (reads)     | façade get or cached DS                                                  | Thin query / cached query under core                                               |
 
@@ -274,6 +275,7 @@ All writers must stop calling `#api/i18n/translations` and use core ports/use ca
 
 - [x] Core domain + `TranslationsDataSource` contract + Mongo DS (+ cache) under `app/api/core`
 - [x] Mutation use cases: create/update/delete context & entries; language delete (ImportPredefined still via façade CSV path)
+- [x] **D11 peel:** deleted test-only translation UseCases (`Create/DeleteTranslationContext`, `Create/UpdateTranslationEntries`, `DeleteTranslationsByLanguage`); specs use `translationsTestHelpers`
 - [x] Thin GET query service + legacy locale DTO mapper (`TranslationsQueryService`)
 - [x] Core express routes for `/api/translations*` and `/api/v2/translations` (`api.js` → core `translationsRoutes`); GETs via QueryService; mutations still delegate façade for thesaurus/CSV side effects
 - [x] Migrate Templates / RelationshipTypes / Thesaurus / language factories onto core DS/use cases; Legacy\* no longer call façade for context CRUD
@@ -336,7 +338,9 @@ Already share parent TM via DS — boundaries OK. Prefer **2A** (extend service 
 - Contract: `app/api/core/application/contracts/TranslationsDataSource.ts`
 - Mongo DS/cache/sync + mappers under `app/api/core/infrastructure/mongodb/translation`
 - Factories: `TranslationsDataSourceFactory`, `TranslationsServiceFactory`, mutation + orchestrator UseCase factories, `TranslationsQueryServiceFactory`, `PropagateThesaurusTranslationServiceFactory`
-- Use cases (own `TM.run`): `SaveLocaleTranslations`, `SaveTranslationEntries`, `UpdateEntriesByContext`, `Create/Update/DeleteTranslationContext`, `Create/UpdateTranslationEntries`, `DeleteTranslationsByLanguage`
+- Use cases (own `TM.run`, controller/job only — D11): `SaveLocaleTranslations`, `SaveTranslationEntries`, `UpdateEntriesByContext`, `UpdateTranslationContext` (settings.ts), `AddLanguage`, `DeleteLanguage`
+- Deleted test-only UseCases (were thin `TM.run` wrappers around `TranslationsService`): `CreateTranslationContext`, `DeleteTranslationContext`, `CreateTranslationEntries`, `UpdateTranslationEntries`, `DeleteTranslationsByLanguage`
+- Test orchestration: `app/api/core/testing/translationsTestHelpers.ts` — `TM.run()` + `TranslationsService`; do not add UseCases for specs
 - Application services: `TranslationsService` (write API, `ensureTransaction`), `TranslationsQueryService` (reads), `ValidateTranslationsService`, `PropagateThesaurusTranslationService` (post-commit)
 - Transaction boundaries: UseCases open one `transactionManager.run()` then call `TranslationsService`; no UC→UC nesting; thesaurus entity propagate runs **after** successful commit (outside TX)
 - Cross-aggregate writers (same shared TM as parent UseCase — Thesaurus pattern):
@@ -344,11 +348,11 @@ Already share parent TM via DS — boundaries OK. Prefer **2A** (extend service 
   - Relationship types: `RelationshipTypeTranslationService` → `TranslationsService`
   - Thesaurus: `ThesaurusTranslationService` → `TranslationsService` under ThesauriService TX
   - DeleteTemplate: `TranslationsService` inside its `TM.run`
-  - Settings Menu/Filters: standalone `UpdateTranslationContextUseCase` entry
+  - Settings Menu/Filters: standalone `UpdateTranslationContextUseCase` from V1 `settings.ts` (D11 follow-up)
   - AddLanguage / populate predefined CSV: `ImportPredefinedTranslationsService` (core; FS+CSV; outside TX)
   - `AvailableLanguagesQueryService` for `GET /api/languages`
 - Removed misleading `Legacy*TranslationService` adapters (they were domain sync services, not old translations)
-- Tests: unit `TranslationsService.spec`; integration orchestrator UC specs; routes; `i18n/specs/translations.spec.ts` calls core factories / QueryService directly (no façade helper)
+- Tests: unit `TranslationsService.spec`; integration specs for real UseCases only; `i18n/specs/translations.spec.ts` uses QueryService / remaining UC factories / `translationsTestHelpers` (no façade, no test-only UCs)
 - QueryService by-item lookups: `getContextValueMap`, `getLanguageValueMaps`; `getLegacy` / `LegacyTranslationDtoMapper` only at mammoth delivery edges (HTTP + SSR)
 - Express: GET → QueryService; languages → AvailableLanguagesQueryService; populate → PopulateTranslationsController; Save* → orchestrator UseCase factories
 - Thesaurus metadata rename: `ThesaurusMetadataRenamerAdapter` → `denormalizeThesauriLabelInMetadata`
@@ -358,6 +362,7 @@ Already share parent TM via DS — boundaries OK. Prefer **2A** (extend service 
 - TX ownership: UseCases / Jobs open `TM.run()`; ambient services (`TranslationsService`, `ThesauriService`, `PendingThesauriValuesApplier.apply`) do not. CSV job owns TX around thesaurus append; translation value updates via `UpdateEntriesByContext` UC after commit.
 - Follow-ups deferred:
   - Phase 1b FE checklist + `translations-postgres.md` (Postgres sync handler branch when that phase starts)
+  - D11: `UpdateTranslationContextUseCase` still called from V1 `settings.ts` (not a controller/job)
 - Phase 1 “module home killed” + sync motor seam: done for current Mongo runtime
 
 ## V2 complete checklist (Phase 1)
@@ -366,6 +371,7 @@ Already share parent TM via DS — boundaries OK. Prefer **2A** (extend service 
 - [x] `/api/v2/translations` served by core controllers
 - [x] GETs use QueryService/DAO (no Get*UseCase)
 - [x] Mutations use Create/Update/Delete use cases — no application Upsert use case
+- [x] Translation UseCases exist only for controller/job (or current settings.ts) callers — no test-only UCs
 - [x] Internal non-delivery callers do not use `getLegacy` (csvExporter / denormalize / search / SaveTranslationEntries)
 - [x] CSV / SaveTranslationsController / PendingThesauriValuesApplier do not call façade `save`/`updateEntries` (use core factories)
 - [x] No runtime production imports of `#api/i18n/translations` (façade deleted; SSR uses QueryService)
@@ -383,11 +389,64 @@ Already share parent TM via DS — boundaries OK. Prefer **2A** (extend service 
 
 ---
 
+## Alignment review (post-ship)
+
+Critical pass after the V2 hex peel and the production SSR CPU outage. Further slices will land here; do not treat the original “mutation use cases (examples)” list as the current surface.
+
+### D11 — UseCases are delivery, not test API
+
+**Request:** UseCases exist only if a controller or job needs them. Tests that need to orchestrate writes do so explicitly (helpers), not by shipping production UseCases.
+
+**Finding:** several translation UseCases were thin `transactionManager.run()` wrappers around `TranslationsService` and were called only from specs (or never). Production already does the same work via domain services sharing the parent UseCase TM (`TemplateTranslationService`, `ThesaurusTranslationService`, `RelationshipTypeTranslationService`) or via `DeleteLanguageUseCase` → DS.
+
+| UseCase | Verdict | Callers at review |
+| --- | --- | --- |
+| `CreateTranslationContextUseCase` | **Deleted** | specs only (`CreateTranslationContext.spec`, `SaveLocaleTranslations.spec`, `i18n/specs/translations.spec`) |
+| `DeleteTranslationContextUseCase` | **Deleted** | specs only |
+| `CreateTranslationEntriesUseCase` | **Deleted** | `syncWorker.spec` fixture setup only |
+| `UpdateTranslationEntriesUseCase` | **Deleted** | **zero callers** (dead factory) |
+| `DeleteTranslationsByLanguageUseCase` | **Deleted** | `i18n/specs/translations.spec` only; `DeleteLanguageUseCase` already deletes via DS |
+| `SaveTranslationEntriesUseCase` | **Keep** | `SaveTranslationEntriesController` |
+| `SaveLocaleTranslationsUseCase` | **Keep** | `SaveTranslationsController` (+ `csv/csvLoader.ts`) |
+| `UpdateEntriesByContextUseCase` | **Keep** | `CsvCreateThesauriValuesJob` (+ `csv/csvLoader.ts`) |
+| `UpdateTranslationContextUseCase` | **Keep for now** | V1 `settings.ts` Menu/Filters — production, but **not** a controller or job (D11 follow-up) |
+
+`CreateTranslationContext.spec.ts` existed only to exercise the deleted wrappers; `TranslationsService.spec.ts` already covers create/update/delete context.
+
+**Test helper:** `app/api/core/testing/translationsTestHelpers.ts` opens `TM.run()` and calls `TranslationsService` (`insertEntries`, `createContext`, `updateContext`, `deleteByContextId`, `deleteByLanguage`). Specs must not grow new UseCases for this.
+
+### Production SSR CPU (keep these; do not regress)
+
+Root cause was not Mongo. Every SSR HTML request:
+
+1. `TranslationsQueryService.getLegacy({ locale })` loaded **all** translations for the language (System + every thesaurus/template/RT)
+2. `toIndexedTranslations` → `prepareContexts` built value maps with `{ ...values, [key]: value }` inside `reduce` → **O(n²) per context**
+3. `onlySystemTranslations()` then threw away everything except System
+
+On a large tenant (~24k `translationsV2` docs, ~9.6k thesaurus keys/language) `toIndexedTranslations` was ~16s Node CPU per request.
+
+Shipped:
+
+- Linear `prepareContexts` in `LegacyTranslationDtoMapper` (mutating assignment)
+- SSR `entry-server.tsx` calls `getLegacy({ locale, context: 'System' })`
+- `getByLanguageAndContext` on the DS; `getLegacy` honors both `locale` and `context`
+- `toLegacyDto` loads the result set **after** `getLanguageKeys()` (thunk) so the Mongo cursor is not opened across that await (session/TX mismatch)
+
+Explicitly **not** shipped: process/tenant-wide translations read cache. Topology is 12 API nodes × 3 servers, 500+ tenants, 5 job workers. In-process invalidation cannot be consistent; memory is unbounded; workers would fill it too. Mongo stays the shared source of truth. `CachedMongoTranslationsDataSource` remains the **old per-UseCase memo** (instance `Map`, `.all()` only, cleared on that TM’s commit) — same pattern as templates/settings. SSR/search do not use it unless `cached: true`.
+
+### Spec isolation (csv thesauri)
+
+`csvLoaderThesauri.spec.ts` tests that `setDefaultLanguage('fr'|'es')` must restore `'en'` in `finally`. If a load/TX throws, leftover French default made later nesting tests assert English labels against French CSV columns. Nesting `beforeEach` also resets to `'en'`.
+
+---
+
 ## To keep an eye on
 
 - Temporary mammoth delivery surface must not become permanent without a scheduled Phase 1b
 - Do not reintroduce application Upsert “because the old service had it”
 - Do not add `GetTranslationsUseCase` “because relationship types still have Get*”
+- Do not add a translations UseCase because a spec needs to create/update/delete data — use `translationsTestHelpers` (or call `TranslationsService` inside an existing parent `TM.run()`)
+- Do not reintroduce process-wide / tenant-wide translations read cache (12 Node processes × 3 servers, 500+ tenants, 5 workers; in-process invalidation cannot be consistent)
 - When Postgres starts: data copy before flag; one-way flag; RLS in same schema migration; keep sync namespace `translationsV2`
 - Do not leave sync on direct `new MongoTranslationsSyncDataSource` / `models.translationsV2` once the SyncHandlerFactory peel lands — that blocks motor swap
 - Align thesaurus vs template context-update semantics before freezing the Update use case contract
