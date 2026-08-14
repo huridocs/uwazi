@@ -3,6 +3,7 @@ import { Translate } from '#app/I18N/index.js';
 import type { RelationshipMarker } from '#V2/Components/Relationships/types.js';
 import {
   buildGraphLayout,
+  computeFitTransform,
   GRAPH_CAP,
   sourcePillWidth,
   truncateForFit,
@@ -38,17 +39,6 @@ const RelationshipsGraphView = ({
   const { groupBy } = useRelationshipsPanelLayout();
   const containerRef = useRef<HTMLDivElement>(null);
   const [hover, setHover] = useState<GraphHover | null>(null);
-  const {
-    transform,
-    dragRef,
-    onPointerDown,
-    onPointerMove,
-    onPointerUp,
-    onWheel,
-    zoomIn,
-    zoomOut,
-    reset,
-  } = useGraphPanZoom();
 
   const { selfTitle } = groupContext;
   const selfTypeName = groupContext.templateName(groupContext.selfTemplateId);
@@ -60,6 +50,22 @@ const RelationshipsGraphView = ({
     () => buildGraphLayout(markers, groupBy, groupContext, activeRelationshipId),
     [markers, groupBy, groupContext, activeRelationshipId]
   );
+  const fit = useMemo(
+    () => computeFitTransform(nodes, spokes, selfTitle, selfTypeName),
+    [nodes, spokes, selfTitle, selfTypeName]
+  );
+  const fitKey = `${nodes.map(node => node.id).join('|')}::${spokes.map(spoke => spoke.key).join('|')}`;
+  const {
+    transform,
+    dragRef,
+    onPointerDown,
+    onPointerMove,
+    onPointerUp,
+    onWheel,
+    zoomIn,
+    zoomOut,
+    reset,
+  } = useGraphPanZoom(fit, fitKey);
 
   if (nodes.length === 0) {
     return (
@@ -97,7 +103,7 @@ const RelationshipsGraphView = ({
   })();
 
   return (
-    <div ref={containerRef} className="relative min-h-[320px] flex-1 overflow-hidden bg-warm">
+    <div ref={containerRef} className="relative h-full min-h-0 overflow-hidden bg-warm">
       {truncated > 0 && (
         <div className="absolute left-1/2 top-2 z-10 -translate-x-1/2 rounded-md border border-border bg-paper/90 px-3 py-1 text-micro text-ink-tertiary shadow-sm">
           <Translate>Showing the top</Translate> {GRAPH_CAP} <Translate>of</Translate>{' '}

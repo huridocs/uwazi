@@ -1,6 +1,5 @@
 import React, { ReactNode } from 'react';
 import { useAtomValue } from 'jotai';
-import { ArrowTopRightOnSquareIcon } from '@heroicons/react/24/outline';
 import { I18NLinkV2 } from '#app/I18N/index.js';
 import {
   getEntityViewerV2BasePath,
@@ -14,6 +13,7 @@ import {
 } from '#V2/formatters/types.js';
 import { settingsAtom } from '#V2/atoms/settingsAtom.js';
 import { CountryFlag } from '../../CustomIcons/index.js';
+
 type RelationshipEntityValue = RelatedRelationshipMetadataProperty['values'][number];
 
 type OpenEntityTarget = {
@@ -25,13 +25,10 @@ type OpenEntityTarget = {
 type ConnectionPillsProps = {
   values: RelationshipEntityValue[];
   targetTemplateId?: string;
-  /** Details table only — not Relationships section / leading cards. */
-  showExternalLinkIcon?: boolean;
   onOpenEntity?: (target: OpenEntityTarget) => void;
 };
 
 type ConnectionPillsForFieldOptions = {
-  showExternalLinkIcon?: boolean;
   onOpenEntity?: (target: OpenEntityTarget) => void;
 };
 
@@ -39,12 +36,7 @@ const isEntityRelationshipValue = (
   value: RelationshipMetadataProperty['values'][number]
 ): value is RelationshipEntityValue => 'title' in value;
 
-const ConnectionPills = ({
-  values,
-  targetTemplateId,
-  showExternalLinkIcon = false,
-  onOpenEntity,
-}: ConnectionPillsProps) => {
+const ConnectionPills = ({ values, targetTemplateId, onOpenEntity }: ConnectionPillsProps) => {
   const settings = useAtomValue(settingsAtom);
   const entityBasePath = `${getEntityViewerV2BasePath(isEntityViewerV2Enabled(settings.features))}/`;
 
@@ -56,27 +48,17 @@ const ConnectionPills = ({
     <div className="flex flex-wrap items-center gap-1.5">
       {values.map((value, index) => {
         const itemKey = value._id || `rel-${index}`;
+        const templateId = value.templateId || targetTemplateId || '';
         const pill = (
           <span className="inline-flex max-w-full items-center gap-1.5">
             {value.icon?._id && <CountryFlag id={value.icon._id} />}
-            <TemplatePill
-              templateId={value.templateId || targetTemplateId || ''}
-              label={value.title}
-            />
+            <TemplatePill templateId={templateId} label={value.title} />
           </span>
         );
 
         if (value.authorized === false) {
           return <span key={itemKey}>{pill}</span>;
         }
-
-        const openIcon = showExternalLinkIcon ? (
-          <ArrowTopRightOnSquareIcon
-            className="h-3 w-3 shrink-0 text-ink-tertiary"
-            aria-hidden="true"
-            data-testid="connection-external-link-icon"
-          />
-        ) : null;
 
         if (onOpenEntity) {
           return (
@@ -89,12 +71,11 @@ const ConnectionPills = ({
                 onOpenEntity({
                   sharedId: value._id,
                   title: value.title,
-                  templateId: value.templateId || targetTemplateId || '',
+                  templateId,
                 })
               }
             >
               {pill}
-              {openIcon}
             </button>
           );
         }
@@ -110,7 +91,6 @@ const ConnectionPills = ({
             title={value.title}
           >
             {pill}
-            {openIcon}
           </I18NLinkV2>
         );
       })}
@@ -130,7 +110,6 @@ const connectionPillsForField = (
     <ConnectionPills
       values={field.values}
       targetTemplateId={field.relationShipTarget || templateProperty?.content}
-      showExternalLinkIcon={options.showExternalLinkIcon}
       onOpenEntity={options.onOpenEntity}
     />
   );

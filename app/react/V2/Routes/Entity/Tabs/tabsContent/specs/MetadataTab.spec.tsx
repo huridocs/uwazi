@@ -10,6 +10,7 @@ import { ServicesProvider } from '#V2/services/ServicesProvider.js';
 import { templatesAtom, userAtom } from '#V2/atoms/index.js';
 import {
   EntityScopedProvider,
+  useEntityContext,
   useMetadataEditing,
 } from '#V2/Routes/Entity/Components/context/index.js';
 import { MetadataDisplayFooter } from '#V2/Routes/Entity/Components/metadata/MetadataDisplayFooter.js';
@@ -24,6 +25,7 @@ const entity: Entity = {
   metadata: {},
   creationDate: 0,
   user: 'user1',
+  relations: [{ entity: 'other', entityData: { title: 'Other', template: 't2' } }],
 };
 
 type SessionApi = ReturnType<typeof useMetadataEditing>;
@@ -36,9 +38,15 @@ const SessionBridge = ({ onSession }: { onSession: (session: SessionApi) => void
   return null;
 };
 
+const RelProbe = () => {
+  const { entity: scoped } = useEntityContext();
+  return <span data-testid="rel-entity">{scoped.relations?.[0]?.entity ?? ''}</span>;
+};
+
 const HostPair = ({ onSession }: { onSession: (session: SessionApi) => void }) => (
   <>
     <SessionBridge onSession={onSession} />
+    <RelProbe />
     <MetadataTab entity={entity} host="side" />
     <MetadataTab entity={entity} host="main" />
     <MetadataDisplayFooter host="side" />
@@ -128,6 +136,35 @@ describe('MetadataTab shared session', () => {
     await waitFor(() => {
       expect(getSession().isEditing).toBe(false);
       expect(getSession().isSaving).toBe(false);
+    });
+  });
+
+  it('keeps relations on the in-memory entity when save omits them', async () => {
+    const upsert = jest.fn().mockResolvedValue([
+      {
+        _id: 'e1',
+        sharedId: 's1',
+        title: 'Saved',
+        template: 't1',
+        language: 'en',
+        metadata: {},
+        creationDate: 0,
+        user: 'user1',
+      },
+      undefined,
+    ]);
+    const { getSession } = await renderSession(upsert);
+
+    await act(async () => {
+      getSession().registerMetadataActive('main', true);
+      getSession().startEditing('main');
+    });
+    await screen.findByTestId('entity-edit-form');
+    fireEvent.click(screen.getByRole('button', { name: 'Save' }));
+
+    await waitFor(() => {
+      expect(getSession().isEditing).toBe(false);
+      expect(screen.getByTestId('rel-entity')).toHaveTextContent('other');
     });
   });
 

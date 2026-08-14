@@ -17,7 +17,10 @@ import {
   useDocumentPdf,
   type MetadataEditingHost,
 } from '#V2/Routes/Entity/Components/context/index.js';
-import { entityLoaderCache } from '#V2/Routes/Entity/EntityLoaderCache.js';
+import {
+  entityIncludesRelationships,
+  entityLoaderCache,
+} from '#V2/Routes/Entity/EntityLoaderCache.js';
 import { useServices } from '#V2/services/index.js';
 import type { EntitySaveInput } from '#V2/services/index.js';
 import {
@@ -131,10 +134,12 @@ const MetadataTab = ({ entity, host }: MetadataTabProps) => {
   };
 
   const completeSave = async (saved: Entity) => {
-    const savedLanguage = saved.language || language;
     entityLoaderCache.invalidateEntity(entity.sharedId);
-    entityLoaderCache.setEntity(entity.sharedId, savedLanguage, saved);
-    setEntity(saved);
+    setEntity(
+      entityIncludesRelationships(saved) || !entity.relations
+        ? saved
+        : { ...saved, relations: entity.relations }
+    );
     await revalidator.revalidate();
     finishEditing();
   };

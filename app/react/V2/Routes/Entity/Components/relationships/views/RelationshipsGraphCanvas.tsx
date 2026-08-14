@@ -65,7 +65,10 @@ const RelationshipsGraphCanvas = ({
     onWheel={onWheel}
     className="h-full w-full cursor-grab touch-none active:cursor-grabbing"
   >
-    <g transform={`translate(${transform.tx} ${transform.ty}) scale(${transform.scale})`}>
+    <g
+      transform={`translate(${transform.tx} ${transform.ty}) scale(${transform.scale})`}
+      style={{ transformOrigin: `${CX}px ${CY}px` }}
+    >
       {spokes.map(spoke => {
         const branchNodes = nodes.filter(node => spoke.nodeIds.includes(node.id));
         const direct = groupBy === 'none';
