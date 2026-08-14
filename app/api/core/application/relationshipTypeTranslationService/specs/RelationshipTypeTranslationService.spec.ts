@@ -4,6 +4,7 @@ import type { DBFixture } from '#api/utils/testing_db.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { RelationshipType } from '#api/core/domain/relationshipType/RelationshipType.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { TranslationsDataSourceFactory } from '#api/core/infrastructure/factories/TranslationsDataSourceFactory.js';
 import { TranslationsServiceFactory } from '#api/core/infrastructure/factories/TranslationsServiceFactory.js';
 import { TranslationsQueryServiceFactory } from '#api/core/infrastructure/factories/TranslationsQueryServiceFactory.js';
 import { toIndexedTranslations } from '#api/core/infrastructure/express/translation/LegacyTranslationDtoMapper.js';
@@ -41,6 +42,7 @@ const createSut = () => {
     transactionManager,
     sut: new RelationshipTypeTranslationService({
       translationsService: TranslationsServiceFactory.default({ transactionManager }),
+      translationsDS: TranslationsDataSourceFactory.default({ transactionManager }),
     }),
   };
 };

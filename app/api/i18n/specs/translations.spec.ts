@@ -7,6 +7,7 @@ import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import entities from '#api/entities/index.js';
 import * as denormalize from '#api/entities/denormalize.js';
 import { importPredefinedTranslations } from '#api/core/application/translation/ImportPredefinedTranslationsService.js';
+import { TranslationsDataSource } from '#api/core/application/contracts/TranslationsDataSource.js';
 import { LocaleTranslationInput } from '#api/core/application/translation/localeTranslationDto.js';
 import { TranslationsService } from '#api/core/application/translation/TranslationsService.js';
 import { TranslationSyO } from '#api/core/infrastructure/mongodb/translation/schemas/TranslationSyO.js';
@@ -16,6 +17,7 @@ import { AddLanguageUseCaseFactory } from '#api/core/infrastructure/factories/Ad
 import { SaveLocaleTranslationsUseCaseFactory } from '#api/core/infrastructure/factories/SaveLocaleTranslationsUseCaseFactory.js';
 import { SaveTranslationEntriesUseCaseFactory } from '#api/core/infrastructure/factories/SaveTranslationEntriesUseCaseFactory.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { TranslationsDataSourceFactory } from '#api/core/infrastructure/factories/TranslationsDataSourceFactory.js';
 import { TranslationsQueryServiceFactory } from '#api/core/infrastructure/factories/TranslationsQueryServiceFactory.js';
 import { TranslationsServiceFactory } from '#api/core/infrastructure/factories/TranslationsServiceFactory.js';
 import { UpdateEntriesByContextUseCaseFactory } from '#api/core/infrastructure/factories/UpdateEntriesByContextUseCaseFactory.js';
@@ -30,11 +32,17 @@ import { sortByLocale } from './sortByLocale.js';
 
 const withContext = async <T>(fn: () => Promise<T>) => testingEnvironment.runWithContext(fn);
 
-const withTranslationsService = async (fn: (service: TranslationsService) => Promise<void>) =>
+const withTranslationWrites = async (
+  fn: (deps: {
+    service: TranslationsService;
+    translationsDS: TranslationsDataSource;
+  }) => Promise<void>
+) =>
   withContext(async () => {
     const transactionManager = TransactionManagerFactory.default();
-    const translationsService = TranslationsServiceFactory.default({ transactionManager });
-    await transactionManager.run(async () => fn(translationsService));
+    const translationsDS = TranslationsDataSourceFactory.default({ transactionManager });
+    const service = TranslationsServiceFactory.default({ transactionManager });
+    await transactionManager.run(async () => fn({ service, translationsDS }));
   });
 
 const getLegacyTranslations = async (query: { locale?: LanguageISO6391; context?: string } = {}) =>
@@ -150,13 +158,13 @@ describe('translations', () => {
       expect(result.locale).toBe('fr');
     });
 
-    it('should accept partial updates in both, array format and map format', async () => {
+    it('should accept partial updates as key/value maps', async () => {
       await saveLocaleTranslations({
         locale: 'en',
         contexts: [
           {
             id: 'System',
-            values: [{ key: 'Password', value: 'edited Password' }],
+            values: { Password: 'edited Password' },
           },
           {
             id: dictionaryId.toString(),
@@ -323,46 +331,6 @@ describe('translations', () => {
     });
   });
 
-  it('should not allow duplicate keys', async () => {
-    try {
-      await saveLocaleTranslations({
-        locale: 'fr',
-        contexts: [
-          {
-            values: [
-              { key: 'repeated_key', value: 'first_value' },
-              { key: 'unique_key', value: 'unique_value' },
-              { key: 'repeated_key', value: 'second_value' },
-            ],
-          },
-        ],
-      });
-      fail('Should throw error.');
-    } catch (error) {
-      expect(error.message).toContain('Process is trying to save repeated translation key');
-    }
-
-    try {
-      await saveLocaleTranslations({
-        locale: 'en',
-        contexts: [
-          {
-            id: dictionaryId.toString(),
-
-            values: [
-              { key: 'repeated_key', value: 'first_value' },
-              { key: 'unique_key', value: 'unique_value' },
-              { key: 'repeated_key', value: 'second_value' },
-            ],
-          },
-        ],
-      });
-      fail('Should throw error.');
-    } catch (error) {
-      expect(error.message).toContain('Process is trying to save repeated translation key');
-    }
-  });
-
   describe('updateEntries', () => {
     it('should update the entries', async () => {
       await updateEntriesByContext('System', {
@@ -421,7 +389,7 @@ describe('translations', () => {
   describe('addContext()', () => {
     it('should add a context with its values', async () => {
       const values = { Name: 'Name', Surname: 'Surname' };
-      await withTranslationsService(async service =>
+      await withTranslationWrites(async ({ service }) =>
         service.createContext({ id: 'context_id', label: 'context_name', type: 'Entity' }, values)
       );
 
@@ -440,7 +408,9 @@ describe('translations', () => {
 
   describe('deleteContext()', () => {
     it('should delete a context and its values', async () => {
-      await withTranslationsService(async service => service.deleteByContextId('System'));
+      await withTranslationWrites(async ({ translationsDS }) =>
+        translationsDS.deleteByContextId('System')
+      );
 
       const translated = await getLegacyTranslations();
 
@@ -453,7 +423,7 @@ describe('translations', () => {
 
   describe('updateContext()', () => {
     it('should change the value of a translation when changing the key if the locale is the default one', async () => {
-      await withTranslationsService(async service =>
+      await withTranslationWrites(async ({ service }) =>
         service.updateContext({
           context: { id: dictionaryId.toString(), label: 'new context name', type: 'Thesaurus' },
           keyChanges: {
@@ -483,7 +453,7 @@ describe('translations', () => {
       });
     });
     it('should properly change context name, key names, values for the keys changed and deleteProperties, and create new values as new translations if key does not exists', async () => {
-      await withTranslationsService(async service =>
+      await withTranslationWrites(async ({ service }) =>
         service.updateContext({
           context: { id: dictionaryId.toString(), label: 'new context name', type: 'Thesaurus' },
           keyChanges: { Account: 'New Account Key', Password: 'New Password key' },
@@ -527,7 +497,7 @@ describe('translations', () => {
         Interface: 'Interfaces',
       };
 
-      await withTranslationsService(async service =>
+      await withTranslationWrites(async ({ service }) =>
         service.updateContext({
           context: { id: 'System', label: 'Interface', type: 'Uwazi UI' },
           keyChanges: keyNameChanges,
@@ -593,7 +563,9 @@ describe('translations', () => {
   describe('removeLanguage', () => {
     it('should remove translation for the language passed', async () => {
       await settings.deleteLanguage('es');
-      await withTranslationsService(async service => service.deleteByLanguage('es'));
+      await withTranslationWrites(async ({ translationsDS }) =>
+        translationsDS.deleteByLanguage('es')
+      );
       const allTranslations = await getLegacyTranslations();
 
       expect(allTranslations.sort(sortByLocale)).toMatchObject([

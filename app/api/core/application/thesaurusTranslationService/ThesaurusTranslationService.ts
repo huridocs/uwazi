@@ -2,11 +2,11 @@ import { Thesaurus } from '#api/core/domain/thesaurus/Thesaurus.js';
 import { Translation } from '#api/core/domain/translation/Translation.js';
 import { ThesaurusDiff } from '#api/core/domain/thesaurus/ThesaurusDiff.js';
 import { SettingsDataSource } from '../contracts/SettingsDataSource.js';
-import { TranslationsService } from '../translation/TranslationsService.js';
+import { TranslationsDataSource } from '../contracts/TranslationsDataSource.js';
 
 type Deps = {
   settingsDS: SettingsDataSource;
-  translationsService: TranslationsService;
+  translationsDS: TranslationsDataSource;
 };
 
 type LabelChanges = {
@@ -171,12 +171,12 @@ class ThesaurusTranslationService {
     labels.add(thesaurus.name);
 
     const translations = await this.createTranslations(thesaurus.id, thesaurus.name, labels);
-    await this.deps.translationsService.insert(translations);
+    await this.deps.translationsDS.insert(translations);
   }
 
   private async persistLabelChanges(diff: ThesaurusDiff, changes: LabelChanges) {
     if (changes.labelsToBeRemoved.size) {
-      await this.deps.translationsService.deleteKeysByContext(
+      await this.deps.translationsDS.deleteKeysByContext(
         diff.id,
         Array.from(changes.labelsToBeRemoved)
       );
@@ -188,12 +188,12 @@ class ThesaurusTranslationService {
         diff.name,
         changes.labelsToBeAdded
       );
-      await this.deps.translationsService.insert(translations);
+      await this.deps.translationsDS.insert(translations);
     }
 
     if (Object.keys(changes.labelsToBeUpdated).length > 0) {
       const defaultLanguage = await this.deps.settingsDS.getDefaultLanguageKey();
-      await this.deps.translationsService.updateKeysByContextV2({
+      await this.deps.translationsDS.updateKeysByContextV2({
         contextId: diff.id,
         keyChanges: changes.labelsToBeUpdated,
         defaultLanguage,
@@ -201,7 +201,7 @@ class ThesaurusTranslationService {
     }
 
     if (diff.updatedName) {
-      await this.deps.translationsService.updateContextLabel(diff.id, diff.after.name);
+      await this.deps.translationsDS.updateContextLabel(diff.id, diff.after.name);
     }
   }
 

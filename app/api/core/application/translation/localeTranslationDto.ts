@@ -9,26 +9,12 @@ import {
 type IndexedContextValues = Record<string, string>;
 
 type LocaleContextInput = Omit<LocaleTranslationContext, 'values'> & {
-  values?: TranslationValue[] | IndexedContextValues;
+  values?: IndexedContextValues;
 };
 
 type LocaleTranslationInput = Omit<TranslationType, 'contexts'> & {
   contexts?: LocaleContextInput[];
 };
-
-function checkDuplicateKeys(context: LocaleContextInput, values: TranslationValue[]) {
-  if (!values) return;
-
-  const seen = new Set<string | undefined>();
-  values.forEach(value => {
-    if (seen.has(value.key)) {
-      throw new Error(
-        `Process is trying to save repeated translation key ${value.key} in context ${context.id} (${context.type}).`
-      );
-    }
-    seen.add(value.key);
-  });
-}
 
 function indexedValuesToList(indexedValues: Record<string, string>): TranslationValue[] {
   return Object.keys(indexedValues)
@@ -37,17 +23,10 @@ function indexedValuesToList(indexedValues: Record<string, string>): Translation
 }
 
 function processContextValues(context: LocaleContextInput): LocaleTranslationContext {
-  let values: TranslationValue[] = [];
-
-  if (context.values && !Array.isArray(context.values)) {
-    values = indexedValuesToList(context.values);
-  } else if (Array.isArray(context.values)) {
-    values = context.values as TranslationValue[];
-  }
-
-  checkDuplicateKeys(context, values);
-
-  return { ...context, values };
+  return {
+    ...context,
+    values: indexedValuesToList(context.values || {}),
+  };
 }
 
 function prepareLocaleTranslation(translation: LocaleTranslationInput): TranslationType {

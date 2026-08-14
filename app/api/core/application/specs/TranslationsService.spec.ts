@@ -25,8 +25,6 @@ const createSut = (isRunning = true) => {
     insert: jest.fn().mockImplementation(async models => models),
     upsert: jest.fn().mockImplementation(async models => models),
     calculateNonexistentKeys: jest.fn().mockResolvedValue([]),
-    deleteByContextId: jest.fn().mockResolvedValue(undefined),
-    deleteByLanguage: jest.fn().mockResolvedValue(undefined),
     getContext: jest.fn(),
     updateContext: jest.fn().mockResolvedValue(undefined),
   });
@@ -69,25 +67,6 @@ describe('TranslationsService', () => {
 
       expect(prepared.contexts?.[0].values).toEqual([{ key: 'Title', value: 'Title' }]);
     });
-
-    it('should reject duplicate keys in a context', () => {
-      expect(() =>
-        prepareLocaleTranslation({
-          locale: 'en',
-          contexts: [
-            {
-              id: 'ctx-1',
-              label: 'Context',
-              type: 'Entity',
-              values: [
-                { key: 'Title', value: 'A' },
-                { key: 'Title', value: 'B' },
-              ],
-            },
-          ],
-        })
-      ).toThrow(/repeated translation key Title/);
-    });
   });
 
   describe('ambient transaction requirement', () => {
@@ -95,23 +74,6 @@ describe('TranslationsService', () => {
       ['insertEntries', async (sut: TranslationsService) => sut.insertEntries([entry()])],
       ['upsertEntries', async (sut: TranslationsService) => sut.upsertEntries([entry()])],
       ['saveEntries', async (sut: TranslationsService) => sut.saveEntries([entry()])],
-      [
-        'persistLocale',
-        async (sut: TranslationsService) =>
-          sut.persistLocale({
-            locale: 'en',
-            contexts: [
-              {
-                id: 'ctx-1',
-                label: 'Context',
-                type: 'Entity',
-                values: [{ key: 'Title', value: 'T' }],
-              },
-            ],
-          }),
-      ],
-      ['deleteByContextId', async (sut: TranslationsService) => sut.deleteByContextId('ctx-1')],
-      ['deleteByLanguage', async (sut: TranslationsService) => sut.deleteByLanguage('en')],
     ])('should throw when %s is called outside a transaction', async (_name, run) => {
       const { sut } = createSut(false);
       await expect(run(sut)).rejects.toThrow('This operation must be called within a transaction');
@@ -212,16 +174,6 @@ describe('TranslationsService', () => {
           expect.objectContaining({ language: 'es', key: 'Name' }),
         ])
       );
-    });
-
-    it('should delete by context and language', async () => {
-      const { sut, translationsDS } = createSut(true);
-
-      await sut.deleteByContextId('ctx-1');
-      await sut.deleteByLanguage('es');
-
-      expect(translationsDS.deleteByContextId).toHaveBeenCalledWith('ctx-1');
-      expect(translationsDS.deleteByLanguage).toHaveBeenCalledWith('es');
     });
   });
 });

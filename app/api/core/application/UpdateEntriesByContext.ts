@@ -1,7 +1,7 @@
 import { AbstractUseCase } from '../libs/UseCase.js';
 import { SettingsDataSource } from './contracts/SettingsDataSource.js';
 import { TranslationsQueryService } from './translation/TranslationsQueryService.js';
-import { prepareLocaleTranslation } from './translation/localeTranslationDto.js';
+import { flattenLocaleTranslation } from './translation/localeTranslationDto.js';
 import { TranslationsService } from './translation/TranslationsService.js';
 import { PropagateThesaurusTranslationService } from './translation/PropagateThesaurusTranslationService.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
@@ -96,7 +96,7 @@ function prepareLocaleUpdate(
 
   return {
     previousContexts,
-    next: prepareLocaleTranslation(translation),
+    next: translation,
   };
 }
 
@@ -140,7 +140,7 @@ class UpdateEntriesByContextUseCase extends AbstractUseCase<Input, Output, Deps>
     await this.transactionManager.run(async () => {
       await prepared.reduce(async (previous, { next }) => {
         await previous;
-        await this.deps.translationsService.persistLocale(next);
+        await this.deps.translationsService.saveEntries(flattenLocaleTranslation(next));
       }, Promise.resolve());
     });
 

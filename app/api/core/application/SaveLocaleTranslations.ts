@@ -1,6 +1,7 @@
 import { AbstractUseCase } from '../libs/UseCase.js';
 import {
   LocaleTranslationInput,
+  flattenLocaleTranslation,
   prepareLocaleTranslation,
 } from './translation/localeTranslationDto.js';
 import { TranslationsQueryService } from './translation/TranslationsQueryService.js';
@@ -27,7 +28,7 @@ class SaveLocaleTranslationsUseCase extends AbstractUseCase<Input, Output, Deps>
     });
 
     await this.transactionManager.run(async () => {
-      await this.deps.translationsService.persistLocale(translationToSave);
+      await this.deps.translationsService.saveEntries(flattenLocaleTranslation(translationToSave));
     });
 
     await this.deps.propagateThesaurusTranslation.forLocale(

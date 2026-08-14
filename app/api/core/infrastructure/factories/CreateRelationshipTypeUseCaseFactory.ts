@@ -3,6 +3,7 @@ import { RelationshipTypeTranslationService } from '#api/core/application/relati
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { IdGeneratorFactory } from '#api/core/infrastructure/factories/IdGeneratorFactory.js';
 import { RelationshipTypesDataSourceFactory } from './RelationshipTypesDataSourceFactory.js';
+import { TranslationsDataSourceFactory } from './TranslationsDataSourceFactory.js';
 import { TranslationsServiceFactory } from './TranslationsServiceFactory.js';
 
 class CreateRelationshipTypeUseCaseFactory {
@@ -13,6 +14,7 @@ class CreateRelationshipTypeUseCaseFactory {
     const relationshipTypesDS = RelationshipTypesDataSourceFactory.default({ transactionManager });
     const translationService = new RelationshipTypeTranslationService({
       translationsService: TranslationsServiceFactory.default({ transactionManager }),
+      translationsDS: TranslationsDataSourceFactory.default({ transactionManager }),
     });
 
     return new CreateRelationshipTypeUseCase({

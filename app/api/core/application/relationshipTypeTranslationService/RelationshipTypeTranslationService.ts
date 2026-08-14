@@ -1,9 +1,11 @@
 import type { RelationshipTypesTranslationService } from '#api/core/application/contracts/RelationshipTypesTranslationService.js';
+import { TranslationsDataSource } from '#api/core/application/contracts/TranslationsDataSource.js';
 import { TranslationsService } from '#api/core/application/translation/TranslationsService.js';
 import { RelationshipType } from '#api/core/domain/relationshipType/RelationshipType.js';
 
 type Deps = {
   translationsService: TranslationsService;
+  translationsDS: TranslationsDataSource;
 };
 
 /**
@@ -40,7 +42,7 @@ class RelationshipTypeTranslationService implements RelationshipTypesTranslation
   }
 
   async delete(relationshipTypeId: string): Promise<void> {
-    await this.deps.translationsService.deleteByContextId(relationshipTypeId);
+    await this.deps.translationsDS.deleteByContextId(relationshipTypeId);
   }
 }
 

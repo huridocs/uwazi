@@ -4,9 +4,9 @@ import { TestUtils } from '#api/common.v2/utils/Test.js';
 import { Thesaurus } from '#api/core/domain/thesaurus/Thesaurus.js';
 import { Translation } from '#api/core/domain/translation/Translation.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-import { TranslationsService } from '#api/core/application/translation/TranslationsService.js';
+import { TranslationsDataSource } from '../../contracts/TranslationsDataSource.js';
 import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
-import { TranslationsServiceFactory } from '#api/core/infrastructure/factories/TranslationsServiceFactory.js';
+import { TranslationsDataSourceFactory } from '#api/core/infrastructure/factories/TranslationsDataSourceFactory.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { MongoThesaurusMapper } from '#api/core/infrastructure/mongodb/thesauri/MongoThesaurusMapper.js';
 import { ThesaurusDBO } from '#api/core/infrastructure/mongodb/thesauri/ThesaurusDBO.js';
@@ -17,7 +17,7 @@ import { factory, fixtures } from './ThesaurusTranslationServiceFixtures.js';
 
 type Props = {
   settingsDS?: SettingsDataSource;
-  translationsService?: TranslationsService;
+  translationsDS?: TranslationsDataSource;
 };
 
 const createSut = (props?: Props) => {
@@ -28,9 +28,9 @@ const createSut = (props?: Props) => {
       getDefaultLanguageKey: jest.fn().mockResolvedValue('en'),
     });
 
-  const translationsService =
-    props?.translationsService ??
-    TestUtils.mockClass<TranslationsService>({
+  const translationsDS =
+    props?.translationsDS ??
+    TestUtils.mockClass<TranslationsDataSource>({
       insert: jest.fn(),
       deleteKeysByContext: jest.fn(),
       updateKeysByContextV2: jest.fn(),
@@ -39,16 +39,16 @@ const createSut = (props?: Props) => {
 
   const sut = new ThesaurusTranslationService({
     settingsDS,
-    translationsService,
+    translationsDS,
   });
 
-  return { sut, settingsDS, translationsService };
+  return { sut, settingsDS, translationsDS };
 };
 
 describe('ThesaurusTranslationService', () => {
   describe('Create', () => {
     it('should create translation entries for thesaurus name', async () => {
-      const { sut, translationsService } = createSut();
+      const { sut, translationsDS } = createSut();
 
       const thesaurus = Thesaurus.create({
         name: 'Countries',
@@ -57,7 +57,7 @@ describe('ThesaurusTranslationService', () => {
 
       await sut.create(thesaurus);
 
-      expect(translationsService.insert).toHaveBeenCalledWith(
+      expect(translationsDS.insert).toHaveBeenCalledWith(
         expect.arrayContaining([
           expect.objectContaining({
             key: 'Countries',
@@ -84,7 +84,7 @@ describe('ThesaurusTranslationService', () => {
     });
 
     it('should create translation entries for root values', async () => {
-      const { sut, translationsService } = createSut();
+      const { sut, translationsDS } = createSut();
 
       const thesaurus = Thesaurus.create({
         name: 'Countries',
@@ -93,7 +93,7 @@ describe('ThesaurusTranslationService', () => {
 
       await sut.create(thesaurus);
 
-      const insertedTranslations = (translationsService.insert as jest.Mock).mock
+      const insertedTranslations = (translationsDS.insert as jest.Mock).mock
         .calls[0][0] as Translation[];
 
       expect(insertedTranslations).toEqual(
@@ -107,7 +107,7 @@ describe('ThesaurusTranslationService', () => {
     });
 
     it('should create flattened translation entries for nested values', async () => {
-      const { sut, translationsService } = createSut();
+      const { sut, translationsDS } = createSut();
 
       const thesaurus = Thesaurus.create({
         name: 'Countries',
@@ -121,7 +121,7 @@ describe('ThesaurusTranslationService', () => {
 
       await sut.create(thesaurus);
 
-      const insertedTranslations = (translationsService.insert as jest.Mock).mock
+      const insertedTranslations = (translationsDS.insert as jest.Mock).mock
         .calls[0][0] as Translation[];
 
       // Should include parent label
@@ -143,7 +143,7 @@ describe('ThesaurusTranslationService', () => {
       );
     });
     it('should not create duplicate entries for same label appearing multiple times', async () => {
-      const { sut, translationsService } = createSut();
+      const { sut, translationsDS } = createSut();
 
       const thesaurus = Thesaurus.create({
         name: 'Test',
@@ -155,7 +155,7 @@ describe('ThesaurusTranslationService', () => {
 
       await sut.create(thesaurus);
 
-      const insertedTranslations = (translationsService.insert as jest.Mock).mock
+      const insertedTranslations = (translationsDS.insert as jest.Mock).mock
         .calls[0][0] as Translation[];
 
       // 'Item' appears twice but should only have 2 entries (one per language)
@@ -175,9 +175,9 @@ describe('ThesaurusTranslationService', () => {
     const createDefaultSut = () => {
       const transactionManager = TransactionManagerFactory.default();
       const settingsDS = SettingsDataSourceFactory.default({ transactionManager });
-      const translationsService = TranslationsServiceFactory.default({ transactionManager });
+      const translationsDS = TranslationsDataSourceFactory.default({ transactionManager });
 
-      const { sut } = createSut({ settingsDS, translationsService });
+      const { sut } = createSut({ settingsDS, translationsDS });
 
       return { sut, transactionManager };
     };
