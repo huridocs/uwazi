@@ -25,21 +25,6 @@ import { LanguageDropdown } from './LanguageDropdown.js';
 import { MenuLinks } from './MenuLinks.js';
 import { MobileMenuDropdown } from './MobileMenuDropdown.js';
 
-const libraryRoutes = new Set([
-  '/library',
-  '/library/map',
-  '/library/table',
-  'library',
-  'library/map',
-  'library/table',
-]);
-
-const isLibraryUrl = (url?: string) => {
-  if (!url) return false;
-  const [path] = url.split('?');
-  return libraryRoutes.has(path);
-};
-
 const mapStateToProps = (state: IStore) => ({
   librarySearch: state.library.search,
   libraryFilters: state.library.filters,
@@ -76,7 +61,7 @@ const HeaderView = ({ librarySearch, libraryFilters, setSidePanelView }: HeaderR
   );
 
   const shouldShowLibrary = !privateInstance || authenticatedUser;
-  const headerLinks = (settings.links ?? []).filter(link => !isLibraryUrl(link.url));
+  const headerLinks = settings.links ?? [];
 
   return (
     <header className="header-bar flex flex-col" data-uwazi-header>
