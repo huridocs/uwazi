@@ -5,7 +5,7 @@ import { DatavizDataSource } from '#api/dataviz.v2/application/contracts/Dataviz
 import { DatavizQueryExecutor } from '#api/dataviz.v2/application/contracts/DatavizQueryExecutor.js';
 import { AbstractUseCase } from '#api/core/libs/UseCase.js';
 import { Dataviz } from '#api/dataviz.v2/domain/Dataviz.js';
-import { DatavizNotFoundError } from '#api/dataviz.v2/domain/errors.js';
+import { DatavizDuplicateNameError, DatavizNotFoundError } from '#api/dataviz.v2/domain/errors.js';
 import type { DatavizScheduler } from '#api/dataviz.v2/application/contracts/DatavizScheduler.js';
 import { normalizeDatavizRefresh } from '#shared/dataviz/normalizeDatavizRefresh.js';
 import type { TemplatesDataSource } from '#api/core/application/contracts/TemplatesDataSource.js';
@@ -37,7 +37,7 @@ class UpdateDatavizUseCase extends AbstractUseCase<Input, Output, Deps> {
     if (input.name !== existing.name) {
       const exists = await this.deps.datavizDS.existsByName(input.name);
       if (exists) {
-        throw new Error(`A dataviz named "${input.name}" already exists`);
+        throw new DatavizDuplicateNameError(input.name);
       }
     }
 
