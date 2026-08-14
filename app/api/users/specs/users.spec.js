@@ -9,7 +9,7 @@ import * as unlockCode from '../generateUnlockCode.js';
 import passwordRecoveriesModel from '../passwordRecoveriesModel.js';
 import users from '../users.js';
 import usersModel from '../usersModel.js';
-import fixtures, { expectedKey, recoveryUserId, userId, userToDelete } from './fixtures.js';
+import fixtures, { expectedKey, recoveryUserId, userId } from './fixtures.js';
 
 jest.mock('api/users/generateUnlockCode.ts', () => ({
   generateUnlockCode: () => 'hash',
@@ -22,24 +22,6 @@ describe('Users', () => {
 
   afterAll(async () => {
     await testingEnvironment.tearDown();
-  });
-
-  describe('simpleUnlock', () => {
-    it('should remove unlock related fields', async () => {
-      await users.simpleUnlock(userId);
-      const [user] = await db.mongodb.collection('users').find({ _id: userId }).toArray();
-      expect(user.accountLocked).toBe(undefined);
-      expect(user.accountUnlockCode).toBe(undefined);
-      expect(user.failedLogins).toBe(undefined);
-    });
-
-    it('should keep fields intact in other users', async () => {
-      await users.simpleUnlock(userId);
-      const [user] = await db.mongodb.collection('users').find({ _id: userToDelete }).toArray();
-      expect(user.accountLocked).toBe(false);
-      expect(user.accountUnlockCode).toBe(undefined);
-      expect(user.failedLogins).toBe(0);
-    });
   });
 
   describe('recoverPassword', () => {

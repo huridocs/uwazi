@@ -57,26 +57,6 @@ export const userRoutes = (app: Application) => {
     '/api/users/unlock',
     needsAuthorization(),
     validatePasswordMiddleWare,
-    async (req: Request, res: Response, next: NextFunction) => {
-      if (tenants.current().featureFlags?.v2UsersUtilityRoutes) {
-        next();
-      } else {
-        await validation.validateRequest({
-          type: 'object',
-          properties: {
-            body: {
-              type: 'object',
-              additionalProperties: false,
-              properties: {
-                _id: { type: 'string' },
-              },
-              required: ['_id'],
-            },
-          },
-          required: ['body'],
-        })(req, res, next);
-      }
-    },
     UnlockBlockedUserController.createHandler()
   );
 

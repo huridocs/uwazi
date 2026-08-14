@@ -44,6 +44,18 @@ function conformRecoverText(options, _settings, domain, key, user) {
   return response;
 }
 
+/**
+ * @deprecated
+ * v1-only. `resetPassword` below is the sole caller; both go when `v2UsersUtilityRoutes`
+ * loses its last two routes. The v2 path is `UsersDataSource.clearLockFields`, which also
+ * guards soft-deleted and system users — this one does not.
+ */
+const clearLockFieldsV1 = async _id =>
+  model.updateMany(
+    { _id },
+    { $unset: { accountLocked: 1, accountUnlockCode: 1, failedLogins: 1 } }
+  );
+
 const populateGroupsOfUsers = async (user, groups) => {
   const memberships = groups
     .filter(group => group.members.find(member => member.refId === user._id.toString()))
@@ -107,20 +119,6 @@ export default {
 
   /**
    * @deprecated
-   * v1 admin unlock flow. Only reached while the tenant's
-   * `v2UsersUtilityRoutes` flag is off (see `UnlockBlockedUserController`), and
-   * also called internally by the legacy `resetPassword` below. Use the v2
-   * `UnlockBlockedUser` use case (`UnlockBlockedUserUseCaseFactory`) instead.
-   */
-  async simpleUnlock(_id) {
-    await model.updateMany(
-      { _id },
-      { $unset: { accountLocked: 1, accountUnlockCode: 1, failedLogins: 1 } }
-    );
-  },
-
-  /**
-   * @deprecated
    * v1 password recovery flow — writes the Mongo `passwordrecoveries`
    * collection directly via `passwordRecoveriesModel`, bypassing
    * `PasswordRecoveriesDataSourceFactory` entirely. Only reached while the
@@ -179,7 +177,7 @@ export default {
         passwordRecoveriesModel.delete(key._id),
         model
           .save({ _id: key.user, password: await encryptPassword(credentials.password) })
-          .then(() => this.simpleUnlock({ _id: key.user })),
+          .then(() => clearLockFieldsV1(key.user)),
       ]);
     }
     throw createError('key not found', 403);

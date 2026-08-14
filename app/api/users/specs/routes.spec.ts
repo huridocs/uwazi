@@ -70,52 +70,6 @@ describe('users routes', () => {
   });
 
   describe('POST', () => {
-    describe('/users/unlock', () => {
-      let unlockMock: jest.SpyInstance;
-
-      beforeAll(() => {
-        unlockMock = jest
-          .spyOn(users, 'simpleUnlock')
-          .mockImplementation(async (_id?: any) => Promise.resolve());
-      });
-
-      afterAll(() => {
-        unlockMock.mockRestore();
-      });
-
-      it('should require an admin', async () => {
-        currentUser = editorUser;
-        const response = await request(app)
-          .post('/api/users/unlock')
-          .send({ _id: 'useridstring ' });
-        expect(response.status).toBe(401);
-        currentUser = adminUser;
-      });
-
-      it.each([
-        {
-          body: {},
-        },
-        {
-          body: { _id: 'useridstring', extra: 'extra' },
-        },
-        {
-          body: { _id: 0 },
-        },
-      ])('should validate the body', async ({ body }) => {
-        const response = await request(app).post('/api/users/unlock').send(body);
-        expect(response.status).toBe(400);
-        expect(response.body.error).toEqual('validation failed');
-      });
-
-      it('should call users simpleUnlock with the body id', async () => {
-        const _id = 'useridstring';
-        const response = await request(app).post('/api/users/unlock').send({ _id });
-        expect(response.status).toBe(200);
-        expect(users.simpleUnlock).toHaveBeenCalledWith(_id);
-      });
-    });
-
     describe('/recoverpassword', () => {
       it.each([
         { value: undefined, keyword: 'required' },
