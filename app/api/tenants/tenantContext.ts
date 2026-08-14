@@ -47,7 +47,6 @@ type Tenant = {
     };
     v2UsersUtilityRoutes?: Boolean;
     v2Auth2fa?: boolean;
-    v2Login?: boolean;
     v2PasswordReauth?: boolean;
     v2Captcha?: boolean;
     v2PrivateInstance?: boolean;

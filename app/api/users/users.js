@@ -1,9 +1,6 @@
-/* eslint-disable max-lines */
 /* eslint-disable max-statements */
-import SHA256 from 'crypto-js/sha256.js';
 import { createError } from '#api/utils/index.js';
-import { encryptPassword, comparePasswords } from '#api/auth/encryptPassword.js';
-import * as usersUtils from '#api/auth2fa/usersUtils.js';
+import { encryptPassword } from '#api/auth/encryptPassword.js';
 import { getByMemberIdList } from '#api/usergroups/userGroupsMembers.js';
 
 import mailer from '../utils/mailer.js';
@@ -11,12 +8,6 @@ import model from './usersModel.js';
 import passwordRecoveriesModel from './passwordRecoveriesModel.js';
 import settings from '../settings/settings.js';
 import { generateUnlockCode } from './generateUnlockCode.js';
-
-const MAX_FAILED_LOGIN_ATTEMPTS = 6;
-
-function validateURL(input) {
-  return new URL(input);
-}
 
 function conformRecoverText(options, _settings, domain, key, user) {
   const response = {};
@@ -52,94 +43,6 @@ function conformRecoverText(options, _settings, domain, key, user) {
 
   return response;
 }
-
-const sendAccountLockedEmail = async (user, domain) => {
-  const url = new URL(domain);
-  url.pathname += `unlockaccount/${user.username}/${user.accountUnlockCode}`;
-  const htmlLink = `<a href="${url}">${url}</a>`;
-  const text =
-    'Hello,\n\n' +
-    'Your account has been locked because of too many failed login attempts. ' +
-    'To unlock your account open the following link:\n' +
-    `${url}`;
-  const html = `<p>${text.replace(url, htmlLink)}</p>`;
-
-  const settingsDetails = await settings.get();
-  const emailSender = mailer.createSenderDetails(settingsDetails);
-  const mailOptions = {
-    from: emailSender,
-    to: user.email,
-    subject: 'Account locked',
-    text,
-    html,
-  };
-
-  return mailer.send(mailOptions);
-};
-
-const updateOldPassword = async (user, password) => {
-  await model.save({ _id: user._id, password: await encryptPassword(password) });
-};
-
-const blockAccount = async (user, domain) => {
-  const accountUnlockCode = generateUnlockCode();
-  const lockedUser = await model.db.findOneAndUpdate(
-    { _id: user._id },
-    { $set: { accountLocked: true, accountUnlockCode } },
-    { new: true, fields: '+accountUnlockCode' }
-  );
-  await sendAccountLockedEmail(lockedUser, domain);
-};
-
-const newFailedLogin = async (user, domain) => {
-  const updatedUser = await model.db.findOneAndUpdate(
-    { _id: user._id },
-    { $inc: { failedLogins: 1 } },
-    { new: true, fields: '+failedLogins' }
-  );
-  if (updatedUser?.failedLogins >= MAX_FAILED_LOGIN_ATTEMPTS) {
-    await blockAccount(user, domain);
-  }
-};
-
-const validateUserPassword = async (user, password, domain) => {
-  const passwordValidated = await comparePasswords(password, user.password);
-  const oldPasswordValidated = user.password === SHA256(password).toString();
-
-  if (oldPasswordValidated) {
-    await updateOldPassword(user, password);
-  }
-
-  if (!oldPasswordValidated && !passwordValidated) {
-    if (!user?.accountLocked) {
-      await newFailedLogin(user, domain);
-    }
-
-    return createError('Invalid username or password', 401);
-  }
-
-  return undefined;
-};
-
-const validate2fa = async (user, token, domain) => {
-  if (user.using2fa) {
-    if (!token) {
-      throw createError('Two-step verification token required', 409);
-    }
-
-    try {
-      await usersUtils.verifyToken(user, token);
-    } catch (err) {
-      await newFailedLogin(user, domain);
-      throw err;
-    }
-  }
-};
-
-const sanitizeUser = user => {
-  const { password, accountLocked, failedLogins, accountUnlockCode, ...sanitizedUser } = user;
-  return sanitizedUser;
-};
 
 const populateGroupsOfUsers = async (user, groups) => {
   const memberships = groups
@@ -200,41 +103,6 @@ export default {
     }
 
     return user ?? null;
-  },
-
-  /**
-   * @deprecated
-   * v1 login flow, invoked via Passport's `LocalStrategy` (see
-   * `passport_conf.js`). Only reached while the tenant's `v2Login` flag is off
-   * (see `app/api/auth/routes.js`, `@deprecated v1 fallback for the v2Login
-   * flag`). Use the v2 `Login` use case (`LoginUseCaseFactory`, exposed via
-   * `LoginController`) instead.
-   */
-  async login({ username, password, token }, domain) {
-    const [dbuser] = await model.get(
-      { username, deletedAt: { $exists: false } },
-      '+password +accountLocked +failedLogins +accountUnlockCode'
-    );
-
-    validateURL(domain);
-    const dummy = { password: await encryptPassword('Avoid user enum on login req ms diff') };
-    const user = dbuser || dummy;
-
-    const passwordError = await validateUserPassword(user, password, domain);
-
-    if (passwordError) {
-      throw passwordError;
-    }
-
-    if (user?.accountLocked) {
-      throw createError('Invalid username or password', 401);
-    }
-
-    await validate2fa(user, token, domain);
-
-    await model.db.updateOne({ _id: user._id }, { $unset: { failedLogins: 1 } });
-
-    return sanitizeUser(user);
   },
 
   /**
@@ -341,5 +209,3 @@ export default {
     throw createError('key not found', 403);
   },
 };
-
-export { validateUserPassword };

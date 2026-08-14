@@ -42,9 +42,10 @@ export const setSecret = async (user: User) => {
 
 /**
  * @deprecated v1 fallback for the `v2Auth2fa` flag, used by EnableTwoFactorAuthController and
- * ResetTwoFactorAuthController, and by the login-time 2FA check in app/api/users/users.js
- * (validate2fa). Login-time usage is superseded by Login.checkTwoFactor
- * (app/api/core/application/Login.ts:85). Remove once v2Auth2fa is enabled for all tenants.
+ * ResetTwoFactorAuthController. The login-time caller is gone: `users.login` and its
+ * `validate2fa` were removed with the `v2Login` flag, and `Login.checkTwoFactor`
+ * (app/api/core/application/Login.ts) is the only 2FA check on the login path now.
+ * Remove once v2Auth2fa is enabled for all tenants.
  */
 export const verifyToken = async (user: User, token: string) => {
   const dbUser = await getUser({ _id: user._id }, '+secret');

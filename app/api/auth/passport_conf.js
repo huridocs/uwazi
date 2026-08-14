@@ -1,36 +1,16 @@
 import passport from 'passport';
-import LocalStrategy from 'passport-local';
 import users from '#api/users/users.js';
 import { UsersDirectoryFactory } from '#api/core/infrastructure/factories/UsersDirectoryFactory.js';
 import { usersDirectoryEnabled } from '#api/core/infrastructure/factories/usersBackendFlags.js';
 import { tenants } from '#api/tenants/tenantContext.js';
 import { appContext } from '#api/utils/AppContext.js';
 
-const getDomain = req => `${req.protocol}://${tenants.current().domain}`;
-
-passport.use(
-  'local',
-  new LocalStrategy(
-    {
-      passReqToCallback: true,
-    },
-    (req, username, password, done) => {
-      const token = req.body ? req.body.token : undefined;
-      users
-        .login({ username, password, token }, getDomain(req))
-        .then(user => done(null, user))
-        .catch(e => done(e));
-    }
-  )
-);
-
 passport.serializeUser((user, done) => {
   done(null, `${user._id}///${tenants.current().name}`);
 });
 
-// No v2Login-specific branch here: sessions established via LoginController (v2Login on) and
-// via the LocalStrategy above (v2Login off) both end up as passport sessions deserialized the
-// same way — deserialization isn't part of the login use case. Which backend answers is
+// Sessions are established by LoginController, which calls `req.logIn` itself; deserialization
+// is not part of the login use case, so nothing here belongs in it. Which backend answers is
 // UsersDirectory's business, under the separate `usersDirectory` rollout flag (D8).
 passport.deserializeUser(async (serializeUser, done) => {
   try {

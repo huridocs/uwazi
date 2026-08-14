@@ -62,7 +62,6 @@ const mongoSchema = new mongoose.Schema({
     },
     v2UsersUtilityRoutes: Boolean,
     v2Auth2fa: Boolean,
-    v2Login: Boolean,
     v2PasswordReauth: Boolean,
     v2Captcha: Boolean,
     v2PrivateInstance: Boolean,
