@@ -78,15 +78,4 @@ export default {
     const query = language ? { template, language } : { template };
     return model.count(query);
   },
-
-  async getByTemplate(template, language, limit, onlyPublished = true) {
-    const query = {
-      template,
-      language,
-      ...(onlyPublished ? { published: true } : {}),
-    };
-    const queryLimit = limit ? { limit } : {};
-    const entities = await model.get(query, ['title', 'icon', 'file', 'sharedId'], queryLimit);
-    return entities;
-  },
 };
