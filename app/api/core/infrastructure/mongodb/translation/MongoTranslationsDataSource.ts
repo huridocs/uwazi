@@ -33,19 +33,20 @@ export class MongoTranslationsDataSource
   }
 
   async upsert(translations: Translation[]): Promise<Translation[]> {
+    if (!translations.length) {
+      return translations;
+    }
+
     const items = translations.map(translation => TranslationMappers.toDBO(translation));
-    const stream = this.createBulkStream();
-
-    await items.reduce(async (previous, item) => {
-      await previous;
-      await stream.updateOne(
-        { language: item.language, key: item.key, 'context.id': item.context.id },
-        { $set: item },
-        true
-      );
-    }, Promise.resolve());
-
-    await stream.flush();
+    await this.getCollection().bulkWrite(
+      items.map(item => ({
+        updateOne: {
+          filter: { language: item.language, key: item.key, 'context.id': item.context.id },
+          update: { $set: item },
+          upsert: true,
+        },
+      }))
+    );
     return translations;
   }
 
@@ -115,20 +116,15 @@ export class MongoTranslationsDataSource
   }
 
   async calculateNonexistentKeys(contextId: string, keys: string[]) {
-    const context = await this.getCollection().findOne({ 'context.id': contextId });
-    if (!context) {
-      return keys;
+    if (!keys.length) {
+      return [];
     }
 
-    const [result] = await this.getCollection()
-      .aggregate([
-        { $match: { key: { $in: keys }, 'context.id': contextId } },
-        { $group: { _id: null, foundKeys: { $push: '$key' } } },
-        { $project: { notFoundKeys: { $setDifference: [keys, '$foundKeys'] } } },
-      ])
+    const found = await this.getCollection()
+      .find({ 'context.id': contextId, key: { $in: keys } }, { projection: { key: 1 } })
       .toArray();
-
-    return result?.notFoundKeys || keys;
+    const foundKeys = new Set(found.map(doc => doc.key));
+    return keys.filter(key => !foundKeys.has(key));
   }
 
   async getContext(

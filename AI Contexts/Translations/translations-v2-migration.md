@@ -392,6 +392,7 @@ Single DS writes do not belong on `TranslationsService`. Callers that already sh
 - [x] Sync `translationsV2` served via `TranslationsSyncHandlerFactory` + registry (no `models.translationsV2` / route special-case) — motor seam for Postgres later
 - [x] Dead translation files/deps deleted (C1); parity/routes specs live under `core/application/translation/specs/`; `i18n/` is predefined CSV only (C2)
 - [x] Writes use domain `Translation` (no `TranslationEntryInput`); GET `IndexedTranslations` defined once in `localeTranslationDto` (C3)
+- [x] `upsert` is one `bulkWrite`; `calculateNonexistentKeys` is `find` + set difference (C4)
 
 ## Phase 1b checklist (FE — later)
 
@@ -461,7 +462,7 @@ HTTP `POST /api/translations` AJV already requires `values` as object/map. Array
 - `csvLoader.loadTranslations` patches **one** context per language column (`getByLanguageAndContext` + `SaveLocaleTranslations` with that context only). Final HTTP return can still `getLegacy()` (import contract)
 - Empty-string skip on flatten/propagate kept for parity
 
-**Not this slice:** C4 (`toIndexedTranslations` still exists for array `TranslationType` in the mapper spec).
+**Not this slice:** `toIndexedTranslations` still exists for array `TranslationType` in the mapper spec.
 
 ### A2 — one context-update engine
 
@@ -553,6 +554,16 @@ HTTP `POST /api/translations` AJV already requires `values` as object/map. Array
 - `IndexedTranslations` / `IndexedContext` / `IndexedContextValues` live in `localeTranslationDto`. Mapper re-exports for delivery. Write `LocaleTranslationInput` is that GET shape with optional `values` (partial locale save)
 - Did not rename shared `TranslationContext` or FE `TranslationValue`. Did not merge write input into GET
 
+### C4 — Mongo write quality
+
+**Request (diagnosis):** `upsert` awaited each `updateOne` through a bulk stream. `calculateNonexistentKeys` did `findOne` then an opaque `$setDifference` aggregate. `cloneForLanguage` streaming is fine for one-shot language install.
+
+**Landed:**
+
+- `upsert` is one `bulkWrite` of natural-key `updateOne` + `upsert: true`. Empty input skips the write
+- `calculateNonexistentKeys` is `find({ context.id, key: { $in } })` plus a JS set difference. A key exists if it is present in any language. Dropped the extra `findOne`
+- Left `cloneForLanguage` as cursor + bulk stream. Did not implement `MongoTranslationsSyncDataSource.get`
+
 ### Production SSR CPU (keep these; do not regress)
 
 Root cause was not Mongo. Every SSR HTML request:
@@ -602,3 +613,4 @@ Explicitly **not** shipped: process/tenant-wide translations read cache. Topolog
 - Do not implement `MongoTranslationsSyncDataSource.get` unless the generic `SyncDBDataSource` contract changes
 - Do not reintroduce `TranslationEntryInput` (or another write DTO that is immediately `new Translation(...)`)
 - Do not merge `LocaleTranslationInput` into `IndexedTranslations` — GET is complete maps; locale POST is a partial write
+- Do not go back to sequential `reduce` of `updateOne`s for `upsert`, or `findOne` + `$setDifference` for missing keys
