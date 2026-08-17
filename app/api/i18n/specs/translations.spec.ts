@@ -165,7 +165,11 @@ describe('translations', () => {
   describe('v2StructureSave', () => {
     it('should save changed translations and propagate the changes', async () => {
       const initialTranslations = await getTranslationsByContext(dictionaryId.toString());
-      const initialEntity = (await entities.get({ language: 'es', sharedId: 'entity1' }))[0];
+      const initialEntity = (
+        await testingEnvironment.runWithContext(async () =>
+          entities.get({ language: 'es', sharedId: 'entity1' })
+        )
+      )[0];
       const translationsToSave = [
         {
           _id: '1',
@@ -186,7 +190,11 @@ describe('translations', () => {
         'Changed Password ES';
       expect(updatedTranslations).toEqual(initialTranslations);
 
-      const updatedEntity = (await entities.get({ language: 'es', sharedId: 'entity1' }))[0];
+      const updatedEntity = (
+        await testingEnvironment.runWithContext(async () =>
+          entities.get({ language: 'es', sharedId: 'entity1' })
+        )
+      )[0];
       initialEntity.metadata.Dictionary[0].label = 'Changed Password ES';
       expect(updatedEntity).toEqual(initialEntity);
     });
@@ -620,7 +628,9 @@ describe('translations', () => {
       it('should not clone it again', async () => {
         await addLanguage({ key: 'fr', label: 'french' });
 
-        const firstEntitiesCount = (await entities.get({ language: 'fr' })).length;
+        const firstEntitiesCount = (
+          await testingEnvironment.runWithContext(async () => entities.get({ language: 'fr' }))
+        ).length;
         const firstPagesCount = (await pages.get({ language: 'fr' })).length;
 
         await addLanguage({ key: 'fr', label: 'french' });
@@ -632,7 +642,9 @@ describe('translations', () => {
         const frTranslations = allTranslations.filter(t => t.locale === 'fr');
         expect(frTranslations.length).toBe(1);
 
-        const secondEntitiesCount = (await entities.get({ language: 'fr' })).length;
+        const secondEntitiesCount = (
+          await testingEnvironment.runWithContext(async () => entities.get({ language: 'fr' }))
+        ).length;
         const secondPagesCount = (await pages.get({ language: 'fr' })).length;
         expect(firstEntitiesCount).toBe(secondEntitiesCount);
         expect(firstPagesCount).toBe(secondPagesCount);
