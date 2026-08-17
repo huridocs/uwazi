@@ -24,15 +24,17 @@ const renderIndex = (entity = entityWithRelations) =>
   );
 
 describe('RelationshipsSsrIndex', () => {
-  it('renders grouped plain links to related entities', async () => {
+  it('renders grouped plain links in the HTML without showing them', async () => {
     renderIndex();
 
-    expect(await screen.findByRole('heading', { name: 'Related' })).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: 'Related Entity' })).toHaveAttribute(
+    const index = await screen.findByTestId('entity-relationships-ssr-index');
+    expect(index).not.toBeVisible();
+    expect(screen.getByRole('heading', { name: 'Related', hidden: true })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Related Entity', hidden: true })).toHaveAttribute(
       'href',
       '/en/entity/target-entity'
     );
-    expect(screen.getByRole('link', { name: 'Other Entity' })).toHaveAttribute(
+    expect(screen.getByRole('link', { name: 'Other Entity', hidden: true })).toHaveAttribute(
       'href',
       '/en/entity/other-entity'
     );

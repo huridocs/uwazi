@@ -388,7 +388,7 @@ describe('Entity view', () => {
       jest.restoreAllMocks();
     });
 
-    it('paints grouped relationship links on SSR and not the interactive panel', async () => {
+    it('includes hidden relationship links on SSR and not the interactive panel', async () => {
       jest.replaceProperty(utils, 'isClient', false);
       renderRelationshipsEntity({
         initialEntries: ['/?m=relationships'],
@@ -396,12 +396,14 @@ describe('Entity view', () => {
 
       await checkEntityRendered();
 
-      expect(screen.getByTestId('entity-relationships-ssr-index')).toBeInTheDocument();
-      expect(screen.getByRole('heading', { name: 'Related' })).toBeInTheDocument();
-      expect(screen.getByRole('link', { name: 'Related Entity' })).toHaveAttribute(
-        'href',
-        '/entityv2/target-entity'
-      );
+      const index = screen.getByTestId('entity-relationships-ssr-index');
+      expect(index).not.toBeVisible();
+      expect(
+        within(index).getByRole('heading', { name: 'Related', hidden: true })
+      ).toBeInTheDocument();
+      expect(
+        within(index).getByRole('link', { name: 'Related Entity', hidden: true })
+      ).toHaveAttribute('href', '/entityv2/target-entity');
       expect(screen.queryByRole('button', { name: 'Expand all' })).not.toBeInTheDocument();
     });
 

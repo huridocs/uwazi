@@ -29,16 +29,16 @@ const RelationshipsSsrIndex = ({
 
   return (
     <nav
-      className={`flex flex-col gap-4 p-4 text-sm text-ink ${className}`.trim()}
+      hidden
+      className={className}
+      aria-hidden="true"
       data-testid={testId}
       data-entity-relationships-ssr-index=""
     >
       {groups.map(group => (
         <section key={group.typeId}>
-          <h2 className="mb-2 text-xs font-semibold uppercase tracking-wide text-ink-tertiary">
-            {group.typeName ? group.typeName : <Translate>No label</Translate>}
-          </h2>
-          <ul className="flex flex-col gap-1">
+          <h2>{group.typeName ? group.typeName : <Translate>No label</Translate>}</h2>
+          <ul>
             {group.entities.map(related => (
               <li key={related.sharedId}>
                 <I18NLinkV2 to={getEntityViewerV2Path(related.sharedId, entityViewerV2)}>

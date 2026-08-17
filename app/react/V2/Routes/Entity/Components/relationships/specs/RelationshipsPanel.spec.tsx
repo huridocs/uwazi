@@ -152,17 +152,18 @@ describe('Relationships panel', () => {
       jest.restoreAllMocks();
     });
 
-    it('renders a plain grouped list instead of the interactive panel', () => {
+    it('renders a hidden grouped list instead of the interactive panel', () => {
       jest.replaceProperty(utils, 'isClient', false);
       renderRelationshipsPanel();
 
-      expect(screen.getByTestId('entity-relationships-ssr-index')).toBeInTheDocument();
-      expect(screen.getByRole('heading', { name: 'Related' })).toBeInTheDocument();
-      expect(screen.getByRole('link', { name: 'Related Entity' })).toHaveAttribute(
+      const index = screen.getByTestId('entity-relationships-ssr-index');
+      expect(index).not.toBeVisible();
+      expect(screen.getByRole('heading', { name: 'Related', hidden: true })).toBeInTheDocument();
+      expect(screen.getByRole('link', { name: 'Related Entity', hidden: true })).toHaveAttribute(
         'href',
         '/entityv2/target-entity'
       );
-      expect(screen.getByRole('link', { name: 'Other Entity' })).toHaveAttribute(
+      expect(screen.getByRole('link', { name: 'Other Entity', hidden: true })).toHaveAttribute(
         'href',
         '/entityv2/other-entity'
       );

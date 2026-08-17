@@ -129,11 +129,7 @@ const EntitySeo = ({ entity }: EntitySeoProps) => {
             ))}
           </dl>
         ) : null}
-        <RelationshipsSsrIndex
-          entity={entity}
-          className="p-0"
-          testId="entity-seo-relationships-index"
-        />
+        <RelationshipsSsrIndex entity={entity} testId="entity-seo-relationships-index" />
       </aside>
     </>
   );
