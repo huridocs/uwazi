@@ -16,6 +16,21 @@ describe('getScopedThemeVars merge contract', () => {
     expect(scoped['--color-theme-surface-page']).not.toBe('#ff00ff');
   });
 
+  it('keeps parchment on the page color for Uwazi Design and on selected for Legacy', () => {
+    const resolved = baseResolved();
+    const design = getScopedThemeVars('default', resolved);
+    expect(design['--color-theme-surface-parchment']).toBe(resolved['--color-theme-bg-primary']);
+
+    const legacyResolved = appliedTheme({ __preset: 'legacy' }, 'light', true);
+    const legacy = getScopedThemeVars('legacy', legacyResolved);
+    expect(legacy['--color-theme-surface-parchment']).toBe(
+      legacyResolved['--color-theme-bg-selected']
+    );
+    expect(legacy['--color-theme-surface-parchment']).not.toBe(
+      legacyResolved['--color-theme-bg-surface']
+    );
+  });
+
   it('does not expose legacy main/status button tokens', () => {
     const resolved = {
       ...baseResolved(),

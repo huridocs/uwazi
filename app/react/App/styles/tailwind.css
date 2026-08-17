@@ -240,7 +240,10 @@
 }
 
 @utility bg-parchment {
-  background-color: var(--color-theme-surface-page, var(--color-theme-bg-primary));
+  background-color: var(
+    --color-theme-surface-parchment,
+    var(--color-theme-surface-page, var(--color-theme-bg-primary))
+  );
 }
 
 @utility bg-warm {
