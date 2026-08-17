@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useMemo } from 'react';
 import { useRevalidator } from 'react-router';
 import { useAtomValue } from 'jotai';
 import type { Entity } from '#V2/api/entities/types.js';
+import type { FileType } from '#shared/types/fileType.js';
 import { mediaContextFromTemplate } from '#shared/entitySave/mediaContext.js';
 import { templatesAtom } from '#V2/atoms/templatesAtom.js';
 import { MetadataRecord } from '#V2/Components/Metadata/MetadataRecord.js';
@@ -20,6 +21,7 @@ import {
 import {
   entityIncludesRelationships,
   entityLoaderCache,
+  entityWithUpdatedFileName,
 } from '#V2/Routes/Entity/EntityLoaderCache.js';
 import { useServices } from '#V2/services/index.js';
 import type { EntitySaveInput } from '#V2/services/index.js';
@@ -108,11 +110,22 @@ const MetadataTab = ({ entity, host }: MetadataTabProps) => {
     ]
   );
 
+  const revalidate = useCallback(async () => revalidator.revalidate(), [revalidator]);
   const refreshEntity = useCallback(async () => {
     entityLoaderCache.invalidateEntity(entity.sharedId);
-    await revalidator.revalidate();
-  }, [entity.sharedId, revalidator]);
+    await revalidate();
+  }, [entity.sharedId, revalidate]);
+  const applyUpdatedFile = useCallback(
+    (file: FileType) => {
+      setEntity(entityWithUpdatedFileName(entity, file));
+    },
+    [entity, setEntity]
+  );
   const documentMutations = useDocumentFieldMutations({
+    sharedId: entity.sharedId,
+    language,
+    applyUpdatedFile,
+    revalidate,
     refreshEntity,
   });
 
