@@ -225,7 +225,7 @@ export class PostgresTable<TRow = Record<string, unknown>> {
     try {
       const readable = this.qb.clone().transacting(handle.trx).stream();
       for await (const row of readable) {
-        yield PostgresTable.cleanRow(row) as TRow;
+        yield this.cleanRow(row) as TRow;
       }
       await handle.commit();
       completed = true;
@@ -242,12 +242,12 @@ export class PostgresTable<TRow = Record<string, unknown>> {
 
   async first(): Promise<TRow | undefined> {
     const row = await this.run(qb => this.applyPolicy(qb, 'read').first());
-    return row ? (PostgresTable.cleanRow(row) as TRow) : undefined;
+    return row ? (this.cleanRow(row) as TRow) : undefined;
   }
 
   async all(): Promise<TRow[]> {
     const rows = (await this.run(qb => this.applyPolicy(qb, 'read'))) as Record<string, unknown>[];
-    return rows.map(r => PostgresTable.cleanRow(r)) as TRow[];
+    return rows.map(r => this.cleanRow(r)) as TRow[];
   }
 
   async count(): Promise<number> {
@@ -326,7 +326,12 @@ export class PostgresTable<TRow = Record<string, unknown>> {
     return serialized;
   }
 
-  private static cleanRow(row: Record<string, unknown>): Record<string, unknown> {
+  /**
+   * Strips infrastructure-only columns (tenant_id, permission arrays) and
+   * null values from a row. Subclasses (e.g. the permission-enforced table)
+   * override this to apply additional safe-by-default row transforms.
+   */
+  protected cleanRow(row: Record<string, unknown>): Record<string, unknown> {
     return Object.fromEntries(
       Object.entries(row).filter(
         ([k, v]) =>

@@ -168,6 +168,83 @@ describe('EntitiesDAO', () => {
         expect(anonymousCount).toBe(publishedEntityCount);
         expect(editorCount).toBe(allEntityCount);
       });
+
+      it('strips permissions from entities a collaborator cannot write to', async () => {
+        const dao = createDao(collaboratorUser);
+        const entities = await dao.find();
+        const bySharedId = new Map(entities.map(e => [e.sharedId, e]));
+        // entity1 has a write grant for collab_user -> full array is kept
+        expect(bySharedId.get('entity1')!.permissions).toEqual([
+          factory.entityPermission('collab_user', 'user', 'write'),
+        ]);
+        // entity5 is readable via a read-only group grant -> permissions stripped
+        expect(bySharedId.get('entity5')!.permissions).toBeUndefined();
+        // published entities without any grant -> permissions stripped
+        expect(bySharedId.get('entity3')!.permissions).toBeUndefined();
+        expect(bySharedId.get('entity4')!.permissions).toBeUndefined();
+      });
+
+      it('strips permissions for a collaborator with no matching grants', async () => {
+        const dao = createDao(otherCollaborator);
+        const entities = await dao.find();
+        entities.forEach(e => expect(e.permissions).toBeUndefined());
+      });
+
+      it('strips permissions from entities read anonymously', async () => {
+        const dao = createDao(publicUser);
+        const entities = await dao.find();
+        entities.forEach(e => expect(e.permissions).toBeUndefined());
+      });
+
+      it('keeps permissions for privileged actors', async () => {
+        const editorEntities = await createDao(editorUser).find();
+        expect(editorEntities.find(e => e.sharedId === 'entity1')!.permissions).toEqual([
+          factory.entityPermission('collab_user', 'user', 'write'),
+        ]);
+        const adminEntities = await createDao(adminUser).find();
+        expect(adminEntities.find(e => e.sharedId === 'entity1')!.permissions).toEqual([
+          factory.entityPermission('collab_user', 'user', 'write'),
+        ]);
+      });
+
+      it('keeps permissions for unrestricted reads', async () => {
+        const entities = await createDao(publicUser).unrestricted().find();
+        expect(entities.find(e => e.sharedId === 'entity1')!.permissions).toEqual([
+          factory.entityPermission('collab_user', 'user', 'write'),
+        ]);
+      });
+
+      it('strips permissions on getBySharedId/getByInternalId reads for non-privileged actors', async () => {
+        const dao = createDao(publicUser);
+        expect((await dao.getBySharedId('entity1', 'en'))?.permissions).toBeUndefined();
+        expect(
+          (await dao.getByInternalId(factory.idString('entity1-en')))?.permissions
+        ).toBeUndefined();
+      });
+
+      it('strips permissions on withFiles reads for non-privileged actors', async () => {
+        const dao = createDao(publicUser);
+        const entities = await dao.find(
+          { sharedId: 'entity1', language: 'en' },
+          { withFiles: true }
+        );
+        expect(entities).toHaveLength(1);
+        expect(entities[0].permissions).toBeUndefined();
+        expect(entities[0].documents).toHaveLength(1);
+        expect(entities[0].attachments).toHaveLength(1);
+      });
+
+      it('keeps permissions on withFiles reads for collaborators with write access', async () => {
+        const dao = createDao(collaboratorUser);
+        const entities = await dao.find(
+          { sharedId: 'entity1', language: 'en' },
+          { withFiles: true }
+        );
+        expect(entities).toHaveLength(1);
+        expect(entities[0].permissions).toEqual([
+          factory.entityPermission('collab_user', 'user', 'write'),
+        ]);
+      });
     });
 
     describe('find()', () => {
