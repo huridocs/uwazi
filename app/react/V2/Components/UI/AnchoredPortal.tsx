@@ -1,4 +1,5 @@
 import React, {
+  useEffect,
   useLayoutEffect,
   useRef,
   useState,
@@ -7,6 +8,8 @@ import React, {
   type RefObject,
 } from 'react';
 import { createPortal } from 'react-dom';
+
+const useIsomorphicLayoutEffect = typeof document !== 'undefined' ? useLayoutEffect : useEffect;
 
 type AnchoredPortalProps = {
   open: boolean;
@@ -86,7 +89,7 @@ const AnchoredPortal = ({
   const panelRef = useRef<HTMLDivElement>(null);
   const [style, setStyle] = useState<CSSProperties>(() => hiddenStyle(width));
 
-  useLayoutEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     if (!open) {
       setStyle(current => {
         const next = hiddenStyle(width);
