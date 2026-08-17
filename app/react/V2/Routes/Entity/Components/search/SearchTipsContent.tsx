@@ -4,33 +4,12 @@ import { Translate, t } from '#app/I18N/index.js';
 
 // Entity Searchtab tips UI — Library keeps App/SearchTipsContent (intentional split).
 
-const TIPS: { example: string; proseKey: string; prose: string; wide?: boolean }[] = [
-  {
-    example: 'juris*',
-    proseKey: 'Search Tips: wildcard',
-    prose: 'matches jurisdiction, jurists, jurisprudence',
-  },
-  {
-    example: '198?',
-    proseKey: 'Search Tips: one char wildcard',
-    prose: 'any single character',
-  },
-  {
-    example: '"Costa Rica"',
-    proseKey: 'Search Tips: exact term',
-    prose: 'the words together, in that order',
-  },
-  {
-    example: '"the status"~5',
-    proseKey: 'Search Tips: proximity',
-    prose: 'the words within 5 of each other',
-  },
-  {
-    example: 'status AND women NOT Nicaragua',
-    proseKey: 'Search Tips: boolean',
-    prose: 'combine or exclude terms',
-    wide: true,
-  },
+const TIPS: { example: string; prose: string; wide?: boolean }[] = [
+  { example: 'juris*', prose: 'matches jurisdiction, jurists, jurisprudence' },
+  { example: '198?', prose: 'any single character' },
+  { example: '"Costa Rica"', prose: 'the words together, in that order' },
+  { example: '"the status"~5', prose: 'the words within 5 of each other' },
+  { example: 'status AND women NOT Nicaragua', prose: 'combine or exclude terms', wide: true },
 ];
 
 const ROW_CLASS =
@@ -67,7 +46,9 @@ const SearchTipsContent = ({ onInsert }: SearchTipsContentProps) => (
             <span dir="ltr" className={EXAMPLE_CLASS}>
               {tip.example}
             </span>
-            <span className={PROSE_CLASS}>{t('System', tip.proseKey, tip.prose, false)}</span>
+            <span className={PROSE_CLASS}>
+              <Translate>{tip.prose}</Translate>
+            </span>
           </button>
         </li>
       ))}
