@@ -101,7 +101,7 @@ class PostgresEntitiesDAO extends PostgresDataSource<EntityRow> implements Entit
     q: ReturnType<typeof this.table.where>,
     filters: EntityFilters
   ): ReturnType<typeof this.table.where> {
-    if (filters._id) {
+    if (filters._id !== undefined) {
       q = q.where({ _id: filters._id });
     }
 
@@ -109,7 +109,7 @@ class PostgresEntitiesDAO extends PostgresDataSource<EntityRow> implements Entit
       q = q.whereIn('_id', filters.ids);
     }
 
-    if (filters.sharedId) {
+    if (filters.sharedId !== undefined) {
       q = q.where({ sharedId: filters.sharedId });
     }
 
@@ -117,7 +117,7 @@ class PostgresEntitiesDAO extends PostgresDataSource<EntityRow> implements Entit
       q = q.whereIn('sharedId', filters.sharedIds);
     }
 
-    if (filters.language) {
+    if (filters.language !== undefined) {
       q = q.where({ language: filters.language });
     }
 
@@ -125,7 +125,7 @@ class PostgresEntitiesDAO extends PostgresDataSource<EntityRow> implements Entit
       q = q.whereIn('language', filters.languages);
     }
 
-    if (filters.template) {
+    if (filters.template !== undefined) {
       q = q.where({ template: filters.template });
     }
 
@@ -133,7 +133,7 @@ class PostgresEntitiesDAO extends PostgresDataSource<EntityRow> implements Entit
       q = q.whereIn('template', filters.templateIds);
     }
 
-    if (filters.title) {
+    if (filters.title !== undefined) {
       q = q.where({ title: filters.title });
     }
 
@@ -220,7 +220,7 @@ class PostgresEntitiesDAO extends PostgresDataSource<EntityRow> implements Entit
       q = q.whereRaw('?? <= ?', ['_id', query.to]);
     }
 
-    if (query.language) {
+    if (query.language !== undefined) {
       q = q.where({ language: query.language });
     }
 
@@ -323,10 +323,10 @@ class PostgresEntitiesDAO extends PostgresDataSource<EntityRow> implements Entit
     const filters: EntityFilters = {};
     if (match.sharedIds !== undefined) {
       filters.sharedIds = match.sharedIds;
-    } else if (match.sharedId) {
+    } else if (match.sharedId !== undefined) {
       filters.sharedId = match.sharedId;
     }
-    if (match.language) {
+    if (match.language !== undefined) {
       filters.language = match.language;
     }
     if (match.published !== undefined) {
@@ -343,7 +343,7 @@ class PostgresEntitiesDAO extends PostgresDataSource<EntityRow> implements Entit
     sharedId: string,
     language?: LanguageISO6391
   ): Promise<EntityDBO[] | EntityDBO | null> {
-    if (language) {
+    if (language !== undefined) {
       return this.findOne({ sharedId, language });
     }
     return this.find({ sharedId });

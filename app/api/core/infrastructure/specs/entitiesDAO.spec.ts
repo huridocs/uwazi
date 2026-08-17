@@ -229,6 +229,23 @@ describe('EntitiesDAO', () => {
         expect(await createDao().find({ _id: 'invalid' })).toEqual([]);
       });
 
+      it('should return no entities for an empty-string sharedId filter', async () => {
+        expect(await createDao().find({ sharedId: '' })).toEqual([]);
+      });
+
+      it('should return no entities for an empty-string language filter', async () => {
+        expect(await createDao().find({ language: '' })).toEqual([]);
+      });
+
+      it('should return no entities for an empty-string template filter', async () => {
+        expect(await createDao().find({ template: '' })).toEqual([]);
+      });
+
+      it('should return only entities with an empty title for an empty-string title filter', async () => {
+        const entities = await createDao().find({ title: '' });
+        expect(entities.map(e => e.sharedId)).toEqual(['entity6']);
+      });
+
       it('should filter by title', async () => {
         const entities = await createDao().find({ title: 'entity1' });
         expect(entities).toHaveLength(2);
@@ -328,6 +345,10 @@ describe('EntitiesDAO', () => {
       it('should return 0 when nothing matches', async () => {
         expect(await createDao().count({ sharedId: 'nonexistent' })).toBe(0);
       });
+
+      it('should return 0 for an empty-string sharedId filter', async () => {
+        expect(await createDao().count({ sharedId: '' })).toBe(0);
+      });
     });
 
     describe('getIds()', () => {
@@ -340,6 +361,10 @@ describe('EntitiesDAO', () => {
         const ids = await createDao().getIds({ sharedId: 'entity1' });
         expect(ids).toHaveLength(2);
         expect(ids).toContain(factory.idString('entity1-en'));
+      });
+
+      it('should return no ids for an empty-string sharedId filter', async () => {
+        expect(await createDao().getIds({ sharedId: '' })).toEqual([]);
       });
     });
 
@@ -467,6 +492,15 @@ describe('EntitiesDAO', () => {
           })
         ).toEqual([]);
       });
+
+      it('should return empty array for an empty-string language filter', async () => {
+        expect(
+          await createDao().findByTemplateIdRange({
+            templateId: factory.idString('t1'),
+            language: '',
+          })
+        ).toEqual([]);
+      });
     });
 
     describe('findByMetadataCriteria()', () => {
@@ -565,6 +599,14 @@ describe('EntitiesDAO', () => {
         expect(await createDao().getWithFiles({ sharedIds: [] })).toEqual([]);
       });
 
+      it('should return empty array for an empty-string sharedId', async () => {
+        expect(await createDao().getWithFiles({ sharedId: '' })).toEqual([]);
+      });
+
+      it('should return empty array for an empty-string language', async () => {
+        expect(await createDao().getWithFiles({ language: '' as any })).toEqual([]);
+      });
+
       it('should return empty array when nothing matches', async () => {
         expect(await createDao().getWithFiles({ sharedId: 'nonexistent' })).toHaveLength(0);
       });
@@ -636,6 +678,14 @@ describe('EntitiesDAO', () => {
       it('should return empty array when no language is given and nothing matches', async () => {
         expect(await createDao().getBySharedId('nonexistent')).toEqual([]);
       });
+
+      it('should return empty array for an empty-string sharedId', async () => {
+        expect(await createDao().getBySharedId('')).toEqual([]);
+      });
+
+      it('should return null for an empty-string language', async () => {
+        expect(await createDao().getBySharedId('entity1', '' as any)).toBeNull();
+      });
     });
 
     describe('getByInternalId()', () => {
@@ -657,6 +707,10 @@ describe('EntitiesDAO', () => {
 
       it('should return null when nothing matches', async () => {
         expect(await createDao().getByInternalId(factory.idString('nonexistent'))).toBeNull();
+      });
+
+      it('should return null for an empty-string id', async () => {
+        expect(await createDao().getByInternalId('')).toBeNull();
       });
     });
 

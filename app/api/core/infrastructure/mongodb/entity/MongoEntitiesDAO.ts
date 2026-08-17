@@ -188,13 +188,13 @@ class MongoEntitiesDAO extends MongoDataSource<EntityDBO> implements EntitiesDAO
 
   private translateGetWithFilesMatch(match: GetWithFilesMatch): Record<string, unknown> {
     const $match: Record<string, unknown> = {};
-    if (match.sharedId) {
+    if (match.sharedId !== undefined) {
       $match.sharedId = match.sharedId;
     }
     if (match.sharedIds !== undefined) {
       $match.sharedId = { $in: match.sharedIds };
     }
-    if (match.language) {
+    if (match.language !== undefined) {
       $match.language = match.language;
     }
     if (match.published !== undefined) {
@@ -265,7 +265,7 @@ class MongoEntitiesDAO extends MongoDataSource<EntityDBO> implements EntitiesDAO
     language?: LanguageISO6391
   ): Promise<EntityDBO[] | EntityDBO | null> {
     const filter: Record<string, unknown> = { sharedId };
-    if (language) {
+    if (language !== undefined) {
       filter.language = language;
       return this.getCollection().findOne(filter);
     }
@@ -449,7 +449,7 @@ class MongoEntitiesDAO extends MongoDataSource<EntityDBO> implements EntitiesDAO
       conditions.push({ _id: range });
     }
 
-    if (query.language) {
+    if (query.language !== undefined) {
       conditions.push({ language: query.language });
     }
 
@@ -529,7 +529,7 @@ class MongoEntitiesDAO extends MongoDataSource<EntityDBO> implements EntitiesDAO
   private translateFilterConditions(filters: EntityFilters): Record<string, unknown>[] {
     const conditions: Record<string, unknown>[] = [];
 
-    if (filters._id) {
+    if (filters._id !== undefined) {
       if (ObjectId.isValid(filters._id)) {
         conditions.push({ _id: new ObjectId(filters._id) });
       } else {
@@ -542,7 +542,7 @@ class MongoEntitiesDAO extends MongoDataSource<EntityDBO> implements EntitiesDAO
       conditions.push({ _id: { $in: validIds.map(id => new ObjectId(id)) } });
     }
 
-    if (filters.sharedId) {
+    if (filters.sharedId !== undefined) {
       conditions.push({ sharedId: filters.sharedId });
     }
 
@@ -550,7 +550,7 @@ class MongoEntitiesDAO extends MongoDataSource<EntityDBO> implements EntitiesDAO
       conditions.push({ sharedId: { $in: filters.sharedIds } });
     }
 
-    if (filters.language) {
+    if (filters.language !== undefined) {
       conditions.push({ language: filters.language });
     }
 
@@ -558,15 +558,19 @@ class MongoEntitiesDAO extends MongoDataSource<EntityDBO> implements EntitiesDAO
       conditions.push({ language: { $in: filters.languages } });
     }
 
-    if (filters.template) {
-      conditions.push({ template: new ObjectId(filters.template) });
+    if (filters.template !== undefined) {
+      if (ObjectId.isValid(filters.template)) {
+        conditions.push({ template: new ObjectId(filters.template) });
+      } else {
+        conditions.push({ _id: { $in: [] } });
+      }
     }
 
     if (filters.templateIds !== undefined) {
       conditions.push({ template: { $in: filters.templateIds.map(id => new ObjectId(id)) } });
     }
 
-    if (filters.title) {
+    if (filters.title !== undefined) {
       conditions.push({ title: filters.title });
     }
 
