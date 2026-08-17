@@ -226,7 +226,9 @@ describe('entities routes', () => {
         const { sharedId } = response.body.entity;
 
         await appContext.run(async () => {
-          const allLanguages = await entities.get({ sharedId });
+          const allLanguages = await testingEnvironment.runWithContext(async () =>
+            entities.get({ sharedId })
+          );
           expect(allLanguages).toHaveLength(3);
 
           const languages = allLanguages.map((e: any) => e.language).sort();
@@ -239,7 +241,9 @@ describe('entities routes', () => {
         const { sharedId } = response.body.entity;
 
         await appContext.run(async () => {
-          const allLanguages = await entities.get({ sharedId });
+          const allLanguages = await testingEnvironment.runWithContext(async () =>
+            entities.get({ sharedId })
+          );
           allLanguages.forEach((entity: any) => {
             expect(entity.title).toBe('Entity with files V2');
             expect(entity.template?.toString()).toBe(templateId.toString());

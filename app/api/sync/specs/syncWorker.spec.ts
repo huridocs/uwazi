@@ -236,7 +236,11 @@ describe('syncWorker', () => {
     await runAllTenants();
     await tenants.run(async () => {
       permissionsContext.setCommandContext();
-      expect(await entities.get({}, {}, { sort: { title: 'asc' } })).toEqual([
+      expect(
+        await testingEnvironment.runWithContext(async () =>
+          entities.get({}, {}, { sort: { title: 'asc' } })
+        )
+      ).toEqual([
         {
           _id: expect.anything(),
           sharedId: 'newDoc1SharedId',
@@ -292,7 +296,11 @@ describe('syncWorker', () => {
 
     await tenants.run(async () => {
       permissionsContext.setCommandContext();
-      expect(await entities.get({}, {}, { sort: { title: 'asc' } })).toEqual([
+      expect(
+        await testingEnvironment.runWithContext(async () =>
+          entities.get({}, {}, { sort: { title: 'asc' } })
+        )
+      ).toEqual([
         {
           __v: 0,
           _id: expect.anything(),

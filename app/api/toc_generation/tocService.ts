@@ -103,7 +103,10 @@ const saveToc = async (_file: FileType, toc: TocSchema[]) => {
     FilesServiceFactory.default().bulkUpsert([existingFile.update({ toc, generatedToc: true })])
   );
 
-  const [entity] = await entities.get({ sharedId: _file.entity }, '+permissions');
+  const [entity] = (await entities.get(
+    { sharedId: _file.entity },
+    '+permissions'
+  )) as unknown as EntityWithFilesSchema[];
   await ensureEntityActor(entity);
   const payload = toEntityUpdatePayload(entity, true);
   if (payload) {

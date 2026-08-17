@@ -3,6 +3,7 @@ import entities from '#api/entities/index.js';
 import { Extractors } from '#api/services/informationextraction/ixextractors.js';
 import settings from '#api/settings/index.js';
 import { LanguageUtils } from '#shared/language/index.js';
+import { EntitySchema } from '#shared/types/entityType.js';
 import { FileType } from '#shared/types/fileType.js';
 import { IXSuggestionType } from '#shared/types/suggestionType.js';
 import { IXServices } from '#api/services/informationextraction/IXServices.js';
@@ -45,7 +46,7 @@ export class CreateBlankSuggestionsFromDocument implements UseCase<Input, void> 
     });
 
     if (!extractors.length) {
-      throw new ExtractorsNotAvailableError(entity.template);
+      throw new ExtractorsNotAvailableError(entity.template.toString());
     }
 
     const targetProperty = await IXServices.getTargetProperty({ extractor: extractors[0] });
@@ -56,7 +57,7 @@ export class CreateBlankSuggestionsFromDocument implements UseCase<Input, void> 
       suggestions.push(
         SuggestionFactory.createForPdf({
           file,
-          entity,
+          entity: entity as unknown as EntitySchema,
           extractor: e,
           targetProperty,
         })

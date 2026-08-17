@@ -449,7 +449,7 @@ const updateEntitiesWithSuggestion = async (
       const [current] = (await entities.get(
         { _id: new ObjectId(as.entityId) },
         '+permissions'
-      )) as EntityWithFilesSchema[];
+      )) as unknown as EntityWithFilesSchema[];
       if (!current) {
         LoggerFactory.default().info('IX accept: entity not found for update', {
           entityId: as.entityId,

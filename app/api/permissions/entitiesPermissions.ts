@@ -3,7 +3,7 @@ import entities from '#api/entities/entities.js';
 import users from '#api/users/users.js';
 import userGroups from '#api/usergroups/userGroups.js';
 import { unique } from '#api/utils/filters.js';
-import { EntitySchema } from '#shared/types/entityType.js';
+import { EntityDBO } from '#api/core/infrastructure/mongodb/entity/EntityDBO.js';
 import { AccessLevels, PermissionType, MixedAccess } from '#shared/types/permissionSchema.js';
 import { PermissionSchema } from '#shared/types/permissionType.js';
 import { MemberWithPermission } from '#shared/types/entityPermisions.js';
@@ -72,7 +72,7 @@ export const entitiesPermissions = {
         { permissions: 1, published: 1 },
         { withoutDocuments: true }
       )
-    ).map((entity: EntitySchema) => ({
+    ).map((entity: EntityDBO) => ({
       permissions: entity.permissions || [],
       published: !!entity.published,
     }));

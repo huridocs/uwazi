@@ -12,18 +12,17 @@ import { TimedMethod } from '#api/core/libs/logger/TimedMethodDecorator.js';
 import { AccessContext } from '#api/core/domain/entityAccessPolicy/AccessContext.js';
 import {
   EntitiesDAO,
-  EntityFilters,
   FindByLanguagePairsQuery,
   FindByMetadataCriteriaQuery,
   FindByTemplateIdRangeQuery,
-  FindOptions,
   LabelInfo,
 } from '#api/core/application/contracts/EntitiesDAO.js';
+
 import type {
+  EntityFilters,
   EntityWithFiles,
-  GetByIdsWithDocumentsOptions,
-  GetWithFilesMatch,
-  GetWithFilesOptions,
+  FindOptions,
+  FindWithFilesOptions,
 } from '#api/core/application/contracts/EntitiesDAO.js';
 
 type EntityWithFilesInternal = EntityDBO & { documents: FileDBO[]; attachments: FileDBO[] };
@@ -53,30 +52,41 @@ class MongoEntitiesDAO extends MongoDataSource<EntityDBO> implements EntitiesDAO
     return this.unrestrictedInstance;
   }
 
-  @TimedMethod('MongoEntitiesDAO.getWithFiles')
-  async getWithFiles(
-    match: GetWithFilesMatch,
-    options: GetWithFilesOptions = {}
+  async find(
+    filters: EntityFilters | undefined,
+    options: FindWithFilesOptions
+  ): Promise<EntityWithFiles[]>;
+
+  async find(filters?: EntityFilters, options?: FindOptions): Promise<EntityDBO[]>;
+
+  @TimedMethod('MongoEntitiesDAO.find')
+  async find(filters: EntityFilters = {}, options: FindOptions = {}): Promise<EntityDBO[]> {
+    if (options.withFiles) {
+      return this.findWithFiles(filters, options);
+    }
+    return this.executeFind(this.translateFilters(filters), options);
+  }
+
+  private async findWithFiles(
+    filters: EntityFilters,
+    options: FindOptions
   ): Promise<EntityWithFiles[]> {
+    const $match = this.translateFilters(filters);
+    const fullText =
+      typeof options.withFiles === 'object' ? Boolean(options.withFiles.fullText) : false;
+
     if (this.filesDAO) {
-      return this.getWithFilesInMemory(match, options.select);
+      return this.getWithFilesInMemory($match, options.select, fullText, options);
     }
-    return this.getWithFilesAggregation(match, options.select).toArray();
+    return this.getWithFilesAggregation($match, options.select, fullText, options).toArray();
   }
 
-  async getByIdsWithDocuments(
-    ids: string[],
-    options: GetByIdsWithDocumentsOptions = {}
-  ): Promise<EntityWithFiles[]> {
-    const validIds = ids.filter(id => ObjectId.isValid(id));
-    if (validIds.length === 0) {
-      return [];
-    }
-
-    const $match: Record<string, unknown> = {
-      _id: { $in: validIds.map(id => new ObjectId(id)) },
-    };
-
+  private getWithFilesAggregation(
+    $match: Record<string, unknown>,
+    select: string[] | undefined,
+    fullText: boolean,
+    options: FindOptions
+  ) {
     const pipeline: Record<string, unknown>[] = [
       { $match },
       {
@@ -85,61 +95,7 @@ class MongoEntitiesDAO extends MongoDataSource<EntityDBO> implements EntitiesDAO
           localField: 'sharedId',
           foreignField: 'entity',
           as: 'files',
-          pipeline: [
-            {
-              $project: options.documentsFullText ? { __v: 0 } : { fullText: 0, __v: 0 },
-            },
-          ],
-        },
-      },
-      {
-        $addFields: {
-          documents: {
-            $filter: {
-              input: '$files',
-              as: 'document',
-              cond: { $eq: ['$$document.type', 'document'] },
-            },
-          },
-          attachments: {
-            $filter: {
-              input: '$files',
-              as: 'attachment',
-              cond: { $eq: ['$$attachment.type', 'attachment'] },
-            },
-          },
-        },
-      },
-      { $unset: 'files' },
-    ];
-
-    if (options.select?.length) {
-      const projection: Record<string, 1> = { sharedId: 1, documents: 1, attachments: 1 };
-      options.select.forEach(field => {
-        projection[field] = 1;
-      });
-      pipeline.push({ $project: projection });
-    }
-
-    if (options.limit) {
-      pipeline.push({ $limit: options.limit });
-    }
-
-    return this.getCollection().aggregate<EntityWithFilesInternal>(pipeline).toArray();
-  }
-
-  private getWithFilesAggregation(match: GetWithFilesMatch, select?: string[]) {
-    const $match = this.translateGetWithFilesMatch(match);
-
-    const pipeline: Record<string, unknown>[] = [
-      { $match },
-      {
-        $lookup: {
-          from: 'files',
-          localField: 'sharedId',
-          foreignField: 'entity',
-          as: 'files',
-          pipeline: [{ $project: { fullText: 0, __v: 0 } }],
+          pipeline: [{ $project: fullText ? { __v: 0 } : { fullText: 0, __v: 0 } }],
         },
       },
       {
@@ -171,31 +127,55 @@ class MongoEntitiesDAO extends MongoDataSource<EntityDBO> implements EntitiesDAO
       pipeline.push({ $project: projection });
     }
 
+    if (options.sort?.length) {
+      const sort: Record<string, 1 | -1> = {};
+      options.sort.forEach(s => {
+        sort[s.field] = s.direction === 'asc' ? 1 : -1;
+      });
+      pipeline.push({ $sort: sort });
+    }
+
+    if (options.limit) {
+      pipeline.push({ $limit: options.limit });
+    }
+
     return this.getCollection().aggregate<EntityWithFilesInternal>(pipeline);
   }
 
   private async getWithFilesInMemory(
-    match: GetWithFilesMatch,
-    select?: string[]
+    $match: Record<string, unknown>,
+    select: string[] | undefined,
+    fullText: boolean,
+    options: FindOptions
   ): Promise<EntityWithFiles[]> {
-    const $match = this.translateGetWithFilesMatch(match);
-    const entities = await this.getCollection()
-      .aggregate<EntityDBO>([
-        { $match },
-        ...(select?.length
-          ? [
-              {
-                $project: Object.fromEntries([['sharedId', 1], ...select.map(field => [field, 1])]),
-              } as Record<string, unknown>,
-            ]
-          : []),
-      ])
-      .toArray();
+    const pipeline: Record<string, unknown>[] = [{ $match }];
+
+    if (select?.length) {
+      pipeline.push({
+        $project: Object.fromEntries([['sharedId', 1], ...select.map(field => [field, 1])]),
+      });
+    }
+
+    if (options.sort?.length) {
+      const sort: Record<string, 1 | -1> = {};
+      options.sort.forEach(s => {
+        sort[s.field] = s.direction === 'asc' ? 1 : -1;
+      });
+      pipeline.push({ $sort: sort });
+    }
+
+    if (options.limit) {
+      pipeline.push({ $limit: options.limit });
+    }
+
+    const entities = await this.getCollection().aggregate<EntityDBO>(pipeline).toArray();
 
     if (entities.length === 0) return [];
 
     const sharedIds = entities.map(e => e.sharedId);
-    const allFiles = await this.filesDAO!.getByEntitySharedIds(sharedIds);
+    const allFiles = await this.filesDAO!.getByEntitySharedIds(sharedIds, {
+      projection: fullText ? {} : { fullText: 0 },
+    });
 
     const filesByEntity: Record<string, typeof allFiles> = {};
     for (const file of allFiles) {
@@ -210,23 +190,6 @@ class MongoEntitiesDAO extends MongoDataSource<EntityDBO> implements EntitiesDAO
       documents: (filesByEntity[entity.sharedId] || []).filter(f => f.type === 'document'),
       attachments: (filesByEntity[entity.sharedId] || []).filter(f => f.type === 'attachment'),
     })) as unknown as EntityWithFiles[];
-  }
-
-  private translateGetWithFilesMatch(match: GetWithFilesMatch): Record<string, unknown> {
-    const $match: Record<string, unknown> = {};
-    if (match.sharedId) {
-      $match.sharedId = match.sharedId;
-    }
-    if (match.sharedIds && match.sharedIds.length > 0) {
-      $match.sharedId = { $in: match.sharedIds };
-    }
-    if (match.language) {
-      $match.language = match.language;
-    }
-    if (match.published !== undefined) {
-      $match.published = match.published;
-    }
-    return $match;
   }
 
   async getEntityIdsBySharedId(
@@ -391,10 +354,6 @@ class MongoEntitiesDAO extends MongoDataSource<EntityDBO> implements EntitiesDAO
   }
 
   // ── Generic reads (contract) ──────────────────────────────────────────────
-
-  async find(filters: EntityFilters = {}, options: FindOptions = {}): Promise<EntityDBO[]> {
-    return this.executeFind(this.translateFilters(filters), options);
-  }
 
   async findOne(filters: EntityFilters = {}, options: FindOptions = {}): Promise<EntityDBO | null> {
     const query = this.translateFilters(filters);

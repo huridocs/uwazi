@@ -2,7 +2,6 @@
 
 import { ZodError } from 'zod';
 
-import entitiesModel from '#api/entities/entitiesModel.js';
 import relationships from '#api/relationships/relationships.js';
 import { search } from '#api/search/index.js';
 import date from '#api/utils/date.js';
@@ -90,7 +89,7 @@ describe('entities', () => {
   const userFactory = new UserInContextMockFactory();
   const saveDoc = async (doc, user) => {
     await saveEntity(doc, { user, language: 'es' });
-    const docs = await entities.get({ title: doc.title });
+    const docs = await testingEnvironment.runWithContext(() => entities.get({ title: doc.title }));
     return {
       createdDocumentEs: docs.find(d => d.language === 'es'),
       createdDocumentEn: docs.find(d => d.language === 'en'),
@@ -853,7 +852,9 @@ describe('entities', () => {
       };
 
       await saveEntity(doc1, { user, language: 'en' });
-      const docs = await entities.get({ title: 'newEntity' });
+      const docs = await testingEnvironment.runWithContext(() =>
+        entities.get({ title: 'newEntity' })
+      );
       expect(docs.length).toBe(3);
       expect(docs.map(d => d.language).sort()).toEqual(['en', 'es', 'pt']);
       docs.forEach(doc => {
@@ -900,54 +901,39 @@ describe('entities', () => {
       const sharedId = 'shared1';
 
       const [enDoc, esDoc] = await Promise.all([
-        entities.get({ sharedId, language: 'en' }),
-        entities.get({ sharedId, language: 'es' }),
+        testingEnvironment.runWithContext(() => entities.get({ sharedId, language: 'en' })),
+        testingEnvironment.runWithContext(() => entities.get({ sharedId, language: 'es' })),
       ]);
       expect(enDoc[0].title).toBe('EN');
       expect(esDoc[0].title).toBe('ES');
     });
 
     it('should return documents and attachments properly, when requested.', async () => {
-      const result = await entities.get({ template: entityGetTestTemplateId });
+      const result = await testingEnvironment.runWithContext(() =>
+        entities.get({ template: entityGetTestTemplateId })
+      );
       checkEntityGetResult(result[0], 'TitleA', ['file2.name'], []);
       checkEntityGetResult(result[1], 'TitleB', [], []);
       checkEntityGetResult(result[2], 'TitleC', ['file3.name'], ['file1.name', 'file4.name']);
     });
 
     it('should return documents and attachments properly while using a select clause in the query.', async () => {
-      const result = await entities.get({ template: entityGetTestTemplateId }, { title: true });
+      const result = await testingEnvironment.runWithContext(() =>
+        entities.get({ template: entityGetTestTemplateId }, { title: true })
+      );
       checkEntityGetResult(result[0], 'TitleA', ['file2.name'], []);
       checkEntityGetResult(result[1], 'TitleB', [], []);
       checkEntityGetResult(result[2], 'TitleC', ['file3.name'], ['file1.name', 'file4.name']);
     });
 
     it('should not return documents and attachments, when not requested.', async () => {
-      const result = await entities.get(
-        { template: entityGetTestTemplateId },
-        {},
-        { withoutDocuments: true }
+      const result = await testingEnvironment.runWithContext(() =>
+        entities.get({ template: entityGetTestTemplateId }, {}, { withoutDocuments: true })
       );
       checkEntityGetResult(result[0], 'TitleA', null, null);
       checkEntityGetResult(result[1], 'TitleB', null, null);
       checkEntityGetResult(result[2], 'TitleC', null, null);
     });
-
-    it.each([
-      [undefined, undefined],
-      ['title', 'title sharedId'],
-      ['+title', '+title +sharedId'],
-      [['title'], ['title', 'sharedId']],
-      [{}, {}],
-      [{ title: 1 }, { title: 1, sharedId: 1 }],
-    ])(
-      'should call model.get with a properly extended select: %s -> %s',
-      async (select, extended) => {
-        const entitesModelGet = jest.spyOn(entitiesModel, 'get');
-        await entities.get({ template: entityGetTestTemplateId }, select);
-        expect(entitesModelGet).toBeCalledWith({ template: entityGetTestTemplateId }, extended, {});
-        entitesModelGet.mockRestore();
-      }
-    );
   });
 
   describe('denormalize', () => {
@@ -957,14 +943,22 @@ describe('entities', () => {
         username: 'collaborator',
         role: UserRole.COLLABORATOR,
       });
-      const entity = (await entities.get({ sharedId: 'shared', language: 'en' }))[0];
+      const entity = (
+        await testingEnvironment.runWithContext(() =>
+          entities.get({ sharedId: 'shared', language: 'en' })
+        )
+      )[0];
       entity.metadata.friends[0].label = '';
       const denormalized = await denormalizeEntity(entity, { user: 'dummy', language: 'en' });
       expect(denormalized.metadata.friends[0].label).toBe('shared2title');
     });
 
     it('should denormalize inherited metadata', async () => {
-      const entity = (await entities.get({ sharedId: 'shared', language: 'en' }))[0];
+      const entity = (
+        await testingEnvironment.runWithContext(() =>
+          entities.get({ sharedId: 'shared', language: 'en' })
+        )
+      )[0];
 
       const denormalized = await denormalizeEntity(entity, { user: 'dummy', language: 'en' });
       expect(denormalized.metadata.enemies[0].inheritedValue).toEqual([

@@ -68,24 +68,11 @@ type FindOptions = {
   select?: string[];
   sort?: Array<{ field: string; direction: 'asc' | 'desc' }>;
   limit?: number;
+  /** Attach documents/attachments to the results. `{ fullText: true }` also includes file fullText. */
+  withFiles?: boolean | { fullText?: boolean };
 };
 
-type GetByIdsWithDocumentsOptions = {
-  limit?: number;
-  documentsFullText?: boolean;
-  select?: string[];
-};
-
-type GetWithFilesMatch = {
-  language?: LanguageISO6391;
-  sharedId?: string;
-  sharedIds?: string[];
-  published?: boolean;
-};
-
-type GetWithFilesOptions = {
-  select?: string[];
-};
+type FindWithFilesOptions = FindOptions & { withFiles: true | { fullText?: boolean } };
 
 type LabelInfo = {
   sharedId: string;
@@ -106,6 +93,10 @@ type EntityWithFiles = EntityDBO & { documents: EntityFile[]; attachments: Entit
 interface EntitiesDAO {
   unrestricted(): EntitiesDAO;
 
+  find(
+    filters: EntityFilters | undefined,
+    options: FindWithFilesOptions
+  ): Promise<EntityWithFiles[]>;
   find(filters?: EntityFilters, options?: FindOptions): Promise<EntityDBO[]>;
   findOne(filters?: EntityFilters, options?: FindOptions): Promise<EntityDBO | null>;
   count(filters?: EntityFilters): Promise<number>;
@@ -120,12 +111,6 @@ interface EntitiesDAO {
     query: FindByMetadataCriteriaQuery,
     options?: FindOptions
   ): Promise<EntityDBO[]>;
-
-  getWithFiles(match: GetWithFilesMatch, options?: GetWithFilesOptions): Promise<EntityWithFiles[]>;
-  getByIdsWithDocuments(
-    ids: string[],
-    options?: GetByIdsWithDocumentsOptions
-  ): Promise<EntityWithFiles[]>;
 
   /** Returns all language variants when no language is given; the specific variant (or null) when language is provided. */
   getBySharedId(sharedId: string): Promise<EntityDBO[]>;
@@ -160,9 +145,7 @@ export type {
   FindByMetadataCriteriaQuery,
   FindByTemplateIdRangeQuery,
   FindOptions,
-  GetByIdsWithDocumentsOptions,
-  GetWithFilesMatch,
-  GetWithFilesOptions,
+  FindWithFilesOptions,
   LabelInfo,
   LanguagePair,
   MetadataCriteria,

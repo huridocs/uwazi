@@ -152,7 +152,9 @@ describe('POST /api/suggestions/accept', () => {
 
     await suggestionsSuccess();
 
-    const actualEntities = await entities.get({ sharedId: 'shared6' });
+    const actualEntities = await testingEnvironment.runWithContext(async () =>
+      entities.get({ sharedId: 'shared6' })
+    );
     expect(actualEntities).toMatchObject([
       {
         title: 'The Penguin',
@@ -185,7 +187,9 @@ describe('POST /api/suggestions/accept', () => {
 
     await suggestionsSuccess();
 
-    const [entity] = await entities.get({ sharedId: 'entityWithSelects2' });
+    const [entity] = await testingEnvironment.runWithContext(async () =>
+      entities.get({ sharedId: 'entityWithSelects2' })
+    );
     expect(entity.metadata.property_multiselect).toEqual([
       { value: 'A', label: 'A' },
       { value: '1B', label: '1B', parent: { value: '1', label: '1' } },

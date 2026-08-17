@@ -1,115 +1,101 @@
 /* eslint-disable no-param-reassign */
 
 import { EntitiesDAOFactory } from '#api/core/infrastructure/factories/EntitiesDAOFactory.js';
-import { FilesDAOFactory } from '#api/core/infrastructure/factories/FilesDAOFactory.js';
-import model from './entitiesModel.js';
-
-const withDocuments = async (entities, documentsFullText) => {
-  const sharedIds = entities.map(entity => entity.sharedId);
-  const allFiles = await FilesDAOFactory.default().getByEntitySharedIds(sharedIds, {
-    projection: documentsFullText ? {} : { fullText: 0 },
-  });
-  const idFileMap = new Map();
-  allFiles.forEach(file => {
-    if (idFileMap.has(file.entity)) {
-      idFileMap.get(file.entity).push(file);
-    } else {
-      idFileMap.set(file.entity, [file]);
-    }
-  });
-  const result = entities.map(entity => {
-    // intentionally passing copies
-    // consumers of the result do not handle it immutably (sometimes even delete data)
-    // changes result in possibly breaking side-effects when file objects are shared between entities
-    const entityFiles = idFileMap.has(entity.sharedId)
-      ? idFileMap.get(entity.sharedId).map(file => ({ ...file }))
-      : [];
-    entity.documents = entityFiles.filter(f => f.type === 'document');
-    entity.attachments = entityFiles.filter(f => f.type === 'attachment');
-    return entity;
-  });
-  return result;
-};
-
-const extendSelect = select => {
-  if (!select) {
-    return select;
-  }
-  if (typeof select === 'string') {
-    return select.includes('+') ? `${select} +sharedId` : `${select} sharedId`;
-  }
-  if (Array.isArray(select)) {
-    return select.concat(['sharedId']);
-  }
-  return Object.keys(select).length > 0 ? { sharedId: 1, ...select } : select;
-};
 
 const selectToArray = select => {
+  if (!select) {
+    return [];
+  }
   if (Array.isArray(select)) {
     return select;
   }
   if (typeof select === 'string') {
-    return [select];
+    // mongoose '+field' means "include in addition to the default fields"
+    // (e.g. '+permissions') -> full document, no projection restriction.
+    if (select.includes('+')) {
+      return [];
+    }
+    return select
+      .split(',')
+      .map(s => s.trim().replace(/^\+/, ''))
+      .filter(Boolean);
   }
   return Object.keys(select);
 };
 
+const translateQueryToFilters = query => {
+  const safeQuery = query || {};
+  const filters = {};
+  if (safeQuery._id) {
+    filters._id = safeQuery._id.toString();
+  }
+  if (safeQuery.sharedId !== undefined) {
+    if (safeQuery.sharedId.$in) {
+      filters.sharedIds = safeQuery.sharedId.$in;
+    } else {
+      filters.sharedId = safeQuery.sharedId;
+    }
+  }
+  if (safeQuery.language) {
+    filters.language = safeQuery.language;
+  }
+  if (safeQuery.template) {
+    filters.template = safeQuery.template.toString();
+  }
+  if (safeQuery.title) {
+    filters.title = safeQuery.title;
+  }
+  return filters;
+};
+
+const buildFindOptions = (select, options = {}) => {
+  const fields = selectToArray(select);
+  const findOptions = {};
+  if (fields.length) {
+    findOptions.select = [...new Set([...fields, 'sharedId', '_id'])];
+  }
+  if (options.limit) {
+    findOptions.limit = options.limit;
+  }
+  if (options.sort) {
+    findOptions.sort = Object.entries(options.sort).map(([field, direction]) => ({
+      field,
+      direction,
+    }));
+  }
+  if (!options.withoutDocuments) {
+    findOptions.withFiles = true;
+  }
+  return findOptions;
+};
+
 export default {
-  async getUnrestricted(query, select) {
-    const safeQuery = query || {};
-    const filters = {};
-    if (safeQuery._id) {
-      filters._id = safeQuery._id.toString();
+  async getUnrestricted(query, select, options = {}) {
+    const filters = translateQueryToFilters(query);
+    if (filters.sharedIds && filters.sharedIds.length === 0) {
+      return [];
     }
-    if (safeQuery.sharedId !== undefined) {
-      if (safeQuery.sharedId.$in) {
-        filters.sharedIds = safeQuery.sharedId.$in;
-      } else {
-        filters.sharedId = safeQuery.sharedId;
-      }
-    }
-    if (safeQuery.language) {
-      filters.language = safeQuery.language;
-    }
-    if (safeQuery.template) {
-      filters.template = safeQuery.template.toString();
-    }
-
-    const findOptions = select
-      ? {
-          select: [...new Set([...selectToArray(select), 'sharedId', '_id'])],
-        }
-      : undefined;
-
-    return EntitiesDAOFactory.default().unrestricted().find(filters, findOptions);
+    return EntitiesDAOFactory.default()
+      .unrestricted()
+      .find(filters, buildFindOptions(select, { ...options, withoutDocuments: true }));
   },
 
   async getUnrestrictedWithDocuments(query, select, options = {}) {
-    const match = {};
-    if (query.sharedId !== undefined) {
-      if (query.sharedId.$in) {
-        match.sharedIds = query.sharedId.$in;
-      } else {
-        match.sharedId = query.sharedId;
-      }
+    const filters = translateQueryToFilters(query);
+    if (filters.sharedIds && filters.sharedIds.length === 0) {
+      return [];
     }
-    if (query.language) {
-      match.language = query.language;
-    }
-
-    const entities = await EntitiesDAOFactory.default()
+    return EntitiesDAOFactory.default()
       .unrestricted()
-      .getWithFiles(match, Array.isArray(select) && select.length ? { select } : undefined);
-
-    return options.limit ? entities.slice(0, options.limit) : entities;
+      .find(filters, buildFindOptions(select, options));
   },
 
   async get(query, select, options = {}) {
-    const { withoutDocuments, documentsFullText, ...restOfOptions } = options;
-    const extendedSelect = withoutDocuments ? select : extendSelect(select);
-    const entities = await model.get(query, extendedSelect, restOfOptions);
-
-    return withoutDocuments ? entities : withDocuments(entities, documentsFullText);
+    const filters = translateQueryToFilters(query);
+    if (filters.sharedIds && filters.sharedIds.length === 0) {
+      return [];
+    }
+    return EntitiesDAOFactory.default().find(filters, buildFindOptions(select, options));
   },
 
   async getById(id, language) {
