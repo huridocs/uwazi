@@ -105,7 +105,7 @@ class PostgresEntitiesDAO extends PostgresDataSource<EntityRow> implements Entit
       q = q.where({ _id: filters._id });
     }
 
-    if (filters.ids && filters.ids.length > 0) {
+    if (filters.ids !== undefined) {
       q = q.whereIn('_id', filters.ids);
     }
 
@@ -113,7 +113,7 @@ class PostgresEntitiesDAO extends PostgresDataSource<EntityRow> implements Entit
       q = q.where({ sharedId: filters.sharedId });
     }
 
-    if (filters.sharedIds && filters.sharedIds.length > 0) {
+    if (filters.sharedIds !== undefined) {
       q = q.whereIn('sharedId', filters.sharedIds);
     }
 
@@ -121,7 +121,7 @@ class PostgresEntitiesDAO extends PostgresDataSource<EntityRow> implements Entit
       q = q.where({ language: filters.language });
     }
 
-    if (filters.languages && filters.languages.length > 0) {
+    if (filters.languages !== undefined) {
       q = q.whereIn('language', filters.languages);
     }
 
@@ -129,7 +129,7 @@ class PostgresEntitiesDAO extends PostgresDataSource<EntityRow> implements Entit
       q = q.where({ template: filters.template });
     }
 
-    if (filters.templateIds && filters.templateIds.length > 0) {
+    if (filters.templateIds !== undefined) {
       q = q.whereIn('template', filters.templateIds);
     }
 
@@ -145,11 +145,16 @@ class PostgresEntitiesDAO extends PostgresDataSource<EntityRow> implements Entit
       q = q.where({ published: filters.published });
     }
 
-    if (filters.metadataValueIn && filters.metadataValueIn.length > 0) {
-      q = q.whereJsonSupersetOfAny(
-        'metadata',
-        filters.metadataValueIn.map(({ property, value }) => ({ [property]: [{ value }] }))
-      );
+    if (filters.metadataValueIn !== undefined) {
+      if (filters.metadataValueIn.length === 0) {
+        // An empty OR list must match nothing, not everything.
+        q = q.whereIn('_id', []);
+      } else {
+        q = q.whereJsonSupersetOfAny(
+          'metadata',
+          filters.metadataValueIn.map(({ property, value }) => ({ [property]: [{ value }] }))
+        );
+      }
     }
 
     return q;
@@ -316,7 +321,7 @@ class PostgresEntitiesDAO extends PostgresDataSource<EntityRow> implements Entit
     if (match.sharedId) {
       filters.sharedId = match.sharedId;
     }
-    if (match.sharedIds && match.sharedIds.length > 0) {
+    if (match.sharedIds !== undefined) {
       filters.sharedIds = match.sharedIds;
     }
     if (match.language) {

@@ -191,7 +191,7 @@ class MongoEntitiesDAO extends MongoDataSource<EntityDBO> implements EntitiesDAO
     if (match.sharedId) {
       $match.sharedId = match.sharedId;
     }
-    if (match.sharedIds && match.sharedIds.length > 0) {
+    if (match.sharedIds !== undefined) {
       $match.sharedId = { $in: match.sharedIds };
     }
     if (match.language) {
@@ -533,18 +533,16 @@ class MongoEntitiesDAO extends MongoDataSource<EntityDBO> implements EntitiesDAO
       }
     }
 
-    if (filters.ids && filters.ids.length > 0) {
+    if (filters.ids !== undefined) {
       const validIds = filters.ids.filter(id => ObjectId.isValid(id));
-      if (validIds.length > 0) {
-        conditions.push({ _id: { $in: validIds.map(id => new ObjectId(id)) } });
-      }
+      conditions.push({ _id: { $in: validIds.map(id => new ObjectId(id)) } });
     }
 
     if (filters.sharedId) {
       conditions.push({ sharedId: filters.sharedId });
     }
 
-    if (filters.sharedIds && filters.sharedIds.length > 0) {
+    if (filters.sharedIds !== undefined) {
       conditions.push({ sharedId: { $in: filters.sharedIds } });
     }
 
@@ -552,7 +550,7 @@ class MongoEntitiesDAO extends MongoDataSource<EntityDBO> implements EntitiesDAO
       conditions.push({ language: filters.language });
     }
 
-    if (filters.languages && filters.languages.length > 0) {
+    if (filters.languages !== undefined) {
       conditions.push({ language: { $in: filters.languages } });
     }
 
@@ -560,7 +558,7 @@ class MongoEntitiesDAO extends MongoDataSource<EntityDBO> implements EntitiesDAO
       conditions.push({ template: new ObjectId(filters.template) });
     }
 
-    if (filters.templateIds && filters.templateIds.length > 0) {
+    if (filters.templateIds !== undefined) {
       conditions.push({ template: { $in: filters.templateIds.map(id => new ObjectId(id)) } });
     }
 
@@ -576,12 +574,17 @@ class MongoEntitiesDAO extends MongoDataSource<EntityDBO> implements EntitiesDAO
       conditions.push({ published: filters.published });
     }
 
-    if (filters.metadataValueIn && filters.metadataValueIn.length > 0) {
-      conditions.push({
-        $or: filters.metadataValueIn.map(({ property, value }) => ({
-          [`metadata.${property}`]: { $elemMatch: { value } },
-        })),
-      });
+    if (filters.metadataValueIn !== undefined) {
+      if (filters.metadataValueIn.length === 0) {
+        // An empty OR list must match nothing, not everything.
+        conditions.push({ _id: { $in: [] } });
+      } else {
+        conditions.push({
+          $or: filters.metadataValueIn.map(({ property, value }) => ({
+            [`metadata.${property}`]: { $elemMatch: { value } },
+          })),
+        });
+      }
     }
 
     return conditions;

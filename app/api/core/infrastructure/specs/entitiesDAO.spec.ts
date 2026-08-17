@@ -187,9 +187,18 @@ describe('EntitiesDAO', () => {
         expect(entities).toHaveLength(3);
       });
 
+      it('returns no entities for an empty sharedIds filter', async () => {
+        const entities = await createDao().find({ sharedIds: [] });
+        expect(entities).toEqual([]);
+      });
+
       it('filters by language and languages', async () => {
         expect(await createDao().find({ language: 'es' })).toHaveLength(3);
         expect(await createDao().find({ languages: ['en'] })).toHaveLength(5);
+      });
+
+      it('returns no entities for an empty languages filter', async () => {
+        expect(await createDao().find({ languages: [] })).toEqual([]);
       });
 
       it('filters by template and templateIds', async () => {
@@ -199,6 +208,10 @@ describe('EntitiesDAO', () => {
         ).toHaveLength(allEntityCount);
       });
 
+      it('returns no entities for an empty templateIds filter', async () => {
+        expect(await createDao().find({ templateIds: [] })).toEqual([]);
+      });
+
       it('filters by _id and ids', async () => {
         expect(await createDao().find({ _id: factory.idString('entity1-en') })).toHaveLength(1);
         expect(
@@ -206,6 +219,10 @@ describe('EntitiesDAO', () => {
             ids: [factory.idString('entity1-en'), factory.idString('entity2-en')],
           })
         ).toHaveLength(2);
+      });
+
+      it('returns no entities for an empty ids filter', async () => {
+        expect(await createDao().find({ ids: [] })).toEqual([]);
       });
 
       it('filters by title', async () => {
@@ -230,6 +247,10 @@ describe('EntitiesDAO', () => {
         });
         expect(entities).toHaveLength(2);
         expect(entities.every(e => e.sharedId === 'entity1')).toBe(true);
+      });
+
+      it('returns no entities for an empty metadataValueIn filter', async () => {
+        expect(await createDao().find({ metadataValueIn: [] })).toEqual([]);
       });
 
       it('combines multiple filters', async () => {
@@ -477,6 +498,10 @@ describe('EntitiesDAO', () => {
       it('supports multiple sharedIds', async () => {
         const entities = await createDao().getWithFiles({ sharedIds: ['entity1'] });
         expect(entities).toHaveLength(2);
+      });
+
+      it('returns empty array for an empty sharedIds filter', async () => {
+        expect(await createDao().getWithFiles({ sharedIds: [] })).toEqual([]);
       });
 
       it('returns empty array when nothing matches', async () => {
