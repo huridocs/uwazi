@@ -108,31 +108,37 @@ describe('metadataPropertyLayout', () => {
   });
 
   // eslint-disable-next-line max-statements
-  it('partitions preview first, leading cards, details, and inheriting relationships exclusively', () => {
+  it('puts only showInCard fields first, details next, and image/media after details', () => {
     const short = textField('short', 'short1');
     const long = textField('x'.repeat(LONG_FIELD_CHAR_THRESHOLD + 1), 'long1');
     const showInCardText = textField('carded', 'card1');
-    const templateMap = new Map<string, ClientProperty>([
-      [
-        'card1',
-        { _id: 'card1', name: 'simple_text', type: 'text', label: 'Text', showInCard: true },
-      ],
-      [
-        'rel-card',
-        {
-          _id: 'rel-card',
-          name: 'links',
-          type: 'relationship',
-          label: 'Links',
-          showInCard: true,
-        },
-      ],
-    ]);
+    const templateProperties: ClientProperty[] = [
+      { _id: 'short1', name: 'simple_text', type: 'text', label: 'Text' },
+      { _id: 'long1', name: 'simple_text', type: 'text', label: 'Text' },
+      { _id: 'card1', name: 'simple_text', type: 'text', label: 'Text', showInCard: true },
+      { _id: 'prev1', name: 'preview', type: 'preview', label: 'Preview' },
+      { _id: 'm1', name: 'notes', type: 'markdown', label: 'Notes' },
+      { _id: 'img1', name: 'photo', type: 'image', label: 'Photo', showInCard: true },
+      {
+        _id: 'rel-card',
+        name: 'links',
+        type: 'relationship',
+        label: 'Links',
+        showInCard: true,
+      },
+      { _id: 'rel-detail', name: 'links', type: 'relationship', label: 'Links' },
+    ];
+    const templateMap = new Map<string, ClientProperty>();
+    templateProperties.forEach(property => {
+      if (typeof property._id === 'string') {
+        templateMap.set(property._id, property);
+      }
+    });
     const linkCard = linkOnlyRel('rel-card');
     const linkDetail = linkOnlyRel('rel-detail');
 
     const withPreview = partitionMetadataRecord(
-      [short, long, showInCardText, previewField, markdownField('md')],
+      [short, long, showInCardText, previewField, markdownField('md'), imageField],
       [linkCard, linkDetail, inheritingRel],
       templateMap,
       false
@@ -140,10 +146,9 @@ describe('metadataPropertyLayout', () => {
 
     expect(withPreview.showDocumentPreview).toBe(true);
     expect(withPreview.previewField?._id).toBe('prev1');
-    expect(withPreview.leadingFields.map(f => f._id).sort()).toEqual(['card1', 'long1', 'm1']);
-    expect(withPreview.detailFields.map(f => f._id)).toEqual(['short1']);
-    expect(withPreview.leadingLinkOnlyRels.map(f => f._id)).toEqual(['rel-card']);
-    expect(withPreview.detailLinkOnlyRels.map(f => f._id)).toEqual(['rel-detail']);
+    expect(withPreview.leadingFields.map(f => f._id)).toEqual(['card1', 'rel-card']);
+    expect(withPreview.detailFields.map(f => f._id)).toEqual(['short1', 'long1', 'rel-detail']);
+    expect(withPreview.trailingFields.map(f => f._id)).toEqual(['m1', 'img1']);
     expect(withPreview.inheritingRels.map(f => f._id)).toEqual(['r2']);
     expect(withPreview.leadingFields.find(f => f._id === 'prev1')).toBeUndefined();
     expect(withPreview.detailFields.find(f => f._id === 'prev1')).toBeUndefined();
@@ -179,8 +184,9 @@ describe('metadataPropertyLayout', () => {
 
     expect(partition.showDocumentPreview).toBe(true);
     expect(partition.previewField?._id).toBe('prev1');
-    expect(partition.leadingFields.map(f => f._id)).toEqual(['m1']);
+    expect(partition.trailingFields.map(f => f._id)).toEqual(['m1']);
     expect(partition.leadingFields.find(f => f._id === 'prev-empty')).toBeUndefined();
     expect(partition.leadingFields.find(f => f._id === 'img-empty')).toBeUndefined();
+    expect(partition.trailingFields.find(f => f._id === 'img-empty')).toBeUndefined();
   });
 });

@@ -1,5 +1,6 @@
 import type { ClientProperty } from '#V2/shared/types.js';
 import type { MetadataProperty, RelationshipMetadataProperty } from '#V2/formatters/types.js';
+import { sortByTemplatePropertyOrder } from './sortByTemplatePropertyOrder.js';
 
 type MetadataTemplateField = { fullWidth?: boolean; showInCard?: boolean } | undefined;
 
@@ -20,6 +21,8 @@ const TEMPLATE_FULL_WIDTH_GRID_TYPES: ReadonlyArray<MetadataProperty['type']> = 
   'media',
 ];
 
+const IMAGE_OR_MEDIA_TYPES: ReadonlyArray<MetadataProperty['type']> = ['image', 'media'];
+
 const FULL_ROW_FIELD_NAME = /^(description|body|abstract|summary|content|notes)$/i;
 
 const COMPACT_METADATA_FIELD_LAYOUT = 'min-w-0 grow basis-[min(100%,18rem)]';
@@ -34,6 +37,9 @@ const joinedScalarText = (data: MetadataProperty): string => {
 
 const isSpecializedFullWidthField = (data: MetadataProperty): boolean =>
   SPECIALIZED_FULL_WIDTH_TYPES.includes(data.type);
+
+const isImageOrMediaField = (data: MetadataProperty): boolean =>
+  IMAGE_OR_MEDIA_TYPES.includes(data.type);
 
 const isLongField = (data: MetadataProperty): boolean => {
   if (isSpecializedFullWidthField(data)) {
@@ -110,13 +116,39 @@ const hasFilledSpecializedValues = (data: MetadataProperty): boolean => {
 const templatePropertyInherits = (templateProperty: ClientProperty | undefined): boolean =>
   Boolean(templateProperty?.inherit);
 
+type RecordFieldBucket = 'leading' | 'detail' | 'trailing';
+
+const classifyRecordField = (
+  field: MetadataProperty,
+  templatePropertyById: Map<string, ClientProperty>,
+  consumedPreviewId: string | undefined
+): RecordFieldBucket | undefined => {
+  if (field._id === consumedPreviewId) {
+    return undefined;
+  }
+  if (
+    !isRelationshipProperty(field) &&
+    isSpecializedFullWidthField(field) &&
+    !hasFilledSpecializedValues(field)
+  ) {
+    return undefined;
+  }
+  const showInCard = fieldShowsInCard(field._id, templatePropertyById);
+  if (isRelationshipProperty(field)) {
+    return showInCard ? 'leading' : 'detail';
+  }
+  if (isImageOrMediaField(field) || (!showInCard && isSpecializedFullWidthField(field))) {
+    return 'trailing';
+  }
+  return showInCard ? 'leading' : 'detail';
+};
+
 type MetadataRecordPartition = {
   showDocumentPreview: boolean;
   previewField: MetadataProperty | undefined;
   leadingFields: MetadataProperty[];
-  leadingLinkOnlyRels: RelationshipMetadataProperty[];
   detailFields: MetadataProperty[];
-  detailLinkOnlyRels: RelationshipMetadataProperty[];
+  trailingFields: MetadataProperty[];
   inheritingRels: RelationshipMetadataProperty[];
 };
 
@@ -129,44 +161,33 @@ const partitionMetadataRecord = (
   const previewField = otherFields.find(hasFilledPreviewValues);
   const showDocumentPreview = hasPrimaryDocument || Boolean(previewField);
   const consumedPreviewId = showDocumentPreview && previewField ? previewField._id : undefined;
+  const templateProperties = [...templatePropertyById.values()];
 
   const leadingFields: MetadataProperty[] = [];
   const detailFields: MetadataProperty[] = [];
+  const trailingFields: MetadataProperty[] = [];
+  const buckets = { leading: leadingFields, detail: detailFields, trailing: trailingFields };
 
-  otherFields.forEach(field => {
-    if (field._id === consumedPreviewId) {
-      return;
-    }
-    if (isSpecializedFullWidthField(field) && !hasFilledSpecializedValues(field)) {
-      return;
-    }
-    const leading =
-      fieldShowsInCard(field._id, templatePropertyById) ||
-      isLongField(field) ||
-      isSpecializedFullWidthField(field);
-    if (leading) {
-      leadingFields.push(field);
-    } else {
-      detailFields.push(field);
+  sortByTemplatePropertyOrder(
+    [...otherFields, ...relationshipFields.filter(isLinkOnlyRelationship)],
+    templateProperties
+  ).forEach(field => {
+    const bucket = classifyRecordField(field, templatePropertyById, consumedPreviewId);
+    if (bucket) {
+      buckets[bucket].push(field);
     }
   });
-
-  const linkOnly = relationshipFields.filter(isLinkOnlyRelationship);
-  const leadingLinkOnlyRels = linkOnly.filter(field =>
-    fieldShowsInCard(field._id, templatePropertyById)
-  );
-  const detailLinkOnlyRels = linkOnly.filter(
-    field => !fieldShowsInCard(field._id, templatePropertyById)
-  );
 
   return {
     showDocumentPreview,
     previewField: showDocumentPreview ? previewField : undefined,
     leadingFields,
-    leadingLinkOnlyRels,
     detailFields,
-    detailLinkOnlyRels,
-    inheritingRels: relationshipFields.filter(isInheritingRelationship),
+    trailingFields,
+    inheritingRels: sortByTemplatePropertyOrder(
+      relationshipFields.filter(isInheritingRelationship),
+      templateProperties
+    ),
   };
 };
 
@@ -175,6 +196,7 @@ export {
   COMPACT_METADATA_FIELD_LAYOUT,
   FULL_ROW_METADATA_FIELD_LAYOUT,
   isSpecializedFullWidthField,
+  isImageOrMediaField,
   isLongField,
   isRelationshipProperty,
   isLinkOnlyRelationship,

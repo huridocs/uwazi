@@ -1,4 +1,4 @@
-import React, { useMemo, useRef } from 'react';
+import React, { useMemo, useRef, type ReactNode } from 'react';
 import { useAtomValue } from 'jotai';
 import { Translate } from '#app/I18N/index.js';
 import { templatesAtom } from '#V2/atoms/templatesAtom.js';
@@ -14,17 +14,29 @@ import type { MetadataItem } from './Components/MetadataItemsTable.js';
 import { useFormatMetadata } from './hooks/useFormatMetadata.js';
 import { buildTemplatePropertyById } from './buildTemplatePropertyById.js';
 import { buildMetadataRecordFields } from './buildMetadataRecordFields.js';
-import { isLongField, partitionMetadataRecord } from './metadataPropertyLayout.js';
+import {
+  isLongField,
+  isRelationshipProperty,
+  partitionMetadataRecord,
+} from './metadataPropertyLayout.js';
 import { renderFieldContent, renderScalarContent } from './Components/metadataFieldContent.js';
 import { fieldTitle, specializedCardTitle } from './Components/metadataFieldTitle.js';
 import { connectionPillsForField, type OpenEntityTarget } from './Components/ConnectionPills.js';
 import { useMetadataRecordFocus } from './useMetadataRecordFocus.js';
 import { EntityIcon } from '../CustomIcons/EntityIcon.js';
+import type { MetadataProperty, RelationshipMetadataProperty } from '#V2/formatters/types.js';
+import type { ClientProperty } from '#V2/shared/types.js';
 
 type MetadataRecordProps = {
   entity: Entity;
   onOpenEntity?: (target: OpenEntityTarget) => void;
 };
+
+const relationshipCardContent = (
+  field: RelationshipMetadataProperty,
+  templateProperty: ClientProperty | undefined,
+  onOpenEntity?: (target: OpenEntityTarget) => void
+) => connectionPillsForField(field, templateProperty, { onOpenEntity });
 
 const MetadataRecord = ({ entity, onOpenEntity }: MetadataRecordProps) => {
   const templates = useAtomValue(templatesAtom);
@@ -95,22 +107,9 @@ const MetadataRecord = ({ entity, onOpenEntity }: MetadataRecordProps) => {
     }
 
     partition.detailFields.forEach(field => {
-      const content = renderScalarContent(field);
-      if (!content) {
-        return;
-      }
-      items.push({
-        id: field.name,
-        label: field.label,
-        translationContext,
-        content,
-      });
-    });
-
-    partition.detailLinkOnlyRels.forEach(field => {
-      const content = connectionPillsForField(field, templatePropertyById.get(field._id), {
-        onOpenEntity,
-      });
+      const content = isRelationshipProperty(field)
+        ? relationshipCardContent(field, templatePropertyById.get(field._id), onOpenEntity)
+        : renderScalarContent(field);
       if (!content) {
         return;
       }
@@ -130,10 +129,29 @@ const MetadataRecord = ({ entity, onOpenEntity }: MetadataRecordProps) => {
     entity.editDate,
     onOpenEntity,
     partition.detailFields,
-    partition.detailLinkOnlyRels,
     templatePropertyById,
     translationContext,
   ]);
+
+  const renderPropertyCard = (field: MetadataProperty) => {
+    let title: ReactNode;
+    let content: ReactNode;
+    if (isRelationshipProperty(field)) {
+      title = fieldTitle(field.label, translationContext, field.hideLabel);
+      content = relationshipCardContent(field, templatePropertyById.get(field._id), onOpenEntity);
+    } else {
+      title = specializedCardTitle(field, translationContext);
+      content = isLongField(field) ? renderScalarContent(field, true) : renderFieldContent(field);
+    }
+    if (!content) {
+      return null;
+    }
+    return (
+      <div key={field._id} data-field-key={field.name}>
+        <MetadataCard title={title}>{content}</MetadataCard>
+      </div>
+    );
+  };
 
   if (!entity || !entityTemplate) {
     return <Translate>NO DATA AVAILABLE</Translate>;
@@ -143,7 +161,7 @@ const MetadataRecord = ({ entity, onOpenEntity }: MetadataRecordProps) => {
   const empty =
     !partition.showDocumentPreview &&
     partition.leadingFields.length === 0 &&
-    partition.leadingLinkOnlyRels.length === 0 &&
+    partition.trailingFields.length === 0 &&
     detailItems.length === 0 &&
     !hasRelCards;
 
@@ -163,42 +181,15 @@ const MetadataRecord = ({ entity, onOpenEntity }: MetadataRecordProps) => {
         <DocumentPreviewCard entity={entity} previewField={partition.previewField} />
       ) : null}
 
-      {partition.leadingFields.map(field => {
-        const long = isLongField(field);
-        const content = long ? renderScalarContent(field, true) : renderFieldContent(field);
-        if (!content) {
-          return null;
-        }
-        return (
-          <div key={field._id} data-field-key={field.name}>
-            <MetadataCard title={specializedCardTitle(field, translationContext)}>
-              {content}
-            </MetadataCard>
-          </div>
-        );
-      })}
-
-      {partition.leadingLinkOnlyRels.map(field => {
-        const content = connectionPillsForField(field, templatePropertyById.get(field._id), {
-          onOpenEntity,
-        });
-        if (!content) {
-          return null;
-        }
-        return (
-          <div key={field._id} data-field-key={field.name}>
-            <MetadataCard title={fieldTitle(field.label, translationContext, field.hideLabel)}>
-              {content}
-            </MetadataCard>
-          </div>
-        );
-      })}
+      {partition.leadingFields.map(renderPropertyCard)}
 
       {detailItems.length > 0 && (
         <MetadataCard title={<Translate>Details</Translate>}>
           <MetadataItemsTable items={detailItems} />
         </MetadataCard>
       )}
+
+      {partition.trailingFields.map(renderPropertyCard)}
 
       <RelationshipCards
         fields={partition.inheritingRels}

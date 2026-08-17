@@ -30,6 +30,7 @@ import {
   groupRelationshipProperties,
   type DisplayProperty,
 } from './functions/relationshipGrouping.js';
+import { sortByTemplatePropertyOrder } from '../sortByTemplatePropertyOrder.js';
 import {
   defaultRelationshipLookup,
   mergeRelationshipLookupOptions,
@@ -84,8 +85,12 @@ const EditEntity = ({
     [activeTemplate]
   );
   const displayProperties = useMemo(
-    () => groupRelationshipProperties(metadataProperties),
-    [metadataProperties]
+    () =>
+      sortByTemplatePropertyOrder(
+        groupRelationshipProperties(metadataProperties),
+        activeTemplate?.properties
+      ),
+    [activeTemplate?.properties, metadataProperties]
   );
   const firstEditableRelationshipId = displayProperties.find(
     property => property.type === 'relationship'

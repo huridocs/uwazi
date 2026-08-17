@@ -211,6 +211,55 @@ describe('MetadataRecord', () => {
     expect(screen.queryByText('Relationships')).not.toBeInTheDocument();
   });
 
+  it('keeps showInCard fields above Details and image/media below Details', () => {
+    const imageTemplate = {
+      ...template,
+      properties: [
+        {
+          _id: 'p-text',
+          name: 'summary',
+          type: 'text' as const,
+          label: 'Summary',
+          showInCard: true,
+        },
+        { _id: 'p-short', name: 'code', type: 'text' as const, label: 'Code' },
+        {
+          _id: 'p-img',
+          name: 'photo',
+          type: 'image' as const,
+          label: 'Image',
+          style: 'contain' as const,
+          showInCard: true,
+        },
+      ],
+    };
+    const imageEntity: Entity = {
+      ...withoutRels,
+      metadata: {
+        summary: [{ value: 'Shown in cards' }],
+        code: [{ value: 'ABC' }],
+        photo: [{ value: '/plant.jpg', alt: 'plant' }],
+      },
+      documents: [],
+    };
+
+    render(
+      <TestAtomStoreProvider
+        initialValues={[
+          [templatesAtom, [imageTemplate, relatedTemplate, relatedEntityTemplate]],
+          [relationshipTypesAtom, [{ _id: 'rel-type-1', name: 'Relates to' }]],
+        ]}
+      >
+        <MetadataRecord entity={imageEntity} />
+      </TestAtomStoreProvider>
+    );
+
+    const headings = screen.getAllByRole('heading').map(heading => heading.textContent);
+    expect(headings.indexOf('Summary')).toBeGreaterThan(-1);
+    expect(headings.indexOf('Details')).toBeGreaterThan(headings.indexOf('Summary'));
+    expect(headings.indexOf('Image')).toBeGreaterThan(headings.indexOf('Details'));
+  });
+
   it('scrolls and flashes the title row when focusMetadataFieldAtom is title', () => {
     jest.useFakeTimers();
     Element.prototype.scrollIntoView = jest.fn();
