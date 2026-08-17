@@ -56,7 +56,7 @@ const checkEntityPermission = async (
 };
 
 const filterByEntityPermissions = async (fileList: FileType[]): Promise<FileType[]> => {
-  const sharedIds = fileList.map(f => f.entity).filter(f => f);
+  const sharedIds = fileList.map(f => f.entity).filter((f): f is string => !!f);
   const allowedSharedIds = await entities
     .get({ sharedId: { $in: sharedIds } }, 'sharedId', {
       withoutDocuments: true,
