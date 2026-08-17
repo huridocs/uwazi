@@ -192,11 +192,11 @@ const renderRecord = (entityOverride: Entity = entity) =>
   );
 
 describe('MetadataRecord', () => {
-  it('shows Document, long fields, and Details, and hides Relationships when empty', () => {
+  it('shows long fields and Details, and hides Relationships when empty', () => {
     renderRecord(withoutRels);
 
-    expect(screen.getByRole('heading', { name: 'Document' })).toBeInTheDocument();
-    expect(screen.getByText('Report.pdf')).toBeInTheDocument();
+    expect(screen.queryByRole('heading', { name: 'Document' })).not.toBeInTheDocument();
+    expect(screen.queryByText('Report.pdf')).not.toBeInTheDocument();
     expect(screen.getByRole('heading', { name: 'Summary' })).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: 'Notes' })).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: 'Details' })).toBeInTheDocument();
@@ -367,11 +367,11 @@ describe('MetadataRecord', () => {
     jest.useRealTimers();
   });
 
-  it('hides empty preview field and still shows Document when entity has a file', () => {
+  it('hides empty preview field and does not show Document', () => {
     renderRecord();
 
     expect(screen.queryByRole('heading', { name: 'Previewg' })).not.toBeInTheDocument();
-    expect(screen.getByRole('heading', { name: 'Document' })).toBeInTheDocument();
+    expect(screen.queryByRole('heading', { name: 'Document' })).not.toBeInTheDocument();
     expect(screen.getByRole('heading', { name: 'Notes' })).toBeInTheDocument();
   });
 

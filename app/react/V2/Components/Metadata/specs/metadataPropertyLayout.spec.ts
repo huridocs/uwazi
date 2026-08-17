@@ -140,22 +140,17 @@ describe('metadataPropertyLayout', () => {
     const withPreview = partitionMetadataRecord(
       [short, long, showInCardText, previewField, markdownField('md'), imageField],
       [linkCard, linkDetail, inheritingRel],
-      templateMap,
-      false
+      templateMap
     );
 
-    expect(withPreview.showDocumentPreview).toBe(true);
-    expect(withPreview.previewField?._id).toBe('prev1');
     expect(withPreview.leadingFields.map(f => f._id)).toEqual(['card1', 'rel-card']);
     expect(withPreview.detailFields.map(f => f._id)).toEqual(['short1', 'long1', 'rel-detail']);
-    expect(withPreview.trailingFields.map(f => f._id)).toEqual(['m1', 'img1']);
+    expect(withPreview.trailingFields.map(f => f._id)).toEqual(['prev1', 'm1', 'img1']);
     expect(withPreview.inheritingRels.map(f => f._id)).toEqual(['r2']);
-    expect(withPreview.leadingFields.find(f => f._id === 'prev1')).toBeUndefined();
-    expect(withPreview.detailFields.find(f => f._id === 'prev1')).toBeUndefined();
 
-    const withDocOnly = partitionMetadataRecord([], [], new Map(), true);
-    expect(withDocOnly.showDocumentPreview).toBe(true);
-    expect(withDocOnly.previewField).toBeUndefined();
+    const withDocOnly = partitionMetadataRecord([], [], new Map());
+    expect(withDocOnly.leadingFields).toEqual([]);
+    expect(withDocOnly.trailingFields).toEqual([]);
   });
 
   it('omits empty specialized fields from leading cards while keeping filled preview consumed', () => {
@@ -178,13 +173,10 @@ describe('metadataPropertyLayout', () => {
     const partition = partitionMetadataRecord(
       [emptyPreview, emptyImage, previewField, markdownField('md')],
       [],
-      new Map(),
-      true
+      new Map()
     );
 
-    expect(partition.showDocumentPreview).toBe(true);
-    expect(partition.previewField?._id).toBe('prev1');
-    expect(partition.trailingFields.map(f => f._id)).toEqual(['m1']);
+    expect(partition.trailingFields.map(f => f._id)).toEqual(['prev1', 'm1']);
     expect(partition.leadingFields.find(f => f._id === 'prev-empty')).toBeUndefined();
     expect(partition.leadingFields.find(f => f._id === 'img-empty')).toBeUndefined();
     expect(partition.trailingFields.find(f => f._id === 'img-empty')).toBeUndefined();

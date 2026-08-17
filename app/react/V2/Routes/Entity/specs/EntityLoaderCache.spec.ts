@@ -90,24 +90,4 @@ describe('EntityLoaderCache entity entries', () => {
       entityLoaderCache.getEntity(sharedId, language, { requireRelationships: true })?.relations
     ).toEqual([{ entity: 'new' }]);
   });
-
-  it('patches document originalname on the cached entity and main document', () => {
-    entityLoaderCache.setEntity(sharedId, language, {
-      ...baseEntity,
-      relations: [],
-      documents: [{ _id: 'doc1', originalname: 'old.pdf' }],
-    });
-    entityLoaderCache.setMainDocument(sharedId, language, { _id: 'doc1', originalname: 'old.pdf' });
-
-    const patched = entityLoaderCache.patchFile(sharedId, language, {
-      _id: 'doc1',
-      originalname: 'new.pdf',
-    });
-
-    expect(patched?.documents?.[0]?.originalname).toBe('new.pdf');
-    expect(entityLoaderCache.getEntity(sharedId, language)?.documents?.[0]?.originalname).toBe(
-      'new.pdf'
-    );
-    expect(entityLoaderCache.getMainDocument(sharedId, language)?.originalname).toBe('new.pdf');
-  });
 });

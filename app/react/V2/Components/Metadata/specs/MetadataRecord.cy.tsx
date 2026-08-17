@@ -62,8 +62,8 @@ describe('Metadata Record', () => {
         .should('have.attr', 'target', '_blank');
     });
 
-    it('shows Document and media image', () => {
-      cy.contains('Document').should('exist');
+    it('shows media image without Document', () => {
+      cy.contains('Document').should('not.exist');
       cy.get('img[src="/batman.jpg"]').should('exist');
 
       cy.contains('Media with an image').should('exist');

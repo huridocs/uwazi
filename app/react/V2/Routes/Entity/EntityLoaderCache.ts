@@ -1,6 +1,5 @@
 import { SnippetsSearchResponse } from '#V2/api/types.js';
 import { Entity, FileType } from '#V2/api/entities/types.js';
-import type { FileType as SharedFileType } from '#shared/types/fileType.js';
 import { isClient } from '#app/utils/index.js';
 
 type EntityCacheOptions = {
@@ -8,28 +7,6 @@ type EntityCacheOptions = {
 };
 
 const entityIncludesRelationships = (entity: Entity): boolean => 'relations' in entity;
-
-const withUpdatedOriginalname = (
-  files: FileType[] | undefined,
-  fileId: string,
-  originalname?: string
-): FileType[] | undefined =>
-  files?.map(current =>
-    String(current._id) === fileId
-      ? { ...current, originalname: originalname ?? current.originalname }
-      : current
-  );
-
-const entityWithUpdatedFileName = (entity: Entity, file: SharedFileType): Entity => {
-  if (typeof file._id !== 'string') {
-    return entity;
-  }
-  return {
-    ...entity,
-    documents: withUpdatedOriginalname(entity.documents, file._id, file.originalname),
-    attachments: withUpdatedOriginalname(entity.attachments, file._id, file.originalname),
-  };
-};
 
 const mergeEntityCacheEntry = (existing: Entity, incoming: Entity): Entity =>
   entityIncludesRelationships(existing)
@@ -185,23 +162,6 @@ class EntityLoaderCache {
     this.mainDocumentCache.delete(`${sharedId}:${language}`);
   }
 
-  patchFile(sharedId: string, language: string, file: SharedFileType): Entity | undefined {
-    const entity = this.getEntity(sharedId, language);
-    if (!entity || typeof file._id !== 'string') {
-      return undefined;
-    }
-    const next = entityWithUpdatedFileName(entity, file);
-    this.setEntity(sharedId, language, next);
-    const mainDocument = this.getMainDocument(sharedId, language);
-    if (mainDocument && String(mainDocument._id) === file._id) {
-      this.setMainDocument(sharedId, language, {
-        ...mainDocument,
-        originalname: file.originalname ?? mainDocument.originalname,
-      });
-    }
-    return next;
-  }
-
   getPlaintext(documentId: string): string | undefined {
     if (!isClient) {
       return undefined;
@@ -259,5 +219,5 @@ class EntityLoaderCache {
 }
 
 export const entityLoaderCache = new EntityLoaderCache();
-export { entityIncludesRelationships, entityWithUpdatedFileName };
+export { entityIncludesRelationships };
 export type { EntityCacheOptions };

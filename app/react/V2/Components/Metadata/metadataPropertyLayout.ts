@@ -97,9 +97,6 @@ const metadataGridClassForProperty = (
   return COMPACT_METADATA_FIELD_LAYOUT;
 };
 
-const hasFilledPreviewValues = (data: MetadataProperty): boolean =>
-  data.type === 'preview' && data.values.some(value => Boolean(value.value));
-
 const hasFilledSpecializedValues = (data: MetadataProperty): boolean => {
   if (data.type === 'image' || data.type === 'preview' || data.type === 'media') {
     return data.values.some(value => Boolean(value.value));
@@ -120,12 +117,8 @@ type RecordFieldBucket = 'leading' | 'detail' | 'trailing';
 
 const classifyRecordField = (
   field: MetadataProperty,
-  templatePropertyById: Map<string, ClientProperty>,
-  consumedPreviewId: string | undefined
+  templatePropertyById: Map<string, ClientProperty>
 ): RecordFieldBucket | undefined => {
-  if (field._id === consumedPreviewId) {
-    return undefined;
-  }
   if (
     !isRelationshipProperty(field) &&
     isSpecializedFullWidthField(field) &&
@@ -144,8 +137,6 @@ const classifyRecordField = (
 };
 
 type MetadataRecordPartition = {
-  showDocumentPreview: boolean;
-  previewField: MetadataProperty | undefined;
   leadingFields: MetadataProperty[];
   detailFields: MetadataProperty[];
   trailingFields: MetadataProperty[];
@@ -155,12 +146,8 @@ type MetadataRecordPartition = {
 const partitionMetadataRecord = (
   otherFields: MetadataProperty[],
   relationshipFields: RelationshipMetadataProperty[],
-  templatePropertyById: Map<string, ClientProperty>,
-  hasPrimaryDocument: boolean
+  templatePropertyById: Map<string, ClientProperty>
 ): MetadataRecordPartition => {
-  const previewField = otherFields.find(hasFilledPreviewValues);
-  const showDocumentPreview = hasPrimaryDocument || Boolean(previewField);
-  const consumedPreviewId = showDocumentPreview && previewField ? previewField._id : undefined;
   const templateProperties = [...templatePropertyById.values()];
 
   const leadingFields: MetadataProperty[] = [];
@@ -172,15 +159,13 @@ const partitionMetadataRecord = (
     [...otherFields, ...relationshipFields.filter(isLinkOnlyRelationship)],
     templateProperties
   ).forEach(field => {
-    const bucket = classifyRecordField(field, templatePropertyById, consumedPreviewId);
+    const bucket = classifyRecordField(field, templatePropertyById);
     if (bucket) {
       buckets[bucket].push(field);
     }
   });
 
   return {
-    showDocumentPreview,
-    previewField: showDocumentPreview ? previewField : undefined,
     leadingFields,
     detailFields,
     trailingFields,
@@ -204,7 +189,6 @@ export {
   fieldShowsInCard,
   metadataGridClassForProperty,
   partitionMetadataRecord,
-  hasFilledPreviewValues,
   hasFilledSpecializedValues,
   templatePropertyInherits,
 };

@@ -3,13 +3,7 @@ import { useAtomValue } from 'jotai';
 import { Translate } from '#app/I18N/index.js';
 import { templatesAtom } from '#V2/atoms/templatesAtom.js';
 import { Entity } from '#V2/api/entities/types.js';
-import {
-  Date,
-  RelationshipCards,
-  MetadataCard,
-  MetadataItemsTable,
-  DocumentPreviewCard,
-} from './Components/index.js';
+import { Date, RelationshipCards, MetadataCard, MetadataItemsTable } from './Components/index.js';
 import type { MetadataItem } from './Components/MetadataItemsTable.js';
 import { useFormatMetadata } from './hooks/useFormatMetadata.js';
 import { buildTemplatePropertyById } from './buildTemplatePropertyById.js';
@@ -58,17 +52,10 @@ const MetadataRecord = ({ entity, onOpenEntity }: MetadataRecordProps) => {
   );
 
   const translationContext = entityTemplate?._id || '';
-  const hasPrimaryDocument = Boolean(entity.documents?.length);
 
   const partition = useMemo(
-    () =>
-      partitionMetadataRecord(
-        otherFields,
-        relationshipFields,
-        templatePropertyById,
-        hasPrimaryDocument
-      ),
-    [otherFields, relationshipFields, templatePropertyById, hasPrimaryDocument]
+    () => partitionMetadataRecord(otherFields, relationshipFields, templatePropertyById),
+    [otherFields, relationshipFields, templatePropertyById]
   );
 
   const detailItems = useMemo(() => {
@@ -159,7 +146,6 @@ const MetadataRecord = ({ entity, onOpenEntity }: MetadataRecordProps) => {
 
   const hasRelCards = partition.inheritingRels.some(field => field.values.length > 0);
   const empty =
-    !partition.showDocumentPreview &&
     partition.leadingFields.length === 0 &&
     partition.trailingFields.length === 0 &&
     detailItems.length === 0 &&
@@ -177,10 +163,6 @@ const MetadataRecord = ({ entity, onOpenEntity }: MetadataRecordProps) => {
 
   return (
     <div ref={rootRef} className="flex flex-col gap-3" data-testid="metadata-record">
-      {partition.showDocumentPreview ? (
-        <DocumentPreviewCard entity={entity} previewField={partition.previewField} />
-      ) : null}
-
       {partition.leadingFields.map(renderPropertyCard)}
 
       {detailItems.length > 0 && (

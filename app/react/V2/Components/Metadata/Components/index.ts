@@ -1,5 +1,4 @@
 export { Date } from './Date.js';
-export { DocumentPreviewCard } from './DocumentPreviewCard.js';
 export { Geolocation } from './Geolocation.js';
 export { Image } from './Image.js';
 export { LinkProperty } from './LinkProperty.js';
