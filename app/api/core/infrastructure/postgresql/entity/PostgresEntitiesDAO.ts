@@ -207,6 +207,9 @@ class PostgresEntitiesDAO extends PostgresDataSource<EntityRow> implements Entit
     query: FindByTemplateIdRangeQuery,
     options: FindOptions = {}
   ): Promise<EntityDBO[]> {
+    if (query.from && !ObjectId.isValid(query.from)) return [];
+    if (query.to && !ObjectId.isValid(query.to)) return [];
+
     let q = this.table.where({ template: query.templateId });
 
     if (query.from && query.to) {
@@ -240,7 +243,7 @@ class PostgresEntitiesDAO extends PostgresDataSource<EntityRow> implements Entit
       }
       if (criteria.hasValues) {
         q = q.whereRaw(
-          "EXISTS (SELECT 1 FROM jsonb_array_elements(??->?) AS elem WHERE elem->>'value' IS NOT NULL AND elem->>'value' NOT IN ('', 'null'))",
+          "EXISTS (SELECT 1 FROM jsonb_array_elements(??->?) AS elem WHERE elem->>'value' IS NOT NULL AND elem->>'value' <> '')",
           ['metadata', criteria.property]
         );
       }
@@ -318,11 +321,10 @@ class PostgresEntitiesDAO extends PostgresDataSource<EntityRow> implements Entit
 
   async getWithFiles(match: GetWithFilesMatch): Promise<EntityWithFiles[]> {
     const filters: EntityFilters = {};
-    if (match.sharedId) {
-      filters.sharedId = match.sharedId;
-    }
     if (match.sharedIds !== undefined) {
       filters.sharedIds = match.sharedIds;
+    } else if (match.sharedId) {
+      filters.sharedId = match.sharedId;
     }
     if (match.language) {
       filters.language = match.language;

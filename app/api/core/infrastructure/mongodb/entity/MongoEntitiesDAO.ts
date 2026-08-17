@@ -437,10 +437,12 @@ class MongoEntitiesDAO extends MongoDataSource<EntityDBO> implements EntitiesDAO
     const conditions: Record<string, unknown>[] = [{ template: new ObjectId(query.templateId) }];
 
     const range: Record<string, unknown> = {};
-    if (query.from && ObjectId.isValid(query.from)) {
+    if (query.from) {
+      if (!ObjectId.isValid(query.from)) return [];
       range.$gte = new ObjectId(query.from);
     }
-    if (query.to && ObjectId.isValid(query.to)) {
+    if (query.to) {
+      if (!ObjectId.isValid(query.to)) return [];
       range.$lte = new ObjectId(query.to);
     }
     if (Object.keys(range).length > 0) {
@@ -530,6 +532,8 @@ class MongoEntitiesDAO extends MongoDataSource<EntityDBO> implements EntitiesDAO
     if (filters._id) {
       if (ObjectId.isValid(filters._id)) {
         conditions.push({ _id: new ObjectId(filters._id) });
+      } else {
+        conditions.push({ _id: { $in: [] } });
       }
     }
 
