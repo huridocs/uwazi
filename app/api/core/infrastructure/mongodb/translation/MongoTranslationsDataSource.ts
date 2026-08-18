@@ -6,7 +6,6 @@ import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import {
   BulkDeleteKeysByContext,
   TranslationsDataSource,
-  UpdateKeysByContextProps,
 } from '#api/core/application/contracts/TranslationsDataSource.js';
 import { TranslationMappers } from '#api/core/infrastructure/mongodb/translation/mappings/TranslationMappers.js';
 import { Translation, TranslationContext } from '#api/core/domain/translation/Translation.js';
@@ -34,19 +33,20 @@ export class MongoTranslationsDataSource
   }
 
   async upsert(translations: Translation[]): Promise<Translation[]> {
+    if (!translations.length) {
+      return translations;
+    }
+
     const items = translations.map(translation => TranslationMappers.toDBO(translation));
-    const stream = this.createBulkStream();
-
-    await items.reduce(async (previous, item) => {
-      await previous;
-      await stream.updateOne(
-        { language: item.language, key: item.key, 'context.id': item.context.id },
-        { $set: item },
-        true
-      );
-    }, Promise.resolve());
-
-    await stream.flush();
+    await this.getCollection().bulkWrite(
+      items.map(item => ({
+        updateOne: {
+          filter: { language: item.language, key: item.key, 'context.id': item.context.id },
+          update: { $set: item },
+          upsert: true,
+        },
+      }))
+    );
     return translations;
   }
 
@@ -72,6 +72,16 @@ export class MongoTranslationsDataSource
     );
   }
 
+  getByLanguageExcludingContextTypes(
+    language: LanguageISO6391,
+    types: TranslationContext['type'][]
+  ) {
+    return new MongoResultSet<TranslationDBO, Translation>(
+      this.getCollection().find({ language, 'context.type': { $nin: types } }),
+      TranslationMappers.toModel
+    );
+  }
+
   getByContext(context: string) {
     return new MongoResultSet<TranslationDBO, Translation>(
       this.getCollection().find({ 'context.id': context }),
@@ -91,57 +101,6 @@ export class MongoTranslationsDataSource
       this.getCollection().find({ 'context.id': contextId, key: { $in: keys } }),
       TranslationMappers.toModel
     );
-  }
-
-  async updateContextLabel(contextId: string, contextLabel: string): Promise<void> {
-    await this.getCollection().updateMany(
-      { 'context.id': contextId },
-      { $set: { 'context.label': contextLabel } }
-    );
-  }
-
-  async updateKeysByContext(contextId: string, keyChanges: { [k: string]: string }) {
-    const stream = this.createBulkStream();
-
-    await Object.entries(keyChanges).reduce(async (previous, [keyName, newKeyName]) => {
-      await previous;
-      await stream.updateMany(
-        { 'context.id': contextId, key: keyName },
-        { $set: { key: newKeyName } }
-      );
-    }, Promise.resolve());
-    await stream.flush();
-  }
-
-  async updateKeysByContextV2(props: UpdateKeysByContextProps): Promise<void> {
-    await this.getCollection().bulkWrite(
-      Object.entries(props.keyChanges).map(([from, to]) => ({
-        updateMany: {
-          filter: {
-            'context.id': props.contextId,
-            key: from,
-          },
-          update: [
-            {
-              $set: {
-                key: to,
-                value: {
-                  $cond: [{ $eq: ['$language', props.defaultLanguage] }, to, '$value'],
-                },
-              },
-            },
-          ],
-          upsert: false,
-        },
-      }))
-    );
-  }
-
-  async deleteKeysByContext(contextId: string, keysToDelete: string[]): Promise<void> {
-    await this.getCollection().deleteMany({
-      'context.id': contextId,
-      key: { $in: keysToDelete },
-    });
   }
 
   async bulkDeleteKeysByContext(props: BulkDeleteKeysByContext) {
@@ -167,20 +126,15 @@ export class MongoTranslationsDataSource
   }
 
   async calculateNonexistentKeys(contextId: string, keys: string[]) {
-    const context = await this.getCollection().findOne({ 'context.id': contextId });
-    if (!context) {
-      return keys;
+    if (!keys.length) {
+      return [];
     }
 
-    const [result] = await this.getCollection()
-      .aggregate([
-        { $match: { key: { $in: keys }, 'context.id': contextId } },
-        { $group: { _id: null, foundKeys: { $push: '$key' } } },
-        { $project: { notFoundKeys: { $setDifference: [keys, '$foundKeys'] } } },
-      ])
+    const found = await this.getCollection()
+      .find({ 'context.id': contextId, key: { $in: keys } }, { projection: { key: 1 } })
       .toArray();
-
-    return result?.notFoundKeys || keys;
+    const foundKeys = new Set(found.map(doc => doc.key));
+    return keys.filter(key => !foundKeys.has(key));
   }
 
   async getContext(

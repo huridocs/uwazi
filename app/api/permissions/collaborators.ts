@@ -1,31 +1,27 @@
 import escapeRegExp from 'lodash/escapeRegExp.js';
-import users from '#api/users/users.js';
 import userGroups from '#api/usergroups/userGroups.js';
+import { UsersDirectoryFactory } from '#api/core/infrastructure/factories/UsersDirectoryFactory.js';
 import { PermissionType } from '#shared/types/permissionSchema.js';
 import { MemberWithPermission } from '#shared/types/entityPermisions.js';
-import { UserSchema } from '#shared/types/userType.js';
-import { WithId } from '#api/odm/index.js';
 import { permissionsContext } from './permissionsContext.js';
 import { PUBLIC_PERMISSION } from './publicPermission.js';
 
 export const collaborators = {
   search: async (filterTerm: string) => {
-    const escapedFilterTerm = escapeRegExp(filterTerm);
-    const exactFilterTerm = new RegExp(`^${escapedFilterTerm}$`, 'i');
-    const partialFilterTerm = new RegExp(`^${escapedFilterTerm}`, 'i');
+    // Users are matched exactly and case-insensitively; groups by prefix. That asymmetry is
+    // long-standing and deliberate — this term is only for the groups query.
+    const partialFilterTerm = new RegExp(`^${escapeRegExp(filterTerm)}`, 'i');
 
-    const matchedUsers = await users.get({
-      $or: [{ email: exactFilterTerm }, { username: exactFilterTerm }],
-    });
+    const matchedUsers = await UsersDirectoryFactory.default().searchByUsernameOrEmail(filterTerm);
     const groups = await userGroups.get({ name: { $regex: partialFilterTerm } });
 
     const availableCollaborators: MemberWithPermission[] = [];
 
-    matchedUsers.forEach((user: WithId<UserSchema>) => {
+    matchedUsers.forEach(user => {
       availableCollaborators.push({
-        refId: user._id.toString(),
+        refId: user._id,
         type: PermissionType.USER,
-        label: user.username!,
+        label: user.username,
       });
     });
 

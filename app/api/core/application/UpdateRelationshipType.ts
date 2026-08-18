@@ -1,7 +1,7 @@
 import { AbstractUseCase } from '../libs/UseCase.js';
 import { RelationshipType } from '../domain/relationshipType/RelationshipType.js';
 import { RelationshipTypesDataSource } from './contracts/RelationshipTypesDataSource.js';
-import { RelationshipTypesTranslationService } from './contracts/RelationshipTypesTranslationService.js';
+import { RelationshipTypeTranslationService } from '../domain/relationshipType/RelationshipTypeTranslationService.js';
 
 type Input = {
   id: string;
@@ -12,7 +12,7 @@ type Output = RelationshipType;
 
 type Deps = {
   relationshipTypesDS: RelationshipTypesDataSource;
-  translationService: RelationshipTypesTranslationService;
+  relationshipTypeTranslationService: RelationshipTypeTranslationService;
 };
 
 class UpdateRelationshipTypeUseCase extends AbstractUseCase<Input, Output, Deps> {
@@ -31,7 +31,7 @@ class UpdateRelationshipTypeUseCase extends AbstractUseCase<Input, Output, Deps>
 
     await this.transactionManager.run(async () => {
       await this.deps.relationshipTypesDS.update(updated);
-      await this.deps.translationService.update(current, updated);
+      await this.deps.relationshipTypeTranslationService.update(current, updated);
     });
 
     return updated;

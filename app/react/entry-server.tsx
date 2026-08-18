@@ -32,10 +32,6 @@ import templatesApi from '#api/core/v1_layer/templates/templates.js';
 import { GetRelationshipTypesUseCaseFactory } from '#api/core/infrastructure/factories/GetRelationshipTypesUseCaseFactory.js';
 import thesauriApi from '../api/core/v1_layer/thesauri/thesauri.js';
 import { TranslationsQueryServiceFactory } from '#api/core/infrastructure/factories/TranslationsQueryServiceFactory.js';
-import {
-  IndexedTranslations,
-  toIndexedTranslations,
-} from '#api/core/infrastructure/express/translation/LegacyTranslationDtoMapper.js';
 import settingsApi from '../api/settings/settings.js';
 import { shapeSettingsForSSR } from '../api/settings/publicSettings.js';
 import { omitInlineCustomization } from '#shared/settings/omitInlineCustomization.js';
@@ -92,12 +88,6 @@ class ServerRenderingFetchError extends Error {
     this.status = 500;
   }
 }
-
-const onlySystemTranslations = (translations: IndexedTranslations[]) =>
-  translations.map(translation => {
-    const systemTranslation = translation?.contexts?.find(c => c.id === 'System');
-    return { ...translation, contexts: [systemTranslation] };
-  });
 
 const toLegacyRelationshipTypesShape = (rows: { id: string; name: string }[]) =>
   rows.map(row => ({ _id: row.id, name: row.name }));
@@ -191,13 +181,11 @@ const prepareStores = async (req: ExpressRequest, settings: ClientSettings, lang
   api.locale(locale);
   const userAgent = req.get('user-agent') || '';
 
-  // Only hydrate the active locale — language switches trigger a full navigation / SSR.
-  const translations = toIndexedTranslations(
-    await TranslationsQueryServiceFactory.default().getLegacy({
-      locale: locale as LanguageISO6391,
-      context: 'System',
-    })
-  );
+  // Active locale, without Thesaurus: template/RT/UI labels must hydrate; thesauri stay out of the HTML blob.
+  const translations = await TranslationsQueryServiceFactory.default().getLegacy({
+    locale: locale as LanguageISO6391,
+    excludeContextTypes: ['Thesaurus'],
+  });
 
   const [
     userApiResponse = {},
@@ -210,7 +198,7 @@ const prepareStores = async (req: ExpressRequest, settings: ClientSettings, lang
     templatesApiResponse = [],
     thesaurisApiResponse = [],
     relationTypesApiResponse = [],
-    translationsApiResponse = onlySystemTranslations(translations),
+    translationsApiResponse = translations,
   ] =
     !settings.private || req.user
       ? await Promise.all([

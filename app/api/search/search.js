@@ -5,7 +5,7 @@ import { OperationalError } from '#api/common.v2/errors/OperationalError.js';
 import { TranslationsQueryServiceFactory } from '#api/core/infrastructure/factories/TranslationsQueryServiceFactory.js';
 import { permissionsContext } from '#api/permissions/permissionsContext.js';
 import userGroups from '#api/usergroups/userGroups.js';
-import usersModel from '#api/users/users.js';
+import { UsersDirectoryFactory } from '#api/core/infrastructure/factories/UsersDirectoryFactory.js';
 import { createError } from '#api/utils/index.js';
 import date from '#api/utils/date.js';
 import { sequentialPromises } from '#shared/asyncUtils.js';
@@ -444,7 +444,11 @@ const _denormalizeAndLimitAggregations = async (
     }
 
     if (PERMISSION_KEYS.has(key)) {
-      const [users, groups] = await Promise.all([usersModel.get(), userGroups.get()]);
+      const [users, groups] = await Promise.all([
+        // Only `_id` and `username` are read below; UserView's other two fields are free.
+        UsersDirectoryFactory.default().list(),
+        userGroups.get(),
+      ]);
 
       const info = [
         ...users.map(u => ({ type: 'user', refId: u._id, label: u.username })),

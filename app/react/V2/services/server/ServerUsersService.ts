@@ -1,4 +1,5 @@
 import { UsersQueryServiceFactory } from '#api/core/infrastructure/factories/UsersQueryServiceFactory.js';
+import type { UserProfile } from '#api/core/application/contracts/UserReadModels.js';
 import type { User } from '#shared/contracts/Users.js';
 import { ApiError } from '#shared/apiClient/ApiError.js';
 import { toApiError } from '#shared/apiClient/index.js';
@@ -9,11 +10,9 @@ import type { ServiceRequestOptions } from '../contracts/ServiceRequestOptions.j
 import { notImplemented } from './notImplemented.js';
 import type { ServerServiceContext } from './types.js';
 
-const mapUsers = (
-  rows: Awaited<ReturnType<ReturnType<typeof UsersQueryServiceFactory.default>['listWithGroups']>>
-): User[] =>
-  rows.map(user => ({
-    _id: user._id.toString(),
+const mapUsers = (users: UserProfile[]): User[] =>
+  users.map(user => ({
+    _id: user._id,
     username: user.username,
     role: user.role,
     email: user.email,
@@ -38,8 +37,8 @@ const mapCurrentUser = (user: UserSchema): User => ({
 const createServerUsersService = (ctx: ServerServiceContext): UsersService => ({
   getAll: async (_options?: ServiceRequestOptions): Promise<ApiResponse<User[]>> => {
     try {
-      const rows = await UsersQueryServiceFactory.default().listWithGroups({});
-      return [mapUsers(rows), undefined];
+      const users = await UsersQueryServiceFactory.default().listUsers();
+      return [mapUsers(users), undefined];
     } catch (e) {
       return [undefined as never, toApiError(e)];
     }

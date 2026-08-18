@@ -1,0 +1,1309 @@
+<title>Uwazi Migration Board</title>
+<style>
+  :root {
+    --ground: #f4f6f8;
+    --surface: #ffffff;
+    --surface-2: #fafbfc;
+    --ink: #14181e;
+    --ink-soft: #3c4552;
+    --muted: #5c6675;
+    --hairline: #e0e4ea;
+    --hairline-strong: #cfd5de;
+    --accent: #0e7a83;
+    --accent-soft: rgba(14, 122, 131, 0.1);
+    --done: #2e7d51;
+    --done-soft: rgba(46, 125, 81, 0.12);
+    --partial: #a86c11;
+    --partial-soft: rgba(168, 108, 17, 0.13);
+    --todo: #6f7a88;
+    --todo-soft: rgba(111, 122, 136, 0.13);
+    --na: #9aa4b0;
+    --shadow: 0 1px 2px rgba(20, 24, 30, 0.05), 0 8px 24px -16px rgba(20, 24, 30, 0.3);
+    --sans: ui-sans-serif, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    --mono: ui-monospace, 'SFMono-Regular', 'JetBrains Mono', Menlo, Consolas, monospace;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme='light']) {
+      --ground: #0e1116;
+      --surface: #151a20;
+      --surface-2: #1a1f27;
+      --ink: #e4e8ed;
+      --ink-soft: #c3cad3;
+      --muted: #98a2af;
+      --hairline: #252b34;
+      --hairline-strong: #333b46;
+      --accent: #4fc2c9;
+      --accent-soft: rgba(79, 194, 201, 0.13);
+      --done: #56ad80;
+      --done-soft: rgba(86, 173, 128, 0.15);
+      --partial: #d69a3e;
+      --partial-soft: rgba(214, 154, 62, 0.15);
+      --todo: #7c8794;
+      --todo-soft: rgba(124, 135, 148, 0.16);
+      --na: #6b7480;
+      --shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 10px 30px -20px rgba(0, 0, 0, 0.9);
+    }
+  }
+
+  :root[data-theme='dark'] {
+    --ground: #0e1116;
+    --surface: #151a20;
+    --surface-2: #1a1f27;
+    --ink: #e4e8ed;
+    --ink-soft: #c3cad3;
+    --muted: #98a2af;
+    --hairline: #252b34;
+    --hairline-strong: #333b46;
+    --accent: #4fc2c9;
+    --accent-soft: rgba(79, 194, 201, 0.13);
+    --done: #56ad80;
+    --done-soft: rgba(86, 173, 128, 0.15);
+    --partial: #d69a3e;
+    --partial-soft: rgba(214, 154, 62, 0.15);
+    --todo: #7c8794;
+    --todo-soft: rgba(124, 135, 148, 0.16);
+    --na: #6b7480;
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 10px 30px -20px rgba(0, 0, 0, 0.9);
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  body {
+    margin: 0;
+    background: var(--ground);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 15px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap {
+    max-width: 1140px;
+    margin: 0 auto;
+    padding: 40px 24px 96px;
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+  }
+
+  .eyebrow {
+    font-family: var(--mono);
+    font-size: 11.5px;
+    letter-spacing: 0.13em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin: 0;
+  }
+
+  h1 {
+    font-size: 34px;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    margin: 10px 0 0;
+    text-wrap: balance;
+  }
+
+  h2 {
+    font-size: 20px;
+    letter-spacing: -0.01em;
+    margin: 0;
+    text-wrap: balance;
+  }
+
+  h3 {
+    font-size: 15px;
+    margin: 0;
+    letter-spacing: -0.005em;
+  }
+
+  p {
+    margin: 0;
+  }
+
+  .lede {
+    max-width: 66ch;
+    color: var(--ink-soft);
+    margin-top: 14px;
+  }
+
+  .stamp {
+    margin-top: 18px;
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--muted);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 18px;
+  }
+
+  .stamp b {
+    color: var(--ink-soft);
+    font-weight: 500;
+  }
+
+  header.page {
+    border-bottom: 1px solid var(--hairline);
+    padding-bottom: 32px;
+  }
+
+  section {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  .section-head {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .section-head p {
+    color: var(--muted);
+    font-size: 14px;
+    max-width: 72ch;
+  }
+
+  /* ---- track meters ---- */
+
+  .tracks {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 18px;
+  }
+
+  .track {
+    background: var(--surface);
+    border: 1px solid var(--hairline);
+    border-radius: 10px;
+    padding: 20px 22px 18px;
+    box-shadow: var(--shadow);
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .track-title {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .track-title .pct {
+    font-family: var(--mono);
+    font-variant-numeric: tabular-nums;
+    font-size: 26px;
+    letter-spacing: -0.03em;
+    color: var(--ink);
+  }
+
+  .track-note {
+    font-size: 13px;
+    color: var(--muted);
+  }
+
+  .bar {
+    display: flex;
+    height: 12px;
+    border-radius: 3px;
+    overflow: hidden;
+    background: var(--todo-soft);
+    gap: 2px;
+  }
+
+  .bar span {
+    display: block;
+    min-width: 0;
+  }
+  .bar .seg-done {
+    background: var(--done);
+  }
+  .bar .seg-partial {
+    background: var(--partial);
+  }
+  .bar .seg-todo {
+    background: var(--todo);
+    opacity: 0.45;
+  }
+
+  .tally {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 18px;
+    font-family: var(--mono);
+    font-size: 12px;
+    font-variant-numeric: tabular-nums;
+    color: var(--muted);
+  }
+
+  .tally i {
+    font-style: normal;
+    color: var(--ink-soft);
+  }
+
+  .dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 2px;
+    margin-right: 7px;
+    vertical-align: 1px;
+  }
+
+  .dot.done {
+    background: var(--done);
+  }
+  .dot.partial {
+    background: var(--partial);
+  }
+  .dot.todo {
+    background: var(--todo);
+  }
+
+  /* ---- filters ---- */
+
+  .filters {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .filters .label {
+    font-family: var(--mono);
+    font-size: 11.5px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-right: 4px;
+  }
+
+  .chip {
+    font: inherit;
+    font-size: 13px;
+    font-family: var(--mono);
+    color: var(--ink-soft);
+    background: var(--surface);
+    border: 1px solid var(--hairline-strong);
+    border-radius: 999px;
+    padding: 4px 13px;
+    cursor: pointer;
+  }
+
+  .chip:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+  .chip:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+  .chip[aria-pressed='true'] {
+    background: var(--accent-soft);
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  /* ---- matrix table ---- */
+
+  .table-shell {
+    background: var(--surface);
+    border: 1px solid var(--hairline);
+    border-radius: 10px;
+    box-shadow: var(--shadow);
+    overflow-x: auto;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13.5px;
+    min-width: 900px;
+  }
+
+  thead th {
+    position: sticky;
+    top: 0;
+    background: var(--surface-2);
+    text-align: left;
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.11em;
+    text-transform: uppercase;
+    color: var(--muted);
+    padding: 11px 16px;
+    border-bottom: 1px solid var(--hairline-strong);
+    white-space: nowrap;
+    z-index: 2;
+  }
+
+  tbody td {
+    padding: 13px 16px;
+    border-bottom: 1px solid var(--hairline);
+    vertical-align: top;
+  }
+
+  tbody tr:last-child td {
+    border-bottom: none;
+  }
+  tbody tr:hover td {
+    background: var(--surface-2);
+  }
+  tbody tr[hidden] {
+    display: none;
+  }
+
+  tr.group td {
+    background: var(--surface-2);
+    border-bottom: 1px solid var(--hairline-strong);
+    padding: 12px 16px;
+  }
+
+  tr.group .group-name {
+    font-family: var(--mono);
+    font-size: 11.5px;
+    letter-spacing: 0.11em;
+    text-transform: uppercase;
+    color: var(--ink);
+  }
+
+  tr.group .group-desc {
+    color: var(--muted);
+    font-size: 12.5px;
+  }
+
+  .area {
+    font-weight: 600;
+    color: var(--ink);
+  }
+  .area code {
+    display: block;
+    margin-top: 3px;
+  }
+
+  code,
+  .flag {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--muted);
+    word-break: break-word;
+  }
+
+  .flag {
+    display: inline-block;
+    background: var(--accent-soft);
+    color: var(--accent);
+    border-radius: 4px;
+    padding: 1px 7px;
+    white-space: nowrap;
+  }
+
+  .flag.off::after {
+    content: ' · off';
+    opacity: 0.7;
+  }
+  .flag.none {
+    background: none;
+    color: var(--na);
+    padding-left: 0;
+  }
+
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    font-family: var(--mono);
+    font-size: 11.5px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    padding: 3px 9px 3px 7px;
+    border-radius: 4px;
+    white-space: nowrap;
+  }
+
+  .pill::before {
+    content: '';
+    width: 7px;
+    height: 7px;
+    border-radius: 2px;
+  }
+
+  .pill.done {
+    background: var(--done-soft);
+    color: var(--done);
+  }
+  .pill.done::before {
+    background: var(--done);
+  }
+  .pill.partial {
+    background: var(--partial-soft);
+    color: var(--partial);
+  }
+  .pill.partial::before {
+    background: var(--partial);
+  }
+  .pill.todo {
+    background: var(--todo-soft);
+    color: var(--todo);
+  }
+  .pill.todo::before {
+    background: var(--todo);
+  }
+  .pill.na {
+    color: var(--na);
+  }
+  .pill.na::before {
+    background: var(--na);
+    opacity: 0.5;
+  }
+
+  .note {
+    color: var(--ink-soft);
+    font-size: 13px;
+    max-width: 46ch;
+  }
+
+  /* ---- queue ---- */
+
+  ol.queue {
+    list-style: none;
+    counter-reset: q;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 12px;
+  }
+
+  ol.queue li {
+    counter-increment: q;
+    background: var(--surface);
+    border: 1px solid var(--hairline);
+    border-left: 3px solid var(--accent);
+    border-radius: 8px;
+    padding: 16px 18px 16px 56px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  ol.queue li::before {
+    content: counter(q, decimal-leading-zero);
+    position: absolute;
+    left: 18px;
+    top: 16px;
+    font-family: var(--mono);
+    font-size: 13px;
+    font-variant-numeric: tabular-nums;
+    color: var(--accent);
+  }
+
+  ol.queue p {
+    color: var(--ink-soft);
+    font-size: 13.5px;
+    max-width: 78ch;
+  }
+  ol.queue .why {
+    color: var(--muted);
+    font-size: 12.5px;
+  }
+
+  .cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 14px;
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--hairline);
+    border-radius: 8px;
+    padding: 16px 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+  }
+
+  .card p {
+    font-size: 13.5px;
+    color: var(--ink-soft);
+  }
+  .card .tag {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--partial);
+  }
+
+  .howto {
+    background: var(--surface);
+    border: 1px solid var(--hairline);
+    border-radius: 10px;
+    padding: 22px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .howto .run {
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--accent);
+    background: var(--accent-soft);
+    border-radius: 6px;
+    padding: 9px 13px;
+    align-self: flex-start;
+  }
+
+  .howto .run::before {
+    content: '$ ';
+    opacity: 0.55;
+  }
+
+  .howto ul {
+    margin: 0;
+    padding-left: 20px;
+    display: grid;
+    gap: 7px;
+  }
+  .howto li {
+    font-size: 13.5px;
+    color: var(--ink-soft);
+    max-width: 82ch;
+  }
+
+  footer {
+    border-top: 1px solid var(--hairline);
+    padding-top: 22px;
+    color: var(--muted);
+    font-size: 12.5px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  @media (max-width: 640px) {
+    .wrap {
+      padding: 28px 16px 64px;
+      gap: 32px;
+    }
+    h1 {
+      font-size: 27px;
+    }
+  }
+</style>
+
+<div class="wrap">
+  <header class="page">
+    <p class="eyebrow">Uwazi backend · long-running migration</p>
+    <h1>Migration Board</h1>
+    <p class="lede">
+      Two migrations run back to back on every part of the backend: first the module moves to the V2
+      hexagonal core (<code>app/api/core</code>), then its persistence moves from MongoDB to
+      PostgreSQL behind a per-tenant feature flag. A module can only start the second one after it
+      has finished the first, so the V2 column is the leading indicator and the Postgres column is
+      the trailing one.
+    </p>
+    <div class="stamp">
+      <span>Verified against <b>f27be07ca7</b></span>
+      <span>Branch <b>migrate-users-to-postgresql</b></span>
+      <span>Last reviewed <b>2026-08-14</b></span>
+    </div>
+  </header>
+
+  <section>
+    <div class="tracks">
+      <article class="track">
+        <div class="track-title">
+          <h2>Track 1 — V2 core architecture</h2>
+          <span class="pct" data-pct="v2">–</span>
+        </div>
+        <div class="bar" data-bar="v2">
+          <span class="seg-done"></span><span class="seg-partial"></span
+          ><span class="seg-todo"></span>
+        </div>
+        <div class="tally" data-tally="v2"></div>
+        <p class="track-note">
+          Domain, use cases and controllers under <code>app/api/core</code>. Partial covers modules
+          in the earlier <code>*.v2</code> generation, which are layered but live outside the core
+          and still need consolidating.
+        </p>
+      </article>
+
+      <article class="track">
+        <div class="track-title">
+          <h2>Track 2 — Mongo → Postgres</h2>
+          <span class="pct" data-pct="db">–</span>
+        </div>
+        <div class="bar" data-bar="db">
+          <span class="seg-done"></span><span class="seg-partial"></span
+          ><span class="seg-todo"></span>
+        </div>
+        <div class="tally" data-tally="db"></div>
+        <p class="track-note">
+          Table + DAO + mapper + data source + factory wiring behind a tenant flag, with a
+          cross-backend consistency suite. Percentages count only areas where Postgres applies.
+        </p>
+      </article>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-head">
+      <h2>Status by area</h2>
+      <p>
+        Each row is one feature area. <b>V2</b> tracks the architecture move, <b>Postgres</b> tracks
+        the persistence move, <b>Flag</b> is the tenant feature flag that switches the new path on.
+      </p>
+    </div>
+
+    <div class="filters">
+      <span class="label">Filter</span>
+      <button class="chip" type="button" data-filter="all" aria-pressed="true">All</button>
+      <button class="chip" type="button" data-filter="active" aria-pressed="false">
+        In flight
+      </button>
+      <button class="chip" type="button" data-filter="db-todo" aria-pressed="false">
+        Postgres not started
+      </button>
+      <button class="chip" type="button" data-filter="v2-todo" aria-pressed="false">
+        Still V1
+      </button>
+    </div>
+
+    <div class="table-shell">
+      <table id="matrix">
+        <thead>
+          <tr>
+            <th scope="col">Area</th>
+            <th scope="col">V2</th>
+            <th scope="col">Postgres</th>
+            <th scope="col">Flag</th>
+            <th scope="col">State &amp; what's left</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr class="group">
+            <td colspan="5">
+              <span class="group-name">A · Core data model</span>
+              <span class="group-desc"
+                >— already in <code>app/api/core</code>, the active Postgres front</span
+              >
+            </td>
+          </tr>
+
+          <tr data-area="templates" data-v2="done" data-db="done">
+            <td class="area">Templates<code>core/domain/template</code></td>
+            <td><span class="pill done">Done</span></td>
+            <td><span class="pill done">Done</span></td>
+            <td><span class="flag">postgresTemplates</span></td>
+            <td class="note">
+              Domain, use cases, Express routes, Postgres DAO + mapper + data source, and a backfill
+              config in <code>migrations/configs</code>. Nothing outstanding.
+            </td>
+          </tr>
+
+          <tr data-area="thesauri" data-v2="partial" data-db="done">
+            <td class="area">Thesauri<code>core/domain/thesaurus</code></td>
+            <td><span class="pill partial">Mostly</span></td>
+            <td><span class="pill done">Done</span></td>
+            <td><span class="flag">postgresThesauri</span></td>
+            <td class="note">
+              Postgres side complete (DAO, data source, schema, backfill). Routes still served
+              through <code>core/v1_layer/thesauri</code> — that bridge is the remaining V2 work.
+            </td>
+          </tr>
+
+          <tr data-area="files" data-v2="partial" data-db="done">
+            <td class="area">Files<code>core/domain/files</code></td>
+            <td><span class="pill partial">Partial</span></td>
+            <td><span class="pill done">Done</span></td>
+            <td><span class="flag">postgresFiles</span></td>
+            <td class="note">
+              Postgres DAO/mapper/data source and backfill done. Legacy
+              <code>app/api/files</code> still owns storage, OCR, export and several route files;
+              only upload/update/delete moved to core.
+            </td>
+          </tr>
+
+          <tr data-area="entities" data-v2="partial" data-db="partial">
+            <td class="area">Entities<code>core/domain/entity</code></td>
+            <td><span class="pill partial">Partial</span></td>
+            <td><span class="pill partial">Read-side only</span></td>
+            <td><span class="flag">postgresEntities</span></td>
+            <td class="note">
+              Table + RLS exist, but only <code>PostgresUnrestrictedEntitiesQuery</code> and a row
+              type are built — there is no <code>PostgresEntitiesDataSource</code>, and
+              <code>EntitiesDataSourceFactory</code> is Mongo-only. Writes are still Mongo
+              everywhere. Three code generations coexist: <code>app/api/entities</code>,
+              <code>entities.v2</code>, and core.
+            </td>
+          </tr>
+
+          <tr data-area="relationship-types" data-v2="done" data-db="done">
+            <td class="area">Relationship types<code>core/domain/relationshipType</code></td>
+            <td><span class="pill done">Done</span></td>
+            <td><span class="pill done">Done</span></td>
+            <td><span class="flag">postgresRelationshipTypes</span></td>
+            <td class="note">
+              Use cases, routes, Postgres data source + mapper, backfill config. Nothing
+              outstanding.
+            </td>
+          </tr>
+
+          <tr data-area="entity-permissions" data-v2="partial" data-db="partial">
+            <td class="area">Entity permissions<code>core/domain/entityAccessPolicy</code></td>
+            <td><span class="pill partial">Partial</span></td>
+            <td><span class="pill partial">RLS only</span></td>
+            <td><span class="flag none">— none yet</span></td>
+            <td class="note">
+              Row-level-security infrastructure landed (migrations 010/011) and the V2 permissions
+              system merged, but the access-policy data source is still Mongo-only and
+              <code>app/api/permissions</code> (collaborators, entity permissions) is untouched V1.
+            </td>
+          </tr>
+
+          <tr data-area="users" data-v2="done" data-db="done">
+            <td class="area">Users &amp; auth<code>core/domain/user</code></td>
+            <td><span class="pill done">Done</span></td>
+            <td><span class="pill done">Done</span></td>
+            <td><span class="flag off">postgresUsers</span></td>
+            <td class="note">
+              Login, 2FA, lockout, recovery and CRUD all run as V2 use cases with routes in core;
+              the V1 module now serves only reads and the login / unlock / recovery fallbacks, with
+              every user write unflagged. Postgres DAO, mapper, all 17 data-source methods, query
+              service and backfill config are in place, but the two data sources are specced
+              separately — there is no shared cross-backend suite. Flag ships off — needs tenant
+              rollout.
+            </td>
+          </tr>
+
+          <tr data-area="user-groups" data-v2="done" data-db="partial">
+            <td class="area">User groups<code>core/domain/userGroup</code></td>
+            <td><span class="pill done">Done</span></td>
+            <td><span class="pill partial">No backfill</span></td>
+            <td><span class="flag off">postgresUsergroups</span></td>
+            <td class="note">
+              Routes cut over behind <code>v2Usergroups</code>; Postgres table (JSONB members), DAO,
+              data source and two consistency suites are done. Missing: a
+              <code>MigrateCollectionToPostgres</code> config, so existing groups cannot be
+              backfilled yet. Four legacy consumers still call the deprecated
+              <code>app/api/usergroups</code> module.
+            </td>
+          </tr>
+
+          <tr data-area="password-recoveries" data-v2="done" data-db="done">
+            <td class="area">Password recoveries<code>core/…/passwordRecovery</code></td>
+            <td><span class="pill done">Done</span></td>
+            <td><span class="pill done">Done</span></td>
+            <td><span class="flag off">postgresPasswordRecoveries</span></td>
+            <td class="note">
+              Data source, backfill config and an expiry cleanup job. No gaps found in the last
+              assessment.
+            </td>
+          </tr>
+
+          <tr data-area="captcha" data-v2="done" data-db="done">
+            <td class="area">Captcha<code>core/domain/captcha</code></td>
+            <td><span class="pill done">Done</span></td>
+            <td><span class="pill done">Done</span></td>
+            <td><span class="flag off">postgresCaptchas</span></td>
+            <td class="note">
+              Data source plus a <code>CleanupExpiredCaptchasJob</code> replacing Mongo's TTL index.
+              No backfill config — captchas are ephemeral, so none is expected.
+            </td>
+          </tr>
+
+          <tr data-area="languages" data-v2="done" data-db="na">
+            <td class="area">Languages<code>core/domain/language</code></td>
+            <td><span class="pill done">Done</span></td>
+            <td><span class="pill na">n/a</span></td>
+            <td><span class="flag none">—</span></td>
+            <td class="note">
+              Add/delete language use cases, events and routes in core. Persistence rides on
+              settings and translations, so it has no table of its own.
+            </td>
+          </tr>
+
+          <tr data-area="settings" data-v2="partial" data-db="todo">
+            <td class="area">Settings<code>app/api/settings</code></td>
+            <td><span class="pill partial">Contract only</span></td>
+            <td><span class="pill todo">Not started</span></td>
+            <td><span class="flag none">—</span></td>
+            <td class="note">
+              Core has a <code>SettingsDataSource</code> contract with Mongo + cached
+              implementations, but no domain model or use cases; routes and business logic stay in
+              the V1 module.
+            </td>
+          </tr>
+
+          <tr class="group">
+            <td colspan="5">
+              <span class="group-name">B · Earlier <code>*.v2</code> generation</span>
+              <span class="group-desc"
+                >— layered, but outside <code>app/api/core</code>; Mongo-backed</span
+              >
+            </td>
+          </tr>
+
+          <tr data-area="i18n" data-v2="partial" data-db="todo">
+            <td class="area">Translations / i18n<code>app/api/i18n.v2</code></td>
+            <td><span class="pill partial">Own v2</span></td>
+            <td><span class="pill todo">Not started</span></td>
+            <td><span class="flag none">—</span></td>
+            <td class="note">
+              Contracts, model, services and routes exist in the older v2 style; V1
+              <code>app/api/i18n</code> still runs alongside it. Needs consolidation into core
+              before Postgres work makes sense.
+            </td>
+          </tr>
+
+          <tr data-area="pages" data-v2="partial" data-db="todo">
+            <td class="area">Pages<code>app/api/pages.v2</code></td>
+            <td><span class="pill partial">Own v2</span></td>
+            <td><span class="pill todo">Not started</span></td>
+            <td><span class="flag none">—</span></td>
+            <td class="note">
+              Hexagonal with its own <code>v1_layer</code> and a <code>TECH_DEBT.md</code>; V1
+              <code>app/api/pages</code> routes still registered.
+            </td>
+          </tr>
+
+          <tr data-area="relationships" data-v2="partial" data-db="todo">
+            <td class="area">Relationships<code>app/api/relationships.v2</code></td>
+            <td><span class="pill partial">Own v2</span></td>
+            <td><span class="pill todo">Not started</span></td>
+            <td><span class="flag none">—</span></td>
+            <td class="note">
+              Large module (~4.5k lines) with its own contracts/services, plus V1
+              <code>app/api/relationships</code> still routed. Coupled to entities, so it follows
+              entities in the queue.
+            </td>
+          </tr>
+
+          <tr data-area="csv" data-v2="partial" data-db="todo">
+            <td class="area">CSV import<code>app/api/csv.v2</code></td>
+            <td><span class="pill partial">Own v2</span></td>
+            <td><span class="pill todo">Not started</span></td>
+            <td><span class="flag none">—</span></td>
+            <td class="note">
+              Biggest non-core module (~9k lines). Writes go through entity paths, so its
+              persistence follows whatever entities land on.
+            </td>
+          </tr>
+
+          <tr data-area="search" data-v2="partial" data-db="todo">
+            <td class="area">Search<code>app/api/search.v2</code></td>
+            <td><span class="pill partial">Split</span></td>
+            <td><span class="pill todo">Not started</span></td>
+            <td><span class="flag none">—</span></td>
+            <td class="note">
+              Query building and permission filters moved; V1 <code>app/api/search</code> and its
+              deprecated routes still carry most of the surface. Backed by Elasticsearch, so
+              Postgres affects it only through indexing sources.
+            </td>
+          </tr>
+
+          <tr data-area="dataviz-segmentation-at" data-v2="partial" data-db="todo">
+            <td class="area">Dataviz, segmentation, automatic translation<code>*.v2</code></td>
+            <td><span class="pill partial">Own v2</span></td>
+            <td><span class="pill todo">Not started</span></td>
+            <td><span class="flag none">—</span></td>
+            <td class="note">
+              Self-contained newer modules following application/domain/infrastructure layering. No
+              core dependency, no Postgres work planned yet.
+            </td>
+          </tr>
+
+          <tr data-area="authorization-libs" data-v2="partial" data-db="todo">
+            <td class="area">
+              Authorization &amp; shared libs<code>authorization.v2, common.v2</code>
+            </td>
+            <td><span class="pill partial">Own v2</span></td>
+            <td><span class="pill todo">Not started</span></td>
+            <td><span class="flag none">—</span></td>
+            <td class="note">
+              Cross-cutting support code for the <code>*.v2</code> generation. Core has its own
+              equivalents (<code>ExecutionContext</code>, <code>libs/</code>); these retire as group
+              B is consolidated.
+            </td>
+          </tr>
+
+          <tr class="group">
+            <td colspan="5">
+              <span class="group-name">C · V1 legacy</span>
+              <span class="group-desc">— not started on either track</span>
+            </td>
+          </tr>
+
+          <tr data-area="activitylog" data-v2="todo" data-db="todo">
+            <td class="area">Activity log<code>app/api/activitylog</code></td>
+            <td><span class="pill todo">V1</span></td>
+            <td><span class="pill todo">Not started</span></td>
+            <td><span class="flag none">—</span></td>
+            <td class="note">
+              Middleware-driven write path over a Mongo model. High write volume — worth sizing
+              before it is scheduled.
+            </td>
+          </tr>
+
+          <tr data-area="suggestions" data-v2="todo" data-db="todo">
+            <td class="area">
+              Suggestions / information extraction<code>app/api/suggestions</code>
+            </td>
+            <td><span class="pill todo">V1</span></td>
+            <td><span class="pill todo">Not started</span></td>
+            <td><span class="flag none">—</span></td>
+            <td class="note">
+              ~3.8k lines, heavily coupled to entities and files. Blocked behind the entities
+              Postgres work.
+            </td>
+          </tr>
+
+          <tr data-area="sync" data-v2="todo" data-db="todo">
+            <td class="area">Sync<code>app/api/sync</code></td>
+            <td><span class="pill todo">V1</span></td>
+            <td><span class="pill todo">Not started</span></td>
+            <td><span class="flag none">—</span></td>
+            <td class="note">
+              Replicates Mongo collections between instances, so it reads persistence directly.
+              Needs a design decision once entities move; <code>SyncLogWriter</code> on the Postgres
+              side is the starting point.
+            </td>
+          </tr>
+
+          <tr data-area="permissions-module" data-v2="todo" data-db="todo">
+            <td class="area">Permissions module<code>app/api/permissions</code></td>
+            <td><span class="pill todo">V1</span></td>
+            <td><span class="pill todo">Not started</span></td>
+            <td><span class="flag none">—</span></td>
+            <td class="note">
+              Collaborators and entity-permission routes still call the legacy user-group model
+              directly — one of the four consumers keeping <code>app/api/usergroups</code> alive.
+            </td>
+          </tr>
+
+          <tr data-area="px-ai-uploads" data-v2="todo" data-db="todo">
+            <td class="area">
+              Paragraph extraction, AI assistant, custom uploads<code>app/api/*</code>
+            </td>
+            <td><span class="pill todo">V1-ish</span></td>
+            <td><span class="pill todo">Not started</span></td>
+            <td><span class="flag none">—</span></td>
+            <td class="note">
+              Newer modules with adapter-style folders but no core integration. Low coupling, so
+              they can move late and cheaply.
+            </td>
+          </tr>
+
+          <tr data-area="small-v1-services" data-v2="todo" data-db="todo">
+            <td class="area">
+              Small V1 services<code
+                >documents, stats, tasks, contact, preserve, toc, updatelogs</code
+              >
+            </td>
+            <td><span class="pill todo">V1</span></td>
+            <td><span class="pill todo">Not started</span></td>
+            <td><span class="flag none">—</span></td>
+            <td class="note">
+              Thin route + model modules, a few hundred lines each. Cheap to migrate, but only after
+              the models they lean on move.
+            </td>
+          </tr>
+
+          <tr data-area="odm-migrations" data-v2="todo" data-db="todo">
+            <td class="area">
+              ODM &amp; Mongo migrations<code>app/api/odm, app/api/migrations</code>
+            </td>
+            <td><span class="pill todo">V1</span></td>
+            <td><span class="pill todo">Not started</span></td>
+            <td><span class="flag none">—</span></td>
+            <td class="note">
+              ~19k lines of Mongo migrations plus the Mongoose ODM wrapper. These retire last, when
+              the final collection leaves Mongo.
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-head">
+      <h2>Next up</h2>
+      <p>Ordered by what unblocks the most work, not by size. Steps 1–3 are the current front.</p>
+    </div>
+
+    <ol class="queue">
+      <li>
+        <h3>Roll the auth flags out to tenants</h3>
+        <p>
+          <code>postgresUsers</code>, <code>postgresUsergroups</code>,
+          <code>postgresCaptchas</code> and <code>postgresPasswordRecoveries</code> are all built
+          and default to off. Turning them on per tenant is what turns finished code into a finished
+          migration.
+        </p>
+        <p class="why">
+          Blocker: user groups still has no backfill config (item 2), and the two user flags must
+          flip together.
+        </p>
+      </li>
+      <li>
+        <h3>Add the user-groups backfill config</h3>
+        <p>
+          Every other migrated collection has a <code>MigrateCollectionToPostgres</code> config;
+          user groups does not, so existing tenants' groups cannot be copied over.
+        </p>
+        <p class="why">Small, well-precedented — mirror <code>UsersMigrationConfig</code>.</p>
+      </li>
+      <li>
+        <h3>Enforce the users / user-groups flag pairing</h3>
+        <p>
+          <code>UsersQueryServiceFactory</code> already requires both flags before it returns the
+          Postgres implementation, but nothing stops a tenant from being configured with only one.
+          Today the constraint is documentation only.
+        </p>
+        <p class="why">Cheap guard that prevents a confusing half-migrated tenant.</p>
+      </li>
+      <li>
+        <h3>Build <code>PostgresEntitiesDataSource</code></h3>
+        <p>
+          The entities table, RLS policies and backfill config exist, but only a read-side
+          unrestricted query is wired. This is the largest remaining piece of the Postgres migration
+          and the gate for suggestions, CSV import, relationships and sync.
+        </p>
+        <p class="why">
+          Expect the same shape as users: DAO + mapper + data source + consistency suite.
+        </p>
+      </li>
+      <li>
+        <h3>Move the entity access policy to Postgres</h3>
+        <p>
+          The permission RLS infrastructure is already in the schema; the data source is not. Doing
+          this alongside entities keeps permission checks on one backend.
+        </p>
+      </li>
+      <li>
+        <h3>Retire the legacy user-groups consumers</h3>
+        <p>
+          <code>collaborators.ts</code>, <code>entitiesPermissions.ts</code>,
+          <code>search.js</code>, <code>activitylog/helpers.js</code>,
+          <code>userGroupsMembers.ts</code> and <code>ServerUserGroupsService.ts</code> still call
+          the deprecated V1 module, so it cannot be deleted and can drift from the V2 path.
+        </p>
+      </li>
+      <li>
+        <h3>Close the remaining core bridges</h3>
+        <p>
+          Thesauri routes still run through <code>core/v1_layer</code>, and files keeps storage, OCR
+          and export in V1. Both are finishing work on areas counted as migrated.
+        </p>
+      </li>
+      <li>
+        <h3>Consolidate the <code>*.v2</code> generation into core</h3>
+        <p>
+          Pages, i18n, relationships, CSV and search are layered but sit outside the core and its
+          conventions (ExecutionContext, factories, use cases). Until they move, they cannot follow
+          the Postgres pattern.
+        </p>
+      </li>
+    </ol>
+  </section>
+
+  <section>
+    <div class="section-head">
+      <h2>Watch-outs</h2>
+      <p>Known risks carried in the current state, not bugs to be filed.</p>
+    </div>
+    <div class="cards">
+      <article class="card">
+        <span class="tag">Flag skew</span>
+        <h3>Independent flags, coupled data</h3>
+        <p>
+          Users and user groups are joined in a single read. Flipping one flag without the other
+          silently falls back to Mongo for that read path.
+        </p>
+      </article>
+      <article class="card">
+        <span class="tag">Three generations</span>
+        <h3>Entities lives in three places</h3>
+        <p>
+          <code>app/api/entities</code>, <code>entities.v2</code> and <code>core</code> all serve
+          entity routes today. Any entity work has to account for all three.
+        </p>
+      </article>
+      <article class="card">
+        <span class="tag">Uneven parity</span>
+        <h3>Only half the areas have a consistency suite</h3>
+        <p>
+          Files, user groups and captcha run the same assertions against both backends, and have
+          already caught real divergences. Users, templates, thesauri, relationship types and
+          password recoveries shipped without one — users has a spec per backend instead, which
+          cannot catch the two drifting apart.
+        </p>
+      </article>
+      <article class="card">
+        <span class="tag">No TTL</span>
+        <h3>Postgres has no TTL indexes</h3>
+        <p>
+          Anything relying on Mongo TTL expiry needs a scheduled cleanup job instead — captchas and
+          password recoveries set the pattern.
+        </p>
+      </article>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-head">
+      <h2>Updating this page</h2>
+    </div>
+    <div class="howto">
+      <p class="run">yarn migration-status</p>
+      <ul>
+        <li>
+          <b>The script owns the Postgres statuses; people own the prose.</b>
+          <code>scripts/migrationStatus.mjs</code> derives each area's state from the tree — schema
+          migration, Postgres data source, tenant flag defined and wired into a factory, backfill
+          config unless the data is ephemeral — and exits non-zero when the page disagrees with it.
+          Run it before trusting this page.
+        </li>
+        <li>
+          It also catches new work the page has never heard of: an unclaimed
+          <code>Postgres*DataSource</code>, a new <code>postgres*</code> flag, or a new backfill
+          config all fail the check until an area is added to the registry and a row is added here.
+        </li>
+        <li>
+          Status lives in the row attributes. Each <code>&lt;tr&gt;</code> carries
+          <code>data-area</code>, <code>data-v2</code> and <code>data-db</code>; meters and filters
+          compute themselves from those, so no count is ever edited by hand. Change the pill class,
+          pill text and note to match whenever you change an attribute.
+        </li>
+        <li>
+          The V2 column is judgement, not signal — no script can tell a finished module from one
+          that still leans on <code>v1_layer</code>. Re-read the code for the areas you touch.
+        </li>
+        <li>
+          Update the stamp under the title (commit, branch, review date) whenever you re-verify. The
+          script warns when migration paths have moved since the stamped commit.
+        </li>
+        <li>
+          In Claude Code, <code>/migration-status</code> runs the whole loop: verify, reconcile,
+          re-stamp, re-verify.
+        </li>
+        <li>
+          Deeper detail belongs in <code>plans/</code> and <code>issues/</code>; keep this page to
+          one screenful of state per area.
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <footer>
+    <p>
+      Derived by reading the tree at f27be07ca7: <code>app/api/core</code>,
+      <code>app/api/*.v2</code>, the legacy <code>app/api</code> modules,
+      <code>postgresql/schema_migrations</code>, <code>postgresql/migrations/configs</code>, the
+      factories, and the feature flags in <code>tenantsModel.ts</code> / <code>config.ts</code>.
+    </p>
+    <p>
+      Background: <code>issues/mongo-to-postgres-auth-migration-assessment.md</code> and the plan
+      files under <code>plans/</code>.
+    </p>
+  </footer>
+</div>
+
+<script>
+  (function () {
+    var rows = Array.prototype.slice.call(document.querySelectorAll('#matrix tbody tr[data-v2]'));
+
+    function tally(key) {
+      var counts = { done: 0, partial: 0, todo: 0, na: 0 };
+      rows.forEach(function (row) {
+        var value = row.getAttribute('data-' + key);
+        if (counts[value] !== undefined) counts[value] += 1;
+      });
+      return counts;
+    }
+
+    function render(key) {
+      var counts = tally(key);
+      var total = counts.done + counts.partial + counts.todo;
+      var score = total ? (counts.done + counts.partial * 0.5) / total : 0;
+
+      var bar = document.querySelector('[data-bar="' + key + '"]');
+      bar.querySelector('.seg-done').style.flex = counts.done;
+      bar.querySelector('.seg-partial').style.flex = counts.partial;
+      bar.querySelector('.seg-todo').style.flex = counts.todo;
+      bar.setAttribute('role', 'img');
+      bar.setAttribute(
+        'aria-label',
+        counts.done + ' done, ' + counts.partial + ' partial, ' + counts.todo + ' not started'
+      );
+
+      document.querySelector('[data-pct="' + key + '"]').textContent =
+        Math.round(score * 100) + '%';
+
+      document.querySelector('[data-tally="' + key + '"]').innerHTML =
+        '<span><i class="dot done"></i>' +
+        counts.done +
+        ' done</span>' +
+        '<span><i class="dot partial"></i>' +
+        counts.partial +
+        ' partial</span>' +
+        '<span><i class="dot todo"></i>' +
+        counts.todo +
+        ' not started</span>' +
+        (counts.na ? '<span>' + counts.na + ' n/a</span>' : '');
+    }
+
+    render('v2');
+    render('db');
+
+    var matches = {
+      all: function () {
+        return true;
+      },
+      active: function (row) {
+        return (
+          row.getAttribute('data-v2') === 'partial' || row.getAttribute('data-db') === 'partial'
+        );
+      },
+      'db-todo': function (row) {
+        return row.getAttribute('data-db') === 'todo';
+      },
+      'v2-todo': function (row) {
+        return row.getAttribute('data-v2') === 'todo';
+      },
+    };
+
+    var chips = Array.prototype.slice.call(document.querySelectorAll('.chip'));
+
+    chips.forEach(function (chip) {
+      chip.addEventListener('click', function () {
+        var filter = chip.getAttribute('data-filter');
+        chips.forEach(function (other) {
+          other.setAttribute('aria-pressed', String(other === chip));
+        });
+        rows.forEach(function (row) {
+          row.hidden = !matches[filter](row);
+        });
+        document.querySelectorAll('#matrix tr.group').forEach(function (group) {
+          var next = group.nextElementSibling;
+          var visible = false;
+          while (next && !next.classList.contains('group')) {
+            if (!next.hidden) visible = true;
+            next = next.nextElementSibling;
+          }
+          group.hidden = !visible;
+        });
+      });
+    });
+  })();
+</script>

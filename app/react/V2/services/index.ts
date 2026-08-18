@@ -46,7 +46,8 @@ export type { EntitiesService, EntitySaveInput } from './contracts/EntitiesServi
 export type { ThesaurusService, ThesaurusInput } from './contracts/ThesaurusService.js';
 export type { Thesaurus } from '#shared/contracts/Thesaurus.js';
 export type { UsersService, UserInput } from './contracts/UsersService.js';
-export type { User, UserGroup } from '#shared/contracts/Users.js';
+export type { User } from '#shared/contracts/Users.js';
+export type { UserGroup } from '#shared/contracts/UserGroups.js';
 export type { UserGroupsService, UserGroupInput } from './contracts/UserGroupsService.js';
 export type {
   RelationshipTypesService,

@@ -9,7 +9,7 @@ import { ThesauriService } from '#api/core/application/ThesauriService.js';
 import { ThesaurusTranslationService } from '#api/core/application/thesaurusTranslationService/ThesaurusTranslationService.js';
 import { DispatcherAdapter } from '#api/core/infrastructure/jobs/DispatcherAdapter.js';
 import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
-import { TranslationsServiceFactory } from '#api/core/infrastructure/factories/TranslationsServiceFactory.js';
+import { TranslationsDataSourceFactory } from '#api/core/infrastructure/factories/TranslationsDataSourceFactory.js';
 import { tenants } from '#api/tenants/tenantContext.js';
 import { CsvCreateThesauriValuesJob } from '../../application/jobs/CsvCreateThesauriValuesJob.js';
 import { CsvImportsDataSource } from '../../application/contracts/CsvImportsDataSource.js';
@@ -57,7 +57,7 @@ class CsvCreateThesauriValuesJobFactory {
     const settingsDS = SettingsDataSourceFactory.default({
       transactionManager: getMongoTransactionManager(),
     });
-    const translationsService = TranslationsServiceFactory.default({
+    const translationsDS = TranslationsDataSourceFactory.default({
       transactionManager: getMongoTransactionManager(),
     });
     const thesauriService = new ThesauriService({
@@ -65,7 +65,7 @@ class CsvCreateThesauriValuesJobFactory {
       thesauriDS,
       thesaurusTranslationService: new ThesaurusTranslationService({
         settingsDS,
-        translationsService,
+        translationsDS,
       }),
     });
 

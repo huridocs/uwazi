@@ -22,6 +22,13 @@ describe('collaborators', () => {
   });
 
   describe('search', () => {
+    // collaborators.search resolves its users query service through
+    // UsersQueryServiceFactory, which reads the tenant and transaction manager off the
+    // ExecutionContext. In production the route middleware establishes it; here the spec has
+    // to.
+    const search = async (term: string) =>
+      testingEnvironment.runWithContext(async () => collaborators.search(term));
+
     function assertPublicOption(results: any[]) {
       expect(results).toEqual(expect.arrayContaining([PUBLIC_PERMISSION]));
     }
@@ -36,19 +43,19 @@ describe('collaborators', () => {
       }
 
       it('should return exact insensitive case matched by the username', async () => {
-        const availableCollaborators = await collaborators.search('userB');
+        const availableCollaborators = await search('userB');
         assertUserAsCollaborator(availableCollaborators[0], userB);
         assertPublicOption(availableCollaborators);
       });
 
       it('should return exact matched by the email of the user', async () => {
-        const availableCollaborators = await collaborators.search('usera@domain.org');
+        const availableCollaborators = await search('usera@domain.org');
         assertUserAsCollaborator(availableCollaborators[0], userA);
         assertPublicOption(availableCollaborators);
       });
 
       it('should return exact matched when username contains regex metacharacters', async () => {
-        const availableCollaborators = await collaborators.search('user+collab');
+        const availableCollaborators = await search('user+collab');
         const matchedUser = availableCollaborators.find(
           collaborator => collaborator.refId === userPlusCollab._id.toString()
         );
@@ -58,7 +65,7 @@ describe('collaborators', () => {
 
     describe('not matched user', () => {
       it('should return all groups that start with the searchTerm', async () => {
-        const availableCollaborators = await collaborators.search('user1');
+        const availableCollaborators = await search('user1');
         expect(availableCollaborators.length).toBe(2);
         expect(availableCollaborators[0]).toEqual({
           refId: groupB._id.toString(),
@@ -69,7 +76,7 @@ describe('collaborators', () => {
       });
 
       it('should return all existing groups', async () => {
-        const availableCollaborators = (await collaborators.search('User')).sort((a, b) =>
+        const availableCollaborators = (await search('User')).sort((a, b) =>
           a.refId.toString().localeCompare(b.refId.toString())
         );
 
@@ -95,7 +102,7 @@ describe('collaborators', () => {
         username: 'collab',
       });
 
-      expect(await collaborators.search('User')).not.toEqual(
+      expect(await search('User')).not.toEqual(
         expect.arrayContaining([
           expect.objectContaining({
             type: PermissionType.PUBLIC,

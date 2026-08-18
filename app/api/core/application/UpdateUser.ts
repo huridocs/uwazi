@@ -1,30 +1,37 @@
+/* eslint-disable max-statements */
 import { z } from 'zod';
 import { PUBLIC_USER_ID, User, UserRole } from '../domain/user/User.js';
 import { EncryptedPassword } from '../domain/user/EncryptedPassword.js';
 import { AbstractUseCase } from '../libs/UseCase.js';
 import { UsersDataSource } from './contracts/UsersDataSource.js';
-import { UsergroupsDataSource } from './contracts/UsergroupsDataSource.js';
+import { UserGroupsDataSource } from './contracts/UserGroupsDataSource.js';
 import { UpdateUserError } from '../domain/user/errors.js';
 import { UnauthorizedError } from '#api/authorization.v2/errors/UnauthorizedError.js';
 
 const UpdateUserInputSchema = z.object({
   _id: z.string(),
-  username: z.string().trim(),
+  username: z
+    .string()
+    .trim()
+    .min(1)
+    .refine(username => !username.includes(' '), 'Usernames can not contain spaces.'),
   role: z.nativeEnum(UserRole),
   email: z.string().email(),
-  groups: z.array(z.object({ _id: z.string(), name: z.string() })).optional(),
-  password: z.string().optional(),
+  // optional, not `.default([])`: an update that does not mention groups must leave
+  // memberships untouched, while `[]` clears them.
+  assignedGroupIds: z.array(z.string()).optional(),
+  password: z.string().min(1).optional(),
 });
 
 type Input = z.infer<typeof UpdateUserInputSchema>;
 
 type Output = User;
 
-type Deps = { usersDS: UsersDataSource; usergroupsDS: UsergroupsDataSource };
+type Deps = { usersDS: UsersDataSource; usergroupsDS: UserGroupsDataSource };
 
 class UpdateUser extends AbstractUseCase<Input, Output, Deps> {
   async execute(input: Input): Promise<Output> {
-    const { password, ...profile } = input;
+    const { password, assignedGroupIds, ...profile } = input;
 
     if (profile._id === PUBLIC_USER_ID.toString()) {
       throw new UpdateUserError('Cannot modify system user');
@@ -34,8 +41,9 @@ class UpdateUser extends AbstractUseCase<Input, Output, Deps> {
 
     const actor = this.getActor();
     const isEditingSelf = profile._id === actor._id;
+    const actorIsAdmin = actor.role === 'admin';
 
-    if (!isEditingSelf && actor.role !== 'admin') {
+    if (!isEditingSelf && !actorIsAdmin) {
       throw new UnauthorizedError();
     }
 
@@ -60,9 +68,13 @@ class UpdateUser extends AbstractUseCase<Input, Output, Deps> {
       user.setPassword(await EncryptedPassword.create(password));
     }
 
+    const groupsToAssign = actorIsAdmin ? assignedGroupIds : undefined;
+
     await this.transactionManager.run(async () => {
       await this.deps.usersDS.update(user);
-      await this.deps.usergroupsDS.updateUserGroups(user);
+      if (groupsToAssign) {
+        await this.deps.usergroupsDS.assignGroupsToUser(user._id, groupsToAssign);
+      }
     });
 
     return user;
