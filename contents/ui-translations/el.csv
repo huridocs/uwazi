@@ -1013,6 +1013,9 @@ Relationship type name already exists,Το όνομα τύπου σχέσης υ
 Relationship types,Τύποι σχέσεων
 relationships,σχέσεις
 Relationships,Σχέσεις
+relationships blank state message,"To add references select **Edit**, then **Create relationship**."
+relationships blank state with document,"To add references you can start by selecting text in the document.
+ or select **Edit**, then **Create relationship**."
 Relationships saved,Οι σχέσεις αποθηκεύτηκαν
 relationships? This action cannot be undone.,relationships? This action cannot be undone.
 RelationType saved,Ο τύπος σχέσης αποθηκεύτηκε

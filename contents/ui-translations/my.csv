@@ -1012,6 +1012,9 @@ Relationship type name already exists,Relationship type name already exists
 Relationship types,ဆက်နွှယ်မှု အမျိုးအစားများ
 relationships,ဆက်နွှယ်မှုများ
 Relationships,ဆက်နွှယ်မှုများ
+relationships blank state message,"To add references select **Edit**, then **Create relationship**."
+relationships blank state with document,"To add references you can start by selecting text in the document.
+ or select **Edit**, then **Create relationship**."
 Relationships saved,Relationships saved
 relationships? This action cannot be undone.,relationships? This action cannot be undone.
 RelationType saved,RelationType သိမ်းဆည်းပြီး

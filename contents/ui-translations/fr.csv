@@ -1011,6 +1011,9 @@ Relationship type name already exists,Relationship type name already exists
 Relationship types,Types de relations
 relationships,Relations
 Relationships,Relations
+relationships blank state message,"To add references select **Edit**, then **Create relationship**."
+relationships blank state with document,"To add references you can start by selecting text in the document.
+ or select **Edit**, then **Create relationship**."
 Relationships saved,Relationships saved
 relationships? This action cannot be undone.,relationships? This action cannot be undone.
 RelationType saved,Type de relation sauvegardé
