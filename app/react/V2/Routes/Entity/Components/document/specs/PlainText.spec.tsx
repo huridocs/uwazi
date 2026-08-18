@@ -58,7 +58,14 @@ describe('PlainText', () => {
     expect(getByTestId('entity-plaintext')).toBeInTheDocument();
     expect(getByRole('region', { name: 'Page 1' })).toHaveAttribute('id', 'page1');
     expect(getByRole('region', { name: 'Page 1' })).toHaveAttribute('data-plaintext-page', '1');
+    expect(getByRole('region', { name: 'Page 1' })).toHaveClass(
+      'rounded-md',
+      'border',
+      'border-border-soft',
+      'bg-paper'
+    );
     expect(getByRole('region', { name: 'Page 2' })).toHaveAttribute('id', 'page2');
+    expect(getByRole('region', { name: 'Page 2' })).toHaveClass('border-border-soft', 'bg-paper');
     expect(scrollIntoView).not.toHaveBeenCalled();
   });
 

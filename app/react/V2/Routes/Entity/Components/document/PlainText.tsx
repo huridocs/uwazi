@@ -45,7 +45,7 @@ export const PlainText = ({ className = '', dir, page, text }: PlainTextProps) =
             id={`page${pageNumber}`}
             data-plaintext-page={pageNumber}
             aria-label={`Page ${pageNumber}`}
-            className="entity-plaintext-mono whitespace-pre-line"
+            className="entity-plaintext-mono whitespace-pre-line rounded-md border border-border-soft bg-paper p-4"
           >
             {pageText}
           </section>
