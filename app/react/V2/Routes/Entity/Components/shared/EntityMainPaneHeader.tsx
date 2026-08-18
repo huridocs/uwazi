@@ -1,5 +1,6 @@
 import React from 'react';
 import { TemplateLabel } from '#V2/Components/Metadata/Components/index.js';
+import { EntityIcon } from '#V2/Components/CustomIcons/EntityIcon.js';
 import { Entity } from '#V2/api/entities/types.js';
 import { DocumentViewModeSelect } from '#V2/Routes/Entity/Components/document/index.js';
 import { useEntityLanguage } from '../context/EntityLanguageContext.js';
@@ -25,7 +26,10 @@ const EntityMainPaneHeader = ({
           no-translate="true"
           title={entity.title}
         >
-          {entity.title}
+          <span className="inline-flex min-w-0 items-center gap-1.5">
+            <EntityIcon data={entity.icon} />
+            <span className="min-w-0">{entity.title}</span>
+          </span>
         </h1>
       </div>
       {showDocumentViewMode ? (

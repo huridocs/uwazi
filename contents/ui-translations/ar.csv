@@ -1,8 +1,11 @@
 Key,Arabic
+"""Costa Rica""","""Costa Rica"""
+"""the status""~5","""the status""~5"
 *please keep this key secret and don't share it.,*please keep this key secret and don't share it.
 + Add data source,+ Add data source
 + Add filter,+ Add filter
 + click to select multiple cards.,+ click to select multiple cards.
+198?,198?
 2FA,2FA
 2FA Enabled,2FA Enabled
 A default template cannot be deleted.,A default template cannot be deleted.
@@ -104,6 +107,7 @@ Analytics,Analytics
 Analytics description,"If you want to track analytics related to your collection visits, Uwazi supports both Google Analytics and Matomo."
 AND OR NOT,AND OR NOT
 Any entity,Any entity
+any single character,any single character
 Anyone can see this entity,Anyone can see this entity
 Appearance,Appearance
 Apply,Apply
@@ -204,6 +208,7 @@ Collection,المجموعة
 Collection Name,Collection Name
 Colors,Colors
 Colors come from the server data layer. Preview shows assigned bucket colors when available.,Colors come from the server data layer. Preview shows assigned bucket colors when available.
+combine or exclude terms,combine or exclude terms
 Common sources,Common sources
 Completed,Completed
 Completed with errors,Completed with errors
@@ -604,6 +609,7 @@ it has been logged with request id #,it has been logged with request id #
 Item,Item
 Items:,العناصر:
 Javascript,Javascript
+juris*,juris*
 key,Arabic
 Label,التسمية
 "Label date ""From""",من:
@@ -694,6 +700,7 @@ Match,Match
 match,match
 match verbatim,match verbatim
 matches,matches
+"matches jurisdiction, jurists, jurisprudence","matches jurisdiction, jurists, jurisprudence"
 Matches show the passage and the page they are on.,Matches show the passage and the page they are on.
 Matching,Matching
 matching,matching
@@ -861,7 +868,6 @@ Or paste a URL,Or paste a URL
 Order,ترتيب
 Other,آخر
 other,آخر
-Other files,Other files
 Other users will be affected by this action!,Other users will be affected by this action!
 Others,Others
 Outgoing,Outgoing
@@ -1005,6 +1011,9 @@ Relationship type name already exists,Relationship type name already exists
 Relationship types,أنواع العلاقات
 relationships,العلاقات
 Relationships,العلاقات
+relationships blank state message,"To add references select **Edit**, then **Create relationship**."
+relationships blank state with document,"To add references you can start by selecting text in the document
+ or select **Edit**, then **Create relationship**."
 Relationships saved,Relationships saved
 relationships? This action cannot be undone.,relationships? This action cannot be undone.
 RelationType saved,تم حفظ نوع العلاقة
@@ -1012,7 +1021,6 @@ Release message,Release message
 remaining files,remaining files
 Remote Server Unreachable,Remote Server Unreachable
 Remove,إزالة
-Remove file,Remove file
 Remove from connection,Remove from connection
 Remove from training set,Remove from training set
 remove icon,إزالة الأيقونة
@@ -1242,6 +1250,8 @@ The request could not be processed.,The request could not be processed.
 The source of this template is a sync.,The source of this template is a sync.
 The token does not validate against the secret key,The token does not validate against the secret key
 The token does not validate against the secret key!,The token does not validate against the secret key!
+"the words together, in that order","the words together, in that order"
+the words within 5 of each other,the words within 5 of each other
 Theme and branding,Theme and branding
 Theme colors,Theme colors
 Theme colors imported,Theme colors imported

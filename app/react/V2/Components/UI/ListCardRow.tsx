@@ -13,7 +13,7 @@ const baseClasses =
 
 const ListCardRow = forwardRef<HTMLDivElement, ListCardRowProps>(
   ({ selected, onClick, className = '', children }, ref) => {
-    const composed = `${baseClasses} ${selected ? 'bg-parchment' : ''} ${className}`;
+    const composed = `${baseClasses} ${selected ? 'bg-parchment [&_.text-ink-tertiary]:text-ink-secondary' : ''} ${className}`;
 
     return (
       <div

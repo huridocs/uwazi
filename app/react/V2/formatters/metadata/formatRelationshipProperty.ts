@@ -28,7 +28,9 @@ const templateIdBySharedId = (
   return map;
 };
 
-const readRelationshipIcon = (icon: unknown): { _id: string; label?: string } | undefined => {
+const readRelationshipIcon = (
+  icon: unknown
+): { _id: string; label?: string; type?: string } | undefined => {
   if (!icon || typeof icon !== 'object') {
     return undefined;
   }
@@ -40,7 +42,12 @@ const readRelationshipIcon = (icon: unknown): { _id: string; label?: string } | 
     return undefined;
   }
   const label = 'label' in icon ? readOptionalString(icon.label) : undefined;
-  return label ? { _id: id, label } : { _id: id };
+  const type = 'type' in icon ? readOptionalString(icon.type) : undefined;
+  return {
+    _id: id,
+    ...(label !== undefined && { label }),
+    ...(type !== undefined && { type }),
+  };
 };
 
 const templateIdFromType = (type: string | undefined): string | undefined =>

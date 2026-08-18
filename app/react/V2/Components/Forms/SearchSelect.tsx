@@ -1,6 +1,6 @@
 /* eslint-disable max-lines */
 import React, { useEffect, useId, useMemo, useRef, useState } from 'react';
-import { MagnifyingGlassIcon, XMarkIcon } from '@heroicons/react/20/solid';
+import { ChevronDownIcon, ChevronUpIcon, XMarkIcon } from '@heroicons/react/20/solid';
 import { Translate } from '#app/I18N/index.js';
 import { Label } from './Label.js';
 
@@ -9,7 +9,7 @@ type FieldState = { disabled?: boolean; hasError?: boolean };
 const cx = (...classes: Array<string | false | undefined>) => classes.filter(Boolean).join(' ');
 
 const shellBase =
-  'flex h-8 w-full items-center rounded-lg border border-border bg-paper focus-within:outline-none focus-within:ring-2 focus-within:ring-carbon/20';
+  'flex w-full items-center rounded-lg border border-border bg-paper focus-within:outline-none focus-within:ring-2 focus-within:ring-carbon/20';
 
 const shellClass = (state: FieldState) =>
   cx(
@@ -18,28 +18,17 @@ const shellClass = (state: FieldState) =>
     state.disabled && 'cursor-not-allowed bg-warm'
   );
 
-const inputBase =
-  'w-full rounded-lg border border-border bg-paper px-3 py-2 text-sm text-ink placeholder:text-ink-muted focus:border-carbon/40 focus:outline-none focus:ring-2 focus:ring-carbon/20';
-
-const triggerClass = (state: FieldState) =>
-  cx(
-    inputBase,
-    state.hasError && 'border-emphasis bg-seal-tint text-seal',
-    state.disabled && 'cursor-not-allowed bg-warm text-ink-muted opacity-50',
-    'w-full text-left text-ink-muted'
-  );
-
 const compactSelectInputClassName =
-  'h-8 min-h-8 w-full min-w-0 flex-1 border-0 bg-transparent pl-3 pr-8 text-xs font-medium text-ink placeholder:text-ink-muted focus:outline-none disabled:cursor-not-allowed';
+  'w-full min-w-0 flex-1 border-0 bg-transparent px-3 py-2 text-sm font-normal text-ink placeholder:text-sm placeholder:font-normal placeholder:text-ink-muted focus:outline-none disabled:cursor-not-allowed';
 
 const compactSelectValueClassName =
-  'flex h-8 min-h-8 min-w-0 flex-1 items-center gap-1.5 truncate px-3 text-left text-xs font-medium text-ink disabled:cursor-not-allowed';
+  'relative flex min-w-0 flex-1 items-center gap-1.5 px-3 py-2 text-left text-sm font-normal text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-carbon/20 disabled:cursor-not-allowed';
 
 const compactSelectDropdownClassName =
-  'absolute z-20 mt-1 max-h-60 w-full overflow-y-auto rounded-lg border border-border bg-paper shadow-sm';
+  'mt-1.5 max-h-60 w-full overflow-y-auto rounded-lg border border-border bg-paper shadow-sm';
 
 const compactSelectOptionClassName =
-  'w-full px-3 py-2 text-left text-sm text-ink transition-colors hover:bg-warm';
+  'w-full px-3 py-2 text-left text-sm font-normal text-ink transition-colors hover:bg-warm';
 
 const compactSelectOptionSelectedClassName = 'bg-carbon-tint hover:bg-carbon-tint';
 
@@ -95,6 +84,18 @@ const filterOptions = (options: SearchSelectOption[], search: string) => {
   return options.filter(option => normalizeSearch(option.searchLabel).includes(normalizedSearch));
 };
 
+const CaretIcon = ({ open }: { open: boolean }) => {
+  const Icon = open ? ChevronUpIcon : ChevronDownIcon;
+  return (
+    <span
+      data-testid="search-select-caret"
+      className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-ink-muted"
+    >
+      <Icon className="h-4 w-4" aria-hidden />
+    </span>
+  );
+};
+
 const groupOptions = (options: SearchSelectOption[]) => {
   const groups = new Map<string, SearchSelectOption[]>();
 
@@ -127,6 +128,7 @@ const SearchSelect = ({
 }: SearchSelectProps) => {
   const generatedId = useId();
   const fieldId = id ?? generatedId;
+  const listboxId = `${fieldId}-listbox`;
   const containerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const [isOpen, setIsOpen] = useState(false);
@@ -158,6 +160,11 @@ const SearchSelect = ({
     return () => document.removeEventListener('mousedown', handlePointerDown);
   }, []);
 
+  const closeSearch = () => {
+    setIsOpen(false);
+    setSearchTerm('');
+  };
+
   const openSearch = () => {
     if (disabled) {
       return;
@@ -168,17 +175,28 @@ const SearchSelect = ({
     window.requestAnimationFrame(() => inputRef.current?.focus());
   };
 
+  const handleKeyDown = (event: React.KeyboardEvent) => {
+    if (event.key === 'Escape' && isOpen) {
+      event.preventDefault();
+      closeSearch();
+      return;
+    }
+
+    if (event.key === 'ArrowDown' && !isOpen && !disabled) {
+      event.preventDefault();
+      openSearch();
+    }
+  };
+
   const handleSelect = (optionValue: string) => {
     onChange?.(optionValue);
-    setIsOpen(false);
-    setSearchTerm('');
+    closeSearch();
   };
 
   const handleClear = (event: React.MouseEvent) => {
     event.stopPropagation();
     onChange?.('');
-    setIsOpen(false);
-    setSearchTerm('');
+    closeSearch();
   };
 
   const renderOptionLabel = (option: SearchSelectOption) => {
@@ -197,15 +215,21 @@ const SearchSelect = ({
   const renderFieldControl = () => {
     if (showTrigger) {
       return (
-        <button
-          type="button"
-          id={fieldId}
-          disabled={disabled}
-          onClick={openSearch}
-          className={triggerClass(state)}
-        >
-          {placeholder}
-        </button>
+        <div className={cx(shellClass(state), 'relative')}>
+          <button
+            type="button"
+            id={fieldId}
+            disabled={disabled}
+            onClick={openSearch}
+            className={cx(compactSelectValueClassName, 'pr-8 text-ink-muted')}
+            aria-expanded={isOpen}
+            aria-haspopup="listbox"
+            aria-controls={listboxId}
+          >
+            <span className="min-w-0 flex-1 truncate">{placeholder}</span>
+            <CaretIcon open={false} />
+          </button>
+        </div>
       );
     }
 
@@ -218,11 +242,14 @@ const SearchSelect = ({
             disabled={disabled}
             onClick={openSearch}
             className={cx(compactSelectValueClassName, showClearButton && 'pr-8')}
+            aria-expanded={isOpen}
+            aria-haspopup="listbox"
+            aria-controls={listboxId}
           >
             {selectedOption?.prefix && (
               <span className="inline-flex shrink-0 items-center">{selectedOption.prefix}</span>
             )}
-            <span className="truncate">{selectedOption?.searchLabel}</span>
+            <span className="min-w-0 flex-1 truncate">{selectedOption?.searchLabel}</span>
           </button>
           {showClearButton && (
             <button
@@ -246,23 +273,30 @@ const SearchSelect = ({
           ref={inputRef}
           id={fieldId}
           type="text"
+          role="combobox"
           autoComplete="off"
           disabled={disabled}
           value={searchTerm}
           placeholder={placeholder}
           onFocus={openSearch}
           onChange={event => setSearchTerm(event.currentTarget.value)}
-          className={compactSelectInputClassName}
+          className={cx(compactSelectInputClassName, !hasSelection && 'pr-8')}
+          aria-autocomplete="list"
+          aria-expanded={isOpen}
+          aria-haspopup="listbox"
+          aria-controls={listboxId}
         />
-        <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-ink-muted">
-          <MagnifyingGlassIcon className="h-3.5 w-3.5" />
-        </span>
+        {!hasSelection && <CaretIcon open />}
       </div>
     );
   };
 
   return (
-    <div className={cx('relative flex flex-col gap-1.5', className)} ref={containerRef}>
+    <div
+      className={cx('flex flex-col gap-1.5', className)}
+      ref={containerRef}
+      onKeyDown={handleKeyDown}
+    >
       <Label htmlFor={fieldId} hideLabel={hideLabel} hasErrors={hasErrors}>
         {label}
       </Label>
@@ -270,43 +304,44 @@ const SearchSelect = ({
       {renderFieldControl()}
 
       {isOpen && !disabled && (
-        <ul className={compactSelectDropdownClassName} role="listbox">
+        <ul className={compactSelectDropdownClassName} role="listbox" id={listboxId}>
           {filteredOptions.length === 0 && (
-            <li className="px-3 py-2 text-xs text-ink-muted">
+            <li className="px-3 py-2 text-sm text-ink-muted" role="presentation">
               <Translate>No results found</Translate>
             </li>
           )}
 
           {groupedOptions.map(({ label: groupLabel, options: groupItems }) => (
-            <li key={groupLabel || 'default'}>
+            <li
+              key={groupLabel || 'default'}
+              role={groupLabel ? 'group' : 'presentation'}
+              aria-label={groupLabel || undefined}
+            >
               {groupLabel && (
-                <div className="px-3 pt-2 pb-1 text-xs font-semibold text-ink-muted">
+                <div className="px-3 pt-2 pb-1 text-sm font-semibold text-ink-muted" aria-hidden>
                   {groupLabel}
                 </div>
               )}
-              <ul>
-                {groupItems.map(option => {
-                  const isSelected = option.value === value;
+              {groupItems.map(option => {
+                const isSelected = option.value === value;
 
-                  return (
-                    <li key={option.value}>
-                      <button
-                        type="button"
-                        role="option"
-                        aria-selected={isSelected}
-                        className={cx(
-                          compactSelectOptionClassName,
-                          isSelected && compactSelectOptionSelectedClassName
-                        )}
-                        onMouseDown={event => event.preventDefault()}
-                        onClick={() => handleSelect(option.value)}
-                      >
-                        {renderOptionLabel(option)}
-                      </button>
-                    </li>
-                  );
-                })}
-              </ul>
+                return (
+                  <button
+                    key={option.value}
+                    type="button"
+                    role="option"
+                    aria-selected={isSelected}
+                    className={cx(
+                      compactSelectOptionClassName,
+                      isSelected && compactSelectOptionSelectedClassName
+                    )}
+                    onMouseDown={event => event.preventDefault()}
+                    onClick={() => handleSelect(option.value)}
+                  >
+                    {renderOptionLabel(option)}
+                  </button>
+                );
+              })}
             </li>
           ))}
         </ul>

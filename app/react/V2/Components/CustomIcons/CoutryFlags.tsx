@@ -7,6 +7,8 @@ const CountryList = new Map(
 
 type CountryFlagProps = { id: string };
 
+const hasCountryFlag = (id: string): boolean => CountryList.has(id);
+
 const CountryFlag = ({ id }: CountryFlagProps) => {
   const item = CountryList.get(id);
   if (!item) return null;
@@ -14,4 +16,4 @@ const CountryFlag = ({ id }: CountryFlagProps) => {
   return <span role="img" aria-label={item.label} className={`fi fi-${item.cca2.toLowerCase()}`} />;
 };
 
-export { CountryFlag };
+export { CountryFlag, hasCountryFlag };

@@ -55,7 +55,7 @@ const Relationship = ({
     label: value.title,
     templateId: value.templateId,
     authorized: value.authorized,
-    iconId: value.icon?._id,
+    icon: value.icon,
   }));
 
   const columns = inheritLabel

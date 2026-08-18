@@ -17,6 +17,7 @@ type PDFEventMap = {
   pagerendered: { pageNumber: number };
   renderpage: { pageNumber: number };
   unmountpage: { pageNumber: number };
+  prioritypage: { pageNumber: number };
 };
 
 class EventBus extends PDFJSEventBus {

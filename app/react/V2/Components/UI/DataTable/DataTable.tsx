@@ -220,7 +220,9 @@ const SortableRow = <T extends { rowId: string }>({
         ref={setNodeRef}
         // eslint-disable-next-line react/jsx-props-no-spreading
         {...rowInteractionProps}
-        className={`${ROW_BASE} ${isClickable ? 'cursor-pointer' : ''} ${isSelected ? 'bg-parchment' : 'hover:bg-warm'}`}
+        className={`${ROW_BASE} ${isClickable ? 'cursor-pointer' : ''} ${
+          isSelected ? 'bg-parchment [&_.text-ink-tertiary]:text-ink-secondary' : 'hover:bg-warm'
+        }`}
         style={{
           gridTemplateColumns,
           borderBottom: `1px solid ${BORDER_COLOR}`,

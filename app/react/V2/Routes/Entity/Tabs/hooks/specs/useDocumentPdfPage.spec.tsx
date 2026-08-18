@@ -84,4 +84,36 @@ describe('useDocumentPdfPage', () => {
 
     expect(setPdfController).toHaveBeenCalledWith(null);
   });
+
+  it('applies the latest visible page when sync unlocks after restoring a hash page', () => {
+    jest.useFakeTimers();
+    mockHashParams.set('page', '2');
+    const setPdfController = jest.fn();
+    const owned = makeControls();
+
+    const { result } = renderHook(() =>
+      useDocumentPdfPage({
+        mainDocument,
+        mainPdfController: null,
+        setPdfController,
+      })
+    );
+
+    act(() => {
+      result.current.onPdfReady(owned);
+    });
+    expect(owned.goToPage).toHaveBeenCalledWith(2);
+
+    act(() => {
+      result.current.handlePageChange(9);
+    });
+    expect(mockUpdateEntityUrl).not.toHaveBeenCalled();
+
+    act(() => {
+      jest.advanceTimersByTime(400);
+    });
+
+    expect(mockUpdateEntityUrl).toHaveBeenCalled();
+    jest.useRealTimers();
+  });
 });
