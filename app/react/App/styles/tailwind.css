@@ -5,6 +5,22 @@
 
 @layer utilities;
 
+html {
+  font-size: 100%;
+}
+
+@media (min-width: 96rem) {
+  html {
+    font-size: 112.5%;
+  }
+}
+
+@media (min-width: 160rem) {
+  html {
+    font-size: 125%;
+  }
+}
+
 .tw-content {
   color-scheme: light;
   --tw-shadow-color: rgba(15, 23, 42, 0.12);
@@ -26,7 +42,7 @@
 }
 
 .tw-content[data-path='settings'] {
-  font-size: 14px;
+  font-size: 0.875rem; /* 14px */
   -webkit-font-smoothing: auto;
   -moz-osx-font-smoothing: auto;
 }
@@ -195,16 +211,17 @@
   --breakpoint-lg: 64rem;
   --breakpoint-xl: 80rem;
   --breakpoint-2xl: 96rem;
+  --breakpoint-3xl: 160rem;
 
-  --text-pico: 8px;
+  --text-pico: 0.5rem; /* 8px */
   --text-pico--line-height: 1rem;
-  --text-tiny: 9px;
+  --text-tiny: 0.5625rem; /* 9px */
   --text-tiny--line-height: 1rem;
-  --text-nano: 10px;
+  --text-nano: 0.625rem; /* 10px */
   --text-nano--line-height: 1rem;
-  --text-micro: 11px;
+  --text-micro: 0.6875rem; /* 11px */
   --text-micro--line-height: 1rem;
-  --text-tab: 13px;
+  --text-tab: 0.8125rem; /* 13px */
   --text-tab--line-height: 1.25rem;
 
   --spacing-nano: 10px;
