@@ -1,7 +1,4 @@
 /* eslint-disable class-methods-use-this */
-import { UserNotFound } from '#api/core/domain/user/errors.js';
-import { Result } from '#api/core/libs/Result.js';
-import type { ResultType } from '#api/core/libs/Result.js';
 import { PostgresDataSource, PostgresDataSourceDeps } from '../common/PostgresDataSource.js';
 import { PostgresTable } from '../common/PostgresTable.js';
 import type { UserRow } from './PostgresUserRow.js';
@@ -18,23 +15,8 @@ type Condition = Record<string, unknown>;
 
 type UserWithGroupsRow = UserRow & { groups: { _id: string; name: string }[] };
 
-/** Every column the users table exposes, used to reject unknown keys before they reach raw SQL. */
 const KNOWN_COLUMNS = new Set<string>(Object.values(COLUMNS_BY_GROUP).flat());
 
-/**
- * A private building block, not an interface (D4). Only UsersDataSource, UsersDirectory and
- * UsersQueryService may hold one; an eslint fence enforces that.
- *
- * Two invariants make this safe to use without reading it:
- *   - every read applies the same guards, via `scoped()` (D5)
- *   - every read selects the same named field groups, defaulting to `identity` (D6)
- *
- * It returns raw nullable rows and never a `Result` — absence is not a domain error down
- * here, and wrapping it is the adapter's job.
- *
- * Its method set deliberately does not match MongoUsersDAO's. Each backend speaks its own
- * query language; parity is proven at the contract level, not here.
- */
 class PostgresUsersDAO extends PostgresDataSource<UserRow> {
   constructor(deps: PostgresDataSourceDeps) {
     super('users', deps);
@@ -68,11 +50,6 @@ class PostgresUsersDAO extends PostgresDataSource<UserRow> {
     return this.read(condition, options).all();
   }
 
-  /**
-   * `_id IN (...)`, which the equality-only Condition object cannot express, so it is its
-   * own method here. Mongo says `findMany({ _id: { $in: ids } })` instead; D4 permits the
-   * asymmetry rather than forcing a shared query vocabulary.
-   */
   async findManyByIds(ids: string[], options: ReadOptions = {}): Promise<UserRow[]> {
     if (!ids.length) {
       return [];
@@ -83,15 +60,7 @@ class PostgresUsersDAO extends PostgresDataSource<UserRow> {
       .all();
   }
 
-  /**
-   * Case-insensitive exact match on username OR email. Stays a DAO method because
-   * `lower(x) = lower(?)` across two columns is not expressible in the equality-only
-   * Condition object. Mongo has no counterpart — it builds an equivalent `Filter` in the
-   * adapter instead, and D4 permits that asymmetry.
-   */
   async matchEmailOrUsername(term: string, options: ReadOptions = {}): Promise<UserRow[]> {
-    // The OR must stay parenthesised: knex does not wrap whereRaw, so without the parens
-    // `AND` would bind tighter and the guards would only apply to the email branch.
     const matched = this.table.whereRaw('(lower(username) = lower(?) OR lower(email) = lower(?))', [
       term,
       term,
@@ -100,25 +69,6 @@ class PostgresUsersDAO extends PostgresDataSource<UserRow> {
     return this.scoped(matched, options.scope).select(resolveColumns(options.fields)).all();
   }
 
-  /**
-   * The users<->usergroups join, server-side (D7). Raw SQL because PostgresTable.join only
-   * does column equality and cannot express the membership relation.
-   *
-   * Shape matters here. The obvious form — a LATERAL subquery per user doing
-   * `ug."members" @> to_jsonb(u."_id")` — is O(users x groups), and no index rescues it:
-   * RLS's `tenant_id = current_setting(...)` predicate is unestimable, so the planner
-   * guesses a handful of rows, takes the primary key, and filters the whole tenant's groups
-   * once per user. Measured at 300 users and 5000 groups that is ~500ms, which is *slower*
-   * than the JS-side join it replaced.
-   *
-   * Unnesting members once and aggregating by member id scans usergroups a single time and
-   * hash-joins to users — O(users + groups), ~25ms on the same data, with identical results.
-   *
-   * RLS scopes both tables: `raw()` runs inside `withConnection`, which sets
-   * `app.current_tenant`, and both `users` and `usergroups` carry a `tenant_isolation`
-   * policy. The `tenant_id` correlation in the join is redundant under RLS and kept as
-   * defence in depth — a cross-tenant leak here would be severe, and it costs nothing.
-   */
   async findWithGroups(
     condition: Condition = {},
     options: ReadOptions = {}
@@ -145,10 +95,6 @@ class PostgresUsersDAO extends PostgresDataSource<UserRow> {
         WHERE ${scope.sql} AND ${filter.sql}`,
       [...scope.bindings, ...filter.bindings]
     );
-
-    // `raw()` bypasses PostgresTable.cleanRow, which strips nulls for builder reads. Without
-    // this, findWithGroups would return `deletedAt: null` where findOne/findMany omit the key
-    // — two shapes for the same row out of one DAO, and a false diff against the Mongo side.
     return result.rows.map(row => PostgresUsersDAO.withoutNulls(row));
   }
 
@@ -158,11 +104,6 @@ class PostgresUsersDAO extends PostgresDataSource<UserRow> {
     ) as UserWithGroupsRow;
   }
 
-  /**
-   * Renders the equality-only Condition into SQL. Column names are interpolated, not bound,
-   * so they are checked against the known column set first — a caller-supplied key must
-   * never reach the statement text.
-   */
   private conditionSql(condition: Condition, prefix: string): { sql: string; bindings: unknown[] } {
     const entries = Object.entries(condition);
 
@@ -194,6 +135,20 @@ class PostgresUsersDAO extends PostgresDataSource<UserRow> {
     return this.scoped(this.table.where(condition), options.scope).count();
   }
 
+  async countByRole(options: { scope?: UserScope } = {}): Promise<Record<string, number>> {
+    const scope = scopeSql(options.scope);
+
+    const result = await this.table.raw<{ rows: { role: string; count: string }[] }>(
+      `SELECT "role", count(*) AS count
+         FROM users
+        WHERE ${scope.sql}
+        GROUP BY "role"`,
+      scope.bindings
+    );
+
+    return Object.fromEntries(result.rows.map(row => [row.role, Number(row.count)]));
+  }
+
   async insertOne(row: UserRow): Promise<void> {
     await this.table.insert(row);
   }
@@ -206,10 +161,6 @@ class PostgresUsersDAO extends PostgresDataSource<UserRow> {
     await this.scoped(this.table.where(condition), options.scope).update(changes);
   }
 
-  /**
-   * Guarded like the reads. It is a write, but the system-user guard matters most here:
-   * the previous implementation guarded nothing at all.
-   */
   async softDelete(ids: string[], options: { scope?: UserScope } = {}): Promise<number> {
     if (!ids.length) {
       return 0;
@@ -220,46 +171,6 @@ class PostgresUsersDAO extends PostgresDataSource<UserRow> {
     });
 
     return updatedIds.length;
-  }
-
-  /* ------------------------------------------------------------------------------------
-   * Legacy surface — removed in plan 05.
-   *
-   * These exist only so the call sites in `app/api/**` that plan 05 migrates to
-   * UsersDirectory keep working meanwhile (activitylog/helpers.js, entitiesPermissions.ts,
-   * userGroups.ts, users.js, the two email job handlers) — they reach both DAOs through
-   * UsersDAOFactory. Plan 02 must not touch those files, and D11 requires the old path to
-   * stay live until parity is proven in plan 04.
-   *
-   * Kept signature-compatible with MongoUsersDAO's shims, because UsersDAOFactory casts
-   * between them. Do not call these from new code, and do not extend them.
-   * ---------------------------------------------------------------------------------- */
-
-  /** @deprecated use `findOne` and wrap absence in the adapter. Removed in plan 05. */
-  async getById(
-    id: string,
-    options: { includePassword?: boolean; includeDeleted?: boolean } = {}
-  ): Promise<ResultType<UserRow, UserNotFound>> {
-    const row = await this.findOne(
-      { _id: id },
-      {
-        fields: options.includePassword
-          ? ['identity', 'status', 'credentials']
-          : ['identity', 'status'],
-        scope: { deleted: options.includeDeleted ? 'include' : 'exclude' },
-      }
-    );
-
-    if (!row) {
-      return Result.fail(new UserNotFound(id));
-    }
-
-    return Result.ok(row);
-  }
-
-  /** @deprecated use `findManyByIds`. Removed in plan 05. */
-  async findByIds(ids: string[]): Promise<UserRow[]> {
-    return this.findManyByIds(ids, { fields: ['identity', 'status'] });
   }
 }
 
