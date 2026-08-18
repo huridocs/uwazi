@@ -1,3 +1,4 @@
+import { ObjectId } from 'mongodb';
 import { BaseFile } from '#api/core/domain/files/BaseFile.js';
 import { MongoDataSource } from '#api/core/infrastructure/mongodb/common/MongoDataSource.js';
 import { dbSessionContext } from '#api/odm/sessionsContext.js';
@@ -10,6 +11,24 @@ import type { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import { TimedMethod } from '#api/core/libs/logger/TimedMethodDecorator.js';
 import { EntitiesDAO } from '#api/core/application/contracts/EntitiesDAO.js';
 
+type HubConnectionDBO = {
+  _id: ObjectId;
+  hub: ObjectId;
+  entity: string;
+  template?: ObjectId | null;
+  file?: ObjectId | string;
+  reference?: {
+    text: string;
+    selectionRectangles?: {
+      top: number;
+      left: number;
+      width: number;
+      height: number;
+      page: string;
+    }[];
+  };
+};
+
 export class MongoRelationshipsV1DataSource extends MongoDataSource<Relation> {
   protected collectionName = 'connections';
 
@@ -19,6 +38,34 @@ export class MongoRelationshipsV1DataSource extends MongoDataSource<Relation> {
     private entitiesDAO: EntitiesDAO
   ) {
     super(db, transactionManager);
+  }
+
+  @TimedMethod('MongoRelationshipsV1DataSource.getHubConnectionsForEntity')
+  async getHubConnectionsForEntity(sharedId: string) {
+    const ownRelations = await this.getCollection<{ hub: ObjectId }>()
+      .find({ entity: sharedId }, { projection: { hub: 1 } })
+      .toArray();
+
+    const hubIds = ownRelations.map(relation => relation.hub);
+    if (hubIds.length === 0) {
+      return [];
+    }
+
+    const rows = await this.getCollection<HubConnectionDBO>()
+      .find(
+        { hub: { $in: hubIds } },
+        { projection: { _id: 1, hub: 1, entity: 1, template: 1, file: 1, reference: 1 } }
+      )
+      .toArray();
+
+    return rows.map(row => ({
+      _id: String(row._id),
+      hub: String(row.hub),
+      entity: row.entity,
+      template: row.template ? String(row.template) : null,
+      ...(row.file ? { file: String(row.file) } : {}),
+      ...(row.reference ? { reference: row.reference } : {}),
+    }));
   }
 
   async getByEntitySharedIds(entitiesSharedIds: string[]) {
