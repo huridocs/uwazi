@@ -115,9 +115,10 @@ describe('toc file sync', () => {
   });
 
   it('keeps the draft when syncing empty or saved toc in edit mode', () => {
+    const initialProps: { fileToc: TocSchema[] | undefined } = { fileToc: undefined };
     const { result, rerender } = renderHook(
-      ({ fileToc }: { fileToc?: TocSchema[] }) => useSyncedToc(fileToc, fileId),
-      { wrapper: tocProviderWrapper, initialProps: { fileToc: undefined } }
+      ({ fileToc }: { fileToc: TocSchema[] | undefined }) => useSyncedToc(fileToc, fileId),
+      { wrapper: tocProviderWrapper, initialProps }
     );
 
     act(() => {

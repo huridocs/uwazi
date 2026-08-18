@@ -7,22 +7,42 @@ import { act, render, screen, waitFor } from '@testing-library/react';
 import { mockEventBus, highlights } from './fixtures.js';
 import { PDFPage } from '../PDFPage';
 import { EventBus } from '../pdfjs.js';
+import { PageRenderQueue } from '../functions/pageRenderQueue.js';
 
 const mockPageDraw = jest.fn();
-const mockPageDestroy = jest.fn();
+const mockPageReset = jest.fn();
+const lastPageView: { current: { renderingState: number } | null } = { current: null };
 
 jest.mock('../pdfjs.ts', () => {
   const RenderingStates = { INITIAL: 0, RUNNING: 1, PAUSED: 2, FINISHED: 3 };
 
   const PDFPageView = jest.fn().mockImplementation(() => {
-    const inst: any = {
+    const inst: {
+      scale: number;
+      renderingState: number;
+      setPdfPage: jest.Mock;
+      update: jest.Mock;
+      cancelRendering: jest.Mock;
+      reset: jest.Mock;
+      draw: jest.Mock;
+      destroy: jest.Mock;
+      resume: jest.Mock;
+    } = {
       scale: 1,
       renderingState: RenderingStates.INITIAL,
       setPdfPage: jest.fn(),
       update: jest.fn(),
       cancelRendering: jest.fn(),
       reset: jest.fn(),
+      draw: jest.fn(),
+      destroy: jest.fn(),
+      resume: jest.fn(),
     };
+
+    inst.reset = jest.fn().mockImplementation(() => {
+      mockPageReset();
+      inst.renderingState = RenderingStates.INITIAL;
+    });
 
     inst.draw = jest.fn().mockImplementation(async () => {
       mockPageDraw();
@@ -30,8 +50,7 @@ jest.mock('../pdfjs.ts', () => {
       return Promise.resolve();
     });
 
-    inst.destroy = jest.fn().mockImplementation(() => mockPageDestroy());
-
+    lastPageView.current = inst;
     return inst;
   });
 
@@ -54,6 +73,8 @@ describe('PDFPage', () => {
   beforeEach(() => {
     dispatchSpy = jest.spyOn(EventBus.prototype, 'dispatch');
     mockPageDraw.mockClear();
+    mockPageReset.mockClear();
+    lastPageView.current = null;
   });
 
   afterEach(() => {
@@ -209,16 +230,54 @@ describe('PDFPage', () => {
       expect(mockPageDraw).not.toHaveBeenCalled();
     });
 
-    it('should unmount the page on unmountpage event if the page is drawn', async () => {
+    it('should reset the page on unmountpage so a later renderpage can draw again', async () => {
       await waitFor(() => expect(dispatchSpy).toHaveBeenCalledWith('pageready', { pageNumber: 2 }));
-      expect(mockPageDraw).not.toHaveBeenCalled();
-      expect(mockPageDestroy).not.toHaveBeenCalled();
-
       eventBus.dispatch('renderpage', { pageNumber: 2 });
-      expect(mockPageDraw).toHaveBeenCalled();
+      expect(mockPageDraw).toHaveBeenCalledTimes(1);
 
       eventBus.dispatch('unmountpage', { pageNumber: 2 });
-      expect(mockPageDestroy).toHaveBeenCalled();
+      expect(mockPageReset).toHaveBeenCalled();
+
+      eventBus.dispatch('renderpage', { pageNumber: 2 });
+      expect(mockPageDraw).toHaveBeenCalledTimes(2);
     });
+
+    it('should not restart an in-flight render', async () => {
+      await waitFor(() => expect(dispatchSpy).toHaveBeenCalledWith('pageready', { pageNumber: 2 }));
+      if (!lastPageView.current) {
+        throw new Error('expected page viewer');
+      }
+      lastPageView.current.renderingState = 1;
+
+      eventBus.dispatch('renderpage', { pageNumber: 2 });
+      expect(mockPageDraw).not.toHaveBeenCalled();
+    });
+  });
+
+  it('should not draw until the page is the render priority', async () => {
+    const eventBus = new EventBus();
+    const renderingQueue = new PageRenderQueue();
+    renderingQueue.prioritize(1);
+
+    await act(async () => {
+      await render(
+        <PDFPage
+          pdf={pdf}
+          page={2}
+          eventBus={eventBus}
+          intersectionObserver={null}
+          containerWidth={100}
+          renderingQueue={renderingQueue}
+        />
+      );
+    });
+
+    await waitFor(() => expect(dispatchSpy).toHaveBeenCalledWith('pageready', { pageNumber: 2 }));
+    eventBus.dispatch('renderpage', { pageNumber: 2 });
+    expect(mockPageDraw).not.toHaveBeenCalled();
+
+    renderingQueue.prioritize(2);
+    eventBus.dispatch('prioritypage', { pageNumber: 2 });
+    expect(mockPageDraw).toHaveBeenCalled();
   });
 });

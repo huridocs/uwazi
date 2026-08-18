@@ -22,4 +22,24 @@ const triggerScroll = (ref: React.RefObject<HTMLDivElement>, frameId: number): n
   return id;
 };
 
-export { triggerScroll };
+const pickMostVisiblePage = (
+  visibleHeightByPage: Map<number, number>,
+  maxPages: number,
+  previousPage = 0
+): number => {
+  let bestPage = 0;
+  let bestHeight = 0;
+  visibleHeightByPage.forEach((height, pageNumber) => {
+    if (pageNumber < 1 || pageNumber > maxPages || height <= 0) {
+      return;
+    }
+    const keepPreviousOnTie = height === bestHeight && pageNumber === previousPage;
+    if (height > bestHeight || keepPreviousOnTie) {
+      bestHeight = height;
+      bestPage = pageNumber;
+    }
+  });
+  return bestPage;
+};
+
+export { triggerScroll, pickMostVisiblePage };
