@@ -1,21 +1,37 @@
 import { buildEntityFileRows } from '../buildEntityFileRows.js';
-import type { Entity } from '#V2/api/entities/types.js';
+import type { Entity, FileType } from '#V2/api/entities/types.js';
 import type { ClientTemplateSchema } from '#V2/shared/types.js';
 
-describe('buildEntityFileRows', () => {
-  const templates = [
-    {
-      _id: 'template-1',
-      name: 'Template',
-      properties: [],
-    },
-  ] as ClientTemplateSchema[];
+const templates: ClientTemplateSchema[] = [
+  {
+    _id: 'template-1',
+    name: 'Template',
+    properties: [],
+  },
+];
 
+const entityFixture = (
+  sharedId: string,
+  documents: FileType[],
+  attachments: FileType[] = []
+): Entity => ({
+  _id: sharedId,
+  sharedId,
+  language: 'en',
+  title: 'Entity',
+  template: 'template-1',
+  creationDate: 1,
+  user: 'user-1',
+  documents,
+  attachments,
+  metadata: {},
+});
+
+describe('buildEntityFileRows', () => {
   it('should split files by category and detect active main document', () => {
-    const entity = {
-      sharedId: 'entity-1',
-      template: 'template-1',
-      documents: [
+    const entity = entityFixture(
+      'entity-1',
+      [
         {
           _id: 'doc-en',
           filename: 'doc-en.pdf',
@@ -35,7 +51,7 @@ describe('buildEntityFileRows', () => {
           creationDate: 1720000010,
         },
       ],
-      attachments: [
+      [
         {
           _id: 'att-1',
           filename: 'audio.mp3',
@@ -44,9 +60,8 @@ describe('buildEntityFileRows', () => {
           size: 200,
           creationDate: 1720000020,
         },
-      ],
-      metadata: {},
-    } as Entity;
+      ]
+    );
 
     const result = buildEntityFileRows(entity, templates, 'en', 'en');
 
@@ -56,32 +71,26 @@ describe('buildEntityFileRows', () => {
   });
 
   it('should label file languages with the UI-locale name and ISO code', () => {
-    const entity = {
-      sharedId: 'entity-lang',
-      template: 'template-1',
-      documents: [
-        {
-          _id: 'doc-en',
-          filename: 'doc-en.pdf',
-          originalname: 'English file',
-          language: 'eng',
-          mimetype: 'application/pdf',
-          size: 1024,
-          creationDate: 1720000000,
-        },
-        {
-          _id: 'doc-es',
-          filename: 'doc-es.pdf',
-          originalname: 'Spanish file',
-          language: 'spa',
-          mimetype: 'application/pdf',
-          size: 2048,
-          creationDate: 1720000010,
-        },
-      ],
-      attachments: [],
-      metadata: {},
-    } as unknown as Entity;
+    const entity = entityFixture('entity-lang', [
+      {
+        _id: 'doc-en',
+        filename: 'doc-en.pdf',
+        originalname: 'English file',
+        language: 'eng',
+        mimetype: 'application/pdf',
+        size: 1024,
+        creationDate: 1720000000,
+      },
+      {
+        _id: 'doc-es',
+        filename: 'doc-es.pdf',
+        originalname: 'Spanish file',
+        language: 'spa',
+        mimetype: 'application/pdf',
+        size: 2048,
+        creationDate: 1720000010,
+      },
+    ]);
 
     const result = buildEntityFileRows(entity, templates, 'es', 'en');
     const byId = Object.fromEntries(result.primaryRows.map(row => [row.rowId, row]));
@@ -91,10 +100,9 @@ describe('buildEntityFileRows', () => {
   });
 
   it('should map stable kinds and type labels to design kinds', () => {
-    const entity = {
-      sharedId: 'entity-2',
-      template: 'template-1',
-      documents: [
+    const entity = entityFixture(
+      'entity-2',
+      [
         {
           _id: 'pdf-1',
           filename: 'doc.pdf',
@@ -105,7 +113,7 @@ describe('buildEntityFileRows', () => {
           creationDate: 1720000000,
         },
       ],
-      attachments: [
+      [
         {
           _id: 'audio-1',
           filename: 'clip.mp3',
@@ -145,9 +153,8 @@ describe('buildEntityFileRows', () => {
           size: 100,
           creationDate: 1720000005,
         },
-      ],
-      metadata: {},
-    } as Entity;
+      ]
+    );
 
     const result = buildEntityFileRows(entity, templates, 'en', 'en');
     const byId = Object.fromEntries(
@@ -163,10 +170,9 @@ describe('buildEntityFileRows', () => {
   });
 
   it('should resolve pdf kind from filename when mimetype is missing', () => {
-    const entity = {
-      sharedId: 'entity-3',
-      template: 'template-1',
-      documents: [
+    const entity = entityFixture(
+      'entity-3',
+      [
         {
           _id: 'pdf-filename',
           filename: 'judgment.pdf',
@@ -176,7 +182,7 @@ describe('buildEntityFileRows', () => {
           creationDate: 1720000000,
         },
       ],
-      attachments: [
+      [
         {
           _id: 'unused',
           filename: 'notes.txt',
@@ -185,9 +191,8 @@ describe('buildEntityFileRows', () => {
           size: 10,
           creationDate: 1720000001,
         },
-      ],
-      metadata: {},
-    } as Entity;
+      ]
+    );
 
     const result = buildEntityFileRows(entity, templates, 'en', 'en');
 
@@ -196,34 +201,28 @@ describe('buildEntityFileRows', () => {
   });
 
   it('should surface document processing status on rows', () => {
-    const entity = {
-      sharedId: 'entity-4',
-      template: 'template-1',
-      documents: [
-        {
-          _id: 'processing-doc',
-          filename: 'new.pdf',
-          originalname: 'New PDF',
-          language: 'eng',
-          mimetype: 'application/pdf',
-          size: 100,
-          creationDate: 1720000000,
-          status: 'processing',
-        },
-        {
-          _id: 'failed-doc',
-          filename: 'bad.pdf',
-          originalname: 'Bad PDF',
-          language: 'eng',
-          mimetype: 'application/pdf',
-          size: 100,
-          creationDate: 1720000001,
-          status: 'failed',
-        },
-      ],
-      attachments: [],
-      metadata: {},
-    } as unknown as Entity;
+    const entity = entityFixture('entity-4', [
+      {
+        _id: 'processing-doc',
+        filename: 'new.pdf',
+        originalname: 'New PDF',
+        language: 'eng',
+        mimetype: 'application/pdf',
+        size: 100,
+        creationDate: 1720000000,
+        status: 'processing',
+      },
+      {
+        _id: 'failed-doc',
+        filename: 'bad.pdf',
+        originalname: 'Bad PDF',
+        language: 'eng',
+        mimetype: 'application/pdf',
+        size: 100,
+        creationDate: 1720000001,
+        status: 'failed',
+      },
+    ]);
 
     const result = buildEntityFileRows(entity, templates, 'en', 'en');
 
@@ -234,29 +233,23 @@ describe('buildEntityFileRows', () => {
   });
 
   it('should pick ready or legacy missing-status docs as mainDocumentId', () => {
-    const entity = {
-      sharedId: 'entity-5',
-      template: 'template-1',
-      documents: [
-        {
-          _id: 'processing-doc',
-          filename: 'busy.pdf',
-          originalname: 'Busy',
-          language: 'eng',
-          mimetype: 'application/pdf',
-          status: 'processing',
-        },
-        {
-          _id: 'legacy-doc',
-          filename: 'legacy.pdf',
-          originalname: 'Legacy',
-          language: 'eng',
-          mimetype: 'application/pdf',
-        },
-      ],
-      attachments: [],
-      metadata: {},
-    } as unknown as Entity;
+    const entity = entityFixture('entity-5', [
+      {
+        _id: 'processing-doc',
+        filename: 'busy.pdf',
+        originalname: 'Busy',
+        language: 'eng',
+        mimetype: 'application/pdf',
+        status: 'processing',
+      },
+      {
+        _id: 'legacy-doc',
+        filename: 'legacy.pdf',
+        originalname: 'Legacy',
+        language: 'eng',
+        mimetype: 'application/pdf',
+      },
+    ]);
 
     const result = buildEntityFileRows(entity, templates, 'en', 'en');
 

@@ -11,7 +11,9 @@ import { PageRenderQueue } from '../functions/pageRenderQueue.js';
 
 const mockPageDraw = jest.fn();
 const mockPageReset = jest.fn();
-const lastPageView: { current: { renderingState: number } | null } = { current: null };
+const lastPageView: {
+  current: { renderingState: number; cancelRendering: jest.Mock } | null;
+} = { current: null };
 
 jest.mock('../pdfjs.ts', () => {
   const RenderingStates = { INITIAL: 0, RUNNING: 1, PAUSED: 2, FINISHED: 3 };
@@ -242,6 +244,39 @@ describe('PDFPage', () => {
       expect(mockPageDraw).toHaveBeenCalledTimes(2);
     });
 
+    it.each([1, 2])(
+      'cancels in-flight rendering on unmountpage when state is %s',
+      async renderingState => {
+        await waitFor(() =>
+          expect(dispatchSpy).toHaveBeenCalledWith('pageready', { pageNumber: 2 })
+        );
+        if (!lastPageView.current) {
+          throw new Error('expected page viewer');
+        }
+        lastPageView.current.renderingState = renderingState;
+        const cancelRendering = lastPageView.current.cancelRendering;
+
+        eventBus.dispatch('unmountpage', { pageNumber: 2 });
+
+        expect(cancelRendering).toHaveBeenCalled();
+        expect(mockPageReset).toHaveBeenCalled();
+      }
+    );
+
+    it('does not cancelRendering on unmountpage when the page is finished', async () => {
+      await waitFor(() => expect(dispatchSpy).toHaveBeenCalledWith('pageready', { pageNumber: 2 }));
+      if (!lastPageView.current) {
+        throw new Error('expected page viewer');
+      }
+      lastPageView.current.renderingState = 3;
+      const cancelRendering = lastPageView.current.cancelRendering;
+
+      eventBus.dispatch('unmountpage', { pageNumber: 2 });
+
+      expect(cancelRendering).not.toHaveBeenCalled();
+      expect(mockPageReset).toHaveBeenCalled();
+    });
+
     it('should not restart an in-flight render', async () => {
       await waitFor(() => expect(dispatchSpy).toHaveBeenCalledWith('pageready', { pageNumber: 2 }));
       if (!lastPageView.current) {
@@ -275,5 +310,35 @@ describe('PDFPage', () => {
     await waitFor(() => expect(dispatchSpy).toHaveBeenCalledWith('pageready', { pageNumber: 2 }));
     eventBus.dispatch('renderpage', { pageNumber: 2 });
     await waitFor(() => expect(mockPageDraw).toHaveBeenCalled());
+  });
+
+  it('cancels in-flight PDF.js draw then the render queue on unmountpage', async () => {
+    const eventBus = new EventBus();
+    const renderingQueue = new PageRenderQueue();
+    const cancelSpy = jest.spyOn(renderingQueue, 'cancel');
+
+    await act(async () => {
+      await render(
+        <PDFPage
+          pdf={pdf}
+          page={2}
+          eventBus={eventBus}
+          intersectionObserver={null}
+          containerWidth={100}
+          renderingQueue={renderingQueue}
+        />
+      );
+    });
+
+    await waitFor(() => expect(dispatchSpy).toHaveBeenCalledWith('pageready', { pageNumber: 2 }));
+    if (!lastPageView.current) {
+      throw new Error('expected page viewer');
+    }
+    lastPageView.current.renderingState = 1;
+    eventBus.dispatch('unmountpage', { pageNumber: 2 });
+
+    expect(lastPageView.current.cancelRendering).toHaveBeenCalled();
+    expect(cancelSpy).toHaveBeenCalledWith(2);
+    expect(mockPageReset).toHaveBeenCalled();
   });
 });

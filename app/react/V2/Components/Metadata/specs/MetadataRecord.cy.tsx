@@ -5,11 +5,11 @@ import { composeStories } from '@storybook/react';
 import * as stories from '#app/stories/EntityViewer/Metadata.stories.js';
 
 describe('Metadata Record', () => {
-  const { CompactRecord } = composeStories(stories);
+  const { Basic } = composeStories(stories);
 
   describe('General', () => {
     beforeEach(() => {
-      mount(<CompactRecord showGeolocationProperties={false} />);
+      mount(<Basic showGeolocationProperties={false} />);
     });
 
     it('shows creation and edit dates in Details', () => {
@@ -84,7 +84,7 @@ describe('Metadata Record', () => {
   describe('accessibility', () => {
     it('should be accessible', () => {
       cy.injectAxe();
-      mount(<CompactRecord showGeolocationProperties={false} />);
+      mount(<Basic showGeolocationProperties={false} />);
       cy.checkA11y(undefined, {
         rules: {
           'color-contrast': { enabled: false },
@@ -98,14 +98,14 @@ describe('Metadata Record', () => {
 
   describe('dates', () => {
     it('shows dates in English locale', () => {
-      mount(<CompactRecord showGeolocationProperties={false} locale="en" />);
+      mount(<Basic showGeolocationProperties={false} locale="en" />);
 
       cy.contains('td', 'Jan 1, 2024').should('exist');
       cy.contains('td', 'From Jan 1, 2024 ~ To Jan 2, 2024').should('exist');
     });
 
     it('shows dates in Russian locale', () => {
-      mount(<CompactRecord showGeolocationProperties={false} locale="ru" />);
+      mount(<Basic showGeolocationProperties={false} locale="ru" />);
 
       cy.contains('td', '1 янв. 2024').should('exist');
       cy.contains('td', 'From 1 янв. 2024 г. ~ To 2 янв. 2024 г.').should('exist');
@@ -154,17 +154,12 @@ describe('Metadata Record', () => {
     };
 
     it('hides empty metadata fields', () => {
-      mount(<CompactRecord showGeolocationProperties={false} locale="en" entity={emptyEntity} />);
+      mount(<Basic showGeolocationProperties={false} locale="en" entity={emptyEntity} />);
       checkProperties();
     });
 
     it('hides missing metadata fields', () => {
-      mount(
-        <CompactRecord
-          showGeolocationProperties={false}
-          entity={{ ...emptyEntity, metadata: {} }}
-        />
-      );
+      mount(<Basic showGeolocationProperties={false} entity={{ ...emptyEntity, metadata: {} }} />);
       checkProperties();
     });
   });

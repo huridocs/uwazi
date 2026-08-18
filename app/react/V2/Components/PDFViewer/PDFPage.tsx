@@ -183,10 +183,19 @@ const PDFPageComponent = ({
     };
 
     const unmountPage = ({ pageNumber }: { pageNumber: number }) => {
-      if (pageNumber === page) {
-        renderingQueue?.cancel(page);
-        pageViewerRef.current?.reset();
+      if (pageNumber !== page) {
+        return;
       }
+      const viewer = pageViewerRef.current;
+      if (
+        viewer &&
+        (viewer.renderingState === PDFJSViewer.RenderingStates.RUNNING ||
+          viewer.renderingState === PDFJSViewer.RenderingStates.PAUSED)
+      ) {
+        viewer.cancelRendering();
+      }
+      renderingQueue?.cancel(page);
+      viewer?.reset();
     };
 
     eventBus.on('renderpage', drawIfPage);
