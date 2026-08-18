@@ -60,7 +60,7 @@ What is **not** right yet is leftover HTTP/shared shape (shared vs domain `Trans
 | C2 | **P2 — landed** | Test / folder pollution | ~~`app/api/i18n/specs/*` hosted the parity suite~~ Moved under `core/application/translation/specs/`. `i18n/` is predefined CSV only. GET assertions are maps. |
 | C3 | **P2 — landed** | Type duplicates | ~~`TranslationEntryInput` ≈ domain `Translation`~~ Writes use `Translation`. GET `IndexedTranslations` lives in `localeTranslationDto`. Write `LocaleTranslationInput` stays partial (optional `values`). Shared/FE `TranslationContext` / `TranslationValue` name collisions left (out of scope). |
 | C4 | **P2 — landed** | DS quality | ~~`upsert` sequential `reduce` of `updateOne`s; `calculateNonexistentKeys` is `findOne` + aggregate~~ `upsert` is one `bulkWrite`. Missing keys are `find` + set difference. `cloneForLanguage` still streams (one-shot language install). |
-| D1 | Keep | Correct | By-item store; façade gone; D11 leftover UCs deleted; service no longer proxies delete/insert; locale **input** is map-only; aggregate-owned translation services; SSR scoped to System |
+| D1 | Keep | Correct | By-item store; façade gone; D11 leftover UCs deleted; service no longer proxies delete/insert; locale **input** is map-only; aggregate-owned translation services; SSR hydrates locale minus Thesaurus |
 | D2 | Do not “fix” | Contract | Unauthenticated `GET /api/translations` and `GET /api/v2/translations` are the **stable public contract** (public `t()`, Settings). Missing auth is not a regression. Unbounded load **is** a problem. |
 
 ---
@@ -108,7 +108,7 @@ These are **gone** and must stay gone:
 
 ### SSR
 
-`getLegacy({ locale, context: 'System' })` + linear assignment in `toLegacyDto` is the right fix. Do not reintroduce a process-wide translations cache.
+`getLegacy({ locale, excludeContextTypes: ['Thesaurus'] })` + linear assignment in `toLegacyDto` is the right fix. Hydrate System + Entity (templates) + Relationship Type + Menu/Filters so `t(template._id, …)` works after a language switch. Do **not** load Thesaurus on SSR (HTML payload). Do not restore `onlySystemTranslations()`. Do not reintroduce a process-wide translations cache.
 
 ### Language UseCases
 
@@ -378,7 +378,7 @@ Filesystem + `availableLanguages` list. Could live in the controller. Harmless.
 
 | Caller | Verdict |
 | --- | --- |
-| SSR `entry-server` | Correct (System + locale) |
+| SSR `entry-server` | Correct (locale minus Thesaurus) |
 | csvExporter / search | Scoped maps (`getContextValueMap`) — good |
 | denormalize.ts | `getLanguageValueMaps` = **full language** when not preloaded — hot-path cost, pre-existing |
 | dataviz | DS `getByContext` + TranslationCollection — good |

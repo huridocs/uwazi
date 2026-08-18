@@ -1,7 +1,7 @@
 import { ResultSet } from '#api/core/application/contracts/ResultSet.js';
 import { TranslationsDataSource } from '#api/core/application/contracts/TranslationsDataSource.js';
 import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js';
-import { Translation } from '#api/core/domain/translation/Translation.js';
+import { Translation, TranslationContext } from '#api/core/domain/translation/Translation.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import {
   IndexedContext,
@@ -99,7 +99,13 @@ export class TranslationsQueryService {
     }));
   }
 
-  async getLegacy(query: { locale?: LanguageISO6391; context?: string } = {}) {
+  async getLegacy(
+    query: {
+      locale?: LanguageISO6391;
+      context?: string;
+      excludeContextTypes?: TranslationContext['type'][];
+    } = {}
+  ) {
     if (query.locale && query.context) {
       return this.toLegacyDto(
         () => this.translationsDS.getByLanguageAndContext(query.locale!, query.context!),
@@ -108,6 +114,16 @@ export class TranslationsQueryService {
     }
     if (query.context) {
       return this.toLegacyDto(() => this.translationsDS.getByContext(query.context!));
+    }
+    if (query.locale && query.excludeContextTypes?.length) {
+      return this.toLegacyDto(
+        () =>
+          this.translationsDS.getByLanguageExcludingContextTypes(
+            query.locale!,
+            query.excludeContextTypes!
+          ),
+        query.locale
+      );
     }
     if (query.locale) {
       return this.toLegacyDto(() => this.translationsDS.getByLanguage(query.locale!), query.locale);

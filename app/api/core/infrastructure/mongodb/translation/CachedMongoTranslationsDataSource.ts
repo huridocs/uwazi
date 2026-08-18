@@ -46,6 +46,16 @@ export class CachedMongoTranslationsDataSource extends MongoTranslationsDataSour
     return this.wrap(`language:${language}`, super.getByLanguage(language));
   }
 
+  override getByLanguageExcludingContextTypes(
+    language: LanguageISO6391,
+    types: Translation['context']['type'][]
+  ) {
+    return this.wrap(
+      `language-excluding:${language}:${types.join(',')}`,
+      super.getByLanguageExcludingContextTypes(language, types)
+    );
+  }
+
   override getByLanguageAndContext(language: LanguageISO6391, contextId: string) {
     return this.wrap(
       `language+context:${language}:${contextId}`,
