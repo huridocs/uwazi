@@ -1,9 +1,11 @@
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo } from 'react';
+import { scrollToPlaintextPage } from './scrollToPlaintextPage.js';
 
 interface PlainTextProps {
   text: string;
   className?: string;
   dir?: 'ltr' | 'rtl';
+  page?: number;
 }
 
 const PAGE_SEPARATOR = '\f';
@@ -18,8 +20,15 @@ const splitPlaintextPages = (text: string): string[] => {
   return [text];
 };
 
-export const PlainText = ({ className = '', dir, text }: PlainTextProps) => {
+export const PlainText = ({ className = '', dir, page, text }: PlainTextProps) => {
   const pages = useMemo(() => splitPlaintextPages(text), [text]);
+
+  useEffect(() => {
+    if (!page) {
+      return;
+    }
+    scrollToPlaintextPage(page);
+  }, [page, pages]);
 
   return (
     <div
@@ -34,8 +43,9 @@ export const PlainText = ({ className = '', dir, text }: PlainTextProps) => {
           <section
             key={pageNumber}
             id={`page${pageNumber}`}
+            data-plaintext-page={pageNumber}
             aria-label={`Page ${pageNumber}`}
-            className="entity-plaintext-mono whitespace-pre-line"
+            className="entity-plaintext-mono whitespace-pre-line rounded-md border border-border-soft bg-paper p-4"
           >
             {pageText}
           </section>
