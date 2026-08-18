@@ -51,7 +51,6 @@ Add from web,Додати з інтернету
 Add group,Додати групу
 add icon,додати піктограму
 Add item,Додати елемент
-Add language,Додати мову
 Add link,Додати посилання
 Add page,Додати сторінку
 Add PDF,Додати PDF
@@ -168,7 +167,6 @@ Cards,Картки
 Cards view,Вид карток
 Category,Category
 Change,Change
-Change password,Змінити пароль
 Change Password,Змінити пароль
 Changes in the thesaurus will impact all the entities using these values.,"Зміни в тезаурусі вплинуть на всіх суб'єктів, які використовують ці значення."
 Changing the type will erase all relationships to this entity.,Зміна типу призведе до видалення всіх зв'язків з цією сутністю.
@@ -260,11 +258,9 @@ Create,Створити
 CREATE,СТВОРИТИ
 Create and edit thesauri,Створення та редагування тезаурусів
 Create Connection,Створити з'єднання
-Create dictionaries,Створення словників
 Create entity,Створити об'єкт
 Create Entity,Створити об'єкт
 Create Extractor,Створити витягач
-Create group,Створити групу
 Create new entities and upload documents,Створюйте нові організації та завантажуйте документи
 Create new entity from selection,Create new entity from selection
 Create Reference,Створити посилання
@@ -316,7 +312,6 @@ Data visualizations,Data visualizations
 Data was updated recently. You can refresh again in a few seconds.,Data was updated recently. You can refresh again in a few seconds.
 Date,Date
 Date added,Дата додавання
-Date format,Формат дати
 Date modified,Дату змінено
 "Date or numeric × numeric enables scatter and heatmap. Line, area, and bar plot the
                 measure over the primary dimension (e.g. max engine size per registration date).","Date or numeric × numeric enables scatter and heatmap. Line, area, and bar plot the
@@ -340,7 +335,6 @@ Delete,Видалити
 DELETE,Видалити
 Delete entities and documents,Видалити документи та об'єкти
 Delete file,Видалити файл
-Delete language,Видалити мову
 Delete relationship,Delete relationship
 Delete relationships,Delete relationships
 Delete?,Delete?
@@ -377,7 +371,6 @@ Do you want disable 2FA for the following users?,Ви хочете вимкну�
 Do you want reset the password for the following users?,Ви хочете скинути пароль для наступних користувачів?
 Do you want to delete the following items?,Ви хочете видалити наступні елементи?
 Document,Документ
-Document and entity types,Типи документів та об'єктів
 Document contents,Зміст документа
 Document OCR trigger,Тригер розпізнавання документів
 Document Title,Назва документа
@@ -421,8 +414,6 @@ Editor,Редактор
 editor,Редактор
 Editors,Редактори
 Email,Електронна пошта
-Email address,Адреса електронної пошти
-Email updated,Електронну пошту оновлено
 Embed,Embed
 Embed in pages,Embed in pages
 Empty,Порожній
@@ -514,7 +505,6 @@ for,за
 For all entities,Для всіх суб'єктів господарювання
 For entities with blank values,Для сутностей з порожніми значеннями
 Forgot Password or Username?,Forgot Password or Username?
-Forgot Password?,Забули пароль?
 Forms and email configuration,Налаштування форм та електронної пошти
 From,Від
 From all suggestions,З усіх пропозицій
@@ -532,7 +522,6 @@ Global CSS & JS,Глобальний CSS та JS
 Global JS,Global JS
 Google,Google
 Google Analytics,Google Аналітики
-Google Analytics ID,ID Google Аналітики
 Google Maps,Карти Google
 Group,Групи
 Group by,Group by
@@ -890,9 +879,7 @@ parties,parties
 Password,Пароль
 Password + 2fa,Пароль + 2fa
 Password changed success,Успішно змінено пароль
-Password Error,Помилка при введенні пароля!  Обидва поля є обов'язковими і повинні співпадати
 Password is too long,Пароль занадто довгий
-Password updated,Пароль оновлено
 Passwords do not match,Паролі не збігаються
 Paste an audio or video URL to use it as this property without uploading a file. Press Enter to apply.,Paste an audio or video URL to use it as this property without uploading a file. Press Enter to apply.
 Paste an image URL to use it as this property without uploading a file. Press Enter to apply.,Paste an image URL to use it as this property without uploading a file. Press Enter to apply.
@@ -935,7 +922,6 @@ Priority sorting,Пріоритетне сортування
 Priority sorting description,"Властивості, позначені як пріоритетні, будуть використані як критерії сортування за замовчуванням. Якщо більше однієї властивості позначено як пріоритетне сортування, система спробує підібрати найкращий варіант. При перерахуванні змішаних типів шаблонів система підбере найкращий комбінований варіант сортування за пріоритетами."
 Private,Private
 Private entities description,Увага: вибрані сутності будуть **приватними**. Лише дозволені користувачі зможуть їх бачити.
-Private instance,Приватна база даних
 Process,Процес
 Process extractor,Технологічний екстрактор
 Process selected,Вибрано процес
@@ -1172,7 +1158,6 @@ Some tasks may take a while. Bert will reply when it's done.,Some tasks may take
 Something went wrong,Щось пішло не так
 Sort,Сортувати
 Sort ascending,Сортування за зростанням
-Sort by,Сортувати за
 Sort descending,Сортування за спаданням
 Sort:,Sort:
 sorted by,відсортовано за

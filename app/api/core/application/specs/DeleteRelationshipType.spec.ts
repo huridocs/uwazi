@@ -2,7 +2,6 @@ import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { testingTenants } from '#api/utils/testingTenants.js';
 import { TranslationsQueryServiceFactory } from '#api/core/infrastructure/factories/TranslationsQueryServiceFactory.js';
-import { toIndexedTranslations } from '#api/core/infrastructure/express/translation/LegacyTranslationDtoMapper.js';
 import { ContextType } from '#shared/translationSchema.js';
 import type { DBFixture } from '#api/utils/testing_db.js';
 import { DeleteRelationshipTypeUseCaseFactory } from '#api/core/infrastructure/factories/DeleteRelationshipTypeUseCaseFactory.js';
@@ -134,12 +133,10 @@ describe('DeleteRelationshipTypeUseCase', () => {
       );
 
       const translationsWithContext = await withFlag(async () =>
-        toIndexedTranslations(
-          await TranslationsQueryServiceFactory.default().getLegacy({
-            locale: 'en',
-            context: factory.id('deletable').toHexString(),
-          })
-        )
+        TranslationsQueryServiceFactory.default().getLegacy({
+          locale: 'en',
+          context: factory.id('deletable').toHexString(),
+        })
       );
 
       expect(translationsWithContext).toEqual([

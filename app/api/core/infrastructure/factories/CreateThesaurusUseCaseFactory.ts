@@ -2,7 +2,7 @@ import { CreateThesaurusUseCase } from '#api/core/application/CreateThesaurus.js
 import { ThesauriService } from '#api/core/application/ThesauriService.js';
 import { ThesaurusTranslationService } from '#api/core/application/thesaurusTranslationService/ThesaurusTranslationService.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
-import { TranslationsServiceFactory } from '#api/core/infrastructure/factories/TranslationsServiceFactory.js';
+import { TranslationsDataSourceFactory } from '#api/core/infrastructure/factories/TranslationsDataSourceFactory.js';
 import { DispatcherAdapter } from '#api/core/infrastructure/jobs/DispatcherAdapter.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { SettingsDataSourceFactory } from './SettingsDataSourceFactory.js';
@@ -14,11 +14,11 @@ class CreateThesaurusUseCaseFactory {
     const thesauriDS = ThesauriDataSourceFactory.default({ transactionManager });
 
     const settingsDS = SettingsDataSourceFactory.default({ transactionManager });
-    const translationsService = TranslationsServiceFactory.default({ transactionManager });
+    const translationsDS = TranslationsDataSourceFactory.default({ transactionManager });
 
     const thesaurusTranslationService = new ThesaurusTranslationService({
       settingsDS,
-      translationsService,
+      translationsDS,
     });
 
     const thesauriService = new ThesauriService({

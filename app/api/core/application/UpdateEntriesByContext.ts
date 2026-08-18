@@ -1,11 +1,11 @@
 import { AbstractUseCase } from '../libs/UseCase.js';
 import { SettingsDataSource } from './contracts/SettingsDataSource.js';
-import { TranslationsQueryService } from './translation/TranslationsQueryService.js';
-import { prepareLocaleTranslation } from './translation/localeTranslationDto.js';
+import { TranslationsDataSource } from './contracts/TranslationsDataSource.js';
+import { toValueMap } from './translation/localeTranslationDto.js';
 import { TranslationsService } from './translation/TranslationsService.js';
 import { PropagateThesaurusTranslationService } from './translation/PropagateThesaurusTranslationService.js';
+import { Translation } from '../domain/translation/Translation.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
-import { TranslationType } from '#shared/translationType.js';
 
 type KeyValuePairsPerLanguage = {
   [language: string]: { [key: string]: string };
@@ -16,88 +16,35 @@ type Input = {
   keyValuePairsPerLanguage: KeyValuePairsPerLanguage;
 };
 
-type Output = (TranslationType | void)[];
+type Output = LanguageISO6391[];
 
 type Deps = {
   settingsDS: SettingsDataSource;
-  query: TranslationsQueryService;
+  translationsDS: TranslationsDataSource;
   translationsService: TranslationsService;
   propagateThesaurusTranslation: PropagateThesaurusTranslationService;
 };
 
 type PreparedLocaleUpdate = {
-  previousContexts: NonNullable<TranslationType['contexts']>;
-  next: TranslationType;
+  locale: LanguageISO6391;
+  type: string;
+  previous: Record<string, string>;
+  next: Record<string, string>;
+  entries: Translation[];
 };
 
 function checkForMissingKeys(
-  keyValuePairsPerLanguage: KeyValuePairsPerLanguage,
+  incoming: Record<string, string>,
+  existing: Record<string, string>,
   locale: string,
-  valueDict: Record<string, string>,
   contextId: string
 ) {
-  const missingKeys = Object.keys(keyValuePairsPerLanguage[locale]).filter(
-    key => !(key in valueDict)
-  );
+  const missingKeys = Object.keys(incoming).filter(key => !(key in existing));
   if (missingKeys.length) {
     throw new Error(
       `Process is trying to update missing translation keys: ${locale} - ${contextId} - ${missingKeys}.`
     );
   }
-}
-
-function snapshotContexts(translation: TranslationType) {
-  return (translation.contexts || []).map(context => ({
-    ...context,
-    values: [...(context.values || [])],
-  }));
-}
-
-function valuesToDict(context: NonNullable<TranslationType['contexts']>[number]) {
-  return Object.fromEntries((context.values || []).map(({ key, value }) => [key!, value!]));
-}
-
-function applyKeyValuePairs(
-  keyValuePairsPerLanguage: KeyValuePairsPerLanguage,
-  locale: string,
-  valueDict: Record<string, string>,
-  contextId: string
-) {
-  checkForMissingKeys(keyValuePairsPerLanguage, locale, valueDict, contextId);
-  const nextValues = {
-    ...valueDict,
-    ...keyValuePairsPerLanguage[locale],
-  };
-  return Object.entries(nextValues).map(([key, value]) => ({ key, value }));
-}
-
-function prepareLocaleUpdate(
-  translation: TranslationType,
-  contextId: string,
-  keyValuePairsPerLanguage: KeyValuePairsPerLanguage
-): PreparedLocaleUpdate | undefined {
-  if (!translation.locale) {
-    throw new Error('Translation local does not exist !');
-  }
-
-  const context = (translation.contexts || []).find(c => c.id === contextId);
-  if (!context) {
-    return undefined;
-  }
-
-  const previousContexts = snapshotContexts(translation);
-  const valueDict = valuesToDict(context);
-  context.values = applyKeyValuePairs(
-    keyValuePairsPerLanguage,
-    translation.locale,
-    valueDict,
-    contextId
-  );
-
-  return {
-    previousContexts,
-    next: prepareLocaleTranslation(translation),
-  };
 }
 
 class UpdateEntriesByContextUseCase extends AbstractUseCase<Input, Output, Deps> {
@@ -113,12 +60,31 @@ class UpdateEntriesByContextUseCase extends AbstractUseCase<Input, Output, Deps>
     ) as LanguageISO6391[];
 
     const results = await Promise.allSettled(
-      languagesToUpdate.map(async language => {
-        const [translation] = await this.deps.query.getLegacy({ locale: language });
-        if (!translation) {
-          throw new Error('Translation local does not exist !');
+      languagesToUpdate.map(async locale => {
+        const rows = await this.deps.translationsDS
+          .getByLanguageAndContext(locale, contextId)
+          .all();
+        if (!rows.length) {
+          return undefined;
         }
-        return prepareLocaleUpdate(translation, contextId, keyValuePairsPerLanguage);
+
+        const incoming = keyValuePairsPerLanguage[locale];
+        const previous = toValueMap(rows);
+        checkForMissingKeys(incoming, previous, locale, contextId);
+
+        const { context } = rows[0];
+        const next = { ...previous, ...incoming };
+        const entries = Object.entries(next).map(
+          ([key, value]) => new Translation(key, value, locale, context)
+        );
+
+        return {
+          locale,
+          type: context.type,
+          previous,
+          next,
+          entries,
+        };
       })
     );
 
@@ -138,19 +104,22 @@ class UpdateEntriesByContextUseCase extends AbstractUseCase<Input, Output, Deps>
     const prepared = await this.prepareUpdates(contextId, keyValuePairsPerLanguage);
 
     await this.transactionManager.run(async () => {
-      await prepared.reduce(async (previous, { next }) => {
-        await previous;
-        await this.deps.translationsService.persistLocale(next);
-      }, Promise.resolve());
+      await this.deps.translationsService.saveEntries(prepared.flatMap(item => item.entries));
     });
 
     await Promise.all(
-      prepared.map(async ({ next, previousContexts }) =>
-        this.deps.propagateThesaurusTranslation.forLocale(next, previousContexts)
+      prepared.map(async item =>
+        this.deps.propagateThesaurusTranslation.propagate({
+          locale: item.locale,
+          contextId,
+          type: item.type,
+          previous: item.previous,
+          next: item.next,
+        })
       )
     );
 
-    return prepared.map(({ next }) => next);
+    return prepared.map(item => item.locale);
   }
 }
 
