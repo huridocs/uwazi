@@ -1,5 +1,5 @@
 import userGroups from '#api/usergroups/userGroups.js';
-import type { UserGroup } from '#shared/contracts/Users.js';
+import type { UserGroup } from '#shared/contracts/UserGroups.js';
 import { toApiError } from '#shared/apiClient/index.js';
 import type { ApiResponse } from '#V2/api/ApiResponse.js';
 import type { UserGroupsService } from '../contracts/UserGroupsService.js';

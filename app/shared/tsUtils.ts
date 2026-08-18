@@ -61,6 +61,8 @@ export async function sleep(ms: number) {
 }
 
 export const randomSleep = async (fromMs: number, toMs: number) => {
+  if (process.env.NODE_ENV === 'test') return;
+
   const ms = Math.floor(Math.random() * (toMs - fromMs + 1)) + fromMs;
   return sleep(ms);
 };

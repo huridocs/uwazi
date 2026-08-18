@@ -1,16 +1,10 @@
 import type { NextFunction, Request, Response } from 'express';
 import request from 'supertest';
-import { DeleteResult } from 'mongodb';
 import { setUpApp } from '#api/utils/testingRoutes.js';
-import { WithId } from '#api/odm/model.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-import { DomainError } from '#api/core/domain/error/DomainError.js';
 import { UserRole } from '#shared/types/userSchema.js';
-import { PUBLIC_USER_ID } from '#api/core/domain/user/User.js';
 import { UserSchema } from '#shared/types/userType.js';
 import { userRoutes } from '#api/core/infrastructure/express/users/routes.js';
-import users from '../users.js';
-import { User } from '../usersModel.js';
 
 const combinedRoutes = (app: any) => {
   userRoutes(app);
@@ -33,16 +27,6 @@ jest.mock('../../auth', () => {
   };
 });
 
-const invalidUserProperties = [
-  { field: 'username', value: undefined, instancePath: '/body', keyword: 'required' },
-  { field: 'email', value: undefined, instancePath: '/body', keyword: 'required' },
-  { field: 'role', value: undefined, instancePath: '/body', keyword: 'required' },
-  { field: 'username', value: '', instancePath: '/body/username', keyword: 'minLength' },
-  { field: 'email', value: '', instancePath: '/body/email', keyword: 'minLength' },
-  { field: 'role', value: 'INVALID', instancePath: '/body/role', keyword: 'enum' },
-  { field: 'password', value: '', instancePath: '/body/password', keyword: 'minLength' },
-];
-
 const adminUser = {
   _id: 'admin1',
   username: 'Admin 1',
@@ -61,12 +45,6 @@ const editorUser = {
 describe('users routes', () => {
   let currentUser: UserSchema | undefined;
 
-  const userToUpdate = {
-    _id: '1',
-    username: 'User 1',
-    role: UserRole.EDITOR,
-    email: 'user@test.com',
-  };
   function getUser() {
     return currentUser;
   }
@@ -88,249 +66,24 @@ describe('users routes', () => {
     currentUser = adminUser;
   });
 
-  describe('POST', () => {
-    describe('/users', () => {
-      beforeEach(() => {
-        jest
-          .spyOn(users, 'save')
-          .mockImplementation(async () => Promise.resolve({} as WithId<User> & { __v: number }));
-      });
-
-      it('should call users save with the body', async () => {
-        await request(app).post('/api/users').send(userToUpdate);
-
-        expect(users.save).toHaveBeenCalledWith(
-          userToUpdate,
-          expect.objectContaining({ _id: 'admin1', groups: [], role: 'admin' })
-        );
-      });
-
-      describe('validation', () => {
-        it.each(invalidUserProperties)(
-          'should invalidate if there is an invalid property',
-          async ({ field, value, instancePath, keyword }) => {
-            // @ts-ignore
-            const invalidUser = { ...userToUpdate, [field]: value };
-            const response = await request(app).post('/api/users').send(invalidUser);
-            expect(response.status).toBe(400);
-            expect(response.body.errors[0].instancePath).toEqual(instancePath);
-            expect(response.body.errors[0].keyword).toEqual(keyword);
-          }
-        );
-      });
-    });
-
-    describe('/users/new', () => {
-      it('should call users newUser with the body', async () => {
-        jest
-          .spyOn(users, 'newUser')
-          .mockImplementation(async () => Promise.resolve({} as WithId<User> & { __v: number }));
-        const response = await request(app).post('/api/users/new').send(userToUpdate);
-
-        expect(response.status).toBe(200);
-        expect(users.newUser).toHaveBeenCalledWith(
-          userToUpdate,
-          expect.stringContaining('http://127.0.0.1')
-        );
-      });
-
-      describe('validation', () => {
-        it.each(invalidUserProperties)(
-          'should invalidate if there is an invalid property',
-          async ({ field, value, instancePath, keyword }) => {
-            // @ts-ignore
-            const invalidUser = { ...userToUpdate, [field]: value };
-            const response = await request(app).post('/api/users/new').send(invalidUser);
-            expect(response.status).toBe(400);
-            expect(response.body.errors[0].instancePath).toEqual(instancePath);
-            expect(response.body.errors[0].keyword).toEqual(keyword);
-          }
-        );
-      });
-    });
-
-    describe('/users/unlock', () => {
-      let unlockMock: jest.SpyInstance;
-
-      beforeAll(() => {
-        unlockMock = jest
-          .spyOn(users, 'simpleUnlock')
-          .mockImplementation(async (_id?: any) => Promise.resolve());
-      });
-
-      afterAll(() => {
-        unlockMock.mockRestore();
-      });
-
-      it('should require an admin', async () => {
-        currentUser = editorUser;
-        const response = await request(app)
-          .post('/api/users/unlock')
-          .send({ _id: 'useridstring ' });
-        expect(response.status).toBe(401);
-        currentUser = adminUser;
-      });
-
-      it.each([
-        {
-          body: {},
-        },
-        {
-          body: { _id: 'useridstring', extra: 'extra' },
-        },
-        {
-          body: { _id: 0 },
-        },
-      ])('should validate the body', async ({ body }) => {
-        const response = await request(app).post('/api/users/unlock').send(body);
-        expect(response.status).toBe(400);
-        expect(response.body.error).toEqual('validation failed');
-      });
-
-      it('should call users simpleUnlock with the body id', async () => {
-        const _id = 'useridstring';
-        const response = await request(app).post('/api/users/unlock').send({ _id });
-        expect(response.status).toBe(200);
-        expect(users.simpleUnlock).toHaveBeenCalledWith(_id);
-      });
-    });
-
-    describe('/recoverpassword', () => {
-      it.each([
-        { value: undefined, keyword: 'required' },
-        { value: 'a', keyword: 'minLength' },
-      ])('should invalidate if the schema is not matched', async ({ value, keyword }) => {
-        const response = await request(app).post('/api/recoverpassword').send({ email: value });
-        expect(response.status).toBe(400);
-        expect(response.body.errors[0].keyword).toEqual(keyword);
-      });
-
-      it('should call recoverPassword with the body email', async () => {
-        jest.spyOn(users, 'recoverPassword').mockImplementation(async () => Promise.resolve());
-        const response = await request(app)
-          .post('/api/recoverpassword')
-          .send({ email: 'recover@me.com' });
-        expect(response.status).toBe(200);
-        expect(users.recoverPassword).toHaveBeenCalledWith(
-          'recover@me.com',
-          expect.stringContaining('http://127.0.0.1')
-        );
-      });
-
-      it('should return an error if recover password fails', async () => {
-        class ErrorSample extends DomainError {}
-
-        jest.spyOn(users, 'recoverPassword').mockImplementation(() => {
-          throw new ErrorSample('error on recoverPassword', 'error_code');
-        });
-        const response = await request(app)
-          .post('/api/recoverpassword')
-          .send({ email: 'recover@me.com' });
-        expect(response.status).toBe(400);
-        expect(response.body.prettyMessage).toContain('error on recoverPassword');
-      });
-    });
-
-    describe('/resetpassword', () => {
-      it.each([
-        { key: 'key', password: undefined, keyword: 'required' },
-        { key: undefined, password: 'pass', keyword: 'required' },
-      ])('should invalidate if the schema is not matched', async ({ key, password, keyword }) => {
-        const response = await request(app).post('/api/resetpassword').send({ key, password });
-        expect(response.status).toBe(400);
-        expect(response.body.errors[0].keyword).toEqual(keyword);
-      });
-
-      it('should call users update with the body', async () => {
-        //@ts-ignore
-        jest.spyOn(users, 'resetPassword').mockImplementation(async () => Promise.resolve({}));
-        const response = await request(app)
-          .post('/api/resetpassword')
-          .send({ key: 'key', password: 'pass' });
-        expect(response.status).toBe(200);
-        expect(users.resetPassword).toHaveBeenCalledWith({ key: 'key', password: 'pass' });
-      });
-    });
-
-    describe('/unlockaccount', () => {
-      it.each([
-        { username: 'name', code: undefined, keyword: 'required' },
-        { username: undefined, code: 'code', keyword: 'required' },
-      ])('should invalidate if the schema is not matched', async ({ username, code, keyword }) => {
-        const response = await request(app).post('/api/unlockaccount').send({ username, code });
-        expect(response.status).toBe(400);
-        expect(response.body.errors[0].keyword).toEqual(keyword);
-      });
-      it('should call users.unlockAccount with the body', async () => {
-        jest
-          .spyOn(users, 'unlockAccount')
-          .mockImplementation(async () => Promise.resolve({} as WithId<User> & { __v: number }));
-        const response = await request(app)
-          .post('/api/unlockAccount')
-          .send({ username: 'user1', code: 'code' });
-        expect(response.status).toBe(200);
-        expect(users.unlockAccount).toHaveBeenCalledWith({ username: 'user1', code: 'code' });
-      });
-    });
-  });
-
   describe('GET', () => {
     it('should need authorization', async () => {
-      jest.spyOn(users, 'get').mockImplementation(async () => Promise.resolve(['users']));
       currentUser = editorUser;
       const response = await request(app).get('/api/users');
       expect(response.status).toBe(401);
     });
 
-    it('should call users get and filter out Public user', async () => {
-      const mockUsers = [
-        { _id: 'user1', username: 'User1' },
-        { _id: PUBLIC_USER_ID, username: 'PublicUser' },
-        { _id: 'user2', username: 'User2' },
-      ];
-      jest.spyOn(users, 'get').mockImplementation(async () => Promise.resolve(mockUsers as any));
-
-      const response = await request(app).get('/api/users');
-
-      expect(response.status).toBe(200);
-      expect(users.get).toHaveBeenCalledWith({}, '+groups +failedLogins +accountLocked');
-      expect(response.body).toHaveLength(2);
-      expect(
-        response.body.find((u: any) => u._id.toString() === PUBLIC_USER_ID.toString())
-      ).toBeUndefined();
-      expect(response.body).toEqual([
-        { _id: 'user1', username: 'User1' },
-        { _id: 'user2', username: 'User2' },
-      ]);
-    });
+    // What the route returns is GetUsersController.spec.ts's job — it exercises the real
+    // query service against fixtures, including the public-user and soft-delete exclusions.
   });
 
   describe('DELETE', () => {
-    beforeEach(() => {
-      jest
-        .spyOn(users, 'delete')
-        .mockImplementation(async () => Promise.resolve({} as DeleteResult));
-    });
-
-    it('should invalidate if the schema is not matched', async () => {
-      const response = await request(app).delete('/api/users');
-      expect(response.status).toBe(422);
-    });
-
     it('should need authorization', async () => {
       currentUser = editorUser;
       const response = await request(app)
         .delete('/api/users')
         .query({ ids: JSON.stringify(['user1']) });
       expect(response.status).toBe(401);
-    });
-
-    it('should use users to delete it', async () => {
-      const response = await request(app)
-        .delete('/api/users')
-        .query({ ids: JSON.stringify(['userToDeleteId']) });
-      expect(response.status).toBe(200);
-      expect(users.delete).toHaveBeenCalledWith(['userToDeleteId'], currentUser);
     });
   });
 });

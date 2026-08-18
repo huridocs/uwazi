@@ -1,7 +1,7 @@
 {
   "packageManager": "yarn@4.13.0",
   "name": "uwazi",
-  "version": "1.229.0-rc493",
+  "version": "1.229.0-rc494",
   "type": "module",
   "description": "Uwazi is a free, open-source solution for organising, analysing and publishing your documents.",
   "keywords": [
@@ -53,6 +53,7 @@
     "update-translations-db": "node ./scripts/runner.js ./scripts/updateTranslationsDB.js",
     "update-translations-csv": "node --no-experimental-fetch ./scripts/updateTranslationsCSV.mjs",
     "describe-database": "node --no-experimental-fetch ./scripts/describeDatabase.mjs",
+    "migration-status": "node --no-experimental-fetch ./scripts/migrationStatus.mjs",
     "tailwind": "npx @tailwindcss/cli -i ./app/react/App/styles/tailwind.css -o ./app/react/App/styles/globals.css",
     "tailwind:watch": "npx @tailwindcss/cli -i ./app/react/App/styles/tailwind.css -o ./app/react/App/styles/globals.css --watch",
     "hot": "HOT=true BABEL_ENV=debug concurrently \"yarn run watch-types\" \"yarn run dev-server\" \"yarn run webpack-server\"",

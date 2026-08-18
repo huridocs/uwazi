@@ -2,7 +2,6 @@ import type { Application, NextFunction, Request, Response } from 'express';
 import request from 'supertest';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { setUpApp } from '#api/utils/testingRoutes.js';
-import { testingTenants } from '#api/utils/testingTenants.js';
 import { UserRole } from '#shared/types/userSchema.js';
 import auth2faRoutes from '../routes.js';
 import fixtures, { secretedUserId } from './fixtures.js';
@@ -31,44 +30,51 @@ describe('POST /api/auth2fa-reset', () => {
     await testingEnvironment.tearDown();
   });
 
-  describe('when the v2Auth2fa flag is off (legacy path)', () => {
-    it('should disable two-factor authentication and clear the secret for the target user', async () => {
-      const response = await request(app)
-        .post('/api/auth2fa-reset')
-        .send({ _id: secretedUserId.toHexString() });
+  it('should disable two-factor authentication and clear the secret for the target user', async () => {
+    const response = await request(app)
+      .post('/api/auth2fa-reset')
+      .send({ _id: secretedUserId.toHexString() });
 
-      expect(response.status).toBe(200);
+    expect(response.status).toBe(200);
 
-      const user = await testingEnvironment.db
-        .getCollection('users')!
-        .findOne({ _id: secretedUserId });
-      expect(user?.using2fa).toBe(false);
-      expect(user?.secret).toBe(null);
-    });
+    const user = await testingEnvironment.db
+      .getCollection('users')!
+      .findOne({ _id: secretedUserId });
+    expect(user?.using2fa).toBe(false);
+    expect(user?.secret).toBe(null);
   });
 
-  describe('when the v2Auth2fa flag is on', () => {
-    beforeEach(() => {
-      testingTenants.changeCurrentTenant({ featureFlags: { v2Auth2fa: true } });
-    });
+  it('should return 422 when _id is missing', async () => {
+    const response = await request(app).post('/api/auth2fa-reset').send({});
+    expect(response.status).toBe(422);
+  });
 
-    it('should disable two-factor authentication and clear the secret for the target user', async () => {
-      const response = await request(app)
-        .post('/api/auth2fa-reset')
-        .send({ _id: secretedUserId.toHexString() });
+  it('should return 422 when _id is not an ObjectId', async () => {
+    const response = await request(app).post('/api/auth2fa-reset').send({ _id: 'not-an-objectid' });
 
-      expect(response.status).toBe(200);
+    expect(response.status).toBe(422);
 
-      const user = await testingEnvironment.db
-        .getCollection('users')!
-        .findOne({ _id: secretedUserId });
-      expect(user?.using2fa).toBe(false);
-      expect(user?.secret).toBe(null);
-    });
+    const user = await testingEnvironment.db
+      .getCollection('users')!
+      .findOne({ _id: secretedUserId });
+    expect(user?.using2fa).toBe(true);
+  });
 
-    it('should return 422 when _id is missing', async () => {
-      const response = await request(app).post('/api/auth2fa-reset').send({});
-      expect(response.status).toBe(422);
-    });
+  it('should report success but change nothing for a soft-deleted user', async () => {
+    await testingEnvironment.db
+      .getCollection('users')!
+      .updateOne({ _id: secretedUserId }, { $set: { deletedAt: new Date() } });
+
+    const response = await request(app)
+      .post('/api/auth2fa-reset')
+      .send({ _id: secretedUserId.toHexString() });
+
+    expect(response.status).toBe(200);
+
+    const user = await testingEnvironment.db
+      .getCollection('users')!
+      .findOne({ _id: secretedUserId });
+    expect(user?.using2fa).toBe(true);
+    expect(user?.secret).toBe('correctSecret');
   });
 });

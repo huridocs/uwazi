@@ -43,22 +43,9 @@ describe('GET /api/user', () => {
     await testingEnvironment.tearDown();
   });
 
-  describe('when v2Login is off', () => {
+  describe('reading the current user', () => {
     beforeEach(() => {
-      testingTenants.changeCurrentTenant({ domain: 'uwazi', featureFlags: { v2Login: false } });
-    });
-
-    it('should return an empty object for an anonymous request', async () => {
-      const response = await request(app).get('/api/user');
-
-      expect(response.status).toBe(200);
-      expect(response.body).toEqual({});
-    });
-  });
-
-  describe('when v2Login is on', () => {
-    beforeEach(() => {
-      testingTenants.changeCurrentTenant({ domain: 'uwazi', featureFlags: { v2Login: true } });
+      testingTenants.changeCurrentTenant({ domain: 'uwazi' });
     });
 
     it('should return an empty object for an anonymous request', async () => {

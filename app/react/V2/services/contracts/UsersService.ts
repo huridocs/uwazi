@@ -1,8 +1,12 @@
-import type { User } from '#shared/contracts/Users.js';
+import type { User, UpdateUserRequest } from '#shared/contracts/Users.js';
 import { ApiResponse } from '#V2/api/ApiResponse.js';
 import type { ServiceRequestOptions } from './ServiceRequestOptions.js';
 
-type UserInput = User & { rowId?: string };
+/**
+ * Built on the request type, not the response type: `upsert` is the write path, and it is
+ * where the settings form's password change travels (D12).
+ */
+type UserInput = UpdateUserRequest & { rowId?: string };
 
 type TwoFactorSecret = {
   otpauth: string;

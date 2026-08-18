@@ -1,4 +1,5 @@
-import type { User, UserGroup } from '#shared/contracts/Users.js';
+import type { User } from '#shared/contracts/Users.js';
+import type { UserGroup } from '#shared/contracts/UserGroups.js';
 
 const users: User[] = [
   {

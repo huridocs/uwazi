@@ -1,20 +1,13 @@
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-import bodyParser from 'body-parser';
-import express from 'express';
-import request from 'supertest';
-import users from '#api/users/users.js';
 import backend from 'fetch-mock';
-import passport from 'passport';
 import svgCaptcha from 'svg-captcha';
 import instrumentRoutes from '../../utils/instrumentRoutes.js';
 import { CaptchaModel } from '../CaptchaModel.js';
-import { comparePasswords } from '../encryptPassword.js';
-import authRoutes, { populateAuthenticatedUser } from '../routes.js';
+import authRoutes from '../routes.js';
 import fixtures from './fixtures.js';
 
 describe('Auth Routes', () => {
   let routes;
-  let app;
 
   beforeEach(async () => {
     await testingEnvironment.setUp(fixtures);
@@ -23,81 +16,6 @@ describe('Auth Routes', () => {
 
   afterAll(async () => {
     await testingEnvironment.tearDown();
-  });
-
-  describe('/login', () => {
-    beforeEach(() => {
-      app = express();
-      app.use(bodyParser.json());
-      populateAuthenticatedUser(app);
-      authRoutes(app);
-    });
-
-    const expectNextOnError = async username => {
-      const req = { body: { username, password: 'badPassword' }, get: () => {} };
-      const next = jest.fn();
-      try {
-        await routes.post('/api/login', req, {}, next);
-      } catch (err) {
-        expect(next.mock.calls[0][0].code).toBe(401);
-        expect(next.mock.calls[0][0].message).toMatch(/invalid username or password/i);
-      }
-    };
-
-    it('should have a validation schema', () => {
-      expect(routes.post.validation('/api/login')).toMatchSnapshot();
-    });
-
-    it('should login succesfully with sha256', async () => {
-      await request(app)
-        .post('/api/login')
-        .send({ username: 'oldUser', password: 'oldPassword' })
-        .expect(200);
-    });
-
-    it('should fail properly with sha256', async () => {
-      await expectNextOnError('oldUser');
-    });
-
-    it('should fail properly with sha256', async () => {
-      const originalSerializers = passport._serializers;
-      passport._serializers = [];
-
-      passport.serializeUser((_user, done) => {
-        done(new Error('logIn error'));
-      });
-      await request(app)
-        .post('/api/login')
-        .send({ username: 'oldUser', password: 'oldPassword' })
-        .expect(500);
-
-      passport._serializers = originalSerializers;
-    });
-
-    it('should login succesfully with bcrypt', async () => {
-      const res = await request(app)
-        .post('/api/login')
-        .send({ username: 'newUser', password: 'newPassword' });
-
-      expect(res.statusCode).toBe(200);
-    });
-
-    it('should fail properly with bcrypt', async () => {
-      await expectNextOnError('newUser');
-    });
-
-    describe('when loging in with old encryption', () => {
-      it('should reencrypt the password using bcrypt', async () => {
-        await request(app)
-          .post('/api/login')
-          .send({ username: 'oldUser', password: 'oldPassword' })
-          .expect(200);
-
-        const [oldUser] = await users.get({ username: 'oldUser' }, '+password');
-        const passwordHasBeenChanged = await comparePasswords('oldPassword', oldUser.password);
-        expect(passwordHasBeenChanged).toBe(true);
-      });
-    });
   });
 
   describe('/captcha', () => {

@@ -3,7 +3,6 @@ import type { Application, NextFunction, Request, Response } from 'express';
 import request from 'supertest';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { setUpApp } from '#api/utils/testingRoutes.js';
-import { testingTenants } from '#api/utils/testingTenants.js';
 import { userRoutes } from '../routes.js';
 import { fixtures, f } from './fixtures.js';
 
@@ -23,10 +22,9 @@ const app: Application = setUpApp(
   }
 );
 
-describe('GET /api/users (v2)', () => {
+describe('GET /api/users', () => {
   beforeAll(async () => {
     await testingEnvironment.setUp(fixtures);
-    testingTenants.changeCurrentTenant({ featureFlags: { v2UsersGet: true } });
   });
 
   afterAll(async () => {

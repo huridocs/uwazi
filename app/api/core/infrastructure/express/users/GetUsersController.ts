@@ -8,10 +8,13 @@ class GetUsersController extends AbstractController {
     const startTime = Date.now();
     try {
       const queryService = UsersQueryServiceFactory.default();
-      const users = await queryService.listWithGroups({});
+      const users = await queryService.listUsers();
 
+      // Field-for-field, and deliberately still explicit: UserProfile is the server-side
+      // read model and GetUsersResponse is the wire contract, so the two stay free to
+      // version independently (D2).
       const response: GetUsersResponse = users.map(user => ({
-        _id: user._id.toString(),
+        _id: user._id,
         username: user.username,
         role: user.role,
         email: user.email,

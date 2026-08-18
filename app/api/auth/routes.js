@@ -9,7 +9,6 @@ import settings from '#api/settings/index.js';
 import { DB } from '#api/odm/index.js';
 import { config } from '#api/config.js';
 import request from '#shared/JSONRequest.js';
-import { randomSleep } from '#shared/tsUtils.js';
 import { tenants } from '#api/tenants/index.js';
 import { LoginController } from '#api/core/infrastructure/express/users/LoginController.js';
 import { LogoutController } from '#api/core/infrastructure/express/users/LogoutController.js';
@@ -17,8 +16,6 @@ import { GetCurrentUserController } from '#api/core/infrastructure/express/users
 import { CaptchaController } from '#api/core/infrastructure/express/captcha/CaptchaController.js';
 import { RemoteCaptchaController } from '#api/core/infrastructure/express/captcha/RemoteCaptchaController.js';
 import { CaptchaModel } from './CaptchaModel.js';
-
-import { validation } from '#api/utils/index.js';
 
 import './passport_conf.js';
 
@@ -48,78 +45,11 @@ const populateAuthenticatedUser = app => {
 };
 
 const authRoutes = app => {
-  app.post(
-    '/api/login',
+  app.post('/api/login', LoginController.createHandler());
 
-    async (req, res, next) => {
-      await randomSleep(500, 1_000);
+  app.get('/api/user', GetCurrentUserController.createHandler());
 
-      if (tenants.current().featureFlags?.v2Login) {
-        await LoginController.createHandler()(req, res);
-        return;
-      }
-
-      next();
-    },
-
-    validation.validateRequest({
-      type: 'object',
-      properties: {
-        body: {
-          type: 'object',
-          properties: {
-            username: { type: 'string', minLength: 1 },
-            password: { type: 'string', minLength: 1 },
-            token: { type: 'string' },
-          },
-          required: ['username', 'password'],
-        },
-      },
-      required: ['body'],
-    }),
-
-    // @deprecated v1 fallback for the `v2Login` flag, superseded by LoginController above.
-    // Remove once v2Login is enabled for all tenants.
-    async (req, res, next) => {
-      passport.authenticate('local', (err, user) => {
-        if (err) {
-          next(err);
-          return;
-        }
-        req.logIn(user, error => {
-          if (error) {
-            next(error);
-            return;
-          }
-          res.status(200);
-          res.json({ success: true });
-        });
-      })(req, res, next);
-    }
-  );
-
-  app.get('/api/user', async (req, res) => {
-    if (tenants.current().featureFlags?.v2Login) {
-      await GetCurrentUserController.createHandler()(req, res);
-      return;
-    }
-
-    // @deprecated v1 fallback for the `v2Login` flag, superseded by GetCurrentUserController above.
-    // Remove once v2Login is enabled for all tenants.
-    res.json(req.user || {});
-  });
-
-  app.get('/logout', async (req, res) => {
-    if (tenants.current().featureFlags?.v2Login) {
-      await LogoutController.createHandler()(req, res);
-      return;
-    }
-
-    // @deprecated v1 fallback for the `v2Login` flag, superseded by LogoutController above.
-    // Remove once v2Login is enabled for all tenants.
-    req.session.destroy();
-    res.redirect('/');
-  });
+  app.get('/logout', LogoutController.createHandler());
 
   const corsOptions = {
     origin: true,
