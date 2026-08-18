@@ -11,10 +11,6 @@ import {
 import { userRoutes } from '../routes.js';
 import { fixtures, f } from './fixtures.js';
 
-jest.mock('../../../../../auth/encryptPassword.ts', () => ({
-  encryptPassword: async () => Promise.resolve('hush hush super secret'),
-}));
-
 jest.mock('../../../../../auth/validatePasswordMiddleWare.ts', () => ({
   validatePasswordMiddleWare: (_req: Request, _res: Response, next: NextFunction) => next(),
 }));
