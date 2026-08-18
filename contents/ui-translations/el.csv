@@ -1,8 +1,11 @@
 Key,Greek
+"""Costa Rica""","""Costa Rica"""
+"""the status""~5","""the status""~5"
 *please keep this key secret and don't share it.,*κρατήστε μυστικό αυτό το κλειδί και μην το μοιραστείτε με κανέναν.
 + Add data source,+ Add data source
 + Add filter,+ Add filter
 + click to select multiple cards.,+ κάντε κλικ για να επιλέξετε πολλαπλές κάρτες.
+198?,198?
 2FA,2FA
 2FA Enabled,Το 2FA ενεργοποιήθηκε
 A default template cannot be deleted.,Ένα προεπιλεγμένο πρότυπο δεν μπορεί να διαγραφεί.
@@ -104,6 +107,7 @@ Analytics,Αναλυτικά στοιχεία
 Analytics description,"Αν θέλετε να παρακολουθείτε αναλυτικά στοιχεία σχετικά με τις επισκέψεις στη συλλογή σας, το Uwazi υποστηρίζει τόσο το Google Analytics όσο και το Matomo."
 AND OR NOT,AND OR NOT
 Any entity,Οποιαδήποτε οντότητα
+any single character,any single character
 Anyone can see this entity,Anyone can see this entity
 Appearance,Appearance
 Apply,Εφαρμογή
@@ -206,6 +210,7 @@ Collection,Συλλογή
 Collection Name,Όνομα συλλογής
 Colors,Colors
 Colors come from the server data layer. Preview shows assigned bucket colors when available.,Colors come from the server data layer. Preview shows assigned bucket colors when available.
+combine or exclude terms,combine or exclude terms
 Common sources,Κοινές πηγές
 Completed,Completed
 Completed with errors,Completed with errors
@@ -606,6 +611,7 @@ it has been logged with request id #,έχει καταγραφεί με αναγ
 Item,Στοιχείο
 Items:,Στοιχεία:
 Javascript,Javascript
+juris*,juris*
 key,κλειδί
 Label,Ετικέτα
 "Label date ""From""",Από:
@@ -696,6 +702,7 @@ Match,Αντιστοιχία
 match,match
 match verbatim,match verbatim
 matches,matches
+"matches jurisdiction, jurists, jurisprudence","matches jurisdiction, jurists, jurisprudence"
 Matches show the passage and the page they are on.,Matches show the passage and the page they are on.
 Matching,Αντιστοίχιση
 matching,αντιστοίχιση
@@ -863,7 +870,6 @@ Or paste a URL,Or paste a URL
 Order,Παραγγελία
 Other,Άλλα
 other,άλλα
-Other files,Other files
 Other users will be affected by this action!,Αυτή η ενέργεια θα επηρεάσει και άλλους χρήστες.
 Others,Άλλοι
 Outgoing,Outgoing
@@ -1014,7 +1020,6 @@ Release message,Release message
 remaining files,υπόλοιπα αρχεία
 Remote Server Unreachable,Απομακρυσμένος διακομιστής μη προσβάσιμος
 Remove,Αφαίρεση
-Remove file,Remove file
 Remove from connection,Remove from connection
 Remove from training set,Αφαίρεση από το σύνολο εκπαίδευσης
 remove icon,αφαιρέση εικονίδιου
@@ -1244,6 +1249,8 @@ The request could not be processed.,Το αίτημα δεν μπόρεσε να
 The source of this template is a sync.,Η πηγή αυτού του προτύπου είναι συγχρονισμός.
 The token does not validate against the secret key,Το token δεν επικυρώνεται με το μυστικό κλειδί
 The token does not validate against the secret key!,Το token δεν επικυρώνεται με το μυστικό κλειδί!
+"the words together, in that order","the words together, in that order"
+the words within 5 of each other,the words within 5 of each other
 Theme and branding,Theme and branding
 Theme colors,Theme colors
 Theme colors imported,Theme colors imported

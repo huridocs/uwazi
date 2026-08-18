@@ -4,12 +4,35 @@ import { Translate, t } from '#app/I18N/index.js';
 
 // Entity Searchtab tips UI — Library keeps App/SearchTipsContent (intentional split).
 
-const TIPS: { example: string; prose: string; wide?: boolean }[] = [
-  { example: 'juris*', prose: 'matches jurisdiction, jurists, jurisprudence' },
-  { example: '198?', prose: 'any single character' },
-  { example: '"Costa Rica"', prose: 'the words together, in that order' },
-  { example: '"the status"~5', prose: 'the words within 5 of each other' },
-  { example: 'status AND women NOT Nicaragua', prose: 'combine or exclude terms', wide: true },
+type Tip = {
+  example: () => string;
+  prose: React.ReactElement;
+  wide?: boolean;
+};
+
+const TIPS: Tip[] = [
+  {
+    example: () => t('System', 'juris*', 'juris*', false),
+    prose: <Translate>matches jurisdiction, jurists, jurisprudence</Translate>,
+  },
+  {
+    example: () => t('System', '198?', '198?', false),
+    prose: <Translate>any single character</Translate>,
+  },
+  {
+    example: () => t('System', '"Costa Rica"', '"Costa Rica"', false),
+    prose: <Translate>the words together, in that order</Translate>,
+  },
+  {
+    example: () => t('System', '"the status"~5', '"the status"~5', false),
+    prose: <Translate>the words within 5 of each other</Translate>,
+  },
+  {
+    example: () =>
+      t('System', 'status AND women NOT Nicaragua', 'status AND women NOT Nicaragua', false),
+    prose: <Translate>combine or exclude terms</Translate>,
+    wide: true,
+  },
 ];
 
 const ROW_CLASS =
@@ -31,27 +54,28 @@ const SearchTipsContent = ({ onInsert }: SearchTipsContentProps) => (
       </span>
     </div>
     <ul className="flex flex-col">
-      {TIPS.map(tip => (
-        <li key={tip.example}>
-          <button
-            type="button"
-            onClick={() => onInsert(tip.example)}
-            aria-label={`${t('System', 'Search', null, false)}: ${tip.example}`}
-            className={`${ROW_CLASS} ${
-              tip.wide
-                ? 'flex items-baseline gap-x-3'
-                : 'grid grid-cols-[7rem_1fr] items-baseline gap-x-3'
-            }`}
-          >
-            <span dir="ltr" className={EXAMPLE_CLASS}>
-              {tip.example}
-            </span>
-            <span className={PROSE_CLASS}>
-              <Translate>{tip.prose}</Translate>
-            </span>
-          </button>
-        </li>
-      ))}
+      {TIPS.map(tip => {
+        const example = tip.example();
+        return (
+          <li key={example}>
+            <button
+              type="button"
+              onClick={() => onInsert(example)}
+              aria-label={`${t('System', 'Search', null, false)}: ${example}`}
+              className={`${ROW_CLASS} ${
+                tip.wide
+                  ? 'flex items-baseline gap-x-3'
+                  : 'grid grid-cols-[7rem_1fr] items-baseline gap-x-3'
+              }`}
+            >
+              <span dir="ltr" className={EXAMPLE_CLASS}>
+                {example}
+              </span>
+              <span className={PROSE_CLASS}>{tip.prose}</span>
+            </button>
+          </li>
+        );
+      })}
     </ul>
   </>
 );

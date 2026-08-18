@@ -1,8 +1,11 @@
 Key,Ukrainian
+"""Costa Rica""","""Costa Rica"""
+"""the status""~5","""the status""~5"
 *please keep this key secret and don't share it.,"*будь ласка, зберігайте цей ключ у таємниці та не передавайте його нікому."
 + Add data source,+ Add data source
 + Add filter,+ Add filter
 + click to select multiple cards.,"(+) натисніть, щоб вибрати декілька карток"
+198?,198?
 2FA,2FA
 2FA Enabled,2FA Увімкнено
 A default template cannot be deleted.,Шаблон за замовчуванням не можна видалити.
@@ -104,6 +107,7 @@ Analytics,Аналітика
 Analytics description,"Якщо ви хочете відстежувати аналітику, пов'язану з відвідуваннями вашої колекції, Uwazi підтримує як Google Analytics, так і Matomo."
 AND OR NOT,AND OR NOT
 Any entity,Будь-який суб'єкт
+any single character,any single character
 Anyone can see this entity,Anyone can see this entity
 Appearance,Appearance
 Apply,Подати заявку
@@ -207,6 +211,7 @@ Collection,Колекція
 Collection Name,Назва колекції
 Colors,Colors
 Colors come from the server data layer. Preview shows assigned bucket colors when available.,Colors come from the server data layer. Preview shows assigned bucket colors when available.
+combine or exclude terms,combine or exclude terms
 Common sources,Загальні джерела
 Completed,Completed
 Completed with errors,Completed with errors
@@ -607,6 +612,7 @@ it has been logged with request id #,його було зареєстрован�
 Item,Пункт
 Items:,Елементи:
 Javascript,Javascript
+juris*,juris*
 key,ключ
 Label,Мітка
 "Label date ""From""",з
@@ -697,6 +703,7 @@ Match,Матч
 match,match
 match verbatim,match verbatim
 matches,matches
+"matches jurisdiction, jurists, jurisprudence","matches jurisdiction, jurists, jurisprudence"
 Matches show the passage and the page they are on.,Matches show the passage and the page they are on.
 Matching,Відповідність
 matching,відповідність
@@ -864,7 +871,6 @@ Or paste a URL,Or paste a URL
 Order,Порядок
 Other,Інший
 other,Інший
-Other files,Other files
 Other users will be affected by this action!,Ця дія вплине на інших користувачів!
 Others,Інші
 Outgoing,Outgoing
@@ -1015,7 +1021,6 @@ Release message,Release message
 remaining files,решта файлів
 Remote Server Unreachable,Віддалений сервер недоступний
 Remove,Видалити
-Remove file,Remove file
 Remove from connection,Remove from connection
 Remove from training set,Видалити з тренувального набору
 remove icon,видалити піктограму
@@ -1245,6 +1250,8 @@ The request could not be processed.,Запит не вдалося оброби�
 The source of this template is a sync.,Джерелом цього шаблону є синхронізація.
 The token does not validate against the secret key,Токен не перевіряється за допомогою секретного ключа
 The token does not validate against the secret key!,Токен не перевіряється за допомогою секретного ключа!
+"the words together, in that order","the words together, in that order"
+the words within 5 of each other,the words within 5 of each other
 Theme and branding,Theme and branding
 Theme colors,Theme colors
 Theme colors imported,Theme colors imported
