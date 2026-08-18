@@ -132,6 +132,7 @@ describe('public dataviz embed integration', () => {
     req.user = { _id: 'adminUser', role: 'admin' };
     next();
   });
+  const anonymousApp: Application = setUpApp(datavizRoutes);
 
   beforeAll(async () => {
     await testingEnvironment.setUp(fixtures);
@@ -261,5 +262,61 @@ describe('public dataviz embed integration', () => {
 
     expect(embedResponse.body.data.series).toHaveLength(1);
     expect(embedResponse.body.data.meta.totalEntities).toBeGreaterThan(0);
+  });
+
+  it('should include unpublished entities for anonymous live embeds, matching snapshot charts', async () => {
+    await testingEnvironment.runWithContext(async () => {
+      const { getConnection } =
+        await import('#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js');
+      const db = getConnection();
+      await db.collection('entities').insertOne({
+        _id: factory.id('unpublished-car'),
+        sharedId: 'unpublished_car_shared',
+        language: 'en',
+        template: templateId,
+        title: 'Unpublished car',
+        published: false,
+        metadata: {
+          registration_date: [{ value: 804863301 }],
+          engine_size: [{ value: 9.9 }],
+        },
+      });
+    });
+
+    const liveResponse = await request(app)
+      .post('/api/dataviz')
+      .send({
+        ...livePieQueryChart,
+        name: 'Live unpublished anonymous',
+      })
+      .expect(200);
+
+    const snapshotResponse = await request(app)
+      .post('/api/dataviz')
+      .send({
+        ...livePieQueryChart,
+        name: 'Snapshot unpublished anonymous',
+        refresh: { refreshMode: 'snapshot_manual' },
+      })
+      .expect(200);
+
+    const liveEmbed = await request(anonymousApp)
+      .get(`/api/public/dataviz/${liveResponse.body.id}/data`)
+      .query({ locale: 'en' })
+      .expect(200);
+
+    const snapshotEmbed = await request(anonymousApp)
+      .get(`/api/public/dataviz/${snapshotResponse.body.id}/data`)
+      .query({ locale: 'en' })
+      .expect(200);
+
+    const unpublishedPoint = (embed: {
+      body: { data: { series: Array<{ points: Array<{ key: string; value: number }> }> } };
+    }) => embed.body.data.series[0].points.find(point => Number(point.key) === 9.9);
+
+    expect(unpublishedPoint(liveEmbed)?.value).toBe(1);
+    expect(unpublishedPoint(snapshotEmbed)?.value).toBe(1);
+    expect(liveEmbed.body.data.meta.totalEntities).toBe(snapshotEmbed.body.data.meta.totalEntities);
+    expect(liveEmbed.body.data.meta.totalEntities).toBeGreaterThanOrEqual(4);
   });
 });
