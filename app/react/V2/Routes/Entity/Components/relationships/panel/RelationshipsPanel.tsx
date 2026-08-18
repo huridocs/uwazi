@@ -1,3 +1,4 @@
+/* eslint-disable react/no-multi-comp */
 import React, { useCallback, useEffect } from 'react';
 import { LinkIcon } from '@heroicons/react/24/outline';
 import { Translate } from '#app/I18N/index.js';
@@ -14,17 +15,20 @@ import {
   useEntityOverlay,
   useEntityLanguage,
   useEntityWriteAuthorized,
+  useEntityScopedEntity,
 } from '#V2/Routes/Entity/Components/context/index.js';
 import { useActiveRelationshipHighlight } from '#V2/Routes/Entity/Components/document/index.js';
 import { useGroupLabelContext } from '../hooks/useGroupLabelContext.js';
 import { useRelationshipDelete } from '../hooks/useRelationshipDelete.js';
+import { useSsrOnlyContent } from '../hooks/useSsrOnlyContent.js';
+import { RelationshipsSsrIndex } from './RelationshipsSsrIndex.js';
 
 type RelationshipsPanelProps = {
   focusDocumentOnSelect?: boolean;
   onFocusDocument?: () => void;
 };
 
-const RelationshipsPanel = ({
+const RelationshipsPanelView = ({
   focusDocumentOnSelect = false,
   onFocusDocument,
 }: RelationshipsPanelProps) => {
@@ -147,6 +151,25 @@ const RelationshipsPanel = ({
         />
       )}
     </div>
+  );
+};
+
+const RelationshipsPanel = ({
+  focusDocumentOnSelect,
+  onFocusDocument,
+}: RelationshipsPanelProps) => {
+  const showSsrIndex = useSsrOnlyContent();
+  const entity = useEntityScopedEntity();
+
+  if (showSsrIndex) {
+    return <RelationshipsSsrIndex entity={entity} />;
+  }
+
+  return (
+    <RelationshipsPanelView
+      focusDocumentOnSelect={focusDocumentOnSelect}
+      onFocusDocument={onFocusDocument}
+    />
   );
 };
 
