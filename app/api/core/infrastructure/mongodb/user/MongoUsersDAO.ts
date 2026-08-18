@@ -96,11 +96,7 @@ class MongoUsersDAO extends MongoDataSource<UserDBO> {
     await this.getCollection<UserDBO>().updateOne(this.scoped(filter, options.scope), update);
   }
 
-  /**
-   * Guarded like the reads. It is a write, but the system-user guard matters most here:
-   * the previous implementation guarded nothing at all.
-   */
-  async softDelete(ids: string[], options: { scope?: UserScope } = {}): Promise<number> {
+  async delete(ids: string[], options: { scope?: UserScope } = {}): Promise<number> {
     if (!ids.length) {
       return 0;
     }

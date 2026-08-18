@@ -161,7 +161,7 @@ class PostgresUsersDAO extends PostgresDataSource<UserRow> {
     await this.scoped(this.table.where(condition), options.scope).update(changes);
   }
 
-  async softDelete(ids: string[], options: { scope?: UserScope } = {}): Promise<number> {
+  async delete(ids: string[], options: { scope?: UserScope } = {}): Promise<number> {
     if (!ids.length) {
       return 0;
     }
