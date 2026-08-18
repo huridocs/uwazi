@@ -83,7 +83,7 @@ const RelationshipsPanel = ({
             hasMainDocument ? (
               <Translate translationKey="relationships blank state with document">
                 {
-                  'To add references you can start by selecting text in the document.\n or select **Edit**, then **Create relationship**.'
+                  'To add references you can start by selecting text in the document\n or select **Edit**, then **Create relationship**.'
                 }
               </Translate>
             ) : (
