@@ -8,24 +8,23 @@ enum UserRole {
   COLLABORATOR = 'collaborator',
 }
 
-type UserGroup = {
-  _id: string;
-  name: string;
-};
-
 type UserProps = {
   _id: string;
   username: string;
   role: UserRole;
   email: string;
-  groups?: UserGroup[];
 };
 
-type UserProfile = {
+/**
+ * The editable identity fields, i.e. `updateProfile`'s argument. Named `...Props` rather
+ * than `UserProfile` so it does not read as a sibling of the `UserProfile` read model in
+ * `application/contracts/UserReadModels.ts` — that one is a read projection carrying
+ * account state, this one is a write-side input.
+ */
+type UserProfileProps = {
   username: string;
   role: UserRole;
   email: string;
-  groups?: UserGroup[];
 };
 
 class User {
@@ -37,23 +36,19 @@ class User {
 
   email: string;
 
-  groups: UserGroup[];
-
   constructor(props: UserProps) {
     this._id = props._id;
     this.username = props.username;
     this.role = props.role;
     this.email = props.email;
-    this.groups = props.groups ?? [];
   }
 
-  updateProfile(profile: UserProfile): void {
+  updateProfile(profile: UserProfileProps): void {
     this.username = profile.username;
     this.role = profile.role;
     this.email = profile.email;
-    this.groups = profile.groups ?? [];
   }
 }
 
 export { User, UserRole, PUBLIC_USER_ID };
-export type { UserProps, UserGroup, UserProfile };
+export type { UserProps, UserProfileProps };

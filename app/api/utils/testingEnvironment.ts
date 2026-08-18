@@ -55,6 +55,47 @@ const sanitizeEntityForPostgres = (entity: Record<string, unknown>) => {
   return { ...ENTITY_POSTGRES_DEFAULTS, ...cleaned };
 };
 
+// `password` and `using2fa` are NOT NULL in 009-create-users-table.sql but optional in
+// Mongo fixtures. The password sentinel is deliberately not a hash: a fixture that omits
+// a password must never accidentally satisfy a password comparison.
+const USER_POSTGRES_DEFAULTS = {
+  password: 'unset-in-fixture',
+  using2fa: false,
+};
+
+const sanitizeUserForPostgres = (user: Record<string, unknown>) => ({
+  ...USER_POSTGRES_DEFAULTS,
+  ...user,
+});
+
+// Mongo stores members as [{ refId }]; Postgres stores a JSONB array of id strings.
+const sanitizeUserGroupForPostgres = (group: Record<string, unknown>) => ({
+  ...group,
+  members: ((group.members as ({ refId: string } | string)[] | undefined) ?? []).map(member =>
+    typeof member === 'string' ? member : member.refId
+  ),
+});
+
+const PG_SANITIZER_BY_MONGO_COLLECTION: Record<
+  string,
+  (row: Record<string, unknown>) => Record<string, unknown>
+> = {
+  entities: sanitizeEntityForPostgres,
+  users: sanitizeUserForPostgres,
+  usergroups: sanitizeUserGroupForPostgres,
+};
+
+const MIRRORED_COLLECTIONS = [
+  'dictionaries',
+  'templates',
+  'files',
+  'entities',
+  'relationtypes',
+  'captchas',
+  'users',
+  'usergroups',
+];
+
 const PG_TABLE_BY_MONGO_COLLECTION: Record<string, string> = {
   dictionaries: 'thesauri',
   relationtypes: 'relationship_types',
@@ -183,17 +224,16 @@ const testingEnvironment = {
       await testingPG.setFixtures(
         Object.fromEntries(
           Object.entries(fixtures)
-            .filter(([table]) =>
-              ['dictionaries', 'templates', 'files', 'entities', 'relationtypes'].includes(table)
-            )
+            .filter(([table]) => MIRRORED_COLLECTIONS.includes(table))
             .map(([table, fixture]) => {
               const pgTable = PG_TABLE_BY_MONGO_COLLECTION[table] ?? table;
+              const sanitizeForPostgres = PG_SANITIZER_BY_MONGO_COLLECTION[table];
 
               return [
                 pgTable,
                 fixture.map((f: any) => {
                   const sanitized = JSON.parse(JSON.stringify(ObjectUtils.sanitize(f, ['__v'])));
-                  return table === 'entities' ? sanitizeEntityForPostgres(sanitized) : sanitized;
+                  return sanitizeForPostgres ? sanitizeForPostgres(sanitized) : sanitized;
                 }),
               ];
             })

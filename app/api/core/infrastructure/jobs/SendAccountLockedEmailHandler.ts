@@ -1,11 +1,9 @@
-import { ObjectId } from 'mongodb';
 import { HeartbeatCallback } from '#api/core/libs/queue/application/contracts/Dispatchable.js';
-import { UsersDAOFactory } from '#api/core/infrastructure/factories/UsersDAOFactory.js';
+import { UsersDirectoryFactory } from '#api/core/infrastructure/factories/UsersDirectoryFactory.js';
 import { EmailSender } from '#api/core/application/contracts/EmailSender.js';
 import { UwaziJobHandler, UwaziJobParams } from '#api/core/infrastructure/jobs/UwaziJobHandler.js';
 import { PrivilegedJob } from '#api/core/infrastructure/jobs/PrivilegedJob.js';
 import { accountLockedEmail } from '#api/core/domain/email/templates/accountLockedEmail.js';
-import { UserNotFound } from '#api/core/domain/user/errors.js';
 
 type SendAccountLockedEmailHandlerParams = UwaziJobParams & {
   domain: string;
@@ -23,13 +21,14 @@ class SendAccountLockedEmailHandler extends UwaziJobHandler<SendAccountLockedEma
     _heartbeat: HeartbeatCallback,
     params: SendAccountLockedEmailHandlerParams
   ) {
-    const user = await UsersDAOFactory.default().findOne({
-      _id: ObjectId.createFromHexString(params.userId),
-    });
-
-    if (!user) {
-      throw new UserNotFound(params.userId);
-    }
+    // UsersDirectory.getById: the Directory takes a hex string and resolves the backend
+    // itself, and `UserView` cannot carry credentials at all — the DAO's non-credential
+    // column list was a convention, this is the type system. Unconditional, no rollout flag:
+    // the DAO path was already backend-agnostic, so there is no legacy branch to keep.
+    //
+    // getDataOrThrow, as before: a queued email for a user that cannot be resolved should
+    // fail the job, not send to `undefined`.
+    const user = (await UsersDirectoryFactory.default().getById(params.userId)).getDataOrThrow();
 
     const message = accountLockedEmail({
       to: user.email,

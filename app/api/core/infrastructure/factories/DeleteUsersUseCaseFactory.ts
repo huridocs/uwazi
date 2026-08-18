@@ -1,6 +1,6 @@
 import { DeleteUsers, DeleteUsersDependencies } from '#api/core/application/DeleteUsers.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
-import { UsergroupsDataSourceFactory } from './UsergroupsDataSourceFactory.js';
+import { UserGroupsDataSourceFactory } from './UserGroupsDataSourceFactory.js';
 import { UsersDataSourceFactory } from './UsersDataSourceFactory.js';
 
 export class DeleteUsersUseCaseFactory {
@@ -9,7 +9,7 @@ export class DeleteUsersUseCaseFactory {
     const useCase = new DeleteUsers(
       {
         usersDS: UsersDataSourceFactory.default(),
-        usergroupsDS: UsergroupsDataSourceFactory.default(),
+        usergroupsDS: UserGroupsDataSourceFactory.default(),
         transactionManager: ExecutionContext.transactionManager,
         ...overrides,
       },

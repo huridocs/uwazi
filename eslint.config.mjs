@@ -427,6 +427,33 @@ export default defineConfig([
     },
   },
   {
+    // The users DAOs are private building blocks, not an interface. Only UsersDataSource,
+    // UsersDirectory and UsersQueryService may hold one, plus the factories that construct
+    // them — see plans/users-refactor-00-decisions.md#d4. The four duplicated feature-flag
+    // ternaries this fence replaces are what direct factory access spreads into.
+    // Specs under the allowlisted infrastructure directories are exempt by the same paths.
+    files: ['app/**/*.{ts,tsx,js,jsx}'],
+    ignores: [
+      'app/api/core/infrastructure/factories/**',
+      'app/api/core/infrastructure/mongodb/user/**',
+      'app/api/core/infrastructure/postgresql/user/**',
+    ],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          patterns: [
+            {
+              group: ['**/infrastructure/*/user/*UsersDAO*', '**/factories/UsersDAOFactory*'],
+              message:
+                'Users DAOs are private. Use UsersDirectory (any internal module), UsersQueryService (the users settings screen) or UsersDataSource (writes) — see plans/users-refactor-00-decisions.md#d4.',
+            },
+          ],
+        },
+      ],
+    },
+  },
+  {
     files: ['./cypress/**/*.ts', './cypress/**/*.d.ts', './**/*.cy.tsx'],
     plugins: { '@typescript-eslint': typescriptEslint },
     languageOptions: {

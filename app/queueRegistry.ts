@@ -86,6 +86,7 @@ import { EmailSenderFactory } from '#api/core/infrastructure/factories/EmailSend
 import { MigrationJob } from '#api/core/infrastructure/jobs/MigrationJob.js';
 import { MigrationJobFactory } from '#api/core/infrastructure/factories/MigrationJobFactory.js';
 import { CleanupExpiredPasswordRecoveriesJob } from '#api/core/infrastructure/jobs/cleanupExpiredPasswordRecoveriesJob/CleanupExpiredPasswordRecoveriesJob.js';
+import { CleanupExpiredCaptchasJob } from '#api/core/infrastructure/jobs/cleanupExpiredCaptchasJob/CleanupExpiredCaptchasJob.js';
 import { PostgresDB } from '#api/infrastructure/PostgresDB.js';
 import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
 import { withFeature } from '#api/core/libs/logger/infrastructure/StandardLogger.js';
@@ -370,6 +371,15 @@ export function registerJobs(register: Register) {
     CleanupExpiredPasswordRecoveriesJob,
     async () =>
       new CleanupExpiredPasswordRecoveriesJob({
+        pool: PostgresDB.adminPool(),
+        jobsDispatcher: ExecutionContext.jobsDispatcher,
+      })
+  );
+
+  register(
+    CleanupExpiredCaptchasJob,
+    async () =>
+      new CleanupExpiredCaptchasJob({
         pool: PostgresDB.adminPool(),
         jobsDispatcher: ExecutionContext.jobsDispatcher,
       })

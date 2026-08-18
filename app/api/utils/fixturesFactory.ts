@@ -412,12 +412,22 @@ function getFixturesFactory(config?: FixturesFactoryConfig) {
       email,
       password,
       deletedAt,
+      using2fa,
+      secret,
+      accountLocked,
+      failedLogins,
+      accountUnlockCode,
     }: {
       username: string;
       role: UserRole;
       email?: string;
       password?: string;
       deletedAt?: Date | string | number;
+      using2fa?: boolean;
+      secret?: string | null;
+      accountLocked?: boolean;
+      failedLogins?: number;
+      accountUnlockCode?: string;
     }): UserDBO => {
       const user = new User({
         _id: idMapper(username).toString(),
@@ -432,6 +442,11 @@ function getFixturesFactory(config?: FixturesFactoryConfig) {
         email: user.email,
         password: password || 'hash',
         ...(deletedAt && { deletedAt: deletedAt as Date }),
+        ...(using2fa !== undefined && { using2fa }),
+        ...(secret !== undefined && { secret }),
+        ...(accountLocked !== undefined && { accountLocked }),
+        ...(failedLogins !== undefined && { failedLogins }),
+        ...(accountUnlockCode !== undefined && { accountUnlockCode }),
       };
     },
 

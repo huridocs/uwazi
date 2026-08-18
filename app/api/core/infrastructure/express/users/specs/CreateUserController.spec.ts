@@ -33,7 +33,7 @@ describe('POST /api/users/new', () => {
 
   beforeAll(async () => {
     await testingEnvironment.setUp(fixtures);
-    testingTenants.changeCurrentTenant({ domain: 'uwazi', featureFlags: { v2UsersCreate: true } });
+    testingTenants.changeCurrentTenant({ domain: 'uwazi' });
     namespace = tenants.current().name;
   });
 
@@ -107,7 +107,7 @@ describe('POST /api/users/new', () => {
     const response = await request(app)
       .post('/api/users/new')
       .send({
-        username: 'guy in group',
+        username: 'guy-in-group',
         role: 'admin',
         email: 'grouped@test.com',
         password: 'Secret123',
@@ -119,7 +119,7 @@ describe('POST /api/users/new', () => {
 
     expect(response.status).toBe(201);
     expect(response.body.user).toMatchObject({
-      username: 'guy in group',
+      username: 'guy-in-group',
       role: 'admin',
       email: 'grouped@test.com',
     });
@@ -169,6 +169,19 @@ describe('POST /api/users/new', () => {
     expect(response.status).toBe(422);
   });
 
+  it.each([
+    { case: 'an empty username', body: { username: '' }, field: 'username' },
+    { case: 'a username with spaces', body: { username: 'guy in group' }, field: 'username' },
+    { case: 'an empty password', body: { password: '' }, field: 'password' },
+  ])('should return 422 for $case', async ({ body, field }) => {
+    const response = await request(app)
+      .post('/api/users/new')
+      .send({ username: 'newguy2', role: 'editor', email: 'newguy2@test.com', ...body });
+
+    expect(response.status).toBe(422);
+    expect(response.body.validations[0].instancePath).toBe(field);
+  });
+
   it('should return 400 when username already exists', async () => {
     const response = await request(app)
       .post('/api/users/new')
@@ -197,5 +210,7 @@ describe('POST /api/users/new', () => {
       role: 'admin',
       email: 'nopassword@test.com',
     });
+    // a random one is generated and hashed — the account is never left without credentials
+    expect(createdUser?.password).toBe('hush hush super secret');
   });
 });

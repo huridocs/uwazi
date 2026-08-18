@@ -1,8 +1,8 @@
+/* eslint-disable max-statements */
 import type { Application, NextFunction, Request, Response } from 'express';
 import request from 'supertest';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { setUpApp } from '#api/utils/testingRoutes.js';
-import { testingTenants } from '#api/utils/testingTenants.js';
 import { userRoutes } from '../routes.js';
 import { fixtures, f, PUBLIC_USER_ID } from './fixtures.js';
 import { UserRole } from '#api/core/domain/user/User.js';
@@ -35,7 +35,6 @@ const appWithEditorUser: Application = setUpApp(
 describe('POST /api/users', () => {
   beforeEach(async () => {
     await testingEnvironment.setUp(fixtures);
-    testingTenants.changeCurrentTenant({ featureFlags: { v2UsersUpdate: true } });
   });
 
   afterAll(async () => {
@@ -199,6 +198,32 @@ describe('POST /api/users', () => {
       expect(response.body.error).toBe('Cannot change own role');
     }
   );
+
+  describe('validation', () => {
+    it.each([
+      { case: 'a missing username', body: { username: undefined }, field: 'username' },
+      { case: 'an empty username', body: { username: '' }, field: 'username' },
+      { case: 'a username with spaces', body: { username: 'existing user' }, field: 'username' },
+      { case: 'a missing email', body: { email: undefined }, field: 'email' },
+      { case: 'an empty email', body: { email: '' }, field: 'email' },
+      { case: 'a missing role', body: { role: undefined }, field: 'role' },
+      { case: 'an unknown role', body: { role: 'INVALID' }, field: 'role' },
+      { case: 'an empty password', body: { password: '' }, field: 'password' },
+    ])('should reject $case', async ({ body, field }) => {
+      const response = await request(appWithAdminUser)
+        .post('/api/users')
+        .send({
+          _id: f.idString('existinguser'),
+          username: 'existinguser',
+          role: 'editor',
+          email: 'existing@test.com',
+          ...body,
+        });
+
+      expect(response.status).toBe(422);
+      expect(response.body.validations[0].instancePath).toBe(field);
+    });
+  });
 
   it('should not allow modifiying the system user', async () => {
     const response = await request(appWithAdminUser).post('/api/users').send({

@@ -338,14 +338,38 @@ describe('PostgresTable', () => {
       expect(row!.name).toBe('new');
     });
 
+    it('should return the ids of the rows actually updated', async () => {
+      const table = createTable();
+      await table.insert({ _id: 'up-2', name: 'urc-alpha-1', values: jsonVal([]) });
+      await table.insert({ _id: 'up-3', name: 'urc-alpha-2', values: jsonVal([]) });
+      await table.insert({ _id: 'up-4', name: 'urc-beta', values: jsonVal([]) });
+
+      const ids = await table
+        .whereIn('_id', ['up-2', 'up-3'])
+        .update({ values: jsonVal(['updated']) });
+
+      expect(ids.sort()).toEqual(['up-2', 'up-3']);
+      const rows = await table.whereIn('_id', ['up-2', 'up-3']).all();
+      expect(rows.every((r: TestRow) => r.values.length === 1)).toBe(true);
+    });
+
+    it('should return an empty array when nothing matches', async () => {
+      const table = createTable();
+
+      const ids = await table.where({ _id: 'nonexistent' }).update({ name: 'x' });
+
+      expect(ids).toEqual([]);
+    });
+
     it('should enforce tenant_id — cannot update rows from other tenants', async () => {
       const tableA = createTable('tenant-a');
       const tableB = createTable('tenant-b');
 
       await tableA.insert({ _id: 'cross-tenant', name: 'original', values: jsonVal([]) });
 
-      await tableB.where({ _id: 'cross-tenant' }).update({ name: 'hacked' });
+      const ids = await tableB.where({ _id: 'cross-tenant' }).update({ name: 'hacked' });
 
+      expect(ids).toEqual([]);
       const row = await tableA.where({ _id: 'cross-tenant' }).first();
       expect(row!.name).toBe('original');
     });

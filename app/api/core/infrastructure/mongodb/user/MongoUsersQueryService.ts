@@ -1,53 +1,31 @@
-import { Db, Filter } from 'mongodb';
-import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
-import { MongoDataSource } from '../common/MongoDataSource.js';
-import { UserDBO } from './UserDBO.js';
+import type { UsersQueryService } from '#api/core/application/contracts/UsersQueryService.js';
+import type { UserProfile } from '#api/core/application/contracts/UserReadModels.js';
 import { MongoUsersDAO } from './MongoUsersDAO.js';
-
-type UserWithGroups = UserDBO & { groups: { _id: string; name: string }[] };
+import { MongoUsersMapper } from './MongoUsersMapper.js';
 
 type Deps = {
-  db: Db;
-  transactionManager: TransactionManager;
   dao: MongoUsersDAO;
 };
 
-class MongoUsersQueryService extends MongoDataSource<UserDBO> {
-  protected collectionName = 'users';
-
+/**
+ * The Mongo half of UsersQueryService (D1/D3): the users settings screen read, and nothing
+ * else. A pure projection — the `$lookup` it used to own lives on MongoUsersDAO (D7), so
+ * this holds no query language and needs no db or transaction manager.
+ *
+ * `fields: ['status']` is required: with the DAO's default `identity` projection the rows
+ * carry neither `using2fa` nor `accountLocked`, both of which UserProfile requires.
+ */
+class MongoUsersQueryService implements UsersQueryService {
   private dao: MongoUsersDAO;
 
   constructor(deps: Deps) {
-    super(deps.db, deps.transactionManager);
     this.dao = deps.dao;
   }
 
-  async listWithGroups(query: Filter<UserDBO> = {}): Promise<UserWithGroups[]> {
-    const aggregation = [
-      {
-        $match: {
-          ...query,
-          ...this.dao.notPublicUserFilter(),
-          ...this.dao.notDeletedFilter(),
-        },
-      },
-      {
-        $project: { _id: 1, username: 1, role: 1, email: 1, using2fa: 1, accountLocked: 1 },
-      },
-      {
-        $lookup: {
-          from: 'usergroups',
-          let: { userId: { $toString: '$_id' } },
-          pipeline: [
-            { $match: { $expr: { $in: ['$$userId', '$members.refId'] } } },
-            { $project: { _id: { $toString: '$_id' }, name: 1 } },
-          ],
-          as: 'groups',
-        },
-      },
-    ];
+  async listUsers(): Promise<UserProfile[]> {
+    const users = await this.dao.findWithGroups({}, { fields: ['status'] });
 
-    return this.getCollection().aggregate<UserWithGroups>(aggregation).toArray();
+    return users.map(user => MongoUsersMapper.toProfile(user));
   }
 }
 
