@@ -40,7 +40,7 @@ describe('Metadata Record', () => {
       cy.contains('th', 'Multiple selector').should('exist');
       cy.contains('span', 'Again').should('exist');
       cy.contains('span', 'Acknowledging').should('exist');
-      cy.contains('span', 'Grouped verbs: verb1').should('exist');
+      cy.contains('span', 'Grouped verbs › verb1').should('exist');
     });
 
     it('shows relationship links under Relationships', () => {
