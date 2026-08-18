@@ -27,6 +27,7 @@ export {
   useDocumentRelationshipNav,
 } from './DocumentInteractionContext.js';
 export { useToc, useTocActions, useTocStateActions } from './TocContext.js';
+export { useToCFileSync } from './ToCFileSync.js';
 export { useMetadataEditing } from './MetadataEditingContext.js';
 export type { MetadataEditingHost } from './metadataEditingSession.js';
 export { EntityWriteAuthorization, useEntityWriteAuthorized } from './EntityWriteAuthorization.js';

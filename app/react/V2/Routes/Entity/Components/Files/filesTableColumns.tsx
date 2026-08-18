@@ -103,7 +103,7 @@ const filesDataTableColumns = ({
   columns.push({
     id: 'languageKey',
     header: showLanguageColumn ? 'Lang' : '',
-    width: '3.5rem',
+    width: '9rem',
     cell: showLanguageColumn
       ? row => <span className="text-xs text-ink-tertiary">{row.languageKey}</span>
       : () => null,

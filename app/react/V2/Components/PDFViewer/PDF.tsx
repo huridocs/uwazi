@@ -10,17 +10,19 @@ import 'pdfjs-dist/web/pdf_viewer.css';
 import { Translate } from '#app/I18N/index.js';
 import { scrollIntoView } from '#V2/helpers/scrollIntoView.js';
 import { TextHighlight } from './types.js';
-import { triggerScroll } from './functions/helpers.js';
+import { triggerScroll, pickMostVisiblePage } from './functions/helpers.js';
 import { clearSnippets, tryHighlightAndScroll } from './functions/handleSnippets.js';
 import { adjustSelectionsToScale } from './functions/handleTextSelection.js';
 import { waitForElement } from './functions/waitForElement.js';
 import { PDFJS, CMAP_URL, WASM_URL, EventBus, PDFDocumentProxy } from './pdfjs.js';
 import { useContainerWidth } from './hooks/useContainerWidth.js';
 import { PDFPage } from './PDFPage.js';
+import { PageRenderQueue } from './functions/pageRenderQueue.js';
 import { BlankState, ProgressBar } from '../UI/index.js';
 import { reportErrorToSentry } from '#app/V2/shared/errorUtils.js';
 
-const CHANGE_PAGE_THRESHOLD: number = 0.4;
+const PAGE_VISIBILITY_THRESHOLDS = [0, 0.1, 0.25, 0.4, 0.5, 0.75, 1];
+const PRELOAD_ROOT_MARGIN = '500px 0px 500px 0px';
 const BORDER_WIDTH: number = 1;
 const WIDTH_SAFETY_BUFFER: number = 2;
 
@@ -46,6 +48,7 @@ interface PDFProps {
   size?: { height?: string; width?: string };
   scrollRoot?: Element | null;
   className?: string;
+  initialPage?: number;
 }
 
 // eslint-disable-next-line max-statements
@@ -61,12 +64,17 @@ const PDF = ({
   size,
   scrollRoot,
   className,
+  initialPage = 1,
 }: PDFProps) => {
   const pageRefsMap = useRef<{ [key: number]: HTMLDivElement | null }>({});
   const animationFrameIdRef = useRef<number>(0);
   const snippetAnimationFrameIdRef = useRef<number>(0);
   const pdfContainerRef = useRef<HTMLDivElement | null>(null);
   const pageVisibilityRef = useRef<Map<number, number>>(new Map());
+  const viewportPagesRef = useRef(new Set<number>());
+  const lastVisiblePageRef = useRef(0);
+  const initialPageRef = useRef(initialPage);
+  const renderingQueueRef = useRef(new PageRenderQueue());
   const numPagesRef = useRef(0);
   const isReady = useRef(false);
   const [intersectionObserver, setIntersectionObserver] = useState<IntersectionObserver | null>(
@@ -284,6 +292,8 @@ const PDF = ({
     isReady.current = false;
     pageVisibility.clear();
     pageRefsMap.current = {};
+    viewportPagesRef.current.clear();
+    renderingQueueRef.current.prioritize(initialPageRef.current);
 
     return () => {
       cancelled = true;
@@ -296,51 +306,30 @@ const PDF = ({
   useEffect(() => {
     numPagesRef.current = pdf?.numPages ?? 0;
     pageVisibilityRef.current.clear();
+    viewportPagesRef.current.clear();
+    lastVisiblePageRef.current = 0;
   }, [pdf]);
 
   useEffect(() => {
-    pageVisibilityRef.current.clear();
-
     const observerHandler: IntersectionObserverCallback = entries => {
       entries.forEach(entry => {
         const pageNumber = Number.parseInt(entry.target.getAttribute('data-pagenumber') || '0', 10);
 
         if (entry.isIntersecting) {
-          pageVisibilityRef.current.set(pageNumber, entry.intersectionRatio);
           pdfEventBus.dispatch('renderpage', { pageNumber });
-        } else {
-          pageVisibilityRef.current.delete(pageNumber);
+          return;
+        }
+
+        if (!viewportPagesRef.current.has(pageNumber)) {
           pdfEventBus.dispatch('unmountpage', { pageNumber });
         }
       });
-
-      if (!isReady.current) return;
-
-      let mostVisiblePage = 0;
-      let highestRatio = 0;
-      const maxPages = numPagesRef.current;
-      pageVisibilityRef.current.forEach((ratio, pageNumber) => {
-        if (pageNumber < 1 || pageNumber > maxPages) {
-          pageVisibilityRef.current.delete(pageNumber);
-          return;
-        }
-        const wins =
-          ratio > highestRatio || (ratio === highestRatio && pageNumber < mostVisiblePage);
-        if (ratio > 0 && (mostVisiblePage === 0 || wins)) {
-          highestRatio = ratio;
-          mostVisiblePage = pageNumber;
-        }
-      });
-
-      if (mostVisiblePage > 0 && highestRatio >= CHANGE_PAGE_THRESHOLD) {
-        onPageChangeRef.current?.(mostVisiblePage);
-      }
     };
 
     const observer = new IntersectionObserver(observerHandler, {
       root: scrollRoot ?? null,
-      rootMargin: '500px 0px 500px 0px',
-      threshold: [0.1, CHANGE_PAGE_THRESHOLD],
+      rootMargin: PRELOAD_ROOT_MARGIN,
+      threshold: 0,
     });
 
     setIntersectionObserver(observer);
@@ -352,25 +341,72 @@ const PDF = ({
   }, [pdfEventBus, scrollRoot]);
 
   useEffect(() => {
-    const readyHandler = ({ pageNumber }: { pageNumber: number }) => {
-      if (pageNumber === 1) {
-        pdfEventBus.dispatch('renderpage', { pageNumber });
+    if (!pdf) {
+      return undefined;
+    }
+
+    const visibleHeightByPage = pageVisibilityRef.current;
+    visibleHeightByPage.clear();
+    const viewportPages = viewportPagesRef.current;
+    viewportPages.clear();
+
+    const observerHandler: IntersectionObserverCallback = entries => {
+      entries.forEach(entry => {
+        const pageNumber = Number.parseInt(entry.target.getAttribute('data-pagenumber') || '0', 10);
+        if (entry.isIntersecting && entry.intersectionRect.height > 0) {
+          viewportPages.add(pageNumber);
+          visibleHeightByPage.set(pageNumber, entry.intersectionRect.height);
+        } else {
+          viewportPages.delete(pageNumber);
+          visibleHeightByPage.delete(pageNumber);
+        }
+      });
+
+      const mostVisiblePage = pickMostVisiblePage(
+        visibleHeightByPage,
+        numPagesRef.current,
+        lastVisiblePageRef.current
+      );
+      if (mostVisiblePage > 0) {
+        lastVisiblePageRef.current = mostVisiblePage;
+        renderingQueueRef.current.prioritize(mostVisiblePage);
+        pdfEventBus.dispatch('prioritypage', { pageNumber: mostVisiblePage });
+        if (isReady.current) {
+          onPageChangeRef.current?.(mostVisiblePage);
+        }
       }
     };
 
-    const renderedHandler = ({ pageNumber }: { pageNumber: number }) => {
-      if (Number(pageNumber) === 1) {
-        pdfReadyCallback();
-        pdfEventBus.off('pagerendered', renderedHandler);
+    const observer = new IntersectionObserver(observerHandler, {
+      root: scrollRoot ?? null,
+      rootMargin: '0px',
+      threshold: PAGE_VISIBILITY_THRESHOLDS,
+    });
+
+    Object.values(pageRefsMap.current).forEach(element => {
+      if (element) {
+        observer.observe(element);
       }
+    });
+
+    return () => {
+      observer.disconnect();
+    };
+  }, [pdf, scrollRoot, pdfEventBus]);
+
+  useEffect(() => {
+    const readyHandler = ({ pageNumber }: { pageNumber: number }) => {
+      if (pageNumber !== initialPageRef.current) {
+        return;
+      }
+      pdfEventBus.dispatch('renderpage', { pageNumber });
+      pdfReadyCallback();
     };
 
     pdfEventBus.on('pageready', readyHandler);
-    pdfEventBus.on('pagerendered', renderedHandler);
 
     return () => {
       pdfEventBus.off('pageready', readyHandler);
-      pdfEventBus.off('pagerendered', renderedHandler);
     };
   }, [pdfReadyCallback, pdfEventBus]);
 
@@ -399,6 +435,7 @@ const PDF = ({
         <div
           key={`page-${regionId}`}
           id={`page-${regionId}-container`}
+          data-pagenumber={regionId}
           ref={el => {
             pageRefsMap.current[regionId] = el;
           }}
@@ -418,6 +455,7 @@ const PDF = ({
               onHighlightClick={onHighlightClick}
               containerWidth={containerWidth}
               onScaleChange={handleScaleChange}
+              renderingQueue={renderingQueueRef.current}
             />
           </SelectionRegion>
         </div>

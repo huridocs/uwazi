@@ -141,6 +141,23 @@ describe('Entity loader with cache integration', () => {
       expect(setMainDocumentSpy).toHaveBeenCalledTimes(2);
     });
 
+    it('should recache mainDocument when originalname changes', async () => {
+      const setMainDocumentSpy = jest.spyOn(entityLoaderCache, 'setMainDocument');
+
+      await loadEntity('http://localhost/entity/shared1');
+      entityLoaderCache.invalidateEntity('shared1');
+      mockEntity.documents = [
+        { ...mockEntity.documents![0], originalname: 'renamed.pdf', status: 'ready' },
+      ];
+      await loadEntity('http://localhost/entity/shared1');
+
+      expect(setMainDocumentSpy).toHaveBeenLastCalledWith(
+        'shared1',
+        '',
+        expect.objectContaining({ originalname: 'renamed.pdf' })
+      );
+    });
+
     it('should use default language document when locale does not match', async () => {
       mockEntity.documents = [
         { _id: 'doc-es', filename: 'es.pdf', language: 'spa', status: 'ready' },

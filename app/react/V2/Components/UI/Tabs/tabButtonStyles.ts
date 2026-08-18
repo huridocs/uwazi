@@ -8,7 +8,7 @@ const tabListClass =
   'inline-flex items-stretch w-max max-w-none shrink-0 rounded-md border border-border shadow-soft';
 
 const tabTriggerBaseClass =
-  'flex items-center justify-center gap-1 px-2.5 py-1.5 text-center text-tab font-medium transition-colors md:px-3 focus-visible:outline-hidden focus-visible:[box-shadow:0_0_0_4px_var(--color-theme-control-ring)]';
+  'flex items-center justify-center gap-1 px-2.5 py-1.5 text-center text-tab font-medium transition-colors md:px-3 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-(--color-theme-control-ring)';
 
 const getTabShapeClass = (index: number, totalTabs: number) => {
   if (totalTabs === 1) {

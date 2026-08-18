@@ -3,7 +3,6 @@ import { Meta, StoryObj } from '@storybook/react-webpack5';
 import { BrowserRouter } from 'react-router';
 import { createStore, Provider } from 'jotai';
 import { Panel } from '#V2/Components/Layouts/Panel.js';
-import { MetadataDisplay } from '#V2/Components/Metadata/MetadataDisplay.js';
 import { MetadataRecord } from '#V2/Components/Metadata/MetadataRecord.js';
 import { MetadataDisplayFooter } from '#app/V2/Routes/Entity/Components/index.js';
 import { MetadataEditingProvider } from '#V2/Routes/Entity/Components/context/MetadataEditingContext.js';
@@ -18,18 +17,14 @@ import {
 import { Entity, MetadataSchema } from '#V2/api/entities/types.js';
 import { apiEntity, templates } from '../fixtures/MetadataDisplayFixtures.js';
 
-type ViewMode = 'masonry' | 'record';
-
 const MetadataStoryShell = ({
   entity,
   showGeolocationProperties,
   locale = 'en',
-  view = 'masonry',
 }: {
   entity: Entity;
   showGeolocationProperties: boolean;
   locale?: string;
-  view?: ViewMode;
 }) => {
   const store = createStore();
   store.set(settingsAtom, { mapLayers: ['Streets', 'Hybrid', 'Satellite'] });
@@ -96,8 +91,6 @@ const MetadataStoryShell = ({
     return { ...entity, metadata };
   }, [entity, showGeolocationProperties]);
 
-  const ReadView = view === 'record' ? MetadataRecord : MetadataDisplay;
-
   return (
     <div className="tw-content">
       <BrowserRouter>
@@ -110,7 +103,7 @@ const MetadataStoryShell = ({
             <MetadataEditingProvider>
               <Panel>
                 <Panel.Body>
-                  <ReadView entity={storyReadyEntity} />
+                  <MetadataRecord entity={storyReadyEntity} />
                 </Panel.Body>
                 <Panel.Footer>
                   <MetadataDisplayFooter host="main" />
@@ -137,7 +130,6 @@ const Primary: Story = {
       entity={args.entity}
       showGeolocationProperties={args.showGeolocationProperties}
       locale={args.locale}
-      view={args.view}
     />
   ),
 };
@@ -148,19 +140,8 @@ const Basic: Story = {
     entity: apiEntity,
     showGeolocationProperties: true,
     locale: 'en',
-    view: 'masonry',
-  },
-};
-
-const CompactRecord: Story = {
-  ...Primary,
-  args: {
-    entity: apiEntity,
-    showGeolocationProperties: true,
-    locale: 'en',
-    view: 'record',
   },
 };
 
 export default meta;
-export { Basic, CompactRecord };
+export { Basic };

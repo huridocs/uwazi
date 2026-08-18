@@ -9,6 +9,7 @@ import {
   formatMetadataTimestamp,
   metadataDisplayPresets,
 } from '#V2/Components/Metadata/display/index.js';
+import { EntityIcon } from '#V2/Components/CustomIcons/EntityIcon.js';
 import { EntityOverlaySection } from './EntityOverlaySection.js';
 import { MetaRow } from './MetaRow.js';
 
@@ -37,7 +38,16 @@ const EntityOverlayMetadataSummary = ({
         label={<Translate>Type</Translate>}
         value={entityTemplate?.name ?? ''}
       />
-      <MetaRow icon={DocumentTextIcon} label={<Translate>Title</Translate>} value={entity.title} />
+      <MetaRow
+        icon={DocumentTextIcon}
+        label={<Translate>Title</Translate>}
+        value={
+          <span className="inline-flex min-w-0 items-center gap-1.5">
+            <EntityIcon data={entity.icon} />
+            <span className="min-w-0">{entity.title}</span>
+          </span>
+        }
+      />
       <MetaRow icon={CalendarIcon} label={<Translate>Created</Translate>} value={created} />
       <MetaRow
         icon={LinkIcon}

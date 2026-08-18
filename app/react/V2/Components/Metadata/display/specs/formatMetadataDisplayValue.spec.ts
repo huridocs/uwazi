@@ -54,7 +54,7 @@ describe('formatMetadataDisplayValue', () => {
         gender: [{ value: 'm1', label: 'Male', parent: { value: 'p1', label: 'Biological' } }],
       }
     );
-    expect(property && formatMetadataDisplayValue(property, context)).toBe('Biological: Male');
+    expect(property && formatMetadataDisplayValue(property, context)).toBe('Biological › Male');
   });
 
   it('formats date ranges with a separator', () => {

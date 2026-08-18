@@ -6,7 +6,7 @@ type SelectValue =
 const formatMetadataSelectValue = (value: SelectValue): string => {
   const base = value.label || value.value;
   if (value.parent?.label) {
-    return `${value.parent.label}: ${base}`;
+    return `${value.parent.label} › ${base}`;
   }
   return base;
 };

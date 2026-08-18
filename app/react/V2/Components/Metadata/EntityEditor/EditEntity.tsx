@@ -7,7 +7,7 @@ import { templatesAtom } from '#V2/atoms/templatesAtom.js';
 import { thesauriAtom } from '#V2/atoms/thesauriAtom.js';
 import type { MetadataValue } from '#V2/formatters/types.js';
 import { MultiselectListOption } from '../../Forms/index.js';
-import { TitleField, IconField, EntityFileFields, TemplateField } from './Components/index.js';
+import { TitleField, IconField, TemplateField } from './Components/index.js';
 import { EditEntityPropertyField } from './EditEntityPropertyField.js';
 import type { EditEntityProps } from './editEntityTypes.js';
 import {
@@ -30,6 +30,7 @@ import {
   groupRelationshipProperties,
   type DisplayProperty,
 } from './functions/relationshipGrouping.js';
+import { sortByTemplatePropertyOrder } from '../sortByTemplatePropertyOrder.js';
 import {
   defaultRelationshipLookup,
   mergeRelationshipLookupOptions,
@@ -48,7 +49,6 @@ const EditEntity = ({
   onDirtyChange,
   onEditSource,
   relationshipLookup = defaultRelationshipLookup,
-  documentMutations,
   mainDocumentId,
 }: EditEntityProps) => {
   const templates = useAtomValue(templatesAtom);
@@ -84,8 +84,12 @@ const EditEntity = ({
     [activeTemplate]
   );
   const displayProperties = useMemo(
-    () => groupRelationshipProperties(metadataProperties),
-    [metadataProperties]
+    () =>
+      sortByTemplatePropertyOrder(
+        groupRelationshipProperties(metadataProperties),
+        activeTemplate?.properties
+      ),
+    [activeTemplate?.properties, metadataProperties]
   );
   const firstEditableRelationshipId = displayProperties.find(
     property => property.type === 'relationship'
@@ -244,7 +248,6 @@ const EditEntity = ({
           ))}
         </Fragment>
       )}
-      <EntityFileFields entity={entity} disabled={disabled} mutations={documentMutations} />
     </form>
   );
 };

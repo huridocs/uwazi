@@ -2,7 +2,7 @@ import React, { type ReactNode } from 'react';
 import { LinkIcon } from '@heroicons/react/24/outline';
 import { I18NLinkV2, Translate } from '#app/I18N/index.js';
 import { TemplatePill } from '#V2/Components/UI/TemplatePill.js';
-import { CountryFlag } from '../../CustomIcons/index.js';
+import { EntityIcon, type EntityIconData } from '../../CustomIcons/index.js';
 
 const DEFAULT_ENTITY_BASE_PATH = '/entityv2/';
 
@@ -16,7 +16,7 @@ type RelationshipTableRow = {
   label: string;
   templateId?: string;
   authorized?: false;
-  iconId?: string;
+  icon?: EntityIconData | null;
 };
 
 type RelationshipConnectionsTableProps = {
@@ -126,7 +126,7 @@ const RelationshipConnectionsTable = ({
               rows.map(row => {
                 const pill = (
                   <span className="inline-flex max-w-full items-center gap-1.5">
-                    {row.iconId ? <CountryFlag id={row.iconId} /> : null}
+                    <EntityIcon data={row.icon} />
                     <TemplatePill
                       templateId={row.templateId || targetTemplateId || ''}
                       label={row.label || row.id}

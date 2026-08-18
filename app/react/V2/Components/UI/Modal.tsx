@@ -2,7 +2,7 @@
 import React, { MouseEventHandler } from 'react';
 import { XMarkIcon } from '@heroicons/react/20/solid';
 
-type modalSizeType = 'sm' | 'md' | 'lg' | 'xl' | 'xxl' | 'xxxl';
+type modalSizeType = 'sm' | 'md' | 'lg' | 'xl' | 'xxl' | 'xxxl' | 'xxxxl';
 
 const modalBackdropClass = [
   'fixed inset-0 top-0 left-0 z-[100] flex items-center justify-center',
@@ -30,6 +30,7 @@ const Modal = ({ children, size, id, ariaLabel = 'Modal' }: ModalProps) => {
     xl: 'w-full max-w-xl min-w-0 sm:min-w-lg',
     xxl: 'w-full max-w-2xl min-w-0 sm:min-w-xl',
     xxxl: 'w-full max-w-3xl min-w-0 sm:min-w-160',
+    xxxxl: 'w-full max-w-4xl min-w-0 sm:min-w-200',
   };
 
   return (
