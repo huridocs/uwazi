@@ -584,8 +584,8 @@ On a large tenant (~24k `translationsV2` docs, ~9.6k thesaurus keys/language) `t
 Shipped:
 
 - Linear mutating assignment in `TranslationsQueryService.toLegacyDto` (the O(n²) spread lived in deleted `prepareContexts`)
-- SSR `entry-server.tsx` calls `getLegacy({ locale, context: 'System' })`
-- `getByLanguageAndContext` on the DS; `getLegacy` honors both `locale` and `context`
+- SSR `entry-server.tsx` calls `getLegacy({ locale, excludeContextTypes: ['Thesaurus'] })` — System + Entity + RT + Menu/Filters; not Thesaurus. `onlySystemTranslations()` is gone (it would strip template labels after the fetch)
+- `getByLanguageAndContext` / `getByLanguageExcludingContextTypes` on the DS; `getLegacy` honors `locale`, `context`, and `excludeContextTypes`
 - `toLegacyDto` loads the result set **after** `getLanguageKeys()` (thunk) so the Mongo cursor is not opened across that await (session/TX mismatch)
 
 Explicitly **not** shipped: process/tenant-wide translations read cache. Topology is 12 API nodes × 3 servers, 500+ tenants, 5 job workers. In-process invalidation cannot be consistent; memory is unbounded; workers would fill it too. Mongo stays the shared source of truth. `CachedMongoTranslationsDataSource` remains the **old per-UseCase memo** (instance `Map`, `.all()` only, cleared on that TM’s commit) — same pattern as templates/settings. SSR/search do not use it unless `cached: true`.
@@ -622,3 +622,4 @@ Explicitly **not** shipped: process/tenant-wide translations read cache. Topolog
 - Do not merge `LocaleTranslationInput` into `IndexedTranslations` — GET is complete maps; locale POST is a partial write
 - Do not go back to sequential `reduce` of `updateOne`s for `upsert`, or `findOne` + `$setDifference` for missing keys
 - Do not reintroduce `toIndexedTranslations` / `prepareContexts` / `LegacyTranslationDtoMapper` — GET maps are built in QueryService `toLegacyDto`
+- Do not hydrate SSR with System-only (`context: 'System'` / `onlySystemTranslations`) — template/property labels need Entity contexts. Do not load Thesaurus on SSR (HTML payload)
