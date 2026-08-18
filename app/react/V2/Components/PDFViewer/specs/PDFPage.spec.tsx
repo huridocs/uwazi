@@ -254,7 +254,7 @@ describe('PDFPage', () => {
     });
   });
 
-  it('should not draw until the page is the render priority', async () => {
+  it('draws a queued page even when it is not the highest priority', async () => {
     const eventBus = new EventBus();
     const renderingQueue = new PageRenderQueue();
     renderingQueue.prioritize(1);
@@ -274,10 +274,6 @@ describe('PDFPage', () => {
 
     await waitFor(() => expect(dispatchSpy).toHaveBeenCalledWith('pageready', { pageNumber: 2 }));
     eventBus.dispatch('renderpage', { pageNumber: 2 });
-    expect(mockPageDraw).not.toHaveBeenCalled();
-
-    renderingQueue.prioritize(2);
-    eventBus.dispatch('prioritypage', { pageNumber: 2 });
-    expect(mockPageDraw).toHaveBeenCalled();
+    await waitFor(() => expect(mockPageDraw).toHaveBeenCalled());
   });
 });

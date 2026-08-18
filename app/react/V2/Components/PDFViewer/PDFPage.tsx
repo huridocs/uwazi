@@ -13,14 +13,47 @@ type PDFPageViewer = typeof PDFJSViewer.PDFPageView.prototype;
 const isRenderingCancelled = (error: unknown): boolean =>
   error instanceof Error && error.name === 'RenderingCancelledException';
 
-const drawPage = (pageViewer: PDFPageViewer, onError: (message: string) => void) => {
-  pageViewer.draw().catch((error: unknown) => {
-    if (isRenderingCancelled(error)) {
+const drawPage = (
+  pageViewer: PDFPageViewer,
+  onError: (message: string) => void,
+  onSettled?: () => void
+) => {
+  pageViewer
+    .draw()
+    .catch((error: unknown) => {
+      if (isRenderingCancelled(error)) {
+        return;
+      }
+      if (error instanceof Error) {
+        onError(error.message);
+      }
+    })
+    .finally(() => {
+      onSettled?.();
+    });
+};
+
+const enqueueDraw = (
+  page: number,
+  pageViewerRef: React.RefObject<PDFPageViewer | null>,
+  renderingQueue: PageRenderQueue | undefined,
+  onError: (message: string) => void
+) => {
+  const pageViewer = pageViewerRef.current;
+  if (!pageViewer || pageViewer.renderingState !== PDFJSViewer.RenderingStates.INITIAL) {
+    return;
+  }
+  if (!renderingQueue) {
+    drawPage(pageViewer, onError);
+    return;
+  }
+  renderingQueue.request(page, () => {
+    const viewer = pageViewerRef.current;
+    if (!viewer || viewer.renderingState !== PDFJSViewer.RenderingStates.INITIAL) {
+      renderingQueue.complete(page);
       return;
     }
-    if (error instanceof Error) {
-      onError(error.message);
-    }
+    drawPage(viewer, onError, () => renderingQueue.complete(page));
   });
 };
 
@@ -116,9 +149,7 @@ const PDFPageComponent = ({
           }
 
           pageViewer.reset();
-          if (!renderingQueue || renderingQueue.isPriority(page)) {
-            drawPage(pageViewer, setError);
-          }
+          enqueueDraw(page, pageViewerRef, renderingQueue, setError);
         }
       }
     }
@@ -145,42 +176,27 @@ const PDFPageComponent = ({
   }, [eventBus, page, ready]);
 
   useEffect(() => {
-    const startDrawIfAllowed = (pageViewer: PDFPageViewer) => {
-      if (pageViewer.renderingState !== PDFJSViewer.RenderingStates.INITIAL) {
-        return;
-      }
-      if (renderingQueue && !renderingQueue.isPriority(page)) {
-        return;
-      }
-      drawPage(pageViewer, setError);
-    };
-
-    const renderPage = ({ pageNumber }: { pageNumber: number }) => {
-      if (pageNumber === page && pageViewerRef.current) {
-        startDrawIfAllowed(pageViewerRef.current);
+    const drawIfPage = ({ pageNumber }: { pageNumber: number }) => {
+      if (pageNumber === page) {
+        enqueueDraw(page, pageViewerRef, renderingQueue, setError);
       }
     };
 
     const unmountPage = ({ pageNumber }: { pageNumber: number }) => {
       if (pageNumber === page) {
+        renderingQueue?.cancel(page);
         pageViewerRef.current?.reset();
       }
     };
 
-    const prioritizePage = ({ pageNumber }: { pageNumber: number }) => {
-      if (pageNumber === page && pageViewerRef.current) {
-        startDrawIfAllowed(pageViewerRef.current);
-      }
-    };
-
-    eventBus.on('renderpage', renderPage);
+    eventBus.on('renderpage', drawIfPage);
     eventBus.on('unmountpage', unmountPage);
-    eventBus.on('prioritypage', prioritizePage);
+    eventBus.on('prioritypage', drawIfPage);
 
     return () => {
-      eventBus.off('renderpage', renderPage);
+      eventBus.off('renderpage', drawIfPage);
       eventBus.off('unmountpage', unmountPage);
-      eventBus.off('prioritypage', prioritizePage);
+      eventBus.off('prioritypage', drawIfPage);
     };
   }, [eventBus, page, renderingQueue]);
 
