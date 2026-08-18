@@ -71,9 +71,12 @@ const renderMetricHtml = (payload: DatavizEmbedPayload): string => {
   return `<div class="metric"${style ? ` style="${style}"` : ''}><div class="metric-value">${escapeHtml(String(value.toLocaleString()))}</div><div class="metric-label">${escapeHtml(String(label))}</div></div>`;
 };
 
+const renderScriptTags = (scriptUrls: string[]): string =>
+  scriptUrls.map(url => `<script src="${url}"></script>`).join('\n    ');
+
 const renderBootstrapScripts = (
   bootstrap: DatavizEmbedBootstrap,
-  embedScriptUrl: string,
+  embedScriptUrls: string[],
   option?: EChartsOption | null
 ): string => {
   const optionScript =
@@ -87,7 +90,7 @@ const renderBootstrapScripts = (
     <script>window.__DATAVIZ_EMBED__ = ${serialize(bootstrap, { isJSON: true })};</script>
     ${optionScript}
     ${echartsScript}
-    <script src="${embedScriptUrl}"></script>
+    ${renderScriptTags(embedScriptUrls)}
   `;
 };
 
@@ -95,6 +98,8 @@ type RenderDatavizEmbedHtmlInput = {
   payload: DatavizEmbedPayload;
   language: string;
   datavizId: string;
+  embedScriptUrls?: string[];
+  /** @deprecated Use embedScriptUrls */
   embedScriptUrl?: string;
   /** Parent page origin allowed to postMessage filters (cross-origin embeds). */
   parentOrigin?: string;
@@ -116,9 +121,11 @@ const renderDatavizEmbedHtml = ({
   payload,
   language,
   datavizId,
+  embedScriptUrls,
   embedScriptUrl = '/dataviz-embed.js',
   parentOrigin,
 }: RenderDatavizEmbedHtmlInput): string => {
+  const scriptUrls = embedScriptUrls ?? [embedScriptUrl];
   const chartType = payload.chart.type;
   const bootstrap: DatavizEmbedBootstrap = {
     id: datavizId,
@@ -148,7 +155,7 @@ const renderDatavizEmbedHtml = ({
 
   const scripts =
     body.includes('dataviz-embed-root') || option
-      ? renderBootstrapScripts(bootstrap, embedScriptUrl, option)
+      ? renderBootstrapScripts(bootstrap, scriptUrls, option)
       : '';
 
   return `<!DOCTYPE html>

@@ -60,7 +60,7 @@ describe('renderDatavizEmbedHtml', () => {
       payload: manualBarPayload,
       language: 'en',
       datavizId: 'dv-embed-bar',
-      embedScriptUrl: 'http://localhost:8080/dataviz-embed.js',
+      embedScriptUrls: ['http://localhost:8080/dataviz-embed.js'],
       parentOrigin: 'https://partner.example',
     });
 
@@ -72,5 +72,17 @@ describe('renderDatavizEmbedHtml', () => {
     expect(html).toContain('echarts.min.js');
     expect(html).toContain('http://localhost:8080/dataviz-embed.js');
     expect(html).not.toContain('main.js');
+  });
+
+  it('should render multiple embed script tags when provided', () => {
+    const html = renderDatavizEmbedHtml({
+      payload: manualBarPayload,
+      language: 'en',
+      datavizId: 'dv-embed-bar',
+      embedScriptUrls: ['/vendor.abc123.js', '/dataviz-embed.abc123.js'],
+    });
+
+    expect(html).toContain('<script src="/vendor.abc123.js"></script>');
+    expect(html).toContain('<script src="/dataviz-embed.abc123.js"></script>');
   });
 });

@@ -91,7 +91,13 @@ module.exports = production => {
             test: /[\\/]node_modules[\\/]/,
             name: 'vendor',
             chunks(chunk) {
-              return chunk.name && !chunk.name.match(/LazyLoad/);
+              // Keep the public embed bundle self-contained: it is loaded alone in
+              // iframe HTML and cannot rely on the main app's vendor chunk.
+              return (
+                chunk.name &&
+                !chunk.name.match(/LazyLoad/) &&
+                chunk.name !== 'dataviz-embed'
+              );
             },
           },
         },
