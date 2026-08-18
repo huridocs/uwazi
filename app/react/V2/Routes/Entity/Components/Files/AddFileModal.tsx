@@ -6,7 +6,7 @@ import { Button, Modal } from '#V2/Components/UI/index.js';
 import { getFileNameAndExtension } from '#V2/shared/formatHelpers.js';
 import { AddFileDropzone } from './AddFileDropzone.js';
 import { fileFieldLabelClass } from './FileDetailsField.js';
-import { fileLanguageSelectOptions, fileSupportsLanguage, isPdfFile } from './fileHelpers.js';
+import { fileSupportsLanguage, isPdfFile } from './fileHelpers.js';
 import { getBrowserFileIcon } from './fileRowIcon.js';
 import { FileUploadProgressLine } from './FileUploadProgressLine.js';
 import { useEntityFiles } from './EntityFilesContext.js';
@@ -32,16 +32,13 @@ const AddFileModal = () => {
   } = useEntityFiles();
   const [displayName, setDisplayName] = useState('');
   const [addAs, setAddAs] = useState<AddAs>('supporting');
-  const [language, setLanguage] = useState('eng');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const file = pendingAddFile;
   const isPdf = file ? isPdfFile(file) : false;
-  const showLanguage = file ? fileSupportsLanguage(file) : false;
   const showAddAs = addFileMode === 'main';
   const resolvedAddAs: AddAs = addFileMode === 'translation' ? 'primary' : addAs;
 
-  const languageOptions = useMemo(() => fileLanguageSelectOptions(), []);
   const addAsOptions = useMemo(
     () => [
       { value: 'supporting', label: t('System', 'Supporting file', null, false) },
@@ -65,9 +62,8 @@ const AddFileModal = () => {
     if (!file) return;
     setDisplayName(getFileNameAndExtension(file.name).name);
     setAddAs('supporting');
-    setLanguage(defaultLanguageIso);
     setIsSubmitting(false);
-  }, [defaultLanguageIso, file]);
+  }, [file]);
 
   if (!addFileMode) {
     return null;
@@ -81,7 +77,7 @@ const AddFileModal = () => {
         file,
         displayName: displayName.trim() || getFileNameAndExtension(file.name).name,
         addAs: resolvedAddAs,
-        language: showLanguage ? language : undefined,
+        language: fileSupportsLanguage(file) ? defaultLanguageIso : undefined,
       });
     } finally {
       setIsSubmitting(false);
@@ -121,76 +117,32 @@ const AddFileModal = () => {
                 </button>
               </div>
 
-              <div
-                className={[
-                  'grid gap-3',
-                  showLanguage && showAddAs ? 'grid-cols-2' : 'grid-cols-1',
-                ].join(' ')}
-              >
-                {showLanguage ? (
-                  <label className="space-y-1" htmlFor="add-file-language">
-                    <span className={fileFieldLabelClass}>
-                      <Translate>Language</Translate>
-                    </span>
-                    <div className="relative">
-                      <select
-                        id="add-file-language"
-                        value={language}
-                        onChange={event => setLanguage(event.target.value)}
-                        disabled={isSubmitting}
-                        className={controlClass}
-                      >
-                        {languageOptions.map(option => (
-                          <option key={option.key ?? option.value} value={option.value}>
-                            {option.label}
-                          </option>
-                        ))}
-                      </select>
-                      <ChevronDownIcon className="pointer-events-none absolute right-2 top-1/2 h-3 w-3 -translate-y-1/2 text-ink-tertiary" />
-                    </div>
-                  </label>
-                ) : null}
-                {showAddAs ? (
-                  <label className="space-y-1" htmlFor="add-file-type">
-                    <span className={fileFieldLabelClass}>
-                      <Translate>Add as</Translate>
-                    </span>
-                    <div className="relative">
-                      <select
-                        id="add-file-type"
-                        value={addAs}
-                        onChange={event => {
-                          const next = event.target.value;
-                          if (isAddAs(next)) setAddAs(next);
-                        }}
-                        disabled={isSubmitting}
-                        className={`${controlClass} truncate`}
-                      >
-                        {addAsOptions.map(option => (
-                          <option
-                            key={option.value}
-                            value={option.value}
-                            disabled={option.disabled}
-                          >
-                            {option.label}
-                          </option>
-                        ))}
-                      </select>
-                      <ChevronDownIcon className="pointer-events-none absolute right-2 top-1/2 h-3 w-3 -translate-y-1/2 text-ink-tertiary" />
-                    </div>
-                  </label>
-                ) : null}
-                {!showAddAs ? (
-                  <div className="space-y-1">
-                    <span className={fileFieldLabelClass}>
-                      <Translate>Add as</Translate>
-                    </span>
-                    <div className="text-xs text-ink">
-                      <Translate>Primary document</Translate>
-                    </div>
+              {showAddAs ? (
+                <label className="space-y-1" htmlFor="add-file-type">
+                  <span className={fileFieldLabelClass}>
+                    <Translate>Add as</Translate>
+                  </span>
+                  <div className="relative">
+                    <select
+                      id="add-file-type"
+                      value={addAs}
+                      onChange={event => {
+                        const next = event.target.value;
+                        if (isAddAs(next)) setAddAs(next);
+                      }}
+                      disabled={isSubmitting}
+                      className={`${controlClass} truncate`}
+                    >
+                      {addAsOptions.map(option => (
+                        <option key={option.value} value={option.value} disabled={option.disabled}>
+                          {option.label}
+                        </option>
+                      ))}
+                    </select>
+                    <ChevronDownIcon className="pointer-events-none absolute right-2 top-1/2 h-3 w-3 -translate-y-1/2 text-ink-tertiary" />
                   </div>
-                ) : null}
-              </div>
+                </label>
+              ) : null}
             </div>
 
             {isSubmitting ? (

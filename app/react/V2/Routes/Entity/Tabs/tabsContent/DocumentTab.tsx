@@ -123,6 +123,7 @@ const DocumentTab = ({
               onHighlightClick={handleHighlightClick}
               onPdfReady={handlePdfReady}
               highlights={propertySelectionHighlights}
+              initialPage={pageNumber}
             />
           </div>
           {!isMobile && (

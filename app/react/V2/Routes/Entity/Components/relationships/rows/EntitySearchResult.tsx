@@ -1,7 +1,9 @@
 import React from 'react';
+import { useAtomValue } from 'jotai';
 import { DocumentTextIcon } from '@heroicons/react/24/outline';
 import { FileType } from '#shared/types/fileType.js';
-import { LanguageUtils } from '#shared/language/index.js';
+import { formatLanguageLabelFromCode } from '#shared/language/index.js';
+import { localeAtom } from '#V2/atoms/index.js';
 import { TemplateLabel } from '#V2/Components/Metadata/Components/index.js';
 import { Card } from '#V2/Components/UI/Card.js';
 import { Entity } from '#V2/api/entities/types.js';
@@ -23,7 +25,7 @@ export const EntitySearchResult = ({
   selectedFile,
   onFileSelect,
 }: EntitySearchResultProps) => {
-  // Format date - try to get creationDate or editDate
+  const locale = useAtomValue(localeAtom) || 'en';
   const dateProperty = entity.creationDate || entity.editDate;
   const dateValue = dateProperty;
   let formattedDate = '';
@@ -112,18 +114,11 @@ export const EntitySearchResult = ({
                     )}
                   </div>
                   <div className="flex items-center gap-2">
-                    {file.language &&
-                      file.language !== 'other' &&
-                      (() => {
-                        const languageCode =
-                          LanguageUtils.fromISO639_3(file.language, false)?.ISO639_1 ||
-                          file.language;
-                        return (
-                          <span className="rounded-md bg-warm px-2 py-0.5 text-micro font-medium text-ink-secondary">
-                            {languageCode.toUpperCase()}
-                          </span>
-                        );
-                      })()}
+                    {file.language && file.language !== 'other' ? (
+                      <span className="rounded-md bg-warm px-2 py-0.5 text-micro font-medium text-ink-secondary">
+                        {formatLanguageLabelFromCode(file.language, locale)}
+                      </span>
+                    ) : null}
                     <DocumentTextIcon className="h-5 w-5 text-ink-muted" aria-hidden="true" />
                   </div>
                 </div>

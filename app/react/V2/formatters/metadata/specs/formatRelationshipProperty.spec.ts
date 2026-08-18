@@ -153,7 +153,7 @@ describe('formatRelationshipProperty', () => {
         {
           _id: ids.entity.incidentMainStreet,
           title: 'Traffic Accident - Main Street',
-          icon: { _id: 'ECU', label: 'Ecuador' },
+          icon: { _id: 'ECU', label: 'Ecuador', type: 'icon' },
         },
         {
           _id: ids.entity.incidentDowntown,
@@ -184,7 +184,7 @@ describe('formatRelationshipProperty', () => {
         {
           _id: ids.entity.incidentMainStreet,
           title: 'Traffic Accident - Main Street',
-          icon: { _id: 'ECU', label: 'Ecuador' },
+          icon: { _id: 'ECU', label: 'Ecuador', type: 'icon' },
         },
         {
           _id: ids.entity.incidentDowntown,
@@ -383,7 +383,7 @@ describe('formatRelationshipLinks', () => {
         {
           _id: ids.entity.witnessMaria,
           title: 'Maria Rodriguez - Witness',
-          icon: { _id: 'ECU', label: 'Ecuador' },
+          icon: { _id: 'ECU', label: 'Ecuador', type: 'icon' },
         },
         {
           _id: ids.entity.reporterJohn,
