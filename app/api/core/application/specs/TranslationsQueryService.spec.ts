@@ -50,7 +50,8 @@ describe('TranslationsQueryService', () => {
       expect(rows[0].locale).toBe('en');
       expect(rows[0].contexts).toHaveLength(1);
       expect(rows[0].contexts?.[0].id).toBe('System');
-      expect(rows[0].contexts?.[0].values).toEqual([{ key: 'Search', value: 'Search' }]);
+      expect(rows[0].contexts?.[0].type).toBe('Uwazi UI');
+      expect(rows[0].contexts?.[0].values).toEqual({ Search: 'Search' });
     });
   });
 

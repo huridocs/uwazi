@@ -4,6 +4,7 @@ import type { DBFixture } from '#api/utils/testing_db.js';
 import { SaveTranslationEntriesUseCaseFactory } from '#api/core/infrastructure/factories/SaveTranslationEntriesUseCaseFactory.js';
 import { TranslationsDataSourceFactory } from '#api/core/infrastructure/factories/TranslationsDataSourceFactory.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { Translation } from '#api/core/domain/translation/Translation.js';
 
 const factory = getFixturesFactory();
 const createTranslationDBO = factory.v2.database.translationDBO;
@@ -42,8 +43,8 @@ describe('SaveTranslationEntriesUseCase', () => {
     await testingEnvironment.runWithContext(async () => {
       await SaveTranslationEntriesUseCaseFactory.default().execute({
         translations: [
-          { language: 'en', key: 'Title', value: 'Title updated', context },
-          { language: 'es', key: 'Title', value: 'Título actualizado', context },
+          new Translation('Title', 'Title updated', 'en', context),
+          new Translation('Title', 'Título actualizado', 'es', context),
         ],
       });
 
@@ -62,10 +63,10 @@ describe('SaveTranslationEntriesUseCase', () => {
     await testingEnvironment.runWithContext(async () => {
       await SaveTranslationEntriesUseCaseFactory.default().execute({
         translations: [
-          { language: 'en', key: 'Title', value: 'Title', context },
-          { language: 'es', key: 'Title', value: 'Título', context },
-          { language: 'en', key: 'Subtitle', value: 'Subtitle', context },
-          { language: 'es', key: 'Subtitle', value: 'Subtítulo', context },
+          new Translation('Title', 'Title', 'en', context),
+          new Translation('Title', 'Título', 'es', context),
+          new Translation('Subtitle', 'Subtitle', 'en', context),
+          new Translation('Subtitle', 'Subtítulo', 'es', context),
         ],
       });
 

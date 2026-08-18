@@ -1,7 +1,6 @@
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import type { DBFixture } from '#api/utils/testing_db.js';
-import { CreateTranslationContextUseCaseFactory } from '#api/core/infrastructure/factories/CreateTranslationContextUseCaseFactory.js';
 import { SaveLocaleTranslationsUseCaseFactory } from '#api/core/infrastructure/factories/SaveLocaleTranslationsUseCaseFactory.js';
 import { TranslationsDataSourceFactory } from '#api/core/infrastructure/factories/TranslationsDataSourceFactory.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
@@ -9,6 +8,12 @@ import { TransactionManagerFactory } from '#api/core/infrastructure/factories/Tr
 const factory = getFixturesFactory();
 const createTranslationDBO = factory.v2.database.translationDBO;
 const contextId = 'ctx-entity';
+const newContextId = factory.id('new-tpl').toHexString();
+const newContext = {
+  type: 'Entity' as const,
+  label: 'New Template',
+  id: newContextId,
+};
 
 const fixtures: DBFixture = {
   settings: [
@@ -30,6 +35,10 @@ const fixtures: DBFixture = {
       label: 'Template',
       id: contextId,
     }),
+    createTranslationDBO('Title', 'Title', 'en', newContext),
+    createTranslationDBO('Title', 'Title', 'es', newContext),
+    createTranslationDBO('Name', 'Name', 'en', newContext),
+    createTranslationDBO('Name', 'Name', 'es', newContext),
   ],
 };
 
@@ -75,12 +84,6 @@ describe('SaveLocaleTranslationsUseCase', () => {
 
   it('should update keys on a newly created context for one locale', async () => {
     await testingEnvironment.runWithContext(async () => {
-      const newContextId = factory.id('new-tpl').toHexString();
-      await CreateTranslationContextUseCaseFactory.default().execute({
-        context: { id: newContextId, label: 'New Template', type: 'Entity' },
-        values: { Title: 'Title', Name: 'Name' },
-      });
-
       await SaveLocaleTranslationsUseCaseFactory.default().execute({
         locale: 'es',
         contexts: [

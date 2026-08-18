@@ -51,7 +51,6 @@ Add from web,Añadir desde la web
 Add group,Añadir grupo
 add icon,Añadir ícono
 Add item,Add item
-Add language,Añadir idioma
 Add link,Añadir enlace
 Add page,Añadir página
 Add PDF,Añadir PDF
@@ -166,7 +165,6 @@ Cards,Tarjetas
 Cards view,Vista de tarjetas
 Category,Category
 Change,Change
-Change password,Cambiar la contraseña
 Change Password,Change Password
 Changes in the thesaurus will impact all the entities using these values.,Los cambios en Tesauros impactarán en todas las entidades que usen esos valores.
 Changing the type will erase all relationships to this entity.,Cambiar el tipo borrará todas las relaciones de esta entidad.
@@ -256,11 +254,9 @@ Create,Crear
 CREATE,Crear
 Create and edit thesauri,Crear y editar tesauro
 Create Connection,Crear Conexión
-Create dictionaries,Crear tesauros
 Create entity,Crear entidad
 Create Entity,Crear entidad
 Create Extractor,Create Extractor
-Create group,Crear grupo
 Create new entities and upload documents,Crear nuevas entidades y subir documentos
 Create new entity from selection,Crear nueva entidad desde selección
 Create Reference,Crear Referencia
@@ -312,7 +308,6 @@ Data visualizations,Data visualizations
 Data was updated recently. You can refresh again in a few seconds.,Data was updated recently. You can refresh again in a few seconds.
 Date,Date
 Date added,Fecha de creación
-Date format,Formato de fecha
 Date modified,Fecha de la modificación
 "Date or numeric × numeric enables scatter and heatmap. Line, area, and bar plot the
                 measure over the primary dimension (e.g. max engine size per registration date).","Date or numeric × numeric enables scatter and heatmap. Line, area, and bar plot the
@@ -336,7 +331,6 @@ Delete,Eliminar
 DELETE,Eliminar
 Delete entities and documents,Eliminar entidades y documentos
 Delete file,Eliminar archivo
-Delete language,Eliminar idioma
 Delete relationship,Eliminar relación
 Delete relationships,Eliminar relaciones
 Delete?,Delete?
@@ -373,7 +367,6 @@ Do you want disable 2FA for the following users?,Do you want disable 2FA for the
 Do you want reset the password for the following users?,Do you want reset the password for the following users?
 Do you want to delete the following items?,Do you want to delete the following items?
 Document,Documento
-Document and entity types,Tipos de documento y entidad
 Document contents,Contenidos del documento
 Document OCR trigger,Desencadenador de OCR de documento
 Document Title,Título del documento
@@ -417,8 +410,6 @@ Editor,Editor
 editor,Editor
 Editors,Editors
 Email,Correo electrónico
-Email address,Dirección de correo electrónico
-Email updated,Correo electrónico actualizado
 Embed,Embed
 Embed in pages,Embed in pages
 Empty,Vacío
@@ -510,7 +501,6 @@ for,for
 For all entities,For all entities
 For entities with blank values,For entities with blank values
 Forgot Password or Username?,Forgot Password or Username?
-Forgot Password?,¿Has olvidado tu contraseña?
 Forms and email configuration,Configuración de formularios y correo electrónico
 From,From
 From all suggestions,From all suggestions
@@ -528,7 +518,6 @@ Global CSS & JS,CSS Global & JS
 Global JS,Global JS
 Google,Google
 Google Analytics,Google Analytics
-Google Analytics ID,ID de Google Analytics
 Google Maps,Google Maps
 Group,Grupo
 Group by,Agrupar por
@@ -885,9 +874,7 @@ parties,parties
 Password,Contraseña
 Password + 2fa,Password + 2fa
 Password changed success,Contraseña cambiada exitosamente
-Password Error,¡Error de contraseña! Ambos campos son obligatorios y deben coincidir
 Password is too long,La contraseña es demasiado larga
-Password updated,Contraseña actualizada
 Passwords do not match,Passwords do not match
 Paste an audio or video URL to use it as this property without uploading a file. Press Enter to apply.,Pega una URL de audio o video para usarlo como esta propiedad sin subir un archivo. Pulsa ENTER para aplicar.
 Paste an image URL to use it as this property without uploading a file. Press Enter to apply.,Pega una URL de imagen para usarlo como esta propiedad sin subir un archivo. Pulsa ENTER para aplicar.
@@ -930,7 +917,6 @@ Priority sorting,Ordenamiento prioritario
 Priority sorting description,"Las propiedades marcadas como ordenamiento prioritaria se utilizarán como criterios de ordenamiento predeterminados. Si se marca más de una propiedad como ordenación prioritaria, el sistema intentará elegir la que mejor se ajuste. Al enumerar tipos de plantillas mixtas, el sistema seleccionará el mejor ordenamiento combinado."
 Private,Private
 Private entities description,AVISO: Las entidades seleccionadas serán **privadas**. Solo usuarios con permiso podrán visualizarlos.
-Private instance,Instancia privada
 Process,Process
 Process extractor,Process extractor
 Process selected,Process selected
@@ -1167,7 +1153,6 @@ Some tasks may take a while. Bert will reply when it's done.,Some tasks may take
 Something went wrong,Algo salió mal
 Sort,Ordenar
 Sort ascending,Orden ascendente
-Sort by,Ordenar por
 Sort descending,Orden descendiente
 Sort:,Ordenar:
 sorted by,ordenado por

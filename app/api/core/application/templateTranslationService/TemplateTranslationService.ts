@@ -1,6 +1,6 @@
 import { TranslationsService } from '#api/core/application/translation/TranslationsService.js';
 import { Template } from '#api/core/domain/template/Template.js';
-import { TranslationService } from '#api/core/domain/template/TranslationService.js';
+import type { TemplateTranslationService as TemplateTranslationServicePort } from '#api/core/domain/template/TemplateTranslationService.js';
 
 type Deps = {
   translationsService: TranslationsService;
@@ -23,7 +23,7 @@ function createTranslationContext(template: Template) {
  * Syncs Template label keys into translation contexts.
  * Must run inside the parent Template UseCase transaction (shared TM), like ThesaurusTranslationService.
  */
-class TemplateTranslationService implements TranslationService {
+class TemplateTranslationService implements TemplateTranslationServicePort {
   constructor(private deps: Deps) {}
 
   async createTemplateTranslation(template: Template): Promise<void> {

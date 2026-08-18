@@ -30,23 +30,13 @@ describe('PropagateThesaurusTranslationService', () => {
   it('should rename metadata when a thesaurus translation value changes', async () => {
     const { sut, renameInMetadata } = createSut(makeThesaurus([{ id: 'age id', label: 'Age' }]));
 
-    await sut.forContext(
-      {
-        locale: 'en',
-        contexts: [
-          {
-            id: thesaurusId,
-            type: 'Thesaurus',
-            values: [{ key: 'Age', value: 'Age changed' }],
-          },
-        ],
-      },
-      {
-        id: thesaurusId,
-        type: 'Thesaurus',
-        values: [{ key: 'Age', value: 'Age' }],
-      }
-    );
+    await sut.propagate({
+      locale: 'en',
+      contextId: thesaurusId,
+      type: 'Thesaurus',
+      previous: { Age: 'Age' },
+      next: { Age: 'Age changed' },
+    });
 
     expect(renameInMetadata).toHaveBeenCalledWith('age id', 'Age changed', thesaurusId, 'en');
   });
@@ -62,23 +52,13 @@ describe('PropagateThesaurusTranslationService', () => {
       ])
     );
 
-    await sut.forContext(
-      {
-        locale: 'en',
-        contexts: [
-          {
-            id: thesaurusId,
-            type: 'Thesaurus',
-            values: [{ key: 'Age', value: 'Age changed in child' }],
-          },
-        ],
-      },
-      {
-        id: thesaurusId,
-        type: 'Thesaurus',
-        values: [{ key: 'Age', value: 'Age' }],
-      }
-    );
+    await sut.propagate({
+      locale: 'en',
+      contextId: thesaurusId,
+      type: 'Thesaurus',
+      previous: { Age: 'Age' },
+      next: { Age: 'Age changed in child' },
+    });
 
     expect(renameInMetadata).toHaveBeenCalledWith(
       'child_id',
@@ -110,29 +90,13 @@ describe('PropagateThesaurusTranslationService', () => {
       ])
     );
 
-    await sut.forContext(
-      {
-        locale: 'en',
-        contexts: [
-          {
-            id: thesaurusId,
-            type: 'Thesaurus',
-            values: [
-              { key: 'Age', value: 'Yes changed' },
-              { key: 'Email', value: 'No changed' },
-            ],
-          },
-        ],
-      },
-      {
-        id: thesaurusId,
-        type: 'Thesaurus',
-        values: [
-          { key: 'Age', value: 'Age' },
-          { key: 'Email', value: 'Email' },
-        ],
-      }
-    );
+    await sut.propagate({
+      locale: 'en',
+      contextId: thesaurusId,
+      type: 'Thesaurus',
+      previous: { Age: 'Age', Email: 'Email' },
+      next: { Age: 'Yes changed', Email: 'No changed' },
+    });
 
     expect(renameInMetadata).toHaveBeenCalledWith('yes_in_court', 'Yes changed', thesaurusId, 'en');
     expect(renameInMetadata).toHaveBeenCalledWith(
@@ -153,13 +117,13 @@ describe('PropagateThesaurusTranslationService', () => {
   it('should not rename when context is not Thesaurus', async () => {
     const { sut, renameInMetadata, getById } = createSut();
 
-    await sut.forContext(
-      {
-        locale: 'en',
-        contexts: [{ id: 'System', type: 'Uwazi UI', values: [{ key: 'A', value: 'B' }] }],
-      },
-      { id: 'System', type: 'Uwazi UI', values: [{ key: 'A', value: 'A' }] }
-    );
+    await sut.propagate({
+      locale: 'en',
+      contextId: 'System',
+      type: 'Uwazi UI',
+      previous: { A: 'A' },
+      next: { A: 'B' },
+    });
 
     expect(getById).not.toHaveBeenCalled();
     expect(renameInMetadata).not.toHaveBeenCalled();

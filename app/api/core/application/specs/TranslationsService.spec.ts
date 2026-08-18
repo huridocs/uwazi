@@ -2,19 +2,19 @@ import { TestUtils } from '#api/common.v2/utils/Test.js';
 import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js';
 import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
 import { TranslationsDataSource } from '#api/core/application/contracts/TranslationsDataSource.js';
-import { prepareLocaleTranslation } from '#api/core/application/translation/localeTranslationDto.js';
 import { TranslationsService } from '#api/core/application/translation/TranslationsService.js';
 import { ValidateTranslationsService } from '#api/core/application/translation/ValidateTranslationsService.js';
 import { Translation } from '#api/core/domain/translation/Translation.js';
 
 const context = { id: 'ctx-1', label: 'Context', type: 'Entity' as const };
 
-const entry = (overrides: Partial<{ key: string; value: string; language: 'en' | 'es' }> = {}) => ({
-  language: overrides.language ?? ('en' as const),
-  key: overrides.key ?? 'Title',
-  value: overrides.value ?? 'Title',
-  context,
-});
+const entry = (overrides: Partial<{ key: string; value: string; language: 'en' | 'es' }> = {}) =>
+  new Translation(
+    overrides.key ?? 'Title',
+    overrides.value ?? 'Title',
+    overrides.language ?? 'en',
+    context
+  );
 
 const createSut = (isRunning = true) => {
   const transactionManager = TestUtils.mockClass<TransactionManager>({
@@ -25,8 +25,6 @@ const createSut = (isRunning = true) => {
     insert: jest.fn().mockImplementation(async models => models),
     upsert: jest.fn().mockImplementation(async models => models),
     calculateNonexistentKeys: jest.fn().mockResolvedValue([]),
-    deleteByContextId: jest.fn().mockResolvedValue(undefined),
-    deleteByLanguage: jest.fn().mockResolvedValue(undefined),
     getContext: jest.fn(),
     updateContext: jest.fn().mockResolvedValue(undefined),
   });
@@ -54,96 +52,39 @@ const createSut = (isRunning = true) => {
 };
 
 describe('TranslationsService', () => {
-  describe('prepareLocaleTranslation', () => {
-    it('should require a locale', () => {
-      expect(() => prepareLocaleTranslation({ contexts: [] })).toThrow(
-        'translation to save should have a locale'
-      );
-    });
-
-    it('should convert indexed context values to a list', () => {
-      const prepared = prepareLocaleTranslation({
-        locale: 'en',
-        contexts: [{ id: 'ctx-1', label: 'Context', type: 'Entity', values: { Title: 'Title' } }],
-      });
-
-      expect(prepared.contexts?.[0].values).toEqual([{ key: 'Title', value: 'Title' }]);
-    });
-
-    it('should reject duplicate keys in a context', () => {
-      expect(() =>
-        prepareLocaleTranslation({
-          locale: 'en',
-          contexts: [
-            {
-              id: 'ctx-1',
-              label: 'Context',
-              type: 'Entity',
-              values: [
-                { key: 'Title', value: 'A' },
-                { key: 'Title', value: 'B' },
-              ],
-            },
-          ],
-        })
-      ).toThrow(/repeated translation key Title/);
-    });
-  });
-
   describe('ambient transaction requirement', () => {
     it.each([
-      ['insertEntries', async (sut: TranslationsService) => sut.insertEntries([entry()])],
-      ['upsertEntries', async (sut: TranslationsService) => sut.upsertEntries([entry()])],
       ['saveEntries', async (sut: TranslationsService) => sut.saveEntries([entry()])],
       [
-        'persistLocale',
+        'createContext',
+        async (sut: TranslationsService) => sut.createContext(context, { Title: 'Title' }),
+      ],
+      [
+        'updateContext',
         async (sut: TranslationsService) =>
-          sut.persistLocale({
-            locale: 'en',
-            contexts: [
-              {
-                id: 'ctx-1',
-                label: 'Context',
-                type: 'Entity',
-                values: [{ key: 'Title', value: 'T' }],
-              },
-            ],
+          sut.updateContext({
+            context,
+            keyChanges: {},
+            keysToDelete: [],
+            valueChanges: {},
           }),
       ],
-      ['deleteByContextId', async (sut: TranslationsService) => sut.deleteByContextId('ctx-1')],
-      ['deleteByLanguage', async (sut: TranslationsService) => sut.deleteByLanguage('en')],
     ])('should throw when %s is called outside a transaction', async (_name, run) => {
-      const { sut } = createSut(false);
-      await expect(run(sut)).rejects.toThrow('This operation must be called within a transaction');
-    });
-
-    it('should throw when createContext persists outside a transaction', async () => {
-      const { sut } = createSut(false);
-      await expect(sut.createContext(context, { Title: 'Title' })).rejects.toThrow(
-        'This operation must be called within a transaction'
-      );
-    });
-
-    it('should throw when updateContext persists outside a transaction', async () => {
       const { sut, translationsDS } = createSut(false);
       translationsDS.getContext = jest.fn();
-      await expect(
-        sut.updateContext({
-          context,
-          keyChanges: {},
-          keysToDelete: [],
-          valueChanges: {},
-        })
-      ).rejects.toThrow('This operation must be called within a transaction');
+      await expect(run(sut)).rejects.toThrow('This operation must be called within a transaction');
     });
   });
 
   describe('when a transaction is running', () => {
-    it('should validate and insert entries', async () => {
+    it('should validate and insert new keys through saveEntries', async () => {
       const { sut, translationsDS, validateTranslations } = createSut(true);
       const translations = [entry({ language: 'en' }), entry({ language: 'es', value: 'Título' })];
+      translationsDS.calculateNonexistentKeys = jest
+        .fn()
+        .mockImplementation(async (_contextId: string, keys: string[]) => keys);
 
-      await sut.insertEntries(translations);
+      await sut.saveEntries(translations);
 
       expect(validateTranslations.languagesExist).toHaveBeenCalledWith(translations);
       expect(validateTranslations.translationsWillExistsInAllLanguages).toHaveBeenCalledWith(
@@ -153,16 +94,20 @@ describe('TranslationsService', () => {
         expect.any(Translation),
         expect.any(Translation),
       ]);
+      expect(translationsDS.upsert).not.toHaveBeenCalled();
     });
 
-    it('should reject upsert when keys are missing', async () => {
-      const { sut, translationsDS } = createSut(true);
-      translationsDS.calculateNonexistentKeys = jest.fn().mockResolvedValue(['Missing']);
+    it('should upsert existing keys through saveEntries without the create-all-languages check', async () => {
+      const { sut, translationsDS, validateTranslations } = createSut(true);
 
-      await expect(sut.upsertEntries([entry({ key: 'Missing' })])).rejects.toThrow(
-        /update missing translation keys/
-      );
-      expect(translationsDS.upsert).not.toHaveBeenCalled();
+      await sut.saveEntries([entry({ key: 'Title', value: 'Updated' })]);
+
+      expect(validateTranslations.languagesExist).toHaveBeenCalled();
+      expect(validateTranslations.translationsWillExistsInAllLanguages).not.toHaveBeenCalled();
+      expect(translationsDS.upsert).toHaveBeenCalledWith([
+        expect.objectContaining({ key: 'Title', value: 'Updated' }),
+      ]);
+      expect(translationsDS.insert).not.toHaveBeenCalled();
     });
 
     it('should partition saveEntries into create and update', async () => {
@@ -212,16 +157,6 @@ describe('TranslationsService', () => {
           expect.objectContaining({ language: 'es', key: 'Name' }),
         ])
       );
-    });
-
-    it('should delete by context and language', async () => {
-      const { sut, translationsDS } = createSut(true);
-
-      await sut.deleteByContextId('ctx-1');
-      await sut.deleteByLanguage('es');
-
-      expect(translationsDS.deleteByContextId).toHaveBeenCalledWith('ctx-1');
-      expect(translationsDS.deleteByLanguage).toHaveBeenCalledWith('es');
     });
   });
 });

@@ -2,7 +2,7 @@ import { TestUtils } from '#api/common.v2/utils/Test.js';
 import { TemplateWithDuplicatedNameOnTheSystemError } from '#api/core/domain/template/errors.js';
 import { PropertyTypeEnum } from '#api/core/domain/template/PropertyType.js';
 import { CreateTemplateUseCaseFactory } from '#api/core/infrastructure/factories/CreateTemplateUseCaseFactory.js';
-import { TranslationService } from '#api/core/domain/template/TranslationService.js';
+import { TemplateTranslationService } from '#api/core/domain/template/TemplateTranslationService.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { DBFixture } from '#api/utils/testing_db.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
@@ -33,14 +33,16 @@ const testConfigs: TestConfig[] = [
 
 type CreateProps = {
   thesauriDS?: ThesauriDataSource;
-  translationService?: TranslationService;
+  templateTranslationService?: TemplateTranslationService;
 };
 
 const createSut = (props?: CreateProps, postgresTemplates = false) =>
   testingEnvironment.runWithContext(
     () => {
       const sut = CreateTemplateUseCaseFactory.default({
-        ...(props?.translationService ? { translationService: props.translationService } : {}),
+        ...(props?.templateTranslationService
+          ? { templateTranslationService: props.templateTranslationService }
+          : {}),
       });
 
       return { sut };
@@ -602,11 +604,11 @@ describe('CreateTemplateUseCase', () => {
 
     if (postgresTemplates) {
       it('should NOT revert the PG write when the Mongo transaction rolls back', async () => {
-        const translationService = TestUtils.mockClass<TranslationService>({
+        const templateTranslationService = TestUtils.mockClass<TemplateTranslationService>({
           createTemplateTranslation: jest.fn().mockRejectedValue(new Error('Creation failed')),
         });
 
-        const { sut } = createSut({ translationService }, postgresTemplates);
+        const { sut } = createSut({ templateTranslationService }, postgresTemplates);
 
         await expect(
           sut.execute({

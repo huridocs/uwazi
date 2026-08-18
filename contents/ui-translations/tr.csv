@@ -51,7 +51,6 @@ Add from web,WEB'ten ekle
 Add group,Grup ekle
 add icon,simge ekle
 Add item,Add item
-Add language,Dil ekle
 Add link,Link ekle
 Add page,Sayfa ekle
 Add PDF,Add PDF
@@ -168,7 +167,6 @@ Cards,Fişler
 Cards view,Fiş görünümü
 Category,Category
 Change,Change
-Change password,Parola değiştir
 Change Password,Change Password
 Changes in the thesaurus will impact all the entities using these values.,Changes in the thesaurus will impact all the entities using these values.
 Changing the type will erase all relationships to this entity.,Changing the type will erase all relationships to this entity.
@@ -258,11 +256,9 @@ Create,Oluştur
 CREATE,Oluştur
 Create and edit thesauri,Create and edit thesauri
 Create Connection,Create Connection
-Create dictionaries,Sözlük oluştur
 Create entity,Varlık oluştur
 Create Entity,Varlık oluştur
 Create Extractor,Create Extractor
-Create group,Grup oluştur
 Create new entities and upload documents,Create new entities and upload documents
 Create new entity from selection,Create new entity from selection
 Create Reference,Create Reference
@@ -314,7 +310,6 @@ Data visualizations,Data visualizations
 Data was updated recently. You can refresh again in a few seconds.,Data was updated recently. You can refresh again in a few seconds.
 Date,Date
 Date added,Eklenme tarihi
-Date format,Tarih biçimi
 Date modified,Değiştirilme tarihi
 "Date or numeric × numeric enables scatter and heatmap. Line, area, and bar plot the
                 measure over the primary dimension (e.g. max engine size per registration date).","Date or numeric × numeric enables scatter and heatmap. Line, area, and bar plot the
@@ -338,7 +333,6 @@ Delete,Sil
 DELETE,Sil
 Delete entities and documents,Delete entities and documents
 Delete file,Delete file
-Delete language,Dili sil
 Delete relationship,Delete relationship
 Delete relationships,Delete relationships
 Delete?,Delete?
@@ -375,7 +369,6 @@ Do you want disable 2FA for the following users?,Do you want disable 2FA for the
 Do you want reset the password for the following users?,Do you want reset the password for the following users?
 Do you want to delete the following items?,Do you want to delete the following items?
 Document,Belge
-Document and entity types,Belge ve varlık türü
 Document contents,Belge içeriği
 Document OCR trigger,Document OCR trigger
 Document Title,Belge Başlığı
@@ -419,8 +412,6 @@ Editor,Editör
 editor,Editör
 Editors,Editors
 Email,E-posta
-Email address,E-posta adresi
-Email updated,E-posta güncellendi
 Embed,Embed
 Embed in pages,Embed in pages
 Empty,Empty
@@ -512,7 +503,6 @@ for,for
 For all entities,For all entities
 For entities with blank values,For entities with blank values
 Forgot Password or Username?,Forgot Password or Username?
-Forgot Password?,Parolanızı mı unuttunuz?
 Forms and email configuration,Formlar ve e-posta yapılandırması
 From,From
 From all suggestions,From all suggestions
@@ -530,7 +520,6 @@ Global CSS & JS,Global CSS & JS
 Global JS,Global JS
 Google,Google
 Google Analytics,Google Analytics
-Google Analytics ID,Google Analytics Kimliği
 Google Maps,Google Maps
 Group,Group
 Group by,Group by
@@ -888,9 +877,7 @@ parties,parties
 Password,Parola
 Password + 2fa,Password + 2fa
 Password changed success,Password changed success
-Password Error,Şifre hatası
 Password is too long,Parola çok uzun
-Password updated,Parola güncellendi
 Passwords do not match,Passwords do not match
 Paste an audio or video URL to use it as this property without uploading a file. Press Enter to apply.,Paste an audio or video URL to use it as this property without uploading a file. Press Enter to apply.
 Paste an image URL to use it as this property without uploading a file. Press Enter to apply.,Paste an image URL to use it as this property without uploading a file. Press Enter to apply.
@@ -933,7 +920,6 @@ Priority sorting,Öncelik sıralaması
 Priority sorting description,"Properties marked as priority sorting will be used as default sorting criteria. If more than one property is marked as priority sorting the system will try to pick-up the best fit. When listing mixed template types, the system will pick-up the best combined priority sorting."
 Private,Private
 Private entities description,Caution: the selected entities will be **private**. Only allowed users will be able to see them.
-Private instance,Özel oluşum
 Process,Process
 Process extractor,Process extractor
 Process selected,Process selected
@@ -1170,7 +1156,6 @@ Some tasks may take a while. Bert will reply when it's done.,Some tasks may take
 Something went wrong,Bir şey ters gitti
 Sort,Sırala
 Sort ascending,Sort ascending
-Sort by,Sırala
 Sort descending,Sort descending
 Sort:,Sort:
 sorted by,şuna göre sıralandı:
