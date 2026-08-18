@@ -23,7 +23,7 @@ const SelectTextInTargetStep = ({
     <div className="flex flex-col flex-1 min-h-0 gap-2">
       <div className="flex flex-col gap-2">
         <h3 className="text-md font-bold text-gray-900">{selectedEntity?.title}</h3>
-        <h3 className="text-sm text-gray-500">{selectedFile.filename}</h3>
+        <h3 className="text-sm text-gray-500">{selectedFile.originalname ?? selectedFile.filename}</h3>
         <TemplateLabel templateId={selectedEntity?.template} />
       </div>
       <div className="flex-1 min-h-50 overflow-auto border border-gray-200 rounded-md">

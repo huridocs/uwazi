@@ -28,7 +28,7 @@ const CreateRelationshipModalHeader = ({
     <div className="min-w-0">
       <h3 className="text-base font-semibold text-ink">{headerTitles[step]}</h3>
       {selectionPreview ? (
-        <p className="mt-0.5 max-w-[350px] truncate text-xs text-ink-secondary">
+        <p className="mt-0.5 max-w-87.5 truncate text-xs text-ink-secondary">
           <Translate>From:</Translate> &quot;{selectionPreview.slice(0, 60)}
           {selectionPreview.length > 60 ? '...' : ''}&quot;
         </p>
