@@ -8,5 +8,6 @@ const elasticLanguageCodes = LanguageUtils.getCodes(elasticLanguages, 'elastic')
 
 export { elasticLanguages, elasticLanguageCodes, ISO6391Codes, LanguageUtils };
 export { availableLanguages } from './availableLanguages.js';
+export { formatLanguageOptionLabel, formatLanguageLabelFromCode } from './formatLanguageOptionLabel.js';
 
 export type { LanguageCode } from './availableLanguages.js';

@@ -55,6 +55,41 @@ describe('buildEntityFileRows', () => {
     expect(result.mainDocumentId).toBe('doc-en');
   });
 
+  it('should label file languages with the UI-locale name and ISO code', () => {
+    const entity = {
+      sharedId: 'entity-lang',
+      template: 'template-1',
+      documents: [
+        {
+          _id: 'doc-en',
+          filename: 'doc-en.pdf',
+          originalname: 'English file',
+          language: 'eng',
+          mimetype: 'application/pdf',
+          size: 1024,
+          creationDate: 1720000000,
+        },
+        {
+          _id: 'doc-es',
+          filename: 'doc-es.pdf',
+          originalname: 'Spanish file',
+          language: 'spa',
+          mimetype: 'application/pdf',
+          size: 2048,
+          creationDate: 1720000010,
+        },
+      ],
+      attachments: [],
+      metadata: {},
+    } as unknown as Entity;
+
+    const result = buildEntityFileRows(entity, templates, 'es', 'en');
+    const byId = Object.fromEntries(result.primaryRows.map(row => [row.rowId, row]));
+
+    expect(byId['doc-en']?.languageKey).toBe('Inglés - EN');
+    expect(byId['doc-es']?.languageKey).toBe('Español - ES');
+  });
+
   it('should map stable kinds and type labels to design kinds', () => {
     const entity = {
       sharedId: 'entity-2',
