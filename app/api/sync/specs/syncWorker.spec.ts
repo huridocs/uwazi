@@ -11,7 +11,6 @@ import express, { NextFunction, Request, RequestHandler, Response } from 'expres
 import { Db, ObjectId } from 'mongodb';
 import authRoutes, { populateAuthenticatedUser } from '#api/auth/routes.js';
 import entities from '#api/entities/index.js';
-import entitiesModel from '#api/entities/entitiesModel.js';
 import {
   attachmentsPath,
   customUploadsPath,
@@ -514,7 +513,7 @@ describe('syncWorker', () => {
         await tenants.run(async () => {
           await elasticTesting.reindex();
           permissionsContext.setCommandContext();
-          await entitiesModel.delete({ template: template1 });
+          await getConnection().collection('entities').deleteMany({ template: template1 });
           await templates.delete({ _id: template1 });
         }, 'host1');
       });
