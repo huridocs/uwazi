@@ -12,7 +12,7 @@ import {
   RelatedRelationshipMetadataProperty,
 } from '#V2/formatters/types.js';
 import { settingsAtom } from '#V2/atoms/settingsAtom.js';
-import { CountryFlag } from '../../CustomIcons/index.js';
+import { EntityIcon } from '../../CustomIcons/index.js';
 
 type RelationshipEntityValue = RelatedRelationshipMetadataProperty['values'][number];
 
@@ -51,7 +51,7 @@ const ConnectionPills = ({ values, targetTemplateId, onOpenEntity }: ConnectionP
         const templateId = value.templateId || targetTemplateId || '';
         const pill = (
           <span className="inline-flex max-w-full items-center gap-1.5">
-            {value.icon?._id && <CountryFlag id={value.icon._id} />}
+            {value.icon ? <EntityIcon data={value.icon} /> : null}
             <TemplatePill templateId={templateId} label={value.title} />
           </span>
         );

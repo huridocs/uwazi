@@ -3,7 +3,7 @@
  */
 
 import * as scroller from '#app/V2/helpers/scrollIntoView.js';
-import { triggerScroll } from '../helpers.js';
+import { triggerScroll, pickMostVisiblePage } from '../helpers.js';
 
 describe('triggerScroll', () => {
   //defined as any since the correct definition of the react ref type has no impact on the test
@@ -50,5 +50,33 @@ describe('triggerScroll', () => {
     jest.advanceTimersByTime(1);
     expect(scroller.scrollIntoView).toHaveBeenCalledWith(mockRef.current);
     expect(frameId).toBe(1);
+  });
+});
+
+describe('pickMostVisiblePage', () => {
+  it('picks the page with the greatest visible height', () => {
+    const visibleHeightByPage = new Map([
+      [8, 200],
+      [9, 500],
+      [10, 180],
+    ]);
+    expect(pickMostVisiblePage(visibleHeightByPage, 23)).toBe(9);
+  });
+
+  it('keeps the previous page when visible heights tie', () => {
+    const visibleHeightByPage = new Map([
+      [8, 300],
+      [9, 300],
+    ]);
+    expect(pickMostVisiblePage(visibleHeightByPage, 23, 9)).toBe(9);
+  });
+
+  it('ignores pages outside the document range', () => {
+    const visibleHeightByPage = new Map([
+      [0, 800],
+      [2, 100],
+      [99, 900],
+    ]);
+    expect(pickMostVisiblePage(visibleHeightByPage, 4)).toBe(2);
   });
 });

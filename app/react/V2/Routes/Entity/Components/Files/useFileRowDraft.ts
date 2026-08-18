@@ -1,4 +1,6 @@
 import { useMemo, useRef, useState } from 'react';
+import { useAtomValue } from 'jotai';
+import { localeAtom } from '#V2/atoms/index.js';
 import {
   fileLanguageSelectOptions,
   fileSupportsLanguage,
@@ -13,7 +15,8 @@ const useFileRowDraft = (row: EntityFileRow) => {
   const [draftLanguage, setDraftLanguage] = useState(() => resolveFileLanguage(row.raw.language));
   const [saving, setSaving] = useState(false);
   const nameInputRef = useRef<HTMLInputElement>(null);
-  const languageOptions = useMemo(() => fileLanguageSelectOptions(), []);
+  const locale = useAtomValue(localeAtom);
+  const languageOptions = useMemo(() => fileLanguageSelectOptions(locale), [locale]);
   const showLanguage = fileSupportsLanguage({
     type: row.raw.mimetype || '',
     name: row.raw.originalname || row.displayName,

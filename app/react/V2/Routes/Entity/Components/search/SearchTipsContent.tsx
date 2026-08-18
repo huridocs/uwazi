@@ -4,31 +4,33 @@ import { Translate, t } from '#app/I18N/index.js';
 
 // Entity Searchtab tips UI — Library keeps App/SearchTipsContent (intentional split).
 
-const TIPS: { example: string; proseKey: string; prose: string; wide?: boolean }[] = [
+type Tip = {
+  example: () => string;
+  prose: React.ReactElement;
+  wide?: boolean;
+};
+
+const TIPS: Tip[] = [
   {
-    example: 'juris*',
-    proseKey: 'Search Tips: wildcard',
-    prose: 'matches jurisdiction, jurists, jurisprudence',
+    example: () => t('System', 'juris*', 'juris*', false),
+    prose: <Translate>matches jurisdiction, jurists, jurisprudence</Translate>,
   },
   {
-    example: '198?',
-    proseKey: 'Search Tips: one char wildcard',
-    prose: 'any single character',
+    example: () => t('System', '198?', '198?', false),
+    prose: <Translate>any single character</Translate>,
   },
   {
-    example: '"Costa Rica"',
-    proseKey: 'Search Tips: exact term',
-    prose: 'the words together, in that order',
+    example: () => t('System', '"Costa Rica"', '"Costa Rica"', false),
+    prose: <Translate>the words together, in that order</Translate>,
   },
   {
-    example: '"the status"~5',
-    proseKey: 'Search Tips: proximity',
-    prose: 'the words within 5 of each other',
+    example: () => t('System', '"the status"~5', '"the status"~5', false),
+    prose: <Translate>the words within 5 of each other</Translate>,
   },
   {
-    example: 'status AND women NOT Nicaragua',
-    proseKey: 'Search Tips: boolean',
-    prose: 'combine or exclude terms',
+    example: () =>
+      t('System', 'status AND women NOT Nicaragua', 'status AND women NOT Nicaragua', false),
+    prose: <Translate>combine or exclude terms</Translate>,
     wide: true,
   },
 ];
@@ -52,25 +54,28 @@ const SearchTipsContent = ({ onInsert }: SearchTipsContentProps) => (
       </span>
     </div>
     <ul className="flex flex-col">
-      {TIPS.map(tip => (
-        <li key={tip.example}>
-          <button
-            type="button"
-            onClick={() => onInsert(tip.example)}
-            aria-label={`${t('System', 'Search', null, false)}: ${tip.example}`}
-            className={`${ROW_CLASS} ${
-              tip.wide
-                ? 'flex items-baseline gap-x-3'
-                : 'grid grid-cols-[7rem_1fr] items-baseline gap-x-3'
-            }`}
-          >
-            <span dir="ltr" className={EXAMPLE_CLASS}>
-              {tip.example}
-            </span>
-            <span className={PROSE_CLASS}>{t('System', tip.proseKey, tip.prose, false)}</span>
-          </button>
-        </li>
-      ))}
+      {TIPS.map(tip => {
+        const example = tip.example();
+        return (
+          <li key={example}>
+            <button
+              type="button"
+              onClick={() => onInsert(example)}
+              aria-label={`${t('System', 'Search', null, false)}: ${example}`}
+              className={`${ROW_CLASS} ${
+                tip.wide
+                  ? 'flex items-baseline gap-x-3'
+                  : 'grid grid-cols-[7rem_1fr] items-baseline gap-x-3'
+              }`}
+            >
+              <span dir="ltr" className={EXAMPLE_CLASS}>
+                {example}
+              </span>
+              <span className={PROSE_CLASS}>{tip.prose}</span>
+            </button>
+          </li>
+        );
+      })}
     </ul>
   </>
 );

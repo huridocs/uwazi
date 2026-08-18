@@ -206,7 +206,8 @@ describe('Entity view', () => {
       fireEvent.click(mainTablist().getByRole('tab', { name: relationshipsMainTab }));
       await waitFor(() => {
         expect(sideTablist().getByRole('tab', { name: 'Document' })).toBeInTheDocument();
-        expect(sideTablist().queryByRole('tab', { name: 'Metadata' })).not.toBeInTheDocument();
+        expect(sideTablist().getByRole('tab', { name: 'Metadata' })).toBeInTheDocument();
+        expect(sideTablist().getByRole('tab', { name: /Files/ })).toBeInTheDocument();
         expect(sideTablist().queryByRole('tab', { name: 'ToC' })).not.toBeInTheDocument();
         expect(
           sideTablist().queryByRole('tab', { name: relationshipsSideTab })
@@ -375,6 +376,20 @@ describe('Entity view', () => {
         'aria-selected',
         'true'
       );
+    });
+
+    it('shows Metadata and Files side tabs when Relationships is on main', async () => {
+      const entityNoDoc = { ...sampleEntity, documents: undefined };
+
+      renderEntity({ entity: entityNoDoc, mainDocument: undefined });
+      await checkEntityRendered();
+
+      fireEvent.click(mainTablist().getByRole('tab', { name: relationshipsMainTab }));
+      await waitFor(() => {
+        expect(sideTablist().getByRole('tab', { name: 'Metadata' })).toBeInTheDocument();
+        expect(sideTablist().getByRole('tab', { name: /Files/ })).toBeInTheDocument();
+        expect(sideTablist().queryByRole('tab', { name: 'Document' })).not.toBeInTheDocument();
+      });
     });
 
     it('should render the Files tab when the entity has no files', async () => {

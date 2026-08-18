@@ -8,26 +8,28 @@ const parseMarkdownMarker = (
   line: string,
   regexp: RegExp,
   wrapper: (text: string) => ReactNode
-) => {
-  const matches = line.match(regexp);
-  if (matches == null) {
-    return matches;
+): ReactNode | null => {
+  const globalRegexp = new RegExp(regexp.source, 'g');
+  const nodes: ReactNode[] = [];
+  let lastIndex = 0;
+  let match = globalRegexp.exec(line);
+  if (!match) return null;
+
+  while (match) {
+    if (match.index > lastIndex) nodes.push(line.slice(lastIndex, match.index));
+    nodes.push(wrapper(match[1]));
+    lastIndex = globalRegexp.lastIndex;
+    match = globalRegexp.exec(line);
   }
-  const parts = matches.input?.split(matches[0]);
-  return (
-    <>
-      {parts?.length && parts[0]}
-      {wrapper(matches[1])}
-      {parts?.length && parts[1]}
-    </>
-  );
+  if (lastIndex < line.length) nodes.push(line.slice(lastIndex));
+  return nodes.map((node, index) => <Fragment key={index}>{node}</Fragment>);
 };
 
 const parseMarkdownBoldMarker = (line: string) =>
-  parseMarkdownMarker(line, /\*{2}(.*)\*{2}/, text => <strong>{text}</strong>);
+  parseMarkdownMarker(line, /\*{2}(.+?)\*{2}/, text => <strong>{text}</strong>);
 
 const parseMarkdownItalicMarker = (line: string) =>
-  parseMarkdownMarker(line, /\*(.*)\*/, text => <i>{text}</i>);
+  parseMarkdownMarker(line, /\*(.+?)\*/, text => <i>{text}</i>);
 
 type TranslateProps = {
   className?: string;

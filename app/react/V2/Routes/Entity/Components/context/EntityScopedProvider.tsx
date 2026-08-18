@@ -7,6 +7,7 @@ import { RelationshipsSelectionProvider } from './RelationshipsSelectionContext.
 import { RelationshipsPanelFiltersProvider } from './RelationshipsPanelFiltersContext.js';
 import { DocumentInteractionProvider } from './DocumentInteractionContext.js';
 import { TocProvider } from './TocContext.js';
+import { ToCFileSync } from './ToCFileSync.js';
 import { MetadataEditingProvider } from './MetadataEditingContext.js';
 import { EntityOverlayProvider } from './EntityOverlayContext.js';
 import { EntityPageViewProvider, type EntityPageViewData } from '../EntityPageView/index.js';
@@ -42,6 +43,7 @@ const EntityScopedProvider = ({
               <RelationshipsPanelFiltersProvider>
                 <DocumentInteractionProvider>
                   <TocProvider>
+                    <ToCFileSync />
                     <EntityOverlayProvider>{children}</EntityOverlayProvider>
                   </TocProvider>
                 </DocumentInteractionProvider>

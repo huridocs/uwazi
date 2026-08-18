@@ -6,6 +6,56 @@ import { calculateScaling } from './functions/calculateScaling.js';
 import { adjustSelectionsToScale } from './functions/handleTextSelection.js';
 import { PDFJSViewer, PixelsPerInch } from './pdfjs.js';
 import type { EventBusType } from './pdfjs.js';
+import type { PageRenderQueue } from './functions/pageRenderQueue.js';
+
+type PDFPageViewer = typeof PDFJSViewer.PDFPageView.prototype;
+
+const isRenderingCancelled = (error: unknown): boolean =>
+  error instanceof Error && error.name === 'RenderingCancelledException';
+
+const drawPage = (
+  pageViewer: PDFPageViewer,
+  onError: (message: string) => void,
+  onSettled?: () => void
+) => {
+  pageViewer
+    .draw()
+    .catch((error: unknown) => {
+      if (isRenderingCancelled(error)) {
+        return;
+      }
+      if (error instanceof Error) {
+        onError(error.message);
+      }
+    })
+    .finally(() => {
+      onSettled?.();
+    });
+};
+
+const enqueueDraw = (
+  page: number,
+  pageViewerRef: React.RefObject<PDFPageViewer | null>,
+  renderingQueue: PageRenderQueue | undefined,
+  onError: (message: string) => void
+) => {
+  const pageViewer = pageViewerRef.current;
+  if (!pageViewer || pageViewer.renderingState !== PDFJSViewer.RenderingStates.INITIAL) {
+    return;
+  }
+  if (!renderingQueue) {
+    drawPage(pageViewer, onError);
+    return;
+  }
+  renderingQueue.request(page, () => {
+    const viewer = pageViewerRef.current;
+    if (!viewer || viewer.renderingState !== PDFJSViewer.RenderingStates.INITIAL) {
+      renderingQueue.complete(page);
+      return;
+    }
+    drawPage(viewer, onError, () => renderingQueue.complete(page));
+  });
+};
 
 interface PDFPageProps {
   pdf: PDFDocumentProxy;
@@ -16,6 +66,7 @@ interface PDFPageProps {
   onHighlightClick?: (highlightKey: string) => void;
   containerWidth?: number;
   onScaleChange?: (scale: number) => void;
+  renderingQueue?: PageRenderQueue;
 }
 
 const PDFPageComponent = ({
@@ -27,13 +78,14 @@ const PDFPageComponent = ({
   highlights,
   onHighlightClick,
   onScaleChange,
+  renderingQueue,
 }: PDFPageProps) => {
   const [error, setError] = useState<string>();
   const [pdfScale, setPdfScale] = useState(1);
   const [pageHeight, setPageHeight] = useState<number>();
   const [ready, setReady] = useState(false);
   const pageContainerRef = useRef<HTMLDivElement>(null);
-  const pageViewerRef = useRef<typeof PDFJSViewer.PDFPageView.prototype | null>(null);
+  const pageViewerRef = useRef<PDFPageViewer | null>(null);
   const baseViewportSizeRef = useRef<{ width: number; height: number } | null>(null);
 
   useEffect(() => {
@@ -97,14 +149,11 @@ const PDFPageComponent = ({
           }
 
           pageViewer.reset();
-
-          pageViewer.draw().catch((e: Error) => {
-            setError(e.message);
-          });
+          enqueueDraw(page, pageViewerRef, renderingQueue, setError);
         }
       }
     }
-  }, [containerWidth, onScaleChange, ready]);
+  }, [containerWidth, onScaleChange, ready, renderingQueue, page]);
 
   useEffect(() => {
     const containerRef = pageContainerRef.current;
@@ -127,36 +176,38 @@ const PDFPageComponent = ({
   }, [eventBus, page, ready]);
 
   useEffect(() => {
-    const renderPage = ({ pageNumber }: { pageNumber: number }) => {
+    const drawIfPage = ({ pageNumber }: { pageNumber: number }) => {
       if (pageNumber === page) {
-        const pageViewer = pageViewerRef.current;
-        if (pageViewer?.renderingState === PDFJSViewer.RenderingStates.INITIAL) {
-          pageViewer?.draw().catch(e => {
-            setError(e.message);
-          });
-        }
+        enqueueDraw(page, pageViewerRef, renderingQueue, setError);
       }
     };
 
     const unmountPage = ({ pageNumber }: { pageNumber: number }) => {
-      if (pageNumber === page) {
-        const pageViewer = pageViewerRef.current;
-        if (pageViewer?.renderingState === PDFJSViewer.RenderingStates.FINISHED) {
-          pageViewer?.destroy();
-        } else {
-          pageViewer?.cancelRendering();
-        }
+      if (pageNumber !== page) {
+        return;
       }
+      const viewer = pageViewerRef.current;
+      if (
+        viewer &&
+        (viewer.renderingState === PDFJSViewer.RenderingStates.RUNNING ||
+          viewer.renderingState === PDFJSViewer.RenderingStates.PAUSED)
+      ) {
+        viewer.cancelRendering();
+      }
+      renderingQueue?.cancel(page);
+      viewer?.reset();
     };
 
-    eventBus.on('renderpage', renderPage);
+    eventBus.on('renderpage', drawIfPage);
     eventBus.on('unmountpage', unmountPage);
+    eventBus.on('prioritypage', drawIfPage);
 
     return () => {
-      eventBus.off('renderpage', renderPage);
+      eventBus.off('renderpage', drawIfPage);
       eventBus.off('unmountpage', unmountPage);
+      eventBus.off('prioritypage', drawIfPage);
     };
-  }, [eventBus, page]);
+  }, [eventBus, page, renderingQueue]);
 
   if (error) {
     return <div>{error}</div>;

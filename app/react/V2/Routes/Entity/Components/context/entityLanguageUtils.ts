@@ -196,6 +196,10 @@ const syncLoaderLanguage = ({
   seedLoaderCache(loaderEntity, loaderLanguage, initialMainDocument);
 
   if (mode === 'seed-only') {
+    if (loaderLanguage === languageRef.current) {
+      setMainDocument(initialMainDocument);
+      setPagePlaintext(initialPagePlaintext);
+    }
     return undefined;
   }
 
