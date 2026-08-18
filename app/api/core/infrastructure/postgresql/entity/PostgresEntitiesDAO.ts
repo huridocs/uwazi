@@ -101,39 +101,39 @@ class PostgresEntitiesDAO extends PostgresDataSource<EntityRow> implements Entit
     q: ReturnType<typeof this.table.where>,
     filters: EntityFilters
   ): ReturnType<typeof this.table.where> {
-    if (filters._id) {
+    if (filters._id !== undefined) {
       q = q.where({ _id: filters._id });
     }
 
-    if (filters.ids && filters.ids.length > 0) {
+    if (filters.ids !== undefined) {
       q = q.whereIn('_id', filters.ids);
     }
 
-    if (filters.sharedId) {
+    if (filters.sharedId !== undefined) {
       q = q.where({ sharedId: filters.sharedId });
     }
 
-    if (filters.sharedIds && filters.sharedIds.length > 0) {
+    if (filters.sharedIds !== undefined) {
       q = q.whereIn('sharedId', filters.sharedIds);
     }
 
-    if (filters.language) {
+    if (filters.language !== undefined) {
       q = q.where({ language: filters.language });
     }
 
-    if (filters.languages && filters.languages.length > 0) {
+    if (filters.languages !== undefined) {
       q = q.whereIn('language', filters.languages);
     }
 
-    if (filters.template) {
+    if (filters.template !== undefined) {
       q = q.where({ template: filters.template });
     }
 
-    if (filters.templateIds && filters.templateIds.length > 0) {
+    if (filters.templateIds !== undefined) {
       q = q.whereIn('template', filters.templateIds);
     }
 
-    if (filters.title) {
+    if (filters.title !== undefined) {
       q = q.where({ title: filters.title });
     }
 
@@ -145,11 +145,16 @@ class PostgresEntitiesDAO extends PostgresDataSource<EntityRow> implements Entit
       q = q.where({ published: filters.published });
     }
 
-    if (filters.metadataValueIn && filters.metadataValueIn.length > 0) {
-      q = q.whereJsonSupersetOfAny(
-        'metadata',
-        filters.metadataValueIn.map(({ property, value }) => ({ [property]: [{ value }] }))
-      );
+    if (filters.metadataValueIn !== undefined) {
+      if (filters.metadataValueIn.length === 0) {
+        // An empty OR list must match nothing, not everything.
+        q = q.whereIn('_id', []);
+      } else {
+        q = q.whereJsonSupersetOfAny(
+          'metadata',
+          filters.metadataValueIn.map(({ property, value }) => ({ [property]: [{ value }] }))
+        );
+      }
     }
 
     return q;
@@ -202,6 +207,9 @@ class PostgresEntitiesDAO extends PostgresDataSource<EntityRow> implements Entit
     query: FindByTemplateIdRangeQuery,
     options: FindOptions = {}
   ): Promise<EntityDBO[]> {
+    if (query.from && !ObjectId.isValid(query.from)) return [];
+    if (query.to && !ObjectId.isValid(query.to)) return [];
+
     let q = this.table.where({ template: query.templateId });
 
     if (query.from && query.to) {
@@ -212,7 +220,7 @@ class PostgresEntitiesDAO extends PostgresDataSource<EntityRow> implements Entit
       q = q.whereRaw('?? <= ?', ['_id', query.to]);
     }
 
-    if (query.language) {
+    if (query.language !== undefined) {
       q = q.where({ language: query.language });
     }
 
@@ -235,7 +243,7 @@ class PostgresEntitiesDAO extends PostgresDataSource<EntityRow> implements Entit
       }
       if (criteria.hasValues) {
         q = q.whereRaw(
-          "EXISTS (SELECT 1 FROM jsonb_array_elements(??->?) AS elem WHERE elem->>'value' IS NOT NULL AND elem->>'value' NOT IN ('', 'null'))",
+          "EXISTS (SELECT 1 FROM jsonb_array_elements(??->?) AS elem WHERE elem->>'value' IS NOT NULL AND elem->>'value' <> '')",
           ['metadata', criteria.property]
         );
       }
@@ -313,13 +321,12 @@ class PostgresEntitiesDAO extends PostgresDataSource<EntityRow> implements Entit
 
   async getWithFiles(match: GetWithFilesMatch): Promise<EntityWithFiles[]> {
     const filters: EntityFilters = {};
-    if (match.sharedId) {
+    if (match.sharedIds !== undefined) {
+      filters.sharedIds = match.sharedIds;
+    } else if (match.sharedId !== undefined) {
       filters.sharedId = match.sharedId;
     }
-    if (match.sharedIds && match.sharedIds.length > 0) {
-      filters.sharedIds = match.sharedIds;
-    }
-    if (match.language) {
+    if (match.language !== undefined) {
       filters.language = match.language;
     }
     if (match.published !== undefined) {
@@ -336,7 +343,7 @@ class PostgresEntitiesDAO extends PostgresDataSource<EntityRow> implements Entit
     sharedId: string,
     language?: LanguageISO6391
   ): Promise<EntityDBO[] | EntityDBO | null> {
-    if (language) {
+    if (language !== undefined) {
       return this.findOne({ sharedId, language });
     }
     return this.find({ sharedId });
