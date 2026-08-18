@@ -12,7 +12,6 @@ const entityFixture = (overrides: Record<string, unknown> = {}) => ({
   title: 'Synced entity',
   icon: { _id: null, type: 'entity' },
   metadata: {},
-  obsoleteMetadata: [],
   user: new ObjectId(),
   published: true,
   creationDate: 100,

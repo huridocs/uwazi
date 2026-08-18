@@ -40,10 +40,9 @@ export class MongoEntitiesSyncHandler
       throw new Error('MongoEntitiesSyncHandler: document._id is required');
     }
     const id = rawId instanceof ObjectId ? rawId : new ObjectId(rawId as unknown as string);
-    const rest = normalize(document);
     await this.getCollection().replaceOne(
       { _id: id },
-      { _id: id, obsoleteMetadata: [], ...rest } as EntityDBO,
+      { _id: id, ...normalize(document) } as EntityDBO,
       { upsert: true, ignoreUndefined: true }
     );
     return this.getCollection().findOne({ _id: id }) as Promise<EntityDBO>;
@@ -68,7 +67,6 @@ export class MongoEntitiesSyncHandler
           filter: { _id: ids[i] },
           replacement: {
             _id: ids[i],
-            obsoleteMetadata: [],
             ...normalize(doc),
           } as EntityDBO,
           upsert: true,
