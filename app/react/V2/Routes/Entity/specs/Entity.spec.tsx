@@ -14,6 +14,7 @@ import { settingsAtom, templatesAtom, userAtom, relationshipTypesAtom } from '#V
 import * as utils from '#app/utils/index.js';
 import * as files from '#V2/api/files/index.js';
 import * as searchApi from '#V2/api/search/index.js';
+import * as scroller from '#V2/helpers/scrollIntoView.js';
 import { Entity } from '../Entity.js';
 import { entityLoaderCache } from '../EntityLoaderCache.js';
 import { entityWithRelations } from '../Components/relationships/specs/fixtures/entityWithRelations.js';
@@ -603,17 +604,25 @@ describe('Entity view', () => {
       const pageText = ['page one', 'page two', 'page three'].join('\f');
       entityLoaderCache.setSearchResults('shared1', 'en:1', 'search', snippetsData);
       jest.spyOn(searchApi, 'snippets').mockResolvedValue(snippetsData);
+      jest.spyOn(files, 'getDocumentPlaintext').mockResolvedValue(pageText);
+      const scrollIntoView = jest
+        .spyOn(scroller, 'scrollIntoView')
+        .mockImplementation(() => undefined);
 
       renderEntity({
         pagePlaintext: pageText,
-        initialEntries: ['/#s=search&searchTerm=search&raw=true'],
+        initialEntries: ['/#s=search&searchTerm=search'],
       });
       await checkEntityRendered();
 
       expect(await screen.findByText(/p\.3/)).toBeInTheDocument();
-      expect(screen.getByTestId('entity-plaintext').closest('.overflow-auto')?.classList).toContain(
-        'block'
-      );
+      selectPlainTextView();
+
+      await waitFor(() => {
+        expect(
+          screen.getByTestId('entity-plaintext').closest('.overflow-auto')?.classList
+        ).toContain('block');
+      });
 
       fireEvent.click(screen.getByRole('button', { name: /Page 3/i }));
 
@@ -622,6 +631,12 @@ describe('Entity view', () => {
           screen.getByTestId('entity-plaintext').closest('.overflow-auto')?.classList
         ).toContain('block');
         expect(screen.getByRole('region', { name: 'Page 3' })).toHaveAttribute('id', 'page3');
+        expect(scrollIntoView).toHaveBeenCalledWith(
+          screen.getByRole('region', { name: 'Page 3' }),
+          {
+            block: 'start',
+          }
+        );
         expect(mainTablist().getByRole('tab', { name: 'Document' })).toHaveAttribute(
           'aria-selected',
           'true'

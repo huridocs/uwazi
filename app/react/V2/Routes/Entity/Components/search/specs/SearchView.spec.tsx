@@ -11,7 +11,7 @@ const deactivateSnippet = jest.fn();
 const goToPage = jest.fn();
 const mockEnsureMainTab = jest.fn();
 const mockUpdateEntityUrl = jest.fn();
-const scrollToPlaintextPage = jest.fn();
+const mockScrollToPlaintextPage = jest.fn();
 let mockHashParams = new URLSearchParams('searchTerm=court');
 let mockPdfController: {
   activateSnippet: typeof activateSnippet;
@@ -76,7 +76,7 @@ jest.mock('#V2/Routes/Entity/Components/search/useJumpToSearchHit.js', () => ({
 }));
 
 jest.mock('#V2/Routes/Entity/Components/document/scrollToPlaintextPage.js', () => ({
-  scrollToPlaintextPage: (...args: unknown[]) => scrollToPlaintextPage(...args),
+  scrollToPlaintextPage: (...args: unknown[]) => mockScrollToPlaintextPage(...args),
 }));
 
 jest.mock('#V2/Components/UI/QuerySearchBar.js', () => ({
@@ -96,7 +96,7 @@ describe('SearchView activateSnippet pending flush', () => {
     goToPage.mockClear();
     mockEnsureMainTab.mockClear();
     mockUpdateEntityUrl.mockClear();
-    scrollToPlaintextPage.mockClear();
+    mockScrollToPlaintextPage.mockClear();
     mockHashParams = new URLSearchParams('searchTerm=court');
     mockPdfController = null;
   });
@@ -134,7 +134,7 @@ describe('SearchView activateSnippet pending flush', () => {
     await user.click(screen.getByRole('button', { name: /Page 1/i }));
 
     expect(goToPage).toHaveBeenCalledWith(1);
-    expect(scrollToPlaintextPage).not.toHaveBeenCalled();
+    expect(mockScrollToPlaintextPage).not.toHaveBeenCalled();
     expect(mockEnsureMainTab).toHaveBeenCalledWith('document', {
       hash: expect.any(Function),
     });
@@ -148,7 +148,7 @@ describe('SearchView activateSnippet pending flush', () => {
 
     await user.click(screen.getByRole('button', { name: /Page 1/i }));
 
-    expect(scrollToPlaintextPage).toHaveBeenCalledWith(1);
+    expect(mockScrollToPlaintextPage).toHaveBeenCalledWith(1);
     expect(goToPage).not.toHaveBeenCalled();
     expect(activateSnippet).not.toHaveBeenCalled();
     expect(mockEnsureMainTab).toHaveBeenCalledWith('document', {
