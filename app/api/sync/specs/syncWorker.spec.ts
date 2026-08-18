@@ -253,7 +253,6 @@ describe('syncWorker', () => {
             t1Relationship1: [{ value: newDoc3.toString() }],
           },
           obsoleteMetadata: [],
-          __v: 0,
           documents: [],
           attachments: [
             {
@@ -280,7 +279,6 @@ describe('syncWorker', () => {
             t1Property2: [{ value: 'another doc property 2' }],
           },
           obsoleteMetadata: [],
-          __v: 0,
           documents: [],
           attachments: [
             {
@@ -302,7 +300,6 @@ describe('syncWorker', () => {
         )
       ).toEqual([
         {
-          __v: 0,
           _id: expect.anything(),
           attachments: [],
           documents: [],
