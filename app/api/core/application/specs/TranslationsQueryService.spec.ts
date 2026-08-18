@@ -7,6 +7,7 @@ const factory = getFixturesFactory();
 const createTranslationDBO = factory.v2.database.translationDBO;
 
 const systemContext = { id: 'System', label: 'User Interface', type: 'Uwazi UI' as const };
+const entityContext = { id: 'template-1', label: 'Case', type: 'Entity' as const };
 const thesaurusContext = { id: 'thesaurus-1', label: 'CPV code', type: 'Thesaurus' as const };
 
 const fixtures: DBFixture = {
@@ -21,6 +22,8 @@ const fixtures: DBFixture = {
   translationsV2: [
     createTranslationDBO('Search', 'Search', 'en', systemContext),
     createTranslationDBO('Search', 'Buscar', 'es', systemContext),
+    createTranslationDBO('Case', 'Case', 'en', entityContext),
+    createTranslationDBO('Case', 'Caso', 'es', entityContext),
     createTranslationDBO('Apple', 'Apple', 'en', thesaurusContext),
     createTranslationDBO('Apple', 'Manzana', 'es', thesaurusContext),
   ],
@@ -52,6 +55,24 @@ describe('TranslationsQueryService', () => {
       expect(rows[0].contexts?.[0].id).toBe('System');
       expect(rows[0].contexts?.[0].type).toBe('Uwazi UI');
       expect(rows[0].contexts?.[0].values).toEqual({ Search: 'Search' });
+    });
+  });
+
+  it('should omit excluded context types from getLegacy', async () => {
+    await testingEnvironment.runWithContext(async () => {
+      const rows = await TranslationsQueryServiceFactory.default().getLegacy({
+        locale: 'es',
+        excludeContextTypes: ['Thesaurus'],
+      });
+
+      expect(rows).toHaveLength(1);
+      expect(rows[0].locale).toBe('es');
+      const contextIds = rows[0].contexts?.map(context => context.id);
+      expect(contextIds).toEqual(expect.arrayContaining(['System', entityContext.id]));
+      expect(contextIds).not.toContain(thesaurusContext.id);
+      expect(rows[0].contexts?.find(context => context.id === entityContext.id)?.values).toEqual({
+        Case: 'Caso',
+      });
     });
   });
 

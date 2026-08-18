@@ -72,6 +72,16 @@ export class MongoTranslationsDataSource
     );
   }
 
+  getByLanguageExcludingContextTypes(
+    language: LanguageISO6391,
+    types: TranslationContext['type'][]
+  ) {
+    return new MongoResultSet<TranslationDBO, Translation>(
+      this.getCollection().find({ language, 'context.type': { $nin: types } }),
+      TranslationMappers.toModel
+    );
+  }
+
   getByContext(context: string) {
     return new MongoResultSet<TranslationDBO, Translation>(
       this.getCollection().find({ 'context.id': context }),
