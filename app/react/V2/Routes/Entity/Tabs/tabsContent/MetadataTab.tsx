@@ -27,7 +27,6 @@ import {
   PdfFillProvider,
   type PdfFillHost,
 } from '#V2/Components/Metadata/EntityEditor/Components/EntityPdfFill.js';
-import { useDocumentFieldMutations } from './useDocumentFieldMutations.js';
 
 type MetadataTabProps = {
   entity: Entity;
@@ -108,14 +107,6 @@ const MetadataTab = ({ entity, host }: MetadataTabProps) => {
     ]
   );
 
-  const refreshEntity = useCallback(async () => {
-    entityLoaderCache.invalidateEntity(entity.sharedId);
-    await revalidator.revalidate();
-  }, [entity.sharedId, revalidator]);
-  const documentMutations = useDocumentFieldMutations({
-    refreshEntity,
-  });
-
   useEffect(() => {
     if (!showEditor) return undefined;
     return registerCancelEdit(() => {
@@ -193,7 +184,6 @@ const MetadataTab = ({ entity, host }: MetadataTabProps) => {
               form={form}
               entity={entity}
               mediaUpload={mediaUpload}
-              documentMutations={documentMutations}
               onSave={onSave}
               disabled={isSaving}
               errors={editErrors}

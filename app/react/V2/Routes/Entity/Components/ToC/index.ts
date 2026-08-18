@@ -1,4 +1,3 @@
-export { ToCPanel } from './ToCPanel.js';
 export { ToCView } from './ToCView.js';
 export { ToCFooterBar } from './ToCFooterBar.js';
 export { useToCPanel } from './useToCPanel.js';

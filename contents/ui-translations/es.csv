@@ -1,8 +1,11 @@
 Key,Spanish
+"""Costa Rica""","""Costa Rica"""
+"""the status""~5","""the status""~5"
 *please keep this key secret and don't share it.,*please keep this key secret and don't share it.
 + Add data source,+ Add data source
 + Add filter,+ Add filter
 + click to select multiple cards.,+ para seleccionar múltiples tarjetas
+198?,198?
 2FA,2FA
 2FA Enabled,2FA Enabled
 A default template cannot be deleted.,A default template cannot be deleted.
@@ -103,6 +106,7 @@ Analytics,Analytics
 Analytics description,"Si quieres dar seguimiento a las analíticas relacionadas con las visitas a tu colección, Uwazi soporta analíticas tanto de Google como de Matomo"
 AND OR NOT,AND OR NOT
 Any entity,Any entity
+any single character,any single character
 Anyone can see this entity,Anyone can see this entity
 Appearance,Appearance
 Apply,Apply
@@ -201,6 +205,7 @@ Collection,Colección
 Collection Name,Collection Name
 Colors,Colors
 Colors come from the server data layer. Preview shows assigned bucket colors when available.,Colors come from the server data layer. Preview shows assigned bucket colors when available.
+combine or exclude terms,combine or exclude terms
 Common sources,Common sources
 Completed,Completed
 Completed with errors,Completed with errors
@@ -592,6 +597,7 @@ it has been logged with request id #,ha sido registrado con el id de solicitud #
 Item,Elemento
 Items:,Elementos:
 Javascript,Javascript
+juris*,juris*
 key,clave
 Label,Etiqueta
 "Label date ""From""",De:
@@ -682,6 +688,7 @@ Match,Match
 match,coincidencia
 match verbatim,match verbatim
 matches,condicencisas
+"matches jurisdiction, jurists, jurisprudence","matches jurisdiction, jurists, jurisprudence"
 Matches show the passage and the page they are on.,Matches show the passage and the page they are on.
 Matching,Coincidencia
 matching,matching
@@ -848,7 +855,6 @@ Or paste a URL,O pega una URL
 Order,Orden
 Other,Otro
 other,Otro
-Other files,Otros archivos
 Other users will be affected by this action!,Otros usuarios pueden resultar afectados por ésta acción!
 Others,Others
 Outgoing,Saliente
@@ -989,6 +995,9 @@ Relationship type name already exists,El nombre de la relación ya existe
 Relationship types,Tipos de relación
 relationships,relaciones
 Relationships,Relaciones
+relationships blank state message,"Para agregar relaciones selecciona **Editar**, luego **Crear relación**."
+relationships blank state with document,"Para agregar relaciones puedes empezar seleccionando texto en el documento
+ o selecciona **Editar**, luego **Crear relación**."
 Relationships saved,Relaciones guardadas
 relationships? This action cannot be undone.,relactiones? Esta acción no puede revertirse.
 RelationType saved,Tipo de Relación guardada
@@ -996,7 +1005,6 @@ Release message,Release message
 remaining files,remaining files
 Remote Server Unreachable,Remote Server Unreachable
 Remove,Eliminar
-Remove file,Eliminar archivo
 Remove from connection,Eliminar de la conexión
 Remove from training set,Eliminar del conjunto de entrenamiento
 remove icon,eliminar ícono
@@ -1224,6 +1232,8 @@ The request could not be processed.,La petición no pudo ser procesada.
 The source of this template is a sync.,The source of this template is a sync.
 The token does not validate against the secret key,The token does not validate against the secret key
 The token does not validate against the secret key!,¡El token no es válido en base a la clave secreta!
+"the words together, in that order","the words together, in that order"
+the words within 5 of each other,the words within 5 of each other
 Theme and branding,Theme and branding
 Theme colors,Theme colors
 Theme colors imported,Theme colors imported

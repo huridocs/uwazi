@@ -13,6 +13,8 @@ export { DatePropertyIcon } from './DatePropertyIcon.js';
 export { GrabDoubleIcon } from './GrabDoubleIcon.js';
 export { CustomPropertyIcon } from './CustomPropertyIcon.js';
 export { CountryFlag } from './CoutryFlags.js';
+export { EntityIcon } from './EntityIcon.js';
+export type { EntityIconData } from './EntityIcon.js';
 export { AudioWaveformIcon } from './AudioWaveformIcon.js';
 export { SplineIcon } from './SplineIcon.js';
 export {

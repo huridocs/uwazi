@@ -31,7 +31,10 @@ describe('SearchTabFooter', () => {
     );
 
     await user.click(screen.getByRole('button', { name: 'Search tips' }));
-    expect(screen.getByRole('dialog', { name: 'Search tips' })).toBeInTheDocument();
+    const dialog = screen.getByRole('dialog', { name: 'Search tips' });
+    expect(dialog).toBeInTheDocument();
+    expect(dialog.parentElement).toHaveStyle({ width: '432px' });
+    expect(screen.getByText('matches jurisdiction, jurists, jurisprudence')).toBeInTheDocument();
 
     await user.click(screen.getByRole('button', { name: 'Search: juris*' }));
 

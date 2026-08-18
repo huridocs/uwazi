@@ -80,7 +80,10 @@ const createEntityLoader =
         defaultLanguage
       );
       if (derivedMainDocument) {
-        if (mainDocument?._id !== derivedMainDocument._id) {
+        if (
+          mainDocument?._id !== derivedMainDocument._id ||
+          mainDocument?.originalname !== derivedMainDocument.originalname
+        ) {
           entityLoaderCache.setMainDocument(entity.sharedId, language, derivedMainDocument);
         }
         mainDocument = derivedMainDocument;
