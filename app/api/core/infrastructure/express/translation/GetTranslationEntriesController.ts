@@ -1,10 +1,13 @@
 import { AbstractController } from '#api/common.v2/infrastructure/AbstractController.js';
-import { TranslationsQueryServiceFactory } from '#api/core/infrastructure/factories/TranslationsQueryServiceFactory.js';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { TranslationsDataSourceFactory } from '#api/core/infrastructure/factories/TranslationsDataSourceFactory.js';
 
 class GetTranslationEntriesController extends AbstractController {
   protected async handle(): Promise<void> {
-    const service = TranslationsQueryServiceFactory.default();
-    const translationList = await service.getAll().all();
+    const translationsDS = TranslationsDataSourceFactory.default({
+      transactionManager: TransactionManagerFactory.default(),
+    });
+    const translationList = await translationsDS.getAll().all();
     this.response.json(translationList);
   }
 }

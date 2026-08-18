@@ -14,7 +14,7 @@ class CreateTemplateUseCaseFactory {
     const transactionManager = TransactionManagerFactory.default();
     const thesauriDS = ThesauriDataSourceFactory.default({ transactionManager });
     const templatesDS = TemplatesDataSourceFactory.default({ transactionManager });
-    const translationService = new TemplateTranslationService({
+    const templateTranslationService = new TemplateTranslationService({
       translationsService: TranslationsServiceFactory.default({ transactionManager }),
     });
     const settingsDS = SettingsDataSourceFactory.default({ transactionManager });
@@ -26,7 +26,7 @@ class CreateTemplateUseCaseFactory {
       idGenerator,
       templatesDS,
       thesauriDS,
-      translationService,
+      templateTranslationService,
       settingsDS,
       relationshipTypesDS,
       transactionManager,

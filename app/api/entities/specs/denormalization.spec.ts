@@ -690,20 +690,11 @@ describe('Denormalize relationships', () => {
             {
               id: factory.id('Numbers').toString(),
               label: 'Numbers',
-              values: [
-                {
-                  key: 'One',
-                  value: 'Uno',
-                },
-                {
-                  key: 'Two',
-                  value: 'Dos',
-                },
-                {
-                  key: 'Numbers',
-                  value: 'Números',
-                },
-              ],
+              values: {
+                One: 'Uno',
+                Two: 'Dos',
+                Numbers: 'Números',
+              },
               type: 'Thesaurus',
             },
           ],
