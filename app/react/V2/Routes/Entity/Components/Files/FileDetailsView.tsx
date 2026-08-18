@@ -9,7 +9,6 @@ import { FileDetailsField } from './FileDetailsField.js';
 import { FileDetailsCard } from './FileDetailsCard.js';
 import { FileDetailsReadonlyMeta } from './FileDetailsReadonlyMeta.js';
 import { FileDocumentContextBadge } from './FileDocumentContextBadge.js';
-import { FileLanguageChip } from './FileLanguageChip.js';
 import { EntityFileRow } from './types.js';
 
 const FileDetailsView = ({ row, onEdit }: { row: EntityFileRow; onEdit: () => void }) => {
@@ -44,9 +43,7 @@ const FileDetailsView = ({ row, onEdit }: { row: EntityFileRow; onEdit: () => vo
         <div className="grid grid-cols-2 gap-3">
           {showLanguage ? (
             <FileDetailsField label={<Translate>Language</Translate>}>
-              <div className="flex h-7 items-center">
-                <FileLanguageChip>{row.languageKey}</FileLanguageChip>
-              </div>
+              <span className="text-sm text-ink-secondary">{row.languageKey}</span>
             </FileDetailsField>
           ) : null}
           <FileDetailsReadonlyMeta row={row} />

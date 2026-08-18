@@ -43,7 +43,11 @@ jest.mock('../pdfjs.ts', () => ({
   PixelsPerInch: { PDF_TO_CSS_UNITS: 1 },
 }));
 
-const observers: Array<IntersectionObserverCallback> = [];
+type MockObserver = IntersectionObserver & {
+  callback: IntersectionObserverCallback;
+};
+
+const observers: MockObserver[] = [];
 const resizeObservers: Array<ResizeObserverMock> = [];
 
 class ResizeObserverMock {
@@ -61,20 +65,80 @@ class ResizeObserverMock {
   disconnect = jest.fn();
 }
 
-global.IntersectionObserver = jest.fn().mockImplementation((cb: IntersectionObserverCallback) => {
-  observers.push(cb);
-  return {
-    observe: jest.fn(),
-    unobserve: jest.fn(),
-    disconnect: jest.fn(),
-  } as any;
-});
+global.IntersectionObserver = jest
+  .fn()
+  .mockImplementation(
+    (callback: IntersectionObserverCallback, options?: IntersectionObserverInit) => {
+      const observer: MockObserver = {
+        callback,
+        root: options?.root ?? null,
+        rootMargin: options?.rootMargin ?? '0px',
+        thresholds: Array.isArray(options?.threshold)
+          ? options.threshold
+          : [options?.threshold ?? 0],
+        observe: jest.fn(),
+        unobserve: jest.fn(),
+        disconnect: jest.fn(),
+        takeRecords: () => [],
+      };
+      observers.push(observer);
+      return observer;
+    }
+  );
 
 global.ResizeObserver = ResizeObserverMock;
 
 beforeEach(() => {
   mockGetDocument.mockReset();
+  observers.splice(0);
 });
+
+function preloadObserver() {
+  return observers.find(observer => observer.rootMargin === '500px 0px 500px 0px');
+}
+
+function visibilityObserver() {
+  return observers.find(observer => observer.rootMargin === '0px');
+}
+
+function pageIntersection(
+  target: Element,
+  { intersecting, height }: { intersecting: boolean; height: number }
+): IntersectionObserverEntry {
+  return {
+    target,
+    isIntersecting: intersecting,
+    intersectionRatio: height > 0 ? 0.5 : 0,
+    intersectionRect: {
+      height,
+      width: 0,
+      top: 0,
+      left: 0,
+      bottom: height,
+      right: 0,
+      x: 0,
+      y: 0,
+      toJSON: () => ({}),
+    },
+    boundingClientRect: {
+      height: 0,
+      width: 0,
+      top: 0,
+      left: 0,
+      bottom: 0,
+      right: 0,
+      x: 0,
+      y: 0,
+      toJSON: () => ({}),
+    },
+    rootBounds: null,
+    time: 0,
+  };
+}
+
+function intersect(observer: MockObserver, target: Element, intersecting: boolean, height = 400) {
+  observer.callback([pageIntersection(target, { intersecting, height })], observer);
+}
 
 function makeResolvedPdf(numPages = 4) {
   return {
@@ -152,21 +216,33 @@ describe('PDF', () => {
     await expect(pageContainer?.className).toMatch(/\[border-width:1px\]/);
   });
 
-  it('should dispatch renderpage for the first page on mount', async () => {
+  it('should dispatch renderpage from the preload observer', async () => {
     mockGetDocument.mockReturnValueOnce(makeResolvedPdf(4));
 
     const dispatchSpy = jest.spyOn(mockEventBus.prototype, 'dispatch');
 
     await act(async () => render(<PDF fileUrl="/file.pdf" highlights={{}} />));
 
+    const target = document.querySelector('#page-1-container');
+    if (!target) {
+      throw new Error('expected #page-1-container');
+    }
+
+    const observer = preloadObserver();
+    if (!observer) {
+      throw new Error('expected preload observer');
+    }
+
+    act(() => {
+      observer.callback([pageIntersection(target, { intersecting: true, height: 400 })], observer);
+    });
+
     expect(dispatchSpy).toHaveBeenCalledWith('renderpage', { pageNumber: 1 });
     dispatchSpy.mockRestore();
   });
 
-  it('should trigger the pdfReady callback after rendering page 1 and unsusbcribe', async () => {
+  it('should trigger the pdfReady callback when a page is ready', async () => {
     const pdfReadySpy = jest.fn();
-    const dispatchSpy = jest.spyOn(mockEventBus.prototype, 'dispatch');
-    const offSpy = jest.spyOn(mockEventBus.prototype, 'off');
 
     mockGetDocument.mockReturnValueOnce(makeResolvedPdf(4));
 
@@ -182,48 +258,104 @@ describe('PDF', () => {
       )
     );
 
-    expect(dispatchSpy).toHaveBeenCalledWith('pagerendered', { pageNumber: 1 });
-    expect(offSpy).toHaveBeenLastCalledWith('pagerendered', expect.any(Function));
     expect(pdfReadySpy).toHaveBeenCalled();
-    dispatchSpy.mockRestore();
   });
 
-  it('should call onPageChange and dispatch render/unmount based on intersection', async () => {
-    const onPageChange = jest.fn();
+  it('should trigger the pdfReady callback when the initial page is ready', async () => {
+    const pdfReadySpy = jest.fn();
     mockGetDocument.mockReturnValueOnce(makeResolvedPdf(4));
 
+    await act(async () =>
+      render(
+        <PDF
+          fileUrl="/file.pdf"
+          initialPage={3}
+          onPdfReady={controls => {
+            pdfReadySpy(controls);
+          }}
+        />
+      )
+    );
+
+    expect(pdfReadySpy).toHaveBeenCalled();
+  });
+
+  it('should call onPageChange from viewport visibility and render from preload', async () => {
+    const onPageChange = jest.fn();
+    mockGetDocument.mockReturnValueOnce(makeResolvedPdf(4));
     const dispatchSpy = jest.spyOn(mockEventBus.prototype, 'dispatch');
 
     await act(async () => render(<PDF fileUrl="/file.pdf" onPageChange={onPageChange} />));
-
     await waitFor(() => expect(document.querySelector('#page-1-container')).toBeInTheDocument());
 
-    const target = document.querySelector('#page-3-container') as Element;
-    // neccessary since we are mocking PDFPage component
-    target.setAttribute('data-pagenumber', '3');
-    const observerCallback = observers[observers.length - 1];
-
-    await act(async () => {
-      // Ensure all mount effects have run (onPageChangeReas anyf set)
-    });
+    const target = document.querySelector('#page-3-container');
+    const preload = preloadObserver();
+    const visibility = visibilityObserver();
+    if (!target || !preload || !visibility) {
+      throw new Error('expected page and observers');
+    }
 
     act(() => {
-      observerCallback(
-        [{ target, intersectionRatio: 0.5, isIntersecting: true }] as any,
-        {} as any
-      );
+      intersect(preload, target, true);
+      intersect(visibility, target, true);
     });
 
     await waitFor(() => expect(onPageChange).toHaveBeenCalledWith(3));
     await waitFor(() => expect(dispatchSpy).toHaveBeenCalledWith('renderpage', { pageNumber: 3 }));
+    dispatchSpy.mockRestore();
+  });
+
+  it('should not unmount a viewport-visible page when it leaves the preload band', async () => {
+    const onPageChange = jest.fn();
+    mockGetDocument.mockReturnValueOnce(makeResolvedPdf(4));
+    const dispatchSpy = jest.spyOn(mockEventBus.prototype, 'dispatch');
+
+    await act(async () => render(<PDF fileUrl="/file.pdf" onPageChange={onPageChange} />));
+    const target = document.querySelector('#page-3-container');
+    const preload = preloadObserver();
+    const visibility = visibilityObserver();
+    if (!target || !preload || !visibility) {
+      throw new Error('expected page and observers');
+    }
 
     act(() => {
-      observerCallback([{ target, intersectionRatio: 0, isIntersecting: false }] as any, {} as any);
+      intersect(visibility, target, true);
+      intersect(preload, target, false, 0);
+    });
+    expect(dispatchSpy).not.toHaveBeenCalledWith('unmountpage', { pageNumber: 3 });
+
+    act(() => {
+      intersect(visibility, target, false, 0);
+      intersect(preload, target, false, 0);
+    });
+    await waitFor(() => expect(dispatchSpy).toHaveBeenCalledWith('unmountpage', { pageNumber: 3 }));
+    dispatchSpy.mockRestore();
+  });
+
+  it('should report the page with greater visible height, not the lower page number', async () => {
+    const onPageChange = jest.fn();
+    mockGetDocument.mockReturnValueOnce(makeResolvedPdf(4));
+
+    await act(async () => render(<PDF fileUrl="/file.pdf" onPageChange={onPageChange} />));
+
+    const page3 = document.querySelector('#page-3-container');
+    const page4 = document.querySelector('#page-4-container');
+    const visibility = visibilityObserver();
+    if (!page3 || !page4 || !visibility) {
+      throw new Error('expected pages and visibility observer');
+    }
+
+    act(() => {
+      visibility.callback(
+        [
+          pageIntersection(page3, { intersecting: true, height: 200 }),
+          pageIntersection(page4, { intersecting: true, height: 500 }),
+        ],
+        visibility
+      );
     });
 
-    await waitFor(() => expect(dispatchSpy).toHaveBeenCalledWith('unmountpage', { pageNumber: 3 }));
-
-    dispatchSpy.mockRestore();
+    await waitFor(() => expect(onPageChange).toHaveBeenCalledWith(4));
   });
 
   it('does not call onPageChange and calls onPdfReady only after PDF is rendered', async () => {
@@ -291,19 +423,17 @@ describe('PDF', () => {
     const target = document.createElement('div');
     target.setAttribute('data-pagenumber', '3');
 
-    const observerCallback = observers[observers.length - 1];
+    const preload = preloadObserver();
+    if (!preload) {
+      throw new Error('expected preload observer');
+    }
 
-    // Simulate intersection before PDF is resolved
     act(() => {
-      observerCallback(
-        [{ target, intersectionRatio: 0.6, isIntersecting: true }] as any,
-        {} as any
-      );
+      preload.callback([pageIntersection(target, { intersecting: true, height: 400 })], preload);
     });
 
     await waitFor(() => expect(onPageChange).not.toHaveBeenCalled());
 
-    // Make PDF ready
     await act(async () => {
       resolveDoc({
         numPages: 4,
@@ -314,11 +444,15 @@ describe('PDF', () => {
       loadingTask.onProgress?.({ percent: 100 });
     });
 
-    // After PDF is ready, the same intersection should trigger onPageChange
+    const visibility = visibilityObserver();
+    if (!visibility) {
+      throw new Error('expected visibility observer');
+    }
+
     act(() => {
-      observerCallback(
-        [{ target, intersectionRatio: 0.6, isIntersecting: true }] as any,
-        {} as any
+      visibility.callback(
+        [pageIntersection(target, { intersecting: true, height: 400 })],
+        visibility
       );
     });
 

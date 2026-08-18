@@ -13,6 +13,7 @@ import {
   useRelationshipsPanelLayout,
   useRelationshipsSelectionActions,
   useEntityOverlay,
+  useEntityLanguage,
   useEntityWriteAuthorized,
   useEntityScopedEntity,
 } from '#V2/Routes/Entity/Components/context/index.js';
@@ -39,6 +40,8 @@ const RelationshipsPanelView = ({
   const { setSelectedRelationshipIds, setRelationshipsEditMode } =
     useRelationshipsSelectionActions();
   const canWrite = useEntityWriteAuthorized();
+  const { mainDocument } = useEntityLanguage();
+  const hasMainDocument = Boolean(mainDocument?.filename);
 
   const { openEntityOverlay } = useEntityOverlay();
   const {
@@ -81,7 +84,17 @@ const RelationshipsPanelView = ({
           }
           title={<Translate>No Relationships</Translate>}
           description={
-            <Translate>To add references you can start by selecting text in the document</Translate>
+            hasMainDocument ? (
+              <Translate translationKey="relationships blank state with document">
+                {
+                  'To add references you can start by selecting text in the document\n or select **Edit**, then **Create relationship**.'
+                }
+              </Translate>
+            ) : (
+              <Translate translationKey="relationships blank state message">
+                To add references select **Edit**, then **Create relationship**.
+              </Translate>
+            )
           }
         />
       );

@@ -159,7 +159,7 @@ const CreateRelationshipModal = ({ mainDocument }: CreateRelationshipModalProps)
 
   return (
     <Modal
-      size={step === 'target-text' ? 'xxl' : 'lg'}
+      size={step === 'target-text' ? 'xxxxl' : 'lg'}
       ariaLabel={t('System', 'Create relationship', null, false)}
     >
       <CreateRelationshipModalHeader

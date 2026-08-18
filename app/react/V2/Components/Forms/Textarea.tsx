@@ -30,7 +30,7 @@ interface TextareaProps {
 const cx = (...classes: Array<string | false | undefined>) => classes.filter(Boolean).join(' ');
 
 const textareaBase =
-  'w-full rounded-lg border border-border bg-paper px-3 py-2 text-sm text-ink placeholder:text-ink-muted focus:border-carbon/40 focus:outline-none focus:ring-2 focus:ring-carbon/20';
+  'w-full rounded-lg border border-border bg-paper px-3 py-2 text-sm font-normal text-ink placeholder:text-sm placeholder:font-normal placeholder:text-ink-muted focus:border-carbon/40 focus:outline-none focus:ring-2 focus:ring-carbon/20';
 
 const textareaClass = (state: FieldState, hasClear: boolean) =>
   cx(

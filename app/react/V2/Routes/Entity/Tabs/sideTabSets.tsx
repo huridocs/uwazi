@@ -93,6 +93,8 @@ const getSideTabButtons = ({
       break;
     case MAIN_TAB.RELATIONSHIPS:
       pushDocument();
+      pushMetadata();
+      pushFilesList();
       break;
     case MAIN_TAB.FILES:
       buttons.push({

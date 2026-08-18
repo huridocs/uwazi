@@ -59,7 +59,6 @@ const TabButtons = ({
               id={`${groupId}-tab-${button.id}`}
               aria-selected={selected}
               aria-controls={`${groupId}-panel-${button.id}`}
-              tabIndex={selected ? 0 : -1}
               className={[
                 tabTriggerBaseClass,
                 getTabShapeClass(index, totalTabs),
