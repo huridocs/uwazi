@@ -3,11 +3,10 @@ import db, { DBFixture } from '#api/utils/testing_db.js';
 
 const entityTemplateId = db.id();
 const documentTemplateId = db.id();
-const englishTranslation = db.id();
 const dictionaryId = db.id();
 
 const createTranslationDBO = getFixturesFactory().v2.database.translationDBO;
-// eslint-disable-next-line camelcase
+
 const translationsV2: DBFixture['translationsV2'] = [
   createTranslationDBO('Age', 'Age', 'zh', { id: 'System', label: 'System', type: 'Uwazi UI' }),
   createTranslationDBO('Library', 'Library', 'zh', {
@@ -161,7 +160,6 @@ const translationsV2: DBFixture['translationsV2'] = [
 ];
 
 const fixtures: DBFixture = {
-  // eslint-disable-next-line camelcase
   translationsV2,
   settings: [
     {
@@ -249,5 +247,4 @@ const fixtures: DBFixture = {
   ],
 };
 
-export default fixtures;
-export { entityTemplateId, englishTranslation, documentTemplateId, dictionaryId };
+export { fixtures, dictionaryId };

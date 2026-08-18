@@ -3,14 +3,14 @@ import request from 'supertest';
 import { ObjectId } from 'mongodb';
 
 import { TestUtils } from '#api/common.v2/utils/Test.js';
-import { UpdateTranslationContextUseCase } from '#api/core/application/UpdateTranslationContext.js';
+import { TranslationsService } from '#api/core/application/translation/TranslationsService.js';
+import { TranslationsServiceFactory } from '#api/core/infrastructure/factories/TranslationsServiceFactory.js';
 import templates from '#api/core/v1_layer/templates/index.js';
 import { permissionsContext } from '#api/permissions/permissionsContext.js';
 import { search } from '#api/search/index.js';
 import settings from '#api/settings/index.js';
 import users from '#api/users/users.js';
 import { iosocket, setUpApp, TestEmitSources } from '#api/utils/testingRoutes.js';
-import { UpdateTranslationContextUseCaseFactory } from '#api/core/infrastructure/factories/UpdateTranslationContextUseCaseFactory.js';
 import * as setupSockets from '#api/socketio/setupSockets.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import settingsRoutes from '../routes.js';
@@ -37,9 +37,9 @@ describe('Settings routes', () => {
 
   beforeAll(async () => {
     jest.spyOn(search, 'indexEntities').mockResolvedValue();
-    jest.spyOn(UpdateTranslationContextUseCaseFactory, 'default').mockReturnValue(
-      TestUtils.mockClass<UpdateTranslationContextUseCase>({
-        execute: jest.fn().mockResolvedValue(undefined),
+    jest.spyOn(TranslationsServiceFactory, 'default').mockReturnValue(
+      TestUtils.mockClass<TranslationsService>({
+        updateContext: jest.fn().mockResolvedValue(undefined),
       })
     );
     const elasticIndex = 'settings_index';

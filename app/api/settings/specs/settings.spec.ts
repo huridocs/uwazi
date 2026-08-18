@@ -1,6 +1,6 @@
 import { TestUtils } from '#api/common.v2/utils/Test.js';
-import { UpdateTranslationContextUseCase } from '#api/core/application/UpdateTranslationContext.js';
-import { UpdateTranslationContextUseCaseFactory } from '#api/core/infrastructure/factories/UpdateTranslationContextUseCaseFactory.js';
+import { TranslationsService } from '#api/core/application/translation/TranslationsService.js';
+import { TranslationsServiceFactory } from '#api/core/infrastructure/factories/TranslationsServiceFactory.js';
 import { WithId } from '#api/odm/index.js';
 import db from '#api/utils/testing_db.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
@@ -14,9 +14,9 @@ describe('settings', () => {
   beforeEach(async () => {
     jest.restoreAllMocks();
     updateContextExecute = jest.fn().mockResolvedValue(undefined);
-    jest.spyOn(UpdateTranslationContextUseCaseFactory, 'default').mockReturnValue(
-      TestUtils.mockClass<UpdateTranslationContextUseCase>({
-        execute: updateContextExecute,
+    jest.spyOn(TranslationsServiceFactory, 'default').mockReturnValue(
+      TestUtils.mockClass<TranslationsService>({
+        updateContext: updateContextExecute,
       })
     );
     await testingEnvironment.setUp(fixtures);
@@ -60,6 +60,22 @@ describe('settings', () => {
           keysToDelete: [],
           valueChanges: { 'Page one': 'Page one' },
         });
+      });
+
+      it('should persist Menu translation rows with the settings document', async () => {
+        (TranslationsServiceFactory.default as jest.Mock).mockRestore();
+
+        await testingEnvironment.runWithContext(async () => {
+          await settings.save(baseConfig);
+        });
+
+        const rows = await testingEnvironment.db.getAllFrom('translationsV2');
+        const menuKeys = rows
+          .filter(row => (row.context as { id?: string } | undefined)?.id === 'Menu')
+          .map(row => `${row.language}:${row.key}:${row.value}`)
+          .sort();
+
+        expect(menuKeys).toEqual(['en:Page one:Page one', 'es:Page one:Page one']);
       });
 
       it('should create a translation context for passed links with sublinks', async () => {

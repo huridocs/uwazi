@@ -159,4 +159,92 @@ describe('MongoTranslationsDataSource', () => {
       expect(esSearch?.value).toBe('Buscar');
     });
   });
+
+  describe('upsert()', () => {
+    const context = { type: 'Entity' as const, label: 'Test', id: 'test' };
+
+    it('should insert when the natural key does not exist and update when it does', async () => {
+      await testingEnvironment.setUp({
+        ...fixtures,
+        translationsV2: [createTranslationDBO('Title', 'Title', 'en', context)],
+      });
+
+      const sut = new MongoTranslationsDataSource(
+        getConnection(),
+        TransactionManagerFactory.default()
+      );
+
+      await sut.upsert([
+        new Translation('Title', 'Title updated', 'en', context),
+        new Translation('Title', 'Título', 'es', context),
+      ]);
+
+      const rows = await testingDB
+        .mongodb!.collection('translationsV2')
+        .find({})
+        .sort({ language: 1, key: 1 })
+        .toArray();
+
+      expect(rows).toEqual([
+        expect.objectContaining({ language: 'en', key: 'Title', value: 'Title updated' }),
+        expect.objectContaining({ language: 'es', key: 'Title', value: 'Título' }),
+      ]);
+    });
+
+    it('should no-op on an empty input', async () => {
+      const sut = new MongoTranslationsDataSource(
+        getConnection(),
+        TransactionManagerFactory.default()
+      );
+      await expect(sut.upsert([])).resolves.toEqual([]);
+      expect(await testingDB.mongodb!.collection('translationsV2').countDocuments()).toBe(0);
+    });
+  });
+
+  describe('calculateNonexistentKeys()', () => {
+    const context = { type: 'Entity' as const, label: 'Test', id: 'test' };
+
+    it('should return every key when the context has no rows', async () => {
+      const sut = new MongoTranslationsDataSource(
+        getConnection(),
+        TransactionManagerFactory.default()
+      );
+
+      await expect(sut.calculateNonexistentKeys('missing', ['Title', 'Name'])).resolves.toEqual([
+        'Title',
+        'Name',
+      ]);
+    });
+
+    it('should treat a key as existing when it is present in any language', async () => {
+      await testingEnvironment.setUp({
+        ...fixtures,
+        translationsV2: [createTranslationDBO('Title', 'Title', 'en', context)],
+      });
+
+      const sut = new MongoTranslationsDataSource(
+        getConnection(),
+        TransactionManagerFactory.default()
+      );
+
+      await expect(
+        sut.calculateNonexistentKeys('test', ['Title', 'Name', 'Title'])
+      ).resolves.toEqual(['Name']);
+    });
+
+    it('should return an empty list when every key exists or the input is empty', async () => {
+      await testingEnvironment.setUp({
+        ...fixtures,
+        translationsV2: [createTranslationDBO('Title', 'Title', 'en', context)],
+      });
+
+      const sut = new MongoTranslationsDataSource(
+        getConnection(),
+        TransactionManagerFactory.default()
+      );
+
+      await expect(sut.calculateNonexistentKeys('test', ['Title'])).resolves.toEqual([]);
+      await expect(sut.calculateNonexistentKeys('test', [])).resolves.toEqual([]);
+    });
+  });
 });

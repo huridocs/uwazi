@@ -2,11 +2,11 @@ import { Thesaurus } from '#api/core/domain/thesaurus/Thesaurus.js';
 import { Translation } from '#api/core/domain/translation/Translation.js';
 import { ThesaurusDiff } from '#api/core/domain/thesaurus/ThesaurusDiff.js';
 import { SettingsDataSource } from '../contracts/SettingsDataSource.js';
-import { TranslationsService } from '../translation/TranslationsService.js';
+import { TranslationsDataSource } from '../contracts/TranslationsDataSource.js';
 
 type Deps = {
   settingsDS: SettingsDataSource;
-  translationsService: TranslationsService;
+  translationsDS: TranslationsDataSource;
 };
 
 type LabelChanges = {
@@ -145,25 +145,34 @@ function collectLabelChanges(diff: ThesaurusDiff): LabelChanges {
   return changes;
 }
 
+function toContextMutation(changes: LabelChanges, contextLabelChanged: boolean) {
+  const valueChanges: Record<string, string> = {};
+  changes.labelsToBeAdded.forEach(label => {
+    valueChanges[label] = label;
+  });
+  Object.values(changes.labelsToBeUpdated).forEach(newKey => {
+    valueChanges[newKey] = newKey;
+  });
+
+  return {
+    keyChanges: changes.labelsToBeUpdated,
+    valueChanges,
+    keysToDelete: Array.from(changes.labelsToBeRemoved),
+    hasChanges:
+      contextLabelChanged ||
+      changes.labelsToBeRemoved.size > 0 ||
+      Object.keys(changes.labelsToBeUpdated).length > 0 ||
+      Object.keys(valueChanges).length > 0,
+  };
+}
+
 class ThesaurusTranslationService {
   constructor(private deps: Deps) {}
 
   private async createTranslations(id: string, name: string, labels: Set<string>) {
-    const installedLanguages = await this.deps.settingsDS.getInstalledLanguages();
-    const context = {
-      type: 'Thesaurus' as const,
-      label: name,
-      id,
-    };
-
-    const translations: Translation[] = [];
-    installedLanguages.forEach(language => {
-      labels.forEach(label => {
-        translations.push(new Translation(label, label, language.key, context));
-      });
-    });
-
-    return translations;
+    const languages = await this.deps.settingsDS.getLanguageKeys();
+    const values = Object.fromEntries([...labels].map(label => [label, label]));
+    return Translation.forLanguages({ type: 'Thesaurus', label: name, id }, values, languages);
   }
 
   async create(thesaurus: Thesaurus) {
@@ -171,38 +180,33 @@ class ThesaurusTranslationService {
     labels.add(thesaurus.name);
 
     const translations = await this.createTranslations(thesaurus.id, thesaurus.name, labels);
-    await this.deps.translationsService.insert(translations);
+    await this.deps.translationsDS.insert(translations);
   }
 
   private async persistLabelChanges(diff: ThesaurusDiff, changes: LabelChanges) {
-    if (changes.labelsToBeRemoved.size) {
-      await this.deps.translationsService.deleteKeysByContext(
-        diff.id,
-        Array.from(changes.labelsToBeRemoved)
-      );
+    const mutation = toContextMutation(changes, Boolean(diff.updatedName));
+    if (!mutation.hasChanges) {
+      return;
     }
 
-    if (changes.labelsToBeAdded.size) {
-      const translations = await this.createTranslations(
-        diff.id,
-        diff.name,
-        changes.labelsToBeAdded
-      );
-      await this.deps.translationsService.insert(translations);
-    }
+    const languages = await this.deps.settingsDS.getLanguageKeys();
+    const defaultLanguage = await this.deps.settingsDS.getDefaultLanguageKey();
+    const translationContext = await this.deps.translationsDS.getContext(
+      {
+        type: 'Thesaurus',
+        label: diff.after.name,
+        id: diff.id,
+      },
+      languages,
+      defaultLanguage
+    );
 
-    if (Object.keys(changes.labelsToBeUpdated).length > 0) {
-      const defaultLanguage = await this.deps.settingsDS.getDefaultLanguageKey();
-      await this.deps.translationsService.updateKeysByContextV2({
-        contextId: diff.id,
-        keyChanges: changes.labelsToBeUpdated,
-        defaultLanguage,
-      });
-    }
-
-    if (diff.updatedName) {
-      await this.deps.translationsService.updateContextLabel(diff.id, diff.after.name);
-    }
+    translationContext.applyChanges(
+      mutation.keyChanges,
+      mutation.valueChanges,
+      mutation.keysToDelete
+    );
+    await this.deps.translationsDS.updateContext(translationContext);
   }
 
   async update(diff: ThesaurusDiff) {

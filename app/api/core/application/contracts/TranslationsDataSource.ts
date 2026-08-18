@@ -8,12 +8,6 @@ export type BulkDeleteKeysByContext = {
   keysToDelete: string[];
 }[];
 
-export type UpdateKeysByContextProps = {
-  contextId: string;
-  keyChanges: { [before: string]: string };
-  defaultLanguage: LanguageISO6391;
-};
-
 export interface TranslationsDataSource {
   insert(translations: Translation[]): Promise<Translation[]>;
   upsert(translations: Translation[]): Promise<Translation[]>;
@@ -26,12 +20,7 @@ export interface TranslationsDataSource {
 
   deleteByContextId(contextId: string): Promise<void>;
   deleteByLanguage(language: string): Promise<void>;
-  deleteKeysByContext(contextId: string, keysToDelete: string[]): Promise<void>;
   bulkDeleteKeysByContext(props: BulkDeleteKeysByContext): Promise<void>;
-
-  updateContextLabel(contextId: string, contextLabel: string): Promise<void>;
-  updateKeysByContext(contextId: string, keyChanges: { [from: string]: string }): Promise<void>;
-  updateKeysByContextV2(props: UpdateKeysByContextProps): Promise<void>;
 
   calculateNonexistentKeys(contextId: string, keys: string[]): Promise<string[]>;
 

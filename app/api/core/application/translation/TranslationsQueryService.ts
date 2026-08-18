@@ -2,9 +2,18 @@ import { ResultSet } from '#api/core/application/contracts/ResultSet.js';
 import { TranslationsDataSource } from '#api/core/application/contracts/TranslationsDataSource.js';
 import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js';
 import { Translation } from '#api/core/domain/translation/Translation.js';
-import { EnforcedWithId } from '#api/odm/index.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
-import { TranslationContext, TranslationType, TranslationValue } from '#shared/translationType.js';
+import {
+  IndexedContext,
+  IndexedTranslations,
+} from '#api/core/application/translation/localeTranslationDto.js';
+
+function legacyContextType(context: Translation['context']): IndexedContext['type'] {
+  if (context.id === 'System' || context.id === 'Filters' || context.id === 'Menu') {
+    return 'Uwazi UI';
+  }
+  return context.type;
+}
 
 export class TranslationsQueryService {
   constructor(
@@ -12,27 +21,13 @@ export class TranslationsQueryService {
     private settingsDS: SettingsDataSource
   ) {}
 
-  getAll(): ResultSet<Translation> {
-    return this.translationsDS.getAll();
-  }
-
-  getByLanguage(language: LanguageISO6391): ResultSet<Translation> {
-    return this.translationsDS.getByLanguage(language);
-  }
-
-  getByContext(contextId: string): ResultSet<Translation> {
-    return this.translationsDS.getByContext(contextId);
-  }
-
-  getByLanguageAndContext(language: LanguageISO6391, contextId: string): ResultSet<Translation> {
-    return this.translationsDS.getByLanguageAndContext(language, contextId);
-  }
-
   async getContextValueMap(
     language: LanguageISO6391,
     contextId: string
   ): Promise<Record<string, string>> {
-    const translations = await this.getByLanguageAndContext(language, contextId).all();
+    const translations = await this.translationsDS
+      .getByLanguageAndContext(language, contextId)
+      .all();
     const values: Record<string, string> = {};
     translations.forEach(translation => {
       values[translation.key] = translation.value;
@@ -43,7 +38,7 @@ export class TranslationsQueryService {
   async getLanguageValueMaps(
     language: LanguageISO6391
   ): Promise<Record<string, Record<string, string>>> {
-    const translations = await this.getByLanguage(language).all();
+    const translations = await this.translationsDS.getByLanguage(language).all();
     const byContext: Record<string, Record<string, string>> = {};
     translations.forEach(translation => {
       const contextId = translation.context.id;
@@ -55,20 +50,18 @@ export class TranslationsQueryService {
     return byContext;
   }
 
-  async toLegacyDto(
+  private async toLegacyDto(
     load: () => ResultSet<Translation>,
     onlyLanguage?: LanguageISO6391
-  ): Promise<EnforcedWithId<TranslationType>[]> {
+  ): Promise<IndexedTranslations[]> {
     let languageKeys = await this.settingsDS.getLanguageKeys();
     if (onlyLanguage) {
       languageKeys = [onlyLanguage];
     }
 
-    const resultMap: { [language: string]: TranslationType & { locale: string } } = {};
+    const resultMap: { [language: string]: IndexedTranslations & { locale: string } } = {};
     const contexts: {
-      [language: string]: {
-        [context: string]: TranslationContext & { values: TranslationValue[] };
-      };
+      [language: string]: { [context: string]: IndexedContext };
     } = {};
 
     languageKeys.forEach(key => {
@@ -89,35 +82,36 @@ export class TranslationsQueryService {
         contexts[translation.language][translation.context.id] = {
           id: translation.context.id,
           label: translation.context.label,
-          type: translation.context.type,
-          values: [],
+          type: legacyContextType(translation.context),
+          values: {},
         };
       }
-      contexts[translation.language][translation.context.id].values.push({
-        key: translation.key,
-        value: translation.value,
-      });
+      // Mutating assignment. Object-spread-per-key in reduce was ~16s CPU per SSR on large thesauri.
+      if (translation.key && translation.value) {
+        contexts[translation.language][translation.context.id].values[translation.key] =
+          translation.value;
+      }
     });
 
     return Object.values(resultMap).map(translation => ({
       ...translation,
-      contexts: Object.values(contexts[translation.locale]),
-    })) as EnforcedWithId<TranslationType>[];
+      contexts: Object.values(contexts[translation.locale as string]),
+    }));
   }
 
   async getLegacy(query: { locale?: LanguageISO6391; context?: string } = {}) {
     if (query.locale && query.context) {
       return this.toLegacyDto(
-        () => this.getByLanguageAndContext(query.locale!, query.context!),
+        () => this.translationsDS.getByLanguageAndContext(query.locale!, query.context!),
         query.locale
       );
     }
     if (query.context) {
-      return this.toLegacyDto(() => this.getByContext(query.context!));
+      return this.toLegacyDto(() => this.translationsDS.getByContext(query.context!));
     }
     if (query.locale) {
-      return this.toLegacyDto(() => this.getByLanguage(query.locale!), query.locale);
+      return this.toLegacyDto(() => this.translationsDS.getByLanguage(query.locale!), query.locale);
     }
-    return this.toLegacyDto(() => this.getAll());
+    return this.toLegacyDto(() => this.translationsDS.getAll());
   }
 }

@@ -2,7 +2,6 @@ import { Thesaurus, UpdateThesaurusProps } from '../domain/thesaurus/Thesaurus.j
 import { AbstractUseCase } from '../libs/UseCase.js';
 import { ThesauriDataSource } from './contracts/ThesauriDataSource.js';
 import { ThesauriService } from './ThesauriService.js';
-import { ThesaurusTranslationService } from './thesaurusTranslationService/ThesaurusTranslationService.js';
 
 type Input = {
   id: string;
@@ -14,7 +13,6 @@ type Output = Thesaurus;
 
 type Deps = {
   thesauriDS: ThesauriDataSource;
-  thesaurusTranslationService: ThesaurusTranslationService;
   thesauriService: ThesauriService;
 };
 

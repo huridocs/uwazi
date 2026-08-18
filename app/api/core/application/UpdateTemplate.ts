@@ -7,7 +7,7 @@ import { InheritedPropertyCanNotBeDeleted } from '../domain/template/errors.js';
 import { TemplateUpdatedEvent } from '../domain/template/events/TemplateUpdatedEvent.js';
 import { TemplateDiff } from '../domain/template/TemplateDiff.js';
 import { TemplatesDataSource } from './contracts/TemplatesDataSource.js';
-import { TranslationService } from '../domain/template/TranslationService.js';
+import { TemplateTranslationService } from '../domain/template/TemplateTranslationService.js';
 import { AbstractUseCase } from '../libs/UseCase.js';
 import { PropertyCreatorServiceStrategy } from './propertyCreatorService/PropertyCreatorServiceStrategy.js';
 import { ThesauriDataSource } from './propertyCreatorService/SelectPropertyCreatorService.js';
@@ -23,7 +23,7 @@ type Deps = {
   templatesDS: TemplatesDataSource;
   thesauriDS: ThesauriDataSource;
   entitiesDS: EntitiesDataSource;
-  translationService: TranslationService;
+  templateTranslationService: TemplateTranslationService;
   settingsDS: SettingsDataSource;
   relationshipTypesDS: RelationshipTypesDataSource;
 };
@@ -74,7 +74,7 @@ class UpdateTemplateUseCase extends AbstractUseCase<Input, Output, Deps, [Contex
 
     await this.transactionManager.run(async () => {
       await this.deps.templatesDS.update(updatedTemplate);
-      await this.deps.translationService.updateTemplateTranslation(
+      await this.deps.templateTranslationService.updateTemplateTranslation(
         currentTemplate,
         updatedTemplate
       );

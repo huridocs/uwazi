@@ -1,13 +1,11 @@
 import { TranslationsQueryServiceFactory } from '#api/core/infrastructure/factories/TranslationsQueryServiceFactory.js';
+import { TranslationsDataSourceFactory } from '#api/core/infrastructure/factories/TranslationsDataSourceFactory.js';
+import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { SaveLocaleTranslationsUseCaseFactory } from '#api/core/infrastructure/factories/SaveLocaleTranslationsUseCaseFactory.js';
 import { UpdateEntriesByContextUseCaseFactory } from '#api/core/infrastructure/factories/UpdateEntriesByContextUseCaseFactory.js';
-import {
-  IndexedTranslations,
-  toIndexedTranslations,
-} from '#api/core/infrastructure/express/translation/LegacyTranslationDtoMapper.js';
+import { IndexedTranslations } from '#api/core/application/translation/localeTranslationDto.js';
 import settings from '#api/settings/index.js';
 import thesauri from '#api/core/v1_layer/thesauri/index.js';
-import { TranslationType } from '#shared/translationType.js';
 import { ensure } from '#shared/tsUtils.js';
 import { LanguageISO6391, LanguageSchema, ObjectIdSchema } from '#shared/types/commonTypes.js';
 import { ThesaurusSchema } from '#shared/types/thesaurusType.js';
@@ -60,8 +58,13 @@ export class CSVLoader {
   }
   /* eslint-enable class-methods-use-this, max-statements */
 
-  async loadTranslations(csvPath: string, translationContext: string) {
+  async loadTranslations(
+    csvPath: string,
+    translationContext: string
+  ): Promise<IndexedTranslations[]> {
     const file = importFile(csvPath);
+    const transactionManager = TransactionManagerFactory.default();
+    const translationsDS = TranslationsDataSourceFactory.default({ transactionManager });
     const query = TranslationsQueryServiceFactory.default();
 
     const intermediateTranslation: { [k: string]: { [k: string]: string } } = {};
@@ -79,33 +82,51 @@ export class CSVLoader {
       .map((l: LanguageSchema) => ({ label: l.label, language: l.key }))
       .filter(lang => Object.keys(intermediateTranslation).includes(lang.label));
 
-    await languagesToTranslate.reduce(
-      async (prev, lang) => {
-        await prev;
-        const trans = intermediateTranslation[lang.label];
+    // eslint-disable-next-line max-statements
+    await languagesToTranslate.reduce(async (prev, lang) => {
+      await prev;
+      const trans = intermediateTranslation[lang.label];
+      if (!trans) {
+        return;
+      }
 
-        const [dbTranslations] = toIndexedTranslations(
-          await query.getLegacy({ locale: lang.language as LanguageISO6391 })
-        ) as IndexedTranslations[];
+      const locale = lang.language as LanguageISO6391;
+      const rows = await translationsDS.getByLanguageAndContext(locale, translationContext).all();
+      if (!rows.length) {
+        return;
+      }
 
-        const context = (dbTranslations.contexts || []).find(
-          ctxt => ctxt.id === translationContext
-        );
+      const previous: Record<string, string> = {};
+      rows.forEach(row => {
+        previous[row.key] = row.value;
+      });
 
-        if (trans && context) {
-          Object.keys(trans).forEach(transKey => {
-            if (context.values[transKey] && trans[transKey] !== '') {
-              context.values[transKey] = trans[transKey];
-            }
-          });
+      const patched: Record<string, string> = {};
+      Object.keys(trans).forEach(transKey => {
+        if (previous[transKey] && trans[transKey] !== '') {
+          patched[transKey] = trans[transKey];
         }
+      });
 
-        return SaveLocaleTranslationsUseCaseFactory.default().execute(dbTranslations);
-      },
-      Promise.resolve({} as TranslationType)
-    );
+      if (!Object.keys(patched).length) {
+        return;
+      }
 
-    return toIndexedTranslations(await query.getLegacy());
+      const { context } = rows[0];
+      await SaveLocaleTranslationsUseCaseFactory.default().execute({
+        locale,
+        contexts: [
+          {
+            id: context.id,
+            type: context.type,
+            label: context.label,
+            values: patched,
+          },
+        ],
+      });
+    }, Promise.resolve());
+
+    return query.getLegacy();
   }
 
   // eslint-disable-next-line class-methods-use-this

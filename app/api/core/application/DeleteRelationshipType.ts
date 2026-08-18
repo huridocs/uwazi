@@ -5,7 +5,7 @@ import * as relationshipsV2Support from '#api/relationships.v2/relationtypes/v2_
 import { createError } from '#api/utils/index.js';
 import { AbstractUseCase } from '../libs/UseCase.js';
 import type { RelationshipTypesDataSource } from './contracts/RelationshipTypesDataSource.js';
-import type { RelationshipTypesTranslationService } from './contracts/RelationshipTypesTranslationService.js';
+import type { RelationshipTypeTranslationService } from '../domain/relationshipType/RelationshipTypeTranslationService.js';
 
 type Input = {
   id: string;
@@ -15,7 +15,7 @@ type Output = boolean;
 
 type Deps = {
   relationshipTypesDS: RelationshipTypesDataSource;
-  translationService: RelationshipTypesTranslationService;
+  relationshipTypeTranslationService: RelationshipTypeTranslationService;
 };
 
 const validateTypeInTemplates = async (id: string) => {
@@ -51,7 +51,7 @@ class DeleteRelationshipTypeUseCase extends AbstractUseCase<Input, Output, Deps>
     await validateTypeInRelationships(input.id);
 
     await this.transactionManager.run(async () => {
-      await this.deps.translationService.delete(input.id);
+      await this.deps.relationshipTypeTranslationService.delete(input.id);
       await this.deps.relationshipTypesDS.delete(input.id);
     });
     return true;

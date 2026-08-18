@@ -1,6 +1,6 @@
 import { SaveLocaleTranslationsUseCase } from '#api/core/application/SaveLocaleTranslations.js';
 import { PropagateThesaurusTranslationServiceFactory } from './PropagateThesaurusTranslationServiceFactory.js';
-import { TranslationsQueryServiceFactory } from './TranslationsQueryServiceFactory.js';
+import { TranslationsDataSourceFactory } from './TranslationsDataSourceFactory.js';
 import { TranslationsServiceFactory } from './TranslationsServiceFactory.js';
 import { TransactionManagerFactory } from './TransactionManagerFactory.js';
 
@@ -11,7 +11,7 @@ export class SaveLocaleTranslationsUseCaseFactory {
     return new SaveLocaleTranslationsUseCase({
       transactionManager,
       translationsService: TranslationsServiceFactory.default({ transactionManager }),
-      query: TranslationsQueryServiceFactory.default(),
+      translationsDS: TranslationsDataSourceFactory.default({ transactionManager }),
       propagateThesaurusTranslation: PropagateThesaurusTranslationServiceFactory.default(),
     });
   }
