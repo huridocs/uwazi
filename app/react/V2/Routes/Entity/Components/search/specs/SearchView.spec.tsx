@@ -11,7 +11,6 @@ const deactivateSnippet = jest.fn();
 const goToPage = jest.fn();
 const mockEnsureMainTab = jest.fn();
 const mockUpdateEntityUrl = jest.fn();
-const mockScrollToPlaintextPage = jest.fn();
 let mockHashParams = new URLSearchParams('searchTerm=court');
 let mockPdfController: {
   activateSnippet: typeof activateSnippet;
@@ -75,10 +74,6 @@ jest.mock('#V2/Routes/Entity/Components/search/useJumpToSearchHit.js', () => ({
   useJumpToSearchHit: () => ({ ensureMainTab: mockEnsureMainTab }),
 }));
 
-jest.mock('#V2/Routes/Entity/Components/document/scrollToPlaintextPage.js', () => ({
-  scrollToPlaintextPage: (...args: unknown[]) => mockScrollToPlaintextPage(...args),
-}));
-
 jest.mock('#V2/Components/UI/QuerySearchBar.js', () => ({
   QuerySearchBar: ({ value, onChange }: { value: string; onChange: (next: string) => void }) => (
     <input
@@ -96,7 +91,6 @@ describe('SearchView activateSnippet pending flush', () => {
     goToPage.mockClear();
     mockEnsureMainTab.mockClear();
     mockUpdateEntityUrl.mockClear();
-    mockScrollToPlaintextPage.mockClear();
     mockHashParams = new URLSearchParams('searchTerm=court');
     mockPdfController = null;
   });
@@ -134,13 +128,12 @@ describe('SearchView activateSnippet pending flush', () => {
     await user.click(screen.getByRole('button', { name: /Page 1/i }));
 
     expect(goToPage).toHaveBeenCalledWith(1);
-    expect(mockScrollToPlaintextPage).not.toHaveBeenCalled();
     expect(mockEnsureMainTab).toHaveBeenCalledWith('document', {
       hash: expect.any(Function),
     });
   });
 
-  it('scrolls the plaintext page and skips PDF snippet APIs in raw mode', async () => {
+  it('skips PDF snippet APIs in raw mode and still sets the page hash', async () => {
     const user = userEvent.setup();
     mockHashParams = new URLSearchParams('searchTerm=court&raw=true');
     mockPdfController = { activateSnippet, deactivateSnippet, goToPage };
@@ -148,7 +141,6 @@ describe('SearchView activateSnippet pending flush', () => {
 
     await user.click(screen.getByRole('button', { name: /Page 1/i }));
 
-    expect(mockScrollToPlaintextPage).toHaveBeenCalledWith(1);
     expect(goToPage).not.toHaveBeenCalled();
     expect(activateSnippet).not.toHaveBeenCalled();
     expect(mockEnsureMainTab).toHaveBeenCalledWith('document', {
