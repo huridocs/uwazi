@@ -1,4 +1,7 @@
-import { formatLanguageLabelFromCode, formatLanguageOptionLabel } from '../language/formatLanguageOptionLabel.js';
+import {
+  formatLanguageLabelFromCode,
+  formatLanguageOptionLabel,
+} from '../language/formatLanguageOptionLabel.js';
 
 describe('formatLanguageOptionLabel', () => {
   it('formats the language name in the UI locale with its ISO code', () => {
