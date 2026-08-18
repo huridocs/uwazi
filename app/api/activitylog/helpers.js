@@ -6,6 +6,8 @@ import users from '#api/users/users.js';
 import userGroups from '#api/usergroups/userGroups.js';
 import { PermissionType } from '#shared/types/permissionSchema.js';
 import { FilesDAOFactory } from '#api/core/infrastructure/factories/FilesDAOFactory.js';
+import { UsersDirectoryFactory } from '#api/core/infrastructure/factories/UsersDirectoryFactory.js';
+import { usersDirectoryEnabled } from '#api/core/infrastructure/factories/usersBackendFlags.js';
 import { Suggestions } from '#api/suggestions/suggestions.js';
 import { Extractors } from '#api/services/informationextraction/ixextractors.js';
 
@@ -104,7 +106,11 @@ const loadPermissionsData = async data => {
   const permissionsIds = data.permissions
     .filter(p => p.type !== PermissionType.PUBLIC)
     .map(pu => pu.refId);
-  const allowedUsers = await users.get({ _id: { $in: permissionsIds } }, { username: 1 });
+  // Soft-deleted permission holders stay excluded on both paths (D9): the log falls back to
+  // printing the raw refId for them, which is intended, not an accident to fix here.
+  const allowedUsers = usersDirectoryEnabled()
+    ? await UsersDirectoryFactory.default().getManyByIds(permissionsIds)
+    : await users.get({ _id: { $in: permissionsIds } }, { username: 1 });
   const allowedGroups = await userGroups.get(
     { _id: { $in: permissionsIds } },
     { name: 1, members: 1 }
@@ -157,9 +163,14 @@ const loadExtractorData = async data => {
 };
 
 const loadUser = async data => {
-  let [user] = await users.get({ _id: data._id });
-  user = user || { username: data._id.toString() };
-  return { ...data, ...user };
+  // getById, not getActor: this only names the subject of a `POST /api/users/unlock` entry,
+  // and both legacy paths excluded soft-deleted users — the log falls back to printing the
+  // raw id for them, exactly as loadPermissionsData does (D9).
+  const [user] = usersDirectoryEnabled()
+    ? [(await UsersDirectoryFactory.default().getById(data._id.toString())).getData()]
+    : await users.get({ _id: data._id });
+
+  return { ...data, ...(user || { username: data._id.toString() }) };
 };
 
 export {

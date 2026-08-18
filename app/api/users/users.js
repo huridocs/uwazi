@@ -1,152 +1,6 @@
-/* eslint-disable max-lines */
-/* eslint-disable max-statements */
-import SHA256 from 'crypto-js/sha256.js';
-import { createError } from '#api/utils/index.js';
-import random from '#shared/uniqueID.js';
-import { encryptPassword, comparePasswords } from '#api/auth/encryptPassword.js';
-import * as usersUtils from '#api/auth2fa/usersUtils.js';
-import {
-  getByMemberIdList,
-  updateUserMemberships,
-  removeUsersFromAllGroups,
-} from '#api/usergroups/userGroupsMembers.js';
-import { PUBLIC_USER_ID } from '#api/core/domain/user/User.js';
-import { tenants } from '#api/tenants/index.js';
-import { UsersDAOFactory } from '#api/core/infrastructure/factories/UsersDAOFactory.js';
-import mailer from '../utils/mailer.js';
+import { getByMemberIdList } from '#api/usergroups/userGroupsMembers.js';
+
 import model from './usersModel.js';
-import passwordRecoveriesModel from './passwordRecoveriesModel.js';
-import settings from '../settings/settings.js';
-import { generateUnlockCode } from './generateUnlockCode.js';
-
-const MAX_FAILED_LOGIN_ATTEMPTS = 6;
-
-function validateURL(input) {
-  return new URL(input);
-}
-
-function conformRecoverText(options, _settings, domain, key, user) {
-  const response = {};
-  if (!options.newUser) {
-    response.subject = 'Password recovery';
-    response.text =
-      `Your username is: ${user.username}\n` +
-      `To set your password click on the following link:\n${domain}/setpassword/${key}\nThis link will be valid for 24 hours.`;
-  }
-
-  if (options.newUser) {
-    const siteName = _settings.site_name || 'Uwazi';
-    response.subject = `Welcome to ${siteName}`;
-    const text =
-      'Hello!\n\n' +
-      `The administrators of ${siteName} have created an account for you under the user name:\n` +
-      `${user.username}\n\n` +
-      'To complete this process, please create a strong password by clicking on the following link:\n' +
-      `${domain}/setpassword/${key}?createAccount=true\n` +
-      'This link will be valid for 24 hours.\n\n' +
-      'For more information about the Uwazi platform, visit https://www.uwazi.io.\n\nThank you!\nUwazi team';
-
-    const htmlLink = `<a href="${domain}/setpassword/${key}?createAccount=true">${domain}/setpassword/${key}?createAccount=true</a>`;
-
-    response.text = text;
-    response.html = `<p>${response.text
-      .replace(new RegExp(user.username, 'g'), `<b>${user.username}</b>`)
-      .replace(new RegExp(`${domain}/setpassword/${key}\\?createAccount=true`, 'g'), htmlLink)
-      .replace(/https:\/\/www.uwazi.io/g, '<a href="https://www.uwazi.io">https://www.uwazi.io</a>')
-      .replace(/\n{2,}/g, '</p><p>')
-      .replace(/\n/g, '<br />')}</p>`;
-  }
-
-  return response;
-}
-
-const sendAccountLockedEmail = async (user, domain) => {
-  const url = new URL(domain);
-  url.pathname += `unlockaccount/${user.username}/${user.accountUnlockCode}`;
-  const htmlLink = `<a href="${url}">${url}</a>`;
-  const text =
-    'Hello,\n\n' +
-    'Your account has been locked because of too many failed login attempts. ' +
-    'To unlock your account open the following link:\n' +
-    `${url}`;
-  const html = `<p>${text.replace(url, htmlLink)}</p>`;
-
-  const settingsDetails = await settings.get();
-  const emailSender = mailer.createSenderDetails(settingsDetails);
-  const mailOptions = {
-    from: emailSender,
-    to: user.email,
-    subject: 'Account locked',
-    text,
-    html,
-  };
-
-  return mailer.send(mailOptions);
-};
-
-const updateOldPassword = async (user, password) => {
-  await model.save({ _id: user._id, password: await encryptPassword(password) });
-};
-
-const blockAccount = async (user, domain) => {
-  const accountUnlockCode = generateUnlockCode();
-  const lockedUser = await model.db.findOneAndUpdate(
-    { _id: user._id },
-    { $set: { accountLocked: true, accountUnlockCode } },
-    { new: true, fields: '+accountUnlockCode' }
-  );
-  await sendAccountLockedEmail(lockedUser, domain);
-};
-
-const newFailedLogin = async (user, domain) => {
-  const updatedUser = await model.db.findOneAndUpdate(
-    { _id: user._id },
-    { $inc: { failedLogins: 1 } },
-    { new: true, fields: '+failedLogins' }
-  );
-  if (updatedUser?.failedLogins >= MAX_FAILED_LOGIN_ATTEMPTS) {
-    await blockAccount(user, domain);
-  }
-};
-
-const validateUserPassword = async (user, password, domain) => {
-  const passwordValidated = await comparePasswords(password, user.password);
-  const oldPasswordValidated = user.password === SHA256(password).toString();
-
-  if (oldPasswordValidated) {
-    await updateOldPassword(user, password);
-  }
-
-  if (!oldPasswordValidated && !passwordValidated) {
-    if (!user?.accountLocked) {
-      await newFailedLogin(user, domain);
-    }
-
-    return createError('Invalid username or password', 401);
-  }
-
-  return undefined;
-};
-
-const validate2fa = async (user, token, domain) => {
-  if (user.using2fa) {
-    if (!token) {
-      throw createError('Two-step verification token required', 409);
-    }
-
-    try {
-      await usersUtils.verifyToken(user, token);
-    } catch (err) {
-      await newFailedLogin(user, domain);
-      throw err;
-    }
-  }
-};
-
-const sanitizeUser = user => {
-  const { password, accountLocked, failedLogins, accountUnlockCode, ...sanitizedUser } = user;
-  return sanitizedUser;
-};
 
 const populateGroupsOfUsers = async (user, groups) => {
   const memberships = groups
@@ -158,88 +12,17 @@ const populateGroupsOfUsers = async (user, groups) => {
   return { ...user, groups: memberships };
 };
 
-function unauthorizedAction(user, userInTheDatabase, currentUser) {
-  return (
-    (user.hasOwnProperty('role') &&
-      user.role !== userInTheDatabase.role &&
-      currentUser.role !== 'admin') ||
-    (user._id !== currentUser._id.toString() && currentUser.role !== 'admin')
-  );
-}
-
 export default {
-  async save(user, currentUser) {
-    if (user._id && user._id.toString() === PUBLIC_USER_ID.toString()) {
-      return Promise.reject(createError('Cannot modify system users', 403));
-    }
-
-    const [userInTheDatabase] = await model.get(
-      { _id: user._id, deletedAt: { $exists: false } },
-      '+password'
-    );
-
-    if (!userInTheDatabase) {
-      return Promise.reject(createError('User not found', 404));
-    }
-
-    if (unauthorizedAction(user, userInTheDatabase, currentUser)) {
-      return Promise.reject(createError('Unauthorized', 403));
-    }
-
-    if (user._id === currentUser._id.toString() && user.role !== currentUser.role) {
-      return Promise.reject(createError('Can not change your own role', 403));
-    }
-
-    if (user.username && user.username.includes(' ')) {
-      return Promise.reject(createError('Usernames can not contain spaces.', 400));
-    }
-
-    const { using2fa, secret, ...userToSave } = user;
-
-    const updatedUser = await model.save({
-      ...userToSave,
-      password: user.password ? await encryptPassword(user.password) : userInTheDatabase.password,
-    });
-
-    if (currentUser.role === 'admin' && user.groups) {
-      await updateUserMemberships(updatedUser, user.groups);
-    }
-
-    return updatedUser;
-  },
-
-  async newUser(user, domain) {
-    const [userNameMatch, emailMatch] = await Promise.all([
-      model.get({ username: user.username, deletedAt: { $exists: false } }),
-      model.get({ email: user.email, deletedAt: { $exists: false } }),
-    ]);
-    if (user.username && user.username.includes(' ')) {
-      return Promise.reject(createError('Usernames can not contain spaces.', 400));
-    }
-    if (userNameMatch.length || emailMatch.length) {
-      const message = userNameMatch.length ? 'Username already exists' : 'Email already exists';
-      return Promise.reject(createError(message, 409));
-    }
-    const password = user.password ? user.password : random();
-    const _user = await model.save({
-      ...user,
-      password: await encryptPassword(password),
-      using2fa: undefined,
-      secret: undefined,
-    });
-    if (user.groups && user.groups.length > 0) {
-      await updateUserMemberships(_user, user.groups);
-    }
-    await this.recoverPassword(user.email, domain, { newUser: true });
-    return _user;
-  },
-
+  /**
+   * @deprecated v1 Mongo-only query path, no longer routed through the postgresUsers flag
+   * (see UsersDAOFactory) since PostgresUsersDAO has no equivalent generic get(). The
+   * /api/users GET route no longer reaches it — that read is `UsersQueryService`'s now. What
+   * is left is activitylog/helpers.js, entitiesPermissions.ts and userGroups.ts when
+   * `usersDirectory` is off; those call sites read through UsersDirectory when it is on.
+   * `collaborators.ts` and `search.js` no longer appear here: they went to UsersDirectory
+   * unconditionally, which resolves the backend itself (plan 05 step 1).
+   */
   async get(query, select) {
-    if (tenants.current().featureFlags?.v2UsersGet) {
-      const users = await UsersDAOFactory.default().get(query);
-      return users;
-    }
-
     const users = await model.get({ ...query, deletedAt: { $exists: false } }, select);
     if (typeof select === 'string' && select.includes('+groups')) {
       const userIds = users.map(user => user._id.toString());
@@ -249,29 +32,25 @@ export default {
     return users;
   },
 
+  /**
+   * @deprecated v1 single-user read. Use `UsersDirectory` (`UsersDirectoryFactory.default()`),
+   * which resolves the backend itself and returns a read model that cannot carry credentials.
+   * Pick the method by what the caller actually needs (D1/D3):
+   *
+   * | this call | UsersDirectory |
+   * |---|---|
+   * | `getById(id)` | `getById` → `UserView` |
+   * | `getById(id, '', true)` | `getProfile` → adds `groups`, `using2fa`, `accountLocked` |
+   * | `getById(id, '', _, true)` | `getActor` → the only read that resolves a soft-deleted user |
+   * | `getById(id, '+password')` | **nothing** — no read model carries a password, and no
+   *   caller asks for one any more. Load the aggregate through `UsersDataSource` instead. |
+   *
+   * Every production caller has a UsersDirectory path already and reaches this one only when
+   * `usersDirectory` is off (passport_conf.js, jobs/getUserById.ts, files.ts, OcrManager.ts,
+   * preserveSync.ts, setupSockets.ts, suggestions/updateEntities.ts, tocService.ts). Retiring
+   * that flag retires this method; `UsersGettersConsistency.spec.ts` pins it until then.
+   */
   async getById(id, select = '', includeGroups = false, includeDeleted = false) {
-    if (tenants.current().featureFlags?.v2UsersGet) {
-      const includePassword = typeof select === 'string' && select.includes('+password');
-
-      const result = await UsersDAOFactory.default().getById(id.toString(), {
-        includePassword,
-        includeDeleted,
-      });
-
-      if (result.isError()) {
-        return null;
-      }
-
-      const user = result.getData();
-
-      if (includeGroups) {
-        const groups = await getByMemberIdList([user._id.toString()]);
-        return populateGroupsOfUsers(user, groups);
-      }
-
-      return user;
-    }
-
     const [user] = await model.get(
       { _id: id, ...(!includeDeleted && { deletedAt: { $exists: false } }) },
       select
@@ -284,141 +63,4 @@ export default {
 
     return user ?? null;
   },
-
-  async delete(_ids, currentUser) {
-    const ids = _ids.map(id => id.toString());
-
-    if (ids.includes(PUBLIC_USER_ID.toString())) {
-      return Promise.reject(createError('Cannot delete system users', 403));
-    }
-
-    if (_ids.find(id => id.toString() === currentUser._id.toString())) {
-      return Promise.reject(createError('Can not delete yourself', 403));
-    }
-
-    const count = await model.count({ _id: { $ne: PUBLIC_USER_ID } });
-    if (count > _ids.length) {
-      await removeUsersFromAllGroups(ids);
-      return model.delete({ _id: { $in: _ids } });
-    }
-    return Promise.reject(createError('Can not delete last user(s).', 403));
-  },
-
-  async login({ username, password, token }, domain) {
-    const [dbuser] = await model.get(
-      { username, deletedAt: { $exists: false } },
-      '+password +accountLocked +failedLogins +accountUnlockCode'
-    );
-
-    validateURL(domain);
-    const dummy = { password: await encryptPassword('Avoid user enum on login req ms diff') };
-    const user = dbuser || dummy;
-
-    const passwordError = await validateUserPassword(user, password, domain);
-
-    if (passwordError) {
-      throw passwordError;
-    }
-
-    if (user?.accountLocked) {
-      throw createError('Invalid username or password', 401);
-    }
-
-    await validate2fa(user, token, domain);
-
-    await model.db.updateOne({ _id: user._id }, { $unset: { failedLogins: 1 } });
-
-    return sanitizeUser(user);
-  },
-
-  async unlockAccount({ username, code }) {
-    const [user] = await model.get(
-      { username, accountUnlockCode: code, deletedAt: { $exists: false } },
-      '_id'
-    );
-
-    if (!user) {
-      throw createError('Invalid username or unlock code', 403);
-    }
-
-    return model.save({
-      ...user,
-      accountLocked: false,
-      accountUnlockCode: false,
-      failedLogins: false,
-    });
-  },
-
-  async simpleUnlock(_id) {
-    await model.updateMany(
-      { _id },
-      { $unset: { accountLocked: 1, accountUnlockCode: 1, failedLogins: 1 } }
-    );
-  },
-
-  /**
-   * @deprecated
-   * v1 password recovery flow — writes the Mongo `passwordrecoveries`
-   * collection directly via `passwordRecoveriesModel`, bypassing
-   * `PasswordRecoveriesDataSourceFactory` entirely. Only reached while the
-   * tenant's `v2UsersUtilityRoutes` flag is off (see
-   * `RecoverPasswordController`), but note that reach is independent of
-   * `postgresPasswordRecoveries` — enabling that flag alone does not stop
-   * this method from hitting Mongo. Also called internally by `newUser`
-   * for the new-user welcome email. Use the v2 `RecoverPassword` use case
-   * (`RecoverPasswordUseCaseFactory`) instead.
-   */
-  recoverPassword(email, domain, options = {}) {
-    const key = generateUnlockCode();
-    return Promise.all([model.get({ email, deletedAt: { $exists: false } }), settings.get()]).then(
-      ([_user, _settings]) => {
-        const user = _user[0];
-        if (user) {
-          return passwordRecoveriesModel.save({ key, user: user._id }).then(() => {
-            const emailSender = mailer.createSenderDetails(_settings);
-            const mailOptions = { from: emailSender, to: email };
-            const mailTexts = conformRecoverText(options, _settings, domain, key, user);
-            mailOptions.subject = mailTexts.subject;
-            mailOptions.text = mailTexts.text;
-
-            if (options.newUser) {
-              mailOptions.html = mailTexts.html;
-            }
-
-            return mailer.send(mailOptions);
-          });
-        }
-
-        return undefined;
-      }
-    );
-  },
-
-  /**
-   * @deprecated
-   * v1 password reset flow — reads/deletes the Mongo `passwordrecoveries`
-   * collection directly via `passwordRecoveriesModel`, bypassing
-   * `PasswordRecoveriesDataSourceFactory` entirely; see the note on
-   * `recoverPassword` above — the same `postgresPasswordRecoveries`
-   * caveat applies here. Use the v2 `ResetPassword` use case
-   * (`ResetPasswordUseCaseFactory`) instead.
-   */
-  async resetPassword(credentials) {
-    const [key] = await passwordRecoveriesModel.get({ key: credentials.key });
-    if (key) {
-      const [user] = await model.get({ _id: key.user, deletedAt: { $exists: false } }, '_id');
-      if (!user) {
-        throw createError('User not found', 404);
-      }
-      return Promise.all([
-        passwordRecoveriesModel.delete(key._id),
-        model
-          .save({ _id: key.user, password: await encryptPassword(credentials.password) })
-          .then(() => this.simpleUnlock({ _id: key.user })),
-      ]);
-    }
-    throw createError('key not found', 403);
-  },
 };
-
-export { validateUserPassword };

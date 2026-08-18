@@ -17,7 +17,11 @@ import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { createError } from '#api/utils/index.js';
 import { FileNotFound as FileNotFoundV2 } from '../core/domain/files/errors.js';
 import { NonRetryableJobError } from '#api/core/libs/queue/infrastructure/errors.js';
-import { TwoFactorTokenRequired } from '#api/core/domain/user/errors.js';
+import {
+  AccountLocked,
+  InvalidCredentials,
+  TwoFactorTokenRequired,
+} from '#api/core/domain/user/errors.js';
 
 const ajvPrettifier = error => {
   const errorMessage = [error.message];
@@ -141,6 +145,17 @@ const prettifyError = (error, { req = {}, uncaught = false } = {}) => {
   // (see app/react/Users/Login.jsx), matching the legacy `createError(..., 409)` behavior.
   if (error instanceof TwoFactorTokenRequired) {
     result = { code: 409, message: error.message, logLevel: 'debug' };
+  }
+
+  // Failed authentication answers 401, not the generic DomainError 400: both API clients
+  // read 401 as "not authenticated" — app/react/utils/api.js redirects to /login without a
+  // toast, and V2's auth policy (app/react/V2/api/policies.ts) redirects on it — while 400
+  // raises a notification over the login form's own inline error. Only `Login` throws these
+  // two, so the override cannot reach another use case. `TwoFactorTokenInvalid` is
+  // deliberately left on 400: `EnableTwoFactorAuth` throws it too, where the legacy status
+  // was 409 rather than 401.
+  if (error instanceof InvalidCredentials || error instanceof AccountLocked) {
+    result = { code: 401, message: error.message, logLevel: 'debug' };
   }
 
   if (error instanceof URIError) {

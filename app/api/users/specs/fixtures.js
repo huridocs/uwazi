@@ -1,4 +1,3 @@
-import SHA256 from 'crypto-js/sha256';
 import db from '#api/utils/testing_db.js';
 import { PUBLIC_USER_ID, UserRole } from '#api/core/domain/user/User.js';
 
@@ -9,7 +8,6 @@ const recoveryUserId = db.id();
 const blockedUserId = db.id();
 const userToDelete = db.id();
 const userToDelete2 = db.id();
-const expectedKey = SHA256(`recovery@email.com${2000}`).toString();
 
 export default {
   users: [
@@ -63,7 +61,6 @@ export default {
       role: UserRole.COLLABORATOR,
     },
   ],
-  passwordrecoveries: [{ _id: db.id(), key: expectedKey, user: recoveryUserId }],
   settings: [
     { site_name: 'Uwazi instance' }, // eslint-disable-line camelcase
   ],
@@ -85,7 +82,6 @@ export default {
 export {
   userId,
   recoveryUserId,
-  expectedKey,
   group1Id,
   group2Id,
   userToDelete,

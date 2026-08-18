@@ -43,22 +43,9 @@ describe('GET /logout', () => {
     await testingEnvironment.tearDown();
   });
 
-  describe('when v2Login is off', () => {
+  describe('logging out', () => {
     beforeEach(() => {
-      testingTenants.changeCurrentTenant({ domain: 'uwazi', featureFlags: { v2Login: false } });
-    });
-
-    it('should destroy the session and redirect home', async () => {
-      const response = await request(app).get('/logout');
-
-      expect(response.status).toBe(302);
-      expect(response.headers.location).toBe('/');
-    });
-  });
-
-  describe('when v2Login is on', () => {
-    beforeEach(() => {
-      testingTenants.changeCurrentTenant({ domain: 'uwazi', featureFlags: { v2Login: true } });
+      testingTenants.changeCurrentTenant({ domain: 'uwazi' });
     });
 
     it('should destroy the session and redirect home', async () => {

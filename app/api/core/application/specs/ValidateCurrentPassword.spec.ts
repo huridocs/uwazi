@@ -1,6 +1,5 @@
 import { encryptPassword } from '#api/auth/encryptPassword.js';
-import { UsersDAOFactory } from '#api/core/infrastructure/factories/UsersDAOFactory.js';
-import { MongoUsersDataSource } from '#api/core/infrastructure/mongodb/user/MongoUsersDataSource.js';
+import { UsersDataSourceFactory } from '#api/core/infrastructure/factories/UsersDataSourceFactory.js';
 import { UserRole } from '#api/core/domain/user/User.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
@@ -19,7 +18,10 @@ const buildFixtures = async () => {
 };
 
 const createSut = () => {
-  const usersDS = new MongoUsersDataSource({ dao: UsersDAOFactory.default() });
+  // The factory's mongo branch builds exactly this data source, and these fixtures run
+  // with postgresUsers off — so the wiring is unchanged, without the spec reaching past
+  // UsersDataSource into the private DAO (D4).
+  const usersDS = UsersDataSourceFactory.default();
   return new ValidateCurrentPassword({ usersDS }, { tenant: {} as any });
 };
 

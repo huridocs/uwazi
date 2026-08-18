@@ -3,7 +3,6 @@ import type { Application, NextFunction, Request, Response } from 'express';
 import request from 'supertest';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { setUpApp } from '#api/utils/testingRoutes.js';
-import { testingTenants } from '#api/utils/testingTenants.js';
 import { userRoutes } from '../routes.js';
 import { fixtures, f } from './fixtures.js';
 import { UserRole } from '#shared/types/userSchema.js';
@@ -16,10 +15,20 @@ jest.mock('../../../../../auth/validatePasswordMiddleWare.ts', () => ({
   validatePasswordMiddleWare: (_req: Request, _res: Response, next: NextFunction) => next(),
 }));
 
+const adminUser = { _id: f.idString('admin'), role: 'admin', username: 'admin' } as const;
+const editorUser = {
+  _id: f.idString('existinguser'),
+  role: 'editor',
+  username: 'existinguser',
+} as const;
+
+// Mutable so the `needsAuthorization()` case can downgrade the session; reset in beforeEach.
+let currentUser: typeof adminUser | typeof editorUser = adminUser;
+
 const app: Application = setUpApp(
   userRoutes,
   (req: Request, _res: Response, next: NextFunction) => {
-    req.user = { _id: f.idString('admin'), role: 'admin', username: 'admin' };
+    req.user = currentUser;
     next();
   }
 );
@@ -45,9 +54,7 @@ const blockedFixtures = {
 describe('POST /api/users/unlock', () => {
   beforeEach(async () => {
     await testingEnvironment.setUp(blockedFixtures);
-    testingTenants.changeCurrentTenant({
-      featureFlags: { v2UsersUtilityRoutes: true },
-    });
+    currentUser = adminUser;
   });
 
   afterAll(async () => {
@@ -73,5 +80,34 @@ describe('POST /api/users/unlock', () => {
   it('should return 422 when _id is missing', async () => {
     const response = await request(app).post('/api/users/unlock').send({});
     expect(response.status).toBe(422);
+  });
+
+  it.each([
+    { name: 'an unknown property', body: { _id: blockedUserId.toHexString(), extra: 'extra' } },
+    { name: 'a non-string _id', body: { _id: 0 } },
+  ])('should return 422 for $name', async ({ body }) => {
+    const response = await request(app).post('/api/users/unlock').send(body);
+
+    expect(response.status).toBe(422);
+
+    const user = await testingEnvironment.db
+      .getCollection('users')!
+      .findOne({ _id: blockedUserId });
+    expect(user?.accountLocked).toBe(true);
+  });
+
+  it('should require an admin', async () => {
+    currentUser = editorUser;
+
+    const response = await request(app)
+      .post('/api/users/unlock')
+      .send({ _id: blockedUserId.toHexString() });
+
+    expect(response.status).toBe(401);
+
+    const user = await testingEnvironment.db
+      .getCollection('users')!
+      .findOne({ _id: blockedUserId });
+    expect(user?.accountLocked).toBe(true);
   });
 });

@@ -5,12 +5,15 @@ import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { User } from '#api/core/domain/user/User.js';
 import { LoginInputSchema } from '#api/core/application/Login.js';
 import { LoginUseCaseFactory } from '../../factories/LoginUseCaseFactory.js';
+import { randomSleep } from '#shared/tsUtils.js';
 
 // passport has no bundled types in this project; `logIn` is added to Request at runtime.
 type RequestWithLogin = { logIn: (user: User, done: (err: unknown) => void) => void };
 
 class LoginController extends AbstractController<LoginRequest> {
   protected async handle(): Promise<void> {
+    await randomSleep(500, 1_000);
+
     const domain = `${this.request.protocol}://${ExecutionContext.tenant.domain}`;
     const startTime = Date.now();
     try {

@@ -47,7 +47,7 @@ export default async (app, server) => {
   (await import('./core/infrastructure/express/translation/routes.js')).translationsRoutes(app);
   (await import('./sync/routes.js')).default(app);
   (await import('./tasks/routes.js')).default(app);
-  (await import('./usergroups/routes.js')).default(app);
+  (await import('./core/infrastructure/express/userGroups/routes.js')).userGroupsRoutes(app);
   (await import('./permissions/routes.js')).permissionRoutes(app);
   (await import('./suggestions/routes.js')).suggestionsRoutes(app);
   (await import('./suggestions/extractorsRoutes.js')).extractorsRoutes(app);

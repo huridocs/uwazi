@@ -1,6 +1,5 @@
 import type { Request, NextFunction, Response } from 'express';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-import { testingTenants } from '#api/utils/testingTenants.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { UserRole } from '#shared/types/userSchema.js';
 import { encryptPassword } from '../encryptPassword.js';
@@ -71,46 +70,6 @@ describe('validatePasswordMiddleWare', () => {
     await testingEnvironment.tearDown();
   });
 
-  it('should reject when the password is incorrect', async () => {
-    const request = createRequest({
-      user: { _id: users[0]._id, username: users[0].username, role: users[0].role },
-      body: { username: 'a_new_user', role: 'collaborator', email: 'collaborator@huridocs.org' },
-      headers: { authorization: `Basic ${encodePassword('wrongPass')}` },
-    });
-
-    await validatePasswordMiddleWare(request, res, next);
-
-    expect(next).not.toHaveBeenCalled();
-    expect(res.status).toHaveBeenCalledWith(403);
-    expect(res.json).toHaveBeenCalledWith({ message: 'Forbidden', error: 'Password error' });
-  });
-
-  it('should reject when the password is empty', async () => {
-    const emptyPasswordRequest = createRequest({
-      user: { _id: users[0]._id, username: users[0].username, role: users[0].role },
-      body: { username: 'a_new_user', role: 'collaborator', email: 'collaborator@huridocs.org' },
-      headers: { authorization: `Basic ${encodePassword('')}` },
-    });
-
-    const noAuthHeaderRequest = createRequest({
-      user: { _id: users[0]._id, username: users[0].username, role: users[0].role },
-      body: { _id: users[0]._id, username: users[0].username, role: users[0].role },
-      headers: { cookie: 'some cookie' },
-    });
-
-    await validatePasswordMiddleWare(emptyPasswordRequest, res, next);
-
-    expect(next).not.toHaveBeenCalled();
-    expect(res.status).toHaveBeenCalledWith(403);
-    expect(res.json).toHaveBeenNthCalledWith(1, { message: 'Forbidden', error: 'Password error' });
-
-    await validatePasswordMiddleWare(noAuthHeaderRequest, res, next);
-
-    expect(next).not.toHaveBeenCalled();
-    expect(res.status).toHaveBeenCalledWith(403);
-    expect(res.json).toHaveBeenNthCalledWith(2, { message: 'Forbidden', error: 'Password error' });
-  });
-
   it('should succeed when the passwords match', async () => {
     const request = createRequest({
       user: { _id: users[1]._id, username: users[1].username, role: users[1].role },
@@ -118,64 +77,58 @@ describe('validatePasswordMiddleWare', () => {
       headers: { authorization: `Basic ${encodePassword('editor1234')}` },
     });
 
-    await validatePasswordMiddleWare(request, res, next);
+    await testingEnvironment.runWithContext(async () =>
+      validatePasswordMiddleWare(request, res, next)
+    );
 
     expect(next).toHaveBeenCalled();
   });
 
-  describe('when v2PasswordReauth is on', () => {
-    beforeEach(() => {
-      testingTenants.mockCurrentTenant({ featureFlags: { v2PasswordReauth: true } });
+  it('should reject when the password is incorrect', async () => {
+    const request = createRequest({
+      user: { _id: users[0]._id, username: users[0].username, role: users[0].role },
+      body: { username: 'a_new_user', role: 'collaborator', email: 'collaborator@huridocs.org' },
+      headers: { authorization: `Basic ${encodePassword('wrongPass')}` },
     });
 
-    afterEach(() => {
-      testingTenants.restoreCurrentFn();
+    await testingEnvironment.runWithContext(async () =>
+      validatePasswordMiddleWare(request, res, next)
+    );
+
+    expect(next).not.toHaveBeenCalled();
+    expect(res.status).toHaveBeenCalledWith(403);
+    expect(res.json).toHaveBeenCalledWith({ message: 'Forbidden', error: 'Password error' });
+  });
+
+  it('should reject when the password is empty', async () => {
+    const request = createRequest({
+      user: { _id: users[0]._id, username: users[0].username, role: users[0].role },
+      body: { username: 'a_new_user', role: 'collaborator', email: 'collaborator@huridocs.org' },
+      headers: { authorization: `Basic ${encodePassword('')}` },
     });
 
-    it('should succeed when the passwords match', async () => {
-      const request = createRequest({
-        user: { _id: users[1]._id, username: users[1].username, role: users[1].role },
-        body: { _id: users[1]._id, username: users[1].username, role: users[1].role },
-        headers: { authorization: `Basic ${encodePassword('editor1234')}` },
-      });
+    await testingEnvironment.runWithContext(async () =>
+      validatePasswordMiddleWare(request, res, next)
+    );
 
-      await testingEnvironment.runWithContext(async () =>
-        validatePasswordMiddleWare(request, res, next)
-      );
+    expect(next).not.toHaveBeenCalled();
+    expect(res.status).toHaveBeenCalledWith(403);
+    expect(res.json).toHaveBeenCalledWith({ message: 'Forbidden', error: 'Password error' });
+  });
 
-      expect(next).toHaveBeenCalled();
+  it('should reject when there is no authorization header', async () => {
+    const request = createRequest({
+      user: { _id: users[0]._id, username: users[0].username, role: users[0].role },
+      body: { _id: users[0]._id, username: users[0].username, role: users[0].role },
+      headers: { cookie: 'some cookie' },
     });
 
-    it('should reject when the password is incorrect', async () => {
-      const request = createRequest({
-        user: { _id: users[1]._id, username: users[1].username, role: users[1].role },
-        body: { _id: users[1]._id, username: users[1].username, role: users[1].role },
-        headers: { authorization: `Basic ${encodePassword('wrongPass')}` },
-      });
+    await testingEnvironment.runWithContext(async () =>
+      validatePasswordMiddleWare(request, res, next)
+    );
 
-      await testingEnvironment.runWithContext(async () =>
-        validatePasswordMiddleWare(request, res, next)
-      );
-
-      expect(next).not.toHaveBeenCalled();
-      expect(res.status).toHaveBeenCalledWith(403);
-      expect(res.json).toHaveBeenCalledWith({ message: 'Forbidden', error: 'Password error' });
-    });
-
-    it('should reject when there is no authorization header', async () => {
-      const request = createRequest({
-        user: { _id: users[1]._id, username: users[1].username, role: users[1].role },
-        body: { _id: users[1]._id, username: users[1].username, role: users[1].role },
-        headers: { cookie: 'some cookie' },
-      });
-
-      await testingEnvironment.runWithContext(async () =>
-        validatePasswordMiddleWare(request, res, next)
-      );
-
-      expect(next).not.toHaveBeenCalled();
-      expect(res.status).toHaveBeenCalledWith(403);
-      expect(res.json).toHaveBeenCalledWith({ message: 'Forbidden', error: 'Password error' });
-    });
+    expect(next).not.toHaveBeenCalled();
+    expect(res.status).toHaveBeenCalledWith(403);
+    expect(res.json).toHaveBeenCalledWith({ message: 'Forbidden', error: 'Password error' });
   });
 });

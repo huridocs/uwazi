@@ -1,10 +1,11 @@
-import { User } from '#api/core/domain/user/User.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { IdGeneratorFactory } from '#api/core/infrastructure/factories/IdGeneratorFactory.js';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { UserRole } from '#shared/types/userSchema.js';
-import { MongoUsergroupsDataSource } from '../MongoUsergroupsDataSource.js';
+import { UserGroup } from '#api/core/domain/userGroup/UserGroup.js';
+import { MongoUserGroupsDataSource } from '../MongoUserGroupsDataSource.js';
 
 const f = getFixturesFactory();
 
@@ -25,7 +26,7 @@ const fixtures = {
 
 const createDs = () => {
   const transactionManager = TransactionManagerFactory.default();
-  const ds = new MongoUsergroupsDataSource(getConnection(), transactionManager);
+  const ds = new MongoUserGroupsDataSource(getConnection(), transactionManager);
   return { ds, transactionManager };
 };
 
@@ -38,19 +39,13 @@ describe('MongoGroupsDataSource', () => {
     await testingEnvironment.tearDown();
   });
 
-  describe('updateUserGroups', () => {
+  describe('assignGroupsToUser', () => {
     it('should add a user to a group', async () => {
       const { ds } = createDs();
 
-      const user = new User({
-        _id: f.id('newuser').toHexString(),
-        username: 'newuser',
-        role: UserRole.COLLABORATOR,
-        email: 'newuser@provider.tld',
-        groups: [{ _id: f.id('Empty').toHexString(), name: 'Empty' }],
-      });
+      const userId = f.id('newuser').toHexString();
 
-      await ds.updateUserGroups(user);
+      await ds.assignGroupsToUser(userId, [f.id('Empty').toHexString()]);
 
       const groups = await testingEnvironment.db.getAllFrom('usergroups');
       const emptyGroup = groups.find(g => g.name === 'Empty');
@@ -61,18 +56,12 @@ describe('MongoGroupsDataSource', () => {
     it('should add a user to multiple groups', async () => {
       const { ds } = createDs();
 
-      const user = new User({
-        _id: f.id('newuser').toHexString(),
-        username: 'newuser',
-        role: UserRole.COLLABORATOR,
-        email: 'newuser@provider.tld',
-        groups: [
-          { _id: f.id('Empty').toHexString(), name: 'Empty' },
-          { _id: f.id('With one member').toHexString(), name: 'With one member' },
-        ],
-      });
+      const userId = f.id('newuser').toHexString();
 
-      await ds.updateUserGroups(user);
+      await ds.assignGroupsToUser(userId, [
+        f.id('Empty').toHexString(),
+        f.id('With one member').toHexString(),
+      ]);
 
       const groups = await testingEnvironment.db.getAllFrom('usergroups');
       const emptyGroup = groups.find(group => group.name === 'Empty');
@@ -88,15 +77,9 @@ describe('MongoGroupsDataSource', () => {
     it('should remove a user if it is no longer in the group', async () => {
       const { ds } = createDs();
 
-      const user = new User({
-        _id: f.id('existing1').toHexString(),
-        username: 'existing1',
-        role: UserRole.ADMIN,
-        email: 'existing1@provider.tld',
-        groups: [],
-      });
+      const userId = f.id('existing1').toHexString();
 
-      await ds.updateUserGroups(user);
+      await ds.assignGroupsToUser(userId, []);
 
       const groups = await testingEnvironment.db.getAllFrom('usergroups');
       const oneMemberGroup = groups.find(group => group.name === 'With one member');
@@ -109,15 +92,9 @@ describe('MongoGroupsDataSource', () => {
     it('should add and remove a user from different groups', async () => {
       const { ds } = createDs();
 
-      const user = new User({
-        _id: f.id('existing1').toHexString(),
-        username: 'existing1',
-        role: UserRole.ADMIN,
-        email: 'existing1@provider.tld',
-        groups: [{ _id: f.id('Empty').toHexString(), name: 'Empty' }],
-      });
+      const userId = f.id('existing1').toHexString();
 
-      await ds.updateUserGroups(user);
+      await ds.assignGroupsToUser(userId, [f.id('Empty').toHexString()]);
 
       const groups = await testingEnvironment.db.getAllFrom('usergroups');
       const emptyGroup = groups.find(group => group.name === 'Empty');
@@ -134,14 +111,9 @@ describe('MongoGroupsDataSource', () => {
     it('return user groups', async () => {
       const { ds } = createDs();
 
-      const user = new User({
-        _id: f.id('existing1').toHexString(),
-        username: 'existing1',
-        role: UserRole.ADMIN,
-        email: 'existing1@provider.tld',
-      });
+      const userId = f.id('existing1').toHexString();
 
-      const foundGroups = await ds.getUserGroups(user);
+      const foundGroups = await ds.getUserGroups(userId);
       expect(foundGroups).toMatchObject([
         {
           _id: f.id('With one member').toHexString(),
@@ -152,6 +124,110 @@ describe('MongoGroupsDataSource', () => {
           name: 'With two members',
         },
       ]);
+    });
+  });
+
+  describe('findById', () => {
+    it('should return the group matching the given id', async () => {
+      const { ds } = createDs();
+
+      const found = await ds.findById(f.id('With one member').toHexString());
+
+      expect(found.getDataOrThrow()).toMatchObject({
+        id: f.id('With one member').toHexString(),
+        name: 'With one member',
+        memberIds: [f.idString('existing1')],
+      });
+    });
+
+    it('should fail with UserGroupNotFound for an unknown id', async () => {
+      const { ds } = createDs();
+
+      expect((await ds.findById(f.id('unknown').toHexString())).isError()).toBe(true);
+    });
+  });
+
+  describe('create', () => {
+    it('should create a group with the given name and members', async () => {
+      const { ds } = createDs();
+      const id = IdGeneratorFactory.default().generate();
+
+      const created = await ds.create(
+        new UserGroup({ id, name: 'New group', memberIds: [f.idString('existing1')] })
+      );
+
+      const groups = await testingEnvironment.db.getAllFrom('usergroups');
+      const found = groups.find(group => group._id.toString() === created.id);
+      expect(found).toMatchObject({
+        name: 'New group',
+        members: [{ refId: f.idString('existing1') }],
+      });
+    });
+  });
+
+  describe('update', () => {
+    it('should rename a group and replace its members', async () => {
+      const { ds } = createDs();
+
+      await ds.update(
+        new UserGroup({
+          id: f.id('With one member').toHexString(),
+          name: 'Renamed',
+          memberIds: [f.idString('existing2')],
+        })
+      );
+
+      const groups = await testingEnvironment.db.getAllFrom('usergroups');
+      const updated = groups.find(
+        group => group._id.toString() === f.id('With one member').toHexString()
+      );
+      expect(updated).toMatchObject({
+        name: 'Renamed',
+        members: [{ refId: f.idString('existing2') }],
+      });
+    });
+  });
+
+  describe('delete', () => {
+    it('should delete multiple groups by id', async () => {
+      const { ds } = createDs();
+
+      await ds.delete([f.id('Empty').toHexString(), f.id('With one member').toHexString()]);
+
+      const groups = await testingEnvironment.db.getAllFrom('usergroups');
+      expect(groups.map(group => group.name)).toEqual(['With two members']);
+    });
+
+    it('should be a no-op for an unknown id', async () => {
+      const { ds } = createDs();
+
+      await expect(ds.delete([f.id('unknown').toHexString()])).resolves.not.toThrow();
+
+      const groups = await testingEnvironment.db.getAllFrom('usergroups');
+      expect(groups).toHaveLength(3);
+    });
+  });
+
+  describe('checkUniqueName', () => {
+    it('should be case-insensitive', async () => {
+      const { ds } = createDs();
+
+      expect((await ds.checkUniqueName('empty')).isError()).toBe(true);
+      expect((await ds.checkUniqueName('EMPTY')).isError()).toBe(true);
+      expect((await ds.checkUniqueName('nonexistent')).isOk()).toBe(true);
+    });
+
+    it('should exclude the given id, so renaming to the current name is allowed', async () => {
+      const { ds } = createDs();
+
+      const excludingSelf = await ds.checkUniqueName('Empty', f.id('Empty').toHexString());
+      expect(excludingSelf.isOk()).toBe(true);
+
+      const excludingOther = await ds.checkUniqueName(
+        'Empty',
+        f.id('With one member').toHexString()
+      );
+      expect(excludingOther.isError()).toBe(true);
     });
   });
 });

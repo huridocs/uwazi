@@ -13,6 +13,10 @@ import { Result } from '#api/core/libs/Result.js';
 import type { ResultType } from '#api/core/libs/Result.js';
 import { MongoUsersMapper } from './MongoUsersMapper.js';
 import { MongoUsersDAO } from './MongoUsersDAO.js';
+import type { UserFieldGroup } from './UserReadOptions.js';
+
+/** Everything UserAccount's Credentials need: password, secret, lockout state and using2fa. */
+const ACCOUNT_FIELDS: UserFieldGroup[] = ['identity', 'status', 'credentials', 'security'];
 
 class MongoUsersDataSource implements UsersDataSource {
   private dao: MongoUsersDAO;
@@ -44,7 +48,7 @@ class MongoUsersDataSource implements UsersDataSource {
   async getById(id: string) {
     const user = await this.dao.findOne(
       { _id: ObjectId.createFromHexString(id) },
-      { projection: { password: 0, secret: 0, failedLogins: 0, accountUnlockCode: 0 } }
+      { fields: ['identity', 'status'] }
     );
 
     if (!user) {
@@ -65,7 +69,7 @@ class MongoUsersDataSource implements UsersDataSource {
   }
 
   async getByUsername(username: string): Promise<ResultType<UserAccount, UserNotFound>> {
-    const user = await this.dao.findOne({ username });
+    const user = await this.dao.findOne({ username }, { fields: ACCOUNT_FIELDS });
 
     if (!user) {
       return Result.fail(new UserNotFound(username));
@@ -75,7 +79,10 @@ class MongoUsersDataSource implements UsersDataSource {
   }
 
   async getAccountById(id: string): Promise<ResultType<UserAccount, UserNotFound>> {
-    const user = await this.dao.findOne({ _id: ObjectId.createFromHexString(id) });
+    const user = await this.dao.findOne(
+      { _id: ObjectId.createFromHexString(id) },
+      { fields: ACCOUNT_FIELDS }
+    );
 
     if (!user) {
       return Result.fail(new UserNotFound(id));
@@ -85,7 +92,9 @@ class MongoUsersDataSource implements UsersDataSource {
   }
 
   async countActiveUsers(): Promise<number> {
-    return this.dao.count(this.dao.notPublicUserFilter());
+    // The default scope already excludes both soft-deleted and system users (D5), so this
+    // no longer passes a guard filter of its own.
+    return this.dao.count();
   }
 
   async insert(user: UserAccount): Promise<void> {
@@ -121,7 +130,7 @@ class MongoUsersDataSource implements UsersDataSource {
   ): Promise<ResultType<User, InvalidUnlockCode>> {
     const user = await this.dao.findOne(
       { username, accountUnlockCode: code },
-      { projection: { _id: 1, username: 1, role: 1, email: 1 } }
+      { fields: ['identity'] }
     );
 
     if (!user) {
@@ -155,7 +164,7 @@ class MongoUsersDataSource implements UsersDataSource {
   async getTwoFactorStatus(userId: string) {
     const user = await this.dao.findOne(
       { _id: ObjectId.createFromHexString(userId) },
-      { projection: { username: 1, using2fa: 1 } }
+      { fields: ['identity', 'status'] }
     );
 
     if (!user) {
@@ -172,7 +181,7 @@ class MongoUsersDataSource implements UsersDataSource {
   async getTwoFactorSecret(userId: string) {
     const user = await this.dao.findOne(
       { _id: ObjectId.createFromHexString(userId) },
-      { projection: { secret: 1 } }
+      { fields: ['security'] }
     );
 
     if (!user) {

@@ -34,7 +34,6 @@ describe('POST /api/recoverpassword', () => {
     await testingEnvironment.setUp(fixtures);
     testingTenants.changeCurrentTenant({
       domain: 'uwazi',
-      featureFlags: { v2UsersUtilityRoutes: true },
     });
     namespace = tenants.current().name;
   });
