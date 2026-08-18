@@ -11,7 +11,7 @@ import {
 import { userRoutes } from '../routes.js';
 import { fixtures, f } from './fixtures.js';
 
-jest.mock('../../../../../auth/validatePasswordMiddleWare.ts', () => ({
+jest.mock('../ValidatePasswordMiddleWare.ts', () => ({
   validatePasswordMiddleWare: (_req: Request, _res: Response, next: NextFunction) => next(),
 }));
 

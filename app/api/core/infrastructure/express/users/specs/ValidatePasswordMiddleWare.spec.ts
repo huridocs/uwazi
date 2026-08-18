@@ -3,7 +3,7 @@ import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { UserRole } from '#shared/types/userSchema.js';
 import { EncryptedPassword } from '#api/core/domain/user/EncryptedPassword.js';
-import { validatePasswordMiddleWare } from '../validatePasswordMiddleWare.js';
+import { validatePasswordMiddleWare } from '../ValidatePasswordMiddleWare.js';
 import { UserDBO } from '#api/core/infrastructure/mongodb/user/UserDBO.js';
 
 const fixturesFactory = getFixturesFactory();
