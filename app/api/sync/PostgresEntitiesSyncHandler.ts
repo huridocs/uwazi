@@ -86,23 +86,21 @@ export class PostgresEntitiesSyncHandler
 
     await this.table.upsert(toRow(document));
 
-    const row = await this.table.where({ _id: id }).first();
-    return row!;
+    return { ...document, _id: id } as unknown as EntitySyncRow;
   }
 
   async saveMultiple(documents: SyncEntityDocument[]): Promise<EntitySyncRow[]> {
     if (documents.length === 0) return [];
 
-    const rows = documents.map(doc => {
+    const validated = documents.map(doc => {
       const id = toString(doc._id);
       if (!id) throw new Error('PostgresEntitiesSyncHandler: document._id is required');
-      return toRow(doc);
+      return { doc, id };
     });
 
-    await this.table.upsert(rows);
+    await this.table.upsert(validated.map(({ doc }) => toRow(doc)));
 
-    const ids = rows.map(row => row._id as string);
-    return this.table.whereIn('_id', ids).all();
+    return validated.map(({ doc, id }) => ({ ...doc, _id: id }) as unknown as EntitySyncRow);
   }
 
   async delete(id: string): Promise<void> {

@@ -40,12 +40,14 @@ export class MongoEntitiesSyncHandler
       throw new Error('MongoEntitiesSyncHandler: document._id is required');
     }
     const id = rawId instanceof ObjectId ? rawId : new ObjectId(rawId as unknown as string);
-    await this.getCollection().replaceOne(
-      { _id: id },
-      { _id: id, ...normalize(document) } as EntityDBO,
-      { upsert: true, ignoreUndefined: true }
-    );
-    return this.getCollection().findOne({ _id: id }) as Promise<EntityDBO>;
+    const written = { _id: id, ...normalize(document) } as EntityDBO;
+    await this.getCollection().replaceOne({ _id: id }, written, {
+      upsert: true,
+      ignoreUndefined: true,
+    });
+    // The sync route discards the return, so we mirror the written payload
+    // in input order instead of paying a re-fetch round-trip.
+    return written;
   }
 
   async saveMultiple(documents: Partial<EntityDBO>[]): Promise<EntityDBO[]> {
@@ -61,23 +63,23 @@ export class MongoEntitiesSyncHandler
       return rawId instanceof ObjectId ? rawId : new ObjectId(rawId as unknown as string);
     });
 
+    const written = documents.map((doc, i) => ({
+      _id: ids[i],
+      ...normalize(doc),
+    })) as EntityDBO[];
+
     await this.getCollection().bulkWrite(
-      documents.map((doc, i) => ({
+      written.map(row => ({
         replaceOne: {
-          filter: { _id: ids[i] },
-          replacement: {
-            _id: ids[i],
-            ...normalize(doc),
-          } as EntityDBO,
+          filter: { _id: row._id },
+          replacement: row,
           upsert: true,
         },
       })),
       { ignoreUndefined: true }
     );
 
-    return this.getCollection()
-      .find({ _id: { $in: ids } })
-      .toArray();
+    return written;
   }
 
   async delete(id: string): Promise<void> {
