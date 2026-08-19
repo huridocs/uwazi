@@ -12934,9 +12934,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-plugin-jest@npm:^29.16.0":
-  version: 29.16.0
-  resolution: "eslint-plugin-jest@npm:29.16.0"
+"eslint-plugin-jest@npm:^29.16.1":
+  version: 29.16.1
+  resolution: "eslint-plugin-jest@npm:29.16.1"
   dependencies:
     "@typescript-eslint/utils": "npm:^8.0.0"
   peerDependencies:
@@ -12951,7 +12951,7 @@ __metadata:
       optional: true
     typescript:
       optional: true
-  checksum: 10c0/ac3b0b0502c48285063a968219852979b0526f814bee90c65ef417e495b270a5aee437961ab51941caa1d0ae4ae5387a55374946165c17cf5e4f001972e0de44
+  checksum: 10c0/6aca236a8db9e9e736322f991ad6f33d776b9fabd9c3ddb1bb24515191a4438b2908ec88c5768dcfbb2323f48e6105fab91ee41d35574fa0bdd7631d53986506
   languageName: node
   linkType: hard
 
@@ -13039,16 +13039,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-plugin-storybook@npm:10.5.7":
-  version: 10.5.7
-  resolution: "eslint-plugin-storybook@npm:10.5.7"
+"eslint-plugin-storybook@npm:10.5.8":
+  version: 10.5.8
+  resolution: "eslint-plugin-storybook@npm:10.5.8"
   dependencies:
     "@typescript-eslint/types": "npm:^8.60.0"
     "@typescript-eslint/utils": "npm:^8.60.0"
   peerDependencies:
     eslint: ">=8"
-    storybook: ^10.5.7
-  checksum: 10c0/c4e3b624c7af821a336293549ebbcef8663528fc61aaee87e4678562a01cae86c950537ae63f36882bd142bd1b17717a610ddd5b32b5ccc393bf1b85ad5a4f96
+    storybook: ^10.5.8
+  checksum: 10c0/117f74ed8007ee12e1c0df0d405a2da781155d22121b7e0b50826a030b70ac2c5697126fc9f65fbc5f550314a7415197ed8ee32e553ba67793fd0976562f71f5
   languageName: node
   linkType: hard
 
@@ -25263,12 +25263,12 @@ __metadata:
     eslint-config-airbnb: "npm:19.0.4"
     eslint-plugin-cypress: "npm:^7.0.0"
     eslint-plugin-import: "npm:^2.31.0"
-    eslint-plugin-jest: "npm:^29.16.0"
+    eslint-plugin-jest: "npm:^29.16.1"
     eslint-plugin-jsx-a11y: "npm:^6.10.2"
     eslint-plugin-node: "npm:^11.1.0"
     eslint-plugin-react: "npm:^7.37.4"
     eslint-plugin-react-hooks: "npm:^7.1.1"
-    eslint-plugin-storybook: "npm:10.5.7"
+    eslint-plugin-storybook: "npm:10.5.8"
     express: "npm:4.22.2"
     express-http-proxy: "npm:^2.1.2"
     express-session: "npm:^1.19.0"
