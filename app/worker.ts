@@ -8,7 +8,6 @@ import { Redis } from '#api/infrastructure/Redis.js';
 import { DB } from '#api/odm/index.js';
 import { PXParagraphsResultListener } from '#api/paragraphExtraction/infrastructure/PXParagraphsResultListener.js';
 import { permissionsContext } from '#api/permissions/permissionsContext.js';
-import { ConvertToPdfWorker } from '#api/services/convertToPDF/ConvertToPdfWorker.js';
 import { InformationExtraction } from '#api/services/informationextraction/InformationExtraction.js';
 import { ocrManager } from '#api/services/ocr/OcrManager.js';
 import { PDFSegmentation } from '#api/services/pdfsegmentation/PDFSegmentation.js';
@@ -52,7 +51,6 @@ DB.connect(config.DBHOST, config.DBAUTH)
         )
       ),
       information_extractor: new InformationExtraction(),
-      convert_pdf: new ConvertToPdfWorker(),
       preserve_integration: new DistributedLoop(
         'preserve_integration',
         async () => preserveSync.syncAllTenants(),

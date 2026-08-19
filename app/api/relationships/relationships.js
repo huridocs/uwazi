@@ -178,10 +178,14 @@ export default {
 
     const existingEntities = new Set(
       (
-        await entities.get({
-          sharedId: { $in: relsFlat.map(r => r.entity) },
-          language,
-        })
+        await entities.get(
+          {
+            sharedId: { $in: relsFlat.map(r => r.entity) },
+            language,
+          },
+          undefined,
+          { withoutDocuments: true }
+        )
       ).map(r => r.sharedId)
     );
 
@@ -343,19 +347,6 @@ export default {
     }
 
     return response;
-  },
-
-  async deleteTextReferences(sharedId, language) {
-    const [{ _id, file = {} }] = await entities.get({ sharedId, language }, 'file');
-    const languagesWithSameFile = await entities.count({
-      'file.filename': file.filename,
-      sharedId,
-      _id: { $ne: _id },
-    });
-    if (!languagesWithSameFile && file.filename) {
-      return this.delete({ filename: file.filename });
-    }
-    return Promise.resolve();
   },
 
   async updateMetadataProperties(template, currentTemplate) {

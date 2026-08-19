@@ -1,9 +1,9 @@
 import type { Application } from 'express';
 import needsAuthorization from '#api/auth/authMiddleware.js';
-import { validatePasswordMiddleWare } from '#api/auth/index.js';
 import { GenerateTwoFactorSecretController } from '#api/core/infrastructure/express/users/GenerateTwoFactorSecretController.js';
 import { EnableTwoFactorAuthController } from '#api/core/infrastructure/express/users/EnableTwoFactorAuthController.js';
 import { ResetTwoFactorAuthController } from '#api/core/infrastructure/express/users/ResetTwoFactorAuthController.js';
+import { validatePasswordMiddleWare } from '#api/core/infrastructure/express/users/ValidatePasswordMiddleWare.js';
 
 export default (app: Application) => {
   app.post(

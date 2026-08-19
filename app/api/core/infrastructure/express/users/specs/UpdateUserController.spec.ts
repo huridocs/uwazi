@@ -12,7 +12,7 @@ jest.mock('bcryptjs', () => ({
   compare: async (plain: string, hashed: string) => plain === hashed,
 }));
 
-jest.mock('../../../../../auth/validatePasswordMiddleWare.ts', () => ({
+jest.mock('../ValidatePasswordMiddleWare.ts', () => ({
   validatePasswordMiddleWare: (_req: Request, _res: Response, next: NextFunction) => next(),
 }));
 

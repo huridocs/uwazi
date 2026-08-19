@@ -111,6 +111,39 @@ describe('UsersQueryService', () => {
         users.forEach(expectNoCredentials);
       });
     });
+
+    describe('countByRole()', () => {
+      it('should count active users by role, excluding soft-deleted and public users', async () => {
+        // The fixture makes both exclusions visible rather than incidental: `deleted` is the
+        // only other editor, and the public user is the only collaborator — so a guard that
+        // stopped working would show up as editor: 2 or collaborator: 1, not as a silent
+        // off-by-one somewhere in a total.
+        const counts = await sut().countByRole();
+
+        expect(counts).toEqual({ admin: 2, editor: 1, collaborator: 0 });
+      });
+
+      it('should key every role even when nobody holds it', async () => {
+        const counts = await sut().countByRole();
+
+        expect(Object.keys(counts).sort()).toEqual(['admin', 'collaborator', 'editor']);
+      });
+
+      it('should return counts as numbers, not strings', async () => {
+        // Postgres `count(*)` is a bigint, which node-postgres renders as a string.
+        const counts = await sut().countByRole();
+
+        Object.values(counts).forEach(count => expect(typeof count).toBe('number'));
+      });
+
+      it('should return every role at zero when there are no users', async () => {
+        await testingEnvironment.setFixtures({ ...fixtures, users: [], usergroups: [] });
+
+        const counts = await sut().countByRole();
+
+        expect(counts).toEqual({ admin: 0, editor: 0, collaborator: 0 });
+      });
+    });
   });
 
   /**
