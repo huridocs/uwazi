@@ -6,22 +6,10 @@ type EntityScopeSectionProps = {
   onChange: (includeUnpublished: boolean) => void;
 };
 
-const ENTITY_SCOPE_OPTIONS: {
-  value: boolean;
-  label: string;
-  description: string;
-}[] = [
-  {
-    value: true,
-    label: 'Include all entities',
-    description: 'Published and unpublished entities are counted.',
-  },
-  {
-    value: false,
-    label: 'Include only public',
-    description: 'Only published entities are counted.',
-  },
-];
+const optionClass = (selected: boolean) =>
+  `flex min-w-0 flex-1 cursor-pointer flex-col gap-3 rounded-lg border p-3 ${
+    selected ? 'border-ink bg-warm' : 'border-border'
+  }`;
 
 const EntityScopeSection = ({ includeUnpublished, onChange }: EntityScopeSectionProps) => (
   <section className="flex flex-col gap-3">
@@ -29,36 +17,45 @@ const EntityScopeSection = ({ includeUnpublished, onChange }: EntityScopeSection
       <Translate>Entity scope</Translate>
     </h3>
     <div className="flex gap-3">
-      {ENTITY_SCOPE_OPTIONS.map(option => {
-        const isSelected = includeUnpublished === option.value;
-
-        return (
-          <label
-            key={String(option.value)}
-            className={`flex min-w-0 flex-1 cursor-pointer flex-col gap-3 rounded-lg border p-3 ${
-              isSelected ? 'border-ink bg-warm' : 'border-border'
-            }`}
-          >
-            <span className="flex gap-3">
-              <input
-                type="radio"
-                name="entity-scope"
-                checked={isSelected}
-                onChange={() => onChange(option.value)}
-                className="mt-1 shrink-0"
-              />
-              <span className="min-w-0 flex-1">
-                <span className="block text-sm font-medium text-ink">
-                  <Translate>{option.label}</Translate>
-                </span>
-                <span className="mt-0.5 block text-xs text-ink-secondary">
-                  <Translate>{option.description}</Translate>
-                </span>
-              </span>
+      <label className={optionClass(includeUnpublished === true)}>
+        <span className="flex gap-3">
+          <input
+            type="radio"
+            name="entity-scope"
+            checked={includeUnpublished === true}
+            onChange={() => onChange(true)}
+            className="mt-1 shrink-0"
+          />
+          <span className="min-w-0 flex-1">
+            <span className="block text-sm font-medium text-ink">
+              <Translate>Include all entities</Translate>
             </span>
-          </label>
-        );
-      })}
+            <span className="mt-0.5 block text-xs text-ink-secondary">
+              <Translate>Published and unpublished entities are counted.</Translate>
+            </span>
+          </span>
+        </span>
+      </label>
+
+      <label className={optionClass(includeUnpublished === false)}>
+        <span className="flex gap-3">
+          <input
+            type="radio"
+            name="entity-scope"
+            checked={includeUnpublished === false}
+            onChange={() => onChange(false)}
+            className="mt-1 shrink-0"
+          />
+          <span className="min-w-0 flex-1">
+            <span className="block text-sm font-medium text-ink">
+              <Translate>Include only public</Translate>
+            </span>
+            <span className="mt-0.5 block text-xs text-ink-secondary">
+              <Translate>Only published entities are counted.</Translate>
+            </span>
+          </span>
+        </span>
+      </label>
     </div>
   </section>
 );

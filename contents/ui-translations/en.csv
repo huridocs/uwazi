@@ -436,6 +436,7 @@ Entity creation stage completed.,Entity creation stage completed.
 Entity deleted,Entity deleted
 Entity Page,Entity Page
 Entity saved,Entity saved
+Entity scope,Entity scope
 Entity type,Entity type
 Entity types,Entity types
 Entity updated,Entity updated
@@ -575,6 +576,8 @@ in,in
 "In a group, either all relationships must have a hub or none of them.","In a group, either all relationships must have a hub or none of them."
 In OCR queue,In OCR queue
 in this document,in this document
+Include all entities,Include all entities
+Include only public,Include only public
 Incoming,Incoming
 Info,Info
 Information extraction training,Information extraction training
@@ -584,6 +587,7 @@ Inherit type,Inherit type
 "Inherited values are read-only. Change the connection above, or edit the source entity.","Inherited values are read-only. Change the connection above, or edit the source entity."
 inherits,inherits
 Input,Input
+Input type,Input type
 Install,Install
 Install Language(s),Install Language(s)
 Install the browser extension.,Install the browser extension.
@@ -839,6 +843,7 @@ one character,one character
 "Only properties with the same name and configuration in every data source are available
             for both dimensions.","Only properties with the same name and configuration in every data source are available
             for both dimensions."
+Only published entities are counted.,Only published entities are counted.
 "Only templates that are not used as source in any other extractor and are not
                 selected as target in this extractor are available for selection.","Only templates that are not used as source in any other extractor and are not
                 selected as target in this extractor are available for selection."
@@ -966,6 +971,7 @@ Public instance,Public instance
 Publish,Publish
 Publish release,Publish release
 Published,Published
+Published and unpublished entities are counted.,Published and unpublished entities are counted.
 QR Code,QR Code
 Query,Query
 Queued,Queued

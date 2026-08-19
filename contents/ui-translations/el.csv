@@ -435,6 +435,7 @@ Entity creation stage completed.,Entity creation stage completed.
 Entity deleted,Η οντότητα διαγράφηκε
 Entity Page,Σελίδα οντότητας
 Entity saved,Η οντότητα αποθηκεύτηκε
+Entity scope,Entity scope
 Entity type,Entity type
 Entity types,Τύποι οντοτήτων
 Entity updated,Η οντότητα ενημερώθηκε
@@ -574,6 +575,8 @@ in,σε
 "In a group, either all relationships must have a hub or none of them.","Σε μια ομάδα, είτε όλες οι σχέσεις πρέπει να έχουν έναν κόμβο είτε καμία από αυτές."
 In OCR queue,Στην ουρά OCR
 in this document,in this document
+Include all entities,Include all entities
+Include only public,Include only public
 Incoming,Incoming
 Info,Πληροφορίες
 Information extraction training,Εκπαίδευση εξαγωγής πληροφοριών
@@ -583,6 +586,7 @@ Inherit type,Κληρονομούμενος τύπος
 "Inherited values are read-only. Change the connection above, or edit the source entity.","Inherited values are read-only. Change the connection above, or edit the source entity."
 inherits,inherits
 Input,Είσοδος
+Input type,Input type
 Install,Εγκατάσταση
 Install Language(s),Εγκατάσταση γλωσσών
 Install the browser extension.,Εγκαταστήστε την επέκταση του προγράμματος περιήγησης.
@@ -838,6 +842,7 @@ one character,one character
 "Only properties with the same name and configuration in every data source are available
             for both dimensions.","Only properties with the same name and configuration in every data source are available
             for both dimensions."
+Only published entities are counted.,Only published entities are counted.
 "Only templates that are not used as source in any other extractor and are not
                 selected as target in this extractor are available for selection.","Μόνο τα πρότυπα που δεν χρησιμοποιούνται ως πηγή σε κανέναν άλλο εξαγωγέα και δεν έχουν 
                 επιλεγεί ως προορισμός σε αυτόν τον εξαγωγέα είναι διαθέσιμα για επιλογή."
@@ -965,6 +970,7 @@ Public instance,Public instance
 Publish,Δημοσίευση
 Publish release,Publish release
 Published,Δημοσιευμένα
+Published and unpublished entities are counted.,Published and unpublished entities are counted.
 QR Code,Κωδικός QR
 Query,Ερώτημα
 Queued,Queued
