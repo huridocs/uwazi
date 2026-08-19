@@ -96,7 +96,12 @@ class MongoFilesDAO extends MongoDataSource<FileDBO> {
     const projection = resolveProjection(options);
     const dbos = await this.getCollection()
       .find(
-        { type: 'document', filename: { $exists: true }, 'toc.0': { $exists: false } },
+        {
+          type: 'document',
+          filename: { $exists: true },
+          entity: { $exists: true, $nin: [null, ''] as string[] },
+          'toc.0': { $exists: false },
+        },
         { projection }
       )
       .sort({ _id: 1 })

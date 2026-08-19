@@ -936,6 +936,32 @@ describe('entities', () => {
     });
   });
 
+  describe('empty-string scalar filters match nothing instead of every entity', () => {
+    it('should return no entities for an empty-string language filter', async () => {
+      const result = await testingEnvironment.runWithContext(() => entities.get({ language: '' }));
+      expect(result).toEqual([]);
+    });
+
+    it('should return no entities for an empty-string template filter', async () => {
+      const result = await testingEnvironment.runWithContext(() => entities.get({ template: '' }));
+      expect(result).toEqual([]);
+    });
+
+    it('should return no entities for an empty-string _id filter (getUnrestricted)', async () => {
+      const result = await testingEnvironment.runWithContext(() =>
+        entities.getUnrestricted({ _id: '' })
+      );
+      expect(result).toEqual([]);
+    });
+
+    it('should return no entities for an empty-string title filter (getUnrestricted)', async () => {
+      const result = await testingEnvironment.runWithContext(() =>
+        entities.getUnrestricted({ title: '' })
+      );
+      expect(result).toEqual([]);
+    });
+  });
+
   describe('denormalize', () => {
     it('should denormalize entity with missing metadata labels', async () => {
       userFactory.mock({
