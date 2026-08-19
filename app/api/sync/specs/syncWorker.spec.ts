@@ -24,7 +24,7 @@ import syncRoutes from '#api/sync/routes.js';
 import templates from '#api/core/v1_layer/templates/index.js';
 import { tenants } from '#api/tenants/index.js';
 import thesauri from '#api/core/v1_layer/thesauri/index.js';
-import { encryptPassword } from '#api/auth/encryptPassword.js';
+import { EncryptedPassword } from '#api/core/domain/user/EncryptedPassword.js';
 import { UserRole } from '#shared/types/userSchema.js';
 import { appContext } from '#api/utils/AppContext.js';
 import { appContextMiddleware } from '#api/utils/appContextMiddleware.js';
@@ -80,7 +80,7 @@ async function targetFixtures(username: string, password: string): Promise<DBFix
       {
         _id: db.id(),
         username,
-        password: await encryptPassword(password),
+        password: (await EncryptedPassword.create(password)).getValue(),
         role: UserRole.ADMIN,
         email: `${username}@testing`,
       },
