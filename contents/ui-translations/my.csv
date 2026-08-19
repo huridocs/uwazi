@@ -16,6 +16,7 @@ A target template needs to have the following properties,A target template needs
 A valid email is required,အီးမေးလ် လိုအပ်သည်
 A → Z,A → Z
 Accept,လက်ခံမည်
+Accept all,Accept all
 Accepted suggestion on entity,Accepted suggestion on entity
 Accepting suggestions,Accepting suggestions
 Accessibility checks need attention,Accessibility checks need attention
@@ -238,6 +239,8 @@ Content translations,Content translations
 Context,Context
 Continue,Continue
 Conversion failed,ပြောင်းလဲခြင်း မအောင်မြင်ပါ
+Cookie policy page,Cookie policy page
+Cookie preferences,Cookie preferences
 Copied,Copied
 Copied to clipboard,Copied to clipboard
 Copy,Copy
@@ -651,6 +654,9 @@ Live translate,Live translate
 Load example,Load example
 Loading,Loading
 Local time,Local time
+"Logging in uses a strictly necessary session cookie. Analytics and preference
+                  cookies remain disabled unless you accept them in the cookie banner.","Logging in uses a strictly necessary session cookie. Analytics and preference
+                  cookies remain disabled unless you accept them in the cookie banner."
 Login,လော့ဂ်အင်ဝင်ရန်
 Login button,လော့ဂ်အင်ဝင်ရန် ခလုတ်
 Login failed,လော့ဂ်အင်ဝင်၍ မရပါ
@@ -855,6 +861,7 @@ Open group,Open group
 Open link,Open link
 Open PDF,Open PDF
 Open the two-factor Authenticator app on your device,သင့်စက်ပေါ်ရှိ နှစ်ဆင့်ခံ Authenticator အက်ပ်ကို ဖွင့်ပါ
+Optional relative URL to your cookie or privacy policy page (for example /page/your-page-id).,Optional relative URL to your cookie or privacy policy page (for example /page/your-page-id).
 Options,Options
 or,သို့မဟုတ်
 or drag and drop here,or drag and drop here
@@ -992,6 +999,7 @@ Refresh,Refresh
                         scheduled run."
 Refresh mode,Refresh mode
 Reject,ငြင်းပယ်ရန်
+Reject non-essential,Reject non-essential
 Related entities created,Related entities created
 Relation type,Relation type
 Relationship,ဆက်နွှယ်မှု
@@ -1294,7 +1302,6 @@ This file type is not supported on media fields,This file type is not supported 
 This group is empty,This group is empty
 This import is waiting in queue.,This import is waiting in queue.
 This label already exists in this template,This label already exists in this template
-This option will show a notification about the use of cookies in your instance.,ဤရွေးချယ်မှုသည် သင့်အခြေအနေတွင် ကွတ်ကီးများ အသုံးပြုမှုအကြောင်း အသိပေးချက် ပြသပါမည်။
 This page does not need Markdown,This page does not need Markdown
 "This page uses HTML only (Markdown is not processed). You can embed maps, charts, entity
           lists, and other components.","This page uses HTML only (Markdown is not processed). You can embed maps, charts, entity
@@ -1306,6 +1313,9 @@ This property will be shown without the label,This property will be shown withou
 This property will be the default filter in the library for this template.,This property will be the default filter in the library for this template.
 "This property will be used for filtering the library results. When properties match in equal name and field type with other entity types, they will be combined for filtering.","This property will be used for filtering the library results. When properties match in equal name and field type with other entity types, they will be combined for filtering."
 This search could not be completed. Try again later.,This search could not be completed. Try again later.
+"This site uses cookies for language preferences and analytics. Session cookies are only
+            set when you log in.","This site uses cookies for language preferences and analytics. Session cookies are only
+            set when you log in."
 This table of contents was automatically created by the system.,This table of contents was automatically created by the system.
 this template,this template
 This template is in use by existing entities and cannot be deleted.,This template is in use by existing entities and cannot be deleted.
@@ -1317,7 +1327,6 @@ tips,tips
 Title,ခေါင်းစဉ်
 To,To
 To add references you can start by selecting text in the document,To add references you can start by selecting text in the document
-"To bring you a better experience, this site uses cookies.",သင့်အား ပိုမိုကောင်းမွန်သော အတွေ့အကြုံ ရရှိစေရန် ဤဝက်ဘ်ဆိုက်တွင် ကွတ်ကီးများ အသုံးပြုသည်။
 "To complete the account creation process, please create a password for your account",အကောင့်ဖန်တီးခြင်း လုပ်ငန်းစဉ် ပြီးမြောက်စေရန် ကျေးဇူးပြု၍ သင့်အကောင့်အတွက် စကားဝှက် ဖန်တီးပါ
 to view your authentication code and verify your identity.,သင်၏ စစ်မှန်ကြောင်း အတည်ပြုကုဒ်ကို ကြည့်ရန်နှင့် သင့်ကိုယ်ပိုင်သင်္ကေတကို မှန်ကန်ကြောင်း စစ်ဆေးရန်။
 Today,Today
@@ -1441,6 +1450,9 @@ Warning: you are editing multiple entities. Fields marked with a,သတိပေ
 We can't find the page you're looking for.,We can't find the page you're looking for.
 Welcome to Uwazi,Uwazi မှ ကြိုဆိုပါသည်
 "Well, this is awkward...",အင်း၊ ဒါက ထူးဆန်းပါတယ်...
+"When enabled, visitors must accept or reject non-essential cookies before they are set.
+    Analytics and language preference cookies are blocked until accepted.","When enabled, visitors must accept or reject non-essential cookies before they are set.
+    Analytics and language preference cookies are blocked until accepted."
 Whitelisted templates,Whitelisted templates
 wildcard,wildcard
 wildcard (many chars),wildcard (many chars)

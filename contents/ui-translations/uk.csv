@@ -16,6 +16,7 @@ A target template needs to have the following properties,Цільовий шаб
 A valid email is required,Потрібна дійсна електронна адреса
 A → Z,A → Z
 Accept,Прийняти
+Accept all,Accept all
 Accepted suggestion on entity,Прийнято пропозицію щодо організації
 Accepting suggestions,Прийняття пропозицій
 Accessibility checks need attention,Accessibility checks need attention
@@ -240,6 +241,8 @@ Content translations,Переклади контенту
 Context,Контекст
 Continue,Продовжуйте
 Conversion failed,Помилка перетворення
+Cookie policy page,Cookie policy page
+Cookie preferences,Cookie preferences
 Copied,Copied
 Copied to clipboard,Скопійовано в буфер обміну
 Copy,Copy
@@ -653,6 +656,9 @@ Live translate,Прямий переклад
 Load example,Load example
 Loading,Завантаження
 Local time,Local time
+"Logging in uses a strictly necessary session cookie. Analytics and preference
+                  cookies remain disabled unless you accept them in the cookie banner.","Logging in uses a strictly necessary session cookie. Analytics and preference
+                  cookies remain disabled unless you accept them in the cookie banner."
 Login,Увійти
 Login button,Кнопка входу
 Login failed,Помилка авторизації
@@ -857,6 +863,7 @@ Open group,Відкрита група
 Open link,Open link
 Open PDF,Відкрити PDF
 Open the two-factor Authenticator app on your device,Відкрийте застосунок Authenticator для двохетапної автентифікації на вашому пристрої
+Optional relative URL to your cookie or privacy policy page (for example /page/your-page-id).,Optional relative URL to your cookie or privacy policy page (for example /page/your-page-id).
 Options,Параметри
 or,або
 or drag and drop here,or drag and drop here
@@ -994,6 +1001,7 @@ Refresh,Refresh
                         scheduled run."
 Refresh mode,Refresh mode
 Reject,Відхилити
+Reject non-essential,Reject non-essential
 Related entities created,Related entities created
 Relation type,Тип відношення
 Relationship,Взаємозв'язок
@@ -1296,7 +1304,6 @@ This file type is not supported on media fields,Цей тип файлів не 
 This group is empty,Ця група порожня
 This import is waiting in queue.,This import is waiting in queue.
 This label already exists in this template,Ця мітка вже існує в цьому шаблоні
-This option will show a notification about the use of cookies in your instance.,Ця опція покаже повідомлення про використання файлів cookie у вашій базі даних.
 This page does not need Markdown,This page does not need Markdown
 "This page uses HTML only (Markdown is not processed). You can embed maps, charts, entity
           lists, and other components.","This page uses HTML only (Markdown is not processed). You can embed maps, charts, entity
@@ -1308,6 +1315,9 @@ This property will be shown without the label,Ця властивість буд
 This property will be the default filter in the library for this template.,Ця властивість буде фільтром за замовчуванням у бібліотеці для цього шаблону.
 "This property will be used for filtering the library results. When properties match in equal name and field type with other entity types, they will be combined for filtering.","Ця властивість буде використовуватися для фільтрації результатів бібліотеки. Якщо властивості збігаються за назвою та типом поля з іншими типами сутностей, вони будуть об'єднані для фільтрації."
 This search could not be completed. Try again later.,This search could not be completed. Try again later.
+"This site uses cookies for language preferences and analytics. Session cookies are only
+            set when you log in.","This site uses cookies for language preferences and analytics. Session cookies are only
+            set when you log in."
 This table of contents was automatically created by the system.,Цей зміст був автоматично створений системою.
 this template,цей шаблон
 This template is in use by existing entities and cannot be deleted.,Цей шаблон використовується існуючими організаціями і не може бути видалений.
@@ -1319,7 +1329,6 @@ tips,tips
 Title,Заголовок
 To,До
 To add references you can start by selecting text in the document,"Щоб додати посилання, спочатку виділіть текст у документі"
-"To bring you a better experience, this site uses cookies.",Цей сайт використовує файли cookie для покращення вашого досвіду взаємодії з сайтом.
 "To complete the account creation process, please create a password for your account","Будь ласка, створіть пароль, щоб завершити процес створення облікового запису."
 to view your authentication code and verify your identity.,щоб переглянути свій код автентифікації та підтвердити свою особу.
 Today,Сьогодні
@@ -1443,6 +1452,9 @@ Warning: you are editing multiple entities. Fields marked with a,"Поперед
 We can't find the page you're looking for.,"Ми не можемо знайти сторінку, яку ви шукаєте."
 Welcome to Uwazi,Ласкаво просимо до Uwazi
 "Well, this is awkward...","Що ж, це незручно..."
+"When enabled, visitors must accept or reject non-essential cookies before they are set.
+    Analytics and language preference cookies are blocked until accepted.","When enabled, visitors must accept or reject non-essential cookies before they are set.
+    Analytics and language preference cookies are blocked until accepted."
 Whitelisted templates,Шаблони білого списку
 wildcard,wildcard
 wildcard (many chars),wildcard (many chars)

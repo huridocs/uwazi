@@ -16,6 +16,7 @@ A target template needs to have the following properties,A target template needs
 A valid email is required,A valid email is required
 A → Z,A → Z
 Accept,Accept
+Accept all,Accept all
 Accepted suggestion on entity,Accepted suggestion on entity
 Accepting suggestions,Accepting suggestions
 Accessibility checks need attention,Accessibility checks need attention
@@ -240,6 +241,8 @@ Content translations,Content translations
 Context,Context
 Continue,Continue
 Conversion failed,Conversion failed
+Cookie policy page,Cookie policy page
+Cookie preferences,Cookie preferences
 Copied,Copied
 Copied to clipboard,Copied to clipboard
 Copy,Copy
@@ -653,6 +656,9 @@ Live translate,Live translate
 Load example,Load example
 Loading,Loading
 Local time,Local time
+"Logging in uses a strictly necessary session cookie. Analytics and preference
+                  cookies remain disabled unless you accept them in the cookie banner.","Logging in uses a strictly necessary session cookie. Analytics and preference
+                  cookies remain disabled unless you accept them in the cookie banner."
 Login,Login
 Login button,Login
 Login failed,Login failed
@@ -857,6 +863,7 @@ Open group,Open group
 Open link,Open link
 Open PDF,Open PDF
 Open the two-factor Authenticator app on your device,Open the two-factor Authenticator app on your device
+Optional relative URL to your cookie or privacy policy page (for example /page/your-page-id).,Optional relative URL to your cookie or privacy policy page (for example /page/your-page-id).
 Options,Options
 or,or
 or drag and drop here,or drag and drop here
@@ -994,6 +1001,7 @@ Refresh,Refresh
                         scheduled run."
 Refresh mode,Refresh mode
 Reject,Reject
+Reject non-essential,Reject non-essential
 Related entities created,Related entities created
 Relation type,Relation type
 Relationship,Relationship
@@ -1296,7 +1304,6 @@ This file type is not supported on media fields,This file type is not supported 
 This group is empty,This group is empty
 This import is waiting in queue.,This import is waiting in queue.
 This label already exists in this template,This label already exists in this template
-This option will show a notification about the use of cookies in your instance.,This option will show a notification about the use of cookies in your instance.
 This page does not need Markdown,This page does not need Markdown
 "This page uses HTML only (Markdown is not processed). You can embed maps, charts, entity
           lists, and other components.","This page uses HTML only (Markdown is not processed). You can embed maps, charts, entity
@@ -1308,6 +1315,9 @@ This property will be shown without the label,This property will be shown withou
 This property will be the default filter in the library for this template.,This property will be the default filter in the library for this template.
 "This property will be used for filtering the library results. When properties match in equal name and field type with other entity types, they will be combined for filtering.","This property will be used for filtering the library results. When properties match in equal name and field type with other entity types, they will be combined for filtering."
 This search could not be completed. Try again later.,This search could not be completed. Try again later.
+"This site uses cookies for language preferences and analytics. Session cookies are only
+            set when you log in.","This site uses cookies for language preferences and analytics. Session cookies are only
+            set when you log in."
 This table of contents was automatically created by the system.,This table of contents was automatically created by the system.
 this template,this template
 This template is in use by existing entities and cannot be deleted.,This template is in use by existing entities and cannot be deleted.
@@ -1319,7 +1329,6 @@ tips,tips
 Title,Title
 To,To
 To add references you can start by selecting text in the document,To add references you can start by selecting text in the document
-"To bring you a better experience, this site uses cookies.","To bring you a better experience, this site uses cookies."
 "To complete the account creation process, please create a password for your account","To complete the account creation process, please create a password for your account"
 to view your authentication code and verify your identity.,to view your authentication code and verify your identity.
 Today,Today
@@ -1443,6 +1452,9 @@ Warning: you are editing multiple entities. Fields marked with a,Warning: you ar
 We can't find the page you're looking for.,We can't find the page you're looking for.
 Welcome to Uwazi,Welcome to Uwazi
 "Well, this is awkward...","Well, this is awkward..."
+"When enabled, visitors must accept or reject non-essential cookies before they are set.
+    Analytics and language preference cookies are blocked until accepted.","When enabled, visitors must accept or reject non-essential cookies before they are set.
+    Analytics and language preference cookies are blocked until accepted."
 Whitelisted templates,Whitelisted templates
 wildcard,wildcard
 wildcard (many chars),wildcard (many chars)

@@ -5,6 +5,7 @@ import { bindActionCreators } from 'redux';
 import { Field, LocalForm, actions as formActions } from 'react-redux-form';
 import { Icon } from '#UI/Icon/Icon.js';
 import { t, Translate } from '#app/I18N/index.js';
+import { getConsent } from '#app/App/cookieConsent.js';
 import { reconnectSocket } from '#app/socket.js';
 import { RouteHandler } from '#app/App/RouteHandler.js';
 import { reloadThesauri } from '#app/Thesauri/actions/thesaurisActions.js';
@@ -107,6 +108,15 @@ class LoginComponent extends RouteHandler {
             <h1 className="login-title">
               <img src="/public/logo.svg" title="uwazi" alt="uwazi" />
             </h1>
+
+            {this.props.cookiepolicy && getConsent() !== 'accepted' && (
+              <div className="alert alert-warning tw-content mb-4" role="alert">
+                <Translate>
+                  Logging in uses a strictly necessary session cookie. Analytics and preference
+                  cookies remain disabled unless you accept them in the cookie banner.
+                </Translate>
+              </div>
+            )}
 
             {this.state.render && (
               <LocalForm
@@ -250,11 +260,13 @@ LoginComponent.propTypes = {
   recoverPassword: PropTypes.func,
   reloadThesauris: PropTypes.func,
   change: PropTypes.func,
+  cookiepolicy: PropTypes.bool,
 };
 
 function mapStateToProps({ settings }) {
   return {
     private: settings.collection.get('private'),
+    cookiepolicy: Boolean(settings.collection.get('cookiepolicy')),
   };
 }
 

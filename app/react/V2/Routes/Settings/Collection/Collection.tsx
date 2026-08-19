@@ -282,6 +282,16 @@ const Collection = () => {
                   watch={watch}
                   setValue={setValue}
                 />
+                <div className="sm:col-span-2">
+                  <InputField
+                    id="cookie-policy-page"
+                    label={labelWithTip(
+                      <Translate>Cookie policy page</Translate>,
+                      tips.cookiePolicyPage
+                    )}
+                    {...register('cookiePolicyPageUrl')}
+                  />
+                </div>
                 <CollectionOptionToggle
                   valueKey="allowcustomJS"
                   label={<Translate className="text-sm font-medium text-ink">Global JS</Translate>}

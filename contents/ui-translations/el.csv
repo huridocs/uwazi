@@ -16,6 +16,7 @@ A target template needs to have the following properties,Ένα πρότυπο �
 A valid email is required,Απαιτείται έγκυρη διεύθυνση email
 A → Z,A → Z
 Accept,Αποδοχή
+Accept all,Accept all
 Accepted suggestion on entity,Η πρόταση για την οντότητα έγινε αποδεκτή
 Accepting suggestions,Αποδοχή προτάσεων
 Accessibility checks need attention,Accessibility checks need attention
@@ -239,6 +240,8 @@ Content translations,Μεταφράσεις περιεχομένου
 Context,Πλαίσιο
 Continue,Συνέχεια
 Conversion failed,Η μετατροπή απέτυχε
+Cookie policy page,Cookie policy page
+Cookie preferences,Cookie preferences
 Copied,Copied
 Copied to clipboard,Αντιγράφηκε στο πρόχειρο
 Copy,Copy
@@ -652,6 +655,9 @@ Live translate,Ζωντανή μετάφραση
 Load example,Load example
 Loading,Φόρτωση
 Local time,Local time
+"Logging in uses a strictly necessary session cookie. Analytics and preference
+                  cookies remain disabled unless you accept them in the cookie banner.","Logging in uses a strictly necessary session cookie. Analytics and preference
+                  cookies remain disabled unless you accept them in the cookie banner."
 Login,Σύνδεση
 Login button,Σύνδεση
 Login failed,Η σύνδεση απέτυχε
@@ -856,6 +862,7 @@ Open group,Άνοιγμα ομάδας
 Open link,Open link
 Open PDF,Άνοιγμα PDF
 Open the two-factor Authenticator app on your device,Ανοίξτε την εφαρμογή πιστοποίησης δύο παραγόντων στη συσκευή σας
+Optional relative URL to your cookie or privacy policy page (for example /page/your-page-id).,Optional relative URL to your cookie or privacy policy page (for example /page/your-page-id).
 Options,Επιλογές
 or,ή
 or drag and drop here,or drag and drop here
@@ -993,6 +1000,7 @@ Refresh,Refresh
                         scheduled run."
 Refresh mode,Refresh mode
 Reject,Απόρριψη
+Reject non-essential,Reject non-essential
 Related entities created,Related entities created
 Relation type,Τύπος σχέσης
 Relationship,Σχέση
@@ -1295,7 +1303,6 @@ This file type is not supported on media fields,Αυτός ο τύπος αρχ�
 This group is empty,Αυτή η ομάδα είναι κενή
 This import is waiting in queue.,This import is waiting in queue.
 This label already exists in this template,Αυτή η ετικέτα υπάρχει ήδη σε αυτό το πρότυπο
-This option will show a notification about the use of cookies in your instance.,Αυτή η επιλογή θα εμφανίσει μια ειδοποίηση σχετικά με τη χρήση cookies στην εγκατάστασή σας.
 This page does not need Markdown,This page does not need Markdown
 "This page uses HTML only (Markdown is not processed). You can embed maps, charts, entity
           lists, and other components.","This page uses HTML only (Markdown is not processed). You can embed maps, charts, entity
@@ -1307,6 +1314,9 @@ This property will be shown without the label,Αυτή η ιδιότητα θα 
 This property will be the default filter in the library for this template.,Αυτή η ιδιότητα θα είναι το προεπιλεγμένο φίλτρο στη βιβλιοθήκη για αυτό το πρότυπο.
 "This property will be used for filtering the library results. When properties match in equal name and field type with other entity types, they will be combined for filtering.","Αυτή η ιδιότητα θα χρησιμοποιηθεί για το φιλτράρισμα των αποτελεσμάτων βιβλιοθήκης. Όταν οι ιδιότητες ταιριάζουν σε όνομα και τύπο πεδίου με άλλους τύπους οντοτήτων, θα συνδυαστούν για φιλτράρισμα."
 This search could not be completed. Try again later.,This search could not be completed. Try again later.
+"This site uses cookies for language preferences and analytics. Session cookies are only
+            set when you log in.","This site uses cookies for language preferences and analytics. Session cookies are only
+            set when you log in."
 This table of contents was automatically created by the system.,Αυτός ο πίνακας περιεχομένων δημιουργήθηκε αυτόματα από το σύστημα.
 this template,αυτό το πρότυπο
 This template is in use by existing entities and cannot be deleted.,Αυτό το πρότυπο χρησιμοποιείται από υπάρχουσες οντότητες και δεν μπορεί να διαγραφεί.
@@ -1318,7 +1328,6 @@ tips,tips
 Title,Τίτλος
 To,Έως
 To add references you can start by selecting text in the document,"Για να προσθέσετε αναφορές, μπορείτε να ξεκινήσετε επιλέγοντας κείμενο στο έγγραφο."
-"To bring you a better experience, this site uses cookies.","Για να σας προσφέρουμε καλύτερη εμπειρία, αυτός ο ιστότοπος χρησιμοποιεί cookies."
 "To complete the account creation process, please create a password for your account","Για να ολοκληρώσετε τη διαδικασία δημιουργίας λογαριασμού, δημιουργήστε έναν κωδικό πρόσβασης για το λογαριασμό σας."
 to view your authentication code and verify your identity.,για να δείτε τον κωδικό πιστοποίησης και να επαληθεύσετε την ταυτότητά σας.
 Today,Σήμερα
@@ -1442,6 +1451,9 @@ Warning: you are editing multiple entities. Fields marked with a,Προειδο�
 We can't find the page you're looking for.,Δεν μπορούμε να βρούμε τη σελίδα που ψάχνετε.
 Welcome to Uwazi,Καλώς ήλθατε στο Uwazi
 "Well, this is awkward...","Λοιπόν, αυτό είναι άβολο..."
+"When enabled, visitors must accept or reject non-essential cookies before they are set.
+    Analytics and language preference cookies are blocked until accepted.","When enabled, visitors must accept or reject non-essential cookies before they are set.
+    Analytics and language preference cookies are blocked until accepted."
 Whitelisted templates,Επιτρεπόμενα πρότυπα
 wildcard,wildcard
 wildcard (many chars),wildcard (many chars)

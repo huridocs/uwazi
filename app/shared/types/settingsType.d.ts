@@ -79,6 +79,7 @@ export interface Settings {
   allowcustomJS?: boolean;
   openPublicEndpoint?: boolean;
   cookiepolicy?: boolean;
+  cookiePolicyPageUrl?: string;
   mailerConfig?: string;
   publicFormDestination?: string;
   allowedPublicTemplates?: string[];
