@@ -29,7 +29,6 @@ import {
   normalizeDatavizBucketKey,
   serializeDatavizBucketKey,
 } from '#shared/dataviz/formatDimensionKeyLabel.js';
-import { User } from '#api/users.v2/model/User.js';
 import { EntityDBO } from '#api/core/infrastructure/mongodb/entity/EntityDBO.js';
 import {
   mergeUnionBuckets,
@@ -121,7 +120,7 @@ class MongoDatavizQueryExecutor extends MongoDataSource<EntityDBO> implements Da
         primaryDim,
         secondaryDim,
         maxBuckets,
-        permissionMatch: this.buildPermissionMatch(context.actor, query.includeUnpublished),
+        permissionMatch: query.includeUnpublished === true ? {} : { published: true },
         timeoutMs,
       });
       bucketSets.push(buckets);
@@ -198,7 +197,7 @@ class MongoDatavizQueryExecutor extends MongoDataSource<EntityDBO> implements Da
     timeoutMs: number,
     start: number
   ) {
-    const permissionMatch = this.buildPermissionMatch(context.actor, query.includeUnpublished);
+    const permissionMatch = query.includeUnpublished === true ? {} : { published: true };
     const counts: number[] = [];
 
     for (const [sourceIndex, source] of query.sources.entries()) {
@@ -393,20 +392,6 @@ class MongoDatavizQueryExecutor extends MongoDataSource<EntityDBO> implements Da
       }
       throw error;
     }
-  }
-
-  /**
-   * Dataviz queries always run as the system. The actor is irrelevant for
-   * filtering entities — only the query's `includeUnpublished` flag matters.
-   * `true`  → no filter (include published and unpublished)
-   * `false` or `undefined` → restrict to published entities only
-   */
-  private buildPermissionMatch(_actor: User, includeUnpublished?: boolean): object {
-    if (includeUnpublished === true) {
-      return {};
-    }
-
-    return { published: true };
   }
 
   private metadataPath(property: string): string {
