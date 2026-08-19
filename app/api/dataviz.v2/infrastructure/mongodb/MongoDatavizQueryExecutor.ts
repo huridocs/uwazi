@@ -395,16 +395,18 @@ class MongoDatavizQueryExecutor extends MongoDataSource<EntityDBO> implements Da
     }
   }
 
-  private buildPermissionMatch(actor: User, includeUnpublished?: boolean): object {
-    if (includeUnpublished === true || (actor.isPrivileged() && includeUnpublished !== false)) {
+  /**
+   * Dataviz queries always run as the system. The actor is irrelevant for
+   * filtering entities — only the query's `includeUnpublished` flag matters.
+   * `true`  → no filter (include published and unpublished)
+   * `false` or `undefined` → restrict to published entities only
+   */
+  private buildPermissionMatch(_actor: User, includeUnpublished?: boolean): object {
+    if (includeUnpublished === true) {
       return {};
     }
 
-    const userRefIds = [actor._id, ...actor.groups];
-
-    return {
-      $or: [{ published: true }, { permissions: { $elemMatch: { refId: { $in: userRefIds } } } }],
-    };
+    return { published: true };
   }
 
   private metadataPath(property: string): string {

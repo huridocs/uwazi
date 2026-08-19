@@ -586,12 +586,11 @@ describe('MongoDatavizQueryExecutor', () => {
       language: 'en',
     };
 
-    it('should exclude unpublished entities for anonymous actors by default', async () => {
+    it('should exclude unpublished entities by default (no flag)', async () => {
       const executor = createExecutor();
-      const anonymous = User.createFrom(null);
 
       const dto = await executor.execute(colorQuery, {
-        actor: anonymous,
+        actor: User.createFrom(null),
         datavizId: 'test-unpublished-default',
       });
 
@@ -600,50 +599,44 @@ describe('MongoDatavizQueryExecutor', () => {
       );
     });
 
-    it('should include unpublished entities for anonymous actors when includeUnpublished is true', async () => {
+    it('should include unpublished entities when includeUnpublished is true, regardless of actor', async () => {
       const executor = createExecutor();
-      const anonymous = User.createFrom(null);
 
-      const dto = await executor.execute(
-        { ...colorQuery, includeUnpublished: true },
-        { actor: anonymous, datavizId: 'test-unpublished-opt-in' }
-      );
+      for (const actor of [
+        User.createFrom(null),
+        User.createFrom({ _id: factory.id('admin').toString(), role: 'admin' }),
+      ]) {
+        // eslint-disable-next-line no-await-in-loop
+        const dto = await executor.execute(
+          { ...colorQuery, includeUnpublished: true },
+          { actor, datavizId: 'test-unpublished-opt-in' }
+        );
 
-      expect(dto.series[0]?.points).toEqual(
-        expect.arrayContaining([
-          expect.objectContaining({ key: unpublishedColorId, label: 'Blue', value: 1 }),
-        ])
-      );
+        expect(dto.series[0]?.points).toEqual(
+          expect.arrayContaining([
+            expect.objectContaining({ key: unpublishedColorId, label: 'Blue', value: 1 }),
+          ])
+        );
+      }
     });
 
-    it('should include unpublished entities for privileged actors by default (no flag)', async () => {
+    it('should exclude unpublished entities when includeUnpublished is false, regardless of actor', async () => {
       const executor = createExecutor();
-      const admin = User.createFrom({ _id: factory.id('admin').toString(), role: 'admin' });
 
-      const dto = await executor.execute(colorQuery, {
-        actor: admin,
-        datavizId: 'test-unpublished-admin-default',
-      });
+      for (const actor of [
+        User.createFrom(null),
+        User.createFrom({ _id: factory.id('admin').toString(), role: 'admin' }),
+      ]) {
+        // eslint-disable-next-line no-await-in-loop
+        const dto = await executor.execute(
+          { ...colorQuery, includeUnpublished: false },
+          { actor, datavizId: 'test-unpublished-opt-out' }
+        );
 
-      expect(dto.series[0]?.points).toEqual(
-        expect.arrayContaining([
-          expect.objectContaining({ key: unpublishedColorId, label: 'Blue', value: 1 }),
-        ])
-      );
-    });
-
-    it('should exclude unpublished entities for privileged actors when includeUnpublished is false', async () => {
-      const executor = createExecutor();
-      const admin = User.createFrom({ _id: factory.id('admin').toString(), role: 'admin' });
-
-      const dto = await executor.execute(
-        { ...colorQuery, includeUnpublished: false },
-        { actor: admin, datavizId: 'test-unpublished-admin-opt-out' }
-      );
-
-      expect(dto.series[0]?.points).toEqual(
-        expect.not.arrayContaining([expect.objectContaining({ key: unpublishedColorId })])
-      );
+        expect(dto.series[0]?.points).toEqual(
+          expect.not.arrayContaining([expect.objectContaining({ key: unpublishedColorId })])
+        );
+      }
     });
   });
 });
