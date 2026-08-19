@@ -52,7 +52,7 @@ const selectToArray = (select?: EntitiesSelect): string[] => {
 
 const translateQueryToFilters = (query: EntitiesQuery): EntityFilters => {
   const filters: EntityFilters = {};
-  if (query._id) {
+  if (query._id !== undefined) {
     filters._id = query._id.toString();
   }
   if (query.sharedId !== undefined) {
@@ -62,13 +62,13 @@ const translateQueryToFilters = (query: EntitiesQuery): EntityFilters => {
       filters.sharedId = query.sharedId;
     }
   }
-  if (query.language) {
+  if (query.language !== undefined) {
     filters.language = query.language;
   }
-  if (query.template) {
+  if (query.template !== undefined) {
     filters.template = query.template.toString();
   }
-  if (query.title) {
+  if (query.title !== undefined) {
     filters.title = query.title;
   }
   return filters;
