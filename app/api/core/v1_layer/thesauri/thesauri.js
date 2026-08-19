@@ -99,6 +99,8 @@ const thesauri = {
     return { values };
   },
 
+  // No explicit `published` filter here — the DAO's permission enforcement
+  // (AccessContext / RLS) excludes unpublished/inaccessible entities.
   async templateToThesauri(template, language, countPerTemplate) {
     const _entities = await EntitiesDAOFactory.default().find(
       { template: template._id.toString(), language },
