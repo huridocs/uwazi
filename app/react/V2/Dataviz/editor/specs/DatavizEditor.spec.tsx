@@ -30,7 +30,7 @@ jest.mock('#V2/atoms/requestStatusAtom.js', () => ({
   useRequestStatus: () => ({ notify: mockNotify }),
 }));
 
-jest.mock('../components/preview/DatavizPreviewPanel.js', () => ({
+jest.mock('../components/preview/DatavizPreviewPanel', () => ({
   DatavizPreviewPanel: () => <div data-testid="dataviz-preview-panel" />,
 }));
 

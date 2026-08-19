@@ -181,6 +181,7 @@ Chart theme,Chart theme
 Chart type,Chart type
 Chart type uses a custom view,Chart type uses a custom view
 Check to make this instance public (non-logged in users can see public documents and entities),Check to make this instance public (non-logged in users can see public documents and entities)
+Check your submission. Some information was missing or incorrect. Review the highlighted fields and try again.,Check your submission. Some information was missing or incorrect. Review the highlighted fields and try again.
 Checking which images fit the requirements,Checking which images fit the requirements...
 Choose,Choose
 Choose relation type,Choose relation type
@@ -1274,6 +1275,7 @@ This chart type cannot display the current data.,This chart type cannot display 
             legend, labels, or data filters.","This chart type has no extra options. Select another chart type above if you need
             legend, labels, or data filters."
 This content is automatically generated,This content is automatically generated
+This data visualization name already exists. Enter a unique name.,This data visualization name already exists. Enter a unique name.
 "This entity has no document, you probably want to see the metadata","This entity has no document, you probably want to see the metadata"
 This entity is restricted from public view.,This entity is restricted from public view.
 This field is required,This field is required

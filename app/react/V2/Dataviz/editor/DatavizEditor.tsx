@@ -78,8 +78,8 @@ const DatavizEditor = ({ initialDefinition, onDeleteRequest }: DatavizEditorProp
         await navigate(`/settings/dataviz/edit/${saved.id}`, { replace: true });
       }
       notify('success', t('System', 'Saved successfully.', null, false));
-    } catch (error) {
-      if (isDatavizDuplicateNameError(error)) {
+    } catch (saveError) {
+      if (isDatavizDuplicateNameError(saveError)) {
         setNameError(true);
         setActiveTab('info');
         notify(
