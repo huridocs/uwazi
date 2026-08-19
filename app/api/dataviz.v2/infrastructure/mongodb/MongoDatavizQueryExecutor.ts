@@ -396,7 +396,7 @@ class MongoDatavizQueryExecutor extends MongoDataSource<EntityDBO> implements Da
   }
 
   private buildPermissionMatch(actor: User, includeUnpublished?: boolean): object {
-    if (actor.isPrivileged() || includeUnpublished === true) {
+    if (includeUnpublished === true || (actor.isPrivileged() && includeUnpublished !== false)) {
       return {};
     }
 

@@ -616,19 +616,33 @@ describe('MongoDatavizQueryExecutor', () => {
       );
     });
 
-    it('should always include unpublished entities for privileged actors regardless of the flag', async () => {
+    it('should include unpublished entities for privileged actors by default (no flag)', async () => {
       const executor = createExecutor();
       const admin = User.createFrom({ _id: factory.id('admin').toString(), role: 'admin' });
 
       const dto = await executor.execute(colorQuery, {
         actor: admin,
-        datavizId: 'test-unpublished-admin',
+        datavizId: 'test-unpublished-admin-default',
       });
 
       expect(dto.series[0]?.points).toEqual(
         expect.arrayContaining([
           expect.objectContaining({ key: unpublishedColorId, label: 'Blue', value: 1 }),
         ])
+      );
+    });
+
+    it('should exclude unpublished entities for privileged actors when includeUnpublished is false', async () => {
+      const executor = createExecutor();
+      const admin = User.createFrom({ _id: factory.id('admin').toString(), role: 'admin' });
+
+      const dto = await executor.execute(
+        { ...colorQuery, includeUnpublished: false },
+        { actor: admin, datavizId: 'test-unpublished-admin-opt-out' }
+      );
+
+      expect(dto.series[0]?.points).toEqual(
+        expect.not.arrayContaining([expect.objectContaining({ key: unpublishedColorId })])
       );
     });
   });
