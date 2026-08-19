@@ -21,14 +21,14 @@ describe('Cookiepopup', () => {
 
   it('should render the consent banner when enabled and no choice was made', () => {
     const component = shallow(
-      <Cookiepopup cookiepolicy cookiePolicyPageUrl="/page/test" />
+      <Cookiepopup cookiepolicy />
     );
     expect(component.find('[data-testid="cookie-consent-banner"]').exists()).toBe(true);
   });
 
   it('should not render when cookie policy is disabled', () => {
     const component = shallow(
-      <Cookiepopup cookiepolicy={false} cookiePolicyPageUrl="" />
+      <Cookiepopup cookiepolicy={false} />
     );
     expect(component.isEmptyRender()).toBe(true);
   });
@@ -36,7 +36,7 @@ describe('Cookiepopup', () => {
   it('should not render when consent was already given', () => {
     cookieConsent.getConsent.mockReturnValue('accepted');
     const component = shallow(
-      <Cookiepopup cookiepolicy cookiePolicyPageUrl="" />
+      <Cookiepopup cookiepolicy />
     );
     expect(component.isEmptyRender()).toBe(true);
   });

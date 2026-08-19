@@ -15,7 +15,6 @@ const PUBLIC_ALLOWED_FIELDS: (keyof Settings)[] = [
   'defaultLibraryView',
   'private',
   'cookiepolicy',
-  'cookiePolicyPageUrl',
   'languages',
   'filters',
   'links',

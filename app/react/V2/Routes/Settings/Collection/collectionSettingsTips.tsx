@@ -49,12 +49,6 @@ export const cookiePolicy = (
   </Translate>
 );
 
-export const cookiePolicyPage = (
-  <Translate>
-    Optional relative URL to your cookie or privacy policy page (for example /page/your-page-id).
-  </Translate>
-);
-
 export const receivingEmail = (
   <>
     <Translate translationKey="Receiving email description">

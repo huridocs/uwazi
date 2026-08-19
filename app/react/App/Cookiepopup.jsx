@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
-import { I18NLink, Translate } from '#app/I18N/index.js';
+import { Translate } from '#app/I18N/index.js';
 import {
   CONSENT_EVENT,
   getConsent,
@@ -9,7 +9,7 @@ import {
   setConsent,
 } from '#app/App/cookieConsent.js';
 
-const Cookiepopup = ({ cookiepolicy, cookiePolicyPageUrl }) => {
+const Cookiepopup = ({ cookiepolicy }) => {
   const [consent, setConsentState] = useState(() => getConsent());
 
   useEffect(() => {
@@ -41,14 +41,6 @@ const Cookiepopup = ({ cookiepolicy, cookiePolicyPageUrl }) => {
             This site uses cookies for language preferences and analytics. Session cookies are only
             set when you log in.
           </Translate>
-          {cookiePolicyPageUrl && (
-            <>
-              {' '}
-              <I18NLink to={cookiePolicyPageUrl} className="underline">
-                <Translate>Learn more</Translate>
-              </I18NLink>
-            </>
-          )}
         </p>
         <div className="flex shrink-0 gap-2">
           <button
@@ -75,16 +67,10 @@ const Cookiepopup = ({ cookiepolicy, cookiePolicyPageUrl }) => {
 
 Cookiepopup.propTypes = {
   cookiepolicy: PropTypes.bool.isRequired,
-  cookiePolicyPageUrl: PropTypes.string,
-};
-
-Cookiepopup.defaultProps = {
-  cookiePolicyPageUrl: '',
 };
 
 const mapStateToProps = state => ({
   cookiepolicy: Boolean(state.settings.collection.get('cookiepolicy')),
-  cookiePolicyPageUrl: state.settings.collection.get('cookiePolicyPageUrl') || '',
 });
 
 const CookiepopupConnected = connect(mapStateToProps)(Cookiepopup);

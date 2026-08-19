@@ -362,7 +362,6 @@ const settingsSchema = {
     allowcustomJS: { type: 'boolean' },
     openPublicEndpoint: { type: 'boolean' },
     cookiepolicy: { type: 'boolean' },
-    cookiePolicyPageUrl: { type: 'string' },
     mailerConfig: { type: 'string' },
     publicFormDestination: { type: 'string' },
     allowedPublicTemplates: {
