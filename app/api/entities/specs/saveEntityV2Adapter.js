@@ -2,7 +2,6 @@ import { EntityFacade } from '#api/core/infrastructure/facades/EntitiesFacade.js
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import entities from '#api/entities/entities.js';
 import { savePropertySelections } from '#api/entities/metadataExtraction/saveSelections.js';
-import { validateEntity } from '#api/entities/validateEntity.js';
 import templates from '#api/core/v1_layer/templates/templates.js';
 import date from '#api/utils/date.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
@@ -10,6 +9,16 @@ import { User } from '#api/users.v2/model/User.js';
 import ID from '#shared/uniqueID.js';
 import { denormalizeMetadata } from '../denormalize.js';
 import { normalizeLegacyEntityForFacade, sanitizeForTemplate } from '../legacyMutationCommon.js';
+
+const getEntityWithDocs = async ({ sharedId, language }) => {
+  const entity = (await testingEnvironment.db.getAllFrom('entities')).find(
+    e => e.sharedId === sharedId && language && e.language === language
+  );
+  entity.documents = (await testingEnvironment.db.getAllFrom('files')).filter(
+    f => f.entity === sharedId
+  );
+  return entity;
+};
 
 const toActorFromUser = user =>
   user?._id
@@ -50,15 +59,13 @@ const initializeEntityForSave = ({ doc, user }) => {
 
 const updateExistingEntity = async ({ entityToSave, language, template }) => {
   const docLanguage = entityToSave.language || language;
-  const [languageDocWithFiles] = await entities.getUnrestrictedWithDocuments(
-    { sharedId: entityToSave.sharedId, language: docLanguage },
-    '+permissions'
-  );
-  const [anyLanguageDocWithFiles] = await entities.getUnrestrictedWithDocuments(
-    { sharedId: entityToSave.sharedId },
-    '+permissions'
-  );
-  const currentDoc = languageDocWithFiles || anyLanguageDocWithFiles;
+
+  const languageDocWithFiles = await getEntityWithDocs({
+    sharedId: entityToSave.sharedId,
+    language: docLanguage,
+  });
+
+  const currentDoc = languageDocWithFiles;
   if (!currentDoc) {
     throw new Error(`entity does not exists: ${entityToSave.sharedId}`);
   }
@@ -100,14 +107,6 @@ const resolveContextOptions = ({ user, runWithContextOptions }) => {
   };
 };
 
-const loadSavedEntity = async ({ sharedId, language }) => {
-  const [entity] = await entities.getUnrestrictedWithDocuments(
-    { sharedId, language },
-    '+permissions'
-  );
-  return entity;
-};
-
 const persistEntity = async ({ entityToSave, language, template }) => {
   if (entityToSave.sharedId) {
     await updateExistingEntity({ entityToSave, language, template });
@@ -120,7 +119,6 @@ const saveEntityV2Adapter = (doc, { user, language }, runWithContextOptions = {}
   const contextOptions = resolveContextOptions({ user, runWithContextOptions });
 
   const runSave = async () => {
-    await validateEntity(doc);
     await savePropertySelections(doc);
 
     const entityToSave = {
@@ -129,7 +127,7 @@ const saveEntityV2Adapter = (doc, { user, language }, runWithContextOptions = {}
     };
     const template = await getEntityTemplate(entityToSave, language);
     const sharedId = await persistEntity({ entityToSave, language, template });
-    return loadSavedEntity({ sharedId, language });
+    return getEntityWithDocs({ sharedId, language });
   };
 
   if (ExecutionContext.getStore()) {
@@ -144,7 +142,6 @@ const saveEntityV2Adapter = (doc, { user, language }, runWithContextOptions = {}
 
 const denormalizeEntityV2Adapter = (_doc, { user, language }) =>
   testingEnvironment.runWithContext(async () => {
-    await validateEntity(_doc);
     const doc = initializeEntityForSave({ doc: _doc, user });
     doc.sharedId = doc.sharedId || ID();
     const [template, defaultTemplate] = await Promise.all([

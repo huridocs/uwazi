@@ -60,6 +60,7 @@ app/react/App/styles/globals.css
 segmentation/*
 tenants/*
 .cursor/*
+.pi/*
 .browsers/*
 
 # Yarn Berry

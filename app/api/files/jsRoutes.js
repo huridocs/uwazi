@@ -80,10 +80,7 @@ const routes = app => {
 
         const [entityWithFiles] = await EntitiesDAOFactory.default({
           user: User.createFrom(userForContext),
-        }).getWithFiles({
-          language: req.language,
-          sharedId: result.sharedId,
-        });
+        }).find({ language: req.language, sharedId: result.sharedId }, { withFiles: true });
 
         res.json(entityWithFiles);
       } catch (error) {

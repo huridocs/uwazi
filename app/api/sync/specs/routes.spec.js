@@ -50,6 +50,16 @@ describe('sync', () => {
     jest.spyOn(storage, 'removeFile').mockImplementation(() => {});
   });
 
+  describe('entities sync handler registration', () => {
+    // instrumentRoutes(syncRoutes) runs registerSyncHandlers() in beforeEach.
+    // entities must be registered as a SyncHandler so the sync receive path
+    // (POST/DELETE /api/sync) uses the V2 handler instead of the V1
+    // models['entities'] (entitiesModel) fallback.
+    it('registers an entities sync handler', () => {
+      expect(SyncHandlerRegistry.has('entities')).toBe(true);
+    });
+  });
+
   describe('POST', () => {
     beforeEach(() => {
       setReqDefault('body');
@@ -144,10 +154,43 @@ describe('sync', () => {
     });
 
     describe('when namespace is entities', () => {
-      it('should index on elastic', async () => {
-        const entities = { save: jest.fn(), delete: jest.fn() };
-        models.entities = () => entities;
+      let handler;
 
+      beforeEach(() => {
+        handler = {
+          save: jest.fn(),
+          saveMultiple: jest.fn(),
+          getById: jest.fn(),
+          delete: jest.fn(),
+        };
+        SyncHandlerRegistry.register('entities', () => handler);
+      });
+
+      it('should delegate save to the entities sync handler (not the V1 models fallback)', async () => {
+        const entitiesModel = { save: jest.fn(), delete: jest.fn() };
+        models.entities = () => entitiesModel;
+
+        req.body = {
+          namespace: 'entities',
+          data: { _id: 'id', sharedId: 'sharedId' },
+        };
+
+        await routes.post('/api/sync', req);
+        expect(handler.save).toHaveBeenCalledWith({ _id: 'id', sharedId: 'sharedId' });
+        expect(entitiesModel.save).not.toHaveBeenCalled();
+      });
+
+      it('should call saveMultiple when data is an array', async () => {
+        req.body = {
+          namespace: 'entities',
+          data: [{ _id: 'e1' }, { _id: 'e2' }],
+        };
+
+        await routes.post('/api/sync', req);
+        expect(handler.saveMultiple).toHaveBeenCalledWith([{ _id: 'e1' }, { _id: 'e2' }]);
+      });
+
+      it('should index on elastic', async () => {
         req.body = {
           namespace: 'entities',
           data: { _id: 'id', sharedId: 'sharedId' },
@@ -394,17 +437,26 @@ describe('sync', () => {
     });
 
     describe('when namespace is entities', () => {
+      let handler;
+
       beforeEach(() => {
-        const entities = {
+        handler = {
           save: jest.fn(),
+          saveMultiple: jest.fn(),
+          getById: jest.fn(),
           delete: jest.fn(),
         };
-        models.entities = () => entities;
+        SyncHandlerRegistry.register('entities', () => handler);
 
         req.query = {
           namespace: 'entities',
           data: JSON.stringify({ _id: 'id' }),
         };
+      });
+
+      it('should delegate delete to the entities sync handler', async () => {
+        await routes.delete('/api/sync', req);
+        expect(handler.delete).toHaveBeenCalledWith('id');
       });
 
       it('should delete it from elastic', async () => {

@@ -11,7 +11,6 @@ import {
 } from '#api/core/domain/template/errors.js';
 import { GenerateIdProperty } from '#api/core/domain/template/GenerateIdProperty.js';
 import { Result, ResultType } from '#api/core/libs/Result.js';
-import { resetIndex, updateMapping } from '#api/search/entitiesIndex.js';
 import { Property } from '../../../domain/template/Property.js';
 import { Template } from '../../../domain/template/Template.js';
 import { TemplatesDataSource } from '../../../application/contracts/TemplatesDataSource.js';
@@ -46,12 +45,20 @@ export class MongoTemplatesDataSource
       const templates = [...this.templatesMutated.values()];
       this.templatesMutated.clear();
       if (templates.length > 0) {
+        // Lazy-load on purpose: '#api/search/entitiesIndex.js' imports TemplatesDataSourceFactory,
+        // which imports CachedMongoTemplatesDataSource, which extends this class. A static import
+        // here would create an import cycle that breaks at module evaluation time ("Class extends
+        // value undefined"). After the first load the dynamic import is just a module-cache lookup.
+        // TEMPORARY: this indirection (and the ES index update itself) goes away with Elasticsearch.
+        const { updateMapping } = await import('#api/search/entitiesIndex.js');
         await updateMapping(templates);
       }
     });
   }
 
   async updateMapping(template: Template, reset = false) {
+    // see the lazy-import note in the constructor
+    const { resetIndex, updateMapping } = await import('#api/search/entitiesIndex.js');
     if (reset) {
       await resetIndex();
       return updateMapping(await this.dao.get());

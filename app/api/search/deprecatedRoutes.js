@@ -1,4 +1,4 @@
-import entities from '#api/entities/index.js';
+import { EntitiesDAOFactory } from '#api/core/infrastructure/factories/EntitiesDAOFactory.js';
 import { searchParamsSchema } from '#shared/types/searchParameterSchema.js';
 import { search } from './search.js';
 import { validation, parseQuery } from '../utils/index.js';
@@ -20,8 +20,8 @@ export default app => {
       required: ['query'],
     }),
     (req, res, next) =>
-      entities
-        .countByTemplate(req.query.templateId)
+      EntitiesDAOFactory.default()
+        .count({ template: req.query.templateId })
         .then(results => res.json(results))
         .catch(next)
   );

@@ -59,7 +59,7 @@ describe('CreateBlankSuggestionsFromDocument', () => {
 
     const file = factory.document('document_1', { entity: 'entity_1', language: 'en' });
 
-    await useCase.execute({ file });
+    await testingEnvironment.runWithContext(async () => useCase.execute({ file }));
 
     const suggestions = await testingEnvironment.db.getAllFrom('ixsuggestions');
 
@@ -139,9 +139,9 @@ describe('CreateBlankSuggestionsFromDocument', () => {
 
     const file = factory.file('file_1', { entity: 'entity_1', language: 'en' });
 
-    await expect(useCase.execute({ file })).rejects.toThrow(
-      new FileTypeNotSupportedError(file.type!)
-    );
+    await expect(
+      testingEnvironment.runWithContext(async () => useCase.execute({ file }))
+    ).rejects.toThrow(new FileTypeNotSupportedError(file.type!));
   });
 
   it("should throw LanguageNotSupportedError if Document's language is not supported", async () => {
@@ -149,9 +149,9 @@ describe('CreateBlankSuggestionsFromDocument', () => {
 
     const file = factory.document('document_1', { entity: 'entity_1', language: 'fr' });
 
-    await expect(useCase.execute({ file })).rejects.toThrow(
-      new LanguageNotSupportedError(file.language!)
-    );
+    await expect(
+      testingEnvironment.runWithContext(async () => useCase.execute({ file }))
+    ).rejects.toThrow(new LanguageNotSupportedError(file.language!));
   });
 
   it('should throw ExtractorsNotAvailableError if there are no Extractors for the Document', async () => {
@@ -159,8 +159,8 @@ describe('CreateBlankSuggestionsFromDocument', () => {
 
     const file = factory.document('document_1', { entity: 'entity_4', language: 'en' });
 
-    await expect(useCase.execute({ file })).rejects.toThrow(
-      new ExtractorsNotAvailableError(factory.id('template_3').toString())
-    );
+    await expect(
+      testingEnvironment.runWithContext(async () => useCase.execute({ file }))
+    ).rejects.toThrow(new ExtractorsNotAvailableError(factory.id('template_3').toString()));
   });
 });

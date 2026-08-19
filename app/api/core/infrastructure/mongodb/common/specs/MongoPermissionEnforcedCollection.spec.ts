@@ -347,6 +347,90 @@ describe('MongoPermissionEnforcedCollection', () => {
     });
   });
 
+  describe('permissions data stripping (safe by default)', () => {
+    it('collaborator keeps permissions only on rows they can write to', async () => {
+      const coll = createEnforcedCollection(AccessContext.forActor(collaborator), db);
+      const rows = await coll.find({}).toArray();
+      const byId = new Map(rows.map(r => [r._id, r]));
+      // write grant -> full array kept
+      expect(byId.get('ent-write')!.permissions).toEqual([
+        { refId: 'collab-1', type: 'user', level: 'write' },
+        { refId: 'group-a', type: 'group', level: 'read' },
+      ]);
+      expect(byId.get('ent-group-write')!.permissions).toEqual([
+        { refId: 'group-a', type: 'group', level: 'write' },
+      ]);
+      // read-only grant -> permissions stripped
+      expect(byId.get('ent-read')!.permissions).toBeUndefined();
+      expect(byId.get('ent-group-read')!.permissions).toBeUndefined();
+      // published without any grant -> permissions stripped
+      expect(byId.get('ent-pub')!.permissions).toBeUndefined();
+    });
+
+    it('anonymous never sees permissions', async () => {
+      const coll = createEnforcedCollection(AccessContext.forActor(anon), db);
+      const rows = await coll.find({}).toArray();
+      rows.forEach(r => expect(r.permissions).toBeUndefined());
+    });
+
+    it('admin and editor keep permissions', async () => {
+      const adminRows = await createEnforcedCollection(AccessContext.forActor(admin), db)
+        .find({ _id: 'ent-write' })
+        .toArray();
+      expect(adminRows[0].permissions).toEqual([
+        { refId: 'collab-1', type: 'user', level: 'write' },
+        { refId: 'group-a', type: 'group', level: 'read' },
+      ]);
+
+      const editorRows = await createEnforcedCollection(AccessContext.forActor(editor), db)
+        .find({ _id: 'ent-write' })
+        .toArray();
+      expect(editorRows[0].permissions).toEqual([
+        { refId: 'collab-1', type: 'user', level: 'write' },
+        { refId: 'group-a', type: 'group', level: 'read' },
+      ]);
+    });
+
+    it('system bypass keeps permissions', async () => {
+      const coll = createEnforcedCollection(AccessContext.system(), db);
+      const rows = await coll.find({ _id: 'ent-write' }).toArray();
+      expect(rows[0].permissions).toEqual([
+        { refId: 'collab-1', type: 'user', level: 'write' },
+        { refId: 'group-a', type: 'group', level: 'read' },
+      ]);
+    });
+
+    it('findOne strips permissions for non-privileged actors', async () => {
+      const coll = createEnforcedCollection(AccessContext.forActor(anon), db);
+      const row = await coll.findOne({ _id: 'ent-pub' });
+      expect(row).toBeDefined();
+      expect(row!.permissions).toBeUndefined();
+
+      const collaboratorColl = createEnforcedCollection(AccessContext.forActor(collaborator), db);
+      expect((await collaboratorColl.findOne({ _id: 'ent-write' }))!.permissions).toEqual([
+        { refId: 'collab-1', type: 'user', level: 'write' },
+        { refId: 'group-a', type: 'group', level: 'read' },
+      ]);
+      expect((await collaboratorColl.findOne({ _id: 'ent-read' }))!.permissions).toBeUndefined();
+    });
+
+    it('aggregate strips permissions for non-privileged actors', async () => {
+      const coll = createEnforcedCollection(AccessContext.forActor(anon), db);
+      const rows = await coll.aggregate([{ $match: { _id: 'ent-pub' } }]).toArray();
+      expect(rows).toHaveLength(1);
+      expect(rows[0].permissions).toBeUndefined();
+
+      const collaboratorColl = createEnforcedCollection(AccessContext.forActor(collaborator), db);
+      const writeRows = await collaboratorColl
+        .aggregate([{ $match: { _id: 'ent-write' } }])
+        .toArray();
+      expect(writeRows[0].permissions).toEqual([
+        { refId: 'collab-1', type: 'user', level: 'write' },
+        { refId: 'group-a', type: 'group', level: 'read' },
+      ]);
+    });
+  });
+
   describe('findOneAndUpdate() — write enforcement', () => {
     it('collaborator can findOneAndUpdate a writable row', async () => {
       const coll = createEnforcedCollection(AccessContext.forActor(collaborator), db);
