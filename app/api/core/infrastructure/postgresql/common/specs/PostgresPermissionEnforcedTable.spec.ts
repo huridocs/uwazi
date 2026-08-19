@@ -172,6 +172,76 @@ describe('PostgresPermissionEnforcedTable', () => {
     });
   });
 
+  describe('permissions data stripping (safe by default)', () => {
+    it('collaborator keeps permissions only on rows they can write to', async () => {
+      const table = createEnforcedTable(AccessContext.forActor(collaborator));
+      const rows = await table.all();
+      const byId = new Map(rows.map(r => [r._id, r]));
+      // write grant -> full array kept
+      expect(byId.get('ent-write')!.permissions).toEqual([
+        { refId: 'collab-1', type: 'user', level: 'write' },
+        { refId: 'group-a', type: 'group', level: 'read' },
+      ]);
+      expect(byId.get('ent-group-write')!.permissions).toEqual([
+        { refId: 'group-a', type: 'group', level: 'write' },
+      ]);
+      // read-only grant -> permissions stripped
+      expect(byId.get('ent-read')!.permissions).toBeUndefined();
+      expect(byId.get('ent-group-read')!.permissions).toBeUndefined();
+      // published without any grant -> permissions stripped
+      expect(byId.get('ent-pub')!.permissions).toBeUndefined();
+    });
+
+    it('anonymous never sees permissions', async () => {
+      const table = createEnforcedTable(AccessContext.forActor(anon));
+      const rows = await table.all();
+      rows.forEach(r => expect(r.permissions).toBeUndefined());
+    });
+
+    it('admin keeps permissions', async () => {
+      const rows = await adminTable().all();
+      expect(rows.find(r => r._id === 'ent-write')!.permissions).toEqual([
+        { refId: 'collab-1', type: 'user', level: 'write' },
+        { refId: 'group-a', type: 'group', level: 'read' },
+      ]);
+    });
+
+    it('system bypass keeps permissions', async () => {
+      const table = createEnforcedTable(AccessContext.system());
+      const rows = await table.all();
+      expect(rows.find(r => r._id === 'ent-write')!.permissions).toEqual([
+        { refId: 'collab-1', type: 'user', level: 'write' },
+        { refId: 'group-a', type: 'group', level: 'read' },
+      ]);
+    });
+
+    it('first() strips permissions for non-privileged actors', async () => {
+      const table = createEnforcedTable(AccessContext.forActor(anon));
+      const row = await table.where({ _id: 'ent-pub' }).first();
+      expect(row).toBeDefined();
+      expect(row!.permissions).toBeUndefined();
+
+      const collaboratorTable = createEnforcedTable(AccessContext.forActor(collaborator));
+      expect((await collaboratorTable.where({ _id: 'ent-write' }).first())!.permissions).toEqual([
+        { refId: 'collab-1', type: 'user', level: 'write' },
+        { refId: 'group-a', type: 'group', level: 'read' },
+      ]);
+      expect(
+        (await collaboratorTable.where({ _id: 'ent-read' }).first())!.permissions
+      ).toBeUndefined();
+    });
+
+    it('stream() strips permissions for non-privileged actors', async () => {
+      const table = createEnforcedTable(AccessContext.forActor(anon));
+      const rows: TestRow[] = [];
+      for await (const row of table.stream()) {
+        rows.push(row);
+      }
+      expect(rows.map(r => r._id)).toEqual(['ent-pub']);
+      rows.forEach(r => expect(r.permissions).toBeUndefined());
+    });
+  });
+
   describe('read enforcement — count', () => {
     it('should count only visible rows for collaborator', async () => {
       const table = createEnforcedTable(AccessContext.forActor(collaborator));

@@ -10,6 +10,7 @@ import connections from '#api/relationships/relationships.js';
 import { search } from '#api/search/index.js';
 import { cleanupRecordsOfFiles } from '#api/services/ocr/ocrRecords.js';
 import { EntityWithFilesSchema } from '#shared/types/entityType.js';
+import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import { validateFile } from '#shared/types/fileSchema.js';
 import { FileType } from '#shared/types/fileType.js';
 import { FileCreatedEvent } from './events/FileCreatedEvent.js';
@@ -156,7 +157,10 @@ export const files = {
       .filter((f): f is PDFDocument => f instanceof PDFDocument)
       .some(f => f.generatedToc);
 
-    const [entity] = await entities.get({ sharedId: updatedFile.entity }, '+permissions');
+    const [entity] = await entities.get({ sharedId: updatedFile.entity });
+    if (!entity) {
+      throw new Error(`Entity not found for sharedId ${updatedFile.entity}`);
+    }
     await ensureEntityActor(entity);
     const template = entity.template?.toString?.();
     if (!template) {
@@ -189,16 +193,16 @@ export const files = {
 
     await EntityFacade.update(
       {
-        _id: entity._id.toString(),
-        sharedId: entity.sharedId,
-        language: entity.language,
-        title: entity.title,
+        _id: entity._id!.toString(),
+        sharedId: entity.sharedId!,
+        language: entity.language!,
+        title: entity.title!,
         template,
         generatedToc,
         documents,
         attachments,
       },
-      entity.language
+      entity.language! as LanguageISO6391
     );
 
     return FileMappers.toDBO(updatedFile);
