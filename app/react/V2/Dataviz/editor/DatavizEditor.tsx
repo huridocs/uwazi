@@ -82,15 +82,6 @@ const DatavizEditor = ({ initialDefinition, onDeleteRequest }: DatavizEditorProp
       if (isDatavizDuplicateNameError(saveError)) {
         setNameError(true);
         setActiveTab('info');
-        notify(
-          'error',
-          t(
-            'System',
-            'Check your submission. Some information was missing or incorrect. Review the highlighted fields and try again.',
-            null,
-            false
-          )
-        );
       } else {
         notify('error', t('System', 'An error occurred', null, false));
       }

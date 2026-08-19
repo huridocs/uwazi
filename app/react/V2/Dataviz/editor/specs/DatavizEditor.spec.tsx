@@ -95,10 +95,7 @@ describe('DatavizEditor duplicate name validation', () => {
     expect(
       screen.getByText('This data visualization name already exists. Enter a unique name.')
     ).toBeVisible();
-    expect(mockNotify).toHaveBeenCalledWith(
-      'error',
-      'Check your submission. Some information was missing or incorrect. Review the highlighted fields and try again.'
-    );
+    expect(mockNotify).not.toHaveBeenCalled();
   });
 
   it('should keep the current tab and show a generic error for other save failures', async () => {
