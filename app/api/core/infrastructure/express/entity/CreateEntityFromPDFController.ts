@@ -31,10 +31,10 @@ class CreateEntityFromPDFController extends AbstractController<Request> {
     });
     const output = await useCase.execute({ templateId: body.templateId, inputFile: body.file });
     const entitiesDAO = EntitiesDAOFactory.default();
-    const [entityWithFiles] = await entitiesDAO.getWithFiles({
-      sharedId: output.sharedId,
-      language: this.language,
-    });
+    const [entityWithFiles] = await entitiesDAO.find(
+      { sharedId: output.sharedId, language: this.language },
+      { withFiles: true }
+    );
 
     this.response.status(201).json({
       data: entityWithFiles as any as EntityWithFilesSchema,

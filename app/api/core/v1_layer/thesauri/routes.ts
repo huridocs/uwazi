@@ -51,7 +51,7 @@ const routes = (app: Application) => {
         id = req.query._id;
       }
       thesauri
-        .get(id, req.language, req.user)
+        .get(id, req.language)
         .then(response => res.json({ rows: response }))
         .catch(next);
     }

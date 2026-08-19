@@ -6,6 +6,7 @@ import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { testingDB } from '#api/utils/testing_db.js';
 import { thesauri } from '../thesauri.js';
 import { fixtures, dictionaryId } from './fixtures.js';
+import { User } from '#api/users.v2/model/User.js';
 
 const factory = getFixturesFactory();
 
@@ -22,40 +23,48 @@ describe('thesauri', () => {
 
   describe('get()', () => {
     it('should return all thesauri including entity templates as options', async () => {
-      await testingEnvironment.runWithContext(async () => {
-        search.indexEntities.mockRestore();
-        const elasticIndex = 'thesauri.spec.elastic.index';
-        await testingDB.setupFixturesAndContext(fixtures, elasticIndex);
-        const thesaurus = await thesauri.get(null, 'es');
-        expect(thesaurus[0]).toMatchObject({ name: 'dictionary' });
-        expect(thesaurus[1]).toMatchObject({ name: 'dictionary 2' });
+      await testingEnvironment.runWithContext(
+        async () => {
+          search.indexEntities.mockRestore();
+          const elasticIndex = 'thesauri.spec.elastic.index';
+          await testingDB.setupFixturesAndContext(fixtures, elasticIndex);
+          const thesaurus = await thesauri.get(null, 'es');
+          expect(thesaurus[0]).toMatchObject({ name: 'dictionary' });
+          expect(thesaurus[1]).toMatchObject({ name: 'dictionary 2' });
 
-        expect(thesaurus[4]).toMatchObject({
-          name: 'entityTemplate',
-          values: [{ label: 'spanish entity' }],
-          optionsCount: 3,
-        });
+          expect(thesaurus[4]).toMatchObject({
+            name: 'entityTemplate',
+            values: [{ label: 'spanish entity' }],
+            optionsCount: 3,
+          });
 
-        expect(thesaurus[5]).toMatchObject({
-          name: 'documentTemplate',
-          values: [{ label: 'document' }, { label: 'document 2' }],
-          optionsCount: 2,
-        });
-      });
+          expect(thesaurus[5]).toMatchObject({
+            name: 'documentTemplate',
+            values: [{ label: 'document' }, { label: 'document 2' }],
+            optionsCount: 2,
+          });
+        },
+        { actor: User.createFrom(null) }
+      );
     });
 
     it('should return all thesauri including unpublished documents if user', async () => {
-      await testingEnvironment.runWithContext(async () => {
-        const elasticIndex = 'thesauri.spec.elastic.index';
-        await testingDB.setupFixturesAndContext(fixtures, elasticIndex);
-        const dictionaries = await thesauri.get(null, 'es', 'user');
-        expect(dictionaries.length).toBe(6);
-        expect(dictionaries[4].values.sort((a, b) => a.id.localeCompare(b.id))).toEqual([
-          { id: 'other', label: 'unpublished entity' },
-          { id: 'sharedId', label: 'spanish entity', icon: { type: 'Icon' } },
-          { id: 'sharedId2' },
-        ]);
-      });
+      await testingEnvironment.runWithContext(
+        async () => {
+          const elasticIndex = 'thesauri.spec.elastic.index';
+          await testingDB.setupFixturesAndContext(fixtures, elasticIndex);
+          const dictionaries = await thesauri.get(null, 'es');
+          expect(dictionaries.length).toBe(6);
+          expect(dictionaries[4].values.sort((a, b) => a.id.localeCompare(b.id))).toEqual([
+            { id: 'other', label: 'unpublished entity' },
+            { id: 'sharedId', label: 'spanish entity', icon: { type: 'Icon' } },
+            { id: 'sharedId2' },
+          ]);
+        },
+        {
+          actor: User.createFrom({ _id: 'user1', role: 'admin', groups: [] }),
+        }
+      );
     });
 
     describe('when passing id', () => {

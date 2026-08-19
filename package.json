@@ -1,7 +1,7 @@
 {
   "packageManager": "yarn@4.13.0",
   "name": "uwazi",
-  "version": "1.229.134",
+  "version": "1.229.135",
   "type": "module",
   "description": "Uwazi is a free, open-source solution for organising, analysing and publishing your documents.",
   "keywords": [
@@ -47,7 +47,6 @@
     "dev-worker": "tsx --no-experimental-fetch ./app/worker.ts",
     "dev-queue": "tsx --no-experimental-fetch --max-old-space-size=1024 --inspect=9230 ./app/queueWorker.ts",
     "new-files-healthcheck": "tsx ./scripts/scripts.v2/filesHealthCheck.ts",
-    "denormalize-all-entities": "tsx ./scripts/scripts.v2/denormalizeAllEntities.ts",
     "generateAutomaticTranslationConfig": "tsx --no-experimental-fetch ./scripts/scripts.v2/generateAutomaticTranslationConfig.ts",
     "check-translations": "node --no-experimental-fetch ./scripts/checkTranslations.mjs",
     "update-translations-db": "node ./scripts/runner.js ./scripts/updateTranslationsDB.js",
