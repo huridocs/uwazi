@@ -409,7 +409,7 @@ const Collection = () => {
                     label={<Translate>Map Provider</Translate>}
                     id="roles"
                     options={[
-                      { label: t('System', 'Mapbox', null, false), value: 'mapbox' },
+                      { label: t('System', 'Open maps (OSM / Esri)', null, false), value: 'osm' },
                       { label: t('System', 'Google', null, false), value: 'google' },
                     ]}
                     {...register('tilesProvider')}

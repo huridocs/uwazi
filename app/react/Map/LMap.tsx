@@ -18,11 +18,6 @@ import {
 } from './MapHelper.js';
 import { getMapProvider } from './TilesProviderFactory.js';
 import { ensureGoogleMaps } from './GoogleMapLayer.js';
-import {
-  streetAttribution,
-  satelliteAttribution,
-  getImproveThisMapLegend,
-} from './MapBoxAttributions.js';
 
 type Layer = 'Dark' | 'Streets' | 'Satellite' | 'Hybrid';
 
@@ -36,7 +31,7 @@ type LMapProps = {
   startingPoint: GeolocationSchema;
   renderPopupInfo?: boolean;
   templatesInfo: TemplatesInfo;
-  tilesProvider: 'google' | 'mapbox';
+  tilesProvider: string;
   mapApiKey: string;
   zoom?: number;
   layers?: Layer[];
@@ -108,7 +103,7 @@ const LMap = ({
     }
   };
 
-  const initMap = (providerOverride?: 'google' | 'mapbox') => {
+  const initMap = (providerOverride?: string) => {
     const provider = providerOverride ?? props.tilesProvider;
     const baseMaps = getMapProvider(provider, props.mapApiKey);
     const mapLayers: { [k: string]: Leaflet.TileLayer } = {};
@@ -157,43 +152,9 @@ const LMap = ({
     initialLayer.addTo(map);
     initMarkers();
     map.on('click', clickHandler);
-
-    const updateAttribution = (layerKey?: string) => {
-      if (!attributionControlRef.current || provider === 'google') {
-        return;
-      }
-
-      const center = map.getCenter();
-      const currentZoom = map.getZoom();
-      const improveThisMapLink = getImproveThisMapLegend(center.lng, center.lat, currentZoom);
-
-      let attribution = streetAttribution;
-
-      if (layerKey) {
-        const layer = baseMaps[layerKey].key as Layer;
-        if (layer === 'Satellite' || layer === 'Hybrid') {
-          attribution = satelliteAttribution;
-        }
-      }
-
-      const container = attributionControlRef.current.getContainer();
-      if (container) {
-        container.innerHTML = `${attribution} - ${improveThisMapLink}`;
-      }
-    };
-
-    const initialLayerKey = Object.keys(mapLayers)[0];
-    updateAttribution(initialLayerKey);
-
-    map.on('baselayerchange', (e: Leaflet.LayersControlEvent) => {
-      const layerKey = Object.keys(mapLayers).find(key => mapLayers[key] === e.layer);
-      updateAttribution(layerKey);
-    });
-
-    map.on('moveend', () => {
-      const layerKey = Object.keys(mapLayers).find(key => map.hasLayer(mapLayers[key]));
-      updateAttribution(layerKey);
-    });
+    // Attribution comes from each tile layer's own `attribution` option and
+    // is kept in sync by Leaflet's attribution control on layer changes; the
+    // google provider shows Google's embedded attribution instead.
   };
 
   useEffect(() => {
@@ -216,7 +177,7 @@ const LMap = ({
           .catch((err: unknown) => {
             // eslint-disable-next-line no-console
             console.error('Google Maps failed to load, falling back:', err);
-            if (!cancelled) initMap('mapbox');
+            if (!cancelled) initMap('osm');
           });
       } else {
         initMap();

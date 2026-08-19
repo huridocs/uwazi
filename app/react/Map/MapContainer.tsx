@@ -24,7 +24,7 @@ const Map = ({ ...props }: MapProps) => {
   const collectionSettings = useAtomValue(settingsAtom);
   const templates = useAtomValue(templatesAtom);
   const startingPoint = collectionSettings?.mapStartingPoint || [{ lat: 46, lon: 6 }];
-  const tilesProvider = collectionSettings?.tilesProvider || 'mapbox';
+  const tilesProvider = collectionSettings?.tilesProvider || 'osm';
   const mapApiKey = collectionSettings?.mapApiKey;
   let mapLayers = (props.layers || collectionSettings?.mapLayers) as Layer[];
 
