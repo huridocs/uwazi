@@ -77,13 +77,21 @@ const toResolvedRow = (value: unknown): RelationshipResolvedRow | undefined => {
 const emptyOnHttp404 = (error: ApiError | undefined): boolean =>
   Boolean(error && error.kind === 'http' && error.status === 404);
 
-const getRows = async <T>(
-  path: string,
-  query: Record<string, string>,
-  language: string,
-  headers: IncomingHttpHeaders | undefined,
-  parse: (value: unknown) => T | undefined
-): Promise<ApiResponse<T[] | undefined>> => {
+type GetRowsOptions<T> = {
+  path: string;
+  query: Record<string, string>;
+  language: string;
+  headers?: IncomingHttpHeaders;
+  parse: (value: unknown) => T | undefined;
+};
+
+const getRows = async <T>({
+  path,
+  query,
+  language,
+  headers,
+  parse,
+}: GetRowsOptions<T>): Promise<ApiResponse<T[] | undefined>> => {
   const [data, error] = await apiClient.getJson<RowsBody>(path, query, {
     headers: withLanguage(language, headers),
     language,
@@ -110,7 +118,13 @@ const getSummary = async (
   language: string,
   headers?: IncomingHttpHeaders
 ): Promise<ApiResponse<RelationshipSummaryRow[] | undefined>> =>
-  getRows('relationships/summary', { sharedId }, language, headers, toSummaryRow);
+  getRows({
+    path: 'relationships/summary',
+    query: { sharedId },
+    language,
+    headers,
+    parse: toSummaryRow,
+  });
 
 const getAnchors = async (
   sharedId: string,
@@ -118,13 +132,25 @@ const getAnchors = async (
   language: string,
   headers?: IncomingHttpHeaders
 ): Promise<ApiResponse<RelationshipAnchorRow[] | undefined>> =>
-  getRows('relationships/anchors', { sharedId, file: fileId }, language, headers, toAnchorRow);
+  getRows({
+    path: 'relationships/anchors',
+    query: { sharedId, file: fileId },
+    language,
+    headers,
+    parse: toAnchorRow,
+  });
 
 const getResolved = async (
   sharedId: string,
   language: string,
   headers?: IncomingHttpHeaders
 ): Promise<ApiResponse<RelationshipResolvedRow[] | undefined>> =>
-  getRows('relationships/resolved', { sharedId }, language, headers, toResolvedRow);
+  getRows({
+    path: 'relationships/resolved',
+    query: { sharedId },
+    language,
+    headers,
+    parse: toResolvedRow,
+  });
 
 export { getSummary, getAnchors, getResolved };
