@@ -10,7 +10,8 @@ import {
 } from '#V2/Routes/Entity/Components/context/index.js';
 import { MAIN_TAB } from '../../Tabs/tabIds.js';
 import { useEntityHashParams, useUpdateEntityUrl } from '../../entityUrlState.js';
-import { PAGE_PARAM, SEARCH_PARAM } from '../../urlParams.js';
+import { PAGE_PARAM, SEARCH_PARAM, VIEW_MODE_PARAM } from '../../urlParams.js';
+import { scrollToPlaintextPage } from '../document/scrollToPlaintextPage.js';
 import { SearchResultsPanel } from './SearchResultsPanel.js';
 import { useEntitySearchSnippets } from './useEntitySearchSnippets.js';
 import { useJumpToSearchHit } from './useJumpToSearchHit.js';
@@ -27,6 +28,7 @@ const SearchView = () => {
   const updateEntityUrl = useUpdateEntityUrl();
   const urlTerm = hashParams.get(SEARCH_PARAM) || '';
   const searchTerm = urlTerm.trim();
+  const isRaw = hashParams.get(VIEW_MODE_PARAM) === 'true';
   const templates = useAtomValue(templatesAtom);
   const { pdfController: mainPdfController } = useDocumentPdf();
   const mainPdfControllerRef = useRef(mainPdfController);
@@ -90,10 +92,10 @@ const SearchView = () => {
   }, [searchTerm, clearSnippetSelection]);
 
   useEffect(() => {
-    if (!pendingSnippet || !mainPdfController) return;
+    if (isRaw || !pendingSnippet || !mainPdfController) return;
     // Keep pending across Document remounts: re-activate when controller is replaced.
     mainPdfController.activateSnippet(pendingSnippet);
-  }, [pendingSnippet, mainPdfController]);
+  }, [isRaw, pendingSnippet, mainPdfController]);
 
   const onChange = (value: string) => {
     setDraft(value);
@@ -119,14 +121,19 @@ const SearchView = () => {
     const newActive = activeSnippet === snippetKey ? null : snippetKey;
     setActiveSnippet(newActive);
     if (newActive) {
-      // Always queue; Document remount clears a stale controller after an immediate activate.
-      setPendingSnippet(pageText);
-      mainPdfControllerRef.current?.goToPage(pageText.page);
       ensureMainTab(MAIN_TAB.DOCUMENT, {
         hash: next => {
           next.set(PAGE_PARAM, String(pageText.page));
         },
       });
+      if (isRaw) {
+        setPendingSnippet(null);
+        scrollToPlaintextPage(pageText.page);
+        return;
+      }
+      // Always queue; Document remount clears a stale controller after an immediate activate.
+      setPendingSnippet(pageText);
+      mainPdfControllerRef.current?.goToPage(pageText.page);
       return;
     }
     setPendingSnippet(null);

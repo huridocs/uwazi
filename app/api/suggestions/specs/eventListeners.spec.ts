@@ -1,5 +1,6 @@
 import entities from '#api/entities/index.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { EntityWithFilesSchema } from '#shared/types/entityType.js';
 import { EntityDeletedEvent } from '#api/entities/events/EntityDeletedEvent.js';
 import { EntityUpdatedEvent } from '#api/entities/events/EntityUpdatedEvent.js';
 import { applicationEventsBus } from '#api/core/libs/eventsbus/index.js';
@@ -280,7 +281,10 @@ describe(`On ${EntityUpdatedEvent.name}`, () => {
     },
   ])('$case', async ({ sharedId, newTemplate, expectedSuggestions }) => {
     await testingEnvironment.runWithContext(async () => {
-      const [current] = await entities.get({ sharedId, language: 'en' }, '+permissions');
+      const [current] = (await entities.get(
+        { sharedId, language: 'en' },
+        '+permissions'
+      )) as unknown as EntityWithFilesSchema[];
       if (!current) {
         throw new Error(`Entity ${sharedId} not found`);
       }
@@ -311,13 +315,13 @@ describe(`On ${EntityUpdatedEvent.name}`, () => {
 
       await EntityFacade.update(
         {
-          _id: current._id.toString(),
-          sharedId: current.sharedId,
-          language: current.language,
-          title: current.title,
+          _id: current._id!.toString(),
+          sharedId: current.sharedId!,
+          language: current.language!,
+          title: current.title!,
           template: newTemplate.toString(),
           user: current.user?.toString?.(),
-          metadata: current.metadata || {},
+          metadata: (current.metadata || {}) as any,
           icon: current.icon,
           documents,
           attachments,

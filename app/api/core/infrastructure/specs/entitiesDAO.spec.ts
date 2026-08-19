@@ -168,6 +168,83 @@ describe('EntitiesDAO', () => {
         expect(anonymousCount).toBe(publishedEntityCount);
         expect(editorCount).toBe(allEntityCount);
       });
+
+      it('strips permissions from entities a collaborator cannot write to', async () => {
+        const dao = createDao(collaboratorUser);
+        const entities = await dao.find();
+        const bySharedId = new Map(entities.map(e => [e.sharedId, e]));
+        // entity1 has a write grant for collab_user -> full array is kept
+        expect(bySharedId.get('entity1')!.permissions).toEqual([
+          factory.entityPermission('collab_user', 'user', 'write'),
+        ]);
+        // entity5 is readable via a read-only group grant -> permissions stripped
+        expect(bySharedId.get('entity5')!.permissions).toBeUndefined();
+        // published entities without any grant -> permissions stripped
+        expect(bySharedId.get('entity3')!.permissions).toBeUndefined();
+        expect(bySharedId.get('entity4')!.permissions).toBeUndefined();
+      });
+
+      it('strips permissions for a collaborator with no matching grants', async () => {
+        const dao = createDao(otherCollaborator);
+        const entities = await dao.find();
+        entities.forEach(e => expect(e.permissions).toBeUndefined());
+      });
+
+      it('strips permissions from entities read anonymously', async () => {
+        const dao = createDao(publicUser);
+        const entities = await dao.find();
+        entities.forEach(e => expect(e.permissions).toBeUndefined());
+      });
+
+      it('keeps permissions for privileged actors', async () => {
+        const editorEntities = await createDao(editorUser).find();
+        expect(editorEntities.find(e => e.sharedId === 'entity1')!.permissions).toEqual([
+          factory.entityPermission('collab_user', 'user', 'write'),
+        ]);
+        const adminEntities = await createDao(adminUser).find();
+        expect(adminEntities.find(e => e.sharedId === 'entity1')!.permissions).toEqual([
+          factory.entityPermission('collab_user', 'user', 'write'),
+        ]);
+      });
+
+      it('keeps permissions for unrestricted reads', async () => {
+        const entities = await createDao(publicUser).unrestricted().find();
+        expect(entities.find(e => e.sharedId === 'entity1')!.permissions).toEqual([
+          factory.entityPermission('collab_user', 'user', 'write'),
+        ]);
+      });
+
+      it('strips permissions on getBySharedId/getByInternalId reads for non-privileged actors', async () => {
+        const dao = createDao(publicUser);
+        expect((await dao.getBySharedId('entity1', 'en'))?.permissions).toBeUndefined();
+        expect(
+          (await dao.getByInternalId(factory.idString('entity1-en')))?.permissions
+        ).toBeUndefined();
+      });
+
+      it('strips permissions on withFiles reads for non-privileged actors', async () => {
+        const dao = createDao(publicUser);
+        const entities = await dao.find(
+          { sharedId: 'entity1', language: 'en' },
+          { withFiles: true }
+        );
+        expect(entities).toHaveLength(1);
+        expect(entities[0].permissions).toBeUndefined();
+        expect(entities[0].documents).toHaveLength(1);
+        expect(entities[0].attachments).toHaveLength(1);
+      });
+
+      it('keeps permissions on withFiles reads for collaborators with write access', async () => {
+        const dao = createDao(collaboratorUser);
+        const entities = await dao.find(
+          { sharedId: 'entity1', language: 'en' },
+          { withFiles: true }
+        );
+        expect(entities).toHaveLength(1);
+        expect(entities[0].permissions).toEqual([
+          factory.entityPermission('collab_user', 'user', 'write'),
+        ]);
+      });
     });
 
     describe('find()', () => {
@@ -246,7 +323,7 @@ describe('EntitiesDAO', () => {
         expect(entities.map(e => e.sharedId)).toEqual(['entity6']);
       });
 
-      it('should filter by title', async () => {
+      it('filters by title', async () => {
         const entities = await createDao().find({ title: 'entity1' });
         expect(entities).toHaveLength(2);
       });
@@ -572,9 +649,12 @@ describe('EntitiesDAO', () => {
       });
     });
 
-    describe('getWithFiles()', () => {
-      it('should return entity with documents and attachments separated', async () => {
-        const entities = await createDao().getWithFiles({ sharedId: 'entity1', language: 'en' });
+    describe('find() with withFiles', () => {
+      it('returns entity with documents and attachments separated', async () => {
+        const entities = await createDao().find(
+          { sharedId: 'entity1', language: 'en' },
+          { withFiles: true }
+        );
         expect(entities).toHaveLength(1);
         expect(entities[0].documents).toHaveLength(1);
         expect(entities[0].documents[0].filename).toBe('doc1');
@@ -582,77 +662,106 @@ describe('EntitiesDAO', () => {
         expect(entities[0].attachments[0].filename).toBe('att1');
       });
 
-      it('should support multiple sharedIds', async () => {
-        const entities = await createDao().getWithFiles({ sharedIds: ['entity1'] });
+      it('supports multiple sharedIds', async () => {
+        const entities = await createDao().find({ sharedIds: ['entity1'] }, { withFiles: true });
         expect(entities).toHaveLength(2);
       });
 
-      it('should prefer sharedIds over sharedId when both are provided', async () => {
-        const entities = await createDao().getWithFiles({
-          sharedId: 'entity1',
-          sharedIds: ['entity3'],
-        });
-        expect(entities.map(e => e.sharedId)).toEqual(['entity3']);
+      it('returns empty array for an empty sharedIds filter', async () => {
+        expect(await createDao().find({ sharedIds: [] }, { withFiles: true })).toEqual([]);
       });
 
-      it('should return empty array for an empty sharedIds filter', async () => {
-        expect(await createDao().getWithFiles({ sharedIds: [] })).toEqual([]);
+      it('returns empty array for an empty-string sharedId filter', async () => {
+        expect(await createDao().find({ sharedId: '' }, { withFiles: true })).toEqual([]);
       });
 
-      it('should return empty array for an empty-string sharedId', async () => {
-        expect(await createDao().getWithFiles({ sharedId: '' })).toEqual([]);
+      it('returns empty array for an empty-string language filter', async () => {
+        expect(await createDao().find({ language: '' }, { withFiles: true })).toEqual([]);
       });
 
-      it('should return empty array for an empty-string language', async () => {
-        expect(await createDao().getWithFiles({ language: '' as any })).toEqual([]);
+      it('returns empty array when nothing matches', async () => {
+        expect(
+          await createDao().find({ sharedId: 'nonexistent' }, { withFiles: true })
+        ).toHaveLength(0);
       });
 
-      it('should return empty array when nothing matches', async () => {
-        expect(await createDao().getWithFiles({ sharedId: 'nonexistent' })).toHaveLength(0);
-      });
-
-      it('should return empty documents and attachments for entities without files', async () => {
-        const entities = await createDao().getWithFiles({ sharedId: 'entity3' });
+      it('returns empty documents and attachments for entities without files', async () => {
+        const entities = await createDao().find({ sharedId: 'entity3' }, { withFiles: true });
         expect(entities).toHaveLength(1);
         expect(entities[0].documents).toEqual([]);
         expect(entities[0].attachments).toEqual([]);
       });
+
+      it('projects only selected fields plus sharedId, documents and attachments', async () => {
+        const entities = await createDao().find(
+          { sharedId: 'entity1', language: 'en' },
+          { withFiles: true, select: ['title', 'template'] }
+        );
+        expect(entities).toHaveLength(1);
+        const entity = entities[0];
+        expect(entity.title).toBe('entity1');
+        expect(entity.template?.toString()).toBe(factory.idString('t1'));
+        expect(entity.sharedId).toBe('entity1');
+        expect(entity.documents).toHaveLength(1);
+        expect(entity.attachments).toHaveLength(1);
+        expect((entity as any).metadata).toBeUndefined();
+        expect((entity as any).published).toBeUndefined();
+      });
     });
 
-    describe('getByIdsWithDocuments()', () => {
-      it('should return entities with documents and attachments', async () => {
-        const entities = await createDao().getByIdsWithDocuments([factory.idString('entity1-en')]);
+    describe('find() with ids and withFiles', () => {
+      it('returns entities with documents and attachments', async () => {
+        const entities = await createDao().find(
+          { ids: [factory.idString('entity1-en')] },
+          { withFiles: true }
+        );
         expect(entities).toHaveLength(1);
         expect(entities[0].documents).toHaveLength(1);
         expect(entities[0].attachments).toHaveLength(1);
       });
 
-      it('should return empty array for empty ids', async () => {
-        expect(await createDao().getByIdsWithDocuments([])).toEqual([]);
+      it('returns empty array for an empty ids filter', async () => {
+        expect(await createDao().find({ ids: [] }, { withFiles: true })).toEqual([]);
       });
 
-      it('should return empty array for non-existent ids', async () => {
-        expect(await createDao().getByIdsWithDocuments(['nonexistent'])).toEqual([]);
+      it('returns empty array for non-existent ids', async () => {
+        expect(
+          await createDao().find({ ids: [factory.idString('nonexistent')] }, { withFiles: true })
+        ).toEqual([]);
       });
 
-      it('should respect the limit option', async () => {
-        const entities = await createDao().getByIdsWithDocuments(
-          [factory.idString('entity1-en'), factory.idString('entity2-en')],
-          { limit: 1 }
+      it('respects the limit option', async () => {
+        const entities = await createDao().find(
+          { ids: [factory.idString('entity1-en'), factory.idString('entity2-en')] },
+          { withFiles: true, limit: 1 }
         );
         expect(entities).toHaveLength(1);
       });
 
-      it('should include fullText when documentsFullText is true and excludes it by default', async () => {
-        const withFullText = await createDao().getByIdsWithDocuments(
-          [factory.idString('entity1-en')],
-          { documentsFullText: true }
+      it('projects only selected fields plus sharedId, documents and attachments', async () => {
+        const entities = await createDao().find(
+          { ids: [factory.idString('entity1-en')] },
+          { withFiles: true, select: ['title'] }
+        );
+        expect(entities).toHaveLength(1);
+        expect(entities[0].title).toBe('entity1');
+        expect(entities[0].sharedId).toBe('entity1');
+        expect(entities[0].documents).toHaveLength(1);
+        expect(entities[0].attachments).toHaveLength(1);
+        expect((entities[0] as any).metadata).toBeUndefined();
+      });
+
+      it('includes fullText when withFiles.fullText is true and excludes it by default', async () => {
+        const withFullText = await createDao().find(
+          { ids: [factory.idString('entity1-en')] },
+          { withFiles: { fullText: true } }
         );
         expect(withFullText[0].documents[0].fullText).toEqual({ 1: 'page one content' });
 
-        const withoutFullText = await createDao().getByIdsWithDocuments([
-          factory.idString('entity1-en'),
-        ]);
+        const withoutFullText = await createDao().find(
+          { ids: [factory.idString('entity1-en')] },
+          { withFiles: true }
+        );
         expect((withoutFullText[0].documents[0] as any).fullText).toBeUndefined();
       });
     });
