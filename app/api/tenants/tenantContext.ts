@@ -44,7 +44,6 @@ type Tenant = {
       enabled?: boolean;
       sampleRate?: number;
     };
-    v2Captcha?: boolean;
     v2PrivateInstance?: boolean;
     v2Usergroups?: boolean;
   };
