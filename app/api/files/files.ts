@@ -157,10 +157,10 @@ export const files = {
       .filter((f): f is PDFDocument => f instanceof PDFDocument)
       .some(f => f.generatedToc);
 
-    const [entity] = (await entities.get(
-      { sharedId: updatedFile.entity },
-      '+permissions'
-    )) as unknown as EntityWithFilesSchema[];
+    const [entity] = await entities.get({ sharedId: updatedFile.entity });
+    if (!entity) {
+      throw new Error(`Entity not found for sharedId ${updatedFile.entity}`);
+    }
     await ensureEntityActor(entity);
     const template = entity.template?.toString?.();
     if (!template) {

@@ -190,7 +190,7 @@ describe('POST /api/suggestions/accept', () => {
     const [entity] = await testingEnvironment.runWithContext(async () =>
       entities.get({ sharedId: 'entityWithSelects2' })
     );
-    expect(entity.metadata.property_multiselect).toEqual([
+    expect(entity.metadata!.property_multiselect).toEqual([
       { value: 'A', label: 'A' },
       { value: '1B', label: '1B', parent: { value: '1', label: '1' } },
     ]);

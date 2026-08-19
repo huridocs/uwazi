@@ -37,7 +37,8 @@ export class CreateBlankSuggestionsFromDocument implements UseCase<Input, void> 
     }
     const [entity] = await entities.get(
       { sharedId: file.entity! },
-      { template: 1, title: 1, metadata: 1 }
+      { template: 1, title: 1, metadata: 1 },
+      { withoutDocuments: true }
     );
 
     const extractors = await Extractors.get({

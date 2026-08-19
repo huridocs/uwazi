@@ -178,10 +178,14 @@ export default {
 
     const existingEntities = new Set(
       (
-        await entities.get({
-          sharedId: { $in: relsFlat.map(r => r.entity) },
-          language,
-        })
+        await entities.get(
+          {
+            sharedId: { $in: relsFlat.map(r => r.entity) },
+            language,
+          },
+          undefined,
+          { withoutDocuments: true }
+        )
       ).map(r => r.sharedId)
     );
 

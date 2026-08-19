@@ -150,7 +150,7 @@ describe('translations', () => {
           entities.get({ language: 'es', sharedId: 'entity1' })
         )
       )[0];
-      initialEntity.metadata.Dictionary[0].label = 'Changed Password ES';
+      initialEntity.metadata!.Dictionary![0].label = 'Changed Password ES';
       expect(updatedEntity).toEqual(initialEntity);
     });
   });

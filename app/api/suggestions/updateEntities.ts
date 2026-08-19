@@ -158,10 +158,11 @@ const fetchEntityInfo = async (
     .flat();
   const addedSharedIds = acceptedSuggestions.map(s => s.addedValues || []).flat();
   const expectedSharedIds = Array.from(new Set(suggestionSharedIds.concat(addedSharedIds)));
-  const entitiesInDb = (await entities.get({ sharedId: { $in: expectedSharedIds } }, [
-    'sharedId',
-    'template',
-  ])) as { sharedId: string; template: ObjectId }[];
+  const entitiesInDb = (await entities.get(
+    { sharedId: { $in: expectedSharedIds } },
+    ['sharedId', 'template'],
+    { withoutDocuments: true }
+  )) as { sharedId: string; template: ObjectId }[];
   const indexedBySharedId = objectIndex(
     entitiesInDb,
     e => e.sharedId,
@@ -455,10 +456,7 @@ const updateEntitiesWithSuggestion = async (
   // Process per accepted suggestion: fetch fresh entity, compute value, save sequentially
   await ArrayUtils.sequentialFor(acceptedSuggestions, async as => {
     try {
-      const [current] = (await entities.get(
-        { _id: new ObjectId(as.entityId) },
-        '+permissions'
-      )) as unknown as EntityWithFilesSchema[];
+      const [current] = await entities.get({ _id: new ObjectId(as.entityId) });
       if (!current) {
         LoggerFactory.default().info('IX accept: entity not found for update', {
           entityId: as.entityId,

@@ -1,7 +1,12 @@
 import type { ObjectId } from 'mongodb';
 import { EntitiesDAOFactory } from '#api/core/infrastructure/factories/EntitiesDAOFactory.js';
 import type { EntityDBO } from '#api/core/infrastructure/mongodb/entity/EntityDBO.js';
-import type { EntityFilters, FindOptions } from '#api/core/application/contracts/EntitiesDAO.js';
+import type {
+  EntityFilters,
+  FindOptions,
+  FindWithFilesOptions,
+} from '#api/core/application/contracts/EntitiesDAO.js';
+import type { EntityWithFilesSchema } from '#shared/types/entityType.js';
 import type { LanguageISO6391 } from '#shared/types/commonTypes.js';
 
 /**
@@ -93,41 +98,95 @@ const buildFindOptions = (
   return findOptions;
 };
 
-export default {
-  async getUnrestricted(query: EntitiesQuery, select?: EntitiesSelect): Promise<EntityDBO[]> {
-    const filters = translateQueryToFilters(query);
-    if (filters.sharedIds && filters.sharedIds.length === 0) {
-      return [];
-    }
-    return EntitiesDAOFactory.default()
-      .unrestricted()
-      .find(filters, buildFindOptions(select, { withoutDocuments: true }));
+/**
+ * Shared read path for the facade. `enforce` selects the enforced vs
+ * unrestricted DAO view; `forceWithoutDocuments` forces the no-files branch
+ * (for `getUnrestricted`). Otherwise the caller's `withoutDocuments` option
+ * decides, defaulting to loading documents/attachments.
+ *
+ * The with-files branch is the core→shared boundary: the DAO returns the core
+ * `EntityWithFiles` shape, surfaced to V1 callers as the shared
+ * `EntityWithFilesSchema`. Centralizing the cast here lets call sites drop
+ * their `as unknown as EntityWithFilesSchema[]` casts.
+ */
+const findEntities = async (
+  query: EntitiesQuery,
+  select: EntitiesSelect | undefined,
+  options: EntitiesGetOptions | undefined,
+  { enforce, forceWithoutDocuments }: { enforce: boolean; forceWithoutDocuments: boolean }
+): Promise<EntityDBO[] | EntityWithFilesSchema[]> => {
+  const filters = translateQueryToFilters(query);
+  if (filters.sharedIds && filters.sharedIds.length === 0) {
+    return [];
+  }
+  const mergedOptions: EntitiesGetOptions = forceWithoutDocuments
+    ? { ...(options ?? {}), withoutDocuments: true }
+    : (options ?? {});
+  const findOptions = buildFindOptions(select, mergedOptions);
+  const dao = enforce ? EntitiesDAOFactory.default() : EntitiesDAOFactory.default().unrestricted();
+
+  if (findOptions.withFiles) {
+    const withFiles = await dao.find(filters, findOptions as FindWithFilesOptions);
+    return withFiles as unknown as EntityWithFilesSchema[];
+  }
+  return dao.find(filters, findOptions);
+};
+
+export interface EntitiesFacade {
+  /** Unrestricted read, no documents/attachments. */
+  getUnrestricted(query: EntitiesQuery, select?: EntitiesSelect): Promise<EntityDBO[]>;
+  /** Unrestricted read, with documents/attachments (unless `withoutDocuments`). */
+  getUnrestrictedWithDocuments(
+    query: EntitiesQuery,
+    select?: EntitiesSelect,
+    options?: EntitiesGetOptions
+  ): Promise<EntityWithFilesSchema[]>;
+  /** Enforced read; with documents/attachments by default, without when `withoutDocuments: true`. */
+  get(
+    query: EntitiesQuery,
+    select: EntitiesSelect | undefined,
+    options: EntitiesGetOptions & { withoutDocuments: true }
+  ): Promise<EntityDBO[]>;
+  get(
+    query: EntitiesQuery,
+    select?: EntitiesSelect,
+    options?: EntitiesGetOptions
+  ): Promise<EntityWithFilesSchema[]>;
+  getById(id: string, language?: LanguageISO6391): Promise<EntityDBO | null>;
+}
+
+const facade: EntitiesFacade = {
+  async getUnrestricted(query, select): Promise<EntityDBO[]> {
+    return findEntities(query, select, undefined, {
+      enforce: false,
+      forceWithoutDocuments: true,
+    }) as Promise<EntityDBO[]>;
   },
 
   async getUnrestrictedWithDocuments(
-    query: EntitiesQuery,
-    select?: EntitiesSelect,
-    options: EntitiesGetOptions = {}
-  ): Promise<EntityDBO[]> {
-    const filters = translateQueryToFilters(query);
-    if (filters.sharedIds && filters.sharedIds.length === 0) {
-      return [];
-    }
-    return EntitiesDAOFactory.default()
-      .unrestricted()
-      .find(filters, buildFindOptions(select, options));
+    query,
+    select,
+    options = {}
+  ): Promise<EntityWithFilesSchema[]> {
+    return findEntities(query, select, options, {
+      enforce: false,
+      forceWithoutDocuments: false,
+    }) as Promise<EntityWithFilesSchema[]>;
   },
 
+  // Implementation signature of an overloaded method; the union return is
+  // narrowed by the overloads above. `any` avoids the impossible "return type
+  // assignable to both EntityDBO[] and EntityWithFilesSchema[]" constraint.
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   async get(
     query: EntitiesQuery,
     select?: EntitiesSelect,
     options: EntitiesGetOptions = {}
-  ): Promise<EntityDBO[]> {
-    const filters = translateQueryToFilters(query);
-    if (filters.sharedIds && filters.sharedIds.length === 0) {
-      return [];
-    }
-    return EntitiesDAOFactory.default().find(filters, buildFindOptions(select, options));
+  ): Promise<any> {
+    return findEntities(query, select, options, {
+      enforce: true,
+      forceWithoutDocuments: false,
+    });
   },
 
   async getById(id: string, language?: LanguageISO6391): Promise<EntityDBO | null> {
@@ -135,3 +194,5 @@ export default {
     return language ? dao.getBySharedId(id, language) : dao.getByInternalId(id);
   },
 };
+
+export default facade;
