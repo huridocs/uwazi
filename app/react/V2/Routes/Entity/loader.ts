@@ -11,6 +11,10 @@ import { httpServices } from '#V2/services/http/index.js';
 import { throwApiError } from '#V2/shared/errorUtils.js';
 import { readyDocuments } from '#shared/entityDefaultDocument.js';
 import { getMainDocument } from '#V2/formatters/index.js';
+import type {
+  RelationshipAnchorRow,
+  RelationshipQueryPayload,
+} from '#V2/api/relationships/types.js';
 import { entityLoaderCache } from './EntityLoaderCache.js';
 import { parseEntityHash } from './entityUrlState.js';
 import { VIEW_MODE_PARAM } from './Components/index.js';
@@ -23,6 +27,34 @@ const entityNotFoundError = (sharedId: string) =>
     status: 404,
     detail: `Entity ${sharedId} not found`,
   });
+
+const loadRelationshipQuery = async (
+  services: V2Services,
+  input: {
+    sharedId: string;
+    language: string;
+    fileId?: string;
+    headers?: IncomingHttpHeaders;
+  }
+): Promise<RelationshipQueryPayload> => {
+  const { sharedId, language, fileId, headers } = input;
+  const noAnchors: Promise<[RelationshipAnchorRow[]]> = Promise.resolve([[]]);
+  const [[summary, summaryError], [anchors, anchorsError]] = await Promise.all([
+    services.relationshipsQuery.getSummary(sharedId, { language, headers }),
+    fileId
+      ? services.relationshipsQuery.getAnchors(sharedId, fileId, { language, headers })
+      : noAnchors,
+  ]);
+  if (summaryError) throwApiError(summaryError);
+  if (anchorsError) throwApiError(anchorsError);
+  return {
+    language,
+    sharedId,
+    ...(fileId ? { fileId } : {}),
+    summary: summary ?? [],
+    anchors: anchors ?? [],
+  };
+};
 
 const isRawFromRequest = (requestUrl: string) => {
   const { hash } = new URL(requestUrl);
@@ -50,15 +82,13 @@ const createEntityLoader =
       return undefined;
     }
 
-    let entity = entityLoaderCache.getEntity(entitySharedId, language, {
-      requireRelationships: true,
-    });
+    let entity = entityLoaderCache.getEntity(entitySharedId, language);
     let pagePlaintext: string | undefined = '';
 
     if (!entity?._id) {
       const [fetchedEntity, error] = await services.entities.getBySharedId(entitySharedId, {
         language,
-        omitRelationships: false,
+        omitRelationships: true,
         headers,
       });
 
@@ -115,8 +145,14 @@ const createEntityLoader =
     }
 
     const entityPageView = entity ? await loadEntityPageView(entity, headers) : undefined;
+    const relationshipQuery = await loadRelationshipQuery(services, {
+      sharedId: entity.sharedId,
+      language,
+      fileId: mainDocument?._id,
+      headers,
+    });
 
-    return { entity, mainDocument, pagePlaintext, entityPageView };
+    return { entity, mainDocument, pagePlaintext, entityPageView, relationshipQuery };
   };
 
 const entityLoader = createEntityLoader(httpServices);

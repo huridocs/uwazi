@@ -1,4 +1,4 @@
-import type { Entity } from '#V2/api/entities/types.js';
+import type { RelationshipHubRow } from '#V2/api/relationships/types.js';
 import { formatRelationships } from './formatRelationships.js';
 
 const UNLABELED_TYPE_ID = 'no_label';
@@ -25,12 +25,13 @@ const typeNameOf = (typeId: string, relationshipTypes: RelationshipTypeName[]): 
 };
 
 const buildRelationshipsSsrIndex = (
-  entity: Entity,
+  selfSharedId: string,
+  hubRows: readonly RelationshipHubRow[],
   relationshipTypes: RelationshipTypeName[]
 ): RelationshipsSsrIndexGroup[] => {
   const groups = new Map<string, Map<string, string>>();
 
-  formatRelationships(entity).forEach(view => {
+  formatRelationships(selfSharedId, hubRows).forEach(view => {
     const sharedId = view.to.entity;
     const title = view.to.entityTitle;
     if (!sharedId || !title) return;

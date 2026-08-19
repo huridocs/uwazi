@@ -5,6 +5,7 @@ import { getEntityViewerV2Path, isEntityViewerV2Enabled } from '#app/utils/entit
 import { relationshipTypesAtom, settingsAtom } from '#V2/atoms/index.js';
 import type { Entity } from '#V2/api/entities/types.js';
 import { buildRelationshipsSsrIndex } from '#V2/formatters/relationships/buildRelationshipsSsrIndex.js';
+import { useRelationshipHubRows } from '#V2/Routes/Entity/Components/context/RelationshipsQueryProvider.js';
 
 type RelationshipsSsrIndexProps = {
   entity: Entity;
@@ -19,9 +20,10 @@ const RelationshipsSsrIndex = ({
 }: RelationshipsSsrIndexProps) => {
   const relationshipTypes = useAtomValue(relationshipTypesAtom);
   const settings = useAtomValue(settingsAtom);
+  const hubRows = useRelationshipHubRows();
   const groups = useMemo(
-    () => buildRelationshipsSsrIndex(entity, relationshipTypes),
-    [entity, relationshipTypes]
+    () => buildRelationshipsSsrIndex(entity.sharedId, hubRows, relationshipTypes),
+    [entity.sharedId, hubRows, relationshipTypes]
   );
   const entityViewerV2 = isEntityViewerV2Enabled(settings?.features);
 

@@ -1,8 +1,10 @@
 import React from 'react';
 import type { Entity, FileType } from '#V2/api/entities/types.js';
+import type { RelationshipQueryPayload } from '#V2/api/relationships/types.js';
 import { EntityProvider } from './EntityContext.js';
 import { EntityLanguageProvider } from './EntityLanguageContext.js';
 import { RelationshipsProvider } from './RelationshipsContext.js';
+import { RelationshipsQueryProvider } from './RelationshipsQueryProvider.js';
 import { RelationshipsSelectionProvider } from './RelationshipsSelectionContext.js';
 import { RelationshipsPanelFiltersProvider } from './RelationshipsPanelFiltersContext.js';
 import { DocumentInteractionProvider } from './DocumentInteractionContext.js';
@@ -18,6 +20,7 @@ type EntityScopedProviderProps = {
   mainDocument?: FileType;
   pagePlaintext?: string;
   entityPageView?: EntityPageViewData;
+  relationshipQuery?: RelationshipQueryPayload;
   children: React.ReactNode;
 };
 
@@ -27,6 +30,7 @@ const EntityScopedProvider = ({
   mainDocument,
   pagePlaintext,
   entityPageView,
+  relationshipQuery,
   children,
 }: EntityScopedProviderProps) => (
   <EntityProvider entity={entity}>
@@ -38,18 +42,20 @@ const EntityScopedProvider = ({
           initialMainDocument={mainDocument}
           initialPagePlaintext={pagePlaintext}
         >
-          <RelationshipsProvider>
-            <RelationshipsSelectionProvider>
-              <RelationshipsPanelFiltersProvider>
-                <DocumentInteractionProvider>
-                  <TocProvider>
-                    <ToCFileSync />
-                    <EntityOverlayProvider>{children}</EntityOverlayProvider>
-                  </TocProvider>
-                </DocumentInteractionProvider>
-              </RelationshipsPanelFiltersProvider>
-            </RelationshipsSelectionProvider>
-          </RelationshipsProvider>
+          <RelationshipsQueryProvider seed={relationshipQuery}>
+            <RelationshipsProvider>
+              <RelationshipsSelectionProvider>
+                <RelationshipsPanelFiltersProvider>
+                  <DocumentInteractionProvider>
+                    <TocProvider>
+                      <ToCFileSync />
+                      <EntityOverlayProvider>{children}</EntityOverlayProvider>
+                    </TocProvider>
+                  </DocumentInteractionProvider>
+                </RelationshipsPanelFiltersProvider>
+              </RelationshipsSelectionProvider>
+            </RelationshipsProvider>
+          </RelationshipsQueryProvider>
         </EntityLanguageProvider>
       </MetadataEditingProvider>
     </EntityPageViewProvider>

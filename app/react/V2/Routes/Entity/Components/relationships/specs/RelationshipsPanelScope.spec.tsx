@@ -9,9 +9,15 @@ import { createMemoryRouter, RouterProvider } from 'react-router';
 import type { Entity } from '#V2/api/entities/types.js';
 import { relationshipTypesAtom, templatesAtom } from '#V2/atoms/index.js';
 import { EntityScopedProvider } from '#V2/Routes/Entity/Components/context/index.js';
+import { ServicesProvider } from '#V2/services/ServicesProvider.js';
+import { createTestServices } from '#V2/testing/createTestServices.js';
 import { RelationshipsPanel } from '../panel/RelationshipsPanel.js';
 import { RelationshipsFiltersDrawer } from '../filters/RelationshipsFiltersDrawer.js';
 import { entityWithRelations } from './fixtures/entityWithRelations.js';
+import {
+  relationshipQueryFromEntity,
+  resolvedFromEntity,
+} from './helpers/relationshipQueryFromEntity.js';
 
 beforeAll(() => {
   Element.prototype.scrollIntoView = jest.fn();
@@ -32,20 +38,31 @@ const createPanelScopeRouter = (entity: Entity) => {
   const store = createStore();
   store.set(relationshipTypesAtom, [{ _id: 'relA', name: 'Related' }]);
   store.set(templatesAtom, [{ _id: 'template1', color: '#faca15', name: 'Entity' }]);
+  const relationshipQuery = relationshipQueryFromEntity(entity);
+  const services = createTestServices({
+    relationshipsQuery: {
+      getSummary: async () => [relationshipQuery.summary],
+      getAnchors: async () => [relationshipQuery.anchors],
+      getResolved: async () => [resolvedFromEntity(entity)],
+    },
+  });
 
   return createMemoryRouter([
     {
       path: '/',
       element: (
         <Provider store={store}>
-          <EntityScopedProvider
-            key={entity.sharedId}
-            entity={entity}
-            language={entity.language ?? 'en'}
-          >
-            <RelationshipsPanel />
-            <RelationshipsFiltersDrawer />
-          </EntityScopedProvider>
+          <ServicesProvider value={services}>
+            <EntityScopedProvider
+              key={entity.sharedId}
+              entity={entity}
+              language={entity.language ?? 'en'}
+              relationshipQuery={relationshipQuery}
+            >
+              <RelationshipsPanel />
+              <RelationshipsFiltersDrawer />
+            </EntityScopedProvider>
+          </ServicesProvider>
         </Provider>
       ),
     },

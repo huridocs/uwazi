@@ -5,7 +5,9 @@ import React from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
 import { localeAtom, relationshipTypesAtom, settingsAtom } from '#V2/atoms/index.js';
 import { TestAtomStoreProvider, TestRouterContext } from '#V2/testing/index.js';
+import { EntityScopedProvider } from '#V2/Routes/Entity/Components/context/index.js';
 import { entityWithRelations } from './fixtures/entityWithRelations.js';
+import { relationshipQueryFromEntity } from './helpers/relationshipQueryFromEntity.js';
 import { RelationshipsSsrIndex } from '../panel/RelationshipsSsrIndex.js';
 
 const renderIndex = (entity = entityWithRelations) =>
@@ -18,7 +20,13 @@ const renderIndex = (entity = entityWithRelations) =>
           [settingsAtom, { features: { featureFlagEntityViewerv2: true } }],
         ]}
       >
-        <RelationshipsSsrIndex entity={entity} />
+        <EntityScopedProvider
+          entity={entity}
+          language={entity.language}
+          relationshipQuery={relationshipQueryFromEntity(entity)}
+        >
+          <RelationshipsSsrIndex entity={entity} />
+        </EntityScopedProvider>
       </TestAtomStoreProvider>
     </TestRouterContext>
   );

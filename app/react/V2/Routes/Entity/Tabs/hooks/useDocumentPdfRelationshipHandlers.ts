@@ -16,6 +16,7 @@ import {
   useRelationshipsPanelFilterInputs,
   useRelationshipsPanelSearch,
   useRelationshipsPanelUi,
+  useRelationshipHubRows,
 } from '#V2/Routes/Entity/Components/context/index.js';
 import { useActiveRelationshipHighlight } from '#V2/Routes/Entity/Components/document/index.js';
 import { getMarkerRefIds, toggleClusterIfActive } from './documentPdfClusterUtils.js';
@@ -32,6 +33,7 @@ function useDocumentPdfRelationshipHandlers({
 }: UseDocumentPdfRelationshipHandlersParams) {
   const { setScrollToRelationshipPanel } = useDocumentRelationshipNav();
   const { mainDocument } = useEntityLanguage();
+  const hubRows = useRelationshipHubRows();
   const { activeClusterRefIds, setActiveClusterRefIds, setRelTypeFilters, setEntityTypeFilters } =
     useRelationshipsPanelFacetFilters();
   const { setSearch } = useRelationshipsPanelSearch();
@@ -53,12 +55,12 @@ function useDocumentPdfRelationshipHandlers({
     (relationshipId: string): RelationshipMarker | undefined => {
       if (!entity) return undefined;
       return filterMarkersForDocument(
-        projectRelationshipMarkers(entity),
+        projectRelationshipMarkers(entity.sharedId, hubRows),
         mainDocument?._id,
         entity.sharedId
       ).find(marker => marker._id === relationshipId);
     },
-    [entity, mainDocument?._id]
+    [entity, hubRows, mainDocument?._id]
   );
 
   const clearVisibilityFilters = useCallback(() => {

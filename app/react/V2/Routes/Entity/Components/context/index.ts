@@ -3,6 +3,11 @@ export { useEntityScopedEntity, useEntityContext } from './EntityContext.js';
 export { useEntityLanguage } from './EntityLanguageContext.js';
 export { useRelationships, useRelationshipsActions } from './RelationshipsContext.js';
 export {
+  useRelationshipHubRows,
+  useRelationshipQueryStatus,
+  useEnsureResolved,
+} from './RelationshipsQueryProvider.js';
+export {
   useRelationshipsSelection,
   useRelationshipsSelectionState,
   useRelationshipsSelectionActions,

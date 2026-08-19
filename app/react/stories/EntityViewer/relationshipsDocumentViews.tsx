@@ -15,6 +15,7 @@ import {
 } from '#V2/Routes/Entity/Components/context/index.js';
 import { useActiveRelationshipHighlight } from '#V2/Routes/Entity/Components/document/index.js';
 import { projectRelationshipMarkers } from '#V2/formatters/relationships/relationshipsPanelProjection.js';
+import { hubRowsFromEntity } from '#V2/Routes/Entity/Components/relationships/specs/helpers/relationshipQueryFromEntity.js';
 import { apiEntity, templates } from '../fixtures/referencesFixtures.js';
 import { RelationshipsStoryProvider } from './RelationshipsStoryProvider.js';
 
@@ -123,7 +124,8 @@ const RelationshipsDocumentView = ({
         />
       </div>
       <RelationshipsDisplay
-        entity={entity}
+        selfSharedId={entity.sharedId}
+        hubRows={hubRowsFromEntity(entity)}
         document={mainDocument}
         currentPage={currentPage}
         pageHeight={pageHeight}
@@ -197,7 +199,9 @@ const RelationshipsSyncedDocumentView = ({
 
   const handleHighlightClick = useCallback(
     (relationshipId: string) => {
-      const marker = projectRelationshipMarkers(entity).find(item => item._id === relationshipId);
+      const marker = projectRelationshipMarkers(entity.sharedId, hubRowsFromEntity(entity)).find(
+        item => item._id === relationshipId
+      );
       if (marker) {
         selectRelationship(marker, { scrollPanel: true });
         return;
@@ -229,7 +233,8 @@ const RelationshipsSyncedDocumentView = ({
       </div>
       {!isMobile && (
         <RelationshipsDisplay
-          entity={entity}
+          selfSharedId={entity.sharedId}
+          hubRows={hubRowsFromEntity(entity)}
           document={mainDocument}
           currentPage={currentPage}
           pageHeight={pageHeight}

@@ -9,7 +9,10 @@ import {
   DocumentSelectionFloatingMenu,
   DocumentLanguageFallbackNotice,
 } from '#V2/Routes/Entity/Components/document/index.js';
-import { useEntityLanguage } from '#V2/Routes/Entity/Components/context/index.js';
+import {
+  useEntityLanguage,
+  useRelationshipHubRows,
+} from '#V2/Routes/Entity/Components/context/index.js';
 import { useDocumentPdfView } from '../hooks/useDocumentPdfView.js';
 import { useRailInset } from '../hooks/useRailInset.js';
 
@@ -28,6 +31,7 @@ const DocumentTab = ({
   showViewModeSelect = false,
   showRail = true,
 }: DocumentTabProps) => {
+  const hubRows = useRelationshipHubRows();
   const {
     filename,
     isRaw,
@@ -128,7 +132,8 @@ const DocumentTab = ({
           </div>
           {!isMobile && (
             <RelationshipsDisplay
-              entity={entity}
+              selfSharedId={entity.sharedId}
+              hubRows={hubRows}
               document={mainDocument}
               currentPage={pageNumber}
               pageHeight={pageHeight}
