@@ -437,6 +437,7 @@ Entity creation stage completed.,Entity creation stage completed.
 Entity deleted,Сутність видалено
 Entity Page,Сторінка сутності
 Entity saved,Об'єкт збережено
+Entity scope,Entity scope
 Entity type,Entity type
 Entity types,Типи об'єктів
 Entity updated,Сутність оновлено
@@ -576,6 +577,8 @@ in,в
 "In a group, either all relationships must have a hub or none of them.","У групі або всі відносини повинні мати центр, або жоден з них."
 In OCR queue,У черзі на оптичне розпізнавання символів
 in this document,in this document
+Include all entities,Include all entities
+Include only public,Include only public
 Incoming,Incoming
 Info,Інформація
 Information extraction training,Тренінг з вилучення інформації
@@ -585,6 +588,7 @@ Inherit type,Тип успадкування
 "Inherited values are read-only. Change the connection above, or edit the source entity.","Inherited values are read-only. Change the connection above, or edit the source entity."
 inherits,inherits
 Input,Вхідні дані
+Input type,Input type
 Install,Встановити
 Install Language(s),Мову(и) інсталяції
 Install the browser extension.,Встановіть розширення для браузера.
@@ -840,6 +844,7 @@ one character,one character
 "Only properties with the same name and configuration in every data source are available
             for both dimensions.","Only properties with the same name and configuration in every data source are available
             for both dimensions."
+Only published entities are counted.,Only published entities are counted.
 "Only templates that are not used as source in any other extractor and are not
                 selected as target in this extractor are available for selection.","Доступні лише шаблони, які не використовуються як джерело в інших екстракторах і не
                 вибрані як ціль у цьому екстракторі, доступні для вибору."
@@ -967,6 +972,7 @@ Public instance,Public instance
 Publish,Опублікувати
 Publish release,Publish release
 Published,У відкритому доступі
+Published and unpublished entities are counted.,Published and unpublished entities are counted.
 QR Code,QR-код
 Query,Запит
 Queued,Queued

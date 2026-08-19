@@ -552,4 +552,91 @@ describe('MongoDatavizQueryExecutor', () => {
       expect.arrayContaining([expect.objectContaining({ key: mujerId, label: 'Mujer', value: 1 })])
     );
   });
+
+  describe('unpublished entities', () => {
+    const unpublishedColorId = 'bb0df33d-ab09-46be-9080-00575d0804d1';
+
+    beforeAll(async () => {
+      await testingEnvironment.runWithContext(async () => {
+        const db = getConnection();
+        await db
+          .collection('dictionaries')
+          .updateOne(
+            { _id: thesaurusId },
+            { $push: { values: { id: unpublishedColorId, label: 'Blue' } } as any }
+          );
+        await db.collection('entities').insertOne({
+          _id: factory.id('unpublished-car'),
+          sharedId: 'shared-unpublished',
+          language: 'en',
+          template: templateId,
+          title: 'Unpublished car',
+          published: false,
+          metadata: {
+            color: [{ value: unpublishedColorId, label: 'Blue' }],
+          },
+        });
+      });
+    });
+
+    const colorQuery = {
+      sources: [{ templateId: templateId.toString() }],
+      dimensions: [{ property: 'color' as const, propertyType: 'select' as const }],
+      measures: [{ aggregation: 'count' as const }],
+      language: 'en',
+    };
+
+    it('should exclude unpublished entities by default (no flag)', async () => {
+      const executor = createExecutor();
+
+      const dto = await executor.execute(colorQuery, {
+        actor: User.createFrom(null),
+        datavizId: 'test-unpublished-default',
+      });
+
+      expect(dto.series[0]?.points).toEqual(
+        expect.not.arrayContaining([expect.objectContaining({ key: unpublishedColorId })])
+      );
+    });
+
+    it('should include unpublished entities when includeUnpublished is true, regardless of actor', async () => {
+      const executor = createExecutor();
+
+      for (const actor of [
+        User.createFrom(null),
+        User.createFrom({ _id: factory.id('admin').toString(), role: 'admin' }),
+      ]) {
+        // eslint-disable-next-line no-await-in-loop
+        const dto = await executor.execute(
+          { ...colorQuery, includeUnpublished: true },
+          { actor, datavizId: 'test-unpublished-opt-in' }
+        );
+
+        expect(dto.series[0]?.points).toEqual(
+          expect.arrayContaining([
+            expect.objectContaining({ key: unpublishedColorId, label: 'Blue', value: 1 }),
+          ])
+        );
+      }
+    });
+
+    it('should exclude unpublished entities when includeUnpublished is false, regardless of actor', async () => {
+      const executor = createExecutor();
+
+      for (const actor of [
+        User.createFrom(null),
+        User.createFrom({ _id: factory.id('admin').toString(), role: 'admin' }),
+      ]) {
+        // eslint-disable-next-line no-await-in-loop
+        const dto = await executor.execute(
+          { ...colorQuery, includeUnpublished: false },
+          { actor, datavizId: 'test-unpublished-opt-out' }
+        );
+
+        expect(dto.series[0]?.points).toEqual(
+          expect.not.arrayContaining([expect.objectContaining({ key: unpublishedColorId })])
+        );
+      }
+    });
+  });
 });
