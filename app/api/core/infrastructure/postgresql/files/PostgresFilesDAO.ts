@@ -160,7 +160,7 @@ class PostgresFilesDAO extends PostgresDataSource<FilesRow> {
     const columnList = columns.map(c => `"${c}"`).join(', ');
 
     // eslint-disable-next-line max-len
-    const sql = `SELECT ${columnList} FROM ?? WHERE "type" = 'document' AND "filename" IS NOT NULL AND ("toc" IS NULL OR jsonb_array_length("toc") = 0) AND "tenant_id" = ? ORDER BY "_id" ASC LIMIT 1`;
+    const sql = `SELECT ${columnList} FROM ?? WHERE "type" = 'document' AND "filename" IS NOT NULL AND "entity" IS NOT NULL AND "entity" <> '' AND ("toc" IS NULL OR jsonb_array_length("toc") = 0) AND "tenant_id" = ? ORDER BY "_id" ASC LIMIT 1`;
 
     const result = await this.table.raw<FilesRow>(sql, [this.table.tableName, this.table.tenantId]);
 
