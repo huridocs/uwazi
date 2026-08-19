@@ -76,7 +76,9 @@ function dropSingletonHubs(rows: ReadableHubRow[]): ReadableHubRow[] {
 
 function keepHubsWithSource(connections: HubConnection[], sharedId: string): HubConnection[] {
   const hubs = new Set(
-    connections.filter(connection => connection.entity === sharedId).map(connection => connection.hub)
+    connections
+      .filter(connection => connection.entity === sharedId)
+      .map(connection => connection.hub)
   );
   return connections.filter(connection => hubs.has(connection.hub));
 }
