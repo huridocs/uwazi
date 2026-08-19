@@ -20,6 +20,8 @@ import { IXSuggestionType } from '#shared/types/suggestionType.js';
 import type { UpdateEntityRequest } from '#api/core/infrastructure/express/entity/Schemas.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import users from '#api/users/users.js';
+import { UsersDirectoryFactory } from '#api/core/infrastructure/factories/UsersDirectoryFactory.js';
+import { usersDirectoryEnabled } from '#api/core/infrastructure/factories/usersBackendFlags.js';
 import { User } from '#api/users.v2/model/User.js';
 import type { LanguageISO6391, MetadataSchema } from '#shared/types/commonTypes.js';
 
@@ -47,7 +49,14 @@ const ensureEntityActor = async (entity: EntitySchema) => {
     throw new Error(`Entity actor is missing for sharedId ${entity.sharedId}`);
   }
 
-  const actorInDb = await users.getById(actorId, '-password', false, true);
+  // getActor, not getById: the entity's author may have been soft-deleted since, and
+  // attribution on historical records must still resolve them — it is the one read that
+  // does (D3/D9). `getData()` yields undefined on a miss, so the check below keeps throwing
+  // this module's own error rather than a UserNotFound.
+  const actorInDb = usersDirectoryEnabled()
+    ? (await UsersDirectoryFactory.default().getActor(actorId)).getData()
+    : await users.getById(actorId, '-password', false, true);
+
   if (!actorInDb) {
     throw new Error(`Entity actor not found for user ${actorId}`);
   }

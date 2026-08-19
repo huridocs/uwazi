@@ -3,7 +3,6 @@ import type { Application, NextFunction, Request, Response } from 'express';
 import request from 'supertest';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { setUpApp } from '#api/utils/testingRoutes.js';
-import { testingTenants } from '#api/utils/testingTenants.js';
 import { userRoutes } from '../routes.js';
 import { fixtures, f } from './fixtures.js';
 import { UserRole } from '#shared/types/userSchema.js';
@@ -26,6 +25,7 @@ const app: Application = setUpApp(
 
 const lockedUserId = new ObjectId();
 const recoveryRecordId = new ObjectId();
+const deletedUserRecoveryRecordId = new ObjectId();
 
 const resetFixtures = {
   ...fixtures,
@@ -49,15 +49,18 @@ const resetFixtures = {
       user: lockedUserId,
       expiresAt: new Date(Date.now() + 86400000),
     },
+    {
+      _id: deletedUserRecoveryRecordId,
+      key: 'deleteduserkey',
+      user: f.id('deletedUser'),
+      expiresAt: new Date(Date.now() + 86400000),
+    },
   ],
 };
 
 describe('POST /api/resetpassword', () => {
   beforeEach(async () => {
     await testingEnvironment.setUp(resetFixtures);
-    testingTenants.changeCurrentTenant({
-      featureFlags: { v2UsersUtilityRoutes: true },
-    });
   });
 
   afterAll(async () => {
@@ -91,6 +94,19 @@ describe('POST /api/resetpassword', () => {
 
     expect(response.status).toBe(400);
     expect(response.body.error).toBe('Recovery key not found');
+  });
+
+  it('should fail for a soft-deleted user without consuming the recovery key', async () => {
+    const response = await request(app)
+      .post('/api/resetpassword')
+      .send({ key: 'deleteduserkey', password: 'NewSecurePass123' });
+
+    expect(response.status).toBe(400);
+
+    const recovery = await testingEnvironment.db
+      .getCollection('passwordrecoveries')!
+      .findOne({ key: 'deleteduserkey' });
+    expect(recovery).not.toBeNull();
   });
 
   it('should return 422 when body is empty', async () => {

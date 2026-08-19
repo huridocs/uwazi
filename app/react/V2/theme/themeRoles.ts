@@ -9,6 +9,7 @@ type ThemeRoles = {
     muted: string;
     overlay: string;
     selected: string;
+    parchment: string;
   };
   text: {
     primary: string;
@@ -74,6 +75,10 @@ const getThemeRoles = (presetId: ThemePresetId, resolved: ResolvedThemeVars): Th
       muted: resolved['--color-theme-bg-muted'],
       overlay: resolved['--color-theme-bg-overlay'],
       selected: resolved['--color-theme-bg-selected'],
+      parchment:
+        presetId === 'legacy'
+          ? resolved['--color-theme-bg-selected']
+          : resolved['--color-theme-bg-primary'],
     },
     text: {
       primary: resolved['--color-theme-text-primary'],
@@ -133,6 +138,7 @@ const getThemeRoleVars = (roles: ThemeRoles): Record<string, string> => ({
   '--color-theme-surface-muted': roles.surface.muted,
   '--color-theme-surface-overlay': roles.surface.overlay,
   '--color-theme-surface-selected': roles.surface.selected,
+  '--color-theme-surface-parchment': roles.surface.parchment,
   '--color-theme-text-on-solid': roles.text.onSolid,
   '--color-theme-border-default': roles.border.default,
   '--color-theme-border-interactive': roles.border.interactive,

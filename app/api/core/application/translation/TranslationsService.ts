@@ -1,18 +1,8 @@
 import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js';
 import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
-import {
-  BulkDeleteKeysByContext,
-  TranslationsDataSource,
-  UpdateKeysByContextProps,
-} from '#api/core/application/contracts/TranslationsDataSource.js';
-import { flattenLocaleTranslation } from '#api/core/application/translation/localeTranslationDto.js';
-import {
-  TranslationEntryInput,
-  ValidateTranslationsService,
-} from '#api/core/application/translation/ValidateTranslationsService.js';
+import { TranslationsDataSource } from '#api/core/application/contracts/TranslationsDataSource.js';
+import { ValidateTranslationsService } from '#api/core/application/translation/ValidateTranslationsService.js';
 import { Translation, TranslationContext } from '#api/core/domain/translation/Translation.js';
-import { LanguageISO6391 } from '#shared/types/commonTypes.js';
-import { TranslationType } from '#shared/translationType.js';
 
 type Deps = {
   transactionManager: TransactionManager;
@@ -21,16 +11,9 @@ type Deps = {
   validateTranslations: ValidateTranslationsService;
 };
 
-function toDomainModels(translations: TranslationEntryInput[]): Translation[] {
-  return translations.map(
-    translation =>
-      new Translation(translation.key, translation.value, translation.language, translation.context)
-  );
-}
-
 /**
- * TX-free / ambient-TX write API for translations (EntitiesService-style).
- * Callers that mutate must open `transactionManager.run()` first.
+ * Multi-step translation writes (EntitiesService-style).
+ * Single DS operations belong on TranslationsDataSource, inside the parent TM.run().
  */
 class TranslationsService {
   constructor(private deps: Deps) {}
@@ -41,16 +24,16 @@ class TranslationsService {
     }
   }
 
-  private async partitionByExistence(translations: TranslationEntryInput[]) {
-    const byContext = new Map<string, TranslationEntryInput[]>();
+  private async partitionByExistence(translations: Translation[]) {
+    const byContext = new Map<string, Translation[]>();
     translations.forEach(t => {
       const list = byContext.get(t.context.id) || [];
       list.push(t);
       byContext.set(t.context.id, list);
     });
 
-    const toCreate: TranslationEntryInput[] = [];
-    const toUpdate: TranslationEntryInput[] = [];
+    const toCreate: Translation[] = [];
+    const toUpdate: Translation[] = [];
 
     await Promise.all(
       [...byContext.entries()].map(async ([contextId, entries]) => {
@@ -71,20 +54,14 @@ class TranslationsService {
     return { toCreate, toUpdate };
   }
 
-  async insertEntries(translations: TranslationEntryInput[]): Promise<Translation[]> {
+  private async insertEntries(translations: Translation[]): Promise<Translation[]> {
     this.ensureTransaction();
     await this.deps.validateTranslations.languagesExist(translations);
     await this.deps.validateTranslations.translationsWillExistsInAllLanguages(translations);
-    return this.deps.translationsDS.insert(toDomainModels(translations));
-  }
-
-  /** Ambient insert of already-built domain models (thesaurus create/update). */
-  async insert(translations: Translation[]): Promise<Translation[]> {
-    this.ensureTransaction();
     return this.deps.translationsDS.insert(translations);
   }
 
-  async upsertEntries(translations: TranslationEntryInput[]): Promise<Translation[]> {
+  private async upsertEntries(translations: Translation[]): Promise<Translation[]> {
     this.ensureTransaction();
     await this.deps.validateTranslations.languagesExist(translations);
 
@@ -109,11 +86,13 @@ class TranslationsService {
       })
     );
 
-    return this.deps.translationsDS.upsert(toDomainModels(translations));
+    return this.deps.translationsDS.upsert(translations);
   }
 
-  /** Partition then create/update by-item entries. Requires ambient TX. */
-  async saveEntries(translations: TranslationEntryInput[]): Promise<void> {
+  /**
+   * Batch write for mixed new and existing keys. Not an Upsert UseCase — HTTP does not branch create vs update.
+   */
+  async saveEntries(translations: Translation[]): Promise<void> {
     this.ensureTransaction();
     if (!translations.length) {
       return;
@@ -129,23 +108,13 @@ class TranslationsService {
     }
   }
 
-  /** Flatten a mammoth locale DTO and create/update entries. Requires ambient TX. */
-  async persistLocale(translation: TranslationType): Promise<void> {
-    await this.saveEntries(flattenLocaleTranslation(translation));
-  }
-
+  /**
+   * Fans out keys × installed languages, so the saveEntries all-languages validator does not apply.
+   */
   async createContext(context: TranslationContext, values: Record<string, string>): Promise<void> {
-    const languages = await this.deps.settingsDS.getLanguageKeys();
-    const entries: Translation[] = [];
-
-    languages.forEach(language => {
-      Object.entries(values).forEach(([key, value]) => {
-        entries.push(new Translation(key, value, language, context));
-      });
-    });
-
     this.ensureTransaction();
-    await this.deps.translationsDS.insert(entries);
+    const languages = await this.deps.settingsDS.getLanguageKeys();
+    await this.deps.translationsDS.insert(Translation.forLanguages(context, values, languages));
   }
 
   async updateContext(input: {
@@ -165,36 +134,6 @@ class TranslationsService {
     );
     translationContext.applyChanges(input.keyChanges, input.valueChanges, input.keysToDelete);
     await this.deps.translationsDS.updateContext(translationContext);
-  }
-
-  async deleteByContextId(contextId: string): Promise<void> {
-    this.ensureTransaction();
-    await this.deps.translationsDS.deleteByContextId(contextId);
-  }
-
-  async deleteByLanguage(language: LanguageISO6391): Promise<void> {
-    this.ensureTransaction();
-    await this.deps.translationsDS.deleteByLanguage(language);
-  }
-
-  async deleteKeysByContext(contextId: string, keysToDelete: string[]): Promise<void> {
-    this.ensureTransaction();
-    await this.deps.translationsDS.deleteKeysByContext(contextId, keysToDelete);
-  }
-
-  async bulkDeleteKeysByContext(props: BulkDeleteKeysByContext): Promise<void> {
-    this.ensureTransaction();
-    await this.deps.translationsDS.bulkDeleteKeysByContext(props);
-  }
-
-  async updateKeysByContextV2(props: UpdateKeysByContextProps): Promise<void> {
-    this.ensureTransaction();
-    await this.deps.translationsDS.updateKeysByContextV2(props);
-  }
-
-  async updateContextLabel(contextId: string, contextLabel: string): Promise<void> {
-    this.ensureTransaction();
-    await this.deps.translationsDS.updateContextLabel(contextId, contextLabel);
   }
 }
 

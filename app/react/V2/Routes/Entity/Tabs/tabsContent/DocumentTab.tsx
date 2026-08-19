@@ -123,6 +123,7 @@ const DocumentTab = ({
               onHighlightClick={handleHighlightClick}
               onPdfReady={handlePdfReady}
               highlights={propertySelectionHighlights}
+              initialPage={pageNumber}
             />
           </div>
           {!isMobile && (
@@ -148,7 +149,11 @@ const DocumentTab = ({
           ) : null}
         </div>
         <div className={`h-full min-h-0 overflow-auto ${isRaw ? 'block' : 'hidden'}`}>
-          <PlainText text={pagePlaintext || ''} dir={isRtl ? 'rtl' : 'ltr'} />
+          <PlainText
+            text={pagePlaintext || ''}
+            dir={isRtl ? 'rtl' : 'ltr'}
+            page={isRaw ? pageNumber : undefined}
+          />
         </div>
       </div>
     </div>

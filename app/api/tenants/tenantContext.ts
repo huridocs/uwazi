@@ -31,12 +31,11 @@ type Tenant = {
     postgresRelationshipTypes?: boolean;
     postgresPasswordRecoveries?: boolean;
     postgresUsers?: boolean;
+    postgresCaptchas?: boolean;
+    postgresUsergroups?: boolean;
     aiAssistant?: boolean;
     aiAssistantServiceUrl?: string;
-    v2UsersCreate?: boolean;
-    v2UsersDelete?: boolean;
-    v2UsersGet?: boolean;
-    v2UsersUpdate?: boolean;
+    usersDirectory?: boolean;
     telemetry?: {
       enabled?: boolean;
       sampleRate?: number;
@@ -45,12 +44,9 @@ type Tenant = {
       enabled?: boolean;
       sampleRate?: number;
     };
-    v2UsersUtilityRoutes?: Boolean;
-    v2Auth2fa?: boolean;
-    v2Login?: boolean;
-    v2PasswordReauth?: boolean;
     v2Captcha?: boolean;
     v2PrivateInstance?: boolean;
+    v2Usergroups?: boolean;
   };
   globalMatomo?: { id: string; url: string };
   ciMatomoActive?: boolean;

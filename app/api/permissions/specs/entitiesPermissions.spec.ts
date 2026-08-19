@@ -1,6 +1,7 @@
 import { entitiesPermissions } from '#api/permissions/entitiesPermissions.js';
 import { fixtures, groupA, userA, userB } from '#api/permissions/specs/fixtures.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { testingTenants } from '#api/utils/testingTenants.js';
 import { AccessLevels, MixedAccess, PermissionType } from '#shared/types/permissionSchema.js';
 import { PUBLIC_PERMISSION } from '../publicPermission.js';
 
@@ -19,32 +20,43 @@ describe('permissions', () => {
   });
 
   describe('get entities permissions', () => {
-    it('should return the permissions of the requested entities', async () => {
-      const permissions = await testingEnvironment.runWithContext(async () =>
-        entitiesPermissions.get(['shared1', 'shared2'])
-      );
-      expect(permissions).toEqual([
-        {
-          refId: groupA._id,
-          label: groupA.name,
-          level: MixedAccess.MIXED,
-          type: PermissionType.GROUP,
-        },
-        publicPermission,
-        {
-          refId: userA._id,
-          label: userA.username,
-          level: AccessLevels.READ,
-          type: PermissionType.USER,
-        },
-        {
-          refId: userB._id,
-          label: userB.username,
-          level: MixedAccess.MIXED,
-          type: PermissionType.USER,
-        },
-      ]);
-    });
+    // The user labels are resolved through UsersDirectory when `usersDirectory` is on and
+    // through the legacy users.get otherwise (plan 05 step 2). Both must produce the same
+    // labels, and `refId` must keep comparing equal despite UserView's `_id` being a string.
+    it.each([
+      { path: 'legacy users.get', usersDirectory: false },
+      { path: 'UsersDirectory', usersDirectory: true },
+    ])(
+      'should return the permissions of the requested entities ($path)',
+      async ({ usersDirectory }) => {
+        testingTenants.changeCurrentTenant({ featureFlags: { usersDirectory } });
+
+        const permissions = await testingEnvironment.runWithContext(async () =>
+          entitiesPermissions.get(['shared1', 'shared2'])
+        );
+        expect(permissions).toEqual([
+          {
+            refId: groupA._id,
+            label: groupA.name,
+            level: MixedAccess.MIXED,
+            type: PermissionType.GROUP,
+          },
+          publicPermission,
+          {
+            refId: userA._id,
+            label: userA.username,
+            level: AccessLevels.READ,
+            type: PermissionType.USER,
+          },
+          {
+            refId: userB._id,
+            label: userB.username,
+            level: MixedAccess.MIXED,
+            type: PermissionType.USER,
+          },
+        ]);
+      }
+    );
 
     it('should return mixed permissions in case one of the entities does not have any', async () => {
       const permissions = await testingEnvironment.runWithContext(async () =>

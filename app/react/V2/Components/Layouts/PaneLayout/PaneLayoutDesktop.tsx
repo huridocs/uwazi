@@ -190,6 +190,7 @@ const PaneLayoutDesktop = ({
           {index < children.length - 1 && (
             <button
               type="button"
+              tabIndex={-1}
               aria-label={t('System', 'Resize panels', null, false)}
               onMouseDown={event => onMouseDown(event, index)}
               onTouchStart={event => onTouchStart(event, index)}

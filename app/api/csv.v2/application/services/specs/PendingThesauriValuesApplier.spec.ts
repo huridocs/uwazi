@@ -2,7 +2,6 @@
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { ThesauriDataSourceFactory } from '#api/core/infrastructure/factories/ThesauriDataSourceFactory.js';
 import { TranslationsDataSourceFactory } from '#api/core/infrastructure/factories/TranslationsDataSourceFactory.js';
-import { TranslationsServiceFactory } from '#api/core/infrastructure/factories/TranslationsServiceFactory.js';
 import { Thesaurus } from '#api/core/domain/thesaurus/Thesaurus.js';
 import { ThesauriService } from '#api/core/application/ThesauriService.js';
 import { ThesaurusTranslationService } from '#api/core/application/thesaurusTranslationService/ThesaurusTranslationService.js';
@@ -79,7 +78,7 @@ describe('PendingThesauriValuesApplier', () => {
       const transactionManager = TransactionManagerFactory.default();
       const thesauriDS = ThesauriDataSourceFactory.default({ transactionManager });
       const settingsDS = SettingsDataSourceFactory.default({ transactionManager });
-      const translationsService = TranslationsServiceFactory.default({ transactionManager });
+      const translationsDS = TranslationsDataSourceFactory.default({ transactionManager });
       const thesauriService = new ThesauriService({
         dispatcher: new DispatcherAdapter(
           UwaziDispatcherFactory(tenants.current().name, transactionManager)
@@ -87,7 +86,7 @@ describe('PendingThesauriValuesApplier', () => {
         thesauriDS,
         thesaurusTranslationService: new ThesaurusTranslationService({
           settingsDS,
-          translationsService,
+          translationsDS,
         }),
       });
       return {

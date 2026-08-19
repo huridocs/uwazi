@@ -10,12 +10,14 @@ import {
 } from '#V2/testing/index.js';
 import { createTestServices } from '#V2/testing/createTestServices.js';
 import { ServicesProvider } from '#V2/services/ServicesProvider.js';
-import { settingsAtom, templatesAtom, userAtom } from '#V2/atoms/index.js';
+import { settingsAtom, templatesAtom, userAtom, relationshipTypesAtom } from '#V2/atoms/index.js';
 import * as utils from '#app/utils/index.js';
 import * as files from '#V2/api/files/index.js';
 import * as searchApi from '#V2/api/search/index.js';
+import * as scroller from '#V2/helpers/scrollIntoView.js';
 import { Entity } from '../Entity.js';
 import { entityLoaderCache } from '../EntityLoaderCache.js';
+import { entityWithRelations } from '../Components/relationships/specs/fixtures/entityWithRelations.js';
 
 jest.mock('#V2/Components/PDFViewer', () => ({
   ...jest.requireActual('#V2/Components/PDFViewer'),
@@ -67,6 +69,7 @@ type RenderEntityOptions = {
   settings?: Record<string, unknown>;
   user?: typeof adminUser;
   withServices?: boolean;
+  relationshipTypes?: Array<{ _id: string; name: string }>;
 };
 
 const renderEntity = (options: RenderEntityOptions = {}) => {
@@ -77,6 +80,7 @@ const renderEntity = (options: RenderEntityOptions = {}) => {
     settings,
     user,
     withServices = false,
+    relationshipTypes,
   } = options;
   const mainDocument = Object.hasOwn(options, 'mainDocument')
     ? options.mainDocument
@@ -85,13 +89,19 @@ const renderEntity = (options: RenderEntityOptions = {}) => {
   window.history.replaceState({}, '', initialEntries?.[0] ?? '/');
 
   const atoms: Array<
-    readonly [typeof templatesAtom | typeof settingsAtom | typeof userAtom, unknown]
+    readonly [
+      typeof templatesAtom | typeof settingsAtom | typeof userAtom | typeof relationshipTypesAtom,
+      unknown,
+    ]
   > = [[templatesAtom, sampleTemplate]];
   if (settings !== undefined) {
     atoms.push([settingsAtom, settings]);
   }
   if (user) {
     atoms.push([userAtom, user]);
+  }
+  if (relationshipTypes) {
+    atoms.push([relationshipTypesAtom, relationshipTypes]);
   }
 
   const tree = (
@@ -206,7 +216,8 @@ describe('Entity view', () => {
       fireEvent.click(mainTablist().getByRole('tab', { name: relationshipsMainTab }));
       await waitFor(() => {
         expect(sideTablist().getByRole('tab', { name: 'Document' })).toBeInTheDocument();
-        expect(sideTablist().queryByRole('tab', { name: 'Metadata' })).not.toBeInTheDocument();
+        expect(sideTablist().getByRole('tab', { name: 'Metadata' })).toBeInTheDocument();
+        expect(sideTablist().getByRole('tab', { name: /Files/ })).toBeInTheDocument();
         expect(sideTablist().queryByRole('tab', { name: 'ToC' })).not.toBeInTheDocument();
         expect(
           sideTablist().queryByRole('tab', { name: relationshipsSideTab })
@@ -363,6 +374,68 @@ describe('Entity view', () => {
     });
   });
 
+  describe('Relationships SSR index', () => {
+    const mainDocument = { filename: 'file.pdf', _id: 'f1', language: 'eng' };
+    const entity = {
+      ...entityWithRelations,
+      title: 'Sample Entity',
+      documents: [mainDocument],
+      metadata: {},
+    };
+    const relationshipTypes = [{ _id: 'relA', name: 'Related' }];
+    const renderRelationshipsEntity = (options: Omit<RenderEntityOptions, 'entity'> = {}) =>
+      renderEntity({ entity, mainDocument, relationshipTypes, ...options });
+
+    afterEach(() => {
+      jest.restoreAllMocks();
+    });
+
+    it('includes hidden relationship links on SSR and not the interactive panel', async () => {
+      jest.replaceProperty(utils, 'isClient', false);
+      renderRelationshipsEntity({
+        initialEntries: ['/?m=relationships'],
+      });
+
+      await checkEntityRendered();
+
+      const index = screen.getByTestId('entity-relationships-ssr-index');
+      expect(index).not.toBeVisible();
+      expect(
+        within(index).getByRole('heading', { name: 'Related', hidden: true })
+      ).toBeInTheDocument();
+      expect(
+        within(index).getByRole('link', { name: 'Related Entity', hidden: true })
+      ).toHaveAttribute('href', '/entityv2/target-entity');
+      expect(screen.queryByRole('button', { name: 'Expand all' })).not.toBeInTheDocument();
+    });
+
+    it('keeps crawlable relationship links on the default entity page', async () => {
+      jest.replaceProperty(utils, 'isClient', false);
+      renderRelationshipsEntity();
+
+      await checkEntityRendered();
+
+      const seoIndex = screen.getByTestId('entity-seo-relationships-index');
+      expect(
+        within(seoIndex).getByRole('link', { name: 'Related Entity', hidden: true })
+      ).toHaveAttribute('href', '/entityv2/target-entity');
+      expect(screen.queryByTestId('entity-relationships-ssr-index')).not.toBeInTheDocument();
+    });
+
+    it('replaces the SSR list with the interactive panel on the client', async () => {
+      renderRelationshipsEntity();
+
+      await checkEntityRendered();
+      fireEvent.click(mainTablist().getByRole('tab', { name: relationshipsMainTab }));
+
+      await waitFor(() => {
+        expect(screen.getByRole('button', { name: 'Expand all' })).toBeInTheDocument();
+      });
+      expect(screen.queryByTestId('entity-relationships-ssr-index')).not.toBeInTheDocument();
+      expect(screen.getByTestId('entity-seo-relationships-index')).toBeInTheDocument();
+    });
+  });
+
   describe('Entity without mainDocument', () => {
     it('does not render Document tab and defaults to Metadata', async () => {
       const entityNoDoc = { ...sampleEntity, documents: undefined };
@@ -375,6 +448,20 @@ describe('Entity view', () => {
         'aria-selected',
         'true'
       );
+    });
+
+    it('shows Metadata and Files side tabs when Relationships is on main', async () => {
+      const entityNoDoc = { ...sampleEntity, documents: undefined };
+
+      renderEntity({ entity: entityNoDoc, mainDocument: undefined });
+      await checkEntityRendered();
+
+      fireEvent.click(mainTablist().getByRole('tab', { name: relationshipsMainTab }));
+      await waitFor(() => {
+        expect(sideTablist().getByRole('tab', { name: 'Metadata' })).toBeInTheDocument();
+        expect(sideTablist().getByRole('tab', { name: /Files/ })).toBeInTheDocument();
+        expect(sideTablist().queryByRole('tab', { name: 'Document' })).not.toBeInTheDocument();
+      });
     });
 
     it('should render the Files tab when the entity has no files', async () => {
@@ -491,6 +578,66 @@ describe('Entity view', () => {
 
       await waitFor(() => {
         expect(mainTablist().getByRole('tab', { name: 'Metadata' })).toHaveAttribute(
+          'aria-selected',
+          'true'
+        );
+        expect(sideTablist().getByRole('tab', { name: 'Search' })).toHaveAttribute(
+          'aria-selected',
+          'true'
+        );
+      });
+    });
+
+    it('document snippet click in plain text keeps the view and jumps to the page container', async () => {
+      const snippetsData = {
+        data: [
+          {
+            _id: 's1',
+            snippets: {
+              count: 1,
+              metadata: [],
+              fullText: [{ page: 3, text: 'Excerpt <b>match</b>' }],
+            },
+          },
+        ],
+      };
+      const pageText = ['page one', 'page two', 'page three'].join('\f');
+      entityLoaderCache.setSearchResults('shared1', 'en:1', 'search', snippetsData);
+      jest.spyOn(searchApi, 'snippets').mockResolvedValue(snippetsData);
+      jest.spyOn(files, 'getDocumentPlaintext').mockResolvedValue(pageText);
+      const scrollIntoView = jest
+        .spyOn(scroller, 'scrollIntoView')
+        .mockImplementation(() => undefined);
+
+      renderEntity({
+        pagePlaintext: pageText,
+        initialEntries: ['/#s=search&searchTerm=search'],
+      });
+      await checkEntityRendered();
+
+      expect(await screen.findByText(/p\.3/)).toBeInTheDocument();
+      selectPlainTextView();
+
+      await waitFor(() => {
+        expect(
+          screen.getByTestId('entity-plaintext').closest('.overflow-auto')?.classList
+        ).toContain('block');
+      });
+
+      fireEvent.click(screen.getByRole('button', { name: /Page 3/i }));
+
+      await waitFor(() => {
+        expect(
+          screen.getByTestId('entity-plaintext').closest('.overflow-auto')?.classList
+        ).toContain('block');
+        expect(screen.getByRole('region', { name: 'Page 3' })).toHaveAttribute('id', 'page3');
+        expect(scrollIntoView).toHaveBeenCalledWith(
+          screen.getByRole('region', { name: 'Page 3' }),
+          {
+            block: 'start',
+          }
+        );
+        expect(mainTablist().getByRole('tab', { name: 'Document' })).toHaveAttribute(
           'aria-selected',
           'true'
         );

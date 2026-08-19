@@ -10,6 +10,11 @@ import { IXValidationError } from '#api/services/informationextraction/IXValidat
 import { PXValidationError } from '#api/paragraphExtraction/domain/PXValidationError.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { DomainError } from '#api/core/domain/error/DomainError.js';
+import {
+  AccountLocked,
+  InvalidCredentials,
+  TwoFactorTokenInvalid,
+} from '#api/core/domain/user/errors.js';
 import { NonRetryableJobError } from '#api/core/libs/queue/infrastructure/errors.js';
 import { handleError, prettifyError } from '../handleError.js';
 
@@ -292,6 +297,26 @@ describe('handleError', () => {
       message: 'Test error',
       logLevel: 'debug',
       prettyMessage: '\nTest error',
+    });
+  });
+
+  describe('failed authentication', () => {
+    it.each([
+      { name: 'InvalidCredentials', error: new InvalidCredentials() },
+      { name: 'AccountLocked', error: new AccountLocked() },
+    ])('should answer 401 for $name, not the generic DomainError 400', ({ error }) => {
+      expect(handleError(error)).toMatchObject({
+        code: 401,
+        message: 'Invalid username or password',
+        logLevel: 'debug',
+      });
+    });
+
+    it('should leave TwoFactorTokenInvalid on 400, since EnableTwoFactorAuth shares it', () => {
+      expect(handleError(new TwoFactorTokenInvalid())).toMatchObject({
+        code: 400,
+        logLevel: 'debug',
+      });
     });
   });
 

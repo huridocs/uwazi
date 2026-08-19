@@ -248,13 +248,15 @@ class MongoEntitiesDAO extends MongoDataSource<EntityDBO> implements EntitiesDAO
   }
 
   async getBySharedId(sharedId: string): Promise<EntityDBO[]>;
+
   async getBySharedId(sharedId: string, language: LanguageISO6391): Promise<EntityDBO | null>;
+
   async getBySharedId(
     sharedId: string,
     language?: LanguageISO6391
   ): Promise<EntityDBO[] | EntityDBO | null> {
     const filter: Record<string, unknown> = { sharedId };
-    if (language) {
+    if (language !== undefined) {
       filter.language = language;
       return this.getCollection().findOne(filter);
     }
@@ -422,17 +424,19 @@ class MongoEntitiesDAO extends MongoDataSource<EntityDBO> implements EntitiesDAO
     const conditions: Record<string, unknown>[] = [{ template: new ObjectId(query.templateId) }];
 
     const range: Record<string, unknown> = {};
-    if (query.from && ObjectId.isValid(query.from)) {
+    if (query.from) {
+      if (!ObjectId.isValid(query.from)) return [];
       range.$gte = new ObjectId(query.from);
     }
-    if (query.to && ObjectId.isValid(query.to)) {
+    if (query.to) {
+      if (!ObjectId.isValid(query.to)) return [];
       range.$lte = new ObjectId(query.to);
     }
     if (Object.keys(range).length > 0) {
       conditions.push({ _id: range });
     }
 
-    if (query.language) {
+    if (query.language !== undefined) {
       conditions.push({ language: query.language });
     }
 
@@ -512,39 +516,48 @@ class MongoEntitiesDAO extends MongoDataSource<EntityDBO> implements EntitiesDAO
   private translateFilterConditions(filters: EntityFilters): Record<string, unknown>[] {
     const conditions: Record<string, unknown>[] = [];
 
-    if (filters._id) {
-      conditions.push({ _id: new ObjectId(filters._id) });
+    if (filters._id !== undefined) {
+      if (ObjectId.isValid(filters._id)) {
+        conditions.push({ _id: new ObjectId(filters._id) });
+      } else {
+        conditions.push({ _id: { $in: [] } });
+      }
     }
 
-    if (filters.ids && filters.ids.length > 0) {
-      conditions.push({ _id: { $in: filters.ids.map(id => new ObjectId(id)) } });
+    if (filters.ids !== undefined) {
+      const validIds = filters.ids.filter(id => ObjectId.isValid(id));
+      conditions.push({ _id: { $in: validIds.map(id => new ObjectId(id)) } });
     }
 
-    if (filters.sharedId) {
+    if (filters.sharedId !== undefined) {
       conditions.push({ sharedId: filters.sharedId });
     }
 
-    if (filters.sharedIds && filters.sharedIds.length > 0) {
+    if (filters.sharedIds !== undefined) {
       conditions.push({ sharedId: { $in: filters.sharedIds } });
     }
 
-    if (filters.language) {
+    if (filters.language !== undefined) {
       conditions.push({ language: filters.language });
     }
 
-    if (filters.languages && filters.languages.length > 0) {
+    if (filters.languages !== undefined) {
       conditions.push({ language: { $in: filters.languages } });
     }
 
-    if (filters.template) {
-      conditions.push({ template: new ObjectId(filters.template) });
+    if (filters.template !== undefined) {
+      if (ObjectId.isValid(filters.template)) {
+        conditions.push({ template: new ObjectId(filters.template) });
+      } else {
+        conditions.push({ _id: { $in: [] } });
+      }
     }
 
-    if (filters.templateIds && filters.templateIds.length > 0) {
+    if (filters.templateIds !== undefined) {
       conditions.push({ template: { $in: filters.templateIds.map(id => new ObjectId(id)) } });
     }
 
-    if (filters.title) {
+    if (filters.title !== undefined) {
       conditions.push({ title: filters.title });
     }
 
@@ -556,12 +569,17 @@ class MongoEntitiesDAO extends MongoDataSource<EntityDBO> implements EntitiesDAO
       conditions.push({ published: filters.published });
     }
 
-    if (filters.metadataValueIn && filters.metadataValueIn.length > 0) {
-      conditions.push({
-        $or: filters.metadataValueIn.map(({ property, value }) => ({
-          [`metadata.${property}`]: { $elemMatch: { value } },
-        })),
-      });
+    if (filters.metadataValueIn !== undefined) {
+      if (filters.metadataValueIn.length === 0) {
+        // An empty OR list must match nothing, not everything.
+        conditions.push({ _id: { $in: [] } });
+      } else {
+        conditions.push({
+          $or: filters.metadataValueIn.map(({ property, value }) => ({
+            [`metadata.${property}`]: { $elemMatch: { value } },
+          })),
+        });
+      }
     }
 
     return conditions;

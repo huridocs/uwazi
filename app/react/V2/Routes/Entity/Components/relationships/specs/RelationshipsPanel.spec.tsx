@@ -4,6 +4,8 @@
 import { screen, within } from '@testing-library/react';
 import userEvent, { type UserEvent } from '@testing-library/user-event';
 import { defaultPdf, renderRelationshipsPanel } from './helpers/renderRelationshipsPanel.js';
+import { entityWithRelations } from './fixtures/entityWithRelations.js';
+import * as utils from '#app/utils/index.js';
 
 beforeAll(() => {
   Element.prototype.scrollIntoView = jest.fn();
@@ -144,5 +146,59 @@ describe('Relationships panel', () => {
       expect(screen.getByText('Other Entity')).toBeInTheDocument();
       expect(filtersButton()).toHaveAttribute('aria-pressed', 'false');
     });
+  });
+
+  describe('SSR index', () => {
+    afterEach(() => {
+      jest.restoreAllMocks();
+    });
+
+    it('renders a hidden grouped list instead of the interactive panel', () => {
+      jest.replaceProperty(utils, 'isClient', false);
+      renderRelationshipsPanel();
+
+      const index = screen.getByTestId('entity-relationships-ssr-index');
+      expect(index).not.toBeVisible();
+      expect(screen.getByRole('heading', { name: 'Related', hidden: true })).toBeInTheDocument();
+      expect(screen.getByRole('link', { name: 'Related Entity', hidden: true })).toHaveAttribute(
+        'href',
+        '/entityv2/target-entity'
+      );
+      expect(screen.getByRole('link', { name: 'Other Entity', hidden: true })).toHaveAttribute(
+        'href',
+        '/entityv2/other-entity'
+      );
+      expect(screen.queryByRole('button', { name: 'Expand all' })).not.toBeInTheDocument();
+    });
+  });
+});
+
+describe('blank state', () => {
+  const entityWithoutRelations = { ...entityWithRelations, relations: [] };
+
+  it('does not mention document text selection when there is no document', () => {
+    renderRelationshipsPanel({ entity: entityWithoutRelations });
+
+    expect(screen.queryByText(/selecting text in the document/)).not.toBeInTheDocument();
+    expect(screen.getAllByRole('strong').map(el => el.textContent)).toEqual([
+      'Edit',
+      'Create relationship',
+    ]);
+  });
+
+  it('keeps document text selection first when a document exists', () => {
+    renderRelationshipsPanel({
+      entity: entityWithoutRelations,
+      mainDocument: { _id: 'f1', filename: 'doc.pdf' },
+    });
+
+    expect(
+      screen.getByText(/To add references you can start by selecting text in the document/)
+    ).toBeInTheDocument();
+    expect(screen.getByText(/or select/)).toBeInTheDocument();
+    expect(screen.getAllByRole('strong').map(el => el.textContent)).toEqual([
+      'Edit',
+      'Create relationship',
+    ]);
   });
 });

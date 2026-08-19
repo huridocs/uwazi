@@ -17,8 +17,6 @@ import {
 
 const DUMMY_PASSWORD = 'Avoid user enum on login req ms diff';
 
-// Migration-only concern (pre-bcrypt passwords) — kept out of EncryptedPassword, which
-// otherwise only ever deals in bcrypt hashes. Delete once no stored password predates bcrypt.
 const matchesLegacySha256Hash = (plain: string, hash: string): boolean =>
   hash === createHash('sha256').update(plain).digest('hex');
 
@@ -126,7 +124,6 @@ class Login extends AbstractUseCase<Input, Output, Deps> {
       username: user.username,
       role: user.role,
       email: user.email,
-      groups: user.groups,
     });
   }
 }

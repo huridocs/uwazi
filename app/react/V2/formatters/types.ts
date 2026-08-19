@@ -151,7 +151,7 @@ interface RelationshipEntityValue {
   readonly templateId?: string;
   // authorized is either false or not present.
   readonly authorized?: false;
-  readonly icon?: { _id: string; label?: string };
+  readonly icon?: { _id: string; label?: string; type?: string };
 }
 
 interface RelatedRelationshipMetadataProperty extends Omit<BaseMetadataProperty, 'values'> {

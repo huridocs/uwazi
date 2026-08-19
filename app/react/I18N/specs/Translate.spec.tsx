@@ -57,14 +57,16 @@ describe('Translate', () => {
     expect(getByText('Save')).toBeInTheDocument();
   });
 
-  it('renders bold markdown', () => {
-    const { getByText } = renderWithAtoms({
+  it('renders multiple bold markdown segments on one line', () => {
+    const { getByText, container } = renderWithAtoms({
       context: 'System',
-      translationKey: 'boldTest',
-      children: '**BoldText**',
+      translationKey: 'multiBold',
+      children: 'select **Edit**, then **Create relationship**.',
     });
-    const el = getByText('BoldText');
-    expect(el.tagName).toBe('STRONG');
+    expect(getByText('Edit').tagName).toBe('STRONG');
+    expect(getByText('Create relationship').tagName).toBe('STRONG');
+    expect(container.querySelectorAll('strong')).toHaveLength(2);
+    expect(container.textContent).toBe('select Edit, then Create relationship.');
   });
 
   it('renders italic markdown', () => {

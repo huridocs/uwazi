@@ -1,3 +1,4 @@
+/* eslint-disable react/no-multi-comp */
 import React, { useCallback, useEffect } from 'react';
 import { LinkIcon } from '@heroicons/react/24/outline';
 import { Translate } from '#app/I18N/index.js';
@@ -12,18 +13,22 @@ import {
   useRelationshipsPanelLayout,
   useRelationshipsSelectionActions,
   useEntityOverlay,
+  useEntityLanguage,
   useEntityWriteAuthorized,
+  useEntityScopedEntity,
 } from '#V2/Routes/Entity/Components/context/index.js';
 import { useActiveRelationshipHighlight } from '#V2/Routes/Entity/Components/document/index.js';
 import { useGroupLabelContext } from '../hooks/useGroupLabelContext.js';
 import { useRelationshipDelete } from '../hooks/useRelationshipDelete.js';
+import { useSsrOnlyContent } from '../hooks/useSsrOnlyContent.js';
+import { RelationshipsSsrIndex } from './RelationshipsSsrIndex.js';
 
 type RelationshipsPanelProps = {
   focusDocumentOnSelect?: boolean;
   onFocusDocument?: () => void;
 };
 
-const RelationshipsPanel = ({
+const RelationshipsPanelView = ({
   focusDocumentOnSelect = false,
   onFocusDocument,
 }: RelationshipsPanelProps) => {
@@ -35,6 +40,8 @@ const RelationshipsPanel = ({
   const { setSelectedRelationshipIds, setRelationshipsEditMode } =
     useRelationshipsSelectionActions();
   const canWrite = useEntityWriteAuthorized();
+  const { mainDocument } = useEntityLanguage();
+  const hasMainDocument = Boolean(mainDocument?.filename);
 
   const { openEntityOverlay } = useEntityOverlay();
   const {
@@ -77,7 +84,17 @@ const RelationshipsPanel = ({
           }
           title={<Translate>No Relationships</Translate>}
           description={
-            <Translate>To add references you can start by selecting text in the document</Translate>
+            hasMainDocument ? (
+              <Translate translationKey="relationships blank state with document">
+                {
+                  'To add references you can start by selecting text in the document\n or select **Edit**, then **Create relationship**.'
+                }
+              </Translate>
+            ) : (
+              <Translate translationKey="relationships blank state message">
+                To add references select **Edit**, then **Create relationship**.
+              </Translate>
+            )
           }
         />
       );
@@ -134,6 +151,25 @@ const RelationshipsPanel = ({
         />
       )}
     </div>
+  );
+};
+
+const RelationshipsPanel = ({
+  focusDocumentOnSelect,
+  onFocusDocument,
+}: RelationshipsPanelProps) => {
+  const showSsrIndex = useSsrOnlyContent();
+  const entity = useEntityScopedEntity();
+
+  if (showSsrIndex) {
+    return <RelationshipsSsrIndex entity={entity} />;
+  }
+
+  return (
+    <RelationshipsPanelView
+      focusDocumentOnSelect={focusDocumentOnSelect}
+      onFocusDocument={onFocusDocument}
+    />
   );
 };
 

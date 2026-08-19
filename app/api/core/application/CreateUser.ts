@@ -5,14 +5,22 @@ import { Credentials } from '../domain/user/Credentials.js';
 import { EncryptedPassword } from '../domain/user/EncryptedPassword.js';
 import { AbstractUseCase } from '../libs/UseCase.js';
 import { UsersDataSource } from './contracts/UsersDataSource.js';
-import { UsergroupsDataSource } from './contracts/UsergroupsDataSource.js';
+import { UserGroupsDataSource } from './contracts/UserGroupsDataSource.js';
 
 const CreateUserInputSchema = z.object({
-  username: z.string().trim(),
+  // kept in step with UpdateUserInputSchema: a username this schema accepts but that one
+  // rejects would create a user who can never be edited.
+  username: z
+    .string()
+    .trim()
+    .min(1)
+    .refine(username => !username.includes(' '), 'Usernames can not contain spaces.'),
   role: z.nativeEnum(UserRole),
   email: z.string().email(),
-  groups: z.array(z.object({ _id: z.string(), name: z.string() })).optional(),
-  password: z.string().optional(),
+  assignedGroupIds: z.array(z.string()).default([]),
+  // `.min(1)`: an empty string is not nullish, so it would reach EncryptedPassword.create
+  // and be hashed as a real password instead of falling back to a random one.
+  password: z.string().min(1).optional(),
   domain: z.string(),
 });
 
@@ -20,11 +28,11 @@ type Input = z.infer<typeof CreateUserInputSchema>;
 
 type Output = User;
 
-type Deps = { usersDS: UsersDataSource; usergroupsDS: UsergroupsDataSource };
+type Deps = { usersDS: UsersDataSource; usergroupsDS: UserGroupsDataSource };
 
 class CreateUser extends AbstractUseCase<Input, Output, Deps> {
   async execute(input: Input): Promise<Output> {
-    const { password, domain, ...userData } = input;
+    const { password, domain, assignedGroupIds, ...userData } = input;
 
     const identityProps = { _id: this.idGenerator.generate(), ...userData };
     const identity = new User(identityProps);
@@ -40,7 +48,7 @@ class CreateUser extends AbstractUseCase<Input, Output, Deps> {
 
     await this.transactionManager.run(async () => {
       await this.deps.usersDS.insert(user);
-      await this.deps.usergroupsDS.updateUserGroups(user);
+      await this.deps.usergroupsDS.assignGroupsToUser(user._id, assignedGroupIds);
       await this.dispatcher.sendWelcomeEmail({
         userId: user._id,
         domain: input.domain,

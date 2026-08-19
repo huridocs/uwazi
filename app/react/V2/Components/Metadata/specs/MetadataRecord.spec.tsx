@@ -192,11 +192,11 @@ const renderRecord = (entityOverride: Entity = entity) =>
   );
 
 describe('MetadataRecord', () => {
-  it('shows Document, long fields, and Details, and hides Relationships when empty', () => {
+  it('shows long fields and Details, and hides Relationships when empty', () => {
     renderRecord(withoutRels);
 
-    expect(screen.getByRole('heading', { name: 'Document' })).toBeInTheDocument();
-    expect(screen.getByText('Report.pdf')).toBeInTheDocument();
+    expect(screen.queryByRole('heading', { name: 'Document' })).not.toBeInTheDocument();
+    expect(screen.queryByText('Report.pdf')).not.toBeInTheDocument();
     expect(screen.getByRole('heading', { name: 'Summary' })).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: 'Notes' })).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: 'Details' })).toBeInTheDocument();
@@ -209,6 +209,55 @@ describe('MetadataRecord', () => {
     expect(within(table).getByRole('rowheader', { name: 'Code' })).toBeInTheDocument();
     expect(within(table).getByText('ABC')).toBeInTheDocument();
     expect(screen.queryByText('Relationships')).not.toBeInTheDocument();
+  });
+
+  it('keeps showInCard fields above Details and image/media below Details', () => {
+    const imageTemplate = {
+      ...template,
+      properties: [
+        {
+          _id: 'p-text',
+          name: 'summary',
+          type: 'text' as const,
+          label: 'Summary',
+          showInCard: true,
+        },
+        { _id: 'p-short', name: 'code', type: 'text' as const, label: 'Code' },
+        {
+          _id: 'p-img',
+          name: 'photo',
+          type: 'image' as const,
+          label: 'Image',
+          style: 'contain' as const,
+          showInCard: true,
+        },
+      ],
+    };
+    const imageEntity: Entity = {
+      ...withoutRels,
+      metadata: {
+        summary: [{ value: 'Shown in cards' }],
+        code: [{ value: 'ABC' }],
+        photo: [{ value: '/plant.jpg', alt: 'plant' }],
+      },
+      documents: [],
+    };
+
+    render(
+      <TestAtomStoreProvider
+        initialValues={[
+          [templatesAtom, [imageTemplate, relatedTemplate, relatedEntityTemplate]],
+          [relationshipTypesAtom, [{ _id: 'rel-type-1', name: 'Relates to' }]],
+        ]}
+      >
+        <MetadataRecord entity={imageEntity} />
+      </TestAtomStoreProvider>
+    );
+
+    const headings = screen.getAllByRole('heading').map(heading => heading.textContent);
+    expect(headings.indexOf('Summary')).toBeGreaterThan(-1);
+    expect(headings.indexOf('Details')).toBeGreaterThan(headings.indexOf('Summary'));
+    expect(headings.indexOf('Image')).toBeGreaterThan(headings.indexOf('Details'));
   });
 
   it('scrolls and flashes the title row when focusMetadataFieldAtom is title', () => {
@@ -318,11 +367,11 @@ describe('MetadataRecord', () => {
     jest.useRealTimers();
   });
 
-  it('hides empty preview field and still shows Document when entity has a file', () => {
+  it('hides empty preview field and does not show Document', () => {
     renderRecord();
 
     expect(screen.queryByRole('heading', { name: 'Previewg' })).not.toBeInTheDocument();
-    expect(screen.getByRole('heading', { name: 'Document' })).toBeInTheDocument();
+    expect(screen.queryByRole('heading', { name: 'Document' })).not.toBeInTheDocument();
     expect(screen.getByRole('heading', { name: 'Notes' })).toBeInTheDocument();
   });
 

@@ -23,6 +23,7 @@ function useDocumentPdfPage({
   const pageNumber = Number.parseInt(page || '1', 10);
   const targetPageRef = useRef(pageNumber);
   const pageSyncEnabledRef = useRef(false);
+  const pendingVisiblePageRef = useRef(0);
   const unlockTimeoutRef = useRef<ReturnType<typeof setTimeout>>();
   const documentIdRef = useRef(mainDocument._id);
   const ownedControllerRef = useRef<PDFControls | null>(null);
@@ -58,16 +59,16 @@ function useDocumentPdfPage({
     documentIdRef.current = mainDocument._id;
     targetPageRef.current = 1;
     pageSyncEnabledRef.current = false;
+    pendingVisiblePageRef.current = 0;
     ownedControllerRef.current = null;
     setPdfController(null);
-    if (hashParams.get(PAGE_PARAM) === '1' || !hashParams.get(PAGE_PARAM)) {
-      return;
+    if (hashParams.get(PAGE_PARAM) && hashParams.get(PAGE_PARAM) !== '1') {
+      updateEntityUrl({
+        hash: next => {
+          next.set(PAGE_PARAM, '1');
+        },
+      });
     }
-    updateEntityUrl({
-      hash: next => {
-        next.set(PAGE_PARAM, '1');
-      },
-    });
   }, [mainDocument._id, hashParams, setPdfController, updateEntityUrl]);
 
   const updatePageParam = useCallback(
@@ -80,6 +81,19 @@ function useDocumentPdfPage({
     },
     [updateEntityUrl]
   );
+
+  const unlockPageSync = useCallback(() => {
+    pageSyncEnabledRef.current = true;
+    if (unlockTimeoutRef.current) {
+      clearTimeout(unlockTimeoutRef.current);
+      unlockTimeoutRef.current = undefined;
+    }
+    const pending = pendingVisiblePageRef.current;
+    if (pending > 0 && pending !== targetPageRef.current) {
+      targetPageRef.current = pending;
+      updatePageParam(pending);
+    }
+  }, [updatePageParam]);
 
   const handlePageNavigation = useCallback(
     (direction: 'prev' | 'next') => {
@@ -101,10 +115,9 @@ function useDocumentPdfPage({
   const handlePageChange = useCallback(
     (newPageNumber: number) => {
       if (!pageSyncEnabledRef.current) {
-        // Unlock once the restored page is visible; ignore earlier intersection noise.
+        pendingVisiblePageRef.current = newPageNumber;
         if (newPageNumber === targetPageRef.current) {
-          pageSyncEnabledRef.current = true;
-          if (unlockTimeoutRef.current) clearTimeout(unlockTimeoutRef.current);
+          unlockPageSync();
         }
         return;
       }
@@ -113,7 +126,7 @@ function useDocumentPdfPage({
         updatePageParam(newPageNumber);
       }
     },
-    [updatePageParam]
+    [unlockPageSync, updatePageParam]
   );
 
   const onPdfReady = useCallback(
@@ -122,16 +135,16 @@ function useDocumentPdfPage({
       ownedControllerRef.current = controls;
       setPdfController(controls);
       if (targetPage === 1) {
-        pageSyncEnabledRef.current = true;
+        unlockPageSync();
         return;
       }
       controls.goToPage(targetPage);
       if (unlockTimeoutRef.current) clearTimeout(unlockTimeoutRef.current);
       unlockTimeoutRef.current = setTimeout(() => {
-        pageSyncEnabledRef.current = true;
+        unlockPageSync();
       }, 400);
     },
-    [setPdfController]
+    [setPdfController, unlockPageSync]
   );
 
   const { filename, totalPages } = mainDocument || {

@@ -1,8 +1,11 @@
 Key,English
+"""Costa Rica""","""Costa Rica"""
+"""the status""~5","""the status""~5"
 *please keep this key secret and don't share it.,*please keep this key secret and don't share it.
 + Add data source,+ Add data source
 + Add filter,+ Add filter
 + click to select multiple cards.,+ click to select multiple cards.
+198?,198?
 2FA,2FA
 2FA Enabled,2FA Enabled
 A default template cannot be deleted.,A default template cannot be deleted.
@@ -48,7 +51,6 @@ Add from web,Add from web
 Add group,Add group
 add icon,add icon
 Add item,Add item
-Add language,Add language
 Add link,Add link
 Add page,Add page
 Add PDF,Add PDF
@@ -104,6 +106,7 @@ Analytics,Analytics
 Analytics description,"If you want to track analytics related to your collection visits, Uwazi supports both Google Analytics and Matomo."
 AND OR NOT,AND OR NOT
 Any entity,Any entity
+any single character,any single character
 Anyone can see this entity,Anyone can see this entity
 Appearance,Appearance
 Apply,Apply
@@ -164,7 +167,6 @@ Cards,Cards
 Cards view,Cards view
 Category,Category
 Change,Change
-Change password,Change password
 Change Password,Change Password
 Changes in the thesaurus will impact all the entities using these values.,Changes in the thesaurus will impact all the entities using these values.
 Changing the type will erase all relationships to this entity.,Changing the type will erase all relationships to this entity.
@@ -207,6 +209,7 @@ Collection,Collection
 Collection Name,Collection Name
 Colors,Colors
 Colors come from the server data layer. Preview shows assigned bucket colors when available.,Colors come from the server data layer. Preview shows assigned bucket colors when available.
+combine or exclude terms,combine or exclude terms
 Common sources,Common sources
 Completed,Completed
 Completed with errors,Completed with errors
@@ -255,11 +258,9 @@ Create,Create
 CREATE,CREATE
 Create and edit thesauri,Create and edit thesauri
 Create Connection,Create Connection
-Create dictionaries,Create dictionaries
 Create entity,Create entity
 Create Entity,Create Entity
 Create Extractor,Create Extractor
-Create group,Create group
 Create new entities and upload documents,Create new entities and upload documents
 Create new entity from selection,Create new entity from selection
 Create Reference,Create Reference
@@ -311,7 +312,6 @@ Data visualizations,Data visualizations
 Data was updated recently. You can refresh again in a few seconds.,Data was updated recently. You can refresh again in a few seconds.
 Date,Date
 Date added,Date added
-Date format,Date format
 Date modified,Date modified
 "Date or numeric × numeric enables scatter and heatmap. Line, area, and bar plot the
                 measure over the primary dimension (e.g. max engine size per registration date).","Date or numeric × numeric enables scatter and heatmap. Line, area, and bar plot the
@@ -335,7 +335,6 @@ Delete,Delete
 DELETE,DELETE
 Delete entities and documents,Delete entities and documents
 Delete file,Delete file
-Delete language,Delete language
 Delete relationship,Delete relationship
 Delete relationships,Delete relationships
 Delete?,Delete?
@@ -372,7 +371,6 @@ Do you want disable 2FA for the following users?,Do you want disable 2FA for the
 Do you want reset the password for the following users?,Do you want reset the password for the following users?
 Do you want to delete the following items?,Do you want to delete the following items?
 Document,Document
-Document and entity types,Document and entity types
 Document contents,Document contents
 Document OCR trigger,Document OCR trigger
 Document Title,Document Title
@@ -416,8 +414,6 @@ Editor,Editor
 editor,editor
 Editors,Editors
 Email,Email
-Email address,Email address
-Email updated,Email updated
 Embed,Embed
 Embed in pages,Embed in pages
 Empty,Empty
@@ -509,7 +505,6 @@ for,for
 For all entities,For all entities
 For entities with blank values,For entities with blank values
 Forgot Password or Username?,Forgot Password or Username?
-Forgot Password?,Forgot Password?
 Forms and email configuration,Forms and email configuration
 From,From
 From all suggestions,From all suggestions
@@ -527,7 +522,6 @@ Global CSS & JS,Global CSS & JS
 Global JS,Global JS
 Google,Google
 Google Analytics,Google Analytics
-Google Analytics ID,Google Analytics ID
 Google Maps,Google Maps
 Group,Group
 Group by,Group by
@@ -607,6 +601,7 @@ it has been logged with request id #,it has been logged with request id #
 Item,Item
 Items:,Items:
 Javascript,Javascript
+juris*,juris*
 key,key
 Label,Label
 "Label date ""From""",From:
@@ -697,6 +692,7 @@ Match,Match
 match,match
 match verbatim,match verbatim
 matches,matches
+"matches jurisdiction, jurists, jurisprudence","matches jurisdiction, jurists, jurisprudence"
 Matches show the passage and the page they are on.,Matches show the passage and the page they are on.
 Matching,Matching
 matching,matching
@@ -864,7 +860,6 @@ Or paste a URL,Or paste a URL
 Order,Order
 Other,Other
 other,other
-Other files,Other files
 Other users will be affected by this action!,Other users will be affected by this action!
 Others,Others
 Outgoing,Outgoing
@@ -884,9 +879,7 @@ parties,parties
 Password,Password
 Password + 2fa,Password + 2fa
 Password changed success,Password changed success
-Password Error,Password Error!  Both fields are required and should match
 Password is too long,Password is too long
-Password updated,Password updated
 Passwords do not match,Passwords do not match
 Paste an audio or video URL to use it as this property without uploading a file. Press Enter to apply.,Paste an audio or video URL to use it as this property without uploading a file. Press Enter to apply.
 Paste an image URL to use it as this property without uploading a file. Press Enter to apply.,Paste an image URL to use it as this property without uploading a file. Press Enter to apply.
@@ -929,7 +922,6 @@ Priority sorting,Priority sorting
 Priority sorting description,"Properties marked as priority sorting will be used as default sorting criteria. If more than one property is marked as priority sorting the system will try to pick-up the best fit. When listing mixed template types, the system will pick-up the best combined priority sorting."
 Private,Private
 Private entities description,Caution: the selected entities will be **private**. Only allowed users will be able to see them.
-Private instance,Private instance
 Process,Process
 Process extractor,Process extractor
 Process selected,Process selected
@@ -1008,6 +1000,9 @@ Relationship type name already exists,Relationship type name already exists
 Relationship types,Relationship types
 relationships,relationships
 Relationships,Relationships
+relationships blank state message,"To add references select **Edit**, then **Create relationship**."
+relationships blank state with document,"To add references you can start by selecting text in the document
+ or select **Edit**, then **Create relationship**."
 Relationships saved,Relationships saved
 relationships? This action cannot be undone.,relationships? This action cannot be undone.
 RelationType saved,RelationType saved
@@ -1015,7 +1010,6 @@ Release message,Release message
 remaining files,remaining files
 Remote Server Unreachable,Remote Server Unreachable
 Remove,Remove
-Remove file,Remove file
 Remove from connection,Remove from connection
 Remove from training set,Remove from training set
 remove icon,remove icon
@@ -1164,7 +1158,6 @@ Some tasks may take a while. Bert will reply when it's done.,Some tasks may take
 Something went wrong,Something went wrong
 Sort,Sort
 Sort ascending,Sort ascending
-Sort by,Sort by
 Sort descending,Sort descending
 Sort:,Sort:
 sorted by,sorted by
@@ -1245,6 +1238,8 @@ The request could not be processed.,The request could not be processed.
 The source of this template is a sync.,The source of this template is a sync.
 The token does not validate against the secret key,The token does not validate against the secret key
 The token does not validate against the secret key!,The token does not validate against the secret key!
+"the words together, in that order","the words together, in that order"
+the words within 5 of each other,the words within 5 of each other
 Theme and branding,Theme and branding
 Theme colors,Theme colors
 Theme colors imported,Theme colors imported

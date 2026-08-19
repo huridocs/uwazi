@@ -5,6 +5,7 @@ import { UserAccount } from '#api/core/domain/user/UserAccount.js';
 import { Credentials } from '#api/core/domain/user/Credentials.js';
 import { EncryptedPassword } from '#api/core/domain/user/EncryptedPassword.js';
 import type { UserDBO } from '../UserDBO.js';
+import type { UserWithGroupsDBO } from '../MongoUsersDAO.js';
 
 describe('MongoUsersMapper', () => {
   describe('toDBO', () => {
@@ -99,6 +100,79 @@ describe('MongoUsersMapper', () => {
       expect(result.credentials.accountUnlockCode).toBe('unlock-code');
       expect(result.credentials.using2fa).toBe(true);
       expect(result.credentials.secret).toBe('a-secret');
+    });
+  });
+
+  /**
+   * The read models. These two cases are the last line of defence on field leakage — the
+   * mappers are the only way a read model comes into existence (D2), so a field that does
+   * not survive them cannot reach a caller. Plan 04 deletes most of the users specs; these
+   * stay for exactly that reason.
+   */
+  const sensitiveDBO: UserWithGroupsDBO = {
+    _id: new ObjectId('507f191e810c19729de860ea'),
+    username: 'testuser',
+    role: UserRole.ADMIN,
+    email: 'test@example.com',
+    password: '$2a$10$hashedvalue',
+    secret: 'a-secret',
+    failedLogins: 3,
+    accountUnlockCode: 'unlock-code',
+    accountLocked: true,
+    using2fa: true,
+    deletedAt: new Date(),
+    groups: [{ _id: '507f191e810c19729de860eb', name: 'Group A' }],
+  };
+
+  const SENSITIVE_FIELDS = ['password', 'secret', 'failedLogins', 'accountUnlockCode', 'deletedAt'];
+
+  describe('toView', () => {
+    it('should map identity fields only, with _id as a hex string', () => {
+      expect(MongoUsersMapper.toView(sensitiveDBO)).toEqual({
+        _id: '507f191e810c19729de860ea',
+        username: 'testuser',
+        role: 'admin',
+        email: 'test@example.com',
+      });
+    });
+
+    it('should not carry any sensitive field through', () => {
+      const result = MongoUsersMapper.toView(sensitiveDBO);
+
+      SENSITIVE_FIELDS.forEach(field => expect(result).not.toHaveProperty(field));
+    });
+  });
+
+  describe('toProfile', () => {
+    it('should add groups and account state', () => {
+      expect(MongoUsersMapper.toProfile(sensitiveDBO)).toEqual({
+        _id: '507f191e810c19729de860ea',
+        username: 'testuser',
+        role: 'admin',
+        email: 'test@example.com',
+        groups: [{ _id: '507f191e810c19729de860eb', name: 'Group A' }],
+        using2fa: true,
+        accountLocked: true,
+      });
+    });
+
+    it('should coerce missing account state to false rather than undefined', () => {
+      const result = MongoUsersMapper.toProfile({
+        _id: new ObjectId('507f191e810c19729de860ea'),
+        username: 'testuser',
+        role: UserRole.ADMIN,
+        email: 'test@example.com',
+        groups: [],
+      });
+
+      expect(result.using2fa).toBe(false);
+      expect(result.accountLocked).toBe(false);
+    });
+
+    it('should not carry any sensitive field through', () => {
+      const result = MongoUsersMapper.toProfile(sensitiveDBO);
+
+      SENSITIVE_FIELDS.forEach(field => expect(result).not.toHaveProperty(field));
     });
   });
 });

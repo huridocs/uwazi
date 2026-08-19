@@ -2,6 +2,8 @@ import entities from '#api/entities/entities.js';
 
 import users from '#api/users/users.js';
 import userGroups from '#api/usergroups/userGroups.js';
+import { UsersDirectoryFactory } from '#api/core/infrastructure/factories/UsersDirectoryFactory.js';
+import { usersDirectoryEnabled } from '#api/core/infrastructure/factories/usersBackendFlags.js';
 import { unique } from '#api/utils/filters.js';
 import { EntityDBO } from '#api/core/infrastructure/mongodb/entity/EntityDBO.js';
 import { AccessLevels, PermissionType, MixedAccess } from '#shared/types/permissionSchema.js';
@@ -28,7 +30,9 @@ async function setAccessLevelAndPermissionData(
 ) {
   const grantedIds = Object.keys(grantedPermissions);
   const [usersData, groupsData] = await Promise.all([
-    users.get({ _id: { $in: grantedIds } }),
+    usersDirectoryEnabled()
+      ? UsersDirectoryFactory.default().getManyByIds(grantedIds)
+      : users.get({ _id: { $in: grantedIds } }),
     userGroups.get({ _id: { $in: grantedIds } }),
   ]);
 
@@ -43,7 +47,9 @@ async function setAccessLevelAndPermissionData(
       grantedPermissions[id].permission.type === PermissionType.USER ? usersData : groupsData;
     const additional =
       grantedPermissions[id].permission.type.toString() === PermissionType.USER
-        ? (p: any) => ({ label: p.username })
+        ? // `any` stays until the legacy branch above goes: `users.get` is untyped, so the
+          // ternary collapses `UserView[] | any` to `any` and there is nothing to narrow to.
+          (p: any) => ({ label: p.username })
         : (g: any) => ({ label: g.name });
     return {
       ...setAdditionalData(sourceData, grantedPermissions[id].permission, additional),

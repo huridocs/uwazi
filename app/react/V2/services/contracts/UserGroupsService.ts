@@ -1,4 +1,4 @@
-import type { UserGroup } from '#shared/contracts/Users.js';
+import type { UserGroup } from '#shared/contracts/UserGroups.js';
 import { ApiResponse } from '#V2/api/ApiResponse.js';
 import type { ServiceRequestOptions } from './ServiceRequestOptions.js';
 

@@ -3,7 +3,6 @@ import { AbstractController } from '#api/common.v2/infrastructure/AbstractContro
 import { LanguageSchema } from '#shared/types/commonTypes.js';
 import settings from '#api/settings/index.js';
 import { TranslationsQueryServiceFactory } from '#api/core/infrastructure/factories/TranslationsQueryServiceFactory.js';
-import { toIndexedTranslations } from '#api/core/infrastructure/express/translation/LegacyTranslationDtoMapper.js';
 import { AddLanguageUseCaseFactory } from '../../factories/AddLanguageUseCaseFactory.js';
 import { LoggerFactory } from '../../factories/LoggerFactory.js';
 
@@ -27,13 +26,13 @@ class AddLanguageController extends AbstractController<RequestDto> {
       const languages = LanguageInputSchema.parse(this.request?.body) as LanguageSchema[];
       const addedLanguages = await AddLanguageUseCaseFactory.default().execute({ languages });
 
-      for (const language of addedLanguages) {
-        const [newTranslations] = toIndexedTranslations(
-          // eslint-disable-next-line no-await-in-loop
-          await TranslationsQueryServiceFactory.default().getLegacy({ locale: language.key })
-        );
+      const query = TranslationsQueryServiceFactory.default();
+      const translationPayloads = await Promise.all(
+        addedLanguages.map(async language => query.getLegacy({ locale: language.key }))
+      );
+      translationPayloads.forEach(([newTranslations]) => {
         this.request.sockets.emitToCurrentTenant('translationsChange', newTranslations);
-      }
+      });
       const newSettings = await settings.get();
       this.request.sockets.emitToCurrentTenant('updateSettings', newSettings);
       // translationsInstallDone is emitted by CloneLanguageEntitiesJob

@@ -1,4 +1,5 @@
 import React, {
+  useEffect,
   useLayoutEffect,
   useRef,
   useState,
@@ -7,6 +8,8 @@ import React, {
   type RefObject,
 } from 'react';
 import { createPortal } from 'react-dom';
+
+const useIsomorphicLayoutEffect = typeof document !== 'undefined' ? useLayoutEffect : useEffect;
 
 type AnchoredPortalProps = {
   open: boolean;
@@ -21,6 +24,15 @@ type AnchoredPortalProps = {
 const GAP = 4;
 const PAD = 8;
 
+const hiddenStyle = (width?: number): CSSProperties => ({
+  position: 'fixed',
+  top: 0,
+  left: 0,
+  width,
+  visibility: 'hidden',
+  zIndex: 60,
+});
+
 const getThemedPortalRoot = (from: HTMLElement | null) => {
   if (typeof document === 'undefined') return null;
   return (
@@ -29,6 +41,13 @@ const getThemedPortalRoot = (from: HTMLElement | null) => {
     document.body
   );
 };
+
+const sameStyle = (a: CSSProperties, b: CSSProperties) =>
+  a.top === b.top &&
+  a.left === b.left &&
+  a.width === b.width &&
+  a.minWidth === b.minWidth &&
+  a.visibility === b.visibility;
 
 const placePanel = (
   anchor: DOMRect,
@@ -40,9 +59,10 @@ const placePanel = (
   let left = prefer === 'end' ? anchor.right - w : anchor.left;
   left = Math.min(Math.max(PAD, left), window.innerWidth - PAD - w);
 
+  const { height } = panel;
   let top = anchor.bottom + GAP;
-  if (top + panel.height > window.innerHeight - PAD) {
-    top = Math.max(PAD, anchor.top - GAP - panel.height);
+  if (top + height > window.innerHeight - PAD) {
+    top = Math.max(PAD, anchor.top - GAP - height);
   }
 
   return {
@@ -52,6 +72,7 @@ const placePanel = (
     width: width ?? undefined,
     minWidth: width ? undefined : panel.width,
     zIndex: 60,
+    visibility: 'visible',
   };
 };
 
@@ -66,30 +87,38 @@ const AnchoredPortal = ({
   className = '',
 }: AnchoredPortalProps) => {
   const panelRef = useRef<HTMLDivElement>(null);
-  const [style, setStyle] = useState<CSSProperties>({
-    position: 'fixed',
-    top: 0,
-    left: 0,
-    visibility: 'hidden',
-    zIndex: 60,
-  });
+  const [style, setStyle] = useState<CSSProperties>(() => hiddenStyle(width));
 
-  useLayoutEffect(() => {
-    if (!open) return undefined;
+  useIsomorphicLayoutEffect(() => {
+    if (!open) {
+      setStyle(current => {
+        const next = hiddenStyle(width);
+        return sameStyle(current, next) ? current : next;
+      });
+      return undefined;
+    }
 
     const update = () => {
       const anchor = anchorRef.current?.getBoundingClientRect();
       const panel = panelRef.current?.getBoundingClientRect();
       if (!anchor || !panel) return;
-      setStyle({ ...placePanel(anchor, panel, prefer, width), visibility: 'visible' });
+      const next = placePanel(anchor, panel, prefer, width);
+      setStyle(current => (sameStyle(current, next) ? current : next));
     };
 
     update();
     window.addEventListener('resize', update);
     window.addEventListener('scroll', update, true);
+
+    const panelEl = panelRef.current;
+    const observer =
+      panelEl && typeof ResizeObserver !== 'undefined' ? new ResizeObserver(update) : undefined;
+    if (panelEl) observer?.observe(panelEl);
+
     return () => {
       window.removeEventListener('resize', update);
       window.removeEventListener('scroll', update, true);
+      observer?.disconnect();
     };
   }, [open, anchorRef, prefer, width]);
 

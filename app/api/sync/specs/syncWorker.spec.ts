@@ -24,7 +24,8 @@ import syncRoutes from '#api/sync/routes.js';
 import templates from '#api/core/v1_layer/templates/index.js';
 import { tenants } from '#api/tenants/index.js';
 import thesauri from '#api/core/v1_layer/thesauri/index.js';
-import users from '#api/users/users.js';
+import { encryptPassword } from '#api/auth/encryptPassword.js';
+import { UserRole } from '#shared/types/userSchema.js';
 import { appContext } from '#api/utils/AppContext.js';
 import { appContextMiddleware } from '#api/utils/appContextMiddleware.js';
 import { elasticTesting } from '#api/utils/elastic_testing.js';
@@ -32,10 +33,8 @@ import errorHandlingMiddleware from '#api/utils/error_handling_middleware.js';
 import mailer from '#api/utils/mailer.js';
 import db, { DBFixture } from '#api/utils/testing_db.js';
 import { advancedSort } from '#app/utils/advancedSort.js';
-import { CreateTranslationEntriesUseCaseFactory } from '#api/core/infrastructure/factories/CreateTranslationEntriesUseCaseFactory.js';
 import { RelationshipTypesDataSourceFactory } from '#api/core/infrastructure/factories/RelationshipTypesDataSourceFactory.js';
 import { TranslationsQueryServiceFactory } from '#api/core/infrastructure/factories/TranslationsQueryServiceFactory.js';
-import { toIndexedTranslations } from '#api/core/infrastructure/express/translation/LegacyTranslationDtoMapper.js';
 import { FetchResponseError } from '#shared/JSONRequest.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
@@ -69,34 +68,50 @@ async function runAllTenants() {
   }
 }
 
+/**
+ * The admin `syncWorker.login` authenticates with on each target. Credentials must match the
+ * sync config in the host fixtures; the password is stored hashed because the target answers
+ * a real `POST api/login`.
+ */
+async function targetFixtures(username: string, password: string): Promise<DBFixture> {
+  return {
+    settings: [{}],
+    users: [
+      {
+        _id: db.id(),
+        username,
+        password: await encryptPassword(password),
+        role: UserRole.ADMIN,
+        email: `${username}@testing`,
+      },
+    ],
+  };
+}
+
 async function applyFixtures(
   _host1Fixtures: DBFixture = host1Fixtures,
   _host2Fixtures = host2Fixtures
 ) {
   const host1db = await db.setupFixturesAndContext(_host1Fixtures, undefined, 'host1');
   const host2db = await db.setupFixturesAndContext(_host2Fixtures, undefined, 'host2');
-  const target1db = await db.setupFixturesAndContext({ settings: [{}] }, undefined, 'target1');
-  const target2db = await db.setupFixturesAndContext({ settings: [{}] }, undefined, 'target2');
+  const target1db = await db.setupFixturesAndContext(
+    await targetFixtures('user', 'password'),
+    undefined,
+    'target1'
+  );
+  const target2db = await db.setupFixturesAndContext(
+    await targetFixtures('user2', 'password2'),
+    undefined,
+    'target2'
+  );
   db.UserInContextMockFactory.restore();
 
   await tenants.run(async () => {
     await elasticTesting.reindex();
-    await users.newUser({
-      username: 'user',
-      password: 'password',
-      role: 'admin',
-      email: 'user@testing',
-    });
   }, 'target1');
 
   await tenants.run(async () => {
     await elasticTesting.reindex();
-    await users.newUser({
-      username: 'user2',
-      password: 'password2',
-      role: 'admin',
-      email: 'user2@testing',
-    });
   }, 'target2');
 
   return { host1db, host2db, target1db, target2db };
@@ -371,6 +386,29 @@ describe('syncWorker', () => {
   });
 
   it('should syncronize translations v2 that match configured properties', async () => {
+    const systemKeyId = new ObjectId();
+    await testingDbs.host1db!.collection('translationsV2').insertOne({
+      _id: systemKeyId,
+      language: 'en',
+      key: 'System Key',
+      value: 'System Value',
+      context: { id: 'System', type: 'Uwazi UI', label: 'System' },
+    });
+    const hostTranslations = await testingDbs
+      .host1db!.collection('translationsV2')
+      .find({
+        $or: [{ _id: systemKeyId }, { 'context.id': template1.toString() }],
+      })
+      .toArray();
+    await testingDbs.host1db!.collection('updatelogs').insertMany(
+      hostTranslations.map(translation => ({
+        timestamp: 20000,
+        namespace: 'translationsV2',
+        mongoId: translation._id,
+        deleted: false,
+      }))
+    );
+
     await testingDbs.target1db!.collection('translationsV2').insertOne({
       _id: new ObjectId(),
       language: 'en',
@@ -378,69 +416,6 @@ describe('syncWorker', () => {
       value: 'System Value',
       context: { id: 'System', type: 'Uwazi UI', label: 'System' },
     });
-
-    await tenants.run(async () => {
-      await testingEnvironment.runWithContext(async () => {
-        await CreateTranslationEntriesUseCaseFactory.default().execute({
-          translations: [
-            {
-              language: 'en',
-              key: 'System Key',
-              value: 'System Value',
-              context: { id: 'System', type: 'Uwazi UI', label: 'System' },
-            },
-            {
-              language: 'en',
-              key: 'template1',
-              value: 'template1T',
-              context: { id: template1.toString(), type: 'Entity', label: 'Entity' },
-            },
-            {
-              language: 'en',
-              key: 't1Property1L',
-              value: 't1Property1T',
-              context: { id: template1.toString(), type: 'Entity', label: 'Entity' },
-            },
-            {
-              language: 'en',
-              key: 't1Relationship1L',
-              value: 't1Relationship1T',
-              context: { id: template1.toString(), type: 'Entity', label: 'Entity' },
-            },
-            {
-              language: 'en',
-              key: 't1Relationship2L',
-              value: 't1Relationship2T',
-              context: { id: template1.toString(), type: 'Entity', label: 'Entity' },
-            },
-            {
-              language: 'en',
-              key: 't1Thesauri2SelectL',
-              value: 't1Thesauri2SelectT',
-              context: { id: template1.toString(), type: 'Entity', label: 'Entity' },
-            },
-            {
-              language: 'en',
-              key: 't1Thesauri3MultiSelectL',
-              value: 't1Thesauri3MultiSelectT',
-              context: { id: template1.toString(), type: 'Entity', label: 'Entity' },
-            },
-            {
-              language: 'en',
-              key: 't1Relationship1',
-              value: 't1Relationship1',
-              context: { id: template1.toString(), type: 'Entity', label: 'Entity' },
-            },
-            {
-              language: 'en',
-              key: 'Template Title',
-              value: 'Template Title translated',
-              context: { id: template1.toString(), type: 'Entity', label: 'Entity' },
-            },
-          ],
-        });
-      });
-    }, 'host1');
 
     await runAllTenants();
 
@@ -450,7 +425,7 @@ describe('syncWorker', () => {
         .find({})
         .toArray();
       const syncedTranslations = await testingEnvironment.runWithContext(async () =>
-        toIndexedTranslations(await TranslationsQueryServiceFactory.default().getLegacy({}))
+        TranslationsQueryServiceFactory.default().getLegacy({})
       );
 
       expect(syncedTranslationsV2.filter(i => i.key === 'System Key')).toEqual([
@@ -463,32 +438,32 @@ describe('syncWorker', () => {
         },
       ]);
 
-      expect(syncedTranslations).toEqual([
-        {
-          contexts: [
-            {
-              id: 'System',
-              label: 'System',
-              type: 'Uwazi UI',
-              values: {
-                'System Key': 'System Value',
-              },
+      expect(syncedTranslations).toHaveLength(1);
+      expect(syncedTranslations[0].locale).toBe('en');
+      expect(syncedTranslations[0].contexts).toEqual(
+        expect.arrayContaining([
+          {
+            id: 'System',
+            label: 'System',
+            type: 'Uwazi UI',
+            values: {
+              'System Key': 'System Value',
             },
-            {
-              id: template1.toString(),
-              type: 'Entity',
-              label: 'Entity',
-              values: {
-                'Template Title': 'Template Title translated',
-                t1Property1L: 't1Property1T',
-                t1Relationship1L: 't1Relationship1T',
-                template1: 'template1T',
-              },
+          },
+          {
+            id: template1.toString(),
+            type: 'Entity',
+            label: 'Entity',
+            values: {
+              'Template Title': 'Template Title translated',
+              t1Property1L: 't1Property1T',
+              t1Relationship1L: 't1Relationship1T',
+              template1: 'template1T',
             },
-          ],
-          locale: 'en',
-        },
-      ]);
+          },
+        ])
+      );
+      expect(syncedTranslations[0].contexts).toHaveLength(2);
     }, 'target1');
   });
 

@@ -2,6 +2,7 @@ import Ajv from 'ajv';
 import { models } from '#api/odm/index.js';
 import userGroups from '#api/usergroups/userGroups.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { testingTenants } from '#api/utils/testingTenants.js';
 import { UserGroupSchema } from '#shared/types/userGroupType.js';
 import { UserSchema } from '#shared/types/userType.js';
 import { fixtures, group1Id, group2Id, user1Id, user2Id } from './fixtures.js';
@@ -14,7 +15,16 @@ describe('userGroups', () => {
   afterAll(async () => testingEnvironment.tearDown());
 
   describe('get', () => {
-    it('should return populated user groups from model', async () => {
+    // The member lookup goes through UsersDirectory when `usersDirectory` is on and through
+    // the legacy users.get otherwise (plan 05 step 2). Both must populate members the same
+    // way — UserView's `_id` is a string where the mongoose document's is an ObjectId, and
+    // that difference has to stay invisible here.
+    it.each([
+      { path: 'legacy users.get', usersDirectory: false },
+      { path: 'UsersDirectory', usersDirectory: true },
+    ])('should return populated user groups from model ($path)', async ({ usersDirectory }) => {
+      testingTenants.changeCurrentTenant({ featureFlags: { usersDirectory } });
+
       const groups = await userGroups.get({}, '', { sort: { name: 1 } });
       expect(groups[0]._id?.toString()).toBe(group1Id.toString());
       expect(groups[0].name).toBe('Group 1');

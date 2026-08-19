@@ -1,8 +1,11 @@
 Key,Russian
+"""Costa Rica""","""Costa Rica"""
+"""the status""~5","""the status""~5"
 *please keep this key secret and don't share it.,*please keep this key secret and don't share it.
 + Add data source,+ Add data source
 + Add filter,+ Add filter
 + click to select multiple cards.,+ click to select multiple cards.
+198?,198?
 2FA,2FA
 2FA Enabled,2FA Enabled
 A default template cannot be deleted.,A default template cannot be deleted.
@@ -48,7 +51,6 @@ Add from web,Добавить из Интернета
 Add group,Добавить группу
 add icon,добавить иконку
 Add item,Add item
-Add language,Добавить язык
 Add link,Добавить ссылку
 Add page,Добавить страницу
 Add PDF,Add PDF
@@ -104,6 +106,7 @@ Analytics,Analytics
 Analytics description,"If you want to track analytics related to your collection visits, Uwazi supports both Google Analytics and Matomo."
 AND OR NOT,AND OR NOT
 Any entity,Any entity
+any single character,any single character
 Anyone can see this entity,Anyone can see this entity
 Appearance,Appearance
 Apply,Apply
@@ -161,7 +164,6 @@ Cards,Карточки
 Cards view,Просмотр в виде карточек
 Category,Category
 Change,Change
-Change password,Изменить пароль
 Change Password,Change Password
 Changes in the thesaurus will impact all the entities using these values.,Changes in the thesaurus will impact all the entities using these values.
 Changing the type will erase all relationships to this entity.,Changing the type will erase all relationships to this entity.
@@ -202,6 +204,7 @@ Collection,Коллекция
 Collection Name,Collection Name
 Colors,Colors
 Colors come from the server data layer. Preview shows assigned bucket colors when available.,Colors come from the server data layer. Preview shows assigned bucket colors when available.
+combine or exclude terms,combine or exclude terms
 Common sources,Common sources
 Completed,Completed
 Completed with errors,Completed with errors
@@ -250,11 +253,9 @@ Create,Создать
 CREATE,Создать
 Create and edit thesauri,Create and edit thesauri
 Create Connection,Create Connection
-Create dictionaries,Создать словари
 Create entity,Создать объект
 Create Entity,Создать объект
 Create Extractor,Create Extractor
-Create group,Создать группу
 Create new entities and upload documents,Create new entities and upload documents
 Create new entity from selection,Create new entity from selection
 Create Reference,Create Reference
@@ -306,7 +307,6 @@ Data visualizations,Data visualizations
 Data was updated recently. You can refresh again in a few seconds.,Data was updated recently. You can refresh again in a few seconds.
 Date,Date
 Date added,Дата добавления
-Date format,Формат даты
 Date modified,Дата изменена
 "Date or numeric × numeric enables scatter and heatmap. Line, area, and bar plot the
                 measure over the primary dimension (e.g. max engine size per registration date).","Date or numeric × numeric enables scatter and heatmap. Line, area, and bar plot the
@@ -330,7 +330,6 @@ Delete,Удалить
 DELETE,Удалить
 Delete entities and documents,Delete entities and documents
 Delete file,Удалить файл
-Delete language,Удалить язык
 Delete relationship,Delete relationship
 Delete relationships,Delete relationships
 Delete?,Delete?
@@ -367,7 +366,6 @@ Do you want disable 2FA for the following users?,Do you want disable 2FA for the
 Do you want reset the password for the following users?,Do you want reset the password for the following users?
 Do you want to delete the following items?,Do you want to delete the following items?
 Document,Документ
-Document and entity types,Типы документов и объектов
 Document contents,Содержание документа
 Document OCR trigger,Document OCR trigger
 Document Title,Название документа
@@ -411,8 +409,6 @@ Editor,Редактор
 editor,Редактор
 Editors,Editors
 Email,Электронная почта
-Email address,Адрес электронной почты
-Email updated,Электронная почта обновлена
 Embed,Embed
 Embed in pages,Embed in pages
 Empty,Пустой
@@ -504,7 +500,6 @@ for,for
 For all entities,For all entities
 For entities with blank values,For entities with blank values
 Forgot Password or Username?,Forgot Password or Username?
-Forgot Password?,Забыли пароль?
 Forms and email configuration,Настройка форм и электронной почты
 From,From
 From all suggestions,From all suggestions
@@ -522,7 +517,6 @@ Global CSS & JS,Global CSS & JS
 Global JS,Global JS
 Google,Google
 Google Analytics,Google Analytics
-Google Analytics ID,ID Google Аналитики
 Google Maps,Google Карты
 Group,Group
 Group by,Group by
@@ -602,6 +596,7 @@ it has been logged with request id #,it has been logged with request id #
 Item,Item
 Items:,Элементы
 Javascript,Javascript
+juris*,juris*
 key,Russian
 Label,Метка
 "Label date ""From""","Метка даты ""от"""
@@ -692,6 +687,7 @@ Match,Match
 match,match
 match verbatim,match verbatim
 matches,matches
+"matches jurisdiction, jurists, jurisprudence","matches jurisdiction, jurists, jurisprudence"
 Matches show the passage and the page they are on.,Matches show the passage and the page they are on.
 Matching,Matching
 matching,matching
@@ -859,7 +855,6 @@ Or paste a URL,Or paste a URL
 Order,Последовательность
 Other,Другой
 other,Другой
-Other files,Other files
 Other users will be affected by this action!,Other users will be affected by this action!
 Others,Others
 Outgoing,Outgoing
@@ -879,9 +874,7 @@ parties,parties
 Password,Пароль
 Password + 2fa,Password + 2fa
 Password changed success,Password changed success
-Password Error,Неверный пароль
 Password is too long,Пароль слишком длинный
-Password updated,Пароль обновлен
 Passwords do not match,Passwords do not match
 Paste an audio or video URL to use it as this property without uploading a file. Press Enter to apply.,Paste an audio or video URL to use it as this property without uploading a file. Press Enter to apply.
 Paste an image URL to use it as this property without uploading a file. Press Enter to apply.,Paste an image URL to use it as this property without uploading a file. Press Enter to apply.
@@ -924,7 +917,6 @@ Priority sorting,Приоритетная сортировка
 Priority sorting description,"Properties marked as priority sorting will be used as default sorting criteria. If more than one property is marked as priority sorting the system will try to pick-up the best fit. When listing mixed template types, the system will pick-up the best combined priority sorting."
 Private,Private
 Private entities description,Caution: the selected entities will be **private**. Only allowed users will be able to see them.
-Private instance,Приватная база данных
 Process,Process
 Process extractor,Process extractor
 Process selected,Process selected
@@ -1003,6 +995,9 @@ Relationship type name already exists,Relationship type name already exists
 Relationship types,Типы взаимосвязей
 relationships,Взаимосвязи
 Relationships,Взаимосвязи
+relationships blank state message,"To add references select **Edit**, then **Create relationship**."
+relationships blank state with document,"To add references you can start by selecting text in the document
+ or select **Edit**, then **Create relationship**."
 Relationships saved,Relationships saved
 relationships? This action cannot be undone.,relationships? This action cannot be undone.
 RelationType saved,Тип взаимосвязи сохранен
@@ -1010,7 +1005,6 @@ Release message,Release message
 remaining files,remaining files
 Remote Server Unreachable,Remote Server Unreachable
 Remove,Удалить
-Remove file,Remove file
 Remove from connection,Remove from connection
 Remove from training set,Remove from training set
 remove icon,удалить иконку
@@ -1159,7 +1153,6 @@ Some tasks may take a while. Bert will reply when it's done.,Some tasks may take
 Something went wrong,Что-то пошло не так
 Sort,Сортировать
 Sort ascending,Sort ascending
-Sort by,Сортировать по
 Sort descending,Sort descending
 Sort:,Sort:
 sorted by,отсортировано по
@@ -1240,6 +1233,8 @@ The request could not be processed.,The request could not be processed.
 The source of this template is a sync.,The source of this template is a sync.
 The token does not validate against the secret key,The token does not validate against the secret key
 The token does not validate against the secret key!,The token does not validate against the secret key!
+"the words together, in that order","the words together, in that order"
+the words within 5 of each other,the words within 5 of each other
 Theme and branding,Theme and branding
 Theme colors,Theme colors
 Theme colors imported,Theme colors imported
