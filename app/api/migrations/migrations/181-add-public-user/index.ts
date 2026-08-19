@@ -1,8 +1,12 @@
 import { Db, ObjectId } from 'mongodb';
 import crypto from 'crypto';
-import { encryptPassword } from '#api/auth/encryptPassword.js';
+import bcrypt from 'bcryptjs';
 
 const PUBLIC_USER_ID = new ObjectId('698c35e7cf8880419d91fe4d');
+
+const SALT_ROUNDS = 10;
+
+const encryptPassword = async (plainPassword: string) => bcrypt.hash(plainPassword, SALT_ROUNDS);
 
 export default {
   delta: 181,

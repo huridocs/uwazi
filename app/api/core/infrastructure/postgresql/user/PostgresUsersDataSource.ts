@@ -89,8 +89,6 @@ class PostgresUsersDataSource implements UsersDataSource {
   }
 
   async countActiveUsers(): Promise<number> {
-    // The default scope already excludes both soft-deleted and system users (D5), so this
-    // no longer passes a guard filter of its own.
     return this.dao.count();
   }
 
@@ -103,7 +101,7 @@ class PostgresUsersDataSource implements UsersDataSource {
   }
 
   async delete(userIds: string[]): Promise<number> {
-    return this.dao.softDelete(userIds);
+    return this.dao.delete(userIds);
   }
 
   async findByUsernameAndUnlockCode(

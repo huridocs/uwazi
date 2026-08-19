@@ -161,7 +161,7 @@ describe('MongoUsersDAO', () => {
     });
 
     it('should soft-delete users', async () => {
-      const deleted = await getDao().softDelete([activeId.toHexString()]);
+      const deleted = await getDao().delete([activeId.toHexString()]);
 
       expect(deleted).toBe(1);
       expect(await getDao().findOne({ _id: activeId })).toBeNull();
@@ -169,11 +169,11 @@ describe('MongoUsersDAO', () => {
 
     it('should refuse to soft-delete the system user', async () => {
       // The previous implementation guarded nothing here.
-      expect(await getDao().softDelete([PUBLIC_USER_ID.toHexString()])).toBe(0);
+      expect(await getDao().delete([PUBLIC_USER_ID.toHexString()])).toBe(0);
     });
 
     it('should return 0 for an empty id list without touching the database', async () => {
-      expect(await getDao().softDelete([])).toBe(0);
+      expect(await getDao().delete([])).toBe(0);
     });
   });
 });

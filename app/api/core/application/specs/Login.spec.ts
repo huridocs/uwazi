@@ -1,7 +1,7 @@
 /* eslint-disable max-statements */
 import { createHash } from 'crypto';
 import * as otplib from 'otplib';
-import { encryptPassword } from '#api/auth/encryptPassword.js';
+import { EncryptedPassword } from '#api/core/domain/user/EncryptedPassword.js';
 import { Dispatcher } from '#api/core/application/contracts/Dispatcher.js';
 import {
   AccountLocked,
@@ -23,7 +23,7 @@ const TWO_FACTOR_SECRET = otplib.authenticator.generateSecret();
 let bcryptPassword: string;
 
 const buildFixtures = async () => {
-  bcryptPassword = await encryptPassword('validpassword');
+  bcryptPassword = (await EncryptedPassword.create('validpassword')).getValue();
 
   return {
     users: [
