@@ -16,7 +16,7 @@ Replace:
 - `Legacy*TranslationService` bridges that call the façade
 - Application-layer **Upsert** as a paradigm (create/update split instead)
 
-**Postgres phase (later):** to be documented in [`translations-postgres.md`](./translations-postgres.md) (not written yet). Do not implement Postgres in this phase.
+**Postgres phase:** [`translations-postgres.md`](./translations-postgres.md). One store; no dual-write; flag/copy/cutover.
 
 **Related prior work (principles only):** [`../Relationship Types/relationship-types-v2-migration.md`](../Relationship%20Types/relationship-types-v2-migration.md), [`../Relationship Types/relationship-types-postgres.md`](../Relationship%20Types/relationship-types-postgres.md).
 
@@ -137,21 +137,21 @@ RT deferred translations ownership: copied Templates’ port + `Legacy*Translati
 
 ## Decision record (locked)
 
-| ID  | Decision                                                                                                         | Status |
-| --- | ---------------------------------------------------------------------------------------------------------------- | ------ |
-| D1  | Phase 1 = V2 hex in `app/api/core` on Mongo `translationsV2` only                                                | Locked |
-| D2  | Keep legacy `/api/translations*` **contracts** identical; reimplement as **core hex**                            | Locked |
-| D3  | Keep `/api/v2/translations` by-item API under core                                                               | Locked |
-| D4  | Internal callers migrate off `#api/i18n/translations` to core mutation use cases/ports; retire Legacy\* wrappers | Locked |
-| D5  | **No application Upsert.** Create / Update / Delete (+ ImportPredefined). HTTP may branch create vs update       | Locked |
-| D6  | Sockets `translationsChange` (legacy locale DTO) and `translationKeysChange` (by-item) stay until FE cutover     | Locked |
-| D7  | FE Settings/atom cutover = Phase 1b follow-up, not required to close Phase 1                                     | Locked |
-| D8  | Postgres = later doc; one store; sync namespace `translationsV2` kept                                            | Locked |
-| D9  | Tests: integration-first; parity with current behavior; auth mock OK at routes                                   | Locked |
-| D10 | **GETs = thin controller → QueryService/DAO; mutations = UseCases.** No `GetTranslationsUseCase`                 | Locked |
-| D11 | **A UseCase exists only if a controller or job needs it.** Tests must not invent UseCases; they orchestrate via helpers that call `TranslationsService` (or the DS) inside `TM.run()` | Locked |
+| ID  | Decision                                                                                                                                                                                                                                                                                                                                                                                     | Status |
+| --- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------ |
+| D1  | Phase 1 = V2 hex in `app/api/core` on Mongo `translationsV2` only                                                                                                                                                                                                                                                                                                                            | Locked |
+| D2  | Keep legacy `/api/translations*` **contracts** identical; reimplement as **core hex**                                                                                                                                                                                                                                                                                                        | Locked |
+| D3  | Keep `/api/v2/translations` by-item API under core                                                                                                                                                                                                                                                                                                                                           | Locked |
+| D4  | Internal callers migrate off `#api/i18n/translations` to core mutation use cases/ports; retire Legacy\* wrappers                                                                                                                                                                                                                                                                             | Locked |
+| D5  | **No application Upsert.** Create / Update / Delete (+ ImportPredefined). HTTP may branch create vs update                                                                                                                                                                                                                                                                                   | Locked |
+| D6  | Sockets `translationsChange` (legacy locale DTO) and `translationKeysChange` (by-item) stay until FE cutover                                                                                                                                                                                                                                                                                 | Locked |
+| D7  | FE Settings/atom cutover = Phase 1b follow-up, not required to close Phase 1                                                                                                                                                                                                                                                                                                                 | Locked |
+| D8  | Postgres = later doc; one store; sync namespace `translationsV2` kept                                                                                                                                                                                                                                                                                                                        | Locked |
+| D9  | Tests: integration-first; parity with current behavior; auth mock OK at routes                                                                                                                                                                                                                                                                                                               | Locked |
+| D10 | **GETs = thin controller → QueryService/DAO; mutations = UseCases.** No `GetTranslationsUseCase`                                                                                                                                                                                                                                                                                             | Locked |
+| D11 | **A UseCase exists only if a controller or job needs it.** Tests must not invent UseCases; they orchestrate via helpers that call `TranslationsService` (or the DS) inside `TM.run()`                                                                                                                                                                                                        | Locked |
 | D12 | **`TranslationsService` is orchestration-only.** Public: `saveEntries` / `createContext` / `updateContext`. `insertEntries` / `upsertEntries` are private internals of `saveEntries` (B2). Single DS writes (`insert`, `deleteBy*`, `updateContext`, …) stay on `TranslationsDataSource` inside the parent `TM.run()`. `ensureTransaction` only on remaining service methods — not on the DS | Locked |
-| D13 | **Locale write input is map-only** `{ [key]: string }`. Indexed maps are a GET mapper. Flatten at the UseCase edge. Do not accept `TranslationValue[]` on `SaveLocaleTranslations` | Locked |
+| D13 | **Locale write input is map-only** `{ [key]: string }`. Indexed maps are a GET mapper. Flatten at the UseCase edge. Do not accept `TranslationValue[]` on `SaveLocaleTranslations`                                                                                                                                                                                                           | Locked |
 
 ### D5 detail — upsert is convenience, not unavoidable
 
@@ -225,20 +225,20 @@ HTTP /api/translations* (legacy locale DTO)     HTTP /api/v2/translations (by-it
 
 All writers must stop calling `#api/i18n/translations` and use core ports/use cases.
 
-| Caller                                | Today                                                                    | Target                                                                             |
-| ------------------------------------- | ------------------------------------------------------------------------ | ---------------------------------------------------------------------------------- |
-| Create/Update Template                | `TemplateTranslationService` → `TranslationsService.createContext` / `updateContext` (shared TM) | Done |
-| Delete Template                       | `translationsDS.deleteByContextId` (+ `bulkDeleteKeysByContext`)                                 | DS inside parent `TM.run()` (D12) |
-| Thesaurus create/update               | `ThesaurusTranslationService` → DS `insert` (create); label diffs then `getContext` / `applyChanges` / `updateContext` (update) | Keep Thesaurus-style; do not proxy through `TranslationsService` (D12) |
-| Thesaurus delete                      | `DeleteThesaurusUseCase` → `translationsDS.deleteByContextId`                                    | DS inside parent `TM.run()` (D12) |
-| Create/Update RelationshipType        | `RelationshipTypeTranslationService` → `TranslationsService.createContext` / `updateContext`     | Done |
-| Delete RelationshipType               | `RelationshipTypeTranslationService.delete` → `translationsDS.deleteByContextId`                 | DS inside parent `TM.run()` (D12) |
-| Settings Menu / Filters               | `translations.updateContext`                                             | V1 `settings.ts` → `TranslationsService.updateContext` in the same `TM.run` as `settingsModel.save` (B1/B5) |
-| CSV v1/v2 thesauri translations       | façade `updateEntries` / DS upsert                                       | `UpdateEntriesByContext` (job + csvLoader); no Create/Update-entries UseCases      |
-| AddLanguage                           | DS clone + façade `importPredefined`                                     | Keep clone in use case; `ImportPredefinedTranslationsService` (outside TX)         |
-| DeleteLanguage                        | DS `deleteByLanguage`                                                    | Same: `DeleteLanguageUseCase` → `translationsDS.deleteByLanguage` (no extra UC)    |
-| Sync                                  | `translationsV2` + sync DS                                               | Keep namespace; handler uses core DS/sync adapter                                  |
-| Denorm / search / dataviz (reads)     | façade get or cached DS                                                  | Thin query / cached query under core                                               |
+| Caller                            | Today                                                                                                                           | Target                                                                                                      |
+| --------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| Create/Update Template            | `TemplateTranslationService` → `TranslationsService.createContext` / `updateContext` (shared TM)                                | Done                                                                                                        |
+| Delete Template                   | `translationsDS.deleteByContextId` (+ `bulkDeleteKeysByContext`)                                                                | DS inside parent `TM.run()` (D12)                                                                           |
+| Thesaurus create/update           | `ThesaurusTranslationService` → DS `insert` (create); label diffs then `getContext` / `applyChanges` / `updateContext` (update) | Keep Thesaurus-style; do not proxy through `TranslationsService` (D12)                                      |
+| Thesaurus delete                  | `DeleteThesaurusUseCase` → `translationsDS.deleteByContextId`                                                                   | DS inside parent `TM.run()` (D12)                                                                           |
+| Create/Update RelationshipType    | `RelationshipTypeTranslationService` → `TranslationsService.createContext` / `updateContext`                                    | Done                                                                                                        |
+| Delete RelationshipType           | `RelationshipTypeTranslationService.delete` → `translationsDS.deleteByContextId`                                                | DS inside parent `TM.run()` (D12)                                                                           |
+| Settings Menu / Filters           | `translations.updateContext`                                                                                                    | V1 `settings.ts` → `TranslationsService.updateContext` in the same `TM.run` as `settingsModel.save` (B1/B5) |
+| CSV v1/v2 thesauri translations   | façade `updateEntries` / DS upsert                                                                                              | `UpdateEntriesByContext` (job + csvLoader); no Create/Update-entries UseCases                               |
+| AddLanguage                       | DS clone + façade `importPredefined`                                                                                            | Keep clone in use case; `ImportPredefinedTranslationsService` (outside TX)                                  |
+| DeleteLanguage                    | DS `deleteByLanguage`                                                                                                           | Same: `DeleteLanguageUseCase` → `translationsDS.deleteByLanguage` (no extra UC)                             |
+| Sync                              | `translationsV2` + sync DS                                                                                                      | Keep namespace; handler uses core DS/sync adapter                                                           |
+| Denorm / search / dataviz (reads) | façade get or cached DS                                                                                                         | Thin query / cached query under core                                                                        |
 
 ---
 
@@ -260,7 +260,9 @@ All writers must stop calling `#api/i18n/translations` and use core ports/use ca
 - Atom/sockets: prefer `translationKeysChange` / by-item hydration; retire mammoth `translationsChange` when safe
 - Then delete legacy DTO reshape delivery surface
 
-### Phase 2 — Postgres (later doc)
+### Phase 2 — Postgres
+
+Tracked in [`translations-postgres.md`](./translations-postgres.md).
 
 - Schema + RLS, PG DS, per-tenant flag, sync branch, one-time copy, one-way flag
 - Still **one** logical store (no mammoth collection in PG)
@@ -270,7 +272,7 @@ All writers must stop calling `#api/i18n/translations` and use core ports/use ca
 
 ## Risks / hard edges
 
-1. **~~Dual `updateContext` semantics~~ (A2 landed)** — Template/RT/Settings and Thesaurus update now share `TranslationContextModel.applyChanges` + `translationsDS.updateContext`. Thesaurus still owns *which* labels changed (nested / duplicate-label identity). Create of a new thesaurus still uses `insert` (B3).
+1. **~~Dual `updateContext` semantics~~ (A2 landed)** — Template/RT/Settings and Thesaurus update now share `TranslationContextModel.applyChanges` + `translationsDS.updateContext`. Thesaurus still owns _which_ labels changed (nested / duplicate-label identity). Create of a new thesaurus still uses `insert` (B3).
 2. **Thesaurus label-as-key + metadata propagation** — translation value edits can rename denormalized entity select labels; easy to break.
 3. **AddLanguage TX boundary** — `importPredefined` / CSVLoader outside TX today; redesign carefully under ImportPredefined use case.
 4. **Sync legacy `translations` namespace leftovers** — live path is `translationsV2`; do not regress Menu/Filters preserve logic.
@@ -306,7 +308,7 @@ All writers must stop calling `#api/i18n/translations` and use core ports/use ca
 - [x] Parity tests for façade + RT/thesaurus/language + core DS/domain; expand syncWorker smoke as routes move
 - [x] **Sync handler factory peel (motor seam)** — see dedicated section below
 - [x] `preserve.createEmptyThesauri` → `CreateThesaurusUseCase` (stop ad-hoc `TM.run` around `ThesauriService`)
-- [ ] Document Phase 1b FE checklist; open `translations-postgres.md` when starting Postgres
+- [x] Document Phase 1b FE checklist; open `translations-postgres.md` when starting Postgres
 
 ### Done — Sync `translationsV2` → SyncHandlerFactory + registry
 
@@ -317,7 +319,7 @@ All writers must stop calling `#api/i18n/translations` and use core ports/use ca
 3. Registered in `registerSyncHandlers()` as `translationsV2`
 4. Removed `translationsV2` special-case from `POST /api/sync` (uses registry like peers)
 5. Deleted `registerTranslationsV2SyncModel.ts` / `models.translationsV2` production registration
-6. Postgres branch deferred to `translations-postgres.md` (factory seam is ready)
+6. Postgres branch: [`translations-postgres.md`](./translations-postgres.md)
 
 ### Assessment — façade kill (1) vs write-API polish (2)
 
@@ -414,17 +416,17 @@ Critical pass after the V2 hex peel and the production SSR CPU outage. Further s
 
 **Finding:** several translation UseCases were thin `transactionManager.run()` wrappers around `TranslationsService` and were called only from specs (or never). Production already does the same work via domain services sharing the parent UseCase TM (`TemplateTranslationService`, `ThesaurusTranslationService`, `RelationshipTypeTranslationService`) or via `DeleteLanguageUseCase` → DS.
 
-| UseCase | Verdict | Callers at review |
-| --- | --- | --- |
-| `CreateTranslationContextUseCase` | **Deleted** | specs only (`CreateTranslationContext.spec`, `SaveLocaleTranslations.spec`, `i18n/specs/translations.spec`) |
-| `DeleteTranslationContextUseCase` | **Deleted** | specs only |
-| `CreateTranslationEntriesUseCase` | **Deleted** | `syncWorker.spec` fixture setup only |
-| `UpdateTranslationEntriesUseCase` | **Deleted** | **zero callers** (dead factory) |
-| `DeleteTranslationsByLanguageUseCase` | **Deleted** | `i18n/specs/translations.spec` only; `DeleteLanguageUseCase` already deletes via DS |
-| `SaveTranslationEntriesUseCase` | **Keep** | `SaveTranslationEntriesController` |
-| `SaveLocaleTranslationsUseCase` | **Keep** | `SaveTranslationsController` (+ `csv/csvLoader.ts`) |
-| `UpdateEntriesByContextUseCase` | **Keep** | `CsvCreateThesauriValuesJob` (+ `csv/csvLoader.ts`) |
-| `UpdateTranslationContextUseCase` | **Deleted (B1)** | was V1 `settings.ts` Menu/Filters — TX shell, not a controller or job |
+| UseCase                               | Verdict          | Callers at review                                                                                           |
+| ------------------------------------- | ---------------- | ----------------------------------------------------------------------------------------------------------- |
+| `CreateTranslationContextUseCase`     | **Deleted**      | specs only (`CreateTranslationContext.spec`, `SaveLocaleTranslations.spec`, `i18n/specs/translations.spec`) |
+| `DeleteTranslationContextUseCase`     | **Deleted**      | specs only                                                                                                  |
+| `CreateTranslationEntriesUseCase`     | **Deleted**      | `syncWorker.spec` fixture setup only                                                                        |
+| `UpdateTranslationEntriesUseCase`     | **Deleted**      | **zero callers** (dead factory)                                                                             |
+| `DeleteTranslationsByLanguageUseCase` | **Deleted**      | `i18n/specs/translations.spec` only; `DeleteLanguageUseCase` already deletes via DS                         |
+| `SaveTranslationEntriesUseCase`       | **Keep**         | `SaveTranslationEntriesController`                                                                          |
+| `SaveLocaleTranslationsUseCase`       | **Keep**         | `SaveTranslationsController` (+ `csv/csvLoader.ts`)                                                         |
+| `UpdateEntriesByContextUseCase`       | **Keep**         | `CsvCreateThesauriValuesJob` (+ `csv/csvLoader.ts`)                                                         |
+| `UpdateTranslationContextUseCase`     | **Deleted (B1)** | was V1 `settings.ts` Menu/Filters — TX shell, not a controller or job                                       |
 
 `CreateTranslationContext.spec.ts` existed only to exercise the deleted wrappers; `TranslationsService.spec.ts` covers the remaining orchestrating methods.
 
@@ -492,7 +494,7 @@ HTTP `POST /api/translations` AJV already requires `values` as object/map. Array
 
 ### B2 — `saveEntries` is the batch API
 
-**Request (diagnosis):** `insertEntries` / `upsertEntries` were public so unit tests could call them. No UseCase did. D5 forbade an Upsert *UseCase*; the service still partitioned create vs update because locale/by-item/CSV bodies are mixed.
+**Request (diagnosis):** `insertEntries` / `upsertEntries` were public so unit tests could call them. No UseCase did. D5 forbade an Upsert _UseCase_; the service still partitioned create vs update because locale/by-item/CSV bodies are mixed.
 
 **Landed:**
 

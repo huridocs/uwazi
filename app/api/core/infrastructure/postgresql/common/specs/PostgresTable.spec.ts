@@ -325,6 +325,35 @@ describe('PostgresTable', () => {
       expect(rowA!.name).toBe('A');
       expect(rowB!.name).toBe('B');
     });
+
+    it('should merge on a custom unique key without replacing _id', async () => {
+      const table = createTable();
+      await table.insert({ _id: 'kept-id', name: 'same-name', values: jsonVal([]) });
+
+      await table.upsert(
+        { _id: 'new-id', name: 'same-name', values: jsonVal(['changed']) },
+        { columns: ['name', 'tenant_id'], merge: ['values'] }
+      );
+
+      const rows = await table.all();
+      expect(rows).toHaveLength(1);
+      expect(rows[0]._id).toBe('kept-id');
+      expect(rows[0].values).toEqual(['changed']);
+    });
+
+    it('should ignore conflict on a custom unique key when asked', async () => {
+      const table = createTable();
+      await table.insert({ _id: 'kept-id', name: 'same-name', values: jsonVal([]) });
+
+      await table.upsert(
+        { _id: 'new-id', name: 'same-name', values: jsonVal(['changed']) },
+        { columns: ['name', 'tenant_id'], ignore: true }
+      );
+
+      const row = await table.where({ name: 'same-name' }).first();
+      expect(row!._id).toBe('kept-id');
+      expect(row!.values).toEqual([]);
+    });
   });
 
   describe('query().where().update()', () => {
@@ -902,6 +931,22 @@ describe('PostgresTable', () => {
         expect(logs).toHaveLength(1);
         expect(logs[0].mongoId.toString()).toBe(u2);
         expect(logs[0].deleted).toBe(false);
+      });
+
+      it('should log the kept _id when merging on a custom unique key', async () => {
+        const table = createTableWithSync();
+        const keptId = _id();
+        await table.insert({ _id: keptId, name: 'same-name', values: jsonVal([]) });
+        await syncDb.collection('updatelogs').deleteMany({});
+
+        await table.upsert(
+          { _id: _id(), name: 'same-name', values: jsonVal(['changed']) },
+          { columns: ['name', 'tenant_id'], merge: ['values'] }
+        );
+
+        const logs = await getSyncLogs();
+        expect(logs).toHaveLength(1);
+        expect(logs[0].mongoId.toString()).toBe(keptId);
       });
     });
 
