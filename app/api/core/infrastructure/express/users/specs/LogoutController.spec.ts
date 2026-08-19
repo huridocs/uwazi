@@ -3,7 +3,7 @@ import request from 'supertest';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { setUpApp } from '#api/utils/testingRoutes.js';
 import { testingTenants } from '#api/utils/testingTenants.js';
-import { encryptPassword } from '#api/auth/encryptPassword.js';
+import { EncryptedPassword } from '#api/core/domain/user/EncryptedPassword.js';
 import { UserRole } from '#api/core/domain/user/User.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import authRoutes from '#api/auth/routes.js';
@@ -14,7 +14,7 @@ const f = getFixturesFactory();
 let bcryptPassword: string;
 
 const buildFixtures = async () => {
-  bcryptPassword = await encryptPassword('validpassword');
+  bcryptPassword = (await EncryptedPassword.create('validpassword')).getValue();
 
   return {
     users: [f.user({ username: 'validuser', role: UserRole.EDITOR, password: bcryptPassword })],

@@ -6,7 +6,7 @@ import { UserRole } from '#shared/types/userSchema.js';
 import auth2faRoutes from '../routes.js';
 import fixtures, { secretedUserId } from './fixtures.js';
 
-jest.mock('../../auth/validatePasswordMiddleWare.ts', () => ({
+jest.mock('../../core/infrastructure/express/users/ValidatePasswordMiddleWare.ts', () => ({
   validatePasswordMiddleWare: (_req: Request, _res: Response, next: NextFunction) => next(),
 }));
 

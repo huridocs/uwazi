@@ -1,5 +1,5 @@
 import type { Application } from 'express';
-import { validatePasswordMiddleWare, needsAuthorization } from '#api/auth/index.js';
+import { needsAuthorization } from '#api/auth/index.js';
 import { CreateUserController } from './CreateUserController.js';
 import { DeleteUserController } from './DeleteUserController.js';
 import { GetUsersController } from './GetUsersController.js';
@@ -8,6 +8,7 @@ import { UnlockAccountController } from './UnlockAccountController.js';
 import { UnlockBlockedUserController } from './UnlockBlockedUserController.js';
 import { RecoverPasswordController } from './RecoverPasswordController.js';
 import { ResetPasswordController } from './ResetPasswordController.js';
+import { validatePasswordMiddleWare } from './ValidatePasswordMiddleWare.js';
 
 export const userRoutes = (app: Application) => {
   app.post(

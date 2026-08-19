@@ -1,4 +1,4 @@
-import { PUBLIC_USER_ID } from '#api/core/domain/user/User.js';
+import { PUBLIC_USER_ID, UserRole } from '#api/core/domain/user/User.js';
 import { UserNotFound } from '#api/core/domain/user/errors.js';
 import { UsersDirectoryFactory } from '#api/core/infrastructure/factories/UsersDirectoryFactory.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
@@ -151,6 +151,41 @@ describe('UsersDirectory', () => {
         ['a malformed id', () => MALFORMED_ID],
       ])('should still refuse %s', async (_case, id) => {
         const result = await sut().getActor(id());
+
+        expect(result.isError()).toBe(true);
+        expect(result.getError()).toBeInstanceOf(UserNotFound);
+      });
+    });
+
+    describe('getPublicUser()', () => {
+      it('should resolve the system user — the only method that does — as a profile', async () => {
+        const result = await sut().getPublicUser();
+
+        expect(result.isOk()).toBe(true);
+        expect(result.getDataOrThrow()).toEqual({
+          _id: PUBLIC_USER_ID.toHexString(),
+          username: 'public',
+          role: UserRole.COLLABORATOR,
+          email: 'public@uwazi.local',
+          groups: [],
+          using2fa: false,
+          accountLocked: false,
+        });
+      });
+
+      it('should not carry credentials', async () => {
+        const result = await sut().getPublicUser();
+
+        expectNoCredentials(result.getDataOrThrow()!);
+      });
+
+      it('should fail with UserNotFound when the public user was never seeded', async () => {
+        await testingEnvironment.setFixtures({
+          ...fixtures,
+          users: (fixtures.users ?? []).filter(user => !PUBLIC_USER_ID.equals(user._id)),
+        });
+
+        const result = await sut().getPublicUser();
 
         expect(result.isError()).toBe(true);
         expect(result.getError()).toBeInstanceOf(UserNotFound);

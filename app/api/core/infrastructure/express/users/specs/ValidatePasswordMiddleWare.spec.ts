@@ -2,8 +2,8 @@ import type { Request, NextFunction, Response } from 'express';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { UserRole } from '#shared/types/userSchema.js';
-import { encryptPassword } from '../encryptPassword.js';
-import { validatePasswordMiddleWare } from '../validatePasswordMiddleWare.js';
+import { EncryptedPassword } from '#api/core/domain/user/EncryptedPassword.js';
+import { validatePasswordMiddleWare } from '../ValidatePasswordMiddleWare.js';
 import { UserDBO } from '#api/core/infrastructure/mongodb/user/UserDBO.js';
 
 const fixturesFactory = getFixturesFactory();
@@ -38,7 +38,7 @@ describe('validatePasswordMiddleWare', () => {
             username: 'admin',
             role: UserRole.ADMIN,
             email: 'admin@test.com',
-            password: await encryptPassword('admin1234'),
+            password: (await EncryptedPassword.create('admin1234')).getValue(),
           }),
         },
         {
@@ -46,7 +46,7 @@ describe('validatePasswordMiddleWare', () => {
             username: 'editor',
             role: UserRole.EDITOR,
             email: 'editor@test.com',
-            password: await encryptPassword('editor1234'),
+            password: (await EncryptedPassword.create('editor1234')).getValue(),
           }),
         },
       ]
