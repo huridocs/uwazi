@@ -3,8 +3,8 @@ import { Square3Stack3DIcon, DocumentIcon } from '@heroicons/react/24/outline';
 import throttle from 'lodash/throttle.js';
 import { Translate } from '#app/I18N/index.js';
 import { FileType } from '#V2/api/entities/types.js';
-import type { RelationshipHubRow } from '#V2/api/relationships/types.js';
 import { filterMarkersForDocument, projectRelationshipMarkers } from '#V2/formatters/index.js';
+import type { RelationshipView } from '#V2/formatters/relationships/types.js';
 import {
   splitMarkersByAnchor,
   groupRelationships,
@@ -24,7 +24,7 @@ const RAIL_LAYOUT = {
 
 type RelationshipsDisplayProps = {
   selfSharedId: string;
-  hubRows: readonly RelationshipHubRow[];
+  views: readonly RelationshipView[];
   document: FileType;
   currentPage?: number;
   pageHeight?: number;
@@ -38,7 +38,7 @@ type RelationshipsDisplayProps = {
 
 const RelationshipsDisplay = ({
   selfSharedId,
-  hubRows,
+  views,
   document,
   currentPage,
   pageHeight,
@@ -56,11 +56,11 @@ const RelationshipsDisplay = ({
   const markers = useMemo<RelationshipMarker[]>(
     () =>
       filterMarkersForDocument(
-        projectRelationshipMarkers(selfSharedId, hubRows),
+        projectRelationshipMarkers(selfSharedId, views),
         document._id,
         selfSharedId
       ),
-    [document._id, hubRows, selfSharedId]
+    [document._id, selfSharedId, views]
   );
 
   const anchoredMarkers = useMemo(() => splitMarkersByAnchor(markers).anchored, [markers]);

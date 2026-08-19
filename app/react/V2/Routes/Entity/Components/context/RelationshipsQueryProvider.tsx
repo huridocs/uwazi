@@ -12,9 +12,8 @@ import type {
   RelationshipHubRow,
   RelationshipQueryPayload,
   RelationshipResolvedRow,
-  RelationshipSummaryRow,
 } from '#V2/api/relationships/types.js';
-import { mergeRelationshipHubs } from '#V2/formatters/relationships/mergeRelationshipHubs.js';
+import type { RelationshipView } from '#V2/formatters/relationships/types.js';
 import { useServices } from '#V2/services/index.js';
 import { useEntityScopedEntity } from './EntityContext.js';
 import { useEntityLanguage } from './EntityLanguageContext.js';
@@ -25,8 +24,9 @@ type RelationshipQueryStatus = {
 };
 
 type RelationshipsQueryState = {
-  hubRows: RelationshipHubRow[];
+  views: RelationshipView[];
   status: RelationshipQueryStatus;
+  ensureAnchors: () => Promise<void>;
   ensureResolved: () => Promise<void>;
 };
 
@@ -34,6 +34,69 @@ const RelationshipsQueryContext = createContext<RelationshipsQueryState | null>(
 
 const queryKey = (sharedId: string, language: string, fileId?: string) =>
   `${sharedId}:${language}:${fileId ?? ''}`;
+
+const seedHubs = (seed: RelationshipQueryPayload | undefined, seedFits: boolean) =>
+  seedFits && seed ? seed.hubRows : [];
+
+const useQueryStore = (seed: RelationshipQueryPayload | undefined, currentKey: string) => {
+  const seedFits = seed
+    ? queryKey(seed.sharedId, seed.language, seed.fileId) === currentKey
+    : false;
+  const initialHubs = seedHubs(seed, seedFits);
+  const { relationshipsQuery } = useServices();
+  const [hubRows, setHubRows] = useState<RelationshipHubRow[]>(() => initialHubs);
+  const [hasResolved, setHasResolved] = useState(false);
+  const [resolving, setResolving] = useState(false);
+  const hubRowsRef = useRef(initialHubs);
+  const summaryBaseRef = useRef<RelationshipHubRow[]>(initialHubs);
+  const anchorsOverlayRef = useRef<readonly RelationshipAnchorRow[] | undefined>(undefined);
+  const resolvedOverlayRef = useRef<readonly RelationshipResolvedRow[] | undefined>(undefined);
+  const summaryLoadedKey = useRef<string | null>(seedFits ? currentKey : null);
+  const anchorsLoadedKey = useRef<string | null>(
+    seedFits && seed?.anchorsLoaded ? currentKey : null
+  );
+  const resolvedKey = useRef<string | null>(null);
+  const summaryInflight = useRef<Promise<RelationshipHubRow[] | undefined> | null>(null);
+  const anchorsInflight = useRef<Promise<void> | null>(null);
+  const resolvedInflight = useRef<Promise<void> | null>(null);
+  const generationRef = useRef(0);
+  hubRowsRef.current = hubRows;
+
+  const publish = useCallback(
+    (generation: number, nextSummary: RelationshipHubRow[]) => {
+      if (generation !== generationRef.current) return;
+      summaryBaseRef.current = nextSummary;
+      const next = relationshipsQuery.compose(nextSummary, {
+        ...(anchorsOverlayRef.current ? { anchors: anchorsOverlayRef.current } : {}),
+        ...(resolvedOverlayRef.current ? { resolved: resolvedOverlayRef.current } : {}),
+      });
+      hubRowsRef.current = next;
+      setHubRows(next);
+    },
+    [relationshipsQuery]
+  );
+
+  return {
+    seedFits,
+    hubRows,
+    hasResolved,
+    resolving,
+    setHasResolved,
+    setResolving,
+    relationshipsQuery,
+    summaryBaseRef,
+    anchorsOverlayRef,
+    resolvedOverlayRef,
+    summaryLoadedKey,
+    anchorsLoadedKey,
+    resolvedKey,
+    summaryInflight,
+    anchorsInflight,
+    resolvedInflight,
+    generationRef,
+    publish,
+  };
+};
 
 type RelationshipsQueryProviderProps = {
   seed?: RelationshipQueryPayload;
@@ -43,78 +106,167 @@ type RelationshipsQueryProviderProps = {
 const RelationshipsQueryProvider = ({ seed, children }: RelationshipsQueryProviderProps) => {
   const entity = useEntityScopedEntity();
   const { language, mainDocument } = useEntityLanguage();
-  const { relationshipsQuery } = useServices();
   const currentKey = queryKey(entity.sharedId, language, mainDocument?._id);
-  const seedFits = seed
-    ? queryKey(seed.sharedId, seed.language, seed.fileId) === currentKey
-    : false;
+  const store = useQueryStore(seed, currentKey);
+  const {
+    seedFits,
+    hubRows,
+    hasResolved,
+    resolving,
+    setHasResolved,
+    setResolving,
+    relationshipsQuery,
+    summaryBaseRef,
+    anchorsOverlayRef,
+    resolvedOverlayRef,
+    summaryLoadedKey,
+    anchorsLoadedKey,
+    resolvedKey,
+    summaryInflight,
+    anchorsInflight,
+    resolvedInflight,
+    generationRef,
+    publish,
+  } = store;
 
-  const [summary, setSummary] = useState<RelationshipSummaryRow[]>(() =>
-    seedFits && seed ? seed.summary : []
-  );
-  const [anchors, setAnchors] = useState<RelationshipAnchorRow[]>(() =>
-    seedFits && seed ? seed.anchors : []
-  );
-  const [resolved, setResolved] = useState<RelationshipResolvedRow[]>([]);
-  const [hasResolved, setHasResolved] = useState(false);
-  const [resolving, setResolving] = useState(false);
-  const resolvedKey = useRef<string | null>(null);
-  const resolvedInflight = useRef<Promise<void> | null>(null);
-  const generationRef = useRef(0);
+  const fetchSummary = useCallback(async (): Promise<RelationshipHubRow[] | undefined> => {
+    if (summaryLoadedKey.current === currentKey) return summaryBaseRef.current;
+    if (summaryInflight.current) return summaryInflight.current;
+
+    const generation = generationRef.current;
+    const request = (async () => {
+      const [rows, error] = await relationshipsQuery.loadSummary(entity.sharedId, { language });
+      if (generation !== generationRef.current) return undefined;
+      if (error) return undefined;
+      const hubs = rows ?? [];
+      summaryLoadedKey.current = currentKey;
+      publish(generation, hubs);
+      return hubs;
+    })();
+    summaryInflight.current = request;
+    try {
+      return await request;
+    } finally {
+      if (summaryInflight.current === request) {
+        summaryInflight.current = null;
+      }
+    }
+  }, [
+    currentKey,
+    entity.sharedId,
+    generationRef,
+    language,
+    publish,
+    relationshipsQuery,
+    summaryBaseRef,
+    summaryInflight,
+    summaryLoadedKey,
+  ]);
 
   useEffect(() => {
     generationRef.current += 1;
+    const generation = generationRef.current;
     resolvedKey.current = null;
+    summaryInflight.current = null;
+    anchorsInflight.current = null;
     resolvedInflight.current = null;
-    setResolved([]);
+    anchorsOverlayRef.current = undefined;
+    resolvedOverlayRef.current = undefined;
     setHasResolved(false);
     setResolving(false);
 
     if (seedFits && seed) {
-      setSummary(seed.summary);
-      setAnchors(seed.anchors);
+      summaryLoadedKey.current = currentKey;
+      anchorsLoadedKey.current = seed.anchorsLoaded ? currentKey : null;
+      publish(generation, seed.hubRows);
       return undefined;
     }
 
-    let cancelled = false;
-    const load = async () => {
-      const [nextSummary, summaryError] = await relationshipsQuery.getSummary(entity.sharedId, {
-        language,
-      });
-      const [nextAnchors, anchorsError] = await (mainDocument?._id
-        ? relationshipsQuery.getAnchors(entity.sharedId, mainDocument._id, { language })
-        : Promise.resolve<[RelationshipAnchorRow[]]>([[]]));
-      if (cancelled || summaryError || anchorsError) return;
-      setSummary(nextSummary ?? []);
-      setAnchors(nextAnchors ?? []);
-    };
-    void load();
-    return () => {
-      cancelled = true;
-    };
+    summaryLoadedKey.current = null;
+    anchorsLoadedKey.current = null;
+    publish(generation, []);
+    fetchSummary().catch(() => undefined);
+    return undefined;
   }, [
+    anchorsInflight,
+    anchorsLoadedKey,
+    anchorsOverlayRef,
     currentKey,
-    entity.sharedId,
-    language,
-    mainDocument?._id,
-    relationshipsQuery,
+    fetchSummary,
+    generationRef,
+    publish,
+    resolvedInflight,
+    resolvedKey,
+    resolvedOverlayRef,
     seed,
     seedFits,
+    setHasResolved,
+    setResolving,
+    summaryInflight,
+    summaryLoadedKey,
   ]);
 
-  const ensureResolved = useCallback(() => {
-    if (resolvedKey.current === currentKey) return Promise.resolve();
-    if (resolvedInflight.current) return resolvedInflight.current;
+  const ensureAnchors = useCallback(async () => {
+    const fileId = mainDocument?._id;
+    if (!fileId || anchorsLoadedKey.current === currentKey) return;
+    if (anchorsInflight.current) {
+      await anchorsInflight.current;
+      return;
+    }
+
+    const generation = generationRef.current;
+    const request = (async () => {
+      const [hubs, [anchors, error]] = await Promise.all([
+        fetchSummary(),
+        relationshipsQuery.loadAnchors(entity.sharedId, { language, fileId }),
+      ]);
+      if (generation !== generationRef.current) return;
+      if (error || hubs === undefined) return;
+      anchorsOverlayRef.current = anchors ?? [];
+      anchorsLoadedKey.current = currentKey;
+      publish(generation, hubs);
+    })();
+    anchorsInflight.current = request;
+    try {
+      await request;
+    } finally {
+      if (anchorsInflight.current === request) {
+        anchorsInflight.current = null;
+      }
+    }
+  }, [
+    anchorsInflight,
+    anchorsLoadedKey,
+    anchorsOverlayRef,
+    currentKey,
+    entity.sharedId,
+    fetchSummary,
+    generationRef,
+    language,
+    mainDocument?._id,
+    publish,
+    relationshipsQuery,
+  ]);
+
+  const ensureResolved = useCallback(async () => {
+    if (resolvedKey.current === currentKey) return;
+    if (resolvedInflight.current) {
+      await resolvedInflight.current;
+      return;
+    }
 
     const generation = generationRef.current;
     setResolving(true);
     const request = (async () => {
-      const [rows, error] = await relationshipsQuery.getResolved(entity.sharedId, { language });
+      const [resolved, error] = await relationshipsQuery.loadResolved(entity.sharedId, {
+        language,
+      });
       if (generation !== generationRef.current) return;
       if (error) return;
-      setResolved(rows ?? []);
+      resolvedOverlayRef.current = resolved ?? [];
       resolvedKey.current = currentKey;
       setHasResolved(true);
+      publish(generation, summaryBaseRef.current);
     })().finally(() => {
       if (resolvedInflight.current === request) {
         resolvedInflight.current = null;
@@ -124,19 +276,32 @@ const RelationshipsQueryProvider = ({ seed, children }: RelationshipsQueryProvid
       }
     });
     resolvedInflight.current = request;
-    return request;
-  }, [currentKey, entity.sharedId, language, relationshipsQuery]);
+    await request;
+  }, [
+    currentKey,
+    entity.sharedId,
+    generationRef,
+    language,
+    publish,
+    relationshipsQuery,
+    resolvedInflight,
+    resolvedKey,
+    resolvedOverlayRef,
+    setHasResolved,
+    setResolving,
+    summaryBaseRef,
+  ]);
 
-  const hubRows = useMemo(
-    () => mergeRelationshipHubs(summary, anchors, resolved),
-    [anchors, resolved, summary]
+  const views = useMemo(
+    () => relationshipsQuery.toViews(entity.sharedId, hubRows),
+    [entity.sharedId, hubRows, relationshipsQuery]
   );
 
   const status = useMemo(() => ({ resolved: hasResolved, resolving }), [hasResolved, resolving]);
 
   const value = useMemo(
-    () => ({ hubRows, status, ensureResolved }),
-    [ensureResolved, hubRows, status]
+    () => ({ views, status, ensureAnchors, ensureResolved }),
+    [ensureAnchors, ensureResolved, status, views]
   );
 
   return (
@@ -154,13 +319,15 @@ const useRelationshipsQuery = () => {
   return context;
 };
 
-const useRelationshipHubRows = () => useRelationshipsQuery().hubRows;
+const useRelationshipViews = () => useRelationshipsQuery().views;
 const useRelationshipQueryStatus = () => useRelationshipsQuery().status;
+const useEnsureAnchors = () => useRelationshipsQuery().ensureAnchors;
 const useEnsureResolved = () => useRelationshipsQuery().ensureResolved;
 
 export {
   RelationshipsQueryProvider,
-  useRelationshipHubRows,
+  useRelationshipViews,
   useRelationshipQueryStatus,
+  useEnsureAnchors,
   useEnsureResolved,
 };

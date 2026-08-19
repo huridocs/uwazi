@@ -11,7 +11,8 @@ import {
 } from '#V2/Routes/Entity/Components/document/index.js';
 import {
   useEntityLanguage,
-  useRelationshipHubRows,
+  useEnsureAnchors,
+  useRelationshipViews,
 } from '#V2/Routes/Entity/Components/context/index.js';
 import { useDocumentPdfView } from '../hooks/useDocumentPdfView.js';
 import { useRailInset } from '../hooks/useRailInset.js';
@@ -31,7 +32,8 @@ const DocumentTab = ({
   showViewModeSelect = false,
   showRail = true,
 }: DocumentTabProps) => {
-  const hubRows = useRelationshipHubRows();
+  const views = useRelationshipViews();
+  const ensureAnchors = useEnsureAnchors();
   const {
     filename,
     isRaw,
@@ -58,6 +60,11 @@ const DocumentTab = ({
   const [pdfScrollRoot, setPdfScrollRoot] = useState<HTMLDivElement | null>(null);
   const [pageHeight, setPageHeight] = useState<number | undefined>();
   const { railInsetRight, measureRailInset } = useRailInset(pdfScrollRoot, !isRaw && showRail);
+
+  useEffect(() => {
+    if (!mainDocument._id || !showRail || isRaw) return;
+    ensureAnchors().catch(() => undefined);
+  }, [ensureAnchors, isRaw, mainDocument._id, showRail]);
 
   useEffect(() => {
     if (isRaw) {
@@ -133,7 +140,7 @@ const DocumentTab = ({
           {!isMobile && (
             <RelationshipsDisplay
               selfSharedId={entity.sharedId}
-              hubRows={hubRows}
+              views={views}
               document={mainDocument}
               currentPage={pageNumber}
               pageHeight={pageHeight}

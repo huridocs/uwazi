@@ -1,4 +1,5 @@
 import type { RelationshipHubRow } from '#V2/api/relationships/types.js';
+import { formatRelationships } from '../formatRelationships.js';
 import { buildRelationshipsSsrIndex, UNLABELED_TYPE_ID } from '../buildRelationshipsSsrIndex.js';
 
 const relationshipTypes = [
@@ -65,9 +66,12 @@ const groupedRows: RelationshipHubRow[] = [
   },
 ];
 
+const indexOf = (hubRows: readonly RelationshipHubRow[]) =>
+  buildRelationshipsSsrIndex(formatRelationships('shared1', hubRows), relationshipTypes);
+
 describe('buildRelationshipsSsrIndex', () => {
   it('groups related entities by relation type and deduplicates within each group', () => {
-    expect(buildRelationshipsSsrIndex('shared1', groupedRows, relationshipTypes)).toEqual([
+    expect(indexOf(groupedRows)).toEqual([
       {
         typeId: 'relB',
         typeName: 'Mentions',
@@ -103,7 +107,7 @@ describe('buildRelationshipsSsrIndex', () => {
       ...groupedRows,
     ];
 
-    const groups = buildRelationshipsSsrIndex('shared1', rows, relationshipTypes);
+    const groups = indexOf(rows);
 
     expect(groups.map(group => group.typeId)).toEqual(['relB', 'relA', UNLABELED_TYPE_ID]);
     expect(groups[2]).toEqual({
@@ -114,6 +118,6 @@ describe('buildRelationshipsSsrIndex', () => {
   });
 
   it('returns an empty list when there are no hub rows', () => {
-    expect(buildRelationshipsSsrIndex('shared1', [], relationshipTypes)).toEqual([]);
+    expect(indexOf([])).toEqual([]);
   });
 });

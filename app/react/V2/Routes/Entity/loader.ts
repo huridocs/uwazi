@@ -11,13 +11,15 @@ import { httpServices } from '#V2/services/http/index.js';
 import { throwApiError } from '#V2/shared/errorUtils.js';
 import { readyDocuments } from '#shared/entityDefaultDocument.js';
 import { getMainDocument } from '#V2/formatters/index.js';
-import type {
-  RelationshipAnchorRow,
-  RelationshipQueryPayload,
-} from '#V2/api/relationships/types.js';
+import type { Entity } from '#V2/api/entities/types.js';
+import type { RelationshipQueryPayload } from '#V2/api/relationships/types.js';
 import { entityLoaderCache } from './EntityLoaderCache.js';
 import { parseEntityHash } from './entityUrlState.js';
-import { VIEW_MODE_PARAM } from './Components/index.js';
+import { MAIN_TAB_PARAM, SIDE_TAB_PARAM, VIEW_MODE_PARAM } from './Components/index.js';
+import { MAIN_TAB, isValidMainTab } from './Tabs/tabIds.js';
+import { getSideTabButtons } from './Tabs/sideTabSets.js';
+import { resolveSideTabId } from './Tabs/hooks/resolveSideTabId.js';
+import { documentRelationshipRailVisible } from './Tabs/documentRelationshipRail.js';
 import { loadEntityPageView } from './loadEntityPageView.js';
 import { LoaderResponse } from './types.js';
 
@@ -28,43 +30,101 @@ const entityNotFoundError = (sharedId: string) =>
     detail: `Entity ${sharedId} not found`,
   });
 
-const loadRelationshipQuery = async (
-  services: V2Services,
-  input: {
-    sharedId: string;
-    language: string;
-    fileId?: string;
-    headers?: IncomingHttpHeaders;
-  }
-): Promise<RelationshipQueryPayload> => {
-  const { sharedId, language, fileId, headers } = input;
-  const noAnchors: Promise<[RelationshipAnchorRow[]]> = Promise.resolve([[]]);
+type RelationshipQueryInput = {
+  sharedId: string;
+  language: string;
+  fileId?: string;
+  headers?: IncomingHttpHeaders;
+  requestUrl: string;
+  entity: Entity;
+};
+
+const seedPayload = ({
+  language,
+  sharedId,
+  fileId,
+  hubRows,
+  anchorsLoaded,
+}: {
+  language: string;
+  sharedId: string;
+  fileId?: string;
+  hubRows: RelationshipQueryPayload['hubRows'];
+  anchorsLoaded: boolean;
+}): RelationshipQueryPayload => ({
+  language,
+  sharedId,
+  ...(fileId ? { fileId } : {}),
+  hubRows,
+  anchorsLoaded,
+});
+
+const requestHash = (requestUrl: string) => {
+  const { hash } = new URL(requestUrl);
+  if (hash) return hash;
+  if (isClient && typeof window !== 'undefined') return window.location.hash;
+  return '';
+};
+
+const isRawFromRequest = (requestUrl: string) =>
+  parseEntityHash(requestHash(requestUrl)).get(VIEW_MODE_PARAM) === 'true';
+
+const needAnchorsForRequest = (requestUrl: string, fileId: string | undefined, entity: Entity) => {
+  if (!fileId || isRawFromRequest(requestUrl)) return false;
+  const url = new URL(requestUrl);
+  const mainFromUrl = url.searchParams.get(MAIN_TAB_PARAM);
+  const mainTab = isValidMainTab(mainFromUrl) ? mainFromUrl : MAIN_TAB.DOCUMENT;
+  const sideTab = resolveSideTabId(
+    parseEntityHash(requestHash(requestUrl)).get(SIDE_TAB_PARAM),
+    getSideTabButtons({ activeMainTab: mainTab, entity, hasMainDocument: true })
+  );
+  return documentRelationshipRailVisible(mainTab, sideTab);
+};
+
+const loadSummarySeed = async (
+  query: V2Services['relationshipsQuery'],
+  input: RelationshipQueryInput
+) => {
+  const [hubRows, error] = await query.loadSummary(input.sharedId, {
+    language: input.language,
+    headers: input.headers,
+  });
+  if (error) throwApiError(error);
+  return seedPayload({
+    language: input.language,
+    sharedId: input.sharedId,
+    fileId: input.fileId,
+    hubRows: hubRows ?? [],
+    anchorsLoaded: false,
+  });
+};
+
+const loadSummaryAndAnchorsSeed = async (
+  query: V2Services['relationshipsQuery'],
+  input: RelationshipQueryInput & { fileId: string }
+) => {
+  const options = { language: input.language, headers: input.headers };
   const [[summary, summaryError], [anchors, anchorsError]] = await Promise.all([
-    services.relationshipsQuery.getSummary(sharedId, { language, headers }),
-    fileId
-      ? services.relationshipsQuery.getAnchors(sharedId, fileId, { language, headers })
-      : noAnchors,
+    query.loadSummary(input.sharedId, options),
+    query.loadAnchors(input.sharedId, { ...options, fileId: input.fileId }),
   ]);
   if (summaryError) throwApiError(summaryError);
   if (anchorsError) throwApiError(anchorsError);
-  return {
-    language,
-    sharedId,
-    ...(fileId ? { fileId } : {}),
-    summary: summary ?? [],
-    anchors: anchors ?? [],
-  };
+  return seedPayload({
+    language: input.language,
+    sharedId: input.sharedId,
+    fileId: input.fileId,
+    hubRows: query.compose(summary ?? [], { anchors: anchors ?? [] }),
+    anchorsLoaded: true,
+  });
 };
 
-const isRawFromRequest = (requestUrl: string) => {
-  const { hash } = new URL(requestUrl);
-  if (parseEntityHash(hash).get(VIEW_MODE_PARAM) === 'true') {
-    return true;
+const loadRelationshipQuery = async (services: V2Services, input: RelationshipQueryInput) => {
+  const query = services.relationshipsQuery;
+  if (input.fileId && needAnchorsForRequest(input.requestUrl, input.fileId, input.entity)) {
+    return loadSummaryAndAnchorsSeed(query, { ...input, fileId: input.fileId });
   }
-  if (isClient && typeof window !== 'undefined') {
-    return parseEntityHash(window.location.hash).get(VIEW_MODE_PARAM) === 'true';
-  }
-  return false;
+  return loadSummarySeed(query, input);
 };
 
 const createEntityLoader =
@@ -150,6 +210,8 @@ const createEntityLoader =
       language,
       fileId: mainDocument?._id,
       headers,
+      requestUrl: request.url,
+      entity,
     });
 
     return { entity, mainDocument, pagePlaintext, entityPageView, relationshipQuery };

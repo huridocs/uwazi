@@ -13,7 +13,10 @@ import { RelationshipsActionBar } from '../../panel/RelationshipsActionBar.js';
 import { RelationshipsPanel } from '../../panel/RelationshipsPanel.js';
 import { CreateRelationshipModal } from '../../create-reference/CreateRelationshipModal.js';
 import { entityWithRelations } from '../fixtures/entityWithRelations.js';
-import { relationshipQueryFromEntity, resolvedFromEntity } from './relationshipQueryFromEntity.js';
+import {
+  relationshipQueryFromEntity,
+  relationshipsQueryStubFromEntity,
+} from './relationshipQueryFromEntity.js';
 
 const PdfControllerSetup = () => {
   const { setPdfController } = useDocumentPdfActions();
@@ -30,11 +33,7 @@ const renderRelationshipsActionBar = () => {
   store.set(templatesAtom, [{ _id: 'template1', color: '#faca15', name: 'Entity' }]);
   const relationshipQuery = relationshipQueryFromEntity(entityWithRelations);
   const services = createTestServices({
-    relationshipsQuery: {
-      getSummary: async () => [relationshipQuery.summary],
-      getAnchors: async () => [relationshipQuery.anchors],
-      getResolved: async () => [resolvedFromEntity(entityWithRelations)],
-    },
+    relationshipsQuery: relationshipsQueryStubFromEntity(entityWithRelations),
   });
 
   const router = createMemoryRouter([

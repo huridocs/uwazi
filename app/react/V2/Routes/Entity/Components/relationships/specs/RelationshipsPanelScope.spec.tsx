@@ -16,7 +16,7 @@ import { RelationshipsFiltersDrawer } from '../filters/RelationshipsFiltersDrawe
 import { entityWithRelations } from './fixtures/entityWithRelations.js';
 import {
   relationshipQueryFromEntity,
-  resolvedFromEntity,
+  relationshipsQueryStubFromEntity,
 } from './helpers/relationshipQueryFromEntity.js';
 
 beforeAll(() => {
@@ -40,11 +40,7 @@ const createPanelScopeRouter = (entity: Entity) => {
   store.set(templatesAtom, [{ _id: 'template1', color: '#faca15', name: 'Entity' }]);
   const relationshipQuery = relationshipQueryFromEntity(entity);
   const services = createTestServices({
-    relationshipsQuery: {
-      getSummary: async () => [relationshipQuery.summary],
-      getAnchors: async () => [relationshipQuery.anchors],
-      getResolved: async () => [resolvedFromEntity(entity)],
-    },
+    relationshipsQuery: relationshipsQueryStubFromEntity(entity),
   });
 
   return createMemoryRouter([

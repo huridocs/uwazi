@@ -25,7 +25,7 @@ const renderIndex = (entity = entityWithRelations) =>
           language={entity.language}
           relationshipQuery={relationshipQueryFromEntity(entity)}
         >
-          <RelationshipsSsrIndex entity={entity} />
+          <RelationshipsSsrIndex />
         </EntityScopedProvider>
       </TestAtomStoreProvider>
     </TestRouterContext>

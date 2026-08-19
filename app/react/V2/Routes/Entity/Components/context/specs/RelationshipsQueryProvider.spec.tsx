@@ -4,39 +4,48 @@ import { act, renderHook, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router';
 import { ApiError } from '#shared/apiClient/index.js';
 import type { FileType } from '#V2/api/entities/types.js';
-import type {
-  RelationshipQueryPayload,
-  RelationshipSummaryRow,
-} from '#V2/api/relationships/types.js';
+import type { RelationshipHubRow, RelationshipQueryPayload } from '#V2/api/relationships/types.js';
 import { templatesAtom } from '#V2/atoms/templatesAtom.js';
 import { settingsAtom } from '#V2/atoms/settingsAtom.js';
 import {
   EntityScopedProvider,
+  useEnsureAnchors,
   useEnsureResolved,
-  useRelationshipHubRows,
   useRelationshipQueryStatus,
+  useRelationshipViews,
 } from '#V2/Routes/Entity/Components/context/index.js';
+import type { RelationshipView } from '#V2/formatters/relationships/types.js';
 import { ServicesProvider } from '#V2/services/ServicesProvider.js';
 import { createTestServices } from '#V2/testing/createTestServices.js';
 import { TestAtomStoreProvider } from '#V2/testing/index.js';
 import { entityWithRelations } from '../../relationships/specs/fixtures/entityWithRelations.js';
 import {
   relationshipQueryFromEntity,
-  resolvedFromEntity,
+  relationshipResolvedFromEntity,
 } from '../../relationships/specs/helpers/relationshipQueryFromEntity.js';
 
 const mainDocument: FileType = { _id: 'f1', filename: 'doc.pdf' };
-const extraRow: RelationshipSummaryRow = {
-  _id: 'c-new',
-  hub: 'h-new',
-  entity: 'new-entity',
-  template: null,
-  entityData: { title: 'New Entity', template: 'template1' },
-};
+const extraHubRows: RelationshipHubRow[] = [
+  {
+    _id: 'c-self-new',
+    hub: 'h-new',
+    entity: 'shared1',
+    template: null,
+    entityData: { title: 'Source', template: 'template1' },
+  },
+  {
+    _id: 'c-new',
+    hub: 'h-new',
+    entity: 'new-entity',
+    template: null,
+    entityData: { title: 'New Entity', template: 'template1' },
+  },
+];
 
 const useQuery = () => ({
-  hubRows: useRelationshipHubRows(),
+  views: useRelationshipViews(),
   status: useRelationshipQueryStatus(),
+  ensureAnchors: useEnsureAnchors(),
   ensureResolved: useEnsureResolved(),
 });
 
@@ -46,14 +55,20 @@ type Harness = {
   mainDocument?: FileType;
 };
 
-const renderQuery = (
-  harness: Harness,
-  relationshipsQuery: {
-    getSummary: jest.Mock;
-    getAnchors: jest.Mock;
-    getResolved: jest.Mock;
-  }
-) => {
+const hasQuoteText = (views: readonly RelationshipView[]) =>
+  views.some(
+    view =>
+      (view.from.type === 'textReference' && Boolean(view.from.text)) ||
+      (view.to.type === 'textReference' && Boolean(view.to.text))
+  );
+
+type QueryMocks = {
+  loadSummary: jest.Mock;
+  loadAnchors: jest.Mock;
+  loadResolved: jest.Mock;
+};
+
+const renderQuery = (harness: Harness, relationshipsQuery: QueryMocks) => {
   const services = createTestServices({ relationshipsQuery });
   return renderHook(useQuery, {
     wrapper: ({ children }: { children: ReactNode }) => (
@@ -92,61 +107,114 @@ describe('RelationshipsQueryProvider', () => {
   const seed = relationshipQueryFromEntity(entityWithRelations, mainDocument._id);
   const revalidatedSeed: RelationshipQueryPayload = {
     ...seed,
-    summary: [...seed.summary, extraRow],
+    hubRows: [...seed.hubRows, ...extraHubRows],
   };
-  const resolved = resolvedFromEntity(entityWithRelations);
+  const resolved = relationshipResolvedFromEntity(entityWithRelations);
 
-  let getSummary: jest.Mock;
-  let getAnchors: jest.Mock;
-  let getResolved: jest.Mock;
+  let loadSummary: jest.Mock;
+  let loadAnchors: jest.Mock;
+  let loadResolved: jest.Mock;
 
   beforeEach(() => {
-    getSummary = jest.fn().mockResolvedValue([seed.summary]);
-    getAnchors = jest.fn().mockResolvedValue([seed.anchors]);
-    getResolved = jest.fn().mockResolvedValue([resolved]);
+    loadSummary = jest.fn().mockResolvedValue([seed.hubRows]);
+    loadAnchors = jest.fn().mockResolvedValue([[]]);
+    loadResolved = jest.fn().mockResolvedValue([resolved]);
   });
 
-  it('replaces same-key revalidated seed and coalesces getResolved', async () => {
+  const mocks = (): QueryMocks => ({ loadSummary, loadAnchors, loadResolved });
+
+  it('replaces same-key revalidated seed and coalesces loadResolved', async () => {
     const harness: Harness = { seed, language: 'en', mainDocument };
-    const { result, rerender } = renderQuery(harness, { getSummary, getAnchors, getResolved });
+    const { result, rerender } = renderQuery(harness, mocks());
 
     await act(async () => {
       await Promise.all([result.current.ensureResolved(), result.current.ensureResolved()]);
     });
 
-    expect(getResolved).toHaveBeenCalledTimes(1);
-    expect(getSummary).not.toHaveBeenCalled();
-    expect(getAnchors).not.toHaveBeenCalled();
+    expect(loadResolved).toHaveBeenCalledTimes(1);
+    expect(loadSummary).not.toHaveBeenCalled();
     expect(result.current.status.resolved).toBe(true);
-    expect(result.current.hubRows.some(row => row.reference?.text)).toBe(true);
+    expect(hasQuoteText(result.current.views)).toBe(true);
 
     harness.seed = revalidatedSeed;
     rerender();
 
-    expect(getSummary).not.toHaveBeenCalled();
-    expect(getAnchors).not.toHaveBeenCalled();
-    expect(getResolved).toHaveBeenCalledTimes(1);
+    expect(loadSummary).not.toHaveBeenCalled();
+    expect(loadResolved).toHaveBeenCalledTimes(1);
     expect(result.current.status.resolved).toBe(false);
-    expect(result.current.hubRows.map(row => row._id)).toContain('c-new');
-    expect(result.current.hubRows.some(row => row.reference?.text)).toBe(false);
+    expect(result.current.views.some(view => view.to.entity === 'new-entity')).toBe(true);
+    expect(hasQuoteText(result.current.views)).toBe(false);
   });
 
-  it('fetches summary and anchors when UI language does not match seed', async () => {
+  it('loads summary only when UI language does not match seed', async () => {
     const harness: Harness = { seed, language: 'es', mainDocument };
-    renderQuery(harness, { getSummary, getAnchors, getResolved });
+    renderQuery(harness, mocks());
 
     await waitFor(() => {
-      expect(getSummary).toHaveBeenCalledWith('shared1', { language: 'es' });
+      expect(loadSummary).toHaveBeenCalledWith('shared1', { language: 'es' });
     });
-    expect(getAnchors).toHaveBeenCalledWith('shared1', 'f1', { language: 'es' });
-    expect(getResolved).not.toHaveBeenCalled();
+    expect(loadAnchors).not.toHaveBeenCalled();
+    expect(loadResolved).not.toHaveBeenCalled();
   });
 
-  it('retries getResolved after a failed fetch', async () => {
-    const error = new ApiError('Server error', { kind: 'http', status: 500 });
-    getResolved.mockResolvedValueOnce([undefined, error]).mockResolvedValueOnce([resolved]);
+  it('loads summary and anchors together when rail is needed on a seed miss', async () => {
+    let resolveSummary: (value: [RelationshipHubRow[]]) => void = () => undefined;
+    loadSummary.mockImplementation(
+      async () =>
+        new Promise<[RelationshipHubRow[]]>(resolve => {
+          resolveSummary = resolve;
+        })
+    );
+    const harness: Harness = { seed, language: 'es', mainDocument };
+    const { result } = renderQuery(harness, mocks());
+
+    await act(async () => {
+      const pending = result.current.ensureAnchors();
+      expect(loadAnchors).toHaveBeenCalledWith('shared1', { language: 'es', fileId: 'f1' });
+      resolveSummary([seed.hubRows]);
+      await pending;
+    });
+
+    expect(loadSummary).toHaveBeenCalledWith('shared1', { language: 'es' });
+    expect(loadSummary).toHaveBeenCalledTimes(1);
+    expect(loadResolved).not.toHaveBeenCalled();
+  });
+
+  it('loads anchors onto a summary-only seed without refetching summary', async () => {
+    const summarySeed: RelationshipQueryPayload = {
+      ...relationshipQueryFromEntity(entityWithRelations),
+      fileId: mainDocument._id,
+      anchorsLoaded: false,
+    };
+    const harness: Harness = { seed: summarySeed, language: 'en', mainDocument };
+    const { result } = renderQuery(harness, mocks());
+
+    await act(async () => {
+      await Promise.all([result.current.ensureAnchors(), result.current.ensureAnchors()]);
+    });
+
+    expect(loadSummary).not.toHaveBeenCalled();
+    expect(loadAnchors).toHaveBeenCalledTimes(1);
+    expect(loadAnchors).toHaveBeenCalledWith('shared1', { language: 'en', fileId: 'f1' });
+  });
+
+  it('does not refetch anchors when the seed already loaded them', async () => {
     const harness: Harness = { seed, language: 'en', mainDocument };
-    const { result } = renderQuery(harness, { getSummary, getAnchors, getResolved });
+    const { result } = renderQuery(harness, mocks());
+
+    await act(async () => {
+      await Promise.all([result.current.ensureAnchors(), result.current.ensureAnchors()]);
+    });
+
+    expect(loadAnchors).not.toHaveBeenCalled();
+    expect(loadSummary).not.toHaveBeenCalled();
+  });
+
+  it('retries loadResolved after a failed fetch', async () => {
+    const error = new ApiError('Server error', { kind: 'http', status: 500 });
+    loadResolved.mockResolvedValueOnce([undefined, error]).mockResolvedValueOnce([resolved]);
+    const harness: Harness = { seed, language: 'en', mainDocument };
+    const { result } = renderQuery(harness, mocks());
 
     await act(async () => {
       await result.current.ensureResolved();
@@ -156,7 +224,7 @@ describe('RelationshipsQueryProvider', () => {
     await act(async () => {
       await result.current.ensureResolved();
     });
-    expect(getResolved).toHaveBeenCalledTimes(2);
+    expect(loadResolved).toHaveBeenCalledTimes(2);
     expect(result.current.status.resolved).toBe(true);
   });
 });

@@ -14,7 +14,10 @@ import { createTestServices } from '#V2/testing/createTestServices.js';
 import { RelationshipsPanel } from '../../panel/RelationshipsPanel.js';
 import { RelationshipsFiltersDrawer } from '../../filters/RelationshipsFiltersDrawer.js';
 import { entityWithRelations } from '../fixtures/entityWithRelations.js';
-import { relationshipQueryFromEntity, resolvedFromEntity } from './relationshipQueryFromEntity.js';
+import {
+  relationshipQueryFromEntity,
+  relationshipsQueryStubFromEntity,
+} from './relationshipQueryFromEntity.js';
 
 type PdfMocks = {
   goToPage: jest.Mock;
@@ -68,11 +71,7 @@ const renderRelationshipsPanel = ({
   store.set(templatesAtom, [{ _id: 'template1', color: '#faca15', name: 'Entity' }]);
   const relationshipQuery = relationshipQueryFromEntity(entity, mainDocument?._id);
   const services = createTestServices({
-    relationshipsQuery: {
-      getSummary: async () => [relationshipQuery.summary],
-      getAnchors: async () => [relationshipQuery.anchors],
-      getResolved: async () => [resolvedFromEntity(entity)],
-    },
+    relationshipsQuery: relationshipsQueryStubFromEntity(entity, mainDocument?._id),
   });
 
   const router = createMemoryRouter([

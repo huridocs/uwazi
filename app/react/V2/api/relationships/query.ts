@@ -105,14 +105,14 @@ const getRows = async <T>(
   return [rows];
 };
 
-const getSummary = (
+const getSummary = async (
   sharedId: string,
   language: string,
   headers?: IncomingHttpHeaders
 ): Promise<ApiResponse<RelationshipSummaryRow[] | undefined>> =>
   getRows('relationships/summary', { sharedId }, language, headers, toSummaryRow);
 
-const getAnchors = (
+const getAnchors = async (
   sharedId: string,
   fileId: string,
   language: string,
@@ -120,7 +120,7 @@ const getAnchors = (
 ): Promise<ApiResponse<RelationshipAnchorRow[] | undefined>> =>
   getRows('relationships/anchors', { sharedId, file: fileId }, language, headers, toAnchorRow);
 
-const getResolved = (
+const getResolved = async (
   sharedId: string,
   language: string,
   headers?: IncomingHttpHeaders

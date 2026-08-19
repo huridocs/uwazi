@@ -12,8 +12,6 @@ export { formatImageProperty } from './metadata/formatImageProperty.js';
 export { formatSelectProperty } from './metadata/formatSelectProperty.js';
 export { formatEntityFiles, countEntityFiles } from './files/formatEntityFiles.js';
 export { getMainDocument } from './files/getMainDocument.js';
-export { formatRelationships } from './relationships/formatRelationships.js';
-export { mergeRelationshipHubs } from './relationships/mergeRelationshipHubs.js';
 export { buildRelationshipsSsrIndex } from './relationships/buildRelationshipsSsrIndex.js';
 export {
   projectRelationshipMarkers,

@@ -5,7 +5,7 @@ import type { Entity as EntityType, FileType } from '#V2/api/entities/types.js';
 import { settingsAtom, templatesAtom } from '#V2/atoms/index.js';
 import { localeAtom } from '#V2/atoms/translationsAtoms.js';
 import { countEntityFiles, countEntityRelationships } from '#V2/formatters/index.js';
-import { useMetadataEditing, useRelationshipHubRows } from '../Components/context/index.js';
+import { useMetadataEditing, useRelationshipViews } from '../Components/context/index.js';
 import { EntityLanguageBar, TabLabel } from '../Components/shared/index.js';
 import { MAIN_TAB } from './tabIds.js';
 
@@ -17,7 +17,7 @@ type TabsMainButtonsProps = {
 
 const TabsMainButtons = ({ entity, mainDocument, onTabChange }: TabsMainButtonsProps) => {
   const { isDirty } = useMetadataEditing();
-  const hubRows = useRelationshipHubRows();
+  const views = useRelationshipViews();
   const templates = useAtomValue(templatesAtom);
   const locale = useAtomValue(localeAtom);
   const settings = useAtomValue(settingsAtom);
@@ -25,11 +25,7 @@ const TabsMainButtons = ({ entity, mainDocument, onTabChange }: TabsMainButtonsP
   const buttons = useMemo(() => {
     const items = [];
     const filesCount = countEntityFiles(entity, templates, locale, defaultLanguage);
-    const relationshipsCount = countEntityRelationships(
-      entity.sharedId,
-      hubRows,
-      mainDocument?._id
-    );
+    const relationshipsCount = countEntityRelationships(entity.sharedId, views, mainDocument?._id);
 
     if (mainDocument?.filename) {
       items.push({
@@ -57,7 +53,7 @@ const TabsMainButtons = ({ entity, mainDocument, onTabChange }: TabsMainButtonsP
   }, [
     defaultLanguage,
     entity,
-    hubRows,
+    views,
     isDirty,
     locale,
     mainDocument?.filename,

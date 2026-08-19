@@ -1,7 +1,6 @@
 import { RelationshipMarker, firstPageOf, toMarker } from '#V2/Components/Relationships/types.js';
-import type { RelationshipHubRow } from '#V2/api/relationships/types.js';
+import type { RelationshipView } from './types.js';
 import { counterpartAnchorOf, selfPointer } from './types.js';
-import { formatRelationships } from './formatRelationships.js';
 import { buildPanelListEntries } from './relationshipsPanelDerivation.js';
 import { buildMatcher } from './relationshipsPanelSearchQuery.js';
 
@@ -29,9 +28,8 @@ const computeStats = (
 
 const projectRelationshipMarkers = (
   selfSharedId: string,
-  hubRows: readonly RelationshipHubRow[]
-): RelationshipMarker[] =>
-  formatRelationships(selfSharedId, hubRows).map(view => toMarker(view, selfSharedId));
+  views: readonly RelationshipView[]
+): RelationshipMarker[] => views.map(view => toMarker(view, selfSharedId));
 
 const filterMarkersForDocument = (
   markers: RelationshipMarker[],
@@ -48,19 +46,19 @@ const filterMarkersForDocument = (
 
 const projectRelationshipsPanel = (
   selfSharedId: string,
-  hubRows: readonly RelationshipHubRow[]
+  views: readonly RelationshipView[]
 ): RelationshipsPanelProjection => {
-  const markers = projectRelationshipMarkers(selfSharedId, hubRows);
+  const markers = projectRelationshipMarkers(selfSharedId, views);
   return { markers, stats: computeStats(markers, selfSharedId) };
 };
 
 const countEntityRelationships = (
   selfSharedId: string,
-  hubRows: readonly RelationshipHubRow[],
+  views: readonly RelationshipView[],
   documentId?: string
 ): number =>
   filterMarkersForDocument(
-    projectRelationshipMarkers(selfSharedId, hubRows),
+    projectRelationshipMarkers(selfSharedId, views),
     documentId,
     selfSharedId
   ).length;

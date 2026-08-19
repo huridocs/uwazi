@@ -44,8 +44,8 @@ type RelationshipQueryPayload = {
   language: string;
   sharedId: string;
   fileId?: string;
-  summary: RelationshipSummaryRow[];
-  anchors: RelationshipAnchorRow[];
+  hubRows: RelationshipHubRow[];
+  anchorsLoaded: boolean;
 };
 
 export type {

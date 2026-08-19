@@ -7,7 +7,7 @@ import { createStore, Provider } from 'jotai';
 import { apiEntity } from '#app/stories/fixtures/referencesFixtures.js';
 import { templatesAtom } from '#V2/atoms/index.js';
 import { projectRelationshipMarkers } from '#V2/formatters/index.js';
-import { hubRowsFromEntity } from '#V2/Routes/Entity/Components/relationships/specs/helpers/relationshipQueryFromEntity.js';
+import { relationshipViewsFromEntity } from '#V2/Routes/Entity/Components/relationships/specs/helpers/relationshipQueryFromEntity.js';
 import {
   groupDocumentRelationships,
   groupRelationships,
@@ -19,7 +19,10 @@ describe('FullMode', () => {
   const store = createStore();
   store.set(templatesAtom, [{ _id: 'template3', color: '#2b8a3e', name: 'Person' }]);
 
-  const markers = projectRelationshipMarkers(apiEntity.sharedId, hubRowsFromEntity(apiEntity));
+  const markers = projectRelationshipMarkers(
+    apiEntity.sharedId,
+    relationshipViewsFromEntity(apiEntity)
+  );
   const documentClusters = groupDocumentRelationships(
     groupRelationships(splitMarkersByAnchor(markers).anchored),
     22

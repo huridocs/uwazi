@@ -1,4 +1,5 @@
 import type { RelationshipHubRow } from '#V2/api/relationships/types.js';
+import { formatRelationships } from '../formatRelationships.js';
 import {
   computeStats,
   countEntityRelationships,
@@ -96,8 +97,10 @@ const multiFileRows: RelationshipHubRow[] = [
   },
 ];
 
+const viewsOf = (hubRows: readonly RelationshipHubRow[]) => formatRelationships('self1', hubRows);
+
 const project = (hubRows: readonly RelationshipHubRow[]) =>
-  projectRelationshipsPanel('self1', hubRows);
+  projectRelationshipsPanel('self1', viewsOf(hubRows));
 
 describe('relationshipsPanelProjection', () => {
   it('projects markers and stats from hub rows', () => {
@@ -143,8 +146,8 @@ describe('relationshipsPanelProjection', () => {
         entityData: { title: 'Other', template: 't2' },
       },
     ];
-    expect(countEntityRelationships('self1', countRows)).toBe(3);
-    expect(countEntityRelationships('self1', countRows, 'f1')).toBe(2);
+    expect(countEntityRelationships('self1', viewsOf(countRows))).toBe(3);
+    expect(countEntityRelationships('self1', viewsOf(countRows), 'f1')).toBe(2);
   });
 });
 
