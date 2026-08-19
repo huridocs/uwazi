@@ -59,13 +59,9 @@ describe('CachedMongoTranslationsDataSource', () => {
       const transactionManager = TransactionManagerFactory.default();
       const dataSource = new CachedMongoTranslationsDataSource(getConnection(), transactionManager);
 
-      const resultSet1 = dataSource.getByContext('context1');
-      const resultSet2 = dataSource.getByContext('context1');
+      const all1 = await dataSource.getByContext('context1');
+      const all2 = await dataSource.getByContext('context1');
 
-      const all1 = await resultSet1.all();
-      const all2 = await resultSet2.all();
-
-      // Second call should return cached result
       expect(all1).toBe(all2);
       expect(all1).toHaveLength(3);
     });
@@ -74,20 +70,14 @@ describe('CachedMongoTranslationsDataSource', () => {
       const transactionManager = TransactionManagerFactory.default();
       const dataSource = new CachedMongoTranslationsDataSource(getConnection(), transactionManager);
 
-      const resultSet1 = dataSource.getByContext('context1');
-      const all1 = await resultSet1.all();
+      const all1 = await dataSource.getByContext('context1');
 
-      // Execute a transaction to trigger onCommitted handlers
       await transactionManager.run(async () => {
-        // Transaction that would modify data
         await Promise.resolve();
       });
 
-      const resultSet2 = dataSource.getByContext('context1');
-      const all2 = await resultSet2.all();
+      const all2 = await dataSource.getByContext('context1');
 
-      // After transaction commit, the cache should be cleared
-      // so the results should be different instances
       expect(all1).not.toBe(all2);
       expect(all1).toHaveLength(3);
       expect(all2).toHaveLength(3);
@@ -97,11 +87,8 @@ describe('CachedMongoTranslationsDataSource', () => {
       const transactionManager = TransactionManagerFactory.default();
       const dataSource = new CachedMongoTranslationsDataSource(getConnection(), transactionManager);
 
-      const resultSet1 = dataSource.getByContext('context1');
-      const resultSet2 = dataSource.getByContext('context2');
-
-      const all1 = await resultSet1.all();
-      const all2 = await resultSet2.all();
+      const all1 = await dataSource.getByContext('context1');
+      const all2 = await dataSource.getByContext('context2');
 
       expect(all1).not.toBe(all2);
       expect(all1).toHaveLength(3);
@@ -114,8 +101,8 @@ describe('CachedMongoTranslationsDataSource', () => {
         TransactionManagerFactory.default()
       );
 
-      const byLanguageAndContext = await dataSource.getByLanguageAndContext('en', 'context1').all();
-      const byContext = await dataSource.getByContext('context1').all();
+      const byLanguageAndContext = await dataSource.getByLanguageAndContext('en', 'context1');
+      const byContext = await dataSource.getByContext('context1');
 
       expect(byLanguageAndContext).toHaveLength(2);
       expect(byContext).toHaveLength(3);
@@ -126,8 +113,7 @@ describe('CachedMongoTranslationsDataSource', () => {
       const transactionManager = TransactionManagerFactory.default();
       const dataSource = new CachedMongoTranslationsDataSource(getConnection(), transactionManager);
 
-      const resultSet = dataSource.getByContext('context1');
-      const all = await resultSet.all();
+      const all = await dataSource.getByContext('context1');
 
       expect(all[0]).toBeInstanceOf(Translation);
       expect(all.some(t => t.key === 'test_key_1' && t.language === 'en')).toBe(true);

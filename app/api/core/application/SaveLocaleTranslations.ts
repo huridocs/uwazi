@@ -31,9 +31,7 @@ class SaveLocaleTranslationsUseCase extends AbstractUseCase<Input, Output, Deps>
 
     const snapshots = await Promise.all(
       thesaurusContexts.map(async context => {
-        const rows = await this.deps.translationsDS
-          .getByLanguageAndContext(locale, context.id!)
-          .all();
+        const rows = await this.deps.translationsDS.getByLanguageAndContext(locale, context.id!);
         const type = context.type || rows[0]?.context.type;
         return {
           contextId: context.id!,

@@ -61,9 +61,7 @@ class UpdateEntriesByContextUseCase extends AbstractUseCase<Input, Output, Deps>
 
     const results = await Promise.allSettled(
       languagesToUpdate.map(async locale => {
-        const rows = await this.deps.translationsDS
-          .getByLanguageAndContext(locale, contextId)
-          .all();
+        const rows = await this.deps.translationsDS.getByLanguageAndContext(locale, contextId);
         if (!rows.length) {
           return undefined;
         }

@@ -50,9 +50,7 @@ describe('SaveTranslationEntriesUseCase', () => {
 
       const rows = await TranslationsDataSourceFactory.default({
         transactionManager: TransactionManagerFactory.default(),
-      })
-        .getByContext(contextId)
-        .all();
+      }).getByContext(contextId);
 
       expect(rows.find(r => r.language === 'en')?.value).toBe('Title updated');
       expect(rows.find(r => r.language === 'es')?.value).toBe('Título actualizado');
@@ -72,9 +70,7 @@ describe('SaveTranslationEntriesUseCase', () => {
 
       const rows = await TranslationsDataSourceFactory.default({
         transactionManager: TransactionManagerFactory.default(),
-      })
-        .getByContext(contextId)
-        .all();
+      }).getByContext(contextId);
 
       expect(rows).toHaveLength(4);
       expect(rows.map(r => `${r.language}:${r.key}`).sort()).toEqual([

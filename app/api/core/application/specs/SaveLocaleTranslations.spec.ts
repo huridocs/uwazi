@@ -73,9 +73,7 @@ describe('SaveLocaleTranslationsUseCase', () => {
 
       const rows = await TranslationsDataSourceFactory.default({
         transactionManager: TransactionManagerFactory.default(),
-      })
-        .getByContext(contextId)
-        .all();
+      }).getByContext(contextId);
 
       expect(rows.find(r => r.language === 'es' && r.key === 'Title')?.value).toBe('Plantilla');
       expect(rows.find(r => r.language === 'en' && r.key === 'Title')?.value).toBe('Title');
@@ -98,9 +96,7 @@ describe('SaveLocaleTranslationsUseCase', () => {
 
       const rows = await TranslationsDataSourceFactory.default({
         transactionManager: TransactionManagerFactory.default(),
-      })
-        .getByContext(newContextId)
-        .all();
+      }).getByContext(newContextId);
 
       expect(rows.map(r => `${r.language}:${r.key}:${r.value}`).sort()).toEqual([
         'en:Name:Name',

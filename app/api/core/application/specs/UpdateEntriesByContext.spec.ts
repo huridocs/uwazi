@@ -54,9 +54,7 @@ describe('UpdateEntriesByContextUseCase', () => {
 
       const rows = await TranslationsDataSourceFactory.default({
         transactionManager: TransactionManagerFactory.default(),
-      })
-        .getByContext(contextId)
-        .all();
+      }).getByContext(contextId);
 
       expect(rows.map(r => `${r.language}:${r.key}:${r.value}`).sort()).toEqual([
         'en:Name:Name EN',
@@ -92,9 +90,7 @@ describe('UpdateEntriesByContextUseCase', () => {
 
       const rows = await TranslationsDataSourceFactory.default({
         transactionManager: TransactionManagerFactory.default(),
-      })
-        .getByContext(contextId)
-        .all();
+      }).getByContext(contextId);
 
       expect(rows.find(r => r.language === 'en' && r.key === 'Title')?.value).toBe('Only EN');
       expect(rows.find(r => r.language === 'es' && r.key === 'Title')?.value).toBe('Título');

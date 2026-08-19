@@ -87,7 +87,7 @@ const loadTemplateTranslations = async (
 
   await Promise.all(
     templateIds.map(async templateId => {
-      const translations = await translationsDS.getByContext(templateId).all();
+      const translations = await translationsDS.getByContext(templateId);
       result.set(templateId, new TranslationCollection(translations));
     })
   );
@@ -189,7 +189,7 @@ const loadPropertyThesaurus = async (
   const thesaurusTranslations = new Map<string, TranslationCollection>();
   await Promise.all(
     [...thesaurusIds].map(async thesaurusId => {
-      const translations = await translationsDS.getByContext(thesaurusId).all();
+      const translations = await translationsDS.getByContext(thesaurusId);
       thesaurusTranslations.set(thesaurusId, new TranslationCollection(translations));
     })
   );
