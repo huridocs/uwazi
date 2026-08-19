@@ -83,6 +83,10 @@ describe('RelationshipsQueryService', () => {
       }
     );
 
+    it('keeps hubs when the source has no template', async () => {
+      expect(names(await summary(admin, 'notmpl'))).toEqual(['source', 'target']);
+    });
+
     it('keeps the current-language file row', async () => {
       const rows = await summary(admin, 'source', 'es');
       expect(rows).toContainEqual(

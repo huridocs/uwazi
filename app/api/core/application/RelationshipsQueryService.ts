@@ -74,9 +74,11 @@ function dropSingletonHubs(rows: ReadableHubRow[]): ReadableHubRow[] {
   return rows.filter(row => (counts.get(row.hub) ?? 0) >= 2);
 }
 
-function dropOrphanHubs(rows: ReadableHubRow[], sharedId: string): ReadableHubRow[] {
-  const hubs = new Set(rows.filter(row => row.entity === sharedId).map(row => row.hub));
-  return rows.filter(row => hubs.has(row.hub));
+function keepHubsWithSource(connections: HubConnection[], sharedId: string): HubConnection[] {
+  const hubs = new Set(
+    connections.filter(connection => connection.entity === sharedId).map(connection => connection.hub)
+  );
+  return connections.filter(connection => hubs.has(connection.hub));
 }
 
 function toReadableRow(connection: HubConnection, entityData: EntityLabel): ReadableHubRow {
@@ -185,7 +187,10 @@ class RelationshipsQueryService {
     language: LanguageISO6391
   ): Promise<ReadableHubRow[]> {
     const fileIds = await this.readableFileIds(connections, language);
-    const kept = connections.filter(connection => !connection.file || fileIds.has(connection.file));
+    const kept = keepHubsWithSource(
+      connections.filter(connection => !connection.file || fileIds.has(connection.file)),
+      sharedId
+    );
     if (kept.length === 0) {
       return [];
     }
@@ -195,7 +200,7 @@ class RelationshipsQueryService {
       const data = entityData.get(connection.entity);
       return data ? [toReadableRow(connection, data)] : [];
     });
-    return dropOrphanHubs(dropSingletonHubs(dropRedundantEntityRows(uniqueById(rows))), sharedId);
+    return dropSingletonHubs(dropRedundantEntityRows(uniqueById(rows)));
   }
 
   private async readableFileIds(
