@@ -1,41 +1,40 @@
 import React from 'react';
 import { Translate } from '#app/I18N/index.js';
-import type { DatavizDataSourceKind } from '#shared/types/datavizSchema.js';
 
-type DataSourceKindSectionProps = {
-  value: DatavizDataSourceKind;
-  onChange: (value: DatavizDataSourceKind) => void;
+type EntityScopeSectionProps = {
+  includeUnpublished: boolean;
+  onChange: (includeUnpublished: boolean) => void;
 };
 
-const DATA_SOURCE_OPTIONS: {
-  value: DatavizDataSourceKind;
+const ENTITY_SCOPE_OPTIONS: {
+  value: boolean;
   label: string;
   description: string;
 }[] = [
   {
-    value: 'query',
-    label: 'Query',
-    description: 'Load data from entity templates.',
+    value: true,
+    label: 'Include all entities',
+    description: 'Published and unpublished entities are counted.',
   },
   {
-    value: 'manual',
-    label: 'Manual',
-    description: 'Paste chart-ready JSON.',
+    value: false,
+    label: 'Include only public',
+    description: 'Only published entities are counted.',
   },
 ];
 
-const DataSourceKindSection = ({ value, onChange }: DataSourceKindSectionProps) => (
+const EntityScopeSection = ({ includeUnpublished, onChange }: EntityScopeSectionProps) => (
   <section className="flex flex-col gap-3">
     <h3 className="text-sm font-semibold text-ink">
-      <Translate>Input type</Translate>
+      <Translate>Entity scope</Translate>
     </h3>
     <div className="flex gap-3">
-      {DATA_SOURCE_OPTIONS.map(option => {
-        const isSelected = value === option.value;
+      {ENTITY_SCOPE_OPTIONS.map(option => {
+        const isSelected = includeUnpublished === option.value;
 
         return (
           <label
-            key={option.value}
+            key={String(option.value)}
             className={`flex min-w-0 flex-1 cursor-pointer flex-col gap-3 rounded-lg border p-3 ${
               isSelected ? 'border-ink bg-warm' : 'border-border'
             }`}
@@ -43,15 +42,17 @@ const DataSourceKindSection = ({ value, onChange }: DataSourceKindSectionProps) 
             <span className="flex gap-3">
               <input
                 type="radio"
-                name="data-source-kind"
+                name="entity-scope"
                 checked={isSelected}
                 onChange={() => onChange(option.value)}
                 className="mt-1 shrink-0"
               />
               <span className="min-w-0 flex-1">
-                <span className="block text-sm font-medium text-ink">{option.label}</span>
+                <span className="block text-sm font-medium text-ink">
+                  <Translate>{option.label}</Translate>
+                </span>
                 <span className="mt-0.5 block text-xs text-ink-secondary">
-                  {option.description}
+                  <Translate>{option.description}</Translate>
                 </span>
               </span>
             </span>
@@ -62,4 +63,4 @@ const DataSourceKindSection = ({ value, onChange }: DataSourceKindSectionProps) 
   </section>
 );
 
-export { DataSourceKindSection };
+export { EntityScopeSection };

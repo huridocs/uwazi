@@ -563,7 +563,7 @@ describe('MongoDatavizQueryExecutor', () => {
           .collection('dictionaries')
           .updateOne(
             { _id: thesaurusId },
-            { $push: { values: { id: unpublishedColorId, label: 'Blue' } } }
+            { $push: { values: { id: unpublishedColorId, label: 'Blue' } } as any }
           );
         await db.collection('entities').insertOne({
           _id: factory.id('unpublished-car'),
@@ -586,14 +586,28 @@ describe('MongoDatavizQueryExecutor', () => {
       language: 'en',
     };
 
-    it('should include unpublished entities for anonymous actors so live queries match snapshots', async () => {
+    it('should exclude unpublished entities for anonymous actors by default', async () => {
       const executor = createExecutor();
       const anonymous = User.createFrom(null);
 
       const dto = await executor.execute(colorQuery, {
         actor: anonymous,
-        datavizId: 'test-unpublished-anonymous',
+        datavizId: 'test-unpublished-default',
       });
+
+      expect(dto.series[0]?.points).toEqual(
+        expect.not.arrayContaining([expect.objectContaining({ key: unpublishedColorId })])
+      );
+    });
+
+    it('should include unpublished entities for anonymous actors when includeUnpublished is true', async () => {
+      const executor = createExecutor();
+      const anonymous = User.createFrom(null);
+
+      const dto = await executor.execute(
+        { ...colorQuery, includeUnpublished: true },
+        { actor: anonymous, datavizId: 'test-unpublished-opt-in' }
+      );
 
       expect(dto.series[0]?.points).toEqual(
         expect.arrayContaining([
@@ -602,17 +616,19 @@ describe('MongoDatavizQueryExecutor', () => {
       );
     });
 
-    it('should exclude unpublished entities when includeUnpublished is false for non-privileged actors', async () => {
+    it('should always include unpublished entities for privileged actors regardless of the flag', async () => {
       const executor = createExecutor();
-      const anonymous = User.createFrom(null);
+      const admin = User.createFrom({ _id: factory.id('admin').toString(), role: 'admin' });
 
-      const dto = await executor.execute(
-        { ...colorQuery, includeUnpublished: false },
-        { actor: anonymous, datavizId: 'test-unpublished-opt-out' }
-      );
+      const dto = await executor.execute(colorQuery, {
+        actor: admin,
+        datavizId: 'test-unpublished-admin',
+      });
 
       expect(dto.series[0]?.points).toEqual(
-        expect.not.arrayContaining([expect.objectContaining({ key: unpublishedColorId })])
+        expect.arrayContaining([
+          expect.objectContaining({ key: unpublishedColorId, label: 'Blue', value: 1 }),
+        ])
       );
     });
   });

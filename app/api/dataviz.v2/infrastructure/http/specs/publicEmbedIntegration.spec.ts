@@ -264,7 +264,7 @@ describe('public dataviz embed integration', () => {
     expect(embedResponse.body.data.meta.totalEntities).toBeGreaterThan(0);
   });
 
-  it('should include unpublished entities for anonymous live embeds, matching snapshot charts', async () => {
+  it('should include unpublished entities when includeUnpublished is true, consistently across live and snapshot modes', async () => {
     await testingEnvironment.runWithContext(async () => {
       const { getConnection } =
         await import('#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js');
@@ -283,10 +283,16 @@ describe('public dataviz embed integration', () => {
       });
     });
 
+    const queryWithUnpublished = {
+      ...livePieQueryChart.query,
+      includeUnpublished: true,
+    };
+
     const liveResponse = await request(app)
       .post('/api/dataviz')
       .send({
         ...livePieQueryChart,
+        query: queryWithUnpublished,
         name: 'Live unpublished anonymous',
       })
       .expect(200);
@@ -295,6 +301,7 @@ describe('public dataviz embed integration', () => {
       .post('/api/dataviz')
       .send({
         ...livePieQueryChart,
+        query: queryWithUnpublished,
         name: 'Snapshot unpublished anonymous',
         refresh: { refreshMode: 'snapshot_manual' },
       })
@@ -317,6 +324,26 @@ describe('public dataviz embed integration', () => {
     expect(unpublishedPoint(liveEmbed)?.value).toBe(1);
     expect(unpublishedPoint(snapshotEmbed)?.value).toBe(1);
     expect(liveEmbed.body.data.meta.totalEntities).toBe(snapshotEmbed.body.data.meta.totalEntities);
-    expect(liveEmbed.body.data.meta.totalEntities).toBeGreaterThanOrEqual(4);
+  });
+
+  it('should exclude unpublished entities by default for anonymous users', async () => {
+    const liveResponse = await request(app)
+      .post('/api/dataviz')
+      .send({
+        ...livePieQueryChart,
+        name: 'Live public only',
+      })
+      .expect(200);
+
+    const liveEmbed = await request(anonymousApp)
+      .get(`/api/public/dataviz/${liveResponse.body.id}/data`)
+      .query({ locale: 'en' })
+      .expect(200);
+
+    const unpublishedPoint = (embed: {
+      body: { data: { series: Array<{ points: Array<{ key: string; value: number }> }> } };
+    }) => embed.body.data.series[0].points.find(point => Number(point.key) === 9.9);
+
+    expect(unpublishedPoint(liveEmbed)).toBeUndefined();
   });
 });
