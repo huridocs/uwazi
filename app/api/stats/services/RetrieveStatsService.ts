@@ -1,26 +1,29 @@
 import { Db } from 'mongodb';
 import { elastic } from '#api/search/index.js';
-import { PUBLIC_USER_ID } from '#api/core/domain/user/User.js';
-import { UserSchema } from '#shared/types/userType.js';
 import { MongoFilesDAO } from '#api/core/infrastructure/mongodb/files/MongoFilesDAO.js';
 import { EntitiesDAO } from '#api/core/application/contracts/EntitiesDAO.js';
-
-type RoleCount = {
-  _id: UserSchema['role'];
-  count: number;
-};
+import type { UsersQueryService } from '#api/core/application/contracts/UsersQueryService.js';
 
 export class RetrieveStatsService {
+  /** Still a raw `Db`: `db.stats()` is a database-level call with no DAO behind it. */
   private readonly db: Db;
 
   private readonly filesDAO: MongoFilesDAO;
 
   private readonly entitiesDAO: EntitiesDAO;
 
-  constructor(db: Db, filesDAO: MongoFilesDAO, entitiesDAO: EntitiesDAO) {
+  private readonly usersQueryService: UsersQueryService;
+
+  constructor(
+    db: Db,
+    filesDAO: MongoFilesDAO,
+    entitiesDAO: EntitiesDAO,
+    usersQueryService: UsersQueryService
+  ) {
     this.db = db;
     this.filesDAO = filesDAO;
     this.entitiesDAO = entitiesDAO;
+    this.usersQueryService = usersQueryService;
   }
 
   async execute(language: string) {
@@ -84,21 +87,11 @@ export class RetrieveStatsService {
   }
 
   private async calculateUserStats() {
-    const users = await this.db
-      .collection('users')
-      .aggregate<RoleCount>([
-        { $match: { _id: { $ne: PUBLIC_USER_ID }, deletedAt: { $exists: false } } },
-        { $group: { _id: '$role', count: { $sum: 1 } } },
-      ])
-      .toArray();
+    const byRole = await this.usersQueryService.countByRole();
 
-    return users.reduce(
-      (userStats, role) => ({
-        ...userStats,
-        [role._id]: role.count,
-        total: userStats.total + role.count,
-      }),
-      { total: 0, admin: 0, editor: 0, collaborator: 0 }
-    );
+    return {
+      ...byRole,
+      total: Object.values(byRole).reduce((total, count) => total + count, 0),
+    };
   }
 }

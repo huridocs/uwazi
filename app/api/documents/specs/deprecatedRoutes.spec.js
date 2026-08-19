@@ -4,7 +4,7 @@ import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { legacyLogger } from '#api/log/index.js';
 import documentRoutes from '../deprecatedRoutes.js';
 import { fixtures } from './fixtures.js';
-import templates from '../../core/v1_layer/templates/index.js';
+import { EntitiesDAOFactory } from '../../core/infrastructure/factories/EntitiesDAOFactory.js';
 
 jest.mock('../../utils/languageMiddleware.ts', () => (req, _res, next) => {
   req.language = 'es';
@@ -23,8 +23,13 @@ describe('documents', () => {
   const app = setUpApp(documentRoutes);
 
   describe('/api/documents/count_by_template', () => {
+    let countSpy;
     beforeEach(() => {
-      jest.spyOn(templates, 'countByTemplate').mockImplementation(async () => Promise.resolve(2));
+      countSpy = jest.fn().mockResolvedValue(2);
+      jest.spyOn(EntitiesDAOFactory, 'default').mockReturnValue({ count: countSpy });
+    });
+    afterEach(() => {
+      jest.restoreAllMocks();
     });
     it('should return a validation error if templateId is not passed', async () => {
       const response = await request(app).get('/api/documents/count_by_template').query({});
@@ -39,7 +44,7 @@ describe('documents', () => {
       const response = await request(app)
         .get('/api/documents/count_by_template')
         .query({ templateId: 'templateId' });
-      expect(templates.countByTemplate).toHaveBeenCalledWith('templateId');
+      expect(countSpy).toHaveBeenCalledWith({ template: 'templateId' });
       expect(response.body).toEqual(2);
     });
   });

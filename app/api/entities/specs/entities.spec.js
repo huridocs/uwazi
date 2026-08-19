@@ -1,8 +1,7 @@
 /* eslint-disable max-statements */
 
-import Ajv from 'ajv';
+import { ZodError } from 'zod';
 
-import entitiesModel from '#api/entities/entitiesModel.js';
 import relationships from '#api/relationships/relationships.js';
 import { search } from '#api/search/index.js';
 import date from '#api/utils/date.js';
@@ -10,15 +9,15 @@ import db from '#api/utils/testing_db.js';
 import { UserInContextMockFactory } from '#api/utils/testingUserInContext.js';
 import { UserRole } from '#shared/types/userSchema.js';
 
-import { applicationEventsBus } from '#api/core/libs/eventsbus/index.js';
+import { RelationshipSyncJob } from '#api/core/infrastructure/jobs/RelationshipSyncJob.js';
+import { ProcessRelationshipAfterEntityUpdatedListener } from '#api/core/infrastructure/listeners/ProcessRelationshipAfterEntityUpdatedListener.js';
 import { EventEmitterFactory } from '#api/core/libs/eventEmitter/EventEmitterFactory.js';
+import { applicationEventsBus } from '#api/core/libs/eventsbus/index.js';
 import { SyncDispatcherForTests } from '#api/core/libs/queue/infrastructure/SyncDispatcherForTests.js';
+import { permissionsContext } from '#api/permissions/permissionsContext.js';
+import { elasticTesting } from '#api/utils/elastic_testing.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { testingTenants } from '#api/utils/testingTenants.js';
-import { elasticTesting } from '#api/utils/elastic_testing.js';
-import { permissionsContext } from '#api/permissions/permissionsContext.js';
-import { ProcessRelationshipAfterEntityUpdatedListener } from '#api/core/infrastructure/listeners/ProcessRelationshipAfterEntityUpdatedListener.js';
-import { RelationshipSyncJob } from '#api/core/infrastructure/jobs/RelationshipSyncJob.js';
 import entities from '../entities.js';
 import {
   denormalizeEntityV2Adapter,
@@ -40,6 +39,15 @@ import fixtures, {
 } from './fixtures.js';
 
 const saveEntity = (doc, options = {}) => saveEntityV2Adapter(doc, options);
+
+const getEntityById = async (id, language) => {
+  const docs = await testingEnvironment.db.getAllFrom('entities');
+  return docs.find(entity =>
+    language
+      ? entity.sharedId === id && entity.language === language
+      : entity._id.toString() === id.toString()
+  );
+};
 
 const saveEntityWithEventing = (doc, options = {}) => {
   const jobsDispatcher = new SyncDispatcherForTests({
@@ -81,7 +89,7 @@ describe('entities', () => {
   const userFactory = new UserInContextMockFactory();
   const saveDoc = async (doc, user) => {
     await saveEntity(doc, { user, language: 'es' });
-    const docs = await entities.get({ title: doc.title });
+    const docs = await testingEnvironment.runWithContext(() => entities.get({ title: doc.title }));
     return {
       createdDocumentEs: docs.find(d => d.language === 'es'),
       createdDocumentEn: docs.find(d => d.language === 'en'),
@@ -277,7 +285,7 @@ describe('entities', () => {
       expect(savedEntity.metadata.friends).toEqual([
         { label: 'shared2title', type: 'entity', value: 'shared2' },
       ]);
-      const refetchedEntity = await entities.getById(batmanFinishesId);
+      const refetchedEntity = await getEntityById(batmanFinishesId);
       expect(refetchedEntity.title).toBe('Updated title');
       expect(refetchedEntity.metadata.property1).toEqual([{ value: 'value1' }]);
       expect(refetchedEntity.metadata.friends).toEqual([
@@ -298,9 +306,9 @@ describe('entities', () => {
         const updatedDoc = await saveEntity(doc, { language: 'en' });
         expect(updatedDoc.language).toBe('en');
         const [docES, docEN, docPT] = await Promise.all([
-          entities.getById('shared', 'es'),
-          entities.getById('shared', 'en'),
-          entities.getById('shared', 'pt'),
+          getEntityById('shared', 'es'),
+          getEntityById('shared', 'en'),
+          getEntityById('shared', 'pt'),
         ]);
         expect(docEN.published).toBe(true);
         expect(docES.published).toBe(true);
@@ -326,8 +334,8 @@ describe('entities', () => {
         const updatedDoc = await saveEntity(doc, { language: 'en' });
         expect(updatedDoc.language).toBe('en');
         const [docES, docEN] = await Promise.all([
-          entities.getById('shared', 'es'),
-          entities.getById('shared', 'en'),
+          getEntityById('shared', 'es'),
+          getEntityById('shared', 'en'),
         ]);
         expect(docEN.template).toBeDefined();
         expect(docES.template).toBeDefined();
@@ -363,8 +371,8 @@ describe('entities', () => {
         await saveEntity(doc, { language: 'en' });
         await saveEntity({ _id: batmanFinishesId, sharedId: 'shared' }, { language: 'en' });
         const [docES, docEN] = await Promise.all([
-          entities.getById('shared', 'es'),
-          entities.getById('shared', 'en'),
+          getEntityById('shared', 'es'),
+          getEntityById('shared', 'en'),
         ]);
 
         expect(docES.generatedToc).toBe(true);
@@ -392,9 +400,9 @@ describe('entities', () => {
       const updatedDoc = await saveEntity(doc, { language: 'en' });
       expect(updatedDoc.language).toBe('en');
       const [docEN, docES, docPT] = await Promise.all([
-        entities.getById('shared1', 'en'),
-        entities.getById('shared1', 'es'),
-        entities.getById('shared1', 'pt'),
+        getEntityById('shared1', 'en'),
+        getEntityById('shared1', 'es'),
+        getEntityById('shared1', 'pt'),
       ]);
       expect(docEN.metadata.text[0].value).toBe('changedText');
       expect(docEN.metadata.select[0]).toEqual({ value: 'country_one', label: 'Country1' });
@@ -477,7 +485,7 @@ describe('entities', () => {
       it('should add references on update', async () => {
         const user = { _id: adminId };
 
-        const existing = await entities.getById('relSaveTest', 'en');
+        const existing = await getEntityById('relSaveTest', 'en');
         const existingRelationships = await relationships.getByDocument('relSaveTest', 'en');
         expect(existingRelationships.length).toBe(4);
         expect(existingRelationships.map(r => r.entityData.title).sort()).toEqual([
@@ -507,7 +515,7 @@ describe('entities', () => {
       it('should delete references on update', async () => {
         const user = { _id: adminId };
 
-        const existing = await entities.getById('relSaveTest', 'en');
+        const existing = await getEntityById('relSaveTest', 'en');
         const existingRelationships = await relationships.getByDocument('relSaveTest', 'en');
         expect(existingRelationships.length).toBe(4);
         expect(existingRelationships.map(r => r.entityData.title).sort()).toEqual([
@@ -531,7 +539,7 @@ describe('entities', () => {
         jest.spyOn(date, 'currentUTC').mockReturnValue(10);
         const modifiedDoc = { _id: batmanFinishesId, sharedId: 'shared' };
         await saveEntity(modifiedDoc, { user: 'another_user', language: 'en' });
-        const doc = await entities.getById('shared', 'en');
+        const doc = await getEntityById('shared', 'en');
         expect(doc.user).not.toBe('another_user');
         expect(doc.creationDate).not.toBe(10);
       });
@@ -655,8 +663,8 @@ describe('entities', () => {
 
         const editedEn = await saveEntity(input, { language: 'en' });
         const [editedEs, editedPt] = await Promise.all([
-          entities.getById(entityEs.sharedId, 'es'),
-          entities.getById(entityEs.sharedId, 'pt'),
+          getEntityById(entityEs.sharedId, 'es'),
+          getEntityById(entityEs.sharedId, 'pt'),
         ]);
 
         expect(editedEn.metadata).toEqual({
@@ -698,8 +706,8 @@ describe('entities', () => {
       const updatedDoc = await saveEntity(doc, { language: 'en' });
       expect(updatedDoc.language).toBe('en');
       const [docES, docEN] = await Promise.all([
-        entities.getById('shared', 'es'),
-        entities.getById('shared', 'en'),
+        getEntityById('shared', 'es'),
+        getEntityById('shared', 'en'),
       ]);
       expect(docES.metadata.multidate).toEqual([{ value: 1234 }, { value: 5678 }]);
       expect(docEN.metadata.multidate).toEqual([{ value: 1234 }, { value: 5678 }]);
@@ -717,8 +725,8 @@ describe('entities', () => {
       const updatedDoc = await saveEntity(doc, { language: 'en' });
       expect(updatedDoc.language).toBe('en');
       const [docES, docEN] = await Promise.all([
-        entities.getById('shared', 'es'),
-        entities.getById('shared', 'en'),
+        getEntityById('shared', 'es'),
+        getEntityById('shared', 'en'),
       ]);
       expect(docES.metadata.select).toEqual([]);
       expect(docEN.metadata.select).toEqual([]);
@@ -751,16 +759,16 @@ describe('entities', () => {
       };
 
       await saveEntity(doc1, { language: 'en' });
-      const doc = await entities.getById('shared', 'en');
+      const doc = await getEntityById('shared', 'en');
       expect(doc.metadata.daterange).toEqual(doc1.metadata.daterange);
       await saveEntity(doc2, { language: 'en' });
-      const doc1db = await entities.getById('shared', 'en');
+      const doc1db = await getEntityById('shared', 'en');
       expect(doc1db.metadata.daterange).toEqual(doc2.metadata.daterange);
       await saveEntity(doc3, { language: 'en' });
-      const doc2db = await entities.getById('shared', 'en');
+      const doc2db = await getEntityById('shared', 'en');
       expect(doc2db.metadata.daterange).toEqual(doc3.metadata.daterange);
       await saveEntity(doc4, { language: 'en' });
-      const doc3db = await entities.getById('shared', 'en');
+      const doc3db = await getEntityById('shared', 'en');
       expect(doc3db.metadata.daterange).toEqual([]);
     });
 
@@ -784,8 +792,8 @@ describe('entities', () => {
       const updatedDoc = await saveEntity(doc, { language: 'en' });
       expect(updatedDoc.language).toBe('en');
       const [docES, docEN] = await Promise.all([
-        entities.getById('shared', 'es'),
-        entities.getById('shared', 'en'),
+        getEntityById('shared', 'es'),
+        getEntityById('shared', 'en'),
       ]);
       expect(docES.metadata.multidaterange).toEqual([
         { value: { from: 1, to: 2 } },
@@ -814,10 +822,10 @@ describe('entities', () => {
       };
 
       await saveEntity(doc1, { language: 'en' });
-      const doc = await entities.getById('shared', 'en');
+      const doc = await getEntityById('shared', 'en');
       expect(doc.metadata.numeric).toEqual([{ value: 10 }]);
       await saveEntity(doc2, { language: 'en' });
-      const doc1db = await entities.getById('shared', 'en');
+      const doc1db = await getEntityById('shared', 'en');
       expect(doc1db.metadata.numeric).toEqual([{ value: 10.5 }]);
     });
 
@@ -830,7 +838,7 @@ describe('entities', () => {
       };
 
       await saveEntity(doc1, { language: 'en' });
-      const doc = await entities.getById('shared', 'en');
+      const doc = await getEntityById('shared', 'en');
       // Empty metadata values are represented as [] in normalized entity payloads.
       expect(doc.metadata.numeric).toEqual([]);
     });
@@ -844,7 +852,9 @@ describe('entities', () => {
       };
 
       await saveEntity(doc1, { user, language: 'en' });
-      const docs = await entities.get({ title: 'newEntity' });
+      const docs = await testingEnvironment.runWithContext(() =>
+        entities.get({ title: 'newEntity' })
+      );
       expect(docs.length).toBe(3);
       expect(docs.map(d => d.language).sort()).toEqual(['en', 'es', 'pt']);
       docs.forEach(doc => {
@@ -891,75 +901,64 @@ describe('entities', () => {
       const sharedId = 'shared1';
 
       const [enDoc, esDoc] = await Promise.all([
-        entities.get({ sharedId, language: 'en' }),
-        entities.get({ sharedId, language: 'es' }),
+        testingEnvironment.runWithContext(() => entities.get({ sharedId, language: 'en' })),
+        testingEnvironment.runWithContext(() => entities.get({ sharedId, language: 'es' })),
       ]);
       expect(enDoc[0].title).toBe('EN');
       expect(esDoc[0].title).toBe('ES');
     });
 
     it('should return documents and attachments properly, when requested.', async () => {
-      const result = await entities.get({ template: entityGetTestTemplateId });
+      const result = await testingEnvironment.runWithContext(() =>
+        entities.get({ template: entityGetTestTemplateId })
+      );
       checkEntityGetResult(result[0], 'TitleA', ['file2.name'], []);
       checkEntityGetResult(result[1], 'TitleB', [], []);
       checkEntityGetResult(result[2], 'TitleC', ['file3.name'], ['file1.name', 'file4.name']);
     });
 
     it('should return documents and attachments properly while using a select clause in the query.', async () => {
-      const result = await entities.get({ template: entityGetTestTemplateId }, { title: true });
+      const result = await testingEnvironment.runWithContext(() =>
+        entities.get({ template: entityGetTestTemplateId }, { title: true })
+      );
       checkEntityGetResult(result[0], 'TitleA', ['file2.name'], []);
       checkEntityGetResult(result[1], 'TitleB', [], []);
       checkEntityGetResult(result[2], 'TitleC', ['file3.name'], ['file1.name', 'file4.name']);
     });
 
     it('should not return documents and attachments, when not requested.', async () => {
-      const result = await entities.get(
-        { template: entityGetTestTemplateId },
-        {},
-        { withoutDocuments: true }
+      const result = await testingEnvironment.runWithContext(() =>
+        entities.get({ template: entityGetTestTemplateId }, {}, { withoutDocuments: true })
       );
       checkEntityGetResult(result[0], 'TitleA', null, null);
       checkEntityGetResult(result[1], 'TitleB', null, null);
       checkEntityGetResult(result[2], 'TitleC', null, null);
     });
-
-    it.each([
-      [undefined, undefined],
-      ['title', 'title sharedId'],
-      ['+title', '+title +sharedId'],
-      [['title'], ['title', 'sharedId']],
-      [{}, {}],
-      [{ title: 1 }, { title: 1, sharedId: 1 }],
-    ])(
-      'should call model.get with a properly extended select: %s -> %s',
-      async (select, extended) => {
-        const entitesModelGet = jest.spyOn(entitiesModel, 'get');
-        await entities.get({ template: entityGetTestTemplateId }, select);
-        expect(entitesModelGet).toBeCalledWith({ template: entityGetTestTemplateId }, extended, {});
-        entitesModelGet.mockRestore();
-      }
-    );
   });
 
-  describe('getWithRelationships', () => {
-    it('should return the entities with its permitted relationships when no user', async () => {
-      userFactory.mock(undefined);
-      const [result] = await entities.getWithRelationships({ sharedId: 'getWithRelRoot' });
-      expect(result.relations).toEqual([
-        expect.objectContaining({ entity: 'getWithRelRoot' }),
-        expect.objectContaining({ entity: 'getWithRelPublic' }),
-      ]);
-      userFactory.mockEditorUser();
+  describe('empty-string scalar filters match nothing instead of every entity', () => {
+    it('should return no entities for an empty-string language filter', async () => {
+      const result = await testingEnvironment.runWithContext(() => entities.get({ language: '' }));
+      expect(result).toEqual([]);
     });
 
-    it('should return the entities with its permitted relationships when the user has permissions', async () => {
-      userFactory.mockEditorUser();
-      const [result] = await entities.getWithRelationships({ sharedId: 'getWithRelRoot' });
-      expect(result.relations).toEqual([
-        expect.objectContaining({ entity: 'getWithRelRoot' }),
-        expect.objectContaining({ entity: 'getWithRelPublic' }),
-        expect.objectContaining({ entity: 'getWithRelPrivate' }),
-      ]);
+    it('should return no entities for an empty-string template filter', async () => {
+      const result = await testingEnvironment.runWithContext(() => entities.get({ template: '' }));
+      expect(result).toEqual([]);
+    });
+
+    it('should return no entities for an empty-string _id filter (getUnrestricted)', async () => {
+      const result = await testingEnvironment.runWithContext(() =>
+        entities.getUnrestricted({ _id: '' })
+      );
+      expect(result).toEqual([]);
+    });
+
+    it('should return no entities for an empty-string title filter (getUnrestricted)', async () => {
+      const result = await testingEnvironment.runWithContext(() =>
+        entities.getUnrestricted({ title: '' })
+      );
+      expect(result).toEqual([]);
     });
   });
 
@@ -970,14 +969,22 @@ describe('entities', () => {
         username: 'collaborator',
         role: UserRole.COLLABORATOR,
       });
-      const entity = (await entities.get({ sharedId: 'shared', language: 'en' }))[0];
+      const entity = (
+        await testingEnvironment.runWithContext(() =>
+          entities.get({ sharedId: 'shared', language: 'en' })
+        )
+      )[0];
       entity.metadata.friends[0].label = '';
       const denormalized = await denormalizeEntity(entity, { user: 'dummy', language: 'en' });
       expect(denormalized.metadata.friends[0].label).toBe('shared2title');
     });
 
     it('should denormalize inherited metadata', async () => {
-      const entity = (await entities.get({ sharedId: 'shared', language: 'en' }))[0];
+      const entity = (
+        await testingEnvironment.runWithContext(() =>
+          entities.get({ sharedId: 'shared', language: 'en' })
+        )
+      )[0];
 
       const denormalized = await denormalizeEntity(entity, { user: 'dummy', language: 'en' });
       expect(denormalized.metadata.enemies[0].inheritedValue).toEqual([
@@ -1001,67 +1008,6 @@ describe('entities', () => {
     });
   });
 
-  describe('countByTemplate', () => {
-    it('should return how many entities using the template passed', async () => {
-      const count = await entities.countByTemplate(templateId);
-      expect(count).toBe(10);
-    });
-
-    it('should return 0 when no count found', done => {
-      entities
-        .countByTemplate(db.id())
-        .then(count => {
-          expect(count).toBe(0);
-          done();
-        })
-        .catch(done.fail);
-    });
-  });
-
-  describe('getByTemplate', () => {
-    it('should return only published entities with passed template and language', done => {
-      entities
-        .getByTemplate(templateId, 'en')
-        .then(docs => {
-          expect(docs.length).toBe(3);
-          expect(docs[0].title).toBe('Batman finishes');
-          expect(docs[1].title).toBe('Batman still not done');
-          expect(docs[2].title).toBe('EN');
-          done();
-        })
-        .catch(done.fail);
-    });
-
-    it('should return all entities (including unpublished) if required', async () => {
-      const docs = await entities.getByTemplate(templateId, 'en', null, false);
-      expect(docs.length).toBe(7);
-      expect(docs.sort((a, b) => a.title.localeCompare(b.title)).map(d => d.title)).toEqual([
-        'Batman finishes',
-        'Batman still not done',
-        'EN',
-        'shared2title',
-        'Unpublished entity',
-        'value0',
-        'value2',
-      ]);
-    });
-
-    it('should return all entities (including unpublished) if required and user is a collaborator', async () => {
-      userFactory.mock({
-        _id: 'user1',
-        role: 'collaborator',
-        groups: [],
-      });
-      const docs = (await entities.getByTemplate(templateId, 'en', null, false)).sort((a, b) =>
-        b.title.localeCompare(a.title)
-      );
-      expect(docs.length).toBe(4);
-      expect(docs[0].title).toBe('Unpublished entity');
-      expect(docs[1].title).toBe('EN');
-      expect(docs[2].title).toBe('Batman still not done');
-      expect(docs[3].title).toBe('Batman finishes');
-    });
-  });
   describe('validation', () => {
     it('should validate on save', async () => {
       const entity = {
@@ -1075,7 +1021,7 @@ describe('entities', () => {
         await saveEntity(entity, options);
         fail('should throw validation error');
       } catch (error) {
-        expect(error).toBeInstanceOf(Ajv.ValidationError);
+        expect(error).toBeInstanceOf(ZodError);
       }
     });
   });

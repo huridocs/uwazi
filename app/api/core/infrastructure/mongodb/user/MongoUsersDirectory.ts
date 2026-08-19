@@ -2,6 +2,7 @@ import { ObjectId } from 'mongodb';
 import escapeRegExp from 'lodash/escapeRegExp.js';
 import type { UsersDirectory } from '#api/core/application/contracts/UsersDirectory.js';
 import type { UserProfile, UserView } from '#api/core/application/contracts/UserReadModels.js';
+import { PUBLIC_USER_ID } from '#api/core/domain/user/User.js';
 import { UserNotFound } from '#api/core/domain/user/errors.js';
 import { Result } from '#api/core/libs/Result.js';
 import type { ResultType } from '#api/core/libs/Result.js';
@@ -15,21 +16,8 @@ type Deps = {
   userGroupsDAO: MongoUserGroupsDAO;
 };
 
-/**
- * Not `ObjectId.isValid`, which also accepts any 12-character string — those pass the check
- * and then throw inside `createFromHexString`. An id that cannot address a document is a
- * miss, not an exception: Postgres, whose `_id` is text, simply matches nothing.
- */
 const isUserId = (id: string): boolean => /^[0-9a-fA-F]{24}$/.test(id);
 
-/**
- * The Mongo half of UsersDirectory (D1/D3).
- *
- * It holds no query language beyond what a `Filter` needs and no guard logic — guards are
- * the DAO's, uniformly, via its default scope (D5/D7). The one query shape that lives here
- * is the case-insensitive match, which Mongo expresses as a `Filter` while Postgres needs a
- * DAO method; D4 permits that asymmetry rather than forcing a shared query vocabulary.
- */
 class MongoUsersDirectory implements UsersDirectory {
   private usersDAO: MongoUsersDAO;
 
@@ -59,9 +47,11 @@ class MongoUsersDirectory implements UsersDirectory {
   }
 
   async getActor(id: string): Promise<ResultType<UserProfile, UserNotFound>> {
-    // The only non-default scope in this class: actors are resolved even once soft-deleted,
-    // so historical records can still name who did the thing (D3/D9).
     return this.profile(id, { deleted: 'include' });
+  }
+
+  async getPublicUser(): Promise<ResultType<UserProfile, UserNotFound>> {
+    return this.profile(PUBLIC_USER_ID.toHexString(), { systemUser: 'include' });
   }
 
   private async profile(

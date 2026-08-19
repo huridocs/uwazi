@@ -171,10 +171,9 @@ const bulkIndex = async (docs, _action = 'index') => {
 const getEntitiesToIndex = async (_query, stepBach, limit, select) => {
   const documentsFullText = Boolean(select && select.includes('+fullText'));
 
-  return EntitiesDAOFactory.default().unrestricted().getByIdsWithDocuments(stepBach, {
-    limit,
-    documentsFullText,
-  });
+  return EntitiesDAOFactory.default()
+    .unrestricted()
+    .find({ ids: stepBach }, { limit, withFiles: documentsFullText ? { fullText: true } : true });
 };
 
 const bulkIndexAndCallback = async assets => {

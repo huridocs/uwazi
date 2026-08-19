@@ -19,12 +19,18 @@ import { TemplateMigrationConfig } from '#api/core/infrastructure/postgresql/mig
 import { ThesaurusMigrationConfig } from '#api/core/infrastructure/postgresql/migrations/configs/ThesaurusMigrationConfig.js';
 import { FilesMigrationConfig } from '#api/core/infrastructure/postgresql/migrations/configs/FilesMigrationConfig.js';
 import { RelationshipTypesMigrationConfig } from '#api/core/infrastructure/postgresql/migrations/configs/RelationshipTypesMigrationConfig.js';
+import { UsersMigrationConfig } from '#api/core/infrastructure/postgresql/migrations/configs/UsersMigrationConfig.js';
+import { UserGroupsMigrationConfig } from '#api/core/infrastructure/postgresql/migrations/configs/UserGroupsMigrationConfig.js';
+import { PasswordRecoveryMigrationConfig } from '#api/core/infrastructure/postgresql/migrations/configs/PasswordRecoveryMigrationConfig.js';
 
 const COLLECTIONS: Record<string, MigrationConfig> = {
   thesauri: ThesaurusMigrationConfig,
   templates: TemplateMigrationConfig,
   files: FilesMigrationConfig,
   relationship_types: RelationshipTypesMigrationConfig,
+  users: UsersMigrationConfig,
+  usergroups: UserGroupsMigrationConfig,
+  password_recoveries: PasswordRecoveryMigrationConfig,
 };
 
 function log(message: string) {
@@ -45,7 +51,7 @@ const argv = yargs(hideBin(process.argv))
   .option('collection', {
     alias: 'c',
     type: 'string',
-    describe: 'Collection to migrate (thesauri|templates|files|relationship_types)',
+    describe: `Collection to migrate (${Object.keys(COLLECTIONS).join('|')})`,
   })
   .option('all', {
     alias: 'a',

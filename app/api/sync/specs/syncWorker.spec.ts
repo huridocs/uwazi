@@ -11,7 +11,6 @@ import express, { NextFunction, Request, RequestHandler, Response } from 'expres
 import { Db, ObjectId } from 'mongodb';
 import authRoutes, { populateAuthenticatedUser } from '#api/auth/routes.js';
 import entities from '#api/entities/index.js';
-import entitiesModel from '#api/entities/entitiesModel.js';
 import {
   attachmentsPath,
   customUploadsPath,
@@ -25,7 +24,7 @@ import syncRoutes from '#api/sync/routes.js';
 import templates from '#api/core/v1_layer/templates/index.js';
 import { tenants } from '#api/tenants/index.js';
 import thesauri from '#api/core/v1_layer/thesauri/index.js';
-import { encryptPassword } from '#api/auth/encryptPassword.js';
+import { EncryptedPassword } from '#api/core/domain/user/EncryptedPassword.js';
 import { UserRole } from '#shared/types/userSchema.js';
 import { appContext } from '#api/utils/AppContext.js';
 import { appContextMiddleware } from '#api/utils/appContextMiddleware.js';
@@ -81,7 +80,7 @@ async function targetFixtures(username: string, password: string): Promise<DBFix
       {
         _id: db.id(),
         username,
-        password: await encryptPassword(password),
+        password: (await EncryptedPassword.create(password)).getValue(),
         role: UserRole.ADMIN,
         email: `${username}@testing`,
       },
@@ -251,7 +250,11 @@ describe('syncWorker', () => {
     await runAllTenants();
     await tenants.run(async () => {
       permissionsContext.setCommandContext();
-      expect(await entities.get({}, {}, { sort: { title: 'asc' } })).toEqual([
+      expect(
+        await testingEnvironment.runWithContext(async () =>
+          entities.get({}, {}, { sort: { title: 'asc' } })
+        )
+      ).toEqual([
         {
           _id: expect.anything(),
           sharedId: 'newDoc1SharedId',
@@ -263,8 +266,6 @@ describe('syncWorker', () => {
             t1Thesauri1Select: [{ value: thesauri1Value2.toString() }],
             t1Relationship1: [{ value: newDoc3.toString() }],
           },
-          obsoleteMetadata: [],
-          __v: 0,
           documents: [],
           attachments: [
             {
@@ -290,8 +291,6 @@ describe('syncWorker', () => {
             t1Property1: [{ value: 'another doc property 1' }],
             t1Property2: [{ value: 'another doc property 2' }],
           },
-          obsoleteMetadata: [],
-          __v: 0,
           documents: [],
           attachments: [
             {
@@ -307,14 +306,16 @@ describe('syncWorker', () => {
 
     await tenants.run(async () => {
       permissionsContext.setCommandContext();
-      expect(await entities.get({}, {}, { sort: { title: 'asc' } })).toEqual([
+      expect(
+        await testingEnvironment.runWithContext(async () =>
+          entities.get({}, {}, { sort: { title: 'asc' } })
+        )
+      ).toEqual([
         {
-          __v: 0,
           _id: expect.anything(),
           attachments: [],
           documents: [],
           metadata: {},
-          obsoleteMetadata: [],
           sharedId: 'newDoc3SharedId',
           template: template2,
           title: 'New Doc 3',
@@ -487,7 +488,7 @@ describe('syncWorker', () => {
         await tenants.run(async () => {
           await elasticTesting.reindex();
           permissionsContext.setCommandContext();
-          await entitiesModel.delete({ template: template1 });
+          await getConnection().collection('entities').deleteMany({ template: template1 });
           await templates.delete({ _id: template1 });
         }, 'host1');
       });
