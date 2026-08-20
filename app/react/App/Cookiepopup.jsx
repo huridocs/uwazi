@@ -1,41 +1,51 @@
-import * as Cookie from 'tiny-cookie';
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
-import { isClient } from '#app/utils/index.js';
-import { Translate } from '#app/I18N/index.js';
+import { CookieConsentBanner } from '#V2/Components/UI/CookieConsentBanner.js';
+import {
+  CONSENT_EVENT,
+  getConsent,
+  removeLegacyConsentCookie,
+  setConsent,
+} from '#app/App/cookieConsent.js';
 
-import { Notification } from '#app/Notifications/components/Notification.js';
+const Cookiepopup = ({ cookiepolicy }) => {
+  const [mounted, setMounted] = useState(false);
+  const [consent, setConsentState] = useState(null);
 
-class Cookiepopup extends Component {
-  constructor(props) {
-    super(props);
-    this.state = { cookieExists: !isClient || (isClient && Boolean(Cookie.get('cookiepolicy'))) };
-    this.close = this.close.bind(this);
+  useEffect(() => {
+    removeLegacyConsentCookie();
+    setConsentState(getConsent());
+    setMounted(true);
+    const sync = () => setConsentState(getConsent());
+    window.addEventListener(CONSENT_EVENT, sync);
+    return () => window.removeEventListener(CONSENT_EVENT, sync);
+  }, []);
+
+  // Banner is client-only: localStorage is not available during SSR.
+  if (!mounted || !cookiepolicy || consent) {
+    return null;
   }
 
-  close() {
-    Cookie.set('cookiepolicy', 1, { expires: 365 * 10 });
-    this.setState({ cookieExists: true });
-  }
-
-  render() {
-    const { cookiepolicy } = this.props;
-    const { cookieExists } = this.state;
-    if (!cookiepolicy || cookieExists) {
-      return <div className="alert-wrapper" />;
-    }
-
-    const message = (
-      <Translate>To bring you a better experience, this site uses cookies.</Translate>
-    );
-    return (
-      <div className="alert-wrapper">
-        <Notification id="cookiepolicy" removeNotification={this.close} message={message} />
-      </div>
-    );
-  }
-}
+  return (
+    <div className="fixed bottom-4 right-4 left-auto z-50 flex w-fit justify-end">
+      <CookieConsentBanner
+        onAcceptAll={() => {
+          setConsent('accepted');
+          setConsentState('accepted');
+        }}
+        onEssentialOnly={() => {
+          setConsent('essential');
+          setConsentState('essential');
+        }}
+        onRejectAll={() => {
+          setConsent('rejected');
+          setConsentState('rejected');
+        }}
+      />
+    </div>
+  );
+};
 
 Cookiepopup.propTypes = {
   cookiepolicy: PropTypes.bool.isRequired,
