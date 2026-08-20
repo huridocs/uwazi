@@ -10,7 +10,7 @@ type CookieConsentBannerProps = {
 
 const CookieConsentBanner = ({ onAccept, onReject }: CookieConsentBannerProps) => (
   <div
-    className="tw-content fixed inset-x-0 bottom-0 z-50 border-t border-border bg-paper shadow-[0_-4px_24px_var(--tw-shadow-color)]"
+    className="border-t border-border bg-paper shadow-[0_-4px_24px_var(--tw-shadow-color)]"
     role="dialog"
     aria-labelledby="cookie-consent-title"
     aria-live="polite"

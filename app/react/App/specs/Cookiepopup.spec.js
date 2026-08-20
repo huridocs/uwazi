@@ -14,6 +14,10 @@ jest.mock('#app/App/cookieConsent.js', () => ({
   removeLegacyConsentCookie: jest.fn(),
 }));
 
+jest.mock('#V2/theme/ThemeProvider.js', () => ({
+  ThemeProvider: ({ children }) => children,
+}));
+
 describe('Cookiepopup', () => {
   beforeEach(() => {
     jest.clearAllMocks();
