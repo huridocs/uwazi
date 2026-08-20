@@ -113,11 +113,11 @@ class LoginComponent extends RouteHandler {
             </h1>
 
             {this.props.cookiepolicy && getConsent() === 'rejected' && (
-              <div className="alert alert-warning tw-content mb-4" role="alert">
+              <p className="tw-content mb-4 rounded-md border border-gray-200 bg-gray-50 px-3 py-2.5 text-center text-xs leading-relaxed text-gray-600">
                 <Translate>
                   By logging in you accept the essential session cookie required to stay signed in.
                 </Translate>
-              </div>
+              </p>
             )}
 
             {this.state.render && (
