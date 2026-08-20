@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 import { CookieConsentBanner } from '#V2/Components/UI/CookieConsentBanner.js';
-import { ThemeProvider } from '#V2/theme/ThemeProvider.js';
+import { CookieConsentPortal } from '#app/App/CookieConsentPortal.js';
 import {
   CONSENT_EVENT,
   getConsent,
@@ -25,7 +25,7 @@ const Cookiepopup = ({ cookiepolicy }) => {
   }
 
   return (
-    <ThemeProvider className="fixed bottom-4 right-4 z-50">
+    <CookieConsentPortal>
       <CookieConsentBanner
         onAcceptAll={() => {
           setConsent('accepted');
@@ -40,7 +40,7 @@ const Cookiepopup = ({ cookiepolicy }) => {
           setConsentState('rejected');
         }}
       />
-    </ThemeProvider>
+    </CookieConsentPortal>
   );
 };
 

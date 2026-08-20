@@ -3,6 +3,7 @@ import type { Meta, StoryObj } from '@storybook/react-webpack5';
 import { fn } from 'storybook/test';
 import { action } from 'storybook/actions';
 import { CookieConsentBanner } from '#V2/Components/UI/CookieConsentBanner.js';
+import { CookieConsentPortal } from '#app/App/CookieConsentPortal.js';
 import { ThemeProvider } from '#V2/theme/ThemeProvider.js';
 
 const meta: Meta<typeof CookieConsentBanner> = {
@@ -39,13 +40,13 @@ const PagePreview = ({
           Example page content. The cookie banner floats at the bottom right.
         </p>
       </main>
-      <ThemeProvider className="fixed bottom-4 right-4 z-50">
+      <CookieConsentPortal>
         <CookieConsentBanner
           onAcceptAll={onAcceptAll}
           onEssentialOnly={onEssentialOnly}
           onRejectAll={onRejectAll}
         />
-      </ThemeProvider>
+      </CookieConsentPortal>
     </div>
   </ThemeProvider>
 );

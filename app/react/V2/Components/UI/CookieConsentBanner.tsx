@@ -15,7 +15,7 @@ const CookieConsentBanner = ({
   onRejectAll,
 }: CookieConsentBannerProps) => (
   <div
-    className="w-[min(24rem,calc(100vw-2rem))] rounded-lg border border-border bg-paper p-4 shadow-lg"
+    className="w-[min(24rem,100%)] rounded-lg border border-border bg-paper p-4 shadow-lg"
     role="dialog"
     aria-labelledby="cookie-consent-title"
     aria-live="polite"
