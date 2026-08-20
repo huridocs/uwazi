@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { connect } from 'react-redux';
 import { CookieConsentBanner } from '#V2/Components/UI/CookieConsentBanner.js';
 import {
@@ -11,30 +12,31 @@ import {
 
 const floatStyle = {
   position: 'fixed',
+  right: '1rem',
   bottom: '1rem',
-  insetInlineEnd: '1rem',
-  left: 'auto',
   width: 'fit-content',
-  zIndex: 50,
   maxWidth: 'calc(100vw - 2rem)',
+  zIndex: 50,
 };
 
 const Cookiepopup = ({ cookiepolicy }) => {
   const [consent, setConsentState] = useState(() => getConsent());
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
     removeLegacyConsentCookie();
     const sync = () => setConsentState(getConsent());
     window.addEventListener(CONSENT_EVENT, sync);
     return () => window.removeEventListener(CONSENT_EVENT, sync);
   }, []);
 
-  if (!cookiepolicy || consent) {
+  if (!mounted || !cookiepolicy || consent) {
     return null;
   }
 
-  return (
-    <div style={floatStyle}>
+  return createPortal(
+    <div style={floatStyle} data-testid="cookie-consent-float">
       <CookieConsentBanner
         onAcceptAll={() => {
           setConsent('accepted');
@@ -49,7 +51,8 @@ const Cookiepopup = ({ cookiepolicy }) => {
           setConsentState('rejected');
         }}
       />
-    </div>
+    </div>,
+    document.body
   );
 };
 

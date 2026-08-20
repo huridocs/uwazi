@@ -2,9 +2,8 @@
  * @jest-environment jsdom
  */
 import React from 'react';
-import { shallow } from 'enzyme';
+import { render, fireEvent, cleanup } from '@testing-library/react';
 import * as cookieConsent from '#app/App/cookieConsent.js';
-import { CookieConsentBanner } from '#V2/Components/UI/CookieConsentBanner.js';
 import { CookiepopupView as Cookiepopup } from '../Cookiepopup.js';
 
 jest.mock('#app/App/cookieConsent.js', () => ({
@@ -20,37 +19,50 @@ describe('Cookiepopup', () => {
     cookieConsent.getConsent.mockReturnValue(null);
   });
 
-  it('should render the consent banner when enabled and no choice was made', () => {
-    const component = shallow(<Cookiepopup cookiepolicy />);
-    expect(component.find(CookieConsentBanner).exists()).toBe(true);
+  afterEach(() => {
+    cleanup();
+  });
+
+  it('should portal the banner to document.body when enabled', () => {
+    render(<Cookiepopup cookiepolicy />);
+    expect(document.body.querySelector('[data-testid="cookie-consent-float"]')).not.toBeNull();
+    expect(document.body.querySelector('[data-testid="cookie-consent-banner"]')).not.toBeNull();
+  });
+
+  it('should position the float at the bottom-right of the viewport', () => {
+    render(<Cookiepopup cookiepolicy />);
+    const float = document.body.querySelector('[data-testid="cookie-consent-float"]');
+    expect(float.style.right).toBe('1rem');
+    expect(float.style.bottom).toBe('1rem');
+    expect(float.style.position).toBe('fixed');
   });
 
   it('should not render when cookie policy is disabled', () => {
-    const component = shallow(<Cookiepopup cookiepolicy={false} />);
-    expect(component.isEmptyRender()).toBe(true);
+    render(<Cookiepopup cookiepolicy={false} />);
+    expect(document.body.querySelector('[data-testid="cookie-consent-float"]')).toBeNull();
   });
 
   it('should not render when consent was already given', () => {
     cookieConsent.getConsent.mockReturnValue('accepted');
-    const component = shallow(<Cookiepopup cookiepolicy />);
-    expect(component.isEmptyRender()).toBe(true);
+    render(<Cookiepopup cookiepolicy />);
+    expect(document.body.querySelector('[data-testid="cookie-consent-float"]')).toBeNull();
   });
 
   it('should save accepted consent', () => {
-    const component = shallow(<Cookiepopup cookiepolicy />);
-    component.find(CookieConsentBanner).prop('onAcceptAll')();
+    render(<Cookiepopup cookiepolicy />);
+    fireEvent.click(document.body.querySelector('[data-testid="cookie-consent-accept-all"]'));
     expect(cookieConsent.setConsent).toHaveBeenCalledWith('accepted');
   });
 
   it('should save essential-only consent', () => {
-    const component = shallow(<Cookiepopup cookiepolicy />);
-    component.find(CookieConsentBanner).prop('onEssentialOnly')();
+    render(<Cookiepopup cookiepolicy />);
+    fireEvent.click(document.body.querySelector('[data-testid="cookie-consent-essential"]'));
     expect(cookieConsent.setConsent).toHaveBeenCalledWith('essential');
   });
 
   it('should save rejected consent', () => {
-    const component = shallow(<Cookiepopup cookiepolicy />);
-    component.find(CookieConsentBanner).prop('onRejectAll')();
+    render(<Cookiepopup cookiepolicy />);
+    fireEvent.click(document.body.querySelector('[data-testid="cookie-consent-reject-all"]'));
     expect(cookieConsent.setConsent).toHaveBeenCalledWith('rejected');
   });
 });
