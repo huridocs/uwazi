@@ -18,6 +18,7 @@ import * as scroller from '#V2/helpers/scrollIntoView.js';
 import { Entity } from '../Entity.js';
 import { entityLoaderCache } from '../EntityLoaderCache.js';
 import { entityWithRelations } from '../Components/relationships/specs/fixtures/entityWithRelations.js';
+import { relationshipQueryFromEntity } from '../Components/relationships/specs/helpers/relationshipQueryFromEntity.js';
 
 jest.mock('#V2/Components/PDFViewer', () => ({
   ...jest.requireActual('#V2/Components/PDFViewer'),
@@ -104,9 +105,28 @@ const renderEntity = (options: RenderEntityOptions = {}) => {
     atoms.push([relationshipTypesAtom, relationshipTypes]);
   }
 
+  const relationshipQuery =
+    entity.language && entity.sharedId && entity.title && entity.template
+      ? relationshipQueryFromEntity(
+          {
+            language: entity.language,
+            sharedId: entity.sharedId,
+            title: entity.title,
+            template: entity.template,
+            relations: entity.relations,
+          },
+          mainDocument?._id
+        )
+      : undefined;
+
   const tree = (
     <TestRouterContext
-      loaderData={{ entity, mainDocument, pagePlaintext }}
+      loaderData={{
+        entity,
+        mainDocument,
+        pagePlaintext,
+        relationshipQuery,
+      }}
       initialEntries={initialEntries}
     >
       <TestAtomStoreProvider initialValues={atoms}>

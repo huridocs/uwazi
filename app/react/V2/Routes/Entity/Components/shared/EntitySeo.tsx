@@ -11,6 +11,7 @@ import type { MetadataProperty } from '#V2/formatters/types.js';
 import { useFormatMetadata } from '#V2/Components/Metadata/hooks/useFormatMetadata.js';
 import { buildRelationshipsSsrIndex } from '#V2/formatters/relationships/buildRelationshipsSsrIndex.js';
 import { RelationshipsSsrIndex } from '../relationships/panel/RelationshipsSsrIndex.js';
+import { useRelationshipViews } from '../context/RelationshipsQueryProvider.js';
 
 type EntitySeoProps = {
   entity: Entity;
@@ -55,6 +56,7 @@ const EntitySeo = ({ entity }: EntitySeoProps) => {
   const templates = useAtomValue(templatesAtom);
   const relationshipTypes = useAtomValue(relationshipTypesAtom);
   const settings = useAtomValue(settingsAtom);
+  const views = useRelationshipViews();
   const { metadata, entityTemplate } = useFormatMetadata(entity, templates, {
     groupGeolocationProperties: true,
   });
@@ -72,10 +74,10 @@ const EntitySeo = ({ entity }: EntitySeoProps) => {
 
   const relationTitles = useMemo(
     () =>
-      buildRelationshipsSsrIndex(entity, relationshipTypes)
+      buildRelationshipsSsrIndex(views, relationshipTypes)
         .flatMap(group => group.entities.map(related => related.title))
         .slice(0, 30),
-    [entity, relationshipTypes]
+    [relationshipTypes, views]
   );
 
   const description = useMemo(() => {
@@ -129,7 +131,7 @@ const EntitySeo = ({ entity }: EntitySeoProps) => {
             ))}
           </dl>
         ) : null}
-        <RelationshipsSsrIndex entity={entity} testId="entity-seo-relationships-index" />
+        <RelationshipsSsrIndex testId="entity-seo-relationships-index" />
       </aside>
     </>
   );

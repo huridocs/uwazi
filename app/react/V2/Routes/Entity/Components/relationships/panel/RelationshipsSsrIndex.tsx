@@ -3,25 +3,24 @@ import { useAtomValue } from 'jotai';
 import { I18NLinkV2, Translate } from '#app/I18N/index.js';
 import { getEntityViewerV2Path, isEntityViewerV2Enabled } from '#app/utils/entityViewerPaths.js';
 import { relationshipTypesAtom, settingsAtom } from '#V2/atoms/index.js';
-import type { Entity } from '#V2/api/entities/types.js';
 import { buildRelationshipsSsrIndex } from '#V2/formatters/relationships/buildRelationshipsSsrIndex.js';
+import { useRelationshipViews } from '#V2/Routes/Entity/Components/context/RelationshipsQueryProvider.js';
 
 type RelationshipsSsrIndexProps = {
-  entity: Entity;
   className?: string;
   testId?: string;
 };
 
 const RelationshipsSsrIndex = ({
-  entity,
   className = '',
   testId = 'entity-relationships-ssr-index',
 }: RelationshipsSsrIndexProps) => {
   const relationshipTypes = useAtomValue(relationshipTypesAtom);
   const settings = useAtomValue(settingsAtom);
+  const views = useRelationshipViews();
   const groups = useMemo(
-    () => buildRelationshipsSsrIndex(entity, relationshipTypes),
-    [entity, relationshipTypes]
+    () => buildRelationshipsSsrIndex(views, relationshipTypes),
+    [relationshipTypes, views]
   );
   const entityViewerV2 = isEntityViewerV2Enabled(settings?.features);
 

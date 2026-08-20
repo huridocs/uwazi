@@ -1,4 +1,4 @@
-import { Entity, EntityRelation } from '#V2/api/entities/types.js';
+import type { RelationshipHubRow } from '#V2/api/relationships/types.js';
 import { Pointer, RelationshipView, Selection } from './types.js';
 
 type Rectangle = { top: number; left: number; width: number; height: number; page: string };
@@ -12,13 +12,12 @@ const toSelections = (rectangles: readonly Rectangle[]): Selection[] =>
     height: rectangle.height,
   }));
 
-const buildPointer = (
-  connection: EntityRelation,
-  entity: string,
-  entityTitle: string,
-  entityTemplateId: string
-): Pointer => {
-  const base = { entity, entityTitle, entityTemplateId };
+const buildPointer = (connection: RelationshipHubRow): Pointer => {
+  const base = {
+    entity: connection.entity,
+    entityTitle: connection.entityData.title,
+    entityTemplateId: connection.entityData.template,
+  };
   const rectangles = connection.reference?.selectionRectangles;
 
   if (rectangles?.length && connection.file) {
@@ -37,28 +36,15 @@ const buildPointer = (
 };
 
 const buildRelationshipView = (
-  entity: Entity,
-  relations: EntityRelation[],
-  target: EntityRelation
+  selfSharedId: string,
+  relations: readonly RelationshipHubRow[],
+  target: RelationshipHubRow
 ): RelationshipView | undefined => {
-  const targetTemplateId = target.entityData?.template;
-  if (!targetTemplateId) return undefined;
+  const source = relations.find(rel => rel.hub === target.hub && rel.entity === selfSharedId);
+  if (!source) return undefined;
 
-  const source = relations.find(rel => rel.hub === target.hub && rel.entity === entity.sharedId);
-  if (!source?._id || !source.hub) return undefined;
-
-  const from = buildPointer(
-    source,
-    source.entity ?? entity.sharedId,
-    source.entityData?.title ?? entity.title,
-    source.entityData?.template ? String(source.entityData.template) : entity.template
-  );
-  const to = buildPointer(
-    target,
-    target.entity ?? '',
-    target.entityData?.title ?? '',
-    String(targetTemplateId)
-  );
+  const from = buildPointer(source);
+  const to = buildPointer(target);
   const relationType = source.template ?? target.template;
 
   return {
@@ -71,12 +57,14 @@ const buildRelationshipView = (
   };
 };
 
-const formatRelationships = (entity: Entity): RelationshipView[] => {
-  const relations = entity.relations ?? [];
-  const targets = relations.filter(r => r.entity !== entity.sharedId && r.entityData?.template);
+const formatRelationships = (
+  selfSharedId: string,
+  hubRows: readonly RelationshipHubRow[]
+): RelationshipView[] => {
+  const targets = hubRows.filter(row => row.entity !== selfSharedId && row.entityData.template);
 
   return targets.flatMap(target => {
-    const view = buildRelationshipView(entity, relations, target);
+    const view = buildRelationshipView(selfSharedId, hubRows, target);
     return view ? [view] : [];
   });
 };

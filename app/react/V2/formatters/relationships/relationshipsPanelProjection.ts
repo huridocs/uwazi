@@ -1,7 +1,6 @@
-import { Entity } from '#V2/api/entities/types.js';
 import { RelationshipMarker, firstPageOf, toMarker } from '#V2/Components/Relationships/types.js';
+import type { RelationshipView } from './types.js';
 import { counterpartAnchorOf, selfPointer } from './types.js';
-import { formatRelationships } from './formatRelationships.js';
 import { buildPanelListEntries } from './relationshipsPanelDerivation.js';
 import { buildMatcher } from './relationshipsPanelSearchQuery.js';
 
@@ -27,8 +26,10 @@ const computeStats = (
   aggregates: buildPanelListEntries(markers, selfSharedId).length,
 });
 
-const projectRelationshipMarkers = (entity: Entity): RelationshipMarker[] =>
-  formatRelationships(entity).map(view => toMarker(view, entity.sharedId));
+const projectRelationshipMarkers = (
+  selfSharedId: string,
+  views: readonly RelationshipView[]
+): RelationshipMarker[] => views.map(view => toMarker(view, selfSharedId));
 
 const filterMarkersForDocument = (
   markers: RelationshipMarker[],
@@ -43,13 +44,24 @@ const filterMarkersForDocument = (
   });
 };
 
-const projectRelationshipsPanel = (entity: Entity): RelationshipsPanelProjection => {
-  const markers = projectRelationshipMarkers(entity);
-  return { markers, stats: computeStats(markers, entity.sharedId) };
+const projectRelationshipsPanel = (
+  selfSharedId: string,
+  views: readonly RelationshipView[]
+): RelationshipsPanelProjection => {
+  const markers = projectRelationshipMarkers(selfSharedId, views);
+  return { markers, stats: computeStats(markers, selfSharedId) };
 };
 
-const countEntityRelationships = (entity: Entity, documentId?: string): number =>
-  filterMarkersForDocument(projectRelationshipMarkers(entity), documentId, entity.sharedId).length;
+const countEntityRelationships = (
+  selfSharedId: string,
+  views: readonly RelationshipView[],
+  documentId?: string
+): number =>
+  filterMarkersForDocument(
+    projectRelationshipMarkers(selfSharedId, views),
+    documentId,
+    selfSharedId
+  ).length;
 
 const markerHaystack = (
   marker: RelationshipMarker,
