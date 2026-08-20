@@ -47,10 +47,10 @@ describe('thesauri routes', () => {
 
   describe('GET', () => {
     describe('/api/thesauris', () => {
-      it('should return all thesauri by default, passing user', async () => {
+      it('should return all thesauri by default', async () => {
         jest.spyOn(thesauri, 'get').mockResolvedValue('response' as any);
         const res = await request(app).get('/api/thesauris').set('content-language', 'es');
-        expect(thesauri.get).toHaveBeenCalledWith(undefined, 'es', user);
+        expect(thesauri.get).toHaveBeenCalledWith(undefined, 'es');
         expect(res.body).toEqual({ rows: 'response' });
       });
 
@@ -58,7 +58,7 @@ describe('thesauri routes', () => {
         it('should get passing id', async () => {
           jest.spyOn(thesauri, 'get').mockResolvedValue('response' as any);
           const res = await request(app).get('/api/thesauris').query({ _id: 'id' });
-          expect(thesauri.get).toHaveBeenCalledWith('id', expect.any(String), user);
+          expect(thesauri.get).toHaveBeenCalledWith('id', expect.any(String));
           expect(res.body).toEqual({ rows: 'response' });
         });
       });

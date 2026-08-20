@@ -31,6 +31,10 @@ import {
   WithoutId,
 } from 'mongodb';
 import { AccessContext } from '#api/core/domain/entityAccessPolicy/AccessContext.js';
+import {
+  filterPermissionsForActor,
+  PermissionedDocument,
+} from '#api/core/infrastructure/common/PermissionDataFilter.js';
 import { CollectionWrapper } from './CollectionWrapper.js';
 import { MongoPermissionTranslator } from './MongoPermissionTranslator.js';
 import { MongoEntityPermissionTranslator } from './MongoPermissionTranslator.js';
@@ -93,7 +97,10 @@ class MongoPermissionEnforcedCollection<TSchema extends Document = Document>
     options?: FindOptions<Document> | undefined
   ): FindCursor<WithId<TSchema>> | FindCursor<T> {
     const permFilter = this.buildReadFilter(filter);
-    return this.collection.find(permFilter, options) as FindCursor<WithId<TSchema>> | FindCursor<T>;
+    const cursor = this.collection.find(permFilter, options) as FindCursor<WithId<TSchema>>;
+    return cursor.map(doc =>
+      filterPermissionsForActor(doc as PermissionedDocument, this.accessContext)
+    ) as FindCursor<WithId<TSchema>> | FindCursor<T>;
   }
 
   async findOne<T = TSchema>(
@@ -101,7 +108,11 @@ class MongoPermissionEnforcedCollection<TSchema extends Document = Document>
     options?: FindOptions<Document> | undefined
   ): Promise<WithId<TSchema> | T | null> {
     const permFilter = this.buildReadFilter(filter);
-    return this.collection.findOne(permFilter, options);
+    const doc = await this.collection.findOne(permFilter, options);
+    return doc
+      ? (filterPermissionsForActor(doc as PermissionedDocument, this.accessContext) as
+          WithId<TSchema> | T)
+      : null;
   }
 
   async countDocuments(
@@ -130,7 +141,11 @@ class MongoPermissionEnforcedCollection<TSchema extends Document = Document>
       Object.keys(permMatch).length > 0
         ? [{ $match: permMatch }, ...(pipeline || [])]
         : pipeline || [];
-    return this.collection.aggregate(permPipeline, options);
+    return this.collection
+      .aggregate(permPipeline, options)
+      .map(doc =>
+        filterPermissionsForActor(doc as PermissionedDocument, this.accessContext)
+      ) as unknown as AggregationCursor<T>;
   }
 
   // ── Insert operations ───────────────────────────────────────────────────────

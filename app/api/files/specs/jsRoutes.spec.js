@@ -18,9 +18,11 @@ jest.mock('api/csv/csvExporter', () =>
   jest.fn().mockImplementation(() => ({ export: mockExport }))
 );
 
-jest.mock('../../auth/captchaMiddleware.ts', () => () => (_req, _res, next) => {
-  next();
-});
+jest.mock('../../core/infrastructure/express/captcha/CaptchaMiddleware.ts', () => ({
+  captchaMiddleware: () => (_req, _res, next) => {
+    next();
+  },
+}));
 
 // eslint-disable-next-line max-statements
 describe('upload routes', () => {

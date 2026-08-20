@@ -50,10 +50,10 @@ class UpdateEntityController extends AbstractController<Request> {
 
       const output = await useCase.execute(mapped);
 
-      const [entityWithFiles] = await entityDAO.getWithFiles({
-        sharedId: output.sharedId,
-        language: this.language,
-      });
+      const [entityWithFiles] = await entityDAO.find(
+        { sharedId: output.sharedId, language: this.language },
+        { withFiles: true }
+      );
 
       const response =
         'entity' in this.request.body ? { entity: entityWithFiles, errors: [] } : entityWithFiles;

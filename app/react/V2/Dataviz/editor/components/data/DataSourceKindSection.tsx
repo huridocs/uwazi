@@ -27,7 +27,7 @@ const DATA_SOURCE_OPTIONS: {
 const DataSourceKindSection = ({ value, onChange }: DataSourceKindSectionProps) => (
   <section className="flex flex-col gap-3">
     <h3 className="text-sm font-semibold text-ink">
-      <Translate>Data source</Translate>
+      <Translate>Input type</Translate>
     </h3>
     <div className="flex gap-3">
       {DATA_SOURCE_OPTIONS.map(option => {

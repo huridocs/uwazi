@@ -8,6 +8,7 @@ const createDraftDatavizInput = (options?: { templateId?: string }): DatavizCrea
     sources: options?.templateId ? [{ templateId: options.templateId }] : [],
     dimensions: [],
     measures: [{ aggregation: 'count', countMode: 'all' }],
+    includeUnpublished: true,
     language: 'en',
     limit: 50,
   },

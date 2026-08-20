@@ -4,6 +4,7 @@ import { MongoDataSource } from '#api/core/infrastructure/mongodb/common/MongoDa
 import { MongoIdHandler } from '#api/core/infrastructure/mongodb/common/MongoIdGenerator.js';
 import { MongoResultSet } from '#api/core/infrastructure/mongodb/common/MongoResultSet.js';
 import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
+import { AccessContext } from '#api/core/domain/entityAccessPolicy/AccessContext.js';
 import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js';
 import { TemplatesDataSource } from '#api/core/application/contracts/TemplatesDataSource.js';
 import { DeprecatedEntitiesDataSource } from '../contracts/DeprecatedEntitiesDataSource.js';
@@ -25,9 +26,10 @@ export class MongoDeprecatedEntitiesDataSource
     db: Db,
     templatesDS: TemplatesDataSource,
     settingsDS: SettingsDataSource,
-    transactionManager: MongoTransactionManager
+    transactionManager: MongoTransactionManager,
+    accessContext?: AccessContext
   ) {
-    super(db, transactionManager);
+    super(db, transactionManager, { accessContext });
     this.templatesDS = templatesDS;
     this.settingsDS = settingsDS;
   }

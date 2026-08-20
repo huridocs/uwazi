@@ -31,7 +31,9 @@ describe('permissions', () => {
       async ({ usersDirectory }) => {
         testingTenants.changeCurrentTenant({ featureFlags: { usersDirectory } });
 
-        const permissions = await entitiesPermissions.get(['shared1', 'shared2']);
+        const permissions = await testingEnvironment.runWithContext(async () =>
+          entitiesPermissions.get(['shared1', 'shared2'])
+        );
         expect(permissions).toEqual([
           {
             refId: groupA._id,
@@ -57,7 +59,9 @@ describe('permissions', () => {
     );
 
     it('should return mixed permissions in case one of the entities does not have any', async () => {
-      const permissions = await entitiesPermissions.get(['shared1', 'shared3']);
+      const permissions = await testingEnvironment.runWithContext(async () =>
+        entitiesPermissions.get(['shared1', 'shared3'])
+      );
       expect(permissions).toEqual([
         {
           refId: groupA._id,
@@ -83,19 +87,25 @@ describe('permissions', () => {
 
     describe('publicly shared', () => {
       it('should return a permission of type "public" and level "mixed" if the entities are published and unpublished', async () => {
-        const permissions = await entitiesPermissions.get(['shared1', 'shared4']);
+        const permissions = await testingEnvironment.runWithContext(async () =>
+          entitiesPermissions.get(['shared1', 'shared4'])
+        );
         expect(permissions).toEqual(
           expect.arrayContaining([{ ...publicPermission, level: MixedAccess.MIXED }])
         );
       });
 
       it('should return a permission of type "public" and level "read" if the entity is published', async () => {
-        const permissions = await entitiesPermissions.get(['shared1']);
+        const permissions = await testingEnvironment.runWithContext(async () =>
+          entitiesPermissions.get(['shared1'])
+        );
         expect(permissions).toEqual(expect.arrayContaining([publicPermission]));
       });
 
       it('should NOT return a permission of type "public" if the entity is not published', async () => {
-        const permissions = await entitiesPermissions.get(['shared4']);
+        const permissions = await testingEnvironment.runWithContext(async () =>
+          entitiesPermissions.get(['shared4'])
+        );
         expect(permissions).toEqual([]);
       });
     });

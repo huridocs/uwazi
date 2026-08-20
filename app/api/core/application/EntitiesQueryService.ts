@@ -67,10 +67,7 @@ class EntitiesQueryService {
     } = input;
     const isAuthenticated = !user.isAnonymous();
 
-    const [entity] = await this.deps.entityDAO.getWithFiles({
-      sharedId,
-      language,
-    });
+    const [entity] = await this.deps.entityDAO.find({ sharedId, language }, { withFiles: true });
 
     if (!entity) {
       throw new EntityNotFoundError(sharedId);

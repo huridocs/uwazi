@@ -6,7 +6,8 @@ import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { setUpApp } from '#api/utils/testingRoutes.js';
 import { testingTenants } from '#api/utils/testingTenants.js';
 
-import privateInstanceMiddleware from '#api/auth/privateInstanceMiddleware.js';
+import { privateInstanceMiddleware } from '#api/core/infrastructure/express/middlewares/PrivateInstanceMiddleware.js';
+import { dependenciesContextMiddleware } from '#api/core/infrastructure/express/middlewares/DependenciesMiddleware.js';
 import uploadRoutes from '../routes.js';
 import {
   adminUser,
@@ -410,7 +411,9 @@ describe('files routes download', () => {
       beforeEach(async () => {
         await settings.save({ private: true });
         testingEnvironment.userInContextMockFactory.mock(undefined);
-        app = setUpApp(uploadRoutes, privateInstanceMiddleware);
+        // privateInstanceMiddleware reads settings and logs through the ExecutionContext,
+        // so it needs the dependencies context mounted before it, as server.js does.
+        app = setUpApp(uploadRoutes, dependenciesContextMiddleware, privateInstanceMiddleware);
       });
 
       it.each([
