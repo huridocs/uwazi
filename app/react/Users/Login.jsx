@@ -113,7 +113,21 @@ class LoginComponent extends RouteHandler {
             </h1>
 
             {this.props.cookiepolicy && getConsent() === 'rejected' && (
-              <p className="tw-content mb-4 rounded-md border border-gray-200 bg-gray-50 px-3 py-2.5 text-center text-xs leading-relaxed text-gray-600">
+              <p className="tw-content mb-4 flex items-start gap-2 text-xs leading-relaxed text-gray-500">
+                <svg
+                  className="mt-0.5 h-3.5 w-3.5 shrink-0 text-gray-400"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                  aria-hidden="true"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z"
+                  />
+                </svg>
                 <Translate>
                   By logging in you accept the essential session cookie required to stay signed in.
                 </Translate>
