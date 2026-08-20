@@ -16,6 +16,7 @@ A target template needs to have the following properties,A target template needs
 A valid email is required,E-posta gerekli
 A → Z,A → Z
 Accept,Kabul Et
+Accept all,Accept all
 Accepted suggestion on entity,Accepted suggestion on entity
 Accepting suggestions,Accepting suggestions
 Accessibility checks need attention,Accessibility checks need attention
@@ -148,6 +149,7 @@ Body,Body
 boolean,boolean
 Browse files to upload,Yüklenecek dosyalara göz atın
 "by ids, methods, keywords, etc.","by ids, methods, keywords, etc."
+By logging in you accept the essential session cookie required to stay signed in.,By logging in you accept the essential session cookie required to stay signed in.
 Can edit,Düzenleyebilir
 Can see,Görebilir
 Can view,Görüntüleyebilir
@@ -238,6 +240,7 @@ Content translations,Content translations
 Context,Context
 Continue,Continue
 Conversion failed,Dönüştürülemedi
+Cookie preferences,Cookie preferences
 Copied,Copied
 Copied to clipboard,Copied to clipboard
 Copy,Copy
@@ -838,6 +841,7 @@ Ok,Tamam
 OK,TAMAM
 On this entity,On this entity
 one character,one character
+Only essential,Only essential
 "Only properties with the same name and configuration in every data source are available
             for both dimensions.","Only properties with the same name and configuration in every data source are available
             for both dimensions."
@@ -992,6 +996,7 @@ Refresh,Refresh
                         scheduled run."
 Refresh mode,Refresh mode
 Reject,Reddet
+Reject all,Reject all
 Related entities created,Related entities created
 Relation type,Relation type
 Relationship,İlişki
@@ -1294,7 +1299,6 @@ This file type is not supported on media fields,This file type is not supported 
 This group is empty,This group is empty
 This import is waiting in queue.,This import is waiting in queue.
 This label already exists in this template,This label already exists in this template
-This option will show a notification about the use of cookies in your instance.,"Bu seçenek, oluşumunuzda çerez kullanımı hakkında bir bildirim gösterecektir."
 This page does not need Markdown,This page does not need Markdown
 "This page uses HTML only (Markdown is not processed). You can embed maps, charts, entity
           lists, and other components.","This page uses HTML only (Markdown is not processed). You can embed maps, charts, entity
@@ -1306,6 +1310,9 @@ This property will be shown without the label,This property will be shown withou
 This property will be the default filter in the library for this template.,This property will be the default filter in the library for this template.
 "This property will be used for filtering the library results. When properties match in equal name and field type with other entity types, they will be combined for filtering.","This property will be used for filtering the library results. When properties match in equal name and field type with other entity types, they will be combined for filtering."
 This search could not be completed. Try again later.,This search could not be completed. Try again later.
+"This site uses cookies for language preferences and analytics. Session cookies are only
+            set when you log in.","This site uses cookies for language preferences and analytics. Session cookies are only
+            set when you log in."
 This table of contents was automatically created by the system.,This table of contents was automatically created by the system.
 this template,this template
 This template is in use by existing entities and cannot be deleted.,This template is in use by existing entities and cannot be deleted.
@@ -1317,7 +1324,6 @@ tips,tips
 Title,Başlık
 To,To
 To add references you can start by selecting text in the document,To add references you can start by selecting text in the document
-"To bring you a better experience, this site uses cookies.",Size daha iyi bir deneyim sunmak için bu site çerezleri kullanır.
 "To complete the account creation process, please create a password for your account",Hesap oluşturma işlemini tamamlamak için lütfen hesabınız için bir parola oluşturun
 to view your authentication code and verify your identity.,kimlik doğrulama kodunuzu görüntülemek ve kimliğinizi doğrulamak için.
 Today,Today
@@ -1441,6 +1447,9 @@ Warning: you are editing multiple entities. Fields marked with a,Uyarı: birden 
 We can't find the page you're looking for.,We can't find the page you're looking for.
 Welcome to Uwazi,Uwazi'ye hoş geldiniz
 "Well, this is awkward...","Peki, bu garip bir durum..."
+"When enabled, visitors must accept or reject non-essential cookies before they are set.
+    Analytics and language preference cookies are blocked until accepted.","When enabled, visitors must accept or reject non-essential cookies before they are set.
+    Analytics and language preference cookies are blocked until accepted."
 Whitelisted templates,Whitelisted templates
 wildcard,wildcard
 wildcard (many chars),wildcard (many chars)

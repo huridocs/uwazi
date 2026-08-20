@@ -16,6 +16,7 @@ A target template needs to have the following properties,A target template needs
 A valid email is required,البريد الإلكتروني مطلوب
 A → Z,A → Z
 Accept,قبول
+Accept all,Accept all
 Accepted suggestion on entity,Accepted suggestion on entity
 Accepting suggestions,Accepting suggestions
 Accessibility checks need attention,Accessibility checks need attention
@@ -148,6 +149,7 @@ Body,يجب الاطلاع على السياق لتحديد الترجمة ال�
 boolean,boolean
 Browse files to upload,تصفح الملفات المراد تحميلها
 "by ids, methods, keywords, etc.","by ids, methods, keywords, etc."
+By logging in you accept the essential session cookie required to stay signed in.,By logging in you accept the essential session cookie required to stay signed in.
 Can edit,إمكانية التحرير
 Can see,إمكانية الرؤية
 Can view,إمكانية المعاينة
@@ -237,6 +239,7 @@ Content translations,Content translations
 Context,Context
 Continue,Continue
 Conversion failed,فشل التحويل
+Cookie preferences,Cookie preferences
 Copied,Copied
 Copied to clipboard,Copied to clipboard
 Copy,Copy
@@ -837,6 +840,7 @@ Ok,موافق
 OK,موافق
 On this entity,On this entity
 one character,one character
+Only essential,Only essential
 "Only properties with the same name and configuration in every data source are available
             for both dimensions.","Only properties with the same name and configuration in every data source are available
             for both dimensions."
@@ -991,6 +995,7 @@ Refresh,Refresh
                         scheduled run."
 Refresh mode,Refresh mode
 Reject,رفض
+Reject all,Reject all
 Related entities created,Related entities created
 Relation type,Relation type
 Relationship,صلة
@@ -1293,7 +1298,6 @@ This file type is not supported on media fields,This file type is not supported 
 This group is empty,This group is empty
 This import is waiting in queue.,This import is waiting in queue.
 This label already exists in this template,This label already exists in this template
-This option will show a notification about the use of cookies in your instance.,سيظهر هذا الخيار إشعاراً حول استخدام ملفات تعريف الارتباط في قاعدة بياناتك
 This page does not need Markdown,This page does not need Markdown
 "This page uses HTML only (Markdown is not processed). You can embed maps, charts, entity
           lists, and other components.","This page uses HTML only (Markdown is not processed). You can embed maps, charts, entity
@@ -1305,6 +1309,9 @@ This property will be shown without the label,This property will be shown withou
 This property will be the default filter in the library for this template.,This property will be the default filter in the library for this template.
 "This property will be used for filtering the library results. When properties match in equal name and field type with other entity types, they will be combined for filtering.","This property will be used for filtering the library results. When properties match in equal name and field type with other entity types, they will be combined for filtering."
 This search could not be completed. Try again later.,This search could not be completed. Try again later.
+"This site uses cookies for language preferences and analytics. Session cookies are only
+            set when you log in.","This site uses cookies for language preferences and analytics. Session cookies are only
+            set when you log in."
 This table of contents was automatically created by the system.,This table of contents was automatically created by the system.
 this template,this template
 This template is in use by existing entities and cannot be deleted.,This template is in use by existing entities and cannot be deleted.
@@ -1316,7 +1323,6 @@ tips,tips
 Title,عنوان
 To,To
 To add references you can start by selecting text in the document,To add references you can start by selecting text in the document
-"To bring you a better experience, this site uses cookies.",لكي تستمتع بتجربة أفضل، يستخدم هذا الموقع ملفات تعريف الارتباط
 "To complete the account creation process, please create a password for your account",لإكمال عملية إنشاء الحساب، يرجى إنشاء كلمة مرور لحسابك
 to view your authentication code and verify your identity.,لمعاينة رمز المصادقة الخاص بك والتحقق من هويتك.
 Today,Today
@@ -1440,6 +1446,9 @@ Warning: you are editing multiple entities. Fields marked with a,تنبيه: أ�
 We can't find the page you're looking for.,We can't find the page you're looking for.
 Welcome to Uwazi,مرحباً بكم في أوازي
 "Well, this is awkward...",إنه لأمر محرج...
+"When enabled, visitors must accept or reject non-essential cookies before they are set.
+    Analytics and language preference cookies are blocked until accepted.","When enabled, visitors must accept or reject non-essential cookies before they are set.
+    Analytics and language preference cookies are blocked until accepted."
 Whitelisted templates,Whitelisted templates
 wildcard,wildcard
 wildcard (many chars),wildcard (many chars)
