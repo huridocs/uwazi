@@ -5,7 +5,7 @@ import { bindActionCreators } from 'redux';
 import { Field, LocalForm, actions as formActions } from 'react-redux-form';
 import { Icon } from '#UI/Icon/Icon.js';
 import { t, Translate } from '#app/I18N/index.js';
-import { getConsent } from '#app/App/cookieConsent.js';
+import { getConsent, setConsent } from '#app/App/cookieConsent.js';
 import { reconnectSocket } from '#app/socket.js';
 import { RouteHandler } from '#app/App/RouteHandler.js';
 import { reloadThesauri } from '#app/Thesauri/actions/thesaurisActions.js';
@@ -63,6 +63,9 @@ class LoginComponent extends RouteHandler {
   async login(credentials) {
     try {
       await this.props.login(credentials);
+      if (this.props.cookiepolicy && getConsent() === 'rejected') {
+        setConsent('essential');
+      }
       this.resolveSuccessfulLogin();
     } catch (err) {
       if (!this.state.tokenRequired && err.status === 409) {
@@ -109,11 +112,10 @@ class LoginComponent extends RouteHandler {
               <img src="/public/logo.svg" title="uwazi" alt="uwazi" />
             </h1>
 
-            {this.props.cookiepolicy && getConsent() !== 'accepted' && (
+            {this.props.cookiepolicy && getConsent() === 'rejected' && (
               <div className="alert alert-warning tw-content mb-4" role="alert">
                 <Translate>
-                  Logging in uses a strictly necessary session cookie. Analytics and preference
-                  cookies remain disabled unless you accept them in the cookie banner.
+                  By logging in you accept the essential session cookie required to stay signed in.
                 </Translate>
               </div>
             )}

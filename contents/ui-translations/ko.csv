@@ -149,6 +149,7 @@ Body,바디
 boolean,boolean
 Browse files to upload,업로드할 파일 탐색
 "by ids, methods, keywords, etc.","by ids, methods, keywords, etc."
+By logging in you accept the essential session cookie required to stay signed in.,By logging in you accept the essential session cookie required to stay signed in.
 Can edit,편집 가능
 Can see,열람 가능
 Can view,열람 가능
@@ -653,9 +654,6 @@ Live translate,Live translate
 Load example,Load example
 Loading,Loading
 Local time,Local time
-"Logging in uses a strictly necessary session cookie. Analytics and preference
-                  cookies remain disabled unless you accept them in the cookie banner.","Logging in uses a strictly necessary session cookie. Analytics and preference
-                  cookies remain disabled unless you accept them in the cookie banner."
 Login,로그인
 Login button,로그인 버튼
 Login failed,로그인 실패
@@ -843,6 +841,7 @@ Ok,확인
 OK,확인
 On this entity,On this entity
 one character,one character
+Only essential,Only essential
 "Only properties with the same name and configuration in every data source are available
             for both dimensions.","Only properties with the same name and configuration in every data source are available
             for both dimensions."
@@ -997,7 +996,7 @@ Refresh,Refresh
                         scheduled run."
 Refresh mode,Refresh mode
 Reject,거부
-Reject non-essential,Reject non-essential
+Reject all,Reject all
 Related entities created,Related entities created
 Relation type,Relation type
 Relationship,연결

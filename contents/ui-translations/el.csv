@@ -149,6 +149,7 @@ Body,Σώμα
 boolean,boolean
 Browse files to upload,Αναζήτηση αρχείων για μεταφόρτωση
 "by ids, methods, keywords, etc.","με αναγνωριστικά, μεθόδους, λέξεις-κλειδιά, κ.λπ."
+By logging in you accept the essential session cookie required to stay signed in.,By logging in you accept the essential session cookie required to stay signed in.
 Can edit,Μπορεί να επεξεργαστεί
 Can see,Μπορεί να δει
 Can view,Μπορεί να δει
@@ -654,9 +655,6 @@ Live translate,Ζωντανή μετάφραση
 Load example,Load example
 Loading,Φόρτωση
 Local time,Local time
-"Logging in uses a strictly necessary session cookie. Analytics and preference
-                  cookies remain disabled unless you accept them in the cookie banner.","Logging in uses a strictly necessary session cookie. Analytics and preference
-                  cookies remain disabled unless you accept them in the cookie banner."
 Login,Σύνδεση
 Login button,Σύνδεση
 Login failed,Η σύνδεση απέτυχε
@@ -844,6 +842,7 @@ Ok,Εντάξει
 OK,Εντάξει
 On this entity,On this entity
 one character,one character
+Only essential,Only essential
 "Only properties with the same name and configuration in every data source are available
             for both dimensions.","Only properties with the same name and configuration in every data source are available
             for both dimensions."
@@ -998,7 +997,7 @@ Refresh,Refresh
                         scheduled run."
 Refresh mode,Refresh mode
 Reject,Απόρριψη
-Reject non-essential,Reject non-essential
+Reject all,Reject all
 Related entities created,Related entities created
 Relation type,Τύπος σχέσης
 Relationship,Σχέση

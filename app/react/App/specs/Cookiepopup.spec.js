@@ -40,15 +40,21 @@ describe('Cookiepopup', () => {
     expect(component.isEmptyRender()).toBe(true);
   });
 
-  it('should save consent when accept is clicked', () => {
+  it('should save accepted consent', () => {
     const component = shallow(<Cookiepopup cookiepolicy />);
-    component.find(CookieConsentBanner).prop('onAccept')();
+    component.find(CookieConsentBanner).prop('onAcceptAll')();
     expect(cookieConsent.setConsent).toHaveBeenCalledWith('accepted');
   });
 
-  it('should save consent when reject is clicked', () => {
+  it('should save essential-only consent', () => {
     const component = shallow(<Cookiepopup cookiepolicy />);
-    component.find(CookieConsentBanner).prop('onReject')();
+    component.find(CookieConsentBanner).prop('onEssentialOnly')();
+    expect(cookieConsent.setConsent).toHaveBeenCalledWith('essential');
+  });
+
+  it('should save rejected consent', () => {
+    const component = shallow(<Cookiepopup cookiepolicy />);
+    component.find(CookieConsentBanner).prop('onRejectAll')();
     expect(cookieConsent.setConsent).toHaveBeenCalledWith('rejected');
   });
 });

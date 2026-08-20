@@ -26,6 +26,12 @@ describe('cookieConsent', () => {
     expect(canUseNonEssentialCookies()).toBe(true);
   });
 
+  it('should store essential-only consent', () => {
+    setConsent('essential');
+    expect(getConsent()).toBe('essential');
+    expect(canUseNonEssentialCookies()).toBe(false);
+  });
+
   it('should store rejected consent', () => {
     setConsent('rejected');
     expect(getConsent()).toBe('rejected');

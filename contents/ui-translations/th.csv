@@ -149,6 +149,7 @@ Body,เนื้อหา
 boolean,boolean
 Browse files to upload,เรียกดูไฟล์ที่จะอัปโหลด
 "by ids, methods, keywords, etc.","by ids, methods, keywords, etc."
+By logging in you accept the essential session cookie required to stay signed in.,By logging in you accept the essential session cookie required to stay signed in.
 Can edit,แก้ไขได้
 Can see,มองเห็นได้
 Can view,มองเห็นได้
@@ -653,9 +654,6 @@ Live translate,Live translate
 Load example,Load example
 Loading,Loading
 Local time,Local time
-"Logging in uses a strictly necessary session cookie. Analytics and preference
-                  cookies remain disabled unless you accept them in the cookie banner.","Logging in uses a strictly necessary session cookie. Analytics and preference
-                  cookies remain disabled unless you accept them in the cookie banner."
 Login,เข้าสู่ระบบ
 Login button,กดเพื่อเข้าสู่ระบบ
 Login failed,การเข้าสู่ระบบล้มเหลว
@@ -843,6 +841,7 @@ Ok,ตกลง
 OK,ตกลง
 On this entity,On this entity
 one character,one character
+Only essential,Only essential
 "Only properties with the same name and configuration in every data source are available
             for both dimensions.","Only properties with the same name and configuration in every data source are available
             for both dimensions."
@@ -997,7 +996,7 @@ Refresh,Refresh
                         scheduled run."
 Refresh mode,Refresh mode
 Reject,ปฏิเสธ
-Reject non-essential,Reject non-essential
+Reject all,Reject all
 Related entities created,Related entities created
 Relation type,Relation type
 Relationship,ความสัมพันธ์

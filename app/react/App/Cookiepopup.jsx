@@ -25,13 +25,17 @@ const Cookiepopup = ({ cookiepolicy }) => {
   }
 
   return (
-    <ThemeProvider className="fixed inset-x-0 bottom-0 z-50">
+    <ThemeProvider className="fixed bottom-4 right-4 z-50">
       <CookieConsentBanner
-        onAccept={() => {
+        onAcceptAll={() => {
           setConsent('accepted');
           setConsentState('accepted');
         }}
-        onReject={() => {
+        onEssentialOnly={() => {
+          setConsent('essential');
+          setConsentState('essential');
+        }}
+        onRejectAll={() => {
           setConsent('rejected');
           setConsentState('rejected');
         }}

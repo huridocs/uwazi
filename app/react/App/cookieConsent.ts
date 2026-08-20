@@ -4,15 +4,17 @@ import { isClient } from '#app/utils/index.js';
 const STORAGE_KEY = 'uwazi_cookie_consent';
 const CONSENT_EVENT = 'uwazi-cookie-consent';
 
-type CookieConsent = 'accepted' | 'rejected';
+type CookieConsent = 'accepted' | 'essential' | 'rejected';
+
+const VALID_CONSENT = new Set<CookieConsent>(['accepted', 'essential', 'rejected']);
 
 const getConsent = (): CookieConsent | null => {
   if (!isClient) {
     return null;
   }
   const value = localStorage.getItem(STORAGE_KEY);
-  if (value === 'accepted' || value === 'rejected') {
-    return value;
+  if (value && VALID_CONSENT.has(value as CookieConsent)) {
+    return value as CookieConsent;
   }
   return null;
 };

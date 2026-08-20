@@ -4,49 +4,57 @@ import { Translate } from '#app/I18N/index.js';
 import { Button } from './Button.js';
 
 type CookieConsentBannerProps = {
-  onAccept: () => void;
-  onReject: () => void;
+  onAcceptAll: () => void;
+  onEssentialOnly: () => void;
+  onRejectAll: () => void;
 };
 
-const CookieConsentBanner = ({ onAccept, onReject }: CookieConsentBannerProps) => (
+const CookieConsentBanner = ({
+  onAcceptAll,
+  onEssentialOnly,
+  onRejectAll,
+}: CookieConsentBannerProps) => (
   <div
-    className="border-t border-border bg-paper shadow-[0_-4px_24px_var(--tw-shadow-color)]"
+    className="w-[min(24rem,calc(100vw-2rem))] rounded-lg border border-border bg-paper p-4 shadow-lg"
     role="dialog"
     aria-labelledby="cookie-consent-title"
     aria-live="polite"
     data-testid="cookie-consent-banner"
   >
-    <div className="mx-auto flex max-w-5xl flex-col gap-4 px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">
-      <div className="flex min-w-0 items-start gap-3">
-        <InformationCircleIcon
-          className="mt-0.5 h-5 w-5 shrink-0 text-supporting"
-          aria-hidden
-        />
-        <p id="cookie-consent-title" className="text-sm leading-relaxed text-ink-secondary">
-          <Translate>
-            This site uses cookies for language preferences and analytics. Session cookies are only
-            set when you log in.
-          </Translate>
-        </p>
-      </div>
-      <div className="flex shrink-0 flex-wrap gap-2 sm:justify-end">
-        <Button
-          variant="secondary"
-          size="medium"
-          onClick={onReject}
-          data-testid="cookie-consent-reject"
-        >
-          <Translate>Reject non-essential</Translate>
-        </Button>
-        <Button
-          variant="primary"
-          size="medium"
-          onClick={onAccept}
-          data-testid="cookie-consent-accept"
-        >
-          <Translate>Accept all</Translate>
-        </Button>
-      </div>
+    <div className="flex items-start gap-2.5">
+      <InformationCircleIcon className="mt-0.5 h-4 w-4 shrink-0 text-supporting" aria-hidden />
+      <p id="cookie-consent-title" className="text-xs leading-relaxed text-ink-secondary">
+        <Translate>
+          This site uses cookies for language preferences and analytics. Session cookies are only
+          set when you log in.
+        </Translate>
+      </p>
+    </div>
+    <div className="mt-3 flex flex-wrap justify-end gap-1.5">
+      <Button
+        variant="ghost"
+        size="small"
+        onClick={onRejectAll}
+        data-testid="cookie-consent-reject-all"
+      >
+        <Translate>Reject all</Translate>
+      </Button>
+      <Button
+        variant="secondary"
+        size="small"
+        onClick={onEssentialOnly}
+        data-testid="cookie-consent-essential"
+      >
+        <Translate>Only essential</Translate>
+      </Button>
+      <Button
+        variant="primary"
+        size="small"
+        onClick={onAcceptAll}
+        data-testid="cookie-consent-accept-all"
+      >
+        <Translate>Accept all</Translate>
+      </Button>
     </div>
   </div>
 );

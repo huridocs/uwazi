@@ -149,6 +149,7 @@ Body,Body
 boolean,boolean
 Browse files to upload,Yüklenecek dosyalara göz atın
 "by ids, methods, keywords, etc.","by ids, methods, keywords, etc."
+By logging in you accept the essential session cookie required to stay signed in.,By logging in you accept the essential session cookie required to stay signed in.
 Can edit,Düzenleyebilir
 Can see,Görebilir
 Can view,Görüntüleyebilir
@@ -653,9 +654,6 @@ Live translate,Live translate
 Load example,Load example
 Loading,Loading
 Local time,Local time
-"Logging in uses a strictly necessary session cookie. Analytics and preference
-                  cookies remain disabled unless you accept them in the cookie banner.","Logging in uses a strictly necessary session cookie. Analytics and preference
-                  cookies remain disabled unless you accept them in the cookie banner."
 Login,Giriş
 Login button,Giriş
 Login failed,Giriş başarısız
@@ -843,6 +841,7 @@ Ok,Tamam
 OK,TAMAM
 On this entity,On this entity
 one character,one character
+Only essential,Only essential
 "Only properties with the same name and configuration in every data source are available
             for both dimensions.","Only properties with the same name and configuration in every data source are available
             for both dimensions."
@@ -997,7 +996,7 @@ Refresh,Refresh
                         scheduled run."
 Refresh mode,Refresh mode
 Reject,Reddet
-Reject non-essential,Reject non-essential
+Reject all,Reject all
 Related entities created,Related entities created
 Relation type,Relation type
 Relationship,İlişki

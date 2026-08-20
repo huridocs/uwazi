@@ -149,6 +149,7 @@ Body,Body
 boolean,boolean
 Browse files to upload,Browse files to upload
 "by ids, methods, keywords, etc.","by ids, methods, keywords, etc."
+By logging in you accept the essential session cookie required to stay signed in.,By logging in you accept the essential session cookie required to stay signed in.
 Can edit,Can edit
 Can see,Can see
 Can view,Can view
@@ -655,9 +656,6 @@ Live translate,Live translate
 Load example,Load example
 Loading,Loading
 Local time,Local time
-"Logging in uses a strictly necessary session cookie. Analytics and preference
-                  cookies remain disabled unless you accept them in the cookie banner.","Logging in uses a strictly necessary session cookie. Analytics and preference
-                  cookies remain disabled unless you accept them in the cookie banner."
 Login,Login
 Login button,Login
 Login failed,Login failed
@@ -845,6 +843,7 @@ Ok,Ok
 OK,OK
 On this entity,On this entity
 one character,one character
+Only essential,Only essential
 "Only properties with the same name and configuration in every data source are available
             for both dimensions.","Only properties with the same name and configuration in every data source are available
             for both dimensions."
@@ -999,7 +998,7 @@ Refresh,Refresh
                         scheduled run."
 Refresh mode,Refresh mode
 Reject,Reject
-Reject non-essential,Reject non-essential
+Reject all,Reject all
 Related entities created,Related entities created
 Relation type,Relation type
 Relationship,Relationship
