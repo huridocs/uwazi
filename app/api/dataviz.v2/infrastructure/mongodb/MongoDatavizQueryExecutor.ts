@@ -29,7 +29,6 @@ import {
   normalizeDatavizBucketKey,
   serializeDatavizBucketKey,
 } from '#shared/dataviz/formatDimensionKeyLabel.js';
-import { User } from '#api/users.v2/model/User.js';
 import { EntityDBO } from '#api/core/infrastructure/mongodb/entity/EntityDBO.js';
 import {
   mergeUnionBuckets,
@@ -121,7 +120,7 @@ class MongoDatavizQueryExecutor extends MongoDataSource<EntityDBO> implements Da
         primaryDim,
         secondaryDim,
         maxBuckets,
-        permissionMatch: this.buildPermissionMatch(context.actor, query.includeUnpublished),
+        permissionMatch: query.includeUnpublished === true ? {} : { published: true },
         timeoutMs,
       });
       bucketSets.push(buckets);
@@ -198,7 +197,7 @@ class MongoDatavizQueryExecutor extends MongoDataSource<EntityDBO> implements Da
     timeoutMs: number,
     start: number
   ) {
-    const permissionMatch = this.buildPermissionMatch(context.actor, query.includeUnpublished);
+    const permissionMatch = query.includeUnpublished === true ? {} : { published: true };
     const counts: number[] = [];
 
     for (const [sourceIndex, source] of query.sources.entries()) {
@@ -393,22 +392,6 @@ class MongoDatavizQueryExecutor extends MongoDataSource<EntityDBO> implements Da
       }
       throw error;
     }
-  }
-
-  private buildPermissionMatch(actor: User, includeUnpublished?: boolean): object {
-    if (actor.isPrivileged() && includeUnpublished) {
-      return {};
-    }
-
-    if (actor.isPrivileged()) {
-      return {};
-    }
-
-    const userRefIds = [actor._id, ...actor.groups];
-
-    return {
-      $or: [{ published: true }, { permissions: { $elemMatch: { refId: { $in: userRefIds } } } }],
-    };
   }
 
   private metadataPath(property: string): string {

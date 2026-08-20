@@ -13,6 +13,7 @@ import { RefreshTab } from '../tabs/RefreshTab.js';
 type DatavizEditorConfigPanelProps = {
   definition: DatavizDefinition;
   activeTab: EditorTabId;
+  nameError?: boolean;
   previewData?: DatavizDataDTO | null;
   previewLoading?: boolean;
   previewError?: string | null;
@@ -28,6 +29,7 @@ type DatavizEditorConfigPanelProps = {
 const DatavizEditorConfigPanel = ({
   definition,
   activeTab,
+  nameError = false,
   previewData,
   refreshConstraints,
   onTabChange,
@@ -42,7 +44,7 @@ const DatavizEditorConfigPanel = ({
   const tabElements = useMemo(() => {
     const tabs = [
       <Tabs.Tab key="info" id="info" label="Info">
-        <InfoTab definition={definition} onChange={onPatch} />
+        <InfoTab definition={definition} nameError={nameError} onChange={onPatch} />
       </Tabs.Tab>,
       <Tabs.Tab key="data" id="data" label="Data">
         <DataTab
@@ -79,6 +81,7 @@ const DatavizEditorConfigPanel = ({
     return tabs;
   }, [
     definition,
+    nameError,
     onPatch,
     onPatchAppearance,
     onPatchChart,

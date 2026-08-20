@@ -18,6 +18,7 @@ import { resolveChartPatchForQuery } from '#V2/Dataviz/utils/resolveChartPatchFo
 import { ensureSourceAliases } from '#V2/Dataviz/utils/ensureSourceAliases.js';
 import { sanitizeDimensionsForSources } from '#V2/Dataviz/utils/sanitizeDimensionsForSources.js';
 import { DataSourceKindSection } from '../data/DataSourceKindSection.js';
+import { EntityScopeSection } from '../data/EntityScopeSection.js';
 import { ManualDataEditor } from '../data/ManualDataEditor.js';
 import { DataSourcesList } from '../data/sources/DataSourcesList.js';
 import { JoinModeSection } from '../data/sources/JoinModeSection.js';
@@ -167,6 +168,13 @@ const DataTab = ({ definition, onPatch, onPatchQuery, onPatchChart }: DataTabPro
   return (
     <div className="flex flex-col gap-6 p-4">
       <DataSourceKindSection value={dataSource} onChange={handleDataSourceChange} />
+
+      {!isManual && (
+        <EntityScopeSection
+          includeUnpublished={query.includeUnpublished ?? true}
+          onChange={value => onPatchQuery({ includeUnpublished: value })}
+        />
+      )}
 
       {isManual ? (
         <>
