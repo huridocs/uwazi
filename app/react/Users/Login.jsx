@@ -113,27 +113,6 @@ class LoginComponent extends RouteHandler {
               <img src="/public/logo.svg" title="uwazi" alt="uwazi" />
             </h1>
 
-            {this.props.cookiepolicy && getConsent() === 'rejected' && (
-              <p
-                style={{
-                  display: 'flex',
-                  alignItems: 'flex-start',
-                  gap: '0.5rem',
-                  marginBottom: '1rem',
-                  fontSize: '0.75rem',
-                  lineHeight: 1.5,
-                  color: '#6b7280',
-                }}
-              >
-                <InformationCircleIcon
-                  style={{ width: '0.875rem', height: '0.875rem', flexShrink: 0, marginTop: '0.125rem', color: '#9ca3af' }}
-                />
-                <Translate>
-                  By logging in you accept the essential session cookie required to stay signed in.
-                </Translate>
-              </p>
-            )}
-
             {this.state.render && (
               <LocalForm
                 onSubmit={this.submit}
@@ -251,6 +230,34 @@ class LoginComponent extends RouteHandler {
                     {submitLabel}
                   </button>
                 </p>
+                {this.props.cookiepolicy && getConsent() === 'rejected' && (
+                  <p
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '0.5rem',
+                      marginTop: '0.75rem',
+                      fontSize: '0.75rem',
+                      lineHeight: 1.5,
+                      color: '#6b7280',
+                      textAlign: 'center',
+                    }}
+                  >
+                    <InformationCircleIcon
+                      style={{
+                        width: '0.875rem',
+                        height: '0.875rem',
+                        flexShrink: 0,
+                        color: '#9ca3af',
+                      }}
+                    />
+                    <Translate>
+                      By logging in you accept the essential session cookie required to stay signed
+                      in.
+                    </Translate>
+                  </p>
+                )}
                 {this.state.recoverPassword && (
                   <div className="form-text">
                     <span
