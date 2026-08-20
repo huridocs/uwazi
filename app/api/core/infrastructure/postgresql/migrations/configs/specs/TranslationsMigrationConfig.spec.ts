@@ -1,4 +1,8 @@
 import { ObjectId } from 'mongodb';
+import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { testingDB } from '#api/utils/testing_db.js';
+import { testingPG } from '#api/utils/testing_pg.js';
+import { MigrateCollectionToPostgres } from '../../MigrateCollectionToPostgres.js';
 import { TranslationsMigrationConfig } from '../TranslationsMigrationConfig.js';
 
 describe('TranslationsMigrationConfig', () => {
@@ -35,5 +39,76 @@ describe('TranslationsMigrationConfig', () => {
 
     expect(mapped._id).toBe('abc123');
     expect(mapped.value).toBe('');
+  });
+
+  it('should throw when context type or label is missing', () => {
+    expect(() =>
+      TranslationsMigrationConfig.mapDocument({
+        _id: 'abc123',
+        language: 'en',
+        key: 'Search',
+        context: { id: 'unknown-context' },
+      })
+    ).toThrow(/missing required context fields/);
+  });
+});
+
+describe('TranslationsMigrationConfig copy', () => {
+  const TENANT = 'translations-migration-tenant';
+
+  beforeAll(async () => {
+    await testingEnvironment.setUp({}, { postgres: true });
+  });
+
+  beforeEach(async () => {
+    await testingDB.clear(['translationsV2', 'migrations']);
+    await testingPG.clear(['translations']);
+  });
+
+  afterAll(async () => {
+    await testingEnvironment.tearDown();
+  });
+
+  const makeMigrator = () => {
+    const mongoDb = testingDB.db(testingDB.dbName);
+    return new MigrateCollectionToPostgres(mongoDb, TENANT);
+  };
+
+  it('should stop when Mongo migration 205 has not run', async () => {
+    await expect(makeMigrator().migrate(TranslationsMigrationConfig)).rejects.toThrow(
+      /205-backfill-translation-context has run/
+    );
+
+    const rows = (await testingPG.getAllFrom('translations')).filter(r => r.tenant_id === TENANT);
+    expect(rows).toHaveLength(0);
+  });
+
+  it('should copy complete documents after 205 has been recorded', async () => {
+    const id = new ObjectId();
+    const mongoDb = testingDB.db(testingDB.dbName);
+    await mongoDb.collection('migrations').insertOne({ delta: 205 });
+    await mongoDb.collection('translationsV2').insertOne({
+      _id: id,
+      language: 'es',
+      key: 'Search',
+      value: 'Buscar',
+      context: { id: 'System', type: 'Uwazi UI', label: 'User Interface' },
+    });
+
+    const result = await makeMigrator().migrate(TranslationsMigrationConfig);
+
+    expect(result).toEqual({ migrated: 1, skipped: false });
+
+    const rows = (await testingPG.getAllFrom('translations')).filter(r => r.tenant_id === TENANT);
+    expect(rows).toHaveLength(1);
+    expect(rows[0]).toMatchObject({
+      _id: id.toHexString(),
+      language: 'es',
+      key: 'Search',
+      value: 'Buscar',
+      context_id: 'System',
+      context_type: 'Uwazi UI',
+      context_label: 'User Interface',
+    });
   });
 });
