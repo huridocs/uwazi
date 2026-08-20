@@ -174,10 +174,7 @@ describe('UserGroups read contract consistency', () => {
       });
 
       it('should skip ids that match no group', async () => {
-        const groups = await directory().getManyByIds([
-          f.idString('Empty'),
-          f.idString('missing'),
-        ]);
+        const groups = await directory().getManyByIds([f.idString('Empty'), f.idString('missing')]);
 
         expect(groups).toEqual([{ _id: f.idString('Empty'), name: 'Empty' }]);
       });
