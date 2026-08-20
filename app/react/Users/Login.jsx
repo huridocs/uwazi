@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { Field, LocalForm, actions as formActions } from 'react-redux-form';
 import { Icon } from '#UI/Icon/Icon.js';
+import { InformationCircleIcon } from '@heroicons/react/24/outline';
 import { t, Translate } from '#app/I18N/index.js';
 import { getConsent, setConsent } from '#app/App/cookieConsent.js';
 import { reconnectSocket } from '#app/socket.js';
@@ -113,21 +114,20 @@ class LoginComponent extends RouteHandler {
             </h1>
 
             {this.props.cookiepolicy && getConsent() === 'rejected' && (
-              <p className="tw-content mb-4 flex items-start gap-2 text-xs leading-relaxed text-gray-500">
-                <svg
-                  className="mt-0.5 h-3.5 w-3.5 shrink-0 text-gray-400"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="1.5"
-                  aria-hidden="true"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z"
-                  />
-                </svg>
+              <p
+                style={{
+                  display: 'flex',
+                  alignItems: 'flex-start',
+                  gap: '0.5rem',
+                  marginBottom: '1rem',
+                  fontSize: '0.75rem',
+                  lineHeight: 1.5,
+                  color: '#6b7280',
+                }}
+              >
+                <InformationCircleIcon
+                  style={{ width: '0.875rem', height: '0.875rem', flexShrink: 0, marginTop: '0.125rem', color: '#9ca3af' }}
+                />
                 <Translate>
                   By logging in you accept the essential session cookie required to stay signed in.
                 </Translate>
