@@ -1,4 +1,5 @@
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { testingTenants } from '#api/utils/testingTenants.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import type { DBFixture } from '#api/utils/testing_db.js';
 import { UpdateEntriesByContextUseCaseFactory } from '#api/core/infrastructure/factories/UpdateEntriesByContextUseCaseFactory.js';
@@ -27,74 +28,94 @@ const fixtures: DBFixture = {
   ],
 };
 
+const testConfigs = [
+  { name: 'Mongo', postgresTranslations: false },
+  { name: 'Postgres', postgresTranslations: true },
+];
+
 describe('UpdateEntriesByContextUseCase', () => {
   beforeAll(async () => {
-    await testingEnvironment.setUp(fixtures);
+    await testingEnvironment.setUp(fixtures, { postgres: true });
   });
 
   afterAll(async () => {
     await testingEnvironment.tearDown();
   });
 
-  beforeEach(async () => {
-    await testingEnvironment.setFixtures(fixtures);
-  });
+  describe.each(testConfigs)('$name', ({ postgresTranslations }) => {
+    const withFlag = <T>(fn: () => T) =>
+      testingEnvironment.runWithContext(
+        fn,
+        postgresTranslations
+          ? {
+              tenant: {
+                ...testingTenants.current(),
+                featureFlags: { postgresTranslations: true },
+              },
+            }
+          : undefined
+      );
 
-  it('should update values across locales for one context in a single transaction', async () => {
-    await testingEnvironment.runWithContext(async () => {
-      const result = await UpdateEntriesByContextUseCaseFactory.default().execute({
-        contextId,
-        keyValuePairsPerLanguage: {
-          en: { Title: 'Title EN', Name: 'Name EN' },
-          es: { Title: 'Título ES', Name: 'Nombre ES' },
-        },
-      });
-
-      expect(result).toHaveLength(2);
-
-      const rows = await TranslationsDataSourceFactory.default({
-        transactionManager: TransactionManagerFactory.default(),
-      }).getByContext(contextId);
-
-      expect(rows.map(r => `${r.language}:${r.key}:${r.value}`).sort()).toEqual([
-        'en:Name:Name EN',
-        'en:Title:Title EN',
-        'es:Name:Nombre ES',
-        'es:Title:Título ES',
-      ]);
+    beforeEach(async () => {
+      await testingEnvironment.setFixtures(fixtures);
     });
-  });
 
-  it('should reject updates for keys that do not exist in the context', async () => {
-    await testingEnvironment.runWithContext(async () => {
-      await expect(
-        UpdateEntriesByContextUseCaseFactory.default().execute({
+    it('should update values across locales for one context in a single transaction', async () => {
+      await withFlag(async () => {
+        const result = await UpdateEntriesByContextUseCaseFactory.default().execute({
           contextId,
           keyValuePairsPerLanguage: {
-            en: { Missing: 'nope' },
+            en: { Title: 'Title EN', Name: 'Name EN' },
+            es: { Title: 'Título ES', Name: 'Nombre ES' },
           },
-        })
-      ).rejects.toThrow(/missing translation keys/);
-    });
-  });
+        });
 
-  it('should ignore languages that are not installed', async () => {
-    await testingEnvironment.runWithContext(async () => {
-      await UpdateEntriesByContextUseCaseFactory.default().execute({
-        contextId,
-        keyValuePairsPerLanguage: {
-          en: { Title: 'Only EN' },
-          fr: { Title: 'Ignored' },
-        },
+        expect(result).toHaveLength(2);
+
+        const rows = await TranslationsDataSourceFactory.default({
+          transactionManager: TransactionManagerFactory.default(),
+        }).getByContext(contextId);
+
+        expect(rows.map(r => `${r.language}:${r.key}:${r.value}`).sort()).toEqual([
+          'en:Name:Name EN',
+          'en:Title:Title EN',
+          'es:Name:Nombre ES',
+          'es:Title:Título ES',
+        ]);
       });
+    });
 
-      const rows = await TranslationsDataSourceFactory.default({
-        transactionManager: TransactionManagerFactory.default(),
-      }).getByContext(contextId);
+    it('should reject updates for keys that do not exist in the context', async () => {
+      await withFlag(async () => {
+        await expect(
+          UpdateEntriesByContextUseCaseFactory.default().execute({
+            contextId,
+            keyValuePairsPerLanguage: {
+              en: { Missing: 'nope' },
+            },
+          })
+        ).rejects.toThrow(/missing translation keys/);
+      });
+    });
 
-      expect(rows.find(r => r.language === 'en' && r.key === 'Title')?.value).toBe('Only EN');
-      expect(rows.find(r => r.language === 'es' && r.key === 'Title')?.value).toBe('Título');
-      expect(rows.some(r => r.language === 'fr')).toBe(false);
+    it('should ignore languages that are not installed', async () => {
+      await withFlag(async () => {
+        await UpdateEntriesByContextUseCaseFactory.default().execute({
+          contextId,
+          keyValuePairsPerLanguage: {
+            en: { Title: 'Only EN' },
+            fr: { Title: 'Ignored' },
+          },
+        });
+
+        const rows = await TranslationsDataSourceFactory.default({
+          transactionManager: TransactionManagerFactory.default(),
+        }).getByContext(contextId);
+
+        expect(rows.find(r => r.language === 'en' && r.key === 'Title')?.value).toBe('Only EN');
+        expect(rows.find(r => r.language === 'es' && r.key === 'Title')?.value).toBe('Título');
+        expect(rows.some(r => r.language === 'fr')).toBe(false);
+      });
     });
   });
 });

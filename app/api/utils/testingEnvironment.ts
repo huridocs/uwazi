@@ -76,6 +76,23 @@ const sanitizeUserGroupForPostgres = (group: Record<string, unknown>) => ({
   ),
 });
 
+const sanitizeTranslationForPostgres = (translation: Record<string, unknown>) => {
+  const context = (translation.context ?? {}) as {
+    id?: string;
+    type?: string;
+    label?: string;
+  };
+  return {
+    _id: translation._id,
+    language: translation.language,
+    key: translation.key,
+    value: translation.value ?? '',
+    context_id: context.id,
+    context_type: context.type,
+    context_label: context.label,
+  };
+};
+
 const PG_SANITIZER_BY_MONGO_COLLECTION: Record<
   string,
   (row: Record<string, unknown>) => Record<string, unknown>
@@ -83,6 +100,7 @@ const PG_SANITIZER_BY_MONGO_COLLECTION: Record<
   entities: sanitizeEntityForPostgres,
   users: sanitizeUserForPostgres,
   usergroups: sanitizeUserGroupForPostgres,
+  translationsV2: sanitizeTranslationForPostgres,
 };
 
 const MIRRORED_COLLECTIONS = [
@@ -94,11 +112,13 @@ const MIRRORED_COLLECTIONS = [
   'captchas',
   'users',
   'usergroups',
+  'translationsV2',
 ];
 
 const PG_TABLE_BY_MONGO_COLLECTION: Record<string, string> = {
   dictionaries: 'thesauri',
   relationtypes: 'relationship_types',
+  translationsV2: 'translations',
 };
 
 type SetUpOptions = {

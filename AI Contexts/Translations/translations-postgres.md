@@ -20,12 +20,12 @@ This document is the working context for the Postgres phase. Prior V2 hex work: 
 - [x] `TranslationsDataSourceFactory` — Templates/Thesauri-style EC + flag; PG TM from EC; `cached()` returns the PG DS when the flag is on (no Mongo cache wrap)
 - [x] `PostgresTranslationsSyncHandler` + factory branch (sync namespace still `translationsV2`)
 - [x] `TranslationsMigrationConfig` + CLI `--collection translations`
+- [x] Dual-backend use-case / QueryService specs (`describe.each` Mongo + Postgres)
 
 ### Still open
 
-- [ ] Dual-backend use-case / QueryService specs (`describe.each` Mongo + Postgres)
 - [ ] Local cutover dry-run: schema → data copy → flip flag → CRUD / language add / SSR / Settings GET / sync
-- [ ] Sync not manually exercised until specs + dry-run
+- [ ] Sync not manually exercised until dry-run
 
 ---
 
