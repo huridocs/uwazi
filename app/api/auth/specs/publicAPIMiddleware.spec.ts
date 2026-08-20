@@ -1,9 +1,9 @@
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-import * as auth from '../index.js';
+import * as captcha from '#api/core/infrastructure/express/captcha/CaptchaMiddleware.js';
 import { publicAPIMiddleware } from '../publicAPIMiddleware.js';
 
-jest.mock('../index', () => ({
-  captchaAuthorization: jest.fn(),
+jest.mock('#api/core/infrastructure/express/captcha/CaptchaMiddleware.js', () => ({
+  captchaMiddleware: jest.fn(),
 }));
 
 describe('publicAPIMiddleware', () => {
@@ -20,7 +20,7 @@ describe('publicAPIMiddleware', () => {
 
   beforeEach(() => {
     captchaMock = jest.fn();
-    (<jest.Mock>auth.captchaAuthorization).mockImplementation(() => captchaMock);
+    (<jest.Mock>captcha.captchaMiddleware).mockImplementation(() => captchaMock);
     captchaMock.mockReset();
   });
 

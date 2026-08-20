@@ -82,10 +82,7 @@ export default app => {
         const result = await EntityFacade.create(entityToSave, req.language, req.inputFiles);
         const [entityInTargetLanguage] = await EntitiesDAOFactory.default({
           user: User.createFrom(req.user),
-        }).getWithFiles({
-          language: req.language,
-          sharedId: result.sharedId,
-        });
+        }).find({ language: req.language, sharedId: result.sharedId }, { withFiles: true });
 
         const response = req.body.entity
           ? { entity: entityInTargetLanguage, errors: [] }

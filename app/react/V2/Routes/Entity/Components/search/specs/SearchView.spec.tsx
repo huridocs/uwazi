@@ -133,6 +133,40 @@ describe('SearchView activateSnippet pending flush', () => {
     });
   });
 
+  it('skips PDF snippet APIs in raw mode and still sets the page hash', async () => {
+    const user = userEvent.setup();
+    mockHashParams = new URLSearchParams('searchTerm=court&raw=true');
+    mockPdfController = { activateSnippet, deactivateSnippet, goToPage };
+    render(<SearchView />);
+
+    await user.click(screen.getByRole('button', { name: /Page 1/i }));
+
+    expect(goToPage).not.toHaveBeenCalled();
+    expect(activateSnippet).not.toHaveBeenCalled();
+    expect(mockEnsureMainTab).toHaveBeenCalledWith('document', {
+      hash: expect.any(Function),
+    });
+    const hashPatch = mockEnsureMainTab.mock.calls[0][1]?.hash;
+    const hashParams = new URLSearchParams();
+    hashPatch?.(hashParams);
+    expect(hashParams.get('page')).toBe('1');
+  });
+
+  it('does not flush a pending PDF snippet after switching to raw mode', async () => {
+    const user = userEvent.setup();
+    mockPdfController = { activateSnippet, deactivateSnippet, goToPage };
+    const { rerender } = render(<SearchView />);
+
+    await user.click(screen.getByRole('button', { name: /Page 1/i }));
+    expect(activateSnippet).toHaveBeenCalledTimes(1);
+
+    mockHashParams = new URLSearchParams('searchTerm=court&raw=true');
+    activateSnippet.mockClear();
+    rerender(<SearchView />);
+
+    expect(activateSnippet).not.toHaveBeenCalled();
+  });
+
   it('re-activates pending when controller is replaced (stale remount)', async () => {
     const user = userEvent.setup();
     const staleActivate = jest.fn();

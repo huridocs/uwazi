@@ -258,17 +258,17 @@ describe('PostgresUsersDAO', () => {
     });
 
     it('should soft-delete users', async () => {
-      expect(await makeDAO().softDelete(['active1'])).toBe(1);
+      expect(await makeDAO().delete(['active1'])).toBe(1);
       expect(await makeDAO().findOne({ _id: 'active1' })).toBeUndefined();
     });
 
     it('should refuse to soft-delete the system user', async () => {
       // The previous implementation guarded nothing here.
-      expect(await makeDAO().softDelete([PUBLIC_ID])).toBe(0);
+      expect(await makeDAO().delete([PUBLIC_ID])).toBe(0);
     });
 
     it('should return 0 for an empty id list without touching the database', async () => {
-      expect(await makeDAO().softDelete([])).toBe(0);
+      expect(await makeDAO().delete([])).toBe(0);
     });
   });
 });

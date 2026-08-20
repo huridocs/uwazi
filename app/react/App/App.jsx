@@ -76,7 +76,6 @@ const App = ({ customParams }) => {
 
   return (
     <div id="app" className={appClassName}>
-      <Cookiepopup />
       <div className="content">
         {shellSharedTheme ? (
           <ThemeProvider
@@ -123,6 +122,7 @@ const App = ({ customParams }) => {
       <ThemeProvider>
         <BertHost />
         <NotificationsPanel />
+        <Cookiepopup />
       </ThemeProvider>
     </div>
   );

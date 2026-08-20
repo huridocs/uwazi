@@ -7,25 +7,20 @@ import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.
 import { EntitiesDAOFactory } from '#api/core/infrastructure/factories/EntitiesDAOFactory.js';
 import { permissionsContext } from '#api/permissions/permissionsContext.js';
 import settings from '#api/settings/index.js';
-import { PUBLIC_USER_ID } from '#api/core/domain/user/User.js';
+import { UsersDirectoryFactory } from '#api/core/infrastructure/factories/UsersDirectoryFactory.js';
 import { publicAPIMiddleware } from '../auth/publicAPIMiddleware.js';
 import { createError } from '../utils/index.js';
 import { User } from '#api/users.v2/model/User.js';
-import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 
 const getPublicUser = async () => {
-  const usersModel = getConnection().collection('users');
-  const publicUser = await usersModel.findOne({
-    _id: PUBLIC_USER_ID,
-    deletedAt: { $exists: false },
-  });
+  const result = await UsersDirectoryFactory.default().getPublicUser();
 
-  if (!publicUser) {
+  if (result.isError()) {
     throw createError('Public user not configured. Migration required.', 500);
   }
 
-  return publicUser;
+  return result.getData();
 };
 
 const routes = app => {
@@ -80,10 +75,7 @@ const routes = app => {
 
         const [entityWithFiles] = await EntitiesDAOFactory.default({
           user: User.createFrom(userForContext),
-        }).getWithFiles({
-          language: req.language,
-          sharedId: result.sharedId,
-        });
+        }).find({ language: req.language, sharedId: result.sharedId }, { withFiles: true });
 
         res.json(entityWithFiles);
       } catch (error) {

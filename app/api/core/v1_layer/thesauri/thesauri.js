@@ -2,7 +2,6 @@
 import cloneDeep from 'lodash/cloneDeep.js';
 import partition from 'lodash/partition.js';
 import flatMapDeep from 'lodash/flatMapDeep.js';
-import entities from '#api/entities/entities.js';
 import { preloadOptionsLimit } from '#shared/config.js';
 import templates from '#api/core/v1_layer/templates/templates.js';
 import { denormalizeThesauriLabelInMetadata } from '#api/entities/denormalize.js';
@@ -10,6 +9,7 @@ import { search } from '#api/search/index.js';
 import { objectIndex } from '#shared/data_utils/objectIndex.js';
 import { sanitizeThesaurusLabel } from '#shared/sanitizationUtils.js';
 import { ThesauriDAOFactory } from '#api/core/infrastructure/factories/ThesauriDAOFactory.js';
+import { EntitiesDAOFactory } from '#api/core/infrastructure/factories/EntitiesDAOFactory.js';
 import { CreateThesaurusUseCaseFactory } from '#api/core/infrastructure/factories/CreateThesaurusUseCaseFactory.js';
 import { UpdateThesaurusUseCaseFactory } from '#api/core/infrastructure/factories/UpdateThesaurusUseCaseFactory.js';
 
@@ -99,13 +99,12 @@ const thesauri = {
     return { values };
   },
 
-  async templateToThesauri(template, language, user, countPerTemplate) {
-    const onlyPublished = !user;
-    const _entities = await entities.getByTemplate(
-      template._id,
-      language,
-      preloadOptionsLimit(),
-      onlyPublished
+  // No explicit `published` filter here — the DAO's permission enforcement
+  // (AccessContext / RLS) excludes unpublished/inaccessible entities.
+  async templateToThesauri(template, language, countPerTemplate) {
+    const _entities = await EntitiesDAOFactory.default().find(
+      { template: template._id.toString(), language },
+      { select: ['title', 'icon', 'file', 'sharedId'], limit: preloadOptionsLimit() }
     );
     const values = this.entitiesToThesauri(_entities);
     return Object.assign(template, values, {
@@ -118,7 +117,7 @@ const thesauri = {
     return dictionary;
   },
 
-  async get(thesauriId, language, user) {
+  async get(thesauriId, language) {
     let ids;
     if (Array.isArray(thesauriId)) {
       ids = thesauriId.length ? thesauriId : undefined;
@@ -134,7 +133,7 @@ const thesauri = {
 
       const processedTemplates = await Promise.all(
         allTemplates.map(result =>
-          this.templateToThesauri(result, language, user, templateCount).then(
+          this.templateToThesauri(result, language, templateCount).then(
             templateTransformedInThesauri => templateTransformedInThesauri
           )
         )

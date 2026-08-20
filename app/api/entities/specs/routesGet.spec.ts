@@ -114,9 +114,28 @@ describe('GET /api/entities', () => {
 
   describe('Permissions inclusion', () => {
     it('should return entity with permissions when requested via include parameter', async () => {
-      const entity = await getEntity(app, 'sharedPerm', { include: ['permissions'] });
+      // a collaborator with a WRITE grant on sharedPerm (permissions refId 'userId')
+      // legitimately sees the permissions list
+      const grantedUser = {
+        _id: 'userId',
+        role: UserRole.COLLABORATOR,
+        username: 'granted user',
+        email: 'granted@test.com',
+      };
+      const appWithGrant = setUpApp(routes, (req: Request, _res: Response, next: NextFunction) => {
+        (req as any).user = grantedUser;
+        next();
+      });
+
+      const entity = await getEntity(appWithGrant, 'sharedPerm', { include: ['permissions'] });
 
       expect(entity).toMatchObject({ permissions });
+    });
+
+    it('should strip permissions from published entities for collaborators without write access', async () => {
+      const entity = await getEntity(app, 'sharedPerm', { include: ['permissions'] });
+
+      expect(entity.permissions).toBeUndefined();
     });
   });
 

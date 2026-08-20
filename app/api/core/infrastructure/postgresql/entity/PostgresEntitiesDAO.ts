@@ -1,30 +1,35 @@
 /* eslint-disable max-statements */
 import { ObjectId } from 'mongodb';
-import { MongoIdHandler } from '#api/core/infrastructure/mongodb/common/MongoIdGenerator.js';
-import { PostgresDataSource } from '../common/PostgresDataSource.js';
-import type { PostgresDataSourceDeps } from '../common/PostgresDataSource.js';
-import { PostgresPermissionEnforcedTable } from '../common/PostgresPermissionEnforcedTable.js';
-import { PostgresTable } from '../common/PostgresTable.js';
-import { PostgresTransactionManager } from '../common/PostgresTransactionManager.js';
-import { AccessContext } from '#api/core/domain/entityAccessPolicy/AccessContext.js';
-import type { EntityRow } from './PostgresEntityRow.js';
-import type { PostgresFilesDAO } from '../files/PostgresFilesDAO.js';
-import type { FilesRow } from '../files/PostgresFilesRow.js';
-import { LanguageISO6391 } from '#shared/types/commonTypes.js';
-import type { LocalizedLabels } from '#shared/types/datavizSchema.js';
-import { EntityDBO } from '#api/core/infrastructure/mongodb/entity/EntityDBO.js';
+
 import {
   EntitiesDAO,
-  EntityFilters,
-  EntityWithFiles,
   FindByLanguagePairsQuery,
   FindByMetadataCriteriaQuery,
   FindByTemplateIdRangeQuery,
-  FindOptions,
-  GetByIdsWithDocumentsOptions,
-  GetWithFilesMatch,
   LabelInfo,
 } from '#api/core/application/contracts/EntitiesDAO.js';
+import { AccessContext } from '#api/core/domain/entityAccessPolicy/AccessContext.js';
+import { MongoIdHandler } from '#api/core/infrastructure/mongodb/common/MongoIdGenerator.js';
+import { EntityDBO } from '#api/core/infrastructure/mongodb/entity/EntityDBO.js';
+import { LanguageISO6391 } from '#shared/types/commonTypes.js';
+import type { LocalizedLabels } from '#shared/types/datavizSchema.js';
+import type { PostgresDataSourceDeps } from '../common/PostgresDataSource.js';
+import { PostgresDataSource } from '../common/PostgresDataSource.js';
+import { PostgresPermissionEnforcedTable } from '../common/PostgresPermissionEnforcedTable.js';
+import { PostgresTable } from '../common/PostgresTable.js';
+import { PostgresTransactionManager } from '../common/PostgresTransactionManager.js';
+import type { PostgresFilesDAO } from '../files/PostgresFilesDAO.js';
+import type { FilesRow } from '../files/PostgresFilesRow.js';
+import type { EntityRow } from './PostgresEntityRow.js';
+
+import type {
+  EntityFilters,
+  EntityWithFiles,
+  FindOptions,
+  FindWithFilesOptions,
+} from '#api/core/application/contracts/EntitiesDAO.js';
+
+import { TimedMethod } from '#api/core/libs/logger/TimedMethodDecorator.js';
 
 type Deps = PostgresDataSourceDeps & {
   filesDAO: PostgresFilesDAO;
@@ -257,7 +262,22 @@ class PostgresEntitiesDAO extends PostgresDataSource<EntityRow> implements Entit
     return rows.map(toDBO);
   }
 
+  async find(
+    filters: EntityFilters | undefined,
+    options: FindWithFilesOptions
+  ): Promise<EntityWithFiles[]>;
+
+  async find(filters?: EntityFilters, options?: FindOptions): Promise<EntityDBO[]>;
+
+  @TimedMethod('PostgresEntitiesDAO.find')
   async find(filters: EntityFilters = {}, options: FindOptions = {}): Promise<EntityDBO[]> {
+    if (options.withFiles) {
+      return this.getWithFiles(filters, {
+        select: options.select,
+        limit: options.limit,
+        fullText: options.withFiles === true ? false : Boolean(options.withFiles?.fullText),
+      });
+    }
     const rows = await this.applyFindOptions(this.applyFilters(filters), options).all();
     return rows.map(toDBO);
   }
@@ -277,11 +297,15 @@ class PostgresEntitiesDAO extends PostgresDataSource<EntityRow> implements Entit
     return this.applyFilters(filters).count();
   }
 
-  async getByIdsWithDocuments(
-    ids: string[],
-    options: GetByIdsWithDocumentsOptions = {}
+  private async getWithFiles(
+    filters: EntityFilters,
+    options: { select?: string[]; limit?: number; fullText?: boolean } = {}
   ): Promise<EntityWithFiles[]> {
-    let q: ReturnType<typeof this.table.whereIn> = this.table.whereIn('_id', ids);
+    let q = this.applyFilters(filters);
+
+    if (options.select?.length) {
+      q = q.select([...new Set([...options.select, '_id', 'sharedId'])]);
+    }
 
     if (options.limit) {
       q = q.limit(options.limit);
@@ -295,7 +319,7 @@ class PostgresEntitiesDAO extends PostgresDataSource<EntityRow> implements Entit
 
     const sharedIds = [...new Set(entities.map(e => e.sharedId))];
     const fileOptions: Record<string, unknown> = {};
-    if (options.documentsFullText) {
+    if (options.fullText) {
       fileOptions.withFullText = true;
     }
     const files = await this.filesDAO.getByEntitySharedIds(sharedIds, fileOptions as any);
@@ -319,26 +343,10 @@ class PostgresEntitiesDAO extends PostgresDataSource<EntityRow> implements Entit
     });
   }
 
-  async getWithFiles(match: GetWithFilesMatch): Promise<EntityWithFiles[]> {
-    const filters: EntityFilters = {};
-    if (match.sharedIds !== undefined) {
-      filters.sharedIds = match.sharedIds;
-    } else if (match.sharedId !== undefined) {
-      filters.sharedId = match.sharedId;
-    }
-    if (match.language !== undefined) {
-      filters.language = match.language;
-    }
-    if (match.published !== undefined) {
-      filters.published = match.published;
-    }
-
-    const ids = await this.getIds(filters);
-    return this.getByIdsWithDocuments(ids);
-  }
-
   async getBySharedId(sharedId: string): Promise<EntityDBO[]>;
+
   async getBySharedId(sharedId: string, language: LanguageISO6391): Promise<EntityDBO | null>;
+
   async getBySharedId(
     sharedId: string,
     language?: LanguageISO6391

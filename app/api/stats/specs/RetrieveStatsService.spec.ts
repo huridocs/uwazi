@@ -6,6 +6,7 @@ import testingDB from '#api/utils/testing_db.js';
 import { elastic } from '#api/search/elastic.js';
 import { testingTenants } from '#api/utils/testingTenants.js';
 import { FilesDAOFactory } from '#api/core/infrastructure/factories/FilesDAOFactory.js';
+import { UsersQueryServiceFactory } from '#api/core/infrastructure/factories/UsersQueryServiceFactory.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { MongoEntitiesDAO } from '#api/core/infrastructure/mongodb/entity/MongoEntitiesDAO.js';
 import { AccessContext } from '#api/core/domain/entityAccessPolicy/AccessContext.js';
@@ -38,7 +39,11 @@ describe('RetrieveStats', () => {
   describe.each(testConfigs)('$name', ({ usePostgres }) => {
     beforeEach(async () => {
       testingTenants.changeCurrentTenant({
-        featureFlags: { postgresFiles: usePostgres },
+        featureFlags: {
+          postgresFiles: usePostgres,
+          postgresUsers: usePostgres,
+          postgresUsergroups: usePostgres,
+        },
       });
       jest.spyOn(db, 'stats').mockResolvedValue({ storageSize: 15000 });
       elasticMock = jest
@@ -56,7 +61,12 @@ describe('RetrieveStats', () => {
         const entitiesDAO = new MongoEntitiesDAO(db, TransactionManagerFactory.default(), {
           accessContext: AccessContext.forActor(new User('admin', 'admin', [])),
         });
-        return new RetrieveStatsService(db, FilesDAOFactory.default(), entitiesDAO);
+        return new RetrieveStatsService(
+          db,
+          FilesDAOFactory.default(),
+          entitiesDAO,
+          UsersQueryServiceFactory.default()
+        );
       });
 
     it('calculates the aggregated stats when collection has files', async () => {
