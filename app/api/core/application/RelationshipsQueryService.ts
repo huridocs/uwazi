@@ -54,15 +54,6 @@ type ReadableHubRow = RelationshipSummaryDTO & {
   };
 };
 
-function uniqueById(rows: ReadableHubRow[]): ReadableHubRow[] {
-  const seen = new Set<string>();
-  return rows.filter(row => {
-    if (seen.has(row._id)) return false;
-    seen.add(row._id);
-    return true;
-  });
-}
-
 function dropRedundantEntityRows(rows: ReadableHubRow[]): ReadableHubRow[] {
   const withFile = new Set(rows.filter(row => row.file).map(row => `${row.hub}:${row.entity}`));
   return rows.filter(row => row.file || !withFile.has(`${row.hub}:${row.entity}`));
@@ -202,7 +193,7 @@ class RelationshipsQueryService {
       const data = entityData.get(connection.entity);
       return data ? [toReadableRow(connection, data)] : [];
     });
-    return dropSingletonHubs(dropRedundantEntityRows(uniqueById(rows)));
+    return dropSingletonHubs(dropRedundantEntityRows(rows));
   }
 
   private async readableFileIds(

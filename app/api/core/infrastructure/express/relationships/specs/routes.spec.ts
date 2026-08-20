@@ -42,6 +42,8 @@ const appFor = (user?: Actor): Application =>
 const get = (app: Application, path: string, query: Record<string, string> = {}) =>
   request(app).get(path).query(query);
 
+const entityIds = (rows: { entity: string }[]) => rows.map(row => row.entity).sort();
+
 describe('GET /api/relationships/summary|anchors|resolved', () => {
   const adminApp = appFor(admin);
   const editorApp = appFor(editor);
@@ -57,32 +59,15 @@ describe('GET /api/relationships/summary|anchors|resolved', () => {
   });
 
   describe('ACL', () => {
-    it('includes unpublished connected entities for admin', async () => {
-      const response = await get(adminApp, '/api/relationships/summary', { sharedId: 'source' });
+    it.each([
+      ['admin source', adminApp, 'source', ['secret', 'source', 'source', 'target']],
+      ['editor hidden', editorApp, 'hidden', ['hidden', 'target']],
+      ['collaborator collabdoc', collabApp, 'collabdoc', ['collabTarget', 'collabdoc']],
+      ['anonymous source', anonApp, 'source', ['source', 'target']],
+    ])('returns readable connected entity ids (%s)', async (_label, app, sharedId, expected) => {
+      const response = await get(app, '/api/relationships/summary', { sharedId });
       expect(response).toHaveStatus(200);
-      expect(response.body.rows.map((row: { entity: string }) => row.entity)).toContain('secret');
-    });
-
-    it('lets editors read unpublished sources', async () => {
-      const response = await get(editorApp, '/api/relationships/summary', { sharedId: 'hidden' });
-      expect(response).toHaveStatus(200);
-      expect(response.body.rows).toHaveLength(2);
-    });
-
-    it('lets a collaborator read an unpublished source they can access', async () => {
-      const response = await get(collabApp, '/api/relationships/summary', {
-        sharedId: 'collabdoc',
-      });
-      expect(response).toHaveStatus(200);
-      expect(response.body.rows).toHaveLength(2);
-    });
-
-    it('omits unpublished connected entities for anonymous users', async () => {
-      const response = await get(anonApp, '/api/relationships/summary', { sharedId: 'source' });
-      expect(response).toHaveStatus(200);
-      expect(response.body.rows.map((row: { entity: string }) => row.entity)).not.toContain(
-        'secret'
-      );
+      expect(entityIds(response.body.rows)).toEqual(expected);
     });
   });
 
@@ -123,8 +108,11 @@ describe('GET /api/relationships/summary|anchors|resolved', () => {
 
     it.each([
       ['/api/relationships/summary', {}],
+      ['/api/relationships/resolved', {}],
       ['/api/relationships/anchors', { sharedId: 'source' }],
-    ])('returns 422 when a required query param is missing (%s)', async (path, query) => {
+      ['/api/relationships/summary', { sharedId: '' }],
+      ['/api/relationships/anchors', { file: sourceEn }],
+    ])('returns 422 when a required query param is missing (%s %j)', async (path, query) => {
       const response = await get(adminApp, path, query);
       expect(response).toHaveStatus(422);
     });
