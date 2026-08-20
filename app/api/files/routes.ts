@@ -8,7 +8,7 @@ import { FileDeleteController } from '#api/core/infrastructure/express/files/Fil
 import { UploadMiddleware } from '#api/core/infrastructure/express/middlewares/UploadMiddleware.js';
 import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
 import entities from '#api/entities/index.js';
-import { EntitySchema } from '#shared/types/entityType.js';
+import { EntityDBO } from '#api/core/infrastructure/mongodb/entity/EntityDBO.js';
 import { fileSchema } from '#shared/types/fileSchema.js';
 import { FileType } from '#shared/types/fileType.js';
 import { UserSchema } from '#shared/types/userType.js';
@@ -33,7 +33,7 @@ const checkEntityPermission = async (
     return true;
   }
 
-  const relatedEntities: EntitySchema[] = await entities.get(
+  const relatedEntities: EntityDBO[] = await entities.get(
     { sharedId: fileInDB.entity! },
     '_id, permissions',
     { withoutDocuments: true }
@@ -56,7 +56,7 @@ const checkEntityPermission = async (
 };
 
 const filterByEntityPermissions = async (fileList: FileType[]): Promise<FileType[]> => {
-  const sharedIds = fileList.map(f => f.entity).filter(f => f);
+  const sharedIds = fileList.map(f => f.entity).filter((f): f is string => !!f);
   const allowedSharedIds = await entities
     .get({ sharedId: { $in: sharedIds } }, 'sharedId', {
       withoutDocuments: true,

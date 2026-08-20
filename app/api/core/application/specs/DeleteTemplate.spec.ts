@@ -3,7 +3,6 @@ import { TemplateInUseError } from '#api/core/domain/template/errors.js';
 import { TemplateDeletedEvent } from '#api/core/domain/template/events/TemplateDeletedEvent.js';
 import { DeleteTemplateUseCaseFactory } from '#api/core/infrastructure/factories/DeleteTemplateUseCaseFactory.js';
 import { spyOnEmit } from '#api/core/libs/eventsbus/eventTesting.js';
-import templates from '#api/core/v1_layer/templates/index.js';
 import {
   createEntitiesInAllLanguages,
   fixtures,
@@ -117,8 +116,6 @@ describe('DeleteTemplateUseCase', () => {
     });
 
     it('should delete a template when no document is using it', async () => {
-      jest.spyOn(templates, 'countByTemplate').mockImplementation(async () => Promise.resolve(0));
-
       const response = await createSut().execute({ templateId: templateToBeDeleted.toString() });
 
       expect(response).toEqual({ templateId: templateToBeDeleted.toString() });
@@ -130,8 +127,6 @@ describe('DeleteTemplateUseCase', () => {
     });
 
     it('should delete the template translation', async () => {
-      jest.spyOn(templates, 'countByTemplate').mockImplementation(async () => Promise.resolve(0));
-
       await createSut().execute({ templateId: templateToBeDeleted.toString() });
       const translation = await testingEnvironment.db
         .getCollection('translationsV2')
@@ -149,7 +144,6 @@ describe('DeleteTemplateUseCase', () => {
     });
 
     it('should throw an error when there is documents using it', async () => {
-      jest.spyOn(templates, 'countByTemplate').mockImplementation(async () => Promise.resolve(1));
       await testingEnvironment.setFixtures({
         ...fixtures,
         entities: [

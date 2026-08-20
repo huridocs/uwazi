@@ -211,4 +211,62 @@ describe('tocService', () => {
       }, 'tenant1');
     });
   });
+
+  describe('orphan files (document with no entity)', () => {
+    beforeEach(() => {
+      requestMock.mockImplementation(async (_url, filename) =>
+        Promise.resolve({ text: JSON.stringify([{ label: `section1 ${filename}` }]) })
+      );
+    });
+
+    it('should skip the orphan and process the next valid file without crashing', async () => {
+      const orphanId = testingDB.id();
+      const pdf1Id = testingDB.id();
+      await testingDB.setupFixturesAndContext(
+        {
+          ...fixtures,
+          settings: [{ features: { tocGeneration: { url: 'url' } } }],
+          files: [
+            {
+              _id: orphanId,
+              filename: 'orphan.pdf',
+              originalname: 'orphan.pdf',
+              language: 'spa',
+              type: 'document',
+              mimetype: 'application/pdf',
+              status: 'ready',
+              totalPages: 1,
+              // no `entity` field - this is the orphan case
+            },
+            {
+              _id: pdf1Id,
+              entity: 'shared1',
+              filename: 'pdf1.pdf',
+              originalname: 'originalPdf1.pdf',
+              language: 'spa',
+              type: 'document',
+              mimetype: 'application/pdf',
+              status: 'ready',
+              totalPages: 1,
+            },
+          ],
+        },
+        undefined,
+        'tenant1'
+      );
+
+      await expect(tocService.processAllTenants()).resolves.not.toThrow();
+
+      await tenants.run(async () => {
+        const [orphan] = await files.get({ filename: 'orphan.pdf' });
+        const [valid] = await files.get({ filename: 'pdf1.pdf' });
+
+        // The orphan is left alone (no entity to attribute a toc to)...
+        expect(orphan.generatedToc).not.toBe(true);
+        // ...and the valid file behind it gets processed instead of being starved out.
+        expect(valid.generatedToc).toBe(true);
+        expect(valid.toc).toEqual([{ label: 'section1 pdf1.pdf' }]);
+      }, 'tenant1');
+    });
+  });
 });

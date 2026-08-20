@@ -16,6 +16,7 @@ A target template needs to have the following properties,Ένα πρότυπο �
 A valid email is required,Απαιτείται έγκυρη διεύθυνση email
 A → Z,A → Z
 Accept,Αποδοχή
+Accept all,Accept all
 Accepted suggestion on entity,Η πρόταση για την οντότητα έγινε αποδεκτή
 Accepting suggestions,Αποδοχή προτάσεων
 Accessibility checks need attention,Accessibility checks need attention
@@ -148,6 +149,7 @@ Body,Σώμα
 boolean,boolean
 Browse files to upload,Αναζήτηση αρχείων για μεταφόρτωση
 "by ids, methods, keywords, etc.","με αναγνωριστικά, μεθόδους, λέξεις-κλειδιά, κ.λπ."
+By logging in you accept the essential session cookie required to stay signed in.,By logging in you accept the essential session cookie required to stay signed in.
 Can edit,Μπορεί να επεξεργαστεί
 Can see,Μπορεί να δει
 Can view,Μπορεί να δει
@@ -239,6 +241,7 @@ Content translations,Μεταφράσεις περιεχομένου
 Context,Πλαίσιο
 Continue,Συνέχεια
 Conversion failed,Η μετατροπή απέτυχε
+Cookie preferences,Cookie preferences
 Copied,Copied
 Copied to clipboard,Αντιγράφηκε στο πρόχειρο
 Copy,Copy
@@ -435,6 +438,7 @@ Entity creation stage completed.,Entity creation stage completed.
 Entity deleted,Η οντότητα διαγράφηκε
 Entity Page,Σελίδα οντότητας
 Entity saved,Η οντότητα αποθηκεύτηκε
+Entity scope,Entity scope
 Entity type,Entity type
 Entity types,Τύποι οντοτήτων
 Entity updated,Η οντότητα ενημερώθηκε
@@ -574,6 +578,8 @@ in,σε
 "In a group, either all relationships must have a hub or none of them.","Σε μια ομάδα, είτε όλες οι σχέσεις πρέπει να έχουν έναν κόμβο είτε καμία από αυτές."
 In OCR queue,Στην ουρά OCR
 in this document,in this document
+Include all entities,Include all entities
+Include only public,Include only public
 Incoming,Incoming
 Info,Πληροφορίες
 Information extraction training,Εκπαίδευση εξαγωγής πληροφοριών
@@ -583,6 +589,7 @@ Inherit type,Κληρονομούμενος τύπος
 "Inherited values are read-only. Change the connection above, or edit the source entity.","Inherited values are read-only. Change the connection above, or edit the source entity."
 inherits,inherits
 Input,Είσοδος
+Input type,Input type
 Install,Εγκατάσταση
 Install Language(s),Εγκατάσταση γλωσσών
 Install the browser extension.,Εγκαταστήστε την επέκταση του προγράμματος περιήγησης.
@@ -835,9 +842,11 @@ Ok,Εντάξει
 OK,Εντάξει
 On this entity,On this entity
 one character,one character
+Only essential,Only essential
 "Only properties with the same name and configuration in every data source are available
             for both dimensions.","Only properties with the same name and configuration in every data source are available
             for both dimensions."
+Only published entities are counted.,Only published entities are counted.
 "Only templates that are not used as source in any other extractor and are not
                 selected as target in this extractor are available for selection.","Μόνο τα πρότυπα που δεν χρησιμοποιούνται ως πηγή σε κανέναν άλλο εξαγωγέα και δεν έχουν 
                 επιλεγεί ως προορισμός σε αυτόν τον εξαγωγέα είναι διαθέσιμα για επιλογή."
@@ -965,6 +974,7 @@ Public instance,Public instance
 Publish,Δημοσίευση
 Publish release,Publish release
 Published,Δημοσιευμένα
+Published and unpublished entities are counted.,Published and unpublished entities are counted.
 QR Code,Κωδικός QR
 Query,Ερώτημα
 Queued,Queued
@@ -987,6 +997,7 @@ Refresh,Refresh
                         scheduled run."
 Refresh mode,Refresh mode
 Reject,Απόρριψη
+Reject all,Reject all
 Related entities created,Related entities created
 Relation type,Τύπος σχέσης
 Relationship,Σχέση
@@ -1273,6 +1284,7 @@ This chart type cannot display the current data.,This chart type cannot display 
             legend, labels, or data filters.","This chart type has no extra options. Select another chart type above if you need
             legend, labels, or data filters."
 This content is automatically generated,Αυτό το περιεχόμενο δημιουργείται αυτόματα
+This data visualization name already exists. Enter a unique name.,This data visualization name already exists. Enter a unique name.
 "This entity has no document, you probably want to see the metadata","Αυτή η οντότητα δεν έχει έγγραφο, πιθανώς θέλετε να δείτε τα μεταδεδομένα"
 This entity is restricted from public view.,Αυτή η οντότητα δεν είναι ορατή στο κοινό.
 This field is required,Αυτό το πεδίο είναι υποχρεωτικό
@@ -1288,7 +1300,6 @@ This file type is not supported on media fields,Αυτός ο τύπος αρχ�
 This group is empty,Αυτή η ομάδα είναι κενή
 This import is waiting in queue.,This import is waiting in queue.
 This label already exists in this template,Αυτή η ετικέτα υπάρχει ήδη σε αυτό το πρότυπο
-This option will show a notification about the use of cookies in your instance.,Αυτή η επιλογή θα εμφανίσει μια ειδοποίηση σχετικά με τη χρήση cookies στην εγκατάστασή σας.
 This page does not need Markdown,This page does not need Markdown
 "This page uses HTML only (Markdown is not processed). You can embed maps, charts, entity
           lists, and other components.","This page uses HTML only (Markdown is not processed). You can embed maps, charts, entity
@@ -1300,6 +1311,9 @@ This property will be shown without the label,Αυτή η ιδιότητα θα 
 This property will be the default filter in the library for this template.,Αυτή η ιδιότητα θα είναι το προεπιλεγμένο φίλτρο στη βιβλιοθήκη για αυτό το πρότυπο.
 "This property will be used for filtering the library results. When properties match in equal name and field type with other entity types, they will be combined for filtering.","Αυτή η ιδιότητα θα χρησιμοποιηθεί για το φιλτράρισμα των αποτελεσμάτων βιβλιοθήκης. Όταν οι ιδιότητες ταιριάζουν σε όνομα και τύπο πεδίου με άλλους τύπους οντοτήτων, θα συνδυαστούν για φιλτράρισμα."
 This search could not be completed. Try again later.,This search could not be completed. Try again later.
+"This site uses cookies for language preferences and analytics. Session cookies are only
+            set when you log in.","This site uses cookies for language preferences and analytics. Session cookies are only
+            set when you log in."
 This table of contents was automatically created by the system.,Αυτός ο πίνακας περιεχομένων δημιουργήθηκε αυτόματα από το σύστημα.
 this template,αυτό το πρότυπο
 This template is in use by existing entities and cannot be deleted.,Αυτό το πρότυπο χρησιμοποιείται από υπάρχουσες οντότητες και δεν μπορεί να διαγραφεί.
@@ -1311,7 +1325,6 @@ tips,tips
 Title,Τίτλος
 To,Έως
 To add references you can start by selecting text in the document,"Για να προσθέσετε αναφορές, μπορείτε να ξεκινήσετε επιλέγοντας κείμενο στο έγγραφο."
-"To bring you a better experience, this site uses cookies.","Για να σας προσφέρουμε καλύτερη εμπειρία, αυτός ο ιστότοπος χρησιμοποιεί cookies."
 "To complete the account creation process, please create a password for your account","Για να ολοκληρώσετε τη διαδικασία δημιουργίας λογαριασμού, δημιουργήστε έναν κωδικό πρόσβασης για το λογαριασμό σας."
 to view your authentication code and verify your identity.,για να δείτε τον κωδικό πιστοποίησης και να επαληθεύσετε την ταυτότητά σας.
 Today,Σήμερα
@@ -1435,6 +1448,9 @@ Warning: you are editing multiple entities. Fields marked with a,Προειδο�
 We can't find the page you're looking for.,Δεν μπορούμε να βρούμε τη σελίδα που ψάχνετε.
 Welcome to Uwazi,Καλώς ήλθατε στο Uwazi
 "Well, this is awkward...","Λοιπόν, αυτό είναι άβολο..."
+"When enabled, visitors must accept or reject non-essential cookies before they are set.
+    Analytics and language preference cookies are blocked until accepted.","When enabled, visitors must accept or reject non-essential cookies before they are set.
+    Analytics and language preference cookies are blocked until accepted."
 Whitelisted templates,Επιτρεπόμενα πρότυπα
 wildcard,wildcard
 wildcard (many chars),wildcard (many chars)

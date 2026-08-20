@@ -32,6 +32,7 @@ export { PortalTooltip } from './PortalTooltip.js';
 export { ExpandableText } from './ExpandableText.js';
 export { FadeTruncate } from './FadeTruncate.js';
 export { AlertBanner } from './AlertBanner.js';
+export { CookieConsentBanner } from './CookieConsentBanner.js';
 export { StatusBadge } from './StatusBadge.js';
 export { WarmSelect } from './WarmSelect.js';
 export { CopyValueInput } from './CopyValueInput.js';

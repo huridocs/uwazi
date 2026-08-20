@@ -9,7 +9,7 @@ import { legacyLogger } from '#api/log/index.js';
 import { search } from '#api/search/index.js';
 import { CSVExporter } from '#api/csv/index.js';
 import settings from '#api/settings/index.js';
-import captchaMiddleware from '#api/auth/captchaMiddleware.js';
+import { captchaMiddleware } from '#api/core/infrastructure/express/captcha/CaptchaMiddleware.js';
 import { csvExportParamsSchema } from '#shared/types/searchParameterSchema.js';
 import { CsvExportBody } from '#shared/types/searchParameterType.js';
 import { temporalFilesPath, generateFileName } from './filesystem.js';

@@ -16,6 +16,7 @@ A target template needs to have the following properties,A target template needs
 A valid email is required,A valid email is required
 A → Z,A → Z
 Accept,Accept
+Accept all,Accept all
 Accepted suggestion on entity,Accepted suggestion on entity
 Accepting suggestions,Accepting suggestions
 Accessibility checks need attention,Accessibility checks need attention
@@ -148,6 +149,7 @@ Body,Body
 boolean,boolean
 Browse files to upload,Browse files to upload
 "by ids, methods, keywords, etc.","by ids, methods, keywords, etc."
+By logging in you accept the essential session cookie required to stay signed in.,By logging in you accept the essential session cookie required to stay signed in.
 Can edit,Can edit
 Can see,Can see
 Can view,Can view
@@ -240,6 +242,7 @@ Content translations,Content translations
 Context,Context
 Continue,Continue
 Conversion failed,Conversion failed
+Cookie preferences,Cookie preferences
 Copied,Copied
 Copied to clipboard,Copied to clipboard
 Copy,Copy
@@ -436,6 +439,7 @@ Entity creation stage completed.,Entity creation stage completed.
 Entity deleted,Entity deleted
 Entity Page,Entity Page
 Entity saved,Entity saved
+Entity scope,Entity scope
 Entity type,Entity type
 Entity types,Entity types
 Entity updated,Entity updated
@@ -575,6 +579,8 @@ in,in
 "In a group, either all relationships must have a hub or none of them.","In a group, either all relationships must have a hub or none of them."
 In OCR queue,In OCR queue
 in this document,in this document
+Include all entities,Include all entities
+Include only public,Include only public
 Incoming,Incoming
 Info,Info
 Information extraction training,Information extraction training
@@ -584,6 +590,7 @@ Inherit type,Inherit type
 "Inherited values are read-only. Change the connection above, or edit the source entity.","Inherited values are read-only. Change the connection above, or edit the source entity."
 inherits,inherits
 Input,Input
+Input type,Input type
 Install,Install
 Install Language(s),Install Language(s)
 Install the browser extension.,Install the browser extension.
@@ -836,9 +843,11 @@ Ok,Ok
 OK,OK
 On this entity,On this entity
 one character,one character
+Only essential,Only essential
 "Only properties with the same name and configuration in every data source are available
             for both dimensions.","Only properties with the same name and configuration in every data source are available
             for both dimensions."
+Only published entities are counted.,Only published entities are counted.
 "Only templates that are not used as source in any other extractor and are not
                 selected as target in this extractor are available for selection.","Only templates that are not used as source in any other extractor and are not
                 selected as target in this extractor are available for selection."
@@ -966,6 +975,7 @@ Public instance,Public instance
 Publish,Publish
 Publish release,Publish release
 Published,Published
+Published and unpublished entities are counted.,Published and unpublished entities are counted.
 QR Code,QR Code
 Query,Query
 Queued,Queued
@@ -988,6 +998,7 @@ Refresh,Refresh
                         scheduled run."
 Refresh mode,Refresh mode
 Reject,Reject
+Reject all,Reject all
 Related entities created,Related entities created
 Relation type,Relation type
 Relationship,Relationship
@@ -1274,6 +1285,7 @@ This chart type cannot display the current data.,This chart type cannot display 
             legend, labels, or data filters.","This chart type has no extra options. Select another chart type above if you need
             legend, labels, or data filters."
 This content is automatically generated,This content is automatically generated
+This data visualization name already exists. Enter a unique name.,This data visualization name already exists. Enter a unique name.
 "This entity has no document, you probably want to see the metadata","This entity has no document, you probably want to see the metadata"
 This entity is restricted from public view.,This entity is restricted from public view.
 This field is required,This field is required
@@ -1289,7 +1301,6 @@ This file type is not supported on media fields,This file type is not supported 
 This group is empty,This group is empty
 This import is waiting in queue.,This import is waiting in queue.
 This label already exists in this template,This label already exists in this template
-This option will show a notification about the use of cookies in your instance.,This option will show a notification about the use of cookies in your instance.
 This page does not need Markdown,This page does not need Markdown
 "This page uses HTML only (Markdown is not processed). You can embed maps, charts, entity
           lists, and other components.","This page uses HTML only (Markdown is not processed). You can embed maps, charts, entity
@@ -1301,6 +1312,9 @@ This property will be shown without the label,This property will be shown withou
 This property will be the default filter in the library for this template.,This property will be the default filter in the library for this template.
 "This property will be used for filtering the library results. When properties match in equal name and field type with other entity types, they will be combined for filtering.","This property will be used for filtering the library results. When properties match in equal name and field type with other entity types, they will be combined for filtering."
 This search could not be completed. Try again later.,This search could not be completed. Try again later.
+"This site uses cookies for language preferences and analytics. Session cookies are only
+            set when you log in.","This site uses cookies for language preferences and analytics. Session cookies are only
+            set when you log in."
 This table of contents was automatically created by the system.,This table of contents was automatically created by the system.
 this template,this template
 This template is in use by existing entities and cannot be deleted.,This template is in use by existing entities and cannot be deleted.
@@ -1312,7 +1326,6 @@ tips,tips
 Title,Title
 To,To
 To add references you can start by selecting text in the document,To add references you can start by selecting text in the document
-"To bring you a better experience, this site uses cookies.","To bring you a better experience, this site uses cookies."
 "To complete the account creation process, please create a password for your account","To complete the account creation process, please create a password for your account"
 to view your authentication code and verify your identity.,to view your authentication code and verify your identity.
 Today,Today
@@ -1436,6 +1449,9 @@ Warning: you are editing multiple entities. Fields marked with a,Warning: you ar
 We can't find the page you're looking for.,We can't find the page you're looking for.
 Welcome to Uwazi,Welcome to Uwazi
 "Well, this is awkward...","Well, this is awkward..."
+"When enabled, visitors must accept or reject non-essential cookies before they are set.
+    Analytics and language preference cookies are blocked until accepted.","When enabled, visitors must accept or reject non-essential cookies before they are set.
+    Analytics and language preference cookies are blocked until accepted."
 Whitelisted templates,Whitelisted templates
 wildcard,wildcard
 wildcard (many chars),wildcard (many chars)
