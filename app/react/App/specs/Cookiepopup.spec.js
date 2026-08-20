@@ -4,6 +4,7 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 import * as cookieConsent from '#app/App/cookieConsent.js';
+import { CookieConsentBanner } from '#V2/Components/UI/CookieConsentBanner.js';
 import { CookiepopupView as Cookiepopup } from '../Cookiepopup.js';
 
 jest.mock('#app/App/cookieConsent.js', () => ({
@@ -20,36 +21,30 @@ describe('Cookiepopup', () => {
   });
 
   it('should render the consent banner when enabled and no choice was made', () => {
-    const component = shallow(
-      <Cookiepopup cookiepolicy />
-    );
-    expect(component.find('[data-testid="cookie-consent-banner"]').exists()).toBe(true);
+    const component = shallow(<Cookiepopup cookiepolicy />);
+    expect(component.find(CookieConsentBanner).exists()).toBe(true);
   });
 
   it('should not render when cookie policy is disabled', () => {
-    const component = shallow(
-      <Cookiepopup cookiepolicy={false} />
-    );
+    const component = shallow(<Cookiepopup cookiepolicy={false} />);
     expect(component.isEmptyRender()).toBe(true);
   });
 
   it('should not render when consent was already given', () => {
     cookieConsent.getConsent.mockReturnValue('accepted');
-    const component = shallow(
-      <Cookiepopup cookiepolicy />
-    );
+    const component = shallow(<Cookiepopup cookiepolicy />);
     expect(component.isEmptyRender()).toBe(true);
   });
 
   it('should save consent when accept is clicked', () => {
-    const component = shallow(<Cookiepopup cookiepolicy cookiePolicyPageUrl="" />);
-    component.find('[data-testid="cookie-consent-accept"]').simulate('click');
+    const component = shallow(<Cookiepopup cookiepolicy />);
+    component.find(CookieConsentBanner).prop('onAccept')();
     expect(cookieConsent.setConsent).toHaveBeenCalledWith('accepted');
   });
 
   it('should save consent when reject is clicked', () => {
-    const component = shallow(<Cookiepopup cookiepolicy cookiePolicyPageUrl="" />);
-    component.find('[data-testid="cookie-consent-reject"]').simulate('click');
+    const component = shallow(<Cookiepopup cookiepolicy />);
+    component.find(CookieConsentBanner).prop('onReject')();
     expect(cookieConsent.setConsent).toHaveBeenCalledWith('rejected');
   });
 });
