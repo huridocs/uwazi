@@ -2,6 +2,7 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 
+import { canUseNonEssentialCookies } from '#app/App/cookieConsent.js';
 import { isClient } from '#app/utils/index.js';
 
 function trackPage() {
@@ -13,7 +14,7 @@ function trackPage() {
 class GoogleAnalytics extends Component {
   constructor(props) {
     super(props);
-    if (!props.analyticsTrackingId || !isClient) {
+    if (!props.analyticsTrackingId || !isClient || !canUseNonEssentialCookies()) {
       return;
     }
     /*eslint-disable */
@@ -28,7 +29,7 @@ class GoogleAnalytics extends Component {
   }
 
   render() {
-    if (!this.props.analyticsTrackingId) {
+    if (!this.props.analyticsTrackingId || !canUseNonEssentialCookies()) {
       return false;
     }
     return (

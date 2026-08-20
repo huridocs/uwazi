@@ -1,6 +1,4 @@
 import users from '#api/users/users.js';
-import { UserGroupSchema } from '#shared/types/userGroupType.js';
-import { validateUserGroup } from './validateUserGroup.js';
 import type { UserView } from '#api/core/application/contracts/UserReadModels.js';
 import { UsersDirectoryFactory } from '#api/core/infrastructure/factories/UsersDirectoryFactory.js';
 import { usersDirectoryEnabled } from '#api/core/infrastructure/factories/usersBackendFlags.js';
@@ -8,11 +6,15 @@ import model from './userGroupsModel.js';
 
 export default {
   /**
-   * @deprecated Route-level callers should use GetUserGroupsUseCase (see
-   * app/api/core/application/GetUserGroups.ts) instead, wired behind the v2Usergroups
-   * feature flag in app/api/core/infrastructure/express/userGroups/routes.ts. Still a
-   * legitimate call site for collaborators.ts, entitiesPermissions.ts, and search.js,
-   * which are out of scope for the V2 migration for now.
+   * @deprecated v1 read path. The `/api/usergroups` routes no longer use it — they go through
+   * `MongoUserGroupsDAO`/`PostgresUserGroupsDAO` (see
+   * app/api/core/infrastructure/express/userGroups/GetUserGroupsController.ts).
+   *
+   * Still the live read for the call sites that were not part of the V2 route migration:
+   * activitylog/helpers.js, permissions/collaborators.ts, permissions/entitiesPermissions.ts,
+   * search/search.js and react/V2/services/server/ServerUserGroupsService.ts. Note that it
+   * always reads Mongo, so it does not honour the `postgresUsergroups` flag — migrating these
+   * call sites is what removes that gap.
    */
   async get(query: any, select: any = '', options = {}) {
     const userGroups = await model.get(query, select, options);
@@ -38,44 +40,5 @@ export default {
         m => members.find(u => u.refId.toString() === m.refId.toString()) || m
       ),
     }));
-  },
-
-  /**
-   * @deprecated Route-level callers should use CreateUserGroupUseCase/UpdateUserGroupUseCase
-   * (see app/api/core/application/CreateUserGroup.ts / UpdateUserGroup.ts) instead, wired
-   * behind the v2Usergroups feature flag.
-   */
-  async save(userGroup: UserGroupSchema) {
-    await validateUserGroup(userGroup);
-    const members = userGroup.members.map(m => ({ refId: m.refId }));
-
-    return model.save({ ...userGroup, members });
-  },
-
-  /**
-   * @deprecated V1 predecessor of MongoUserGroupsDataSource.assignGroupsToUser, used only by
-   * the legacy user create/update/delete flow (app/api/users/users.js). Not moved as part of
-   * the V2 route-level migration.
-   */
-  async saveMultiple(userGroups: UserGroupSchema[]) {
-    const groupsToUpdate = userGroups.map(userGroup => {
-      const members = userGroup.members.map(m => ({ refId: m.refId.toString() }));
-      return { ...userGroup, members };
-    });
-    await Promise.all(
-      groupsToUpdate.map(async group => {
-        await validateUserGroup(group);
-      })
-    );
-    return model.saveMultiple(groupsToUpdate);
-  },
-
-  /**
-   * @deprecated Route-level callers should use DeleteUserGroupsUseCase (see
-   * app/api/core/application/DeleteUserGroups.ts) instead, wired behind the v2Usergroups
-   * feature flag.
-   */
-  async delete(query: any) {
-    return model.delete(query);
   },
 };

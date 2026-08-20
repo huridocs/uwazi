@@ -2,62 +2,53 @@
  * @jest-environment jsdom
  */
 import React from 'react';
-import { shallow } from 'enzyme';
-import * as Cookie from 'tiny-cookie';
+import { render, fireEvent, cleanup, act, waitFor } from '@testing-library/react';
+import * as cookieConsent from '#app/App/cookieConsent.js';
 import { CookiepopupView as Cookiepopup } from '../Cookiepopup.js';
 
-let cookieValue;
-const mockCookieGet = jest.fn().mockImplementation(() => cookieValue);
-jest.mock('tiny-cookie', () => ({
-  ...jest.requireActual('tiny-cookie'),
-  set: jest.fn(),
-  get: _name => mockCookieGet(),
+jest.mock('#app/App/cookieConsent.js', () => ({
+  CONSENT_EVENT: 'uwazi-cookie-consent',
+  getConsent: jest.fn(),
+  setConsent: jest.fn(),
+  removeLegacyConsentCookie: jest.fn(),
 }));
-
-let component;
-let props;
-let instance;
 
 describe('Cookiepopup', () => {
   beforeEach(() => {
-    props = {
-      cookiepolicy: true,
-    };
+    jest.clearAllMocks();
+    cookieConsent.getConsent.mockReturnValue(null);
   });
 
-  const render = () => {
-    component = shallow(<Cookiepopup {...props} />);
-    instance = component.instance();
-  };
+  afterEach(() => {
+    cleanup();
+  });
 
-  describe('when the cookiepolicy is active and the cookie not exists', () => {
-    it('should render a notification', () => {
-      render();
-      expect(component).toMatchSnapshot();
+  it('should render the banner on the client when enabled and no choice was made', async () => {
+    render(<Cookiepopup cookiepolicy />);
+    await waitFor(() => {
+      expect(document.querySelector('[data-testid="cookie-consent-banner"]')).not.toBeNull();
     });
   });
 
-  describe('when the cookiepolicy is disabled', () => {
-    it('should not render a notification', () => {
-      props.cookiepolicy = false;
-      render();
-      expect(component).toMatchSnapshot();
-    });
+  it('should not render when cookie policy is disabled', async () => {
+    render(<Cookiepopup cookiepolicy={false} />);
+    await act(async () => {});
+    expect(document.querySelector('[data-testid="cookie-consent-banner"]')).toBeNull();
   });
 
-  describe('when the cookie already exists', () => {
-    it('should not render a notification', () => {
-      cookieValue = 1;
-      render();
-      expect(component).toMatchSnapshot();
-    });
+  it('should not render when consent was already given', async () => {
+    cookieConsent.getConsent.mockReturnValue('accepted');
+    render(<Cookiepopup cookiepolicy />);
+    await act(async () => {});
+    expect(document.querySelector('[data-testid="cookie-consent-banner"]')).toBeNull();
   });
 
-  describe('when closing', () => {
-    it('should set the cookie', () => {
-      render();
-      instance.close();
-      expect(Cookie.set).toHaveBeenCalledWith('cookiepolicy', 1, { expires: 3650 });
+  it('should save accepted consent', async () => {
+    render(<Cookiepopup cookiepolicy />);
+    await waitFor(() => {
+      expect(document.querySelector('[data-testid="cookie-consent-accept-all"]')).not.toBeNull();
     });
+    fireEvent.click(document.querySelector('[data-testid="cookie-consent-accept-all"]'));
+    expect(cookieConsent.setConsent).toHaveBeenCalledWith('accepted');
   });
 });

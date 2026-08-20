@@ -165,8 +165,6 @@ export const config = {
       aiAssistant: FEATURE_FLAG_AI_ASSISTANT === 'true' || false,
       aiAssistantServiceUrl: AI_ASSISTANT_SERVICE_URL || undefined,
       usersDirectory: false,
-      v2PrivateInstance: false,
-      v2Usergroups: false,
       telemetry: {
         enabled: false,
         sampleRate: 0.5,
