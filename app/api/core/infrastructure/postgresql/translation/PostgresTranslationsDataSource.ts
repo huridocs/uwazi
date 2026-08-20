@@ -76,7 +76,7 @@ export class PostgresTranslationsDataSource
 
     await this.table.upsert(this.toRows(translations), {
       columns: NATURAL_KEY,
-      merge: ['value', 'context_type', 'context_label'],
+      merge: ['value'],
     });
     return translations;
   }

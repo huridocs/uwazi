@@ -1,4 +1,8 @@
-import { Translation, TranslationContext } from '#api/core/domain/translation/Translation.js';
+import {
+  assertCompleteTranslationContext,
+  Translation,
+  TranslationContext,
+} from '#api/core/domain/translation/Translation.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 
 export type TranslationRow = {
@@ -21,6 +25,7 @@ export class PostgresTranslationMapper {
   }
 
   static toDBO(translation: Translation, id: string): TranslationRow {
+    assertCompleteTranslationContext(translation.context);
     return {
       _id: id,
       language: translation.language,

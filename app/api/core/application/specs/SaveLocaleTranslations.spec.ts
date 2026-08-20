@@ -100,6 +100,45 @@ describe('SaveLocaleTranslationsUseCase', () => {
       });
     });
 
+    it('should inherit type and label when a partial locale payload omits them', async () => {
+      await withFlag(async () => {
+        await SaveLocaleTranslationsUseCaseFactory.default().execute({
+          locale: 'es',
+          contexts: [
+            {
+              id: contextId,
+              values: { Title: 'Plantilla' },
+            },
+          ],
+        });
+
+        const rows = await TranslationsDataSourceFactory.default({
+          transactionManager: TransactionManagerFactory.default(),
+        }).getByLanguageAndContext('es', contextId);
+
+        expect(rows.find(r => r.key === 'Title')).toMatchObject({
+          value: 'Plantilla',
+          context: { id: contextId, type: 'Entity', label: 'Template' },
+        });
+      });
+    });
+
+    it('should reject a new context that has no type or label to inherit', async () => {
+      await withFlag(async () => {
+        await expect(
+          SaveLocaleTranslationsUseCaseFactory.default().execute({
+            locale: 'es',
+            contexts: [
+              {
+                id: 'brand-new-context',
+                values: { Title: 'Título' },
+              },
+            ],
+          })
+        ).rejects.toThrow('without type and label');
+      });
+    });
+
     it('should update keys on a newly created context for one locale', async () => {
       await withFlag(async () => {
         await SaveLocaleTranslationsUseCaseFactory.default().execute({
