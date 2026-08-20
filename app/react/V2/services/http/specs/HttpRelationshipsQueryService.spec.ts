@@ -120,7 +120,10 @@ describe('HttpRelationshipsQueryService', () => {
         entityTemplateId: 't1',
         file: 'file1',
         text: 'quote',
-        selections: [{ page: 1, top: 1, left: 2, width: 3, height: 4 }],
+        selections: [
+          { page: 1, top: 1, left: 2, width: 3, height: 4 },
+          { page: 2, top: 5, left: 6, width: 7, height: 8 },
+        ],
       },
       to: {
         type: 'entity',
