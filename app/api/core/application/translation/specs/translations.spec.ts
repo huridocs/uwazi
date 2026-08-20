@@ -112,6 +112,7 @@ describe('translations', () => {
   beforeAll(async () => {
     await testingEnvironment.setUp(fixtures, {
       postgres: true,
+      postgresMirror: ['translationsV2'],
     });
   });
 
@@ -181,7 +182,7 @@ describe('translations', () => {
           new Translation('Password', 'Changed Password ES', 'es', {
             id: dictionaryId.toString(),
             type: 'Thesaurus',
-            label: '',
+            label: 'Dictionary',
           }),
         ];
 
