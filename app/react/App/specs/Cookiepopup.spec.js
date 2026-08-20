@@ -5,7 +5,6 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import * as cookieConsent from '#app/App/cookieConsent.js';
 import { CookieConsentBanner } from '#V2/Components/UI/CookieConsentBanner.js';
-import { CookieConsentPortal } from '#app/App/CookieConsentPortal.js';
 import { CookiepopupView as Cookiepopup } from '../Cookiepopup.js';
 
 jest.mock('#app/App/cookieConsent.js', () => ({
@@ -13,10 +12,6 @@ jest.mock('#app/App/cookieConsent.js', () => ({
   getConsent: jest.fn(),
   setConsent: jest.fn(),
   removeLegacyConsentCookie: jest.fn(),
-}));
-
-jest.mock('#app/App/CookieConsentPortal.js', () => ({
-  CookieConsentPortal: ({ children }) => children,
 }));
 
 describe('Cookiepopup', () => {
@@ -27,7 +22,6 @@ describe('Cookiepopup', () => {
 
   it('should render the consent banner when enabled and no choice was made', () => {
     const component = shallow(<Cookiepopup cookiepolicy />);
-    expect(component.find(CookieConsentPortal).exists()).toBe(true);
     expect(component.find(CookieConsentBanner).exists()).toBe(true);
   });
 

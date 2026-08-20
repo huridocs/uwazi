@@ -3,7 +3,6 @@ import type { Meta, StoryObj } from '@storybook/react-webpack5';
 import { fn } from 'storybook/test';
 import { action } from 'storybook/actions';
 import { CookieConsentBanner } from '#V2/Components/UI/CookieConsentBanner.js';
-import { CookieConsentPortal } from '#app/App/CookieConsentPortal.js';
 import { ThemeProvider } from '#V2/theme/ThemeProvider.js';
 
 const meta: Meta<typeof CookieConsentBanner> = {
@@ -21,6 +20,16 @@ const meta: Meta<typeof CookieConsentBanner> = {
 
 type Story = StoryObj<typeof CookieConsentBanner>;
 
+const floatStyle = {
+  position: 'fixed' as const,
+  bottom: '1rem',
+  insetInlineEnd: '1rem',
+  left: 'auto',
+  width: 'fit-content',
+  zIndex: 50,
+  maxWidth: 'calc(100vw - 2rem)',
+};
+
 const PagePreview = ({
   onAcceptAll,
   onEssentialOnly,
@@ -33,20 +42,18 @@ const PagePreview = ({
   legacyChrome?: boolean;
 }) => (
   <ThemeProvider legacyChrome={legacyChrome} className="min-h-screen">
-    <div className="relative min-h-screen bg-primary">
-      <main className="mx-auto max-w-3xl px-6 py-10">
-        <h1 className="text-2xl font-semibold text-ink">Library</h1>
-        <p className="mt-3 text-sm leading-relaxed text-ink-secondary">
-          Example page content. The cookie banner floats at the bottom right.
-        </p>
-      </main>
-      <CookieConsentPortal>
-        <CookieConsentBanner
-          onAcceptAll={onAcceptAll}
-          onEssentialOnly={onEssentialOnly}
-          onRejectAll={onRejectAll}
-        />
-      </CookieConsentPortal>
+    <main className="mx-auto max-w-3xl px-6 py-10">
+      <h1 className="text-2xl font-semibold text-ink">Library</h1>
+      <p className="mt-3 text-sm leading-relaxed text-ink-secondary">
+        Example page content. The cookie banner floats at the bottom right.
+      </p>
+    </main>
+    <div style={floatStyle}>
+      <CookieConsentBanner
+        onAcceptAll={onAcceptAll}
+        onEssentialOnly={onEssentialOnly}
+        onRejectAll={onRejectAll}
+      />
     </div>
   </ThemeProvider>
 );
