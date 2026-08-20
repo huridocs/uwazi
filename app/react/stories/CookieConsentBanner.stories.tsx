@@ -22,11 +22,12 @@ type Story = StoryObj<typeof CookieConsentBanner>;
 
 const floatStyle = {
   position: 'fixed' as const,
-  right: '1rem',
   bottom: '1rem',
+  right: '1rem',
+  left: 'auto',
   width: 'fit-content',
-  maxWidth: 'calc(100vw - 2rem)',
   zIndex: 50,
+  maxWidth: 'calc(100vw - 2rem)',
 };
 
 const PagePreview = ({
