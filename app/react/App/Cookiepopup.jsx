@@ -10,16 +10,20 @@ import {
 } from '#app/App/cookieConsent.js';
 
 const Cookiepopup = ({ cookiepolicy }) => {
-  const [consent, setConsentState] = useState(() => getConsent());
+  const [mounted, setMounted] = useState(false);
+  const [consent, setConsentState] = useState(null);
 
   useEffect(() => {
     removeLegacyConsentCookie();
+    setConsentState(getConsent());
+    setMounted(true);
     const sync = () => setConsentState(getConsent());
     window.addEventListener(CONSENT_EVENT, sync);
     return () => window.removeEventListener(CONSENT_EVENT, sync);
   }, []);
 
-  if (!cookiepolicy || consent) {
+  // Banner is client-only: localStorage is not available during SSR.
+  if (!mounted || !cookiepolicy || consent) {
     return null;
   }
 
