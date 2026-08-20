@@ -1,4 +1,4 @@
-import { encryptPassword } from '#api/auth/encryptPassword.js';
+import { EncryptedPassword } from '#api/core/domain/user/EncryptedPassword.js';
 import { UsersDataSourceFactory } from '#api/core/infrastructure/factories/UsersDataSourceFactory.js';
 import { UserRole } from '#api/core/domain/user/User.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
@@ -10,7 +10,7 @@ const f = getFixturesFactory();
 let bcryptPassword: string;
 
 const buildFixtures = async () => {
-  bcryptPassword = await encryptPassword('validpassword');
+  bcryptPassword = (await EncryptedPassword.create('validpassword')).getValue();
 
   return {
     users: [f.user({ username: 'validuser', role: UserRole.EDITOR, password: bcryptPassword })],

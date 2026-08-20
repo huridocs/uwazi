@@ -6,6 +6,7 @@ import type { ResultType } from '#api/core/libs/Result.js';
 import { PostgresUsersDAO } from './PostgresUsersDAO.js';
 import { PostgresUserGroupsDAO } from './PostgresUserGroupsDAO.js';
 import { PostgresUsersMapper } from './PostgresUsersMapper.js';
+import { PUBLIC_USER_ID_STRING } from './UserReadOptions.js';
 import type { UserScope } from './UserReadOptions.js';
 
 type Deps = {
@@ -13,14 +14,6 @@ type Deps = {
   userGroupsDAO: PostgresUserGroupsDAO;
 };
 
-/**
- * The Postgres half of UsersDirectory (D1/D3).
- *
- * It holds no SQL and no guard logic — guards are the DAO's, uniformly, via its default
- * scope (D5/D7). The case-insensitive match is a DAO method here (`lower(x) = lower(?)`
- * across two columns is not expressible in the equality-only condition object) where Mongo
- * builds a `Filter` in the adapter; D4 permits that asymmetry.
- */
 class PostgresUsersDirectory implements UsersDirectory {
   private usersDAO: PostgresUsersDAO;
 
@@ -46,9 +39,11 @@ class PostgresUsersDirectory implements UsersDirectory {
   }
 
   async getActor(id: string): Promise<ResultType<UserProfile, UserNotFound>> {
-    // The only non-default scope in this class: actors are resolved even once soft-deleted,
-    // so historical records can still name who did the thing (D3/D9).
     return this.profile(id, { deleted: 'include' });
+  }
+
+  async getPublicUser(): Promise<ResultType<UserProfile, UserNotFound>> {
+    return this.profile(PUBLIC_USER_ID_STRING, { systemUser: 'include' });
   }
 
   private async profile(
@@ -61,16 +56,12 @@ class PostgresUsersDirectory implements UsersDirectory {
       return Result.fail(new UserNotFound(id));
     }
 
-    // A single-user lookup, so `getGroupsByUserIds` rather than `findWithGroups`: the latter
-    // unnests every group in the tenant to build its hash join, which pays off for a list
-    // and not for one row.
     const groups = await this.userGroupsDAO.getGroupsByUserIds([id]);
 
     return Result.ok(PostgresUsersMapper.toProfile({ ...row, groups: groups.get(id) ?? [] }));
   }
 
   async getManyByIds(ids: string[]): Promise<UserView[]> {
-    // findManyByIds short-circuits on an empty list without touching the database.
     const rows = await this.usersDAO.findManyByIds(ids);
 
     return rows.map(row => PostgresUsersMapper.toView(row));

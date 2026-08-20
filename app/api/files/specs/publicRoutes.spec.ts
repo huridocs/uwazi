@@ -19,12 +19,11 @@ jest.mock(
   }
 );
 
-jest.mock(
-  '../../auth/captchaMiddleware.ts',
-  () => () => (_req: Request, _res: Response, next: NextFunction) => {
+jest.mock('../../core/infrastructure/express/captcha/CaptchaMiddleware.ts', () => ({
+  captchaMiddleware: () => (_req: Request, _res: Response, next: NextFunction) => {
     next();
-  }
-);
+  },
+}));
 
 describe('public routes', () => {
   const app: Application = setUpApp(routes);

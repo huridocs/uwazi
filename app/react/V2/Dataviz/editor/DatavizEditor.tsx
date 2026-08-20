@@ -15,6 +15,7 @@ import { DatavizEditorConfigPanel } from './components/layout/DatavizEditorConfi
 import { DatavizPreviewPanel } from './components/preview/DatavizPreviewPanel.js';
 import { isManualDataSource } from '#shared/dataviz/manualData.js';
 import { isEchartsChartType } from '#V2/Dataviz/types/chartTypes.js';
+import { isDatavizDuplicateNameError } from '#V2/Dataviz/utils/isDatavizDuplicateNameError.js';
 
 type DatavizEditorProps = {
   initialDefinition: DatavizDefinition;
@@ -41,6 +42,7 @@ const DatavizEditor = ({ initialDefinition, onDeleteRequest }: DatavizEditorProp
   );
   const [previewTab, setPreviewTab] = useState<PreviewTabId>('preview');
   const [saving, setSaving] = useState(false);
+  const [nameError, setNameError] = useState(false);
 
   useEffect(() => {
     if (isManualDataSource(definition.dataSource)) {
@@ -58,18 +60,31 @@ const DatavizEditor = ({ initialDefinition, onDeleteRequest }: DatavizEditorProp
 
   const breadcrumbPath = useMemo(() => new Map([['Data visualizations', '/settings/dataviz']]), []);
 
+  const handlePatch = (patchValue: Partial<DatavizDefinition>) => {
+    if ('name' in patchValue) {
+      setNameError(false);
+    }
+    patch(patchValue);
+  };
+
   const handleSave = async () => {
     setSaving(true);
     const isFirstSave = !isPersistedId(definition.id);
     try {
       const saved = await api.saveDefinition(definition);
+      setNameError(false);
       replace(saved);
       if (isFirstSave) {
         await navigate(`/settings/dataviz/edit/${saved.id}`, { replace: true });
       }
       notify('success', t('System', 'Saved successfully.', null, false));
-    } catch {
-      notify('error', t('System', 'An error occurred', null, false));
+    } catch (saveError) {
+      if (isDatavizDuplicateNameError(saveError)) {
+        setNameError(true);
+        setActiveTab('info');
+      } else {
+        notify('error', t('System', 'An error occurred', null, false));
+      }
     } finally {
       setSaving(false);
     }
@@ -98,12 +113,13 @@ const DatavizEditor = ({ initialDefinition, onDeleteRequest }: DatavizEditorProp
             <DatavizEditorConfigPanel
               definition={definition}
               activeTab={activeTab}
+              nameError={nameError}
               previewData={data}
               previewLoading={loading}
               previewError={error}
               refreshConstraints={refreshConstraints}
               onTabChange={setActiveTab}
-              onPatch={patch}
+              onPatch={handlePatch}
               onPatchQuery={patchQuery}
               onPatchChart={patchChart}
               onPatchAppearance={patchAppearance}

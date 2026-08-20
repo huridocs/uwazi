@@ -4,6 +4,8 @@ import { PostgresTable, type TableConfig } from './PostgresTable.js';
 import { PostgresTransactionManager } from './PostgresTransactionManager.js';
 import { SyncLogWriter } from './SyncLogWriter.js';
 import { AccessContext } from '#api/core/domain/entityAccessPolicy/AccessContext.js';
+import { filterPermissionsForActor } from '#api/core/infrastructure/common/PermissionDataFilter.js';
+import type { PermissionedDocument } from '#api/core/infrastructure/common/PermissionDataFilter.js';
 
 type ForParams = {
   tableName: string;
@@ -148,6 +150,18 @@ class PostgresPermissionEnforcedTable<TRow = Record<string, unknown>> extends Po
       return { bypass: false, refIds: [] };
     }
     return { bypass: false, refIds: this.accessContext.refIds };
+  }
+
+  /**
+   * Safe-by-default row transform: strips the permissions field from rows
+   * returned to non-privileged actors unless they hold a write-level grant
+   * on the row (RLS already filtered which rows they can see at all).
+   */
+  protected override cleanRow(row: Record<string, unknown>): Record<string, unknown> {
+    return filterPermissionsForActor(
+      super.cleanRow(row) as PermissionedDocument,
+      this.accessContext
+    ) as Record<string, unknown>;
   }
 }
 

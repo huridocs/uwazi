@@ -2,22 +2,17 @@ import { z } from 'zod';
 import { AbstractController } from '#api/common.v2/infrastructure/AbstractController.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { UpdateUserGroupUseCaseFactory } from '#api/core/infrastructure/factories/UpdateUserGroupUseCaseFactory.js';
+import { IdSchema } from '#api/core/libs/Id.js';
 import type {
   UpdateUserGroupRequest,
   UpdateUserGroupResponse,
 } from '#shared/contracts/UserGroups.js';
 
-// strict() at the top level: the v2 POST /api/usergroups route has no validation middleware,
-// so this schema is the only thing rejecting unknown body fields. The member objects stay
-// lenient on purpose — GET returns members enriched with username/role/email and the client
-// posts { refId, username } back, so extra member keys are stripped rather than rejected.
-const UpdateUserGroupRequestSchema = z
-  .object({
-    _id: z.string(),
-    name: z.string().trim(),
-    members: z.array(z.object({ refId: z.string() })),
-  })
-  .strict();
+const UpdateUserGroupRequestSchema = z.object({
+  _id: IdSchema,
+  name: z.string().trim(),
+  members: z.array(z.object({ refId: IdSchema })),
+});
 
 class UpdateUserGroupController extends AbstractController<UpdateUserGroupRequest> {
   protected async handle(): Promise<void> {

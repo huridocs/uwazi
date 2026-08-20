@@ -1,5 +1,4 @@
 /* eslint-disable max-statements */
-import entities from '#api/entities/index.js';
 import { denormalizeRelated } from '#api/entities/denormalize.js';
 import { EventEmitterFactory } from '#api/core/libs/eventEmitter/EventEmitterFactory.js';
 import templates from '#api/core/v1_layer/templates/templates.js';
@@ -13,6 +12,11 @@ import { elasticTesting } from '#api/utils/elastic_testing.js';
 import { EntitySchema } from '#shared/types/entityType.js';
 import { getFixturesFactory } from '../../utils/fixturesFactory.js';
 import { saveEntityV2Adapter } from './saveEntityV2Adapter.js';
+
+const getEntityById = async (id: string, language: string) =>
+  (await testingEnvironment.db.getAllFrom('entities')).find(
+    entity => entity.sharedId === id && entity.language === language
+  );
 
 const load = async (data: DBFixture, index?: string) =>
   testingEnvironment.setUp(
@@ -31,6 +35,10 @@ const load = async (data: DBFixture, index?: string) =>
     index
   );
 
+async function getEntitiesBySharedId(sharedId: string) {
+  return (await testingEnvironment.db.getAllFrom('entities')).filter(e => e.sharedId === sharedId);
+}
+
 describe('Denormalize relationships', () => {
   const factory = getFixturesFactory();
   const createTranslationDBO = factory.v2.database.translationDBO;
@@ -39,7 +47,7 @@ describe('Denormalize relationships', () => {
   const ensureEntityLanguages = async (sharedIds: string[]) => {
     await Promise.all(
       sharedIds.map(async sharedId => {
-        const docs = await entities.getAllLanguages(sharedId);
+        const docs = await getEntitiesBySharedId(sharedId);
         if (!docs.length) {
           return;
         }
@@ -70,11 +78,11 @@ describe('Denormalize relationships', () => {
           .filter((value): value is string => typeof value === 'string');
         await ensureEntityLanguages([...new Set(relationshipValues)]);
 
-        const beforeByLanguage = await entities.getAllLanguages(id);
+        const beforeByLanguage = await getEntitiesBySharedId(id);
         const doc = { _id: factory.id(`${id}-${language}`), sharedId: id, ...entityData, language };
         await saveEntityV2Adapter(doc, { language, user: { _id: db.id() } });
 
-        const afterByLanguage = await entities.getAllLanguages(id);
+        const afterByLanguage = await getEntitiesBySharedId(id);
         if (!afterByLanguage[0]?.template) {
           throw new Error(`Missing template for entity ${id}`);
         }
@@ -124,7 +132,7 @@ describe('Denormalize relationships', () => {
       await modifyEntity('B1', { title: 'new Title' });
       await modifyEntity('B2', { title: 'new Title 2' });
 
-      const relatedEntity = await entities.getById('A1', 'en');
+      const relatedEntity = await getEntityById('A1', 'en');
       expect(relatedEntity?.metadata).toMatchObject({
         relationship: [{ label: 'new Title', icon: { _id: 'icon_id' } }, { label: 'new Title 2' }],
       });
@@ -175,7 +183,7 @@ describe('Denormalize relationships', () => {
         metadata: { another_text: [{ value: 'another text changed' }] },
       });
 
-      const relatedEntity = await entities.getById('A1', 'en');
+      const relatedEntity = await getEntityById('A1', 'en');
       expect(relatedEntity?.metadata).toMatchObject({
         relationship: [
           {
@@ -232,11 +240,11 @@ describe('Denormalize relationships', () => {
       });
 
       const [relatedB1, relatedB2, relatedC, relatedD, relatedE] = [
-        await entities.getById('B1', 'en'),
-        await entities.getById('B2', 'en'),
-        await entities.getById('C1', 'en'),
-        await entities.getById('D1', 'en'),
-        await entities.getById('E1', 'en'),
+        await getEntityById('B1', 'en'),
+        await getEntityById('B2', 'en'),
+        await getEntityById('C1', 'en'),
+        await getEntityById('D1', 'en'),
+        await getEntityById('E1', 'en'),
       ];
 
       expect(relatedB1?.metadata?.relationship).toMatchObject([
@@ -277,8 +285,8 @@ describe('Denormalize relationships', () => {
       });
 
       const [relatedB, relatedC] = [
-        await entities.getById('B1', 'en'),
-        await entities.getById('C1', 'en'),
+        await getEntityById('B1', 'en'),
+        await getEntityById('C1', 'en'),
       ];
 
       expect(relatedB?.metadata?.relationship_b).toMatchObject([
@@ -320,7 +328,7 @@ describe('Denormalize relationships', () => {
       await modifyEntity('B1', { title: 'new B1' });
       await modifyEntity('C1', { title: 'new C1' });
 
-      const relatedEntity = await entities.getById('A1', 'en');
+      const relatedEntity = await getEntityById('A1', 'en');
 
       expect(relatedEntity?.metadata?.relationship).toMatchObject([
         {
@@ -386,7 +394,7 @@ describe('Denormalize relationships', () => {
         metadata: { multiselect: [{ value: 'T1' }] },
       });
 
-      const relatedEntity = await entities.getById('A1', 'en');
+      const relatedEntity = await getEntityById('A1', 'en');
       expect(relatedEntity?.metadata?.relationship).toMatchObject([
         {
           inheritedValue: [
@@ -432,7 +440,7 @@ describe('Denormalize relationships', () => {
     });
 
     it('should update denormalized properties when relationship selected changes', async () => {
-      const relatedEntity = await entities.getById('A1', 'en');
+      const relatedEntity = await getEntityById('A1', 'en');
       expect(relatedEntity?.metadata?.relationship).toMatchObject([
         { inheritedValue: [{ value: 'C1', label: 'C1' }] },
         {
@@ -448,7 +456,7 @@ describe('Denormalize relationships', () => {
       await modifyEntity('C1', { title: 'new C1' });
       await modifyEntity('C2', { title: 'new C2' });
 
-      const relatedEntity = await entities.getById('A1', 'en');
+      const relatedEntity = await getEntityById('A1', 'en');
 
       expect(relatedEntity?.metadata?.relationship).toMatchObject([
         { inheritedValue: [{ value: 'C1', label: 'new C1' }] },
