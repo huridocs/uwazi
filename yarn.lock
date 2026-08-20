@@ -6012,6 +6012,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@standard-schema/spec@npm:1.1.0":
+  version: 1.1.0
+  resolution: "@standard-schema/spec@npm:1.1.0"
+  checksum: 10c0/d90f55acde4b2deb983529c87e8025fa693de1a5e8b49ecc6eb84d1fd96328add0e03d7d551442156c7432fd78165b2c26ff561b970a9a881f046abb78d6a526
+  languageName: node
+  linkType: hard
+
 "@storybook/addon-a11y@npm:10.5.7":
   version: 10.5.7
   resolution: "@storybook/addon-a11y@npm:10.5.7"
@@ -19145,6 +19152,33 @@ __metadata:
   languageName: node
   linkType: hard
 
+"nuqs@npm:^2.9.6":
+  version: 2.9.6
+  resolution: "nuqs@npm:2.9.6"
+  dependencies:
+    "@standard-schema/spec": "npm:1.1.0"
+  peerDependencies:
+    "@remix-run/react": ">=2"
+    "@tanstack/react-router": ^1
+    next: ">=14.2.0"
+    react: ">=18.2.0 || ^19.0.0-0"
+    react-router: ^5 || ^6 || ^7 || ^8
+    react-router-dom: ^5 || ^6 || ^7
+  peerDependenciesMeta:
+    "@remix-run/react":
+      optional: true
+    "@tanstack/react-router":
+      optional: true
+    next:
+      optional: true
+    react-router:
+      optional: true
+    react-router-dom:
+      optional: true
+  checksum: 10c0/15f1eae164a68d4a2fc42a5ccdbab617b01ababaa6bc7348e0837a3ec496fe0b809f1d48d8d31e9bc43786844993ca3bf323a465bd4e9589f0bf21408d820526
+  languageName: node
+  linkType: hard
+
 "nwsapi@npm:^2.2.0":
   version: 2.2.0
   resolution: "nwsapi@npm:2.2.0"
@@ -25323,6 +25357,7 @@ __metadata:
     nodemailer: "npm:^9.0.5"
     nodemon: "npm:^3.1.14"
     nprogress: "npm:^0.2.0"
+    nuqs: "npm:^2.9.6"
     otplib: "npm:^11.0.1"
     passport: "npm:^0.7.0"
     passport-local: "npm:^1.0.0"

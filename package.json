@@ -213,6 +213,7 @@
     "node-uuid": "^1.4.7",
     "nodemailer": "^9.0.5",
     "nprogress": "^0.2.0",
+    "nuqs": "^2.9.6",
     "otplib": "^11.0.1",
     "passport": "^0.7.0",
     "passport-local": "^1.0.0",

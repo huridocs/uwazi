@@ -1,4 +1,5 @@
 import type { Location } from 'react-router';
+import { getLibraryV2BasePath } from '#app/utils/libraryPaths.js';
 import { libraryViewInfo } from '#app/App/libraryViewInfo.js';
 import { IStore } from '#app/istore.js';
 import { processFilters, encodeSearch } from '#app/Library/actions/libraryActions.js';
@@ -12,7 +13,11 @@ function buildLibraryUrl(input: {
   librarySearch: IStore['library']['search'];
   libraryFilters: IStore['library']['filters'];
   defaultLibraryView: string | undefined;
+  libraryV2?: boolean;
 }): string {
+  if (input.libraryV2) {
+    return getLibraryV2BasePath(true);
+  }
   const resolved = isLibraryView(input.defaultLibraryView) ? input.defaultLibraryView : 'cards';
   const raw = searchParamsFromLocationSearch(input.location, 'q');
   const searchTerm =

@@ -56,8 +56,9 @@ const HeaderView = ({ librarySearch, libraryFilters, setSidePanelView }: HeaderR
         librarySearch,
         libraryFilters,
         defaultLibraryView,
+        libraryV2: Boolean(settings.features?.featureFlagLibraryV2),
       }),
-    [location, librarySearch, libraryFilters, defaultLibraryView]
+    [location, librarySearch, libraryFilters, defaultLibraryView, settings.features]
   );
 
   const shouldShowLibrary = !privateInstance || authenticatedUser;
