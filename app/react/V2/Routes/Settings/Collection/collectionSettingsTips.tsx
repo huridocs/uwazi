@@ -44,7 +44,8 @@ export const publicSharing = (
 
 export const cookiePolicy = (
   <Translate>
-    This option will show a notification about the use of cookies in your instance.
+    When enabled, visitors must accept or reject non-essential cookies before they are set.
+    Analytics and language preference cookies are blocked until accepted.
   </Translate>
 );
 

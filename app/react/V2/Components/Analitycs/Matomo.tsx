@@ -2,6 +2,7 @@
 import { useEffect, useRef } from 'react';
 import { useAtomValue } from 'jotai';
 import { useLocation } from 'react-router';
+import { canUseNonEssentialCookies } from '#app/App/cookieConsent.js';
 import { globalMatomoAtom, settingsAtom } from '#V2/atoms/index.js';
 import { isClient } from '#app/utils/index.js';
 
@@ -57,6 +58,9 @@ const Matomo = () => {
   } catch (e) {}
 
   useEffect(() => {
+    if (!canUseNonEssentialCookies()) {
+      return;
+    }
     if (!scriptIsPresent.current) {
       const script = document.createElement('script');
       const hasUserMatomo = Boolean(id && url);
@@ -95,6 +99,9 @@ const Matomo = () => {
   }, []);
 
   useEffect(() => {
+    if (!canUseNonEssentialCookies()) {
+      return;
+    }
     if (isClient && window._paq) {
       window._paq.push(['setCustomUrl', window.location.href]);
       window._paq.push(['deleteCustomVariables', 'page']);
