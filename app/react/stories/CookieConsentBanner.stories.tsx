@@ -20,16 +20,6 @@ const meta: Meta<typeof CookieConsentBanner> = {
 
 type Story = StoryObj<typeof CookieConsentBanner>;
 
-const floatStyle = {
-  position: 'fixed' as const,
-  bottom: '1rem',
-  right: '1rem',
-  left: 'auto',
-  width: 'fit-content',
-  zIndex: 50,
-  maxWidth: 'calc(100vw - 2rem)',
-};
-
 const PagePreview = ({
   onAcceptAll,
   onEssentialOnly,
@@ -48,7 +38,7 @@ const PagePreview = ({
         Example page content. The cookie banner floats at the bottom right.
       </p>
     </main>
-    <div style={floatStyle}>
+    <div className="fixed bottom-4 right-4 left-auto z-50 flex w-fit justify-end">
       <CookieConsentBanner
         onAcceptAll={onAcceptAll}
         onEssentialOnly={onEssentialOnly}

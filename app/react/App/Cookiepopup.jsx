@@ -9,16 +9,6 @@ import {
   setConsent,
 } from '#app/App/cookieConsent.js';
 
-const floatStyle = {
-  position: 'fixed',
-  bottom: '1rem',
-  right: '1rem',
-  left: 'auto',
-  width: 'fit-content',
-  zIndex: 50,
-  maxWidth: 'calc(100vw - 2rem)',
-};
-
 const Cookiepopup = ({ cookiepolicy }) => {
   const [consent, setConsentState] = useState(() => getConsent());
 
@@ -34,7 +24,7 @@ const Cookiepopup = ({ cookiepolicy }) => {
   }
 
   return (
-    <div style={floatStyle}>
+    <div className="fixed bottom-4 right-4 left-auto z-50 flex w-fit justify-end">
       <CookieConsentBanner
         onAcceptAll={() => {
           setConsent('accepted');
