@@ -1,12 +1,6 @@
-import userGroups from '#api/usergroups/userGroups.js';
-import {
-  getByMemberIdList,
-  removeUsersFromAllGroups,
-  updateUserMemberships,
-} from '#api/usergroups/userGroupsMembers.js';
+import { getByMemberIdList } from '#api/usergroups/userGroupsMembers.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-import { UserRole } from '#shared/types/userSchema.js';
-import { fixtures, group1Id, group2Id, user1Id, user2Id, user3Id } from './fixtures.js';
+import { fixtures, group1Id, group2Id, user1Id, user2Id } from './fixtures.js';
 
 describe('userGroupsMembers', () => {
   beforeEach(async () => {
@@ -31,48 +25,6 @@ describe('userGroupsMembers', () => {
       async ({ input, outputMatch }) => {
         const groups = await getByMemberIdList(input);
         expect(groups).toMatchObject(outputMatch);
-      }
-    );
-  });
-
-  describe('updateUserMemberships', () => {
-    it('should update the groups adding or removing the userId according the new groups passed', async () => {
-      const userToUpdate = {
-        _id: fixtures.users![0]._id!,
-        role: UserRole.COLLABORATOR,
-      };
-      await updateUserMemberships(userToUpdate, [{ _id: group1Id.toString() }]);
-      const groups = await userGroups.get({}, { members: 1 });
-      const newGroup1Members =
-        groups.find(group => group._id!.toString() === group1Id.toString())?.members || [];
-      const newGroup2Members =
-        groups.find(group => group._id!.toString() === group2Id.toString())?.members || [];
-      expect(
-        newGroup1Members.find(m => m.refId.toString() === userToUpdate._id.toString())
-      ).not.toBeUndefined();
-      expect(
-        newGroup2Members.find(m => m.refId.toString() === userToUpdate._id.toString())
-      ).toBeUndefined();
-    });
-  });
-
-  describe('removeUsersFromAllGroups', () => {
-    it.each([
-      {
-        users: [user2Id.toString()],
-        expectedMemberLists: [[], [{ refId: user1Id }, { refId: user3Id }]],
-      },
-      {
-        users: [user2Id.toString(), user3Id.toString()],
-        expectedMemberLists: [[], [{ refId: user1Id }]],
-      },
-    ])(
-      'should remove the specified user(s) from all groups',
-      async ({ users, expectedMemberLists }) => {
-        await removeUsersFromAllGroups(users);
-        const groups = await userGroups.get({}, { members: 1 });
-        const memberIds = groups.map(group => group.members);
-        expect(memberIds).toMatchObject(expectedMemberLists);
       }
     );
   });

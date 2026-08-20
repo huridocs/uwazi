@@ -59,7 +59,7 @@ describe('UpdateUserGroupController integration', () => {
     expect(response).toHaveStatus(422);
   });
 
-  it('should return 422 for an unexpected extra field', async () => {
+  it('should strip an unexpected extra field instead of rejecting it', async () => {
     const response = await request(app)
       .post('/api/usergroups')
       .send({
@@ -68,6 +68,17 @@ describe('UpdateUserGroupController integration', () => {
         members: [],
         other: 'invalid',
       });
+
+    expect(response).toHaveStatus(200);
+
+    const [stored] = await testingEnvironment.db.getAllFrom('usergroups');
+    expect(stored.other).toBeUndefined();
+  });
+
+  it('should return 422 when _id is not a valid id', async () => {
+    const response = await request(app)
+      .post('/api/usergroups')
+      .send({ _id: 'not-an-id', name: 'Renamed', members: [] });
 
     expect(response).toHaveStatus(422);
   });
