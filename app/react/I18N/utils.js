@@ -1,4 +1,5 @@
 import * as Cookie from 'tiny-cookie';
+import { canUseNonEssentialCookies } from '#app/App/cookieConsent.js';
 import { isClient } from '#app/utils/index.js';
 
 const languageInLanguages = (languages, locale) => Boolean(languages.find(l => l.key === locale));
@@ -18,7 +19,7 @@ const I18NUtils = {
   },
 
   saveLocale: locale => {
-    if (isClient) {
+    if (isClient && canUseNonEssentialCookies()) {
       Cookie.set('locale', locale, { expires: 365 * 10 });
     }
   },
