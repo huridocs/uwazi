@@ -1,7 +1,7 @@
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import { LanguageUtils } from '#shared/language/index.js';
-import { EntityNotFoundError } from '../domain/entity/errors.js';
-import { EntitiesDAO } from './contracts/EntitiesDAO.js';
+import { EntityNotFoundError } from '#api/core/domain/entity/errors.js';
+import { EntitiesDAO } from '#api/core/application/contracts/EntitiesDAO.js';
 import {
   RelationshipAnchorDTO,
   RelationshipResolvedDTO,

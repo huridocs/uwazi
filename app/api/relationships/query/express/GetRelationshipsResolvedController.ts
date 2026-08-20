@@ -1,13 +1,13 @@
 import { AbstractController } from '#api/common.v2/infrastructure/AbstractController.js';
-import { RelationshipsQueryServiceFactory } from '#api/core/infrastructure/factories/RelationshipsQueryServiceFactory.js';
+import { RelationshipsQueryServiceFactory } from '#api/relationships/query/factory/RelationshipsQueryServiceFactory.js';
 import { SharedIdQuerySchema } from './RelationshipQuerySchemas.js';
 import { sendNotFoundRows } from './sendNotFoundRows.js';
 
-class GetRelationshipsSummaryController extends AbstractController {
+class GetRelationshipsResolvedController extends AbstractController {
   protected async handle(): Promise<void> {
     try {
       const query = SharedIdQuerySchema.parse(this.request.query);
-      const rows = await RelationshipsQueryServiceFactory.default(this.user).getSummary({
+      const rows = await RelationshipsQueryServiceFactory.default().getResolved({
         ...query,
         language: this.language,
       });
@@ -18,4 +18,4 @@ class GetRelationshipsSummaryController extends AbstractController {
   }
 }
 
-export { GetRelationshipsSummaryController };
+export { GetRelationshipsResolvedController };

@@ -1,7 +1,7 @@
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { User } from '#api/users.v2/model/User.js';
 import { EntityNotFoundError } from '#api/core/domain/entity/errors.js';
-import { RelationshipsQueryServiceFactory } from '#api/core/infrastructure/factories/RelationshipsQueryServiceFactory.js';
+import { RelationshipsQueryServiceFactory } from '#api/relationships/query/factory/RelationshipsQueryServiceFactory.js';
 import type { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import {
   enRect1,
@@ -16,7 +16,7 @@ const collaborator = User.createFrom({ _id: id('collab').toString(), role: 'coll
 const anon = User.createFrom(null);
 
 const service = (actor: User) =>
-  testingEnvironment.runWithContext(() => RelationshipsQueryServiceFactory.default(actor), {
+  testingEnvironment.runWithContext(() => RelationshipsQueryServiceFactory.default(), {
     actor,
   });
 

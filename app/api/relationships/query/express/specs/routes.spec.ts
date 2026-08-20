@@ -9,7 +9,7 @@ import {
   enRect2,
   id,
   relationshipQueryFixtures,
-} from '#api/core/application/specs/relationshipQueryFixtures.js';
+} from '#api/relationships/query/application/specs/relationshipQueryFixtures.js';
 import { relationshipsQueryRoutes } from '../routes.js';
 
 type Actor = {
