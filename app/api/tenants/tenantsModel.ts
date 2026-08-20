@@ -60,8 +60,6 @@ const mongoSchema = new mongoose.Schema({
       enabled: Boolean,
       sampleRate: Number,
     },
-    v2PrivateInstance: Boolean,
-    v2Usergroups: Boolean,
   },
   globalMatomo: { id: String, url: String },
   ciMatomoActive: Boolean,

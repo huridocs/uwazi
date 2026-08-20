@@ -7,6 +7,10 @@ import { shallow } from 'enzyme';
 
 import { GoogleAnalyticsView, trackPage } from '../GoogleAnalytics.js';
 
+jest.mock('#app/App/cookieConsent.js', () => ({
+  canUseNonEssentialCookies: jest.fn(() => true),
+}));
+
 describe('GoogleAnalytics', () => {
   let component;
   let props;

@@ -16,6 +16,7 @@ A target template needs to have the following properties,Цільовий шаб
 A valid email is required,Потрібна дійсна електронна адреса
 A → Z,A → Z
 Accept,Прийняти
+Accept all,Accept all
 Accepted suggestion on entity,Прийнято пропозицію щодо організації
 Accepting suggestions,Прийняття пропозицій
 Accessibility checks need attention,Accessibility checks need attention
@@ -148,6 +149,7 @@ Body,Основна частина
 boolean,boolean
 Browse files to upload,Перегляньте файли для завантаження
 "by ids, methods, keywords, etc.","за ідентифікаторами, методами, ключовими словами тощо."
+By logging in you accept the essential session cookie required to stay signed in.,By logging in you accept the essential session cookie required to stay signed in.
 Can edit,Може редагувати
 Can see,Може бачити
 Can view,Може переглядати
@@ -240,6 +242,7 @@ Content translations,Переклади контенту
 Context,Контекст
 Continue,Продовжуйте
 Conversion failed,Помилка перетворення
+Cookie preferences,Cookie preferences
 Copied,Copied
 Copied to clipboard,Скопійовано в буфер обміну
 Copy,Copy
@@ -840,6 +843,7 @@ Ok,Гаразд
 OK,ГАРАЗД.
 On this entity,On this entity
 one character,one character
+Only essential,Only essential
 "Only properties with the same name and configuration in every data source are available
             for both dimensions.","Only properties with the same name and configuration in every data source are available
             for both dimensions."
@@ -994,6 +998,7 @@ Refresh,Refresh
                         scheduled run."
 Refresh mode,Refresh mode
 Reject,Відхилити
+Reject all,Reject all
 Related entities created,Related entities created
 Relation type,Тип відношення
 Relationship,Взаємозв'язок
@@ -1280,6 +1285,7 @@ This chart type cannot display the current data.,This chart type cannot display 
             legend, labels, or data filters.","This chart type has no extra options. Select another chart type above if you need
             legend, labels, or data filters."
 This content is automatically generated,Цей контент генерується автоматично
+This data visualization name already exists. Enter a unique name.,This data visualization name already exists. Enter a unique name.
 "This entity has no document, you probably want to see the metadata","Цей об'єкт не має документів, ви, певно, хочете переглянути метадані"
 This entity is restricted from public view.,Цей об'єкт обмежений для загальнодоступного перегляду.
 This field is required,Це поле обов'язкове для заповнення
@@ -1295,7 +1301,6 @@ This file type is not supported on media fields,Цей тип файлів не 
 This group is empty,Ця група порожня
 This import is waiting in queue.,This import is waiting in queue.
 This label already exists in this template,Ця мітка вже існує в цьому шаблоні
-This option will show a notification about the use of cookies in your instance.,Ця опція покаже повідомлення про використання файлів cookie у вашій базі даних.
 This page does not need Markdown,This page does not need Markdown
 "This page uses HTML only (Markdown is not processed). You can embed maps, charts, entity
           lists, and other components.","This page uses HTML only (Markdown is not processed). You can embed maps, charts, entity
@@ -1307,6 +1312,9 @@ This property will be shown without the label,Ця властивість буд
 This property will be the default filter in the library for this template.,Ця властивість буде фільтром за замовчуванням у бібліотеці для цього шаблону.
 "This property will be used for filtering the library results. When properties match in equal name and field type with other entity types, they will be combined for filtering.","Ця властивість буде використовуватися для фільтрації результатів бібліотеки. Якщо властивості збігаються за назвою та типом поля з іншими типами сутностей, вони будуть об'єднані для фільтрації."
 This search could not be completed. Try again later.,This search could not be completed. Try again later.
+"This site uses cookies for language preferences and analytics. Session cookies are only
+            set when you log in.","This site uses cookies for language preferences and analytics. Session cookies are only
+            set when you log in."
 This table of contents was automatically created by the system.,Цей зміст був автоматично створений системою.
 this template,цей шаблон
 This template is in use by existing entities and cannot be deleted.,Цей шаблон використовується існуючими організаціями і не може бути видалений.
@@ -1318,7 +1326,6 @@ tips,tips
 Title,Заголовок
 To,До
 To add references you can start by selecting text in the document,"Щоб додати посилання, спочатку виділіть текст у документі"
-"To bring you a better experience, this site uses cookies.",Цей сайт використовує файли cookie для покращення вашого досвіду взаємодії з сайтом.
 "To complete the account creation process, please create a password for your account","Будь ласка, створіть пароль, щоб завершити процес створення облікового запису."
 to view your authentication code and verify your identity.,щоб переглянути свій код автентифікації та підтвердити свою особу.
 Today,Сьогодні
@@ -1442,6 +1449,9 @@ Warning: you are editing multiple entities. Fields marked with a,"Поперед
 We can't find the page you're looking for.,"Ми не можемо знайти сторінку, яку ви шукаєте."
 Welcome to Uwazi,Ласкаво просимо до Uwazi
 "Well, this is awkward...","Що ж, це незручно..."
+"When enabled, visitors must accept or reject non-essential cookies before they are set.
+    Analytics and language preference cookies are blocked until accepted.","When enabled, visitors must accept or reject non-essential cookies before they are set.
+    Analytics and language preference cookies are blocked until accepted."
 Whitelisted templates,Шаблони білого списку
 wildcard,wildcard
 wildcard (many chars),wildcard (many chars)

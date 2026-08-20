@@ -9,6 +9,10 @@ import { globalMatomoAtom, settingsAtom } from '#V2/atoms/index.js';
 import { TestAtomStoreProvider } from '#V2/testing/index.js';
 import { Matomo } from '../Matomo.js';
 
+jest.mock('#app/App/cookieConsent.js', () => ({
+  canUseNonEssentialCookies: jest.fn(() => true),
+}));
+
 describe('Matomo', () => {
   const originalLocation = window.location;
 

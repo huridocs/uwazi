@@ -4,7 +4,9 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { Field, LocalForm, actions as formActions } from 'react-redux-form';
 import { Icon } from '#UI/Icon/Icon.js';
+import { InformationCircleIcon } from '@heroicons/react/24/outline';
 import { t, Translate } from '#app/I18N/index.js';
+import { getConsent, setConsent } from '#app/App/cookieConsent.js';
 import { reconnectSocket } from '#app/socket.js';
 import { RouteHandler } from '#app/App/RouteHandler.js';
 import { reloadThesauri } from '#app/Thesauri/actions/thesaurisActions.js';
@@ -62,6 +64,9 @@ class LoginComponent extends RouteHandler {
   async login(credentials) {
     try {
       await this.props.login(credentials);
+      if (this.props.cookiepolicy && getConsent() === 'rejected') {
+        setConsent('essential');
+      }
       this.resolveSuccessfulLogin();
     } catch (err) {
       if (!this.state.tokenRequired && err.status === 409) {
@@ -225,6 +230,34 @@ class LoginComponent extends RouteHandler {
                     {submitLabel}
                   </button>
                 </p>
+                {this.props.cookiepolicy && getConsent() === 'rejected' && (
+                  <p
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '0.5rem',
+                      marginTop: '0.75rem',
+                      fontSize: '0.75rem',
+                      lineHeight: 1.5,
+                      color: '#6b7280',
+                      textAlign: 'center',
+                    }}
+                  >
+                    <InformationCircleIcon
+                      style={{
+                        width: '0.875rem',
+                        height: '0.875rem',
+                        flexShrink: 0,
+                        color: '#9ca3af',
+                      }}
+                    />
+                    <Translate>
+                      By logging in you accept the essential session cookie required to stay signed
+                      in.
+                    </Translate>
+                  </p>
+                )}
                 {this.state.recoverPassword && (
                   <div className="form-text">
                     <span
@@ -250,11 +283,13 @@ LoginComponent.propTypes = {
   recoverPassword: PropTypes.func,
   reloadThesauris: PropTypes.func,
   change: PropTypes.func,
+  cookiepolicy: PropTypes.bool,
 };
 
 function mapStateToProps({ settings }) {
   return {
     private: settings.collection.get('private'),
+    cookiepolicy: Boolean(settings.collection.get('cookiepolicy')),
   };
 }
 

@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { CleanInsights as CI } from 'clean-insights-sdk';
 import { useAtomValue } from 'jotai';
+import { canUseNonEssentialCookies } from '#app/App/cookieConsent.js';
 import { ciMatomoActiveAtom } from '#V2/atoms/index.js';
 
 // January 1 of 2024 just happens to be a Monday.
@@ -68,10 +69,12 @@ const measureActiveUser = (optedIn: boolean) => {
 };
 
 const CleanInsights = () => {
-  // Measurement involves aggregation over time, and this aggregation
-  // happens in the browser's local storage, so useEffect.
   const optedIn = useAtomValue(ciMatomoActiveAtom);
   useEffect(() => {
+    if (!canUseNonEssentialCookies()) {
+      deny();
+      return;
+    }
     measureActiveUser(optedIn);
   }, []);
   return null;
