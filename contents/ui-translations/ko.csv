@@ -37,6 +37,7 @@ Activity log,활동 로그
 Activity Log,활동 로그
 Add,추가
 Add / remove favorite,즐겨찾기 추가/제거
+Add a type below.,Add a type below.
 Add an account to the app by scanning the provided QR code with your mobile device or by inserting the provided key.,Add an account to the app by scanning the provided QR code with your mobile device or by inserting the provided key.
 Add as,Add as
 Add data source,Add data source
@@ -53,6 +54,7 @@ Add group,그룹 추가
 add icon,아이콘 추가
 Add item,Add item
 Add link,링크 추가
+Add or remove relationship types for this collection.,Add or remove relationship types for this collection.
 Add page,페이지 추가
 Add PDF,Add PDF
 Add people or groups,사용자 혹은 그룹 추가
@@ -74,6 +76,7 @@ Add/delete users and assign roles,사용자 추가/삭제 및 권한 부여
 Add/edit translations,번역 추가/편집
 Added language,Added language
 Added new user,Added new user
+"Added relation type ""{name}""","Added relation type ""{name}"""
 added to hub with the following errors:,added to hub with the following errors:
 added to hub.,added to hub.
 Adding a group and its items.,Adding a group and its items.
@@ -96,6 +99,7 @@ Allow captcha bypass,Allow captcha bypass
 Allow public embedding without login,Allow public embedding without login
 Already exists,Already exists
 Amount,Amount
+An admin needs to add relationship types before you can create a relationship.,An admin needs to add relationship types before you can create a relationship.
 An error has occured while deleting a language:,An error has occured while deleting a language:
 An error has occured while installing languages:,An error has occured while installing languages:
 An error has occurred,An error has occurred
@@ -257,6 +261,7 @@ Could not reach server. Please try again later.,Could not reach server. Please t
 Count,Count
 Create,생성
 CREATE,생성
+Create a type to continue.,Create a type to continue.
 Create and edit thesauri,Create and edit thesauri
 Create Connection,Create Connection
 Create entity,엔티티 생성
@@ -577,6 +582,7 @@ in,안
 "In a group, either all relationships must have a hub or none of them.","In a group, either all relationships must have a hub or none of them."
 In OCR queue,OCR 대기 중
 in this document,in this document
+In use,In use
 Include all entities,Include all entities
 Include only public,Include only public
 Incoming,Incoming
@@ -663,6 +669,7 @@ Longitude must be between -180 and 180,Longitude must be between -180 and 180
 Lookup help,Lookup help
 Lost connection to the server. Your changes may be lost,Lost connection to the server. Your changes may be lost
 low,낮게
+Manage relationship types,Manage relationship types
 Manage site settings and configuration,사이트 설정 및 구성 관리
 Manage types,Manage types
 Manual data,Manual data
@@ -751,6 +758,7 @@ New language added,새로운 언어가 추가되었습니다.
 New page,New page
 New password,새 비밀번호
 New primary doc,New primary doc
+New relation type label…,New relation type label…
 New relationship type,New relationship type
 New relationships group,새로운 관계 그룹
 New Relationships Migration,New Relationships Migration
@@ -790,6 +798,7 @@ No primary documents,No primary documents
 No property,속성 없음
 No References,참고문헌 없음
 No References description,References are parts of this document related with other documents and entities.
+No relationship types,No relationship types
 No Relationships,관계 없음
 No Relationships description,Relationships are bonds between entities.
 No relationships found,No relationships found
@@ -1408,6 +1417,9 @@ Use for training,Use for training
                 needed.","Use this iframe on external sites. Change the locale query parameter in the URL if
                 needed."
 Use URL,Use URL
+Used in templates and {n} refs — cannot delete,Used in templates and {n} refs — cannot delete
+Used in templates — cannot delete,Used in templates — cannot delete
+Used in {n} refs — cannot delete,Used in {n} refs — cannot delete
 User,사용자
 User Action,User Action
 User Role,User Role

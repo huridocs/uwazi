@@ -37,6 +37,7 @@ Activity log,Ημερολόγιο δραστηριοτήτων
 Activity Log,Ημερολόγιο δραστηριοτήτων
 Add,Προσθήκη
 Add / remove favorite,Προσθήκη / αφαίρεση αγαπημένου
+Add a type below.,Add a type below.
 Add an account to the app by scanning the provided QR code with your mobile device or by inserting the provided key.,Προσθέστε έναν λογαριασμό στην εφαρμογή σαρώνοντας τον παρεχόμενο κωδικό QR με την κινητή συσκευή σας ή εισάγοντας το παρεχόμενο κλειδί.
 Add as,Add as
 Add data source,Add data source
@@ -53,6 +54,7 @@ Add group,Προσθήκη ομάδας
 add icon,προσθήκη εικονιδίου
 Add item,Προσθήκη αντικειμένου
 Add link,Προσθήκη συνδέσμου
+Add or remove relationship types for this collection.,Add or remove relationship types for this collection.
 Add page,Προσθήκη σελίδας
 Add PDF,Προσθήκη PDF
 Add people or groups,Προσθήκη ατόμων ή ομάδων
@@ -74,6 +76,7 @@ Add/delete users and assign roles,Προσθήκη/διαγραφή χρηστώ
 Add/edit translations,Προσθήκη/επεξεργασία μεταφράσεων
 Added language,Προστέθηκε γλώσσα
 Added new user,Προστέθηκε νέος χρήστης
+"Added relation type ""{name}""","Added relation type ""{name}"""
 added to hub with the following errors:,προστέθηκε στον κόμβο με τα ακόλουθα σφάλματα:
 added to hub.,προστέθηκε στον κόμβο.
 Adding a group and its items.,Προσθήκη μιας ομάδας και των στοιχείων της.
@@ -96,6 +99,7 @@ Allow captcha bypass,Παράκαμψη CAPTCHA
 Allow public embedding without login,Allow public embedding without login
 Already exists,Υπάρχει ήδη
 Amount,Ποσό
+An admin needs to add relationship types before you can create a relationship.,An admin needs to add relationship types before you can create a relationship.
 An error has occured while deleting a language:,An error has occured while deleting a language:
 An error has occured while installing languages:,An error has occured while installing languages:
 An error has occurred,Παρουσιάστηκε σφάλμα
@@ -258,6 +262,7 @@ Could not reach server. Please try again later.,Δεν ήταν δυνατή η 
 Count,Count
 Create,Δημιουργία
 CREATE,ΔΗΜΙΟΥΡΓΙΑ
+Create a type to continue.,Create a type to continue.
 Create and edit thesauri,Δημιουργία και επεξεργασία θησαυρών
 Create Connection,Δημιουργία σύνδεσης
 Create entity,Δημιουργία οντότητας
@@ -578,6 +583,7 @@ in,σε
 "In a group, either all relationships must have a hub or none of them.","Σε μια ομάδα, είτε όλες οι σχέσεις πρέπει να έχουν έναν κόμβο είτε καμία από αυτές."
 In OCR queue,Στην ουρά OCR
 in this document,in this document
+In use,In use
 Include all entities,Include all entities
 Include only public,Include only public
 Incoming,Incoming
@@ -664,6 +670,7 @@ Longitude must be between -180 and 180,Longitude must be between -180 and 180
 Lookup help,Lookup help
 Lost connection to the server. Your changes may be lost,Η σύνδεση με τον διακομιστή χάθηκε. Οι αλλαγές σας ενδέχεται να χαθούν.
 low,χαμηλό
+Manage relationship types,Manage relationship types
 Manage site settings and configuration,Διαχείριση ρυθμίσεων και διαμόρφωσης ιστότοπου
 Manage types,Manage types
 Manual data,Manual data
@@ -752,6 +759,7 @@ New language added,Προστέθηκε νέα γλώσσα
 New page,Νέα σελίδα
 New password,Νέος κωδικός πρόσβασης
 New primary doc,New primary doc
+New relation type label…,New relation type label…
 New relationship type,Νέος τύπος σχέσης
 New relationships group,Νέα ομάδα σχέσεων
 New Relationships Migration,Μετεγκατάσταση νέων σχέσεων
@@ -791,6 +799,7 @@ No primary documents,No primary documents
 No property,Το στοιχείο δεν έχει αυτήν την ιδιότητα
 No References,Δεν υπάρχουν αναφορές
 No References description,Οι αναφορές είναι τμήματα αυτού του εγγράφου που σχετίζονται με άλλα έγγραφα και οντότητες.
+No relationship types,No relationship types
 No Relationships,Δεν υπάρχουν σχέσεις
 No Relationships description,Οι σχέσεις είναι δεσμοί μεταξύ οντοτήτων.
 No relationships found,No relationships found
@@ -1409,6 +1418,9 @@ Use for training,Χρήση για εκπαίδευση
                 needed.","Use this iframe on external sites. Change the locale query parameter in the URL if
                 needed."
 Use URL,Use URL
+Used in templates and {n} refs — cannot delete,Used in templates and {n} refs — cannot delete
+Used in templates — cannot delete,Used in templates — cannot delete
+Used in {n} refs — cannot delete,Used in {n} refs — cannot delete
 User,Χρήστης
 User Action,Ενέργεια χρήστη
 User Role,Ρόλος χρήστη

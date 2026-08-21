@@ -37,6 +37,7 @@ Activity log,Журнал активності
 Activity Log,Журнал активності
 Add,Додати
 Add / remove favorite,Додати/видалити обране
+Add a type below.,Add a type below.
 Add an account to the app by scanning the provided QR code with your mobile device or by inserting the provided key.,"Додайте обліковий запис до додатку, відсканувавши наданий QR-код своїм мобільним пристроєм або вставивши наданий ключ."
 Add as,Add as
 Add data source,Add data source
@@ -53,6 +54,7 @@ Add group,Додати групу
 add icon,додати піктограму
 Add item,Додати елемент
 Add link,Додати посилання
+Add or remove relationship types for this collection.,Add or remove relationship types for this collection.
 Add page,Додати сторінку
 Add PDF,Додати PDF
 Add people or groups,Додати людей або групи
@@ -74,6 +76,7 @@ Add/delete users and assign roles,Додати/видалити користув
 Add/edit translations,Додати/редагувати переклади
 Added language,Додано мову
 Added new user,Додано нового користувача
+"Added relation type ""{name}""","Added relation type ""{name}"""
 added to hub with the following errors:,додано до хабу з наступними помилками:
 added to hub.,додано до хабу.
 Adding a group and its items.,Додавання групи та її елементів.
@@ -96,6 +99,7 @@ Allow captcha bypass,Дозволити обхід капчі
 Allow public embedding without login,Allow public embedding without login
 Already exists,Вже існує
 Amount,Сума
+An admin needs to add relationship types before you can create a relationship.,An admin needs to add relationship types before you can create a relationship.
 An error has occured while deleting a language:,An error has occured while deleting a language:
 An error has occured while installing languages:,An error has occured while installing languages:
 An error has occurred,Виникла помилка
@@ -259,6 +263,7 @@ Could not reach server. Please try again later.,"Не вдалося зв'яза
 Count,Count
 Create,Створити
 CREATE,СТВОРИТИ
+Create a type to continue.,Create a type to continue.
 Create and edit thesauri,Створення та редагування тезаурусів
 Create Connection,Створити з'єднання
 Create entity,Створити об'єкт
@@ -579,6 +584,7 @@ in,в
 "In a group, either all relationships must have a hub or none of them.","У групі або всі відносини повинні мати центр, або жоден з них."
 In OCR queue,У черзі на оптичне розпізнавання символів
 in this document,in this document
+In use,In use
 Include all entities,Include all entities
 Include only public,Include only public
 Incoming,Incoming
@@ -665,6 +671,7 @@ Longitude must be between -180 and 180,Longitude must be between -180 and 180
 Lookup help,Lookup help
 Lost connection to the server. Your changes may be lost,Втрачено зв'язок з сервером. Ваші зміни можуть бути втрачені
 low,низький
+Manage relationship types,Manage relationship types
 Manage site settings and configuration,Керування сайтом і конфігурація
 Manage types,Manage types
 Manual data,Manual data
@@ -753,6 +760,7 @@ New language added,Додано нову мову
 New page,Нова сторінка
 New password,Новий пароль
 New primary doc,New primary doc
+New relation type label…,New relation type label…
 New relationship type,Новий тип відносин
 New relationships group,Група нових взаємозв'язків
 New Relationships Migration,Нові стосунки Міграція Міграція
@@ -792,6 +800,7 @@ No primary documents,No primary documents
 No property,Товар не має цієї властивості
 No References,Немає посилань
 No References description,"Посилання - це частини цього документа, пов'язані з іншими документами та об'єктами."
+No relationship types,No relationship types
 No Relationships,Немає взаємозв'язків
 No Relationships description,Відносини - це зв'язки між суб'єктами.
 No relationships found,No relationships found
@@ -1410,6 +1419,9 @@ Use for training,Використання для навчання
                 needed.","Use this iframe on external sites. Change the locale query parameter in the URL if
                 needed."
 Use URL,Use URL
+Used in templates and {n} refs — cannot delete,Used in templates and {n} refs — cannot delete
+Used in templates — cannot delete,Used in templates — cannot delete
+Used in {n} refs — cannot delete,Used in {n} refs — cannot delete
 User,Користувач
 User Action,Дія користувача
 User Role,Роль користувача
