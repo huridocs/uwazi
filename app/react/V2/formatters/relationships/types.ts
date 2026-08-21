@@ -33,7 +33,7 @@ interface TextReferencePointer extends BasePointer {
 
 type Pointer = EntityPointer | FilePointer | TextReferencePointer;
 
-interface RelationshipView {
+interface DirectedRelationship {
   readonly _id: string;
   readonly hub: string;
   readonly type: string;
@@ -47,14 +47,14 @@ interface RelationshipView {
 const isTextReference = (pointer: Pointer): pointer is TextReferencePointer =>
   pointer.type === 'textReference';
 
-const selfPointer = (relationship: RelationshipView, selfSharedId: string): Pointer =>
+const selfPointer = (relationship: DirectedRelationship, selfSharedId: string): Pointer =>
   relationship.from.entity === selfSharedId ? relationship.from : relationship.to;
 
-const targetPointer = (relationship: RelationshipView, selfSharedId: string): Pointer =>
+const targetPointer = (relationship: DirectedRelationship, selfSharedId: string): Pointer =>
   relationship.from.entity === selfSharedId ? relationship.to : relationship.from;
 
 const anchorOf = (
-  relationship: RelationshipView,
+  relationship: DirectedRelationship,
   selfSharedId: string
 ): TextReferencePointer | undefined => {
   const self = selfPointer(relationship, selfSharedId);
@@ -62,7 +62,7 @@ const anchorOf = (
 };
 
 const counterpartAnchorOf = (
-  relationship: RelationshipView,
+  relationship: DirectedRelationship,
   selfSharedId: string
 ): TextReferencePointer | undefined => {
   const counterpart = targetPointer(relationship, selfSharedId);
@@ -72,7 +72,7 @@ const counterpartAnchorOf = (
 type RelationshipDirection = 'incoming' | 'outgoing' | 'both';
 
 const directionOf = (
-  relationship: RelationshipView,
+  relationship: DirectedRelationship,
   selfSharedId: string
 ): RelationshipDirection => {
   const selfAnchored = isTextReference(selfPointer(relationship, selfSharedId));
@@ -90,7 +90,7 @@ export type {
   EntityPointer,
   FilePointer,
   TextReferencePointer,
-  RelationshipView,
+  DirectedRelationship,
   RelationshipDirection,
 };
 export { isTextReference, selfPointer, targetPointer, anchorOf, counterpartAnchorOf, directionOf };

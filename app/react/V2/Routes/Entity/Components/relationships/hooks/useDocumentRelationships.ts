@@ -5,20 +5,22 @@ import {
 } from '#V2/formatters/relationships/relationshipsPanelProjection.js';
 import { useEntityScopedEntity } from '#V2/Routes/Entity/Components/context/EntityContext.js';
 import { useEntityLanguage } from '#V2/Routes/Entity/Components/context/EntityLanguageContext.js';
+import { useDirectedRelationships } from '#V2/Routes/Entity/Components/context/RelationshipsQueryProvider.js';
 import { useRelationshipsPanelFacetFilters } from '#V2/Routes/Entity/Components/context/index.js';
 import { useActiveRelationshipHighlight } from '#V2/Routes/Entity/Components/document/index.js';
 
 const useEntityRelationshipMarkers = () => {
   const entity = useEntityScopedEntity();
+  const relationships = useDirectedRelationships();
   const { mainDocument } = useEntityLanguage();
   return useMemo(
     () =>
       filterMarkersForDocument(
-        projectRelationshipMarkers(entity),
+        projectRelationshipMarkers(entity.sharedId, relationships),
         mainDocument?._id,
         entity.sharedId
       ),
-    [entity, mainDocument?._id]
+    [entity.sharedId, mainDocument?._id, relationships]
   );
 };
 

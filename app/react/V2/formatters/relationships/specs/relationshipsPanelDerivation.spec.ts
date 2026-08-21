@@ -12,7 +12,7 @@ const marker = (
   type = 'relA'
 ): RelationshipMarker => ({
   _id: id,
-  view: {
+  relationship: {
     _id: id,
     hub,
     type,

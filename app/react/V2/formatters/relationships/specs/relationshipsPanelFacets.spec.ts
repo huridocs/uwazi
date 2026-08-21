@@ -3,7 +3,7 @@ import { computeFacetCounts } from '../relationshipsPanelFacets.js';
 
 const marker = (id: string, type: string, templateId: string): RelationshipMarker => ({
   _id: id,
-  view: {
+  relationship: {
     _id: id,
     hub: `h-${id}`,
     type,
