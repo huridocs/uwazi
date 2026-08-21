@@ -149,8 +149,20 @@ export class PostgresTranslationsDataSource
       return;
     }
 
+    const BATCH_SIZE = 500;
+    const batches: TranslationRow[][] = [];
+    for (let i = 0; i < source.length; i += BATCH_SIZE) {
+      batches.push(source.slice(i, i + BATCH_SIZE));
+    }
+    await batches.reduce(async (previous, batch) => {
+      await previous;
+      await this.insertClonedBatch(batch, to);
+    }, Promise.resolve());
+  }
+
+  private async insertClonedBatch(rows: TranslationRow[], to: LanguageISO6391): Promise<void> {
     await this.table.upsert(
-      source.map(row => ({
+      rows.map(row => ({
         ...row,
         _id: this.idGenerator.generate(),
         language: to,
