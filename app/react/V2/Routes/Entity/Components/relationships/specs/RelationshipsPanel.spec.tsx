@@ -3,9 +3,17 @@
  */
 import { screen, within } from '@testing-library/react';
 import userEvent, { type UserEvent } from '@testing-library/user-event';
+import type { ClientUserSchema } from '#app/apiResponseTypes.js';
 import { defaultPdf, renderRelationshipsPanel } from './helpers/renderRelationshipsPanel.js';
 import { entityWithRelations } from './fixtures/entityWithRelations.js';
 import * as utils from '#app/utils/index.js';
+
+const writerUser: ClientUserSchema = {
+  _id: '1',
+  role: 'admin',
+  username: 'admin',
+  email: 'admin@example.com',
+};
 
 beforeAll(() => {
   Element.prototype.scrollIntoView = jest.fn();
@@ -177,7 +185,7 @@ describe('blank state', () => {
   const entityWithoutRelations = { ...entityWithRelations, relations: [] };
 
   it('does not mention document text selection when there is no document', () => {
-    renderRelationshipsPanel({ entity: entityWithoutRelations });
+    renderRelationshipsPanel({ entity: entityWithoutRelations, user: writerUser });
 
     expect(screen.queryByText(/selecting text in the document/)).not.toBeInTheDocument();
     expect(screen.getAllByRole('strong').map(el => el.textContent)).toEqual([
@@ -190,6 +198,7 @@ describe('blank state', () => {
     renderRelationshipsPanel({
       entity: entityWithoutRelations,
       mainDocument: { _id: 'f1', filename: 'doc.pdf' },
+      user: writerUser,
     });
 
     expect(
@@ -200,5 +209,13 @@ describe('blank state', () => {
       'Edit',
       'Create relationship',
     ]);
+  });
+
+  it('hides how-to copy when the visitor cannot write', () => {
+    renderRelationshipsPanel({ entity: entityWithoutRelations });
+
+    expect(screen.getByText('No Relationships')).toBeInTheDocument();
+    expect(screen.queryByText(/Edit/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/Create relationship/)).not.toBeInTheDocument();
   });
 });

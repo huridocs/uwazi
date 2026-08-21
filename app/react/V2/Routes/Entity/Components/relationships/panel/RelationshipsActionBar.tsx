@@ -1,7 +1,7 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import { PencilIcon, PlusIcon } from '@heroicons/react/24/outline';
-import { I18NLinkV2, Translate } from '#app/I18N/index.js';
-import { GitForkIcon } from '#V2/Components/CustomIcons/index.js';
+import { Translate } from '#app/I18N/index.js';
+import { Settings2StrokeIcon } from '#V2/Components/CustomIcons/index.js';
 import {
   Button,
   ConfirmationModal,
@@ -29,7 +29,7 @@ const RelationshipsActionBar = () => {
     selectedRelationshipIds: selected,
     setSelectedRelationshipIds: setSelected,
   } = useRelationshipsSelection();
-  const { openCreateRelationship } = useRelationshipsActions();
+  const { openCreateRelationship, openManageRelationTypes } = useRelationshipsActions();
   const { documentPdfSelection } = useDocumentPdf();
   const { focusRelationshipsPanel } = useEntityTabNavigation();
   const [confirmDelete, setConfirmDelete] = useState(false);
@@ -91,13 +91,17 @@ const RelationshipsActionBar = () => {
               <Translate>Create relationship</Translate>
             </Button>
             <NeedAuthorization roles={['admin']}>
-              <I18NLinkV2
-                to="/settings/relationship-types"
-                className="inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium text-ink-secondary transition-colors hover:bg-warm hover:text-ink"
+              <Button
+                variant="warm"
+                className="inline-flex items-center"
+                onClick={openManageRelationTypes}
               >
-                <GitForkIcon className={`${iconClass} text-ink-tertiary`} />
+                <Settings2StrokeIcon
+                  className={`${iconClass} text-ink-tertiary`}
+                  aria-hidden="true"
+                />
                 <Translate>Manage types</Translate>
-              </I18NLinkV2>
+              </Button>
             </NeedAuthorization>
             <SelectControls
               allSelected={allSelected}

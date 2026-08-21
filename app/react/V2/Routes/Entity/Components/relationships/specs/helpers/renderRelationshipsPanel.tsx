@@ -2,8 +2,9 @@ import React, { useEffect } from 'react';
 import { createStore, Provider } from 'jotai';
 import { createMemoryRouter, RouterProvider } from 'react-router';
 import { render } from '@testing-library/react';
+import type { ClientUserSchema } from '#app/apiResponseTypes.js';
 import type { Entity, FileType } from '#V2/api/entities/types.js';
-import { relationshipTypesAtom, templatesAtom } from '#V2/atoms/index.js';
+import { relationshipTypesAtom, templatesAtom, userAtom } from '#V2/atoms/index.js';
 import {
   EntityScopedProvider,
   useDocumentPdfActions,
@@ -25,6 +26,7 @@ type RenderRelationshipsPanelOptions = {
   onFocusDocument?: jest.Mock;
   pdf?: PdfMocks;
   withFiltersDrawer?: boolean;
+  user?: ClientUserSchema;
 };
 
 const defaultPdf = (): PdfMocks => ({
@@ -59,8 +61,10 @@ const renderRelationshipsPanel = ({
   onFocusDocument = jest.fn(),
   pdf = defaultPdf(),
   withFiltersDrawer = false,
+  user,
 }: RenderRelationshipsPanelOptions = {}) => {
   const store = createStore();
+  if (user) store.set(userAtom, user);
   store.set(relationshipTypesAtom, [{ _id: 'relA', name: 'Related' }]);
   store.set(templatesAtom, [{ _id: 'template1', color: '#faca15', name: 'Entity' }]);
 

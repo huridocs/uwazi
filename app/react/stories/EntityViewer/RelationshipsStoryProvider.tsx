@@ -1,11 +1,13 @@
 import React, { useLayoutEffect, useMemo } from 'react';
 import { createStore, Provider } from 'jotai';
+import type { ClientUserSchema } from '#app/apiResponseTypes.js';
 import type { Entity } from '#V2/api/entities/types.js';
 import {
   localeAtom,
   relationshipTypesAtom,
   templatesAtom,
   translationsAtom,
+  userAtom,
 } from '#V2/atoms/index.js';
 import type { ClientTemplateSchema } from '#V2/shared/types.js';
 import { EntityScopedProvider } from '#V2/Routes/Entity/Components/context/index.js';
@@ -22,6 +24,8 @@ type RelationshipsStoryProviderProps = {
   entity: Entity;
   storyTemplates?: ClientTemplateSchema[];
   preloadEntities?: Entity[];
+  relationshipTypes?: { _id: string; name: string }[];
+  user?: ClientUserSchema;
   children: React.ReactNode;
 };
 
@@ -30,6 +34,8 @@ const RelationshipsStoryProvider = ({
   entity,
   storyTemplates,
   preloadEntities,
+  relationshipTypes,
+  user,
   children,
 }: RelationshipsStoryProviderProps) => {
   const store = useMemo(() => {
@@ -37,9 +43,12 @@ const RelationshipsStoryProvider = ({
     nextStore.set(localeAtom, locale);
     nextStore.set(templatesAtom, storyTemplates ?? templates);
     nextStore.set(translationsAtom, translations);
-    nextStore.set(relationshipTypesAtom, relationshipStoryTypes);
+    nextStore.set(relationshipTypesAtom, relationshipTypes ?? relationshipStoryTypes);
+    if (user) {
+      nextStore.set(userAtom, user);
+    }
     return nextStore;
-  }, [locale, storyTemplates]);
+  }, [locale, relationshipTypes, storyTemplates, user]);
 
   useLayoutEffect(() => {
     preloadEntities?.forEach(item => {
