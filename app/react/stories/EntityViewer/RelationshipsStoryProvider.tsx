@@ -12,6 +12,7 @@ import {
 import type { ClientTemplateSchema } from '#V2/shared/types.js';
 import { EntityScopedProvider } from '#V2/Routes/Entity/Components/context/index.js';
 import { entityLoaderCache } from '#V2/Routes/Entity/EntityLoaderCache.js';
+import { relationshipQueryFromEntity } from '#V2/Routes/Entity/Components/relationships/specs/helpers/relationshipQueryFromEntity.js';
 import { templates, translations } from '../fixtures/referencesFixtures.js';
 
 const relationshipStoryTypes = [
@@ -63,6 +64,7 @@ const RelationshipsStoryProvider = ({
         entity={entity}
         language={entity.language ?? locale}
         mainDocument={entity.documents?.[0]}
+        relationshipQuery={relationshipQueryFromEntity(entity, entity.documents?.[0]?._id)}
       >
         {children}
       </EntityScopedProvider>

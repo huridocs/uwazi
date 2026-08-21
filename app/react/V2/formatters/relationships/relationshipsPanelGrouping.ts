@@ -46,9 +46,9 @@ const getGroupKey = (
     case 'source-entity':
       return context.selfSharedId;
     case 'relation-type':
-      return marker.view.type || 'no_label';
+      return marker.relationship.type || 'no_label';
     case 'direction':
-      return directionOf(marker.view, context.selfSharedId);
+      return directionOf(marker.relationship, context.selfSharedId);
     case 'source-page': {
       const page = marker.anchor?.selections[0]?.page;
       return page === undefined ? 'no-page' : String(page);

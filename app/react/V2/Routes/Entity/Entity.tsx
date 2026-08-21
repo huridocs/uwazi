@@ -153,6 +153,7 @@ const Entity = () => {
         mainDocument={mainDocument}
         pagePlaintext={pagePlaintext}
         entityPageView={entityPageView}
+        relationshipQuery={loaderData?.relationshipQuery}
       >
         <EntityFilesFromEntity>
           <EntityView />

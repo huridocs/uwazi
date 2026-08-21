@@ -13,6 +13,7 @@ type Params = {
   filesSideTabs: FilesSideTabsOptions;
   activeMainTab: MainTabId;
   hashParams: URLSearchParams;
+  relationshipsCount: number;
 };
 
 const useEntityTabChangeHandlers = ({
@@ -22,6 +23,7 @@ const useEntityTabChangeHandlers = ({
   filesSideTabs,
   activeMainTab,
   hashParams,
+  relationshipsCount,
 }: Params) => {
   const updateEntityUrl = useUpdateEntityUrl();
 
@@ -39,6 +41,7 @@ const useEntityTabChangeHandlers = ({
             hasMainDocument,
             mainDocumentId,
             filesSideTabs,
+            relationshipsCount,
           });
           const rawS = hashParams.get(SIDE_TAB_PARAM);
           const sStillValid =
@@ -59,6 +62,7 @@ const useEntityTabChangeHandlers = ({
       hasMainDocument,
       mainDocumentId,
       filesSideTabs,
+      relationshipsCount,
     ]
   );
 

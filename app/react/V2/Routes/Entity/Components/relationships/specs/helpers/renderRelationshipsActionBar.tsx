@@ -8,13 +8,16 @@ import {
   EntityScopedProvider,
   useDocumentPdfActions,
 } from '#V2/Routes/Entity/Components/context/index.js';
-import { ServicesProvider } from '#V2/services/index.js';
-import { createTestingServices } from '#V2/testing/createTestingServices.js';
+import { ServicesProvider } from '#V2/services/ServicesProvider.js';
+import { createTestServices } from '#V2/testing/createTestServices.js';
 import { RelationshipsActionBar } from '../../panel/RelationshipsActionBar.js';
 import { RelationshipsPanel } from '../../panel/RelationshipsPanel.js';
 import { CreateRelationshipModal } from '../../create-reference/CreateRelationshipModal.js';
-import { ManageRelationTypesModal } from '../../create-reference/ManageRelationTypesModal.js';
 import { entityWithRelations } from '../fixtures/entityWithRelations.js';
+import {
+  relationshipQueryFromEntity,
+  relationshipsQueryStubFromEntity,
+} from './relationshipQueryFromEntity.js';
 
 const PdfControllerSetup = () => {
   const { setPdfController } = useDocumentPdfActions();
@@ -35,8 +38,9 @@ const renderRelationshipsActionBar = ({
   store.set(userAtom, { _id: '1', role, username: role, email: `${role}@example.com` });
   store.set(relationshipTypesAtom, [{ _id: 'relA', name: 'Related' }]);
   store.set(templatesAtom, [{ _id: 'template1', color: '#faca15', name: 'Entity' }]);
-  const { services } = createTestingServices({
-    initialRelationshipTypes: [{ _id: 'relA', name: 'Related' }],
+  const relationshipQuery = relationshipQueryFromEntity(entityWithRelations);
+  const services = createTestServices({
+    relationshipsQuery: relationshipsQueryStubFromEntity(entityWithRelations),
   });
 
   const router = createMemoryRouter([
@@ -49,12 +53,12 @@ const renderRelationshipsActionBar = ({
               key={entityWithRelations.sharedId}
               entity={entityWithRelations}
               language={entityWithRelations.language ?? 'en'}
+              relationshipQuery={relationshipQuery}
             >
               <PdfControllerSetup />
               <RelationshipsPanel />
               <RelationshipsActionBar />
               <CreateRelationshipModal />
-              <ManageRelationTypesModal />
             </EntityScopedProvider>
           </ServicesProvider>
         </Provider>
