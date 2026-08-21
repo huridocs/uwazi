@@ -22,7 +22,7 @@ This document is the working context for the Postgres phase. Prior V2 hex work: 
 - [x] `TranslationsMigrationConfig` + CLI `--collection translations`
 - [x] Dual-backend use-case / QueryService specs (`describe.each` Mongo + Postgres), including `application/translation/specs/translations.spec.ts`
 - [x] Dual-backend HTTP route specs (`application/translation/specs/routes.spec.ts`, `express/translation/specs/routes.spec.ts`)
-- [x] Mongo migration `206-backfill-translation-context` (`requiresSchema: 15`). Writes after 206 cannot omit `context.type` / `context.label`: locale saves inherit type/label or throw, mappers assert before persist, and 206 attaches a `translationsV2` JSON schema validator.
+- [x] Mongo migration `207-backfill-translation-context` (`requiresSchema: 15`). Writes after 207 cannot omit `context.type` / `context.label`: locale saves inherit type/label or throw, mappers assert before persist, and 207 attaches a `translationsV2` JSON schema validator.
 
 ### Still open
 
@@ -149,7 +149,7 @@ Engine: `MigrateCollectionToPostgres`
 - `mongoCollection: 'translationsV2'`, `pgTable: 'translations'`
 - Map `_id` to hex; flatten `context`
 - Idempotent skip if the tenant already has any PG row
-- **Incomplete Mongo context:** `POST /api/translations` does not require `type`/`label`, and Mongo `$set`s the whole `context` object. Partial locale saves used to persist `{ id }` only. PG columns are `NOT NULL` (and `context_type` is CHECKed). Migration `206-backfill-translation-context` fills missing type/label, then attaches a `translationsV2` JSON schema validator so later Mongo writes cannot omit them before the Postgres cutover. Application writes inherit type/label from existing rows or throw; mappers assert a complete context before persist. Copy assumes Mongo data migrations have already run. Unresolvable rows still fail loudly rather than inserting nulls.
+- **Incomplete Mongo context:** `POST /api/translations` does not require `type`/`label`, and Mongo `$set`s the whole `context` object. Partial locale saves used to persist `{ id }` only. PG columns are `NOT NULL` (and `context_type` is CHECKed). Migration `207-backfill-translation-context` fills missing type/label, then attaches a `translationsV2` JSON schema validator so later Mongo writes cannot omit them before the Postgres cutover. Application writes inherit type/label from existing rows or throw; mappers assert a complete context before persist. Copy assumes Mongo data migrations have already run. Unresolvable rows still fail loudly rather than inserting nulls.
 
 ---
 
