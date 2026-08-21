@@ -15,7 +15,6 @@ import {
   useEntityOverlay,
   useEntityLanguage,
   useEntityWriteAuthorized,
-  useEntityScopedEntity,
 } from '#V2/Routes/Entity/Components/context/index.js';
 import { useActiveRelationshipHighlight } from '#V2/Routes/Entity/Components/document/index.js';
 import { useGroupLabelContext } from '../hooks/useGroupLabelContext.js';
@@ -159,10 +158,9 @@ const RelationshipsPanel = ({
   onFocusDocument,
 }: RelationshipsPanelProps) => {
   const showSsrIndex = useSsrOnlyContent();
-  const entity = useEntityScopedEntity();
 
   if (showSsrIndex) {
-    return <RelationshipsSsrIndex entity={entity} />;
+    return <RelationshipsSsrIndex />;
   }
 
   return (

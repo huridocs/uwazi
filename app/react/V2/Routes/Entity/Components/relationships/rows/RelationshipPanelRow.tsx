@@ -68,7 +68,7 @@ const renderNestedRows = (
           nested
           marker={marker}
           selfSharedId={handlers.selfSharedId}
-          relationshipTypeName={groupContext.relationshipTypeName(marker.view.type)}
+          relationshipTypeName={groupContext.relationshipTypeName(marker.relationship.type)}
           isSelected={
             !!handlers.activeRelationshipId &&
             representedIds.includes(handlers.activeRelationshipId)
@@ -98,7 +98,7 @@ const RelationshipPanelRowComponent = ({
       <RelationshipRow
         marker={entry.marker}
         selfSharedId={handlers.selfSharedId}
-        relationshipTypeName={groupContext.relationshipTypeName(entry.marker.view.type)}
+        relationshipTypeName={groupContext.relationshipTypeName(entry.marker.relationship.type)}
         isSelected={handlers.activeRelationshipId === entry.marker._id}
         onClick={() => handlers.onClick(entry.marker)}
         onView={() => handlers.onView(entry.marker)}

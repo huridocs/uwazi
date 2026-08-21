@@ -26,7 +26,7 @@ const makeMarker = (
 
   return {
     _id,
-    view: {
+    relationship: {
       _id,
       hub: `h-${_id}`,
       type: 'relType',

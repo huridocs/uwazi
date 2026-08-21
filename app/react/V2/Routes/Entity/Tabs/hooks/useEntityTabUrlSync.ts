@@ -18,6 +18,7 @@ type UseEntityTabUrlSyncParams = {
   searchParams: URLSearchParams;
   hashParams: URLSearchParams;
   setTabGroups: (updater: (prev: TabGroupsState) => TabGroupsState) => void;
+  relationshipsCount: number;
 };
 
 const useEntityTabUrlSync = ({
@@ -31,6 +32,7 @@ const useEntityTabUrlSync = ({
   searchParams,
   hashParams,
   setTabGroups,
+  relationshipsCount,
 }: UseEntityTabUrlSyncParams) => {
   const updateEntityUrl = useUpdateEntityUrl();
   const previousSharedId = useRef(entity.sharedId);
@@ -57,6 +59,7 @@ const useEntityTabUrlSync = ({
         hasMainDocument,
         mainDocumentId,
         filesSideTabs,
+        relationshipsCount,
       });
       const sideId = resolveSideTabId(sideParams.get(SIDE_TAB_PARAM), sideButtons);
 
@@ -81,6 +84,7 @@ const useEntityTabUrlSync = ({
     mainDocumentId,
     filesSideTabs,
     mainTabIds,
+    relationshipsCount,
     setTabGroups,
   ]);
 

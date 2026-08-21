@@ -12,6 +12,7 @@ type Params = {
   filesSideTabs: FilesSideTabsOptions;
   searchParams: URLSearchParams;
   hashParams: URLSearchParams;
+  relationshipsCount: number;
 };
 
 const useResolvedEntityTabs = ({
@@ -21,6 +22,7 @@ const useResolvedEntityTabs = ({
   filesSideTabs,
   searchParams,
   hashParams,
+  relationshipsCount,
 }: Params) => {
   const mainTabIds = useMemo(() => {
     const ids = new Set<MainTabId>([MAIN_TAB.METADATA, MAIN_TAB.RELATIONSHIPS, MAIN_TAB.FILES]);
@@ -42,8 +44,9 @@ const useResolvedEntityTabs = ({
         hasMainDocument,
         mainDocumentId,
         filesSideTabs,
+        relationshipsCount,
       }),
-    [activeMainTab, entity, hasMainDocument, mainDocumentId, filesSideTabs]
+    [activeMainTab, entity, hasMainDocument, mainDocumentId, filesSideTabs, relationshipsCount]
   );
 
   const activeSideTab = useMemo(
