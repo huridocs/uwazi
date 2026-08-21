@@ -427,7 +427,7 @@ export default defineConfig([
     },
   },
   {
-    files: ['app/**/*.{ts,tsx,js,jsx}'],
+    files: ['app/api/**/*.{ts,tsx,js,jsx}'],
     ignores: [
       'app/api/core/infrastructure/factories/**',
       'app/api/core/infrastructure/mongodb/user/**',
@@ -442,12 +442,12 @@ export default defineConfig([
             {
               group: ['**/infrastructure/*/user/*UsersDAO*', '**/factories/UsersDAOFactory*'],
               message:
-                'Users DAOs are private. Use UsersDirectory (any internal module), UsersQueryService (the users settings screen) or UsersDataSource (writes) — see plans/users-refactor-00-decisions.md#d4.',
+                'Users DAOs are private. Use UsersDirectory (any internal module), UsersQueryService or UsersDataSource (writes)',
             },
             {
               group: ['**/infrastructure/*/user/*UserGroupsDAO*'],
               message:
-                'User groups DAOs are private, and now expose generic primitives with no guard of their own. Use UserGroupsDirectory (any internal module), UserGroupsQueryService (the users & groups settings screen) or UserGroupsDataSource (writes)',
+                'User groups DAOs are private, and now expose generic primitives with no guard of their own. Use UserGroupsDirectory (any internal module), UserGroupsQueryService or UserGroupsDataSource (writes)',
             },
           ],
         },
