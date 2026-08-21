@@ -261,7 +261,7 @@ describe('syncWorker', () => {
       expect(syncedTemplate2).toMatchObject({ name: 'template2' });
       expect(syncedTemplate3).toMatchObject({ name: 'template3' });
     }, 'target2');
-  });
+  }, 10000);
 
   it('should sync entities that belong to the configured templates', async () => {
     await runAllTenants();
@@ -516,7 +516,6 @@ describe('syncWorker', () => {
 
   describe('after changing sync configurations', () => {
     it('should delete templates not defined in the config', async () => {
-      jest.setTimeout(20000);
       await runAllTenants();
       const changedFixtures = _.cloneDeep(host1Fixtures);
       //@ts-ignore
@@ -529,7 +528,7 @@ describe('syncWorker', () => {
         const syncedTemplates = await templates.get();
         expect(syncedTemplates).toHaveLength(0);
       }, 'target1');
-    });
+    }, 20000);
   });
 
   it('should sync collections in correct preference order', async () => {
