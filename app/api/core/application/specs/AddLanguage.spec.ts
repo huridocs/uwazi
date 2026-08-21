@@ -288,6 +288,30 @@ describe('AddLanguage use case', () => {
         expect(result).toEqual([]);
       });
 
+      it('should roll back settings when cloneForLanguage fails', async () => {
+        await expect(
+          createSut({
+            translationsDS: {
+              cloneForLanguage: jest.fn().mockRejectedValue(new Error('clone failed')),
+            } as any,
+          }).execute({ languages: [{ key: 'es', label: 'Spanish' }] })
+        ).rejects.toThrow('clone failed');
+
+        const settings = await testingEnvironment.db.getCollection('settings')!.findOne({});
+        expect(settings?.languages).toEqual([
+          expect.objectContaining({ key: 'en', label: 'English', default: true }),
+        ]);
+
+        const esCount = (
+          await withFlag(async () =>
+            TranslationsDataSourceFactory.default({
+              transactionManager: TransactionManagerFactory.default(),
+            }).getByLanguage('es')
+          )
+        ).length;
+        expect(esCount).toBe(0);
+      });
+
       it('should deduplicate input languages with the same key', async () => {
         const emitSpy = jest.fn().mockResolvedValue(undefined);
         await createSut({ eventEmitter: { emit: emitSpy } }).execute({

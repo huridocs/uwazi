@@ -17,6 +17,9 @@ class AddLanguageUseCaseFactory {
   ): AddLanguageUseCase {
     const { actor, tenant, eventEmitter } = ExecutionContext;
     const transactionManager = ExecutionContext.transactionManager as MongoTransactionManager;
+    const postgresTransactionManager = tenant.featureFlags?.postgresTranslations
+      ? ExecutionContext.postgresTransactionManager
+      : undefined;
     const settingsDS = SettingsDataSourceFactory.default({ transactionManager });
     const translationsDS = TranslationsDataSourceFactory.default({ transactionManager });
     const importPredefinedTranslations = ImportPredefinedTranslationsService;
@@ -37,6 +40,7 @@ class AddLanguageUseCaseFactory {
     return new AddLanguageUseCase(
       {
         transactionManager,
+        postgresTransactionManager,
         settingsDS,
         translationsDS,
         importPredefinedTranslations,

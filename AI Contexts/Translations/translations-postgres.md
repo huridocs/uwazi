@@ -23,6 +23,7 @@ This document is the working context for the Postgres phase. Prior V2 hex work: 
 - [x] Dual-backend use-case / QueryService specs (`describe.each` Mongo + Postgres), including `application/translation/specs/translations.spec.ts`
 - [x] Dual-backend HTTP route specs (`application/translation/specs/routes.spec.ts`, `express/translation/specs/routes.spec.ts`)
 - [x] Mongo migration `207-backfill-translation-context` (`requiresSchema: 15`). Writes after 207 cannot omit `context.type` / `context.label`: locale saves inherit type/label or throw, mappers assert before persist, and 207 attaches a `translationsV2` JSON schema validator.
+- [x] AddLanguage mixed-store (P12): PG `run()` only around `cloneForLanguage`; DS batches at 500 without calling `TM.run()`
 
 ### Still open
 
@@ -61,10 +62,11 @@ Relationship types are a small named collection (`id` + `name`). Translations ar
 | P5  | One store. Copy Mongo → PG, then flip `postgresTranslations`. No dual-write of domain rows. Flag is **one-way** after any PG write.                                                                                                                                                                                      |
 | P6  | New inserts mint `_id` via `IdGenerator` (factory-wired). Data copy **preserves** Mongo `_id`. Natural-key upsert **must not** overwrite an existing `_id`.                                                                                                                                                              |
 | P7  | Translation upsert identity is `(language, key, context_id)`, not `_id`. Default `PostgresTable.upsert` conflicts on `_id`; pass `{ columns: NATURAL_KEY, merge: ['value'] }` so partial locale saves do not null `context_type`/`context_label`. `RETURNING _id` for sync. Do **not** add `id` to domain `Translation`. |
-| P8  | `cloneForLanguage` is insert-ignore by natural key, not a second mammoth read into `getLegacy`.                                                                                                                                                                                                                          |
+| P8  | `cloneForLanguage` is insert-ignore by natural key, not a second mammoth read into `getLegacy`. PG clone batches at 500 (node-pg bind limit). The DataSource does **not** call `TM.run()`.                                                                                                                               |
 | P9  | `TranslationsDataSource` getters return `Promise<Translation[]>`. Production callers already materialized ResultSet with `.all()`. Mongo may still use a cursor internally.                                                                                                                                              |
 | P10 | Thesaurus stays **off SSR**; that is unrelated to this cutover. QueryService / SSR keep calling the DS — the factory flag is the switch.                                                                                                                                                                                 |
 | P11 | Phase 1b FE (Settings atom / mammoth GET) is **not** a blocker for Postgres.                                                                                                                                                                                                                                             |
+| P12 | Mixed Mongo+Postgres is not 2PC (same as templates/thesauri). Use cases keep one Mongo `this.transactionManager.run()`. **AddLanguage only:** factory injects `postgresTransactionManager` **when `postgresTranslations` is on**; `run()` wraps **only** `cloneForLanguage`. Flag off: clone stays inside the Mongo `run()`, no PG `run()`. No DualStore; do not nest `run()` on other translation UCs. |
 
 **Primary references:** Thesauri PG DS deps (no ES, no Mongo TM in the PG DS). Templates/Files factory shape (flag from EC, `postgresTransactionManager`). Relationship types postgres doc for flag/copy/cutover. Avoid Entities partial cutover.
 

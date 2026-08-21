@@ -1,7 +1,8 @@
 /* eslint-disable no-await-in-loop */
-import { LanguageSchema } from '#shared/types/commonTypes.js';
+import { LanguageISO6391, LanguageSchema } from '#shared/types/commonTypes.js';
 import { TranslationsDataSource } from '#api/core/application/contracts/TranslationsDataSource.js';
 import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js';
+import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
 import { ImportPredefinedTranslations } from '#api/core/application/translation/ImportPredefinedTranslationsService.js';
 import { LanguageAddedEvent } from '#api/core/domain/language/events/LanguageAddedEvent.js';
 import { AbstractUseCase } from '../libs/UseCase.js';
@@ -16,9 +17,18 @@ type Deps = {
   settingsDS: SettingsDataSource;
   translationsDS: TranslationsDataSource;
   importPredefinedTranslations: ImportPredefinedTranslations;
+  postgresTransactionManager?: TransactionManager;
 };
 
 class AddLanguageUseCase extends AbstractUseCase<Input, Output, Deps> {
+  private async cloneForLanguage(from: LanguageISO6391, to: LanguageISO6391): Promise<void> {
+    const clone = async () => this.deps.translationsDS.cloneForLanguage(from, to);
+    if (!this.deps.postgresTransactionManager) {
+      return clone();
+    }
+    return this.deps.postgresTransactionManager.run(clone);
+  }
+
   async execute({ languages }: Input): Promise<Output> {
     const defaultLanguage = await this.deps.settingsDS.getDefaultLanguageKey();
     const installedKeys = new Set(await this.deps.settingsDS.getLanguageKeys());
@@ -32,7 +42,7 @@ class AddLanguageUseCase extends AbstractUseCase<Input, Output, Deps> {
       for (const language of newLanguages) {
         await this.deps.settingsDS.addLanguage(language);
         await this.deps.settingsDS.setLanguageInstalling(language.key, true);
-        await this.deps.translationsDS.cloneForLanguage(defaultLanguage, language.key);
+        await this.cloneForLanguage(defaultLanguage, language.key);
         await this.eventEmitter.emit(
           new LanguageAddedEvent({
             language: language.key,
