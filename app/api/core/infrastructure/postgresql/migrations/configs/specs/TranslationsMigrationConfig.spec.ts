@@ -61,7 +61,7 @@ describe('TranslationsMigrationConfig copy', () => {
   });
 
   beforeEach(async () => {
-    await testingDB.clear(['translationsV2', 'migrations']);
+    await testingDB.clear(['translationsV2']);
     await testingPG.clear(['translations']);
   });
 
@@ -74,26 +74,18 @@ describe('TranslationsMigrationConfig copy', () => {
     return new MigrateCollectionToPostgres(mongoDb, TENANT);
   };
 
-  it('should stop when Mongo migration 205 has not run', async () => {
-    await expect(makeMigrator().migrate(TranslationsMigrationConfig)).rejects.toThrow(
-      /205-backfill-translation-context has run/
-    );
-
-    const rows = (await testingPG.getAllFrom('translations')).filter(r => r.tenant_id === TENANT);
-    expect(rows).toHaveLength(0);
-  });
-
-  it('should copy complete documents after 205 has been recorded', async () => {
+  it('should copy complete documents', async () => {
     const id = new ObjectId();
-    const mongoDb = testingDB.db(testingDB.dbName);
-    await mongoDb.collection('migrations').insertOne({ delta: 205 });
-    await mongoDb.collection('translationsV2').insertOne({
-      _id: id,
-      language: 'es',
-      key: 'Search',
-      value: 'Buscar',
-      context: { id: 'System', type: 'Uwazi UI', label: 'User Interface' },
-    });
+    await testingDB
+      .db(testingDB.dbName)
+      .collection('translationsV2')
+      .insertOne({
+        _id: id,
+        language: 'es',
+        key: 'Search',
+        value: 'Buscar',
+        context: { id: 'System', type: 'Uwazi UI', label: 'User Interface' },
+      });
 
     const result = await makeMigrator().migrate(TranslationsMigrationConfig);
 

@@ -10,7 +10,6 @@ interface MigrationConfig {
   mongoCollection: string;
   pgTable: string;
   mapDocument(doc: Record<string, unknown>): Record<string, unknown>;
-  assertPrerequisites?(mongoDb: Db): Promise<void>;
 }
 
 const insertBatch = async (
@@ -82,10 +81,6 @@ class MigrateCollectionToPostgres {
 
     if (existingRow !== undefined) {
       return { migrated: 0, skipped: true };
-    }
-
-    if (config.assertPrerequisites) {
-      await config.assertPrerequisites(this.mongoDb);
     }
 
     const migrated = await this.fetchAndInsert(config, table);

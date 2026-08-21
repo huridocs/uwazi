@@ -39,13 +39,13 @@ afterAll(async () => {
   await testingDB.tearDown();
 });
 
-describe('205-backfill-translation-context', () => {
+describe('206-backfill-translation-context', () => {
   beforeEach(async () => {
     await seed();
   });
 
   it('should have expected metadata', () => {
-    expect(migration.delta).toBe(205);
+    expect(migration.delta).toBe(206);
     expect(migration.reindex).toBe(false);
     expect(migration.requiresSchema).toBe(15);
   });
