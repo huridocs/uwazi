@@ -66,4 +66,21 @@ describe('migration remove-orphaned-language-entities', () => {
       expect(migration.reindex).toBe(false);
     });
   });
+
+  describe('when the module is cached and reused for another tenant', () => {
+    beforeAll(async () => {
+      // first tenant deletes orphans -> the shared module instance sets reindex to true
+      await initTest(orphanedDataFixture);
+    });
+
+    it('should reset reindex to false when the next tenant deletes nothing', async () => {
+      expect(migration.reindex).toBe(true);
+
+      // second tenant: same cached module instance (the production loader caches by
+      // URL), nothing left to delete. Note: deliberately NOT resetting the flag here.
+      await migration.up(db!);
+
+      expect(migration.reindex).toBe(false);
+    });
+  });
 });

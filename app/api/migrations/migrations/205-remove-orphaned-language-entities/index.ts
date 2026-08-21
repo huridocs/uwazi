@@ -28,6 +28,7 @@ export default {
       process.stdout.write(
         `${this.name}: no languages configured in settings, skipping to avoid mass deletion.\r\n`
       );
+      this.reindex = false;
       return;
     }
 
@@ -35,9 +36,10 @@ export default {
       .collection('entities')
       .deleteMany({ language: { $nin: [...installedKeys, null, ''] } });
 
-    if (result.deletedCount > 0) {
-      this.reindex = true;
-    }
+    // Set the flag deterministically from this tenant's own result: the module is
+    // cached by the loader and shared across tenants, so a stale `true` from a
+    // previous tenant must not leak into this run.
+    this.reindex = result.deletedCount > 0;
 
     process.stdout.write(
       `${this.name}: removed ${result.deletedCount} orphaned entity document(s).\r\n`

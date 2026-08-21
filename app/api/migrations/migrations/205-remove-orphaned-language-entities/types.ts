@@ -11,19 +11,4 @@ interface Settings {
   languages?: Language[];
 }
 
-interface Entity {
-  _id?: ObjectId;
-  sharedId?: string;
-  language?: string;
-  title?: string;
-  template?: ObjectId;
-  [k: string]: unknown | undefined;
-}
-
-interface Fixture {
-  settings: Settings[];
-  templates?: Array<{ _id?: ObjectId; name: string }>;
-  entities?: Entity[];
-}
-
-export type { Settings, Language, Entity, Fixture };
+export type { Settings, Language };

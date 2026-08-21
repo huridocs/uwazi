@@ -26,11 +26,12 @@ const TENANT_B = 'tenantB';
  * Jest's module resolver intercepts dynamic `import()` and cannot resolve the
  * production loader's `import(pathToFileURL(p).href)`, so load the migration
  * modules with require, like app/api/migrations/specs/migrator.spec.js does.
+ * Like the production loader, the module is cached: mutations a migration makes
+ * to its own module (e.g. a dynamic reindex flag) persist across tenants, which
+ * is exactly the behavior the sticky-flag test relies on.
  */
 const loadMigration = async (p: string): Promise<any> => {
-  const normalized = path.resolve(p);
-  delete require.cache[normalized];
-  const m = require(normalized);
+  const m = require(path.resolve(p));
   return m.default ?? m;
 };
 
@@ -38,6 +39,7 @@ const REINDEX_MIGRATIONS_DIR = path.join(__dirname, 'testMigrations', 'reindex')
 const NO_REINDEX_MIGRATIONS_DIR = path.join(__dirname, 'testMigrations', 'noreindex');
 const BLOCKED_MIGRATIONS_DIR = path.join(__dirname, 'testMigrations', 'blocked');
 const FAILING_MIGRATIONS_DIR = path.join(__dirname, 'testMigrations', 'failing');
+const DYNAMIC_REINDEX_MIGRATIONS_DIR = path.join(__dirname, 'testMigrations', 'dynamic-reindex');
 
 let pgMigrationsDir = '';
 let maintenanceCalls: Array<[string, boolean]> = [];
@@ -278,5 +280,26 @@ describe('MigrationJob (real chain)', () => {
     ).rejects.toThrow('boom from migration');
 
     expect(maintenanceCalls).toEqual([]);
+  });
+
+  it('only reindexes tenants that actually deleted something when the migration sets its flag dynamically', async () => {
+    const tenantBDbName = `tenant_b_${testingDB.id().toHexString()}`;
+    tenants.add({ name: TENANT_B, dbName: tenantBDbName });
+    await testingDB.db(tenantBDbName).collection('settings').insertOne({});
+    // default has a probe doc to delete, tenantB has none
+    await testingDB.mongodb!.collection('migrationProbe').insertOne({ marker: 'to-delete' });
+
+    const { dispatcher, reindexTenant } = createRunChain(DYNAMIC_REINDEX_MIGRATIONS_DIR);
+
+    await dispatcher.dispatch(MigrationJob, { reindexTenants: [], results: initialResults() });
+
+    // the migration module is cached across tenants, but the flag is recomputed per
+    // tenant: only default deleted something, so only default is reindexed
+    expect(reindexTenant).toHaveBeenCalledTimes(1);
+    expect(reindexCalls).toEqual(['default']);
+    expect(maintenanceCalls).toEqual([
+      ['default', true],
+      ['default', false],
+    ]);
   });
 });

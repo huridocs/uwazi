@@ -130,7 +130,7 @@ describe('migrate', () => {
       });
     });
 
-    it('runs migrations even when they require a newer PG schema than what is applied', async () => {
+    it('runs migrations when the migrator reports them as runnable', async () => {
       jest.spyOn(migrator, 'migrate').mockResolvedValue({
         migrations: [
           { _id: testingDB.id(), delta: 1, description: 'migration test 1', reindex: false },

@@ -9,7 +9,10 @@ import {
 import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
 import { Logger } from '#api/core/libs/logger/contracts/Logger.js';
 import { PgMigrator } from '#api/core/infrastructure/postgresql/PgMigrator.js';
-import { TenantMigrationRunner } from '#api/core/infrastructure/mongodb/TenantMigrationRunner.js';
+import {
+  TenantMigrationResult,
+  TenantMigrationRunner,
+} from '#api/core/infrastructure/mongodb/TenantMigrationRunner.js';
 
 type MigrationJobResults = {
   appliedDataDeltas: number[];
@@ -203,11 +206,7 @@ class MigrationJob implements Dispatchable {
   ): Promise<{ reindexTenants: string[]; applied: boolean }> {
     const tenantNames = Object.keys(this.deps.tenantsManager.tenants);
     const reindexTenants: string[] = [];
-    const results: Array<{
-      status: string;
-      migration?: any;
-      blocked?: { requiresSchema?: number };
-    }> = [];
+    const results: TenantMigrationResult[] = [];
 
     for (const tenantName of tenantNames) {
       // eslint-disable-next-line no-await-in-loop
