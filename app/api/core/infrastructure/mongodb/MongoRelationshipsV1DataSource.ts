@@ -11,6 +11,26 @@ import type { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import { TimedMethod } from '#api/core/libs/logger/TimedMethodDecorator.js';
 import { EntitiesDAO } from '#api/core/application/contracts/EntitiesDAO.js';
 
+type SelectionRect = {
+  top: number;
+  left: number;
+  width: number;
+  height: number;
+  page: string;
+};
+
+type HubConnection = {
+  _id: string;
+  hub: string;
+  entity: string;
+  template: string | null;
+  file?: string;
+  reference?: {
+    text: string;
+    selectionRectangles?: SelectionRect[];
+  };
+};
+
 type HubConnectionDBO = {
   _id: ObjectId;
   hub: ObjectId;
@@ -19,13 +39,7 @@ type HubConnectionDBO = {
   file?: ObjectId | string;
   reference?: {
     text: string;
-    selectionRectangles?: {
-      top: number;
-      left: number;
-      width: number;
-      height: number;
-      page: string;
-    }[];
+    selectionRectangles?: SelectionRect[];
   };
 };
 
@@ -41,7 +55,7 @@ export class MongoRelationshipsV1DataSource extends MongoDataSource<Relation> {
   }
 
   @TimedMethod('MongoRelationshipsV1DataSource.getHubConnectionsForEntity')
-  async getHubConnectionsForEntity(sharedId: string) {
+  async getHubConnectionsForEntity(sharedId: string): Promise<HubConnection[]> {
     const ownRelations = await this.getCollection<{ hub: ObjectId }>()
       .find({ entity: sharedId }, { projection: { hub: 1 } })
       .toArray();
@@ -203,3 +217,5 @@ export class MongoRelationshipsV1DataSource extends MongoDataSource<Relation> {
     await relationships.delete({ entity: { $in: sharedIds } }, null, false);
   }
 }
+
+export type { HubConnection };

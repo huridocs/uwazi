@@ -63,7 +63,7 @@ describe('relationships query api', () => {
     expect(data).toEqual(rows);
   });
 
-  it('treats http 404 as an empty graph', async () => {
+  it('treats http 404 as an empty graph (defensive; API returns 200 for missing sources)', async () => {
     jest
       .mocked(apiClient.getJson)
       .mockResolvedValue([undefined, new ApiError('Not found', { kind: 'http', status: 404 })]);

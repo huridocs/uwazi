@@ -1,9 +1,9 @@
 import { useCallback, useRef, useState } from 'react';
 import type {
-  RelationshipAnchorRow,
+  RelationshipAnchor,
   RelationshipHubRow,
   RelationshipQueryPayload,
-  RelationshipResolvedRow,
+  RelationshipResolved,
 } from '#V2/api/relationships/types.js';
 import { useServices } from '#V2/services/index.js';
 
@@ -24,8 +24,8 @@ const useQueryStore = (seed: RelationshipQueryPayload | undefined, currentKey: s
   const [resolving, setResolving] = useState(false);
   const hubRowsRef = useRef(initialHubs);
   const summaryBaseRef = useRef<RelationshipHubRow[]>(initialHubs);
-  const anchorsOverlayRef = useRef<readonly RelationshipAnchorRow[] | undefined>(undefined);
-  const resolvedOverlayRef = useRef<readonly RelationshipResolvedRow[] | undefined>(undefined);
+  const anchorsOverlayRef = useRef<readonly RelationshipAnchor[] | undefined>(undefined);
+  const resolvedOverlayRef = useRef<readonly RelationshipResolved[] | undefined>(undefined);
   const summaryLoadedKey = useRef<string | null>(seedFits ? currentKey : null);
   const anchorsLoadedKey = useRef<string | null>(
     seedFits && seed?.anchorsLoaded ? currentKey : null

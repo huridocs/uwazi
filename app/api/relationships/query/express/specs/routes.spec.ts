@@ -9,7 +9,7 @@ import {
   enRect2,
   id,
   relationshipQueryFixtures,
-} from '#api/relationships/query/application/specs/relationshipQueryFixtures.js';
+} from '#api/relationships/query/infrastructure/specs/relationshipQueryFixtures.js';
 import { relationshipsQueryRoutes } from '../routes.js';
 
 type Actor = {
@@ -81,10 +81,10 @@ describe('GET /api/relationships/summary|anchors|resolved', () => {
       [adminApp, '/api/relationships/anchors', { sharedId: 'missing', file: sourceEn }],
       [adminApp, '/api/relationships/resolved', { sharedId: 'missing' }],
     ])(
-      'returns 404 { rows: [] } when the source is unreadable or missing',
+      'returns 200 { rows: [] } when the source is unreadable or missing',
       async (app, path, query) => {
         const response = await get(app, path, query);
-        expect(response).toHaveStatus(404);
+        expect(response).toHaveStatus(200);
         expect(response.body).toEqual({ rows: [] });
       }
     );

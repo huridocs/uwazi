@@ -4,9 +4,9 @@ import { apiClient } from '../client.js';
 import { requestHeaders } from '../requestHeaders.js';
 import { ApiResponse } from '../ApiResponse.js';
 import type {
-  RelationshipAnchorRow,
-  RelationshipResolvedRow,
-  RelationshipSummaryRow,
+  RelationshipAnchor,
+  RelationshipResolved,
+  RelationshipSummary,
   SelectionRect,
 } from './types.js';
 
@@ -28,7 +28,7 @@ const isSelectionRect = (value: unknown): value is SelectionRect =>
   typeof value.height === 'number' &&
   typeof value.page === 'string';
 
-const toSummaryRow = (value: unknown): RelationshipSummaryRow | undefined => {
+const toSummaryRow = (value: unknown): RelationshipSummary | undefined => {
   if (!isRecord(value) || !isRecord(value.entityData)) return undefined;
   if (typeof value._id !== 'string' || typeof value.hub !== 'string') return undefined;
   if (typeof value.entity !== 'string') return undefined;
@@ -46,7 +46,7 @@ const toSummaryRow = (value: unknown): RelationshipSummaryRow | undefined => {
   };
 };
 
-const toAnchorRow = (value: unknown): RelationshipAnchorRow | undefined => {
+const toAnchorRow = (value: unknown): RelationshipAnchor | undefined => {
   if (!isRecord(value) || typeof value._id !== 'string' || !isRecord(value.reference)) {
     return undefined;
   }
@@ -56,7 +56,7 @@ const toAnchorRow = (value: unknown): RelationshipAnchorRow | undefined => {
   return { _id: value._id, reference: { selectionRectangles: [first] } };
 };
 
-const toResolvedRow = (value: unknown): RelationshipResolvedRow | undefined => {
+const toResolvedRow = (value: unknown): RelationshipResolved | undefined => {
   if (!isRecord(value) || typeof value._id !== 'string' || !isRecord(value.reference)) {
     return undefined;
   }
@@ -117,7 +117,7 @@ const getSummary = async (
   sharedId: string,
   language: string,
   headers?: IncomingHttpHeaders
-): Promise<ApiResponse<RelationshipSummaryRow[] | undefined>> =>
+): Promise<ApiResponse<RelationshipSummary[] | undefined>> =>
   getRows({
     path: 'relationships/summary',
     query: { sharedId },
@@ -131,7 +131,7 @@ const getAnchors = async (
   fileId: string,
   language: string,
   headers?: IncomingHttpHeaders
-): Promise<ApiResponse<RelationshipAnchorRow[] | undefined>> =>
+): Promise<ApiResponse<RelationshipAnchor[] | undefined>> =>
   getRows({
     path: 'relationships/anchors',
     query: { sharedId, file: fileId },
@@ -144,7 +144,7 @@ const getResolved = async (
   sharedId: string,
   language: string,
   headers?: IncomingHttpHeaders
-): Promise<ApiResponse<RelationshipResolvedRow[] | undefined>> =>
+): Promise<ApiResponse<RelationshipResolved[] | undefined>> =>
   getRows({
     path: 'relationships/resolved',
     query: { sharedId },

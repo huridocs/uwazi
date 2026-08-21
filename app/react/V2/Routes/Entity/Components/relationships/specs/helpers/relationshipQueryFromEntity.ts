@@ -1,11 +1,11 @@
 import type { ApiResponse } from '#V2/api/ApiResponse.js';
 import type { Entity, EntityRelation } from '#V2/api/entities/types.js';
 import type {
-  RelationshipAnchorRow,
+  RelationshipAnchor,
   RelationshipHubRow,
   RelationshipQueryPayload,
-  RelationshipResolvedRow,
-  RelationshipSummaryRow,
+  RelationshipResolved,
+  RelationshipSummary,
   SelectionRect,
 } from '#V2/api/relationships/types.js';
 import type { RelationshipView } from '#V2/formatters/relationships/types.js';
@@ -32,7 +32,7 @@ type EntityQuerySource = {
 const toSummaryRow = (
   row: EntityRelation,
   entity: EntityQuerySource
-): RelationshipSummaryRow | undefined => {
+): RelationshipSummary | undefined => {
   if (!row._id || !row.hub || !row.entity) return undefined;
   const title =
     row.entityData?.title ?? (row.entity === entity.sharedId ? entity.title : undefined);
@@ -49,14 +49,14 @@ const toSummaryRow = (
   };
 };
 
-const toAnchorRow = (row: EntityRelation, fileId?: string): RelationshipAnchorRow | undefined => {
+const toAnchorRow = (row: EntityRelation, fileId?: string): RelationshipAnchor | undefined => {
   if (!row._id || !row.file || (fileId && row.file !== fileId)) return undefined;
   const first = row.reference?.selectionRectangles?.[0];
   if (!first) return undefined;
   return { _id: row._id, reference: { selectionRectangles: [toSelectionRect(first)] } };
 };
 
-const toResolvedRow = (row: EntityRelation): RelationshipResolvedRow | undefined => {
+const toResolvedRow = (row: EntityRelation): RelationshipResolved | undefined => {
   if (!row._id || row.reference?.text === undefined) return undefined;
   const rects = row.reference.selectionRectangles ?? [];
   return {
@@ -88,7 +88,7 @@ const toHubRow = (
   };
 };
 
-const relationshipSummaryFromEntity = (entity: EntityQuerySource): RelationshipSummaryRow[] =>
+const relationshipSummaryFromEntity = (entity: EntityQuerySource): RelationshipSummary[] =>
   (entity.relations ?? []).flatMap(row => {
     const next = toSummaryRow(row, entity);
     return next ? [next] : [];
@@ -97,7 +97,7 @@ const relationshipSummaryFromEntity = (entity: EntityQuerySource): RelationshipS
 const relationshipAnchorsFromEntity = (
   entity: EntityQuerySource,
   fileId?: string
-): RelationshipAnchorRow[] =>
+): RelationshipAnchor[] =>
   (entity.relations ?? []).flatMap(row => {
     const anchor = toAnchorRow(row, fileId);
     return anchor ? [anchor] : [];
@@ -118,7 +118,7 @@ const relationshipQueryFromEntity = (
   };
 };
 
-const relationshipResolvedFromEntity = (entity: EntityQuerySource): RelationshipResolvedRow[] =>
+const relationshipResolvedFromEntity = (entity: EntityQuerySource): RelationshipResolved[] =>
   (entity.relations ?? []).flatMap(row => {
     const resolved = toResolvedRow(row);
     return resolved ? [resolved] : [];
@@ -137,10 +137,10 @@ const relationshipsQueryStubFromEntity = (entity: EntityQuerySource, fileId?: st
   loadSummary: async (): Promise<ApiResponse<RelationshipHubRow[] | undefined>> => [
     relationshipSummaryFromEntity(entity),
   ],
-  loadAnchors: async (): Promise<ApiResponse<RelationshipAnchorRow[] | undefined>> => [
+  loadAnchors: async (): Promise<ApiResponse<RelationshipAnchor[] | undefined>> => [
     relationshipAnchorsFromEntity(entity, fileId),
   ],
-  loadResolved: async (): Promise<ApiResponse<RelationshipResolvedRow[] | undefined>> => [
+  loadResolved: async (): Promise<ApiResponse<RelationshipResolved[] | undefined>> => [
     relationshipResolvedFromEntity(entity),
   ],
 });

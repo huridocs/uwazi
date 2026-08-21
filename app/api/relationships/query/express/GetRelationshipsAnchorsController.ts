@@ -1,7 +1,8 @@
 import { AbstractController } from '#api/common.v2/infrastructure/AbstractController.js';
+import { EntityNotFoundError } from '#api/core/domain/entity/errors.js';
 import { RelationshipsQueryServiceFactory } from '#api/relationships/query/factory/RelationshipsQueryServiceFactory.js';
+import type { GetRelationshipsAnchorsResponse } from '#shared/contracts/Relationships.js';
 import { AnchorsQuerySchema } from './RelationshipQuerySchemas.js';
-import { sendNotFoundRows } from './sendNotFoundRows.js';
 
 class GetRelationshipsAnchorsController extends AbstractController {
   protected async handle(): Promise<void> {
@@ -11,9 +12,15 @@ class GetRelationshipsAnchorsController extends AbstractController {
         ...query,
         language: this.language,
       });
-      this.response.json({ rows });
+      const response: GetRelationshipsAnchorsResponse = { rows };
+      this.response.json(response);
     } catch (error: unknown) {
-      sendNotFoundRows(this.response, error);
+      if (error instanceof EntityNotFoundError) {
+        const response: GetRelationshipsAnchorsResponse = { rows: [] };
+        this.response.json(response);
+        return;
+      }
+      throw error;
     }
   }
 }

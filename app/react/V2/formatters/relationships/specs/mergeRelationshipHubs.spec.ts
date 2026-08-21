@@ -1,11 +1,11 @@
 import type {
-  RelationshipAnchorRow,
-  RelationshipResolvedRow,
-  RelationshipSummaryRow,
+  RelationshipAnchor,
+  RelationshipResolved,
+  RelationshipSummary,
 } from '#V2/api/relationships/types.js';
 import { mergeRelationshipHubs } from '../mergeRelationshipHubs.js';
 
-const summary: RelationshipSummaryRow[] = [
+const summary: RelationshipSummary[] = [
   {
     _id: 'self',
     hub: 'h1',
@@ -26,11 +26,11 @@ const summary: RelationshipSummaryRow[] = [
 const firstRect = { top: 1, left: 2, width: 3, height: 4, page: '1' };
 const secondRect = { top: 5, left: 6, width: 7, height: 8, page: '2' };
 
-const anchors: RelationshipAnchorRow[] = [
+const anchors: RelationshipAnchor[] = [
   { _id: 'self', reference: { selectionRectangles: [firstRect] } },
 ];
 
-const resolved: RelationshipResolvedRow[] = [
+const resolved: RelationshipResolved[] = [
   {
     _id: 'self',
     reference: { text: 'quote', selectionRectangles: [firstRect, secondRect] },
@@ -56,10 +56,10 @@ describe('mergeRelationshipHubs', () => {
   });
 
   it('drops anchors and resolved rows whose _id is not in summary', () => {
-    const unknownAnchor: RelationshipAnchorRow[] = [
+    const unknownAnchor: RelationshipAnchor[] = [
       { _id: 'missing', reference: { selectionRectangles: [firstRect] } },
     ];
-    const unknownResolved: RelationshipResolvedRow[] = [
+    const unknownResolved: RelationshipResolved[] = [
       { _id: 'missing', reference: { text: 'nope', selectionRectangles: [firstRect] } },
     ];
 

@@ -1,14 +1,14 @@
 import type {
-  RelationshipAnchorRow,
+  RelationshipAnchor,
   RelationshipHubRow,
-  RelationshipResolvedRow,
-  RelationshipSummaryRow,
+  RelationshipResolved,
+  RelationshipSummary,
 } from '#V2/api/relationships/types.js';
 
 const mergeRelationshipHubs = (
-  summary: readonly RelationshipSummaryRow[],
-  anchors: readonly RelationshipAnchorRow[] = [],
-  resolved: readonly RelationshipResolvedRow[] = []
+  summary: readonly RelationshipSummary[],
+  anchors: readonly RelationshipAnchor[] = [],
+  resolved: readonly RelationshipResolved[] = []
 ): RelationshipHubRow[] => {
   const byId = new Map<string, RelationshipHubRow>(summary.map(row => [row._id, { ...row }]));
 

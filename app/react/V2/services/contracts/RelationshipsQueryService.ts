@@ -1,8 +1,8 @@
 import type { ApiResponse } from '#V2/api/ApiResponse.js';
 import type {
-  RelationshipAnchorRow,
+  RelationshipAnchor,
   RelationshipHubRow,
-  RelationshipResolvedRow,
+  RelationshipResolved,
 } from '#V2/api/relationships/types.js';
 import type { RelationshipView } from '#V2/formatters/relationships/types.js';
 import type { ServiceRequestOptions } from './ServiceRequestOptions.js';
@@ -16,8 +16,8 @@ type RelationshipAnchorsReadOptions = RelationshipQueryReadOptions & {
 };
 
 type RelationshipHubOverlays = {
-  anchors?: readonly RelationshipAnchorRow[];
-  resolved?: readonly RelationshipResolvedRow[];
+  anchors?: readonly RelationshipAnchor[];
+  resolved?: readonly RelationshipResolved[];
 };
 
 interface RelationshipsQueryService {
@@ -28,11 +28,11 @@ interface RelationshipsQueryService {
   loadAnchors(
     sharedId: string,
     options: RelationshipAnchorsReadOptions
-  ): Promise<ApiResponse<RelationshipAnchorRow[] | undefined>>;
+  ): Promise<ApiResponse<RelationshipAnchor[] | undefined>>;
   loadResolved(
     sharedId: string,
     options: RelationshipQueryReadOptions
-  ): Promise<ApiResponse<RelationshipResolvedRow[] | undefined>>;
+  ): Promise<ApiResponse<RelationshipResolved[] | undefined>>;
   compose(
     hubs: readonly RelationshipHubRow[],
     overlays?: RelationshipHubOverlays

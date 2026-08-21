@@ -4,9 +4,9 @@
 import { ApiError } from '#shared/apiClient/index.js';
 import * as relationshipsQueryApi from '#V2/api/relationships/query.js';
 import type {
-  RelationshipAnchorRow,
-  RelationshipResolvedRow,
-  RelationshipSummaryRow,
+  RelationshipAnchor,
+  RelationshipResolved,
+  RelationshipSummary,
 } from '#V2/api/relationships/types.js';
 import { httpRelationshipsQueryService } from '../HttpRelationshipsQueryService.js';
 
@@ -16,7 +16,7 @@ jest.mock('#V2/api/relationships/query.js', () => ({
   getResolved: jest.fn(),
 }));
 
-const summary: RelationshipSummaryRow[] = [
+const summary: RelationshipSummary[] = [
   {
     _id: 'self',
     hub: 'h1',
@@ -37,11 +37,11 @@ const summary: RelationshipSummaryRow[] = [
 const firstRect = { top: 1, left: 2, width: 3, height: 4, page: '1' };
 const secondRect = { top: 5, left: 6, width: 7, height: 8, page: '2' };
 
-const anchors: RelationshipAnchorRow[] = [
+const anchors: RelationshipAnchor[] = [
   { _id: 'self', reference: { selectionRectangles: [firstRect] } },
 ];
 
-const resolved: RelationshipResolvedRow[] = [
+const resolved: RelationshipResolved[] = [
   {
     _id: 'self',
     reference: { text: 'quote', selectionRectangles: [firstRect, secondRect] },

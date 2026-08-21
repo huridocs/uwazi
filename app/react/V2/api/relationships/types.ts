@@ -1,39 +1,11 @@
-type SelectionRect = {
-  top: number;
-  left: number;
-  width: number;
-  height: number;
-  page: string;
-};
+import type {
+  RelationshipAnchor,
+  RelationshipResolved,
+  RelationshipSummary,
+  SelectionRect,
+} from '#shared/contracts/Relationships.js';
 
-type RelationshipSummaryRow = {
-  _id: string;
-  hub: string;
-  entity: string;
-  template: string | null;
-  file?: string;
-  entityData: {
-    title: string;
-    template: string;
-  };
-};
-
-type RelationshipAnchorRow = {
-  _id: string;
-  reference: {
-    selectionRectangles: readonly [SelectionRect];
-  };
-};
-
-type RelationshipResolvedRow = {
-  _id: string;
-  reference: {
-    text: string;
-    selectionRectangles: SelectionRect[];
-  };
-};
-
-type RelationshipHubRow = RelationshipSummaryRow & {
+type RelationshipHubRow = RelationshipSummary & {
   reference?: {
     text?: string;
     selectionRectangles?: ReadonlyArray<SelectionRect>;
@@ -50,9 +22,9 @@ type RelationshipQueryPayload = {
 
 export type {
   SelectionRect,
-  RelationshipSummaryRow,
-  RelationshipAnchorRow,
-  RelationshipResolvedRow,
+  RelationshipSummary,
+  RelationshipAnchor,
+  RelationshipResolved,
   RelationshipHubRow,
   RelationshipQueryPayload,
 };
