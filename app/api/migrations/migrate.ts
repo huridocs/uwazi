@@ -1,72 +1,39 @@
-import path from 'path';
-import { fileURLToPath } from 'url';
 import { DB } from '#api/odm/index.js';
 import { tenants } from '#api/tenants/tenantContext.js';
 import { config } from '#api/config.js';
-import { PostgresDB } from '#api/infrastructure/PostgresDB.js';
-import { PgMigrator } from '#api/core/infrastructure/postgresql/PgMigrator.js';
 import { migrator } from './migrator.js';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+export type MigrationRunResult = {
+  migrated: boolean;
+  applied: number[];
+  reindex: boolean;
+};
 
-const PG_MIGRATIONS_DIR = path.join(
-  __dirname,
-  '../core/infrastructure/postgresql/schema_migrations'
-);
-
-export type MigrationRunResult =
-  | {
-      migrated: boolean;
-      applied: number[];
-      reindex: boolean;
-      schemaVersion: number;
-    }
-  | {
-      blocked: { delta: number; requiresSchema: number };
-      currentSchema: number;
-    };
-
+/**
+ * Classic data-migration runner (plain `yarn migrate`).
+ *
+ * Runs pending Mongo data migrations without consulting the PostgreSQL schema
+ * version. Schema-dependency blocking only applies to the `--new` flow
+ * (MigrationService/MigrationJob), which advances the PG schema on demand.
+ * This runner always treats migrations as runnable, matching the legacy
+ * Mongo-only behavior.
+ */
 export const runMigration = async (): Promise<MigrationRunResult> => {
   await DB.connect(config.DBHOST, config.DBAUTH);
 
-  let currentSchemaVersion = Number.MAX_SAFE_INTEGER;
-
-  try {
-    const pgMigrator = new PgMigrator(PG_MIGRATIONS_DIR, PostgresDB.adminPool());
-    currentSchemaVersion = await pgMigrator.getCurrentVersion();
-  } catch (error) {
-    process.stdout.write(
-      `Warning: could not connect to PostgreSQL, skipping schema migration check. ${
-        error instanceof Error ? error.message : String(error)
-      }\n`
-    );
-  }
-
   const { db } = DB.connectionForDB(config.defaultTenant.dbName);
-  let migrationsResult: {
-    migrations: any[];
-    blocked: { delta: number; requiresSchema: number } | null;
-  } = { migrations: [], blocked: null };
+  let migrations: any[] = [];
+
   await tenants.run(async () => {
-    migrationsResult = await migrator.migrate(db, currentSchemaVersion);
+    migrations = (await migrator.migrate(db)).migrations;
   });
 
   await DB.disconnect();
-  await PostgresDB.disconnect();
 
-  if (migrationsResult.blocked) {
-    return {
-      blocked: migrationsResult.blocked,
-      currentSchema: currentSchemaVersion,
-    };
-  }
-
-  const reindexNeeded = migrationsResult.migrations.some(migration => migration.reindex === true);
+  const reindexNeeded = migrations.some(migration => migration.reindex === true);
   return {
-    migrated: migrationsResult.migrations.length > 0,
-    applied: migrationsResult.migrations.map(migration => migration.delta),
+    migrated: migrations.length > 0,
+    applied: migrations.map(migration => migration.delta),
     reindex: reindexNeeded,
-    schemaVersion: currentSchemaVersion,
   };
 };
