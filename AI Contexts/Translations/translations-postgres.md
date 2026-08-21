@@ -29,6 +29,7 @@ This document is the working context for the Postgres phase. Prior V2 hex work: 
 
 - [ ] Local cutover dry-run: schema → data copy → flip flag → CRUD / language add / SSR / Settings GET / sync
 - [ ] Sync not manually exercised until dry-run
+- [ ] Team consult: mixed-store / missing PG `run()` inventory below (not blocking add-language dry-run)
 
 ---
 
@@ -69,6 +70,56 @@ Relationship types are a small named collection (`id` + `name`). Translations ar
 | P12 | Mixed Mongo+Postgres is not 2PC (same as templates/thesauri). Use cases keep one Mongo `this.transactionManager.run()`. **AddLanguage only:** factory injects `postgresTransactionManager` **when `postgresTranslations` is on**; `run()` wraps **only** `cloneForLanguage`. Flag off: clone stays inside the Mongo `run()`, no PG `run()`. No DualStore; do not nest `run()` on other translation UCs. |
 
 **Primary references:** Thesauri PG DS deps (no ES, no Mongo TM in the PG DS). Templates/Files factory shape (flag from EC, `postgresTransactionManager`). Relationship types postgres doc for flag/copy/cutover. Avoid Entities partial cutover.
+
+---
+
+## Transaction ownership (transitional)
+
+There is **no 2PC**. One `TransactionManager` contract, two implementations on `ExecutionContext` (`transactionManager` = Mongo, `postgresTransactionManager` = Postgres). Use cases call `this.transactionManager.run()` (Mongo). PG DataSources join a PG transaction **only** if that same `postgresTransactionManager` already has `run()` active; otherwise each `withConnection` is its own short commit.
+
+**Do not** DualStore / nest `run()` on every use case. **Do not** call `TM.run()` inside a DataSource. DataSources persist; use cases and jobs own `run()`.
+
+No 2PC means: if a PG `run()` (inner) returns successfully, PG is committed even if the outer Mongo `run()` later aborts. Throw **during** the inner `run()` rolls back PG **and** unwinds Mongo. That is the same window CreateTemplate / CreateThesaurus already test (`should NOT revert the PG write when the Mongo transaction rolls back`).
+
+### Done (this cutover)
+
+| Location | What |
+| --- | --- |
+| `AddLanguageUseCase` | Flag **on:** factory injects `postgresTransactionManager`; `run()` wraps **only** `cloneForLanguage` (batches of 500 join that TX). Flag **off:** no PG `run()`, clone stays in the Mongo `run()`. Clone is **not** last in the Mongo `run()` (emit + entity-clone dispatch follow). |
+
+### Mixed Mongo + PG translations — Mongo `run()` only (PG auto-commits)
+
+Same house style as templates/thesauri. Settings / template / thesaurus / RT rows are still Mongo (or their own PG flag). Translation writes go to PG when `postgresTranslations` is on and **do not** join the Mongo `run()`.
+
+| Location | PG translation writes | Notes |
+| --- | --- | --- |
+| `DeleteLanguageUseCase` | `deleteByLanguage` | One SQL `DELETE`. Language gone from settings if Mongo aborts; PG rows may already be gone (or vice versa if delete throws after settings). |
+| `CreateTemplate` / `UpdateTemplate` / `DeleteTemplate` | `TemplateTranslationService` → `createContext` / `updateContext` / `deleteByContextId` + `bulkDeleteKeysByContext` | Specs already expect PG template row to survive Mongo rollback when `postgresTemplates` is on. |
+| `CreateThesaurus` / `UpdateThesaurus` / `DeleteThesaurus` | `ThesaurusTranslationService` insert / `updateContext` / `deleteByContextId` | Same. |
+| `CreateRelationshipType` / `UpdateRelationshipType` / `DeleteRelationshipType` | `RelationshipTypeTranslationService` | Same. |
+| `persistSettingsAndTranslations` (`settingsTranslations.ts`) | `TranslationsService.updateContext` (Menu / Filters) | Mongo TM only; V1 `settingsModel.save` joins that session via `dbSessionContext`. |
+| `SaveLocaleTranslations` / `SaveTranslationEntries` / `UpdateEntriesByContext` | `TranslationsService.saveEntries` | Translation-only UCs still open a **Mongo** `run()` so `ensureTransaction` passes. PG insert/upsert auto-commit. Optional later: pass PG TM as `this.transactionManager` when the flag is on (no nesting). |
+| `CsvCreateThesauriValuesJob` | `ThesauriService` + `UpdateEntriesByContext` | Job `transactionManager.run()` is Mongo. |
+| `CSVLoader.loadTranslations` | `SaveLocaleTranslationsUseCase` | Factory-flag-aware DS. Used by predefined import **after** AddLanguage’s Mongo `run()`. |
+
+### Multi-statement PG without a PG `run()` (partial PG state)
+
+Worse than the mixed-store window: **some** PG statements can commit before a later one throws.
+
+| Location | Statements | Risk |
+| --- | --- | --- |
+| `PostgresTranslationsDataSource.cloneForLanguage` | Batched upserts of 500 | **Mitigated** when called from AddLanguage with flag on (outer PG `run()`). Without that wrap, a failed later batch leaves earlier batches (spec covers both). |
+| `TranslationsService.saveEntries` | `insert` then `upsert` | Two auto-commits if flag on. |
+| `PostgresTranslationsDataSource.updateContext` / `persistContextDiff` | label updates, inserts, value upserts, key deletes | Several auto-commits. Callers: thesaurus/template/RT/settings translation services. |
+| `bulkDeleteKeysByContext` | sequential `DELETE`s | One context can commit, the next throw. |
+| `PostgresTranslationsSyncHandler.save` | `DELETE` by natural key then `INSERT` | Handler does not `run()`. Crash between them drops the row until retry. `saveMultiple` is N independent saves. |
+| `MigrateCollectionToPostgres` | batched inserts of 50; TM constructed but **never** `run()` | Failed mid-copy leaves partial PG rows; skip-if-**any**-row then refuses to resume. Copy already succeeded for this dry-run tenant. |
+| `SyncLogWriter.upsertSyncLogs` | Mongo `updatelogs` **without** the Mongo session | Clone batches write updatelogs after each PG upsert; those Mongo writes stay even if the PG `run()` later rolls back. |
+| `CloneLanguageEntitiesJob` / `DeleteLanguageEntitiesJob` | `PostgresEntitiesDAO.cloneForLanguage` / `deleteByLanguage` batches of 500 | **Entities**, not translations. Same pattern: job does not `run()`; each batch auto-commits. |
+
+### Dual TM
+
+Only AddLanguage clone when the flag is on (P12). Everywhere else is Mongo `run()` + PG auto-commit, **not** two `run()`s. Do not introduce a DualStore facade.
 
 ---
 
@@ -160,6 +211,7 @@ Engine: `MigrateCollectionToPostgres`
 - Namespace remains `translationsV2`
 - `PostgresTranslationsSyncHandler` preserves historical semantics: **delete by natural key** then insert the synced document (including its `_id`)
 - Factory mirrors the DS flag
+- **Gap:** `save()` does not wrap delete+insert in `pgTransactionManager.run()` (see inventory above)
 
 ---
 
