@@ -92,7 +92,7 @@ describe('MigrationService', () => {
 
     expect(dispatchedCalls).toHaveLength(1);
     expect(dispatchedCalls[0]).toEqual({
-      reindex: false,
+      reindexTenants: [],
       results: { appliedDataDeltas: [], appliedSchemaDeltas: [] },
     });
     expect(fakePgMigrator.getCurrentVersion).toHaveBeenCalled();

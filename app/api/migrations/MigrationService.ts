@@ -161,7 +161,7 @@ class MigrationService {
       },
       async () => {
         await dispatcher.dispatch(MigrationJob, {
-          reindex: false,
+          reindexTenants: [],
           results: initialResults,
         });
       }
