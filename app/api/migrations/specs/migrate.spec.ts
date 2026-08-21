@@ -5,25 +5,6 @@ import { DB } from '#api/odm/index.js';
 import { migrator } from '#api/migrations/migrator.js';
 import { runMigration } from '#api/migrations/migrate.js';
 
-jest.mock('#api/infrastructure/PostgresDB.js', () => ({
-  PostgresDB: {
-    connect: jest.fn(),
-    disconnect: jest.fn().mockResolvedValue(undefined),
-    pool: jest.fn().mockReturnValue({
-      query: jest.fn().mockResolvedValue({ rows: [{ delta: 15 }] }),
-    }),
-    adminPool: jest.fn().mockReturnValue({
-      query: jest.fn().mockResolvedValue({ rows: [{ delta: 15 }] }),
-    }),
-  },
-}));
-
-jest.mock('#api/core/infrastructure/postgresql/PgMigrator.js', () => ({
-  PgMigrator: jest.fn().mockImplementation(() => ({
-    getCurrentVersion: jest.fn().mockResolvedValue(15),
-  })),
-}));
-
 describe('migrate', () => {
   let connection: Connection;
 
@@ -51,17 +32,17 @@ describe('migrate', () => {
         );
     });
 
-    it('should call migrator migrate with db and schema version', async () => {
+    it('should call migrator migrate with db and no schema version (plain runner never blocks)', async () => {
       const migrateSpy = jest
         .spyOn(migrator, 'migrate')
         .mockResolvedValue({ migrations: [], blocked: null });
 
       await runMigration();
 
-      expect(migrateSpy).toBeCalledWith(connection.db, 15);
+      expect(migrateSpy).toBeCalledWith(connection.db);
     });
 
-    it('returns applied migrations with reindex and schema version', async () => {
+    it('returns applied migrations with reindex', async () => {
       jest.spyOn(migrator, 'migrate').mockResolvedValue({
         migrations: [
           {
@@ -96,7 +77,6 @@ describe('migrate', () => {
         migrated: true,
         applied: [1, 2, 10],
         reindex: false,
-        schemaVersion: 15,
       });
     });
 
@@ -135,7 +115,6 @@ describe('migrate', () => {
         migrated: true,
         applied: [1, 2, 10],
         reindex: true,
-        schemaVersion: 15,
       });
     });
 
@@ -148,23 +127,23 @@ describe('migrate', () => {
         migrated: false,
         applied: [],
         reindex: false,
-        schemaVersion: 15,
       });
     });
 
-    it('returns blocked info when migration requires newer schema', async () => {
+    it('runs migrations when the migrator reports them as runnable', async () => {
       jest.spyOn(migrator, 'migrate').mockResolvedValue({
         migrations: [
           { _id: testingDB.id(), delta: 1, description: 'migration test 1', reindex: false },
         ],
-        blocked: { delta: 2, requiresSchema: 18 },
+        blocked: null,
       });
 
       const result = await runMigration();
 
       expect(result).toEqual({
-        blocked: { delta: 2, requiresSchema: 18 },
-        currentSchema: 15,
+        migrated: true,
+        applied: [1],
+        reindex: false,
       });
     });
   });
