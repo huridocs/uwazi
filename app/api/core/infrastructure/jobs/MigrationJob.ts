@@ -1,5 +1,4 @@
 import { PrivilegedJob } from '#api/core/infrastructure/jobs/PrivilegedJob.js';
-import { tenants } from '#api/tenants/index.js';
 import { Tenant, Tenants } from '#api/tenants/tenantContext.js';
 import {
   Dispatchable,
@@ -10,7 +9,10 @@ import {
 import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
 import { Logger } from '#api/core/libs/logger/contracts/Logger.js';
 import { PgMigrator } from '#api/core/infrastructure/postgresql/PgMigrator.js';
-import { TenantMigrationRunner } from '#api/core/infrastructure/mongodb/TenantMigrationRunner.js';
+import {
+  TenantMigrationResult,
+  TenantMigrationRunner,
+} from '#api/core/infrastructure/mongodb/TenantMigrationRunner.js';
 
 type MigrationJobResults = {
   appliedDataDeltas: number[];
@@ -18,7 +20,8 @@ type MigrationJobResults = {
 };
 
 type MigrationJobParams = {
-  reindex?: boolean;
+  /** Tenant names that applied at least one migration flagged with `reindex: true` in this run */
+  reindexTenants?: string[];
   results?: MigrationJobResults;
 };
 
@@ -92,12 +95,15 @@ class MigrationJob implements Dispatchable {
       });
     }
 
-    const { reindex: deltaReindex, applied } = await this.runDeltaOnAllTenants(
+    const { reindexTenants: deltaReindexTenants, applied } = await this.runDeltaOnAllTenants(
       nextDelta,
       schemaVersion,
       heartbeat
     );
-    const nextReindex = jobParams.reindex || deltaReindex;
+    const nextReindexTenants = Array.from(
+      new Set([...jobParams.reindexTenants, ...deltaReindexTenants])
+    );
+    jobParams.reindexTenants = nextReindexTenants;
 
     if (applied && !jobParams.results.appliedDataDeltas.includes(nextDelta)) {
       jobParams.results.appliedDataDeltas.push(nextDelta);
@@ -106,12 +112,12 @@ class MigrationJob implements Dispatchable {
     if (applied) {
       this.deps.logger.info(`Applied data migration ${nextDelta}`, {
         delta: nextDelta,
-        reindex: nextReindex,
+        reindexTenants: nextReindexTenants,
       });
     } else {
       this.deps.logger.info(`Skipped data migration ${nextDelta} (already applied)`, {
         delta: nextDelta,
-        reindex: nextReindex,
+        reindexTenants: nextReindexTenants,
       });
     }
 
@@ -123,20 +129,20 @@ class MigrationJob implements Dispatchable {
 
     this.deps.logger.info('Dispatching next migration job');
     await this.deps.dispatcher.dispatch(MigrationJob, {
-      reindex: nextReindex,
+      reindexTenants: nextReindexTenants,
       results: jobParams.results,
     });
   }
 
   private normalizeParams(params: MigrationJobParams): Required<MigrationJobParams> {
     return {
-      reindex: params.reindex ?? false,
+      reindexTenants: params.reindexTenants ?? [],
       results: params.results ?? { appliedDataDeltas: [], appliedSchemaDeltas: [] },
     };
   }
 
   private async getNextGlobalDelta(schemaVersion: number): Promise<number | null> {
-    const tenantNames = Object.keys(tenants.tenants);
+    const tenantNames = Object.keys(this.deps.tenantsManager.tenants);
     let minDelta: number | null = null;
 
     const updateMinDelta = (delta: number) => {
@@ -147,8 +153,8 @@ class MigrationJob implements Dispatchable {
 
     for (const tenantName of tenantNames) {
       // eslint-disable-next-line no-await-in-loop
-      await tenants.run(async () => {
-        const tenant = tenants.current();
+      await this.deps.tenantsManager.run(async () => {
+        const tenant = this.deps.tenantsManager.current();
         const { runnable, blocked } = await this.deps.runner.getPendingMigrations(
           tenant,
           schemaVersion
@@ -168,13 +174,13 @@ class MigrationJob implements Dispatchable {
     delta: number,
     schemaVersion: number
   ): Promise<{ delta: number; requiresSchema: number } | null> {
-    const tenantNames = Object.keys(tenants.tenants);
+    const tenantNames = Object.keys(this.deps.tenantsManager.tenants);
     if (tenantNames.length === 0) return null;
 
     let blocked: { delta: number; requiresSchema: number } | null = null;
 
-    await tenants.run(async () => {
-      const tenant = tenants.current();
+    await this.deps.tenantsManager.run(async () => {
+      const tenant = this.deps.tenantsManager.current();
       const { runnable, blocked: pendingBlocked } = await this.deps.runner.getPendingMigrations(
         tenant,
         schemaVersion
@@ -197,18 +203,15 @@ class MigrationJob implements Dispatchable {
     delta: number,
     schemaVersion: number,
     heartbeat: HeartbeatCallback
-  ): Promise<{ reindex: boolean; applied: boolean }> {
-    const tenantNames = Object.keys(tenants.tenants);
-    const results: Array<{
-      status: string;
-      migration?: any;
-      blocked?: { requiresSchema?: number };
-    }> = [];
+  ): Promise<{ reindexTenants: string[]; applied: boolean }> {
+    const tenantNames = Object.keys(this.deps.tenantsManager.tenants);
+    const reindexTenants: string[] = [];
+    const results: TenantMigrationResult[] = [];
 
     for (const tenantName of tenantNames) {
       // eslint-disable-next-line no-await-in-loop
-      await tenants.run(async () => {
-        const tenant = tenants.current();
+      await this.deps.tenantsManager.run(async () => {
+        const tenant = this.deps.tenantsManager.current();
         if (!(await this.deps.runner.tenantExists(tenant))) {
           this.deps.logger.info(
             `Skipping tenant '${tenantName}': no settings collection, tenant is not ready`
@@ -218,6 +221,9 @@ class MigrationJob implements Dispatchable {
         }
         const result = await this.deps.runner.migrateDelta(tenant, delta, schemaVersion);
         results.push(result);
+        if (result.status === 'applied' && result.migration?.reindex === true) {
+          reindexTenants.push(tenantName);
+        }
       }, tenantName);
 
       // eslint-disable-next-line no-await-in-loop
@@ -242,7 +248,7 @@ class MigrationJob implements Dispatchable {
     const appliedMigration = results.find(r => r.status === 'applied')?.migration;
 
     return {
-      reindex: appliedMigration?.reindex === true,
+      reindexTenants,
       applied: appliedMigration !== undefined,
     };
   }
@@ -263,24 +269,25 @@ class MigrationJob implements Dispatchable {
       }
     );
 
-    if (jobParams.reindex) {
-      this.deps.logger.info('Reindex requested, reindexing all tenants');
-      await this.reindexAllTenants(heartbeat);
+    if (jobParams.reindexTenants.length > 0) {
+      this.deps.logger.info(
+        `Reindex requested for tenants: [${jobParams.reindexTenants.join(', ')}]`,
+        { tenants: jobParams.reindexTenants }
+      );
+      await this.reindexTenants(jobParams.reindexTenants, heartbeat);
     }
 
     const summary = [
       'Migration run complete',
       `  Data migrations applied: [${jobParams.results.appliedDataDeltas.join(', ') || 'none'}]`,
       `  Schema migrations applied: [${jobParams.results.appliedSchemaDeltas.join(', ') || 'none'}]`,
-      `  Reindex required: ${jobParams.reindex}`,
+      `  Reindexed tenants: [${jobParams.reindexTenants.join(', ') || 'none'}]`,
     ].join('\n');
 
     this.deps.logger.info(summary);
   }
 
-  private async reindexAllTenants(heartbeat: HeartbeatCallback): Promise<void> {
-    const tenantNames = Object.keys(this.deps.tenantsManager.tenants);
-
+  private async reindexTenants(tenantNames: string[], heartbeat: HeartbeatCallback): Promise<void> {
     for (const tenantName of tenantNames) {
       // eslint-disable-next-line no-await-in-loop
       await this.deps.tenantsManager.run(async () => {
@@ -304,10 +311,16 @@ class MigrationJob implements Dispatchable {
 
     try {
       await this.deps.reindexTenant();
-    } finally {
-      await this.deps.tenantsManager.setMaintenance(tenant.name, false);
-      this.deps.logger.info(`Tenant '${tenant.name}' removed from maintenance mode after reindex`);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      this.deps.logger.error(
+        `Reindex failed for tenant '${tenant.name}', keeping maintenance mode: ${message}`
+      );
+      throw error;
     }
+
+    await this.deps.tenantsManager.setMaintenance(tenant.name, false);
+    this.deps.logger.info(`Tenant '${tenant.name}' removed from maintenance mode after reindex`);
   }
 }
 

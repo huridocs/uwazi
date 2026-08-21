@@ -24,6 +24,8 @@ Backend is in `app/api`
 - **formatting check:** `yarn prettier`
 - **formatting fix:** `yarn prettier --write`
 - **Translations CSV update:** never edit translation keys manually in CSV files; run `yarn update-translations-csv` instead.
+- **Add schema migration:**  `yarn add-migration schema <name> <description>`
+- **Add data migration:**  `yarn add-migration data <name> <description>`
 
 ### Running tests (agents)
 
