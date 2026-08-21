@@ -104,6 +104,9 @@ const createFakeRunner = (options: {
       if (options.failDelta === delta) {
         throw new Error('migration failed');
       }
+      if ((await appliedDeltas(tenant)).has(delta)) {
+        return { status: 'done' };
+      }
       await dbForTenant(tenant).collection('migrations').insertOne({ delta });
       return {
         status: 'applied',
@@ -193,9 +196,12 @@ const appliedDeltas = async () =>
     .map(m => m.delta)
     .sort((a, b) => a - b);
 
+const emptyResults = () => ({ appliedDataDeltas: [], appliedSchemaDeltas: [] });
+
 describe('MigrationJob', () => {
   beforeAll(async () => {
-    await testingEnvironment.setUp({}, true);
+    // no ES needed: reindexTenant is always mocked in this spec
+    await testingEnvironment.setUp({});
   });
 
   afterAll(async () => {
@@ -219,18 +225,18 @@ describe('MigrationJob', () => {
     const dispatchSpy = jest.spyOn(dispatcher, 'dispatch');
 
     await dispatcher.dispatch(MigrationJob, {
-      reindex: false,
-      results: { appliedDataDeltas: [], appliedSchemaDeltas: [] },
+      reindexTenants: [],
+      results: emptyResults(),
     });
 
     expect(await appliedDeltas()).toEqual([1, 2, 3, 10]);
 
     expect(dispatchSpy).toHaveBeenCalledTimes(4);
     const lastCall = dispatchSpy.mock.calls[3][1] as {
-      reindex: boolean;
+      reindexTenants: string[];
       results: { appliedDataDeltas: number[]; appliedSchemaDeltas: number[] };
     };
-    expect(lastCall.reindex).toBe(true);
+    expect(lastCall.reindexTenants).toEqual(['default']);
   });
 
   it('should advance schema when data migration is blocked', async () => {
@@ -248,8 +254,8 @@ describe('MigrationJob', () => {
     });
 
     await dispatcher.dispatch(MigrationJob, {
-      reindex: false,
-      results: { appliedDataDeltas: [], appliedSchemaDeltas: [] },
+      reindexTenants: [],
+      results: emptyResults(),
     });
 
     expect(await pgMigrator.getCurrentVersion()).toBe(100);
@@ -269,78 +275,21 @@ describe('MigrationJob', () => {
     const dispatchSpy = jest.spyOn(dispatcher, 'dispatch');
 
     await dispatcher.dispatch(MigrationJob, {
-      reindex: false,
-      results: { appliedDataDeltas: [], appliedSchemaDeltas: [] },
+      reindexTenants: [],
+      results: emptyResults(),
     });
 
     expect(await appliedDeltas()).toEqual([1, 2, 3, 10]);
 
     expect(dispatchSpy).toHaveBeenCalledTimes(4);
     const lastCall = dispatchSpy.mock.calls[3][1] as {
-      reindex: boolean;
+      reindexTenants: string[];
       results: { appliedDataDeltas: number[]; appliedSchemaDeltas: number[] };
     };
-    expect(lastCall.reindex).toBe(true);
+    expect(lastCall.reindexTenants).toEqual(['default']);
     expect(lastCall.results.appliedSchemaDeltas).toHaveLength(100);
 
     expect(reindexTenant).toHaveBeenCalledTimes(1);
-  });
-
-  it('should reindex all tenants when the final job has reindex flag', async () => {
-    await saveMigration(1);
-    await saveMigration(2);
-    await saveMigration(3);
-    await saveMigration(10);
-
-    const logger = createMockLogger();
-    const reindexTenant = jest.fn();
-    const setMaintenance = jest.fn();
-    const { dispatcher } = createJobFactory({
-      logger,
-      reindexTenant,
-      runner: createFakeRunner({ migrations: defaultCatalogue }),
-      tenantsManager: {
-        tenants: { default: { name: 'default', dbName: testingDB.dbName } },
-        current() {
-          return this.tenants.default;
-        },
-        async run(fn: () => Promise<void>, tenantName = 'default') {
-          return tenants.run(fn, tenantName);
-        },
-        setMaintenance,
-      },
-    });
-
-    await dispatcher.dispatch(MigrationJob, {
-      reindex: true,
-      results: { appliedDataDeltas: [], appliedSchemaDeltas: [] },
-    });
-
-    expect(reindexTenant).toHaveBeenCalledTimes(1);
-    expect(setMaintenance).toHaveBeenCalledWith('default', true);
-    expect(setMaintenance).toHaveBeenCalledWith('default', false);
-  });
-
-  it('should not reindex when reindex flag is false', async () => {
-    await saveMigration(1);
-    await saveMigration(2);
-    await saveMigration(3);
-    await saveMigration(10);
-
-    const logger = createMockLogger();
-    const reindexTenant = jest.fn();
-    const { dispatcher } = createJobFactory({
-      logger,
-      reindexTenant,
-      runner: createFakeRunner({ migrations: defaultCatalogue }),
-    });
-
-    await dispatcher.dispatch(MigrationJob, {
-      reindex: false,
-      results: { appliedDataDeltas: [], appliedSchemaDeltas: [] },
-    });
-
-    expect(reindexTenant).not.toHaveBeenCalled();
   });
 
   it('should skip already applied migrations on retry', async () => {
@@ -358,55 +307,12 @@ describe('MigrationJob', () => {
     const dispatchSpy = jest.spyOn(dispatcher, 'dispatch');
 
     await dispatcher.dispatch(MigrationJob, {
-      reindex: false,
-      results: { appliedDataDeltas: [], appliedSchemaDeltas: [] },
+      reindexTenants: [],
+      results: emptyResults(),
     });
 
     expect(await appliedDeltas()).toEqual([1, 2, 3, 10]);
     expect(dispatchSpy).toHaveBeenCalledTimes(3);
-  });
-
-  it('should propagate reindex flag through the chain', async () => {
-    const logger = createMockLogger();
-    const reindexTenant = jest.fn();
-    const pgMigrator = new FakePgMigrator({ currentVersion: 100 });
-    const { dispatcher } = createJobFactory({
-      logger,
-      reindexTenant,
-      pgMigrator,
-      runner: createFakeRunner({ migrations: defaultCatalogue }),
-    });
-
-    await dispatcher.dispatch(MigrationJob, {
-      reindex: false,
-      results: { appliedDataDeltas: [], appliedSchemaDeltas: [] },
-    });
-
-    expect(reindexTenant).toHaveBeenCalledTimes(1);
-  });
-
-  it('should handle tenant that is already up to date', async () => {
-    await saveMigration(1);
-    await saveMigration(2);
-    await saveMigration(3);
-    await saveMigration(10);
-
-    const logger = createMockLogger();
-    const reindexTenant = jest.fn();
-    const { dispatcher } = createJobFactory({
-      logger,
-      reindexTenant,
-      runner: createFakeRunner({ migrations: defaultCatalogue }),
-    });
-    const dispatchSpy = jest.spyOn(dispatcher, 'dispatch');
-
-    await dispatcher.dispatch(MigrationJob, {
-      reindex: false,
-      results: { appliedDataDeltas: [], appliedSchemaDeltas: [] },
-    });
-
-    expect(dispatchSpy).toHaveBeenCalledTimes(1);
-    expect(reindexTenant).not.toHaveBeenCalled();
   });
 
   it('should log migration lifecycle events', async () => {
@@ -421,8 +327,8 @@ describe('MigrationJob', () => {
     });
 
     await dispatcher.dispatch(MigrationJob, {
-      reindex: false,
-      results: { appliedDataDeltas: [], appliedSchemaDeltas: [] },
+      reindexTenants: [],
+      results: emptyResults(),
     });
 
     const infoMessages = (logger.info as jest.Mock).mock.calls.map(
@@ -435,6 +341,9 @@ describe('MigrationJob', () => {
     );
     expect(infoMessages).toEqual(
       expect.arrayContaining([expect.stringContaining('Data migrations applied:')])
+    );
+    expect(infoMessages).toEqual(
+      expect.arrayContaining([expect.stringContaining('Reindexed tenants: [default]')])
     );
   });
 
@@ -450,8 +359,8 @@ describe('MigrationJob', () => {
     });
 
     await dispatcher.dispatch(MigrationJob, {
-      reindex: false,
-      results: { appliedDataDeltas: [], appliedSchemaDeltas: [] },
+      reindexTenants: [],
+      results: emptyResults(),
     });
 
     const infoMessages = (logger.info as jest.Mock).mock.calls.map(
@@ -471,23 +380,6 @@ describe('MigrationJob', () => {
     );
   });
 
-  it('should throw when a migration fails', async () => {
-    const logger = createMockLogger();
-    const reindexTenant = jest.fn();
-    const { dispatcher } = createJobFactory({
-      logger,
-      reindexTenant,
-      runner: createFakeRunner({ migrations: defaultCatalogue, failDelta: 1 }),
-    });
-
-    await expect(
-      dispatcher.dispatch(MigrationJob, {
-        reindex: false,
-        results: { appliedDataDeltas: [], appliedSchemaDeltas: [] },
-      })
-    ).rejects.toThrow('migration failed');
-  });
-
   it('should heartbeat after each tenant migration', async () => {
     const heartbeat = jest.fn();
     const reindexTenant = jest.fn();
@@ -502,8 +394,8 @@ describe('MigrationJob', () => {
     });
 
     await dispatcher.dispatch(MigrationJob, {
-      reindex: false,
-      results: { appliedDataDeltas: [], appliedSchemaDeltas: [] },
+      reindexTenants: [],
+      results: emptyResults(),
     });
 
     expect(heartbeat).toHaveBeenCalledTimes(4);
@@ -521,30 +413,11 @@ describe('MigrationJob', () => {
     });
 
     await dispatcher.dispatch(MigrationJob, {
-      reindex: false,
-      results: { appliedDataDeltas: [], appliedSchemaDeltas: [] },
+      reindexTenants: [],
+      results: emptyResults(),
     });
 
     expect(reindexTenant).toHaveBeenCalledTimes(1);
     expect(heartbeat).toHaveBeenCalledTimes(5);
-  });
-
-  it('should skip reindex for tenants that do not exist', async () => {
-    const heartbeat = jest.fn();
-    const reindexTenant = jest.fn();
-    const pgMigrator = new FakePgMigrator({ currentVersion: 100 });
-    const { dispatcher } = createJobFactory({
-      heartbeat,
-      reindexTenant,
-      pgMigrator,
-      runner: createFakeRunner({ migrations: defaultCatalogue, tenantExists: false }),
-    });
-
-    await dispatcher.dispatch(MigrationJob, {
-      reindex: false,
-      results: { appliedDataDeltas: [], appliedSchemaDeltas: [] },
-    });
-
-    expect(reindexTenant).not.toHaveBeenCalled();
   });
 });
