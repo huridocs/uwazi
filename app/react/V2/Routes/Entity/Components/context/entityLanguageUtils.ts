@@ -55,16 +55,14 @@ const resolveMainDocument = (
 };
 
 const fetchEntityForLanguage = async (sharedId: string, nextLanguage: string) => {
-  const cached = entityLoaderCache.getEntity(sharedId, nextLanguage, {
-    requireRelationships: true,
-  });
+  const cached = entityLoaderCache.getEntity(sharedId, nextLanguage);
   if (cached) {
     return cached;
   }
 
   const [fetched, error] = await httpServices.entities.getBySharedId(sharedId, {
     language: nextLanguage,
-    omitRelationships: false,
+    omitRelationships: true,
   });
   if (error || !fetched?.[0]?._id) {
     return undefined;

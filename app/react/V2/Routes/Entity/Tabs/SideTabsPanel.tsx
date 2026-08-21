@@ -3,8 +3,8 @@ import { useAtomValue } from 'jotai';
 import type { Entity as EntityType, FileType } from '#V2/api/entities/types.js';
 import { settingsAtom, templatesAtom } from '#V2/atoms/index.js';
 import { localeAtom } from '#V2/atoms/translationsAtoms.js';
-import { countEntityFiles } from '#V2/formatters/index.js';
-import { useMetadataEditing } from '../Components/context/index.js';
+import { countEntityFiles, countEntityRelationships } from '#V2/formatters/index.js';
+import { useMetadataEditing, useDirectedRelationships } from '../Components/context/index.js';
 import { useEntityHashParams } from '../entityUrlState.js';
 import { SEARCH_PARAM } from '../urlParams.js';
 import { getSideTabButtons, type FilesSideTabsOptions } from './sideTabSets.js';
@@ -35,6 +35,7 @@ const SideTabsPanel = ({
   filesSideTabs,
 }: SideTabsPanelProps) => {
   const { isDirty } = useMetadataEditing();
+  const relationships = useDirectedRelationships();
   const hashParams = useEntityHashParams();
   const searchDirty = Boolean(hashParams.get(SEARCH_PARAM)?.trim());
   const templates = useAtomValue(templatesAtom);
@@ -56,10 +57,16 @@ const SideTabsPanel = ({
         metadataDirty: isDirty,
         searchDirty,
         filesCount,
+        relationshipsCount: countEntityRelationships(
+          entity.sharedId,
+          relationships,
+          mainDocument?._id
+        ),
       }),
     [
       activeMainTab,
       entity,
+      relationships,
       mainDocument?.filename,
       mainDocument?._id,
       filesSideTabs,

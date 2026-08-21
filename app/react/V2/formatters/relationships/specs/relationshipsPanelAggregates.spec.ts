@@ -3,7 +3,7 @@ import { aggregateKey, deriveAggregates, listAggregates } from '../relationships
 
 const marker = (id: string, target: string, type = 'relA'): RelationshipMarker => ({
   _id: id,
-  view: {
+  relationship: {
     _id: id,
     hub: `hub-${id}`,
     type,
