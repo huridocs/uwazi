@@ -66,7 +66,7 @@ const deriveHub = (hubId: string, markers: RelationshipMarker[]): RelationshipHu
 
   return {
     id: hubId,
-    relationType: markers[0]?.view.type ?? '',
+    relationType: markers[0]?.relationship.type ?? '',
     members: Array.from(members.values()),
     firstPage,
     markerIds,
@@ -76,7 +76,7 @@ const deriveHub = (hubId: string, markers: RelationshipMarker[]): RelationshipHu
 const groupMarkersByHub = (markers: RelationshipMarker[]) => {
   const byHub = new Map<string, RelationshipMarker[]>();
   for (const marker of markers) {
-    const hubId = marker.view.hub;
+    const hubId = marker.relationship.hub;
     const list = byHub.get(hubId) ?? [];
     list.push(marker);
     byHub.set(hubId, list);

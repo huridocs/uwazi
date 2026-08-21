@@ -1,7 +1,6 @@
-import { Entity } from '#V2/api/entities/types.js';
 import { RelationshipMarker, firstPageOf, toMarker } from '#V2/Components/Relationships/types.js';
+import type { DirectedRelationship } from './types.js';
 import { counterpartAnchorOf, selfPointer } from './types.js';
-import { formatRelationships } from './formatRelationships.js';
 import { buildPanelListEntries } from './relationshipsPanelDerivation.js';
 import { buildMatcher } from './relationshipsPanelSearchQuery.js';
 
@@ -27,8 +26,10 @@ const computeStats = (
   aggregates: buildPanelListEntries(markers, selfSharedId).length,
 });
 
-const projectRelationshipMarkers = (entity: Entity): RelationshipMarker[] =>
-  formatRelationships(entity).map(view => toMarker(view, entity.sharedId));
+const projectRelationshipMarkers = (
+  selfSharedId: string,
+  relationships: readonly DirectedRelationship[]
+): RelationshipMarker[] => relationships.map(relationship => toMarker(relationship, selfSharedId));
 
 const filterMarkersForDocument = (
   markers: RelationshipMarker[],
@@ -37,26 +38,37 @@ const filterMarkersForDocument = (
 ): RelationshipMarker[] => {
   if (!documentId) return markers;
   return markers.filter(marker => {
-    const self = selfPointer(marker.view, selfSharedId);
+    const self = selfPointer(marker.relationship, selfSharedId);
     if (self.type === 'entity') return true;
     return self.file === documentId;
   });
 };
 
-const projectRelationshipsPanel = (entity: Entity): RelationshipsPanelProjection => {
-  const markers = projectRelationshipMarkers(entity);
-  return { markers, stats: computeStats(markers, entity.sharedId) };
+const projectRelationshipsPanel = (
+  selfSharedId: string,
+  relationships: readonly DirectedRelationship[]
+): RelationshipsPanelProjection => {
+  const markers = projectRelationshipMarkers(selfSharedId, relationships);
+  return { markers, stats: computeStats(markers, selfSharedId) };
 };
 
-const countEntityRelationships = (entity: Entity, documentId?: string): number =>
-  filterMarkersForDocument(projectRelationshipMarkers(entity), documentId, entity.sharedId).length;
+const countEntityRelationships = (
+  selfSharedId: string,
+  relationships: readonly DirectedRelationship[],
+  documentId?: string
+): number =>
+  filterMarkersForDocument(
+    projectRelationshipMarkers(selfSharedId, relationships),
+    documentId,
+    selfSharedId
+  ).length;
 
 const markerHaystack = (
   marker: RelationshipMarker,
   relationshipTypeName: string,
   selfSharedId: string
 ): string => {
-  const counterpartText = counterpartAnchorOf(marker.view, selfSharedId)?.text ?? '';
+  const counterpartText = counterpartAnchorOf(marker.relationship, selfSharedId)?.text ?? '';
   const selfText = marker.anchor?.text ?? '';
   return `${counterpartText} ${selfText} ${marker.target.title} ${relationshipTypeName}`.toLowerCase();
 };
@@ -117,7 +129,7 @@ const filterBySearch = (
   const matcher = buildMatcher(searchQuery);
   if (!matcher) return markers;
   return markers.filter(marker =>
-    matcher(markerHaystack(marker, relationshipTypeName(marker.view.type), selfSharedId))
+    matcher(markerHaystack(marker, relationshipTypeName(marker.relationship.type), selfSharedId))
   );
 };
 
@@ -136,7 +148,11 @@ const filterAndSortMarkers = (
   options: RelationshipsPanelFilterOptions
 ): RelationshipMarker[] => {
   let result = filterByCluster(markers, options.activeClusterRefIds);
-  result = filterByIds(result, activeFacetIds(options.relTypeFilters), marker => marker.view.type);
+  result = filterByIds(
+    result,
+    activeFacetIds(options.relTypeFilters),
+    marker => marker.relationship.type
+  );
   result = filterByIds(
     result,
     activeFacetIds(options.entityTypeFilters),

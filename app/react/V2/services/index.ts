@@ -53,6 +53,10 @@ export type {
   RelationshipTypesService,
   RelationshipTypeInput,
 } from './contracts/RelationshipTypesService.js';
+export type {
+  RelationshipsQueryService,
+  RelationshipQueryReadOptions,
+} from './contracts/RelationshipsQueryService.js';
 export type { RelationshipType } from '#shared/contracts/RelationshipType.js';
 export type { TemplatesService, TemplateInput } from './contracts/TemplatesService.js';
 export type { Template } from '#shared/contracts/Template.js';

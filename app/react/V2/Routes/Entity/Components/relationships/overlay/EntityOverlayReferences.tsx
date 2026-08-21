@@ -18,8 +18,8 @@ const EntityOverlayReferences = ({ markers, selfSharedId }: EntityOverlayReferen
       markers.map(marker => {
         const { referenceText, referencePage } = relationshipReferenceDisplay(marker, selfSharedId);
         const relationshipTypeName =
-          relationshipTypes.find(type => type._id === marker.view.type)?.name ??
-          marker.view.relationshipTypeName ??
+          relationshipTypes.find(type => type._id === marker.relationship.type)?.name ??
+          marker.relationship.relationshipTypeName ??
           '';
         return { marker, referenceText, referencePage, relationshipTypeName };
       }),

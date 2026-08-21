@@ -3,8 +3,6 @@ import type { Meta, StoryObj } from '@storybook/react-webpack5';
 import { ColorDot } from '#V2/Components/UI/ColorDot.js';
 import { CollapsibleSectionHeader } from '#V2/Components/UI/CollapsibleSectionHeader.js';
 import { FacetSection } from '#V2/Components/UI/FacetSection.js';
-import { RelationshipsPanelFiltersProvider } from '#V2/Routes/Entity/Components/context/RelationshipsPanelFiltersContext.js';
-import { RelationshipsTreeBranch } from '#V2/Routes/Entity/Components/relationships/index.js';
 
 const templateColors: Record<string, string> = {
   person: '#f59e0b',
@@ -17,7 +15,7 @@ const FacetPreview = () => {
   const toggle = (id: string) => setSelected(current => ({ ...current, [id]: !current[id] }));
 
   return (
-    <div className="max-w-[340px] overflow-hidden rounded-md border border-border-soft bg-paper shadow-lg">
+    <div className="max-w-85 overflow-hidden rounded-md border border-border-soft bg-paper shadow-lg">
       <div className="border-b border-border-soft px-4 py-2.5 text-xs font-semibold text-ink-secondary">
         Filters
       </div>
@@ -69,29 +67,42 @@ const GroupedPreview = () => {
   );
 };
 
-const TreePreview = () => (
-  <RelationshipsPanelFiltersProvider>
+const TreePreview = () => {
+  const [rootExpanded, setRootExpanded] = useState(true);
+  const [personExpanded, setPersonExpanded] = useState(true);
+
+  return (
     <div className="max-w-md rounded-md bg-paper p-2">
-      <RelationshipsTreeBranch
+      <CollapsibleSectionHeader
+        variant="tree"
         title="This document"
         color={templateColors.document}
         count={4}
-        markerIds={[]}
-      >
-        <RelationshipsTreeBranch
-          title="Person"
-          color={templateColors.person}
-          count={3}
-          markerIds={[]}
-        >
-          <p className="py-1.5 pl-2 text-xs text-ink-secondary">Mexico</p>
-          <p className="py-1.5 pl-2 text-xs text-ink-secondary">Ana García</p>
-        </RelationshipsTreeBranch>
-        <p className="py-1.5 pl-2 text-xs text-ink-secondary">Country · Mexico</p>
-      </RelationshipsTreeBranch>
+        expanded={rootExpanded}
+        onToggle={() => setRootExpanded(current => !current)}
+      />
+      {rootExpanded && (
+        <div className="ml-3.5">
+          <CollapsibleSectionHeader
+            variant="tree"
+            title="Person"
+            color={templateColors.person}
+            count={3}
+            expanded={personExpanded}
+            onToggle={() => setPersonExpanded(current => !current)}
+          />
+          {personExpanded && (
+            <div className="ml-3.5">
+              <p className="py-1.5 pl-2 text-xs text-ink-secondary">Mexico</p>
+              <p className="py-1.5 pl-2 text-xs text-ink-secondary">Ana García</p>
+            </div>
+          )}
+          <p className="py-1.5 pl-2 text-xs text-ink-secondary">Country · Mexico</p>
+        </div>
+      )}
     </div>
-  </RelationshipsPanelFiltersProvider>
-);
+  );
+};
 
 const meta: Meta = {
   title: 'Components/UI/CollapsibleSectionHeader',

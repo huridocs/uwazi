@@ -1,5 +1,4 @@
-import type { Entity } from '#V2/api/entities/types.js';
-import { formatRelationships } from './formatRelationships.js';
+import type { DirectedRelationship } from './types.js';
 
 const UNLABELED_TYPE_ID = 'no_label';
 
@@ -25,17 +24,17 @@ const typeNameOf = (typeId: string, relationshipTypes: RelationshipTypeName[]): 
 };
 
 const buildRelationshipsSsrIndex = (
-  entity: Entity,
+  relationships: readonly DirectedRelationship[],
   relationshipTypes: RelationshipTypeName[]
 ): RelationshipsSsrIndexGroup[] => {
   const groups = new Map<string, Map<string, string>>();
 
-  formatRelationships(entity).forEach(view => {
-    const sharedId = view.to.entity;
-    const title = view.to.entityTitle;
+  relationships.forEach(relationship => {
+    const sharedId = relationship.to.entity;
+    const title = relationship.to.entityTitle;
     if (!sharedId || !title) return;
 
-    const typeId = view.type || UNLABELED_TYPE_ID;
+    const typeId = relationship.type || UNLABELED_TYPE_ID;
     const entities = groups.get(typeId) ?? new Map<string, string>();
     if (!entities.has(sharedId)) {
       entities.set(sharedId, title);

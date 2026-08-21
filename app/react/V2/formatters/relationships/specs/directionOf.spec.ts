@@ -1,6 +1,6 @@
-import { anchorOf, counterpartAnchorOf, directionOf, type RelationshipView } from '../types.js';
+import { anchorOf, counterpartAnchorOf, directionOf, type DirectedRelationship } from '../types.js';
 
-const outgoingView: RelationshipView = {
+const outgoingRelationship: DirectedRelationship = {
   _id: 'out',
   hub: 'hub-out',
   type: 'rel',
@@ -22,7 +22,7 @@ const outgoingView: RelationshipView = {
   },
 };
 
-const incomingView: RelationshipView = {
+const incomingRelationship: DirectedRelationship = {
   _id: 'in',
   hub: 'hub-in',
   type: 'rel',
@@ -46,15 +46,15 @@ const incomingView: RelationshipView = {
 
 describe('directionOf', () => {
   it('returns outgoing when the text anchor is on the self side', () => {
-    expect(directionOf(outgoingView, 'self')).toBe('outgoing');
+    expect(directionOf(outgoingRelationship, 'self')).toBe('outgoing');
   });
 
   it('returns incoming when the text anchor is on the target side', () => {
-    expect(directionOf(incomingView, 'self')).toBe('incoming');
+    expect(directionOf(incomingRelationship, 'self')).toBe('incoming');
   });
 
   it('returns outgoing for entity-level links where the partner carries the type', () => {
-    const entityLevel: RelationshipView = {
+    const entityLevel: DirectedRelationship = {
       _id: 'el-out',
       hub: 'hub-el-out',
       type: 'rel',
@@ -77,7 +77,7 @@ describe('directionOf', () => {
   });
 
   it('returns incoming for entity-level links where self carries the type', () => {
-    const entityLevel: RelationshipView = {
+    const entityLevel: DirectedRelationship = {
       _id: 'el-in',
       hub: 'hub-el-in',
       type: 'rel',
@@ -102,18 +102,18 @@ describe('directionOf', () => {
 
 describe('anchorOf', () => {
   it('returns the self-side text reference', () => {
-    expect(anchorOf(outgoingView, 'self')?.text).toBe('quoted');
+    expect(anchorOf(outgoingRelationship, 'self')?.text).toBe('quoted');
   });
 
   it('returns undefined when the self side is entity-level', () => {
-    expect(anchorOf(incomingView, 'self')).toBeUndefined();
+    expect(anchorOf(incomingRelationship, 'self')).toBeUndefined();
   });
 });
 
 describe('counterpartAnchorOf', () => {
   it('returns the target-side text reference', () => {
-    const view: RelationshipView = {
-      ...outgoingView,
+    const relationship: DirectedRelationship = {
+      ...outgoingRelationship,
       to: {
         type: 'textReference',
         entity: 'target',
@@ -125,10 +125,10 @@ describe('counterpartAnchorOf', () => {
       },
     };
 
-    expect(counterpartAnchorOf(view, 'self')?.text).toBe('target passage');
+    expect(counterpartAnchorOf(relationship, 'self')?.text).toBe('target passage');
   });
 
   it('returns undefined when the target side is entity-level', () => {
-    expect(counterpartAnchorOf(outgoingView, 'self')).toBeUndefined();
+    expect(counterpartAnchorOf(outgoingRelationship, 'self')).toBeUndefined();
   });
 });
