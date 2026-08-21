@@ -60,7 +60,7 @@ const marker = (
 
   return {
     _id: id,
-    view: {
+    relationship: {
       _id: id,
       hub: 'hub-1',
       type: relType,
@@ -146,7 +146,7 @@ describe('RelationshipPanelRow', () => {
     const targetSharedId = 'target-1';
     const m: RelationshipMarker = {
       _id: '1',
-      view: {
+      relationship: {
         _id: '1',
         hub: 'hub-1',
         type: 'rel-type',

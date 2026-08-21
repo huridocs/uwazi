@@ -280,13 +280,17 @@ describe('formatRelationships', () => {
     const result = formatRelationships('sharedId-multi', rows);
 
     expect(result).toHaveLength(3);
-    expect(result.map(view => view.to.entityTitle).sort()).toEqual(['A2', 'Ecuador', 'Honduras']);
-    result.forEach(view => {
-      expect(view.from.entity).toBe('sharedId-multi');
+    expect(result.map(relationship => relationship.to.entityTitle).sort()).toEqual([
+      'A2',
+      'Ecuador',
+      'Honduras',
+    ]);
+    result.forEach(relationship => {
+      expect(relationship.from.entity).toBe('sharedId-multi');
     });
   });
 
-  it('emits one view per hub target', () => {
+  it('emits one relationship per hub target', () => {
     const rows: RelationshipHubRow[] = [
       {
         template: 'relationshipType1',

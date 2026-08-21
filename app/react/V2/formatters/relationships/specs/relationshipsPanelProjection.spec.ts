@@ -97,10 +97,11 @@ const multiFileRows: RelationshipHubRow[] = [
   },
 ];
 
-const viewsOf = (hubRows: readonly RelationshipHubRow[]) => formatRelationships('self1', hubRows);
+const relationshipsOf = (hubRows: readonly RelationshipHubRow[]) =>
+  formatRelationships('self1', hubRows);
 
 const project = (hubRows: readonly RelationshipHubRow[]) =>
-  projectRelationshipsPanel('self1', viewsOf(hubRows));
+  projectRelationshipsPanel('self1', relationshipsOf(hubRows));
 
 describe('relationshipsPanelProjection', () => {
   it('projects markers and stats from hub rows', () => {
@@ -146,8 +147,8 @@ describe('relationshipsPanelProjection', () => {
         entityData: { title: 'Other', template: 't2' },
       },
     ];
-    expect(countEntityRelationships('self1', viewsOf(countRows))).toBe(3);
-    expect(countEntityRelationships('self1', viewsOf(countRows), 'f1')).toBe(2);
+    expect(countEntityRelationships('self1', relationshipsOf(countRows))).toBe(3);
+    expect(countEntityRelationships('self1', relationshipsOf(countRows), 'f1')).toBe(2);
   });
 });
 
@@ -199,7 +200,7 @@ describe('relationshipsPanelProjection filters', () => {
       relTypeFilters: { relA: true },
     });
     expect(filtered).toHaveLength(1);
-    expect(filtered[0]?.view.type).toBe('relA');
+    expect(filtered[0]?.relationship.type).toBe('relA');
   });
 
   it('filters markers by active cluster ids', () => {

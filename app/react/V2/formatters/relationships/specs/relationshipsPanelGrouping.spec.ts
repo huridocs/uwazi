@@ -23,9 +23,9 @@ const marker = (
   } = {}
 ): RelationshipMarker => ({
   _id: id,
-  view: {
+  relationship: {
     _id: id,
-    hub: overrides.view?.hub ?? `hub-${id}`,
+    hub: overrides.relationship?.hub ?? `hub-${id}`,
     type: overrides.type ?? 'relA',
     from: {
       type: 'entity',

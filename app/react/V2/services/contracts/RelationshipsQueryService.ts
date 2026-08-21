@@ -4,7 +4,7 @@ import type {
   RelationshipHubRow,
   RelationshipResolved,
 } from '#V2/api/relationships/types.js';
-import type { RelationshipView } from '#V2/formatters/relationships/types.js';
+import type { DirectedRelationship } from '#V2/formatters/relationships/types.js';
 import type { ServiceRequestOptions } from './ServiceRequestOptions.js';
 
 type RelationshipQueryReadOptions = ServiceRequestOptions & {
@@ -37,7 +37,7 @@ interface RelationshipsQueryService {
     hubs: readonly RelationshipHubRow[],
     overlays?: RelationshipHubOverlays
   ): RelationshipHubRow[];
-  toViews(sharedId: string, hubs: readonly RelationshipHubRow[]): RelationshipView[];
+  toRelationships(sharedId: string, hubs: readonly RelationshipHubRow[]): DirectedRelationship[];
 }
 
 export type {

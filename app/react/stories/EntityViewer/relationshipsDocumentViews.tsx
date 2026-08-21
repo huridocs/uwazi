@@ -15,7 +15,7 @@ import {
 } from '#V2/Routes/Entity/Components/context/index.js';
 import { useActiveRelationshipHighlight } from '#V2/Routes/Entity/Components/document/index.js';
 import { projectRelationshipMarkers } from '#V2/formatters/relationships/relationshipsPanelProjection.js';
-import { relationshipViewsFromEntity } from '#V2/Routes/Entity/Components/relationships/specs/helpers/relationshipQueryFromEntity.js';
+import { directedRelationshipsFromEntity } from '#V2/Routes/Entity/Components/relationships/specs/helpers/relationshipQueryFromEntity.js';
 import { apiEntity, templates } from '../fixtures/referencesFixtures.js';
 import { RelationshipsStoryProvider } from './RelationshipsStoryProvider.js';
 
@@ -125,7 +125,7 @@ const RelationshipsDocumentView = ({
       </div>
       <RelationshipsDisplay
         selfSharedId={entity.sharedId}
-        views={relationshipViewsFromEntity(entity)}
+        relationships={directedRelationshipsFromEntity(entity)}
         document={mainDocument}
         currentPage={currentPage}
         pageHeight={pageHeight}
@@ -201,7 +201,7 @@ const RelationshipsSyncedDocumentView = ({
     (relationshipId: string) => {
       const marker = projectRelationshipMarkers(
         entity.sharedId,
-        relationshipViewsFromEntity(entity)
+        directedRelationshipsFromEntity(entity)
       ).find(item => item._id === relationshipId);
       if (marker) {
         selectRelationship(marker, { scrollPanel: true });
@@ -235,7 +235,7 @@ const RelationshipsSyncedDocumentView = ({
       {!isMobile && (
         <RelationshipsDisplay
           selfSharedId={entity.sharedId}
-          views={relationshipViewsFromEntity(entity)}
+          relationships={directedRelationshipsFromEntity(entity)}
           document={mainDocument}
           currentPage={currentPage}
           pageHeight={pageHeight}

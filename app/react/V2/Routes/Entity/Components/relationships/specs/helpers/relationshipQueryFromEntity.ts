@@ -8,7 +8,7 @@ import type {
   RelationshipSummary,
   SelectionRect,
 } from '#V2/api/relationships/types.js';
-import type { RelationshipView } from '#V2/formatters/relationships/types.js';
+import type { DirectedRelationship } from '#V2/formatters/relationships/types.js';
 import { httpRelationshipsQueryService } from '#V2/services/http/HttpRelationshipsQueryService.js';
 
 const toSelectionRect = (
@@ -130,8 +130,11 @@ const relationshipHubRowsFromEntity = (entity: EntityQuerySource): RelationshipH
     return hubRow ? [hubRow] : [];
   });
 
-const relationshipViewsFromEntity = (entity: EntityQuerySource): RelationshipView[] =>
-  httpRelationshipsQueryService.toViews(entity.sharedId, relationshipHubRowsFromEntity(entity));
+const directedRelationshipsFromEntity = (entity: EntityQuerySource): DirectedRelationship[] =>
+  httpRelationshipsQueryService.toRelationships(
+    entity.sharedId,
+    relationshipHubRowsFromEntity(entity)
+  );
 
 const relationshipsQueryStubFromEntity = (entity: EntityQuerySource, fileId?: string) => ({
   loadSummary: async (): Promise<ApiResponse<RelationshipHubRow[] | undefined>> => [
@@ -148,6 +151,6 @@ const relationshipsQueryStubFromEntity = (entity: EntityQuerySource, fileId?: st
 export {
   relationshipQueryFromEntity,
   relationshipResolvedFromEntity,
-  relationshipViewsFromEntity,
+  directedRelationshipsFromEntity,
   relationshipsQueryStubFromEntity,
 };

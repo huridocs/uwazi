@@ -12,9 +12,9 @@ import {
   useEnsureAnchors,
   useEnsureResolved,
   useRelationshipQueryStatus,
-  useRelationshipViews,
+  useDirectedRelationships,
 } from '#V2/Routes/Entity/Components/context/index.js';
-import type { RelationshipView } from '#V2/formatters/relationships/types.js';
+import type { DirectedRelationship } from '#V2/formatters/relationships/types.js';
 import { ServicesProvider } from '#V2/services/ServicesProvider.js';
 import { createTestServices } from '#V2/testing/createTestServices.js';
 import { TestAtomStoreProvider } from '#V2/testing/index.js';
@@ -43,7 +43,7 @@ const extraHubRows: RelationshipHubRow[] = [
 ];
 
 const useQuery = () => ({
-  views: useRelationshipViews(),
+  relationships: useDirectedRelationships(),
   status: useRelationshipQueryStatus(),
   ensureAnchors: useEnsureAnchors(),
   ensureResolved: useEnsureResolved(),
@@ -55,11 +55,11 @@ type Harness = {
   mainDocument?: FileType;
 };
 
-const hasQuoteText = (views: readonly RelationshipView[]) =>
-  views.some(
-    view =>
-      (view.from.type === 'textReference' && Boolean(view.from.text)) ||
-      (view.to.type === 'textReference' && Boolean(view.to.text))
+const hasQuoteText = (relationships: readonly DirectedRelationship[]) =>
+  relationships.some(
+    relationship =>
+      (relationship.from.type === 'textReference' && Boolean(relationship.from.text)) ||
+      (relationship.to.type === 'textReference' && Boolean(relationship.to.text))
   );
 
 type QueryMocks = {
@@ -134,7 +134,7 @@ describe('RelationshipsQueryProvider', () => {
     expect(loadResolved).toHaveBeenCalledTimes(1);
     expect(loadSummary).not.toHaveBeenCalled();
     expect(result.current.status.resolved).toBe(true);
-    expect(hasQuoteText(result.current.views)).toBe(true);
+    expect(hasQuoteText(result.current.relationships)).toBe(true);
 
     harness.seed = revalidatedSeed;
     rerender();
@@ -142,8 +142,10 @@ describe('RelationshipsQueryProvider', () => {
     expect(loadSummary).not.toHaveBeenCalled();
     expect(loadResolved).toHaveBeenCalledTimes(1);
     expect(result.current.status.resolved).toBe(false);
-    expect(result.current.views.some(view => view.to.entity === 'new-entity')).toBe(true);
-    expect(hasQuoteText(result.current.views)).toBe(false);
+    expect(
+      result.current.relationships.some(relationship => relationship.to.entity === 'new-entity')
+    ).toBe(true);
+    expect(hasQuoteText(result.current.relationships)).toBe(false);
   });
 
   it('loads summary only when UI language does not match seed', async () => {

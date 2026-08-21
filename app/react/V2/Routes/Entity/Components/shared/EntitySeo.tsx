@@ -11,7 +11,7 @@ import type { MetadataProperty } from '#V2/formatters/types.js';
 import { useFormatMetadata } from '#V2/Components/Metadata/hooks/useFormatMetadata.js';
 import { buildRelationshipsSsrIndex } from '#V2/formatters/relationships/buildRelationshipsSsrIndex.js';
 import { RelationshipsSsrIndex } from '../relationships/panel/RelationshipsSsrIndex.js';
-import { useRelationshipViews } from '../context/RelationshipsQueryProvider.js';
+import { useDirectedRelationships } from '../context/RelationshipsQueryProvider.js';
 
 type EntitySeoProps = {
   entity: Entity;
@@ -56,7 +56,7 @@ const EntitySeo = ({ entity }: EntitySeoProps) => {
   const templates = useAtomValue(templatesAtom);
   const relationshipTypes = useAtomValue(relationshipTypesAtom);
   const settings = useAtomValue(settingsAtom);
-  const views = useRelationshipViews();
+  const relationships = useDirectedRelationships();
   const { metadata, entityTemplate } = useFormatMetadata(entity, templates, {
     groupGeolocationProperties: true,
   });
@@ -74,10 +74,10 @@ const EntitySeo = ({ entity }: EntitySeoProps) => {
 
   const relationTitles = useMemo(
     () =>
-      buildRelationshipsSsrIndex(views, relationshipTypes)
+      buildRelationshipsSsrIndex(relationships, relationshipTypes)
         .flatMap(group => group.entities.map(related => related.title))
         .slice(0, 30),
-    [relationshipTypes, views]
+    [relationshipTypes, relationships]
   );
 
   const description = useMemo(() => {

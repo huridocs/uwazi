@@ -12,7 +12,7 @@ const httpRelationshipsQueryService: RelationshipsQueryService = {
     relationshipsQueryApi.getResolved(sharedId, language, headers),
   compose: (hubs, overlays = {}) =>
     mergeRelationshipHubs(hubs, overlays.anchors ?? [], overlays.resolved ?? []),
-  toViews: (sharedId, hubs) => formatRelationships(sharedId, hubs),
+  toRelationships: (sharedId, hubs) => formatRelationships(sharedId, hubs),
 };
 
 export { httpRelationshipsQueryService };

@@ -104,12 +104,12 @@ describe('HttpRelationshipsQueryService', () => {
     });
   });
 
-  it('toViews maps composed hubs to relationship views', () => {
+  it('toRelationships maps composed hubs to directed relationships', () => {
     const hubs = httpRelationshipsQueryService.compose(summary, { anchors, resolved });
-    const views = httpRelationshipsQueryService.toViews('source', hubs);
+    const relationships = httpRelationshipsQueryService.toRelationships('source', hubs);
 
-    expect(views).toHaveLength(1);
-    expect(views[0]).toEqual({
+    expect(relationships).toHaveLength(1);
+    expect(relationships[0]).toEqual({
       _id: 'target',
       hub: 'h1',
       type: 'relA',

@@ -1,5 +1,5 @@
 import type { RelationshipHubRow } from '#V2/api/relationships/types.js';
-import { Pointer, RelationshipView, Selection } from './types.js';
+import { Pointer, DirectedRelationship, Selection } from './types.js';
 
 type Rectangle = { top: number; left: number; width: number; height: number; page: string };
 
@@ -35,11 +35,11 @@ const buildPointer = (connection: RelationshipHubRow): Pointer => {
   return { ...base, type: 'entity' };
 };
 
-const buildRelationshipView = (
+const buildDirectedRelationship = (
   selfSharedId: string,
   relations: readonly RelationshipHubRow[],
   target: RelationshipHubRow
-): RelationshipView | undefined => {
+): DirectedRelationship | undefined => {
   const source = relations.find(rel => rel.hub === target.hub && rel.entity === selfSharedId);
   if (!source) return undefined;
 
@@ -60,12 +60,12 @@ const buildRelationshipView = (
 const formatRelationships = (
   selfSharedId: string,
   hubRows: readonly RelationshipHubRow[]
-): RelationshipView[] => {
+): DirectedRelationship[] => {
   const targets = hubRows.filter(row => row.entity !== selfSharedId && row.entityData.template);
 
   return targets.flatMap(target => {
-    const view = buildRelationshipView(selfSharedId, hubRows, target);
-    return view ? [view] : [];
+    const relationship = buildDirectedRelationship(selfSharedId, hubRows, target);
+    return relationship ? [relationship] : [];
   });
 };
 

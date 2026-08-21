@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useMemo } from 'react';
 import type { RelationshipQueryPayload } from '#V2/api/relationships/types.js';
-import type { RelationshipView } from '#V2/formatters/relationships/types.js';
+import type { DirectedRelationship } from '#V2/formatters/relationships/types.js';
 import { useEntityScopedEntity } from './EntityContext.js';
 import { useEntityLanguage } from './EntityLanguageContext.js';
 import { useRelationshipsQueryStore } from './hooks/useRelationshipsQueryStore.js';
@@ -11,7 +11,7 @@ type RelationshipQueryStatus = {
 };
 
 type RelationshipsQueryState = {
-  views: RelationshipView[];
+  relationships: DirectedRelationship[];
   status: RelationshipQueryStatus;
   ensureAnchors: () => Promise<void>;
   ensureResolved: () => Promise<void>;
@@ -35,14 +35,14 @@ const RelationshipsQueryProvider = ({ seed, children }: RelationshipsQueryProvid
       fileId: mainDocument?._id,
     });
 
-  const views = useMemo(
-    () => relationshipsQuery.toViews(entity.sharedId, hubRows),
+  const relationships = useMemo(
+    () => relationshipsQuery.toRelationships(entity.sharedId, hubRows),
     [entity.sharedId, hubRows, relationshipsQuery]
   );
   const status = useMemo(() => ({ resolved: hasResolved, resolving }), [hasResolved, resolving]);
   const value = useMemo(
-    () => ({ views, status, ensureAnchors, ensureResolved }),
-    [ensureAnchors, ensureResolved, status, views]
+    () => ({ relationships, status, ensureAnchors, ensureResolved }),
+    [ensureAnchors, ensureResolved, relationships, status]
   );
 
   return (
@@ -60,14 +60,14 @@ const useRelationshipsQuery = () => {
   return context;
 };
 
-const useRelationshipViews = () => useRelationshipsQuery().views;
+const useDirectedRelationships = () => useRelationshipsQuery().relationships;
 const useRelationshipQueryStatus = () => useRelationshipsQuery().status;
 const useEnsureAnchors = () => useRelationshipsQuery().ensureAnchors;
 const useEnsureResolved = () => useRelationshipsQuery().ensureResolved;
 
 export {
   RelationshipsQueryProvider,
-  useRelationshipViews,
+  useDirectedRelationships,
   useRelationshipQueryStatus,
   useEnsureAnchors,
   useEnsureResolved,

@@ -12,7 +12,7 @@ import {
 import {
   useEntityLanguage,
   useEnsureAnchors,
-  useRelationshipViews,
+  useDirectedRelationships,
 } from '#V2/Routes/Entity/Components/context/index.js';
 import { useDocumentPdfView } from '../hooks/useDocumentPdfView.js';
 import { useRailInset } from '../hooks/useRailInset.js';
@@ -32,7 +32,7 @@ const DocumentTab = ({
   showViewModeSelect = false,
   showRail = true,
 }: DocumentTabProps) => {
-  const views = useRelationshipViews();
+  const relationships = useDirectedRelationships();
   const ensureAnchors = useEnsureAnchors();
   const {
     filename,
@@ -140,7 +140,7 @@ const DocumentTab = ({
           {!isMobile && (
             <RelationshipsDisplay
               selfSharedId={entity.sharedId}
-              views={views}
+              relationships={relationships}
               document={mainDocument}
               currentPage={pageNumber}
               pageHeight={pageHeight}
