@@ -12,6 +12,10 @@ import { Dispatcher } from '#api/core/application/contracts/Dispatcher.js';
 import { ImportPredefinedTranslations } from '#api/core/application/translation/ImportPredefinedTranslationsService.js';
 import { TranslationsDataSourceFactory } from '#api/core/infrastructure/factories/TranslationsDataSourceFactory.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
+import { PostgresTable } from '#api/core/infrastructure/postgresql/common/PostgresTable.js';
+import { CLONE_BATCH_SIZE } from '#api/core/infrastructure/postgresql/translation/PostgresTranslationsDataSource.js';
+import { Translation } from '#api/core/domain/translation/Translation.js';
 
 jest.mock('#api/core/infrastructure/services/V1WebSocketsWrapper.js', () => ({
   V1WebSocketsWrapper: jest.fn().mockImplementation(() => ({
@@ -311,6 +315,75 @@ describe('AddLanguage use case', () => {
         ).length;
         expect(esCount).toBe(0);
       });
+
+      if (!postgresTranslations) {
+        it('should not start a Postgres transaction when the translations flag is off', async () => {
+          await withFlag(async () => {
+            const runSpy = jest.spyOn(ExecutionContext.postgresTransactionManager, 'run');
+            await AddLanguageUseCaseFactory.default({
+              dispatcher: mockDispatcher,
+              importPredefinedTranslations: mockImportPredefinedTranslations,
+            }).execute({ languages: [{ key: 'es', label: 'Spanish' }] });
+            expect(runSpy).not.toHaveBeenCalled();
+          });
+        });
+      }
+
+      if (postgresTranslations) {
+        it('should wrap cloneForLanguage in a Postgres transaction', async () => {
+          await withFlag(async () => {
+            const runSpy = jest.spyOn(ExecutionContext.postgresTransactionManager, 'run');
+            await AddLanguageUseCaseFactory.default({
+              dispatcher: mockDispatcher,
+              importPredefinedTranslations: mockImportPredefinedTranslations,
+            }).execute({ languages: [{ key: 'es', label: 'Spanish' }] });
+            expect(runSpy).toHaveBeenCalledTimes(1);
+          });
+        });
+
+        it('should roll back cloned PG batches and settings when a later clone batch fails', async () => {
+          await withFlag(async () => {
+            const translationsDS = TranslationsDataSourceFactory.default({
+              transactionManager: TransactionManagerFactory.default(),
+            });
+            await translationsDS.insert(
+              Array.from(
+                { length: CLONE_BATCH_SIZE + 1 },
+                (_, i) => new Translation(`key-${i}`, `key-${i}`, 'en', systemContext)
+              )
+            );
+          });
+
+          const originalUpsert = PostgresTable.prototype.upsert;
+          jest
+            .spyOn(PostgresTable.prototype, 'upsert')
+            .mockImplementation(async function failLaterBatch(this: PostgresTable, doc, conflict) {
+              const rows = Array.isArray(doc) ? doc : [doc];
+              if (rows.length < CLONE_BATCH_SIZE) {
+                throw new Error('second clone batch failed');
+              }
+              return originalUpsert.call(this, doc, conflict);
+            });
+
+          await expect(
+            createSut().execute({ languages: [{ key: 'es', label: 'Spanish' }] })
+          ).rejects.toThrow('second clone batch failed');
+
+          const settings = await testingEnvironment.db.getCollection('settings')!.findOne({});
+          expect(settings?.languages).toEqual([
+            expect.objectContaining({ key: 'en', label: 'English', default: true }),
+          ]);
+
+          const esCount = (
+            await withFlag(async () =>
+              TranslationsDataSourceFactory.default({
+                transactionManager: TransactionManagerFactory.default(),
+              }).getByLanguage('es')
+            )
+          ).length;
+          expect(esCount).toBe(0);
+        });
+      }
 
       it('should deduplicate input languages with the same key', async () => {
         const emitSpy = jest.fn().mockResolvedValue(undefined);

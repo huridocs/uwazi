@@ -14,6 +14,7 @@ import { PostgresTransactionManager } from '../common/PostgresTransactionManager
 import { PostgresTranslationMapper, TranslationRow } from './PostgresTranslationMapper.js';
 
 const NATURAL_KEY = ['tenant_id', 'language', 'key', 'context_id'];
+const CLONE_BATCH_SIZE = 500;
 
 const isUniqueViolation = (error: unknown): boolean =>
   typeof error === 'object' &&
@@ -149,10 +150,9 @@ export class PostgresTranslationsDataSource
       return;
     }
 
-    const BATCH_SIZE = 500;
     const batches: TranslationRow[][] = [];
-    for (let i = 0; i < source.length; i += BATCH_SIZE) {
-      batches.push(source.slice(i, i + BATCH_SIZE));
+    for (let i = 0; i < source.length; i += CLONE_BATCH_SIZE) {
+      batches.push(source.slice(i, i + CLONE_BATCH_SIZE));
     }
     await batches.reduce(async (previous, batch) => {
       await previous;
@@ -211,3 +211,5 @@ export class PostgresTranslationsDataSource
     }
   }
 }
+
+export { CLONE_BATCH_SIZE };
