@@ -1,0 +1,107 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": [
+    "eslint",
+    "typescript",
+    "oxc",
+    "react",
+    "import",
+    "jsx-a11y",
+    "jest",
+    "node"
+  ],
+  "categories": {
+    "correctness": "error",
+    "suspicious": "warn",
+    "perf": "warn"
+  },
+  "rules": {
+    "react/set-state-in-effect": "off",
+    "react/refs": "off",
+    "react/immutability": "off",
+    "react/incompatible-library": "off",
+    "react/use-memo": "off",
+    "react/void-use-memo": "off",
+    "react/static-components": "off",
+    "react/preserve-manual-memoization": "off",
+    "react/error-boundaries": "off",
+    "react/purity": "off",
+    "react/no-direct-mutation-state": "off",
+    "react/no-did-update-set-state": "off",
+    "react/no-did-mount-set-state": "off",
+    "react/globals": "off",
+    "jest/no-conditional-expect": "off",
+    "jest/expect-expect": "off",
+    "jest/valid-expect": "off",
+    "jest/require-to-throw-message": "off",
+    "jest/valid-title": "off",
+    "jest/prefer-snapshot-hint": "off",
+    "jest/no-standalone-expect": "off",
+    "jest/no-disabled-tests": "off",
+    "jest/valid-expect-in-promise": "off",
+    "jest/no-export": "off",
+    "typescript/prefer-as-const": "off",
+    "react-hooks/exhaustive-deps": "warn",
+    "eslint/no-useless-escape": "warn",
+    "jsx-a11y/click-events-have-key-events": "off",
+    "jsx-a11y/no-static-element-interactions": "off",
+    "jsx-a11y/mouse-events-have-key-events": "off",
+    "jsx-a11y/label-has-associated-control": "off",
+    "jsx-a11y/prefer-tag-over-role": "off",
+    "jsx-a11y/no-noninteractive-element-to-interactive-role": "off",
+    "jsx-a11y/no-autofocus": "off",
+    "jsx-a11y/control-has-associated-label": "warn",
+    "jsx-a11y/no-noninteractive-element-interactions": "warn",
+    "jsx-a11y/alt-text": "warn",
+    "jsx-a11y/anchor-is-valid": "warn",
+    "typescript/no-non-null-asserted-optional-chain": "warn",
+    "typescript/no-wrapper-object-types": "warn",
+    "typescript/no-useless-empty-export": "warn",
+    "typescript/triple-slash-reference": "warn",
+    "eslint/no-unassigned-vars": "warn",
+    "import/namespace": "warn",
+    "eslint/no-unused-vars": [
+      "warn",
+      {
+        "args": "after-used",
+        "argsIgnorePattern": "^_",
+        "caughtErrorsIgnorePattern": "^_",
+        "ignoreRestSiblings": true
+      }
+    ],
+    "eslint/no-underscore-dangle": "off",
+    "typescript/no-extraneous-class": "off",
+    "import/no-unassigned-import": "off",
+    "jest/no-commented-out-tests": "off",
+    "eslint/no-useless-constructor": "off"
+  },
+  "env": {
+    "browser": true,
+    "node": true,
+    "jest": true,
+    "jasmine": true
+  },
+  "overrides": [
+    {
+      "files": ["app/**/*.{ts,tsx,js,jsx}"],
+      "excludeFiles": [
+        "app/api/core/infrastructure/factories/**",
+        "app/api/core/infrastructure/mongodb/user/**",
+        "app/api/core/infrastructure/postgresql/user/**"
+      ],
+      "rules": {
+        "eslint/no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              {
+                "group": ["**/infrastructure/*/user/*UsersDAO*", "**/factories/UsersDAOFactory*"],
+                "message": "Users DAOs are private. Use UsersDirectory (any internal module), UsersQueryService (the users settings screen) or UsersDataSource (writes) — see plans/users-refactor-00-decisions.md#d4."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}
