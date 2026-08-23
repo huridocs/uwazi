@@ -51,13 +51,14 @@ describe('languageMiddleware', () => {
 
     describe('when no content-language', () => {
       it('should use cookies.locale', async () => {
-        req = {
+        req = createRequest({
           //@ts-ignore
           get: () => {},
           cookies: {
             locale: 'en',
           },
-        };
+        });
+
         await middleware(req, res, next);
         expect(req.language).toBe('en');
         expect(next).toHaveBeenCalled();
