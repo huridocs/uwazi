@@ -130,7 +130,7 @@ const RelationTypeStep = ({
           </button>
         ))}
         {isAdmin ? (
-          <div className="space-y-2">
+          <div className="space-y-2 pt-2">
             <div className="flex items-center gap-2">
               <input
                 type="text"
