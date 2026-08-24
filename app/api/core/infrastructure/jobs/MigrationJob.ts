@@ -177,6 +177,9 @@ class MigrationJob implements Dispatchable {
     const tenantNames = Object.keys(this.deps.tenantsManager.tenants);
     if (tenantNames.length === 0) return null;
 
+    const probeTenant =
+      tenantNames.length > 1 && tenantNames[0] === 'default' ? tenantNames[1] : tenantNames[0];
+
     let blocked: { delta: number; requiresSchema: number } | null = null;
 
     await this.deps.tenantsManager.run(async () => {
@@ -194,7 +197,7 @@ class MigrationJob implements Dispatchable {
       if (isTargetBlocked) {
         blocked = pendingBlocked;
       }
-    }, tenantNames[0]);
+    }, probeTenant);
 
     return blocked;
   }

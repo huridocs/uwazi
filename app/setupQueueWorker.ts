@@ -69,8 +69,9 @@ function register<T extends Dispatchable>(
   this.register(dispatchable, async (namespace, job) => {
     let deps!: ExecutionContextDeps;
     let instance!: T;
+    const tenantName = namespace === 'system' ? config.defaultTenant.name : namespace;
+
     const isSystem = isPrivilegedJob(dispatchable);
-    const tenantContext = namespace === 'system' ? tenants.defaultTenant : namespace;
 
     await tenants.run(async () => {
       deps = {
@@ -113,7 +114,7 @@ function register<T extends Dispatchable>(
       }
 
       instance = await ExecutionContext.run(deps, async () => factory(namespace, job));
-    }, tenantContext);
+    }, tenantName);
 
     // v1 backwards compatibility only (probably)
     ExecutionContext.attachContext(instance, 'handleDispatch', deps);
