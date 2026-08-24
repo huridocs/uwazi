@@ -73,7 +73,11 @@
     "typescript/no-extraneous-class": "off",
     "import/no-unassigned-import": "off",
     "jest/no-commented-out-tests": "off",
-    "eslint/no-useless-constructor": "off"
+    "eslint/no-useless-constructor": "off",
+    "typescript/no-floating-promises": "error",
+    "typescript/no-misused-promises": ["error", { "checksVoidReturn": false }],
+    "typescript/promise-function-async": "error",
+    "typescript/unbound-method": "warn"
   },
   "env": {
     "browser": true,
