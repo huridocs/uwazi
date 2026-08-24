@@ -60,8 +60,12 @@ class Tenants {
 
   constructor(defaultTenant: Tenant) {
     this.defaultTenant = defaultTenant;
-    this.tenants = {
-      [config.defaultTenant.name]: defaultTenant,
+    this.tenants = this.defaultTenantMap();
+  }
+
+  private defaultTenantMap(): { [k: string]: Tenant } {
+    return {
+      [this.defaultTenant.name]: this.defaultTenant,
     };
   }
 
@@ -82,9 +86,14 @@ class Tenants {
   }
 
   async updateTenants(model: TenantsModel) {
-    const tenants = await model.get();
+    const tenantsFromDb = await model.get();
+    if (tenantsFromDb.length === 0) {
+      this.tenants = this.defaultTenantMap();
+      return;
+    }
 
-    tenants.forEach((tenant: TenantDocument) => {
+    this.tenants = {};
+    tenantsFromDb.forEach((tenant: TenantDocument) => {
       this.add(tenant);
     });
   }
