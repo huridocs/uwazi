@@ -106,19 +106,6 @@ describe('PostgresUserGroupsDataSource', () => {
     });
   });
 
-  describe('getUserGroups', () => {
-    it('return user groups', async () => {
-      const ds = makeDS();
-
-      const foundGroups = await ds.getUserGroups('existing1');
-
-      expect(foundGroups).toMatchObject([
-        { _id: 'with-one-member', name: 'With one member' },
-        { _id: 'with-two-members', name: 'With two members' },
-      ]);
-    });
-  });
-
   describe('findById', () => {
     it('should return the group matching the given id', async () => {
       const ds = makeDS();

@@ -1,13 +1,13 @@
 import { AbstractController } from '#api/common.v2/infrastructure/AbstractController.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
-import { UserGroupsDAOFactory } from '#api/core/infrastructure/factories/UserGroupsDAOFactory.js';
+import { UserGroupsQueryServiceFactory } from '#api/core/infrastructure/factories/UserGroupsQueryServiceFactory.js';
 import type { GetUserGroupsResponse } from '#shared/contracts/UserGroups.js';
 
 class GetUserGroupsController extends AbstractController {
   protected async handle(): Promise<void> {
     const startTime = Date.now();
     try {
-      const groups = await UserGroupsDAOFactory.default().getAll();
+      const groups = await UserGroupsQueryServiceFactory.default().listUserGroups();
 
       const response: GetUserGroupsResponse = groups;
       this.response.json(response);

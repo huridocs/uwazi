@@ -2,6 +2,7 @@ import { ObjectId } from 'mongodb';
 import escapeRegExp from 'lodash/escapeRegExp.js';
 import type { UsersDirectory } from '#api/core/application/contracts/UsersDirectory.js';
 import type { UserProfile, UserView } from '#api/core/application/contracts/UserReadModels.js';
+import type { UserGroupView } from '#api/core/application/contracts/UserGroupReadModels.js';
 import { PUBLIC_USER_ID } from '#api/core/domain/user/User.js';
 import { UserNotFound } from '#api/core/domain/user/errors.js';
 import { Result } from '#api/core/libs/Result.js';
@@ -9,6 +10,7 @@ import type { ResultType } from '#api/core/libs/Result.js';
 import { MongoUsersDAO } from './MongoUsersDAO.js';
 import { MongoUserGroupsDAO } from './MongoUserGroupsDAO.js';
 import { MongoUsersMapper } from './MongoUsersMapper.js';
+import { MongoUserGroupsMapper } from './MongoUserGroupsMapper.js';
 import type { UserScope } from './UserReadOptions.js';
 
 type Deps = {
@@ -71,19 +73,31 @@ class MongoUsersDirectory implements UsersDirectory {
       return Result.fail(new UserNotFound(id));
     }
 
-    const groups = await this.userGroupsDAO.getGroupsByUserIds([id]);
+    const groups = await this.groupsOf([id]);
 
     return Result.ok(MongoUsersMapper.toProfile({ ...user, groups: groups.get(id) ?? [] }));
   }
 
+  private async groupsOf(userIds: string[]): Promise<Map<string, UserGroupView[]>> {
+    const map = new Map<string, UserGroupView[]>(userIds.map(id => [id, []]));
+    if (!userIds.length) return map;
+
+    const groups = await this.userGroupsDAO.find({ 'members.refId': { $in: userIds } });
+
+    groups.forEach(group => {
+      group.members.forEach(member => {
+        map.get(member.refId)?.push(MongoUserGroupsMapper.toView(group));
+      });
+    });
+
+    return map;
+  }
+
   async getManyByIds(ids: string[]): Promise<UserView[]> {
-    // Short-circuit without touching the database, matching the DAO's own behaviour.
     if (!ids.length) {
       return [];
     }
 
-    // A malformed id cannot match anything, and throwing on one would make a single bad
-    // permission refId take down the whole batch. Postgres simply does not match it.
     const objectIds = ids.filter(isUserId).map(id => ObjectId.createFromHexString(id));
 
     const users = await this.usersDAO.findMany({ _id: { $in: objectIds } });
@@ -92,9 +106,6 @@ class MongoUsersDirectory implements UsersDirectory {
   }
 
   async searchByUsernameOrEmail(term: string): Promise<UserView[]> {
-    // Case-insensitive exact match. escapeRegExp matters: without it a term containing
-    // regex metacharacters would match far more than it should — and Postgres, matching on
-    // `lower(?)`, would disagree.
     const exactRegex = new RegExp(`^${escapeRegExp(term)}$`, 'i');
 
     const users = await this.usersDAO.findMany({
