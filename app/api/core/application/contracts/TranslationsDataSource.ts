@@ -1,4 +1,3 @@
-import { ResultSet } from '#api/core/application/contracts/ResultSet.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import { Translation, TranslationContext } from '#api/core/domain/translation/Translation.js';
 import { TranslationContextModel } from '#api/core/domain/translation/TranslationContextModel.js';
@@ -12,15 +11,15 @@ export interface TranslationsDataSource {
   insert(translations: Translation[]): Promise<Translation[]>;
   upsert(translations: Translation[]): Promise<Translation[]>;
 
-  getAll(): ResultSet<Translation>;
-  getByLanguage(language: string): ResultSet<Translation>;
+  getAll(): Promise<Translation[]>;
+  getByLanguage(language: string): Promise<Translation[]>;
   getByLanguageExcludingContextTypes(
     language: string,
     types: TranslationContext['type'][]
-  ): ResultSet<Translation>;
-  getByContext(context: string): ResultSet<Translation>;
-  getByLanguageAndContext(language: string, contextId: string): ResultSet<Translation>;
-  getContextAndKeys(contextId: string, keys: string[]): ResultSet<Translation>;
+  ): Promise<Translation[]>;
+  getByContext(context: string): Promise<Translation[]>;
+  getByLanguageAndContext(language: string, contextId: string): Promise<Translation[]>;
+  getContextAndKeys(contextId: string, keys: string[]): Promise<Translation[]>;
 
   deleteByContextId(contextId: string): Promise<void>;
   deleteByLanguage(language: string): Promise<void>;

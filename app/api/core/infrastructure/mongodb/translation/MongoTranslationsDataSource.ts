@@ -58,49 +58,44 @@ export class MongoTranslationsDataSource
     await this.getCollection().deleteMany({ language });
   }
 
-  getAll() {
+  private async load(filter: Record<string, unknown>): Promise<Translation[]> {
     return new MongoResultSet<TranslationDBO, Translation>(
-      this.getCollection().find({}),
+      this.getCollection().find(filter),
       TranslationMappers.toModel
-    );
+    ).all();
   }
 
-  getByLanguage(language: LanguageISO6391) {
-    return new MongoResultSet<TranslationDBO, Translation>(
-      this.getCollection().find({ language }),
-      TranslationMappers.toModel
-    );
+  async getAll() {
+    return this.load({});
   }
 
-  getByLanguageExcludingContextTypes(
+  async getByLanguage(language: LanguageISO6391) {
+    return this.load({ language });
+  }
+
+  async getByLanguageExcludingContextTypes(
     language: LanguageISO6391,
     types: TranslationContext['type'][]
   ) {
-    return new MongoResultSet<TranslationDBO, Translation>(
-      this.getCollection().find({ language, 'context.type': { $nin: types } }),
-      TranslationMappers.toModel
-    );
+    if (!types.length) {
+      return this.getByLanguage(language);
+    }
+    return this.load({ language, 'context.type': { $nin: types } });
   }
 
-  getByContext(context: string) {
-    return new MongoResultSet<TranslationDBO, Translation>(
-      this.getCollection().find({ 'context.id': context }),
-      TranslationMappers.toModel
-    );
+  async getByContext(context: string) {
+    return this.load({ 'context.id': context });
   }
 
-  getByLanguageAndContext(language: LanguageISO6391, contextId: string) {
-    return new MongoResultSet<TranslationDBO, Translation>(
-      this.getCollection().find({ language, 'context.id': contextId }),
-      TranslationMappers.toModel
-    );
+  async getByLanguageAndContext(language: LanguageISO6391, contextId: string) {
+    return this.load({ language, 'context.id': contextId });
   }
 
-  getContextAndKeys(contextId: string, keys: string[]) {
-    return new MongoResultSet<TranslationDBO, Translation>(
-      this.getCollection().find({ 'context.id': contextId, key: { $in: keys } }),
-      TranslationMappers.toModel
-    );
+  async getContextAndKeys(contextId: string, keys: string[]) {
+    if (!keys.length) {
+      return [];
+    }
+    return this.load({ 'context.id': contextId, key: { $in: keys } });
   }
 
   async bulkDeleteKeysByContext(props: BulkDeleteKeysByContext) {
@@ -142,7 +137,7 @@ export class MongoTranslationsDataSource
     languages: LanguageISO6391[],
     defaultLanguage: LanguageISO6391
   ): Promise<TranslationContextModel> {
-    const translations = await this.getByContext(contextInfo.id).all();
+    const translations = await this.getByContext(contextInfo.id);
 
     return TranslationContextModel.create(contextInfo, translations, languages, defaultLanguage);
   }
