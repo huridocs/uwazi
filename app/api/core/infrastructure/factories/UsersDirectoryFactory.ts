@@ -33,7 +33,6 @@ class UsersDirectoryFactory {
         userGroupsDAO: new PostgresUserGroupsDAO({
           tenantId: tenant.name,
           pgTransactionManager: ExecutionContext.postgresTransactionManager,
-          usersDAO,
         }),
       });
     }
