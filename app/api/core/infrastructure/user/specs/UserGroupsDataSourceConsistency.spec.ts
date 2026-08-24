@@ -7,6 +7,7 @@ import { DBFixture } from '#api/utils/testing_db.js';
 import { UserGroup } from '#api/core/domain/userGroup/UserGroup.js';
 import { IdGeneratorFactory } from '#api/core/infrastructure/factories/IdGeneratorFactory.js';
 import { UserGroupsDataSourceFactory } from '#api/core/infrastructure/factories/UserGroupsDataSourceFactory.js';
+import { UserGroupsQueryServiceFactory } from '#api/core/infrastructure/factories/UserGroupsQueryServiceFactory.js';
 
 const f = getFixturesFactory();
 const TENANT_ID = 'usergroups-datasource-consistency';
@@ -93,18 +94,33 @@ describe('UserGroupsDataSource consistency', () => {
     const getDS = () =>
       testingEnvironment.runWithContext(() => UserGroupsDataSourceFactory.default());
 
+    // The membership writes used to be verified through `UserGroupsDataSource.getUserGroups`,
+    // a read on the write contract with no production caller. Reading them back through
+    // UserGroupsQueryService keeps the assertions backend-agnostic without that method
+    // existing, and goes through a contract rather than reaching into persistence.
+    //
+    // Not UsersDirectory.getProfile: membership is stored as a bare refId with no foreign key,
+    // and the first test below deliberately assigns groups to an id that has no user row.
+    const groupsOfUser = async (id: string) => {
+      const groups = await testingEnvironment.runWithContext(async () =>
+        UserGroupsQueryServiceFactory.default().listUserGroups()
+      );
+
+      return groups.filter(group => group.members.some(member => member.refId === id));
+    };
+
     // Mongo ids are hex ObjectId strings; Postgres ids are the plain fixture keys.
     const groupId = (name: string) => (usePostgres ? f.idString(name) : f.id(name).toHexString());
     const userId = (key: string) => (usePostgres ? f.idString(key) : f.id(key).toHexString());
 
-    describe('assignGroupsToUser / getUserGroups', () => {
+    describe('assignGroupsToUser', () => {
       it('should add a user to a group', async () => {
         const ds = getDS();
         const newUserId = usePostgres ? 'new-user' : f.id('newuser').toHexString();
 
         await ds.assignGroupsToUser(newUserId, [groupId('Empty')]);
 
-        const foundGroups = await ds.getUserGroups(newUserId);
+        const foundGroups = await groupsOfUser(newUserId);
         expect(foundGroups.map(g => g.name)).toEqual(['Empty']);
       });
 
@@ -113,14 +129,13 @@ describe('UserGroupsDataSource consistency', () => {
 
         await ds.assignGroupsToUser(userId('existing1'), []);
 
-        const remainingGroups = await ds.getUserGroups(userId('existing1'));
+        const remainingGroups = await groupsOfUser(userId('existing1'));
         expect(remainingGroups).toEqual([]);
       });
 
-      it('should return the groups a user belongs to', async () => {
-        const ds = getDS();
-
-        const foundGroups = await ds.getUserGroups(userId('existing1'));
+      // The baseline the two tests above mutate away from.
+      it('should leave a user in the groups the fixtures put them in', async () => {
+        const foundGroups = await groupsOfUser(userId('existing1'));
 
         expect(foundGroups.map(g => g.name).sort()).toEqual(
           ['With one member', 'With two members'].sort()
@@ -134,7 +149,7 @@ describe('UserGroupsDataSource consistency', () => {
 
         await ds.removeUsersFromGroups([userId('existing1')]);
 
-        const remainingGroups = await ds.getUserGroups(userId('existing1'));
+        const remainingGroups = await groupsOfUser(userId('existing1'));
         expect(remainingGroups).toEqual([]);
       });
     });
