@@ -22,6 +22,7 @@ import { RelationshipTypesMigrationConfig } from '#api/core/infrastructure/postg
 import { UsersMigrationConfig } from '#api/core/infrastructure/postgresql/migrations/configs/UsersMigrationConfig.js';
 import { UserGroupsMigrationConfig } from '#api/core/infrastructure/postgresql/migrations/configs/UserGroupsMigrationConfig.js';
 import { PasswordRecoveryMigrationConfig } from '#api/core/infrastructure/postgresql/migrations/configs/PasswordRecoveryMigrationConfig.js';
+import { TranslationsMigrationConfig } from '#api/core/infrastructure/postgresql/migrations/configs/TranslationsMigrationConfig.js';
 
 const COLLECTIONS: Record<string, MigrationConfig> = {
   thesauri: ThesaurusMigrationConfig,
@@ -31,6 +32,7 @@ const COLLECTIONS: Record<string, MigrationConfig> = {
   users: UsersMigrationConfig,
   usergroups: UserGroupsMigrationConfig,
   password_recoveries: PasswordRecoveryMigrationConfig,
+  translations: TranslationsMigrationConfig,
 };
 
 function log(message: string) {
