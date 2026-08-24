@@ -120,12 +120,15 @@ class Tenants {
     if (!tenantName) {
       throw new Error('There is no tenant on the current async context');
     }
-    if (!this.tenants[tenantName]) {
-      throw new Error(
-        `the tenant set to run the current async context -> [${tenantName}] its not available in the current process`
-      );
+    if (this.tenants[tenantName]) {
+      return this.tenants[tenantName];
     }
-    return this.tenants[tenantName];
+    if (tenantName === this.defaultTenant.name) {
+      return this.defaultTenant;
+    }
+    throw new Error(
+      `the tenant set to run the current async context -> [${tenantName}] its not available in the current process`
+    );
   }
 
   add(tenant: DBTenant) {

@@ -4,6 +4,7 @@ import { appContext } from '#api/utils/AppContext.js';
 import testingDB from '#api/utils/testing_db.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { config } from '#api/config.js';
+import { testingTenants } from '#api/utils/testingTenants.js';
 import { tenants } from '../tenantContext.js';
 import { tenantsModel } from '../tenantsModel.js';
 
@@ -89,7 +90,31 @@ describe('tenantsContext', () => {
       expect(tenants.tenants['tenant two'].dbName).toBe('tenant_two');
     });
 
+    it('still resolves current() for the default context when the seed is not in the map', async () => {
+      testingTenants.restoreCurrentFn();
+      jest.spyOn(appContext, 'get').mockRestore();
+
+      await db.collection('tenants').insertOne({ name: 'tenant one', dbName: 'tenant_one' });
+      await tenants.updateTenants(model);
+      expect(tenants.tenants[defaultName]).toBeUndefined();
+
+      await tenants.run(async () => {
+        expect(tenants.current()).toBe(tenants.defaultTenant);
+      }, defaultName);
+
+      await expect(
+        tenants.run(async () => {
+          tenants.current();
+        }, 'missing-tenant')
+      ).rejects.toThrow(
+        'the tenant set to run the current async context -> [missing-tenant] its not available in the current process'
+      );
+    });
+
     it('uses the Mongo default row when the collection includes one', async () => {
+      testingTenants.restoreCurrentFn();
+      jest.spyOn(appContext, 'get').mockRestore();
+
       await db.collection('tenants').insertMany([
         {
           name: defaultName,
@@ -105,6 +130,11 @@ describe('tenantsContext', () => {
       expect(Object.keys(tenants.tenants).sort()).toEqual([defaultName, 'other'].sort());
       expect(tenants.tenants[defaultName].dbName).toBe('mongo_default_db');
       expect(tenants.tenants[defaultName].dbName).not.toBe(config.defaultTenant.dbName);
+
+      await tenants.run(async () => {
+        expect(tenants.current()).toBe(tenants.tenants[defaultName]);
+        expect(tenants.current().dbName).toBe('mongo_default_db');
+      }, defaultName);
     });
 
     it('falls back to the constructor seed when Mongo tenants are later emptied', async () => {
