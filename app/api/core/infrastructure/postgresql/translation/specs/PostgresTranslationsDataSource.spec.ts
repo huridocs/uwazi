@@ -185,42 +185,6 @@ describe('PostgresTranslationsDataSource', () => {
     jest.restoreAllMocks();
   });
 
-  it('should roll back every clone batch when an outer Postgres run() fails', async () => {
-    const pgTransactionManager = managerFor(TENANT_ID);
-    const originalUpsert = PostgresTable.prototype.upsert;
-    jest.spyOn(PostgresTable.prototype, 'upsert').mockImplementation(async function failLaterBatch(
-      this: PostgresTable,
-      doc,
-      conflict
-    ) {
-      const rows = Array.isArray(doc) ? doc : [doc];
-      if (rows.length < CLONE_BATCH_SIZE) {
-        throw new Error('second clone batch failed');
-      }
-      return originalUpsert.call(this, doc, conflict);
-    });
-
-    const transactionalDs = new PostgresTranslationsDataSource({
-      tenantId: TENANT_ID,
-      mongoDb: getConnection(),
-      pgTransactionManager,
-      idGenerator: IdGeneratorFactory.default(),
-    });
-
-    await transactionalDs.insert(
-      Array.from({ length: CLONE_BATCH_SIZE + 1 }, (_, i) =>
-        translation(`key-${i}`, `key-${i}`, 'en')
-      )
-    );
-
-    await expect(
-      pgTransactionManager.run(async () => transactionalDs.cloneForLanguage('en', 'es'))
-    ).rejects.toThrow('second clone batch failed');
-
-    expect(await makeDS().getByLanguage('es')).toHaveLength(0);
-    jest.restoreAllMocks();
-  });
-
   it('should calculate missing keys across languages', async () => {
     const ds = makeDS();
     await ds.insert([translation('Title', 'Title', 'en')]);

@@ -145,19 +145,17 @@ export class PostgresTranslationsDataSource
   }
 
   async cloneForLanguage(from: LanguageISO6391, to: LanguageISO6391): Promise<void> {
-    const source = await this.table.where({ language: from }).all();
-    if (!source.length) {
-      return;
+    let batch: TranslationRow[] = [];
+    for await (const row of this.table.where({ language: from }).stream()) {
+      batch.push(row);
+      if (batch.length >= CLONE_BATCH_SIZE) {
+        await this.insertClonedBatch(batch, to);
+        batch = [];
+      }
     }
-
-    const batches: TranslationRow[][] = [];
-    for (let i = 0; i < source.length; i += CLONE_BATCH_SIZE) {
-      batches.push(source.slice(i, i + CLONE_BATCH_SIZE));
-    }
-    await batches.reduce(async (previous, batch) => {
-      await previous;
+    if (batch.length > 0) {
       await this.insertClonedBatch(batch, to);
-    }, Promise.resolve());
+    }
   }
 
   private async insertClonedBatch(rows: TranslationRow[], to: LanguageISO6391): Promise<void> {
