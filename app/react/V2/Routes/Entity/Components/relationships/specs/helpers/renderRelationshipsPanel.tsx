@@ -9,9 +9,15 @@ import {
   useDocumentPdfActions,
   useDocumentRelationshipNav,
 } from '#V2/Routes/Entity/Components/context/index.js';
+import { ServicesProvider } from '#V2/services/ServicesProvider.js';
+import { createTestServices } from '#V2/testing/createTestServices.js';
 import { RelationshipsPanel } from '../../panel/RelationshipsPanel.js';
 import { RelationshipsFiltersDrawer } from '../../filters/RelationshipsFiltersDrawer.js';
 import { entityWithRelations } from '../fixtures/entityWithRelations.js';
+import {
+  relationshipQueryFromEntity,
+  relationshipsQueryStubFromEntity,
+} from './relationshipQueryFromEntity.js';
 
 type PdfMocks = {
   goToPage: jest.Mock;
@@ -63,26 +69,33 @@ const renderRelationshipsPanel = ({
   const store = createStore();
   store.set(relationshipTypesAtom, [{ _id: 'relA', name: 'Related' }]);
   store.set(templatesAtom, [{ _id: 'template1', color: '#faca15', name: 'Entity' }]);
+  const relationshipQuery = relationshipQueryFromEntity(entity, mainDocument?._id);
+  const services = createTestServices({
+    relationshipsQuery: relationshipsQueryStubFromEntity(entity, mainDocument?._id),
+  });
 
   const router = createMemoryRouter([
     {
       path: '/',
       element: (
         <Provider store={store}>
-          <EntityScopedProvider
-            key={entity.sharedId}
-            entity={entity}
-            language={entity.language ?? 'en'}
-            mainDocument={mainDocument}
-          >
-            <PdfControllerSetup pdf={pdf} />
-            <RelationshipsPanel
-              focusDocumentOnSelect={focusDocumentOnSelect}
-              onFocusDocument={onFocusDocument}
-            />
-            {withFiltersDrawer && <RelationshipsFiltersDrawer />}
-            <SelectionState />
-          </EntityScopedProvider>
+          <ServicesProvider value={services}>
+            <EntityScopedProvider
+              key={entity.sharedId}
+              entity={entity}
+              language={entity.language ?? 'en'}
+              mainDocument={mainDocument}
+              relationshipQuery={relationshipQuery}
+            >
+              <PdfControllerSetup pdf={pdf} />
+              <RelationshipsPanel
+                focusDocumentOnSelect={focusDocumentOnSelect}
+                onFocusDocument={onFocusDocument}
+              />
+              {withFiltersDrawer && <RelationshipsFiltersDrawer />}
+              <SelectionState />
+            </EntityScopedProvider>
+          </ServicesProvider>
         </Provider>
       ),
     },

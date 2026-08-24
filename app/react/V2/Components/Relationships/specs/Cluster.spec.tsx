@@ -11,7 +11,7 @@ import type { RelationshipMarker } from '../types.js';
 
 const marker = (index: number, valueIndex = index): RelationshipMarker => ({
   _id: `ref-${index}`,
-  view: {
+  relationship: {
     _id: `ref-${index}`,
     hub: 'hub-1',
     type: 'rel-type',
@@ -167,7 +167,7 @@ describe('Cluster', () => {
       };
       return {
         _id: `ref-${index}`,
-        view: {
+        relationship: {
           _id: `ref-${index}`,
           hub: 'hub-1',
           type: 'rel-type',
@@ -221,7 +221,7 @@ describe('Cluster', () => {
       };
       return {
         _id: `ref-${index}`,
-        view: {
+        relationship: {
           _id: `ref-${index}`,
           hub: 'hub-1',
           type: 'rel-type',
