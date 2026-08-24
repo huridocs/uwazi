@@ -44,6 +44,7 @@ const mongoSchema = new mongoose.Schema({
     postgresEntities: Boolean,
     postgresFiles: Boolean,
     postgresRelationshipTypes: Boolean,
+    postgresTranslations: Boolean,
     aiAssistant: Boolean,
     aiAssistantServiceUrl: String,
     postgresPasswordRecoveries: Boolean,

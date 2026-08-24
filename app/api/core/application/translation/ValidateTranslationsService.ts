@@ -65,7 +65,7 @@ class ValidateTranslationsService {
     await Object.entries(translationsByContext).reduce(
       async (previous, [contextId, contextTranslations]) => {
         await previous;
-        const dbTranslations = this.translationsDS.getContextAndKeys(
+        const dbTranslations = await this.translationsDS.getContextAndKeys(
           contextId,
           contextTranslations.map(t => t.key)
         );
@@ -76,7 +76,7 @@ class ValidateTranslationsService {
           t => t
         );
 
-        await dbTranslations.forEach(async dbt => {
+        dbTranslations.forEach(dbt => {
           translationsByKey[dbt.key].missingLanguages.push(dbt.language);
         });
       },

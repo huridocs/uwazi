@@ -45,7 +45,7 @@ export class SelectPropertyAssignmentCreatorService extends AbstractPropertyAssi
       existingThesaurusValues.push(thesaurusValue);
     });
 
-    const translations = await this.deps.translationsDS.getByContext(thesaurus.id).all();
+    const translations = await this.deps.translationsDS.getByContext(thesaurus.id);
     const translationCollection = new TranslationCollection(translations);
 
     const languages = await this.deps.settingsDS.getLanguageKeys();

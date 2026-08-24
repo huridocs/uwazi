@@ -4,15 +4,42 @@ import { LoggerFactory } from '../../factories/LoggerFactory.js';
 import { PostgresTable } from '../common/PostgresTable.js';
 import { PostgresTransactionManager } from '../common/PostgresTransactionManager.js';
 
-export const BATCH_SIZE = 50;
+const BATCH_SIZE = 50;
 
-export interface MigrationConfig {
+interface MigrationConfig {
   mongoCollection: string;
   pgTable: string;
   mapDocument(doc: Record<string, unknown>): Record<string, unknown>;
 }
 
-export class MigrateCollectionToPostgres {
+const insertBatch = async (
+  table: PostgresTable,
+  batch: Record<string, unknown>[]
+): Promise<void> => {
+  if (!batch.length) {
+    return;
+  }
+  try {
+    await table.insert(batch);
+  } catch (err: unknown) {
+    // eslint-disable-next-line no-console
+    console.error(
+      '[MigrateCollectionToPostgres] Insert failed for batch:',
+      JSON.stringify(batch, null, 2)
+    );
+    throw err;
+  }
+};
+
+const flushBatch = async (
+  table: PostgresTable,
+  batch: Record<string, unknown>[]
+): Promise<Record<string, unknown>[]> => {
+  await insertBatch(table, batch);
+  return [];
+};
+
+class MigrateCollectionToPostgres {
   constructor(
     private mongoDb: Db,
     private tenantId: string
@@ -27,36 +54,16 @@ export class MigrateCollectionToPostgres {
     let migrated = 0;
     let batch: Record<string, unknown>[] = [];
 
-    // eslint-disable-next-line no-await-in-loop
     for await (const doc of cursor) {
       batch.push(config.mapDocument(doc));
       migrated += 1;
-
       if (batch.length === BATCH_SIZE) {
-        // eslint-disable-next-line no-await-in-loop
-        await this.insertBatch(table, batch);
-        batch = [];
+        batch = await flushBatch(table, batch);
       }
     }
 
-    if (batch.length > 0) {
-      await this.insertBatch(table, batch);
-    }
-
+    await insertBatch(table, batch);
     return migrated;
-  }
-
-  private async insertBatch(table: PostgresTable, batch: Record<string, unknown>[]): Promise<void> {
-    try {
-      await table.insert(batch);
-    } catch (err: unknown) {
-      // eslint-disable-next-line no-console
-      console.error(
-        '[MigrateCollectionToPostgres] Insert failed for batch:',
-        JSON.stringify(batch, null, 2)
-      );
-      throw err;
-    }
   }
 
   async migrate(config: MigrationConfig): Promise<{ migrated: number; skipped: boolean }> {
@@ -80,3 +87,6 @@ export class MigrateCollectionToPostgres {
     return { migrated, skipped: false };
   }
 }
+
+export type { MigrationConfig };
+export { BATCH_SIZE, MigrateCollectionToPostgres };

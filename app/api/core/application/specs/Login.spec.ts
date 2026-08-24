@@ -72,6 +72,16 @@ const createSut = () => {
   return { sut, dispatcher };
 };
 
+const withFrozenTotpClock = async (run: () => Promise<void>) => {
+  const previous = otplib.authenticator.options;
+  otplib.authenticator.options = { ...previous, epoch: Date.now() };
+  try {
+    await run();
+  } finally {
+    otplib.authenticator.options = previous;
+  }
+};
+
 const getUser = async (username: string) =>
   testingEnvironment.db.getCollection('users')!.findOne({ username });
 
@@ -217,15 +227,18 @@ describe('Login', () => {
 
   it('should return the sanitized user when the 2FA token is correct', async () => {
     const { sut } = createSut();
-    const token = otplib.authenticator.generate(TWO_FACTOR_SECRET);
 
-    const user = await sut.execute({
-      username: '2fauser',
-      password: 'validpassword',
-      token,
-      domain: 'http://localhost',
+    await withFrozenTotpClock(async () => {
+      const token = otplib.authenticator.generate(TWO_FACTOR_SECRET);
+
+      const user = await sut.execute({
+        username: '2fauser',
+        password: 'validpassword',
+        token,
+        domain: 'http://localhost',
+      });
+
+      expect(user.username).toBe('2fauser');
     });
-
-    expect(user.username).toBe('2fauser');
   });
 });

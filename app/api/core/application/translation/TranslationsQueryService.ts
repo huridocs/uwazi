@@ -1,4 +1,3 @@
-import { ResultSet } from '#api/core/application/contracts/ResultSet.js';
 import { TranslationsDataSource } from '#api/core/application/contracts/TranslationsDataSource.js';
 import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js';
 import { Translation, TranslationContext } from '#api/core/domain/translation/Translation.js';
@@ -25,9 +24,7 @@ export class TranslationsQueryService {
     language: LanguageISO6391,
     contextId: string
   ): Promise<Record<string, string>> {
-    const translations = await this.translationsDS
-      .getByLanguageAndContext(language, contextId)
-      .all();
+    const translations = await this.translationsDS.getByLanguageAndContext(language, contextId);
     const values: Record<string, string> = {};
     translations.forEach(translation => {
       values[translation.key] = translation.value;
@@ -38,7 +35,7 @@ export class TranslationsQueryService {
   async getLanguageValueMaps(
     language: LanguageISO6391
   ): Promise<Record<string, Record<string, string>>> {
-    const translations = await this.translationsDS.getByLanguage(language).all();
+    const translations = await this.translationsDS.getByLanguage(language);
     const byContext: Record<string, Record<string, string>> = {};
     translations.forEach(translation => {
       const contextId = translation.context.id;
@@ -51,7 +48,7 @@ export class TranslationsQueryService {
   }
 
   private async toLegacyDto(
-    load: () => ResultSet<Translation>,
+    load: () => Promise<Translation[]>,
     onlyLanguage?: LanguageISO6391
   ): Promise<IndexedTranslations[]> {
     let languageKeys = await this.settingsDS.getLanguageKeys();
@@ -69,7 +66,7 @@ export class TranslationsQueryService {
       contexts[key] = {};
     });
 
-    const translations = await load().all();
+    const translations = await load();
     translations.forEach(translation => {
       if (!resultMap[translation.language]) {
         resultMap[translation.language] = {
@@ -108,16 +105,16 @@ export class TranslationsQueryService {
   ) {
     if (query.locale && query.context) {
       return this.toLegacyDto(
-        () => this.translationsDS.getByLanguageAndContext(query.locale!, query.context!),
+        async () => this.translationsDS.getByLanguageAndContext(query.locale!, query.context!),
         query.locale
       );
     }
     if (query.context) {
-      return this.toLegacyDto(() => this.translationsDS.getByContext(query.context!));
+      return this.toLegacyDto(async () => this.translationsDS.getByContext(query.context!));
     }
     if (query.locale && query.excludeContextTypes?.length) {
       return this.toLegacyDto(
-        () =>
+        async () =>
           this.translationsDS.getByLanguageExcludingContextTypes(
             query.locale!,
             query.excludeContextTypes!
@@ -126,8 +123,11 @@ export class TranslationsQueryService {
       );
     }
     if (query.locale) {
-      return this.toLegacyDto(() => this.translationsDS.getByLanguage(query.locale!), query.locale);
+      return this.toLegacyDto(
+        async () => this.translationsDS.getByLanguage(query.locale!),
+        query.locale
+      );
     }
-    return this.toLegacyDto(() => this.translationsDS.getAll());
+    return this.toLegacyDto(async () => this.translationsDS.getAll());
   }
 }
