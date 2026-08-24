@@ -10,7 +10,9 @@ jest.mock('#api/auth/routes.js', () => {
   const actual = jest.requireActual('#api/auth/routes.js');
   return {
     ...actual,
-    authenticatedUserMiddlewares: () => [(_req: Request, _res: Response, next: NextFunction) => next()],
+    authenticatedUserMiddlewares: () => [
+      (_req: Request, _res: Response, next: NextFunction) => next(),
+    ],
   };
 });
 
