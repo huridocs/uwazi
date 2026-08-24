@@ -6,9 +6,13 @@ import { UserRole } from '#shared/types/userSchema.js';
 import { UserSchema } from '#shared/types/userType.js';
 import { userRoutes } from '#api/core/infrastructure/express/users/routes.js';
 
-const combinedRoutes = (app: any) => {
-  userRoutes(app);
-};
+jest.mock('#api/auth/routes.js', () => {
+  const actual = jest.requireActual('#api/auth/routes.js');
+  return {
+    ...actual,
+    authenticatedUserMiddlewares: () => [(_req: Request, _res: Response, next: NextFunction) => next()],
+  };
+});
 
 jest.mock(
   '../../utils/languageMiddleware.ts',
@@ -26,6 +30,10 @@ jest.mock('../../auth', () => {
     }),
   };
 });
+
+const combinedRoutes = (app: any) => {
+  userRoutes(app);
+};
 
 const adminUser = {
   _id: 'admin1',
