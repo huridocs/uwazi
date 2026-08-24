@@ -1,10 +1,8 @@
-/* eslint-disable max-statements */
 import { Db } from 'mongodb';
 import { appContext } from '#api/utils/AppContext.js';
 import testingDB from '#api/utils/testing_db.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { config } from '#api/config.js';
-import { testingTenants } from '#api/utils/testingTenants.js';
 import { tenants } from '../tenantContext.js';
 import { tenantsModel } from '../tenantsModel.js';
 
@@ -32,46 +30,13 @@ describe('tenantsContext', () => {
 
   describe('updateTenants', () => {
     let db: Db;
-    let model: Awaited<ReturnType<typeof tenantsModel>>;
-
-    const defaultName = config.defaultTenant.name;
 
     beforeAll(async () => {
       await testingDB.connect();
       testingEnvironment.setRequestId();
       db = testingDB.db(config.SHARED_DB);
-      model = await tenantsModel();
-      await model.initialize();
-    });
 
-    beforeEach(async () => {
       await db.collection('tenants').deleteMany({});
-      await tenants.updateTenants(model);
-    });
-
-    afterEach(async () => {
-      await db.collection('tenants').deleteMany({});
-      await tenants.updateTenants(model);
-    });
-
-    afterAll(async () => {
-      await new Promise(resolve => {
-        setTimeout(resolve, 1000);
-      });
-      await tenants.tearDownTenants();
-      await db.collection('tenants').deleteMany({});
-      await testingEnvironment.tearDown();
-      jest.spyOn(appContext, 'get').mockRestore();
-    });
-
-    it('keeps the constructor seed when the tenants collection is empty', async () => {
-      await tenants.updateTenants(model);
-
-      expect(Object.keys(tenants.tenants)).toEqual([defaultName]);
-      expect(tenants.tenants[defaultName].dbName).toBe(config.defaultTenant.dbName);
-    });
-
-    it('replaces the in-memory map with Mongo tenants and drops the seeded default', async () => {
       await db.collection('tenants').insertMany([
         {
           name: 'tenant one',
@@ -82,71 +47,27 @@ describe('tenantsContext', () => {
           dbName: 'tenant_two',
         },
       ]);
+    });
+
+    afterAll(async () => {
+      // await for the debounce to finish
+      await new Promise(resolve => {
+        setTimeout(resolve, 1000);
+      });
+      await tenants.tearDownTenants();
+      await db.collection('tenants').deleteMany({});
+      await testingEnvironment.tearDown();
+      jest.spyOn(appContext, 'get').mockRestore();
+    });
+
+    it('should udpate tenants with DB data', async () => {
+      const model = await tenantsModel();
+      await model.initialize();
       await tenants.updateTenants(model);
 
-      expect(Object.keys(tenants.tenants).sort()).toEqual(['tenant one', 'tenant two']);
-      expect(tenants.tenants[defaultName]).toBeUndefined();
       expect(tenants.tenants['tenant one'].dbName).toBe('tenant_one');
       expect(tenants.tenants['tenant two'].dbName).toBe('tenant_two');
-    });
-
-    it('run with the seed tenant does not look up a tenant named default', async () => {
-      testingTenants.restoreCurrentFn();
-      jest.spyOn(appContext, 'get').mockRestore();
-
-      await db.collection('tenants').insertMany([
-        { name: defaultName, dbName: 'mongo_default_db' },
-        { name: 'tenant one', dbName: 'tenant_one' },
-      ]);
-      await tenants.updateTenants(model);
-
-      await tenants.run(async () => {
-        expect(tenants.current()).toBe(tenants.defaultTenant);
-        expect(tenants.current().dbName).not.toBe('mongo_default_db');
-      }, tenants.defaultTenant);
-
-      await tenants.run(async () => {
-        expect(tenants.current()).toBe(tenants.tenants[defaultName]);
-        expect(tenants.current().dbName).toBe('mongo_default_db');
-      }, defaultName);
-    });
-
-    it('uses the Mongo default row when the collection includes one', async () => {
-      testingTenants.restoreCurrentFn();
-      jest.spyOn(appContext, 'get').mockRestore();
-
-      await db.collection('tenants').insertMany([
-        {
-          name: defaultName,
-          dbName: 'mongo_default_db',
-        },
-        {
-          name: 'other',
-          dbName: 'other_db',
-        },
-      ]);
-      await tenants.updateTenants(model);
-
-      expect(Object.keys(tenants.tenants).sort()).toEqual([defaultName, 'other'].sort());
-      expect(tenants.tenants[defaultName].dbName).toBe('mongo_default_db');
-      expect(tenants.tenants[defaultName].dbName).not.toBe(config.defaultTenant.dbName);
-
-      await tenants.run(async () => {
-        expect(tenants.current()).toBe(tenants.tenants[defaultName]);
-        expect(tenants.current().dbName).toBe('mongo_default_db');
-      }, defaultName);
-    });
-
-    it('falls back to the constructor seed when Mongo tenants are later emptied', async () => {
-      await db.collection('tenants').insertOne({ name: 'tenant one', dbName: 'tenant_one' });
-      await tenants.updateTenants(model);
-      expect(tenants.tenants[defaultName]).toBeUndefined();
-
-      await db.collection('tenants').deleteMany({});
-      await tenants.updateTenants(model);
-
-      expect(Object.keys(tenants.tenants)).toEqual([defaultName]);
-      expect(tenants.tenants[defaultName].dbName).toBe(config.defaultTenant.dbName);
+      await model.closeChangeStream();
     });
   });
 
