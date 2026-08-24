@@ -15,6 +15,9 @@ import { Template } from '#api/core/domain/template/Template.js';
 import { MongoEntitiesDataSource } from '../entity/MongoEntitiesDataSource.js';
 import { MongoTemplatesDAO } from '../template/MongoTemplatesDAO.js';
 import { search } from '#api/search/index.js';
+import { EntityNotFoundError } from '#api/core/application/errors.js';
+import { V1RelationshipProperty } from '#api/core/domain/template/V1RelationshipProperty.js';
+import { elasticTesting } from '#api/utils/elastic_testing.js';
 
 const factory = getFixturesFactory();
 const fixtures = {
@@ -132,19 +135,32 @@ describe('MongoEntitiesDataSource', () => {
       expect(entity3Docs.map(e => e.language).sort()).toEqual(['en', 'es']);
     });
 
-    it('should add all sharedIds to modifiedSharedIds for search indexing', async () => {
-      const { sut } = createSut();
+    it('should index the inserted entities on transaction commit', async () => {
+      const { sut, transactionManager } = createSut();
 
       const template = createSampleTemplate();
       const entity1 = createEntity(['en', 'es'], template);
       const entity2 = createEntity(['en', 'es'], template);
 
-      await sut.bulkInsert([entity1, entity2]);
+      await transactionManager.run(async () => {
+        await sut.bulkInsert([entity1, entity2]);
+      });
 
-      const modifiedSharedIds = (sut as any).modifiedSharedIds as Set<string>;
+      await elasticTesting.refresh();
+      const indexed = await elasticTesting.getIndexedEntities();
+      const indexedForEntities = indexed
+        .filter(e => [entity1.sharedId, entity2.sharedId].includes(e.sharedId))
+        .map(e => `${e.sharedId}:${e.language}`)
+        .sort();
 
-      expect(modifiedSharedIds.has(entity1.sharedId)).toBe(true);
-      expect(modifiedSharedIds.has(entity2.sharedId)).toBe(true);
+      expect(indexedForEntities).toEqual(
+        [
+          `${entity1.sharedId}:en`,
+          `${entity1.sharedId}:es`,
+          `${entity2.sharedId}:en`,
+          `${entity2.sharedId}:es`,
+        ].sort()
+      );
     });
 
     it('should handle entities with different templates', async () => {
@@ -543,6 +559,446 @@ describe('MongoEntitiesDataSource', () => {
         await sut.unrestricted().getEntitiesBySharedIds(['readable', 'unreadable'])
       ).all();
       expect(unrestricted.map(e => e.sharedId).sort()).toEqual(['readable', 'unreadable']);
+    });
+  });
+
+  describe('create', () => {
+    it('should insert a single entity with all its translations', async () => {
+      const { sut } = createSut();
+
+      const template = createSampleTemplate();
+      const entity = createEntity(['en', 'es'], template);
+
+      await sut.create(entity);
+
+      const dbEntities = await testingEnvironment.db.getAllFrom('entities');
+
+      expect(dbEntities.length).toBe(2);
+      expect(dbEntities.map(e => e.sharedId)).toEqual([entity.sharedId, entity.sharedId]);
+      expect(dbEntities.map(e => e.language).sort()).toEqual(['en', 'es']);
+    });
+
+    it('should index the created entity on transaction commit', async () => {
+      const { sut, transactionManager } = createSut();
+
+      const template = createSampleTemplate();
+      const entity = createEntity(['en'], template);
+
+      await transactionManager.run(async () => {
+        await sut.create(entity);
+      });
+
+      await elasticTesting.refresh();
+      const indexed = await elasticTesting.getIndexedEntities();
+      const indexedEntity = indexed.find(e => e.sharedId === entity.sharedId);
+
+      expect(indexedEntity?.language).toBe('en');
+      expect(indexedEntity?.title).toBe(`Entity ${entity.sharedId}`);
+    });
+  });
+
+  describe('update', () => {
+    it('should update the entity content and reindex it', async () => {
+      const { sut, transactionManager } = createSut();
+
+      const template = createSampleTemplate();
+      const entity = createEntity(['en'], template);
+      await transactionManager.run(async () => {
+        await sut.bulkInsert([entity]);
+      });
+
+      entity.setPropertyAssignmentsInAllLanguages([
+        template.createPropertyAssignment('title', { value: [{ value: 'Updated Title' }] }),
+      ]);
+
+      await transactionManager.run(async () => {
+        await sut.update(entity);
+      });
+
+      const [stored] = await testingEnvironment.db.getAllFrom('entities');
+      expect(stored.title).toBe('Updated Title');
+
+      await elasticTesting.refresh();
+      const indexed = await elasticTesting.getIndexedEntities();
+      const indexedEntity = indexed.find(e => e.sharedId === entity.sharedId);
+
+      expect(indexedEntity?.title).toBe('Updated Title');
+    });
+  });
+
+  describe('getById', () => {
+    it('should return the entity for a sharedId', async () => {
+      await testingEnvironment.setFixtures({
+        settings: [{ languages: [{ default: true, key: 'en', label: 'English' }] }],
+        templates: [factory.template('Template1', [factory.property('text', 'text')])],
+        entities: [
+          factory.entity('entity-1', 'Template1', {}, { language: 'en' }),
+          factory.entity('entity-1', 'Template1', {}, { language: 'es' }),
+        ],
+      });
+
+      const { sut } = createSut();
+
+      const result = await sut.getById('entity-1');
+
+      expect(result.isOk()).toBe(true);
+      const found = result.getDataOrThrow();
+      expect(found.sharedId).toBe('entity-1');
+      expect(found.languages.sort()).toEqual(['en', 'es']);
+    });
+
+    it('should fail with EntityNotFoundError when the entity does not exist', async () => {
+      const { sut } = createSut();
+
+      const result = await sut.getById('missing-shared-id');
+
+      expect(result.isError()).toBe(true);
+      expect(result.getError()).toBeInstanceOf(EntityNotFoundError);
+    });
+  });
+
+  describe('getAllBySharedId', () => {
+    it('should return entities for the given sharedIds', async () => {
+      await testingEnvironment.setFixtures({
+        settings: [{ languages: [{ default: true, key: 'en', label: 'English' }] }],
+        templates: [factory.template('Template1', [factory.property('text', 'text')])],
+        entities: [
+          factory.entity('entity-1', 'Template1', {}),
+          factory.entity('entity-2', 'Template1', {}),
+        ],
+      });
+
+      const { sut } = createSut();
+
+      const result = await sut.getAllBySharedId(['entity-1', 'entity-2']);
+
+      expect(result.isOk()).toBe(true);
+      const entities = result.getDataOrThrow();
+      expect(entities.map(e => e.sharedId).sort()).toEqual(['entity-1', 'entity-2']);
+    });
+
+    it('should fail when no entities are found', async () => {
+      const { sut } = createSut();
+
+      const result = await sut.getAllBySharedId(['missing-1', 'missing-2']);
+
+      expect(result.isError()).toBe(true);
+      expect(result.getError()?.message).toContain('not found');
+    });
+  });
+
+  describe('getEntitiesByTemplateId', () => {
+    it('should return only entities of the given template', async () => {
+      await testingEnvironment.setFixtures({
+        settings: [{ languages: [{ default: true, key: 'en', label: 'English' }] }],
+        templates: [
+          factory.template('Template1', [factory.property('text', 'text')]),
+          factory.template('Template2', [factory.property('text', 'text')]),
+        ],
+        entities: [
+          factory.entity('entity-1', 'Template1', {}),
+          factory.entity('entity-2', 'Template2', {}),
+        ],
+      });
+
+      const { sut } = createSut();
+
+      const entities = await (
+        await sut.getEntitiesByTemplateId(factory.id('Template1').toString())
+      ).all();
+
+      expect(entities.map(e => e.sharedId)).toEqual(['entity-1']);
+    });
+  });
+
+  describe('getSharedIdsByTemplateId', () => {
+    it('should return sharedIds of entities in the given template', async () => {
+      const { sut } = createSut();
+
+      const template1 = createSampleTemplate('Template1');
+      const template2 = createSampleTemplate('Template2');
+      const entity1 = createEntity(['en', 'es'], template1);
+      const entity2 = createEntity(['en'], template1);
+      const entity3 = createEntity(['en'], template2);
+      await sut.bulkInsert([entity1, entity2, entity3]);
+
+      const sharedIds = await (await sut.getSharedIdsByTemplateId(template1.id)).all();
+
+      expect(sharedIds.sort()).toEqual([entity1.sharedId, entity2.sharedId].sort());
+    });
+  });
+
+  describe('countByTemplateId', () => {
+    it('should count distinct sharedIds in the given template', async () => {
+      const { sut } = createSut();
+
+      const template1 = createSampleTemplate('Template1');
+      const template2 = createSampleTemplate('Template2');
+      const entity1 = createEntity(['en', 'es'], template1);
+      const entity2 = createEntity(['en'], template1);
+      const entity3 = createEntity(['en'], template2);
+      await sut.bulkInsert([entity1, entity2, entity3]);
+
+      await expect(sut.countByTemplateId(template1.id)).resolves.toBe(2);
+      await expect(sut.countByTemplateId(template2.id)).resolves.toBe(1);
+    });
+  });
+
+  describe('getEntitiesByRelatedProperties', () => {
+    it('should return entities referenced by the given relationship properties', async () => {
+      await testingEnvironment.setFixtures({
+        settings: [{ languages: [{ default: true, key: 'en', label: 'English' }] }],
+        templates: [
+          factory.template('RelTemplate', [factory.relationshipProp('rel', 'thesaurus1')]),
+        ],
+        entities: [
+          factory.entity('related-1', 'RelTemplate', {}),
+          factory.entity('related-2', 'RelTemplate', {}),
+        ],
+      });
+
+      const { sut } = createSut();
+
+      const templateId = factory.id('RelTemplate').toString();
+      const relationshipProperty = new V1RelationshipProperty(
+        'rel',
+        'rel',
+        'Rel',
+        'relType',
+        templateId
+      );
+      const template = TemplateBuilder.aTemplate({ id: templateId, name: 'RelTemplate' })
+        .withProperties([relationshipProperty])
+        .build();
+      const source = createEntity(['en'], template);
+
+      source.setPropertyAssignmentsInAllLanguages([
+        relationshipProperty.createPropertyAssignment({
+          value: [
+            { value: 'related-1', label: 'r1', type: 'entity' },
+            { value: 'related-2', label: 'r2', type: 'entity' },
+          ],
+          language: 'en',
+        }),
+      ]);
+
+      const entities = await (
+        await sut.getEntitiesByRelatedProperties([source], [relationshipProperty])
+      ).all();
+
+      expect(entities.map(e => e.sharedId).sort()).toEqual(['related-1', 'related-2']);
+    });
+  });
+
+  describe('getSharedIdsUsingThesaurus', () => {
+    it('should return sharedIds of entities with non-empty metadata using thesaurus templates', async () => {
+      await testingEnvironment.setFixtures({
+        settings: [{ languages: [{ default: true, key: 'en', label: 'English' }] }],
+        templates: [
+          factory.template('ThesaurusTemplate', [factory.relationshipProp('rel', 'thesaurus1')]),
+          factory.template('OtherTemplate', [factory.property('text', 'text')]),
+        ],
+        entities: [
+          factory.entity('with-metadata', 'ThesaurusTemplate', {
+            rel: [{ value: 'value1', label: 'value1' }],
+          }),
+          factory.entity('empty-metadata', 'ThesaurusTemplate', {}),
+          factory.entity('other-template', 'OtherTemplate', { text: [{ value: 'x' }] }),
+        ],
+      });
+
+      const { sut } = createSut();
+
+      const sharedIds = await sut.getSharedIdsUsingThesaurus(factory.id('thesaurus1').toString());
+
+      expect(sharedIds).toEqual(['with-metadata']);
+    });
+  });
+
+  describe('deleteReferencesToSharedIds', () => {
+    it('should remove references to the deleted sharedIds from metadata', async () => {
+      await testingEnvironment.setFixtures({
+        settings: [{ languages: [{ default: true, key: 'en', label: 'English' }] }],
+        templates: [
+          factory.template('RefTemplate', [factory.relationshipProp('rel', 'thesaurus1')]),
+        ],
+        entities: [
+          factory.entity('entity-a', 'RefTemplate', {
+            rel: [
+              { value: 'deleted-1', label: 'd1' },
+              { value: 'keep-1', label: 'k1' },
+            ],
+          }),
+          factory.entity('entity-b', 'RefTemplate', {
+            rel: [{ value: 'keep-2', label: 'k2' }],
+          }),
+        ],
+      });
+
+      const { sut, transactionManager } = createSut();
+
+      await transactionManager.run(async () => {
+        await sut.deleteReferencesToSharedIds(['deleted-1']);
+      });
+
+      const stored = await testingEnvironment.db.getAllFrom('entities');
+      const entityA = stored.find(e => e.sharedId === 'entity-a');
+      const entityB = stored.find(e => e.sharedId === 'entity-b');
+
+      expect(entityA?.metadata.rel).toEqual([{ value: 'keep-1', label: 'k1' }]);
+      expect(entityB?.metadata.rel).toEqual([{ value: 'keep-2', label: 'k2' }]);
+
+      await elasticTesting.refresh();
+      const indexed = await elasticTesting.getIndexedEntities();
+      const indexedEntityA = indexed.find(e => e.sharedId === 'entity-a');
+
+      expect(indexedEntityA?.metadata.rel).toEqual([{ value: 'keep-1', label: 'k1' }]);
+    });
+  });
+
+  describe('touchEntitiesBySharedIds', () => {
+    it('should update editDate and reindex the sharedIds', async () => {
+      const { sut, transactionManager } = createSut();
+
+      const template = createSampleTemplate();
+      const entity = createEntity(['en'], template);
+      await transactionManager.run(async () => {
+        await sut.bulkInsert([entity]);
+      });
+
+      await transactionManager.run(async () => {
+        await sut.touchEntitiesBySharedIds([entity.sharedId]);
+      });
+
+      const [stored] = await testingEnvironment.db.getAllFrom('entities');
+      expect(typeof stored.editDate).toBe('number');
+
+      await elasticTesting.refresh();
+      const indexed = await elasticTesting.getIndexedEntities();
+      const indexedEntity = indexed.find(e => e.sharedId === entity.sharedId);
+
+      expect(indexedEntity?.editDate).toBe(stored.editDate);
+    });
+  });
+
+  describe('deleteMetadataProperties', () => {
+    it('should remove the given metadata properties and reindex', async () => {
+      const { sut, transactionManager } = createSut();
+
+      const template = createSampleTemplate();
+      const entity = createEntity(['en'], template);
+      entity.setPropertyAssignmentsInAllLanguages([
+        template.createPropertyAssignment('title', { value: [{ value: 'Title' }] }),
+        template.createPropertyAssignment('text', { value: [{ value: 'Text' }] }),
+        template.createPropertyAssignment('numeric', { value: [{ value: 42 }] }),
+      ]);
+      await transactionManager.run(async () => {
+        await sut.bulkInsert([entity]);
+      });
+
+      await transactionManager.run(async () => {
+        await sut.deleteMetadataProperties(['text'], [entity.sharedId]);
+      });
+
+      const [stored] = await testingEnvironment.db.getAllFrom('entities');
+      expect(stored.metadata.text).toBeUndefined();
+      expect(stored.metadata.numeric).toEqual([{ value: 42 }]);
+
+      await elasticTesting.refresh();
+      const indexed = await elasticTesting.getIndexedEntities();
+      const indexedEntity = indexed.find(e => e.sharedId === entity.sharedId);
+
+      expect(indexedEntity?.metadata.text).toBeUndefined();
+      expect(indexedEntity?.metadata.numeric).toEqual([{ value: 42 }]);
+    });
+  });
+
+  describe('renameMetadataProperties', () => {
+    it('should rename the given metadata properties and reindex', async () => {
+      const { sut, transactionManager } = createSut();
+
+      const template = createSampleTemplate();
+      const entity = createEntity(['en'], template);
+      entity.setPropertyAssignmentsInAllLanguages([
+        template.createPropertyAssignment('title', { value: [{ value: 'Title' }] }),
+        template.createPropertyAssignment('text', { value: [{ value: 'Text' }] }),
+      ]);
+      await transactionManager.run(async () => {
+        await sut.bulkInsert([entity]);
+      });
+
+      await transactionManager.run(async () => {
+        await sut.renameMetadataProperties({ text: 'renamed' }, [entity.sharedId]);
+      });
+
+      const [stored] = await testingEnvironment.db.getAllFrom('entities');
+      expect(stored.metadata.text).toBeUndefined();
+      expect(stored.metadata.renamed).toEqual([{ value: 'Text' }]);
+
+      await elasticTesting.refresh();
+      const indexed = await elasticTesting.getIndexedEntities();
+      const indexedEntity = indexed.find(e => e.sharedId === entity.sharedId);
+
+      expect(indexedEntity?.metadata.text).toBeUndefined();
+      expect(indexedEntity?.metadata.renamed).toEqual([{ value: 'Text' }]);
+    });
+  });
+
+  describe('bulkUpdateDeprecated', () => {
+    it('should update metadata for each translation and reindex', async () => {
+      const { sut, transactionManager } = createSut();
+
+      const template = createSampleTemplate();
+      const entity = createEntity(['en', 'es'], template);
+      await transactionManager.run(async () => {
+        await sut.bulkInsert([entity]);
+      });
+
+      const textProperty = template.properties.find(p => p.name === 'text')!;
+
+      entity.setPropertyAssignmentsInAllLanguages([
+        template.createPropertyAssignment('title', { value: [{ value: 'Title' }] }),
+        textProperty.createPropertyAssignment({ value: [{ value: 'New Text' }] }),
+      ]);
+
+      await transactionManager.run(async () => {
+        await sut.bulkUpdateDeprecated([entity], [textProperty]);
+      });
+
+      const stored = await testingEnvironment.db.getAllFrom('entities');
+      stored.forEach(doc => {
+        expect(doc.metadata.text).toEqual([{ value: 'New Text' }]);
+      });
+
+      await elasticTesting.refresh();
+      const indexed = await elasticTesting.getIndexedEntities();
+      const indexedEntities = indexed.filter(e => e.sharedId === entity.sharedId);
+      indexedEntities.forEach(doc => {
+        expect(doc.metadata.text).toEqual([{ value: 'New Text' }]);
+      });
+    });
+  });
+
+  describe('bulkDelete', () => {
+    it('should delete all translations of the given sharedIds from the database', async () => {
+      const bulkDeleteBySharedIdSpy = jest
+        .spyOn(search, 'bulkDeleteBySharedId')
+        .mockResolvedValue(undefined);
+
+      const { sut } = createSut();
+
+      const template = createSampleTemplate();
+      const entity1 = createEntity(['en', 'es'], template);
+      const entity2 = createEntity(['en'], template);
+      await sut.bulkInsert([entity1, entity2]);
+
+      await sut.bulkDelete([entity1.sharedId]);
+
+      const stored = await testingEnvironment.db.getAllFrom('entities');
+      expect(stored.map(e => e.sharedId)).toEqual([entity2.sharedId]);
+      expect(bulkDeleteBySharedIdSpy).toHaveBeenCalledWith([entity1.sharedId]);
+
+      bulkDeleteBySharedIdSpy.mockRestore();
     });
   });
 });
