@@ -90,25 +90,25 @@ describe('tenantsContext', () => {
       expect(tenants.tenants['tenant two'].dbName).toBe('tenant_two');
     });
 
-    it('still resolves current() for the default context when the seed is not in the map', async () => {
+    it('run with the seed tenant does not look up a tenant named default', async () => {
       testingTenants.restoreCurrentFn();
       jest.spyOn(appContext, 'get').mockRestore();
 
-      await db.collection('tenants').insertOne({ name: 'tenant one', dbName: 'tenant_one' });
+      await db.collection('tenants').insertMany([
+        { name: defaultName, dbName: 'mongo_default_db' },
+        { name: 'tenant one', dbName: 'tenant_one' },
+      ]);
       await tenants.updateTenants(model);
-      expect(tenants.tenants[defaultName]).toBeUndefined();
 
       await tenants.run(async () => {
         expect(tenants.current()).toBe(tenants.defaultTenant);
-      }, defaultName);
+        expect(tenants.current().dbName).not.toBe('mongo_default_db');
+      }, tenants.defaultTenant);
 
-      await expect(
-        tenants.run(async () => {
-          tenants.current();
-        }, 'missing-tenant')
-      ).rejects.toThrow(
-        'the tenant set to run the current async context -> [missing-tenant] its not available in the current process'
-      );
+      await tenants.run(async () => {
+        expect(tenants.current()).toBe(tenants.tenants[defaultName]);
+        expect(tenants.current().dbName).toBe('mongo_default_db');
+      }, defaultName);
     });
 
     it('uses the Mongo default row when the collection includes one', async () => {

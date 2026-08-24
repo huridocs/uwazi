@@ -102,33 +102,38 @@ class Tenants {
    * This is a proxy to the context run method using only the tenant information.
    * It is here for backwards compatibility after refactoring.
    * @param cb The callback to run in the context
-   * @param tenantName Tenant name
+   * @param tenant Tenant name, or a Tenant instance (used for the privileged queue wrap)
    */
   // eslint-disable-next-line class-methods-use-this
   async run(
     cb: () => Promise<void>,
-    tenantName: string = config.defaultTenant.name
+    tenant: string | Tenant = config.defaultTenant.name
   ): Promise<void> {
+    if (typeof tenant !== 'string') {
+      return appContext.run(cb, { tenantInstance: tenant });
+    }
     return appContext.run(cb, {
-      tenant: tenantName,
+      tenant,
     });
   }
 
   current() {
+    const tenantInstance = appContext.get('tenantInstance') as Tenant | undefined;
+    if (tenantInstance) {
+      return tenantInstance;
+    }
+
     const tenantName = <string>appContext.get('tenant');
 
     if (!tenantName) {
       throw new Error('There is no tenant on the current async context');
     }
-    if (this.tenants[tenantName]) {
-      return this.tenants[tenantName];
+    if (!this.tenants[tenantName]) {
+      throw new Error(
+        `the tenant set to run the current async context -> [${tenantName}] its not available in the current process`
+      );
     }
-    if (tenantName === this.defaultTenant.name) {
-      return this.defaultTenant;
-    }
-    throw new Error(
-      `the tenant set to run the current async context -> [${tenantName}] its not available in the current process`
-    );
+    return this.tenants[tenantName];
   }
 
   add(tenant: DBTenant) {
