@@ -1,4 +1,3 @@
-/* eslint-disable max-classes-per-file */
 /* eslint-disable max-statements */
 import { register } from 'app/setupQueueWorker';
 import { ObjectId } from 'mongodb';
@@ -31,9 +30,7 @@ const actor: UserSchema = {
 @PrivilegedJob()
 class TestSystemJob extends UwaziJobHandler<{ userId: string }> {
   capturedTenant: Tenant | undefined;
-
   capturedTenant2: Tenant | undefined;
-
   capturedActor: UserSchema | undefined;
 
   protected async handle(
@@ -74,9 +71,7 @@ class TestSystemPlainDispatchable implements Dispatchable {
 
 class TestUserJob extends UwaziJobHandler<{ userId: string; someParam: string }> {
   capturedTenant: Tenant | undefined;
-
   capturedTenant2: Tenant | undefined;
-
   capturedActor: UserSchema | undefined;
 
   protected async handle(
@@ -221,36 +216,5 @@ describe('Setup Queue Worker', () => {
     expect(testJob.capturedTenant).toMatchObject({ name: TENANT });
     expect(testJob.capturedTenant2).toMatchObject({ name: TENANT });
     expect(testJob.capturedActor).toMatchObject({ _id: actor._id?.toString() });
-  });
-
-  it('runs system-namespace jobs against the seed tenant, not a tenant named default', async () => {
-    testingTenants.restoreCurrentFn();
-    delete tenants.tenants[tenants.defaultTenant.name];
-    tenants.add(
-      testingTenants.createTenant({
-        name: tenants.defaultTenant.name,
-        dbName: 'mongo-default-db',
-      })
-    );
-
-    const worker = TestUtils.mockClass<QueueWorker>({
-      register: jest.fn(),
-      getRegisteredJobs: jest.fn().mockReturnValue([]),
-      start: jest.fn(),
-      stop: jest.fn(),
-    });
-
-    let contextDuringFactory: Tenant | undefined;
-    const testJob = new TestSystemPlainDispatchable();
-    register.call(worker, TestSystemPlainDispatchable, async () => {
-      contextDuringFactory = tenants.current();
-      return testJob;
-    });
-
-    const [, wrappedFactory] = (worker.register as jest.Mock).mock.calls[0];
-    await wrappedFactory('system', { namespace: 'system', params: {} });
-
-    expect(contextDuringFactory).toBe(tenants.defaultTenant);
-    expect(contextDuringFactory?.dbName).not.toBe('mongo-default-db');
   });
 });

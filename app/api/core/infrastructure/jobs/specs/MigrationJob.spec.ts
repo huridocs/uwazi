@@ -1,3 +1,4 @@
+/* eslint-disable max-statements */
 import { TenantMigrationRunner } from '#api/core/infrastructure/mongodb/TenantMigrationRunner.js';
 import { MigrationJob } from '#api/core/infrastructure/jobs/MigrationJob.js';
 import { createMockLogger } from '#api/core/libs/logger/infrastructure/MockLogger.js';
@@ -49,7 +50,7 @@ type MigrationCatalogueEntry = {
 const createFakeRunner = (options: {
   migrations: MigrationCatalogueEntry[];
   failDelta?: number;
-  tenantExists?: boolean;
+  tenantExists?: boolean | ((tenant: { name?: string; dbName: string }) => boolean);
 }): TenantMigrationRunner => {
   const dbForTenant = (tenant: { dbName: string }) => testingDB.db(tenant.dbName);
 
@@ -58,13 +59,20 @@ const createFakeRunner = (options: {
     return new Set(docs.map(doc => doc.delta));
   };
 
+  const tenantExists = (tenant: { name?: string; dbName: string }) => {
+    if (typeof options.tenantExists === 'function') {
+      return options.tenantExists(tenant);
+    }
+    return options.tenantExists !== false;
+  };
+
   return {
-    async tenantExists(_tenant: { dbName: string }) {
-      return options.tenantExists !== false;
+    async tenantExists(tenant: { name?: string; dbName: string }) {
+      return tenantExists(tenant);
     },
 
-    async getPendingMigrations(tenant: { dbName: string }, schemaVersion: number) {
-      if (options.tenantExists === false) {
+    async getPendingMigrations(tenant: { name?: string; dbName: string }, schemaVersion: number) {
+      if (!tenantExists(tenant)) {
         return { runnable: [], blocked: null };
       }
 
@@ -251,6 +259,43 @@ describe('MigrationJob', () => {
       reindexTenant,
       pgMigrator,
       runner: createFakeRunner({ migrations: defaultCatalogue }),
+    });
+
+    await dispatcher.dispatch(MigrationJob, {
+      reindexTenants: [],
+      results: emptyResults(),
+    });
+
+    expect(await pgMigrator.getCurrentVersion()).toBe(100);
+    expect(await appliedDeltas()).toEqual([1, 2, 3, 10]);
+  });
+
+  it('should advance schema using tenant [1] when [0] is the seeded default', async () => {
+    const logger = createMockLogger();
+    const pgMigrator = new FakePgMigrator({ currentVersion: 99, maxDelta: 100 });
+    const tenantsManager = {
+      tenants: {
+        default: { name: 'default', dbName: 'seed' },
+        cluster: { name: 'cluster', dbName: testingDB.dbName },
+      },
+      currentName: 'default',
+      current() {
+        return this.tenants[this.currentName as 'default' | 'cluster'];
+      },
+      async run(fn: () => Promise<void>, tenantName = 'default') {
+        this.currentName = tenantName;
+        return fn();
+      },
+      async setMaintenance() {},
+    };
+    const { dispatcher } = createJobFactory({
+      logger,
+      pgMigrator,
+      tenantsManager,
+      runner: createFakeRunner({
+        migrations: defaultCatalogue,
+        tenantExists: tenant => tenant.name !== 'default',
+      }),
     });
 
     await dispatcher.dispatch(MigrationJob, {
