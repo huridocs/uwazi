@@ -44,8 +44,6 @@ class PostgresEntityMapper {
         }
         return { ...acc, [key]: propertyValue.value };
       }, {}),
-      published: false,
-      permissions: [],
     }));
   }
 
@@ -60,7 +58,7 @@ class PostgresEntityMapper {
       metadata: row.metadata as EntityDBO['metadata'],
       obsoleteMetadata: [],
       user: row.user ? new ObjectId(row.user) : undefined,
-      published: row.published,
+      published: row.published ?? false,
       creationDate: row.creationDate,
       editDate: row.editDate,
       generatedToc: row.generatedToc ?? undefined,

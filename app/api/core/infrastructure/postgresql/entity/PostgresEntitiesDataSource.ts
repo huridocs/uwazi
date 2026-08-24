@@ -174,6 +174,7 @@ export class PostgresEntitiesDataSource
       .where({ template: templateId })
       .whereIn('title', titles)
       .select(['title', 'sharedId'])
+      .orderBy('_id')
       .all();
 
     return rows.map(r => ({ title: r.title, sharedId: r.sharedId }));
@@ -187,6 +188,7 @@ export class PostgresEntitiesDataSource
     const rows = await this.table
       .whereIn('title', titles)
       .select(['title', 'sharedId', 'template'])
+      .orderBy('_id')
       .all();
 
     return rows.map(r => ({ title: r.title, sharedId: r.sharedId, templateId: r.template }));
