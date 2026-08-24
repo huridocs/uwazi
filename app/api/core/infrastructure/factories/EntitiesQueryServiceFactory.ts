@@ -5,7 +5,7 @@ import {
 import { User } from '#api/users.v2/model/User.js';
 import { TransactionManagerFactory } from './TransactionManagerFactory.js';
 import { MongoTransactionManager } from '../mongodb/common/MongoTransactionManager.js';
-import { MongoEntityPermissionChecker } from '../mongodb/entity/MongoEntityPermissionChecker.js';
+import { EntityPermissionCheckerFactory } from './EntityPermissionCheckerFactory.js';
 import { MongoRelationshipsV1DataSource } from '../mongodb/MongoRelationshipsV1DataSource.js';
 import { getConnection } from '../mongodb/common/getConnectionForCurrentTenant.js';
 import { SettingsDataSourceFactory } from './SettingsDataSourceFactory.js';
@@ -24,7 +24,7 @@ class EntitiesQueryServiceFactory {
     return new EntitiesQueryService({
       entityPermissionChecker:
         deps?.entityPermissionChecker ??
-        new MongoEntityPermissionChecker(getConnection(), transactionManager),
+        EntityPermissionCheckerFactory.default({ transactionManager }),
       settingsDS: deps?.settingsDS ?? SettingsDataSourceFactory.cached({ transactionManager }),
       templatesDS: deps?.templatesDS ?? TemplatesDataSourceFactory.cached({ transactionManager }),
       templatesDAO: deps?.templatesDAO ?? TemplatesDAOFactory.default(),

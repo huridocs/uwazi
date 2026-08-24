@@ -82,9 +82,7 @@ const createSut = (props?: CreateSutProps) => {
   });
 
   const mockPermissionChecker = {
-    checkReadPermission: jest.fn().mockResolvedValue({
-      getDataOrThrow: () => true,
-    }),
+    checkReadPermission: jest.fn().mockResolvedValue(true),
   };
 
   jest.spyOn(FileStorageFactory, 'default').mockReturnValue(mockFileStorage as any);
