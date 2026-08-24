@@ -43,8 +43,18 @@ jest.mock('../pdfjs.ts', () => ({
   PixelsPerInch: { PDF_TO_CSS_UNITS: 1 },
 }));
 
-type MockObserver = IntersectionObserver & {
+type MockObserver = {
   callback: IntersectionObserverCallback;
+  root: Element | Document | null;
+  rootMargin: string;
+  // `scrollMargin` exists only in newer DOM lib versions (TS 7),
+  // but declaring it here keeps the mock valid on both TS 5.9 and TS 7.
+  scrollMargin: string;
+  thresholds: readonly number[];
+  observe: (target: Element) => void;
+  unobserve: (target: Element) => void;
+  disconnect: () => void;
+  takeRecords: () => IntersectionObserverEntry[];
 };
 
 const observers: MockObserver[] = [];
@@ -73,6 +83,7 @@ global.IntersectionObserver = jest
         callback,
         root: options?.root ?? null,
         rootMargin: options?.rootMargin ?? '0px',
+        scrollMargin: '',
         thresholds: Array.isArray(options?.threshold)
           ? options.threshold
           : [options?.threshold ?? 0],

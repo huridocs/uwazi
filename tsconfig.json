@@ -17,8 +17,9 @@
     "emitDecoratorMetadata": true,
     "resolveJsonModule": true,
     "strict": true,
-    "baseUrl": ".",
     "rootDir": ".",
+    "types": ["*"],
+    "noUncheckedSideEffectImports": false,
     "paths": {
       "#api/*": ["./app/api/*"],
       "#app/*": ["./app/react/*"],
@@ -27,7 +28,8 @@
       "#UI/*": ["./app/react/UI/*"],
       "#V2/*": ["./app/react/V2/*"],
       "#api/utils/*": ["./app/api/utils/*"],
-      "#app/utils/*": ["./app/react/utils/*"]
+      "#app/utils/*": ["./app/react/utils/*"],
+      "*": ["./*"]
     },
     //TODO: solve conflict between @types from react dependencies
     "skipLibCheck": true
