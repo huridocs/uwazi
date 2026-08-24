@@ -60,8 +60,12 @@ class Tenants {
 
   constructor(defaultTenant: Tenant) {
     this.defaultTenant = defaultTenant;
-    this.tenants = {
-      [config.defaultTenant.name]: defaultTenant,
+    this.tenants = this.defaultTenantMap();
+  }
+
+  private defaultTenantMap(): { [k: string]: Tenant } {
+    return {
+      [this.defaultTenant.name]: this.defaultTenant,
     };
   }
 
@@ -82,9 +86,14 @@ class Tenants {
   }
 
   async updateTenants(model: TenantsModel) {
-    const tenants = await model.get();
+    const tenantsFromDb = await model.get();
+    if (tenantsFromDb.length === 0) {
+      this.tenants = this.defaultTenantMap();
+      return;
+    }
 
-    tenants.forEach((tenant: TenantDocument) => {
+    this.tenants = {};
+    tenantsFromDb.forEach((tenant: TenantDocument) => {
       this.add(tenant);
     });
   }
@@ -93,19 +102,27 @@ class Tenants {
    * This is a proxy to the context run method using only the tenant information.
    * It is here for backwards compatibility after refactoring.
    * @param cb The callback to run in the context
-   * @param tenantName Tenant name
+   * @param tenant Tenant name, or a Tenant instance (used for the privileged queue wrap)
    */
   // eslint-disable-next-line class-methods-use-this
   async run(
     cb: () => Promise<void>,
-    tenantName: string = config.defaultTenant.name
+    tenant: string | Tenant = config.defaultTenant.name
   ): Promise<void> {
+    if (typeof tenant !== 'string') {
+      return appContext.run(cb, { tenantInstance: tenant });
+    }
     return appContext.run(cb, {
-      tenant: tenantName,
+      tenant,
     });
   }
 
   current() {
+    const tenantInstance = appContext.get('tenantInstance') as Tenant | undefined;
+    if (tenantInstance) {
+      return tenantInstance;
+    }
+
     const tenantName = <string>appContext.get('tenant');
 
     if (!tenantName) {
