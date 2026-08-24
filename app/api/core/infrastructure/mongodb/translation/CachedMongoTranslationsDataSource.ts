@@ -1,8 +1,6 @@
 import { Db } from 'mongodb';
-import { MongoResultSet } from '#api/core/infrastructure/mongodb/common/MongoResultSet.js';
 import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
 import { MongoTranslationsDataSource } from './MongoTranslationsDataSource.js';
-import { TranslationDBO } from '#api/core/infrastructure/mongodb/translation/schemas/TranslationDBO.js';
 import { Translation } from '#api/core/domain/translation/Translation.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 
@@ -20,45 +18,35 @@ export class CachedMongoTranslationsDataSource extends MongoTranslationsDataSour
     });
   }
 
-  private wrap(
-    cacheKey: string,
-    resultSet: MongoResultSet<TranslationDBO, Translation>
-  ): MongoResultSet<TranslationDBO, Translation> {
-    return {
-      ...resultSet,
-      all: async () => {
-        const cached = this.cache.get(cacheKey);
-        if (cached) {
-          return cached;
-        }
-        const all = await resultSet.all();
-        this.cache.set(cacheKey, all);
-        return all;
-      },
-    } as MongoResultSet<TranslationDBO, Translation>;
+  private async wrap(cacheKey: string, load: () => Promise<Translation[]>): Promise<Translation[]> {
+    const cached = this.cache.get(cacheKey);
+    if (cached) {
+      return cached;
+    }
+    const all = await load();
+    this.cache.set(cacheKey, all);
+    return all;
   }
 
-  override getByContext(context: string) {
-    return this.wrap(`context:${context}`, super.getByContext(context));
+  override async getByContext(context: string) {
+    return this.wrap(`context:${context}`, async () => super.getByContext(context));
   }
 
-  override getByLanguage(language: LanguageISO6391) {
-    return this.wrap(`language:${language}`, super.getByLanguage(language));
+  override async getByLanguage(language: LanguageISO6391) {
+    return this.wrap(`language:${language}`, async () => super.getByLanguage(language));
   }
 
-  override getByLanguageExcludingContextTypes(
+  override async getByLanguageExcludingContextTypes(
     language: LanguageISO6391,
     types: Translation['context']['type'][]
   ) {
-    return this.wrap(
-      `language-excluding:${language}:${types.join(',')}`,
+    return this.wrap(`language-excluding:${language}:${types.join(',')}`, async () =>
       super.getByLanguageExcludingContextTypes(language, types)
     );
   }
 
-  override getByLanguageAndContext(language: LanguageISO6391, contextId: string) {
-    return this.wrap(
-      `language+context:${language}:${contextId}`,
+  override async getByLanguageAndContext(language: LanguageISO6391, contextId: string) {
+    return this.wrap(`language+context:${language}:${contextId}`, async () =>
       super.getByLanguageAndContext(language, contextId)
     );
   }

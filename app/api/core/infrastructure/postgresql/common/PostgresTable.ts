@@ -287,13 +287,27 @@ export class PostgresTable<TRow = Record<string, unknown>> {
     await this.notifySync(rows, false);
   }
 
-  async upsert(doc: Record<string, unknown> | Record<string, unknown>[]): Promise<void> {
+  async upsert(
+    doc: Record<string, unknown> | Record<string, unknown>[],
+    conflict: { columns?: string[]; merge?: string[]; ignore?: boolean } = {}
+  ): Promise<void> {
     this.applyInsertPolicy();
     const rows = this.rowsWithTenant(doc);
-    await this.cfg.transactionManager.withConnection(async trx =>
-      trx(this.cfg.tableName).insert(rows).onConflict(['_id', 'tenant_id']).merge()
+    if (rows.length === 0) {
+      return;
+    }
+
+    const conflictColumns = conflict.columns ?? ['_id', 'tenant_id'];
+    const result = await this.cfg.transactionManager.withConnection(async trx => {
+      const qb = trx(this.cfg.tableName).insert(rows).onConflict(conflictColumns);
+      const conflicting = conflict.ignore ? qb.ignore() : qb.merge(conflict.merge);
+      return conflicting.returning(['_id']);
+    });
+
+    await this.notifySync(
+      PostgresTable.idsOf(result).map(_id => ({ _id })),
+      false
     );
-    await this.notifySync(rows, false);
   }
 
   async update(changes: Record<string, unknown>): Promise<string[]> {
