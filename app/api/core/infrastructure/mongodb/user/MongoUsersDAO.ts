@@ -2,7 +2,7 @@ import { Db, Document, Filter, ObjectId, UpdateFilter } from 'mongodb';
 import { MongoDataSource } from '../common/MongoDataSource.js';
 import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
 import { UserDBO } from './UserDBO.js';
-import { applyScope, resolveProjection } from './UserReadOptions.js';
+import { applyScope, resolveProjection, scopeFilters } from './UserReadOptions.js';
 import type { ReadOptions, UserScope } from './UserReadOptions.js';
 
 type Deps = {
@@ -22,6 +22,11 @@ class MongoUsersDAO extends MongoDataSource<UserDBO> {
   // eslint-disable-next-line class-methods-use-this
   private scoped(filter: Filter<UserDBO>, scope?: UserScope): Filter<UserDBO> {
     return applyScope(filter, scope);
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  scopeFilters(scope?: UserScope): Filter<UserDBO>[] {
+    return scopeFilters(scope);
   }
 
   async findOne(filter: Filter<UserDBO>, options: ReadOptions = {}): Promise<UserDBO | null> {

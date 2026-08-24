@@ -3,10 +3,10 @@ import { typeParsers } from './migrationsParser.js';
 import templates from '#api/core/v1_layer/templates/templates.js';
 import entities from '#api/entities/entities.js';
 import users from '#api/users/users.js';
-import userGroups from '#api/usergroups/userGroups.js';
 import { PermissionType } from '#shared/types/permissionSchema.js';
 import { FilesDAOFactory } from '#api/core/infrastructure/factories/FilesDAOFactory.js';
 import { UsersDirectoryFactory } from '#api/core/infrastructure/factories/UsersDirectoryFactory.js';
+import { UserGroupsDirectoryFactory } from '#api/core/infrastructure/factories/UserGroupsDirectoryFactory.js';
 import { usersDirectoryEnabled } from '#api/core/infrastructure/factories/usersBackendFlags.js';
 import { Suggestions } from '#api/suggestions/suggestions.js';
 import { Extractors } from '#api/services/informationextraction/ixextractors.js';
@@ -111,10 +111,7 @@ const loadPermissionsData = async data => {
   const allowedUsers = usersDirectoryEnabled()
     ? await UsersDirectoryFactory.default().getManyByIds(permissionsIds)
     : await users.get({ _id: { $in: permissionsIds } }, { username: 1 });
-  const allowedGroups = await userGroups.get(
-    { _id: { $in: permissionsIds } },
-    { name: 1, members: 1 }
-  );
+  const allowedGroups = await UserGroupsDirectoryFactory.default().getManyByIds(permissionsIds);
   const publicPermission = !!data.permissions.find(p => p.type === PermissionType.PUBLIC);
 
   return {

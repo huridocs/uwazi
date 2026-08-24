@@ -84,11 +84,6 @@ const scopeFilters = (scope?: UserScope): Filter<UserDBO>[] => {
   ] as Filter<UserDBO>[];
 };
 
-/**
- * Merges caller filter and guards into a single filter, `$and`-composed so neither can
- * clobber the other. Used by every read on MongoUsersDAO and by MongoUserGroupsDAO's
- * users `$lookup`, which needs the same guards inside its sub-pipeline.
- */
 const applyScope = (filter: Filter<UserDBO>, scope?: UserScope): Filter<UserDBO> => {
   const clauses = [filter, ...scopeFilters(scope)].filter(clause => Object.keys(clause).length > 0);
 

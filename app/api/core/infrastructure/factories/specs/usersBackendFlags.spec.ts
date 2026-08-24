@@ -1,12 +1,15 @@
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { testingTenants } from '#api/utils/testingTenants.js';
 import { MongoUsersDirectory } from '#api/core/infrastructure/mongodb/user/MongoUsersDirectory.js';
-import { MongoUserGroupsDAO } from '#api/core/infrastructure/mongodb/user/MongoUserGroupsDAO.js';
 import { MongoUsersQueryService } from '#api/core/infrastructure/mongodb/user/MongoUsersQueryService.js';
 import { PostgresUsersDirectory } from '#api/core/infrastructure/postgresql/user/PostgresUsersDirectory.js';
-import { PostgresUserGroupsDAO } from '#api/core/infrastructure/postgresql/user/PostgresUserGroupsDAO.js';
 import { PostgresUsersQueryService } from '#api/core/infrastructure/postgresql/user/PostgresUsersQueryService.js';
-import { UserGroupsDAOFactory } from '../UserGroupsDAOFactory.js';
+import { MongoUserGroupsDirectory } from '#api/core/infrastructure/mongodb/user/MongoUserGroupsDirectory.js';
+import { MongoUserGroupsQueryService } from '#api/core/infrastructure/mongodb/user/MongoUserGroupsQueryService.js';
+import { PostgresUserGroupsDirectory } from '#api/core/infrastructure/postgresql/user/PostgresUserGroupsDirectory.js';
+import { PostgresUserGroupsQueryService } from '#api/core/infrastructure/postgresql/user/PostgresUserGroupsQueryService.js';
+import { UserGroupsDirectoryFactory } from '../UserGroupsDirectoryFactory.js';
+import { UserGroupsQueryServiceFactory } from '../UserGroupsQueryServiceFactory.js';
 import { UsersDirectoryFactory } from '../UsersDirectoryFactory.js';
 import { UsersQueryServiceFactory } from '../UsersQueryServiceFactory.js';
 
@@ -18,7 +21,7 @@ import { UsersQueryServiceFactory } from '../UsersQueryServiceFactory.js';
 const factories = [
   { name: 'UsersDirectory', build: () => UsersDirectoryFactory.default() },
   { name: 'UsersQueryService', build: () => UsersQueryServiceFactory.default() },
-  { name: 'UserGroupsDAO', build: () => UserGroupsDAOFactory.default() },
+  { name: 'UserGroupsQueryService', build: () => UserGroupsQueryServiceFactory.default() },
 ];
 
 const runWithFlags = (
@@ -58,8 +61,11 @@ describe('users backend resolution', () => {
     expect(runWithFlags(() => UsersQueryServiceFactory.default(), flags)).toBeInstanceOf(
       MongoUsersQueryService
     );
-    expect(runWithFlags(() => UserGroupsDAOFactory.default(), flags)).toBeInstanceOf(
-      MongoUserGroupsDAO
+    expect(runWithFlags(() => UserGroupsDirectoryFactory.default(), flags)).toBeInstanceOf(
+      MongoUserGroupsDirectory
+    );
+    expect(runWithFlags(() => UserGroupsQueryServiceFactory.default(), flags)).toBeInstanceOf(
+      MongoUserGroupsQueryService
     );
   });
 
@@ -72,8 +78,34 @@ describe('users backend resolution', () => {
     expect(runWithFlags(() => UsersQueryServiceFactory.default(), flags)).toBeInstanceOf(
       PostgresUsersQueryService
     );
-    expect(runWithFlags(() => UserGroupsDAOFactory.default(), flags)).toBeInstanceOf(
-      PostgresUserGroupsDAO
+    expect(runWithFlags(() => UserGroupsDirectoryFactory.default(), flags)).toBeInstanceOf(
+      PostgresUserGroupsDirectory
     );
+    expect(runWithFlags(() => UserGroupsQueryServiceFactory.default(), flags)).toBeInstanceOf(
+      PostgresUserGroupsQueryService
+    );
+  });
+
+  /**
+   * The Directory is the one contract exempt from the both-flags rule: none of its methods
+   * joins users, so it can serve a mixed configuration correctly and routes on
+   * `postgresUsergroups` alone. If this ever starts throwing, the exemption was lost.
+   */
+  describe('UserGroupsDirectory', () => {
+    it('should build the mongo implementation when only postgresUsers is on', () => {
+      const flags = { postgresUsers: true, postgresUsergroups: false };
+
+      expect(runWithFlags(() => UserGroupsDirectoryFactory.default(), flags)).toBeInstanceOf(
+        MongoUserGroupsDirectory
+      );
+    });
+
+    it('should build the postgres implementation when only postgresUsergroups is on', () => {
+      const flags = { postgresUsers: false, postgresUsergroups: true };
+
+      expect(runWithFlags(() => UserGroupsDirectoryFactory.default(), flags)).toBeInstanceOf(
+        PostgresUserGroupsDirectory
+      );
+    });
   });
 });
