@@ -33,7 +33,7 @@ Replace:
 
 ### Explicit non-goals (this phase)
 
-- Postgres schema, feature flag, sync handler branch, Mongo→PG data copy
+- Postgres schema, feature flag, sync handler branch, Mongo→PG data copy (done: [`translations-postgres.md`](./translations-postgres.md))
 - Rewriting Settings Translations UI / `translationsAtom` / sockets to by-item-only
 - Removing mammoth HTTP or `translationsChange` socket
 - Fixing `GetRelationshipTypesUseCase` (separate team debt; do not copy that pattern)
@@ -53,7 +53,7 @@ These are architecture rules to reuse — not RelationshipType-specific detail:
 | Contract-driven side effects               | Templates/thesaurus/RT/settings call translation ports/use cases          |
 | Facades optional                           | Prefer controllers → factories/use cases (or thin query services for GET) |
 | Integration-first tests                    | Prefer DB assertions; auth middleware mock OK at route boundary           |
-| Postgres later, separate doc               | One store only; no dual-write; flag/copy/cutover when that phase starts   |
+| Postgres later, separate doc               | One store only; no dual-write; flag/copy/cutover — landed in [`translations-postgres.md`](./translations-postgres.md) |
 | Avoid incomplete peer patterns             | Do not copy Entities partial cutover; do not copy RT Get*UseCase          |
 
 ---
@@ -339,7 +339,7 @@ Tracked in [`translations-postgres.md`](./translations-postgres.md).
 
 Single DS writes do not belong on `TranslationsService`. Callers that already share the parent TM use `TranslationsDataSource` directly (Thesaurus, DeleteTemplate, RT delete, DeleteLanguage). `ensureTransaction` stays on the remaining orchestrating service methods only — not on the DS (Mongo can still auto-commit without a session; the parent UseCase already owns `TM.run()`).
 
-## Implementation status (in progress)
+## Implementation status (Phase 1 done)
 
 **Process note:** update this section whenever a peel/migration slice lands — not only at pause points.
 
@@ -371,12 +371,13 @@ Single DS writes do not belong on `TranslationsService`. Callers that already sh
 - Express: GET mammoth → QueryService `getLegacy`; GET v2 → DS; languages → AvailableLanguagesQueryService; populate → PopulateTranslationsController; Save* → orchestrator UseCase factories
 - Thesaurus metadata rename: `ThesaurusMetadataRenamerAdapter` → `denormalizeThesauriLabelInMetadata`
 - `app/api/i18n.v2/` removed; `i18n/routes` deleted; **`i18n/translations.ts` + `i18n/v2_support.ts` deleted**. `app/api/i18n/` is predefined CSV lookup (`defaultTranslations.ts`) plus its spec and CSV fixtures.
-- Sync: `TranslationsSyncHandlerFactory` + `MongoTranslationsSyncHandler` on `SyncHandlerRegistry` (`translationsV2`); compound-key delete lives in handler `save`; no `models.translationsV2` / route special-case
+- Sync: `TranslationsSyncHandlerFactory` + `MongoTranslationsSyncHandler` / `PostgresTranslationsSyncHandler` on `SyncHandlerRegistry` (`translationsV2`); factory branches on `postgresTranslations`; compound-key delete lives in handler `save`; no `models.translationsV2` / route special-case
 - Peeled production callers: Settings; csvExporter / denormalize / search; csvLoader + PendingThesauri; Save* controllers; languages + populate; denormalizeAllEntities; **entry-server SSR**; **preserve → CreateThesaurusUseCase**
 - TX ownership: UseCases / Jobs open `TM.run()`; ambient services (`TranslationsService`, `ThesauriService`, `PendingThesauriValuesApplier.apply`) do not. CSV job owns TX around thesaurus append; translation value updates via `UpdateEntriesByContext` UC after commit.
 - Follow-ups deferred:
-  - Phase 1b FE checklist + `translations-postgres.md` (Postgres sync handler branch when that phase starts)
-- Phase 1 “module home killed” + sync motor seam: done for current Mongo runtime
+  - Phase 1b FE checklist
+- Postgres: [`translations-postgres.md`](./translations-postgres.md) — first cut + local dry-run landed; flag off by default
+- Phase 1 “module home killed” + sync motor seam: done (Mongo runtime; PG branch behind `postgresTranslations`)
 
 ## V2 complete checklist (Phase 1)
 
@@ -391,7 +392,7 @@ Single DS writes do not belong on `TranslationsService`. Callers that already sh
 - [x] Template/RT **create/update** via `TemplateTranslationService` / `RelationshipTypeTranslationService` → `TranslationsService` (no Legacy adapters; shared parent TM). RT **delete**, Thesaurus, DeleteTemplate, DeleteLanguage → `TranslationsDataSource` (D12)
 - [x] Translation side effects for relationship types / thesaurus / language covered by existing integration tests
 - [x] Sync namespace `translationsV2` still green in syncWorker specs after route cutover
-- [x] Sync `translationsV2` served via `TranslationsSyncHandlerFactory` + registry (no `models.translationsV2` / route special-case) — motor seam for Postgres later
+- [x] Sync `translationsV2` served via `TranslationsSyncHandlerFactory` + registry (no `models.translationsV2` / route special-case) — Mongo + PG factory branch (see [`translations-postgres.md`](./translations-postgres.md))
 - [x] Dead translation files/deps deleted (C1); parity/routes specs live under `core/application/translation/specs/`; `i18n/` is predefined CSV only (C2)
 - [x] Writes use domain `Translation` (no `TranslationEntryInput`); GET `IndexedTranslations` defined once in `localeTranslationDto` (C3)
 - [x] `upsert` is one `bulkWrite`; `calculateNonexistentKeys` is `find` + set difference (C4)

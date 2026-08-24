@@ -8,9 +8,9 @@ This document is the working context for the Postgres phase. Prior V2 hex work: 
 
 ## Status
 
-- **Analysis / planning** — decisions locked below
-- **Implementation** — in progress
-- **Prerequisite** — V2 core ownership on Mongo `translationsV2` is done; factory seam `TranslationsSyncHandlerFactory` is Mongo-only until the PG branch lands
+- **Analysis / planning** — done (decisions locked below)
+- **Implementation** — first cut landed; local dry-run validated (copy, flag, CRUD, Settings GET, language add including ~37k streamed clone)
+- **Prerequisite** — V2 core ownership on Mongo `translationsV2` is done; `TranslationsSyncHandlerFactory` branches to `PostgresTranslationsSyncHandler` when `postgresTranslations` is on
 
 ### Implemented so far
 
@@ -23,13 +23,14 @@ This document is the working context for the Postgres phase. Prior V2 hex work: 
 - [x] Dual-backend use-case / QueryService specs (`describe.each` Mongo + Postgres), including `application/translation/specs/translations.spec.ts`
 - [x] Dual-backend HTTP route specs (`application/translation/specs/routes.spec.ts`, `express/translation/specs/routes.spec.ts`)
 - [x] Mongo migration `207-backfill-translation-context` (`requiresSchema: 15`). Writes after 207 cannot omit `context.type` / `context.label`: locale saves inherit type/label or throw, mappers assert before persist, and 207 attaches a `translationsV2` JSON schema validator.
-- [x] AddLanguage mixed-store (P12): single Mongo `this.transactionManager.run()`; PG clone auto-commits in batches of 500. No nested PG `run()`.
+- [x] AddLanguage mixed-store (P12): single Mongo `this.transactionManager.run()`; PG clone streams and auto-commits in batches of 500. No nested PG `run()`.
+- [x] Team consult: mixed-store is not 2PC. Consensus is P12 (one use-case `run()`, Mongo while hybrid; no nested PG `run()`; no DualStore). Inventory below is accepted hybrid risk, not an open decision.
+- [x] Local cutover dry-run: schema → data copy → flip flag → CRUD / language add / SSR / Settings GET
 
 ### Still open
 
-- [ ] Local cutover dry-run: schema → data copy → flip flag → CRUD / language add / SSR / Settings GET / sync
-- [ ] Sync not manually exercised until dry-run
-- [ ] Team consult: mixed-store / missing PG `run()` inventory below (not blocking add-language dry-run)
+- [ ] Sync not manually exercised in local dry-run (rely on specs / hope for now)
+- [ ] Optional later: translation-only UseCases (`SaveLocaleTranslations` / `SaveTranslationEntries` / `UpdateEntriesByContext`) pass the Postgres TM as `this.transactionManager` when the flag is on (no nesting)
 
 ---
 
@@ -74,6 +75,8 @@ Relationship types are a small named collection (`id` + `name`). Translations ar
 ---
 
 ## Transaction ownership (transitional)
+
+Team consult is **done**. Consensus is P12. The tables below record accepted hybrid risk, not an open decision.
 
 There is **no 2PC**. One `TransactionManager` contract, two implementations on `ExecutionContext` (`transactionManager` = Mongo, `postgresTransactionManager` = Postgres). Use cases call **one** `this.transactionManager.run()` — Mongo while the store is hybrid. PG DataSources join a PG transaction **only** if that same `postgresTransactionManager` already has `run()` active; otherwise each `withConnection` is its own short commit.
 
@@ -206,11 +209,14 @@ Engine: `MigrateCollectionToPostgres`
 - Namespace remains `translationsV2`
 - `PostgresTranslationsSyncHandler` preserves historical semantics: **delete by natural key** then insert the synced document (including its `_id`)
 - Factory mirrors the DS flag
-- **Gap:** `save()` does not wrap delete+insert in `pgTransactionManager.run()` (see inventory above)
+- Not manually exercised in local dry-run (same as relationship types). Handler specs cover the PG branch.
+- **Accepted gap:** `save()` does not wrap delete+insert in `pgTransactionManager.run()` (see inventory above)
 
 ---
 
 ## Implementation order
+
+All steps landed:
 
 1. Schema + RLS
 2. Mapper + PG DataSource + specs (CRUD, natural-key upsert, clone, exclude types, RLS)
