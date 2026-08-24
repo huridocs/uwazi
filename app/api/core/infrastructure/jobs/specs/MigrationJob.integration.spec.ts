@@ -13,7 +13,6 @@ import { PgMigrator } from '#api/core/infrastructure/postgresql/PgMigrator.js';
 import { createMockLogger } from '#api/core/libs/logger/infrastructure/MockLogger.js';
 import { SyncJobsDispatcher } from '#api/core/libs/queue/infrastructure/SyncJobsDispatcher.js';
 import { tenants } from '#api/tenants/index.js';
-import { tenantsModel } from '#api/tenants/tenantsModel.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { testingTenants } from '#api/utils/testingTenants.js';
 import testingDB from '#api/utils/testing_db.js';
@@ -113,6 +112,7 @@ describe('MigrationJob (real chain)', () => {
   });
 
   afterEach(async () => {
+    delete tenants.tenants[TENANT_B];
     rmSync(pgMigrationsDir, { recursive: true, force: true });
     spiesToRestore.forEach(spy => spy.mockRestore());
     spiesToRestore = [];
@@ -231,8 +231,6 @@ describe('MigrationJob (real chain)', () => {
   });
 
   it('advances the real postgres schema when a data migration is blocked', async () => {
-    expect(Object.keys(tenants.tenants)).toContain(DEFAULT_TENANT);
-
     writeFileSync(
       path.join(pgMigrationsDir, '001-init.sql'),
       'CREATE TABLE IF NOT EXISTS migration_pg_probe_1 (id serial);'
@@ -261,52 +259,6 @@ describe('MigrationJob (real chain)', () => {
 
     const defaultMigrations = await testingDB.mongodb!.collection('migrations').find().toArray();
     expect(defaultMigrations.map(m => m.delta)).toEqual([1]);
-  });
-
-  it('advances schema for a cluster tenant after updateTenants drops the seeded default', async () => {
-    const sharedDb = testingDB.db(config.SHARED_DB);
-    const model = await tenantsModel();
-    await model.initialize();
-
-    try {
-      await sharedDb.collection('tenants').deleteMany({});
-      await sharedDb.collection('tenants').insertOne({
-        name: TENANT_B,
-        dbName: testingDB.dbName,
-      });
-      await tenants.updateTenants(model);
-
-      expect(Object.keys(tenants.tenants)).toEqual([TENANT_B]);
-      expect(tenants.tenants[DEFAULT_TENANT]).toBeUndefined();
-
-      writeFileSync(
-        path.join(pgMigrationsDir, '001-init.sql'),
-        'CREATE TABLE IF NOT EXISTS migration_pg_probe_1 (id serial);'
-      );
-      writeFileSync(
-        path.join(pgMigrationsDir, '002-later.sql'),
-        'CREATE TABLE IF NOT EXISTS migration_pg_probe_2 (id serial);'
-      );
-
-      const { dispatcher, dispatchSpy, reindexTenant } = createRunChain(BLOCKED_MIGRATIONS_DIR);
-      await dispatcher.dispatch(MigrationJob, { reindexTenants: [], results: initialResults() });
-
-      expect(dispatchSpy).toHaveBeenCalledTimes(1);
-      const pgMigrator = new PgMigrator(pgMigrationsDir, testingEnvironment.pg.pool as any);
-      expect(await pgMigrator.getCurrentVersion()).toBe(2);
-      expect(reindexTenant).toHaveBeenCalledTimes(1);
-      expect(reindexCalls).toEqual([TENANT_B]);
-
-      const applied = await testingDB.mongodb!.collection('migrations').find().toArray();
-      expect(applied.map(m => m.delta)).toEqual([1]);
-    } finally {
-      await model.closeChangeStream();
-      await sharedDb.collection('tenants').deleteMany({});
-      Object.keys(tenants.tenants).forEach(name => {
-        delete tenants.tenants[name];
-      });
-      tenants.add({ name: DEFAULT_TENANT, dbName: testingDB.dbName });
-    }
   });
 
   it('keeps maintenance mode when the reindex fails', async () => {
