@@ -91,7 +91,7 @@ export class CSVLoader {
       }
 
       const locale = lang.language as LanguageISO6391;
-      const rows = await translationsDS.getByLanguageAndContext(locale, translationContext).all();
+      const rows = await translationsDS.getByLanguageAndContext(locale, translationContext);
       if (!rows.length) {
         return;
       }

@@ -35,21 +35,20 @@ class TranslationsService {
     const toCreate: Translation[] = [];
     const toUpdate: Translation[] = [];
 
-    await Promise.all(
-      [...byContext.entries()].map(async ([contextId, entries]) => {
-        const keys = Array.from(new Set(entries.map(e => e.key)));
-        const missingKeys = new Set(
-          await this.deps.translationsDS.calculateNonexistentKeys(contextId, keys)
-        );
-        entries.forEach(entry => {
-          if (missingKeys.has(entry.key)) {
-            toCreate.push(entry);
-          } else {
-            toUpdate.push(entry);
-          }
-        });
-      })
-    );
+    await [...byContext.entries()].reduce(async (previous, [contextId, entries]) => {
+      await previous;
+      const keys = Array.from(new Set(entries.map(e => e.key)));
+      const missingKeys = new Set(
+        await this.deps.translationsDS.calculateNonexistentKeys(contextId, keys)
+      );
+      entries.forEach(entry => {
+        if (missingKeys.has(entry.key)) {
+          toCreate.push(entry);
+        } else {
+          toUpdate.push(entry);
+        }
+      });
+    }, Promise.resolve());
 
     return { toCreate, toUpdate };
   }
@@ -72,19 +71,18 @@ class TranslationsService {
       byContext.set(t.context.id, keys);
     });
 
-    await Promise.all(
-      [...byContext.entries()].map(async ([contextId, keys]) => {
-        const missing = await this.deps.translationsDS.calculateNonexistentKeys(
-          contextId,
-          Array.from(keys)
+    await [...byContext.entries()].reduce(async (previous, [contextId, keys]) => {
+      await previous;
+      const missing = await this.deps.translationsDS.calculateNonexistentKeys(
+        contextId,
+        Array.from(keys)
+      );
+      if (missing.length) {
+        throw new Error(
+          `Process is trying to update missing translation keys: ${contextId} - ${missing}.`
         );
-        if (missing.length) {
-          throw new Error(
-            `Process is trying to update missing translation keys: ${contextId} - ${missing}.`
-          );
-        }
-      })
-    );
+      }
+    }, Promise.resolve());
 
     return this.deps.translationsDS.upsert(translations);
   }

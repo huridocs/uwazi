@@ -8,6 +8,7 @@ import { TranslationsService } from './translation/TranslationsService.js';
 import { PropagateThesaurusTranslationService } from './translation/PropagateThesaurusTranslationService.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import { TranslationsDataSource } from './contracts/TranslationsDataSource.js';
+import { isTranslationContextType } from '../domain/translation/Translation.js';
 
 type Input = LocaleTranslationInput;
 
@@ -26,23 +27,37 @@ class SaveLocaleTranslationsUseCase extends AbstractUseCase<Input, Output, Deps>
       throw new Error('translation to save should have a locale');
     }
 
-    const entries = flattenLocaleTranslation(translation);
     const thesaurusContexts = (translation.contexts || []).filter(context => context.id);
 
     const snapshots = await Promise.all(
       thesaurusContexts.map(async context => {
-        const rows = await this.deps.translationsDS
-          .getByLanguageAndContext(locale, context.id!)
-          .all();
-        const type = context.type || rows[0]?.context.type;
+        const rows = await this.deps.translationsDS.getByLanguageAndContext(locale, context.id!);
+        const type = isTranslationContextType(context.type) ? context.type : rows[0]?.context.type;
+        const label = context.label || rows[0]?.context.label;
+        if (!type || !label) {
+          throw new Error(
+            `Cannot save translations for context "${context.id}" without type and label`
+          );
+        }
         return {
           contextId: context.id!,
           type,
+          label,
           previous: toValueMap(rows),
           next: context.values || {},
         };
       })
     );
+
+    const entries = flattenLocaleTranslation({
+      ...translation,
+      contexts: snapshots.map(snapshot => ({
+        id: snapshot.contextId,
+        type: snapshot.type,
+        label: snapshot.label,
+        values: snapshot.next,
+      })),
+    });
 
     await this.transactionManager.run(async () => {
       await this.deps.translationsService.saveEntries(entries);
