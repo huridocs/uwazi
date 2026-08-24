@@ -1,5 +1,5 @@
 import { UserRole } from '#api/core/domain/user/User.js';
-import type { GroupSummary } from '#shared/contracts/UserGroups.js';
+import type { UserGroupView } from './UserGroupReadModels.js';
 
 type UserView = {
   _id: string;
@@ -9,7 +9,7 @@ type UserView = {
 };
 
 type UserProfile = UserView & {
-  groups: GroupSummary[];
+  groups: UserGroupView[];
   using2fa: boolean;
   accountLocked: boolean;
 };

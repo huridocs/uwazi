@@ -11,11 +11,11 @@ const mongoSchema = new mongoose.Schema(propsWithDBSpecifics, {
 });
 
 /**
- * @deprecated v1 Mongo model. Read-only now: its remaining callers are the getters in
- * app/api/usergroups/userGroups.ts and userGroupsMembers.ts. Every write goes through
- * MongoUserGroupsDataSource / PostgresUserGroupsDataSource
+ * @deprecated v1 Mongo model, down to a single caller: `getByMemberIdList` in
+ * userGroupsMembers.ts, which populates `user.groups` for the legacy `users.js` getters and
+ * dies with them. Every other read goes through UserGroupsDirectory / UserGroupsQueryService
+ * and every write through MongoUserGroupsDataSource / PostgresUserGroupsDataSource
  * (app/api/core/infrastructure/{mongodb,postgresql}/user/).
- * Remove once those two getters are migrated.
  */
 const Model = instanceModel<UserGroupSchema>('usergroups', mongoSchema);
 
