@@ -149,7 +149,10 @@ describe('MongoEntitiesDataSource', () => {
       await elasticTesting.refresh();
       const indexed = await elasticTesting.getIndexedEntities();
       const indexedForEntities = indexed
-        .filter(e => [entity1.sharedId, entity2.sharedId].includes(e.sharedId))
+        .filter(
+          e =>
+            e.sharedId !== undefined && [entity1.sharedId, entity2.sharedId].includes(e.sharedId)
+        )
         .map(e => `${e.sharedId}:${e.language}`)
         .sort();
 
@@ -852,7 +855,7 @@ describe('MongoEntitiesDataSource', () => {
       const indexed = await elasticTesting.getIndexedEntities();
       const indexedEntityA = indexed.find(e => e.sharedId === 'entity-a');
 
-      expect(indexedEntityA?.metadata.rel).toEqual([{ value: 'keep-1', label: 'k1' }]);
+      expect(indexedEntityA?.metadata?.rel).toEqual([{ value: 'keep-1', label: 'k1' }]);
     });
   });
 
@@ -908,8 +911,8 @@ describe('MongoEntitiesDataSource', () => {
       const indexed = await elasticTesting.getIndexedEntities();
       const indexedEntity = indexed.find(e => e.sharedId === entity.sharedId);
 
-      expect(indexedEntity?.metadata.text).toBeUndefined();
-      expect(indexedEntity?.metadata.numeric).toEqual([{ value: 42 }]);
+      expect(indexedEntity?.metadata?.text).toBeUndefined();
+      expect(indexedEntity?.metadata?.numeric).toEqual([{ value: 42 }]);
     });
   });
 
@@ -939,8 +942,8 @@ describe('MongoEntitiesDataSource', () => {
       const indexed = await elasticTesting.getIndexedEntities();
       const indexedEntity = indexed.find(e => e.sharedId === entity.sharedId);
 
-      expect(indexedEntity?.metadata.text).toBeUndefined();
-      expect(indexedEntity?.metadata.renamed).toEqual([{ value: 'Text' }]);
+      expect(indexedEntity?.metadata?.text).toBeUndefined();
+      expect(indexedEntity?.metadata?.renamed).toEqual([{ value: 'Text' }]);
     });
   });
 
@@ -954,7 +957,7 @@ describe('MongoEntitiesDataSource', () => {
         await sut.bulkInsert([entity]);
       });
 
-      const textProperty = template.properties.find(p => p.name === 'text')!;
+      const textProperty = template.properties.find(p => p.name === 'text') as TextProperty;
 
       entity.setPropertyAssignmentsInAllLanguages([
         template.createPropertyAssignment('title', { value: [{ value: 'Title' }] }),
@@ -974,7 +977,7 @@ describe('MongoEntitiesDataSource', () => {
       const indexed = await elasticTesting.getIndexedEntities();
       const indexedEntities = indexed.filter(e => e.sharedId === entity.sharedId);
       indexedEntities.forEach(doc => {
-        expect(doc.metadata.text).toEqual([{ value: 'New Text' }]);
+        expect(doc.metadata?.text).toEqual([{ value: 'New Text' }]);
       });
     });
   });
