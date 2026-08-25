@@ -1,9 +1,7 @@
 /* eslint-disable max-statements */
 import { inspect } from 'util';
 import entities from '#api/entities/index.js';
-import users from '#api/users/users.js';
 import { UsersDirectoryFactory } from '#api/core/infrastructure/factories/UsersDirectoryFactory.js';
-import { usersDirectoryEnabled } from '#api/core/infrastructure/factories/usersBackendFlags.js';
 import { applicationEventsBus } from '#api/core/libs/eventsbus/index.js';
 import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
 import connections from '#api/relationships/relationships.js';
@@ -48,13 +46,9 @@ const ensureEntityActor = async (entity: EntityWithFilesSchema) => {
     throw new Error(`Entity actor is missing for sharedId ${entity.sharedId}`);
   }
 
-  // getActor, not getById: the entity's author may have been soft-deleted since, and
-  // attribution on historical records must still resolve them — it is the one read that
-  // does (D3/D9). `getData()` yields undefined on a miss, so the check below keeps throwing
-  // this module's own error rather than a UserNotFound.
-  const actorInDb = usersDirectoryEnabled()
-    ? (await UsersDirectoryFactory.default().getActor(actorId)).getData()
-    : await users.getById(actorId, '-password', false, true);
+  // getActor: the entity's author may have been soft-deleted since, and attribution on
+  // historical records must still resolve them.
+  const actorInDb = (await UsersDirectoryFactory.default().getActor(actorId)).getData();
 
   if (!actorInDb) {
     throw new Error(`Entity actor not found for user ${actorId}`);
