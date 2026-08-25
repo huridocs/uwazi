@@ -76,7 +76,7 @@ Add/delete users and assign roles,Añadir / Eliminar usuarios y asignar roles
 Add/edit translations,Añadir / editar traducciones
 Added language,Idioma añadido
 Added new user,Nuevo usuario añadido
-"Added relation type ""{name}""",Tipo de relación "{name}" añadido
+"Added relation type ""{name}""","Tipo de relación ""{name}"" añadido"
 added to hub with the following errors:,añadido al nodo con los siguientes errores:
 added to hub.,añadido al nodo.
 Adding a group and its items.,Adding a group and its items.
@@ -1015,9 +1015,6 @@ Relationship type name already exists,El nombre de la relación ya existe
 Relationship types,Tipos de relación
 relationships,relaciones
 Relationships,Relaciones
-relationships blank state message,"Para agregar relaciones selecciona **Editar**, luego **Crear relación**."
-relationships blank state with document,"Para agregar relaciones puedes empezar seleccionando texto en el documento
- o selecciona **Editar**, luego **Crear relación**."
 Relationships saved,Relaciones guardadas
 relationships? This action cannot be undone.,relactiones? Esta acción no puede revertirse.
 RelationType saved,Tipo de Relación guardada
@@ -1328,7 +1325,6 @@ Timestamp,Timestamp
 tips,consejos
 Title,Título
 To,To
-To add references you can start by selecting text in the document,To add references you can start by selecting text in the document
 "To complete the account creation process, please create a password for your account","Para completar este proceso de creación de cuenta, por favor crea una contraseña."
 to view your authentication code and verify your identity.,para ver el código de autenticación y verificar tu identidad.
 Today,Today

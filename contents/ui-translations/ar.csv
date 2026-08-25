@@ -1017,9 +1017,6 @@ Relationship type name already exists,Relationship type name already exists
 Relationship types,أنواع العلاقات
 relationships,العلاقات
 Relationships,العلاقات
-relationships blank state message,"To add references select **Edit**, then **Create relationship**."
-relationships blank state with document,"To add references you can start by selecting text in the document
- or select **Edit**, then **Create relationship**."
 Relationships saved,Relationships saved
 relationships? This action cannot be undone.,relationships? This action cannot be undone.
 RelationType saved,تم حفظ نوع العلاقة
@@ -1331,7 +1328,6 @@ Timestamp,Timestamp
 tips,tips
 Title,عنوان
 To,To
-To add references you can start by selecting text in the document,To add references you can start by selecting text in the document
 "To complete the account creation process, please create a password for your account",لإكمال عملية إنشاء الحساب، يرجى إنشاء كلمة مرور لحسابك
 to view your authentication code and verify your identity.,لمعاينة رمز المصادقة الخاص بك والتحقق من هويتك.
 Today,Today

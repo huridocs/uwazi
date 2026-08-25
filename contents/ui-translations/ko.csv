@@ -1018,9 +1018,6 @@ Relationship type name already exists,Relationship type name already exists
 Relationship types,연결 유형
 relationships,연결
 Relationships,연결
-relationships blank state message,"To add references select **Edit**, then **Create relationship**."
-relationships blank state with document,"To add references you can start by selecting text in the document
- or select **Edit**, then **Create relationship**."
 Relationships saved,Relationships saved
 relationships? This action cannot be undone.,relationships? This action cannot be undone.
 RelationType saved,연결 유형 저장 완료
@@ -1332,7 +1329,6 @@ Timestamp,Timestamp
 tips,tips
 Title,제목
 To,To
-To add references you can start by selecting text in the document,To add references you can start by selecting text in the document
 "To complete the account creation process, please create a password for your account",계정 생성을 마치려면 계정 비밀번호를 설정하십시오.
 to view your authentication code and verify your identity.,코드 확인하고 인증하기
 Today,Today

@@ -1020,9 +1020,6 @@ Relationship type name already exists,Назва типу зв'язку вже �
 Relationship types,Тип взаємозв'язку
 relationships,Взаємозв'язки
 Relationships,Взаємозв'язки
-relationships blank state message,"To add references select **Edit**, then **Create relationship**."
-relationships blank state with document,"To add references you can start by selecting text in the document
- or select **Edit**, then **Create relationship**."
 Relationships saved,Відносини збережені
 relationships? This action cannot be undone.,relationships? This action cannot be undone.
 RelationType saved,Тип взаємозв'язку збережено
@@ -1334,7 +1331,6 @@ Timestamp,Відмітка часу
 tips,tips
 Title,Заголовок
 To,До
-To add references you can start by selecting text in the document,"Щоб додати посилання, спочатку виділіть текст у документі"
 "To complete the account creation process, please create a password for your account","Будь ласка, створіть пароль, щоб завершити процес створення облікового запису."
 to view your authentication code and verify your identity.,щоб переглянути свій код автентифікації та підтвердити свою особу.
 Today,Сьогодні

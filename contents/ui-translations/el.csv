@@ -1019,9 +1019,6 @@ Relationship type name already exists,Το όνομα τύπου σχέσης υ
 Relationship types,Τύποι σχέσεων
 relationships,σχέσεις
 Relationships,Σχέσεις
-relationships blank state message,"To add references select **Edit**, then **Create relationship**."
-relationships blank state with document,"To add references you can start by selecting text in the document
- or select **Edit**, then **Create relationship**."
 Relationships saved,Οι σχέσεις αποθηκεύτηκαν
 relationships? This action cannot be undone.,relationships? This action cannot be undone.
 RelationType saved,Ο τύπος σχέσης αποθηκεύτηκε
@@ -1333,7 +1330,6 @@ Timestamp,Χρονοσφραγίδα
 tips,tips
 Title,Τίτλος
 To,Έως
-To add references you can start by selecting text in the document,"Για να προσθέσετε αναφορές, μπορείτε να ξεκινήσετε επιλέγοντας κείμενο στο έγγραφο."
 "To complete the account creation process, please create a password for your account","Για να ολοκληρώσετε τη διαδικασία δημιουργίας λογαριασμού, δημιουργήστε έναν κωδικό πρόσβασης για το λογαριασμό σας."
 to view your authentication code and verify your identity.,για να δείτε τον κωδικό πιστοποίησης και να επαληθεύσετε την ταυτότητά σας.
 Today,Σήμερα

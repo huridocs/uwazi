@@ -1018,9 +1018,6 @@ Relationship type name already exists,Relationship type name already exists
 Relationship types,ဆက်နွှယ်မှု အမျိုးအစားများ
 relationships,ဆက်နွှယ်မှုများ
 Relationships,ဆက်နွှယ်မှုများ
-relationships blank state message,"To add references select **Edit**, then **Create relationship**."
-relationships blank state with document,"To add references you can start by selecting text in the document
- or select **Edit**, then **Create relationship**."
 Relationships saved,Relationships saved
 relationships? This action cannot be undone.,relationships? This action cannot be undone.
 RelationType saved,RelationType သိမ်းဆည်းပြီး
@@ -1332,7 +1329,6 @@ Timestamp,Timestamp
 tips,tips
 Title,ခေါင်းစဉ်
 To,To
-To add references you can start by selecting text in the document,To add references you can start by selecting text in the document
 "To complete the account creation process, please create a password for your account",အကောင့်ဖန်တီးခြင်း လုပ်ငန်းစဉ် ပြီးမြောက်စေရန် ကျေးဇူးပြု၍ သင့်အကောင့်အတွက် စကားဝှက် ဖန်တီးပါ
 to view your authentication code and verify your identity.,သင်၏ စစ်မှန်ကြောင်း အတည်ပြုကုဒ်ကို ကြည့်ရန်နှင့် သင့်ကိုယ်ပိုင်သင်္ကေတကို မှန်ကန်ကြောင်း စစ်ဆေးရန်။
 Today,Today
