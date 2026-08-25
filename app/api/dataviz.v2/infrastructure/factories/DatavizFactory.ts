@@ -7,6 +7,8 @@ import { GetDatavizDataUseCase } from '#api/dataviz.v2/application/useCases/GetD
 import { GetPublicDatavizEmbedUseCase } from '#api/dataviz.v2/application/useCases/GetPublicDatavizEmbed.js';
 import { RefreshDatavizSnapshotJob } from '#api/dataviz.v2/application/jobs/RefreshDatavizSnapshotJob.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
+import { AccessContext } from '#api/core/domain/entityAccessPolicy/AccessContext.js';
+import { User } from '#api/users.v2/model/User.js';
 import { TranslationsDataSourceFactory } from '#api/core/infrastructure/factories/TranslationsDataSourceFactory.js';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
@@ -20,10 +22,12 @@ import type { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import { MongoDatavizDataSource } from '../mongodb/MongoDatavizDataSource.js';
 import { MongoDatavizSnapshotsDataSource } from '../mongodb/MongoDatavizSnapshotsDataSource.js';
 import { MongoDatavizQueryExecutor } from '../mongodb/MongoDatavizQueryExecutor.js';
+import { PostgresDatavizQueryExecutor } from '../postgresql/PostgresDatavizQueryExecutor.js';
+import { DatavizQueryOrchestrator } from '#api/dataviz.v2/application/services/DatavizQueryOrchestrator.js';
 import type {
   EntitiesReadDAO,
   TemplatesReadDAO,
-} from '../mongodb/executor/buildDatavizMultilingualLabelContext.js';
+} from '#api/dataviz.v2/application/services/buildDatavizMultilingualLabelContext.js';
 import { DatavizSchedulerService } from '../services/DatavizSchedulerService.js';
 import { DatavizScheduledRefreshJobHandler } from '../jobHandlers/DatavizScheduledRefreshJobHandler.js';
 
@@ -47,14 +51,27 @@ class DatavizFactory {
 
   static queryExecutor() {
     const transactionManager = this.getTransactionManager();
+    const { actor } = this.getExecutionScope();
 
-    return new MongoDatavizQueryExecutor(getConnection(), transactionManager, {
+    const deps = {
       settingsDS: SettingsDataSourceFactory.cached({ transactionManager }),
       translationsDS: TranslationsDataSourceFactory.cached({ transactionManager }),
       templatesDAO: TemplatesDAOFactory.default() as TemplatesReadDAO,
       thesauriDAO: ThesauriDAOFactory.default(),
       entitiesDAO: EntitiesDAOFactory.default() as EntitiesReadDAO,
-    });
+    };
+
+    const accessContext = AccessContext.forActor(actor ?? User.createFrom(null));
+
+    const strategy = ExecutionContext.tenant.featureFlags?.postgresEntities
+      ? new PostgresDatavizQueryExecutor({
+          tenantId: ExecutionContext.tenant.name,
+          pgTransactionManager: ExecutionContext.postgresTransactionManager,
+          accessContext,
+        })
+      : new MongoDatavizQueryExecutor(getConnection(), transactionManager, accessContext);
+
+    return new DatavizQueryOrchestrator(deps, strategy);
   }
 
   static schedulerService() {

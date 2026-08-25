@@ -1,260 +1,50 @@
+/* eslint-disable max-lines */
 import { Db, ObjectId } from 'mongodb';
-import {
-  DatavizQueryContext,
-  DatavizQueryExecutor,
-} from '#api/dataviz.v2/application/contracts/DatavizQueryExecutor.js';
 import { DatavizQueryTimeoutError } from '#api/dataviz.v2/domain/errors.js';
-import { validateQueryStructure } from '#api/dataviz.v2/domain/validators/validateExecutableDatavizQuery.js';
+import { AccessContext } from '#api/core/domain/entityAccessPolicy/AccessContext.js';
 import { MongoDataSource } from '#api/core/infrastructure/mongodb/common/MongoDataSource.js';
 import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
 import type {
   DatavizFilter,
-  DatavizQuery,
   DatavizSource,
   DimensionSpec,
   MeasureSpec,
 } from '#shared/types/datavizSchema.js';
-import {
-  DATAVIZ_MAX_BUCKETS,
-  REFRESH_LIVE_TIMEOUT_MS,
-  TEMPLATE_DIMENSION_PROPERTY,
-} from '#shared/types/datavizSchema.js';
+import { TEMPLATE_DIMENSION_PROPERTY } from '#shared/types/datavizSchema.js';
 import { isDateLikePropertyType } from '#shared/dataviz/dimensionPropertyTypes.js';
 import {
   dimensionNeedsUnwind,
   isRelationshipDimension,
 } from '#shared/dataviz/relationshipDimension.js';
 import { DATAVIZ_MISSING_BUCKET_KEY } from '#shared/dataviz/missingBucket.js';
-import {
-  normalizeDatavizBucketKey,
-  serializeDatavizBucketKey,
-} from '#shared/dataviz/formatDimensionKeyLabel.js';
 import { EntityDBO } from '#api/core/infrastructure/mongodb/entity/EntityDBO.js';
 import {
-  mergeUnionBuckets,
-  normalizeBuckets,
-  normalizeCompareSeries,
-  normalizeMetricCount,
+  AggregateSourceParams,
+  CountSourceEntitiesParams,
+  DatavizAggregationStrategy,
   RawBucket,
-} from './executor/DatavizResultNormalizer.js';
-import type { LanguageISO6391 } from '#shared/types/commonTypes.js';
+} from '#api/dataviz.v2/application/contracts/DatavizAggregationStrategy.js';
 import {
-  buildDatavizMultilingualLabelContext,
-  relatedEntityProperties,
-  type DatavizLabelContextDeps,
-} from './executor/buildDatavizMultilingualLabelContext.js';
-import {
-  createMultilingualLabelResolver,
-  pickDefaultLocalizedLabel,
-  resolveSeriesLocalizedLabels,
-} from './executor/DatavizMultilingualLabelResolver.js';
+  filterAppliesToSource as sharedFilterAppliesToSource,
+  filtersForSource as sharedFiltersForSource,
+  mergeSourceFilters as sharedMergeSourceFilters,
+} from '#api/dataviz.v2/application/services/datavizSourceFilters.js';
 
-type MongoDatavizQueryExecutorDeps = DatavizLabelContextDeps;
-
-class MongoDatavizQueryExecutor extends MongoDataSource<EntityDBO> implements DatavizQueryExecutor {
+class MongoDatavizQueryExecutor
+  extends MongoDataSource<EntityDBO>
+  implements DatavizAggregationStrategy
+{
   protected collectionName = 'entities';
-
-  private labelContextDeps: DatavizLabelContextDeps;
 
   constructor(
     db: Db,
     transactionManager: MongoTransactionManager,
-    deps: MongoDatavizQueryExecutorDeps
+    accessContext: AccessContext
   ) {
-    super(db, transactionManager, { useSyncedCollection: false });
-    this.labelContextDeps = deps;
+    super(db, transactionManager, { useSyncedCollection: false, accessContext });
   }
 
-  private async resolveEntityTitles(query: DatavizQuery, bucketKeys: Iterable<string>) {
-    if (relatedEntityProperties(query.dimensions).size === 0) {
-      return new Map();
-    }
-
-    const languages = await this.labelContextDeps.settingsDS.getLanguageKeys();
-    const filteredIds = [...bucketKeys].filter(
-      id => id && id !== DATAVIZ_MISSING_BUCKET_KEY && id !== 'null' && id !== 'undefined'
-    );
-
-    return this.labelContextDeps.entitiesDAO.getTitleLabelsBySharedIds(
-      filteredIds,
-      languages as LanguageISO6391[]
-    );
-  }
-
-  private async buildLabelContext(query: DatavizQuery, bucketKeys: Iterable<string>) {
-    return buildDatavizMultilingualLabelContext({
-      query,
-      entityTitles: await this.resolveEntityTitles(query, bucketKeys),
-      deps: this.labelContextDeps,
-    });
-  }
-
-  async execute(query: DatavizQuery, context: DatavizQueryContext) {
-    validateQueryStructure(query);
-
-    const start = Date.now();
-    const defaultLanguage = await this.labelContextDeps.settingsDS.getDefaultLanguageKey();
-    const timeoutMs = context.timeoutMs ?? REFRESH_LIVE_TIMEOUT_MS;
-
-    if (query.dimensions.length === 0) {
-      return this.executeMetricCount(query, context, defaultLanguage, timeoutMs, start);
-    }
-
-    const primaryDim = query.dimensions[0]!;
-    const secondaryDim = query.dimensions[1];
-    const maxBuckets = primaryDim.maxBuckets ?? DATAVIZ_MAX_BUCKETS;
-
-    const bucketSets: RawBucket[][] = [];
-    const sourceIds: string[] = [];
-
-    for (const [sourceIndex, source] of query.sources.entries()) {
-      // Sequential aggregation keeps per-source timeout accounting predictable.
-      // eslint-disable-next-line no-await-in-loop
-      const buckets = await this.aggregateSource({
-        query,
-        externalFilters: context.externalFilters,
-        source,
-        sourceIndex,
-        sourceTemplateId: source.templateId,
-        language: defaultLanguage,
-        primaryDim,
-        secondaryDim,
-        maxBuckets,
-        permissionMatch: query.includeUnpublished === true ? {} : { published: true },
-        timeoutMs,
-      });
-      bucketSets.push(buckets);
-      sourceIds.push(source.alias ?? source.templateId);
-    }
-
-    const allBuckets = bucketSets.flat();
-    const bucketKeys = this.collectBucketKeysFromRawBuckets(allBuckets);
-    const labelContext = await this.buildLabelContext(query, bucketKeys);
-    const resolveLabel = createMultilingualLabelResolver(labelContext);
-
-    const templateCountById = new Map<string, number>();
-    query.sources.forEach(source => {
-      templateCountById.set(source.templateId, (templateCountById.get(source.templateId) ?? 0) + 1);
-    });
-
-    const sourceLocalizedLabels = query.sources.map(source =>
-      resolveSeriesLocalizedLabels(
-        source.templateId,
-        source.alias,
-        templateCountById.get(source.templateId) ?? 1,
-        labelContext
-      )
-    );
-    const sourceLabels = sourceLocalizedLabels.map(labels =>
-      pickDefaultLocalizedLabel(labels, labelContext.defaultLanguage, 'Series')
-    );
-
-    const joinType = query.join?.type ?? (query.sources.length > 1 ? 'compare' : undefined);
-
-    if (query.sources.length > 1 && joinType === 'compare') {
-      return normalizeCompareSeries({
-        bucketSets,
-        sourceIds,
-        sourceLabels,
-        sourceLocalizedLabels,
-        primaryDim,
-        secondaryDim,
-        resolveLabel,
-        datavizId: context.datavizId ?? '',
-        queryDurationMs: Date.now() - start,
-        appearance: context.appearance,
-        defaultLanguage: labelContext.defaultLanguage,
-        missingBucketLabels: labelContext.missingBucketLabels,
-        measure: query.measures[0],
-      });
-    }
-
-    const { buckets, seriesLabel } =
-      query.sources.length > 1
-        ? mergeUnionBuckets(bucketSets, sourceLabels)
-        : { buckets: bucketSets[0] ?? [], seriesLabel: sourceLabels[0] ?? 'Series' };
-
-    return normalizeBuckets({
-      buckets,
-      primaryDim,
-      secondaryDim,
-      resolveLabel,
-      datavizId: context.datavizId ?? '',
-      queryDurationMs: Date.now() - start,
-      appearance: context.appearance,
-      seriesLabel,
-      seriesLabels: sourceLocalizedLabels[0],
-      defaultLanguage: labelContext.defaultLanguage,
-      missingBucketLabels: labelContext.missingBucketLabels,
-      measure: query.measures[0],
-    });
-  }
-
-  private async executeMetricCount(
-    query: DatavizQuery,
-    context: DatavizQueryContext,
-    language: string,
-    timeoutMs: number,
-    start: number
-  ) {
-    const permissionMatch = query.includeUnpublished === true ? {} : { published: true };
-    const counts: number[] = [];
-
-    for (const [sourceIndex, source] of query.sources.entries()) {
-      // eslint-disable-next-line no-await-in-loop
-      const count = await this.countSourceEntities({
-        query,
-        externalFilters: context.externalFilters,
-        source,
-        sourceIndex,
-        sourceTemplateId: source.templateId,
-        language,
-        permissionMatch,
-        timeoutMs,
-      });
-      counts.push(count);
-    }
-
-    const labelContext = await this.buildLabelContext(query, []);
-
-    const templateCountById = new Map<string, number>();
-    query.sources.forEach(source => {
-      templateCountById.set(source.templateId, (templateCountById.get(source.templateId) ?? 0) + 1);
-    });
-
-    const sourceLocalizedLabels = query.sources.map(source =>
-      resolveSeriesLocalizedLabels(
-        source.templateId,
-        source.alias,
-        templateCountById.get(source.templateId) ?? 1,
-        labelContext
-      )
-    );
-    const sourceLabels = sourceLocalizedLabels.map(labels =>
-      pickDefaultLocalizedLabel(labels, labelContext.defaultLanguage, 'Total')
-    );
-    const sourceIds = query.sources.map(source => source.alias ?? source.templateId);
-
-    return normalizeMetricCount({
-      counts,
-      sourceIds,
-      sourceLabels,
-      sourceLocalizedLabels,
-      datavizId: context.datavizId ?? '',
-      queryDurationMs: Date.now() - start,
-    });
-  }
-
-  private async countSourceEntities(params: {
-    query: DatavizQuery;
-    externalFilters?: DatavizFilter[];
-    source: DatavizQuery['sources'][number];
-    sourceIndex: number;
-    sourceTemplateId: string;
-    language: string;
-    permissionMatch: object;
-    timeoutMs: number;
-  }): Promise<number> {
+  async countSourceEntities(params: CountSourceEntitiesParams): Promise<number> {
     const {
       query,
       externalFilters,
@@ -262,16 +52,12 @@ class MongoDatavizQueryExecutor extends MongoDataSource<EntityDBO> implements Da
       sourceIndex,
       sourceTemplateId,
       language,
-      permissionMatch,
+      includeUnpublished,
       timeoutMs,
     } = params;
 
-    const sourceFilters = this.mergeSourceFilters(
-      query.filters,
-      externalFilters,
-      source,
-      sourceIndex
-    );
+    const sourceFilters = sharedMergeSourceFilters(query.filters, externalFilters, source, sourceIndex);
+    const permissionMatch = includeUnpublished ? {} : { published: true };
     const match: Record<string, unknown> = {
       template: ObjectId.createFromHexString(sourceTemplateId),
       language,
@@ -294,19 +80,7 @@ class MongoDatavizQueryExecutor extends MongoDataSource<EntityDBO> implements Da
     }
   }
 
-  private async aggregateSource(params: {
-    query: DatavizQuery;
-    externalFilters?: DatavizFilter[];
-    source: DatavizQuery['sources'][number];
-    sourceIndex: number;
-    sourceTemplateId: string;
-    language: string;
-    primaryDim: DimensionSpec;
-    secondaryDim?: DimensionSpec;
-    maxBuckets: number;
-    permissionMatch: object;
-    timeoutMs: number;
-  }): Promise<RawBucket[]> {
+  async aggregateSource(params: AggregateSourceParams): Promise<RawBucket[]> {
     const {
       query,
       externalFilters,
@@ -317,16 +91,12 @@ class MongoDatavizQueryExecutor extends MongoDataSource<EntityDBO> implements Da
       primaryDim,
       secondaryDim,
       maxBuckets,
-      permissionMatch,
+      includeUnpublished,
       timeoutMs,
     } = params;
 
-    const sourceFilters = this.mergeSourceFilters(
-      query.filters,
-      externalFilters,
-      source,
-      sourceIndex
-    );
+    const sourceFilters = sharedMergeSourceFilters(query.filters, externalFilters, source, sourceIndex);
+    const permissionMatch = includeUnpublished ? {} : { published: true };
 
     const match: Record<string, unknown> = {
       template: ObjectId.createFromHexString(sourceTemplateId),
@@ -429,42 +199,20 @@ class MongoDatavizQueryExecutor extends MongoDataSource<EntityDBO> implements Da
     return raw;
   }
 
-  private filterAppliesToSource(
+  filterAppliesToSource(
     filter: DatavizFilter,
     source: DatavizSource,
     sourceIndex: number
   ): boolean {
-    if (!filter.sourceAlias) {
-      return true;
-    }
-
-    if (source.alias) {
-      return filter.sourceAlias === source.alias;
-    }
-
-    return sourceIndex === 0 && filter.sourceAlias === '';
+    return sharedFilterAppliesToSource(filter, source, sourceIndex);
   }
 
-  private filtersForSource(
+  filtersForSource(
     filters: DatavizFilter[] | undefined,
     source: DatavizSource,
     sourceIndex: number
   ): DatavizFilter[] {
-    return (filters ?? []).filter(
-      filter => filter.property && this.filterAppliesToSource(filter, source, sourceIndex)
-    );
-  }
-
-  private mergeSourceFilters(
-    queryFilters: DatavizFilter[] | undefined,
-    externalFilters: DatavizFilter[] | undefined,
-    source: DatavizSource,
-    sourceIndex: number
-  ): DatavizFilter[] {
-    return [
-      ...this.filtersForSource(queryFilters, source, sourceIndex),
-      ...this.filtersForSource(externalFilters, source, sourceIndex),
-    ];
+    return sharedFiltersForSource(filters, source, sourceIndex);
   }
 
   private buildExternalDateRangeMatch(filter: DatavizFilter, path: string): object {
@@ -472,32 +220,35 @@ class MongoDatavizQueryExecutor extends MongoDataSource<EntityDBO> implements Da
     const to = this.filterBound(filter, 'to');
 
     if (filter.propertyType === 'date' || filter.propertyType === 'multidate') {
-      if (from !== undefined && to !== undefined) {
-        return { [`${path}.value`]: { $elemMatch: { $gte: from, $lte: to } } };
-      }
+      const valueMatch: Record<string, unknown> = {};
       if (from !== undefined) {
-        return { [`${path}.value`]: { $elemMatch: { $gte: from } } };
+        valueMatch.$gte = from;
       }
       if (to !== undefined) {
-        return { [`${path}.value`]: { $elemMatch: { $lte: to } } };
+        valueMatch.$lte = to;
       }
+      // `$elemMatch` on the *object* path (not `path.value`): the dotted path
+      // through an array of objects makes `$elemMatch` fail to match.
+      return { [path]: { $elemMatch: { value: valueMatch } } };
     }
 
     if (filter.propertyType === 'daterange' || filter.propertyType === 'multidaterange') {
+      // Nested dotted paths inside $elemMatch: `value: { from: ..., to: ... }`
+      // performs whole-document equality and fails to match operator documents.
       const rangeMatch: Record<string, unknown> = {};
       if (to !== undefined) {
-        rangeMatch.from = { $lte: to };
+        rangeMatch['value.from'] = { $lte: to };
       }
       if (from !== undefined) {
-        rangeMatch.to = { $gte: from };
+        rangeMatch['value.to'] = { $gte: from };
       }
-      return { [`${path}.value`]: { $elemMatch: rangeMatch } };
+      return { [path]: { $elemMatch: rangeMatch } };
     }
 
     return {};
   }
 
-  private buildFilterMatch(filters: DatavizFilter[] = []): object[] {
+  buildFilterMatch(filters: DatavizFilter[] = []): object[] {
     return filters.map(filter => {
       const path = this.metadataPath(filter.property);
 
@@ -663,7 +414,7 @@ class MongoDatavizQueryExecutor extends MongoDataSource<EntityDBO> implements Da
     });
   }
 
-  private buildMeasureGroupAccumulator(measure: MeasureSpec): Record<string, object> {
+  buildMeasureGroupAccumulator(measure: MeasureSpec): Record<string, object> {
     if (measure.aggregation === 'count' || !measure.property) {
       return { count: { $sum: 1 } };
     }
@@ -710,23 +461,6 @@ class MongoDatavizQueryExecutor extends MongoDataSource<EntityDBO> implements Da
         },
       },
     });
-  }
-
-  private collectBucketKeysFromRawBuckets(buckets: RawBucket[]): string[] {
-    const keys = new Set<string>();
-
-    buckets.forEach(bucket => {
-      const id = bucket._id;
-      if (id && typeof id === 'object' && 'primary' in id) {
-        keys.add(String(serializeDatavizBucketKey(normalizeDatavizBucketKey(id.primary))));
-        keys.add(String(serializeDatavizBucketKey(normalizeDatavizBucketKey(id.secondary))));
-        return;
-      }
-
-      keys.add(String(serializeDatavizBucketKey(normalizeDatavizBucketKey(id))));
-    });
-
-    return [...keys];
   }
 }
 

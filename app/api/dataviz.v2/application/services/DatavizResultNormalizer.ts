@@ -13,22 +13,41 @@ import {
   compareDatavizBucketKeys,
 } from '#shared/dataviz/formatDimensionKeyLabel.js';
 import { alignCompareBreakdownColumns } from '#shared/dataviz/alignCompareBreakdownColumns.js';
+import { datavizBucketLabel } from '#shared/dataviz/missingBucket.js';
 import { DATAVIZ_MAX_BUCKETS } from '#shared/types/datavizSchema.js';
 import type { LanguageISO6391 } from '#shared/types/commonTypes.js';
+import { RawBucket } from '#api/dataviz.v2/application/contracts/DatavizAggregationStrategy.js';
 import type { MultilingualLabelResolver } from './DatavizMultilingualLabelResolver.js';
-import { applyLocalizedPointLabels } from './applyLocalizedPointLabel.js';
-
-type RawBucket = {
-  _id:
-    | string
-    | number
-    | null
-    | { primary: string | number; secondary: string | number }
-    | { from: number; to: number };
-  count: number;
-};
+import { pickDefaultLocalizedLabel } from './DatavizMultilingualLabelResolver.js';
 
 type LabelResolver = MultilingualLabelResolver;
+
+const applyLocalizedPointLabels = (
+  key: unknown,
+  dim: DimensionSpec,
+  resolveLabels: MultilingualLabelResolver,
+  defaultLanguage: LanguageISO6391,
+  missingBucketLabels: LocalizedLabels
+): { label: string; labels: LocalizedLabels } => {
+  const resolved = resolveLabels(dim, key);
+  const labels: LocalizedLabels = {};
+
+  Object.entries(resolved).forEach(([language, text]) => {
+    if (text === undefined) {
+      return;
+    }
+    labels[language] = datavizBucketLabel(
+      key,
+      text,
+      missingBucketLabels[language] ?? missingBucketLabels[defaultLanguage]
+    );
+  });
+
+  return {
+    labels,
+    label: pickDefaultLocalizedLabel(labels, defaultLanguage, String(key)),
+  };
+};
 
 const sortPoints = (points: DataPoint[], sort?: DimensionSpec['sort']): DataPoint[] => {
   const copy = [...points];
@@ -388,8 +407,6 @@ export const mergeUnionBuckets = (
     seriesLabel: 'Union',
   };
 };
-
-export type { RawBucket, DataSeries };
 
 export const normalizeMetricCount = (params: {
   counts: number[];
