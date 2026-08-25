@@ -78,3 +78,4 @@ const remove = async (id: string, headers?: IncomingHttpHeaders): Promise<ApiRes
 };
 
 export { getAll, upsert, remove };
+export { countByRelationType, countByRelationTypes } from './countByRelationType.js';
