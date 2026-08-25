@@ -65,12 +65,15 @@ describe('GET /api/user', () => {
       const response = await request(app).get('/api/user').set('Cookie', cookie);
 
       expect(response.status).toBe(200);
-      expect(response.body.username).toBe('validuser');
-      expect(response.body.password).toBeUndefined();
-      expect(response.body.secret).toBeUndefined();
-      expect(response.body.failedLogins).toBeUndefined();
-      expect(response.body.accountUnlockCode).toBeUndefined();
-      expect(response.body.accountLocked).toBeUndefined();
+      expect(response.body).toEqual({
+        _id: expect.any(String),
+        username: 'validuser',
+        role: UserRole.EDITOR,
+        email: expect.any(String),
+        groups: [],
+        using2fa: false,
+        accountLocked: false,
+      });
     });
   });
 });

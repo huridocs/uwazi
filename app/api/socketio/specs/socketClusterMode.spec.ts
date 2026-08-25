@@ -9,7 +9,8 @@ import { multitenantMiddleware } from '#api/utils/multitenantMiddleware.js';
 import { tenants, Tenant } from '#api/tenants/tenantContext.js';
 import { appContextMiddleware } from '#api/utils/appContextMiddleware.js';
 import { config } from '#api/config.js';
-import users from '#api/users/users.js';
+import { UsersDirectoryFactory } from '#api/core/infrastructure/factories/UsersDirectoryFactory.js';
+import { Result } from '#api/core/libs/Result.js';
 
 import {
   endSocketServer,
@@ -294,12 +295,12 @@ describe('socket middlewares setup', () => {
         setSession('admin-session-tenant2', 'admin-user-tenant2', 'tenant2'),
       ]);
 
-      jest.spyOn(users, 'getById').mockImplementation(async (id: string) => {
-        if (id === 'admin-user-tenant1' || id === 'admin-user-tenant2') {
-          return { _id: id, role: 'admin' } as any;
-        }
-        return { _id: id, role: 'editor' } as any;
-      });
+      jest.spyOn(UsersDirectoryFactory, 'default').mockReturnValue({
+        getById: async (id: string) =>
+          id === 'admin-user-tenant1' || id === 'admin-user-tenant2'
+            ? Result.ok({ _id: id, role: 'admin' } as any)
+            : Result.ok({ _id: id, role: 'editor' } as any),
+      } as any);
 
       adminSocketTenant1 = await connectSocket(port, 'tenant1', 'admin-session-tenant1');
       nonAdminSocketTenant1 = await connectSocket(port, 'tenant1', 'nonadmin-session-tenant1');

@@ -38,9 +38,7 @@ import { CleanupExpiredPasswordRecoveriesJobScheduler } from '#api/core/infrastr
 import { CleanupExpiredCaptchasJobScheduler } from '#api/core/infrastructure/jobs/cleanupExpiredCaptchasJob/CleanupExpiredCaptchasJobScheduler.js';
 import { isPrivilegedJob } from '#api/core/infrastructure/jobs/PrivilegedJob.js';
 import { User } from '#api/users.v2/model/User.js';
-import users from '#api/users/users.js';
 import { UsersDirectoryFactory } from '#api/core/infrastructure/factories/UsersDirectoryFactory.js';
-import { usersDirectoryEnabled } from '#api/core/infrastructure/factories/usersBackendFlags.js';
 
 type Props = {
   standAloneProcess?: boolean;
@@ -92,18 +90,11 @@ function register<T extends Dispatchable>(
       if (isSystem) {
         deps.actor = User.system();
       } else if (userId) {
-        // getActor is what dictated UsersDirectory returning UserProfile rather than
-        // UserView (D3): `groups` drives permission checks inside the job, and
-        // User.createFrom's schema defaults a missing `groups` to [] — so an actor resolved
-        // without them loses access silently, with no error anywhere.
-        //
-        // getDataOrThrow, deliberately: the legacy path returns null for an unresolvable
-        // user and User.createFrom(null) yields an *anonymous* actor, so the job would run
-        // on with no permissions instead of failing. Failing is the better outcome, and the
-        // branch above already throws for a missing userId.
-        const user = usersDirectoryEnabled()
-          ? (await UsersDirectoryFactory.default().getActor(userId)).getDataOrThrow()
-          : await users.getById(userId, '-password', true, true);
+        // getActor for `groups`: they drive permission checks inside the job, and
+        // User.createFrom defaults a missing `groups` to [], losing access silently.
+        // getDataOrThrow so an unresolvable user fails the job instead of becoming
+        // User.createFrom(null)'s anonymous, permissionless actor.
+        const user = (await UsersDirectoryFactory.default().getActor(userId)).getDataOrThrow();
 
         deps.actor = User.createFrom(user);
       } else {

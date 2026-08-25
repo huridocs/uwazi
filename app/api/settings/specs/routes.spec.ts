@@ -9,7 +9,8 @@ import templates from '#api/core/v1_layer/templates/index.js';
 import { permissionsContext } from '#api/permissions/permissionsContext.js';
 import { search } from '#api/search/index.js';
 import settings from '#api/settings/index.js';
-import users from '#api/users/users.js';
+import { UsersDirectoryFactory } from '#api/core/infrastructure/factories/UsersDirectoryFactory.js';
+import { Result } from '#api/core/libs/Result.js';
 import { iosocket, setUpApp, TestEmitSources } from '#api/utils/testingRoutes.js';
 import * as setupSockets from '#api/socketio/setupSockets.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
@@ -138,13 +139,18 @@ describe('Settings routes', () => {
           email: 'user@test.test',
           role: 'admin',
         });
-        jest.spyOn(users, 'getById').mockReturnValue({
-          //@ts-ignore
+        const contextUser = {
           _id: 'user1',
           username: 'User 1',
           email: 'user@test.test',
           role: 'admin',
-        });
+        };
+        jest.spyOn(UsersDirectoryFactory, 'default').mockReturnValue({
+          getById: async () => Result.ok(contextUser as any),
+          getActor: async () => Result.ok(contextUser as any),
+          getProfile: async () => Result.ok(contextUser as any),
+          getManyByIds: async () => [contextUser as any],
+        } as any);
       });
 
       it('should migrate all entity names when newNameGeneration is saved as true', async () => {

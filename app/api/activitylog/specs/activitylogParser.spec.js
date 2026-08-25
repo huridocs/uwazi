@@ -1,5 +1,4 @@
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-import { testingTenants } from '#api/utils/testingTenants.js';
 /* eslint-disable max-statements */
 
 import db from '#api/utils/testing_db.js';
@@ -752,22 +751,9 @@ describe('Activitylog Parser', () => {
         );
       });
 
-      // The unlocked user's name is resolved through UsersDirectory when `usersDirectory` is
-      // on and through the legacy users.get otherwise (plan 05 step 2, loadUser). Both must
-      // name the same user, and both must fall back to the raw id when it resolves to nobody
-      // — which is also what a soft-deleted user gets, since neither path sees them (D9).
-      describe.each([
-        { path: 'legacy users.get', usersDirectory: false },
-        { path: 'UsersDirectory', usersDirectory: true },
-      ])('method: POST /api/users/unlock ($path)', ({ usersDirectory }) => {
-        beforeEach(() => {
-          testingTenants.changeCurrentTenant({ featureFlags: { usersDirectory } });
-        });
-
-        afterAll(() => {
-          testingTenants.changeCurrentTenant({ featureFlags: {} });
-        });
-
+      // loadUser falls back to the raw id when the user resolves to nobody, soft-deleted
+      // users included.
+      describe('method: POST /api/users/unlock', () => {
         it('should beautify as UPDATE', async () => {
           await testBeautified(
             {
@@ -1176,22 +1162,9 @@ describe('Activitylog Parser', () => {
     });
 
     describe('routes: /api/entities/permissions', () => {
-      // The permission holders behind `extra` are resolved through UsersDirectory when
-      // `usersDirectory` is on and through the legacy users.get otherwise (plan 05 step 2).
-      // Both must name the same users — and both must keep falling back to the raw refId for
-      // an id that resolves to nobody, which is also what a soft-deleted holder gets (D9).
-      describe.each([
-        { path: 'legacy users.get', usersDirectory: false },
-        { path: 'UsersDirectory', usersDirectory: true },
-      ])('method: POST /api/entities/permissions ($path)', ({ usersDirectory }) => {
-        beforeEach(() => {
-          testingTenants.changeCurrentTenant({ featureFlags: { usersDirectory } });
-        });
-
-        afterAll(() => {
-          testingTenants.changeCurrentTenant({ featureFlags: {} });
-        });
-
+      // Permission holders behind `extra` fall back to the raw refId when they resolve to
+      // nobody, soft-deleted holders included.
+      describe('method: POST /api/entities/permissions', () => {
         it('should beautify as UPDATE with entities names and permissions as extra data', async () => {
           await testBeautified(
             {
