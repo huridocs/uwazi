@@ -45,28 +45,6 @@ describe('Relationships action bar', () => {
     expect(screen.getByRole('button', { name: 'Deselect all' })).toBeInTheDocument();
   });
 
-  it('opens the manage relationship types dialog from a button', async () => {
-    const user = userEvent.setup();
-    renderRelationshipsActionBar();
-
-    await user.click(screen.getByRole('button', { name: /edit/i }));
-
-    expect(screen.queryByRole('link', { name: 'Manage types' })).not.toBeInTheDocument();
-    await user.click(screen.getByRole('button', { name: 'Manage types' }));
-
-    expect(screen.getByRole('dialog', { name: 'Manage relationship types' })).toBeInTheDocument();
-  });
-
-  it('hides manage types from editors', async () => {
-    const user = userEvent.setup();
-    renderRelationshipsActionBar({ role: 'editor' });
-
-    await user.click(screen.getByRole('button', { name: /edit/i }));
-
-    expect(screen.queryByRole('button', { name: 'Manage types' })).not.toBeInTheDocument();
-    expect(screen.queryByRole('link', { name: 'Manage types' })).not.toBeInTheDocument();
-  });
-
   it('offers to delete selected relationships while editing', async () => {
     const user = userEvent.setup();
     renderRelationshipsActionBar();

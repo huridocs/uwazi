@@ -6,6 +6,7 @@ import { RelationshipsStoryShell } from '#app/stories/EntityViewer/relationships
 import type { Entity } from '#V2/api/entities/types.js';
 import {
   CreateRelationshipModal,
+  RelationshipsActionBar,
   RelationshipsPanel,
 } from '#V2/Routes/Entity/Components/relationships/index.js';
 import { useRelationshipsActions } from '#V2/Routes/Entity/Components/context/index.js';
@@ -263,5 +264,32 @@ describe('Create relationship dialog', () => {
     cy.contains('button', 'Cancel').should('not.exist');
     cy.get('[data-testid="modal"]').contains('button', 'Back').should('be.visible');
     cy.get('[data-testid="modal"]').contains('button', 'Create relationship').should('be.visible');
+  });
+
+  it('shows duplicate copy when the typed label already exists', () => {
+    mountCreateRelationshipModal({ withSelection: false, user: adminUser });
+    openModal();
+    searchEntity('Simple');
+    cy.contains('Simple entity').click();
+    cy.get('[data-testid="modal"]')
+      .find('input[placeholder="New relation type label…"]')
+      .type('related to');
+    cy.get('[data-testid="modal"]').contains('button', 'Add').click();
+    cy.contains('Already exists').should('be.visible');
+  });
+
+  it('opens from the action bar', () => {
+    mount(
+      <RelationshipsStoryShell locale="en" user={adminUser}>
+        <>
+          <RelationshipsActionBar />
+          <CreateRelationshipModal />
+        </>
+      </RelationshipsStoryShell>
+    );
+    cy.contains('button', 'Edit').click();
+    cy.contains('button', 'Create relationship').click();
+    cy.get('[role="dialog"][aria-label="Create relationship"]').should('be.visible');
+    cy.contains('Select target entity').should('be.visible');
   });
 });

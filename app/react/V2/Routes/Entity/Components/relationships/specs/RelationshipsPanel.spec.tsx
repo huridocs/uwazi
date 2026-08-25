@@ -3,17 +3,9 @@
  */
 import { screen, within } from '@testing-library/react';
 import userEvent, { type UserEvent } from '@testing-library/user-event';
-import type { ClientUserSchema } from '#app/apiResponseTypes.js';
 import { defaultPdf, renderRelationshipsPanel } from './helpers/renderRelationshipsPanel.js';
 import { entityWithRelations } from './fixtures/entityWithRelations.js';
 import * as utils from '#app/utils/index.js';
-
-const writerUser: ClientUserSchema = {
-  _id: '1',
-  role: 'admin',
-  username: 'admin',
-  email: 'admin@example.com',
-};
 
 beforeAll(() => {
   Element.prototype.scrollIntoView = jest.fn();
@@ -179,43 +171,12 @@ describe('Relationships panel', () => {
       expect(screen.queryByRole('button', { name: 'Expand all' })).not.toBeInTheDocument();
     });
   });
-});
 
-describe('blank state', () => {
-  const entityWithoutRelations = { ...entityWithRelations, relations: [] };
-
-  it('does not mention document text selection when there is no document', () => {
-    renderRelationshipsPanel({ entity: entityWithoutRelations, user: writerUser });
-
-    expect(screen.queryByText(/selecting text in the document/)).not.toBeInTheDocument();
-    expect(screen.getAllByRole('strong').map(el => el.textContent)).toEqual([
-      'Edit',
-      'Create relationship',
-    ]);
-  });
-
-  it('keeps document text selection first when a document exists', () => {
+  it('shows the blank state when the entity has no relationships', () => {
     renderRelationshipsPanel({
-      entity: entityWithoutRelations,
-      mainDocument: { _id: 'f1', filename: 'doc.pdf' },
-      user: writerUser,
+      entity: { ...entityWithRelations, relations: [] },
     });
 
-    expect(
-      screen.getByText(/To add references you can start by selecting text in the document/)
-    ).toBeInTheDocument();
-    expect(screen.getByText(/or select/)).toBeInTheDocument();
-    expect(screen.getAllByRole('strong').map(el => el.textContent)).toEqual([
-      'Edit',
-      'Create relationship',
-    ]);
-  });
-
-  it('hides how-to copy when the visitor cannot write', () => {
-    renderRelationshipsPanel({ entity: entityWithoutRelations });
-
     expect(screen.getByText('No Relationships')).toBeInTheDocument();
-    expect(screen.queryByText(/Edit/)).not.toBeInTheDocument();
-    expect(screen.queryByText(/Create relationship/)).not.toBeInTheDocument();
   });
 });

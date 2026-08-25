@@ -35,11 +35,19 @@ type RelationshipTypeRowProps = {
   onConfirmDelete: () => void;
 };
 
-const trash = ({ blocked, onAskDelete }: { blocked: boolean; onAskDelete: () => void }) => (
+const trash = ({
+  blocked,
+  name,
+  onAskDelete,
+}: {
+  blocked: boolean;
+  name: string;
+  onAskDelete: () => void;
+}) => (
   <button
     type="button"
     disabled={blocked}
-    aria-label="Delete relationship type"
+    aria-label={`Delete ${name}`}
     onClick={onAskDelete}
     className={
       blocked
@@ -52,16 +60,18 @@ const trash = ({ blocked, onAskDelete }: { blocked: boolean; onAskDelete: () => 
 );
 
 const RelationshipTypeRowActions = ({
+  name,
   onConfirmDelete,
   onCancelDelete,
 }: {
+  name: string;
   onConfirmDelete: () => void;
   onCancelDelete: () => void;
 }) => (
   <div className="flex shrink-0 items-center gap-1">
     <button
       type="button"
-      aria-label="Delete relationship type"
+      aria-label={`Delete ${name}`}
       onClick={onConfirmDelete}
       className="rounded-md bg-button-danger px-2 py-1 text-xs font-medium text-button-danger-fg hover:opacity-90"
     >
@@ -69,7 +79,7 @@ const RelationshipTypeRowActions = ({
     </button>
     <button
       type="button"
-      aria-label="Cancel deleting relationship type"
+      aria-label={`Cancel deleting ${name}`}
       onClick={onCancelDelete}
       className="px-2 py-1 text-xs font-medium text-ink-secondary hover:text-ink"
     >
@@ -90,10 +100,11 @@ const RelationshipTypeRow = ({
   const tooltip = blockedTooltip(inUse, count);
   const blocked = Boolean(tooltip);
 
-  let actions = trash({ blocked, onAskDelete });
+  let actions = trash({ blocked, name, onAskDelete });
   if (!blocked && confirming) {
     actions = (
       <RelationshipTypeRowActions
+        name={name}
         onConfirmDelete={onConfirmDelete}
         onCancelDelete={onCancelDelete}
       />
@@ -101,7 +112,7 @@ const RelationshipTypeRow = ({
   } else if (tooltip) {
     actions = (
       <Tooltip content={tooltip} placement="top" size="nano" theme={nanoTooltipTheme}>
-        <span className="inline-flex shrink-0">{trash({ blocked, onAskDelete })}</span>
+        <span className="inline-flex shrink-0">{trash({ blocked, name, onAskDelete })}</span>
       </Tooltip>
     );
   }

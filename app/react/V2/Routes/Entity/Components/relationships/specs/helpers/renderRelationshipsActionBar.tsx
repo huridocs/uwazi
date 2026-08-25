@@ -13,6 +13,7 @@ import { createTestServices } from '#V2/testing/createTestServices.js';
 import { RelationshipsActionBar } from '../../panel/RelationshipsActionBar.js';
 import { RelationshipsPanel } from '../../panel/RelationshipsPanel.js';
 import { CreateRelationshipModal } from '../../create-reference/CreateRelationshipModal.js';
+import { ManageRelationTypesModal } from '../../create-reference/ManageRelationTypesModal.js';
 import { entityWithRelations } from '../fixtures/entityWithRelations.js';
 import {
   relationshipQueryFromEntity,
@@ -41,6 +42,9 @@ const renderRelationshipsActionBar = ({
   const relationshipQuery = relationshipQueryFromEntity(entityWithRelations);
   const services = createTestServices({
     relationshipsQuery: relationshipsQueryStubFromEntity(entityWithRelations),
+    relationshipTypes: {
+      countByTypes: async () => [{}],
+    },
   });
 
   const router = createMemoryRouter([
@@ -59,6 +63,7 @@ const renderRelationshipsActionBar = ({
               <RelationshipsPanel />
               <RelationshipsActionBar />
               <CreateRelationshipModal />
+              <ManageRelationTypesModal />
             </EntityScopedProvider>
           </ServicesProvider>
         </Provider>
