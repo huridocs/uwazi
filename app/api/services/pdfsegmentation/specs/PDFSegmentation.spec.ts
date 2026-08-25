@@ -393,8 +393,7 @@ describe('PDFSegmentation', () => {
 
   describe('when there is pending tasks', () => {
     const withPendingTasks = (pending: number) => {
-      segmentPdfs.segmentationTaskManager!.countPendingTasks = async () =>
-        Promise.resolve(pending);
+      segmentPdfs.segmentationTaskManager!.countPendingTasks = async () => Promise.resolve(pending);
     };
 
     it('should keep the queue topped up while it is below the target depth', async () => {
