@@ -55,6 +55,7 @@ import {
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { dependenciesContextMiddleware } from '#api/core/infrastructure/express/middlewares/DependenciesMiddleware.js';
 import { requestTimingMiddleware } from '#api/core/infrastructure/express/middlewares/RequestTimingMiddleware.js';
+import { StandardLogger } from '#api/core/libs/logger/infrastructure/StandardLogger.js';
 
 async function runAllTenants() {
   try {
@@ -592,18 +593,82 @@ describe('syncWorker', () => {
     syncWorker.UPDATE_LOG_TARGET_COUNT = originalBatchLimit;
   }, 10000);
 
-  it('should throw an error, when trying to sync a collection that is not in the order list', async () => {
-    const fixtures = _.cloneDeep(orderedHostFixtures);
-    //@ts-ignore
-    fixtures.settings[0].sync[0].config.pages = [];
+  describe('when a tenant or config throws', () => {
+    afterEach(() => {
+      jest.spyOn(syncWorker, 'syncronize').mockRestore();
+      jest.spyOn(syncWorker, 'login').mockRestore();
+      jest.spyOn(StandardLogger.prototype, 'error').mockRestore();
+      syncWorker.UPDATE_LOG_TARGET_COUNT = 50;
+    });
 
-    await applyFixtures(fixtures, {});
+    it('should still sync later tenants', async () => {
+      const { host2db } = await applyFixtures();
+      const errorSpy = jest.spyOn(StandardLogger.prototype, 'error');
 
-    await expect(runAllTenants).rejects.toThrow(
-      new Error('Invalid elements found in ordering - pages')
-    );
+      const originalSyncronize = syncWorker.syncronize.bind(syncWorker);
+      jest.spyOn(syncWorker, 'syncronize').mockImplementation(async syncSettings => {
+        if (tenants.current().name === 'host1') {
+          throw new Error('host1 sync exploded');
+        }
+        return originalSyncronize(syncSettings);
+      });
 
-    await applyFixtures();
+      await expect(syncWorker.runAllTenants()).resolves.not.toThrow();
+
+      expect(errorSpy).toHaveBeenCalledWith(
+        'Sync failed: host1 sync exploded',
+        expect.objectContaining({ tenant: 'host1', errorName: 'Error' })
+      );
+
+      const host2Sync = await host2db!.collection('syncs').findOne({ name: 'target2' });
+      expect(host2Sync?.lastSyncs).toEqual(expect.any(Object));
+      expect(Object.keys(host2Sync?.lastSyncs || {})).not.toHaveLength(0);
+    }, 10000);
+
+    it('should still sync later configs on the same tenant', async () => {
+      const { host1db, host2db } = await applyFixtures();
+      const originalLogin = syncWorker.login.bind(syncWorker);
+      jest.spyOn(syncWorker, 'login').mockImplementation(async config => {
+        if (config.url === 'http://localhost:6667') {
+          throw new Error('login failed for target1');
+        }
+        return originalLogin(config);
+      });
+
+      await expect(syncWorker.runAllTenants()).resolves.not.toThrow();
+
+      const host1Target1 = await host1db!.collection('syncs').findOne({ name: 'target1' });
+      expect(host1Target1?.lastSyncs).toBeUndefined();
+
+      const host1Target2 = await host1db!.collection('syncs').findOne({ name: 'target2' });
+      expect(Object.keys(host1Target2?.lastSyncs || {})).not.toHaveLength(0);
+
+      const host2Target2 = await host2db!.collection('syncs').findOne({ name: 'target2' });
+      expect(Object.keys(host2Target2?.lastSyncs || {})).not.toHaveLength(0);
+    }, 10000);
+
+    it('should not abort the tick when a config names a collection that is not in the order list', async () => {
+      const errorSpy = jest.spyOn(StandardLogger.prototype, 'error');
+      const fixtures = _.cloneDeep(orderedHostFixtures);
+      //@ts-ignore
+      fixtures.settings[0].sync[0].config.pages = [];
+
+      const { host2db } = await applyFixtures(fixtures, host2Fixtures);
+
+      await expect(syncWorker.runAllTenants()).resolves.not.toThrow();
+
+      expect(errorSpy).toHaveBeenCalledWith(
+        'Sync failed: Invalid elements found in ordering - pages',
+        expect.objectContaining({
+          tenant: 'host1',
+          syncConfig: 'target1',
+          url: 'http://localhost:6667',
+        })
+      );
+
+      const host2Sync = await host2db!.collection('syncs').findOne({ name: 'target2' });
+      expect(Object.keys(host2Sync?.lastSyncs || {})).not.toHaveLength(0);
+    }, 10000);
   });
 
   describe('when active is false', () => {

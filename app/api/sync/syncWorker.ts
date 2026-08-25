@@ -2,10 +2,12 @@ import '#api/entities/index.js';
 import urljoin from 'url-join';
 import request from '#shared/JSONRequest.js';
 import { SettingsSyncSchema } from '#shared/types/settingsType.js';
+import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
 import { tenants } from '#api/tenants/index.js';
 import settings from '#api/settings/index.js';
 import { permissionsContext } from '#api/permissions/permissionsContext.js';
 import { runInJobContext } from '#api/services/tasksmanager/runInJobContext.js';
+import { handleError } from '#api/utils/handleError.js';
 import { synchronizer } from './synchronizer.js';
 import { createSyncConfig } from './syncConfig.js';
 import syncsModel from './syncsModel.js';
@@ -52,29 +54,63 @@ const validateConfig = (config: SettingsSyncSchema) => {
   return config as SyncConfig;
 };
 
+const reportSyncFailure = (
+  error: unknown,
+  context: { tenant: string; syncConfig?: string; url?: string }
+) => {
+  try {
+    const err = error instanceof Error ? error : new Error(String(error));
+    LoggerFactory.default().error(`Sync failed: ${err.message}`, {
+      tenant: context.tenant,
+      syncConfig: context.syncConfig,
+      url: context.url,
+      errorName: err.name,
+    });
+    handleError(error);
+  } catch (reportingError) {
+    handleError(reportingError, { useContext: false });
+  }
+};
+
 export const syncWorker = {
   UPDATE_LOG_TARGET_COUNT: 50,
 
   async runAllTenants() {
     return tenants.getTenantsForFeatureFlag('sync').reduce(async (previous, tenant) => {
       await previous;
-      return runInJobContext(tenant.name, async () => {
-        permissionsContext.setCommandContext();
-        const { sync } = await settings.get({}, 'sync');
-        if (sync) {
-          await this.syncronize(sync);
-        }
-      });
+      try {
+        await runInJobContext(tenant.name, async () => {
+          try {
+            permissionsContext.setCommandContext();
+            const { sync } = await settings.get({}, 'sync');
+            if (sync) {
+              await this.syncronize(sync);
+            }
+          } catch (error) {
+            reportSyncFailure(error, { tenant: tenant.name });
+          }
+        });
+      } catch (error) {
+        handleError(error, { useContext: false });
+      }
     }, Promise.resolve());
   },
 
   async syncronize(syncSettings: SettingsSyncSchema[]) {
     await syncSettings.reduce(async (previousSync, config) => {
       await previousSync;
-      const syncConfig = validateConfig(config);
-      if (!syncConfig?.active) return;
+      try {
+        const syncConfig = validateConfig(config);
+        if (!syncConfig?.active) return;
 
-      await this.syncronizeConfig(syncConfig);
+        await this.syncronizeConfig(syncConfig);
+      } catch (error) {
+        reportSyncFailure(error, {
+          tenant: tenants.current().name,
+          syncConfig: config.name,
+          url: config.url,
+        });
+      }
     }, Promise.resolve());
   },
 
