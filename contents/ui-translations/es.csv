@@ -37,6 +37,7 @@ Activity log,Registro de actividad
 Activity Log,Registro de Actividad
 Add,Añadir
 Add / remove favorite,Añadir / eliminar favorito
+Add a type below.,Añadir un tipo debajo.
 Add an account to the app by scanning the provided QR code with your mobile device or by inserting the provided key.,Add an account to the app by scanning the provided QR code with your mobile device or by inserting the provided key.
 Add as,Add as
 Add data source,Add data source
@@ -53,6 +54,7 @@ Add group,Añadir grupo
 add icon,Añadir ícono
 Add item,Add item
 Add link,Añadir enlace
+Add or remove relationship types for this collection.,Añadir o eliminar tipos de relación para esta colección.
 Add page,Añadir página
 Add PDF,Añadir PDF
 Add people or groups,Añadir personas o grupos
@@ -74,6 +76,7 @@ Add/delete users and assign roles,Añadir / Eliminar usuarios y asignar roles
 Add/edit translations,Añadir / editar traducciones
 Added language,Idioma añadido
 Added new user,Nuevo usuario añadido
+"Added relation type ""{name}""","Tipo de relación ""{name}"" añadido"
 added to hub with the following errors:,añadido al nodo con los siguientes errores:
 added to hub.,añadido al nodo.
 Adding a group and its items.,Adding a group and its items.
@@ -96,6 +99,7 @@ Allow captcha bypass,Permitir la omisión de captcha
 Allow public embedding without login,Allow public embedding without login
 Already exists,Already exists
 Amount,Amount
+An admin needs to add relationship types before you can create a relationship.,Un administrador necesita añadir tipos de relación para poder crear una relación.
 An error has occured while deleting a language:,An error has occured while deleting a language:
 An error has occured while installing languages:,An error has occured while installing languages:
 An error has occurred,Ocurrió un error
@@ -255,6 +259,7 @@ Could not reach server. Please try again later.,No se puede conectar con el serv
 Count,Count
 Create,Crear
 CREATE,Crear
+Create a type to continue.,Crea un tipo para continuar.
 Create and edit thesauri,Crear y editar tesauro
 Create Connection,Crear Conexión
 Create entity,Crear entidad
@@ -575,6 +580,7 @@ in,en
 "In a group, either all relationships must have a hub or none of them.","En un grupo, todas las relaciones deben tener un nodo o ninguno de ellos."
 In OCR queue,En cola para ROC
 in this document,en este documento
+In use,En uso
 Include all entities,Include all entities
 Include only public,Include only public
 Incoming,Entrante
@@ -661,6 +667,7 @@ Longitude must be between -180 and 180,Longitud debe estar entre -180 y 180
 Lookup help,Lookup help
 Lost connection to the server. Your changes may be lost,Se perdió la conexión con el servidor. Los cambios pueden perderse
 low,bajo
+Manage relationship types,Administrar tipos de relación
 Manage site settings and configuration,Administrar la configuración del sitio
 Manage types,Administrar tipos
 Manual data,Manual data
@@ -749,6 +756,7 @@ New language added,Nuevo idioma añadido
 New page,Nueva página
 New password,Nueva contraseña
 New primary doc,Nuevo documento primario
+New relation type label…,Etiqueta para nuevo tipo de relación…
 New relationship type,Nuevo tipo de relación
 New relationships group,Nuevo grupo de relaciones
 New Relationships Migration,New Relationships Migration
@@ -788,6 +796,7 @@ No primary documents,Sin documentos primarios
 No property,Ninguna propiedad
 No References,Sin referencias
 No References description,Las referencias son partes de este documento relacionadas con otros documentos y entidades.
+No relationship types,Sin tipos de relación
 No Relationships,No existen relaciones
 No Relationships description,Las relaciones son vínculos entre entidades.
 No relationships found,No se encontraron relaciones
@@ -1006,9 +1015,6 @@ Relationship type name already exists,El nombre de la relación ya existe
 Relationship types,Tipos de relación
 relationships,relaciones
 Relationships,Relaciones
-relationships blank state message,"Para agregar relaciones selecciona **Editar**, luego **Crear relación**."
-relationships blank state with document,"Para agregar relaciones puedes empezar seleccionando texto en el documento
- o selecciona **Editar**, luego **Crear relación**."
 Relationships saved,Relaciones guardadas
 relationships? This action cannot be undone.,relactiones? Esta acción no puede revertirse.
 RelationType saved,Tipo de Relación guardada
@@ -1319,7 +1325,6 @@ Timestamp,Timestamp
 tips,consejos
 Title,Título
 To,To
-To add references you can start by selecting text in the document,To add references you can start by selecting text in the document
 "To complete the account creation process, please create a password for your account","Para completar este proceso de creación de cuenta, por favor crea una contraseña."
 to view your authentication code and verify your identity.,para ver el código de autenticación y verificar tu identidad.
 Today,Today
@@ -1404,6 +1409,9 @@ Use for training,Use for training
                 needed.","Use this iframe on external sites. Change the locale query parameter in the URL if
                 needed."
 Use URL,Use URL
+Used in templates and {n} refs — cannot delete,Usado en plantillas y {n} referencias — no se puede eliminar
+Used in templates — cannot delete,Usado en plantillas — no se puede eliminar
+Used in {n} refs — cannot delete,Usado en {n} referencias — no se puede eliminar
 User,Usuario
 User Action,User Action
 User Role,User Role

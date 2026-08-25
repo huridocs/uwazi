@@ -37,6 +37,7 @@ Activity log,Journal d'activité
 Activity Log,Journal d'activité
 Add,Ajouter
 Add / remove favorite,Ajouter / supprimer un favori
+Add a type below.,Add a type below.
 Add an account to the app by scanning the provided QR code with your mobile device or by inserting the provided key.,Add an account to the app by scanning the provided QR code with your mobile device or by inserting the provided key.
 Add as,Add as
 Add data source,Add data source
@@ -53,6 +54,7 @@ Add group,Ajouter un groupe
 add icon,Ajouter une icône
 Add item,Add item
 Add link,Ajouter un lien
+Add or remove relationship types for this collection.,Add or remove relationship types for this collection.
 Add page,Ajouter une page
 Add PDF,Add PDF
 Add people or groups,Ajouter des personnes ou des groupes
@@ -74,6 +76,7 @@ Add/delete users and assign roles,Ajouter / Supprimer des utilisateurs et attrib
 Add/edit translations,Ajouter / Modifier des traductions
 Added language,Added language
 Added new user,Added new user
+"Added relation type ""{name}""","Added relation type ""{name}"""
 added to hub with the following errors:,added to hub with the following errors:
 added to hub.,added to hub.
 Adding a group and its items.,Adding a group and its items.
@@ -96,6 +99,7 @@ Allow captcha bypass,Allow captcha bypass
 Allow public embedding without login,Allow public embedding without login
 Already exists,Already exists
 Amount,Amount
+An admin needs to add relationship types before you can create a relationship.,An admin needs to add relationship types before you can create a relationship.
 An error has occured while deleting a language:,An error has occured while deleting a language:
 An error has occured while installing languages:,An error has occured while installing languages:
 An error has occurred,An error has occurred
@@ -256,6 +260,7 @@ Could not reach server. Please try again later.,Could not reach server. Please t
 Count,Count
 Create,Créer
 CREATE,Créer
+Create a type to continue.,Create a type to continue.
 Create and edit thesauri,Create and edit thesauri
 Create Connection,Create Connection
 Create entity,Créer une entité
@@ -576,6 +581,7 @@ in,dans
 "In a group, either all relationships must have a hub or none of them.","In a group, either all relationships must have a hub or none of them."
 In OCR queue,dans la file d'attente OCR
 in this document,in this document
+In use,In use
 Include all entities,Include all entities
 Include only public,Include only public
 Incoming,Incoming
@@ -662,6 +668,7 @@ Longitude must be between -180 and 180,Longitude must be between -180 and 180
 Lookup help,Lookup help
 Lost connection to the server. Your changes may be lost,Lost connection to the server. Your changes may be lost
 low,Bas
+Manage relationship types,Manage relationship types
 Manage site settings and configuration,Gérer la configuration et les paramètres du site
 Manage types,Manage types
 Manual data,Manual data
@@ -750,6 +757,7 @@ New language added,New language added
 New page,New page
 New password,Nouveau mot de passe
 New primary doc,New primary doc
+New relation type label…,New relation type label…
 New relationship type,New relationship type
 New relationships group,New relationships group
 New Relationships Migration,New Relationships Migration
@@ -789,6 +797,7 @@ No primary documents,No primary documents
 No property,Aucune propriété
 No References,Pas de références
 No References description,References are parts of this document related with other documents and entities.
+No relationship types,No relationship types
 No Relationships,Aucune relation
 No Relationships description,Relationships are bonds between entities.
 No relationships found,No relationships found
@@ -1008,9 +1017,6 @@ Relationship type name already exists,Relationship type name already exists
 Relationship types,Types de relations
 relationships,Relations
 Relationships,Relations
-relationships blank state message,"To add references select **Edit**, then **Create relationship**."
-relationships blank state with document,"To add references you can start by selecting text in the document
- or select **Edit**, then **Create relationship**."
 Relationships saved,Relationships saved
 relationships? This action cannot be undone.,relationships? This action cannot be undone.
 RelationType saved,Type de relation sauvegardé
@@ -1322,7 +1328,6 @@ Timestamp,Timestamp
 tips,tips
 Title,Titre
 To,To
-To add references you can start by selecting text in the document,To add references you can start by selecting text in the document
 "To complete the account creation process, please create a password for your account","Pour compléter le processus de création de compte, veuillez créer un mot de passe pour votre compte."
 to view your authentication code and verify your identity.,Pour afficher votre code d'authentification et vérifier votre identité.
 Today,Today
@@ -1407,6 +1412,9 @@ Use for training,Use for training
                 needed.","Use this iframe on external sites. Change the locale query parameter in the URL if
                 needed."
 Use URL,Use URL
+Used in templates and {n} refs — cannot delete,Used in templates and {n} refs — cannot delete
+Used in templates — cannot delete,Used in templates — cannot delete
+Used in {n} refs — cannot delete,Used in {n} refs — cannot delete
 User,Utilisateur
 User Action,User Action
 User Role,User Role

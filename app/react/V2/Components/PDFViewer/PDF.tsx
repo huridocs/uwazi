@@ -487,7 +487,6 @@ const PDF = ({
             <ExclamationTriangleIcon className="h-7 w-7 text-gray-900 rounded-full bg-gray-300 p-1" />
           }
           title={error}
-          description=""
         />
       </div>
     );

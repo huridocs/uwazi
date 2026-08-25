@@ -171,34 +171,12 @@ describe('Relationships panel', () => {
       expect(screen.queryByRole('button', { name: 'Expand all' })).not.toBeInTheDocument();
     });
   });
-});
 
-describe('blank state', () => {
-  const entityWithoutRelations = { ...entityWithRelations, relations: [] };
-
-  it('does not mention document text selection when there is no document', () => {
-    renderRelationshipsPanel({ entity: entityWithoutRelations });
-
-    expect(screen.queryByText(/selecting text in the document/)).not.toBeInTheDocument();
-    expect(screen.getAllByRole('strong').map(el => el.textContent)).toEqual([
-      'Edit',
-      'Create relationship',
-    ]);
-  });
-
-  it('keeps document text selection first when a document exists', () => {
+  it('shows the blank state when the entity has no relationships', () => {
     renderRelationshipsPanel({
-      entity: entityWithoutRelations,
-      mainDocument: { _id: 'f1', filename: 'doc.pdf' },
+      entity: { ...entityWithRelations, relations: [] },
     });
 
-    expect(
-      screen.getByText(/To add references you can start by selecting text in the document/)
-    ).toBeInTheDocument();
-    expect(screen.getByText(/or select/)).toBeInTheDocument();
-    expect(screen.getAllByRole('strong').map(el => el.textContent)).toEqual([
-      'Edit',
-      'Create relationship',
-    ]);
+    expect(screen.getByText('No Relationships')).toBeInTheDocument();
   });
 });

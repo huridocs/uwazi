@@ -20,6 +20,7 @@ import {
   useMetadataEditing,
 } from './Components/index.js';
 import { CreateRelationshipModal } from './Components/relationships/create-reference/CreateRelationshipModal.js';
+import { ManageRelationTypesModal } from './Components/relationships/create-reference/ManageRelationTypesModal.js';
 import { useResetRelationshipsOnDocumentChange } from './Components/relationships/hooks/useDocumentRelationships.js';
 import {
   TabsMainButtons,
@@ -158,6 +159,7 @@ const Entity = () => {
           <EntityView />
         </EntityFilesFromEntity>
         <EntityCreateRelationshipModal />
+        <ManageRelationTypesModal />
       </EntityScopedProvider>
     </ThemeProvider>
   );
