@@ -1,14 +1,30 @@
 import React from 'react';
 import { mount } from 'cypress/react';
 import type { TextSelection } from '@huridocs/react-text-selection-handler';
-import type { Entity } from '#V2/api/entities/types.js';
+import type { ClientUserSchema } from '#app/apiResponseTypes.js';
 import { RelationshipsStoryShell } from '#app/stories/EntityViewer/relationshipsStoryShell.js';
+import type { Entity } from '#V2/api/entities/types.js';
 import {
   CreateRelationshipModal,
+  RelationshipsActionBar,
   RelationshipsPanel,
 } from '#V2/Routes/Entity/Components/relationships/index.js';
 import { useRelationshipsActions } from '#V2/Routes/Entity/Components/context/index.js';
 import { expandAllRelationships } from '#V2/Components/Relationships/specs/relationshipsCyHelpers.js';
+
+const adminUser: ClientUserSchema = {
+  _id: '1',
+  role: 'admin',
+  username: 'admin',
+  email: 'admin@example.com',
+};
+
+const editorUser: ClientUserSchema = {
+  _id: '2',
+  role: 'editor',
+  username: 'editor',
+  email: 'editor@example.com',
+};
 
 const selection: TextSelection = {
   text: 'Selected text for relationship',
@@ -63,12 +79,16 @@ const OpenCreateRelationshipTrigger = ({ withSelection }: { withSelection: boole
 const mountCreateRelationshipModal = ({
   withSelection = true,
   withPanel = false,
+  relationshipTypes,
+  user,
 }: {
   withSelection?: boolean;
   withPanel?: boolean;
+  relationshipTypes?: { _id: string; name: string }[];
+  user?: ClientUserSchema;
 } = {}) =>
   mount(
-    <RelationshipsStoryShell locale="en">
+    <RelationshipsStoryShell locale="en" relationshipTypes={relationshipTypes} user={user}>
       <>
         <OpenCreateRelationshipTrigger withSelection={withSelection} />
         {withPanel && <RelationshipsPanel />}
@@ -173,5 +193,103 @@ describe('Create relationship dialog', () => {
     cy.contains('button', 'Save').should('not.be.disabled').click();
     cy.wait('@saveRelationship');
     cy.get('[data-testid="modal"]').should('not.exist');
+  });
+
+  it('shows admin empty copy and creates a type on the choose-type step', () => {
+    cy.intercept('POST', '**/relationtypes*', {
+      statusCode: 200,
+      body: { _id: 'new-rel-type', name: 'Custom type' },
+    }).as('createType');
+    mountCreateRelationshipModal({
+      withSelection: false,
+      relationshipTypes: [],
+      user: adminUser,
+    });
+    openModal();
+    searchEntity('Simple');
+    cy.contains('Simple entity').click();
+    cy.contains('Choose relation type').should('be.visible');
+    cy.contains('No relationship types').should('be.visible');
+    cy.contains('Create a type to continue.').should('be.visible');
+    cy.contains('button', 'Create relationship').should('be.disabled');
+    cy.contains('button', 'Create new relationship type').should('not.exist');
+    cy.contains('button', 'Cancel').should('not.exist');
+    cy.get('[data-testid="modal"]')
+      .find('input[placeholder="New relation type label…"]')
+      .should('be.visible')
+      .type('Custom type');
+    cy.get('[data-testid="modal"]').contains('button', 'Add').click();
+    cy.wait('@createType');
+    cy.get('[data-testid="modal"]')
+      .contains('button', 'Custom type')
+      .should('have.attr', 'aria-pressed', 'true');
+    cy.get('[data-testid="modal"]')
+      .find('input[placeholder="New relation type label…"]')
+      .should('have.value', '');
+    cy.contains('button', 'Create relationship').should('not.be.disabled');
+  });
+
+  it('shows editor empty copy without inline create', () => {
+    mountCreateRelationshipModal({
+      withSelection: false,
+      relationshipTypes: [],
+      user: editorUser,
+    });
+    openModal();
+    searchEntity('Simple');
+    cy.contains('Simple entity').click();
+    cy.contains('No relationship types').should('be.visible');
+    cy.contains(
+      'An admin needs to add relationship types before you can create a relationship.'
+    ).should('be.visible');
+    cy.contains('button', 'Create new relationship type').should('not.exist');
+    cy.contains('button', 'Add').should('not.exist');
+    cy.get('[data-testid="modal"]')
+      .find('input[placeholder="New relation type label…"]')
+      .should('not.exist');
+    cy.contains('button', 'Create relationship').should('be.disabled');
+  });
+
+  it('shows always-visible add field for admin when types exist', () => {
+    mountCreateRelationshipModal({ withSelection: false, user: adminUser });
+    openModal();
+    searchEntity('Simple');
+    cy.contains('Simple entity').click();
+    cy.contains('Choose relation type').should('be.visible');
+    cy.get('[data-testid="modal"]')
+      .find('input[placeholder="New relation type label…"]')
+      .should('be.visible');
+    cy.get('[data-testid="modal"]').contains('button', 'Add').should('be.visible');
+    cy.contains('button', 'Create new relationship type').should('not.exist');
+    cy.contains('button', 'Cancel').should('not.exist');
+    cy.get('[data-testid="modal"]').contains('button', 'Back').should('be.visible');
+    cy.get('[data-testid="modal"]').contains('button', 'Create relationship').should('be.visible');
+  });
+
+  it('shows duplicate copy when the typed label already exists', () => {
+    mountCreateRelationshipModal({ withSelection: false, user: adminUser });
+    openModal();
+    searchEntity('Simple');
+    cy.contains('Simple entity').click();
+    cy.get('[data-testid="modal"]')
+      .find('input[placeholder="New relation type label…"]')
+      .type('related to');
+    cy.get('[data-testid="modal"]').contains('button', 'Add').click();
+    cy.contains('Already exists').should('be.visible');
+  });
+
+  it('opens from the action bar', () => {
+    mount(
+      <RelationshipsStoryShell locale="en" user={adminUser}>
+        <>
+          <RelationshipsActionBar />
+          <CreateRelationshipModal />
+        </>
+      </RelationshipsStoryShell>
+    );
+    cy.contains('button', 'Edit').click();
+    cy.contains('button', 'Create relationship').click();
+    cy.get('[role="dialog"][aria-label="Create relationship"]').should('be.visible');
+    cy.contains('Select target entity').should('be.visible');
   });
 });

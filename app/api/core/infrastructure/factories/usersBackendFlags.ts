@@ -14,7 +14,11 @@ type UsersBackend = 'postgres' | 'mongo';
  * i.e. a silent loss of permissions.
  *
  * One definition shared by UsersDirectoryFactory, UsersQueryServiceFactory and
- * UserGroupsDAOFactory. Three copies of a rule this consequential is three chances to drift.
+ * UserGroupsQueryServiceFactory. Three copies of a rule this consequential is three chances
+ * to drift.
+ *
+ * UserGroupsDirectoryFactory deliberately does not use it — no Directory method joins users,
+ * so that contract has not earned the constraint.
  */
 const resolveUsersBackend = (contract: string): UsersBackend => {
   const tenant = ExecutionContext.currentTenant;

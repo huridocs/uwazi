@@ -2,9 +2,7 @@ import React, { useState, ChangeEvent } from 'react';
 import { t, Translate } from '#app/I18N/index.js';
 import { Modal, Button } from '#V2/Components/UI/index.js';
 import { InputField } from '#V2/Components/Forms/index.js';
-import { useAtom } from 'jotai';
-import { relationshipTypesAtom } from '#V2/atoms/index.js';
-import { useServices } from '#V2/services/index.js';
+import { useRelationshipTypeMutations } from '#V2/services/useRelationshipTypeMutations.js';
 import { useRequestStatus } from '#V2/atoms/requestStatusAtom.js';
 
 interface AddRelationshipTypeModalProps {
@@ -15,8 +13,7 @@ export const AddRelationshipTypeModal = ({ onClose }: AddRelationshipTypeModalPr
   const [name, setName] = useState('');
   const [isSaving, setIsSaving] = useState(false);
   const { notify } = useRequestStatus();
-  const { relationshipTypes: relationshipTypesService } = useServices();
-  const [relationshipTypes, setRelationshipTypes] = useAtom(relationshipTypesAtom);
+  const { create } = useRelationshipTypeMutations();
   const [nameError, setNameError] = useState(false);
 
   const handleClose = () => {
@@ -24,43 +21,22 @@ export const AddRelationshipTypeModal = ({ onClose }: AddRelationshipTypeModalPr
     onClose();
   };
 
-  const save = async () => {
-    const [newRelationshipType, error] = await relationshipTypesService.upsert({
-      name: name.trim(),
-    });
-
-    if (error) {
-      notify(
-        'error',
-        t('System', 'An error occurred', null, false),
-        undefined,
-        error.detail ?? error.message
-      );
-      return;
-    }
-
-    if (newRelationshipType) {
-      setRelationshipTypes([...relationshipTypes, newRelationshipType]);
-    }
-    notify('success', t('System', 'Relationship type created successfully.', null, false));
-  };
-
   const handleSave = async () => {
-    const isDuplicateName = relationshipTypes.some(
-      relationshipType => relationshipType.name.toLowerCase() === name.trim().toLowerCase()
-    );
-
-    if (isDuplicateName) {
-      setNameError(true);
-      return;
-    }
-
     setIsSaving(true);
     try {
-      await save();
+      const result = await create(name);
+      if (result.status === 'duplicate') {
+        setNameError(true);
+        return;
+      }
+      if (result.status === 'error') {
+        notify('error', t('System', 'An error occurred', null, false), undefined, result.message);
+        return;
+      }
+      notify('success', t('System', 'Relationship type created successfully.', null, false));
+      handleClose();
     } finally {
       setIsSaving(false);
-      handleClose();
     }
   };
 

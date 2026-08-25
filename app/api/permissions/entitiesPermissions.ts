@@ -1,8 +1,8 @@
 import entities from '#api/entities/entities.js';
 
 import users from '#api/users/users.js';
-import userGroups from '#api/usergroups/userGroups.js';
 import { UsersDirectoryFactory } from '#api/core/infrastructure/factories/UsersDirectoryFactory.js';
+import { UserGroupsDirectoryFactory } from '#api/core/infrastructure/factories/UserGroupsDirectoryFactory.js';
 import { usersDirectoryEnabled } from '#api/core/infrastructure/factories/usersBackendFlags.js';
 import { unique } from '#api/utils/filters.js';
 import { EntityDBO } from '#api/core/infrastructure/mongodb/entity/EntityDBO.js';
@@ -33,7 +33,7 @@ async function setAccessLevelAndPermissionData(
     usersDirectoryEnabled()
       ? UsersDirectoryFactory.default().getManyByIds(grantedIds)
       : users.get({ _id: { $in: grantedIds } }),
-    userGroups.get({ _id: { $in: grantedIds } }),
+    UserGroupsDirectoryFactory.default().getManyByIds(grantedIds),
   ]);
 
   const permissionsData = Object.keys(grantedPermissions).map(id => {

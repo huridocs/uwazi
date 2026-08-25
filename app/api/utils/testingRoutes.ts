@@ -26,8 +26,9 @@ enum TestEmitSources {
 // connected to the DB, and some specs never connect at all (they don't need one).
 // authenticatedUserMiddlewares() needs a live connection to build its Mongo session store,
 // so defer building it to the first actual request, self-connecting with the bare DB.connect()
-// if nothing has connected yet. Deliberately not testingDB.connect(): that helper also mocks
-// the current tenant as a side effect, which would clobber tenant mocks specs set up themselves
+// if the worker is not connected (including a leftover handle after a previous spec
+// disconnected). Deliberately not testingDB.connect(): that helper also mocks the current
+// tenant as a side effect, which would clobber tenant mocks specs set up themselves
 // (e.g. testingEnvironment.setTenant() with a specific `domain`) for specs that never otherwise
 // need a real DB connection.
 const lazyAuthenticatedUserMiddlewares = () => {
@@ -37,7 +38,8 @@ const lazyAuthenticatedUserMiddlewares = () => {
   return (req: Request, res: Response, next: NextFunction) => {
     (async () => {
       if (!middlewares) {
-        if (!DB.getConnection()) {
+        const existingConnection = DB.getConnection();
+        if (!existingConnection || existingConnection.readyState !== 1) {
           connecting ??= DB.connect();
           await connecting;
         }

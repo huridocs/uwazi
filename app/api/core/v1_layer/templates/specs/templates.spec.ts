@@ -100,14 +100,12 @@ describe('templates', () => {
 
       const dbTranslations = await TranslationsDataSourceFactory.default({
         transactionManager: TransactionManagerFactory.default(),
-      })
-        .getContextAndKeys(response._id.toString(), [
-          'created template',
-          'Title',
-          'label 1',
-          'label 2',
-        ])
-        .all();
+      }).getContextAndKeys(response._id.toString(), [
+        'created template',
+        'Title',
+        'label 1',
+        'label 2',
+      ]);
 
       expect(dbTranslations.find(t => t.key === 'created template')).toBeTruthy();
       expect(dbTranslations.find(t => t.key === 'Title')).toBeTruthy();

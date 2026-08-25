@@ -166,9 +166,7 @@ describe('templates', () => {
 
       const dbTranslations = await TranslationsDataSourceFactory.default({
         transactionManager: TransactionManagerFactory.default(),
-      })
-        .getContextAndKeys(testTemplate._id.toString(), ['changed name', 'new template'])
-        .all();
+      }).getContextAndKeys(testTemplate._id.toString(), ['changed name', 'new template']);
 
       expect(dbTranslations.find(t => t.key === 'new template')).toBeFalsy();
       expect(dbTranslations.find(t => t.key === 'changed name')).toBeTruthy();
@@ -184,9 +182,7 @@ describe('templates', () => {
 
       const dbTranslations = await TranslationsDataSourceFactory.default({
         transactionManager: TransactionManagerFactory.default(),
-      })
-        .getContextAndKeys(testTemplate._id.toString(), ['First New Title', 'Second New Title'])
-        .all();
+      }).getContextAndKeys(testTemplate._id.toString(), ['First New Title', 'Second New Title']);
 
       expect(dbTranslations.find(t => t.key === 'First New Title')).toBeFalsy();
       expect(dbTranslations.find(t => t.key === 'Second New Title')).toBeTruthy();
@@ -203,9 +199,7 @@ describe('templates', () => {
       );
       let dbTranslations = await TranslationsDataSourceFactory.default({
         transactionManager: TransactionManagerFactory.default(),
-      })
-        .getAll()
-        .all();
+      }).getAll();
       expect(dbTranslations.find(t => t.key === 'created template')).toBeTruthy();
       expect(dbTranslations.find(t => t.key === 'Title')).toBeTruthy();
       expect(dbTranslations.find(t => t.key === 'label 1')).toBeTruthy();
@@ -220,9 +214,7 @@ describe('templates', () => {
 
       dbTranslations = await TranslationsDataSourceFactory.default({
         transactionManager: TransactionManagerFactory.default(),
-      })
-        .getAll()
-        .all();
+      }).getAll();
 
       expect(dbTranslations.find(t => t.key === 'created template')).toBeFalsy();
       expect(dbTranslations.find(t => t.key === 'new template title')).toBeTruthy();
@@ -245,9 +237,7 @@ describe('templates', () => {
       );
       let dbTranslations = await TranslationsDataSourceFactory.default({
         transactionManager: TransactionManagerFactory.default(),
-      })
-        .getAll()
-        .all();
+      }).getAll();
 
       expect(dbTranslations.filter(t => t.key === 'Country' && t.language === 'en').length).toBe(1);
 
@@ -256,9 +246,7 @@ describe('templates', () => {
 
       dbTranslations = await TranslationsDataSourceFactory.default({
         transactionManager: TransactionManagerFactory.default(),
-      })
-        .getAll()
-        .all();
+      }).getAll();
 
       expect(dbTranslations.filter(t => t.key === 'Country' && t.language === 'en').length).toBe(1);
       expect(
@@ -270,9 +258,7 @@ describe('templates', () => {
 
       dbTranslations = await TranslationsDataSourceFactory.default({
         transactionManager: TransactionManagerFactory.default(),
-      })
-        .getAll()
-        .all();
+      }).getAll();
 
       expect(dbTranslations.filter(t => t.key === 'Country' && t.language === 'en').length).toBe(1);
       expect(
@@ -284,9 +270,7 @@ describe('templates', () => {
 
       dbTranslations = await TranslationsDataSourceFactory.default({
         transactionManager: TransactionManagerFactory.default(),
-      })
-        .getAll()
-        .all();
+      }).getAll();
 
       expect(dbTranslations.filter(t => t.key === 'Country' && t.language === 'en').length).toBe(1);
       expect(
