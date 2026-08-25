@@ -18,9 +18,7 @@ import { ResultsMessage, TaskManager } from '#api/services/tasksmanager/TaskMana
 import settings from '#api/settings/settings.js';
 import { emitToSession } from '#api/socketio/setupSockets.js';
 import { tenants } from '#api/tenants/tenantContext.js';
-import users from '#api/users/users.js';
 import { UsersDirectoryFactory } from '#api/core/infrastructure/factories/UsersDirectoryFactory.js';
-import { usersDirectoryEnabled } from '#api/core/infrastructure/factories/usersBackendFlags.js';
 import createError from '#api/utils/Error.js';
 import { handleError } from '#api/utils/handleError.js';
 import request from '#shared/JSONRequest.js';
@@ -95,9 +93,7 @@ const setUserContextForFile = async (file: FileType): Promise<void> => {
 
   // getProfile: the result goes straight into permissionsContext, which reads `groups` to
   // build the permission refIds this OCR run is authorised by.
-  const user = usersDirectoryEnabled()
-    ? (await UsersDirectoryFactory.default().getProfile(entity.user.toString())).getData()
-    : await users.getById(entity.user.toString(), '-password', true);
+  const user = (await UsersDirectoryFactory.default().getProfile(entity.user.toString())).getData();
 
   if (!user) {
     throw new Error(`OCR cannot process file ${file.filename}: user ${entity.user} not found`);
