@@ -19,6 +19,11 @@ const Basic: Story = {
           <MagnifyingGlassIcon className="h-7 w-7 text-gray-900 rounded-full bg-gray-300 p-1" />
         }
         title={<Translate>No text match</Translate>}
+        description={
+          <Translate translationKey="No text match description">
+            No text match description
+          </Translate>
+        }
       />
     </div>
   ),
