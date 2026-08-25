@@ -15,30 +15,25 @@ export type RawBucket = {
   count: number;
 };
 
-export type AggregateSourceParams = {
+/** Everything the engine needs to know about the query source being executed. */
+export type SourceQueryContext = {
   query: DatavizQuery;
   externalFilters?: DatavizFilter[];
   source: DatavizQuery['sources'][number];
   sourceIndex: number;
   sourceTemplateId: string;
   language: string;
-  primaryDim: DimensionSpec;
-  secondaryDim?: DimensionSpec;
-  maxBuckets: number;
   includeUnpublished: boolean;
   timeoutMs: number;
 };
 
-export type CountSourceEntitiesParams = {
-  query: DatavizQuery;
-  externalFilters?: DatavizFilter[];
-  source: DatavizQuery['sources'][number];
-  sourceIndex: number;
-  sourceTemplateId: string;
-  language: string;
-  includeUnpublished: boolean;
-  timeoutMs: number;
+export type AggregateSourceParams = SourceQueryContext & {
+  primaryDim: DimensionSpec;
+  secondaryDim?: DimensionSpec;
+  maxBuckets: number;
 };
+
+export type CountSourceEntitiesParams = SourceQueryContext;
 
 /**
  * The aggregation engine a backend must provide. `aggregateSource` computes

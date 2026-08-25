@@ -2,6 +2,7 @@ import { DatavizQueryContext } from '#api/dataviz.v2/application/contracts/Datav
 import {
   DatavizAggregationStrategy,
   RawBucket,
+  SourceQueryContext,
 } from '#api/dataviz.v2/application/contracts/DatavizAggregationStrategy.js';
 import { validateQueryStructure } from '#api/dataviz.v2/domain/validators/validateExecutableDatavizQuery.js';
 import { DatavizDataDTO, DatavizQuery } from '#shared/types/datavizSchema.js';
@@ -59,19 +60,21 @@ export class DatavizQueryOrchestrator {
     const sourceIds: string[] = [];
 
     for (const [sourceIndex, source] of query.sources.entries()) {
-      // eslint-disable-next-line no-await-in-loop
-      const buckets = await this.engine.aggregateSource({
+      const sourceContext = this.buildSourceContext(
         query,
-        externalFilters: context.externalFilters,
+        context,
         source,
         sourceIndex,
-        sourceTemplateId: source.templateId,
-        language: defaultLanguage,
+        defaultLanguage,
+        timeoutMs,
+        includeUnpublished
+      );
+      // eslint-disable-next-line no-await-in-loop
+      const buckets = await this.engine.aggregateSource({
+        ...sourceContext,
         primaryDim,
         secondaryDim,
         maxBuckets,
-        includeUnpublished,
-        timeoutMs,
       });
       bucketSets.push(buckets);
       sourceIds.push(source.alias ?? source.templateId);
@@ -152,16 +155,9 @@ export class DatavizQueryOrchestrator {
 
     for (const [sourceIndex, source] of query.sources.entries()) {
       // eslint-disable-next-line no-await-in-loop
-      const count = await this.engine.countSourceEntities({
-        query,
-        externalFilters: context.externalFilters,
-        source,
-        sourceIndex,
-        sourceTemplateId: source.templateId,
-        language,
-        includeUnpublished,
-        timeoutMs,
-      });
+      const count = await this.engine.countSourceEntities(
+        this.buildSourceContext(query, context, source, sourceIndex, language, timeoutMs, includeUnpublished)
+      );
       counts.push(count);
     }
 
@@ -193,6 +189,27 @@ export class DatavizQueryOrchestrator {
       datavizId: context.datavizId ?? '',
       queryDurationMs: Date.now() - start,
     });
+  }
+
+  private buildSourceContext(
+    query: DatavizQuery,
+    context: DatavizQueryContext,
+    source: DatavizQuery['sources'][number],
+    sourceIndex: number,
+    language: string,
+    timeoutMs: number,
+    includeUnpublished: boolean
+  ): SourceQueryContext {
+    return {
+      query,
+      externalFilters: context.externalFilters,
+      source,
+      sourceIndex,
+      sourceTemplateId: source.templateId,
+      language,
+      includeUnpublished,
+      timeoutMs,
+    };
   }
 
   private async resolveEntityTitles(query: DatavizQuery, bucketKeys: Iterable<string>) {
