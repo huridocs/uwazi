@@ -15,7 +15,8 @@ import { Tenant } from '#api/tenants/tenantContext.js';
 import { UserSchema } from '#shared/types/userType.js';
 import { tenants } from '#api/tenants/index.js';
 import { testingTenants } from '#api/utils/testingTenants.js';
-import users from '#api/users/users.js';
+import { UsersDirectoryFactory } from '#api/core/infrastructure/factories/UsersDirectoryFactory.js';
+import { Result } from '#api/core/libs/Result.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 
 const TENANT = 'test-namespace';
@@ -88,7 +89,9 @@ class TestUserJob extends UwaziJobHandler<{ userId: string; someParam: string }>
 describe('Setup Queue Worker', () => {
   beforeEach(() => {
     tenants.add(testingTenants.createTenant({ name: TENANT }));
-    jest.spyOn(users, 'getById').mockResolvedValue(actor as any);
+    jest.spyOn(UsersDirectoryFactory, 'default').mockReturnValue({
+      getActor: async () => Result.ok(actor as any),
+    } as any);
   });
 
   afterEach(() => {

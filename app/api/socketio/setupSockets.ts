@@ -12,9 +12,7 @@ import { DB } from '#api/odm/index.js';
 import { handleError } from '#api/utils/index.js';
 import { tenants } from '#api/tenants/index.js';
 import { config } from '#api/config.js';
-import users from '#api/users/users.js';
 import { UsersDirectoryFactory } from '#api/core/infrastructure/factories/UsersDirectoryFactory.js';
-import { usersDirectoryEnabled } from '#api/core/infrastructure/factories/usersBackendFlags.js';
 
 declare global {
   namespace Express {
@@ -145,11 +143,7 @@ const attachRoleRoomsIfApplicable = (
 
     tenants
       .run(async () => {
-        // The legacy call passed an empty select, which pulls the whole document —
-        // `password` included — to read one field. getById returns identity only.
-        const user = usersDirectoryEnabled()
-          ? (await UsersDirectoryFactory.default().getById(userId)).getData()
-          : await users.getById(userId, '', false);
+        const user = (await UsersDirectoryFactory.default().getById(userId)).getData();
 
         if (!user) {
           return;
