@@ -128,22 +128,15 @@ export class PostgresEntitiesDataSource
     return Boolean(row);
   }
 
-  async update(entity: Entity): Promise<void> {
-    const rows = PostgresEntityMapper.toDBO(entity);
-
-    await ArrayUtils.sequentialFor(rows, async row => {
-      await this.table.where({ _id: row._id }).update(this.toUpdateRow(row));
-    });
-
-    this.modifiedSharedIds.add(entity.sharedId);
+  async update(entities: Entity | Entity[]): Promise<void> {
+    return this.bulkUpdate(ArrayUtils.asArray(entities));
   }
 
-  async bulkUpdate(entities: Entity[]): Promise<void> {
+  private async bulkUpdate(entities: Entity[]): Promise<void> {
     const allRows = entities.flatMap(entity => PostgresEntityMapper.toDBO(entity));
+    if (allRows.length === 0) return;
 
-    await ArrayUtils.sequentialFor(allRows, async row => {
-      await this.table.where({ _id: row._id }).update(this.toUpdateRow(row));
-    });
+    await this.table.bulkUpdate(allRows.map(row => this.toUpdateRow(row)));
 
     entities.forEach(entity => this.modifiedSharedIds.add(entity.sharedId));
   }

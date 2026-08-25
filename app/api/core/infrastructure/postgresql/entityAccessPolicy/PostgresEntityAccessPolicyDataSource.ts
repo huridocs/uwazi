@@ -116,27 +116,29 @@ class PostgresEntityAccessPolicyDataSource
   }
 
   private async persist(policy: EntityAccessPolicy, shouldIndex = true): Promise<void> {
-    const { permissions, published } = EntityAccessPolicyMapper.toDBO(policy);
-
-    await this.permissionTable
-      .where({ sharedId: policy.sharedId })
-      .update({ permissions, published });
-
-    if (shouldIndex) {
-      this.updatedSharedIds.add(policy.sharedId);
-    }
+    await this.bulkPersist([policy], shouldIndex);
   }
 
   private async bulkPersist(policies: EntityAccessPolicy[], shouldIndex = true): Promise<void> {
     if (policies.length === 0) return;
 
-    for (const policy of policies) {
+    // Updates every language row of each sharedId in a single statement. This
+    // is intentionally sharedId-keyed (not the `_id`-keyed bulkUpdate), because
+    // one policy maps to several entity rows.
+    const rows = policies.map(policy => {
       const { permissions, published } = EntityAccessPolicyMapper.toDBO(policy);
-      // eslint-disable-next-line no-await-in-loop
-      await this.permissionTable
-        .where({ sharedId: policy.sharedId })
-        .update({ permissions, published });
-    }
+      return [policy.sharedId, JSON.stringify(permissions), published];
+    });
+
+    const placeholders = rows.map(() => '(?, ?, ?)').join(', ');
+    const bindings = rows.flat();
+
+    await this.permissionTable.raw(
+      `UPDATE ?? AS t SET permissions = v.permissions::jsonb, published = v.published::boolean
+       FROM (VALUES ${placeholders}) AS v("sharedId", permissions, published)
+       WHERE t."sharedId" = v."sharedId"`,
+      [this.permissionTable.tableName, ...bindings]
+    );
 
     if (shouldIndex) {
       policies.forEach(policy => this.updatedSharedIds.add(policy.sharedId));

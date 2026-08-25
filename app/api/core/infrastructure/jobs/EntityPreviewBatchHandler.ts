@@ -49,7 +49,7 @@ export class EntityPreviewBatchHandler extends UwaziJobHandler<Params> {
       entities.forEach(entity => {
         entity.setPreview(thumbnailsByEntity.get(entity.sharedId) ?? [], defaultLanguage);
       });
-      await this.deps.entitiesDS.bulkUpdate(entities);
+      await this.deps.entitiesDS.update(entities);
     });
   }
 }

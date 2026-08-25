@@ -473,7 +473,7 @@ describe('EntitiesDataSource', () => {
         ]);
 
         await transactionManager.run(async () => {
-          await sut.bulkUpdate([entity]);
+          await sut.update([entity]);
         });
 
         const stored = await getAllEntities();
@@ -509,7 +509,7 @@ describe('EntitiesDataSource', () => {
         const entity = createEntityWithIds('preview-entity', ['en'], template);
 
         await transactionManager.run(async () => {
-          await sut.bulkUpdate([entity]);
+          await sut.update([entity]);
         });
 
         const [stored] = await getAllEntities();

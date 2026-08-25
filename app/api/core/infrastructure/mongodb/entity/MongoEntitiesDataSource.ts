@@ -18,6 +18,7 @@ import { Entity } from '../../../domain/entity/Entity.js';
 import { EntitiesDataSource } from '../../../application/contracts/EntitiesDataSource.js';
 import { EntityDBO, EntityTemplateAggregation } from './EntityDBO.js';
 import { TemplatesDAOFactory } from '../../factories/TemplatesDAOFactory.js';
+import { ArrayUtils } from '#api/common.v2/utils/Array.js';
 
 // Temporary union type during Mongo -> Postgres migration
 type TemplatesDAO = Awaited<ReturnType<typeof TemplatesDAOFactory.default>>;
@@ -88,26 +89,11 @@ export class MongoEntitiesDataSource
     return Boolean(entity);
   }
 
-  async update(entity: Entity): Promise<void> {
-    const dbos = MongoEntityMapper.toDBO(entity);
-
-    await this.getCollection().bulkWrite(
-      dbos.map(dbo => ({
-        updateOne: {
-          filter: { _id: dbo._id },
-          update: {
-            $set: dbo,
-            ...(dbo.preview === undefined ? { $unset: { preview: '' } } : {}),
-          },
-        },
-      })),
-      { ignoreUndefined: true }
-    );
-
-    this.modifiedSharedIds.add(entity.sharedId);
+  async update(entities: Entity | Entity[]): Promise<void> {
+    return this.bulkUpdate(ArrayUtils.asArray(entities));
   }
 
-  async bulkUpdate(entities: Entity[]): Promise<void> {
+  private async bulkUpdate(entities: Entity[]): Promise<void> {
     const allDbos = entities.flatMap(entity => MongoEntityMapper.toDBO(entity));
 
     const updates = allDbos.map(dbo => {
