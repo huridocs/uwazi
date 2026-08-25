@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 /* eslint-disable no-continue */
 /* eslint-disable class-methods-use-this */
 /* eslint-disable max-statements */
@@ -18,6 +19,74 @@ import type {
 import type { LanguageISO6393 } from '#shared/language/languageISO639_3.js';
 
 type Deps = PostgresDataSourceDeps;
+
+const PG_ARRAY_CAST: Record<string, string> = {
+  string: 'text',
+  number: 'numeric',
+  boolean: 'boolean',
+};
+
+/**
+ * Picks the Postgres array element type for an `$in` / `$nin` operand, or `null` when the caller
+ * must fall back to `whereIn` / `whereNotIn`.
+ *
+ * The cast has to follow the values because `getByQuery` applies these operators to *any* column:
+ * a blanket `::text[]` would break on `totalPages`, `size` or `creationDate`.
+ *
+ * `numeric` is deliberate over `integer` — it compares correctly against `INTEGER` and `BIGINT`
+ * columns through an implicit cast, and it will not truncate a float.
+ *
+ * Returns `null` for an empty array, for mixed types, and for anything outside the allowlist
+ * (`null`, `undefined`, objects, symbols, bigints, functions). `typeof` returns a closed set of
+ * strings, none of which collide with `Object.prototype` keys, so the plain-object lookup is safe.
+ */
+function arrayCastFor(values: unknown[]): string | null {
+  if (!values.length) {
+    return null;
+  }
+
+  const cast = PG_ARRAY_CAST[typeof values[0]];
+
+  if (!cast) {
+    return null;
+  }
+
+  return values.every(value => typeof value === typeof values[0]) ? cast : null;
+}
+
+/**
+ * Applies an `$in` / `$nin` operand as a **single** bind parameter: `= ANY(array)` sends one
+ * parameter regardless of length, where `whereIn` / `whereNotIn` send one per element. The
+ * Postgres wire protocol counts parameters in an Int16, so a ~65k-element exclusion list
+ * overflows it and the connection dies with `bind message has N parameter formats`.
+ *
+ * The cast is interpolated into the SQL string rather than bound — `?::?` is not valid SQL. It
+ * comes from the fixed `PG_ARRAY_CAST` allowlist in `arrayCastFor`, never from caller input.
+ *
+ * `null` / `undefined` are stripped before binding: `NOT (x = ANY(arr))` evaluates to NULL when
+ * `arr` contains a NULL, which silently drops every row.
+ *
+ * When no cast applies the original, unstripped array goes to `whereIn` / `whereNotIn`, so those
+ * cases behave exactly as they did before — including `$in: []` matching nothing and `$nin: []`
+ * matching everything.
+ */
+function applyArrayOperator(
+  qb: PostgresTable<FilesRow>,
+  key: string,
+  values: Knex.Value[],
+  negated: boolean
+): PostgresTable<FilesRow> {
+  const bindable = values.filter(value => value !== null && value !== undefined);
+  const cast = arrayCastFor(bindable);
+
+  if (!cast) {
+    return negated ? qb.whereNotIn(key, values) : qb.whereIn(key, values);
+  }
+
+  const condition = negated ? `NOT (?? = ANY(?::${cast}[]))` : `?? = ANY(?::${cast}[])`;
+
+  return qb.whereRaw(condition, [key, bindable] as unknown as Knex.RawBinding[]);
+}
 
 class PostgresFilesDAO extends PostgresDataSource<FilesRow> {
   constructor(deps: Deps) {
@@ -129,11 +198,11 @@ class PostgresFilesDAO extends PostgresDataSource<FilesRow> {
           continue;
         }
         if ('$in' in obj) {
-          qb = qb.whereIn(key, obj.$in as Knex.Value[]);
+          qb = applyArrayOperator(qb, key, obj.$in as Knex.Value[], false);
           continue;
         }
         if ('$nin' in obj) {
-          qb = qb.whereNotIn(key, obj.$nin as Knex.Value[]);
+          qb = applyArrayOperator(qb, key, obj.$nin as Knex.Value[], true);
           continue;
         }
       }
@@ -228,4 +297,4 @@ class PostgresFilesDAO extends PostgresDataSource<FilesRow> {
   }
 }
 
-export { PostgresFilesDAO };
+export { PostgresFilesDAO, arrayCastFor };
