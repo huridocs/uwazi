@@ -26,6 +26,13 @@ describe('ServerRelationshipTypesService', () => {
     ]);
   });
 
+  it('countByTypes returns an empty map', async () => {
+    const [data, error] = await service.countByTypes(['rt1']);
+
+    expect(error).toBeUndefined();
+    expect(data).toEqual({});
+  });
+
   it('upsert returns not implemented', async () => {
     const [data, error] = await service.upsert({ name: 'Related to' });
 

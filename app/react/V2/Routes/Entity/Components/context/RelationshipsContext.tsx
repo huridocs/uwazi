@@ -4,11 +4,14 @@ import type { TextSelection } from './types.js';
 type RelationshipsState = {
   createReferenceSelection: TextSelection | undefined;
   createRelationshipModalOpen: boolean;
+  manageRelationTypesOpen: boolean;
 };
 
 type RelationshipsActions = {
   openCreateRelationship: (selection?: TextSelection) => void;
   closeCreateRelationship: () => void;
+  openManageRelationTypes: () => void;
+  closeManageRelationTypes: () => void;
 };
 
 const RelationshipsStateContext = createContext<RelationshipsState | null>(null);
@@ -17,6 +20,7 @@ const RelationshipsActionsContext = createContext<RelationshipsActions | null>(n
 const RelationshipsProvider = ({ children }: { children: React.ReactNode }) => {
   const [createReferenceSelection, setCreateReferenceSelection] = useState<TextSelection>();
   const [createRelationshipModalOpen, setCreateRelationshipModalOpen] = useState(false);
+  const [manageRelationTypesOpen, setManageRelationTypesOpen] = useState(false);
 
   const openCreateRelationship = useCallback((selection?: TextSelection) => {
     setCreateReferenceSelection(selection);
@@ -28,14 +32,32 @@ const RelationshipsProvider = ({ children }: { children: React.ReactNode }) => {
     setCreateReferenceSelection(undefined);
   }, []);
 
+  const openManageRelationTypes = useCallback(() => {
+    setManageRelationTypesOpen(true);
+  }, []);
+
+  const closeManageRelationTypes = useCallback(() => {
+    setManageRelationTypesOpen(false);
+  }, []);
+
   const state = useMemo(
-    () => ({ createReferenceSelection, createRelationshipModalOpen }),
-    [createReferenceSelection, createRelationshipModalOpen]
+    () => ({ createReferenceSelection, createRelationshipModalOpen, manageRelationTypesOpen }),
+    [createReferenceSelection, createRelationshipModalOpen, manageRelationTypesOpen]
   );
 
   const actions = useMemo(
-    () => ({ openCreateRelationship, closeCreateRelationship }),
-    [openCreateRelationship, closeCreateRelationship]
+    () => ({
+      openCreateRelationship,
+      closeCreateRelationship,
+      openManageRelationTypes,
+      closeManageRelationTypes,
+    }),
+    [
+      openCreateRelationship,
+      closeCreateRelationship,
+      openManageRelationTypes,
+      closeManageRelationTypes,
+    ]
   );
 
   return (

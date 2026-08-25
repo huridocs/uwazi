@@ -8,6 +8,7 @@ jest.mock('#V2/api/relationshiptypes', () => ({
   getAll: jest.fn(),
   upsert: jest.fn(),
   remove: jest.fn(),
+  countByRelationTypes: jest.fn(),
 }));
 
 describe('HttpRelationshipTypesService', () => {
@@ -24,6 +25,17 @@ describe('HttpRelationshipTypesService', () => {
     expect(relationshipTypesApi.getAll).toHaveBeenCalledWith(undefined);
     expect(error).toBeUndefined();
     expect(data).toEqual(rows);
+  });
+
+  it('countByTypes delegates to the relationship types API', async () => {
+    const { signal } = new AbortController();
+    jest.mocked(relationshipTypesApi.countByRelationTypes).mockResolvedValue({ rt1: 3 });
+
+    const [data, error] = await httpRelationshipTypesService.countByTypes(['rt1'], { signal });
+
+    expect(relationshipTypesApi.countByRelationTypes).toHaveBeenCalledWith(['rt1'], signal);
+    expect(error).toBeUndefined();
+    expect(data).toEqual({ rt1: 3 });
   });
 
   it('upsert delegates to the relationship types API', async () => {

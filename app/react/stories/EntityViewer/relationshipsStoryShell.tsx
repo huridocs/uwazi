@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo } from 'react';
 import { createMemoryRouter, RouterProvider } from 'react-router';
+import type { ClientUserSchema } from '#app/apiResponseTypes.js';
 import type { Entity } from '#V2/api/entities/types.js';
 import { PaneLayout } from '#V2/Components/Layouts/PaneLayout.js';
 import {
@@ -21,6 +22,8 @@ type RelationshipsStoryShellProps = {
   entity?: Entity;
   storyTemplates?: ClientTemplateSchema[];
   preloadEntities?: Entity[];
+  relationshipTypes?: { _id: string; name: string }[];
+  user?: ClientUserSchema;
   children?: React.ReactNode;
 };
 
@@ -52,6 +55,8 @@ const RelationshipsStoryShell = ({
   entity = apiEntity,
   storyTemplates,
   preloadEntities,
+  relationshipTypes,
+  user,
   children,
 }: RelationshipsStoryShellProps) => {
   const storyEntity = useMemo(() => structuredClone(entity), [entity]);
@@ -72,6 +77,8 @@ const RelationshipsStoryShell = ({
               entity={storyEntity}
               storyTemplates={storyTemplates}
               preloadEntities={preloadEntities}
+              relationshipTypes={relationshipTypes}
+              user={user}
             >
               <ResetFiltersDrawer />
               <div className={shellClass}>
@@ -128,9 +135,11 @@ const RelationshipsStoryShell = ({
       locale,
       mainDocument,
       preloadEntities,
+      relationshipTypes,
       shellClass,
       storyEntity,
       storyTemplates,
+      user,
     ]
   );
 

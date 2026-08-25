@@ -22,6 +22,8 @@ const createServerRelationshipTypesService = (
     }
   },
 
+  countByTypes: async () => [{}],
+
   upsert: async () => notImplemented<RelationshipType>(),
 
   delete: async () => notImplemented<void>(),
