@@ -24,20 +24,20 @@ The rest of the original plan (skip missing files, login/redirects) is **deferre
 | Code: skip `FileNotFound` and advance `lastSyncs` | Deferred — only if that type keeps tripping disable |
 | Code: POST login must not follow 301 as GET | Deferred — only if that type keeps tripping disable |
 | Code: errors include tenant, config name, URL | **Done as part of slice 1** (`reportSyncFailure`; disable notify is slice 2) |
-| Ops: restore or skip a missing object on tenant A | Not done — after deploy, re-enable **or** leave paused; if re-enabled still broken, slice 2 disables after 5 failures |
-| Ops: reverse-proxy HTTP Basic on tenant B’s target | Not done — keep `featureFlags.sync: false` on that tenant |
+| Ops: restore or skip a missing object on tenant A | Underlying dest still broken. **Production check:** re-enable `config_public` after deploy; expect auto-disable + one Mattermost |
+| Ops: reverse-proxy HTTP Basic on tenant B’s target | Underlying dest still broken. **Production check:** set `featureFlags.sync: true` after deploy; expect that config to auto-disable + one Mattermost |
 
-Do **not** re-enable paused syncs until the matching ops (and any agreed code) item above is done.
+**Production verification (next):** deploy slices 1–2, then re-enable the two paused syncs **on purpose while still broken**. Expect five Graylog `Sync failed:` lines each (no `notify`), then one Mattermost `Sync disabled after 5 consecutive failures…` (`notify: true`). Later tenants must keep moving. After they disable themselves, leave them off until the object-store key / proxy Basic is actually fixed.
 
 ## Production actions already taken (do not repeat blindly)
 
-Generic shape of the mitigation. Re-enable **one at a time** after the real target fix. After slice 2, a still-broken target errors for five ticks then disables itself (`active: false`) with one Mattermost notify.
+Generic shape of the mitigation. After slice 2, a still-broken target errors for five ticks then disables itself (`active: false`) with one Mattermost notify.
 
-| Kind of tenant | Change | Revert after the target is actually fixed |
+| Kind of tenant | Change already applied | Re-enable for the production check |
 |---|---|---|
-| **Tenant B** (whole tenant blocked at login by proxy Basic) | `featureFlags.sync: false` on that tenant | Set `featureFlags.sync: true` |
+| **Tenant B** (login blocked by proxy Basic) | `featureFlags.sync: false` on that tenant | Set `featureFlags.sync: true` (reload/restart the worker if flags are cached) |
 | **Tenant A**, one of several configs | `active: false` on that array element only | `active: true` on that element only |
-| **Tenant C** (stale hostname that 301s) | `settings.sync.url` set to the final custom domain, `active: true` | **done** — leave on |
+| **Tenant C** (stale hostname that 301s) | url set to the final custom domain, `active: true` | **done** — leave on |
 
 A second config on tenant A that was idle (`pending=0`) was left active.
 
@@ -49,7 +49,7 @@ The multi-tenant `sync_job` walked every `featureFlags.sync: true` tenant **in s
 
 This blocked a later tenant that had never received a `syncs` document yet, and stalled another tenant with a large pending queue. The pipeline started flowing again after pausing two broken targets and fixing a third URL.
 
-**Still paused (need a real fix before re-enable):**
+**Still paused (destinations still broken; re-enable after deploy to verify auto-disable):**
 
 1. **Tenant A** → config `config_public` → `https://public.tenant-a.example`
 2. **Tenant B** → config `config_site` → `https://public.tenant-b.example`
@@ -66,7 +66,7 @@ This blocked a later tenant that had never received a `syncs` document yet, and 
 - Batch size: 50 updatelogs per config per tick (`UPDATE_LOG_TARGET_COUNT`).
 - Idle configs (`pending=0`) do **not** log in.
 
-`DistributedLoop.runTask()` already catches a throw from the **whole** `runAllTenants()` call, logs it (`handleError(..., { useContext: false })`), waits 10s, and ticks again. Before slice 1 that was a **same-tick cancellation** problem: the next tick started from the same broken tenant and failed the same way. Slice 1 isolates inside `runAllTenants`, so the remaining tenants/configs of that tick still run. Until slice 2, a broken config still retries every tick; after slice 2 it disables itself after five consecutive failures.
+`DistributedLoop.runTask()` already catches a throw from the **whole** `runAllTenants()` call, logs it (`handleError(..., { useContext: false })`), waits 10s, and ticks again. Before slice 1 that was a **same-tick cancellation** problem: the next tick started from the same broken tenant and failed the same way. Slice 1 isolates inside `runAllTenants`, so the remaining tenants/configs of that tick still run. Slice 2: a broken config retries until five consecutive failures, then sets that config `active: false` and logs once with `notify: true`.
 
 `JSONRequest.post` uses `fetch` with default redirect following. A **301 on POST** is retried as **GET**, which is how a custom-domain redirect turned login into `404 Not Found`.
 
@@ -197,31 +197,23 @@ Not in the first follow-up. Revisit only if slice 2 shows a repeating type worth
 
 ---
 
-## What still needs to happen to re-enable the two paused syncs
+## Production check after deploy (planned)
 
-These are **not** replaced by slices 1–2. Isolation keeps other tenants moving; auto-disable pages once. The destination still has to work before it will drain.
+Re-enable the two paused syncs **while the destinations are still broken**, to confirm auto-disable and Mattermost.
+
+1. Deploy slices 1–2 to the jobs workers.
+2. **Tenant A:** set `config_public` `active: true` only. Expect `FileNotFound` five times in Graylog (`Sync failed:`, no `notify`), then one Mattermost (`Sync disabled after 5 consecutive failures…`, `notify: true`). Sibling configs on that master keep running. `consecutiveFailures === 5`, `active: false` again.
+3. **Tenant B:** set `featureFlags.sync: true` (reload/restart if flags are cached). Expect five failed logins in Graylog, then one Mattermost disable of `config_site`. The tenant flag stays true; only that config is switched off.
+4. Confirm later tenants’ `lastSyncs` still move during those five ticks.
+5. Leave both configs off until the object-store object / proxy Basic is actually fixed. Five is **attempts**, not wall-clock seconds.
 
 ### A. Tenant A → `config_public` → `https://public.tenant-a.example`
 
-**Ops / data**
-
-- Restore the missing object-store object, **or** skip that files updatelog (advance that config’s `lastSyncs.files` past that change). Slice 2 does **not** skip the file; it will disable this config after five throws.
-- Filename may be a document title (punctuation, spaces, non-ASCII), not a hashed storage name — check whether Mongo `files.filename` matches a real storage key.
-- Destination login is fine; do not rotate credentials for this.
-
-**Then** set `active: true` on `config_public` only and watch:
-
-- Worker logs for that tenant / `FileNotFound` / object-store 404
-- That config’s pending count draining
+**Still needed for a lasting fix (after the Mattermost check):** restore the missing object-store object, **or** skip that files updatelog. Filename may be a document title (punctuation, spaces, non-ASCII), not a hashed storage name. Destination login is fine; do not rotate credentials.
 
 ### B. Tenant B → `config_site` → `https://public.tenant-b.example`
 
-**Ops / infra**
-
-- Remove reverse-proxy HTTP Basic from the public site, **or** exclude `/api/login` and `/api/sync` (and upload routes) from Basic, **or** put the sync target on a URL the worker can reach without Basic.
-- Confirm: `POST /api/login` with the sync user returns `200 {"success":true}` **without** an `Authorization: Basic` header (from a host like the jobs box, not only a browser).
-
-**Then** set `featureFlags.sync: true` on tenant B (worker may need a tenant reload / process restart if flags are cached). Watch pending drain and that later tenants keep moving.
+**Still needed for a lasting fix (after the Mattermost check):** remove reverse-proxy HTTP Basic, **or** exclude `/api/login` and `/api/sync` (and upload routes), **or** point sync at a URL the worker can reach without Basic. Confirm `POST /api/login` returns `200 {"success":true}` without `Authorization: Basic` from the jobs host.
 
 ---
 
@@ -234,7 +226,7 @@ Read-only pending check (updatelogs newer than `syncs.lastSyncs`): after the ten
 - [x] **Slice 1 (unit):** tenant A throws, tenant B still ticks; one config throws, later configs on the same tenant still run (`syncWorker.spec.ts`).
 - [ ] **Slice 1 (staging):** force a missing file or 401 login on a staging tenant with `sync: true` **ahead of** another tenant; the second tenant must still tick.
 - [x] **Slice 2 (unit):** five consecutive throws disable that config, Mattermost once, sibling configs / later tenants still run; a success in between resets the counter.
-- [ ] **Ops:** after deploy, re-enable paused targets **one at a time**. If still broken, expect five Graylog errors then one Mattermost disable.
+- [ ] **Ops (production check):** deploy slices 1–2; re-enable tenant A `config_public` and tenant B `featureFlags.sync`; expect five Graylog errors then one Mattermost disable each; later tenants keep moving.
 
 ## Open questions
 
@@ -243,4 +235,5 @@ None blocking. Optional later: skip-one-missing-file vs freeze-the-destination; 
 ## Suggested next steps
 
 1. Deploy slices 1–2.
-2. Re-enable paused configs one at a time, or leave them paused until the destination is fixed; if re-enabled still broken, they disable themselves after five failures with one notify.
+2. Re-enable the two paused syncs (still broken) and confirm auto-disable + Mattermost as in **Production check after deploy**.
+3. Leave them off until the object-store / proxy issues are actually fixed.
