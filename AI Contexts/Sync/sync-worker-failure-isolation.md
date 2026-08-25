@@ -10,7 +10,9 @@ This document is the handoff for a production sync outage (2026-08-18) and the c
 
 **Slice 1 (done):** if a tenant or one of its sync configs throws, `runAllTenants()` logs and continues. That is the defect that turned a missing source file on **tenant A** into a global stall of every later tenant.
 
-The rest of the plan (skip missing files, login/redirects) is **not** committed yet. Slice 2/3 may be general worker hardening or one-off ops; decide before implementing. Isolation unblocks *other* tenants; it does not drain a broken queue by itself.
+The rest of the original plan (skip missing files, login/redirects) is **deferred**. If a particular error type keeps showing up after auto-disable, we deal with that type then — not by classifying errors up front.
+
+**Slice 2 (done):** five consecutive failures on a config, no successful tick in between → set that config `active: false` and Mattermost-notify once with the reason.
 
 ## Status
 
@@ -18,17 +20,18 @@ The rest of the plan (skip missing files, login/redirects) is **not** committed 
 |---|---|
 | Incident mitigated in production | Yes (paused two broken targets, corrected one stale URL) |
 | Code: tenant/config isolation | **Done** (2026-08-25) — `app/api/sync/syncWorker.ts` |
-| Code: skip `FileNotFound` and advance `lastSyncs` | Not done — **undecided** whether this is a general skip or a specific ops/data fix for one stuck config |
-| Code: POST login must not follow 301 as GET | Not done — **undecided** whether this is general worker policy or “put the final URL in `settings.sync.url`” |
-| Code: errors include tenant, config name, URL | **Done as part of slice 1** (`reportSyncFailure` + `LoggerFactory.default()` inside `runInJobContext`) |
-| Ops: restore or skip a missing object on tenant A | Not done — keep that config paused |
+| Code: 5 consecutive failures → disable config + `notify: true` | **Done** (2026-08-25) — `consecutiveFailures` on `syncs`, threshold 5 |
+| Code: skip `FileNotFound` and advance `lastSyncs` | Deferred — only if that type keeps tripping disable |
+| Code: POST login must not follow 301 as GET | Deferred — only if that type keeps tripping disable |
+| Code: errors include tenant, config name, URL | **Done as part of slice 1** (`reportSyncFailure`; disable notify is slice 2) |
+| Ops: restore or skip a missing object on tenant A | Not done — after deploy, re-enable **or** leave paused; if re-enabled still broken, slice 2 disables after 5 failures |
 | Ops: reverse-proxy HTTP Basic on tenant B’s target | Not done — keep `featureFlags.sync: false` on that tenant |
 
 Do **not** re-enable paused syncs until the matching ops (and any agreed code) item above is done.
 
 ## Production actions already taken (do not repeat blindly)
 
-Generic shape of the mitigation. Re-enable **one at a time** after the real target fix. Even after isolation ships, a still-broken target will burn a full batch of that tenant’s tick every 10s.
+Generic shape of the mitigation. Re-enable **one at a time** after the real target fix. After slice 2, a still-broken target errors for five ticks then disables itself (`active: false`) with one Mattermost notify.
 
 | Kind of tenant | Change | Revert after the target is actually fixed |
 |---|---|---|
@@ -63,7 +66,7 @@ This blocked a later tenant that had never received a `syncs` document yet, and 
 - Batch size: 50 updatelogs per config per tick (`UPDATE_LOG_TARGET_COUNT`).
 - Idle configs (`pending=0`) do **not** log in.
 
-`DistributedLoop.runTask()` already catches a throw from the **whole** `runAllTenants()` call, logs it (`handleError(..., { useContext: false })`), waits 10s, and ticks again. Before slice 1 that was a **same-tick cancellation** problem: the next tick started from the same broken tenant and failed the same way. Slice 1 isolates inside `runAllTenants`, so the remaining tenants/configs of that tick still run. A broken config still retries its own stuck item every 10s until that error is gone.
+`DistributedLoop.runTask()` already catches a throw from the **whole** `runAllTenants()` call, logs it (`handleError(..., { useContext: false })`), waits 10s, and ticks again. Before slice 1 that was a **same-tick cancellation** problem: the next tick started from the same broken tenant and failed the same way. Slice 1 isolates inside `runAllTenants`, so the remaining tenants/configs of that tick still run. Until slice 2, a broken config still retries every tick; after slice 2 it disables itself after five consecutive failures.
 
 `JSONRequest.post` uses `fetch` with default redirect following. A **301 on POST** is retried as **GET**, which is how a custom-domain redirect turned login into `404 Not Found`.
 
@@ -167,58 +170,42 @@ Shipped in `syncWorker.ts` / `syncWorker.spec.ts` (`describe('when a tenant or c
 - Host1 `syncronize` throws → host2 still advances `lastSyncs`.
 - Host1 login fails for one target URL → host1’s second config and host2 still run.
 - Invalid collection (`pages`) logs and does not reject `runAllTenants`; later tenants still tick.
-- `lastSyncs` behaviour unchanged in this slice. A `FileNotFound` on tenant A still retries that config forever; it no longer starves other tenants or other configs on the same master.
+- `lastSyncs` behaviour unchanged in this slice. A repeating throw on tenant A still retried that config forever until slice 2; it no longer starves other tenants or other configs on the same master.
 
 Two pre-existing failures on this branch (`translations v2`, `preference order`) also fail against the original worker; not caused by slice 1.
 
-### Slice 2 — Missing files must not infinite-loop — **undecided (general vs specific)**
+### Slice 2 — Five consecutive failures disable the config — **done**
 
-Not started. Product question: is a missing blob a skippable queue item for every tenant, or a real error that should keep retrying until ops restores the object? Do not implement until that is decided.
+Shipped in `syncWorker.ts` / `syncsModel.ts` / `syncWorker.spec.ts` (`describe('when a config fails repeatedly')`).
 
-**If treated as general:** `FileNotFound` during `uploadFile` logs, skips that change, and still `updateSyncs`.
+No error taxonomy. Login 401, missing blob, 5xx, redirect-404, invalid config: each is one failure. If a type keeps tripping disable in production, add a specific fix then.
 
-**Where:** `synchronizer.syncData` / `uploadFile`, or the per-change loop in `syncronizeConfig`. Catch `FileNotFound` from `#api/files/FileNotFound.js` (the storage one, not the V2 domain error).
-
-**If implementing skip-and-advance:** do **not** mark the file unsyncable in Mongo unless there is also a UI/ops story for it. A structured error log with tenant + filename + storage key is enough for ops to restore the object later.
-
-**Careful:** `syncData` POSTs the files document **before** `uploadFile`. If we skip only the upload and still `updateSyncs`, the target has a files row pointing at a blob that never arrived. That is acceptable vs stalling the cluster; call it out in the log (`namespace=files`, filename, “metadata synced, blob skipped”).
+**Counter:** sibling field `consecutiveFailures` on the `syncs` document (not inside `lastSyncs`). Atomic `$inc` on failure; `$set: 0` when that config’s tick finishes without throwing (including idle `pending=0`). At `>= 5`, `$set` that `settings.sync[]` element `active: false` only if it is currently `true`; **`notify: true` only when `modifiedCount === 1`**.
 
 **Tests:**
 
-- Files updatelog whose blob is missing: `lastSyncs.files` advances past that timestamp; later files in the same batch still sync; other tenants still tick.
-- Non-file errors (login 401, network) still do **not** advance `lastSyncs` (retry next tick). Isolation from slice 1 keeps other tenants moving.
+- Five throws on one config → `active: false`, `consecutiveFailures === 5`, `notify: true` once; sibling config stays active; later tenants still run. A further tick does not notify again.
+- Two throws, then a successful tick → counter back to 0; not disabled.
 
-**Ops after this ships (if skip is agreed):** restore the missing object *or* rely on skip-and-advance, then set `active: true` on tenant A’s `config_public` only. Watch that config’s pending drain and that later tenants’ `lastSyncs` still move.
+### Slice 3 — Missing files skip / login redirects — **deferred**
 
-### Slice 3 — Login / redirects — **undecided (general vs specific)**
-
-Not started. Tenant C was fixed in production by setting `settings.sync.url` to the final custom domain. Open: safety-net in the worker vs ops-only “always use the final URL.”
-
-**If treated as general:** `POST /api/login` must not become `GET /api/login` via a 301/302. Prefer a clear “redirected to X” failure over a 404 loop.
-
-**Where:** `syncWorker.login` and/or `JSONRequest` `_fetch`. Changing global `fetch` redirect policy affects the whole app (frontend + API clients). Prefer a **login-specific** option (`redirect: 'manual'` or `redirect: 'error'`) rather than changing default `JSONRequest.post`.
-
-On a 3xx: log the `Location`, do not follow, do not update `lastSyncs`, next config/tenant continues (slice 1).
-
-**Tests:** staging/target that 301s POST `/api/login` to another host. Worker does not 404-loop on GET. Error mentions the redirect target.
-
-**Ops note:** the correct long-term config is still “put the final custom domain in `settings.sync.url`”. The code change is the safety net.
+Not in the first follow-up. Revisit only if slice 2 shows a repeating type worth special-casing (skip one blob vs freeze the destination; POST login following 301 as GET).
 
 ### Slice 4 — Logging — **done as part of slice 1**
 
-`reportSyncFailure` logs tenant, config `name`, and URL inside `runInJobContext`. Further `FetchResponseError` shape changes are optional.
+`reportSyncFailure` logs tenant, config `name`, and URL inside `runInJobContext` without `notify`. Slice 2 adds `notify: true` only on disable.
 
 ---
 
 ## What still needs to happen to re-enable the two paused syncs
 
-These are **not** replaced by slice 1. Isolation makes it *safe* to re-enable one at a time; the target still has to work.
+These are **not** replaced by slices 1–2. Isolation keeps other tenants moving; auto-disable pages once. The destination still has to work before it will drain.
 
 ### A. Tenant A → `config_public` → `https://public.tenant-a.example`
 
 **Ops / data**
 
-- Restore the missing object-store object, **or** skip that files updatelog (advance that config’s `lastSyncs.files` past that change). Slice 2 would make the skip automatic.
+- Restore the missing object-store object, **or** skip that files updatelog (advance that config’s `lastSyncs.files` past that change). Slice 2 does **not** skip the file; it will disable this config after five throws.
 - Filename may be a document title (punctuation, spaces, non-ASCII), not a hashed storage name — check whether Mongo `files.filename` matches a real storage key.
 - Destination login is fine; do not rotate credentials for this.
 
@@ -246,20 +233,14 @@ Read-only pending check (updatelogs newer than `syncs.lastSyncs`): after the ten
 
 - [x] **Slice 1 (unit):** tenant A throws, tenant B still ticks; one config throws, later configs on the same tenant still run (`syncWorker.spec.ts`).
 - [ ] **Slice 1 (staging):** force a missing file or 401 login on a staging tenant with `sync: true` **ahead of** another tenant; the second tenant must still tick.
-- [ ] **Slice 2 + ops (if agreed):** re-enable **only** tenant A `config_public` after object-store/skip fix; pending drains; no `FileNotFound` loop; later tenants’ `lastSyncs` still move.
-- [ ] **Ops:** re-enable **only** tenant B after proxy fix; `POST /api/login` 200 from jobs host; tenant B pending drains; later tenants still move.
-- [ ] **Slice 3 (if agreed):** staging `settings.sync.url` that 301s to another host; worker should not 404-loop on GET `/api/login`.
+- [x] **Slice 2 (unit):** five consecutive throws disable that config, Mattermost once, sibling configs / later tenants still run; a success in between resets the counter.
+- [ ] **Ops:** after deploy, re-enable paused targets **one at a time**. If still broken, expect five Graylog errors then one Mattermost disable.
 
 ## Open questions
 
-1. **Slice 2 skip vs restore:** is a missing blob a general skippable queue item, or a real error that should keep retrying until ops restores the object? Automatic skip-and-advance vs restore-first so the public target gets that file.
-2. **Metadata without blob:** if we POST the files document then skip the upload, is that worse than skipping the whole change (no POST, still `updateSyncs`)? Skipping the whole change leaves the target without the file row; posting without the blob leaves a dangling files document.
-3. **Login 401 vs FileNotFound:** 401/404 login should **not** advance `lastSyncs` (retry until infra is fixed). Only treat missing blobs as skippable *if* slice 2 is agreed as general.
-4. **JSONRequest / slice 3 scope:** keep redirect policy local to `syncWorker.login`, or treat 301-to-custom-domain as an ops URL mistake only?
+None blocking. Optional later: skip-one-missing-file vs freeze-the-destination; POST login 301→GET. Only if production disable-notifies show a repeating type.
 
-## Suggested implementation order for the next session
+## Suggested next steps
 
-Do **not** start slice 2 or 3 until the open questions above are decided. Next useful work is either:
-
-- staging verification of slice 1 (broken tenant ahead of a healthy one still ticks), or
-- ops path for tenant A’s missing object / tenant B’s proxy Basic, still one-at-a-time after isolation is deployed.
+1. Deploy slices 1–2.
+2. Re-enable paused configs one at a time, or leave them paused until the destination is fixed; if re-enabled still broken, they disable themselves after five failures with one notify.

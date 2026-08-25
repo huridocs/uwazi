@@ -5,6 +5,7 @@ import { SettingsSyncSchema } from '#shared/types/settingsType.js';
 import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
 import { tenants } from '#api/tenants/index.js';
 import settings from '#api/settings/index.js';
+import { settingsModel } from '#api/settings/settingsModel.js';
 import { permissionsContext } from '#api/permissions/permissionsContext.js';
 import { runInJobContext } from '#api/services/tasksmanager/runInJobContext.js';
 import { handleError } from '#api/utils/handleError.js';
@@ -18,9 +19,66 @@ const updateSyncs = async (name: string, collection: string, lastSync: number) =
 async function createSyncIfNotExists(config: SettingsSyncSchema) {
   const syncs = await syncsModel.find({ name: config.name });
   if (syncs.length === 0) {
-    await syncsModel.create([{ lastSyncs: {}, name: config.name }]);
+    await syncsModel.create([{ lastSyncs: {}, name: config.name, consecutiveFailures: 0 }]);
   }
 }
+
+const CONSECUTIVE_FAILURES_BEFORE_DISABLE = 5;
+
+const resetConsecutiveFailures = async (name: string) => {
+  await syncsModel._updateMany({ name }, { $set: { consecutiveFailures: 0 } }, {});
+};
+
+const disableConfigAndNotify = async (
+  config: SettingsSyncSchema,
+  error: unknown,
+  consecutiveFailures: number
+) => {
+  const disableResult = await settingsModel.updateMany(
+    {},
+    { $set: { 'sync.$[c].active': false } },
+    { arrayFilters: [{ 'c.name': config.name, 'c.active': true }] }
+  );
+
+  if (disableResult.modifiedCount !== 1) {
+    return;
+  }
+
+  const err = error instanceof Error ? error : new Error(String(error));
+  LoggerFactory.default().error(
+    `Sync disabled after ${consecutiveFailures} consecutive failures: ${err.message}`,
+    {
+      tenant: tenants.current().name,
+      syncConfig: config.name,
+      url: config.url,
+      errorName: err.name,
+      consecutiveFailures,
+      notify: true,
+    }
+  );
+};
+
+const recordConfigFailure = async (config: SettingsSyncSchema, error: unknown) => {
+  if (!config.name) {
+    return;
+  }
+
+  const updated = await syncsModel.findOneAndUpdate(
+    { name: config.name },
+    {
+      $inc: { consecutiveFailures: 1 },
+      $setOnInsert: { lastSyncs: {}, name: config.name },
+    },
+    { upsert: true, new: true, lean: true }
+  );
+
+  const consecutiveFailures = updated?.consecutiveFailures ?? 0;
+  if (consecutiveFailures < CONSECUTIVE_FAILURES_BEFORE_DISABLE) {
+    return;
+  }
+
+  await disableConfigAndNotify(config, error, consecutiveFailures);
+};
 
 class InvalidSyncConfig extends Error {
   constructor(message: string) {
@@ -74,6 +132,7 @@ const reportSyncFailure = (
 
 export const syncWorker = {
   UPDATE_LOG_TARGET_COUNT: 50,
+  CONSECUTIVE_FAILURES_BEFORE_DISABLE,
 
   async runAllTenants() {
     return tenants.getTenantsForFeatureFlag('sync').reduce(async (previous, tenant) => {
@@ -104,12 +163,18 @@ export const syncWorker = {
         if (!syncConfig?.active) return;
 
         await this.syncronizeConfig(syncConfig);
+        await resetConsecutiveFailures(syncConfig.name);
       } catch (error) {
         reportSyncFailure(error, {
           tenant: tenants.current().name,
           syncConfig: config.name,
           url: config.url,
         });
+        try {
+          await recordConfigFailure(config, error);
+        } catch (recordingError) {
+          handleError(recordingError, { useContext: false });
+        }
       }
     }, Promise.resolve());
   },

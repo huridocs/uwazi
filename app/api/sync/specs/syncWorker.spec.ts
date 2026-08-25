@@ -671,6 +671,93 @@ describe('syncWorker', () => {
     }, 10000);
   });
 
+  describe('when a config fails repeatedly', () => {
+    const failTarget1Login = () => {
+      const originalLogin = syncWorker.login.bind(syncWorker);
+      jest.spyOn(syncWorker, 'login').mockImplementation(async config => {
+        if (config.url === 'http://localhost:6667') {
+          throw new Error('login failed for target1');
+        }
+        return originalLogin(config);
+      });
+    };
+
+    afterEach(() => {
+      jest.spyOn(syncWorker, 'login').mockRestore();
+      jest.spyOn(StandardLogger.prototype, 'error').mockRestore();
+    });
+
+    it('should reset the failure counter after a successful tick', async () => {
+      const { host1db } = await applyFixtures();
+      failTarget1Login();
+
+      await syncWorker.runAllTenants();
+      await syncWorker.runAllTenants();
+
+      expect(
+        (await host1db!.collection('syncs').findOne({ name: 'target1' }))?.consecutiveFailures
+      ).toBe(2);
+
+      jest.spyOn(syncWorker, 'login').mockRestore();
+      await syncWorker.runAllTenants();
+
+      expect(
+        (await host1db!.collection('syncs').findOne({ name: 'target1' }))?.consecutiveFailures
+      ).toBe(0);
+    }, 20000);
+
+    it('should disable the config and notify once after five consecutive failures', async () => {
+      const { host1db, host2db } = await applyFixtures();
+      const errorSpy = jest.spyOn(StandardLogger.prototype, 'error');
+      failTarget1Login();
+
+      for (
+        let attempt = 0;
+        attempt < syncWorker.CONSECUTIVE_FAILURES_BEFORE_DISABLE;
+        attempt += 1
+      ) {
+        // eslint-disable-next-line no-await-in-loop
+        await syncWorker.runAllTenants();
+      }
+
+      expect(
+        (await host1db!.collection('syncs').findOne({ name: 'target1' }))?.consecutiveFailures
+      ).toBe(syncWorker.CONSECUTIVE_FAILURES_BEFORE_DISABLE);
+
+      const hostSettings = await host1db!.collection('settings').findOne({});
+      expect(
+        hostSettings?.sync.find((config: { name: string }) => config.name === 'target1').active
+      ).toBe(false);
+      expect(
+        hostSettings?.sync.find((config: { name: string }) => config.name === 'target2').active
+      ).toBe(true);
+
+      expect(errorSpy).toHaveBeenCalledWith(
+        'Sync disabled after 5 consecutive failures: login failed for target1',
+        expect.objectContaining({
+          tenant: 'host1',
+          syncConfig: 'target1',
+          url: 'http://localhost:6667',
+          consecutiveFailures: 5,
+          notify: true,
+        })
+      );
+
+      errorSpy.mockClear();
+      await syncWorker.runAllTenants();
+      expect(errorSpy).not.toHaveBeenCalledWith(
+        expect.stringContaining('Sync disabled'),
+        expect.objectContaining({ notify: true })
+      );
+
+      expect(
+        Object.keys(
+          (await host2db!.collection('syncs').findOne({ name: 'target2' }))?.lastSyncs || {}
+        )
+      ).not.toHaveLength(0);
+    }, 30000);
+  });
+
   describe('when active is false', () => {
     it('should not sync anything', async () => {
       await applyFixtures();
