@@ -103,7 +103,8 @@ export default {
           _relationships,
           connectedDocuments,
           sharedId,
-          unpublished
+          unpublished,
+          language
         );
 
         return relationshipsCollection;
