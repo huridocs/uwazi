@@ -6,7 +6,6 @@ import { MongoDataSource } from '#api/core/infrastructure/mongodb/common/MongoDa
 import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
 import type {
   DatavizFilter,
-  DatavizSource,
   DimensionSpec,
   MeasureSpec,
 } from '#shared/types/datavizSchema.js';
@@ -24,11 +23,7 @@ import {
   DatavizAggregationStrategy,
   RawBucket,
 } from '#api/dataviz.v2/application/contracts/DatavizAggregationStrategy.js';
-import {
-  filterAppliesToSource as sharedFilterAppliesToSource,
-  filtersForSource as sharedFiltersForSource,
-  mergeSourceFilters as sharedMergeSourceFilters,
-} from '#api/dataviz.v2/application/services/datavizSourceFilters.js';
+import { mergeSourceFilters as sharedMergeSourceFilters } from '#api/dataviz.v2/application/services/datavizSourceFilters.js';
 
 class MongoDatavizQueryExecutor
   extends MongoDataSource<EntityDBO>
@@ -197,22 +192,6 @@ class MongoDatavizQueryExecutor
     }
 
     return raw;
-  }
-
-  filterAppliesToSource(
-    filter: DatavizFilter,
-    source: DatavizSource,
-    sourceIndex: number
-  ): boolean {
-    return sharedFilterAppliesToSource(filter, source, sourceIndex);
-  }
-
-  filtersForSource(
-    filters: DatavizFilter[] | undefined,
-    source: DatavizSource,
-    sourceIndex: number
-  ): DatavizFilter[] {
-    return sharedFiltersForSource(filters, source, sourceIndex);
   }
 
   private buildExternalDateRangeMatch(filter: DatavizFilter, path: string): object {
