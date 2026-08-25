@@ -74,10 +74,19 @@ DB.connect(config.DBHOST, config.DBAUTH)
       pdf_segmentation: new PDFSegmentation(),
     };
 
+    // Tunable for backlog drains: the delay is applied *after* each tick returns, so at the
+    // default it is roughly half of every cycle. Lowering it also shortens DistributedLoop's
+    // redlock lease, which is `maxLockTime + delayTimeBetweenTasks` and is never extended — the
+    // reason `segmentOnePdf` claims each file before dispatching it rather than after.
+    // Only the segmentation loop is tuned here; the other consumers keep their own delays.
     services.segmentation_distributed_loop = new DistributedLoop(
       'segmentation_repeat',
       services.pdf_segmentation.segmentPdfs,
-      { port: config.redis.port, host: config.redis.host, delayTimeBetweenTasks: 60000 }
+      {
+        port: config.redis.port,
+        host: config.redis.host,
+        delayTimeBetweenTasks: Number(process.env.SEGMENTATION_LOOP_DELAY) || 60000,
+      }
     );
 
     Object.values(services).forEach(service => service.start());

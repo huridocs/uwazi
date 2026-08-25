@@ -4,7 +4,7 @@ import { testingPG } from '#api/utils/testing_pg.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { PostgresDB } from '#api/infrastructure/PostgresDB.js';
 import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
-import { PostgresFilesDAO } from '../PostgresFilesDAO.js';
+import { PostgresFilesDAO, arrayCastFor } from '../PostgresFilesDAO.js';
 import { PostgresTable } from '#api/core/infrastructure/postgresql/common/PostgresTable.js';
 import { PostgresTransactionManager } from '#api/core/infrastructure/postgresql/common/PostgresTransactionManager.js';
 import { FileNotFound } from '#api/core/domain/files/errors.js';
@@ -78,6 +78,29 @@ const createSut = () =>
     tenantId: TENANT_ID,
     pgTransactionManager: managerFor(TENANT_ID),
   });
+
+describe('arrayCastFor()', () => {
+  it.each([
+    { label: 'strings', values: ['a', 'b'], cast: 'text' },
+    { label: 'numbers', values: [1, 2.5], cast: 'numeric' },
+    { label: 'booleans', values: [true, false], cast: 'boolean' },
+    { label: 'a single value', values: ['only'], cast: 'text' },
+  ])('returns $cast for homogeneous $label', ({ values, cast }) => {
+    expect(arrayCastFor(values)).toBe(cast);
+  });
+
+  it.each([
+    { label: 'an empty array', values: [] },
+    { label: 'mixed types', values: [1, 'a'] },
+    { label: 'nulls', values: [null] },
+    { label: 'a null mixed in with strings', values: ['a', null] },
+    { label: 'undefined', values: [undefined] },
+    { label: 'objects', values: [{}] },
+    { label: 'bigints', values: [1n] },
+  ])('returns null for $label, so the caller falls back to whereIn', ({ values }) => {
+    expect(arrayCastFor(values)).toBeNull();
+  });
+});
 
 describe('PostgresFilesDAO', () => {
   beforeAll(async () => {
@@ -566,6 +589,76 @@ describe('PostgresFilesDAO', () => {
 
       expect(files.length).toBeGreaterThanOrEqual(1);
       expect(files.every(f => ['entity_a', 'entity_x'].includes(f.entity!))).toBe(true);
+    });
+
+    it('returns matching files for a $nin query', async () => {
+      const dao = createSut();
+      const files = await dao.getByQuery({
+        type: 'document',
+        _id: { $nin: [factory.idString('doc_with_fulltext')] },
+      });
+
+      expect(files.length).toBeGreaterThan(0);
+      expect(files.every(f => f._id !== factory.idString('doc_with_fulltext'))).toBe(true);
+    });
+
+    it('matches nothing for $in: [] and everything for $nin: []', async () => {
+      const dao = createSut();
+      const all = await dao.getByQuery({ type: 'document' });
+
+      expect(await dao.getByQuery({ type: 'document', _id: { $in: [] } })).toEqual([]);
+      expect(await dao.getByQuery({ type: 'document', _id: { $nin: [] } })).toHaveLength(
+        all.length
+      );
+    });
+
+    it('filters a numeric column without casting it to text', async () => {
+      await testingEnvironment.setFixtures({
+        files: [
+          ...baseFixtures.files,
+          factory.document('sized_file', { entity: 'entity_sized', status: 'ready', size: 4096 }),
+        ],
+      });
+      const dao = createSut();
+
+      // A blanket ::text[] cast would fail here — the cast has to follow the value types.
+      const included = await dao.getByQuery({ size: { $in: [4096] } });
+      const excluded = await dao.getByQuery({ entity: 'entity_sized', size: { $nin: [4096] } });
+
+      expect(included.map(f => f._id)).toContain(factory.idString('sized_file'));
+      expect(excluded).toEqual([]);
+    });
+
+    it('ignores nulls inside an operand instead of dropping every row', async () => {
+      const dao = createSut();
+
+      // `NOT (x = ANY(arr))` is NULL when arr contains a NULL, which would filter out everything.
+      const files = await dao.getByQuery({
+        type: 'document',
+        _id: { $nin: [factory.idString('doc_with_fulltext'), null] as any },
+      });
+
+      expect(files.length).toBeGreaterThan(0);
+      expect(files.every(f => f._id !== factory.idString('doc_with_fulltext'))).toBe(true);
+    });
+
+    it('sends a large $nin as one bind parameter and executes without a protocol error', async () => {
+      const dao = createSut();
+      const excluded = [...Array(70000).keys()].map(i => `absent_id_${i}`);
+
+      // The regression: whereNotIn would emit 70k+ bind parameters, overflowing the Int16 the
+      // Postgres wire protocol uses to count them.
+      // `??` is interpolated into the SQL text, so the array is the only binding left — and it
+      // stays one binding rather than being expanded into 70,000 of them.
+      const { bindings } = PostgresDB.knex('files')
+        .whereRaw('?? = ANY(?::text[])', ['_id', excluded] as any)
+        .toSQL();
+      expect(bindings).toHaveLength(1);
+      expect(bindings[0]).toHaveLength(70000);
+
+      const files = await dao.getByQuery({ type: 'document', _id: { $nin: excluded } });
+      const all = await dao.getByQuery({ type: 'document' });
+      expect(files).toHaveLength(all.length);
     });
 
     it('returns empty array when query matches nothing', async () => {

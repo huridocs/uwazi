@@ -491,6 +491,26 @@ describe('MongoFilesDAO', () => {
       expect(files.every(f => ['entity_a', 'entity_x'].includes(f.entity))).toBe(true);
     });
 
+    it('accepts string ids inside an _id $nin operand', async () => {
+      const sut = createSut();
+      const excluded = factory.id('doc_with_fulltext').toString();
+
+      const files = await sut.getByQuery({ type: 'document', _id: { $nin: [excluded] } });
+
+      expect(files.length).toBeGreaterThan(0);
+      expect(files.every(f => f._id.toString() !== excluded)).toBe(true);
+    });
+
+    it('accepts string ids inside an _id $in operand', async () => {
+      const sut = createSut();
+      const included = factory.id('doc_with_fulltext').toString();
+
+      const files = await sut.getByQuery({ _id: { $in: [included] } });
+
+      expect(files).toHaveLength(1);
+      expect(files[0]._id.toString()).toBe(included);
+    });
+
     it('returns empty array when query matches nothing', async () => {
       const sut = createSut();
       const files = await sut.getByQuery({ filename: 'nonexistent_file' });
