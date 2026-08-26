@@ -71,6 +71,7 @@
       }
     ],
     "eslint/no-underscore-dangle": "off",
+    "eslint/no-shadow": "error",
     "typescript/no-extraneous-class": "off",
     "import/no-unassigned-import": "off",
     "jest/no-commented-out-tests": "off",
