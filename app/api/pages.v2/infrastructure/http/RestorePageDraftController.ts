@@ -1,12 +1,10 @@
 import { AbstractController } from '#api/common.v2/infrastructure/AbstractController.js';
-import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { RestorePageDraftUseCaseFactory } from '../factories/RestorePageDraftUseCaseFactory.js';
 import { RestorePageDraftSchema, RestorePageDraftRequest } from './Schemas.js';
 import { mapPageHttpErrors } from './mapPageHttpErrors.js';
 
 class RestorePageDraftController extends AbstractController<RestorePageDraftRequest> {
   protected async handle(): Promise<void> {
-    const startTime = Date.now();
     const parsed = RestorePageDraftSchema.parse(this.request.body);
 
     try {
@@ -15,25 +13,8 @@ class RestorePageDraftController extends AbstractController<RestorePageDraftRequ
         language: this.language,
       });
 
-      ExecutionContext.logger.info('Page draft restored from release', {
-        namespace: 'Page_Restore',
-        success: true,
-        durationMs: Date.now() - startTime,
-        sharedId: parsed.sharedId,
-        version: parsed.version,
-      });
-
       this.response.json(output);
     } catch (error: unknown) {
-      ExecutionContext.logger.info(
-        `Page restore failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
-        {
-          namespace: 'Page_Restore',
-          success: false,
-          durationMs: Date.now() - startTime,
-          sharedId: parsed.sharedId,
-        }
-      );
       if (mapPageHttpErrors(error, this.response)) {
         return;
       }
