@@ -16,10 +16,11 @@
     "perf": "warn"
   },
   "rules": {
-    "react/jsx-key": "warn",
-    "eslint/no-useless-escape": "warn",
-    "jsx-a11y/alt-text": "warn",
-    "jsx-a11y/anchor-is-valid": "warn",
+    "react/jsx-key": "error",
+    "eslint/no-useless-escape": "error",
+    "jsx-a11y/alt-text": "error",
+    "jsx-a11y/anchor-is-valid": "error",
+    "import/no-named-as-default": "error",
     "eslint/no-unused-vars": [
       "error",
       {
