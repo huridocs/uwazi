@@ -1,4 +1,5 @@
 /* eslint-disable max-statements */
+/* oxlint-disable typescript/promise-function-async */
 
 import { validation } from '#api/utils/index.js';
 
@@ -20,7 +21,7 @@ const mockResponseAsWritableStream = (res, resolve) => {
   };
 };
 
-const executeRoute = async (
+const executeRoute = (
   method,
   routePath,
   req = {},
@@ -103,23 +104,23 @@ export default (route, io) => {
   route(app, io);
   validation.validateRequest = originalValidateRequest;
 
-  const get = async (routePath, req, res = {}, next = () => {}) =>
+  const get = (routePath, req, res = {}, next = () => {}) =>
     executeRoute('get', routePath, req, res, next, app);
-  const _get = async (routePath, req, res = {}, next = () => {}) =>
+  const _get = (routePath, req, res = {}, next = () => {}) =>
     executeRoute('get', routePath, req, res, next, app, false);
   get.validation = (routePath, req, res = {}, next = () => {}) =>
     executeRoute('get', routePath, req, res, next, app, false).validation;
 
-  const post = async (routePath, req, res = {}, next = () => {}) =>
+  const post = (routePath, req, res = {}, next = () => {}) =>
     executeRoute('post', routePath, req, res, next, app);
-  const _post = async (routePath, req, res = {}, next = () => {}) =>
+  const _post = (routePath, req, res = {}, next = () => {}) =>
     executeRoute('post', routePath, req, res, next, app, false);
   post.validation = (routePath, req, res = {}, next = () => {}) =>
     executeRoute('post', routePath, req, res, next, app, false).validation;
 
-  const remove = async (routePath, req, res = {}, next = () => {}) =>
+  const remove = (routePath, req, res = {}, next = () => {}) =>
     executeRoute('delete', routePath, req, res, next, app);
-  const _remove = async (routePath, req, res = {}, next = () => {}) =>
+  const _remove = (routePath, req, res = {}, next = () => {}) =>
     executeRoute('delete', routePath, req, res, next, app, false);
   remove.validation = (routePath, req, res = {}, next = () => {}) =>
     executeRoute('delete', routePath, req, res, next, app, false).validation;

@@ -54,13 +54,17 @@ describe('Repeater', () => {
   it('should skip interval between executions if stop method is executed', async () => {
     let promise;
     let resolvePromise;
-    const sut = new Repeater(async () => {
-      promise = new Promise(resolve => {
-        resolvePromise = resolve;
-      });
+    const sut = new Repeater(
+      // oxlint-disable-next-line typescript/promise-function-async
+      () => {
+        promise = new Promise(resolve => {
+          resolvePromise = resolve;
+        });
 
-      return promise;
-    }, 10_000);
+        return promise;
+      },
+      10_000
+    );
 
     void sut.start();
     resolvePromise();
