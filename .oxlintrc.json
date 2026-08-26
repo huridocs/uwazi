@@ -66,7 +66,7 @@
     "eslint/no-useless-constructor": "off",
     // ─────────────────────────────────────────────────────────────
 
-    // Disabled pending review (present in ESLint, but noisy in this codebase)
+    // Warnings for further review (present in ESLint at warn, but noisy in this codebase)
     // ─────────────────────────────────────────────────────────────
     "jsx-a11y/no-noninteractive-element-interactions": "off",
     "jsx-a11y/control-has-associated-label": "off",
