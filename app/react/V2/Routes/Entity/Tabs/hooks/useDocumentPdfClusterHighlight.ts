@@ -64,7 +64,9 @@ const useDocumentPdfClusterHighlight = ({
   );
 
   useEffect(() => {
-    if (activeRelationshipId || !activeClusterRefIds?.length || !mainPdfController || !entity) return;
+    if (activeRelationshipId || !activeClusterRefIds?.length || !mainPdfController || !entity) {
+      return;
+    }
     const liveMarkers = activeClusterRefIds.flatMap(id => {
       const marker = findMarkerById(id);
       return marker ? [marker] : [];
