@@ -12,81 +12,52 @@ type Request = UpdateEntityRequest | { entity: string };
 
 class UpdateEntityController extends AbstractController<Request> {
   protected async handle(): Promise<void> {
-    const startTime = Date.now();
-    try {
-      const useCase = UpdateEntityUseCaseFactory.default();
-      const entityDAO = EntitiesDAOFactory.default({ user: this.user });
+    const useCase = UpdateEntityUseCaseFactory.default();
+    const entityDAO = EntitiesDAOFactory.default({ user: this.user });
 
-      let parsed: UpdateEntityRequest;
+    let parsed: UpdateEntityRequest;
+
+    if ('entity' in this.request.body) {
+      parsed = UpdateEntitySchema.parse(JSON.parse(this.request.body.entity));
+    } else {
+      parsed = UpdateEntitySchema.parse(this.request.body);
+    }
+
+    const currentDocs = await entityDAO.getBySharedId(parsed.sharedId);
+    const currentDoc = currentDocs.find(d => d.language === parsed.language);
+    if (currentDoc) {
+      const resolver = new ATConflictSolver(
+        AutomaticTranslationFactory.defaultATConfigDataSource(
+          ExecutionContext.transactionManager as MongoTransactionManager
+        ),
+        ExecutionContext.logger
+      );
+      parsed = await resolver.execute(currentDoc, parsed);
 
       if ('entity' in this.request.body) {
-        parsed = UpdateEntitySchema.parse(JSON.parse(this.request.body.entity));
+        this.request.body.entity = JSON.stringify(parsed);
       } else {
-        parsed = UpdateEntitySchema.parse(this.request.body);
+        Object.assign(this.request.body, parsed);
       }
-
-      const currentDocs = await entityDAO.getBySharedId(parsed.sharedId);
-      const currentDoc = currentDocs.find(d => d.language === parsed.language);
-      if (currentDoc) {
-        const resolver = new ATConflictSolver(
-          AutomaticTranslationFactory.defaultATConfigDataSource(
-            ExecutionContext.transactionManager as MongoTransactionManager
-          ),
-          ExecutionContext.logger
-        );
-        parsed = await resolver.execute(currentDoc, parsed);
-
-        if ('entity' in this.request.body) {
-          this.request.body.entity = JSON.stringify(parsed);
-        } else {
-          Object.assign(this.request.body, parsed);
-        }
-      }
-
-      const mapped = ExpressEntityMapper.toEntityUpdateInput({
-        dto: parsed,
-        inputFiles: this.request.inputFiles,
-      });
-
-      const output = await useCase.execute(mapped);
-
-      const [entityWithFiles] = await entityDAO.find(
-        { sharedId: output.sharedId, language: this.language },
-        { withFiles: true }
-      );
-
-      const response =
-        'entity' in this.request.body ? { entity: entityWithFiles, errors: [] } : entityWithFiles;
-
-      ExecutionContext.logger.info('Entity Update executed successfully', {
-        namespace: 'Entity_Update',
-        success: true,
-        durationMs: Date.now() - startTime,
-
-        sharedId: output.sharedId,
-        templateId: output.template.id.toString(),
-      });
-
-      this.response.json(response);
-      this.request.emitToSessionSocket('documentProcessed', output.sharedId);
-    } catch (error: unknown) {
-      const duration = Date.now() - startTime;
-
-      ExecutionContext.logger.info(
-        `Entity update failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
-        {
-          namespace: 'Entity_Update',
-          durationMs: duration,
-          success: false,
-          notify: true,
-
-          error: JSON.stringify(error),
-          dto: JSON.stringify(this.request.body),
-        }
-      );
-
-      throw error;
     }
+
+    const mapped = ExpressEntityMapper.toEntityUpdateInput({
+      dto: parsed,
+      inputFiles: this.request.inputFiles,
+    });
+
+    const output = await useCase.execute(mapped);
+
+    const [entityWithFiles] = await entityDAO.find(
+      { sharedId: output.sharedId, language: this.language },
+      { withFiles: true }
+    );
+
+    const response =
+      'entity' in this.request.body ? { entity: entityWithFiles, errors: [] } : entityWithFiles;
+
+    this.response.json(response);
+    this.request.emitToSessionSocket('documentProcessed', output.sharedId);
   }
 }
 
