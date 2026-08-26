@@ -40,16 +40,18 @@ const Geolocation = ({
   }
 
   return (
-    <Map
-      height={height}
-      markers={formatMarkers(markers)}
-      clickOnMarker={clickOnMarker}
-      onClick={onClick}
-      showControls={showControls}
-      renderPopupInfo={renderPopupInfo}
-      layers={layers}
-      zoom={zoom}
-    />
+    <div className="w-full min-w-0 overflow-hidden rounded-md">
+      <Map
+        height={height}
+        markers={formatMarkers(markers)}
+        clickOnMarker={clickOnMarker}
+        onClick={onClick}
+        showControls={showControls}
+        renderPopupInfo={renderPopupInfo}
+        layers={layers}
+        zoom={zoom}
+      />
+    </div>
   );
 };
 
