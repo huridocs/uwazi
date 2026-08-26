@@ -8,35 +8,14 @@ class RecoverPasswordController extends AbstractController<RecoverPasswordReques
   protected async handle(): Promise<void> {
     const domain = `${this.request.protocol}://${ExecutionContext.tenant.domain}`;
 
-    const startTime = Date.now();
-    try {
-      const input = RecoverPasswordInputSchema.parse({ ...this.request.body, domain });
+    const input = RecoverPasswordInputSchema.parse({ ...this.request.body, domain });
 
-      const useCase = RecoverPasswordUseCaseFactory.default();
+    const useCase = RecoverPasswordUseCaseFactory.default();
 
-      await useCase.execute(input);
+    await useCase.execute(input);
 
-      ExecutionContext.logger.info('Password recovery email sent successfully', {
-        namespace: 'Users_Utilities',
-        success: true,
-        durationMs: Date.now() - startTime,
-      });
-
-      const response: RecoverPasswordResponse = 'OK';
-      this.response.json(response);
-    } catch (error: unknown) {
-      ExecutionContext.logger.info(
-        `Password recovery failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
-        {
-          namespace: 'Users_Utilities',
-          success: false,
-          error: JSON.stringify(error),
-          notify: true,
-        }
-      );
-
-      throw error;
-    }
+    const response: RecoverPasswordResponse = 'OK';
+    this.response.json(response);
   }
 }
 

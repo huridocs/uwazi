@@ -4,7 +4,6 @@ import { AbstractController } from '#api/common.v2/infrastructure/AbstractContro
 import { GrantEntityPermissionsUseCaseFactory } from '../../factories/GrantEntityPermissionsUseCaseFactory.js';
 import { BulkGrantEntityPermissionsUseCaseFactory } from '../../factories/BulkGrantEntityPermissionsUseCaseFactory.js';
 import { AccessGrantProps } from '#api/core/domain/entityAccessPolicy/AccessGrant.js';
-import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 
 const RequestSchema = z
   .object({
@@ -31,58 +30,34 @@ type RequestDto = z.infer<typeof RequestSchema>;
 
 class EntityPermissionsController extends AbstractController<RequestDto> {
   protected async handle(): Promise<void> {
-    const startTime = Date.now();
+    const { ids, permissions } = RequestSchema.parse(this.request.body);
 
-    try {
-      const { ids, permissions } = RequestSchema.parse(this.request.body);
+    const publicEntry = permissions.find(p => p.type === 'public');
+    const nonPublicGrants = permissions.filter(p => p.type !== 'public');
 
-      const publicEntry = permissions.find(p => p.type === 'public');
-      const nonPublicGrants = permissions.filter(p => p.type !== 'public');
+    if (ids.length === 1) {
+      const isPublic = publicEntry !== undefined;
+      const grants = nonPublicGrants as AccessGrantProps[];
 
-      if (ids.length === 1) {
-        const isPublic = publicEntry !== undefined;
-        const grants = nonPublicGrants as AccessGrantProps[];
-
-        const useCase = GrantEntityPermissionsUseCaseFactory.default();
-        await useCase.execute({ sharedId: ids[0], grants, isPublic });
+      const useCase = GrantEntityPermissionsUseCaseFactory.default();
+      await useCase.execute({ sharedId: ids[0], grants, isPublic });
+    } else {
+      let isPublic: boolean | undefined;
+      if (!publicEntry) {
+        isPublic = false;
+      } else if (publicEntry.level === 'mixed') {
+        isPublic = undefined;
       } else {
-        let isPublic: boolean | undefined;
-        if (!publicEntry) {
-          isPublic = false;
-        } else if (publicEntry.level === 'mixed') {
-          isPublic = undefined;
-        } else {
-          isPublic = true;
-        }
-
-        const grants = nonPublicGrants.filter(g => g.level !== 'mixed') as AccessGrantProps[];
-
-        const useCase = BulkGrantEntityPermissionsUseCaseFactory.default();
-        await useCase.execute({ sharedIds: ids, grants, isPublic });
+        isPublic = true;
       }
 
-      ExecutionContext.logger.info('Entity Permissions changed executed successfully', {
-        namespace: 'Entity_Permissions_Changed',
-        success: true,
-        durationMs: Date.now() - startTime,
-      });
+      const grants = nonPublicGrants.filter(g => g.level !== 'mixed') as AccessGrantProps[];
 
-      this.response.json({ ids, permissions });
-    } catch (error: unknown) {
-      ExecutionContext.logger.info(
-        `Entity Permissions change failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
-        {
-          namespace: 'Entity_Permissions_Changed',
-          durationMs: Date.now() - startTime,
-          success: false,
-
-          error: JSON.stringify(error),
-          dto: JSON.stringify(this.request.body),
-        }
-      );
-
-      throw error;
+      const useCase = BulkGrantEntityPermissionsUseCaseFactory.default();
+      await useCase.execute({ sharedIds: ids, grants, isPublic });
     }
+
+    this.response.json({ ids, permissions });
   }
 }
 
