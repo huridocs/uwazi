@@ -14,7 +14,9 @@
     {
       "name": "local",
       "specifier": "./oxlint-plugins/require-js-extension.cjs"
-    }
+    },
+    "eslint-plugin-cypress",
+    "eslint-plugin-storybook"
   ],
   "categories": {
     "correctness": "error",
@@ -177,6 +179,32 @@
       "files": ["app/api/**/*.ts"],
       "rules": {
         "local/require-js-extension": "error"
+      }
+    },
+    {
+      "files": ["cypress/**/*.{js,ts,tsx}"],
+      "rules": {
+        "cypress/no-assigning-return-values": "error",
+        "cypress/no-unnecessary-waiting": "error",
+        "cypress/no-async-tests": "error",
+        "cypress/unsafe-to-chain-command": "error"
+      }
+    },
+    {
+      "files": ["**/*.stories.{ts,tsx,js,jsx}"],
+      "rules": {
+        "react/rules-of-hooks": "off",
+        "storybook/await-interactions": "error",
+        "storybook/context-in-play-function": "error",
+        "storybook/default-exports": "error",
+        "storybook/hierarchy-separator": "warn",
+        "storybook/no-redundant-story-name": "warn",
+        "storybook/no-renderer-packages": "error",
+        "storybook/prefer-pascal-case": "warn",
+        "storybook/story-exports": "error",
+        "storybook/use-storybook-expect": "error",
+        "storybook/use-storybook-testing-library": "error",
+        "storybook/no-uninstalled-addons": "error"
       }
     }
   ]
