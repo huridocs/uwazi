@@ -9,29 +9,37 @@ import {
   translationsAtom,
   userAtom,
 } from '#V2/atoms/index.js';
-import { templates, translations } from '../fixtures/referencesFixtures.js';
+import { templates as fixtureTemplates, translations } from '../fixtures/referencesFixtures.js';
 import { LibraryView } from '#V2/Routes/Library/Components/LibraryView.js';
-import type { Chip } from '#V2/Routes/Library/Components/LibraryToolbar.js';
+import type { Chip } from '#V2/Routes/Library/Components/ActiveFiltersSheet.js';
+import { resolveFilterChipParts } from '#V2/Routes/Library/filterChipLabel.js';
 import type { LibraryFiltersState, LibraryViewMode } from '#V2/Routes/Library/libraryUrlState.js';
 import type { Entity } from '#V2/api/entities/types.js';
-import type { Aggregations } from '#shared/types/aggregations.js';
+import type { LibraryAggregations } from '#shared/types/librarySearch.js';
 
-const aggregations: Aggregations = {
-  all: {
-    _published: {
-      buckets: [
-        { key: 'true', filtered: { doc_count: 2 } },
-        { key: 'false', filtered: { doc_count: 1 } },
-      ],
-    },
-    _types: {
-      buckets: [
-        { key: 'template1', filtered: { doc_count: 2 } },
-        { key: 'template2', filtered: { doc_count: 1 } },
-      ],
-    },
+const aggregations: LibraryAggregations = {
+  templates: [
+    { id: 'template1', count: 2 },
+    { id: 'template2', count: 1 },
+  ],
+  published: { published: 2, restricted: 1 },
+  properties: {
+    country: [
+      { id: 'ES', label: 'Spain', count: 1 },
+      { id: 'FR', label: 'France', count: 1 },
+    ],
   },
 };
+
+const templates = [
+  {
+    ...fixtureTemplates[0]!,
+    properties: [
+      { _id: 'prop-country', type: 'select' as const, label: 'Country', name: 'country' },
+    ],
+  },
+  ...fixtureTemplates.slice(1),
+];
 
 const rows: Entity[] = [
   {
@@ -76,7 +84,12 @@ const LibraryPreview = () => {
       values.forEach(value => {
         items.push({
           key: `${key}:${value}`,
-          label: value,
+          label: (() => {
+            const parts = resolveFilterChipParts(key, value, templates, aggregations);
+            return `${parts.propertyLabel}: ${parts.valueLabel}`;
+          })(),
+          color:
+            key === 'type' ? templates.find(template => template._id === value)?.color : undefined,
           onRemove: () =>
             setFilters(current => {
               const next = {

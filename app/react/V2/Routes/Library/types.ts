@@ -1,4 +1,4 @@
-import type { LibrarySearchResult } from '#V2/api/librarySearch.js';
+import type { LibrarySearchResult } from '#shared/types/librarySearch.js';
 import type { LibraryUrlState } from './libraryUrlState.js';
 
 type LoaderResponse = LibrarySearchResult & {

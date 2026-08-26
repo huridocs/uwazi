@@ -2,15 +2,17 @@ import React, { useCallback, useEffect, useMemo, useState, type ReactNode } from
 import { useLoaderData } from 'react-router';
 import { useAtomValue } from 'jotai';
 import { useQueryStates } from 'nuqs';
+import { ClientThesaurus, Template } from '#app/apiResponseTypes.js';
 import { Translate } from '#app/I18N/index.js';
-import { settingsAtom } from '#V2/atoms/settingsAtom.js';
-import { templatesAtom } from '#V2/atoms/templatesAtom.js';
 import {
-  isEntityViewerV2Enabled,
   getEntityViewerV2BasePath,
+  isEntityViewerV2Enabled,
 } from '#app/utils/entityViewerPaths.js';
+import { LibraryAggregations } from '#shared/types/librarySearch.js';
+import { settingsAtom, templatesAtom, thesauriAtom } from '#V2/atoms/index.js';
 import { LibraryView } from './Components/LibraryView.js';
-import type { Chip } from './Components/LibraryToolbar.js';
+import type { Chip } from './Components/ActiveFiltersSheet.js';
+import { resolveFilterChipParts } from './filterChipLabel.js';
 import { librarySearchParams } from './librarySearchParams.js';
 import { DEFAULT_LIBRARY_URL_STATE, type LibraryFiltersState } from './libraryUrlState.js';
 import type { LoaderResponse } from './types.js';
@@ -28,22 +30,26 @@ const removeFilterValue = (
   return next;
 };
 
+const translatedText = (text: string, context?: string) =>
+  context ? <Translate context={context}>{text}</Translate> : <Translate>{text}</Translate>;
+
 const chipLabel = (
   key: string,
   value: string,
-  templates: { _id: string; name: string }[]
+  templates: Template[],
+  aggregations: LibraryAggregations,
+  thesauri: ClientThesaurus[]
 ): ReactNode => {
-  if (key === 'status') {
-    return <Translate>{value === 'restricted' ? 'Restricted' : 'Published'}</Translate>;
-  }
-  if (key === 'type') {
-    const template = templates.find(item => item._id === value);
-    if (!template) {
-      return value;
-    }
-    return <Translate context={template._id}>{template.name}</Translate>;
-  }
-  return `${key}: ${value}`;
+  const parts = resolveFilterChipParts(key, value, templates, aggregations, thesauri);
+  return (
+    <>
+      {translatedText(parts.propertyLabel, parts.propertyContext)}
+      {': '}
+      {parts.translateValue
+        ? translatedText(parts.valueLabel, parts.valueContext)
+        : parts.valueLabel}
+    </>
+  );
 };
 
 const Library = () => {
@@ -51,6 +57,7 @@ const Library = () => {
   const [urlState, setUrlState] = useQueryStates(librarySearchParams);
   const settings = useAtomValue(settingsAtom);
   const templates = useAtomValue(templatesAtom);
+  const thesauri = useAtomValue(thesauriAtom);
   const [selectedId, setSelectedId] = useState<string>();
   const [searchInput, setSearchInput] = useState(urlState.search);
 
@@ -82,7 +89,9 @@ const Library = () => {
       values.forEach(value => {
         items.push({
           key: `${key}:${value}`,
-          label: chipLabel(key, value, templates),
+          label: chipLabel(key, value, templates, data.aggregations, thesauri),
+          color:
+            key === 'type' ? templates.find(template => template._id === value)?.color : undefined,
           onRemove: () => {
             updateUrl({
               filters: removeFilterValue(urlState.filters, key, value),
@@ -93,7 +102,7 @@ const Library = () => {
       });
     });
     return items;
-  }, [templates, updateUrl, urlState.filters]);
+  }, [data.aggregations, templates, thesauri, updateUrl, urlState.filters]);
 
   return (
     <LibraryView

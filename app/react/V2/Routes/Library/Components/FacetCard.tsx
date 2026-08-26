@@ -4,10 +4,15 @@ import { checkboxInputClassName } from '#V2/Components/Forms/Checkbox.js';
 
 type FacetCardProps = {
   children: ReactNode;
+  title?: ReactNode;
+  open?: boolean;
 };
 
-const FacetCard = ({ children }: FacetCardProps) => (
-  <div className="rounded-lg border border-border/60 bg-paper p-1.5">{children}</div>
+const FacetCard = ({ children, title, open = true }: FacetCardProps) => (
+  <div className="rounded-lg border border-border/60 bg-paper p-1.5">
+    {title && <div className="px-2 pt-1 pb-0.5 text-sm font-bold text-ink">{title}</div>}
+    {open ? children : null}
+  </div>
 );
 
 type FacetRowProps = {
@@ -70,10 +75,10 @@ const FacetRow = ({
       className={checkboxInputClassName}
     />
     <span className="ms-2.5 flex min-w-0 flex-1 items-center gap-1.5">
+      {icon}
       <span className={`truncate text-sm ${bold ? 'text-ink' : 'text-ink-secondary'}`}>
         {label}
       </span>
-      {icon}
     </span>
     <span
       className={`shrink-0 text-sm tabular-nums ${bold ? 'font-bold text-ink' : 'font-medium text-ink-tertiary'}`}

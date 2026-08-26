@@ -80,7 +80,7 @@ import {
   createTemplatesEditorLoader,
 } from '#V2/Routes/Settings/Templates/index.js';
 import { Entity, entityLoader } from '#V2/Routes/Entity/index.js';
-import { Library, libraryLoader } from '#V2/Routes/Library/index.js';
+import { Library, createLibraryLoader } from '#V2/Routes/Library/index.js';
 import {
   loggedInUsersRoute,
   adminsOnlyRoute,
@@ -228,7 +228,7 @@ const getRoutesLayout = (
         <Route
           path="library"
           element={<Library />}
-          loader={libraryLoader(headers)}
+          loader={createLibraryLoader(services)(headers)}
           handle={{ library: true }}
         />
         <Route path="legacy-library/*" element={privateRoute(<LibraryRoot />, settings)}>
@@ -271,7 +271,7 @@ const getRoutesLayout = (
         <Route
           path="libraryv2"
           element={<Library />}
-          loader={libraryLoader(headers)}
+          loader={createLibraryLoader(services)(headers)}
           handle={{ library: true }}
         />
       </>

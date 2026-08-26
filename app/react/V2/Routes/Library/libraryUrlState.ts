@@ -224,6 +224,19 @@ const serializeLibrarySearchString = (state: Partial<LibraryUrlState>): string =
   return parts.join('&');
 };
 
+const publishedStatusFromFilters = (
+  status: string[] | undefined
+): 'published' | 'restricted' | 'all' => {
+  const values = status ?? [];
+  if (!values.length || (values.includes('published') && values.includes('restricted'))) {
+    return 'all';
+  }
+  if (values.includes('restricted') && !values.includes('published')) {
+    return 'restricted';
+  }
+  return 'published';
+};
+
 export {
   DEFAULT_LIBRARY_URL_STATE,
   parseCompactFilters,
@@ -232,5 +245,6 @@ export {
   parseLibrarySearchParams,
   serializeLibrarySearchParams,
   serializeLibrarySearchString,
+  publishedStatusFromFilters,
 };
 export type { LibraryFiltersState, LibraryUrlState, LibraryViewMode, LibrarySortOrder };

@@ -1,31 +1,21 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { GlobeAltIcon, LockClosedIcon } from '@heroicons/react/24/outline';
 import { useAtomValue } from 'jotai';
 import { Translate } from '#app/I18N/index.js';
 import { templatesAtom } from '#V2/atoms/templatesAtom.js';
 import { NeedAuthorization } from '#V2/Components/UI/NeedAuthorization.js';
-import { Aggregations } from '#shared/types/aggregations.js';
+import type { LibraryAggregations } from '#shared/types/librarySearch.js';
 import type { LibraryFiltersState } from '../libraryUrlState.js';
 import { FacetCard, FacetRow } from './FacetCard.js';
-
-const HIDDEN_AGGREGATION_KEYS = new Set([
-  '_types',
-  '_published',
-  'generatedToc',
-  '_permissions.self',
-  '_permissions.read',
-  '_permissions.write',
-]);
+import { LibraryFooterButton } from './LibraryFooterButton.js';
+import { ActiveFiltersSheet, type Chip } from './ActiveFiltersSheet.js';
 
 type LibraryFiltersProps = {
-  aggregations: Aggregations;
+  aggregations: LibraryAggregations;
   filters: LibraryFiltersState;
   onChange: (filters: LibraryFiltersState) => void;
+  chips?: Chip[];
 };
-
-const bucketCount = (aggregations: Aggregations, name: string, key: string) =>
-  aggregations.all?.[name]?.buckets?.find(bucket => String(bucket.key) === key)?.filtered
-    ?.doc_count ?? 0;
 
 const toggleValue = (current: string[] | undefined, value: string): string[] => {
   const next = new Set(current ?? []);
@@ -37,22 +27,26 @@ const toggleValue = (current: string[] | undefined, value: string): string[] => 
   return [...next];
 };
 
-const LibraryFilters = ({ aggregations, filters, onChange }: LibraryFiltersProps) => {
+const LibraryFilters = ({ aggregations, filters, onChange, chips = [] }: LibraryFiltersProps) => {
   const templates = useAtomValue(templatesAtom);
   const typeIds = filters.type ?? [];
   const status = filters.status ?? [];
   const templateById = new Map(templates.map(template => [template._id, template]));
 
-  const typeBuckets = aggregations.all?._types?.buckets ?? [];
-  const propertyFacets = Object.entries(aggregations.all || {}).filter(
-    ([key, value]) => !HIDDEN_AGGREGATION_KEYS.has(key) && value?.buckets?.length
+  const publishedCount = aggregations.published.published;
+  const restrictedCount = aggregations.published.restricted;
+  const showStatus = publishedCount + restrictedCount > 0;
+  const propertyFacets = Object.entries(aggregations.properties).filter(
+    ([, buckets]) => buckets.length
   );
 
-  const publishedCount = bucketCount(aggregations, '_published', 'true');
-  const restrictedCount = bucketCount(aggregations, '_published', 'false');
-  const showStatus = publishedCount + restrictedCount > 0;
-
   const activeCount = Object.values(filters).reduce((sum, values) => sum + values.length, 0);
+  const facetIds = ['status', 'type', ...propertyFacets.map(([name]) => name)];
+  const [openFacets, setOpenFacets] = useState<Record<string, boolean>>({});
+  const isOpen = (id: string) => openFacets[id] !== false;
+  const setAllFacets = (open: boolean) => {
+    setOpenFacets(Object.fromEntries(facetIds.map(id => [id, open])));
+  };
 
   const setFilter = (key: string, values: string[]) => {
     const next = { ...filters };
@@ -75,7 +69,7 @@ const LibraryFilters = ({ aggregations, filters, onChange }: LibraryFiltersProps
       <div className="flex-1 space-y-2 overflow-auto px-3.5 pb-3">
         {showStatus && (
           <NeedAuthorization roles={['admin', 'editor', 'collaborator']}>
-            <FacetCard>
+            <FacetCard title={<Translate>Status</Translate>} open={isOpen('status')}>
               <FacetRow
                 checked={status.includes('restricted')}
                 onToggle={() => setFilter('status', toggleValue(status, 'restricted'))}
@@ -96,20 +90,23 @@ const LibraryFilters = ({ aggregations, filters, onChange }: LibraryFiltersProps
           </NeedAuthorization>
         )}
 
-        {typeBuckets.length > 0 && (
-          <FacetCard>
-            {typeBuckets.map(bucket => {
-              const id = String(bucket.key);
-              const template = templateById.get(id);
+        {aggregations.templates.length > 0 && (
+          <FacetCard title={<Translate>Type</Translate>} open={isOpen('type')}>
+            {aggregations.templates.map(bucket => {
+              const template = templateById.get(bucket.id);
               return (
                 <FacetRow
-                  key={id}
-                  checked={typeIds.includes(id)}
-                  onToggle={() => setFilter('type', toggleValue(typeIds, id))}
+                  key={bucket.id}
+                  checked={typeIds.includes(bucket.id)}
+                  onToggle={() => setFilter('type', toggleValue(typeIds, bucket.id))}
                   label={
-                    template ? <Translate context={template._id}>{template.name}</Translate> : id
+                    template ? (
+                      <Translate context={template._id}>{template.name}</Translate>
+                    ) : (
+                      bucket.id
+                    )
                   }
-                  count={bucket.filtered?.doc_count ?? 0}
+                  count={bucket.count}
                   bold
                 />
               );
@@ -117,47 +114,52 @@ const LibraryFilters = ({ aggregations, filters, onChange }: LibraryFiltersProps
           </FacetCard>
         )}
 
-        {propertyFacets.map(([name, aggregation]) => {
+        {propertyFacets.map(([name, buckets]) => {
           const property = templates
             .flatMap(template => template.properties ?? [])
             .find(item => item.name === name);
           return (
-            <FacetCard key={name}>
-              <div className="px-2 pt-1 text-sm font-bold text-ink">
-                {property ? (
+            <FacetCard
+              key={name}
+              title={
+                property ? (
                   <Translate context={property._id || property.name}>{property.label}</Translate>
                 ) : (
                   name
-                )}
-              </div>
-              {aggregation.buckets
-                .filter(bucket => bucket.key !== 'missing')
-                .map(bucket => {
-                  const id = String(bucket.key);
-                  return (
-                    <FacetRow
-                      key={id}
-                      checked={(filters[name] ?? []).includes(id)}
-                      onToggle={() => setFilter(name, toggleValue(filters[name], id))}
-                      label={bucket.label || id}
-                      count={bucket.filtered?.doc_count ?? 0}
-                    />
-                  );
-                })}
+                )
+              }
+              open={isOpen(name)}
+            >
+              {buckets.map(bucket => (
+                <FacetRow
+                  key={bucket.id}
+                  checked={(filters[name] ?? []).includes(bucket.id)}
+                  onToggle={() => setFilter(name, toggleValue(filters[name], bucket.id))}
+                  label={bucket.label || bucket.id}
+                  count={bucket.count}
+                />
+              ))}
             </FacetCard>
           );
         })}
       </div>
 
-      <div className="flex h-12 shrink-0 items-center border-t border-border px-3.5">
-        <button
-          type="button"
+      <ActiveFiltersSheet chips={chips} onClearAll={() => onChange({})} />
+
+      <div className="flex h-12 shrink-0 items-center gap-2 border-t border-border px-3.5">
+        <LibraryFooterButton onClick={() => setAllFacets(false)}>
+          <Translate>Collapse all</Translate>
+        </LibraryFooterButton>
+        <LibraryFooterButton onClick={() => setAllFacets(true)}>
+          <Translate>Expand all</Translate>
+        </LibraryFooterButton>
+        <LibraryFooterButton
+          className="ms-auto"
           onClick={() => onChange({})}
           disabled={activeCount === 0}
-          className="cursor-pointer rounded-md bg-paper px-3 py-1.5 text-xs font-medium text-ink-secondary transition-colors hover:bg-parchment hover:text-ink disabled:cursor-default disabled:opacity-40 disabled:hover:bg-paper"
         >
           <Translate>Clear</Translate>
-        </button>
+        </LibraryFooterButton>
       </div>
     </div>
   );

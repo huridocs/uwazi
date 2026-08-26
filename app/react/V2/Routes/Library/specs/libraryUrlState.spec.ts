@@ -5,6 +5,7 @@ import {
   serializeLibrarySearchParams,
   serializeLibrarySearchString,
   normalizeFilters,
+  publishedStatusFromFilters,
 } from '../libraryUrlState.js';
 
 describe('libraryUrlState', () => {
@@ -38,6 +39,13 @@ describe('libraryUrlState', () => {
       expect(normalizeFilters({ status: ['published', 'restricted'], type: ['a'] })).toEqual({
         type: ['a'],
       });
+    });
+
+    it('maps omitted status to all, and single values to published or restricted', () => {
+      expect(publishedStatusFromFilters(undefined)).toBe('all');
+      expect(publishedStatusFromFilters(['published', 'restricted'])).toBe('all');
+      expect(publishedStatusFromFilters(['published'])).toBe('published');
+      expect(publishedStatusFromFilters(['restricted'])).toBe('restricted');
     });
   });
 

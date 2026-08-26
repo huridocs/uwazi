@@ -11,28 +11,19 @@ import {
 import { templates, translations } from '../fixtures/referencesFixtures.js';
 import { LibraryFilters } from '#V2/Routes/Library/Components/LibraryFilters.js';
 import type { LibraryFiltersState } from '#V2/Routes/Library/libraryUrlState.js';
-import type { Aggregations } from '#shared/types/aggregations.js';
+import type { LibraryAggregations } from '#shared/types/librarySearch.js';
 
-const aggregations: Aggregations = {
-  all: {
-    _published: {
-      buckets: [
-        { key: 'true', filtered: { doc_count: 12 } },
-        { key: 'false', filtered: { doc_count: 3 } },
-      ],
-    },
-    _types: {
-      buckets: [
-        { key: 'template1', filtered: { doc_count: 8 }, label: 'Documents' },
-        { key: 'template2', filtered: { doc_count: 7 }, label: 'Person' },
-      ],
-    },
-    country: {
-      buckets: [
-        { key: 'ES', filtered: { doc_count: 5 }, label: 'Spain' },
-        { key: 'FR', filtered: { doc_count: 4 }, label: 'France' },
-      ],
-    },
+const aggregations: LibraryAggregations = {
+  templates: [
+    { id: 'template1', count: 8 },
+    { id: 'template2', count: 7 },
+  ],
+  published: { published: 12, restricted: 3 },
+  properties: {
+    country: [
+      { id: 'ES', label: 'Spain', count: 5 },
+      { id: 'FR', label: 'France', count: 4 },
+    ],
   },
 };
 

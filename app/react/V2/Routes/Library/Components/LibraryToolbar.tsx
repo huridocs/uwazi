@@ -1,21 +1,15 @@
-import React, { type ReactNode } from 'react';
-import { Squares2X2Icon, Bars3Icon } from '@heroicons/react/24/outline';
-import { Translate } from '#app/I18N/index.js';
+/* eslint-disable react/no-multi-comp */
+import React from 'react';
+import { CheckIcon } from '@heroicons/react/24/solid';
+import { Translate, t } from '#app/I18N/index.js';
 import {
-  ActiveFilterChip,
   DisplayMenu,
   DisplayMenuRow,
   QuerySearchBar,
-  SegmentedControl,
   WarmSelect,
 } from '#V2/Components/UI/index.js';
+import { SearchTipsContent } from '#V2/Routes/Entity/Components/search/index.js';
 import type { LibrarySortOrder, LibraryViewMode } from '../libraryUrlState.js';
-
-type Chip = {
-  key: string;
-  label: ReactNode;
-  onRemove: () => void;
-};
 
 type LibraryToolbarProps = {
   search: string;
@@ -25,15 +19,46 @@ type LibraryToolbarProps = {
   sort: string;
   order: LibrarySortOrder;
   onSortChange: (sort: string, order: LibrarySortOrder) => void;
-  chips: Chip[];
   totalRows: number;
+  showThumbnail: boolean;
+  onShowThumbnailChange: (value: boolean) => void;
+  showMetadata: boolean;
+  onShowMetadataChange: (value: boolean) => void;
 };
 
 const SORT_OPTIONS = [
-  { value: 'title', label: 'Title' },
-  { value: 'creationDate', label: 'Date added' },
-  { value: '_score', label: 'Relevance' },
+  { value: 'title', label: t('System', 'Title', null, false) },
+  { value: 'creationDate', label: t('System', 'Date added', null, false) },
+  { value: '_score', label: t('System', 'Relevance', null, false) },
 ];
+
+const VIEW_OPTIONS = [
+  { value: 'cards', label: t('System', 'Cards', null, false) },
+  { value: 'list', label: t('System', 'List', null, false) },
+];
+
+const DisplayCheckRow = ({
+  label,
+  checked,
+  onToggle,
+}: {
+  label: React.ReactNode;
+  checked: boolean;
+  onToggle: () => void;
+}) => (
+  <button
+    type="button"
+    role="menuitemcheckbox"
+    aria-checked={checked}
+    onClick={onToggle}
+    className="flex w-full cursor-pointer items-center gap-2 rounded px-2 py-1.5 text-start transition-colors hover:bg-warm"
+  >
+    <span className="flex w-4 shrink-0 items-center justify-center text-carbon">
+      {checked ? <CheckIcon className="h-3.5 w-3.5" /> : null}
+    </span>
+    <span className={`text-xs ${checked ? 'text-ink' : 'text-ink-tertiary'}`}>{label}</span>
+  </button>
+);
 
 const LibraryToolbar = ({
   search,
@@ -43,62 +68,84 @@ const LibraryToolbar = ({
   sort,
   order,
   onSortChange,
-  chips,
   totalRows,
+  showThumbnail,
+  onShowThumbnailChange,
+  showMetadata,
+  onShowMetadataChange,
 }: LibraryToolbarProps) => {
   const sortValue = sort || 'creationDate';
+  const displayModified = !showThumbnail || !showMetadata || order !== 'desc';
 
   return (
-    <div className="flex shrink-0 flex-col gap-2 border-b border-border px-3 py-2">
-      <div className="flex items-center gap-2">
-        <QuerySearchBar
-          value={search}
-          onChange={onSearchChange}
-          placeholder='Search  •  AND, OR, NOT, "exact", wild*'
-          ariaLabel="Search"
-          clearAriaLabel="Clear search"
-          className="min-w-0 flex-1 pb-0 pt-0"
-          inlineSlot={chips.map(chip => (
-            <ActiveFilterChip key={chip.key} label={chip.label} onRemove={chip.onRemove} />
-          ))}
+    <div className="flex shrink-0 items-center gap-2 border-b border-border bg-parchment px-3 py-2">
+      <QuerySearchBar
+        value={search}
+        onChange={onSearchChange}
+        placeholder={t('System', 'Search title & metadata', null, false)}
+        ariaLabel={t('System', 'Search', null, false)}
+        clearAriaLabel={t('System', 'Clear search', null, false)}
+        tipsAriaLabel={t('System', 'Search tips', null, false)}
+        tipsLabel={<Translate>tips</Translate>}
+        tipsWidth={432}
+        tipsContent={<SearchTipsContent onInsert={onSearchChange} />}
+        className="min-w-0 flex-1 pb-0 pt-0"
+        boxClassName="bg-paper"
+      />
+      <span className="hidden shrink-0 text-nano tabular-nums text-ink-tertiary md:inline">
+        {totalRows} <Translate>entities</Translate>
+      </span>
+      <WarmSelect
+        ariaLabel={t('System', 'Sort', null, false)}
+        variant="paper"
+        value={sortValue}
+        options={SORT_OPTIONS}
+        onChange={value => onSortChange(value, order)}
+      />
+      <WarmSelect
+        ariaLabel={t('System', 'View', null, false)}
+        variant="paper"
+        value={view}
+        options={VIEW_OPTIONS}
+        onChange={value => onViewChange(value as LibraryViewMode)}
+      />
+      <DisplayMenu
+        ariaLabel={t('System', 'Display options', null, false)}
+        appearance="outlined"
+        modified={displayModified}
+      >
+        <p className="px-2 pt-1 pb-1 text-nano font-semibold uppercase tracking-wide text-ink-tertiary">
+          <Translate>Sort</Translate>
+        </p>
+        <DisplayMenuRow label={<Translate>Order</Translate>}>
+          <WarmSelect
+            ariaLabel={t('System', 'Sort order', null, false)}
+            value={order}
+            options={[
+              { value: 'desc', label: t('System', 'Descending', null, false) },
+              { value: 'asc', label: t('System', 'Ascending', null, false) },
+            ]}
+            onChange={value => onSortChange(sortValue, value as LibrarySortOrder)}
+          />
+        </DisplayMenuRow>
+        <div className="my-1 h-px border-t border-border-soft" />
+        <p className="px-2 pt-1 pb-1 text-nano font-semibold uppercase tracking-wide text-ink-tertiary">
+          <Translate>Show information</Translate>
+        </p>
+        <DisplayCheckRow
+          label={<Translate>Thumbnail</Translate>}
+          checked={showThumbnail}
+          onToggle={() => onShowThumbnailChange(!showThumbnail)}
         />
-        <SegmentedControl
-          ariaLabel="Library view"
-          value={view}
-          onChange={onViewChange}
-          options={[
-            { id: 'cards' as const, title: 'Cards', Icon: Squares2X2Icon },
-            { id: 'list' as const, title: 'List', Icon: Bars3Icon },
-          ]}
+        <DisplayCheckRow
+          label={<Translate>Metadata</Translate>}
+          checked={showMetadata}
+          onToggle={() => onShowMetadataChange(!showMetadata)}
         />
-        <DisplayMenu ariaLabel="Sort" size="sm">
-          <DisplayMenuRow label={<Translate>Sort</Translate>}>
-            <WarmSelect
-              ariaLabel="Sort field"
-              value={sortValue}
-              options={SORT_OPTIONS}
-              onChange={value => onSortChange(value, order)}
-            />
-          </DisplayMenuRow>
-          <DisplayMenuRow label={<Translate>Order</Translate>}>
-            <WarmSelect
-              ariaLabel="Sort order"
-              value={order}
-              options={[
-                { value: 'desc', label: 'Descending' },
-                { value: 'asc', label: 'Ascending' },
-              ]}
-              onChange={value => onSortChange(sortValue, value as LibrarySortOrder)}
-            />
-          </DisplayMenuRow>
-        </DisplayMenu>
-      </div>
-      <p className="text-micro text-ink-tertiary">
-        <Translate>Showing</Translate> {totalRows} <Translate>entities</Translate>
-      </p>
+      </DisplayMenu>
     </div>
   );
 };
 
-export type { Chip, LibraryToolbarProps };
+export type { LibraryToolbarProps };
 export { LibraryToolbar };
