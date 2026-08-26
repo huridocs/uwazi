@@ -10,6 +10,12 @@
     "jest",
     "node"
   ],
+  "jsPlugins": [
+    {
+      "name": "local",
+      "specifier": "./oxlint-plugins/require-js-extension.cjs"
+    }
+  ],
   "categories": {
     "correctness": "error",
     "suspicious": "warn",
@@ -165,6 +171,12 @@
             ]
           }
         ]
+      }
+    },
+    {
+      "files": ["app/api/**/*.ts"],
+      "rules": {
+        "local/require-js-extension": "error"
       }
     }
   ]
