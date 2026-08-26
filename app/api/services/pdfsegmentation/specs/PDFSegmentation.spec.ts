@@ -21,7 +21,7 @@ import { DB } from '#api/odm/index.js';
 import { Db } from 'mongodb';
 import request from '#shared/JSONRequest.js';
 
-// eslint-disable-next-line node/no-restricted-import
+// eslint-disable-next-line no-restricted-imports
 import fs from 'fs/promises';
 import { config } from '#api/config.js';
 import { PDFSegmentation } from '../PDFSegmentation.js';

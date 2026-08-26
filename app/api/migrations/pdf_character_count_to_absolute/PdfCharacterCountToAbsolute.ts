@@ -1,4 +1,4 @@
-//eslint-disable-next-line node/no-restricted-import
+//eslint-disable-next-line no-restricted-imports
 import fs from 'fs';
 import { spawn } from 'child-process-promise';
 import convert from 'xml-js';

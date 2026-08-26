@@ -1,5 +1,5 @@
 import { fileURLToPath, pathToFileURL } from 'url';
-// eslint-disable-next-line node/no-restricted-import
+// eslint-disable-next-line no-restricted-imports
 import fs from 'fs/promises';
 import path, { dirname } from 'path';
 import migrationsModel from './migrationsModel.js';

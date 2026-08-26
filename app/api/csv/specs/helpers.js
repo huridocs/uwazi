@@ -1,9 +1,9 @@
 import path from 'path';
 import yazl from 'yazl';
 import { Readable } from 'stream';
-// eslint-disable-next-line node/no-restricted-import
+// eslint-disable-next-line no-restricted-imports
 import fsPromises from 'fs/promises';
-// eslint-disable-next-line node/no-restricted-import
+// eslint-disable-next-line no-restricted-imports
 import fs from 'fs';
 
 const createTestingZip = (filesToZip, fileName, directory = __dirname) =>

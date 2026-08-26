@@ -1,6 +1,6 @@
-// eslint-disable-next-line node/no-restricted-import
+// eslint-disable-next-line no-restricted-imports
 import { createReadStream } from 'fs';
-// eslint-disable-next-line node/no-restricted-import
+// eslint-disable-next-line no-restricted-imports
 import { stat } from 'fs/promises';
 import * as os from 'os';
 import { legacyLogger } from '#api/log/index.js';

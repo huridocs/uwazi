@@ -1,7 +1,7 @@
 import path from 'path';
 import { deleteFiles } from '#api/files/index.js';
 import { createTestingZip } from '#api/csv/specs/helpers.js';
-// eslint-disable-next-line node/no-restricted-import
+// eslint-disable-next-line no-restricted-imports
 import fs from 'fs/promises';
 import zipFile from '../zipFile.js';
 

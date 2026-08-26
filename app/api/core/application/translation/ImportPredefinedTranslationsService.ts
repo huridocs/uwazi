@@ -2,7 +2,7 @@ import * as os from 'os';
 import path from 'path';
 import { Readable } from 'stream';
 import { pipeline } from 'stream/promises';
-// eslint-disable-next-line node/no-restricted-import -- CSVLoader needs a filesystem path
+// eslint-disable-next-line no-restricted-imports -- CSVLoader needs a filesystem path
 import { createWriteStream } from 'fs';
 import { CSVLoader } from '#api/csv/index.js';
 import { generateFileName } from '#api/files/index.js';

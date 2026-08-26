@@ -97,18 +97,20 @@ export default defineConfig([
         },
       ],
 
-      'node/no-restricted-import': [
+      'no-restricted-imports': [
         'error',
-        [
-          {
-            name: 'fs',
-            message: 'Please use { storage } from api/files',
-          },
-          {
-            name: 'fs/promises',
-            message: 'Please use { storage } from api/files',
-          },
-        ],
+        {
+          paths: [
+            {
+              name: 'fs',
+              message: 'Please use { storage } from api/files',
+            },
+            {
+              name: 'fs/promises',
+              message: 'Please use { storage } from api/files',
+            },
+          ],
+        },
       ],
 
       indent: 'off',

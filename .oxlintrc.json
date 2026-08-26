@@ -78,7 +78,24 @@
     "typescript/no-floating-promises": "error",
     "typescript/no-misused-promises": ["error", { "checksVoidReturn": false }],
     "typescript/promise-function-async": "error",
-    "typescript/unbound-method": "warn"
+    "typescript/unbound-method": "warn",
+    "react/rules-of-hooks": "error",
+    "eslint/no-use-before-define": "error",
+    "react/jsx-no-useless-fragment": ["error", { "allowExpressions": true }],
+    "react/no-unknown-property": [
+      "error",
+      {
+        "ignore": [
+          "no-translate",
+          "date-rangepicker",
+          "datepicker",
+          "inline-datepicker",
+          "datepicker-autohide",
+          "datepicker-buttons",
+          "datepicker-autoselect-today"
+        ]
+      }
+    ]
   },
   "env": {
     "browser": true,
@@ -98,6 +115,16 @@
         "eslint/no-restricted-imports": [
           "error",
           {
+            "paths": [
+              {
+                "name": "fs",
+                "message": "Please use { storage } from api/files"
+              },
+              {
+                "name": "fs/promises",
+                "message": "Please use { storage } from api/files"
+              }
+            ],
             "patterns": [
               {
                 "group": ["**/infrastructure/*/user/*UsersDAO*", "**/factories/UsersDAOFactory*"],

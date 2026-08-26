@@ -1,7 +1,7 @@
 /* eslint-disable max-statements */
 /* eslint-disable max-lines */
 import type { Request as ExpressRequest, Response } from 'express';
-// eslint-disable-next-line node/no-restricted-import
+// eslint-disable-next-line no-restricted-imports
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
