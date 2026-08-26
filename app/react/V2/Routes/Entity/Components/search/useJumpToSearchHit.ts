@@ -1,6 +1,8 @@
 import { useCallback } from 'react';
 import { useSetAtom } from 'jotai';
+import { useTabGroup } from '#V2/Components/UI/index.js';
 import { useEntityLanguage } from '#V2/Routes/Entity/Components/context/index.js';
+import { useEntityTabNavigation } from '../../Tabs/EntityTabsContext.js';
 import { useUpdateEntityUrl } from '../../entityUrlState.js';
 import { SIDE_TAB_PARAM } from '../../urlParams.js';
 import { applyMainTabSearchParam } from '../../Tabs/entityTabState.js';
@@ -13,11 +15,15 @@ import {
 const useJumpToSearchHit = () => {
   const setFocusField = useSetAtom(focusMetadataFieldAtom);
   const updateEntityUrl = useUpdateEntityUrl();
+  const { selectTab: selectMainTab } = useTabGroup('entity-main');
+  const { stageSideTab } = useEntityTabNavigation();
   const { mainDocument } = useEntityLanguage();
   const hasMainDocument = Boolean(mainDocument?.filename);
 
   const ensureMainTab = useCallback(
     (mainTab: MainTabId, options?: { hash?: (params: URLSearchParams) => void }) => {
+      selectMainTab(mainTab);
+      stageSideTab(SIDE_TAB.SEARCH);
       updateEntityUrl({
         search: next => applyMainTabSearchParam(next, mainTab, hasMainDocument),
         hash: next => {
@@ -26,7 +32,7 @@ const useJumpToSearchHit = () => {
         },
       });
     },
-    [hasMainDocument, updateEntityUrl]
+    [hasMainDocument, selectMainTab, stageSideTab, updateEntityUrl]
   );
 
   const jumpToProperty = useCallback(

@@ -10,6 +10,7 @@ import {
 } from '#V2/formatters/relationships/relationshipsPanelProjection.js';
 import {
   useEntityLanguage,
+  useDocumentRelationshipNav,
   useRelationshipsPanelFacetFilters,
   useDirectedRelationships,
 } from '#V2/Routes/Entity/Components/context/index.js';
@@ -26,6 +27,7 @@ const useDocumentPdfClusterHighlight = ({
 }: UseDocumentPdfClusterHighlightParams) => {
   const { mainDocument } = useEntityLanguage();
   const relationships = useDirectedRelationships();
+  const { activeRelationshipId } = useDocumentRelationshipNav();
   const { activeClusterRefIds, setActiveClusterRefIds } = useRelationshipsPanelFacetFilters();
   const templates = useAtomValue(templatesAtom);
 
@@ -62,7 +64,7 @@ const useDocumentPdfClusterHighlight = ({
   );
 
   useEffect(() => {
-    if (!activeClusterRefIds?.length || !mainPdfController || !entity) return;
+    if (activeRelationshipId || !activeClusterRefIds?.length || !mainPdfController || !entity) return;
     const liveMarkers = activeClusterRefIds.flatMap(id => {
       const marker = findMarkerById(id);
       return marker ? [marker] : [];
@@ -71,6 +73,7 @@ const useDocumentPdfClusterHighlight = ({
     syncClusterHighlights(liveMarkers);
   }, [
     activeClusterRefIds,
+    activeRelationshipId,
     entity,
     findMarkerById,
     mainPdfController,

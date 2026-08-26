@@ -25,6 +25,7 @@ const useEntityTabNavigation = () => {
     relationshipsOnMain,
     documentOnMain,
     focusSideTab,
+    stageSideTab,
     focusRelationshipsPanel,
     focusDocumentPanel,
   } = useEntityTabsContext();
@@ -33,6 +34,7 @@ const useEntityTabNavigation = () => {
     relationshipsOnMain,
     documentOnMain,
     focusSideTab,
+    stageSideTab,
     focusRelationshipsPanel,
     focusDocumentPanel,
   };

@@ -1,9 +1,7 @@
-import React, { useMemo } from 'react';
-import { useTabGroup } from '#V2/Components/UI/index.js';
+import React from 'react';
 import type { TabButtonDef } from '#V2/Components/UI/Tabs/tabsAtoms.js';
 import type { Entity as EntityType, FileType } from '#V2/api/entities/types.js';
-import { resolveActiveTabId } from '../Components/context/metadataEditingSession.js';
-import { SIDE_TAB, isValidSideTab, type SideTabId } from './tabIds.js';
+import { SIDE_TAB, type SideTabId } from './tabIds.js';
 import { TabsSideButtons } from './TabsSideButtons.js';
 import { SideTabsContent } from './SideTabsContent.js';
 import { SideTabsFooters } from './SideTabsFooters.js';
@@ -29,11 +27,7 @@ const SideTabsPanel = ({
   mainDocument,
   pagePlaintext,
 }: SideTabsPanelProps) => {
-  const { activeTabId: atomSideTab } = useTabGroup('entity-side');
-  const displaySideTab = useMemo(() => {
-    const resolved = resolveActiveTabId(atomSideTab, activeSideTab);
-    return isValidSideTab(resolved) ? resolved : activeSideTab;
-  }, [activeSideTab, atomSideTab]);
+  const displaySideTab = activeSideTab;
 
   return (
     <div className="relative flex h-full min-h-0 min-w-0 w-full flex-col gap-3 overflow-hidden border-l border-border-soft">

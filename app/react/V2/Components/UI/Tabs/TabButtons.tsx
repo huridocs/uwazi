@@ -34,11 +34,12 @@ const TabButtons = ({
 }: TabButtonsProps) => {
   const { activeTabId: atomActiveTabId, syncButtons, selectTab } = useTabGroup(groupId);
   const displayActiveTabId = activeTabId ?? atomActiveTabId;
+  const atomSyncTabId = syncActiveTabId ?? activeTabId;
   const totalTabs = buttons.length;
 
   useEffect(() => {
-    syncButtons(buttons, syncActiveTabId);
-  }, [syncActiveTabId, buttons, syncButtons]);
+    syncButtons(buttons, atomSyncTabId);
+  }, [atomSyncTabId, buttons, syncButtons]);
 
   if (totalTabs === 0) {
     return null;

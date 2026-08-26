@@ -127,7 +127,7 @@ const CollapsibleRelationshipRow = ({
           <div className="mt-1 flex items-center gap-1 text-nano text-ink-tertiary">{meta}</div>
         )}
       </ListCardRow>
-      {expanded && <div className="ml-[14px]">{children}</div>}
+      {expanded && <div className="ml-3.5">{children}</div>}
     </div>
   );
 };

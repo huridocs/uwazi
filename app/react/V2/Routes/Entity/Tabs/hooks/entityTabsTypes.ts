@@ -21,6 +21,7 @@ type EntityTabsState = {
   onMainTabChange: (selectedMainTab: string) => void;
   onSideTabChange: (selectedSideTab: string) => void;
   focusSideTab: (sideTab: SideTabId) => void;
+  stageSideTab: (sideTab: SideTabId) => void;
   focusRelationshipsPanel: () => void;
   focusDocumentPanel: () => void;
 };

@@ -33,7 +33,7 @@ const useEntityTabs = ({
   const hashParams = useEntityHashParams();
   const updateEntityUrl = useUpdateEntityUrl();
   const setTabGroups = useSetAtom(tabGroupsAtom);
-  const { selectTab: selectSideTab } = useTabGroup('entity-side');
+  const { selectTab: selectSideTab, activeTabId: atomSideTab } = useTabGroup('entity-side');
   const relationships = useDirectedRelationships();
   const { isDirty: metadataDirty } = useMetadataEditing();
   const templates = useAtomValue(templatesAtom);
@@ -95,10 +95,15 @@ const useEntityTabs = ({
   const documentOnMain = activeMainTab === MAIN_TAB.DOCUMENT;
   const pendingSideTabId = pendingSideTabRef.current ?? pendingSideTab;
   const syncSideTabId = pendingSideTabId ?? explicitSideTab;
-  const activeSideTabResolved = useMemo(
-    () => syncSideTabId ?? resolveSideTabId(null, sideButtons),
-    [sideButtons, syncSideTabId]
-  );
+  const activeSideTabResolved = useMemo(() => {
+    if (pendingSideTabId) return pendingSideTabId;
+    if (explicitSideTab) return explicitSideTab;
+    return resolveSideTabId(
+      null,
+      sideButtons,
+      isValidSideTab(atomSideTab) ? atomSideTab : undefined
+    );
+  }, [atomSideTab, explicitSideTab, pendingSideTabId, sideButtons]);
 
   const clearPendingSideTab = useCallback(() => {
     pendingSideTabRef.current = null;
@@ -183,6 +188,15 @@ const useEntityTabs = ({
     ]
   );
 
+  const stageSideTab = useCallback(
+    (sideTab: SideTabId) => {
+      pendingSideTabRef.current = sideTab;
+      setPendingSideTab(sideTab);
+      selectSideTab(sideTab);
+    },
+    [selectSideTab]
+  );
+
   const navigateSideTab = useCallback(
     (sideTab: SideTabId, syncAtom = true) => {
       pendingSideTabRef.current = sideTab;
@@ -229,6 +243,7 @@ const useEntityTabs = ({
     onMainTabChange,
     onSideTabChange,
     focusSideTab,
+    stageSideTab,
     focusRelationshipsPanel,
     focusDocumentPanel,
   };
