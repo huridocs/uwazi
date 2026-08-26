@@ -55,4 +55,9 @@ const activateDocumentCluster = async ({
   await ensureResolved();
 };
 
-export { getMarkerRefIds, toggleClusterIfActive, clusterMarkersToHighlights, activateDocumentCluster };
+export {
+  getMarkerRefIds,
+  toggleClusterIfActive,
+  clusterMarkersToHighlights,
+  activateDocumentCluster,
+};

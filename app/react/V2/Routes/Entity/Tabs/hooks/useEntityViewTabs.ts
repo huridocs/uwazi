@@ -48,6 +48,7 @@ const useEntityViewTabs = (params: UseEntityViewTabsParams) => {
   return {
     activeMainTab: tabs.activeMainTab,
     activeSideTab: tabs.activeSideTab,
+    explicitSideTab: tabs.explicitSideTab,
     ...handlers,
   };
 };

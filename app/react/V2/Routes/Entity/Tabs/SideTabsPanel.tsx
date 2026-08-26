@@ -18,6 +18,7 @@ import { EntityOverlay } from '../Components/relationships/overlay/EntityOverlay
 type SideTabsPanelProps = {
   activeMainTab: MainTabId;
   activeSideTab?: SideTabId;
+  explicitSideTab?: SideTabId;
   onSideTabChange: (tabId: string) => void;
   entity: EntityType;
   mainDocument?: FileType;
@@ -28,6 +29,7 @@ type SideTabsPanelProps = {
 const SideTabsPanel = ({
   activeMainTab,
   activeSideTab,
+  explicitSideTab,
   onSideTabChange,
   entity,
   mainDocument,
@@ -83,6 +85,7 @@ const SideTabsPanel = ({
         <TabsSideButtons
           buttons={sideButtons}
           activeTabId={activeSideTab}
+          syncActiveTabId={explicitSideTab}
           onTabChange={onSideTabChange}
         />
       </div>

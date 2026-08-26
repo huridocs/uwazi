@@ -2,7 +2,13 @@ import { useMemo } from 'react';
 import { Entity as EntityType } from '#V2/api/entities/types.js';
 import { MAIN_TAB_PARAM, SIDE_TAB_PARAM } from '../../urlParams.js';
 import { getSideTabButtons, type FilesSideTabsOptions } from '../sideTabSets.js';
-import { MAIN_TAB, isValidMainTab, type MainTabId } from '../tabIds.js';
+import {
+  MAIN_TAB,
+  isValidMainTab,
+  isValidSideTab,
+  type MainTabId,
+  type SideTabId,
+} from '../tabIds.js';
 import { resolveSideTabId } from './resolveSideTabId.js';
 
 type Params = {
@@ -49,12 +55,21 @@ const useResolvedEntityTabs = ({
     [activeMainTab, entity, hasMainDocument, mainDocumentId, filesSideTabs, relationshipsCount]
   );
 
+  const sideTabFromHash = hashParams.get(SIDE_TAB_PARAM);
+
+  const explicitSideTab = useMemo((): SideTabId | undefined => {
+    if (!isValidSideTab(sideTabFromHash)) return undefined;
+    return sideTabButtons.some(button => button.id === sideTabFromHash)
+      ? sideTabFromHash
+      : undefined;
+  }, [sideTabFromHash, sideTabButtons]);
+
   const activeSideTab = useMemo(
-    () => resolveSideTabId(hashParams.get(SIDE_TAB_PARAM), sideTabButtons),
-    [hashParams, sideTabButtons]
+    () => explicitSideTab ?? resolveSideTabId(null, sideTabButtons),
+    [explicitSideTab, sideTabButtons]
   );
 
-  return { mainTabIds, activeMainTab, sideTabButtons, activeSideTab };
+  return { mainTabIds, activeMainTab, sideTabButtons, activeSideTab, explicitSideTab };
 };
 
 export { useResolvedEntityTabs };

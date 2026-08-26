@@ -15,6 +15,7 @@ type TabButtonsProps = {
   groupId: string;
   buttons: TabButtonDef[];
   activeTabId?: string;
+  syncActiveTabId?: string;
   onTabChange?: (tabId: string) => void;
   className?: string;
   tabListClassName?: string;
@@ -25,6 +26,7 @@ const TabButtons = ({
   groupId,
   buttons,
   activeTabId,
+  syncActiveTabId,
   onTabChange,
   className,
   tabListClassName,
@@ -35,8 +37,8 @@ const TabButtons = ({
   const totalTabs = buttons.length;
 
   useEffect(() => {
-    syncButtons(buttons, activeTabId);
-  }, [activeTabId, buttons, syncButtons]);
+    syncButtons(buttons, syncActiveTabId);
+  }, [syncActiveTabId, buttons, syncButtons]);
 
   if (totalTabs === 0) {
     return null;

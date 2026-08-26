@@ -58,12 +58,13 @@ const EntityView = () => {
     [primaryRows.length]
   );
 
-  const { activeMainTab, activeSideTab, onMainTabChange, onSideTabChange } = useEntityViewTabs({
-    entity,
-    hasMainDocument,
-    mainDocumentId: mainDocument?._id,
-    filesSideTabs,
-  });
+  const { activeMainTab, activeSideTab, explicitSideTab, onMainTabChange, onSideTabChange } =
+    useEntityViewTabs({
+      entity,
+      hasMainDocument,
+      mainDocumentId: mainDocument?._id,
+      filesSideTabs,
+    });
   const { activeTabId: atomMainTabId } = useTabGroup('entity-main');
   const mainTabId = isValidMainTab(atomMainTabId) ? atomMainTabId : activeMainTab;
   const { isEditing, isDirty, isSaving, cancelEdit, formMountHost } = useMetadataEditing();
@@ -118,6 +119,7 @@ const EntityView = () => {
             <SideTabsPanel
               activeMainTab={mainTabId}
               activeSideTab={activeSideTab}
+              explicitSideTab={explicitSideTab}
               onSideTabChange={onSideTabChange}
               entity={entity}
               mainDocument={mainDocument}

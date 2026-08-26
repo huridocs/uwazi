@@ -61,9 +61,12 @@ const useEntityTabUrlSync = ({
         filesSideTabs,
         relationshipsCount,
       });
-      const sideId = resolveSideTabId(sideParams.get(SIDE_TAB_PARAM), sideButtons);
-
       setTabGroups(prev => {
+        const sideId = resolveSideTabId(
+          sideParams.get(SIDE_TAB_PARAM),
+          sideButtons,
+          prev['entity-side']?.activeTabId
+        );
         let next = mergeTabGroup(prev, 'entity-main', { activeTabId: mainId });
         if (sideId) {
           next = mergeTabGroup(next, 'entity-side', { activeTabId: sideId });

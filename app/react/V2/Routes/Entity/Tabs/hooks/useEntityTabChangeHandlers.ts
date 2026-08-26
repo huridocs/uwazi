@@ -1,10 +1,11 @@
 import { useCallback } from 'react';
 import { Entity as EntityType } from '#V2/api/entities/types.js';
 import { useUpdateEntityUrl } from '../../entityUrlState.js';
-import { MAIN_TAB_PARAM, SIDE_TAB_PARAM } from '../../urlParams.js';
+import { SIDE_TAB_PARAM } from '../../urlParams.js';
 import { applyMainTabSearchParam } from '../applyMainTabSearchParam.js';
+import { setEntitySideTabInUrl } from '../setEntitySideTabInUrl.js';
 import { getSideTabButtons, type FilesSideTabsOptions } from '../sideTabSets.js';
-import { MAIN_TAB, isValidMainTab, isValidSideTab, type MainTabId } from '../tabIds.js';
+import { isValidMainTab, isValidSideTab, type MainTabId } from '../tabIds.js';
 
 type Params = {
   entity: EntityType;
@@ -69,16 +70,7 @@ const useEntityTabChangeHandlers = ({
   const onSideTabChange = useCallback(
     (selectedSideTab: string) => {
       if (!isValidSideTab(selectedSideTab)) return;
-      updateEntityUrl({
-        search: next => {
-          if (!next.get(MAIN_TAB_PARAM) && activeMainTab !== MAIN_TAB.DOCUMENT) {
-            next.set(MAIN_TAB_PARAM, activeMainTab);
-          }
-        },
-        hash: next => {
-          next.set(SIDE_TAB_PARAM, selectedSideTab);
-        },
-      });
+      setEntitySideTabInUrl(updateEntityUrl, activeMainTab, selectedSideTab);
     },
     [activeMainTab, updateEntityUrl]
   );
