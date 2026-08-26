@@ -1,13 +1,8 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import { TagIcon } from '@heroicons/react/24/outline';
-import { useAtomValue } from 'jotai';
 import { Translate } from '#app/I18N/index.js';
-import { localeAtom } from '#V2/atoms/index.js';
 import type { MetadataProperty } from '#V2/formatters/types.js';
-import {
-  formatMetadataDisplayValue,
-  metadataDisplayPresets,
-} from '#V2/Components/Metadata/display/index.js';
+import { renderFieldContent } from '#V2/Components/Metadata/Components/metadataFieldContent.js';
 import { EntityOverlaySection } from './EntityOverlaySection.js';
 import { MetaRow } from './MetaRow.js';
 
@@ -16,13 +11,13 @@ type EntityOverlayPropertiesProps = {
   translationContext: string;
 };
 
+const isFullWidthProperty = (property: MetadataProperty) =>
+  ['image', 'preview', 'media', 'geolocation'].includes(property.type);
+
 const EntityOverlayProperties = ({
   metadata,
   translationContext,
 }: EntityOverlayPropertiesProps) => {
-  const locale = useAtomValue(localeAtom);
-  const displayContext = useMemo(() => ({ ...metadataDisplayPresets.compact, locale }), [locale]);
-
   if (metadata.length === 0) {
     return null;
   }
@@ -34,7 +29,8 @@ const EntityOverlayProperties = ({
           key={property._id}
           icon={TagIcon}
           label={<Translate context={translationContext}>{property.label}</Translate>}
-          value={formatMetadataDisplayValue(property, displayContext)}
+          value={renderFieldContent(property, { density: 'compact' })}
+          valueLayout={isFullWidthProperty(property) ? 'full' : 'inline'}
         />
       ))}
     </EntityOverlaySection>

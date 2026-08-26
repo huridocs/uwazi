@@ -46,7 +46,7 @@ const Media = ({ values, width = '100%', height = 300 }: MediaProps) => {
               className="w-full min-w-0 max-w-full overflow-hidden rounded-md bg-(--color-theme-surface-warm)"
             >
               <MediaPlayer
-                className="max-w-full"
+                className="w-full max-w-full"
                 playerRef={playerRef}
                 url={value}
                 width={width}

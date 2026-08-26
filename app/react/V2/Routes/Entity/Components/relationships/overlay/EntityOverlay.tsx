@@ -29,7 +29,7 @@ const EntityOverlay = () => {
   const [entered, setEntered] = useState(false);
   const { entity, loading, error } = useOverlayEntity(target?.sharedId ?? null);
 
-  const referenceMarkers = useMemo(
+  const targetMarkers = useMemo(
     () =>
       target ? sourceMarkers.filter(marker => marker.target.sharedId === target.sharedId) : [],
     [sourceMarkers, target]
@@ -141,7 +141,7 @@ const EntityOverlay = () => {
           <ErrorBoundary>
             <EntityOverlayContent
               entity={entity}
-              referenceMarkers={referenceMarkers}
+              markers={targetMarkers}
               selfSharedId={selfEntity.sharedId}
             />
           </ErrorBoundary>
