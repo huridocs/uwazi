@@ -217,6 +217,7 @@
         "storybook/no-uninstalled-addons": "error"
       }
     },
+    // For the frontend to review
     {
       "files": ["app/react/**/*.{ts,tsx,js,jsx}"],
       "rules": {
