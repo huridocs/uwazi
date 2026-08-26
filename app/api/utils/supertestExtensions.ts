@@ -4,7 +4,7 @@ import Test from 'supertest/lib/test';
 function extractStatusDebugInfo(res: Response): string {
   try {
     return JSON.stringify(JSON.parse(res.text), null, 2);
-  } catch (e) {
+  } catch (_) {
     return res.text;
   }
 }

@@ -62,7 +62,7 @@
     "eslint/no-unassigned-vars": "warn",
     "import/namespace": "warn",
     "eslint/no-unused-vars": [
-      "warn",
+      "error",
       {
         "args": "after-used",
         "argsIgnorePattern": "^_",

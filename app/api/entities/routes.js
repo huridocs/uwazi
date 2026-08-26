@@ -27,7 +27,7 @@ function coerceValues(value, type, locale) {
       try {
         const numeric = Number.parseFloat(value);
         return !numeric ? { success: false } : { success: true, value: numeric };
-      } catch (e) {
+      } catch (_) {
         return { success: false };
       }
     case 'text':

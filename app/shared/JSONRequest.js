@@ -73,7 +73,7 @@ function toUrlParams(_data) {
         try {
           attemptRisonDecode(data[key]);
           encodedValue = data[key];
-        } catch (err) {
+        } catch (_) {
           encodedValue = attemptURIEncode(data[key]);
         }
       }

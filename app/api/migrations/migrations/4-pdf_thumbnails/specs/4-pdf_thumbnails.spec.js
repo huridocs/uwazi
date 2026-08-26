@@ -35,7 +35,7 @@ describe('migration pdf_thumbnails', () => {
         fs.unlinkSync(thumbnail1);
         fs.unlinkSync(thumbnail2);
         done();
-      } catch (err) {
+      } catch (_) {
         done();
       }
     };

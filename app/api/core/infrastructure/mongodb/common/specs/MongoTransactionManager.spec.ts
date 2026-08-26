@@ -155,7 +155,7 @@ describe('When one operation fails', () => {
           await testingDB.mongodb
             ?.collection('collection1')
             .insertOne({ name: 'doc3' }, { session: this.tm.getSession() });
-        } catch (e) {
+        } catch (_) {
           // Ignores the error for the sake of testing.
         }
       }

@@ -22,7 +22,7 @@ export default (app: Application) => {
   const removeTempFile = (filePath: string) => async () => {
     try {
       await fs.unlink(filePath);
-    } catch (err) {
+    } catch (_) {
       legacyLogger.error(`Error unlinking exported file: ${filePath}`);
     }
   };

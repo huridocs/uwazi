@@ -54,7 +54,7 @@ const getSessionStore = (): SessionStore => {
         noListener: false,
       }).getClient(),
     });
-  } catch (e) {
+  } catch (_) {
     // Fallback for environments (such as isolated tests) where DB has not been initialized.
     sessionStore = new session.MemoryStore();
   }

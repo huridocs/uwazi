@@ -99,7 +99,7 @@ const cleanupTestUploadedPaths = async (subPath: string = '') => {
         }
         // skip directories
       }
-    } catch (e) {
+    } catch (_) {
       // ignore if dir not exists
     }
   }

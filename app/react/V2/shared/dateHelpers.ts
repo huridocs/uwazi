@@ -316,7 +316,7 @@ const parseLocalizedDate = (dateString: string | undefined, language: string = '
     if (parsed.isValid) {
       return parsed.toSeconds();
     }
-  } catch (e) {
+  } catch (_) {
     // Ignore parsing errors
   }
 
