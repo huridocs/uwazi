@@ -1,7 +1,5 @@
+/** @jest-environment jsdom */
 /* eslint-disable react/no-multi-comp */
-/**
- * @jest-environment jsdom
- */
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import { renderFieldContent } from '../metadataFieldContent.js';

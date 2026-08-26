@@ -6,7 +6,6 @@ type OverlayReferenceDisplay = {
   referencePage: number | undefined;
   sourceSharedId: string;
   sourceEntity: { templateId: string; title: string };
-  isEntityLevel: boolean;
 };
 
 const overlayReferenceDisplay = (
@@ -22,7 +21,6 @@ const overlayReferenceDisplay = (
     referencePage: targetAnchor?.selections?.[0]?.page,
     sourceSharedId: source.entity,
     sourceEntity: { templateId: source.entityTemplateId, title: source.entityTitle },
-    isEntityLevel: !referenceText,
   };
 };
 

@@ -61,17 +61,15 @@ describe('overlayReferenceDisplay', () => {
       referencePage: 7,
       sourceSharedId: documentSharedId,
       sourceEntity: { templateId: 'case-tmpl', title: 'Case 11.137' },
-      isEntityLevel: false,
     });
   });
 
-  it('marks entity-level refs and exposes source entity for From pill', () => {
+  it('exposes source entity for From pill when there is no target text', () => {
     expect(overlayReferenceDisplay(baseMarker(), documentSharedId)).toEqual({
       referenceText: '',
       referencePage: undefined,
       sourceSharedId: documentSharedId,
       sourceEntity: { templateId: 'case-tmpl', title: 'Case 11.137' },
-      isEntityLevel: true,
     });
   });
 });

@@ -13,7 +13,6 @@ const row = (id: string, sourceSharedId: string, title: string): OverlayReferenc
     referencePage: undefined,
     sourceSharedId,
     sourceEntity: { templateId: 'tmpl', title },
-    isEntityLevel: true,
   },
 });
 

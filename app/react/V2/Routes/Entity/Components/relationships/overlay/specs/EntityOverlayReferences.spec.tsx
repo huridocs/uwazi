@@ -14,25 +14,31 @@ jest.mock('#app/I18N/index.js', () => ({
 }));
 
 class ResizeObserverMock {
-  observe() {}
+  observe = jest.fn();
 
-  disconnect() {}
+  unobserve = jest.fn();
 
-  unobserve() {}
+  disconnect = jest.fn();
+
+  constructor(_callback: ResizeObserverCallback) {}
 }
 
 global.ResizeObserver = ResizeObserverMock as typeof ResizeObserver;
 
 const documentSharedId = 'doc-entity';
 
-const textMarker: RelationshipMarker = {
-  _id: 'rel-text',
+const textMarker = (
+  id: string,
+  text: string,
+  relationshipTypeName: string
+): RelationshipMarker => ({
+  _id: id,
   target: { sharedId: 'person-1', title: 'Roberto', templateId: 'person-tmpl' },
   relationship: {
-    _id: 'rel-text',
-    hub: 'hub-1',
-    type: 'rel-type-1',
-    relationshipTypeName: 'Relates To',
+    _id: id,
+    hub: `hub-${id}`,
+    type: `rel-type-${id}`,
+    relationshipTypeName,
     relationTypeOnSelf: false,
     from: {
       type: 'textReference',
@@ -49,32 +55,8 @@ const textMarker: RelationshipMarker = {
       entityTitle: 'Roberto',
       entityTemplateId: 'person-tmpl',
       file: 'file-2',
-      text: 'Target-side reference text',
+      text,
       selections: [{ page: 9, top: 0, left: 0, width: 1, height: 1 }],
-    },
-  },
-};
-
-const entityMarker = (id: string, relationshipTypeName: string): RelationshipMarker => ({
-  _id: id,
-  target: { sharedId: 'person-1', title: 'Roberto', templateId: 'person-tmpl' },
-  relationship: {
-    _id: id,
-    hub: `hub-${id}`,
-    type: `rel-type-${id}`,
-    relationshipTypeName,
-    relationTypeOnSelf: false,
-    from: {
-      type: 'entity',
-      entity: documentSharedId,
-      entityTitle: 'Inter-American Count',
-      entityTemplateId: 'case-tmpl',
-    },
-    to: {
-      type: 'entity',
-      entity: 'person-1',
-      entityTitle: 'Roberto',
-      entityTemplateId: 'person-tmpl',
     },
   },
 });
@@ -88,7 +70,7 @@ const renderReferences = (markers: RelationshipMarker[]) =>
 
 describe('EntityOverlayReferences', () => {
   it('shows target reference text with FadeTruncate and relationship type', () => {
-    renderReferences([textMarker]);
+    renderReferences([textMarker('rel-text', 'Target-side reference text', 'Relates To')]);
 
     expect(screen.getByText('From')).toBeInTheDocument();
     expect(screen.getByText('Case 11.137')).toBeInTheDocument();
@@ -99,38 +81,30 @@ describe('EntityOverlayReferences', () => {
     expect(screen.getByText('Relates To')).toBeInTheDocument();
   });
 
-  it('shows one From header for multiple entity-level refs from the same source', () => {
+  it('shows one From header for multiple text refs from the same source', () => {
     renderReferences([
-      entityMarker('rel-1', 'Another'),
-      entityMarker('rel-2', 'Refers To'),
-      entityMarker('rel-3', 'Related To'),
+      textMarker('rel-1', 'Quote one', 'Another'),
+      textMarker('rel-2', 'Quote two', 'Refers To'),
+      textMarker('rel-3', 'Quote three', 'Related To'),
     ]);
 
     expect(screen.getAllByText('From')).toHaveLength(1);
-    expect(screen.getByText('Inter-American Count')).toBeInTheDocument();
+    expect(screen.getByText('Case 11.137')).toBeInTheDocument();
     expect(screen.getByText('Another')).toBeInTheDocument();
     expect(screen.getByText('Refers To')).toBeInTheDocument();
     expect(screen.getByText('Related To')).toBeInTheDocument();
   });
 
   it('reveals hidden references with section Show more', () => {
-    renderReferences([
-      entityMarker('rel-1', 'One'),
-      entityMarker('rel-2', 'Two'),
-      entityMarker('rel-3', 'Three'),
-      entityMarker('rel-4', 'Four'),
-      entityMarker('rel-5', 'Five'),
-      entityMarker('rel-6', 'Six'),
-      entityMarker('rel-7', 'Seven'),
-      entityMarker('rel-8', 'Eight'),
-      entityMarker('rel-9', 'Nine'),
-      entityMarker('rel-10', 'Ten'),
-      entityMarker('rel-11', 'Eleven'),
-    ]);
+    renderReferences(
+      Array.from({ length: 11 }, (_, index) =>
+        textMarker(`rel-${index + 1}`, `Quote ${index + 1}`, `Type ${index + 1}`)
+      )
+    );
 
-    expect(screen.queryByText('Eleven')).not.toBeInTheDocument();
+    expect(screen.queryByText(/Quote 11/)).not.toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: /Show more/i }));
-    expect(screen.getByText('Eleven')).toBeInTheDocument();
+    expect(screen.getByText(/Quote 11/)).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /Show less/i })).toBeInTheDocument();
   });
 });
