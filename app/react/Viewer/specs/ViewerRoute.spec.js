@@ -110,7 +110,7 @@ describe('ViewerRoute', () => {
         fail('Should throw error');
       } catch (e) {
         expect(e.status).toBe(404);
-        expect(e.message).toMatch('Not found');
+        expect(e.message).toContain('Not found');
       }
     });
   });

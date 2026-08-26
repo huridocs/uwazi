@@ -114,7 +114,7 @@ describe('activitylogMiddleware', () => {
     activitylogMiddleware(req, res, next);
     await waitForExpect(() => {
       expect(legacyLogger.error).toHaveBeenCalled();
-      expect(legacyLogger.error.mock.calls[0][0]).toMatch('activitylog save error');
+      expect(legacyLogger.error.mock.calls[0][0]).toContain('activitylog save error');
     });
   });
 
@@ -127,7 +127,7 @@ describe('activitylogMiddleware', () => {
     activitylogMiddleware(req, res, next);
     await waitForExpect(() => {
       expect(legacyLogger.error).toHaveBeenCalled();
-      expect(legacyLogger.error.mock.calls[0][0]).toMatch('storage save error');
+      expect(legacyLogger.error.mock.calls[0][0]).toContain('storage save error');
     });
   });
 

@@ -60,8 +60,8 @@ describe('search', () => {
 
       expect(snippets.fullText.length).toBe(1);
       expect(snippets.fullText[0].page).toBe(34);
-      expect(snippets.fullText[0].text).toMatch('spanish');
-      expect(snippets.fullText[0].text).not.toMatch('[[34]]');
+      expect(snippets.fullText[0].text).toContain('spanish');
+      expect(snippets.fullText[0].text).not.toContain('[[34]]');
     });
 
     it('perform a search on metadata and fullText and return the snippets', async () => {
@@ -79,9 +79,9 @@ describe('search', () => {
       expect(snippets.count).toBe(3);
       expect(snippets.metadata.length).toEqual(2);
       expect(titleSnippet.texts.length).toBe(1);
-      expect(titleSnippet.texts[0]).toMatch('gargoyles');
+      expect(titleSnippet.texts[0]).toContain('gargoyles');
       expect(fieldSnippet.texts.length).toBe(1);
-      expect(fieldSnippet.texts[0]).toMatch('gargoyles');
+      expect(fieldSnippet.texts[0]).toContain('gargoyles');
       expect(snippets.fullText.length).toBe(1);
     });
 
