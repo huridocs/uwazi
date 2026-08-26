@@ -221,7 +221,8 @@
     {
       "files": ["app/react/**/*.{ts,tsx,js,jsx}"],
       "rules": {
-        "typescript/no-floating-promises": "off"
+        "typescript/no-floating-promises": "off",
+        "typescript/promise-function-async": "off"
       }
     }
   ]
