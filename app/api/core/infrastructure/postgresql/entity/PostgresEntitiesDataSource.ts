@@ -273,31 +273,40 @@ export class PostgresEntitiesDataSource
   }
 
   async bulkUpdateDeprecated(entitiesToSave: Entity[], properties: Property[] = []) {
-    await ArrayUtils.sequentialFor(entitiesToSave, async entity => {
-      await ArrayUtils.sequentialFor(entity.translationsList, async ([language, translation]) => {
-        const sets: { path: string; value: unknown }[] = [];
+    const rows: { sharedId: string; language: string; patch: Record<string, unknown> }[] = [];
+
+    entitiesToSave.forEach(entity =>
+      entity.translationsList.forEach(([language, translation]) => {
+        const patch: Record<string, unknown> = {};
         properties.forEach(property => {
           const { value } = translation.getValue(property.name);
           if (value) {
-            sets.push({ path: `{${property.name}}`, value });
+            patch[property.name] = value;
           }
         });
-        if (sets.length === 0) return;
+        if (Object.keys(patch).length > 0) {
+          rows.push({ sharedId: entity.sharedId, language, patch });
+        }
+      })
+    );
 
-        let expr = 'metadata';
-        const bindings: unknown[] = [this.table.tableName];
-        sets.forEach(({ path, value }) => {
-          expr = `jsonb_set(${expr}, ?::text[], ?::jsonb)`;
-          bindings.push(path, JSON.stringify(value));
-        });
-        bindings.push(entity.sharedId, language);
+    if (rows.length === 0) {
+      return;
+    }
 
-        await this.table.raw(
-          `UPDATE ?? SET metadata = ${expr} WHERE "sharedId" = ? AND "language" = ?`,
-          bindings
-        );
-      });
+    const placeholders = rows.map(() => '(?, ?, ?::jsonb)').join(', ');
+    const bindings = [this.table.tableName];
+    rows.forEach(row => {
+      bindings.push(row.sharedId, row.language, JSON.stringify(row.patch));
     });
+
+    await this.table.raw(
+      `UPDATE ?? AS t SET metadata = t.metadata || v.patch
+       FROM (VALUES ${placeholders}) AS v("sharedId", "language", patch)
+       WHERE t."sharedId" = v."sharedId" AND t."language" = v."language"`,
+      bindings
+    );
+
     const sharedIds = entitiesToSave.map(e => e.sharedId);
     sharedIds.forEach(id => this.modifiedSharedIds.add(id));
   }
