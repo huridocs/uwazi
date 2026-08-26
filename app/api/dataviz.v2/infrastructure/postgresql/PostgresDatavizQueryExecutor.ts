@@ -238,15 +238,9 @@ class PostgresDatavizQueryExecutor
 
     switch (filter.operator) {
       case 'eq':
-        return {
-          sql: `EXISTS (SELECT 1 FROM ${elem} WHERE f->>'value' = ?)`,
-          bindings: [filter.value ?? null],
-        };
+        return this.equalityCondition(elem, filter, false);
       case 'ne':
-        return {
-          sql: `NOT EXISTS (SELECT 1 FROM ${elem} WHERE f->>'value' = ?)`,
-          bindings: [filter.value ?? null],
-        };
+        return this.equalityCondition(elem, filter, true);
       case 'in':
         return {
           sql: `EXISTS (SELECT 1 FROM ${elem} WHERE f->>'value' = ANY(?) )`,
@@ -258,40 +252,104 @@ class PostgresDatavizQueryExecutor
           bindings: [filter.values ?? []],
         };
       case 'gte':
-        return this.compareCondition(elem, '>=', filter.from ?? filter.value ?? null);
+        return this.compareCondition(elem, '>=', filter, 'from');
       case 'lte':
-        return this.compareCondition(elem, '<=', filter.to ?? filter.value ?? null);
+        return this.compareCondition(elem, '<=', filter, 'to');
       case 'between':
-        return this.compareRangeCondition(elem, filter.from ?? null, filter.to ?? null);
+        return this.compareRangeCondition(elem, filter);
       default:
         return null;
     }
   }
 
+  /**
+   * Equality/negation filter. Numeric properties compare typed values
+   * (mirroring MongoDatavizQueryExecutor.filterBound), so a string bound like
+   * '2500.0' still matches a stored JSON number 2500. Other property types
+   * keep the text comparison.
+   */
+  private equalityCondition(
+    elem: string,
+    filter: DatavizFilter,
+    negated: boolean
+  ): { sql: string; bindings: unknown[] } | null {
+    const bound = this.filterBoundValue(filter, 'value');
+    if (bound === undefined) {
+      return null;
+    }
+    const valueExpr =
+      filter.propertyType === 'numeric' ? '(f->>\'value\')::numeric' : 'f->>\'value\'';
+    const clause = `EXISTS (SELECT 1 FROM ${elem} WHERE ${valueExpr} = ?)`;
+    return {
+      sql: negated ? `NOT ${clause}` : clause,
+      bindings: [bound],
+    };
+  }
+
+  /** Mirrors MongoDatavizQueryExecutor.filterBound: numeric bounds are coerced. */
+  private filterBoundValue(
+    filter: DatavizFilter,
+    bound: 'from' | 'to' | 'value'
+  ): string | number | undefined {
+    let raw: string | number | undefined;
+    if (bound === 'from') {
+      raw = filter.from ?? filter.value;
+    } else if (bound === 'to') {
+      raw = filter.to ?? filter.value;
+    } else {
+      raw = filter.value;
+    }
+
+    if (filter.propertyType === 'numeric') {
+      return this.coerceNumericBound(raw);
+    }
+
+    return raw;
+  }
+
+  private coerceNumericBound(value: string | number | undefined): string | number | undefined {
+    if (value === undefined || value === '') {
+      return undefined;
+    }
+    if (typeof value === 'number') {
+      return value;
+    }
+    const parsed = Number(value);
+    return Number.isNaN(parsed) ? undefined : parsed;
+  }
+
+  /**
+   * Range filter (gte/lte). Numeric bounds are coerced and compared as
+   * ::numeric (mirroring MongoDatavizQueryExecutor.filterBound), so string
+   * bounds like '3000.0' work and floats are not truncated by ::bigint.
+   */
   private compareCondition(
     elem: string,
     operator: string,
-    value: string | number | null
+    filter: DatavizFilter,
+    bound: 'from' | 'to'
   ): { sql: string; bindings: unknown[] } | null {
-    if (value === null) {
+    const value = this.filterBoundValue(filter, bound);
+    if (value === undefined) {
       return null;
     }
     return {
-      sql: `EXISTS (SELECT 1 FROM ${elem} WHERE (f->>'value')::bigint ${operator} ?)`,
+      sql: `EXISTS (SELECT 1 FROM ${elem} WHERE (f->>'value')::numeric ${operator} ?)`,
       bindings: [value],
     };
   }
 
   private compareRangeCondition(
     elem: string,
-    from: string | number | null,
-    to: string | number | null
+    filter: DatavizFilter
   ): { sql: string; bindings: unknown[] } | null {
-    if (from === null || to === null) {
+    const from = this.filterBoundValue(filter, 'from');
+    const to = this.filterBoundValue(filter, 'to');
+    if (from === undefined || to === undefined) {
       return null;
     }
     return {
-      sql: `EXISTS (SELECT 1 FROM ${elem} WHERE (f->>'value')::bigint BETWEEN ? AND ?)`,
+      sql: `EXISTS (SELECT 1 FROM ${elem} WHERE (f->>'value')::numeric BETWEEN ? AND ?)`,
       bindings: [from, to],
     };
   }

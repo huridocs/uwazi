@@ -807,6 +807,144 @@ describe('DatavizQueryExecutor', () => {
         expect(lteDto.meta.totalEntities).toBe(10);
       });
 
+      it('should apply an equality filter on a numeric property with a string value', async () => {
+        const dto = await run({
+          sources: [{ templateId: templateId.toString() }],
+          dimensions: [{ property: 'sexo', propertyType: 'select' }],
+          measures: [{ aggregation: 'count' }],
+          language: 'en',
+          filters: [
+            {
+              id: 'f1',
+              property: 'engine_size',
+              propertyType: 'numeric',
+              operator: 'eq',
+              // string form of 2500: numerically equal to the stored JSON number 2500
+              value: '2500.0',
+            },
+          ],
+        });
+
+        expect(dto.meta.totalEntities).toBe(9);
+      });
+
+      it('should apply a negation filter on a numeric property with a string value', async () => {
+        const dto = await run({
+          sources: [{ templateId: templateId.toString() }],
+          dimensions: [{ property: 'sexo', propertyType: 'select' }],
+          measures: [{ aggregation: 'count' }],
+          language: 'en',
+          filters: [
+            {
+              id: 'f1',
+              property: 'engine_size',
+              propertyType: 'numeric',
+              operator: 'ne',
+              // string form of 2500: numerically equal to the stored JSON number 2500
+              value: '2500.0',
+            },
+          ],
+        });
+
+        expect(dto.meta.totalEntities).toBe(3);
+      });
+
+      it('should apply in/nin filters on a numeric property', async () => {
+        const inDto = await run({
+          sources: [{ templateId: templateId.toString() }],
+          dimensions: [{ property: 'sexo', propertyType: 'select' }],
+          measures: [{ aggregation: 'count' }],
+          language: 'en',
+          filters: [
+            {
+              id: 'f1',
+              property: 'engine_size',
+              propertyType: 'numeric',
+              operator: 'in',
+              values: [2000, 4000],
+            },
+          ],
+        });
+        expect(inDto.meta.totalEntities).toBe(2);
+
+        const ninDto = await run({
+          sources: [{ templateId: templateId.toString() }],
+          dimensions: [{ property: 'sexo', propertyType: 'select' }],
+          measures: [{ aggregation: 'count' }],
+          language: 'en',
+          filters: [
+            {
+              id: 'f1',
+              property: 'engine_size',
+              propertyType: 'numeric',
+              operator: 'nin',
+              values: [2500],
+            },
+          ],
+        });
+        expect(ninDto.meta.totalEntities).toBe(3);
+      });
+
+      it('should apply numeric between filters with string bounds', async () => {
+        const dto = await run({
+          sources: [{ templateId: templateId.toString() }],
+          dimensions: [{ property: 'sexo', propertyType: 'select' }],
+          measures: [{ aggregation: 'count' }],
+          language: 'en',
+          filters: [
+            {
+              id: 'f1',
+              property: 'engine_size',
+              propertyType: 'numeric',
+              operator: 'between',
+              // string forms of 2000/3000: numerically equal to the stored JSON numbers
+              from: '2000.0',
+              to: '3000.0',
+            },
+          ],
+        });
+
+        expect(dto.meta.totalEntities).toBe(11);
+      });
+
+      it('should apply numeric gte/lte filters with string bounds', async () => {
+        const gteDto = await run({
+          sources: [{ templateId: templateId.toString() }],
+          dimensions: [{ property: 'sexo', propertyType: 'select' }],
+          measures: [{ aggregation: 'count' }],
+          language: 'en',
+          filters: [
+            {
+              id: 'f1',
+              property: 'engine_size',
+              propertyType: 'numeric',
+              operator: 'gte',
+              // string form of 3000
+              value: '3000.0',
+            },
+          ],
+        });
+        expect(gteDto.meta.totalEntities).toBe(2);
+
+        const lteDto = await run({
+          sources: [{ templateId: templateId.toString() }],
+          dimensions: [{ property: 'sexo', propertyType: 'select' }],
+          measures: [{ aggregation: 'count' }],
+          language: 'en',
+          filters: [
+            {
+              id: 'f1',
+              property: 'engine_size',
+              propertyType: 'numeric',
+              operator: 'lte',
+              // string form of 2500
+              value: '2500.0',
+            },
+          ],
+        });
+        expect(lteDto.meta.totalEntities).toBe(10);
+      });
+
       it('should apply a contains filter on a text property', async () => {
         const dto = await run({
           sources: [{ templateId: templateId.toString() }],
