@@ -38,7 +38,7 @@ describe('migration move_document_to_files', () => {
   });
 
   afterAll(async () => {
-    testingDB.disconnect();
+    await testingDB.disconnect();
   });
 
   it('should have a delta number', () => {

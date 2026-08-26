@@ -36,8 +36,8 @@ describe('migration sync-starting-point', () => {
     await testingDB.setupFixturesAndContext(fixtures);
   });
 
-  afterAll(done => {
-    testingDB.disconnect().then(done);
+  afterAll(async () => {
+    await testingDB.disconnect();
   });
 
   it('should have a delta number', () => {

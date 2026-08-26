@@ -184,7 +184,7 @@ describe('DistributedLoopLock', () => {
 
     const waitBetweenTasksSpy = jest.spyOn(sut, 'waitBetweenTasks');
 
-    sut.start();
+    void sut.start();
     await waitForExpect(() => expect(task).toHaveBeenCalledTimes(1));
 
     finishTask();
@@ -202,7 +202,7 @@ describe('DistributedLoopLock', () => {
 
     const waitBetweenTasksSpy = jest.spyOn(sut, 'waitBetweenTasks');
 
-    sut.start();
+    void sut.start();
 
     await waitForExpect(() => expect(task).toHaveBeenCalledTimes(1));
 
@@ -232,7 +232,7 @@ describe('DistributedLoopLock', () => {
       delayTimeBetweenTasks: 100_000,
     });
 
-    sut.start();
+    void sut.start();
     await waitForExpect(() => expect(task).toHaveBeenCalledTimes(1));
 
     const stopPromise = sut.stop();

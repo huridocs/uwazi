@@ -8,8 +8,8 @@ describe('migration settings-date-format', () => {
     jest.spyOn(process.stdout, 'write').mockImplementation(() => {});
   });
 
-  afterAll(done => {
-    testingDB.disconnect().then(done);
+  afterAll(async () => {
+    await testingDB.disconnect();
   });
 
   it('should have a delta number', () => {

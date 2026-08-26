@@ -230,7 +230,7 @@ describe('search', () => {
 
   it('should limit the results', done => {
     userFactory.mock(undefined);
-    searchEntities({ searchTerm: '', limit: 1, sort: 'title' }, 'en').then(({ rows }) => {
+    void searchEntities({ searchTerm: '', limit: 1, sort: 'title' }, 'en').then(({ rows }) => {
       expect(rows.length).toBe(1);
       expect(rows[0].title).toBe('template1 title en');
       done();
@@ -239,7 +239,7 @@ describe('search', () => {
 
   it('should return results from a given number', done => {
     userFactory.mock(undefined);
-    searchEntities({ searchTerm: '', limit: 1, sort: 'title', from: 1 }, 'en').then(({ rows }) => {
+    void searchEntities({ searchTerm: '', limit: 1, sort: 'title', from: 1 }, 'en').then(({ rows }) => {
       expect(rows.length).toBe(1);
       expect(rows[0].title).toBe('Something');
       done();

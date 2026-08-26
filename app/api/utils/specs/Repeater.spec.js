@@ -29,12 +29,12 @@ describe('Repeater', () => {
     repeaterOne = new Repeater(callbackOne, 1);
     repeaterTwo = new Repeater(callbackTwo, 1);
 
-    repeaterTwo.start();
-    repeaterOne.start();
+    void repeaterTwo.start();
+    void repeaterOne.start();
 
     await advanceTime(1);
 
-    repeaterOne.stop();
+    void repeaterOne.stop();
 
     await advanceTime(1);
 
@@ -46,7 +46,7 @@ describe('Repeater', () => {
     jest.useRealTimers();
     repeaterOne = new Repeater(callbackOne, 1);
 
-    repeaterOne.start();
+    void repeaterOne.start();
 
     await expect(repeaterOne.stop()).resolves.toBeUndefined();
   });
@@ -62,7 +62,7 @@ describe('Repeater', () => {
       return promise;
     }, 10_000);
 
-    sut.start();
+    void sut.start();
     resolvePromise();
     await expect(promise).resolves.toBeUndefined();
     await expect(sut.stop()).resolves.toBeUndefined();

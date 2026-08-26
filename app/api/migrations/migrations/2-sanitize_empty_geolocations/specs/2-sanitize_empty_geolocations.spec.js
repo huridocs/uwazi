@@ -8,8 +8,8 @@ describe('migration sanitize_empty_geolocations', () => {
     await testingDB.setupFixturesAndContext(fixtures);
   });
 
-  afterAll(done => {
-    testingDB.disconnect().then(done);
+  afterAll(async () => {
+    await testingDB.disconnect();
   });
 
   it('should have a delta number', () => {

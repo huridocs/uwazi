@@ -90,7 +90,7 @@ const shutdown = new HttpServerGracefulShutdown({
 
 const uncaughtError = error => {
   handleError(error, { uncaught: true });
-  close(2000).then(() => {
+  void close(2000).then(() => {
     shutdown.shutdown();
   });
 };
@@ -118,7 +118,7 @@ app.use(metricsMiddleware);
 
 console.info('==> Connecting to', maskMongoPassword(config.DBHOST));
 
-DB.connect(config.DBHOST, config.DBAUTH).then(async () => {
+void DB.connect(config.DBHOST, config.DBAUTH).then(async () => {
   await Redis.connect();
   await tenants.setupTenants();
   populateAuthenticatedUser(app);

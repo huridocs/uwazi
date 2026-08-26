@@ -40,8 +40,8 @@ describe('migration separate-custom-uploads-from-documents', () => {
     done();
   });
 
-  afterAll(done => {
-    testingDB.disconnect().then(done);
+  afterAll(async () => {
+    await testingDB.disconnect();
   });
 
   it('should have a delta number', () => {
