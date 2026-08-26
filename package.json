@@ -208,7 +208,7 @@
     "moment-timezone": "0.6.3",
     "monaco-editor": "^0.56.0",
     "mongodb": "6.13.0",
-    "mongoose": "8.10.0",
+    "mongoose": "9.7.2",
     "multer": "^2.2.0",
     "node-uuid": "^1.4.7",
     "nodemailer": "^9.0.5",
