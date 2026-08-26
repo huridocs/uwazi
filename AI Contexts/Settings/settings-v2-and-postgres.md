@@ -12,8 +12,110 @@ This is the planning doc for both phases. Pattern sources: [`../Relationship Typ
 ## Status
 
 - **Analysis / planning** — this document
-- **V2 implementation** — **done** (Mongo). Core owns reads/writes: `SettingsDataSource` + `SettingsQueryService` + `SaveSettings` / `SaveSettingsLinks` / `SetDefaultLanguage` / filter use cases; HTTP `/api/settings*` is in `core/infrastructure/express/settings`; sync namespace `settings` is a `SyncHandler`. V1 `app/api/settings` is gone.
-- **Postgres** — blocked until a later cutover (schema 016, flag `postgresSettings`). Do not start PG until this V2 slice has soaked.
+- **V2 implementation** — **first cut on Mongo, not accepted.** Core owns reads/writes and V1 `app/api/settings` is gone, but the first review (below) reopens design: Zod, safe-by-default reads, blob projections, use-case outputs/sockets, and concept boundaries (menu / filters / sync / templates). Do not treat the current code as the target shape.
+- **Postgres** — still blocked. The review’s projection/opt-in-read questions **change the DS contract**; lock that before schema 016 / `postgresSettings`.
+
+---
+
+## First review (2026-08-26)
+
+Developer notes, **verbatim**. Interpretation, corrections, and TODOs follow in the next subsection. No code was changed for this review.
+
+### Developer questions (raw)
+
+- Why ajv?  I thought there is a very clear directive to use zod and where in the path (useCases, controllers, etc.) should they reside upon.  This should be part of the Settings v2 migration, and a big part of it.
+- I think we need a more "pure" approach to this.  I understand settings is sometimes orchestrating things from other logics, but I think we need to be a little more organized.  `ensureLinkIds` really doesn't seem like a "settings" problem.  A helper, sure.  A util? See how other modules are doing this, but polluting the saveSettingsUseCase with an ensureLinkIds seems like the wrong thing to do.  Please argue against this if you think it's the right path, I don't want praise of "uh, you are very clever", I want your opinion on why this should or should not be there.
+- This last point is even more critical for the template save orchestration upon changing of the newNameGeneration.  Surely this is a purely TEMPLATE issue, that is templates the one that should know how to do, not settings.  Maybe we create a tech debt for this (don't create any issues for me, I'll do that), but this seems like the wrong thing to do when saving settings.  Maybe I'm wrong.
+- Same point 2 for "links" (which is also a name I think is terribly picked... these are menu items in the navbar, the fact that they are links is a secondary side effect of what is stored as value... these are menu items!  The routes probably would need to stay, but the internal naming not necessarily)
+- Same for sync... we probably want a separate sync module altogether... we are not doing this right now, but to keep in mind
+- We are moving to a safe-first type of approach.  Can we make it here so that omitHiddenSettingsFields (which I don't really like the name... they are not hidden, lets go with omitPrivate ? What do you think) is a de-facto applied and not a thing you need to remember everytime to exclude?  For example, the `patch` flow you introduced, after upate, returns a raw .get with all the data, including passwords, so the SaveSettingsUseCase actually returns all that to the client.  Do we want that? Maybe yes, I'm leaning towards "probably not".  That's why you are having to call a return with omitHiddenSettings nested with applyDefaults in so many places.  This seems like a smell and not ideal that the developer needs to remember to do all these things.  UpdateFiltersNameUseCase is apparently also returning everything?
+- The filterTree (why tree?) has remove and rename.  How are append, or add or create paths handled?
+- getForHttp is also a name I don't like... why http is different? Not because of the protocol, but because of who consumes it.  So getPublic, getClientVisible, getPermitted, getAllowed?  Lets align. Ask for this with your suggestions
+- Here's maybe a more critical thing: What is the restrictions applied to UseCases inside the Agents.md file?  Can we simply use UseCases like you are doing in the TemplateMutationController? Or is that a violation of instantiating UseCases?  And that one appears like a really glaring security problem: that updateSettings is being broadcasted to all connected clients, but this includes ALL the settings!  Is this reading correct? Maybe that was already the case, but I think that mongo's defaults came to the rescue... here they are not.  Maybe we need to do a much more indepth search into how we are dealing with returns of this settings? Maybe that is the problem of wildly using UseCases outside of their scoped intended use case?
+- Same problem with DeleteTemplateController
+- What is this TM resolver in SettingsDataSourceFactory???
+- On TaskService.ts (IXTaskService you getDefaultLanguage then .key, but on another location you have a dedicated method detDefaultLanguageKey, do we need both approaches? Can we be consistent?  Maybe we don't need that extra method and extract the key like here on other places? Lets be consistent and tidy up all these nonsense
+- We store in Settings things like the custom CSS and JavaScript of the collection.  I can see places like the tocService that is getting the settings to extract { features }, but for that it needs to load ALL the custom CSS that can be text of multiple Kbs. Same for the languageMiddleware.  Not limited to these two scenarios, just examples. I think this is a problem we should try to address on this development and, at least those two and Sync, we should ONLY returned when specifically asked for, and not excluded only when someone remembers to exclude them.  Obviously this needs to survive partial updates, and I don't know how PG is going to work with that, mongo more or less does it natively
+
+### Interpretation
+
+This is one problem with several symptoms: **Settings is still a singleton dump of unrelated concepts**, and the first V2 cut treated that dump as the application model. Use cases, QueryService, sockets, and “omit after read” are all ways of living with the blob instead of splitting **who may see what** from **what a given caller needs**.
+
+The migration is not “move `settings.save` into a use case.” It is: stop having one document-shaped API in the core. HTTP paths can stay ugly; the core should not.
+
+#### What is more important (priority)
+
+1. **Safe-by-default outputs (sockets + use-case return types).** Highest. This is the only item that can leak credentials/config to every connected client. It is also the smell behind `omit* + applyDefaults` copied through Save / SetDefaultLanguage / filter UCs.
+2. **Opt-in reads (projections), not opt-out.** Highest for *this* development, not a later polish. `languageMiddleware` and `tocService` loading `customCSS` / `customJS` (multi-KB) to get languages or `features` is the frankenstein made expensive. Sync passwords on the same document is the same rule: **absent unless asked**. This must be designed on the **port** now, or Postgres `SELECT document` will clone the problem.
+3. **Zod at the use-case boundary** (and controller DTO only if HTTP needs a different shape). Explicit V2 rule in AGENTS.md (`Input` may include Zod, e.g. `MultiUpdateEntity.InputSchema`). AJV was cargo-culted from V1 `validateSettings` / `emitSchemaTypes`. This is a large, intentional part of Settings V2, not a follow-up.
+4. **Concept boundaries and names** (navbar menu items, filters, sync-as-a-later-module). Internal naming can move without changing `/api/settings/links`. Sync extraction is **not** this slice; the read model must still treat `sync` as a dedicated slice so we do not keep dragging it through QueryService.
+5. **`newNameGeneration` → templates.** Real layering bug (`SaveSettings` → `TemplateFacade` → v1 templates). Acceptable as **named tech debt** if templates are not opened in this slice; not acceptable as “Settings knows how to rewrite every template.”
+6. **`ensureLinkIds` off `SaveSettings`.** Correctness is fine; placement is the V1 god-save. Follows menu-item naming.
+7. **TM fallback in `SettingsDataSourceFactory`.** Compatibility hack; delete once callers have ExecutionContext.
+8. **`getDefaultLanguage` vs `getDefaultLanguageKey`.** Tidy while touching reads; not architectural. Do not invent a third helper.
+
+#### Wrong or incomplete assumptions
+
+- **“Mongoose defaults came to the rescue on `updateSettings`.”** Only for fields that were `select: false`: `sync` (passwords), `evidencesVault`, `publicFormDestination`. **`mailerConfig` (SMTP secrets), `contactEmail`, `customCSS`, `customJS`, `features` were already on V1 `settings.save()` / `updateFilterName` returns** and were already socketed from template mutate/delete. Native `findOne` made the *select:false* trio easier to leak if someone returns `SettingsDataSource.get()` / `patch()` raw. It did **not** newly invent broadcasting mailer/CSS. The template controllers are still wrong relative to `SaveSettingsController`, which sockets **`getPublicSettingsPayload`**.
+- **`SaveSettingsUseCase` “returns all that to the client” including sync passwords.** As written, `execute` returns `omitHiddenSettingsFields(applySettingsDefaults(saved))`, so **`sync` / `evidencesVault` / `publicFormDestination` are stripped** before HTTP POST JSON. `patch()` itself **does** return the raw document (passwords included). The bug is **layering**: persistence `get()` is a full row; delivery was supposed to remember to omit. `UpdateFilterName` returns that SaveSettings output — **not** sync passwords, **yes** mailerConfig, CSS, JS, features, languages, filters, …
+- **`TemplateMutationController` using `UpdateFilterNameUseCaseFactory.default().execute()` is a UseCase instantiation violation.** It is **not**. AGENTS.md: factories are the wiring; ExecutionContext is **only** for factories; controllers are delivery adapters and **should** call `Factory.default()`. The violation would be `new UpdateFilterNameUseCase(...)` or `ExecutionContext.transactionManager` inside the controller. The *real* smell is **using a command whose output is “the settings document” as a socket payload** from a **template** flow — wrong output type for that consumer, not a forbidden Factory call.
+- **`filterTree` is missing append/create.** Collection UI **POSTs the whole `filters` array** through `SaveSettings`. Remove/rename exist as extra use cases because **template rename/delete** must patch nested ids without the Settings screen. There is no “add filter” use case because that is not a separate application action today.
+- **“getForHttp is different because it is HTTP.”** The boolean is **who the actor is** (admin vs everyone else), plus a public whitelist. Mixing that with protocol in the name hid that QueryService is doing **authorization shaping**, not transport.
+
+#### Further assumptions drawn from this review
+
+- Settings is **not one aggregate**. Languages, navbar, library filters, feature flags, mail, sync credentials, and theme assets share a **storage row**, not a **domain**. V2 use cases per *HTTP verb on /api/settings* still treat them as one thing. The review is asking to model **slices** (and later modules) even while Mongo/PG keep one row.
+- **Safe-first** means the default application read is never the persistence row. `SettingsDataSource` may return secrets; **nothing above it should, unless the call is explicitly `getSyncConfig()` / `getPrivateFormDestination()` / etc.** Developers should not be able to “forget omit.”
+- **Postgres:** `document JSONB` can still `SELECT document` and pull CSS every time. Opt-in is `document->'languages'`, generated columns, or a port method `read(paths)`. Partial `$set` in Mongo and `jsonb_set` / `document ||` in PG both preserve unmentioned keys **if the write is a patch of a slice**, not a full-document replace. The first cut’s `patch({ ...incoming })` is already a field `$set`; fat **reads** are the gap, not fat writes.
+- `SaveSettings` calling `TemplateFacade` is a **core → v1_layer** dependency from the wrong module. Even a “use case tells the full story” argument only justifies **dispatching** “apply new name generation,” not implementing template walks inside Settings.
+- AJV remains in `app/shared/types/settingsSchema.ts` because of **`emitSchemaTypes`**. Zod migration is also a **shared type / emit-types** question, not only a use-case swap.
+
+#### Opinions asked for
+
+**`ensureLinkIds` on `SaveSettings` — should not stay there.**  
+Stable `_id`s exist so Menu/Filters translation diffs can match rows (`toString()` on `_id`). That is a **navbar menu item identity** rule (mongoose used to auto-`_id` subdocs). Reimplementing mongoose in the nearest use case is how V1 logic spreads. A helper/util is fine; a `NavbarMenu` / menu-item collection that assigns ids on write is better. Putting it on `SaveSettings` teaches the next person that “settings save” is the place for every nested-array quirk.
+
+**`newNameGeneration` template rewrite — you are not wrong.**  
+The flag lives on settings; the **meaning** of the flag is “template property `name`s are generated with the new algorithm.” Templates must own the algorithm. Settings may **notify** (event) or **call a template use case** when the flag flips false→true. Walking all templates via `TemplateFacade.update` inside `SaveSettings` is the wrong owner and the wrong layer. Tech debt is reasonable **if** it is an explicit “Templates: apply newNameGeneration” ticket you file — not if the code stays unnamed in Settings.
+
+**`omitHidden` vs `omitPrivate`.**  
+`hidden` is mongoose `select: false` jargon; drop it. `omitPrivate` is better and still **the wrong primitive**: it is an opt-out after a full load. Prefer a **positive** default (`getPublic()` / `getForAdmin()` that never had secrets). If we keep an omit helper for a transition, `omitPrivate` is the rename. Also: today’s list is **not** all private data — `mailerConfig` is private in the English sense and is **not** omitted.
+
+**`getForHttp` naming (suggestion).**  
+Do **not** keep a protocol word. Do **not** keep a single `isAdmin` function that merges three policies (public whitelist, admin extras, `themeCustomization`). Split:
+
+| Suggested | Meaning |
+| --- | --- |
+| `getPublic()` | Unauthenticated / non-admin client: whitelist only (today `getPublicSettingsPayload`) |
+| `getForAdmin()` | Admin UI: public ∪ admin-only fields that are **not** secrets (`mailerConfig`, `contactEmail`, `publicFormDestination`, `features`, …). Explicit allowlist, not “everything minus three keys.” |
+| `getSyncConfig()` | Server-only; passwords. Never sockets, never QueryService default. |
+
+Avoid `getClientVisible` (client = browser vs API is ambiguous). `getPermitted` / `getAllowed` need an actor parameter to be honest — then they collapse to the two methods above plus server-only slices.
+
+**UseCases in AGENTS.md vs TemplateMutationController.**  
+Allowed: factory in a controller. Not allowed: ExecutionContext outside factories; use cases as generic “get me the settings blob.” Output of `UpdateFilterName` / `RemoveTemplateFromFilters` for sockets should be **`getPublic()`** (or a dedicated `NavbarAndFiltersChanged` DTO), never the command’s persistence result.
+
+**TM resolver.**  
+`ExecutionContext.getStore() ? EC.transactionManager : TransactionManagerFactory.default()`. Added so mailer / languageMiddleware / tests without `runWithContext` would not throw after the V1 sweep. It **violates** “factory defaults come from ExecutionContext.” It is not a Settings-domain concept. Remove when every read/write runs inside request/job context (or tests wrap `runWithContext`).
+
+**`getDefaultLanguage` vs `getDefaultLanguageKey`.**  
+Keep **`SettingsDataSource.getDefaultLanguageKey()`** — that is already the V2 convention (Add/DeleteLanguage, translations, entities, CSV v2, dataviz, IX-adjacent core). **Delete** `SettingsQueryService.getDefaultLanguage()` as a V1 shim. Callers that did `getDefaultLanguage().key` (TaskService, InformationExtraction, preserveSync, csvLoader tests) should call `getDefaultLanguageKey()`. Do **not** standardize on “load the whole settings object and pick `.key`.”
+
+#### TODOs (work queue, no tickets created)
+
+- [ ] **P0 — Inventory every settings return path** (HTTP GET/POST, sockets `updateSettings`, SSR `shapeSettingsForSSR`, sync inbound/outbound, jobs). Table: caller, method, fields present, intended audience. Confirm template mutate/delete vs `SaveSettingsController` socket mismatch.
+- [ ] **P0 — Safe-by-default:** DS `get`/`patch` stay full-row (persistence). Use cases / QueryService **never** return `sync` / vault / other secrets. Delivery adapters must not re-fetch raw DS for sockets. Template mutate/delete emit **public** payload (or a tiny DTO), not UC output.
+- [ ] **P0 — Replace “omit after full read”** with allowlisted `getPublic` / `getForAdmin` and server-only slice methods. Rename away from `hidden`. Decide whether admin POST JSON should include `mailerConfig` (probably yes, for the saving admin only — not on sockets).
+- [ ] **P0 — Projection port:** `read({ languages })`, `read({ features: ['tocGeneration'] })`, `getSyncConfig()`, etc. `languageMiddleware`, `tocService`, and sync **must** use slices. Writes remain patch-of-provided-keys so CSS/JS/`sync` survive. Design JSONB path reads the same way (do not `SELECT document` as the only PG implementation).
+- [ ] **P1 — Zod:** `SaveSettings` / menu-item save / `SetDefaultLanguage` / filter UCs get `InputSchema`. Controllers parse HTTP with the same schema or a thin DTO. Plan what happens to `settingsSchema.ts` + `emitSchemaTypes` / `settingsType.d.ts`.
+- [ ] **P1 — Internal names:** `links` → menu items / navbar (use case, QueryService, DS fields can wait for a mapper). HTTP `/api/settings/links` stays. Do not extract a sync bounded context in this slice; do isolate `sync` on the read port.
+- [ ] **P2 — `ensureLinkIds`:** move to menu-item write path (domain or helper used there), not `SaveSettings` private method.
+- [ ] **P2 — `newNameGeneration`:** Settings flips the flag; templates apply. Event or `ApplyNewNameGeneration` use case. You file the debt issue if we leave a one-line dispatch in Settings.
+- [ ] **P2 — Remove `resolveTransactionManager` fallback** once remaining callers are in EC.
+- [ ] **P3 — One default-language API:** `getDefaultLanguageKey()` only; remove QueryService `getDefaultLanguage()`.
+- [ ] **P3 — `filterTree`:** rename to something like `libraryFilters` / `nestedFilters`; document that create = `SaveSettings({ filters })`. No append UC unless product asks.
+
+**Suggested implementation order for the next coding slice:** (1) return/socket inventory + public socket payloads, (2) QueryService allowlists + no omit-on-remember, (3) DS projections for languages / features / sync, (4) Zod on the mutation UCs, (5) menu naming + `ensureLinkIds` move, (6) TM fallback + default-language tidy. `newNameGeneration` in parallel as debt or a small template UC if cheap.
 
 ---
 
@@ -306,9 +408,9 @@ Same class of risk as translations P12. Notable:
 
 ---
 
-## Open (do not block Phase 1)
+## Open (do not block a Postgres start)
 
-- Whether `syncWorker` should get a dedicated `getSyncConfig()` on the DS vs full `get()` (full `get()` is enough if V2 always loads secrets server-side).
-- Whether a domain `Settings` class is worth it vs AJV + a typed document. Lean AJV at SaveSettings unless invariants spread.
+Superseded in part by **First review** above. Until that queue is worked, do not treat Phase 1 as closed.
+
 - Staging collision: any tenant with **zero or multiple** `settings` docs — copy must fail; fix data before flag.
-- Outbound sync remaining `{ languages }` only — document here if product ever wants more (never `password` without a separate design).
+- Outbound sync remaining `{ languages }` only — never `password` without a separate design (aligns with opt-in `getSyncConfig()`).
