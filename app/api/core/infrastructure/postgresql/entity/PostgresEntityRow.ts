@@ -4,7 +4,7 @@ type EntityRow = {
   language: string;
   title: string;
   template: string;
-  published: boolean;
+  published?: boolean;
   generatedToc: boolean | null;
   icon: {
     _id: string | null;
@@ -15,7 +15,7 @@ type EntityRow = {
   editDate: number;
   metadata: Record<string, { value: unknown; label?: string }[]>;
   user: string | null;
-  permissions: { refId: string; type: string; level: string }[];
+  permissions?: { refId: string; type: string; level: string }[];
   preview: string | null;
 };
 

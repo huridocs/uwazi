@@ -1,11 +1,9 @@
-import type { ObjectId } from 'mongodb';
 import type { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js';
 import type { TranslationsDataSource } from '#api/core/application/contracts/TranslationsDataSource.js';
 import { TranslationCollection } from '#api/core/domain/translation/TranslationCollection.js';
-import type { LanguageISO6391 } from '#shared/types/commonTypes.js';
+import type { LanguageISO6391, ObjectIdSchema, PropertySchema } from '#shared/types/commonTypes.js';
 import type { LocalizedLabels, DatavizQuery, DimensionSpec } from '#shared/types/datavizSchema.js';
 import { TEMPLATE_DIMENSION_PROPERTY } from '#shared/types/datavizSchema.js';
-import type { TemplateDBO } from '#api/core/infrastructure/mongodb/template/DBOs/TemplateDBO.js';
 import {
   buildMissingBucketLabels,
   type DatavizMultilingualLabelContext,
@@ -14,13 +12,19 @@ import {
 type ThesaurusValue = { id: string; label: string; values?: ThesaurusValue[] };
 
 type ThesaurusReadRow = {
-  _id: ObjectId | string;
+  _id: ObjectIdSchema;
   name: string;
   values: ThesaurusValue[];
 };
 
+type TemplateReadRow = {
+  _id: ObjectIdSchema;
+  name: string;
+  properties?: PropertySchema[];
+};
+
 export type TemplatesReadDAO = {
-  get(ids?: string[]): Promise<TemplateDBO[]>;
+  get(ids?: string[]): Promise<TemplateReadRow[]>;
 };
 
 export type ThesauriReadDAO = {
@@ -42,10 +46,11 @@ export type DatavizLabelContextDeps = {
   translationsDS: TranslationsDataSource;
 };
 
-const templateIdFromDBO = (template: TemplateDBO): string => template._id.toHexString();
+const idToString = (id: ObjectIdSchema): string => (typeof id === 'string' ? id : id.toString());
 
-const thesaurusIdFromRow = (row: ThesaurusReadRow): string =>
-  typeof row._id === 'string' ? row._id : row._id.toHexString();
+const templateIdFromRow = (template: TemplateReadRow): string => idToString(template._id);
+
+const thesaurusIdFromRow = (row: ThesaurusReadRow): string => idToString(row._id);
 
 const flattenThesaurusValues = (values: ThesaurusValue[]): Map<string, string> => {
   const map = new Map<string, string>();
@@ -76,7 +81,7 @@ const loadTemplateNames = async (
   const uniqueIds = [...new Set(ids)];
   const templates = await templatesDAO.get(uniqueIds);
 
-  return new Map(templates.map(template => [templateIdFromDBO(template), template.name]));
+  return new Map(templates.map(template => [templateIdFromRow(template), template.name]));
 };
 
 const loadTemplateTranslations = async (
@@ -133,7 +138,7 @@ const loadPropertyThesaurus = async (
 
   const allTemplateIds = [...new Set([...sourceTemplateIds, ...relatedTemplateIds])];
   const templates = await templatesDAO.get(allTemplateIds);
-  const templatesById = new Map(templates.map(template => [templateIdFromDBO(template), template]));
+  const templatesById = new Map(templates.map(template => [templateIdFromRow(template), template]));
 
   const thesaurusIds = new Set<string>();
   const propertyToThesaurus = new Map<string, string>();
@@ -159,7 +164,10 @@ const loadPropertyThesaurus = async (
       ) {
         const relatedTemplate = templatesById.get(prop.content);
         const inheritedProp = relatedTemplate?.properties?.find(
-          item => item._id?.toString() === prop.inherit?.property?.toString()
+          item =>
+            item._id !== undefined &&
+            prop.inherit?.property !== undefined &&
+            idToString(item._id) === prop.inherit.property
         );
         if (inheritedProp?.content) {
           thesaurusIds.add(inheritedProp.content);

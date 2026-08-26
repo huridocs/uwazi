@@ -37,10 +37,6 @@ class MongoEntityAccessPolicyDataSource
     });
   }
 
-  async create(policy: EntityAccessPolicy): Promise<void> {
-    await this.persist(policy, false);
-  }
-
   async bulkCreate(policies: EntityAccessPolicy[]): Promise<void> {
     await this.bulkPersist(policies, false);
   }

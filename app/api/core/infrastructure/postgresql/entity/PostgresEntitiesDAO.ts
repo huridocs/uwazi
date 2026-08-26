@@ -46,7 +46,7 @@ const toDBO = (row: EntityRow): EntityDBO => ({
   metadata: row.metadata as EntityDBO['metadata'],
   obsoleteMetadata: [],
   user: row.user ? new ObjectId(row.user) : undefined,
-  published: row.published,
+  published: row.published as boolean,
   creationDate: row.creationDate,
   editDate: row.editDate,
   generatedToc: row.generatedToc ?? undefined,

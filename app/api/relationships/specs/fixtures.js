@@ -381,6 +381,14 @@ export default {
     { sharedId: 'entity_id', language: 'en', title: 'en entity', type: 'entity', template },
     { sharedId: 'entity_id', language: 'pt', title: 'en entity', type: 'entity', template },
   ],
+  files: [
+    { entity: 'doc1', language: 'eng', filename: 'doc1enFile', type: 'document' },
+    { entity: 'doc1', language: 'por', filename: 'doc1ptFile', type: 'document' },
+    { entity: 'doc1', language: 'spa', filename: 'doc1enFile', type: 'document' },
+    { entity: 'doc2', language: 'eng', filename: 'doc2enFile', type: 'document' },
+    { entity: 'doc2', language: 'por', filename: 'doc2ptFile', type: 'document' },
+    { entity: 'doc2', language: 'spa', filename: 'doc2esFile', type: 'document' },
+  ],
   dictionaries: [{ _id: thesauri }],
   relationtypes: [
     {

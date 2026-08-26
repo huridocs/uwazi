@@ -1,8 +1,7 @@
 import { UpdateFile, UpdateFileDeps } from '#api/core/application/UpdateFile.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { MongoTransactionManager } from '../mongodb/common/MongoTransactionManager.js';
-import { MongoEntityPermissionChecker } from '../mongodb/entity/MongoEntityPermissionChecker.js';
-import { getConnection } from '../mongodb/common/getConnectionForCurrentTenant.js';
+import { EntityPermissionCheckerFactory } from './EntityPermissionCheckerFactory.js';
 import { FilesDataSourceFactory } from './FilesDataSourceFactory.js';
 import { FilesServiceFactory } from './FilesServiceFactory.js';
 
@@ -14,7 +13,7 @@ class UpdateFileUseCaseFactory {
       {
         filesDS: FilesDataSourceFactory.default(),
         filesService: FilesServiceFactory.default(),
-        entityPermissions: new MongoEntityPermissionChecker(getConnection(), transactionManager),
+        entityPermissions: EntityPermissionCheckerFactory.default(),
         transactionManager,
         ...overrides,
       },
