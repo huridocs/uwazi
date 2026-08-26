@@ -1,8 +1,4 @@
-import type {
-  DatavizFilter,
-  DatavizQuery,
-  DimensionSpec,
-} from '#shared/types/datavizSchema.js';
+import type { DatavizFilter, DatavizQuery, DimensionSpec } from '#shared/types/datavizSchema.js';
 
 /** One raw (unlabeled) aggregation bucket as produced by a backend strategy. */
 export type RawBucket = {

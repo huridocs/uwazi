@@ -49,7 +49,14 @@ export class DatavizQueryOrchestrator {
     const includeUnpublished = query.includeUnpublished === true;
 
     if (query.dimensions.length === 0) {
-      return this.executeMetricCount(query, context, defaultLanguage, timeoutMs, start, includeUnpublished);
+      return this.executeMetricCount(
+        query,
+        context,
+        defaultLanguage,
+        timeoutMs,
+        start,
+        includeUnpublished
+      );
     }
 
     const primaryDim = query.dimensions[0]!;
@@ -156,7 +163,15 @@ export class DatavizQueryOrchestrator {
     for (const [sourceIndex, source] of query.sources.entries()) {
       // eslint-disable-next-line no-await-in-loop
       const count = await this.engine.countSourceEntities(
-        this.buildSourceContext(query, context, source, sourceIndex, language, timeoutMs, includeUnpublished)
+        this.buildSourceContext(
+          query,
+          context,
+          source,
+          sourceIndex,
+          language,
+          timeoutMs,
+          includeUnpublished
+        )
       );
       counts.push(count);
     }

@@ -1,8 +1,4 @@
-import {
-  DatavizFilter,
-  DimensionSpec,
-  MeasureSpec,
-} from '#shared/types/datavizSchema.js';
+import { DatavizFilter, DimensionSpec, MeasureSpec } from '#shared/types/datavizSchema.js';
 import { TEMPLATE_DIMENSION_PROPERTY } from '#shared/types/datavizSchema.js';
 import { isDateLikePropertyType } from '#shared/dataviz/dimensionPropertyTypes.js';
 import { dimensionNeedsUnwind } from '#shared/dataviz/relationshipDimension.js';
@@ -23,9 +19,7 @@ import {
 } from '#api/dataviz.v2/application/contracts/DatavizAggregationStrategy.js';
 import { mergeSourceFilters } from '#api/dataviz.v2/application/services/datavizSourceFilters.js';
 
-type Deps = PostgresDataSourceDeps & {
-  accessContext: AccessContext;
-};
+type Deps = PostgresDataSourceDeps;
 
 type BucketRow = {
   __primary: string | null;
@@ -64,13 +58,13 @@ class PostgresDatavizQueryExecutor
 {
   private permissionTable: PostgresPermissionEnforcedTable<EntityRow>;
 
-  constructor({ tenantId, pgTransactionManager, accessContext }: Deps) {
+  constructor({ tenantId, pgTransactionManager }: Deps) {
     super('entities', { tenantId, pgTransactionManager });
     this.permissionTable = PostgresPermissionEnforcedTable.for<EntityRow>({
       tableName: 'entities',
       tenantId,
       transactionManager: pgTransactionManager,
-      accessContext,
+      accessContext: AccessContext.system(),
     });
   }
 
@@ -153,12 +147,13 @@ class PostgresDatavizQueryExecutor
     const result = await this.runQuery<BucketRow>(sql, bindings);
 
     return result.rows.map(row => ({
-      _id: secondaryDim && secondary
-        ? {
-            primary: toBucketValue(row.__primary, primaryDim),
-            secondary: toBucketValue(row.__secondary ?? null, secondaryDim),
-          }
-        : toBucketValue(row.__primary, primaryDim),
+      _id:
+        secondaryDim && secondary
+          ? {
+              primary: toBucketValue(row.__primary, primaryDim),
+              secondary: toBucketValue(row.__secondary ?? null, secondaryDim),
+            }
+          : toBucketValue(row.__primary, primaryDim),
       count: row.count,
     }));
   }
@@ -213,11 +208,11 @@ class PostgresDatavizQueryExecutor
       const conditions: string[] = [];
       const bindings: unknown[] = [];
       if (from !== null) {
-        conditions.push('(f->\'value\'->>\'to\')::bigint >= ?');
+        conditions.push("(f->'value'->>'to')::bigint >= ?");
         bindings.push(from);
       }
       if (to !== null) {
-        conditions.push('(f->\'value\'->>\'from\')::bigint <= ?');
+        conditions.push("(f->'value'->>'from')::bigint <= ?");
         bindings.push(to);
       }
       if (conditions.length === 0) {
@@ -277,8 +272,7 @@ class PostgresDatavizQueryExecutor
     if (bound === undefined) {
       return null;
     }
-    const valueExpr =
-      filter.propertyType === 'numeric' ? '(f->>\'value\')::numeric' : 'f->>\'value\'';
+    const valueExpr = filter.propertyType === 'numeric' ? "(f->>'value')::numeric" : "f->>'value'";
     const clause = `EXISTS (SELECT 1 FROM ${elem} WHERE ${valueExpr} = ?)`;
     return {
       sql: negated ? `NOT ${clause}` : clause,
@@ -459,10 +453,7 @@ class PostgresDatavizQueryExecutor
     return { sql: `EXTRACT(YEAR FROM ${dateExpr})::int` };
   }
 
-  private dateRangeUnixSecondsExpression(
-    dim: DimensionSpec,
-    aliases: Map<string, string>
-  ): string {
+  private dateRangeUnixSecondsExpression(dim: DimensionSpec, aliases: Map<string, string>): string {
     const raw = this.dimensionJsonbValueExpression(dim, aliases);
     return `CASE WHEN jsonb_typeof(${raw}) = 'object' THEN (${raw}->>'from')::bigint ELSE (${raw}#>>'{}')::bigint END`;
   }

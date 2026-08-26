@@ -22,7 +22,9 @@ export const filtersForSource = (
   source: DatavizSource,
   sourceIndex: number
 ): DatavizFilter[] =>
-  (filters ?? []).filter(filter => filter.property && filterAppliesToSource(filter, source, sourceIndex));
+  (filters ?? []).filter(
+    filter => filter.property && filterAppliesToSource(filter, source, sourceIndex)
+  );
 
 export const mergeSourceFilters = (
   queryFilters: DatavizFilter[] | undefined,

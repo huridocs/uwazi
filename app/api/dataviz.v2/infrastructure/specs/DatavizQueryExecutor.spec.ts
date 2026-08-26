@@ -7,7 +7,6 @@ import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { User } from '#api/users.v2/model/User.js';
-import { AccessContext } from '#api/core/domain/entityAccessPolicy/AccessContext.js';
 import { TranslationsDataSourceFactory } from '#api/core/infrastructure/factories/TranslationsDataSourceFactory.js';
 import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
 import { TemplatesDAOFactory } from '#api/core/infrastructure/factories/TemplatesDAOFactory.js';
@@ -350,9 +349,7 @@ describe('DatavizQueryExecutor', () => {
       await testingEnvironment.setFixtures(fixtures);
     });
 
-    const createExecutor = (
-      actor: User = User.createFrom({ _id: factory.id('admin').toString(), role: 'admin' })
-    ) =>
+    const createExecutor = () =>
       testingEnvironment.runWithContext(() => {
         const tm = ExecutionContext.transactionManager as MongoTransactionManager;
         const deps = {
@@ -362,14 +359,12 @@ describe('DatavizQueryExecutor', () => {
           thesauriDAO: ThesauriDAOFactory.default(),
           entitiesDAO: EntitiesDAOFactory.default() as EntitiesReadDAO,
         };
-        const accessContext = AccessContext.forActor(actor);
         const strategy = usePostgres
           ? new PostgresDatavizQueryExecutor({
               tenantId: ExecutionContext.tenant.name,
               pgTransactionManager: ExecutionContext.postgresTransactionManager,
-              accessContext,
             })
-          : new MongoDatavizQueryExecutor(getConnection(), tm, accessContext);
+          : new MongoDatavizQueryExecutor(getConnection(), tm);
         return new DatavizQueryOrchestrator(deps, strategy);
       });
 
@@ -614,7 +609,9 @@ describe('DatavizQueryExecutor', () => {
       );
       expect(year2005?.value).toBe(1);
       expect(year2005?.breakdown).toEqual(
-        expect.arrayContaining([expect.objectContaining({ key: mujerId, label: 'Mujer', value: 1 })])
+        expect.arrayContaining([
+          expect.objectContaining({ key: mujerId, label: 'Mujer', value: 1 }),
+        ])
       );
       expect(dto.series[0]?.points).toEqual(
         expect.arrayContaining([expect.objectContaining({ label: 'No data', value: 1 })])
@@ -675,7 +672,9 @@ describe('DatavizQueryExecutor', () => {
         ])
       );
       expect(personasYear2005?.breakdown).toEqual(
-        expect.arrayContaining([expect.objectContaining({ key: mujerId, label: 'Mujer', value: 1 })])
+        expect.arrayContaining([
+          expect.objectContaining({ key: mujerId, label: 'Mujer', value: 1 }),
+        ])
       );
     });
 
@@ -683,7 +682,7 @@ describe('DatavizQueryExecutor', () => {
       const admin = User.createFrom({ _id: factory.id('admin').toString(), role: 'admin' });
 
       const run = async (query: DatavizQuery, context: Partial<DatavizQueryContext> = {}) =>
-        createExecutor(admin).execute(query, { actor: admin, datavizId: 'test', ...context });
+        createExecutor().execute(query, { actor: admin, datavizId: 'test', ...context });
 
       it('should apply an equality filter on a select property', async () => {
         const dto = await run({
@@ -747,7 +746,13 @@ describe('DatavizQueryExecutor', () => {
           measures: [{ aggregation: 'count' }],
           language: 'en',
           filters: [
-            { id: 'f1', property: 'sexo', propertyType: 'select', operator: 'nin', values: [mujerId] },
+            {
+              id: 'f1',
+              property: 'sexo',
+              propertyType: 'select',
+              operator: 'nin',
+              values: [mujerId],
+            },
           ],
         });
         expect(ninDto.meta.totalEntities).toBe(11);
@@ -1077,7 +1082,7 @@ describe('DatavizQueryExecutor', () => {
       const admin = User.createFrom({ _id: factory.id('admin').toString(), role: 'admin' });
 
       const run = async (query: DatavizQuery) =>
-        createExecutor(admin).execute(query, { actor: admin, datavizId: 'test' });
+        createExecutor().execute(query, { actor: admin, datavizId: 'test' });
 
       it('should aggregate by a multiselect dimension', async () => {
         const dto = await run({
@@ -1147,7 +1152,11 @@ describe('DatavizQueryExecutor', () => {
         expect(dto.series[0]?.points).toEqual(
           expect.arrayContaining([
             expect.objectContaining({ key: templateId.toString(), label: 'Cars', value: 12 }),
-            expect.objectContaining({ key: ownersTemplateId.toString(), label: 'Owners', value: 3 }),
+            expect.objectContaining({
+              key: ownersTemplateId.toString(),
+              label: 'Owners',
+              value: 3,
+            }),
           ])
         );
       });
@@ -1157,7 +1166,7 @@ describe('DatavizQueryExecutor', () => {
       const admin = User.createFrom({ _id: factory.id('admin').toString(), role: 'admin' });
 
       const run = async (dateInterval: DatavizQuery['dimensions'][number]['dateInterval']) => {
-        const executor = createExecutor(admin);
+        const executor = createExecutor();
         return executor.execute(
           {
             sources: [{ templateId: templateId.toString() }],
@@ -1211,7 +1220,7 @@ describe('DatavizQueryExecutor', () => {
       const admin = User.createFrom({ _id: factory.id('admin').toString(), role: 'admin' });
 
       const run = async (aggregation: 'sum' | 'avg' | 'min' | 'max') => {
-        const executor = createExecutor(admin);
+        const executor = createExecutor();
         return executor.execute(
           {
             sources: [{ templateId: templateId.toString() }],
@@ -1274,7 +1283,7 @@ describe('DatavizQueryExecutor', () => {
 
     it('should mark the result as truncated when the bucket limit is reached', async () => {
       const admin = User.createFrom({ _id: factory.id('admin').toString(), role: 'admin' });
-      const dto = await createExecutor(admin).execute(
+      const dto = await createExecutor().execute(
         {
           sources: [{ templateId: templateId.toString() }],
           dimensions: [{ property: 'sexo', propertyType: 'select', maxBuckets: 1 }],
@@ -1295,7 +1304,7 @@ describe('DatavizQueryExecutor', () => {
       const admin = User.createFrom({ _id: factory.id('admin').toString(), role: 'admin' });
 
       const run = async (query: DatavizQuery) =>
-        createExecutor(admin).execute(query, { actor: admin, datavizId: 'test' });
+        createExecutor().execute(query, { actor: admin, datavizId: 'test' });
 
       it('should union three sources into one series', async () => {
         const dto = await run({
@@ -1349,7 +1358,7 @@ describe('DatavizQueryExecutor', () => {
       };
 
       it('should exclude unpublished entities by default (no flag)', async () => {
-        const executor = createExecutor(User.createFrom(null));
+        const executor = createExecutor();
 
         const dto = await executor.execute(colorQuery, {
           actor: User.createFrom(null),
@@ -1361,31 +1370,24 @@ describe('DatavizQueryExecutor', () => {
         );
       });
 
-      it('should include unpublished entities with includeUnpublished for privileged actors only', async () => {
-        const admin = User.createFrom({ _id: factory.id('admin').toString(), role: 'admin' });
+      it('should include unpublished entities with includeUnpublished regardless of actor', async () => {
+        for (const actor of [
+          User.createFrom(null),
+          User.createFrom({ _id: factory.id('admin').toString(), role: 'admin' }),
+        ]) {
+          const executor = createExecutor();
+          // eslint-disable-next-line no-await-in-loop
+          const dto = await executor.execute(
+            { ...colorQuery, includeUnpublished: true },
+            { actor, datavizId: 'test-unpublished-opt-in' }
+          );
 
-        const adminExecutor = createExecutor(admin);
-        const adminDto = await adminExecutor.execute(
-          { ...colorQuery, includeUnpublished: true },
-          { actor: admin, datavizId: 'test-unpublished-opt-in-admin' }
-        );
-
-        expect(adminDto.series[0]?.points).toEqual(
-          expect.arrayContaining([
-            expect.objectContaining({ key: unpublishedColorId, label: 'Blue', value: 1 }),
-          ])
-        );
-
-        const anonymous = User.createFrom(null);
-        const anonymousExecutor = createExecutor(anonymous);
-        const anonymousDto = await anonymousExecutor.execute(
-          { ...colorQuery, includeUnpublished: true },
-          { actor: anonymous, datavizId: 'test-unpublished-opt-in-anon' }
-        );
-
-        expect(anonymousDto.series[0]?.points).toEqual(
-          expect.not.arrayContaining([expect.objectContaining({ key: unpublishedColorId })])
-        );
+          expect(dto.series[0]?.points).toEqual(
+            expect.arrayContaining([
+              expect.objectContaining({ key: unpublishedColorId, label: 'Blue', value: 1 }),
+            ])
+          );
+        }
       });
 
       it('should exclude unpublished entities when includeUnpublished is false, regardless of actor', async () => {
@@ -1393,7 +1395,7 @@ describe('DatavizQueryExecutor', () => {
           User.createFrom(null),
           User.createFrom({ _id: factory.id('admin').toString(), role: 'admin' }),
         ]) {
-          const executor = createExecutor(actor);
+          const executor = createExecutor();
           // eslint-disable-next-line no-await-in-loop
           const dto = await executor.execute(
             { ...colorQuery, includeUnpublished: false },
@@ -1408,4 +1410,3 @@ describe('DatavizQueryExecutor', () => {
     });
   });
 });
-

@@ -264,7 +264,7 @@ describe('public dataviz embed integration', () => {
     expect(embedResponse.body.data.meta.totalEntities).toBeGreaterThan(0);
   });
 
-  it('should keep admin-baked unpublished data in snapshots while live re-queries respect viewer permissions', async () => {
+  it('should keep admin-baked unpublished data in snapshots and include it in live re-queries with includeUnpublished', async () => {
     await testingEnvironment.runWithContext(async () => {
       const { getConnection } =
         await import('#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js');
@@ -323,9 +323,9 @@ describe('public dataviz embed integration', () => {
 
     // The snapshot was baked by an admin, so it keeps the unpublished entity.
     expect(unpublishedPoint(snapshotEmbed)?.value).toBe(1);
-    // The live embed re-queries with the anonymous viewer's access context,
-    // which only grants published entities — even with includeUnpublished.
-    expect(unpublishedPoint(liveEmbed)?.value).toBeUndefined();
+    // Live re-queries bypass permissions (system access context), so the
+    // unpublished entity is included when the query opts in via includeUnpublished.
+    expect(unpublishedPoint(liveEmbed)?.value).toBe(1);
   });
 
   it('should exclude unpublished entities by default for anonymous users', async () => {

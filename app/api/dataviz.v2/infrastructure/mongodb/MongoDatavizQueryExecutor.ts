@@ -4,11 +4,7 @@ import { DatavizQueryTimeoutError } from '#api/dataviz.v2/domain/errors.js';
 import { AccessContext } from '#api/core/domain/entityAccessPolicy/AccessContext.js';
 import { MongoDataSource } from '#api/core/infrastructure/mongodb/common/MongoDataSource.js';
 import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
-import type {
-  DatavizFilter,
-  DimensionSpec,
-  MeasureSpec,
-} from '#shared/types/datavizSchema.js';
+import type { DatavizFilter, DimensionSpec, MeasureSpec } from '#shared/types/datavizSchema.js';
 import { TEMPLATE_DIMENSION_PROPERTY } from '#shared/types/datavizSchema.js';
 import { isDateLikePropertyType } from '#shared/dataviz/dimensionPropertyTypes.js';
 import {
@@ -31,12 +27,11 @@ class MongoDatavizQueryExecutor
 {
   protected collectionName = 'entities';
 
-  constructor(
-    db: Db,
-    transactionManager: MongoTransactionManager,
-    accessContext: AccessContext
-  ) {
-    super(db, transactionManager, { useSyncedCollection: false, accessContext });
+  constructor(db: Db, transactionManager: MongoTransactionManager) {
+    super(db, transactionManager, {
+      useSyncedCollection: false,
+      accessContext: AccessContext.system(),
+    });
   }
 
   async countSourceEntities(params: CountSourceEntitiesParams): Promise<number> {
@@ -51,7 +46,12 @@ class MongoDatavizQueryExecutor
       timeoutMs,
     } = params;
 
-    const sourceFilters = sharedMergeSourceFilters(query.filters, externalFilters, source, sourceIndex);
+    const sourceFilters = sharedMergeSourceFilters(
+      query.filters,
+      externalFilters,
+      source,
+      sourceIndex
+    );
     const permissionMatch = includeUnpublished ? {} : { published: true };
     const match: Record<string, unknown> = {
       template: ObjectId.createFromHexString(sourceTemplateId),
@@ -90,7 +90,12 @@ class MongoDatavizQueryExecutor
       timeoutMs,
     } = params;
 
-    const sourceFilters = sharedMergeSourceFilters(query.filters, externalFilters, source, sourceIndex);
+    const sourceFilters = sharedMergeSourceFilters(
+      query.filters,
+      externalFilters,
+      source,
+      sourceIndex
+    );
     const permissionMatch = includeUnpublished ? {} : { published: true };
 
     const match: Record<string, unknown> = {

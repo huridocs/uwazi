@@ -1,11 +1,7 @@
 import type { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js';
 import type { TranslationsDataSource } from '#api/core/application/contracts/TranslationsDataSource.js';
 import { TranslationCollection } from '#api/core/domain/translation/TranslationCollection.js';
-import type {
-  LanguageISO6391,
-  ObjectIdSchema,
-  PropertySchema,
-} from '#shared/types/commonTypes.js';
+import type { LanguageISO6391, ObjectIdSchema, PropertySchema } from '#shared/types/commonTypes.js';
 import type { LocalizedLabels, DatavizQuery, DimensionSpec } from '#shared/types/datavizSchema.js';
 import { TEMPLATE_DIMENSION_PROPERTY } from '#shared/types/datavizSchema.js';
 import {
@@ -50,8 +46,7 @@ export type DatavizLabelContextDeps = {
   translationsDS: TranslationsDataSource;
 };
 
-const idToString = (id: ObjectIdSchema): string =>
-  typeof id === 'string' ? id : id.toString();
+const idToString = (id: ObjectIdSchema): string => (typeof id === 'string' ? id : id.toString());
 
 const templateIdFromRow = (template: TemplateReadRow): string => idToString(template._id);
 
