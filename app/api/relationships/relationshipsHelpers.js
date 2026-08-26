@@ -1,4 +1,5 @@
 import { ObjectId } from 'mongodb';
+import { LanguageUtils } from '#shared/language/index.js';
 import model from './model.js';
 
 function groupByHubs(references) {
@@ -122,13 +123,19 @@ async function guessRelationshipPropertyHub(sharedId, relationType) {
   ]);
 }
 
-function removeOtherLanguageTextReferences(relationshipArray, connectedDocuments) {
+function removeOtherLanguageTextReferences(relationshipArray, connectedDocuments, language) {
   return relationshipArray.filter(r => {
     if (r.filename) {
-      const filename = connectedDocuments[r.entity].file
-        ? connectedDocuments[r.entity].file.filename
-        : '';
-      return r.filename === filename;
+      const entity = connectedDocuments[r.entity];
+      const hasMatchingDocument =
+        entity && entity.documents
+          ? entity.documents.some(
+              d =>
+                d.filename === r.filename &&
+                d.language === LanguageUtils.fromISO639_1(language).ISO639_3
+            )
+          : false;
+      return hasMatchingDocument;
     }
     return true;
   });
@@ -166,11 +173,13 @@ function processRelationshipCollection(
   relationshipArray,
   connectedDocuments,
   sharedId,
-  unpublished
+  unpublished,
+  language
 ) {
   let relationshipsCollection = removeOtherLanguageTextReferences(
     relationshipArray,
-    connectedDocuments
+    connectedDocuments,
+    language
   );
   relationshipsCollection = withConnectedData(relationshipsCollection, connectedDocuments);
   relationshipsCollection = removeSingleHubs(relationshipsCollection);

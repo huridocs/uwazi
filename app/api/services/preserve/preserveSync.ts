@@ -22,9 +22,7 @@ import { EnforcedWithId } from '#api/odm/index.js';
 import settings from '#api/settings/index.js';
 import { tenants } from '#api/tenants/index.js';
 import thesauri from '#api/core/v1_layer/thesauri/index.js';
-import users from '#api/users/users.js';
 import { UsersDirectoryFactory } from '#api/core/infrastructure/factories/UsersDirectoryFactory.js';
-import { usersDirectoryEnabled } from '#api/core/infrastructure/factories/usersBackendFlags.js';
 import { newThesauriId } from '#api/utils/templateUtils.js';
 import request from '#shared/JSONRequest.js';
 import { propertyTypes } from '#shared/propertyTypes.js';
@@ -102,16 +100,11 @@ const saveEvidence =
       }
 
       const template = await templates.getById(config.template);
-      // Only `user._id` is read downstream, so getById (identity) is the whole requirement —
-      // no groups, no account state.
-      const user = usersDirectoryEnabled()
-        ? // `config.user` is an optional ObjectIdSchema; the untyped legacy getter took it as
-          // it came. An empty id is a miss on both backends, which is what a missing
-          // `config.user` already produced.
-          ((
-            await UsersDirectoryFactory.default().getById(config.user?.toString() ?? '')
-          ).getData() ?? null)
-        : await users.getById(config.user);
+      // Only `user._id` is read downstream, so identity is the whole requirement. An empty
+      // id is a miss, which is what a missing `config.user` produces.
+      const user =
+        (await UsersDirectoryFactory.default().getById(config.user?.toString() ?? '')).getData() ??
+        null;
 
       // Set up V2 services
       const transactionManager = TransactionManagerFactory.default();

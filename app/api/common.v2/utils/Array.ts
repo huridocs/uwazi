@@ -14,6 +14,13 @@ type RunInBatchesCallback<Item, Result> = (
 
 export class ArrayUtils {
   /**
+   * Normalizes a single value or an array into an array.
+   */
+  static asArray<T>(value: T | T[]): T[] {
+    return Array.isArray(value) ? value : [value];
+  }
+
+  /**
    * Executes promises in sequence.
    */
   static async sequentialFor<Item, Result>(

@@ -132,8 +132,7 @@ export class PdfCharacterCountToAbsolute {
       lines[errorLineNumber - 1],
       lines[errorLineNumber],
     ];
-    const escapeRegex = (lineText: string) =>
-      lineText.replace(/[-[\]/{}()*+?.\\^$|]/g, '\\$&');
+    const escapeRegex = (lineText: string) => lineText.replace(/[-[\]/{}()*+?.\\^$|]/g, '\\$&');
     problematicLines.forEach(
       x =>
         (sanitizedContentString = sanitizedContentString.replace(

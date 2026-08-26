@@ -77,6 +77,16 @@ describe('MongoTranslationsDataSource', () => {
       });
     });
 
+    it('should reject a translation whose context is missing type or label', async () => {
+      const transactionManager = TransactionManagerFactory.default();
+
+      await expect(
+        new MongoTranslationsDataSource(getConnection(), transactionManager).insert([
+          new Translation('Search', 'Search', 'en', { id: 'System' } as Translation['context']),
+        ])
+      ).rejects.toThrow(/context.type/);
+    });
+
     describe('when any other error happens', () => {
       it('should bubble up the error', async () => {
         const transactionManager = TransactionManagerFactory.default();

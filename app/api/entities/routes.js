@@ -14,7 +14,6 @@ import { CreateEntityFromPDFController } from '#api/core/infrastructure/express/
 import needsAuthorization from '../auth/authMiddleware.js';
 import { parseQuery, validation } from '../utils/index.js';
 import date from '../utils/date.js';
-import entities from './entities.js';
 import { User } from '#api/users.v2/model/User.js';
 
 function coerceValues(value, type, locale) {
@@ -96,15 +95,6 @@ export default app => {
 
       await UpdateEntityController.createHandler()(req, res, next);
     }
-  );
-
-  app.post('/api/entity_denormalize', needsAuthorization(['admin', 'editor']), (req, res, next) =>
-    entities
-      .denormalize(req.body, { user: req.user, language: req.language })
-      .then(response => {
-        res.json(response);
-      })
-      .catch(next)
   );
 
   app.post(

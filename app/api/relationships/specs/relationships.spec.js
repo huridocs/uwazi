@@ -65,7 +65,6 @@ describe('relationships', () => {
       const entity1Connection = result.find(connection => connection.entity === 'entity1');
       testEntityData(entity1Connection, {
         title: 'entity1 title',
-        type: 'document',
         creationDate: 123,
         template,
       });
@@ -73,7 +72,6 @@ describe('relationships', () => {
       const entity3Connection = result.find(connection => connection.entity === 'entity3');
       testEntityData(entity3Connection, {
         title: 'entity3 title',
-        type: 'entity',
         published: true,
         creationDate: 456,
         template,

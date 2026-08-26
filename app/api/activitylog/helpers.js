@@ -2,12 +2,10 @@ import { availableLanguages } from '#shared/language/index.js';
 import { typeParsers } from './migrationsParser.js';
 import templates from '#api/core/v1_layer/templates/templates.js';
 import entities from '#api/entities/entities.js';
-import users from '#api/users/users.js';
 import { PermissionType } from '#shared/types/permissionSchema.js';
 import { FilesDAOFactory } from '#api/core/infrastructure/factories/FilesDAOFactory.js';
 import { UsersDirectoryFactory } from '#api/core/infrastructure/factories/UsersDirectoryFactory.js';
 import { UserGroupsDirectoryFactory } from '#api/core/infrastructure/factories/UserGroupsDirectoryFactory.js';
-import { usersDirectoryEnabled } from '#api/core/infrastructure/factories/usersBackendFlags.js';
 import { Suggestions } from '#api/suggestions/suggestions.js';
 import { Extractors } from '#api/services/informationextraction/ixextractors.js';
 
@@ -106,11 +104,8 @@ const loadPermissionsData = async data => {
   const permissionsIds = data.permissions
     .filter(p => p.type !== PermissionType.PUBLIC)
     .map(pu => pu.refId);
-  // Soft-deleted permission holders stay excluded on both paths (D9): the log falls back to
-  // printing the raw refId for them, which is intended, not an accident to fix here.
-  const allowedUsers = usersDirectoryEnabled()
-    ? await UsersDirectoryFactory.default().getManyByIds(permissionsIds)
-    : await users.get({ _id: { $in: permissionsIds } }, { username: 1 });
+  // Unresolvable holders (soft-deleted included) are left to print as their raw refId.
+  const allowedUsers = await UsersDirectoryFactory.default().getManyByIds(permissionsIds);
   const allowedGroups = await UserGroupsDirectoryFactory.default().getManyByIds(permissionsIds);
   const publicPermission = !!data.permissions.find(p => p.type === PermissionType.PUBLIC);
 
@@ -160,12 +155,8 @@ const loadExtractorData = async data => {
 };
 
 const loadUser = async data => {
-  // getById, not getActor: this only names the subject of a `POST /api/users/unlock` entry,
-  // and both legacy paths excluded soft-deleted users — the log falls back to printing the
-  // raw id for them, exactly as loadPermissionsData does (D9).
-  const [user] = usersDirectoryEnabled()
-    ? [(await UsersDirectoryFactory.default().getById(data._id.toString())).getData()]
-    : await users.get({ _id: data._id });
+  // Unresolvable users fall back to their raw id below, as in loadPermissionsData.
+  const user = (await UsersDirectoryFactory.default().getById(data._id.toString())).getData();
 
   return { ...data, ...(user || { username: data._id.toString() }) };
 };

@@ -325,6 +325,35 @@ describe('PostgresTable', () => {
       expect(rowA!.name).toBe('A');
       expect(rowB!.name).toBe('B');
     });
+
+    it('should merge on a custom unique key without replacing _id', async () => {
+      const table = createTable();
+      await table.insert({ _id: 'kept-id', name: 'same-name', values: jsonVal([]) });
+
+      await table.upsert(
+        { _id: 'new-id', name: 'same-name', values: jsonVal(['changed']) },
+        { columns: ['name', 'tenant_id'], merge: ['values'] }
+      );
+
+      const rows = await table.all();
+      expect(rows).toHaveLength(1);
+      expect(rows[0]._id).toBe('kept-id');
+      expect(rows[0].values).toEqual(['changed']);
+    });
+
+    it('should ignore conflict on a custom unique key when asked', async () => {
+      const table = createTable();
+      await table.insert({ _id: 'kept-id', name: 'same-name', values: jsonVal([]) });
+
+      await table.upsert(
+        { _id: 'new-id', name: 'same-name', values: jsonVal(['changed']) },
+        { columns: ['name', 'tenant_id'], ignore: true }
+      );
+
+      const row = await table.where({ name: 'same-name' }).first();
+      expect(row!._id).toBe('kept-id');
+      expect(row!.values).toEqual([]);
+    });
   });
 
   describe('query().where().update()', () => {
@@ -372,6 +401,135 @@ describe('PostgresTable', () => {
       expect(ids).toEqual([]);
       const row = await tableA.where({ _id: 'cross-tenant' }).first();
       expect(row!.name).toBe('original');
+    });
+  });
+
+  describe('bulkUpdate', () => {
+    it('should update multiple rows in a single statement with per-row values', async () => {
+      const table = createTable();
+      await table.insert([
+        { _id: 'bu-1', name: 'alpha', values: jsonVal([]) },
+        { _id: 'bu-2', name: 'beta', values: jsonVal([]) },
+        { _id: 'bu-3', name: 'gamma', values: jsonVal([]) },
+      ]);
+
+      await table.bulkUpdate([
+        { _id: 'bu-1', name: 'alpha-renamed', values: [{ id: 'v1' }] },
+        { _id: 'bu-2', name: 'beta-renamed', values: [{ id: 'v2' }] },
+      ]);
+
+      const rows = await table.whereIn('_id', ['bu-1', 'bu-2', 'bu-3']).all();
+      expect(rows.find(r => r._id === 'bu-1')).toMatchObject({
+        name: 'alpha-renamed',
+        values: [{ id: 'v1' }],
+      });
+      expect(rows.find(r => r._id === 'bu-2')).toMatchObject({
+        name: 'beta-renamed',
+        values: [{ id: 'v2' }],
+      });
+      expect(rows.find(r => r._id === 'bu-3')).toMatchObject({ name: 'gamma', values: [] });
+    });
+
+    it('should return the ids of the rows actually updated', async () => {
+      const table = createTable();
+      await table.insert([
+        { _id: 'bu-id-1', name: 'alpha', values: jsonVal([]) },
+        { _id: 'bu-id-2', name: 'beta', values: jsonVal([]) },
+        { _id: 'bu-id-3', name: 'gamma', values: jsonVal([]) },
+      ]);
+
+      const ids = await table.bulkUpdate([
+        { _id: 'bu-id-1', name: 'alpha-1' },
+        { _id: 'bu-id-2', name: 'beta-1' },
+        { _id: 'bu-id-3', name: 'gamma-1' },
+      ]);
+
+      expect(ids.sort()).toEqual(['bu-id-1', 'bu-id-2', 'bu-id-3']);
+    });
+
+    it('should not create rows that do not already exist', async () => {
+      const table = createTable();
+      await table.insert({ _id: 'bu-existing', name: 'before', values: jsonVal([]) });
+
+      const ids = await table.bulkUpdate([
+        { _id: 'bu-existing', name: 'after' },
+        { _id: 'bu-missing', name: 'ghost' },
+      ]);
+
+      expect(ids).toEqual(['bu-existing']);
+      const rows = await table.all();
+      expect(rows).toHaveLength(1);
+      expect(rows[0].name).toBe('after');
+    });
+
+    it('should return an empty array for an empty input', async () => {
+      const table = createTable();
+
+      const ids = await table.bulkUpdate([]);
+
+      expect(ids).toEqual([]);
+    });
+
+    it('should infer jsonb casts from object values', async () => {
+      const table = createTable();
+      await table.insert({ _id: 'bu-cast-1', name: 'before', values: jsonVal([]) });
+
+      await table.bulkUpdate([
+        { _id: 'bu-cast-1', name: 'after', values: [{ id: 'v1', label: 'Updated' }] },
+      ]);
+
+      const row = await table.where({ _id: 'bu-cast-1' }).first();
+      expect(row!.values).toEqual([{ id: 'v1', label: 'Updated' }]);
+    });
+
+    it('should leave columns untouched on rows that omit them', async () => {
+      const table = createTable();
+      await table.insert([
+        { _id: 'bu-some-1', name: 'a', values: jsonVal([{ id: 'keep-a' }]) },
+        { _id: 'bu-some-2', name: 'b', values: jsonVal([{ id: 'keep-b' }]) },
+      ]);
+
+      await table.bulkUpdate([
+        { _id: 'bu-some-1', name: 'a-1', values: [{ id: 'new-a' }] },
+        { _id: 'bu-some-2', name: 'b-1' },
+      ]);
+
+      const rows = await table.whereIn('_id', ['bu-some-1', 'bu-some-2']).all();
+      expect(rows.find(r => r._id === 'bu-some-1')).toMatchObject({
+        name: 'a-1',
+        values: [{ id: 'new-a' }],
+      });
+      expect(rows.find(r => r._id === 'bu-some-2')).toMatchObject({
+        name: 'b-1',
+        values: [{ id: 'keep-b' }],
+      });
+    });
+
+    it('should return an empty array when no rows match', async () => {
+      const table = createTable();
+
+      const ids = await table.bulkUpdate([{ _id: 'bu-nonexistent', name: 'x' }]);
+
+      expect(ids).toEqual([]);
+    });
+
+    it('should enforce tenant_id — cannot update rows from other tenants', async () => {
+      const tableA = createTable('tenant-a');
+      const tableB = createTable('tenant-b');
+
+      await tableA.insert({ _id: 'bu-cross', name: 'original', values: jsonVal([]) });
+
+      const ids = await tableB.bulkUpdate([{ _id: 'bu-cross', name: 'hacked' }]);
+
+      expect(ids).toEqual([]);
+      const row = await tableA.where({ _id: 'bu-cross' }).first();
+      expect(row!.name).toBe('original');
+    });
+
+    it('should throw when a row does not carry an _id', async () => {
+      const table = createTable();
+
+      await expect(table.bulkUpdate([{ name: 'no-id' }])).rejects.toThrow('_id');
     });
   });
 
@@ -903,6 +1061,22 @@ describe('PostgresTable', () => {
         expect(logs[0].mongoId.toString()).toBe(u2);
         expect(logs[0].deleted).toBe(false);
       });
+
+      it('should log the kept _id when merging on a custom unique key', async () => {
+        const table = createTableWithSync();
+        const keptId = _id();
+        await table.insert({ _id: keptId, name: 'same-name', values: jsonVal([]) });
+        await syncDb.collection('updatelogs').deleteMany({});
+
+        await table.upsert(
+          { _id: _id(), name: 'same-name', values: jsonVal(['changed']) },
+          { columns: ['name', 'tenant_id'], merge: ['values'] }
+        );
+
+        const logs = await getSyncLogs();
+        expect(logs).toHaveLength(1);
+        expect(logs[0].mongoId.toString()).toBe(keptId);
+      });
     });
 
     describe('update', () => {
@@ -948,6 +1122,42 @@ describe('PostgresTable', () => {
         expect(logs).toHaveLength(1);
         expect(logs[0].mongoId.toString()).toBe(i4);
         expect(logs[0].deleted).toBe(false);
+      });
+    });
+
+    describe('bulkUpdate', () => {
+      it('should write sync logs for every updated row', async () => {
+        const table = createTableWithSync();
+        const b1 = _id();
+        const b2 = _id();
+        await table.insert([
+          { _id: b1, name: 'alpha', values: jsonVal([]) },
+          { _id: b2, name: 'beta', values: jsonVal([]) },
+        ]);
+        await syncDb.collection('updatelogs').deleteMany({});
+
+        await table.bulkUpdate([
+          { _id: b1, name: 'alpha-1' },
+          { _id: b2, name: 'beta-1' },
+        ]);
+
+        const logs = await getSyncLogs();
+        expect(logs).toHaveLength(2);
+        const ids = logs.map(l => l.mongoId.toString()).sort();
+        expect(ids).toEqual([b1, b2].sort());
+        expect(logs.every(l => l.deleted === false)).toBe(true);
+      });
+
+      it('should not write sync logs when no rows match', async () => {
+        const table = createTableWithSync();
+        const b3 = _id();
+        await table.insert({ _id: b3, name: 'only', values: jsonVal([]) });
+        await syncDb.collection('updatelogs').deleteMany({});
+
+        await table.bulkUpdate([{ _id: _id(), name: 'ghost' }]);
+
+        const logs = await getSyncLogs();
+        expect(logs).toHaveLength(0);
       });
     });
 
@@ -1235,6 +1445,45 @@ describe('PostgresTable', () => {
         const visible = await tableA.where({ _id: 'trx-4' }).first();
         expect(visible).toBeDefined();
       });
+    });
+
+    it('should commit bulkUpdate writes inside a run', async () => {
+      const manager = managerFor('tenant-a');
+      const tableA = PostgresTable.for<TestRow>({
+        tableName: 'thesauri',
+        tenantId: 'tenant-a',
+        transactionManager: manager,
+      });
+
+      await tableA.insert({ _id: 'trx-bu-1', name: 'original', values: jsonVal([]) });
+
+      await manager.run(async () => {
+        await tableA.bulkUpdate([{ _id: 'trx-bu-1', name: 'committed' }]);
+      });
+
+      const row = await tableA.where({ _id: 'trx-bu-1' }).first();
+      expect(row!.name).toBe('committed');
+    });
+
+    it('should roll back bulkUpdate writes when the run throws', async () => {
+      const manager = managerFor('tenant-a');
+      const tableA = PostgresTable.for<TestRow>({
+        tableName: 'thesauri',
+        tenantId: 'tenant-a',
+        transactionManager: manager,
+      });
+
+      await tableA.insert({ _id: 'trx-bu-2', name: 'original', values: jsonVal([]) });
+
+      await expect(
+        manager.run(async () => {
+          await tableA.bulkUpdate([{ _id: 'trx-bu-2', name: 'changed' }]);
+          throw new Error('boom');
+        })
+      ).rejects.toThrow('boom');
+
+      const row = await tableA.where({ _id: 'trx-bu-2' }).first();
+      expect(row!.name).toBe('original');
     });
   });
 });

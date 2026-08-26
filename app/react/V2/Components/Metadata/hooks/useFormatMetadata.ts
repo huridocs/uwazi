@@ -53,7 +53,7 @@ register(['select', 'multiselect'], withMetadata(formatSelectProperty));
 register(['link'], withMetadata(formatLinkProperty));
 register(['media'], withMetadata(formatMediaProperty));
 register(['image', 'preview'], ctx =>
-  formatImageProperty(ctx.field, ctx.metadata, ctx.entityTemplate)
+  formatImageProperty(ctx.field, ctx.metadata, ctx.entityTemplate, ctx.entity)
 );
 register(['relationship'], ctx =>
   formatRelationshipProperty(ctx.field, ctx.metadata, ctx.entity.relations)

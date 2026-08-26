@@ -20,10 +20,12 @@ import type { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import { MongoDatavizDataSource } from '../mongodb/MongoDatavizDataSource.js';
 import { MongoDatavizSnapshotsDataSource } from '../mongodb/MongoDatavizSnapshotsDataSource.js';
 import { MongoDatavizQueryExecutor } from '../mongodb/MongoDatavizQueryExecutor.js';
+import { PostgresDatavizQueryExecutor } from '../postgresql/PostgresDatavizQueryExecutor.js';
+import { DatavizQueryOrchestrator } from '#api/dataviz.v2/application/services/DatavizQueryOrchestrator.js';
 import type {
   EntitiesReadDAO,
   TemplatesReadDAO,
-} from '../mongodb/executor/buildDatavizMultilingualLabelContext.js';
+} from '#api/dataviz.v2/application/services/buildDatavizMultilingualLabelContext.js';
 import { DatavizSchedulerService } from '../services/DatavizSchedulerService.js';
 import { DatavizScheduledRefreshJobHandler } from '../jobHandlers/DatavizScheduledRefreshJobHandler.js';
 
@@ -48,13 +50,22 @@ class DatavizFactory {
   static queryExecutor() {
     const transactionManager = this.getTransactionManager();
 
-    return new MongoDatavizQueryExecutor(getConnection(), transactionManager, {
+    const deps = {
       settingsDS: SettingsDataSourceFactory.cached({ transactionManager }),
       translationsDS: TranslationsDataSourceFactory.cached({ transactionManager }),
       templatesDAO: TemplatesDAOFactory.default() as TemplatesReadDAO,
       thesauriDAO: ThesauriDAOFactory.default(),
       entitiesDAO: EntitiesDAOFactory.default() as EntitiesReadDAO,
-    });
+    };
+
+    const strategy = ExecutionContext.tenant.featureFlags?.postgresEntities
+      ? new PostgresDatavizQueryExecutor({
+          tenantId: ExecutionContext.tenant.name,
+          pgTransactionManager: ExecutionContext.postgresTransactionManager,
+        })
+      : new MongoDatavizQueryExecutor(getConnection(), transactionManager);
+
+    return new DatavizQueryOrchestrator(deps, strategy);
   }
 
   static schedulerService() {

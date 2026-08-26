@@ -1,3 +1,4 @@
+/* eslint-disable max-statements */
 // eslint-disable-next-line no-restricted-imports
 import { mkdtempSync, rmSync, writeFileSync } from 'fs';
 import os from 'os';
@@ -111,6 +112,7 @@ describe('MigrationJob (real chain)', () => {
   });
 
   afterEach(async () => {
+    delete tenants.tenants[TENANT_B];
     rmSync(pgMigrationsDir, { recursive: true, force: true });
     spiesToRestore.forEach(spy => spy.mockRestore());
     spiesToRestore = [];

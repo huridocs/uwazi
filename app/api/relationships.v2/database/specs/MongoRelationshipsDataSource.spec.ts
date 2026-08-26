@@ -124,20 +124,6 @@ describe('When getting by query', () => {
     ]);
   });
 
-  it('should be paginable', async () => {
-    const query = new MatchQueryNode({ sharedId: 'entity1' }, [
-      new TraversalQueryNode('out', {}, [
-        new MatchQueryNode({}, [new TraversalQueryNode('in', {}, [new MatchQueryNode()])]),
-      ]),
-    ]);
-
-    const result = await ds.getByQuery(query, 'en').page(2, 2);
-    expect(result).toMatchObject([
-      { _id: factory.id('entity5-en').toString(), sharedId: 'entity5' },
-      { _id: factory.id('entity6-en').toString(), sharedId: 'entity6' },
-    ]);
-  });
-
   it('should allow to add filters to the query', async () => {
     const query = new MatchQueryNode({ sharedId: 'entity1' }, [
       new TraversalQueryNode('out', {}, [

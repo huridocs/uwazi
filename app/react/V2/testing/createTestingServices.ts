@@ -19,6 +19,7 @@ import {
 type CreateTestingServicesOptions = {
   initialThesauri?: Thesaurus[];
   initialRelationshipTypes?: RelationshipType[];
+  initialRelationTypeRefCounts?: { [id: string]: number };
   initialTemplates?: Template[];
   initialTemplateEntityCounts?: Record<string, number>;
 };
@@ -38,6 +39,7 @@ const createTestingServices = (
   });
   const relationshipTypes = createTestingRelationshipTypesService({
     initialRelationshipTypes: options?.initialRelationshipTypes,
+    initialRefCounts: options?.initialRelationTypeRefCounts,
   });
   const templates = createTestingTemplatesService({
     initialTemplates: options?.initialTemplates,

@@ -239,11 +239,13 @@ describe('search', () => {
 
   it('should return results from a given number', done => {
     userFactory.mock(undefined);
-    void searchEntities({ searchTerm: '', limit: 1, sort: 'title', from: 1 }, 'en').then(({ rows }) => {
-      expect(rows.length).toBe(1);
-      expect(rows[0].title).toBe('Something');
-      done();
-    });
+    void searchEntities({ searchTerm: '', limit: 1, sort: 'title', from: 1 }, 'en').then(
+      ({ rows }) => {
+        expect(rows.length).toBe(1);
+        expect(rows[0].title).toBe('Something');
+        done();
+      }
+    );
   });
 
   it('should filter by templates', async () => {

@@ -13,7 +13,7 @@ export const groupMemberSchema = {
 };
 /**
  * Kept as the source `yarn emit-types` generates userGroupType.d.ts from — `UserGroupSchema`
- * is still the type for userGroupsModel.ts, testing_db.ts and, via apiResponseTypes.d.ts,
+ * is still the type for testing_db.ts and, via apiResponseTypes.d.ts,
  * the frontend's ClientUserGroupSchema. It is no longer compiled by AJV: request validation
  * lives in the zod schemas of the userGroups controllers, and the `uniqueName` keyword it
  * used to carry is now MongoUserGroupsDataSource.checkUniqueName.

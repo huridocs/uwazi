@@ -15,6 +15,28 @@ type Deps = {
 
 const defaultProjection: Document = { fullText: 0 };
 
+const toObjectId = (value: unknown) =>
+  typeof value === 'string' && ObjectId.isValid(value) ? new ObjectId(value) : value;
+
+/**
+ * Callers pass `_id` as a plain string — the one representation both DAOs can accept — and each
+ * DAO normalises it to its own storage form. Postgres stores `_id` as TEXT and wants the string
+ * as-is; Mongo needs an ObjectId, including inside `$in` / `$nin` operands, where a string never
+ * matches. Non-array operands (`$exists: true`) are passed through untouched.
+ */
+const resolveIdFilter = (value: unknown) => {
+  if (value !== null && typeof value === 'object' && !Array.isArray(value)) {
+    return Object.fromEntries(
+      Object.entries(value as Record<string, unknown>).map(([operator, operand]) => [
+        operator,
+        Array.isArray(operand) ? operand.map(toObjectId) : operand,
+      ])
+    );
+  }
+
+  return toObjectId(value);
+};
+
 function resolveProjection(options?: GetFileOptions): Document | undefined {
   if (options?.projection) return options.projection;
   if (options?.withFullText) return {};
@@ -83,8 +105,8 @@ class MongoFilesDAO extends MongoDataSource<FileDBO> {
     if (options?.limit) findOptions.limit = options.limit;
 
     const resolvedQuery = { ...query };
-    if (typeof resolvedQuery._id === 'string' && ObjectId.isValid(resolvedQuery._id)) {
-      resolvedQuery._id = new ObjectId(resolvedQuery._id);
+    if ('_id' in resolvedQuery) {
+      resolvedQuery._id = resolveIdFilter(resolvedQuery._id);
     }
 
     return this.getCollection().find(resolvedQuery, findOptions).toArray() as Promise<T[]>;

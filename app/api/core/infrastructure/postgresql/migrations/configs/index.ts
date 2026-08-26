@@ -6,3 +6,4 @@ export { RelationshipTypesMigrationConfig } from './RelationshipTypesMigrationCo
 export { PasswordRecoveryMigrationConfig } from './PasswordRecoveryMigrationConfig.js';
 export { UsersMigrationConfig } from './UsersMigrationConfig.js';
 export { UserGroupsMigrationConfig } from './UserGroupsMigrationConfig.js';
+export { TranslationsMigrationConfig } from './TranslationsMigrationConfig.js';
