@@ -18,7 +18,7 @@ import {
   getMarkerRefIds,
   toggleClusterIfActive,
 } from './documentPdfClusterUtils.js';
-import { useEntityTabNavigation } from './useEntityTabNavigation.js';
+import { useEntityTabNavigation } from '../EntityTabsContext.js';
 
 type UseDocumentPdfRelationshipClicksParams = {
   entity?: EntityType;

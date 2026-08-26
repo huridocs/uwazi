@@ -1,7 +1,7 @@
 /**
  * @jest-environment jsdom
  */
-import { resolveSideTabId } from '../Tabs/hooks/resolveSideTabId.js';
+import { resolveSideTabId } from '../Tabs/entityTabState.js';
 import { SIDE_TAB } from '../Tabs/tabIds.js';
 
 describe('resolveSideTabId', () => {

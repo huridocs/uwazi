@@ -30,7 +30,8 @@ import {
   MAIN_TAB,
   isValidMainTab,
 } from './Tabs/index.js';
-import { useEntityViewTabs } from './Tabs/hooks/useEntityViewTabs.js';
+import { EntityTabsProvider } from './Tabs/EntityTabsContext.js';
+import { useEntityTabs } from './Tabs/hooks/useEntityTabs.js';
 import { LoaderResponse } from './types.js';
 
 const EntityCreateRelationshipModal = () => {
@@ -58,15 +59,14 @@ const EntityView = () => {
     [primaryRows.length]
   );
 
-  const { activeMainTab, activeSideTab, explicitSideTab, onMainTabChange, onSideTabChange } =
-    useEntityViewTabs({
-      entity,
-      hasMainDocument,
-      mainDocumentId: mainDocument?._id,
-      filesSideTabs,
-    });
+  const entityTabs = useEntityTabs({
+    entity,
+    hasMainDocument,
+    mainDocumentId: mainDocument?._id,
+    filesSideTabs,
+  });
   const { activeTabId: atomMainTabId } = useTabGroup('entity-main');
-  const mainTabId = isValidMainTab(atomMainTabId) ? atomMainTabId : activeMainTab;
+  const mainTabId = isValidMainTab(atomMainTabId) ? atomMainTabId : entityTabs.activeMainTab;
   const { isEditing, isDirty, isSaving, cancelEdit, formMountHost } = useMetadataEditing();
   const showMainPaneHeader = !(
     mainTabId === MAIN_TAB.METADATA &&
@@ -75,7 +75,7 @@ const EntityView = () => {
   );
 
   return (
-    <>
+    <EntityTabsProvider value={entityTabs}>
       <EntitySeo entity={entity} />
       <FilesDeleteConfirmationModal />
       <AddFileModal />
@@ -92,7 +92,7 @@ const EntityView = () => {
                   <TabsMainButtons
                     entity={entity}
                     mainDocument={mainDocument}
-                    onTabChange={onMainTabChange}
+                    onTabChange={entityTabs.onMainTabChange}
                   />
                 </div>
                 {showMainPaneHeader ? (
@@ -117,19 +117,18 @@ const EntityView = () => {
           </PaneLayout.Pane>
           <PaneLayout.Pane key="entity-side-pane">
             <SideTabsPanel
-              activeMainTab={mainTabId}
-              activeSideTab={activeSideTab}
-              explicitSideTab={explicitSideTab}
-              onSideTabChange={onSideTabChange}
+              activeSideTab={entityTabs.activeSideTab}
+              syncSideTabId={entityTabs.syncSideTabId}
+              sideButtons={entityTabs.sideButtons}
+              onSideTabChange={entityTabs.onSideTabChange}
               entity={entity}
               mainDocument={mainDocument}
               pagePlaintext={pagePlaintext}
-              filesSideTabs={filesSideTabs}
             />
           </PaneLayout.Pane>
         </PaneLayout>
       </div>
-    </>
+    </EntityTabsProvider>
   );
 };
 

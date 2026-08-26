@@ -11,7 +11,7 @@ import {
   keepMetadataTab,
   resolveActiveTabId,
 } from '../Components/context/metadataEditingSession.js';
-import { useEntityTabNavigation } from './hooks/useEntityTabNavigation.js';
+import { useEntityTabNavigation } from './EntityTabsContext.js';
 import { DocumentTab } from './tabsContent/DocumentTab.js';
 import { MetadataTab } from './tabsContent/MetadataTab.js';
 import {
