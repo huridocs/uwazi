@@ -321,6 +321,67 @@ export class PostgresTable<TRow = Record<string, unknown>> {
     return PostgresTable.idsOf(result);
   }
 
+  async bulkUpdate(rows: Record<string, unknown>[]): Promise<string[]> {
+    if (rows.length === 0) return [];
+
+    const hasValue = (row: Record<string, unknown>, column: string) =>
+      Object.prototype.hasOwnProperty.call(row, column) && row[column] !== undefined;
+
+    if (!rows.every(row => hasValue(row, '_id'))) {
+      throw new Error('bulkUpdate requires every row to carry its "_id"');
+    }
+
+    const columns = Array.from(new Set(rows.flatMap(row => Object.keys(row)))).filter(
+      column => column !== '_id'
+    );
+
+    const castOf = (column: string): string => {
+      const value = rows.map(row => row[column]).find(v => v !== null && v !== undefined);
+      if (value instanceof Date) return 'timestamptz';
+      if (typeof value === 'object') return 'jsonb';
+      if (typeof value === 'boolean') return 'boolean';
+      if (typeof value === 'number') {
+        return Number.isInteger(value) ? 'bigint' : 'double precision';
+      }
+      return '';
+    };
+
+    const serialized = rows.map(row => PostgresTable.serialize(row));
+    const valueColumns = ['_id', ...columns];
+    const placeholders = serialized
+      .map(() => `(${valueColumns.map(() => '?').join(', ')})`)
+      .join(', ');
+    const bindings = serialized.flatMap(row =>
+      valueColumns.map(column => (hasValue(row, column) ? row[column] : null))
+    );
+
+    const setClause = columns
+      .map(column => {
+        const cast = castOf(column);
+        const suffix = cast ? `::${cast}` : '';
+        const value = serialized.every(row => hasValue(row, column))
+          ? `v."${column}"${suffix}`
+          : `COALESCE(v."${column}"${suffix}, t."${column}")`;
+        return `"${column}" = ${value}`;
+      })
+      .join(', ');
+
+    const sql = `UPDATE ?? AS t SET ${setClause}
+      FROM (VALUES ${placeholders}) AS v(${valueColumns.map(column => `"${column}"`).join(', ')})
+      WHERE t."_id" = v."_id" RETURNING t."_id"`;
+
+    const result = await this.raw<{ rows: { _id: string }[] }>(sql, [
+      this.cfg.tableName,
+      ...bindings,
+    ]);
+
+    const affectedIds = result.rows.map(row => row._id);
+    if (this.cfg.syncWriter) {
+      await this.cfg.syncWriter.upsertSyncLogs(affectedIds, false);
+    }
+    return affectedIds;
+  }
+
   async delete(): Promise<string[]> {
     const result = await this.run(qb => this.applyPolicy(qb, 'write').returning(['_id']).del());
     if (this.cfg.syncWriter) {

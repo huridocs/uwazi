@@ -1,6 +1,5 @@
 import { EntityPermissionChecker } from '#api/core/domain/entityAccessPolicy/EntityPermissionChecker.js';
 import { FileNotFound } from '#api/core/domain/files/errors.js';
-import { Result } from '#api/core/libs/Result.js';
 import { DBFixture } from '#api/utils/testing_db.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
@@ -117,7 +116,7 @@ describe('UpdateFile', () => {
 
     const createSut = (deps?: Partial<UpdateFileDeps>) => {
       const entityPermissions = TestUtils.mockClass<EntityPermissionChecker>({
-        checkWritePermission: jest.fn().mockResolvedValue(Result.ok(true)),
+        checkWritePermission: jest.fn().mockResolvedValue(true),
       });
 
       return testingEnvironment.runWithContext(() => ({
@@ -133,7 +132,7 @@ describe('UpdateFile', () => {
 
     it('throws a 404 error when the actor lacks write permission', async () => {
       const noPermissions = TestUtils.mockClass<EntityPermissionChecker>({
-        checkWritePermission: jest.fn().mockResolvedValue(Result.ok(false)),
+        checkWritePermission: jest.fn().mockResolvedValue(false),
       });
 
       await expect(

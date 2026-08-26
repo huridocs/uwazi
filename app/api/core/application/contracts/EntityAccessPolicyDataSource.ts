@@ -3,7 +3,6 @@ import { EntityAccessPolicyNotFoundError } from '#api/core/domain/entityAccessPo
 import { ResultType } from '#api/core/libs/Result.js';
 
 interface EntityAccessPolicyDataSource {
-  create(policy: EntityAccessPolicy): Promise<void>;
   update(policy: EntityAccessPolicy): Promise<void>;
   bulkCreate(policies: EntityAccessPolicy[]): Promise<void>;
   bulkUpdate(policies: EntityAccessPolicy[]): Promise<void>;

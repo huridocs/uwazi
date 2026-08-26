@@ -467,7 +467,6 @@ describe('EntitiesService', () => {
         const eventEmitter = TestUtils.mockClass<EventEmitter>({ emit: jest.fn() });
         const entitiesDS = TestUtils.mockClass<MongoEntitiesDataSource>({
           update: jest.fn(),
-          bulkUpdate: jest.fn(),
         });
         const { sut, transactionManager, eventBus, actor } = createSut(
           { eventEmitter, entitiesDS },
@@ -501,7 +500,7 @@ describe('EntitiesService', () => {
           })
         );
 
-        expect(entitiesDS.bulkUpdate).not.toHaveBeenCalled();
+        expect(entitiesDS.update).not.toHaveBeenCalled();
         expect(eventEmitter.emit).not.toHaveBeenCalled();
 
         entity.update({ icon: { id: 'icon-123', type: 'image', label: 'Icon Label' } });
@@ -515,7 +514,7 @@ describe('EntitiesService', () => {
           })
         );
 
-        expect(entitiesDS.bulkUpdate).toHaveBeenCalled();
+        expect(entitiesDS.update).toHaveBeenCalled();
         expect(eventEmitter.emit).toHaveBeenCalled();
         expect(eventBus.emit).toHaveBeenCalledWith(
           new LegacyEntityUpdatedEvent({

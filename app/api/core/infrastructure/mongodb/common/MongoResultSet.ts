@@ -19,16 +19,11 @@ export class MongoResultSet<T, U = T> implements ResultSet<U> {
     this.mapper = mapper;
   }
 
-  async page(number: number, size: number) {
-    this.mongoCursor.skip((number - 1) * size).limit(size);
-    return this.all();
-  }
-
-  async hasNext() {
+  private async hasNext() {
     return this.mongoCursor.hasNext();
   }
 
-  async next() {
+  private async next() {
     const item: T | null = await this.mongoCursor.next();
     if (item) {
       const mappedItem = this.mapper(item);
@@ -37,7 +32,7 @@ export class MongoResultSet<T, U = T> implements ResultSet<U> {
     return null;
   }
 
-  async nextBatch(size: number): Promise<U[]> {
+  private async nextBatch(size: number): Promise<U[]> {
     const dbos: T[] = [];
     while ((await this.mongoCursor.hasNext()) && dbos.length < size) {
       const item = await this.mongoCursor.next();

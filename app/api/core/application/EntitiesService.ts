@@ -124,7 +124,7 @@ class EntitiesService {
     const changedEntities = authorized.filter(e => e.hasChanged);
     if (changedEntities.length === 0) return [];
 
-    await this.deps.entitiesDS.bulkUpdate(changedEntities);
+    await this.deps.entitiesDS.update(changedEntities);
 
     const updatedSharedIds = changedEntities.map(e => e.sharedId);
 

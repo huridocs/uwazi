@@ -14,9 +14,7 @@ import { FileDBO } from '#api/core/infrastructure/mongodb/files/schemas/FilesTyp
 import { tenants } from '#api/tenants/index.js';
 import { User } from '#api/users.v2/model/User.js';
 import { FilesDataSourceFactory } from '../factories/FilesDataSourceFactory.js';
-import { TransactionManagerFactory } from '../factories/TransactionManagerFactory.js';
-import { getConnection } from '../mongodb/common/getConnectionForCurrentTenant.js';
-import { MongoEntityPermissionChecker } from '../mongodb/entity/MongoEntityPermissionChecker.js';
+import { EntityPermissionCheckerFactory } from '../factories/EntityPermissionCheckerFactory.js';
 import { ClientAbortedRequestError } from '#api/common.v2/errors/ClientAbortedRequestError.js';
 
 const timestampToHTTPDate = (timestamp: number): string => new Date(timestamp).toUTCString();
@@ -160,17 +158,10 @@ class DownloadFileController extends AbstractController {
       return true;
     }
 
-    const entityPermissionChecker = new MongoEntityPermissionChecker(
-      getConnection(),
-      TransactionManagerFactory.default()
+    return EntityPermissionCheckerFactory.default().checkReadPermission(
+      file.entity,
+      User.createFrom(this.request.user)
     );
-
-    return (
-      await entityPermissionChecker.checkReadPermission(
-        file.entity,
-        User.createFrom(this.request.user)
-      )
-    ).getDataOrThrow();
   }
 }
 
