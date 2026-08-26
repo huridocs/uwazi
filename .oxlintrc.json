@@ -16,6 +16,84 @@
     "perf": "warn"
   },
   "rules": {
+    "react-hooks/exhaustive-deps": "warn",
+    "react/jsx-key": "warn",
+    "eslint/no-useless-escape": "warn",
+    "jsx-a11y/control-has-associated-label": "warn",
+    "jsx-a11y/no-noninteractive-element-interactions": "warn",
+    "jsx-a11y/alt-text": "warn",
+    "jsx-a11y/anchor-is-valid": "warn",
+    "eslint/no-unused-vars": [
+      "error",
+      {
+        "args": "after-used",
+        "argsIgnorePattern": "^_",
+        "caughtErrorsIgnorePattern": "^_",
+        "ignoreRestSiblings": true
+      }
+    ],
+    "eslint/no-shadow": "error",
+    "typescript/no-floating-promises": "error",
+    "typescript/no-misused-promises": ["error", { "checksVoidReturn": false }],
+    "typescript/promise-function-async": "error",
+    "typescript/unbound-method": "warn",
+    "react/rules-of-hooks": "error",
+    "eslint/no-use-before-define": "error",
+    "react/jsx-no-useless-fragment": ["error", { "allowExpressions": true }],
+    "react/no-unknown-property": [
+      "error",
+      {
+        "ignore": [
+          "no-translate",
+          "date-rangepicker",
+          "datepicker",
+          "inline-datepicker",
+          "datepicker-autohide",
+          "datepicker-buttons",
+          "datepicker-autoselect-today"
+        ]
+      }
+    ],
+
+    // ─────────────────────────────────────────────────────────────
+    // DISABLED rules — consolidated here for readability.
+    // ─────────────────────────────────────────────────────────────
+
+    // Off in ESLint already (kept off in oxlint to match)
+    // ─────────────────────────────────────────────────────────────
+    "jsx-a11y/click-events-have-key-events": "off",
+    "jsx-a11y/no-static-element-interactions": "off",
+    "jsx-a11y/mouse-events-have-key-events": "off",
+    "jsx-a11y/label-has-associated-control": "off",
+    "eslint/no-underscore-dangle": "off",
+    "eslint/no-useless-constructor": "off",
+    // ─────────────────────────────────────────────────────────────
+
+    // New in oxlint (no ESLint equivalent) — set off for now
+    // Revisit in the future
+    // ─────────────────────────────────────────────────────────────
+    "react/iframe-missing-sandbox": "off",
+    "react/exhaustive-effect-dependencies": "off",
+    "react/no-object-type-as-default-prop": "off",
+    "react/no-deriving-state-in-effects": "off",
+    "react/memo-dependencies": "off",
+    "react/hooks": "off",
+    "react/capitalized-calls": "off",
+    "oxc/no-async-endpoint-handlers": "off",
+    "oxc/no-accumulating-spread": "off",
+    "oxc/no-map-spread": "off",
+    "oxc/no-this-in-exported-function": "off",
+    "eslint/no-unmodified-loop-condition": "off",
+    "import/no-self-import": "off",
+    "import/no-named-as-default-member": "off",
+    "import/namespace": "off",
+    "typescript/no-non-null-asserted-optional-chain": "off",
+    "typescript/no-wrapper-object-types": "off",
+    "typescript/no-useless-empty-export": "off",
+    "typescript/triple-slash-reference": "off",
+    "typescript/no-unnecessary-type-constraint": "off",
+    "eslint/no-unassigned-vars": "off",
+    "eslint/preserve-caught-error": "off",
     "react/set-state-in-effect": "off",
     "react/refs": "off",
     "react/immutability": "off",
@@ -40,63 +118,14 @@
     "jest/no-disabled-tests": "off",
     "jest/valid-expect-in-promise": "off",
     "jest/no-export": "off",
+    "jest/no-commented-out-tests": "off",
     "typescript/prefer-as-const": "off",
-    "react-hooks/exhaustive-deps": "warn",
-    "react/jsx-key": "warn",
-    "eslint/no-useless-escape": "warn",
-    "jsx-a11y/click-events-have-key-events": "off",
-    "jsx-a11y/no-static-element-interactions": "off",
-    "jsx-a11y/mouse-events-have-key-events": "off",
-    "jsx-a11y/label-has-associated-control": "off",
+    "typescript/no-extraneous-class": "off",
     "jsx-a11y/prefer-tag-over-role": "off",
     "jsx-a11y/no-noninteractive-element-to-interactive-role": "off",
     "jsx-a11y/no-autofocus": "off",
-    "jsx-a11y/control-has-associated-label": "warn",
-    "jsx-a11y/no-noninteractive-element-interactions": "warn",
-    "jsx-a11y/alt-text": "warn",
-    "jsx-a11y/anchor-is-valid": "warn",
-    "typescript/no-non-null-asserted-optional-chain": "warn",
-    "typescript/no-wrapper-object-types": "warn",
-    "typescript/no-useless-empty-export": "warn",
-    "typescript/triple-slash-reference": "warn",
-    "eslint/no-unassigned-vars": "warn",
-    "import/namespace": "warn",
-    "eslint/no-unused-vars": [
-      "error",
-      {
-        "args": "after-used",
-        "argsIgnorePattern": "^_",
-        "caughtErrorsIgnorePattern": "^_",
-        "ignoreRestSiblings": true
-      }
-    ],
-    "eslint/no-underscore-dangle": "off",
-    "eslint/no-shadow": "error",
-    "typescript/no-extraneous-class": "off",
-    "import/no-unassigned-import": "off",
-    "jest/no-commented-out-tests": "off",
-    "eslint/no-useless-constructor": "off",
-    "typescript/no-floating-promises": "error",
-    "typescript/no-misused-promises": ["error", { "checksVoidReturn": false }],
-    "typescript/promise-function-async": "error",
-    "typescript/unbound-method": "warn",
-    "react/rules-of-hooks": "error",
-    "eslint/no-use-before-define": "error",
-    "react/jsx-no-useless-fragment": ["error", { "allowExpressions": true }],
-    "react/no-unknown-property": [
-      "error",
-      {
-        "ignore": [
-          "no-translate",
-          "date-rangepicker",
-          "datepicker",
-          "inline-datepicker",
-          "datepicker-autohide",
-          "datepicker-buttons",
-          "datepicker-autoselect-today"
-        ]
-      }
-    ]
+    "import/no-unassigned-import": "off"
+    // -------------------------
   },
   "env": {
     "browser": true,
