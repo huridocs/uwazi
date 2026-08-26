@@ -200,13 +200,6 @@ export default defineConfig([
       'import/named': ['warn'],
       'import/no-cycle': ['warn'],
 
-      'import/no-extraneous-dependencies': [
-        'error',
-        {
-          devDependencies: true,
-        },
-      ],
-
       'import/no-import-module-exports': ['warn'],
       'react/static-property-placement': 'off',
       'react/no-deprecated': ['warn'],
@@ -412,7 +405,6 @@ export default defineConfig([
     rules: {
       'no-console': 'off',
       'max-statements': 'off',
-      'import/no-extraneous-dependencies': 'off',
     },
   },
   {
