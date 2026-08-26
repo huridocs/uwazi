@@ -33,11 +33,7 @@ class FileDelete extends AbstractUseCase<Input, Output, Deps> {
   async execute({ fileId }: Input): Promise<Output> {
     const file = (await this.deps.filesDS.getById(fileId)).getDataOrThrow();
 
-    if (
-      !(
-        await this.deps.entityPermissions.checkWritePermission(file, this.getActor())
-      ).getDataOrThrow()
-    ) {
+    if (!(await this.deps.entityPermissions.checkWritePermission(file, this.getActor()))) {
       throw createError('file not found', 404);
     }
 

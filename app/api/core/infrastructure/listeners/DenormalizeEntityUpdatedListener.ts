@@ -1,4 +1,5 @@
 import { Listener } from '#api/core/libs/eventEmitter/Listener.js';
+import { isPostgresEntitiesActive } from '#api/core/libs/featureFlags.js';
 import { PrivilegedJob } from '#api/core/infrastructure/jobs/PrivilegedJob.js';
 import { EventEmitterFactory } from '#api/core/libs/eventEmitter/EventEmitterFactory.js';
 import { EntityUpdatedEvent } from '#api/core/domain/entity/EntityUpdatedEvent.js';
@@ -26,6 +27,13 @@ class DenormalizeEntityUpdatedListener extends Listener<EntityUpdatedEvent, Deps
     params: EntityUpdatedEvent['payload'],
     _jobInfo?: JobInfo
   ): Promise<void> {
+    // The Mongo-write denormalization is deferred for the Postgres pipeline:
+    // with postgresEntities active the Mongo collection is no longer the source
+    // of truth, so propagating denormalized values into it is a stale no-op.
+    if (isPostgresEntitiesActive()) {
+      return;
+    }
+
     const [templateBefore, templateAfter] = await this.deps.templatesDS.getByIds([
       params.before.templateId,
       params.after.templateId,
