@@ -3,7 +3,7 @@ import path from 'path';
 
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
-import testingDB from '../../utils/testing_db.js';
+import { testingDB } from '../../utils/testing_db.js';
 import migrationsModel from '../migrationsModel.js';
 import { migrator } from '../migrator.js';
 

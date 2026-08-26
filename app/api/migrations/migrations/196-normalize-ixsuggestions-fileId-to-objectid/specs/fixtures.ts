@@ -1,4 +1,4 @@
-import testingDB from '#api/utils/testing_db.js';
+import { testingDB } from '#api/utils/testing_db.js';
 import type { DBFixture } from '#api/utils/testing_db.js';
 
 const ids = {

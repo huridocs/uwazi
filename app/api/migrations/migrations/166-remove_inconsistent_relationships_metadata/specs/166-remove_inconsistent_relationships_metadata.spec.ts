@@ -1,6 +1,6 @@
 import { Db } from 'mongodb';
 
-import testingDB from '#api/utils/testing_db.js';
+import { testingDB } from '#api/utils/testing_db.js';
 import migration from '../index.js';
 import { fixtures, ids, noReindexFixtures } from './fixtures.js';
 import { EntitySchema } from '../types.js';

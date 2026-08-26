@@ -1,6 +1,6 @@
 /* eslint-disable no-await-in-loop */
 
-import testingDB from '#api/utils/testing_db.js';
+import { testingDB } from '#api/utils/testing_db.js';
 import { legacyLogger } from '#api/log/index.js';
 import { config } from '#api/config.js';
 import {

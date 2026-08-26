@@ -2,7 +2,7 @@ import { Db } from 'mongodb';
 import { RetrieveStatsService } from '#api/stats/services/RetrieveStatsService.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { fixtures } from '#api/stats/specs/fixtures.js';
-import testingDB from '#api/utils/testing_db.js';
+import { testingDB } from '#api/utils/testing_db.js';
 import { elastic } from '#api/search/elastic.js';
 import { testingTenants } from '#api/utils/testingTenants.js';
 import { FilesDAOFactory } from '#api/core/infrastructure/factories/FilesDAOFactory.js';

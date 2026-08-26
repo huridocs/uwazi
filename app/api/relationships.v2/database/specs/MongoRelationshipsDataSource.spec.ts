@@ -2,7 +2,7 @@ import { MatchQueryNode } from '#api/relationships.v2/model/MatchQueryNode.js';
 import { TraversalQueryNode } from '#api/relationships.v2/model/TraversalQueryNode.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-import testingDB from '#api/utils/testing_db.js';
+import { testingDB } from '#api/utils/testing_db.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { Relationship } from '#api/relationships.v2/model/Relationship.js';
 import { MongoRelationshipsDataSource } from '../MongoRelationshipsDataSource.js';

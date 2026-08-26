@@ -2,7 +2,7 @@
 /* eslint-disable camelcase */
 /* eslint-disable max-lines */
 
-import testingDB, { fixturer } from '#api/utils/testing_db.js';
+import { testingDB, fixturer } from '#api/utils/testing_db.js';
 import {
   fixturesOneFile,
   fixturesOtherFile,

@@ -13,7 +13,7 @@ import { MongoTemplatesDAO } from '#api/core/infrastructure/mongodb/template/Mon
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { testingTenants } from '#api/utils/testingTenants.js';
-import testingDB, { DBFixture } from '#api/utils/testing_db.js';
+import { testingDB, DBFixture } from '#api/utils/testing_db.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { FilesDataSourceFactory } from '#api/core/infrastructure/factories/FilesDataSourceFactory.js';
 import { CreateRelationshipService } from '../CreateRelationshipService.js';

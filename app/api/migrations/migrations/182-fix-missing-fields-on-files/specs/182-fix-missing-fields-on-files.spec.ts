@@ -9,7 +9,7 @@ import {
   S3Client,
 } from '@aws-sdk/client-s3';
 import { config } from '#api/config.js';
-import testingDB from '#api/utils/testing_db.js';
+import { testingDB } from '#api/utils/testing_db.js';
 import {
   fileAlreadyCompleteId,
   fileMissingBothLocalId,

@@ -2,6 +2,7 @@
 import request from 'supertest';
 import express, { Application } from 'express';
 import { Server } from 'http';
+// oxlint-disable-next-line import/no-named-as-default
 import io from 'socket.io-client';
 import waitForExpect from 'wait-for-expect';
 import type { SessionData, Store as SessionStore } from 'express-session';
