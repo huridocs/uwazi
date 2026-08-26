@@ -3,28 +3,14 @@
  */
 import React from 'react';
 import { fireEvent, render, screen } from '@testing-library/react';
-import { MemoryRouter } from 'react-router';
 import { TestAtomStoreProvider } from '#V2/testing/index.js';
-import { relationshipTypesAtom, settingsAtom } from '#V2/atoms/index.js';
+import { relationshipTypesAtom } from '#V2/atoms/index.js';
 import type { RelationshipMarker } from '#V2/Components/Relationships/types.js';
-import { EntityOverlayConnections } from '../EntityOverlayConnections.js';
+import { EntityOverlayRelationships } from '../EntityOverlayRelationships.js';
 
 jest.mock('#app/I18N/index.js', () => ({
   Translate: ({ children }: { children: React.ReactNode }) => children,
   t: (_ctx: string, key: string) => key,
-  I18NLinkV2: ({
-    children,
-    to,
-    onClick,
-  }: {
-    children: React.ReactNode;
-    to: string;
-    onClick?: () => void;
-  }) => (
-    <a href={to} onClick={onClick}>
-      {children}
-    </a>
-  ),
 }));
 
 const documentSharedId = 'doc-entity';
@@ -54,29 +40,22 @@ const entityMarker = (id: string, relationshipTypeName: string): RelationshipMar
   },
 });
 
-const renderConnections = (markers: RelationshipMarker[]) =>
+const renderRelationships = (markers: RelationshipMarker[]) =>
   render(
-    <MemoryRouter>
-      <TestAtomStoreProvider
-        initialValues={[
-          [relationshipTypesAtom, []],
-          [settingsAtom, { features: { featureFlagEntityViewerv2: true } }],
-        ]}
-      >
-        <EntityOverlayConnections markers={markers} selfSharedId={documentSharedId} />
-      </TestAtomStoreProvider>
-    </MemoryRouter>
+    <TestAtomStoreProvider initialValues={[[relationshipTypesAtom, []]]}>
+      <EntityOverlayRelationships markers={markers} selfSharedId={documentSharedId} />
+    </TestAtomStoreProvider>
   );
 
-describe('EntityOverlayConnections', () => {
-  it('lists entity-level connections without anchor text and shows View all CTA', () => {
-    renderConnections([
+describe('EntityOverlayRelationships', () => {
+  it('lists entity-level relationships without anchor text', () => {
+    renderRelationships([
       entityMarker('rel-1', 'Another'),
       entityMarker('rel-2', 'Refers To'),
       entityMarker('rel-3', 'Related To'),
     ]);
 
-    expect(screen.getByText('Connections')).toBeInTheDocument();
+    expect(screen.getByText('Relationships')).toBeInTheDocument();
     expect(screen.getAllByText('From')).toHaveLength(1);
     expect(screen.getByText('Inter-American Count')).toBeInTheDocument();
     expect(screen.getByText('Another')).toBeInTheDocument();
@@ -85,8 +64,8 @@ describe('EntityOverlayConnections', () => {
     expect(screen.queryByText(/"/)).not.toBeInTheDocument();
   });
 
-  it('reveals hidden connections with section Show more', () => {
-    renderConnections([
+  it('reveals hidden relationships with section Show more', () => {
+    renderRelationships([
       entityMarker('rel-1', 'One'),
       entityMarker('rel-2', 'Two'),
       entityMarker('rel-3', 'Three'),
@@ -104,5 +83,10 @@ describe('EntityOverlayConnections', () => {
     fireEvent.click(screen.getByRole('button', { name: /Show more/i }));
     expect(screen.getByText('Eleven')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /Show less/i })).toBeInTheDocument();
+  });
+
+  it('renders nothing when there are no relationships', () => {
+    const { container } = renderRelationships([]);
+    expect(container).toBeEmptyDOMElement();
   });
 });

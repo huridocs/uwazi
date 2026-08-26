@@ -1,4 +1,4 @@
-import { isOverlayConnectionMarker, isOverlayTextReferenceMarker } from '../overlayMarkerKind.js';
+import { isOverlayRelationshipMarker, isOverlayTextReferenceMarker } from '../overlayMarkerKind.js';
 import type { RelationshipMarker } from '#V2/Components/Relationships/types.js';
 
 const documentSharedId = 'doc-entity';
@@ -54,11 +54,11 @@ const textMarker: RelationshipMarker = {
 describe('overlayMarkerKind', () => {
   it('classifies textReference markers as references', () => {
     expect(isOverlayTextReferenceMarker(textMarker)).toBe(true);
-    expect(isOverlayConnectionMarker(textMarker)).toBe(false);
+    expect(isOverlayRelationshipMarker(textMarker)).toBe(false);
   });
 
-  it('classifies entity-only markers as connections', () => {
-    expect(isOverlayConnectionMarker(entityMarker)).toBe(true);
+  it('classifies entity-only markers as relationships', () => {
+    expect(isOverlayRelationshipMarker(entityMarker)).toBe(true);
     expect(isOverlayTextReferenceMarker(entityMarker)).toBe(false);
   });
 });

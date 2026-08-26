@@ -4,7 +4,7 @@ import type { RelationshipMarker } from '#V2/Components/Relationships/types.js';
 const isOverlayTextReferenceMarker = (marker: RelationshipMarker): boolean =>
   isTextReference(marker.relationship.from) || isTextReference(marker.relationship.to);
 
-const isOverlayConnectionMarker = (marker: RelationshipMarker): boolean =>
+const isOverlayRelationshipMarker = (marker: RelationshipMarker): boolean =>
   !isOverlayTextReferenceMarker(marker);
 
-export { isOverlayTextReferenceMarker, isOverlayConnectionMarker };
+export { isOverlayTextReferenceMarker, isOverlayRelationshipMarker };

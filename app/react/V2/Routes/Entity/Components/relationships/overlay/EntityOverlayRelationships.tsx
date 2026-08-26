@@ -14,16 +14,16 @@ import {
   type OverlayReferenceRow,
 } from './groupOverlayReferences.js';
 
-type EntityOverlayConnectionsProps = {
+type EntityOverlayRelationshipsProps = {
   markers: RelationshipMarker[];
   selfSharedId: string;
 };
 
-type ConnectionItemProps = {
+type RelationshipItemProps = {
   relationshipTypeName: string;
 };
 
-const ConnectionItem = ({ relationshipTypeName }: ConnectionItemProps) => (
+const RelationshipItem = ({ relationshipTypeName }: RelationshipItemProps) => (
   <div className="border-t border-border/30 px-3 py-2 first:border-t-0">
     {relationshipTypeName && (
       <p className="text-micro capitalize text-ink-tertiary">{relationshipTypeName}</p>
@@ -31,7 +31,7 @@ const ConnectionItem = ({ relationshipTypeName }: ConnectionItemProps) => (
   </div>
 );
 
-const EntityOverlayConnections = ({ markers, selfSharedId }: EntityOverlayConnectionsProps) => {
+const EntityOverlayRelationships = ({ markers, selfSharedId }: EntityOverlayRelationshipsProps) => {
   const relationshipTypes = useAtomValue(relationshipTypesAtom);
   const [expanded, setExpanded] = useState(false);
 
@@ -53,35 +53,37 @@ const EntityOverlayConnections = ({ markers, selfSharedId }: EntityOverlayConnec
     ? groups
     : limitReferenceGroups(groups, OVERLAY_REFERENCES_VISIBLE_LIMIT);
 
+  if (markers.length === 0) {
+    return null;
+  }
+
   return (
     <section className="flex flex-col gap-3">
       <h4 className="text-micro font-semibold uppercase tracking-wider text-ink-tertiary">
-        <Translate>Connections</Translate>
+        <Translate>Relationships</Translate>
       </h4>
-      {visibleGroups.length > 0 && (
-        <div>
-          {visibleGroups.map(group => (
-            <div key={group.sourceSharedId} className="border-b border-border/50 last:border-b-0">
-              <div className="flex items-center gap-1.5 px-3 pt-2.5 pb-1">
-                <span className="text-micro text-ink-tertiary">
-                  <Translate>From</Translate>
-                </span>
-                <TemplatePill
-                  templateId={group.sourceEntity.templateId}
-                  label={group.sourceEntity.title}
-                  size="sm"
-                />
-              </div>
-              {group.items.map(item => (
-                <ConnectionItem
-                  key={item.markerId}
-                  relationshipTypeName={item.relationshipTypeName}
-                />
-              ))}
+      <div>
+        {visibleGroups.map(group => (
+          <div key={group.sourceSharedId} className="border-b border-border/50 last:border-b-0">
+            <div className="flex items-center gap-1.5 px-3 pt-2.5 pb-1">
+              <span className="text-micro text-ink-tertiary">
+                <Translate>From</Translate>
+              </span>
+              <TemplatePill
+                templateId={group.sourceEntity.templateId}
+                label={group.sourceEntity.title}
+                size="sm"
+              />
             </div>
-          ))}
-        </div>
-      )}
+            {group.items.map(item => (
+              <RelationshipItem
+                key={item.markerId}
+                relationshipTypeName={item.relationshipTypeName}
+              />
+            ))}
+          </div>
+        ))}
+      </div>
       {hiddenCount > 0 && (
         <button
           type="button"
@@ -96,4 +98,4 @@ const EntityOverlayConnections = ({ markers, selfSharedId }: EntityOverlayConnec
   );
 };
 
-export { EntityOverlayConnections };
+export { EntityOverlayRelationships };

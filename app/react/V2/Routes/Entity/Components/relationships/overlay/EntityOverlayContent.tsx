@@ -8,7 +8,7 @@ import type { RelationshipMarker } from '#V2/Components/Relationships/types.js';
 import { EntityOverlayMetadataSummary } from './EntityOverlayMetadataSummary.js';
 import { EntityOverlayProperties } from './EntityOverlayProperties.js';
 import { EntityOverlayReferences } from './EntityOverlayReferences.js';
-import { EntityOverlayConnections } from './EntityOverlayConnections.js';
+import { EntityOverlayRelationships } from './EntityOverlayRelationships.js';
 import { isOverlayTextReferenceMarker } from './overlayMarkerKind.js';
 
 type EntityOverlayContentProps = {
@@ -23,17 +23,17 @@ const EntityOverlayContent = ({ entity, markers, selfSharedId }: EntityOverlayCo
     groupGeolocationProperties: true,
   });
 
-  const { referenceMarkers, connectionMarkers } = useMemo(() => {
+  const { referenceMarkers, relationshipMarkers } = useMemo(() => {
     const references: RelationshipMarker[] = [];
-    const connections: RelationshipMarker[] = [];
+    const relationships: RelationshipMarker[] = [];
     markers.forEach(marker => {
       if (isOverlayTextReferenceMarker(marker)) {
         references.push(marker);
       } else {
-        connections.push(marker);
+        relationships.push(marker);
       }
     });
-    return { referenceMarkers: references, connectionMarkers: connections };
+    return { referenceMarkers: references, relationshipMarkers: relationships };
   }, [markers]);
 
   return (
@@ -56,7 +56,7 @@ const EntityOverlayContent = ({ entity, markers, selfSharedId }: EntityOverlayCo
       {referenceMarkers.length > 0 && (
         <EntityOverlayReferences markers={referenceMarkers} selfSharedId={selfSharedId} />
       )}
-      <EntityOverlayConnections markers={connectionMarkers} selfSharedId={selfSharedId} />
+      <EntityOverlayRelationships markers={relationshipMarkers} selfSharedId={selfSharedId} />
     </div>
   );
 };
