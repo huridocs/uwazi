@@ -5,10 +5,12 @@ import { ImageMetadataProperty } from '#V2/formatters/types.js';
 type ImageProps = {
   values: ImageMetadataProperty['values'];
   imageStyle?: 'contain' | 'cover';
+  density?: 'default' | 'compact';
 };
 
-const Image = ({ values, imageStyle }: ImageProps) => {
+const Image = ({ values, imageStyle, density = 'default' }: ImageProps) => {
   const [errorIndices, setErrorIndices] = useState<Set<number>>(new Set());
+  const maxHeightClass = density === 'compact' ? 'max-h-32' : 'max-h-96';
 
   if (!values?.length) {
     return null;
@@ -18,8 +20,13 @@ const Image = ({ values, imageStyle }: ImageProps) => {
     return null;
   }
 
+  const imgClassName =
+    density === 'compact'
+      ? `block w-full ${maxHeightClass}`
+      : `m-auto ${maxHeightClass} max-w-full`;
+
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex w-full min-w-0 flex-col gap-2">
       {values.map((image, index) => {
         const hasError = errorIndices.has(index);
 
@@ -37,9 +44,9 @@ const Image = ({ values, imageStyle }: ImageProps) => {
             className="w-full min-w-0 max-w-full overflow-hidden rounded-md bg-(--color-theme-surface-warm)"
           >
             <img
-              className="m-auto max-h-96 max-w-full"
+              className={imgClassName}
               style={{
-                objectFit: imageStyle ?? 'fill',
+                objectFit: imageStyle ?? (density === 'compact' ? 'contain' : 'fill'),
               }}
               src={image.value}
               alt={image.alt}
