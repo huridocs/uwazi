@@ -16,7 +16,6 @@
     "perf": "warn"
   },
   "rules": {
-    "react-hooks/exhaustive-deps": "warn",
     "react/jsx-key": "warn",
     "eslint/no-useless-escape": "warn",
     "jsx-a11y/alt-text": "warn",
@@ -72,6 +71,7 @@
     "jsx-a11y/no-noninteractive-element-interactions": "off",
     "jsx-a11y/control-has-associated-label": "off",
     "react/no-array-index-key": "off",
+    "react-hooks/exhaustive-deps": "off",
     // ─────────────────────────────────────────────────────────────
 
     // New in oxlint (no ESLint equivalent) — set off for now
