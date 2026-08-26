@@ -15,6 +15,7 @@ import { Result, ResultType } from '#api/core/libs/Result.js';
 import { search } from '#api/search/index.js';
 import { Settings as SettingsType } from '#shared/types/settingsType.js';
 import { Entity } from '../../../domain/entity/Entity.js';
+import { EntityTemplateDoesNotExistError } from '../../../domain/entity/errors.js';
 import { EntitiesDataSource } from '../../../application/contracts/EntitiesDataSource.js';
 import { EntityDBO, EntityTemplateAggregation } from './EntityDBO.js';
 import { TemplatesDAOFactory } from '../../factories/TemplatesDAOFactory.js';
@@ -387,6 +388,10 @@ export class MongoEntitiesDataSource
     const templateIdStrings = templateIds.map(id => id.toHexString());
     const templateDBOs = await this.templatesDAO.get(templateIdStrings);
     const templateMap = new Map(templateDBOs.map(t => [t._id.toString(), t]));
+    const missingTemplateIds = templateIdStrings.filter(id => !templateMap.has(id));
+    if (missingTemplateIds.length > 0) {
+      throw new EntityTemplateDoesNotExistError(missingTemplateIds);
+    }
 
     const aggregation = [
       { $match: query },

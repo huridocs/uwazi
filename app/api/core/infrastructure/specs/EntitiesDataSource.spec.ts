@@ -17,6 +17,7 @@ import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
 import { search } from '#api/search/index.js';
 import { EntityNotFoundError } from '#api/core/application/errors.js';
+import { EntityTemplateDoesNotExistError } from '#api/core/domain/entity/errors.js';
 import { V1RelationshipProperty } from '#api/core/domain/template/V1RelationshipProperty.js';
 import { elasticTesting } from '#api/utils/elastic_testing.js';
 import { PermissionSchema } from '#shared/types/permissionType.js';
@@ -700,6 +701,25 @@ describe('EntitiesDataSource', () => {
 
         expect(result.isError()).toBe(true);
         expect(result.getError()?.message).toContain('not found');
+      });
+    });
+
+    describe('getEntitiesBySharedIds', () => {
+      it('should throw EntityTemplateDoesNotExistError when an entity references a template that does not exist', async () => {
+        const { sut } = createSut();
+
+        const template = createTemplateWithId(factory.idString('missing-template'));
+        const entity = createEntityWithIds(
+          factory.idString('entity-with-missing-template'),
+          ['en'],
+          template
+        );
+
+        await sut.create(entity);
+
+        await expect(
+          sut.getEntitiesBySharedIds([entity.sharedId]).then(async rs => rs.all())
+        ).rejects.toThrow(EntityTemplateDoesNotExistError);
       });
     });
 

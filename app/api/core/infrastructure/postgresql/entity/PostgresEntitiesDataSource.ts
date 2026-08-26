@@ -7,6 +7,7 @@ import { AccessContext } from '#api/core/domain/entityAccessPolicy/AccessContext
 import { Result, ResultType } from '#api/core/libs/Result.js';
 import { search } from '#api/search/index.js';
 import { Entity } from '#api/core/domain/entity/Entity.js';
+import { EntityTemplateDoesNotExistError } from '#api/core/domain/entity/errors.js';
 import { EntitiesDataSource } from '#api/core/application/contracts/EntitiesDataSource.js';
 import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js';
 import { PostgresDataSource, PostgresDataSourceDeps } from '../common/PostgresDataSource.js';
@@ -373,6 +374,10 @@ export class PostgresEntitiesDataSource
     const templateIdStrings = templateRows.map(r => r.template);
     const templateDBOs = await this.templatesDAO.get(templateIdStrings);
     const templateMap = new Map(templateDBOs.map(t => [t._id.toString(), t]));
+    const missingTemplateIds = templateIdStrings.filter(id => !templateMap.has(id));
+    if (missingTemplateIds.length > 0) {
+      throw new EntityTemplateDoesNotExistError(missingTemplateIds);
+    }
 
     const iterator = this.groupBySharedId(q.orderBy('sharedId').stream());
     return new PostgresResultSet(iterator, group => {
