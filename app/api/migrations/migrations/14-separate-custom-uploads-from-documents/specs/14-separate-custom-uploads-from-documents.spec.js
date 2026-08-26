@@ -67,7 +67,7 @@ describe('migration separate-custom-uploads-from-documents', () => {
     });
     const initFiles = async () =>
       Promise.all(
-        files.map(f =>
+        files.map(async f =>
           asyncFs.writeFile(
             path.join(config.defaultTenant.uploadedDocuments, f),
             `contents for file ${f}`
@@ -78,10 +78,10 @@ describe('migration separate-custom-uploads-from-documents', () => {
       await initFiles();
       await migration.up(testingDB.mongodb);
       const filesExistInOldPath = await Promise.all(
-        files.map(f => fileExists(path.join(config.defaultTenant.uploadedDocuments, f)))
+        files.map(async f => fileExists(path.join(config.defaultTenant.uploadedDocuments, f)))
       );
       const filesExistInNewPath = await Promise.all(
-        files.map(f => fileExists(path.join(config.defaultTenant.customUploads, f)))
+        files.map(async f => fileExists(path.join(config.defaultTenant.customUploads, f)))
       );
       expect(filesExistInOldPath).toEqual([false, false, false]);
       expect(filesExistInNewPath).toEqual([true, true, true]);

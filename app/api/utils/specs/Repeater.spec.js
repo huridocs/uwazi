@@ -7,7 +7,7 @@ describe('Repeater', () => {
   let repeaterOne;
   let repeaterTwo;
 
-  function advanceTime(time) {
+  async function advanceTime(time) {
     jest.advanceTimersByTime(time);
     return new Promise(resolve => {
       setImmediate(resolve);
@@ -21,8 +21,8 @@ describe('Repeater', () => {
   beforeEach(() => {
     jest.useFakeTimers('legacy');
 
-    callbackOne = jest.fn().mockImplementation(() => Promise.resolve());
-    callbackTwo = jest.fn().mockImplementation(() => Promise.resolve());
+    callbackOne = jest.fn().mockImplementation(async () => Promise.resolve());
+    callbackTwo = jest.fn().mockImplementation(async () => Promise.resolve());
   });
 
   it('should be able to have two independant repeaters', async () => {
@@ -54,7 +54,7 @@ describe('Repeater', () => {
   it('should skip interval between executions if stop method is executed', async () => {
     let promise;
     let resolvePromise;
-    const sut = new Repeater(() => {
+    const sut = new Repeater(async () => {
       promise = new Promise(resolve => {
         resolvePromise = resolve;
       });

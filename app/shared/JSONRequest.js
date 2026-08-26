@@ -89,7 +89,7 @@ const removeUndefinedKeys = obj => {
   Object.keys(obj).forEach(key => (obj[key] === undefined ? delete obj[key] : {}));
 };
 
-const _fetch = (url, data, method, _headers) => {
+const _fetch = async (url, data, method, _headers) => {
   let response;
   let params = '';
   let body;
@@ -122,7 +122,7 @@ const _fetch = (url, data, method, _headers) => {
     credentials: 'same-origin',
     body,
   })
-    .then(res => {
+    .then(async res => {
       let setCookie;
       if (res.headers.get('set-cookie')) {
         setCookie = res.headers.get('set-cookie');
@@ -161,18 +161,18 @@ const _fetch = (url, data, method, _headers) => {
 };
 
 export default {
-  post: (url, data, headers) => _fetch(url, data, 'POST', headers),
+  post: async (url, data, headers) => _fetch(url, data, 'POST', headers),
 
-  put: (url, data, headers) => _fetch(url, data, 'PUT', headers),
+  put: async (url, data, headers) => _fetch(url, data, 'PUT', headers),
 
-  get: (url, data, headers) => _fetch(url, data, 'GET', headers),
+  get: async (url, data, headers) => _fetch(url, data, 'GET', headers),
 
-  delete: (url, data, headers) => _fetch(url, data, 'DELETE', headers),
+  delete: async (url, data, headers) => _fetch(url, data, 'DELETE', headers),
 
-  head: (url, data, headers) => _fetch(url, data, 'HEAD', headers),
+  head: async (url, data, headers) => _fetch(url, data, 'HEAD', headers),
 
   // TEST!!!!! Fully untested function
-  uploadFile: (url, filename, file, _cookie) =>
+  uploadFile: async (url, filename, file, _cookie) =>
     new Promise((resolve, reject) => {
       superagent
         .post(url)

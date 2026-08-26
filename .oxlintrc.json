@@ -1,15 +1,6 @@
 {
   "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": [
-    "eslint",
-    "typescript",
-    "oxc",
-    "react",
-    "import",
-    "jsx-a11y",
-    "jest",
-    "node"
-  ],
+  "plugins": ["eslint", "typescript", "oxc", "react", "import", "jsx-a11y", "jest", "node"],
   "jsPlugins": [
     {
       "name": "local",

@@ -16,7 +16,7 @@ async function exists(path) {
 
 async function clearFiles() {
   const thumbnails = (await fs.readdir(__dirname)).filter(f => f.match(/\.jpg/));
-  return Promise.all(thumbnails.map(f => fs.unlink(`${__dirname}/${f}`)));
+  return Promise.all(thumbnails.map(async f => fs.unlink(`${__dirname}/${f}`)));
 }
 
 describe('migration Re create thumbnails', () => {

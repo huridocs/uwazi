@@ -132,7 +132,7 @@ const thesauri = {
       const templateCount = await search.countPerTemplate(language);
 
       const processedTemplates = await Promise.all(
-        allTemplates.map(result =>
+        allTemplates.map(async result =>
           this.templateToThesauri(result, language, templateCount).then(
             templateTransformedInThesauri => templateTransformedInThesauri
           )
@@ -144,7 +144,7 @@ const thesauri = {
     return dictionaries;
   },
 
-  dictionaries() {
+  async dictionaries() {
     return ThesauriDAOFactory.default().get();
   },
 

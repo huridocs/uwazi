@@ -27,7 +27,7 @@ export default {
     if (typeof select === 'string' && select.includes('+groups')) {
       const userIds = users.map(user => user._id.toString());
       const groups = await getByMemberIdList(userIds);
-      return Promise.all(users.map(user => populateGroupsOfUsers(user, groups)));
+      return Promise.all(users.map(async user => populateGroupsOfUsers(user, groups)));
     }
     return users;
   },

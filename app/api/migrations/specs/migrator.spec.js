@@ -52,7 +52,7 @@ describe('migrator', () => {
 
   const setTestMigrationsDir = (registry = []) => {
     migrator.migrationsDir = path.join(__dirname, 'testMigrations');
-    migrator.loader = p => Promise.resolve(loadMigration(p, registry));
+    migrator.loader = async p => Promise.resolve(loadMigration(p, registry));
   };
 
   describe('migrate', () => {

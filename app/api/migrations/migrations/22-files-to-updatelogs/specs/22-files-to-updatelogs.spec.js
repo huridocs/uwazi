@@ -2,7 +2,7 @@ import { testingDB } from '#api/utils/testing_db.js';
 import migration from '../index.js';
 import fixtures, { file1, file2, file3 } from './fixtures.js';
 
-const query = (collectionName, queryObject = {}, select = {}) =>
+const query = async (collectionName, queryObject = {}, select = {}) =>
   testingDB.mongodb.collection(collectionName).find(queryObject, select).toArray();
 
 describe('migration files-to-updatelogs', () => {

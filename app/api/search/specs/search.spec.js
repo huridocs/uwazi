@@ -1552,7 +1552,7 @@ describe('search', () => {
   });
 
   describe('bulkDeleteBySharedId()', () => {
-    const getBySharedIds = sharedIds =>
+    const getBySharedIds = async sharedIds =>
       elastic.search({
         body: {
           query: {

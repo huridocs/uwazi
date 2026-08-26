@@ -55,7 +55,7 @@ const processQuery = (params, globalResources, key) => {
   };
 };
 
-const requestState = (
+const requestState = async (
   requestParams,
   globalResources,
   options = { calculateTableColumns: false, geolocation: false }

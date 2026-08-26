@@ -85,7 +85,7 @@ async function getEntityReferencesByRelationshipTypes(sharedId, relationTypes) {
     );
 }
 
-function guessRelationshipPropertyHub(sharedId, relationType) {
+async function guessRelationshipPropertyHub(sharedId, relationType) {
   return model.db.aggregate([
     {
       $match: {

@@ -7,14 +7,14 @@ import migration, { fileExists } from '../index.js';
 import fixtures from './fixtures.js';
 
 const unique = (v, i, a) => a.indexOf(v) === i;
-const query = (collectionName, queryObject = {}, select = {}) =>
+const query = async (collectionName, queryObject = {}, select = {}) =>
   testingDB.mongodb.collection(collectionName).find(queryObject, select).toArray();
 
 const setupTestUploadedPaths = () => {
   config.defaultTenant.uploadedDocuments = `${__dirname}/uploads/`;
 };
 
-const createThumbnail = entity =>
+const createThumbnail = async entity =>
   new Promise((resolve, reject) => {
     fs.writeFile(
       `${config.defaultTenant.uploadedDocuments}${entity._id}.jpg`,

@@ -98,7 +98,7 @@ const processEntityMetadataUpdate = async ({ entityId, language, templates, getB
 const updateEntitiesMetadata = async ({ entitiesIds, language, getByDocument }) => {
   const templates = await templatesAPI.get();
 
-  await ArrayUtils.sequentialFor(entitiesIds, entityId =>
+  await ArrayUtils.sequentialFor(entitiesIds, async entityId =>
     processEntityMetadataUpdate({ entityId, language, templates, getByDocument })
   );
 };

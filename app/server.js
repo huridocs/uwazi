@@ -79,10 +79,10 @@ const shutdown = new HttpServerGracefulShutdown({
     };
 
     await Promise.all([
-      disconnect('Redis', () => Redis.disconnect()),
-      disconnect('MongoDB', () => DB.disconnect()),
-      disconnect('PostgreSQL', () => PostgresDB.disconnect()),
-      disconnect('Elasticsearch', () => elasticClient.close()),
+      disconnect('Redis', async () => Redis.disconnect()),
+      disconnect('MongoDB', async () => DB.disconnect()),
+      disconnect('PostgreSQL', async () => PostgresDB.disconnect()),
+      disconnect('Elasticsearch', async () => elasticClient.close()),
     ]);
   },
   closeSockets: () => closeSockets(),

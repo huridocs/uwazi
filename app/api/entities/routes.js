@@ -74,7 +74,8 @@ export default app => {
     '/api/entities',
     needsAuthorization(['admin', 'editor', 'collaborator']),
     activitylogMiddleware,
-    (req, res, next) => new UploadMiddleware(LoggerFactory.default()).multiple()(req, res, next),
+    async (req, res, next) =>
+      new UploadMiddleware(LoggerFactory.default()).multiple()(req, res, next),
     async (req, res, next) => {
       const entityToSave = req.body.entity ? JSON.parse(req.body.entity) : req.body;
 
@@ -171,7 +172,7 @@ export default app => {
   app.post(
     '/api/entities/create-from-pdf',
     needsAuthorization(['admin', 'editor', 'collaborator']),
-    (req, res, next) =>
+    async (req, res, next) =>
       new UploadMiddleware(LoggerFactory.default()).singleUpload('document')(req, res, next),
     CreateEntityFromPDFController.createHandler(),
     activitylogMiddleware

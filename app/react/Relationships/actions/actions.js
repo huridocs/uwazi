@@ -182,7 +182,7 @@ function saveRelationships() {
 
     return api
       .post('relationships/bulk', new RequestParams(apiCall))
-      .then(response =>
+      .then(async response =>
         Promise.all([
           response,
           EntitiesApi.get(new RequestParams({ sharedId: parentEntityId })).then(([r]) => r),
