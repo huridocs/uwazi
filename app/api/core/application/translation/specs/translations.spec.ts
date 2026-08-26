@@ -13,7 +13,8 @@ import { LocaleTranslationInput } from '#api/core/application/translation/locale
 import { TranslationsService } from '#api/core/application/translation/TranslationsService.js';
 import { Translation } from '#api/core/domain/translation/Translation.js';
 import pages from '#api/pages/index.js';
-import settings from '#api/settings/index.js';
+import { SettingsQueryServiceFactory } from '#api/core/infrastructure/factories/SettingsQueryServiceFactory.js';
+import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
 import { AddLanguageUseCaseFactory } from '#api/core/infrastructure/factories/AddLanguageUseCaseFactory.js';
 import { SaveLocaleTranslationsUseCaseFactory } from '#api/core/infrastructure/factories/SaveLocaleTranslationsUseCaseFactory.js';
 import { SaveTranslationEntriesUseCaseFactory } from '#api/core/infrastructure/factories/SaveTranslationEntriesUseCaseFactory.js';
@@ -609,7 +610,9 @@ describe('translations', () => {
 
           await addLanguage({ key: 'fr', label: 'french' });
 
-          const settingsLanguages = (await settings.get()).languages?.map(l => l.key);
+          const settingsLanguages = (await SettingsQueryServiceFactory.default().get()).languages?.map(
+            l => l.key
+          );
           expect(settingsLanguages).toEqual(['es', 'en', 'zh', 'fr']);
 
           const allTranslations = await getLegacyTranslations();
@@ -628,7 +631,7 @@ describe('translations', () => {
 
     describe('removeLanguage', () => {
       it('should remove translation for the language passed', async () => {
-        await settings.deleteLanguage('es');
+        await SettingsDataSourceFactory.default().deleteLanguage('es');
         await withTranslationWrites(async ({ translationsDS }) =>
           translationsDS.deleteByLanguage('es')
         );

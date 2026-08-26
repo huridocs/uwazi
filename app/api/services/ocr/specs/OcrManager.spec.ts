@@ -4,7 +4,8 @@ import fetchMock from 'fetch-mock';
 import { Readable } from 'stream';
 import { files, storage } from '#api/files/index.js';
 import { tenants } from '#api/tenants/tenantContext.js';
-import settings from '#api/settings/settings.js';
+import { SettingsQueryServiceFactory } from '#api/core/infrastructure/factories/SettingsQueryServiceFactory.js';
+import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
 import { FilesDAOFactory } from '#api/core/infrastructure/factories/FilesDAOFactory.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import request from '#shared/JSONRequest.js';
@@ -249,8 +250,8 @@ describe('OcrManager', () => {
     });
 
     it('should throw an error when settings are missing from the database', async () => {
-      const oldSettings = await settings.get();
-      await settings.save({ features: {} });
+      const oldSettings = await SettingsQueryServiceFactory.default().get();
+      await SettingsDataSourceFactory.default().patch({ features: {} });
 
       const [sourceFile] = await files.get({ _id: fixturesFactory.id('erroringSourceFile') });
 
@@ -258,7 +259,7 @@ describe('OcrManager', () => {
         'Ocr settings are missing from the database'
       );
 
-      await settings.save(oldSettings);
+      await SettingsDataSourceFactory.default().patch(oldSettings);
     });
 
     it('should throw an error when language is not supported', async () => {

@@ -19,7 +19,7 @@ import { TranslationsDataSourceFactory } from '#api/core/infrastructure/factorie
 import { runInJobContext } from '#api/services/tasksmanager/runInJobContext.js';
 import { legacyLogger } from '#api/log/index.js';
 import { EnforcedWithId } from '#api/odm/index.js';
-import settings from '#api/settings/index.js';
+import { SettingsQueryServiceFactory } from '#api/core/infrastructure/factories/SettingsQueryServiceFactory.js';
 import { tenants } from '#api/tenants/index.js';
 import thesauri from '#api/core/v1_layer/thesauri/index.js';
 import { UsersDirectoryFactory } from '#api/core/infrastructure/factories/UsersDirectoryFactory.js';
@@ -198,7 +198,7 @@ const saveEvidence =
 
       await filesService.storeFiles(attachments);
 
-      const defaultLanguage = await settings.getDefaultLanguage();
+      const defaultLanguage = await SettingsQueryServiceFactory.default().getDefaultLanguage();
 
       await transactionManager.run(async () => {
         await filesService.insert(attachments);
@@ -221,7 +221,7 @@ const preserveSync = {
     return Object.keys(tenants.tenants).reduce(async (previous, tenantName) => {
       await previous;
       return runInJobContext(tenantName, async () => {
-        const { features } = await settings.get({}, 'features.preserve');
+        const { features } = await SettingsQueryServiceFactory.default().get();
         if (features?.preserve) {
           await this.sync(features.preserve);
         }

@@ -16,7 +16,7 @@ import { PropertyTypeSchema } from '#shared/types/commonTypes.js';
 import testingDB from '#api/utils/testing_db.js';
 import entities from '#api/entities/index.js';
 import { EnforcedWithId } from '#api/odm/index.js';
-import settings from '#api/settings/index.js';
+import { SettingsQueryServiceFactory } from '#api/core/infrastructure/factories/SettingsQueryServiceFactory.js';
 import { Suggestions } from '#api/suggestions/suggestions.js';
 import { LanguageUtils } from '#shared/language/index.js';
 import { IXExtractorType } from '#shared/types/extractorType.js';
@@ -90,7 +90,7 @@ const _getEntityFromFile = async (file: EnforcedWithId<FileType> | FileWithAggre
   });
 
   if (!entity) {
-    const defaultLanguage = await settings.getDefaultLanguage();
+    const defaultLanguage = await SettingsQueryServiceFactory.default().getDefaultLanguage();
     [entity] = await entities.getUnrestricted({
       sharedId: file.entity,
       language: defaultLanguage?.key,

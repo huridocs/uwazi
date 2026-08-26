@@ -3,8 +3,8 @@
 import sift from 'sift';
 import { EntitiesDAOFactory } from '#api/core/infrastructure/factories/EntitiesDAOFactory.js';
 import { DataType, models, WithId } from '#api/odm/index.js';
-import { settingsModel } from '#api/settings/settingsModel.js';
 import templates from '#api/core/v1_layer/templates/templates.js';
+import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
 import { UpdateLog } from '#api/updatelogs/index.js';
 import { SyncHandlerRegistry } from './SyncHandlerRegistry.js';
 import { ensure } from '#shared/tsUtils.js';
@@ -199,8 +199,10 @@ class ProcessNamespaces {
   }
 
   private async settings() {
-    const { mongoId } = this.change;
-    const data = ensure<WithId<Settings>>(await settingsModel.getById(mongoId), noDataFound);
+    const data = ensure<WithId<Settings>>(
+      (await SettingsDataSourceFactory.default().find()) as WithId<Settings> | null,
+      noDataFound
+    );
     return { data: { _id: data._id, languages: data.languages } };
   }
 

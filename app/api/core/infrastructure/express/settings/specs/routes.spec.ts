@@ -8,18 +8,17 @@ import { TranslationsServiceFactory } from '#api/core/infrastructure/factories/T
 import templates from '#api/core/v1_layer/templates/index.js';
 import { permissionsContext } from '#api/permissions/permissionsContext.js';
 import { search } from '#api/search/index.js';
-import settings from '#api/settings/index.js';
+import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
 import { UsersDirectoryFactory } from '#api/core/infrastructure/factories/UsersDirectoryFactory.js';
 import { Result } from '#api/core/libs/Result.js';
 import { iosocket, setUpApp, TestEmitSources } from '#api/utils/testingRoutes.js';
 import * as setupSockets from '#api/socketio/setupSockets.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-import settingsRoutes from '../routes.js';
-import { settingsModel } from '../settingsModel.js';
-import fixtures from './fixtures.js';
+import { settingsRoutes } from '../routes.js';
+import fixtures from '../../../../application/settings/specs/fixtures.js';
 
 jest.mock(
-  '../../auth/authMiddleware.ts',
+  '#api/auth/authMiddleware.js',
   () => () => (_req: Request, _res: Response, next: NextFunction) => {
     next();
   }
@@ -164,7 +163,7 @@ describe('Settings routes', () => {
 
       it('should only migrate in the newNameGeneration false to true scenario', async () => {
         jest.spyOn(templates, 'save');
-        await settingsModel.save({ ...(await settings.get()), newNameGeneration: true });
+        await SettingsDataSourceFactory.default().patch({ newNameGeneration: true });
 
         await request(app).post('/api/settings').send({}).expect(200);
 

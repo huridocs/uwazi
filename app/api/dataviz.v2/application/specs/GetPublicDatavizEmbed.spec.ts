@@ -4,7 +4,6 @@ import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
 import { IdGeneratorFactory } from '#api/core/infrastructure/factories/IdGeneratorFactory.js';
 import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
-import settings from '#api/settings/settings.js';
 import { User } from '#api/users.v2/model/User.js';
 import { DatavizFactory } from '#api/dataviz.v2/infrastructure/factories/DatavizFactory.js';
 import { TemplatesDataSourceFactory } from '#api/core/infrastructure/factories/TemplatesDataSourceFactory.js';
@@ -129,14 +128,13 @@ describe('GetPublicDatavizEmbedUseCase', () => {
       refresh: { refreshMode: 'live' },
     });
 
-    const current = await settings.get();
-    await settings.save({ ...current, private: true });
+    await SettingsDataSourceFactory.default().patch({ private: true });
 
     await expect(getPublicEmbed(User.createFrom(null)).execute({ id: dataviz.id })).rejects.toThrow(
       DatavizUnauthorizedError
     );
 
-    await settings.save({ ...current, private: false });
+    await SettingsDataSourceFactory.default().patch({ private: false });
   });
 
   it('should allow anonymous access on private instances when embedPublic is enabled', async () => {
@@ -156,14 +154,13 @@ describe('GetPublicDatavizEmbedUseCase', () => {
       embedPublic: true,
     });
 
-    const current = await settings.get();
-    await settings.save({ ...current, private: true });
+    await SettingsDataSourceFactory.default().patch({ private: true });
 
     const payload = await getPublicEmbed(User.createFrom(null)).execute({ id: dataviz.id });
 
     expect(payload.data.series[0].points[0].label).toBe('Category A');
 
-    await settings.save({ ...current, private: false });
+    await SettingsDataSourceFactory.default().patch({ private: false });
   });
 
   it('should allow authenticated users on private instances', async () => {
@@ -182,8 +179,7 @@ describe('GetPublicDatavizEmbedUseCase', () => {
       refresh: { refreshMode: 'live' },
     });
 
-    const current = await settings.get();
-    await settings.save({ ...current, private: true });
+    await SettingsDataSourceFactory.default().patch({ private: true });
 
     const payload = await getPublicEmbed(User.createFrom({ _id: 'admin1', role: 'admin' })).execute(
       {
@@ -193,7 +189,7 @@ describe('GetPublicDatavizEmbedUseCase', () => {
 
     expect(payload.data.series).toHaveLength(1);
 
-    await settings.save({ ...current, private: false });
+    await SettingsDataSourceFactory.default().patch({ private: false });
   });
 
   it('should reject when snapshot refresh is in progress', async () => {

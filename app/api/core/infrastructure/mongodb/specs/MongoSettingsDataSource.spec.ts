@@ -77,4 +77,56 @@ describe('MongoSettingsDataSource', () => {
       expect(enLanguage?.installing).toBeUndefined();
     });
   });
+
+  describe('deleteLanguage()', () => {
+    it('should remove the language from the list', async () => {
+      const sut = createSut();
+      await sut.deleteLanguage('en');
+
+      const settings = await testingEnvironment.db.getCollection('settings')!.findOne({});
+      expect(settings?.languages?.map((l: any) => l.key)).toEqual(['es']);
+    });
+  });
+
+  describe('find() and patch()', () => {
+    it('should return null when no settings document exists', async () => {
+      await testingEnvironment.db.getCollection('settings')!.deleteMany({});
+      const sut = createSut();
+      expect(await sut.find()).toBeNull();
+    });
+
+    it('should merge incoming fields onto the existing singleton', async () => {
+      const sut = createSut();
+      await sut.patch({ site_name: 'Patched collection' });
+
+      const stored = await sut.find();
+      expect(stored?.site_name).toBe('Patched collection');
+      expect(stored?.languages?.map(l => l.key)).toEqual(['en', 'es']);
+    });
+  });
+
+  describe('deactivateSyncConfig()', () => {
+    it('should disable the named sync config', async () => {
+      await testingEnvironment.db.getCollection('settings')!.updateOne(
+        {},
+        {
+          $set: {
+            sync: [
+              { name: 'keep-active', url: 'http://a', active: true, config: {} },
+              { name: 'disable-me', url: 'http://b', active: true, config: {} },
+            ],
+          },
+        }
+      );
+
+      const sut = createSut();
+      expect(await sut.deactivateSyncConfig('disable-me')).toBe(1);
+
+      const stored = await sut.find();
+      expect(stored?.sync).toEqual([
+        expect.objectContaining({ name: 'keep-active', active: true }),
+        expect.objectContaining({ name: 'disable-me', active: false }),
+      ]);
+    });
+  });
 });

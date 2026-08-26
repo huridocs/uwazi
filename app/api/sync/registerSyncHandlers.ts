@@ -5,6 +5,7 @@ import { ThesauriSyncHandlerFactory } from './ThesauriSyncHandlerFactory.js';
 import { FilesSyncHandlerFactory } from './FilesSyncHandlerFactory.js';
 import { RelationshipTypesSyncHandlerFactory } from './RelationshipTypesSyncHandlerFactory.js';
 import { TranslationsSyncHandlerFactory } from './TranslationsSyncHandlerFactory.js';
+import { SettingsSyncHandlerFactory } from './SettingsSyncHandlerFactory.js';
 
 export function registerSyncHandlers(): void {
   SyncHandlerRegistry.register('entities', () => EntitiesSyncHandlerFactory.default());
@@ -15,4 +16,5 @@ export function registerSyncHandlers(): void {
   );
   SyncHandlerRegistry.register('files', () => FilesSyncHandlerFactory.default());
   SyncHandlerRegistry.register('translationsV2', () => TranslationsSyncHandlerFactory.default());
+  SyncHandlerRegistry.register('settings', () => SettingsSyncHandlerFactory.default());
 }

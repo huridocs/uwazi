@@ -8,7 +8,7 @@ import QueryString from 'qs';
 import { legacyLogger } from '#api/log/index.js';
 import { search } from '#api/search/index.js';
 import { CSVExporter } from '#api/csv/index.js';
-import settings from '#api/settings/index.js';
+import { SettingsQueryServiceFactory } from '#api/core/infrastructure/factories/SettingsQueryServiceFactory.js';
 import { captchaMiddleware } from '#api/core/infrastructure/express/captcha/CaptchaMiddleware.js';
 import { csvExportParamsSchema } from '#shared/types/searchParameterSchema.js';
 import { CsvExportBody } from '#shared/types/searchParameterType.js';
@@ -44,7 +44,7 @@ export default (app: Application) => {
 
         const results = await search.search(query, req.language, req.user);
         // eslint-disable-next-line camelcase
-        const { dateFormat = '', site_name } = await settings.get();
+        const { dateFormat = '', site_name } = await SettingsQueryServiceFactory.default().get();
 
         const exporter = new CSVExporter();
 

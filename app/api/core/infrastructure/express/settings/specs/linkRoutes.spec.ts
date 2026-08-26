@@ -6,9 +6,9 @@ import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { setUpApp } from '#api/utils/testingRoutes.js';
 import { UserRole } from '#shared/types/userSchema.js';
 import { UserSchema } from '#shared/types/userType.js';
-import { expectedLinks, linkFixtures, newLinks } from './fixtures.js';
-import settingsRoutes from '../routes.js';
-import settings from '../settings.js';
+import { expectedLinks, linkFixtures, newLinks } from '../../../../application/settings/specs/fixtures.js';
+import { settingsRoutes } from '../routes.js';
+import { SettingsQueryServiceFactory } from '#api/core/infrastructure/factories/SettingsQueryServiceFactory.js';
 
 let currentUser: UserSchema;
 
@@ -73,8 +73,20 @@ describe('api/settings/links', () => {
       currentUser = adminUser;
       const response = await request(app).post('/api/settings/links').send(newLinks);
       expect(response.status).toEqual(200);
-      const storedLinks = await settings.getLinks();
-      expect(storedLinks).toEqual(newLinks);
+      const storedLinks = (await SettingsQueryServiceFactory.default().get()).links || [];
+      expect(storedLinks).toEqual(
+        newLinks.map(link =>
+          link.sublinks?.length
+            ? {
+                ...link,
+                sublinks: link.sublinks.map(sublink => ({
+                  ...sublink,
+                  _id: expect.anything(),
+                })),
+              }
+            : link
+        )
+      );
     });
 
     it.each([

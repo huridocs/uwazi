@@ -15,7 +15,7 @@ import { storage } from '#api/files/index.js';
 import { permissionsContext } from '#api/permissions/permissionsContext.js';
 import relationships from '#api/relationships/relationships.js';
 import { ResultsMessage, TaskManager } from '#api/services/tasksmanager/TaskManager.js';
-import settings from '#api/settings/settings.js';
+import { SettingsQueryServiceFactory } from '#api/core/infrastructure/factories/SettingsQueryServiceFactory.js';
 import { emitToSession } from '#api/socketio/setupSockets.js';
 import { tenants } from '#api/tenants/tenantContext.js';
 import { UsersDirectoryFactory } from '#api/core/infrastructure/factories/UsersDirectoryFactory.js';
@@ -39,7 +39,7 @@ interface OcrSettings {
 }
 
 const isEnabled = async () => {
-  const settingsObject = await settings.get();
+  const settingsObject = await SettingsQueryServiceFactory.default().get();
   return Boolean(settingsObject.features?.ocr?.url) && Boolean(settingsObject.ocrServiceEnabled);
 };
 
@@ -58,7 +58,7 @@ const validateFileIsDocument = (file: FileType) => {
 };
 
 const getSettings = async (): Promise<OcrSettings> => {
-  const settingsValues = await settings.get();
+  const settingsValues = await SettingsQueryServiceFactory.default().get();
   const ocrServiceConfig = settingsValues?.features?.ocr;
 
   if (!ocrServiceConfig) {

@@ -2,7 +2,7 @@ import { EntityDeletedEvent } from '#api/entities/events/EntityDeletedEvent.js';
 import { EventsBus } from '#api/core/libs/eventsbus/index.js';
 import { FilesDeletedEvent } from '#api/files/events/FilesDeletedEvent.js';
 import { Extractors } from '#api/services/informationextraction/ixextractors.js';
-import settings from '#api/settings/index.js';
+import { SettingsQueryServiceFactory } from '#api/core/infrastructure/factories/SettingsQueryServiceFactory.js';
 import templates from '#api/core/v1_layer/templates/index.js';
 import { TemplateDeletedEvent } from '#api/core/domain/template/events/TemplateDeletedEvent.js';
 import { TemplateUpdatedEvent } from '#api/core/domain/template/events/TemplateUpdatedEvent.js';
@@ -21,7 +21,7 @@ import { UpdateSuggestionsAfterEntityUpdate } from './useCases/updateSuggestions
 import { ProcessSuggestionsAfterTemplateChanged } from './useCases/processSuggestionsAfterTemplateChanged.js';
 
 const featureIsEnabled = async () => {
-  const configuration = await settings.get();
+  const configuration = await SettingsQueryServiceFactory.default().get();
   return !!configuration.features?.metadataExtraction;
 };
 

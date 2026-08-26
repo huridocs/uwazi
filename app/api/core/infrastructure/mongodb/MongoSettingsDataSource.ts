@@ -1,5 +1,6 @@
-import { Db } from 'mongodb';
+import { Db, ObjectId } from 'mongodb';
 import { MongoDataSource } from '#api/core/infrastructure/mongodb/common/MongoDataSource.js';
+import { MongoIdHandler } from '#api/core/infrastructure/mongodb/common/MongoIdGenerator.js';
 import { LanguageUtils } from '#shared/language/index.js';
 import { LanguageISO6391, LanguageSchema, LanguagesListSchema } from '#shared/types/commonTypes.js';
 import { Settings as SettingsType } from '#shared/types/settingsType.js';
@@ -61,6 +62,81 @@ export class MongoSettingsDataSource
 
   protected async readSettings(): Promise<SettingsType | null> {
     return this.getCollection().findOne({});
+  }
+
+  async find(): Promise<SettingsType | null> {
+    return this.readSettings();
+  }
+
+  async patch(partial: SettingsType): Promise<SettingsType> {
+    const current = await this.find();
+    const { _id: incomingId, __v: _version, ...fields } = this.normalizeForMongo(
+      partial
+    ) as SettingsType & { __v?: number };
+
+    if (current?._id) {
+      if (Object.keys(fields).length) {
+        await this.getCollection().updateOne({ _id: current._id }, { $set: fields });
+      }
+      return this.get();
+    }
+
+    const id =
+      incomingId instanceof ObjectId
+        ? incomingId
+        : MongoIdHandler.mapToDb(String(incomingId ?? ''));
+    if (!id || !String(id)) {
+      throw new Error('Cannot create settings without an _id');
+    }
+
+    await this.getCollection().insertOne({ ...fields, _id: id } as SettingsType);
+    return this.get();
+  }
+
+  private toObjectId(id: unknown): ObjectId | undefined {
+    if (id === undefined || id === null || id === '') {
+      return undefined;
+    }
+    if (id instanceof ObjectId) {
+      return id;
+    }
+    return MongoIdHandler.mapToDb(String(id));
+  }
+
+  private normalizeForMongo(partial: SettingsType): SettingsType {
+    if (!partial.links) {
+      return partial;
+    }
+
+    return {
+      ...partial,
+      links: partial.links.map(link => {
+        const id = this.toObjectId(link._id);
+        const normalized = {
+          ...link,
+          ...(id ? { _id: id } : {}),
+        };
+        if (!link.sublinks) {
+          return normalized;
+        }
+        return {
+          ...normalized,
+          sublinks: link.sublinks.map(sublink => {
+            const subId = this.toObjectId((sublink as { _id?: unknown })._id);
+            return subId ? { ...sublink, _id: subId } : sublink;
+          }),
+        };
+      }),
+    };
+  }
+
+  async deactivateSyncConfig(name: string): Promise<number> {
+    const result = await this.getCollection().updateMany(
+      {},
+      { $set: { 'sync.$[c].active': false } },
+      { arrayFilters: [{ 'c.name': name, 'c.active': true }] }
+    );
+    return result.modifiedCount;
   }
 
   protected async readLanguages(): Promise<SettingsType['languages']> {

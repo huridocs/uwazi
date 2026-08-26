@@ -1,12 +1,20 @@
 import { TestUtils } from '#api/common.v2/utils/Test.js';
 import { TranslationsService } from '#api/core/application/translation/TranslationsService.js';
 import { TranslationsServiceFactory } from '#api/core/infrastructure/factories/TranslationsServiceFactory.js';
-import { WithId } from '#api/odm/index.js';
+import { SaveSettingsUseCaseFactory } from '#api/core/infrastructure/factories/SaveSettingsUseCaseFactory.js';
+import { SaveSettingsLinksUseCaseFactory } from '#api/core/infrastructure/factories/SaveSettingsLinksUseCaseFactory.js';
+import { SetDefaultLanguageUseCaseFactory } from '#api/core/infrastructure/factories/SetDefaultLanguageUseCaseFactory.js';
+import { SettingsQueryServiceFactory } from '#api/core/infrastructure/factories/SettingsQueryServiceFactory.js';
+import { RemoveTemplateFromFiltersUseCaseFactory } from '#api/core/infrastructure/factories/RemoveTemplateFromFiltersUseCaseFactory.js';
+import { UpdateFilterNameUseCaseFactory } from '#api/core/infrastructure/factories/UpdateFilterNameUseCaseFactory.js';
 import db from '#api/utils/testing_db.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { Settings } from '#shared/types/settingsType.js';
-import settings from '../settings.js';
 import fixtures, { linkFixtures, newLinks } from './fixtures.js';
+
+const saveSettings = async (input: Settings) =>
+  SaveSettingsUseCaseFactory.default().execute(input);
+const getSettings = async () => SettingsQueryServiceFactory.default().get();
 
 describe('settings', () => {
   let updateContextExecute: jest.Mock;
@@ -29,9 +37,9 @@ describe('settings', () => {
   describe('save()', () => {
     it('should save the settings', async () => {
       const config = { site_name: 'My collection' };
-      await settings.save(config);
-      await settings.save({ custom: { customNested: 'data' } });
-      const result = await settings.get();
+      await saveSettings(config);
+      await saveSettings({ custom: { customNested: 'data' } });
+      const result = await getSettings();
       expect(result.site_name).toBe('My collection');
       expect(typeof result.custom === 'object' && result.custom.customNested).toBe('data');
     });
@@ -39,7 +47,7 @@ describe('settings', () => {
     it('should return the updated settings', async () => {
       const config = { site_name: 'New settings' };
 
-      const createdDocument = await settings.save(config);
+      const createdDocument = await saveSettings(config);
       expect(createdDocument.site_name).toBe(config.site_name);
       expect(createdDocument.allowedPublicTemplates?.[0]).toBe('id1');
       expect(createdDocument.allowedPublicTemplates?.[1]).toBe('id2');
@@ -53,7 +61,7 @@ describe('settings', () => {
       };
 
       it('should create a translation context for the passed links', async () => {
-        await settings.save(baseConfig);
+        await saveSettings(baseConfig);
         expect(updateContextExecute).toHaveBeenCalledWith({
           context: { id: 'Menu', label: 'Menu', type: 'Uwazi UI' },
           keyChanges: {},
@@ -66,7 +74,7 @@ describe('settings', () => {
         (TranslationsServiceFactory.default as jest.Mock).mockRestore();
 
         await testingEnvironment.runWithContext(async () => {
-          await settings.save(baseConfig);
+          await saveSettings(baseConfig);
         });
 
         const rows = await testingEnvironment.db.getAllFrom('translationsV2');
@@ -89,7 +97,7 @@ describe('settings', () => {
             },
           ],
         };
-        await settings.save(config);
+        await saveSettings(config);
         expect(updateContextExecute).toHaveBeenCalledWith({
           context: { id: 'Menu', label: 'Menu', type: 'Uwazi UI' },
           keyChanges: {},
@@ -107,7 +115,7 @@ describe('settings', () => {
               { title: 'Page two', type: 'link' as 'link', url: 'url2' },
             ],
           };
-          const savedConfig = await settings.save(config1);
+          const savedConfig = await saveSettings(config1);
           const config2 = {
             ...baseConfig,
             links: [
@@ -120,7 +128,7 @@ describe('settings', () => {
               { title: 'Page three', type: 'link' as 'link', url: 'url3' },
             ],
           };
-          await settings.save(config2);
+          await saveSettings(config2);
           expect(updateContextExecute).toHaveBeenCalledWith({
             context: { id: 'Menu', label: 'Menu', type: 'Uwazi UI' },
             keyChanges: { 'Page one': 'Page 1' },
@@ -141,7 +149,7 @@ describe('settings', () => {
               },
             ],
           };
-          const savedConfig = await settings.save(config);
+          const savedConfig = await saveSettings(config);
           const finalConfig = {
             ...baseConfig,
             links: [
@@ -154,7 +162,7 @@ describe('settings', () => {
               { title: 'Page three', type: 'link' as 'link', url: 'url3' },
             ],
           };
-          await settings.save(finalConfig);
+          await saveSettings(finalConfig);
 
           expect(updateContextExecute).toHaveBeenCalledWith({
             context: { id: 'Menu', label: 'Menu', type: 'Uwazi UI' },
@@ -177,7 +185,7 @@ describe('settings', () => {
               },
             ],
           };
-          const savedConfig = await settings.save(config);
+          const savedConfig = await saveSettings(config);
           const finalConfig = {
             ...baseConfig,
             links: [
@@ -204,7 +212,7 @@ describe('settings', () => {
           };
 
           jest.clearAllMocks();
-          await settings.save(finalConfig);
+          await saveSettings(finalConfig);
 
           expect(updateContextExecute).toHaveBeenCalledWith({
             context: { id: 'Menu', label: 'Menu', type: 'Uwazi UI' },
@@ -225,7 +233,7 @@ describe('settings', () => {
             { id: '2', name: 'Documents', items: [{ id: '3', name: 'Cause' }] },
           ],
         };
-        await settings.save(config);
+        await saveSettings(config);
         expect(updateContextExecute).toHaveBeenCalledWith({
           context: { id: 'Filters', label: 'Filters', type: 'Uwazi UI' },
           keyChanges: {},
@@ -243,7 +251,7 @@ describe('settings', () => {
             { id: '3', name: 'Files', items: [] },
           ],
         };
-        await settings.save(config);
+        await saveSettings(config);
         config = {
           site_name: 'My collection',
           filters: [
@@ -251,7 +259,7 @@ describe('settings', () => {
             { id: '2', name: 'Important Documents', items: [] },
           ],
         };
-        await settings.save(config);
+        await saveSettings(config);
         expect(updateContextExecute).toHaveBeenCalledWith({
           context: { id: 'Filters', label: 'Filters', type: 'Uwazi UI' },
           keyChanges: { Documents: 'Important Documents' },
@@ -263,7 +271,7 @@ describe('settings', () => {
 
     describe('when no links or filters are present', () => {
       it('should not update contexts translations', async () => {
-        await settings.save({ custom: 'something that does not have links' });
+        await saveSettings({ custom: 'something that does not have links' });
         expect(updateContextExecute).not.toHaveBeenCalled();
       });
     });
@@ -274,19 +282,19 @@ describe('settings', () => {
       it('should return an empty object', async () => {
         await db.clear(['settings']);
 
-        const result = await settings.get();
+        const result = await getSettings();
         expect(result).toEqual({});
       });
     });
 
     it('should not return private values', async () => {
-      const values = await settings.get();
+      const values = await getSettings();
       expect(values.publicFormDestination).not.toBeDefined();
     });
 
     describe('if there is settings with no map starting point on the DB', () => {
       it('should return the default starting point', async () => {
-        const settingsFromModel = await settings.get();
+        const settingsFromModel = await getSettings();
         const SWITZERLAND_COORDINATES = [{ lat: 46, lon: 6 }];
         expect(settingsFromModel.mapStartingPoint).toEqual(SWITZERLAND_COORDINATES);
       });
@@ -294,8 +302,8 @@ describe('settings', () => {
 
     describe('if map starting point is set to empty array on the DB', () => {
       it('should return the default starting point', async () => {
-        await settings.save({ mapStartingPoint: [] });
-        const settingsFromModel = await settings.get();
+        await saveSettings({ mapStartingPoint: [] });
+        const settingsFromModel = await getSettings();
         const SWITZERLAND_COORDINATES = [{ lat: 46, lon: 6 }];
         expect(settingsFromModel.mapStartingPoint).toEqual(SWITZERLAND_COORDINATES);
       });
@@ -304,95 +312,55 @@ describe('settings', () => {
 
   describe('setDefaultLanguage()', () => {
     it('should save the settings with the new default language', async () => {
-      await settings.setDefaultLanguage('en');
-      const result = await settings.get();
+      await SetDefaultLanguageUseCaseFactory.default().execute({ key: 'en' });
+      const result = await getSettings();
       expect(result.languages?.[1].key).toBe('en');
       expect(result.languages?.[1].default).toBe(true);
     });
   });
 
-  describe('addLanguage()', () => {
-    it('should add a to settings list language', async () => {
-      await settings.addLanguage({ key: 'fr', label: 'Frances' });
-      const result = await settings.get();
-      const languages = result.languages?.map(l => l.key);
-      expect(languages).toEqual(['es', 'en', 'fr']);
-    });
-
-    it('should not add a language if it already exists', async () => {
-      await settings.addLanguage({ key: 'en', label: 'English' });
-      const result = await settings.get();
-      const languages = result.languages?.map(l => l.key);
-      expect(languages).toEqual(['es', 'en']);
-    });
-  });
-
-  describe('deleteLanguage()', () => {
-    it('should add a to settings list language', async () => {
-      await settings.deleteLanguage('en');
-      const result = await settings.get();
-      expect(result.languages?.length).toBe(1);
-    });
-  });
-
   describe('removeTemplateFromFilters', () => {
     it('should remove the template from the filters', async () => {
-      const _settings = {
+      await saveSettings({
         filters: [
-          { id: '123' },
-          {
-            id: 'axz',
-            items: [{ id: '123' }],
-          },
+          { id: '123', name: 'Template' },
+          { id: 'axz', name: 'Group', items: [{ id: '123', name: 'Template' }] },
         ],
-      };
-      jest.spyOn(settings, 'get').mockImplementation(async () => Promise.resolve(_settings));
-      jest
-        .spyOn(settings, 'save')
-        .mockImplementation(async () => Promise.resolve({} as WithId<Settings>));
-      await settings.removeTemplateFromFilters('123');
-      expect(settings.save).toHaveBeenCalledWith({ filters: [{ id: 'axz', items: [] }] });
+      });
+      await RemoveTemplateFromFiltersUseCaseFactory.default().execute({ templateId: '123' });
+      expect((await getSettings()).filters).toEqual([
+        { id: 'axz', name: 'Group', items: [] },
+      ]);
     });
   });
 
   describe('updateFilterName', () => {
-    const _settings = {
-      filters: [{ id: '123', name: 'Batman' }],
-    };
-
     it('should update a filter name', async () => {
-      jest.spyOn(settings, 'get').mockImplementation(async () => Promise.resolve(_settings));
-      jest
-        .spyOn(settings, 'save')
-        .mockImplementation(async () =>
-          Promise.resolve({ project: 'updatedSettings' } as WithId<Settings>)
-        );
-
-      const updatedFilter = await settings.updateFilterName('123', 'The dark knight');
-
-      expect(settings.save).toHaveBeenCalledWith({
-        filters: [{ id: '123', name: 'The dark knight' }],
+      await saveSettings({ filters: [{ id: '123', name: 'Batman' }] });
+      const updatedFilter = await UpdateFilterNameUseCaseFactory.default().execute({
+        filterId: '123',
+        name: 'The dark knight',
       });
-      expect(updatedFilter?.project).toEqual('updatedSettings');
+
+      expect(updatedFilter?.filters).toEqual([{ id: '123', name: 'The dark knight' }]);
     });
 
     it('should do nothing when filter does not exist', async () => {
-      jest.spyOn(settings, 'get').mockImplementation(async () => Promise.resolve(_settings));
-      jest
-        .spyOn(settings, 'save')
-        .mockImplementation(async () => Promise.resolve({} as WithId<Settings>));
+      await saveSettings({ filters: [{ id: '123', name: 'Batman' }] });
+      const updatedFilter = await UpdateFilterNameUseCaseFactory.default().execute({
+        filterId: '321',
+        name: 'Filter not present',
+      });
 
-      const updatedFilter = await settings.updateFilterName('321', 'Filter not present');
-
-      expect(settings.save).not.toHaveBeenCalled();
       expect(updatedFilter).toBeUndefined();
+      expect((await getSettings()).filters).toEqual([{ id: '123', name: 'Batman' }]);
     });
   });
 
   describe('getLinks', () => {
     it('should return the links', async () => {
       await testingEnvironment.setUp(linkFixtures);
-      const result = await settings.getLinks();
+      const result = (await getSettings()).links || [];
       expect(result).toEqual(linkFixtures.settings?.[0].links);
     });
   });
@@ -400,9 +368,21 @@ describe('settings', () => {
   describe('saveLinks', () => {
     it('should save the links', async () => {
       await testingEnvironment.setUp(fixtures);
-      await settings.saveLinks(newLinks);
-      const result = await settings.getLinks();
-      expect(result).toEqual(newLinks);
+      await SaveSettingsLinksUseCaseFactory.default().execute({ links: newLinks });
+      const result = (await getSettings()).links || [];
+      expect(result).toEqual(
+        newLinks.map(link =>
+          link.sublinks?.length
+            ? {
+                ...link,
+                sublinks: link.sublinks.map(sublink => ({
+                  ...sublink,
+                  _id: expect.anything(),
+                })),
+              }
+            : link
+        )
+      );
     });
   });
 });

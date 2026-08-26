@@ -1,6 +1,6 @@
 import { IXExtractorType } from '#shared/types/extractorType.js';
 import { PropertySchema } from '#shared/types/commonTypes.js';
-import settings from '#api/settings/index.js';
+import { SettingsQueryServiceFactory } from '#api/core/infrastructure/factories/SettingsQueryServiceFactory.js';
 import { ObjectId } from 'mongodb';
 import entities from '#api/entities/index.js';
 import thesauri from '#api/core/v1_layer/thesauri/index.js';
@@ -62,7 +62,8 @@ export class IXTaskService {
 
   // eslint-disable-next-line class-methods-use-this
   private async fetchCandidates(targetProperty: PropertySchema) {
-    const defaultLanguageKey = (await settings.getDefaultLanguage()).key;
+    const defaultLanguageKey = (await SettingsQueryServiceFactory.default().getDefaultLanguage())
+      .key;
     const query: { template?: ObjectId; language: string } = {
       language: defaultLanguageKey,
     };

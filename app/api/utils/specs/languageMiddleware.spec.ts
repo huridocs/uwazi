@@ -1,6 +1,7 @@
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import type { NextFunction, Request, Response } from 'express';
-import settings from '#api/settings/settings.js';
+import { SettingsQueryServiceFactory } from '#api/core/infrastructure/factories/SettingsQueryServiceFactory.js';
+import { SaveSettingsUseCaseFactory } from '#api/core/infrastructure/factories/SaveSettingsUseCaseFactory.js';
 import middleware from '../languageMiddleware.js';
 import fixtures from './languageFixtures.js';
 
@@ -93,8 +94,8 @@ describe('languageMiddleware', () => {
 
   describe('public dataviz embed routes', () => {
     it('should prefer ?locale= query param on /api/public/dataviz paths', async () => {
-      const current = await settings.get();
-      await settings.save({
+      const current = await SettingsQueryServiceFactory.default().get();
+      await SaveSettingsUseCaseFactory.default().execute({
         ...current,
         languages: [...(current.languages ?? []), { key: 'pt', label: 'Portuguese' }],
       });

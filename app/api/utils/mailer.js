@@ -1,5 +1,5 @@
 import mailerConfig from '#api/config/mailer.js';
-import settings from '#api/settings/settings.js';
+import { SettingsQueryServiceFactory } from '#api/core/infrastructure/factories/SettingsQueryServiceFactory.js';
 import { getMailerTransport } from '#api/utils/mailerTransport.js';
 
 let transporterOptions = {
@@ -20,7 +20,7 @@ export default {
   send(mailOptions) {
     let transporter;
     return new Promise((resolve, reject) => {
-      settings
+      SettingsQueryServiceFactory.default()
         .get()
         .then(config => {
           try {

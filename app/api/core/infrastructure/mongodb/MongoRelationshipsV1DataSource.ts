@@ -4,7 +4,7 @@ import { MongoDataSource } from '#api/core/infrastructure/mongodb/common/MongoDa
 import { dbSessionContext } from '#api/odm/sessionsContext.js';
 import relationships from '#api/relationships/relationships.js';
 import { withConnectedData } from '#api/relationships/relationshipsHelpers.js';
-import settings from '#api/settings/index.js';
+import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
 import { Entity } from '#api/core/domain/entity/Entity.js';
 import type { Relation } from '../../../relationships/RelationsV1Collection.js';
 import type { LanguageISO6391 } from '#shared/types/commonTypes.js';
@@ -97,7 +97,7 @@ export class MongoRelationshipsV1DataSource extends MongoDataSource<Relation> {
 
     const _connectedDocuments = await this.entitiesDAO.find({
       sharedIds: dbRelationships.map(r => r.entity),
-      language: (await settings.getDefaultLanguage()).key,
+      language: await SettingsDataSourceFactory.default().getDefaultLanguageKey(),
     });
 
     const connectedDocuments = _connectedDocuments.reduce((res, doc) => {

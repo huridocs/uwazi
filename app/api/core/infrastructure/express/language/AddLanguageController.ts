@@ -1,8 +1,8 @@
 import { z } from 'zod';
 import { AbstractController } from '#api/common.v2/infrastructure/AbstractController.js';
 import { LanguageSchema } from '#shared/types/commonTypes.js';
-import settings from '#api/settings/index.js';
 import { TranslationsQueryServiceFactory } from '#api/core/infrastructure/factories/TranslationsQueryServiceFactory.js';
+import { SettingsQueryServiceFactory } from '../../factories/SettingsQueryServiceFactory.js';
 import { AddLanguageUseCaseFactory } from '../../factories/AddLanguageUseCaseFactory.js';
 import { LoggerFactory } from '../../factories/LoggerFactory.js';
 
@@ -33,7 +33,7 @@ class AddLanguageController extends AbstractController<RequestDto> {
       translationPayloads.forEach(([newTranslations]) => {
         this.request.sockets.emitToCurrentTenant('translationsChange', newTranslations);
       });
-      const newSettings = await settings.get();
+      const newSettings = await SettingsQueryServiceFactory.default().get();
       this.request.sockets.emitToCurrentTenant('updateSettings', newSettings);
       // translationsInstallDone is emitted by CloneLanguageEntitiesJob
 

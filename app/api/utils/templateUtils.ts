@@ -1,6 +1,6 @@
 import uuid from 'node-uuid';
 
-import settings from '#api/settings/settings.js';
+import { SettingsQueryServiceFactory } from '#api/core/infrastructure/factories/SettingsQueryServiceFactory.js';
 import { objectIndex } from '#shared/data_utils/objectIndex.js';
 import { safeName as sharedSafeName } from '#shared/propertyNames.js';
 import { PropertySchema } from '#shared/types/commonTypes.js';
@@ -16,7 +16,7 @@ const generateName = (property: PropertySchema, newNameGeneration: boolean) => {
 };
 
 const generateNames = async (properties: PropertySchema[]) => {
-  const { newNameGeneration = false } = await settings.get();
+  const { newNameGeneration = false } = await SettingsQueryServiceFactory.default().get();
   return properties.map(property => ({
     ...property,
     name: generateName(property, newNameGeneration),

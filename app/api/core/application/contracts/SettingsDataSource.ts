@@ -10,7 +10,10 @@ export interface SettingsDataSource {
   readNewRelationshipsAllowed(): Promise<boolean>;
   readFilterUnauthorizedRelated(): Promise<boolean>;
   getInstalledLanguages(): Promise<LanguagesListSchema>;
+  find(): Promise<SettingsType | null>;
   get(): Promise<SettingsType>;
+  patch(partial: SettingsType): Promise<SettingsType>;
+  deactivateSyncConfig(name: string): Promise<number>;
   getNewRelationshipsConfiguration(): Promise<
     Exclude<Partial<Required<SettingsType>['features']['newRelationships']>, boolean | undefined>
   >;

@@ -3,7 +3,7 @@ import { TestUtils } from '#api/common.v2/utils/Test.js';
 import { tenants } from '#api/tenants/index.js';
 import { AddLanguageUseCaseFactory } from '#api/core/infrastructure/factories/AddLanguageUseCaseFactory.js';
 import { AddLanguageUseCase } from '#api/core/application/AddLanguage.js';
-import settings from '#api/settings/index.js';
+import { SettingsQueryServiceFactory } from '#api/core/infrastructure/factories/SettingsQueryServiceFactory.js';
 import { TranslationsQueryServiceFactory } from '#api/core/infrastructure/factories/TranslationsQueryServiceFactory.js';
 import { TranslationsQueryService } from '#api/core/application/translation/TranslationsQueryService.js';
 import { AddLanguageController } from '../AddLanguageController.js';
@@ -41,7 +41,9 @@ describe('AddLanguageController', () => {
         getLegacy: getLegacySpy,
       })
     );
-    jest.spyOn(settings, 'get').mockResolvedValue({ languages: [] } as any);
+    jest.spyOn(SettingsQueryServiceFactory, 'default').mockReturnValue({
+      get: jest.fn().mockResolvedValue({ languages: [] }),
+    } as any);
   });
 
   afterEach(() => {
@@ -109,7 +111,10 @@ describe('AddLanguageController', () => {
   it('should emit updateSettings after execution', async () => {
     const fakeSettings = { languages: [{ key: 'es', label: 'Spanish' }] };
     useCaseExecuteSpy.mockResolvedValue([]);
-    jest.spyOn(settings, 'get').mockResolvedValue(fakeSettings as any);
+    const getSettings = jest.fn().mockResolvedValue(fakeSettings);
+    jest.spyOn(SettingsQueryServiceFactory, 'default').mockReturnValue({
+      get: getSettings,
+    } as any);
 
     const { sut, emitToCurrentTenant } = createSut([{ key: 'es', label: 'Spanish' }]);
 

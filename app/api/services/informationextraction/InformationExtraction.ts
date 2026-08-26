@@ -16,7 +16,7 @@ import { emitToTenantAdminsAndEditors } from '#api/socketio/setupSockets.js';
 import { FilesDAOFactory } from '#api/core/infrastructure/factories/FilesDAOFactory.js';
 import { EntityDBO } from '#api/core/infrastructure/mongodb/entity/EntityDBO.js';
 import entities from '#api/entities/entities.js';
-import settings from '#api/settings/settings.js';
+import { SettingsQueryServiceFactory } from '#api/core/infrastructure/factories/SettingsQueryServiceFactory.js';
 import request from '#shared/JSONRequest.js';
 import { EntitySchema } from '#shared/types/entityType.js';
 import {
@@ -477,7 +477,7 @@ class InformationExtraction {
     });
 
     if (!entity) {
-      const defaultLanguage = await settings.getDefaultLanguage();
+      const defaultLanguage = await SettingsQueryServiceFactory.default().getDefaultLanguage();
       [entity] = await entities.getUnrestricted({
         sharedId: file.entity,
         language: defaultLanguage?.key,
@@ -626,7 +626,7 @@ class InformationExtraction {
   };
 
   serviceUrl = async () => {
-    const settingsValues = await settings.get();
+    const settingsValues = await SettingsQueryServiceFactory.default().get();
     const serviceUrl = settingsValues.features?.metadataExtraction?.url;
     if (!serviceUrl) {
       throw new Error('No url for metadata extraction service');

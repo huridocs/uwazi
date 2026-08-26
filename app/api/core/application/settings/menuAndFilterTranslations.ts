@@ -6,14 +6,11 @@ import {
 } from '#shared/types/settingsType.js';
 import { ensure } from '#shared/tsUtils.js';
 import { TranslationsService } from '#api/core/application/translation/TranslationsService.js';
-import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
-import { TranslationsServiceFactory } from '#api/core/infrastructure/factories/TranslationsServiceFactory.js';
-import { dbSessionContext } from '#api/odm/sessionsContext.js';
-import { settingsModel } from './settingsModel.js';
 
 type FilterOrLink = SettingsFilterSchema | SettingsLinkSchema | SettingsSublinkSchema;
 
-const isLink = (item: any): item is SettingsLinkSchema => item.type && item.title;
+const isLink = (item: FilterOrLink): item is SettingsLinkSchema =>
+  'type' in item && Boolean((item as SettingsLinkSchema).type) && 'title' in item;
 
 const getUpdatesAndDeletes = <T extends FilterOrLink>(
   matchProperty: keyof T,
@@ -21,7 +18,7 @@ const getUpdatesAndDeletes = <T extends FilterOrLink>(
   newValues: T[] = [],
   currentValues: T[] = []
 ) => {
-  const updatedValues: { [k: string]: any } = {};
+  const updatedValues: { [k: string]: string } = {};
   const deletedValues: string[] = [];
   const values: { [k: string]: string } = {};
 
@@ -37,27 +34,32 @@ const getUpdatesAndDeletes = <T extends FilterOrLink>(
       return [...result, ...(value.sublinks as T[]), value];
     }
     return [...result, value];
-  }, [] as T[]);
+  }, []);
 
   flattenedCurrentValues.forEach(value => {
     const matchValue = flattenedNewValues.find(
       (v): v is T =>
-        v[matchProperty] && v[matchProperty]?.toString() === value[matchProperty]?.toString()
+        Boolean(v[matchProperty]) &&
+        v[matchProperty]?.toString() === value[matchProperty]?.toString()
     );
 
     if (!matchValue) {
-      deletedValues.push(ensure<string>(value[propertyName]));
+      deletedValues.push(ensure<string>(value[propertyName] as string));
       return;
     }
 
     const nameHasChanged = value[propertyName] !== matchValue[propertyName];
     if (nameHasChanged) {
-      updatedValues[ensure<string>(value[propertyName])] = matchValue[propertyName];
+      updatedValues[ensure<string>(value[propertyName] as string)] = matchValue[
+        propertyName
+      ] as string;
     }
   });
 
   flattenedNewValues.forEach(value => {
-    values[ensure<string>(value[propertyName])] = ensure<string>(value[propertyName]);
+    values[ensure<string>(value[propertyName] as string)] = ensure<string>(
+      value[propertyName] as string
+    );
   });
 
   return { updatedValues, deletedValues, values };
@@ -114,21 +116,13 @@ const saveFiltersTranslations = async (
   });
 };
 
-export async function persistSettingsAndTranslations(
-  settings: Settings,
-  currentSettings: Settings
-) {
-  const transactionManager = TransactionManagerFactory.default();
-  const translationsService = TranslationsServiceFactory.default({ transactionManager });
+const persistMenuAndFilterTranslations = async (
+  translationsService: TranslationsService,
+  incoming: Settings,
+  current: Settings
+) => {
+  await saveLinksTranslations(translationsService, incoming.links, current.links);
+  await saveFiltersTranslations(translationsService, incoming.filters, current.filters);
+};
 
-  return transactionManager.run(async () => {
-    dbSessionContext.setTransactionManager(transactionManager);
-    try {
-      await saveLinksTranslations(translationsService, settings.links, currentSettings.links);
-      await saveFiltersTranslations(translationsService, settings.filters, currentSettings.filters);
-      return settingsModel.save({ ...settings, _id: currentSettings._id });
-    } finally {
-      dbSessionContext.clearSession();
-    }
-  });
-}
+export { persistMenuAndFilterTranslations };

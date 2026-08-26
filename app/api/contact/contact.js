@@ -1,9 +1,9 @@
 import mailer from '#api/utils/mailer.js';
-import settings from '#api/settings/settings.js';
+import { SettingsQueryServiceFactory } from '#api/core/infrastructure/factories/SettingsQueryServiceFactory.js';
 
 export default {
   async sendMessage({ email, name, message }) {
-    const siteSettings = await settings.get();
+    const siteSettings = await SettingsQueryServiceFactory.default().get();
     const emailSender = mailer.createSenderDetails(siteSettings);
     const mailOptions = {
       from: emailSender,

@@ -1,7 +1,7 @@
 import type { Application, NextFunction, Request, Response } from 'express';
 import path from 'path';
 import request, { Response as SuperTestResponse } from 'supertest';
-import settings from '#api/settings/settings.js';
+import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { setUpApp } from '#api/utils/testingRoutes.js';
 import { testingTenants } from '#api/utils/testingTenants.js';
@@ -209,7 +209,7 @@ describe('files routes download', () => {
 
     describe('when instance is public', () => {
       beforeEach(async () => {
-        await settings.save({ private: false });
+        await SettingsDataSourceFactory.default().patch({ private: false });
         testingEnvironment.userInContextMockFactory.mock(undefined);
         app = setUpApp(uploadRoutes);
       });
@@ -265,7 +265,7 @@ describe('files routes download', () => {
 
     describe('when accessed by authenticated user', () => {
       beforeEach(async () => {
-        await settings.save({ private: false });
+        await SettingsDataSourceFactory.default().patch({ private: false });
         app = setAppWithUser(uploadRoutes, adminUser);
       });
 
@@ -307,7 +307,7 @@ describe('files routes download', () => {
 
     describe('Conditional GET / 304 Not Modified', () => {
       beforeEach(async () => {
-        await settings.save({ private: false });
+        await SettingsDataSourceFactory.default().patch({ private: false });
         testingEnvironment.userInContextMockFactory.mock(undefined);
         app = setUpApp(uploadRoutes);
       });
@@ -409,7 +409,7 @@ describe('files routes download', () => {
 
     describe('when instance is private and no authenticated user', () => {
       beforeEach(async () => {
-        await settings.save({ private: true });
+        await SettingsDataSourceFactory.default().patch({ private: true });
         testingEnvironment.userInContextMockFactory.mock(undefined);
         // privateInstanceMiddleware reads settings and logs through the ExecutionContext,
         // so it needs the dependencies context mounted before it, as server.js does.
@@ -435,7 +435,7 @@ describe('files routes download', () => {
         testingTenants.changeCurrentTenant({
           featureFlags: { fileCacheHeaders: false },
         });
-        await settings.save({ private: false });
+        await SettingsDataSourceFactory.default().patch({ private: false });
         testingEnvironment.userInContextMockFactory.mockEditorUser();
         app = setUpApp(uploadRoutes);
       });

@@ -1,5 +1,5 @@
 /* eslint-disable max-nested-callbacks */
-import settings from '#api/settings/index.js';
+import { SaveSettingsUseCaseFactory } from '#api/core/infrastructure/factories/SaveSettingsUseCaseFactory.js';
 import mailer from '#api/utils/mailer.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import contact from '../contact.js';
@@ -34,7 +34,7 @@ describe('contact', () => {
         site_name: 'some site name',
         senderEmail: 'sender@email.com',
       };
-      await settings.save(newSettings);
+      await SaveSettingsUseCaseFactory.default().execute(newSettings);
       await contact.sendMessage({
         email: 'bruce@wayne.com',
         name: 'Bruce Wayne',

@@ -3,7 +3,7 @@ import type { Request, Response } from 'express';
 import { tenants } from '#api/tenants/index.js';
 import { DeleteLanguageUseCaseFactory } from '#api/core/infrastructure/factories/DeleteLanguageUseCaseFactory.js';
 import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
-import settings from '#api/settings/index.js';
+import { SettingsQueryServiceFactory } from '#api/core/infrastructure/factories/SettingsQueryServiceFactory.js';
 import { DeleteLanguageController } from '../DeleteLanguageController.js';
 
 const createSut = (query?: Record<string, string>) => {
@@ -39,7 +39,9 @@ describe('DeleteLanguageController', () => {
       get: settingsGetSpy,
     } as any);
 
-    jest.spyOn(settings, 'get').mockResolvedValue({ languages: [] } as any);
+    jest.spyOn(SettingsQueryServiceFactory, 'default').mockReturnValue({
+      get: jest.fn().mockResolvedValue({ languages: [] }),
+    } as any);
   });
 
   afterEach(() => {
@@ -101,7 +103,10 @@ describe('DeleteLanguageController', () => {
     settingsGetSpy.mockResolvedValue({
       languages: [{ key: 'es', label: 'Spanish', installing: false }],
     });
-    jest.spyOn(settings, 'get').mockResolvedValue(fakeSettings as any);
+    const getSettings = jest.fn().mockResolvedValue(fakeSettings);
+    jest.spyOn(SettingsQueryServiceFactory, 'default').mockReturnValue({
+      get: getSettings,
+    } as any);
 
     const { sut, emitToCurrentTenant } = createSut({ key: 'es' });
 

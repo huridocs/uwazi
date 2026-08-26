@@ -32,8 +32,8 @@ import templatesApi from '#api/core/v1_layer/templates/templates.js';
 import { GetRelationshipTypesUseCaseFactory } from '#api/core/infrastructure/factories/GetRelationshipTypesUseCaseFactory.js';
 import thesauriApi from '../api/core/v1_layer/thesauri/thesauri.js';
 import { TranslationsQueryServiceFactory } from '#api/core/infrastructure/factories/TranslationsQueryServiceFactory.js';
-import settingsApi from '../api/settings/settings.js';
-import { shapeSettingsForSSR } from '../api/settings/publicSettings.js';
+import { SettingsQueryServiceFactory } from '#api/core/infrastructure/factories/SettingsQueryServiceFactory.js';
+import { shapeSettingsForSSR } from '#api/core/application/settings/publicSettings.js';
 import { omitInlineCustomization } from '#shared/settings/omitInlineCustomization.js';
 import { tenants } from '../api/tenants/index.js';
 import { CustomProvider } from './App/Provider.js';
@@ -346,7 +346,10 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
   const ssrStart = process.hrtime.bigint();
   RouteHandler.renderedFromServer = true;
   const [settings, assets] = await withSpan('settings_and_assets', async () =>
-    Promise.all([settingsApi.get() as Promise<ClientSettings>, getAssets()])
+    Promise.all([
+      SettingsQueryServiceFactory.default().get() as Promise<ClientSettings>,
+      getAssets(),
+    ])
   );
   const { connection, ...headers } = req.headers;
 

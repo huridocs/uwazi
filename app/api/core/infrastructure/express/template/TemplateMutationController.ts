@@ -1,5 +1,5 @@
 import { AbstractController } from '#api/common.v2/infrastructure/AbstractController.js';
-import settings from '#api/settings/index.js';
+import { UpdateFilterNameUseCaseFactory } from '../../factories/UpdateFilterNameUseCaseFactory.js';
 import { createError } from '#api/utils/index.js';
 import { inspect } from 'util';
 import { TemplateFacade } from '../../facades/TemplateFacade.js';
@@ -19,10 +19,10 @@ class TemplateMutationController extends AbstractController {
         response = await TemplateFacade.update(this.request.body, this.language);
       }
 
-      const updatedSettings = await settings.updateFilterName(
-        response._id.toString(),
-        response.name
-      );
+      const updatedSettings = await UpdateFilterNameUseCaseFactory.default().execute({
+        filterId: response._id.toString(),
+        name: response.name,
+      });
 
       if (updatedSettings) {
         this.request.sockets.emitToCurrentTenant('updateSettings', updatedSettings);

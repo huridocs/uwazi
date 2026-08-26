@@ -1,8 +1,8 @@
 import { z } from 'zod';
 import { AbstractController } from '#api/common.v2/infrastructure/AbstractController.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
-import settings from '#api/settings/index.js';
 import { DeleteLanguageUseCaseFactory } from '../../factories/DeleteLanguageUseCaseFactory.js';
+import { SettingsQueryServiceFactory } from '../../factories/SettingsQueryServiceFactory.js';
 import { SettingsDataSourceFactory } from '../../factories/SettingsDataSourceFactory.js';
 import { LoggerFactory } from '../../factories/LoggerFactory.js';
 
@@ -32,7 +32,7 @@ class DeleteLanguageController extends AbstractController<RequestDto> {
     try {
       await DeleteLanguageUseCaseFactory.default().execute({ key: key as LanguageISO6391 });
 
-      const newSettings = await settings.get();
+      const newSettings = await SettingsQueryServiceFactory.default().get();
       this.request.sockets.emitToCurrentTenant('updateSettings', newSettings);
       this.request.sockets.emitToCurrentTenant('translationsDelete', key);
 

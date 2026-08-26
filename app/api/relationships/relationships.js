@@ -4,7 +4,7 @@ import _ from 'lodash';
 
 import { ObjectId } from 'mongodb';
 import templatesAPI from '#api/core/v1_layer/templates/index.js';
-import settings from '#api/settings/index.js';
+import { SettingsQueryServiceFactory } from '#api/core/infrastructure/factories/SettingsQueryServiceFactory.js';
 import entities from '#api/entities/entities.js';
 import { createError } from '#api/utils/index.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
@@ -318,7 +318,7 @@ export default {
     const relationsToDelete = await model.get(relationQuery, 'hub');
     const hubsAffected = relationsToDelete.map(r => r.hub).filter(unique);
 
-    const { languages } = await settings.get();
+    const { languages } = await SettingsQueryServiceFactory.default().get();
     const entitiesAffected = await model.db.aggregate([
       { $match: { hub: { $in: hubsAffected } } },
       { $group: { _id: '$entity' } },

@@ -1,5 +1,5 @@
 import type { Request, Response, NextFunction } from 'express';
-import settings from '#api/settings/settings.js';
+import { SettingsQueryServiceFactory } from '#api/core/infrastructure/factories/SettingsQueryServiceFactory.js';
 import { resolveEmbedLocale } from '#shared/embed/resolveEmbedLocale.js';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -25,7 +25,7 @@ const parseLocaleQuery = (locale: Request['query']['locale']): string | string[]
 
 export default async (req: Request, _res: Response, next: NextFunction) => {
   try {
-    const { languages = [] } = await settings.get();
+    const { languages = [] } = await SettingsQueryServiceFactory.default().get();
 
     if (usesEmbedLocaleResolution(req.path)) {
       req.language = resolveEmbedLocale({

@@ -1,4 +1,4 @@
-import settings from '#api/settings/settings.js';
+import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
 import db from '#api/utils/testing_db.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { PropertySchema } from '#shared/types/commonTypes.js';
@@ -21,7 +21,7 @@ describe('templates utils', () => {
   describe('name generation', () => {
     describe('default name generation', () => {
       it('should sanitize the labels and append the type', async () => {
-        await settings.save({});
+        await SettingsDataSourceFactory.default().patch({});
         const result = await generateNames([
           { label: ' my prop ', name: '', type: 'text' },
           { label: 'my^foreïgn$próp"', name: '', type: 'text' },
@@ -36,7 +36,7 @@ describe('templates utils', () => {
 
     describe('less restrictive name generation', () => {
       it('should not contain the characters #, \\, /, *, ?, ", <, >, |, , :, ., and should be lowercase', async () => {
-        await settings.save({ newNameGeneration: true });
+        await SettingsDataSourceFactory.default().patch({ newNameGeneration: true });
         const result = await generateNames([
           { label: ' my prop ', name: '', type: 'text' },
           { label: 'my^foreïgn$próp"', name: '', type: 'text' },
@@ -75,7 +75,7 @@ describe('templates utils', () => {
       });
 
       it('should not start with _, -, +, $', async () => {
-        await settings.save({ newNameGeneration: true });
+        await SettingsDataSourceFactory.default().patch({ newNameGeneration: true });
         const result = await generateNames([
           { label: '.test ', name: '', type: 'text' },
           { label: '_test', name: '', type: 'text' },
