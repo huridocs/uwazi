@@ -54,6 +54,7 @@ interface Entity extends Omit<
   attachments?: FileType[];
   relations?: EntityRelation[];
   metadata?: MetadataSchema;
+  preview?: string;
   icon?: {
     _id: string;
     type: string;
