@@ -7,8 +7,7 @@ import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.
 import { TransactionManagerFactory } from './TransactionManagerFactory.js';
 import { EntitiesDataSourceFactory } from './EntitiesDataSourceFactory.js';
 import { MongoTransactionManager } from '../mongodb/common/MongoTransactionManager.js';
-import { MongoEntityPermissionChecker } from '../mongodb/entity/MongoEntityPermissionChecker.js';
-import { getConnection } from '../mongodb/common/getConnectionForCurrentTenant.js';
+import { EntityPermissionCheckerFactory } from './EntityPermissionCheckerFactory.js';
 import { SettingsDataSourceFactory } from './SettingsDataSourceFactory.js';
 import { TemplatesDataSourceFactory } from './TemplatesDataSourceFactory.js';
 import { TestUtils } from '#api/common.v2/utils/Test.js';
@@ -25,10 +24,7 @@ class EntitiesServiceFactory {
       eventEmitter,
       dispatcher: new DispatcherAdapter(jobsDispatcher),
       entitiesDS: EntitiesDataSourceFactory.default({ transactionManager }),
-      entityPermissionChecker: new MongoEntityPermissionChecker(
-        getConnection(),
-        transactionManager as MongoTransactionManager
-      ),
+      entityPermissionChecker: EntityPermissionCheckerFactory.default(),
       eventBus: applicationEventsBus,
       settingsDS: SettingsDataSourceFactory.default({ transactionManager }),
       templatesDS: TemplatesDataSourceFactory.default({ transactionManager }),
@@ -50,10 +46,7 @@ class EntitiesServiceFactory {
         DefaultDispatcher(tenants.current().name, transactionManager)
       ),
       entitiesDS: EntitiesDataSourceFactory.default({ transactionManager }),
-      entityPermissionChecker: new MongoEntityPermissionChecker(
-        getConnection(),
-        transactionManager as MongoTransactionManager
-      ),
+      entityPermissionChecker: EntityPermissionCheckerFactory.default(),
       eventBus: TestUtils.mockClass<EventsBus>({
         clear: jest.fn(),
         emit: jest.fn(),

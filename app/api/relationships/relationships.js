@@ -89,11 +89,7 @@ export default {
         'template',
         'creationDate',
         'title',
-        'file',
         'sharedId',
-        'uploaded',
-        'processed',
-        'type',
         'published',
         'metadata',
         'icon',
@@ -107,7 +103,8 @@ export default {
           _relationships,
           connectedDocuments,
           sharedId,
-          unpublished
+          unpublished,
+          language
         );
 
         return relationshipsCollection;

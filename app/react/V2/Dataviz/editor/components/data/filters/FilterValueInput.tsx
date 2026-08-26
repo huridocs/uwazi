@@ -75,7 +75,7 @@ const FilterValueInput = ({ filter, sources, onChange }: FilterValueInputProps) 
     return (
       <MultiSelect
         label="Values"
-        value={filter.values ?? []}
+        value={(filter.values ?? []).filter((v): v is string => typeof v === 'string')}
         options={thesaurusOptions}
         onChange={values => onChange({ values })}
         canBeEmpty

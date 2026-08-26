@@ -12,8 +12,7 @@ export interface EntitiesDataSource {
   unrestricted(): EntitiesDataSource;
 
   bulkUpdateDeprecated(entitiesToSave: Entity[], properties: Property[]): Promise<void>;
-  bulkUpdate(entities: Entity[]): Promise<void>;
-  update(entity: Entity): Promise<void>;
+  update(entities: Entity | Entity[]): Promise<void>;
 
   deleteMetadataProperties(propertyNames: string[], sharedIds: string[]): Promise<void>;
   touchEntitiesBySharedIds(sharedIds: string[]): Promise<void>;

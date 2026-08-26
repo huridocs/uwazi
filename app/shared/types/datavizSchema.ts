@@ -29,7 +29,7 @@ export type DatavizFilter = {
   propertyType: FilterablePropertyType;
   operator: DatavizFilterOperator;
   value?: string | number;
-  values?: string[];
+  values?: (string | number)[];
   from?: string | number;
   to?: string | number;
 };
@@ -40,7 +40,7 @@ export type DatavizRuntimeFilterValue = {
   max?: number | string;
   from?: number | string;
   to?: number | string;
-  values?: string[];
+  values?: (string | number)[];
   value?: string | number;
 };
 

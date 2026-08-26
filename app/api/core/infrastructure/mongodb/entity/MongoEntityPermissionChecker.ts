@@ -3,7 +3,6 @@ import {
   PermissionSpec,
 } from '#api/core/domain/entityAccessPolicy/EntityPermissionChecker.js';
 import { EntityDBO } from '#api/core/infrastructure/mongodb/entity/EntityDBO.js';
-import { Result, ResultType } from '#api/core/libs/Result.js';
 import { User } from '#api/users.v2/model/User.js';
 import { MongoDataSource } from '../common/MongoDataSource.js';
 import { BaseFile } from '#api/core/domain/files/BaseFile.js';
@@ -52,7 +51,7 @@ class MongoEntityPermissionChecker
     return entities.map(entity => entity.sharedId);
   }
 
-  async checkReadPermission(sharedId: string, user: User): Promise<ResultType<boolean, Error>> {
+  async checkReadPermission(sharedId: string, user: User): Promise<boolean> {
     const [entity] = await this.getCollection()
       .aggregate([
         { $match: { sharedId } },
@@ -69,31 +68,31 @@ class MongoEntityPermissionChecker
       .toArray();
 
     if (!entity) {
-      return Result.fail(new Error(`Entity not found: ${sharedId}`));
+      return false;
     }
 
     if (entity.published || user?.isPrivileged()) {
-      return Result.ok(true);
+      return true;
     }
 
     const userRefIds = [user._id, ...user.groups];
     const userRefIdsAsStrings = userRefIds.map(id => id.toString());
-    return Result.ok(
+    return Boolean(
       entity.permissions?.some((perm: any) => userRefIdsAsStrings.includes(perm.refId.toString()))
     );
   }
 
-  async checkWritePermission(file: BaseFile, user: User): Promise<ResultType<boolean, Error>> {
+  async checkWritePermission(file: BaseFile, user: User): Promise<boolean> {
     if (user.isAnonymous()) {
-      return Result.ok(false);
+      return false;
     }
 
     if (user.role === 'admin') {
-      return Result.ok(true);
+      return true;
     }
 
     if (!file.isEntityFile()) {
-      return Result.ok(false);
+      return false;
     }
 
     const [entity] = await this.getCollection()
@@ -110,11 +109,11 @@ class MongoEntityPermissionChecker
       .toArray();
 
     if (!entity) {
-      return Result.ok(false);
+      return false;
     }
 
     const userRefIds = [user._id, ...user.groups].map(id => id.toString());
-    return Result.ok(
+    return Boolean(
       entity.permissions?.some(
         (perm: any) => userRefIds.includes(perm.refId.toString()) && perm.level === 'write'
       ) ?? false

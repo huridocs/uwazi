@@ -8,7 +8,8 @@ class GetMigrationHubRecordsService {
   }
 
   async getPage(page: number, pageSize: number) {
-    const hubRecords = await this.hubRecordsDS.getAll().page(page, pageSize);
+    const all = await this.hubRecordsDS.getAll().all();
+    const hubRecords = all.slice((page - 1) * pageSize, page * pageSize);
     const fullCount = await this.hubRecordsDS.countAll();
     return { hubRecords, fullCount };
   }

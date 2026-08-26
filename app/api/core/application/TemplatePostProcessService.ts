@@ -93,11 +93,9 @@ class TemplatePostProcessService {
       await this.deps.templatesDS.addJobsToProcessingCount(diff.templateId, totalJobs);
     }
 
-    // eslint-disable-next-line no-await-in-loop
-    while (await resultSet.hasNext()) {
+    await resultSet.forEachBatch(limit, entitiesIds => {
       dispatch({
-        // eslint-disable-next-line no-await-in-loop
-        entitiesIds: await resultSet.nextBatch(limit),
+        entitiesIds,
         templateId: diff.templateId,
         language,
         modifiedRelationshipsProps: diff.modifiedRelationshipPropIds,
@@ -108,7 +106,7 @@ class TemplatePostProcessService {
         resaveForFilterChange,
         tenantName,
       });
-    }
+    });
   }
 }
 
