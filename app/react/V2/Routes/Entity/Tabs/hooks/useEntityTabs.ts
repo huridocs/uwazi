@@ -100,12 +100,16 @@ const useEntityTabs = ({
     [sideButtons, syncSideTabId]
   );
 
+  const clearPendingSideTab = useCallback(() => {
+    pendingSideTabRef.current = null;
+    setPendingSideTab(null);
+  }, []);
+
   useEffect(() => {
     if (pendingSideTabId && explicitSideTab === pendingSideTabId) {
-      pendingSideTabRef.current = null;
-      setPendingSideTab(null);
+      clearPendingSideTab();
     }
-  }, [explicitSideTab, pendingSideTabId]);
+  }, [clearPendingSideTab, explicitSideTab, pendingSideTabId]);
 
   useEntityTabGroupsSync({
     entity,
@@ -121,8 +125,7 @@ const useEntityTabs = ({
     hashParams,
     searchParams,
     pendingSideTabId,
-    pendingSideTabRef,
-    setPendingSideTab,
+    clearPendingSideTab,
     setTabGroups,
   });
 

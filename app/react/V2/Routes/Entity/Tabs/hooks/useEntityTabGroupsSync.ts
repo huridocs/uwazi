@@ -1,10 +1,4 @@
-import {
-  useEffect,
-  useRef,
-  type Dispatch,
-  type MutableRefObject,
-  type SetStateAction,
-} from 'react';
+import { useEffect, useRef } from 'react';
 import type { TabGroupsState } from '#V2/Components/UI/Tabs/tabsAtoms.js';
 import { mergeTabGroup } from '#V2/Components/UI/Tabs/tabsAtoms.js';
 import type { Entity as EntityType } from '#V2/api/entities/types.js';
@@ -27,8 +21,7 @@ type UseEntityTabGroupsSyncParams = {
   hashParams: URLSearchParams;
   searchParams: URLSearchParams;
   pendingSideTabId: SideTabId | null;
-  pendingSideTabRef: MutableRefObject<SideTabId | null>;
-  setPendingSideTab: Dispatch<SetStateAction<SideTabId | null>>;
+  clearPendingSideTab: () => void;
   setTabGroups: (update: (prev: TabGroupsState) => TabGroupsState) => void;
 };
 
@@ -46,8 +39,7 @@ const useEntityTabGroupsSync = ({
   hashParams,
   searchParams,
   pendingSideTabId,
-  pendingSideTabRef,
-  setPendingSideTab,
+  clearPendingSideTab,
   setTabGroups,
 }: UseEntityTabGroupsSyncParams) => {
   const previousSharedId = useRef(entity.sharedId);
@@ -55,13 +47,12 @@ const useEntityTabGroupsSync = ({
   useEffect(() => {
     if (previousSharedId.current === entity.sharedId) return;
     previousSharedId.current = entity.sharedId;
-    pendingSideTabRef.current = null;
-    setPendingSideTab(null);
+    clearPendingSideTab();
     setTabGroups(prev => {
       const { 'entity-main': _main, 'entity-side': _side, ...rest } = prev;
       return rest;
     });
-  }, [entity.sharedId, pendingSideTabRef, setPendingSideTab, setTabGroups]);
+  }, [clearPendingSideTab, entity.sharedId, setTabGroups]);
 
   useEffect(() => {
     setTabGroups(prev => {
