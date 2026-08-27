@@ -2,7 +2,6 @@ import React from 'react';
 import { Translate } from '#app/I18N/index.js';
 import type { RelationshipsPanelStats } from '#V2/formatters/relationships/relationshipsPanelProjection.js';
 import {
-  useEnsureResolved,
   useRelationshipsPanelLayout,
   useRelationshipsPanelUi,
 } from '#V2/Routes/Entity/Components/context/index.js';
@@ -14,7 +13,6 @@ type RelationshipsListInfoRowProps = {
 const RelationshipsListInfoRow = ({ stats }: RelationshipsListInfoRowProps) => {
   const { groupBy } = useRelationshipsPanelLayout();
   const { setExpandAllSignal, setCollapseAllSignal } = useRelationshipsPanelUi();
-  const ensureResolved = useEnsureResolved();
   const groupingEnabled = groupBy !== 'none';
 
   return (
@@ -43,10 +41,7 @@ const RelationshipsListInfoRow = ({ stats }: RelationshipsListInfoRowProps) => {
         <button
           type="button"
           disabled={!groupingEnabled}
-          onClick={async () => {
-            await ensureResolved();
-            setExpandAllSignal(signal => signal + 1);
-          }}
+          onClick={() => setExpandAllSignal(signal => signal + 1)}
           className={`px-1 font-medium ${
             groupingEnabled
               ? 'cursor-pointer text-ink-secondary hover:text-ink'
