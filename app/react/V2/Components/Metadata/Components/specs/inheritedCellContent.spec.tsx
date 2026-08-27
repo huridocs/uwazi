@@ -13,11 +13,19 @@ jest.mock('#app/I18N/index.js', () => ({
 }));
 
 jest.mock('#app/Map/index.js', () => ({
-  Map: () => <div data-testid="map" />,
+  Map: ({ height, showControls }: { height?: number; showControls?: boolean }) => (
+    <div
+      data-testid="map"
+      data-height={height}
+      data-show-controls={showControls === undefined ? 'undefined' : String(showControls)}
+    />
+  ),
 }));
 
 jest.mock('#V2/Components/UI/index.js', () => ({
-  MediaPlayer: () => <div data-testid="media-player" />,
+  MediaPlayer: ({ height }: { height?: number | string }) => (
+    <div data-testid="media-player" data-height={height} />
+  ),
 }));
 
 const renderCell = (node: React.ReactNode) =>
@@ -88,7 +96,24 @@ describe('inheritedCellContent', () => {
     expect(screen.getByTestId('cell').innerHTML).toContain('<strong>');
   });
 
-  it('renders media inherited values', () => {
+  it('renders geolocation inherited values with compact density', () => {
+    renderCell(
+      inheritedCellContent(
+        [
+          {
+            value: 'e1',
+            inheritedType: 'geolocation',
+            inheritedValue: [{ value: { lat: 1, lon: 2 } }],
+          },
+        ],
+        'e1'
+      )
+    );
+    expect(screen.getByTestId('map')).toHaveAttribute('data-height', '160');
+    expect(screen.getByTestId('map')).toHaveAttribute('data-show-controls', 'false');
+  });
+
+  it('renders media inherited values with compact density', () => {
     renderCell(
       inheritedCellContent(
         [
@@ -101,10 +126,10 @@ describe('inheritedCellContent', () => {
         'e1'
       )
     );
-    expect(screen.getByTestId('media-player')).toBeInTheDocument();
+    expect(screen.getByTestId('media-player')).toHaveAttribute('data-height', '140');
   });
 
-  it('renders image inherited values', () => {
+  it('renders image inherited values with default density', () => {
     renderCell(
       inheritedCellContent(
         [
@@ -117,7 +142,10 @@ describe('inheritedCellContent', () => {
         'e1'
       )
     );
-    expect(screen.getByRole('img')).toHaveAttribute('src', '/api/files/photo.png');
+    const img = screen.getByRole('img');
+    expect(img).toHaveAttribute('src', '/api/files/photo.png');
+    expect(img.className).toContain('max-h-96');
+    expect(img.className).not.toContain('max-h-32');
   });
 
   it('falls back to labels for select-like values without type rendering gaps', () => {

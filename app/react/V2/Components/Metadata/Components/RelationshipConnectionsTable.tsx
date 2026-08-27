@@ -91,7 +91,7 @@ const RelationshipConnectionsTable = ({
 
   return (
     <div className="overflow-hidden rounded-md border border-border">
-      <div className="max-h-60 overflow-auto">
+      <div className="overflow-x-auto">
         <table className="w-full border-collapse text-sm">
           <thead>
             <tr className="text-[11px] uppercase tracking-wide text-ink-tertiary">
@@ -138,13 +138,13 @@ const RelationshipConnectionsTable = ({
                     key={row.id}
                     className="border-t border-border/40 transition-colors hover:bg-warm/30"
                   >
-                    <td className="min-w-0 max-w-40 px-3 py-1.5 align-middle">
+                    <td className="max-w-40 px-3 py-1.5 align-middle">
                       {entityCellForRow(row, pill, onEntityClick)}
                     </td>
                     {columns.map(column => (
                       <td
                         key={`${row.id}-${column.label}`}
-                        className="border-s border-border/40 px-3 py-1.5 align-middle"
+                        className="min-w-0 border-s border-border/40 px-3 py-1.5 align-middle"
                       >
                         {renderInheritedCell(cellContent(column, row.id))}
                       </td>

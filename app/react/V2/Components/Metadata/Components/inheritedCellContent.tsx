@@ -16,7 +16,22 @@ import type {
   SimpleMetadataProperty,
 } from '#V2/formatters/types.js';
 import { resolveInheritedRelationship } from '#V2/formatters/metadata/resolvePropertyMetadataValues.js';
-import { renderFieldContent } from './metadataFieldContent.js';
+import { renderFieldContent, type FieldContentOptions } from './metadataFieldContent.js';
+
+const densityForInherited = (
+  type: NonNullable<MetadataValue['inheritedType']>
+): FieldContentOptions['density'] | undefined => {
+  switch (type) {
+    case 'geolocation':
+    case 'media':
+      return 'compact';
+    case 'image':
+    case 'preview':
+      return 'default';
+    default:
+      return undefined;
+  }
+};
 
 const base = { _id: 'inherited', name: 'inherited', label: '' };
 
@@ -258,8 +273,12 @@ const inheritedCellContent = (values: unknown, entityId: string): ReactNode => {
 
   if (flattened.inheritedType && flattened.inheritedType !== 'relationship') {
     const field = toInheritedField(flattened.inheritedType, flattened.values);
-    const content = field ? renderFieldContent(field) : null;
-    if (content) return content;
+    if (field) {
+      const density = densityForInherited(flattened.inheritedType);
+      const content =
+        density !== undefined ? renderFieldContent(field, { density }) : renderFieldContent(field);
+      if (content) return content;
+    }
   }
 
   return labelFallback(flattened.values);
