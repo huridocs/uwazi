@@ -86,7 +86,7 @@ describe('ViewerRoute', () => {
     it('should throw a FetchResponseError exception', async () => {
       const request = new RequestParams({ sharedId: '123' }, 'headers');
 
-      spyOn(EntitiesAPI, 'get').and.callFake(() =>
+      spyOn(EntitiesAPI, 'get').and.callFake(async () =>
         Promise.reject(
           new FetchResponseError('Not found', {
             status: 404,
@@ -110,7 +110,7 @@ describe('ViewerRoute', () => {
         fail('Should throw error');
       } catch (e) {
         expect(e.status).toBe(404);
-        expect(e.message).toMatch('Not found');
+        expect(e.message).toContain('Not found');
       }
     });
   });

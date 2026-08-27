@@ -66,7 +66,7 @@ export default app => {
       required: ['body'],
     }),
     (req, res, next) => {
-      relationships
+      void relationships
         .save(req.body, req.language)
         .then(response => res.json(response))
         .catch(next);
@@ -90,7 +90,7 @@ export default app => {
       required: ['query'],
     }),
     (req, res, next) => {
-      relationships
+      void relationships
         .delete({ _id: req.query._id }, req.language)
         .then(response => res.json(response))
         .catch(next);
@@ -120,7 +120,7 @@ export default app => {
       );
       const unrestricted = Boolean(req.user && ['admin', 'editor'].includes(req.user.role));
 
-      relationships
+      void relationships
         .getByDocument(
           req.query.sharedId,
           req.language,
@@ -135,7 +135,7 @@ export default app => {
   );
 
   app.get('/api/references/group_by_connection/', (req, res, next) => {
-    relationships
+    void relationships
       .getGroupsByConnection(req.query.sharedId, req.language, {
         excludeRefs: true,
         user: req.user,
@@ -169,7 +169,7 @@ export default app => {
     (req, res, next) => {
       req.query.filter = JSON.parse(req.query.filter || '{}');
       const { sharedId, ...query } = req.query;
-      relationships
+      void relationships
         .search(req.query.sharedId, query, req.language, req.user)
         .then(results => res.json(results))
         .catch(next);
@@ -192,7 +192,7 @@ export default app => {
       required: ['query'],
     }),
     (req, res, next) => {
-      relationships
+      void relationships
         .countByRelationType(req.query.relationtypeId)
         .then(response => res.json(response))
         .catch(next);

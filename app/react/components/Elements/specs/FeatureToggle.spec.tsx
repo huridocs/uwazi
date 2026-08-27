@@ -2,11 +2,11 @@ import React from 'react';
 import { Provider } from 'react-redux';
 import Immutable from 'immutable';
 import { shallow } from 'enzyme';
-import configureStore, { MockStore, MockStoreCreator } from 'redux-mock-store';
+import configureMockStore, { MockStore, MockStoreCreator } from 'redux-mock-store';
 
 import { FeatureToggle, OwnPropTypes } from '../FeatureToggle.js';
 
-const mockStoreCreator: MockStoreCreator<object> = configureStore<object>([]);
+const mockStoreCreator: MockStoreCreator<object> = configureMockStore<object>([]);
 
 const renderComponent = (store: MockStore<object>, feature: string = 'testFeature') => {
   const ownProps: OwnPropTypes = { feature };

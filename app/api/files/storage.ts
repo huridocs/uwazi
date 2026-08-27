@@ -1,8 +1,8 @@
 import { NoSuchKey, NotFound } from '@aws-sdk/client-s3';
 import { inspect } from 'util';
-// eslint-disable-next-line node/no-restricted-import
+// eslint-disable-next-line no-restricted-imports
 import { createReadStream, createWriteStream } from 'fs';
-// eslint-disable-next-line node/no-restricted-import
+// eslint-disable-next-line no-restricted-imports
 import { access, readdir } from 'fs/promises';
 import path from 'path';
 

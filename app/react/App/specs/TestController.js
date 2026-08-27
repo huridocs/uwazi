@@ -2,7 +2,7 @@ import React from 'react';
 import { RouteHandler } from '../RouteHandler.js';
 
 class TestController extends RouteHandler {
-  static requestState() {
+  static async requestState() {
     return Promise.resolve({ initialData: 'data' });
   }
 

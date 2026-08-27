@@ -1,6 +1,6 @@
 /* eslint-disable max-statements */
 import { Db } from 'mongodb';
-import testingDB from '#api/utils/testing_db.js';
+import { testingDB } from '#api/utils/testing_db.js';
 import migration from '../index.js';
 import {
   allAlreadyDenormalizedFixtures,

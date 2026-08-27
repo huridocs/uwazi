@@ -7,7 +7,7 @@ import { testingTenants } from '#api/utils/testingTenants.js';
 import { config } from '#api/config.js';
 import { DB } from '../DB.js';
 import { instanceModel } from '../model.js';
-import testingDB from '#api/utils/testing_db.js';
+import { testingDB } from '#api/utils/testing_db.js';
 
 const testSchema = new mongoose.Schema({
   name: { type: String, index: true },

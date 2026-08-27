@@ -179,7 +179,7 @@ describe('handleError', () => {
     it('should return generate a new error with code 500', () => {
       const error = handleError();
       expect(error.code).toBe(500);
-      expect(error.prettyMessage).toMatch(/A server side error has occurred/i);
+      expect(error.prettyMessage).toContain('A server side error has occurred');
       expect(error.requestId).toBe(contextRequestId);
     });
   });

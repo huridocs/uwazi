@@ -73,7 +73,7 @@ describe('Viewer uiActions', () => {
     let dispatch;
     beforeEach(() => {
       jest.restoreAllMocks();
-      jest.spyOn(scroller, 'to').mockImplementation(() => Promise.resolve());
+      jest.spyOn(scroller, 'to').mockImplementation(async () => Promise.resolve());
       jest.spyOn(window.document, 'querySelector').mockReturnValue(true);
       dispatch = jest.fn();
     });

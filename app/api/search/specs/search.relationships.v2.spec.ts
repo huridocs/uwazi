@@ -5,7 +5,7 @@ describe('deprecated', () => {
 });
 // import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 // import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-// import testingDB from '#api/utils/testing_db.js';
+// import { testingDB } from '#api/utils/testing_db.js';
 // import { elastic } from '../elastic.js';
 // import { search } from '../search.js';
 // import { fixturesTimeOut } from './fixtures_elastic.js';

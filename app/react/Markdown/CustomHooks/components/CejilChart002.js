@@ -21,7 +21,7 @@ function conformSearchQuery(filters) {
   return api.search(new RequestParams({ types: [judgesCommisionersTemplate], filters, limit: 0 }));
 }
 
-function getData() {
+async function getData() {
   const filters = {};
   filters[this.props.filterProperty] = { from: -2208988800 };
 

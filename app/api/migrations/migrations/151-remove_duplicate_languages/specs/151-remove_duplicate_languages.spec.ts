@@ -1,6 +1,6 @@
 import { Collection, Db } from 'mongodb';
 
-import testingDB from '#api/utils/testing_db.js';
+import { testingDB } from '#api/utils/testing_db.js';
 import { settingsOnlyDuplication, defaultLanguageDuplication, allCases } from './fixtures.js';
 import migration from '../index.js';
 import { Entity, Fixture, Page } from '../types.js';

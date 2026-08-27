@@ -14,7 +14,7 @@
  *   yarn migration-status --json   machine-readable output
  */
 
-// eslint-disable-next-line node/no-restricted-import
+// eslint-disable-next-line no-restricted-imports
 import { readFileSync, readdirSync, existsSync } from 'fs';
 import { execFileSync } from 'child_process';
 import { dirname, resolve } from 'path';

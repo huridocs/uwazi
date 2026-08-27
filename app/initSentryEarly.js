@@ -1,7 +1,7 @@
 import 'dotenv/config';
 import { init } from '@sentry/node-core/light';
 import { nodeProfilingIntegration } from '@sentry/profiling-node';
-// eslint-disable-next-line node/no-restricted-import -- must not import app code so Sentry runs before other modules
+// eslint-disable-next-line no-restricted-imports -- must not import app code so Sentry runs before other modules
 import { readFileSync } from 'fs';
 import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';

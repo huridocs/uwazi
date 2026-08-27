@@ -3,7 +3,7 @@ import path from 'path';
 
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
-import testingDB from '../../utils/testing_db.js';
+import { testingDB } from '../../utils/testing_db.js';
 import migrationsModel from '../migrationsModel.js';
 import { migrator } from '../migrator.js';
 
@@ -52,7 +52,7 @@ describe('migrator', () => {
 
   const setTestMigrationsDir = (registry = []) => {
     migrator.migrationsDir = path.join(__dirname, 'testMigrations');
-    migrator.loader = p => Promise.resolve(loadMigration(p, registry));
+    migrator.loader = async p => Promise.resolve(loadMigration(p, registry));
   };
 
   describe('migrate', () => {

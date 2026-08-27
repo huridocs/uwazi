@@ -8,7 +8,7 @@ import { prioritySortingCriteria } from '#app/utils/prioritySortingCriteria.js';
 import { ReferencesAPI as referencesAPI } from '#app/Viewer/referencesAPI.js';
 
 function requestState(requestParams, state) {
-  return referencesAPI.getGroupedByConnection(requestParams).then(connectionsGroups => {
+  return referencesAPI.getGroupedByConnection(requestParams).then(async connectionsGroups => {
     const filteredTemplates = connectionsGroups.reduce(
       (templateIds, group) => templateIds.concat(group.templates.map(t => t._id.toString())),
       []

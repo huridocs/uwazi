@@ -55,7 +55,7 @@ const testCheckboxes = async (expectedSelected?: string) => {
 const findSidepanel = async () => {
   try {
     return await screen.findByRole('dialog');
-  } catch (e) {
+  } catch (_) {
     return screen.findByRole('complementary');
   }
 };

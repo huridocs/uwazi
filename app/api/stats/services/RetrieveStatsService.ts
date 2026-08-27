@@ -71,7 +71,7 @@ export class RetrieveStatsService {
     try {
       const elasticSize = await RetrieveStatsService.getElasticStorageSize();
       return { total: baseSize + elasticSize };
-    } catch (error) {
+    } catch (_) {
       return { total: baseSize };
     }
   }

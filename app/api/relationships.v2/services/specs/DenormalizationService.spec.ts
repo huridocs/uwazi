@@ -12,7 +12,7 @@ describe('deprecated', () => {
 // import { MongoTemplatesDAO } from '#api/core/infrastructure/mongodb/template/MongoTemplatesDAO.js';
 // import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 // import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-// import testingDB, { DBFixture } from '#api/utils/testing_db.js';
+// import { testingDB, DBFixture } from '#api/utils/testing_db.js';
 // import { partialImplementation } from '#api/common.v2/testing/partialImplementation.js';
 // import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 // import { DenormalizationService } from '../DenormalizationService.js';

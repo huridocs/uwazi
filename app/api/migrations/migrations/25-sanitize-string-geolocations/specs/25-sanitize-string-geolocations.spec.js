@@ -1,4 +1,4 @@
-import testingDB from '#api/utils/testing_db.js';
+import { testingDB } from '#api/utils/testing_db.js';
 import logger from '#api/migrations/logger.js';
 import migration from '../index.js';
 import fixtures from './fixtures.js';
@@ -11,8 +11,8 @@ describe('migration sanitize-string-geolocations', () => {
     jest.spyOn(logger, 'logFieldParseError').mockImplementation(() => {});
   });
 
-  afterAll(done => {
-    testingDB.disconnect().then(done);
+  afterAll(async () => {
+    await testingDB.disconnect();
   });
 
   it('should have a delta number', () => {

@@ -1,5 +1,5 @@
 /* eslint-disable max-classes-per-file */
-// eslint-disable-next-line node/no-restricted-import
+// eslint-disable-next-line no-restricted-imports
 import { readFile, readdir } from 'fs/promises';
 
 import { CSVLoader } from '#api/csv/index.js';

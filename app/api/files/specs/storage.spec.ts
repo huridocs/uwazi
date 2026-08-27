@@ -10,9 +10,9 @@ import {
 } from '@aws-sdk/client-s3';
 import { config } from '#api/config.js';
 import { testingTenants } from '#api/utils/testingTenants.js';
-// eslint-disable-next-line node/no-restricted-import
+// eslint-disable-next-line no-restricted-imports
 import { copyFile, rmdir } from 'fs/promises';
-// eslint-disable-next-line node/no-restricted-import
+// eslint-disable-next-line no-restricted-imports
 import { createReadStream } from 'fs';
 import path from 'path';
 import { Readable } from 'stream';

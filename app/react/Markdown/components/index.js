@@ -20,37 +20,40 @@ import { SearchBox } from './SearchBox.js';
 import { EntityInfo } from './EntityInfo.js';
 
 const BarChart = loadable(
-  () => import(/* webpackChunkName: "LazyLoadBarChart" */ './BarChart.js'),
+  async () => import(/* webpackChunkName: "LazyLoadBarChart" */ './BarChart.js'),
   { resolveComponent: m => m.BarChartComponent }
 );
 const FreeBarChart = loadable(
-  () => import(/* webpackChunkName: "LazyLoadFreeBarChart" */ './FreeBarChart.tsx'),
+  async () => import(/* webpackChunkName: "LazyLoadFreeBarChart" */ './FreeBarChart.tsx'),
   { resolveComponent: m => m.FreeBarChart }
 );
 
 const Slideshow = loadable(
-  () => import(/* webpackChunkName: "LazyLoadSlideshow" */ './Slideshow.js'),
+  async () => import(/* webpackChunkName: "LazyLoadSlideshow" */ './Slideshow.js'),
   { resolveComponent: m => m.Slideshow }
 );
 
 const PieChart = loadable(
-  () => import(/* webpackChunkName: "LazyLoadPieChart" */ './PieChart.js'),
+  async () => import(/* webpackChunkName: "LazyLoadPieChart" */ './PieChart.js'),
   { resolveComponent: m => m.PieChart }
 );
 
 const ListChart = loadable(
-  () => import(/* webpackChunkName: "LazyLoadListChart" */ './ListChart.js'),
+  async () => import(/* webpackChunkName: "LazyLoadListChart" */ './ListChart.js'),
   { resolveComponent: m => m.ListChart }
 );
 
 const GaugeChart = loadable(
-  () => import(/* webpackChunkName: "LazyLoadGaugeChart" */ './GaugeChart.js'),
+  async () => import(/* webpackChunkName: "LazyLoadGaugeChart" */ './GaugeChart.js'),
   { resolveComponent: m => m.GaugeChart }
 );
 
-const Dataviz = loadable(() => import(/* webpackChunkName: "LazyLoadDataviz" */ './Dataviz.tsx'), {
-  resolveComponent: m => m.Dataviz,
-});
+const Dataviz = loadable(
+  async () => import(/* webpackChunkName: "LazyLoadDataviz" */ './Dataviz.tsx'),
+  {
+    resolveComponent: m => m.Dataviz,
+  }
+);
 
 export {
   MarkdownMedia,

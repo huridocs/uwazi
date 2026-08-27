@@ -20,7 +20,7 @@ export function checkRelationTypeCanBeDeleted(relationType) {
   return function () {
     return referencesAPI
       .countByRelationType(new RequestParams({ relationtypeId: relationType._id }))
-      .then(count => {
+      .then(async count => {
         if (count) {
           return Promise.reject();
         }
