@@ -10,5 +10,5 @@ export async function IsTopicClassificationReachable() {
   if (!tcServer || tcServer === 'none') {
     return false;
   }
-  return isReachable(tcServer, { timeout: RPC_DEADLINE_MS });
+  return isReachable(tcServer, { signal: AbortSignal.timeout(RPC_DEADLINE_MS) });
 }

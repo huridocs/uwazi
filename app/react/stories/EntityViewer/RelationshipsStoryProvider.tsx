@@ -12,6 +12,8 @@ import {
 import type { ClientTemplateSchema } from '#V2/shared/types.js';
 import { EntityScopedProvider } from '#V2/Routes/Entity/Components/context/index.js';
 import { entityLoaderCache } from '#V2/Routes/Entity/EntityLoaderCache.js';
+import { createStubEntityTabsState } from '#V2/Routes/Entity/Components/relationships/specs/helpers/createStubEntityTabsState.js';
+import { EntityTabsProvider } from '#V2/Routes/Entity/Tabs/EntityTabsContext.js';
 import { relationshipQueryFromEntity } from '#V2/Routes/Entity/Components/relationships/specs/helpers/relationshipQueryFromEntity.js';
 import { templates, translations } from '../fixtures/referencesFixtures.js';
 
@@ -57,6 +59,8 @@ const RelationshipsStoryProvider = ({
     });
   }, [locale, preloadEntities]);
 
+  const entityTabs = useMemo(() => createStubEntityTabsState(), []);
+
   return (
     <Provider store={store}>
       <EntityScopedProvider
@@ -66,7 +70,7 @@ const RelationshipsStoryProvider = ({
         mainDocument={entity.documents?.[0]}
         relationshipQuery={relationshipQueryFromEntity(entity, entity.documents?.[0]?._id)}
       >
-        {children}
+        <EntityTabsProvider value={entityTabs}>{children}</EntityTabsProvider>
       </EntityScopedProvider>
     </Provider>
   );
