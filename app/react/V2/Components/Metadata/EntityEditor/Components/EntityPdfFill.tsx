@@ -52,6 +52,10 @@ const EntityPdfFill = ({
   const lastNonceOnArm = useRef(pdfFillCommitNonce);
 
   const { name: propertyName, propertyId, coerceType } = target;
+  const armedRef = useRef(armedPdfFill);
+  armedRef.current = armedPdfFill;
+  const targetRef = useRef({ name: propertyName, propertyId });
+  targetRef.current = { name: propertyName, propertyId };
   const isArmed = Boolean(
     armedPdfFill && armedPdfFill.name === propertyName && armedPdfFill.propertyId === propertyId
   );
@@ -80,6 +84,10 @@ const EntityPdfFill = ({
       return;
     }
 
+    const armedAtStart = armedRef.current;
+    const startedArmedForThis =
+      armedAtStart?.name === propertyName && armedAtStart.propertyId === propertyId;
+
     fillInFlight.current = true;
     setIsFilling(true);
 
@@ -97,11 +105,24 @@ const EntityPdfFill = ({
         );
         return;
       }
+
+      if (startedArmedForThis) {
+        const armedNow = armedRef.current;
+        if (armedNow?.name !== propertyName || armedNow.propertyId !== propertyId) {
+          return;
+        }
+      }
+
       applyValue(filled.value);
       upsertPropertySelection({ name: propertyName, id: propertyId }, documentPdfSelection);
       setDocumentPdfSelection(undefined);
       setPdfSelectionMenuOpen(false);
-      disarmPdfFill();
+      if (
+        startedArmedForThis ||
+        (armedRef.current?.name === propertyName && armedRef.current.propertyId === propertyId)
+      ) {
+        disarmPdfFill();
+      }
     } catch {
       notify(t('System', 'Value cannot be transformed to the correct type', null, false), 'danger');
     } finally {
@@ -127,11 +148,6 @@ const EntityPdfFill = ({
     lastNonceOnArm.current = pdfFillCommitNonce;
     onFill().catch(() => undefined);
   }, [isArmed, onFill, pdfFillCommitNonce]);
-
-  const armedRef = useRef(armedPdfFill);
-  armedRef.current = armedPdfFill;
-  const targetRef = useRef({ name: propertyName, propertyId });
-  targetRef.current = { name: propertyName, propertyId };
 
   useEffect(
     () => () => {

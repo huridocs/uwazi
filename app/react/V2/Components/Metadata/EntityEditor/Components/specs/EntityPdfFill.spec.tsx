@@ -60,7 +60,7 @@ jest.mock('#V2/api/entities/index.js', () => ({
   coerceValue: jest.fn(),
 }));
 
-jest.mock('../../../../../Routes/Entity/Components/context/MetadataEditingContext.js', () => ({
+jest.mock('#V2/Routes/Entity/Components/context/MetadataEditingContext.js', () => ({
   useMetadataEditing: () => ({ isEditing: true }),
 }));
 
@@ -518,6 +518,47 @@ describe('Entity PDF fill', () => {
       expect(upsertPropertySelection).toHaveBeenCalledTimes(1);
       expect(screen.getByRole('spinbutton')).toHaveValue(42);
     });
+  });
+
+  it('does not apply after coerce if the field was disarmed mid-flight', async () => {
+    let resolveCoerce: (value: { success: string; value: number }) => void = () => undefined;
+    jest.mocked(entitiesAPI.coerceValue).mockImplementation(
+      async () =>
+        new Promise(resolve => {
+          resolveCoerce = resolve;
+        })
+    );
+
+    mockSelection = {
+      text: '42',
+      selectionRectangles: [{ top: 1, left: 2, width: 10, height: 4, regionId: '1' }],
+    };
+
+    render(
+      <Host>
+        <TextField<EditEntityFormValues>
+          context="tpl-1"
+          label="Numeric"
+          field="metadata.numeric_prop.0.value"
+          type="number"
+          pdfFill={{ name: 'numeric_prop', propertyId: 'num-1', coerceType: 'numeric' }}
+        />
+      </Host>
+    );
+
+    const input = screen.getByRole('spinbutton');
+    arm(input);
+    commitFill();
+    fireEvent.keyDown(window, { key: 'Escape' });
+    expect(screen.queryByTestId('listening-chip')).not.toBeInTheDocument();
+
+    resolveCoerce({ success: 'true', value: 42 });
+
+    await waitFor(() => {
+      expect(entitiesAPI.coerceValue).toHaveBeenCalled();
+    });
+    expect(upsertPropertySelection).not.toHaveBeenCalled();
+    expect(input).toHaveValue(null);
   });
 
   it('does not nest role=button wrappers around the listening chip', () => {
