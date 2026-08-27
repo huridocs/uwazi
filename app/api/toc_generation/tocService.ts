@@ -9,7 +9,7 @@ import { UsersDirectoryFactory } from '#api/core/infrastructure/factories/UsersD
 import { LanguageISO6391, TocSchema } from '#shared/types/commonTypes.js';
 import { FileType } from '#shared/types/fileType.js';
 import { tenants } from '#api/tenants/index.js';
-import { SettingsQueryServiceFactory } from '#api/core/infrastructure/factories/SettingsQueryServiceFactory.js';
+import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
 import { permissionsContext } from '#api/permissions/permissionsContext.js';
 import { runInJobContext } from '#api/services/tasksmanager/runInJobContext.js';
 import { FilesDataSourceFactory } from '#api/core/infrastructure/factories/FilesDataSourceFactory.js';
@@ -144,9 +144,10 @@ const tocService = {
       await previous;
       return runInJobContext(tenantName, async () => {
         permissionsContext.setCommandContext();
-        const { features } = await SettingsQueryServiceFactory.default().get();
-        if (features?.tocGeneration) {
-          await this.processNext(features.tocGeneration.url);
+        const tocGeneration =
+          await SettingsDataSourceFactory.default().readFeature('tocGeneration');
+        if (tocGeneration) {
+          await this.processNext(tocGeneration.url);
         }
       });
     }, Promise.resolve());

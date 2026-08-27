@@ -1,8 +1,7 @@
 import type { Request, Response, NextFunction } from 'express';
-import { SettingsQueryServiceFactory } from '#api/core/infrastructure/factories/SettingsQueryServiceFactory.js';
+import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
 import { resolveEmbedLocale } from '#shared/embed/resolveEmbedLocale.js';
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 declare global {
   namespace Express {
     interface Request {
@@ -23,9 +22,11 @@ const parseLocaleQuery = (locale: Request['query']['locale']): string | string[]
   return undefined;
 };
 
+// eslint-disable-next-line import/no-default-export
 export default async (req: Request, _res: Response, next: NextFunction) => {
   try {
-    const { languages = [] } = await SettingsQueryServiceFactory.default().get();
+    const { languages = [] } =
+      (await SettingsDataSourceFactory.default().readFields(['languages'])) ?? {};
 
     if (usesEmbedLocaleResolution(req.path)) {
       req.language = resolveEmbedLocale({

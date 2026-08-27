@@ -12,7 +12,7 @@ This is the planning doc for both phases. Pattern sources: [`../Relationship Typ
 ## Status
 
 - **Analysis / planning** — this document
-- **V2 implementation** — **first cut on Mongo, not accepted.** Core owns reads/writes and V1 `app/api/settings` is gone, but the first review (below) reopens design: Zod, safe-by-default reads, blob projections, use-case outputs/sockets, and concept boundaries (menu / filters / sync / templates). Do not treat the current code as the target shape.
+- **V2 implementation** — **first cut on Mongo, not accepted.** Review implementation is in progress (safe-by-default reads/sockets, projections, Zod, factory EC, tests adapted to the core — not the other way around). Do not treat the first-cut code as the target shape.
 - **Postgres** — still blocked. The review’s projection/opt-in-read questions **change the DS contract**; lock that before schema 016 / `postgresSettings`.
 
 ---
@@ -68,7 +68,16 @@ The migration is not “move `settings.save` into a use case.” It is: stop hav
 - **Safe-first** means the default application read is never the persistence row. `SettingsDataSource` may return secrets; **nothing above it should, unless the call is explicitly `getSyncConfig()` / `getPrivateFormDestination()` / etc.** Developers should not be able to “forget omit.”
 - **Postgres:** `document JSONB` can still `SELECT document` and pull CSS every time. Opt-in is `document->'languages'`, generated columns, or a port method `read(paths)`. Partial `$set` in Mongo and `jsonb_set` / `document ||` in PG both preserve unmentioned keys **if the write is a patch of a slice**, not a full-document replace. The first cut’s `patch({ ...incoming })` is already a field `$set`; fat **reads** are the gap, not fat writes.
 - `SaveSettings` calling `TemplateFacade` is a **core → v1_layer** dependency from the wrong module. Even a “use case tells the full story” argument only justifies **dispatching** “apply new name generation,” not implementing template walks inside Settings.
-- AJV remains in `app/shared/types/settingsSchema.ts` because of **`emitSchemaTypes`**. Zod migration is also a **shared type / emit-types** question, not only a use-case swap.
+- **AJV is gone from Settings.** `validateSettings` had no remaining callers. Comparison with the other three blobs:
+
+  | Module | JSON schema + `emitSchemaTypes` | AJV at runtime | Types consumed as |
+  | --- | --- | --- | --- |
+  | Entities | `entitySchema.ts` (no Ajv import) | No — V1 `validateEntity` is gone; core has `domain/entity/Entity` | generated `entityType.d.ts` |
+  | Templates | `templateSchema.ts` (constructs unused `Ajv`) | No — core has `domain/template/Template` | generated `templateType.d.ts` |
+  | Users | `userSchema.ts` (no Ajv; `UserRole` enum is the live export) | No — core has `domain/user/User` | generated `userType.d.ts` |
+  | Settings | **deleted** `settingsSchema.ts` | **deleted** | hand-written `settingsType.ts` |
+
+  Emit-types is still how entities/templates/users present **shared DTO** types. That pipeline is not the Settings contract anymore. Input validation is Zod on the use-case (`SaveSettingsInputSchema`). Do not regenerate Settings types via `yarn emit-types`.
 
 #### Opinions asked for
 
@@ -96,26 +105,58 @@ Avoid `getClientVisible` (client = browser vs API is ambiguous). `getPermitted` 
 Allowed: factory in a controller. Not allowed: ExecutionContext outside factories; use cases as generic “get me the settings blob.” Output of `UpdateFilterName` / `RemoveTemplateFromFilters` for sockets should be **`getPublic()`** (or a dedicated `NavbarAndFiltersChanged` DTO), never the command’s persistence result.
 
 **TM resolver.**  
-`ExecutionContext.getStore() ? EC.transactionManager : TransactionManagerFactory.default()`. Added so mailer / languageMiddleware / tests without `runWithContext` would not throw after the V1 sweep. It **violates** “factory defaults come from ExecutionContext.” It is not a Settings-domain concept. Remove when every read/write runs inside request/job context (or tests wrap `runWithContext`).
+`ExecutionContext.getStore() ? EC.transactionManager : TransactionManagerFactory.default()`. Added so mailer / languageMiddleware / tests without `runWithContext` would not throw after the V1 sweep. It **violates** “factory defaults come from ExecutionContext.” It is not a Settings-domain concept. **Remove it.** Production callers that actually run outside request/job context (legacy `tenants.run` loops) must be given a real `ExecutionContext` (`runInJobContext` or HTTP middleware) — that is fixing production, not a factory compatibility shim. Tests wrap `testingEnvironment.runWithContext()`.
+
+#### Tests do not mandate production code
+
+Nothing in production exists to make the current tests pass as they are. If a test needs a particular shape, flow, or method, **change the test**, adapt the assertion, or add a test helper. Do **not** keep or add production branches, fallbacks, aliases, or return types whose reason is “so mailer / languageMiddleware / tests without `runWithContext` would not throw after the V1 sweep.” Even when the resulting production code would still satisfy factory defaults, it is the wrong owner: tests follow the core, the core does not follow tests.
+
+That includes:
+
+- TM / ExecutionContext fallbacks so a spec can call `Factory.default()` after `setUp()` without wrapping context.
+- Keeping `QueryService.get()` / `getDefaultLanguage()` / `omitHidden*` because existing specs import them.
+- Returning a fat settings document from a use case so a controller test can socket the UC output unchanged.
+- AJV (or any other) error-message compatibility in production to match an old `validations[0].message` string.
+
+If a test was taking advantage of a particularity that is gone (mongoose `select: false`, implicit TM, omit-after-read), the test is wrong, not the new boundary.
 
 **`getDefaultLanguage` vs `getDefaultLanguageKey`.**  
 Keep **`SettingsDataSource.getDefaultLanguageKey()`** — that is already the V2 convention (Add/DeleteLanguage, translations, entities, CSV v2, dataviz, IX-adjacent core). **Delete** `SettingsQueryService.getDefaultLanguage()` as a V1 shim. Callers that did `getDefaultLanguage().key` (TaskService, InformationExtraction, preserveSync, csvLoader tests) should call `getDefaultLanguageKey()`. Do **not** standardize on “load the whole settings object and pick `.key`.”
 
 #### TODOs (work queue, no tickets created)
 
-- [ ] **P0 — Inventory every settings return path** (HTTP GET/POST, sockets `updateSettings`, SSR `shapeSettingsForSSR`, sync inbound/outbound, jobs). Table: caller, method, fields present, intended audience. Confirm template mutate/delete vs `SaveSettingsController` socket mismatch.
-- [ ] **P0 — Safe-by-default:** DS `get`/`patch` stay full-row (persistence). Use cases / QueryService **never** return `sync` / vault / other secrets. Delivery adapters must not re-fetch raw DS for sockets. Template mutate/delete emit **public** payload (or a tiny DTO), not UC output.
-- [ ] **P0 — Replace “omit after full read”** with allowlisted `getPublic` / `getForAdmin` and server-only slice methods. Rename away from `hidden`. Decide whether admin POST JSON should include `mailerConfig` (probably yes, for the saving admin only — not on sockets).
-- [ ] **P0 — Projection port:** `read({ languages })`, `read({ features: ['tocGeneration'] })`, `getSyncConfig()`, etc. `languageMiddleware`, `tocService`, and sync **must** use slices. Writes remain patch-of-provided-keys so CSS/JS/`sync` survive. Design JSONB path reads the same way (do not `SELECT document` as the only PG implementation).
-- [ ] **P1 — Zod:** `SaveSettings` / menu-item save / `SetDefaultLanguage` / filter UCs get `InputSchema`. Controllers parse HTTP with the same schema or a thin DTO. Plan what happens to `settingsSchema.ts` + `emitSchemaTypes` / `settingsType.d.ts`.
-- [ ] **P1 — Internal names:** `links` → menu items / navbar (use case, QueryService, DS fields can wait for a mapper). HTTP `/api/settings/links` stays. Do not extract a sync bounded context in this slice; do isolate `sync` on the read port.
-- [ ] **P2 — `ensureLinkIds`:** move to menu-item write path (domain or helper used there), not `SaveSettings` private method.
-- [ ] **P2 — `newNameGeneration`:** Settings flips the flag; templates apply. Event or `ApplyNewNameGeneration` use case. You file the debt issue if we leave a one-line dispatch in Settings.
-- [ ] **P2 — Remove `resolveTransactionManager` fallback** once remaining callers are in EC.
-- [ ] **P3 — One default-language API:** `getDefaultLanguageKey()` only; remove QueryService `getDefaultLanguage()`.
-- [ ] **P3 — `filterTree`:** rename to something like `libraryFilters` / `nestedFilters`; document that create = `SaveSettings({ filters })`. No append UC unless product asks.
+- [x] **P0 — Inventory every settings return path** — table below. Template mutate/delete vs `SaveSettingsController` socket mismatch confirmed (UC blob vs public payload).
+- [x] **P0 — Safe-by-default:** DS `get`/`patch` stay full-row (persistence). Use cases / QueryService **never** return `sync` / vault / other secrets. Delivery adapters must not re-fetch raw DS for sockets. Template mutate/delete emit **public** payload if filters changed; filter UCs return `boolean`.
+- [x] **P0 — Replace “omit after full read”** with allowlisted `getPublic` / `getForAdmin` and server-only slice methods. `hidden` is gone. Admin POST JSON includes `mailerConfig` for the saving admin only — not on sockets.
+- [x] **P0 — Projection port:** `readFields`, `readFeature`, `getSyncConfig()`. `languageMiddleware`, `tocService`, and sync use slices. Writes remain patch-of-provided-keys so CSS/JS/`sync` survive. JSONB path reads should match this port (`document->'languages'`, not only `SELECT document`).
+- [x] **P1 — Zod:** `SaveSettings` / menu-item save / `SetDefaultLanguage` / filter UCs have `InputSchema`. Controllers parse HTTP with the same schema.
+- [x] **P1 — AJV / emit-types:** Deleted `settingsSchema.ts` and generated `settingsType.d.ts`. Types live in `settingsType.ts`. Runtime validation is Zod only.
+- [x] **P1 — Internal names:** menu-item helper + `SaveMenuItemsUseCase`. HTTP `/api/settings/links` stays. `sync` is isolated on `getSyncConfig()`.
+- [x] **P2 — `ensureLinkIds`:** `assignMenuItemIds` on the menu-item write path, not a `SaveSettings` private method.
+- [x] **P2 — `newNameGeneration`:** Settings flips the flag; `TemplateFacade.applyNewNameGeneration` owns the template walk. File the templates ticket separately.
+- [x] **P2 — Remove `resolveTransactionManager` fallback.** Factory uses `ExecutionContext.transactionManager` only. Tests wrap `runWithContext`. Legacy `tenants.run` job loops that read settings use `runInJobContext`.
+- [x] **P3 — One default-language API:** `getDefaultLanguageKey()` only; QueryService `getDefaultLanguage()` is gone.
+- [x] **P3 — `filterTree`:** renamed to `libraryFilters`. Create = `SaveSettings({ filters })`. No append UC.
 
-**Suggested implementation order for the next coding slice:** (1) return/socket inventory + public socket payloads, (2) QueryService allowlists + no omit-on-remember, (3) DS projections for languages / features / sync, (4) Zod on the mutation UCs, (5) menu naming + `ensureLinkIds` move, (6) TM fallback + default-language tidy. `newNameGeneration` in parallel as debt or a small template UC if cheap.
+#### Return-path inventory (2026-08-26)
+
+| Caller | Today | Intended audience | Target |
+| --- | --- | --- | --- |
+| `GET /api/settings` | `getForHttp(isAdmin)` | browser, public vs admin | `getPublic()` / `getForAdmin()` |
+| `POST /api/settings` JSON | UC `omitHidden(applyDefaults(saved))` | saving admin | UC / controller: `pickAdminFields` (mailerConfig yes, sync never) |
+| `POST /api/settings` socket | `getPublicSettingsPayload(saved)` | all connected clients | keep public |
+| `GET /api/settings/links` | `QueryService.get().links` | any authenticated? currently unauthenticated GET | public `links` slice |
+| `POST /api/settings/links` JSON / socket | UC blob / public payload | admin / all clients | admin JSON + public socket |
+| `POST /api/translations/setasdeafult` | UC blob on JSON **and** socket | admin / all clients | admin JSON + **public** socket |
+| Add/Delete language sockets | `QueryService.get()` (omitHidden, includes mailer/CSS) | all clients | `getPublic()` |
+| Template mutate/delete sockets | `UpdateFilterName` / `RemoveTemplateFromFilters` UC output | all clients | `getPublic()` if filters changed; UC returns `boolean` |
+| SSR `entry-server` | `QueryService.get()` then `shapeSettingsForSSR` | HTML / Redux | `getPublic` / `getForAdmin` + tenant feature flags (do not hydrate preserve tokens for non-admin) |
+| Outbound sync `processNamespaces.settings()` | DS `find()` then `{ _id, languages }` | sync peer | `readFields(['languages'])` (Mongo still includes `_id`) |
+| Inbound `MongoSettingsSyncHandler` | DS `find` / `patch` | server | keep full-row persistence |
+| `syncWorker` | DS `find()` then `stored.sync` | server | `getSyncConfig()` |
+| `languageMiddleware` | `QueryService.get()` → `languages` | request | `readFields(['languages'])` |
+| `tocService` | `QueryService.get()` → `features` | job | `readFeature('tocGeneration')` |
+| mailer / contact / OCR / IX / preserve / … | `QueryService.get()` for one field | server | `readFields` / `readFeature` / `getDefaultLanguageKey()` |
 
 ---
 
@@ -156,12 +197,11 @@ HTTP /api/settings*                    Other callers (mailer, IX, templates, …
  Mongo collection `settings`
 ```
 
-- **`SettingsQueryService.get()`** — V1-compatible read: defaults + omit `sync` / `evidencesVault` / `publicFormDestination`.
-- **`SettingsQueryService.getForHttp(isAdmin)`** — public whitelist vs admin (admin re-adds `publicFormDestination` only).
-- **`SettingsDataSource.find()` / `get()` / `patch()`** — persistence; `get()` throws if missing (language UCs); `find()` returns null; `patch()` is a `$set` merge onto the singleton.
-- **Language HTTP** uses `AddLanguageUseCase` / `DeleteLanguageUseCase`, then QueryService for `updateSettings`.
-- **Template HTTP** uses `UpdateFilterNameUseCase` / `RemoveTemplateFromFiltersUseCase`.
-- **Secrets** are stored in Mongo and stripped in QueryService / HTTP, not via mongoose `select: false`.
+- **`SettingsQueryService.getPublic()` / `getForAdmin()`** — allowlisted reads. No `get()`, no omit-after-read.
+- **`SettingsDataSource.find()` / `get()` / `patch()`** — persistence; full row including secrets. `readFields` / `readFeature` / `getSyncConfig()` for opt-in slices. `get()` throws if missing; `find()` returns null; `patch()` is a `$set` merge onto the singleton.
+- **Language HTTP** uses `AddLanguageUseCase` / `DeleteLanguageUseCase`, then `getPublic()` for `updateSettings`.
+- **Template HTTP** uses `UpdateFilterNameUseCase` / `RemoveTemplateFromFiltersUseCase` (boolean); sockets emit `getPublic()` when filters changed.
+- **Secrets** live in Mongo. Nothing above the DS returns them unless the call is explicitly `getSyncConfig()` (or a future destination/vault getter).
 
 ### Public HTTP (must stay)
 
@@ -349,7 +389,7 @@ Same class of risk as translations P12. Notable:
 ### Phase 1 (V2 / Mongo)
 
 1. Expand `SettingsDataSource` + Mongo DS + specs (`save`, full `get`, no mongoose select strings).
-2. Domain invariants (default language, link URLs) — reuse AJV `validateSettings` at the use-case boundary unless a small `Settings` model pays for itself.
+2. Domain invariants (default language, link URLs) — Zod `SaveSettingsInputSchema` / `SaveMenuItemsInputSchema` at the use-case boundary.
 3. `SaveSettings` / `SaveSettingsLinks` / `SetDefaultLanguage` / filter use cases + Menu/Filters translations.
 4. Core HTTP controllers for `/api/settings*`; keep sockets + public payload.
 5. `SettingsSyncHandler` + registry; keep `_id` rewrite and languages-only outbound.
@@ -396,7 +436,7 @@ Same class of risk as translations P12. Notable:
 | Save + Menu/Filters translations | `app/api/settings/settingsTranslations.ts` |
 | Public GET whitelist | `app/api/settings/publicSettings.ts` |
 | HTTP | `app/api/settings/routes.ts` |
-| Shared type / AJV | `app/shared/types/settingsType.d.ts`, `settingsSchema.ts` |
+| Shared Settings types | `app/shared/types/settingsType.ts` |
 | V2 DS + cache | `app/api/core/infrastructure/mongodb/MongoSettingsDataSource.ts`, `CachedMongoSettingsDataSource.ts` |
 | Contract / factory | `app/api/core/application/contracts/SettingsDataSource.ts`, `…/factories/SettingsDataSourceFactory.ts` |
 | Language UCs | `app/api/core/application/AddLanguage.ts`, `DeleteLanguage.ts` |

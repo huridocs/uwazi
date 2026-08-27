@@ -1,6 +1,6 @@
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import type { NextFunction, Request, Response } from 'express';
-import { SettingsQueryServiceFactory } from '#api/core/infrastructure/factories/SettingsQueryServiceFactory.js';
+import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
 import { SaveSettingsUseCaseFactory } from '#api/core/infrastructure/factories/SaveSettingsUseCaseFactory.js';
 import middleware from '../languageMiddleware.js';
 import fixtures from './languageFixtures.js';
@@ -9,6 +9,8 @@ describe('languageMiddleware', () => {
   let req: Request;
   const res: Response = <Response>{};
   let next: NextFunction;
+
+  const runMiddleware = () => testingEnvironment.runWithContext(() => middleware(req, res, next));
 
   const createRequest = (request: Partial<Request>) => <Request>{ ...request };
 
@@ -37,14 +39,14 @@ describe('languageMiddleware', () => {
           locale: 'en',
         },
       });
-      await middleware(req, res, next);
+      await runMiddleware();
       expect(next).toHaveBeenCalledWith(new Error('error'));
     });
   });
 
   describe('when language exists on the config', () => {
     it('should set req.language with content-language', async () => {
-      await middleware(req, res, next);
+      await runMiddleware();
 
       expect(req.language).toBe('es');
       expect(next).toHaveBeenCalled();
@@ -60,7 +62,7 @@ describe('languageMiddleware', () => {
           },
         });
 
-        await middleware(req, res, next);
+        await runMiddleware();
         expect(req.language).toBe('en');
         expect(next).toHaveBeenCalled();
       });
@@ -72,7 +74,7 @@ describe('languageMiddleware', () => {
           //@ts-ignore
           get: (headerName: string) => ({ 'accept-language': 'en-US' })[headerName],
         });
-        await middleware(req, res, next);
+        await runMiddleware();
         expect(req.language).toBe('en');
         expect(next).toHaveBeenCalled();
       });
@@ -86,7 +88,7 @@ describe('languageMiddleware', () => {
         get: (headerName: string) => ({ 'content-language': 'nonExistent' })[headerName],
       });
 
-      await middleware(req, res, next);
+      await runMiddleware();
       expect(req.language).toBe('es');
       expect(next).toHaveBeenCalled();
     });
@@ -94,10 +96,11 @@ describe('languageMiddleware', () => {
 
   describe('public dataviz embed routes', () => {
     it('should prefer ?locale= query param on /api/public/dataviz paths', async () => {
-      const current = await SettingsQueryServiceFactory.default().get();
-      await SaveSettingsUseCaseFactory.default().execute({
-        ...current,
-        languages: [...(current.languages ?? []), { key: 'pt', label: 'Portuguese' }],
+      await testingEnvironment.runWithContext(async () => {
+        const current = await SettingsDataSourceFactory.default().readFields(['languages']);
+        await SaveSettingsUseCaseFactory.default().execute({
+          languages: [...(current?.languages ?? []), { key: 'pt', label: 'Portuguese' }],
+        });
       });
 
       req = createRequest({
@@ -108,7 +111,7 @@ describe('languageMiddleware', () => {
         cookies: { locale: 'en' },
       });
 
-      await middleware(req, res, next);
+      await runMiddleware();
       expect(req.language).toBe('pt');
     });
   });

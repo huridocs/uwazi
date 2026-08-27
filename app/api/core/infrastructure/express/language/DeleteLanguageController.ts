@@ -19,8 +19,8 @@ class DeleteLanguageController extends AbstractController<RequestDto> {
     const { key } = QuerySchema.parse(this.request?.query);
 
     const settingsDS = SettingsDataSourceFactory.default();
-    const currentSettings = await settingsDS.get();
-    const language = currentSettings.languages?.find(l => l.key === key);
+    const currentSettings = await settingsDS.readFields(['languages']);
+    const language = currentSettings?.languages?.find(l => l.key === key);
 
     if (!language || language.installing) {
       this.response
@@ -32,7 +32,7 @@ class DeleteLanguageController extends AbstractController<RequestDto> {
     try {
       await DeleteLanguageUseCaseFactory.default().execute({ key: key as LanguageISO6391 });
 
-      const newSettings = await SettingsQueryServiceFactory.default().get();
+      const newSettings = await SettingsQueryServiceFactory.default().getPublic();
       this.request.sockets.emitToCurrentTenant('updateSettings', newSettings);
       this.request.sockets.emitToCurrentTenant('translationsDelete', key);
 

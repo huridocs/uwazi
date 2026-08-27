@@ -9,7 +9,11 @@ const settingsRoutes = (app: Application) => {
   app.get('/api/settings', GetSettingsController.createHandler());
   app.post('/api/settings', needsAuthorization(), SaveSettingsController.createHandler());
   app.get('/api/settings/links', GetSettingsLinksController.createHandler());
-  app.post('/api/settings/links', needsAuthorization(), SaveSettingsLinksController.createHandler());
+  app.post(
+    '/api/settings/links',
+    needsAuthorization(),
+    SaveSettingsLinksController.createHandler()
+  );
 };
 
 export { settingsRoutes };

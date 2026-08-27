@@ -15,7 +15,8 @@ import { storage } from '#api/files/index.js';
 import { permissionsContext } from '#api/permissions/permissionsContext.js';
 import relationships from '#api/relationships/relationships.js';
 import { ResultsMessage, TaskManager } from '#api/services/tasksmanager/TaskManager.js';
-import { SettingsQueryServiceFactory } from '#api/core/infrastructure/factories/SettingsQueryServiceFactory.js';
+import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
+import { runInJobContext } from '#api/services/tasksmanager/runInJobContext.js';
 import { emitToSession } from '#api/socketio/setupSockets.js';
 import { tenants } from '#api/tenants/tenantContext.js';
 import { UsersDirectoryFactory } from '#api/core/infrastructure/factories/UsersDirectoryFactory.js';
@@ -39,8 +40,10 @@ interface OcrSettings {
 }
 
 const isEnabled = async () => {
-  const settingsObject = await SettingsQueryServiceFactory.default().get();
-  return Boolean(settingsObject.features?.ocr?.url) && Boolean(settingsObject.ocrServiceEnabled);
+  const settingsDS = SettingsDataSourceFactory.default();
+  const ocr = await settingsDS.readFeature('ocr');
+  const slice = await settingsDS.readFields(['ocrServiceEnabled']);
+  return Boolean(ocr?.url) && Boolean(slice?.ocrServiceEnabled);
 };
 
 const validateNotInQueue = async (file: EnforcedWithId<FileType>) => {
@@ -58,8 +61,7 @@ const validateFileIsDocument = (file: FileType) => {
 };
 
 const getSettings = async (): Promise<OcrSettings> => {
-  const settingsValues = await SettingsQueryServiceFactory.default().get();
-  const ocrServiceConfig = settingsValues?.features?.ocr;
+  const ocrServiceConfig = await SettingsDataSourceFactory.default().readFeature('ocr');
 
   if (!ocrServiceConfig) {
     throw Error('Ocr settings are missing from the database (settings.features.ocr).');
@@ -193,7 +195,7 @@ const handleOcrError = async (
 };
 
 const processResults = async (message: ResultsMessage): Promise<void> => {
-  await tenants.run(async () => {
+  await runInJobContext(message.tenant, async () => {
     try {
       const originalFile = (
         await FilesDAOFactory.default().getByFilename(message.params!.filename)
@@ -216,7 +218,7 @@ const processResults = async (message: ResultsMessage): Promise<void> => {
     } catch (e) {
       handleError(e);
     }
-  }, message.tenant);
+  });
 };
 
 const validateLanguage = async (language: string, ocrSettings?: { url: string }) => {

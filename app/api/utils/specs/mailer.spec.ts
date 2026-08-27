@@ -1,5 +1,5 @@
 import mailer from '#api/utils/mailer.js';
-import { SettingsQueryServiceFactory } from '#api/core/infrastructure/factories/SettingsQueryServiceFactory.js';
+import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
 import Mail from 'nodemailer/lib/mailer';
 import { testingTenants } from '#api/utils/testingTenants.js';
 import { SentMessageInfo } from 'nodemailer';
@@ -9,8 +9,8 @@ describe('mailer', () => {
   const ORIGINAL_ENV = process.env;
   beforeEach(() => {
     testingTenants.mockCurrentTenant({ name: 'default' });
-    jest.spyOn(SettingsQueryServiceFactory, 'default').mockReturnValue({
-      get: async () => ({ mailerConfig: '{}' }),
+    jest.spyOn(SettingsDataSourceFactory, 'default').mockReturnValue({
+      readFields: async () => ({ mailerConfig: '{}' }),
     } as any);
     process.env = { ...ORIGINAL_ENV };
   });

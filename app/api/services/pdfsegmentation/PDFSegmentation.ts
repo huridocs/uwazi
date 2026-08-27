@@ -9,7 +9,8 @@ import { ArrayUtils } from '#api/common.v2/utils/Array.js';
 import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
 import { Logger } from '#api/core/libs/logger/contracts/Logger.js';
 import { ResultsMessage, TaskManager } from '#api/services/tasksmanager/TaskManager.js';
-import { SettingsQueryServiceFactory } from '#api/core/infrastructure/factories/SettingsQueryServiceFactory.js';
+import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
+import { runInJobContext } from '#api/services/tasksmanager/runInJobContext.js';
 import { tenants } from '#api/tenants/tenantContext.js';
 import { handleError } from '#api/utils/index.js';
 import request from '#shared/JSONRequest.js';
@@ -243,9 +244,9 @@ class PDFSegmentation {
     try {
       await Promise.all(
         Object.keys(tenants.tenants).map(async tenant => {
-          await tenants.run(async () => {
-            const settingsValues = await SettingsQueryServiceFactory.default().get();
-            const segmentationServiceConfig = settingsValues?.features?.segmentation;
+          await runInJobContext(tenant, async () => {
+            const segmentationServiceConfig =
+              await SettingsDataSourceFactory.default().readFeature('segmentation');
 
             if (!segmentationServiceConfig) {
               return;
@@ -273,7 +274,7 @@ class PDFSegmentation {
               uploadConcurrency: this.uploadConcurrency,
               durationMs: Date.now() - tenantStart,
             });
-          }, tenant);
+          });
         })
       );
     } catch (err) {

@@ -1,4 +1,4 @@
-import { SettingsQueryServiceFactory } from '#api/core/infrastructure/factories/SettingsQueryServiceFactory.js';
+import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
 import templates from '#api/core/v1_layer/templates/index.js';
 import { objectIndex } from '#shared/data_utils/objectIndex.js';
 import {
@@ -118,7 +118,7 @@ export const postProcessCurrentValues = (
 
 // eslint-disable-next-line max-statements
 export const updateStates = async (query: Record<string, unknown>) => {
-  const { languages } = await SettingsQueryServiceFactory.default().get();
+  const { languages } = (await SettingsDataSourceFactory.default().readFields(['languages'])) ?? {};
   const propertyTypes = objectIndex(
     (await templates.get()).map(t => t.properties || []).flat(),
     p => p.name,

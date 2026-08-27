@@ -71,7 +71,6 @@ import { IXTaskService } from '#api/services/informationextraction/TaskService.j
 import { TrainModelForPDF } from '#api/services/informationextraction/TrainModelForPDF.js';
 import { TrainModelForText } from '#api/services/informationextraction/TrainModelForText.js';
 import { IXTrainModelJob } from '#api/services/informationextraction/TrainModelJob.js';
-import { SettingsQueryServiceFactory } from '#api/core/infrastructure/factories/SettingsQueryServiceFactory.js';
 import { AcceptSuggestionsFactory } from '#api/suggestions/infrastructure/AcceptSuggestionsFactory.js';
 import { AcceptSuggestionsJob } from '#api/suggestions/jobs/AcceptSuggestionsJob.js';
 import { CreateBlankStateSuggestionsJob } from '#api/suggestions/jobs/CreateBlankStateSuggestionsJob.js';
@@ -182,8 +181,9 @@ export function registerJobs(register: Register) {
 
   const informationExtraction = new InformationExtraction();
   register(IXTrainModelJob, async (tenantName: string) => {
-    const settingsValues = await SettingsQueryServiceFactory.default().get();
-    const serviceUrl = settingsValues.features?.metadataExtraction?.url;
+    const metadataExtraction =
+      await SettingsDataSourceFactory.default().readFeature('metadataExtraction');
+    const serviceUrl = metadataExtraction?.url;
     const iXTaskService = new IXTaskService({
       tenantName,
       taskManager: informationExtraction.taskManager,

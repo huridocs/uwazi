@@ -1,16 +1,21 @@
+import { z } from 'zod';
 import { AbstractUseCase } from '../libs/UseCase.js';
 import { ObjectIdSchema } from '#shared/types/commonTypes.js';
-import { Settings } from '#shared/types/settingsType.js';
 import { SettingsDataSource } from './contracts/SettingsDataSource.js';
 import { SaveSettingsUseCase } from './SaveSettings.js';
-import { renameFilter } from './settings/filterTree.js';
+import { renameFilter } from './settings/libraryFilters.js';
+
+const InputSchema = z.object({
+  filterId: z.string(),
+  name: z.string(),
+});
 
 type Input = {
   filterId: ObjectIdSchema;
   name: string;
 };
 
-type Output = Settings | undefined;
+type Output = boolean;
 
 type Deps = {
   settingsDS: SettingsDataSource;
@@ -18,13 +23,17 @@ type Deps = {
 };
 
 class UpdateFilterNameUseCase extends AbstractUseCase<Input, Output, Deps> {
-  async execute({ filterId, name }: Input): Promise<Output> {
+  static InputSchema = InputSchema;
+
+  async execute(raw: Input): Promise<Output> {
+    const { filterId, name } = UpdateFilterNameUseCase.InputSchema.parse(raw);
     const current = (await this.deps.settingsDS.find()) ?? {};
     const filters = renameFilter(current.filters || [], filterId, name);
     if (!filters) {
-      return undefined;
+      return false;
     }
-    return this.deps.saveSettings.execute({ filters });
+    await this.deps.saveSettings.execute({ filters });
+    return true;
   }
 }
 

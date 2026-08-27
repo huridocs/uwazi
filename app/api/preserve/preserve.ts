@@ -1,5 +1,5 @@
 import { WithId } from '#api/odm/index.js';
-import { SettingsQueryServiceFactory } from '#api/core/infrastructure/factories/SettingsQueryServiceFactory.js';
+import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
 import { SaveSettingsUseCaseFactory } from '#api/core/infrastructure/factories/SaveSettingsUseCaseFactory.js';
 import request from '#shared/JSONRequest.js';
 import createError from '#api/utils/Error.js';
@@ -14,7 +14,7 @@ import { MongoThesaurusMapper } from '#api/core/infrastructure/mongodb/thesauri/
 
 export const Preserve = {
   async setup(language: string, user: User) {
-    const currentSettings: any = await SettingsQueryServiceFactory.default().get();
+    const currentSettings = (await SettingsDataSourceFactory.default().find()) ?? {};
     const preserve: PreserveConfig | undefined = currentSettings?.features?.preserve;
 
     if (!preserve) {
@@ -30,7 +30,6 @@ export const Preserve = {
     userConfig = await this.createUserConfig(preserve, language, user);
 
     await SaveSettingsUseCaseFactory.default().execute({
-      ...currentSettings,
       features: {
         ...currentSettings.features,
         preserve: {

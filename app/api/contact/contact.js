@@ -1,9 +1,14 @@
 import mailer from '#api/utils/mailer.js';
-import { SettingsQueryServiceFactory } from '#api/core/infrastructure/factories/SettingsQueryServiceFactory.js';
+import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
 
 export default {
   async sendMessage({ email, name, message }) {
-    const siteSettings = await SettingsQueryServiceFactory.default().get();
+    const siteSettings =
+      (await SettingsDataSourceFactory.default().readFields([
+        'contactEmail',
+        'senderEmail',
+        'site_name',
+      ])) ?? {};
     const emailSender = mailer.createSenderDetails(siteSettings);
     const mailOptions = {
       from: emailSender,

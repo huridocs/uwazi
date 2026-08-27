@@ -200,7 +200,7 @@ class ProcessNamespaces {
 
   private async settings() {
     const data = ensure<WithId<Settings>>(
-      (await SettingsDataSourceFactory.default().find()) as WithId<Settings> | null,
+      await SettingsDataSourceFactory.default().readFields(['languages']),
       noDataFound
     );
     return { data: { _id: data._id, languages: data.languages } };

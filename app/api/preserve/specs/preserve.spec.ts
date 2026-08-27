@@ -1,5 +1,5 @@
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-import { SettingsQueryServiceFactory } from '#api/core/infrastructure/factories/SettingsQueryServiceFactory.js';
+import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
 import templates from '#api/core/v1_layer/templates/index.js';
 import thesauri from '#api/core/v1_layer/thesauri/index.js';
 import request from '#shared/JSONRequest.js';
@@ -29,7 +29,9 @@ describe('Preserve', () => {
     describe('pass', () => {
       it('should create a thesauri, template and a config when no config is found.', async () => {
         await testingEnvironment.runWithContext(async () => Preserve.setup('en', user));
-        const savedSettings: any = await SettingsQueryServiceFactory.default().get();
+        const savedSettings: any = await testingEnvironment.runWithContext(async () =>
+          SettingsDataSourceFactory.default().find()
+        );
         const configs: PreserveConfig['config'] = savedSettings.features.preserve.config;
         const config = configs.find(conf => conf.user!.toString() === user._id.toString());
         expect(config?.template).toBeDefined();
@@ -59,7 +61,9 @@ describe('Preserve', () => {
         await testingEnvironment.runWithContext(async () => Preserve.setup('en', { _id: userId2 }));
         const templatesAfterSetup = await templates.get();
         expect(savedTemplates.length).toEqual(templatesAfterSetup.length);
-        const savedSettings: any = await SettingsQueryServiceFactory.default().get();
+        const savedSettings: any = await testingEnvironment.runWithContext(async () =>
+          SettingsDataSourceFactory.default().find()
+        );
         const savedConfigs = savedSettings.features.preserve.config;
         expect(savedConfigs[0].template).toEqual(savedConfigs[1].template);
       });
@@ -75,7 +79,9 @@ describe('Preserve', () => {
         ];
         await testingEnvironment.setUp({ ...fixtures, settings: newSettings }, 'preserve-index');
 
-        await expect(Preserve.setup('en', { _id: 'someid' })).rejects.toMatchObject({
+        await expect(
+          testingEnvironment.runWithContext(async () => Preserve.setup('en', { _id: 'someid' }))
+        ).rejects.toMatchObject({
           message: 'Preserve configuration not found',
           code: 402,
         });

@@ -6,7 +6,11 @@ import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { setUpApp } from '#api/utils/testingRoutes.js';
 import { UserRole } from '#shared/types/userSchema.js';
 import { UserSchema } from '#shared/types/userType.js';
-import { expectedLinks, linkFixtures, newLinks } from '../../../../application/settings/specs/fixtures.js';
+import {
+  expectedLinks,
+  linkFixtures,
+  newLinks,
+} from '../../../../application/settings/specs/fixtures.js';
 import { settingsRoutes } from '../routes.js';
 import { SettingsQueryServiceFactory } from '#api/core/infrastructure/factories/SettingsQueryServiceFactory.js';
 
@@ -73,7 +77,12 @@ describe('api/settings/links', () => {
       currentUser = adminUser;
       const response = await request(app).post('/api/settings/links').send(newLinks);
       expect(response.status).toEqual(200);
-      const storedLinks = (await SettingsQueryServiceFactory.default().get()).links || [];
+      const storedLinks =
+        (
+          await testingEnvironment.runWithContext(async () =>
+            SettingsQueryServiceFactory.default().getPublic()
+          )
+        ).links || [];
       expect(storedLinks).toEqual(
         newLinks.map(link =>
           link.sublinks?.length
@@ -96,8 +105,8 @@ describe('api/settings/links', () => {
           const { title, ...rest } = newLinks[0];
           return [rest];
         },
-        expectedFirstMessage: "must have required property 'title'",
-        expectedPath: '/links/0',
+        expectedFirstMessage: 'Required',
+        expectedPath: 'links.0.title',
       },
       {
         case: 'missing type',
@@ -105,8 +114,8 @@ describe('api/settings/links', () => {
           const { type, ...rest } = newLinks[0];
           return [rest];
         },
-        expectedFirstMessage: "must have required property 'type'",
-        expectedPath: '/links/0',
+        expectedFirstMessage: 'Required',
+        expectedPath: 'links.0.type',
       },
       {
         case: 'unexpected type',
@@ -114,8 +123,9 @@ describe('api/settings/links', () => {
           const { type, ...rest } = newLinks[0];
           return [{ ...rest, type: 'unexpected' }];
         },
-        expectedFirstMessage: 'must be equal to one of the allowed values',
-        expectedPath: '/links/0/type',
+        expectedFirstMessage:
+          "Invalid enum value. Expected 'link' | 'group', received 'unexpected'",
+        expectedPath: 'links.0.type',
       },
       {
         case: 'that links have url',
@@ -124,13 +134,13 @@ describe('api/settings/links', () => {
           return [{ ...rest }];
         },
         expectedFirstMessage: 'Links of type link should have url',
-        expectedPath: '/links/0',
+        expectedPath: 'links.0',
       },
       {
         case: "that groups don't have url",
         getInput: () => [{ ...newLinks[1], url: 'unexpected' }],
         expectedFirstMessage: 'Links of type group should not have url',
-        expectedPath: '/links/0',
+        expectedPath: 'links.0',
       },
       {
         case: "that links don't have sublinks",
@@ -141,13 +151,14 @@ describe('api/settings/links', () => {
               {
                 title: 'unexpected',
                 url: 'page/unexpectedid/unexpected',
+                type: 'link',
                 localId: 'unexpectedLocalId1Id',
               },
             ],
           },
         ],
         expectedFirstMessage: 'Links of type link should not have sublinks',
-        expectedPath: '/links/0',
+        expectedPath: 'links.0',
       },
       {
         case: 'that groups have sublinks',
@@ -156,7 +167,7 @@ describe('api/settings/links', () => {
           return [rest];
         },
         expectedFirstMessage: 'Links of type group should have sublinks',
-        expectedPath: '/links/0',
+        expectedPath: 'links.0',
       },
       {
         case: 'missing sublink title',
@@ -165,8 +176,8 @@ describe('api/settings/links', () => {
           const { title, ...sublink } = sublinks![0];
           return [{ ...rest, sublinks: [{ ...sublink }] }];
         },
-        expectedFirstMessage: "must have required property 'title'",
-        expectedPath: '/links/0/sublinks/0',
+        expectedFirstMessage: 'Required',
+        expectedPath: 'links.0.sublinks.0.title',
       },
       {
         case: 'missing sublink url',
@@ -175,8 +186,8 @@ describe('api/settings/links', () => {
           const { url, ...sublink } = sublinks![0];
           return [{ ...rest, sublinks: [{ ...sublink }] }];
         },
-        expectedFirstMessage: "must have required property 'url'",
-        expectedPath: '/links/0/sublinks/0',
+        expectedFirstMessage: 'Required',
+        expectedPath: 'links.0.sublinks.0.url',
       },
       {
         case: 'missing sublink type',
@@ -185,8 +196,8 @@ describe('api/settings/links', () => {
           const { type, ...sublink } = sublinks![0];
           return [{ ...rest, sublinks: [{ ...sublink }] }];
         },
-        expectedFirstMessage: "must have required property 'type'",
-        expectedPath: '/links/0/sublinks/0',
+        expectedFirstMessage: 'Invalid literal value, expected "link"',
+        expectedPath: 'links.0.sublinks.0.type',
       },
       {
         case: 'unexpected sublink type',
@@ -195,8 +206,8 @@ describe('api/settings/links', () => {
           const { type, ...sublink } = sublinks![0];
           return [{ ...rest, sublinks: [{ ...sublink, type: 'unexpected' }] }];
         },
-        expectedFirstMessage: 'must be equal to one of the allowed values',
-        expectedPath: '/links/0/sublinks/0/type',
+        expectedFirstMessage: 'Invalid literal value, expected "link"',
+        expectedPath: 'links.0.sublinks.0.type',
       },
     ])('should validate $case', async ({ getInput, expectedFirstMessage, expectedPath }) => {
       currentUser = adminUser;

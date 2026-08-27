@@ -42,16 +42,12 @@ export class MongoSettingsDataSource
   }
 
   async getInstalledLanguages(): Promise<LanguagesListSchema> {
-    const settings = await this.readSettings();
-    if (!settings?.languages) {
+    const languages = await this.readLanguages();
+    if (!languages) {
       return [];
     }
 
-    if (!settings?.languages) {
-      throw new Error('Settings not found or settings do not have languages configured');
-    }
-
-    return settings.languages.map(
+    return languages.map(
       language =>
         ({
           ...LanguageUtils.fromISO639_1(language.key),
@@ -64,15 +60,39 @@ export class MongoSettingsDataSource
     return this.getCollection().findOne({});
   }
 
+  async readFields<K extends keyof SettingsType>(
+    fields: readonly K[]
+  ): Promise<(Pick<SettingsType, K> & { _id?: SettingsType['_id'] }) | null> {
+    const projection = Object.fromEntries(fields.map(field => [field, 1])) as Record<string, 1>;
+    return this.getCollection().findOne({}, { projection });
+  }
+
+  async readFeature<K extends keyof NonNullable<SettingsType['features']>>(
+    name: K
+  ): Promise<NonNullable<SettingsType['features']>[K] | undefined> {
+    const settings = await this.getCollection().findOne(
+      {},
+      { projection: { [`features.${String(name)}`]: 1 } }
+    );
+    return settings?.features?.[name];
+  }
+
+  async getSyncConfig(): Promise<SettingsType['sync']> {
+    const settings = await this.getCollection().findOne({}, { projection: { sync: 1 } });
+    return settings?.sync;
+  }
+
   async find(): Promise<SettingsType | null> {
     return this.readSettings();
   }
 
   async patch(partial: SettingsType): Promise<SettingsType> {
     const current = await this.find();
-    const { _id: incomingId, __v: _version, ...fields } = this.normalizeForMongo(
-      partial
-    ) as SettingsType & { __v?: number };
+    const {
+      _id: incomingId,
+      __v: _version,
+      ...fields
+    } = this.normalizeForMongo(partial) as SettingsType & { __v?: number };
 
     if (current?._id) {
       if (Object.keys(fields).length) {
@@ -140,7 +160,8 @@ export class MongoSettingsDataSource
   }
 
   protected async readLanguages(): Promise<SettingsType['languages']> {
-    return (await this.readSettings())?.languages;
+    const settings = await this.getCollection().findOne({}, { projection: { languages: 1 } });
+    return settings?.languages;
   }
 
   async getLanguageKeys() {
@@ -158,20 +179,21 @@ export class MongoSettingsDataSource
   }
 
   async readNewRelationshipsAllowed(): Promise<boolean> {
-    const settings = await this.readSettings();
-    return !!settings?.features?.newRelationships;
+    return Boolean(await this.readFeature('newRelationships'));
   }
 
   async readFilterUnauthorizedRelated(): Promise<boolean> {
-    const settings = await this.readSettings();
+    const settings = await this.getCollection().findOne(
+      {},
+      { projection: { filterUnauthorizedRelated: 1 } }
+    );
     return !!settings?.filterUnauthorizedRelated;
   }
 
   async getNewRelationshipsConfiguration(): Promise<
     Exclude<Partial<Required<SettingsType>['features']['newRelationships']>, boolean | undefined>
   > {
-    const settings = await this.readSettings();
-    const featureConfiguration = settings?.features?.newRelationships;
+    const featureConfiguration = await this.readFeature('newRelationships');
 
     if (typeof featureConfiguration === 'boolean' || !featureConfiguration) {
       return {};

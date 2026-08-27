@@ -2,19 +2,24 @@ import { TestUtils } from '#api/common.v2/utils/Test.js';
 import { TranslationsService } from '#api/core/application/translation/TranslationsService.js';
 import { TranslationsServiceFactory } from '#api/core/infrastructure/factories/TranslationsServiceFactory.js';
 import { SaveSettingsUseCaseFactory } from '#api/core/infrastructure/factories/SaveSettingsUseCaseFactory.js';
-import { SaveSettingsLinksUseCaseFactory } from '#api/core/infrastructure/factories/SaveSettingsLinksUseCaseFactory.js';
+import { SaveMenuItemsUseCaseFactory } from '#api/core/infrastructure/factories/SaveMenuItemsUseCaseFactory.js';
 import { SetDefaultLanguageUseCaseFactory } from '#api/core/infrastructure/factories/SetDefaultLanguageUseCaseFactory.js';
 import { SettingsQueryServiceFactory } from '#api/core/infrastructure/factories/SettingsQueryServiceFactory.js';
 import { RemoveTemplateFromFiltersUseCaseFactory } from '#api/core/infrastructure/factories/RemoveTemplateFromFiltersUseCaseFactory.js';
 import { UpdateFilterNameUseCaseFactory } from '#api/core/infrastructure/factories/UpdateFilterNameUseCaseFactory.js';
 import db from '#api/utils/testing_db.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-import { Settings } from '#shared/types/settingsType.js';
+import { SaveSettingsInput } from '../../SaveSettings.js';
 import fixtures, { linkFixtures, newLinks } from './fixtures.js';
 
-const saveSettings = async (input: Settings) =>
-  SaveSettingsUseCaseFactory.default().execute(input);
-const getSettings = async () => SettingsQueryServiceFactory.default().get();
+const saveSettings = async (input: SaveSettingsInput) =>
+  testingEnvironment.runWithContext(async () =>
+    SaveSettingsUseCaseFactory.default().execute(input)
+  );
+const getSettings = async () =>
+  testingEnvironment.runWithContext(async () =>
+    SettingsQueryServiceFactory.default().getForAdmin()
+  );
 
 describe('settings', () => {
   let updateContextExecute: jest.Mock;
@@ -226,7 +231,7 @@ describe('settings', () => {
 
     describe('when there are filter groups', () => {
       it('should create translations for them', async () => {
-        const config: Settings = {
+        const config: SaveSettingsInput = {
           site_name: 'My collection',
           filters: [
             { id: '1', name: 'Judge' },
@@ -277,19 +282,36 @@ describe('settings', () => {
     });
   });
 
-  describe('get()', () => {
+  describe('getPublic / getForAdmin()', () => {
     describe('if there is no settings on the DB', () => {
-      it('should return an empty object', async () => {
+      it('should return the public payload with tenant flags only', async () => {
         await db.clear(['settings']);
 
-        const result = await getSettings();
-        expect(result).toEqual({});
+        const result = await testingEnvironment.runWithContext(async () =>
+          SettingsQueryServiceFactory.default().getPublic()
+        );
+        expect(result.site_name).toBeUndefined();
+        expect(result.mailerConfig).toBeUndefined();
+        expect(result).toEqual(
+          expect.objectContaining({ themeCustomization: expect.any(Boolean) })
+        );
       });
     });
 
-    it('should not return private values', async () => {
-      const values = await getSettings();
+    it('should not return secrets on getPublic', async () => {
+      const values = await testingEnvironment.runWithContext(async () =>
+        SettingsQueryServiceFactory.default().getPublic()
+      );
       expect(values.publicFormDestination).not.toBeDefined();
+      expect(values.mailerConfig).not.toBeDefined();
+      expect(values).not.toHaveProperty('sync');
+    });
+
+    it('should include admin-only fields on getForAdmin but never sync', async () => {
+      const values = await getSettings();
+      expect(values.publicFormDestination).toBe('http://example.com/submit');
+      expect(values.mailerConfig).toBeDefined();
+      expect(values.sync).not.toBeDefined();
     });
 
     describe('if there is settings with no map starting point on the DB', () => {
@@ -312,7 +334,9 @@ describe('settings', () => {
 
   describe('setDefaultLanguage()', () => {
     it('should save the settings with the new default language', async () => {
-      await SetDefaultLanguageUseCaseFactory.default().execute({ key: 'en' });
+      await testingEnvironment.runWithContext(async () =>
+        SetDefaultLanguageUseCaseFactory.default().execute({ key: 'en' })
+      );
       const result = await getSettings();
       expect(result.languages?.[1].key).toBe('en');
       expect(result.languages?.[1].default).toBe(true);
@@ -327,32 +351,37 @@ describe('settings', () => {
           { id: 'axz', name: 'Group', items: [{ id: '123', name: 'Template' }] },
         ],
       });
-      await RemoveTemplateFromFiltersUseCaseFactory.default().execute({ templateId: '123' });
-      expect((await getSettings()).filters).toEqual([
-        { id: 'axz', name: 'Group', items: [] },
-      ]);
+      await testingEnvironment.runWithContext(async () =>
+        RemoveTemplateFromFiltersUseCaseFactory.default().execute({ templateId: '123' })
+      );
+      expect((await getSettings()).filters).toEqual([{ id: 'axz', name: 'Group', items: [] }]);
     });
   });
 
   describe('updateFilterName', () => {
     it('should update a filter name', async () => {
       await saveSettings({ filters: [{ id: '123', name: 'Batman' }] });
-      const updatedFilter = await UpdateFilterNameUseCaseFactory.default().execute({
-        filterId: '123',
-        name: 'The dark knight',
-      });
+      const updated = await testingEnvironment.runWithContext(async () =>
+        UpdateFilterNameUseCaseFactory.default().execute({
+          filterId: '123',
+          name: 'The dark knight',
+        })
+      );
 
-      expect(updatedFilter?.filters).toEqual([{ id: '123', name: 'The dark knight' }]);
+      expect(updated).toBe(true);
+      expect((await getSettings()).filters).toEqual([{ id: '123', name: 'The dark knight' }]);
     });
 
     it('should do nothing when filter does not exist', async () => {
       await saveSettings({ filters: [{ id: '123', name: 'Batman' }] });
-      const updatedFilter = await UpdateFilterNameUseCaseFactory.default().execute({
-        filterId: '321',
-        name: 'Filter not present',
-      });
+      const updated = await testingEnvironment.runWithContext(async () =>
+        UpdateFilterNameUseCaseFactory.default().execute({
+          filterId: '321',
+          name: 'Filter not present',
+        })
+      );
 
-      expect(updatedFilter).toBeUndefined();
+      expect(updated).toBe(false);
       expect((await getSettings()).filters).toEqual([{ id: '123', name: 'Batman' }]);
     });
   });
@@ -368,7 +397,9 @@ describe('settings', () => {
   describe('saveLinks', () => {
     it('should save the links', async () => {
       await testingEnvironment.setUp(fixtures);
-      await SaveSettingsLinksUseCaseFactory.default().execute({ links: newLinks });
+      await testingEnvironment.runWithContext(async () =>
+        SaveMenuItemsUseCaseFactory.default().execute({ links: newLinks })
+      );
       const result = (await getSettings()).links || [];
       expect(result).toEqual(
         newLinks.map(link =>

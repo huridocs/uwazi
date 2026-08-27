@@ -1,14 +1,14 @@
-import { SaveSettingsLinksUseCase } from '#api/core/application/SaveSettingsLinks.js';
+import { SaveMenuItemsUseCase } from '#api/core/application/SaveMenuItems.js';
 import { TransactionManagerFactory } from './TransactionManagerFactory.js';
 import { SaveSettingsUseCaseFactory } from './SaveSettingsUseCaseFactory.js';
 
-class SaveSettingsLinksUseCaseFactory {
-  static default(): SaveSettingsLinksUseCase {
-    return new SaveSettingsLinksUseCase({
+class SaveMenuItemsUseCaseFactory {
+  static default(): SaveMenuItemsUseCase {
+    return new SaveMenuItemsUseCase({
       transactionManager: TransactionManagerFactory.default(),
       saveSettings: SaveSettingsUseCaseFactory.default(),
     });
   }
 }
 
-export { SaveSettingsLinksUseCaseFactory };
+export { SaveMenuItemsUseCaseFactory };

@@ -2,7 +2,7 @@ import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import templates from '#api/core/v1_layer/templates/index.js';
 import { createError } from '#api/utils/index.js';
 import { PagesDataSourceFactory } from '#api/pages.v2/infrastructure/factories/PagesDataSourceFactory.js';
-import { SettingsQueryServiceFactory } from '#api/core/infrastructure/factories/SettingsQueryServiceFactory.js';
+import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
 import pagesService from './pagesService.js';
 import { toLegacyHttpError } from './legacyHttpErrors.js';
 
@@ -52,7 +52,8 @@ export default {
   },
 
   async addLanguage(language: string) {
-    const { languages } = await SettingsQueryServiceFactory.default().get();
+    const languages = (await SettingsDataSourceFactory.default().readFields(['languages']))
+      ?.languages;
     const defaultLanguage = languages?.find(l => l.default)?.key ?? 'en';
     return withLegacyErrors(
       pagesService.addLanguage(language as LanguageISO6391, defaultLanguage as LanguageISO6391)

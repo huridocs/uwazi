@@ -95,6 +95,29 @@ describe('MongoSettingsDataSource', () => {
       expect(await sut.find()).toBeNull();
     });
 
+    it('readFields() should return only the requested keys', async () => {
+      const sut = createSut();
+      const slice = await sut.readFields(['languages']);
+      expect(slice?.languages?.map(l => l.key)).toEqual(['en', 'es']);
+      expect((slice as { site_name?: string } | null)?.site_name).toBeUndefined();
+    });
+
+    it('getSyncConfig() should return only the sync slice', async () => {
+      await testingEnvironment.db.getCollection('settings')!.updateOne(
+        {},
+        {
+          $set: {
+            site_name: 'Should not be needed',
+            sync: [{ name: 'peer', url: 'http://a', username: 'u', password: 'p', config: {} }],
+          },
+        }
+      );
+      const sut = createSut();
+      expect(await sut.getSyncConfig()).toEqual([
+        expect.objectContaining({ name: 'peer', url: 'http://a' }),
+      ]);
+    });
+
     it('should merge incoming fields onto the existing singleton', async () => {
       const sut = createSut();
       await sut.patch({ site_name: 'Patched collection' });

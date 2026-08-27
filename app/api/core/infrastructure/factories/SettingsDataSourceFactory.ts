@@ -5,28 +5,23 @@ import { SettingsDataSource } from '#api/core/application/contracts/SettingsData
 import { MongoSettingsDataSource } from '../mongodb/MongoSettingsDataSource.js';
 import { CachedMongoSettingsDataSource } from '../mongodb/CachedMongoSettingsDataSource.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
-import { TransactionManagerFactory } from './TransactionManagerFactory.js';
 
 type Overrides = { transactionManager?: TransactionManager };
-
-const resolveTransactionManager = (overrides?: Overrides): MongoTransactionManager =>
-  (overrides?.transactionManager ??
-    (ExecutionContext.getStore()
-      ? ExecutionContext.transactionManager
-      : TransactionManagerFactory.default())) as MongoTransactionManager;
 
 export class SettingsDataSourceFactory {
   static default(overrides?: Overrides): SettingsDataSource {
     return new MongoSettingsDataSource({
       db: getConnection(),
-      transactionManager: resolveTransactionManager(overrides),
+      transactionManager: (overrides?.transactionManager ??
+        ExecutionContext.transactionManager) as MongoTransactionManager,
     });
   }
 
   static cached(overrides?: Overrides): SettingsDataSource {
     return new CachedMongoSettingsDataSource({
       db: getConnection(),
-      transactionManager: resolveTransactionManager(overrides),
+      transactionManager: (overrides?.transactionManager ??
+        ExecutionContext.transactionManager) as MongoTransactionManager,
     });
   }
 }

@@ -1,13 +1,12 @@
 import { AbstractController } from '#api/common.v2/infrastructure/AbstractController.js';
-import { SaveSettingsLinksUseCaseFactory } from '#api/core/infrastructure/factories/SaveSettingsLinksUseCaseFactory.js';
+import { SaveMenuItemsUseCaseFactory } from '#api/core/infrastructure/factories/SaveMenuItemsUseCaseFactory.js';
+import { SaveMenuItemsUseCase } from '#api/core/application/SaveMenuItems.js';
 import { getPublicSettingsPayload } from '#api/core/application/settings/publicSettings.js';
-import { Settings } from '#shared/types/settingsType.js';
 
 class SaveSettingsLinksController extends AbstractController {
   protected async handle(): Promise<void> {
-    const saved = await SaveSettingsLinksUseCaseFactory.default().execute({
-      links: this.request.body as NonNullable<Settings['links']>,
-    });
+    const { links } = SaveMenuItemsUseCase.InputSchema.parse({ links: this.request.body });
+    const saved = await SaveMenuItemsUseCaseFactory.default().execute({ links });
     this.request.sockets.emitToCurrentTenant('updateSettings', getPublicSettingsPayload(saved));
     this.response.json(saved);
   }

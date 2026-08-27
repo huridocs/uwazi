@@ -4,7 +4,6 @@ import fetchMock from 'fetch-mock';
 import { Readable } from 'stream';
 import { files, storage } from '#api/files/index.js';
 import { tenants } from '#api/tenants/tenantContext.js';
-import { SettingsQueryServiceFactory } from '#api/core/infrastructure/factories/SettingsQueryServiceFactory.js';
 import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
 import { FilesDAOFactory } from '#api/core/infrastructure/factories/FilesDAOFactory.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
@@ -85,6 +84,11 @@ describe('OcrManager', () => {
 
     ocrManager = new OcrManager();
     ocrManager.start();
+    const originalAddToQueue = ocrManager.addToQueue.bind(ocrManager);
+    ocrManager.addToQueue = (async (...args: Parameters<OcrManager['addToQueue']>) =>
+      testingEnvironment.runWithContext(async () =>
+        originalAddToQueue(...args)
+      )) as OcrManager['addToQueue'];
   });
 
   afterEach(async () => {
@@ -250,8 +254,12 @@ describe('OcrManager', () => {
     });
 
     it('should throw an error when settings are missing from the database', async () => {
-      const oldSettings = await SettingsQueryServiceFactory.default().get();
-      await SettingsDataSourceFactory.default().patch({ features: {} });
+      const oldSettings = await testingEnvironment.runWithContext(async () =>
+        SettingsDataSourceFactory.default().find()
+      );
+      await testingEnvironment.runWithContext(async () =>
+        SettingsDataSourceFactory.default().patch({ features: {} })
+      );
 
       const [sourceFile] = await files.get({ _id: fixturesFactory.id('erroringSourceFile') });
 
@@ -259,7 +267,9 @@ describe('OcrManager', () => {
         'Ocr settings are missing from the database'
       );
 
-      await SettingsDataSourceFactory.default().patch(oldSettings);
+      await testingEnvironment.runWithContext(async () =>
+        SettingsDataSourceFactory.default().patch(oldSettings!)
+      );
     });
 
     it('should throw an error when language is not supported', async () => {

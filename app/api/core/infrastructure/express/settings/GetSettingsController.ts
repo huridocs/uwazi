@@ -3,8 +3,9 @@ import { SettingsQueryServiceFactory } from '#api/core/infrastructure/factories/
 
 class GetSettingsController extends AbstractController {
   protected async handle(): Promise<void> {
-    const isAdmin = this.request.user?.role === 'admin';
-    const payload = await SettingsQueryServiceFactory.default().getForHttp(isAdmin);
+    const query = SettingsQueryServiceFactory.default();
+    const payload =
+      this.request.user?.role === 'admin' ? await query.getForAdmin() : await query.getPublic();
     this.response.json(payload);
   }
 }

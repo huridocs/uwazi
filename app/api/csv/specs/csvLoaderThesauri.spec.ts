@@ -6,9 +6,8 @@ import { TranslationsQueryServiceFactory } from '#api/core/infrastructure/factor
 import { TranslationsDataSourceFactory } from '#api/core/infrastructure/factories/TranslationsDataSourceFactory.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { UpdateEntriesByContextUseCaseFactory } from '#api/core/infrastructure/factories/UpdateEntriesByContextUseCaseFactory.js';
-import { SettingsQueryServiceFactory } from '#api/core/infrastructure/factories/SettingsQueryServiceFactory.js';
-import { SetDefaultLanguageUseCaseFactory } from '#api/core/infrastructure/factories/SetDefaultLanguageUseCaseFactory.js';
 import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
+import { SetDefaultLanguageUseCaseFactory } from '#api/core/infrastructure/factories/SetDefaultLanguageUseCaseFactory.js';
 import thesauri from '#api/core/v1_layer/thesauri/index.js';
 import { saveThesauri } from '#api/core/v1_layer/thesauri/specs/testHelpers.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
@@ -34,11 +33,11 @@ const addLanguageTranslations = async (newLanguage: LanguageISO6391) =>
     if (existing?.contexts?.length) {
       return;
     }
-    const defaultLanguage = await SettingsQueryServiceFactory.default().getDefaultLanguage();
+    const defaultLanguageKey = await SettingsDataSourceFactory.default().getDefaultLanguageKey();
     const translationsDS = TranslationsDataSourceFactory.default({
       transactionManager: TransactionManagerFactory.default(),
     });
-    await translationsDS.cloneForLanguage(defaultLanguage.key, newLanguage);
+    await translationsDS.cloneForLanguage(defaultLanguageKey, newLanguage);
   });
 
 describe('csvLoader thesauri', () => {
@@ -48,11 +47,15 @@ describe('csvLoader thesauri', () => {
     testingEnvironment.runWithContext(async () => loader.loadThesauri(...args));
 
   const withDefaultLanguage = async (key: LanguageISO6391, fn: () => Promise<void>) => {
-    await SetDefaultLanguageUseCaseFactory.default().execute({ key });
+    await testingEnvironment.runWithContext(async () =>
+      SetDefaultLanguageUseCaseFactory.default().execute({ key })
+    );
     try {
       await fn();
     } finally {
-      await SetDefaultLanguageUseCaseFactory.default().execute({ key: 'en' });
+      await testingEnvironment.runWithContext(async () =>
+        SetDefaultLanguageUseCaseFactory.default().execute({ key: 'en' })
+      );
     }
   };
 
@@ -64,10 +67,14 @@ describe('csvLoader thesauri', () => {
     beforeAll(async () => {
       await testingEnvironment.setUp(fixtures);
 
-      await SettingsDataSourceFactory.default().addLanguage({ key: 'es', label: 'spanish' });
+      await testingEnvironment.runWithContext(async () => {
+        await SettingsDataSourceFactory.default().addLanguage({ key: 'es', label: 'spanish' });
+      });
       await addLanguageTranslations('es');
 
-      await SettingsDataSourceFactory.default().addLanguage({ key: 'fr', label: 'french' });
+      await testingEnvironment.runWithContext(async () => {
+        await SettingsDataSourceFactory.default().addLanguage({ key: 'fr', label: 'french' });
+      });
       await addLanguageTranslations('fr');
 
       const { _id } = await saveThesauri({
@@ -298,7 +305,9 @@ describe('csvLoader thesauri', () => {
 
     describe('nesting', () => {
       beforeEach(async () => {
-        await SetDefaultLanguageUseCaseFactory.default().execute({ key: 'en' });
+        await testingEnvironment.runWithContext(async () =>
+          SetDefaultLanguageUseCaseFactory.default().execute({ key: 'en' })
+        );
       });
 
       it('should allow nesting thesauri by prefixing the children', async () => {

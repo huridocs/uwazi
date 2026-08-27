@@ -1,6 +1,3 @@
-/* eslint-disable */
-/**AUTO-GENERATED. RUN yarn emit-types to update.*/
-
 import {
   ObjectIdSchema,
   LanguagesListSchema,
@@ -68,9 +65,7 @@ export interface Settings {
       dark?: string;
     };
   };
-  themeVars?: {
-    [k: string]: string | undefined;
-  };
+  themeVars?: Record<string, string>;
   contactEmail?: string;
   senderEmail?: string;
   home_page?: string;
@@ -93,10 +88,7 @@ export interface Settings {
   customCSS?: string;
   customJS?: string;
   mapApiKey?: string;
-  /**
-   * @minItems 1
-   */
-  mapLayers?: [string, ...string[]];
+  mapLayers?: string[];
   newNameGeneration?: true;
   ocrServiceEnabled?: boolean;
   filterUnauthorizedRelated?: boolean;
@@ -139,21 +131,19 @@ export interface Settings {
     newRelationships?:
       | boolean
       | {
-          updateStrategy: 'OnlineRelationshipPropertyUpdateStrategy' | 'QueuedRelationshipPropertyUpdateStrategy';
+          updateStrategy:
+            | 'OnlineRelationshipPropertyUpdateStrategy'
+            | 'QueuedRelationshipPropertyUpdateStrategy';
         };
     automaticTranslation?: AutomaticTranslationConfig;
     [k: string]: unknown | undefined;
   };
-  mapStartingPoint?: {
-    label?: string;
-    lat: number;
-    lon: number;
-  }[];
+  mapStartingPoint?: GeolocationSchema;
   tilesProvider?: string;
 }
 
 export interface SettingsSublinkSchema {
-  _id?: string | ObjectId;
+  _id?: ObjectIdSchema;
   title: string;
   type: 'link';
   url: string;

@@ -345,12 +345,15 @@ const prepareRouteData = async (req: ExpressRequest, routes: RouteObject[]) => {
 const EntryServer = async (req: ExpressRequest, res: Response) => {
   const ssrStart = process.hrtime.bigint();
   RouteHandler.renderedFromServer = true;
-  const [settings, assets] = await withSpan('settings_and_assets', async () =>
-    Promise.all([
-      SettingsQueryServiceFactory.default().get() as Promise<ClientSettings>,
+  const [settings, assets] = await withSpan('settings_and_assets', async () => {
+    const query = SettingsQueryServiceFactory.default();
+    return Promise.all([
+      (req.user?.role === 'admin'
+        ? query.getForAdmin()
+        : query.getPublic()) as Promise<ClientSettings>,
       getAssets(),
-    ])
-  );
+    ]);
+  });
   const { connection, ...headers } = req.headers;
 
   const languageKeys = (settings?.languages?.map(lang => lang.key) as string[]) || [];

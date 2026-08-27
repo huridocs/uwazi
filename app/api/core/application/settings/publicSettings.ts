@@ -34,15 +34,32 @@ const PUBLIC_ALLOWED_FIELDS: (keyof Settings)[] = [
   'customJS',
 ];
 
-const pickPublicFields = (settingsData: Settings): Partial<Settings> => {
-  const publicSettings: Partial<Settings> = {};
-  PUBLIC_ALLOWED_FIELDS.forEach(field => {
-    if (field in settingsData) {
-      (publicSettings as Record<string, unknown>)[field] = settingsData[field];
-    }
-  });
-  return publicSettings;
-};
+/** Admin UI: public ∪ non-secret admin fields. Not “everything minus sync”. Never `sync` / `evidencesVault`. */
+const ADMIN_ALLOWED_FIELDS: (keyof Settings)[] = [
+  ...PUBLIC_ALLOWED_FIELDS,
+  'contactEmail',
+  'senderEmail',
+  'openPublicEndpoint',
+  'mailerConfig',
+  'publicFormDestination',
+  'features',
+  'filterUnauthorizedRelated',
+];
+
+const pickFields =
+  (allowed: (keyof Settings)[]) =>
+  (settingsData: Settings): Partial<Settings> => {
+    const picked: Partial<Settings> = {};
+    allowed.forEach(field => {
+      if (field in settingsData) {
+        (picked as Record<string, unknown>)[field] = settingsData[field];
+      }
+    });
+    return picked;
+  };
+
+const pickPublicFields = pickFields(PUBLIC_ALLOWED_FIELDS);
+const pickAdminFields = pickFields(ADMIN_ALLOWED_FIELDS);
 
 const getPublicSettingsPayload = (settingsData: Settings) => ({
   ...pickPublicFields(settingsData),
@@ -50,9 +67,8 @@ const getPublicSettingsPayload = (settingsData: Settings) => ({
 });
 
 /**
- * Shape settings for SSR hydration the same way GET /api/settings does:
- * admins get the full document; everyone else gets the public whitelist.
- * Preserve `features` already merged with client feature flags for FeatureToggle.
+ * Shape already-allowlisted settings for SSR hydration.
+ * `features` must already be the audience-safe set (admin allowlist or tenant flags only).
  */
 const shapeSettingsForSSR = (
   settingsData: Settings & { features?: Settings['features']; themeCustomization?: boolean },
@@ -60,7 +76,7 @@ const shapeSettingsForSSR = (
 ) => {
   if (user?.role === 'admin') {
     return {
-      ...settingsData,
+      ...pickAdminFields(settingsData),
       ...getPublicSettingsPayload(settingsData),
       features: settingsData.features,
     };
@@ -74,7 +90,9 @@ const shapeSettingsForSSR = (
 
 export {
   PUBLIC_ALLOWED_FIELDS,
+  ADMIN_ALLOWED_FIELDS,
   pickPublicFields,
+  pickAdminFields,
   getPublicSettingsPayload,
   shapeSettingsForSSR,
   omitInlineCustomization,

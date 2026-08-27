@@ -42,7 +42,7 @@ describe('AddLanguageController', () => {
       })
     );
     jest.spyOn(SettingsQueryServiceFactory, 'default').mockReturnValue({
-      get: jest.fn().mockResolvedValue({ languages: [] }),
+      getPublic: jest.fn().mockResolvedValue({ languages: [] }),
     } as any);
   });
 
@@ -113,7 +113,7 @@ describe('AddLanguageController', () => {
     useCaseExecuteSpy.mockResolvedValue([]);
     const getSettings = jest.fn().mockResolvedValue(fakeSettings);
     jest.spyOn(SettingsQueryServiceFactory, 'default').mockReturnValue({
-      get: getSettings,
+      getPublic: getSettings,
     } as any);
 
     const { sut, emitToCurrentTenant } = createSut([{ key: 'es', label: 'Spanish' }]);

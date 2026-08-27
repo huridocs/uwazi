@@ -1,5 +1,5 @@
-import { TestUtils } from '#api/common.v2/utils/Test.js';
 import type { Request, Response } from 'express';
+import { TestUtils } from '#api/common.v2/utils/Test.js';
 import { tenants } from '#api/tenants/index.js';
 import { DeleteLanguageUseCaseFactory } from '#api/core/infrastructure/factories/DeleteLanguageUseCaseFactory.js';
 import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
@@ -36,11 +36,11 @@ describe('DeleteLanguageController', () => {
     } as any);
 
     jest.spyOn(SettingsDataSourceFactory, 'default').mockReturnValue({
-      get: settingsGetSpy,
+      readFields: settingsGetSpy,
     } as any);
 
     jest.spyOn(SettingsQueryServiceFactory, 'default').mockReturnValue({
-      get: jest.fn().mockResolvedValue({ languages: [] }),
+      getPublic: jest.fn().mockResolvedValue({ languages: [] }),
     } as any);
   });
 
@@ -105,7 +105,7 @@ describe('DeleteLanguageController', () => {
     });
     const getSettings = jest.fn().mockResolvedValue(fakeSettings);
     jest.spyOn(SettingsQueryServiceFactory, 'default').mockReturnValue({
-      get: getSettings,
+      getPublic: getSettings,
     } as any);
 
     const { sut, emitToCurrentTenant } = createSut({ key: 'es' });

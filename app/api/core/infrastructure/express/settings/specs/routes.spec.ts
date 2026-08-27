@@ -163,7 +163,9 @@ describe('Settings routes', () => {
 
       it('should only migrate in the newNameGeneration false to true scenario', async () => {
         jest.spyOn(templates, 'save');
-        await SettingsDataSourceFactory.default().patch({ newNameGeneration: true });
+        await testingEnvironment.runWithContext(async () =>
+          SettingsDataSourceFactory.default().patch({ newNameGeneration: true })
+        );
 
         await request(app).post('/api/settings').send({}).expect(200);
 
@@ -179,7 +181,7 @@ describe('Settings routes', () => {
           .expect(422);
 
         expect(response.body.validations).toEqual([
-          expect.objectContaining({ params: { allowedValues: [true] } }),
+          expect.objectContaining({ message: expect.stringMatching(/true/) }),
         ]);
       });
     });

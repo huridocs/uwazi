@@ -12,11 +12,12 @@ import { IXSuggestionsModel } from '#api/suggestions/IXSuggestionsModel.js';
 import { SegmentationModel } from '#api/services/pdfsegmentation/segmentationModel.js';
 import { EnforcedWithId } from '#api/odm/index.js';
 import { tenants } from '#api/tenants/index.js';
+import { runInJobContext } from '#api/services/tasksmanager/runInJobContext.js';
 import { emitToTenantAdminsAndEditors } from '#api/socketio/setupSockets.js';
 import { FilesDAOFactory } from '#api/core/infrastructure/factories/FilesDAOFactory.js';
 import { EntityDBO } from '#api/core/infrastructure/mongodb/entity/EntityDBO.js';
 import entities from '#api/entities/entities.js';
-import { SettingsQueryServiceFactory } from '#api/core/infrastructure/factories/SettingsQueryServiceFactory.js';
+import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
 import request from '#shared/JSONRequest.js';
 import { EntitySchema } from '#shared/types/entityType.js';
 import {
@@ -477,10 +478,10 @@ class InformationExtraction {
     });
 
     if (!entity) {
-      const defaultLanguage = await SettingsQueryServiceFactory.default().getDefaultLanguage();
+      const defaultLanguageKey = await SettingsDataSourceFactory.default().getDefaultLanguageKey();
       [entity] = await entities.getUnrestricted({
         sharedId: file.entity,
-        language: defaultLanguage?.key,
+        language: defaultLanguageKey,
       });
     }
     return entity;
@@ -626,8 +627,9 @@ class InformationExtraction {
   };
 
   serviceUrl = async () => {
-    const settingsValues = await SettingsQueryServiceFactory.default().get();
-    const serviceUrl = settingsValues.features?.metadataExtraction?.url;
+    const metadataExtraction =
+      await SettingsDataSourceFactory.default().readFeature('metadataExtraction');
+    const serviceUrl = metadataExtraction?.url;
     if (!serviceUrl) {
       throw new Error('No url for metadata extraction service');
     }
@@ -986,7 +988,7 @@ class InformationExtraction {
   };
 
   processResults = async (_message: IXResultsMessage): Promise<void> => {
-    await tenants.run(async () => {
+    await runInJobContext(_message.tenant, async () => {
       const message: InternalIXResultsMessage = {
         ..._message,
         params: { ..._message.params, id: new ObjectId(_message.params!.id) },
@@ -1045,7 +1047,7 @@ class InformationExtraction {
       }
 
       await this.getSuggestions(message.params!.id);
-    }, _message.tenant);
+    });
   };
 }
 
