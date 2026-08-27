@@ -3,6 +3,7 @@ import {
   LanguagesListSchema,
   GeolocationSchema,
 } from '#shared/types/commonTypes.js';
+import { ThemeVars } from '#shared/types/themeVars.js';
 
 export interface AutomaticTranslationConfig {
   active: boolean;
@@ -65,7 +66,7 @@ export interface Settings {
       dark?: string;
     };
   };
-  themeVars?: Record<string, string>;
+  themeVars?: ThemeVars;
   contactEmail?: string;
   senderEmail?: string;
   home_page?: string;

@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { ISO6391Codes } from '#shared/language/index.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
+import { themeVarsSchema } from '#shared/types/themeVars.js';
 import { menuItemSchema, objectIdValue, refineMenuItems } from './menuItems.js';
 
 const languageKeySchema = z.custom<LanguageISO6391>(
@@ -177,7 +178,7 @@ const SaveSettingsInputSchema = z
       })
       .strict()
       .optional(),
-    themeVars: z.record(z.string().max(512)).optional(),
+    themeVars: themeVarsSchema.optional(),
     contactEmail: z.string().optional(),
     senderEmail: z.string().optional(),
     home_page: z.string().optional(),

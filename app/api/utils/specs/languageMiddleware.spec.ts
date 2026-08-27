@@ -5,14 +5,15 @@ import { SaveSettingsUseCaseFactory } from '#api/core/infrastructure/factories/S
 import middleware from '../languageMiddleware.js';
 import fixtures from './languageFixtures.js';
 
+const createRequest = (request: Partial<Request>) => <Request>{ ...request };
+
 describe('languageMiddleware', () => {
   let req: Request;
   const res: Response = <Response>{};
   let next: NextFunction;
 
-  const runMiddleware = () => testingEnvironment.runWithContext(() => middleware(req, res, next));
-
-  const createRequest = (request: Partial<Request>) => <Request>{ ...request };
+  const runMiddleware = async () =>
+    testingEnvironment.runWithContext(async () => middleware(req, res, next));
 
   beforeEach(async () => {
     await testingEnvironment.setUp(fixtures);
