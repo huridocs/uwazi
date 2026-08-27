@@ -1119,6 +1119,7 @@ Select target document,Select target document
 Select target entity,Select target entity
 Select target paragraph,Виберіть цільовий абзац
 Select text in target document,Select text in target document
+select text or a value,select text or a value
 Select the template to store the extracted paragraphs.,Виберіть шаблон для збереження вилучених абзаців.
 Select the template with the source documents.,Виберіть шаблон з вихідними документами.
 Select...,Вибрати...
@@ -1192,6 +1193,7 @@ Statistics,Статистика
 Stats & Filters,Статистика та фільтри
 Status,Статус
 status AND women NOT Nicaragua,status AND women NOT Nicaragua
+Stop filling,Stop filling
 Storage,Зберігання
 Streets,Вулиці
 Strict mode,Суворий режим
