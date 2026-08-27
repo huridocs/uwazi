@@ -29,9 +29,11 @@ describe('segmentation v2 routes', () => {
   });
 
   it('should return segmentation data stored for the file when feature is enabled', async () => {
-    await SettingsDataSourceFactory.default().patch({
-      features: { segmentation: { url: 'http://localhost:1235' } },
-    });
+    await testingEnvironment.runWithContext(async () =>
+      SettingsDataSourceFactory.default().patch({
+        features: { segmentation: { url: 'http://localhost:1235' } },
+      })
+    );
     await testingEnvironment.db.getCollection('segmentations')?.updateOne(
       { fileID: uploadId },
       {
@@ -81,7 +83,9 @@ describe('segmentation v2 routes', () => {
   });
 
   it('should return 404 when segmentation feature is disabled on settings', async () => {
-    await SettingsDataSourceFactory.default().patch({ features: {} });
+    await testingEnvironment.runWithContext(async () =>
+      SettingsDataSourceFactory.default().patch({ features: {} })
+    );
 
     const response = await request(app).get(`/api/v2/files/${uploadId.toString()}/segmentation`);
 

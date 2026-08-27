@@ -88,17 +88,23 @@ describe('public dataviz embed routes', () => {
   });
 
   it('should reject anonymous access when the instance is private', async () => {
-    await SettingsDataSourceFactory.default().patch({ private: true });
+    await testingEnvironment.runWithContext(async () =>
+      SettingsDataSourceFactory.default().patch({ private: true })
+    );
 
     const response = await request(app).get(`/api/public/dataviz/${datavizId}/data`).expect(401);
 
     expect(response.body.error).toBe('Unauthorized');
 
-    await SettingsDataSourceFactory.default().patch({ private: false });
+    await testingEnvironment.runWithContext(async () =>
+      SettingsDataSourceFactory.default().patch({ private: false })
+    );
   });
 
   it('should allow anonymous access when embedPublic is enabled on a private instance', async () => {
-    await SettingsDataSourceFactory.default().patch({ private: true });
+    await testingEnvironment.runWithContext(async () =>
+      SettingsDataSourceFactory.default().patch({ private: true })
+    );
 
     await testingEnvironment.runWithContext(async () => {
       const transactionManager = ExecutionContext.transactionManager as MongoTransactionManager;
@@ -124,11 +130,15 @@ describe('public dataviz embed routes', () => {
 
     expect(response.body.data.series[0].points[0].label).toBe('Category A');
 
-    await SettingsDataSourceFactory.default().patch({ private: false });
+    await testingEnvironment.runWithContext(async () =>
+      SettingsDataSourceFactory.default().patch({ private: false })
+    );
   });
 
   it('should allow authenticated users on a private instance', async () => {
-    await SettingsDataSourceFactory.default().patch({ private: true });
+    await testingEnvironment.runWithContext(async () =>
+      SettingsDataSourceFactory.default().patch({ private: true })
+    );
 
     const authedApp = setUpApp(datavizRoutes, (req, _res, next) => {
       req.user = { _id: 'adminUser', role: 'admin' };
@@ -142,7 +152,9 @@ describe('public dataviz embed routes', () => {
 
     expect(response.body.data.series[0].points[0].label).toBe('Category A');
 
-    await SettingsDataSourceFactory.default().patch({ private: false });
+    await testingEnvironment.runWithContext(async () =>
+      SettingsDataSourceFactory.default().patch({ private: false })
+    );
   });
 
   it('should return 503 when a snapshot chart has no snapshot', async () => {

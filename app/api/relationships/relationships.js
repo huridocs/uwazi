@@ -319,8 +319,6 @@ export default {
     const relationsToDelete = await model.get(relationQuery, 'hub');
     const hubsAffected = relationsToDelete.map(r => r.hub).filter(unique);
 
-    const { languages } =
-      (await SettingsDataSourceFactory.default().readFields(['languages'])) ?? {};
     const entitiesAffected = await model.db.aggregate([
       { $match: { hub: { $in: hubsAffected } } },
       { $group: { _id: '$entity' } },
@@ -337,6 +335,8 @@ export default {
     await model.delete({ hub: { $in: hubsToDelete.map(h => h._id) } });
 
     if (updateMetdata) {
+      const { languages } =
+        (await SettingsDataSourceFactory.default().readFields(['languages'])) ?? {};
       await ArrayUtils.sequentialFor(languages, async l =>
         this.updateEntitiesMetadata(
           entitiesAffected.map(e => e._id),

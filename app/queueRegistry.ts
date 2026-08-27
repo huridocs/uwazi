@@ -234,7 +234,8 @@ export function registerJobs(register: Register) {
         relationshipsV1DS: new MongoRelationshipsV1DataSource(
           getConnection(),
           transactionManager,
-          EntitiesDAOFactory.default()
+          EntitiesDAOFactory.default(),
+          SettingsDataSourceFactory.default({ transactionManager })
         ),
         templatesDS: TemplatesDataSourceFactory.default({ transactionManager }),
         transactionManager,

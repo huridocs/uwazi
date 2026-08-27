@@ -238,11 +238,15 @@ describe('OCR service', () => {
 
   describe('when the feature is not enabled', () => {
     beforeEach(async () => {
-      await SettingsDataSourceFactory.default().patch({ ocrServiceEnabled: false });
+      await testingEnvironment.runWithContext(async () =>
+        SettingsDataSourceFactory.default().patch({ ocrServiceEnabled: false })
+      );
     });
 
     afterAll(async () => {
-      await SettingsDataSourceFactory.default().patch({ ocrServiceEnabled: true });
+      await testingEnvironment.runWithContext(async () =>
+        SettingsDataSourceFactory.default().patch({ ocrServiceEnabled: true })
+      );
     });
 
     it('should not allow request status', async () => {

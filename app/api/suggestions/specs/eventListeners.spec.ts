@@ -201,6 +201,9 @@ const fixtures: DBFixture = {
 const disableFeatures = async () =>
   testingDB.mongodb?.collection('settings').updateOne({}, { $set: { features: {} } });
 
+const emitEvent = async (...args: Parameters<typeof applicationEventsBus.emit>) =>
+  testingEnvironment.runWithContext(async () => applicationEventsBus.emit(...args));
+
 beforeAll(() => {
   registerEventListeners(applicationEventsBus);
 });
@@ -360,7 +363,7 @@ describe(`On ${EntityDeletedEvent.name}`, () => {
     const doc1Id = db.id();
     const doc2Id = db.id();
 
-    await applicationEventsBus.emit(
+    await emitEvent(
       new EntityDeletedEvent({
         entity: [
           {
@@ -397,7 +400,7 @@ describe(`On ${FileCreatedEvent.name}`, () => {
       'new_file.pdf'
     );
 
-    await applicationEventsBus.emit(
+    await emitEvent(
       new FileCreatedEvent({
         newFile: fileInfo,
       })
@@ -416,7 +419,7 @@ describe(`On ${FileCreatedEvent.name}`, () => {
       'new_file.pdf'
     );
 
-    await applicationEventsBus.emit(
+    await emitEvent(
       new FileCreatedEvent({
         newFile: fileInfo,
       })
@@ -437,7 +440,7 @@ describe(`On ${FileCreatedEvent.name}`, () => {
       'new_file.pdf'
     );
 
-    await applicationEventsBus.emit(
+    await emitEvent(
       new FileCreatedEvent({
         newFile: fileInfo,
       })
@@ -453,7 +456,7 @@ describe('On EntityCreatedEvent', () => {
   it('should only create suggestions if Extractors extracts from text', async () => {
     const saveSpy = jest.spyOn(Suggestions, 'saveMultiple');
 
-    await applicationEventsBus.emit(
+    await emitEvent(
       new EntityCreatedEvent({
         targetLanguageKey: 'en',
         entities: [
@@ -592,7 +595,7 @@ describe('On EntityCreatedEvent', () => {
 
   it('should not create Suggestions if there are no Extractors', async () => {
     const saveSpy = jest.spyOn(Suggestions, 'saveMultiple');
-    await applicationEventsBus.emit(
+    await emitEvent(
       new EntityCreatedEvent({
         targetLanguageKey: 'en',
         entities: [
@@ -638,13 +641,13 @@ describe(`On ${FileUpdatedEvent.name}`, () => {
   it('should not update the ix suggestion state if propertySelections does not change', async () => {
     const updateSpy = jest.spyOn(Suggestions, 'updateStates');
 
-    await applicationEventsBus.emit(new FileUpdatedEvent({ before: original, after: original }));
+    await emitEvent(new FileUpdatedEvent({ before: original, after: original }));
 
     expect(updateSpy).not.toHaveBeenCalled();
 
     updateSpy.mockClear();
 
-    await applicationEventsBus.emit(
+    await emitEvent(
       new FileUpdatedEvent({
         before: { ...original, ...propertySelections },
         after: { ...original, ...propertySelections },
@@ -659,7 +662,7 @@ describe(`On ${FileUpdatedEvent.name}`, () => {
     await disableFeatures();
     const updateSpy = jest.spyOn(Suggestions, 'updateStates');
 
-    await applicationEventsBus.emit(
+    await emitEvent(
       new FileUpdatedEvent({ before: original, after: { ...original, ...propertySelections } })
     );
 
@@ -686,7 +689,7 @@ describe(`On ${FilesDeletedEvent.name}`, () => {
     const file1Id = db.id();
     const file2Id = db.id();
 
-    await applicationEventsBus.emit(
+    await emitEvent(
       new FilesDeletedEvent({
         files: [
           {
@@ -728,7 +731,7 @@ describe(`On ${TemplateUpdatedEvent.name}`, () => {
     const extractors = await testingDB.mongodb?.collection('ixextractors').find({}).toArray();
     const suggestions = await testingDB.mongodb?.collection('ixsuggestions').find({}).toArray();
 
-    await applicationEventsBus.emit(
+    await emitEvent(
       new TemplateUpdatedEvent({
         before: {
           _id: fixturesFactory.id(extractedTemplateName),
@@ -761,7 +764,7 @@ describe(`On ${TemplateUpdatedEvent.name}`, () => {
   });
 
   it('should delete the template from the extractor if the property not longer exists', async () => {
-    await applicationEventsBus.emit(
+    await emitEvent(
       new TemplateUpdatedEvent({
         before: {
           _id: fixturesFactory.id(extractedTemplateName),
@@ -854,7 +857,7 @@ describe(`On ${TemplateUpdatedEvent.name}`, () => {
   });
 
   it('should remove the template from the extractor if the property changed names', async () => {
-    await applicationEventsBus.emit(
+    await emitEvent(
       new TemplateUpdatedEvent({
         before: {
           _id: fixturesFactory.id(extractedTemplateName),
@@ -949,7 +952,7 @@ describe(`On ${TemplateUpdatedEvent.name}`, () => {
   });
 
   it('should delete the extractor itself if it does not contain any templates', async () => {
-    await applicationEventsBus.emit(
+    await emitEvent(
       new TemplateUpdatedEvent({
         before: {
           _id: fixturesFactory.id(extractedTemplateName),
@@ -990,7 +993,7 @@ describe(`On ${TemplateUpdatedEvent.name}`, () => {
 
 describe(`On ${TemplateDeletedEvent.name}`, () => {
   it('should delete the template from the extractor if the property not longer exists', async () => {
-    await applicationEventsBus.emit(
+    await emitEvent(
       new TemplateDeletedEvent({
         templateId: fixturesFactory.id(extractedTemplateName).toString(),
       })
@@ -1024,7 +1027,7 @@ describe(`On ${TemplateDeletedEvent.name}`, () => {
   });
 
   it('should delete the extractor itself if it does not contain any templates', async () => {
-    await applicationEventsBus.emit(
+    await emitEvent(
       new TemplateDeletedEvent({
         templateId: fixturesFactory.id(extractedTemplateName).toString(),
       })
@@ -1038,7 +1041,7 @@ describe(`On ${TemplateDeletedEvent.name}`, () => {
   });
 
   it('should delete the suggestions related to the template', async () => {
-    await applicationEventsBus.emit(
+    await emitEvent(
       new TemplateDeletedEvent({
         templateId: fixturesFactory.id(extractedTemplateName).toString(),
       })
@@ -1055,7 +1058,7 @@ describe(`On ${TemplateDeletedEvent.name}`, () => {
     const suggestions = await testingDB.mongodb?.collection('ixsuggestions').find({}).toArray();
     const extractors = await testingDB.mongodb?.collection('ixextractors').find({}).toArray();
 
-    await applicationEventsBus.emit(
+    await emitEvent(
       new TemplateDeletedEvent({
         templateId: fixturesFactory.id(extractedTemplateName).toString(),
       })
