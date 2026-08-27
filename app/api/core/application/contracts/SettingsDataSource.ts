@@ -20,7 +20,7 @@ export interface SettingsDataSource {
   readFeature<K extends keyof NonNullable<SettingsType['features']>>(
     name: K
   ): Promise<NonNullable<SettingsType['features']>[K] | undefined>;
-  getSyncConfig(): Promise<SettingsType['sync']>;
+  readSyncConfig(): Promise<SettingsType['sync']>;
   getNewRelationshipsConfiguration(): Promise<
     Exclude<Partial<Required<SettingsType>['features']['newRelationships']>, boolean | undefined>
   >;

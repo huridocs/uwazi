@@ -136,7 +136,7 @@ export const syncWorker = {
         await runInJobContext(tenant.name, async () => {
           try {
             permissionsContext.setCommandContext();
-            const sync = await SettingsDataSourceFactory.default().getSyncConfig();
+            const sync = await SettingsDataSourceFactory.default().readSyncConfig();
             if (sync) {
               await this.syncronize(sync);
             }

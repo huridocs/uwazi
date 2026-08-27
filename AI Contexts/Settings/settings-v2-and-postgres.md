@@ -65,7 +65,7 @@ The migration is not “move `settings.save` into a use case.” It is: stop hav
 #### Further assumptions drawn from this review
 
 - Settings is **not one aggregate**. Languages, navbar, library filters, feature flags, mail, sync credentials, and theme assets share a **storage row**, not a **domain**. V2 use cases per *HTTP verb on /api/settings* still treat them as one thing. The review is asking to model **slices** (and later modules) even while Mongo/PG keep one row.
-- **Safe-first** means the default application read is never the persistence row. `SettingsDataSource` may return secrets; **nothing above it should, unless the call is explicitly `getSyncConfig()` / `getPrivateFormDestination()` / etc.** Developers should not be able to “forget omit.”
+- **Safe-first** means the default application read is never the persistence row. `SettingsDataSource` may return secrets; **nothing above it should, unless the call is explicitly `readSyncConfig()` / `getPrivateFormDestination()` / etc.** Developers should not be able to “forget omit.”
 - **Postgres:** `document JSONB` can still `SELECT document` and pull CSS every time. Opt-in is `document->'languages'`, generated columns, or a port method `read(paths)`. Partial `$set` in Mongo and `jsonb_set` / `document ||` in PG both preserve unmentioned keys **if the write is a patch of a slice**, not a full-document replace. The first cut’s `patch({ ...incoming })` is already a field `$set`; fat **reads** are the gap, not fat writes.
 - `SaveSettings` calling `TemplateFacade` is a **core → v1_layer** dependency from the wrong module. Even a “use case tells the full story” argument only justifies **dispatching** “apply new name generation,” not implementing template walks inside Settings.
 - **AJV is gone from Settings.** `validateSettings` had no remaining callers. Comparison with the other three blobs:
@@ -97,7 +97,7 @@ Do **not** keep a protocol word. Do **not** keep a single `isAdmin` function tha
 | --- | --- |
 | `getPublic()` | Unauthenticated / non-admin client: whitelist only (today `getPublicSettingsPayload`) |
 | `getForAdmin()` | Admin UI: public ∪ admin-only fields that are **not** secrets (`mailerConfig`, `contactEmail`, `publicFormDestination`, `features`, …). Explicit allowlist, not “everything minus three keys.” |
-| `getSyncConfig()` | Server-only; passwords. Never sockets, never QueryService default. |
+| `readSyncConfig()` | Server-only; passwords. Never sockets, never QueryService default. |
 
 Avoid `getClientVisible` (client = browser vs API is ambiguous). `getPermitted` / `getAllowed` need an actor parameter to be honest — then they collapse to the two methods above plus server-only slices.
 
@@ -128,10 +128,10 @@ Keep **`SettingsDataSource.getDefaultLanguageKey()`** — that is already the V2
 - [x] **P0 — Inventory every settings return path** — table below. Template mutate/delete vs `SaveSettingsController` socket mismatch confirmed (UC blob vs public payload).
 - [x] **P0 — Safe-by-default:** DS `get`/`patch` stay full-row (persistence). Use cases / QueryService **never** return `sync` / vault / other secrets. Delivery adapters must not re-fetch raw DS for sockets. Template mutate/delete emit **public** payload if filters changed; filter UCs return `boolean`.
 - [x] **P0 — Replace “omit after full read”** with allowlisted `getPublic` / `getForAdmin` and server-only slice methods. `hidden` is gone. Admin POST JSON includes `mailerConfig` for the saving admin only — not on sockets.
-- [x] **P0 — Projection port:** `readFields`, `readFeature`, `getSyncConfig()`. `languageMiddleware`, `tocService`, and sync use slices. Writes remain patch-of-provided-keys so CSS/JS/`sync` survive. JSONB path reads should match this port (`document->'languages'`, not only `SELECT document`).
+- [x] **P0 — Projection port:** `readFields`, `readFeature`, `readSyncConfig()`. `languageMiddleware`, `tocService`, and sync use slices. Writes remain patch-of-provided-keys so CSS/JS/`sync` survive. JSONB path reads should match this port (`document->'languages'`, not only `SELECT document`).
 - [x] **P1 — Zod:** `SaveSettings` / menu-item save / `SetDefaultLanguage` / filter UCs have `InputSchema`. Controllers parse HTTP with the same schema.
 - [x] **P1 — AJV / emit-types:** Deleted `settingsSchema.ts` and generated `settingsType.d.ts`. Types live in `settingsType.ts`. Runtime validation is Zod only.
-- [x] **P1 — Internal names:** menu-item helper + `SaveMenuItemsUseCase`. HTTP `/api/settings/links` stays. `sync` is isolated on `getSyncConfig()`.
+- [x] **P1 — Internal names:** menu-item helper + `SaveMenuItemsUseCase`. HTTP `/api/settings/links` stays. `sync` is isolated on `readSyncConfig()`.
 - [x] **P2 — `ensureLinkIds`:** `assignMenuItemIds` on the menu-item write path, not a `SaveSettings` private method.
 - [x] **P2 — `newNameGeneration`:** Settings flips the flag; `TemplateFacade.applyNewNameGeneration` owns the template walk. File the templates ticket separately.
 - [x] **P2 — Remove `resolveTransactionManager` fallback.** Factory uses `ExecutionContext.transactionManager` only. Tests wrap `runWithContext`. Legacy `tenants.run` job loops that read settings use `runInJobContext`.
@@ -153,7 +153,7 @@ Keep **`SettingsDataSource.getDefaultLanguageKey()`** — that is already the V2
 | SSR `entry-server` | `QueryService.get()` then `shapeSettingsForSSR` | HTML / Redux | `getPublic` / `getForAdmin` + tenant feature flags (do not hydrate preserve tokens for non-admin) |
 | Outbound sync `processNamespaces.settings()` | DS `find()` then `{ _id, languages }` | sync peer | `readFields(['languages'])` (Mongo still includes `_id`) |
 | Inbound `MongoSettingsSyncHandler` | DS `find` / `patch` | server | keep full-row persistence |
-| `syncWorker` | DS `find()` then `stored.sync` | server | `getSyncConfig()` |
+| `syncWorker` | DS `find()` then `stored.sync` | server | `readSyncConfig()` |
 | `languageMiddleware` | `QueryService.get()` → `languages` | request | `readFields(['languages'])` |
 | `tocService` | `QueryService.get()` → `features` | job | `readFeature('tocGeneration')` |
 | mailer / contact / OCR / IX / preserve / … | `QueryService.get()` for one field | server | `readFields` / `readFeature` / `getDefaultLanguageKey()` |
@@ -198,10 +198,10 @@ HTTP /api/settings*                    Other callers (mailer, IX, templates, …
 ```
 
 - **`SettingsQueryService.getPublic()` / `getForAdmin()`** — allowlisted reads. No `get()`, no omit-after-read.
-- **`SettingsDataSource.find()` / `get()` / `patch()`** — persistence; full row including secrets. `readFields` / `readFeature` / `getSyncConfig()` for opt-in slices. `get()` throws if missing; `find()` returns null; `patch()` is a `$set` merge onto the singleton.
+- **`SettingsDataSource.find()` / `get()` / `patch()`** — persistence; full row including secrets. `find()` returns null; `get()` throws if missing; `patch()` is a `$set` merge onto the singleton. Document projections are `read*` (`readFields`, `readFeature`, `readSyncConfig`). Derived values stay `get*` (`getDefaultLanguageKey`, `getLanguageKeys`).
 - **Language HTTP** uses `AddLanguageUseCase` / `DeleteLanguageUseCase`, then `getPublic()` for `updateSettings`.
 - **Template HTTP** uses `UpdateFilterNameUseCase` / `RemoveTemplateFromFiltersUseCase` (boolean); sockets emit `getPublic()` when filters changed.
-- **Secrets** live in Mongo. Nothing above the DS returns them unless the call is explicitly `getSyncConfig()` (or a future destination/vault getter).
+- **Secrets** live in Mongo. Nothing above the DS returns them unless the call is explicitly `readSyncConfig()` (or a future destination/vault getter).
 
 ### Public HTTP (must stay)
 
@@ -453,4 +453,4 @@ Same class of risk as translations P12. Notable:
 Superseded in part by **First review** above. Until that queue is worked, do not treat Phase 1 as closed.
 
 - Staging collision: any tenant with **zero or multiple** `settings` docs — copy must fail; fix data before flag.
-- Outbound sync remaining `{ languages }` only — never `password` without a separate design (aligns with opt-in `getSyncConfig()`).
+- Outbound sync remaining `{ languages }` only — never `password` without a separate design (aligns with opt-in `readSyncConfig()`).

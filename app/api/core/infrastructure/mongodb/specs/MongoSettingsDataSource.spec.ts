@@ -102,7 +102,7 @@ describe('MongoSettingsDataSource', () => {
       expect((slice as { site_name?: string } | null)?.site_name).toBeUndefined();
     });
 
-    it('getSyncConfig() should return only the sync slice', async () => {
+    it('readSyncConfig() should return only the sync slice', async () => {
       await testingEnvironment.db.getCollection('settings')!.updateOne(
         {},
         {
@@ -113,7 +113,7 @@ describe('MongoSettingsDataSource', () => {
         }
       );
       const sut = createSut();
-      expect(await sut.getSyncConfig()).toEqual([
+      expect(await sut.readSyncConfig()).toEqual([
         expect.objectContaining({ name: 'peer', url: 'http://a' }),
       ]);
     });

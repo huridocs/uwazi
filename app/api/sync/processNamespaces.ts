@@ -199,7 +199,7 @@ class ProcessNamespaces {
   }
 
   private async settings() {
-    const data = ensure<WithId<Settings>>(
+    const data = ensure<WithId<Pick<Settings, 'languages'>>>(
       await SettingsDataSourceFactory.default().readFields(['languages']),
       noDataFound
     );

@@ -8,9 +8,46 @@ import { SettingsDataSource } from '../../application/contracts/SettingsDataSour
 import { DefaultLanguageMissingError } from './errors/settingsErrors.js';
 import { MongoTransactionManager } from './common/MongoTransactionManager.js';
 
-export type MongoSettingsDataSourceDeps = {
+type MongoSettingsDataSourceDeps = {
   db: Db;
   transactionManager: MongoTransactionManager;
+};
+
+const toObjectId = (id: ObjectId | string | undefined | null): ObjectId | undefined => {
+  if (id === undefined || id === null || id === '') {
+    return undefined;
+  }
+  if (id instanceof ObjectId) {
+    return id;
+  }
+  return MongoIdHandler.mapToDb(id);
+};
+
+const normalizeMenuItemIds = (partial: SettingsType): SettingsType => {
+  if (!partial.links) {
+    return partial;
+  }
+
+  return {
+    ...partial,
+    links: partial.links.map(link => {
+      const id = toObjectId(link._id);
+      const normalized = {
+        ...link,
+        ...(id ? { _id: id } : {}),
+      };
+      if (!link.sublinks) {
+        return normalized;
+      }
+      return {
+        ...normalized,
+        sublinks: link.sublinks.map(sublink => {
+          const subId = toObjectId(sublink._id);
+          return subId ? { ...sublink, _id: subId } : sublink;
+        }),
+      };
+    }),
+  };
 };
 
 export class MongoSettingsDataSource
@@ -77,7 +114,7 @@ export class MongoSettingsDataSource
     return settings?.features?.[name];
   }
 
-  async getSyncConfig(): Promise<SettingsType['sync']> {
+  async readSyncConfig(): Promise<SettingsType['sync']> {
     const settings = await this.getCollection().findOne({}, { projection: { sync: 1 } });
     return settings?.sync;
   }
@@ -88,19 +125,29 @@ export class MongoSettingsDataSource
 
   async patch(partial: SettingsType): Promise<SettingsType> {
     const current = await this.find();
-    const {
-      _id: incomingId,
-      __v: _version,
-      ...fields
-    } = this.normalizeForMongo(partial) as SettingsType & { __v?: number };
+    const { _id: incomingId, __v: _version, ...fields } = normalizeMenuItemIds(partial);
 
     if (current?._id) {
-      if (Object.keys(fields).length) {
-        await this.getCollection().updateOne({ _id: current._id }, { $set: fields });
-      }
-      return this.get();
+      return this.mergeOntoExisting(current._id, fields);
     }
 
+    return this.insertSingleton(incomingId, fields);
+  }
+
+  private async mergeOntoExisting(
+    id: NonNullable<SettingsType['_id']>,
+    fields: Omit<SettingsType, '_id' | '__v'>
+  ): Promise<SettingsType> {
+    if (Object.keys(fields).length) {
+      await this.getCollection().updateOne({ _id: id }, { $set: fields });
+    }
+    return this.get();
+  }
+
+  private async insertSingleton(
+    incomingId: SettingsType['_id'],
+    fields: Omit<SettingsType, '_id' | '__v'>
+  ): Promise<SettingsType> {
     const id =
       incomingId instanceof ObjectId
         ? incomingId
@@ -109,45 +156,8 @@ export class MongoSettingsDataSource
       throw new Error('Cannot create settings without an _id');
     }
 
-    await this.getCollection().insertOne({ ...fields, _id: id } as SettingsType);
+    await this.getCollection().insertOne({ ...fields, _id: id });
     return this.get();
-  }
-
-  private toObjectId(id: unknown): ObjectId | undefined {
-    if (id === undefined || id === null || id === '') {
-      return undefined;
-    }
-    if (id instanceof ObjectId) {
-      return id;
-    }
-    return MongoIdHandler.mapToDb(String(id));
-  }
-
-  private normalizeForMongo(partial: SettingsType): SettingsType {
-    if (!partial.links) {
-      return partial;
-    }
-
-    return {
-      ...partial,
-      links: partial.links.map(link => {
-        const id = this.toObjectId(link._id);
-        const normalized = {
-          ...link,
-          ...(id ? { _id: id } : {}),
-        };
-        if (!link.sublinks) {
-          return normalized;
-        }
-        return {
-          ...normalized,
-          sublinks: link.sublinks.map(sublink => {
-            const subId = this.toObjectId((sublink as { _id?: unknown })._id);
-            return subId ? { ...sublink, _id: subId } : sublink;
-          }),
-        };
-      }),
-    };
   }
 
   async deactivateSyncConfig(name: string): Promise<number> {
@@ -216,3 +226,5 @@ export class MongoSettingsDataSource
     return settings;
   }
 }
+
+export type { MongoSettingsDataSourceDeps };
