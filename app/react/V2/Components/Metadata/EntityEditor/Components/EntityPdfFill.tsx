@@ -1,22 +1,34 @@
-import React, { useCallback, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { ViewfinderCircleIcon } from '@heroicons/react/20/solid';
 import { t, Translate } from '#app/I18N/index.js';
+import { useDocumentPdf } from '#V2/Routes/Entity/Components/context/index.js';
 import { notify } from '#V2/utils/notifyBridge.js';
 import { propertyHasSelection } from '../functions/propertySelectionHelpers.js';
+import { ListeningChip } from './ListeningChip.js';
 import { usePdfFill } from './PdfFillContext.js';
 import type { PdfFillPlacement, PdfFillTarget } from './pdfFillTypes.js';
 import { resolveFillValue } from './resolvePdfFillValue.js';
 
+type EntityPdfFillSlot = {
+  overlay?: React.ReactNode;
+  labelAccessory?: React.ReactNode;
+  latched: boolean;
+  onFocus: () => void;
+  onClick: () => void;
+};
+
 type EntityPdfFillProps = {
   target: PdfFillTarget;
+  label: string;
   disabled?: boolean;
   placement?: PdfFillPlacement;
   applyValue: (value: string | number) => void;
-  children: (overlay: React.ReactNode) => React.ReactNode;
+  children: (slot: EntityPdfFillSlot) => React.ReactNode;
 };
 
 const EntityPdfFill = ({
   target,
+  label,
   disabled,
   placement = 'overlay',
   applyValue,
@@ -34,17 +46,28 @@ const EntityPdfFill = ({
     setDocumentPdfSelection,
     setPdfSelectionMenuOpen,
   } = usePdfFill();
+  const { armedPdfFill, pdfFillCommitNonce, armPdfFill, disarmPdfFill } = useDocumentPdf();
   const [isFilling, setIsFilling] = useState(false);
   const fillInFlight = useRef(false);
+  const lastNonceOnArm = useRef(pdfFillCommitNonce);
 
   const { name: propertyName, propertyId, coerceType } = target;
-  const showFill = Boolean(isEditing && documentPdfSelection && !disabled);
+  const isArmed = Boolean(
+    armedPdfFill && armedPdfFill.name === propertyName && armedPdfFill.propertyId === propertyId
+  );
+  const showFill = Boolean(isEditing && documentPdfSelection && !disabled && !armedPdfFill);
   const showClear =
     Boolean(isEditing && !disabled) &&
     propertyHasSelection(savedPropertySelections, draftPropertySelections, {
       name: propertyName,
       id: propertyId,
     });
+
+  const onArm = useCallback(() => {
+    if (!isEditing || disabled) return;
+    lastNonceOnArm.current = pdfFillCommitNonce;
+    armPdfFill({ name: propertyName, propertyId, label });
+  }, [armPdfFill, disabled, isEditing, label, pdfFillCommitNonce, propertyId, propertyName]);
 
   const onFill = useCallback(async () => {
     if (!documentPdfSelection || fillInFlight.current) return;
@@ -78,6 +101,7 @@ const EntityPdfFill = ({
       upsertPropertySelection({ name: propertyName, id: propertyId }, documentPdfSelection);
       setDocumentPdfSelection(undefined);
       setPdfSelectionMenuOpen(false);
+      disarmPdfFill();
     } catch {
       notify(t('System', 'Value cannot be transformed to the correct type', null, false), 'danger');
     } finally {
@@ -87,6 +111,7 @@ const EntityPdfFill = ({
   }, [
     applyValue,
     coerceType,
+    disarmPdfFill,
     documentLanguage,
     documentPdfSelection,
     language,
@@ -97,15 +122,36 @@ const EntityPdfFill = ({
     upsertPropertySelection,
   ]);
 
+  useEffect(() => {
+    if (!isArmed || pdfFillCommitNonce === lastNonceOnArm.current) return;
+    lastNonceOnArm.current = pdfFillCommitNonce;
+    onFill().catch(() => undefined);
+  }, [isArmed, onFill, pdfFillCommitNonce]);
+
+  const armedRef = useRef(armedPdfFill);
+  armedRef.current = armedPdfFill;
+  const targetRef = useRef({ name: propertyName, propertyId });
+  targetRef.current = { name: propertyName, propertyId };
+
+  useEffect(
+    () => () => {
+      const armed = armedRef.current;
+      const key = targetRef.current;
+      if (armed?.name === key.name && armed.propertyId === key.propertyId) {
+        disarmPdfFill();
+      }
+    },
+    [disarmPdfFill]
+  );
+
   const onClear = useCallback(() => {
     clearPropertySelection({ name: propertyName, id: propertyId });
   }, [clearPropertySelection, propertyId, propertyName]);
 
-  const fillDisabled = Boolean(disabled || isFilling);
   const fillButton = showFill ? (
     <button
       type="button"
-      disabled={fillDisabled}
+      disabled={Boolean(disabled || isFilling)}
       aria-label={t('System', 'Click to fill', null, false)}
       onClick={() => {
         onFill().catch(() => undefined);
@@ -124,6 +170,14 @@ const EntityPdfFill = ({
     </button>
   ) : null;
 
+  const slot: EntityPdfFillSlot = {
+    overlay: placement === 'beside' ? undefined : fillButton,
+    labelAccessory: isArmed ? <ListeningChip label={label} onStop={disarmPdfFill} /> : undefined,
+    latched: isArmed,
+    onFocus: onArm,
+    onClick: onArm,
+  };
+
   const clearButton = showClear ? (
     <button
       type="button"
@@ -139,7 +193,7 @@ const EntityPdfFill = ({
     return (
       <>
         <div className="flex items-end gap-2">
-          <div className="min-w-0">{children(null)}</div>
+          <div className="min-w-0">{children(slot)}</div>
           {fillButton}
         </div>
         {clearButton}
@@ -149,7 +203,7 @@ const EntityPdfFill = ({
 
   return (
     <>
-      {children(fillButton)}
+      {children(slot)}
       {clearButton}
     </>
   );
@@ -163,3 +217,4 @@ export type {
   PdfFillHost,
   PdfFillPlacement,
 } from './pdfFillTypes.js';
+export type { EntityPdfFillSlot };

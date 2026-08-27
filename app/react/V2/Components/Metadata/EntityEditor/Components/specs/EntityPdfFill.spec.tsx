@@ -5,6 +5,8 @@ import React from 'react';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { FormProvider, useForm } from 'react-hook-form';
 import * as entitiesAPI from '#V2/api/entities/index.js';
+import { DocumentInteractionProvider } from '#V2/Routes/Entity/Components/context/DocumentInteractionContext.js';
+import { useDocumentPdf } from '#V2/Routes/Entity/Components/context/index.js';
 import { notify } from '#V2/utils/notifyBridge.js';
 import { TitleField } from '../TitleField.js';
 import { TextField } from '../TextField.js';
@@ -58,6 +60,10 @@ jest.mock('#V2/api/entities/index.js', () => ({
   coerceValue: jest.fn(),
 }));
 
+jest.mock('../../../../../Routes/Entity/Components/context/MetadataEditingContext.js', () => ({
+  useMetadataEditing: () => ({ isEditing: true }),
+}));
+
 const pdfFillHost = (overrides: Partial<PdfFillHost> = {}): PdfFillHost => ({
   isEditing: true,
   language: 'en',
@@ -70,6 +76,15 @@ const pdfFillHost = (overrides: Partial<PdfFillHost> = {}): PdfFillHost => ({
   setPdfSelectionMenuOpen,
   ...overrides,
 });
+
+const CommitHarness = () => {
+  const { requestPdfFillCommit } = useDocumentPdf();
+  return (
+    <button type="button" data-testid="commit-pdf-fill" onClick={requestPdfFillCommit}>
+      commit-pdf-fill
+    </button>
+  );
+};
 
 const Host = ({
   children,
@@ -92,14 +107,27 @@ const Host = ({
     },
   });
   return (
-    // eslint-disable-next-line react/jsx-props-no-spreading
-    <FormProvider {...form}>
-      <PdfFillProvider value={pdfFillHost(pdfFillOverrides)}>{children}</PdfFillProvider>
-    </FormProvider>
+    <DocumentInteractionProvider>
+      {/* eslint-disable-next-line react/jsx-props-no-spreading */}
+      <FormProvider {...form}>
+        <PdfFillProvider value={pdfFillHost(pdfFillOverrides)}>
+          <CommitHarness />
+          {children}
+        </PdfFillProvider>
+      </FormProvider>
+    </DocumentInteractionProvider>
   );
 };
 
-describe('Entity PDF Click to fill', () => {
+const arm = (control: HTMLElement) => {
+  fireEvent.focus(control);
+};
+
+const commitFill = () => {
+  fireEvent.click(screen.getByTestId('commit-pdf-fill'));
+};
+
+describe('Entity PDF fill', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     mockDraft = [];
@@ -110,7 +138,41 @@ describe('Entity PDF Click to fill', () => {
     jest.mocked(entitiesAPI.coerceValue).mockResolvedValue({ success: 'true', value: 42 });
   });
 
-  it('renders Click to fill and fills title on click', async () => {
+  it('hides all Click to fill when any field is armed with a selection', () => {
+    render(
+      <Host>
+        <TitleField<EditEntityFormValues> context="System" label="Title" field="title" />
+        <TextField<EditEntityFormValues>
+          context="tpl-1"
+          label="Text"
+          field="metadata.simple_text.0.value"
+          type="text"
+          pdfFill={{ name: 'simple_text', propertyId: 'prop-1', coerceType: 'text' }}
+        />
+      </Host>
+    );
+
+    expect(screen.getAllByTestId('click-to-fill')).toHaveLength(2);
+    expect(screen.queryByTestId('listening-chip')).not.toBeInTheDocument();
+
+    arm(screen.getByRole('textbox', { name: /Title/ }));
+    expect(screen.getByTestId('listening-chip')).toBeInTheDocument();
+    expect(screen.queryByTestId('click-to-fill')).not.toBeInTheDocument();
+  });
+
+  it('shows Click to fill when unarmed with a selection', () => {
+    render(
+      <Host>
+        <TitleField<EditEntityFormValues> context="System" label="Title" field="title" />
+      </Host>
+    );
+
+    expect(screen.getByTestId('click-to-fill')).toBeInTheDocument();
+    expect(screen.getByText('Click to fill')).toBeInTheDocument();
+    expect(screen.queryByTestId('listening-chip')).not.toBeInTheDocument();
+  });
+
+  it('renders Click to fill and fills title on click without arming', async () => {
     render(
       <Host>
         <TitleField<EditEntityFormValues> context="System" label="Title" field="title" />
@@ -118,10 +180,7 @@ describe('Entity PDF Click to fill', () => {
     );
 
     const fill = screen.getByTestId('click-to-fill');
-    expect(fill).toBeInTheDocument();
-    expect(screen.getByText('Click to fill')).toBeInTheDocument();
     expect(fill.tagName).toBe('BUTTON');
-
     fireEvent.click(fill);
 
     await waitFor(() => {
@@ -129,10 +188,66 @@ describe('Entity PDF Click to fill', () => {
       expect(screen.getByRole('textbox')).toHaveValue('selected from pdf');
       expect(setDocumentPdfSelection).toHaveBeenCalledWith(undefined);
       expect(setPdfSelectionMenuOpen).toHaveBeenCalledWith(false);
+      expect(screen.queryByTestId('listening-chip')).not.toBeInTheDocument();
     });
   });
 
-  it('renders Clear PDF selection sibling when a saved selection exists', () => {
+  it('restores Click to fill after disarm', () => {
+    render(
+      <Host>
+        <TitleField<EditEntityFormValues> context="System" label="Title" field="title" />
+        <TextField<EditEntityFormValues>
+          context="tpl-1"
+          label="Text"
+          field="metadata.simple_text.0.value"
+          type="text"
+          pdfFill={{ name: 'simple_text', propertyId: 'prop-1', coerceType: 'text' }}
+        />
+      </Host>
+    );
+
+    arm(screen.getByRole('textbox', { name: /Title/ }));
+    expect(screen.queryByTestId('click-to-fill')).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: 'Stop filling Title' }));
+    expect(screen.queryByTestId('listening-chip')).not.toBeInTheDocument();
+    expect(screen.getAllByTestId('click-to-fill')).toHaveLength(2);
+  });
+
+  it('places overlay as a button sibling of the input, not a role=button wrapper', () => {
+    render(
+      <Host>
+        <TitleField<EditEntityFormValues> context="System" label="Title" field="title" />
+      </Host>
+    );
+
+    const input = screen.getByRole('textbox');
+    const fill = screen.getByTestId('click-to-fill');
+    expect(fill.tagName).toBe('BUTTON');
+    expect(fill.parentElement).toBe(input.parentElement);
+    expect(fill.parentElement?.getAttribute('role')).not.toBe('button');
+    expect(input.closest('[role="button"]')).toBeNull();
+  });
+
+  it('places Click to fill beside the date input, not inside it', () => {
+    render(
+      <Host>
+        <DateField<EditEntityFormValues>
+          context="tpl-1"
+          label="Date"
+          field="metadata.date_prop.0.value"
+          pdfFill={{ name: 'date_prop', propertyId: 'date-1', coerceType: 'date' }}
+        />
+      </Host>
+    );
+
+    const input = screen.getByLabelText(/Date/);
+    const fill = screen.getByTestId('click-to-fill');
+    expect(input.parentElement?.contains(fill)).toBe(false);
+    expect(fill.className).not.toContain('absolute');
+  });
+
+  it('exposes an accessible name on the fill button', () => {
     render(
       <Host>
         <TextField<EditEntityFormValues>
@@ -145,20 +260,10 @@ describe('Entity PDF Click to fill', () => {
       </Host>
     );
 
-    const clear = screen.getByTestId('clear-pdf-selection');
-    expect(clear).toBeInTheDocument();
-    expect(clear.tagName).toBe('BUTTON');
-    expect(screen.getByText('Clear PDF selection')).toBeInTheDocument();
-    expect(clear.closest('[data-testid="click-to-fill"]')).toBeNull();
-
-    fireEvent.click(clear);
-    expect(clearPropertySelection).toHaveBeenCalledWith({
-      name: 'simple_text',
-      id: 'prop-1',
-    });
+    expect(screen.getByTestId('click-to-fill')).toHaveAttribute('aria-label', 'Click to fill');
   });
 
-  it('warns and skips fill when selection has no rectangles', async () => {
+  it('warns from overlay and skips fill when selection has no rectangles', async () => {
     mockSelection = { text: 'no boxes', selectionRectangles: [] };
 
     render(
@@ -176,10 +281,42 @@ describe('Entity PDF Click to fill', () => {
       );
       expect(upsertPropertySelection).not.toHaveBeenCalled();
       expect(screen.getByRole('textbox')).toHaveValue('');
+      expect(screen.queryByTestId('listening-chip')).not.toBeInTheDocument();
     });
   });
 
-  it('ignores a second click while coerce is in flight', async () => {
+  it('coerces numeric selection from overlay then upserts', async () => {
+    mockSelection = {
+      text: ' 42 ',
+      selectionRectangles: [{ top: 1, left: 2, width: 10, height: 4, regionId: '1' }],
+    };
+    jest.mocked(entitiesAPI.coerceValue).mockResolvedValue({ success: 'true', value: 42 });
+
+    render(
+      <Host>
+        <TextField<EditEntityFormValues>
+          context="tpl-1"
+          label="Numeric"
+          field="metadata.numeric_prop.0.value"
+          type="number"
+          pdfFill={{ name: 'numeric_prop', propertyId: 'num-1', coerceType: 'numeric' }}
+        />
+      </Host>
+    );
+
+    fireEvent.click(screen.getByTestId('click-to-fill'));
+
+    await waitFor(() => {
+      expect(entitiesAPI.coerceValue).toHaveBeenCalledWith('42', 'numeric', 'en');
+      expect(upsertPropertySelection).toHaveBeenCalledWith(
+        { name: 'numeric_prop', id: 'num-1' },
+        mockSelection
+      );
+      expect(screen.getByRole('spinbutton')).toHaveValue(42);
+    });
+  });
+
+  it('ignores a second overlay click while coerce is in flight', async () => {
     let resolveCoerce: (value: { success: string; value: number }) => void = () => undefined;
     jest.mocked(entitiesAPI.coerceValue).mockImplementation(
       async () =>
@@ -219,50 +356,7 @@ describe('Entity PDF Click to fill', () => {
     });
   });
 
-  it('does not nest role=button wrappers around the fill button', () => {
-    const { container } = render(
-      <Host>
-        <TitleField<EditEntityFormValues> context="System" label="Title" field="title" />
-      </Host>
-    );
-
-    const fill = screen.getByTestId('click-to-fill');
-    expect(fill.parentElement?.getAttribute('role')).not.toBe('button');
-    expect(container.querySelectorAll('[role="button"]')).toHaveLength(0);
-  });
-
-  it('coerces numeric selection then upserts', async () => {
-    mockSelection = {
-      text: ' 42 ',
-      selectionRectangles: [{ top: 1, left: 2, width: 10, height: 4, regionId: '1' }],
-    };
-    jest.mocked(entitiesAPI.coerceValue).mockResolvedValue({ success: 'true', value: 42 });
-
-    render(
-      <Host>
-        <TextField<EditEntityFormValues>
-          context="tpl-1"
-          label="Numeric"
-          field="metadata.numeric_prop.0.value"
-          type="number"
-          pdfFill={{ name: 'numeric_prop', propertyId: 'num-1', coerceType: 'numeric' }}
-        />
-      </Host>
-    );
-
-    fireEvent.click(screen.getByTestId('click-to-fill'));
-
-    await waitFor(() => {
-      expect(entitiesAPI.coerceValue).toHaveBeenCalledWith('42', 'numeric', 'en');
-      expect(upsertPropertySelection).toHaveBeenCalledWith(
-        { name: 'numeric_prop', id: 'num-1' },
-        mockSelection
-      );
-      expect(screen.getByRole('spinbutton')).toHaveValue(42);
-    });
-  });
-
-  it('parses localized date client-side then upserts without API', async () => {
+  it('parses localized date from overlay then upserts without API', async () => {
     mockSelection = {
       text: '18th July 2025',
       selectionRectangles: [{ top: 1, left: 2, width: 10, height: 4, regionId: '1' }],
@@ -291,6 +385,217 @@ describe('Entity PDF Click to fill', () => {
     });
   });
 
+  it('arms on focus, keeps chip on blur, and fills title on commit', async () => {
+    render(
+      <Host>
+        <TitleField<EditEntityFormValues> context="System" label="Title" field="title" />
+      </Host>
+    );
+
+    const title = screen.getByRole('textbox');
+    arm(title);
+
+    const chip = screen.getByTestId('listening-chip');
+    expect(chip).toBeInTheDocument();
+    expect(chip.closest('label')).toBeNull();
+    expect(screen.getByText('select text or a value')).toBeInTheDocument();
+
+    fireEvent.blur(title);
+    expect(screen.getByTestId('listening-chip')).toBeInTheDocument();
+
+    commitFill();
+
+    await waitFor(() => {
+      expect(upsertPropertySelection).toHaveBeenCalled();
+      expect(title).toHaveValue('selected from pdf');
+      expect(setDocumentPdfSelection).toHaveBeenCalledWith(undefined);
+      expect(setPdfSelectionMenuOpen).toHaveBeenCalledWith(false);
+      expect(screen.queryByTestId('listening-chip')).not.toBeInTheDocument();
+    });
+  });
+
+  it('disarms from chip close and Escape', () => {
+    render(
+      <Host>
+        <TitleField<EditEntityFormValues> context="System" label="Title" field="title" />
+      </Host>
+    );
+
+    arm(screen.getByRole('textbox'));
+    fireEvent.click(screen.getByRole('button', { name: 'Stop filling Title' }));
+    expect(screen.queryByTestId('listening-chip')).not.toBeInTheDocument();
+
+    arm(screen.getByRole('textbox'));
+    expect(screen.getByTestId('listening-chip')).toBeInTheDocument();
+    fireEvent.keyDown(window, { key: 'Escape' });
+    expect(screen.queryByTestId('listening-chip')).not.toBeInTheDocument();
+  });
+
+  it('renders Clear PDF selection sibling when a saved selection exists', () => {
+    render(
+      <Host>
+        <TextField<EditEntityFormValues>
+          context="tpl-1"
+          label="Text"
+          field="metadata.simple_text.0.value"
+          type="text"
+          pdfFill={{ name: 'simple_text', propertyId: 'prop-1', coerceType: 'text' }}
+        />
+      </Host>
+    );
+
+    const clear = screen.getByTestId('clear-pdf-selection');
+    expect(clear).toBeInTheDocument();
+    expect(clear.tagName).toBe('BUTTON');
+    expect(screen.getByText('Clear PDF selection')).toBeInTheDocument();
+    expect(clear.closest('[data-testid="click-to-fill"]')).toBeNull();
+
+    fireEvent.click(clear);
+    expect(clearPropertySelection).toHaveBeenCalledWith({
+      name: 'simple_text',
+      id: 'prop-1',
+    });
+  });
+
+  it('warns and skips fill when selection has no rectangles', async () => {
+    mockSelection = { text: 'no boxes', selectionRectangles: [] };
+
+    render(
+      <Host>
+        <TitleField<EditEntityFormValues> context="System" label="Title" field="title" />
+      </Host>
+    );
+
+    arm(screen.getByRole('textbox'));
+    commitFill();
+
+    await waitFor(() => {
+      expect(notify).toHaveBeenCalledWith(
+        'Could not detect the area for the selected text',
+        'warning'
+      );
+      expect(upsertPropertySelection).not.toHaveBeenCalled();
+      expect(screen.getByRole('textbox')).toHaveValue('');
+      expect(screen.getByTestId('listening-chip')).toBeInTheDocument();
+    });
+  });
+
+  it('ignores a second commit while coerce is in flight', async () => {
+    let resolveCoerce: (value: { success: string; value: number }) => void = () => undefined;
+    jest.mocked(entitiesAPI.coerceValue).mockImplementation(
+      async () =>
+        new Promise(resolve => {
+          resolveCoerce = resolve;
+        })
+    );
+
+    mockSelection = {
+      text: '42',
+      selectionRectangles: [{ top: 1, left: 2, width: 10, height: 4, regionId: '1' }],
+    };
+
+    render(
+      <Host>
+        <TextField<EditEntityFormValues>
+          context="tpl-1"
+          label="Numeric"
+          field="metadata.numeric_prop.0.value"
+          type="number"
+          pdfFill={{ name: 'numeric_prop', propertyId: 'num-1', coerceType: 'numeric' }}
+        />
+      </Host>
+    );
+
+    arm(screen.getByRole('spinbutton'));
+    commitFill();
+    commitFill();
+
+    expect(entitiesAPI.coerceValue).toHaveBeenCalledTimes(1);
+
+    resolveCoerce({ success: 'true', value: 42 });
+
+    await waitFor(() => {
+      expect(upsertPropertySelection).toHaveBeenCalledTimes(1);
+      expect(screen.getByRole('spinbutton')).toHaveValue(42);
+    });
+  });
+
+  it('does not nest role=button wrappers around the listening chip', () => {
+    const { container } = render(
+      <Host>
+        <TitleField<EditEntityFormValues> context="System" label="Title" field="title" />
+      </Host>
+    );
+
+    arm(screen.getByRole('textbox'));
+    const chip = screen.getByTestId('listening-chip');
+    expect(chip.getAttribute('role')).not.toBe('button');
+    expect(chip.parentElement?.getAttribute('role')).not.toBe('button');
+    expect(container.querySelectorAll('[role="button"]')).toHaveLength(0);
+  });
+
+  it('coerces numeric selection then upserts', async () => {
+    mockSelection = {
+      text: ' 42 ',
+      selectionRectangles: [{ top: 1, left: 2, width: 10, height: 4, regionId: '1' }],
+    };
+    jest.mocked(entitiesAPI.coerceValue).mockResolvedValue({ success: 'true', value: 42 });
+
+    render(
+      <Host>
+        <TextField<EditEntityFormValues>
+          context="tpl-1"
+          label="Numeric"
+          field="metadata.numeric_prop.0.value"
+          type="number"
+          pdfFill={{ name: 'numeric_prop', propertyId: 'num-1', coerceType: 'numeric' }}
+        />
+      </Host>
+    );
+
+    arm(screen.getByRole('spinbutton'));
+    commitFill();
+
+    await waitFor(() => {
+      expect(entitiesAPI.coerceValue).toHaveBeenCalledWith('42', 'numeric', 'en');
+      expect(upsertPropertySelection).toHaveBeenCalledWith(
+        { name: 'numeric_prop', id: 'num-1' },
+        mockSelection
+      );
+      expect(screen.getByRole('spinbutton')).toHaveValue(42);
+    });
+  });
+
+  it('parses localized date client-side then upserts without API', async () => {
+    mockSelection = {
+      text: '18th July 2025',
+      selectionRectangles: [{ top: 1, left: 2, width: 10, height: 4, regionId: '1' }],
+    };
+
+    render(
+      <Host>
+        <DateField<EditEntityFormValues>
+          context="tpl-1"
+          label="Date"
+          field="metadata.date_prop.0.value"
+          pdfFill={{ name: 'date_prop', propertyId: 'date-1', coerceType: 'date' }}
+        />
+      </Host>
+    );
+
+    arm(screen.getByLabelText(/Date/));
+    commitFill();
+
+    await waitFor(() => {
+      expect(entitiesAPI.coerceValue).not.toHaveBeenCalled();
+      expect(upsertPropertySelection).toHaveBeenCalledWith(
+        { name: 'date_prop', id: 'date-1' },
+        mockSelection
+      );
+      expect(screen.getByLabelText(/Date/)).toHaveValue('2025-07-18');
+    });
+  });
+
   it('parses date with document language when entity language fails', async () => {
     mockSelection = {
       text: '18 de julio de 2025',
@@ -308,7 +613,8 @@ describe('Entity PDF Click to fill', () => {
       </Host>
     );
 
-    fireEvent.click(screen.getByTestId('click-to-fill'));
+    arm(screen.getByLabelText(/Date/));
+    commitFill();
 
     await waitFor(() => {
       expect(entitiesAPI.coerceValue).not.toHaveBeenCalled();
@@ -339,7 +645,8 @@ describe('Entity PDF Click to fill', () => {
       </Host>
     );
 
-    fireEvent.click(screen.getByTestId('click-to-fill'));
+    arm(screen.getByLabelText(/Date/));
+    commitFill();
 
     await waitFor(() => {
       expect(entitiesAPI.coerceValue).toHaveBeenNthCalledWith(1, 'not-a-date', 'date', 'en');
@@ -370,7 +677,8 @@ describe('Entity PDF Click to fill', () => {
       </Host>
     );
 
-    fireEvent.click(screen.getByTestId('click-to-fill'));
+    arm(screen.getByLabelText(/Date/));
+    commitFill();
 
     await waitFor(() => {
       expect(entitiesAPI.coerceValue).toHaveBeenCalledWith('not-a-date', 'date', 'en');
@@ -382,7 +690,7 @@ describe('Entity PDF Click to fill', () => {
     });
   });
 
-  it('notifies danger when date API fallback coerce fails', async () => {
+  it('notifies danger when date API fallback coerce fails and stays armed', async () => {
     mockSelection = {
       text: 'not-a-date',
       selectionRectangles: [{ top: 1, left: 2, width: 10, height: 4, regionId: '1' }],
@@ -403,7 +711,8 @@ describe('Entity PDF Click to fill', () => {
       </Host>
     );
 
-    fireEvent.click(screen.getByTestId('click-to-fill'));
+    arm(screen.getByLabelText(/Date/));
+    commitFill();
 
     await waitFor(() => {
       expect(entitiesAPI.coerceValue).toHaveBeenCalledWith('not-a-date', 'date', 'en');
@@ -412,25 +721,8 @@ describe('Entity PDF Click to fill', () => {
         'danger'
       );
       expect(upsertPropertySelection).not.toHaveBeenCalled();
+      expect(screen.getByTestId('listening-chip')).toBeInTheDocument();
     });
-  });
-
-  it('places Click to fill beside the date input, not inside it', () => {
-    render(
-      <Host>
-        <DateField<EditEntityFormValues>
-          context="tpl-1"
-          label="Date"
-          field="metadata.date_prop.0.value"
-          pdfFill={{ name: 'date_prop', propertyId: 'date-1', coerceType: 'date' }}
-        />
-      </Host>
-    );
-
-    const input = screen.getByLabelText(/Date/);
-    const fill = screen.getByTestId('click-to-fill');
-    expect(input.parentElement?.contains(fill)).toBe(false);
-    expect(fill.className).not.toContain('absolute');
   });
 
   it('notifies danger and skips upsert when coerce fails', async () => {
@@ -455,7 +747,8 @@ describe('Entity PDF Click to fill', () => {
       </Host>
     );
 
-    fireEvent.click(screen.getByTestId('click-to-fill'));
+    arm(screen.getByRole('spinbutton'));
+    commitFill();
 
     await waitFor(() => {
       expect(notify).toHaveBeenCalledWith(
@@ -464,6 +757,7 @@ describe('Entity PDF Click to fill', () => {
       );
       expect(upsertPropertySelection).not.toHaveBeenCalled();
       expect(setDocumentPdfSelection).not.toHaveBeenCalled();
+      expect(screen.getByTestId('listening-chip')).toBeInTheDocument();
     });
   });
 
@@ -486,7 +780,8 @@ describe('Entity PDF Click to fill', () => {
       </Host>
     );
 
-    fireEvent.click(screen.getByTestId('click-to-fill'));
+    arm(screen.getByRole('spinbutton'));
+    commitFill();
 
     await waitFor(() => {
       expect(notify).toHaveBeenCalledWith(
@@ -495,26 +790,5 @@ describe('Entity PDF Click to fill', () => {
       );
       expect(upsertPropertySelection).not.toHaveBeenCalled();
     });
-  });
-
-  it('exposes an accessible name on the fill button', () => {
-    mockSelection = {
-      text: 'hello',
-      selectionRectangles: [{ top: 1, left: 2, width: 10, height: 4, regionId: '1' }],
-    };
-
-    render(
-      <Host>
-        <TextField<EditEntityFormValues>
-          context="tpl-1"
-          label="Text"
-          field="metadata.simple_text.0.value"
-          type="text"
-          pdfFill={{ name: 'simple_text', propertyId: 'prop-1', coerceType: 'text' }}
-        />
-      </Host>
-    );
-
-    expect(screen.getByTestId('click-to-fill')).toHaveAttribute('aria-label', 'Click to fill');
   });
 });
