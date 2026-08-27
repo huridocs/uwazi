@@ -3,9 +3,7 @@ import { MAIN_TAB, SIDE_TAB } from '../../../../Tabs/tabIds.js';
 
 const noop = () => undefined;
 
-const createStubEntityTabsState = (
-  overrides: Partial<EntityTabsState> = {}
-): EntityTabsState => ({
+const createStubEntityTabsState = (overrides: Partial<EntityTabsState> = {}): EntityTabsState => ({
   activeMainTab: MAIN_TAB.DOCUMENT,
   activeSideTab: SIDE_TAB.RELATIONSHIPS,
   explicitSideTab: SIDE_TAB.RELATIONSHIPS,
