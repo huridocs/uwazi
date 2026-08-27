@@ -12,9 +12,11 @@ type ClusterProps = {
   stackOrder?: number;
   references: RelationshipMarker[];
   onPointClick: (marker: RelationshipMarker) => void;
+  onPointHover?: (marker: RelationshipMarker) => void;
   onMoreClick: (markers: RelationshipMarker[]) => void;
   activePointId?: string | null;
   onClusterClick?: (markers: RelationshipMarker[]) => void;
+  onClusterHover?: (markers: RelationshipMarker[]) => void;
   isOpen?: boolean;
   onToggle?: () => void;
 };
@@ -89,9 +91,11 @@ const ClusterComponent = ({
   stackOrder = 1,
   references,
   onPointClick,
+  onPointHover,
   onMoreClick,
   activePointId,
   onClusterClick,
+  onClusterHover,
   isOpen,
   onToggle,
 }: ClusterProps) => {
@@ -119,6 +123,9 @@ const ClusterComponent = ({
       <button
         data-testid="rail-marker"
         type="button"
+        onMouseEnter={() => {
+          onClusterHover?.(references);
+        }}
         onClick={() => {
           onClusterClick?.(references);
 
@@ -203,6 +210,7 @@ const ClusterComponent = ({
                 position={index * RAIL_MARKER_SPACING}
                 marker={marker}
                 onClick={onPointClick}
+                onHover={onPointHover}
                 isActive={markers.some(pointMarker => pointMarker._id === activePointId)}
                 representedCount={markers.length}
               />

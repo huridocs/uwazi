@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import type { RelationshipHubRow, RelationshipQueryPayload } from '#V2/api/relationships/types.js';
 import { queryKey, useQueryStore } from './useQueryStore.js';
 
@@ -16,6 +16,7 @@ const useRelationshipsQueryStore = ({
   fileId,
 }: UseRelationshipsQueryStoreParams) => {
   const currentKey = queryKey(sharedId, language, fileId);
+  const prevKeyRef = useRef(currentKey);
   const store = useQueryStore(seed, currentKey);
   const {
     seedFits,
@@ -73,6 +74,22 @@ const useRelationshipsQueryStore = ({
   ]);
 
   useEffect(() => {
+    const keyChanged = prevKeyRef.current !== currentKey;
+    prevKeyRef.current = currentKey;
+
+    if (seedFits && seed && !keyChanged) {
+      summaryInflight.current = null;
+      summaryLoadedKey.current = currentKey;
+      if (seed.anchorsLoaded) {
+        anchorsLoadedKey.current = currentKey;
+        anchorsOverlayRef.current = undefined;
+      } else if (anchorsLoadedKey.current !== currentKey) {
+        anchorsLoadedKey.current = null;
+      }
+      publish(generationRef.current, seed.hubRows);
+      return undefined;
+    }
+
     generationRef.current += 1;
     const generation = generationRef.current;
     resolvedKey.current = null;

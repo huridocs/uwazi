@@ -69,7 +69,7 @@ const RelationshipsTreeBranch = ({
   color,
   count,
   markerIds,
-  defaultExpanded = true,
+  defaultExpanded = false,
   children,
 }: RelationshipsTreeBranchProps) => {
   const [expanded, setExpanded] = useState(defaultExpanded);

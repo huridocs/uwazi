@@ -79,6 +79,10 @@ const useDocumentPdfRelationshipClicks = ({
     [entity?.sharedId, filterInputs, relationshipTypes]
   );
 
+  const handleRailHover = useCallback(() => {
+    ensureResolved().catch(() => undefined);
+  }, [ensureResolved]);
+
   const handleRailPointClick = useCallback(
     (marker: RelationshipMarker) => {
       if (!entity) return;
@@ -170,7 +174,13 @@ const useDocumentPdfRelationshipClicks = ({
     ]
   );
 
-  return { handleRailPointClick, handleClusterClick, handleClusterMoreClick, handleHighlightClick };
+  return {
+    handleRailHover,
+    handleRailPointClick,
+    handleClusterClick,
+    handleClusterMoreClick,
+    handleHighlightClick,
+  };
 };
 
 export { useDocumentPdfRelationshipClicks };

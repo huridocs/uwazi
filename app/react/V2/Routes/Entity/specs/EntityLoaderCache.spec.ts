@@ -2,6 +2,7 @@
  * @jest-environment jsdom
  */
 import { Entity } from '#V2/api/entities/types.js';
+import type { RelationshipQueryPayload } from '#V2/api/relationships/types.js';
 import { entityLoaderCache } from '../EntityLoaderCache.js';
 
 const sharedId = 'shared1';
@@ -17,6 +18,19 @@ const baseEntity: Entity = {
   user: 'user1',
   documents: [],
   attachments: [],
+};
+
+const summarySeed: RelationshipQueryPayload = {
+  language,
+  sharedId,
+  fileId: 'doc1',
+  hubRows: [],
+  anchorsLoaded: false,
+};
+
+const anchorsSeed: RelationshipQueryPayload = {
+  ...summarySeed,
+  anchorsLoaded: true,
 };
 
 describe('EntityLoaderCache entity entries', () => {
@@ -89,5 +103,46 @@ describe('EntityLoaderCache entity entries', () => {
     expect(
       entityLoaderCache.getEntity(sharedId, language, { requireRelationships: true })?.relations
     ).toEqual([{ entity: 'new' }]);
+  });
+});
+
+describe('EntityLoaderCache relationship query seeds', () => {
+  beforeEach(() => {
+    entityLoaderCache.invalidateAll();
+  });
+
+  it('serves cached seeds and skips summary-only when anchors are required', () => {
+    entityLoaderCache.setRelationshipQuery(sharedId, language, 'doc1', summarySeed);
+
+    expect(entityLoaderCache.getRelationshipQuery(sharedId, language, 'doc1')).toEqual(summarySeed);
+    expect(
+      entityLoaderCache.getRelationshipQuery(sharedId, language, 'doc1', { requireAnchors: true })
+    ).toBeUndefined();
+
+    entityLoaderCache.setRelationshipQuery(sharedId, language, 'doc1', anchorsSeed);
+    expect(
+      entityLoaderCache.getRelationshipQuery(sharedId, language, 'doc1', { requireAnchors: true })
+    ).toEqual(anchorsSeed);
+  });
+
+  it('does not downgrade an anchors seed to summary-only', () => {
+    entityLoaderCache.setRelationshipQuery(sharedId, language, 'doc1', anchorsSeed);
+    entityLoaderCache.setRelationshipQuery(sharedId, language, 'doc1', summarySeed);
+
+    expect(
+      entityLoaderCache.getRelationshipQuery(sharedId, language, 'doc1', { requireAnchors: true })
+    ).toEqual(anchorsSeed);
+  });
+
+  it('clears relationship seeds on invalidateEntity and invalidateAll', () => {
+    entityLoaderCache.setRelationshipQuery(sharedId, language, 'doc1', anchorsSeed);
+    entityLoaderCache.invalidateEntity(sharedId);
+
+    expect(entityLoaderCache.getRelationshipQuery(sharedId, language, 'doc1')).toBeUndefined();
+
+    entityLoaderCache.setRelationshipQuery(sharedId, language, 'doc1', anchorsSeed);
+    entityLoaderCache.invalidateAll();
+
+    expect(entityLoaderCache.getRelationshipQuery(sharedId, language, 'doc1')).toBeUndefined();
   });
 });

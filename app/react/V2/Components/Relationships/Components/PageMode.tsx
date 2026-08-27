@@ -12,10 +12,12 @@ import { RelationshipMarker } from '../types.js';
 type PageModeProps = {
   markerLayerHeight: number;
   onPointClick?: (marker: RelationshipMarker) => void;
+  onPointHover?: (marker: RelationshipMarker) => void;
   relationshipGroups?: RelationshipGroup[];
   allRelationshipGroups?: RelationshipGroup[];
   activeRelationshipId?: string | null;
   onMoreClick?: (markers: RelationshipMarker[]) => void;
+  onClusterHover?: (markers: RelationshipMarker[]) => void;
   currentPage?: number;
   pageHeight?: number;
 };
@@ -29,10 +31,12 @@ const getGroupMarkers = (group: RelationshipGroup): RelationshipMarker[] =>
 const PageModeComponent = ({
   markerLayerHeight,
   onPointClick,
+  onPointHover,
   relationshipGroups,
   allRelationshipGroups,
   activeRelationshipId = null,
   onMoreClick,
+  onClusterHover,
   currentPage,
   pageHeight,
 }: PageModeProps) => {
@@ -134,7 +138,13 @@ const PageModeComponent = ({
               onPointClick={marker => {
                 onPointClick?.(marker);
               }}
+              onPointHover={marker => {
+                onPointHover?.(marker);
+              }}
               onMoreClick={markersToShow => onMoreClick?.(markersToShow)}
+              onClusterHover={markersToShow => {
+                onClusterHover?.(markersToShow);
+              }}
             />
           );
         }
@@ -150,6 +160,9 @@ const PageModeComponent = ({
             onClick={marker => {
               setOpenClusterKey(null);
               onPointClick?.(marker);
+            }}
+            onHover={marker => {
+              onPointHover?.(marker);
             }}
           />
         );

@@ -123,7 +123,7 @@ describe('RelationshipsQueryProvider', () => {
 
   const mocks = (): QueryMocks => ({ loadSummary, loadAnchors, loadResolved });
 
-  it('replaces same-key revalidated seed and coalesces loadResolved', async () => {
+  it('preserves resolved overlays on same-key revalidated seed and coalesces loadResolved', async () => {
     const harness: Harness = { seed, language: 'en', mainDocument };
     const { result, rerender } = renderQuery(harness, mocks());
 
@@ -141,11 +141,36 @@ describe('RelationshipsQueryProvider', () => {
 
     expect(loadSummary).not.toHaveBeenCalled();
     expect(loadResolved).toHaveBeenCalledTimes(1);
-    expect(result.current.status.resolved).toBe(false);
+    expect(result.current.status.resolved).toBe(true);
     expect(
       result.current.relationships.some(relationship => relationship.to.entity === 'new-entity')
     ).toBe(true);
-    expect(hasQuoteText(result.current.relationships)).toBe(false);
+    expect(hasQuoteText(result.current.relationships)).toBe(true);
+  });
+
+  it('keeps client anchors when a summary-only same-key seed arrives', async () => {
+    const summarySeed: RelationshipQueryPayload = {
+      ...relationshipQueryFromEntity(entityWithRelations),
+      fileId: mainDocument._id,
+      anchorsLoaded: false,
+    };
+    const harness: Harness = { seed: summarySeed, language: 'en', mainDocument };
+    const { result, rerender } = renderQuery(harness, mocks());
+
+    await act(async () => {
+      await result.current.ensureAnchors();
+    });
+    expect(loadAnchors).toHaveBeenCalledTimes(1);
+
+    harness.seed = { ...summarySeed, hubRows: [...summarySeed.hubRows, ...extraHubRows] };
+    rerender();
+
+    await act(async () => {
+      await result.current.ensureAnchors();
+    });
+
+    expect(loadAnchors).toHaveBeenCalledTimes(1);
+    expect(loadSummary).not.toHaveBeenCalled();
   });
 
   it('loads summary only when UI language does not match seed', async () => {

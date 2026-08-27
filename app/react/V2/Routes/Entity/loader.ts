@@ -120,11 +120,27 @@ const loadSummaryAndAnchorsSeed = async (
 };
 
 const loadRelationshipQuery = async (services: V2Services, input: RelationshipQueryInput) => {
-  const query = services.relationshipsQuery;
-  if (input.fileId && needAnchorsForRequest(input.requestUrl, input.fileId, input.entity)) {
-    return loadSummaryAndAnchorsSeed(query, { ...input, fileId: input.fileId });
+  const needAnchors = Boolean(
+    input.fileId && needAnchorsForRequest(input.requestUrl, input.fileId, input.entity)
+  );
+  const cached = entityLoaderCache.getRelationshipQuery(
+    input.sharedId,
+    input.language,
+    input.fileId,
+    { requireAnchors: needAnchors }
+  );
+  if (cached) {
+    return cached;
   }
-  return loadSummarySeed(query, input);
+
+  const query = services.relationshipsQuery;
+  const payload =
+    needAnchors && input.fileId
+      ? await loadSummaryAndAnchorsSeed(query, { ...input, fileId: input.fileId })
+      : await loadSummarySeed(query, input);
+
+  entityLoaderCache.setRelationshipQuery(input.sharedId, input.language, input.fileId, payload);
+  return payload;
 };
 
 const createEntityLoader =

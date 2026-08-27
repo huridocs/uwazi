@@ -1,9 +1,14 @@
 import { SnippetsSearchResponse } from '#V2/api/types.js';
 import { Entity, FileType } from '#V2/api/entities/types.js';
+import type { RelationshipQueryPayload } from '#V2/api/relationships/types.js';
 import { isClient } from '#app/utils/index.js';
 
 type EntityCacheOptions = {
   requireRelationships?: boolean;
+};
+
+type RelationshipQueryCacheOptions = {
+  requireAnchors?: boolean;
 };
 
 const entityIncludesRelationships = (entity: Entity): boolean => 'relations' in entity;
@@ -75,11 +80,14 @@ class EntityLoaderCache {
 
   private searchResultsCache = new Map<string, CachedItem<SnippetsSearchResponse>>();
 
+  private relationshipQueryCache = new Map<string, CachedItem<RelationshipQueryPayload>>();
+
   private ttls = {
     entity: 5 * 60 * 1000,
     mainDocument: 5 * 60 * 1000,
     plaintext: 5 * 60 * 1000,
     searchResults: 5 * 60 * 1000,
+    relationshipQuery: 5 * 60 * 1000,
   };
 
   private limits = {
@@ -87,7 +95,12 @@ class EntityLoaderCache {
     mainDocument: 20,
     plaintext: 20,
     searchResults: 20,
+    relationshipQuery: 20,
   };
+
+  private relationshipQueryKey(sharedId: string, language: string, fileId?: string): string {
+    return `${sharedId}:${language}:${fileId ?? ''}`;
+  }
 
   getEntity(
     sharedId: string,
@@ -138,8 +151,59 @@ class EntityLoaderCache {
   invalidateEntity(sharedId: string): void {
     invalidateByPrefix(this.entityCache, `${sharedId}:`);
     invalidateByPrefix(this.mainDocumentCache, `${sharedId}:`);
+    this.invalidateRelationshipQuery(sharedId);
     this.invalidateSearchResults(sharedId);
     this.refetchSharedIds.add(sharedId);
+  }
+
+  getRelationshipQuery(
+    sharedId: string,
+    language: string,
+    fileId?: string,
+    { requireAnchors = false }: RelationshipQueryCacheOptions = {}
+  ): RelationshipQueryPayload | undefined {
+    if (!isClient) {
+      return undefined;
+    }
+
+    const cached = getCachedItem(
+      this.relationshipQueryCache,
+      this.relationshipQueryKey(sharedId, language, fileId),
+      this.ttls.relationshipQuery
+    );
+
+    if (!cached) {
+      return undefined;
+    }
+
+    if (requireAnchors && !cached.anchorsLoaded) {
+      return undefined;
+    }
+
+    return cached;
+  }
+
+  setRelationshipQuery(
+    sharedId: string,
+    language: string,
+    fileId: string | undefined,
+    data: RelationshipQueryPayload
+  ): void {
+    if (!isClient) {
+      return;
+    }
+
+    const key = this.relationshipQueryKey(sharedId, language, fileId);
+    const existing = getCachedItem(this.relationshipQueryCache, key, this.ttls.relationshipQuery);
+    if (existing?.anchorsLoaded && !data.anchorsLoaded) {
+      return;
+    }
+
+    setCachedItem(this.relationshipQueryCache, key, data, this.limits.relationshipQuery);
+  }
+
+  invalidateRelationshipQuery(sharedId: string): void {
+    invalidateByPrefix(this.relationshipQueryCache, `${sharedId}:`);
   }
 
   getMainDocument(sharedId: string, language: string): FileType | undefined {
@@ -214,10 +278,11 @@ class EntityLoaderCache {
     this.mainDocumentCache.clear();
     this.plaintextCache.clear();
     this.searchResultsCache.clear();
+    this.relationshipQueryCache.clear();
     this.refetchSharedIds.clear();
   }
 }
 
 export const entityLoaderCache = new EntityLoaderCache();
 export { entityIncludesRelationships };
-export type { EntityCacheOptions };
+export type { EntityCacheOptions, RelationshipQueryCacheOptions };
