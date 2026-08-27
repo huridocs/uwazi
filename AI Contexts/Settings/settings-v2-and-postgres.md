@@ -302,29 +302,64 @@ Integration-first: save + Menu/Filters translation keys, links merge, default la
 | ID | Decision |
 | --- | --- |
 | S1 | PG table **`settings`**. Sync namespace stays **`settings`**. |
-| S2 | `_id TEXT` + `tenant_id` composite PK (shared `PostgresTable` / `SyncLogWriter`). `_id` is 24-char ObjectId hex. Copy **preserves** Mongo `_id`. |
-| S3 | **One row per tenant:** `UNIQUE (tenant_id)`. Never insert a second settings row. |
-| S4 | Body is **`document JSONB`**. Mapper: domain ↔ `{ _id, ...document }`. Unknown keys survive (`strict: false`). Do not freeze today’s `settingsType` as columns. |
-| S5 | RLS + `tenant_isolation` in the **same** schema migration as `CREATE TABLE` (next delta: **016**). |
+| S2 | **`tenant_id` is PRIMARY KEY** (singleton identity). RLS is `tenant_id = current_tenant()` only — never `AND _id`. |
+| S3 | **`_id TEXT NOT NULL` is a sync surrogate**, not identity. 24-char ObjectId hex. Copy **preserves** Mongo `_id`. `SyncLogWriter` / updatelogs still use it. Inbound settings handler **ignores** payload `_id` and patches the tenant row. Do not special-case the settings namespace to drop `_id`. `PostgresTable` upsert conflict is `{ columns: ['tenant_id'] }`. |
+| S4 | **No single `document` blob.** Slice columns + semantic JSONB groups (mail, analytics, map, branding, site_preferences). Unknown Mongo keys go in **`extras JSONB`**, not `custom`. `__v` dropped on copy. |
+| S5 | RLS + `tenant_isolation` in the **same** schema migration as `CREATE TABLE` (next delta: **017** — 016 is entities published default). |
 | S6 | One store. Copy Mongo → PG, flip `postgresSettings`. No dual-write of the settings row. Flag is **one-way** after any PG write. |
 | S7 | New row (blank tenant) mints `_id` via `IdGenerator` in the use case / DS factory wiring — **not** `new ObjectId()` inside the PG DS. |
-| S8 | Language `$push`/`$pull` become read-modify-write of `document` inside the PG TM (singleton). Do not add a `settings_languages` table in v1. |
+| S8 | Language `$push`/`$pull` become read-modify-write of the **`languages` JSONB column** inside the PG TM (singleton). Do not add a `settings_languages` table in v1. |
 | S9 | `cached()`: when the flag is on, return the same PG DS as `default()` (translations pattern). Optional later: cache `languageKeys` with `onCommitted` clear — not required to ship. |
-| S10 | Sync handler factory branches on the same flag. Inbound still rewrites to the tenant’s `_id`. Outbound still `{ _id, languages }` until a separate product change. |
-| S11 | Public/admin field filtering stays in HTTP (`publicSettings.ts`), not in SQL column grants. JSONB stores secrets; GET still omits them for non-admin. |
+| S10 | Sync handler factory branches on the same flag. Inbound still applies onto the tenant singleton (ignore payload `_id`). Outbound still `{ _id, languages }` until a separate product change. |
+| S11 | Public/admin field filtering stays in HTTP (`publicSettings.ts`), not in SQL column grants. Secrets live in `sync` / `mail` / `public_form_destination`; GET still omits them for non-admin. |
 | S12 | Mixed store is P12: one use-case `run()`. While hybrid, Mongo TM for leftover Mongo collections; PG settings auto-commit unless the use-case TM **is** the PG TM (both settings and translations flags on → pass `postgresTransactionManager` as `this.transactionManager`). No DualStore. Staging-only hybrid. |
 
-### Schema (proposed)
+### Schema (locked)
 
-`app/api/core/infrastructure/postgresql/schema_migrations/016-create-settings-table.sql`
+`app/api/core/infrastructure/postgresql/schema_migrations/017-create-settings-table.sql`
 
 ```sql
 CREATE TABLE IF NOT EXISTS settings (
-  "_id"       TEXT NOT NULL,
-  "tenant_id" TEXT NOT NULL,
-  "document"  JSONB NOT NULL,
-  PRIMARY KEY ("_id", "tenant_id"),
-  UNIQUE ("tenant_id")
+  "tenant_id"                   TEXT NOT NULL PRIMARY KEY,
+  "_id"                         TEXT NOT NULL,
+
+  "languages"                   JSONB,
+  "links"                       JSONB,
+  "filters"                     JSONB,
+  "features"                    JSONB,
+  "theme_vars"                  JSONB,
+  "theme_assets"                JSONB,
+  "site_name"                   TEXT,
+  "custom_css"                  TEXT,
+  "custom_js"                   TEXT,
+  "sync"                        JSONB,
+  "private"                     BOOLEAN,
+  "new_name_generation"         BOOLEAN,
+  "open_public_endpoint"        BOOLEAN,
+  "allowed_public_templates"    JSONB,
+  "public_form_destination"     TEXT,
+  "ocr_service_enabled"         BOOLEAN,
+  "filter_unauthorized_related" BOOLEAN,
+  "project"                     TEXT,
+  "custom"                      JSONB,
+
+  "mail"                        JSONB,
+  -- mailerConfig, contactEmail, senderEmail (admin)
+
+  "analytics"                   JSONB,
+  -- analyticsTrackingId, matomoConfig (public)
+
+  "map"                         JSONB,
+  -- mapApiKey, mapLayers, mapStartingPoint, tilesProvider (public)
+
+  "branding"                    JSONB,
+  -- site_logo, favicon (public)
+
+  "site_preferences"            JSONB,
+  -- home_page, defaultLibraryView, allowcustomJS, cookiepolicy (public)
+
+  "extras"                      JSONB NOT NULL DEFAULT '{}'
+  -- unknown Mongo top-level keys only; not `custom`; drop __v on copy
 );
 
 ALTER TABLE settings ENABLE ROW LEVEL SECURITY;
@@ -334,11 +369,21 @@ CREATE POLICY tenant_isolation ON settings
   WITH CHECK (tenant_id = current_tenant());
 ```
 
-`current_tenant()` already exists (004).
+JSONB group envelopes (mapper, not extra SQL types):
+
+| Column | Keys |
+| --- | --- |
+| `mail` | `mailerConfig`, `contactEmail`, `senderEmail` |
+| `analytics` | `analyticsTrackingId`, `matomoConfig` |
+| `map` | `mapApiKey`, `mapLayers`, `mapStartingPoint`, `tilesProvider` |
+| `branding` | `site_logo`, `favicon` |
+| `site_preferences` | `home_page`, `defaultLibraryView`, `allowcustomJS`, `cookiepolicy` |
+
+`current_tenant()` already exists (004). Do not use a composite (`_id`, `tenant_id`) PK. Upsert conflict is `{ columns: ['tenant_id'] }`.
 
 ### Adapter
 
-1. `PostgresSettingsMapper` — `_id` ↔ domain `_id`; rest in `document` (strip `_id` / `__v` from JSONB).
+1. `PostgresSettingsMapper` — `_id` is a sync field on the row; slices/groups map to columns; unknown keys → `extras`. Strip `__v`.
 2. `PostgresSettingsDataSource` extends `PostgresDataSource`, table `settings`, implements the Phase 1 contract.
 3. Deps: `tenantId` + `mongoDb` (updatelogs) + `pgTransactionManager`. **No** Mongo TM in the PG DS (no ES hook).
 4. `sync: { syncNamespace: 'settings', syncDb }`.
@@ -362,7 +407,7 @@ Cutover per tenant: schema (cluster-wide) → copy → flip flag → smoke GET/P
 `MigrateCollectionToPostgres` + `SettingsMigrationConfig`:
 
 - `mongoCollection: 'settings'`, `pgTable: 'settings'`
-- Map `_id` to hex; remaining fields → `document` JSONB (keep `select:false` fields; copy is ops, not GET)
+- Map `_id` to hex (sync surrogate); peel known keys into columns; remainder → `extras` JSONB (keep former `select:false` fields in their columns; copy is ops, not GET)
 - Tenant must have **exactly one** Mongo settings doc; fail loudly if 0 or >1
 - Idempotent skip if the tenant already has any PG row (engine default)
 - CLI: `--collection settings` on `scripts/scripts.v2/migrateToPostgres.ts`
