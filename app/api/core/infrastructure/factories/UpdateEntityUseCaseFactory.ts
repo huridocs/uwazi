@@ -12,7 +12,10 @@ import { FilesDataSourceFactory } from './FilesDataSourceFactory.js';
 import { EntitiesServiceFactory } from './EntitiesServiceFactory.js';
 
 class UpdateEntityUseCaseFactory {
-  static default(overrides?: Partial<ConstructorParameters<typeof UpdateEntityUseCase>[0]>) {
+  static default(
+    overrides?: Partial<ConstructorParameters<typeof UpdateEntityUseCase>[0]>,
+    sessionId?: string
+  ) {
     const { tenant } = ExecutionContext;
 
     const transactionManager = ExecutionContext.transactionManager as MongoTransactionManager;
@@ -34,7 +37,14 @@ class UpdateEntityUseCaseFactory {
 
     const filesDS = FilesDataSourceFactory.default();
 
-    const fileService = FilesServiceFactory.default({ filesDS });
+    const fileService = FilesServiceFactory.default(
+      { filesDS },
+      {
+        userId: ExecutionContext.actor?._id?.toString(),
+        tenantName: tenant.name,
+        sessionId,
+      }
+    );
 
     const entitiesService = EntitiesServiceFactory.default();
 
