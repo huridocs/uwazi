@@ -4,7 +4,7 @@ import { DuplicatedKeyError } from '#api/common.v2/errors/DuplicatedKeyError.js'
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { Translation } from '#api/core/domain/translation/Translation.js';
-import testingDB, { DBFixture } from '#api/utils/testing_db.js';
+import { testingDB, DBFixture } from '#api/utils/testing_db.js';
 import { MongoTranslationsDataSource } from '../MongoTranslationsDataSource.js';
 
 const fixtures: DBFixture = {

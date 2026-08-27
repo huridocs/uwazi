@@ -113,7 +113,7 @@ export async function getDocument(requestParams, defaultLanguage, filename) {
 }
 
 export function loadTargetDocument(sharedId) {
-  return (dispatch, getState) => {
+  return async (dispatch, getState) => {
     if (!sharedId) {
       return Promise.resolve();
     }
@@ -132,7 +132,7 @@ export function loadTargetDocument(sharedId) {
 }
 
 export function reloadDocument(sharedId) {
-  return (dispatch, getState) =>
+  return async (dispatch, getState) =>
     Promise.all([
       getDocument(new RequestParams({ sharedId }), getState().locale),
       referencesAPI.get(new RequestParams({ sharedId })),

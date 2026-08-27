@@ -35,6 +35,7 @@ const ItemSnippet = ({ snippets, onSnippetClick, template }) => {
     <div className="item-snippet-wrapper">
       {snippetElement}
       <div>
+        {/* oxlint-disable-next-line jsx-a11y/anchor-is-valid -- anchor styled as button */}
         <a onClick={onSnippetClick}>{t('System', 'Show more')}</a>
       </div>
     </div>

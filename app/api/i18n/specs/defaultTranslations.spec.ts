@@ -1,4 +1,4 @@
-/* eslint-disable node/no-restricted-import */
+/* eslint-disable no-restricted-imports */
 import { readdir } from 'fs/promises';
 import request from 'supertest';
 import waitForExpect from 'wait-for-expect';

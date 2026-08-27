@@ -1,6 +1,6 @@
-import testingDB from '#api/utils/testing_db.js';
+import { testingDB } from '#api/utils/testing_db.js';
 import { config } from '#api/config.js';
-// eslint-disable-next-line node/no-restricted-import
+// eslint-disable-next-line no-restricted-imports
 import fs from 'fs/promises';
 import migration from '../index.js';
 import { fixtures } from './fixtures.js';
@@ -16,7 +16,7 @@ async function exists(path) {
 
 async function clearFiles() {
   const thumbnails = (await fs.readdir(__dirname)).filter(f => f.match(/\.jpg/));
-  return Promise.all(thumbnails.map(f => fs.unlink(`${__dirname}/${f}`)));
+  return Promise.all(thumbnails.map(async f => fs.unlink(`${__dirname}/${f}`)));
 }
 
 describe('migration Re create thumbnails', () => {

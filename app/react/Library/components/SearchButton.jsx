@@ -27,6 +27,7 @@ class SearchButton extends Component {
     }
 
     return (
+      // oxlint-disable-next-line jsx-a11y/anchor-is-valid -- anchor styled as button
       <a href="#" className={`search-button btn ${activeClass}`} onClick={toggle}>
         <div className="searchButton-open">
           <Icon icon="funnel-filter" />

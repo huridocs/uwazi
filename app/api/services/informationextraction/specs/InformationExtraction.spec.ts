@@ -1,7 +1,7 @@
 /* eslint-disable global-require */
 /* eslint-disable max-statements */
 
-// eslint-disable-next-line node/no-restricted-import
+// eslint-disable-next-line no-restricted-imports
 import fs from 'fs/promises';
 
 import { ObjectId } from 'mongodb';
@@ -13,7 +13,7 @@ import * as setupSockets from '#api/socketio/setupSockets.js';
 import { sortByStrings } from '#shared/data_utils/objectSorting.js';
 import { PropertyTypeSchema } from '#shared/types/commonTypes.js';
 
-import testingDB from '#api/utils/testing_db.js';
+import { testingDB } from '#api/utils/testing_db.js';
 import entities from '#api/entities/index.js';
 import { EnforcedWithId } from '#api/odm/index.js';
 import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';

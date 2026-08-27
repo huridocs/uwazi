@@ -8,7 +8,7 @@ import { LibraryLayout } from '#app/Library/LibraryLayout.js';
 
 jest.mock('#app/appRoutes');
 jest.mock('#app/Library/helpers/requestState.js', () => ({
-  requestState: jest.fn(() => Promise.resolve([])),
+  requestState: jest.fn(async () => Promise.resolve([])),
 }));
 
 describe('Library', () => {

@@ -11,8 +11,8 @@ describe('contact', () => {
     await testingEnvironment.setUp(fixtures);
   });
 
-  afterAll(done => {
-    testingEnvironment.tearDown().then(done);
+  afterAll(async () => {
+    await testingEnvironment.tearDown();
   });
 
   describe('sendMessage', () => {

@@ -169,7 +169,7 @@ describe('DeleteTemplateUseCase', () => {
     it('should handle a non existing template', async () => {
       try {
         await createSut().execute({ templateId: new ObjectId().toString() });
-      } catch (error) {
+      } catch (_) {
         throw new Error(
           'should not delete the template and throw an error because it is the default template'
         );

@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { createStore, Provider } from 'jotai';
 import { createMemoryRouter, RouterProvider } from 'react-router';
-import { render } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
 import type { Entity, FileType } from '#V2/api/entities/types.js';
 import { relationshipTypesAtom, templatesAtom } from '#V2/atoms/index.js';
 import {
@@ -70,8 +70,10 @@ const renderRelationshipsPanel = ({
   store.set(relationshipTypesAtom, [{ _id: 'relA', name: 'Related' }]);
   store.set(templatesAtom, [{ _id: 'template1', color: '#faca15', name: 'Entity' }]);
   const relationshipQuery = relationshipQueryFromEntity(entity, mainDocument?._id);
+  const stub = relationshipsQueryStubFromEntity(entity, mainDocument?._id);
+  const loadResolved = jest.fn(stub.loadResolved);
   const services = createTestServices({
-    relationshipsQuery: relationshipsQueryStubFromEntity(entity, mainDocument?._id),
+    relationshipsQuery: { ...stub, loadResolved },
   });
 
   const router = createMemoryRouter([
@@ -104,6 +106,12 @@ const renderRelationshipsPanel = ({
   return {
     onFocusDocument,
     pdf,
+    loadResolved,
+    waitForResolved: async () => {
+      await waitFor(() => expect(loadResolved).toHaveBeenCalled());
+      const pending = loadResolved.mock.results[0]?.value;
+      if (pending) await pending;
+    },
     ...render(<RouterProvider router={router} />),
   };
 };

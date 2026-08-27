@@ -1,6 +1,6 @@
 import { Connection } from 'mongoose';
 import path from 'path';
-import testingDB from '#api/utils/testing_db.js';
+import { testingDB } from '#api/utils/testing_db.js';
 import { DB } from '#api/odm/index.js';
 import { migrator } from '#api/migrations/migrator.js';
 import { runMigration } from '#api/migrations/migrate.js';

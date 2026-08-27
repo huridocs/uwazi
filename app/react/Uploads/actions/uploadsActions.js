@@ -64,7 +64,7 @@ export function upload(docId, file, endpoint = 'files/upload/document') {
 }
 
 export function publicSubmit(data, remote = false) {
-  return dispatch =>
+  return async dispatch =>
     new Promise(resolve => {
       const request = superagent
         .post(remote ? `${APIURL}remotepublic` : `${APIURL}public`)

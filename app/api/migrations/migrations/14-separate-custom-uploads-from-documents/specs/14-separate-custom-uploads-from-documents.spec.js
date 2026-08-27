@@ -1,7 +1,7 @@
-//eslint-disable-next-line node/no-restricted-import
+//eslint-disable-next-line no-restricted-imports
 import fs from 'fs';
 import path from 'path';
-import testingDB from '#api/utils/testing_db.js';
+import { testingDB } from '#api/utils/testing_db.js';
 import { config } from '#api/config.js';
 import migration from '../index.js';
 import fixtures from './fixtures.js';
@@ -40,8 +40,8 @@ describe('migration separate-custom-uploads-from-documents', () => {
     done();
   });
 
-  afterAll(done => {
-    testingDB.disconnect().then(done);
+  afterAll(async () => {
+    await testingDB.disconnect();
   });
 
   it('should have a delta number', () => {
@@ -67,7 +67,7 @@ describe('migration separate-custom-uploads-from-documents', () => {
     });
     const initFiles = async () =>
       Promise.all(
-        files.map(f =>
+        files.map(async f =>
           asyncFs.writeFile(
             path.join(config.defaultTenant.uploadedDocuments, f),
             `contents for file ${f}`
@@ -78,10 +78,10 @@ describe('migration separate-custom-uploads-from-documents', () => {
       await initFiles();
       await migration.up(testingDB.mongodb);
       const filesExistInOldPath = await Promise.all(
-        files.map(f => fileExists(path.join(config.defaultTenant.uploadedDocuments, f)))
+        files.map(async f => fileExists(path.join(config.defaultTenant.uploadedDocuments, f)))
       );
       const filesExistInNewPath = await Promise.all(
-        files.map(f => fileExists(path.join(config.defaultTenant.customUploads, f)))
+        files.map(async f => fileExists(path.join(config.defaultTenant.customUploads, f)))
       );
       expect(filesExistInOldPath).toEqual([false, false, false]);
       expect(filesExistInNewPath).toEqual([true, true, true]);

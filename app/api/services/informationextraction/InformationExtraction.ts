@@ -961,7 +961,7 @@ class InformationExtraction {
     // concurrent process triggers while acceptance is running.
     try {
       await ixmodels.startFindingSuggestions(new ObjectId(extractorId));
-    } catch (e) {
+    } catch (_) {
       /* empty */
     }
 
@@ -1042,7 +1042,7 @@ class InformationExtraction {
           );
           return;
         }
-      } catch (error) {
+      } catch (_) {
         await this.handleFailedStatus(message, currentModel);
       }
 

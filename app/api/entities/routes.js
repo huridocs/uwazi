@@ -1,5 +1,6 @@
 /* eslint-disable max-lines */
 /* eslint-disable max-statements */
+import * as cookie from 'cookie';
 import activitylogMiddleware from '#api/activitylog/activitylogMiddleware.js';
 import { UploadMiddleware } from '#api/core/infrastructure/express/middlewares/UploadMiddleware.js';
 import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
@@ -26,7 +27,7 @@ function coerceValues(value, type, locale) {
       try {
         const numeric = Number.parseFloat(value);
         return !numeric ? { success: false } : { success: true, value: numeric };
-      } catch (e) {
+      } catch (_) {
         return { success: false };
       }
     case 'text':
@@ -73,12 +74,17 @@ export default app => {
     '/api/entities',
     needsAuthorization(['admin', 'editor', 'collaborator']),
     activitylogMiddleware,
-    (req, res, next) => new UploadMiddleware(LoggerFactory.default()).multiple()(req, res, next),
+    async (req, res, next) =>
+      new UploadMiddleware(LoggerFactory.default()).multiple()(req, res, next),
     async (req, res, next) => {
       const entityToSave = req.body.entity ? JSON.parse(req.body.entity) : req.body;
 
       if (!entityToSave?.sharedId) {
-        const result = await EntityFacade.create(entityToSave, req.language, req.inputFiles);
+        const sessionId = cookie.parse(req.get('cookie') || '')['connect.sid'];
+        const result = await EntityFacade.create(entityToSave, req.language, {
+          inputFiles: req.inputFiles,
+          sessionId,
+        });
         const [entityInTargetLanguage] = await EntitiesDAOFactory.default({
           user: User.createFrom(req.user),
         }).find({ language: req.language, sharedId: result.sharedId }, { withFiles: true });
@@ -161,7 +167,7 @@ export default app => {
   app.post(
     '/api/entities/create-from-pdf',
     needsAuthorization(['admin', 'editor', 'collaborator']),
-    (req, res, next) =>
+    async (req, res, next) =>
       new UploadMiddleware(LoggerFactory.default()).singleUpload('document')(req, res, next),
     CreateEntityFromPDFController.createHandler(),
     activitylogMiddleware

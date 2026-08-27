@@ -204,7 +204,7 @@ const RelationshipsSyncedDocumentView = ({
         directedRelationshipsFromEntity(entity)
       ).find(item => item._id === relationshipId);
       if (marker) {
-        selectRelationship(marker, { scrollPanel: true });
+        selectRelationship(marker, { scrollPanel: true }).catch(() => undefined);
         return;
       }
       setScrollToRelationshipPanel(relationshipId);
@@ -240,7 +240,9 @@ const RelationshipsSyncedDocumentView = ({
           currentPage={currentPage}
           pageHeight={pageHeight}
           activeRelationshipId={activeRelationshipId}
-          onPointClick={marker => selectRelationship(marker, { scrollPanel: true })}
+          onPointClick={async marker =>
+            selectRelationship(marker, { scrollPanel: true }).catch(() => undefined)
+          }
           onClusterClick={handleClusterClick}
         />
       )}

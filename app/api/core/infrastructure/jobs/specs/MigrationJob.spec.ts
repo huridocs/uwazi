@@ -5,7 +5,7 @@ import { createMockLogger } from '#api/core/libs/logger/infrastructure/MockLogge
 import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { tenants } from '#api/tenants/tenantContext.js';
-import testingDB from '#api/utils/testing_db.js';
+import { testingDB } from '#api/utils/testing_db.js';
 import { PgMigrator } from '../../postgresql/PgMigrator.js';
 
 class FakePgMigrator {

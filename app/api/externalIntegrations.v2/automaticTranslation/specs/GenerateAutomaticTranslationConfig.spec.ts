@@ -10,7 +10,7 @@ import { GenerateATConfigError } from '../errors/generateATErrors.js';
 import { SemanticConfig, semanticConfigSchema } from '../types/SemanticConfig.js';
 import { ValidationError, Validator } from '../infrastructure/Validator.js';
 import { AutomaticTranslationFactory } from '../AutomaticTranslationFactory.js';
-import testingDB from '#api/utils/testing_db.js';
+import { testingDB } from '#api/utils/testing_db.js';
 import { Settings } from '#shared/types/settingsType.js';
 
 const factory = getFixturesFactory();

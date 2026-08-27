@@ -5,7 +5,7 @@ import {
   ModelWithPermissions,
 } from '#api/odm/ModelWithPermissions.js';
 import { permissionsContext } from '#api/permissions/permissionsContext.js';
-import testingDB from '#api/utils/testing_db.js';
+import { testingDB } from '#api/utils/testing_db.js';
 import * as mongoose from 'mongoose';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 

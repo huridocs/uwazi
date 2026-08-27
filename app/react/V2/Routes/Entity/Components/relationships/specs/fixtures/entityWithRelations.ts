@@ -18,7 +18,10 @@ const entityWithRelations = {
       entityData: { title: 'Source', template: 'template1' },
       reference: {
         text: 'alpha snippet',
-        selectionRectangles: [{ top: 50, left: 0, width: 10, height: 10, page: '2' }],
+        selectionRectangles: [
+          { top: 50, left: 0, width: 10, height: 10, page: '2' },
+          { top: 65, left: 5, width: 12, height: 8, page: '2' },
+        ],
       },
     },
     {

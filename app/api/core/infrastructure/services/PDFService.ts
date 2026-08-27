@@ -1,11 +1,11 @@
-// eslint-disable-next-line node/no-restricted-import
+// eslint-disable-next-line no-restricted-imports
 import { PDFService } from '#api/core/application/contracts/PDFService.js';
 import { DomainError } from '#api/core/domain/error/DomainError.js';
 import { Result } from '#api/core/libs/Result.js';
 import { ShellExecutor } from '#api/core/libs/shell/ShellExecutor.js';
 import { FileContents } from '#api/core/domain/files/FileContents.js';
 import franc from 'franc';
-// eslint-disable-next-line node/no-restricted-import
+// eslint-disable-next-line no-restricted-imports
 import { DiskFile } from '#api/core/infrastructure/files/DiskFile.js';
 import * as os from 'os';
 import path from 'path';

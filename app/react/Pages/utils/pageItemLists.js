@@ -14,7 +14,7 @@ const extractAdditionalOptions = (content, match) => {
     matchString = `(${optionsMatch})`;
     try {
       options = risonDecodeOrIgnore(`(${optionsMatch})`);
-    } catch (err) {
+    } catch (_) {
       options = {};
     }
   }

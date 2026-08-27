@@ -17,9 +17,9 @@ import { UserRole } from '#shared/types/userSchema.js';
 import { UserSchema } from '#shared/types/userType.js';
 
 import * as setupSockets from '#api/socketio/setupSockets.js';
-// eslint-disable-next-line node/no-restricted-import
+// eslint-disable-next-line no-restricted-imports
 import { createReadStream } from 'fs';
-// eslint-disable-next-line node/no-restricted-import
+// eslint-disable-next-line no-restricted-imports
 import { copyFile } from 'fs/promises';
 import { OcrModel, OcrStatus } from '../../services/ocr/ocrModel.js';
 import { TaskManager } from '../../services/tasksmanager/TaskManager.js';

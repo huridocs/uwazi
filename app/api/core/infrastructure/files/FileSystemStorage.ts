@@ -1,4 +1,4 @@
-/* eslint-disable node/no-restricted-import */
+/* eslint-disable no-restricted-imports */
 import { createWriteStream } from 'fs';
 import { access, mkdir, rm } from 'fs/promises';
 

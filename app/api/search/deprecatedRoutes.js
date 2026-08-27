@@ -19,7 +19,7 @@ export default app => {
       },
       required: ['query'],
     }),
-    (req, res, next) =>
+    async (req, res, next) =>
       EntitiesDAOFactory.default()
         .count({ template: req.query.templateId })
         .then(results => res.json(results))
@@ -31,7 +31,7 @@ export default app => {
     parseQuery,
     validation.validateRequest(searchParamsSchema),
 
-    (req, res, next) => {
+    async (req, res, next) => {
       const action = req.query.geolocation ? 'searchGeolocations' : 'search';
 
       return search[action](req.query, req.language, req.user)
@@ -59,7 +59,7 @@ export default app => {
       },
       'query'
     ),
-    (req, res, next) =>
+    async (req, res, next) =>
       search
         .searchSnippets(req.query.searchTerm, req.query.id, req.language, req.user)
         .then(results => res.json(results))

@@ -5,7 +5,7 @@ import { useMetadataEditing } from '../Components/context/index.js';
 import { MAIN_TAB, SIDE_TAB, isValidMainTab, isValidSideTab, type SideTabId } from './tabIds.js';
 import {
   keepMetadataTab,
-  resolveActiveTabId,
+  resolveControlledTabId,
 } from '../Components/context/metadataEditingSession.js';
 import { DocumentTab } from './tabsContent/DocumentTab.js';
 import { MetadataTab } from './tabsContent/MetadataTab.js';
@@ -31,7 +31,7 @@ const SideTabsContent = ({
 }: SideTabsContentProps) => {
   const { activeTabId: atomActiveTabId } = useTabGroup('entity-side');
   const { activeTabId: mainAtomTabId } = useTabGroup('entity-main');
-  const resolvedTabId = resolveActiveTabId(atomActiveTabId, urlActiveTabId);
+  const resolvedTabId = resolveControlledTabId(urlActiveTabId, atomActiveTabId);
   const activeTabId = isValidSideTab(resolvedTabId) ? resolvedTabId : urlActiveTabId;
   const mainTabId = isValidMainTab(mainAtomTabId) ? mainAtomTabId : undefined;
   const showDocumentRail = mainTabId !== MAIN_TAB.METADATA;

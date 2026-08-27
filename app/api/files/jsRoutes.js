@@ -35,7 +35,8 @@ const routes = app => {
   app.post(
     '/api/public',
     cors(corsOptions),
-    (req, res, next) => new UploadMiddleware(LoggerFactory.default()).multiple()(req, res, next),
+    async (req, res, next) =>
+      new UploadMiddleware(LoggerFactory.default()).multiple()(req, res, next),
     publicAPIMiddleware,
     activitylogMiddleware,
     (req, _res, next) => {
@@ -72,7 +73,9 @@ const routes = app => {
         permissionsContext.setUserInContext(userForContext);
         ExecutionContext.actor = User.createFrom(userForContext);
 
-        const result = await EntityFacade.create(entity, req.language, req.inputFiles);
+        const result = await EntityFacade.create(entity, req.language, {
+          inputFiles: req.inputFiles,
+        });
 
         const [entityWithFiles] = await EntitiesDAOFactory.default({
           user: User.createFrom(userForContext),

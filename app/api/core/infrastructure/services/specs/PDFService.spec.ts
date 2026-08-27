@@ -1,6 +1,6 @@
-// eslint-disable-next-line node/no-restricted-import
+// eslint-disable-next-line no-restricted-imports
 import { createWriteStream } from 'fs';
-// eslint-disable-next-line node/no-restricted-import
+// eslint-disable-next-line no-restricted-imports
 import { readFile } from 'fs/promises';
 
 import { TestUtils } from '#api/common.v2/utils/Test.js';

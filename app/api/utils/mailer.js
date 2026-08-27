@@ -18,7 +18,7 @@ if (Object.keys(mailerConfig).length) {
 
 // eslint-disable-next-line import/no-default-export
 export default {
-  send(mailOptions) {
+  async send(mailOptions) {
     let transporter;
     return new Promise((resolve, reject) => {
       SettingsDataSourceFactory.default()

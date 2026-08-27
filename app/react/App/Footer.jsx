@@ -66,6 +66,7 @@ class Footer extends Component {
           })()}
           {this.props.cookiepolicy && (
             <li className="footer-nav_item">
+              {/* oxlint-disable-next-line jsx-a11y/anchor-is-valid -- anchor styled as button */}
               <a
                 href="#"
                 onClick={e => {
