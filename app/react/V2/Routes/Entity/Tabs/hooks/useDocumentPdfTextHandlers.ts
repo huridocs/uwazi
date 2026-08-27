@@ -2,7 +2,6 @@ import { useState, useEffect, useCallback } from 'react';
 import { useAtomValue } from 'jotai';
 import type { TextSelection } from '@huridocs/react-text-selection-handler';
 import { settingsAtom, userAtom } from '#V2/atoms/index.js';
-import { useTabGroup } from '#V2/Components/UI/index.js';
 import { convertTextSelectionToTocEntry } from '#V2/Routes/Entity/Components/ToC/index.js';
 import {
   useDocumentPdf,
@@ -10,13 +9,10 @@ import {
   useRelationshipsActions,
   useTocActions,
 } from '#V2/Routes/Entity/Components/context/index.js';
-import { useUpdateEntityUrl } from '../../entityUrlState.js';
-import { SIDE_TAB_PARAM } from '../../urlParams.js';
+import { useEntityTabNavigation } from '../EntityTabsContext.js';
 import { SIDE_TAB } from '../tabIds.js';
-import { useEntityTabNavigation } from './useEntityTabNavigation.js';
 
 function useDocumentPdfTextHandlers() {
-  const updateEntityUrl = useUpdateEntityUrl();
   const { ocrServiceEnabled } = useAtomValue(settingsAtom);
   const user = useAtomValue(userAtom);
   const [userIsAdminOrEditor, setUserIsAdminOrEditor] = useState(false);
@@ -29,8 +25,7 @@ function useDocumentPdfTextHandlers() {
   const { isEditing } = useMetadataEditing();
   const { addEntry } = useTocActions();
   const { openCreateRelationship } = useRelationshipsActions();
-  const { focusRelationshipsPanel } = useEntityTabNavigation();
-  const { selectTab: selectSideTab } = useTabGroup('entity-side');
+  const { focusRelationshipsPanel, focusSideTab } = useEntityTabNavigation();
 
   useEffect(() => {
     setUserIsAdminOrEditor((user?._id && ['admin', 'editor'].includes(user.role)) || false);
@@ -68,14 +63,9 @@ function useDocumentPdfTextHandlers() {
     (selection: TextSelection) => {
       const tocEntry = convertTextSelectionToTocEntry(selection);
       addEntry(tocEntry);
-      selectSideTab(SIDE_TAB.TOC);
-      updateEntityUrl({
-        hash: next => {
-          next.set(SIDE_TAB_PARAM, SIDE_TAB.TOC);
-        },
-      });
+      focusSideTab(SIDE_TAB.TOC);
     },
-    [addEntry, selectSideTab, updateEntityUrl]
+    [addEntry, focusSideTab]
   );
 
   return {

@@ -15,7 +15,7 @@ import {
   useRelationshipsActions,
   useRelationshipsSelection,
 } from '#V2/Routes/Entity/Components/context/index.js';
-import { useEntityTabNavigation } from '#V2/Routes/Entity/Tabs/hooks/useEntityTabNavigation.js';
+import { useEntityTabNavigation } from '#V2/Routes/Entity/Tabs/EntityTabsContext.js';
 import { useRelationshipBulkDelete } from '../hooks/useRelationshipBulkDelete.js';
 import { useEntityRelationshipMarkers } from '../hooks/useDocumentRelationships.js';
 

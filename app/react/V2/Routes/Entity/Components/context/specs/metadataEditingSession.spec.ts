@@ -4,6 +4,7 @@
 import {
   keepMetadataTab,
   resolveActiveTabId,
+  resolveControlledTabId,
   resolveFormMountHost,
 } from '../metadataEditingSession.js';
 
@@ -11,6 +12,11 @@ describe('metadataEditingSession', () => {
   it('resolveActiveTabId prefers the atom id', () => {
     expect(resolveActiveTabId('toc', 'metadata')).toBe('toc');
     expect(resolveActiveTabId(undefined, 'metadata')).toBe('metadata');
+  });
+
+  it('resolveControlledTabId prefers the controlled id', () => {
+    expect(resolveControlledTabId('metadata', 'toc')).toBe('metadata');
+    expect(resolveControlledTabId(undefined, 'toc')).toBe('toc');
   });
 
   it('keepMetadataTab keeps the form mount host while editing', () => {

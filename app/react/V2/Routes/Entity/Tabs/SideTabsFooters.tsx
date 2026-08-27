@@ -5,7 +5,7 @@ import { useMetadataEditing } from '../Components/context/index.js';
 import { SIDE_TAB, isValidSideTab, type SideTabId } from './tabIds.js';
 import {
   keepMetadataTab,
-  resolveActiveTabId,
+  resolveControlledTabId,
 } from '../Components/context/metadataEditingSession.js';
 import { DocumentTabFooter } from './footers/DocumentTabFooter.js';
 import { MetadataTabFooter } from './footers/MetadataTabFooter.js';
@@ -23,7 +23,7 @@ type SideTabsFootersProps = {
 
 const SideTabsFooters = ({ activeTabId: urlActiveTabId, mainDocument }: SideTabsFootersProps) => {
   const { activeTabId: atomActiveTabId } = useTabGroup('entity-side');
-  const resolvedTabId = resolveActiveTabId(atomActiveTabId, urlActiveTabId);
+  const resolvedTabId = resolveControlledTabId(urlActiveTabId, atomActiveTabId);
   const activeTabId = isValidSideTab(resolvedTabId) ? resolvedTabId : urlActiveTabId;
   const { isEditing, formMountHost } = useMetadataEditing();
   const metadataActive = activeTabId === SIDE_TAB.METADATA;

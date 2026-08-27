@@ -18,7 +18,7 @@ import { parseEntityHash } from './entityUrlState.js';
 import { MAIN_TAB_PARAM, SIDE_TAB_PARAM, VIEW_MODE_PARAM } from './Components/index.js';
 import { MAIN_TAB, isValidMainTab } from './Tabs/tabIds.js';
 import { getSideTabButtons } from './Tabs/sideTabSets.js';
-import { resolveSideTabId } from './Tabs/hooks/resolveSideTabId.js';
+import { resolveSideTabId } from './Tabs/entityTabState.js';
 import { documentRelationshipRailVisible } from './Tabs/documentRelationshipRail.js';
 import { loadEntityPageView } from './loadEntityPageView.js';
 import { LoaderResponse } from './types.js';

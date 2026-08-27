@@ -1,7 +1,7 @@
 /**
  * @jest-environment jsdom
  */
-import { screen, within } from '@testing-library/react';
+import { screen, within, waitFor } from '@testing-library/react';
 import userEvent, { type UserEvent } from '@testing-library/user-event';
 import { defaultPdf, renderRelationshipsPanel } from './helpers/renderRelationshipsPanel.js';
 import { entityWithRelations } from './fixtures/entityWithRelations.js';
@@ -57,7 +57,8 @@ describe('Relationships panel', () => {
     it('jumps to the quoted page and highlights the source text', async () => {
       const user = userEvent.setup();
       const pdf = defaultPdf();
-      renderRelationshipsPanel({ pdf });
+      const { waitForResolved } = renderRelationshipsPanel({ pdf });
+      await waitForResolved();
 
       await expandAll(user);
       await user.click(screen.getByText('Related Entity'));
@@ -71,10 +72,32 @@ describe('Relationships panel', () => {
       expect(getSelectionState().getAttribute('data-active')).not.toBe('');
     });
 
+    it('highlights every selection rectangle after resolved loads', async () => {
+      const user = userEvent.setup();
+      const pdf = defaultPdf();
+      const { waitForResolved } = renderRelationshipsPanel({
+        pdf,
+        mainDocument: { _id: 'f1', filename: 'doc.pdf' },
+      });
+      await waitForResolved();
+
+      await expandAll(user);
+      await user.click(screen.getByText('Related Entity'));
+
+      await waitFor(() => {
+        const multiRectCall = pdf.toggleHighlights.mock.calls.find(([highlights]) => {
+          const pageHighlights = highlights?.[0]?.[2];
+          return pageHighlights?.[0]?.textSelection?.selectionRectangles?.length === 2;
+        });
+        expect(multiRectCall).toBeDefined();
+      });
+    });
+
     it('clears the highlight when the same reference is selected again', async () => {
       const user = userEvent.setup();
       const pdf = defaultPdf();
-      renderRelationshipsPanel({ pdf });
+      const { waitForResolved } = renderRelationshipsPanel({ pdf });
+      await waitForResolved();
 
       await expandAll(user);
       await user.click(screen.getByText('Related Entity'));
@@ -84,6 +107,36 @@ describe('Relationships panel', () => {
 
       expect(getSelectionState().getAttribute('data-active')).toBe('');
       expect(pdf.toggleHighlights).toHaveBeenLastCalledWith([]);
+    });
+  });
+
+  describe('resolved fetch triggers', () => {
+    it('loads resolved hubs when the relationships panel mounts', async () => {
+      const { loadResolved, waitForResolved } = renderRelationshipsPanel();
+      await waitForResolved();
+      expect(loadResolved).toHaveBeenCalledTimes(1);
+    });
+
+    it('does not re-fetch resolved when Expand all is clicked after mount', async () => {
+      const user = userEvent.setup();
+      const { loadResolved, waitForResolved } = renderRelationshipsPanel();
+      await waitForResolved();
+      loadResolved.mockClear();
+
+      await expandAll(user);
+
+      expect(loadResolved).not.toHaveBeenCalled();
+      expect(screen.getByText(/target quoted text/)).toBeInTheDocument();
+    });
+
+    it('shows reference text when a relationship group is expanded', async () => {
+      const user = userEvent.setup();
+      const { waitForResolved } = renderRelationshipsPanel();
+
+      await user.click(screen.getAllByRole('button', { name: /Related/ })[0]);
+      await waitForResolved();
+
+      expect(screen.getByText(/target quoted text/)).toBeInTheDocument();
     });
   });
 
