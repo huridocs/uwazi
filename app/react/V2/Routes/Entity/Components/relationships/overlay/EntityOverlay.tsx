@@ -8,6 +8,7 @@ import {
   useEntityOverlay,
   useEntityScopedEntity,
   useEntityRelationshipMarkers,
+  useEnsureResolved,
 } from '#V2/Routes/Entity/Components/context/index.js';
 import { EntityOverlayContent } from './EntityOverlayContent.js';
 import { useOverlayEntity } from './useOverlayEntity.js';
@@ -22,6 +23,7 @@ const EntityOverlay = () => {
   const { target, closeEntityOverlay } = useEntityOverlay();
   const selfEntity = useEntityScopedEntity();
   const sourceMarkers = useEntityRelationshipMarkers();
+  const ensureResolved = useEnsureResolved();
   const templates = useAtomValue(templatesAtom);
   const settings = useAtomValue(settingsAtom);
   const panelRef = useRef<HTMLDivElement>(null);
@@ -46,9 +48,10 @@ const EntityOverlay = () => {
       setEntered(false);
       return undefined;
     }
+    ensureResolved().catch(() => undefined);
     const frame = window.requestAnimationFrame(() => setEntered(true));
     return () => window.cancelAnimationFrame(frame);
-  }, [isOpen]);
+  }, [ensureResolved, isOpen]);
 
   useEffect(() => {
     if (!isOpen) return undefined;

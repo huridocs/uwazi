@@ -8,6 +8,8 @@ import {
   EntityScopedProvider,
   useDocumentPdfActions,
 } from '#V2/Routes/Entity/Components/context/index.js';
+import { createStubEntityTabsState } from './createStubEntityTabsState.js';
+import { EntityTabsProvider } from '#V2/Routes/Entity/Tabs/EntityTabsContext.js';
 import { ServicesProvider } from '#V2/services/ServicesProvider.js';
 import { createTestServices } from '#V2/testing/createTestServices.js';
 import { RelationshipsActionBar } from '../../panel/RelationshipsActionBar.js';
@@ -59,11 +61,13 @@ const renderRelationshipsActionBar = ({
               language={entityWithRelations.language ?? 'en'}
               relationshipQuery={relationshipQuery}
             >
-              <PdfControllerSetup />
-              <RelationshipsPanel />
-              <RelationshipsActionBar />
-              <CreateRelationshipModal />
-              <ManageRelationTypesModal />
+              <EntityTabsProvider value={createStubEntityTabsState()}>
+                <PdfControllerSetup />
+                <RelationshipsPanel />
+                <RelationshipsActionBar />
+                <CreateRelationshipModal />
+                <ManageRelationTypesModal />
+              </EntityTabsProvider>
             </EntityScopedProvider>
           </ServicesProvider>
         </Provider>

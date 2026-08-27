@@ -2,6 +2,9 @@ type MetadataEditingHost = 'main' | 'side';
 
 const resolveActiveTabId = (atomId: string | undefined, urlId?: string) => atomId || urlId;
 
+const resolveControlledTabId = (controlledId: string | undefined, atomId: string | undefined) =>
+  controlledId || atomId;
+
 const resolveFormMountHost = (
   mainMetadataActive: boolean,
   sideMetadataActive: boolean,
@@ -21,5 +24,5 @@ const keepMetadataTab = (
   host: MetadataEditingHost
 ) => metadataActive || (isEditing && formMountHost === host);
 
-export { resolveActiveTabId, resolveFormMountHost, keepMetadataTab };
+export { resolveActiveTabId, resolveControlledTabId, resolveFormMountHost, keepMetadataTab };
 export type { MetadataEditingHost };
