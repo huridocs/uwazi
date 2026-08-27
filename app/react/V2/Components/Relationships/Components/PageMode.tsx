@@ -135,16 +135,10 @@ const PageModeComponent = ({
               onToggle={() => {
                 setOpenClusterKey(currentValue => (currentValue === key ? null : key));
               }}
-              onPointClick={marker => {
-                onPointClick?.(marker);
-              }}
-              onPointHover={marker => {
-                onPointHover?.(marker);
-              }}
+              onPointClick={marker => onPointClick?.(marker)}
+              onPointHover={onPointHover}
               onMoreClick={markersToShow => onMoreClick?.(markersToShow)}
-              onClusterHover={markersToShow => {
-                onClusterHover?.(markersToShow);
-              }}
+              onClusterHover={onClusterHover}
             />
           );
         }
@@ -161,9 +155,7 @@ const PageModeComponent = ({
               setOpenClusterKey(null);
               onPointClick?.(marker);
             }}
-            onHover={marker => {
-              onPointHover?.(marker);
-            }}
+            onHover={onPointHover}
           />
         );
       })}

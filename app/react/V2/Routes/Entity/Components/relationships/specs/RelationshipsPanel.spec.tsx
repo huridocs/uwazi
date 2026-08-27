@@ -161,6 +161,7 @@ describe('Relationships panel', () => {
       renderRelationshipsPanel();
 
       await user.click(screen.getByRole('radio', { name: 'Tree' }));
+      await expandAll(user);
 
       expect(screen.getByRole('button', { name: 'Expand all' })).toBeEnabled();
       expect(screen.getAllByText('Related Entity').length).toBeGreaterThanOrEqual(1);

@@ -68,19 +68,11 @@ const FullModeComponent = ({
               onToggle={() => {
                 setOpenClusterKey(currentValue => (currentValue === key ? null : key));
               }}
-              onPointClick={reference => {
-                onPointClick?.(reference);
-              }}
-              onPointHover={reference => {
-                onPointHover?.(reference);
-              }}
+              onPointClick={reference => onPointClick?.(reference)}
+              onPointHover={onPointHover}
               onMoreClick={references => onMoreClick?.(references)}
-              onClusterClick={references => {
-                onClusterClick?.(references);
-              }}
-              onClusterHover={references => {
-                onClusterHover?.(references);
-              }}
+              onClusterClick={references => onClusterClick?.(references)}
+              onClusterHover={onClusterHover}
             />
           );
         }
@@ -97,9 +89,7 @@ const FullModeComponent = ({
               setOpenClusterKey(null);
               onPointClick?.(marker);
             }}
-            onHover={marker => {
-              onPointHover?.(marker);
-            }}
+            onHover={onPointHover}
           />
         );
       })}

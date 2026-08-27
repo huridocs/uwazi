@@ -124,6 +124,7 @@ const ClusterComponent = ({
         data-testid="rail-marker"
         type="button"
         onMouseEnter={() => {
+          if (clusterIsOpen) return;
           onClusterHover?.(references);
         }}
         onClick={() => {

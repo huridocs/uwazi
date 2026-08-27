@@ -134,10 +134,12 @@ const loadRelationshipQuery = async (services: V2Services, input: RelationshipQu
   }
 
   const query = services.relationshipsQuery;
-  const payload =
-    needAnchors && input.fileId
-      ? await loadSummaryAndAnchorsSeed(query, { ...input, fileId: input.fileId })
-      : await loadSummarySeed(query, input);
+  let payload: RelationshipQueryPayload;
+  if (needAnchors && input.fileId) {
+    payload = await loadSummaryAndAnchorsSeed(query, { ...input, fileId: input.fileId });
+  } else {
+    payload = await loadSummarySeed(query, input);
+  }
 
   entityLoaderCache.setRelationshipQuery(input.sharedId, input.language, input.fileId, payload);
   return payload;

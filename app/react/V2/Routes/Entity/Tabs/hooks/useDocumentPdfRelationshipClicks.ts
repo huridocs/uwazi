@@ -8,6 +8,7 @@ import { filterAndSortMarkers } from '#V2/formatters/relationships/relationships
 import {
   useDocumentRelationshipNav,
   useEnsureResolved,
+  useRelationshipQueryStatus,
   useRelationshipsPanelFacetFilters,
   useRelationshipsPanelFilterInputs,
   useRelationshipsPanelSearch,
@@ -43,6 +44,7 @@ const useDocumentPdfRelationshipClicks = ({
   clearRelationshipSelection,
 }: UseDocumentPdfRelationshipClicksParams) => {
   const ensureResolved = useEnsureResolved();
+  const { resolved } = useRelationshipQueryStatus();
   const { setRelTypeFilters, setEntityTypeFilters } = useRelationshipsPanelFacetFilters();
   const { setSearch } = useRelationshipsPanelSearch();
   const { setExpandForRefId } = useRelationshipsPanelUi();
@@ -80,8 +82,9 @@ const useDocumentPdfRelationshipClicks = ({
   );
 
   const handleRailHover = useCallback(() => {
+    if (resolved) return;
     ensureResolved().catch(() => undefined);
-  }, [ensureResolved]);
+  }, [ensureResolved, resolved]);
 
   const handleRailPointClick = useCallback(
     (marker: RelationshipMarker) => {
