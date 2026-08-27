@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { ViewfinderCircleIcon } from '@heroicons/react/20/solid';
 import { t, Translate } from '#app/I18N/index.js';
+import { TextCursorInputStrokeIcon } from '#V2/Components/CustomIcons/index.js';
 import { useDocumentPdf } from '#V2/Routes/Entity/Components/context/index.js';
 import { notify } from '#V2/utils/notifyBridge.js';
 import { propertyHasSelection } from '../functions/propertySelectionHelpers.js';
@@ -181,7 +181,7 @@ const EntityPdfFill = ({
     >
       <span className="inline-flex items-center gap-1 rounded-sm bg-paper px-0.5 py-px text-xs">
         <Translate>Click to fill</Translate>
-        <ViewfinderCircleIcon className="size-3.5 shrink-0" aria-hidden />
+        <TextCursorInputStrokeIcon className="size-3.5 shrink-0" aria-hidden />
       </span>
     </button>
   ) : null;

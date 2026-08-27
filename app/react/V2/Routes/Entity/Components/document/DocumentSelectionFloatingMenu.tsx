@@ -94,7 +94,7 @@ const DocumentSelectionFloatingMenu = ({
           onClick={onCreateRelationship}
           className="flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium text-white transition-colors hover:bg-white/15"
         >
-          <LinkIcon className="h-3.5 w-3.5" />
+          <LinkIcon className="h-3.5 w-3.5" aria-hidden />
           <Translate>Create relationship</Translate>
         </button>
         <div className="h-4 w-px bg-white/20" aria-hidden="true" />
@@ -103,7 +103,7 @@ const DocumentSelectionFloatingMenu = ({
           onClick={onAddToToC}
           className="flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium text-white/80 transition-colors hover:bg-white/15 hover:text-white"
         >
-          <ListBulletIcon className="h-3.5 w-3.5" />
+          <ListBulletIcon className="h-3.5 w-3.5" aria-hidden />
           <Translate>Add to ToC</Translate>
         </button>
       </div>

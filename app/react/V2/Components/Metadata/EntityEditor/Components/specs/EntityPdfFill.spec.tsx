@@ -260,7 +260,9 @@ describe('Entity PDF fill', () => {
       </Host>
     );
 
-    expect(screen.getByTestId('click-to-fill')).toHaveAttribute('aria-label', 'Click to fill');
+    const fill = screen.getByTestId('click-to-fill');
+    expect(fill).toHaveAttribute('aria-label', 'Click to fill');
+    expect(fill.querySelector('svg path[d="M9 7v10"]')).not.toBeNull();
   });
 
   it('warns from overlay and skips fill when selection has no rectangles', async () => {
