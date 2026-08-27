@@ -28,7 +28,7 @@ export const setupMatchMediaMock = () => {
   const restore = () => {
     try {
       delete (window as any).matchMedia;
-    } catch (e) {
+    } catch (_) {
       // silent fail
     }
   };

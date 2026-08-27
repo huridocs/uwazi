@@ -142,7 +142,7 @@ describe('relationships', () => {
 
   describe('getGroupsByConnection()', () => {
     it('should return groups of connection types and templates of all the relationships of a document', async () => {
-      const groups = await testingEnvironment.runWithContext(() =>
+      const groups = await testingEnvironment.runWithContext(async () =>
         relationships.getGroupsByConnection('entity2', 'en')
       );
       const group1 = groups.find(r => r.key === relation1.toString());
@@ -163,7 +163,7 @@ describe('relationships', () => {
     });
 
     it('should return groups of connection including unpublished docs if user is found', async () => {
-      const groups = await testingEnvironment.runWithContext(() =>
+      const groups = await testingEnvironment.runWithContext(async () =>
         relationships.getGroupsByConnection('entity2', 'en', { user: 'found' })
       );
       expect(groups.length).toBe(3);
@@ -181,7 +181,7 @@ describe('relationships', () => {
     });
 
     it('should return groups of connection wihtout refs if excluded', async () => {
-      const groups = await testingEnvironment.runWithContext(() =>
+      const groups = await testingEnvironment.runWithContext(async () =>
         relationships.getGroupsByConnection('entity2', 'en', {
           excludeRefs: true,
         })
@@ -260,7 +260,7 @@ describe('relationships', () => {
         delete: [{ _id: connectionID2 }, { _id: connectionID3 }],
       };
 
-      const response = await testingEnvironment.runWithContext(() =>
+      const response = await testingEnvironment.runWithContext(async () =>
         relationships.bulk(data, 'en')
       );
       expect(cleanSnapshot(response)).toMatchSnapshot();
@@ -280,7 +280,7 @@ describe('relationships', () => {
         delete: [{ _id: connectionID6 }],
       };
 
-      await testingEnvironment.runWithContext(() => relationships.bulk(data, 'en'));
+      await testingEnvironment.runWithContext(async () => relationships.bulk(data, 'en'));
       const hubRelationships = await relationships.getHub(hub11);
       expect(hubRelationships.length).toBe(2);
     });
@@ -289,7 +289,7 @@ describe('relationships', () => {
   describe('save()', () => {
     describe('When creating a new reference to a hub', () => {
       it('should save it and return it with the entity data', async () => {
-        const [result] = await testingEnvironment.runWithContext(() =>
+        const [result] = await testingEnvironment.runWithContext(async () =>
           relationships.save({ entity: 'entity3', hub: hub1 }, 'en')
         );
 
@@ -302,7 +302,7 @@ describe('relationships', () => {
       });
 
       it('should call entities to update the metadata', async () => {
-        await testingEnvironment.runWithContext(() =>
+        await testingEnvironment.runWithContext(async () =>
           relationships.save({ entity: 'entity3', hub: hub1 }, 'en')
         );
         const updatedSharedIds = updateEntityUseCaseExecuteMock.mock.calls.map(([input]) => {
@@ -317,7 +317,7 @@ describe('relationships', () => {
       it('should throw an error', async () => {
         const nonExistentRelationshipType = db.id();
         await expect(async () =>
-          testingEnvironment.runWithContext(() =>
+          testingEnvironment.runWithContext(async () =>
             relationships.save(
               [
                 { entity: 'entity3', template: relation2 },
@@ -333,7 +333,7 @@ describe('relationships', () => {
 
     describe('when creating relationships to non existent entities', () => {
       it('should not create them', async () => {
-        const relations = await testingEnvironment.runWithContext(() =>
+        const relations = await testingEnvironment.runWithContext(async () =>
           relationships.save(
             [{ entity: 'non existent' }, { entity: 'entity3' }, { entity: 'doc4' }],
             'en'
@@ -347,7 +347,7 @@ describe('relationships', () => {
       });
 
       it('should not throw an error on 0 length relations', async () => {
-        const relations = await testingEnvironment.runWithContext(() =>
+        const relations = await testingEnvironment.runWithContext(async () =>
           relationships.save([{ entity: 'non existent' }], 'en')
         );
         expect(relations.length).toBe(0);
@@ -356,8 +356,8 @@ describe('relationships', () => {
 
     describe('When creating new relationships', () => {
       it('should assign them a hub and return them with the entity data', async () => {
-        const [entity3Connection, doc4Connection] = await testingEnvironment.runWithContext(() =>
-          relationships.save([{ entity: 'entity3' }, { entity: 'doc4' }], 'en')
+        const [entity3Connection, doc4Connection] = await testingEnvironment.runWithContext(
+          async () => relationships.save([{ entity: 'entity3' }, { entity: 'doc4' }], 'en')
         );
 
         expect(entity3Connection.entity).toBe('entity3');
@@ -385,7 +385,7 @@ describe('relationships', () => {
       it('should update it', async () => {
         const reference = await relationships.getById(connectionID1);
         reference.entity = 'entity1';
-        await testingEnvironment.runWithContext(() => relationships.save(reference, 'en'));
+        await testingEnvironment.runWithContext(async () => relationships.save(reference, 'en'));
 
         const changedReference = await relationships.getById(connectionID1);
 
@@ -398,7 +398,7 @@ describe('relationships', () => {
         reference._id = reference._id.toString();
         reference.entity = 'entity1';
 
-        const [changedReference] = await testingEnvironment.runWithContext(() =>
+        const [changedReference] = await testingEnvironment.runWithContext(async () =>
           relationships.save(reference, 'en')
         );
 
@@ -409,7 +409,7 @@ describe('relationships', () => {
       it('should update correctly if template is null', async () => {
         let reference = await relationships.getById(connectionID1);
         reference.template = { _id: null };
-        const [savedReference] = await testingEnvironment.runWithContext(() =>
+        const [savedReference] = await testingEnvironment.runWithContext(async () =>
           relationships.save(reference, 'en')
         );
         expect(savedReference.entity).toBe('entity_id');
@@ -417,7 +417,7 @@ describe('relationships', () => {
 
         reference = await relationships.getById(connectionID1);
         reference.template = null;
-        const [savedRef2] = await testingEnvironment.runWithContext(() =>
+        const [savedRef2] = await testingEnvironment.runWithContext(async () =>
           relationships.save(reference, 'en')
         );
         expect(savedRef2.entity).toBe('entity_id');
@@ -428,7 +428,7 @@ describe('relationships', () => {
     describe('when saving one reference without hub', () => {
       it('should throw an error', done => {
         testingEnvironment
-          .runWithContext(() => relationships.save({ entity: 'entity3' }, 'en'))
+          .runWithContext(async () => relationships.save({ entity: 'entity3' }, 'en'))
           .then(() => {
             done.fail('Should throw an error');
           })
@@ -441,7 +441,7 @@ describe('relationships', () => {
 
     it('should not allow mixing references with and without hubs', done => {
       testingEnvironment
-        .runWithContext(() =>
+        .runWithContext(async () =>
           relationships.save([{ entity: 'entity3' }, { entity: 'entity1', hub: 'somehub' }], 'en')
         )
         .then(() => {
@@ -469,7 +469,7 @@ describe('relationships', () => {
       };
 
       it('should save grouped input with or without existing hubs', async () => {
-        const result = await testingEnvironment.runWithContext(() =>
+        const result = await testingEnvironment.runWithContext(async () =>
           relationships.save(
             [
               [
@@ -511,7 +511,7 @@ describe('relationships', () => {
       });
 
       it('should allow mixing grouped and non-grouped input', async () => {
-        const result = await testingEnvironment.runWithContext(() =>
+        const result = await testingEnvironment.runWithContext(async () =>
           relationships.save(
             [
               [
@@ -555,7 +555,7 @@ describe('relationships', () => {
 
       it('should not allow mixing references with and without hubs in each group', async () => {
         try {
-          await testingEnvironment.runWithContext(() =>
+          await testingEnvironment.runWithContext(async () =>
             relationships.save(
               [
                 [
@@ -575,7 +575,7 @@ describe('relationships', () => {
 
       it('should not allow groups of one reference without hub', async () => {
         try {
-          await testingEnvironment.runWithContext(() =>
+          await testingEnvironment.runWithContext(async () =>
             relationships.save(
               [
                 [
@@ -611,7 +611,7 @@ describe('relationships', () => {
 
     const saveReferencesChangingMetadataTo = async metadata => {
       entity.metadata = metadata;
-      await testingEnvironment.runWithContext(() =>
+      await testingEnvironment.runWithContext(async () =>
         relationships.saveEntityBasedReferences(entity, 'en')
       );
     };
@@ -632,10 +632,10 @@ describe('relationships', () => {
     });
 
     it('should not create existing connections based on properties', async () => {
-      await testingEnvironment.runWithContext(() =>
+      await testingEnvironment.runWithContext(async () =>
         relationships.saveEntityBasedReferences(entity, 'en')
       );
-      await testingEnvironment.runWithContext(() =>
+      await testingEnvironment.runWithContext(async () =>
         relationships.saveEntityBasedReferences(entity, 'en')
       );
       const connections = await relationships.getByDocument('bruceWayne', 'en');
@@ -656,7 +656,7 @@ describe('relationships', () => {
     });
 
     it('should delete connections based on properties', async () => {
-      await testingEnvironment.runWithContext(() =>
+      await testingEnvironment.runWithContext(async () =>
         relationships.saveEntityBasedReferences(entity, 'en')
       );
 
@@ -686,7 +686,7 @@ describe('relationships', () => {
     it('should prepare a query with ids based on an entity id and a searchTerm', async () => {
       const searchResponse = Promise.resolve({ rows: [] });
       jest.spyOn(search, 'search').mockReturnValue(searchResponse);
-      await testingEnvironment.runWithContext(() =>
+      await testingEnvironment.runWithContext(async () =>
         relationships.search('entity2', { filter: {}, searchTerm: 'something' }, 'en')
       );
       const actualQuery = search.search.mock.calls[0][0];
@@ -704,7 +704,7 @@ describe('relationships', () => {
       const query = { filter: {}, searchTerm: 'something' };
       query.filter[relation2] = [relation2 + template];
 
-      await testingEnvironment.runWithContext(() =>
+      await testingEnvironment.runWithContext(async () =>
         relationships.search('entity2', query, 'en', 'user')
       );
 
@@ -731,7 +731,7 @@ describe('relationships', () => {
         ],
       });
       jest.spyOn(search, 'search').mockReturnValue(searchResponse);
-      const result = await testingEnvironment.runWithContext(() =>
+      const result = await testingEnvironment.runWithContext(async () =>
         relationships.search('entity2', { filter: {}, searchTerm: 'something' }, 'en')
       );
       expect(result.rows.length).toBe(5);
@@ -753,7 +753,7 @@ describe('relationships', () => {
       });
       jest.spyOn(search, 'search').mockReturnValue(searchResponse);
 
-      const result = await testingEnvironment.runWithContext(() =>
+      const result = await testingEnvironment.runWithContext(async () =>
         relationships.search('entity2', { filter: {}, searchTerm: 'something', limit: 2 }, 'en')
       );
       expect(result.totalHubs).toBe(5);

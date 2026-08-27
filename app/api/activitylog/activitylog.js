@@ -42,7 +42,7 @@ const getOptions = query => ({
 });
 
 export default {
-  save(entry) {
+  async save(entry) {
     return model.save(entry);
   },
 

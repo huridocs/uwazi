@@ -13,7 +13,7 @@ const parseQueryProperty = (query: query, property: string) => {
 
   try {
     return JSON.parse(query[property]);
-  } catch (e) {
+  } catch (_) {
     return query[property];
   }
 };

@@ -270,7 +270,7 @@ describe('scatterMapper', () => {
       { colorMode: 'from_data' }
     );
 
-    const datum = (option.series?.[0]?.data as Array<{ breakdown?: unknown[] }>)[0];
+    const datum = (option.series![0]!.data as Array<{ breakdown?: unknown[] }>)[0];
     const formatter = option.tooltip?.formatter as (params: { data: typeof datum }) => string;
     const html = formatter({ data: datum! });
 

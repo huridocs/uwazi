@@ -6,7 +6,7 @@ import { partialImplementation } from '#api/common.v2/testing/partialImplementat
 import { User } from '#api/users.v2/model/User.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-import testingDB from '#api/utils/testing_db.js';
+import { testingDB } from '#api/utils/testing_db.js';
 import { ObjectId } from 'mongodb';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { MongoRelationshipsDataSource } from '../../database/MongoRelationshipsDataSource.js';

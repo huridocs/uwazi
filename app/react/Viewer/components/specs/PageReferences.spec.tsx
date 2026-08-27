@@ -6,11 +6,11 @@ import { mount, shallow } from 'enzyme';
 import Immutable from 'immutable';
 import { Highlight } from '@huridocs/react-text-selection-handler';
 import { Provider } from 'react-redux';
-import configureStore, { MockStoreCreator } from 'redux-mock-store';
+import configureMockStore, { MockStoreCreator } from 'redux-mock-store';
 import { IStore } from '#app/istore.js';
 import { PageReferences, groupByRectangle } from '../PageReferences.js';
 
-const mockStoreCreator: MockStoreCreator<object> = configureStore<object>([]);
+const mockStoreCreator: MockStoreCreator<object> = configureMockStore<object>([]);
 
 describe('FormConfigInput', () => {
   let props: any;

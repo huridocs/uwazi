@@ -1,5 +1,5 @@
 /* eslint-disable camelcase */
-import configureStore from 'redux-mock-store';
+import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import Immutable from 'immutable';
 import { IStore } from '#app/istore.js';
@@ -24,6 +24,6 @@ const defaultState = {
 const middlewares = [thunk];
 
 const LEGACY_createStore = (state?: Partial<IStore>) =>
-  configureStore<object>(middlewares)(() => ({ ...defaultState, ...state }));
+  configureMockStore<object>(middlewares)(() => ({ ...defaultState, ...state }));
 
 export { LEGACY_createStore };

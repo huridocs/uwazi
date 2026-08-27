@@ -1,4 +1,4 @@
-// eslint-disable-next-line node/no-restricted-import
+// eslint-disable-next-line no-restricted-imports
 import { mkdirSync, writeFileSync, rmSync } from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';

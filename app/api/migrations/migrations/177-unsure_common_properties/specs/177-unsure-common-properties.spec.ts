@@ -1,5 +1,5 @@
 /* eslint-disable max-statements */
-import testingDB from '#api/utils/testing_db.js';
+import { testingDB } from '#api/utils/testing_db.js';
 import { Db, ObjectId } from 'mongodb';
 import migration from '../index.js';
 import { TemplateSchema } from '../types.js';

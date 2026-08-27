@@ -1,6 +1,6 @@
 /* eslint-disable import/no-dynamic-require, global-require */
 import path from 'path';
-// eslint-disable-next-line node/no-restricted-import
+// eslint-disable-next-line no-restricted-imports
 import fs from 'fs/promises';
 import { migrator } from '../migrator.js';
 

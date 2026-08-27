@@ -36,6 +36,7 @@ class ShowToc extends Component {
             return (
               <li className={`toc-indent-${scaledToc.indentation}`} key={index}>
                 <ShowIf if={!this.props.readOnly}>
+                  {/* oxlint-disable-next-line jsx-a11y/anchor-is-valid -- anchor styled as button */}
                   <a
                     className="toc-view-link"
                     href="#"

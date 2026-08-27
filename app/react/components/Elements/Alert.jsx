@@ -31,6 +31,7 @@ class Alert extends Component {
               <Icon icon={icon} />
             </span>
             <span className="alert-message">{message}</span>
+            {/* oxlint-disable-next-line jsx-a11y/anchor-is-valid -- anchor styled as button */}
             <a onClick={this.hide} className="alert-close">
               <Icon icon="times" />
             </a>

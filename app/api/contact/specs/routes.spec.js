@@ -40,7 +40,7 @@ describe('contact', () => {
     });
 
     it('should next with error if sending email failed', async () => {
-      jest.spyOn(contact, 'sendMessage').mockImplementation(() => Promise.reject());
+      jest.spyOn(contact, 'sendMessage').mockImplementation(async () => Promise.reject());
       const response = await request(app).post('/api/contact').send(body);
       expect(response.status).not.toBe(200);
     });

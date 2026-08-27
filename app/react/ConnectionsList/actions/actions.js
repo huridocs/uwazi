@@ -38,7 +38,7 @@ export function connectionsChanged(sharedId) {
     }
     return referencesAPI
       .getGroupedByConnection(new RequestParams({ sharedId: innerSharedId }))
-      .then(connectionsGroups => {
+      .then(async connectionsGroups => {
         const filteredTemplates = connectionsGroups.reduce(
           (templateIds, group) => templateIds.concat(group.templates.map(t => t._id.toString())),
           []
@@ -51,7 +51,7 @@ export function connectionsChanged(sharedId) {
         });
         return Promise.all([connectionsGroups, sortOptions]);
       })
-      .then(([connectionsGroups, sort]) => {
+      .then(async ([connectionsGroups, sort]) => {
         dispatch(actions.set('relationships/list/connectionsGroups', connectionsGroups));
         dispatch(actions.set('relationships/list/sharedId', sharedId));
         dispatch(formActions.merge('relationships/list.sort', sort));
@@ -79,7 +79,7 @@ export function loadAllReferences() {
 }
 
 export function loadMoreReferences(limit) {
-  return function (dispatch, getState) {
+  return async function (dispatch, getState) {
     const relationshipsList = getState().relationships.list;
     dispatch(
       actions.set('relationships/list/filters', relationshipsList.filters.set('limit', limit))
@@ -89,7 +89,7 @@ export function loadMoreReferences(limit) {
 }
 
 export function setFilter(groupFilterValues) {
-  return function (dispatch, getState) {
+  return async function (dispatch, getState) {
     const relationshipsList = getState().relationships.list;
     const currentFilter = relationshipsList.filters.get('filter') || Immutable.fromJS({});
     const newFilter = currentFilter.merge(groupFilterValues);
@@ -101,7 +101,7 @@ export function setFilter(groupFilterValues) {
 }
 
 export function resetSearch() {
-  return function (dispatch, getState) {
+  return async function (dispatch, getState) {
     dispatch(formActions.change('relationships/list/search.searchTerm', ''));
     dispatch(actions.set('relationships/list/filters', Immutable.fromJS({})));
     return searchReferences()(dispatch, getState);

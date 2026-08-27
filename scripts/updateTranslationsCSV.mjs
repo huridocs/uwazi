@@ -9,7 +9,7 @@ import csv from '@fast-csv/format';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import csvtojson from 'csvtojson';
-// eslint-disable-next-line node/no-restricted-import
+// eslint-disable-next-line no-restricted-imports
 import fs from 'fs';
 import _ from 'lodash';
 import {

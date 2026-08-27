@@ -31,13 +31,13 @@ describe('markdownDatasets', () => {
 
     beforeEach(() => {
       requestParams = new RequestParams({}, 'headers');
-      spyOn(searchApi, 'search').and.callFake(params =>
+      spyOn(searchApi, 'search').and.callFake(async params =>
         Promise.resolve({ isSearch: true, headers: params.headers, ...params.data })
       );
-      spyOn(entitiesApi, 'get').and.callFake(params =>
+      spyOn(entitiesApi, 'get').and.callFake(async params =>
         Promise.resolve([{ isEntity: true, data: params.data, headers: params.headers }])
       );
-      spyOn(api, 'get').and.callFake((url, pasedRequestParams) => {
+      spyOn(api, 'get').and.callFake(async (url, pasedRequestParams) => {
         if (url === 'multirowEndpoint') {
           return Promise.resolve({ json: { rows: ['row1', 'row2'] } });
         }

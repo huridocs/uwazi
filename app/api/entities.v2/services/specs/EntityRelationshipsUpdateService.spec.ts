@@ -11,7 +11,7 @@ describe('deprecated', () => {
 // import { MongoTemplatesDataSource } from '#api/core/infrastructure/mongodb/template/MongoTemplatesDataSource.js';
 // import { MongoTemplatesDAO } from '#api/core/infrastructure/mongodb/template/MongoTemplatesDAO.js';
 // import { MongoRelationshipsDataSource } from '#api/relationships.v2/database/MongoRelationshipsDataSource.js';
-// import testingDB from '#api/utils/testing_db.js';
+// import { testingDB } from '#api/utils/testing_db.js';
 // import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 // import { EntityRelationshipsUpdateService } from '../EntityRelationshipsUpdateService.js';
 // import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';

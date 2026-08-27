@@ -1,5 +1,5 @@
 import { testingTenants } from '#api/utils/testingTenants.js';
-// eslint-disable-next-line node/no-restricted-import
+// eslint-disable-next-line no-restricted-imports
 import fs from 'fs/promises';
 import { mockID } from '#shared/uniqueID.js';
 import { deleteFiles, fileExistsOnPath, activityLogPath, generateFileName } from '../filesystem.js';

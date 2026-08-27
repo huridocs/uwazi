@@ -1,4 +1,4 @@
-/* eslint-disable node/no-restricted-import */
+/* eslint-disable no-restricted-imports */
 import * as fs from 'fs/promises';
 
 import { FileBuilder } from '#api/core/domain/files/specs/FileBuilder.js';

@@ -912,7 +912,7 @@ const search = {
     return bulkIndex(docs, action);
   },
 
-  bulkDelete(docs) {
+  async bulkDelete(docs) {
     const body = docs.map(doc => ({
       delete: { _id: doc._id },
     }));
@@ -932,12 +932,12 @@ const search = {
     });
   },
 
-  delete(entity) {
+  async delete(entity) {
     const id = entity._id.toString();
     return elastic.delete({ id });
   },
 
-  deleteLanguage(language) {
+  async deleteLanguage(language) {
     const query = { query: { match: { language } } };
     return elastic.deleteByQuery({ body: query });
   },

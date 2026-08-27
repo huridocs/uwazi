@@ -1,3 +1,4 @@
+// oxlint-disable-next-line import/no-named-as-default
 import io from 'socket.io-client';
 import { isClient } from '#app/utils/index.js';
 

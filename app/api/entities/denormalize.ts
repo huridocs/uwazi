@@ -14,7 +14,7 @@ import {
 } from '#shared/types/commonTypes.js';
 import model from './entitiesModel.js';
 import { EntitiesDAOFactory } from '#api/core/infrastructure/factories/EntitiesDAOFactory.js';
-import thesauri from '#api/core/v1_layer/thesauri/thesauri.js';
+import { thesauri } from '#api/core/v1_layer/thesauri/thesauri.js';
 
 type TranslationValueMaps = Record<string, Record<string, string>>;
 

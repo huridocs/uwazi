@@ -1,5 +1,5 @@
 /* eslint-disable max-statements */
-// eslint-disable-next-line node/no-restricted-import
+// eslint-disable-next-line no-restricted-imports
 import { readFile } from 'fs/promises';
 
 import { createHash } from 'crypto';

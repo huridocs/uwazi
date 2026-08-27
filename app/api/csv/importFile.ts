@@ -6,9 +6,9 @@ import {
   getMimetypeFromOriginalName,
 } from '#api/files/filesystem.js';
 import zipFile from '#api/utils/zipFile.js';
-// eslint-disable-next-line node/no-restricted-import
+// eslint-disable-next-line no-restricted-imports
 import { createReadStream } from 'fs';
-// eslint-disable-next-line node/no-restricted-import
+// eslint-disable-next-line no-restricted-imports
 import { readFile, stat } from 'fs/promises';
 
 const extractFromZip = async (zipPath: string, fileName: string) => {
