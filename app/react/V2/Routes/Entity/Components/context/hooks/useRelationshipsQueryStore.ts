@@ -9,6 +9,12 @@ type UseRelationshipsQueryStoreParams = {
   fileId?: string;
 };
 
+const hubRowsFingerprint = (rows: RelationshipHubRow[]): string =>
+  rows
+    .map(row => row._id)
+    .sort()
+    .join('\0');
+
 const useRelationshipsQueryStore = ({
   seed,
   sharedId,
@@ -17,6 +23,7 @@ const useRelationshipsQueryStore = ({
 }: UseRelationshipsQueryStoreParams) => {
   const currentKey = queryKey(sharedId, language, fileId);
   const prevKeyRef = useRef(currentKey);
+  const prevSeedFingerprintRef = useRef<string | null>(null);
   const store = useQueryStore(seed, currentKey);
   const {
     seedFits,
@@ -77,7 +84,15 @@ const useRelationshipsQueryStore = ({
     const keyChanged = prevKeyRef.current !== currentKey;
     prevKeyRef.current = currentKey;
 
-    if (seedFits && seed && !keyChanged) {
+    const seedFingerprint = seed ? hubRowsFingerprint(seed.hubRows) : null;
+    const preserveResolved =
+      seedFits &&
+      seed &&
+      !keyChanged &&
+      seedFingerprint !== null &&
+      seedFingerprint === prevSeedFingerprintRef.current;
+
+    if (preserveResolved) {
       summaryInflight.current = null;
       summaryLoadedKey.current = currentKey;
       if (seed.anchorsLoaded) {
@@ -104,10 +119,12 @@ const useRelationshipsQueryStore = ({
     if (seedFits && seed) {
       summaryLoadedKey.current = currentKey;
       anchorsLoadedKey.current = seed.anchorsLoaded ? currentKey : null;
+      prevSeedFingerprintRef.current = seedFingerprint;
       publish(generation, seed.hubRows);
       return undefined;
     }
 
+    prevSeedFingerprintRef.current = null;
     summaryLoadedKey.current = null;
     anchorsLoadedKey.current = null;
     publish(generation, []);
