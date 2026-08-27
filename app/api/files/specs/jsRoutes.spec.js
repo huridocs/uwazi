@@ -97,9 +97,7 @@ describe('upload routes', () => {
     });
 
     it('should not create entity if settings has no allowedPublicTemplates option', async () => {
-      const settingsObject = await testingEnvironment.db
-        .getCollection('settings')
-        .findOne({});
+      const settingsObject = await testingEnvironment.db.getCollection('settings').findOne({});
       delete settingsObject.allowedPublicTemplates;
       await testingEnvironment.db.getCollection('settings').replaceOne({}, settingsObject);
 
