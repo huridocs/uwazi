@@ -6,7 +6,7 @@ import fs from 'fs/promises';
 
 import { ObjectId } from 'mongodb';
 
-import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { testingEnvironment, SettingsDSWithContext } from '#api/utils/testingEnvironment.js';
 import { testingTenants } from '#api/utils/testingTenants.js';
 import { IXSuggestionsModel } from '#api/suggestions/IXSuggestionsModel.js';
 import * as setupSockets from '#api/socketio/setupSockets.js';
@@ -16,7 +16,6 @@ import { PropertyTypeSchema } from '#shared/types/commonTypes.js';
 import { testingDB } from '#api/utils/testing_db.js';
 import entities from '#api/entities/index.js';
 import { EnforcedWithId } from '#api/odm/index.js';
-import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
 import { Suggestions } from '#api/suggestions/suggestions.js';
 import { LanguageUtils } from '#shared/language/index.js';
 import { IXExtractorType } from '#shared/types/extractorType.js';
@@ -91,7 +90,7 @@ const _getEntityFromFile = async (file: EnforcedWithId<FileType> | FileWithAggre
     });
 
     if (!entity) {
-      const defaultLanguageKey = await SettingsDataSourceFactory.default().getDefaultLanguageKey();
+      const defaultLanguageKey = await SettingsDSWithContext.default().getDefaultLanguageKey();
       [entity] = await entities.getUnrestricted({
         sharedId: file.entity,
         language: defaultLanguageKey,

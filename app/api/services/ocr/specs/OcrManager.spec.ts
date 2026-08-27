@@ -4,9 +4,8 @@ import fetchMock from 'fetch-mock';
 import { Readable } from 'stream';
 import { files, storage } from '#api/files/index.js';
 import { tenants } from '#api/tenants/tenantContext.js';
-import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
 import { FilesDAOFactory } from '#api/core/infrastructure/factories/FilesDAOFactory.js';
-import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { testingEnvironment, SettingsDSWithContext } from '#api/utils/testingEnvironment.js';
 import request from '#shared/JSONRequest.js';
 import * as sockets from '#api/socketio/setupSockets.js';
 import * as handleError from '#api/utils/handleError.js';
@@ -254,12 +253,8 @@ describe('OcrManager', () => {
     });
 
     it('should throw an error when settings are missing from the database', async () => {
-      const oldSettings = await testingEnvironment.runWithContext(async () =>
-        SettingsDataSourceFactory.default().find()
-      );
-      await testingEnvironment.runWithContext(async () =>
-        SettingsDataSourceFactory.default().patch({ features: {} })
-      );
+      const oldSettings = await SettingsDSWithContext.default().find();
+      await SettingsDSWithContext.default().patch({ features: {} });
 
       const [sourceFile] = await files.get({ _id: fixturesFactory.id('erroringSourceFile') });
 
@@ -267,9 +262,7 @@ describe('OcrManager', () => {
         'Ocr settings are missing from the database'
       );
 
-      await testingEnvironment.runWithContext(async () =>
-        SettingsDataSourceFactory.default().patch(oldSettings!)
-      );
+      await SettingsDSWithContext.default().patch(oldSettings!);
     });
 
     it('should throw an error when language is not supported', async () => {

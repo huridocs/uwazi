@@ -7,10 +7,9 @@ import { storage } from '#api/files/index.js';
 import relationships from '#api/relationships/relationships.js';
 import { search } from '#api/search/index.js';
 import { ocrManager } from '#api/services/ocr/OcrManager.js';
-import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import db, { DBFixture } from '#api/utils/testing_db.js';
-import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { testingEnvironment, SettingsDSWithContext } from '#api/utils/testingEnvironment.js';
 import { setUpApp } from '#api/utils/testingRoutes.js';
 import JSONRequest from '#shared/JSONRequest.js';
 import { UserRole } from '#shared/types/userSchema.js';
@@ -238,15 +237,11 @@ describe('OCR service', () => {
 
   describe('when the feature is not enabled', () => {
     beforeEach(async () => {
-      await testingEnvironment.runWithContext(async () =>
-        SettingsDataSourceFactory.default().patch({ ocrServiceEnabled: false })
-      );
+      await SettingsDSWithContext.default().patch({ ocrServiceEnabled: false });
     });
 
     afterAll(async () => {
-      await testingEnvironment.runWithContext(async () =>
-        SettingsDataSourceFactory.default().patch({ ocrServiceEnabled: true })
-      );
+      await SettingsDSWithContext.default().patch({ ocrServiceEnabled: true });
     });
 
     it('should not allow request status', async () => {

@@ -1,6 +1,5 @@
-import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
 import db from '#api/utils/testing_db.js';
-import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { testingEnvironment, SettingsDSWithContext } from '#api/utils/testingEnvironment.js';
 import { PropertySchema } from '#shared/types/commonTypes.js';
 import {
   generateIds,
@@ -21,14 +20,14 @@ describe('templates utils', () => {
   describe('name generation', () => {
     describe('default name generation', () => {
       it('should sanitize the labels and append the type', async () => {
-        const result = await testingEnvironment.runWithContext(async () => {
-          await SettingsDataSourceFactory.default().patch({});
-          return generateNames([
+        await SettingsDSWithContext.default().patch({});
+        const result = await testingEnvironment.runWithContext(async () =>
+          generateNames([
             { label: ' my prop ', name: '', type: 'text' },
             { label: 'my^foreïgn$próp"', name: '', type: 'text' },
             { label: ' my prop ', name: '', type: 'geolocation' },
-          ]);
-        });
+          ])
+        );
 
         expect(result[0].name).toBe('my_prop');
         expect(result[1].name).toBe('my_fore_gn_pr_p_');
@@ -38,9 +37,9 @@ describe('templates utils', () => {
 
     describe('less restrictive name generation', () => {
       it('should not contain the characters #, \\, /, *, ?, ", <, >, |, , :, ., and should be lowercase', async () => {
-        const result = await testingEnvironment.runWithContext(async () => {
-          await SettingsDataSourceFactory.default().patch({ newNameGeneration: true });
-          return generateNames([
+        await SettingsDSWithContext.default().patch({ newNameGeneration: true });
+        const result = await testingEnvironment.runWithContext(async () =>
+          generateNames([
             { label: ' my prop ', name: '', type: 'text' },
             { label: 'my^foreïgn$próp"', name: '', type: 'text' },
             { label: ' my prop ', name: '', type: 'geolocation' },
@@ -56,8 +55,8 @@ describe('templates utils', () => {
             { label: 'te st ', name: '', type: 'text' },
             { label: 'test: ', name: '', type: 'text' },
             { label: 'te.st. ', name: '', type: 'text' },
-          ]);
-        });
+          ])
+        );
 
         expect(result).toEqual([
           expect.objectContaining({ name: 'my_prop' }),
@@ -79,16 +78,16 @@ describe('templates utils', () => {
       });
 
       it('should not start with _, -, +, $', async () => {
-        const result = await testingEnvironment.runWithContext(async () => {
-          await SettingsDataSourceFactory.default().patch({ newNameGeneration: true });
-          return generateNames([
+        await SettingsDSWithContext.default().patch({ newNameGeneration: true });
+        const result = await testingEnvironment.runWithContext(async () =>
+          generateNames([
             { label: '.test ', name: '', type: 'text' },
             { label: '_test', name: '', type: 'text' },
             { label: '+test', name: '', type: 'text' },
             { label: '$test', name: '', type: 'text' },
             { label: '-test', name: '', type: 'text' },
-          ]);
-        });
+          ])
+        );
 
         expect(result).toEqual([
           expect.objectContaining({ name: 'test' }),

@@ -6,11 +6,10 @@ import { TranslationsQueryServiceFactory } from '#api/core/infrastructure/factor
 import { TranslationsDataSourceFactory } from '#api/core/infrastructure/factories/TranslationsDataSourceFactory.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { UpdateEntriesByContextUseCaseFactory } from '#api/core/infrastructure/factories/UpdateEntriesByContextUseCaseFactory.js';
-import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
 import { SetDefaultLanguageUseCaseFactory } from '#api/core/infrastructure/factories/SetDefaultLanguageUseCaseFactory.js';
 import thesauri from '#api/core/v1_layer/thesauri/index.js';
 import { saveThesauri } from '#api/core/v1_layer/thesauri/specs/testHelpers.js';
-import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { testingEnvironment, SettingsDSWithContext } from '#api/utils/testingEnvironment.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import { CSVLoader } from '../csvLoader.js';
 import { fixtures, thesauri1Id } from './fixtures.js';
@@ -33,7 +32,7 @@ const addLanguageTranslations = async (newLanguage: LanguageISO6391) =>
     if (existing?.contexts?.length) {
       return;
     }
-    const defaultLanguageKey = await SettingsDataSourceFactory.default().getDefaultLanguageKey();
+    const defaultLanguageKey = await SettingsDSWithContext.default().getDefaultLanguageKey();
     const translationsDS = TranslationsDataSourceFactory.default({
       transactionManager: TransactionManagerFactory.default(),
     });
@@ -67,14 +66,10 @@ describe('csvLoader thesauri', () => {
     beforeAll(async () => {
       await testingEnvironment.setUp(fixtures);
 
-      await testingEnvironment.runWithContext(async () => {
-        await SettingsDataSourceFactory.default().addLanguage({ key: 'es', label: 'spanish' });
-      });
+      await SettingsDSWithContext.default().addLanguage({ key: 'es', label: 'spanish' });
       await addLanguageTranslations('es');
 
-      await testingEnvironment.runWithContext(async () => {
-        await SettingsDataSourceFactory.default().addLanguage({ key: 'fr', label: 'french' });
-      });
+      await SettingsDSWithContext.default().addLanguage({ key: 'fr', label: 'french' });
       await addLanguageTranslations('fr');
 
       const { _id } = await saveThesauri({
