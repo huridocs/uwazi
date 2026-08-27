@@ -8,6 +8,7 @@ import React, {
 } from 'react';
 import { XMarkIcon } from '@heroicons/react/20/solid';
 import { Translate } from '#app/I18N/index.js';
+import { FieldLabelRow } from './FieldLabelRow.js';
 import { InputError } from './InputError.js';
 import { Label } from './Label.js';
 
@@ -83,22 +84,16 @@ const Textarea = React.forwardRef(
   ) => {
     const state: FieldState = { disabled, hasError: Boolean(hasErrors || errorMessage) };
     const hasClear = Boolean(clearFieldAction);
-    const labelEl = (
-      <Label htmlFor={id} hideLabel={!label || hideLabel} hasErrors={state.hasError}>
-        {label}
-      </Label>
-    );
-
     return (
       <div className={cx('flex flex-col gap-1.5', className)}>
-        {labelAccessory ? (
-          <div className="flex min-h-4 items-center gap-2">
-            {labelEl}
-            {labelAccessory}
-          </div>
-        ) : (
-          labelEl
-        )}
+        <FieldLabelRow
+          accessory={labelAccessory}
+          label={
+            <Label htmlFor={id} hideLabel={!label || hideLabel} hasErrors={state.hasError}>
+              {label}
+            </Label>
+          }
+        />
         <div className="relative flex w-full">
           <textarea
             id={id}

@@ -30,10 +30,15 @@ const DocumentSelectionFloatingMenu = ({
   const [menuSize, setMenuSize] = useState({ width: 0, height: 0 });
 
   useEffect(() => {
-    const bump = () => setLayoutTick(tick => tick + 1);
+    let frame = 0;
+    const bump = () => {
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(() => setLayoutTick(tick => tick + 1));
+    };
     scrollRoot?.addEventListener('scroll', bump, { passive: true });
     window.addEventListener('resize', bump);
     return () => {
+      cancelAnimationFrame(frame);
       scrollRoot?.removeEventListener('scroll', bump);
       window.removeEventListener('resize', bump);
     };
@@ -43,7 +48,9 @@ const DocumentSelectionFloatingMenu = ({
     const node = menuRef.current;
     if (!node) return;
     const { width, height } = node.getBoundingClientRect();
-    setMenuSize({ width, height });
+    setMenuSize(prev =>
+      prev.width === width && prev.height === height ? prev : { width, height }
+    );
   }, [selection, armedLabel, layoutTick]);
 
   const position = getSelectionMenuPosition(selection);
@@ -62,7 +69,7 @@ const DocumentSelectionFloatingMenu = ({
         position: 'fixed',
         left,
         top,
-        width: 'max-content',
+        display: 'inline-flex',
         zIndex: 50,
       }}
       data-testid="document-selection-floating-menu"

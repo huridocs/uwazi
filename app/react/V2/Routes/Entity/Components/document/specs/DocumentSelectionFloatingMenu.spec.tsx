@@ -135,7 +135,7 @@ describe('DocumentSelectionFloatingMenu', () => {
     expect(menu).toHaveClass('tw-content', 'tw-content--chrome');
     expect(menu).not.toHaveClass('fixed');
     expect(menu.style.position).toBe('fixed');
-    expect(menu.style.width).toBe('max-content');
+    expect(menu.style.display).toBe('inline-flex');
     expect(menu.style.zIndex).toBe('50');
     expect(menu.style.transform).toBe('');
   });

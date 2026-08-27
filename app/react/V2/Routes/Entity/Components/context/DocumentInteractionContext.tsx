@@ -126,7 +126,9 @@ const DocumentInteractionProvider = ({ children }: { children: React.ReactNode }
   }, []);
 
   const armPdfFill = useCallback((target: ArmedPdfFill) => {
-    setArmedPdfFill(target);
+    setArmedPdfFill(prev =>
+      prev?.name === target.name && prev.propertyId === target.propertyId ? prev : target
+    );
   }, []);
 
   const disarmPdfFill = useCallback(() => {
@@ -137,8 +139,9 @@ const DocumentInteractionProvider = ({ children }: { children: React.ReactNode }
     setPdfFillCommitNonce(n => n + 1);
   }, []);
 
+  const pdfFillArmed = armedPdfFill !== null;
   useEffect(() => {
-    if (!armedPdfFill) return undefined;
+    if (!pdfFillArmed) return undefined;
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key !== 'Escape') return;
       const { target } = event;
@@ -147,7 +150,7 @@ const DocumentInteractionProvider = ({ children }: { children: React.ReactNode }
     };
     window.addEventListener('keydown', onKeyDown);
     return () => window.removeEventListener('keydown', onKeyDown);
-  }, [armedPdfFill, disarmPdfFill]);
+  }, [pdfFillArmed, disarmPdfFill]);
 
   const pdfState = useMemo(
     () => ({

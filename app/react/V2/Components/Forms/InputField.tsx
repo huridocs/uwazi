@@ -2,6 +2,7 @@
 import React, { ChangeEventHandler, FocusEventHandler, MouseEventHandler, Ref } from 'react';
 import { XMarkIcon } from '@heroicons/react/20/solid';
 import { Translate } from '#app/I18N/index.js';
+import { FieldLabelRow } from './FieldLabelRow.js';
 import { InputError } from './InputError.js';
 import { Label } from './Label.js';
 import type { LabelVariant } from './Label.js';
@@ -108,27 +109,21 @@ const InputField = React.forwardRef(
     const hasClearOrIcon = Boolean(clearFieldAction || icon);
     const showClearButton = Boolean(clearFieldAction) && (hasValue || !icon);
     const showIcon = icon && (!clearFieldAction || !hasValue);
-    const labelEl = (
-      <Label
-        htmlFor={id}
-        hideLabel={!label || hideLabel}
-        hasErrors={state.hasError}
-        variant={labelVariant}
-      >
-        {label}
-      </Label>
-    );
-
     return (
       <div className={cx('flex flex-col gap-1.5', className)}>
-        {labelAccessory ? (
-          <div className="flex min-h-4 items-center gap-2">
-            {labelEl}
-            {labelAccessory}
-          </div>
-        ) : (
-          labelEl
-        )}
+        <FieldLabelRow
+          accessory={labelAccessory}
+          label={
+            <Label
+              htmlFor={id}
+              hideLabel={!label || hideLabel}
+              hasErrors={state.hasError}
+              variant={labelVariant}
+            >
+              {label}
+            </Label>
+          }
+        />
         <div className="relative flex w-full">
           {preText && <span className={preTextClass}>{preText}</span>}
           <input
