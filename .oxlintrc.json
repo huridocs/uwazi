@@ -12,7 +12,7 @@
   "categories": {
     "correctness": "error",
     "suspicious": "warn",
-    "perf": "warn",
+    "perf": "warn"
   },
   "rules": {
     "import/no-named-as-default": "error",
@@ -277,6 +277,10 @@
               {
                 "group": ["**/infrastructure/*/user/*UsersDAO*", "**/factories/UsersDAOFactory*"],
                 "message": "Users DAOs are private. Use UsersDirectory (any internal module), UsersQueryService (the users settings screen) or UsersDataSource (writes) — see plans/users-refactor-00-decisions.md#d4."
+              },
+              {
+                "group": ["**/infrastructure/*/user/*UserGroupsDAO*"],
+                "message": "User groups DAOs are private, and now expose generic primitives with no guard of their own. Use UserGroupsDirectory (any internal module), UserGroupsQueryService or UserGroupsDataSource (writes)"
               }
             ]
           }
