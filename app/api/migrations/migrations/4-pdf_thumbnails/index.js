@@ -26,7 +26,7 @@ export default {
             ['-f', '1', '-singlefile', '-scale-to', '320', '-jpeg', filePath, thumbnailPath],
             { capture: ['stdout', 'stderr'] }
           );
-        } catch (err) {
+        } catch (_) {
           process.stdout.write(`Thumbnail creation error for: ${documentId}\r`);
         }
         process.stdout.write(`processed -> ${index}\r`);

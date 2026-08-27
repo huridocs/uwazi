@@ -8,7 +8,7 @@ import db from '#api/utils/testing_db.js';
 
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { routes } from '../routes.js';
-import thesauri from '../thesauri.js';
+import { thesauri } from '../thesauri.js';
 import { fixtures, dictionaryId } from './fixtures.js';
 import { UserRole } from '#shared/types/userSchema.js';
 import { DeleteThesaurusUseCaseFactory } from '#api/core/infrastructure/factories/DeleteThesaurusUseCaseFactory.js';

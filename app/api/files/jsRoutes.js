@@ -35,7 +35,8 @@ const routes = app => {
   app.post(
     '/api/public',
     cors(corsOptions),
-    (req, res, next) => new UploadMiddleware(LoggerFactory.default()).multiple()(req, res, next),
+    async (req, res, next) =>
+      new UploadMiddleware(LoggerFactory.default()).multiple()(req, res, next),
     publicAPIMiddleware,
     activitylogMiddleware,
     (req, _res, next) => {

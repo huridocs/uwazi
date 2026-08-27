@@ -107,7 +107,7 @@ describe('upload routes', () => {
         .field('entity', JSON.stringify(baseReq.body.entity));
 
       expect(response.status).toBe(403);
-      expect(response.body.error).toMatch(/unauthorized public template/i);
+      expect(response.body.error).toContain('Unauthorized public template');
 
       const res = await entities.get({ title: 'public submit' });
       expect(res.length).toBe(0);
@@ -125,7 +125,7 @@ describe('upload routes', () => {
         );
 
       expect(response.status).toBe(403);
-      expect(response.body.error).toMatch(/unauthorized public template/i);
+      expect(response.body.error).toContain('Unauthorized public template');
 
       const res = await entities.get({ title: 'public submit' });
       expect(res.length).toBe(0);
@@ -144,7 +144,7 @@ describe('upload routes', () => {
         );
 
       expect(response.status).toBe(403);
-      expect(response.body.error).toMatch(/unauthorized _id property/i);
+      expect(response.body.error).toContain('Unauthorized _id property');
     });
 
     it('should use authenticated user instead of Public user when user is logged in', async () => {

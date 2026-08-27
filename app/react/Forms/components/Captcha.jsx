@@ -29,7 +29,7 @@ class Captcha extends Component {
     try {
       const response = await api.get(url);
       this.setState(response.json);
-    } catch (ex) {
+    } catch (_) {
       if (remote) {
         this.setState({ remoteUnreachable: true });
       }

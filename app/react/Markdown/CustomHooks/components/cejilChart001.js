@@ -14,7 +14,7 @@ function conformSearchQuery(types) {
   return api.search(new RequestParams({ types, limit: 0 }));
 }
 
-function getData() {
+async function getData() {
   const types = [
     [casesTemplate, provisionalMeasuresTemplate],
     [casesTemplate],

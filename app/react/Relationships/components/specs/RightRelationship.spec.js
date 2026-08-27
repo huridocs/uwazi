@@ -1,6 +1,6 @@
 import React from 'react';
 import Immutable from 'immutable';
-import configureStore from 'redux-mock-store';
+import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import { Provider } from 'react-redux';
 import { shallow } from 'enzyme';
@@ -11,7 +11,7 @@ import * as types from '../../actions/actionTypes.js';
 import { RightRelationship } from '../RightRelationship.js';
 import { HubRelationshipMetadata } from '../HubRelationshipMetadata.js';
 
-const mockStore = configureStore([thunk]);
+const mockStore = configureMockStore([thunk]);
 
 describe('RelationshipsGraphEdit', () => {
   let component;

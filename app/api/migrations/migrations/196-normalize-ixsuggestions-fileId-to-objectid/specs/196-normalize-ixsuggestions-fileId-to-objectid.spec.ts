@@ -1,5 +1,5 @@
 import { ObjectId } from 'mongodb';
-import testingDB from '#api/utils/testing_db.js';
+import { testingDB } from '#api/utils/testing_db.js';
 import migration from '../index.js';
 import { fixtures, ids } from './fixtures.js';
 
@@ -30,7 +30,7 @@ describe('normalize ixsuggestions.fileId to ObjectId migration', () => {
 
     const converted = await getSuggestion(ids.suggestionA);
     expect(converted?.fileId).toBeInstanceOf(ObjectId);
-    expect((converted?.fileId as ObjectId).toString()).toBe(ids.fileA.toString());
+    expect((converted!.fileId as ObjectId).toString()).toBe(ids.fileA.toString());
   });
 
   it('should keep already-ObjectId and invalid string fileId values unchanged', async () => {
@@ -40,7 +40,7 @@ describe('normalize ixsuggestions.fileId to ObjectId migration', () => {
     const invalidString = await getSuggestion(ids.suggestionC);
 
     expect(alreadyObjectId?.fileId).toBeInstanceOf(ObjectId);
-    expect((alreadyObjectId?.fileId as ObjectId).toString()).toBe(ids.fileB.toString());
+    expect((alreadyObjectId!.fileId as ObjectId).toString()).toBe(ids.fileB.toString());
 
     expect(invalidString?.fileId).toBe('not-an-objectid');
   });
@@ -62,7 +62,7 @@ describe('normalize ixsuggestions.fileId to ObjectId migration', () => {
     const invalidString = await getSuggestion(ids.suggestionC);
 
     expect(converted?.fileId).toBeInstanceOf(ObjectId);
-    expect((converted?.fileId as ObjectId).toString()).toBe(ids.fileA.toString());
+    expect((converted!.fileId as ObjectId).toString()).toBe(ids.fileA.toString());
     expect(alreadyObjectId?.fileId).toBeInstanceOf(ObjectId);
     expect(invalidString?.fileId).toBe('not-an-objectid');
     expect(await getSuggestion(ids.suggestionD)).toBeNull();

@@ -19,6 +19,7 @@ const LibraryModeToggleButtons = ({
   const renderTableButton = () => {
     if (!isClient) {
       return (
+        // oxlint-disable-next-line jsx-a11y/anchor-is-valid -- SSR placeholder; real link rendered client-side
         <a href="#" className="btn btn-default">
           <Icon icon="align-justify" />
           <span className="tab-link-tooltip">{t('System', 'Table view')}</span>
@@ -45,6 +46,7 @@ const LibraryModeToggleButtons = ({
     }
     if (!isClient) {
       return (
+        // oxlint-disable-next-line jsx-a11y/anchor-is-valid -- SSR placeholder; real link rendered client-side
         <a href="#" className="btn btn-default">
           <Icon icon="map-marker" />
           <span className="tab-link-tooltip">{t('System', 'Map view')}</span>

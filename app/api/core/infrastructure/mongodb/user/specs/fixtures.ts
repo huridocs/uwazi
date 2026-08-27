@@ -1,6 +1,6 @@
 import { PUBLIC_USER_ID, UserRole } from '#api/core/domain/user/User.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
-import testingDB, { DBFixture } from '#api/utils/testing_db.js';
+import { testingDB, DBFixture } from '#api/utils/testing_db.js';
 
 const factory = getFixturesFactory();
 

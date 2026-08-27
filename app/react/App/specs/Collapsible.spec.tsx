@@ -6,13 +6,13 @@ import { mount, CommonWrapper } from 'enzyme';
 import React from 'react';
 import { Provider } from 'react-redux';
 import thunk from 'redux-thunk';
-import configureStore, { MockStoreCreator } from 'redux-mock-store';
+import configureMockStore, { MockStoreCreator } from 'redux-mock-store';
 import { Collapsible } from '../Collapsible.js';
 
 describe('Collapsible', () => {
   let component: CommonWrapper;
   const middlewares = [thunk];
-  const mockStoreCreator: MockStoreCreator<object> = configureStore<object>(middlewares);
+  const mockStoreCreator: MockStoreCreator<object> = configureMockStore<object>(middlewares);
 
   const render = (props = { collapse: false }) =>
     mount(

@@ -1,6 +1,6 @@
-import testingDB from '#api/utils/testing_db.js';
+import { testingDB } from '#api/utils/testing_db.js';
 import { config } from '#api/config.js';
-// eslint-disable-next-line node/no-restricted-import
+// eslint-disable-next-line no-restricted-imports
 import * as fs from 'fs';
 import migration from '../index.js';
 import { fixtures } from './fixtures.js';

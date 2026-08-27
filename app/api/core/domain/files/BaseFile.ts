@@ -27,9 +27,9 @@ const sanitizeFilename = (filename: string) => {
     prev = sanitized;
     // Remove any sequence of dots followed by path separator (./, ../, .../, etc.)
     sanitized = sanitized
-      .replace(/\.+[\\\/]/g, '')
+      .replace(/\.+[\\/]/g, '')
       // Remove any remaining path separators
-      .replace(/[\\\/]/g, '')
+      .replace(/[\\/]/g, '')
       // Remove null bytes
       .replace(/\0/g, '');
   } while (prev !== sanitized);

@@ -43,7 +43,7 @@ describe('Viewer referencesActions', () => {
 
     describe('loadReferences', () => {
       beforeEach(() => {
-        spyOn(referencesAPI, 'get').and.callFake(requestParams =>
+        spyOn(referencesAPI, 'get').and.callFake(async requestParams =>
           Promise.resolve(`${requestParams.data.sharedId}References`)
         );
       });

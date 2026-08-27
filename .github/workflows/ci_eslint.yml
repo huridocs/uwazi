@@ -1,4 +1,4 @@
-name: eslint/formatting
+name: lint/formatting
 
 on:
   push:
@@ -36,7 +36,7 @@ jobs:
       is_protected_push: ${{ github.ref_name == 'development' || github.ref_name == 'production' }}
       sha: ${{ github.sha }}
 
-  eslint:
+  lint:
     needs: precheck
     if: needs.precheck.outputs.should_run == 'true'
     runs-on: ubuntu-24.04
@@ -64,7 +64,7 @@ jobs:
         run: corepack enable
       - name: install dependencies
         run: yarn install
-      - run: yarn eslint
+      - run: yarn lint --type-aware
       - run: yarn prettier
 
   build:

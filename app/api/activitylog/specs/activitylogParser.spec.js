@@ -196,7 +196,7 @@ describe('Activitylog Parser', () => {
     describe('route: /api/attachments', () => {
       describe('method: POST /upload', () => {
         it('should beautify as CREATE', async () => {
-          testBeautified(
+          await testBeautified(
             {
               method: 'POST',
               url: '/api/attachments/upload',
@@ -819,7 +819,7 @@ describe('Activitylog Parser', () => {
       });
       describe('method: DELETE', () => {
         it('should beautify as DELETE', async () => {
-          testBeautified(
+          await testBeautified(
             {
               method: 'DELETE',
               url: '/api/references',

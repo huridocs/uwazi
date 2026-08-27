@@ -77,7 +77,7 @@ describe('searchSnippets', () => {
     try {
       const { body } = await search({ sharedId: 'entity3SharedId', searchString: 'fulltext OR' });
       expect(body.data.length).toBe(1);
-    } catch (e) {
+    } catch (_) {
       fail('should not throw an exception');
     }
   });

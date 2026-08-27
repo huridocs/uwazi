@@ -36,7 +36,7 @@ const propsToConfig = (props: MarkdownMediaProps) => {
 
   try {
     parsedProps = JSON.parse(parsedProps);
-  } catch (error) {
+  } catch (_) {
     parsedProps = {};
   }
 

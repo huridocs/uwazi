@@ -5,7 +5,7 @@ import multer from 'multer';
 import path from 'path';
 import { FileType } from '#shared/types/fileType.js';
 import { legacyLogger } from '#api/log/index.js';
-// eslint-disable-next-line node/no-restricted-import
+// eslint-disable-next-line no-restricted-imports
 import { createReadStream } from 'fs';
 import { storage } from './storage.js';
 

@@ -1,5 +1,5 @@
 import { config } from '#api/config.js';
-import testingDB from '#api/utils/testing_db.js';
+import { testingDB } from '#api/utils/testing_db.js';
 
 import fixtures from './fixtures.js';
 import migration from '../index.js';
@@ -25,24 +25,24 @@ describe('migration fullText_to_per_page', () => {
     const entities = await testingDB.mongodb.collection('entities').find().toArray();
 
     const doc1 = entities.find(e => e.title === 'doc1');
-    expect(doc1.fullText[1]).toMatch('This[[1]]');
-    expect(doc1.fullText[2]).toMatch('Is[[2]]');
-    expect(doc1.fullText[2]).toMatch('The[[2]] new[[2]]');
-    expect(doc1.fullText[3]).toMatch('fullText[[3]]');
+    expect(doc1.fullText[1]).toContain('This[[1]]');
+    expect(doc1.fullText[2]).toContain('Is[[2]]');
+    expect(doc1.fullText[2]).toContain('The[[2]] new[[2]]');
+    expect(doc1.fullText[3]).toContain('fullText[[3]]');
     expect(doc1.totalPages).toBe(3);
 
     const doc2 = entities.find(e => e.title === 'doc2');
-    expect(doc2.fullText[1]).toMatch('This');
-    expect(doc2.fullText[2]).toMatch('Is[[2]]');
-    expect(doc2.fullText[2]).toMatch('The[[2]] new[[2]]');
-    expect(doc2.fullText[3]).toMatch('fullText');
+    expect(doc2.fullText[1]).toContain('This');
+    expect(doc2.fullText[2]).toContain('Is[[2]]');
+    expect(doc2.fullText[2]).toContain('The[[2]] new[[2]]');
+    expect(doc2.fullText[3]).toContain('fullText');
     expect(doc2.totalPages).toBe(3);
 
     const doc7 = entities.find(e => e.title === 'doc7');
-    expect(doc7.fullText[1]).toMatch('This');
-    expect(doc7.fullText[2]).toMatch('Is[[2]]');
-    expect(doc7.fullText[2]).toMatch('The[[2]] new[[2]]');
-    expect(doc7.fullText[3]).toMatch('fullText');
+    expect(doc7.fullText[1]).toContain('This');
+    expect(doc7.fullText[2]).toContain('Is[[2]]');
+    expect(doc7.fullText[2]).toContain('The[[2]] new[[2]]');
+    expect(doc7.fullText[3]).toContain('fullText');
     expect(doc7.totalPages).toBe(3);
   });
 });

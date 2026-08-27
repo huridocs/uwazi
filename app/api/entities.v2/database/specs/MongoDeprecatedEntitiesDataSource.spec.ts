@@ -5,7 +5,7 @@ import { MongoSettingsDataSource } from '#api/core/infrastructure/mongodb/MongoS
 import { MongoTemplatesDataSource } from '#api/core/infrastructure/mongodb/template/MongoTemplatesDataSource.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-import testingDB from '#api/utils/testing_db.js';
+import { testingDB } from '#api/utils/testing_db.js';
 import { MetadataSchema } from '#shared/types/commonTypes.js';
 import { EntitySchema } from '#shared/types/entityType.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';

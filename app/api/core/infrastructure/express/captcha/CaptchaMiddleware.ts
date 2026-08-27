@@ -32,7 +32,7 @@ const captchaMiddleware = () => async (req: Request, res: Response, next: NextFu
     delete req.body.captcha;
 
     return next();
-  } catch (error: unknown) {
+  } catch (_) {
     return sendForbidden(res);
   }
 };

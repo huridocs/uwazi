@@ -1,7 +1,7 @@
 import { Parser as HTMLParser } from 'htmlparser2';
 import qs from 'qs';
 import { risonDecodeOrIgnore } from '#app/utils/index.js';
-import Big from 'big.js';
+import { Big } from 'big.js';
 
 import { SearchAPI as searchApi } from '#app/Search/SearchAPI.js';
 import { api } from '#app/utils/api.js';
@@ -50,7 +50,7 @@ const parseDatasets = markdown => {
   return result;
 };
 
-const requestDatasets = (datasets, requestParams) =>
+const requestDatasets = async (datasets, requestParams) =>
   Promise.all(
     Object.keys(datasets).map(name => {
       if (datasets[name].query) {

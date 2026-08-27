@@ -1,4 +1,4 @@
-import testingDB from '#api/utils/testing_db.js';
+import { testingDB } from '#api/utils/testing_db.js';
 
 import fixtures from './fixtures.js';
 import migration from '../index.js';
@@ -9,8 +9,8 @@ describe('migration entities_override_mongo_language', () => {
     await testingDB.setupFixturesAndContext(fixtures);
   });
 
-  afterAll(done => {
-    testingDB.disconnect().then(done);
+  afterAll(async () => {
+    await testingDB.disconnect();
   });
 
   it('should have a delta number', () => {

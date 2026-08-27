@@ -383,7 +383,7 @@ describe('PageViewer', () => {
         expect(screen.queryByText('Loading...')).not.toBeInTheDocument();
       });
 
-      expect(container.textContent).toMatch(/\*\*notbold\*\*/);
+      expect(container.textContent).toContain('**notbold**');
       expect(container.querySelector('.markdown-viewer strong')).not.toBeInTheDocument();
     });
 

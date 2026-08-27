@@ -4,7 +4,7 @@ import { TranslationDBO } from '#api/core/infrastructure/mongodb/translation/sch
 import { TranslationSyO } from '#api/core/infrastructure/mongodb/translation/schemas/TranslationSyO.js';
 import { getIdMapper } from '#api/utils/fixturesFactory.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-import testingDB, { DBFixture } from '#api/utils/testing_db.js';
+import { testingDB, DBFixture } from '#api/utils/testing_db.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import { MongoTranslationsSyncDataSource } from '../MongoTranslationsSyncDataSource.js';
 
