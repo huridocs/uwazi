@@ -16,8 +16,7 @@ Backend is in `app/api`
 ### Commands
 
 - **Install:** `yarn install`
-- **Test:** `yarn test app/api`
-- **Suggested Jest invocation for targeted test runs:** `DEBUG=true node --no-experimental-fetch ./node_modules/.bin/jest <path-or-pattern> -w=4`
+- **Test:** `yarn test <path-or-pattern>` defaults to 4 workers, can be overridden with `-w=`, use `yarn test --help` on how to use
 - **Run:** `yarn hot`
 - **lint:** `yarn lint --type-aware <paths>`
 - **type checking** `yarn check-types`
@@ -26,26 +25,6 @@ Backend is in `app/api`
 - **Translations CSV update:** never edit translation keys manually in CSV files; run `yarn update-translations-csv` instead.
 - **Add schema migration:**  `yarn add-migration schema <name> <description>`
 - **Add data migration:**  `yarn add-migration data <name> <description>`
-
-### Running tests (agents)
-
-Integration tests talk to whatever Mongo/Postgres the developer already has (local install **or** Docker). Prefer not to start/restart those services unless the developer asks or nothing is reachable.
-
-**Try Jest invocations in this order** (different environments need different shapes):
-
-1. **Bare allowlisted form** (often works on local WSL/desktop; stays out of the Cursor sandbox):
-   ```bash
-   DEBUG=true node --no-experimental-fetch ./node_modules/.bin/jest <path-or-pattern> -w=4
-   ```
-2. **With Node 20 on PATH** (often needed on Cursor Cloud VM, where default `node` may be v22):
-   ```bash
-   export PATH="$HOME/.nvm/versions/node/v20.19.6/bin:$PATH"
-   DEBUG=true node --no-experimental-fetch ./node_modules/.bin/jest <path-or-pattern> -w=4
-   ```
-3. **If you still get `ECONNREFUSED 127.0.0.1:27017`**, try again with unrestricted/host network permissions for the shell (`required_permissions: ["all"]`). That error is often sandbox isolation, not a missing Mongo. Do not jump straight to starting Docker.
-4. **Only if Mongo/Postgres are actually down** and this is a compose-based env (e.g. Cursor Cloud VM): bring up services per “Cursor Cloud specific instructions” below. Never assume every developer uses Docker.
-
-Paths may be relative to `app/api` (e.g. `csv/specs/csvLoaderThesauri.spec.ts`) or under `app/api/...`; both work from the repo root.
 
 ### Architecture Status
 
