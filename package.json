@@ -1,7 +1,7 @@
 {
   "packageManager": "yarn@4.13.0",
   "name": "uwazi",
-  "version": "1.229.0-rc519",
+  "version": "1.229.0-rc520",
   "type": "module",
   "description": "Uwazi is a free, open-source solution for organising, analysing and publishing your documents.",
   "keywords": [
@@ -82,7 +82,7 @@
     "e2e-fixtures": "DATABASE_NAME=uwazi_e2e INDEX_NAME=uwazi_e2e ./uwazi-fixtures/restore.sh",
     "blank-e2e-fixtures": "DATABASE_NAME=uwazi_e2e INDEX_NAME=uwazi_e2e ./uwazi-fixtures/restore.blank-e2e.sh",
     "lint": "node scripts/oxlint.mjs",
-    "prettier": "./node_modules/.bin/prettier --check --cache 'app/**/*.{js,ts,tsx}'",
+    "prettier": "node scripts/prettier.mjs",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
     "cypress": "cypress open",
