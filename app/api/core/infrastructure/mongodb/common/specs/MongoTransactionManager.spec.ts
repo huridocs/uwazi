@@ -2,7 +2,7 @@
 import { MongoClient, MongoError } from 'mongodb';
 import { getIdMapper } from '#api/utils/fixturesFactory.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-import testingDB from '#api/utils/testing_db.js';
+import { testingDB } from '#api/utils/testing_db.js';
 import { StandardLogger } from '#api/core/libs/logger/infrastructure/StandardLogger.js';
 import { getClient, getTenant } from '../getConnectionForCurrentTenant.js';
 import { MongoTransactionManager } from '../MongoTransactionManager.js';
@@ -155,7 +155,7 @@ describe('When one operation fails', () => {
           await testingDB.mongodb
             ?.collection('collection1')
             .insertOne({ name: 'doc3' }, { session: this.tm.getSession() });
-        } catch (e) {
+        } catch (_) {
           // Ignores the error for the sake of testing.
         }
       }

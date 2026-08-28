@@ -2,7 +2,7 @@ import type { Application, NextFunction, Request, Response } from 'express';
 import os from 'os';
 import path from 'path';
 import request from 'supertest';
-// eslint-disable-next-line node/no-restricted-import
+// eslint-disable-next-line no-restricted-imports
 import fs from 'fs/promises';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { setupTestUploadedPaths, storage } from '#api/files/index.js';

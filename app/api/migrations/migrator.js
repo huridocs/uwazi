@@ -1,5 +1,5 @@
 import { fileURLToPath, pathToFileURL } from 'url';
-// eslint-disable-next-line node/no-restricted-import
+// eslint-disable-next-line no-restricted-imports
 import fs from 'fs/promises';
 import path, { dirname } from 'path';
 import migrationsModel from './migrationsModel.js';
@@ -7,7 +7,7 @@ import migrationsModel from './migrationsModel.js';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-const loadMigration = p => import(pathToFileURL(p).href).then(m => m.default);
+const loadMigration = async p => import(pathToFileURL(p).href).then(m => m.default);
 
 const sortByDelta = migrations => migrations.sort((a, b) => a.delta - b.delta);
 
@@ -17,7 +17,7 @@ const getMigrations = async (migrationsDir, loader = loadMigration) => {
   const loadedMigrations = await Promise.all(
     files
       .filter(f => !f.startsWith('.'))
-      .map(migration => loader(path.join(migrationsDir, migration, 'index.js')))
+      .map(async migration => loader(path.join(migrationsDir, migration, 'index.js')))
   );
   let migrations = sortByDelta(loadedMigrations);
   if (lastMigration) {
@@ -26,7 +26,7 @@ const getMigrations = async (migrationsDir, loader = loadMigration) => {
   return migrations;
 };
 
-const saveMigration = migration => migrationsModel.save(migration);
+const saveMigration = async migration => migrationsModel.save(migration);
 
 const getPendingMigrations = async (migrationsDir, loader, schemaVersion) => {
   const pending = await getMigrations(migrationsDir, loader);
@@ -114,7 +114,7 @@ const migrator = {
   async migrateDelta(db, delta, schemaVersion = Number.MAX_SAFE_INTEGER) {
     return migrateDelta(this.migrationsDir, this.loader, db, delta, schemaVersion);
   },
-  shouldMigrate() {
+  async shouldMigrate() {
     return getMigrations(this.migrationsDir, this.loader).then(migrations =>
       Boolean(migrations.length)
     );

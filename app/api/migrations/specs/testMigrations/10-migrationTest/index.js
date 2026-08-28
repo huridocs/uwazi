@@ -3,7 +3,7 @@ export default {
   description: 'migration test 10',
   reindex: false,
 
-  up() {
+  async up() {
     return new Promise(resolve => {
       setTimeout(resolve, 10);
     });

@@ -1,4 +1,4 @@
-// eslint-disable-next-line node/no-restricted-import
+// eslint-disable-next-line no-restricted-imports
 import { unlink } from 'fs/promises';
 import path from 'path';
 import { config } from '#api/config.js';

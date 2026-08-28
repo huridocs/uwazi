@@ -1,4 +1,5 @@
 /* eslint-disable max-statements */
+/* oxlint-disable typescript/promise-function-async */
 
 import { validation } from '#api/utils/index.js';
 

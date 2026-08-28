@@ -1,4 +1,4 @@
-import testingDB from '#api/utils/testing_db.js';
+import { testingDB } from '#api/utils/testing_db.js';
 import migration from '../index.js';
 import fixturesWithFormat from './fixtures_with_format.js';
 import fixturesWithoutFormat from './fixtures_without_format.js';
@@ -8,8 +8,8 @@ describe('migration settings-date-format', () => {
     jest.spyOn(process.stdout, 'write').mockImplementation(() => {});
   });
 
-  afterAll(done => {
-    testingDB.disconnect().then(done);
+  afterAll(async () => {
+    await testingDB.disconnect();
   });
 
   it('should have a delta number', () => {

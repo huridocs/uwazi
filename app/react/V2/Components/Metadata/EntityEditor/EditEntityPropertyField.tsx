@@ -1,5 +1,5 @@
 /* eslint-disable max-lines */
-import React, { Fragment } from 'react';
+import React from 'react';
 import { Translate } from '#app/I18N/index.js';
 import type { ClientThesaurus } from '#app/apiResponseTypes.js';
 import type { ClientFile } from '#app/istore.js';

@@ -1,4 +1,4 @@
-// eslint-disable-next-line node/no-restricted-import
+// eslint-disable-next-line no-restricted-imports
 import { stat } from 'fs/promises';
 import path from 'path';
 import { HeadObjectCommand, S3Client } from '@aws-sdk/client-s3';

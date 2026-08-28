@@ -14,7 +14,7 @@ import { RouteHandler } from '../RouteHandler.js';
 import { APIURL } from '../../config.js';
 
 class TestController extends RouteHandler {
-  static requestState(_requestParams, _state) {
+  static async requestState(_requestParams, _state) {
     return Promise.resolve([
       { type: 'action1', value: 'value1' },
       { type: 'action2', value: 'value2' },
@@ -60,7 +60,7 @@ describe('RouteHandler', () => {
 
     jest
       .spyOn(TestController, 'requestState')
-      .mockImplementation((...args) => originalRequestState.apply(TestController, args));
+      .mockImplementation(async (...args) => originalRequestState.apply(TestController, args));
 
     RouteHandler.renderedFromServer = false;
 

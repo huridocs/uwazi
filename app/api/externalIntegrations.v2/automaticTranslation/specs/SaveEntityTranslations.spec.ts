@@ -3,7 +3,7 @@ import { EntitiesDataSourceFactory } from '#api/core/infrastructure/factories/En
 import { TemplatesDataSourceFactory } from '#api/core/infrastructure/factories/TemplatesDataSourceFactory.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-import testingDB, { DBFixture } from '#api/utils/testing_db.js';
+import { testingDB, DBFixture } from '#api/utils/testing_db.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import { createMockLogger } from '#api/core/libs/logger/infrastructure/MockLogger.js';
 import { Logger } from '#api/core/libs/logger/contracts/Logger.js';

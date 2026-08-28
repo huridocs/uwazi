@@ -16,7 +16,7 @@ describe('DistributedLoopLock', () => {
     testId = Math.random().toString(36).substring(7);
     pendingTasks = [];
     task = jest.fn().mockImplementation(
-      () =>
+      async () =>
         new Promise((resolve, reject) => {
           pendingTasks.push(resolve);
           rejectTask = reject;
@@ -184,7 +184,7 @@ describe('DistributedLoopLock', () => {
 
     const waitBetweenTasksSpy = jest.spyOn(sut, 'waitBetweenTasks');
 
-    sut.start();
+    void sut.start();
     await waitForExpect(() => expect(task).toHaveBeenCalledTimes(1));
 
     finishTask();
@@ -202,7 +202,7 @@ describe('DistributedLoopLock', () => {
 
     const waitBetweenTasksSpy = jest.spyOn(sut, 'waitBetweenTasks');
 
-    sut.start();
+    void sut.start();
 
     await waitForExpect(() => expect(task).toHaveBeenCalledTimes(1));
 
@@ -219,7 +219,7 @@ describe('DistributedLoopLock', () => {
     const connection = Redis.createClient(
       `redis://${connectionConfig.host}:${connectionConfig.port}`
     );
-    const get = key =>
+    const get = async key =>
       new Promise((resolve, reject) => {
         connection.get(key, (error, data) => {
           if (error) reject(error);
@@ -232,7 +232,7 @@ describe('DistributedLoopLock', () => {
       delayTimeBetweenTasks: 100_000,
     });
 
-    sut.start();
+    void sut.start();
     await waitForExpect(() => expect(task).toHaveBeenCalledTimes(1));
 
     const stopPromise = sut.stop();

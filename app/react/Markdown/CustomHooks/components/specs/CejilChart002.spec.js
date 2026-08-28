@@ -57,7 +57,7 @@ describe('CejilChart002', () => {
 
   describe('When data loaded', () => {
     beforeEach(() => {
-      spyOn(api, 'search').and.callFake(RequestParams => {
+      spyOn(api, 'search').and.callFake(async RequestParams => {
         const args = RequestParams.data;
         const combinedQuery = args.types[0] === template && !args.filters.sexo;
         const maleQuery = testQuery(args, male);

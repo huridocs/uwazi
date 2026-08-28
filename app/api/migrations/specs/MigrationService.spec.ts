@@ -1,6 +1,6 @@
 /* eslint-disable max-statements */
 import { Connection } from 'mongoose';
-import testingDB from '#api/utils/testing_db.js';
+import { testingDB } from '#api/utils/testing_db.js';
 import { DB } from '#api/odm/index.js';
 import { PostgresDB } from '#api/infrastructure/PostgresDB.js';
 import { Logger } from '#api/core/libs/logger/contracts/Logger.js';

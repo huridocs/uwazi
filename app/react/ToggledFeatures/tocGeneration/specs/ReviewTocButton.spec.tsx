@@ -1,6 +1,6 @@
 import React from 'react';
 import { shallow, ShallowWrapper } from 'enzyme';
-import configureStore, { MockStore, MockStoreCreator } from 'redux-mock-store';
+import configureMockStore, { MockStore, MockStoreCreator } from 'redux-mock-store';
 import { Provider } from 'react-redux';
 import { ClientFile } from '#app/istore.js';
 import { ReviewTocButton } from '../ReviewTocButton.js';
@@ -8,7 +8,7 @@ import { ReviewTocButton } from '../ReviewTocButton.js';
 describe('ReviewTocButton', () => {
   let component: ShallowWrapper<typeof ReviewTocButton>;
 
-  const mockStoreCreator: MockStoreCreator<object> = configureStore<object>([]);
+  const mockStoreCreator: MockStoreCreator<object> = configureMockStore<object>([]);
   const render = (file: Partial<ClientFile>) => {
     const store: MockStore<object> = mockStoreCreator({});
     component = shallow(

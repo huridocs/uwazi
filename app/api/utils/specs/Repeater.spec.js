@@ -7,7 +7,7 @@ describe('Repeater', () => {
   let repeaterOne;
   let repeaterTwo;
 
-  function advanceTime(time) {
+  async function advanceTime(time) {
     jest.advanceTimersByTime(time);
     return new Promise(resolve => {
       setImmediate(resolve);
@@ -21,20 +21,20 @@ describe('Repeater', () => {
   beforeEach(() => {
     jest.useFakeTimers('legacy');
 
-    callbackOne = jest.fn().mockImplementation(() => Promise.resolve());
-    callbackTwo = jest.fn().mockImplementation(() => Promise.resolve());
+    callbackOne = jest.fn().mockImplementation(async () => Promise.resolve());
+    callbackTwo = jest.fn().mockImplementation(async () => Promise.resolve());
   });
 
   it('should be able to have two independant repeaters', async () => {
     repeaterOne = new Repeater(callbackOne, 1);
     repeaterTwo = new Repeater(callbackTwo, 1);
 
-    repeaterTwo.start();
-    repeaterOne.start();
+    void repeaterTwo.start();
+    void repeaterOne.start();
 
     await advanceTime(1);
 
-    repeaterOne.stop();
+    void repeaterOne.stop();
 
     await advanceTime(1);
 
@@ -46,7 +46,7 @@ describe('Repeater', () => {
     jest.useRealTimers();
     repeaterOne = new Repeater(callbackOne, 1);
 
-    repeaterOne.start();
+    void repeaterOne.start();
 
     await expect(repeaterOne.stop()).resolves.toBeUndefined();
   });
@@ -54,15 +54,19 @@ describe('Repeater', () => {
   it('should skip interval between executions if stop method is executed', async () => {
     let promise;
     let resolvePromise;
-    const sut = new Repeater(() => {
-      promise = new Promise(resolve => {
-        resolvePromise = resolve;
-      });
+    const sut = new Repeater(
+      // oxlint-disable-next-line typescript/promise-function-async
+      () => {
+        promise = new Promise(resolve => {
+          resolvePromise = resolve;
+        });
 
-      return promise;
-    }, 10_000);
+        return promise;
+      },
+      10_000
+    );
 
-    sut.start();
+    void sut.start();
     resolvePromise();
     await expect(promise).resolves.toBeUndefined();
     await expect(sut.stop()).resolves.toBeUndefined();

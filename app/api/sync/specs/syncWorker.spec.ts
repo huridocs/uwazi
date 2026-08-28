@@ -1,7 +1,7 @@
 /* eslint-disable max-statements */
 import 'isomorphic-fetch';
 import { Server } from 'http';
-// eslint-disable-next-line node/no-restricted-import
+// eslint-disable-next-line no-restricted-imports
 import { rm, writeFile } from 'fs/promises';
 
 import bodyParser from 'body-parser';

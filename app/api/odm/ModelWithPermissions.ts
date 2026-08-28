@@ -143,7 +143,7 @@ export class ModelWithPermissions<T> extends OdmModel<WithPermissions<T>> {
     try {
       if (typeof user?._id === 'undefined') return;
       ObjectId.createFromHexString(user._id.toString());
-    } catch (e) {
+    } catch (_) {
       throw new InvalidUserIdError();
     }
   }

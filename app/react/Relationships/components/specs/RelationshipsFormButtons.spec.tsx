@@ -4,7 +4,7 @@
 import React from 'react';
 import Immutable from 'immutable';
 import thunk from 'redux-thunk';
-import configureStore, { MockStoreCreator } from 'redux-mock-store';
+import configureMockStore, { MockStoreCreator } from 'redux-mock-store';
 import { mount, ReactWrapper } from 'enzyme';
 import { Provider } from 'react-redux';
 import { AccessLevels } from '#shared/types/permissionSchema.js';
@@ -14,7 +14,7 @@ import { RelationshipsFormButtonsView as RelationshipsFormButtons } from '../Rel
 
 describe('RelationshipsFormButtons', () => {
   const middlewares = [thunk];
-  const mockStoreCreator: MockStoreCreator<object> = configureStore<object>(middlewares);
+  const mockStoreCreator: MockStoreCreator<object> = configureMockStore<object>(middlewares);
   const adminUser = {
     email: 'admin1@relation.test',
     username: 'admin 1',

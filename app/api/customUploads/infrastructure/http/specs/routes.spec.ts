@@ -7,9 +7,9 @@ import { UserSchema } from '#shared/types/userType.js';
 import { files } from '#api/files/files.js';
 import { FileType } from '#shared/types/fileType.js';
 import { customUploadsPath } from '#api/files/index.js';
-// eslint-disable-next-line node/no-restricted-import
+// eslint-disable-next-line no-restricted-imports
 import fs from 'fs/promises';
-import customUploadsRoutes from '../routes.js';
+import { customUploadsRoutes } from '../routes.js';
 import { adminUser, downloadFixtures, fixtures } from '#api/files/specs/fixtures.js';
 
 jest.mock(

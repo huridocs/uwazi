@@ -10,7 +10,7 @@ import { SyncDispatcherForTests } from '#api/core/libs/queue/infrastructure/Sync
 import { EntitiesDAOFactory } from '#api/core/infrastructure/factories/EntitiesDAOFactory.js';
 import { files } from '#api/files/index.js';
 import * as setupSockets from '#api/socketio/setupSockets.js';
-import testingDB from '#api/utils/testing_db.js';
+import { testingDB } from '#api/utils/testing_db.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { TemplateSchema } from '#shared/types/templateType.js';
 import templates from '../templates.js';

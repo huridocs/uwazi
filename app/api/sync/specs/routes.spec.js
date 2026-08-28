@@ -248,7 +248,10 @@ describe('sync', () => {
 
     describe('when namespace is settings', () => {
       it('should replace the incomming id with the local id', async () => {
-        const settings = { save: jest.fn(), get: () => Promise.resolve([{ _id: 'slaveId' }]) };
+        const settings = {
+          save: jest.fn(),
+          get: async () => Promise.resolve([{ _id: 'slaveId' }]),
+        };
         models.settings = () => settings;
 
         req.body = {

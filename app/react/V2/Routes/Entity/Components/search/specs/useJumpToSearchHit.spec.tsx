@@ -9,11 +9,28 @@ import { tabGroupsAtom } from '#V2/Components/UI/Tabs/tabsAtoms.js';
 import { focusMetadataFieldAtom } from '#V2/Components/Metadata/focusMetadataFieldAtom.js';
 import { useJumpToSearchHit } from '../useJumpToSearchHit.js';
 
+let mockTestStore: ReturnType<typeof createStore> | null = null;
+
 jest.mock('#V2/Routes/Entity/Components/context/index.js', () => ({
   useEntityLanguage: () => ({
     mainDocument: { _id: '1', filename: 'file.pdf' },
   }),
 }));
+
+jest.mock('#V2/Routes/Entity/Tabs/EntityTabsContext.js', () => {
+  const { mergeTabGroup, tabGroupsAtom: groupsAtom } =
+    require('#V2/Components/UI/Tabs/tabsAtoms.js') as typeof import('#V2/Components/UI/Tabs/tabsAtoms.js');
+  return {
+    useEntityTabNavigation: () => ({
+      stageSideTab: (sideTab: string) => {
+        if (!mockTestStore) return;
+        mockTestStore.set(groupsAtom, prev =>
+          mergeTabGroup(prev, 'entity-side', { activeTabId: sideTab })
+        );
+      },
+    }),
+  };
+});
 
 describe('useJumpToSearchHit', () => {
   let store: ReturnType<typeof createStore>;
@@ -35,6 +52,7 @@ describe('useJumpToSearchHit', () => {
 
   beforeEach(() => {
     store = createStore();
+    mockTestStore = store;
   });
 
   it('jumpToProperty sets focus atom, main Metadata, and pins side Search', async () => {

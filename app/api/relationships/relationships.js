@@ -38,11 +38,11 @@ const getRelationshipTypesDS = () =>
   });
 
 export default {
-  get(query, select, pagination) {
+  async get(query, select, pagination) {
     return model.get(query, select, pagination);
   },
 
-  getById(id) {
+  async getById(id) {
     return model.getById(id);
   },
 
@@ -74,7 +74,7 @@ export default {
     return model.get({ hub: { $in: hubsIds } });
   },
 
-  getByDocument(
+  async getByDocument(
     sharedId,
     language,
     unpublished = true,
@@ -82,7 +82,7 @@ export default {
     onlyTextReferences = false,
     unrestricted = true
   ) {
-    return this.getDocumentHubs(sharedId, file, onlyTextReferences).then(_relationships => {
+    return this.getDocumentHubs(sharedId, file, onlyTextReferences).then(async _relationships => {
       const connectedEntitiesSharedId = _relationships.map(relationship => relationship.entity);
       const method = unrestricted ? 'getUnrestrictedWithDocuments' : 'get';
       return entities[method]({ sharedId: { $in: connectedEntitiesSharedId }, language }, [
@@ -112,7 +112,7 @@ export default {
     });
   },
 
-  getGroupsByConnection(id, language, options = {}) {
+  async getGroupsByConnection(id, language, options = {}) {
     return Promise.all([
       this.getByDocument(id, language, undefined, undefined, undefined, false),
       templatesAPI.get(),
@@ -135,15 +135,15 @@ export default {
     });
   },
 
-  getHub(hub) {
+  async getHub(hub) {
     return model.get({ hub });
   },
 
-  countByRelationType(typeId) {
+  async countByRelationType(typeId) {
     return model.count({ template: typeId });
   },
 
-  getAllLanguages(sharedId) {
+  async getAllLanguages(sharedId) {
     return model.get({ sharedId });
   },
 
@@ -283,7 +283,8 @@ export default {
     return updateEntitiesMetadataV1Bridge({
       entitiesIds,
       language,
-      getByDocument: (entityId, documentLanguage) => this.getByDocument(entityId, documentLanguage),
+      getByDocument: async (entityId, documentLanguage) =>
+        this.getByDocument(entityId, documentLanguage),
     });
   },
 
@@ -293,8 +294,8 @@ export default {
       language,
       template: _template,
       getTemplateById: templatesAPI.getById,
-      saveRelationships: relationships => this.save(relationships, language, false),
-      deleteRelationships: query => this.delete(query, language, false),
+      saveRelationships: async relationships => this.save(relationships, language, false),
+      deleteRelationships: async query => this.delete(query, language, false),
     });
   },
 
@@ -335,7 +336,7 @@ export default {
     await model.delete({ hub: { $in: hubsToDelete.map(h => h._id) } });
 
     if (updateMetdata) {
-      await ArrayUtils.sequentialFor(languages, l =>
+      await ArrayUtils.sequentialFor(languages, async l =>
         this.updateEntitiesMetadata(
           entitiesAffected.map(e => e._id),
           l.key

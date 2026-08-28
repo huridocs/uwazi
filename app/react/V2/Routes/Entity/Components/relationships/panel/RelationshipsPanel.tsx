@@ -14,6 +14,7 @@ import {
   useRelationshipsSelectionActions,
   useEntityOverlay,
   useEntityWriteAuthorized,
+  useEnsureResolved,
 } from '#V2/Routes/Entity/Components/context/index.js';
 import { useActiveRelationshipHighlight } from '#V2/Routes/Entity/Components/document/index.js';
 import { useGroupLabelContext } from '../hooks/useGroupLabelContext.js';
@@ -40,6 +41,7 @@ const RelationshipsPanelView = ({
   const canWrite = useEntityWriteAuthorized();
 
   const { openEntityOverlay } = useEntityOverlay();
+  const ensureResolved = useEnsureResolved();
   const {
     relationshipToDelete,
     isDeleting,
@@ -48,12 +50,16 @@ const RelationshipsPanelView = ({
     handleCancelDelete,
   } = useRelationshipDelete(activeRelationshipId, clearRelationshipSelection);
 
+  useEffect(() => {
+    ensureResolved().catch(() => undefined);
+  }, [ensureResolved]);
+
   const handleRelationshipClick = useCallback(
     (marker: RelationshipMarker) => {
       if (focusDocumentOnSelect && marker.anchor?.selections?.[0]?.page) {
         onFocusDocument?.();
       }
-      selectRelationship(marker, { scrollPanel: true });
+      selectRelationship(marker, { scrollPanel: true }).catch(() => undefined);
     },
     [focusDocumentOnSelect, onFocusDocument, selectRelationship]
   );

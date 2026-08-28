@@ -3,7 +3,7 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 import Immutable from 'immutable';
-import configureStore from 'redux-mock-store';
+import configureMockStore from 'redux-mock-store';
 import { Provider } from 'react-redux';
 import { Form, Field } from 'react-redux-form';
 
@@ -12,7 +12,7 @@ import { MetadataFormFields } from '../MetadataFormFields.js';
 import { Select as SimpleSelect } from '../../../Forms.js';
 import { SupportingFiles } from '../SupportingFiles.js';
 
-const mockStore = configureStore([]);
+const mockStore = configureMockStore([]);
 
 describe('MetadataForm', () => {
   let component;

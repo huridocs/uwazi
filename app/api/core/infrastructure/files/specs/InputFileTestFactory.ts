@@ -1,4 +1,4 @@
-/* eslint-disable node/no-restricted-import */
+/* eslint-disable no-restricted-imports */
 import * as fs from 'fs/promises';
 import path from 'path';
 import { InputFile } from '#api/core/infrastructure/files/InputFile.js';

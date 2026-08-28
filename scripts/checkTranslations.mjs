@@ -3,7 +3,7 @@ import traverse from '@babel/traverse';
 import mongodb from 'mongodb';
 
 import { resolve } from 'path';
-// eslint-disable-next-line node/no-restricted-import
+// eslint-disable-next-line no-restricted-imports
 import { promises } from 'fs';
 import {
   comparableString,

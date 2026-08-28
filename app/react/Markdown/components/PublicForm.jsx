@@ -76,7 +76,7 @@ class PublicFormComponent extends Component {
       await submitResult.promise;
       this.resetForm(_values);
       this.setState({ submiting: false, files: [] });
-    } catch (e) {
+    } catch (_) {
       this.setState({ submiting: false });
     }
     this.refreshCaptcha();
@@ -173,7 +173,7 @@ class PublicFormComponent extends Component {
               <Control.file
                 id={id}
                 {...props}
-                onChange={e => this.fileDropped([...e.target.files])}
+                onChange={async e => this.fileDropped([...e.target.files])}
               />
             </MobileView>
             <div className="preview-list">
@@ -182,7 +182,7 @@ class PublicFormComponent extends Component {
                   <li key={file.preview ?? `file-${index}`}>
                     <div className="preview-title">{file.name}</div>
                     <div>
-                      <span onClick={() => this.removeAttachment(file)}>
+                      <span onClick={async () => this.removeAttachment(file)}>
                         <Icon icon="times" />
                         &nbsp;<Translate>Remove</Translate>
                       </span>

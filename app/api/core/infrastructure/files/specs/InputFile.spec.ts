@@ -1,5 +1,5 @@
 import { Readable } from 'stream';
-// eslint-disable-next-line node/no-restricted-import
+// eslint-disable-next-line no-restricted-imports
 import { unlink } from 'fs/promises';
 import { InputFile } from '../InputFile.js';
 

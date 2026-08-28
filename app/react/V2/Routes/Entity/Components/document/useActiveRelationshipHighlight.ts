@@ -1,56 +1,61 @@
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
 import { useAtomValue } from 'jotai';
 import { templatesAtom } from '#V2/atoms/index.js';
-import { PDFControls, relationshipToHighlight } from '#V2/Components/PDFViewer/index.js';
+import type { PDFControls } from '#V2/Components/PDFViewer/index.js';
 import { RelationshipMarker } from '#V2/Components/Relationships/types.js';
 import {
+  filterMarkersForDocument,
+  projectRelationshipMarkers,
+} from '#V2/formatters/relationships/relationshipsPanelProjection.js';
+import {
+  useDirectedRelationships,
   useDocumentPdf,
   useDocumentRelationshipNav,
+  useEnsureResolved,
+  useEntityLanguage,
+  useEntityScopedEntity,
+  useRelationshipQueryStatus,
+  useRelationshipsPanelFacetFilters,
   useRelationshipsPanelUi,
 } from '#V2/Routes/Entity/Components/context/index.js';
+import {
+  activateRelationshipSelection,
+  clearRelationshipPdfHighlights,
+  deselectActiveRelationship,
+  syncActiveRelationshipHighlight,
+  type RelationshipHighlightActions,
+} from './relationshipHighlightUtils.js';
 
-type SelectOptions = {
-  scrollPanel?: boolean;
-};
-
-const clearRelationshipPdfHighlights = (pdfController: PDFControls | null) => {
-  pdfController?.toggleHighlights([]);
-};
-
-const syncPdfWithMarker = (
-  marker: RelationshipMarker,
-  colorOf: (marker: RelationshipMarker) => string,
-  pdfController: PDFControls | null
-) => {
-  const page = marker.anchor?.selections?.[0]?.page;
-  const highlight = relationshipToHighlight(marker.anchor, colorOf(marker), marker._id);
-  if (page) pdfController?.goToPage(page);
-  pdfController?.toggleHighlights(highlight ? [highlight] : []);
-};
-
-const scrollRelationshipPanel = (
-  markerId: string,
-  setScrollToRelationshipPanel: (id: string) => void,
-  setExpandForRefId: (id: string) => void
-) => {
-  setScrollToRelationshipPanel(markerId);
-  setExpandForRefId(markerId);
-};
-
-const useRelationshipHighlightRefs = (mainPdfController: PDFControls | null) => {
+const usePdfControllerRef = (mainPdfController: PDFControls | null) => {
   const pdfControllerRef = useRef(mainPdfController);
   pdfControllerRef.current = mainPdfController;
-  const selectedMarkerRef = useRef<RelationshipMarker | null>(null);
-  return { pdfControllerRef, selectedMarkerRef };
+  return pdfControllerRef;
 };
 
-const useActiveRelationshipHighlight = () => {
-  const { activeRelationshipId, setActiveRelationshipId, setScrollToRelationshipPanel } =
-    useDocumentRelationshipNav();
-  const { pdfController: mainPdfController } = useDocumentPdf();
-  const { setExpandForRefId } = useRelationshipsPanelUi();
+const useSelectedMarkerRef = () => {
+  const selectedMarkerRef = useRef<RelationshipMarker | null>(null);
+  const setSelectedMarker = useCallback((marker: RelationshipMarker | null) => {
+    selectedMarkerRef.current = marker;
+  }, []);
+  const getSelectedMarker = useCallback(() => selectedMarkerRef.current, []);
+  return { getSelectedMarker, setSelectedMarker };
+};
+
+const useRelationshipLiveMarkers = () => {
+  const relationships = useDirectedRelationships();
+  const entity = useEntityScopedEntity();
+  const { mainDocument } = useEntityLanguage();
   const templates = useAtomValue(templatesAtom);
-  const { pdfControllerRef, selectedMarkerRef } = useRelationshipHighlightRefs(mainPdfController);
+
+  const liveMarkers = useMemo(
+    () =>
+      filterMarkersForDocument(
+        projectRelationshipMarkers(entity.sharedId, relationships),
+        mainDocument?._id,
+        entity.sharedId
+      ),
+    [entity.sharedId, mainDocument?._id, relationships]
+  );
 
   const colorOf = useCallback(
     (marker: RelationshipMarker) =>
@@ -58,49 +63,97 @@ const useActiveRelationshipHighlight = () => {
     [templates]
   );
 
+  return { liveMarkers, colorOf };
+};
+
+const useRelationshipHighlightContext = (mainPdfController: PDFControls | null) => {
+  const { activeRelationshipId, setActiveRelationshipId, setScrollToRelationshipPanel } =
+    useDocumentRelationshipNav();
+  const { setExpandForRefId } = useRelationshipsPanelUi();
+  const { activeClusterRefIds } = useRelationshipsPanelFacetFilters();
+  const ensureResolved = useEnsureResolved();
+  const { resolved } = useRelationshipQueryStatus();
+  const pdfControllerRef = usePdfControllerRef(mainPdfController);
+  const { getSelectedMarker, setSelectedMarker } = useSelectedMarkerRef();
+  const actions: RelationshipHighlightActions = {
+    setActiveRelationshipId,
+    setSelectedMarker,
+    setScrollToRelationshipPanel,
+    setExpandForRefId,
+  };
+
+  return {
+    actions,
+    activeClusterRefIds,
+    activeRelationshipId,
+    ensureResolved,
+    getSelectedMarker,
+    mainPdfController,
+    pdfControllerRef,
+    resolved,
+    setSelectedMarker,
+  };
+};
+
+const useActiveRelationshipHighlight = () => {
+  const { pdfController: mainPdfController } = useDocumentPdf();
+  const { liveMarkers, colorOf } = useRelationshipLiveMarkers();
+  const {
+    actions,
+    activeClusterRefIds,
+    activeRelationshipId,
+    ensureResolved,
+    getSelectedMarker,
+    mainPdfController: pdfController,
+    pdfControllerRef,
+    resolved,
+    setSelectedMarker,
+  } = useRelationshipHighlightContext(mainPdfController);
+
   const selectRelationship = useCallback(
-    (marker: RelationshipMarker, options?: SelectOptions) => {
+    async (marker: RelationshipMarker, options?: { scrollPanel?: boolean }) => {
       if (marker._id === activeRelationshipId) {
-        selectedMarkerRef.current = null;
-        setActiveRelationshipId(null);
-        clearRelationshipPdfHighlights(pdfControllerRef.current);
+        deselectActiveRelationship(actions, pdfControllerRef.current);
         return;
       }
-
-      setActiveRelationshipId(marker._id);
-      selectedMarkerRef.current = marker;
-      if (options?.scrollPanel) {
-        scrollRelationshipPanel(marker._id, setScrollToRelationshipPanel, setExpandForRefId);
-      }
-      syncPdfWithMarker(marker, colorOf, pdfControllerRef.current);
+      activateRelationshipSelection({
+        marker,
+        options,
+        actions,
+        colorOf,
+        pdfController: pdfControllerRef.current,
+      });
+      await ensureResolved();
     },
-    [
-      activeRelationshipId,
-      colorOf,
-      pdfControllerRef,
-      selectedMarkerRef,
-      setActiveRelationshipId,
-      setScrollToRelationshipPanel,
-      setExpandForRefId,
-    ]
+    [actions, activeRelationshipId, colorOf, ensureResolved, pdfControllerRef]
   );
 
   const clearRelationshipSelection = useCallback(() => {
-    selectedMarkerRef.current = null;
-    setActiveRelationshipId(null);
+    setSelectedMarker(null);
+    actions.setActiveRelationshipId(null);
     clearRelationshipPdfHighlights(pdfControllerRef.current);
-  }, [pdfControllerRef, selectedMarkerRef, setActiveRelationshipId]);
+  }, [actions, pdfControllerRef, setSelectedMarker]);
 
   useEffect(() => {
-    if (!activeRelationshipId) {
-      selectedMarkerRef.current = null;
-      clearRelationshipPdfHighlights(mainPdfController);
-      return;
-    }
-    const marker = selectedMarkerRef.current;
-    if (!marker || marker._id !== activeRelationshipId || !mainPdfController) return;
-    syncPdfWithMarker(marker, colorOf, mainPdfController);
-  }, [activeRelationshipId, mainPdfController, colorOf, selectedMarkerRef]);
+    syncActiveRelationshipHighlight({
+      activeRelationshipId,
+      activeClusterRefIds,
+      liveMarkers,
+      getSelectedMarker,
+      setSelectedMarker,
+      colorOf,
+      mainPdfController: pdfController,
+    });
+  }, [
+    activeClusterRefIds,
+    activeRelationshipId,
+    colorOf,
+    getSelectedMarker,
+    liveMarkers,
+    pdfController,
+    resolved,
+    setSelectedMarker,
+  ]);
 
   return { activeRelationshipId, selectRelationship, clearRelationshipSelection };
 };

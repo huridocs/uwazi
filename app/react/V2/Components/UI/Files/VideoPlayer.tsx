@@ -18,14 +18,14 @@ interface VideoPlayerProps {
 
 const isExternalPlatform = (url: string): boolean => {
   const youtubePattern =
-    /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/;
+    /(?:youtube\.com\/(?:[^/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?/\s]{11})/;
   const vimeoPattern = /(?:vimeo\.com\/)(?:.*\/)?(\d+)/;
   return youtubePattern.test(url) || vimeoPattern.test(url);
 };
 
 const getYouTubeEmbedUrl = (url: string): string | null => {
   const youtubePattern =
-    /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/;
+    /(?:youtube\.com\/(?:[^/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?/\s]{11})/;
   const match = url.match(youtubePattern);
   if (match) {
     return `https://www.youtube.com/embed/${match[1]}`;

@@ -1,7 +1,7 @@
 import { Application, Request, Response, NextFunction } from 'express';
-// eslint-disable-next-line node/no-restricted-import
+// eslint-disable-next-line no-restricted-imports
 import { createWriteStream } from 'fs';
-// eslint-disable-next-line node/no-restricted-import
+// eslint-disable-next-line no-restricted-imports
 import fs from 'fs/promises';
 import QueryString from 'qs';
 
@@ -22,7 +22,7 @@ export default (app: Application) => {
   const removeTempFile = (filePath: string) => async () => {
     try {
       await fs.unlink(filePath);
-    } catch (err) {
+    } catch (_) {
       legacyLogger.error(`Error unlinking exported file: ${filePath}`);
     }
   };
