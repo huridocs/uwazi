@@ -69,7 +69,7 @@ const RelationshipsTreeBranch = ({
   color,
   count,
   markerIds,
-  defaultExpanded = true,
+  defaultExpanded = false,
   children,
 }: RelationshipsTreeBranchProps) => {
   const [expanded, setExpanded] = useState(defaultExpanded);
@@ -89,7 +89,7 @@ const RelationshipsTreeBranch = ({
         count={count}
       />
       {expanded && items.length > 0 && (
-        <div className="ml-[14px]">
+        <div className="ml-3.5">
           {items.map((child, index) => {
             const line = getTreeLine(index, items.length);
             if (

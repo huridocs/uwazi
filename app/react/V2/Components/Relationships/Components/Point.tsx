@@ -12,6 +12,7 @@ type PointProps = {
   stackOrder?: number;
   marker: RelationshipMarker;
   onClick: (marker: RelationshipMarker) => void;
+  onHover?: (marker: RelationshipMarker) => void;
   isActive?: boolean;
   representedCount?: number;
   centerOnAxis?: boolean;
@@ -25,6 +26,7 @@ const PointComponent = ({
   stackOrder = 1,
   marker,
   onClick,
+  onHover,
   isActive = false,
   representedCount = 1,
   centerOnAxis = false,
@@ -56,6 +58,9 @@ const PointComponent = ({
         }}
         onClick={() => {
           onClick(marker);
+        }}
+        onMouseEnter={() => {
+          onHover?.(marker);
         }}
       >
         <span no-translate="true" className="sr-only">
