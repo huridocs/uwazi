@@ -1120,6 +1120,7 @@ Select target document,Select target document
 Select target entity,Select target entity
 Select target paragraph,Select target paragraph
 Select text in target document,Select text in target document
+select text or a value,select text or a value
 Select the template to store the extracted paragraphs.,Select the template to store the extracted paragraphs.
 Select the template with the source documents.,Select the template with the source documents.
 Select...,Select...
@@ -1193,6 +1194,7 @@ Statistics,Statistics
 Stats & Filters,Stats & Filters
 Status,Status
 status AND women NOT Nicaragua,status AND women NOT Nicaragua
+Stop filling,Stop filling
 Storage,Storage
 Streets,Streets
 Strict mode,Strict mode

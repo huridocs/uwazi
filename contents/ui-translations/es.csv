@@ -1115,6 +1115,7 @@ Select target document,Seleccionar documento de destino
 Select target entity,Seleccionar entidad de destino
 Select target paragraph,Seleccionar párrafo de destino
 Select text in target document,Seleccionar texto en documento de destino
+select text or a value,seleccionar texto o un valor
 Select the template to store the extracted paragraphs.,Select the template to store the extracted paragraphs.
 Select the template with the source documents.,Select the template with the source documents.
 Select...,Seleccionar
@@ -1188,6 +1189,7 @@ Statistics,Statistics
 Stats & Filters,Stats & Filters
 Status,Status
 status AND women NOT Nicaragua,status AND women NOT Nicaragua
+Stop filling,detener relleno
 Storage,Almacenamiento
 Streets,Calles
 Strict mode,Modo estricto
