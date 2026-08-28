@@ -13,6 +13,7 @@ import {
   useEntityLanguage,
   useEnsureAnchors,
   useDirectedRelationships,
+  useDocumentPdf,
 } from '#V2/Routes/Entity/Components/context/index.js';
 import { useDocumentPdfView } from '../hooks/useDocumentPdfView.js';
 import { useRailInset } from '../hooks/useRailInset.js';
@@ -48,12 +49,14 @@ const DocumentTab = ({
     userIsAdminOrEditor,
     handlePageChange,
     handleHighlightClick,
+    handleRailHover,
     handleRailPointClick,
     handleClusterClick,
     handleClusterMoreClick,
     onPdfReady,
     propertySelectionHighlights,
   } = useDocumentPdfView({ mainDocument, entity });
+  const { armedPdfFill, requestPdfFillCommit } = useDocumentPdf();
 
   const isMobile = useIsMobile();
   const { isRtl } = useEntityLanguage();
@@ -148,7 +151,9 @@ const DocumentTab = ({
               showRail={showRail}
               activeRelationshipId={activeRelationshipId}
               onPointClick={handleRailPointClick}
+              onPointHover={handleRailHover}
               onClusterClick={handleClusterClick}
+              onClusterHover={handleRailHover}
               onMoreClick={handleClusterMoreClick}
             />
           )}
@@ -157,6 +162,9 @@ const DocumentTab = ({
               selection={selectedText}
               onCreateRelationship={() => handleCreateRelationship(selectedText)}
               onAddToToC={() => handleAddToToC(selectedText)}
+              armedLabel={armedPdfFill?.label}
+              onFillFromSelection={requestPdfFillCommit}
+              scrollRoot={pdfScrollRoot}
             />
           ) : null}
         </div>

@@ -5,7 +5,7 @@ import { MultiselectListOption } from '#V2/Components/Forms/index.js';
 import { relationshipTypesAtom } from '#V2/atoms/index.js';
 import type { MetadataValue } from '#V2/formatters/types.js';
 import { EntityFieldError, getFieldErrorState } from '../functions/fieldErrorState.js';
-import type { RelationshipInheritColumn } from '../functions/relationshipFieldHelpers.js';
+import type { InheritColumn } from '../../relationshipInherit.js';
 import { RelationshipFieldEditor } from './RelationshipFieldEditor.js';
 import { EntityField } from './EntityField.js';
 
@@ -18,7 +18,7 @@ type RelationshipFieldProps<TFormValues extends FieldValues = FieldValues> = {
   lookupSearch?: (search: string) => Promise<MultiselectListOption[]>;
   targetTemplateId?: string;
   relationTypeId?: string;
-  inheritColumns?: RelationshipInheritColumn[];
+  inheritColumns?: InheritColumn[];
   onEditSource?: (entityId: string, label: string) => void;
 };
 
@@ -74,4 +74,3 @@ const RelationshipField = <TFormValues extends FieldValues = FieldValues>({
 };
 
 export { RelationshipField };
-export type { RelationshipInheritColumn };

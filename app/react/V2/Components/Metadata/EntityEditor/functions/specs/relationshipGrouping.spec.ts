@@ -3,17 +3,9 @@ import type { FormMetadataProperty } from '../formatMetadataForForm.js';
 import {
   getGroupedRelationshipSyncPairs,
   groupRelationshipProperties,
-  relationshipGroupKey,
   syncGroupedRelationshipMetadata,
   type DisplayProperty,
 } from '../relationshipGrouping.js';
-
-describe('relationshipGroupKey', () => {
-  it('should join content and relationType with a separator', () => {
-    expect(relationshipGroupKey({ content: 'tpl', relationType: 'rel' })).toBe('tpl::rel');
-    expect(relationshipGroupKey({})).toBe('::');
-  });
-});
 
 describe('groupRelationshipProperties', () => {
   const properties: FormMetadataProperty[] = [
