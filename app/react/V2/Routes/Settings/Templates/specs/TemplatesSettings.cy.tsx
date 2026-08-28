@@ -73,7 +73,10 @@ describe('Settings Templates section services', () => {
         .first()
         .click();
 
-      cy.contains('[data-testid="settings-templates"] tbody tr', 'Case').should('contain', 'Default');
+      cy.contains('[data-testid="settings-templates"] tbody tr', 'Case').should(
+        'contain',
+        'Default'
+      );
       expectTemplatesSnapshot(() => {
         expect(templates.snapshot().find(item => item._id === 'template2')?.default).to.equal(true);
         expect(templates.snapshot().find(item => item._id === 'template1')?.default).to.equal(
