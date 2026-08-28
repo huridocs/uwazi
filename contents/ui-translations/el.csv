@@ -236,6 +236,7 @@ Confirm your password,Confirm your password
 Connect to a paragraph,Σύνδεση με παράγραφο
 Connect to an entity,Σύνδεση με οντότητα
 Connect to entity,Connect to entity
+Connected entities,Connected entities
 Connected to server,Connected to server
 Connection type,Τύπος σύνδεσης
 Contact email description,Εδώ μπορείτε να ρυθμίσετε το email επικοινωνίας και το email που εμφανίζεται όταν το Uwazi στέλνει ειδοποίηση σε χρήστη
@@ -1118,6 +1119,7 @@ Select target document,Select target document
 Select target entity,Select target entity
 Select target paragraph,Επιλογή παράγραφου-στόχου
 Select text in target document,Select text in target document
+select text or a value,select text or a value
 Select the template to store the extracted paragraphs.,Επιλέξτε το πρότυπο για την αποθήκευση των εξαγόμενων παραγράφων
 Select the template with the source documents.,Επιλέξτε το πρότυπο με τα έγγραφα προέλευσης.
 Select...,Επιλέξτε...
@@ -1191,6 +1193,7 @@ Statistics,Στατιστικά στοιχεία
 Stats & Filters,Στατιστικά & φίλτρα
 Status,Κατάσταση
 status AND women NOT Nicaragua,status AND women NOT Nicaragua
+Stop filling,Stop filling
 Storage,Αποθήκευση
 Streets,Δρόμοι
 Strict mode,Αυστηρή λειτουργία

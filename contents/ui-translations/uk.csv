@@ -237,6 +237,7 @@ Confirm your password,Confirm your password
 Connect to a paragraph,З'єднати з абзацом
 Connect to an entity,Підключіться до організації
 Connect to entity,Connect to entity
+Connected entities,Connected entities
 Connected to server,Connected to server
 Connection type,Тип зв'язку
 Contact email description,"Тут ви можете налаштувати контактний email та email, який з'являється, коли Uwazi надсилає сповіщення користувачеві"
@@ -1119,6 +1120,7 @@ Select target document,Select target document
 Select target entity,Select target entity
 Select target paragraph,Виберіть цільовий абзац
 Select text in target document,Select text in target document
+select text or a value,select text or a value
 Select the template to store the extracted paragraphs.,Виберіть шаблон для збереження вилучених абзаців.
 Select the template with the source documents.,Виберіть шаблон з вихідними документами.
 Select...,Вибрати...
@@ -1192,6 +1194,7 @@ Statistics,Статистика
 Stats & Filters,Статистика та фільтри
 Status,Статус
 status AND women NOT Nicaragua,status AND women NOT Nicaragua
+Stop filling,Stop filling
 Storage,Зберігання
 Streets,Вулиці
 Strict mode,Суворий режим

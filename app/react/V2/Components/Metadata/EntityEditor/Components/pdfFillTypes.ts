@@ -9,6 +9,8 @@ type PdfFillTarget = {
   coerceType: PdfFillCoerceType;
 };
 
+type PdfFillPlacement = 'overlay' | 'beside';
+
 type PdfFillHost = {
   isEditing: boolean;
   language: string;
@@ -24,7 +26,5 @@ type PdfFillHost = {
   setDocumentPdfSelection: (selection: TextSelection | undefined) => void;
   setPdfSelectionMenuOpen: (open: boolean) => void;
 };
-
-type PdfFillPlacement = 'overlay' | 'beside';
 
 export type { PdfFillCoerceType, PdfFillTarget, PdfFillHost, PdfFillPlacement };

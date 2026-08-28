@@ -4,6 +4,16 @@ import { mount } from 'cypress/react';
 import { composeStories } from '@storybook/react';
 import * as stories from '#app/stories/EntityViewer/Metadata.stories.js';
 
+const inheritingRelationshipCard = (label: string) =>
+  cy.contains(label).parents('.rounded-lg.border-border-40').first();
+
+const assertInheritedTableScroll = (card: Cypress.Chainable<JQuery<HTMLElement>>) => {
+  card.within(() => {
+    cy.get('.overflow-x-auto').should('exist').and('not.have.class', 'max-h-60');
+    cy.get('table').should('have.class', 'w-max').and('have.class', 'min-w-full');
+  });
+};
+
 describe('Metadata Record', () => {
   const { Basic } = composeStories(stories);
 
@@ -43,15 +53,37 @@ describe('Metadata Record', () => {
       cy.contains('span', 'Grouped verbs › verb1').should('exist');
     });
 
-    it('shows relationship links under Relationships', () => {
-      cy.contains('Relationships').should('exist');
-      cy.contains('Relationship with inheritance').should('exist');
-      cy.contains('via').should('exist');
-      cy.contains('inherits').should('exist');
+    it('shows link-only connections in Details', () => {
+      cy.contains('th', 'Regular relationship with no inheritance').should('exist');
       cy.contains('a', 'Traffic Accident - Main Street')
         .should('have.attr', 'href', '/entityv2/entity4')
         .should('have.attr', 'target', '_blank');
       cy.contains('This value should not display').should('not.have.attr', 'href');
+    });
+
+    it('shows inheriting connections as scrollable tables under Relationships', () => {
+      cy.contains('Relationships').should('exist');
+
+      const multiselectInherit = inheritingRelationshipCard('Relationship with inheritance');
+      multiselectInherit.within(() => {
+        cy.contains('via').should('exist');
+        cy.contains('inherits Multiselect from events').should('exist');
+        cy.contains('th', 'Entity').should('exist');
+        cy.contains('th', 'Multiselect from events').should('exist');
+        cy.contains('Maria Rodriguez - Witness').should('exist');
+        cy.contains('Again').should('exist');
+        cy.contains('Acknowledging').should('exist');
+      });
+      assertInheritedTableScroll(multiselectInherit);
+
+      const geoInherit = inheritingRelationshipCard('Grouped geolocation 3 (inherited)');
+      geoInherit.within(() => {
+        cy.contains('inherits Geolocation').should('exist');
+        cy.contains('th', 'Geolocation').should('have.class', 'min-w-72');
+        cy.get('td.min-w-72').should('exist');
+        cy.get('[data-testid="map-container"]').should('exist');
+      });
+      assertInheritedTableScroll(geoInherit);
     });
 
     it('shows external link in Details', () => {

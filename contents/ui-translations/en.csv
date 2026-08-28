@@ -237,6 +237,7 @@ Confirm your password,Confirm your password
 Connect to a paragraph,Connect to a paragraph
 Connect to an entity,Connect to an entity
 Connect to entity,Connect to entity
+Connected entities,Connected entities
 Connected to server,Connected to server
 Connection type,Connection type
 Contact email description,Here you can set up the contact email and the email that appears when Uwazi sends a notification to a user
@@ -1119,6 +1120,7 @@ Select target document,Select target document
 Select target entity,Select target entity
 Select target paragraph,Select target paragraph
 Select text in target document,Select text in target document
+select text or a value,select text or a value
 Select the template to store the extracted paragraphs.,Select the template to store the extracted paragraphs.
 Select the template with the source documents.,Select the template with the source documents.
 Select...,Select...
@@ -1192,6 +1194,7 @@ Statistics,Statistics
 Stats & Filters,Stats & Filters
 Status,Status
 status AND women NOT Nicaragua,status AND women NOT Nicaragua
+Stop filling,Stop filling
 Storage,Storage
 Streets,Streets
 Strict mode,Strict mode
