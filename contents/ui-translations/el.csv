@@ -1118,6 +1118,7 @@ Select target document,Select target document
 Select target entity,Select target entity
 Select target paragraph,Επιλογή παράγραφου-στόχου
 Select text in target document,Select text in target document
+select text or a value,select text or a value
 Select the template to store the extracted paragraphs.,Επιλέξτε το πρότυπο για την αποθήκευση των εξαγόμενων παραγράφων
 Select the template with the source documents.,Επιλέξτε το πρότυπο με τα έγγραφα προέλευσης.
 Select...,Επιλέξτε...
@@ -1191,6 +1192,7 @@ Statistics,Στατιστικά στοιχεία
 Stats & Filters,Στατιστικά & φίλτρα
 Status,Κατάσταση
 status AND women NOT Nicaragua,status AND women NOT Nicaragua
+Stop filling,Stop filling
 Storage,Αποθήκευση
 Streets,Δρόμοι
 Strict mode,Αυστηρή λειτουργία
