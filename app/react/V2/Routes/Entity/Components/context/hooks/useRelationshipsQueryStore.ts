@@ -24,6 +24,7 @@ const useRelationshipsQueryStore = ({
   const currentKey = queryKey(sharedId, language, fileId);
   const prevKeyRef = useRef(currentKey);
   const prevSeedFingerprintRef = useRef<string | null>(null);
+  const prevSeedRevisionRef = useRef<number | null>(null);
   const store = useQueryStore(seed, currentKey);
   const {
     seedFits,
@@ -85,12 +86,14 @@ const useRelationshipsQueryStore = ({
     prevKeyRef.current = currentKey;
 
     const seedFingerprint = seed ? hubRowsFingerprint(seed.hubRows) : null;
+    const seedRevision = seed?.seedRevision ?? 0;
     const preserveResolved =
       seedFits &&
       seed &&
       !keyChanged &&
       seedFingerprint !== null &&
-      seedFingerprint === prevSeedFingerprintRef.current;
+      seedFingerprint === prevSeedFingerprintRef.current &&
+      seedRevision === prevSeedRevisionRef.current;
 
     if (preserveResolved) {
       summaryInflight.current = null;
@@ -120,11 +123,13 @@ const useRelationshipsQueryStore = ({
       summaryLoadedKey.current = currentKey;
       anchorsLoadedKey.current = seed.anchorsLoaded ? currentKey : null;
       prevSeedFingerprintRef.current = seedFingerprint;
+      prevSeedRevisionRef.current = seedRevision;
       publish(generation, seed.hubRows);
       return undefined;
     }
 
     prevSeedFingerprintRef.current = null;
+    prevSeedRevisionRef.current = null;
     summaryLoadedKey.current = null;
     anchorsLoadedKey.current = null;
     publish(generation, []);

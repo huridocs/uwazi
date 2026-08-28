@@ -155,7 +155,7 @@ describe('RelationshipsQueryProvider', () => {
     expect(loadResolved).toHaveBeenCalledTimes(1);
     expect(result.current.status.resolved).toBe(true);
 
-    harness.seed = revalidatedSeed;
+    harness.seed = { ...revalidatedSeed, seedRevision: 1 };
     rerender();
 
     expect(result.current.status.resolved).toBe(false);
@@ -170,6 +170,57 @@ describe('RelationshipsQueryProvider', () => {
     expect(loadResolved).toHaveBeenCalledTimes(2);
     expect(result.current.status.resolved).toBe(true);
     expect(hasQuoteText(result.current.relationships)).toBe(true);
+  });
+
+  it('clears resolved overlays when hub rows are unchanged but seed revision changes after invalidate', async () => {
+    const updatedResolved = resolved.map(row =>
+      row._id === 'c2'
+        ? {
+            ...row,
+            reference: { ...row.reference, text: 'updated quoted text' },
+          }
+        : row
+    );
+    loadResolved.mockResolvedValueOnce([resolved]).mockResolvedValueOnce([updatedResolved]);
+
+    const harness: Harness = { seed, language: 'en', mainDocument };
+    const { result, rerender } = renderQuery(harness, mocks());
+
+    await act(async () => {
+      await result.current.ensureResolved();
+    });
+    expect(loadResolved).toHaveBeenCalledTimes(1);
+    expect(result.current.status.resolved).toBe(true);
+    expect(
+      result.current.relationships.some(
+        relationship =>
+          relationship.to.type === 'textReference' && relationship.to.text === 'target quoted text'
+      )
+    ).toBe(true);
+
+    harness.seed = { ...seed, hubRows: [...seed.hubRows], seedRevision: 1 };
+    rerender();
+
+    expect(result.current.status.resolved).toBe(false);
+    expect(
+      result.current.relationships.some(
+        relationship =>
+          relationship.to.type === 'textReference' && relationship.to.text === 'target quoted text'
+      )
+    ).toBe(false);
+
+    await act(async () => {
+      await result.current.ensureResolved();
+    });
+
+    expect(loadResolved).toHaveBeenCalledTimes(2);
+    expect(result.current.status.resolved).toBe(true);
+    expect(
+      result.current.relationships.some(
+        relationship =>
+          relationship.to.type === 'textReference' && relationship.to.text === 'updated quoted text'
+      )
+    ).toBe(true);
   });
 
   it('keeps client anchors when a summary-only same-key seed arrives with unchanged hub rows', async () => {

@@ -82,6 +82,8 @@ class EntityLoaderCache {
 
   private relationshipQueryCache = new Map<string, CachedItem<RelationshipQueryPayload>>();
 
+  private relationshipSeedRevision = new Map<string, number>();
+
   private ttls = {
     entity: 5 * 60 * 1000,
     mainDocument: 5 * 60 * 1000,
@@ -100,6 +102,14 @@ class EntityLoaderCache {
 
   private relationshipQueryKey(sharedId: string, language: string, fileId?: string): string {
     return `${sharedId}:${language}:${fileId ?? ''}`;
+  }
+
+  getRelationshipSeedRevision(sharedId: string): number {
+    return this.relationshipSeedRevision.get(sharedId) ?? 0;
+  }
+
+  private bumpRelationshipSeedRevision(sharedId: string): void {
+    this.relationshipSeedRevision.set(sharedId, this.getRelationshipSeedRevision(sharedId) + 1);
   }
 
   getEntity(
@@ -151,6 +161,7 @@ class EntityLoaderCache {
   invalidateEntity(sharedId: string): void {
     invalidateByPrefix(this.entityCache, `${sharedId}:`);
     invalidateByPrefix(this.mainDocumentCache, `${sharedId}:`);
+    this.bumpRelationshipSeedRevision(sharedId);
     this.invalidateRelationshipQuery(sharedId);
     this.invalidateSearchResults(sharedId);
     this.refetchSharedIds.add(sharedId);
@@ -199,7 +210,12 @@ class EntityLoaderCache {
       return;
     }
 
-    setCachedItem(this.relationshipQueryCache, key, data, this.limits.relationshipQuery);
+    const payload: RelationshipQueryPayload = {
+      ...data,
+      seedRevision: this.getRelationshipSeedRevision(sharedId),
+    };
+
+    setCachedItem(this.relationshipQueryCache, key, payload, this.limits.relationshipQuery);
   }
 
   invalidateRelationshipQuery(sharedId: string): void {
@@ -279,6 +295,7 @@ class EntityLoaderCache {
     this.plaintextCache.clear();
     this.searchResultsCache.clear();
     this.relationshipQueryCache.clear();
+    this.relationshipSeedRevision.clear();
     this.refetchSharedIds.clear();
   }
 }

@@ -12,6 +12,8 @@ const shouldRevalidateEntity: ShouldRevalidateFunction = ({
     return true;
   }
 
+  // Skip loader revalidation when only Entity UI params change (main tab ?m=, side tab / hash).
+  // Same sharedId + pathname: tab switching must not refetch summary/anchors/resolved.
   if (
     currentParams.sharedId === nextParams.sharedId &&
     currentUrl.pathname === nextUrl.pathname &&

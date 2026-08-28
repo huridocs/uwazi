@@ -114,7 +114,10 @@ describe('EntityLoaderCache relationship query seeds', () => {
   it('serves cached seeds and skips summary-only when anchors are required', () => {
     entityLoaderCache.setRelationshipQuery(sharedId, language, 'doc1', summarySeed);
 
-    expect(entityLoaderCache.getRelationshipQuery(sharedId, language, 'doc1')).toEqual(summarySeed);
+    expect(entityLoaderCache.getRelationshipQuery(sharedId, language, 'doc1')).toEqual({
+      ...summarySeed,
+      seedRevision: 0,
+    });
     expect(
       entityLoaderCache.getRelationshipQuery(sharedId, language, 'doc1', { requireAnchors: true })
     ).toBeUndefined();
@@ -122,7 +125,7 @@ describe('EntityLoaderCache relationship query seeds', () => {
     entityLoaderCache.setRelationshipQuery(sharedId, language, 'doc1', anchorsSeed);
     expect(
       entityLoaderCache.getRelationshipQuery(sharedId, language, 'doc1', { requireAnchors: true })
-    ).toEqual(anchorsSeed);
+    ).toEqual({ ...anchorsSeed, seedRevision: 0 });
   });
 
   it('does not downgrade an anchors seed to summary-only', () => {
@@ -131,7 +134,21 @@ describe('EntityLoaderCache relationship query seeds', () => {
 
     expect(
       entityLoaderCache.getRelationshipQuery(sharedId, language, 'doc1', { requireAnchors: true })
-    ).toEqual(anchorsSeed);
+    ).toEqual({ ...anchorsSeed, seedRevision: 0 });
+  });
+
+  it('bumps relationship seed revision on invalidateEntity', () => {
+    entityLoaderCache.setRelationshipQuery(sharedId, language, 'doc1', summarySeed);
+    expect(entityLoaderCache.getRelationshipSeedRevision(sharedId)).toBe(0);
+
+    entityLoaderCache.invalidateEntity(sharedId);
+    expect(entityLoaderCache.getRelationshipSeedRevision(sharedId)).toBe(1);
+
+    entityLoaderCache.setRelationshipQuery(sharedId, language, 'doc1', summarySeed);
+    expect(entityLoaderCache.getRelationshipQuery(sharedId, language, 'doc1')).toEqual({
+      ...summarySeed,
+      seedRevision: 1,
+    });
   });
 
   it('clears relationship seeds on invalidateEntity and invalidateAll', () => {
