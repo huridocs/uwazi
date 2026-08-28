@@ -52,7 +52,7 @@ const PageRestoreModal = ({
   return (
     <Modal size="lg">
       <Modal.Header>
-        <h1 className="text-xl font-medium [color:var(--color-theme-text-primary)]">
+        <h1 className="text-xl font-medium text-ink">
           <Translate>Restore previous version</Translate>
         </h1>
         <Modal.CloseButton onClick={onClose} />

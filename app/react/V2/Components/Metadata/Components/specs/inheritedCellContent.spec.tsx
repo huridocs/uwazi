@@ -13,11 +13,23 @@ jest.mock('#app/I18N/index.js', () => ({
 }));
 
 jest.mock('#app/Map/index.js', () => ({
-  Map: () => <div data-testid="map" />,
+  Map: ({ height, showControls }: { height?: number; showControls?: boolean }) => (
+    <div
+      data-testid="map"
+      data-height={height}
+      data-show-controls={showControls === undefined ? 'undefined' : String(showControls)}
+    />
+  ),
 }));
 
 jest.mock('#V2/Components/UI/index.js', () => ({
-  MediaPlayer: () => <div data-testid="media-player" />,
+  MediaPlayer: ({ height }: { height?: number | string }) => (
+    <div data-testid="media-player" data-height={height} />
+  ),
+}));
+
+jest.mock('#V2/Components/UI/TemplatePill.js', () => ({
+  TemplatePill: ({ label }: { label: string }) => <span>{label}</span>,
 }));
 
 const renderCell = (node: React.ReactNode) =>
@@ -88,7 +100,24 @@ describe('inheritedCellContent', () => {
     expect(screen.getByTestId('cell').innerHTML).toContain('<strong>');
   });
 
-  it('renders media inherited values', () => {
+  it('renders geolocation inherited values with compact density', () => {
+    renderCell(
+      inheritedCellContent(
+        [
+          {
+            value: 'e1',
+            inheritedType: 'geolocation',
+            inheritedValue: [{ value: { lat: 1, lon: 2 } }],
+          },
+        ],
+        'e1'
+      )
+    );
+    expect(screen.getByTestId('map')).toHaveAttribute('data-height', '160');
+    expect(screen.getByTestId('map')).toHaveAttribute('data-show-controls', 'false');
+  });
+
+  it('renders media inherited values with compact density', () => {
     renderCell(
       inheritedCellContent(
         [
@@ -101,10 +130,10 @@ describe('inheritedCellContent', () => {
         'e1'
       )
     );
-    expect(screen.getByTestId('media-player')).toBeInTheDocument();
+    expect(screen.getByTestId('media-player')).toHaveAttribute('data-height', '140');
   });
 
-  it('renders image inherited values', () => {
+  it('renders image inherited values with default density', () => {
     renderCell(
       inheritedCellContent(
         [
@@ -117,7 +146,38 @@ describe('inheritedCellContent', () => {
         'e1'
       )
     );
-    expect(screen.getByRole('img')).toHaveAttribute('src', '/api/files/photo.png');
+    const img = screen.getByRole('img');
+    expect(img).toHaveAttribute('src', '/api/files/photo.png');
+    expect(img.className).toContain('max-h-96');
+    expect(img.className).not.toContain('max-h-32');
+  });
+
+  it('renders inherited relationship values as entity pills with overlay handler', () => {
+    const onOpenEntity = jest.fn();
+    renderCell(
+      inheritedCellContent(
+        [
+          {
+            value: 'person-1',
+            inheritedType: 'relationship',
+            inheritedValue: [
+              { value: 'city-1', label: 'Quito' },
+              { value: 'city-2', label: 'Guayaquil' },
+            ],
+          },
+        ],
+        'person-1',
+        { onOpenEntity, inheritTargetTemplateId: 'city-tmpl' }
+      )
+    );
+    expect(screen.getByRole('button', { name: 'Quito' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Guayaquil' })).toBeInTheDocument();
+    screen.getByRole('button', { name: 'Quito' }).click();
+    expect(onOpenEntity).toHaveBeenCalledWith({
+      sharedId: 'city-1',
+      title: 'Quito',
+      templateId: 'city-tmpl',
+    });
   });
 
   it('falls back to labels for select-like values without type rendering gaps', () => {

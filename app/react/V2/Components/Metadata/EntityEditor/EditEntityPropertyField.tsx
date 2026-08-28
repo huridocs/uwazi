@@ -1,5 +1,5 @@
 /* eslint-disable max-lines */
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Translate } from '#app/I18N/index.js';
 import type { ClientThesaurus } from '#app/apiResponseTypes.js';
 import type { ClientFile } from '#app/istore.js';
@@ -27,11 +27,10 @@ import type { EditEntityFormValues } from './functions/buildEditEntityDefaultVal
 import { getMetadataFieldPath } from './functions/editEntityErrors.js';
 import type { FormMetadataProperty } from './functions/formatMetadataForForm.js';
 import type { DisplayProperty } from './functions/relationshipGrouping.js';
+import { buildInheritColumns, type InheritColumnTemplate } from '../relationshipInherit.js';
 import {
-  buildInheritColumns,
   DEFAULT_RELATIONSHIP_LOOKUP_LIMIT,
   thesaurusToOptions,
-  type InheritColumnTemplate,
 } from './functions/relationshipFieldHelpers.js';
 
 type EditEntityPropertyFieldProps = {
@@ -89,6 +88,13 @@ const EditEntityPropertyField = ({
   const field = getMetadataFieldPath(property);
   const registerOptions = { required: property.required };
   const context = activeTemplateId;
+  const inheritColumns = useMemo(
+    () =>
+      property.type === 'relationship'
+        ? buildInheritColumns(property, metadataProperties, templates, entityMetadata)
+        : [],
+    [property, metadataProperties, templates, entityMetadata]
+  );
 
   if (property.type === 'text' || property.type === 'numeric') {
     return (
@@ -165,12 +171,7 @@ const EditEntityPropertyField = ({
           disabled={disabled}
           targetTemplateId={property.content}
           relationTypeId={property.relationType}
-          inheritColumns={buildInheritColumns(
-            property,
-            metadataProperties,
-            templates,
-            entityMetadata
-          )}
+          inheritColumns={inheritColumns}
           onEditSource={
             onEditSource
               ? (entityId, label) => onEditSource(entityId, label, property.content)

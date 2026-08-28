@@ -380,13 +380,11 @@ describe('MetadataRecord', () => {
 
     expect(screen.getByText('Relationships')).toBeInTheDocument();
     expect(screen.getByText('Relationshipa')).toBeInTheDocument();
-    expect(screen.getByText('Relationshipb')).toBeInTheDocument();
+    expect(screen.queryByText('Relationshipb')).not.toBeInTheDocument();
     expect(screen.queryByRole('heading', { name: 'Relationshipa' })).not.toBeInTheDocument();
-    expect(screen.queryByRole('heading', { name: 'Relationshipb' })).not.toBeInTheDocument();
     expect(screen.queryByRole('rowheader', { name: 'Relationshipa' })).not.toBeInTheDocument();
-    expect(screen.queryByRole('rowheader', { name: 'Relationshipb' })).not.toBeInTheDocument();
     expect(screen.getAllByText(/via/).length).toBeGreaterThan(0);
-    expect(screen.getAllByText(/inherits/).length).toBeGreaterThan(0);
+    expect(screen.getByText(/inherits/)).toHaveTextContent('Body text, Location');
     expect(screen.getByRole('heading', { name: 'Relationshipc' })).toBeInTheDocument();
   });
 
@@ -395,15 +393,14 @@ describe('MetadataRecord', () => {
 
     const rela = sectionForLabel('Relationshipa');
     expect(rela).toHaveTextContent('Inherited long text content for relationship a');
+    expect(within(rela).getByTestId('map')).toBeInTheDocument();
     expect(within(rela).getByRole('link', { name: /A1/i })).toBeInTheDocument();
-
-    const relb = sectionForLabel('Relationshipb');
-    expect(within(relb).getByTestId('map')).toBeInTheDocument();
-    expect(within(relb).getByRole('link', { name: /A1/i })).toBeInTheDocument();
+    expect(within(rela).getByRole('columnheader', { name: 'Body text' })).toBeInTheDocument();
+    expect(within(rela).getByRole('columnheader', { name: 'Location' })).toBeInTheDocument();
 
     expect(screen.getByText('Relationships')).toBeInTheDocument();
+    expect(screen.queryByText('Relationshipb')).not.toBeInTheDocument();
     expect(screen.queryByRole('heading', { name: 'Relationshipa' })).not.toBeInTheDocument();
-    expect(screen.queryByRole('heading', { name: 'Relationshipb' })).not.toBeInTheDocument();
   });
 
   it('shows own map and inherited location under Relationships', () => {
@@ -534,7 +531,7 @@ describe('MetadataRecord', () => {
           type: 'relationship' as const,
           label: 'Inherited location B',
           content: 'related-tmpl',
-          relationType: 'rel-type-1',
+          relationType: 'rel-type-2',
           inherit: { property: 'inherited-geo-prop', type: 'geolocation' as const },
         },
       ],
@@ -575,7 +572,13 @@ describe('MetadataRecord', () => {
       <TestAtomStoreProvider
         initialValues={[
           [templatesAtom, [geoGroupTemplate, relatedTemplate]],
-          [relationshipTypesAtom, [{ _id: 'rel-type-1', name: 'Relates to' }]],
+          [
+            relationshipTypesAtom,
+            [
+              { _id: 'rel-type-1', name: 'Relates to' },
+              { _id: 'rel-type-2', name: 'Also relates' },
+            ],
+          ],
         ]}
       >
         <MetadataRecord entity={geoGroupEntity} />
