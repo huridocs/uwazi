@@ -49,6 +49,7 @@ const DocumentTab = ({
     userIsAdminOrEditor,
     handlePageChange,
     handleHighlightClick,
+    handleRailHover,
     handleRailPointClick,
     handleClusterClick,
     handleClusterMoreClick,
@@ -150,7 +151,9 @@ const DocumentTab = ({
               showRail={showRail}
               activeRelationshipId={activeRelationshipId}
               onPointClick={handleRailPointClick}
+              onPointHover={handleRailHover}
               onClusterClick={handleClusterClick}
+              onClusterHover={handleRailHover}
               onMoreClick={handleClusterMoreClick}
             />
           )}
