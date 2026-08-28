@@ -8,7 +8,22 @@ const DEFAULT_ENTITY_BASE_PATH = '/entityv2/';
 
 type RelationshipTableColumn = {
   label: string;
+  inheritedType?: string;
   cellsByEntityId?: Record<string, ReactNode>;
+};
+
+const inheritColumnMinWidthClass = (inheritedType?: string): string => {
+  switch (inheritedType) {
+    case 'geolocation':
+      return 'min-w-72';
+    case 'media':
+      return 'min-w-64';
+    case 'image':
+    case 'preview':
+      return 'min-w-48';
+    default:
+      return 'min-w-0';
+  }
 };
 
 type RelationshipTableRow = {
@@ -92,7 +107,7 @@ const RelationshipConnectionsTable = ({
   return (
     <div className="overflow-hidden rounded-md border border-border">
       <div className="overflow-x-auto">
-        <table className="w-full border-collapse text-sm">
+        <table className="w-max min-w-full border-collapse text-sm">
           <thead>
             <tr className="text-[11px] uppercase tracking-wide text-ink-tertiary">
               <th className="px-3 py-1.5 text-start font-medium">
@@ -101,7 +116,7 @@ const RelationshipConnectionsTable = ({
               {columns.map(column => (
                 <th
                   key={column.label}
-                  className="whitespace-nowrap px-3 py-1.5 text-start font-medium"
+                  className={`${inheritColumnMinWidthClass(column.inheritedType)} whitespace-nowrap px-3 py-1.5 text-start font-medium`}
                 >
                   <span className="inline-flex items-center gap-1">
                     <LinkIcon className="h-2.5 w-2.5 text-carbon" aria-hidden />
@@ -144,7 +159,7 @@ const RelationshipConnectionsTable = ({
                     {columns.map(column => (
                       <td
                         key={`${row.id}-${column.label}`}
-                        className="min-w-0 border-s border-border/40 px-3 py-1.5 align-middle"
+                        className={`${inheritColumnMinWidthClass(column.inheritedType)} border-s border-border/40 px-3 py-1.5 align-middle`}
                       >
                         {renderInheritedCell(cellContent(column, row.id))}
                       </td>

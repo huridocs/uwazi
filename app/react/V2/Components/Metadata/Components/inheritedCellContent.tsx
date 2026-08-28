@@ -1,5 +1,10 @@
-import { type ReactNode } from 'react';
+import React, { type ReactNode } from 'react';
 import type { PropertyTypeSchema } from '#shared/types/commonTypes.js';
+import {
+  ConnectionPills,
+  type OpenEntityTarget,
+  type RelationshipEntityValue,
+} from './ConnectionPills.js';
 import type {
   DateMetadataProperty,
   DateRangeMetadataProperty,
@@ -121,6 +126,43 @@ const stringValues = (items: MetadataValue[]): Array<{ value: string }> =>
     if (typeof item.value === 'string' && item.value.length > 0) return [{ value: item.value }];
     if (typeof item.value === 'number') return [{ value: String(item.value) }];
     return [];
+  });
+
+const RELATIONSHIP_TYPE_NAMES = new Set(['entity', 'document', 'relationship', 'newRelationship']);
+
+type InheritedCellContentOptions = {
+  onOpenEntity?: (target: OpenEntityTarget) => void;
+  inheritTargetTemplateId?: string;
+};
+
+const readRelationshipIcon = (icon: unknown): RelationshipEntityValue['icon'] | undefined => {
+  if (!icon || typeof icon !== 'object' || !('_id' in icon)) return undefined;
+  const id = icon._id;
+  if (typeof id !== 'string' || !id) return undefined;
+  const label = 'label' in icon && typeof icon.label === 'string' ? icon.label : undefined;
+  const type = 'type' in icon && typeof icon.type === 'string' ? icon.type : undefined;
+  return { _id: id, ...(label ? { label } : {}), ...(type ? { type } : {}) };
+};
+
+const toConnectionPillValues = (items: MetadataValue[]): RelationshipEntityValue[] =>
+  items.flatMap(item => {
+    const sharedId = typeof item.value === 'string' ? item.value : '';
+    if (!sharedId) return [];
+    const title = typeof item.label === 'string' && item.label.length > 0 ? item.label : sharedId;
+    const templateId =
+      typeof item.type === 'string' && !RELATIONSHIP_TYPE_NAMES.has(item.type)
+        ? item.type
+        : undefined;
+    const icon = readRelationshipIcon(item.icon);
+    return [
+      {
+        _id: sharedId,
+        title,
+        ...(templateId ? { templateId } : {}),
+        ...(item.authorized === false ? { authorized: false as const } : {}),
+        ...(icon ? { icon } : {}),
+      },
+    ];
   });
 
 const labelFallback = (items: MetadataValue[]): string | undefined => {
@@ -256,7 +298,11 @@ const toInheritedField = (
   }
 };
 
-const inheritedCellContent = (values: unknown, entityId: string): ReactNode => {
+const inheritedCellContent = (
+  values: unknown,
+  entityId: string,
+  options: InheritedCellContentOptions = {}
+): ReactNode => {
   const rows = readInheritedRows(values);
   const row = rows.find(value => String(value.value ?? '') === entityId);
   if (!row?.inheritedValue?.length) return undefined;
@@ -281,7 +327,21 @@ const inheritedCellContent = (values: unknown, entityId: string): ReactNode => {
     }
   }
 
+  if (flattened.inheritedType === 'relationship') {
+    const pillValues = toConnectionPillValues(flattened.values);
+    if (pillValues.length) {
+      return (
+        <ConnectionPills
+          values={pillValues}
+          targetTemplateId={options.inheritTargetTemplateId}
+          onOpenEntity={options.onOpenEntity}
+        />
+      );
+    }
+  }
+
   return labelFallback(flattened.values);
 };
 
 export { inheritedCellContent };
+export type { InheritedCellContentOptions };

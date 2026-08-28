@@ -28,6 +28,10 @@ jest.mock('#V2/Components/UI/index.js', () => ({
   ),
 }));
 
+jest.mock('#V2/Components/UI/TemplatePill.js', () => ({
+  TemplatePill: ({ label }: { label: string }) => <span>{label}</span>,
+}));
+
 const renderCell = (node: React.ReactNode) =>
   render(
     <TestAtomStoreProvider initialValues={[[localeAtom, 'en']]}>
@@ -146,6 +150,34 @@ describe('inheritedCellContent', () => {
     expect(img).toHaveAttribute('src', '/api/files/photo.png');
     expect(img.className).toContain('max-h-96');
     expect(img.className).not.toContain('max-h-32');
+  });
+
+  it('renders inherited relationship values as entity pills with overlay handler', () => {
+    const onOpenEntity = jest.fn();
+    renderCell(
+      inheritedCellContent(
+        [
+          {
+            value: 'person-1',
+            inheritedType: 'relationship',
+            inheritedValue: [
+              { value: 'city-1', label: 'Quito' },
+              { value: 'city-2', label: 'Guayaquil' },
+            ],
+          },
+        ],
+        'person-1',
+        { onOpenEntity, inheritTargetTemplateId: 'city-tmpl' }
+      )
+    );
+    expect(screen.getByRole('button', { name: 'Quito' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Guayaquil' })).toBeInTheDocument();
+    screen.getByRole('button', { name: 'Quito' }).click();
+    expect(onOpenEntity).toHaveBeenCalledWith({
+      sharedId: 'city-1',
+      title: 'Quito',
+      templateId: 'city-tmpl',
+    });
   });
 
   it('falls back to labels for select-like values without type rendering gaps', () => {

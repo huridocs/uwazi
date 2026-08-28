@@ -37,12 +37,20 @@ type RelationshipFieldEditorProps = {
 const toTableColumns = (columns: RelationshipInheritColumn[], values: MetadataValue[]) =>
   columns.map(column => ({
     label: column.label,
+    inheritedType: column.inheritedType,
     cellsByEntityId:
       column.cellsByEntityId ??
       Object.fromEntries(
         values.map(row => {
           const entityId = String(row.value ?? '');
-          return [entityId, inheritedCellContent([row], entityId)];
+          return [
+            entityId,
+            inheritedCellContent([row], entityId, {
+              ...(column.inheritTargetTemplateId
+                ? { inheritTargetTemplateId: column.inheritTargetTemplateId }
+                : {}),
+            }),
+          ];
         })
       ),
   }));

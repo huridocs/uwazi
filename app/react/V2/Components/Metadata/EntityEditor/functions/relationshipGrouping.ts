@@ -1,4 +1,5 @@
 import type { MetadataValue } from '#V2/formatters/types.js';
+import { relationshipGroupKey } from '../../relationshipInherit.js';
 import type { FormMetadataProperty } from './formatMetadataForForm.js';
 
 type DisplayProperty = FormMetadataProperty & {
@@ -9,9 +10,6 @@ type GroupedRelationshipSyncPair = {
   mainName: string;
   otherNames: string[];
 };
-
-const relationshipGroupKey = (property: { content?: string; relationType?: string }): string =>
-  `${property.content ?? ''}::${property.relationType ?? ''}`;
 
 const groupRelationshipProperties = (properties: FormMetadataProperty[]): DisplayProperty[] => {
   const groupedProperties = new Map<string, DisplayProperty>();

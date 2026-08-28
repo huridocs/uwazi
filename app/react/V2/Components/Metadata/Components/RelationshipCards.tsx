@@ -4,6 +4,11 @@ import type { ClientProperty, ClientTemplateSchema } from '#V2/shared/types.js';
 import type { RelationshipMetadataProperty } from '#V2/formatters/types.js';
 import type { Entity } from '#V2/api/entities/types.js';
 import { isInheritingRelationship } from '../metadataPropertyLayout.js';
+import {
+  buildInheritColumns,
+  relationshipGroupKey,
+  type InheritColumnProperty,
+} from '../relationshipInherit.js';
 import { Relationship } from './Relationship.js';
 import type { OpenEntityTarget } from './ConnectionPills.js';
 
@@ -29,71 +34,149 @@ type BuildRelationshipCardNodesArgs = {
   relationshipClassName?: string;
 };
 
+type CardRenderContext = {
+  translationContext: string;
+  templatePropertyById: Map<string, ClientProperty>;
+  templates: ClientTemplateSchema[];
+  entity?: Entity;
+  onOpenEntity?: (target: OpenEntityTarget) => void;
+  relationshipClassName?: string;
+};
+
 const hasLinkedEntities = (field: RelationshipMetadataProperty): boolean =>
   Array.isArray(field.values) &&
   field.values.length > 0 &&
   field.values.every(value => typeof value === 'object' && value !== null && 'title' in value);
 
-const inheritLabelForProperty = (
-  templateProperty: ClientProperty | undefined,
-  templates: ClientTemplateSchema[] | undefined
-): string | undefined => {
-  const inheritPropertyId = templateProperty?.inherit?.property;
-  if (!inheritPropertyId || !templates?.length) {
-    return undefined;
-  }
-  for (const template of templates) {
-    const match = template.properties?.find(property => property._id === inheritPropertyId);
-    if (match?.label) {
-      return match.label;
-    }
-  }
-  return undefined;
+const toInheritColumnProperty = (
+  field: RelationshipMetadataProperty,
+  templateProperty: ClientProperty | undefined
+): InheritColumnProperty => ({
+  _id: field._id,
+  type: 'relationship',
+  name: field.name,
+  label: field.label,
+  content: templateProperty?.content,
+  relationType: templateProperty?.relationType,
+  inherited: true,
+  inherit: templateProperty?.inherit,
+});
+
+const groupKeyForField = (
+  field: RelationshipMetadataProperty,
+  templatePropertyById: Map<string, ClientProperty>
+): string => {
+  const templateProperty = templatePropertyById.get(field._id);
+  return relationshipGroupKey({
+    content: templateProperty?.content,
+    relationType: templateProperty?.relationType,
+  });
+};
+
+const linkOnlyCard = (field: RelationshipMetadataProperty, ctx: CardRenderContext): ReactNode => {
+  const templateProperty = ctx.templatePropertyById.get(field._id);
+  return (
+    <div key={field._id} data-field-key={field.name}>
+      <Relationship
+        values={field.values}
+        label={field.label}
+        translationContext={ctx.translationContext}
+        hideLabel={field.hideLabel}
+        className={ctx.relationshipClassName}
+        relationTypeId={templateProperty?.relationType}
+        targetTemplateId={field.relationShipTarget || templateProperty?.content}
+        onOpenEntity={ctx.onOpenEntity}
+      />
+    </div>
+  );
+};
+
+const inheritingGroupCard = (
+  siblings: RelationshipMetadataProperty[],
+  groupKey: string,
+  ctx: CardRenderContext
+): ReactNode => {
+  const [primary] = siblings;
+  const primaryTpl = ctx.templatePropertyById.get(primary._id);
+  const columns = buildInheritColumns(
+    { content: primaryTpl?.content, relationType: primaryTpl?.relationType },
+    siblings.map(sibling =>
+      toInheritColumnProperty(sibling, ctx.templatePropertyById.get(sibling._id))
+    ),
+    ctx.templates,
+    ctx.entity?.metadata,
+    { onOpenEntity: ctx.onOpenEntity }
+  );
+
+  return (
+    <div key={groupKey} data-field-key={primary.name}>
+      <Relationship
+        values={primary.values}
+        label={primary.label}
+        translationContext={ctx.translationContext}
+        hideLabel={primary.hideLabel}
+        className={ctx.relationshipClassName}
+        relationTypeId={primaryTpl?.relationType}
+        targetTemplateId={primary.relationShipTarget || primaryTpl?.content}
+        columns={columns}
+        inheritLabels={columns.map(column => column.label)}
+        onOpenEntity={ctx.onOpenEntity}
+      />
+    </div>
+  );
 };
 
 const buildRelationshipCardNodes = ({
   fields,
   translationContext,
   templatePropertyById,
-  templates,
+  templates = [],
   entity,
   onOpenEntity,
   inheritingOnly = false,
   relationshipClassName,
-}: BuildRelationshipCardNodesArgs): ReactNode[] =>
-  fields
-    .filter(field => {
-      if (!hasLinkedEntities(field)) {
-        return false;
-      }
-      if (inheritingOnly && !isInheritingRelationship(field)) {
-        return false;
-      }
-      return true;
-    })
-    .map(data => {
-      const templateProperty = templatePropertyById.get(data._id);
-      const inheritLabel = isInheritingRelationship(data)
-        ? inheritLabelForProperty(templateProperty, templates) || data.label
-        : undefined;
-      const sourceMetadata = entity?.metadata?.[data.name];
-      return (
-        <div key={data._id} data-field-key={data.name}>
-          <Relationship
-            values={data.values}
-            label={data.label}
-            translationContext={translationContext}
-            hideLabel={data.hideLabel}
-            className={relationshipClassName}
-            relationTypeId={templateProperty?.relationType}
-            targetTemplateId={data.relationShipTarget || templateProperty?.content}
-            inheritLabel={inheritLabel}
-            sourceMetadata={sourceMetadata}
-            onOpenEntity={onOpenEntity}
-          />
-        </div>
-      );
-    });
+}: BuildRelationshipCardNodesArgs): ReactNode[] => {
+  const linked = fields.filter(field => {
+    if (!hasLinkedEntities(field)) {
+      return false;
+    }
+    return !(inheritingOnly && !isInheritingRelationship(field));
+  });
+
+  const ctx: CardRenderContext = {
+    translationContext,
+    templatePropertyById,
+    templates,
+    entity,
+    onOpenEntity,
+    relationshipClassName,
+  };
+
+  const nodes: ReactNode[] = [];
+  const seenInheritGroups = new Set<string>();
+
+  linked.forEach(field => {
+    if (!isInheritingRelationship(field)) {
+      nodes.push(linkOnlyCard(field, ctx));
+      return;
+    }
+
+    const groupKey = groupKeyForField(field, templatePropertyById);
+    if (seenInheritGroups.has(groupKey)) {
+      return;
+    }
+    seenInheritGroups.add(groupKey);
+
+    const siblings = linked.filter(
+      candidate =>
+        isInheritingRelationship(candidate) &&
+        groupKeyForField(candidate, templatePropertyById) === groupKey
+    );
+    nodes.push(inheritingGroupCard(siblings, groupKey, ctx));
+  });
+
+  return nodes;
+};
 
 const RelationshipCards = ({
   fields,
