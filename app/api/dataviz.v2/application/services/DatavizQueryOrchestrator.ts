@@ -194,11 +194,9 @@ export class DatavizQueryOrchestrator {
     const sourceLabels = sourceLocalizedLabels.map(labels =>
       pickDefaultLocalizedLabel(labels, labelContext.defaultLanguage, 'Total')
     );
-    const sourceIds = query.sources.map(source => source.alias ?? source.templateId);
 
     return normalizeMetricCount({
       counts,
-      sourceIds,
       sourceLabels,
       sourceLocalizedLabels,
       datavizId: context.datavizId ?? '',

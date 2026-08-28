@@ -560,6 +560,58 @@ describe('DatavizQueryExecutor', () => {
       expect(dto.meta.totalEntities).toBe(12);
     });
 
+    it('should union metric counts from multiple sources into one series', async () => {
+      const executor = createExecutor();
+      const admin = User.createFrom({ _id: factory.id('admin').toString(), role: 'admin' });
+
+      const dto = await executor.execute(
+        {
+          sources: [
+            { templateId: ownersTemplateId.toString(), alias: 'owners' },
+            { templateId: personasTemplateId.toString(), alias: 'personas' },
+          ],
+          join: { type: 'union' },
+          dimensions: [],
+          measures: [{ aggregation: 'count', countMode: 'all' }],
+          language: 'en',
+        },
+        { actor: admin, datavizId: 'test-metric-union' }
+      );
+
+      expect(dto.series).toHaveLength(1);
+      expect(dto.series[0]).toEqual(
+        expect.objectContaining({
+          id: 'union',
+          label: 'Union',
+          points: [expect.objectContaining({ key: 'total', label: 'Total', value: 5 })],
+        })
+      );
+      expect(dto.meta.totalEntities).toBe(5);
+    });
+
+    it('should combine metric counts even when join is compare', async () => {
+      const executor = createExecutor();
+      const admin = User.createFrom({ _id: factory.id('admin').toString(), role: 'admin' });
+
+      const dto = await executor.execute(
+        {
+          sources: [
+            { templateId: ownersTemplateId.toString(), alias: 'owners' },
+            { templateId: personasTemplateId.toString(), alias: 'personas' },
+          ],
+          join: { type: 'compare' },
+          dimensions: [],
+          measures: [{ aggregation: 'count', countMode: 'all' }],
+          language: 'en',
+        },
+        { actor: admin, datavizId: 'test-metric-always-union' }
+      );
+
+      expect(dto.series).toHaveLength(1);
+      expect(dto.series[0]?.points[0]?.value).toBe(5);
+      expect(dto.meta.totalEntities).toBe(5);
+    });
+
     it('should union two templates with date and select dimensions into one breakdown series', async () => {
       const executor = createExecutor();
       const admin = User.createFrom({ _id: factory.id('admin').toString(), role: 'admin' });
