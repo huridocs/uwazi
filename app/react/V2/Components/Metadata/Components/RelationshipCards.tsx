@@ -1,4 +1,4 @@
-import React, { ReactNode } from 'react';
+import React, { ReactNode, useMemo } from 'react';
 import { Translate } from '#app/I18N/index.js';
 import type { ClientProperty, ClientTemplateSchema } from '#V2/shared/types.js';
 import type { RelationshipMetadataProperty } from '#V2/formatters/types.js';
@@ -62,17 +62,6 @@ const toInheritColumnProperty = (
   inherit: templateProperty?.inherit,
 });
 
-const groupKeyForField = (
-  field: RelationshipMetadataProperty,
-  templatePropertyById: Map<string, ClientProperty>
-): string => {
-  const templateProperty = templatePropertyById.get(field._id);
-  return relationshipGroupKey({
-    content: templateProperty?.content,
-    relationType: templateProperty?.relationType,
-  });
-};
-
 const linkOnlyCard = (field: RelationshipMetadataProperty, ctx: CardRenderContext): ReactNode => {
   const templateProperty = ctx.templatePropertyById.get(field._id);
   return (
@@ -105,7 +94,7 @@ const inheritingGroupCard = (
     ),
     ctx.templates,
     ctx.entity?.metadata,
-    { onOpenEntity: ctx.onOpenEntity }
+    ctx.onOpenEntity
   );
 
   return (
@@ -119,7 +108,6 @@ const inheritingGroupCard = (
         relationTypeId={primaryTpl?.relationType}
         targetTemplateId={primary.relationShipTarget || primaryTpl?.content}
         columns={columns}
-        inheritLabels={columns.map(column => column.label)}
         onOpenEntity={ctx.onOpenEntity}
       />
     </div>
@@ -152,6 +140,19 @@ const buildRelationshipCardNodes = ({
     relationshipClassName,
   };
 
+  const inheritingByGroup = new Map<string, RelationshipMetadataProperty[]>();
+  linked.forEach(field => {
+    if (!isInheritingRelationship(field)) return;
+    const templateProperty = templatePropertyById.get(field._id);
+    const groupKey = relationshipGroupKey({
+      content: templateProperty?.content,
+      relationType: templateProperty?.relationType,
+    });
+    const group = inheritingByGroup.get(groupKey);
+    if (group) group.push(field);
+    else inheritingByGroup.set(groupKey, [field]);
+  });
+
   const nodes: ReactNode[] = [];
   const seenInheritGroups = new Set<string>();
 
@@ -161,18 +162,16 @@ const buildRelationshipCardNodes = ({
       return;
     }
 
-    const groupKey = groupKeyForField(field, templatePropertyById);
+    const templateProperty = templatePropertyById.get(field._id);
+    const groupKey = relationshipGroupKey({
+      content: templateProperty?.content,
+      relationType: templateProperty?.relationType,
+    });
     if (seenInheritGroups.has(groupKey)) {
       return;
     }
     seenInheritGroups.add(groupKey);
-
-    const siblings = linked.filter(
-      candidate =>
-        isInheritingRelationship(candidate) &&
-        groupKeyForField(candidate, templatePropertyById) === groupKey
-    );
-    nodes.push(inheritingGroupCard(siblings, groupKey, ctx));
+    nodes.push(inheritingGroupCard(inheritingByGroup.get(groupKey) ?? [field], groupKey, ctx));
   });
 
   return nodes;
@@ -187,15 +186,27 @@ const RelationshipCards = ({
   onOpenEntity,
   inheritingOnly = false,
 }: RelationshipCardsProps) => {
-  const list = buildRelationshipCardNodes({
-    fields,
-    translationContext,
-    templatePropertyById,
-    templates,
-    entity,
-    onOpenEntity,
-    inheritingOnly,
-  });
+  const list = useMemo(
+    () =>
+      buildRelationshipCardNodes({
+        fields,
+        translationContext,
+        templatePropertyById,
+        templates,
+        entity,
+        onOpenEntity,
+        inheritingOnly,
+      }),
+    [
+      fields,
+      translationContext,
+      templatePropertyById,
+      templates,
+      entity,
+      onOpenEntity,
+      inheritingOnly,
+    ]
+  );
 
   if (!list.length) {
     return null;

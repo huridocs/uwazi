@@ -1,44 +1,12 @@
 import React, { type ReactNode } from 'react';
 import type { PropertyTypeSchema } from '#shared/types/commonTypes.js';
-import {
-  ConnectionPills,
-  type OpenEntityTarget,
-  type RelationshipEntityValue,
-} from './ConnectionPills.js';
-import type {
-  DateMetadataProperty,
-  DateRangeMetadataProperty,
-  GeolocationMetadataProperty,
-  ImageMetadataProperty,
-  LinkMetadataProperty,
-  MediaMetadataProperty,
-  MetadataProperty,
-  MetadataValue,
-  MultiDateMetadataProperty,
-  MultiDateRangeMetadataProperty,
-  MultiSelectMetadataProperty,
-  SelectMetadataProperty,
-  SimpleMetadataProperty,
-} from '#V2/formatters/types.js';
+import { ConnectionPills, type OpenEntityTarget } from './ConnectionPills.js';
+import { relationshipEntityValuesFromMetadata } from '#V2/formatters/metadata/relationshipEntityValue.js';
+import type { MetadataValue } from '#V2/formatters/types.js';
 import { resolveInheritedRelationship } from '#V2/formatters/metadata/resolvePropertyMetadataValues.js';
-import { renderFieldContent, type FieldContentOptions } from './metadataFieldContent.js';
-
-const densityForInherited = (
-  type: NonNullable<MetadataValue['inheritedType']>
-): FieldContentOptions['density'] | undefined => {
-  switch (type) {
-    case 'geolocation':
-    case 'media':
-      return 'compact';
-    case 'image':
-    case 'preview':
-      return 'default';
-    default:
-      return undefined;
-  }
-};
-
-const base = { _id: 'inherited', name: 'inherited', label: '' };
+import { renderFieldContent } from './metadataFieldContent.js';
+import { formatInheritedCellProperty } from '../formatInheritedCellProperty.js';
+import { inheritedTypeLayout } from '../inheritedTypeLayout.js';
 
 type InheritedRow = {
   value?: unknown;
@@ -115,55 +83,10 @@ const toMetadataValues = (rows: InheritedRow[]): MetadataValue[] =>
     inheritedValue: row.inheritedValue?.length ? toMetadataValues(row.inheritedValue) : undefined,
   }));
 
-const isLatLon = (value: unknown): value is { lat: number; lon: number; label?: string } => {
-  if (!value || typeof value !== 'object') return false;
-  if (!('lat' in value) || !('lon' in value)) return false;
-  return typeof value.lat === 'number' && typeof value.lon === 'number';
-};
-
-const stringValues = (items: MetadataValue[]): Array<{ value: string }> =>
-  items.flatMap(item => {
-    if (typeof item.value === 'string' && item.value.length > 0) return [{ value: item.value }];
-    if (typeof item.value === 'number') return [{ value: String(item.value) }];
-    return [];
-  });
-
-const RELATIONSHIP_TYPE_NAMES = new Set(['entity', 'document', 'relationship', 'newRelationship']);
-
 type InheritedCellContentOptions = {
   onOpenEntity?: (target: OpenEntityTarget) => void;
   inheritTargetTemplateId?: string;
 };
-
-const readRelationshipIcon = (icon: unknown): RelationshipEntityValue['icon'] | undefined => {
-  if (!icon || typeof icon !== 'object' || !('_id' in icon)) return undefined;
-  const id = icon._id;
-  if (typeof id !== 'string' || !id) return undefined;
-  const label = 'label' in icon && typeof icon.label === 'string' ? icon.label : undefined;
-  const type = 'type' in icon && typeof icon.type === 'string' ? icon.type : undefined;
-  return { _id: id, ...(label ? { label } : {}), ...(type ? { type } : {}) };
-};
-
-const toConnectionPillValues = (items: MetadataValue[]): RelationshipEntityValue[] =>
-  items.flatMap(item => {
-    const sharedId = typeof item.value === 'string' ? item.value : '';
-    if (!sharedId) return [];
-    const title = typeof item.label === 'string' && item.label.length > 0 ? item.label : sharedId;
-    const templateId =
-      typeof item.type === 'string' && !RELATIONSHIP_TYPE_NAMES.has(item.type)
-        ? item.type
-        : undefined;
-    const icon = readRelationshipIcon(item.icon);
-    return [
-      {
-        _id: sharedId,
-        title,
-        ...(templateId ? { templateId } : {}),
-        ...(item.authorized === false ? { authorized: false as const } : {}),
-        ...(icon ? { icon } : {}),
-      },
-    ];
-  });
 
 const labelFallback = (items: MetadataValue[]): string | undefined => {
   const parts = items
@@ -175,127 +98,6 @@ const labelFallback = (items: MetadataValue[]): string | undefined => {
     })
     .filter((part): part is string => Boolean(part));
   return parts.length > 0 ? parts.join(', ') : undefined;
-};
-
-const toInheritedField = (
-  inheritedType: NonNullable<MetadataValue['inheritedType']>,
-  inheritedValue: MetadataValue[]
-): MetadataProperty | null => {
-  switch (inheritedType) {
-    case 'geolocation': {
-      const values: GeolocationMetadataProperty['values'] = inheritedValue.flatMap(item => {
-        if (!isLatLon(item.value)) return [];
-        const label =
-          (typeof item.label === 'string' && item.label) ||
-          (typeof item.value.label === 'string' ? item.value.label : undefined);
-        return [
-          {
-            value: { latitude: item.value.lat, longitude: item.value.lon },
-            ...(label ? { label } : {}),
-          },
-        ];
-      });
-      if (!values.length) return null;
-      const field: GeolocationMetadataProperty = { ...base, type: 'geolocation', values };
-      return field;
-    }
-    case 'markdown':
-    case 'text':
-    case 'generatedid':
-    case 'numeric': {
-      const values = stringValues(inheritedValue);
-      if (!values.length) return null;
-      const field: SimpleMetadataProperty = { ...base, type: inheritedType, values };
-      return field;
-    }
-    case 'media': {
-      const values = stringValues(inheritedValue);
-      if (!values.length) return null;
-      const field: MediaMetadataProperty = { ...base, type: 'media', values };
-      return field;
-    }
-    case 'image': {
-      const values = stringValues(inheritedValue);
-      if (!values.length) return null;
-      const field: ImageMetadataProperty = {
-        ...base,
-        type: 'image',
-        style: 'contain',
-        values,
-      };
-      return field;
-    }
-    case 'date':
-    case 'multidate': {
-      const values = inheritedValue.flatMap(item =>
-        typeof item.value === 'number' ? [{ value: item.value }] : []
-      );
-      if (!values.length) return null;
-      if (inheritedType === 'date') {
-        const field: DateMetadataProperty = { ...base, type: 'date', values };
-        return field;
-      }
-      const field: MultiDateMetadataProperty = { ...base, type: 'multidate', values };
-      return field;
-    }
-    case 'daterange':
-    case 'multidaterange': {
-      const values = inheritedValue.flatMap(item => {
-        const range = item.value;
-        if (!range || typeof range !== 'object') return [];
-        const from = 'from' in range && typeof range.from === 'number' ? range.from : 0;
-        const to = 'to' in range && typeof range.to === 'number' ? range.to : 0;
-        if (!from && !to) return [];
-        return [{ value: { from, to } }];
-      });
-      if (!values.length) return null;
-      if (inheritedType === 'daterange') {
-        const field: DateRangeMetadataProperty = { ...base, type: 'daterange', values };
-        return field;
-      }
-      const field: MultiDateRangeMetadataProperty = { ...base, type: 'multidaterange', values };
-      return field;
-    }
-    case 'select':
-    case 'multiselect': {
-      const values = inheritedValue.map(item => ({
-        value: typeof item.value === 'string' ? item.value : String(item.value ?? ''),
-        label: item.label || '',
-        ...(item.parent
-          ? {
-              parent: {
-                value: String(item.parent.value ?? ''),
-                label: item.parent.label || '',
-              },
-            }
-          : {}),
-      }));
-      if (!values.length) return null;
-      if (inheritedType === 'select') {
-        const field: SelectMetadataProperty = { ...base, type: 'select', values };
-        return field;
-      }
-      const field: MultiSelectMetadataProperty = { ...base, type: 'multiselect', values };
-      return field;
-    }
-    case 'link': {
-      const values = inheritedValue.flatMap(item => {
-        const link = item.value;
-        if (!link || typeof link !== 'object') return [];
-        const url = 'url' in link && typeof link.url === 'string' ? link.url : '';
-        if (!url) return [];
-        const linkLabel =
-          ('label' in link && typeof link.label === 'string' && link.label) ||
-          (typeof item.label === 'string' ? item.label : undefined);
-        return [{ value: url, ...(linkLabel ? { label: linkLabel } : {}) }];
-      });
-      if (!values.length) return null;
-      const field: LinkMetadataProperty = { ...base, type: 'link', values };
-      return field;
-    }
-    default:
-      return null;
-  }
 };
 
 const inheritedCellContent = (
@@ -318,9 +120,9 @@ const inheritedCellContent = (
   if (!flattened.values.length) return undefined;
 
   if (flattened.inheritedType && flattened.inheritedType !== 'relationship') {
-    const field = toInheritedField(flattened.inheritedType, flattened.values);
+    const field = formatInheritedCellProperty(flattened.inheritedType, flattened.values);
     if (field) {
-      const density = densityForInherited(flattened.inheritedType);
+      const { density } = inheritedTypeLayout(flattened.inheritedType);
       const content =
         density !== undefined ? renderFieldContent(field, { density }) : renderFieldContent(field);
       if (content) return content;
@@ -328,7 +130,14 @@ const inheritedCellContent = (
   }
 
   if (flattened.inheritedType === 'relationship') {
-    const pillValues = toConnectionPillValues(flattened.values);
+    const entityItems = flattened.values.filter(
+      (item): item is MetadataValue & { value: string } =>
+        typeof item.value === 'string' && item.value.length > 0
+    );
+    const pillValues = relationshipEntityValuesFromMetadata(entityItems, {
+      defaultTemplateId: options.inheritTargetTemplateId,
+      titleFallback: 'sharedId',
+    });
     if (pillValues.length) {
       return (
         <ConnectionPills

@@ -77,7 +77,6 @@ const syncGroupedRelationshipMetadata = (
 };
 
 export {
-  relationshipGroupKey,
   groupRelationshipProperties,
   getGroupedRelationshipSyncPairs,
   syncGroupedRelationshipMetadata,

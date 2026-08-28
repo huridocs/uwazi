@@ -121,11 +121,7 @@ describe('buildInheritColumns', () => {
         ],
       }
     );
-    expect(columns[0]).toMatchObject({
-      label: 'Cities',
-      inheritedType: 'relationship',
-      inheritTargetTemplateId: 'city-tmpl',
-    });
+    expect(columns[0]).toMatchObject({ label: 'Cities', inheritedType: 'relationship' });
   });
 
   it('should build N columns for sibling inherits on the same group key', () => {

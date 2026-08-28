@@ -1,14 +1,7 @@
 import type { ClientThesaurus } from '#app/apiResponseTypes.js';
 import { lookup as lookupEntities } from '#V2/api/search/index.js';
 import type { MetadataValue } from '#V2/formatters/types.js';
-import {
-  buildInheritColumns,
-  inheritColumnLabel,
-  relationshipGroupKey,
-  type InheritColumn,
-  type InheritColumnTemplate,
-  type RelationshipInheritColumn,
-} from '../../relationshipInherit.js';
+import { relationshipGroupKey } from '../../relationshipInherit.js';
 import type { MultiselectListOption } from '../../../Forms/index.js';
 import type { FormMetadataProperty } from './formatMetadataForForm.js';
 import type { DisplayProperty } from './relationshipGrouping.js';
@@ -116,7 +109,4 @@ export {
   mergeRelationshipLookupOptions,
   DEFAULT_RELATIONSHIP_LOOKUP_LIMIT,
   defaultRelationshipLookup,
-  buildInheritColumns,
-  inheritColumnLabel,
 };
-export type { RelationshipInheritColumn, InheritColumn, InheritColumnTemplate };

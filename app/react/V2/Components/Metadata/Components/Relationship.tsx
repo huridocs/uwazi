@@ -12,7 +12,7 @@ import {
   type OpenEntityTarget,
 } from './ConnectionPills.js';
 import { RelationshipConnectionsTable } from './RelationshipConnectionsTable.js';
-import type { RelationshipInheritColumn } from '../relationshipInherit.js';
+import type { InheritColumn } from '../relationshipInherit.js';
 
 type RelationshipProps = {
   label: string;
@@ -22,7 +22,7 @@ type RelationshipProps = {
   values: RelationshipMetadataProperty['values'];
   relationTypeId?: string;
   targetTemplateId?: string;
-  columns?: RelationshipInheritColumn[];
+  columns?: InheritColumn[];
   inheritLabels?: string[];
   inheritLabel?: string;
   onOpenEntity?: (target: OpenEntityTarget) => void;
@@ -70,7 +70,13 @@ const Relationship = ({
         ]
       : []);
 
-  const resolvedInheritLabels = inheritLabels ?? (inheritLabel ? [inheritLabel] : undefined);
+  const resolvedInheritLabels =
+    inheritLabels ??
+    (columns.length > 0
+      ? columns.map(column => column.label)
+      : inheritLabel
+        ? [inheritLabel]
+        : undefined);
   const showsInheritedTable = columns.length > 0;
 
   return (

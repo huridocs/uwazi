@@ -27,11 +27,10 @@ import type { EditEntityFormValues } from './functions/buildEditEntityDefaultVal
 import { getMetadataFieldPath } from './functions/editEntityErrors.js';
 import type { FormMetadataProperty } from './functions/formatMetadataForForm.js';
 import type { DisplayProperty } from './functions/relationshipGrouping.js';
+import { buildInheritColumns, type InheritColumnTemplate } from '../relationshipInherit.js';
 import {
-  buildInheritColumns,
   DEFAULT_RELATIONSHIP_LOOKUP_LIMIT,
   thesaurusToOptions,
-  type InheritColumnTemplate,
 } from './functions/relationshipFieldHelpers.js';
 
 type EditEntityPropertyFieldProps = {

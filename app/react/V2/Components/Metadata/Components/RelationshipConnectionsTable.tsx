@@ -1,8 +1,9 @@
-import React, { type ReactNode } from 'react';
+import React, { memo, type ReactNode } from 'react';
 import { LinkIcon } from '@heroicons/react/24/outline';
 import { I18NLinkV2, Translate } from '#app/I18N/index.js';
 import { TemplatePill } from '#V2/Components/UI/TemplatePill.js';
 import { EntityIcon, type EntityIconData } from '../../CustomIcons/index.js';
+import { inheritedTypeLayout } from '../inheritedTypeLayout.js';
 
 const DEFAULT_ENTITY_BASE_PATH = '/entityv2/';
 
@@ -12,19 +13,8 @@ type RelationshipTableColumn = {
   cellsByEntityId?: Record<string, ReactNode>;
 };
 
-const inheritColumnMinWidthClass = (inheritedType?: string): string => {
-  switch (inheritedType) {
-    case 'geolocation':
-      return 'min-w-72';
-    case 'media':
-      return 'min-w-64';
-    case 'image':
-    case 'preview':
-      return 'min-w-48';
-    default:
-      return 'min-w-0';
-  }
-};
+const inheritedCellClass = (inheritedType?: string) =>
+  `${inheritedTypeLayout(inheritedType).minWidthClass} border-s border-border/40 px-3 py-1.5 align-middle`;
 
 type RelationshipTableRow = {
   id: string;
@@ -92,7 +82,7 @@ const entityCellForRow = (
   );
 };
 
-const RelationshipConnectionsTable = ({
+const RelationshipConnectionsTableComponent = ({
   rows,
   columns = [],
   translationContext = 'System',
@@ -116,7 +106,7 @@ const RelationshipConnectionsTable = ({
               {columns.map(column => (
                 <th
                   key={column.label}
-                  className={`${inheritColumnMinWidthClass(column.inheritedType)} whitespace-nowrap px-3 py-1.5 text-start font-medium`}
+                  className={`${inheritedTypeLayout(column.inheritedType).minWidthClass} whitespace-nowrap px-3 py-1.5 text-start font-medium`}
                 >
                   <span className="inline-flex items-center gap-1">
                     <LinkIcon className="h-2.5 w-2.5 text-carbon" aria-hidden />
@@ -159,7 +149,7 @@ const RelationshipConnectionsTable = ({
                     {columns.map(column => (
                       <td
                         key={`${row.id}-${column.label}`}
-                        className={`${inheritColumnMinWidthClass(column.inheritedType)} border-s border-border/40 px-3 py-1.5 align-middle`}
+                        className={inheritedCellClass(column.inheritedType)}
                       >
                         {renderInheritedCell(cellContent(column, row.id))}
                       </td>
@@ -179,6 +169,8 @@ const RelationshipConnectionsTable = ({
     </div>
   );
 };
+
+const RelationshipConnectionsTable = memo(RelationshipConnectionsTableComponent);
 
 export { RelationshipConnectionsTable };
 export type { RelationshipConnectionsTableProps, RelationshipTableColumn, RelationshipTableRow };
