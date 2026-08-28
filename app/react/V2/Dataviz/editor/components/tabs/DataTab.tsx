@@ -197,7 +197,7 @@ const DataTab = ({ definition, onPatch, onPatchQuery, onPatchChart }: DataTabPro
       ) : (
         <>
           <DataSourcesList sources={query.sources} onChange={handleSourcesChange} />
-          {query.sources.length > 1 && (
+          {query.sources.length > 1 && query.dimensions.length > 0 && (
             <JoinModeSection join={query.join} onChange={join => onPatchQuery({ join })} />
           )}
           <FiltersSection
