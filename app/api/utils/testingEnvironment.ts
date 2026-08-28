@@ -33,6 +33,8 @@ import { ObjectUtils } from '#api/common.v2/utils/Object.js';
 import { UwaziDispatcherFactory } from '#api/core/infrastructure/jobs/UwaziDispatcherFactory.js';
 import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js';
 import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
+import { PostgresSettingsMapper } from '#api/core/infrastructure/postgresql/settings/PostgresSettingsMapper.js';
+import { Settings as SettingsType } from '#shared/types/settingsType.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -95,6 +97,9 @@ const sanitizeTranslationForPostgres = (translation: Record<string, unknown>) =>
   };
 };
 
+const sanitizeSettingsForPostgres = (settings: Record<string, unknown>) =>
+  PostgresSettingsMapper.toRow(settings as SettingsType);
+
 const PG_SANITIZER_BY_MONGO_COLLECTION: Record<
   string,
   (row: Record<string, unknown>) => Record<string, unknown>
@@ -103,6 +108,7 @@ const PG_SANITIZER_BY_MONGO_COLLECTION: Record<
   users: sanitizeUserForPostgres,
   usergroups: sanitizeUserGroupForPostgres,
   translationsV2: sanitizeTranslationForPostgres,
+  settings: sanitizeSettingsForPostgres,
 };
 
 const MIRRORED_COLLECTIONS = [

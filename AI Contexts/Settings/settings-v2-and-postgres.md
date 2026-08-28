@@ -11,9 +11,30 @@ This is the planning doc for both phases. Pattern sources: [`../Relationship Typ
 
 ## Status
 
-- **Analysis / planning** — this document
-- **V2 implementation** — **first cut on Mongo, not accepted.** Review implementation is in progress (safe-by-default reads/sockets, projections, Zod, factory EC, tests adapted to the core — not the other way around). Do not treat the first-cut code as the target shape.
-- **Postgres** — still blocked. The review’s projection/opt-in-read questions **change the DS contract**; lock that before schema 016 / `postgresSettings`.
+- **Phase 1 (V2 hex, Mongo)** — **done.** Review queue below is all `[x]`. Core owns reads/writes. Factory uses `ExecutionContext.transactionManager` only (no TM fallback). Tests that need a settings DS outside HTTP/jobs use `SettingsDSWithContext` from `testingEnvironment` — they do **not** wrap Jest globally and they do **not** import `SettingsDataSourceFactory` for fixture patches. V2 adapters that already have a TM take an injected `settingsDS`.
+- **Phase 2 (Postgres)** — **in progress.** Contract is locked (`readFields` / `readFeature` / `readSyncConfig`, slice columns not `SELECT document`). Schema is **017** (016 is entities published default).
+
+Do not re-investigate these; they are done and should stay this way:
+
+- No `SettingsService`. Inject `settingsDS` (with the TM you already have).
+- Factory uses `ExecutionContext.transactionManager` only (no TM fallback).
+- Tests that patch settings fixtures use `SettingsDSWithContext`. Do not wrap Jest globally. Do not import the factory just to seed fixtures.
+- PG DS does not mint `_id`. Copy preserves Mongo `_id`. Upsert conflict is `tenant_id`.
+- Sync handler is the existing DS-backed class. Factory branching on `postgresSettings` is enough.
+- Dual-backend tests must pass `postgresMirror: ['settings']` explicitly. Do not add `settings` to default `MIRRORED_COLLECTIONS` (settings fixtures include entities that are not PG-ready).
+- JSONB `links` store `_id` as hex strings. `custom` is JSONB — objects only, not a string.
+
+### Phase 2 progress
+
+- [x] Schema `017-create-settings-table.sql` (`settings` + RLS in the same migration)
+- [x] `PostgresSettingsMapper` + specs (columns, JSONB groups, `extras`, drop `__v`)
+- [x] `PostgresSettingsDataSource` + specs (CRUD, singleton `tenant_id`, RLS as `app_user`, projections)
+- [x] Feature flag `postgresSettings` (config / tenantContext / tenantsModel; local via `FEATURE_FLAG_POSTGRES_SETTINGS=true`)
+- [x] `SettingsDataSourceFactory` branches on the flag; `cached()` returns the PG DS when on
+- [x] Sync handler stays DS-backed (`MongoSettingsSyncHandler` + factory). No separate PG handler — inbound still patches the tenant singleton via `SettingsDataSource`.
+- [x] `SettingsMigrationConfig` + CLI `--collection settings` (fail on 0 or >1 Mongo docs)
+- [x] Dual-backend `SaveSettings.spec` (`describe.each`). Remaining: HTTP routes, `newNameGeneration`, add/delete language.
+- [ ] Local dry-run: schema → copy → flag → GET/POST / links / languages / filters / public vs admin
 
 ---
 
@@ -444,7 +465,7 @@ Same class of risk as translations P12. Notable:
 
 ### Phase 2 (Postgres)
 
-1. Schema `016` + RLS.
+1. Schema `017` + RLS.
 2. Mapper + PG DS + specs (CRUD, singleton unique, RLS as `app_user`, JSONB extras).
 3. Flag `postgresSettings` + factory + `cached()`.
 4. Sync handler PG branch.
@@ -487,15 +508,21 @@ Same class of risk as translations P12. Notable:
 | Language UCs | `app/api/core/application/AddLanguage.ts`, `DeleteLanguage.ts` |
 | Inbound sync `_id` rewrite | `app/api/sync/routes.ts` (`namespace === 'settings'`) |
 | Outbound sync subset | `app/api/sync/processNamespaces.ts` (`settings()`) |
-| Copy engine / CLI | `…/postgresql/migrations/MigrateCollectionToPostgres.ts`, `scripts/scripts.v2/migrateToPostgres.ts` |
+| Copy engine / CLI | `…/postgresql/migrations/MigrateCollectionToPostgres.ts`, `scripts/scripts.v2/migrateToPostgres.ts` (`--collection settings`) |
+| Settings copy map | `…/postgresql/migrations/configs/SettingsMigrationConfig.ts` |
+| Settings PG schema | `…/schema_migrations/017-create-settings-table.sql` |
+| Settings PG adapter | `…/postgresql/settings/PostgresSettingsMapper.ts`, `PostgresSettingsDataSource.ts` |
 | RLS pattern | `…/schema_migrations/015-create-translations-table.sql` |
 | Tenant flags | `app/api/config.ts`, `tenants/tenantContext.ts`, `tenants/tenantsModel.ts` |
+| Test helper (settings fixture patches) | `SettingsDSWithContext` in `app/api/utils/testingEnvironment.ts` |
 
 ---
 
-## Open (do not block a Postgres start)
+## Open (do not block schema / DS)
 
-Superseded in part by **First review** above. Until that queue is worked, do not treat Phase 1 as closed.
+Phase 1 is closed. Remaining items are cutover, not contract.
 
 - Staging collision: any tenant with **zero or multiple** `settings` docs — copy must fail; fix data before flag.
 - Outbound sync remaining `{ languages }` only — never `password` without a separate design (aligns with opt-in `readSyncConfig()`).
+- Templates ticket: `applyNewNameGeneration` ownership (named debt; not this slice).
+- Dual-backend remaining: settings HTTP routes, `SaveSettings.newNameGeneration`, add/delete language.
