@@ -4,7 +4,6 @@ import { LinkIcon } from '@heroicons/react/24/outline';
 import { Translate } from '#app/I18N/index.js';
 import { relationshipTypesAtom } from '#V2/atoms/relationshipTypes.js';
 import { RelationshipMetadataProperty } from '#V2/formatters/types.js';
-import type { Entity } from '#V2/api/entities/types.js';
 import { MetadataCard } from './MetadataCard.js';
 import { RelationCaption } from './RelationCaption.js';
 import {
@@ -13,7 +12,7 @@ import {
   type OpenEntityTarget,
 } from './ConnectionPills.js';
 import { RelationshipConnectionsTable } from './RelationshipConnectionsTable.js';
-import { inheritedCellContent } from './inheritedCellContent.js';
+import type { InheritColumn } from '../relationshipInherit.js';
 
 type RelationshipProps = {
   label: string;
@@ -23,8 +22,9 @@ type RelationshipProps = {
   values: RelationshipMetadataProperty['values'];
   relationTypeId?: string;
   targetTemplateId?: string;
+  columns?: InheritColumn[];
+  inheritLabels?: string[];
   inheritLabel?: string;
-  sourceMetadata?: NonNullable<Entity['metadata']>[string];
   onOpenEntity?: (target: OpenEntityTarget) => void;
 };
 
@@ -36,8 +36,9 @@ const Relationship = ({
   values,
   relationTypeId,
   targetTemplateId,
+  columns: columnsProp,
+  inheritLabels,
   inheritLabel,
-  sourceMetadata,
   onOpenEntity,
 }: RelationshipProps) => {
   const relationshipTypes = useAtomValue(relationshipTypesAtom);
@@ -58,16 +59,26 @@ const Relationship = ({
     icon: value.icon,
   }));
 
-  const columns = inheritLabel
-    ? [
-        {
-          label: inheritLabel,
-          cellsByEntityId: Object.fromEntries(
-            rows.map(row => [row.id, inheritedCellContent(sourceMetadata, row.id)])
-          ),
-        },
-      ]
-    : [];
+  const columns =
+    columnsProp ??
+    (inheritLabel
+      ? [
+          {
+            label: inheritLabel,
+            cellsByEntityId: {},
+          },
+        ]
+      : []);
+
+  let resolvedInheritLabels = inheritLabels;
+  if (!resolvedInheritLabels) {
+    if (columns.length > 0) {
+      resolvedInheritLabels = columns.map(column => column.label);
+    } else if (inheritLabel) {
+      resolvedInheritLabels = [inheritLabel];
+    }
+  }
+  const showsInheritedTable = columns.length > 0;
 
   return (
     <MetadataCard className={className}>
@@ -81,8 +92,8 @@ const Relationship = ({
         </Translate>
       </dt>
       <dd className="mt-1 flex flex-col gap-1.5">
-        <RelationCaption relationLabel={relationLabel} inheritLabel={inheritLabel} />
-        {inheritLabel ? (
+        <RelationCaption relationLabel={relationLabel} inheritLabels={resolvedInheritLabels} />
+        {showsInheritedTable ? (
           <RelationshipConnectionsTable
             rows={rows}
             columns={columns}
