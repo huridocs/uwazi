@@ -1,0 +1,107 @@
+[
+  {
+    "pages": 20000,
+    "buildMs": 2458,
+    "size": "63 MB",
+    "results": {
+      "single partition": {
+        "ms": 0.378,
+        "signature": "ParadeDB Aggregate Scan"
+      },
+      "agnostic fan (21 parts)": {
+        "ms": 4.4,
+        "signature": "ParadeDB Base Scan/NormalScanExecState"
+      },
+      "snippets, LIMIT per branch": {
+        "ms": 5.804,
+        "signature": "ParadeDB Base Scan/TopKScanExecState"
+      },
+      "snippets, outer LIMIT only": {
+        "ms": 775.665,
+        "signature": "Sort+ParadeDB Base Scan/NormalScanExecState"
+      },
+      "collapse to entities": {
+        "ms": 8.577,
+        "signature": "Sort+ParadeDB Base Scan/NormalScanExecState"
+      },
+      "in-document search": {
+        "ms": 0.542,
+        "signature": "ParadeDB Base Scan/TopKScanExecState"
+      },
+      "phrase search": {
+        "ms": 0.695,
+        "signature": "ParadeDB Aggregate Scan"
+      }
+    }
+  },
+  {
+    "pages": 100000,
+    "buildMs": 11875,
+    "size": "81 MB",
+    "results": {
+      "single partition": {
+        "ms": 0.923,
+        "signature": "ParadeDB Aggregate Scan"
+      },
+      "agnostic fan (21 parts)": {
+        "ms": 12.963,
+        "signature": "ParadeDB Base Scan/NormalScanExecState"
+      },
+      "snippets, LIMIT per branch": {
+        "ms": 5.992,
+        "signature": "ParadeDB Base Scan/TopKScanExecState"
+      },
+      "snippets, outer LIMIT only": {
+        "ms": 1708.714,
+        "signature": "Sort+ParadeDB Base Scan/NormalScanExecState"
+      },
+      "collapse to entities": {
+        "ms": 19.905,
+        "signature": "Sort+ParadeDB Base Scan/NormalScanExecState"
+      },
+      "in-document search": {
+        "ms": 2.182,
+        "signature": "ParadeDB Base Scan/TopKScanExecState"
+      },
+      "phrase search": {
+        "ms": 3.205,
+        "signature": "ParadeDB Aggregate Scan"
+      }
+    }
+  },
+  {
+    "pages": 400000,
+    "buildMs": 8569,
+    "size": "216 MB",
+    "results": {
+      "single partition": {
+        "ms": 6.194,
+        "signature": "ParadeDB Aggregate Scan"
+      },
+      "agnostic fan (21 parts)": {
+        "ms": 21.107,
+        "signature": "ParadeDB Base Scan/NormalScanExecState"
+      },
+      "snippets, LIMIT per branch": {
+        "ms": 7.57,
+        "signature": "ParadeDB Base Scan/TopKScanExecState"
+      },
+      "snippets, outer LIMIT only": {
+        "ms": 2841.562,
+        "signature": "Sort+ParadeDB Base Scan/NormalScanExecState"
+      },
+      "collapse to entities": {
+        "ms": 35.659,
+        "signature": "Sort+ParadeDB Base Scan/NormalScanExecState"
+      },
+      "in-document search": {
+        "ms": 8.801,
+        "signature": "ParadeDB Base Scan/TopKScanExecState"
+      },
+      "phrase search": {
+        "ms": 8.594,
+        "signature": "ParadeDB Aggregate Scan"
+      }
+    }
+  }
+]

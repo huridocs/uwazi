@@ -1,0 +1,930 @@
+<title>Uwazi Search Surface Audit</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Serif:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+
+<style>
+  :root {
+    --ground: #f4f6f7;
+    --surface: #ffffff;
+    --surface-sunk: #eceff1;
+    --line: #d6dce0;
+    --line-soft: #e5eaed;
+    --ink: #131b21;
+    --ink-2: #3d4a53;
+    --ink-3: #6b7a84;
+    --accent: #14666e;
+    --accent-soft: #d9eced;
+    --amber: #97600f;
+    --amber-soft: #f6e9d3;
+    --brick: #8f3038;
+    --brick-soft: #f5dcdd;
+    --code-bg: #eef2f3;
+
+    --f-display: "IBM Plex Sans", "Helvetica Neue", Arial, sans-serif;
+    --f-body: "IBM Plex Serif", Georgia, "Times New Roman", serif;
+    --f-mono: "IBM Plex Mono", "SFMono-Regular", Consolas, monospace;
+
+    --measure: 68ch;
+    --rail: 250px;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ground: #0e1418;
+      --surface: #151d22;
+      --surface-sunk: #1b252b;
+      --line: #2b383f;
+      --line-soft: #222d33;
+      --ink: #dde5ea;
+      --ink-2: #adbac2;
+      --ink-3: #7d8d97;
+      --accent: #56b3ba;
+      --accent-soft: #163336;
+      --amber: #d7a256;
+      --amber-soft: #33270f;
+      --brick: #d9848b;
+      --brick-soft: #351a1d;
+      --code-bg: #1b252b;
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --ground: #0e1418;
+    --surface: #151d22;
+    --surface-sunk: #1b252b;
+    --line: #2b383f;
+    --line-soft: #222d33;
+    --ink: #dde5ea;
+    --ink-2: #adbac2;
+    --ink-3: #7d8d97;
+    --accent: #56b3ba;
+    --accent-soft: #163336;
+    --amber: #d7a256;
+    --amber-soft: #33270f;
+    --brick: #d9848b;
+    --brick-soft: #351a1d;
+    --code-bg: #1b252b;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--ground);
+    color: var(--ink);
+    font-family: var(--f-body);
+    font-size: 16px;
+    line-height: 1.62;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .shell {
+    display: grid;
+    grid-template-columns: var(--rail) minmax(0, 1fr);
+    gap: 0;
+    max-width: 1240px;
+    margin: 0 auto;
+  }
+
+  /* ---------- rail ---------- */
+  .rail {
+    position: sticky;
+    top: 0;
+    align-self: start;
+    height: 100vh;
+    overflow-y: auto;
+    padding: 40px 26px 40px 24px;
+    border-right: 1px solid var(--line);
+    font-family: var(--f-display);
+    font-size: 13px;
+  }
+  .rail-brand {
+    font-weight: 600;
+    letter-spacing: .01em;
+    color: var(--ink);
+    font-size: 14px;
+    line-height: 1.35;
+    margin-bottom: 4px;
+  }
+  .rail-sub {
+    color: var(--ink-3);
+    font-size: 11.5px;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    margin-bottom: 26px;
+  }
+  .rail nav { display: flex; flex-direction: column; gap: 1px; }
+  .rail a {
+    color: var(--ink-2);
+    text-decoration: none;
+    padding: 5px 8px 5px 0;
+    border-left: 2px solid transparent;
+    padding-left: 10px;
+    line-height: 1.35;
+  }
+  .rail a:hover { color: var(--accent); border-left-color: var(--accent); }
+  .rail a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .rail a .num {
+    font-family: var(--f-mono);
+    font-size: 11px;
+    color: var(--ink-3);
+    margin-right: 7px;
+  }
+  .rail-group {
+    margin-top: 18px;
+    padding-left: 10px;
+    font-size: 10.5px;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    font-weight: 600;
+  }
+
+  /* ---------- content ---------- */
+  main {
+    padding: 40px 48px 120px;
+    min-width: 0;
+  }
+
+  .masthead { border-bottom: 2px solid var(--ink); padding-bottom: 22px; margin-bottom: 34px; }
+  .eyebrow {
+    font-family: var(--f-mono);
+    font-size: 11.5px;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 12px;
+  }
+  h1 {
+    font-family: var(--f-display);
+    font-weight: 600;
+    font-size: clamp(30px, 4vw, 42px);
+    line-height: 1.1;
+    letter-spacing: -.02em;
+    margin: 0 0 14px;
+    text-wrap: balance;
+  }
+  .standfirst {
+    font-size: 17.5px;
+    color: var(--ink-2);
+    max-width: var(--measure);
+    margin: 0;
+  }
+  .meta-strip {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    margin-top: 22px;
+    font-family: var(--f-display);
+    font-size: 12.5px;
+    color: var(--ink-3);
+  }
+  .meta-strip b { color: var(--ink-2); font-weight: 600; }
+
+  section { margin-top: 52px; scroll-margin-top: 20px; }
+
+  h2 {
+    font-family: var(--f-display);
+    font-weight: 600;
+    font-size: 25px;
+    letter-spacing: -.015em;
+    line-height: 1.2;
+    margin: 0 0 6px;
+    text-wrap: balance;
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+  }
+  h2 .sec {
+    font-family: var(--f-mono);
+    font-size: 14px;
+    color: var(--accent);
+    font-weight: 400;
+    flex: none;
+  }
+  h3 {
+    font-family: var(--f-display);
+    font-weight: 600;
+    font-size: 16.5px;
+    letter-spacing: -.005em;
+    margin: 34px 0 8px;
+    text-wrap: balance;
+  }
+  h4 {
+    font-family: var(--f-display);
+    font-weight: 600;
+    font-size: 13px;
+    letter-spacing: .05em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    margin: 26px 0 8px;
+  }
+  p { max-width: var(--measure); margin: 0 0 14px; }
+  ul, ol { max-width: var(--measure); padding-left: 20px; margin: 0 0 14px; }
+  li { margin-bottom: 6px; }
+  a { color: var(--accent); }
+
+  code, .path {
+    font-family: var(--f-mono);
+    font-size: .855em;
+    background: var(--code-bg);
+    padding: 1px 5px;
+    border-radius: 3px;
+    color: var(--ink);
+    word-break: break-word;
+  }
+  pre {
+    background: var(--code-bg);
+    border: 1px solid var(--line-soft);
+    border-radius: 4px;
+    padding: 14px 16px;
+    overflow-x: auto;
+    font-family: var(--f-mono);
+    font-size: 12.5px;
+    line-height: 1.6;
+    margin: 0 0 18px;
+  }
+  pre code { background: none; padding: 0; font-size: inherit; }
+
+  .lead-rule {
+    height: 1px; background: var(--line); border: 0; margin: 0 0 22px;
+  }
+
+  /* ---------- tables ---------- */
+  .tw { overflow-x: auto; margin: 0 0 20px; border: 1px solid var(--line); border-radius: 4px; background: var(--surface); }
+  table { border-collapse: collapse; width: 100%; font-family: var(--f-display); font-size: 13px; }
+  th {
+    text-align: left;
+    font-weight: 600;
+    font-size: 10.5px;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--line);
+    background: var(--surface-sunk);
+    white-space: nowrap;
+  }
+  td {
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--line-soft);
+    vertical-align: top;
+    line-height: 1.5;
+  }
+  tr:last-child td { border-bottom: 0; }
+  td code { font-size: 12px; background: none; padding: 0; color: var(--ink-2); }
+  .tw table { min-width: 620px; }
+
+  /* ---------- status chips ---------- */
+  .chip {
+    display: inline-block;
+    font-family: var(--f-display);
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: .05em;
+    text-transform: uppercase;
+    padding: 2px 7px;
+    border-radius: 2px;
+    white-space: nowrap;
+    border: 1px solid transparent;
+  }
+  .c-direct { background: var(--accent-soft); color: var(--accent); border-color: var(--accent); }
+  .c-rework { background: var(--amber-soft); color: var(--amber); border-color: var(--amber); }
+  .c-gap    { background: var(--brick-soft); color: var(--brick); border-color: var(--brick); }
+  .c-none   { background: var(--surface-sunk); color: var(--ink-3); border-color: var(--line); }
+
+  /* ---------- callouts ---------- */
+  .note {
+    border-left: 3px solid var(--accent);
+    background: var(--surface);
+    padding: 14px 18px;
+    margin: 0 0 20px;
+    max-width: var(--measure);
+    font-size: 15px;
+  }
+  .note.warn { border-left-color: var(--amber); }
+  .note.risk { border-left-color: var(--brick); }
+  .note p:last-child { margin-bottom: 0; }
+  .note .label {
+    display: block;
+    font-family: var(--f-display);
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: .09em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 5px;
+  }
+  .note.warn .label { color: var(--amber); }
+  .note.risk .label { color: var(--brick); }
+
+  /* ---------- stat row ---------- */
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1px;
+    background: var(--line);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    overflow: hidden;
+    margin: 0 0 24px;
+  }
+  .stat { background: var(--surface); padding: 14px 16px; }
+  .stat .n {
+    font-family: var(--f-display);
+    font-size: 26px;
+    font-weight: 600;
+    letter-spacing: -.02em;
+    line-height: 1.05;
+    font-variant-numeric: tabular-nums;
+    display: block;
+  }
+  .stat .k {
+    font-family: var(--f-display);
+    font-size: 11px;
+    letter-spacing: .05em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    margin-top: 5px;
+    display: block;
+    line-height: 1.35;
+  }
+
+  .legend {
+    display: flex; flex-wrap: wrap; gap: 14px;
+    font-family: var(--f-display); font-size: 12px; color: var(--ink-3);
+    margin: 0 0 18px;
+    align-items: center;
+  }
+
+  .src {
+    font-family: var(--f-mono);
+    font-size: 11.5px;
+    color: var(--ink-3);
+    margin: -8px 0 20px;
+  }
+
+  @media (max-width: 900px) {
+    .shell { grid-template-columns: 1fr; }
+    .rail { position: static; height: auto; border-right: 0; border-bottom: 1px solid var(--line); padding: 26px 22px; }
+    .rail nav { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 0 12px; }
+    main { padding: 30px 22px 90px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { animation: none !important; transition: none !important; }
+  }
+</style>
+
+<div class="shell">
+  <aside class="rail">
+    <div class="rail-brand">Uwazi Search Surface Audit</div>
+    <div class="rail-sub">ES → ParadeDB evaluation</div>
+    <nav>
+      <a href="#summary"><span class="num">00</span>Summary</a>
+      <div class="rail-group">Part I · What exists</div>
+      <a href="#entry"><span class="num">01</span>Entry points</a>
+      <a href="#text"><span class="num">02</span>Text search</a>
+      <a href="#filters"><span class="num">03</span>Metadata filters</a>
+      <a href="#perms"><span class="num">04</span>Permissions</a>
+      <a href="#aggs"><span class="num">05</span>Aggregations</a>
+      <a href="#sort"><span class="num">06</span>Sorting</a>
+      <a href="#snippets"><span class="num">07</span>Snippets</a>
+      <a href="#write"><span class="num">08</span>Indexing</a>
+      <div class="rail-group">Part II · Analysis</div>
+      <a href="#loadbearing"><span class="num">09</span>Load-bearing ES</a>
+      <a href="#explosion"><span class="num">10</span>Mapping explosion</a>
+      <div class="rail-group">Part III · ParadeDB</div>
+      <a href="#schema"><span class="num">11</span>Schema design</a>
+      <a href="#mapping"><span class="num">12</span>Pattern-by-pattern</a>
+      <a href="#gaps"><span class="num">13</span>Gaps</a>
+      <a href="#effort"><span class="num">14</span>Effort</a>
+      <a href="#decision"><span class="num">15</span>Decision framing</a>
+    </nav>
+  </aside>
+
+  <main>
+    <header class="masthead">
+      <div class="eyebrow">Codebase audit · branch <code>production</code> · v1.229.151</div>
+      <h1>Every query pattern Uwazi runs, and what ParadeDB would do with them</h1>
+      <p class="standfirst">A complete inventory of the Elasticsearch surface in this repo — read out of the query builders, not from memory — followed by a concrete ParadeDB schema, a pattern-by-pattern feasibility map, and the handful of things that genuinely do not port.</p>
+      <div class="meta-strip">
+        <span><b>Elasticsearch</b> 8.18.0, index-per-tenant</span>
+        <span><b>Search code</b> ~3,300 LOC across two API versions</span>
+        <span><b>Postgres</b> already holds entities, files, templates, users</span>
+      </div>
+    </header>
+
+    <div style="border:2px solid #b45309;background:#fffbeb;color:#3f2d0b;padding:1rem 1.25rem;border-radius:8px;margin:0 0 2rem;">
+      <p style="margin:0 0 .5rem;font-weight:700;font-size:1.05rem;">⚠️ Read <code>paradedb-findings.md</code> first</p>
+      <p style="margin:0 0 .5rem;">
+        <b>This page is a code-derived inventory, and that part is still useful</b> — the catalogue of
+        every query pattern Uwazi issues, read out of the query builders rather than from memory.
+      </p>
+      <p style="margin:0;">
+        <b>Its ParadeDB verdicts are superseded.</b> They predate every measurement. Facets, sorting,
+        permissions, nested-strict mode and full text have since been built and tested, and several of
+        the conclusions here turned out to be wrong. Use <code>paradedb-findings.md</code> for what
+        ParadeDB actually does; use this page only as an inventory of what we have to support.
+      </p>
+    </div>
+
+    <section id="summary">
+      <h2><span class="sec">§00</span>Summary</h2>
+      <hr class="lead-rule">
+
+      <div class="stats">
+        <div class="stat"><span class="n">11</span><span class="k">Distinct query entry points</span></div>
+        <div class="stat"><span class="n">17</span><span class="k">Filter shapes by property type</span></div>
+        <div class="stat"><span class="n">7</span><span class="k">Aggregation families</span></div>
+        <div class="stat"><span class="n">4,500</span><span class="k">Field ceiling in the ES mapping</span></div>
+        <div class="stat"><span class="n">~30</span><span class="k">Per-language analyzer pairs</span></div>
+      </div>
+
+      <p>Three findings shape the decision more than anything else in this document.</p>
+
+      <p><strong>The mapping explosion is real, and ParadeDB removes it for two of the three jobs the mapping does.</strong> The ES mapping is built by iterating every property of every template and emitting a field subtree keyed by <em>property name</em>, globally, across all templates — see <a href="database/elastic_mapping/elasticMapFactory.ts">elasticMapFactory.ts:24-70</a>. At 3–8 leaf fields per property (16 with inheritance) against a 4,500-field ceiling, a tenant runs out somewhere around 500–900 distinct property names. ParadeDB's JSONB indexing auto-discovers every sub-path with no declared schema, which genuinely removes that ceiling for <em>matching and filtering</em>. It does <strong>not</strong> remove it for sorting or for per-property analysis — both still need a declaration per property, and unlike ES those declarations require a <code>REINDEX</code> to change. See §10 for the real shape of this. What is unambiguous is the other direction: a multi-tenant ES index makes the ceiling strictly worse, because one mapping would carry the union of every tenant's property names.</p>
+
+      <p><strong>The hard part is not full-text search — it's the faceting model.</strong> Uwazi's library screen computes, in one round trip, a <code>global</code>-scoped aggregation per filterable property where each facet's counts re-apply every active filter <em>except its own</em> (<a href="app/api/search/metadataAggregations.js">metadataAggregations.js:106-120</a>). Nested properties add a four-level <code>nested → terms → filter → reverse_nested</code> stack. There is no <code>reverse_nested</code> in ParadeDB and no nested-document model at all; this becomes N normalized-table aggregate queries, and ParadeDB's aggregate pushdown does not apply to <code>pdb.agg()</code> across joins. This is where the migration effort and the performance risk both concentrate.</p>
+
+      <p><strong>One ES feature is load-bearing in a way that looks trivial and isn't.</strong> Page numbers in full-text snippets are recovered by injecting a <code>[[42]]</code> marker after <em>every word</em> of every PDF page (<a href="app/api/files/PDF.ts">PDF.ts:35</a>) and then stripping them at analysis time with a <code>pattern_replace</code> character filter. ParadeDB has no character filters. Those markers would tokenize into the index, shifting term positions and breaking phrase search on full text. Porting requires re-modelling full text as one row per page — which is a better design anyway, but it is a data-model change, not a query rewrite.</p>
+
+      <div class="note">
+        <span class="label">Context that changes the framing</span>
+        <p>This repo is already mid-migration from Mongo to Postgres. <code>entities</code>, <code>files</code>, <code>templates</code>, <code>thesauri</code>, <code>users</code>, <code>usergroups</code> and <code>translations</code> have Postgres tables, and <code>entities</code> already carries <code>metadata JSONB</code>, <code>permissions JSONB</code>, tenant RLS and permission-level RLS with derived <code>_perm_read_refs</code> / <code>_perm_write_refs</code> arrays (migrations 005/006/010/011). A ParadeDB index would sit on a table that already exists with roughly the right shape. That materially lowers the cost relative to a green-field port, and it means "stay on ES" also carries a cost: keeping two sources of truth in sync for the indefinite future.</p>
+      </div>
+    </section>
+
+    <!-- ============ PART I ============ -->
+
+    <section id="entry">
+      <h2><span class="sec">§01</span>Entry points</h2>
+      <hr class="lead-rule">
+      <p>Eleven distinct callers reach Elasticsearch. Two of them (<code>/api/search</code> and <code>/api/v2/search</code>) are separate query builders with overlapping but non-identical semantics — any migration has to satisfy both, or explicitly retire one.</p>
+
+      <div class="tw">
+        <table>
+          <thead><tr><th>Entry point</th><th>Built by</th><th>What it does</th></tr></thead>
+          <tbody>
+            <tr><td><code>GET /api/search</code></td><td><code>documentQueryBuilder.js</code></td><td>The library screen. Text search + metadata filters + facets + sort + pagination + permissions, all in one request. The dominant surface.</td></tr>
+            <tr><td><code>GET /api/v2/search</code></td><td><code>search.v2/buildQuery.ts</code></td><td>Public API. Simpler: filters, sort, pagination, snippets, no aggregations. Introspects the live mapping at request time to pick a sort field.</td></tr>
+            <tr><td><code>GET /api/search_snippets</code></td><td><code>documentQueryBuilder.js</code></td><td>All matching fragments for one entity — <code>number_of_fragments: 9999</code>.</td></tr>
+            <tr><td><code>GET /api/search/lookup</code></td><td><code>search.autocomplete</code></td><td>Title typeahead over <code>search_as_you_type</code> subfields.</td></tr>
+            <tr><td><code>GET /api/search/lookupaggregation</code></td><td><code>search.autocompleteAggregations</code></td><td>Typeahead <em>inside a facet</em>: runs the full library query with <code>limit: 0</code>, keeps one aggregation, appends a <code>wildcard</code> filter on the label.</td></tr>
+            <tr><td>CSV export</td><td><code>files/exportRoutes.ts:45</code></td><td>Re-runs the exact library query to stream results out.</td></tr>
+            <tr><td>Relationships panel</td><td><code>relationships/relationshipsSearch.js:197</code></td><td>Mongo finds the connected sharedIds, then ES filters/orders them (<code>limit: 9999</code>, aggregations off).</td></tr>
+            <tr><td>Map view</td><td><code>search.searchGeolocations</code></td><td>Library query, <code>size 9999</code>, restricted to entities that <em>have</em> a geolocation property, projecting only geo fields.</td></tr>
+            <tr><td><code>countPerTemplate</code></td><td><code>search.countPerTemplate</code></td><td>Template histogram via the <code>_types</code> aggregation with <code>limit: 0</code>.</td></tr>
+            <tr><td>Entity access policy</td><td><code>MongoEntityAccessPolicyDataSource.ts</code></td><td>Permission checks routed through search.</td></tr>
+            <tr><td>Write path</td><td><code>entitiesIndex.js</code>, <code>sync/routes.ts</code></td><td>Bulk index, delete by id, <code>deleteByQuery</code> by sharedId and by language, mapping updates, full reindex.</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="src">app/api/search/routes.ts · app/api/search/deprecatedRoutes.js · app/api/search.v2/routes.ts</p>
+    </section>
+
+    <section id="text">
+      <h2><span class="sec">§02</span>Text search</h2>
+      <hr class="lead-rule">
+
+      <h3>Syntax negotiation at request time</h3>
+      <p>Before every text search, Uwazi asks the cluster whether the user's string is valid Lucene syntax and picks the parser accordingly:</p>
+      <pre><code>const validationResult = await elastic.indices.validateQuery({
+  body: { query: { query_string: { query: searchTerm } } },
+});
+return validationResult.body.valid ? 'query_string' : 'simple_query_string';</code></pre>
+      <p class="src">app/api/search/search.js:726-731 — mirrored in app/api/search.v2/queryHelpers.ts:9-14</p>
+      <p>So users have the full <code>query_string</code> grammar available: field-scoped terms, boolean operators, phrases, wildcards, ranges, and fuzziness. The V2 client relies on this directly — the entity lookup sends <code>title:{value}~2</code>. When the string doesn't parse, it silently degrades instead of erroring.</p>
+
+      <h3>Field targeting</h3>
+      <p>A bare search term fans out over a computed field list: <code>title</code>, <code>fullText</code>, plus — for every unique property across every template — <code>metadata.X.value</code> for text/markdown/generatedid types and <code>metadata.X.label</code> for everything else. Non-full-text fields get <code>boost: 2</code>.</p>
+
+      <h3>Full text lives in a child document</h3>
+      <p>Full text is not a field on the entity. It is a separate ES document joined by <code>{ type: 'join', relations: { entity: 'fullText' } }</code>, queried with <code>has_child</code> / <code>score_mode: 'max'</code> / <code>inner_hits</code>. One child per entity, id <code>{entityId}_fullText</code>, routed to the parent.</p>
+
+      <h3>Per-language analysis</h3>
+      <p>The child document's field name encodes its language — <code>fullText_persian</code>, <code>fullText_arabic</code> — and dynamic templates attach the matching analyzer pair. For ~30 languages the mapping defines <code>fulltext_&lt;lang&gt;</code> (index-time: lowercase, asciifolding, stemmer) and <code>stop_&lt;lang&gt;</code> (search-time: the same plus a stopword filter), with <code>search_quote_analyzer</code> falling back to the non-stopword variant so phrase queries still work. Arabic and Persian get normalization filters; Thai and CJK skip stemming. Language is taken from the file, or detected from the text when absent.</p>
+
+      <h3>Other text shapes</h3>
+      <ul>
+        <li><strong>Typeahead:</strong> <code>multi_match</code> / <code>bool_prefix</code> over <code>title.sayt</code>, <code>title.sayt._2gram</code>, <code>title.sayt._3gram</code>, and a separate 3–4 char ngram field <code>title.sayt_ngram</code> for mid-word matching.</li>
+        <li><strong>Facet typeahead:</strong> <code>wildcard</code> with <code>*term*</code> against <code>metadata.X.label</code>.</li>
+        <li><strong>Full-text-only groups:</strong> V2 extracts <code>fullText:(...)</code> groups out of the search string with a regex and routes only those to the child query.</li>
+        <li><strong>Metadata-as-text filters:</strong> <code>filterMetadataByFullText</code> folds select filters into the scoring clause rather than the filter clause, so related entities score into results.</li>
+      </ul>
+    </section>
+
+    <section id="filters">
+      <h2><span class="sec">§03</span>Metadata filters</h2>
+      <hr class="lead-rule">
+      <p>Every property type has its own filter shape. Before matching, <code>processFilters</code> normalizes: dates go through <code>descriptionToTimestamp</code> (so "1 year ago" is a valid bound), text is lowercased, <code>date</code>/<code>multidate</code>/<code>numeric</code> collapse to <code>range</code>, and select values are expanded through parent thesauri so selecting a group selects its children.</p>
+
+      <div class="tw">
+        <table>
+          <thead><tr><th>Property type</th><th>Indexed path</th><th>Query shape</th></tr></thead>
+          <tbody>
+            <tr><td>text / markdown / generatedid</td><td><code>metadata.X.value</code></td><td><code>term</code> — exact, lowercased client-side</td></tr>
+            <tr><td>numeric / date / multidate</td><td><code>metadata.X.value</code></td><td><code>range</code> gte/lte</td></tr>
+            <tr><td>daterange / multidaterange</td><td><code>.value.from</code>, <code>.value.to</code></td><td><code>bool.should</code> of two ranges — overlap semantics</td></tr>
+            <tr><td>select / multiselect / relationship</td><td><code>metadata.X.value</code></td><td><code>terms</code>, plus four special modes below</td></tr>
+            <tr><td>nested (non-strict)</td><td><code>metadata.X</code></td><td>One <code>nested</code> query per sub-key value, AND-ed — matches across different array elements</td></tr>
+            <tr><td>nested (strict)</td><td><code>metadata.X</code></td><td>One <code>nested</code> query with all conditions inside — all must hit the same array element</td></tr>
+            <tr><td>relationshipfilter</td><td><code>relationships</code></td><td><code>nested</code> over denormalized relationship metadata + relation type</td></tr>
+            <tr><td>inherited (any type)</td><td><code>metadata.X.inheritedValue.value</code></td><td>Same shape as the inherited type, one level deeper</td></tr>
+            <tr><td>newRelationship</td><td><code>metadata.X.value</code></td><td>Takes the shape of its <code>denormalizedProperty</code>'s type</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h4>The four select modes</h4>
+      <ul>
+        <li><code>any</code> → <code>exists</code> on the field.</li>
+        <li><code>missing</code> → <code>bool.must_not.exists</code>, OR-ed with a <code>terms</code> on the remaining values.</li>
+        <li>default → <code>terms</code> (OR).</li>
+        <li><code>and: true</code> → <code>bool.must</code> of one <code>term</code> per value (AND).</li>
+      </ul>
+
+      <h4>Non-metadata filters</h4>
+      <ul>
+        <li><strong>Template</strong> — <code>terms</code> on <code>template</code>, with a <code>missing</code> pseudo-value handled as <code>must_not exists</code>.</li>
+        <li><strong>Entity ids</strong> — <code>terms</code> on <code>sharedId.raw</code>.</li>
+        <li><strong>Language</strong> — <code>term</code>, always applied, and also pushed into the aggregation filter.</li>
+        <li><strong>generatedToc</strong> — <code>terms</code> via the generic <code>customFilters</code> path.</li>
+        <li><strong>Geolocation presence</strong> — <code>bool.should</code> of <code>exists</code> over every geolocation property, used by the map view. Note: no geo-distance or bounding-box queries exist anywhere in the codebase.</li>
+      </ul>
+    </section>
+
+    <section id="perms">
+      <h2><span class="sec">§04</span>Permissions and publishing</h2>
+      <hr class="lead-rule">
+      <p>This is the security-critical layer and the one where a migration bug is most expensive. Permissions are an array of <code>{ refId, type, level }</code> mapped as a <code>nested</code> ES type, and the rules differ by role.</p>
+
+      <div class="tw">
+        <table>
+          <thead><tr><th>Situation</th><th>Query effect</th></tr></thead>
+          <tbody>
+            <tr><td>Anonymous</td><td><code>filter[0] = { should: [ { term: { published: true } } ] }</code></td></tr>
+            <tr><td>Collaborator</td><td>A <code>nested</code> <code>terms</code> on <code>permissions.refId</code> against the actor's own refIds is pushed into that same <code>should</code> — published OR explicitly shared</td></tr>
+            <tr><td>Admin / editor + <code>includeUnpublished</code></td><td>The published clause is spliced out entirely</td></tr>
+            <tr><td><code>unpublished: true</code></td><td>The <code>should</code> is rewritten in place into a <code>must</code> with <code>published: false</code></td></tr>
+            <tr><td>Assignee filter</td><td><code>nested</code> on <code>refId</code> + <code>level</code> per value, AND or OR; non-admins have their requested values silently narrowed to their own refIds</td></tr>
+            <tr><td>Response shaping</td><td><code>permissions</code> is stripped from each hit unless the actor has write access; relationship visibility is then re-checked per row via <code>applyRelationshipPermissions</code></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="src">documentQueryBuilder.js:filterByPermissions/includeUnpublished/onlyUnpublished · search.v2/permissionsFilters.ts</p>
+
+      <div class="note">
+        <span class="label">This one gets easier, not harder</span>
+        <p>Postgres already enforces exactly these rules declaratively. Migration 010 derives <code>_perm_read_refs</code> / <code>_perm_write_refs</code> from the permissions JSONB via trigger, GIN-indexes them, and installs an RLS policy of <code>published = true OR _perm_read_refs &amp;&amp; session refIds</code>, with a bypass flag for admin/editor/system. Under ParadeDB the permission filter stops being query-builder logic that every call site must remember to apply, and becomes an invariant the database enforces. That is a genuine correctness win — but note RLS interacts with aggregate and join pushdown, which needs measuring rather than assuming.</p>
+      </div>
+    </section>
+
+    <section id="aggs">
+      <h2><span class="sec">§05</span>Aggregations</h2>
+      <hr class="lead-rule">
+      <p>The most intricate part of the system, and the part that decides whether this migration is a quarter or a year.</p>
+
+      <h3>The self-excluding facet contract</h3>
+      <p>All aggregations hang off a <code>global: {}</code> bucket, which resets the query context to the whole index. Each facet is then a <code>terms</code> aggregation with a <code>filtered</code> sub-aggregation that re-applies the query's filters — minus the filter on its own field:</p>
+      <pre><code>const extractFilters = (baseQuery, path) => {
+  let filters = baseQuery.query.bool.filter.filter(
+    match => match &amp;&amp; (!match.terms || (match.terms &amp;&amp; !match.terms[path])) &amp;&amp; ...
+  );
+  return filters.concat(baseQuery.query.bool.must);
+};</code></pre>
+      <p class="src">app/api/search/metadataAggregations.js:106-120</p>
+      <p>This is what makes a multi-select facet still show its unselected options with counts. Every bucket the UI reads is <code>bucket.filtered.doc_count</code>, never <code>doc_count</code>. Any replacement must reproduce it exactly or the library's filter panel silently changes behaviour.</p>
+
+      <h3>The seven aggregation families</h3>
+      <div class="tw">
+        <table>
+          <thead><tr><th>Family</th><th>Structure</th></tr></thead>
+          <tbody>
+            <tr><td>Template (<code>_types</code>)</td><td><code>terms</code> on <code>template.raw</code>, <code>missing: 'missing'</code>, size 2000</td></tr>
+            <tr><td>Plain property</td><td><code>terms</code> + <code>filtered</code> sub-agg</td></tr>
+            <tr><td>Select / multiselect</td><td>Two parallel aggregations — <code>self</code> on <code>.value</code> and <code>parent</code> on <code>.parent.value</code> — merged afterwards so thesaurus groups and their children both appear</td></tr>
+            <tr><td>Nested property</td><td>Four levels: <code>nested</code> → <code>terms</code> per sub-key → <code>filtered</code> → <code>reverse_nested</code> → <code>filtered</code></td></tr>
+            <tr><td>Permissions by level / by user</td><td><code>filter</code> → <code>nested</code> → <code>terms</code> → <code>filter</code> → <code>reverse_nested</code>, with the permissions filters themselves stripped from the base</td></tr>
+            <tr><td>Publishing status</td><td><code>filter</code> → <code>terms</code> on <code>published</code>, re-adding a permissions clause for collaborators</td></tr>
+            <tr><td>Generated TOC</td><td><code>terms</code> on <code>generatedToc</code></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Post-processing</h3>
+      <p>Raw buckets are not usable output. <code>search.js</code> then: flattens the grouped select structure; converts nested and permission shapes into flat buckets; drops zero-count buckets; resolves keys to labels through thesauri <em>in the request language</em>; resolves relationship buckets to entity titles with a database round trip (<code>getSharedIdLabelInfo</code>); resolves permission refIds against the users and groups directories; groups children under thesaurus parents; truncates to 200 while always preserving the <code>missing</code> bucket; and synthesizes an <code>any</code> bucket from <code>hits.total</code> minus the missing count.</p>
+
+      <div class="note warn">
+        <span class="label">Cost profile</span>
+        <p>Each <code>terms</code> aggregation requests <code>size: 2000</code> (<code>PRELOAD_OPTIONS_SEARCH</code>) and runs in <em>global</em> scope — i.e. across the entire tenant index, not the result set — and there is one per filterable property, plus <code>allAggregations: true</code> which switches it to <em>every</em> property. This is very likely where your current latency lives, and it is worth measuring before attributing slowness to Elasticsearch itself. A structural fix here may be available without changing datastore at all.</p>
+      </div>
+    </section>
+
+    <section id="sort">
+      <h2><span class="sec">§06</span>Sorting</h2>
+      <hr class="lead-rule">
+      <p>Sorting relies on dedicated <code>.sort</code> subfields, whose type depends on the property type.</p>
+      <div class="tw">
+        <table>
+          <thead><tr><th>Sort target</th><th>Backing field</th></tr></thead>
+          <tbody>
+            <tr><td>Relevance</td><td><code>_score</code></td></tr>
+            <tr><td>Title</td><td><code>title.sort</code> — <code>keyword</code> with a lowercase + asciifolding normalizer, or <code>icu_collation_keyword</code> when <code>USE_ELASTIC_ICU=true</code> (custom Docker image)</td></tr>
+            <tr><td>creationDate / editDate</td><td><code>.sort</code>, typed <code>date</code></td></tr>
+            <tr><td>Text metadata</td><td><code>metadata.X.value.sort</code> — normalized keyword</td></tr>
+            <tr><td>Numeric / date metadata</td><td><code>metadata.X.value.sort</code> — <code>double</code></td></tr>
+            <tr><td>Select metadata</td><td><code>metadata.X.label.sort</code> — sorted by label, not id</td></tr>
+            <tr><td>Inherited</td><td><code>metadata.X.inheritedValue.value.sort</code></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>Two details matter for a port. Missing fields are tolerated via <code>unmapped_type: 'boolean'</code>. And V2 fetches the live mapping on every request to decide whether to sort by <code>value.sort</code>, <code>label.sort</code>, or the raw field — a schema introspection at query time that has no natural equivalent in SQL, and would need replacing with template metadata the app already has.</p>
+    </section>
+
+    <section id="snippets">
+      <h2><span class="sec">§07</span>Snippets and highlighting</h2>
+      <hr class="lead-rule">
+      <p>Highlighting uses the fast vector highlighter, which is why every searchable text field carries <code>term_vector: 'with_positions_offsets'</code>:</p>
+      <pre><code>highlight: {
+  order: 'score', pre_tags: ['&lt;b&gt;'], post_tags: ['&lt;/b&gt;'],
+  encoder: 'html', type: 'fvh',
+  fragment_size: 300, fragmenter: 'span',
+  fields: { 'fullText_*': { number_of_fragments } }
+}</code></pre>
+      <p>Full-text highlights come back inside <code>inner_hits</code> on the child document; metadata highlights come back on the parent hit. The two are merged into a single <code>{ count, metadata[], fullText[] }</code> shape.</p>
+
+      <div class="note risk">
+        <span class="label">The page-number hack</span>
+        <p>Snippets carry a page number, and this is how: when a PDF is processed, every single word in page <em>n</em> gets <code>[[n]]</code> appended to it (<code>page.replace(/(\S+)(\s?)/g, "$1[[n]]$2")</code>). A <code>pattern_replace</code> character filter named <code>remove_annotation</code> strips <code>\[\[[0-9]+\]\]</code> before tokenization, so the index is clean — but the <em>stored</em> text still has the markers, so the highlighter returns them and <code>getSnippets()</code> regexes the page number back out.</p>
+        <p>This works only because ES has character filters. ParadeDB does not. See §13.</p>
+      </div>
+    </section>
+
+    <section id="write">
+      <h2><span class="sec">§08</span>Indexing and write patterns</h2>
+      <hr class="lead-rule">
+      <ul>
+        <li><strong>Bulk index</strong> — parent entity doc plus, when the entity has a default document, a child <code>fullText</code> doc with <code>routing</code> to the parent. Page texts are joined with <code>\f</code>.</li>
+        <li><strong>Mapping updates</strong> — <code>putMapping</code> runs whenever templates change; adding a property mutates the index mapping live.</li>
+        <li><strong>Full reindex</strong> — delete index, recreate from <code>getTenantESMapping()</code>, re-emit every entity. Concurrency 10, batches of 50.</li>
+        <li><strong>Deletes</strong> — by id, <code>deleteByQuery</code> on <code>sharedId.raw</code>, and <code>deleteByQuery</code> by language for language removal.</li>
+        <li><strong>Tenancy</strong> — one index per tenant, resolved per-request from <code>tenants.current().indexName</code>; replica count is feature-flagged per tenant.</li>
+      </ul>
+      <div class="note">
+        <span class="label">Already half-ported</span>
+        <p><code>entitiesIndex.js</code> no longer reads entities from Mongo — it goes through <code>EntitiesDAOFactory</code>, and <code>entityFiltersFromQuery</code> translates the legacy Mongo query shapes into DAO filters, deliberately <em>throwing</em> on any shape it doesn't recognize rather than silently matching everything. The write path is already datastore-agnostic.</p>
+      </div>
+    </section>
+
+    <!-- ============ PART II ============ -->
+
+    <section id="loadbearing">
+      <h2><span class="sec">§09</span>What is actually load-bearing</h2>
+      <hr class="lead-rule">
+      <p>Stripping the inventory down to the ES capabilities that carry real weight — the ones where a replacement has to make a deliberate decision.</p>
+      <div class="tw">
+        <table>
+          <thead><tr><th>Capability</th><th>Used for</th><th>Portability</th></tr></thead>
+          <tbody>
+            <tr><td>Dynamic mapping</td><td>Any template property becomes searchable with no code change</td><td><span class="chip c-direct">Better in PDB</span></td></tr>
+            <tr><td>Parent/child join</td><td>Full text separate from entity, one child per entity</td><td><span class="chip c-rework">SQL join / table</span></td></tr>
+            <tr><td>Nested documents + <code>reverse_nested</code></td><td>Nested properties, permissions facets</td><td><span class="chip c-gap">No equivalent</span></td></tr>
+            <tr><td>Character filters</td><td>Stripping <code>[[page]]</code> markers</td><td><span class="chip c-gap">No equivalent</span></td></tr>
+            <tr><td>Global-scope aggs with per-facet filters</td><td>Self-excluding facet counts</td><td><span class="chip c-rework">N queries</span></td></tr>
+            <tr><td>Per-document analyzer selection</td><td>~30 languages via <code>fullText_&lt;lang&gt;</code></td><td><span class="chip c-rework">Column or index per language</span></td></tr>
+            <tr><td><code>query_string</code> grammar + validity probe</td><td>User-facing advanced search with silent fallback</td><td><span class="chip c-rework">Different grammar</span></td></tr>
+            <tr><td>FVH highlighting w/ term vectors</td><td>Snippets with offsets</td><td><span class="chip c-direct"><code>pdb.snippet</code></span></td></tr>
+            <tr><td><code>search_as_you_type</code></td><td>Title typeahead</td><td><span class="chip c-direct">edge_ngram</span></td></tr>
+            <tr><td>ICU collation sort keys</td><td>Locale-correct alphabetical sort</td><td><span class="chip c-direct">PG collations</span></td></tr>
+            <tr><td>Geo queries</td><td><em>Nothing</em> — only <code>exists</code> checks</td><td><span class="chip c-none">N/A</span></td></tr>
+            <tr><td>Vector / semantic search</td><td><em>Nothing</em> — no embeddings anywhere</td><td><span class="chip c-none">N/A</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>The last two rows are worth pausing on. The ParadeDB comparison table flags "geospatial ❌ use PostGIS" as a gap, but Uwazi does not run a single geo query — the map view filters on field <em>presence</em> and projects coordinates for the client to plot. Likewise there is no vector search to preserve, though ParadeDB would put hybrid search within reach if you ever want it.</p>
+    </section>
+
+    <section id="explosion">
+      <h2><span class="sec">§10</span>The mapping explosion, quantified</h2>
+      <hr class="lead-rule">
+      <p>Worth being precise, because it drives the whole discussion.</p>
+      <div class="tw">
+        <table>
+          <thead><tr><th>Property type</th><th>Leaf fields emitted</th><th>With <code>inherit</code></th></tr></thead>
+          <tbody>
+            <tr><td>text / markdown / generatedid</td><td>3 — object, <code>.value</code>, <code>.value.sort</code></td><td>6</td></tr>
+            <tr><td>numeric / date / multidate</td><td>3</td><td>6</td></tr>
+            <tr><td>daterange / multidaterange</td><td>6 — from/to each with a sort field</td><td>12</td></tr>
+            <tr><td>select / multiselect</td><td>8 — label, value, and the whole <code>parent</code> subtree again</td><td>16</td></tr>
+            <tr><td>relationship</td><td>6</td><td>12</td></tr>
+            <tr><td>geolocation</td><td>6 — label, lat, lon</td><td>12</td></tr>
+            <tr><td>link</td><td>5</td><td>10</td></tr>
+            <tr><td>nested</td><td>Unbounded — sub-keys are dynamically mapped via <code>*_nested.value.*</code></td><td>—</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>Against <code>index.mapping.total_fields.limit: 4500</code> and a base mapping of roughly 60 fields, that puts the ceiling at <strong>somewhere between 550 and 900 unique property names</strong> per tenant, depending on the type mix — and lower if nested properties are in play.</p>
+
+      <h3>Two things make it worse than the raw number suggests</h3>
+      <p><strong>Name collisions across templates.</strong> <code>elasticMapFactory</code> keys on <code>property.name</code> globally. Two templates that both define a property called <code>date</code>, one as <code>date</code> and one as <code>text</code>, produce a last-write-wins mapping — silently. This is a latent correctness bug in the current design independent of any migration.</p>
+      <p><strong>A multi-tenant index amplifies it.</strong> Merging tenants into one index means one mapping holding the union of every tenant's property names against the same 4,500 ceiling. Unless you simultaneously restructure metadata into a key-value or <code>flattened</code> model — which costs you per-field analysis, per-field sorting and typed range queries — the multi-tenant direction moves the wrong way on precisely the constraint you named as your main pain. Operationally it's attractive; on this specific problem it is not the fix.</p>
+
+      <h3>What ParadeDB does instead — and where the schema comes back</h3>
+      <p>Indexing a <code>JSONB</code> column auto-discovers every sub-path and infers each one's type. There is no per-path schema entry, so there is nothing analogous to <code>total_fields.limit</code> to run out of. But "schema-free" only covers part of what the ES mapping is doing for you, and the rest comes back as explicit declarations.</p>
+
+      <div class="tw">
+        <table>
+          <thead><tr><th>What the ES mapping provides</th><th>Under a plain JSONB index</th></tr></thead>
+          <tbody>
+            <tr><td>Match / filter on any property</td><td>Free, no declaration, no ceiling <span class="chip c-direct">Direct</span></td></tr>
+            <tr><td><code>GROUP BY</code> a property (facets)</td><td>Supported via <code>metadata-&gt;&gt;'key'</code>, but the JSON field must use the <code>literal</code> tokenizer — which conflicts with wanting it full-text tokenized, so you need a second aliased tokenizer <span class="chip c-rework">Rework</span></td></tr>
+            <tr><td><code>ORDER BY</code> a property</td><td><strong>Not supported directly.</strong> "Ordering by a JSON subfield directly is not yet supported." The workaround is a declared, cast, aliased index expression <em>per sortable path</em> <span class="chip c-gap">Gap</span></td></tr>
+            <tr><td>Per-property analyzer</td><td>One tokenizer for the whole column. Per-property analysis requires indexing that path as its own expression <span class="chip c-rework">Rework</span></td></tr>
+            <tr><td>Add a property online</td><td>Free for match/filter. Adding a sortable or specially-analyzed path means changing the index definition, which means <code>REINDEX</code> — where ES does an additive, online <code>putMapping</code> <span class="chip c-gap">Gap</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="src">paradedb.com/docs — indexing/indexing-json, sorting/topk §"Sorting by JSON", aggregates/bucket/terms, welcome/limitations</p>
+
+      <p>That sorting limitation lands directly on Uwazi. <a href="app/react/Library/helpers/sortComponets.ts">sortComponets.ts:45-47</a> puts <em>every</em> text, date, numeric or select property with <code>filter: true</code> into the library's sort dropdown — an unbounded, user-controlled set. A pure-JSONB design would need one declared index expression per such property and a full <code>REINDEX</code> whenever an editor ticks the filter box on a new one. That is a worse operational story than today's live <code>putMapping</code>, not a better one.</p>
+
+      <div class="note">
+        <span class="label">Why the design in §11 is shaped the way it is</span>
+        <p>This is precisely why the proposal routes sorting and faceting through the normalized <code>entity_metadata_values</code> table rather than through the JSONB column. That table has <em>fixed</em> columns — <code>value_text</code>, <code>value_num</code>, <code>label</code> — so sorting and grouping by any property needs no per-property declaration and no <code>REINDEX</code>, no matter how many properties a tenant defines. JSONB then carries only what it is genuinely good at: matching and filtering across an open-ended property set.</p>
+        <p>So the honest version of the headline claim is narrower than "no more mapping explosion": ParadeDB removes the ceiling, but the normalized values table is what does the load-bearing work, and without it a ParadeDB migration would trade one schema-management problem for a worse one.</p>
+      </div>
+
+      <h4>Three tradeoffs the docs don't cover</h4>
+      <p>These follow from Tantivy, which is what actually implements the index. ParadeDB's documentation is silent on all three, so treat them as things to measure rather than facts to plan around:</p>
+      <ul>
+        <li><strong>Term dictionary cost.</strong> Tantivy encodes a JSON term as path + type marker + value, so the path string is carried inline in every term. Index size scales with distinct <em>(path, value)</em> pairs rather than with a compact field table. Many properties with high-cardinality values is the expensive case.</li>
+        <li><strong>Type inference is per value, not per path.</strong> If <code>metadata.date</code> holds a number in one entity and a string in another, those become separately typed terms under the same path, and a query for one type will not see the other. Uwazi is already exposed to this: property names are global across templates today, so same-name-different-type collisions exist in the data.</li>
+        <li><strong>Arrays of objects are undocumented territory.</strong> Uwazi metadata is <code>{ prop: [{ value, label, … }] }</code>. Exactly how a JSON path under an array of objects is indexed, and whether <code>metadata.prop.value</code> behaves as a proper multi-valued field, is not stated anywhere in the docs. This needs a direct experiment before anyone commits to a design.</li>
+      </ul>
+    </section>
+
+    <!-- ============ PART III ============ -->
+
+    <section id="schema">
+      <h2><span class="sec">§11</span>What a ParadeDB design looks like</h2>
+      <hr class="lead-rule">
+      <p>Three tables, two of them new. <code>entities</code> already exists with the right columns.</p>
+
+      <h3>Entities — index the existing table</h3>
+      <pre><code>CREATE INDEX entities_search ON entities USING paradedb (
+  _id,
+  (title::pdb.unicode_words('columnar=true')),
+  (title::pdb.edge_ngram('alias=title_sayt')),   -- typeahead
+  (title::pdb.literal('alias=title_sort')),      -- ORDER BY / GROUP BY
+  metadata,                                      -- every property, auto-discovered
+  template, language, published, "sharedId",
+  "creationDate", "editDate", generatedToc,
+  _perm_read_refs
+) WITH (key_field = '_id');</code></pre>
+      <p>Text and JSON fields must be <code>columnar</code> to be usable in <code>ORDER BY</code>, <code>GROUP BY</code> or a pushed-down join; the <code>literal</code> tokenizer is columnar by default. Multiple tokenizers per column via <code>alias=</code> is the direct analogue of ES multi-fields, and it is how <code>title.sort</code>, <code>title.sayt</code> and <code>title</code> coexist today.</p>
+
+      <h3>Full text — one row per page, not per entity</h3>
+      <pre><code>CREATE TABLE entity_fulltext (
+  tenant_id  TEXT NOT NULL,
+  entity_id  TEXT NOT NULL,
+  file_id    TEXT NOT NULL,
+  page       INTEGER NOT NULL,
+  language   TEXT NOT NULL,
+  contents   TEXT NOT NULL,
+  PRIMARY KEY (tenant_id, file_id, page)
+);</code></pre>
+      <p>This replaces the parent/child join <em>and</em> the <code>[[page]]</code> marker hack in one move: the page number becomes a column instead of an in-band annotation, and snippets come from <code>pdb.snippets(contents)</code> on the matching row. Per-language analysis is handled either by one aliased tokenizer per language family on <code>contents</code>, or by partial indexes keyed on <code>language</code>. Entity-level matching becomes <code>EXISTS (SELECT 1 FROM entity_fulltext …)</code> or a join with <code>MAX(pdb.score(...))</code> for <code>score_mode: max</code>.</p>
+
+      <h3>Metadata values — normalized, for faceting</h3>
+      <pre><code>CREATE TABLE entity_metadata_values (
+  tenant_id   TEXT NOT NULL,
+  entity_id   TEXT NOT NULL,
+  property    TEXT NOT NULL,      -- 'country'
+  path        TEXT NOT NULL,      -- 'value' | 'inheritedValue.value' | 'parent.value'
+  value_text  TEXT,
+  value_num   DOUBLE PRECISION,
+  label       TEXT,
+  parent_value TEXT,
+  ordinal     INTEGER             -- array position: recovers nested-strict semantics
+);</code></pre>
+      <p>This is the piece that does the real work. The JSONB column alone cannot serve multi-valued facets — <code>GROUP BY metadata-&gt;&gt;'x'</code> works for scalars, not for arrays of objects. A derived, trigger-maintained (or job-maintained) value table gives you: facet counts as ordinary <code>GROUP BY</code>, AND-mode select filters as <code>HAVING count(*) = n</code>, nested-strict filters via matching <code>ordinal</code>, and thesaurus parent/child rollups as a self-join — all with real indexes.</p>
+
+      <p>This is essentially the "redesign the system of record" option you raised, and the honest answer is that <strong>it is required for ParadeDB and it would also help on Elasticsearch</strong>. It is not ParadeDB-specific work.</p>
+    </section>
+
+    <section id="mapping">
+      <h2><span class="sec">§12</span>Pattern by pattern</h2>
+      <hr class="lead-rule">
+      <div class="legend">
+        <span class="chip c-direct">Direct</span> equivalent exists
+        <span class="chip c-rework">Rework</span> works, different shape
+        <span class="chip c-gap">Gap</span> needs a data-model change or is unavailable
+      </div>
+      <div class="tw">
+        <table>
+          <thead><tr><th>Pattern</th><th>ParadeDB approach</th><th></th></tr></thead>
+          <tbody>
+            <tr><td>BM25 relevance + scoring</td><td><code>pdb.score()</code>, <code>ORDER BY score DESC</code></td><td><span class="chip c-direct">Direct</span></td></tr>
+            <tr><td>Boost non-fulltext fields ×2</td><td><code>pdb.boost()</code> cast</td><td><span class="chip c-direct">Direct</span></td></tr>
+            <tr><td>Phrase, wildcard, regex, proximity, fuzzy</td><td><code>###</code>, <code>pdb.regex</code>, <code>##</code>, <code>pdb.fuzzy</code> (max edit distance 2)</td><td><span class="chip c-direct">Direct</span></td></tr>
+            <tr><td><code>query_string</code> user grammar</td><td><code>pdb.parse(..., lenient =&gt; true)</code> — Tantivy grammar, not Lucene. Field syntax and boolean operators carry over; fuzzy and boost operator support needs verifying against your actual saved queries</td><td><span class="chip c-rework">Rework</span></td></tr>
+            <tr><td><code>validateQuery</code> parser probe</td><td>No equivalent; <code>lenient =&gt; true</code> is the substitute for the graceful-degradation behaviour</td><td><span class="chip c-rework">Rework</span></td></tr>
+            <tr><td>Typeahead over <code>search_as_you_type</code></td><td><code>edge_ngram</code> tokenizer on an aliased field, or fuzzy prefix</td><td><span class="chip c-direct">Direct</span></td></tr>
+            <tr><td>Facet typeahead (<code>wildcard</code> on label)</td><td><code>ILIKE</code> or <code>pdb.regex</code> on <code>entity_metadata_values.label</code></td><td><span class="chip c-direct">Direct</span></td></tr>
+            <tr><td>All term / range / exists / missing filters</td><td>Ordinary SQL <code>WHERE</code>; pushed down when the query carries a ParadeDB operator</td><td><span class="chip c-direct">Direct</span></td></tr>
+            <tr><td>Select AND-mode</td><td><code>GROUP BY entity_id HAVING count(DISTINCT value) = n</code></td><td><span class="chip c-rework">Rework</span></td></tr>
+            <tr><td>Thesaurus parent expansion</td><td>Already done in app code before the query; unchanged</td><td><span class="chip c-direct">Direct</span></td></tr>
+            <tr><td>Nested properties (strict &amp; loose)</td><td>No nested documents. Recovered via <code>ordinal</code> on the values table — same element = same ordinal</td><td><span class="chip c-gap">Gap</span></td></tr>
+            <tr><td>Parent/child full text</td><td>Join to <code>entity_fulltext</code>. Pushdown requires all tables indexed, an equi-join, and a <code>LIMIT</code></td><td><span class="chip c-rework">Rework</span></td></tr>
+            <tr><td>Per-facet self-excluding counts</td><td>One <code>GROUP BY</code> query per facet, or one query with per-facet <code>FILTER (WHERE …)</code>. Not one round trip</td><td><span class="chip c-rework">Rework</span></td></tr>
+            <tr><td>Total-count + results in one shot</td><td><code>pdb.agg(...) OVER ()</code> faceted query — single table only</td><td><span class="chip c-direct">Direct</span></td></tr>
+            <tr><td><code>reverse_nested</code> unique-entity counts</td><td><code>COUNT(DISTINCT entity_id)</code></td><td><span class="chip c-rework">Rework</span></td></tr>
+            <tr><td>Permission &amp; published filtering</td><td>Native RLS, already written (migrations 010/011)</td><td><span class="chip c-direct">Direct</span></td></tr>
+            <tr><td>Sorting incl. locale collation</td><td><code>ORDER BY</code> on a <code>literal</code>-tokenized columnar field; Postgres ICU collations replace <code>icu_collation_keyword</code></td><td><span class="chip c-direct">Direct</span></td></tr>
+            <tr><td>Snippets with tags</td><td><code>pdb.snippet()</code> / <code>pdb.snippets()</code> with <code>start_tag</code> / <code>end_tag</code>, plus byte offsets ES can't give you</td><td><span class="chip c-direct">Direct</span></td></tr>
+            <tr><td>Snippet page numbers</td><td>Only via the per-page table — the marker approach cannot survive without character filters</td><td><span class="chip c-gap">Gap</span></td></tr>
+            <tr><td>Per-language stemming &amp; stopwords</td><td>20 stemmer languages, 15 stopword languages, Jieba/Lindera/ICU for CJK. Selected per index field, not per document</td><td><span class="chip c-rework">Rework</span></td></tr>
+            <tr><td>Mapping updates on template change</td><td>Free for match/filter on JSONB paths. A new <em>sortable</em> property needs no change under the values-table design, but would need an index-definition change and a <code>REINDEX</code> under a pure-JSONB design</td><td><span class="chip c-rework">Rework</span></td></tr>
+            <tr><td>Sort by an arbitrary metadata property</td><td>Not available on JSON sub-fields; served instead by the fixed <code>value_text</code> / <code>value_num</code> columns of the values table</td><td><span class="chip c-rework">Rework</span></td></tr>
+            <tr><td>Reindex / bulk index / delete-by-query</td><td><code>COPY</code>, <code>UPDATE</code>, <code>DELETE</code> — transactional, immediately visible, no refresh delay</td><td><span class="chip c-direct">Direct</span></td></tr>
+            <tr><td>Index-per-tenant</td><td>Keep <code>tenant_id</code> + RLS as today, or partition by tenant. Both work</td><td><span class="chip c-direct">Direct</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="gaps">
+      <h2><span class="sec">§13</span>The six real gaps</h2>
+      <hr class="lead-rule">
+
+      <h3>1. Character filters — no equivalent</h3>
+      <p>The <code>[[page]]</code> marker scheme has no port. Feeding marked-up text to any ParadeDB tokenizer puts page-number tokens into the index between every pair of words, which shifts term positions and breaks phrase and proximity queries on full text. <strong>Mitigation:</strong> the per-page table in §11. This also removes a scheme that inflates stored full text by roughly the length of the marker per word, so it is a net improvement — but it is a data-model migration touching PDF processing, indexing, and snippet assembly.</p>
+
+      <h3>2. Nested documents — no equivalent</h3>
+      <p>Both <code>strictNestedFilter</code> (all conditions must hit the same array element) and the four-level nested aggregation depend on ES nested docs. <strong>Mitigation:</strong> the <code>ordinal</code> column. Semantically sound, but it is a full reimplementation of two of the fiddliest code paths you have, and they are covered by tests you'll want to port carefully — <code>search.spec.js</code> has dedicated blocks for second-level nested fields and strict-nested behaviour.</p>
+
+      <h3>3. Facets are no longer one round trip</h3>
+      <p>ES computes every facet in a single request. In ParadeDB, self-excluding counts across a normalized values table means one aggregate per facet, and <code>pdb.agg()</code> is explicitly <em>not</em> pushed down across joins — so facet queries touching <code>entity_metadata_values</code> fall back to native Postgres execution unless expressed as plain SQL aggregates over indexed columns. <strong>This is the largest performance unknown in the whole evaluation and the thing to prototype first.</strong> Build the values table, load one large real tenant, and measure the library screen's facet panel. Everything else is predictable; this is not.</p>
+
+      <h3>4. Per-document analyzer selection</h3>
+      <p>ES picks the analyzer from the field name, so one index serves 30 languages with correct stemming per document. ParadeDB fixes the tokenizer per indexed field. Options: one aliased tokenizer per language family on <code>contents</code> (index size grows with the number of families); partial indexes per language; or ICU tokenization for everything, accepting weaker stemming for stemmed languages. There is a real quality/size tradeoff here that only your corpus can settle.</p>
+
+      <h3>5. Sorting and per-property analysis are not schema-free</h3>
+      <p>ParadeDB's docs state plainly that "ordering by a JSON subfield directly is not yet supported", and that the workaround is a declared, cast, aliased index expression per sortable path. Tokenizers are likewise per indexed field, so per-property analysis also means per-property declaration. Since index columns must be defined up front and changing them requires <code>REINDEX</code>, a design that leans on JSONB for sorting would replace ES's additive online <code>putMapping</code> with a full rebuild every time an editor makes a new property filterable. <strong>Mitigation:</strong> the values table (§11), whose fixed columns make this a non-issue — which is exactly why it is not optional. Worth noting Postgres also caps index definitions at 32 columns; past that you need composite types, a beta feature.</p>
+
+      <h3>6. Query grammar is Tantivy, not Lucene</h3>
+      <p>Any saved query, public API consumer, or documented advanced-search syntax written against <code>query_string</code> needs re-testing. The common cases — <code>field:term</code>, <code>AND</code>/<code>OR</code>/<code>NOT</code>, phrases, ranges — carry over. Anything relying on Lucene-specific operators may not. The V2 <code>title:x~2</code> lookup is the first thing to check.</p>
+
+      <div class="note warn">
+        <span class="label">Non-gaps worth striking off the list</span>
+        <p>Geospatial and vector search both show as gaps in ParadeDB's own ES comparison table, and neither applies — you run no geo queries and no vector queries. Function-score, decay functions and script scoring are also absent from ParadeDB and also unused here. Scroll and <code>search_after</code> are unsupported, and also unused: pagination is <code>from</code>/<code>size</code> throughout, with <code>limit: 9999</code> for map and relationships views.</p>
+      </div>
+    </section>
+
+    <section id="effort">
+      <h2><span class="sec">§14</span>Effort shape</h2>
+      <hr class="lead-rule">
+      <p>Rough sizing, assuming the Postgres migration continues on its current path. Treat these as relative weights, not calendar commitments.</p>
+      <div class="tw">
+        <table>
+          <thead><tr><th>Workstream</th><th>Weight</th><th>Notes</th></tr></thead>
+          <tbody>
+            <tr><td>Metadata values table + maintenance</td><td>Large</td><td>Trigger or job, backfill, ordinal semantics, inherited &amp; denormalized paths. Needed for facets, sorting and AND-mode filters</td></tr>
+            <tr><td>Facet engine rewrite</td><td>Large</td><td>Self-excluding counts, thesaurus grouping, permission facets, the 200-limit/missing/any post-processing contract</td></tr>
+            <tr><td>Full text re-model to per-page</td><td>Medium</td><td>PDF processing, index path, snippet assembly, language strategy</td></tr>
+            <tr><td>Query builder replacement</td><td>Medium</td><td>Two builders to replace; the filter shapes themselves are mostly mechanical</td></tr>
+            <tr><td>Nested property support</td><td>Medium</td><td>Small surface area, high fiddliness, well covered by existing tests</td></tr>
+            <tr><td>Permissions</td><td>Small</td><td>Already written as RLS; mostly deletion of query-builder code</td></tr>
+            <tr><td>Sorting, typeahead, pagination</td><td>Small</td><td>Direct equivalents</td></tr>
+            <tr><td>Ops: dual-write, shadow-read, cutover</td><td>Medium</td><td>Per-tenant cutover is feasible since tenancy is already a request-scoped concept</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>The counterweight is what disappears: an entire cluster to operate, version, and secure; the mapping-update-on-template-change path; the reindex-everything recovery procedure; the near-real-time refresh semantics; and the persistent class of bug where Mongo/Postgres and ES disagree. Search results become transactionally consistent with writes, which is a correctness property the current architecture cannot offer at any price.</p>
+    </section>
+
+    <section id="decision">
+      <h2><span class="sec">§15</span>How I'd frame the decision</h2>
+      <hr class="lead-rule">
+
+      <p><strong>The three options are not independent.</strong> The multi-tenant ES index, the ParadeDB move, and the "redesign the system of record" option interact:</p>
+      <ul>
+        <li>Multi-tenant ES <em>worsens</em> the mapping ceiling unless metadata is restructured first.</li>
+        <li>Restructuring metadata into a normalized value table fixes faceting and sorting cost on <em>either</em> backend, and is a prerequisite for ParadeDB.</li>
+        <li>ParadeDB without the restructure does not work — JSONB alone can't serve multi-valued facets, and can't sort by a property at all without a per-property index declaration that needs a <code>REINDEX</code> to add.</li>
+      </ul>
+      <p>So the metadata restructure is the common dependency, and it is the one piece of work that pays off regardless of which way the datastore decision goes. That makes it the obvious thing to do first, and doing it first also buys you a real measurement instead of an argument.</p>
+
+      <h3>The one experiment worth running before deciding</h3>
+      <p>Build <code>entity_metadata_values</code> against a copy of your largest real tenant, put a ParadeDB index on <code>entities</code> and that table, and reproduce exactly one screen: the library with its default facet panel, a text search, and a sort. Measure p50/p95 against the same query on the current ES cluster. That single comparison resolves the only genuinely unknown risk (§13.3) and de-risks the largest workstream (§14), and the table it produces is useful work either way.</p>
+
+      <h3>What I'd expect to find</h3>
+      <p>Full-text quality and latency will be fine — this workload is well within what ParadeDB is built for, and BM25 over a few million documents on one node is not exotic. The risk is concentrated entirely in faceting, and specifically in whether facet aggregates over the values table stay in the index or fall back to heap scans. If they push down, the migration is a meaningful but bounded project with a clear operational payoff. If they don't, you will need either denormalized facet-count tables or a materialized approach, and the calculus changes.</p>
+
+      <div class="note">
+        <span class="label">One thing to check regardless of the outcome</span>
+        <p>Every <code>terms</code> aggregation in the current system runs in <code>global</code> scope with <code>size: 2000</code>, once per filterable property. Before attributing library-screen latency to Elasticsearch, it's worth confirming how much of it is that. If a large share of your performance complaint is the aggregation shape rather than the engine, the same shape will be slow on ParadeDB too — and fixing it on ES is available today at a fraction of the cost.</p>
+      </div>
+    </section>
+  </main>
+</div>

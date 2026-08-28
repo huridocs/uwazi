@@ -1,0 +1,24 @@
+{
+  "fulltext + snippets": [
+    {
+      "concurrency": 1,
+      "completed": 191,
+      "errors": 0,
+      "qps": 95.5,
+      "p50": 8.652131,
+      "p95": 13.712311,
+      "p99": 14.768361,
+      "scaling": 1
+    },
+    {
+      "concurrency": 4,
+      "completed": 751,
+      "errors": 0,
+      "qps": 375.5,
+      "p50": 8.691726,
+      "p95": 13.649113,
+      "p99": 15.021574,
+      "scaling": 0.9829842931937173
+    }
+  ]
+}

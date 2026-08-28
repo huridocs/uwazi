@@ -1,0 +1,32 @@
+# Standalone ParadeDB instance for the search feasibility probes.
+# Deliberately separate from the repo's docker-compose.yml: different port,
+# different project, own volume — running these probes must not touch a
+# development database.
+services:
+  paradedb:
+    image: 'paradedb/paradedb:0.25.4-pg17'
+    container_name: uwazi-paradedb-probe
+    ports:
+      - '5433:5432'
+    environment:
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=admin
+      - POSTGRES_DB=paradedb_probe
+    command:
+      - postgres
+      # auto_explain captures the plan of anything slow, which is how a latency
+      # spike in the scale sweep gets tied back to a plan change.
+      - -c
+      - shared_preload_libraries=pg_search,pg_cron,auto_explain,pg_stat_statements
+      - -c
+      - auto_explain.log_min_duration=200ms
+      - -c
+      - auto_explain.log_analyze=on
+      - -c
+      - auto_explain.log_nested_statements=on
+    volumes:
+      - pdbdata:/var/lib/postgresql/data
+
+volumes:
+  pdbdata:
+    driver: local
