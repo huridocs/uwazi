@@ -1,5 +1,3 @@
-import type { DataRouter } from 'react-router';
-import 'cypress-real-events';
 import { mount } from 'cypress/react';
 import { createTemplatesSettingsTree } from './mountTemplatesSettings.js';
 
@@ -15,19 +13,23 @@ const suppressResizeObserverLoop = () => {
 const selectRowCheckbox = (label: string) => {
   cy.contains('[data-testid="settings-templates"] tbody tr', label)
     .find('input[type="checkbox"]')
-    .realClick();
+    .check();
+};
+
+const expectTemplatesSnapshot = (assertion: () => void) => {
+  cy.wrap(null).should(() => {
+    assertion();
+  });
 };
 
 describe('Settings Templates section services', () => {
   describe('list', () => {
     let templates: ReturnType<typeof createTemplatesSettingsTree>['templates'];
-    let router: DataRouter;
 
     beforeEach(() => {
       suppressResizeObserverLoop();
       const mounted = createTemplatesSettingsTree('/settings/templates');
       templates = mounted.templates;
-      router = mounted.router;
       mount(mounted.tree);
     });
 
@@ -50,13 +52,12 @@ describe('Settings Templates section services', () => {
     it('deletes a deletable template from the list', () => {
       selectRowCheckbox('Case');
       cy.get('[data-testid="settings-content-footer"]').should('contain', 'Selected');
-      cy.get('[data-testid="templates-delete"]').realClick();
+      cy.get('[data-testid="templates-delete"]').click();
       cy.get('[data-testid="accept-button"]').click();
       cy.get('[data-testid="modal"]').should('not.exist');
 
-      cy.wrap(router.revalidate());
       cy.get('[data-testid="settings-templates"] tbody').should('not.contain', 'Case');
-      cy.wrap(null).then(() => {
+      expectTemplatesSnapshot(() => {
         expect(
           templates
             .snapshot()
@@ -68,11 +69,15 @@ describe('Settings Templates section services', () => {
 
     it('sets a template as default', () => {
       cy.contains('[data-testid="settings-templates"] tbody tr', 'Case')
-        .contains('button', 'Set as default')
-        .click({ force: true });
+        .find('button')
+        .first()
+        .click();
 
-      cy.wrap(router.revalidate());
-      cy.wrap(null).then(() => {
+      cy.contains('[data-testid="settings-templates"] tbody tr', 'Case').should(
+        'contain',
+        'Default'
+      );
+      expectTemplatesSnapshot(() => {
         expect(templates.snapshot().find(item => item._id === 'template2')?.default).to.equal(true);
         expect(templates.snapshot().find(item => item._id === 'template1')?.default).to.equal(
           false
