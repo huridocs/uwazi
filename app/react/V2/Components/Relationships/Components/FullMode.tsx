@@ -11,8 +11,10 @@ type FullModeProps = {
   markerLayerHeight: number;
   activeRelationshipId?: string | null;
   onPointClick?: (marker: RelationshipMarker) => void;
+  onPointHover?: (marker: RelationshipMarker) => void;
   onMoreClick?: (markers: RelationshipMarker[]) => void;
   onClusterClick?: (markers: RelationshipMarker[]) => void;
+  onClusterHover?: (markers: RelationshipMarker[]) => void;
   documentClusters?: DocumentRelationshipGroup[];
 };
 
@@ -21,8 +23,10 @@ const FullModeComponent = ({
   markerLayerHeight,
   activeRelationshipId = null,
   onPointClick,
+  onPointHover,
   onMoreClick,
   onClusterClick,
+  onClusterHover,
   documentClusters,
 }: FullModeProps) => {
   const [openClusterKey, setOpenClusterKey] = useState<string | null>(null);
@@ -64,13 +68,11 @@ const FullModeComponent = ({
               onToggle={() => {
                 setOpenClusterKey(currentValue => (currentValue === key ? null : key));
               }}
-              onPointClick={reference => {
-                onPointClick?.(reference);
-              }}
+              onPointClick={reference => onPointClick?.(reference)}
+              onPointHover={onPointHover}
               onMoreClick={references => onMoreClick?.(references)}
-              onClusterClick={references => {
-                onClusterClick?.(references);
-              }}
+              onClusterClick={references => onClusterClick?.(references)}
+              onClusterHover={onClusterHover}
             />
           );
         }
@@ -87,6 +89,7 @@ const FullModeComponent = ({
               setOpenClusterKey(null);
               onPointClick?.(marker);
             }}
+            onHover={onPointHover}
           />
         );
       })}

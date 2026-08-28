@@ -115,6 +115,7 @@ const relationshipQueryFromEntity = (
     ...(fileId ? { fileId } : {}),
     hubRows: httpRelationshipsQueryService.compose(summary, fileId ? { anchors } : {}),
     anchorsLoaded: Boolean(fileId),
+    seedRevision: 0,
   };
 };
 

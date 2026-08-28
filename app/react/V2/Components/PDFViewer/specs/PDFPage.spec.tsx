@@ -254,7 +254,7 @@ describe('PDFPage', () => {
           throw new Error('expected page viewer');
         }
         lastPageView.current.renderingState = renderingState;
-        const cancelRendering = lastPageView.current.cancelRendering;
+        const { cancelRendering } = lastPageView.current;
 
         eventBus.dispatch('unmountpage', { pageNumber: 2 });
 
@@ -269,7 +269,7 @@ describe('PDFPage', () => {
         throw new Error('expected page viewer');
       }
       lastPageView.current.renderingState = 3;
-      const cancelRendering = lastPageView.current.cancelRendering;
+      const { cancelRendering } = lastPageView.current;
 
       eventBus.dispatch('unmountpage', { pageNumber: 2 });
 
