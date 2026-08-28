@@ -20,4 +20,3 @@ const inheritedTypeLayout = (inheritedType?: string): InheritedTypeLayout => {
 };
 
 export { inheritedTypeLayout };
-export type { InheritedTypeLayout };

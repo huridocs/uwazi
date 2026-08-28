@@ -74,4 +74,3 @@ const RelationshipField = <TFormValues extends FieldValues = FieldValues>({
 };
 
 export { RelationshipField };
-export type { InheritColumn };

@@ -1,5 +1,5 @@
-import type { PropertyValueSchema } from '#shared/types/commonTypes.js';
-import type { Entity, MetadataObjectSchema } from '#V2/api/entities/types.js';
+import type { Entity } from '#V2/api/entities/types.js';
+import { toMetadataObjectSchema } from './EntityEditor/functions/toMetadataObjectSchema.js';
 import {
   formatDateProperty,
   formatGeolocationProperty,
@@ -17,41 +17,6 @@ import type {
 
 const INHERITED = 'inherited';
 
-const isLatLon = (value: object): value is { lat: number; lon: number } =>
-  'lat' in value &&
-  'lon' in value &&
-  typeof value.lat === 'number' &&
-  typeof value.lon === 'number';
-
-const isPropertyValueSchema = (value: unknown): value is PropertyValueSchema => {
-  if (value === null) return true;
-  if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') {
-    return true;
-  }
-  if (Array.isArray(value)) {
-    return value.every(item => typeof item === 'object' && item !== null && isLatLon(item));
-  }
-  if (typeof value !== 'object') return false;
-  if ('url' in value && typeof value.url === 'string') return true;
-  if ('from' in value || 'to' in value) return true;
-  return isLatLon(value);
-};
-
-const toMetadataObjectSchema = (value: MetadataValue): MetadataObjectSchema => {
-  const entry: MetadataObjectSchema = {
-    value: isPropertyValueSchema(value.value) ? value.value : null,
-  };
-  if (typeof value.label === 'string') entry.label = value.label;
-  if (typeof value.type === 'string') entry.type = value.type;
-  if (value.parent && typeof value.parent.label === 'string') {
-    entry.parent = {
-      label: value.parent.label,
-      value: String(value.parent.value ?? ''),
-    };
-  }
-  return entry;
-};
-
 const inheritedField = (
   type: NonNullable<MetadataValue['inheritedType']>
 ): BaseMetadataProperty => ({
@@ -67,7 +32,7 @@ const inheritedMetadata = (values: MetadataValue[]): NonNullable<Entity['metadat
   [INHERITED]: values.map(toMetadataObjectSchema),
 });
 
-const stubEntity = (values: MetadataValue[]): Entity => ({
+const stubEntity = (metadata: NonNullable<Entity['metadata']>): Entity => ({
   _id: '',
   sharedId: '',
   language: 'en',
@@ -75,7 +40,7 @@ const stubEntity = (values: MetadataValue[]): Entity => ({
   template: '',
   creationDate: 0,
   user: '',
-  metadata: inheritedMetadata(values),
+  metadata,
   relations: [],
 });
 
@@ -89,7 +54,7 @@ const formatInheritedCellProperty = (
 
   const field = inheritedField(inheritedType);
   const metadata = inheritedMetadata(values);
-  const entity = stubEntity(values);
+  const entity = stubEntity(metadata);
 
   switch (inheritedType) {
     case 'text':

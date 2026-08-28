@@ -1,12 +1,12 @@
 import type { ReactNode } from 'react';
 import type { PropertyTypeSchema } from '#shared/types/commonTypes.js';
-import { propertyTypes } from '#shared/propertyTypes.js';
 import type { Entity } from '#V2/api/entities/types.js';
 import {
   inheritedCellContent,
   type InheritedCellContentOptions,
 } from './Components/inheritedCellContent.js';
 import type { OpenEntityTarget } from './Components/ConnectionPills.js';
+import { isPropertyType } from './isPropertyType.js';
 
 type InheritColumnTemplate = {
   _id?: string;
@@ -30,10 +30,6 @@ type InheritColumn = {
   cellsByEntityId?: Record<string, ReactNode>;
 };
 
-const PROPERTY_TYPES = new Set<string>(Object.values(propertyTypes));
-
-const isPropertyType = (value: string): value is PropertyTypeSchema => PROPERTY_TYPES.has(value);
-
 const inheritedPropertyOnTarget = (
   property: InheritColumnProperty,
   templates: InheritColumnTemplate[]
@@ -43,14 +39,6 @@ const inheritedPropertyOnTarget = (
   const targetTemplate = templates.find(template => template._id === property.content);
   return targetTemplate?.properties?.find(candidate => candidate._id === inheritPropertyId);
 };
-
-const inheritTargetTemplateIdFor = (
-  candidate: InheritColumnProperty,
-  templates: InheritColumnTemplate[]
-): string | undefined =>
-  candidate.inherit?.type === 'relationship'
-    ? inheritedPropertyOnTarget(candidate, templates)?.content
-    : undefined;
 
 const relationshipGroupKey = (property: { content?: string; relationType?: string }): string =>
   `${property.content ?? ''}::${property.relationType ?? ''}`;
@@ -77,10 +65,12 @@ const buildInheritColumns = (
     )
     .map(candidate => {
       const values = sourceMetadata?.[candidate.name];
-      const inheritTargetTemplateId = inheritTargetTemplateIdFor(candidate, templates);
+      const inheritedTarget = inheritedPropertyOnTarget(candidate, templates);
+      const inheritTargetTemplateId =
+        candidate.inherit?.type === 'relationship' ? inheritedTarget?.content : undefined;
       const cellOptions: InheritedCellContentOptions = {
-        onOpenEntity,
-        inheritTargetTemplateId,
+        ...(onOpenEntity ? { onOpenEntity } : {}),
+        ...(inheritTargetTemplateId ? { inheritTargetTemplateId } : {}),
       };
       const cellsByEntityId: Record<string, ReactNode> = {};
       (values ?? []).forEach(row => {
@@ -91,7 +81,7 @@ const buildInheritColumns = (
       });
       const inheritType = candidate.inherit?.type;
       return {
-        label: inheritColumnLabel(candidate, templates),
+        label: inheritedTarget?.label ?? candidate.label,
         ...(inheritType && isPropertyType(inheritType) ? { inheritedType: inheritType } : {}),
         cellsByEntityId,
       };

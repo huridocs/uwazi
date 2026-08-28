@@ -62,6 +62,17 @@ const toInheritColumnProperty = (
   inherit: templateProperty?.inherit,
 });
 
+const groupKeyForField = (
+  field: RelationshipMetadataProperty,
+  templatePropertyById: Map<string, ClientProperty>
+): string => {
+  const templateProperty = templatePropertyById.get(field._id);
+  return relationshipGroupKey({
+    content: templateProperty?.content,
+    relationType: templateProperty?.relationType,
+  });
+};
+
 const linkOnlyCard = (field: RelationshipMetadataProperty, ctx: CardRenderContext): ReactNode => {
   const templateProperty = ctx.templatePropertyById.get(field._id);
   return (
@@ -143,11 +154,7 @@ const buildRelationshipCardNodes = ({
   const inheritingByGroup = new Map<string, RelationshipMetadataProperty[]>();
   linked.forEach(field => {
     if (!isInheritingRelationship(field)) return;
-    const templateProperty = templatePropertyById.get(field._id);
-    const groupKey = relationshipGroupKey({
-      content: templateProperty?.content,
-      relationType: templateProperty?.relationType,
-    });
+    const groupKey = groupKeyForField(field, templatePropertyById);
     const group = inheritingByGroup.get(groupKey);
     if (group) group.push(field);
     else inheritingByGroup.set(groupKey, [field]);
@@ -162,11 +169,7 @@ const buildRelationshipCardNodes = ({
       return;
     }
 
-    const templateProperty = templatePropertyById.get(field._id);
-    const groupKey = relationshipGroupKey({
-      content: templateProperty?.content,
-      relationType: templateProperty?.relationType,
-    });
+    const groupKey = groupKeyForField(field, templatePropertyById);
     if (seenInheritGroups.has(groupKey)) {
       return;
     }

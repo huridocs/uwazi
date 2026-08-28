@@ -220,4 +220,4 @@ const RelationshipFieldEditor = ({
 };
 
 export { RelationshipFieldEditor };
-export type { RelationshipFieldEditorProps, InheritColumn };
+export type { RelationshipFieldEditorProps };

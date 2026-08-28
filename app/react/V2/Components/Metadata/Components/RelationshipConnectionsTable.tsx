@@ -16,6 +16,9 @@ type RelationshipTableColumn = {
 const inheritedCellClass = (inheritedType?: string) =>
   `${inheritedTypeLayout(inheritedType).minWidthClass} border-s border-border/40 px-3 py-1.5 align-middle`;
 
+const inheritColumnHeaderClass = (inheritedType?: string) =>
+  `${inheritedTypeLayout(inheritedType).minWidthClass} whitespace-nowrap px-3 py-1.5 text-start font-medium`;
+
 type RelationshipTableRow = {
   id: string;
   label: string;
@@ -104,10 +107,7 @@ const RelationshipConnectionsTableComponent = ({
                 <Translate>Entity</Translate>
               </th>
               {columns.map(column => (
-                <th
-                  key={column.label}
-                  className={`${inheritedTypeLayout(column.inheritedType).minWidthClass} whitespace-nowrap px-3 py-1.5 text-start font-medium`}
-                >
+                <th key={column.label} className={inheritColumnHeaderClass(column.inheritedType)}>
                   <span className="inline-flex items-center gap-1">
                     <LinkIcon className="h-2.5 w-2.5 text-carbon" aria-hidden />
                     <Translate context={translationContext}>{column.label}</Translate>

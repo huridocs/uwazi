@@ -1,6 +1,6 @@
 import React, { type ReactNode } from 'react';
-import type { PropertyTypeSchema } from '#shared/types/commonTypes.js';
 import { ConnectionPills, type OpenEntityTarget } from './ConnectionPills.js';
+import { isPropertyType } from '../isPropertyType.js';
 import { relationshipEntityValuesFromMetadata } from '#V2/formatters/metadata/relationshipEntityValue.js';
 import type { MetadataValue } from '#V2/formatters/types.js';
 import { resolveInheritedRelationship } from '#V2/formatters/metadata/resolvePropertyMetadataValues.js';
@@ -14,32 +14,6 @@ type InheritedRow = {
   parent?: MetadataValue['parent'];
   inheritedType?: unknown;
   inheritedValue?: InheritedRow[];
-};
-
-const isPropertyType = (value: string): value is PropertyTypeSchema => {
-  switch (value) {
-    case 'date':
-    case 'daterange':
-    case 'geolocation':
-    case 'image':
-    case 'link':
-    case 'markdown':
-    case 'media':
-    case 'multidate':
-    case 'multidaterange':
-    case 'multiselect':
-    case 'nested':
-    case 'numeric':
-    case 'preview':
-    case 'relationship':
-    case 'select':
-    case 'text':
-    case 'generatedid':
-    case 'newRelationship':
-      return true;
-    default:
-      return false;
-  }
 };
 
 const readInheritedRows = (input: unknown): InheritedRow[] => {
@@ -130,11 +104,7 @@ const inheritedCellContent = (
   }
 
   if (flattened.inheritedType === 'relationship') {
-    const entityItems = flattened.values.filter(
-      (item): item is MetadataValue & { value: string } =>
-        typeof item.value === 'string' && item.value.length > 0
-    );
-    const pillValues = relationshipEntityValuesFromMetadata(entityItems, {
+    const pillValues = relationshipEntityValuesFromMetadata(flattened.values, {
       defaultTemplateId: options.inheritTargetTemplateId,
       titleFallback: 'sharedId',
     });

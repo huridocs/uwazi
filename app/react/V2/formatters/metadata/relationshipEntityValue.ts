@@ -44,12 +44,12 @@ const relationshipEntityValueFromMetadata = (
 ): RelationshipEntityValue | undefined => {
   if (typeof item.value !== 'string' || !item.value) return undefined;
   const sharedId = item.value;
-  const title =
-    typeof item.label === 'string' && item.label.length > 0
-      ? item.label
-      : options.titleFallback === 'empty'
-        ? ''
-        : sharedId;
+  let title = sharedId;
+  if (typeof item.label === 'string' && item.label.length > 0) {
+    title = item.label;
+  } else if (options.titleFallback === 'empty') {
+    title = '';
+  }
   const templateId = templateIdForItem(item, sharedId, options);
   const icon = readRelationshipIcon(item.icon);
   return {
@@ -70,9 +70,5 @@ const relationshipEntityValuesFromMetadata = (
     return value ? [value] : [];
   });
 
-export {
-  relationshipEntityValueFromMetadata,
-  relationshipEntityValuesFromMetadata,
-  readRelationshipIcon,
-};
+export { relationshipEntityValueFromMetadata, relationshipEntityValuesFromMetadata };
 export type { RelationshipEntityMappingOptions, RelationshipEntityValue };
