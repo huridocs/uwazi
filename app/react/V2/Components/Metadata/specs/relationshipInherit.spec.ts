@@ -68,6 +68,27 @@ describe('buildInheritColumns', () => {
     ]);
   });
 
+  it('should map empty inheritedValue cells to undefined for dash fallback', () => {
+    const columns = buildInheritColumns(metadataProperties[0], metadataProperties, templates, {
+      inherited_tags: [{ value: 'entity-1' }, { value: 'entity-2', inheritedValue: [] }],
+    });
+    expect(columns).toHaveLength(1);
+    expect(columns[0].label).toBe('Inherited label');
+    expect(columns[0].cellsByEntityId).toEqual({
+      'entity-1': undefined,
+      'entity-2': undefined,
+    });
+  });
+
+  it('should keep an empty cellsByEntityId when source metadata is missing', () => {
+    expect(buildInheritColumns(metadataProperties[0], metadataProperties, templates)).toEqual([
+      {
+        label: 'Inherited label',
+        cellsByEntityId: {},
+      },
+    ]);
+  });
+
   it('should set inheritedType from inherit.type for visual columns', () => {
     const geoProp: InheritColumnProperty = {
       _id: 'geo-rel',

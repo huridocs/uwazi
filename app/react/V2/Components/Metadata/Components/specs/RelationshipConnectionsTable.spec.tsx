@@ -67,4 +67,20 @@ describe('RelationshipConnectionsTable layout', () => {
     expect(headers[2].className).toContain('min-w-64');
     expect(headers[3].className).toContain('min-w-48');
   });
+
+  it('renders an em dash when inherited cells are empty', () => {
+    renderTable([{ label: 'Country', cellsByEntityId: {} }]);
+    const row = screen.getByText('Alpha').closest('tr') as HTMLElement;
+    expect(within(row).getByText('—')).toBeInTheDocument();
+  });
+
+  it('exposes column scope and a screen-reader caption', () => {
+    const { container } = renderTable([{ label: 'Country', cellsByEntityId: { e1: 'Kenya' } }]);
+    const table = container.querySelector('table');
+    expect(table?.querySelector('caption')?.textContent).toBe('Connected entities — Country');
+    const headers = within(table as HTMLElement).getAllByRole('columnheader');
+    headers.forEach(header => {
+      expect(header).toHaveAttribute('scope', 'col');
+    });
+  });
 });

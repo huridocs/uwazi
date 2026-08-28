@@ -70,13 +70,14 @@ const Relationship = ({
         ]
       : []);
 
-  const resolvedInheritLabels =
-    inheritLabels ??
-    (columns.length > 0
-      ? columns.map(column => column.label)
-      : inheritLabel
-        ? [inheritLabel]
-        : undefined);
+  let resolvedInheritLabels = inheritLabels;
+  if (!resolvedInheritLabels) {
+    if (columns.length > 0) {
+      resolvedInheritLabels = columns.map(column => column.label);
+    } else if (inheritLabel) {
+      resolvedInheritLabels = [inheritLabel];
+    }
+  }
   const showsInheritedTable = columns.length > 0;
 
   return (

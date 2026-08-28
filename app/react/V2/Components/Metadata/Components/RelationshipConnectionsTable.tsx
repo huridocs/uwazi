@@ -101,20 +101,30 @@ const RelationshipConnectionsTableComponent = ({
     <div className="overflow-hidden rounded-md border border-border">
       <div className="overflow-x-auto">
         <table className="w-max min-w-full border-collapse text-sm">
+          <caption className="sr-only">
+            <Translate>Connected entities</Translate>
+            {columns.length > 0 ? ` — ${columns.map(column => column.label).join(', ')}` : null}
+          </caption>
           <thead>
             <tr className="text-[11px] uppercase tracking-wide text-ink-tertiary">
-              <th className="px-3 py-1.5 text-start font-medium">
+              <th scope="col" className="px-3 py-1.5 text-start font-medium">
                 <Translate>Entity</Translate>
               </th>
               {columns.map(column => (
-                <th key={column.label} className={inheritColumnHeaderClass(column.inheritedType)}>
+                <th
+                  key={column.label}
+                  scope="col"
+                  className={inheritColumnHeaderClass(column.inheritedType)}
+                >
                   <span className="inline-flex items-center gap-1">
                     <LinkIcon className="h-2.5 w-2.5 text-carbon" aria-hidden />
                     <Translate context={translationContext}>{column.label}</Translate>
                   </span>
                 </th>
               ))}
-              {actionCol ? <th className="sticky right-0 w-0 bg-paper px-2" aria-hidden /> : null}
+              {actionCol ? (
+                <th scope="col" className="sticky right-0 w-0 bg-paper px-2" aria-hidden />
+              ) : null}
             </tr>
           </thead>
           <tbody>
