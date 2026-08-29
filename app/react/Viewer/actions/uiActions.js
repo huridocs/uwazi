@@ -129,7 +129,7 @@ export function highlightSnippet(snippet) {
 }
 
 export function scrollToPage(page, duration = 50, force = false) {
-  scroller.to(`.document-viewer div#page-${page}`, '.document-viewer', {
+  void scroller.to(`.document-viewer div#page-${page}`, '.document-viewer', {
     duration,
     dividerOffset: 1,
     offset: 50,
@@ -138,7 +138,7 @@ export function scrollToPage(page, duration = 50, force = false) {
 }
 
 export function scrollTomark() {
-  scroller.to('.document-viewer mark', '.document-viewer', { duration: 0 });
+  void scroller.to('.document-viewer mark', '.document-viewer', { duration: 0 });
 }
 
 export async function scrollToToc(toc) {
@@ -237,7 +237,7 @@ export function activateReference(
     dispatch(actions.set('viewer.sidepanel.tab', tabName));
     if (!delayActivation) {
       setTimeout(() => {
-        scrollTo(connection);
+        void scrollTo(connection);
       });
     }
   };

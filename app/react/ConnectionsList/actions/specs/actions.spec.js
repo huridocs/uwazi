@@ -47,7 +47,7 @@ describe('ConnectionsList actions', () => {
     );
   });
 
-  function checkLoadAllReferences(done, argPos = 0) {
+  function expectLoadAllReferences(argPos = 0) {
     expect(dispatch.calls.argsFor(argPos)[0].type).toBe('relationships/list/filters/SET');
     expect(dispatch.calls.argsFor(argPos)[0].value.toJS()).toEqual({
       filter: 'filter',
@@ -61,7 +61,6 @@ describe('ConnectionsList actions', () => {
       type: 'relationships/list/searchResults/SET',
       value: 'searchResults',
     });
-    done();
   }
 
   describe('searchReferences', () => {
@@ -173,12 +172,9 @@ describe('ConnectionsList actions', () => {
   });
 
   describe('loadAllReferences', () => {
-    it('should set the limit 9999', done => {
-      actions
-        .loadAllReferences()(dispatch, getState)
-        .then(() => {
-          checkLoadAllReferences(done);
-        });
+    it('should set the limit 9999', async () => {
+      await actions.loadAllReferences()(dispatch, getState);
+      expectLoadAllReferences();
     });
   });
 
@@ -257,18 +253,15 @@ describe('ConnectionsList actions', () => {
 
   describe('switchView', () => {
     it('should set view to passed type', () => {
-      actions.switchView('specificType')(dispatch, getState);
+      void actions.switchView('specificType')(dispatch, getState);
       expect(dispatch.calls.argsFor(0)[0].type).toBe('relationships/list/view/SET');
       expect(dispatch.calls.argsFor(0)[0].value).toBe('specificType');
     });
 
     describe('When type is grpah', () => {
-      it('should load all references', done => {
-        actions
-          .switchView('graph')(dispatch, getState)
-          .then(() => {
-            checkLoadAllReferences(done, 1);
-          });
+      it('should load all references', async () => {
+        await actions.switchView('graph')(dispatch, getState);
+        expectLoadAllReferences(1);
       });
     });
   });

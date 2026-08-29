@@ -41,7 +41,7 @@ export function filterDocumentTypes(documentTypes, location, navigate) {
 }
 
 export function resetFilters(navigate, location) {
-  return (dispatch, getState) => {
+  return async (dispatch, getState) => {
     dispatch({ type: types.SET_LIBRARY_FILTERS, documentTypes: [], libraryFilters: [] });
     dispatch(
       formActions.load('library.search', {
@@ -51,7 +51,7 @@ export function resetFilters(navigate, location) {
         sort: 'creationDate',
       })
     );
-    libraryActions.searchDocuments({ navigate, location })(dispatch, getState);
+    return libraryActions.searchDocuments({ navigate, location })(dispatch, getState);
   };
 }
 
