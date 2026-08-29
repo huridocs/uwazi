@@ -1,10 +1,6 @@
 import { t } from '#app/I18N/index.js';
-import {
-  availableLanguages,
-  formatLanguageOptionLabel,
-  LanguageUtils,
-} from '#shared/language/index.js';
-import { OptionSchema } from '#V2/Components/Forms/index.js';
+import { availableLanguages, formatLanguageName, LanguageUtils } from '#shared/language/index.js';
+import type { LanguageSelectOption } from '#V2/Components/UI/index.js';
 import type { EntityFileRow } from './types.js';
 
 type FileLike = Pick<File, 'type' | 'name'>;
@@ -36,18 +32,26 @@ const fileSupportsLanguage = (file: FileLike) => {
   return ['pdf', 'doc', 'docx', 'txt', 'odt', 'rtf'].includes(extension ?? '');
 };
 
-const fileLanguageSelectOptions = (uiLocale: string): OptionSchema[] => {
+const fileLanguageOptionsByLocale = new Map<string, LanguageSelectOption[]>();
+
+const fileLanguageSelectOptions = (uiLocale: string): LanguageSelectOption[] => {
   const locale = uiLocale || 'en';
-  return [
+  const cached = fileLanguageOptionsByLocale.get(locale);
+  if (cached) {
+    return cached;
+  }
+  const options = [
     ...availableLanguages
       .map(item => ({
-        key: item.ISO639_3,
         value: item.ISO639_3,
-        label: formatLanguageOptionLabel(item.ISO639_1, locale),
+        label: formatLanguageName(item.ISO639_1, locale),
+        iso6391: item.ISO639_1,
       }))
       .sort((a, b) => a.label.localeCompare(b.label, locale)),
-    { key: 'other', value: 'other', label: t('System', 'other', 'other', false) },
+    { value: 'other', label: t('System', 'other', 'other', false) },
   ];
+  fileLanguageOptionsByLocale.set(locale, options);
+  return options;
 };
 
 const resolveFileLanguage = (rawLanguage?: string) => {
