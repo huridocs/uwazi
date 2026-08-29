@@ -27,7 +27,7 @@ jest.mock('#V2/Routes/Entity/Components/context/index.js', () => ({
 }));
 
 describe('EntityLanguageBar', () => {
-  it('lists languages as name plus code in the UI locale, sorted alphabetically', async () => {
+  it('lists languages as translated names in the UI locale, sorted alphabetically', async () => {
     const store = createStore();
     store.set(localeAtom, 'es');
     render(
@@ -39,6 +39,6 @@ describe('EntityLanguageBar', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Language' }));
     const options = screen.getAllByRole('option').map(option => option.textContent);
 
-    expect(options).toEqual(['Español - ES', 'Inglés - EN']);
+    expect(options).toEqual(['Español', 'Inglés']);
   });
 });

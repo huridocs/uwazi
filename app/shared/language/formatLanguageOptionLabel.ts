@@ -1,7 +1,7 @@
 import { availableLanguages } from './availableLanguages.js';
 import { LanguageUtils } from './languageUtils.js';
 
-const formatLanguageOptionLabel = (iso6391: string, uiLocale: string): string => {
+const formatLanguageName = (iso6391: string, uiLocale: string): string => {
   const code = iso6391.toUpperCase();
   const locale = uiLocale || 'en';
   try {
@@ -9,10 +9,16 @@ const formatLanguageOptionLabel = (iso6391: string, uiLocale: string): string =>
     if (!name) {
       return code;
     }
-    return `${name.charAt(0).toUpperCase()}${name.slice(1)} - ${code}`;
+    return `${name.charAt(0).toUpperCase()}${name.slice(1)}`;
   } catch {
     return code;
   }
+};
+
+const formatLanguageOptionLabel = (iso6391: string, uiLocale: string): string => {
+  const code = iso6391.toUpperCase();
+  const name = formatLanguageName(iso6391, uiLocale);
+  return name === code ? code : `${name} - ${code}`;
 };
 
 const formatLanguageLabelFromCode = (language: string | undefined, uiLocale: string): string => {
@@ -31,7 +37,7 @@ const formatLanguageLabelFromCode = (language: string | undefined, uiLocale: str
     return language.toUpperCase();
   }
 
-  return formatLanguageOptionLabel(iso1, uiLocale);
+  return formatLanguageName(iso1, uiLocale);
 };
 
-export { formatLanguageOptionLabel, formatLanguageLabelFromCode };
+export { formatLanguageName, formatLanguageOptionLabel, formatLanguageLabelFromCode };
