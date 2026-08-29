@@ -93,7 +93,7 @@ describe('filterActions', () => {
 
   describe('resetFilters', () => {
     it('should deactivate all the properties, documentTypes and searchTerm', () => {
-      actions.resetFilters(navigate, location)(dispatch, getState);
+      void actions.resetFilters(navigate, location)(dispatch, getState);
       expect(dispatch).toHaveBeenCalledWith({
         type: types.SET_LIBRARY_FILTERS,
         libraryFilters: [],
@@ -113,7 +113,7 @@ describe('filterActions', () => {
       const searchDocumentsCallback = jasmine.createSpy('searchDocumentsCallback');
 
       spyOn(libraryActions, 'searchDocuments').and.returnValue(searchDocumentsCallback);
-      actions.resetFilters(navigate, location)(dispatch, getState);
+      void actions.resetFilters(navigate, location)(dispatch, getState);
 
       expect(libraryActions.searchDocuments).toHaveBeenCalledWith({ location, navigate });
       expect(searchDocumentsCallback).toHaveBeenCalledWith(dispatch, getState);

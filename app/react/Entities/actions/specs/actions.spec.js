@@ -21,7 +21,7 @@ describe('Entities actions', () => {
   });
 
   describe('saveEntity', () => {
-    it('should dispatch a saving entity and save the data', done => {
+    it('should dispatch a saving entity and save the data', async () => {
       spyOn(relationshipActions, 'reloadRelationships').and.returnValue({
         type: 'reloadRelationships',
       });
@@ -30,7 +30,7 @@ describe('Entities actions', () => {
         errors: [],
       });
 
-      actions
+      await actions
         .saveEntity('data')(dispatch)
         .then(() => {
           expect(saveEntityWithFiles.saveEntityWithFiles).toHaveBeenCalledWith('data', dispatch);
@@ -45,7 +45,6 @@ describe('Entities actions', () => {
           });
           expect(dispatch).toHaveBeenCalledWith({ type: 'reloadRelationships' });
           expect(relationshipActions.reloadRelationships).toHaveBeenCalledWith('sharedId');
-          done();
         });
     });
 
