@@ -218,7 +218,18 @@ const useLanguageSelectListbox = <T extends string>({
     if (!open || disabled) {
       return undefined;
     }
+    const isInsideSelect = (target: EventTarget | null) => {
+      if (!(target instanceof Node)) {
+        return false;
+      }
+      return Boolean(
+        listboxRef.current?.contains(target) || triggerElementRef.current?.contains(target)
+      );
+    };
     const onDocumentKeyDown = (event: KeyboardEvent) => {
+      if (!isInsideSelect(event.target)) {
+        return;
+      }
       dispatchListboxKey(event, options.length, handlersRef.current);
     };
     document.addEventListener('keydown', onDocumentKeyDown, true);

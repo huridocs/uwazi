@@ -221,6 +221,24 @@ describe('LanguageSelect', () => {
       expect(onChange).toHaveBeenCalledWith('fr');
     });
 
+    it('ignores keydown when focus is outside the select', async () => {
+      const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
+      const { onChange } = renderSelect({ value: 'en' });
+      await openSelect(user);
+      expectActiveOption('en');
+
+      const outside = document.createElement('input');
+      document.body.appendChild(outside);
+      outside.focus();
+      expect(outside).toHaveFocus();
+
+      await user.keyboard('f{Enter}');
+      expectActiveOption('en');
+      expect(onChange).not.toHaveBeenCalled();
+      expect(screen.getByRole('listbox')).toBeInTheDocument();
+      outside.remove();
+    });
+
     it('scrolls the highlighted option into view', async () => {
       const scrollIntoView = jest.fn();
       Element.prototype.scrollIntoView = scrollIntoView;
