@@ -15,7 +15,7 @@ class Captcha extends Component {
   }
 
   componentDidMount() {
-    this.refresh();
+    void this.refresh();
   }
 
   onChange(e) {

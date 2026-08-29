@@ -31,14 +31,14 @@ const renderTable = (
   );
 
 describe('RelationshipConnectionsTable layout', () => {
-  it('uses horizontal scroll only', () => {
+  it('uses horizontal scroll only', async () => {
     const { container } = renderTable();
     const scrollWrap = container.querySelector('.overflow-x-auto');
     expect(scrollWrap).toBeTruthy();
     expect(scrollWrap?.className).not.toContain('max-h-60');
-    expect(scrollWrap?.className).not.toMatch(/\boverflow-auto\b/);
-    expect(scrollWrap?.querySelector('table')?.className).toMatch(/\bw-max\b/);
-    expect(scrollWrap?.querySelector('table')?.className).toMatch(/\bmin-w-full\b/);
+    await expect(scrollWrap?.className).not.toMatch(/\boverflow-auto\b/);
+    await expect(scrollWrap?.querySelector('table')?.className).toMatch(/\bw-max\b/);
+    await expect(scrollWrap?.querySelector('table')?.className).toMatch(/\bmin-w-full\b/);
   });
 
   it('sizes entity and scalar inherited cells', () => {

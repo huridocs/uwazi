@@ -109,7 +109,7 @@ export function resetSearch() {
 }
 
 export function switchView(type) {
-  return function (dispatch, getState) {
+  return async function (dispatch, getState) {
     dispatch(actions.set('relationships/list/view', type));
     if (type === 'graph') {
       return loadAllReferences()(dispatch, getState);

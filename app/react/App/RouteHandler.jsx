@@ -48,7 +48,11 @@ class RouteHandler extends Component {
   componentDidUpdate(prevProps) {
     if (this.urlHasChanged(prevProps)) {
       this.emptyState();
-      this.getClientState(this.props);
+      this.getClientState(this.props).catch(ex => {
+        // used in inherited types
+        // eslint-disable-next-line react/no-unused-state
+        this.setState({ loadingError: ex });
+      });
     }
   }
 

@@ -318,14 +318,6 @@
         "storybook/use-storybook-testing-library": "error",
         "storybook/no-uninstalled-addons": "error"
       }
-    },
-    // For the frontend to review
-    {
-      "files": ["app/react/**/*.{ts,tsx,js,jsx}"],
-      "rules": {
-        "typescript/no-floating-promises": "off",
-        "typescript/promise-function-async": "off"
-      }
     }
   ]
 }
