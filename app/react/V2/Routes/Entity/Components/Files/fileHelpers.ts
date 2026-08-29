@@ -32,9 +32,15 @@ const fileSupportsLanguage = (file: FileLike) => {
   return ['pdf', 'doc', 'docx', 'txt', 'odt', 'rtf'].includes(extension ?? '');
 };
 
+const fileLanguageOptionsByLocale = new Map<string, LanguageSelectOption[]>();
+
 const fileLanguageSelectOptions = (uiLocale: string): LanguageSelectOption[] => {
   const locale = uiLocale || 'en';
-  return [
+  const cached = fileLanguageOptionsByLocale.get(locale);
+  if (cached) {
+    return cached;
+  }
+  const options = [
     ...availableLanguages
       .map(item => ({
         value: item.ISO639_3,
@@ -44,6 +50,8 @@ const fileLanguageSelectOptions = (uiLocale: string): LanguageSelectOption[] => 
       .sort((a, b) => a.label.localeCompare(b.label, locale)),
     { value: 'other', label: t('System', 'other', 'other', false) },
   ];
+  fileLanguageOptionsByLocale.set(locale, options);
+  return options;
 };
 
 const resolveFileLanguage = (rawLanguage?: string) => {

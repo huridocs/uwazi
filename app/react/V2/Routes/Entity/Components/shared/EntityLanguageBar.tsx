@@ -30,6 +30,10 @@ const EntityLanguageBar = () => {
     return null;
   }
 
+  const switchLanguage = (nextLanguage: string) => {
+    setLanguage(nextLanguage).catch(() => undefined);
+  };
+
   const requestLanguage = (nextLanguage: string) => {
     if (nextLanguage === language || isSaving) {
       return;
@@ -41,7 +45,7 @@ const EntityLanguageBar = () => {
     if (isEditing) {
       cancelEdit();
     }
-    setLanguage(nextLanguage).catch(() => undefined);
+    switchLanguage(nextLanguage);
   };
 
   const discardAndSwitch = () => {
@@ -51,7 +55,7 @@ const EntityLanguageBar = () => {
       return;
     }
     cancelEdit();
-    setLanguage(nextLanguage).catch(() => undefined);
+    switchLanguage(nextLanguage);
   };
 
   return (
@@ -62,7 +66,6 @@ const EntityLanguageBar = () => {
         onChange={requestLanguage}
         disabled={isLoading || isSaving}
         aria-label="Language"
-        listAriaLabel="Language selection"
         align="end"
         appearance="default"
       />

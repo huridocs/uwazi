@@ -37,16 +37,16 @@ const optionClassName = (isHighlighted: boolean, isSelected: boolean) => {
   return 'text-ink-secondary hover:bg-parchment';
 };
 
-type WritableRef<T> = { current: T | null };
+type MutableRef<T> = { current: T | null };
 
-const isWritableRef = <T,>(ref: object): ref is WritableRef<T> => 'current' in ref;
+const isMutableRef = <T,>(ref: object): ref is MutableRef<T> => 'current' in ref;
 
 const assignRef = <T,>(ref: React.Ref<T> | undefined, value: T | null) => {
   if (typeof ref === 'function') {
     ref(value);
     return;
   }
-  if (ref && isWritableRef<T>(ref)) {
+  if (ref && isMutableRef<T>(ref)) {
     ref.current = value;
   }
 };
@@ -75,7 +75,8 @@ const LanguageSelect = <T extends string>({
     triggerElementRef,
     onTriggerKeyDown,
     onTriggerClick,
-    clearPrefix,
+    close,
+    selectOption,
   } = useLanguageSelectListbox({ open, setOpen, options, value, onChange, disabled });
 
   const activeOption = options[highlightedIndex];
@@ -111,7 +112,7 @@ const LanguageSelect = <T extends string>({
       </button>
       {open && !disabled ? (
         <>
-          <div className="fixed inset-0 z-10" aria-hidden onClick={() => setOpen(false)} />
+          <div className="fixed inset-0 z-10" aria-hidden onClick={close} />
           <div
             ref={listboxRef}
             id={listboxId}
@@ -132,11 +133,7 @@ const LanguageSelect = <T extends string>({
                 tabIndex={-1}
                 aria-selected={option.value === value}
                 onMouseDown={event => event.preventDefault()}
-                onClick={() => {
-                  onChange(option.value);
-                  setOpen(false);
-                  clearPrefix();
-                }}
+                onClick={() => selectOption(option.value)}
                 className={`block w-full whitespace-nowrap px-3 py-2 text-left text-xs font-medium transition-colors ${optionClassName(
                   index === highlightedIndex,
                   option.value === value

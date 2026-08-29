@@ -5,7 +5,6 @@ import {
   useState,
   type Dispatch,
   type KeyboardEvent as ReactKeyboardEvent,
-  type RefObject,
   type SetStateAction,
 } from 'react';
 
@@ -16,25 +15,57 @@ type ListboxOption<T extends string> = {
 
 const PREFIX_RESET_MS = 500;
 
-type ListboxKeyEvent = {
+const findPrefixMatchIndex = <T extends string>(
+  options: readonly ListboxOption<T>[],
+  prefix: string
+): number => {
+  const needle = prefix.toLocaleLowerCase();
+  return options.findIndex(option => option.label.toLocaleLowerCase().startsWith(needle));
+};
+
+const isTypeAheadKey = (event: {
   key: string;
   ctrlKey: boolean;
   metaKey: boolean;
   altKey: boolean;
-  preventDefault: () => void;
-  stopPropagation: () => void;
+}) =>
+  event.key.length === 1 && event.key !== ' ' && !event.ctrlKey && !event.metaKey && !event.altKey;
+
+type ListboxKeyHandlers = {
+  close: () => void;
+  move: (delta: number) => void;
+  select: () => void;
+  jump: (index: number) => void;
+  typeAhead: (key: string) => void;
 };
 
-const labelMatchesPrefix = (label: string, prefix: string) =>
-  label.toLocaleLowerCase().startsWith(prefix.toLocaleLowerCase());
-
-const findPrefixMatchIndex = <T extends string>(
-  options: readonly ListboxOption<T>[],
-  prefix: string
-): number => options.findIndex(option => labelMatchesPrefix(option.label, prefix));
-
-const isTypeAheadKey = (event: ListboxKeyEvent) =>
-  event.key.length === 1 && event.key !== ' ' && !event.ctrlKey && !event.metaKey && !event.altKey;
+const dispatchListboxKey = (
+  event: KeyboardEvent,
+  optionCount: number,
+  handlers: ListboxKeyHandlers
+) => {
+  const actions: Record<string, () => void> = {
+    Escape: handlers.close,
+    ArrowDown: () => handlers.move(1),
+    ArrowUp: () => handlers.move(-1),
+    Enter: handlers.select,
+    ' ': handlers.select,
+    Home: () => handlers.jump(0),
+    End: () => handlers.jump(Math.max(optionCount - 1, 0)),
+  };
+  const action = actions[event.key];
+  if (action) {
+    event.preventDefault();
+    event.stopPropagation();
+    action();
+    return;
+  }
+  if (isTypeAheadKey(event)) {
+    event.preventDefault();
+    event.stopPropagation();
+    handlers.typeAhead(event.key);
+  }
+};
 
 const useTypeAheadPrefix = () => {
   const prefixRef = useRef('');
@@ -72,79 +103,52 @@ type UseListboxKeyboardArgs<T extends string> = {
   disabled: boolean;
 };
 
-type ListboxKeyHandlers = {
-  close: () => void;
-  move: (delta: number) => void;
-  select: () => void;
-  jump: (index: number) => void;
-  typeAhead: (key: string) => void;
-};
-
-const dispatchListboxKey = (
-  event: ListboxKeyEvent,
-  optionCount: number,
-  handlers: ListboxKeyHandlers
-) => {
-  const actions: Record<string, () => void> = {
-    Escape: handlers.close,
-    ArrowDown: () => handlers.move(1),
-    ArrowUp: () => handlers.move(-1),
-    Enter: handlers.select,
-    ' ': handlers.select,
-    Home: () => handlers.jump(0),
-    End: () => handlers.jump(Math.max(optionCount - 1, 0)),
-  };
-  const action = actions[event.key];
-  if (action) {
-    event.preventDefault();
-    event.stopPropagation();
-    action();
-    return;
-  }
-  if (event.key.length === 1 && !event.ctrlKey && !event.metaKey && !event.altKey) {
-    event.preventDefault();
-    event.stopPropagation();
-    handlers.typeAhead(event.key);
-  }
-};
-
-type TriggerControlsArgs<T extends string> = {
-  open: boolean;
-  setOpen: Dispatch<SetStateAction<boolean>>;
-  disabled: boolean;
-  options: readonly ListboxOption<T>[];
-  fallbackHighlight: number;
-  setHighlightedIndex: Dispatch<SetStateAction<number>>;
-  clearPrefix: () => void;
-  appendPrefix: (character: string, onMatch: (prefix: string) => void) => void;
-  triggerElementRef: RefObject<HTMLButtonElement | null>;
-};
-
-const useTriggerControls = <T extends string>({
+const useLanguageSelectListbox = <T extends string>({
   open,
   setOpen,
-  disabled,
   options,
-  fallbackHighlight,
-  setHighlightedIndex,
-  clearPrefix,
-  appendPrefix,
-  triggerElementRef,
-}: TriggerControlsArgs<T>) => {
-  const openListbox = (highlightIndex: number) => {
-    setHighlightedIndex(highlightIndex);
-    setOpen(true);
-  };
+  value,
+  onChange,
+  disabled,
+}: UseListboxKeyboardArgs<T>) => {
+  const selectedIndex = options.findIndex(option => option.value === value);
+  const fallbackHighlight = selectedIndex >= 0 ? selectedIndex : 0;
+  const [highlightedIndex, setHighlightedIndex] = useState(0);
+  const { clearPrefix, appendPrefix } = useTypeAheadPrefix();
+  const listboxRef = useRef<HTMLDivElement>(null);
+  const triggerElementRef = useRef<HTMLButtonElement | null>(null);
+  const highlightedIndexRef = useRef(highlightedIndex);
+  highlightedIndexRef.current = highlightedIndex;
 
-  const closeAndFocusTrigger = () => {
+  const close = useCallback(() => {
     setOpen(false);
     clearPrefix();
+  }, [setOpen, clearPrefix]);
+
+  const closeAndFocusTrigger = useCallback(() => {
+    close();
     triggerElementRef.current?.focus();
-  };
+  }, [close]);
+
+  const openListbox = useCallback(
+    (highlightIndex: number) => {
+      setHighlightedIndex(highlightIndex);
+      setOpen(true);
+    },
+    [setOpen]
+  );
+
+  const selectOption = useCallback(
+    (next: T) => {
+      onChange(next);
+      closeAndFocusTrigger();
+    },
+    [onChange, closeAndFocusTrigger]
+  );
 
   const onTriggerClick = () => {
     if (disabled) return;
-    if (open) setOpen(false);
+    if (open) close();
     else openListbox(fallbackHighlight);
   };
 
@@ -163,25 +167,6 @@ const useTriggerControls = <T extends string>({
     });
   };
 
-  return { closeAndFocusTrigger, onTriggerClick, onTriggerKeyDown };
-};
-
-const useLanguageSelectListbox = <T extends string>({
-  open,
-  setOpen,
-  options,
-  value,
-  onChange,
-  disabled,
-}: UseListboxKeyboardArgs<T>) => {
-  const selectedIndex = options.findIndex(option => option.value === value);
-  const [highlightedIndex, setHighlightedIndex] = useState(0);
-  const { clearPrefix, appendPrefix } = useTypeAheadPrefix();
-  const listboxRef = useRef<HTMLDivElement>(null);
-  const triggerElementRef = useRef<HTMLButtonElement | null>(null);
-  const highlightedIndexRef = useRef(highlightedIndex);
-  highlightedIndexRef.current = highlightedIndex;
-
   useEffect(() => {
     if (!open) {
       clearPrefix();
@@ -192,21 +177,11 @@ const useLanguageSelectListbox = <T extends string>({
 
   useEffect(() => {
     if (!open) return;
-    const optionEls = listboxRef.current?.querySelectorAll<HTMLElement>('[role="option"]');
-    optionEls?.[highlightedIndex]?.scrollIntoView({ block: 'nearest' });
+    const optionEl = listboxRef.current?.children[highlightedIndex];
+    if (optionEl instanceof HTMLElement) {
+      optionEl.scrollIntoView({ block: 'nearest' });
+    }
   }, [open, highlightedIndex]);
-
-  const { closeAndFocusTrigger, onTriggerClick, onTriggerKeyDown } = useTriggerControls({
-    open,
-    setOpen,
-    disabled,
-    options,
-    fallbackHighlight: selectedIndex >= 0 ? selectedIndex : 0,
-    setHighlightedIndex,
-    clearPrefix,
-    appendPrefix,
-    triggerElementRef,
-  });
 
   const handlersRef = useRef<ListboxKeyHandlers>({
     close: () => undefined,
@@ -225,8 +200,7 @@ const useLanguageSelectListbox = <T extends string>({
     select: () => {
       const option = options[highlightedIndexRef.current];
       if (!option) return;
-      onChange(option.value);
-      closeAndFocusTrigger();
+      selectOption(option.value);
     },
     jump: index => {
       clearPrefix();
@@ -241,7 +215,9 @@ const useLanguageSelectListbox = <T extends string>({
   };
 
   useEffect(() => {
-    if (!open || disabled) return;
+    if (!open || disabled) {
+      return undefined;
+    }
     const onDocumentKeyDown = (event: KeyboardEvent) => {
       dispatchListboxKey(event, options.length, handlersRef.current);
     };
@@ -255,8 +231,10 @@ const useLanguageSelectListbox = <T extends string>({
     triggerElementRef,
     onTriggerKeyDown,
     onTriggerClick,
-    clearPrefix,
+    close,
+    selectOption,
   };
 };
 
 export { useLanguageSelectListbox };
+export type { ListboxOption };
