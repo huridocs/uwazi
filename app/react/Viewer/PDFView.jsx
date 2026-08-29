@@ -50,7 +50,7 @@ class PDFViewComponent extends Component {
       (query.page !== currentQuery.page || query.raw !== currentQuery.raw) &&
       query.raw === 'true'
     ) {
-      entitiesAPI
+      void entitiesAPI
         .getRawPage(new RequestParams({ _id: defaultDoc(props.entity)._id, page: query.page }))
         .then(pageText => {
           this.context.store.dispatch(actions.set('viewer/rawText', pageText));

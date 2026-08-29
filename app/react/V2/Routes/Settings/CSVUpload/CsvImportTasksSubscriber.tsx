@@ -145,8 +145,7 @@ const CsvImportTasksSubscriber = () => {
     }
 
     const hydrate = () => {
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      hydrateAndReconcileRef.current();
+      void hydrateAndReconcileRef.current();
     };
 
     const listenerEntries = Object.values(csvImportEvents).map(eventName => {
