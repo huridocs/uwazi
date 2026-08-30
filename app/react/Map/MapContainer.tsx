@@ -1,7 +1,6 @@
 /* eslint-disable max-statements */
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useAtomValue } from 'jotai';
-import { isClient } from '#app/utils/index.js';
 import { LMap } from '#app/Map/index.js';
 import { DataMarker, MarkerInput } from '#app/Map/MapHelper.js';
 import { ErrorBoundary } from '#V2/Components/ErrorHandling/index.js';
@@ -25,7 +24,7 @@ const Map = ({ ...props }: MapProps) => {
   const collectionSettings = useAtomValue(settingsAtom);
   const templates = useAtomValue(templatesAtom);
   const startingPoint = collectionSettings?.mapStartingPoint || [{ lat: 46, lon: 6 }];
-  const tilesProvider = collectionSettings?.tilesProvider || 'mapbox';
+  const tilesProvider = collectionSettings?.tilesProvider || 'osm';
   const mapApiKey = collectionSettings?.mapApiKey;
   let mapLayers = (props.layers || collectionSettings?.mapLayers) as Layer[];
 
@@ -33,26 +32,9 @@ const Map = ({ ...props }: MapProps) => {
     mapLayers = mapLayers?.filter(layer => layer !== 'Dark');
   }
 
-  useEffect(() => {
-    if (tilesProvider === 'google' && mapApiKey && isClient) {
-      import('@googlemaps/js-api-loader')
-        .then(module => {
-          const GoogleMapsLoader = module.default || module;
-          const Loader = GoogleMapsLoader.Loader || module.Loader;
-          if (Loader) {
-            const loader = new Loader({
-              apiKey: mapApiKey,
-              retries: 0,
-            });
-            loader
-              .load()
-              .then(() => {})
-              .catch(() => {});
-          }
-        })
-        .catch(() => {});
-    }
-  }, [tilesProvider, mapApiKey]);
+  // The Google Maps JS API is loaded (and awaited) inside LMap via
+  // ensureGoogleMaps — a fire-and-forget load here raced the map's layer
+  // construction and swallowed every failure.
 
   const templatesInfo = templates.reduce(
     (info, t) => ({
