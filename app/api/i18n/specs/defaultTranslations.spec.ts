@@ -51,6 +51,10 @@ const EXPECTED_DEFAULT_TRANSLATIONS: defaulTranslationInfo[] = [
     longName: 'Burmese',
   },
   {
+    key: 'pl',
+    longName: 'Polish',
+  },
+  {
     key: 'ru',
     longName: 'Russian',
   },
