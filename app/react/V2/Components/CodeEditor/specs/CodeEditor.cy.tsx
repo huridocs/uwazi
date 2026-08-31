@@ -43,7 +43,7 @@ describe('Code editor', () => {
     cy.get('div[role="code"]').should('exist');
     cy.get('div[dir="ltr"]').should('exist');
     cy.contains('<h1>Main Heading</h1>').should('exist');
-    cy.get('div[dir="ltr"]').click();
+    cy.get('div[role="code"]').click();
     cy.get('body').type('{ctrl}a');
     cy.get('body').type('{del}');
     cy.contains('<h1>Main Heading</h1>').should('not.exist');

@@ -30,7 +30,8 @@ describe('File dropzone', () => {
 
   beforeEach(() => {
     onChangeSpy = cy.spy().as('onChangeSpy');
-    mount(<Basic.Component onChange={onChangeSpy} />);
+    Basic.composed.args.onChange = onChangeSpy;
+    mount(<Basic.Component />);
     cy.get('input[type=file]').selectFile(files, { force: true });
   });
 

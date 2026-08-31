@@ -14,20 +14,16 @@ const FragileComponent = ({ source }: { source?: { text: string } }) => (
 
 describe('ErrorBoundary', () => {
   it('should show the nested children if no errors', () => {
-    mount(
-      <BasicErrorBoundary.Component error={undefined}>
-        <FragileComponent source={{ text: 'well' }} />
-      </BasicErrorBoundary.Component>
-    );
+    BasicErrorBoundary.composed.args.error = undefined;
+    BasicErrorBoundary.composed.args.children = <FragileComponent source={{ text: 'well' }} />;
+    mount(<BasicErrorBoundary.Component />);
     cy.contains('this works well').should('exist');
   });
 
   it('should show a fallback component when a nested component fails', () => {
-    mount(
-      <BasicErrorBoundary.Component error={undefined}>
-        <FragileComponent source={undefined} />
-      </BasicErrorBoundary.Component>
-    );
+    BasicErrorBoundary.composed.args.error = undefined;
+    BasicErrorBoundary.composed.args.children = <FragileComponent source={undefined} />;
+    mount(<BasicErrorBoundary.Component />);
     cy.on('uncaught:exception', (_err, _runnable) => {
       cy.contains('this works').should('not.exist');
       cy.contains('Well, this is awkward...').should('exist');
@@ -37,6 +33,11 @@ describe('ErrorBoundary', () => {
   });
 
   it('should show a fallback component for a 500 status', () => {
+    BasicErrorBoundary.composed.args.error = {
+      status: 500,
+      message: 'Internal server error',
+      name: 'Server Error',
+    };
     mount(<BasicErrorBoundary.Component />);
     cy.contains('500');
     cy.contains('Unexpected error');
@@ -44,11 +45,13 @@ describe('ErrorBoundary', () => {
   });
 
   it('should show a fallback component for a 404 status', () => {
-    mount(
-      <BasicErrorBoundary.Component
-        error={{ status: 404, message: 'missing file', requestId: '123', name: 'ServerError' }}
-      />
-    );
+    BasicErrorBoundary.composed.args.error = {
+      status: 404,
+      message: 'missing file',
+      requestId: '123',
+      name: 'ServerError',
+    };
+    mount(<BasicErrorBoundary.Component />);
     cy.contains('404');
     cy.contains('Not Found');
     cy.contains("We can't find the page you're looking for.");

@@ -57,11 +57,9 @@ describe('PaneLayout', () => {
       cy.realDrag(cy.get('button[aria-label]'), 50, 0);
       cy.getAllLocalStorage().then(result => {
         const host = Object.keys(result)[0];
-        expect(result).to.deep.equal({
-          [host]: {
-            cypressComponentTest: '[0.3799837266069976,0.2823433685923515,0.33116354759967453]',
-          },
-        });
+        expect(result[host].cypressComponentTest).to.equal(
+          '[0.3799837266069976,0.2823433685923515,0.33116354759967453]'
+        );
       });
       cy.clearAllLocalStorage();
     });

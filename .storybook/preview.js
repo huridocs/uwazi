@@ -158,7 +158,10 @@ const decorators = [
           themeVars: buildStorybookThemeVars(preset),
         });
         store.set(themeModeAtom, mode);
-        store.set(isMobileOverrideAtom, isMobileViewport);
+        store.set(
+          isMobileOverrideAtom,
+          typeof window !== 'undefined' && window.Cypress ? undefined : isMobileViewport
+        );
         store.set(localeAtom, 'en');
         store.set(translationsAtom, []);
         return store;
