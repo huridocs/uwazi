@@ -10,6 +10,9 @@ import {
   isLinkOnlyRelationship,
   isInheritingRelationship,
   LONG_FIELD_CHAR_THRESHOLD,
+  COMPACT_METADATA_FIELD_LAYOUT,
+  FULL_ROW_METADATA_FIELD_LAYOUT,
+  metadataGridClassForProperty,
   partitionMetadataRecord,
 } from '../metadataPropertyLayout';
 
@@ -107,8 +110,39 @@ describe('metadataPropertyLayout', () => {
     expect(isInheritingRelationship(inheritingRel)).toBe(true);
   });
 
+  it('packs short fields and images compact', () => {
+    expect(metadataGridClassForProperty(textField('short'), undefined)).toBe(
+      COMPACT_METADATA_FIELD_LAYOUT
+    );
+    expect(metadataGridClassForProperty(linkOnlyRel(), undefined)).toBe(
+      COMPACT_METADATA_FIELD_LAYOUT
+    );
+    expect(metadataGridClassForProperty(imageField, undefined)).toBe(COMPACT_METADATA_FIELD_LAYOUT);
+  });
+
+  it('packs long text, markdown, geo, media, and fullWidth images full-row', () => {
+    expect(metadataGridClassForProperty(imageField, { fullWidth: true, showInCard: true })).toBe(
+      FULL_ROW_METADATA_FIELD_LAYOUT
+    );
+    expect(metadataGridClassForProperty(markdownField('md'), undefined)).toBe(
+      FULL_ROW_METADATA_FIELD_LAYOUT
+    );
+    expect(metadataGridClassForProperty(geolocationField, undefined)).toBe(
+      FULL_ROW_METADATA_FIELD_LAYOUT
+    );
+    expect(metadataGridClassForProperty(mediaField, undefined)).toBe(
+      FULL_ROW_METADATA_FIELD_LAYOUT
+    );
+    expect(
+      metadataGridClassForProperty({ ...textField('x'.repeat(160)), name: 'body' }, undefined)
+    ).toBe(FULL_ROW_METADATA_FIELD_LAYOUT);
+    expect(
+      metadataGridClassForProperty({ ...textField('short'), name: 'summary' }, undefined)
+    ).toBe(FULL_ROW_METADATA_FIELD_LAYOUT);
+  });
+
   // eslint-disable-next-line max-statements
-  it('puts only showInCard fields first, details next, and image/media after details', () => {
+  it('puts link-only and template fields in masonry order and inheriting rels aside', () => {
     const short = textField('short', 'short1');
     const long = textField('x'.repeat(LONG_FIELD_CHAR_THRESHOLD + 1), 'long1');
     const showInCardText = textField('carded', 'card1');
@@ -143,17 +177,24 @@ describe('metadataPropertyLayout', () => {
       templateMap
     );
 
-    expect(withPreview.leadingFields.map(f => f._id)).toEqual(['card1', 'rel-card']);
-    expect(withPreview.detailFields.map(f => f._id)).toEqual(['short1', 'long1', 'rel-detail']);
-    expect(withPreview.trailingFields.map(f => f._id)).toEqual(['prev1', 'm1', 'img1']);
+    expect(withPreview.masonryFields.map(f => f._id)).toEqual([
+      'short1',
+      'long1',
+      'card1',
+      'prev1',
+      'm1',
+      'img1',
+      'rel-card',
+      'rel-detail',
+    ]);
     expect(withPreview.inheritingRels.map(f => f._id)).toEqual(['r2']);
 
-    const withDocOnly = partitionMetadataRecord([], [], new Map());
-    expect(withDocOnly.leadingFields).toEqual([]);
-    expect(withDocOnly.trailingFields).toEqual([]);
+    const empty = partitionMetadataRecord([], [], new Map());
+    expect(empty.masonryFields).toEqual([]);
+    expect(empty.inheritingRels).toEqual([]);
   });
 
-  it('omits empty specialized fields from leading cards while keeping filled preview consumed', () => {
+  it('omits empty specialized fields from masonry while keeping filled preview', () => {
     const emptyPreview: MetadataProperty = {
       _id: 'prev-empty',
       name: 'previewg',
@@ -176,9 +217,6 @@ describe('metadataPropertyLayout', () => {
       new Map()
     );
 
-    expect(partition.trailingFields.map(f => f._id)).toEqual(['prev1', 'm1']);
-    expect(partition.leadingFields.find(f => f._id === 'prev-empty')).toBeUndefined();
-    expect(partition.leadingFields.find(f => f._id === 'img-empty')).toBeUndefined();
-    expect(partition.trailingFields.find(f => f._id === 'img-empty')).toBeUndefined();
+    expect(partition.masonryFields.map(f => f._id)).toEqual(['prev1', 'm1']);
   });
 });

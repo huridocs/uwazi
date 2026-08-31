@@ -11,13 +11,13 @@ import { buildMetadataRecordFields } from './buildMetadataRecordFields.js';
 import {
   isLongField,
   isRelationshipProperty,
+  metadataGridClassForProperty,
   partitionMetadataRecord,
 } from './metadataPropertyLayout.js';
 import { renderFieldContent, renderScalarContent } from './Components/metadataFieldContent.js';
 import { fieldTitle, specializedCardTitle } from './Components/metadataFieldTitle.js';
 import { connectionPillsForField, type OpenEntityTarget } from './Components/ConnectionPills.js';
 import { useMetadataRecordFocus } from './useMetadataRecordFocus.js';
-import { EntityIcon } from '../CustomIcons/EntityIcon.js';
 import type { MetadataProperty, RelationshipMetadataProperty } from '#V2/formatters/types.js';
 import type { ClientProperty } from '#V2/shared/types.js';
 
@@ -32,6 +32,28 @@ const relationshipCardContent = (
   onOpenEntity?: (target: OpenEntityTarget) => void
 ) => connectionPillsForField(field, templateProperty, { onOpenEntity });
 
+const systemDateItems = (entity: Entity): MetadataItem[] => {
+  const items: MetadataItem[] = [];
+  if (typeof entity.creationDate === 'number') {
+    items.push({
+      id: 'system-creation-date',
+      label: 'Creation Date',
+      translationContext: 'System',
+      content: <Date values={[{ value: entity.creationDate }]} />,
+    });
+  }
+  if (typeof entity.editDate === 'number') {
+    items.push({
+      id: 'system-edit-date',
+      label: 'Edit Date',
+      translationContext: 'System',
+      content: <Date values={[{ value: entity.editDate }]} />,
+    });
+  }
+  return items;
+};
+
+// eslint-disable-next-line max-statements
 const MetadataRecord = ({ entity, onOpenEntity }: MetadataRecordProps) => {
   const templates = useAtomValue(templatesAtom);
   const rootRef = useRef<HTMLDivElement>(null);
@@ -58,67 +80,7 @@ const MetadataRecord = ({ entity, onOpenEntity }: MetadataRecordProps) => {
     [otherFields, relationshipFields, templatePropertyById]
   );
 
-  const detailItems = useMemo(() => {
-    const items: MetadataItem[] = [
-      {
-        id: 'title',
-        label: 'Title',
-        translationContext,
-        content: (
-          <span className="inline-flex min-w-0 items-center gap-1.5 font-medium text-ink">
-            <EntityIcon data={entity.icon} />
-            <span className="min-w-0" no-translate="true">
-              {entity.title}
-            </span>
-          </span>
-        ),
-      },
-    ];
-
-    if (typeof entity.creationDate === 'number') {
-      items.push({
-        id: 'system-creation-date',
-        label: 'Creation Date',
-        translationContext: 'System',
-        content: <Date values={[{ value: entity.creationDate }]} />,
-      });
-    }
-
-    if (typeof entity.editDate === 'number') {
-      items.push({
-        id: 'system-edit-date',
-        label: 'Edit Date',
-        translationContext: 'System',
-        content: <Date values={[{ value: entity.editDate }]} />,
-      });
-    }
-
-    partition.detailFields.forEach(field => {
-      const content = isRelationshipProperty(field)
-        ? relationshipCardContent(field, templatePropertyById.get(field._id), onOpenEntity)
-        : renderScalarContent(field);
-      if (!content) {
-        return;
-      }
-      items.push({
-        id: field.name,
-        label: field.label,
-        translationContext,
-        content,
-      });
-    });
-
-    return items;
-  }, [
-    entity.title,
-    entity.icon,
-    entity.creationDate,
-    entity.editDate,
-    onOpenEntity,
-    partition.detailFields,
-    templatePropertyById,
-    translationContext,
-  ]);
+  const detailItems = useMemo(() => systemDateItems(entity), [entity]);
 
   const renderPropertyCard = (field: MetadataProperty) => {
     let title: ReactNode;
@@ -134,7 +96,11 @@ const MetadataRecord = ({ entity, onOpenEntity }: MetadataRecordProps) => {
       return null;
     }
     return (
-      <div key={field._id} data-field-key={field.name}>
+      <div
+        key={field._id}
+        data-field-key={field.name}
+        className={metadataGridClassForProperty(field, templatePropertyById.get(field._id))}
+      >
         <MetadataCard title={title}>{content}</MetadataCard>
       </div>
     );
@@ -145,11 +111,7 @@ const MetadataRecord = ({ entity, onOpenEntity }: MetadataRecordProps) => {
   }
 
   const hasRelCards = partition.inheritingRels.some(field => field.values.length > 0);
-  const empty =
-    partition.leadingFields.length === 0 &&
-    partition.trailingFields.length === 0 &&
-    detailItems.length === 0 &&
-    !hasRelCards;
+  const empty = partition.masonryFields.length === 0 && detailItems.length === 0 && !hasRelCards;
 
   if (empty) {
     return (
@@ -163,15 +125,17 @@ const MetadataRecord = ({ entity, onOpenEntity }: MetadataRecordProps) => {
 
   return (
     <div ref={rootRef} className="flex flex-col gap-3" data-testid="metadata-record">
-      {partition.leadingFields.map(renderPropertyCard)}
-
       {detailItems.length > 0 && (
         <MetadataCard title={<Translate>Details</Translate>}>
           <MetadataItemsTable items={detailItems} />
         </MetadataCard>
       )}
 
-      {partition.trailingFields.map(renderPropertyCard)}
+      {partition.masonryFields.length > 0 && (
+        <div className="flex min-w-0 flex-wrap gap-3">
+          {partition.masonryFields.map(renderPropertyCard)}
+        </div>
+      )}
 
       <RelationshipCards
         fields={partition.inheritingRels}

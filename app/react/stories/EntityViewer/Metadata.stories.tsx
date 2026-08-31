@@ -118,7 +118,7 @@ const MetadataStoryShell = ({
 };
 
 const meta: Meta<typeof MetadataStoryShell> = {
-  title: 'EntityViewer/MedataDisplay',
+  title: 'EntityViewer/MetadataDisplay',
   component: MetadataStoryShell,
 };
 

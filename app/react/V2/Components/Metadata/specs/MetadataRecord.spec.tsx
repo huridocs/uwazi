@@ -8,6 +8,10 @@ import { templatesAtom } from '#V2/atoms/templatesAtom.js';
 import { relationshipTypesAtom } from '#V2/atoms/relationshipTypes.js';
 import type { Entity } from '#V2/api/entities/types.js';
 import { focusMetadataFieldAtom } from '../focusMetadataFieldAtom.js';
+import {
+  COMPACT_METADATA_FIELD_LAYOUT,
+  FULL_ROW_METADATA_FIELD_LAYOUT,
+} from '../metadataPropertyLayout.js';
 import { MetadataRecord } from '../MetadataRecord';
 
 jest.mock('#app/I18N/index.js', () => ({
@@ -191,27 +195,40 @@ const renderRecord = (entityOverride: Entity = entity) =>
     </TestAtomStoreProvider>
   );
 
+const fieldEl = (name: string): HTMLElement => {
+  const el = document.querySelector(`[data-field-key="${name}"]`);
+  if (!(el instanceof HTMLElement)) {
+    throw new Error(`expected field ${name}`);
+  }
+  return el;
+};
+
 describe('MetadataRecord', () => {
-  it('shows long fields and Details, and hides Relationships when empty', () => {
+  // eslint-disable-next-line max-statements
+  it('shows Details dates only and packs template fields in masonry', () => {
     renderRecord(withoutRels);
 
     expect(screen.queryByRole('heading', { name: 'Document' })).not.toBeInTheDocument();
     expect(screen.queryByText('Report.pdf')).not.toBeInTheDocument();
     expect(screen.getByRole('heading', { name: 'Summary' })).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: 'Notes' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Code' })).toBeInTheDocument();
+    expect(screen.getByText('ABC')).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: 'Details' })).toBeInTheDocument();
 
     const table = screen.getByRole('table');
-    expect(within(table).getByRole('rowheader', { name: 'Title' })).toBeInTheDocument();
-    expect(table.querySelector('[data-field-key="title"]')).toBeInTheDocument();
+    expect(within(table).queryByRole('rowheader', { name: 'Title' })).not.toBeInTheDocument();
+    expect(within(table).queryByRole('rowheader', { name: 'Code' })).not.toBeInTheDocument();
     expect(within(table).getByRole('rowheader', { name: 'Creation Date' })).toBeInTheDocument();
     expect(within(table).getByRole('rowheader', { name: 'Edit Date' })).toBeInTheDocument();
-    expect(within(table).getByRole('rowheader', { name: 'Code' })).toBeInTheDocument();
-    expect(within(table).getByText('ABC')).toBeInTheDocument();
     expect(screen.queryByText('Relationships')).not.toBeInTheDocument();
+
+    expect(fieldEl('code').className).toContain(COMPACT_METADATA_FIELD_LAYOUT);
+    expect(fieldEl('summary').className).toContain(FULL_ROW_METADATA_FIELD_LAYOUT);
+    expect(fieldEl('notes').className).toContain(FULL_ROW_METADATA_FIELD_LAYOUT);
   });
 
-  it('keeps showInCard fields above Details and image/media below Details', () => {
+  it('packs image without fullWidth as compact in the masonry wrap', () => {
     const imageTemplate = {
       ...template,
       properties: [
@@ -255,12 +272,14 @@ describe('MetadataRecord', () => {
     );
 
     const headings = screen.getAllByRole('heading').map(heading => heading.textContent);
-    expect(headings.indexOf('Summary')).toBeGreaterThan(-1);
-    expect(headings.indexOf('Details')).toBeGreaterThan(headings.indexOf('Summary'));
+    expect(headings.indexOf('Details')).toBeLessThan(headings.indexOf('Summary'));
+    expect(headings.indexOf('Code')).toBeGreaterThan(headings.indexOf('Details'));
     expect(headings.indexOf('Image')).toBeGreaterThan(headings.indexOf('Details'));
+    expect(fieldEl('photo').className).toContain(COMPACT_METADATA_FIELD_LAYOUT);
+    expect(fieldEl('code').className).toContain(COMPACT_METADATA_FIELD_LAYOUT);
   });
 
-  it('scrolls and flashes the title row when focusMetadataFieldAtom is title', () => {
+  it('scrolls and flashes a masonry field when focusMetadataFieldAtom matches', () => {
     jest.useFakeTimers();
     Element.prototype.scrollIntoView = jest.fn();
 
@@ -269,19 +288,18 @@ describe('MetadataRecord', () => {
         initialValues={[
           [templatesAtom, [template, relatedTemplate, relatedEntityTemplate]],
           [relationshipTypesAtom, [{ _id: 'rel-type-1', name: 'Relates to' }]],
-          [focusMetadataFieldAtom, { fieldKey: 'title' }],
+          [focusMetadataFieldAtom, { fieldKey: 'code' }],
         ]}
       >
         <MetadataRecord entity={withoutRels} />
       </TestAtomStoreProvider>
     );
 
-    const titleRow = screen.getByRole('table').querySelector('[data-field-key="title"]');
-    expect(titleRow).toBeInstanceOf(HTMLElement);
-    expect(titleRow).toHaveClass('flash-highlight');
+    const codeCard = fieldEl('code');
+    expect(codeCard).toHaveClass('flash-highlight');
     expect(Element.prototype.scrollIntoView).toHaveBeenCalled();
     jest.advanceTimersByTime(1100);
-    expect(titleRow).not.toHaveClass('flash-highlight');
+    expect(codeCard).not.toHaveClass('flash-highlight');
     jest.useRealTimers();
   });
 
@@ -313,7 +331,7 @@ describe('MetadataRecord', () => {
     const store = createStore();
     store.set(templatesAtom, [template, relatedTemplate]);
     store.set(relationshipTypesAtom, [{ _id: 'rel-type-1', name: 'Relates to' }]);
-    store.set(focusMetadataFieldAtom, { fieldKey: 'title' });
+    store.set(focusMetadataFieldAtom, { fieldKey: 'code' });
 
     const { rerender } = render(
       <Provider store={store}>
@@ -321,7 +339,7 @@ describe('MetadataRecord', () => {
       </Provider>
     );
 
-    expect(store.get(focusMetadataFieldAtom)).toEqual({ fieldKey: 'title' });
+    expect(store.get(focusMetadataFieldAtom)).toEqual({ fieldKey: 'code' });
 
     rerender(
       <Provider store={store}>
@@ -337,7 +355,7 @@ describe('MetadataRecord', () => {
     const store = createStore();
     store.set(templatesAtom, [template, relatedTemplate]);
     store.set(relationshipTypesAtom, [{ _id: 'rel-type-1', name: 'Relates to' }]);
-    store.set(focusMetadataFieldAtom, { fieldKey: 'title' });
+    store.set(focusMetadataFieldAtom, { fieldKey: 'code' });
 
     const { unmount } = render(
       <Provider store={store}>
@@ -598,13 +616,13 @@ describe('MetadataRecord', () => {
   it('colors unconstrained relationship pills from the related entity template', () => {
     renderRecord();
 
-    const relationshipd = screen.getByRole('rowheader', { name: 'Relationshipd' });
-    const table = relationshipd.closest('table');
-    expect(table).not.toBeNull();
-    if (!table) {
+    const relationshipd = screen.getByRole('heading', { name: 'Relationshipd' });
+    const card = relationshipd.closest('div.overflow-hidden');
+    expect(card).toBeInstanceOf(HTMLElement);
+    if (!(card instanceof HTMLElement)) {
       return;
     }
-    const diana = within(table).getByRole('link', { name: /Diana/i });
+    const diana = within(card).getByRole('link', { name: /Diana/i });
     const pill = diana.querySelector('span[title="Diana"]');
     expect(pill?.firstElementChild).toHaveStyle({ backgroundColor: '#2563eb' });
     expect(pill?.firstElementChild).not.toHaveStyle({ backgroundColor: '#c03b22' });

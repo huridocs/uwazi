@@ -21,8 +21,6 @@ const TEMPLATE_FULL_WIDTH_GRID_TYPES: ReadonlyArray<MetadataProperty['type']> = 
   'media',
 ];
 
-const IMAGE_OR_MEDIA_TYPES: ReadonlyArray<MetadataProperty['type']> = ['image', 'media'];
-
 const FULL_ROW_FIELD_NAME = /^(description|body|abstract|summary|content|notes)$/i;
 
 const COMPACT_METADATA_FIELD_LAYOUT = 'min-w-0 grow basis-[min(100%,18rem)]';
@@ -37,9 +35,6 @@ const joinedScalarText = (data: MetadataProperty): string => {
 
 const isSpecializedFullWidthField = (data: MetadataProperty): boolean =>
   SPECIALIZED_FULL_WIDTH_TYPES.includes(data.type);
-
-const isImageOrMediaField = (data: MetadataProperty): boolean =>
-  IMAGE_OR_MEDIA_TYPES.includes(data.type);
 
 const isLongField = (data: MetadataProperty): boolean => {
   if (isSpecializedFullWidthField(data)) {
@@ -59,11 +54,6 @@ const isLinkOnlyRelationship = (field: RelationshipMetadataProperty): boolean =>
 
 const isInheritingRelationship = (field: RelationshipMetadataProperty): boolean =>
   Boolean(field.inherited);
-
-const fieldShowsInCard = (
-  fieldId: string,
-  templatePropertyById: Map<string, ClientProperty>
-): boolean => templatePropertyById.get(fieldId)?.showInCard === true;
 
 const fieldNamePrefersFullRow = (name: string) => FULL_ROW_FIELD_NAME.test(name);
 
@@ -113,33 +103,13 @@ const hasFilledSpecializedValues = (data: MetadataProperty): boolean => {
 const templatePropertyInherits = (templateProperty: ClientProperty | undefined): boolean =>
   Boolean(templateProperty?.inherit);
 
-type RecordFieldBucket = 'leading' | 'detail' | 'trailing';
-
-const classifyRecordField = (
-  field: MetadataProperty,
-  templatePropertyById: Map<string, ClientProperty>
-): RecordFieldBucket | undefined => {
-  if (
-    !isRelationshipProperty(field) &&
-    isSpecializedFullWidthField(field) &&
-    !hasFilledSpecializedValues(field)
-  ) {
-    return undefined;
-  }
-  const showInCard = fieldShowsInCard(field._id, templatePropertyById);
-  if (isRelationshipProperty(field)) {
-    return showInCard ? 'leading' : 'detail';
-  }
-  if (isImageOrMediaField(field) || (!showInCard && isSpecializedFullWidthField(field))) {
-    return 'trailing';
-  }
-  return showInCard ? 'leading' : 'detail';
-};
+const includeInMasonry = (field: MetadataProperty): boolean =>
+  isRelationshipProperty(field) ||
+  !isSpecializedFullWidthField(field) ||
+  hasFilledSpecializedValues(field);
 
 type MetadataRecordPartition = {
-  leadingFields: MetadataProperty[];
-  detailFields: MetadataProperty[];
-  trailingFields: MetadataProperty[];
+  masonryFields: MetadataProperty[];
   inheritingRels: RelationshipMetadataProperty[];
 };
 
@@ -150,25 +120,11 @@ const partitionMetadataRecord = (
 ): MetadataRecordPartition => {
   const templateProperties = [...templatePropertyById.values()];
 
-  const leadingFields: MetadataProperty[] = [];
-  const detailFields: MetadataProperty[] = [];
-  const trailingFields: MetadataProperty[] = [];
-  const buckets = { leading: leadingFields, detail: detailFields, trailing: trailingFields };
-
-  sortByTemplatePropertyOrder(
-    [...otherFields, ...relationshipFields.filter(isLinkOnlyRelationship)],
-    templateProperties
-  ).forEach(field => {
-    const bucket = classifyRecordField(field, templatePropertyById);
-    if (bucket) {
-      buckets[bucket].push(field);
-    }
-  });
-
   return {
-    leadingFields,
-    detailFields,
-    trailingFields,
+    masonryFields: sortByTemplatePropertyOrder(
+      [...otherFields, ...relationshipFields.filter(isLinkOnlyRelationship)],
+      templateProperties
+    ).filter(includeInMasonry),
     inheritingRels: sortByTemplatePropertyOrder(
       relationshipFields.filter(isInheritingRelationship),
       templateProperties
@@ -181,12 +137,10 @@ export {
   COMPACT_METADATA_FIELD_LAYOUT,
   FULL_ROW_METADATA_FIELD_LAYOUT,
   isSpecializedFullWidthField,
-  isImageOrMediaField,
   isLongField,
   isRelationshipProperty,
   isLinkOnlyRelationship,
   isInheritingRelationship,
-  fieldShowsInCard,
   metadataGridClassForProperty,
   partitionMetadataRecord,
   hasFilledSpecializedValues,
