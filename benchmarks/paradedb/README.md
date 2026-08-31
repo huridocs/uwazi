@@ -107,13 +107,29 @@ Text Top-K engages **only under `COLLATE "C"`** — raw byte order. The database
 `en_US.utf8`, and under any non-C collation ParadeDB will not push the sort down, even when the
 field uses the literal tokenizer and is stored as a fast field.
 
-So the trade is not "declare the property and it sorts fast". For text it is: **indexed Top-K
-sorting, or locale-correct alphabetical ordering — not both.** `COLLATE "C"` puts uppercase before
-lowercase and sorts "ñ" after "z", which is exactly the per-locale visible ordering §II.3 flags as a
-support-ticket risk.
-
 Title is the library's default sort, so this is not an edge case. It applies to every text property
-in the sort dropdown.
+in the sort dropdown — and to `title` and `template`, which are ordinary columns, so it is not a
+consequence of indexing metadata as JSON.
+
+**Correction to an earlier version of this section**, which claimed the trade was "indexed Top-K
+sorting, or locale-correct alphabetical ordering — not both". That is wrong. Storing a normalised
+sort key (lowercase + accents folded) and byte-ordering _that_ gives both:
+
+| `ORDER BY` (100k entities)       | Order                             | Plan             |
+| -------------------------------- | --------------------------------- | ---------------- |
+| `title`                          | `ähnlich, Ápice, apple, …`        | full sort, 268ms |
+| `title COLLATE "C"`              | `Banana, Zebra, apple, …` ❌      | TopK, 109ms      |
+| **`sortkey(title) COLLATE "C"`** | **`ähnlich, Ápice, apple, …`** ✅ | **TopK, 108ms**  |
+
+The normalised key reproduced `en_US.utf8` ordering exactly on Swedish, Spanish, German and
+mixed-case inputs. It is the same technique Elasticsearch already uses — `string_sorter_normalized`
+is lowercase + asciifolding on a keyword sort field.
+
+Two practical notes: `unaccent()` is `STABLE` and needs an `IMMUTABLE` wrapper before it can be used
+in an index expression, and the sort key must still be declared per property like any other. What is
+genuinely lost is the `USE_ELASTIC_ICU=true` mode — true per-locale collation, where Swedish å/ä/ö
+sort after `z` and Spanish `ñ` after `n`. Neither the normalised key nor the current non-ICU default
+does that, so it is a pre-existing gap.
 
 ### Strict nested cannot be expressed against the index — open question #3
 

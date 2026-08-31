@@ -1,7 +1,7 @@
 # ParadeDB for entity search — findings
 
 **Status:** living document. Entity metadata, PDF full text, combining the two into one ranked result
-list, and behaviour under concurrent load are all covered.
+list, and behavior under concurrent load are all covered.
 
 **Version tested:** ParadeDB `pg_search` 0.25.4 on PostgreSQL 17.
 
@@ -40,7 +40,7 @@ We tested **pointing ParadeDB at the `entities` table exactly as it exists today
 
 - No new tables.
 - No change to how metadata is stored.
-- No projection, flattening or denormalisation of any kind.
+- No projection, flattening or denormalization of any kind.
 - One index, one shape.
 
 This is the lowest-effort version of the migration. We wanted to know what it buys before
@@ -118,18 +118,19 @@ were verified — but the _storage_ is shared. Section 8 covers what that does a
 | Searching titles and metadata               | Works                                                                           |
 | Every filter type in the library            | Works                                                                           |
 | Sidebar counts, including thesaurus groups  | Works, and the whole sidebar is one query                                       |
-| Permissions                                 | Enforced by the database — correct, but the biggest single cost; see §4 and §11 |
+| Permissions                                 | Enforced by the database — correct, but the biggest single cost; see §4 and §12 |
 | Property name/type collisions               | Not a problem — better than we expected                                         |
 | Sorting by numbers and dates                | Works, if the property is declared in the index                                 |
-| **Sorting by text**                         | **Problem — see §6**                                                            |
+| Sorting by text                             | Works via a stored sort key — see §6                                            |
 | **Nested "strict" filters**                 | **Needs a workaround — see §5**                                                 |
 | **Sidebar with very many properties**       | **Hard ceiling — see §7**                                                       |
-| PDF full-text search, language-agnostic     | Works — see §9                                                                  |
-| Snippets, page numbers, jump-to-page        | Works — see §9                                                                  |
-| Searching every attached PDF, not just one  | Works — new behaviour, see §9                                                   |
-| Metadata + document text in one ranked list | Works, with rank fusion — see §10                                               |
-| Permissions over document text              | Enforced by joining to entities — see §10                                       |
-| Behaviour under concurrent load             | ~25–30 req/s for the library screen; see §11                                    |
+| **Scaling search reads across replicas**    | **Blocked on Community license — see §9**                                       |
+| PDF full-text search, language-agnostic     | Works — see §10                                                                  |
+| Snippets, page numbers, jump-to-page        | Works — see §10                                                                  |
+| Searching every attached PDF, not just one  | Works — new behaviour, see §10                                                   |
+| Metadata + document text in one ranked list | Works, with rank fusion — see §11                                               |
+| Permissions over document text              | Enforced by joining to entities — see §11                                       |
+| Behavior under concurrent load              | ~25–30 req/s for the library screen; see §12                                    |
 
 ---
 
@@ -236,7 +237,7 @@ The permission rules are enforced by PostgreSQL itself (row-level security), not
 builder. A query cannot accidentally return rows the user may not see, regardless of how it is
 written.
 
-We were concerned this would prevent ParadeDB from using its optimisations, since the rule is a
+We were concerned this would prevent ParadeDB from using its optimizations, since the rule is a
 three-way condition including an array-overlap check. **It does not.** All the fast paths survive it.
 
 It does not change the shape of any query plan. But it is **not cheap**, and an earlier version of
@@ -250,9 +251,9 @@ subject to the same rules. Measured against a connection where the rules do not 
 | Permission as an ordinary SQL condition              | 35.7 ms     | 5.1×        |
 | **Permission enforced by the database (what we do)** | **52.2 ms** | **7.5×**    |
 
-Under concurrent load the difference is larger — see §11.
+Under concurrent load the difference is larger — see §12.
 
-The reason it cannot be optimised away: the rule contains a check of "is this user's id in the
+The reason it cannot be optimized away: the rule contains a check of "is this user's id in the
 document's permission list", expressed as an array comparison. The search index cannot answer that,
 so for every candidate row the database has to go and read the actual row to check. Adding the
 permission list to the index recovered only about 18%.
@@ -370,15 +371,34 @@ ParadeDB will only use its fast sorting path on text if the query asks for `COLL
 normal database collation it refuses — the index stores text in byte order, and it cannot guarantee
 that matches what `en_US` ordering would produce.
 
-So for sorting the library by **Title** — which is the default sort — you choose one:
+This applies to **every text property**, including `title` and `template`, which are ordinary
+columns rather than JSON paths — so it is not a consequence of how metadata is stored.
 
-|                  | Order the user sees                   | Speed                  |
-| ---------------- | ------------------------------------- | ---------------------- |
-| Normal collation | Correct: `apple, Banana, café`        | Slow: reads everything |
-| `COLLATE "C"`    | Wrong-looking: `Banana, Zebra, apple` | Fast                   |
+### There is a way to get both, and it is what we already do
 
-There is no configuration that gives both. This applies to **every text property** in the sort
-dropdown, not just Title.
+The fix is not a setting — it is to change _what is stored_. Precompute a normalised sort key
+(lowercase, accents folded) and byte-order that instead. Measured on 100,000 entities:
+
+| `ORDER BY`                       | Order the user sees               | Speed                   |
+| -------------------------------- | --------------------------------- | ----------------------- |
+| `title`                          | `ähnlich, Ápice, apple, …`        | 268 ms, reads all rows  |
+| `title COLLATE "C"`              | `Banana, Zebra, apple, …` ❌      | 109 ms, stops at 30     |
+| **`sortkey(title) COLLATE "C"`** | **`ähnlich, Ápice, apple, …`** ✅ | **108 ms, stops at 30** |
+
+The normalised key reproduces the database's own ordering **exactly** — verified against Swedish,
+Spanish, German and mixed-case sets, where it matched `en_US.utf8` in every case.
+
+This is the same technique Elasticsearch uses today: `string_sorter_normalized` is lowercase +
+asciifolding, applied to a keyword sort field. So the default path ports at full parity.
+
+Two caveats. `unaccent()` is `STABLE`, so it needs a thin `IMMUTABLE` wrapper before it can go in an
+index expression. And the sort key still has to be **declared** per property, exactly like numbers —
+so this solves the ordering problem, not the "one line per sortable property" problem.
+
+**What is genuinely lost** is the ICU mode (`USE_ELASTIC_ICU=true`), which gives true per-locale
+collation: Swedish å/ä/ö after `z`, Spanish `ñ` after `n`. Neither the normalised key nor the current
+non-ICU default handles those, so this is a gap that **already exists** rather than one the migration
+introduces.
 
 **Numbers and dates are fine** — declare them and you get correct ordering on the fast path.
 
@@ -529,7 +549,56 @@ is not ours alone to make.
 
 ---
 
-## 9. PDF full text
+## 9. Scaling reads: replicas and the license wall
+
+Everything measured in this document ran against **one Postgres instance**. This section is about
+what happens when we try to spread read load across more than one — because that is our actual infra,
+and it turns out not to be a purely technical question.
+
+### Our infra today
+
+One primary (read/write) and **two standby nodes**. Those two standbys exist for **failover**, not for
+load distribution — no search (or any other read) traffic is routed to them today. The question is
+whether they could be, to take search load off the primary.
+
+### How Elasticsearch scales reads
+
+Elasticsearch's read scaling is built in and free: an index is split into **shards**, each shard can
+have any number of **replicas**, and any node holding a replica can serve a query. Add nodes, add
+replicas, reads spread across them — no license tier gates this.
+
+### How ParadeDB scales reads
+
+ParadeDB has no shards or replicas of its own — it is a Postgres index, so it scales the way Postgres
+scales: by adding standby nodes and pointing read traffic at them. That is where it stops being purely
+technical:
+
+| Replication method                                            | Can a standby answer `pg_search` (BM25) queries?               |
+| --------------------------------------------------------------- | ---------------------------------------------------------------- |
+| **Physical streaming replication** (what our 2 standbys use)    | **No, on Community.** Requires WAL integration — Enterprise-only |
+| Logical replication                                              | Yes, on Community — but a different, heavier-to-operate mechanism |
+| ParadeDB Enterprise (commercial license)                         | Yes — physical standbys become search-capable read replicas       |
+
+The restriction is explicit, not a bug: ParadeDB's own error message on Community, when you try, says
+serving reads from a standby "requires write-ahead log (WAL) integration, which is supported on
+ParadeDB Enterprise, not ParadeDB Community."
+
+**Concretely, for us:** our two existing standbys cannot take search read load under the Community
+(AGPL) license, no matter how we tune anything above. Getting there means either an Enterprise license,
+or replacing physical streaming replication with logical replication as the mechanism feeding
+search-serving replicas — a real architecture change (separate replication slots, replication lag to
+manage, DDL doesn't replicate automatically), not a config flag.
+
+### The comparison, in one line
+
+**Elasticsearch:** read scaling is a capacity decision — add nodes. **ParadeDB Community:** read
+scaling off physical replicas isn't available at all; you're on one instance for search reads
+regardless of how many standbys you run. **ParadeDB Enterprise:** closes that gap, at a commercial
+license cost.
+
+---
+
+## 10. PDF full text
 
 Tested separately from entity metadata, because it lives in its own table and behaves differently.
 
@@ -607,7 +676,7 @@ than exact word forms, dropping it would roughly halve recall in inflected langu
 | Phrase search inside a document                 | Works                                              |
 | Search within one open document                 | Works                                              |
 | Get one result row per entity, not one per page | Works                                              |
-| Find text in a second or third attached PDF     | **Works — new behaviour**                          |
+| Find text in a second or third attached PDF     | **Works — new behavior**                           |
 
 ### Performance
 
@@ -665,7 +734,7 @@ would degrade first on a much larger collection.
   gets the wrong stemmer, and now also sits in the wrong partition. Correcting the language moves it
   automatically.
 
-## 10. Combining metadata and document text
+## 11. Combining metadata and document text
 
 The library shows one ranked list containing entities that matched on their metadata **and** entities
 that matched inside their PDFs. That means joining the two tables, which raised two questions — both
@@ -711,7 +780,7 @@ by score (reciprocal rank fusion). Same term, same data:
 About 20% more expensive, and the only option that produces a usable ordering.
 
 > **A decision for product here.** Merging by rank currently treats both sources as equally
-> important. Today's behaviour favours metadata over document text, so if we want to preserve that
+> important. Today's behavior favours metadata over document text, so if we want to preserve that
 > feel, the document-text side should be weighted lower. That is a dial, not a rewrite — but someone
 > has to choose the setting.
 
@@ -734,7 +803,7 @@ with no fallback to scanning.
 
 ---
 
-## 11. Under concurrent load
+## 12. Under concurrent load
 
 Everything above measures one query at a time. This section runs the real library workloads through a
 connection pool at rising concurrency, on 12 cores with 200,000 entities and 400,000 pages, always as
@@ -787,7 +856,7 @@ Roughly **30× less throughput** on result-fetching once permissions are enforce
 unchanged — nothing degrades or falls back — but each candidate row has to be read from the table to
 check who is allowed to see it.
 
-This is the clearest optimisation target in the whole evaluation, and it is a design question rather
+This is the clearest optimization target in the whole evaluation, and it is a design question rather
 than a tuning one: how much of the permission check can move into the search index, and how much
 safety are we prepared to trade for it.
 
@@ -799,33 +868,207 @@ capacity planning on real hardware.
 
 ---
 
-## 12. Open questions
+## 13. Things to discuss as a group
 
-| Question                                                                         | Why it matters                                                                                      | How to answer                            |
-| -------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- | ---------------------------------------- |
-| **How much of the permission check can move into the search index?**             | It is the largest single cost in every measurement — 7.5× on latency, ~30× on throughput under load | Design work, then measure                |
-| **How many filterable properties, with how many options, do real tenants have?** | Decides whether the 65,000-bucket ceiling and the property-scaling costs are real or theoretical    | One query against production data        |
-| **Do we accept `COLLATE "C"` ordering, or slow text sorting?**                   | Affects the library's default sort, visibly, for every user                                         | Product decision                         |
-| **How should document text be weighted against metadata in the ranking?**        | Rank fusion currently treats them equally; today's behaviour favours metadata                       | Product decision, then a one-line change |
-| **How does a mostly-unpublished collection perform?**                            | Our permission-cost numbers assume mostly-published data                                            | Re-run with a different published ratio  |
-| **Is `_id` globally unique across tenants?**                                     | The search index needs a single-column key, but the real table's key is composite                   | One query against production data        |
+These are decisions, not more testing. Each one has been measured; what is left is a choice about
+what we are willing to trade. Roughly in order of how much they shape the work.
 
 ---
 
-## 13. Where this leaves us
+### 13.1 Sorting — the one that needs the most discussion
+
+This is the least resolved area and it has three separate parts that get confused with each other.
+
+**Part 1: text sorting needs a stored sort key — solved, but it is work.** ParadeDB will only sort
+text through the index in the byte order it stores. Under the database's normal collation it refuses,
+so `ORDER BY title` reads every matching row.
+
+The answer is to store a normalised sort key — lowercase, accents folded — and byte-order that. It
+reproduces the database's own ordering exactly and keeps the fast path:
+
+| `ORDER BY`                       | Order the user sees               | Speed                  |
+| -------------------------------- | --------------------------------- | ---------------------- |
+| `title`                          | `ähnlich, Ápice, apple, …`        | 268 ms, reads all rows |
+| `title COLLATE "C"`              | `Banana, Zebra, apple, …` ❌      | 109 ms                 |
+| **`sortkey(title) COLLATE "C"`** | **`ähnlich, Ápice, apple, …`** ✅ | **108 ms**             |
+
+This is the same trick Elasticsearch uses today (`string_sorter_normalized` = lowercase +
+asciifolding), so the default behaviour ports at parity. It applies to `title` and `template` too,
+which are plain columns — the problem was never specific to metadata.
+
+> **To decide:** nothing blocking, but two things to note. We would lose the `USE_ELASTIC_ICU=true`
+> mode, which gives true per-locale ordering (Swedish å after `z`, Spanish `ñ` after `n`) — a gap
+> that already exists whenever that flag is off. And the sort key still has to be declared per
+> property, which is Part 2's problem, not this one.
+
+**Part 2: numbers and dates work, but only if declared — and the declaration is per property.**
+A sortable property must be written by name into the `CREATE INDEX` statement, with a cast:
+
+```sql
+(("metadata"->'date_of_ruling'->0->>'value')::numeric::pdb.alias('sort_date_of_ruling'))
+```
+
+That one line buys two things. Without it the property still sorts, but the database reads **every**
+matching row to return thirty (10,000 rows read per row displayed at 300k entities), and dates and
+numbers come back in text order — `100, 1000, 25, 9` — silently, with no error.
+
+**Part 3: this collides with how the sort dropdown is populated.** The dropdown lists every property
+with "Use as filter" ticked, which editors control. So an editor ticking a checkbox creates a
+property that sorts _correctly but slowly_, and it stays that way until an engineer edits SQL and
+rebuilds the index.
+
+And it degrades on **both** axes — more entities _and_ more properties, because the whole `metadata`
+document has to be read to sort by it:
+
+| Undeclared sort                 | Cost   |
+| ------------------------------- | ------ |
+| 20,000 entities, 20 properties  | 49 ms  |
+| 20,000 entities, 600 properties | 692 ms |
+| 300,000 entities, 20 properties | 851 ms |
+
+> **To decide:** do we accept a bounded, curated set of fast-sortable properties — and if so, who
+> curates it and how does an editor find out their property is not in it? Or do we accept that
+> sorting by an arbitrary property is slow on large collections?
+
+---
+
+### 13.2 Ranking — how metadata and document text combine
+
+Two indexes produce two relevance scores on completely different scales (metadata 3.23–3.65,
+document text 0.000019). Adding them gives a first page that is **100% metadata matches**.
+
+Merging by rank instead of score fixes it, and costs about 20% more:
+
+| Method            | First 30 results              |
+| ----------------- | ----------------------------- |
+| Adding raw scores | 30 metadata, 0 document text  |
+| Merging by rank   | 15 metadata, 15 document text |
+
+Rank fusion currently treats both sources as equally important. Today's behaviour deliberately
+favours metadata over document text.
+
+> **To decide:** what weighting do we want? Equal, or metadata-favoured as today? This is a dial —
+> one number — but nobody can pick it from a benchmark. It needs someone who knows how researchers
+> actually use the library.
+
+---
+
+### 13.3 Permissions — the largest single cost in the whole evaluation
+
+| Same query, 200k entities              | Time        | vs no check |
+| -------------------------------------- | ----------- | ----------- |
+| No permission check at all             | 6.9 ms      | 1.0×        |
+| Check written into the search query    | 22.5 ms     | 3.2×        |
+| Check as an ordinary SQL condition     | 35.7 ms     | 5.1×        |
+| **Enforced by the database, as today** | **52.2 ms** | **7.5×**    |
+
+Under concurrent load the gap is roughly **30×** on throughput. The database-enforced version is the
+safest — a query cannot forget it — and the most expensive.
+
+> **To decide:** how much of the permission check moves into the search index, and how much of the
+> "the database refuses to return rows you may not see" guarantee are we prepared to trade for it?
+> For a product used by human-rights organisations that is not a purely technical call.
+
+Two things worth knowing before that conversation: being an admin does **not** avoid the cost, and
+our measurements assume a mostly-published collection — a mostly-unpublished one would be worse, and
+we have not measured it.
+
+---
+
+### 13.4 The filter sidebar — the first thing that runs out of headroom
+
+Two independent limits meet here.
+
+- **A hard ceiling:** one aggregation query may return at most **65,000 buckets** (facets × options).
+  It is a fixed maximum, not a setting. Past it the query fails outright. Batching works — 600 facets
+  in 4 queries, 498 ms — so it is survivable, not fatal.
+- **Under load it saturates first.** The sidebar tops out around 25 requests/second, below every
+  other workload, because counting has to walk every matching row and does not scale with cores.
+
+> **To decide:** nothing yet — this one needs a fact first. **How many filterable properties, with
+> how many distinct options, do our largest real tenants actually have?** That single query decides
+> whether the ceiling is a real constraint or a theoretical one, and it also settles §13.1's "bounded
+> set of sortable properties" question. Worth running before the meeting.
+
+---
+
+### 13.5 Tenant isolation
+
+All tenants share one index. Measured, that is cheaper than feared — a neighbour ten times your size
+costs essentially nothing for filtering, searching and faceting; only sorting doubles. But two
+non-performance consequences remain: the index is the size of all tenants combined, and **a rebuild
+rebuilds everything**, so per-tenant reindexing is lost.
+
+Partitioning restores it, and we tested that it works — but the sidebar aggregation function does not
+run on a partitioned table at all, and permission rules do not inherit into partitions (we confirmed
+a restricted user reading everything through a partition).
+
+> **To discuss:** this is a decision about the `entities` table, not about search. It needs whoever
+> owns the Postgres migration in the room.
+
+---
+
+### 13.6 Languages without stemmers
+
+Eleven languages we stem today have no ParadeDB stemmer (Armenian, Basque, Bulgarian, Catalan,
+Galician, Hindi, Indonesian, Irish, Latvian, Lithuanian, Sorani). They stay fully searchable by exact
+word, but a base form will not find inflected forms.
+
+> **To confirm:** this was accepted as a declared trade when the index shape was chosen. Worth
+> restating to the group rather than leaving it buried, since it is a real quality regression for any
+> collection in those languages.
+
+---
+
+### 13.7 Read scaling requires a license, or a different replication mechanism
+
+Our infra is one primary plus two standbys, currently used only for failover. On ParadeDB Community,
+those standbys **cannot** serve `pg_search` reads at all — physical streaming replication is
+Enterprise-only (it needs WAL integration Community doesn't have). Elasticsearch has no equivalent
+gate: replicas serve reads for free, on any tier.
+
+See §9 for the detail. The two ways out are a commercial license, or rebuilding read distribution on
+logical replication instead of the physical streaming replication we use today.
+
+> **To decide:** is an Enterprise license in scope for this migration, or does "search reads only ever
+> hit one instance" become an accepted constraint (at least until logical-replication-based read
+> distribution is built and proven)? This changes the cost comparison against Elasticsearch materially
+> — it is not just a feature checkbox.
+
+---
+
+### Facts worth gathering before the meeting
+
+Three lookups, none of which need this harness:
+
+| Question                                                                            | Feeds        |
+| ----------------------------------------------------------------------------------- | ------------ |
+| How many filterable properties, with how many options, do our largest tenants have? | §13.1, §13.4 |
+| What proportion of a real collection is unpublished?                                | §13.3        |
+| Which languages do our actual PDF collections use?                                  | §13.6        |
+
+---
+
+## 14. Where this leaves us
 
 Indexing the `metadata` column exactly as it is stored today covers **more than we expected**:
-searching, every filter type, facet counts including thesaurus groups, permissions, and property
-type collisions all work with no change to the data model. The sidebar keeps its single round trip,
-and the number of properties is not, in general, a scaling problem.
+searching, every filter type, facet counts including thesaurus groups, permissions, and property type
+collisions all work with no change to the data model. The sidebar keeps its single round trip, and
+the number of properties is not, in general, a scaling problem.
 
-Three things need decisions rather than more testing:
+PDF full text works too, with a different shape — one row per page, partitioned by the document's own
+language — and it turned out to be the **fastest** part of the system, an order of magnitude quicker
+than anything else under load. It also gains two things we do not have today: every attached document
+is searchable rather than one per entity, and searching is language-agnostic without anyone choosing
+a language.
 
-- **Text sorting** forces a choice between correct alphabetical order and speed.
-- **Nested strict filters** need a deliberate two-step implementation, or they silently return the
-  wrong set.
-- **Tenant isolation** — sharing one index is cheaper than feared, but per-tenant reindexing is lost,
-  and getting it back has real costs attached.
+What is left is not really a feasibility question any more. It is five trades, and none of them is
+ours alone to make:
 
-And the largest untested area remains **PDF full text**, which is a separate table and a separate
-problem. Nothing in this document speaks to it.
+- **Sorting** — a bounded set of fast-sortable properties, or slow sorting on arbitrary ones. Text
+  ordering itself is solved by a stored sort key, at parity with today.
+- **Permissions** — the strongest safety guarantee we could have, at 7.5× the cost.
+- **Ranking** — how much document text should count against metadata.
+- **Tenant isolation** — one shared index, or partitioning and the two problems it brings.
+- **Read scaling** — our standbys can't serve search reads without an Enterprise license or a switch
+  to logical replication; Elasticsearch has no equivalent restriction.
