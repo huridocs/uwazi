@@ -1,10 +1,9 @@
 import React from 'react';
 import 'cypress-axe';
 import { mount } from 'cypress/react';
-import { composeStories } from '@storybook/react';
 import * as stories from '#app/stories/ErrorBoundary.stories.js';
 
-const { BasicErrorBoundary } = composeStories(stories);
+const { BasicErrorBoundary } = stories;
 
 const FragileComponent = ({ source }: { source?: { text: string } }) => (
   <div>
@@ -16,18 +15,18 @@ const FragileComponent = ({ source }: { source?: { text: string } }) => (
 describe('ErrorBoundary', () => {
   it('should show the nested children if no errors', () => {
     mount(
-      <BasicErrorBoundary error={undefined}>
+      <BasicErrorBoundary.Component error={undefined}>
         <FragileComponent source={{ text: 'well' }} />
-      </BasicErrorBoundary>
+      </BasicErrorBoundary.Component>
     );
     cy.contains('this works well').should('exist');
   });
 
   it('should show a fallback component when a nested component fails', () => {
     mount(
-      <BasicErrorBoundary error={undefined}>
+      <BasicErrorBoundary.Component error={undefined}>
         <FragileComponent source={undefined} />
-      </BasicErrorBoundary>
+      </BasicErrorBoundary.Component>
     );
     cy.on('uncaught:exception', (_err, _runnable) => {
       cy.contains('this works').should('not.exist');
@@ -38,7 +37,7 @@ describe('ErrorBoundary', () => {
   });
 
   it('should show a fallback component for a 500 status', () => {
-    mount(<BasicErrorBoundary />);
+    mount(<BasicErrorBoundary.Component />);
     cy.contains('500');
     cy.contains('Unexpected error');
     cy.contains('Something went wrong');
@@ -46,7 +45,7 @@ describe('ErrorBoundary', () => {
 
   it('should show a fallback component for a 404 status', () => {
     mount(
-      <BasicErrorBoundary
+      <BasicErrorBoundary.Component
         error={{ status: 404, message: 'missing file', requestId: '123', name: 'ServerError' }}
       />
     );

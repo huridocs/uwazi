@@ -1,21 +1,20 @@
 import React from 'react';
 import 'cypress-axe';
 import { mount } from 'cypress/react';
-import { composeStories } from '@storybook/react';
 import * as stories from '#app/stories/Components/UI/DropdownListbox.stories.js';
 
-const { Sort, Disabled } = composeStories(stories);
+const { Sort, Disabled } = stories;
 
 describe('DropdownListbox', () => {
   it('should be accessible when open', () => {
-    mount(<Sort />);
+    mount(<Sort.Component />);
     cy.get('button[aria-haspopup="listbox"]').click();
     cy.injectAxe();
     cy.checkA11y();
   });
 
   it('should open, select an option, and close the menu', () => {
-    mount(<Sort />);
+    mount(<Sort.Component />);
     cy.contains('button', 'Appearance').should('be.visible');
     cy.get('button[aria-haspopup="listbox"]').click();
     cy.get('[role="listbox"]').should('be.visible');
@@ -25,7 +24,7 @@ describe('DropdownListbox', () => {
   });
 
   it('should close when clicking the backdrop', () => {
-    mount(<Sort />);
+    mount(<Sort.Component />);
     cy.get('button[aria-haspopup="listbox"]').click();
     cy.get('[role="listbox"]').should('be.visible');
     cy.get('body').click(0, 0);
@@ -33,7 +32,7 @@ describe('DropdownListbox', () => {
   });
 
   it('should not open when disabled', () => {
-    mount(<Disabled />);
+    mount(<Disabled.Component />);
     cy.get('button[aria-haspopup="listbox"]').should('be.disabled');
     cy.get('button[aria-haspopup="listbox"]').click({ force: true });
     cy.get('[role="listbox"]').should('not.exist');

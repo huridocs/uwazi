@@ -1,10 +1,9 @@
 import React from 'react';
 import 'cypress-axe';
 import { mount } from 'cypress/react';
-import { composeStories } from '@storybook/react';
 import * as stories from '#app/stories/CodeEditor.stories.js';
 
-const { HTMLEditor, JSEditor } = composeStories(stories);
+const { HTMLEditor, JSEditor } = stories;
 
 class NoopWorker extends EventTarget implements Worker {
   onerror: AbstractWorker['onerror'] = null;
@@ -33,14 +32,14 @@ describe('Code editor', () => {
   });
 
   it('should render the editor with existing HTML and the correct layout properties', () => {
-    mount(<HTMLEditor />);
+    mount(<HTMLEditor.Component />);
     cy.contains('<h1>Main Heading</h1>').should('exist');
     cy.get('div[role="code"]').should('exist');
     cy.get('div[dir="ltr"]').should('exist');
   });
 
   it('should be able to edit', () => {
-    mount(<HTMLEditor />);
+    mount(<HTMLEditor.Component />);
     cy.get('div[role="code"]').should('exist');
     cy.get('div[dir="ltr"]').should('exist');
     cy.contains('<h1>Main Heading</h1>').should('exist');
@@ -51,14 +50,14 @@ describe('Code editor', () => {
   });
 
   it('should mount an empty editor if there is no code', () => {
-    JSEditor.args.intialValue = undefined;
-    mount(<JSEditor />);
+    JSEditor.composed.args.intialValue = undefined;
+    mount(<JSEditor.Component />);
     cy.get('.view-lines').children().should('have.length', 1);
   });
 
   it('should get the updated code when clicking the save button', () => {
-    HTMLEditor.args.intialValue = '<h1>Original HTML code</h1>';
-    mount(<HTMLEditor />);
+    HTMLEditor.composed.args.intialValue = '<h1>Original HTML code</h1>';
+    mount(<HTMLEditor.Component />);
 
     cy.get('[role="code"]').should('exist');
     cy.contains('button', 'Save').click();
@@ -73,7 +72,7 @@ describe('Code editor', () => {
   });
 
   it('should render the fallback element when an error occurs', () => {
-    HTMLEditor.args.fallbackElement = (
+    HTMLEditor.composed.args.fallbackElement = (
       <textarea
         className="w-full h-full"
         data-test-id="fallback"
@@ -82,9 +81,9 @@ describe('Code editor', () => {
       />
     );
     //@ts-ignore force monaco to fail
-    HTMLEditor.args.intialValue = {};
+    HTMLEditor.composed.args.intialValue = {};
 
-    mount(<HTMLEditor />);
+    mount(<HTMLEditor.Component />);
 
     cy.contains('<h1>Original HTML code</h1>').should('exist');
     cy.get('div[role="code"]').should('not.exist');

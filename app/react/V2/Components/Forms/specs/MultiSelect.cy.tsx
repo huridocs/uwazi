@@ -1,15 +1,14 @@
 import React from 'react';
 import 'cypress-axe';
 import { mount } from 'cypress/react';
-import { composeStories } from '@storybook/react';
 import * as stories from '#app/stories/Forms/MultiSelect.stories.js';
 
-const { Basic: MultiSelect } = composeStories(stories);
+const { Basic: MultiSelect } = stories;
 
 describe('MultiSelect', () => {
   describe('Rendering', () => {
     beforeEach(() => {
-      mount(<MultiSelect />);
+      mount(<MultiSelect.Component />);
     });
 
     it('should be accessible', () => {
@@ -37,7 +36,7 @@ describe('MultiSelect', () => {
 
   describe('Main area', () => {
     beforeEach(() => {
-      mount(<MultiSelect />);
+      mount(<MultiSelect.Component />);
       cy.get('[data-testid="multiselect"] button').click();
       cy.get('ul li').get('input').eq(1).click();
       cy.get('ul li').get('input').eq(2).click();
@@ -61,7 +60,7 @@ describe('MultiSelect', () => {
     it('should execute the onchange action when adding or removing items and return the updated options', () => {
       const onChangeSpy = cy.stub().as('onChange');
       mount(
-        <MultiSelect
+        <MultiSelect.Component
           onChange={(value: string[]) => {
             onChangeSpy(value);
           }}
@@ -74,8 +73,8 @@ describe('MultiSelect', () => {
     });
 
     it('should update the values if value has changed', () => {
-      mount(<MultiSelect value={['item1']} />).then(({ rerender }) => {
-        rerender(<MultiSelect value={['item8', 'item9']} />);
+      mount(<MultiSelect.Component value={['item1']} />).then(({ rerender }) => {
+        rerender(<MultiSelect.Component value={['item8', 'item9']} />);
         cy.get('[data-testid="pill-comp"]').should('have.length', 2);
       });
     });
@@ -84,7 +83,7 @@ describe('MultiSelect', () => {
   describe('disabled', () => {
     it('should not be able to open the popover menu or remove items', () => {
       mount(
-        <MultiSelect
+        <MultiSelect.Component
           disabled
           options={[
             { label: 'Value 1', value: 'someone' },

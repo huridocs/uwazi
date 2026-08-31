@@ -1,5 +1,6 @@
 import React from 'react';
-import type { Meta, StoryObj } from '@storybook/react-webpack5';
+import preview from '#storybook/preview';
+import { storyExtend } from '#app/stories/storyExtend.js';
 import {
   ArrowDownTrayIcon,
   PencilSquareIcon,
@@ -13,7 +14,7 @@ import type { ButtonVariant } from '#V2/Components/UI/Button.js';
 const designVariants: ButtonVariant[] = ['primary', 'secondary', 'danger', 'ghost', 'compact'];
 const compatibilityVariants: ButtonVariant[] = ['success'];
 
-const meta: Meta<typeof Button> = {
+const meta = preview.meta({
   title: 'Components/Buttons/Button',
   component: Button,
   args: {
@@ -35,12 +36,14 @@ const meta: Meta<typeof Button> = {
       },
     },
   },
-};
-export default meta;
+});
 
-type Story = StoryObj<typeof Button>;
-
-const Primary: Story = {
+const Primary = meta.story({
+  args: {
+    size: 'medium',
+    disabled: false,
+    children: 'Button name',
+  },
   render: args => (
     <div className="p-4" data-storybook-theme-checks>
       <Button variant={args.variant} size={args.size} disabled={args.disabled}>
@@ -48,19 +51,18 @@ const Primary: Story = {
       </Button>
     </div>
   ),
-};
+});
 
-const Basic: Story = {
-  ...Primary,
+const Basic = storyExtend(Primary, {
   args: {
     variant: 'primary',
     size: 'medium',
     disabled: false,
     children: 'Button name',
   },
-};
+});
 
-const Catalog: Story = {
+const Catalog = meta.story({
   render: () => (
     <div className="flex flex-col gap-3 rounded-lg bg-warm p-4" data-storybook-theme-checks>
       <div className="flex flex-wrap items-center gap-3">
@@ -101,6 +103,6 @@ const Catalog: Story = {
       </div>
     </div>
   ),
-};
+});
 
 export { Basic, Catalog };

@@ -4,11 +4,10 @@
 import React from 'react';
 import 'cypress-axe';
 import { mount } from 'cypress/react';
-import { composeStories } from '@storybook/react';
 import * as stories from '#app/stories/Layouts/PaneLayout.stories.js';
 import { PaneLayout } from '#V2/Components/Layouts/PaneLayout.js';
 
-const { Basic } = composeStories(stories);
+const { Basic } = stories;
 
 describe('PaneLayout', () => {
   const render = ({
@@ -18,7 +17,7 @@ describe('PaneLayout', () => {
     localStorageKey?: string;
     defaultRatios?: number[];
   } = {}) => {
-    mount(<Basic localStorageKey={localStorageKey} defaultRatios={defaultRatios} />);
+    mount(<Basic.Component localStorageKey={localStorageKey} defaultRatios={defaultRatios} />);
   };
 
   describe('Desktop', () => {

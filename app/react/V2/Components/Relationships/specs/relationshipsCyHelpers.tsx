@@ -1,12 +1,11 @@
 /// <reference types="cypress" />
 import React from 'react';
 import { mount } from 'cypress/react';
-import { composeStories } from '@storybook/react';
 import * as stories from '#app/stories/EntityViewer/Relationships.stories.js';
 import { ThemeProvider } from '#V2/theme/ThemeProvider.js';
 import { setupMediaIntercepts, setupTestFileIntercept } from '../../UI/Files/specs/testHelpers.js';
 
-const { Basic, WithPanel } = composeStories(stories);
+const { Basic, WithPanel } = stories;
 
 const suppressResizeObserverLoop = () => {
   Cypress.on('uncaught:exception', error => {
@@ -24,11 +23,11 @@ const prepareRelationshipsViewport = () => {
 };
 
 const resetBasicStoryArgs = () => {
-  Basic.args.locale = 'en';
-  Basic.args.fileUrl = '/api/files/sample.pdf';
-  Basic.args.activeRelationshipId = null;
-  Basic.args.onPointClick = undefined;
-  Basic.args.onClusterClick = undefined;
+  Basic.composed.args.locale = 'en';
+  Basic.composed.args.fileUrl = '/api/files/sample.pdf';
+  Basic.composed.args.activeRelationshipId = null;
+  Basic.composed.args.onPointClick = undefined;
+  Basic.composed.args.onClusterClick = undefined;
 };
 
 const waitForDocumentRail = () => {
@@ -39,14 +38,14 @@ const waitForDocumentRail = () => {
 const mountBasicStory = () => {
   mount(
     <ThemeProvider>
-      <Basic />
+      <Basic.Component />
     </ThemeProvider>
   );
   waitForDocumentRail();
 };
 
 const mountWithPanelStory = () => {
-  mount(<WithPanel />);
+  mount(<WithPanel.Component />);
   waitForDocumentRail();
   cy.get('[aria-label="Search relationships"]', { timeout: 20000 }).should('be.visible');
 };

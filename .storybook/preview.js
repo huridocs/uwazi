@@ -1,4 +1,6 @@
 import React from 'react';
+import { definePreview } from '@storybook/react-webpack5';
+import addonA11y from '@storybook/addon-a11y';
 import { configureActions } from 'storybook/actions';
 import { addons } from 'storybook/preview-api';
 import { Provider as ReduxProvider } from 'react-redux';
@@ -35,7 +37,7 @@ configureActions({
   limit: 20,
 });
 
-export const parameters = {
+const parameters = {
   controls: {
     matchers: {
       color: /(background|color)$/i,
@@ -50,7 +52,7 @@ export const parameters = {
   },
 };
 
-export const globalTypes = {
+const globalTypes = {
   uwaziThemePreset: {
     name: 'Theme',
     defaultValue: 'default',
@@ -86,7 +88,7 @@ export const globalTypes = {
   },
 };
 
-export const decorators = [
+const decorators = [
   (Story, context) => {
     const preset = normalizeStorybookThemePreset(context.globals.uwaziThemePreset);
     const mode = normalizeStorybookThemeMode(context.globals.uwaziThemeMode);
@@ -216,4 +218,12 @@ export const decorators = [
   },
 ];
 
-export const tags = ['autodocs'];
+const tags = ['autodocs'];
+
+export default definePreview({
+  addons: [addonA11y()],
+  parameters,
+  globalTypes,
+  decorators,
+  tags,
+});

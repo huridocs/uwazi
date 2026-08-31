@@ -28,7 +28,8 @@
     "#UI": "./app/react/UI/index.js",
     "#UI/*": "./app/react/UI/*",
     "#V2": "./app/react/V2/index.js",
-    "#V2/*": "./app/react/V2/*"
+    "#V2/*": "./app/react/V2/*",
+    "#storybook/preview": "./.storybook/preview.js"
   },
   "scripts": {
     "postinstall": "npx patch-package",

@@ -1,13 +1,7 @@
 import React from 'react';
-import type { Meta, StoryObj } from '@storybook/react-webpack5';
+import preview from '#storybook/preview';
+import { storyExtend } from '#app/stories/storyExtend.js';
 import { PaneLayout } from '#V2/Components/Layouts/PaneLayout.js';
-
-const meta: Meta<typeof PaneLayout> = {
-  title: 'Layouts/PaneLayout',
-  component: PaneLayout,
-};
-
-type Story = StoryObj<typeof PaneLayout>;
 
 const Component = ({
   localStorageKey,
@@ -112,7 +106,16 @@ const Component = ({
   </PaneLayout>
 );
 
-const Primary: Story = {
+const meta = preview.meta({
+  title: 'Layouts/PaneLayout',
+  component: Component,
+});
+
+const Primary = meta.story({
+  args: {
+    localStorageKey: undefined,
+    defaultRatios: undefined,
+  },
   render: args => (
     <div className="tw-content" style={{ height: '768px', maxHeight: '768px' }}>
       <div className="flex flex-col gap-4 h-full">
@@ -131,15 +134,13 @@ const Primary: Story = {
       </div>
     </div>
   ),
-};
+});
 
-const Basic: Story = {
-  ...Primary,
+const Basic = storyExtend(Primary, {
   args: {
     localStorageKey: undefined,
     defaultRatios: undefined,
   },
-};
+});
 
 export { Basic };
-export default meta;
