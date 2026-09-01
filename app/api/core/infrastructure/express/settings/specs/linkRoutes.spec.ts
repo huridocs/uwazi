@@ -3,6 +3,7 @@ import request from 'supertest';
 
 import { DBFixture } from '#api/utils/testing_db.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { testingTenants } from '#api/utils/testingTenants.js';
 import { setUpApp } from '#api/utils/testingRoutes.js';
 import { UserRole } from '#shared/types/userSchema.js';
 import { UserSchema } from '#shared/types/userType.js';
@@ -13,6 +14,11 @@ import {
 } from '../../../../application/settings/specs/fixtures.js';
 import { settingsRoutes } from '../routes.js';
 import { SettingsQueryServiceFactory } from '#api/core/infrastructure/factories/SettingsQueryServiceFactory.js';
+
+const testConfigs = [
+  { name: 'Mongo', postgresSettings: false },
+  { name: 'Postgres', postgresSettings: true },
+];
 
 let currentUser: UserSchema;
 
@@ -51,171 +57,194 @@ const fixtures: DBFixture = {
   users: [adminUser, editor, collaborator],
 };
 
-beforeEach(async () => {
-  await testingEnvironment.setUp(fixtures);
-});
-
-afterAll(async () => testingEnvironment.tearDown());
-
 describe('api/settings/links', () => {
-  describe('GET', () => {
-    it('should respond with links', async () => {
-      const response = await request(app).get('/api/settings/links').expect(200);
-      expect(response.body).toEqual(expectedLinks);
-    });
+  beforeAll(async () => {
+    await testingEnvironment.setUp({}, { postgres: true });
   });
 
-  describe('POST', () => {
-    it.each([editor, collaborator])('$username should not be able save links', async user => {
-      currentUser = user;
-      const response = await request(app).post('/api/settings/links');
-      expect(response.status).toEqual(401);
-      expect(response.body).toEqual({ error: 'Unauthorized', message: 'Unauthorized' });
+  afterAll(async () => testingEnvironment.tearDown());
+
+  describe.each(testConfigs)('$name', ({ postgresSettings }) => {
+    beforeEach(async () => {
+      await testingEnvironment.setUp(fixtures, {
+        postgres: true,
+        postgresMirror: postgresSettings ? ['settings'] : [],
+      });
+      if (postgresSettings) {
+        testingTenants.changeCurrentTenant({
+          ...testingTenants.current(),
+          featureFlags: { postgresSettings: true },
+        });
+      }
+    });
+    describe('GET', () => {
+      it('should respond with links', async () => {
+        const response = await request(app).get('/api/settings/links').expect(200);
+        expect(response.body).toEqual(expectedLinks);
+      });
     });
 
-    it('should overwrite links with new links', async () => {
-      currentUser = adminUser;
-      const response = await request(app).post('/api/settings/links').send(newLinks);
-      expect(response.status).toEqual(200);
-      const storedLinks =
-        (
-          await testingEnvironment.runWithContext(async () =>
-            SettingsQueryServiceFactory.default().getPublic()
+    describe('POST', () => {
+      it.each([editor, collaborator])('$username should not be able save links', async user => {
+        currentUser = user;
+        const response = await request(app).post('/api/settings/links');
+        expect(response.status).toEqual(401);
+        expect(response.body).toEqual({ error: 'Unauthorized', message: 'Unauthorized' });
+      });
+
+      it('should overwrite links with new links', async () => {
+        currentUser = adminUser;
+        const response = await request(app).post('/api/settings/links').send(newLinks);
+        expect(response.status).toEqual(200);
+        const storedLinks =
+          (
+            await testingEnvironment.runWithContext(
+              async () => SettingsQueryServiceFactory.default().getPublic(),
+              postgresSettings
+                ? {
+                    tenant: {
+                      ...testingTenants.current(),
+                      featureFlags: { postgresSettings: true },
+                    },
+                  }
+                : undefined
+            )
+          ).links || [];
+        const serialize = (value: unknown) => JSON.parse(JSON.stringify(value));
+        expect(serialize(storedLinks)).toEqual(
+          serialize(newLinks).map((link: { sublinks?: Record<string, unknown>[] }) =>
+            link.sublinks?.length
+              ? {
+                  ...link,
+                  sublinks: link.sublinks.map(sublink => ({
+                    ...sublink,
+                    _id: expect.any(String),
+                  })),
+                }
+              : link
           )
-        ).links || [];
-      expect(storedLinks).toEqual(
-        newLinks.map(link =>
-          link.sublinks?.length
-            ? {
-                ...link,
-                sublinks: link.sublinks.map(sublink => ({
-                  ...sublink,
-                  _id: expect.anything(),
-                })),
-              }
-            : link
-        )
-      );
-    });
+        );
+      });
 
-    it.each([
-      {
-        case: 'missing title',
-        getInput: () => {
-          const { title, ...rest } = newLinks[0];
-          return [rest];
-        },
-        expectedFirstMessage: 'Required',
-        expectedPath: 'links.0.title',
-      },
-      {
-        case: 'missing type',
-        getInput: () => {
-          const { type, ...rest } = newLinks[0];
-          return [rest];
-        },
-        expectedFirstMessage: 'Required',
-        expectedPath: 'links.0.type',
-      },
-      {
-        case: 'unexpected type',
-        getInput: () => {
-          const { type, ...rest } = newLinks[0];
-          return [{ ...rest, type: 'unexpected' }];
-        },
-        expectedFirstMessage:
-          "Invalid enum value. Expected 'link' | 'group', received 'unexpected'",
-        expectedPath: 'links.0.type',
-      },
-      {
-        case: 'that links have url',
-        getInput: () => {
-          const { url, ...rest } = newLinks[0];
-          return [{ ...rest }];
-        },
-        expectedFirstMessage: 'Links of type link should have url',
-        expectedPath: 'links.0',
-      },
-      {
-        case: "that groups don't have url",
-        getInput: () => [{ ...newLinks[1], url: 'unexpected' }],
-        expectedFirstMessage: 'Links of type group should not have url',
-        expectedPath: 'links.0',
-      },
-      {
-        case: "that links don't have sublinks",
-        getInput: () => [
-          {
-            ...newLinks[0],
-            sublinks: [
-              {
-                title: 'unexpected',
-                url: 'page/unexpectedid/unexpected',
-                type: 'link',
-                localId: 'unexpectedLocalId1Id',
-              },
-            ],
+      it.each([
+        {
+          case: 'missing title',
+          getInput: () => {
+            const { title, ...rest } = newLinks[0];
+            return [rest];
           },
-        ],
-        expectedFirstMessage: 'Links of type link should not have sublinks',
-        expectedPath: 'links.0',
-      },
-      {
-        case: 'that groups have sublinks',
-        getInput: () => {
-          const { sublinks, ...rest } = newLinks[1];
-          return [rest];
+          expectedFirstMessage: 'Required',
+          expectedPath: 'links.0.title',
         },
-        expectedFirstMessage: 'Links of type group should have sublinks',
-        expectedPath: 'links.0',
-      },
-      {
-        case: 'missing sublink title',
-        getInput: () => {
-          const { sublinks, ...rest } = newLinks[1];
-          const { title, ...sublink } = sublinks![0];
-          return [{ ...rest, sublinks: [{ ...sublink }] }];
+        {
+          case: 'missing type',
+          getInput: () => {
+            const { type, ...rest } = newLinks[0];
+            return [rest];
+          },
+          expectedFirstMessage: 'Required',
+          expectedPath: 'links.0.type',
         },
-        expectedFirstMessage: 'Required',
-        expectedPath: 'links.0.sublinks.0.title',
-      },
-      {
-        case: 'missing sublink url',
-        getInput: () => {
-          const { sublinks, ...rest } = newLinks[1];
-          const { url, ...sublink } = sublinks![0];
-          return [{ ...rest, sublinks: [{ ...sublink }] }];
+        {
+          case: 'unexpected type',
+          getInput: () => {
+            const { type, ...rest } = newLinks[0];
+            return [{ ...rest, type: 'unexpected' }];
+          },
+          expectedFirstMessage:
+            "Invalid enum value. Expected 'link' | 'group', received 'unexpected'",
+          expectedPath: 'links.0.type',
         },
-        expectedFirstMessage: 'Required',
-        expectedPath: 'links.0.sublinks.0.url',
-      },
-      {
-        case: 'missing sublink type',
-        getInput: () => {
-          const { sublinks, ...rest } = newLinks[1];
-          const { type, ...sublink } = sublinks![0];
-          return [{ ...rest, sublinks: [{ ...sublink }] }];
+        {
+          case: 'that links have url',
+          getInput: () => {
+            const { url, ...rest } = newLinks[0];
+            return [{ ...rest }];
+          },
+          expectedFirstMessage: 'Links of type link should have url',
+          expectedPath: 'links.0',
         },
-        expectedFirstMessage: 'Invalid literal value, expected "link"',
-        expectedPath: 'links.0.sublinks.0.type',
-      },
-      {
-        case: 'unexpected sublink type',
-        getInput: () => {
-          const { sublinks, ...rest } = newLinks[1];
-          const { type, ...sublink } = sublinks![0];
-          return [{ ...rest, sublinks: [{ ...sublink, type: 'unexpected' }] }];
+        {
+          case: "that groups don't have url",
+          getInput: () => [{ ...newLinks[1], url: 'unexpected' }],
+          expectedFirstMessage: 'Links of type group should not have url',
+          expectedPath: 'links.0',
         },
-        expectedFirstMessage: 'Invalid literal value, expected "link"',
-        expectedPath: 'links.0.sublinks.0.type',
-      },
-    ])('should validate $case', async ({ getInput, expectedFirstMessage, expectedPath }) => {
-      currentUser = adminUser;
-      const input = getInput();
-      const response = await request(app).post('/api/settings/links').send(input);
-      expect(response.body.validations[0].message).toEqual(expectedFirstMessage);
-      expect(response.body.validations[0].instancePath).toEqual(expectedPath);
-      expect(response.status).toEqual(422);
+        {
+          case: "that links don't have sublinks",
+          getInput: () => [
+            {
+              ...newLinks[0],
+              sublinks: [
+                {
+                  title: 'unexpected',
+                  url: 'page/unexpectedid/unexpected',
+                  type: 'link',
+                  localId: 'unexpectedLocalId1Id',
+                },
+              ],
+            },
+          ],
+          expectedFirstMessage: 'Links of type link should not have sublinks',
+          expectedPath: 'links.0',
+        },
+        {
+          case: 'that groups have sublinks',
+          getInput: () => {
+            const { sublinks, ...rest } = newLinks[1];
+            return [rest];
+          },
+          expectedFirstMessage: 'Links of type group should have sublinks',
+          expectedPath: 'links.0',
+        },
+        {
+          case: 'missing sublink title',
+          getInput: () => {
+            const { sublinks, ...rest } = newLinks[1];
+            const { title, ...sublink } = sublinks![0];
+            return [{ ...rest, sublinks: [{ ...sublink }] }];
+          },
+          expectedFirstMessage: 'Required',
+          expectedPath: 'links.0.sublinks.0.title',
+        },
+        {
+          case: 'missing sublink url',
+          getInput: () => {
+            const { sublinks, ...rest } = newLinks[1];
+            const { url, ...sublink } = sublinks![0];
+            return [{ ...rest, sublinks: [{ ...sublink }] }];
+          },
+          expectedFirstMessage: 'Required',
+          expectedPath: 'links.0.sublinks.0.url',
+        },
+        {
+          case: 'missing sublink type',
+          getInput: () => {
+            const { sublinks, ...rest } = newLinks[1];
+            const { type, ...sublink } = sublinks![0];
+            return [{ ...rest, sublinks: [{ ...sublink }] }];
+          },
+          expectedFirstMessage: 'Invalid literal value, expected "link"',
+          expectedPath: 'links.0.sublinks.0.type',
+        },
+        {
+          case: 'unexpected sublink type',
+          getInput: () => {
+            const { sublinks, ...rest } = newLinks[1];
+            const { type, ...sublink } = sublinks![0];
+            return [{ ...rest, sublinks: [{ ...sublink, type: 'unexpected' }] }];
+          },
+          expectedFirstMessage: 'Invalid literal value, expected "link"',
+          expectedPath: 'links.0.sublinks.0.type',
+        },
+      ])('should validate $case', async ({ getInput, expectedFirstMessage, expectedPath }) => {
+        currentUser = adminUser;
+        const input = getInput();
+        const response = await request(app).post('/api/settings/links').send(input);
+        expect(response.body.validations[0].message).toEqual(expectedFirstMessage);
+        expect(response.body.validations[0].instancePath).toEqual(expectedPath);
+        expect(response.status).toEqual(422);
+      });
     });
   });
 });

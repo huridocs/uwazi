@@ -6,8 +6,10 @@ import { SyncHandler } from './SyncHandler.js';
  * Preserves historical POST /api/sync semantics: the target tenant has one
  * settings document; inbound payloads (usually `{ _id, languages }`) are
  * applied onto that singleton, never inserted as a second row.
+ *
+ * Storage is whatever SettingsDataSourceFactory returns (Mongo or Postgres).
  */
-export class MongoSettingsSyncHandler implements SyncHandler<Settings> {
+export class SettingsSyncHandler implements SyncHandler<Settings> {
   constructor(private readonly settingsDS: SettingsDataSource) {}
 
   async getById(_id: string): Promise<Settings | null> {
@@ -17,7 +19,7 @@ export class MongoSettingsSyncHandler implements SyncHandler<Settings> {
   async save(document: Partial<Settings>): Promise<Settings> {
     const current = await this.settingsDS.find();
     if (!current?._id) {
-      throw new Error('MongoSettingsSyncHandler: target tenant has no settings document');
+      throw new Error('SettingsSyncHandler: target tenant has no settings document');
     }
 
     return this.settingsDS.patch({
@@ -36,6 +38,6 @@ export class MongoSettingsSyncHandler implements SyncHandler<Settings> {
   }
 
   async delete(_id: string): Promise<void> {
-    throw new Error('MongoSettingsSyncHandler: deleting the settings singleton is not supported');
+    throw new Error(`${this.constructor.name}: deleting the settings singleton is not supported`);
   }
 }

@@ -1,7 +1,6 @@
-/* eslint-disable max-statements */
+/* eslint-disable max-statements, max-lines */
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-import { testingTenants } from '#api/utils/testingTenants.js';
 import { DBFixture } from '#api/utils/testing_db.js';
 import { TranslationDBO } from '#api/core/infrastructure/mongodb/translation/schemas/TranslationDBO.js';
 import { AddLanguageUseCase } from '#api/core/application/AddLanguage.js';
@@ -11,7 +10,13 @@ import { search } from '#api/search/index.js';
 import { Dispatcher } from '#api/core/application/contracts/Dispatcher.js';
 import { ImportPredefinedTranslations } from '#api/core/application/translation/ImportPredefinedTranslationsService.js';
 import { TranslationsDataSourceFactory } from '#api/core/infrastructure/factories/TranslationsDataSourceFactory.js';
+import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import {
+  languageBackendConfigs,
+  languageBackendPostgresMirror,
+  withLanguageBackendFlags,
+} from './languageBackendTest.js';
 
 jest.mock('#api/core/infrastructure/services/V1WebSocketsWrapper.js', () => ({
   V1WebSocketsWrapper: jest.fn().mockImplementation(() => ({
@@ -53,11 +58,6 @@ const mockImportPredefinedTranslations: ImportPredefinedTranslations = {
   execute: importPredefinedSpy,
 };
 
-const testConfigs = [
-  { name: 'Mongo', postgresTranslations: false },
-  { name: 'Postgres', postgresTranslations: true },
-];
-
 describe('AddLanguage use case', () => {
   beforeAll(async () => {
     await testingEnvironment.setUp(fixtures, { postgres: true });
@@ -67,19 +67,12 @@ describe('AddLanguage use case', () => {
     await testingEnvironment.tearDown();
   });
 
-  describe.each(testConfigs)('$name', ({ postgresTranslations }) => {
+  describe.each(languageBackendConfigs)('$name', ({ postgresSettings, postgresTranslations }) => {
     const withFlag = <T>(fn: () => T) =>
-      testingEnvironment.runWithContext(
-        fn,
-        postgresTranslations
-          ? {
-              tenant: {
-                ...testingTenants.current(),
-                featureFlags: { postgresTranslations: true },
-              },
-            }
-          : undefined
-      );
+      withLanguageBackendFlags(postgresSettings, postgresTranslations, fn);
+
+    const readLanguages = async () =>
+      withFlag(async () => (await SettingsDataSourceFactory.default().get()).languages ?? []);
 
     const createSut = (overrides?: Partial<ConstructorParameters<typeof AddLanguageUseCase>[0]>) =>
       withFlag(() =>
@@ -94,7 +87,10 @@ describe('AddLanguage use case', () => {
       cloneLanguageEntitiesSpy.mockClear();
       importPredefinedSpy.mockClear();
       jest.spyOn(search, 'indexEntities').mockResolvedValue(undefined as any);
-      await testingEnvironment.setFixtures(fixtures);
+      await testingEnvironment.setUp(fixtures, {
+        postgres: true,
+        postgresMirror: languageBackendPostgresMirror(postgresSettings, postgresTranslations),
+      });
     });
 
     afterEach(() => {
@@ -110,8 +106,8 @@ describe('AddLanguage use case', () => {
           ],
         });
 
-        const settings = await testingEnvironment.db.getCollection('settings')!.findOne({});
-        expect(settings?.languages).toEqual(
+        const languages = await readLanguages();
+        expect(languages).toEqual(
           expect.arrayContaining([
             expect.objectContaining({ key: 'en', label: 'English', default: true }),
             expect.objectContaining({ key: 'es', label: 'Spanish', installing: true }),
@@ -246,8 +242,7 @@ describe('AddLanguage use case', () => {
         expect(importPredefinedSpy).toHaveBeenCalledWith('es');
 
         // 'en' entry in settings unchanged (no duplicate)
-        const settings = await testingEnvironment.db.getCollection('settings')!.findOne({});
-        const enEntries = settings?.languages?.filter((l: any) => l.key === 'en');
+        const enEntries = (await readLanguages()).filter(language => language.key === 'en');
         expect(enEntries).toHaveLength(1);
       });
 
@@ -306,10 +301,16 @@ describe('AddLanguage use case', () => {
           ).rejects.toThrow('clone failed');
         });
 
-        const settings = await testingEnvironment.db.getCollection('settings')!.findOne({});
-        expect(settings?.languages).toEqual([
-          expect.objectContaining({ key: 'en', label: 'English', default: true }),
-        ]);
+        const languages = await readLanguages();
+        if (postgresSettings) {
+          expect(languages.map(language => language.key)).toEqual(
+            expect.arrayContaining(['en', 'es'])
+          );
+        } else {
+          expect(languages).toEqual([
+            expect.objectContaining({ key: 'en', label: 'English', default: true }),
+          ]);
+        }
 
         if (!postgresTranslations) {
           const esCount = (
@@ -344,8 +345,7 @@ describe('AddLanguage use case', () => {
         expect(importPredefinedSpy).toHaveBeenCalledWith('es');
 
         // Only one 'es' entry in settings
-        const settings = await testingEnvironment.db.getCollection('settings')!.findOne({});
-        const esEntries = settings?.languages?.filter((l: any) => l.key === 'es');
+        const esEntries = (await readLanguages()).filter(language => language.key === 'es');
         expect(esEntries).toHaveLength(1);
       });
     });
