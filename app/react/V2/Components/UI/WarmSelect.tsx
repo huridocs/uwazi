@@ -13,6 +13,7 @@ type WarmSelectProps<T extends string = string> = {
   ariaLabel?: string;
   align?: 'start' | 'end';
   disabled?: boolean;
+  variant?: 'warm' | 'paper';
 };
 
 const WarmSelect = <T extends string>({
@@ -22,9 +23,14 @@ const WarmSelect = <T extends string>({
   ariaLabel,
   align = 'start',
   disabled = false,
+  variant = 'warm',
 }: WarmSelectProps<T>) => {
   const [open, setOpen] = useState(false);
   const current = options.find(option => option.value === value) ?? options[0];
+  const triggerClass =
+    variant === 'paper'
+      ? 'inline-flex h-8 max-w-full cursor-pointer items-center gap-1.5 rounded-md border border-border bg-paper ps-3 pe-2 text-xs font-medium text-ink-secondary transition-colors hover:bg-parchment hover:text-ink focus:outline-none focus-visible:ring-2 focus-visible:ring-ink/35 disabled:cursor-not-allowed disabled:opacity-60'
+      : 'inline-flex h-8 max-w-full cursor-pointer items-center gap-1.5 rounded-md bg-warm ps-2.5 pe-2 text-xs font-medium text-ink-secondary transition-colors hover:bg-parchment hover:text-ink focus:outline-none focus-visible:ring-2 focus-visible:ring-carbon/30 disabled:cursor-not-allowed disabled:opacity-60';
 
   return (
     <div className="relative shrink-0">
@@ -35,7 +41,7 @@ const WarmSelect = <T extends string>({
         aria-haspopup="listbox"
         aria-expanded={open}
         aria-label={ariaLabel}
-        className="inline-flex h-8 max-w-full cursor-pointer items-center gap-1.5 rounded-md bg-warm ps-2.5 pe-2 text-xs font-medium text-ink-secondary transition-colors hover:bg-parchment hover:text-ink focus:outline-none focus-visible:ring-2 focus-visible:ring-carbon/30 disabled:cursor-not-allowed disabled:opacity-60"
+        className={triggerClass}
       >
         <span className="truncate">{current?.label}</span>
         <ChevronDownIcon
