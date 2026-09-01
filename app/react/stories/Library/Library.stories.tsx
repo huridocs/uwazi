@@ -130,6 +130,7 @@ const LibraryPreview = () => {
             chips={chips}
             selectedId={selectedId}
             onSelect={setSelectedId}
+            onClosePreview={() => setSelectedId(undefined)}
             entityBasePath="/entityv2"
             onLoadMore={() => undefined}
           />

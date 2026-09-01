@@ -1,5 +1,5 @@
 /* eslint-disable react/no-multi-comp */
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { useAtomValue } from 'jotai';
 import { DocumentPlusIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import { t, Translate } from '#app/I18N/index.js';
@@ -25,7 +25,10 @@ import {
   MainTabsContent,
   TabsMainButtons,
   isValidMainTab,
+  type MainTabId,
 } from '#V2/Routes/Entity/Tabs/index.js';
+import { EntityTabsProvider } from '#V2/Routes/Entity/Tabs/EntityTabsContext.js';
+import type { EntityTabsState } from '#V2/Routes/Entity/Tabs/hooks/entityTabsTypes.js';
 import { LibraryEntityPreviewFooter } from './LibraryEntityPreviewFooter.js';
 import { LibraryFooterButton } from './LibraryFooterButton.js';
 import { useLibraryPreviewEntity } from './useLibraryPreviewEntity.js';
@@ -35,6 +38,24 @@ type LibraryEntityPreviewProps = {
   entityBasePath: string;
   onClose: () => void;
 };
+
+const noop = () => undefined;
+
+const libraryPreviewTabs = (mainTabId: MainTabId): EntityTabsState => ({
+  activeMainTab: mainTabId,
+  activeSideTab: undefined,
+  explicitSideTab: undefined,
+  syncSideTabId: undefined,
+  sideButtons: [],
+  relationshipsOnMain: mainTabId === MAIN_TAB.RELATIONSHIPS,
+  documentOnMain: mainTabId === MAIN_TAB.DOCUMENT,
+  onMainTabChange: noop,
+  onSideTabChange: noop,
+  focusSideTab: noop,
+  stageSideTab: noop,
+  focusRelationshipsPanel: noop,
+  focusDocumentPanel: noop,
+});
 
 const EntityFilesFromEntity = ({ children }: { children: React.ReactNode }) => {
   const entity = useEntityScopedEntity();
@@ -76,52 +97,55 @@ const LibraryEntityPreviewView = ({
       : defaultMainTab;
   const { isEditing, formMountHost } = useMetadataEditing();
   const showCopyFrom = isEditing && formMountHost === 'main' && mainTabId === MAIN_TAB.METADATA;
+  const entityTabs = useMemo(() => libraryPreviewTabs(mainTabId), [mainTabId]);
 
   return (
-    <div
-      className="flex h-full min-h-0 w-full min-w-0 flex-col overflow-hidden bg-paper"
-      dir={isRtl ? 'rtl' : 'ltr'}
-      data-testid="library-entity-preview"
-    >
-      <div className="shrink-0">
-        <div className="relative">
-          <div className="pe-8">
-            <EntityMainPaneHeader entity={entity} showDocumentViewMode={false} />
+    <EntityTabsProvider value={entityTabs}>
+      <div
+        className="flex h-full min-h-0 w-full min-w-0 flex-col overflow-hidden bg-paper"
+        dir={isRtl ? 'rtl' : 'ltr'}
+        data-testid="library-entity-preview"
+      >
+        <div className="shrink-0">
+          <div className="relative">
+            <div className="pe-8">
+              <EntityMainPaneHeader entity={entity} showDocumentViewMode={false} />
+            </div>
+            <button
+              type="button"
+              onClick={onClose}
+              className="absolute end-2 top-2.5 shrink-0 rounded-md p-1.5 text-ink-muted transition-colors hover:bg-warm hover:text-ink"
+              aria-label={t('System', 'Close', null, false)}
+            >
+              <XMarkIcon className="h-4 w-4" />
+            </button>
           </div>
-          <button
-            type="button"
-            onClick={onClose}
-            className="absolute end-2 top-2.5 shrink-0 rounded-md p-1.5 text-ink-muted transition-colors hover:bg-warm hover:text-ink"
-            aria-label={t('System', 'Close', null, false)}
-          >
-            <XMarkIcon className="h-4 w-4" />
-          </button>
+          <div className="px-3 pt-2 pb-1">
+            <TabsMainButtons
+              entity={entity}
+              mainDocument={mainDocument}
+              onTabChange={() => undefined}
+            />
+          </div>
         </div>
-        <div className="px-3 pt-2 pb-1">
-          <TabsMainButtons
-            entity={entity}
-            mainDocument={mainDocument}
-            onTabChange={() => undefined}
+        <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
+          {showCopyFrom ? <LibraryMetadataCopyFrom /> : null}
+          <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
+            <MainTabsContent
+              activeTabId={mainTabId}
+              entity={entity}
+              mainDocument={mainDocument}
+              pagePlaintext={pagePlaintext}
+            />
+          </div>
+          <LibraryEntityPreviewFooter
+            entityBasePath={entityBasePath}
+            onClose={onClose}
+            mainTabId={mainTabId}
           />
         </div>
       </div>
-      <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
-        {showCopyFrom ? <LibraryMetadataCopyFrom /> : null}
-        <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
-          <MainTabsContent
-            activeTabId={mainTabId}
-            entity={entity}
-            mainDocument={mainDocument}
-            pagePlaintext={pagePlaintext}
-          />
-        </div>
-        <LibraryEntityPreviewFooter
-          entityBasePath={entityBasePath}
-          onClose={onClose}
-          mainTabId={mainTabId}
-        />
-      </div>
-    </div>
+    </EntityTabsProvider>
   );
 };
 
@@ -167,7 +191,7 @@ const LibraryEntityPreview = ({ sharedId, entityBasePath, onClose }: LibraryEnti
     );
   }
 
-  const language = entity.language;
+  const {language} = entity;
   const mainDocument = getMainDocument(readyDocuments(entity.documents), language, defaultLanguage);
 
   return (

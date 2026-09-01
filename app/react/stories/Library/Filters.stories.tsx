@@ -118,7 +118,7 @@ const fakeRelationshipLookup = async (
   });
   const query = searchTerm.trim().toLowerCase();
   const matched = query
-    ? RELATED_ENTITIES.filter(item => item.label.toLowerCase().includes(query))
+    ? RELATED_ENTITIES.filter(item => item.label?.toLowerCase().includes(query))
     : RELATED_ENTITIES;
   const buckets = matched.slice(0, 12);
   onLog({

@@ -13,7 +13,7 @@ describe('ServerSearchService', () => {
   const service = createServerSearchService({
     headers: {},
     language: 'en',
-    user: { _id: 'u1', role: 'editor', username: 'editor' },
+    user: { _id: 'u1', role: 'editor', username: 'editor', email: 'editor@example.com' },
   });
 
   beforeEach(() => {

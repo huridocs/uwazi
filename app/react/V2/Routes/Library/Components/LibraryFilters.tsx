@@ -81,7 +81,11 @@ const PropertyFacet = ({
 }) => {
   const type = filterPropertyType(property, templates);
   const buckets = (aggregations.properties[property.name] ?? []).filter(bucket => bucket.count > 0);
-  const title = <Translate context={property._id || property.name}>{property.label}</Translate>;
+  const title = (
+    <Translate context={property._id ? String(property._id) : property.name}>
+      {property.label}
+    </Translate>
+  );
   const selected = filters[property.name] ?? [];
   const mode: FacetMode = andFilters.includes(property.name) ? 'and' : 'or';
   const onModeChange = (next: FacetMode) => {

@@ -1,4 +1,3 @@
-import type { Aggregations } from '#shared/types/aggregations.js';
 import type {
   LibraryAggregations,
   LibraryFacetBucket,
@@ -58,7 +57,9 @@ type RawAggregation = {
 type SearchEndpointResult = {
   rows?: LibrarySearchResult['rows'];
   totalRows?: number;
-  aggregations?: Aggregations;
+  aggregations?: {
+    all?: Record<string, RawAggregation>;
+  };
 };
 
 const statusToEndpointFlags = (status: LibraryPublishedStatus | undefined) => {

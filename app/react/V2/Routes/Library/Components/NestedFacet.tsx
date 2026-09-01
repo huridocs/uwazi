@@ -15,8 +15,10 @@ type NestedFacetProps = {
   defaultExpanded?: boolean;
 };
 
+const nestedLabelMap: Record<string, Record<string, string>> = nestedPropertyLabels;
+
 const nestedGroupLabel = (key: string, locale: string) => {
-  const entry = nestedPropertyLabels[key.toLowerCase()] as Record<string, string> | undefined;
+  const entry = nestedLabelMap[key.toLowerCase()];
   return entry?.[`label_${locale}`] || entry?.label_en || key;
 };
 
