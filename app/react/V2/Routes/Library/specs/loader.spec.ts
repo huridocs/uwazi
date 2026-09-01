@@ -65,4 +65,18 @@ describe('library loader', () => {
     expect(location).toContain('limit=10');
     expect(searchLibrary).not.toHaveBeenCalled();
   });
+
+  it('passes AND properties to searchLibrary', async () => {
+    await runLoader(
+      'http://localhost/en/libraryv2?filters=(descriptores:(d1,d2))&andFilters=(descriptores)'
+    );
+
+    expect(searchLibrary).toHaveBeenCalledWith(
+      expect.objectContaining({
+        filters: { descriptores: ['d1', 'd2'] },
+        andFilters: ['descriptores'],
+      }),
+      expect.anything()
+    );
+  });
 });

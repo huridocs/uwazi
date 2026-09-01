@@ -9,10 +9,24 @@ type ChipParts = {
   translateValue: boolean;
 };
 
-const findProperty = (templates: Template[], name: string) =>
-  templates
-    .flatMap(template => [...(template.commonProperties ?? []), ...(template.properties ?? [])])
-    .find(property => property.name === name);
+const findProperty = (templates: Template[], name: string) => {
+  const properties = templates.flatMap(template => [
+    ...(template.commonProperties ?? []),
+    ...(template.properties ?? []),
+  ]);
+  const direct = properties.find(property => property.name === name);
+  if (direct) {
+    return direct;
+  }
+  const separator = name.indexOf('.');
+  if (separator < 1) {
+    return undefined;
+  }
+  return properties.find(property => property.name === name.slice(0, separator));
+};
+
+const nestedGroupKey = (name: string, propertyName: string) =>
+  name.startsWith(`${propertyName}.`) ? name.slice(propertyName.length + 1) : undefined;
 
 const flattenThesaurusValues = (
   values: ClientThesaurus['values'] | undefined
@@ -79,12 +93,23 @@ const resolveFilterChipParts = (
   }
 
   const property = findProperty(templates, key);
-  const fromAggregation = aggregationValueLabel(aggregations?.properties?.[key], value);
+  const aggregationKey = property?.name ?? key;
+  const fromAggregation = aggregationValueLabel(aggregations?.properties?.[aggregationKey], value);
   if (fromAggregation) {
     return {
       propertyLabel: property?.label ?? key,
       propertyContext: property?._id || property?.name,
       valueLabel: fromAggregation,
+      translateValue: false,
+    };
+  }
+
+  const group = property ? nestedGroupKey(key, property.name) : undefined;
+  if (group && value === 'any') {
+    return {
+      propertyLabel: property?.label ?? key,
+      propertyContext: property?._id || property?.name,
+      valueLabel: group,
       translateValue: false,
     };
   }

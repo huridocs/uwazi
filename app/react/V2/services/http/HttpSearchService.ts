@@ -1,23 +1,25 @@
-import { SearchAPI } from '#app/Search/SearchAPI.js';
-import { RequestParams } from '#app/utils/RequestParams.js';
-import { toApiError } from '#shared/apiClient/index.js';
+import { apiClient } from '#V2/api/client.js';
+import { requestHeaders } from '#V2/api/requestHeaders.js';
 import type { SearchService } from '../contracts/SearchService.js';
 import {
-  fromV1SearchResult,
-  toV1SearchQuery,
-  type V1SearchResult,
-} from '../search/librarySearchMapping.js';
+  fromSearchEndpointResult,
+  toSearchEndpointQuery,
+  type SearchEndpointResult,
+} from '../search/librarySearchEndpoint.js';
 
 const httpSearchService: SearchService = {
-  searchLibrary: async (query, { headers } = {}) => {
-    try {
-      const response = (await SearchAPI.search(
-        new RequestParams(toV1SearchQuery(query), headers)
-      )) as V1SearchResult;
-      return [fromV1SearchResult(response)];
-    } catch (error) {
-      return [undefined as never, toApiError(error)];
+  searchLibrary: async (query, { headers, language, signal } = {}) => {
+    const [data, error] = await apiClient.getJson<SearchEndpointResult>(
+      'search',
+      toSearchEndpointQuery(query),
+      { headers: requestHeaders(headers), language, signal }
+    );
+
+    if (error) {
+      return [undefined as never, error];
     }
+
+    return [fromSearchEndpointResult(data ?? {})];
   },
 };
 

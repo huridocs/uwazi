@@ -4,6 +4,7 @@ import {
   legacyRisonToLibraryUrlState,
   translateLegacySearchParams,
 } from '../risonLegacy.js';
+import { serializeLibrarySearchString } from '../libraryUrlState.js';
 
 describe('risonLegacy', () => {
   it('detects a V1 q= rison blob', () => {
@@ -35,6 +36,7 @@ describe('risonLegacy', () => {
         country: ['ES', 'FR'],
         year: ['2020', '2021'],
       },
+      andFilters: [],
       search: 'batman',
       limit: 10,
       from: 0,
@@ -63,5 +65,20 @@ describe('risonLegacy', () => {
     expect(next.get('search')).toBe('batman');
     expect(next.get('filters')).toBe('(type:(abc))');
     expect(next.get('limit')).toBe('10');
+  });
+
+  it('keeps V1 and:true as andFilters', () => {
+    const q = encodeSearch(
+      {
+        filters: {
+          multiselect1: { values: ['EgyptID', 'SpainID'], and: true },
+        },
+      },
+      false
+    );
+    const state = legacyRisonToLibraryUrlState(q);
+    expect(state.filters.multiselect1).toEqual(['EgyptID', 'SpainID']);
+    expect(state.andFilters).toEqual(['multiselect1']);
+    expect(serializeLibrarySearchString(state)).toContain('andFilters=(multiselect1)');
   });
 });

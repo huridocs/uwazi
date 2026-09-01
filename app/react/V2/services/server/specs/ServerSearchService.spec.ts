@@ -1,5 +1,5 @@
 import { search } from '#api/search/index.js';
-import { createSearchQueryService } from '../SearchQueryService.js';
+import { createServerSearchService } from '../ServerSearchService.js';
 
 jest.mock('#api/search/index.js', () => ({
   search: {
@@ -9,8 +9,8 @@ jest.mock('#api/search/index.js', () => ({
 
 const searchMock = search.search as jest.Mock;
 
-describe('SearchQueryService (SSR)', () => {
-  const service = createSearchQueryService({
+describe('ServerSearchService', () => {
+  const service = createServerSearchService({
     headers: {},
     language: 'en',
     user: { _id: 'u1', role: 'editor', username: 'editor' },

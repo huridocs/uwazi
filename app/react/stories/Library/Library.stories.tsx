@@ -76,6 +76,7 @@ const LibraryPreview = () => {
   const [search, setSearch] = useState('');
   const [view, setView] = useState<LibraryViewMode>('cards');
   const [filters, setFilters] = useState<LibraryFiltersState>({});
+  const [andFilters, setAndFilters] = useState<string[]>([]);
   const [selectedId, setSelectedId] = useState<string>();
 
   const chips = useMemo((): Chip[] => {
@@ -123,7 +124,9 @@ const LibraryPreview = () => {
             order="desc"
             onSortChange={() => undefined}
             filters={filters}
+            andFilters={andFilters}
             onFiltersChange={setFilters}
+            onAndFiltersChange={setAndFilters}
             chips={chips}
             selectedId={selectedId}
             onSelect={setSelectedId}

@@ -1,20 +1,13 @@
 import React, { useState } from 'react';
-import { useAtomValue } from 'jotai';
-import { FolderIcon } from '@heroicons/react/24/outline';
-import { Translate } from '#app/I18N/index.js';
-import { templatesAtom } from '#V2/atoms/templatesAtom.js';
-import { BlankState } from '#V2/Components/UI/BlankState.js';
 import { PaneLayout } from '#V2/Components/Layouts/PaneLayout.js';
-import type { Entity } from '#V2/api/entities/types.js';
 import type { LibraryAggregations, LibrarySearchHit } from '#shared/types/librarySearch.js';
 import type { LibraryFiltersState, LibrarySortOrder, LibraryViewMode } from '../libraryUrlState.js';
-import { EntityCard } from './EntityCard.js';
-import { metadataFieldsForCard, thumbnailFromEntity } from './cardModel.js';
 import { LibraryFilters } from './LibraryFilters.js';
 import { LibraryResultsFooter } from './LibraryResultsFooter.js';
 import { LibraryToolbar } from './LibraryToolbar.js';
 import type { Chip } from './ActiveFiltersSheet.js';
-import { LoadMore } from './LoadMore.js';
+import { LibraryEntityPreview } from './LibraryEntityPreview.js';
+import { LibraryViewerHost } from './Viewers/index.js';
 
 type LibraryViewProps = {
   rows: LibrarySearchHit[];
@@ -22,6 +15,7 @@ type LibraryViewProps = {
   aggregations: LibraryAggregations;
   search: string;
   onSearchChange: (value: string) => void;
+  onSearchSubmit?: (value: string) => void;
   view: LibraryViewMode;
   onViewChange: (view: LibraryViewMode) => void;
   sort: string;
@@ -29,9 +23,12 @@ type LibraryViewProps = {
   onSortChange: (sort: string, order: LibrarySortOrder) => void;
   filters: LibraryFiltersState;
   onFiltersChange: (filters: LibraryFiltersState) => void;
+  andFilters: string[];
+  onAndFiltersChange: (andFilters: string[]) => void;
   chips: Chip[];
   selectedId?: string;
   onSelect: (sharedId: string) => void;
+  onClosePreview: () => void;
   entityBasePath: string;
   onLoadMore: (amount: number) => void;
 };
@@ -42,6 +39,7 @@ const LibraryView = ({
   aggregations,
   search,
   onSearchChange,
+  onSearchSubmit,
   view,
   onViewChange,
   sort,
@@ -49,14 +47,15 @@ const LibraryView = ({
   onSortChange,
   filters,
   onFiltersChange,
+  andFilters,
+  onAndFiltersChange,
   chips,
   selectedId,
   onSelect,
+  onClosePreview,
   entityBasePath,
   onLoadMore,
 }: LibraryViewProps) => {
-  const templates = useAtomValue(templatesAtom);
-  const templateById = new Map(templates.map(template => [template._id, template]));
   const [showThumbnail, setShowThumbnail] = useState(true);
   const [showMetadata, setShowMetadata] = useState(true);
 
@@ -71,6 +70,7 @@ const LibraryView = ({
             <LibraryToolbar
               search={search}
               onSearchChange={onSearchChange}
+              onSearchSubmit={onSearchSubmit}
               view={view}
               onViewChange={onViewChange}
               sort={sort}
@@ -87,59 +87,39 @@ const LibraryView = ({
               role="region"
               aria-label="Library results"
             >
-              {rows.length === 0 ? (
-                <BlankState
-                  icon={<FolderIcon className="h-8 w-8 text-ink-muted" />}
-                  title={<Translate>No entities found</Translate>}
-                  description={<Translate>Try a different search or clear filters.</Translate>}
-                />
-              ) : (
-                <>
-                  <div
-                    className={
-                      view === 'list'
-                        ? 'flex flex-col gap-1.5'
-                        : 'grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3'
-                    }
-                  >
-                    {rows.map(entity => {
-                      const cardEntity = entity as Entity;
-                      const thumbnail = thumbnailFromEntity(cardEntity);
-                      return (
-                        <EntityCard
-                          key={entity.sharedId}
-                          title={entity.title}
-                          templateId={entity.template}
-                          fields={metadataFieldsForCard(
-                            cardEntity,
-                            templateById.get(entity.template)
-                          )}
-                          thumbnailSrc={thumbnail.src}
-                          thumbnailKind={thumbnail.kind}
-                          layout={view}
-                          showThumbnail={showThumbnail}
-                          showMetadata={showMetadata}
-                          selected={selectedId === entity.sharedId}
-                          onSelect={() => onSelect(entity.sharedId)}
-                          viewHref={`${entityBasePath}/${entity.sharedId}`}
-                        />
-                      );
-                    })}
-                  </div>
-                  <LoadMore loaded={rows.length} total={totalRows} onLoadMore={onLoadMore} />
-                </>
-              )}
+              <LibraryViewerHost
+                view={view}
+                rows={rows}
+                totalRows={totalRows}
+                selectedId={selectedId}
+                onSelect={onSelect}
+                entityBasePath={entityBasePath}
+                onLoadMore={onLoadMore}
+                showThumbnail={showThumbnail}
+                showMetadata={showMetadata}
+              />
             </div>
             <LibraryResultsFooter />
           </div>
         </PaneLayout.Pane>
         <PaneLayout.Pane key="filters" background="transparent">
-          <LibraryFilters
-            aggregations={aggregations}
-            filters={filters}
-            onChange={onFiltersChange}
-            chips={chips}
-          />
+          {selectedId ? (
+            <LibraryEntityPreview
+              key={selectedId}
+              sharedId={selectedId}
+              entityBasePath={entityBasePath}
+              onClose={onClosePreview}
+            />
+          ) : (
+            <LibraryFilters
+              aggregations={aggregations}
+              filters={filters}
+              andFilters={andFilters}
+              onChange={onFiltersChange}
+              onAndFiltersChange={onAndFiltersChange}
+              chips={chips}
+            />
+          )}
         </PaneLayout.Pane>
       </PaneLayout>
     </div>

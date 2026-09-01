@@ -18,6 +18,7 @@ const toSearchQuery = (
     searchTerm: urlState.search,
     templateIds: type,
     filters: propertyFilters,
+    ...(urlState.andFilters.length ? { andFilters: urlState.andFilters } : {}),
     publishedStatus: publishedStatusFromFilters(status),
     from,
     limit,

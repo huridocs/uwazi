@@ -1,22 +1,25 @@
 import { search } from '#api/search/index.js';
 import { toApiError } from '#shared/apiClient/index.js';
 import type { SearchService } from '../contracts/SearchService.js';
-import { fromV1SearchResult, toV1SearchQuery } from '../search/librarySearchMapping.js';
+import {
+  fromSearchEndpointResult,
+  toSearchEndpointQuery,
+} from '../search/librarySearchEndpoint.js';
 import type { ServerServiceContext } from './types.js';
 
-const createSearchQueryService = (ctx: ServerServiceContext): SearchService => ({
+const createServerSearchService = (ctx: ServerServiceContext): SearchService => ({
   searchLibrary: async (query, { language } = {}) => {
     try {
       const result = await search.search(
-        toV1SearchQuery(query),
+        toSearchEndpointQuery(query),
         language || ctx.language,
         ctx.user
       );
-      return [fromV1SearchResult(result)];
+      return [fromSearchEndpointResult(result)];
     } catch (error) {
       return [undefined as never, toApiError(error)];
     }
   },
 });
 
-export { createSearchQueryService };
+export { createServerSearchService };

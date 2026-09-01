@@ -14,6 +14,7 @@ import type { LibrarySortOrder, LibraryViewMode } from '../libraryUrlState.js';
 type LibraryToolbarProps = {
   search: string;
   onSearchChange: (value: string) => void;
+  onSearchSubmit?: (value: string) => void;
   view: LibraryViewMode;
   onViewChange: (view: LibraryViewMode) => void;
   sort: string;
@@ -35,6 +36,9 @@ const SORT_OPTIONS = [
 const VIEW_OPTIONS = [
   { value: 'cards', label: t('System', 'Cards', null, false) },
   { value: 'list', label: t('System', 'List', null, false) },
+  { value: 'map', label: t('System', 'Map', null, false) },
+  { value: 'table', label: t('System', 'Table', null, false) },
+  { value: 'timeline', label: t('System', 'Timeline', null, false) },
 ];
 
 const DisplayCheckRow = ({
@@ -63,6 +67,7 @@ const DisplayCheckRow = ({
 const LibraryToolbar = ({
   search,
   onSearchChange,
+  onSearchSubmit,
   view,
   onViewChange,
   sort,
@@ -82,13 +87,14 @@ const LibraryToolbar = ({
       <QuerySearchBar
         value={search}
         onChange={onSearchChange}
+        onSubmit={onSearchSubmit}
         placeholder={t('System', 'Search title & metadata', null, false)}
         ariaLabel={t('System', 'Search', null, false)}
         clearAriaLabel={t('System', 'Clear search', null, false)}
         tipsAriaLabel={t('System', 'Search tips', null, false)}
         tipsLabel={<Translate>tips</Translate>}
         tipsWidth={432}
-        tipsContent={<SearchTipsContent onInsert={onSearchChange} />}
+        tipsContent={<SearchTipsContent onInsert={onSearchSubmit ?? onSearchChange} />}
         className="min-w-0 flex-1 pb-0 pt-0"
         boxClassName="bg-paper"
       />

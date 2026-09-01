@@ -5,6 +5,8 @@ type LibrarySearchQuery = {
   searchTerm?: string;
   templateIds?: string[];
   filters?: Record<string, string[]>;
+  /** Property names that use AND (must match all values). Same as V1 `filters[name].and`. */
+  andFilters?: string[];
   publishedStatus?: LibraryPublishedStatus;
   from?: number;
   limit?: number;

@@ -1,6 +1,7 @@
 import { risonDecodeOrIgnore } from '#app/utils/index.js';
 import { queryToFilter } from '#app/Library/helpers/publishedStatusFilter.js';
 import {
+  isLibraryViewMode,
   normalizeFilters,
   serializeLibrarySearchParams,
   serializeLibrarySearchString,
@@ -83,8 +84,11 @@ const statusFromLegacy = (query: LegacyRisonQuery): string[] | undefined => {
   return mapped.values.length ? mapped.values : undefined;
 };
 
-const filtersFromLegacy = (query: LegacyRisonQuery): LibraryFiltersState => {
+const filtersFromLegacy = (
+  query: LegacyRisonQuery
+): { filters: LibraryFiltersState; andFilters: string[] } => {
   const filters: LibraryFiltersState = {};
+  const andFilters: string[] = [];
 
   if (query.types?.length) {
     filters.type = query.types.map(String);
@@ -100,18 +104,29 @@ const filtersFromLegacy = (query: LegacyRisonQuery): LibraryFiltersState => {
     if (list.length) {
       filters[key] = list;
     }
+    if (
+      value &&
+      typeof value === 'object' &&
+      !Array.isArray(value) &&
+      (value as { and?: boolean }).and === true
+    ) {
+      andFilters.push(key);
+    }
   });
 
-  return normalizeFilters(filters);
+  return { filters: normalizeFilters(filters), andFilters: [...new Set(andFilters)] };
 };
 
 const legacyRisonToLibraryUrlState = (q: string): LibraryUrlState => {
   const query = risonDecodeOrIgnore(q || '()') as LegacyRisonQuery;
   const order: LibrarySortOrder = query.order === 'asc' ? 'asc' : 'desc';
-  const view: LibraryViewMode = query.view === 'list' || query.view === 'table' ? 'list' : 'cards';
+  const view: LibraryViewMode = isLibraryViewMode(query.view) ? query.view : 'cards';
+
+  const { filters, andFilters } = filtersFromLegacy(query);
 
   return {
-    filters: filtersFromLegacy(query),
+    filters,
+    andFilters,
     search: typeof query.searchTerm === 'string' ? decodeURIComponent(query.searchTerm) : '',
     limit: typeof query.limit === 'number' && query.limit > 0 ? query.limit : 30,
     from: typeof query.from === 'number' && query.from > 0 ? query.from : 0,

@@ -11,6 +11,7 @@ import { IconButton } from './IconButton.js';
 type QuerySearchBarProps = {
   value: string;
   onChange: (value: string) => void;
+  onSubmit?: (value: string) => void;
   placeholder: string;
   ariaLabel: string;
   clearAriaLabel: string;
@@ -27,6 +28,7 @@ type QuerySearchBarProps = {
 const QuerySearchBar = ({
   value,
   onChange,
+  onSubmit,
   placeholder,
   ariaLabel,
   clearAriaLabel,
@@ -66,6 +68,13 @@ const QuerySearchBar = ({
           type="text"
           value={value}
           onChange={event => onChange(event.target.value)}
+          onKeyDown={event => {
+            if (event.key !== 'Enter') {
+              return;
+            }
+            event.preventDefault();
+            onSubmit?.(event.currentTarget.value);
+          }}
           placeholder={placeholder}
           aria-label={ariaLabel}
           className="h-6 min-w-25 flex-1 bg-transparent text-xs font-medium placeholder:text-ink-muted focus:outline-none"

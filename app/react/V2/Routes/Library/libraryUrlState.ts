@@ -1,10 +1,16 @@
-type LibraryViewMode = 'cards' | 'list';
+const LIBRARY_VIEW_MODES = ['cards', 'list', 'map', 'table', 'timeline'] as const;
+type LibraryViewMode = (typeof LIBRARY_VIEW_MODES)[number];
+
+const isLibraryViewMode = (value: string | null | undefined): value is LibraryViewMode =>
+  Boolean(value && (LIBRARY_VIEW_MODES as readonly string[]).includes(value));
 type LibrarySortOrder = 'asc' | 'desc';
 
 type LibraryFiltersState = Record<string, string[]>;
 
 type LibraryUrlState = {
   filters: LibraryFiltersState;
+  /** Properties in AND mode (V1 `filters[name].and: true`). OR is the default. */
+  andFilters: string[];
   search: string;
   limit: number;
   from: number;
@@ -15,6 +21,7 @@ type LibraryUrlState = {
 
 const DEFAULT_LIBRARY_URL_STATE: LibraryUrlState = {
   filters: {},
+  andFilters: [],
   search: '',
   limit: 30,
   from: 0,
@@ -134,6 +141,46 @@ const serializeCompactFilters = (filters: LibraryFiltersState): string => {
   return parts.length ? `(${parts.join(',')})` : '';
 };
 
+const parseAndFilters = (raw: string): string[] | null => {
+  const input = raw.trim();
+  if (!input) {
+    return [];
+  }
+  if (input[0] !== '(' || input[input.length - 1] !== ')') {
+    return null;
+  }
+
+  const inner = input.slice(1, -1);
+  if (!inner.trim()) {
+    return [];
+  }
+
+  const names: string[] = [];
+  let i = 0;
+  while (i < inner.length) {
+    const start = i;
+    while (i < inner.length && IDENT.test(inner[i]!)) {
+      i += 1;
+    }
+    const name = inner.slice(start, i);
+    if (!name) {
+      return null;
+    }
+    names.push(name);
+    if (inner[i] === ',') {
+      i += 1;
+    } else if (i < inner.length) {
+      return null;
+    }
+  }
+  return [...new Set(names)];
+};
+
+const serializeAndFilters = (names: string[]): string => {
+  const unique = [...new Set(names.filter(Boolean))];
+  return unique.length ? `(${unique.join(',')})` : '';
+};
+
 const normalizeFilters = (filters: LibraryFiltersState): LibraryFiltersState => {
   const next: LibraryFiltersState = {};
   Object.entries(filters).forEach(([key, values]) => {
@@ -166,10 +213,12 @@ const parsePositiveInt = (raw: string | null, fallback: number): number => {
 const parseLibrarySearchParams = (params: URLSearchParams): LibraryUrlState => {
   const filters = parseCompactFilters(params.get('filters') || '') ?? {};
   const order = params.get('order') === 'asc' ? 'asc' : DEFAULT_LIBRARY_URL_STATE.order;
-  const view = params.get('view') === 'list' ? 'list' : DEFAULT_LIBRARY_URL_STATE.view;
+  const viewParam = params.get('view');
+  const view = isLibraryViewMode(viewParam) ? viewParam : DEFAULT_LIBRARY_URL_STATE.view;
 
   return {
     filters: normalizeFilters(filters),
+    andFilters: parseAndFilters(params.get('andFilters') || '') ?? [],
     search: params.get('search') || '',
     limit:
       parsePositiveInt(params.get('limit'), DEFAULT_LIBRARY_URL_STATE.limit) ||
@@ -186,6 +235,10 @@ const serializeLibrarySearchParams = (state: Partial<LibraryUrlState>): URLSearc
   const filters = serializeCompactFilters(normalizeFilters(state.filters ?? {}));
   if (filters) {
     params.set('filters', filters);
+  }
+  const andFilters = serializeAndFilters(state.andFilters ?? []);
+  if (andFilters) {
+    params.set('andFilters', andFilters);
   }
   if (state.search) {
     params.set('search', state.search);
@@ -209,7 +262,7 @@ const serializeLibrarySearchParams = (state: Partial<LibraryUrlState>): URLSearc
 };
 
 const encodeLibraryQueryValue = (key: string, value: string): string => {
-  if (key === 'filters') {
+  if (key === 'filters' || key === 'andFilters') {
     return value;
   }
   return encodeURIComponent(value).replace(/%20/g, '+');
@@ -239,8 +292,12 @@ const publishedStatusFromFilters = (
 
 export {
   DEFAULT_LIBRARY_URL_STATE,
+  LIBRARY_VIEW_MODES,
+  isLibraryViewMode,
   parseCompactFilters,
   serializeCompactFilters,
+  parseAndFilters,
+  serializeAndFilters,
   normalizeFilters,
   parseLibrarySearchParams,
   serializeLibrarySearchParams,

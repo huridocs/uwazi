@@ -1,6 +1,9 @@
 import {
+  DEFAULT_LIBRARY_URL_STATE,
   parseCompactFilters,
   serializeCompactFilters,
+  parseAndFilters,
+  serializeAndFilters,
   parseLibrarySearchParams,
   serializeLibrarySearchParams,
   serializeLibrarySearchString,
@@ -53,6 +56,7 @@ describe('libraryUrlState', () => {
     it('omits defaults from the serialized URL', () => {
       const state = {
         filters: { type: ['abc'] },
+        andFilters: [],
         search: 'batman',
         limit: 30,
         from: 0,
@@ -79,6 +83,38 @@ describe('libraryUrlState', () => {
       expect(params.get('sort')).toBe('title');
       expect(params.get('order')).toBe('asc');
       expect(params.get('view')).toBe('list');
+    });
+
+    it('round-trips AND properties as andFilters=(name)', () => {
+      const state = {
+        ...DEFAULT_LIBRARY_URL_STATE,
+        filters: { descriptores: ['d1', 'd2'] },
+        andFilters: ['descriptores'],
+      };
+      expect(serializeLibrarySearchString(state)).toBe(
+        'filters=(descriptores:(d1,d2))&andFilters=(descriptores)'
+      );
+      expect(parseLibrarySearchParams(serializeLibrarySearchParams(state))).toEqual(state);
+    });
+
+    it('parses and serializes andFilters lists', () => {
+      expect(parseAndFilters('')).toEqual([]);
+      expect(parseAndFilters('()')).toEqual([]);
+      expect(parseAndFilters('(descriptores,related)')).toEqual(['descriptores', 'related']);
+      expect(parseAndFilters('descriptores')).toBeNull();
+      expect(serializeAndFilters(['descriptores', 'related'])).toBe('(descriptores,related)');
+      expect(serializeAndFilters([])).toBe('');
+    });
+
+    it('keeps map, table and timeline view params', () => {
+      const params = serializeLibrarySearchParams({
+        ...DEFAULT_LIBRARY_URL_STATE,
+        view: 'map',
+      });
+      expect(params.get('view')).toBe('map');
+      expect(parseLibrarySearchParams(new URLSearchParams('view=table')).view).toBe('table');
+      expect(parseLibrarySearchParams(new URLSearchParams('view=timeline')).view).toBe('timeline');
+      expect(parseLibrarySearchParams(new URLSearchParams('view=bogus')).view).toBe('cards');
     });
   });
 });

@@ -29,6 +29,7 @@ Action,عمل/ إجراء
 Actions,Actions
 Activate,Activate
 Activated,Activated
+Active filters,Active filters
 Active languages,اللغات النشطة
 Active primary,Active primary
 Activity,Activity
@@ -105,6 +106,7 @@ An error occurred,An error occurred
 Analytics,Analytics
 Analytics description,"If you want to track analytics related to your collection visits, Uwazi supports both Google Analytics and Matomo."
 AND OR NOT,AND OR NOT
+Any,Any
 Any entity,Any entity
 any single character,any single character
 Anyone can see this entity,Anyone can see this entity
@@ -123,6 +125,7 @@ Are you sure you want to delete this item?,Are you sure you want to delete this 
 Are you sure you want to delete this relationship? This action cannot be undone.,Are you sure you want to delete this relationship? This action cannot be undone.
 Are you sure you want to delete this visualization? This action cannot be undone.,Are you sure you want to delete this visualization? This action cannot be undone.
 Are you sure?,Are you sure?
+Ascending,Ascending
 Ask Bert,Ask Bert
 Attachment,Attachment
 Attachment deleted,Attachment deleted
@@ -233,6 +236,7 @@ Connection type,نوع الاتصال
 Contact email description,Here you can set up the contact email and the email that appears when Uwazi sends a notification to a user
 Contact Form,استمارة اتصال
 Contact form email,Contact form email
+Contains,Contains
 Content translations,Content translations
 Context,Context
 Continue,Continue
@@ -241,6 +245,7 @@ Copied,Copied
 Copied to clipboard,Copied to clipboard
 Copy,Copy
 Copy From,النسخ من
+Copy from...,Copy from...
 Copy Highlighted,نسخ المظلل
 Copy link,نسخ الرابط
 Copy properties to this entity from,انسخ الخصائص إلى هذا الكيان (الإدخال) من
@@ -249,6 +254,7 @@ Could not add media. Please try again.,Could not add media. Please try again.
 Could not be processed,لا يمكن معالجتها
 Could not create entity,Could not create entity
 Could not detect the area for the selected text,"Could not detect the area for the selected text, please try selecting again."
+Could not load suggestions.,Could not load suggestions.
 Could not reach server. Please try again later.,Could not reach server. Please try again later.
 Count,Count
 Create,أنشئ
@@ -316,6 +322,7 @@ Date modified,تاريخ التعديل
 "Date or numeric × select enables line and area charts with one line per breakdown
                 value over time.","Date or numeric × select enables line and area charts with one line per breakdown
                 value over time."
+Date range,Date range
 Day,يوم
 "Deep-merged onto the generated ECharts option. Use for fine-tuning options not exposed in
           the Chart tab.","Deep-merged onto the generated ECharts option. Use for fine-tuning options not exposed in
@@ -350,6 +357,7 @@ Deleted user,Deleted user
 Deleted user group,Deleted user group
 Deletion success,Deletion success
 Density,Density
+Descending,Descending
 Description,وصف
 Deselect all,Deselect all
 Details,Details
@@ -559,6 +567,7 @@ ID:,ID:
 "If you want to continue, please type",إذا كنت ترغب في المتابعة، يرجى كتابة
 Image doesn't match the required size.,Image doesn't match the required size.
 Import,استيراد
+Import / Export CSV,Import / Export CSV
 Import asset,Import asset
 Import CSV,استيراد ملف القيم المفصولة بفواصل
 Import failed. Review details below.,Import failed. Review details below.
@@ -644,10 +653,13 @@ Light,Light
 Light Theme,Light Theme
 Link,Link
 linked,مرتبط
+List,List
 List renders as a table. Use the options below to filter empty or zero values.,List renders as a table. Use the options below to filter empty or zero values.
 Live preview,Live preview
 Live translate,Live translate
+Load,Load
 Load example,Load example
+Load more,Load more
 Loading,Loading
 Local time,Local time
 Login,تسجيل الدخول
@@ -718,6 +730,7 @@ Modified,Modified
 Month,شهر
 Months,Months
 More,More
+more,more
 more options.,مزيد من الخيارات
 Multi-source mode,Multi-source mode
 Multiple date,Multiple date
@@ -764,6 +777,7 @@ No context,No context
 No CSVs yet,No CSVs yet
 No data,No data
 NO DATA AVAILABLE,NO DATA AVAILABLE
+No entities found,No entities found
 NO EXTRACTORS,NO EXTRACTORS
 No files available,No files available
 No files queued yet.,No files queued yet.
@@ -775,6 +789,7 @@ No items available,No items available
 No Label,لا تسمية
 No label,No label
 No matches for,No matches for
+No matches.,No matches.
 No matching entities.,No matching entities.
 No media selected,No media selected
 No metadata for this entity yet.,No metadata for this entity yet.
@@ -783,6 +798,7 @@ No options found,لم يتم العثور على خيارات
 No page,No page
 No people or groups added yet,No people or groups added yet
 No primary documents,No primary documents
+No primary documents yet. Promote a supporting file or add a new one.,No primary documents yet. Promote a supporting file or add a new one.
 No property,هذه الخاصية غير متوفرة
 No References,لا مرجع
 No References description,المراجع هي اجزاء من الوثيقة التي لها علاقة بوثائق وكيانات أخرى
@@ -1010,6 +1026,8 @@ Relationships saved,Relationships saved
 relationships? This action cannot be undone.,relationships? This action cannot be undone.
 RelationType saved,تم حفظ نوع العلاقة
 Release message,Release message
+Relevance,Relevance
+remaining,remaining
 remaining files,remaining files
 Remote Server Unreachable,Remote Server Unreachable
 Remove,إزالة
@@ -1082,6 +1100,7 @@ Search Tips: exact term,نصائح البحث: المصطلح الدقيق
 Search Tips: one char wildcard,نصائح البحث: واحد char wildcard
 Search Tips: proximity,بحث نصائح: القرب
 Search Tips: wildcard,نصائح البحث: Wildcard
+Search title & metadata,Search title & metadata
 Searching...,Searching...
 Secondary button,Secondary button
 Secret keys,Secret keys
@@ -1140,6 +1159,7 @@ Show cookie policy,عرض سياسة ملف تعريف الارتباط
 Show details,Show details
 Show filters,إظهار عوامل التصفية
 Show in cards,اظهر في البطاقات
+Show information,Show information
 Show less,Show less
 Show more,أظهر المزيد
 Show remaining in panel,Show remaining in panel
@@ -1162,6 +1182,7 @@ Something went wrong,حدث خطأ ما
 Sort,تصنيف
 Sort ascending,Sort ascending
 Sort descending,Sort descending
+Sort order,Sort order
 Sort:,Sort:
 sorted by,مرتبة حسب
 Source,Source
@@ -1308,8 +1329,10 @@ This search could not be completed. Try again later.,This search could not be co
 This table of contents was automatically created by the system.,This table of contents was automatically created by the system.
 this template,this template
 This template is in use by existing entities and cannot be deleted.,This template is in use by existing entities and cannot be deleted.
+Thumbnail,Thumbnail
 Time,زمن
 Time (UTC),Time (UTC)
+Timeline,Timeline
 Timelinks,Timelinks
 Timestamp,Timestamp
 tips,tips
@@ -1340,6 +1363,7 @@ Translations,الترجمات
 Translations imported.,Translations imported.
 Translations reset successfully,Translations reset successfully
 Translations saved,تم حفظ الترجمات
+Try a different search or clear filters.,Try a different search or clear filters.
 Turn off inline translation,Turn off inline translation
 "Two categorical dimensions enable stacked bar charts (e.g. country with sex
               breakdown).","Two categorical dimensions enable stacked bar charts (e.g. country with sex
