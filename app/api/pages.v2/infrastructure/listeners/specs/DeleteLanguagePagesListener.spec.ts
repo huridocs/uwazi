@@ -1,6 +1,7 @@
 import db, { DBFixture } from '#api/utils/testing_db.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-import pages from '#api/pages/index.js';
+import pages from '#api/pages.v2/application/services/PagesService.js';
+import { PageNotFoundError } from '#api/pages.v2/domain/errors.js';
 import { UserRole } from '#api/core/domain/user/User.js';
 import { DeleteLanguagePagesListener } from '../DeleteLanguagePagesListener.js';
 
@@ -65,7 +66,7 @@ describe('DeleteLanguagePagesListener', () => {
 
     await expect(
       testingEnvironment.runWithContext(async () => pages.getById('page1', 'es'))
-    ).rejects.toMatchObject({ code: 404 });
+    ).rejects.toThrow(PageNotFoundError);
     const enPage = await testingEnvironment.runWithContext(async () =>
       pages.getById('page1', 'en')
     );

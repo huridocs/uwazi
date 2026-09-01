@@ -37,7 +37,6 @@ export default async (app, server) => {
   (await import('./contact/routes.js')).default(app);
   (await import('./entities/routes.js')).default(app);
   (await import('./entities.v2/routes/index.js')).entitiesRoutes(app);
-  (await import('./pages/routes.js')).default(app);
   (await import('./pages.v2/infrastructure/http/routes.js')).pagesV2Routes(app);
   (await import('./files/jsRoutes.js')).default(app);
   (await import('./files/routes.js')).default(app);

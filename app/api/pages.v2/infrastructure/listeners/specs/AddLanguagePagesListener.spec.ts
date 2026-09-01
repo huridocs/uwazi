@@ -1,7 +1,8 @@
 import db, { DBFixture } from '#api/utils/testing_db.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { NonRetryableJobError } from '#api/core/libs/queue/infrastructure/errors.js';
-import pages from '#api/pages/index.js';
+import pages from '#api/pages.v2/application/services/PagesService.js';
+import { PageNotFoundError } from '#api/pages.v2/domain/errors.js';
 import { AddLanguagePagesListener } from '../AddLanguagePagesListener.js';
 
 const user1 = db.id();
@@ -78,7 +79,7 @@ describe('AddLanguagePagesListener', () => {
 
       await expect(
         testingEnvironment.runWithContext(async () => pages.getById('page1', 'fr'))
-      ).rejects.toMatchObject({ code: 404 });
+      ).rejects.toThrow(PageNotFoundError);
     });
   });
 });

@@ -48,11 +48,7 @@ class SavePageUseCase extends AbstractUseCase<Input, Output, Deps> {
     const returnEditorShape = input.editorResponse ?? useEditorPayload;
 
     if (clientPage.sharedId) {
-      const existing = await this.deps.pagesDS.getBySharedId(clientPage.sharedId);
-      if (existing.isError()) {
-        throw existing.getError();
-      }
-      const page = existing.getDataOrThrow();
+      const page = (await this.deps.pagesDS.getBySharedId(clientPage.sharedId)).getDataOrThrow();
 
       if (useEditorPayload) {
         applyEditorClientToPage(page, clientPage, languageKeys);

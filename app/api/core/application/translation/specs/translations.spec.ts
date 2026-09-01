@@ -12,7 +12,7 @@ import { TranslationsDataSource } from '#api/core/application/contracts/Translat
 import { LocaleTranslationInput } from '#api/core/application/translation/localeTranslationDto.js';
 import { TranslationsService } from '#api/core/application/translation/TranslationsService.js';
 import { Translation } from '#api/core/domain/translation/Translation.js';
-import pages from '#api/pages/index.js';
+import pages from '#api/pages.v2/application/services/PagesService.js';
 import settings from '#api/settings/index.js';
 import { AddLanguageUseCaseFactory } from '#api/core/infrastructure/factories/AddLanguageUseCaseFactory.js';
 import { SaveLocaleTranslationsUseCaseFactory } from '#api/core/infrastructure/factories/SaveLocaleTranslationsUseCaseFactory.js';

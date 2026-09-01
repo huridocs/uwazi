@@ -10,5 +10,21 @@ export const RestorePageDraftSchema = z.object({
   version: z.coerce.number().int().min(1),
 });
 
+export const ListPagesSchema = z.object({
+  sharedId: z.string().optional(),
+});
+
+export const GetPageSchema = z.object({
+  sharedId: z.string().min(1),
+  mode: z.enum(['editor']).optional(),
+});
+
+export const DeletePageSchema = z.object({
+  sharedId: z.string().optional(),
+});
+
 export type PublishPageReleaseRequest = z.infer<typeof PublishPageReleaseSchema>;
 export type RestorePageDraftRequest = z.infer<typeof RestorePageDraftSchema>;
+export type ListPagesRequest = z.infer<typeof ListPagesSchema>;
+export type GetPageRequest = z.infer<typeof GetPageSchema>;
+export type DeletePageRequest = z.infer<typeof DeletePageSchema>;

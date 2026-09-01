@@ -2,6 +2,7 @@ import { DeletePageUseCase } from '#api/pages.v2/application/useCases/DeletePage
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { PagesDataSourceFactory } from './PagesDataSourceFactory.js';
 import { PageReleasesDataSourceFactory } from './PageReleasesDataSourceFactory.js';
+import { TemplatesPageUsageDataSourceFactory } from './TemplatesPageUsageDataSourceFactory.js';
 import { pageUseCaseExecutionContext } from './pageUseCaseExecutionContext.js';
 
 export class DeletePageUseCaseFactory {
@@ -14,6 +15,7 @@ export class DeletePageUseCaseFactory {
         transactionManager,
         pagesDS: PagesDataSourceFactory.default({ transactionManager }),
         pageReleasesDS: PageReleasesDataSourceFactory.default({ transactionManager }),
+        templatesDS: TemplatesPageUsageDataSourceFactory.default(),
       },
       { actor, tenant }
     );

@@ -1,7 +1,7 @@
 import { ObjectId } from 'mongodb';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { User } from '#api/users.v2/model/User.js';
-import { fixtures } from '#api/pages/specs/fixtures.js';
+import { fixtures, pageToUpdate } from '#api/pages.v2/specs/fixtures.js';
 import { PublishPageReleaseUseCaseFactory } from '#api/pages.v2/infrastructure/factories/PublishPageReleaseUseCaseFactory.js';
 import { RestorePageDraftUseCaseFactory } from '#api/pages.v2/infrastructure/factories/RestorePageDraftUseCaseFactory.js';
 import { AddLanguageToPagesUseCaseFactory } from '#api/pages.v2/infrastructure/factories/AddLanguageToPagesUseCaseFactory.js';
@@ -9,11 +9,11 @@ import { RemoveLanguageFromPagesUseCaseFactory } from '#api/pages.v2/infrastruct
 import { PagesDataSourceFactory } from '#api/pages.v2/infrastructure/factories/PagesDataSourceFactory.js';
 import { PageReleasesDataSourceFactory } from '#api/pages.v2/infrastructure/factories/PageReleasesDataSourceFactory.js';
 import { DeletePageUseCaseFactory } from '#api/pages.v2/infrastructure/factories/DeletePageUseCaseFactory.js';
+import { TemplatesPageUsageDataSourceFactory } from '#api/pages.v2/infrastructure/factories/TemplatesPageUsageDataSourceFactory.js';
 import { DeletePageUseCase } from '#api/pages.v2/application/useCases/DeletePage.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { pageUseCaseExecutionContext } from '#api/pages.v2/infrastructure/factories/pageUseCaseExecutionContext.js';
-import { pageToUpdate } from '#api/pages/specs/fixtures.js';
-import pages from '#api/pages/pages.js';
+import pages from '#api/pages.v2/application/services/PagesService.js';
 import { mockID } from '#shared/uniqueID.js';
 import db from '#api/utils/testing_db.js';
 
@@ -195,6 +195,18 @@ describe('Pages use cases (integration)', () => {
       });
     });
 
+    it('should not delete a page that is used as entity view by templates', async () => {
+      await withContext(async () => {
+        await expect(DeletePageUseCaseFactory.default().execute({ sharedId: '1' })).rejects.toThrow(
+          'This page is in use by the following templates:'
+        );
+
+        const pagesDS = PagesDataSourceFactory.default();
+        const stillThere = await pagesDS.getBySharedId('1');
+        expect(stillThere.isError()).toBe(false);
+      });
+    });
+
     it('should not delete the page when release deletion fails', async () => {
       await withContext(async () => {
         const transactionManager = TransactionManagerFactory.default();
@@ -213,6 +225,7 @@ describe('Pages use cases (integration)', () => {
             transactionManager,
             pagesDS,
             pageReleasesDS,
+            templatesDS: TemplatesPageUsageDataSourceFactory.default(),
           },
           { actor, tenant }
         );
