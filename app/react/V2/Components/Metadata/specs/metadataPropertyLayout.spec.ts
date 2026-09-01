@@ -12,8 +12,12 @@ import {
   LONG_FIELD_CHAR_THRESHOLD,
   COMPACT_METADATA_FIELD_LAYOUT,
   FULL_ROW_METADATA_FIELD_LAYOUT,
+  MEDIA_CARD_MIN_PX,
+  PROPERTY_ROW_GAP_PX,
   metadataGridClassForProperty,
   partitionMetadataRecord,
+  packPropertyRows,
+  packClassForProperty,
 } from '../metadataPropertyLayout';
 
 const textField = (value: string, id = 't1'): SimpleMetadataProperty => ({
@@ -110,27 +114,25 @@ describe('metadataPropertyLayout', () => {
     expect(isInheritingRelationship(inheritingRel)).toBe(true);
   });
 
-  it('packs short fields and images compact', () => {
-    expect(metadataGridClassForProperty(textField('short'), undefined)).toBe(
-      COMPACT_METADATA_FIELD_LAYOUT
-    );
+  it('packs short fields, images, and media compact', () => {
     expect(metadataGridClassForProperty(linkOnlyRel(), undefined)).toBe(
       COMPACT_METADATA_FIELD_LAYOUT
     );
     expect(metadataGridClassForProperty(imageField, undefined)).toBe(COMPACT_METADATA_FIELD_LAYOUT);
-  });
-
-  it('packs long text, markdown, geo, media, and fullWidth images full-row', () => {
-    expect(metadataGridClassForProperty(imageField, { fullWidth: true, showInCard: true })).toBe(
-      FULL_ROW_METADATA_FIELD_LAYOUT
-    );
-    expect(metadataGridClassForProperty(markdownField('md'), undefined)).toBe(
-      FULL_ROW_METADATA_FIELD_LAYOUT
+    expect(metadataGridClassForProperty(mediaField, undefined)).toBe(COMPACT_METADATA_FIELD_LAYOUT);
+    expect(metadataGridClassForProperty(previewField, undefined)).toBe(
+      COMPACT_METADATA_FIELD_LAYOUT
     );
     expect(metadataGridClassForProperty(geolocationField, undefined)).toBe(
-      FULL_ROW_METADATA_FIELD_LAYOUT
+      COMPACT_METADATA_FIELD_LAYOUT
     );
-    expect(metadataGridClassForProperty(mediaField, undefined)).toBe(
+  });
+
+  it('packs long text and markdown full-row; media stays compact so it can share a row', () => {
+    expect(metadataGridClassForProperty(imageField, { fullWidth: true, showInCard: true })).toBe(
+      COMPACT_METADATA_FIELD_LAYOUT
+    );
+    expect(metadataGridClassForProperty(markdownField('md'), undefined)).toBe(
       FULL_ROW_METADATA_FIELD_LAYOUT
     );
     expect(
@@ -138,11 +140,18 @@ describe('metadataPropertyLayout', () => {
     ).toBe(FULL_ROW_METADATA_FIELD_LAYOUT);
     expect(
       metadataGridClassForProperty({ ...textField('short'), name: 'summary' }, undefined)
-    ).toBe(FULL_ROW_METADATA_FIELD_LAYOUT);
+    ).toBe(COMPACT_METADATA_FIELD_LAYOUT);
+  });
+
+  it('packs inheriting relationships as full-row cards', () => {
+    expect(metadataGridClassForProperty(inheritingRel, undefined)).toBe(
+      FULL_ROW_METADATA_FIELD_LAYOUT
+    );
+    expect(packClassForProperty(inheritingRel, undefined)).toBe('block');
   });
 
   // eslint-disable-next-line max-statements
-  it('puts link-only and template fields in masonry order and inheriting rels aside', () => {
+  it('puts inherit groups in masonry at the first inherited property', () => {
     const short = textField('short', 'short1');
     const long = textField('x'.repeat(LONG_FIELD_CHAR_THRESHOLD + 1), 'long1');
     const showInCardText = textField('carded', 'card1');
@@ -186,12 +195,61 @@ describe('metadataPropertyLayout', () => {
       'img1',
       'rel-card',
       'rel-detail',
+      'r2',
     ]);
     expect(withPreview.inheritingRels.map(f => f._id)).toEqual(['r2']);
 
     const empty = partitionMetadataRecord([], [], new Map());
     expect(empty.masonryFields).toEqual([]);
     expect(empty.inheritingRels).toEqual([]);
+  });
+
+  it('keeps one inherit group card at the first sibling in template order', () => {
+    const first: RelationshipMetadataProperty = {
+      ...inheritingRel,
+      _id: 'inh-a',
+      name: 'rel_a',
+      label: 'Rel A',
+    };
+    const second: RelationshipMetadataProperty = {
+      ...inheritingRel,
+      _id: 'inh-b',
+      name: 'rel_b',
+      label: 'Rel B',
+    };
+    const later = textField('after', 'after1');
+    const templateProperties: ClientProperty[] = [
+      { _id: 'short1', name: 'code', type: 'text', label: 'Code' },
+      {
+        _id: 'inh-a',
+        name: 'rel_a',
+        type: 'relationship',
+        label: 'Rel A',
+        content: 'related-tmpl',
+        relationType: 'rel-type-1',
+        inherit: { property: 'p1', type: 'text' },
+      },
+      {
+        _id: 'inh-b',
+        name: 'rel_b',
+        type: 'relationship',
+        label: 'Rel B',
+        content: 'related-tmpl',
+        relationType: 'rel-type-1',
+        inherit: { property: 'p2', type: 'geolocation' },
+      },
+      { _id: 'after1', name: 'after', type: 'text', label: 'After' },
+    ];
+    const templateMap = new Map(templateProperties.map(property => [property._id, property]));
+
+    const partition = partitionMetadataRecord(
+      [textField('ABC', 'short1'), later],
+      [second, first],
+      templateMap
+    );
+
+    expect(partition.masonryFields.map(f => f._id)).toEqual(['short1', 'inh-a', 'after1']);
+    expect(partition.inheritingRels.map(f => f._id)).toEqual(['inh-a', 'inh-b']);
   });
 
   it('omits empty specialized fields from masonry while keeping filled preview', () => {
@@ -218,5 +276,92 @@ describe('metadataPropertyLayout', () => {
     );
 
     expect(partition.masonryFields.map(f => f._id)).toEqual(['prev1', 'm1']);
+  });
+
+  it('classifies compact vs block content for packing', () => {
+    expect(packClassForProperty(textField('1987'), undefined)).toBe('short');
+    expect(
+      packClassForProperty(
+        { ...textField('x'.repeat(LONG_FIELD_CHAR_THRESHOLD + 1), 'mid'), type: 'numeric' },
+        undefined
+      )
+    ).toBe('block');
+    expect(packClassForProperty(imageField, undefined)).toBe('media');
+    expect(packClassForProperty(mediaField, undefined)).toBe('media');
+    expect(packClassForProperty(markdownField('md'), undefined)).toBe('block');
+    expect(packClassForProperty(imageField, { fullWidth: true })).toBe('media');
+    expect(packClassForProperty(geolocationField, undefined)).toBe('media');
+  });
+
+  const rowIds = (fields: MetadataProperty[], width: number) =>
+    packPropertyRows(fields, width, new Map()).map(row => row.fields.map(f => f._id));
+
+  it('puts one compact card per row when the panel is narrower than two cards', () => {
+    expect(rowIds([textField('1987', 't1'), textField('ABC', 't2')], 300)).toEqual([
+      ['t1'],
+      ['t2'],
+    ]);
+  });
+
+  it('puts one compact card per row when width is unknown', () => {
+    expect(rowIds([textField('1987', 't1'), textField('ABC', 't2')], 0)).toEqual([['t1'], ['t2']]);
+  });
+
+  it('packs two then three media cards as the panel widens', () => {
+    const twoCol = MEDIA_CARD_MIN_PX * 2 + PROPERTY_ROW_GAP_PX;
+    const threeCol = MEDIA_CARD_MIN_PX * 3 + PROPERTY_ROW_GAP_PX * 2;
+    expect(rowIds([imageField, mediaField], twoCol - 1)).toEqual([['img1'], ['med1']]);
+    expect(rowIds([imageField, mediaField], twoCol)).toEqual([['img1', 'med1']]);
+    expect(rowIds([imageField, mediaField, previewField], threeCol - 1)).toEqual([
+      ['img1', 'med1'],
+      ['prev1'],
+    ]);
+    expect(rowIds([imageField, mediaField, previewField], threeCol)).toEqual([
+      ['img1', 'med1', 'prev1'],
+    ]);
+  });
+  it('does not pack a short field with the following image', () => {
+    expect(rowIds([textField('1987', 't1'), imageField, mediaField], 800)).toEqual([
+      ['t1'],
+      ['img1', 'med1'],
+    ]);
+  });
+
+  it('packs consecutive media when they fit and flushes a block so it never shares a row', () => {
+    const longNumeric: MetadataProperty = {
+      ...textField('x'.repeat(LONG_FIELD_CHAR_THRESHOLD + 1), 't3'),
+      type: 'numeric',
+    };
+    expect(
+      rowIds(
+        [
+          textField('1987', 't1'),
+          textField('ABC', 't2'),
+          longNumeric,
+          imageField,
+          mediaField,
+          markdownField('md'),
+        ],
+        800
+      )
+    ).toEqual([['t1', 't2'], ['t3'], ['img1', 'med1'], ['m1']]);
+  });
+
+  it('pairs image with media and preview with geolocation on a side pane and a wide pane', () => {
+    const fields = [
+      { ...markdownField('## Description'), _id: 'desc' },
+      { ...markdownField('Articles 4, 5 and 7'), _id: 'articles' },
+      textField('1987', 'body'),
+      imageField,
+      mediaField,
+      previewField,
+      geolocationField,
+    ];
+    const stacked = [['desc'], ['articles'], ['body'], ['img1'], ['med1'], ['prev1'], ['g1']];
+    const two = [['desc'], ['articles'], ['body'], ['img1', 'med1'], ['prev1', 'g1']];
+    const three = [['desc'], ['articles'], ['body'], ['img1', 'med1', 'prev1'], ['g1']];
+    expect(rowIds(fields, 400)).toEqual(stacked);
+    expect(rowIds(fields, 800)).toEqual(two);
+    expect(rowIds(fields, 2560)).toEqual(three);
   });
 });

@@ -93,7 +93,7 @@ const HeaderView = ({ librarySearch, libraryFilters, setSidePanelView }: HeaderR
             <I18NLink
               to={libraryUrl}
               onClick={() => setSidePanelView('library')}
-              className="header-bar-button flex items-center gap-1.5 rounded-md border px-3 py-1 text-[0.8125rem] font-medium transition-colors"
+              className="header-bar-button flex items-center gap-1.5 rounded-md border px-3 py-1 text-tab font-medium transition-colors"
               activeClassname="header-bar-button-active"
               aria-label={t('System', 'Library', null, false)}
             >
@@ -104,7 +104,7 @@ const HeaderView = ({ librarySearch, libraryFilters, setSidePanelView }: HeaderR
           {authenticatedUser && (
             <I18NLink
               to="/settings/account"
-              className="header-bar-button flex items-center gap-1.5 rounded-md border px-3 py-1 text-[0.8125rem] font-medium transition-colors"
+              className="header-bar-button flex items-center gap-1.5 rounded-md border px-3 py-1 text-tab font-medium transition-colors"
               activeClassname="header-bar-button-active"
               aria-label={t('System', 'Settings', null, false)}
             >
@@ -115,7 +115,7 @@ const HeaderView = ({ librarySearch, libraryFilters, setSidePanelView }: HeaderR
           {!authenticatedUser && (
             <I18NLink
               to="/login"
-              className="header-bar-button flex items-center gap-1.5 rounded-md border px-3 py-1 text-[0.8125rem] font-medium transition-colors"
+              className="header-bar-button flex items-center gap-1.5 rounded-md border px-3 py-1 text-tab font-medium transition-colors"
             >
               <KeyIcon className="h-4 w-4" />
               {!isMobile ? <Translate>Sign in</Translate> : null}

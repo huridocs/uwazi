@@ -8,12 +8,13 @@ type MediaProps = {
   values: MediaMetadataProperty['values'];
   width?: number | string;
   height?: number | string;
+  frame?: 'natural' | 'video';
 };
 
 type PlayerRef = NonNullable<React.ComponentProps<typeof MediaPlayer>['playerRef']>;
 type PlayerInstance = PlayerRef extends React.RefObject<infer T> ? T : never;
 
-const Media = ({ values, width = '100%', height = 300 }: MediaProps) => {
+const Media = ({ values, width = '100%', height = 300, frame = 'natural' }: MediaProps) => {
   const baseId = useId();
   const playerRefs = useRef<React.RefObject<PlayerInstance>[]>([]);
   if (playerRefs.current.length !== values.length) {
@@ -43,14 +44,18 @@ const Media = ({ values, width = '100%', height = 300 }: MediaProps) => {
           <div key={index} className="flex min-w-0 max-w-full flex-col gap-2">
             <figure
               aria-labelledby={figId}
-              className="w-full min-w-0 max-w-full overflow-hidden rounded-md bg-(--color-theme-surface-warm)"
+              className={`w-full min-w-0 max-w-full overflow-hidden rounded-md bg-(--color-theme-surface-warm) ${
+                frame === 'video' ? 'relative aspect-video' : ''
+              }`.trim()}
             >
               <MediaPlayer
-                className="w-full max-w-full"
+                className={
+                  frame === 'video' ? 'absolute inset-0 h-full w-full' : 'h-full w-full max-w-full'
+                }
                 playerRef={playerRef}
                 url={value}
                 width={width}
-                height={height}
+                height={frame === 'video' ? '100%' : height}
               />
               {alt && (
                 <figcaption className="sr-only" id={figId}>

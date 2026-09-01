@@ -1,5 +1,4 @@
 import React, { ReactNode, useMemo } from 'react';
-import { Translate } from '#app/I18N/index.js';
 import type { ClientProperty, ClientTemplateSchema } from '#V2/shared/types.js';
 import type { RelationshipMetadataProperty } from '#V2/formatters/types.js';
 import type { Entity } from '#V2/api/entities/types.js';
@@ -19,7 +18,7 @@ type RelationshipCardsProps = {
   templates?: ClientTemplateSchema[];
   entity?: Entity;
   onOpenEntity?: (target: OpenEntityTarget) => void;
-  /** Skip link-only connections — host renders those in the Details table. */
+  /** Skip link-only connections — host renders those as masonry cards. */
   inheritingOnly?: boolean;
 };
 
@@ -215,16 +214,7 @@ const RelationshipCards = ({
     return null;
   }
 
-  return (
-    <>
-      <div className="mt-2 flex w-full min-w-0 items-center">
-        <p className="text-xs font-semibold uppercase tracking-wide text-ink-tertiary">
-          <Translate>Relationships</Translate>
-        </p>
-      </div>
-      <div className="flex flex-col gap-3">{list}</div>
-    </>
-  );
+  return <div className="flex flex-col gap-3">{list}</div>;
 };
 
 export { RelationshipCards, buildRelationshipCardNodes };

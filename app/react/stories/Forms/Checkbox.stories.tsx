@@ -118,6 +118,10 @@ const DisabledIndeterminate: Story = {
   ),
 };
 
+const Ink: Story = {
+  render: () => <Checkbox name="ink-tone" label="Ink tone (default)" checked tone="ink" />,
+};
+
 const CarbonTone: Story = {
   render: () => <Checkbox name="carbon-tone" label="Carbon tone (filters)" checked tone="carbon" />,
 };
@@ -130,6 +134,7 @@ export {
   Disabled,
   DisabledChecked,
   DisabledIndeterminate,
+  Ink,
   CarbonTone,
 };
 

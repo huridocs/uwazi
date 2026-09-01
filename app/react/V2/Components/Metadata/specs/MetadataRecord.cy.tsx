@@ -15,7 +15,7 @@ const assertInheritedTableScroll = (card: Cypress.Chainable<JQuery<HTMLElement>>
 };
 
 const compactField = (name: string) =>
-  cy.get(`[data-field-key="${name}"]`).should('have.class', 'basis-[min(100%,18rem)]');
+  cy.get(`[data-field-key="${name}"]`).should('have.class', 'flex-1');
 
 const fullRowField = (name: string) =>
   cy.get(`[data-field-key="${name}"]`).should('have.class', 'basis-full');
@@ -35,7 +35,7 @@ describe('MetadataDisplay', () => {
       cy.contains('th', 'Edit Date').should('exist');
     });
 
-    it('shows simple text as a compact masonry card', () => {
+    it('shows simple text as a compact card', () => {
       cy.contains('h2', 'A basic simple text').should('exist');
       cy.contains('Emergency incident report from downtown area').should('exist');
       compactField('simple_text');
@@ -71,8 +71,8 @@ describe('MetadataDisplay', () => {
       cy.contains('This value should not display').should('not.have.attr', 'href');
     });
 
-    it('shows inheriting connections as scrollable tables under Relationships', () => {
-      cy.contains('Relationships').should('exist');
+    it('shows inheriting connections as scrollable tables in property order', () => {
+      cy.contains('p', 'Relationships').should('not.exist');
 
       const multiselectInherit = inheritingRelationshipCard('Relationship with inheritance');
       multiselectInherit.within(() => {
@@ -86,14 +86,7 @@ describe('MetadataDisplay', () => {
       });
       assertInheritedTableScroll(multiselectInherit);
 
-      const geoInherit = inheritingRelationshipCard('Grouped geolocation 3 (inherited)');
-      geoInherit.within(() => {
-        cy.contains('inherits Geolocation').should('exist');
-        cy.contains('th', 'Geolocation').should('have.class', 'min-w-72');
-        cy.get('td.min-w-72').should('exist');
-        cy.get('[data-testid="map-container"]').should('exist');
-      });
-      assertInheritedTableScroll(geoInherit);
+      cy.contains('Grouped geolocation 3 (inherited)').should('not.exist');
     });
 
     it('shows external link as a masonry card', () => {
@@ -115,12 +108,29 @@ describe('MetadataDisplay', () => {
         'src',
         '/short-video-thumbnail.jpg'
       );
+      compactField('selected_image');
+      compactField('video_of_event');
+      cy.get('[data-field-key="selected_image"] .aspect-video').should('exist');
+      cy.get('[data-field-key="video_of_event"] .aspect-video').should('exist');
+      cy.get('[data-field-key="selected_image"]')
+        .closest('[data-property-row]')
+        .should('contain', 'selected_image');
     });
 
     it('shows media timelinks', () => {
       cy.contains('Media video with timelinks').should('exist');
       cy.contains('Timelink 1').should('exist');
       cy.contains('Timelink 2').should('exist');
+    });
+  });
+
+  describe('Grouped geolocation', () => {
+    it('shows adjacent inherited geolocation on the grouped map', () => {
+      mount(<Basic showGeolocationProperties />);
+
+      cy.contains('Grouped geolocation properties').should('exist');
+      cy.contains('Grouped geolocation 3 (inherited)').should('not.exist');
+      cy.get('[data-testid="map-container"]').should('exist');
     });
   });
 

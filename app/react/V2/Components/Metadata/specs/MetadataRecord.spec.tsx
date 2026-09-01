@@ -2,7 +2,7 @@
 /* eslint-disable react/no-multi-comp */
 import React from 'react';
 import { createStore, Provider } from 'jotai';
-import { render, screen, within } from '@testing-library/react';
+import { act, render, screen, waitFor, within } from '@testing-library/react';
 import { TestAtomStoreProvider } from '#V2/testing/index.js';
 import { templatesAtom } from '#V2/atoms/templatesAtom.js';
 import { relationshipTypesAtom } from '#V2/atoms/relationshipTypes.js';
@@ -41,6 +41,31 @@ jest.mock('#app/Map/index.js', () => ({
     <div data-testid="map" data-marker-count={markers?.length ?? 0} />
   ),
 }));
+
+const resizeObservers: Array<{
+  callback: ResizeObserverCallback;
+  observe: () => void;
+  unobserve: () => void;
+  disconnect: () => void;
+}> = [];
+let mockClientWidth = 0;
+
+class ResizeObserverMock {
+  callback: ResizeObserverCallback;
+
+  constructor(callback: ResizeObserverCallback) {
+    this.callback = callback;
+    resizeObservers.push(this);
+  }
+
+  observe = jest.fn();
+
+  unobserve = jest.fn();
+
+  disconnect = jest.fn();
+}
+
+global.ResizeObserver = ResizeObserverMock as unknown as typeof ResizeObserver;
 
 const relatedTemplate = {
   _id: 'related-tmpl',
@@ -204,6 +229,15 @@ const fieldEl = (name: string): HTMLElement => {
 };
 
 describe('MetadataRecord', () => {
+  beforeEach(() => {
+    mockClientWidth = 0;
+    resizeObservers.length = 0;
+    Object.defineProperty(HTMLElement.prototype, 'clientWidth', {
+      configurable: true,
+      get: () => mockClientWidth,
+    });
+  });
+
   // eslint-disable-next-line max-statements
   it('shows Details dates only and packs template fields in masonry', () => {
     renderRecord(withoutRels);
@@ -228,6 +262,7 @@ describe('MetadataRecord', () => {
     expect(fieldEl('notes').className).toContain(FULL_ROW_METADATA_FIELD_LAYOUT);
   });
 
+  // eslint-disable-next-line max-statements
   it('packs image without fullWidth as compact in the masonry wrap', () => {
     const imageTemplate = {
       ...template,
@@ -272,11 +307,80 @@ describe('MetadataRecord', () => {
     );
 
     const headings = screen.getAllByRole('heading').map(heading => heading.textContent);
-    expect(headings.indexOf('Details')).toBeLessThan(headings.indexOf('Summary'));
-    expect(headings.indexOf('Code')).toBeGreaterThan(headings.indexOf('Details'));
-    expect(headings.indexOf('Image')).toBeGreaterThan(headings.indexOf('Details'));
+    expect(headings.indexOf('Summary')).toBeLessThan(headings.indexOf('Image'));
+    expect(headings.indexOf('Details')).toBeGreaterThan(headings.indexOf('Image'));
+    expect(headings.filter(heading => heading === 'Details')).toHaveLength(1);
     expect(fieldEl('photo').className).toContain(COMPACT_METADATA_FIELD_LAYOUT);
     expect(fieldEl('code').className).toContain(COMPACT_METADATA_FIELD_LAYOUT);
+  });
+
+  // eslint-disable-next-line max-statements
+  it('repacks image and media onto one row when the panel widens', async () => {
+    mockClientWidth = 300;
+    const imageTemplate = {
+      ...template,
+      properties: [
+        {
+          _id: 'p-img',
+          name: 'photo',
+          type: 'image' as const,
+          label: 'Image',
+          style: 'contain' as const,
+        },
+        { _id: 'p-med', name: 'clip', type: 'media' as const, label: 'Media' },
+      ],
+    };
+    const imageEntity: Entity = {
+      ...withoutRels,
+      metadata: {
+        photo: [{ value: '/plant.jpg', alt: 'plant' }],
+        clip: [{ value: '/a.mp4' }],
+      },
+      documents: [],
+    };
+
+    render(
+      <TestAtomStoreProvider
+        initialValues={[
+          [templatesAtom, [imageTemplate, relatedTemplate, relatedEntityTemplate]],
+          [relationshipTypesAtom, [{ _id: 'rel-type-1', name: 'Relates to' }]],
+        ]}
+      >
+        <MetadataRecord entity={imageEntity} />
+      </TestAtomStoreProvider>
+    );
+
+    await waitFor(() => {
+      expect(
+        fieldEl('photo').closest('[data-property-row]')?.getAttribute('data-property-row')
+      ).toBe('photo');
+      expect(
+        fieldEl('clip').closest('[data-property-row]')?.getAttribute('data-property-row')
+      ).toBe('clip');
+    });
+
+    mockClientWidth = 700;
+    const [observer] = resizeObservers;
+    if (!observer) {
+      throw new Error('expected ResizeObserver');
+    }
+    act(() => {
+      observer.callback(
+        [
+          {
+            contentRect: { width: 700, height: 100 } as DOMRectReadOnly,
+            target: document.querySelector('[data-testid="metadata-record"]') as Element,
+          } as ResizeObserverEntry,
+        ],
+        observer
+      );
+    });
+
+    await waitFor(() => {
+      expect(
+        fieldEl('photo').closest('[data-property-row]')?.getAttribute('data-property-row')
+      ).toBe('photo clip');
+    });
   });
 
   it('scrolls and flashes a masonry field when focusMetadataFieldAtom matches', () => {
@@ -393,10 +497,10 @@ describe('MetadataRecord', () => {
     expect(screen.getByRole('heading', { name: 'Notes' })).toBeInTheDocument();
   });
 
-  it('shows inheriting connections under Relationships with via and inherits', () => {
+  it('shows inheriting connections in template order without a Relationships heading', () => {
     renderRecord();
 
-    expect(screen.getByText('Relationships')).toBeInTheDocument();
+    expect(screen.queryByText('Relationships')).not.toBeInTheDocument();
     expect(screen.getByText('Relationshipa')).toBeInTheDocument();
     expect(screen.queryByText('Relationshipb')).not.toBeInTheDocument();
     expect(screen.queryByRole('heading', { name: 'Relationshipa' })).not.toBeInTheDocument();
@@ -404,9 +508,12 @@ describe('MetadataRecord', () => {
     expect(screen.getAllByText(/via/).length).toBeGreaterThan(0);
     expect(screen.getByText(/inherits/)).toHaveTextContent('Body text, Location');
     expect(screen.getByRole('heading', { name: 'Relationshipc' })).toBeInTheDocument();
+    const headings = screen.getAllByRole('heading').map(heading => heading.textContent);
+    expect(headings.indexOf('Notes')).toBeLessThan(headings.indexOf('Relationshipc'));
+    expect(headings.indexOf('Details')).toBe(headings.length - 1);
   });
 
-  it('shows inheriting connections under Relationships with inherited body and map', () => {
+  it('shows inheriting connections with inherited body and map', () => {
     renderRecord();
 
     const rela = sectionForLabel('Relationshipa');
@@ -416,12 +523,12 @@ describe('MetadataRecord', () => {
     expect(within(rela).getByRole('columnheader', { name: 'Body text' })).toBeInTheDocument();
     expect(within(rela).getByRole('columnheader', { name: 'Location' })).toBeInTheDocument();
 
-    expect(screen.getByText('Relationships')).toBeInTheDocument();
-    expect(screen.queryByText('Relationshipb')).not.toBeInTheDocument();
+    expect(screen.getByText(/inherits/)).toHaveTextContent('Body text, Location');
+    expect(screen.queryByText('Relationships')).not.toBeInTheDocument();
     expect(screen.queryByRole('heading', { name: 'Relationshipa' })).not.toBeInTheDocument();
   });
 
-  it('shows own map and inherited location under Relationships', () => {
+  it('shows own map and inherited location in property order', () => {
     const geoGroupTemplate = {
       _id: 'tmpl-geo-group',
       name: 'Geo group template',
@@ -469,17 +576,17 @@ describe('MetadataRecord', () => {
       </TestAtomStoreProvider>
     );
 
-    expect(screen.queryByText('Grouped geolocation properties')).not.toBeInTheDocument();
-    expect(screen.getByRole('heading', { name: 'Own location' })).toBeInTheDocument();
-    expect(within(sectionForLabel('Own location')).getByTestId('map')).toHaveAttribute(
-      'data-marker-count',
-      '1'
-    );
+    expect(screen.getByText('Grouped geolocation properties')).toBeInTheDocument();
+    expect(screen.queryByRole('heading', { name: 'Own location' })).not.toBeInTheDocument();
+    const groupedMap = within(
+      screen
+        .getByText('Grouped geolocation properties')
+        .closest('div.overflow-hidden') as HTMLElement
+    ).getByTestId('map');
+    expect(groupedMap).toHaveAttribute('data-marker-count', '2');
 
-    expect(screen.getByText('Relationships')).toBeInTheDocument();
-    const inherited = sectionForLabel('Inherited location');
-    expect(within(inherited).getByTestId('map')).toHaveAttribute('data-marker-count', '1');
-    expect(within(inherited).getByRole('link', { name: /A1/i })).toBeInTheDocument();
+    expect(screen.queryByText('Relationships')).not.toBeInTheDocument();
+    expect(screen.queryByRole('heading', { name: 'Inherited location' })).not.toBeInTheDocument();
   });
 
   it('shows own map and hides empty inherited location', () => {
@@ -522,8 +629,10 @@ describe('MetadataRecord', () => {
       </TestAtomStoreProvider>
     );
 
-    expect(screen.getByRole('heading', { name: 'Own location' })).toBeInTheDocument();
-    expect(screen.getByTestId('map')).toBeInTheDocument();
+    expect(screen.getByText('Grouped geolocation properties')).toBeInTheDocument();
+    expect(
+      within(sectionForLabel('Grouped geolocation properties')).getByTestId('map')
+    ).toHaveAttribute('data-marker-count', '1');
     expect(screen.queryByText('Relationships')).not.toBeInTheDocument();
     expect(screen.queryByText('Inherited location')).not.toBeInTheDocument();
   });
@@ -603,14 +712,13 @@ describe('MetadataRecord', () => {
       </TestAtomStoreProvider>
     );
 
-    const relA = sectionForLabel('Inherited location A');
-    const relB = sectionForLabel('Inherited location B');
-    expect(within(relA).getByTestId('map')).toHaveAttribute('data-marker-count', '1');
-    expect(within(relB).getByTestId('map')).toHaveAttribute('data-marker-count', '2');
-    expect(within(relA).getByRole('link', { name: /A1/i })).toBeInTheDocument();
-    expect(within(relB).getByRole('link', { name: /B1/i })).toBeInTheDocument();
-    expect(within(relA).queryByRole('link', { name: /B1/i })).not.toBeInTheDocument();
-    expect(within(relB).queryByRole('link', { name: /A1/i })).not.toBeInTheDocument();
+    expect(screen.getByText('Grouped geolocation properties')).toBeInTheDocument();
+    expect(
+      within(sectionForLabel('Grouped geolocation properties')).getByTestId('map')
+    ).toHaveAttribute('data-marker-count', '4');
+
+    expect(screen.queryByRole('heading', { name: 'Inherited location A' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('heading', { name: 'Inherited location B' })).not.toBeInTheDocument();
   });
 
   it('colors unconstrained relationship pills from the related entity template', () => {

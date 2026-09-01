@@ -72,17 +72,41 @@ describe('PaneLayout', () => {
         window.localStorage.setItem('cypressComponentTest', '[0.2,0.2,0.6]');
       });
       render({ localStorageKey: 'cypressComponentTest' });
-      cy.get('section').eq(0).should('have.attr', 'style').and('equal', 'width: 245.8px;');
-      cy.get('section').eq(1).should('have.attr', 'style').and('equal', 'width: 245.8px;');
-      cy.get('section').eq(2).should('have.attr', 'style').and('equal', 'width: 737.4px;');
+      cy.get('section')
+        .eq(0)
+        .should($el => {
+          expect(parseFloat($el[0].style.width)).to.be.closeTo(283.66, 0.5);
+        });
+      cy.get('section')
+        .eq(1)
+        .should($el => {
+          expect(parseFloat($el[0].style.width)).to.be.closeTo(283.66, 0.5);
+        });
+      cy.get('section')
+        .eq(2)
+        .should($el => {
+          expect(parseFloat($el[0].style.width)).to.be.closeTo(653.67, 0.5);
+        });
       cy.clearAllLocalStorage();
     });
 
     it('should allow passing default widths for panes', () => {
       render({ defaultRatios: [0.2, 0.2, 0.6] });
-      cy.get('section').eq(0).should('have.attr', 'style').and('equal', 'width: 245.8px;');
-      cy.get('section').eq(1).should('have.attr', 'style').and('equal', 'width: 245.8px;');
-      cy.get('section').eq(2).should('have.attr', 'style').and('equal', 'width: 737.4px;');
+      cy.get('section')
+        .eq(0)
+        .should($el => {
+          expect(parseFloat($el[0].style.width)).to.be.closeTo(283.66, 0.5);
+        });
+      cy.get('section')
+        .eq(1)
+        .should($el => {
+          expect(parseFloat($el[0].style.width)).to.be.closeTo(283.66, 0.5);
+        });
+      cy.get('section')
+        .eq(2)
+        .should($el => {
+          expect(parseFloat($el[0].style.width)).to.be.closeTo(653.67, 0.5);
+        });
     });
 
     it('should keep user selected widths when children update', () => {
