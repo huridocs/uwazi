@@ -65,7 +65,7 @@ const PageRestoreModal = ({
           selectedValues={selectedValues}
           onChange={onSelectionChange}
           noItems={<Translate>No releases yet</Translate>}
-          hideFilters={true}
+          hideFilters
         />
       </Modal.Body>
       <Modal.Footer>

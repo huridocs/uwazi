@@ -8,7 +8,7 @@ import { fileURLToPath } from 'url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const packagePath = join(__dirname, '..', 'package.json');
-const version = JSON.parse(readFileSync(packagePath, 'utf-8')).version;
+const { version } = JSON.parse(readFileSync(packagePath, 'utf-8'));
 const dsn = process.env.SENTRY_API_DSN;
 if (dsn) {
   init({

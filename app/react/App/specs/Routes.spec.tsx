@@ -70,6 +70,13 @@ describe('Routes', () => {
         expect(element).toMatchObject(<Navigate to="entity/entitySharedId" replace />);
       });
 
+      it('should redirect to library V2 when the library flag is enabled', () => {
+        settings.features = { featureFlagLibraryV2: true };
+        const { element, defaultToLibrary } = getIndexElement(settings, userId);
+        expect(element).toMatchObject(<Navigate to="library" replace />);
+        expect(defaultToLibrary).toBe(true);
+      });
+
       it('should render a library view with the query', () => {
         settings.home_page =
           "/library/map/?searchTerm:'mySearch',types:!('63f64f8bd793c9aae9925032')";
