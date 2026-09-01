@@ -1,4 +1,3 @@
-import { Db } from 'mongodb';
 import { IdGenerator } from '#api/core/application/contracts/IdGenerator.js';
 import { Result } from '#api/core/libs/Result.js';
 import { PageReleasesDataSource } from '#api/pages.v2/application/contracts/PageReleasesDataSource.js';
@@ -16,14 +15,12 @@ export class PostgresPageReleasesDataSource
 
   constructor(deps: {
     tenantId: string;
-    mongoDb: Db;
     pgTransactionManager: PostgresTransactionManager;
     idGenerator: IdGenerator;
   }) {
     super('page_releases', {
       tenantId: deps.tenantId,
       pgTransactionManager: deps.pgTransactionManager,
-      sync: { syncDb: deps.mongoDb, syncNamespace: 'page_releases' },
     });
     this.idGenerator = deps.idGenerator;
   }

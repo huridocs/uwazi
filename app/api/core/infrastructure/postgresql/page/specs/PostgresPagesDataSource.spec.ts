@@ -1,6 +1,5 @@
 import { ObjectId } from 'mongodb';
 import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
-import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { PostgresDB } from '#api/infrastructure/PostgresDB.js';
 import { Page, PageLocaleData } from '#api/pages.v2/domain/Page.js';
 import { PageNotFoundError } from '#api/pages.v2/domain/errors.js';
@@ -19,7 +18,6 @@ const managerFor = (tenantId: string) =>
 const makeDS = (tenantId = TENANT_ID) =>
   new PostgresPagesDataSource({
     tenantId,
-    mongoDb: getConnection(),
     pgTransactionManager: managerFor(tenantId),
   });
 

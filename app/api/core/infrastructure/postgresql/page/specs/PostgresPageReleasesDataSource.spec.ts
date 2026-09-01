@@ -1,7 +1,6 @@
 import { ObjectId } from 'mongodb';
 import { IdGeneratorFactory } from '#api/core/infrastructure/factories/IdGeneratorFactory.js';
 import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
-import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { PostgresDB } from '#api/infrastructure/PostgresDB.js';
 import { PageReleaseSnapshot } from '#api/pages.v2/domain/Page.js';
 import { PageReleaseNotFoundError } from '#api/pages.v2/domain/errors.js';
@@ -20,7 +19,6 @@ const managerFor = (tenantId: string) =>
 const makeDS = (tenantId = TENANT_ID) =>
   new PostgresPageReleasesDataSource({
     tenantId,
-    mongoDb: getConnection(),
     pgTransactionManager: managerFor(tenantId),
     idGenerator: IdGeneratorFactory.default(),
   });

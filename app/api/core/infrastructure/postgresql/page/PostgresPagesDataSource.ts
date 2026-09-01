@@ -1,4 +1,3 @@
-import { Db } from 'mongodb';
 import { Result } from '#api/core/libs/Result.js';
 import { PagesDataSource } from '#api/pages.v2/application/contracts/PagesDataSource.js';
 import { Page } from '#api/pages.v2/domain/Page.js';
@@ -20,15 +19,10 @@ export class PostgresPagesDataSource
    */
   private readonly locales: PostgresTable<PageLocaleRow>;
 
-  constructor(deps: {
-    tenantId: string;
-    mongoDb: Db;
-    pgTransactionManager: PostgresTransactionManager;
-  }) {
+  constructor(deps: { tenantId: string; pgTransactionManager: PostgresTransactionManager }) {
     super('pages', {
       tenantId: deps.tenantId,
       pgTransactionManager: deps.pgTransactionManager,
-      sync: { syncDb: deps.mongoDb, syncNamespace: 'pages' },
     });
     this.locales = PostgresTable.for<PageLocaleRow>({
       tableName: LOCALES_TABLE,

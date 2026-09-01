@@ -11,18 +11,17 @@ type Overrides = { transactionManager?: TransactionManager };
 
 export class PageReleasesDataSourceFactory {
   static default(overrides?: Overrides): PageReleasesDataSource {
-    const db = getConnection();
     const tenant = ExecutionContext.currentTenant;
 
     if (tenant.featureFlags?.postgresPages) {
       return new PostgresPageReleasesDataSource({
         tenantId: tenant.name,
-        mongoDb: db,
         pgTransactionManager: ExecutionContext.postgresTransactionManager,
         idGenerator: IdGeneratorFactory.default(),
       });
     }
 
+    const db = getConnection();
     const tm = (overrides?.transactionManager ??
       ExecutionContext.transactionManager) as MongoTransactionManager;
     return new MongoPageReleasesDataSource(db, tm);
