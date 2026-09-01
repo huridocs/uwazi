@@ -691,7 +691,7 @@ describe('PostgresTable', () => {
       await table.insert({ _id: 'ex-2', name: 'beta', values: jsonVal([]) });
 
       const rows = await table
-        .whereExists(function  rows(this: Knex.QueryBuilder) {
+        .whereExists(function rows(this: Knex.QueryBuilder) {
           this.select('*').from('thesauri').whereRaw('1=1');
         })
         .all();
@@ -704,7 +704,7 @@ describe('PostgresTable', () => {
       await table.insert({ _id: 'ex-3', name: 'alpha', values: jsonVal([]) });
 
       const rows = await table
-        .whereExists(function  rows(this: Knex.QueryBuilder) {
+        .whereExists(function rows(this: Knex.QueryBuilder) {
           this.select('*').from('thesauri').whereRaw('1=0');
         })
         .all();

@@ -769,7 +769,7 @@ describe('PostgresPermissionEnforcedTable', () => {
     it('should not leak rows via whereExists subquery', async () => {
       const table = createEnforcedTable(AccessContext.forActor(collaborator));
       const rows = await table
-        .whereExists(function  rows(this: Knex.QueryBuilder) {
+        .whereExists(function rows(this: Knex.QueryBuilder) {
           this.select('*').from(TEST_TABLE).whereRaw('1=1');
         })
         .all();

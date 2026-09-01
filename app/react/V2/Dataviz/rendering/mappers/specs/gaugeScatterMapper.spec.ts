@@ -10,7 +10,7 @@ type MapperSeries = {
 
 const seriesAt = (option: EChartsOption | null, index = 0): MapperSeries => {
   expect(option).not.toBeNull();
-  const {series} = option!;
+  const { series } = option!;
   let list: unknown[];
   if (Array.isArray(series)) {
     list = series;

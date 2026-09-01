@@ -3,7 +3,11 @@ import { createWriteStream } from 'fs';
 import { access, mkdir, rm } from 'fs/promises';
 
 import { BaseFile } from '#api/core/domain/files/BaseFile.js';
-import { FileWithContent,FileStorage,GetFileInput } from '../../application/contracts/FileStorage.js';
+import {
+  FileWithContent,
+  FileStorage,
+  GetFileInput,
+} from '../../application/contracts/FileStorage.js';
 import path from 'path';
 import { pipeline } from 'stream/promises';
 import { DiskFile } from './DiskFile.js';
