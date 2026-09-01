@@ -61,7 +61,11 @@ const legacyBeaconSlotStyle: React.CSSProperties = {
 };
 
 const menuLinkKey = (link: IImmutable<ClientSettingsLinkSchema>, index: number): string =>
-  String(link.get('_id') ?? `${link.get('type') ?? 'link'}-${link.get('title')}-${index}`);
+  String(
+    link.get('id') ??
+      link.get('_id') ??
+      `${link.get('type') ?? 'link'}-${link.get('title')}-${index}`
+  );
 
 const MenuComponent = ({
   librarySearch,

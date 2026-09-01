@@ -19,11 +19,13 @@ Do not re-investigate these; they are done and should stay this way:
 - No `SettingsService`. Inject `settingsDS` (with the TM you already have).
 - Factory uses `ExecutionContext.transactionManager` only (no TM fallback).
 - Tests that patch settings fixtures use `SettingsDSWithContext`. Do not wrap Jest globally. Do not import the factory just to seed fixtures.
-- PG DS does not mint the **document** `_id`. Copy preserves Mongo `_id`. Upsert conflict is `tenant_id`. Nested array `_id`s (`links`, `filters`) are minted in the use case (`assignMenuItemIds` / `assignFilterIds`) — mongoose used to add those on save; native Mongo and JSONB do not.
-- Filters table `rowId` is filter `_id` only. `id` is template id or group logical id. Do **not** fall back `rowId` to `id`.
+- PG DS does not mint the **document** `_id`. Copy preserves Mongo `_id`. Upsert conflict is `tenant_id`.
+- Nested **menu items** identity is `id`. `toPersistableMenuItems` mints `id` for new items and strips leftover mongoose `_id`. `toReadableMenuItems` lifts stored `_id` → `id` on GET (does **not** generate). Menu translations match `id` after that lift, so leftover Mongo `_id` still diffs correctly before the next save. Menu table `rowId` is `id`.
+- Nested **filters** identity is `id` (template id or group id) — same as thesaurus values / template property domain `id`. Translations, rename, and remove-template already use `id`. Do **not** mint filter `_id`. `toPersistableFilters` strips leftover mongoose `_id` on save. Filters table `rowId` is `id`.
+- Languages table `rowId` is `key` (the language identity). Do not mint language `_id` for the UI.
 - Sync handler is DS-backed (`SettingsSyncHandler`). Factory branching on `postgresSettings` is enough; there is no Mongo-specific handler.
 - Dual-backend tests must pass `postgresMirror: ['settings']` explicitly. Do not add `settings` to default `MIRRORED_COLLECTIONS` (settings fixtures include entities that are not PG-ready).
-- JSONB `links` store `_id` as hex strings. `custom` is JSONB — objects only, not a string.
+- JSONB `links` store `id` as strings. Copy/`toRow` lifts leftover menu `_id` onto `id`. `custom` is JSONB — objects only, not a string.
 
 ### Phase 2 progress
 
@@ -35,8 +37,8 @@ Do not re-investigate these; they are done and should stay this way:
 - [x] Sync handler is DS-backed (`SettingsSyncHandler` + factory). No separate PG class — inbound still patches the tenant singleton via `SettingsDataSource`.
 - [x] `SettingsMigrationConfig` + CLI `--collection settings` (fail on 0 or >1 Mongo docs)
 - [x] Dual-backend: `SaveSettings.spec`, `SaveSettings.newNameGeneration.spec`, settings HTTP routes + links, `AddLanguage` / `DeleteLanguage` (`describe.each`).
-- [x] Nested filter `_id`: `assignFilterIds` on save (same as menu `assignMenuItemIds`). Filters UI `formatFilters` still uses `_id` as `rowId` — not `id`.
-- [ ] Local dry-run: schema → copy → flag → GET/POST / links / languages / filters / public vs admin
+- [x] Filter identity is `id` (`formatFilters` / `toPersistableFilters`). No `assignFilterIds`. Menu identity is `id` (`formatMenuLinks` / `toPersistableMenuItems` / `toReadableMenuItems`). Languages table `rowId` is `key`.
+- [x] Local dry-run: schema → copy → flag → GET/POST / links / languages / filters / public vs admin
 
 ---
 
@@ -155,7 +157,7 @@ Keep **`SettingsDataSource.getDefaultLanguageKey()`** — that is already the V2
 - [x] **P1 — Zod:** `SaveSettings` / menu-item save / `SetDefaultLanguage` / filter UCs have `InputSchema`. Controllers parse HTTP with the same schema.
 - [x] **P1 — AJV / emit-types:** Deleted `settingsSchema.ts` and generated `settingsType.d.ts`. Types live in `settingsType.ts`. Runtime validation is Zod only.
 - [x] **P1 — Internal names:** menu-item helper + `SaveMenuItemsUseCase`. HTTP `/api/settings/links` stays. `sync` is isolated on `readSyncConfig()`.
-- [x] **P2 — `ensureLinkIds`:** `assignMenuItemIds` on the menu-item write path, not a `SaveSettings` private method. Filters get the same treatment via `assignFilterIds` (root filters only; group `items` keep template `id`).
+- [x] **P2 — `ensureLinkIds`:** `toPersistableMenuItems` on the menu-item write path (identity and translations match `id`; leftover mongoose `_id` is lifted then dropped). Filters do **not** get a parallel mongoose `_id` — identity is already `id` (`toPersistableFilters` strips leftover `_id`). GET lifts leftover menu `_id` via `toReadableMenuItems` so a save is not required first.
 - [x] **P2 — `newNameGeneration`:** Settings flips the flag; `TemplateFacade.applyNewNameGeneration` owns the template walk. File the templates ticket separately.
 - [x] **P2 — Remove `resolveTransactionManager` fallback.** Factory uses `ExecutionContext.transactionManager` only. Tests wrap `runWithContext`. Legacy `tenants.run` job loops that read settings use `runInJobContext`.
 - [x] **P3 — One default-language API:** `getDefaultLanguageKey()` only; QueryService `getDefaultLanguage()` is gone.
@@ -330,7 +332,7 @@ Integration-first: save + Menu/Filters translation keys, links merge, default la
 | S4 | **No single `document` blob.** Slice columns + semantic JSONB groups (mail, analytics, map, branding, site_preferences). Unknown Mongo keys go in **`extras JSONB`**, not `custom`. `__v` dropped on copy. |
 | S5 | RLS + `tenant_isolation` in the **same** schema migration as `CREATE TABLE` (next delta: **017** — 016 is entities published default). |
 | S6 | One store. Copy Mongo → PG, flip `postgresSettings`. No dual-write of the settings row. Flag is **one-way** after any PG write. |
-| S7 | New **document** `_id` (blank tenant) is minted via `IdGenerator` in the use case — **not** `new ObjectId()` inside the PG DS. Nested `links[]` / `filters[]` `_id`s are also use-case helpers (`assignMenuItemIds` / `assignFilterIds`), not the PG DS. |
+| S7 | New **document** `_id` (blank tenant) is minted via `IdGenerator` in the use case — **not** `new ObjectId()` inside the PG DS. Nested `links[]` mint **`id`** via `toPersistableMenuItems` (Menu translation identity). Nested `filters[]` do **not** mint `_id`; identity is `id`; persist strips mongoose leftovers (`toPersistableFilters`). |
 | S8 | Language `$push`/`$pull` become read-modify-write of the **`languages` JSONB column** inside the PG TM (singleton). Do not add a `settings_languages` table in v1. |
 | S9 | `cached()`: when the flag is on, return the same PG DS as `default()` (translations pattern). Optional later: cache `languageKeys` with `onCommitted` clear — not required to ship. |
 | S10 | Sync handler factory branches on the same flag. Inbound still applies onto the tenant singleton (ignore payload `_id`). Outbound still `{ _id, languages }` until a separate product change. |
@@ -441,7 +443,7 @@ Same class of risk as translations P12. Notable:
 
 | Location | Settings write | Notes |
 | --- | --- | --- |
-| `SaveSettings` | PG upsert | Menu/Filters translations may already be PG (`postgresTranslations`) or Mongo. Nested filter `_id`s: `assignFilterIds` (root only). Nested link `_id`s: `assignMenuItemIds`. |
+| `SaveSettings` | PG upsert | Menu/Filters translations may already be PG (`postgresTranslations`) or Mongo. Filters persist by `id` (`toPersistableFilters`). Menu items persist by `id` (`toPersistableMenuItems`). |
 | `AddLanguageUseCase` | `addLanguage` + `setLanguageInstalling` | Clone translations + entity clone jobs; settings row is not last |
 | `DeleteLanguageUseCase` | `deleteLanguage` | Inverse |
 | Template create/update/delete | filter name / remove template | Socket `updateSettings` |
@@ -484,7 +486,8 @@ Same class of risk as translations P12. Notable:
 - Enable the flag by default
 - Turn the flag off after PG writes
 - Put `ObjectId` / `new ObjectId()` in the PG DS
-- Teach Filters `formatFilters` to use `id` as `rowId` when `_id` is missing (`id` is template/group identity, not the subdocument key)
+- Mint mongoose `_id` on filters or menu items, or use leftover `_id` as table `rowId` (`id` is the identity; thesaurus values / template properties work the same way)
+- Fall back `rowId` between `_id` and `id` — one identity field per nested collection
 - Split languages/links/filters into child tables in v1
 - Encode mongoose `select: false` as “column missing in PG” — store them, hide them in HTTP
 - Change `/api/settings` contracts or the public whitelist as part of this work
@@ -509,8 +512,8 @@ Same class of risk as translations P12. Notable:
 | V2 DS + cache | `app/api/core/infrastructure/mongodb/MongoSettingsDataSource.ts`, `CachedMongoSettingsDataSource.ts` |
 | Contract / factory | `app/api/core/application/contracts/SettingsDataSource.ts`, `…/factories/SettingsDataSourceFactory.ts` |
 | Language UCs | `app/api/core/application/AddLanguage.ts`, `DeleteLanguage.ts` |
-| Filter nested ids | `app/api/core/application/settings/libraryFilters.ts` (`assignFilterIds`) |
-| Menu nested ids | `app/api/core/application/settings/menuItems.ts` (`assignMenuItemIds`) |
+| Filter identity | `app/api/core/application/settings/libraryFilters.ts` (`toPersistableFilters`) |
+| Menu nested ids | `app/api/core/application/settings/menuItems.ts` (`toPersistableMenuItems`, `toReadableMenuItems`) |
 | Inbound sync | `app/api/sync/SettingsSyncHandler.ts` + factory |
 | Outbound sync subset | `app/api/sync/processNamespaces.ts` (`settings()`) |
 | Copy engine / CLI | `…/postgresql/migrations/MigrateCollectionToPostgres.ts`, `scripts/scripts.v2/migrateToPostgres.ts` (`--collection settings`) |
@@ -525,7 +528,7 @@ Same class of risk as translations P12. Notable:
 
 **Hybrid pitfall:** `AddLanguage` runs inside the Mongo TM. PG settings upserts do **not** join that transaction. If `cloneForLanguage` fails after `addLanguage`, Postgres can keep the new language while Mongo translations roll back. Same class as translations-PG vs Mongo settings.
 
-**Nested `_id` pitfall:** V2 `patch` (native Mongo and PG JSONB) does not auto-`_id` array subdocs the way mongoose did. The Filters settings table keys rows on `filter._id`. Without `assignFilterIds`, a new filter saves, reloads with `rowId: undefined`, and Delete is a no-op (checkbox looks like it works; Save stays disabled). Copy from Mongo already has those `_id`s; **new** filters after cutover did not. Do not fix this by mapping `rowId` to `id`. Languages UI also uses `lang._id` as `rowId` but actions use `key` — uninstall still works; newly added languages may lack `_id` until something mints them.
+**Nested identity:** mongoose used to auto-`_id` array subdocs. Native Mongo / PG JSONB do not. That is not a reason to reimplement mongoose. **Filters** already have domain `id` (translations match `id`). **Menu** identity is also `id`: persist mints `id` for new items, GET lifts leftover mongoose `_id` without generating, translations match `id` after that lift. Copy/`toRow` lifts menu `_id` → `id` so PG JSON is clean; leftover `_id` in Mongo (flag off) still works because the same V2 read/write path is used. Next save drops leftover `_id` (lazy cleanup, not required for GET/Delete). **Languages** identity is `key`. A Filters Delete bug during dry-run was the table using leftover mongoose `_id` as `rowId`; the fix is `rowId = id`, not minting `_id`. Same for Menu.
 
 ---
 
@@ -537,4 +540,3 @@ Phase 1 is closed. Remaining items are cutover, not contract.
 - Outbound sync remaining `{ languages }` only — never `password` without a separate design (aligns with opt-in `readSyncConfig()`).
 - Templates ticket: `applyNewNameGeneration` ownership (named debt; not this slice).
 - AddLanguage / Mongo TM vs PG settings: failed clone does not roll back the PG languages column (hybrid pitfall above).
-- Languages nested `_id`: `AddLanguage` does not mint language `_id`; Languages table uses it as `rowId` but mutations use `key`. Same mongoose-vs-native class as filters, different blast radius.

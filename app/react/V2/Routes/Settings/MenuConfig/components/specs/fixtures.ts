@@ -2,21 +2,21 @@ import { Link } from '../../MenuConfig.js';
 
 const links: Link[] = [
   {
-    _id: 'link1',
+    id: 'link1',
     title: 'Root link 1',
     type: 'link',
     url: 'root.com',
     rowId: 'link1',
   },
   {
-    _id: 'link2',
+    id: 'link2',
     title: 'Root link 2',
     type: 'link',
     url: 'root2.com',
     rowId: 'link2',
   },
   {
-    _id: 'group1',
+    id: 'group1',
     title: 'Empty group',
     type: 'group',
     url: '',
@@ -24,7 +24,7 @@ const links: Link[] = [
     subRows: [],
   },
   {
-    _id: 'group2',
+    id: 'group2',
     title: 'Group',
     type: 'group',
     url: '',

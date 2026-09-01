@@ -2,6 +2,14 @@ import { Settings } from '#shared/types/settingsType.js';
 import { SettingsDataSource } from '../contracts/SettingsDataSource.js';
 import { applySettingsDefaults } from './settingsDefaults.js';
 import { getPublicSettingsPayload, pickAdminFields } from './publicSettings.js';
+import { toReadableMenuItems } from './menuItems.js';
+import { toReadableFilters } from './libraryFilters.js';
+
+const presentSettings = (stored: Settings): Settings => ({
+  ...stored,
+  ...(stored.links ? { links: toReadableMenuItems(stored.links) } : {}),
+  ...(stored.filters ? { filters: toReadableFilters(stored.filters) } : {}),
+});
 
 class SettingsQueryService {
   constructor(private settingsDS: SettingsDataSource) {}
@@ -11,7 +19,7 @@ class SettingsQueryService {
     if (!stored) {
       return getPublicSettingsPayload({});
     }
-    return getPublicSettingsPayload(applySettingsDefaults(stored));
+    return getPublicSettingsPayload(applySettingsDefaults(presentSettings(stored)));
   }
 
   async getForAdmin(): Promise<Partial<Settings> & { themeCustomization: boolean }> {
@@ -19,7 +27,7 @@ class SettingsQueryService {
     if (!stored) {
       return getPublicSettingsPayload({});
     }
-    const withDefaults = applySettingsDefaults(stored);
+    const withDefaults = applySettingsDefaults(presentSettings(stored));
     return {
       ...pickAdminFields(withDefaults),
       ...getPublicSettingsPayload(withDefaults),

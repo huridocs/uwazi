@@ -1,4 +1,5 @@
 import { Settings as SettingsType } from '#shared/types/settingsType.js';
+import { toReadableMenuItems } from '#api/core/application/settings/menuItems.js';
 
 const COLUMN_FIELDS = {
   languages: 'languages',
@@ -94,6 +95,11 @@ const pickDefined = (source: Record<string, unknown>, keys: readonly string[]) =
   return Object.keys(picked).length ? picked : undefined;
 };
 
+const withReadableMenuItems = (row: SettingsRow): SettingsRow => {
+  const links = toReadableMenuItems(row.links);
+  return links ? { ...row, links } : row;
+};
+
 export class PostgresSettingsMapper {
   static toRow(settings: SettingsType): SettingsRow {
     const source = { ...(settings as SettingsType & Record<string, unknown>) };
@@ -124,7 +130,7 @@ export class PostgresSettingsMapper {
     });
 
     row.extras = { ...source };
-    return row;
+    return withReadableMenuItems(row);
   }
 
   static toSettings(row: SettingsRow): SettingsType {

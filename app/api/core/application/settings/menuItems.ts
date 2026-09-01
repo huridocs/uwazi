@@ -4,27 +4,78 @@ import { Settings, SettingsLinkSchema, SettingsSublinkSchema } from '#shared/typ
 
 const objectIdValue = z.union([z.string(), z.instanceof(ObjectId)]);
 
-const withId = <T extends { _id?: unknown }>(item: T, generateId: () => string): T =>
-  item._id ? item : { ...item, _id: generateId() };
+type MenuItemIdentity = {
+  id?: string;
+  _id?: unknown;
+};
 
-const assignMenuItemIds = (
+const omitNestedId = <T extends object>(item: T): Omit<T, '_id'> => {
+  const { _id: _nestedId, ...rest } = item as T & { _id?: unknown };
+  return rest;
+};
+
+const asMenuItemId = (item: MenuItemIdentity): string | undefined => {
+  if (item.id) {
+    return item.id;
+  }
+  if (item._id == null || item._id === '') {
+    return undefined;
+  }
+  return String(item._id);
+};
+
+const withReadableId = <T extends MenuItemIdentity>(item: T): Omit<T, '_id'> => {
+  const withoutId = omitNestedId(item);
+  const id = asMenuItemId(item);
+  return id ? { ...withoutId, id } : withoutId;
+};
+
+const withPersistedId = <T extends MenuItemIdentity>(
+  item: T,
+  generateId: () => string
+): Omit<T, '_id'> & { id: string } => ({
+  ...omitNestedId(item),
+  id: asMenuItemId(item) ?? generateId(),
+});
+
+const toReadableMenuItems = (
+  links: SettingsLinkSchema[] | undefined
+): SettingsLinkSchema[] | undefined => {
+  if (!links) {
+    return links;
+  }
+
+  return links.map(link => {
+    const readable = withReadableId(link);
+    if (!link.sublinks) {
+      return readable;
+    }
+    return {
+      ...readable,
+      sublinks: link.sublinks.map(sublink => withReadableId(sublink)),
+    };
+  });
+};
+
+const toPersistableMenuItems = (
   links: NonNullable<Settings['links']>,
   generateId: () => string
 ): NonNullable<Settings['links']> =>
   links.map(link => {
-    const withLinkId = withId(link, generateId);
+    const persisted = withPersistedId(link, generateId);
     if (!link.sublinks) {
-      return withLinkId;
+      return persisted;
     }
     return {
-      ...withLinkId,
-      sublinks: link.sublinks.map(sublink => withId(sublink, generateId)),
+      ...persisted,
+      sublinks: link.sublinks.map(sublink => withPersistedId(sublink, generateId)),
     };
   });
 
 const menuSublinkSchema: z.ZodType<SettingsSublinkSchema> = z
   .object({
     _id: objectIdValue.optional(),
+    id: z.string().optional(),
     title: z.string(),
     type: z.literal('link'),
     url: z.string(),
@@ -35,6 +86,7 @@ const menuSublinkSchema: z.ZodType<SettingsSublinkSchema> = z
 const menuItemSchema: z.ZodType<SettingsLinkSchema> = z
   .object({
     _id: objectIdValue.optional(),
+    id: z.string().optional(),
     title: z.string(),
     url: z.string().optional(),
     localId: z.string().optional(),
@@ -81,5 +133,11 @@ const refineMenuItems = (
   });
 };
 
-export { assignMenuItemIds, menuItemSchema, objectIdValue, refineMenuItems };
+export {
+  menuItemSchema,
+  objectIdValue,
+  refineMenuItems,
+  toPersistableMenuItems,
+  toReadableMenuItems,
+};
 export type { SettingsLinkSchema as MenuItem };

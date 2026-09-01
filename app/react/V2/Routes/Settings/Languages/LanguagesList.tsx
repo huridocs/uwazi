@@ -53,7 +53,7 @@ const LanguagesList = () => {
 
   const languages: TableLanguages[] = values(
     merge(keyBy(installedLanguages, 'key'), keyBy(collectionLanguages, 'key'))
-  ).map(lang => ({ ...lang, rowId: lang._id! }));
+  ).map(lang => ({ ...lang, rowId: lang.key }));
 
   const handleAction =
     (

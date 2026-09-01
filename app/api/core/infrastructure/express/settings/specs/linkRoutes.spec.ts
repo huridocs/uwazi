@@ -111,19 +111,29 @@ describe('api/settings/links', () => {
             )
           ).links || [];
         const serialize = (value: unknown) => JSON.parse(JSON.stringify(value));
-        expect(serialize(storedLinks)).toEqual(
-          serialize(newLinks).map((link: { sublinks?: Record<string, unknown>[] }) =>
-            link.sublinks?.length
+        const asPersistedMenuItem = (link: {
+          _id?: unknown;
+          sublinks?: Record<string, unknown>[];
+          [key: string]: unknown;
+        }) => {
+          const { _id, sublinks, ...rest } = link;
+          return {
+            ...rest,
+            id: String(_id),
+            ...(sublinks
               ? {
-                  ...link,
-                  sublinks: link.sublinks.map(sublink => ({
-                    ...sublink,
-                    _id: expect.any(String),
-                  })),
+                  sublinks: sublinks.map(sublink => {
+                    const { _id: subId, ...subRest } = sublink;
+                    return {
+                      ...subRest,
+                      id: subId ? String(subId) : expect.any(String),
+                    };
+                  }),
                 }
-              : link
-          )
-        );
+              : {}),
+          };
+        };
+        expect(serialize(storedLinks)).toEqual(serialize(newLinks).map(asPersistedMenuItem));
       });
 
       it.each([

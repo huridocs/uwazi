@@ -31,6 +31,7 @@ export interface SettingsFilterSchema {
 
 export interface SettingsLinkSchema {
   _id?: ObjectIdSchema;
+  id?: string;
   title: string;
   url?: string;
   localId?: string;
@@ -145,6 +146,7 @@ export interface Settings {
 
 export interface SettingsSublinkSchema {
   _id?: ObjectIdSchema;
+  id?: string;
   title: string;
   type: 'link';
   url: string;

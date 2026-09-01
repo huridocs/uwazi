@@ -13,43 +13,6 @@ type MongoSettingsDataSourceDeps = {
   transactionManager: MongoTransactionManager;
 };
 
-const toObjectId = (id: ObjectId | string | undefined | null): ObjectId | undefined => {
-  if (id === undefined || id === null || id === '') {
-    return undefined;
-  }
-  if (id instanceof ObjectId) {
-    return id;
-  }
-  return MongoIdHandler.mapToDb(id);
-};
-
-const normalizeMenuItemIds = (partial: SettingsType): SettingsType => {
-  if (!partial.links) {
-    return partial;
-  }
-
-  return {
-    ...partial,
-    links: partial.links.map(link => {
-      const id = toObjectId(link._id);
-      const normalized = {
-        ...link,
-        ...(id ? { _id: id } : {}),
-      };
-      if (!link.sublinks) {
-        return normalized;
-      }
-      return {
-        ...normalized,
-        sublinks: link.sublinks.map(sublink => {
-          const subId = toObjectId(sublink._id);
-          return subId ? { ...sublink, _id: subId } : sublink;
-        }),
-      };
-    }),
-  };
-};
-
 export class MongoSettingsDataSource
   extends MongoDataSource<SettingsType>
   implements SettingsDataSource
@@ -125,7 +88,7 @@ export class MongoSettingsDataSource
 
   async patch(partial: SettingsType): Promise<SettingsType> {
     const current = await this.find();
-    const { _id: incomingId, __v: _version, ...fields } = normalizeMenuItemIds(partial);
+    const { _id: incomingId, __v: _version, ...fields } = partial;
 
     if (current?._id) {
       return this.mergeOntoExisting(current._id, fields);

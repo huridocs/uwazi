@@ -110,12 +110,14 @@ const linkFixtures: DBFixture = {
           type: 'group',
           sublinks: [
             {
+              _id: factory.id('sublink1'),
               title: 'Sublink1',
               url: 'page/pageid/sublink1',
               type: 'link',
               localId: 'sublink1',
             },
             {
+              _id: factory.id('sublink2'),
               title: 'Sublink2',
               url: 'page/pageid2/sublink2',
               type: 'link',
@@ -130,24 +132,26 @@ const linkFixtures: DBFixture = {
 
 const expectedLinks = [
   {
-    _id: factory.idString('link'),
+    id: factory.idString('link'),
     title: 'Link',
     url: 'http://uwazi.io',
     sublinks: [],
     type: 'link',
   },
   {
-    _id: factory.idString('group'),
+    id: factory.idString('group'),
     title: 'Group',
     type: 'group',
     sublinks: [
       {
+        id: factory.idString('sublink1'),
         title: 'Sublink1',
         url: 'page/pageid/sublink1',
         type: 'link',
         localId: 'sublink1',
       },
       {
+        id: factory.idString('sublink2'),
         title: 'Sublink2',
         url: 'page/pageid2/sublink2',
         type: 'link',

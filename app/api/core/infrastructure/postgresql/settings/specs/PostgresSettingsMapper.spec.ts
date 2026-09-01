@@ -108,6 +108,36 @@ describe('PostgresSettingsMapper', () => {
     );
   });
 
+  it('should lift leftover menu _id onto id when mapping a row', () => {
+    const row = PostgresSettingsMapper.toRow({
+      _id: sampleId(),
+      links: [
+        {
+          _id: 'menu1',
+          title: 'Home',
+          type: 'link',
+          url: '/',
+        },
+        {
+          _id: 'group1',
+          title: 'Group',
+          type: 'group',
+          sublinks: [{ _id: 'sub1', title: 'Child', type: 'link', url: '/child' }],
+        },
+      ],
+    });
+
+    expect(row.links).toEqual([
+      { id: 'menu1', title: 'Home', type: 'link', url: '/' },
+      {
+        id: 'group1',
+        title: 'Group',
+        type: 'group',
+        sublinks: [{ id: 'sub1', title: 'Child', type: 'link', url: '/child' }],
+      },
+    ]);
+  });
+
   it('should stringify ObjectId _id and omit empty groups', () => {
     const objectId = new ObjectId();
     const row = PostgresSettingsMapper.toRow({

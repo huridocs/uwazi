@@ -6,8 +6,8 @@ import { TranslationsService } from './translation/TranslationsService.js';
 import { persistMenuAndFilterTranslations } from './settings/menuAndFilterTranslations.js';
 import { applySettingsDefaults } from './settings/settingsDefaults.js';
 import { pickAdminFields } from './settings/publicSettings.js';
-import { assignFilterIds } from './settings/libraryFilters.js';
-import { assignMenuItemIds } from './settings/menuItems.js';
+import { toPersistableFilters } from './settings/libraryFilters.js';
+import { toPersistableMenuItems } from './settings/menuItems.js';
 import { SaveSettingsInputSchema } from './settings/saveSettingsInput.js';
 import { TemplateFacade } from '#api/core/infrastructure/facades/TemplateFacade.js';
 
@@ -30,11 +30,9 @@ class SaveSettingsUseCase extends AbstractUseCase<Input, Output, Deps> {
     const toPersist = {
       ...incoming,
       ...(incoming.links
-        ? { links: assignMenuItemIds(incoming.links, () => this.idGenerator.generate()) }
+        ? { links: toPersistableMenuItems(incoming.links, () => this.idGenerator.generate()) }
         : {}),
-      ...(incoming.filters
-        ? { filters: assignFilterIds(incoming.filters, () => this.idGenerator.generate()) }
-        : {}),
+      ...(incoming.filters ? { filters: toPersistableFilters(incoming.filters) } : {}),
     };
 
     const saved = await this.transactionManager.run(async () => {

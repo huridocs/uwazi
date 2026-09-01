@@ -6,6 +6,7 @@ import {
 } from '#shared/types/settingsType.js';
 import { ensure } from '#shared/tsUtils.js';
 import { TranslationsService } from '#api/core/application/translation/TranslationsService.js';
+import { toReadableMenuItems } from './menuItems.js';
 
 type FilterOrLink = SettingsFilterSchema | SettingsLinkSchema | SettingsSublinkSchema;
 
@@ -75,10 +76,10 @@ const saveLinksTranslations = async (
   }
 
   const { updatedValues, deletedValues, values } = getUpdatesAndDeletes(
-    '_id',
+    'id',
     'title',
-    newLinks,
-    currentLinks
+    toReadableMenuItems(newLinks) ?? [],
+    toReadableMenuItems(currentLinks) ?? []
   );
 
   await translationsService.updateContext({
