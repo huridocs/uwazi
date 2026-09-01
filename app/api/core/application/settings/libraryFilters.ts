@@ -26,4 +26,10 @@ const renameFilter = (
   return filters.map(filter => (filter.id === filterId ? { ...filter, name } : filter));
 };
 
-export { removeTemplateFromFilters, renameFilter };
+const assignFilterIds = (
+  filters: SettingsFilterSchema[],
+  generateId: () => string
+): SettingsFilterSchema[] =>
+  filters.map(filter => (filter._id ? filter : { ...filter, _id: generateId() }));
+
+export { removeTemplateFromFilters, renameFilter, assignFilterIds };

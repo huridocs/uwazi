@@ -262,6 +262,35 @@ describe('settings', () => {
       });
 
       describe('when there are filter groups', () => {
+        it('should assign _id to root filters that do not have one', async () => {
+          await saveSettings({
+            filters: [
+              { id: '123', name: 'Template' },
+              { id: 'grp', name: 'Group', items: [{ id: '456', name: 'Nested' }] },
+            ],
+          });
+
+          const saved = (await getSettings()).filters;
+          expect(saved?.[0]._id).toBeTruthy();
+          expect(saved?.[0]).toEqual(
+            expect.objectContaining({ id: '123', name: 'Template', _id: expect.anything() })
+          );
+          expect(saved?.[1]._id).toBeTruthy();
+          expect(saved?.[1]).toEqual(
+            expect.objectContaining({ id: 'grp', name: 'Group', _id: expect.anything() })
+          );
+          expect(saved?.[1].items).toEqual([{ id: '456', name: 'Nested' }]);
+        });
+
+        it('should keep existing filter _ids', async () => {
+          const existingId = 'aaaaaaaaaaaaaaaaaaaaaaaa';
+          await saveSettings({
+            filters: [{ _id: existingId, id: '123', name: 'Template' }],
+          });
+
+          expect(String((await getSettings()).filters?.[0]._id)).toBe(existingId);
+        });
+
         it('should create translations for them', async () => {
           const config: SaveSettingsInput = {
             site_name: 'My collection',
@@ -389,7 +418,9 @@ describe('settings', () => {
         await withSettings(async () =>
           RemoveTemplateFromFiltersUseCaseFactory.default().execute({ templateId: '123' })
         );
-        expect((await getSettings()).filters).toEqual([{ id: 'axz', name: 'Group', items: [] }]);
+        expect((await getSettings()).filters).toEqual([
+          expect.objectContaining({ id: 'axz', name: 'Group', items: [] }),
+        ]);
       });
     });
 
@@ -404,7 +435,9 @@ describe('settings', () => {
         );
 
         expect(updated).toBe(true);
-        expect((await getSettings()).filters).toEqual([{ id: '123', name: 'The dark knight' }]);
+        expect((await getSettings()).filters).toEqual([
+          expect.objectContaining({ id: '123', name: 'The dark knight' }),
+        ]);
       });
 
       it('should do nothing when filter does not exist', async () => {
@@ -417,7 +450,9 @@ describe('settings', () => {
         );
 
         expect(updated).toBe(false);
-        expect((await getSettings()).filters).toEqual([{ id: '123', name: 'Batman' }]);
+        expect((await getSettings()).filters).toEqual([
+          expect.objectContaining({ id: '123', name: 'Batman' }),
+        ]);
       });
     });
 
