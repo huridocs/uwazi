@@ -283,7 +283,7 @@ describe('i18n translations routes', () => {
           const newSettings = expect.objectContaining({
             languages: [
               expect.objectContaining({ key: 'en', label: 'English', default: true }),
-              expect.objectContaining({ key: 'es', label: 'Spanish', default: false }),
+              expect.objectContaining({ key: 'es', label: 'Spanish' }),
               expect.objectContaining({ key: 'zh', label: 'Chinese' }),
               expect.objectContaining({ key: 'ja', label: 'Japanese' }),
             ],
@@ -459,7 +459,6 @@ describe('i18n translations routes', () => {
             languages: [
               {
                 key: 'en',
-                default: false,
               },
               {
                 key: 'es',
@@ -467,12 +466,13 @@ describe('i18n translations routes', () => {
               },
             ],
           });
+          expect(response.body.languages[0]).not.toHaveProperty('default');
           expect(iosocket.emit).toHaveBeenCalledWith(
             'updateSettings',
             TestEmitSources.currentTenant,
             expect.objectContaining({
               languages: [
-                expect.objectContaining({ default: false, key: 'en', label: 'English' }),
+                expect.objectContaining({ key: 'en', label: 'English' }),
                 expect.objectContaining({ default: true, key: 'es', label: 'Spanish' }),
               ],
             })
