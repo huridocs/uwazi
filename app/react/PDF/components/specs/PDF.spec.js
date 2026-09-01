@@ -11,7 +11,7 @@ const legacyCharacterMapUrl = '/legacy_character_maps/';
 
 jest.mock('#V2/Components/PDFViewer/pdfjs.js', () => ({
   PDFJS: { getDocument: jest.fn() },
-  EventBus: function () {},
+  EventBus() {},
   CMAP_URL: '/legacy_character_maps/',
   WASM_URL: '/pdfjs_wasm/',
 }));
