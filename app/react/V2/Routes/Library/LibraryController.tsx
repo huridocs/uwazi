@@ -10,13 +10,13 @@ import {
 } from '#app/utils/entityViewerPaths.js';
 import { LibraryAggregations } from '#shared/types/librarySearch.js';
 import { settingsAtom, templatesAtom, thesauriAtom } from '#V2/atoms/index.js';
+import { useDebouncedDraft } from '#V2/CustomHooks/useDebouncedDraft.js';
 import { LibraryView } from './Components/LibraryView.js';
 import type { Chip } from './Components/ActiveFiltersSheet.js';
 import { resolveFilterChipParts } from './filterChipLabel.js';
 import { librarySearchParams } from './librarySearchParams.js';
 import { DEFAULT_LIBRARY_URL_STATE, type LibraryFiltersState } from './libraryUrlState.js';
 import type { LoaderResponse } from './types.js';
-import { useLibrarySearchDraft } from './useLibrarySearchDraft.js';
 
 const removeFilterValue = (
   filters: LibraryFiltersState,
@@ -80,7 +80,9 @@ const LibraryController = () => {
     draft: searchInput,
     setDraft: setSearchInput,
     commitNow: commitSearchNow,
-  } = useLibrarySearchDraft(urlState.search, commitSearch);
+  } = useDebouncedDraft(urlState.search, commitSearch, {
+    shouldCommitImmediately: value => value === '',
+  });
 
   const entityBasePath = getEntityViewerV2BasePath(isEntityViewerV2Enabled(settings.features));
 
