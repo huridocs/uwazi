@@ -62,7 +62,7 @@ const PXEntityDashboard = () => {
         );
         await revalidator.revalidate();
       }
-    } catch (error) {
+    } catch (_) {
       notify('error', t('System', 'An error occurred', null, false));
     }
 

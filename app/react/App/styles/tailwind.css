@@ -221,8 +221,9 @@ html {
   --text-nano--line-height: 1rem;
   --text-micro: 0.6875rem; /* 11px */
   --text-micro--line-height: 1rem;
-  /* Design token (`text-meta`): same size as micro, no paired line-height. */
+  /* Design token (`text-meta`): same size as micro. */
   --text-meta: 0.6875rem;
+  --text-meta--line-height: 1rem;
   --text-tab: 0.8125rem; /* 13px */
   --text-tab--line-height: 1.25rem;
 

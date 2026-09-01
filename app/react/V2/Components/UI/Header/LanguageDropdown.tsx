@@ -8,6 +8,7 @@ import { Translate } from '#app/I18N/index.js';
 import { useIsMobile } from '#app/V2/CustomHooks/useIsMobile.js';
 import { NeedAuthorization } from '#V2/Components/UI/index.js';
 import { BaseDropdown } from './BaseDropdown.js';
+import { buildLanguageSwitchUrl } from './buildLanguageSwitchUrl.js';
 
 interface LanguageDropdownProps {
   className?: string;
@@ -24,24 +25,6 @@ export const LanguageDropdown: React.FC<LanguageDropdownProps> = ({ className = 
   const [dropdownOpen, setDropdownOpen] = React.useState(false);
 
   const selectedLanguage = getSelectedLanguage(locale, languageList);
-
-  // Function to build URL with language prefix
-  const buildLanguageUrl = (languageKey: string): string => {
-    const currentPath = location.pathname;
-    const currentSearch = location.search;
-
-    // Remove existing language prefix if present
-    const pathWithoutLanguage = currentPath.replace(/^\/[a-z]{2}(\/|$)/, '/');
-
-    // Add new language prefix
-    const newPath = `/${languageKey}${pathWithoutLanguage === '/' ? '' : pathWithoutLanguage}`;
-
-    // Preserve search parameters (but exclude page parameter for non-document pages)
-    const shouldPreserveSearch = !currentPath.match('document') && currentSearch.match(/page=/);
-    const searchParams = shouldPreserveSearch ? currentSearch : '';
-
-    return `${newPath}${searchParams}`;
-  };
 
   const isTablet = useIsMobile(768);
 
@@ -126,7 +109,12 @@ export const LanguageDropdown: React.FC<LanguageDropdownProps> = ({ className = 
         }}
       >
         {languageList?.map((language, index) => {
-          const url = buildLanguageUrl(language.key);
+          const url = buildLanguageSwitchUrl({
+            pathname: location.pathname,
+            search: location.search,
+            hash: location.hash,
+            languageKey: language.key,
+          });
           const isFirst = index === 0;
           const isLast = index === (languageList?.length || 0) - 1;
 

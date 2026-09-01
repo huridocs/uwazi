@@ -4,7 +4,7 @@ import { tenants } from '#api/tenants/index.js';
 import date from '#api/utils/date.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { legacyLogger } from '#api/log/index.js';
-// eslint-disable-next-line node/no-restricted-import
+// eslint-disable-next-line no-restricted-imports
 import fs from 'fs/promises';
 import waitForExpect from 'wait-for-expect';
 import activitylog from '../activitylog.js';
@@ -114,7 +114,7 @@ describe('activitylogMiddleware', () => {
     activitylogMiddleware(req, res, next);
     await waitForExpect(() => {
       expect(legacyLogger.error).toHaveBeenCalled();
-      expect(legacyLogger.error.mock.calls[0][0]).toMatch('activitylog save error');
+      expect(legacyLogger.error.mock.calls[0][0]).toContain('activitylog save error');
     });
   });
 
@@ -127,7 +127,7 @@ describe('activitylogMiddleware', () => {
     activitylogMiddleware(req, res, next);
     await waitForExpect(() => {
       expect(legacyLogger.error).toHaveBeenCalled();
-      expect(legacyLogger.error.mock.calls[0][0]).toMatch('storage save error');
+      expect(legacyLogger.error.mock.calls[0][0]).toContain('storage save error');
     });
   });
 

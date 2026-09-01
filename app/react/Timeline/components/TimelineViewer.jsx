@@ -30,7 +30,7 @@ const dateProperties = Object.keys(renderableTemplates).reduce(
 
 const fetchReferences = entityId => ReferencesAPI.get(new RequestParams({ sharedId: entityId }));
 
-const getRelatedReferences = (references, template) => {
+const getRelatedReferences = async (references, template) => {
   let promise = Promise.resolve([]);
   const relatedEntity = references.find(r => r.entityData.template === template);
   if (relatedEntity) {
@@ -40,7 +40,7 @@ const getRelatedReferences = (references, template) => {
   return promise;
 };
 
-const fetchReferenceData = references => {
+const fetchReferenceData = async references => {
   const fetchPromises = references.map(reference =>
     EntitiesAPI.get(new RequestParams({ sharedId: reference.entityData.sharedId }))
   );
@@ -204,7 +204,7 @@ class TimelineViewer extends Component {
     return tracks;
   }
 
-  getRelatedEntity(references, isCase) {
+  async getRelatedEntity(references, isCase) {
     let fetchRelatedEntity = Promise.resolve(null);
 
     const relatedEntity = references.find(
@@ -228,7 +228,7 @@ class TimelineViewer extends Component {
     this.plainTemplates = this.props.templates.toJS();
 
     fetchReferences(entity.sharedId)
-      .then(references => {
+      .then(async references => {
         const relatedReferences = getRelatedReferences(
           references,
           isCase ? matterTemplate : caseTemplate
@@ -239,7 +239,7 @@ class TimelineViewer extends Component {
           relatedReferences,
         ]);
       })
-      .then(([relatedEntity, references, relatedReferences]) => {
+      .then(async ([relatedEntity, references, relatedReferences]) => {
         usefulReferences = this.filterUsefulReferences(
           entity,
           references,

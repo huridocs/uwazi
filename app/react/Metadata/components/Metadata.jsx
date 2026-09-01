@@ -273,7 +273,7 @@ const Metadata = ({
       >
         <dt className={prop.noLabel ? 'hidden' : ''}>
           {t(prop.translateContext || 'System', prop.label)}
-          {prop.obsolete ? [' ', <Icon icon="spinner" spin />] : null}
+          {prop.obsolete ? [' ', <Icon key="spinner" icon="spinner" spin />] : null}
         </dt>
         <dd className={prop.sortedBy ? 'item-current-sort' : ''}>
           {showByType({ prop, templateId, compact, useV2Player })}

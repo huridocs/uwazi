@@ -50,12 +50,27 @@ describe('CreateUserGroupController integration', () => {
     expect(usergroups).toContainEqual(expect.objectContaining({ name: 'Created Group' }));
   });
 
-  it('should return 422 for an unexpected extra field', async () => {
+  it('should strip an unexpected extra field instead of rejecting it', async () => {
     const response = await request(app)
       .post('/api/usergroups')
       .send({ name: 'Extra', members: [], other: 'invalid' });
 
+    expect(response).toHaveStatus(200);
+
+    const [stored] = (await testingEnvironment.db.getAllFrom('usergroups')).filter(
+      (group: any) => group.name === 'Extra'
+    );
+    expect(stored.other).toBeUndefined();
+  });
+
+  it('should return 422 for a member refId that is not a valid id', async () => {
+    const response = await request(app)
+      .post('/api/usergroups')
+      .send({ name: 'BadRefId', members: [{ refId: 'not-an-id' }] });
+
     expect(response).toHaveStatus(422);
+    const usergroups = await testingEnvironment.db.getAllFrom('usergroups');
+    expect(usergroups).not.toContainEqual(expect.objectContaining({ name: 'BadRefId' }));
   });
 
   it('should return 422 for a member missing refId', async () => {

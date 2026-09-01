@@ -5,7 +5,7 @@ import { tenants } from '#api/tenants/index.js';
 import { model as updatelogsModel } from '#api/updatelogs/index.js';
 import { UpdateLog } from '#api/updatelogs/updatelogsModel.js';
 import { testingTenants } from '#api/utils/testingTenants.js';
-import testingDB from '#api/utils/testing_db.js';
+import { testingDB } from '#api/utils/testing_db.js';
 import mongoose, { Schema } from 'mongoose';
 import { ensure } from '#shared/tsUtils.js';
 import { instanceModel, models, OdmModel, WithId } from '../model.js';

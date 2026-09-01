@@ -4,6 +4,7 @@ import partition from 'lodash/partition.js';
 import flatMapDeep from 'lodash/flatMapDeep.js';
 import { preloadOptionsLimit } from '#shared/config.js';
 import templates from '#api/core/v1_layer/templates/templates.js';
+import { isPostgresEntitiesActive } from '#api/core/libs/featureFlags.js';
 import { denormalizeThesauriLabelInMetadata } from '#api/entities/denormalize.js';
 import { search } from '#api/search/index.js';
 import { objectIndex } from '#shared/data_utils/objectIndex.js';
@@ -132,7 +133,7 @@ const thesauri = {
       const templateCount = await search.countPerTemplate(language);
 
       const processedTemplates = await Promise.all(
-        allTemplates.map(result =>
+        allTemplates.map(async result =>
           this.templateToThesauri(result, language, templateCount).then(
             templateTransformedInThesauri => templateTransformedInThesauri
           )
@@ -144,11 +145,14 @@ const thesauri = {
     return dictionaries;
   },
 
-  dictionaries() {
+  async dictionaries() {
     return ThesauriDAOFactory.default().get();
   },
 
   async renameThesaurusInMetadata(valueId, newLabel, thesaurusId, language) {
+    if (isPostgresEntitiesActive()) {
+      return;
+    }
     return denormalizeThesauriLabelInMetadata(valueId, newLabel, thesaurusId, language);
   },
 };

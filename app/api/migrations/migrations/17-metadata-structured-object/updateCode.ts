@@ -1,4 +1,4 @@
-/* eslint-disable max-statements,no-eval,node/no-restricted-import,no-console */
+/* eslint-disable max-statements,no-eval,no-restricted-imports,no-console */
 import { config } from '#api/config.js';
 import fs from 'fs';
 import path from 'path';

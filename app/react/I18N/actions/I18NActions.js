@@ -35,11 +35,11 @@ export function toggleInlineEdit() {
 
 export function saveTranslations(translations) {
   return dispatch => {
-    Promise.all(translations.map(translation => I18NApi.save(new RequestParams(translation)))).then(
-      () => {
-        notifications.notify(t('System', 'Translations saved', null, false), 'success')(dispatch);
-      }
-    );
+    void Promise.all(
+      translations.map(translation => I18NApi.save(new RequestParams(translation)))
+    ).then(() => {
+      notifications.notify(t('System', 'Translations saved', null, false), 'success')(dispatch);
+    });
   };
 }
 
@@ -74,7 +74,7 @@ export function setDefaultLanguage(key) {
 }
 
 export function resetDefaultTranslations(key) {
-  return dispatch =>
+  return async dispatch =>
     I18NApi.populateTranslations(new RequestParams({ locale: key })).then(() => {
       notifications.notify(
         t('System', 'Translations reset successfully', null, false),

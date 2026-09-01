@@ -117,9 +117,8 @@ export class TraversalQueryNode extends QueryNode {
       return false;
     }
     return (
-      (this.filters.types
-        ? this.filters.types.includes(relationship.type)
-        : true && this.filters.types) && this.direction === traverseDirection
+      (this.filters.types ? this.filters.types.includes(relationship.type) : true) &&
+      this.direction === traverseDirection
     );
   }
 

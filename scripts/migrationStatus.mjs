@@ -14,7 +14,7 @@
  *   yarn migration-status --json   machine-readable output
  */
 
-// eslint-disable-next-line node/no-restricted-import
+// eslint-disable-next-line no-restricted-imports
 import { readFileSync, readdirSync, existsSync } from 'fs';
 import { execFileSync } from 'child_process';
 import { dirname, resolve } from 'path';
@@ -118,9 +118,16 @@ const AREAS = [
     ephemeral: true,
     consistency: /Captcha.*Consistency/,
   },
+  {
+    id: 'i18n',
+    dir: 'translation',
+    dataSource: 'PostgresTranslationsDataSource.ts',
+    table: /create-translations-table/,
+    flag: 'postgresTranslations',
+    backfill: 'TranslationsMigrationConfig',
+  },
   { id: 'languages', tracked: false, expected: 'na' },
   { id: 'settings', tracked: false },
-  { id: 'i18n', tracked: false },
   { id: 'pages', tracked: false },
   { id: 'relationships', tracked: false },
   { id: 'csv', tracked: false },

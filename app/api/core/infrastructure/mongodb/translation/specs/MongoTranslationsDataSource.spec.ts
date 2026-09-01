@@ -4,7 +4,7 @@ import { DuplicatedKeyError } from '#api/common.v2/errors/DuplicatedKeyError.js'
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { Translation } from '#api/core/domain/translation/Translation.js';
-import testingDB, { DBFixture } from '#api/utils/testing_db.js';
+import { testingDB, DBFixture } from '#api/utils/testing_db.js';
 import { MongoTranslationsDataSource } from '../MongoTranslationsDataSource.js';
 
 const fixtures: DBFixture = {
@@ -75,6 +75,16 @@ describe('MongoTranslationsDataSource', () => {
           new MongoTranslationsDataSource(getConnection(), transactionManager).insert([])
         ).resolves.toEqual([]);
       });
+    });
+
+    it('should reject a translation whose context is missing type or label', async () => {
+      const transactionManager = TransactionManagerFactory.default();
+
+      await expect(
+        new MongoTranslationsDataSource(getConnection(), transactionManager).insert([
+          new Translation('Search', 'Search', 'en', { id: 'System' } as Translation['context']),
+        ])
+      ).rejects.toThrow(/context.type/);
     });
 
     describe('when any other error happens', () => {

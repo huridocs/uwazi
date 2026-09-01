@@ -1,6 +1,7 @@
 import React, { useState, type ReactNode } from 'react';
 import { CollapsibleSectionHeader } from '#V2/Components/UI/CollapsibleSectionHeader.js';
 import { useExpandCollapseSignals } from '../hooks/useExpandCollapseSignals.js';
+import { useEnsureResolvedOnExpand } from '../hooks/useEnsureResolvedOnExpand.js';
 
 type RelationshipGroupedCardProps = {
   title: ReactNode;
@@ -19,6 +20,7 @@ const RelationshipGroupedCard = ({
 }: RelationshipGroupedCardProps) => {
   const [expanded, setExpanded] = useState(false);
   useExpandCollapseSignals(setExpanded, markerIds);
+  useEnsureResolvedOnExpand(expanded);
 
   return (
     <div className="overflow-hidden rounded-md border border-border/40 bg-paper">

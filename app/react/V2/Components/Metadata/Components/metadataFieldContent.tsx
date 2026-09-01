@@ -7,7 +7,13 @@ import { Markdown } from './Markdown.js';
 import { LinkProperty } from './LinkProperty.js';
 import { Image } from './Image.js';
 import { Media } from './Media.js';
+import { connectionPillsForField } from './ConnectionPills.js';
 import type { MetadataProperty } from '#V2/formatters/types.js';
+
+type FieldContentOptions = {
+  density?: 'default' | 'compact';
+  long?: boolean;
+};
 
 const hasFilledText = (values?: Array<{ value?: string | null }>) =>
   Boolean(values?.some(value => value.value !== '' && value.value != null));
@@ -37,10 +43,24 @@ const renderScalarContent = (data: MetadataProperty, long = false): ReactNode =>
   return null;
 };
 
-const renderSpecializedContent = (data: MetadataProperty): ReactNode => {
+const renderSpecializedContent = (
+  data: MetadataProperty,
+  options: FieldContentOptions = {}
+): ReactNode => {
+  const compact = (options.density ?? 'default') === 'compact';
+
+  if (data.type === 'relationship') {
+    return connectionPillsForField(data, undefined);
+  }
   if (data.type === 'geolocation') {
     if (!data.values?.length) return null;
-    return <Geolocation markers={data.values} />;
+    return (
+      <Geolocation
+        markers={data.values}
+        height={compact ? 160 : undefined}
+        showControls={compact ? false : undefined}
+      />
+    );
   }
   if (data.type === 'markdown') {
     if (!hasFilledText(data.values)) return null;
@@ -48,16 +68,19 @@ const renderSpecializedContent = (data: MetadataProperty): ReactNode => {
   }
   if (data.type === 'media') {
     if (!hasFilledText(data.values)) return null;
-    return <Media values={data.values} />;
+    return <Media values={data.values} height={compact ? 140 : undefined} />;
   }
   if (data.type === 'image' || data.type === 'preview') {
     if (!hasFilledText(data.values)) return null;
-    return <Image values={data.values} imageStyle={data.style} />;
+    return (
+      <Image values={data.values} imageStyle={data.style} density={options.density ?? 'default'} />
+    );
   }
   return null;
 };
 
-const renderFieldContent = (data: MetadataProperty, long = false): ReactNode =>
-  renderSpecializedContent(data) ?? renderScalarContent(data, long);
+const renderFieldContent = (data: MetadataProperty, options: FieldContentOptions = {}): ReactNode =>
+  renderSpecializedContent(data, options) ?? renderScalarContent(data, options.long ?? false);
 
+export type { FieldContentOptions };
 export { renderScalarContent, renderSpecializedContent, renderFieldContent };

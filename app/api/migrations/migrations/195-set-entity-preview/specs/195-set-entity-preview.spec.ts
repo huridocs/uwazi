@@ -1,5 +1,5 @@
 /* eslint-disable max-statements */
-import testingDB from '#api/utils/testing_db.js';
+import { testingDB } from '#api/utils/testing_db.js';
 import {
   fixtures,
   entity1EnId,

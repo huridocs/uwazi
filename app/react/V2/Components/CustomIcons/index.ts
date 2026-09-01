@@ -22,10 +22,11 @@ export {
   Trash2StrokeIcon,
   PlusStrokeIcon,
   CloudUploadStrokeIcon,
+  Settings2StrokeIcon,
+  TextCursorInputStrokeIcon,
 } from './LucideStrokeIcons.js';
 export {
   CircleDotIcon,
-  GitForkIcon,
   LayoutListIcon,
   ListTreeIcon,
   NetworkIcon,

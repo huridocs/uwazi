@@ -335,6 +335,7 @@ describe('PostgresTransactionManager', () => {
         const rows = await testingPG.getAllFrom('thesauri');
         expect(rows.map(r => r._id).sort()).toEqual(['keep-me', 'nested-rollback']);
       });
+
       it('should restore permission vars after nested beginTransaction completes', async () => {
         const manager = createManager();
 

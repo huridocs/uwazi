@@ -1,5 +1,5 @@
 import {
-  RelationshipView,
+  DirectedRelationship,
   TextReferencePointer,
   anchorOf,
   counterpartAnchorOf,
@@ -8,13 +8,14 @@ import {
 
 type RelationshipMarker = {
   _id: string;
-  view: RelationshipView;
+  relationship: DirectedRelationship;
   target: { sharedId: string; title: string; templateId: string };
   anchor?: TextReferencePointer;
 };
 
 const markerReferenceText = (marker: RelationshipMarker, selfSharedId: string): string => {
-  const counterpartText = counterpartAnchorOf(marker.view, selfSharedId)?.text?.trim() ?? '';
+  const counterpartText =
+    counterpartAnchorOf(marker.relationship, selfSharedId)?.text?.trim() ?? '';
   if (counterpartText) return counterpartText;
   return marker.anchor?.text?.trim() ?? '';
 };
@@ -38,21 +39,21 @@ const markerNestedEvidenceKey = (marker: RelationshipMarker, selfSharedId: strin
   [
     selfSharedId,
     marker.target.sharedId,
-    marker.view.type,
-    counterpartAnchorOf(marker.view, selfSharedId)?.text?.trim() ?? '',
+    marker.relationship.type,
+    counterpartAnchorOf(marker.relationship, selfSharedId)?.text?.trim() ?? '',
   ].join('\u0000');
 
-const toMarker = (view: RelationshipView, selfSharedId: string): RelationshipMarker => {
-  const target = targetPointer(view, selfSharedId);
+const toMarker = (relationship: DirectedRelationship, selfSharedId: string): RelationshipMarker => {
+  const target = targetPointer(relationship, selfSharedId);
   return {
-    _id: view._id,
-    view,
+    _id: relationship._id,
+    relationship,
     target: {
       sharedId: target.entity,
       title: target.entityTitle,
       templateId: target.entityTemplateId,
     },
-    anchor: anchorOf(view, selfSharedId),
+    anchor: anchorOf(relationship, selfSharedId),
   };
 };
 

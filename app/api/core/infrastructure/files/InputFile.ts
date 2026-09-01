@@ -1,6 +1,6 @@
-// eslint-disable-next-line node/no-restricted-import
+// eslint-disable-next-line no-restricted-imports
 import { createReadStream, createWriteStream } from 'fs';
-// eslint-disable-next-line node/no-restricted-import
+// eslint-disable-next-line no-restricted-imports
 import { stat } from 'fs/promises';
 
 import path from 'path';

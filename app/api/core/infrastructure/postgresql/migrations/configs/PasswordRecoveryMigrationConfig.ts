@@ -12,7 +12,7 @@ export const PasswordRecoveryMigrationConfig: MigrationConfig = {
       _id,
       key: doc.key,
       userId,
-      expiresAt: doc.expiresAt,
+      expiresAt: doc.expiresAt || new Date(),
     };
   },
 };

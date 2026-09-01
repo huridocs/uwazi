@@ -14,7 +14,7 @@ import setReduxState from './setReduxState.js';
 const decodeQuery = params => {
   try {
     return risonDecodeOrIgnore(params.q || '()');
-  } catch (error) {
+  } catch (_) {
     // if (error instanceof RangeError) {
     //   console.log()
     return {};
@@ -55,7 +55,7 @@ const processQuery = (params, globalResources, key) => {
   };
 };
 
-const requestState = (
+const requestState = async (
   requestParams,
   globalResources,
   options = { calculateTableColumns: false, geolocation: false }

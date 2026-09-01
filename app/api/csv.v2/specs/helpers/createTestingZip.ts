@@ -1,6 +1,6 @@
 import path from 'path';
 import { ZipFile } from 'yazl';
-// eslint-disable-next-line node/no-restricted-import
+// eslint-disable-next-line no-restricted-imports
 import fs from 'fs';
 
 const createTestingZip = async (

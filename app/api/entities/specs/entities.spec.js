@@ -38,7 +38,7 @@ import fixtures, {
   unpublishedDocId,
 } from './fixtures.js';
 
-const saveEntity = (doc, options = {}) => saveEntityV2Adapter(doc, options);
+const saveEntity = async (doc, options = {}) => saveEntityV2Adapter(doc, options);
 
 const getEntityById = async (id, language) => {
   const docs = await testingEnvironment.db.getAllFrom('entities');
@@ -49,7 +49,7 @@ const getEntityById = async (id, language) => {
   );
 };
 
-const saveEntityWithEventing = (doc, options = {}) => {
+const saveEntityWithEventing = async (doc, options = {}) => {
   const jobsDispatcher = new SyncDispatcherForTests({
     [ProcessRelationshipAfterEntityUpdatedListener.asJob().name]: async () =>
       new ProcessRelationshipAfterEntityUpdatedListener({}),
@@ -83,13 +83,15 @@ const runRelationshipSyncJob = async ({ sharedId, language, entityTemplateId, us
   );
 };
 
-const denormalizeEntity = (entity, options) => denormalizeEntityV2Adapter(entity, options);
+const denormalizeEntity = async (entity, options) => denormalizeEntityV2Adapter(entity, options);
 
 describe('entities', () => {
   const userFactory = new UserInContextMockFactory();
   const saveDoc = async (doc, user) => {
     await saveEntity(doc, { user, language: 'es' });
-    const docs = await testingEnvironment.runWithContext(() => entities.get({ title: doc.title }));
+    const docs = await testingEnvironment.runWithContext(async () =>
+      entities.get({ title: doc.title })
+    );
     return {
       createdDocumentEs: docs.find(d => d.language === 'es'),
       createdDocumentEn: docs.find(d => d.language === 'en'),
@@ -852,7 +854,7 @@ describe('entities', () => {
       };
 
       await saveEntity(doc1, { user, language: 'en' });
-      const docs = await testingEnvironment.runWithContext(() =>
+      const docs = await testingEnvironment.runWithContext(async () =>
         entities.get({ title: 'newEntity' })
       );
       expect(docs.length).toBe(3);
@@ -901,15 +903,15 @@ describe('entities', () => {
       const sharedId = 'shared1';
 
       const [enDoc, esDoc] = await Promise.all([
-        testingEnvironment.runWithContext(() => entities.get({ sharedId, language: 'en' })),
-        testingEnvironment.runWithContext(() => entities.get({ sharedId, language: 'es' })),
+        testingEnvironment.runWithContext(async () => entities.get({ sharedId, language: 'en' })),
+        testingEnvironment.runWithContext(async () => entities.get({ sharedId, language: 'es' })),
       ]);
       expect(enDoc[0].title).toBe('EN');
       expect(esDoc[0].title).toBe('ES');
     });
 
     it('should return documents and attachments properly, when requested.', async () => {
-      const result = await testingEnvironment.runWithContext(() =>
+      const result = await testingEnvironment.runWithContext(async () =>
         entities.get({ template: entityGetTestTemplateId })
       );
       checkEntityGetResult(result[0], 'TitleA', ['file2.name'], []);
@@ -918,7 +920,7 @@ describe('entities', () => {
     });
 
     it('should return documents and attachments properly while using a select clause in the query.', async () => {
-      const result = await testingEnvironment.runWithContext(() =>
+      const result = await testingEnvironment.runWithContext(async () =>
         entities.get({ template: entityGetTestTemplateId }, { title: true })
       );
       checkEntityGetResult(result[0], 'TitleA', ['file2.name'], []);
@@ -927,7 +929,7 @@ describe('entities', () => {
     });
 
     it('should not return documents and attachments, when not requested.', async () => {
-      const result = await testingEnvironment.runWithContext(() =>
+      const result = await testingEnvironment.runWithContext(async () =>
         entities.get({ template: entityGetTestTemplateId }, {}, { withoutDocuments: true })
       );
       checkEntityGetResult(result[0], 'TitleA', null, null);
@@ -938,24 +940,28 @@ describe('entities', () => {
 
   describe('empty-string scalar filters match nothing instead of every entity', () => {
     it('should return no entities for an empty-string language filter', async () => {
-      const result = await testingEnvironment.runWithContext(() => entities.get({ language: '' }));
+      const result = await testingEnvironment.runWithContext(async () =>
+        entities.get({ language: '' })
+      );
       expect(result).toEqual([]);
     });
 
     it('should return no entities for an empty-string template filter', async () => {
-      const result = await testingEnvironment.runWithContext(() => entities.get({ template: '' }));
+      const result = await testingEnvironment.runWithContext(async () =>
+        entities.get({ template: '' })
+      );
       expect(result).toEqual([]);
     });
 
     it('should return no entities for an empty-string _id filter (getUnrestricted)', async () => {
-      const result = await testingEnvironment.runWithContext(() =>
+      const result = await testingEnvironment.runWithContext(async () =>
         entities.getUnrestricted({ _id: '' })
       );
       expect(result).toEqual([]);
     });
 
     it('should return no entities for an empty-string title filter (getUnrestricted)', async () => {
-      const result = await testingEnvironment.runWithContext(() =>
+      const result = await testingEnvironment.runWithContext(async () =>
         entities.getUnrestricted({ title: '' })
       );
       expect(result).toEqual([]);
@@ -970,7 +976,7 @@ describe('entities', () => {
         role: UserRole.COLLABORATOR,
       });
       const entity = (
-        await testingEnvironment.runWithContext(() =>
+        await testingEnvironment.runWithContext(async () =>
           entities.get({ sharedId: 'shared', language: 'en' })
         )
       )[0];
@@ -981,7 +987,7 @@ describe('entities', () => {
 
     it('should denormalize inherited metadata', async () => {
       const entity = (
-        await testingEnvironment.runWithContext(() =>
+        await testingEnvironment.runWithContext(async () =>
           entities.get({ sharedId: 'shared', language: 'en' })
         )
       )[0];

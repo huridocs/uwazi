@@ -1,6 +1,6 @@
-// eslint-disable-next-line node/no-restricted-import
+// eslint-disable-next-line no-restricted-imports
 import { existsSync, mkdirSync, writeFileSync } from 'fs';
-// eslint-disable-next-line node/no-restricted-import
+// eslint-disable-next-line no-restricted-imports
 import { readFile, unlink } from 'fs/promises';
 
 import { tmpdir } from 'os';

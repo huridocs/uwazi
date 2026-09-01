@@ -16,6 +16,7 @@ A target template needs to have the following properties,Ένα πρότυπο �
 A valid email is required,Απαιτείται έγκυρη διεύθυνση email
 A → Z,A → Z
 Accept,Αποδοχή
+Accept all,Accept all
 Accepted suggestion on entity,Η πρόταση για την οντότητα έγινε αποδεκτή
 Accepting suggestions,Αποδοχή προτάσεων
 Accessibility checks need attention,Accessibility checks need attention
@@ -37,6 +38,7 @@ Activity log,Ημερολόγιο δραστηριοτήτων
 Activity Log,Ημερολόγιο δραστηριοτήτων
 Add,Προσθήκη
 Add / remove favorite,Προσθήκη / αφαίρεση αγαπημένου
+Add a type below.,Add a type below.
 Add an account to the app by scanning the provided QR code with your mobile device or by inserting the provided key.,Προσθέστε έναν λογαριασμό στην εφαρμογή σαρώνοντας τον παρεχόμενο κωδικό QR με την κινητή συσκευή σας ή εισάγοντας το παρεχόμενο κλειδί.
 Add as,Add as
 Add data source,Add data source
@@ -53,6 +55,7 @@ Add group,Προσθήκη ομάδας
 add icon,προσθήκη εικονιδίου
 Add item,Προσθήκη αντικειμένου
 Add link,Προσθήκη συνδέσμου
+Add or remove relationship types for this collection.,Add or remove relationship types for this collection.
 Add page,Προσθήκη σελίδας
 Add PDF,Προσθήκη PDF
 Add people or groups,Προσθήκη ατόμων ή ομάδων
@@ -74,6 +77,7 @@ Add/delete users and assign roles,Προσθήκη/διαγραφή χρηστώ
 Add/edit translations,Προσθήκη/επεξεργασία μεταφράσεων
 Added language,Προστέθηκε γλώσσα
 Added new user,Προστέθηκε νέος χρήστης
+"Added relation type ""{name}""","Added relation type ""{name}"""
 added to hub with the following errors:,προστέθηκε στον κόμβο με τα ακόλουθα σφάλματα:
 added to hub.,προστέθηκε στον κόμβο.
 Adding a group and its items.,Προσθήκη μιας ομάδας και των στοιχείων της.
@@ -96,6 +100,7 @@ Allow captcha bypass,Παράκαμψη CAPTCHA
 Allow public embedding without login,Allow public embedding without login
 Already exists,Υπάρχει ήδη
 Amount,Ποσό
+An admin needs to add relationship types before you can create a relationship.,An admin needs to add relationship types before you can create a relationship.
 An error has occured while deleting a language:,An error has occured while deleting a language:
 An error has occured while installing languages:,An error has occured while installing languages:
 An error has occurred,Παρουσιάστηκε σφάλμα
@@ -151,6 +156,7 @@ Body,Σώμα
 boolean,boolean
 Browse files to upload,Αναζήτηση αρχείων για μεταφόρτωση
 "by ids, methods, keywords, etc.","με αναγνωριστικά, μεθόδους, λέξεις-κλειδιά, κ.λπ."
+By logging in you accept the essential session cookie required to stay signed in.,By logging in you accept the essential session cookie required to stay signed in.
 Can edit,Μπορεί να επεξεργαστεί
 Can see,Μπορεί να δει
 Can view,Μπορεί να δει
@@ -233,6 +239,7 @@ Confirm your password,Confirm your password
 Connect to a paragraph,Σύνδεση με παράγραφο
 Connect to an entity,Σύνδεση με οντότητα
 Connect to entity,Connect to entity
+Connected entities,Connected entities
 Connected to server,Connected to server
 Connection type,Τύπος σύνδεσης
 Contact email description,Εδώ μπορείτε να ρυθμίσετε το email επικοινωνίας και το email που εμφανίζεται όταν το Uwazi στέλνει ειδοποίηση σε χρήστη
@@ -243,6 +250,7 @@ Content translations,Μεταφράσεις περιεχομένου
 Context,Πλαίσιο
 Continue,Συνέχεια
 Conversion failed,Η μετατροπή απέτυχε
+Cookie preferences,Cookie preferences
 Copied,Copied
 Copied to clipboard,Αντιγράφηκε στο πρόχειρο
 Copy,Copy
@@ -261,6 +269,7 @@ Could not reach server. Please try again later.,Δεν ήταν δυνατή η 
 Count,Count
 Create,Δημιουργία
 CREATE,ΔΗΜΙΟΥΡΓΙΑ
+Create a type to continue.,Create a type to continue.
 Create and edit thesauri,Δημιουργία και επεξεργασία θησαυρών
 Create Connection,Δημιουργία σύνδεσης
 Create entity,Δημιουργία οντότητας
@@ -584,6 +593,7 @@ in,σε
 "In a group, either all relationships must have a hub or none of them.","Σε μια ομάδα, είτε όλες οι σχέσεις πρέπει να έχουν έναν κόμβο είτε καμία από αυτές."
 In OCR queue,Στην ουρά OCR
 in this document,in this document
+In use,In use
 Include all entities,Include all entities
 Include only public,Include only public
 Incoming,Incoming
@@ -673,6 +683,7 @@ Longitude must be between -180 and 180,Longitude must be between -180 and 180
 Lookup help,Lookup help
 Lost connection to the server. Your changes may be lost,Η σύνδεση με τον διακομιστή χάθηκε. Οι αλλαγές σας ενδέχεται να χαθούν.
 low,χαμηλό
+Manage relationship types,Manage relationship types
 Manage site settings and configuration,Διαχείριση ρυθμίσεων και διαμόρφωσης ιστότοπου
 Manage types,Manage types
 Manual data,Manual data
@@ -762,6 +773,7 @@ New language added,Προστέθηκε νέα γλώσσα
 New page,Νέα σελίδα
 New password,Νέος κωδικός πρόσβασης
 New primary doc,New primary doc
+New relation type label…,New relation type label…
 New relationship type,Νέος τύπος σχέσης
 New relationships group,Νέα ομάδα σχέσεων
 New Relationships Migration,Μετεγκατάσταση νέων σχέσεων
@@ -804,6 +816,7 @@ No primary documents yet. Promote a supporting file or add a new one.,No primary
 No property,Το στοιχείο δεν έχει αυτήν την ιδιότητα
 No References,Δεν υπάρχουν αναφορές
 No References description,Οι αναφορές είναι τμήματα αυτού του εγγράφου που σχετίζονται με άλλα έγγραφα και οντότητες.
+No relationship types,No relationship types
 No Relationships,Δεν υπάρχουν σχέσεις
 No Relationships description,Οι σχέσεις είναι δεσμοί μεταξύ οντοτήτων.
 No relationships found,No relationships found
@@ -855,6 +868,7 @@ Ok,Εντάξει
 OK,Εντάξει
 On this entity,On this entity
 one character,one character
+Only essential,Only essential
 "Only properties with the same name and configuration in every data source are available
             for both dimensions.","Only properties with the same name and configuration in every data source are available
             for both dimensions."
@@ -1009,6 +1023,7 @@ Refresh,Refresh
                         scheduled run."
 Refresh mode,Refresh mode
 Reject,Απόρριψη
+Reject all,Reject all
 Related entities created,Related entities created
 Relation type,Τύπος σχέσης
 Relationship,Σχέση
@@ -1021,9 +1036,6 @@ Relationship type name already exists,Το όνομα τύπου σχέσης υ
 Relationship types,Τύποι σχέσεων
 relationships,σχέσεις
 Relationships,Σχέσεις
-relationships blank state message,"To add references select **Edit**, then **Create relationship**."
-relationships blank state with document,"To add references you can start by selecting text in the document
- or select **Edit**, then **Create relationship**."
 Relationships saved,Οι σχέσεις αποθηκεύτηκαν
 relationships? This action cannot be undone.,relationships? This action cannot be undone.
 RelationType saved,Ο τύπος σχέσης αποθηκεύτηκε
@@ -1126,6 +1138,7 @@ Select target document,Select target document
 Select target entity,Select target entity
 Select target paragraph,Επιλογή παράγραφου-στόχου
 Select text in target document,Select text in target document
+select text or a value,select text or a value
 Select the template to store the extracted paragraphs.,Επιλέξτε το πρότυπο για την αποθήκευση των εξαγόμενων παραγράφων
 Select the template with the source documents.,Επιλέξτε το πρότυπο με τα έγγραφα προέλευσης.
 Select...,Επιλέξτε...
@@ -1201,6 +1214,7 @@ Statistics,Στατιστικά στοιχεία
 Stats & Filters,Στατιστικά & φίλτρα
 Status,Κατάσταση
 status AND women NOT Nicaragua,status AND women NOT Nicaragua
+Stop filling,Stop filling
 Storage,Αποθήκευση
 Streets,Δρόμοι
 Strict mode,Αυστηρή λειτουργία
@@ -1316,7 +1330,6 @@ This file type is not supported on media fields,Αυτός ο τύπος αρχ�
 This group is empty,Αυτή η ομάδα είναι κενή
 This import is waiting in queue.,This import is waiting in queue.
 This label already exists in this template,Αυτή η ετικέτα υπάρχει ήδη σε αυτό το πρότυπο
-This option will show a notification about the use of cookies in your instance.,Αυτή η επιλογή θα εμφανίσει μια ειδοποίηση σχετικά με τη χρήση cookies στην εγκατάστασή σας.
 This page does not need Markdown,This page does not need Markdown
 "This page uses HTML only (Markdown is not processed). You can embed maps, charts, entity
           lists, and other components.","This page uses HTML only (Markdown is not processed). You can embed maps, charts, entity
@@ -1328,6 +1341,9 @@ This property will be shown without the label,Αυτή η ιδιότητα θα 
 This property will be the default filter in the library for this template.,Αυτή η ιδιότητα θα είναι το προεπιλεγμένο φίλτρο στη βιβλιοθήκη για αυτό το πρότυπο.
 "This property will be used for filtering the library results. When properties match in equal name and field type with other entity types, they will be combined for filtering.","Αυτή η ιδιότητα θα χρησιμοποιηθεί για το φιλτράρισμα των αποτελεσμάτων βιβλιοθήκης. Όταν οι ιδιότητες ταιριάζουν σε όνομα και τύπο πεδίου με άλλους τύπους οντοτήτων, θα συνδυαστούν για φιλτράρισμα."
 This search could not be completed. Try again later.,This search could not be completed. Try again later.
+"This site uses cookies for language preferences and analytics. Session cookies are only
+            set when you log in.","This site uses cookies for language preferences and analytics. Session cookies are only
+            set when you log in."
 This table of contents was automatically created by the system.,Αυτός ο πίνακας περιεχομένων δημιουργήθηκε αυτόματα από το σύστημα.
 this template,αυτό το πρότυπο
 This template is in use by existing entities and cannot be deleted.,Αυτό το πρότυπο χρησιμοποιείται από υπάρχουσες οντότητες και δεν μπορεί να διαγραφεί.
@@ -1340,8 +1356,6 @@ Timestamp,Χρονοσφραγίδα
 tips,tips
 Title,Τίτλος
 To,Έως
-To add references you can start by selecting text in the document,"Για να προσθέσετε αναφορές, μπορείτε να ξεκινήσετε επιλέγοντας κείμενο στο έγγραφο."
-"To bring you a better experience, this site uses cookies.","Για να σας προσφέρουμε καλύτερη εμπειρία, αυτός ο ιστότοπος χρησιμοποιεί cookies."
 "To complete the account creation process, please create a password for your account","Για να ολοκληρώσετε τη διαδικασία δημιουργίας λογαριασμού, δημιουργήστε έναν κωδικό πρόσβασης για το λογαριασμό σας."
 to view your authentication code and verify your identity.,για να δείτε τον κωδικό πιστοποίησης και να επαληθεύσετε την ταυτότητά σας.
 Today,Σήμερα
@@ -1427,6 +1441,9 @@ Use for training,Χρήση για εκπαίδευση
                 needed.","Use this iframe on external sites. Change the locale query parameter in the URL if
                 needed."
 Use URL,Use URL
+Used in templates and {n} refs — cannot delete,Used in templates and {n} refs — cannot delete
+Used in templates — cannot delete,Used in templates — cannot delete
+Used in {n} refs — cannot delete,Used in {n} refs — cannot delete
 User,Χρήστης
 User Action,Ενέργεια χρήστη
 User Role,Ρόλος χρήστη
@@ -1466,6 +1483,9 @@ Warning: you are editing multiple entities. Fields marked with a,Προειδο�
 We can't find the page you're looking for.,Δεν μπορούμε να βρούμε τη σελίδα που ψάχνετε.
 Welcome to Uwazi,Καλώς ήλθατε στο Uwazi
 "Well, this is awkward...","Λοιπόν, αυτό είναι άβολο..."
+"When enabled, visitors must accept or reject non-essential cookies before they are set.
+    Analytics and language preference cookies are blocked until accepted.","When enabled, visitors must accept or reject non-essential cookies before they are set.
+    Analytics and language preference cookies are blocked until accepted."
 Whitelisted templates,Επιτρεπόμενα πρότυπα
 wildcard,wildcard
 wildcard (many chars),wildcard (many chars)

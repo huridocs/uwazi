@@ -2,8 +2,9 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Square3Stack3DIcon, DocumentIcon } from '@heroicons/react/24/outline';
 import throttle from 'lodash/throttle.js';
 import { Translate } from '#app/I18N/index.js';
-import { Entity, FileType } from '#V2/api/entities/types.js';
+import { FileType } from '#V2/api/entities/types.js';
 import { filterMarkersForDocument, projectRelationshipMarkers } from '#V2/formatters/index.js';
+import type { DirectedRelationship } from '#V2/formatters/relationships/types.js';
 import {
   splitMarkersByAnchor,
   groupRelationships,
@@ -22,7 +23,8 @@ const RAIL_LAYOUT = {
 } as const;
 
 type RelationshipsDisplayProps = {
-  entity: Entity;
+  selfSharedId: string;
+  relationships: readonly DirectedRelationship[];
   document: FileType;
   currentPage?: number;
   pageHeight?: number;
@@ -30,12 +32,15 @@ type RelationshipsDisplayProps = {
   showRail?: boolean;
   activeRelationshipId?: string | null;
   onPointClick?: (marker: RelationshipMarker) => void;
+  onPointHover?: (marker: RelationshipMarker) => void;
   onClusterClick?: (markers: RelationshipMarker[]) => void;
+  onClusterHover?: (markers: RelationshipMarker[]) => void;
   onMoreClick?: (markers: RelationshipMarker[]) => void;
 };
 
 const RelationshipsDisplay = ({
-  entity,
+  selfSharedId,
+  relationships,
   document,
   currentPage,
   pageHeight,
@@ -43,7 +48,9 @@ const RelationshipsDisplay = ({
   showRail = true,
   activeRelationshipId = null,
   onPointClick,
+  onPointHover,
   onClusterClick,
+  onClusterHover,
   onMoreClick,
 }: RelationshipsDisplayProps) => {
   const [fullMode, setFullMode] = useState(true);
@@ -52,8 +59,12 @@ const RelationshipsDisplay = ({
 
   const markers = useMemo<RelationshipMarker[]>(
     () =>
-      filterMarkersForDocument(projectRelationshipMarkers(entity), document._id, entity.sharedId),
-    [document._id, entity]
+      filterMarkersForDocument(
+        projectRelationshipMarkers(selfSharedId, relationships),
+        document._id,
+        selfSharedId
+      ),
+    [document._id, selfSharedId, relationships]
   );
 
   const anchoredMarkers = useMemo(() => splitMarkersByAnchor(markers).anchored, [markers]);
@@ -150,7 +161,9 @@ const RelationshipsDisplay = ({
               documentClusters={documentClusters}
               activeRelationshipId={activeRelationshipId}
               onPointClick={onPointClick}
+              onPointHover={onPointHover}
               onClusterClick={onClusterClick}
+              onClusterHover={onClusterHover}
               onMoreClick={onMoreClick}
             />
           ) : (
@@ -162,6 +175,8 @@ const RelationshipsDisplay = ({
               pageHeight={pageHeight}
               activeRelationshipId={activeRelationshipId}
               onPointClick={onPointClick}
+              onPointHover={onPointHover}
+              onClusterHover={onClusterHover}
               onMoreClick={onMoreClick}
             />
           )}

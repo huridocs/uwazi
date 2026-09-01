@@ -13,7 +13,7 @@ type RelationshipAggregate = {
 };
 
 const aggregateKey = (marker: RelationshipMarker): string =>
-  `${marker.target.sharedId}::${marker.view.type}`;
+  `${marker.target.sharedId}::${marker.relationship.type}`;
 
 const mergeIntoAggregate = (
   existing: RelationshipAggregate,
@@ -42,7 +42,7 @@ const createAggregate = (
   targetSharedId: marker.target.sharedId,
   targetTitle: marker.target.title,
   targetTemplateId: marker.target.templateId,
-  relationType: marker.view.type,
+  relationType: marker.relationship.type,
   directions: [direction],
   firstPage: page,
   markerIds: [marker._id],
@@ -55,7 +55,7 @@ const deriveAggregates = (
   const map = new Map<string, RelationshipAggregate>();
   for (const marker of markers) {
     const key = aggregateKey(marker);
-    const direction = directionOf(marker.view, selfSharedId);
+    const direction = directionOf(marker.relationship, selfSharedId);
     const page = firstPageOf(marker);
     const existing = map.get(key);
     if (existing) map.set(key, mergeIntoAggregate(existing, marker, direction, page));

@@ -1,5 +1,5 @@
 /* eslint-disable max-statements */
-/* eslint-disable node/no-restricted-import */
+/* eslint-disable no-restricted-imports */
 /* eslint-disable no-restricted-syntax */
 /* eslint-disable no-await-in-loop */
 /* eslint-disable no-console */

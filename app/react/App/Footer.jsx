@@ -2,6 +2,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { I18NLink, Translate } from '#app/I18N/index.js';
+import { resetConsent } from '#app/App/cookieConsent.js';
 import { createSelector } from 'reselect';
 import { libraryViewInfo } from '#app/App/libraryViewInfo.js';
 
@@ -63,6 +64,20 @@ class Footer extends Component {
               </li>
             );
           })()}
+          {this.props.cookiepolicy && (
+            <li className="footer-nav_item">
+              {/* oxlint-disable-next-line jsx-a11y/anchor-is-valid -- anchor styled as button */}
+              <a
+                href="#"
+                onClick={e => {
+                  e.preventDefault();
+                  resetConsent();
+                }}
+              >
+                <Translate>Cookie preferences</Translate>
+              </a>
+            </li>
+          )}
         </ul>
       </footer>
     );
@@ -73,6 +88,7 @@ Footer.propTypes = {
   user: PropTypes.object,
   siteName: PropTypes.string,
   defaultLibraryView: PropTypes.string,
+  cookiepolicy: PropTypes.bool,
 };
 
 Footer.defaultProps = {
@@ -89,6 +105,7 @@ export function mapStateToProps(state) {
     user: selectUser(state),
     siteName: state.settings.collection.get('site_name'),
     defaultLibraryView: state.settings.collection.get('defaultLibraryView'),
+    cookiepolicy: Boolean(state.settings.collection.get('cookiepolicy')),
   };
 }
 

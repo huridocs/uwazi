@@ -16,6 +16,7 @@ A target template needs to have the following properties,A target template needs
 A valid email is required,จำเป็นต้องใช้อีเมล
 A → Z,A → Z
 Accept,ตกลง
+Accept all,Accept all
 Accepted suggestion on entity,Accepted suggestion on entity
 Accepting suggestions,Accepting suggestions
 Accessibility checks need attention,Accessibility checks need attention
@@ -37,6 +38,7 @@ Activity log,บันทึกกิจกรรม
 Activity Log,บันทึกกิจกรรม
 Add,เพิ่ม
 Add / remove favorite,เพิ่ม / ลบรายการโปรด
+Add a type below.,Add a type below.
 Add an account to the app by scanning the provided QR code with your mobile device or by inserting the provided key.,Add an account to the app by scanning the provided QR code with your mobile device or by inserting the provided key.
 Add as,Add as
 Add data source,Add data source
@@ -53,6 +55,7 @@ Add group,เพิ่มกลุ่ม
 add icon,เพิ่มไอคอน
 Add item,Add item
 Add link,เพิ่มลิงค์
+Add or remove relationship types for this collection.,Add or remove relationship types for this collection.
 Add page,เพิ่มหน้า
 Add PDF,Add PDF
 Add people or groups,เพิ่มผู้คนหรือกลุ่ม
@@ -74,6 +77,7 @@ Add/delete users and assign roles,เพิ่ม / ลบผู้ใช้แ�
 Add/edit translations,เพิ่ม / แก้ไขการแปล
 Added language,Added language
 Added new user,Added new user
+"Added relation type ""{name}""","Added relation type ""{name}"""
 added to hub with the following errors:,added to hub with the following errors:
 added to hub.,added to hub.
 Adding a group and its items.,Adding a group and its items.
@@ -96,6 +100,7 @@ Allow captcha bypass,Allow captcha bypass
 Allow public embedding without login,Allow public embedding without login
 Already exists,Already exists
 Amount,Amount
+An admin needs to add relationship types before you can create a relationship.,An admin needs to add relationship types before you can create a relationship.
 An error has occured while deleting a language:,An error has occured while deleting a language:
 An error has occured while installing languages:,An error has occured while installing languages:
 An error has occurred,An error has occurred
@@ -151,6 +156,7 @@ Body,เนื้อหา
 boolean,boolean
 Browse files to upload,เรียกดูไฟล์ที่จะอัปโหลด
 "by ids, methods, keywords, etc.","by ids, methods, keywords, etc."
+By logging in you accept the essential session cookie required to stay signed in.,By logging in you accept the essential session cookie required to stay signed in.
 Can edit,แก้ไขได้
 Can see,มองเห็นได้
 Can view,มองเห็นได้
@@ -232,6 +238,7 @@ Confirm your password,Confirm your password
 Connect to a paragraph,เชื่อมต่อย่อหน้า
 Connect to an entity,Connect to an entity
 Connect to entity,Connect to entity
+Connected entities,Connected entities
 Connected to server,Connected to server
 Connection type,ประเภทการเชื่อมต่อ
 Contact email description,Here you can set up the contact email and the email that appears when Uwazi sends a notification to a user
@@ -242,6 +249,7 @@ Content translations,Content translations
 Context,Context
 Continue,Continue
 Conversion failed,การแปลงล้มเหลว
+Cookie preferences,Cookie preferences
 Copied,Copied
 Copied to clipboard,Copied to clipboard
 Copy,Copy
@@ -260,6 +268,7 @@ Could not reach server. Please try again later.,Could not reach server. Please t
 Count,Count
 Create,สร้าง
 CREATE,สร้าง
+Create a type to continue.,Create a type to continue.
 Create and edit thesauri,Create and edit thesauri
 Create Connection,Create Connection
 Create entity,สร้างรายการ
@@ -583,6 +592,7 @@ in,ใน
 "In a group, either all relationships must have a hub or none of them.","In a group, either all relationships must have a hub or none of them."
 In OCR queue,In OCR queue
 in this document,in this document
+In use,In use
 Include all entities,Include all entities
 Include only public,Include only public
 Incoming,Incoming
@@ -672,6 +682,7 @@ Longitude must be between -180 and 180,Longitude must be between -180 and 180
 Lookup help,Lookup help
 Lost connection to the server. Your changes may be lost,Lost connection to the server. Your changes may be lost
 low,ต่ำ
+Manage relationship types,Manage relationship types
 Manage site settings and configuration,จัดการการตั้งค่าไซต์และการกำหนดค่า
 Manage types,Manage types
 Manual data,Manual data
@@ -761,6 +772,7 @@ New language added,ภาษาใหม่ถูกเพิ่มแล้ว
 New page,New page
 New password,รหัสผ่านใหม่
 New primary doc,New primary doc
+New relation type label…,New relation type label…
 New relationship type,New relationship type
 New relationships group,กลุ่มความสัมพันธ์ใหม่
 New Relationships Migration,New Relationships Migration
@@ -803,6 +815,7 @@ No primary documents yet. Promote a supporting file or add a new one.,No primary
 No property,ไม่เจอพร๊อพเพอร์ตี้
 No References,ไม่มีการอ้างอิง
 No References description,References are parts of this document related with other documents and entities.
+No relationship types,No relationship types
 No Relationships,ไม่มีความสัมพันธ์
 No Relationships description,Relationships are bonds between entities.
 No relationships found,No relationships found
@@ -854,6 +867,7 @@ Ok,ตกลง
 OK,ตกลง
 On this entity,On this entity
 one character,one character
+Only essential,Only essential
 "Only properties with the same name and configuration in every data source are available
             for both dimensions.","Only properties with the same name and configuration in every data source are available
             for both dimensions."
@@ -1008,6 +1022,7 @@ Refresh,Refresh
                         scheduled run."
 Refresh mode,Refresh mode
 Reject,ปฏิเสธ
+Reject all,Reject all
 Related entities created,Related entities created
 Relation type,Relation type
 Relationship,ความสัมพันธ์
@@ -1020,9 +1035,6 @@ Relationship type name already exists,Relationship type name already exists
 Relationship types,ประเภทความสัมพันธ์
 relationships,ความสัมพันธ์
 Relationships,ความสัมพันธ์
-relationships blank state message,"To add references select **Edit**, then **Create relationship**."
-relationships blank state with document,"To add references you can start by selecting text in the document
- or select **Edit**, then **Create relationship**."
 Relationships saved,Relationships saved
 relationships? This action cannot be undone.,relationships? This action cannot be undone.
 RelationType saved,บันทึกประเภทความสัมพันธ์
@@ -1125,6 +1137,7 @@ Select target document,Select target document
 Select target entity,Select target entity
 Select target paragraph,เลือกย่อหน้าที่ต้องการ
 Select text in target document,Select text in target document
+select text or a value,select text or a value
 Select the template to store the extracted paragraphs.,Select the template to store the extracted paragraphs.
 Select the template with the source documents.,Select the template with the source documents.
 Select...,เลือก...
@@ -1200,6 +1213,7 @@ Statistics,Statistics
 Stats & Filters,Stats & Filters
 Status,Status
 status AND women NOT Nicaragua,status AND women NOT Nicaragua
+Stop filling,Stop filling
 Storage,Storage
 Streets,Streets
 Strict mode,โหมดแบบจำกัด
@@ -1315,7 +1329,6 @@ This file type is not supported on media fields,This file type is not supported 
 This group is empty,This group is empty
 This import is waiting in queue.,This import is waiting in queue.
 This label already exists in this template,This label already exists in this template
-This option will show a notification about the use of cookies in your instance.,ตัวเลือกนี้จะแสดงการแจ้งเตือนเกี่ยวกับการใช้คุ้กกี้ในระบบของคุณ
 This page does not need Markdown,This page does not need Markdown
 "This page uses HTML only (Markdown is not processed). You can embed maps, charts, entity
           lists, and other components.","This page uses HTML only (Markdown is not processed). You can embed maps, charts, entity
@@ -1327,6 +1340,9 @@ This property will be shown without the label,This property will be shown withou
 This property will be the default filter in the library for this template.,This property will be the default filter in the library for this template.
 "This property will be used for filtering the library results. When properties match in equal name and field type with other entity types, they will be combined for filtering.","This property will be used for filtering the library results. When properties match in equal name and field type with other entity types, they will be combined for filtering."
 This search could not be completed. Try again later.,This search could not be completed. Try again later.
+"This site uses cookies for language preferences and analytics. Session cookies are only
+            set when you log in.","This site uses cookies for language preferences and analytics. Session cookies are only
+            set when you log in."
 This table of contents was automatically created by the system.,This table of contents was automatically created by the system.
 this template,this template
 This template is in use by existing entities and cannot be deleted.,This template is in use by existing entities and cannot be deleted.
@@ -1339,8 +1355,6 @@ Timestamp,Timestamp
 tips,tips
 Title,ชื่อหัวข้อ
 To,To
-To add references you can start by selecting text in the document,To add references you can start by selecting text in the document
-"To bring you a better experience, this site uses cookies.",เพื่อประสบการณ์ที่ดีของคุณ เว็บไซต์ของเราจะทำการเก็บคุกกี้
 "To complete the account creation process, please create a password for your account",เพื่อให้การสร้างบัญชีเสร็จสมบูรณ์กรุณาสร้างรหัสผ่านสำหรับบัญชีของคุณ
 to view your authentication code and verify your identity.,ในกรณีที่ต้องการดูรหัสผ่านและยืนยันตัวตน
 Today,Today
@@ -1426,6 +1440,9 @@ Use for training,Use for training
                 needed.","Use this iframe on external sites. Change the locale query parameter in the URL if
                 needed."
 Use URL,Use URL
+Used in templates and {n} refs — cannot delete,Used in templates and {n} refs — cannot delete
+Used in templates — cannot delete,Used in templates — cannot delete
+Used in {n} refs — cannot delete,Used in {n} refs — cannot delete
 User,ผู้ใช้
 User Action,User Action
 User Role,User Role
@@ -1465,6 +1482,9 @@ Warning: you are editing multiple entities. Fields marked with a,คำเตื
 We can't find the page you're looking for.,We can't find the page you're looking for.
 Welcome to Uwazi,ยินดีต้อนรับสู่ Uwazi
 "Well, this is awkward...",แย่หน่อยนะ...
+"When enabled, visitors must accept or reject non-essential cookies before they are set.
+    Analytics and language preference cookies are blocked until accepted.","When enabled, visitors must accept or reject non-essential cookies before they are set.
+    Analytics and language preference cookies are blocked until accepted."
 Whitelisted templates,Whitelisted templates
 wildcard,wildcard
 wildcard (many chars),wildcard (many chars)

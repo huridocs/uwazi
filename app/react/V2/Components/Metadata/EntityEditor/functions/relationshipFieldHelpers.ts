@@ -1,22 +1,10 @@
-import type { ReactNode } from 'react';
 import type { ClientThesaurus } from '#app/apiResponseTypes.js';
-import type { Entity } from '#V2/api/entities/types.js';
 import { lookup as lookupEntities } from '#V2/api/search/index.js';
 import type { MetadataValue } from '#V2/formatters/types.js';
-import { inheritedCellContent } from '../../Components/inheritedCellContent.js';
+import { relationshipGroupKey } from '../../relationshipInherit.js';
 import type { MultiselectListOption } from '../../../Forms/index.js';
 import type { FormMetadataProperty } from './formatMetadataForForm.js';
-import { relationshipGroupKey, type DisplayProperty } from './relationshipGrouping.js';
-
-type InheritColumnTemplate = {
-  _id: string;
-  properties?: { _id?: string; label: string }[];
-};
-
-type InheritColumn = {
-  label: string;
-  cellsByEntityId?: Record<string, ReactNode>;
-};
+import type { DisplayProperty } from './relationshipGrouping.js';
 
 type MergeRelationshipLookupArgs = {
   property: DisplayProperty;
@@ -116,56 +104,9 @@ const defaultRelationshipLookup = async ({
   });
 };
 
-const inheritColumnLabel = (
-  property: FormMetadataProperty,
-  templates: InheritColumnTemplate[]
-): string => {
-  const inheritPropertyId = property.inherit?.property;
-  if (inheritPropertyId && property.content) {
-    const targetTemplate = templates.find(template => template._id === property.content);
-    const inheritedProperty = targetTemplate?.properties?.find(
-      candidate => candidate._id === inheritPropertyId
-    );
-    if (inheritedProperty?.label) return inheritedProperty.label;
-  }
-  return property.label;
-};
-
-const buildInheritColumns = (
-  property: DisplayProperty,
-  metadataProperties: FormMetadataProperty[],
-  templates: InheritColumnTemplate[],
-  sourceMetadata?: Entity['metadata']
-): InheritColumn[] =>
-  metadataProperties
-    .filter(
-      candidate =>
-        candidate.type === 'relationship' &&
-        candidate.inherited &&
-        candidate.content === property.content &&
-        candidate.relationType === property.relationType
-    )
-    .map(candidate => {
-      const values = sourceMetadata?.[candidate.name];
-      const cellsByEntityId: Record<string, ReactNode> = {};
-      (values ?? []).forEach(row => {
-        const entityId = String(row.value ?? '');
-        if (entityId) {
-          cellsByEntityId[entityId] = inheritedCellContent(values, entityId);
-        }
-      });
-      return {
-        label: inheritColumnLabel(candidate, templates),
-        cellsByEntityId,
-      };
-    });
-
 export {
   thesaurusToOptions,
   mergeRelationshipLookupOptions,
   DEFAULT_RELATIONSHIP_LOOKUP_LIMIT,
   defaultRelationshipLookup,
-  buildInheritColumns,
-  inheritColumnLabel,
 };
-export type { InheritColumn as RelationshipInheritColumn, InheritColumn, InheritColumnTemplate };

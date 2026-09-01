@@ -11,7 +11,7 @@ const legacyCharacterMapUrl = '/legacy_character_maps/';
 
 jest.mock('#V2/Components/PDFViewer/pdfjs.js', () => ({
   PDFJS: { getDocument: jest.fn() },
-  EventBus: function () {},
+  EventBus () {},
   CMAP_URL: '/legacy_character_maps/',
   WASM_URL: '/pdfjs_wasm/',
 }));
@@ -60,9 +60,9 @@ describe('PDF', () => {
   });
 
   describe('onPDFReady', () => {
-    it('should be called on the first render of the PDF pages (only once)', () => {
+    it('should be called on the first render of the PDF pages (only once)', async () => {
       props.onPDFReady = jest.fn();
-      render();
+      await render();
 
       component.setState({ pdf: { numPages: 5 } });
       expect(props.onPDFReady).toHaveBeenCalled();
@@ -74,14 +74,14 @@ describe('PDF', () => {
   });
 
   describe('on filename change', () => {
-    it('should not attempt to get the PDF if filname remains unchanged', () => {
-      render();
+    it('should not attempt to get the PDF if filname remains unchanged', async () => {
+      await render();
       component.setProps({ filename: 'original.pdf' });
       expect(PDFJS.getDocument).toHaveBeenCalledTimes(1);
     });
 
-    it('should get the new PDF if filename changed', done => {
-      render();
+    it('should get the new PDF if filename changed', async () => {
+      await render();
       component.setProps({ filename: 'newfile.pdf' });
       expect(Object.keys(instance.pagesLoaded).length).toBe(0);
       expect(instance.state).toEqual({
@@ -91,23 +91,25 @@ describe('PDF', () => {
         scale: 1,
       });
       expect(PDFJS.getDocument).toHaveBeenCalledTimes(2);
-      setTimeout(() => {
-        expect(instance.state).toEqual({
-          error: null,
-          pdf: pdfObject,
-          filename: 'newfile.pdf',
-          scale: 1,
+      await new Promise(resolve => {
+        setTimeout(() => {
+          expect(instance.state).toEqual({
+            error: null,
+            pdf: pdfObject,
+            filename: 'newfile.pdf',
+            scale: 1,
+          });
+          resolve();
         });
-        done();
       });
     });
   });
 
   describe('pageVisibility', () => {
-    it('should save page and visibility and execute onPageChange', () => {
+    it('should save page and visibility and execute onPageChange', async () => {
       props.onPageChange = jest.fn();
 
-      render();
+      await render();
       const page = 2;
       const visibility = 500;
       instance.onPageVisible(page, visibility);
@@ -115,10 +117,10 @@ describe('PDF', () => {
     });
 
     // eslint-disable-next-line max-statements
-    it('should call pageChange when visibility is the highest and the page is diferent from before', () => {
+    it('should call pageChange when visibility is the highest and the page is diferent from before', async () => {
       props.onPageChange = jest.fn();
 
-      render();
+      await render();
       instance.pages = { 2: null };
 
       let page = 3;
@@ -141,9 +143,9 @@ describe('PDF', () => {
 
     describe('in case of equal visibility', () => {
       // eslint-disable-next-line max-statements
-      it('should use the smallest one', () => {
+      it('should use the smallest one', async () => {
         props.onPageChange = jest.fn();
-        render();
+        await render();
 
         let page = 30;
         let visibility = 10;
@@ -159,8 +161,8 @@ describe('PDF', () => {
     });
 
     describe('when pageHidden', () => {
-      it('should remove page key from pages map', () => {
-        render();
+      it('should remove page key from pages map', async () => {
+        await render();
         instance.pages = { 1: 10, 2: 20 };
         instance.onPageHidden(1);
 
@@ -170,8 +172,8 @@ describe('PDF', () => {
   });
 
   describe('render', () => {
-    it('should render a pdfPage for each page', () => {
-      render();
+    it('should render a pdfPage for each page', async () => {
+      await render();
       instance.setState({ pdf: { numPages: 3 } });
       component.update();
       expect(component.find(PDFPage).length).toBe(3);
@@ -179,8 +181,8 @@ describe('PDF', () => {
   });
 
   describe('loaded', () => {
-    it('should call onLoad only when the pages are consecutive', () => {
-      render();
+    it('should call onLoad only when the pages are consecutive', async () => {
+      await render();
       instance.pageLoaded(1);
       expect(props.onLoad).toHaveBeenCalled();
       props.onLoad.mockClear();
@@ -193,8 +195,8 @@ describe('PDF', () => {
   });
 
   describe('onLoad', () => {
-    it('should be called when there is no pages loading', () => {
-      render();
+    it('should be called when there is no pages loading', async () => {
+      await render();
       instance.setState({ pdf: { numPages: 5 } });
       instance.pageLoaded(1);
       props.onLoad.mockClear();
@@ -205,8 +207,8 @@ describe('PDF', () => {
       expect(props.onLoad).toHaveBeenCalledWith({ pages: [1, 2, 3] });
     });
 
-    it('should be called when a pages is unloaded', () => {
-      render();
+    it('should be called when a pages is unloaded', async () => {
+      await render();
       instance.setState({ pdf: { numPages: 5 } });
 
       instance.pageLoaded(1);

@@ -1,7 +1,7 @@
 /* eslint-disable class-methods-use-this */
-// eslint-disable-next-line node/no-restricted-import
+// eslint-disable-next-line no-restricted-imports
 import { stat } from 'fs/promises';
-// eslint-disable-next-line node/no-restricted-import
+// eslint-disable-next-line no-restricted-imports
 import { createWriteStream } from 'fs';
 
 import { Result } from '#api/core/libs/Result.js';

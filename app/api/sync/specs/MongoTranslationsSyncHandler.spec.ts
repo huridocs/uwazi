@@ -55,7 +55,9 @@ describe('MongoTranslationsSyncHandler', () => {
     });
   });
 
-  it('TranslationsSyncHandlerFactory should return the Mongo handler', () => {
-    expect(TranslationsSyncHandlerFactory.default()).toBeInstanceOf(MongoTranslationsSyncHandler);
+  it('TranslationsSyncHandlerFactory should return the Mongo handler when the postgres flag is off', () => {
+    expect(
+      testingEnvironment.runWithContext(() => TranslationsSyncHandlerFactory.default())
+    ).toBeInstanceOf(MongoTranslationsSyncHandler);
   });
 });

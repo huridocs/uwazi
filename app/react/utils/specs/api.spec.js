@@ -234,7 +234,7 @@ describe('api', () => {
         try {
           await api.post(url, requestParams);
           fail('should throw error');
-        } catch (e) {
+        } catch (_) {
           testNotificationDisplayed(message, 'danger');
         }
       });

@@ -18,7 +18,7 @@ describe('Provider', () => {
       this.state = {};
     }
 
-    static requestState() {
+    static async requestState() {
       return Promise.resolve({ initialData: 'data' });
     }
 

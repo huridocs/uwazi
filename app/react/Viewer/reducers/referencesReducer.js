@@ -1,4 +1,4 @@
-import Immutable from '#shared/immutableWrapper.js';
+import { Immutable } from '#shared/immutableWrapper.js';
 import * as types from '#app/Viewer/actions/actionTypes.js';
 
 const initialState = [];

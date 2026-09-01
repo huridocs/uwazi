@@ -131,7 +131,7 @@ const handleErrorStatus = error => {
   return errorMessage;
 };
 
-const handleError = (e, endpoint) => {
+const handleError = async (e, endpoint) => {
   const error = e;
   error.endpoint = endpoint;
 

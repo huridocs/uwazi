@@ -80,8 +80,9 @@ describe('thesauri', () => {
     });
   });
 
-  const getById = id => testingEnvironment.runWithContext(() => thesauri.getById(id));
-  const saveThesauri = async data => testingEnvironment.runWithContext(() => thesauri.save(data));
+  const getById = async id => testingEnvironment.runWithContext(async () => thesauri.getById(id));
+  const saveThesauri = async data =>
+    testingEnvironment.runWithContext(async () => thesauri.save(data));
 
   describe('save', () => {
     it('should create a thesauri', async () => {

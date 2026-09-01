@@ -16,6 +16,7 @@ A target template needs to have the following properties,A target template needs
 A valid email is required,이메일이 필요합니다.
 A → Z,A → Z
 Accept,수락
+Accept all,Accept all
 Accepted suggestion on entity,Accepted suggestion on entity
 Accepting suggestions,Accepting suggestions
 Accessibility checks need attention,Accessibility checks need attention
@@ -37,6 +38,7 @@ Activity log,활동 로그
 Activity Log,활동 로그
 Add,추가
 Add / remove favorite,즐겨찾기 추가/제거
+Add a type below.,Add a type below.
 Add an account to the app by scanning the provided QR code with your mobile device or by inserting the provided key.,Add an account to the app by scanning the provided QR code with your mobile device or by inserting the provided key.
 Add as,Add as
 Add data source,Add data source
@@ -53,6 +55,7 @@ Add group,그룹 추가
 add icon,아이콘 추가
 Add item,Add item
 Add link,링크 추가
+Add or remove relationship types for this collection.,Add or remove relationship types for this collection.
 Add page,페이지 추가
 Add PDF,Add PDF
 Add people or groups,사용자 혹은 그룹 추가
@@ -74,6 +77,7 @@ Add/delete users and assign roles,사용자 추가/삭제 및 권한 부여
 Add/edit translations,번역 추가/편집
 Added language,Added language
 Added new user,Added new user
+"Added relation type ""{name}""","Added relation type ""{name}"""
 added to hub with the following errors:,added to hub with the following errors:
 added to hub.,added to hub.
 Adding a group and its items.,Adding a group and its items.
@@ -96,6 +100,7 @@ Allow captcha bypass,Allow captcha bypass
 Allow public embedding without login,Allow public embedding without login
 Already exists,Already exists
 Amount,Amount
+An admin needs to add relationship types before you can create a relationship.,An admin needs to add relationship types before you can create a relationship.
 An error has occured while deleting a language:,An error has occured while deleting a language:
 An error has occured while installing languages:,An error has occured while installing languages:
 An error has occurred,An error has occurred
@@ -151,6 +156,7 @@ Body,바디
 boolean,boolean
 Browse files to upload,업로드할 파일 탐색
 "by ids, methods, keywords, etc.","by ids, methods, keywords, etc."
+By logging in you accept the essential session cookie required to stay signed in.,By logging in you accept the essential session cookie required to stay signed in.
 Can edit,편집 가능
 Can see,열람 가능
 Can view,열람 가능
@@ -232,6 +238,7 @@ Confirm your password,Confirm your password
 Connect to a paragraph,단락과 연결
 Connect to an entity,Connect to an entity
 Connect to entity,Connect to entity
+Connected entities,Connected entities
 Connected to server,Connected to server
 Connection type,커넥션 유형
 Contact email description,Here you can set up the contact email and the email that appears when Uwazi sends a notification to a user
@@ -242,6 +249,7 @@ Content translations,Content translations
 Context,Context
 Continue,Continue
 Conversion failed,변환 실패
+Cookie preferences,Cookie preferences
 Copied,Copied
 Copied to clipboard,Copied to clipboard
 Copy,Copy
@@ -260,6 +268,7 @@ Could not reach server. Please try again later.,Could not reach server. Please t
 Count,Count
 Create,생성
 CREATE,생성
+Create a type to continue.,Create a type to continue.
 Create and edit thesauri,Create and edit thesauri
 Create Connection,Create Connection
 Create entity,엔티티 생성
@@ -583,6 +592,7 @@ in,안
 "In a group, either all relationships must have a hub or none of them.","In a group, either all relationships must have a hub or none of them."
 In OCR queue,OCR 대기 중
 in this document,in this document
+In use,In use
 Include all entities,Include all entities
 Include only public,Include only public
 Incoming,Incoming
@@ -672,6 +682,7 @@ Longitude must be between -180 and 180,Longitude must be between -180 and 180
 Lookup help,Lookup help
 Lost connection to the server. Your changes may be lost,Lost connection to the server. Your changes may be lost
 low,낮게
+Manage relationship types,Manage relationship types
 Manage site settings and configuration,사이트 설정 및 구성 관리
 Manage types,Manage types
 Manual data,Manual data
@@ -761,6 +772,7 @@ New language added,새로운 언어가 추가되었습니다.
 New page,New page
 New password,새 비밀번호
 New primary doc,New primary doc
+New relation type label…,New relation type label…
 New relationship type,New relationship type
 New relationships group,새로운 관계 그룹
 New Relationships Migration,New Relationships Migration
@@ -803,6 +815,7 @@ No primary documents yet. Promote a supporting file or add a new one.,No primary
 No property,속성 없음
 No References,참고문헌 없음
 No References description,References are parts of this document related with other documents and entities.
+No relationship types,No relationship types
 No Relationships,관계 없음
 No Relationships description,Relationships are bonds between entities.
 No relationships found,No relationships found
@@ -854,6 +867,7 @@ Ok,확인
 OK,확인
 On this entity,On this entity
 one character,one character
+Only essential,Only essential
 "Only properties with the same name and configuration in every data source are available
             for both dimensions.","Only properties with the same name and configuration in every data source are available
             for both dimensions."
@@ -1008,6 +1022,7 @@ Refresh,Refresh
                         scheduled run."
 Refresh mode,Refresh mode
 Reject,거부
+Reject all,Reject all
 Related entities created,Related entities created
 Relation type,Relation type
 Relationship,연결
@@ -1020,9 +1035,6 @@ Relationship type name already exists,Relationship type name already exists
 Relationship types,연결 유형
 relationships,연결
 Relationships,연결
-relationships blank state message,"To add references select **Edit**, then **Create relationship**."
-relationships blank state with document,"To add references you can start by selecting text in the document
- or select **Edit**, then **Create relationship**."
 Relationships saved,Relationships saved
 relationships? This action cannot be undone.,relationships? This action cannot be undone.
 RelationType saved,연결 유형 저장 완료
@@ -1125,6 +1137,7 @@ Select target document,Select target document
 Select target entity,Select target entity
 Select target paragraph,대상 단락 선택
 Select text in target document,Select text in target document
+select text or a value,select text or a value
 Select the template to store the extracted paragraphs.,Select the template to store the extracted paragraphs.
 Select the template with the source documents.,Select the template with the source documents.
 Select...,선택
@@ -1200,6 +1213,7 @@ Statistics,Statistics
 Stats & Filters,Stats & Filters
 Status,Status
 status AND women NOT Nicaragua,status AND women NOT Nicaragua
+Stop filling,Stop filling
 Storage,Storage
 Streets,Streets
 Strict mode,제한 모드
@@ -1315,7 +1329,6 @@ This file type is not supported on media fields,This file type is not supported 
 This group is empty,This group is empty
 This import is waiting in queue.,This import is waiting in queue.
 This label already exists in this template,This label already exists in this template
-This option will show a notification about the use of cookies in your instance.,인스턴스 내 쿠키 사용 알림이 필요할 경우 이 옵션을 선택하십시오.
 This page does not need Markdown,This page does not need Markdown
 "This page uses HTML only (Markdown is not processed). You can embed maps, charts, entity
           lists, and other components.","This page uses HTML only (Markdown is not processed). You can embed maps, charts, entity
@@ -1327,6 +1340,9 @@ This property will be shown without the label,This property will be shown withou
 This property will be the default filter in the library for this template.,This property will be the default filter in the library for this template.
 "This property will be used for filtering the library results. When properties match in equal name and field type with other entity types, they will be combined for filtering.","This property will be used for filtering the library results. When properties match in equal name and field type with other entity types, they will be combined for filtering."
 This search could not be completed. Try again later.,This search could not be completed. Try again later.
+"This site uses cookies for language preferences and analytics. Session cookies are only
+            set when you log in.","This site uses cookies for language preferences and analytics. Session cookies are only
+            set when you log in."
 This table of contents was automatically created by the system.,This table of contents was automatically created by the system.
 this template,this template
 This template is in use by existing entities and cannot be deleted.,This template is in use by existing entities and cannot be deleted.
@@ -1339,8 +1355,6 @@ Timestamp,Timestamp
 tips,tips
 Title,제목
 To,To
-To add references you can start by selecting text in the document,To add references you can start by selecting text in the document
-"To bring you a better experience, this site uses cookies.",이 사이트는 사용자 편의를 위해 쿠키를 사용합니다.
 "To complete the account creation process, please create a password for your account",계정 생성을 마치려면 계정 비밀번호를 설정하십시오.
 to view your authentication code and verify your identity.,코드 확인하고 인증하기
 Today,Today
@@ -1426,6 +1440,9 @@ Use for training,Use for training
                 needed.","Use this iframe on external sites. Change the locale query parameter in the URL if
                 needed."
 Use URL,Use URL
+Used in templates and {n} refs — cannot delete,Used in templates and {n} refs — cannot delete
+Used in templates — cannot delete,Used in templates — cannot delete
+Used in {n} refs — cannot delete,Used in {n} refs — cannot delete
 User,사용자
 User Action,User Action
 User Role,User Role
@@ -1465,6 +1482,9 @@ Warning: you are editing multiple entities. Fields marked with a,경고: 여러 
 We can't find the page you're looking for.,We can't find the page you're looking for.
 Welcome to Uwazi,Uwazi 에 오신 것을 환영합니다.
 "Well, this is awkward...",알 수 없는 에러 발생
+"When enabled, visitors must accept or reject non-essential cookies before they are set.
+    Analytics and language preference cookies are blocked until accepted.","When enabled, visitors must accept or reject non-essential cookies before they are set.
+    Analytics and language preference cookies are blocked until accepted."
 Whitelisted templates,Whitelisted templates
 wildcard,wildcard
 wildcard (many chars),wildcard (many chars)

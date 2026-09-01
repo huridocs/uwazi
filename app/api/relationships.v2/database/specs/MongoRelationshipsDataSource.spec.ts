@@ -2,7 +2,7 @@ import { MatchQueryNode } from '#api/relationships.v2/model/MatchQueryNode.js';
 import { TraversalQueryNode } from '#api/relationships.v2/model/TraversalQueryNode.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-import testingDB from '#api/utils/testing_db.js';
+import { testingDB } from '#api/utils/testing_db.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { Relationship } from '#api/relationships.v2/model/Relationship.js';
 import { MongoRelationshipsDataSource } from '../MongoRelationshipsDataSource.js';
@@ -119,20 +119,6 @@ describe('When getting by query', () => {
     expect(result).toMatchObject([
       { _id: factory.id('entity3-en').toString(), sharedId: 'entity3' },
       { _id: factory.id('entity4-en').toString(), sharedId: 'entity4' },
-      { _id: factory.id('entity5-en').toString(), sharedId: 'entity5' },
-      { _id: factory.id('entity6-en').toString(), sharedId: 'entity6' },
-    ]);
-  });
-
-  it('should be paginable', async () => {
-    const query = new MatchQueryNode({ sharedId: 'entity1' }, [
-      new TraversalQueryNode('out', {}, [
-        new MatchQueryNode({}, [new TraversalQueryNode('in', {}, [new MatchQueryNode()])]),
-      ]),
-    ]);
-
-    const result = await ds.getByQuery(query, 'en').page(2, 2);
-    expect(result).toMatchObject([
       { _id: factory.id('entity5-en').toString(), sharedId: 'entity5' },
       { _id: factory.id('entity6-en').toString(), sharedId: 'entity6' },
     ]);

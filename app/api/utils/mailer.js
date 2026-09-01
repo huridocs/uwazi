@@ -17,7 +17,7 @@ if (Object.keys(mailerConfig).length) {
 }
 
 export default {
-  send(mailOptions) {
+  async send(mailOptions) {
     let transporter;
     return new Promise((resolve, reject) => {
       settings

@@ -6,7 +6,7 @@ After copy pasting:
   - change the tests, if necessary
 */
 
-// eslint-disable-next-line max-statements,node/no-restricted-import
+// eslint-disable-next-line max-statements,no-restricted-imports
 import fs from 'fs';
 import csv from '#api/csv/csv.js';
 

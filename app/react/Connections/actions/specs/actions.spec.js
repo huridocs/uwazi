@@ -27,7 +27,7 @@ describe('Connections actions', () => {
         },
       })
     );
-    spyOn(api, 'post').and.callFake(url => {
+    spyOn(api, 'post').and.callFake(async url => {
       if (url === 'relationships/bulk') {
         return Promise.resolve({ status: 200, json: 'bulkResponse(ArrayOfTwo)' });
       }

@@ -79,7 +79,7 @@ import {
   TemplatesEditor,
   createTemplatesEditorLoader,
 } from '#V2/Routes/Settings/Templates/index.js';
-import { Entity, entityLoader } from '#V2/Routes/Entity/index.js';
+import { Entity, entityLoader, shouldRevalidateEntity } from '#V2/Routes/Entity/index.js';
 import { Library, createLibraryLoader } from '#V2/Routes/Library/index.js';
 import {
   loggedInUsersRoute,
@@ -284,7 +284,12 @@ const getRoutesLayout = (
     */}
     {isEntityViewerV2Enabled(settings?.features) ? (
       <>
-        <Route path="entity/:sharedId" element={<Entity />} loader={entityLoader(headers)} />
+        <Route
+          path="entity/:sharedId"
+          element={<Entity />}
+          loader={entityLoader(headers)}
+          shouldRevalidate={shouldRevalidateEntity}
+        />
         <Route path="entity/:sharedId/*" element={<RedirectEntityTabToEntity />} />
         <Route path="legacy-entity/:sharedId" element={privateRoute(<ViewerRoute />, settings)}>
           <Route path="*" element={privateRoute(<ViewerRoute />, settings)} />
@@ -300,7 +305,12 @@ const getRoutesLayout = (
           <Route path="*" element={privateRoute(<ViewerRoute />, settings)} />
         </Route>
         <Route path="entity/:sharedId/:tabView" element={privateRoute(<ViewerRoute />, settings)} />
-        <Route path="entityv2/:sharedId" element={<Entity />} loader={entityLoader(headers)} />
+        <Route
+          path="entityv2/:sharedId"
+          element={<Entity />}
+          loader={entityLoader(headers)}
+          shouldRevalidate={shouldRevalidateEntity}
+        />
       </>
     )}
     <Route path="error/:errorCode" element={<GeneralError />} />

@@ -150,34 +150,30 @@ describe('Attachments actions', () => {
   });
 
   describe('deleteAttachment', () => {
-    it('should call on attachments/delete, with entity and filename and dispatch deleted and notification actions', done => {
+    it('should call on attachments/delete, with entity and filename and dispatch deleted and notification actions', async () => {
       jest.spyOn(api, 'delete').mockResolvedValue({});
       mockID();
       const dispatch = jest.fn();
-      actions
-        .deleteAttachment(
-          'id',
-          { _id: 'attachmentId', filename: 'filename' },
-          'storeKey'
-        )(dispatch)
-        .then(() => {
-          expect(api.delete).toHaveBeenCalledWith(
-            'files',
-            new RequestParams({
-              _id: 'attachmentId',
-            })
-          );
-          expect(dispatch).toHaveBeenCalledWith({
-            type: types.ATTACHMENT_DELETED,
-            entity: 'id',
-            file: {
-              _id: 'attachmentId',
-              filename: 'filename',
-            },
-            __reducerKey: 'storeKey',
-          });
-          done();
-        });
+      await actions.deleteAttachment(
+        'id',
+        { _id: 'attachmentId', filename: 'filename' },
+        'storeKey'
+      )(dispatch);
+      expect(api.delete).toHaveBeenCalledWith(
+        'files',
+        new RequestParams({
+          _id: 'attachmentId',
+        })
+      );
+      expect(dispatch).toHaveBeenCalledWith({
+        type: types.ATTACHMENT_DELETED,
+        entity: 'id',
+        file: {
+          _id: 'attachmentId',
+          filename: 'filename',
+        },
+        __reducerKey: 'storeKey',
+      });
     });
   });
 

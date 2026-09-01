@@ -1,11 +1,13 @@
 import type { UsersDirectory } from '#api/core/application/contracts/UsersDirectory.js';
 import type { UserProfile, UserView } from '#api/core/application/contracts/UserReadModels.js';
+import type { UserGroupView } from '#api/core/application/contracts/UserGroupReadModels.js';
 import { UserNotFound } from '#api/core/domain/user/errors.js';
 import { Result } from '#api/core/libs/Result.js';
 import type { ResultType } from '#api/core/libs/Result.js';
 import { PostgresUsersDAO } from './PostgresUsersDAO.js';
 import { PostgresUserGroupsDAO } from './PostgresUserGroupsDAO.js';
 import { PostgresUsersMapper } from './PostgresUsersMapper.js';
+import { PostgresUserGroupsMapper } from './PostgresUserGroupsMapper.js';
 import { PUBLIC_USER_ID_STRING } from './UserReadOptions.js';
 import type { UserScope } from './UserReadOptions.js';
 
@@ -56,9 +58,24 @@ class PostgresUsersDirectory implements UsersDirectory {
       return Result.fail(new UserNotFound(id));
     }
 
-    const groups = await this.userGroupsDAO.getGroupsByUserIds([id]);
+    const groups = await this.groupsOf([id]);
 
     return Result.ok(PostgresUsersMapper.toProfile({ ...row, groups: groups.get(id) ?? [] }));
+  }
+
+  private async groupsOf(userIds: string[]): Promise<Map<string, UserGroupView[]>> {
+    const map = new Map<string, UserGroupView[]>(userIds.map(id => [id, []]));
+    if (!userIds.length) return map;
+
+    const groups = await this.userGroupsDAO.table.whereJsonSupersetOfAny('members', userIds).all();
+
+    groups.forEach(group => {
+      group.members.forEach(memberId => {
+        map.get(memberId)?.push(PostgresUserGroupsMapper.toView(group));
+      });
+    });
+
+    return map;
   }
 
   async getManyByIds(ids: string[]): Promise<UserView[]> {

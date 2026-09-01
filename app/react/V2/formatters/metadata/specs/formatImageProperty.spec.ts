@@ -25,8 +25,28 @@ describe('formatImageProperty', () => {
       name: 'preview_document',
       label: 'Preview document',
       type: 'preview',
-      values: [{ value: '/api/files/test-preview.png', alt: '/api/files/test-preview.png' }],
+      values: [{ value: '/api/files/test-preview.png', alt: 'Preview document' }],
       style: 'cover',
+    });
+  });
+
+  it('should use entity preview when preview metadata is empty', () => {
+    const property = {
+      _id: 'p1',
+      name: 'preview_document',
+      label: 'Preview document',
+      type: 'preview',
+    } as BaseMetadataProperty;
+
+    const entity = { preview: 'doc-preview.jpg' } as Entity;
+
+    expect(formatImageProperty(property, {}, undefined, entity)).toEqual({
+      _id: 'p1',
+      name: 'preview_document',
+      label: 'Preview document',
+      type: 'preview',
+      values: [{ value: '/api/files/doc-preview.jpg', alt: 'Preview document' }],
+      style: 'contain',
     });
   });
 

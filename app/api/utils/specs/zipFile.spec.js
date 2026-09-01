@@ -1,7 +1,7 @@
 import path from 'path';
 import { deleteFiles } from '#api/files/index.js';
 import { createTestingZip } from '#api/csv/specs/helpers.js';
-// eslint-disable-next-line node/no-restricted-import
+// eslint-disable-next-line no-restricted-imports
 import fs from 'fs/promises';
 import zipFile from '../zipFile.js';
 
@@ -29,7 +29,7 @@ describe('zipFile', () => {
     it('should return a readable stream for matched file', async () => {
       let fileContents;
       await new Promise((resolve, reject) => {
-        zipFile(path.join(__dirname, '/zipData/zipTest.zip'))
+        void zipFile(path.join(__dirname, '/zipData/zipTest.zip'))
           .findReadStream(entry => entry === 'test.csv')
           .then(file => {
             file
@@ -59,7 +59,7 @@ describe('zipFile', () => {
 
     describe('when zip is invalid', () => {
       it('should throw an error', async () => {
-        (await fs.open(path.join(__dirname, '/invalid_zip.zip'), 'w')).close();
+        await (await fs.open(path.join(__dirname, '/invalid_zip.zip'), 'w')).close();
         try {
           await zipFile(path.join(__dirname, '/invalid_zip.zip')).findReadStream(
             entry => entry.fileName === 'test.csv'

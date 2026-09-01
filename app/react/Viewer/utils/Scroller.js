@@ -19,7 +19,7 @@ export default {
     );
   },
 
-  to(selector, parentSelector, opt = {}) {
+  async to(selector, parentSelector, opt = {}) {
     const options = this.getOptions(opt);
     if (this.isVisible(selector, parentSelector) && !options.force) {
       return Promise.resolve();
@@ -49,7 +49,7 @@ export default {
     );
   },
 
-  animateScroll(_parent, scrollTop, options) {
+  async animateScroll(_parent, scrollTop, options) {
     const parent = _parent;
     const start = Date.now();
     return new Promise(resolve => {

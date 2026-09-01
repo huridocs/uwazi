@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { createStore, Provider } from 'jotai';
 import { createMemoryRouter, RouterProvider } from 'react-router';
-import { render } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
 import type { Entity, FileType } from '#V2/api/entities/types.js';
 import { relationshipTypesAtom, templatesAtom } from '#V2/atoms/index.js';
 import {
@@ -9,9 +9,15 @@ import {
   useDocumentPdfActions,
   useDocumentRelationshipNav,
 } from '#V2/Routes/Entity/Components/context/index.js';
+import { ServicesProvider } from '#V2/services/ServicesProvider.js';
+import { createTestServices } from '#V2/testing/createTestServices.js';
 import { RelationshipsPanel } from '../../panel/RelationshipsPanel.js';
 import { RelationshipsFiltersDrawer } from '../../filters/RelationshipsFiltersDrawer.js';
 import { entityWithRelations } from '../fixtures/entityWithRelations.js';
+import {
+  relationshipQueryFromEntity,
+  relationshipsQueryStubFromEntity,
+} from './relationshipQueryFromEntity.js';
 
 type PdfMocks = {
   goToPage: jest.Mock;
@@ -63,26 +69,35 @@ const renderRelationshipsPanel = ({
   const store = createStore();
   store.set(relationshipTypesAtom, [{ _id: 'relA', name: 'Related' }]);
   store.set(templatesAtom, [{ _id: 'template1', color: '#faca15', name: 'Entity' }]);
+  const relationshipQuery = relationshipQueryFromEntity(entity, mainDocument?._id);
+  const stub = relationshipsQueryStubFromEntity(entity, mainDocument?._id);
+  const loadResolved = jest.fn(stub.loadResolved);
+  const services = createTestServices({
+    relationshipsQuery: { ...stub, loadResolved },
+  });
 
   const router = createMemoryRouter([
     {
       path: '/',
       element: (
         <Provider store={store}>
-          <EntityScopedProvider
-            key={entity.sharedId}
-            entity={entity}
-            language={entity.language ?? 'en'}
-            mainDocument={mainDocument}
-          >
-            <PdfControllerSetup pdf={pdf} />
-            <RelationshipsPanel
-              focusDocumentOnSelect={focusDocumentOnSelect}
-              onFocusDocument={onFocusDocument}
-            />
-            {withFiltersDrawer && <RelationshipsFiltersDrawer />}
-            <SelectionState />
-          </EntityScopedProvider>
+          <ServicesProvider value={services}>
+            <EntityScopedProvider
+              key={entity.sharedId}
+              entity={entity}
+              language={entity.language ?? 'en'}
+              mainDocument={mainDocument}
+              relationshipQuery={relationshipQuery}
+            >
+              <PdfControllerSetup pdf={pdf} />
+              <RelationshipsPanel
+                focusDocumentOnSelect={focusDocumentOnSelect}
+                onFocusDocument={onFocusDocument}
+              />
+              {withFiltersDrawer && <RelationshipsFiltersDrawer />}
+              <SelectionState />
+            </EntityScopedProvider>
+          </ServicesProvider>
         </Provider>
       ),
     },
@@ -91,6 +106,12 @@ const renderRelationshipsPanel = ({
   return {
     onFocusDocument,
     pdf,
+    loadResolved,
+    waitForResolved: async () => {
+      await waitFor(() => expect(loadResolved).toHaveBeenCalled());
+      const pending = loadResolved.mock.results[0]?.value;
+      if (pending) await pending;
+    },
     ...render(<RouterProvider router={router} />),
   };
 };

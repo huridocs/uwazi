@@ -31,7 +31,7 @@ describe('ShellExecutor', () => {
       expect(result.getData()).toBeUndefined();
       expect(result.getError()).toBeInstanceOf(Error);
       expect(result.getError()?.message).toBe('Shell command failed');
-      expect((result.getError()?.cause as Error).message.match(/cannot access/)).toBeTruthy();
+      expect((result.getError()!.cause as Error).message.match(/cannot access/)).toBeTruthy();
     });
 
     it('should return error when command does not exist', async () => {

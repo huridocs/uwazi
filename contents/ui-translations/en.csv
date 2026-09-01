@@ -16,6 +16,7 @@ A target template needs to have the following properties,A target template needs
 A valid email is required,A valid email is required
 A → Z,A → Z
 Accept,Accept
+Accept all,Accept all
 Accepted suggestion on entity,Accepted suggestion on entity
 Accepting suggestions,Accepting suggestions
 Accessibility checks need attention,Accessibility checks need attention
@@ -37,6 +38,7 @@ Activity log,Activity log
 Activity Log,Activity Log
 Add,Add
 Add / remove favorite,Add / remove favorite
+Add a type below.,Add a type below.
 Add an account to the app by scanning the provided QR code with your mobile device or by inserting the provided key.,Add an account to the app by scanning the provided QR code with your mobile device or by inserting the provided key.
 Add as,Add as
 Add data source,Add data source
@@ -53,6 +55,7 @@ Add group,Add group
 add icon,add icon
 Add item,Add item
 Add link,Add link
+Add or remove relationship types for this collection.,Add or remove relationship types for this collection.
 Add page,Add page
 Add PDF,Add PDF
 Add people or groups,Add people or groups
@@ -74,6 +77,7 @@ Add/delete users and assign roles,Add/delete users and assign roles
 Add/edit translations,Add/edit translations
 Added language,Added language
 Added new user,Added new user
+"Added relation type ""{name}""","Added relation type ""{name}"""
 added to hub with the following errors:,added to hub with the following errors:
 added to hub.,added to hub.
 Adding a group and its items.,Adding a group and its items.
@@ -96,6 +100,7 @@ Allow captcha bypass,Allow captcha bypass
 Allow public embedding without login,Allow public embedding without login
 Already exists,Already exists
 Amount,Amount
+An admin needs to add relationship types before you can create a relationship.,An admin needs to add relationship types before you can create a relationship.
 An error has occured while deleting a language:,An error has occured while deleting a language:
 An error has occured while installing languages:,An error has occured while installing languages:
 An error has occurred,An error has occurred
@@ -151,6 +156,7 @@ Body,Body
 boolean,boolean
 Browse files to upload,Browse files to upload
 "by ids, methods, keywords, etc.","by ids, methods, keywords, etc."
+By logging in you accept the essential session cookie required to stay signed in.,By logging in you accept the essential session cookie required to stay signed in.
 Can edit,Can edit
 Can see,Can see
 Can view,Can view
@@ -234,6 +240,7 @@ Confirm your password,Confirm your password
 Connect to a paragraph,Connect to a paragraph
 Connect to an entity,Connect to an entity
 Connect to entity,Connect to entity
+Connected entities,Connected entities
 Connected to server,Connected to server
 Connection type,Connection type
 Contact email description,Here you can set up the contact email and the email that appears when Uwazi sends a notification to a user
@@ -244,6 +251,7 @@ Content translations,Content translations
 Context,Context
 Continue,Continue
 Conversion failed,Conversion failed
+Cookie preferences,Cookie preferences
 Copied,Copied
 Copied to clipboard,Copied to clipboard
 Copy,Copy
@@ -262,6 +270,7 @@ Could not reach server. Please try again later.,Could not reach server. Please t
 Count,Count
 Create,Create
 CREATE,CREATE
+Create a type to continue.,Create a type to continue.
 Create and edit thesauri,Create and edit thesauri
 Create Connection,Create Connection
 Create entity,Create entity
@@ -585,6 +594,7 @@ in,in
 "In a group, either all relationships must have a hub or none of them.","In a group, either all relationships must have a hub or none of them."
 In OCR queue,In OCR queue
 in this document,in this document
+In use,In use
 Include all entities,Include all entities
 Include only public,Include only public
 Incoming,Incoming
@@ -674,6 +684,7 @@ Longitude must be between -180 and 180,Longitude must be between -180 and 180
 Lookup help,Lookup help
 Lost connection to the server. Your changes may be lost,Lost connection to the server. Your changes may be lost
 low,low
+Manage relationship types,Manage relationship types
 Manage site settings and configuration,Manage site settings and configuration
 Manage types,Manage types
 Manual data,Manual data
@@ -763,6 +774,7 @@ New language added,New language added
 New page,New page
 New password,New password
 New primary doc,New primary doc
+New relation type label…,New relation type label…
 New relationship type,New relationship type
 New relationships group,New relationships group
 New Relationships Migration,New Relationships Migration
@@ -805,6 +817,7 @@ No primary documents yet. Promote a supporting file or add a new one.,No primary
 No property,Item does not have this property
 No References,No References
 No References description,References are parts of this document related with other documents and entities.
+No relationship types,No relationship types
 No Relationships,No Relationships
 No Relationships description,Relationships are bonds between entities.
 No relationships found,No relationships found
@@ -856,6 +869,7 @@ Ok,Ok
 OK,OK
 On this entity,On this entity
 one character,one character
+Only essential,Only essential
 "Only properties with the same name and configuration in every data source are available
             for both dimensions.","Only properties with the same name and configuration in every data source are available
             for both dimensions."
@@ -1010,6 +1024,7 @@ Refresh,Refresh
                         scheduled run."
 Refresh mode,Refresh mode
 Reject,Reject
+Reject all,Reject all
 Related entities created,Related entities created
 Relation type,Relation type
 Relationship,Relationship
@@ -1022,9 +1037,6 @@ Relationship type name already exists,Relationship type name already exists
 Relationship types,Relationship types
 relationships,relationships
 Relationships,Relationships
-relationships blank state message,"To add references select **Edit**, then **Create relationship**."
-relationships blank state with document,"To add references you can start by selecting text in the document
- or select **Edit**, then **Create relationship**."
 Relationships saved,Relationships saved
 relationships? This action cannot be undone.,relationships? This action cannot be undone.
 RelationType saved,RelationType saved
@@ -1127,6 +1139,7 @@ Select target document,Select target document
 Select target entity,Select target entity
 Select target paragraph,Select target paragraph
 Select text in target document,Select text in target document
+select text or a value,select text or a value
 Select the template to store the extracted paragraphs.,Select the template to store the extracted paragraphs.
 Select the template with the source documents.,Select the template with the source documents.
 Select...,Select...
@@ -1202,6 +1215,7 @@ Statistics,Statistics
 Stats & Filters,Stats & Filters
 Status,Status
 status AND women NOT Nicaragua,status AND women NOT Nicaragua
+Stop filling,Stop filling
 Storage,Storage
 Streets,Streets
 Strict mode,Strict mode
@@ -1317,7 +1331,6 @@ This file type is not supported on media fields,This file type is not supported 
 This group is empty,This group is empty
 This import is waiting in queue.,This import is waiting in queue.
 This label already exists in this template,This label already exists in this template
-This option will show a notification about the use of cookies in your instance.,This option will show a notification about the use of cookies in your instance.
 This page does not need Markdown,This page does not need Markdown
 "This page uses HTML only (Markdown is not processed). You can embed maps, charts, entity
           lists, and other components.","This page uses HTML only (Markdown is not processed). You can embed maps, charts, entity
@@ -1329,6 +1342,9 @@ This property will be shown without the label,This property will be shown withou
 This property will be the default filter in the library for this template.,This property will be the default filter in the library for this template.
 "This property will be used for filtering the library results. When properties match in equal name and field type with other entity types, they will be combined for filtering.","This property will be used for filtering the library results. When properties match in equal name and field type with other entity types, they will be combined for filtering."
 This search could not be completed. Try again later.,This search could not be completed. Try again later.
+"This site uses cookies for language preferences and analytics. Session cookies are only
+            set when you log in.","This site uses cookies for language preferences and analytics. Session cookies are only
+            set when you log in."
 This table of contents was automatically created by the system.,This table of contents was automatically created by the system.
 this template,this template
 This template is in use by existing entities and cannot be deleted.,This template is in use by existing entities and cannot be deleted.
@@ -1341,8 +1357,6 @@ Timestamp,Timestamp
 tips,tips
 Title,Title
 To,To
-To add references you can start by selecting text in the document,To add references you can start by selecting text in the document
-"To bring you a better experience, this site uses cookies.","To bring you a better experience, this site uses cookies."
 "To complete the account creation process, please create a password for your account","To complete the account creation process, please create a password for your account"
 to view your authentication code and verify your identity.,to view your authentication code and verify your identity.
 Today,Today
@@ -1428,6 +1442,9 @@ Use for training,Use for training
                 needed.","Use this iframe on external sites. Change the locale query parameter in the URL if
                 needed."
 Use URL,Use URL
+Used in templates and {n} refs — cannot delete,Used in templates and {n} refs — cannot delete
+Used in templates — cannot delete,Used in templates — cannot delete
+Used in {n} refs — cannot delete,Used in {n} refs — cannot delete
 User,User
 User Action,User Action
 User Role,User Role
@@ -1467,6 +1484,9 @@ Warning: you are editing multiple entities. Fields marked with a,Warning: you ar
 We can't find the page you're looking for.,We can't find the page you're looking for.
 Welcome to Uwazi,Welcome to Uwazi
 "Well, this is awkward...","Well, this is awkward..."
+"When enabled, visitors must accept or reject non-essential cookies before they are set.
+    Analytics and language preference cookies are blocked until accepted.","When enabled, visitors must accept or reject non-essential cookies before they are set.
+    Analytics and language preference cookies are blocked until accepted."
 Whitelisted templates,Whitelisted templates
 wildcard,wildcard
 wildcard (many chars),wildcard (many chars)

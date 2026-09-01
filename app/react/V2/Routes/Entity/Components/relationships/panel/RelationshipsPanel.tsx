@@ -13,9 +13,7 @@ import {
   useRelationshipsPanelLayout,
   useRelationshipsSelectionActions,
   useEntityOverlay,
-  useEntityLanguage,
   useEntityWriteAuthorized,
-  useEntityScopedEntity,
 } from '#V2/Routes/Entity/Components/context/index.js';
 import { useActiveRelationshipHighlight } from '#V2/Routes/Entity/Components/document/index.js';
 import { useGroupLabelContext } from '../hooks/useGroupLabelContext.js';
@@ -40,8 +38,6 @@ const RelationshipsPanelView = ({
   const { setSelectedRelationshipIds, setRelationshipsEditMode } =
     useRelationshipsSelectionActions();
   const canWrite = useEntityWriteAuthorized();
-  const { mainDocument } = useEntityLanguage();
-  const hasMainDocument = Boolean(mainDocument?.filename);
 
   const { openEntityOverlay } = useEntityOverlay();
   const {
@@ -57,7 +53,7 @@ const RelationshipsPanelView = ({
       if (focusDocumentOnSelect && marker.anchor?.selections?.[0]?.page) {
         onFocusDocument?.();
       }
-      selectRelationship(marker, { scrollPanel: true });
+      selectRelationship(marker, { scrollPanel: true }).catch(() => undefined);
     },
     [focusDocumentOnSelect, onFocusDocument, selectRelationship]
   );
@@ -83,19 +79,6 @@ const RelationshipsPanelView = ({
             <LinkIcon className="h-7 w-7 text-ink rounded-full bg-[color-mix(in_srgb,var(--color-theme-border-default)_70%,transparent)] p-1" />
           }
           title={<Translate>No Relationships</Translate>}
-          description={
-            hasMainDocument ? (
-              <Translate translationKey="relationships blank state with document">
-                {
-                  'To add references you can start by selecting text in the document\n or select **Edit**, then **Create relationship**.'
-                }
-              </Translate>
-            ) : (
-              <Translate translationKey="relationships blank state message">
-                To add references select **Edit**, then **Create relationship**.
-              </Translate>
-            )
-          }
         />
       );
     }
@@ -159,10 +142,9 @@ const RelationshipsPanel = ({
   onFocusDocument,
 }: RelationshipsPanelProps) => {
   const showSsrIndex = useSsrOnlyContent();
-  const entity = useEntityScopedEntity();
 
   if (showSsrIndex) {
-    return <RelationshipsSsrIndex entity={entity} />;
+    return <RelationshipsSsrIndex />;
   }
 
   return (

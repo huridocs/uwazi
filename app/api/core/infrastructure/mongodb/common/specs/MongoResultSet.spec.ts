@@ -1,7 +1,7 @@
 import { ObjectId } from 'mongodb';
 
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-import testingDB from '#api/utils/testing_db.js';
+import { testingDB } from '#api/utils/testing_db.js';
 
 import { MongoResultSet } from '../MongoResultSet.js';
 
@@ -31,40 +31,6 @@ afterAll(async () => {
 });
 
 describe('when built from a $type cursor', () => {
-  describe('next()', () => {
-    it('should provide the next item as a normal mongo cursor', async () => {
-      const cursor = buildCursor();
-      const resultSet = new MongoResultSet(cursor!, MongoResultSet.NoOpMapper);
-      let index = 0;
-      // eslint-disable-next-line no-await-in-loop
-      while (await resultSet.hasNext()) {
-        // eslint-disable-next-line no-await-in-loop
-        const item = await resultSet.next();
-        expect(item).toEqual(testDocuments[index]);
-        index += 1;
-      }
-    });
-  });
-
-  describe('nextBatch()', () => {
-    it('should provide the next batch', async () => {
-      const cursor = buildCursor();
-      const resultSet = new MongoResultSet(cursor!, MongoResultSet.NoOpMapper);
-      const visited: (typeof testDocuments)[] = [];
-      // eslint-disable-next-line no-await-in-loop
-      while (await resultSet.hasNext()) {
-        // eslint-disable-next-line no-await-in-loop
-        const batch = await resultSet.nextBatch(4);
-        visited.push(batch);
-      }
-      expect(visited).toEqual([
-        [testDocuments[0], testDocuments[1], testDocuments[2], testDocuments[3]],
-        [testDocuments[4], testDocuments[5]],
-      ]);
-      expect(cursor?.closed).toBe(true);
-    });
-  });
-
   describe('all()', () => {
     it('should return all the results and close the cursor', async () => {
       const cursor = buildCursor();
@@ -93,17 +59,6 @@ describe('when built from a $type cursor', () => {
 
       expect(Object.keys(index).length).toBe(6);
     });
-  });
-
-  it.each([
-    { page: 1, start: 0, end: 4 },
-    { page: 2, start: 4, end: 6 },
-  ])('should return results page $page and close the cursor', async ({ page, start, end }) => {
-    const cursor = buildCursor();
-    const resultSet = new MongoResultSet(cursor!, elem => elem.name);
-    const result = await resultSet.page(page, 4);
-    expect(result).toEqual(testDocuments.slice(start, end).map(elem => elem.name));
-    expect(cursor?.closed).toBe(true);
   });
 
   describe('using find(...)', () => {
@@ -300,8 +255,8 @@ describe('when built from an aggregation cursor', () => {
   it('should correctly count the result and use the mapper', async () => {
     const cursor = buildAggregationCursor();
     const resultSet = new MongoResultSet(cursor!, elem => elem.name);
-    const result = await resultSet.page(1, 4);
-    expect(result).toEqual(testDocuments.slice(0, 4).map(elem => elem.name));
+    const result = await resultSet.all();
+    expect(result).toEqual(testDocuments.map(elem => elem.name));
     expect(cursor?.closed).toBe(true);
   });
 });

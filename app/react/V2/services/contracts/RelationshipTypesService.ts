@@ -8,11 +8,15 @@ import type { ServiceRequestOptions } from './ServiceRequestOptions.js';
 /**
  * Relationship types domain service (settings CRUD).
  *
- * Standard reads: `getAll`.
+ * Standard reads: `getAll`, `countByTypes`.
  * Standard writes: `upsert`, `delete`.
  */
 interface RelationshipTypesService {
   getAll(options?: ServiceRequestOptions): Promise<ApiResponse<RelationshipType[]>>;
+  countByTypes(
+    ids: string[],
+    options?: ServiceRequestOptions
+  ): Promise<ApiResponse<{ [id: string]: number }>>;
   upsert(
     relationshipType: RelationshipTypeInput,
     options?: ServiceRequestOptions

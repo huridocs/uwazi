@@ -1,12 +1,11 @@
-/* eslint-disable node/no-restricted-import */
+/* eslint-disable no-restricted-imports */
 import { createWriteStream } from 'fs';
 import { access, mkdir, rm } from 'fs/promises';
 
 import { BaseFile } from '#api/core/domain/files/BaseFile.js';
-import { FileWithContent } from '../../application/contracts/FileStorage.js';
+import { FileWithContent,FileStorage,GetFileInput } from '../../application/contracts/FileStorage.js';
 import path from 'path';
 import { pipeline } from 'stream/promises';
-import { FileStorage, GetFileInput } from '../../application/contracts/FileStorage.js';
 import { DiskFile } from './DiskFile.js';
 import { FileContents } from '../../domain/files/FileContents.js';
 import { StoredFile } from './StoredFile.js';

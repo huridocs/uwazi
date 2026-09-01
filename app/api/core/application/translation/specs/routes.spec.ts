@@ -11,6 +11,7 @@ import '#api/pages.v2/infrastructure/listeners/DeleteLanguagePagesListener.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { testingTenants } from '#api/utils/testingTenants.js';
+import type { DBFixture } from '#api/utils/testing_db.js';
 import { TestEmitSources, iosocket, setUpApp } from '#api/utils/testingRoutes.js';
 import { availableLanguages } from '#shared/language/index.js';
 import { LanguageSchema } from '#shared/types/commonTypes.js';
@@ -21,8 +22,50 @@ import { sortByLocale } from './sortByLocale.js';
 
 const I18N_SPECS_DIR = 'app/api/i18n/specs';
 
+const testConfigs = [
+  { name: 'Mongo', postgresTranslations: false },
+  { name: 'Postgres', postgresTranslations: true },
+];
+
+const createTranslationDBO = getFixturesFactory().v2.database.translationDBO;
+
+const createFixtures = (): DBFixture => {
+  const translationsV2: TranslationDBO[] = [
+    createTranslationDBO('title', 'Plantilla 1', 'es', {
+      id: 'contextID',
+      type: 'Entity',
+      label: 'Template',
+    }),
+    createTranslationDBO('Search', 'Buscar', 'es', {
+      id: 'System',
+      type: 'Entity',
+      label: 'User Interface',
+    }),
+    createTranslationDBO('title', 'Template 1', 'en', {
+      id: 'contextID',
+      type: 'Entity',
+      label: 'Template',
+    }),
+    createTranslationDBO('Search', 'Search', 'en', {
+      id: 'System',
+      type: 'Uwazi UI',
+      label: 'User Interface',
+    }),
+  ];
+  return {
+    settings: [
+      {
+        languages: [
+          { key: 'en', label: 'English', default: true },
+          { key: 'es', label: 'Spanish', default: false },
+        ],
+      },
+    ],
+    translationsV2,
+  };
+};
+
 describe('i18n translations routes', () => {
-  const createTranslationDBO = getFixturesFactory().v2.database.translationDBO;
   const app = setUpApp(i18nRoutes, (req, _res, next) => {
     req.user = {
       _id: 'admin',
@@ -35,43 +78,10 @@ describe('i18n translations routes', () => {
     next();
   });
 
-  beforeAll(() => {
+  beforeAll(async () => {
     jest.spyOn(search, 'deleteLanguage').mockResolvedValue(undefined as any);
-  });
-
-  beforeEach(async () => {
-    const translationsV2: TranslationDBO[] = [
-      createTranslationDBO('title', 'Plantilla 1', 'es', {
-        id: 'contextID',
-        type: 'Entity',
-        label: 'Template',
-      }),
-      createTranslationDBO('Search', 'Buscar', 'es', {
-        id: 'System',
-        type: 'Entity',
-        label: 'User Interface',
-      }),
-      createTranslationDBO('title', 'Template 1', 'en', {
-        id: 'contextID',
-        type: 'Entity',
-        label: 'Template',
-      }),
-      createTranslationDBO('Search', 'Search', 'en', {
-        id: 'System',
-        type: 'Uwazi UI',
-        label: 'User Interface',
-      }),
-    ];
-    await testingEnvironment.setUp({
-      settings: [
-        {
-          languages: [
-            { key: 'en', label: 'English', default: true },
-            { key: 'es', label: 'Spanish', default: false },
-          ],
-        },
-      ],
-      translationsV2,
+    await testingEnvironment.setUp(createFixtures(), {
+      postgres: true,
     });
   });
 
@@ -79,560 +89,579 @@ describe('i18n translations routes', () => {
     await testingEnvironment.tearDown();
   });
 
-  describe('GET', () => {
-    describe('api/translations', () => {
-      it('should return the translations', async () => {
-        const response = await request(app).get('/api/translations').expect(200);
-
-        expect(response.body.rows.sort(sortByLocale)).toMatchObject([
-          {
-            contexts: [
-              {
-                id: 'contextID',
-                label: 'Template',
-                type: 'Entity',
-                values: { title: 'Template 1' },
-              },
-              {
-                id: 'System',
-                label: 'User Interface',
-                type: 'Uwazi UI',
-                values: {
-                  Search: 'Search',
-                },
-              },
-            ],
-            locale: 'en',
-          },
-
-          {
-            contexts: [
-              {
-                id: 'contextID',
-                label: 'Template',
-                type: 'Entity',
-                values: { title: 'Plantilla 1' },
-              },
-              {
-                id: 'System',
-                label: 'User Interface',
-                type: 'Uwazi UI',
-                values: {
-                  Search: 'Buscar',
-                },
-              },
-            ],
-            locale: 'es',
-          },
-        ]);
+  describe.each(testConfigs)('$name', ({ postgresTranslations }) => {
+    const applyBackendTenant = () => {
+      testingTenants.changeCurrentTenant({
+        featureFlags: postgresTranslations ? { postgresTranslations: true } : {},
       });
+    };
 
-      it('should only return the requested context', async () => {
-        const appWithQuery = setUpApp(i18nRoutes, (req, _res, next) => {
-          req.user = {
-            _id: 'admin',
-            username: 'admin',
-            role: UserRole.ADMIN,
-            email: 'admin@test.com',
-          };
-          req.query = { context: 'contextID' };
-          next();
-        });
-
-        const response = await request(appWithQuery).get('/api/translations').expect(200);
-
-        expect(response.body.rows.sort(sortByLocale)).toMatchObject([
-          {
-            contexts: [
-              {
-                id: 'contextID',
-                label: 'Template',
-                type: 'Entity',
-                values: { title: 'Template 1' },
-              },
-            ],
-            locale: 'en',
-          },
-
-          {
-            contexts: [
-              {
-                id: 'contextID',
-                label: 'Template',
-                type: 'Entity',
-                values: { title: 'Plantilla 1' },
-              },
-            ],
-            locale: 'es',
-          },
-        ]);
-      });
-
-      it('should only return the requested locale when locale is provided', async () => {
-        const response = await request(app).get('/api/translations?locale=es').expect(200);
-
-        expect(response.body.rows).toHaveLength(1);
-        expect(response.body.rows[0]).toMatchObject({
-          locale: 'es',
-          contexts: expect.arrayContaining([
-            expect.objectContaining({
-              id: 'contextID',
-              values: { title: 'Plantilla 1' },
-            }),
-            expect.objectContaining({
-              id: 'System',
-              values: { Search: 'Buscar' },
-            }),
-          ]),
-        });
-      });
+    beforeEach(async () => {
+      await testingEnvironment.setFixtures(createFixtures());
+      applyBackendTenant();
     });
 
-    describe('api/languages', () => {
-      it('should return the available languages', async () => {
-        DefaultTranslations.CONTENTS_DIRECTORY = `${I18N_SPECS_DIR}/test_contents/1`;
+    describe('GET', () => {
+      describe('api/translations', () => {
+        it('should return the translations', async () => {
+          const response = await request(app).get('/api/translations').expect(200);
 
-        const response = await request(app).get('/api/languages').expect(200);
+          expect(response.body.rows.sort(sortByLocale)).toMatchObject([
+            {
+              contexts: expect.arrayContaining([
+                {
+                  id: 'contextID',
+                  label: 'Template',
+                  type: 'Entity',
+                  values: { title: 'Template 1' },
+                },
+                {
+                  id: 'System',
+                  label: 'User Interface',
+                  type: 'Uwazi UI',
+                  values: {
+                    Search: 'Search',
+                  },
+                },
+              ]),
+              locale: 'en',
+            },
 
-        const languagesWithPredefinedTranslations = response.body.filter(
-          (language: LanguageSchema) => language.translationAvailable
-        );
-
-        expect(languagesWithPredefinedTranslations).toMatchObject([
-          { key: 'ar' },
-          { key: 'fr' },
-          { key: 'es' },
-        ]);
-      });
-
-      describe('when github returns any error', () => {
-        it('should return an unaltered version of the languages list', async () => {
-          DefaultTranslations.CONTENTS_DIRECTORY = `${I18N_SPECS_DIR}/non_valid`;
-
-          const responseLanguages = await request(app).get('/api/languages').expect(200);
-
-          expect(responseLanguages.body).toEqual(availableLanguages);
+            {
+              contexts: expect.arrayContaining([
+                {
+                  id: 'contextID',
+                  label: 'Template',
+                  type: 'Entity',
+                  values: { title: 'Plantilla 1' },
+                },
+                {
+                  id: 'System',
+                  label: 'User Interface',
+                  type: 'Uwazi UI',
+                  values: {
+                    Search: 'Buscar',
+                  },
+                },
+              ]),
+              locale: 'es',
+            },
+          ]);
         });
-      });
-    });
-  });
 
-  describe('POST', () => {
-    describe('api/translations', () => {
-      it('should save the translation', async () => {
-        const response = await request(app)
-          .post('/api/translations')
-          .send({
-            locale: 'es',
-            contexts: [
-              {
-                id: 'System',
-                label: 'User Interface',
-                type: 'Uwazi UI',
-                values: { Search: 'Buscar' },
-              },
-            ],
+        it('should only return the requested context', async () => {
+          const appWithQuery = setUpApp(i18nRoutes, (req, _res, next) => {
+            req.user = {
+              _id: 'admin',
+              username: 'admin',
+              role: UserRole.ADMIN,
+              email: 'admin@test.com',
+            };
+            req.query = { context: 'contextID' };
+            next();
           });
 
-        expect(
-          response.body.contexts.find((context: any) => context.id === 'System')
-        ).toMatchObject({
-          values: { Search: 'Buscar' },
+          const response = await request(appWithQuery).get('/api/translations').expect(200);
+
+          expect(response.body.rows.sort(sortByLocale)).toMatchObject([
+            {
+              contexts: [
+                {
+                  id: 'contextID',
+                  label: 'Template',
+                  type: 'Entity',
+                  values: { title: 'Template 1' },
+                },
+              ],
+              locale: 'en',
+            },
+
+            {
+              contexts: [
+                {
+                  id: 'contextID',
+                  label: 'Template',
+                  type: 'Entity',
+                  values: { title: 'Plantilla 1' },
+                },
+              ],
+              locale: 'es',
+            },
+          ]);
         });
 
-        expect(iosocket.emit).toHaveBeenCalledWith(
-          'translationsChange',
-          TestEmitSources.currentTenant,
-          expect.objectContaining({
+        it('should only return the requested locale when locale is provided', async () => {
+          const response = await request(app).get('/api/translations?locale=es').expect(200);
+
+          expect(response.body.rows).toHaveLength(1);
+          expect(response.body.rows[0]).toMatchObject({
+            locale: 'es',
             contexts: expect.arrayContaining([
-              expect.objectContaining({ values: { Search: 'Buscar' } }),
+              expect.objectContaining({
+                id: 'contextID',
+                values: { title: 'Plantilla 1' },
+              }),
+              expect.objectContaining({
+                id: 'System',
+                values: { Search: 'Buscar' },
+              }),
             ]),
-            locale: 'es',
-          })
-        );
+          });
+        });
+      });
+
+      describe('api/languages', () => {
+        it('should return the available languages', async () => {
+          DefaultTranslations.CONTENTS_DIRECTORY = `${I18N_SPECS_DIR}/test_contents/1`;
+
+          const response = await request(app).get('/api/languages').expect(200);
+
+          const languagesWithPredefinedTranslations = response.body.filter(
+            (language: LanguageSchema) => language.translationAvailable
+          );
+
+          expect(languagesWithPredefinedTranslations).toMatchObject([
+            { key: 'ar' },
+            { key: 'fr' },
+            { key: 'es' },
+          ]);
+        });
+
+        describe('when github returns any error', () => {
+          it('should return an unaltered version of the languages list', async () => {
+            DefaultTranslations.CONTENTS_DIRECTORY = `${I18N_SPECS_DIR}/non_valid`;
+
+            const responseLanguages = await request(app).get('/api/languages').expect(200);
+
+            expect(responseLanguages.body).toEqual(availableLanguages);
+          });
+        });
       });
     });
 
-    describe('api/translations/languages (V2)', () => {
-      describe('when successful', () => {
-        let response: request.Response;
-        let mockCalls: any[];
-
-        const newSettings = expect.objectContaining({
-          languages: [
-            expect.objectContaining({ key: 'en', label: 'English', default: true }),
-            expect.objectContaining({ key: 'es', label: 'Spanish', default: false }),
-            expect.objectContaining({ key: 'zh', label: 'Chinese' }),
-            expect.objectContaining({ key: 'ja', label: 'Japanese' }),
-          ],
-          mapStartingPoint: [{ lon: 6, lat: 46 }],
-        });
-
-        beforeAll(async () => {
-          testingTenants.changeCurrentTenant({});
-          DefaultTranslations.CONTENTS_DIRECTORY = `${I18N_SPECS_DIR}/test_contents/3`;
-
-          iosocket.emit.mockReset();
-          response = await request(app)
-            .post('/api/translations/languages')
-            .send([
-              { key: 'zh', label: 'Chinese' },
-              { key: 'ja', label: 'Japanese' },
-            ]);
-          mockCalls = iosocket.emit.mock.calls;
-          await waitForExpect(() => {
-            expect(mockCalls.length).toBe(4);
-          });
-        });
-
-        it('should return a 204', async () => {
-          expect(response.status).toBe(204);
-        });
-
-        it('should emit a translationsChange event for each new language', async () => {
-          const translationChangeEvents = mockCalls.filter(
-            ([eventName]) => eventName === 'translationsChange'
-          );
-          expect(translationChangeEvents).toMatchObject([
-            [
-              'translationsChange',
-              TestEmitSources.currentTenant,
-              {
-                locale: 'zh',
-                contexts: [
-                  {
-                    id: 'System',
-                    label: 'User Interface',
-                    type: 'Uwazi UI',
-                    values: {
-                      Search: 'Search',
-                    },
-                  },
-                  {
-                    id: 'contextID',
-                    label: 'Template',
-                    type: 'Entity',
-                    values: { title: 'Template 1' },
-                  },
-                ],
-              },
-            ],
-            [
-              'translationsChange',
-              TestEmitSources.currentTenant,
-              {
-                locale: 'ja',
-                contexts: [
-                  {
-                    id: 'System',
-                    label: 'User Interface',
-                    type: 'Uwazi UI',
-                    values: { Search: 'Search' },
-                  },
-                  {
-                    id: 'contextID',
-                    label: 'Template',
-                    type: 'Entity',
-                    values: { title: 'Template 1' },
-                  },
-                ],
-              },
-            ],
-          ]);
-        });
-
-        it('should emit an updateSettings event', async () => {
-          const eventCandidate = mockCalls.find(([eventName]) => eventName === 'updateSettings');
-          expect(eventCandidate).toMatchObject([
-            'updateSettings',
-            TestEmitSources.currentTenant,
-            newSettings,
-          ]);
-        });
-
-        it('should emit a translationsInstallDone event', async () => {
-          const eventCandidate = mockCalls.find(
-            ([eventName]) => eventName === 'translationsInstallDone'
-          );
-          expect(eventCandidate).toMatchObject([
-            'translationsInstallDone',
-            TestEmitSources.currentTenant,
-          ]);
-        });
-      });
-
-      describe('when encountering an error', () => {
-        jest.spyOn(console, 'error').mockImplementation(() => true);
-        let response: request.Response;
-        let errorMock: jest.SpyInstance;
-
-        beforeAll(async () => {
-          testingTenants.changeCurrentTenant({});
-          DefaultTranslations.CONTENTS_DIRECTORY = `${I18N_SPECS_DIR}/test_contents/3`;
-          iosocket.emit.mockReset();
-
-          errorMock = jest
-            .spyOn(MongoSettingsDataSource.prototype, 'addLanguage')
-            .mockImplementation(() => {
-              throw new Error('error message');
+    describe('POST', () => {
+      describe('api/translations', () => {
+        it('should save the translation', async () => {
+          const response = await request(app)
+            .post('/api/translations')
+            .send({
+              locale: 'es',
+              contexts: [
+                {
+                  id: 'System',
+                  label: 'User Interface',
+                  type: 'Uwazi UI',
+                  values: { Search: 'Buscar' },
+                },
+              ],
             });
 
-          response = await request(app)
-            .post('/api/translations/languages')
-            .send([{ key: 'ja', label: 'Japanese' }]);
-        });
+          expect(
+            response.body.contexts.find((context: any) => context.id === 'System')
+          ).toMatchObject({
+            values: { Search: 'Buscar' },
+          });
 
-        afterAll(async () => {
-          errorMock.mockRestore();
-        });
-
-        it('should return a 500 as the error propagates through Express', async () => {
-          expect(response.status).toBe(500);
+          expect(iosocket.emit).toHaveBeenCalledWith(
+            'translationsChange',
+            TestEmitSources.currentTenant,
+            expect.objectContaining({
+              contexts: expect.arrayContaining([
+                expect.objectContaining({ values: { Search: 'Buscar' } }),
+              ]),
+              locale: 'es',
+            })
+          );
         });
       });
-    });
 
-    describe('api/translations/populate', () => {
-      it('should save the translations', async () => {
-        DefaultTranslations.CONTENTS_DIRECTORY = `${I18N_SPECS_DIR}/test_contents/2`;
+      describe('api/translations/languages (V2)', () => {
+        describe('when successful', () => {
+          let response: request.Response;
+          let mockCalls: any[];
 
-        const response = await request(app)
-          .post('/api/translations/populate')
-          .send({ locale: 'es' })
-          .expect(200);
-
-        expect(response.body).toMatchObject([
-          {
-            contexts: [
-              {
-                id: 'System',
-                label: 'User Interface',
-                type: 'Uwazi UI',
-                values: {
-                  Search: 'Buscar traducida',
-                },
-              },
-              {
-                id: 'contextID',
-                label: 'Template',
-                type: 'Entity',
-                values: { title: 'Plantilla 1' },
-              },
-            ],
-            locale: 'es',
-          },
-        ]);
-      });
-    });
-
-    describe('api/translations/setasdeafult', () => {
-      it('should update the setting', async () => {
-        const response = await request(app)
-          .post('/api/translations/setasdeafult')
-          .send({ key: 'es' });
-
-        expect(response.body).toMatchObject({
-          languages: [
-            {
-              key: 'en',
-              default: false,
-            },
-            {
-              key: 'es',
-              default: true,
-            },
-          ],
-        });
-        expect(iosocket.emit).toHaveBeenCalledWith(
-          'updateSettings',
-          TestEmitSources.currentTenant,
-          expect.objectContaining({
+          const newSettings = expect.objectContaining({
             languages: [
-              expect.objectContaining({ default: false, key: 'en', label: 'English' }),
-              expect.objectContaining({ default: true, key: 'es', label: 'Spanish' }),
+              expect.objectContaining({ key: 'en', label: 'English', default: true }),
+              expect.objectContaining({ key: 'es', label: 'Spanish', default: false }),
+              expect.objectContaining({ key: 'zh', label: 'Chinese' }),
+              expect.objectContaining({ key: 'ja', label: 'Japanese' }),
             ],
-          })
-        );
-      });
-    });
-
-    describe('api/<translations>/import', () => {
-      let csvLoaderMock: jest.SpyInstance;
-      let loadTranslationsMock: jest.Mock;
-
-      beforeEach(async () => {
-        csvLoaderMock = jest.spyOn(csvApi, 'CSVLoader');
-        csvLoaderMock.mockImplementation(() => {
-          const mockObj = {
-            loadTranslations: jest.fn(() => []),
-          };
-          loadTranslationsMock = mockObj.loadTranslations;
-          return mockObj;
-        });
-      });
-
-      afterAll(async () => {
-        csvLoaderMock.mockRestore();
-      });
-
-      it.each([
-        {
-          body: { context: 0 },
-          expectedError: 'type',
-          expectedPath: '/body/context',
-        },
-        {
-          req: { body: {}, file: { path: 'filepath' } },
-          expectedError: 'required',
-          expectedPath: '/body',
-        },
-      ])(
-        'should return a validation error on $expectedError error',
-        async ({ body, expectedError, expectedPath }) => {
-          const response = await request(app)
-            .post('/api/translations/import')
-            .send(body)
-            .expect(400);
-          expect(response.body.errors[0].keyword).toBe(expectedError);
-          expect(response.body.errors[0].instancePath).toBe(expectedPath);
-          expect(response.body.error).toBe('validation failed');
-        }
-      );
-
-      it('should load csv', async () => {
-        await request(app)
-          .post('/api/translations/import')
-          .send({ context: 'context' })
-          .expect(200);
-        expect(loadTranslationsMock).toHaveBeenCalledWith('filder/filename.ext', 'context');
-      });
-    });
-  });
-
-  describe('DELETE', () => {
-    describe('api/translations/languages (V2)', () => {
-      describe('when successful', () => {
-        let response: request.Response;
-
-        beforeAll(async () => {
-          testingTenants.changeCurrentTenant({});
-          iosocket.emit.mockReset();
-          await testingEnvironment.setFixtures({
-            settings: [
-              {
-                languages: [
-                  { key: 'en', label: 'English', default: true },
-                  { key: 'es', label: 'Spanish', default: false },
-                ],
-              },
-            ],
+            mapStartingPoint: [{ lon: 6, lat: 46 }],
           });
-          response = await request(app).delete('/api/translations/languages?key=es').send();
-          await waitForExpect(() => {
-            expect(
-              iosocket.emit.mock.calls.find(([eventName]) => eventName === 'translationsDeleteDone')
-            ).toBeDefined();
+
+          beforeAll(async () => {
+            await testingEnvironment.setFixtures(createFixtures());
+            applyBackendTenant();
+            DefaultTranslations.CONTENTS_DIRECTORY = `${I18N_SPECS_DIR}/test_contents/3`;
+
+            iosocket.emit.mockReset();
+            response = await request(app)
+              .post('/api/translations/languages')
+              .send([
+                { key: 'zh', label: 'Chinese' },
+                { key: 'ja', label: 'Japanese' },
+              ]);
+            mockCalls = iosocket.emit.mock.calls;
+            await waitForExpect(() => {
+              expect(mockCalls.length).toBe(4);
+            });
           });
-        });
 
-        it('should return a 204', async () => {
-          expect(response).toHaveStatus(204);
-        });
+          it('should return a 204', async () => {
+            expect(response.status).toBe(204);
+          });
 
-        it('should emit an updateSettings event', async () => {
-          await waitForExpect(() => {
-            const eventCandidate = iosocket.emit.mock.calls.find(
-              ([eventName]) => eventName === 'updateSettings'
+          it('should emit a translationsChange event for each new language', async () => {
+            const translationChangeEvents = mockCalls.filter(
+              ([eventName]) => eventName === 'translationsChange'
             );
+            expect(translationChangeEvents).toMatchObject([
+              [
+                'translationsChange',
+                TestEmitSources.currentTenant,
+                {
+                  locale: 'zh',
+                  contexts: expect.arrayContaining([
+                    {
+                      id: 'System',
+                      label: 'User Interface',
+                      type: 'Uwazi UI',
+                      values: {
+                        Search: 'Search',
+                      },
+                    },
+                    {
+                      id: 'contextID',
+                      label: 'Template',
+                      type: 'Entity',
+                      values: { title: 'Template 1' },
+                    },
+                  ]),
+                },
+              ],
+              [
+                'translationsChange',
+                TestEmitSources.currentTenant,
+                {
+                  locale: 'ja',
+                  contexts: expect.arrayContaining([
+                    {
+                      id: 'System',
+                      label: 'User Interface',
+                      type: 'Uwazi UI',
+                      values: { Search: 'Search' },
+                    },
+                    {
+                      id: 'contextID',
+                      label: 'Template',
+                      type: 'Entity',
+                      values: { title: 'Template 1' },
+                    },
+                  ]),
+                },
+              ],
+            ]);
+          });
+
+          it('should emit an updateSettings event', async () => {
+            const eventCandidate = mockCalls.find(([eventName]) => eventName === 'updateSettings');
             expect(eventCandidate).toMatchObject([
               'updateSettings',
               TestEmitSources.currentTenant,
-              {
-                languages: [
-                  {
-                    default: true,
-                    key: 'en',
-                    label: 'English',
+              newSettings,
+            ]);
+          });
+
+          it('should emit a translationsInstallDone event', async () => {
+            const eventCandidate = mockCalls.find(
+              ([eventName]) => eventName === 'translationsInstallDone'
+            );
+            expect(eventCandidate).toMatchObject([
+              'translationsInstallDone',
+              TestEmitSources.currentTenant,
+            ]);
+          });
+        });
+
+        describe('when encountering an error', () => {
+          jest.spyOn(console, 'error').mockImplementation(() => true);
+          let response: request.Response;
+          let errorMock: jest.SpyInstance;
+
+          beforeAll(async () => {
+            await testingEnvironment.setFixtures(createFixtures());
+            applyBackendTenant();
+            DefaultTranslations.CONTENTS_DIRECTORY = `${I18N_SPECS_DIR}/test_contents/3`;
+            iosocket.emit.mockReset();
+
+            errorMock = jest
+              .spyOn(MongoSettingsDataSource.prototype, 'addLanguage')
+              .mockImplementation(() => {
+                throw new Error('error message');
+              });
+
+            response = await request(app)
+              .post('/api/translations/languages')
+              .send([{ key: 'ja', label: 'Japanese' }]);
+          });
+
+          afterAll(() => {
+            errorMock.mockRestore();
+          });
+
+          it('should return a 500 as the error propagates through Express', async () => {
+            expect(response.status).toBe(500);
+          });
+        });
+      });
+
+      describe('api/translations/populate', () => {
+        it('should save the translations', async () => {
+          DefaultTranslations.CONTENTS_DIRECTORY = `${I18N_SPECS_DIR}/test_contents/2`;
+
+          const response = await request(app)
+            .post('/api/translations/populate')
+            .send({ locale: 'es' })
+            .expect(200);
+
+          expect(response.body).toMatchObject([
+            {
+              contexts: expect.arrayContaining([
+                {
+                  id: 'System',
+                  label: 'User Interface',
+                  type: 'Uwazi UI',
+                  values: {
+                    Search: 'Buscar traducida',
                   },
-                ],
-                mapStartingPoint: [{ lat: 46, lon: 6 }],
+                },
+                {
+                  id: 'contextID',
+                  label: 'Template',
+                  type: 'Entity',
+                  values: { title: 'Plantilla 1' },
+                },
+              ]),
+              locale: 'es',
+            },
+          ]);
+        });
+      });
+
+      describe('api/translations/setasdeafult', () => {
+        it('should update the setting', async () => {
+          const response = await request(app)
+            .post('/api/translations/setasdeafult')
+            .send({ key: 'es' });
+
+          expect(response.body).toMatchObject({
+            languages: [
+              {
+                key: 'en',
+                default: false,
               },
-            ]);
+              {
+                key: 'es',
+                default: true,
+              },
+            ],
           });
-        });
-
-        it('should emit a translationsDelete event', async () => {
-          await waitForExpect(() => {
-            const eventCandidate = iosocket.emit.mock.calls.find(
-              ([eventName]) => eventName === 'translationsDelete'
-            );
-            expect(eventCandidate).toMatchObject([
-              'translationsDelete',
-              TestEmitSources.currentTenant,
-              'es',
-            ]);
-          });
-        });
-
-        it('should emit a translationsDeleteDone event', async () => {
-          await waitForExpect(() => {
-            const eventCandidate = iosocket.emit.mock.calls.find(
-              ([eventName]) => eventName === 'translationsDeleteDone'
-            );
-            expect(eventCandidate).toMatchObject([
-              'translationsDeleteDone',
-              TestEmitSources.currentTenant,
-            ]);
-          });
+          expect(iosocket.emit).toHaveBeenCalledWith(
+            'updateSettings',
+            TestEmitSources.currentTenant,
+            expect.objectContaining({
+              languages: [
+                expect.objectContaining({ default: false, key: 'en', label: 'English' }),
+                expect.objectContaining({ default: true, key: 'es', label: 'Spanish' }),
+              ],
+            })
+          );
         });
       });
 
-      describe('when encountering an error', () => {
-        let response: request.Response;
-        let settingsDeleteLanguageMock: jest.SpyInstance;
+      describe('api/<translations>/import', () => {
+        let csvLoaderMock: jest.SpyInstance;
+        let loadTranslationsMock: jest.Mock;
 
-        beforeAll(async () => {
-          testingTenants.changeCurrentTenant({});
-          DefaultTranslations.CONTENTS_DIRECTORY = `${I18N_SPECS_DIR}/test_contents/3`;
-          iosocket.emit.mockReset();
+        beforeEach(() => {
+          csvLoaderMock = jest.spyOn(csvApi, 'CSVLoader');
+          csvLoaderMock.mockImplementation(() => {
+            const mockObj = {
+              loadTranslations: jest.fn(() => []),
+            };
+            loadTranslationsMock = mockObj.loadTranslations;
+            return mockObj;
+          });
+        });
 
-          settingsDeleteLanguageMock = jest
-            .spyOn(MongoSettingsDataSource.prototype, 'deleteLanguage')
-            .mockImplementation(() => {
-              throw new Error('error message');
+        afterAll(() => {
+          csvLoaderMock.mockRestore();
+        });
+
+        it.each([
+          {
+            body: { context: 0 },
+            expectedError: 'type',
+            expectedPath: '/body/context',
+          },
+          {
+            req: { body: {}, file: { path: 'filepath' } },
+            expectedError: 'required',
+            expectedPath: '/body',
+          },
+        ])(
+          'should return a validation error on $expectedError error',
+          async ({ body, expectedError, expectedPath }) => {
+            const response = await request(app)
+              .post('/api/translations/import')
+              .send(body)
+              .expect(400);
+            expect(response.body.errors[0].keyword).toBe(expectedError);
+            expect(response.body.errors[0].instancePath).toBe(expectedPath);
+            expect(response.body.error).toBe('validation failed');
+          }
+        );
+
+        it('should load csv', async () => {
+          await request(app)
+            .post('/api/translations/import')
+            .send({ context: 'context' })
+            .expect(200);
+          expect(loadTranslationsMock).toHaveBeenCalledWith('filder/filename.ext', 'context');
+        });
+      });
+    });
+
+    describe('DELETE', () => {
+      describe('api/translations/languages (V2)', () => {
+        describe('when successful', () => {
+          let response: request.Response;
+
+          beforeAll(async () => {
+            applyBackendTenant();
+            iosocket.emit.mockReset();
+            await testingEnvironment.setFixtures({
+              settings: [
+                {
+                  languages: [
+                    { key: 'en', label: 'English', default: true },
+                    { key: 'es', label: 'Spanish', default: false },
+                  ],
+                },
+              ],
             });
+            applyBackendTenant();
+            response = await request(app).delete('/api/translations/languages?key=es').send();
+            await waitForExpect(() => {
+              expect(
+                iosocket.emit.mock.calls.find(
+                  ([eventName]) => eventName === 'translationsDeleteDone'
+                )
+              ).toBeDefined();
+            });
+          });
 
-          response = await request(app).delete('/api/translations/languages?key=es').send();
+          it('should return a 204', async () => {
+            expect(response).toHaveStatus(204);
+          });
+
+          it('should emit an updateSettings event', async () => {
+            await waitForExpect(() => {
+              const eventCandidate = iosocket.emit.mock.calls.find(
+                ([eventName]) => eventName === 'updateSettings'
+              );
+              expect(eventCandidate).toMatchObject([
+                'updateSettings',
+                TestEmitSources.currentTenant,
+                {
+                  languages: [
+                    {
+                      default: true,
+                      key: 'en',
+                      label: 'English',
+                    },
+                  ],
+                  mapStartingPoint: [{ lat: 46, lon: 6 }],
+                },
+              ]);
+            });
+          });
+
+          it('should emit a translationsDelete event', async () => {
+            await waitForExpect(() => {
+              const eventCandidate = iosocket.emit.mock.calls.find(
+                ([eventName]) => eventName === 'translationsDelete'
+              );
+              expect(eventCandidate).toMatchObject([
+                'translationsDelete',
+                TestEmitSources.currentTenant,
+                'es',
+              ]);
+            });
+          });
+
+          it('should emit a translationsDeleteDone event', async () => {
+            await waitForExpect(() => {
+              const eventCandidate = iosocket.emit.mock.calls.find(
+                ([eventName]) => eventName === 'translationsDeleteDone'
+              );
+              expect(eventCandidate).toMatchObject([
+                'translationsDeleteDone',
+                TestEmitSources.currentTenant,
+              ]);
+            });
+          });
         });
 
-        afterAll(async () => {
-          settingsDeleteLanguageMock.mockRestore();
+        describe('when encountering an error', () => {
+          let response: request.Response;
+          let settingsDeleteLanguageMock: jest.SpyInstance;
+
+          beforeAll(async () => {
+            await testingEnvironment.setFixtures(createFixtures());
+            applyBackendTenant();
+            DefaultTranslations.CONTENTS_DIRECTORY = `${I18N_SPECS_DIR}/test_contents/3`;
+            iosocket.emit.mockReset();
+
+            settingsDeleteLanguageMock = jest
+              .spyOn(MongoSettingsDataSource.prototype, 'deleteLanguage')
+              .mockImplementation(() => {
+                throw new Error('error message');
+              });
+
+            response = await request(app).delete('/api/translations/languages?key=es').send();
+          });
+
+          afterAll(() => {
+            settingsDeleteLanguageMock.mockRestore();
+          });
+
+          it('should return a 500 as the error propagates through Express', async () => {
+            expect(response.status).toBe(500);
+          });
         });
 
-        it('should return a 500 as the error propagates through Express', async () => {
-          expect(response.status).toBe(500);
+        describe('when the language is still being installed', () => {
+          it('should return 409 and not start the delete operation', async () => {
+            applyBackendTenant();
+            await testingEnvironment.db
+              .getCollection('settings')!
+              .updateOne({ 'languages.key': 'es' }, { $set: { 'languages.$.installing': true } });
+
+            const response = await request(app).delete('/api/translations/languages?key=es').send();
+
+            expect(response.status).toBe(409);
+          });
         });
-      });
 
-      describe('when the language is still being installed', () => {
-        it('should return 409 and not start the delete operation', async () => {
-          testingTenants.changeCurrentTenant({});
-          await testingEnvironment.db
-            .getCollection('settings')!
-            .updateOne({ 'languages.key': 'es' }, { $set: { 'languages.$.installing': true } });
+        describe('when the language does not exist', () => {
+          it('should return 409', async () => {
+            applyBackendTenant();
+            const response = await request(app).delete('/api/translations/languages?key=fr').send();
 
-          const response = await request(app).delete('/api/translations/languages?key=es').send();
-
-          expect(response.status).toBe(409);
-        });
-      });
-
-      describe('when the language does not exist', () => {
-        it('should return 409', async () => {
-          testingTenants.changeCurrentTenant({});
-          const response = await request(app).delete('/api/translations/languages?key=fr').send();
-
-          expect(response.status).toBe(409);
+            expect(response.status).toBe(409);
+          });
         });
       });
     });

@@ -7,6 +7,7 @@ import React, {
 } from 'react';
 import { CollapsibleSectionHeader } from '#V2/Components/UI/CollapsibleSectionHeader.js';
 import { useExpandCollapseSignals } from '../hooks/useExpandCollapseSignals.js';
+import { useEnsureResolvedOnExpand } from '../hooks/useEnsureResolvedOnExpand.js';
 
 type TreeLine = 'only' | 'first' | 'middle' | 'last';
 
@@ -68,11 +69,12 @@ const RelationshipsTreeBranch = ({
   color,
   count,
   markerIds,
-  defaultExpanded = true,
+  defaultExpanded = false,
   children,
 }: RelationshipsTreeBranchProps) => {
   const [expanded, setExpanded] = useState(defaultExpanded);
   useExpandCollapseSignals(setExpanded, markerIds);
+  useEnsureResolvedOnExpand(expanded);
 
   const items = Children.toArray(children);
 
@@ -87,7 +89,7 @@ const RelationshipsTreeBranch = ({
         count={count}
       />
       {expanded && items.length > 0 && (
-        <div className="ml-[14px]">
+        <div className="ml-3.5">
           {items.map((child, index) => {
             const line = getTreeLine(index, items.length);
             if (

@@ -61,7 +61,7 @@ describe('EntityView', () => {
     const relationTypes = [{ _id: 1, name: 'against' }];
 
     beforeEach(() => {
-      spyOn(EntitiesAPI, 'get').and.callFake(value =>
+      spyOn(EntitiesAPI, 'get').and.callFake(async value =>
         Promise.resolve(entities.filter(e => e.sharedId === value.data.sharedId))
       );
       spyOn(RelationTypesAPI, 'get').and.callFake(async () => Promise.resolve(relationTypes));

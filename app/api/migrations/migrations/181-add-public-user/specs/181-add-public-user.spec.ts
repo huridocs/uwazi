@@ -1,5 +1,5 @@
 import { Db } from 'mongodb';
-import testingDB from '#api/utils/testing_db.js';
+import { testingDB } from '#api/utils/testing_db.js';
 import migration, { PUBLIC_USER_ID } from '../index.js';
 import { fixtures } from './fixtures.js';
 

@@ -2,7 +2,7 @@ import { Provider } from 'react-redux';
 import Immutable from 'immutable';
 import React from 'react';
 import { shallow } from 'enzyme';
-import configureStore, { MockStore, MockStoreCreator } from 'redux-mock-store';
+import configureMockStore, { MockStore, MockStoreCreator } from 'redux-mock-store';
 
 import { ViewerComponent } from '#app/Viewer/components/ViewerComponent.js';
 import { PDFView } from '#app/Viewer/PDFView.js';
@@ -10,7 +10,7 @@ import { EntityView } from '#app/Viewer/EntityView.js';
 import { Loader } from '#app/components/Elements/Loader.js';
 import { ErrorFallback } from '#V2/Components/ErrorHandling/index.js';
 
-const mockStoreCreator: MockStoreCreator<object> = configureStore<object>([]);
+const mockStoreCreator: MockStoreCreator<object> = configureMockStore<object>([]);
 const renderComponent = (store: MockStore<object>) =>
   shallow(
     <Provider store={store}>

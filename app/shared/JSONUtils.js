@@ -7,7 +7,7 @@ export default {
     Object.keys(object).forEach(index => {
       try {
         result[index] = JSON.parse(object[index]);
-      } catch (e) {
+      } catch (_) {
         result[index] = object[index];
       }
     });

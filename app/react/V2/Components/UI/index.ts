@@ -32,8 +32,15 @@ export { PortalTooltip } from './PortalTooltip.js';
 export { ExpandableText } from './ExpandableText.js';
 export { FadeTruncate } from './FadeTruncate.js';
 export { AlertBanner } from './AlertBanner.js';
+export { CookieConsentBanner } from './CookieConsentBanner.js';
 export { StatusBadge } from './StatusBadge.js';
 export { WarmSelect } from './WarmSelect.js';
+export { LanguageSelect } from './LanguageSelect.js';
+export type {
+  LanguageSelectOption,
+  LanguageSelectProps,
+  LanguageSelectAppearance,
+} from './LanguageSelect.js';
 export { CopyValueInput } from './CopyValueInput.js';
 export { Paginator } from './Paginator.js';
 export { PaginationState } from './PaginationState.js';

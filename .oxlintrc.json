@@ -1,0 +1,323 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": ["eslint", "typescript", "oxc", "react", "import", "jsx-a11y", "jest", "node"],
+  "jsPlugins": [
+    {
+      "name": "local",
+      "specifier": "./oxlint-plugins/require-js-extension.cjs"
+    },
+    "eslint-plugin-cypress",
+    "eslint-plugin-storybook"
+  ],
+  "categories": {
+    "correctness": "error",
+    "suspicious": "warn",
+    "perf": "warn"
+  },
+  "rules": {
+    "import/no-named-as-default": "error",
+    "import/no-default-export": "warn",
+    "eslint/prefer-promise-reject-errors": "warn",
+    "eslint/prefer-const": "warn",
+    "eslint/no-param-reassign": "warn",
+    "eslint/array-callback-return": "warn",
+    "eslint/no-empty": "warn",
+    "import/no-duplicates": "warn",
+    "import/no-cycle": "warn",
+    "import/named": "warn",
+    "import/no-mutable-exports": "warn",
+    "react/no-unescaped-entities": "warn",
+    "react/jsx-no-target-blank": "warn",
+    "react/button-has-type": "warn",
+    "jsx-a11y/html-has-lang": "warn",
+    "jsx-a11y/iframe-has-title": "warn",
+    "jsx-a11y/tabindex-no-positive": "warn",
+    "eslint/no-unused-vars": [
+      "error",
+      {
+        "args": "after-used",
+        "argsIgnorePattern": "^_",
+        "caughtErrorsIgnorePattern": "^_",
+        "ignoreRestSiblings": true
+      }
+    ],
+    "eslint/no-shadow": "error",
+    "typescript/no-floating-promises": "error",
+    "typescript/no-misused-promises": ["error", { "checksVoidReturn": false }],
+    "typescript/promise-function-async": "error",
+    "react/rules-of-hooks": "error",
+    "eslint/no-use-before-define": "error",
+    "react/jsx-no-useless-fragment": ["error", { "allowExpressions": true }],
+    "react/no-unknown-property": [
+      "error",
+      {
+        "ignore": [
+          "no-translate",
+          "date-rangepicker",
+          "datepicker",
+          "inline-datepicker",
+          "datepicker-autohide",
+          "datepicker-buttons",
+          "datepicker-autoselect-today"
+        ]
+      }
+    ],
+    "import/no-named-as-default-member": "warn",
+    "jsx-a11y/control-has-associated-label": "warn",
+    "jsx-a11y/no-noninteractive-element-interactions": "warn",
+    "react/exhaustive-deps": "warn",
+    "react/no-array-index-key": "warn",
+    "eslint/class-methods-use-this": "warn",
+    "typescript/consistent-return": "warn",
+    "eslint/default-case": "error",
+    "eslint/default-case-last": "error",
+    "eslint/default-param-last": "error",
+    "typescript/dot-notation": "error",
+    "eslint/func-names": "warn",
+    "node/global-require": "warn",
+    "eslint/grouped-accessor-pairs": "error",
+    "eslint/guard-for-in": "error",
+    "import/exports-last": "warn",
+    "import/first": "warn",
+    "import/newline-after-import": "warn",
+    "import/no-amd": "error",
+    "import/no-named-default": "error",
+    "import/no-webpack-loader-syntax": "error",
+    "eslint/max-classes-per-file": "warn",
+    "eslint/max-lines": "warn",
+    "eslint/max-params": "warn",
+    "eslint/max-statements": "warn",
+    "eslint/no-alert": "warn",
+    "eslint/no-array-constructor": "error",
+    "eslint/no-bitwise": "error",
+    "eslint/no-case-declarations": "error",
+    "eslint/no-console": "warn",
+    "eslint/no-constructor-return": "error",
+    "eslint/no-continue": "error",
+    "eslint/no-else-return": "error",
+    "eslint/no-extra-label": "error",
+    "eslint/no-fallthrough": "error",
+    "eslint/no-inner-declarations": "error",
+    "eslint/no-label-var": "error",
+    "eslint/no-labels": "error",
+    "eslint/no-lone-blocks": "error",
+    "eslint/no-lonely-if": "error",
+    "eslint/no-loop-func": "error",
+    "eslint/no-multi-assign": "error",
+    "eslint/no-multi-str": "error",
+    "eslint/no-nested-ternary": "error",
+    "eslint/no-new-func": "error",
+    "node/no-new-require": "error",
+    "eslint/no-new-wrappers": "error",
+    "eslint/no-plusplus": "error",
+    "eslint/no-promise-executor-return": "error",
+    "eslint/no-proto": "error",
+    "eslint/no-regex-spaces": "error",
+    "eslint/no-restricted-exports": "warn",
+    "eslint/no-restricted-globals": "error",
+    "eslint/no-restricted-properties": "error",
+    "eslint/no-return-assign": "warn",
+    "eslint/no-script-url": "error",
+    "eslint/no-self-compare": "error",
+    "eslint/no-sequences": "error",
+    "eslint/no-template-curly-in-string": "error",
+    "eslint/no-throw-literal": "error",
+    "eslint/no-unreachable-loop": "error",
+    "eslint/no-useless-computed-key": "error",
+    "eslint/no-useless-return": "error",
+    "eslint/no-var": "error",
+    "eslint/object-shorthand": "warn",
+    "eslint/operator-assignment": "error",
+    "eslint/prefer-arrow-callback": "warn",
+    "eslint/prefer-destructuring": "warn",
+    "eslint/prefer-exponentiation-operator": "error",
+    "eslint/prefer-numeric-literals": "error",
+    "eslint/prefer-object-spread": "error",
+    "eslint/prefer-regex-literals": "error",
+    "eslint/prefer-rest-params": "warn",
+    "eslint/prefer-spread": "error",
+    "eslint/prefer-template": "warn",
+    "eslint/radix": "error",
+    "react/jsx-boolean-value": "warn",
+    "react/jsx-curly-brace-presence": "warn",
+    "react/jsx-fragments": "error",
+    "react/jsx-pascal-case": "warn",
+    "react/jsx-props-no-spreading": "warn",
+    "react/no-danger": "warn",
+    "react/no-multi-comp": "warn",
+    "react/no-redundant-should-component-update": "error",
+    "react/prefer-es6-class": "error",
+    "react/require-render-return": "error",
+    "react/state-in-constructor": "error",
+    "eslint/symbol-description": "error",
+    "eslint/vars-on-top": "error",
+    "eslint/yoda": "error",
+
+    // ─────────────────────────────────────────────────────────────
+    // DISABLED rules — consolidated here for readability.
+    // ─────────────────────────────────────────────────────────────
+
+    // Off in ESLint already (kept off in oxlint to match)
+    // ─────────────────────────────────────────────────────────────
+    "jsx-a11y/click-events-have-key-events": "off",
+    "jsx-a11y/no-static-element-interactions": "off",
+    "jsx-a11y/mouse-events-have-key-events": "off",
+    "jsx-a11y/label-has-associated-control": "off",
+    "eslint/no-underscore-dangle": "off",
+    // ─────────────────────────────────────────────────────────────
+
+    // Warnings for further review (present in ESLint at warn, but noisy in this codebase)
+    // ─────────────────────────────────────────────────────────────
+    // ─────────────────────────────────────────────────────────────
+
+    // New in oxlint (no ESLint equivalent) — set off for now
+    // Revisit in the future
+    // ─────────────────────────────────────────────────────────────
+    "jsx-a11y/no-noninteractive-element-to-interactive-role": "off",
+    "react/no-did-update-set-state": "off",
+    "jsx-a11y/no-autofocus": "off",
+    "react/iframe-missing-sandbox": "off",
+    "react/exhaustive-effect-dependencies": "off",
+    "react/no-object-type-as-default-prop": "off",
+    "react/no-deriving-state-in-effects": "off",
+    "react/memo-dependencies": "off",
+    "react/hooks": "off",
+    "react/capitalized-calls": "off",
+    "oxc/no-async-endpoint-handlers": "off",
+    "oxc/no-accumulating-spread": "off",
+    "oxc/no-map-spread": "off",
+    "oxc/no-this-in-exported-function": "off",
+    "eslint/no-unmodified-loop-condition": "off",
+    "import/namespace": "off",
+    "typescript/no-non-null-asserted-optional-chain": "off",
+    "typescript/no-wrapper-object-types": "off",
+    "typescript/no-useless-empty-export": "off",
+    "typescript/triple-slash-reference": "off",
+    "typescript/no-unnecessary-type-constraint": "off",
+    // Type-aware rules (oxlint-only, no ESLint equivalent) — set off for now
+    // Fired under `yarn lint --type-aware`; revisit in the future
+    "typescript/await-thenable": "off",
+    "typescript/unbound-method": "off",
+    "typescript/no-unsafe-type-assertion": "off",
+    "typescript/no-unnecessary-type-assertion": "off",
+    "typescript/no-unnecessary-type-conversion": "off",
+    "typescript/no-unnecessary-type-arguments": "off",
+    "typescript/no-duplicate-type-constituents": "off",
+    "typescript/no-redundant-type-constituents": "off",
+    "typescript/no-unnecessary-type-parameters": "off",
+    "typescript/no-base-to-string": "off",
+    "typescript/no-unsafe-enum-comparison": "off",
+    "typescript/restrict-template-expressions": "off",
+    "typescript/no-misused-spread": "off",
+    "typescript/no-unnecessary-boolean-literal-compare": "off",
+    "typescript/no-useless-default-assignment": "off",
+    "typescript/require-array-sort-compare": "off",
+    "typescript/no-unnecessary-template-expression": "off",
+    "eslint/no-unassigned-vars": "off",
+    "eslint/preserve-caught-error": "off",
+    "react/set-state-in-effect": "off",
+    "react/refs": "off",
+    "react/immutability": "off",
+    "react/incompatible-library": "off",
+    "react/use-memo": "off",
+    "react/void-use-memo": "off",
+    "react/static-components": "off",
+    "react/preserve-manual-memoization": "off",
+    "react/error-boundaries": "off",
+    "react/purity": "off",
+    "react/no-direct-mutation-state": "off",
+    "react/no-did-mount-set-state": "off",
+    "react/globals": "off",
+    "jest/no-conditional-expect": "off",
+    "jest/expect-expect": "off",
+    "jest/valid-expect": "off",
+    "jest/require-to-throw-message": "off",
+    "jest/valid-title": "off",
+    "jest/prefer-snapshot-hint": "off",
+    "jest/no-standalone-expect": "off",
+    "jest/no-disabled-tests": "off",
+    "jest/valid-expect-in-promise": "off",
+    "jest/no-export": "off",
+    "jest/no-commented-out-tests": "off",
+    "typescript/prefer-as-const": "off",
+    "typescript/no-extraneous-class": "off",
+    "jsx-a11y/prefer-tag-over-role": "off",
+    "import/no-unassigned-import": "off"
+    // -------------------------
+  },
+  "env": {
+    "browser": true,
+    "node": true,
+    "jest": true,
+    "jasmine": true
+  },
+  "overrides": [
+    {
+      "files": ["app/**/*.{ts,tsx,js,jsx}"],
+      "excludeFiles": [
+        "app/api/core/infrastructure/factories/**",
+        "app/api/core/infrastructure/mongodb/user/**",
+        "app/api/core/infrastructure/postgresql/user/**"
+      ],
+      "rules": {
+        "eslint/no-restricted-imports": [
+          "error",
+          {
+            "paths": [
+              {
+                "name": "fs",
+                "message": "Please use { storage } from api/files"
+              },
+              {
+                "name": "fs/promises",
+                "message": "Please use { storage } from api/files"
+              }
+            ],
+            "patterns": [
+              {
+                "group": ["**/infrastructure/*/user/*UsersDAO*", "**/factories/UsersDAOFactory*"],
+                "message": "Users DAOs are private. Use UsersDirectory (any internal module), UsersQueryService (the users settings screen) or UsersDataSource (writes) — see plans/users-refactor-00-decisions.md#d4."
+              },
+              {
+                "group": ["**/infrastructure/*/user/*UserGroupsDAO*"],
+                "message": "User groups DAOs are private, and now expose generic primitives with no guard of their own. Use UserGroupsDirectory (any internal module), UserGroupsQueryService or UserGroupsDataSource (writes)"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "files": ["app/api/**/*.ts"],
+      "rules": {
+        "local/require-js-extension": "error"
+      }
+    },
+    {
+      "files": ["cypress/**/*.{js,ts,tsx}"],
+      "rules": {
+        "cypress/no-assigning-return-values": "error",
+        "cypress/no-unnecessary-waiting": "error",
+        "cypress/no-async-tests": "error",
+        "cypress/unsafe-to-chain-command": "error"
+      }
+    },
+    {
+      "files": ["**/*.stories.{ts,tsx,js,jsx}"],
+      "rules": {
+        "react/rules-of-hooks": "off",
+        "storybook/await-interactions": "error",
+        "storybook/context-in-play-function": "error",
+        "storybook/default-exports": "error",
+        "storybook/hierarchy-separator": "warn",
+        "storybook/no-redundant-story-name": "warn",
+        "storybook/no-renderer-packages": "error",
+        "storybook/prefer-pascal-case": "warn",
+        "storybook/story-exports": "error",
+        "storybook/use-storybook-expect": "error",
+        "storybook/use-storybook-testing-library": "error",
+        "storybook/no-uninstalled-addons": "error"
+      }
+    }
+  ]
+}

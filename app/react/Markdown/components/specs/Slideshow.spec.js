@@ -9,8 +9,8 @@ describe('Link', () => {
   it('should render a slideshow', () => {
     const component = shallow(
       <Slideshow>
-        <img src="img1.jpg" />
-        <img src="img2.jpg" />
+        <img src="img1.jpg" alt="" />
+        <img src="img2.jpg" alt="" />
       </Slideshow>
     );
     expect(component).toMatchSnapshot();

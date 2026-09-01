@@ -1,6 +1,6 @@
 import { Db } from 'mongodb';
 import { appContext } from '#api/utils/AppContext.js';
-import testingDB from '#api/utils/testing_db.js';
+import { testingDB } from '#api/utils/testing_db.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { config } from '#api/config.js';
 import { tenants } from '../tenantContext.js';
