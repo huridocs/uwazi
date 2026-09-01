@@ -4,11 +4,13 @@ import { applySettingsDefaults } from './settingsDefaults.js';
 import { getPublicSettingsPayload, pickAdminFields } from './publicSettings.js';
 import { toReadableMenuItems } from './menuItems.js';
 import { toReadableFilters } from './libraryFilters.js';
+import { toReadableLanguages } from './settingsLanguages.js';
 
 const presentSettings = (stored: Settings): Settings => ({
   ...stored,
   ...(stored.links ? { links: toReadableMenuItems(stored.links) } : {}),
   ...(stored.filters ? { filters: toReadableFilters(stored.filters) } : {}),
+  ...(stored.languages ? { languages: toReadableLanguages(stored.languages) } : {}),
 });
 
 class SettingsQueryService {

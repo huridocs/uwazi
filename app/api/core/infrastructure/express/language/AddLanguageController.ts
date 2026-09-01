@@ -10,9 +10,6 @@ const LanguageInputSchema = z.array(
   z.object({
     key: z.string(),
     label: z.string(),
-    rtl: z.boolean().optional(),
-    ISO639_3: z.string().optional(),
-    localized_label: z.string().optional(),
   })
 );
 
@@ -25,17 +22,7 @@ class AddLanguageController extends AbstractController<RequestDto> {
     try {
       const languages = LanguageInputSchema.parse(this.request?.body) as LanguageSchema[];
       const addedLanguages = await AddLanguageUseCaseFactory.default().execute({ languages });
-
-      const query = TranslationsQueryServiceFactory.default();
-      const translationPayloads = await Promise.all(
-        addedLanguages.map(async language => query.getLegacy({ locale: language.key }))
-      );
-      translationPayloads.forEach(([newTranslations]) => {
-        this.request.sockets.emitToCurrentTenant('translationsChange', newTranslations);
-      });
-      const newSettings = await SettingsQueryServiceFactory.default().getPublic();
-      this.request.sockets.emitToCurrentTenant('updateSettings', newSettings);
-      // translationsInstallDone is emitted by CloneLanguageEntitiesJob
+      await this.emitLanguageAdded(addedLanguages);
 
       logger.info('Add language executed successfully', {
         namespace: 'Add_Language',
@@ -58,6 +45,19 @@ class AddLanguageController extends AbstractController<RequestDto> {
 
       throw error;
     }
+  }
+
+  private async emitLanguageAdded(addedLanguages: LanguageSchema[]): Promise<void> {
+    const query = TranslationsQueryServiceFactory.default();
+    const translationPayloads = await Promise.all(
+      addedLanguages.map(async language => query.getLegacy({ locale: language.key }))
+    );
+    translationPayloads.forEach(([newTranslations]) => {
+      this.request.sockets.emitToCurrentTenant('translationsChange', newTranslations);
+    });
+    const newSettings = await SettingsQueryServiceFactory.default().getPublic();
+    this.request.sockets.emitToCurrentTenant('updateSettings', newSettings);
+    // translationsInstallDone is emitted by CloneLanguageEntitiesJob
   }
 }
 

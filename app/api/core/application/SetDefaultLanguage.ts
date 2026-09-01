@@ -5,6 +5,7 @@ import { Settings } from '#shared/types/settingsType.js';
 import { SettingsDataSource } from './contracts/SettingsDataSource.js';
 import { applySettingsDefaults } from './settings/settingsDefaults.js';
 import { pickAdminFields } from './settings/publicSettings.js';
+import { toPersistableLanguages } from './settings/settingsLanguages.js';
 
 const InputSchema = z.object({
   key: z.string().min(1),
@@ -26,10 +27,12 @@ class SetDefaultLanguageUseCase extends AbstractUseCase<Input, Output, Deps> {
   async execute(raw: Input): Promise<Output> {
     const { key } = SetDefaultLanguageUseCase.InputSchema.parse(raw);
     const current = await this.deps.settingsDS.get();
-    const languages = (current.languages || []).map(language => ({
-      ...language,
-      default: language.key === key,
-    }));
+    const languages = toPersistableLanguages(
+      (current.languages || []).map(language => ({
+        ...language,
+        default: language.key === key,
+      }))
+    );
 
     const saved = await this.transactionManager.run(async () =>
       this.deps.settingsDS.patch({ languages })

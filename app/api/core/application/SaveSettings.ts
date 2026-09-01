@@ -8,6 +8,7 @@ import { applySettingsDefaults } from './settings/settingsDefaults.js';
 import { pickAdminFields } from './settings/publicSettings.js';
 import { toPersistableFilters } from './settings/libraryFilters.js';
 import { toPersistableMenuItems } from './settings/menuItems.js';
+import { toPersistableLanguages } from './settings/settingsLanguages.js';
 import { SaveSettingsInputSchema } from './settings/saveSettingsInput.js';
 import { TemplateFacade } from '#api/core/infrastructure/facades/TemplateFacade.js';
 
@@ -33,6 +34,7 @@ class SaveSettingsUseCase extends AbstractUseCase<Input, Output, Deps> {
         ? { links: toPersistableMenuItems(incoming.links, () => this.idGenerator.generate()) }
         : {}),
       ...(incoming.filters ? { filters: toPersistableFilters(incoming.filters) } : {}),
+      ...(incoming.languages ? { languages: toPersistableLanguages(incoming.languages) } : {}),
     };
 
     const saved = await this.transactionManager.run(async () => {

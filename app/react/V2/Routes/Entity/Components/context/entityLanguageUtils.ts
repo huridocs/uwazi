@@ -1,5 +1,4 @@
 import type { MutableRefObject } from 'react';
-import type { LanguagesListSchema } from '#shared/types/commonTypes.js';
 import { availableLanguages } from '#shared/language/index.js';
 import { FetchResponseError } from '#shared/JSONRequest.js';
 import type { Entity, FileType } from '#V2/api/entities/types.js';
@@ -11,13 +10,8 @@ import { entityLoaderCache } from '../../EntityLoaderCache.js';
 
 type ApplyLanguageResult = 'applied' | 'stale' | 'failed';
 
-const resolveRtl = (languageKey: string, languages: LanguagesListSchema): boolean => {
-  const fromSettings = languages.find(language => language.key === languageKey)?.rtl;
-  if (typeof fromSettings === 'boolean') {
-    return fromSettings;
-  }
-  return Boolean(availableLanguages.find(language => language.key === languageKey)?.rtl);
-};
+const resolveRtl = (languageKey: string): boolean =>
+  Boolean(availableLanguages.find(language => language.key === languageKey)?.rtl);
 
 type PlaintextQuery = {
   isRaw: boolean;

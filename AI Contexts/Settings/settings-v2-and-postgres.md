@@ -48,19 +48,19 @@ Developer notes, **verbatim**. Interpretation, corrections, and TODOs follow in 
 
 ### Developer questions (raw)
 
-- Why ajv?  I thought there is a very clear directive to use zod and where in the path (useCases, controllers, etc.) should they reside upon.  This should be part of the Settings v2 migration, and a big part of it.
-- I think we need a more "pure" approach to this.  I understand settings is sometimes orchestrating things from other logics, but I think we need to be a little more organized.  `ensureLinkIds` really doesn't seem like a "settings" problem.  A helper, sure.  A util? See how other modules are doing this, but polluting the saveSettingsUseCase with an ensureLinkIds seems like the wrong thing to do.  Please argue against this if you think it's the right path, I don't want praise of "uh, you are very clever", I want your opinion on why this should or should not be there.
-- This last point is even more critical for the template save orchestration upon changing of the newNameGeneration.  Surely this is a purely TEMPLATE issue, that is templates the one that should know how to do, not settings.  Maybe we create a tech debt for this (don't create any issues for me, I'll do that), but this seems like the wrong thing to do when saving settings.  Maybe I'm wrong.
-- Same point 2 for "links" (which is also a name I think is terribly picked... these are menu items in the navbar, the fact that they are links is a secondary side effect of what is stored as value... these are menu items!  The routes probably would need to stay, but the internal naming not necessarily)
+- Why ajv? I thought there is a very clear directive to use zod and where in the path (useCases, controllers, etc.) should they reside upon. This should be part of the Settings v2 migration, and a big part of it.
+- I think we need a more "pure" approach to this. I understand settings is sometimes orchestrating things from other logics, but I think we need to be a little more organized. `ensureLinkIds` really doesn't seem like a "settings" problem. A helper, sure. A util? See how other modules are doing this, but polluting the saveSettingsUseCase with an ensureLinkIds seems like the wrong thing to do. Please argue against this if you think it's the right path, I don't want praise of "uh, you are very clever", I want your opinion on why this should or should not be there.
+- This last point is even more critical for the template save orchestration upon changing of the newNameGeneration. Surely this is a purely TEMPLATE issue, that is templates the one that should know how to do, not settings. Maybe we create a tech debt for this (don't create any issues for me, I'll do that), but this seems like the wrong thing to do when saving settings. Maybe I'm wrong.
+- Same point 2 for "links" (which is also a name I think is terribly picked... these are menu items in the navbar, the fact that they are links is a secondary side effect of what is stored as value... these are menu items! The routes probably would need to stay, but the internal naming not necessarily)
 - Same for sync... we probably want a separate sync module altogether... we are not doing this right now, but to keep in mind
-- We are moving to a safe-first type of approach.  Can we make it here so that omitHiddenSettingsFields (which I don't really like the name... they are not hidden, lets go with omitPrivate ? What do you think) is a de-facto applied and not a thing you need to remember everytime to exclude?  For example, the `patch` flow you introduced, after upate, returns a raw .get with all the data, including passwords, so the SaveSettingsUseCase actually returns all that to the client.  Do we want that? Maybe yes, I'm leaning towards "probably not".  That's why you are having to call a return with omitHiddenSettings nested with applyDefaults in so many places.  This seems like a smell and not ideal that the developer needs to remember to do all these things.  UpdateFiltersNameUseCase is apparently also returning everything?
-- The filterTree (why tree?) has remove and rename.  How are append, or add or create paths handled?
-- getForHttp is also a name I don't like... why http is different? Not because of the protocol, but because of who consumes it.  So getPublic, getClientVisible, getPermitted, getAllowed?  Lets align. Ask for this with your suggestions
-- Here's maybe a more critical thing: What is the restrictions applied to UseCases inside the Agents.md file?  Can we simply use UseCases like you are doing in the TemplateMutationController? Or is that a violation of instantiating UseCases?  And that one appears like a really glaring security problem: that updateSettings is being broadcasted to all connected clients, but this includes ALL the settings!  Is this reading correct? Maybe that was already the case, but I think that mongo's defaults came to the rescue... here they are not.  Maybe we need to do a much more indepth search into how we are dealing with returns of this settings? Maybe that is the problem of wildly using UseCases outside of their scoped intended use case?
+- We are moving to a safe-first type of approach. Can we make it here so that omitHiddenSettingsFields (which I don't really like the name... they are not hidden, lets go with omitPrivate ? What do you think) is a de-facto applied and not a thing you need to remember everytime to exclude? For example, the `patch` flow you introduced, after upate, returns a raw .get with all the data, including passwords, so the SaveSettingsUseCase actually returns all that to the client. Do we want that? Maybe yes, I'm leaning towards "probably not". That's why you are having to call a return with omitHiddenSettings nested with applyDefaults in so many places. This seems like a smell and not ideal that the developer needs to remember to do all these things. UpdateFiltersNameUseCase is apparently also returning everything?
+- The filterTree (why tree?) has remove and rename. How are append, or add or create paths handled?
+- getForHttp is also a name I don't like... why http is different? Not because of the protocol, but because of who consumes it. So getPublic, getClientVisible, getPermitted, getAllowed? Lets align. Ask for this with your suggestions
+- Here's maybe a more critical thing: What is the restrictions applied to UseCases inside the Agents.md file? Can we simply use UseCases like you are doing in the TemplateMutationController? Or is that a violation of instantiating UseCases? And that one appears like a really glaring security problem: that updateSettings is being broadcasted to all connected clients, but this includes ALL the settings! Is this reading correct? Maybe that was already the case, but I think that mongo's defaults came to the rescue... here they are not. Maybe we need to do a much more indepth search into how we are dealing with returns of this settings? Maybe that is the problem of wildly using UseCases outside of their scoped intended use case?
 - Same problem with DeleteTemplateController
 - What is this TM resolver in SettingsDataSourceFactory???
-- On TaskService.ts (IXTaskService you getDefaultLanguage then .key, but on another location you have a dedicated method detDefaultLanguageKey, do we need both approaches? Can we be consistent?  Maybe we don't need that extra method and extract the key like here on other places? Lets be consistent and tidy up all these nonsense
-- We store in Settings things like the custom CSS and JavaScript of the collection.  I can see places like the tocService that is getting the settings to extract { features }, but for that it needs to load ALL the custom CSS that can be text of multiple Kbs. Same for the languageMiddleware.  Not limited to these two scenarios, just examples. I think this is a problem we should try to address on this development and, at least those two and Sync, we should ONLY returned when specifically asked for, and not excluded only when someone remembers to exclude them.  Obviously this needs to survive partial updates, and I don't know how PG is going to work with that, mongo more or less does it natively
+- On TaskService.ts (IXTaskService you getDefaultLanguage then .key, but on another location you have a dedicated method detDefaultLanguageKey, do we need both approaches? Can we be consistent? Maybe we don't need that extra method and extract the key like here on other places? Lets be consistent and tidy up all these nonsense
+- We store in Settings things like the custom CSS and JavaScript of the collection. I can see places like the tocService that is getting the settings to extract { features }, but for that it needs to load ALL the custom CSS that can be text of multiple Kbs. Same for the languageMiddleware. Not limited to these two scenarios, just examples. I think this is a problem we should try to address on this development and, at least those two and Sync, we should ONLY returned when specifically asked for, and not excluded only when someone remembers to exclude them. Obviously this needs to survive partial updates, and I don't know how PG is going to work with that, mongo more or less does it natively
 
 ### Interpretation
 
@@ -71,7 +71,7 @@ The migration is not “move `settings.save` into a use case.” It is: stop hav
 #### What is more important (priority)
 
 1. **Safe-by-default outputs (sockets + use-case return types).** Highest. This is the only item that can leak credentials/config to every connected client. It is also the smell behind `omit* + applyDefaults` copied through Save / SetDefaultLanguage / filter UCs.
-2. **Opt-in reads (projections), not opt-out.** Highest for *this* development, not a later polish. `languageMiddleware` and `tocService` loading `customCSS` / `customJS` (multi-KB) to get languages or `features` is the frankenstein made expensive. Sync passwords on the same document is the same rule: **absent unless asked**. This must be designed on the **port** now, or Postgres `SELECT document` will clone the problem.
+2. **Opt-in reads (projections), not opt-out.** Highest for _this_ development, not a later polish. `languageMiddleware` and `tocService` loading `customCSS` / `customJS` (multi-KB) to get languages or `features` is the frankenstein made expensive. Sync passwords on the same document is the same rule: **absent unless asked**. This must be designed on the **port** now, or Postgres `SELECT document` will clone the problem.
 3. **Zod at the use-case boundary** (and controller DTO only if HTTP needs a different shape). Explicit V2 rule in AGENTS.md (`Input` may include Zod, e.g. `MultiUpdateEntity.InputSchema`). AJV was cargo-culted from V1 `validateSettings` / `emitSchemaTypes`. This is a large, intentional part of Settings V2, not a follow-up.
 4. **Concept boundaries and names** (navbar menu items, filters, sync-as-a-later-module). Internal naming can move without changing `/api/settings/links`. Sync extraction is **not** this slice; the read model must still treat `sync` as a dedicated slice so we do not keep dragging it through QueryService.
 5. **`newNameGeneration` → templates.** Real layering bug (`SaveSettings` → `TemplateFacade` → v1 templates). Acceptable as **named tech debt** if templates are not opened in this slice; not acceptable as “Settings knows how to rewrite every template.”
@@ -81,26 +81,26 @@ The migration is not “move `settings.save` into a use case.” It is: stop hav
 
 #### Wrong or incomplete assumptions
 
-- **“Mongoose defaults came to the rescue on `updateSettings`.”** Only for fields that were `select: false`: `sync` (passwords), `evidencesVault`, `publicFormDestination`. **`mailerConfig` (SMTP secrets), `contactEmail`, `customCSS`, `customJS`, `features` were already on V1 `settings.save()` / `updateFilterName` returns** and were already socketed from template mutate/delete. Native `findOne` made the *select:false* trio easier to leak if someone returns `SettingsDataSource.get()` / `patch()` raw. It did **not** newly invent broadcasting mailer/CSS. The template controllers are still wrong relative to `SaveSettingsController`, which sockets **`getPublicSettingsPayload`**.
+- **“Mongoose defaults came to the rescue on `updateSettings`.”** Only for fields that were `select: false`: `sync` (passwords), `evidencesVault`, `publicFormDestination`. **`mailerConfig` (SMTP secrets), `contactEmail`, `customCSS`, `customJS`, `features` were already on V1 `settings.save()` / `updateFilterName` returns** and were already socketed from template mutate/delete. Native `findOne` made the _select:false_ trio easier to leak if someone returns `SettingsDataSource.get()` / `patch()` raw. It did **not** newly invent broadcasting mailer/CSS. The template controllers are still wrong relative to `SaveSettingsController`, which sockets **`getPublicSettingsPayload`**.
 - **`SaveSettingsUseCase` “returns all that to the client” including sync passwords.** As written, `execute` returns `omitHiddenSettingsFields(applySettingsDefaults(saved))`, so **`sync` / `evidencesVault` / `publicFormDestination` are stripped** before HTTP POST JSON. `patch()` itself **does** return the raw document (passwords included). The bug is **layering**: persistence `get()` is a full row; delivery was supposed to remember to omit. `UpdateFilterName` returns that SaveSettings output — **not** sync passwords, **yes** mailerConfig, CSS, JS, features, languages, filters, …
-- **`TemplateMutationController` using `UpdateFilterNameUseCaseFactory.default().execute()` is a UseCase instantiation violation.** It is **not**. AGENTS.md: factories are the wiring; ExecutionContext is **only** for factories; controllers are delivery adapters and **should** call `Factory.default()`. The violation would be `new UpdateFilterNameUseCase(...)` or `ExecutionContext.transactionManager` inside the controller. The *real* smell is **using a command whose output is “the settings document” as a socket payload** from a **template** flow — wrong output type for that consumer, not a forbidden Factory call.
+- **`TemplateMutationController` using `UpdateFilterNameUseCaseFactory.default().execute()` is a UseCase instantiation violation.** It is **not**. AGENTS.md: factories are the wiring; ExecutionContext is **only** for factories; controllers are delivery adapters and **should** call `Factory.default()`. The violation would be `new UpdateFilterNameUseCase(...)` or `ExecutionContext.transactionManager` inside the controller. The _real_ smell is **using a command whose output is “the settings document” as a socket payload** from a **template** flow — wrong output type for that consumer, not a forbidden Factory call.
 - **`filterTree` is missing append/create.** Collection UI **POSTs the whole `filters` array** through `SaveSettings`. Remove/rename exist as extra use cases because **template rename/delete** must patch nested ids without the Settings screen. There is no “add filter” use case because that is not a separate application action today.
 - **“getForHttp is different because it is HTTP.”** The boolean is **who the actor is** (admin vs everyone else), plus a public whitelist. Mixing that with protocol in the name hid that QueryService is doing **authorization shaping**, not transport.
 
 #### Further assumptions drawn from this review
 
-- Settings is **not one aggregate**. Languages, navbar, library filters, feature flags, mail, sync credentials, and theme assets share a **storage row**, not a **domain**. V2 use cases per *HTTP verb on /api/settings* still treat them as one thing. The review is asking to model **slices** (and later modules) even while Mongo/PG keep one row.
+- Settings is **not one aggregate**. Languages, navbar, library filters, feature flags, mail, sync credentials, and theme assets share a **storage row**, not a **domain**. V2 use cases per _HTTP verb on /api/settings_ still treat them as one thing. The review is asking to model **slices** (and later modules) even while Mongo/PG keep one row.
 - **Safe-first** means the default application read is never the persistence row. `SettingsDataSource` may return secrets; **nothing above it should, unless the call is explicitly `readSyncConfig()` / `getPrivateFormDestination()` / etc.** Developers should not be able to “forget omit.”
 - **Postgres:** `document JSONB` can still `SELECT document` and pull CSS every time. Opt-in is `document->'languages'`, generated columns, or a port method `read(paths)`. Partial `$set` in Mongo and `jsonb_set` / `document ||` in PG both preserve unmentioned keys **if the write is a patch of a slice**, not a full-document replace. The first cut’s `patch({ ...incoming })` is already a field `$set`; fat **reads** are the gap, not fat writes.
 - `SaveSettings` calling `TemplateFacade` is a **core → v1_layer** dependency from the wrong module. Even a “use case tells the full story” argument only justifies **dispatching** “apply new name generation,” not implementing template walks inside Settings.
 - **AJV is gone from Settings.** `validateSettings` had no remaining callers. Comparison with the other three blobs:
 
-  | Module | JSON schema + `emitSchemaTypes` | AJV at runtime | Types consumed as |
-  | --- | --- | --- | --- |
-  | Entities | `entitySchema.ts` (no Ajv import) | No — V1 `validateEntity` is gone; core has `domain/entity/Entity` | generated `entityType.d.ts` |
-  | Templates | `templateSchema.ts` (constructs unused `Ajv`) | No — core has `domain/template/Template` | generated `templateType.d.ts` |
-  | Users | `userSchema.ts` (no Ajv; `UserRole` enum is the live export) | No — core has `domain/user/User` | generated `userType.d.ts` |
-  | Settings | **deleted** `settingsSchema.ts` | **deleted** | hand-written `settingsType.ts` |
+  | Module    | JSON schema + `emitSchemaTypes`                              | AJV at runtime                                                    | Types consumed as              |
+  | --------- | ------------------------------------------------------------ | ----------------------------------------------------------------- | ------------------------------ |
+  | Entities  | `entitySchema.ts` (no Ajv import)                            | No — V1 `validateEntity` is gone; core has `domain/entity/Entity` | generated `entityType.d.ts`    |
+  | Templates | `templateSchema.ts` (constructs unused `Ajv`)                | No — core has `domain/template/Template`                          | generated `templateType.d.ts`  |
+  | Users     | `userSchema.ts` (no Ajv; `UserRole` enum is the live export) | No — core has `domain/user/User`                                  | generated `userType.d.ts`      |
+  | Settings  | **deleted** `settingsSchema.ts`                              | **deleted**                                                       | hand-written `settingsType.ts` |
 
   Emit-types is still how entities/templates/users present **shared DTO** types. That pipeline is not the Settings contract anymore. Input validation is Zod on the use-case (`SaveSettingsInputSchema`). Do not regenerate Settings types via `yarn emit-types`.
 
@@ -118,11 +118,11 @@ The flag lives on settings; the **meaning** of the flag is “template property 
 **`getForHttp` naming (suggestion).**
 Do **not** keep a protocol word. Do **not** keep a single `isAdmin` function that merges three policies (public whitelist, admin extras, `themeCustomization`). Split:
 
-| Suggested | Meaning |
-| --- | --- |
-| `getPublic()` | Unauthenticated / non-admin client: whitelist only (today `getPublicSettingsPayload`) |
-| `getForAdmin()` | Admin UI: public ∪ admin-only fields that are **not** secrets (`mailerConfig`, `contactEmail`, `publicFormDestination`, `features`, …). Explicit allowlist, not “everything minus three keys.” |
-| `readSyncConfig()` | Server-only; passwords. Never sockets, never QueryService default. |
+| Suggested          | Meaning                                                                                                                                                                                        |
+| ------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `getPublic()`      | Unauthenticated / non-admin client: whitelist only (today `getPublicSettingsPayload`)                                                                                                          |
+| `getForAdmin()`    | Admin UI: public ∪ admin-only fields that are **not** secrets (`mailerConfig`, `contactEmail`, `publicFormDestination`, `features`, …). Explicit allowlist, not “everything minus three keys.” |
+| `readSyncConfig()` | Server-only; passwords. Never sockets, never QueryService default.                                                                                                                             |
 
 Avoid `getClientVisible` (client = browser vs API is ambiguous). `getPermitted` / `getAllowed` need an actor parameter to be honest — then they collapse to the two methods above plus server-only slices.
 
@@ -165,23 +165,23 @@ Keep **`SettingsDataSource.getDefaultLanguageKey()`** — that is already the V2
 
 #### Return-path inventory (2026-08-26)
 
-| Caller | Today | Intended audience | Target |
-| --- | --- | --- | --- |
-| `GET /api/settings` | `getForHttp(isAdmin)` | browser, public vs admin | `getPublic()` / `getForAdmin()` |
-| `POST /api/settings` JSON | UC `omitHidden(applyDefaults(saved))` | saving admin | UC / controller: `pickAdminFields` (mailerConfig yes, sync never) |
-| `POST /api/settings` socket | `getPublicSettingsPayload(saved)` | all connected clients | keep public |
-| `GET /api/settings/links` | `QueryService.get().links` | any authenticated? currently unauthenticated GET | public `links` slice |
-| `POST /api/settings/links` JSON / socket | UC blob / public payload | admin / all clients | admin JSON + public socket |
-| `POST /api/translations/setasdeafult` | UC blob on JSON **and** socket | admin / all clients | admin JSON + **public** socket |
-| Add/Delete language sockets | `QueryService.get()` (omitHidden, includes mailer/CSS) | all clients | `getPublic()` |
-| Template mutate/delete sockets | `UpdateFilterName` / `RemoveTemplateFromFilters` UC output | all clients | `getPublic()` if filters changed; UC returns `boolean` |
-| SSR `entry-server` | `QueryService.get()` then `shapeSettingsForSSR` | HTML / Redux | `getPublic` / `getForAdmin` + tenant feature flags (do not hydrate preserve tokens for non-admin) |
-| Outbound sync `processNamespaces.settings()` | DS `find()` then `{ _id, languages }` | sync peer | `readFields(['languages'])` (Mongo still includes `_id`) |
-| Inbound `SettingsSyncHandler` | DS `find` / `patch` | server | keep full-row persistence |
-| `syncWorker` | DS `find()` then `stored.sync` | server | `readSyncConfig()` |
-| `languageMiddleware` | `QueryService.get()` → `languages` | request | `readFields(['languages'])` |
-| `tocService` | `QueryService.get()` → `features` | job | `readFeature('tocGeneration')` |
-| mailer / contact / OCR / IX / preserve / … | `QueryService.get()` for one field | server | `readFields` / `readFeature` / `getDefaultLanguageKey()` |
+| Caller                                       | Today                                                      | Intended audience                                | Target                                                                                            |
+| -------------------------------------------- | ---------------------------------------------------------- | ------------------------------------------------ | ------------------------------------------------------------------------------------------------- |
+| `GET /api/settings`                          | `getForHttp(isAdmin)`                                      | browser, public vs admin                         | `getPublic()` / `getForAdmin()`                                                                   |
+| `POST /api/settings` JSON                    | UC `omitHidden(applyDefaults(saved))`                      | saving admin                                     | UC / controller: `pickAdminFields` (mailerConfig yes, sync never)                                 |
+| `POST /api/settings` socket                  | `getPublicSettingsPayload(saved)`                          | all connected clients                            | keep public                                                                                       |
+| `GET /api/settings/links`                    | `QueryService.get().links`                                 | any authenticated? currently unauthenticated GET | public `links` slice                                                                              |
+| `POST /api/settings/links` JSON / socket     | UC blob / public payload                                   | admin / all clients                              | admin JSON + public socket                                                                        |
+| `POST /api/translations/setasdeafult`        | UC blob on JSON **and** socket                             | admin / all clients                              | admin JSON + **public** socket                                                                    |
+| Add/Delete language sockets                  | `QueryService.get()` (omitHidden, includes mailer/CSS)     | all clients                                      | `getPublic()`                                                                                     |
+| Template mutate/delete sockets               | `UpdateFilterName` / `RemoveTemplateFromFilters` UC output | all clients                                      | `getPublic()` if filters changed; UC returns `boolean`                                            |
+| SSR `entry-server`                           | `QueryService.get()` then `shapeSettingsForSSR`            | HTML / Redux                                     | `getPublic` / `getForAdmin` + tenant feature flags (do not hydrate preserve tokens for non-admin) |
+| Outbound sync `processNamespaces.settings()` | DS `find()` then `{ _id, languages }`                      | sync peer                                        | `readFields(['languages'])` (Mongo still includes `_id`)                                          |
+| Inbound `SettingsSyncHandler`                | DS `find` / `patch`                                        | server                                           | keep full-row persistence                                                                         |
+| `syncWorker`                                 | DS `find()` then `stored.sync`                             | server                                           | `readSyncConfig()`                                                                                |
+| `languageMiddleware`                         | `QueryService.get()` → `languages`                         | request                                          | `readFields(['languages'])`                                                                       |
+| `tocService`                                 | `QueryService.get()` → `features`                          | job                                              | `readFeature('tocGeneration')`                                                                    |
+| mailer / contact / OCR / IX / preserve / …   | `QueryService.get()` for one field                         | server                                           | `readFields` / `readFeature` / `getDefaultLanguageKey()`                                          |
 
 ---
 
@@ -189,16 +189,16 @@ Keep **`SettingsDataSource.getDefaultLanguageKey()`** — that is already the V2
 
 It is **one document per tenant**, not a collection of named rows. The Mongo collection is schemaless (legacy mongoose `strict: false`). Several fields are HTTP secrets (`publicFormDestination`, `sync`, `evidencesVault`). All reads/writes go through core (`SettingsDataSource` / use cases / query service). Language add/delete stay on the existing `AddLanguageUseCase` / `DeleteLanguageUseCase`.
 
-| Aspect | Settings | Closest PG module |
-| --- | --- | --- |
-| Cardinality | **Singleton** per tenant | Nothing else; users/thesauri are many rows |
-| Shape | Large nested blob (`languages`, `links`, `filters`, `features`, `sync`, …) | Templates mix columns + JSONB; usergroups `members` JSONB |
-| Schema | Mongoose `strict: false` (unknown keys exist, e.g. `evidencesVault`) | Must round-trip extras — JSONB, not a frozen column list |
-| Secrets | `publicFormDestination`, `sync`, `evidencesVault` (`select: false`); admin GET opts into `+publicFormDestination` only | Application-layer whitelist stays (`publicSettings.ts`) |
-| Translations | Menu / Filters contexts updated on save | Same `TranslationsService.updateContext` as today |
-| Sync | Namespace `settings` via `SettingsSyncHandler` | Inbound POST **applies onto the existing singleton `_id`**. Outbound `processNamespaces.settings()` sends **`{ _id, languages }` only** |
-| ES | None | Same as thesauri / relationship types / translations |
-| HTTP | `GET/POST /api/settings`, `GET/POST /api/settings/links` | Stable, like `/api/relationtypes` |
+| Aspect       | Settings                                                                                                               | Closest PG module                                                                                                                       |
+| ------------ | ---------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
+| Cardinality  | **Singleton** per tenant                                                                                               | Nothing else; users/thesauri are many rows                                                                                              |
+| Shape        | Large nested blob (`languages`, `links`, `filters`, `features`, `sync`, …)                                             | Templates mix columns + JSONB; usergroups `members` JSONB                                                                               |
+| Schema       | Mongoose `strict: false` (unknown keys exist, e.g. `evidencesVault`)                                                   | Must round-trip extras — JSONB, not a frozen column list                                                                                |
+| Secrets      | `publicFormDestination`, `sync`, `evidencesVault` (`select: false`); admin GET opts into `+publicFormDestination` only | Application-layer whitelist stays (`publicSettings.ts`)                                                                                 |
+| Translations | Menu / Filters contexts updated on save                                                                                | Same `TranslationsService.updateContext` as today                                                                                       |
+| Sync         | Namespace `settings` via `SettingsSyncHandler`                                                                         | Inbound POST **applies onto the existing singleton `_id`**. Outbound `processNamespaces.settings()` sends **`{ _id, languages }` only** |
+| ES           | None                                                                                                                   | Same as thesauri / relationship types / translations                                                                                    |
+| HTTP         | `GET/POST /api/settings`, `GET/POST /api/settings/links`                                                               | Stable, like `/api/relationtypes`                                                                                                       |
 
 **Do not** copy Entities’ partial flag. **Do not** normalize `languages` / `links` / `filters` into child tables in v1 — every language mutation today is `$push` / `$set` / `$pull` on the same document.
 
@@ -230,12 +230,12 @@ HTTP /api/settings*                    Other callers (mailer, IX, templates, …
 
 ### Public HTTP (must stay)
 
-| Method | Path | Notes |
-| --- | --- | --- |
-| GET | `/api/settings` | Admin: stored doc (minus `sync`/`evidencesVault`) + `publicFormDestination` + public payload overlay. Others: `getPublicSettingsPayload` whitelist |
-| POST | `/api/settings` | Admin. Socket `updateSettings` with **public** payload |
-| GET | `/api/settings/links` | `settings.links` |
-| POST | `/api/settings/links` | Body is the links array; **partial** `$set` of `links` onto the stored singleton |
+| Method | Path                  | Notes                                                                                                                                              |
+| ------ | --------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| GET    | `/api/settings`       | Admin: stored doc (minus `sync`/`evidencesVault`) + `publicFormDestination` + public payload overlay. Others: `getPublicSettingsPayload` whitelist |
+| POST   | `/api/settings`       | Admin. Socket `updateSettings` with **public** payload                                                                                             |
+| GET    | `/api/settings/links` | `settings.links`                                                                                                                                   |
+| POST   | `/api/settings/links` | Body is the links array; **partial** `$set` of `links` onto the stored singleton                                                                   |
 
 Socket: `updateSettings`.
 
@@ -245,15 +245,15 @@ Callers that previously imported `#api/settings` now use `SettingsQueryServiceFa
 
 ## Transferable principles
 
-| Principle | Apply to Settings |
-| --- | --- |
-| Stable external contract | Paths, GET whitelist, sockets, AJV save rules stay |
-| Hex in `app/api/core` | Domain / use cases / contract / adapters / factories / express |
-| No application upsert | Explicit Save / SetDefaultLanguage / SaveLinks / filter mutators |
-| Contract-driven side effects | Menu/Filters translations via `TranslationsService`, not a settings-owned i18n façade |
-| Integration-first tests | DB assertions; auth mock OK at routes |
-| One store + flag/copy/cutover | After V2; no dual-write of the settings row |
-| Mixed Mongo+PG is not 2PC | Same P12 as translations: one `this.transactionManager.run()`; no DualStore |
+| Principle                     | Apply to Settings                                                                     |
+| ----------------------------- | ------------------------------------------------------------------------------------- |
+| Stable external contract      | Paths, GET whitelist, sockets, AJV save rules stay                                    |
+| Hex in `app/api/core`         | Domain / use cases / contract / adapters / factories / express                        |
+| No application upsert         | Explicit Save / SetDefaultLanguage / SaveLinks / filter mutators                      |
+| Contract-driven side effects  | Menu/Filters translations via `TranslationsService`, not a settings-owned i18n façade |
+| Integration-first tests       | DB assertions; auth mock OK at routes                                                 |
+| One store + flag/copy/cutover | After V2; no dual-write of the settings row                                           |
+| Mixed Mongo+PG is not 2PC     | Same P12 as translations: one `this.transactionManager.run()`; no DualStore           |
 
 ---
 
@@ -276,13 +276,13 @@ Today the contract is a language/feature helper. It has to become the persistenc
 
 ### Use cases (mutations)
 
-| Use case | Replaces | Side effects |
-| --- | --- | --- |
-| `SaveSettings` | `settings.save` | AJV (or domain invariants); Menu/Filters `TranslationsService.updateContext`; if `newNameGeneration` flips on → template name-generation update (today `TemplateFacade.update`) |
-| `SaveSettingsLinks` | `POST /api/settings/links` | Merge `links` onto stored doc, then same translation path as save |
-| `SetDefaultLanguage` | `settings.setDefaultLanguage` / translations `setasdeafult` | Languages array only |
-| `UpdateFilterName` | template rename | Nested filters; translations via save path |
-| `RemoveTemplateFromFilters` | template delete | Nested filters; translations via save path |
+| Use case                    | Replaces                                                    | Side effects                                                                                                                                                                    |
+| --------------------------- | ----------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `SaveSettings`              | `settings.save`                                             | AJV (or domain invariants); Menu/Filters `TranslationsService.updateContext`; if `newNameGeneration` flips on → template name-generation update (today `TemplateFacade.update`) |
+| `SaveSettingsLinks`         | `POST /api/settings/links`                                  | Merge `links` onto stored doc, then same translation path as save                                                                                                               |
+| `SetDefaultLanguage`        | `settings.setDefaultLanguage` / translations `setasdeafult` | Languages array only                                                                                                                                                            |
+| `UpdateFilterName`          | template rename                                             | Nested filters; translations via save path                                                                                                                                      |
+| `RemoveTemplateFromFilters` | template delete                                             | Nested filters; translations via save path                                                                                                                                      |
 
 Language add/delete **already exist** — do not create a second pair. Point leftover V1 `addLanguage` / `deleteLanguage` at the DS or delete them.
 
@@ -324,20 +324,20 @@ Integration-first: save + Menu/Filters translation keys, links merge, default la
 
 ### Locked decisions
 
-| ID | Decision |
-| --- | --- |
-| S1 | PG table **`settings`**. Sync namespace stays **`settings`**. |
-| S2 | **`tenant_id` is PRIMARY KEY** (singleton identity). RLS is `tenant_id = current_tenant()` only — never `AND _id`. |
-| S3 | **`_id TEXT NOT NULL` is a sync surrogate**, not identity. 24-char ObjectId hex. Copy **preserves** Mongo `_id`. `SyncLogWriter` / updatelogs still use it. Inbound settings handler **ignores** payload `_id` and patches the tenant row. Do not special-case the settings namespace to drop `_id`. `PostgresTable` upsert conflict is `{ columns: ['tenant_id'] }`. |
-| S4 | **No single `document` blob.** Slice columns + semantic JSONB groups (mail, analytics, map, branding, site_preferences). Unknown Mongo keys go in **`extras JSONB`**, not `custom`. `__v` dropped on copy. |
-| S5 | RLS + `tenant_isolation` in the **same** schema migration as `CREATE TABLE` (next delta: **017** — 016 is entities published default). |
-| S6 | One store. Copy Mongo → PG, flip `postgresSettings`. No dual-write of the settings row. Flag is **one-way** after any PG write. |
-| S7 | New **document** `_id` (blank tenant) is minted via `IdGenerator` in the use case — **not** `new ObjectId()` inside the PG DS. Nested `links[]` mint **`id`** via `toPersistableMenuItems` (Menu translation identity). Nested `filters[]` do **not** mint `_id`; identity is `id`; persist strips mongoose leftovers (`toPersistableFilters`). |
-| S8 | Language `$push`/`$pull` become read-modify-write of the **`languages` JSONB column** inside the PG TM (singleton). Do not add a `settings_languages` table in v1. |
-| S9 | `cached()`: when the flag is on, return the same PG DS as `default()` (translations pattern). Optional later: cache `languageKeys` with `onCommitted` clear — not required to ship. |
-| S10 | Sync handler factory branches on the same flag. Inbound still applies onto the tenant singleton (ignore payload `_id`). Outbound still `{ _id, languages }` until a separate product change. |
-| S11 | Public/admin field filtering stays in HTTP (`publicSettings.ts`), not in SQL column grants. Secrets live in `sync` / `mail` / `public_form_destination`; GET still omits them for non-admin. |
-| S12 | Mixed store is P12: one use-case `run()`. While hybrid, Mongo TM for leftover Mongo collections; PG settings auto-commit unless the use-case TM **is** the PG TM (both settings and translations flags on → pass `postgresTransactionManager` as `this.transactionManager`). No DualStore. Staging-only hybrid. |
+| ID  | Decision                                                                                                                                                                                                                                                                                                                                                              |
+| --- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| S1  | PG table **`settings`**. Sync namespace stays **`settings`**.                                                                                                                                                                                                                                                                                                         |
+| S2  | **`tenant_id` is PRIMARY KEY** (singleton identity). RLS is `tenant_id = current_tenant()` only — never `AND _id`.                                                                                                                                                                                                                                                    |
+| S3  | **`_id TEXT NOT NULL` is a sync surrogate**, not identity. 24-char ObjectId hex. Copy **preserves** Mongo `_id`. `SyncLogWriter` / updatelogs still use it. Inbound settings handler **ignores** payload `_id` and patches the tenant row. Do not special-case the settings namespace to drop `_id`. `PostgresTable` upsert conflict is `{ columns: ['tenant_id'] }`. |
+| S4  | **No single `document` blob.** Slice columns + semantic JSONB groups (mail, analytics, map, branding, site_preferences). Unknown Mongo keys go in **`extras JSONB`**, not `custom`. `__v` dropped on copy.                                                                                                                                                            |
+| S5  | RLS + `tenant_isolation` in the **same** schema migration as `CREATE TABLE` (next delta: **017** — 016 is entities published default).                                                                                                                                                                                                                                |
+| S6  | One store. Copy Mongo → PG, flip `postgresSettings`. No dual-write of the settings row. Flag is **one-way** after any PG write.                                                                                                                                                                                                                                       |
+| S7  | New **document** `_id` (blank tenant) is minted via `IdGenerator` in the use case — **not** `new ObjectId()` inside the PG DS. Nested `links[]` mint **`id`** via `toPersistableMenuItems` (Menu translation identity). Nested `filters[]` do **not** mint `_id`; identity is `id`; persist strips mongoose leftovers (`toPersistableFilters`).                       |
+| S8  | Language `$push`/`$pull` become read-modify-write of the **`languages` JSONB column** inside the PG TM (singleton). Do not add a `settings_languages` table in v1.                                                                                                                                                                                                    |
+| S9  | `cached()`: when the flag is on, return the same PG DS as `default()` (translations pattern). Optional later: cache `languageKeys` with `onCommitted` clear — not required to ship.                                                                                                                                                                                   |
+| S10 | Sync handler factory branches on the same flag. Inbound still applies onto the tenant singleton (ignore payload `_id`). Outbound still `{ _id, languages }` until a separate product change.                                                                                                                                                                          |
+| S11 | Public/admin field filtering stays in HTTP (`publicSettings.ts`), not in SQL column grants. Secrets live in `sync` / `mail` / `public_form_destination`; GET still omits them for non-admin.                                                                                                                                                                          |
+| S12 | Mixed store is P12: one use-case `run()`. While hybrid, Mongo TM for leftover Mongo collections; PG settings auto-commit unless the use-case TM **is** the PG TM (both settings and translations flags on → pass `postgresTransactionManager` as `this.transactionManager`). No DualStore. Staging-only hybrid.                                                       |
 
 ### Schema (locked)
 
@@ -396,12 +396,12 @@ CREATE POLICY tenant_isolation ON settings
 
 JSONB group envelopes (mapper, not extra SQL types):
 
-| Column | Keys |
-| --- | --- |
-| `mail` | `mailerConfig`, `contactEmail`, `senderEmail` |
-| `analytics` | `analyticsTrackingId`, `matomoConfig` |
-| `map` | `mapApiKey`, `mapLayers`, `mapStartingPoint`, `tilesProvider` |
-| `branding` | `site_logo`, `favicon` |
+| Column             | Keys                                                               |
+| ------------------ | ------------------------------------------------------------------ |
+| `mail`             | `mailerConfig`, `contactEmail`, `senderEmail`                      |
+| `analytics`        | `analyticsTrackingId`, `matomoConfig`                              |
+| `map`              | `mapApiKey`, `mapLayers`, `mapStartingPoint`, `tilesProvider`      |
+| `branding`         | `site_logo`, `favicon`                                             |
 | `site_preferences` | `home_page`, `defaultLibraryView`, `allowcustomJS`, `cookiepolicy` |
 
 `current_tenant()` already exists (004). Do not use a composite (`_id`, `tenant_id`) PK. Upsert conflict is `{ columns: ['tenant_id'] }`.
@@ -416,10 +416,10 @@ JSONB group envelopes (mapper, not extra SQL types):
 
 ### Feature flag
 
-| Surface | Name |
-| --- | --- |
-| Tenant flag | `postgresSettings` |
-| Local ENV | `FEATURE_FLAG_POSTGRES_SETTINGS=true` (do not flip `config.ts` defaults) |
+| Surface     | Name                                                                     |
+| ----------- | ------------------------------------------------------------------------ |
+| Tenant flag | `postgresSettings`                                                       |
+| Local ENV   | `FEATURE_FLAG_POSTGRES_SETTINGS=true` (do not flip `config.ts` defaults) |
 
 Wire: `config.ts` → `tenantContext.ts` → `tenantsModel.ts` → DS factory → sync handler factory → dual-backend tests.
 
@@ -441,14 +441,14 @@ Cutover per tenant: schema (cluster-wide) → copy → flip flag → smoke GET/P
 
 Same class of risk as translations P12. Notable:
 
-| Location | Settings write | Notes |
-| --- | --- | --- |
-| `SaveSettings` | PG upsert | Menu/Filters translations may already be PG (`postgresTranslations`) or Mongo. Filters persist by `id` (`toPersistableFilters`). Menu items persist by `id` (`toPersistableMenuItems`). |
-| `AddLanguageUseCase` | `addLanguage` + `setLanguageInstalling` | Clone translations + entity clone jobs; settings row is not last |
-| `DeleteLanguageUseCase` | `deleteLanguage` | Inverse |
-| Template create/update/delete | filter name / remove template | Socket `updateSettings` |
-| `syncWorker` | reads `sync` via `SettingsDataSource.find()`; disable via `deactivateSyncConfig` | Must not go through `SettingsQueryService.get()` (that strips `sync`) |
-| Inbound `/api/sync` settings | upsert by rewritten `_id` | Handler, not ODM |
+| Location                      | Settings write                                                                   | Notes                                                                                                                                                                                   |
+| ----------------------------- | -------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `SaveSettings`                | PG upsert                                                                        | Menu/Filters translations may already be PG (`postgresTranslations`) or Mongo. Filters persist by `id` (`toPersistableFilters`). Menu items persist by `id` (`toPersistableMenuItems`). |
+| `AddLanguageUseCase`          | `addLanguage` + `setLanguageInstalling`                                          | Clone translations + entity clone jobs; settings row is not last                                                                                                                        |
+| `DeleteLanguageUseCase`       | `deleteLanguage`                                                                 | Inverse                                                                                                                                                                                 |
+| Template create/update/delete | filter name / remove template                                                    | Socket `updateSettings`                                                                                                                                                                 |
+| `syncWorker`                  | reads `sync` via `SettingsDataSource.find()`; disable via `deactivateSyncConfig` | Must not go through `SettingsQueryService.get()` (that strips `sync`)                                                                                                                   |
+| Inbound `/api/sync` settings  | upsert by rewritten `_id`                                                        | Handler, not ODM                                                                                                                                                                        |
 
 `persistSettingsAndTranslations` (Mongo TM + `dbSessionContext` + mongoose save) **dies in Phase 1**. Replacement is `SaveSettings` + `TranslationsService` inside one `run()`.
 
@@ -501,34 +501,34 @@ Same class of risk as translations P12. Notable:
 
 ## Key reference files
 
-| Concern | Path |
-| --- | --- |
-| V1 façade | `app/api/settings/settings.ts` |
-| V1 mongoose | `app/api/settings/settingsModel.ts` |
-| Save + Menu/Filters translations | `app/api/settings/settingsTranslations.ts` |
-| Public GET whitelist | `app/api/settings/publicSettings.ts` |
-| HTTP | `app/api/settings/routes.ts` |
-| Shared Settings types | `app/shared/types/settingsType.ts` |
-| V2 DS + cache | `app/api/core/infrastructure/mongodb/MongoSettingsDataSource.ts`, `CachedMongoSettingsDataSource.ts` |
-| Contract / factory | `app/api/core/application/contracts/SettingsDataSource.ts`, `…/factories/SettingsDataSourceFactory.ts` |
-| Language UCs | `app/api/core/application/AddLanguage.ts`, `DeleteLanguage.ts` |
-| Filter identity | `app/api/core/application/settings/libraryFilters.ts` (`toPersistableFilters`) |
-| Menu nested ids | `app/api/core/application/settings/menuItems.ts` (`toPersistableMenuItems`, `toReadableMenuItems`) |
-| Inbound sync | `app/api/sync/SettingsSyncHandler.ts` + factory |
-| Outbound sync subset | `app/api/sync/processNamespaces.ts` (`settings()`) |
-| Copy engine / CLI | `…/postgresql/migrations/MigrateCollectionToPostgres.ts`, `scripts/scripts.v2/migrateToPostgres.ts` (`--collection settings`) |
-| Settings copy map | `…/postgresql/migrations/configs/SettingsMigrationConfig.ts` |
-| Settings PG schema | `…/schema_migrations/017-create-settings-table.sql` |
-| Settings PG adapter | `…/postgresql/settings/PostgresSettingsMapper.ts`, `PostgresSettingsDataSource.ts` |
-| RLS pattern | `…/schema_migrations/015-create-translations-table.sql` |
-| Tenant flags | `app/api/config.ts`, `tenants/tenantContext.ts`, `tenants/tenantsModel.ts` |
-| Test helper (settings fixture patches) | `SettingsDSWithContext` in `app/api/utils/testingEnvironment.ts` |
+| Concern                                | Path                                                                                                                          |
+| -------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| V1 façade                              | `app/api/settings/settings.ts`                                                                                                |
+| V1 mongoose                            | `app/api/settings/settingsModel.ts`                                                                                           |
+| Save + Menu/Filters translations       | `app/api/settings/settingsTranslations.ts`                                                                                    |
+| Public GET whitelist                   | `app/api/settings/publicSettings.ts`                                                                                          |
+| HTTP                                   | `app/api/settings/routes.ts`                                                                                                  |
+| Shared Settings types                  | `app/shared/types/settingsType.ts`                                                                                            |
+| V2 DS + cache                          | `app/api/core/infrastructure/mongodb/MongoSettingsDataSource.ts`, `CachedMongoSettingsDataSource.ts`                          |
+| Contract / factory                     | `app/api/core/application/contracts/SettingsDataSource.ts`, `…/factories/SettingsDataSourceFactory.ts`                        |
+| Language UCs                           | `app/api/core/application/AddLanguage.ts`, `DeleteLanguage.ts`                                                                |
+| Filter identity                        | `app/api/core/application/settings/libraryFilters.ts` (`toPersistableFilters`)                                                |
+| Menu nested ids                        | `app/api/core/application/settings/menuItems.ts` (`toPersistableMenuItems`, `toReadableMenuItems`)                            |
+| Inbound sync                           | `app/api/sync/SettingsSyncHandler.ts` + factory                                                                               |
+| Outbound sync subset                   | `app/api/sync/processNamespaces.ts` (`settings()`)                                                                            |
+| Copy engine / CLI                      | `…/postgresql/migrations/MigrateCollectionToPostgres.ts`, `scripts/scripts.v2/migrateToPostgres.ts` (`--collection settings`) |
+| Settings copy map                      | `…/postgresql/migrations/configs/SettingsMigrationConfig.ts`                                                                  |
+| Settings PG schema                     | `…/schema_migrations/017-create-settings-table.sql`                                                                           |
+| Settings PG adapter                    | `…/postgresql/settings/PostgresSettingsMapper.ts`, `PostgresSettingsDataSource.ts`                                            |
+| RLS pattern                            | `…/schema_migrations/015-create-translations-table.sql`                                                                       |
+| Tenant flags                           | `app/api/config.ts`, `tenants/tenantContext.ts`, `tenants/tenantsModel.ts`                                                    |
+| Test helper (settings fixture patches) | `SettingsDSWithContext` in `app/api/utils/testingEnvironment.ts`                                                              |
 
 ---
 
 **Hybrid pitfall:** `AddLanguage` runs inside the Mongo TM. PG settings upserts do **not** join that transaction. If `cloneForLanguage` fails after `addLanguage`, Postgres can keep the new language while Mongo translations roll back. Same class as translations-PG vs Mongo settings.
 
-**Nested identity:** mongoose used to auto-`_id` array subdocs. Native Mongo / PG JSONB do not. That is not a reason to reimplement mongoose. **Filters** already have domain `id` (translations match `id`). **Menu** identity is also `id`: persist mints `id` for new items, GET lifts leftover mongoose `_id` without generating, translations match `id` after that lift. Copy/`toRow` lifts menu `_id` → `id` so PG JSON is clean; leftover `_id` in Mongo (flag off) still works because the same V2 read/write path is used. Next save drops leftover `_id` (lazy cleanup, not required for GET/Delete). **Languages** identity is `key`. A Filters Delete bug during dry-run was the table using leftover mongoose `_id` as `rowId`; the fix is `rowId = id`, not minting `_id`. Same for Menu.
+**Nested identity:** mongoose used to auto-`_id` array subdocs. Native Mongo / PG JSONB do not. That is not a reason to reimplement mongoose. **Filters** already have domain `id` (translations match `id`). **Menu** identity is also `id`: persist mints `id` for new items, GET lifts leftover mongoose `_id` without generating, translations match `id` after that lift. Copy/`toRow` lifts menu `_id` → `id` so PG JSON is clean; leftover `_id` in Mongo (flag off) still works because the same V2 read/write path is used. Next save drops leftover `_id` (lazy cleanup, not required for GET/Delete). **Languages** identity is `key`. Tenant storage is `key`, `label`, `default`, `installing` — not catalog copies (`ISO639_3`, `localized_label`, `rtl`, `elastic`, `ISO639_1`, `translationAvailable`) and not leftover mongoose `_id`. GET / QueryService **joins** `LanguageUtils.fromISO639_1(key)` so `/api/settings` still presents those fields. Sync copies stored languages as they are (no catalog join, no persistable rewrite). Our UI does not treat stored catalog fields as source of truth (autonyms and RTL from the catalog). SaveSettings/SetDefaultLanguage run the persistable shape so an application save does not write catalog fields back. Do not backfill `ISO639_3` onto seeded English. A Filters Delete bug during dry-run was the table using leftover mongoose `_id` as `rowId`; the fix is `rowId = id`, not minting `_id`. Same for Menu.
 
 ---
 

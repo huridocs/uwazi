@@ -11,6 +11,7 @@ import { Dispatcher } from '#api/core/application/contracts/Dispatcher.js';
 import { ImportPredefinedTranslations } from '#api/core/application/translation/ImportPredefinedTranslationsService.js';
 import { TranslationsDataSourceFactory } from '#api/core/infrastructure/factories/TranslationsDataSourceFactory.js';
 import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
+import { SettingsQueryServiceFactory } from '#api/core/infrastructure/factories/SettingsQueryServiceFactory.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import {
   languageBackendConfigs,
@@ -113,6 +114,42 @@ describe('AddLanguage use case', () => {
             expect.objectContaining({ key: 'es', label: 'Spanish', installing: true }),
             expect.objectContaining({ key: 'zh', label: 'Chinese', installing: true }),
           ])
+        );
+      });
+
+      it('should persist tenant language fields and not catalog fields', async () => {
+        await createSut().execute({
+          languages: [
+            {
+              key: 'es',
+              label: 'Spanish',
+              ISO639_3: 'spa',
+              ISO639_1: 'es',
+              localized_label: 'Español',
+              elastic: 'spanish',
+              translationAvailable: true,
+            },
+          ],
+        });
+
+        const [spanish] = (await readLanguages()).filter(language => language.key === 'es');
+        expect(spanish).toEqual({ key: 'es', label: 'Spanish', installing: true });
+      });
+
+      it('should present catalog language fields on GET without storing them', async () => {
+        await createSut().execute({ languages: [{ key: 'es', label: 'Spanish' }] });
+
+        const settings = await withFlag(async () =>
+          SettingsQueryServiceFactory.default().getForAdmin()
+        );
+        expect(settings.languages?.find(language => language.key === 'es')).toEqual(
+          expect.objectContaining({
+            key: 'es',
+            label: 'Spanish',
+            ISO639_3: 'spa',
+            localized_label: 'Español',
+            installing: true,
+          })
         );
       });
 
