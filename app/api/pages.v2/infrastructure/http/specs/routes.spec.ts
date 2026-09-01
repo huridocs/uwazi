@@ -4,8 +4,15 @@ import { ObjectId } from 'mongodb';
 
 import { setUpApp } from '#api/utils/testingRoutes.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { testingTenants } from '#api/utils/testingTenants.js';
+import { testingPG } from '#api/utils/testing_pg.js';
 import { pagesV2Routes } from '../routes.js';
 import { fixtures } from '#api/pages.v2/specs/fixtures.js';
+
+const testConfigs = [
+  { name: 'Mongo', postgresPages: false },
+  { name: 'Postgres', postgresPages: true },
+];
 
 const getUser = () => ({ _id: new ObjectId().toString(), _username: 'user 1', role: 'admin' });
 
@@ -14,13 +21,15 @@ const app: Application = setUpApp(pagesV2Routes, (req, _res, next) => {
   next();
 });
 
-describe('Pages V2 HTTP routes', () => {
-  beforeEach(async () => {
-    await testingEnvironment.setUp(fixtures);
-  });
+afterAll(async () => {
+  await testingEnvironment.tearDown();
+});
 
-  afterAll(async () => {
-    await testingEnvironment.tearDown();
+describe.each(testConfigs)('Pages V2 HTTP routes - $name', ({ postgresPages }) => {
+  beforeEach(async () => {
+    await testingEnvironment.setUp(fixtures, { postgres: true, postgresMirror: ['pages'] });
+    testingTenants.changeCurrentTenant({ featureFlags: { postgresPages } });
+    await testingPG.clear(['page_releases']);
   });
 
   describe('POST /api/pages/release', () => {
