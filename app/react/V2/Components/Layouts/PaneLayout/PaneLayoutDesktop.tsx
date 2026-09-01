@@ -174,10 +174,7 @@ const PaneLayoutDesktop = ({
   };
 
   return (
-    <div
-      ref={containerRef}
-      className={`flex h-full min-h-0 bg-(--color-theme-surface-page) ${className}`}
-    >
+    <div ref={containerRef} className={`flex h-full min-h-0 bg-warm ${className}`}>
       {children.map((child, index) => (
         <Fragment key={child.key ?? index}>
           <section
