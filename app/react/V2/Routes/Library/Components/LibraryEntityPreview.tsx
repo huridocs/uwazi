@@ -191,7 +191,7 @@ const LibraryEntityPreview = ({ sharedId, entityBasePath, onClose }: LibraryEnti
     );
   }
 
-  const {language} = entity;
+  const { language } = entity;
   const mainDocument = getMainDocument(readyDocuments(entity.documents), language, defaultLanguage);
 
   return (
