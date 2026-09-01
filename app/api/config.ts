@@ -47,6 +47,7 @@ const {
   FEATURE_FLAG_POSTGRES_TRANSLATIONS,
   FEATURE_FLAG_POSTGRES_SETTINGS,
   FEATURE_FLAG_ENTITY_VIEWER_V2,
+  FEATURE_FLAG_LIBRARY_V2,
   AI_ASSISTANT_SERVICE_URL,
   DEV_FLAG_TESTING,
   FILES_ROOT_PATH,
@@ -166,6 +167,7 @@ export const config = {
       postgresUsergroups: false,
       newHeader: NEW_HEADER !== 'false',
       featureFlagEntityViewerv2: FEATURE_FLAG_ENTITY_VIEWER_V2 === 'true' || false,
+      featureFlagLibraryV2: FEATURE_FLAG_LIBRARY_V2 === 'true' || false,
       aiAssistant: FEATURE_FLAG_AI_ASSISTANT === 'true' || false,
       aiAssistantServiceUrl: AI_ASSISTANT_SERVICE_URL || undefined,
       telemetry: {

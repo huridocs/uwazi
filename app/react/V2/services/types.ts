@@ -1,6 +1,7 @@
 import type { EntitiesService } from './contracts/EntitiesService.js';
 import type { RelationshipTypesService } from './contracts/RelationshipTypesService.js';
 import type { RelationshipsQueryService } from './contracts/RelationshipsQueryService.js';
+import type { SearchService } from './contracts/SearchService.js';
 import type { TemplatesService } from './contracts/TemplatesService.js';
 import type { ThesaurusService } from './contracts/ThesaurusService.js';
 import type { UserGroupsService } from './contracts/UserGroupsService.js';
@@ -14,6 +15,7 @@ interface V2Services {
   userGroups: UserGroupsService;
   relationshipTypes: RelationshipTypesService;
   relationshipsQuery: RelationshipsQueryService;
+  search: SearchService;
 }
 
 export type { V2Services };

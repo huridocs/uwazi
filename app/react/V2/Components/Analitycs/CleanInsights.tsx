@@ -38,7 +38,7 @@ const campaigns = {
 const ci = new CI({
   server: 'https://metrics.cleaninsights.org/cleaninsights.php',
   siteId: 35,
-  campaigns: campaigns,
+  campaigns,
 });
 
 const grant = () => {

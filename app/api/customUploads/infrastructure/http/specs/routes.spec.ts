@@ -20,7 +20,7 @@ jest.mock(
 );
 
 describe('custom uploads routes', () => {
-  let requestMockedUser: UserSchema = adminUser;
+  const requestMockedUser: UserSchema = adminUser;
 
   const app: Application = setUpApp(
     customUploadsRoutes,

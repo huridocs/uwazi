@@ -46,14 +46,14 @@ class DocumentSidePanel extends Component {
 
   componentDidMount() {
     if (this.props.selectedDocument) {
-      this.updateRelationships(this.props.selectedDocument.get('sharedId'));
+      void this.updateRelationships(this.props.selectedDocument.get('sharedId'));
     }
   }
 
   async componentDidUpdate(prevProps) {
     const sharedId = this.props.doc.get('sharedId');
     if (this.props.doc.get('_id') && prevProps.doc.get('_id') !== this.props.doc.get('_id')) {
-      this.updateRelationships(sharedId);
+      void this.updateRelationships(sharedId);
     }
   }
 
