@@ -1,6 +1,8 @@
-/* eslint-disable max-lines */
+// oxlint-disable react/jsx-props-no-spreading
+// oxlint-disable react/no-multi-comp
 import React, { useState } from 'react';
-import { Meta, StoryObj } from '@storybook/react-webpack5';
+import preview from '#storybook/preview';
+import { storyExtend } from '#app/stories/storyExtend.js';
 import { TocSchema } from '#shared/types/commonTypes.js';
 import {
   ToC,
@@ -9,15 +11,13 @@ import {
   findItemsWithChildren,
 } from '#V2/Routes/Entity/Components/ToC/index.js';
 
-const meta: Meta<typeof ToC> = {
+const meta = preview.meta({
   title: 'EntityViewer/ToC',
   component: ToC,
   parameters: {
     layout: 'padded',
   },
-};
-
-type Story = StoryObj<typeof ToC>;
+});
 
 // Mock data for stories
 const simpleToc: TocSchema[] = [
@@ -244,18 +244,21 @@ const ToCWrapper = ({ toc }: { toc?: TocSchema[] }) => {
   );
 };
 
-const Primary: Story = {
+const Primary = meta.story({
+  args: {
+    toc: simpleToc,
+    expanded: {},
+    onToggleExpand: () => {},
+  },
   render: args => <ToCWrapper toc={args.toc} />,
-};
+});
 
-export const Simple = {
-  ...Primary,
+export const Simple = storyExtend(Primary, {
   args: {
     toc: simpleToc,
   },
-};
+});
 
-export const Nested: Story = {
+export const Nested = meta.story({
   render: () => <ToCWithControls toc={nestedToc} />,
-};
-export default meta;
+});

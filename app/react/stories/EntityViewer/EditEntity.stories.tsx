@@ -1,7 +1,8 @@
 /* eslint-disable max-lines */
 import React, { useMemo, useState } from 'react';
+import preview from '#storybook/preview';
+import { storyExtend } from '#app/stories/storyExtend.js';
 import { FormProvider, useForm } from 'react-hook-form';
-import { Meta, StoryObj } from '@storybook/react-webpack5';
 import { BrowserRouter } from 'react-router';
 import { createStore, Provider } from 'jotai';
 import {
@@ -199,14 +200,17 @@ const EditEntityComponent = ({
   );
 };
 
-const meta: Meta<typeof EditEntityComponent> = {
+const meta = preview.meta({
   title: 'EntityViewer/EditEntity',
   component: EditEntityComponent,
-};
+});
 
-type Story = StoryObj<typeof EditEntityComponent>;
-
-const Primary: Story = {
+const Primary = meta.story({
+  args: {
+    entity: apiEntity,
+    locale: 'en',
+    onSave: () => {},
+  },
   render: args => (
     <EditEntityComponent
       onSave={args.onSave}
@@ -217,38 +221,34 @@ const Primary: Story = {
       relationshipLookup={args.relationshipLookup}
     />
   ),
-};
+});
 
-const Basic: Story = {
-  ...Primary,
+const Basic = storyExtend(Primary, {
   args: {
     entity: apiEntity,
     locale: 'en',
     onSave: undefined,
   },
-};
+});
 
-const New: Story = {
-  ...Primary,
+const New = storyExtend(Primary, {
   args: {
     entity: newEntity,
     locale: 'en',
     onSave: undefined,
   },
-};
+});
 
-const AllRequired: Story = {
-  ...Primary,
+const AllRequired = storyExtend(Primary, {
   args: {
     entity: newEntity,
     locale: 'en',
     templatesForStory: allRequiredTemplates,
     onSave: undefined,
   },
-};
+});
 
-const WithExternalErrors: Story = {
-  ...Primary,
+const WithExternalErrors = storyExtend(Primary, {
   args: {
     entity: apiEntity,
     locale: 'en',
@@ -262,7 +262,5 @@ const WithExternalErrors: Story = {
     },
     onSave: undefined,
   },
-};
-
-export default meta;
+});
 export { Basic, New, AllRequired, WithExternalErrors };

@@ -1,7 +1,8 @@
 /* eslint-disable import/exports-last */
 /* eslint-disable import/no-default-export */
 import React, { useRef, useState } from 'react';
-import type { Meta, StoryObj } from '@storybook/react-webpack5';
+import preview from '#storybook/preview';
+import { storyExtend } from '#app/stories/storyExtend.js';
 import {
   CodeEditor,
   CodeEditorProps,
@@ -78,14 +79,10 @@ const sampleHTML = `<h1>Main Heading</h1>
   <p>&copy; 2024 Example Company. All rights reserved.</p>
 </footer>`;
 
-const meta: Meta<typeof CodeEditor> = {
+const meta = preview.meta({
   title: 'Components/CodeEditor',
   component: CodeEditor,
-};
-
-export default meta;
-
-type Story = StoryObj<typeof CodeEditor>;
+});
 
 const Component = ({ language, intialValue, fallbackElement }: CodeEditorProps) => {
   const editorInstance = useRef<CodeEditorInstance>();
@@ -120,7 +117,11 @@ const Component = ({ language, intialValue, fallbackElement }: CodeEditorProps) 
   );
 };
 
-const Primary: Story = {
+const Primary = meta.story({
+  args: {
+    language: 'html',
+    intialValue: sampleHTML,
+  },
   render: args => (
     <Component
       language={args.language}
@@ -128,22 +129,20 @@ const Primary: Story = {
       fallbackElement={args.fallbackElement}
     />
   ),
-};
+});
 
-const JSEditor: Story = {
-  ...Primary,
+const JSEditor = storyExtend(Primary, {
   args: {
     language: 'javascript',
     intialValue: sampleJS,
   },
-};
+});
 
-const HTMLEditor: Story = {
-  ...Primary,
+const HTMLEditor = storyExtend(Primary, {
   args: {
     language: 'html',
     intialValue: sampleHTML,
   },
-};
+});
 
 export { JSEditor, HTMLEditor };

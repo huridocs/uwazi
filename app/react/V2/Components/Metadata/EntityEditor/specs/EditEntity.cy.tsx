@@ -1,7 +1,6 @@
 import React from 'react';
 import 'cypress-axe';
 import { mount } from 'cypress/react';
-import { composeStories } from '@storybook/react';
 import { ThemeProvider } from '#V2/theme/ThemeProvider.js';
 import * as stories from '#app/stories/EntityViewer/EditEntity.stories.js';
 
@@ -18,13 +17,13 @@ const openRelationshipSearch = (fieldTitle: string, fieldId: string) => {
 };
 
 describe('Entity edit', () => {
-  const { Basic, AllRequired, WithExternalErrors } = composeStories(stories);
+  const { Basic, AllRequired, WithExternalErrors } = stories;
 
   describe('Current metadata', () => {
     beforeEach(() => {
       mount(
         <ThemeProvider>
-          <Basic />
+          <Basic.Component />
         </ThemeProvider>
       );
     });
@@ -186,7 +185,7 @@ describe('Entity edit', () => {
       beforeEach(() => {
         mount(
           <ThemeProvider>
-            <Basic />
+            <Basic.Component />
           </ThemeProvider>
         );
       });
@@ -250,7 +249,7 @@ describe('Entity edit', () => {
         const saveSpy = cy.stub().as('saveSpy');
         mount(
           <ThemeProvider>
-            <Basic onSave={saveSpy} />
+            <Basic.Component onSave={saveSpy} />
           </ThemeProvider>
         );
 
@@ -294,7 +293,7 @@ describe('Entity edit', () => {
         const saveSpy = cy.stub().as('saveSpy');
         mount(
           <ThemeProvider>
-            <Basic onSave={saveSpy} />
+            <Basic.Component onSave={saveSpy} />
           </ThemeProvider>
         );
 
@@ -320,7 +319,7 @@ describe('Entity edit', () => {
     beforeEach(() => {
       mount(
         <ThemeProvider>
-          <Basic />
+          <Basic.Component />
         </ThemeProvider>
       );
       cy.contains('Owner / Residents').should('exist');
@@ -373,7 +372,7 @@ describe('Entity edit', () => {
       const saveSpy = cy.stub().as('saveSpy');
       mount(
         <ThemeProvider>
-          <Basic onSave={saveSpy} />
+          <Basic.Component onSave={saveSpy} />
         </ThemeProvider>
       );
       cy.contains('Owner / Residents').should('exist');
@@ -400,7 +399,7 @@ describe('Entity edit', () => {
     it('should mark required fields with an asterisk', () => {
       mount(
         <ThemeProvider>
-          <AllRequired />
+          <AllRequired.Component />
         </ThemeProvider>
       );
 
@@ -411,7 +410,7 @@ describe('Entity edit', () => {
       const saveSpy = cy.stub().as('saveSpy');
       mount(
         <ThemeProvider>
-          <AllRequired onSave={saveSpy} />
+          <AllRequired.Component onSave={saveSpy} />
         </ThemeProvider>
       );
 
@@ -424,7 +423,7 @@ describe('Entity edit', () => {
     it('should focus the first invalid field on failed save', () => {
       mount(
         <ThemeProvider>
-          <AllRequired />
+          <AllRequired.Component />
         </ThemeProvider>
       );
 
@@ -437,7 +436,7 @@ describe('Entity edit', () => {
     beforeEach(() => {
       mount(
         <ThemeProvider>
-          <WithExternalErrors />
+          <WithExternalErrors.Component />
         </ThemeProvider>
       );
     });

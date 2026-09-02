@@ -1,14 +1,13 @@
 import React, { useState } from 'react';
-import { Meta, StoryObj } from '@storybook/react-webpack5';
+import preview from '#storybook/preview';
+import { storyExtend } from '#app/stories/storyExtend.js';
 import { action } from 'storybook/actions';
 import { Checkbox } from '#V2/Components/Forms/index.js';
 
-const meta: Meta<typeof Checkbox> = {
+const meta = preview.meta({
   title: 'Forms/Checkbox',
   component: Checkbox,
-};
-
-type Story = StoryObj<typeof Checkbox>;
+});
 
 const InteractiveWrapper = ({
   initialChecked = false,
@@ -38,7 +37,7 @@ const InteractiveWrapper = ({
   );
 };
 
-const AllStates: Story = {
+const AllStates = meta.story({
   render: () => (
     <div className="flex flex-col gap-4 p-4">
       <Checkbox name="unchecked" label="Unchecked" checked={false} />
@@ -54,9 +53,16 @@ const AllStates: Story = {
       />
     </div>
   ),
-};
+});
 
-const Basic: Story = {
+const Basic = meta.story({
+  args: {
+    name: 'interactive-checkbox',
+    label: 'Uwazi is awesome',
+    disabled: false,
+    checked: false,
+    indeterminate: false,
+  },
   render: args => (
     <InteractiveWrapper
       initialChecked={args.checked}
@@ -65,49 +71,40 @@ const Basic: Story = {
       label={args.label}
     />
   ),
-  args: {
-    label: 'Uwazi is awesome',
-    disabled: false,
-    checked: false,
-    indeterminate: false,
-  },
-};
+});
 
-const Checked: Story = {
-  ...Basic,
+const Checked = storyExtend(Basic, {
   args: {
     label: 'Already checked',
     disabled: false,
     checked: true,
     indeterminate: false,
   },
-};
+});
 
-const Indeterminate: Story = {
+const Indeterminate = meta.story({
   render: () => <Checkbox name="indeterminate-only" label="Partial selection" indeterminate />,
-};
+});
 
-const Disabled: Story = {
-  ...Basic,
+const Disabled = storyExtend(Basic, {
   args: {
     label: 'Disabled checkbox',
     disabled: true,
     checked: false,
     indeterminate: false,
   },
-};
+});
 
-const DisabledChecked: Story = {
-  ...Basic,
+const DisabledChecked = storyExtend(Basic, {
   args: {
     label: 'Disabled and checked',
     disabled: true,
     checked: true,
     indeterminate: false,
   },
-};
+});
 
-const DisabledIndeterminate: Story = {
+const DisabledIndeterminate = meta.story({
   render: () => (
     <Checkbox
       name="disabled-indeterminate-only"
@@ -116,11 +113,11 @@ const DisabledIndeterminate: Story = {
       indeterminate
     />
   ),
-};
+});
 
-const CarbonTone: Story = {
+const CarbonTone = meta.story({
   render: () => <Checkbox name="carbon-tone" label="Carbon tone (filters)" checked tone="carbon" />,
-};
+});
 
 export {
   AllStates,
@@ -132,5 +129,3 @@ export {
   DisabledIndeterminate,
   CarbonTone,
 };
-
-export default meta;

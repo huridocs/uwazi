@@ -1,5 +1,5 @@
 import React from 'react';
-import type { Meta, StoryObj } from '@storybook/react-webpack5';
+import preview from '#storybook/preview';
 import { DatavizEditor } from '#V2/Dataviz/editor/DatavizEditor.js';
 import {
   createCustomColorsDefinition,
@@ -11,7 +11,7 @@ import {
 } from '../fixtures/datavizFixtures.js';
 import { DatavizStoryProvider } from '../providers/DatavizStoryProvider.js';
 
-const meta: Meta<typeof DatavizEditor> = {
+const meta = preview.meta({
   title: 'Settings/DatavizEditor',
   component: DatavizEditor,
   parameters: {
@@ -24,53 +24,49 @@ const meta: Meta<typeof DatavizEditor> = {
       </DatavizStoryProvider>
     ),
   ],
-};
+});
 
-export default meta;
-
-type Story = StoryObj<typeof DatavizEditor>;
-
-export const Default: Story = {
+export const Default = meta.story({
   args: {
     initialDefinition: createDefaultDatavizDefinition(),
   },
-};
+});
 
-export const PersonasSexByCountry: Story = {
+export const PersonasSexByCountry = meta.story({
   args: {
     initialDefinition: createPersonasSexByCountryDefinition(),
   },
-};
+});
 
-export const MultiSource: Story = {
+export const MultiSource = meta.story({
   args: {
     initialDefinition: createMultiSourceDefinition(),
   },
-};
+});
 
-export const WithFilters: Story = {
+export const WithFilters = meta.story({
   args: {
     initialDefinition: createWithFiltersDefinition(),
   },
-};
+});
 
-export const CustomColors: Story = {
+export const CustomColors = meta.story({
   args: {
     initialDefinition: createCustomColorsDefinition(),
   },
-};
+});
 
-export const LoadingPreview: Story = {
+export const LoadingPreview = meta.story({
   parameters: {
     apiOptions: { dataDelayMs: 3000 },
   },
   args: {
     initialDefinition: createDefaultDatavizDefinition(),
   },
-};
+});
 
-export const New: Story = {
+export const New = meta.story({
   args: {
     initialDefinition: createEmptyDatavizDefinition(),
   },
-};
+});

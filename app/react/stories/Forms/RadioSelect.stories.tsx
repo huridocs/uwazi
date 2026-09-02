@@ -1,22 +1,45 @@
 import React from 'react';
-import { Meta, StoryObj } from '@storybook/react-webpack5';
+import preview from '#storybook/preview';
+import { storyExtend } from '#app/stories/storyExtend.js';
 import { action } from 'storybook/actions';
 import { fn } from 'storybook/test';
 import { RadioSelect } from '#V2/Components/Forms/index.js';
 
-const meta: Meta<typeof RadioSelect> = {
+const meta = preview.meta({
   title: 'Forms/RadioSelect',
   component: RadioSelect,
   args: {
     onChange: fn(),
   },
-};
+});
 
-export default meta;
-
-type Story = StoryObj<typeof RadioSelect>;
-
-const Primary: Story = {
+const Primary = meta.story({
+  args: {
+    legend: 'Choose your favorite country',
+    name: 'country',
+    options: [
+      {
+        id: 'united-state',
+        label: 'USA',
+        value: 'united-state',
+      },
+      { label: 'Germany', value: 'germany' },
+      {
+        id: 'spain',
+        label: 'Spain',
+        value: 'spain',
+        defaultChecked: true,
+      },
+      {
+        id: 'uk',
+        label: 'United Kingdom',
+        value: 'uk',
+        disabled: true,
+      },
+      { id: 'china', label: 'China', value: 'china' },
+    ],
+    onChange: fn(),
+  },
   render: args => (
     <div className="tw-content">
       <RadioSelect
@@ -28,10 +51,9 @@ const Primary: Story = {
       />
     </div>
   ),
-};
+});
 
-const Basic: Story = {
-  ...Primary,
+const Basic = storyExtend(Primary, {
   args: {
     legend: 'Choose your favorite country',
     name: 'country',
@@ -58,14 +80,13 @@ const Basic: Story = {
     ],
     onChange: action('changed'),
   },
-};
+});
 
-const Horizontal: Story = {
-  ...Primary,
+const Horizontal = storyExtend(Primary, {
   args: {
-    ...Basic.args,
+    ...Basic.composed.args,
     orientation: 'horizontal',
   },
-};
+});
 
 export { Basic, Horizontal };
