@@ -592,7 +592,6 @@ Imported translations from file,Imported translations from file
 in,ใน
 "In a group, either all relationships must have a hub or none of them.","In a group, either all relationships must have a hub or none of them."
 In OCR queue,In OCR queue
-in this document,in this document
 In use,In use
 Include all entities,Include all entities
 Include only public,Include only public
@@ -943,7 +942,6 @@ Preserve Extension,Preserve Extension
 Preserve Setup Description,"If you know your Uwazi URL and TOKEN click the link below, and fill the required information."
 Press enter to add,กด Enter เพื่อเพิ่ม
 Preview,ดูตัวอย่าง
-Preview entity,Preview entity
 Preview updates automatically (300ms debounce),Preview updates automatically (300ms debounce)
 Preview updates when the JSON is valid.,Preview updates when the JSON is valid.
 Previous,ก่อนหน้า
@@ -1016,7 +1014,6 @@ Recommended,Recommended
 Reference,Reference
 References,การอ้างอิง
 references,references
-References in document,References in document
 Refresh,Refresh
 "Refresh manually when you have added data and cannot wait for the next
                         scheduled run.","Refresh manually when you have added data and cannot wait for the next
@@ -1359,6 +1356,7 @@ To,To
 "To complete the account creation process, please create a password for your account",เพื่อให้การสร้างบัญชีเสร็จสมบูรณ์กรุณาสร้างรหัสผ่านสำหรับบัญชีของคุณ
 to view your authentication code and verify your identity.,ในกรณีที่ต้องการดูรหัสผ่านและยืนยันตัวตน
 Today,Today
+Toggle relationship details,Toggle relationship details
 Toggle timeline mode,Toggle timeline mode
 Tools,เครื่องมือ
 total entities,total entities

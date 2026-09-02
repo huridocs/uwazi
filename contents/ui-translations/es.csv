@@ -590,7 +590,6 @@ Imported translations from file,Traducciones importadas desde el archivo
 in,en
 "In a group, either all relationships must have a hub or none of them.","En un grupo, todas las relaciones deben tener un nodo o ninguno de ellos."
 In OCR queue,En cola para ROC
-in this document,en este documento
 In use,En uso
 Include all entities,Include all entities
 Include only public,Include only public
@@ -940,7 +939,6 @@ Preserve Extension,Extensión Preservar
 Preserve Setup Description,"Si conoces el URL y TOKEN de Uwazi, haz click en el enlace a continuación y completa la información requerida."
 Press enter to add,Pulsa ENTER para añadir
 Preview,Previsualizar
-Preview entity,Previsualizar entidad
 Preview updates automatically (300ms debounce),Preview updates automatically (300ms debounce)
 Preview updates when the JSON is valid.,Preview updates when the JSON is valid.
 Previous,Anterior
@@ -1013,7 +1011,6 @@ Recommended,Recommended
 Reference,Reference
 References,Referencias
 references,referencias
-References in document,Referencias en el documento
 Refresh,Refresh
 "Refresh manually when you have added data and cannot wait for the next
                         scheduled run.","Refresh manually when you have added data and cannot wait for the next
@@ -1355,6 +1352,7 @@ To,To
 "To complete the account creation process, please create a password for your account","Para completar este proceso de creación de cuenta, por favor crea una contraseña."
 to view your authentication code and verify your identity.,para ver el código de autenticación y verificar tu identidad.
 Today,Today
+Toggle relationship details,Mostrar detalles de la relación
 Toggle timeline mode,Toggle timeline mode
 Tools,Herramientas
 total entities,total entities

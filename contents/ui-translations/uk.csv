@@ -594,7 +594,6 @@ Imported translations from file,Імпортовані переклади з ф�
 in,в
 "In a group, either all relationships must have a hub or none of them.","У групі або всі відносини повинні мати центр, або жоден з них."
 In OCR queue,У черзі на оптичне розпізнавання символів
-in this document,in this document
 In use,In use
 Include all entities,Include all entities
 Include only public,Include only public
@@ -945,7 +944,6 @@ Preserve Extension,Зберегти розширення
 Preserve Setup Description,"Якщо ви знаєте свій Uwazi URL і TOKEN, перейдіть за посиланням нижче і заповніть необхідну інформацію."
 Press enter to add,"Натисніть Enter, щоб додати"
 Preview,Попередній перегляд
-Preview entity,Preview entity
 Preview updates automatically (300ms debounce),Preview updates automatically (300ms debounce)
 Preview updates when the JSON is valid.,Preview updates when the JSON is valid.
 Previous,Попередній
@@ -1018,7 +1016,6 @@ Recommended,Recommended
 Reference,Посилання
 References,Посилання
 references,references
-References in document,References in document
 Refresh,Refresh
 "Refresh manually when you have added data and cannot wait for the next
                         scheduled run.","Refresh manually when you have added data and cannot wait for the next
@@ -1361,6 +1358,7 @@ To,До
 "To complete the account creation process, please create a password for your account","Будь ласка, створіть пароль, щоб завершити процес створення облікового запису."
 to view your authentication code and verify your identity.,щоб переглянути свій код автентифікації та підтвердити свою особу.
 Today,Сьогодні
+Toggle relationship details,Toggle relationship details
 Toggle timeline mode,Toggle timeline mode
 Tools,Інструменти
 total entities,всього суб'єктів господарювання
