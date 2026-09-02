@@ -1,13 +1,11 @@
 import React from 'react';
-import type { Meta, StoryObj } from '@storybook/react-webpack5';
+import preview from '#storybook/preview';
+import { storyExtend } from '#app/stories/storyExtend.js';
 import { fn } from 'storybook/test';
-import {
-  RelationshipsDocumentStory,
-  type RelationshipsDocumentStoryProps,
-} from './relationshipsDocumentViews.js';
+import { RelationshipsDocumentStory } from './relationshipsDocumentViews.js';
 import { RelationshipsStoryShell } from './relationshipsStoryShell.js';
 
-const meta: Meta<typeof RelationshipsDocumentStory> = {
+const meta = preview.meta({
   title: 'EntityViewer/RelationshipsDisplay',
   component: RelationshipsDocumentStory,
   args: {
@@ -21,30 +19,40 @@ const meta: Meta<typeof RelationshipsDocumentStory> = {
     onClusterClick: { action: 'cluster-clicked' },
     activeRelationshipId: { control: 'text' },
   },
-};
+});
 
-type Story = StoryObj<RelationshipsDocumentStoryProps>;
+const Primary = meta.story({
+  args: {
+    locale: 'en',
+    fileUrl: undefined,
+    activeRelationshipId: null,
+    onPointClick: fn(),
+    onClusterClick: fn(),
+  },
+  render: args => (
+    <RelationshipsDocumentStory
+      locale={args.locale}
+      fileUrl={args.fileUrl}
+      activeRelationshipId={args.activeRelationshipId}
+      onPointClick={args.onPointClick}
+      onClusterClick={args.onClusterClick}
+    />
+  ),
+});
 
-const Primary: Story = {
-  render: args => <RelationshipsDocumentStory {...args} />,
-};
-
-const Basic: Story = {
-  ...Primary,
+const Basic = storyExtend(Primary, {
   args: {
     fileUrl: undefined,
   },
-};
+});
 
-const Panel: Story = {
+const Panel = meta.story({
   render: () => <RelationshipsStoryShell locale="en" />,
   parameters: { layout: 'fullscreen' },
-};
+});
 
-const WithPanel: Story = {
+const WithPanel = meta.story({
   render: () => <RelationshipsStoryShell locale="en" layout="split" />,
   parameters: { layout: 'fullscreen' },
-};
-
-export default meta;
+});
 export { Basic, Panel, WithPanel };

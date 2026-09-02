@@ -98,84 +98,82 @@ const RelationshipConnectionsTableComponent = ({
   const colSpan = columns.length + 1 + (actionCol ? 1 : 0);
 
   return (
-    <div className="overflow-hidden rounded-md border border-border">
-      <div className="overflow-x-auto">
-        <table className="w-max min-w-full border-collapse text-sm">
-          <caption className="sr-only">
-            <Translate>Connected entities</Translate>
-            {columns.length > 0 ? ` — ${columns.map(column => column.label).join(', ')}` : null}
-          </caption>
-          <thead>
-            <tr className="text-[11px] uppercase tracking-wide text-ink-tertiary">
-              <th scope="col" className="px-3 py-1.5 text-start font-medium">
-                <Translate>Entity</Translate>
+    <div className="overflow-x-auto">
+      <table className="w-max min-w-full border-collapse text-sm">
+        <caption className="sr-only">
+          <Translate>Connected entities</Translate>
+          {columns.length > 0 ? ` — ${columns.map(column => column.label).join(', ')}` : null}
+        </caption>
+        <thead>
+          <tr className="text-[11px] uppercase tracking-wide text-ink-tertiary">
+            <th scope="col" className="px-3 py-1.5 text-start font-medium">
+              <Translate>Entity</Translate>
+            </th>
+            {columns.map(column => (
+              <th
+                key={column.label}
+                scope="col"
+                className={inheritColumnHeaderClass(column.inheritedType)}
+              >
+                <span className="inline-flex items-center gap-1">
+                  <LinkIcon className="h-2.5 w-2.5 text-carbon" aria-hidden />
+                  <Translate context={translationContext}>{column.label}</Translate>
+                </span>
               </th>
-              {columns.map(column => (
-                <th
-                  key={column.label}
-                  scope="col"
-                  className={inheritColumnHeaderClass(column.inheritedType)}
-                >
-                  <span className="inline-flex items-center gap-1">
-                    <LinkIcon className="h-2.5 w-2.5 text-carbon" aria-hidden />
-                    <Translate context={translationContext}>{column.label}</Translate>
-                  </span>
-                </th>
-              ))}
-              {actionCol ? (
-                <th scope="col" className="sticky right-0 w-0 bg-paper px-2" aria-hidden />
-              ) : null}
+            ))}
+            {actionCol ? (
+              <th scope="col" className="sticky right-0 w-0 bg-paper px-2" aria-hidden />
+            ) : null}
+          </tr>
+        </thead>
+        <tbody>
+          {rows.length === 0 ? (
+            <tr>
+              <td
+                colSpan={colSpan}
+                className="border-t border-border/40 px-3 py-2.5 text-xs text-ink-muted"
+              >
+                <Translate>{emptyLabel}</Translate>
+              </td>
             </tr>
-          </thead>
-          <tbody>
-            {rows.length === 0 ? (
-              <tr>
-                <td
-                  colSpan={colSpan}
-                  className="border-t border-border/40 px-3 py-2.5 text-xs text-ink-muted"
+          ) : (
+            rows.map(row => {
+              const pill = (
+                <span className="inline-flex max-w-full items-center gap-1.5">
+                  <EntityIcon data={row.icon} />
+                  <TemplatePill
+                    templateId={row.templateId || targetTemplateId || ''}
+                    label={row.label || row.id}
+                  />
+                </span>
+              );
+              return (
+                <tr
+                  key={row.id}
+                  className="border-t border-border/40 transition-colors hover:bg-warm/30"
                 >
-                  <Translate>{emptyLabel}</Translate>
-                </td>
-              </tr>
-            ) : (
-              rows.map(row => {
-                const pill = (
-                  <span className="inline-flex max-w-full items-center gap-1.5">
-                    <EntityIcon data={row.icon} />
-                    <TemplatePill
-                      templateId={row.templateId || targetTemplateId || ''}
-                      label={row.label || row.id}
-                    />
-                  </span>
-                );
-                return (
-                  <tr
-                    key={row.id}
-                    className="border-t border-border/40 transition-colors hover:bg-warm/30"
-                  >
-                    <td className="max-w-40 px-3 py-1.5 align-middle">
-                      {entityCellForRow(row, pill, onEntityClick)}
+                  <td className="max-w-40 px-3 py-1.5 align-middle">
+                    {entityCellForRow(row, pill, onEntityClick)}
+                  </td>
+                  {columns.map(column => (
+                    <td
+                      key={`${row.id}-${column.label}`}
+                      className={inheritedCellClass(column.inheritedType)}
+                    >
+                      {renderInheritedCell(cellContent(column, row.id))}
                     </td>
-                    {columns.map(column => (
-                      <td
-                        key={`${row.id}-${column.label}`}
-                        className={inheritedCellClass(column.inheritedType)}
-                      >
-                        {renderInheritedCell(cellContent(column, row.id))}
-                      </td>
-                    ))}
-                    {actionCol ? (
-                      <td className="sticky right-0 border-s border-border/40 bg-paper px-2 py-1 align-middle">
-                        {renderActions?.(row)}
-                      </td>
-                    ) : null}
-                  </tr>
-                );
-              })
-            )}
-          </tbody>
-        </table>
-      </div>
+                  ))}
+                  {actionCol ? (
+                    <td className="sticky right-0 border-s border-border/40 bg-paper px-2 py-1 align-middle">
+                      {renderActions?.(row)}
+                    </td>
+                  ) : null}
+                </tr>
+              );
+            })
+          )}
+        </tbody>
+      </table>
     </div>
   );
 };

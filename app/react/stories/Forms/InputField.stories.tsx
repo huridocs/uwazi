@@ -1,18 +1,24 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import React, { useState } from 'react';
-import { Meta, StoryObj } from '@storybook/react-webpack5';
+import preview from '#storybook/preview';
+import { storyExtend } from '#app/stories/storyExtend.js';
 import { MagnifyingGlassIcon } from '@heroicons/react/24/solid';
 import { InputField } from '#V2/Components/Forms/index.js';
 
-const meta: Meta<typeof InputField> = {
+const meta = preview.meta({
   title: 'Forms/InputField',
   component: InputField,
-};
-export default meta;
+});
 
-type Story = StoryObj<typeof InputField>;
-
-const InputFieldStory: Story = {
+const InputFieldStory = meta.story({
+  args: {
+    id: '1',
+    label: 'Input field label',
+    disabled: false,
+    hideLabel: false,
+    hasErrors: false,
+    placeholder: 'Users can get a hint of what value is expected in this field',
+  },
   render: args => (
     <div className="tw-content">
       <div className="md:w-1/2">
@@ -20,7 +26,7 @@ const InputFieldStory: Story = {
       </div>
     </div>
   ),
-};
+});
 
 const InteractiveWrapper = ({
   initialValue = '',
@@ -61,8 +67,7 @@ const InteractiveWrapper = ({
   );
 };
 
-const Basic = {
-  ...InputFieldStory,
+const Basic = storyExtend(InputFieldStory, {
   args: {
     id: '1',
     label: 'Input field label',
@@ -71,49 +76,45 @@ const Basic = {
     hasErrors: false,
     placeholder: 'Users can get a hint of what value is expected in this field',
   },
-};
+});
 
-const WithClearFieldButton = {
-  ...InputFieldStory,
+const WithClearFieldButton = storyExtend(InputFieldStory, {
   args: {
-    ...Basic.args,
+    ...Basic.composed.args,
     clearFieldAction: () => {},
     value:
       'This is a very long value that will not show over the clear field button even if it is very long',
   },
-};
+});
 
-const WithError = {
-  ...InputFieldStory,
+const WithError = storyExtend(InputFieldStory, {
   args: {
-    ...Basic.args,
+    ...Basic.composed.args,
     hasErrors: true,
     value: 'This value has errors',
     clearFieldAction: () => {},
   },
-};
+});
 
-const WithErrorMessage = {
-  ...InputFieldStory,
+const WithErrorMessage = storyExtend(InputFieldStory, {
   args: {
-    ...Basic.args,
+    ...Basic.composed.args,
     errorMessage: "This is an error message that will show when there's an error",
     value: 'This value has errors',
     clearFieldAction: () => {},
   },
-};
+});
 
-const WithPreText = {
-  ...InputFieldStory,
+const WithPreText = storyExtend(InputFieldStory, {
   args: {
-    ...Basic.args,
+    ...Basic.composed.args,
     value: 'example.com',
     preText: 'https://',
     clearFieldAction: () => {},
   },
-};
+});
 
-const WithIcon: Story = {
+const WithIcon = meta.story({
   render: args => (
     <div className="tw-content">
       <div className="md:w-1/2">
@@ -126,11 +127,11 @@ const WithIcon: Story = {
     </div>
   ),
   args: {
-    ...Basic.args,
+    ...Basic.composed.args,
   },
-};
+});
 
-const WithIconAndClearButton: Story = {
+const WithIconAndClearButton = meta.story({
   render: args => (
     <div className="tw-content">
       <div className="md:w-1/2">
@@ -144,11 +145,11 @@ const WithIconAndClearButton: Story = {
     </div>
   ),
   args: {
-    ...Basic.args,
+    ...Basic.composed.args,
   },
-};
+});
 
-const WithIconAndClearButtonWithValue: Story = {
+const WithIconAndClearButtonWithValue = meta.story({
   render: args => (
     <div className="tw-content">
       <div className="md:w-1/2">
@@ -163,9 +164,9 @@ const WithIconAndClearButtonWithValue: Story = {
     </div>
   ),
   args: {
-    ...Basic.args,
+    ...Basic.composed.args,
   },
-};
+});
 
 export {
   Basic,

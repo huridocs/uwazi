@@ -5,8 +5,12 @@ import {
   SourceQueryContext,
 } from '#api/dataviz.v2/application/contracts/DatavizAggregationStrategy.js';
 import { validateQueryStructure } from '#api/dataviz.v2/domain/validators/validateExecutableDatavizQuery.js';
-import { DatavizDataDTO, DatavizQuery } from '#shared/types/datavizSchema.js';
-import { DATAVIZ_MAX_BUCKETS, REFRESH_LIVE_TIMEOUT_MS } from '#shared/types/datavizSchema.js';
+import {
+  DatavizDataDTO,
+  DatavizQuery,
+  DATAVIZ_MAX_BUCKETS,
+  REFRESH_LIVE_TIMEOUT_MS,
+} from '#shared/types/datavizSchema.js';
 import { DATAVIZ_MISSING_BUCKET_KEY } from '#shared/dataviz/missingBucket.js';
 import {
   normalizeDatavizBucketKey,

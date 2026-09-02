@@ -1,15 +1,13 @@
 import React, { useId, useState } from 'react';
-import type { Meta, StoryObj } from '@storybook/react-webpack5';
+import preview from '#storybook/preview';
 import { action } from 'storybook/actions';
 import { Drawer, type DrawerMotion, type DrawerScope } from '#V2/Components/UI/Drawer.js';
 import { Button } from '#V2/Components/UI/Button.js';
 
-const meta: Meta<typeof Drawer> = {
+const meta = preview.meta({
   title: 'Components/UI/Drawer',
   component: Drawer,
-};
-
-type Story = StoryObj<typeof Drawer>;
+});
 
 type DrawerDemoProps = {
   scope?: DrawerScope;
@@ -88,17 +86,15 @@ const DrawerDemo = ({ scope = 'fixed', motion, defaultOpen = false }: DrawerDemo
   );
 };
 
-const Playground: Story = {
+const Playground = meta.story({
   render: () => <DrawerDemo />,
-};
+});
 
-const Open: Story = {
+const Open = meta.story({
   render: () => <DrawerDemo defaultOpen />,
-};
+});
 
-const Absolute: Story = {
+const Absolute = meta.story({
   render: () => <DrawerDemo scope="absolute" defaultOpen />,
-};
-
-export default meta;
+});
 export { Playground, Open, Absolute };

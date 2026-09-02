@@ -1,13 +1,11 @@
 import React, { useState } from 'react';
-import type { Meta, StoryObj } from '@storybook/react-webpack5';
+import preview from '#storybook/preview';
 import { DisplayMenu, DisplayMenuRow, WarmSelect } from '#V2/Components/UI/index.js';
 
-const meta: Meta<typeof DisplayMenu> = {
+const meta = preview.meta({
   title: 'Components/UI/DisplayMenu',
   component: DisplayMenu,
-};
-
-type Story = StoryObj<typeof DisplayMenu>;
+});
 
 const Preview = () => {
   const [groupBy, setGroupBy] = useState('relation-type');
@@ -48,9 +46,8 @@ const Preview = () => {
   );
 };
 
-const Default: Story = {
+const Default = meta.story({
   render: () => <Preview />,
-};
+});
 
 export { Default };
-export default meta;

@@ -54,13 +54,13 @@ const geoProp: MetadataProperty = {
 describe('renderFieldContent density', () => {
   it('uses default image/media/geo sizes when density omitted', () => {
     const { rerender } = render(<>{renderFieldContent(imageProp)}</>);
-    expect(screen.getByRole('img').className).toContain('max-h-96');
+    expect(screen.getByRole('img').className).toContain('absolute inset-0 h-full w-full');
 
     rerender(<>{renderFieldContent(mediaProp)}</>);
-    expect(screen.getByTestId('media-player')).toHaveAttribute('data-height', '300');
+    expect(screen.getByTestId('media-player')).toHaveAttribute('data-height', '100%');
 
     rerender(<>{renderFieldContent(geoProp)}</>);
-    expect(screen.getByTestId('map')).toHaveAttribute('data-height', '500');
+    expect(screen.getByTestId('map')).toHaveAttribute('data-height', '220');
     expect(screen.getByTestId('map')).toHaveAttribute('data-show-controls', 'undefined');
   });
 

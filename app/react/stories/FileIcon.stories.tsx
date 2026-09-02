@@ -1,16 +1,14 @@
 import React from 'react';
-import type { Meta, StoryObj } from '@storybook/react-webpack5';
+import preview from '#storybook/preview';
+import { storyExtend } from '#app/stories/storyExtend.js';
 import { FileIcon } from '#V2/Components/UI/index.js';
 
-const meta: Meta<typeof FileIcon> = {
+const meta = preview.meta({
   title: 'Components/FileIcon',
   component: FileIcon,
-};
-export default meta;
+});
 
-type Story = StoryObj<typeof FileIcon>;
-
-const Primary: Story = {
+const Primary = meta.story({
   render: () => (
     <div className="tw-content">
       <div className="flex gap-6">
@@ -35,10 +33,8 @@ const Primary: Story = {
       </div>
     </div>
   ),
-};
+});
 
-const Basic: Story = {
-  ...Primary,
-};
+const Basic = storyExtend(Primary, {});
 
 export { Basic };

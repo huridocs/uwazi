@@ -1,23 +1,31 @@
 import React from 'react';
-import { Meta, StoryObj } from '@storybook/react-webpack5';
+import preview from '#storybook/preview';
+import { storyExtend } from '#app/stories/storyExtend.js';
 import { action } from 'storybook/actions';
 import { fn } from 'storybook/test';
 import { Geolocation } from '#V2/Components/Forms/index.js';
 import { LEGACY_createStore as createStore } from '#V2/testing/index.js';
 import { Provider } from 'react-redux';
 
-const meta: Meta<typeof Geolocation> = {
+const meta = preview.meta({
   title: 'Forms/Geolocation',
   component: Geolocation,
   args: {
     onChange: fn(),
   },
-};
-export default meta;
+});
 
-type Story = StoryObj<typeof Geolocation>;
-
-const Primary: Story = {
+const Primary = meta.story({
+  args: {
+    label: 'Uwazi is everywhere',
+    name: 'Uwazilocations',
+    disabled: false,
+    className: '',
+    value: { lat: 0, lon: 0 },
+    onChange: fn(),
+    zoom: 2,
+    layers: ['Dark', 'Satellite'],
+  },
   render: args => (
     <Provider store={createStore()}>
       <div className="tw-content">
@@ -34,10 +42,9 @@ const Primary: Story = {
       </div>
     </Provider>
   ),
-};
+});
 
-const Basic: Story = {
-  ...Primary,
+const Basic = storyExtend(Primary, {
   args: {
     label: 'Uwazi is everywhere',
     name: 'Uwazilocations',
@@ -48,6 +55,6 @@ const Basic: Story = {
     zoom: 2,
     layers: ['Dark', 'Satellite'],
   },
-};
+});
 
 export { Basic };

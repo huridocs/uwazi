@@ -211,7 +211,7 @@ const parseLocalizedDate = (dateString: string | undefined, language: string = '
   const locale = localeMap[language.toLowerCase()] || 'en';
 
   // Clean up the date string - remove common ordinals and suffixes
-  let cleanedDate = dateString
+  const cleanedDate = dateString
     // Greek ordinals
     .replace(/ης\s/g, ' ') // Remove "ης" (18ης -> 18)
     .replace(/η\s/g, ' ') // Remove "η" (1η -> 1)
@@ -228,7 +228,7 @@ const parseLocalizedDate = (dateString: string | undefined, language: string = '
     .trim();
 
   // Special handling for Spanish "de" format
-  let spanishCleanedDate = cleanedDate
+  const spanishCleanedDate = cleanedDate
     .replace(/\s+de\s+/g, ' ') // Remove "de" particles (18 de julio de 2025 -> 18 julio 2025)
     .replace(/\s+/g, ' ') // Normalize spaces
     .trim();

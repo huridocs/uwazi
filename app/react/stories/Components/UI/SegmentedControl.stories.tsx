@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import type { Meta, StoryObj } from '@storybook/react-webpack5';
+import preview from '#storybook/preview';
 import { fn } from 'storybook/test';
 import {
   LayoutListIcon,
@@ -12,12 +12,10 @@ import {
   SegmentedControlRoot,
 } from '#V2/Components/UI/SegmentedControl/index.js';
 
-const meta: Meta<typeof SegmentedControl> = {
+const meta = preview.meta({
   title: 'Components/UI/SegmentedControl',
   component: SegmentedControl,
-};
-
-type Story = StoryObj<typeof SegmentedControl>;
+});
 
 const viewOptions = [
   { id: 'list' as const, title: 'List', Icon: LayoutListIcon },
@@ -53,15 +51,15 @@ const ComposedPreview = () => {
   );
 };
 
-const OptionsApi: Story = {
+const OptionsApi = meta.story({
   render: () => <OptionsApiPreview />,
-};
+});
 
-const Composed: Story = {
+const Composed = meta.story({
   render: () => <ComposedPreview />,
-};
+});
 
-const Disabled: Story = {
+const Disabled = meta.story({
   render: () => (
     <div className="tw-content p-4">
       <SegmentedControl
@@ -73,7 +71,5 @@ const Disabled: Story = {
       />
     </div>
   ),
-};
-
-export default meta;
+});
 export { OptionsApi, Composed, Disabled };

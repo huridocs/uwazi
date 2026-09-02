@@ -10,6 +10,7 @@ interface MultiselectListButtonItemProps {
   itemContainerClassName?: string;
   itemClassName?: string;
   onClick: () => void;
+  plain?: boolean;
 }
 
 const MultiselectListGroup = ({
@@ -20,13 +21,16 @@ const MultiselectListGroup = ({
   onClick,
   itemContainerClassName,
   itemClassName,
+  plain = false,
 }: MultiselectListButtonItemProps) => {
+  const foldableHeaderBg = isOpen ? 'bg-parchment' : 'bg-warm';
+
   if (foldable) {
     return (
-      <li className={`${itemClassName ?? 'mb-2 rounded-md bg-warm'}`}>
+      <li className={`${itemClassName ?? (plain ? 'mb-2' : 'mb-2 rounded-md bg-warm')}`}>
         <div
           className={`mb-1 flex cursor-pointer items-center justify-between gap-2 rounded-md px-2.5 py-2 ${
-            isOpen ? 'bg-parchment' : 'bg-warm'
+            plain ? '' : foldableHeaderBg
           }`}
           onClick={onClick}
         >
@@ -45,15 +49,17 @@ const MultiselectListGroup = ({
             <Translate>Group</Translate>
           </button>
         </div>
-        {isOpen && <ul className={`${itemContainerClassName ?? 'space-y-1 ps-3'}`}>{children}</ul>}
+        {isOpen && (
+          <ul className={`${itemContainerClassName ?? 'flex flex-col gap-1 ps-3'}`}>{children}</ul>
+        )}
       </li>
     );
   }
 
   return (
-    <li className={`${itemClassName ?? 'mb-2 rounded-md bg-warm px-2.5 py-2'}`}>
+    <li className={`${itemClassName ?? (plain ? 'mb-2' : 'mb-2 rounded-md bg-warm px-2.5 py-2')}`}>
       <span className="mb-1.5 block text-sm font-semibold text-ink">{label}</span>
-      <ul className={`${itemContainerClassName ?? 'space-y-1'}`}>{children}</ul>
+      <ul className={`${itemContainerClassName ?? 'flex flex-col gap-1'}`}>{children}</ul>
     </li>
   );
 };

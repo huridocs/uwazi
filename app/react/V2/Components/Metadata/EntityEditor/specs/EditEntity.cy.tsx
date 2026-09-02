@@ -1,7 +1,6 @@
 import React from 'react';
 import 'cypress-axe';
 import { mount } from 'cypress/react';
-import { composeStories } from '@storybook/react';
 import { ThemeProvider } from '#V2/theme/ThemeProvider.js';
 import * as stories from '#app/stories/EntityViewer/EditEntity.stories.js';
 
@@ -18,13 +17,13 @@ const openRelationshipSearch = (fieldTitle: string, fieldId: string) => {
 };
 
 describe('Entity edit', () => {
-  const { Basic, AllRequired, WithExternalErrors } = composeStories(stories);
+  const { Basic, AllRequired, WithExternalErrors } = stories;
 
   describe('Current metadata', () => {
     beforeEach(() => {
       mount(
         <ThemeProvider>
-          <Basic />
+          <Basic.Component />
         </ThemeProvider>
       );
     });
@@ -120,7 +119,7 @@ describe('Entity edit', () => {
     });
 
     it('should check the selected values in Related people field', () => {
-      cy.contains('Owner / Residents')
+      cy.contains('Owner')
         .closest('div.space-y-1\\.5')
         .within(() => {
           cy.contains('Maria Rodriguez - Witness').should('exist');
@@ -186,7 +185,7 @@ describe('Entity edit', () => {
       beforeEach(() => {
         mount(
           <ThemeProvider>
-            <Basic />
+            <Basic.Component />
           </ThemeProvider>
         );
       });
@@ -250,7 +249,7 @@ describe('Entity edit', () => {
         const saveSpy = cy.stub().as('saveSpy');
         mount(
           <ThemeProvider>
-            <Basic onSave={saveSpy} />
+            <Basic.Component onSave={saveSpy} />
           </ThemeProvider>
         );
 
@@ -294,7 +293,7 @@ describe('Entity edit', () => {
         const saveSpy = cy.stub().as('saveSpy');
         mount(
           <ThemeProvider>
-            <Basic onSave={saveSpy} />
+            <Basic.Component onSave={saveSpy} />
           </ThemeProvider>
         );
 
@@ -320,25 +319,19 @@ describe('Entity edit', () => {
     beforeEach(() => {
       mount(
         <ThemeProvider>
-          <Basic />
+          <Basic.Component />
         </ThemeProvider>
       );
-      cy.contains('Owner / Residents').should('exist');
+      cy.contains('Owner').should('exist');
     });
 
-    it('should render grouped Owner / Residents as a single relationship field', () => {
-      cy.contains('Owner / Residents').should('exist');
+    it('should render grouped Owner as a single relationship field', () => {
+      cy.contains('Owner').should('exist');
       cy.contains('Maria Rodriguez - Witness').should('exist');
       cy.contains('button', 'Add entity').should('exist');
       cy.contains('label', 'Related residents').should('not.exist');
-      cy.contains('Owner / Residents')
-        .closest('div.space-y-1\\.5')
-        .find('.overflow-x-auto')
-        .should('exist');
-      cy.contains('Owner / Residents')
-        .closest('div.space-y-1\\.5')
-        .find('table')
-        .should('have.class', 'w-max');
+      cy.contains('Owner').closest('div.space-y-1\\.5').find('.overflow-x-auto').should('exist');
+      cy.contains('Owner').closest('div.space-y-1\\.5').find('table').should('have.class', 'w-max');
     });
 
     it('should render Witnesses as a separate relationship field', () => {
@@ -347,16 +340,16 @@ describe('Entity edit', () => {
     });
 
     it('should filter relationship options when searching the lookup', () => {
-      openRelationshipSearch('Owner / Residents', 'metadata.related_people');
+      openRelationshipSearch('Owner', 'metadata.related_people');
       cy.get('input[id="metadata.related_people"]').type('Lucia Torres');
       cy.contains('button', 'Lucia Torres - Resident').should('exist');
       cy.contains('button', 'Diego Morales - Resident').should('not.exist');
     });
 
     it('should select and deselect relationship entities', () => {
-      openRelationshipSearch('Owner / Residents', 'metadata.related_people');
+      openRelationshipSearch('Owner', 'metadata.related_people');
       cy.contains('button', 'Lucia Torres - Resident').click();
-      cy.contains('Owner / Residents')
+      cy.contains('Owner')
         .closest('div.space-y-1\\.5')
         .within(() => {
           cy.contains('Lucia Torres - Resident').should('exist');
@@ -373,12 +366,12 @@ describe('Entity edit', () => {
       const saveSpy = cy.stub().as('saveSpy');
       mount(
         <ThemeProvider>
-          <Basic onSave={saveSpy} />
+          <Basic.Component onSave={saveSpy} />
         </ThemeProvider>
       );
-      cy.contains('Owner / Residents').should('exist');
+      cy.contains('Owner').should('exist');
 
-      openRelationshipSearch('Owner / Residents', 'metadata.related_people');
+      openRelationshipSearch('Owner', 'metadata.related_people');
       cy.contains('button', 'Lucia Torres - Resident').click();
       cy.contains('button', 'Save').click();
 
@@ -400,7 +393,7 @@ describe('Entity edit', () => {
     it('should mark required fields with an asterisk', () => {
       mount(
         <ThemeProvider>
-          <AllRequired />
+          <AllRequired.Component />
         </ThemeProvider>
       );
 
@@ -411,7 +404,7 @@ describe('Entity edit', () => {
       const saveSpy = cy.stub().as('saveSpy');
       mount(
         <ThemeProvider>
-          <AllRequired onSave={saveSpy} />
+          <AllRequired.Component onSave={saveSpy} />
         </ThemeProvider>
       );
 
@@ -424,7 +417,7 @@ describe('Entity edit', () => {
     it('should focus the first invalid field on failed save', () => {
       mount(
         <ThemeProvider>
-          <AllRequired />
+          <AllRequired.Component />
         </ThemeProvider>
       );
 
@@ -437,7 +430,7 @@ describe('Entity edit', () => {
     beforeEach(() => {
       mount(
         <ThemeProvider>
-          <WithExternalErrors />
+          <WithExternalErrors.Component />
         </ThemeProvider>
       );
     });
