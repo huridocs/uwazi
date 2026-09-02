@@ -8,11 +8,13 @@ import { LinkProperty } from './LinkProperty.js';
 import { Image } from './Image.js';
 import { Media } from './Media.js';
 import { connectionPillsForField } from './ConnectionPills.js';
+import type { OpenEntityTarget } from './ConnectionPills.js';
 import type { MetadataProperty } from '#V2/formatters/types.js';
 
 type FieldContentOptions = {
   density?: 'default' | 'compact';
   long?: boolean;
+  onOpenEntity?: (target: OpenEntityTarget) => void;
 };
 
 const hasFilledText = (values?: Array<{ value?: string | null }>) =>
@@ -59,6 +61,8 @@ const renderSpecializedContent = (
         markers={data.values}
         height={compact ? 160 : undefined}
         showControls={compact ? false : undefined}
+        showLegend={!compact && (data.propertyGroup?.length ?? 0) > 1}
+        onOpenEntity={options.onOpenEntity}
       />
     );
   }
@@ -68,12 +72,23 @@ const renderSpecializedContent = (
   }
   if (data.type === 'media') {
     if (!hasFilledText(data.values)) return null;
-    return <Media values={data.values} height={compact ? 140 : undefined} />;
+    return (
+      <Media
+        values={data.values}
+        height={compact ? 140 : '100%'}
+        frame={compact ? 'natural' : 'video'}
+      />
+    );
   }
   if (data.type === 'image' || data.type === 'preview') {
     if (!hasFilledText(data.values)) return null;
     return (
-      <Image values={data.values} imageStyle={data.style} density={options.density ?? 'default'} />
+      <Image
+        values={data.values}
+        imageStyle={data.style}
+        density={options.density ?? 'default'}
+        frame={compact ? 'natural' : 'video'}
+      />
     );
   }
   return null;

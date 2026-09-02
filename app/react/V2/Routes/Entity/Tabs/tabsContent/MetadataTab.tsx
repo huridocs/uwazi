@@ -166,7 +166,7 @@ const MetadataTab = ({ entity, host }: MetadataTabProps) => {
 
   return (
     <div
-      className={`h-full min-h-0 min-w-0 flex-1 overflow-y-auto py-3 pb-8 ${
+      className={`min-h-0 min-w-0 flex-1 overflow-y-auto py-3 pb-8 ${
         host === 'side' ? 'px-3' : 'px-4'
       }`}
     >

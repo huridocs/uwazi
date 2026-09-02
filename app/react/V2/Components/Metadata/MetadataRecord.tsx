@@ -3,21 +3,26 @@ import { useAtomValue } from 'jotai';
 import { Translate } from '#app/I18N/index.js';
 import { templatesAtom } from '#V2/atoms/templatesAtom.js';
 import { Entity } from '#V2/api/entities/types.js';
-import { Date, RelationshipCards, MetadataCard, MetadataItemsTable } from './Components/index.js';
-import type { MetadataItem } from './Components/MetadataItemsTable.js';
+import { MetadataCard } from './Components/index.js';
 import { useFormatMetadata } from './hooks/useFormatMetadata.js';
 import { buildTemplatePropertyById } from './buildTemplatePropertyById.js';
 import { buildMetadataRecordFields } from './buildMetadataRecordFields.js';
 import {
+  inheritGroupKey,
+  isInheritingRelationship,
   isLongField,
   isRelationshipProperty,
+  metadataGridClassForProperty,
+  packPropertyRows,
   partitionMetadataRecord,
 } from './metadataPropertyLayout.js';
+import { useContainerWidth } from '#V2/Components/PDFViewer/hooks/useContainerWidth.js';
 import { renderFieldContent, renderScalarContent } from './Components/metadataFieldContent.js';
 import { fieldTitle, specializedCardTitle } from './Components/metadataFieldTitle.js';
 import { connectionPillsForField, type OpenEntityTarget } from './Components/ConnectionPills.js';
+import { buildInheritingCardsByGroupKey } from './Components/RelationshipCards.js';
 import { useMetadataRecordFocus } from './useMetadataRecordFocus.js';
-import { EntityIcon } from '../CustomIcons/EntityIcon.js';
+import { SystemDatesLine, entityHasSystemDates } from './Components/SystemDatesLine.js';
 import type { MetadataProperty, RelationshipMetadataProperty } from '#V2/formatters/types.js';
 import type { ClientProperty } from '#V2/shared/types.js';
 
@@ -26,16 +31,70 @@ type MetadataRecordProps = {
   onOpenEntity?: (target: OpenEntityTarget) => void;
 };
 
-const relationshipCardContent = (
-  field: RelationshipMetadataProperty,
-  templateProperty: ClientProperty | undefined,
-  onOpenEntity?: (target: OpenEntityTarget) => void
-) => connectionPillsForField(field, templateProperty, { onOpenEntity });
+const fieldCard = (field: MetadataProperty, layoutClass: string, children: ReactNode) => (
+  <div key={field._id} data-field-key={field.name} className={layoutClass}>
+    {children}
+  </div>
+);
 
+type InheritingCardArgs = {
+  field: RelationshipMetadataProperty;
+  inheritingCardsByGroupKey: Map<string, ReactNode>;
+  templatePropertyById: Map<string, ClientProperty>;
+};
+
+const inheritingPropertyCard = ({
+  field,
+  inheritingCardsByGroupKey,
+  templatePropertyById,
+}: InheritingCardArgs) => {
+  const node = inheritingCardsByGroupKey.get(inheritGroupKey(field, templatePropertyById));
+  if (!node) {
+    return null;
+  }
+  return fieldCard(field, metadataGridClassForProperty(field), node);
+};
+
+const standardPropertyCard = ({
+  field,
+  translationContext,
+  templatePropertyById,
+  onOpenEntity,
+}: {
+  field: MetadataProperty;
+  translationContext: string;
+  templatePropertyById: Map<string, ClientProperty>;
+  onOpenEntity?: (target: OpenEntityTarget) => void;
+}) => {
+  const title = isRelationshipProperty(field)
+    ? fieldTitle(field.label, translationContext, field.hideLabel)
+    : specializedCardTitle(field, translationContext);
+  let content: ReactNode = renderFieldContent(field, { onOpenEntity });
+  if (isRelationshipProperty(field)) {
+    content = connectionPillsForField(field, templatePropertyById.get(field._id), { onOpenEntity });
+  } else if (isLongField(field)) {
+    content = renderScalarContent(field, true);
+  }
+  if (!content) {
+    return null;
+  }
+  return fieldCard(
+    field,
+    metadataGridClassForProperty(field),
+    <MetadataCard title={title}>{content}</MetadataCard>
+  );
+};
+
+// eslint-disable-next-line max-statements
 const MetadataRecord = ({ entity, onOpenEntity }: MetadataRecordProps) => {
   const templates = useAtomValue(templatesAtom);
   const rootRef = useRef<HTMLDivElement>(null);
-  useMetadataRecordFocus(entity.sharedId, rootRef);
+  const panelWidth = useContainerWidth(rootRef, {
+    borderWidth: 0,
+    safetyBuffer: 0,
+    debounce: 50,
+  });
+  useMetadataRecordFocus(entity.sharedId, rootRef, panelWidth !== undefined);
 
   const { entityTemplate, metadata } = useFormatMetadata(entity, templates, {
     groupGeolocationProperties: true,
@@ -47,8 +106,8 @@ const MetadataRecord = ({ entity, onOpenEntity }: MetadataRecordProps) => {
   );
 
   const { relationshipFields, otherFields } = useMemo(
-    () => buildMetadataRecordFields(metadata, templatePropertyById, entity, templates),
-    [metadata, templatePropertyById, entity, templates]
+    () => buildMetadataRecordFields(metadata, templatePropertyById, entity),
+    [metadata, templatePropertyById, entity]
   );
 
   const translationContext = entityTemplate?._id || '';
@@ -58,100 +117,53 @@ const MetadataRecord = ({ entity, onOpenEntity }: MetadataRecordProps) => {
     [otherFields, relationshipFields, templatePropertyById]
   );
 
-  const detailItems = useMemo(() => {
-    const items: MetadataItem[] = [
-      {
-        id: 'title',
-        label: 'Title',
+  const masonryRows = useMemo(
+    () => (panelWidth === undefined ? [] : packPropertyRows(partition.masonryFields, panelWidth)),
+    [partition.masonryFields, panelWidth]
+  );
+
+  const inheritingCardsByGroupKey = useMemo(
+    () =>
+      buildInheritingCardsByGroupKey({
+        fields: partition.inheritingRels,
         translationContext,
-        content: (
-          <span className="inline-flex min-w-0 items-center gap-1.5 font-medium text-ink">
-            <EntityIcon data={entity.icon} />
-            <span className="min-w-0" no-translate="true">
-              {entity.title}
-            </span>
-          </span>
-        ),
-      },
-    ];
+        templatePropertyById,
+        templates,
+        entity,
+        onOpenEntity,
+        inheritingOnly: true,
+      }),
+    [
+      partition.inheritingRels,
+      translationContext,
+      templatePropertyById,
+      templates,
+      entity,
+      onOpenEntity,
+    ]
+  );
 
-    if (typeof entity.creationDate === 'number') {
-      items.push({
-        id: 'system-creation-date',
-        label: 'Creation Date',
-        translationContext: 'System',
-        content: <Date values={[{ value: entity.creationDate }]} />,
-      });
-    }
+  const hasSystemDates = entityHasSystemDates(entity);
 
-    if (typeof entity.editDate === 'number') {
-      items.push({
-        id: 'system-edit-date',
-        label: 'Edit Date',
-        translationContext: 'System',
-        content: <Date values={[{ value: entity.editDate }]} />,
-      });
-    }
-
-    partition.detailFields.forEach(field => {
-      const content = isRelationshipProperty(field)
-        ? relationshipCardContent(field, templatePropertyById.get(field._id), onOpenEntity)
-        : renderScalarContent(field);
-      if (!content) {
-        return;
-      }
-      items.push({
-        id: field.name,
-        label: field.label,
-        translationContext,
-        content,
-      });
-    });
-
-    return items;
-  }, [
-    entity.title,
-    entity.icon,
-    entity.creationDate,
-    entity.editDate,
-    onOpenEntity,
-    partition.detailFields,
-    templatePropertyById,
-    translationContext,
-  ]);
-
-  const renderPropertyCard = (field: MetadataProperty) => {
-    let title: ReactNode;
-    let content: ReactNode;
-    if (isRelationshipProperty(field)) {
-      title = fieldTitle(field.label, translationContext, field.hideLabel);
-      content = relationshipCardContent(field, templatePropertyById.get(field._id), onOpenEntity);
-    } else {
-      title = specializedCardTitle(field, translationContext);
-      content = isLongField(field) ? renderScalarContent(field, true) : renderFieldContent(field);
-    }
-    if (!content) {
-      return null;
-    }
-    return (
-      <div key={field._id} data-field-key={field.name}>
-        <MetadataCard title={title}>{content}</MetadataCard>
-      </div>
-    );
-  };
+  const renderPropertyCard = (field: MetadataProperty) =>
+    isInheritingRelationship(field)
+      ? inheritingPropertyCard({
+          field,
+          inheritingCardsByGroupKey,
+          templatePropertyById,
+        })
+      : standardPropertyCard({
+          field,
+          translationContext,
+          templatePropertyById,
+          onOpenEntity,
+        });
 
   if (!entity || !entityTemplate) {
     return <Translate>NO DATA AVAILABLE</Translate>;
   }
 
-  const hasRelCards = partition.inheritingRels.some(field => field.values.length > 0);
-  const empty =
-    partition.leadingFields.length === 0 &&
-    partition.trailingFields.length === 0 &&
-    detailItems.length === 0 &&
-    !hasRelCards;
-
-  if (empty) {
+  if (partition.masonryFields.length === 0 && !hasSystemDates) {
     return (
       <div className="flex items-center justify-center py-10 text-center">
         <p className="text-xs text-ink-muted">
@@ -163,25 +175,17 @@ const MetadataRecord = ({ entity, onOpenEntity }: MetadataRecordProps) => {
 
   return (
     <div ref={rootRef} className="flex flex-col gap-3" data-testid="metadata-record">
-      {partition.leadingFields.map(renderPropertyCard)}
+      {masonryRows.map(row => (
+        <div
+          key={row.fields.map(field => field._id).join('-')}
+          data-property-row={row.fields.map(field => field.name).join(' ')}
+          className="flex w-full min-w-0 items-stretch gap-3"
+        >
+          {row.fields.map(renderPropertyCard)}
+        </div>
+      ))}
 
-      {detailItems.length > 0 && (
-        <MetadataCard title={<Translate>Details</Translate>}>
-          <MetadataItemsTable items={detailItems} />
-        </MetadataCard>
-      )}
-
-      {partition.trailingFields.map(renderPropertyCard)}
-
-      <RelationshipCards
-        fields={partition.inheritingRels}
-        translationContext={translationContext}
-        templatePropertyById={templatePropertyById}
-        templates={templates}
-        entity={entity}
-        onOpenEntity={onOpenEntity}
-        inheritingOnly
-      />
+      {hasSystemDates ? <SystemDatesLine entity={entity} /> : null}
     </div>
   );
 };

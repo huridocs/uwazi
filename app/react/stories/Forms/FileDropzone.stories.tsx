@@ -1,29 +1,25 @@
 import React from 'react';
-import { Meta, StoryObj } from '@storybook/react-webpack5';
+import preview from '#storybook/preview';
+import { storyExtend } from '#app/stories/storyExtend.js';
 import { FileDropzone } from '#V2/Components/Forms/index.js';
 
-const meta: Meta<typeof FileDropzone> = {
+const meta = preview.meta({
   title: 'Forms/FileDropzone',
   component: FileDropzone,
-};
+});
 
-type Story = StoryObj<typeof FileDropzone>;
-
-const Primary: Story = {
+const Primary = meta.story({
   render: args => (
     <div className="tw-content">
       <FileDropzone className="w-1/2" onDrop={args.onDrop} onChange={args.onChange} />
     </div>
   ),
-};
+});
 
-const Basic: Story = {
-  ...Primary,
+const Basic = storyExtend(Primary, {
   args: {
     onDrop: _files => {},
     onChange: _files => {},
   },
-};
-
-export default meta;
+});
 export { Basic };

@@ -1,28 +1,46 @@
 import React from 'react';
-import { Meta, StoryObj } from '@storybook/react-webpack5';
+import preview from '#storybook/preview';
+import { storyExtend } from '#app/stories/storyExtend.js';
 import { Modal } from '#V2/Components/UI/Modal.js';
 import { Button } from '#V2/Components/UI/Button.js';
 import { InformationCircleIcon } from '@heroicons/react/24/outline';
 import { GeneratedContent } from './helpers/GeneratedContent.js';
 
-const meta: Meta<typeof Modal> = {
+const meta = preview.meta({
   title: 'Components/Modal',
   component: Modal,
-};
-export default meta;
+});
 
-type Story = StoryObj<typeof Modal>;
-
-const Primary: Story = {
+const Primary = meta.story({
+  args: {
+    size: 'sm',
+    children: (
+      <>
+        <Modal.Header>
+          <h3 className="text-xl font-medium text-gray-900">Do you want to continue?</h3>
+          <Modal.CloseButton />
+        </Modal.Header>
+        <Modal.Body>
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam lacinia lorem non est
+          ornare, a volutpat massa interdum.
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="ghost" className="grow">
+            Decline
+          </Button>
+          <Button className="grow">Accept</Button>
+        </Modal.Footer>
+      </>
+    ),
+  },
   render: args => (
     <div className="tw-content">
       <Modal size={args.size}>{args.children}</Modal>
     </div>
   ),
-};
+});
 
-const Basic = {
-  ...Primary,
+const Basic = storyExtend(Primary, {
   args: {
     children: (
       <>
@@ -44,10 +62,9 @@ const Basic = {
     ),
     size: 'sm',
   },
-};
+});
 
-const Warning = {
-  ...Primary,
+const Warning = storyExtend(Primary, {
   args: {
     children: (
       <Modal.Body>
@@ -72,10 +89,9 @@ const Warning = {
     ),
     size: 'sm',
   },
-};
+});
 
-const LargeContent = {
-  ...Primary,
+const LargeContent = storyExtend(Primary, {
   args: {
     children: (
       <>
@@ -95,6 +111,6 @@ const LargeContent = {
     ),
     size: 'xxxl',
   },
-};
+});
 
 export { Basic, Warning, LargeContent };

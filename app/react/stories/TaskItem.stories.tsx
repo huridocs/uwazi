@@ -1,15 +1,13 @@
 import React from 'react';
-import type { Meta, StoryObj } from '@storybook/react-webpack5';
+import preview from '#storybook/preview';
+import { storyExtend } from '#app/stories/storyExtend.js';
 import { TaskItem } from '#V2/Components/UI/Notifications/TaskItem.js';
 import { StatusTask } from '#V2/atoms/requestStatusAtom.js';
 
-const meta: Meta<typeof TaskItem> = {
+const meta = preview.meta({
   title: 'Components/Notifications/TaskItem',
   component: TaskItem,
-};
-export default meta;
-
-type Story = StoryObj<typeof TaskItem>;
+});
 
 const makeTask = (status: StatusTask['status'], label: string, progress?: number): StatusTask => ({
   id: '1',
@@ -18,7 +16,11 @@ const makeTask = (status: StatusTask['status'], label: string, progress?: number
   progress,
 });
 
-const Primary: Story = {
+const Primary = meta.story({
+  args: {
+    task: makeTask('running', 'Uploading document batch...', 42),
+    onRemove: () => {},
+  },
   render: args => (
     <div className="tw-content">
       <div className="max-w-sm p-4">
@@ -26,26 +28,22 @@ const Primary: Story = {
       </div>
     </div>
   ),
-};
+});
 
-const Running: Story = {
-  ...Primary,
+const Running = storyExtend(Primary, {
   args: { task: makeTask('running', 'Uploading document batch...', 42) },
-};
+});
 
-const RunningNoProgress: Story = {
-  ...Primary,
+const RunningNoProgress = storyExtend(Primary, {
   args: { task: makeTask('running', 'Processing entities...') },
-};
+});
 
-const Completed: Story = {
-  ...Primary,
+const Completed = storyExtend(Primary, {
   args: { task: makeTask('completed', 'Uploading document batch...', 100) },
-};
+});
 
-const Failed: Story = {
-  ...Primary,
+const Failed = storyExtend(Primary, {
   args: { task: makeTask('failed', 'Exporting CSV failed.', 67) },
-};
+});
 
 export { Running, RunningNoProgress, Completed, Failed };

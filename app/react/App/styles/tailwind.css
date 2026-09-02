@@ -5,29 +5,47 @@
 
 @layer utilities;
 
-html {
-  font-size: 100%;
-}
-
-@media (min-width: 96rem) {
-  html {
-    font-size: 112.5%;
-  }
-}
-
-@media (min-width: 160rem) {
-  html {
-    font-size: 125%;
-  }
-}
-
 .tw-content {
+  --v2-text-scale: 1;
+  --text-pico: calc(0.5rem * var(--v2-text-scale));
+  --text-tiny: calc(0.5625rem * var(--v2-text-scale));
+  --text-nano: calc(0.625rem * var(--v2-text-scale));
+  --text-micro: calc(0.6875rem * var(--v2-text-scale));
+  --text-meta: calc(0.6875rem * var(--v2-text-scale));
+  --text-tab: calc(0.8125rem * var(--v2-text-scale));
+  --text-xs: calc(0.75rem * var(--v2-text-scale));
+  --text-sm: calc(0.875rem * var(--v2-text-scale));
+  --text-base: calc(1rem * var(--v2-text-scale));
+  --text-lg: calc(1.125rem * var(--v2-text-scale));
+  --text-xl: calc(1.25rem * var(--v2-text-scale));
+  --text-2xl: calc(1.5rem * var(--v2-text-scale));
+  --text-3xl: calc(1.875rem * var(--v2-text-scale));
+  --text-4xl: calc(2.25rem * var(--v2-text-scale));
+  --text-5xl: calc(3rem * var(--v2-text-scale));
+  --text-6xl: calc(3.75rem * var(--v2-text-scale));
+  --text-7xl: calc(4.5rem * var(--v2-text-scale));
+  --text-8xl: calc(6rem * var(--v2-text-scale));
+  --text-9xl: calc(8rem * var(--v2-text-scale));
   color-scheme: light;
   --tw-shadow-color: rgba(15, 23, 42, 0.12);
   font-family: var(--font-theme-sans, var(--font-sans));
   color: var(--text-primary, var(--color-theme-text-primary, #1a1a1a));
   text-rendering: optimizeLegibility;
-  transition: background-color 0.2s ease, color 0.2s ease;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
+}
+
+@media (min-width: 1920px) {
+  .tw-content {
+    --v2-text-scale: 1.125;
+  }
+}
+
+@media (min-width: 180rem) {
+  .tw-content {
+    --v2-text-scale: 1.25;
+  }
 }
 
 /* Beat Bootstrap/vendor.css h1–h6/p margins; :where() stays overrideable by utilities */
@@ -42,7 +60,7 @@ html {
 }
 
 .tw-content[data-path='settings'] {
-  font-size: 0.875rem; /* 14px */
+  font-size: calc(0.875rem * var(--v2-text-scale));
   -webkit-font-smoothing: auto;
   -moz-osx-font-smoothing: auto;
 }
@@ -59,8 +77,7 @@ html {
     Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Helvetica Neue, Arial, Noto Sans,
     sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
   --font-mono:
-    ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, Liberation Mono, Courier New,
-    monospace;
+    ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, Liberation Mono, Courier New, monospace;
 
   --color-*: initial;
 
@@ -221,6 +238,7 @@ html {
   --text-nano--line-height: 1rem;
   --text-micro: 0.6875rem; /* 11px */
   --text-micro--line-height: 1rem;
+  /* Design token (`text-meta`): same size as micro. */
   --text-meta: 0.6875rem;
   --text-meta--line-height: 1rem;
   --text-tab: 0.8125rem; /* 13px */
@@ -232,7 +250,7 @@ html {
 
   /* Concrete fallbacks: nested theme vars alone resolve invalid on :root (ink currentColor). */
   --color-border: var(--color-theme-border-primary, #e0d9c8);
-  --color-warm: var(--color-theme-surface-warm, var(--color-theme-bg-warm, #FCFAF8));
+  --color-warm: var(--color-theme-surface-warm, var(--color-theme-bg-warm, #fcfaf8));
   --color-ink: var(--color-theme-action-primary, var(--color-theme-text-primary, #1c1917));
 }
 
@@ -470,11 +488,7 @@ html {
 
 /* TW opacity modifiers cannot mix nested theme vars — explicit soft chrome for cards. */
 @utility border-border-40 {
-  border-color: color-mix(
-    in srgb,
-    var(--color-theme-border-primary, #e0d9c8) 40%,
-    transparent
-  );
+  border-color: color-mix(in srgb, var(--color-theme-border-primary, #e0d9c8) 40%, transparent);
 }
 
 @utility border-border-soft {
@@ -744,12 +758,18 @@ header button svg:not([class*='notification-kind-icon']),
 .tw-content .header-bar[data-uwazi-header] .header-bar-button:focus-visible,
 .tw-content .header-bar[data-uwazi-header] .header-bar-icon-button:hover,
 .tw-content .header-bar[data-uwazi-header] .header-bar-icon-button:focus-visible {
-  background-color: var(--color-theme-chrome-app-bar-active, var(--color-theme-bg-parchment, #ede9e4));
+  background-color: var(
+    --color-theme-chrome-app-bar-active,
+    var(--color-theme-bg-parchment, #ede9e4)
+  );
   color: var(--color-theme-chrome-app-bar-fg, var(--color-theme-text-primary, #1a1a1a));
 }
 .tw-content .header-bar[data-uwazi-header] .header-bar-button-active,
 .tw-content .header-bar[data-uwazi-header] .header-bar-panel-item-active {
-  background-color: var(--color-theme-chrome-app-bar-active, var(--color-theme-bg-parchment, #ede9e4));
+  background-color: var(
+    --color-theme-chrome-app-bar-active,
+    var(--color-theme-bg-parchment, #ede9e4)
+  );
   color: var(--color-theme-chrome-app-bar-fg, var(--color-theme-text-primary, #1a1a1a));
 }
 .tw-content .header-bar[data-uwazi-header] .header-bar-separator {
@@ -806,7 +826,11 @@ header button svg:not([class*='notification-kind-icon']),
 .tw-content nav[aria-label='Settings navigation'] .settings-nav-link:focus-visible {
   outline: none;
   box-shadow: 0 0 0 2px
-    color-mix(in srgb, var(--color-theme-border-interactive, var(--color-theme-accent-primary)) 35%, transparent);
+    color-mix(
+      in srgb,
+      var(--color-theme-border-interactive, var(--color-theme-accent-primary)) 35%,
+      transparent
+    );
 }
 
 .tw-content .theme-notification {
@@ -966,11 +990,7 @@ header button svg:not([class*='notification-kind-icon']),
 .beacon-header-veil {
   height: 1.75rem;
   width: 5.5rem;
-  background: linear-gradient(
-    to right,
-    transparent 0%,
-    var(--beacon-header-fade, #ffffff) 100%
-  );
+  background: linear-gradient(to right, transparent 0%, var(--beacon-header-fade, #ffffff) 100%);
 }
 
 .beacon-header-fade-rail {

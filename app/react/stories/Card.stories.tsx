@@ -1,16 +1,18 @@
 import React from 'react';
-import type { Meta, StoryObj } from '@storybook/react-webpack5';
+import preview from '#storybook/preview';
+import { storyExtend } from '#app/stories/storyExtend.js';
 import { Card } from '#V2/Components/UI/index.js';
 
-const meta: Meta<typeof Card> = {
+const meta = preview.meta({
   title: 'Components/Cards',
   component: Card,
-};
-export default meta;
+});
 
-type Story = StoryObj<typeof Card>;
-
-const Primary: Story = {
+const Primary = meta.story({
+  args: {
+    children: 'Card contents',
+    title: 'Card title',
+  },
   render: args => (
     <div className="tw-content">
       <Card title={args.title} color={args.color} className={args.className}>
@@ -18,14 +20,13 @@ const Primary: Story = {
       </Card>
     </div>
   ),
-};
+});
 
-const Basic: Story = {
-  ...Primary,
+const Basic = storyExtend(Primary, {
   args: {
     children: 'Card contents',
     title: 'Card title',
   },
-};
+});
 
 export { Basic };

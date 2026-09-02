@@ -126,7 +126,14 @@ describe('formatGeolocationProperty', () => {
       name: 'locationA',
       label: 'Location A',
       type: 'geolocation',
-      values: [{ value: { latitude: 10, longitude: 20 }, label: 'Location A', color: '#1A73E8' }],
+      values: [
+        {
+          value: { latitude: 10, longitude: 20 },
+          label: 'Location A',
+          color: '#1A73E8',
+          templateId: 'entity-template',
+        },
+      ],
     });
   });
 
@@ -152,11 +159,17 @@ describe('formatGeolocationProperty', () => {
         { name: 'locationB', label: 'Location B' },
       ],
       values: [
-        { value: { latitude: 10, longitude: 20 }, label: 'Location A', color: '#1A73E8' },
+        {
+          value: { latitude: 10, longitude: 20 },
+          label: 'Location A',
+          color: '#1A73E8',
+          templateId: 'entity-template',
+        },
         {
           value: { latitude: -5, longitude: -6 },
           label: 'Location B',
           color: '#1A73E8',
+          templateId: 'entity-template',
         },
       ],
     });
@@ -202,11 +215,13 @@ describe('formatGeolocationProperty', () => {
           value: { latitude: -5, longitude: -6 },
           label: 'Location B',
           color: '#1A73E8',
+          templateId: 'entity-template',
         },
         {
           value: { latitude: 10, longitude: 20 },
           label: 'Location 1',
           color: '#FF6F00',
+          templateId: '69f0a4ac62c282d87ef5970f',
           entity: {
             _id: '1',
             icon: { _id: 'star', label: 'Star' },
@@ -216,6 +231,7 @@ describe('formatGeolocationProperty', () => {
           value: { latitude: 11, longitude: 21 },
           label: 'Location 2',
           color: '#FF6F00',
+          templateId: '69f0a4ac62c282d87ef5970f',
           entity: {
             _id: '2',
           },
@@ -245,6 +261,7 @@ describe('formatGeolocationProperty', () => {
           value: { latitude: 10, longitude: 20 },
           label: 'Location 1',
           color: '#FF6F00',
+          templateId: '69f0a4ac62c282d87ef5970f',
           entity: {
             _id: '1',
             icon: { _id: 'star', label: 'Star' },
@@ -254,6 +271,7 @@ describe('formatGeolocationProperty', () => {
           value: { latitude: 11, longitude: 21 },
           label: 'Location 2',
           color: '#FF6F00',
+          templateId: '69f0a4ac62c282d87ef5970f',
           entity: {
             _id: '2',
           },
@@ -300,11 +318,13 @@ describe('formatGeolocationProperty', () => {
           value: { latitude: -5, longitude: -6 },
           label: 'Location B',
           color: '#1A73E8',
+          templateId: 'entity-template',
         },
         {
           value: { latitude: 48.8566, longitude: 2.3522 },
           label: 'Location 3',
           color: '#FF6F00',
+          templateId: '69f0a4ac62c282d87ef5970f',
           entity: {
             _id: '3',
           },

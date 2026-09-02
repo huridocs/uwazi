@@ -64,6 +64,7 @@ const RelationshipField = <TFormValues extends FieldValues = FieldValues>({
               onEditSource={onEditSource}
               disabled={disabled}
               searchId={String(field)}
+              showError={showError}
             />
             <EntityFieldError showError={showError} message={message} />
           </>

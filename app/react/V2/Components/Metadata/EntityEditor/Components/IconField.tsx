@@ -94,7 +94,7 @@ const IconField = ({ disabled = false }: IconFieldProps) => {
 
   return (
     <EntityField>
-      <div className="text-sm font-bold text-ink">
+      <div className="text-sm font-normal text-ink">
         <Translate context="System">Icon</Translate>
       </div>
 

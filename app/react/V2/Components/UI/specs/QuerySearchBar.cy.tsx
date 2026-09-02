@@ -1,26 +1,25 @@
 import React from 'react';
 import 'cypress-axe';
 import { mount } from 'cypress/react';
-import { composeStories } from '@storybook/react';
 import * as stories from '#app/stories/Components/UI/QuerySearchBar.stories.js';
 
-const { Basic } = composeStories(stories);
+const { Basic } = stories;
 
 describe('QuerySearchBar', () => {
   it('should be accessible', () => {
-    mount(<Basic />);
+    mount(<Basic.Component />);
     cy.injectAxe();
     cy.checkA11y();
   });
 
   it('should update the query when typing', () => {
-    mount(<Basic />);
+    mount(<Basic.Component />);
     cy.get('[aria-label="Search"]').type('witness');
     cy.get('[aria-label="Search"]').should('have.value', 'witness');
   });
 
   it('should clear the query and refocus the input', () => {
-    mount(<Basic />);
+    mount(<Basic.Component />);
     cy.get('[aria-label="Search"]').type('witness');
     cy.get('[aria-label="Clear search"]').click();
     cy.get('[aria-label="Search"]').should('have.value', '').and('be.focused');
@@ -28,7 +27,7 @@ describe('QuerySearchBar', () => {
   });
 
   it('should toggle search tips', () => {
-    mount(<Basic />);
+    mount(<Basic.Component />);
     cy.get('button[aria-label="Search tips"]').click();
     cy.get('[role="dialog"][aria-label="Search tips"]').should('be.visible');
     cy.contains('AND OR NOT').should('be.visible');
@@ -37,7 +36,7 @@ describe('QuerySearchBar', () => {
   });
 
   it('should close search tips when clicking outside', () => {
-    mount(<Basic />);
+    mount(<Basic.Component />);
     cy.get('button[aria-label="Search tips"]').click();
     cy.get('[role="dialog"][aria-label="Search tips"]').should('be.visible');
     cy.get('body').click(0, 0);

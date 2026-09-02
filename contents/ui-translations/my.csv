@@ -30,6 +30,7 @@ Action,လုပ်ဆောင်ချက်
 Actions,Actions
 Activate,Activate
 Activated,Activated
+Active filters,Active filters
 Active languages,Active languages
 Active primary,Active primary
 Activity,လုပ်ဆောင်မှု
@@ -110,6 +111,7 @@ An error occurred,An error occurred
 Analytics,Analytics
 Analytics description,"If you want to track analytics related to your collection visits, Uwazi supports both Google Analytics and Matomo."
 AND OR NOT,AND OR NOT
+Any,Any
 Any entity,Any entity
 any single character,any single character
 Anyone can see this entity,Anyone can see this entity
@@ -128,6 +130,7 @@ Are you sure you want to delete this item?,Are you sure you want to delete this 
 Are you sure you want to delete this relationship? This action cannot be undone.,Are you sure you want to delete this relationship? This action cannot be undone.
 Are you sure you want to delete this visualization? This action cannot be undone.,Are you sure you want to delete this visualization? This action cannot be undone.
 Are you sure?,Are you sure?
+Ascending,Ascending
 Ask Bert,Ask Bert
 Attachment,Attachment
 Attachment deleted,Attachment deleted
@@ -241,6 +244,7 @@ Connection type,ချိတ်ဆက်မှု အမျိုးအစား
 Contact email description,Here you can set up the contact email and the email that appears when Uwazi sends a notification to a user
 Contact Form,Contact Form
 Contact form email,Contact form email
+Contains,Contains
 Content translations,Content translations
 Context,Context
 Continue,Continue
@@ -250,6 +254,7 @@ Copied,Copied
 Copied to clipboard,Copied to clipboard
 Copy,Copy
 Copy From,ဤမှ ကူးပါ
+Copy from...,Copy from...
 Copy Highlighted,အရောင်ခြယ်ထားသည်ကို ကူးပါ
 Copy link,လင့်ခ်ကို ကူးပါ
 Copy properties to this entity from,ဤဖြည့်သွင်းချက်သို့ ထူးခြားချက်များကို ဤမှ ကူးပါ
@@ -258,6 +263,7 @@ Could not add media. Please try again.,Could not add media. Please try again.
 Could not be processed,Could not be processed
 Could not create entity,Could not create entity
 Could not detect the area for the selected text,"Could not detect the area for the selected text, please try selecting again."
+Could not load suggestions.,Could not load suggestions.
 Could not reach server. Please try again later.,Could not reach server. Please try again later.
 Count,Count
 Create,ဖန်တီးရန်
@@ -326,6 +332,7 @@ Date modified,ရက်စွဲ ပြင်ဆင်ပြီး
 "Date or numeric × select enables line and area charts with one line per breakdown
                 value over time.","Date or numeric × select enables line and area charts with one line per breakdown
                 value over time."
+Date range,Date range
 Day,နေ့
 "Deep-merged onto the generated ECharts option. Use for fine-tuning options not exposed in
           the Chart tab.","Deep-merged onto the generated ECharts option. Use for fine-tuning options not exposed in
@@ -360,6 +367,7 @@ Deleted user,Deleted user
 Deleted user group,Deleted user group
 Deletion success,Deletion success
 Density,Density
+Descending,Descending
 Description,ဖော်ပြချက်
 Deselect all,Deselect all
 Details,Details
@@ -417,6 +425,7 @@ Edit item,Edit item
 Edit metadata of entities,Edit metadata of entities
 Edit theme,Edit theme
 Edit user,Edit user
+Edited,Edited
 Editor,အယ်ဒီတာ
 editor,အယ်ဒီတာ
 Editors,Editors
@@ -569,6 +578,7 @@ ID:,ID:
 "If you want to continue, please type",ဆက်လက်ဆောင်ရွက်လိုပါက ကျေးဇူးပြု၍ စာရိုက်ပါ
 Image doesn't match the required size.,Image doesn't match the required size.
 Import,ထည့်သွင်းရန်
+Import / Export CSV,Import / Export CSV
 Import asset,Import asset
 Import CSV,CSV ထည့်သွင်းရန်
 Import failed. Review details below.,Import failed. Review details below.
@@ -655,10 +665,13 @@ Light,Light
 Light Theme,Light Theme
 Link,Link
 linked,ချိတ်ဆက်ထားသော
+List,List
 List renders as a table. Use the options below to filter empty or zero values.,List renders as a table. Use the options below to filter empty or zero values.
 Live preview,Live preview
 Live translate,Live translate
+Load,Load
 Load example,Load example
+Load more,Load more
 Loading,Loading
 Local time,Local time
 Login,လော့ဂ်အင်ဝင်ရန်
@@ -730,6 +743,7 @@ Modified,Modified
 Month,လ
 Months,Months
 More,More
+more,more
 more options.,နောက်ထပ် ရွေးချယ်စရာများ။
 Multi-source mode,Multi-source mode
 Multiple date,Multiple date
@@ -777,6 +791,7 @@ No context,No context
 No CSVs yet,No CSVs yet
 No data,No data
 NO DATA AVAILABLE,NO DATA AVAILABLE
+No entities found,No entities found
 NO EXTRACTORS,NO EXTRACTORS
 No files available,No files available
 No files queued yet.,No files queued yet.
@@ -788,6 +803,7 @@ No items available,No items available
 No Label,တံဆိပ် မရှိပါ
 No label,No label
 No matches for,No matches for
+No matches.,No matches.
 No matching entities.,No matching entities.
 No media selected,No media selected
 No metadata for this entity yet.,No metadata for this entity yet.
@@ -796,6 +812,7 @@ No options found,ရွေးချယ်စရာ မရှိပါ
 No page,No page
 No people or groups added yet,No people or groups added yet
 No primary documents,No primary documents
+No primary documents yet. Promote a supporting file or add a new one.,No primary documents yet. Promote a supporting file or add a new one.
 No property,ထူးခြားချက် မရှိပါ
 No References,ကိုးကားချက် မရှိပါ
 No References description,References are parts of this document related with other documents and entities.
@@ -1023,6 +1040,8 @@ Relationships saved,Relationships saved
 relationships? This action cannot be undone.,relationships? This action cannot be undone.
 RelationType saved,RelationType သိမ်းဆည်းပြီး
 Release message,Release message
+Relevance,Relevance
+remaining,remaining
 remaining files,remaining files
 Remote Server Unreachable,Remote Server Unreachable
 Remove,ဖယ်ရှားရန်
@@ -1095,6 +1114,7 @@ Search Tips: exact term,ရှာဖွေမှု အကြံပြုချ�
 Search Tips: one char wildcard,ရှာဖွေမှု အကြံပြုချက်များ- စာလုံးတစ်ခု ပါဝင်ခြင်း
 Search Tips: proximity,ရှာဖွေမှု အကြံပြုချက်များ- နီးစပ်မှု
 Search Tips: wildcard,ရှာဖွေမှု အကြံပြုချက်များ- ပါဝင်မှု
+Search title & metadata,Search title & metadata
 Searching...,Searching...
 Secondary button,Secondary button
 Secret keys,Secret keys
@@ -1154,6 +1174,7 @@ Show cookie policy,ကွတ်ကီး မူဝါဒ ပြရန်
 Show details,Show details
 Show filters,စစ်ထုတ်မှုများကို ပြရန်
 Show in cards,Show in cards
+Show information,Show information
 Show less,Show less
 Show more,ပိုမိုပြသရန်
 Show remaining in panel,Show remaining in panel
@@ -1176,6 +1197,7 @@ Something went wrong,တစ်ခုခု မှားသွားသည်
 Sort,အမျိုးအစားခွဲရန်
 Sort ascending,Sort ascending
 Sort descending,Sort descending
+Sort order,Sort order
 Sort:,Sort:
 sorted by,ဤသို့ အမျိုးအစားခွဲထားသည်
 Source,Source
@@ -1325,8 +1347,10 @@ This search could not be completed. Try again later.,This search could not be co
 This table of contents was automatically created by the system.,This table of contents was automatically created by the system.
 this template,this template
 This template is in use by existing entities and cannot be deleted.,This template is in use by existing entities and cannot be deleted.
+Thumbnail,Thumbnail
 Time,အချိန်
 Time (UTC),Time (UTC)
+Timeline,Timeline
 Timelinks,Timelinks
 Timestamp,Timestamp
 tips,tips
@@ -1355,6 +1379,7 @@ Translations,ဘာသာပြန်ဆိုချက်များ
 Translations imported.,Translations imported.
 Translations reset successfully,Translations reset successfully
 Translations saved,ဘာသာပြန်ဆိုချက်များ သိမ်းပြီး
+Try a different search or clear filters.,Try a different search or clear filters.
 Turn off inline translation,Turn off inline translation
 "Two categorical dimensions enable stacked bar charts (e.g. country with sex
               breakdown).","Two categorical dimensions enable stacked bar charts (e.g. country with sex
