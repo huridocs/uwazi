@@ -24,22 +24,25 @@ const ExpandableText = ({
 }: ExpandableTextProps) => {
   const [expanded, setExpanded] = useState(false);
   const expandable = text.length > minLength;
+  const display = quoted ? `\u201c${text}\u201d` : text;
+  const textClass = `${expanded ? '' : 'line-clamp-2'} ${textClassName}`;
 
   return (
     <div className={`relative min-w-0 ${className}`}>
-      <p
-        className={`${expanded ? '' : 'line-clamp-2'} ${onActivate ? 'cursor-pointer' : ''} ${textClassName}`}
-        onClick={
-          onActivate
-            ? event => {
-                event.stopPropagation();
-                onActivate();
-              }
-            : undefined
-        }
-      >
-        {quoted ? `\u201c${text}\u201d` : text}
-      </p>
+      {onActivate ? (
+        <button
+          type="button"
+          className={`${textClass} cursor-pointer text-left`}
+          onClick={event => {
+            event.stopPropagation();
+            onActivate();
+          }}
+        >
+          {display}
+        </button>
+      ) : (
+        <p className={textClass}>{display}</p>
+      )}
       {expandable && !expanded && (
         <div
           className={`pointer-events-none absolute inset-x-0 bottom-0 h-5 bg-linear-to-t ${fadeClassName} to-transparent`}

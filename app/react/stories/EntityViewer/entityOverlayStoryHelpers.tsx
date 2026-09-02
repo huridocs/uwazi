@@ -1,3 +1,4 @@
+/* eslint-disable react/no-multi-comp */
 import { useEffect, useRef } from 'react';
 import { useAtomValue } from 'jotai';
 import type { Entity } from '#V2/api/entities/types.js';

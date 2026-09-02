@@ -21,15 +21,15 @@ jest.mock('#app/I18N/index.js', () => ({
 
 global.ResizeObserver = class ResizeObserverMock {
   observe() {
-    return undefined;
+    return this;
   }
 
   unobserve() {
-    return undefined;
+    return this;
   }
 
   disconnect() {
-    return undefined;
+    return this;
   }
 } as unknown as typeof ResizeObserver;
 

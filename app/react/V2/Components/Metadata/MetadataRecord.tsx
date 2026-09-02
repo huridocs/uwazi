@@ -56,6 +56,20 @@ const inheritingPropertyCard = ({
   return fieldCard(field, metadataGridClassForProperty(field), node);
 };
 
+const propertyCardContent = (
+  field: MetadataProperty,
+  templatePropertyById: Map<string, ClientProperty>,
+  onOpenEntity?: (target: OpenEntityTarget) => void
+) => {
+  if (isRelationshipProperty(field)) {
+    return connectionPillsForField(field, templatePropertyById.get(field._id), { onOpenEntity });
+  }
+  if (isLongField(field)) {
+    return renderScalarContent(field, true);
+  }
+  return renderFieldContent(field, { onOpenEntity });
+};
+
 const standardPropertyCard = ({
   field,
   translationContext,
@@ -85,11 +99,7 @@ const standardPropertyCard = ({
   const title = isRelationshipProperty(field)
     ? fieldTitle(field.label, translationContext, field.hideLabel)
     : specializedCardTitle(field, translationContext);
-  const content = isRelationshipProperty(field)
-    ? connectionPillsForField(field, templatePropertyById.get(field._id), { onOpenEntity })
-    : isLongField(field)
-      ? renderScalarContent(field, true)
-      : renderFieldContent(field, { onOpenEntity });
+  const content = propertyCardContent(field, templatePropertyById, onOpenEntity);
   if (!content) {
     return null;
   }
