@@ -12,7 +12,7 @@ const EntityOverlayContent = ({ entity }: EntityOverlayContentProps) => {
 
   return (
     <div className="min-h-0 min-w-0 flex-1 overflow-y-auto px-3 py-3 pb-8">
-      <MetadataRecord entity={entity} onOpenEntity={openEntityOverlayTarget} />
+      <MetadataRecord entity={entity} onOpenEntity={openEntityOverlayTarget} showDocumentPreview />
     </div>
   );
 };
