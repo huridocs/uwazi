@@ -24,17 +24,68 @@ type CollapsibleRelationshipRowProps = {
   isHub?: boolean;
   memberCount?: number;
   targetTemplateId?: string;
+  targetSharedId?: string;
   entityTitle?: string;
   templateName?: string;
-  onHeaderClick?: () => void;
   children: ReactNode;
 };
+
+const collapsibleMetaLayout = ({
+  zoom,
+  meta,
+  hideTargetPill,
+  isHub,
+}: {
+  zoom: RelationshipsPanelZoom;
+  meta: ReactNode | undefined;
+  hideTargetPill: boolean;
+  isHub: boolean;
+}) => ({
+  showMetaBelow: Boolean(meta && zoom === 'detail' && !hideTargetPill),
+  alignItems: zoom === 'detail' && meta && !hideTargetPill ? 'items-start' : 'items-center',
+  hubBadge: isHub ? (
+    <span className="text-nano uppercase tracking-wide text-ink-tertiary">
+      <Translate>hub</Translate>
+    </span>
+  ) : null,
+});
 
 const rowPadding: Record<RelationshipsPanelZoom, string> = {
   overview: 'border-b-0! py-1.5!',
   compact: 'py-2!',
   detail: '',
 };
+
+const collapsibleChevron = (expanded: boolean, toggle: () => void) => (
+  <button
+    type="button"
+    onClick={toggle}
+    aria-expanded={expanded}
+    aria-label={t('System', 'Toggle relationship details', null, false)}
+    className="flex shrink-0 rounded p-0.5 text-ink-muted hover:bg-warm hover:text-ink"
+  >
+    <ChevronDownIcon
+      className={`h-3 w-3 shrink-0 transition-transform ${expanded ? '' : '-rotate-90'}`}
+      aria-hidden
+    />
+  </button>
+);
+
+const evidenceCountButton = (evidenceCount: number, expanded: boolean, toggle: () => void) => (
+  <button
+    type="button"
+    onClick={event => {
+      event.stopPropagation();
+      toggle();
+    }}
+    aria-label={t('System', `${evidenceCount} evidence references`, null, false)}
+    aria-expanded={expanded}
+    className="flex h-5 shrink-0 items-center gap-1 rounded bg-warm px-1.5 text-nano font-medium tabular-nums text-ink-tertiary transition-colors hover:bg-parchment hover:text-ink-secondary"
+  >
+    <LinkIcon className="h-2.5 w-2.5" />
+    {evidenceCount}
+  </button>
+);
 
 const CollapsibleRelationshipRow = ({
   checkboxIds,
@@ -47,9 +98,9 @@ const CollapsibleRelationshipRow = ({
   isHub = false,
   memberCount = 0,
   targetTemplateId,
+  targetSharedId,
   entityTitle,
   templateName,
-  onHeaderClick,
   children,
 }: CollapsibleRelationshipRowProps) => {
   const [expanded, setExpanded] = useState(false);
@@ -58,13 +109,12 @@ const CollapsibleRelationshipRow = ({
   const { view, zoom } = useRelationshipsPanelLayout();
   const { hideTargetPill, hideTemplateName } = useRelationshipRowVisibility();
   const toggle = () => setExpanded(current => !current);
-  const handleHeaderClick = () => {
-    if (onHeaderClick) {
-      onHeaderClick();
-      return;
-    }
-    toggle();
-  };
+  const { showMetaBelow, alignItems, hubBadge } = collapsibleMetaLayout({
+    zoom,
+    meta,
+    hideTargetPill,
+    isHub,
+  });
   const headerContent = resolveCollapsibleRowHeader({
     hideTargetPill,
     hideTemplateName,
@@ -72,6 +122,7 @@ const CollapsibleRelationshipRow = ({
     zoom,
     header,
     targetTemplateId,
+    targetSharedId,
     entityTitle,
     templateName,
     glyphDirection,
@@ -80,49 +131,18 @@ const CollapsibleRelationshipRow = ({
     memberCount,
     headerWrap,
   });
-  const chevron = (
-    <ChevronDownIcon
-      className={`h-3 w-3 shrink-0 text-ink-muted transition-transform ${
-        expanded ? '' : '-rotate-90'
-      }`}
-      aria-hidden
-    />
-  );
-  const evidenceButton = (
-    <button
-      type="button"
-      onClick={event => {
-        event.stopPropagation();
-        toggle();
-      }}
-      aria-label={t('System', `${evidenceCount} evidence references`, null, false)}
-      aria-expanded={expanded}
-      className="flex h-5 shrink-0 items-center gap-1 rounded bg-warm px-1.5 text-nano font-medium tabular-nums text-ink-tertiary transition-colors hover:bg-parchment hover:text-ink-secondary"
-    >
-      <LinkIcon className="h-2.5 w-2.5" />
-      {evidenceCount}
-    </button>
-  );
-  const hubBadge = isHub ? (
-    <span className="text-nano uppercase tracking-wide text-ink-tertiary">
-      <Translate>hub</Translate>
-    </span>
-  ) : null;
-  const showMetaBelow = meta && zoom === 'detail' && !hideTargetPill;
-  const alignItems = zoom === 'detail' && meta && !hideTargetPill ? 'items-start' : 'items-center';
-
   return (
     <div className="border-b border-border/50 last:border-b-0">
-      <ListCardRow selected={false} onClick={handleHeaderClick} className={rowPadding[zoom]}>
+      <ListCardRow selected={false} className={rowPadding[zoom]}>
         <div className={`flex ${alignItems} justify-between gap-2`}>
           <div className={`flex min-w-0 items-center gap-1.5 ${headerWrap ? 'flex-wrap' : ''}`}>
             <RelationshipRowCheckbox relationshipIds={checkboxIds} />
-            {chevron}
+            {collapsibleChevron(expanded, toggle)}
             {headerContent}
           </div>
           <div className="flex shrink-0 items-center gap-1.5">
             {zoom !== 'overview' && hubBadge}
-            {evidenceButton}
+            {evidenceCountButton(evidenceCount, expanded, toggle)}
           </div>
         </div>
         {showMetaBelow && (

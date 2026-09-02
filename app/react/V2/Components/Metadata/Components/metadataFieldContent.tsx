@@ -22,8 +22,7 @@ const hasFilledText = (values?: Array<{ value?: string | null }>) =>
 
 const renderScalarContent = (data: MetadataProperty, long = false): ReactNode => {
   if (data.type === 'text' || data.type === 'generatedid' || data.type === 'numeric') {
-    if (!hasFilledText(data.values)) return null;
-    return <SimpleValue values={data.values} long={long} />;
+    return hasFilledText(data.values) ? <SimpleValue values={data.values} long={long} /> : null;
   }
   if (
     data.type === 'date' ||
@@ -31,16 +30,40 @@ const renderScalarContent = (data: MetadataProperty, long = false): ReactNode =>
     data.type === 'multidate' ||
     data.type === 'multidaterange'
   ) {
-    if (!data.values?.length) return null;
-    return <Date values={data.values} />;
+    return data.values?.length ? <Date values={data.values} /> : null;
   }
   if (data.type === 'select' || data.type === 'multiselect') {
-    if (!data.values?.length) return null;
-    return <Select values={data} />;
+    return data.values?.length ? <Select values={data} /> : null;
   }
   if (data.type === 'link') {
-    if (!hasFilledText(data.values)) return null;
-    return <LinkProperty values={data.values} />;
+    return hasFilledText(data.values) ? <LinkProperty values={data.values} /> : null;
+  }
+  return null;
+};
+
+const renderMediaOrImage = (
+  data: MetadataProperty,
+  compact: boolean,
+  density: FieldContentOptions['density']
+): ReactNode => {
+  if (data.type === 'media') {
+    return hasFilledText(data.values) ? (
+      <Media
+        values={data.values}
+        height={compact ? 140 : '100%'}
+        frame={compact ? 'natural' : 'video'}
+      />
+    ) : null;
+  }
+  if (data.type === 'image' || data.type === 'preview') {
+    return hasFilledText(data.values) ? (
+      <Image
+        values={data.values}
+        imageStyle={data.style}
+        density={density ?? 'default'}
+        frame={compact ? 'natural' : 'video'}
+      />
+    ) : null;
   }
   return null;
 };
@@ -50,13 +73,11 @@ const renderSpecializedContent = (
   options: FieldContentOptions = {}
 ): ReactNode => {
   const compact = (options.density ?? 'default') === 'compact';
-
   if (data.type === 'relationship') {
-    return connectionPillsForField(data, undefined);
+    return connectionPillsForField(data, undefined, { onOpenEntity: options.onOpenEntity });
   }
   if (data.type === 'geolocation') {
-    if (!data.values?.length) return null;
-    return (
+    return data.values?.length ? (
       <Geolocation
         markers={data.values}
         height={compact ? 160 : undefined}
@@ -64,34 +85,12 @@ const renderSpecializedContent = (
         showLegend={!compact && (data.propertyGroup?.length ?? 0) > 1}
         onOpenEntity={options.onOpenEntity}
       />
-    );
+    ) : null;
   }
   if (data.type === 'markdown') {
-    if (!hasFilledText(data.values)) return null;
-    return <Markdown values={data.values} />;
+    return hasFilledText(data.values) ? <Markdown values={data.values} /> : null;
   }
-  if (data.type === 'media') {
-    if (!hasFilledText(data.values)) return null;
-    return (
-      <Media
-        values={data.values}
-        height={compact ? 140 : '100%'}
-        frame={compact ? 'natural' : 'video'}
-      />
-    );
-  }
-  if (data.type === 'image' || data.type === 'preview') {
-    if (!hasFilledText(data.values)) return null;
-    return (
-      <Image
-        values={data.values}
-        imageStyle={data.style}
-        density={options.density ?? 'default'}
-        frame={compact ? 'natural' : 'video'}
-      />
-    );
-  }
-  return null;
+  return renderMediaOrImage(data, compact, options.density);
 };
 
 const renderFieldContent = (data: MetadataProperty, options: FieldContentOptions = {}): ReactNode =>

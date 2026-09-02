@@ -71,6 +71,7 @@ describe('metadataPropertyLayout', () => {
       ).toBe('block');
       expect(packClassForProperty(imageField)).toBe('media');
       expect(packClassForProperty(mediaField)).toBe('media');
+      expect(packClassForProperty(previewField)).toBe('media');
       expect(packClassForProperty(markdownField('md'))).toBe('block');
       expect(packClassForProperty(geolocationField)).toBe('media');
     });
