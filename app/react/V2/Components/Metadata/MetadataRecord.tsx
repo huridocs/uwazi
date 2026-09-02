@@ -3,7 +3,7 @@ import { useAtomValue } from 'jotai';
 import { Translate } from '#app/I18N/index.js';
 import { templatesAtom } from '#V2/atoms/templatesAtom.js';
 import { Entity } from '#V2/api/entities/types.js';
-import { MetadataCard } from './Components/index.js';
+import { MetadataCard, DocumentPreviewCard } from './Components/index.js';
 import { useFormatMetadata } from './hooks/useFormatMetadata.js';
 import { buildTemplatePropertyById } from './buildTemplatePropertyById.js';
 import { buildMetadataRecordFields } from './buildMetadataRecordFields.js';
@@ -29,6 +29,7 @@ import type { ClientProperty } from '#V2/shared/types.js';
 type MetadataRecordProps = {
   entity: Entity;
   onOpenEntity?: (target: OpenEntityTarget) => void;
+  showDocumentPreview?: boolean;
 };
 
 const fieldCard = (field: MetadataProperty, layoutClass: string, children: ReactNode) => (
@@ -55,26 +56,50 @@ const inheritingPropertyCard = ({
   return fieldCard(field, metadataGridClassForProperty(field), node);
 };
 
+const propertyCardContent = (
+  field: MetadataProperty,
+  templatePropertyById: Map<string, ClientProperty>,
+  onOpenEntity?: (target: OpenEntityTarget) => void
+) => {
+  if (isRelationshipProperty(field)) {
+    return connectionPillsForField(field, templatePropertyById.get(field._id), { onOpenEntity });
+  }
+  if (isLongField(field)) {
+    return renderScalarContent(field, true);
+  }
+  return renderFieldContent(field, { onOpenEntity });
+};
+
 const standardPropertyCard = ({
   field,
   translationContext,
   templatePropertyById,
   onOpenEntity,
+  entity,
+  showDocumentPreview,
 }: {
   field: MetadataProperty;
   translationContext: string;
   templatePropertyById: Map<string, ClientProperty>;
   onOpenEntity?: (target: OpenEntityTarget) => void;
+  entity: Entity;
+  showDocumentPreview: boolean;
 }) => {
+  if (showDocumentPreview && field.type === 'preview') {
+    return fieldCard(
+      field,
+      metadataGridClassForProperty(field),
+      <DocumentPreviewCard
+        entity={entity}
+        previewField={field}
+        translationContext={translationContext}
+      />
+    );
+  }
   const title = isRelationshipProperty(field)
     ? fieldTitle(field.label, translationContext, field.hideLabel)
     : specializedCardTitle(field, translationContext);
-  let content: ReactNode = renderFieldContent(field, { onOpenEntity });
-  if (isRelationshipProperty(field)) {
-    content = connectionPillsForField(field, templatePropertyById.get(field._id), { onOpenEntity });
-  } else if (isLongField(field)) {
-    content = renderScalarContent(field, true);
-  }
+  const content = propertyCardContent(field, templatePropertyById, onOpenEntity);
   if (!content) {
     return null;
   }
@@ -86,7 +111,11 @@ const standardPropertyCard = ({
 };
 
 // eslint-disable-next-line max-statements
-const MetadataRecord = ({ entity, onOpenEntity }: MetadataRecordProps) => {
+const MetadataRecord = ({
+  entity,
+  onOpenEntity,
+  showDocumentPreview = false,
+}: MetadataRecordProps) => {
   const templates = useAtomValue(templatesAtom);
   const rootRef = useRef<HTMLDivElement>(null);
   const panelWidth = useContainerWidth(rootRef, {
@@ -117,9 +146,17 @@ const MetadataRecord = ({ entity, onOpenEntity }: MetadataRecordProps) => {
     [otherFields, relationshipFields, templatePropertyById]
   );
 
+  const masonryFields = useMemo(
+    () =>
+      showDocumentPreview
+        ? partition.masonryFields
+        : partition.masonryFields.filter(field => field.type !== 'preview'),
+    [partition.masonryFields, showDocumentPreview]
+  );
+
   const masonryRows = useMemo(
-    () => (panelWidth === undefined ? [] : packPropertyRows(partition.masonryFields, panelWidth)),
-    [partition.masonryFields, panelWidth]
+    () => (panelWidth === undefined ? [] : packPropertyRows(masonryFields, panelWidth)),
+    [masonryFields, panelWidth]
   );
 
   const inheritingCardsByGroupKey = useMemo(
@@ -157,13 +194,15 @@ const MetadataRecord = ({ entity, onOpenEntity }: MetadataRecordProps) => {
           translationContext,
           templatePropertyById,
           onOpenEntity,
+          entity,
+          showDocumentPreview,
         });
 
   if (!entity || !entityTemplate) {
     return <Translate>NO DATA AVAILABLE</Translate>;
   }
 
-  if (partition.masonryFields.length === 0 && !hasSystemDates) {
+  if (masonryFields.length === 0 && !hasSystemDates) {
     return (
       <div className="flex items-center justify-center py-10 text-center">
         <p className="text-xs text-ink-muted">

@@ -1,5 +1,5 @@
 /** @jest-environment jsdom */
-/* eslint-disable react/no-multi-comp */
+/* eslint-disable react/no-multi-comp, max-statements, max-lines */
 import React from 'react';
 import { createStore, Provider } from 'jotai';
 import { act, render, screen, waitFor, within } from '@testing-library/react';
@@ -208,7 +208,10 @@ const withoutRels: Entity = {
   },
 };
 
-const renderRecord = (entityOverride: Entity = entity) =>
+const renderRecord = (
+  entityOverride: Entity = entity,
+  options: { showDocumentPreview?: boolean } = {}
+) =>
   render(
     <TestAtomStoreProvider
       initialValues={[
@@ -216,7 +219,7 @@ const renderRecord = (entityOverride: Entity = entity) =>
         [relationshipTypesAtom, [{ _id: 'rel-type-1', name: 'Relates to' }]],
       ]}
     >
-      <MetadataRecord entity={entityOverride} />
+      <MetadataRecord entity={entityOverride} showDocumentPreview={options.showDocumentPreview} />
     </TestAtomStoreProvider>
   );
 
@@ -494,6 +497,61 @@ describe('MetadataRecord', () => {
     expect(screen.queryByRole('heading', { name: 'Previewg' })).not.toBeInTheDocument();
     expect(screen.queryByRole('heading', { name: 'Document' })).not.toBeInTheDocument();
     expect(screen.getByRole('heading', { name: 'Notes' })).toBeInTheDocument();
+  });
+
+  it('omits the preview card on the entity page', () => {
+    renderRecord({
+      ...entity,
+      documents: [
+        {
+          _id: 'doc-1',
+          filename: 'judgment.pdf',
+          originalname: 'Velasquez.pdf',
+          mimetype: 'application/pdf',
+          size: 218112,
+          language: 'eng',
+        },
+      ],
+      metadata: {
+        ...entity.metadata,
+        previewg: [{ value: '/batman.jpg' }],
+      },
+    });
+
+    expect(screen.queryByRole('heading', { name: 'Previewg' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: 'View' })).not.toBeInTheDocument();
+    expect(document.querySelector('[data-field-key="previewg"]')).toBeNull();
+  });
+
+  it('shows a compact document card in overlay preview mode', () => {
+    renderRecord(
+      {
+        ...entity,
+        documents: [
+          {
+            _id: 'doc-1',
+            filename: 'judgment.pdf',
+            originalname: 'Velasquez.pdf',
+            mimetype: 'application/pdf',
+            size: 218112,
+            language: 'eng',
+          },
+        ],
+        metadata: {
+          ...entity.metadata,
+          previewg: [{ value: '/batman.jpg' }],
+        },
+      },
+      { showDocumentPreview: true }
+    );
+
+    expect(screen.getByRole('heading', { name: 'Previewg' })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'View' })).toBeInTheDocument();
+    expect(screen.queryByRole('heading', { name: 'Document' })).not.toBeInTheDocument();
+    const headings = screen.getAllByRole('heading').map(heading => heading.textContent);
+    expect(headings.indexOf('Notes')).toBeLessThan(headings.indexOf('Previewg'));
+    expect(headings.indexOf('Previewg')).toBeLessThan(headings.indexOf('Relationshipc'));
+    expect(fieldEl('previewg').className).toContain(COMPACT_METADATA_FIELD_LAYOUT);
   });
 
   it('shows inheriting connections in template order without a Relationships heading', () => {

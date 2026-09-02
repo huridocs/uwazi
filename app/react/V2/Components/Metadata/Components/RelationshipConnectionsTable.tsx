@@ -1,11 +1,9 @@
 import React, { memo, type ReactNode } from 'react';
 import { LinkIcon } from '@heroicons/react/24/outline';
-import { I18NLinkV2, Translate } from '#app/I18N/index.js';
-import { TemplatePill } from '#V2/Components/UI/TemplatePill.js';
-import { EntityIcon, type EntityIconData } from '../../CustomIcons/index.js';
+import { Translate } from '#app/I18N/index.js';
 import { inheritedTypeLayout } from '../inheritedTypeLayout.js';
-
-const DEFAULT_ENTITY_BASE_PATH = '/entityv2/';
+import { EntityOverlayPill, type OpenEntityTarget } from './EntityOverlayPill.js';
+import type { EntityIconData } from '../../CustomIcons/index.js';
 
 type RelationshipTableColumn = {
   label: string;
@@ -32,7 +30,7 @@ type RelationshipConnectionsTableProps = {
   columns?: RelationshipTableColumn[];
   translationContext?: string;
   targetTemplateId?: string;
-  onEntityClick?: (row: RelationshipTableRow) => void;
+  onOpenEntity?: (target: OpenEntityTarget) => void;
   renderActions?: (row: RelationshipTableRow) => ReactNode;
   emptyLabel?: string;
 };
@@ -50,47 +48,12 @@ const renderInheritedCell = (cell: ReactNode): ReactNode => {
   return cell;
 };
 
-const entityCellForRow = (
-  row: RelationshipTableRow,
-  pill: ReactNode,
-  onEntityClick?: (row: RelationshipTableRow) => void
-): ReactNode => {
-  if (row.authorized === false) {
-    return pill;
-  }
-  const title = row.label || row.id;
-  if (onEntityClick) {
-    return (
-      <button
-        type="button"
-        className="inline-flex max-w-full cursor-pointer items-center rounded-md transition-opacity hover:opacity-80"
-        title={title}
-        onClick={() => onEntityClick(row)}
-      >
-        {pill}
-      </button>
-    );
-  }
-  return (
-    <I18NLinkV2
-      className="inline-flex max-w-full items-center rounded-md transition-opacity hover:opacity-80"
-      to={`${DEFAULT_ENTITY_BASE_PATH}${row.id}`}
-      target="_blank"
-      rel="noreferrer"
-      localized={false}
-      title={title}
-    >
-      {pill}
-    </I18NLinkV2>
-  );
-};
-
 const RelationshipConnectionsTableComponent = ({
   rows,
   columns = [],
   translationContext = 'System',
   targetTemplateId,
-  onEntityClick,
+  onOpenEntity,
   renderActions,
   emptyLabel = 'No connected entities yet.',
 }: RelationshipConnectionsTableProps) => {
@@ -137,40 +100,36 @@ const RelationshipConnectionsTableComponent = ({
               </td>
             </tr>
           ) : (
-            rows.map(row => {
-              const pill = (
-                <span className="inline-flex max-w-full items-center gap-1.5">
-                  <EntityIcon data={row.icon} />
-                  <TemplatePill
+            rows.map(row => (
+              <tr
+                key={row.id}
+                className="border-t border-border/40 transition-colors hover:bg-warm/30"
+              >
+                <td className="max-w-40 px-3 py-1.5 align-middle">
+                  <EntityOverlayPill
+                    sharedId={row.id}
                     templateId={row.templateId || targetTemplateId || ''}
                     label={row.label || row.id}
+                    icon={row.icon}
+                    authorized={row.authorized}
+                    onOpenEntity={onOpenEntity}
                   />
-                </span>
-              );
-              return (
-                <tr
-                  key={row.id}
-                  className="border-t border-border/40 transition-colors hover:bg-warm/30"
-                >
-                  <td className="max-w-40 px-3 py-1.5 align-middle">
-                    {entityCellForRow(row, pill, onEntityClick)}
+                </td>
+                {columns.map(column => (
+                  <td
+                    key={`${row.id}-${column.label}`}
+                    className={inheritedCellClass(column.inheritedType)}
+                  >
+                    {renderInheritedCell(cellContent(column, row.id))}
                   </td>
-                  {columns.map(column => (
-                    <td
-                      key={`${row.id}-${column.label}`}
-                      className={inheritedCellClass(column.inheritedType)}
-                    >
-                      {renderInheritedCell(cellContent(column, row.id))}
-                    </td>
-                  ))}
-                  {actionCol ? (
-                    <td className="sticky right-0 border-s border-border/40 bg-paper px-2 py-1 align-middle">
-                      {renderActions?.(row)}
-                    </td>
-                  ) : null}
-                </tr>
-              );
-            })
+                ))}
+                {actionCol ? (
+                  <td className="sticky right-0 border-s border-border/40 bg-paper px-2 py-1 align-middle">
+                    {renderActions?.(row)}
+                  </td>
+                ) : null}
+              </tr>
+            ))
           )}
         </tbody>
       </table>

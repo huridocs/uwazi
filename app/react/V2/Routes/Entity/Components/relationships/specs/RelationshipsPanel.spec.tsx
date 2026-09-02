@@ -1,6 +1,7 @@
 /**
  * @jest-environment jsdom
  */
+/* eslint-disable max-statements */
 import { screen, within, waitFor } from '@testing-library/react';
 import userEvent, { type UserEvent } from '@testing-library/user-event';
 import { defaultPdf, renderRelationshipsPanel } from './helpers/renderRelationshipsPanel.js';
@@ -15,6 +16,10 @@ const getSelectionState = () => screen.getByTestId('selection-state');
 
 const expandAll = async (user: UserEvent) => {
   await user.click(screen.getByRole('button', { name: 'Expand all' }));
+};
+
+const clickReference = async (user: UserEvent) => {
+  await user.click(screen.getByText(/target quoted text/));
 };
 
 describe('Relationships panel', () => {
@@ -40,7 +45,7 @@ describe('Relationships panel', () => {
 
       await expandAll(user);
       await waitForResolved();
-      await user.click(screen.getByText('Related Entity'));
+      await clickReference(user);
 
       expect(onFocusDocument).toHaveBeenCalledTimes(1);
     });
@@ -55,7 +60,7 @@ describe('Relationships panel', () => {
 
       await expandAll(user);
       await waitForResolved();
-      await user.click(screen.getByText('Related Entity'));
+      await clickReference(user);
 
       expect(onFocusDocument).not.toHaveBeenCalled();
     });
@@ -69,7 +74,7 @@ describe('Relationships panel', () => {
 
       await expandAll(user);
       await waitForResolved();
-      await user.click(screen.getByText('Related Entity'));
+      await clickReference(user);
 
       expect(pdf.goToPage).toHaveBeenCalledWith(2);
       expect(
@@ -90,7 +95,7 @@ describe('Relationships panel', () => {
 
       await expandAll(user);
       await waitForResolved();
-      await user.click(screen.getByText('Related Entity'));
+      await clickReference(user);
 
       await waitFor(() => {
         const multiRectCall = pdf.toggleHighlights.mock.calls.find(([highlights]) => {
@@ -108,10 +113,10 @@ describe('Relationships panel', () => {
 
       await expandAll(user);
       await waitForResolved();
-      await user.click(screen.getByText('Related Entity'));
+      await clickReference(user);
       expect(getSelectionState().getAttribute('data-active')).not.toBe('');
 
-      await user.click(screen.getByText('Related Entity'));
+      await clickReference(user);
 
       expect(getSelectionState().getAttribute('data-active')).toBe('');
       expect(pdf.toggleHighlights).toHaveBeenLastCalledWith([]);
@@ -139,7 +144,7 @@ describe('Relationships panel', () => {
       const user = userEvent.setup();
       const { waitForResolved } = renderRelationshipsPanel();
 
-      await user.click(screen.getAllByRole('button', { name: /Related/ })[0]);
+      await user.click(screen.getByRole('button', { name: 'Related 2' }));
       await waitForResolved();
 
       expect(screen.getByText(/target quoted text/)).toBeInTheDocument();

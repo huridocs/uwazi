@@ -8,26 +8,32 @@ type ListCardRowProps = {
   children: ReactNode;
 };
 
-const baseClasses =
-  'group px-3 py-2.5 border-b border-border/50 last:border-b-0 cursor-pointer transition-colors focus:outline-none focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-ink/20';
+const staticClasses =
+  'group px-3 py-2.5 border-b border-border/50 last:border-b-0 transition-colors';
+const interactiveClasses = `${staticClasses} cursor-pointer focus:outline-none focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-ink/20`;
 
 const ListCardRow = forwardRef<HTMLDivElement, ListCardRowProps>(
   ({ selected, onClick, className = '', children }, ref) => {
-    const composed = `${baseClasses} ${selected ? 'bg-parchment [&_.text-ink-tertiary]:text-ink-secondary' : ''} ${className}`;
+    const selectedClass = selected ? 'bg-parchment [&_.text-ink-tertiary]:text-ink-secondary' : '';
+    const composed = `${onClick ? interactiveClasses : staticClasses} ${selectedClass} ${className}`;
 
     return (
       <div
         ref={ref}
-        role="button"
-        tabIndex={0}
-        aria-pressed={selected}
+        role={onClick ? 'button' : undefined}
+        tabIndex={onClick ? 0 : undefined}
+        aria-pressed={onClick ? selected : undefined}
         onClick={onClick}
-        onKeyDown={(e: KeyboardEvent) => {
-          if (e.key === 'Enter' || e.key === ' ') {
-            e.preventDefault();
-            onClick?.();
-          }
-        }}
+        onKeyDown={
+          onClick
+            ? (e: KeyboardEvent) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  onClick();
+                }
+              }
+            : undefined
+        }
         className={composed}
       >
         {children}
