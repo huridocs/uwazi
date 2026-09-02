@@ -12,6 +12,9 @@ type SystemDatesLineProps = {
   entity: Entity;
 };
 
+const entityHasSystemDates = (entity: Entity) =>
+  typeof entity.creationDate === 'number' || typeof entity.editDate === 'number';
+
 const SystemDatesLine = ({ entity }: SystemDatesLineProps) => {
   const locale = useAtomValue(localeAtom);
   const displayContext = { ...metadataDisplayPresets.compact, locale };
@@ -45,4 +48,4 @@ const SystemDatesLine = ({ entity }: SystemDatesLineProps) => {
   );
 };
 
-export { SystemDatesLine };
+export { SystemDatesLine, entityHasSystemDates };

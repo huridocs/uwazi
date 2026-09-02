@@ -3,10 +3,7 @@ import type { MetadataProperty, RelationshipMetadataProperty } from '#V2/formatt
 import { sortByTemplatePropertyOrder } from './sortByTemplatePropertyOrder.js';
 import { relationshipGroupKey } from './relationshipInherit.js';
 
-type MetadataTemplateField = { fullWidth?: boolean; showInCard?: boolean } | undefined;
-
 const LONG_FIELD_CHAR_THRESHOLD = 100;
-const LONG_TEXT_CHAR_THRESHOLD = 160;
 
 const SPECIALIZED_FULL_WIDTH_TYPES: ReadonlyArray<MetadataProperty['type']> = [
   'geolocation',
@@ -16,14 +13,9 @@ const SPECIALIZED_FULL_WIDTH_TYPES: ReadonlyArray<MetadataProperty['type']> = [
   'markdown',
 ];
 
-const TEMPLATE_FULL_WIDTH_GRID_TYPES: ReadonlyArray<MetadataProperty['type']> = [
-  'image',
-  'preview',
-  'media',
-];
-
-const COMPACT_METADATA_FIELD_LAYOUT = 'min-w-0 flex-1';
-const FULL_ROW_METADATA_FIELD_LAYOUT = 'min-w-0 w-full basis-full shrink-0';
+const METADATA_FIELD_COLUMN = 'flex min-h-0 min-w-0 flex-col self-stretch';
+const COMPACT_METADATA_FIELD_LAYOUT = `${METADATA_FIELD_COLUMN} flex-1`;
+const FULL_ROW_METADATA_FIELD_LAYOUT = `${METADATA_FIELD_COLUMN} w-full shrink-0 basis-full`;
 const COMPACT_CARD_MIN_PX = 160;
 const MEDIA_CARD_MIN_PX = 288;
 const PROPERTY_ROW_GAP_PX = 12;
@@ -75,20 +67,6 @@ const inheritGroupKey = (
   return relationshipGroupKey({ content: property?.content, relationType: property?.relationType });
 };
 
-const isLongTextProperty = (data: MetadataProperty): boolean => {
-  if (data.type !== 'text') {
-    return false;
-  }
-  const text = data.values.map(v => String(v.value ?? '')).join('\n');
-  return text.length >= LONG_TEXT_CHAR_THRESHOLD || text.includes('\n');
-};
-
-const usesTemplateFullWidthGrid = (
-  data: MetadataProperty,
-  templateField: MetadataTemplateField
-): boolean =>
-  Boolean(templateField?.fullWidth) && TEMPLATE_FULL_WIDTH_GRID_TYPES.includes(data.type);
-
 const isMediaPackType = (type: MetadataProperty['type']): boolean =>
   MEDIA_PACK_TYPES.includes(type);
 
@@ -110,107 +88,74 @@ const contentLength = (data: MetadataProperty): number => {
   return 0;
 };
 
-const packClassForProperty = (
-  data: MetadataProperty,
-  templateField: MetadataTemplateField
-): MasonryPackClass => {
-  if (isInheritingRelationship(data) || data.type === 'markdown' || isLongTextProperty(data)) {
+const packClassForProperty = (data: MetadataProperty): MasonryPackClass => {
+  if (
+    isInheritingRelationship(data) ||
+    data.type === 'markdown' ||
+    isLongField(data) ||
+    contentLength(data) > LONG_FIELD_CHAR_THRESHOLD
+  ) {
     return 'block';
   }
   if (isMediaPackType(data.type)) {
     return 'media';
   }
-  if (usesTemplateFullWidthGrid(data, templateField)) {
-    return 'block';
-  }
-  if (isLongField(data) || contentLength(data) > LONG_FIELD_CHAR_THRESHOLD) {
-    return 'block';
-  }
   return 'short';
 };
 
-const metadataGridClassForProperty = (
-  data: MetadataProperty,
-  templateField: MetadataTemplateField
-): string => {
-  const packClass = packClassForProperty(data, templateField);
-  if (packClass === 'block') {
-    return FULL_ROW_METADATA_FIELD_LAYOUT;
+const metadataGridClassForProperty = (data: MetadataProperty): string =>
+  packClassForProperty(data) === 'block'
+    ? FULL_ROW_METADATA_FIELD_LAYOUT
+    : COMPACT_METADATA_FIELD_LAYOUT;
+
+type PackRow = { current: MetadataProperty[]; used: number };
+type PackWork = { rows: PropertyRow[]; row: PackRow; widthPx: number };
+
+const emptyRow = (): PackRow => ({ current: [], used: 0 });
+
+const flushPackedRow = (rows: PropertyRow[], current: MetadataProperty[]) => {
+  if (current.length > 0) {
+    rows.push({ fields: current });
   }
-  return COMPACT_METADATA_FIELD_LAYOUT;
 };
 
-const flushPackedRow = (
-  rows: PropertyRow[],
-  current: MetadataProperty[]
-): { rows: PropertyRow[]; current: MetadataProperty[]; used: number } => {
-  if (current.length === 0) {
-    return { rows, current, used: 0 };
-  }
-  return { rows: [...rows, { fields: current }], current: [], used: 0 };
-};
-
-const packClassOf = (
-  field: MetadataProperty,
-  templatePropertyById: Map<string, ClientProperty>
-): MasonryPackClass => packClassForProperty(field, templatePropertyById.get(field._id));
-
-const minPxForPackClass = (packClass: MasonryPackClass): number =>
-  packClass === 'media' ? MEDIA_CARD_MIN_PX : COMPACT_CARD_MIN_PX;
-
-type PackCursor = {
-  current: MetadataProperty[];
-  widthPx: number;
-  usedPx: number;
-  byId: Map<string, ClientProperty>;
-};
-
-const canJoinCurrentRow = (field: MetadataProperty, cursor: PackCursor): boolean => {
-  const [first] = cursor.current;
-  if (!first || cursor.widthPx <= 0) {
+const canJoin = (field: MetadataProperty, work: PackWork): boolean => {
+  const packClass = packClassForProperty(field);
+  const minPx = packClass === 'media' ? MEDIA_CARD_MIN_PX : COMPACT_CARD_MIN_PX;
+  const [first] = work.row.current;
+  if (!first || work.widthPx <= 0 || packClass === 'block') {
     return false;
   }
-  const packClass = packClassOf(field, cursor.byId);
-  const minPx = minPxForPackClass(packClass);
   if (
-    packClass === 'block' ||
-    packClassOf(first, cursor.byId) !== packClass ||
-    cursor.usedPx + PROPERTY_ROW_GAP_PX + minPx > cursor.widthPx
+    packClassForProperty(first) !== packClass ||
+    work.row.used + PROPERTY_ROW_GAP_PX + minPx > work.widthPx
   ) {
     return false;
   }
-  return packClass !== 'media' || cursor.current.length < MEDIA_MAX_PER_ROW;
+  return packClass !== 'media' || work.row.current.length < MEDIA_MAX_PER_ROW;
 };
 
-const packPropertyRows = (
-  fields: MetadataProperty[],
-  containerWidthPx: number,
-  templatePropertyById: Map<string, ClientProperty>
-): PropertyRow[] => {
-  let rows: PropertyRow[] = [];
-  let current: MetadataProperty[] = [];
-  let used = 0;
+const packOneField = (field: MetadataProperty, work: PackWork) => {
+  const packClass = packClassForProperty(field);
+  const minPx = packClass === 'media' ? MEDIA_CARD_MIN_PX : COMPACT_CARD_MIN_PX;
+  if (!canJoin(field, work)) {
+    flushPackedRow(work.rows, work.row.current);
+    work.row = emptyRow();
+  }
+  if (packClass === 'block') {
+    work.rows.push({ fields: [field] });
+    return;
+  }
+  work.row.current.push(field);
+  work.row.used =
+    work.row.current.length === 1 ? minPx : work.row.used + PROPERTY_ROW_GAP_PX + minPx;
+};
 
-  fields.forEach(field => {
-    if (
-      !canJoinCurrentRow(field, {
-        current,
-        widthPx: containerWidthPx,
-        usedPx: used,
-        byId: templatePropertyById,
-      })
-    ) {
-      ({ rows, current, used } = flushPackedRow(rows, current));
-    }
-    if (packClassOf(field, templatePropertyById) === 'block') {
-      rows.push({ fields: [field] });
-      return;
-    }
-    current.push(field);
-    const minPx = minPxForPackClass(packClassOf(field, templatePropertyById));
-    used = current.length === 1 ? minPx : used + PROPERTY_ROW_GAP_PX + minPx;
-  });
-  return flushPackedRow(rows, current).rows;
+const packPropertyRows = (fields: MetadataProperty[], widthPx: number): PropertyRow[] => {
+  const work: PackWork = { rows: [], row: emptyRow(), widthPx };
+  fields.forEach(field => packOneField(field, work));
+  flushPackedRow(work.rows, work.row.current);
+  return work.rows;
 };
 
 const hasFilledSpecializedValues = (data: MetadataProperty): boolean => {
@@ -239,18 +184,38 @@ type MetadataRecordPartition = {
   inheritingRels: RelationshipMetadataProperty[];
 };
 
+const groupInheritingRelationships = (
+  fields: RelationshipMetadataProperty[],
+  templatePropertyById: Map<string, ClientProperty>
+): Map<string, RelationshipMetadataProperty[]> => {
+  const groups = new Map<string, RelationshipMetadataProperty[]>();
+  fields.forEach(field => {
+    if (!isInheritingRelationship(field)) {
+      return;
+    }
+    const groupKey = inheritGroupKey(field, templatePropertyById);
+    const group = groups.get(groupKey);
+    if (group) {
+      group.push(field);
+    } else {
+      groups.set(groupKey, [field]);
+    }
+  });
+  return groups;
+};
+
 const inheritGroupPrimaries = (
   inheritingRels: RelationshipMetadataProperty[],
   templatePropertyById: Map<string, ClientProperty>
 ): RelationshipMetadataProperty[] => {
-  const seen = new Set<string>();
-  return inheritingRels.filter(field => {
-    if (!field.values.length) return false;
-    const groupKey = inheritGroupKey(field, templatePropertyById);
-    if (seen.has(groupKey)) return false;
-    seen.add(groupKey);
-    return true;
+  const primaries: RelationshipMetadataProperty[] = [];
+  groupInheritingRelationships(inheritingRels, templatePropertyById).forEach(siblings => {
+    const primary = siblings.find(field => field.values.length > 0);
+    if (primary) {
+      primaries.push(primary);
+    }
   });
+  return primaries;
 };
 
 const partitionMetadataRecord = (
@@ -290,6 +255,7 @@ export {
   isLinkOnlyRelationship,
   isInheritingRelationship,
   inheritGroupKey,
+  groupInheritingRelationships,
   metadataGridClassForProperty,
   packClassForProperty,
   packPropertyRows,
@@ -297,4 +263,4 @@ export {
   hasFilledSpecializedValues,
   templatePropertyInherits,
 };
-export type { MetadataTemplateField, MetadataRecordPartition, MasonryPackClass, PropertyRow };
+export type { MetadataRecordPartition, MasonryPackClass, PropertyRow };

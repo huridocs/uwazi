@@ -22,11 +22,12 @@ const collectInheritingIds = (templatePropertyById: Map<string, ClientProperty>)
 const groupedGeolocationInheritIds = (metadata: MetadataProperty[]) => {
   const ids = new Set<string>();
   metadata.forEach(field => {
-    if (field.type !== 'geolocation' || (field.propertyGroup?.length ?? 0) < 2) {
+    const group = field.propertyGroup;
+    if (field.type !== 'geolocation' || !group || group.length < 2) {
       return;
     }
-    field.propertyGroup?.forEach(member => {
-      if (member.inherited && typeof member._id === 'string') {
+    group.forEach(member => {
+      if (member.inherited && member._id) {
         ids.add(member._id);
       }
     });
@@ -52,12 +53,12 @@ const pushInheritingLinkFields = ({
       return;
     }
     const tpl = templatePropertyById.get(id);
-    if (!tpl || typeof tpl._id !== 'string') {
+    if (!tpl) {
       return;
     }
     const formatted = formatRelationshipLinks(
       {
-        _id: tpl._id,
+        _id: id,
         name: tpl.name,
         label: tpl.label,
         type: 'relationship',

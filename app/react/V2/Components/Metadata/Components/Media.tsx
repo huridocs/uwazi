@@ -30,7 +30,11 @@ const Media = ({ values, width = '100%', height = 300, frame = 'natural' }: Medi
   }
 
   return (
-    <div className="flex min-w-0 max-w-full flex-col gap-4 overflow-hidden">
+    <div
+      className={`flex min-w-0 max-w-full flex-col gap-4 overflow-hidden${
+        frame === 'video' ? ' min-h-0 flex-1' : ''
+      }`}
+    >
       {nonEmptyValues.map(({ value, alt, timelinks = [] }, index) => {
         const playerRef = playerRefs.current[index];
         const handleTimelinkClick = (time: number) => {
@@ -40,12 +44,16 @@ const Media = ({ values, width = '100%', height = 300, frame = 'natural' }: Medi
         const figId = `${baseId}-${index}`;
 
         return (
-          // eslint-disable-next-line react/no-array-index-key
-          <div key={index} className="flex min-w-0 max-w-full flex-col gap-2">
+          <div
+            key={value}
+            className={`flex min-w-0 max-w-full flex-col gap-2${
+              frame === 'video' ? ' min-h-0 flex-1' : ''
+            }`}
+          >
             <figure
               aria-labelledby={figId}
               className={`w-full min-w-0 max-w-full overflow-hidden rounded-md bg-(--color-theme-surface-warm) ${
-                frame === 'video' ? 'relative aspect-video' : ''
+                frame === 'video' ? 'relative min-h-0 flex-1 aspect-video' : ''
               }`.trim()}
             >
               <MediaPlayer

@@ -26,7 +26,7 @@ const Image = ({ values, imageStyle, density = 'default', frame = 'natural' }: I
   }
 
   return (
-    <div className="flex w-full min-w-0 flex-col gap-2">
+    <div className={`flex w-full min-w-0 flex-col gap-2${videoFrame ? ' min-h-0 flex-1' : ''}`}>
       {values.map((image, index) => {
         const hasError = errorIndices.has(index);
 
@@ -42,7 +42,7 @@ const Image = ({ values, imageStyle, density = 'default', frame = 'natural' }: I
           <div
             key={image.value || index}
             className={`w-full min-w-0 max-w-full overflow-hidden rounded-md bg-(--color-theme-surface-warm) ${
-              videoFrame ? 'relative aspect-video' : ''
+              videoFrame ? 'relative min-h-0 flex-1 aspect-video' : ''
             }`.trim()}
           >
             <img

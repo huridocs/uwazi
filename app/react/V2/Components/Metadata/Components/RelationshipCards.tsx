@@ -2,12 +2,12 @@ import React, { ReactNode, useMemo } from 'react';
 import type { ClientProperty, ClientTemplateSchema } from '#V2/shared/types.js';
 import type { RelationshipMetadataProperty } from '#V2/formatters/types.js';
 import type { Entity } from '#V2/api/entities/types.js';
-import { isInheritingRelationship } from '../metadataPropertyLayout.js';
 import {
-  buildInheritColumns,
-  relationshipGroupKey,
-  type InheritColumnProperty,
-} from '../relationshipInherit.js';
+  inheritGroupKey,
+  isInheritingRelationship,
+  groupInheritingRelationships,
+} from '../metadataPropertyLayout.js';
+import { buildInheritColumns, type InheritColumnProperty } from '../relationshipInherit.js';
 import { Relationship } from './Relationship.js';
 import type { OpenEntityTarget } from './ConnectionPills.js';
 
@@ -18,7 +18,6 @@ type RelationshipCardsProps = {
   templates?: ClientTemplateSchema[];
   entity?: Entity;
   onOpenEntity?: (target: OpenEntityTarget) => void;
-  /** Skip link-only connections — host renders those as masonry cards. */
   inheritingOnly?: boolean;
 };
 
@@ -61,32 +60,20 @@ const toInheritColumnProperty = (
   inherit: templateProperty?.inherit,
 });
 
-const groupKeyForField = (
-  field: RelationshipMetadataProperty,
-  templatePropertyById: Map<string, ClientProperty>
-): string => {
-  const templateProperty = templatePropertyById.get(field._id);
-  return relationshipGroupKey({
-    content: templateProperty?.content,
-    relationType: templateProperty?.relationType,
-  });
-};
-
 const linkOnlyCard = (field: RelationshipMetadataProperty, ctx: CardRenderContext): ReactNode => {
   const templateProperty = ctx.templatePropertyById.get(field._id);
   return (
-    <div key={field._id} data-field-key={field.name}>
-      <Relationship
-        values={field.values}
-        label={field.label}
-        translationContext={ctx.translationContext}
-        hideLabel={field.hideLabel}
-        className={ctx.relationshipClassName}
-        relationTypeId={templateProperty?.relationType}
-        targetTemplateId={field.relationShipTarget || templateProperty?.content}
-        onOpenEntity={ctx.onOpenEntity}
-      />
-    </div>
+    <Relationship
+      key={field._id}
+      values={field.values}
+      label={field.label}
+      translationContext={ctx.translationContext}
+      hideLabel={field.hideLabel}
+      className={ctx.relationshipClassName}
+      relationTypeId={templateProperty?.relationType}
+      targetTemplateId={field.relationShipTarget || templateProperty?.content}
+      onOpenEntity={ctx.onOpenEntity}
+    />
   );
 };
 
@@ -108,59 +95,65 @@ const inheritingGroupCard = (
   );
 
   return (
-    <div key={groupKey} data-field-key={primary.name}>
-      <Relationship
-        values={primary.values}
-        label={primary.label}
-        translationContext={ctx.translationContext}
-        hideLabel={primary.hideLabel}
-        className={ctx.relationshipClassName}
-        relationTypeId={primaryTpl?.relationType}
-        targetTemplateId={primary.relationShipTarget || primaryTpl?.content}
-        columns={columns}
-        onOpenEntity={ctx.onOpenEntity}
-      />
-    </div>
+    <Relationship
+      key={groupKey}
+      values={primary.values}
+      label={primary.label}
+      translationContext={ctx.translationContext}
+      hideLabel={primary.hideLabel}
+      className={ctx.relationshipClassName}
+      relationTypeId={primaryTpl?.relationType}
+      targetTemplateId={primary.relationShipTarget || primaryTpl?.content}
+      columns={columns}
+      onOpenEntity={ctx.onOpenEntity}
+    />
   );
 };
 
-const buildRelationshipCardNodes = ({
-  fields,
+const cardRenderContext = ({
   translationContext,
   templatePropertyById,
   templates = [],
   entity,
   onOpenEntity,
-  inheritingOnly = false,
   relationshipClassName,
-}: BuildRelationshipCardNodesArgs): ReactNode[] => {
-  const linked = fields.filter(field => {
+}: BuildRelationshipCardNodesArgs): CardRenderContext => ({
+  translationContext,
+  templatePropertyById,
+  templates,
+  entity,
+  onOpenEntity,
+  relationshipClassName,
+});
+
+const linkedRelationshipFields = ({
+  fields,
+  inheritingOnly = false,
+}: Pick<BuildRelationshipCardNodesArgs, 'fields' | 'inheritingOnly'>) =>
+  fields.filter(field => {
     if (!hasLinkedEntities(field)) {
       return false;
     }
     return !(inheritingOnly && !isInheritingRelationship(field));
   });
 
-  const ctx: CardRenderContext = {
-    translationContext,
-    templatePropertyById,
-    templates,
-    entity,
-    onOpenEntity,
-    relationshipClassName,
-  };
-
-  const inheritingByGroup = new Map<string, RelationshipMetadataProperty[]>();
-  linked.forEach(field => {
-    if (!isInheritingRelationship(field)) return;
-    const groupKey = groupKeyForField(field, templatePropertyById);
-    const group = inheritingByGroup.get(groupKey);
-    if (group) group.push(field);
-    else inheritingByGroup.set(groupKey, [field]);
+const buildInheritingCardsByGroupKey = (
+  args: BuildRelationshipCardNodesArgs
+): Map<string, ReactNode> => {
+  const linked = linkedRelationshipFields(args);
+  const ctx = cardRenderContext(args);
+  const cards = new Map<string, ReactNode>();
+  groupInheritingRelationships(linked, args.templatePropertyById).forEach((siblings, groupKey) => {
+    cards.set(groupKey, inheritingGroupCard(siblings, groupKey, ctx));
   });
+  return cards;
+};
 
+const buildRelationshipCardNodes = (args: BuildRelationshipCardNodesArgs): ReactNode[] => {
+  const linked = linkedRelationshipFields(args);
+  const ctx = cardRenderContext(args);
+  const inheritingByGroup = groupInheritingRelationships(linked, args.templatePropertyById);
   const nodes: ReactNode[] = [];
-  const seenInheritGroups = new Set<string>();
 
   linked.forEach(field => {
     if (!isInheritingRelationship(field)) {
@@ -168,12 +161,12 @@ const buildRelationshipCardNodes = ({
       return;
     }
 
-    const groupKey = groupKeyForField(field, templatePropertyById);
-    if (seenInheritGroups.has(groupKey)) {
+    const groupKey = inheritGroupKey(field, args.templatePropertyById);
+    const siblings = inheritingByGroup.get(groupKey);
+    if (!siblings || siblings[0] !== field) {
       return;
     }
-    seenInheritGroups.add(groupKey);
-    nodes.push(inheritingGroupCard(inheritingByGroup.get(groupKey) ?? [field], groupKey, ctx));
+    nodes.push(inheritingGroupCard(siblings, groupKey, ctx));
   });
 
   return nodes;
@@ -217,5 +210,5 @@ const RelationshipCards = ({
   return <div className="flex flex-col gap-3">{list}</div>;
 };
 
-export { RelationshipCards, buildRelationshipCardNodes };
+export { RelationshipCards, buildRelationshipCardNodes, buildInheritingCardsByGroupKey };
 export type { BuildRelationshipCardNodesArgs };

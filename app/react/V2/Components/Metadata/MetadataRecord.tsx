@@ -16,26 +16,20 @@ import {
   packPropertyRows,
   partitionMetadataRecord,
 } from './metadataPropertyLayout.js';
-import { useElementWidth } from './useElementWidth.js';
+import { useContainerWidth } from '#V2/Components/PDFViewer/hooks/useContainerWidth.js';
 import { renderFieldContent, renderScalarContent } from './Components/metadataFieldContent.js';
 import { fieldTitle, specializedCardTitle } from './Components/metadataFieldTitle.js';
 import { connectionPillsForField, type OpenEntityTarget } from './Components/ConnectionPills.js';
-import { buildRelationshipCardNodes } from './Components/RelationshipCards.js';
+import { buildInheritingCardsByGroupKey } from './Components/RelationshipCards.js';
 import { useMetadataRecordFocus } from './useMetadataRecordFocus.js';
-import { SystemDatesLine } from './Components/SystemDatesLine.js';
+import { SystemDatesLine, entityHasSystemDates } from './Components/SystemDatesLine.js';
 import type { MetadataProperty, RelationshipMetadataProperty } from '#V2/formatters/types.js';
-import type { ClientProperty, ClientTemplateSchema } from '#V2/shared/types.js';
+import type { ClientProperty } from '#V2/shared/types.js';
 
 type MetadataRecordProps = {
   entity: Entity;
   onOpenEntity?: (target: OpenEntityTarget) => void;
 };
-
-const relationshipCardContent = (
-  field: RelationshipMetadataProperty,
-  templateProperty: ClientProperty | undefined,
-  onOpenEntity?: (target: OpenEntityTarget) => void
-) => connectionPillsForField(field, templateProperty, { onOpenEntity });
 
 const fieldCard = (field: MetadataProperty, layoutClass: string, children: ReactNode) => (
   <div key={field._id} data-field-key={field.name} className={layoutClass}>
@@ -45,43 +39,20 @@ const fieldCard = (field: MetadataProperty, layoutClass: string, children: React
 
 type InheritingCardArgs = {
   field: RelationshipMetadataProperty;
-  inheritingRels: RelationshipMetadataProperty[];
+  inheritingCardsByGroupKey: Map<string, ReactNode>;
   templatePropertyById: Map<string, ClientProperty>;
-  translationContext: string;
-  templates: ClientTemplateSchema[];
-  entity: Entity;
-  onOpenEntity?: (target: OpenEntityTarget) => void;
 };
 
 const inheritingPropertyCard = ({
   field,
-  inheritingRels,
+  inheritingCardsByGroupKey,
   templatePropertyById,
-  translationContext,
-  templates,
-  entity,
-  onOpenEntity,
 }: InheritingCardArgs) => {
-  const groupKey = inheritGroupKey(field, templatePropertyById);
-  const [node] = buildRelationshipCardNodes({
-    fields: inheritingRels.filter(
-      candidate => inheritGroupKey(candidate, templatePropertyById) === groupKey
-    ),
-    translationContext,
-    templatePropertyById,
-    templates,
-    entity,
-    onOpenEntity,
-    inheritingOnly: true,
-  });
+  const node = inheritingCardsByGroupKey.get(inheritGroupKey(field, templatePropertyById));
   if (!node) {
     return null;
   }
-  return fieldCard(
-    field,
-    metadataGridClassForProperty(field, templatePropertyById.get(field._id)),
-    node
-  );
+  return fieldCard(field, metadataGridClassForProperty(field), node);
 };
 
 const standardPropertyCard = ({
@@ -100,7 +71,7 @@ const standardPropertyCard = ({
     : specializedCardTitle(field, translationContext);
   let content: ReactNode = renderFieldContent(field, { onOpenEntity });
   if (isRelationshipProperty(field)) {
-    content = relationshipCardContent(field, templatePropertyById.get(field._id), onOpenEntity);
+    content = connectionPillsForField(field, templatePropertyById.get(field._id), { onOpenEntity });
   } else if (isLongField(field)) {
     content = renderScalarContent(field, true);
   }
@@ -109,7 +80,7 @@ const standardPropertyCard = ({
   }
   return fieldCard(
     field,
-    metadataGridClassForProperty(field, templatePropertyById.get(field._id)),
+    metadataGridClassForProperty(field),
     <MetadataCard title={title}>{content}</MetadataCard>
   );
 };
@@ -118,8 +89,12 @@ const standardPropertyCard = ({
 const MetadataRecord = ({ entity, onOpenEntity }: MetadataRecordProps) => {
   const templates = useAtomValue(templatesAtom);
   const rootRef = useRef<HTMLDivElement>(null);
-  const panelWidth = useElementWidth(rootRef);
-  useMetadataRecordFocus(entity.sharedId, rootRef);
+  const panelWidth = useContainerWidth(rootRef, {
+    borderWidth: 0,
+    safetyBuffer: 0,
+    debounce: 50,
+  });
+  useMetadataRecordFocus(entity.sharedId, rootRef, panelWidth !== undefined);
 
   const { entityTemplate, metadata } = useFormatMetadata(entity, templates, {
     groupGeolocationProperties: true,
@@ -143,23 +118,39 @@ const MetadataRecord = ({ entity, onOpenEntity }: MetadataRecordProps) => {
   );
 
   const masonryRows = useMemo(
-    () => packPropertyRows(partition.masonryFields, panelWidth, templatePropertyById),
-    [partition.masonryFields, panelWidth, templatePropertyById]
+    () => (panelWidth === undefined ? [] : packPropertyRows(partition.masonryFields, panelWidth)),
+    [partition.masonryFields, panelWidth]
   );
 
-  const hasSystemDates =
-    typeof entity.creationDate === 'number' || typeof entity.editDate === 'number';
+  const inheritingCardsByGroupKey = useMemo(
+    () =>
+      buildInheritingCardsByGroupKey({
+        fields: partition.inheritingRels,
+        translationContext,
+        templatePropertyById,
+        templates,
+        entity,
+        onOpenEntity,
+        inheritingOnly: true,
+      }),
+    [
+      partition.inheritingRels,
+      translationContext,
+      templatePropertyById,
+      templates,
+      entity,
+      onOpenEntity,
+    ]
+  );
+
+  const hasSystemDates = entityHasSystemDates(entity);
 
   const renderPropertyCard = (field: MetadataProperty) =>
     isInheritingRelationship(field)
       ? inheritingPropertyCard({
           field,
-          inheritingRels: partition.inheritingRels,
+          inheritingCardsByGroupKey,
           templatePropertyById,
-          translationContext,
-          templates,
-          entity,
-          onOpenEntity,
         })
       : standardPropertyCard({
           field,
@@ -188,7 +179,7 @@ const MetadataRecord = ({ entity, onOpenEntity }: MetadataRecordProps) => {
         <div
           key={row.fields.map(field => field._id).join('-')}
           data-property-row={row.fields.map(field => field.name).join(' ')}
-          className="flex w-full min-w-0 items-start gap-3"
+          className="flex w-full min-w-0 items-stretch gap-3"
         >
           {row.fields.map(renderPropertyCard)}
         </div>
