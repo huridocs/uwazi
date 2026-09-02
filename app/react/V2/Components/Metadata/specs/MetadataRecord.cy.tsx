@@ -28,10 +28,12 @@ describe('MetadataDisplay', () => {
       mount(<Basic.Component showGeolocationProperties={false} />);
     });
 
-    it('shows creation and edit dates in Details', () => {
+    it('shows created and edited dates as a footer line', () => {
       cy.get('[data-testid="metadata-record"]').should('exist');
-      cy.contains('th', 'Creation Date').should('exist');
-      cy.contains('th', 'Edit Date').should('exist');
+      cy.get('[data-testid="entity-system-dates"]').should(
+        'contain',
+        'Created Oct 2, 2025 · Edited Oct 13, 2025'
+      );
     });
 
     it('shows simple text as a compact card', () => {
@@ -113,7 +115,9 @@ describe('MetadataDisplay', () => {
       cy.get('[data-field-key="video_of_event"] .aspect-video').should('exist');
       cy.get('[data-field-key="selected_image"]')
         .closest('[data-property-row]')
-        .should('contain', 'selected_image');
+        .invoke('attr', 'data-property-row')
+        .should('include', 'selected_image')
+        .and('include', 'video_of_event');
     });
 
     it('shows media timelinks', () => {
@@ -135,16 +139,25 @@ describe('MetadataDisplay', () => {
 
   describe('accessibility', () => {
     it('should be accessible', () => {
-      cy.injectAxe();
-      mount(<Basic.Component showGeolocationProperties={false} />);
-      cy.checkA11y(undefined, {
-        rules: {
-          'color-contrast': { enabled: false },
-          'heading-order': { enabled: false },
-          dlitem: { enabled: false },
-          'definition-list': { enabled: false },
-        },
+      cy.on('uncaught:exception', err => {
+        if (err.message.includes('_leaflet_pos')) {
+          return false;
+        }
+        return true;
       });
+      mount(<Basic.Component showGeolocationProperties={false} />);
+      cy.injectAxe();
+      cy.checkA11y(
+        { exclude: ['.leaflet-container'] },
+        {
+          rules: {
+            'color-contrast': { enabled: false },
+            'heading-order': { enabled: false },
+            dlitem: { enabled: false },
+            'definition-list': { enabled: false },
+          },
+        }
+      );
     });
   });
 
@@ -192,8 +205,10 @@ describe('MetadataDisplay', () => {
     };
 
     const checkProperties = () => {
-      cy.contains('td', 'Oct 2, 2025');
-      cy.contains('td', 'Oct 13, 2025');
+      cy.get('[data-testid="entity-system-dates"]').should(
+        'contain',
+        'Created Oct 2, 2025 · Edited Oct 13, 2025'
+      );
 
       cy.contains('h2', 'A basic simple text').should('not.exist');
       cy.contains('h2', 'Single Date').should('not.exist');

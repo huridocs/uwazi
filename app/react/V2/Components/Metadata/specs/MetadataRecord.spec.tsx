@@ -239,7 +239,7 @@ describe('MetadataRecord', () => {
   });
 
   // eslint-disable-next-line max-statements
-  it('shows Details dates only and packs template fields in masonry', () => {
+  it('shows system dates and packs template fields in masonry', () => {
     renderRecord(withoutRels);
 
     expect(screen.queryByRole('heading', { name: 'Document' })).not.toBeInTheDocument();
@@ -248,13 +248,8 @@ describe('MetadataRecord', () => {
     expect(screen.getByRole('heading', { name: 'Notes' })).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: 'Code' })).toBeInTheDocument();
     expect(screen.getByText('ABC')).toBeInTheDocument();
-    expect(screen.getByRole('heading', { name: 'Details' })).toBeInTheDocument();
-
-    const table = screen.getByRole('table');
-    expect(within(table).queryByRole('rowheader', { name: 'Title' })).not.toBeInTheDocument();
-    expect(within(table).queryByRole('rowheader', { name: 'Code' })).not.toBeInTheDocument();
-    expect(within(table).getByRole('rowheader', { name: 'Creation Date' })).toBeInTheDocument();
-    expect(within(table).getByRole('rowheader', { name: 'Edit Date' })).toBeInTheDocument();
+    expect(screen.queryByRole('heading', { name: 'Details' })).not.toBeInTheDocument();
+    expect(screen.getByTestId('entity-system-dates')).toHaveTextContent(/Created/);
     expect(screen.queryByText('Relationships')).not.toBeInTheDocument();
 
     expect(fieldEl('code').className).toContain(COMPACT_METADATA_FIELD_LAYOUT);
@@ -308,8 +303,8 @@ describe('MetadataRecord', () => {
 
     const headings = screen.getAllByRole('heading').map(heading => heading.textContent);
     expect(headings.indexOf('Summary')).toBeLessThan(headings.indexOf('Image'));
-    expect(headings.indexOf('Details')).toBeGreaterThan(headings.indexOf('Image'));
-    expect(headings.filter(heading => heading === 'Details')).toHaveLength(1);
+    expect(headings).not.toContain('Details');
+    expect(screen.getByTestId('entity-system-dates')).toBeInTheDocument();
     expect(fieldEl('photo').className).toContain(COMPACT_METADATA_FIELD_LAYOUT);
     expect(fieldEl('code').className).toContain(COMPACT_METADATA_FIELD_LAYOUT);
   });
@@ -402,7 +397,9 @@ describe('MetadataRecord', () => {
     const codeCard = fieldEl('code');
     expect(codeCard).toHaveClass('flash-highlight');
     expect(Element.prototype.scrollIntoView).toHaveBeenCalled();
-    jest.advanceTimersByTime(1100);
+    act(() => {
+      jest.advanceTimersByTime(1100);
+    });
     expect(codeCard).not.toHaveClass('flash-highlight');
     jest.useRealTimers();
   });
@@ -423,7 +420,9 @@ describe('MetadataRecord', () => {
 
     expect(store.get(focusMetadataFieldAtom)).toEqual({ fieldKey: 'missing-field' });
 
-    jest.advanceTimersByTime(500);
+    act(() => {
+      jest.advanceTimersByTime(500);
+    });
     expect(store.get(focusMetadataFieldAtom)).toEqual({ fieldKey: 'missing-field' });
 
     jest.useRealTimers();
@@ -510,7 +509,8 @@ describe('MetadataRecord', () => {
     expect(screen.getByRole('heading', { name: 'Relationshipc' })).toBeInTheDocument();
     const headings = screen.getAllByRole('heading').map(heading => heading.textContent);
     expect(headings.indexOf('Notes')).toBeLessThan(headings.indexOf('Relationshipc'));
-    expect(headings.indexOf('Details')).toBe(headings.length - 1);
+    expect(headings).not.toContain('Details');
+    expect(screen.getByTestId('entity-system-dates')).toBeInTheDocument();
   });
 
   it('shows inheriting connections with inherited body and map', () => {

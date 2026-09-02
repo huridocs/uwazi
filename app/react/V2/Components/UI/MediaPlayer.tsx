@@ -119,7 +119,12 @@ const MediaPlayer = ({
           config={{
             facebook: { attributes: { 'data-height': playerHeight } },
           }}
-          playIcon={<PlayIcon className={`absolute w-1/5 min-w-5 max-w-30 ${playIconColor}`} />}
+          playIcon={
+            <PlayIcon
+              className={`absolute w-1/5 min-w-5 max-w-30 ${playIconColor}`}
+              aria-label="Play video"
+            />
+          }
           onClickPreview={() => !playing && setPlaying(true)}
           // eslint-disable-next-line react/jsx-props-no-spreading
           {...props}
