@@ -1,62 +1,18 @@
-import React, { useMemo } from 'react';
-import { useAtomValue } from 'jotai';
-import { templatesAtom } from '#V2/atoms/templatesAtom.js';
-import { TemplatePill } from '#V2/Components/UI/TemplatePill.js';
-import { useFormatMetadata } from '#V2/Components/Metadata/hooks/useFormatMetadata.js';
+import React from 'react';
+import { MetadataRecord } from '#V2/Components/Metadata/MetadataRecord.js';
 import type { Entity } from '#V2/api/entities/types.js';
-import type { RelationshipMarker } from '#V2/Components/Relationships/types.js';
-import { EntityOverlayMetadataSummary } from './EntityOverlayMetadataSummary.js';
-import { EntityOverlayProperties } from './EntityOverlayProperties.js';
-import { EntityOverlayReferences } from './EntityOverlayReferences.js';
-import { EntityOverlayRelationships } from './EntityOverlayRelationships.js';
-import { isOverlayTextReferenceMarker } from './overlayMarkerKind.js';
+import { useEntityOverlay } from '#V2/Routes/Entity/Components/context/index.js';
 
 type EntityOverlayContentProps = {
   entity: Entity;
-  markers: RelationshipMarker[];
-  selfSharedId: string;
 };
 
-const EntityOverlayContent = ({ entity, markers, selfSharedId }: EntityOverlayContentProps) => {
-  const templates = useAtomValue(templatesAtom);
-  const { entityTemplate, metadata } = useFormatMetadata(entity, templates, {
-    groupGeolocationProperties: true,
-  });
-
-  const { referenceMarkers, relationshipMarkers } = useMemo(() => {
-    const references: RelationshipMarker[] = [];
-    const relationships: RelationshipMarker[] = [];
-    markers.forEach(marker => {
-      if (isOverlayTextReferenceMarker(marker)) {
-        references.push(marker);
-      } else {
-        relationships.push(marker);
-      }
-    });
-    return { referenceMarkers: references, relationshipMarkers: relationships };
-  }, [markers]);
+const EntityOverlayContent = ({ entity }: EntityOverlayContentProps) => {
+  const { openEntityOverlayTarget } = useEntityOverlay();
 
   return (
-    <div
-      className="flex flex-1 flex-col gap-5 overflow-auto bg-(--color-theme-surface-raised) p-4 pb-8"
-      style={{
-        backgroundColor:
-          'var(--color-theme-surface-raised, var(--color-theme-bg-surface, #ffffff))',
-      }}
-    >
-      <div className="w-fit shrink-0">
-        <TemplatePill templateId={entity.template} size="md" />
-      </div>
-      <EntityOverlayMetadataSummary
-        entity={entity}
-        entityTemplate={entityTemplate}
-        referenceCount={referenceMarkers.length}
-      />
-      <EntityOverlayProperties metadata={metadata} translationContext={entityTemplate?._id ?? ''} />
-      {referenceMarkers.length > 0 && (
-        <EntityOverlayReferences markers={referenceMarkers} selfSharedId={selfSharedId} />
-      )}
-      <EntityOverlayRelationships markers={relationshipMarkers} selfSharedId={selfSharedId} />
+    <div className="min-h-0 min-w-0 flex-1 overflow-y-auto px-3 py-3 pb-8">
+      <MetadataRecord entity={entity} onOpenEntity={openEntityOverlayTarget} />
     </div>
   );
 };

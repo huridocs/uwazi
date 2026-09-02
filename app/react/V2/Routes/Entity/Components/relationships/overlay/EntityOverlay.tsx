@@ -1,15 +1,10 @@
-import React, { useEffect, useId, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useId, useRef, useState } from 'react';
 import { useAtomValue } from 'jotai';
 import { XMarkIcon } from '@heroicons/react/24/outline';
 import { I18NLinkV2, t, Translate } from '#app/I18N/index.js';
 import { templatesAtom } from '#V2/atoms/templatesAtom.js';
 import { ErrorBoundary } from '#V2/Components/ErrorHandling/ErrorBoundary.js';
-import {
-  useEntityOverlay,
-  useEntityScopedEntity,
-  useEntityRelationshipMarkers,
-  useEnsureResolved,
-} from '#V2/Routes/Entity/Components/context/index.js';
+import { useEntityOverlay, useEnsureResolved } from '#V2/Routes/Entity/Components/context/index.js';
 import { EntityOverlayContent } from './EntityOverlayContent.js';
 import { useOverlayEntity } from './useOverlayEntity.js';
 import { settingsAtom } from '#V2/atoms/settingsAtom.js';
@@ -21,8 +16,6 @@ const overlaySurfaceStyle = {
 
 const EntityOverlay = () => {
   const { target, closeEntityOverlay } = useEntityOverlay();
-  const selfEntity = useEntityScopedEntity();
-  const sourceMarkers = useEntityRelationshipMarkers();
   const ensureResolved = useEnsureResolved();
   const templates = useAtomValue(templatesAtom);
   const settings = useAtomValue(settingsAtom);
@@ -30,12 +23,6 @@ const EntityOverlay = () => {
   const titleId = useId();
   const [entered, setEntered] = useState(false);
   const { entity, loading, error } = useOverlayEntity(target?.sharedId ?? null);
-
-  const targetMarkers = useMemo(
-    () =>
-      target ? sourceMarkers.filter(marker => marker.target.sharedId === target.sharedId) : [],
-    [sourceMarkers, target]
-  );
 
   const isOpen = target !== null;
   const title = entity?.title ?? target?.title ?? '';
@@ -142,11 +129,7 @@ const EntityOverlay = () => {
         )}
         {entity && !loading && (
           <ErrorBoundary>
-            <EntityOverlayContent
-              entity={entity}
-              markers={targetMarkers}
-              selfSharedId={selfEntity.sharedId}
-            />
+            <EntityOverlayContent entity={entity} />
           </ErrorBoundary>
         )}
         <div
