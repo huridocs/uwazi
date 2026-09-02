@@ -11,6 +11,7 @@ type DisplayMenuProps = {
   children: ReactNode;
   modified?: boolean;
   size?: DisplayMenuSize;
+  appearance?: 'plain' | 'outlined';
 };
 
 type DisplayMenuRowProps = {
@@ -25,18 +26,32 @@ const DisplayMenuRow = ({ label, children }: DisplayMenuRowProps) => (
   </div>
 );
 
-const DisplayMenu = ({ ariaLabel, children, modified = false, size = 'md' }: DisplayMenuProps) => {
+const DisplayMenu = ({
+  ariaLabel,
+  children,
+  modified = false,
+  size = 'md',
+  appearance = 'plain',
+}: DisplayMenuProps) => {
   const [open, setOpen] = useState(false);
   const buttonRef = useRef<HTMLButtonElement>(null);
   const box = size === 'sm' ? 'h-6 w-6' : 'h-8 w-8';
   const icon = size === 'sm' ? 'h-3 w-3' : 'h-3.5 w-3.5';
+  const outlined = appearance === 'outlined';
+  const active = open || modified;
+  let tone = 'bg-warm text-ink-secondary hover:bg-parchment hover:text-ink';
+  if (outlined && active) {
+    tone = 'border border-ink/40 bg-paper text-ink shadow-sm';
+  } else if (outlined) {
+    tone = 'border border-border bg-paper text-ink-secondary hover:bg-parchment hover:text-ink';
+  } else if (active) {
+    tone = 'bg-vellum text-ink';
+  }
   const buttonClass = [
     'relative inline-flex cursor-pointer items-center justify-center rounded-md',
     'transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-carbon/30',
     box,
-    open || modified
-      ? 'bg-vellum text-ink'
-      : 'bg-warm text-ink-secondary hover:bg-parchment hover:text-ink',
+    tone,
   ].join(' ');
 
   return (

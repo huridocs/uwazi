@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react';
-import { Meta, StoryObj } from '@storybook/react-webpack5';
+import preview from '#storybook/preview';
+import { storyExtend } from '#app/stories/storyExtend.js';
 import { BrowserRouter } from 'react-router';
 import { createStore, Provider } from 'jotai';
 import { Panel } from '#V2/Components/Layouts/Panel.js';
@@ -117,14 +118,17 @@ const MetadataStoryShell = ({
   );
 };
 
-const meta: Meta<typeof MetadataStoryShell> = {
+const meta = preview.meta({
   title: 'EntityViewer/MetadataDisplay',
   component: MetadataStoryShell,
-};
+});
 
-type Story = StoryObj<typeof MetadataStoryShell>;
-
-const Primary: Story = {
+const Primary = meta.story({
+  args: {
+    entity: apiEntity,
+    showGeolocationProperties: true,
+    locale: 'en',
+  },
   render: args => (
     <MetadataStoryShell
       entity={args.entity}
@@ -132,16 +136,13 @@ const Primary: Story = {
       locale={args.locale}
     />
   ),
-};
+});
 
-const Basic: Story = {
-  ...Primary,
+const Basic = storyExtend(Primary, {
   args: {
     entity: apiEntity,
     showGeolocationProperties: true,
     locale: 'en',
   },
-};
-
-export default meta;
+});
 export { Basic };

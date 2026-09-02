@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Meta, StoryObj } from '@storybook/react-webpack5';
+import preview from '#storybook/preview';
 import { Provider, createStore } from 'jotai';
 import { isMobileOverrideAtom } from '#V2/atoms/isMobileAtom.js';
 import { LanguageSelect } from '#V2/Components/UI/index.js';
@@ -10,13 +10,11 @@ const options = [
   { value: 'fr', label: 'Français', iso6391: 'fr' },
 ] as const;
 
-const meta: Meta<typeof LanguageSelect> = {
+const meta = preview.meta({
   title: 'Design System/Shared/LanguageSelect',
   component: LanguageSelect,
   parameters: { layout: 'centered' },
-};
-
-type Story = StoryObj<typeof LanguageSelect>;
+});
 
 const Demo = ({
   appearance,
@@ -48,16 +46,14 @@ const Demo = ({
   );
 };
 
-export const Default: Story = {
+export const Default = meta.story({
   render: () => <Demo appearance="default" isMobile={false} />,
-};
+});
 
-export const Compact: Story = {
+export const Compact = meta.story({
   render: () => <Demo appearance="compact" isMobile={false} />,
-};
+});
 
-export const MobileTrigger: Story = {
+export const MobileTrigger = meta.story({
   render: () => <Demo appearance="default" isMobile />,
-};
-
-export default meta;
+});

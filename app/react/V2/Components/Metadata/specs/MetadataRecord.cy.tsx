@@ -1,7 +1,6 @@
 import React from 'react';
 import 'cypress-axe';
 import { mount } from 'cypress/react';
-import { composeStories } from '@storybook/react';
 import * as stories from '#app/stories/EntityViewer/Metadata.stories.js';
 
 const inheritingRelationshipCard = (label: string) =>
@@ -22,11 +21,11 @@ const fullRowField = (name: string) =>
 
 // eslint-disable-next-line max-statements
 describe('MetadataDisplay', () => {
-  const { Basic } = composeStories(stories);
+  const { Basic } = stories;
 
   describe('General', () => {
     beforeEach(() => {
-      mount(<Basic showGeolocationProperties={false} />);
+      mount(<Basic.Component showGeolocationProperties={false} />);
     });
 
     it('shows creation and edit dates in Details', () => {
@@ -126,7 +125,7 @@ describe('MetadataDisplay', () => {
 
   describe('Grouped geolocation', () => {
     it('shows adjacent inherited geolocation on the grouped map', () => {
-      mount(<Basic showGeolocationProperties />);
+      mount(<Basic.Component showGeolocationProperties />);
 
       cy.contains('Grouped geolocation properties').should('exist');
       cy.contains('Grouped geolocation 3 (inherited)').should('not.exist');
@@ -137,7 +136,7 @@ describe('MetadataDisplay', () => {
   describe('accessibility', () => {
     it('should be accessible', () => {
       cy.injectAxe();
-      mount(<Basic showGeolocationProperties={false} />);
+      mount(<Basic.Component showGeolocationProperties={false} />);
       cy.checkA11y(undefined, {
         rules: {
           'color-contrast': { enabled: false },
@@ -151,14 +150,14 @@ describe('MetadataDisplay', () => {
 
   describe('dates', () => {
     it('shows dates in English locale', () => {
-      mount(<Basic showGeolocationProperties={false} locale="en" />);
+      mount(<Basic.Component showGeolocationProperties={false} locale="en" />);
 
       cy.contains('Jan 1, 2024').should('exist');
       cy.contains('From Jan 1, 2024 ~ To Jan 2, 2024').should('exist');
     });
 
     it('shows dates in Russian locale', () => {
-      mount(<Basic showGeolocationProperties={false} locale="ru" />);
+      mount(<Basic.Component showGeolocationProperties={false} locale="ru" />);
 
       cy.contains('1 янв. 2024').should('exist');
       cy.contains('From 1 янв. 2024 г. ~ To 2 янв. 2024 г.').should('exist');
@@ -207,12 +206,17 @@ describe('MetadataDisplay', () => {
     };
 
     it('hides empty metadata fields', () => {
-      mount(<Basic showGeolocationProperties={false} locale="en" entity={emptyEntity} />);
+      mount(<Basic.Component showGeolocationProperties={false} locale="en" entity={emptyEntity} />);
       checkProperties();
     });
 
     it('hides missing metadata fields', () => {
-      mount(<Basic showGeolocationProperties={false} entity={{ ...emptyEntity, metadata: {} }} />);
+      mount(
+        <Basic.Component
+          showGeolocationProperties={false}
+          entity={{ ...emptyEntity, metadata: {} }}
+        />
+      );
       checkProperties();
     });
   });

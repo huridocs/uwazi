@@ -1,14 +1,13 @@
 import React from 'react';
 import 'cypress-axe';
 import { mount } from 'cypress/react';
-import { composeStories } from '@storybook/react';
 import * as stories from '#app/stories/Forms/RadioSelect.stories.js';
 
-const { Basic, Horizontal } = composeStories(stories);
+const { Basic, Horizontal } = stories;
 
 describe('RadioSelect', () => {
   beforeEach(() => {
-    mount(<Basic />);
+    mount(<Basic.Component />);
   });
 
   it('should be accessible', () => {
@@ -49,7 +48,7 @@ describe('RadioSelect', () => {
 
 describe('RadioSelect Horizontal', () => {
   beforeEach(() => {
-    mount(<Horizontal />);
+    mount(<Horizontal.Component />);
   });
 
   it('should be accessible', () => {

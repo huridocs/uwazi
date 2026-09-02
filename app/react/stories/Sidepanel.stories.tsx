@@ -1,16 +1,15 @@
 import React, { useState } from 'react';
-import { Meta, StoryObj } from '@storybook/react-webpack5';
+import preview from '#storybook/preview';
+import { storyExtend } from '#app/stories/storyExtend.js';
 import { action } from 'storybook/actions';
 import { Sidepanel, Button } from '#V2/Components/UI/index.js';
 import { SidePanelProps } from '#V2/Components/UI/Sidepanel.js';
 import { GeneratedContent } from './helpers/GeneratedContent.js';
 
-const meta: Meta<typeof Sidepanel> = {
+const meta = preview.meta({
   title: 'Components/Sidepanel',
   component: Sidepanel,
-};
-
-export default meta;
+});
 
 const SidePanelContainer = (args: SidePanelProps) => {
   const [showSidepanel, setShowSidepanel] = useState(false);
@@ -78,9 +77,14 @@ const SidePanelContainer = (args: SidePanelProps) => {
   );
 };
 
-type Story = StoryObj<typeof Sidepanel>;
-
-const Primary: Story = {
+const Primary = meta.story({
+  args: {
+    withOverlay: false,
+    title: 'My sidepanel',
+    size: 'medium',
+    children: <GeneratedContent />,
+    closeSidepanelFunction: action('closeSidePanel'),
+  },
   render: args => (
     <SidePanelContainer
       withOverlay={args.withOverlay}
@@ -88,17 +92,13 @@ const Primary: Story = {
       size={args.size}
       closeSidepanelFunction={action('closeSidePanel')}
     >
-      {
-        // eslint-disable-next-line react/jsx-no-useless-fragment
-        <></>
-      }
+      {args.children}
     </SidePanelContainer>
   ),
-};
+});
 
-const Basic: Story = {
-  ...Primary,
+const Basic = storyExtend(Primary, {
   args: { withOverlay: false, title: 'My sidepanel', size: 'medium' },
-};
+});
 
 export { Basic };

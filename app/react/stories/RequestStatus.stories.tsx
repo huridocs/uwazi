@@ -1,15 +1,12 @@
 import React, { useState } from 'react';
-import type { Meta, StoryObj } from '@storybook/react-webpack5';
+import preview from '#storybook/preview';
 import { RequestStatus } from '#V2/Components/UI/Notifications/RequestStatus.js';
 import { NotificationsPanel } from '#V2/Components/UI/Notifications/NotificationsPanel.js';
 import { useRequestStatus } from '#V2/atoms/requestStatusAtom.js';
 
-const meta: Meta = {
+const meta = preview.meta({
   title: 'Components/Notifications/RequestStatus',
-};
-export default meta;
-
-type Story = StoryObj;
+});
 
 const statusColors: Record<string, string> = {
   success: 'text-green-600',
@@ -345,8 +342,8 @@ const Playground = () => {
   );
 };
 
-const PlaygroundStory: Story = {
+const PlaygroundStory = meta.story({
   render: () => <Playground />,
-};
+});
 
 export { PlaygroundStory as Playground };
