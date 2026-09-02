@@ -1,31 +1,29 @@
 import React from 'react';
 import 'cypress-axe';
 import { mount } from 'cypress/react';
-import { composeStories } from '@storybook/react';
 import * as stories from '#app/stories/ConfirmationModal.stories.js';
 
-const { BasicConfirmation, TextConfirmation, WarningConfirmation, PasswordConfirm } =
-  composeStories(stories);
+const { BasicConfirmation, TextConfirmation, WarningConfirmation, PasswordConfirm } = stories;
 
 describe('Confirmation modals', () => {
   it('should be accessible', () => {
     cy.injectAxe();
 
-    mount(<BasicConfirmation />);
+    mount(<BasicConfirmation.Component />);
     cy.checkA11y();
 
-    mount(<TextConfirmation />);
+    mount(<TextConfirmation.Component />);
     cy.checkA11y();
 
-    mount(<WarningConfirmation />);
+    mount(<WarningConfirmation.Component />);
     cy.checkA11y();
 
-    mount(<PasswordConfirm />);
+    mount(<PasswordConfirm.Component />);
     cy.checkA11y();
   });
 
   it('should show a simple confirmation', () => {
-    mount(<BasicConfirmation />);
+    mount(<BasicConfirmation.Component />);
     cy.contains('Delete Confirmation').should('be.visible');
     cy.contains('Are you sure you want to delete this product?').should('be.visible');
     cy.contains('Please type').should('not.exist');
@@ -34,7 +32,9 @@ describe('Confirmation modals', () => {
   it('should execute actions', () => {
     const onAcceptClick = cy.stub().as('accept');
     const onCancelClick = cy.stub().as('cancel');
-    mount(<BasicConfirmation onAcceptClick={onAcceptClick} onCancelClick={onCancelClick} />);
+    mount(
+      <BasicConfirmation.Component onAcceptClick={onAcceptClick} onCancelClick={onCancelClick} />
+    );
     cy.contains('Accept').click();
     cy.get('@accept').should('have.been.called');
     cy.contains('Cancel').click();
@@ -42,7 +42,7 @@ describe('Confirmation modals', () => {
   });
 
   it('should be able to disable buttons regardless of confirmation', () => {
-    mount(<PasswordConfirm disabled />);
+    mount(<PasswordConfirm.Component disabled />);
     cy.get('input').type('currentPassword');
     cy.contains('Accept').should('be.disabled');
     cy.contains('Cancel').should('be.disabled');
@@ -50,7 +50,7 @@ describe('Confirmation modals', () => {
 
   describe('Text confirmation', () => {
     it('should check confirmation text to accept action', () => {
-      mount(<TextConfirmation />);
+      mount(<TextConfirmation.Component />);
       cy.contains('Delete Confirmation').should('be.visible');
       cy.contains('Are you sure you want to delete this product?').should('be.visible');
       cy.contains('Please type in CONFIRMATION_TEXT:').should('be.visible');
@@ -62,7 +62,7 @@ describe('Confirmation modals', () => {
     });
 
     it('should show a warning', () => {
-      mount(<WarningConfirmation />);
+      mount(<WarningConfirmation.Component />);
       cy.contains('Are you sure').should('be.visible');
       cy.contains('Other users will be affected by this action').should('be.visible');
     });
@@ -70,7 +70,7 @@ describe('Confirmation modals', () => {
 
   describe('Password confirmation', () => {
     it('should enable save button when input has value', () => {
-      mount(<PasswordConfirm />);
+      mount(<PasswordConfirm.Component />);
       cy.contains('Enter your current password to confirm');
       cy.contains('button', 'Accept').should('be.disabled');
       cy.get('input').type('value');
@@ -82,7 +82,9 @@ describe('Confirmation modals', () => {
     it('should execute actions', () => {
       const onAcceptClick = cy.stub().as('accept');
       const onCancelClick = cy.stub().as('cancel');
-      mount(<PasswordConfirm onAcceptClick={onAcceptClick} onCancelClick={onCancelClick} />);
+      mount(
+        <PasswordConfirm.Component onAcceptClick={onAcceptClick} onCancelClick={onCancelClick} />
+      );
       cy.get('input').type('currentPassword');
       cy.contains('Accept').click();
       cy.get('@accept').should('have.been.calledOnceWith', 'currentPassword');

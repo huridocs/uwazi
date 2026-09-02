@@ -1,8 +1,10 @@
+// oxlint-disable react/jsx-props-no-spreading
 import React from 'react';
-import type { Meta, StoryObj } from '@storybook/react-webpack5';
+import preview from '#storybook/preview';
+import { storyExtend } from '#app/stories/storyExtend.js';
 import { ProgressBar } from '#V2/Components/UI/index.js';
 
-const meta: Meta<typeof ProgressBar> = {
+const meta = preview.meta({
   title: 'Components/ProgressBar',
   component: ProgressBar,
   argTypes: {
@@ -20,25 +22,25 @@ const meta: Meta<typeof ProgressBar> = {
       description: 'Additional CSS classes',
     },
   },
-};
-export default meta;
+});
 
-type Story = StoryObj<typeof ProgressBar>;
-
-const Primary: Story = {
+const Primary = meta.story({
+  args: {
+    progress: 50,
+    color: 'gray',
+  },
   render: args => (
     <div className="tw-content">
       <ProgressBar {...args} />
     </div>
   ),
-};
+});
 
-const Basic: Story = {
-  ...Primary,
+const Basic = storyExtend(Primary, {
   args: {
     progress: 50,
     color: 'gray',
   },
-};
+});
 
 export { Basic };

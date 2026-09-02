@@ -417,7 +417,7 @@ const MediaField = <TFormValues extends FieldValues = FieldValues>({
 
           return (
             <>
-              <div className="text-sm font-bold text-ink">
+              <div className="text-sm font-normal text-ink">
                 <Translate context={context}>{label}</Translate>
                 {registerOptions?.required && '*'}
               </div>

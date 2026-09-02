@@ -1,5 +1,5 @@
 import React from 'react';
-import type { Meta, StoryObj } from '@storybook/react-webpack5';
+import preview from '#storybook/preview';
 import { createStore, Provider } from 'jotai';
 import { settingsAtom, templatesAtom } from '#V2/atoms/index.js';
 import { FileList } from '#V2/Routes/Entity/Components/shared/index.js';
@@ -9,14 +9,12 @@ const store = createStore();
 store.set(settingsAtom, { languages: [{ key: 'en', label: 'English' }] });
 store.set(templatesAtom, [{ _id: 'template1', name: 'Template 1', properties: [] }] as any);
 
-const meta: Meta<typeof FileList> = {
+const meta = preview.meta({
   title: 'Components/FileList',
   component: FileList,
-};
+});
 
-type Story = StoryObj<typeof FileList>;
-
-const Empty: Story = {
+const Empty = meta.story({
   render: () => {
     const mockEntity: Entity = {
       _id: 'entity1',
@@ -37,9 +35,9 @@ const Empty: Story = {
       </div>
     );
   },
-};
+});
 
-const WithFiles: Story = {
+const WithFiles = meta.story({
   render: () => {
     const mockEntity: Entity = {
       _id: 'entity1',
@@ -79,7 +77,5 @@ const WithFiles: Story = {
       </div>
     );
   },
-};
-
-export default meta;
+});
 export { Empty, WithFiles };

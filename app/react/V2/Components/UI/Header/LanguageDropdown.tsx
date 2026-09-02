@@ -61,7 +61,7 @@ export const LanguageDropdown: React.FC<LanguageDropdownProps> = ({ className = 
       type="button"
       id="language-menu-button"
       className={[
-        'header-bar-button flex items-center gap-1.5 rounded-md border px-3 py-1 text-[0.8125rem] font-medium transition-colors',
+        'header-bar-button flex items-center gap-1.5 rounded-md border px-3 py-1 text-tab font-medium transition-colors',
         inlineEditState.inlineEdit ? 'header-bar-button-active' : '',
       ].join(' ')}
       aria-expanded={dropdownOpen}

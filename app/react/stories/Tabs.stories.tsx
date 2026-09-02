@@ -1,16 +1,12 @@
-/* eslint-disable import/no-default-export */
 import React from 'react';
-import { Meta, StoryObj } from '@storybook/react-webpack5';
+import preview from '#storybook/preview';
+import { storyExtend } from '#app/stories/storyExtend.js';
 import { Tabs, TabButtons, TabPanels, splitTabConfig } from '#V2/Components/UI/Tabs/index.js';
 
-const meta: Meta<typeof Tabs> = {
+const meta = preview.meta({
   title: 'Components/Tabs',
   component: Tabs,
-};
-
-export default meta;
-
-type Story = StoryObj<typeof Tabs>;
+});
 
 const tabContent = (title: string) => (
   <div className="py-4">
@@ -25,7 +21,14 @@ const splitStoryTabs = [
   { id: 'tab3', label: 'Tab 3', content: tabContent('Tab 3 Content') },
 ];
 
-const Primary: Story = {
+const Primary = meta.story({
+  args: {
+    groupId: 'story-basic',
+    children: tabContent('Tab 1 Content'),
+    onTabSelected: undefined,
+    unmountTabs: undefined,
+    tabListAriaLabel: 'Entity detail sections',
+  },
   render: args => (
     <div className="tw-content">
       <Tabs
@@ -47,18 +50,24 @@ const Primary: Story = {
       </Tabs>
     </div>
   ),
-};
+});
 
-export const Basic = {
-  ...Primary,
+const Basic = storyExtend(Primary, {
   args: {
     onTabSelected: undefined,
     unmountTabs: undefined,
     tabListAriaLabel: 'Entity detail sections',
   },
-};
+});
 
-export const WithCounter: Story = {
+const WithCounter = meta.story({
+  args: {
+    groupId: 'story-with-counter',
+    children: tabContent('File tab content'),
+    onTabSelected: undefined,
+    unmountTabs: undefined,
+    tabListAriaLabel: 'Entity files side panel tabs',
+  },
   render: args => (
     <div className="tw-content">
       <Tabs
@@ -91,12 +100,7 @@ export const WithCounter: Story = {
       </Tabs>
     </div>
   ),
-  args: {
-    onTabSelected: undefined,
-    unmountTabs: undefined,
-    tabListAriaLabel: 'Entity files side panel tabs',
-  },
-};
+});
 
 const SplitLayoutDemo = () => {
   const [activeTab, setActiveTab] = React.useState('tab1');
@@ -120,6 +124,8 @@ const SplitLayoutDemo = () => {
   );
 };
 
-export const SplitLayout: Story = {
+const SplitLayout = meta.story({
   render: () => <SplitLayoutDemo />,
-};
+});
+
+export { Basic, WithCounter, SplitLayout };

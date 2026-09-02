@@ -7,7 +7,7 @@ import { BaseDropdown } from './BaseDropdown.js';
 import type { HeaderLink } from './MenuLinks.js';
 
 const navButtonClasses =
-  'header-bar-button flex shrink-0 items-center gap-1.5 rounded-md border px-3 py-1 text-[0.8125rem] font-medium transition-colors';
+  'header-bar-button flex shrink-0 items-center gap-1.5 rounded-md border px-3 py-1 text-tab font-medium transition-colors';
 const activeClasses = 'header-bar-button-active';
 
 const linkKey = (link: HeaderLink) => String(link.id ?? link._id ?? link.localId ?? link.title);

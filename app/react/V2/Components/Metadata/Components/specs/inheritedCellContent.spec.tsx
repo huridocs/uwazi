@@ -148,7 +148,7 @@ describe('inheritedCellContent', () => {
     );
     const img = screen.getByRole('img');
     expect(img).toHaveAttribute('src', '/api/files/photo.png');
-    expect(img.className).toContain('max-h-96');
+    expect(img.parentElement?.className).toContain('aspect-video');
     expect(img.className).not.toContain('max-h-32');
   });
 
