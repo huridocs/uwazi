@@ -3,6 +3,7 @@
  */
 import React from 'react';
 import { render, screen, within } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { RelationshipConnectionsTable } from '../RelationshipConnectionsTable.js';
 
 jest.mock('#app/I18N/index.js', () => ({
@@ -31,6 +32,25 @@ const renderTable = (
   );
 
 describe('RelationshipConnectionsTable layout', () => {
+  it('opens the entity overlay from the entity pill', async () => {
+    const user = userEvent.setup();
+    const onOpenEntity = jest.fn();
+    render(
+      <RelationshipConnectionsTable
+        rows={[{ id: 'ecuador', label: 'Ecuador', templateId: 'country' }]}
+        onOpenEntity={onOpenEntity}
+      />
+    );
+
+    await user.click(screen.getByRole('button', { name: 'Ecuador' }));
+
+    expect(onOpenEntity).toHaveBeenCalledWith({
+      sharedId: 'ecuador',
+      title: 'Ecuador',
+      templateId: 'country',
+    });
+  });
+
   it('uses horizontal scroll only', async () => {
     const { container } = renderTable();
     const scrollWrap = container.querySelector('.overflow-x-auto');

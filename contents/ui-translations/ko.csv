@@ -592,7 +592,6 @@ Imported translations from file,Imported translations from file
 in,안
 "In a group, either all relationships must have a hub or none of them.","In a group, either all relationships must have a hub or none of them."
 In OCR queue,OCR 대기 중
-in this document,in this document
 In use,In use
 Include all entities,Include all entities
 Include only public,Include only public
@@ -943,7 +942,6 @@ Preserve Extension,Preserve Extension
 Preserve Setup Description,"If you know your Uwazi URL and TOKEN click the link below, and fill the required information."
 Press enter to add,Enter 키를 눌러 추가
 Preview,미리보기
-Preview entity,Preview entity
 Preview updates automatically (300ms debounce),Preview updates automatically (300ms debounce)
 Preview updates when the JSON is valid.,Preview updates when the JSON is valid.
 Previous,이전
@@ -1016,7 +1014,6 @@ Recommended,Recommended
 Reference,Reference
 References,참고문헌
 references,references
-References in document,References in document
 Refresh,Refresh
 "Refresh manually when you have added data and cannot wait for the next
                         scheduled run.","Refresh manually when you have added data and cannot wait for the next
@@ -1359,6 +1356,7 @@ To,To
 "To complete the account creation process, please create a password for your account",계정 생성을 마치려면 계정 비밀번호를 설정하십시오.
 to view your authentication code and verify your identity.,코드 확인하고 인증하기
 Today,Today
+Toggle relationship details,Toggle relationship details
 Toggle timeline mode,Toggle timeline mode
 Tools,도구
 total entities,total entities

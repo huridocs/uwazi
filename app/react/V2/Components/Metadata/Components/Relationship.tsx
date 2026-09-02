@@ -92,16 +92,7 @@ const Relationship = ({
             columns={columns}
             translationContext={translationContext}
             targetTemplateId={targetTemplateId}
-            onEntityClick={
-              onOpenEntity
-                ? row =>
-                    onOpenEntity({
-                      sharedId: row.id,
-                      title: row.label,
-                      templateId: row.templateId || targetTemplateId || '',
-                    })
-                : undefined
-            }
+            onOpenEntity={onOpenEntity}
           />
         ) : (
           <ConnectionPills
