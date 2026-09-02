@@ -3,28 +3,12 @@ import { captureException } from '@sentry/react';
 import { t } from '#app/I18N/index.js';
 import { isClient } from '#app/utils/index.js';
 import { PaneLayoutProps } from './types.js';
-
-const MIN_WIDTH = 100;
-const SEPARATOR_PX = 4;
+import { SEPARATOR_PX, minWidthForPane, paneWidthsFromRatios } from './paneLayoutWidths.js';
 
 const getClientXValue = (event: MouseEvent | TouchEvent | Event): number | undefined => {
   if ('clientX' in event && typeof event.clientX === 'number') return event.clientX;
   if ('touches' in event && event.touches?.length) return event.touches[0].clientX;
   return undefined;
-};
-
-const ratiosToPixels = (ratios: number[], containerWidth: number) =>
-  ratios.map(percentage => Math.max(percentage * containerWidth, MIN_WIDTH));
-
-const pixelsFromRatios = (ratios: number[], containerWidth: number): number[] => {
-  const separatorCount = ratios.length - 1;
-  const fromRatios = ratiosToPixels(ratios, containerWidth);
-  const total = fromRatios.reduce((a, b) => a + b, 0);
-  if (total > containerWidth) {
-    const scale = (containerWidth - separatorCount * SEPARATOR_PX) / total;
-    return fromRatios.map(width => width * scale);
-  }
-  return fromRatios;
 };
 
 const getRatiosFromLocalStorage = (localStorageKey?: string): number[] => {
@@ -53,6 +37,7 @@ const PaneLayoutDesktop = ({
   children,
   localStorageKey,
   defaultRatios,
+  minPaneRatios,
   className = '',
 }: PaneLayoutProps) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -60,7 +45,12 @@ const PaneLayoutDesktop = ({
   const [widths, setWidths] = useState<number[]>([]);
   const widthsRef = useRef<number[]>([]);
   const ratiosRef = useRef<number[]>([]);
+  const minPaneRatiosRef = useRef(minPaneRatios);
   const initialWidths = useRef(defaultRatios?.map(ratio => `${ratio * 100}%`));
+
+  useEffect(() => {
+    minPaneRatiosRef.current = minPaneRatios;
+  }, [minPaneRatios]);
 
   const handleResize = useCallback(
     (event: Event) => {
@@ -82,7 +72,10 @@ const PaneLayoutDesktop = ({
       const totalPair = currentWidths[leftIndex] + currentWidths[rightIndex];
       const rightNew = totalPair - currentLeft;
 
-      if (currentLeft >= MIN_WIDTH && rightNew >= MIN_WIDTH) {
+      const minLeft = minWidthForPane(leftIndex, containerRect.width, minPaneRatios);
+      const minRight = minWidthForPane(rightIndex, containerRect.width, minPaneRatios);
+
+      if (currentLeft >= minLeft && rightNew >= minRight) {
         currentWidths[leftIndex] = currentLeft;
         currentWidths[rightIndex] = rightNew;
         setWidths(currentWidths);
@@ -92,7 +85,7 @@ const PaneLayoutDesktop = ({
         setRatiosToLocalStorage(ratios, localStorageKey);
       }
     },
-    [children.length, localStorageKey]
+    [children.length, localStorageKey, minPaneRatios]
   );
 
   useEffect(() => {
@@ -122,13 +115,15 @@ const PaneLayoutDesktop = ({
     } else {
       const initialWidth =
         (containerWidth - separatorCount * SEPARATOR_PX) / Math.max(1, children.length);
-      const initials = children.map(() => Math.max(initialWidth, MIN_WIDTH));
+      const initials = children.map((_, index) =>
+        Math.max(initialWidth, minWidthForPane(index, containerWidth, minPaneRatios))
+      );
       ratios = initials.map(width => width / containerWidth);
     }
 
     ratiosRef.current = ratios;
-    setWidths(pixelsFromRatios(ratios, containerWidth));
-  }, [children, localStorageKey, defaultRatios]);
+    setWidths(paneWidthsFromRatios(ratios, containerWidth, minPaneRatios));
+  }, [children, localStorageKey, defaultRatios, minPaneRatios]);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -136,11 +131,11 @@ const PaneLayoutDesktop = ({
 
     const observer = new ResizeObserver(entries => {
       if (draggingIndex.current !== null) return;
-      const entry = entries[0];
+      const [entry] = entries;
       if (!entry || ratiosRef.current.length === 0) return;
 
       const containerWidth = entry.contentRect.width || 1;
-      setWidths(pixelsFromRatios(ratiosRef.current, containerWidth));
+      setWidths(paneWidthsFromRatios(ratiosRef.current, containerWidth, minPaneRatiosRef.current));
     });
 
     observer.observe(container);
@@ -174,7 +169,10 @@ const PaneLayoutDesktop = ({
   };
 
   return (
-    <div ref={containerRef} className={`flex h-full min-h-0 bg-warm ${className}`}>
+    <div
+      ref={containerRef}
+      className={`flex h-full min-h-0 overflow-hidden bg-(--color-theme-surface-page) ${className}`}
+    >
       {children.map((child, index) => (
         <Fragment key={child.key ?? index}>
           <section

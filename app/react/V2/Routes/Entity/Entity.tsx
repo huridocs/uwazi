@@ -81,7 +81,11 @@ const EntityView = () => {
       <AddFileModal />
       <BlockDirtyNavigation when={isEditing && (isDirty || isSaving)} onDiscard={cancelEdit} />
       <div className="h-full min-h-0" dir={isRtl ? 'rtl' : 'ltr'}>
-        <PaneLayout defaultRatios={[0.637, 0.363]} className="bg-parchment text-ink">
+        <PaneLayout
+          defaultRatios={[0.637, 0.363]}
+          minPaneRatios={[0.5]}
+          className="bg-parchment text-ink"
+        >
           <PaneLayout.Pane>
             <div
               className="flex h-full min-h-0 w-full min-w-0 flex-col overflow-hidden bg-paper"

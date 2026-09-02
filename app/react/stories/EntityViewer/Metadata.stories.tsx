@@ -119,7 +119,7 @@ const MetadataStoryShell = ({
 };
 
 const meta = preview.meta({
-  title: 'EntityViewer/MedataDisplay',
+  title: 'EntityViewer/MetadataDisplay',
   component: MetadataStoryShell,
 });
 

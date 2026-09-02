@@ -99,6 +99,7 @@ const formatGeolocationProperty = (
       const templateColor = inherited
         ? getTemplateColor(content, templates)
         : getEntityTemplateColor(name, templates, entityTemplateId);
+      const pointTemplateId = inherited ? content : entityTemplateId;
 
       const relatedEntity =
         metadataValue.type === 'entity' ? { _id: metadataValue.value as string } : undefined;
@@ -119,6 +120,7 @@ const formatGeolocationProperty = (
             ...((typeof templateColor === 'string' || typeof metadataValue?.color === 'string') && {
               color: templateColor || metadataValue.color,
             }),
+            ...(typeof pointTemplateId === 'string' && { templateId: pointTemplateId }),
             ...(relatedEntity?._id && {
               entity: {
                 _id: relatedEntity._id,

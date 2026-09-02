@@ -91,10 +91,6 @@ const EditEntity = ({
       ),
     [activeTemplate?.properties, metadataProperties]
   );
-  const firstEditableRelationshipId = displayProperties.find(
-    property => property.type === 'relationship'
-  )?._id;
-
   const {
     entityAttachments,
     pendingAttachments,
@@ -235,7 +231,6 @@ const EditEntity = ({
                 metadata={metadata}
                 entityMetadata={entity?.metadata}
                 entitySharedId={entity?.sharedId ?? 'NEW_ENTITY'}
-                firstEditableRelationshipId={firstEditableRelationshipId}
                 entityAttachments={entityAttachments}
                 pendingAttachments={pendingAttachments}
                 registerPendingAttachment={registerPendingAttachment}

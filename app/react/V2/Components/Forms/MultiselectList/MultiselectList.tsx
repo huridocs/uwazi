@@ -245,7 +245,8 @@ const MultiselectList = ({
         key={item.value}
         className={cx(
           !selected && searchTerm && !showAll && 'opacity-70',
-          itemClassName ?? (panel ? '' : 'rounded-lg mb-2')
+          itemClassName ??
+            (panel ? 'flex items-center py-0.5' : 'mb-2 flex items-center rounded-lg')
         )}
       >
         <Checkbox
@@ -287,6 +288,7 @@ const MultiselectList = ({
         onClick={() => handleGroupToggle(group.value)}
         itemContainerClassName={itemContainerClassName}
         itemClassName={itemClassName}
+        plain={Boolean(panel && checkboxes)}
       >
         {group.items?.map(renderItem)}
       </MultiselectListGroup>

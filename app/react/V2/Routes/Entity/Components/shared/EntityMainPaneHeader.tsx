@@ -22,6 +22,7 @@ const EntityMainPaneHeader = ({
       <div className="min-w-0 flex-1">
         <TemplateLabel templateId={entity.template} variant="tag" />
         <h1
+          data-field-key="title"
           className="m-0 mt-1 line-clamp-2 text-sm font-semibold leading-snug text-ink"
           no-translate="true"
           title={entity.title}

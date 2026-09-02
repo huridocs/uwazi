@@ -62,8 +62,8 @@ const Button = ({
     },
     compact: {
       small: 'px-2 py-1 text-xs',
-      medium: 'px-3 py-1 text-[0.8125rem]',
-      default: 'px-3 py-1 text-[0.8125rem]',
+      medium: 'px-3 py-1 text-tab',
+      default: 'px-3 py-1 text-tab',
     },
     warm: {
       small: 'px-2 py-1.5 text-xs',
