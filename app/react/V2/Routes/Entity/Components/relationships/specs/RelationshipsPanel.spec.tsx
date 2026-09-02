@@ -1,6 +1,7 @@
 /**
  * @jest-environment jsdom
  */
+/* eslint-disable max-statements */
 import { screen, within, waitFor } from '@testing-library/react';
 import userEvent, { type UserEvent } from '@testing-library/user-event';
 import { defaultPdf, renderRelationshipsPanel } from './helpers/renderRelationshipsPanel.js';

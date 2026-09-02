@@ -21,6 +21,25 @@ type RelationshipRowProps = {
   onDelete?: () => void;
 };
 
+const renderZoomRow = ({
+  zoom,
+  nested,
+  baseProps,
+  onDelete,
+}: {
+  zoom: ReturnType<typeof useRelationshipsPanelLayout>['zoom'];
+  nested: boolean;
+  baseProps: Parameters<typeof RelationshipRowOverview>[0] & { representedCount?: number };
+  onDelete?: () => void;
+}) => {
+  if (nested && zoom !== 'overview') {
+    return <RelationshipRowDetail {...baseProps} nested onDelete={onDelete} />;
+  }
+  if (zoom === 'overview') return <RelationshipRowOverview {...baseProps} />;
+  if (zoom === 'compact' && !nested) return <RelationshipRowCompact {...baseProps} />;
+  return <RelationshipRowDetail {...baseProps} onDelete={onDelete} />;
+};
+
 const RelationshipRow = ({
   marker,
   selfSharedId,
@@ -36,26 +55,20 @@ const RelationshipRow = ({
   const ids = React.useMemo(() => representedIds ?? [marker._id], [marker._id, representedIds]);
   const rowData = useRelationshipRowData(marker, selfSharedId, relationshipTypeName, ids);
   const nestedReference = relationshipReferenceDisplay(marker, selfSharedId);
-  const baseProps = {
-    ...rowData,
-    referenceText: nested ? nestedReference.referenceText : rowData.referenceText,
-    referencePage: nested ? nestedReference.referencePage : rowData.referencePage,
-    isSelected,
-    representedIds: ids,
-    representedCount,
-    onClick,
-  };
-
-  if (nested) {
-    if (zoom === 'overview') {
-      return <RelationshipRowOverview {...baseProps} />;
-    }
-    return <RelationshipRowDetail {...baseProps} nested onDelete={onDelete} />;
-  }
-
-  if (zoom === 'overview') return <RelationshipRowOverview {...baseProps} />;
-  if (zoom === 'compact') return <RelationshipRowCompact {...baseProps} />;
-  return <RelationshipRowDetail {...baseProps} onDelete={onDelete} />;
+  return renderZoomRow({
+    zoom,
+    nested,
+    baseProps: {
+      ...rowData,
+      referenceText: nested ? nestedReference.referenceText : rowData.referenceText,
+      referencePage: nested ? nestedReference.referencePage : rowData.referencePage,
+      isSelected,
+      representedIds: ids,
+      representedCount,
+      onClick,
+    },
+    onDelete,
+  });
 };
 
 export { RelationshipRow };

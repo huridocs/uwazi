@@ -1,5 +1,5 @@
 /** @jest-environment jsdom */
-/* eslint-disable react/no-multi-comp */
+/* eslint-disable react/no-multi-comp, max-statements, max-lines */
 import React from 'react';
 import { createStore, Provider } from 'jotai';
 import { act, render, screen, waitFor, within } from '@testing-library/react';

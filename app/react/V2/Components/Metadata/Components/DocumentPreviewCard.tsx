@@ -30,6 +30,26 @@ const isPdf = (mimetype?: string, filename?: string) => {
   return mime === 'application/pdf' || /\.pdf$/i.test(filename || '');
 };
 
+const previewSrcOf = (previewField?: MetadataProperty) =>
+  previewField && (previewField.type === 'preview' || previewField.type === 'image')
+    ? previewField.values?.find(value => Boolean(value.value))?.value
+    : undefined;
+
+const documentFileUrls = (document: ReturnType<typeof getMainDocument>) => {
+  const name = document?.originalname || document?.filename;
+  const fileUrl = document?.filename
+    ? `/api/files/${document.filename}`
+    : document?.url || undefined;
+  return {
+    name,
+    fileUrl,
+    downloadUrl: document?.filename && fileUrl ? `${fileUrl}?download=true` : fileUrl,
+    hasFilename: Boolean(document?.filename),
+    documentId: document?._id ? String(document._id) : document?.filename,
+    showPdfBadge: isPdf(document?.mimetype, document?.filename || document?.originalname),
+  };
+};
+
 const buildDocumentPreviewModel = ({
   entity,
   previewField,
@@ -42,33 +62,18 @@ const buildDocumentPreviewModel = ({
     entity.language,
     defaultLanguage
   );
-  const previewValues =
-    previewField && (previewField.type === 'preview' || previewField.type === 'image')
-      ? previewField.values
-      : undefined;
-  const previewSrc = previewValues?.find(value => Boolean(value.value))?.value;
+  const previewSrc = previewSrcOf(previewField);
   if (!document && !previewSrc) {
     return null;
   }
-
-  const name = document?.originalname || document?.filename;
-  const fileUrl = document?.filename
-    ? `/api/files/${document.filename}`
-    : document?.url || undefined;
-  const downloadUrl = document?.filename && fileUrl ? `${fileUrl}?download=true` : fileUrl;
+  const urls = documentFileUrls(document);
   const activePreviewSrc = previewSrc && !previewFailed ? previewSrc : undefined;
   const fileThumbSrc =
     document?._id && !thumbFailed ? `/api/files/${String(document._id)}.jpg` : undefined;
-
   return {
-    name,
-    fileUrl,
-    downloadUrl,
+    ...urls,
     thumbSrc: activePreviewSrc || fileThumbSrc,
     activePreviewSrc,
-    showPdfBadge: isPdf(document?.mimetype, document?.filename || document?.originalname),
-    hasFilename: Boolean(document?.filename),
-    documentId: document?._id ? String(document._id) : document?.filename,
   };
 };
 
@@ -88,16 +93,11 @@ const DocumentPreviewCard = ({
     previewFailed,
     thumbFailed,
   });
-  const previewSrc =
-    previewField && (previewField.type === 'preview' || previewField.type === 'image')
-      ? previewField.values.find(value => Boolean(value.value))?.value
-      : undefined;
-  const documentId = model?.documentId;
 
   useEffect(() => {
     setPreviewFailed(false);
     setThumbFailed(false);
-  }, [previewSrc, documentId, entity._id, entity.sharedId, entity.language]);
+  }, [previewField, entity._id, entity.sharedId, entity.language, model?.documentId]);
 
   if (!model) {
     return null;
