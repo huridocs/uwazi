@@ -9,6 +9,7 @@ type ExpandableTextProps = {
   className?: string;
   fadeClassName?: string;
   buttonClassName?: string;
+  onActivate?: () => void;
 };
 
 const ExpandableText = ({
@@ -19,13 +20,24 @@ const ExpandableText = ({
   className = '',
   fadeClassName = 'from-warm/95',
   buttonClassName = '',
+  onActivate,
 }: ExpandableTextProps) => {
   const [expanded, setExpanded] = useState(false);
   const expandable = text.length > minLength;
 
   return (
     <div className={`relative min-w-0 ${className}`}>
-      <p className={`${expanded ? '' : 'line-clamp-2'} ${textClassName}`}>
+      <p
+        className={`${expanded ? '' : 'line-clamp-2'} ${onActivate ? 'cursor-pointer' : ''} ${textClassName}`}
+        onClick={
+          onActivate
+            ? event => {
+                event.stopPropagation();
+                onActivate();
+              }
+            : undefined
+        }
+      >
         {quoted ? `\u201c${text}\u201d` : text}
       </p>
       {expandable && !expanded && (

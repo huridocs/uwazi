@@ -52,7 +52,7 @@ const renderSpecializedContent = (
   const compact = (options.density ?? 'default') === 'compact';
 
   if (data.type === 'relationship') {
-    return connectionPillsForField(data, undefined);
+    return connectionPillsForField(data, undefined, { onOpenEntity: options.onOpenEntity });
   }
   if (data.type === 'geolocation') {
     if (!data.values?.length) return null;

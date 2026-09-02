@@ -18,7 +18,6 @@ type RelationshipRowProps = {
   representedIds?: string[];
   representedCount?: number;
   onClick?: () => void;
-  onView?: () => void;
   onDelete?: () => void;
 };
 
@@ -31,7 +30,6 @@ const RelationshipRow = ({
   representedIds,
   representedCount,
   onClick,
-  onView,
   onDelete,
 }: RelationshipRowProps) => {
   const { zoom } = useRelationshipsPanelLayout();
@@ -52,12 +50,12 @@ const RelationshipRow = ({
     if (zoom === 'overview') {
       return <RelationshipRowOverview {...baseProps} />;
     }
-    return <RelationshipRowDetail {...baseProps} nested onView={onView} onDelete={onDelete} />;
+    return <RelationshipRowDetail {...baseProps} nested onDelete={onDelete} />;
   }
 
   if (zoom === 'overview') return <RelationshipRowOverview {...baseProps} />;
   if (zoom === 'compact') return <RelationshipRowCompact {...baseProps} />;
-  return <RelationshipRowDetail {...baseProps} onView={onView} onDelete={onDelete} />;
+  return <RelationshipRowDetail {...baseProps} onDelete={onDelete} />;
 };
 
 export { RelationshipRow };

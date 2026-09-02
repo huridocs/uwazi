@@ -13,10 +13,7 @@ import { expandAllRelationships } from '#V2/Components/Relationships/specs/relat
 
 const openOverlay = () => {
   expandAllRelationships();
-  cy.contains('.group', 'Person 1')
-    .first()
-    .find('[aria-label="Preview entity"]')
-    .click({ force: true });
+  cy.contains('button', 'Person 1').click();
   cy.get('[data-testid="entity-overlay"]').should('be.visible');
   cy.get('[data-testid="entity-overlay"]')
     .find('[data-testid="metadata-record"]', { timeout: 15000 })

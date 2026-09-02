@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useAtomValue } from 'jotai';
 import type { Entity } from '#V2/api/entities/types.js';
 import { localeAtom } from '#V2/atoms/index.js';
@@ -21,10 +21,13 @@ const SeedOverlayEntityCache = ({ entity }: { entity: Entity }) => {
 const OpenEntityOverlayOnMount = ({ targetSharedId }: { targetSharedId: string }) => {
   const { openEntityOverlay } = useEntityOverlay();
   const markers = useEntityRelationshipMarkers();
+  const opened = useRef(false);
 
   useEffect(() => {
+    if (opened.current) return;
     const marker = markers.find(item => item.target.sharedId === targetSharedId);
     if (marker) {
+      opened.current = true;
       openEntityOverlay(marker);
     }
   }, [markers, openEntityOverlay, targetSharedId]);

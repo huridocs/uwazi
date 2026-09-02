@@ -12,7 +12,6 @@ import {
   useRelationshipsPanelData,
   useRelationshipsPanelLayout,
   useRelationshipsSelectionActions,
-  useEntityOverlay,
   useEntityWriteAuthorized,
 } from '#V2/Routes/Entity/Components/context/index.js';
 import { useActiveRelationshipHighlight } from '#V2/Routes/Entity/Components/document/index.js';
@@ -39,7 +38,6 @@ const RelationshipsPanelView = ({
     useRelationshipsSelectionActions();
   const canWrite = useEntityWriteAuthorized();
 
-  const { openEntityOverlay } = useEntityOverlay();
   const {
     relationshipToDelete,
     isDeleting,
@@ -56,11 +54,6 @@ const RelationshipsPanelView = ({
       selectRelationship(marker, { scrollPanel: true }).catch(() => undefined);
     },
     [focusDocumentOnSelect, onFocusDocument, selectRelationship]
-  );
-
-  const handleViewClick = useCallback(
-    (marker: RelationshipMarker) => openEntityOverlay(marker),
-    [openEntityOverlay]
   );
 
   useEffect(
@@ -96,7 +89,6 @@ const RelationshipsPanelView = ({
         selfSharedId={groupContext.selfSharedId}
         activeRelationshipId={activeRelationshipId ?? undefined}
         onClick={handleRelationshipClick}
-        onView={handleViewClick}
         onDelete={canWrite ? handleDeleteClick : undefined}
       />
     );

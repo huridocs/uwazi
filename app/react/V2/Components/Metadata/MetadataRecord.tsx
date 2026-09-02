@@ -85,12 +85,11 @@ const standardPropertyCard = ({
   const title = isRelationshipProperty(field)
     ? fieldTitle(field.label, translationContext, field.hideLabel)
     : specializedCardTitle(field, translationContext);
-  let content: ReactNode = renderFieldContent(field, { onOpenEntity });
-  if (isRelationshipProperty(field)) {
-    content = connectionPillsForField(field, templatePropertyById.get(field._id), { onOpenEntity });
-  } else if (isLongField(field)) {
-    content = renderScalarContent(field, true);
-  }
+  const content = isRelationshipProperty(field)
+    ? connectionPillsForField(field, templatePropertyById.get(field._id), { onOpenEntity })
+    : isLongField(field)
+      ? renderScalarContent(field, true)
+      : renderFieldContent(field, { onOpenEntity });
   if (!content) {
     return null;
   }
