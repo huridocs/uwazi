@@ -28,7 +28,7 @@ describe('importFile', () => {
       expect(fileContents).toMatchSnapshot();
     });
 
-    describe('when file is a a zip', () => {
+    describe('when file is a zip', () => {
       it('should return a stream for a file that should be called import.csv by default', async () => {
         const file = importFile(path.join(__dirname, '/zipData/ImportFile.zip'));
         const fileContents = await streamToString(await file.readStream());
