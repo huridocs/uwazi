@@ -35,7 +35,7 @@ const groupByLanguage = (translations: Translation[]): Map<string, Translation[]
 
 class SaveTranslationEntriesUseCase extends AbstractUseCase<Input, Output, Deps> {
   private async loadContextSnapshots(contextId: string): Promise<LocaleValueSnapshot[]> {
-    const translations = await this.deps.translationsDS.getByContext(contextId).all();
+    const translations = await this.deps.translationsDS.getByContext(contextId);
     if (!translations.length) {
       return [];
     }

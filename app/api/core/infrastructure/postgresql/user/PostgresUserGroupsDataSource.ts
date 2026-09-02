@@ -58,11 +58,6 @@ class PostgresUserGroupsDataSource
     );
   }
 
-  async getUserGroups(userId: string): Promise<{ _id: string; name: string }[]> {
-    const rows = await this.table.whereRaw('members @> to_jsonb(?::text)', [userId]).all();
-    return rows.map(row => ({ _id: row._id, name: row.name }));
-  }
-
   async findById(id: string): Promise<ResultType<UserGroup, UserGroupNotFound>> {
     const row = await this.table.where({ _id: id }).first();
     return row

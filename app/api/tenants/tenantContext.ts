@@ -24,18 +24,19 @@ type Tenant = {
     themeCustomization?: boolean;
     newHeader?: boolean;
     featureFlagEntityViewerv2?: boolean;
+    featureFlagLibraryV2?: boolean;
     postgresThesauri?: boolean;
     postgresFiles?: boolean;
     postgresTemplates?: boolean;
     postgresEntities?: boolean;
     postgresRelationshipTypes?: boolean;
+    postgresTranslations?: boolean;
     postgresPasswordRecoveries?: boolean;
     postgresUsers?: boolean;
     postgresCaptchas?: boolean;
     postgresUsergroups?: boolean;
     aiAssistant?: boolean;
     aiAssistantServiceUrl?: string;
-    usersDirectory?: boolean;
     telemetry?: {
       enabled?: boolean;
       sampleRate?: number;
@@ -44,8 +45,6 @@ type Tenant = {
       enabled?: boolean;
       sampleRate?: number;
     };
-    v2PrivateInstance?: boolean;
-    v2Usergroups?: boolean;
   };
   globalMatomo?: { id: string; url: string };
   ciMatomoActive?: boolean;

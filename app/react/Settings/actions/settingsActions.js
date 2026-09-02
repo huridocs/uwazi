@@ -4,7 +4,7 @@ import { RequestParams } from '#app/utils/RequestParams.js';
 import { SettingsAPI } from '#app/Settings/SettingsAPI.js';
 import { actions } from '#app/BasicReducer/index.js';
 
-const saveSettings = data => dispatch =>
+const saveSettings = data => async dispatch =>
   SettingsAPI.save(new RequestParams(data)).then(newSettings => {
     dispatch(actions.set('settings/collection', newSettings));
     dispatch(notificationActions.notify(t('System', 'Settings updated'), 'success'));

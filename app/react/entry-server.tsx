@@ -1,7 +1,7 @@
 /* eslint-disable max-statements */
 /* eslint-disable max-lines */
 import type { Request as ExpressRequest, Response } from 'express';
-// eslint-disable-next-line node/no-restricted-import
+// eslint-disable-next-line no-restricted-imports
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -356,6 +356,7 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
     paragraphExtraction: featureFlags?.paragraphExtraction,
     newHeader: featureFlags?.newHeader,
     featureFlagEntityViewerv2: featureFlags?.featureFlagEntityViewerv2,
+    featureFlagLibraryV2: featureFlags?.featureFlagLibraryV2,
     themeCustomization: featureFlags?.themeCustomization,
     aiAssistant: featureFlags?.aiAssistant,
   };

@@ -12,15 +12,6 @@ class MongoUserGroupsDataSource
 {
   protected collectionName = 'usergroups';
 
-  async getUserGroups(userId: string): Promise<{ _id: string; name: string }[]> {
-    const collection = this.getCollection();
-    const groupDocuments = await collection.find({ 'members.refId': userId }).toArray();
-    return groupDocuments.map(group => ({
-      _id: group._id.toString(),
-      name: group.name,
-    }));
-  }
-
   async assignGroupsToUser(userId: string, groupIds: string[]): Promise<void> {
     const targetGroupIds = groupIds.map(id => ObjectId.createFromHexString(id));
 

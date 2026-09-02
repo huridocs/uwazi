@@ -1,9 +1,9 @@
 import React, { useEffect } from 'react';
 import { CheckIcon, PencilIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import { t } from '#app/I18N/index.js';
+import { LanguageSelect } from '#V2/Components/UI/index.js';
 import { EntityWriteAuthorization } from '#V2/Routes/Entity/Components/context/index.js';
 import { FileLanguageChip } from './FileLanguageChip.js';
-import { FileLanguageSelect } from './FileLanguageSelect.js';
 import { FileProcessStatusIndicator } from './FileProcessStatusIndicator.js';
 import { FileThumbnail } from './FileThumbnail.js';
 import { ViewFileButton } from './ViewFileButton.js';
@@ -78,8 +78,8 @@ const DrawerFileRow = ({
           />
           <div className="flex items-center gap-2">
             {showLanguage ? (
-              <FileLanguageSelect
-                compact
+              <LanguageSelect
+                appearance="compact"
                 value={draftLanguage}
                 onChange={setDraftLanguage}
                 options={languageOptions}

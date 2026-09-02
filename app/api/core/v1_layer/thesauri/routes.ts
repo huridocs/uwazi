@@ -8,7 +8,7 @@ import { GetThesauriController } from '#api/core/infrastructure/express/thesauru
 import { DeleteThesaurusController } from '#api/core/infrastructure/express/thesaurus/DeleteThesaurusController.js';
 import { validation } from '../../../utils/index.js';
 import needsAuthorization from '../../../auth/authMiddleware.js';
-import thesauri from './thesauri.js';
+import { thesauri } from './thesauri.js';
 
 const routes = (app: Application) => {
   app.post(

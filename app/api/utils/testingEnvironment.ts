@@ -1,6 +1,6 @@
 /* eslint-disable max-lines */
 /* eslint-disable max-statements */
-// eslint-disable-next-line node/no-restricted-import
+// eslint-disable-next-line no-restricted-imports
 import { copyFile } from 'fs/promises';
 import path, { dirname } from 'path';
 import { fileURLToPath } from 'url';
@@ -22,7 +22,7 @@ import { PostgresTransactionManagerFactory } from '#api/core/infrastructure/fact
 import { DefaultTestingQueueAdapter } from '#api/core/libs/queue/configuration/factories.js';
 import { appContext } from '#api/utils/AppContext.js';
 import { elasticTesting } from '#api/utils/elastic_testing.js';
-import testingDB, { DBFixture } from '#api/utils/testing_db.js';
+import { testingDB, DBFixture } from '#api/utils/testing_db.js';
 import { testingTenants } from '#api/utils/testingTenants.js';
 import { UserInContextMockFactory } from '#api/utils/testingUserInContext.js';
 import { testingPG } from '#api/utils/testing_pg.js';
@@ -76,6 +76,23 @@ const sanitizeUserGroupForPostgres = (group: Record<string, unknown>) => ({
   ),
 });
 
+const sanitizeTranslationForPostgres = (translation: Record<string, unknown>) => {
+  const context = (translation.context ?? {}) as {
+    id?: string;
+    type?: string;
+    label?: string;
+  };
+  return {
+    _id: translation._id,
+    language: translation.language,
+    key: translation.key,
+    value: translation.value ?? '',
+    context_id: context.id,
+    context_type: context.type,
+    context_label: context.label,
+  };
+};
+
 const PG_SANITIZER_BY_MONGO_COLLECTION: Record<
   string,
   (row: Record<string, unknown>) => Record<string, unknown>
@@ -83,6 +100,7 @@ const PG_SANITIZER_BY_MONGO_COLLECTION: Record<
   entities: sanitizeEntityForPostgres,
   users: sanitizeUserForPostgres,
   usergroups: sanitizeUserGroupForPostgres,
+  translationsV2: sanitizeTranslationForPostgres,
 };
 
 const MIRRORED_COLLECTIONS = [
@@ -94,29 +112,34 @@ const MIRRORED_COLLECTIONS = [
   'captchas',
   'users',
   'usergroups',
+  'translationsV2',
 ];
 
 const PG_TABLE_BY_MONGO_COLLECTION: Record<string, string> = {
   dictionaries: 'thesauri',
   relationtypes: 'relationship_types',
+  translationsV2: 'translations',
 };
 
 type SetUpOptions = {
   elasticIndex?: string | boolean;
   postgres?: boolean;
+  postgresMirror?: string[];
 };
 
 const testingEnvironment = {
   elasticIndex: '',
   uploadSubPath: '',
   pgEnabled: false,
+  postgresMirror: undefined as string[] | undefined,
   userInContextMockFactory: new UserInContextMockFactory(),
 
   async setUp(fixtures?: DBFixture, options?: string | boolean | SetUpOptions) {
-    const { elasticIndex, postgres } =
+    const { elasticIndex, postgres, postgresMirror } =
       options === undefined || typeof options === 'string' || typeof options === 'boolean'
-        ? { elasticIndex: options, postgres: false }
+        ? { elasticIndex: options, postgres: false, postgresMirror: undefined }
         : options;
+    this.postgresMirror = postgresMirror;
 
     if (!elasticIndex) {
       this.elasticIndex = '';
@@ -224,7 +247,7 @@ const testingEnvironment = {
       await testingPG.setFixtures(
         Object.fromEntries(
           Object.entries(fixtures)
-            .filter(([table]) => MIRRORED_COLLECTIONS.includes(table))
+            .filter(([table]) => (this.postgresMirror ?? MIRRORED_COLLECTIONS).includes(table))
             .map(([table, fixture]) => {
               const pgTable = PG_TABLE_BY_MONGO_COLLECTION[table] ?? table;
               const sanitizeForPostgres = PG_SANITIZER_BY_MONGO_COLLECTION[table];
@@ -342,6 +365,7 @@ const testingEnvironment = {
       await testingPG.disconnect();
       this.pgEnabled = false;
     }
+    this.postgresMirror = undefined;
     await testingDB.disconnect();
   },
 

@@ -10,7 +10,7 @@ import { RelationshipMarker } from '../types.js';
 
 const marker: RelationshipMarker = {
   _id: 'ref-partner-33',
-  view: {
+  relationship: {
     _id: 'ref-partner-33',
     hub: 'h1',
     type: 'rel-type',

@@ -1,7 +1,7 @@
 /**
  * @jest-environment jsdom
  */
-import { screen, within } from '@testing-library/react';
+import { screen, within, waitFor } from '@testing-library/react';
 import userEvent, { type UserEvent } from '@testing-library/user-event';
 import { defaultPdf, renderRelationshipsPanel } from './helpers/renderRelationshipsPanel.js';
 import { entityWithRelations } from './fixtures/entityWithRelations.js';
@@ -20,10 +20,11 @@ const expandAll = async (user: UserEvent) => {
 describe('Relationships panel', () => {
   it('lists the relationships connected to the current entity', async () => {
     const user = userEvent.setup();
-    renderRelationshipsPanel();
+    const { waitForResolved } = renderRelationshipsPanel();
 
     expect(screen.getByRole('button', { name: 'Expand all' })).toBeEnabled();
     await expandAll(user);
+    await waitForResolved();
 
     expect(screen.getByText(/target quoted text/)).toBeInTheDocument();
     expect(screen.getByText('Related Entity')).toBeInTheDocument();
@@ -33,9 +34,12 @@ describe('Relationships panel', () => {
   describe('document navigation', () => {
     it('switches to the document when a text reference is selected', async () => {
       const user = userEvent.setup();
-      const { onFocusDocument } = renderRelationshipsPanel({ focusDocumentOnSelect: true });
+      const { onFocusDocument, waitForResolved } = renderRelationshipsPanel({
+        focusDocumentOnSelect: true,
+      });
 
       await expandAll(user);
+      await waitForResolved();
       await user.click(screen.getByText('Related Entity'));
 
       expect(onFocusDocument).toHaveBeenCalledTimes(1);
@@ -44,9 +48,13 @@ describe('Relationships panel', () => {
     it('stays on the relationships tab when document navigation is disabled', async () => {
       const user = userEvent.setup();
       const onFocusDocument = jest.fn();
-      renderRelationshipsPanel({ focusDocumentOnSelect: false, onFocusDocument });
+      const { waitForResolved } = renderRelationshipsPanel({
+        focusDocumentOnSelect: false,
+        onFocusDocument,
+      });
 
       await expandAll(user);
+      await waitForResolved();
       await user.click(screen.getByText('Related Entity'));
 
       expect(onFocusDocument).not.toHaveBeenCalled();
@@ -57,9 +65,10 @@ describe('Relationships panel', () => {
     it('jumps to the quoted page and highlights the source text', async () => {
       const user = userEvent.setup();
       const pdf = defaultPdf();
-      renderRelationshipsPanel({ pdf });
+      const { waitForResolved } = renderRelationshipsPanel({ pdf });
 
       await expandAll(user);
+      await waitForResolved();
       await user.click(screen.getByText('Related Entity'));
 
       expect(pdf.goToPage).toHaveBeenCalledWith(2);
@@ -71,12 +80,34 @@ describe('Relationships panel', () => {
       expect(getSelectionState().getAttribute('data-active')).not.toBe('');
     });
 
+    it('highlights every selection rectangle after resolved loads', async () => {
+      const user = userEvent.setup();
+      const pdf = defaultPdf();
+      const { waitForResolved } = renderRelationshipsPanel({
+        pdf,
+        mainDocument: { _id: 'f1', filename: 'doc.pdf' },
+      });
+
+      await expandAll(user);
+      await waitForResolved();
+      await user.click(screen.getByText('Related Entity'));
+
+      await waitFor(() => {
+        const multiRectCall = pdf.toggleHighlights.mock.calls.find(([highlights]) => {
+          const pageHighlights = highlights?.[0]?.[2];
+          return pageHighlights?.[0]?.textSelection?.selectionRectangles?.length === 2;
+        });
+        expect(multiRectCall).toBeDefined();
+      });
+    });
+
     it('clears the highlight when the same reference is selected again', async () => {
       const user = userEvent.setup();
       const pdf = defaultPdf();
-      renderRelationshipsPanel({ pdf });
+      const { waitForResolved } = renderRelationshipsPanel({ pdf });
 
       await expandAll(user);
+      await waitForResolved();
       await user.click(screen.getByText('Related Entity'));
       expect(getSelectionState().getAttribute('data-active')).not.toBe('');
 
@@ -87,14 +118,52 @@ describe('Relationships panel', () => {
     });
   });
 
+  describe('resolved fetch triggers', () => {
+    it('does not load resolved hubs when the relationships panel mounts', () => {
+      const { loadResolved } = renderRelationshipsPanel();
+      expect(loadResolved).not.toHaveBeenCalled();
+    });
+
+    it('loads resolved when Expand all is clicked', async () => {
+      const user = userEvent.setup();
+      const { loadResolved, waitForResolved } = renderRelationshipsPanel();
+
+      await expandAll(user);
+      await waitForResolved();
+
+      expect(loadResolved).toHaveBeenCalledTimes(1);
+      expect(screen.getByText(/target quoted text/)).toBeInTheDocument();
+    });
+
+    it('shows reference text when a relationship group is expanded', async () => {
+      const user = userEvent.setup();
+      const { waitForResolved } = renderRelationshipsPanel();
+
+      await user.click(screen.getAllByRole('button', { name: /Related/ })[0]);
+      await waitForResolved();
+
+      expect(screen.getByText(/target quoted text/)).toBeInTheDocument();
+    });
+
+    it('does not load resolved when switching to tree view', async () => {
+      const user = userEvent.setup();
+      const { loadResolved } = renderRelationshipsPanel();
+
+      await user.click(screen.getByRole('radio', { name: 'Tree' }));
+
+      expect(loadResolved).not.toHaveBeenCalled();
+    });
+  });
+
   describe('tree view', () => {
     it('groups relationships by target entity when tree view is selected', async () => {
       const user = userEvent.setup();
       renderRelationshipsPanel();
 
       await user.click(screen.getByRole('radio', { name: 'Tree' }));
+      await expandAll(user);
 
-      expect(screen.getByRole('button', { name: 'Collapse all' })).toBeEnabled();
+      expect(screen.getByRole('button', { name: 'Expand all' })).toBeEnabled();
       expect(screen.getAllByText('Related Entity').length).toBeGreaterThanOrEqual(1);
       expect(screen.getAllByText('Other Entity').length).toBeGreaterThanOrEqual(1);
     });
@@ -106,10 +175,11 @@ describe('Relationships panel', () => {
 
     it('narrows the list to matching relationships and shows the active search', async () => {
       const user = userEvent.setup();
-      renderRelationshipsPanel();
+      const { waitForResolved } = renderRelationshipsPanel();
 
       await user.type(searchInput(), 'alpha');
       await expandAll(user);
+      await waitForResolved();
 
       expect(screen.getByText(/target quoted text/)).toBeInTheDocument();
       expect(screen.queryByText('Other Entity')).not.toBeInTheDocument();
@@ -120,12 +190,13 @@ describe('Relationships panel', () => {
 
     it('restores the full list when the search chip is cleared', async () => {
       const user = userEvent.setup();
-      renderRelationshipsPanel();
+      const { waitForResolved } = renderRelationshipsPanel();
 
       await user.type(searchInput(), 'alpha');
       const chip = screen.getByText('"alpha"').parentElement;
       await user.click(within(chip!).getByRole('button', { name: 'Clear search' }));
       await expandAll(user);
+      await waitForResolved();
 
       expect(screen.getByText(/target quoted text/)).toBeInTheDocument();
       expect(screen.getByText('Other Entity')).toBeInTheDocument();
@@ -135,12 +206,13 @@ describe('Relationships panel', () => {
 
     it('restores the full list when all filters are cleared', async () => {
       const user = userEvent.setup();
-      renderRelationshipsPanel({ withFiltersDrawer: true });
+      const { waitForResolved } = renderRelationshipsPanel({ withFiltersDrawer: true });
 
       await user.type(searchInput(), 'alpha');
       await user.click(filtersButton());
       await user.click(screen.getByRole('button', { name: /clear all filters/i }));
       await expandAll(user);
+      await waitForResolved();
 
       expect(screen.getByText(/target quoted text/)).toBeInTheDocument();
       expect(screen.getByText('Other Entity')).toBeInTheDocument();
@@ -171,34 +243,12 @@ describe('Relationships panel', () => {
       expect(screen.queryByRole('button', { name: 'Expand all' })).not.toBeInTheDocument();
     });
   });
-});
 
-describe('blank state', () => {
-  const entityWithoutRelations = { ...entityWithRelations, relations: [] };
-
-  it('does not mention document text selection when there is no document', () => {
-    renderRelationshipsPanel({ entity: entityWithoutRelations });
-
-    expect(screen.queryByText(/selecting text in the document/)).not.toBeInTheDocument();
-    expect(screen.getAllByRole('strong').map(el => el.textContent)).toEqual([
-      'Edit',
-      'Create relationship',
-    ]);
-  });
-
-  it('keeps document text selection first when a document exists', () => {
+  it('shows the blank state when the entity has no relationships', () => {
     renderRelationshipsPanel({
-      entity: entityWithoutRelations,
-      mainDocument: { _id: 'f1', filename: 'doc.pdf' },
+      entity: { ...entityWithRelations, relations: [] },
     });
 
-    expect(
-      screen.getByText(/To add references you can start by selecting text in the document/)
-    ).toBeInTheDocument();
-    expect(screen.getByText(/or select/)).toBeInTheDocument();
-    expect(screen.getAllByRole('strong').map(el => el.textContent)).toEqual([
-      'Edit',
-      'Create relationship',
-    ]);
+    expect(screen.getByText('No Relationships')).toBeInTheDocument();
   });
 });

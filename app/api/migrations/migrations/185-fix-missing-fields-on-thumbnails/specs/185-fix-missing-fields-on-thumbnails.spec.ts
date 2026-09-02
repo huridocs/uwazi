@@ -1,5 +1,5 @@
 import { Db } from 'mongodb';
-import testingDB from '#api/utils/testing_db.js';
+import { testingDB } from '#api/utils/testing_db.js';
 import migration from '../index.js';
 import { Fixture } from '../types.js';
 import {
@@ -58,7 +58,7 @@ describe('migration fix-missing-fields-on-thumbnails', () => {
     expect(thumbnail).not.toBeNull();
     expect(thumbnail!.entity).toBe(processedPdfForMissingAll.entity);
     expect(thumbnail!.language).toBe(processedPdfForMissingAll.language);
-    expect(thumbnail!.originalname).toBe(processedPdfForMissingAll._id.toHexString() + '.jpg');
+    expect(thumbnail!.originalname).toBe(`${processedPdfForMissingAll._id.toHexString()}.jpg`);
     expect(thumbnail!.mimetype).toBe('image/jpeg');
   });
 
@@ -77,7 +77,7 @@ describe('migration fix-missing-fields-on-thumbnails', () => {
       .findOne({ _id: thumbnailMissingOriginalnameId });
     expect(thumbnail).not.toBeNull();
     expect(thumbnail!.originalname).toBe(
-      processedPdfForMissingOriginalnameDoc._id.toHexString() + '.jpg'
+      `${processedPdfForMissingOriginalnameDoc._id.toHexString()}.jpg`
     );
     // Pre-existing fields should be preserved
     expect(thumbnail!.entity).toBe('entity-missing-originalname');

@@ -204,7 +204,7 @@ describe('PendingThesauriValuesApplier', () => {
     const translationsDS = TranslationsDataSourceFactory.default({
       transactionManager: TransactionManagerFactory.default(),
     });
-    const translations = await translationsDS.getByContext(thesaurusId).all();
+    const translations = await translationsDS.getByContext(thesaurusId);
     expect(translations.length).toBeGreaterThan(0);
     expect(appliedValues).toEqual(
       expect.arrayContaining([

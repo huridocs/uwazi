@@ -1,6 +1,8 @@
 import { httpServices } from '#V2/services/http/index.js';
 import type { EntitiesService } from '#V2/services/contracts/EntitiesService.js';
 import type { RelationshipTypesService } from '#V2/services/contracts/RelationshipTypesService.js';
+import type { RelationshipsQueryService } from '#V2/services/contracts/RelationshipsQueryService.js';
+import type { SearchService } from '#V2/services/contracts/SearchService.js';
 import type { TemplatesService } from '#V2/services/contracts/TemplatesService.js';
 import type { ThesaurusService } from '#V2/services/contracts/ThesaurusService.js';
 import type { UserGroupsService } from '#V2/services/contracts/UserGroupsService.js';
@@ -14,6 +16,8 @@ type TestServiceOverrides = {
   users?: Partial<UsersService>;
   userGroups?: Partial<UserGroupsService>;
   relationshipTypes?: Partial<RelationshipTypesService>;
+  relationshipsQuery?: Partial<RelationshipsQueryService>;
+  search?: Partial<SearchService>;
 };
 
 const createTestServices = (overrides?: TestServiceOverrides): V2Services => {
@@ -30,6 +34,8 @@ const createTestServices = (overrides?: TestServiceOverrides): V2Services => {
     users: { ...defaults.users, ...overrides.users },
     userGroups: { ...defaults.userGroups, ...overrides.userGroups },
     relationshipTypes: { ...defaults.relationshipTypes, ...overrides.relationshipTypes },
+    relationshipsQuery: { ...defaults.relationshipsQuery, ...overrides.relationshipsQuery },
+    search: { ...defaults.search, ...overrides.search },
   };
 };
 

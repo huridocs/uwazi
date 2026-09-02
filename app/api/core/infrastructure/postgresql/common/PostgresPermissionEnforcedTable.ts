@@ -142,6 +142,27 @@ class PostgresPermissionEnforcedTable<TRow = Record<string, unknown>> extends Po
     return super.stream(this.buildPermissionContext());
   }
 
+  /**
+   * Runs raw SQL with the actor's permission context applied, so the RLS
+   * policies see the correct `uwazi.bypass_rls` / `uwazi.ref_ids` session
+   * variables.
+   *
+   * The base implementation executes the SQL via a `withConnection` call that
+   * carries no permission context, which resets those variables to their
+   * defaults (bypass=false, refIds=''). On an RLS-enforced table the
+   * `permission_write` policy then matches zero rows, silently discarding
+   * writes even for privileged actors.
+   */
+  override async raw<TResult = unknown>(
+    sql: string,
+    bindings?: unknown
+  ): Promise<Knex.Raw<TResult>> {
+    return this.cfg.transactionManager.withConnection(
+      async trx => trx.raw(sql, bindings as any),
+      this.buildPermissionContext()
+    ) as Promise<Knex.Raw<TResult>>;
+  }
+
   private buildPermissionContext(): { bypass: boolean; refIds: string[] } {
     if (this.accessContext.isPrivileged()) {
       return { bypass: true, refIds: [] };

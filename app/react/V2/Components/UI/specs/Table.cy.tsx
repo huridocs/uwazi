@@ -1,17 +1,15 @@
 import React from 'react';
 import 'cypress-axe';
 import { mount } from 'cypress/react';
-import { composeStories } from '@storybook/react';
 import map from 'lodash/map.js';
 import * as stories from '#app/stories/Table.stories.js';
 import { tableWithDisabled } from '../Table/specs/fixtures.js';
 
-const { Basic, Nested, Custom, BasicWithDisabledDnD, NestedWithDisabledDnD } =
-  composeStories(stories);
+const { Basic, Nested, Custom, BasicWithDisabledDnD, NestedWithDisabledDnD } = stories;
 
 describe('Table', () => {
-  const data = Basic.args.tableData || [];
-  const dataWithNested = Nested.args.tableData || [];
+  const data = Basic.composed.args.tableData || [];
+  const dataWithNested = Nested.composed.args.tableData || [];
 
   const checkRowContent = (rowNumber: number, cellsContent: string[]) => {
     cellsContent.forEach(
@@ -23,18 +21,18 @@ describe('Table', () => {
 
   it('should be accessible', () => {
     cy.injectAxe();
-    mount(<Basic />);
+    mount(<Basic.Component />);
     cy.checkA11y();
   });
 
   beforeEach(() => {
-    Basic.args.defaultSorting = undefined;
-    Basic.args.enableSelections = false;
-    Basic.args.dnd = { enable: false, disableEditingGroups: false };
+    Basic.composed.args.defaultSorting = undefined;
+    Basic.composed.args.enableSelections = false;
+    Basic.composed.args.dnd = { enable: false, disableEditingGroups: false };
   });
 
   it('Should return a table with the columns and row specified', () => {
-    mount(<Basic />);
+    mount(<Basic.Component />);
     const toStrings = (cells: JQuery<HTMLElement>) => map(cells, 'textContent');
     cy.get('tr th').then(toStrings).should('eql', ['Title', 'Description', 'Date added']);
 
@@ -46,7 +44,7 @@ describe('Table', () => {
   });
 
   it('should render the data in a custom component and styles', () => {
-    mount(<Custom />);
+    mount(<Custom.Component />);
     cy.get('table').within(() => {
       cy.contains('th', 'Description').should(
         'have.attr',
@@ -69,14 +67,14 @@ describe('Table', () => {
   });
 
   it('should highlight the focused row using table focusedRowId prop', () => {
-    Basic.args.focusedRowId = 'A1';
-    mount(<Basic />);
+    Basic.composed.args.focusedRowId = 'A1';
+    mount(<Basic.Component />);
     cy.contains('tr', 'Entity 1').should('have.class', 'bg-(--color-theme-surface-muted)');
   });
 
   it('should trigger the custom action for the buttons', () => {
-    Custom.args.actionFn = cy.spy().as('actionSpy');
-    mount(<Custom />);
+    Custom.composed.args.actionFn = cy.spy().as('actionSpy');
+    mount(<Custom.Component />);
 
     cy.contains('tr', 'Entity 1').within(() => {
       cy.contains('button', 'Action').realClick();
@@ -87,7 +85,7 @@ describe('Table', () => {
 
   describe('Sorting', () => {
     it('Should be sortable by title', () => {
-      mount(<Basic />);
+      mount(<Basic.Component />);
 
       cy.get('th').contains('Title').realClick();
       cy.contains('button', 'Save changes').realClick();
@@ -100,7 +98,7 @@ describe('Table', () => {
     });
 
     it('should return to the default sorting', () => {
-      mount(<Basic />);
+      mount(<Basic.Component />);
       cy.get('th').contains('Title').realClick().realClick().realClick();
 
       checkRowContent(1, ['Entity 2', data[0].description, '2']);
@@ -111,8 +109,8 @@ describe('Table', () => {
     });
 
     it('should keep selections when sorting', () => {
-      Basic.args.enableSelections = true;
-      mount(<Basic />);
+      Basic.composed.args.enableSelections = true;
+      mount(<Basic.Component />);
 
       cy.get('tbody').within(() => {
         cy.get('input[type="checkbox"]').eq(0).check();
@@ -129,7 +127,7 @@ describe('Table', () => {
     });
 
     it('should sort items in groups', () => {
-      mount(<Nested />);
+      mount(<Nested.Component />);
       cy.contains('tr', 'Group 1').within(() => {
         cy.contains('button', 'Open group').realClick();
       });
@@ -188,7 +186,7 @@ describe('Table', () => {
     });
 
     it('should disable sorting when defined in the columns', () => {
-      mount(<Basic />);
+      mount(<Basic.Component />);
       cy.get('tr th').contains('Title').children().should('have.length', 1);
       cy.get('tr th').contains('Description').children().should('have.length', 0);
       cy.get('tr th').contains('Date added').children().should('have.length', 1);
@@ -198,8 +196,8 @@ describe('Table', () => {
     });
 
     it('Should sort the rows with the sorting state specified', () => {
-      Basic.args.defaultSorting = [{ id: 'created', desc: false }];
-      mount(<Basic />);
+      Basic.composed.args.defaultSorting = [{ id: 'created', desc: false }];
+      mount(<Basic.Component />);
 
       checkRowContent(1, ['Entity 1', data[1].description, '1']);
       checkRowContent(2, ['Entity 2', data[0].description, '2']);
@@ -207,8 +205,8 @@ describe('Table', () => {
     });
 
     it('should reset sorting state when using dnd after sorting', () => {
-      Basic.args.dnd = { enable: true };
-      mount(<Nested />);
+      Basic.composed.args.dnd = { enable: true };
+      mount(<Nested.Component />);
 
       cy.contains('tr', 'Group 1').within(() => {
         cy.contains('button', 'Open group').realClick();
@@ -226,9 +224,9 @@ describe('Table', () => {
     });
 
     it('it should sort items within groups', () => {
-      Nested.args.dnd = { enable: false };
-      Nested.args.enableSelections = false;
-      mount(<Nested />);
+      Nested.composed.args.dnd = { enable: false };
+      Nested.composed.args.enableSelections = false;
+      mount(<Nested.Component />);
 
       cy.contains('tr', 'Group 1').within(() => {
         cy.contains('button', 'Open group').realClick();
@@ -247,8 +245,8 @@ describe('Table', () => {
 
     describe('Controlled sorting', () => {
       it('should allow manually controlling the sorting', () => {
-        Basic.args.controlledSorting = true;
-        mount(<Basic />);
+        Basic.composed.args.controlledSorting = true;
+        mount(<Basic.Component />);
         cy.get('th').contains('Title').realClick();
         cy.get('[data-testid="controlled-sorting"]').within(() => {
           cy.contains('p', 'Sorted by title');
@@ -256,9 +254,9 @@ describe('Table', () => {
       });
 
       it('should respect the default sorting in the state', () => {
-        Basic.args.controlledSorting = true;
-        Basic.args.defaultSorting = [{ id: 'created', desc: false }];
-        mount(<Basic />);
+        Basic.composed.args.controlledSorting = true;
+        Basic.composed.args.defaultSorting = [{ id: 'created', desc: false }];
+        mount(<Basic.Component />);
         cy.get('[data-testid="controlled-sorting"]').within(() => {
           cy.contains('p', 'Sorted by created');
         });
@@ -268,9 +266,9 @@ describe('Table', () => {
 
   describe('Selections', () => {
     beforeEach(() => {
-      Basic.args.enableSelections = true;
-      Basic.args.dnd = { enable: true };
-      mount(<Basic />);
+      Basic.composed.args.enableSelections = true;
+      Basic.composed.args.dnd = { enable: true };
+      mount(<Basic.Component />);
     });
 
     it('should select and unselect some items selections', () => {
@@ -307,10 +305,10 @@ describe('Table', () => {
     });
 
     it('should not select items with disabled row selection', () => {
-      Nested.args.enableSelections = true;
-      Nested.args.dnd = { enable: true };
-      Nested.args.tableData = tableWithDisabled;
-      mount(<Nested />);
+      Nested.composed.args.enableSelections = true;
+      Nested.composed.args.dnd = { enable: true };
+      Nested.composed.args.tableData = tableWithDisabled;
+      mount(<Nested.Component />);
       cy.contains('Select all').realClick();
       cy.contains('button', 'Save changes').realClick();
       cy.get('[data-testid="selected-items"]').within(() => {
@@ -327,10 +325,10 @@ describe('Table', () => {
     });
 
     it('should change parent status based on selected children', () => {
-      Nested.args.enableSelections = true;
-      Nested.args.dnd = { enable: true };
-      Nested.args.tableData = tableWithDisabled;
-      mount(<Nested />);
+      Nested.composed.args.enableSelections = true;
+      Nested.composed.args.dnd = { enable: true };
+      Nested.composed.args.tableData = tableWithDisabled;
+      mount(<Nested.Component />);
 
       cy.contains('tr', 'Group 1').within(() => {
         cy.contains('button', 'Open group').realClick();
@@ -355,10 +353,10 @@ describe('Table', () => {
 
   describe('DnD', () => {
     beforeEach(() => {
-      Basic.args.dnd = { enable: true };
-      Basic.args.enableSelections = true;
-      Nested.args.tableData = dataWithNested;
-      mount(<Basic />);
+      Basic.composed.args.dnd = { enable: true };
+      Basic.composed.args.enableSelections = true;
+      Nested.composed.args.tableData = dataWithNested;
+      mount(<Basic.Component />);
       cy.get('[data-testid="sorted-items"]').within(() => {
         cy.contains('Entity 2 Entity 1 Entity 4 Entity 3 Entity 5');
       });
@@ -416,12 +414,12 @@ describe('Table', () => {
 
   describe('DnD with disabled rows', () => {
     it('should not allow dragging disabled rows', () => {
-      mount(<BasicWithDisabledDnD />);
+      mount(<BasicWithDisabledDnD.Component />);
       checkRowContent(1, ['Empty', 'Select', 'Entity 2', data[0].description, '2']);
     });
 
     it('should not do anything when droping over disabled rows', () => {
-      mount(<BasicWithDisabledDnD />);
+      mount(<BasicWithDisabledDnD.Component />);
       cy.realDragAndDrop(
         cy.get('button[aria-roledescription="sortable"]').eq(0),
         cy.get('tr').eq(1)
@@ -431,7 +429,7 @@ describe('Table', () => {
     });
 
     it('should not allow dragging disabled groups or children', () => {
-      mount(<NestedWithDisabledDnD />);
+      mount(<NestedWithDisabledDnD.Component />);
       checkRowContent(1, [
         'Empty',
         'Select',
@@ -456,7 +454,7 @@ describe('Table', () => {
     });
 
     it('should be able to drag children from not dragable parents', () => {
-      mount(<NestedWithDisabledDnD />);
+      mount(<NestedWithDisabledDnD.Component />);
       cy.contains('tr', 'Group 1').within(() => {
         cy.contains('Open group').realClick();
       });
@@ -473,9 +471,9 @@ describe('Table', () => {
 
   describe('Nested data', () => {
     beforeEach(() => {
-      Nested.args.dnd = { enable: true };
-      Nested.args.enableSelections = true;
-      mount(<Nested />);
+      Nested.composed.args.dnd = { enable: true };
+      Nested.composed.args.enableSelections = true;
+      mount(<Nested.Component />);
     });
 
     it('should check the content', () => {
@@ -693,8 +691,8 @@ describe('Table', () => {
     });
 
     it('should disable editing groups with dnd but allow sorting them internally', () => {
-      Nested.args.dnd = { enable: true, disableEditingGroups: true };
-      mount(<Nested />);
+      Nested.composed.args.dnd = { enable: true, disableEditingGroups: true };
+      mount(<Nested.Component />);
 
       cy.contains('tr', 'Group 4').within(() => {
         cy.contains('button', 'Open group').realClick();
@@ -731,9 +729,9 @@ describe('Table', () => {
     });
 
     it('should render the correct text for empty groups based on dnd status', () => {
-      Nested.args.dnd = { enable: false };
-      Nested.args.enableSelections = false;
-      mount(<Nested />);
+      Nested.composed.args.dnd = { enable: false };
+      Nested.composed.args.enableSelections = false;
+      mount(<Nested.Component />);
 
       cy.contains('tr', 'Group 4').within(() => {
         cy.contains('button', 'Open group').realClick();
@@ -745,8 +743,8 @@ describe('Table', () => {
 
   describe('No data', () => {
     it('should render no data message if data is empty', () => {
-      Basic.args.tableData = [];
-      mount(<Basic />);
+      Basic.composed.args.tableData = [];
+      mount(<Basic.Component />);
       cy.contains('NO DATA AVAILABLE');
     });
   });

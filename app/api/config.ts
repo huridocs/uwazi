@@ -1,7 +1,7 @@
 import dotenv from 'dotenv';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
-// eslint-disable-next-line node/no-restricted-import
+// eslint-disable-next-line no-restricted-imports
 import { readFileSync } from 'fs';
 import { hostname } from 'os';
 import { z } from 'zod';
@@ -44,7 +44,9 @@ const {
   FEATURE_FLAG_POSTGRES_ENTITIES,
   FEATURE_FLAG_POSTGRES_TEMPLATES,
   FEATURE_FLAG_POSTGRES_RELATIONSHIP_TYPES,
+  FEATURE_FLAG_POSTGRES_TRANSLATIONS,
   FEATURE_FLAG_ENTITY_VIEWER_V2,
+  FEATURE_FLAG_LIBRARY_V2,
   AI_ASSISTANT_SERVICE_URL,
   DEV_FLAG_TESTING,
   FILES_ROOT_PATH,
@@ -156,17 +158,16 @@ export const config = {
       postgresEntities: FEATURE_FLAG_POSTGRES_ENTITIES === 'true' || false,
       postgresTemplates: FEATURE_FLAG_POSTGRES_TEMPLATES === 'true' || false,
       postgresRelationshipTypes: FEATURE_FLAG_POSTGRES_RELATIONSHIP_TYPES === 'true' || false,
+      postgresTranslations: FEATURE_FLAG_POSTGRES_TRANSLATIONS === 'true' || false,
       postgresPasswordRecoveries: false,
       postgresUsers: false,
       postgresCaptchas: false,
       postgresUsergroups: false,
       newHeader: NEW_HEADER !== 'false',
       featureFlagEntityViewerv2: FEATURE_FLAG_ENTITY_VIEWER_V2 === 'true' || false,
+      featureFlagLibraryV2: FEATURE_FLAG_LIBRARY_V2 === 'true' || false,
       aiAssistant: FEATURE_FLAG_AI_ASSISTANT === 'true' || false,
       aiAssistantServiceUrl: AI_ASSISTANT_SERVICE_URL || undefined,
-      usersDirectory: false,
-      v2PrivateInstance: false,
-      v2Usergroups: false,
       telemetry: {
         enabled: false,
         sampleRate: 0.5,

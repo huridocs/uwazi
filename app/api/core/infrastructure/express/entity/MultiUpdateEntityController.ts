@@ -1,5 +1,4 @@
 import { AbstractController } from '#api/common.v2/infrastructure/AbstractController.js';
-import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { MultiUpdateEntity } from '#api/core/application/MultiUpdateEntity.js';
 import { MultiUpdateEntityUseCaseFactory } from '../../factories/MultiUpdateEntityUseCaseFactory.js';
 import { EntitiesDAOFactory } from '../../factories/EntitiesDAOFactory.js';
@@ -15,62 +14,38 @@ type RequestDto = {
 
 class MultiUpdateEntityController extends AbstractController<RequestDto> {
   protected async handle(): Promise<void> {
-    const startTime = Date.now();
+    const useCase = MultiUpdateEntityUseCaseFactory.default();
 
-    try {
-      const useCase = MultiUpdateEntityUseCaseFactory.default();
+    const parsed = MultiUpdateEntity.InputSchema.parse({ ids: this.request.body?.ids || [] });
+    const { values = {} } = this.request.body;
+    const targetLanguage = this.language;
 
-      const parsed = MultiUpdateEntity.InputSchema.parse({ ids: this.request.body?.ids || [] });
-      const { values = {} } = this.request.body;
-      const targetLanguage = this.language;
+    const propertyAssignments: PropertyAssignmentInput[] | undefined = values.metadata
+      ? (Object.entries(values.metadata).map(([name, value]) => ({
+          name,
+          value,
+        })) as PropertyAssignmentInput[])
+      : undefined;
 
-      const propertyAssignments: PropertyAssignmentInput[] | undefined = values.metadata
-        ? (Object.entries(values.metadata).map(([name, value]) => ({
-            name,
-            value,
-          })) as PropertyAssignmentInput[])
-        : undefined;
+    const output = await useCase.execute({
+      ids: parsed.ids,
+      targetLanguage,
+      values: {
+        propertyAssignments,
+        templateId: values.template?.toString(),
+      },
+    });
 
-      const output = await useCase.execute({
-        ids: parsed.ids,
-        targetLanguage,
-        values: {
-          propertyAssignments,
-          templateId: values.template?.toString(),
-        },
-      });
+    const sharedIds = [...new Set(output.map(e => e.sharedId))];
 
-      const sharedIds = [...new Set(output.map(e => e.sharedId))];
+    const entityDAO = EntitiesDAOFactory.default({ user: this.user });
 
-      const entityDAO = EntitiesDAOFactory.default({ user: this.user });
+    const updatedEntities = await entityDAO.find(
+      { sharedIds, language: targetLanguage },
+      { withFiles: true }
+    );
 
-      const updatedEntities = await entityDAO.find(
-        { sharedIds, language: targetLanguage },
-        { withFiles: true }
-      );
-
-      ExecutionContext.logger.info('MultiUpdateEntity executed successfully', {
-        namespace: 'MultiUpdate_Entity',
-        success: true,
-        durationMs: Date.now() - startTime,
-        count: updatedEntities.length,
-      });
-
-      this.response.json(updatedEntities);
-    } catch (error: unknown) {
-      ExecutionContext.logger.info(
-        `MultiUpdateEntity failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
-        {
-          namespace: 'MultiUpdate_Entity',
-          success: false,
-          durationMs: Date.now() - startTime,
-          error: JSON.stringify(error),
-          dto: JSON.stringify(this.request.body),
-        }
-      );
-
-      throw error;
-    }
+    this.response.json(updatedEntities);
   }
 }
 

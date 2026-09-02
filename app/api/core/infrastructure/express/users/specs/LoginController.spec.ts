@@ -128,14 +128,20 @@ describe('POST /api/login', () => {
     });
 
     it('should log in when the 2FA token is correct', async () => {
-      const token = otplib.authenticator.generate(TWO_FACTOR_SECRET);
+      const previous = otplib.authenticator.options;
+      otplib.authenticator.options = { ...previous, epoch: Date.now() };
+      try {
+        const token = otplib.authenticator.generate(TWO_FACTOR_SECRET);
 
-      const response = await request(app)
-        .post('/api/login')
-        .send({ username: '2fauser', password: 'validpassword', token });
+        const response = await request(app)
+          .post('/api/login')
+          .send({ username: '2fauser', password: 'validpassword', token });
 
-      expect(response.status).toBe(200);
-      expect(response.body).toEqual({ success: true });
+        expect(response.status).toBe(200);
+        expect(response.body).toEqual({ success: true });
+      } finally {
+        otplib.authenticator.options = previous;
+      }
     });
   });
 });

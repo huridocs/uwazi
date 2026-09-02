@@ -84,3 +84,6 @@ app/api/csv.v2/specs/uploads_intermediate/
 # Playwright outputs
 test-results/
 playwright-report/
+
+# TypeScript incremental build info
+.tsbuildinfo/

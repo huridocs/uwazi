@@ -16,7 +16,7 @@ function log(body) {
     username: 'System',
     time,
   };
-  model.save(entry);
+  void model.save(entry);
 }
 
 function logFieldParseError(

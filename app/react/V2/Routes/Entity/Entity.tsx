@@ -20,6 +20,7 @@ import {
   useMetadataEditing,
 } from './Components/index.js';
 import { CreateRelationshipModal } from './Components/relationships/create-reference/CreateRelationshipModal.js';
+import { ManageRelationTypesModal } from './Components/relationships/create-reference/ManageRelationTypesModal.js';
 import { useResetRelationshipsOnDocumentChange } from './Components/relationships/hooks/useDocumentRelationships.js';
 import {
   TabsMainButtons,
@@ -29,7 +30,8 @@ import {
   MAIN_TAB,
   isValidMainTab,
 } from './Tabs/index.js';
-import { useEntityViewTabs } from './Tabs/hooks/useEntityViewTabs.js';
+import { EntityTabsProvider } from './Tabs/EntityTabsContext.js';
+import { useEntityTabs } from './Tabs/hooks/useEntityTabs.js';
 import { LoaderResponse } from './types.js';
 
 const EntityCreateRelationshipModal = () => {
@@ -57,14 +59,14 @@ const EntityView = () => {
     [primaryRows.length]
   );
 
-  const { activeMainTab, activeSideTab, onMainTabChange, onSideTabChange } = useEntityViewTabs({
+  const entityTabs = useEntityTabs({
     entity,
     hasMainDocument,
     mainDocumentId: mainDocument?._id,
     filesSideTabs,
   });
   const { activeTabId: atomMainTabId } = useTabGroup('entity-main');
-  const mainTabId = isValidMainTab(atomMainTabId) ? atomMainTabId : activeMainTab;
+  const mainTabId = isValidMainTab(atomMainTabId) ? atomMainTabId : entityTabs.activeMainTab;
   const { isEditing, isDirty, isSaving, cancelEdit, formMountHost } = useMetadataEditing();
   const showMainPaneHeader = !(
     mainTabId === MAIN_TAB.METADATA &&
@@ -73,7 +75,7 @@ const EntityView = () => {
   );
 
   return (
-    <>
+    <EntityTabsProvider value={entityTabs}>
       <EntitySeo entity={entity} />
       <FilesDeleteConfirmationModal />
       <AddFileModal />
@@ -90,7 +92,7 @@ const EntityView = () => {
                   <TabsMainButtons
                     entity={entity}
                     mainDocument={mainDocument}
-                    onTabChange={onMainTabChange}
+                    onTabChange={entityTabs.onMainTabChange}
                   />
                 </div>
                 {showMainPaneHeader ? (
@@ -115,18 +117,18 @@ const EntityView = () => {
           </PaneLayout.Pane>
           <PaneLayout.Pane key="entity-side-pane">
             <SideTabsPanel
-              activeMainTab={mainTabId}
-              activeSideTab={activeSideTab}
-              onSideTabChange={onSideTabChange}
+              activeSideTab={entityTabs.activeSideTab}
+              syncSideTabId={entityTabs.syncSideTabId}
+              sideButtons={entityTabs.sideButtons}
+              onSideTabChange={entityTabs.onSideTabChange}
               entity={entity}
               mainDocument={mainDocument}
               pagePlaintext={pagePlaintext}
-              filesSideTabs={filesSideTabs}
             />
           </PaneLayout.Pane>
         </PaneLayout>
       </div>
-    </>
+    </EntityTabsProvider>
   );
 };
 
@@ -152,11 +154,13 @@ const Entity = () => {
         mainDocument={mainDocument}
         pagePlaintext={pagePlaintext}
         entityPageView={entityPageView}
+        relationshipQuery={loaderData?.relationshipQuery}
       >
         <EntityFilesFromEntity>
           <EntityView />
         </EntityFilesFromEntity>
         <EntityCreateRelationshipModal />
+        <ManageRelationTypesModal />
       </EntityScopedProvider>
     </ThemeProvider>
   );

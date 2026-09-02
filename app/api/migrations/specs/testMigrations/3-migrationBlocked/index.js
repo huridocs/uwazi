@@ -4,7 +4,7 @@ export default {
   requiresSchema: 100,
   reindex: false,
 
-  up() {
+  async up() {
     return new Promise(resolve => {
       setTimeout(resolve, 10);
     });

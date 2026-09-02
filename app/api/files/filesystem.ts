@@ -1,4 +1,4 @@
-// eslint-disable-next-line node/no-restricted-import
+// eslint-disable-next-line no-restricted-imports
 import { testingTenants } from '#api/utils/testingTenants.js';
 import mimetypes from 'mime-types';
 import path, { dirname } from 'path';
@@ -6,9 +6,9 @@ import { fileURLToPath } from 'url';
 import { tenants } from '#api/tenants/tenantContext.js';
 import ID from '#shared/uniqueID.js';
 import { Readable } from 'stream';
-// eslint-disable-next-line node/no-restricted-import
+// eslint-disable-next-line no-restricted-imports
 import fs, { access } from 'fs/promises';
-// eslint-disable-next-line node/no-restricted-import
+// eslint-disable-next-line no-restricted-imports
 import { createWriteStream } from 'fs';
 
 import { FileType } from '../../shared/types/fileType.js';
@@ -99,7 +99,7 @@ const cleanupTestUploadedPaths = async (subPath: string = '') => {
         }
         // skip directories
       }
-    } catch (e) {
+    } catch (_) {
       // ignore if dir not exists
     }
   }

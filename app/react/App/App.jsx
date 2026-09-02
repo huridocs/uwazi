@@ -2,6 +2,7 @@ import React, { useState, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { Outlet, useLocation, useParams } from 'react-router';
 import { useAtom, useAtomValue } from 'jotai';
+import { NuqsAdapter } from 'nuqs/adapters/react-router/v7';
 import { Cookiepopup } from '#app/App/Cookiepopup.js';
 import { Matomo, CleanInsights } from '#app/V2/Components/Analitycs/index.js';
 import { settingsAtom } from '#V2/atoms/settingsAtom.js';
@@ -16,6 +17,7 @@ import { AppMainContext } from './AppMainContext.js';
 import { GoogleAnalytics } from './GoogleAnalytics.js';
 import { LegacyHeader } from './LegacyHeader.js';
 import { isEntityPath, isEntityV2Path } from '#app/utils/entityViewerPaths.js';
+import { isLibraryV2Route } from '#app/utils/libraryPaths.js';
 import 'react-widgets/dist/css/react-widgets.css';
 import 'bootstrap/dist/css/bootstrap.css';
 import 'flag-icons/sass/flag-icons.scss';
@@ -55,28 +57,31 @@ const App = ({ customParams }) => {
   const appClassName = shouldAddAppClassName && sharedId ? `pageId_${sharedId}` : '';
 
   const entityViewerV2 = Boolean(settings.features?.featureFlagEntityViewerv2);
+  const libraryV2 = Boolean(settings.features?.featureFlagLibraryV2);
   const isV2Route =
     location.pathname.includes('/settings') ||
     isEntityV2Path(location.pathname) ||
-    (entityViewerV2 && isEntityPath(location.pathname));
+    (entityViewerV2 && isEntityPath(location.pathname)) ||
+    isLibraryV2Route(location.pathname, libraryV2);
   const isSettingsRoute = location.pathname.includes('/settings');
   const shellSharedTheme = shouldShowNewHeader && isV2Route;
   const settingsThemePath = isSettingsRoute ? 'settings' : undefined;
 
   const appMainTree = (
-    <AppMainContext.Provider value={appContext}>
-      {/* eslint-disable-next-line react/jsx-props-no-spreading */}
-      <Confirm {...confirmOptions} />
-      <Outlet />
-      <GoogleAnalytics />
-      <Matomo />
-      <CleanInsights />
-    </AppMainContext.Provider>
+    <NuqsAdapter>
+      <AppMainContext.Provider value={appContext}>
+        {/* eslint-disable-next-line react/jsx-props-no-spreading */}
+        <Confirm {...confirmOptions} />
+        <Outlet />
+        <GoogleAnalytics />
+        <Matomo />
+        <CleanInsights />
+      </AppMainContext.Provider>
+    </NuqsAdapter>
   );
 
   return (
     <div id="app" className={appClassName}>
-      <Cookiepopup />
       <div className="content">
         {shellSharedTheme ? (
           <ThemeProvider
@@ -123,6 +128,7 @@ const App = ({ customParams }) => {
       <ThemeProvider>
         <BertHost />
         <NotificationsPanel />
+        <Cookiepopup />
       </ThemeProvider>
     </div>
   );

@@ -44,7 +44,8 @@ export const publicSharing = (
 
 export const cookiePolicy = (
   <Translate>
-    This option will show a notification about the use of cookies in your instance.
+    When enabled, visitors must accept or reject non-essential cookies before they are set.
+    Analytics and language preference cookies are blocked until accepted.
   </Translate>
 );
 
@@ -66,12 +67,12 @@ export const receivingEmail = (
   </>
 );
 export const emails = [
-  <Translate translationKey="Contact email description">
+  <Translate key="contact-email" translationKey="Contact email description">
     Here you can set up the contact email and the email that appears when Uwazi sends a notification
     to a user
   </Translate>,
 
-  <Translate translationKey="Sending email description">
+  <Translate key="sending-email" translationKey="Sending email description">
     {`This is the email address that will appear as the sender when an email is sent from your Uwazi
     collection to registered users. The default address is *no-reply@uwazi.io*. You can set a custom
     one by including your desired email address here.`}
@@ -118,14 +119,14 @@ export const mapAxis = (
 );
 
 export const publicForm = [
-  <Translate translationKey="Public form settings description">
+  <Translate key="public-form-settings" translationKey="Public form settings description">
     Here you can configure the public form destination and the whitelisted templates
   </Translate>,
-  <Translate translationKey="Public form URL description">
+  <Translate key="public-form-url" translationKey="Public form URL description">
     If you have configured a public form and would like a different Uwazi collection to receive the
     submissions, enter its URL here.
   </Translate>,
-  <Translate translationKey="Public form whitelist description">
+  <Translate key="public-form-whitelist" translationKey="Public form whitelist description">
     If you wish to include Public Forms on your pages, you must white-list the template IDs for
     which Public Forms are expected.
   </Translate>,

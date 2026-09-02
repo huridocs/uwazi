@@ -7,7 +7,7 @@ class GetTranslationEntriesController extends AbstractController {
     const translationsDS = TranslationsDataSourceFactory.default({
       transactionManager: TransactionManagerFactory.default(),
     });
-    const translationList = await translationsDS.getAll().all();
+    const translationList = await translationsDS.getAll();
     this.response.json(translationList);
   }
 }

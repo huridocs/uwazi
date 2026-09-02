@@ -1,10 +1,10 @@
 import React from 'react';
+import preview from '#storybook/preview';
 import { MemoryRouter } from 'react-router';
-import type { Meta, StoryObj } from '@storybook/react-webpack5';
 import { Dropdown } from '#V2/Components/UI/Header/Dropdown.js';
 import type { DropdownItem } from '#V2/Components/UI/Header/Dropdown.js';
 
-const meta: Meta<typeof Dropdown> = {
+const meta = preview.meta({
   title: 'Components/UI/Dropdown',
   component: Dropdown,
   parameters: {
@@ -32,10 +32,7 @@ const meta: Meta<typeof Dropdown> = {
       description: 'Additional CSS classes',
     },
   },
-};
-export default meta;
-
-type Story = StoryObj<typeof Dropdown>;
+});
 
 // Sample dropdown items
 const sampleItems: DropdownItem[] = [
@@ -57,7 +54,7 @@ const mixedItems: DropdownItem[] = [
   { title: 'GitHub', url: 'https://github.com', isExternal: true },
 ];
 
-const Basic: Story = {
+const Basic = meta.story({
   args: {
     title: 'Navigation',
     items: sampleItems,
@@ -68,9 +65,9 @@ const Basic: Story = {
       <Dropdown title={args.title} items={args.items} className={args.className} />
     </div>
   ),
-};
+});
 
-const WithExternalLinks: Story = {
+const WithExternalLinks = meta.story({
   args: {
     title: 'External Links',
     items: externalItems,
@@ -81,9 +78,9 @@ const WithExternalLinks: Story = {
       <Dropdown title={args.title} items={args.items} className={args.className} />
     </div>
   ),
-};
+});
 
-const MixedLinks: Story = {
+const MixedLinks = meta.story({
   args: {
     title: 'Mixed Links',
     items: mixedItems,
@@ -94,9 +91,9 @@ const MixedLinks: Story = {
       <Dropdown title={args.title} items={args.items} className={args.className} />
     </div>
   ),
-};
+});
 
-const LongTitle: Story = {
+const LongTitle = meta.story({
   args: {
     title: 'Very Long Dropdown Title That Might Wrap',
     items: sampleItems,
@@ -107,9 +104,9 @@ const LongTitle: Story = {
       <Dropdown title={args.title} items={args.items} className={args.className} />
     </div>
   ),
-};
+});
 
-const ManyItems: Story = {
+const ManyItems = meta.story({
   args: {
     title: 'Many Items',
     items: [
@@ -128,9 +125,9 @@ const ManyItems: Story = {
       <Dropdown title={args.title} items={args.items} className={args.className} />
     </div>
   ),
-};
+});
 
-const WithCustomStyling: Story = {
+const WithCustomStyling = meta.story({
   args: {
     title: 'Styled Dropdown',
     items: sampleItems,
@@ -141,6 +138,6 @@ const WithCustomStyling: Story = {
       <Dropdown title={args.title} items={args.items} className={args.className} />
     </div>
   ),
-};
+});
 
 export { Basic, WithExternalLinks, MixedLinks, LongTitle, ManyItems, WithCustomStyling };

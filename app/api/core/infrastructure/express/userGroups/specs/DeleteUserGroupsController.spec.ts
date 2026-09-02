@@ -73,4 +73,27 @@ describe('DeleteUserGroupsController integration', () => {
     const usergroups = await testingEnvironment.db.getAllFrom('usergroups');
     expect(usergroups.map((g: any) => g.name)).toEqual(['Two']);
   });
+
+  it('should return 422 when an id is not a valid id', async () => {
+    const response = await request(app).delete('/api/usergroups?ids=not-an-id');
+
+    expect(response).toHaveStatus(422);
+
+    const usergroups = await testingEnvironment.db.getAllFrom('usergroups');
+    expect(usergroups).toHaveLength(2);
+  });
+
+  it('should return 422 when ids is missing', async () => {
+    const response = await request(app).delete('/api/usergroups');
+
+    expect(response).toHaveStatus(422);
+  });
+
+  it('should ignore unknown query params', async () => {
+    const response = await request(app).delete(
+      `/api/usergroups?ids=${factory.id('One').toHexString()}&unexpected=1`
+    );
+
+    expect(response).toHaveStatus(200);
+  });
 });

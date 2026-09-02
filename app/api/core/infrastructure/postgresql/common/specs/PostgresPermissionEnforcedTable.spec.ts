@@ -374,6 +374,74 @@ describe('PostgresPermissionEnforcedTable', () => {
     });
   });
 
+  describe('write enforcement — raw SQL', () => {
+    it('should let collaborator update a writable row via raw SQL', async () => {
+      const table = createEnforcedTable(AccessContext.forActor(collaborator));
+      await table.raw(`UPDATE ${TEST_TABLE} SET "name" = ? WHERE "_id" = ?`, [
+        'raw-updated',
+        'ent-write',
+      ]);
+
+      const after = await adminTable().where({ _id: 'ent-write' }).first();
+      expect(after!.name).toBe('raw-updated');
+    });
+
+    it('should not let collaborator update a read-only row via raw SQL', async () => {
+      const table = createEnforcedTable(AccessContext.forActor(collaborator));
+      await table.raw(`UPDATE ${TEST_TABLE} SET "name" = ? WHERE "_id" = ?`, [
+        'raw-updated',
+        'ent-read',
+      ]);
+
+      const after = await adminTable().where({ _id: 'ent-read' }).first();
+      expect(after!.name).toBe('private-read');
+    });
+
+    it('should let collaborator update a row with group write permission via raw SQL', async () => {
+      const table = createEnforcedTable(AccessContext.forActor(collaborator));
+      await table.raw(`UPDATE ${TEST_TABLE} SET "name" = ? WHERE "_id" = ?`, [
+        'raw-group-updated',
+        'ent-group-write',
+      ]);
+
+      const after = await adminTable().where({ _id: 'ent-group-write' }).first();
+      expect(after!.name).toBe('raw-group-updated');
+    });
+
+    it('should not let collaborator update a row with only group read permission via raw SQL', async () => {
+      const table = createEnforcedTable(AccessContext.forActor(collaborator));
+      await table.raw(`UPDATE ${TEST_TABLE} SET "name" = ? WHERE "_id" = ?`, [
+        'raw-group-updated',
+        'ent-group-read',
+      ]);
+
+      const after = await adminTable().where({ _id: 'ent-group-read' }).first();
+      expect(after!.name).toBe('group-read-only');
+    });
+
+    it('should let admin update any row via raw SQL', async () => {
+      const table = createEnforcedTable(AccessContext.forActor(admin));
+      await table.raw(`UPDATE ${TEST_TABLE} SET "name" = ? WHERE "_id" = ?`, [
+        'admin-raw',
+        'ent-none',
+      ]);
+
+      const after = await adminTable().where({ _id: 'ent-none' }).first();
+      expect(after!.name).toBe('admin-raw');
+    });
+
+    it('should not let anonymous update any row via raw SQL', async () => {
+      const table = createEnforcedTable(AccessContext.forActor(anon));
+      await table.raw(`UPDATE ${TEST_TABLE} SET "name" = ? WHERE "_id" = ?`, [
+        'anon-raw',
+        'ent-pub',
+      ]);
+
+      const after = await adminTable().where({ _id: 'ent-pub' }).first();
+      expect(after!.name).toBe('published');
+    });
+  });
+
   describe('insert gate', () => {
     it('should let collaborator insert', async () => {
       const table = createEnforcedTable(AccessContext.forActor(collaborator));
@@ -701,7 +769,7 @@ describe('PostgresPermissionEnforcedTable', () => {
     it('should not leak rows via whereExists subquery', async () => {
       const table = createEnforcedTable(AccessContext.forActor(collaborator));
       const rows = await table
-        .whereExists(function (this: Knex.QueryBuilder) {
+        .whereExists(function rows(this: Knex.QueryBuilder) {
           this.select('*').from(TEST_TABLE).whereRaw('1=1');
         })
         .all();

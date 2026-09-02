@@ -108,6 +108,7 @@ class Connection extends Component {
           <div className="item-shortcut-group">
             <ShowIf if={!this.props.targetDoc && !this.props.readOnly}>
               <NeedAuthorization roles={['admin', 'editor']}>
+                {/* oxlint-disable-next-line jsx-a11y/anchor-is-valid -- anchor styled as button */}
                 <a
                   className="item-shortcut btn btn-default btn-hover-danger delete"
                   onClick={this.deleteReference.bind(this, reference)}

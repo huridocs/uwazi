@@ -20,6 +20,7 @@ export default async (app, server) => {
 
   (await import('./auth2fa/routes.js')).default(app);
   (await import('./relationships/routes.js')).default(app);
+  (await import('./relationships/query/express/routes.js')).relationshipsQueryRoutes(app);
   (await import('./activitylog/routes.js')).default(app);
   (await import('./core/infrastructure/express/users/routes.js')).userRoutes(app);
   (await import('./core/infrastructure/express/template/routes.js')).default(app);

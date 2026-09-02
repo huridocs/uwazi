@@ -2,10 +2,10 @@ import backend from 'fetch-mock';
 import path from 'path';
 import qs from 'qs';
 import { URL } from 'url';
-// eslint-disable-next-line node/no-restricted-import
+// eslint-disable-next-line no-restricted-imports
 import fs from 'fs/promises';
 import { ApiResponse } from '@elastic/elasticsearch';
-// eslint-disable-next-line node/no-restricted-import
+// eslint-disable-next-line no-restricted-imports
 import { createReadStream } from 'fs';
 import { generateFileName, testingUploadPaths } from '#api/files/filesystem.js';
 import { storage } from '#api/files/storage.js';

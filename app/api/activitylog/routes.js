@@ -10,7 +10,7 @@ export default app => {
     needsAuthorization(['admin']),
     parseQuery,
     validation.validateRequest(ActivityLogGetRequestSchema),
-    (req, res, next) =>
+    async (req, res, next) =>
       activitylog
         .get(req.query)
         .then(response => res.json(response))

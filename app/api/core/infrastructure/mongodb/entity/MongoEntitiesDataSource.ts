@@ -15,9 +15,11 @@ import { Result, ResultType } from '#api/core/libs/Result.js';
 import { search } from '#api/search/index.js';
 import { Settings as SettingsType } from '#shared/types/settingsType.js';
 import { Entity } from '../../../domain/entity/Entity.js';
+import { EntityTemplateDoesNotExistError } from '../../../domain/entity/errors.js';
 import { EntitiesDataSource } from '../../../application/contracts/EntitiesDataSource.js';
 import { EntityDBO, EntityTemplateAggregation } from './EntityDBO.js';
 import { TemplatesDAOFactory } from '../../factories/TemplatesDAOFactory.js';
+import { ArrayUtils } from '#api/common.v2/utils/Array.js';
 
 // Temporary union type during Mongo -> Postgres migration
 type TemplatesDAO = Awaited<ReturnType<typeof TemplatesDAOFactory.default>>;
@@ -88,26 +90,11 @@ export class MongoEntitiesDataSource
     return Boolean(entity);
   }
 
-  async update(entity: Entity): Promise<void> {
-    const dbos = MongoEntityMapper.toDBO(entity);
-
-    await this.getCollection().bulkWrite(
-      dbos.map(dbo => ({
-        updateOne: {
-          filter: { _id: dbo._id },
-          update: {
-            $set: dbo,
-            ...(dbo.preview === undefined ? { $unset: { preview: '' } } : {}),
-          },
-        },
-      })),
-      { ignoreUndefined: true }
-    );
-
-    this.modifiedSharedIds.add(entity.sharedId);
+  async update(entities: Entity | Entity[]): Promise<void> {
+    return this.bulkUpdate(ArrayUtils.asArray(entities));
   }
 
-  async bulkUpdate(entities: Entity[]): Promise<void> {
+  private async bulkUpdate(entities: Entity[]): Promise<void> {
     const allDbos = entities.flatMap(entity => MongoEntityMapper.toDBO(entity));
 
     const updates = allDbos.map(dbo => {
@@ -401,6 +388,10 @@ export class MongoEntitiesDataSource
     const templateIdStrings = templateIds.map(id => id.toHexString());
     const templateDBOs = await this.templatesDAO.get(templateIdStrings);
     const templateMap = new Map(templateDBOs.map(t => [t._id.toString(), t]));
+    const missingTemplateIds = templateIdStrings.filter(id => !templateMap.has(id));
+    if (missingTemplateIds.length > 0) {
+      throw new EntityTemplateDoesNotExistError(missingTemplateIds);
+    }
 
     const aggregation = [
       { $match: query },

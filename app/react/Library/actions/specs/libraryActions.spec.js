@@ -238,12 +238,12 @@ describe('libraryActions', () => {
           types: ['decision'],
         };
 
-        actions.searchDocuments({ search, location, navigate }, 30)(dispatch, getState);
+        void actions.searchDocuments({ search, location, navigate }, 30)(dispatch, getState);
         let queryObject = rison.decode(navigate.mock.calls[0][0].split('q=')[1]);
         expect(queryObject).toEqual(expectedQuery);
 
         search.filters.relationshipfilter.status.values = [];
-        actions.searchDocuments({ search, location, navigate }, 'limit')(dispatch, getState);
+        void actions.searchDocuments({ search, location, navigate }, 'limit')(dispatch, getState);
         queryObject = rison.decode(navigate.mock.calls[1][0].split('q=')[1]);
         expect(queryObject.filters.relationshipfilter).not.toBeDefined();
       });
@@ -264,7 +264,10 @@ describe('libraryActions', () => {
         const { filters } = store.library;
 
         const limit = 60;
-        actions.searchDocuments({ search, location, navigate, filters }, limit)(dispatch, getState);
+        void actions.searchDocuments({ search, location, navigate, filters }, limit)(
+          dispatch,
+          getState
+        );
 
         expect(navigate).toHaveBeenCalledWith(
           "/library/?q=(filters:(author:batman,nested:nestedValue,select:selectValue),from:0,limit:60,searchTerm:'batman',sort:_score,types:!(decision))"
@@ -289,7 +292,10 @@ describe('libraryActions', () => {
 
         const limit = 60;
         navigate.mockClear();
-        actions.searchDocuments({ search, location, navigate, filters }, limit)(dispatch, getState);
+        void actions.searchDocuments({ search, location, navigate, filters }, limit)(
+          dispatch,
+          getState
+        );
         expect(navigate).toHaveBeenCalledWith(
           "/library/?q=(filters:(author:batman&spiderman,nested:nestedValue,select:selectValue,unsafe&char:character),from:0,limit:60,searchTerm:'batman',sort:_score,types:!(decision))"
         );
@@ -298,7 +304,7 @@ describe('libraryActions', () => {
         const limit = 60;
 
         navigate.mockClear();
-        actions.searchDocuments({ location, navigate }, limit)(dispatch, getState);
+        void actions.searchDocuments({ location, navigate }, limit)(dispatch, getState);
 
         expect(navigate).toHaveBeenCalledWith(
           "/library/?q=(customFilters:(property:(values:!(value))),filters:(),from:0,limit:60,searchTerm:'batman',sort:_score,types:!(decision))"
@@ -310,7 +316,7 @@ describe('libraryActions', () => {
           type: 'library.selectedSorting/SET',
           value: { searchTerm: 'batman', filters: { author: 'batman' }, userSelectedSorting: true },
         };
-        actions.searchDocuments({
+        void actions.searchDocuments({
           search: {
             searchTerm: 'batman',
             filters: { author: 'batman' },
@@ -327,7 +333,7 @@ describe('libraryActions', () => {
           pathname: '/library',
           search: '?q=(searchTerm:%27batman%20begings%27)',
         };
-        actions.searchDocuments({
+        void actions.searchDocuments({
           search: { searchTerm: 'batman' },
           location,
           navigate,
@@ -344,7 +350,7 @@ describe('libraryActions', () => {
           search: '?q=(searchTerm:%27batman%27)',
         };
 
-        actions.searchDocuments({
+        void actions.searchDocuments({
           search: { searchTerm: 'batman', sort: 'title', order: 'desc' },
           location,
           navigate,

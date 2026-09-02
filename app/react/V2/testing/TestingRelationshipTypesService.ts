@@ -8,10 +8,12 @@ import type { RelationshipTypesService } from '#V2/services/contracts/Relationsh
 
 type TestingRelationshipTypesServiceOptions = {
   initialRelationshipTypes?: RelationshipType[];
+  initialRefCounts?: { [id: string]: number };
 };
 
 type TestingRelationshipTypesService = RelationshipTypesService & {
   seed(types: RelationshipType[]): void;
+  seedRefCounts(counts: { [id: string]: number }): void;
   snapshot(): RelationshipType[];
 };
 
@@ -20,13 +22,26 @@ const cloneTypes = (types: RelationshipType[]): RelationshipType[] =>
 
 const createTestingRelationshipTypesService = ({
   initialRelationshipTypes = [],
+  initialRefCounts = {},
 }: TestingRelationshipTypesServiceOptions = {}): TestingRelationshipTypesService => {
   let relationshipTypes = cloneTypes(initialRelationshipTypes);
+  let refCounts = { ...initialRefCounts };
   let nextId = 1;
 
   const service: TestingRelationshipTypesService = {
     getAll: async (_options?: ServiceRequestOptions): Promise<ApiResponse<RelationshipType[]>> => [
       cloneTypes(relationshipTypes),
+    ],
+
+    countByTypes: async (
+      ids: string[],
+      _options?: ServiceRequestOptions
+    ): Promise<ApiResponse<{ [id: string]: number }>> => [
+      ids.reduce<{ [id: string]: number }>((acc, id) => {
+        const count = refCounts[id];
+        if (count !== undefined) acc[id] = count;
+        return acc;
+      }, {}),
     ],
 
     upsert: async (
@@ -54,6 +69,10 @@ const createTestingRelationshipTypesService = ({
 
     seed: (next: RelationshipType[]) => {
       relationshipTypes = cloneTypes(next);
+    },
+
+    seedRefCounts: (counts: { [id: string]: number }) => {
+      refCounts = { ...counts };
     },
 
     snapshot: () => cloneTypes(relationshipTypes),

@@ -1,7 +1,13 @@
 import { Tenant } from '#api/tenants/tenantContext.js';
 
+export type TenantMigrationInfo = {
+  delta: number;
+  reindex?: boolean;
+  requiresSchema?: number;
+};
+
 export type TenantMigrationResult =
-  | { status: 'applied'; migration: any }
+  | { status: 'applied'; migration: TenantMigrationInfo }
   | { status: 'blocked'; blocked: { delta: number; requiresSchema: number } }
   | { status: 'done' };
 

@@ -25,8 +25,14 @@ const MarkdownField = <TFormValues extends FieldValues = FieldValues>({
   const { control, setValue } = useFormContext<TFormValues>();
 
   return (
-    <EntityPdfFillField field={field} setValue={setValue} disabled={disabled} pdfFill={pdfFill}>
-      {overlay => (
+    <EntityPdfFillField
+      field={field}
+      setValue={setValue}
+      label={label}
+      disabled={disabled}
+      pdfFill={pdfFill}
+    >
+      {slot => (
         <Controller
           control={control}
           name={field}
@@ -46,13 +52,17 @@ const MarkdownField = <TFormValues extends FieldValues = FieldValues>({
                 value={fieldController.value || ''}
                 onChange={fieldController.onChange}
                 onBlur={fieldController.onBlur}
+                onFocus={() => slot?.onFocus()}
+                onClick={slot?.onClick}
                 name={fieldController.name}
                 ref={fieldController.ref}
                 disabled={disabled}
                 hasErrors={showError}
                 errorMessage={message}
                 rows={6}
-                overlay={overlay}
+                overlay={slot?.overlay}
+                labelAccessory={slot?.labelAccessory}
+                latched={slot?.latched}
               />
             );
           }}

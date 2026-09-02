@@ -16,6 +16,7 @@ A target template needs to have the following properties,A target template needs
 A valid email is required,La dirección de correo electrónico es obligatorio
 A → Z,A → Z
 Accept,Aceptar
+Accept all,Accept all
 Accepted suggestion on entity,Sugerencia aceptada en la entidad
 Accepting suggestions,Accepting suggestions
 Accessibility checks need attention,Accessibility checks need attention
@@ -29,6 +30,7 @@ Action,Acción
 Actions,Acciones
 Activate,Activate
 Activated,Activated
+Active filters,Active filters
 Active languages,Idiomas activos
 Active primary,Primario activo
 Activity,Actividad
@@ -36,6 +38,7 @@ Activity log,Registro de actividad
 Activity Log,Registro de Actividad
 Add,Añadir
 Add / remove favorite,Añadir / eliminar favorito
+Add a type below.,Añadir un tipo debajo.
 Add an account to the app by scanning the provided QR code with your mobile device or by inserting the provided key.,Add an account to the app by scanning the provided QR code with your mobile device or by inserting the provided key.
 Add as,Add as
 Add data source,Add data source
@@ -52,6 +55,7 @@ Add group,Añadir grupo
 add icon,Añadir ícono
 Add item,Add item
 Add link,Añadir enlace
+Add or remove relationship types for this collection.,Añadir o eliminar tipos de relación para esta colección.
 Add page,Añadir página
 Add PDF,Añadir PDF
 Add people or groups,Añadir personas o grupos
@@ -73,6 +77,7 @@ Add/delete users and assign roles,Añadir / Eliminar usuarios y asignar roles
 Add/edit translations,Añadir / editar traducciones
 Added language,Idioma añadido
 Added new user,Nuevo usuario añadido
+"Added relation type ""{name}""","Tipo de relación ""{name}"" añadido"
 added to hub with the following errors:,añadido al nodo con los siguientes errores:
 added to hub.,añadido al nodo.
 Adding a group and its items.,Adding a group and its items.
@@ -95,6 +100,7 @@ Allow captcha bypass,Permitir la omisión de captcha
 Allow public embedding without login,Allow public embedding without login
 Already exists,Already exists
 Amount,Amount
+An admin needs to add relationship types before you can create a relationship.,Un administrador necesita añadir tipos de relación para poder crear una relación.
 An error has occured while deleting a language:,An error has occured while deleting a language:
 An error has occured while installing languages:,An error has occured while installing languages:
 An error has occurred,Ocurrió un error
@@ -105,6 +111,7 @@ An error occurred,Se ha producido un error
 Analytics,Analytics
 Analytics description,"Si quieres dar seguimiento a las analíticas relacionadas con las visitas a tu colección, Uwazi soporta analíticas tanto de Google como de Matomo"
 AND OR NOT,AND OR NOT
+Any,Any
 Any entity,Any entity
 any single character,any single character
 Anyone can see this entity,Anyone can see this entity
@@ -123,6 +130,7 @@ Are you sure you want to delete this item?,Estás seguro que quieres eliminar es
 Are you sure you want to delete this relationship? This action cannot be undone.,Estás seguro que quieres eliminar esta relación? Esta acción no puede revertirse.
 Are you sure you want to delete this visualization? This action cannot be undone.,Are you sure you want to delete this visualization? This action cannot be undone.
 Are you sure?,Estás seguro?
+Ascending,Ascending
 Ask Bert,Ask Bert
 Attachment,Archivo
 Attachment deleted,Archivo adjunto eliminado
@@ -148,6 +156,7 @@ Body,Cuerpo
 boolean,boolean
 Browse files to upload,Explorar archivos para subir
 "by ids, methods, keywords, etc.","por ids, métodos, palabras clave, etc."
+By logging in you accept the essential session cookie required to stay signed in.,By logging in you accept the essential session cookie required to stay signed in.
 Can edit,Puede editar
 Can see,Puede visualizar
 Can view,Puede visualizar
@@ -227,19 +236,23 @@ Confirm your password,Confirm your password
 Connect to a paragraph,Conectar a un párrafo
 Connect to an entity,Connect to an entity
 Connect to entity,Conectar a entidad
+Connected entities,Entidades conectadas
 Connected to server,Connected to server
 Connection type,Tipo de relación
 Contact email description,Aquí puedes configurar el correo electrónico de contacto y el que aparece cuando Uwazi envía una notificación a un usuario
 Contact Form,Formulario de contacto
 Contact form email,Contact form email
+Contains,Contains
 Content translations,Traducciones de contenido
 Context,Contexto
 Continue,Continue
 Conversion failed,La conversión ha fallado
+Cookie preferences,Cookie preferences
 Copied,Copied
 Copied to clipboard,Copiado al clipboard
 Copy,Copy
 Copy From,Copiar desde
+Copy from...,Copy from...
 Copy Highlighted,Copiar lo resaltado
 Copy link,Copiar enlace
 Copy properties to this entity from,Copiar las propiedades a esta entidad desde
@@ -248,10 +261,12 @@ Could not add media. Please try again.,No se pudo agregar el archivo. Por favor 
 Could not be processed,El proceso no ha sido posible
 Could not create entity,No se pudo crear la entidad
 Could not detect the area for the selected text,"No se pudo detectar el área para el texto seleccionado, por favor intenta seleccionar nuevamente."
+Could not load suggestions.,Could not load suggestions.
 Could not reach server. Please try again later.,No se puede conectar con el servidor. Por favor intenta después.
 Count,Count
 Create,Crear
 CREATE,Crear
+Create a type to continue.,Crea un tipo para continuar.
 Create and edit thesauri,Crear y editar tesauro
 Create Connection,Crear Conexión
 Create entity,Crear entidad
@@ -315,6 +330,7 @@ Date modified,Fecha de la modificación
 "Date or numeric × select enables line and area charts with one line per breakdown
                 value over time.","Date or numeric × select enables line and area charts with one line per breakdown
                 value over time."
+Date range,Date range
 Day,Día
 "Deep-merged onto the generated ECharts option. Use for fine-tuning options not exposed in
           the Chart tab.","Deep-merged onto the generated ECharts option. Use for fine-tuning options not exposed in
@@ -349,6 +365,7 @@ Deleted user,Usuario eliminado
 Deleted user group,Grupo de usuarios eliminado
 Deletion success,Eliminación exitosa
 Density,Densidad
+Descending,Descending
 Description,Descripción
 Deselect all,Deselect all
 Details,Detalle
@@ -558,6 +575,7 @@ ID:,ID:
 "If you want to continue, please type","Si quieres continuar, por favor escribe"
 Image doesn't match the required size.,Image doesn't match the required size.
 Import,Importar
+Import / Export CSV,Import / Export CSV
 Import asset,Import asset
 Import CSV,Importar CSV
 Import failed. Review details below.,Import failed. Review details below.
@@ -572,6 +590,7 @@ in,en
 "In a group, either all relationships must have a hub or none of them.","En un grupo, todas las relaciones deben tener un nodo o ninguno de ellos."
 In OCR queue,En cola para ROC
 in this document,en este documento
+In use,En uso
 Include all entities,Include all entities
 Include only public,Include only public
 Incoming,Entrante
@@ -643,10 +662,13 @@ Light,Light
 Light Theme,Light Theme
 Link,Link
 linked,vinculado
+List,List
 List renders as a table. Use the options below to filter empty or zero values.,List renders as a table. Use the options below to filter empty or zero values.
 Live preview,Live preview
 Live translate,Traducción en vivo
+Load,Load
 Load example,Load example
+Load more,Load more
 Loading,Cargando
 Local time,Local time
 Login,Acceder
@@ -658,6 +680,7 @@ Longitude must be between -180 and 180,Longitud debe estar entre -180 y 180
 Lookup help,Lookup help
 Lost connection to the server. Your changes may be lost,Se perdió la conexión con el servidor. Los cambios pueden perderse
 low,bajo
+Manage relationship types,Administrar tipos de relación
 Manage site settings and configuration,Administrar la configuración del sitio
 Manage types,Administrar tipos
 Manual data,Manual data
@@ -717,6 +740,7 @@ Modified,Modified
 Month,Mes
 Months,Months
 More,Más
+more,more
 more options.,más opciones.
 Multi-source mode,Multi-source mode
 Multiple date,Fecha múltiple
@@ -746,6 +770,7 @@ New language added,Nuevo idioma añadido
 New page,Nueva página
 New password,Nueva contraseña
 New primary doc,Nuevo documento primario
+New relation type label…,Etiqueta para nuevo tipo de relación…
 New relationship type,Nuevo tipo de relación
 New relationships group,Nuevo grupo de relaciones
 New Relationships Migration,New Relationships Migration
@@ -763,6 +788,7 @@ No context,No context
 No CSVs yet,No CSVs yet
 No data,No data
 NO DATA AVAILABLE,NO DATA AVAILABLE
+No entities found,No entities found
 NO EXTRACTORS,NO EXTRACTORS
 No files available,No files available
 No files queued yet.,Sin archivos en cola.
@@ -774,6 +800,7 @@ No items available,No items available
 No Label,No existe etiqueta
 No label,No label
 No matches for,Sin coincidencias para
+No matches.,No matches.
 No matching entities.,Ninguna coincidencia encontrada.
 No media selected,No media selected
 No metadata for this entity yet.,Aún no hay metadatos para esta entidad.
@@ -782,9 +809,11 @@ No options found,Opciones no encontradas
 No page,No hay página
 No people or groups added yet,No people or groups added yet
 No primary documents,Sin documentos primarios
+No primary documents yet. Promote a supporting file or add a new one.,No primary documents yet. Promote a supporting file or add a new one.
 No property,Ninguna propiedad
 No References,Sin referencias
 No References description,Las referencias son partes de este documento relacionadas con otros documentos y entidades.
+No relationship types,Sin tipos de relación
 No Relationships,No existen relaciones
 No Relationships description,Las relaciones son vínculos entre entidades.
 No relationships found,No se encontraron relaciones
@@ -835,6 +864,7 @@ Ok,De acuerdo
 OK,OK
 On this entity,En esta entidad
 one character,one character
+Only essential,Only essential
 "Only properties with the same name and configuration in every data source are available
             for both dimensions.","Only properties with the same name and configuration in every data source are available
             for both dimensions."
@@ -989,6 +1019,7 @@ Refresh,Refresh
                         scheduled run."
 Refresh mode,Refresh mode
 Reject,Rechazar
+Reject all,Reject all
 Related entities created,Related entities created
 Relation type,Tipo de relación
 Relationship,Relación
@@ -1001,13 +1032,12 @@ Relationship type name already exists,El nombre de la relación ya existe
 Relationship types,Tipos de relación
 relationships,relaciones
 Relationships,Relaciones
-relationships blank state message,"Para agregar relaciones selecciona **Editar**, luego **Crear relación**."
-relationships blank state with document,"Para agregar relaciones puedes empezar seleccionando texto en el documento
- o selecciona **Editar**, luego **Crear relación**."
 Relationships saved,Relaciones guardadas
 relationships? This action cannot be undone.,relactiones? Esta acción no puede revertirse.
 RelationType saved,Tipo de Relación guardada
 Release message,Release message
+Relevance,Relevance
+remaining,remaining
 remaining files,remaining files
 Remote Server Unreachable,Remote Server Unreachable
 Remove,Eliminar
@@ -1080,6 +1110,7 @@ Search Tips: exact term,"Coincidencia exacta del término encerrando su cadena d
 Search Tips: one char wildcard,"? para un carácter comodín. Es decir: ""198?"" coincidirá con 1980 a 1989 y también con 198a, 198b, etc."
 Search Tips: proximity,"~ para búsquedas de proximidad. Es decir: ""el estado""~5 encontrará cualquier cosa que tenga ""el"" y ""estado"" dentro de una distancia de 5 palabras, como ""el estado procesal"", ""el estado legal específico""."
 Search Tips: wildcard,"Utilice un * para la búsqueda con comodines. Es decir: ""juris*"" coincidirá con palabras como jurisdicción, jurisdiccional, juristas, jurisprudencia, etc."
+Search title & metadata,Search title & metadata
 Searching...,Buscando...
 Secondary button,Secondary button
 Secret keys,Secret keys
@@ -1103,6 +1134,7 @@ Select target document,Seleccionar documento de destino
 Select target entity,Seleccionar entidad de destino
 Select target paragraph,Seleccionar párrafo de destino
 Select text in target document,Seleccionar texto en documento de destino
+select text or a value,seleccionar texto o un valor
 Select the template to store the extracted paragraphs.,Select the template to store the extracted paragraphs.
 Select the template with the source documents.,Select the template with the source documents.
 Select...,Seleccionar
@@ -1138,6 +1170,7 @@ Show cookie policy,Mostrar política de cookies
 Show details,Mostrar detalles
 Show filters,Mostrar filtros
 Show in cards,Mostrar en tarjetas
+Show information,Show information
 Show less,Show less
 Show more,Mostrar más
 Show remaining in panel,Mostrar los elementos restantes en el panel
@@ -1160,6 +1193,7 @@ Something went wrong,Algo salió mal
 Sort,Ordenar
 Sort ascending,Orden ascendente
 Sort descending,Orden descendiente
+Sort order,Sort order
 Sort:,Ordenar:
 sorted by,ordenado por
 Source,Source
@@ -1176,6 +1210,7 @@ Statistics,Statistics
 Stats & Filters,Stats & Filters
 Status,Status
 status AND women NOT Nicaragua,status AND women NOT Nicaragua
+Stop filling,detener relleno
 Storage,Almacenamiento
 Streets,Calles
 Strict mode,Modo estricto
@@ -1290,7 +1325,6 @@ This file type is not supported on media fields,This file type is not supported 
 This group is empty,This group is empty
 This import is waiting in queue.,This import is waiting in queue.
 This label already exists in this template,This label already exists in this template
-This option will show a notification about the use of cookies in your instance.,Esta opción mostrará una notificación sobre el uso de cookies en la instancia.
 This page does not need Markdown,This page does not need Markdown
 "This page uses HTML only (Markdown is not processed). You can embed maps, charts, entity
           lists, and other components.","This page uses HTML only (Markdown is not processed). You can embed maps, charts, entity
@@ -1302,18 +1336,21 @@ This property will be shown without the label,This property will be shown withou
 This property will be the default filter in the library for this template.,This property will be the default filter in the library for this template.
 "This property will be used for filtering the library results. When properties match in equal name and field type with other entity types, they will be combined for filtering.","This property will be used for filtering the library results. When properties match in equal name and field type with other entity types, they will be combined for filtering."
 This search could not be completed. Try again later.,Esta búsqueda no pudo completarse. Intenta nuevamente más tarde.
+"This site uses cookies for language preferences and analytics. Session cookies are only
+            set when you log in.","This site uses cookies for language preferences and analytics. Session cookies are only
+            set when you log in."
 This table of contents was automatically created by the system.,This table of contents was automatically created by the system.
 this template,esta plantilla
 This template is in use by existing entities and cannot be deleted.,This template is in use by existing entities and cannot be deleted.
+Thumbnail,Thumbnail
 Time,Tiempo
 Time (UTC),Time (UTC)
+Timeline,Timeline
 Timelinks,Líneas de tiempo
 Timestamp,Timestamp
 tips,consejos
 Title,Título
 To,To
-To add references you can start by selecting text in the document,To add references you can start by selecting text in the document
-"To bring you a better experience, this site uses cookies.","Para una mejor experiencia de usuario, este sitio utiliza cookies."
 "To complete the account creation process, please create a password for your account","Para completar este proceso de creación de cuenta, por favor crea una contraseña."
 to view your authentication code and verify your identity.,para ver el código de autenticación y verificar tu identidad.
 Today,Today
@@ -1337,6 +1374,7 @@ Translations,Traducciones
 Translations imported.,Traducciones importadas.
 Translations reset successfully,Traducciones reseteadas exitosamente
 Translations saved,Traducciones guardadas
+Try a different search or clear filters.,Try a different search or clear filters.
 Turn off inline translation,Desactivar la traducción en línea
 "Two categorical dimensions enable stacked bar charts (e.g. country with sex
               breakdown).","Two categorical dimensions enable stacked bar charts (e.g. country with sex
@@ -1398,6 +1436,9 @@ Use for training,Use for training
                 needed.","Use this iframe on external sites. Change the locale query parameter in the URL if
                 needed."
 Use URL,Use URL
+Used in templates and {n} refs — cannot delete,Usado en plantillas y {n} referencias — no se puede eliminar
+Used in templates — cannot delete,Usado en plantillas — no se puede eliminar
+Used in {n} refs — cannot delete,Usado en {n} referencias — no se puede eliminar
 User,Usuario
 User Action,User Action
 User Role,User Role
@@ -1437,6 +1478,9 @@ Warning: you are editing multiple entities. Fields marked with a,ADVERTENCIA: Es
 We can't find the page you're looking for.,No podemos hallar la página que buscas.
 Welcome to Uwazi,Bienvenido a Uwazi
 "Well, this is awkward...","Bueno, esto es incómodo..."
+"When enabled, visitors must accept or reject non-essential cookies before they are set.
+    Analytics and language preference cookies are blocked until accepted.","When enabled, visitors must accept or reject non-essential cookies before they are set.
+    Analytics and language preference cookies are blocked until accepted."
 Whitelisted templates,Whitelisted templates
 wildcard,wildcard
 wildcard (many chars),comodín (muchos caracteres)

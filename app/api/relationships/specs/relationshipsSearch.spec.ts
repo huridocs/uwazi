@@ -1,7 +1,7 @@
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
-import testingDB, { DBFixture } from '#api/utils/testing_db.js';
+import { testingDB, DBFixture } from '#api/utils/testing_db.js';
 import relationships from '../relationships.js';
 
 const fixutreFactory = getFixturesFactory();

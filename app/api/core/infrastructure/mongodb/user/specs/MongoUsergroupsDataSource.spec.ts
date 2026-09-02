@@ -107,26 +107,6 @@ describe('MongoGroupsDataSource', () => {
     });
   });
 
-  describe('getUserGroups', () => {
-    it('return user groups', async () => {
-      const { ds } = createDs();
-
-      const userId = f.id('existing1').toHexString();
-
-      const foundGroups = await ds.getUserGroups(userId);
-      expect(foundGroups).toMatchObject([
-        {
-          _id: f.id('With one member').toHexString(),
-          name: 'With one member',
-        },
-        {
-          _id: f.id('With two members').toHexString(),
-          name: 'With two members',
-        },
-      ]);
-    });
-  });
-
   describe('findById', () => {
     it('should return the group matching the given id', async () => {
       const { ds } = createDs();

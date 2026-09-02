@@ -2,7 +2,6 @@
 import React, { useState } from 'react';
 import 'cypress-axe';
 import { mount } from 'cypress/react';
-import { composeStories } from '@storybook/react';
 import * as stories from '#app/stories/Forms/MultiselectList.stories.js';
 import {
   MultiselectList,
@@ -405,11 +404,11 @@ describe('MultiselectList.cy.tsx', { viewportWidth: 450, viewportHeight: 650 }, 
   });
 
   describe('custom search', () => {
-    const { RemoteSearch } = composeStories(stories);
+    const { RemoteSearch } = stories;
 
     it('should not trigger the search function on mount', () => {
       const searchSpy = cy.spy().as('searchSpy');
-      mount(<RemoteSearch onSearch={searchSpy} />);
+      mount(<RemoteSearch.Component onSearch={searchSpy} />);
       cy.clock();
       cy.tick(2000);
       cy.contains('No items available').then(() => {
@@ -419,7 +418,7 @@ describe('MultiselectList.cy.tsx', { viewportWidth: 450, viewportHeight: 650 }, 
 
     it('should search once after the user finishes typing', () => {
       const searchSpy = cy.spy().as('searchSpy');
-      mount(<RemoteSearch onSearch={searchSpy} />);
+      mount(<RemoteSearch.Component onSearch={searchSpy} />);
       cy.clock();
       cy.get('input[type=text]').type('Item');
       cy.tick(2000);
@@ -427,7 +426,7 @@ describe('MultiselectList.cy.tsx', { viewportWidth: 450, viewportHeight: 650 }, 
     });
 
     it('should search when filling the field via a UI action instead of typing', () => {
-      mount(<RemoteSearch />);
+      mount(<RemoteSearch.Component />);
       cy.clock();
       cy.contains('button', 'Search & Focus').click();
       cy.tick(2000);

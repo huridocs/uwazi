@@ -1,4 +1,4 @@
-// eslint-disable-next-line node/no-restricted-import
+// eslint-disable-next-line no-restricted-imports
 import { readdirSync, readFileSync } from 'fs';
 import path from 'path';
 import pg from 'pg';

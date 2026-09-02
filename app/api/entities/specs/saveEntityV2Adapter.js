@@ -115,7 +115,7 @@ const persistEntity = async ({ entityToSave, language, template }) => {
   return createNewEntity({ entityToSave, language, template });
 };
 
-const saveEntityV2Adapter = (doc, { user, language }, runWithContextOptions = {}) => {
+const saveEntityV2Adapter = async (doc, { user, language }, runWithContextOptions = {}) => {
   const contextOptions = resolveContextOptions({ user, runWithContextOptions });
 
   const runSave = async () => {
@@ -140,7 +140,7 @@ const saveEntityV2Adapter = (doc, { user, language }, runWithContextOptions = {}
   );
 };
 
-const denormalizeEntityV2Adapter = (_doc, { user, language }) =>
+const denormalizeEntityV2Adapter = async (_doc, { user, language }) =>
   testingEnvironment.runWithContext(async () => {
     const doc = initializeEntityForSave({ doc: _doc, user });
     doc.sharedId = doc.sharedId || ID();

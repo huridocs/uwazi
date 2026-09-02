@@ -3,6 +3,7 @@ export {
   RelationshipsSsrIndex,
   RelationshipRow,
   CreateRelationshipModal,
+  ManageRelationTypesModal,
   useRelationships,
   useRelationshipsActions,
 } from './panel/index.js';

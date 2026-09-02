@@ -77,6 +77,7 @@ module.exports = production => {
         '#shared': path.join(rootPath, 'app/shared'),
         '#UI': path.join(rootPath, 'app/react/UI'),
         '#V2': path.join(rootPath, 'app/react/V2'),
+        '#storybook/preview': path.join(rootPath, '.storybook/preview.js'),
       },
     },
     resolveLoader: {

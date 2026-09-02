@@ -1,11 +1,34 @@
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 
-type ContextType = 'Entity' | 'Relationship Type' | 'Uwazi UI' | 'Thesaurus';
+const CONTEXT_TYPES = ['Entity', 'Relationship Type', 'Uwazi UI', 'Thesaurus'] as const;
+
+type ContextType = (typeof CONTEXT_TYPES)[number];
 
 export type TranslationContext = {
   type: ContextType;
   label: string;
   id: string;
+};
+
+export const isTranslationContextType = (value: unknown): value is ContextType =>
+  typeof value === 'string' && (CONTEXT_TYPES as readonly string[]).includes(value);
+
+export const assertCompleteTranslationContext = (context: TranslationContext) => {
+  if (typeof context.id !== 'string' || !context.id) {
+    throw new Error(
+      `Translation context.id must be a non-empty string, received ${JSON.stringify(context.id)}`
+    );
+  }
+  if (!isTranslationContextType(context.type)) {
+    throw new Error(
+      `Translation context.type must be one of ${CONTEXT_TYPES.join(', ')}, received ${JSON.stringify(context.type)}`
+    );
+  }
+  if (typeof context.label !== 'string' || !context.label) {
+    throw new Error(
+      `Translation context.label must be a non-empty string, received ${JSON.stringify(context.label)}`
+    );
+  }
 };
 
 export class Translation {

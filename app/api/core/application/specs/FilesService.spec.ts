@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-shadow */
-// eslint-disable-next-line node/no-restricted-import
+// eslint-disable-next-line no-restricted-imports
 import { createWriteStream } from 'fs';
-// eslint-disable-next-line node/no-restricted-import
+// eslint-disable-next-line no-restricted-imports
 import { readFile } from 'fs/promises';
 
 import { createHash } from 'crypto';

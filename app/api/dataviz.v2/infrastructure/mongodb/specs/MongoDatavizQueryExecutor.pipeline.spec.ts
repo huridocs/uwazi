@@ -1,17 +1,11 @@
 import type { DatavizFilter, DatavizSource, MeasureSpec } from '#shared/types/datavizSchema.js';
 import { MongoDatavizQueryExecutor } from '../MongoDatavizQueryExecutor.js';
+import {
+  filterAppliesToSource,
+  filtersForSource,
+} from '#api/dataviz.v2/application/services/datavizSourceFilters.js';
 
 type PipelineTestHarness = {
-  filterAppliesToSource: (
-    filter: DatavizFilter,
-    source: DatavizSource,
-    sourceIndex: number
-  ) => boolean;
-  filtersForSource: (
-    filters: DatavizFilter[] | undefined,
-    source: DatavizSource,
-    sourceIndex: number
-  ) => DatavizFilter[];
   buildFilterMatch: (filters?: DatavizFilter[]) => object[];
   buildMeasureGroupAccumulator: (measure: MeasureSpec) => Record<string, object>;
 };
@@ -48,9 +42,9 @@ describe('MongoDatavizQueryExecutor pipeline helpers', () => {
     };
 
     it('should apply filters only to their source alias', () => {
-      expect(pipeline.filterAppliesToSource(hombreFilter, hombresSource, 0)).toBe(true);
-      expect(pipeline.filterAppliesToSource(hombreFilter, mujeresSource, 1)).toBe(false);
-      expect(pipeline.filterAppliesToSource(mujerFilter, mujeresSource, 1)).toBe(true);
+      expect(filterAppliesToSource(hombreFilter, hombresSource, 0)).toBe(true);
+      expect(filterAppliesToSource(hombreFilter, mujeresSource, 1)).toBe(false);
+      expect(filterAppliesToSource(mujerFilter, mujeresSource, 1)).toBe(true);
     });
 
     it('should keep global filters for every source', () => {
@@ -62,16 +56,16 @@ describe('MongoDatavizQueryExecutor pipeline helpers', () => {
         value: 'yes',
       };
 
-      expect(pipeline.filterAppliesToSource(globalFilter, hombresSource, 0)).toBe(true);
-      expect(pipeline.filterAppliesToSource(globalFilter, mujeresSource, 1)).toBe(true);
+      expect(filterAppliesToSource(globalFilter, hombresSource, 0)).toBe(true);
+      expect(filterAppliesToSource(globalFilter, mujeresSource, 1)).toBe(true);
     });
 
     it('should build match only with scoped filters', () => {
       const hombreMatch = pipeline.buildFilterMatch(
-        pipeline.filtersForSource([hombreFilter, mujerFilter], hombresSource, 0)
+        filtersForSource([hombreFilter, mujerFilter], hombresSource, 0)
       );
       const mujerMatch = pipeline.buildFilterMatch(
-        pipeline.filtersForSource([hombreFilter, mujerFilter], mujeresSource, 1)
+        filtersForSource([hombreFilter, mujerFilter], mujeresSource, 1)
       );
 
       expect(hombreMatch).toEqual([{ 'metadata.sexo.value': 'hombre-id' }]);

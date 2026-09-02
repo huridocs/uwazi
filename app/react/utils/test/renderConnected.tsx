@@ -1,6 +1,6 @@
 import React from 'react';
 import { mount, ReactWrapper, shallow } from 'enzyme';
-import configureStore, { MockStore, MockStoreCreator } from 'redux-mock-store';
+import configureMockStore, { MockStore, MockStoreCreator } from 'redux-mock-store';
 import { BrowserRouter, MemoryRouter, InitialEntry } from 'react-router';
 import { ConnectedComponent, Provider } from 'react-redux';
 import thunk from 'redux-thunk';
@@ -8,7 +8,7 @@ import Immutable from 'immutable';
 import { render, RenderResult } from '@testing-library/react';
 
 const middlewares = [thunk];
-const mockStoreCreator: MockStoreCreator<object> = configureStore<object>(middlewares);
+const mockStoreCreator: MockStoreCreator<object> = configureMockStore<object>(middlewares);
 
 const defaultState = {
   locale: 'en',
@@ -78,7 +78,7 @@ const renderConnectedContainer = (
   routerWrapper?: 'BrowserRouter' | 'MemoryRouter',
   memoryRouterLocation: InitialEntry[] | undefined = undefined
 ) => {
-  const store = configureStore<object>(middlewares)(stateFunc);
+  const store = configureMockStore<object>(middlewares)(stateFunc);
 
   let renderResult: RenderResult;
 

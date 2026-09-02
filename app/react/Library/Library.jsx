@@ -32,7 +32,10 @@ class LibraryRootComponent extends RouteHandler {
 
   componentDidUpdate(prevProps) {
     if (this.urlHasChanged(prevProps)) {
-      this.getClientState(this.props);
+      this.getClientState(this.props).catch(ex => {
+        // eslint-disable-next-line react/no-unused-state
+        this.setState({ loadingError: ex });
+      });
     }
   }
 
@@ -63,7 +66,7 @@ class LibraryRootComponent extends RouteHandler {
 
   componentWillUnmount() {
     const nextLocation = window?.location?.pathname;
-    import('#app/appRoutes.js').then(({ getAppRoutes }) => {
+    void import('#app/appRoutes.js').then(({ getAppRoutes }) => {
       const matchedRoute = this.findMatchingRoute(nextLocation, getAppRoutes());
       if (!matchedRoute && !nextLocation.includes('library')) {
         this.emptyState();

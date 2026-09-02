@@ -8,10 +8,16 @@ import {
 
 const isImageType = (type: BaseMetadataProperty['type']) => type === 'image' || type === 'preview';
 
+const previewUrlFromEntity = (entity?: Entity): string | undefined => {
+  const preview = entity?.preview;
+  return typeof preview === 'string' && preview ? `/api/files/${preview}` : undefined;
+};
+
 const formatImageProperty = (
   property: BaseMetadataProperty,
   metadata?: Entity['metadata'],
-  template?: ClientTemplateSchema
+  template?: ClientTemplateSchema,
+  entity?: Entity
 ): ImageMetadataProperty | PreviewMetadataProperty | null => {
   const metadataValues = resolvePropertyMetadataValues(property, metadata);
   const type = resolvePropertyType(property, metadata);
@@ -24,10 +30,18 @@ const formatImageProperty = (
     templateProperty => templateProperty.name === property.name
   );
 
-  const values = metadataValues
+  const metadataUrls = metadataValues
     .map(item => item?.value as string | undefined)
-    .filter((value): value is string => Boolean(value))
-    .map(value => ({ value, alt: value }));
+    .filter((value): value is string => Boolean(value));
+
+  const previewUrl =
+    type === 'preview' && metadataUrls.length === 0 ? previewUrlFromEntity(entity) : undefined;
+  const urls = previewUrl ? [previewUrl, ...metadataUrls] : metadataUrls;
+
+  const values = urls.map(value => ({
+    value,
+    alt: type === 'preview' ? property.label : value,
+  }));
 
   return {
     _id: property._id,

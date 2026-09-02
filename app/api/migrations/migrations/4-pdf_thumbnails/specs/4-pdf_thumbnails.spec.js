@@ -1,10 +1,10 @@
-//eslint-disable-next-line node/no-restricted-import
+//eslint-disable-next-line no-restricted-imports
 import fs from 'fs';
 import { promisify } from 'util';
 
 import { legacyLogger } from '#api/log/index.js';
 import { config } from '#api/config.js';
-import testingDB from '#api/utils/testing_db.js';
+import { testingDB } from '#api/utils/testing_db.js';
 import migration from '../index.js';
 import fixtures, { docId1, docId4 } from './fixtures.js';
 
@@ -18,8 +18,8 @@ describe('migration pdf_thumbnails', () => {
     await testingDB.setupFixturesAndContext(fixtures);
   });
 
-  afterAll(done => {
-    testingDB.disconnect().then(done);
+  afterAll(async () => {
+    await testingDB.disconnect();
   });
 
   it('should have a delta number', () => {
@@ -35,7 +35,7 @@ describe('migration pdf_thumbnails', () => {
         fs.unlinkSync(thumbnail1);
         fs.unlinkSync(thumbnail2);
         done();
-      } catch (err) {
+      } catch (_) {
         done();
       }
     };

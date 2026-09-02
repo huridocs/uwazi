@@ -1,4 +1,4 @@
-import Immutable from '#shared/immutableWrapper.js';
+import { Immutable } from '#shared/immutableWrapper.js';
 
 import * as viewerTypes from '#app/Viewer/actions/actionTypes.js';
 

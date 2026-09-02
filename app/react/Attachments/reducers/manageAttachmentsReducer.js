@@ -1,4 +1,4 @@
-import Immutable from '#shared/immutableWrapper.js';
+import { Immutable } from '#shared/immutableWrapper.js';
 import * as attachmentsTypes from '#app/Attachments/actions/actionTypes.js';
 import * as uploadTypes from '#app/Uploads/actions/actionTypes.js';
 

@@ -30,7 +30,7 @@ const DeleteDialog = ({
       setIsOpen(false);
       notify('success', t('System', 'Paragraphs deleted', null, false));
       onSuccess();
-    } catch (error) {
+    } catch (_) {
       notify('error', t('System', 'An error occurred', null, false));
     }
 

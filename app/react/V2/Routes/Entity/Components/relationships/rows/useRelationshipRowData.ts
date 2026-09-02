@@ -15,8 +15,8 @@ const relationshipReferenceDisplay = (
   marker: RelationshipMarker,
   selfSharedId: string
 ): { referenceText: string; referencePage: number | undefined } => {
-  const selfAnchor = anchorOf(marker.view, selfSharedId);
-  const counterpartAnchor = counterpartAnchorOf(marker.view, selfSharedId);
+  const selfAnchor = anchorOf(marker.relationship, selfSharedId);
+  const counterpartAnchor = counterpartAnchorOf(marker.relationship, selfSharedId);
   const selfText = selfAnchor?.text?.trim() ?? '';
   const counterpartText = counterpartAnchor?.text?.trim() ?? '';
   const referenceText = counterpartText || selfText;
@@ -45,8 +45,8 @@ const buildRelationshipRowDerivedData = ({
     templates.find(template => template._id === marker.target.templateId)?.name ?? '';
   const relationshipTypeName =
     relationshipTypeNameProp ??
-    relationshipTypes.find(type => type._id === marker.view.type)?.name ??
-    marker.view.relationshipTypeName ??
+    relationshipTypes.find(type => type._id === marker.relationship.type)?.name ??
+    marker.relationship.relationshipTypeName ??
     '';
 
   return {
@@ -54,7 +54,7 @@ const buildRelationshipRowDerivedData = ({
     referencePage,
     templateName,
     relationshipTypeName,
-    direction: directionOf(marker.view, selfSharedId),
+    direction: directionOf(marker.relationship, selfSharedId),
   };
 };
 

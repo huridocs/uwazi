@@ -39,6 +39,15 @@ export class AttachmentNotFoundError extends DomainError {
   }
 }
 
+export class EntityTemplateDoesNotExistError extends DomainError {
+  constructor(templateIds: string[]) {
+    super(
+      `Entities reference non-existent templates: ${templateIds.join(', ')}`,
+      'entity.entity.template_does_not_exist_error'
+    );
+  }
+}
+
 export class RelationshipPropertyDoesNotExistError extends DomainError {
   constructor(propertyName: string, missing: string[]) {
     super(

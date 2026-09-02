@@ -16,6 +16,9 @@ jest.mock('#V2/api/files/index.js');
 describe('Entity loader with cache integration', () => {
   let mockEntity: Partial<Entity>;
   let getBySharedId: jest.Mock;
+  let loadSummary: jest.Mock;
+  let loadAnchors: jest.Mock;
+  let loadResolved: jest.Mock;
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -34,6 +37,9 @@ describe('Entity loader with cache integration', () => {
     };
 
     getBySharedId = jest.fn().mockResolvedValue([[mockEntity as Entity]]);
+    loadSummary = jest.fn().mockResolvedValue([[]]);
+    loadAnchors = jest.fn().mockResolvedValue([[]]);
+    loadResolved = jest.fn();
     jest.spyOn(files, 'getDocumentPlaintext').mockResolvedValue('plaintext content');
     getStore().set(settingsAtom, {
       languages: [
@@ -47,7 +53,12 @@ describe('Entity loader with cache integration', () => {
     const fullUrl = new URL(url);
     const pathParts = fullUrl.pathname.split('/');
     const sharedId = pathParts[pathParts.length - 1];
-    const loader = createEntityLoader(createTestServices({ entities: { getBySharedId } }))();
+    const loader = createEntityLoader(
+      createTestServices({
+        entities: { getBySharedId },
+        relationshipsQuery: { loadSummary, loadAnchors, loadResolved },
+      })
+    )();
 
     return loader({
       params: { sharedId, ...(lang ? { lang } : {}) },
@@ -71,17 +82,174 @@ describe('Entity loader with cache integration', () => {
       expect(getBySharedId).toHaveBeenCalledTimes(1);
     });
 
-    it('should refetch when cache only has a partial entity', async () => {
-      const partialEntity = { ...(mockEntity as Entity) };
-      delete (partialEntity as { relations?: Entity['relations'] }).relations;
-      entityLoaderCache.setEntity('shared1', 'en', partialEntity);
-
+    it('should fetch entity without relationships and reuse the cache', async () => {
       await loadEntity('http://localhost/entity/shared1', 'en');
 
+      expect(getBySharedId).toHaveBeenCalledWith('shared1', {
+        language: 'en',
+        omitRelationships: true,
+        headers: undefined,
+      });
+
+      await loadEntity('http://localhost/entity/shared1', 'en');
       expect(getBySharedId).toHaveBeenCalledTimes(1);
-      expect(
-        entityLoaderCache.getEntity('shared1', 'en', { requireRelationships: true })?.relations
-      ).toEqual([]);
+    });
+  });
+
+  describe('Relationship query loading', () => {
+    it('loads summary and anchors for document first paint and never resolved', async () => {
+      const selfHub = {
+        _id: 'c1',
+        hub: 'h1',
+        entity: 'shared1',
+        template: null,
+        entityData: { title: 'Test Entity', template: 'template1' },
+      };
+      const selectionRectangles = [{ top: 1, left: 2, width: 3, height: 4, page: '1' }];
+      loadSummary.mockResolvedValue([[selfHub]]);
+      loadAnchors.mockResolvedValue([[{ _id: 'c1', reference: { selectionRectangles } }]]);
+
+      const result = await loadEntity('http://localhost/entity/shared1', 'en');
+
+      expect(loadSummary).toHaveBeenCalledWith('shared1', {
+        language: 'en',
+        headers: undefined,
+      });
+      expect(loadAnchors).toHaveBeenCalledWith('shared1', {
+        language: 'en',
+        fileId: 'doc1',
+        headers: undefined,
+      });
+      expect(loadResolved).not.toHaveBeenCalled();
+      expect(result).toEqual(
+        expect.objectContaining({
+          relationshipQuery: {
+            language: 'en',
+            sharedId: 'shared1',
+            fileId: 'doc1',
+            hubRows: [{ ...selfHub, reference: { selectionRectangles } }],
+            anchorsLoaded: true,
+          },
+        })
+      );
+    });
+
+    it('loads anchors when relationships main shows the document side rail', async () => {
+      await loadEntity('http://localhost/entity/shared1?m=relationships', 'en');
+
+      expect(loadSummary).toHaveBeenCalled();
+      expect(loadAnchors).toHaveBeenCalled();
+      expect(loadResolved).not.toHaveBeenCalled();
+    });
+
+    it('skips anchors when relationships main has no document rail', async () => {
+      await loadEntity('http://localhost/entity/shared1?m=relationships#s=metadata', 'en');
+
+      expect(loadSummary).toHaveBeenCalled();
+      expect(loadAnchors).not.toHaveBeenCalled();
+    });
+
+    it('skips anchors for the relationships side panel without a document rail', async () => {
+      await loadEntity('http://localhost/entity/shared1?m=metadata#s=relationships', 'en');
+
+      expect(loadSummary).toHaveBeenCalled();
+      expect(loadAnchors).not.toHaveBeenCalled();
+    });
+
+    it('skips anchors for files first paint', async () => {
+      await loadEntity('http://localhost/entity/shared1?m=files', 'en');
+
+      expect(loadSummary).toHaveBeenCalled();
+      expect(loadAnchors).not.toHaveBeenCalled();
+    });
+
+    it('skips anchors for metadata-only first paint', async () => {
+      const result = await loadEntity('http://localhost/entity/shared1?m=metadata', 'en');
+
+      expect(loadSummary).toHaveBeenCalledWith('shared1', {
+        language: 'en',
+        headers: undefined,
+      });
+      expect(loadAnchors).not.toHaveBeenCalled();
+      expect(loadResolved).not.toHaveBeenCalled();
+      expect(result).toEqual(
+        expect.objectContaining({
+          relationshipQuery: expect.objectContaining({
+            fileId: 'doc1',
+            hubRows: [],
+            anchorsLoaded: false,
+          }),
+        })
+      );
+    });
+
+    it('skips anchors for raw document view', async () => {
+      await loadEntity('http://localhost/entity/shared1#raw=true', 'en');
+
+      expect(loadSummary).toHaveBeenCalled();
+      expect(loadAnchors).not.toHaveBeenCalled();
+      expect(loadResolved).not.toHaveBeenCalled();
+    });
+
+    it('skips anchors when the entity has no file', async () => {
+      mockEntity.documents = [];
+      const result = await loadEntity('http://localhost/entity/shared1', 'en');
+
+      expect(loadSummary).toHaveBeenCalled();
+      expect(loadAnchors).not.toHaveBeenCalled();
+      expect(result).toEqual(
+        expect.objectContaining({
+          relationshipQuery: {
+            language: 'en',
+            sharedId: 'shared1',
+            hubRows: [],
+            anchorsLoaded: false,
+          },
+        })
+      );
+    });
+
+    it('returns empty relationship rows when the graph is missing', async () => {
+      loadSummary.mockResolvedValue([[]]);
+      loadAnchors.mockResolvedValue([[]]);
+
+      const result = await loadEntity('http://localhost/entity/shared1', 'en');
+
+      expect(result).toEqual(
+        expect.objectContaining({
+          relationshipQuery: expect.objectContaining({ hubRows: [], anchorsLoaded: true }),
+        })
+      );
+    });
+
+    it('reuses cached relationship seeds and refetches after invalidate', async () => {
+      await loadEntity('http://localhost/entity/shared1', 'en');
+      expect(loadSummary).toHaveBeenCalledTimes(1);
+      expect(loadAnchors).toHaveBeenCalledTimes(1);
+
+      await loadEntity('http://localhost/entity/shared1', 'en');
+      expect(loadSummary).toHaveBeenCalledTimes(1);
+      expect(loadAnchors).toHaveBeenCalledTimes(1);
+
+      entityLoaderCache.invalidateEntity('shared1');
+      await loadEntity('http://localhost/entity/shared1', 'en');
+
+      expect(loadSummary).toHaveBeenCalledTimes(2);
+      expect(loadAnchors).toHaveBeenCalledTimes(2);
+    });
+
+    it('upgrades a summary-only cache when anchors are needed', async () => {
+      await loadEntity('http://localhost/entity/shared1?m=metadata', 'en');
+      expect(loadSummary).toHaveBeenCalledTimes(1);
+      expect(loadAnchors).not.toHaveBeenCalled();
+
+      await loadEntity('http://localhost/entity/shared1', 'en');
+      expect(loadSummary).toHaveBeenCalledTimes(2);
+      expect(loadAnchors).toHaveBeenCalledTimes(1);
+
+      await loadEntity('http://localhost/entity/shared1?m=files', 'en');
+      expect(loadSummary).toHaveBeenCalledTimes(2);
+      expect(loadAnchors).toHaveBeenCalledTimes(1);
     });
   });
 

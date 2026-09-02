@@ -21,7 +21,7 @@ class EntityInfo extends Component {
     const { entity, tag, classname, children } = this.props;
     return React.createElement(
       tag,
-      { className: classname, onClick: () => this.getAndSelect(entity) },
+      { className: classname, onClick: async () => this.getAndSelect(entity) },
       children
     );
   }

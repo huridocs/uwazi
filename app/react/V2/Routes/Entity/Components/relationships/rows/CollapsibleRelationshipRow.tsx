@@ -6,6 +6,8 @@ import type { RelationshipsPanelZoom } from '#V2/Routes/Entity/Components/contex
 import { useRelationshipsPanelLayout } from '#V2/Routes/Entity/Components/context/index.js';
 import { RelationshipRowCheckbox } from './RelationshipRowCheckbox.js';
 import { useRelationshipRowVisibility } from '../hooks/useRelationshipRowVisibility.js';
+import { useExpandCollapseSignals } from '../hooks/useExpandCollapseSignals.js';
+import { useEnsureResolvedOnExpand } from '../hooks/useEnsureResolvedOnExpand.js';
 import {
   resolveCollapsibleRowHeader,
   type HeaderContext,
@@ -51,6 +53,8 @@ const CollapsibleRelationshipRow = ({
   children,
 }: CollapsibleRelationshipRowProps) => {
   const [expanded, setExpanded] = useState(false);
+  useExpandCollapseSignals(setExpanded, checkboxIds);
+  useEnsureResolvedOnExpand(expanded);
   const { view, zoom } = useRelationshipsPanelLayout();
   const { hideTargetPill, hideTemplateName } = useRelationshipRowVisibility();
   const toggle = () => setExpanded(current => !current);
@@ -125,7 +129,7 @@ const CollapsibleRelationshipRow = ({
           <div className="mt-1 flex items-center gap-1 text-nano text-ink-tertiary">{meta}</div>
         )}
       </ListCardRow>
-      {expanded && <div className="ml-[14px]">{children}</div>}
+      {expanded && <div className="ml-3.5">{children}</div>}
     </div>
   );
 };

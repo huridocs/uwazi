@@ -21,7 +21,7 @@ import { maskMongoPassword } from '#api/utils/maskMongoPassword.js';
 import { elasticClient } from '#api/search/elastic.js';
 import uwaziMessage from '../message.js';
 import apiRoutes from './api/api.js';
-import privateInstanceMiddleware from './api/auth/privateInstanceMiddleware.js';
+import { privateInstanceMiddleware } from '#api/core/infrastructure/express/middlewares/PrivateInstanceMiddleware.js';
 import authRoutes, { populateAuthenticatedUser } from './api/auth/routes.js';
 import { captchaRoutes } from '#api/core/infrastructure/express/captcha/routes.js';
 import { config } from './api/config.js';
@@ -79,10 +79,10 @@ const shutdown = new HttpServerGracefulShutdown({
     };
 
     await Promise.all([
-      disconnect('Redis', () => Redis.disconnect()),
-      disconnect('MongoDB', () => DB.disconnect()),
-      disconnect('PostgreSQL', () => PostgresDB.disconnect()),
-      disconnect('Elasticsearch', () => elasticClient.close()),
+      disconnect('Redis', async () => Redis.disconnect()),
+      disconnect('MongoDB', async () => DB.disconnect()),
+      disconnect('PostgreSQL', async () => PostgresDB.disconnect()),
+      disconnect('Elasticsearch', async () => elasticClient.close()),
     ]);
   },
   closeSockets: () => closeSockets(),
@@ -90,7 +90,7 @@ const shutdown = new HttpServerGracefulShutdown({
 
 const uncaughtError = error => {
   handleError(error, { uncaught: true });
-  close(2000).then(() => {
+  void close(2000).then(() => {
     shutdown.shutdown();
   });
 };
@@ -118,7 +118,7 @@ app.use(metricsMiddleware);
 
 console.info('==> Connecting to', maskMongoPassword(config.DBHOST));
 
-DB.connect(config.DBHOST, config.DBAUTH).then(async () => {
+void DB.connect(config.DBHOST, config.DBAUTH).then(async () => {
   await Redis.connect();
   await tenants.setupTenants();
   populateAuthenticatedUser(app);

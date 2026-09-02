@@ -1,11 +1,16 @@
 import * as Cookie from 'tiny-cookie';
 import * as appUtils from '#app/utils/index.js';
+import * as cookieConsent from '#app/App/cookieConsent.js';
 
 import { I18NUtils as utils } from '../utils.js';
 
 jest.mock('tiny-cookie', () => ({
   ...jest.requireActual('tiny-cookie'),
   set: jest.fn(),
+}));
+
+jest.mock('#app/App/cookieConsent.js', () => ({
+  canUseNonEssentialCookies: jest.fn(),
 }));
 
 describe('I18NUtils', () => {
@@ -41,6 +46,7 @@ describe('I18NUtils', () => {
   describe('saveLocale', () => {
     beforeEach(() => {
       Cookie.set.mockRestore();
+      cookieConsent.canUseNonEssentialCookies.mockReturnValue(true);
     });
 
     it('should set the cookie locale', () => {
@@ -50,6 +56,14 @@ describe('I18NUtils', () => {
       expect(Cookie.set).toHaveBeenCalledWith('locale', 'tr', { expires: 365 * 10 });
       utils.saveLocale('es');
       expect(Cookie.set).toHaveBeenCalledWith('locale', 'es', { expires: 365 * 10 });
+    });
+
+    it('should not set the cookie locale without consent', () => {
+      cookieConsent.canUseNonEssentialCookies.mockReturnValue(false);
+      // eslint-disable-next-line no-import-assign
+      appUtils.isClient = true;
+      utils.saveLocale('tr');
+      expect(Cookie.set).not.toHaveBeenCalled();
     });
 
     it('should not attempt to save cookie on server', () => {

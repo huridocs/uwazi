@@ -1,7 +1,7 @@
 /* eslint-disable max-statements */
 import 'isomorphic-fetch';
 import { Server } from 'http';
-// eslint-disable-next-line node/no-restricted-import
+// eslint-disable-next-line no-restricted-imports
 import { rm, writeFile } from 'fs/promises';
 
 import bodyParser from 'body-parser';
@@ -24,7 +24,6 @@ import syncRoutes from '#api/sync/routes.js';
 import templates from '#api/core/v1_layer/templates/index.js';
 import { tenants } from '#api/tenants/index.js';
 import thesauri from '#api/core/v1_layer/thesauri/index.js';
-import { EncryptedPassword } from '#api/core/domain/user/EncryptedPassword.js';
 import { UserRole } from '#shared/types/userSchema.js';
 import { appContext } from '#api/utils/AppContext.js';
 import { appContextMiddleware } from '#api/utils/appContextMiddleware.js';
@@ -56,6 +55,7 @@ import {
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { dependenciesContextMiddleware } from '#api/core/infrastructure/express/middlewares/DependenciesMiddleware.js';
 import { requestTimingMiddleware } from '#api/core/infrastructure/express/middlewares/RequestTimingMiddleware.js';
+import { StandardLogger } from '#api/core/libs/logger/infrastructure/StandardLogger.js';
 
 async function runAllTenants() {
   try {
@@ -69,18 +69,21 @@ async function runAllTenants() {
 }
 
 /**
- * The admin `syncWorker.login` authenticates with on each target. Credentials must match the
- * sync config in the host fixtures; the password is stored hashed because the target answers
- * a real `POST api/login`.
+ * The admin `syncWorker.login` authenticates with each target. Credentials must match the
+ * sync config in the host fixtures. Precomputed bcrypt hashes (cost 4) of `password` / `password2`
+ * so setup does not spend seconds hashing on every `applyFixtures`.
  */
-async function targetFixtures(username: string, password: string): Promise<DBFixture> {
+const TARGET_USER_PASSWORD_HASH = '$2b$04$fKwGBbV/KjvLjKvB6ziu.Ob1d1xC3WRwBQRnZ0wpXvRT0q406a7ba';
+const TARGET_USER2_PASSWORD_HASH = '$2b$04$yjJhmvqRr1NQGZqK85u4H.qketlSXZVI5VJqM7dJqqlVowXlka6ae';
+
+function targetFixtures(username: string, passwordHash: string): DBFixture {
   return {
     settings: [{}],
     users: [
       {
         _id: db.id(),
         username,
-        password: (await EncryptedPassword.create(password)).getValue(),
+        password: passwordHash,
         role: UserRole.ADMIN,
         email: `${username}@testing`,
       },
@@ -92,18 +95,20 @@ async function applyFixtures(
   _host1Fixtures: DBFixture = host1Fixtures,
   _host2Fixtures = host2Fixtures
 ) {
-  const host1db = await db.setupFixturesAndContext(_host1Fixtures, undefined, 'host1');
-  const host2db = await db.setupFixturesAndContext(_host2Fixtures, undefined, 'host2');
-  const target1db = await db.setupFixturesAndContext(
-    await targetFixtures('user', 'password'),
-    undefined,
-    'target1'
-  );
-  const target2db = await db.setupFixturesAndContext(
-    await targetFixtures('user2', 'password2'),
-    undefined,
-    'target2'
-  );
+  const [host1db, host2db, target1db, target2db] = await Promise.all([
+    db.setupFixturesAndContext(_host1Fixtures, undefined, 'host1'),
+    db.setupFixturesAndContext(_host2Fixtures, undefined, 'host2'),
+    db.setupFixturesAndContext(
+      targetFixtures('user', TARGET_USER_PASSWORD_HASH),
+      undefined,
+      'target1'
+    ),
+    db.setupFixturesAndContext(
+      targetFixtures('user2', TARGET_USER2_PASSWORD_HASH),
+      undefined,
+      'target2'
+    ),
+  ]);
   db.UserInContextMockFactory.restore();
 
   await tenants.run(async () => {
@@ -115,6 +120,15 @@ async function applyFixtures(
   }, 'target2');
 
   return { host1db, host2db, target1db, target2db };
+}
+
+async function closeServer(listening: Server | undefined) {
+  if (!listening) {
+    return;
+  }
+  await new Promise<void>(resolve => {
+    listening.close(() => resolve());
+  });
 }
 
 describe('syncWorker', () => {
@@ -200,23 +214,27 @@ describe('syncWorker', () => {
       await writeFile(attachmentsPath('test2.txt'), '');
       await writeFile(customUploadsPath('customUpload.gif'), '');
     }, 'host1');
-    server = app.listen(6667);
-    server2 = app.listen(6668);
+    await Promise.all([
+      new Promise<void>(resolve => {
+        server = app.listen(6667, resolve);
+      }),
+      new Promise<void>(resolve => {
+        server2 = app.listen(6668, resolve);
+      }),
+    ]);
   });
 
   afterAll(async () => {
-    await tenants.run(async () => {
-      await rm(attachmentsPath(), { recursive: true });
-    }, 'target1');
-    await tenants.run(async () => {
-      await rm(attachmentsPath(), { recursive: true });
-    }, 'target2');
-    await new Promise(resolve => {
-      server.close(resolve);
-    });
-    await new Promise(resolve => {
-      server2.close(resolve);
-    });
+    await Promise.allSettled([
+      tenants.run(async () => {
+        await rm(attachmentsPath(), { recursive: true });
+      }, 'target1'),
+      tenants.run(async () => {
+        await rm(attachmentsPath(), { recursive: true });
+      }, 'target2'),
+    ]);
+    await closeServer(server);
+    await closeServer(server2);
     await db.disconnect();
   });
 
@@ -244,7 +262,7 @@ describe('syncWorker', () => {
       expect(syncedTemplate2).toMatchObject({ name: 'template2' });
       expect(syncedTemplate3).toMatchObject({ name: 'template3' });
     }, 'target2');
-  });
+  }, 10000);
 
   it('should sync entities that belong to the configured templates', async () => {
     await runAllTenants();
@@ -499,7 +517,6 @@ describe('syncWorker', () => {
 
   describe('after changing sync configurations', () => {
     it('should delete templates not defined in the config', async () => {
-      jest.setTimeout(20000);
       await runAllTenants();
       const changedFixtures = _.cloneDeep(host1Fixtures);
       //@ts-ignore
@@ -512,7 +529,7 @@ describe('syncWorker', () => {
         const syncedTemplates = await templates.get();
         expect(syncedTemplates).toHaveLength(0);
       }, 'target1');
-    });
+    }, 20000);
   });
 
   it('should sync collections in correct preference order', async () => {
@@ -576,18 +593,169 @@ describe('syncWorker', () => {
     syncWorker.UPDATE_LOG_TARGET_COUNT = originalBatchLimit;
   }, 10000);
 
-  it('should throw an error, when trying to sync a collection that is not in the order list', async () => {
-    const fixtures = _.cloneDeep(orderedHostFixtures);
-    //@ts-ignore
-    fixtures.settings[0].sync[0].config.pages = [];
+  describe('when a tenant or config throws', () => {
+    afterEach(() => {
+      jest.spyOn(syncWorker, 'syncronize').mockRestore();
+      jest.spyOn(syncWorker, 'login').mockRestore();
+      jest.spyOn(StandardLogger.prototype, 'error').mockRestore();
+      syncWorker.UPDATE_LOG_TARGET_COUNT = 50;
+    });
 
-    await applyFixtures(fixtures, {});
+    it('should still sync later tenants', async () => {
+      const { host2db } = await applyFixtures();
+      const errorSpy = jest.spyOn(StandardLogger.prototype, 'error');
 
-    await expect(runAllTenants).rejects.toThrow(
-      new Error('Invalid elements found in ordering - pages')
-    );
+      const originalSyncronize = syncWorker.syncronize.bind(syncWorker);
+      jest.spyOn(syncWorker, 'syncronize').mockImplementation(async syncSettings => {
+        if (tenants.current().name === 'host1') {
+          throw new Error('host1 sync exploded');
+        }
+        return originalSyncronize(syncSettings);
+      });
 
-    await applyFixtures();
+      await expect(syncWorker.runAllTenants()).resolves.not.toThrow();
+
+      expect(errorSpy).toHaveBeenCalledWith(
+        'Sync failed: host1 sync exploded',
+        expect.objectContaining({ tenant: 'host1', errorName: 'Error' })
+      );
+
+      const host2Sync = await host2db!.collection('syncs').findOne({ name: 'target2' });
+      expect(host2Sync?.lastSyncs).toEqual(expect.any(Object));
+      expect(Object.keys(host2Sync?.lastSyncs || {})).not.toHaveLength(0);
+    }, 10000);
+
+    it('should still sync later configs on the same tenant', async () => {
+      const { host1db, host2db } = await applyFixtures();
+      const originalLogin = syncWorker.login.bind(syncWorker);
+      jest.spyOn(syncWorker, 'login').mockImplementation(async config => {
+        if (config.url === 'http://localhost:6667') {
+          throw new Error('login failed for target1');
+        }
+        return originalLogin(config);
+      });
+
+      await expect(syncWorker.runAllTenants()).resolves.not.toThrow();
+
+      const host1Target1 = await host1db!.collection('syncs').findOne({ name: 'target1' });
+      expect(host1Target1?.lastSyncs).toBeUndefined();
+
+      const host1Target2 = await host1db!.collection('syncs').findOne({ name: 'target2' });
+      expect(Object.keys(host1Target2?.lastSyncs || {})).not.toHaveLength(0);
+
+      const host2Target2 = await host2db!.collection('syncs').findOne({ name: 'target2' });
+      expect(Object.keys(host2Target2?.lastSyncs || {})).not.toHaveLength(0);
+    }, 10000);
+
+    it('should not abort the tick when a config names a collection that is not in the order list', async () => {
+      const errorSpy = jest.spyOn(StandardLogger.prototype, 'error');
+      const fixtures = _.cloneDeep(orderedHostFixtures);
+      //@ts-ignore
+      fixtures.settings[0].sync[0].config.pages = [];
+
+      const { host2db } = await applyFixtures(fixtures, host2Fixtures);
+
+      await expect(syncWorker.runAllTenants()).resolves.not.toThrow();
+
+      expect(errorSpy).toHaveBeenCalledWith(
+        'Sync failed: Invalid elements found in ordering - pages',
+        expect.objectContaining({
+          tenant: 'host1',
+          syncConfig: 'target1',
+          url: 'http://localhost:6667',
+        })
+      );
+
+      const host2Sync = await host2db!.collection('syncs').findOne({ name: 'target2' });
+      expect(Object.keys(host2Sync?.lastSyncs || {})).not.toHaveLength(0);
+    }, 10000);
+  });
+
+  describe('when a config fails repeatedly', () => {
+    const failTarget1Login = () => {
+      const originalLogin = syncWorker.login.bind(syncWorker);
+      jest.spyOn(syncWorker, 'login').mockImplementation(async config => {
+        if (config.url === 'http://localhost:6667') {
+          throw new Error('login failed for target1');
+        }
+        return originalLogin(config);
+      });
+    };
+
+    afterEach(() => {
+      jest.spyOn(syncWorker, 'login').mockRestore();
+      jest.spyOn(StandardLogger.prototype, 'error').mockRestore();
+    });
+
+    it('should reset the failure counter after a successful tick', async () => {
+      const { host1db } = await applyFixtures();
+      failTarget1Login();
+
+      await syncWorker.runAllTenants();
+      await syncWorker.runAllTenants();
+
+      expect(
+        (await host1db!.collection('syncs').findOne({ name: 'target1' }))?.consecutiveFailures
+      ).toBe(2);
+
+      jest.spyOn(syncWorker, 'login').mockRestore();
+      await syncWorker.runAllTenants();
+
+      expect(
+        (await host1db!.collection('syncs').findOne({ name: 'target1' }))?.consecutiveFailures
+      ).toBe(0);
+    }, 20000);
+
+    it('should disable the config and notify once after five consecutive failures', async () => {
+      const { host1db, host2db } = await applyFixtures();
+      const errorSpy = jest.spyOn(StandardLogger.prototype, 'error');
+      failTarget1Login();
+
+      for (
+        let attempt = 0;
+        attempt < syncWorker.CONSECUTIVE_FAILURES_BEFORE_DISABLE;
+        attempt += 1
+      ) {
+        // eslint-disable-next-line no-await-in-loop
+        await syncWorker.runAllTenants();
+      }
+
+      expect(
+        (await host1db!.collection('syncs').findOne({ name: 'target1' }))?.consecutiveFailures
+      ).toBe(syncWorker.CONSECUTIVE_FAILURES_BEFORE_DISABLE);
+
+      const hostSettings = await host1db!.collection('settings').findOne({});
+      expect(
+        hostSettings?.sync.find((config: { name: string }) => config.name === 'target1').active
+      ).toBe(false);
+      expect(
+        hostSettings?.sync.find((config: { name: string }) => config.name === 'target2').active
+      ).toBe(true);
+
+      expect(errorSpy).toHaveBeenCalledWith(
+        'Sync disabled after 5 consecutive failures: login failed for target1',
+        expect.objectContaining({
+          tenant: 'host1',
+          syncConfig: 'target1',
+          url: 'http://localhost:6667',
+          consecutiveFailures: 5,
+          notify: true,
+        })
+      );
+
+      errorSpy.mockClear();
+      await syncWorker.runAllTenants();
+      expect(errorSpy).not.toHaveBeenCalledWith(
+        expect.stringContaining('Sync disabled'),
+        expect.objectContaining({ notify: true })
+      );
+
+      expect(
+        Object.keys(
+          (await host2db!.collection('syncs').findOne({ name: 'target2' }))?.lastSyncs || {}
+        )
+      ).not.toHaveLength(0);
+    }, 30000);
   });
 
   describe('when active is false', () => {

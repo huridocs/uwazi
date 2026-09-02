@@ -1,5 +1,5 @@
 /* eslint-disable no-await-in-loop */
-//eslint-disable-next-line node/no-restricted-import
+//eslint-disable-next-line no-restricted-imports
 import fs from 'fs';
 import path from 'path';
 import util from 'util';

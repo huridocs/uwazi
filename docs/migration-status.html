@@ -611,9 +611,9 @@
       the trailing one.
     </p>
     <div class="stamp">
-      <span>Verified against <b>f27be07ca7</b></span>
-      <span>Branch <b>migrate-users-to-postgresql</b></span>
-      <span>Last reviewed <b>2026-08-14</b></span>
+      <span>Verified against <b>dee554a26f</b></span>
+      <span>Branch <b>remove-v2-users-directory</b></span>
+      <span>Last reviewed <b>2026-08-25</b></span>
     </div>
   </header>
 
@@ -777,25 +777,23 @@
             <td><span class="flag off">postgresUsers</span></td>
             <td class="note">
               Login, 2FA, lockout, recovery and CRUD all run as V2 use cases with routes in core;
-              the V1 module now serves only reads and the login / unlock / recovery fallbacks, with
-              every user write unflagged. Postgres DAO, mapper, all 17 data-source methods, query
-              service and backfill config are in place, but the two data sources are specced
-              separately — there is no shared cross-backend suite. Flag ships off — needs tenant
-              rollout.
+              <code>app/api/users</code> is down to the Mongoose model, kept for the few callers
+              that still read it directly. Postgres DAO, mapper, data source, query service and
+              backfill config are in place, but the two data sources are specced separately — there
+              is still no shared cross-backend suite. Flag ships off — needs tenant rollout.
             </td>
           </tr>
 
-          <tr data-area="user-groups" data-v2="done" data-db="partial">
+          <tr data-area="user-groups" data-v2="done" data-db="done">
             <td class="area">User groups<code>core/domain/userGroup</code></td>
             <td><span class="pill done">Done</span></td>
-            <td><span class="pill partial">No backfill</span></td>
+            <td><span class="pill done">Done</span></td>
             <td><span class="flag off">postgresUsergroups</span></td>
             <td class="note">
-              Routes cut over behind <code>v2Usergroups</code>; Postgres table (JSONB members), DAO,
-              data source and two consistency suites are done. Missing: a
-              <code>MigrateCollectionToPostgres</code> config, so existing groups cannot be
-              backfilled yet. Four legacy consumers still call the deprecated
-              <code>app/api/usergroups</code> module.
+              Postgres table (JSONB members), DAO, data source, two consistency suites and now a
+              <code>UserGroupsMigrationConfig</code> backfill. The deprecated
+              <code>app/api/usergroups</code> module is gone — its former consumers go through
+              <code>UserGroupsDirectoryFactory</code>. Flag ships off; needs tenant rollout.
             </td>
           </tr>
 
@@ -818,6 +816,20 @@
             <td class="note">
               Data source plus a <code>CleanupExpiredCaptchasJob</code> replacing Mongo's TTL index.
               No backfill config — captchas are ephemeral, so none is expected.
+            </td>
+          </tr>
+
+          <tr data-area="i18n" data-v2="done" data-db="done">
+            <td class="area">Translations / i18n<code>core/domain/translation</code></td>
+            <td><span class="pill done">Done</span></td>
+            <td><span class="pill done">Done</span></td>
+            <td><span class="flag off">postgresTranslations</span></td>
+            <td class="note">
+              Consolidated out of <code>app/api/i18n.v2</code> into core — domain, services,
+              controllers and routes — then migrated: translations table, mapper, data source,
+              factory wiring and a backfill config. <code>app/api/i18n</code> is down to
+              <code>defaultTranslations.ts</code>. No cross-backend consistency suite; the Postgres
+              data source is specced on its own.
             </td>
           </tr>
 
@@ -850,18 +862,6 @@
               <span class="group-desc"
                 >— layered, but outside <code>app/api/core</code>; Mongo-backed</span
               >
-            </td>
-          </tr>
-
-          <tr data-area="i18n" data-v2="partial" data-db="todo">
-            <td class="area">Translations / i18n<code>app/api/i18n.v2</code></td>
-            <td><span class="pill partial">Own v2</span></td>
-            <td><span class="pill todo">Not started</span></td>
-            <td><span class="flag none">—</span></td>
-            <td class="note">
-              Contracts, model, services and routes exist in the older v2 style; V1
-              <code>app/api/i18n</code> still runs alongside it. Needs consolidation into core
-              before Postgres work makes sense.
             </td>
           </tr>
 
@@ -985,8 +985,9 @@
             <td><span class="pill todo">Not started</span></td>
             <td><span class="flag none">—</span></td>
             <td class="note">
-              Collaborators and entity-permission routes still call the legacy user-group model
-              directly — one of the four consumers keeping <code>app/api/usergroups</code> alive.
+              Collaborators and entity-permission routes now read groups through
+              <code>UserGroupsDirectoryFactory</code>, but the module itself is untouched V1 — no
+              domain model, no use cases, Mongo throughout.
             </td>
           </tr>
 
@@ -1038,39 +1039,23 @@
   <section>
     <div class="section-head">
       <h2>Next up</h2>
-      <p>Ordered by what unblocks the most work, not by size. Steps 1–3 are the current front.</p>
+      <p>Ordered by what unblocks the most work, not by size. Steps 1–2 are the current front.</p>
     </div>
 
     <ol class="queue">
       <li>
-        <h3>Roll the auth flags out to tenants</h3>
+        <h3>Roll the migrated flags out to tenants</h3>
         <p>
           <code>postgresUsers</code>, <code>postgresUsergroups</code>,
-          <code>postgresCaptchas</code> and <code>postgresPasswordRecoveries</code> are all built
-          and default to off. Turning them on per tenant is what turns finished code into a finished
-          migration.
+          <code>postgresTranslations</code>, <code>postgresCaptchas</code> and
+          <code>postgresPasswordRecoveries</code> are all built, backfillable and default to off.
+          Turning them on per tenant is what turns finished code into a finished migration.
         </p>
         <p class="why">
-          Blocker: user groups still has no backfill config (item 2), and the two user flags must
-          flip together.
+          Nothing in the code blocks this any more: the last backfill config landed with user
+          groups, and <code>resolveUsersBackend</code> now rejects a tenant that has only one of the
+          two user flags instead of quietly serving Mongo.
         </p>
-      </li>
-      <li>
-        <h3>Add the user-groups backfill config</h3>
-        <p>
-          Every other migrated collection has a <code>MigrateCollectionToPostgres</code> config;
-          user groups does not, so existing tenants' groups cannot be copied over.
-        </p>
-        <p class="why">Small, well-precedented — mirror <code>UsersMigrationConfig</code>.</p>
-      </li>
-      <li>
-        <h3>Enforce the users / user-groups flag pairing</h3>
-        <p>
-          <code>UsersQueryServiceFactory</code> already requires both flags before it returns the
-          Postgres implementation, but nothing stops a tenant from being configured with only one.
-          Today the constraint is documentation only.
-        </p>
-        <p class="why">Cheap guard that prevents a confusing half-migrated tenant.</p>
       </li>
       <li>
         <h3>Build <code>PostgresEntitiesDataSource</code></h3>
@@ -1091,15 +1076,6 @@
         </p>
       </li>
       <li>
-        <h3>Retire the legacy user-groups consumers</h3>
-        <p>
-          <code>collaborators.ts</code>, <code>entitiesPermissions.ts</code>,
-          <code>search.js</code>, <code>activitylog/helpers.js</code>,
-          <code>userGroupsMembers.ts</code> and <code>ServerUserGroupsService.ts</code> still call
-          the deprecated V1 module, so it cannot be deleted and can drift from the V2 path.
-        </p>
-      </li>
-      <li>
         <h3>Close the remaining core bridges</h3>
         <p>
           Thesauri routes still run through <code>core/v1_layer</code>, and files keeps storage, OCR
@@ -1109,9 +1085,10 @@
       <li>
         <h3>Consolidate the <code>*.v2</code> generation into core</h3>
         <p>
-          Pages, i18n, relationships, CSV and search are layered but sit outside the core and its
+          Pages, relationships, CSV and search are layered but sit outside the core and its
           conventions (ExecutionContext, factories, use cases). Until they move, they cannot follow
-          the Postgres pattern.
+          the Postgres pattern. Translations just made this trip — consolidation first, then the
+          table — and it is the template for the rest.
         </p>
       </li>
     </ol>
@@ -1127,8 +1104,9 @@
         <span class="tag">Flag skew</span>
         <h3>Independent flags, coupled data</h3>
         <p>
-          Users and user groups are joined in a single read. Flipping one flag without the other
-          silently falls back to Mongo for that read path.
+          Users and user groups are joined in a single read, so
+          <code>resolveUsersBackend</code> now throws when only one of the two flags is set. The
+          guard covers the contracts that join; every other flag pair is still uncoordinated.
         </p>
       </article>
       <article class="card">
@@ -1144,9 +1122,10 @@
         <h3>Only half the areas have a consistency suite</h3>
         <p>
           Files, user groups and captcha run the same assertions against both backends, and have
-          already caught real divergences. Users, templates, thesauri, relationship types and
-          password recoveries shipped without one — users has a spec per backend instead, which
-          cannot catch the two drifting apart.
+          already caught real divergences. Users, translations, templates, thesauri, relationship
+          types and password recoveries shipped without one — they have a spec per backend instead,
+          which cannot catch the two drifting apart. The gap grows with each area that ships
+          flagged-off.
         </p>
       </article>
       <article class="card">
@@ -1207,7 +1186,7 @@
 
   <footer>
     <p>
-      Derived by reading the tree at f27be07ca7: <code>app/api/core</code>,
+      Derived by reading the tree at dee554a26f: <code>app/api/core</code>,
       <code>app/api/*.v2</code>, the legacy <code>app/api</code> modules,
       <code>postgresql/schema_migrations</code>, <code>postgresql/migrations/configs</code>, the
       factories, and the feature flags in <code>tenantsModel.ts</code> / <code>config.ts</code>.

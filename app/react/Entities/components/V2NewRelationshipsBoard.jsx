@@ -140,7 +140,9 @@ class V2NewRelationshipsBoard extends Component {
             onChange={this.selectType.bind(this)}
           >
             {relationTypes.map(rt => (
-              <option value={rt._id}>{rt.name}</option>
+              <option key={rt._id} value={rt._id}>
+                {rt.name}
+              </option>
             ))}
           </select>
           &emsp;
