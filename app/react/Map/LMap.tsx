@@ -17,6 +17,7 @@ import {
   checkMapInitialization,
 } from './MapHelper.js';
 import { getMapProvider } from './TilesProviderFactory.js';
+import { ensureGoogleMaps } from './GoogleMapLayer.js';
 import {
   streetAttribution,
   satelliteAttribution,
@@ -107,8 +108,9 @@ const LMap = ({
     }
   };
 
-  const initMap = () => {
-    const baseMaps = getMapProvider(props.tilesProvider, props.mapApiKey);
+  const initMap = (providerOverride?: 'google' | 'mapbox') => {
+    const provider = providerOverride ?? props.tilesProvider;
+    const baseMaps = getMapProvider(provider, props.mapApiKey);
     const mapLayers: { [k: string]: Leaflet.TileLayer } = {};
     Object.keys(baseMaps).forEach(key => {
       const mapKey = baseMaps[key].key;
@@ -128,7 +130,7 @@ const LMap = ({
       scrollWheelZoom: false,
       wheelDebounceTime: 100,
       dragging: false,
-      attributionControl: currentTilesProvider === 'google',
+      attributionControl: provider === 'google',
     });
 
     map.on('click', enableMapGestures);
@@ -157,7 +159,7 @@ const LMap = ({
     map.on('click', clickHandler);
 
     const updateAttribution = (layerKey?: string) => {
-      if (!attributionControlRef.current || currentTilesProvider === 'google') {
+      if (!attributionControlRef.current || provider === 'google') {
         return;
       }
 
@@ -197,13 +199,31 @@ const LMap = ({
   useEffect(() => {
     const reRender = currentTilesProvider !== props.tilesProvider || !props.onClick;
 
+    let cancelled = false;
     if (reRender || currentMarkers === undefined) {
       setCurrentMarkers(pointMarkers);
       setCurrentTilesProvider(props.tilesProvider);
       checkMapInitialization(map, containerId);
-      initMap();
+      if (props.tilesProvider === 'google') {
+        // GoogleMutant layers require window.google to exist BEFORE they are
+        // constructed — wait for the Maps JS API, and on failure surface the
+        // real error and fall back to the other provider instead of leaving
+        // a dead map.
+        ensureGoogleMaps(props.mapApiKey)
+          .then(() => {
+            if (!cancelled) initMap();
+          })
+          .catch((err: unknown) => {
+            // eslint-disable-next-line no-console
+            console.error('Google Maps failed to load, falling back:', err);
+            if (!cancelled) initMap('mapbox');
+          });
+      } else {
+        initMap();
+      }
     }
     return () => {
+      cancelled = true;
       if (map && reRender) {
         map.off('click', enableMapGestures);
         document.removeEventListener('click', disableMapGestures);

@@ -12,7 +12,6 @@ import {
   useRelationshipsPanelData,
   useRelationshipsPanelLayout,
   useRelationshipsSelectionActions,
-  useEntityOverlay,
   useEntityWriteAuthorized,
 } from '#V2/Routes/Entity/Components/context/index.js';
 import { useActiveRelationshipHighlight } from '#V2/Routes/Entity/Components/document/index.js';
@@ -24,6 +23,50 @@ import { RelationshipsSsrIndex } from './RelationshipsSsrIndex.js';
 type RelationshipsPanelProps = {
   focusDocumentOnSelect?: boolean;
   onFocusDocument?: () => void;
+};
+
+const RelationshipsPanelBodyState = ({
+  hasRelationships,
+  markers,
+  groupContext,
+  activeRelationshipId,
+  onClick,
+  onDelete,
+}: {
+  hasRelationships: boolean;
+  markers: RelationshipMarker[];
+  groupContext: ReturnType<typeof useGroupLabelContext>;
+  activeRelationshipId?: string;
+  onClick: (marker: RelationshipMarker) => void;
+  onDelete?: (marker: RelationshipMarker, relationshipIds?: string[]) => void;
+}) => {
+  if (!hasRelationships) {
+    return (
+      <BlankState
+        icon={
+          <LinkIcon className="h-7 w-7 text-ink rounded-full bg-[color-mix(in_srgb,var(--color-theme-border-default)_70%,transparent)] p-1" />
+        }
+        title={<Translate>No Relationships</Translate>}
+      />
+    );
+  }
+  if (markers.length === 0) {
+    return (
+      <p className="py-8 text-center text-sm text-ink-tertiary">
+        <Translate>No relationships found</Translate>
+      </p>
+    );
+  }
+  return (
+    <RelationshipsPanelBody
+      markers={markers}
+      groupContext={groupContext}
+      selfSharedId={groupContext.selfSharedId}
+      activeRelationshipId={activeRelationshipId}
+      onClick={onClick}
+      onDelete={onDelete}
+    />
+  );
 };
 
 const RelationshipsPanelView = ({
@@ -39,7 +82,6 @@ const RelationshipsPanelView = ({
     useRelationshipsSelectionActions();
   const canWrite = useEntityWriteAuthorized();
 
-  const { openEntityOverlay } = useEntityOverlay();
   const {
     relationshipToDelete,
     isDeleting,
@@ -58,11 +100,6 @@ const RelationshipsPanelView = ({
     [focusDocumentOnSelect, onFocusDocument, selectRelationship]
   );
 
-  const handleViewClick = useCallback(
-    (marker: RelationshipMarker) => openEntityOverlay(marker),
-    [openEntityOverlay]
-  );
-
   useEffect(
     () => () => {
       setRelationshipsEditMode(false);
@@ -70,37 +107,6 @@ const RelationshipsPanelView = ({
     },
     [setRelationshipsEditMode, setSelectedRelationshipIds]
   );
-
-  const renderBody = () => {
-    if (!hasRelationships) {
-      return (
-        <BlankState
-          icon={
-            <LinkIcon className="h-7 w-7 text-ink rounded-full bg-[color-mix(in_srgb,var(--color-theme-border-default)_70%,transparent)] p-1" />
-          }
-          title={<Translate>No Relationships</Translate>}
-        />
-      );
-    }
-    if (markers.length === 0) {
-      return (
-        <p className="py-8 text-center text-sm text-ink-tertiary">
-          <Translate>No relationships found</Translate>
-        </p>
-      );
-    }
-    return (
-      <RelationshipsPanelBody
-        markers={markers}
-        groupContext={groupContext}
-        selfSharedId={groupContext.selfSharedId}
-        activeRelationshipId={activeRelationshipId ?? undefined}
-        onClick={handleRelationshipClick}
-        onView={handleViewClick}
-        onDelete={canWrite ? handleDeleteClick : undefined}
-      />
-    );
-  };
 
   return (
     <div className="flex h-full min-h-0 flex-col [&_.panel]:h-full [&_.panel]:border-0">
@@ -114,7 +120,14 @@ const RelationshipsPanelView = ({
         <Panel.Body
           className={view === 'graph' ? 'flex min-h-0 flex-col overflow-hidden! pr-1' : 'pr-1 pb-2'}
         >
-          {renderBody()}
+          <RelationshipsPanelBodyState
+            hasRelationships={hasRelationships}
+            markers={markers}
+            groupContext={groupContext}
+            activeRelationshipId={activeRelationshipId ?? undefined}
+            onClick={handleRelationshipClick}
+            onDelete={canWrite ? handleDeleteClick : undefined}
+          />
         </Panel.Body>
       </Panel>
       {relationshipToDelete && (

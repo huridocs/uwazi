@@ -86,6 +86,7 @@ interface GeolocationMetadataProperty extends Omit<BaseMetadataProperty, 'values
       _id: string;
       icon?: { _id: string; label: string };
     };
+    templateId?: string;
   }>;
 }
 

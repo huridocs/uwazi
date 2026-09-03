@@ -82,7 +82,9 @@ describe('MultiselectList.cy.tsx', { viewportWidth: 450, viewportHeight: 650 }, 
 
     it('should show all the options with their status', () => {
       const items: string[] = [];
-      cy.get('input[type="radio"]:checked').siblings().contains('All');
+      cy.get('input[type="radio"]:checked').then($input => {
+        cy.get(`label[for="${$input.attr('id')}"]`).should('contain', 'All');
+      });
       cy.get('input[type="radio"]').eq(1).should('be.disabled');
       cy.get('[data-testid="pill-comp"]').eq(3).click();
       cy.get('[data-testid="pill-comp"]').eq(6).click();

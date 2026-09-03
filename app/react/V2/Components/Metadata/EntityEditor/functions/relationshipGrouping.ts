@@ -33,7 +33,6 @@ const groupRelationshipProperties = (properties: FormMetadataProperty[]): Displa
 
     groupedProperties.set(groupKey, {
       ...existing,
-      label: `${existing.label} / ${property.label}`,
       required: Boolean(existing.required || property.required),
       groupedRelationshipNames: [
         ...(existing.groupedRelationshipNames ?? [existing.name]),

@@ -7,6 +7,23 @@ type RelationCaptionProps = {
   inheritLabels?: string[];
 };
 
+const inheritLabelsFromColumns = (
+  columns: { label: string }[],
+  inheritLabel?: string,
+  inheritLabels?: string[]
+) => {
+  if (inheritLabels && inheritLabels.length > 0) {
+    return inheritLabels;
+  }
+  if (columns.length > 0) {
+    return columns.map(column => column.label);
+  }
+  if (inheritLabel) {
+    return [inheritLabel];
+  }
+  return undefined;
+};
+
 const inheritSuffix = (inheritLabel?: string, inheritLabels?: string[]) => {
   if (inheritLabels && inheritLabels.length > 0) {
     return (
@@ -39,4 +56,4 @@ const RelationCaption = ({ relationLabel, inheritLabel, inheritLabels }: Relatio
   </p>
 );
 
-export { RelationCaption };
+export { RelationCaption, inheritLabelsFromColumns };

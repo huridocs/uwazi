@@ -23,7 +23,7 @@ export const Dropdown: React.FC<DropdownProps> = ({ title, items, className = ''
       type="button"
       className={`header-bar-button ${
         isOpen ? 'header-bar-button-active' : ''
-      } flex items-center gap-1.5 rounded-md border px-3 py-1 text-[0.8125rem] font-medium transition-colors`}
+      } flex items-center gap-1.5 rounded-md border px-3 py-1 text-tab font-medium transition-colors`}
       aria-expanded={isOpen}
       aria-haspopup="menu"
     >

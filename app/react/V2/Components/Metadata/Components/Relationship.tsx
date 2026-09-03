@@ -5,7 +5,7 @@ import { Translate } from '#app/I18N/index.js';
 import { relationshipTypesAtom } from '#V2/atoms/relationshipTypes.js';
 import { RelationshipMetadataProperty } from '#V2/formatters/types.js';
 import { MetadataCard } from './MetadataCard.js';
-import { RelationCaption } from './RelationCaption.js';
+import { RelationCaption, inheritLabelsFromColumns } from './RelationCaption.js';
 import {
   ConnectionPills,
   isEntityRelationshipValue,
@@ -70,14 +70,7 @@ const Relationship = ({
         ]
       : []);
 
-  let resolvedInheritLabels = inheritLabels;
-  if (!resolvedInheritLabels) {
-    if (columns.length > 0) {
-      resolvedInheritLabels = columns.map(column => column.label);
-    } else if (inheritLabel) {
-      resolvedInheritLabels = [inheritLabel];
-    }
-  }
+  const resolvedInheritLabels = inheritLabelsFromColumns(columns, inheritLabel, inheritLabels);
   const showsInheritedTable = columns.length > 0;
 
   return (
@@ -99,16 +92,7 @@ const Relationship = ({
             columns={columns}
             translationContext={translationContext}
             targetTemplateId={targetTemplateId}
-            onEntityClick={
-              onOpenEntity
-                ? row =>
-                    onOpenEntity({
-                      sharedId: row.id,
-                      title: row.label,
-                      templateId: row.templateId || targetTemplateId || '',
-                    })
-                : undefined
-            }
+            onOpenEntity={onOpenEntity}
           />
         ) : (
           <ConnectionPills

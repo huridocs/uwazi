@@ -16,7 +16,7 @@ HTMLCollection [
             Select
           </span>
           <input
-            class="h-3.5 w-3.5 shrink-0 cursor-pointer rounded disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-carbon/30 accent-ink"
+            class="m-0 h-3.5 w-3.5 shrink-0 cursor-pointer rounded accent-ink disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-carbon/30"
             id="thesaurus3"
             type="checkbox"
           />
@@ -79,7 +79,7 @@ HTMLCollection [
             Select
           </span>
           <input
-            class="h-3.5 w-3.5 shrink-0 cursor-pointer rounded disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-carbon/30 accent-ink"
+            class="m-0 h-3.5 w-3.5 shrink-0 cursor-pointer rounded accent-ink disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-carbon/30"
             id="thesaurus1"
             type="checkbox"
           />
@@ -142,7 +142,7 @@ HTMLCollection [
             Select
           </span>
           <input
-            class="h-3.5 w-3.5 shrink-0 cursor-pointer rounded disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-carbon/30 accent-ink"
+            class="m-0 h-3.5 w-3.5 shrink-0 cursor-pointer rounded accent-ink disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-carbon/30"
             disabled=""
             id="thesaurus2"
             type="checkbox"
