@@ -16,12 +16,14 @@ describe('RadioSelect', () => {
   });
 
   it('should show all the options', () => {
-    cy.get('input[type="radio"]').should(list => {
-      expect(list[0].nextSibling?.textContent).to.equal('USA');
-      expect(list[1].nextSibling?.textContent).to.equal('Germany');
-      expect(list[2].nextSibling?.textContent).to.equal('Spain');
-      expect(list[3].nextSibling?.textContent).to.equal('United Kingdom');
-      expect(list[4].nextSibling?.textContent).to.equal('China');
+    cy.get('fieldset label').should($labels => {
+      expect([...$labels].map(el => el.textContent?.trim())).to.deep.equal([
+        'USA',
+        'Germany',
+        'Spain',
+        'United Kingdom',
+        'China',
+      ]);
     });
   });
 
@@ -31,18 +33,27 @@ describe('RadioSelect', () => {
   });
 
   it('should have checked the default checked property', () => {
-    cy.get('input[type="radio"]:checked').siblings().contains('Spain');
+    cy.get('input[type="radio"]:checked').then($input => {
+      cy.get(`label[for="${$input.attr('id')}"]`).should('contain', 'Spain');
+    });
   });
 
   it('should disable the options specified', () => {
-    cy.get('input[type="radio"]:disabled').siblings().contains('United Kingdom');
-    cy.get('input[type="radio"]:disabled').siblings().should('have.class', '!text-gray-500');
+    cy.get('input[type="radio"]:disabled').then($input => {
+      cy.get(`label[for="${$input.attr('id')}"]`).should('contain', 'United Kingdom');
+      cy.get(`label[for="${$input.attr('id')}"]`).should('have.class', 'text-ink-muted');
+    });
   });
 
   it('should execute on change when the selected option changes', () => {
     cy.get('input[type="radio"]').invoke('on', 'change', cy.stub().as('change'));
     cy.get('input[type="radio"]').eq(1).check();
     cy.get('@change').should('have.been.called');
+  });
+
+  it('should select an option when clicking its label', () => {
+    cy.contains('label', 'Germany').click();
+    cy.get('#country_germany').should('be.checked');
   });
 });
 

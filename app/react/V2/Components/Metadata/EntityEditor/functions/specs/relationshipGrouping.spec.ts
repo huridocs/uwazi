@@ -44,7 +44,7 @@ describe('groupRelationshipProperties', () => {
     expect(grouped[0]).toMatchObject({ name: 'title_text', type: 'text' });
     expect(grouped[1]).toMatchObject({
       name: 'related_people',
-      label: 'Owner / Residents',
+      label: 'Owner',
       required: true,
       groupedRelationshipNames: ['related_people', 'related_residents'],
     });
