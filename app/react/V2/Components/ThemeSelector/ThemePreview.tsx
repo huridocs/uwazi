@@ -97,7 +97,7 @@ const ThemePreview = ({ mode, themeVars, siteLogo, favicon }: ThemePreviewProps)
           {favicon ? <img src={favicon} alt="" className="h-5 w-5 rounded object-contain" /> : null}
           <button
             type="button"
-            className="rounded-md border px-3 py-1.5 text-[0.8125rem] font-medium"
+            className="rounded-md border px-3 py-1.5 text-tab font-medium"
             style={{
               borderColor: 'var(--color-theme-chrome-app-bar-separator)',
               color: headerFg,
@@ -107,7 +107,7 @@ const ThemePreview = ({ mode, themeVars, siteLogo, favicon }: ThemePreviewProps)
           </button>
           <button
             type="button"
-            className="rounded-md border px-3 py-1.5 text-[0.8125rem] font-medium"
+            className="rounded-md border px-3 py-1.5 text-tab font-medium"
             style={{
               borderColor: 'var(--color-theme-chrome-app-bar-separator)',
               color: headerFg,

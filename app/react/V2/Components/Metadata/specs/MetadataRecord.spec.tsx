@@ -1,13 +1,17 @@
 /** @jest-environment jsdom */
-/* eslint-disable react/no-multi-comp */
+/* eslint-disable react/no-multi-comp, max-statements, max-lines */
 import React from 'react';
 import { createStore, Provider } from 'jotai';
-import { render, screen, within } from '@testing-library/react';
+import { act, render, screen, waitFor, within } from '@testing-library/react';
 import { TestAtomStoreProvider } from '#V2/testing/index.js';
 import { templatesAtom } from '#V2/atoms/templatesAtom.js';
 import { relationshipTypesAtom } from '#V2/atoms/relationshipTypes.js';
 import type { Entity } from '#V2/api/entities/types.js';
 import { focusMetadataFieldAtom } from '../focusMetadataFieldAtom.js';
+import {
+  COMPACT_METADATA_FIELD_LAYOUT,
+  FULL_ROW_METADATA_FIELD_LAYOUT,
+} from '../metadataPropertyLayout.js';
 import { MetadataRecord } from '../MetadataRecord';
 
 jest.mock('#app/I18N/index.js', () => ({
@@ -37,6 +41,31 @@ jest.mock('#app/Map/index.js', () => ({
     <div data-testid="map" data-marker-count={markers?.length ?? 0} />
   ),
 }));
+
+const resizeObservers: Array<{
+  callback: ResizeObserverCallback;
+  observe: () => void;
+  unobserve: () => void;
+  disconnect: () => void;
+}> = [];
+let mockClientWidth = 0;
+
+class ResizeObserverMock {
+  callback: ResizeObserverCallback;
+
+  constructor(callback: ResizeObserverCallback) {
+    this.callback = callback;
+    resizeObservers.push(this);
+  }
+
+  observe = jest.fn();
+
+  unobserve = jest.fn();
+
+  disconnect = jest.fn();
+}
+
+global.ResizeObserver = ResizeObserverMock as unknown as typeof ResizeObserver;
 
 const relatedTemplate = {
   _id: 'related-tmpl',
@@ -179,7 +208,10 @@ const withoutRels: Entity = {
   },
 };
 
-const renderRecord = (entityOverride: Entity = entity) =>
+const renderRecord = (
+  entityOverride: Entity = entity,
+  options: { showDocumentPreview?: boolean } = {}
+) =>
   render(
     <TestAtomStoreProvider
       initialValues={[
@@ -187,31 +219,49 @@ const renderRecord = (entityOverride: Entity = entity) =>
         [relationshipTypesAtom, [{ _id: 'rel-type-1', name: 'Relates to' }]],
       ]}
     >
-      <MetadataRecord entity={entityOverride} />
+      <MetadataRecord entity={entityOverride} showDocumentPreview={options.showDocumentPreview} />
     </TestAtomStoreProvider>
   );
 
+const fieldEl = (name: string): HTMLElement => {
+  const el = document.querySelector(`[data-field-key="${name}"]`);
+  if (!(el instanceof HTMLElement)) {
+    throw new Error(`expected field ${name}`);
+  }
+  return el;
+};
+
 describe('MetadataRecord', () => {
-  it('shows long fields and Details, and hides Relationships when empty', () => {
+  beforeEach(() => {
+    mockClientWidth = 0;
+    resizeObservers.length = 0;
+    Object.defineProperty(HTMLElement.prototype, 'clientWidth', {
+      configurable: true,
+      get: () => mockClientWidth,
+    });
+  });
+
+  // eslint-disable-next-line max-statements
+  it('shows system dates and packs template fields in masonry', () => {
     renderRecord(withoutRels);
 
     expect(screen.queryByRole('heading', { name: 'Document' })).not.toBeInTheDocument();
     expect(screen.queryByText('Report.pdf')).not.toBeInTheDocument();
     expect(screen.getByRole('heading', { name: 'Summary' })).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: 'Notes' })).toBeInTheDocument();
-    expect(screen.getByRole('heading', { name: 'Details' })).toBeInTheDocument();
-
-    const table = screen.getByRole('table');
-    expect(within(table).getByRole('rowheader', { name: 'Title' })).toBeInTheDocument();
-    expect(table.querySelector('[data-field-key="title"]')).toBeInTheDocument();
-    expect(within(table).getByRole('rowheader', { name: 'Creation Date' })).toBeInTheDocument();
-    expect(within(table).getByRole('rowheader', { name: 'Edit Date' })).toBeInTheDocument();
-    expect(within(table).getByRole('rowheader', { name: 'Code' })).toBeInTheDocument();
-    expect(within(table).getByText('ABC')).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Code' })).toBeInTheDocument();
+    expect(screen.getByText('ABC')).toBeInTheDocument();
+    expect(screen.queryByRole('heading', { name: 'Details' })).not.toBeInTheDocument();
+    expect(screen.getByTestId('entity-system-dates')).toHaveTextContent(/Created/);
     expect(screen.queryByText('Relationships')).not.toBeInTheDocument();
+
+    expect(fieldEl('code').className).toContain(COMPACT_METADATA_FIELD_LAYOUT);
+    expect(fieldEl('summary').className).toContain(FULL_ROW_METADATA_FIELD_LAYOUT);
+    expect(fieldEl('notes').className).toContain(FULL_ROW_METADATA_FIELD_LAYOUT);
   });
 
-  it('keeps showInCard fields above Details and image/media below Details', () => {
+  // eslint-disable-next-line max-statements
+  it('packs image without fullWidth as compact in the masonry wrap', () => {
     const imageTemplate = {
       ...template,
       properties: [
@@ -255,12 +305,83 @@ describe('MetadataRecord', () => {
     );
 
     const headings = screen.getAllByRole('heading').map(heading => heading.textContent);
-    expect(headings.indexOf('Summary')).toBeGreaterThan(-1);
-    expect(headings.indexOf('Details')).toBeGreaterThan(headings.indexOf('Summary'));
-    expect(headings.indexOf('Image')).toBeGreaterThan(headings.indexOf('Details'));
+    expect(headings.indexOf('Summary')).toBeLessThan(headings.indexOf('Image'));
+    expect(headings).not.toContain('Details');
+    expect(screen.getByTestId('entity-system-dates')).toBeInTheDocument();
+    expect(fieldEl('photo').className).toContain(COMPACT_METADATA_FIELD_LAYOUT);
+    expect(fieldEl('code').className).toContain(COMPACT_METADATA_FIELD_LAYOUT);
   });
 
-  it('scrolls and flashes the title row when focusMetadataFieldAtom is title', () => {
+  // eslint-disable-next-line max-statements
+  it('repacks image and media onto one row when the panel widens', async () => {
+    mockClientWidth = 300;
+    const imageTemplate = {
+      ...template,
+      properties: [
+        {
+          _id: 'p-img',
+          name: 'photo',
+          type: 'image' as const,
+          label: 'Image',
+          style: 'contain' as const,
+        },
+        { _id: 'p-med', name: 'clip', type: 'media' as const, label: 'Media' },
+      ],
+    };
+    const imageEntity: Entity = {
+      ...withoutRels,
+      metadata: {
+        photo: [{ value: '/plant.jpg', alt: 'plant' }],
+        clip: [{ value: '/a.mp4' }],
+      },
+      documents: [],
+    };
+
+    render(
+      <TestAtomStoreProvider
+        initialValues={[
+          [templatesAtom, [imageTemplate, relatedTemplate, relatedEntityTemplate]],
+          [relationshipTypesAtom, [{ _id: 'rel-type-1', name: 'Relates to' }]],
+        ]}
+      >
+        <MetadataRecord entity={imageEntity} />
+      </TestAtomStoreProvider>
+    );
+
+    await waitFor(() => {
+      expect(
+        fieldEl('photo').closest('[data-property-row]')?.getAttribute('data-property-row')
+      ).toBe('photo');
+      expect(
+        fieldEl('clip').closest('[data-property-row]')?.getAttribute('data-property-row')
+      ).toBe('clip');
+    });
+
+    mockClientWidth = 700;
+    const [observer] = resizeObservers;
+    if (!observer) {
+      throw new Error('expected ResizeObserver');
+    }
+    act(() => {
+      observer.callback(
+        [
+          {
+            contentRect: { width: 700, height: 100 } as DOMRectReadOnly,
+            target: document.querySelector('[data-testid="metadata-record"]') as Element,
+          } as ResizeObserverEntry,
+        ],
+        observer
+      );
+    });
+
+    await waitFor(() => {
+      expect(
+        fieldEl('photo').closest('[data-property-row]')?.getAttribute('data-property-row')
+      ).toBe('photo clip');
+    });
+  });
+
+  it('scrolls and flashes a masonry field when focusMetadataFieldAtom matches', () => {
     jest.useFakeTimers();
     Element.prototype.scrollIntoView = jest.fn();
 
@@ -269,19 +390,20 @@ describe('MetadataRecord', () => {
         initialValues={[
           [templatesAtom, [template, relatedTemplate, relatedEntityTemplate]],
           [relationshipTypesAtom, [{ _id: 'rel-type-1', name: 'Relates to' }]],
-          [focusMetadataFieldAtom, { fieldKey: 'title' }],
+          [focusMetadataFieldAtom, { fieldKey: 'code' }],
         ]}
       >
         <MetadataRecord entity={withoutRels} />
       </TestAtomStoreProvider>
     );
 
-    const titleRow = screen.getByRole('table').querySelector('[data-field-key="title"]');
-    expect(titleRow).toBeInstanceOf(HTMLElement);
-    expect(titleRow).toHaveClass('flash-highlight');
+    const codeCard = fieldEl('code');
+    expect(codeCard).toHaveClass('flash-highlight');
     expect(Element.prototype.scrollIntoView).toHaveBeenCalled();
-    jest.advanceTimersByTime(1100);
-    expect(titleRow).not.toHaveClass('flash-highlight');
+    act(() => {
+      jest.advanceTimersByTime(1100);
+    });
+    expect(codeCard).not.toHaveClass('flash-highlight');
     jest.useRealTimers();
   });
 
@@ -301,7 +423,9 @@ describe('MetadataRecord', () => {
 
     expect(store.get(focusMetadataFieldAtom)).toEqual({ fieldKey: 'missing-field' });
 
-    jest.advanceTimersByTime(500);
+    act(() => {
+      jest.advanceTimersByTime(500);
+    });
     expect(store.get(focusMetadataFieldAtom)).toEqual({ fieldKey: 'missing-field' });
 
     jest.useRealTimers();
@@ -313,7 +437,7 @@ describe('MetadataRecord', () => {
     const store = createStore();
     store.set(templatesAtom, [template, relatedTemplate]);
     store.set(relationshipTypesAtom, [{ _id: 'rel-type-1', name: 'Relates to' }]);
-    store.set(focusMetadataFieldAtom, { fieldKey: 'title' });
+    store.set(focusMetadataFieldAtom, { fieldKey: 'code' });
 
     const { rerender } = render(
       <Provider store={store}>
@@ -321,7 +445,7 @@ describe('MetadataRecord', () => {
       </Provider>
     );
 
-    expect(store.get(focusMetadataFieldAtom)).toEqual({ fieldKey: 'title' });
+    expect(store.get(focusMetadataFieldAtom)).toEqual({ fieldKey: 'code' });
 
     rerender(
       <Provider store={store}>
@@ -337,7 +461,7 @@ describe('MetadataRecord', () => {
     const store = createStore();
     store.set(templatesAtom, [template, relatedTemplate]);
     store.set(relationshipTypesAtom, [{ _id: 'rel-type-1', name: 'Relates to' }]);
-    store.set(focusMetadataFieldAtom, { fieldKey: 'title' });
+    store.set(focusMetadataFieldAtom, { fieldKey: 'code' });
 
     const { unmount } = render(
       <Provider store={store}>
@@ -375,10 +499,65 @@ describe('MetadataRecord', () => {
     expect(screen.getByRole('heading', { name: 'Notes' })).toBeInTheDocument();
   });
 
-  it('shows inheriting connections under Relationships with via and inherits', () => {
+  it('omits the preview card on the entity page', () => {
+    renderRecord({
+      ...entity,
+      documents: [
+        {
+          _id: 'doc-1',
+          filename: 'judgment.pdf',
+          originalname: 'Velasquez.pdf',
+          mimetype: 'application/pdf',
+          size: 218112,
+          language: 'eng',
+        },
+      ],
+      metadata: {
+        ...entity.metadata,
+        previewg: [{ value: '/batman.jpg' }],
+      },
+    });
+
+    expect(screen.queryByRole('heading', { name: 'Previewg' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: 'View' })).not.toBeInTheDocument();
+    expect(document.querySelector('[data-field-key="previewg"]')).toBeNull();
+  });
+
+  it('shows a compact document card in overlay preview mode', () => {
+    renderRecord(
+      {
+        ...entity,
+        documents: [
+          {
+            _id: 'doc-1',
+            filename: 'judgment.pdf',
+            originalname: 'Velasquez.pdf',
+            mimetype: 'application/pdf',
+            size: 218112,
+            language: 'eng',
+          },
+        ],
+        metadata: {
+          ...entity.metadata,
+          previewg: [{ value: '/batman.jpg' }],
+        },
+      },
+      { showDocumentPreview: true }
+    );
+
+    expect(screen.getByRole('heading', { name: 'Previewg' })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'View' })).toBeInTheDocument();
+    expect(screen.queryByRole('heading', { name: 'Document' })).not.toBeInTheDocument();
+    const headings = screen.getAllByRole('heading').map(heading => heading.textContent);
+    expect(headings.indexOf('Notes')).toBeLessThan(headings.indexOf('Previewg'));
+    expect(headings.indexOf('Previewg')).toBeLessThan(headings.indexOf('Relationshipc'));
+    expect(fieldEl('previewg').className).toContain(COMPACT_METADATA_FIELD_LAYOUT);
+  });
+
+  it('shows inheriting connections in template order without a Relationships heading', () => {
     renderRecord();
 
-    expect(screen.getByText('Relationships')).toBeInTheDocument();
+    expect(screen.queryByText('Relationships')).not.toBeInTheDocument();
     expect(screen.getByText('Relationshipa')).toBeInTheDocument();
     expect(screen.queryByText('Relationshipb')).not.toBeInTheDocument();
     expect(screen.queryByRole('heading', { name: 'Relationshipa' })).not.toBeInTheDocument();
@@ -386,9 +565,13 @@ describe('MetadataRecord', () => {
     expect(screen.getAllByText(/via/).length).toBeGreaterThan(0);
     expect(screen.getByText(/inherits/)).toHaveTextContent('Body text, Location');
     expect(screen.getByRole('heading', { name: 'Relationshipc' })).toBeInTheDocument();
+    const headings = screen.getAllByRole('heading').map(heading => heading.textContent);
+    expect(headings.indexOf('Notes')).toBeLessThan(headings.indexOf('Relationshipc'));
+    expect(headings).not.toContain('Details');
+    expect(screen.getByTestId('entity-system-dates')).toBeInTheDocument();
   });
 
-  it('shows inheriting connections under Relationships with inherited body and map', () => {
+  it('shows inheriting connections with inherited body and map', () => {
     renderRecord();
 
     const rela = sectionForLabel('Relationshipa');
@@ -398,12 +581,12 @@ describe('MetadataRecord', () => {
     expect(within(rela).getByRole('columnheader', { name: 'Body text' })).toBeInTheDocument();
     expect(within(rela).getByRole('columnheader', { name: 'Location' })).toBeInTheDocument();
 
-    expect(screen.getByText('Relationships')).toBeInTheDocument();
-    expect(screen.queryByText('Relationshipb')).not.toBeInTheDocument();
+    expect(screen.getByText(/inherits/)).toHaveTextContent('Body text, Location');
+    expect(screen.queryByText('Relationships')).not.toBeInTheDocument();
     expect(screen.queryByRole('heading', { name: 'Relationshipa' })).not.toBeInTheDocument();
   });
 
-  it('shows own map and inherited location under Relationships', () => {
+  it('shows own map and inherited location in property order', () => {
     const geoGroupTemplate = {
       _id: 'tmpl-geo-group',
       name: 'Geo group template',
@@ -451,17 +634,17 @@ describe('MetadataRecord', () => {
       </TestAtomStoreProvider>
     );
 
-    expect(screen.queryByText('Grouped geolocation properties')).not.toBeInTheDocument();
-    expect(screen.getByRole('heading', { name: 'Own location' })).toBeInTheDocument();
-    expect(within(sectionForLabel('Own location')).getByTestId('map')).toHaveAttribute(
-      'data-marker-count',
-      '1'
-    );
+    expect(screen.getByText('Grouped geolocation properties')).toBeInTheDocument();
+    expect(screen.queryByRole('heading', { name: 'Own location' })).not.toBeInTheDocument();
+    const groupedMap = within(
+      screen
+        .getByText('Grouped geolocation properties')
+        .closest('div.overflow-hidden') as HTMLElement
+    ).getByTestId('map');
+    expect(groupedMap).toHaveAttribute('data-marker-count', '2');
 
-    expect(screen.getByText('Relationships')).toBeInTheDocument();
-    const inherited = sectionForLabel('Inherited location');
-    expect(within(inherited).getByTestId('map')).toHaveAttribute('data-marker-count', '1');
-    expect(within(inherited).getByRole('link', { name: /A1/i })).toBeInTheDocument();
+    expect(screen.queryByText('Relationships')).not.toBeInTheDocument();
+    expect(screen.queryByRole('heading', { name: 'Inherited location' })).not.toBeInTheDocument();
   });
 
   it('shows own map and hides empty inherited location', () => {
@@ -504,8 +687,10 @@ describe('MetadataRecord', () => {
       </TestAtomStoreProvider>
     );
 
-    expect(screen.getByRole('heading', { name: 'Own location' })).toBeInTheDocument();
-    expect(screen.getByTestId('map')).toBeInTheDocument();
+    expect(screen.getByText('Grouped geolocation properties')).toBeInTheDocument();
+    expect(
+      within(sectionForLabel('Grouped geolocation properties')).getByTestId('map')
+    ).toHaveAttribute('data-marker-count', '1');
     expect(screen.queryByText('Relationships')).not.toBeInTheDocument();
     expect(screen.queryByText('Inherited location')).not.toBeInTheDocument();
   });
@@ -585,26 +770,25 @@ describe('MetadataRecord', () => {
       </TestAtomStoreProvider>
     );
 
-    const relA = sectionForLabel('Inherited location A');
-    const relB = sectionForLabel('Inherited location B');
-    expect(within(relA).getByTestId('map')).toHaveAttribute('data-marker-count', '1');
-    expect(within(relB).getByTestId('map')).toHaveAttribute('data-marker-count', '2');
-    expect(within(relA).getByRole('link', { name: /A1/i })).toBeInTheDocument();
-    expect(within(relB).getByRole('link', { name: /B1/i })).toBeInTheDocument();
-    expect(within(relA).queryByRole('link', { name: /B1/i })).not.toBeInTheDocument();
-    expect(within(relB).queryByRole('link', { name: /A1/i })).not.toBeInTheDocument();
+    expect(screen.getByText('Grouped geolocation properties')).toBeInTheDocument();
+    expect(
+      within(sectionForLabel('Grouped geolocation properties')).getByTestId('map')
+    ).toHaveAttribute('data-marker-count', '4');
+
+    expect(screen.queryByRole('heading', { name: 'Inherited location A' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('heading', { name: 'Inherited location B' })).not.toBeInTheDocument();
   });
 
   it('colors unconstrained relationship pills from the related entity template', () => {
     renderRecord();
 
-    const relationshipd = screen.getByRole('rowheader', { name: 'Relationshipd' });
-    const table = relationshipd.closest('table');
-    expect(table).not.toBeNull();
-    if (!table) {
+    const relationshipd = screen.getByRole('heading', { name: 'Relationshipd' });
+    const card = relationshipd.closest('div.overflow-hidden');
+    expect(card).toBeInstanceOf(HTMLElement);
+    if (!(card instanceof HTMLElement)) {
       return;
     }
-    const diana = within(table).getByRole('link', { name: /Diana/i });
+    const diana = within(card).getByRole('link', { name: /Diana/i });
     const pill = diana.querySelector('span[title="Diana"]');
     expect(pill?.firstElementChild).toHaveStyle({ backgroundColor: '#2563eb' });
     expect(pill?.firstElementChild).not.toHaveStyle({ backgroundColor: '#c03b22' });
