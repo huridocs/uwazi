@@ -611,9 +611,9 @@
       the trailing one.
     </p>
     <div class="stamp">
-      <span>Verified against <b>dee554a26f</b></span>
-      <span>Branch <b>remove-v2-users-directory</b></span>
-      <span>Last reviewed <b>2026-08-25</b></span>
+      <span>Verified against <b>6c6a40331d</b></span>
+      <span>Branch <b>production</b></span>
+      <span>Last reviewed <b>2026-08-31</b></span>
     </div>
   </header>
 
@@ -733,17 +733,18 @@
             </td>
           </tr>
 
-          <tr data-area="entities" data-v2="partial" data-db="partial">
+          <tr data-area="entities" data-v2="partial" data-db="done">
             <td class="area">Entities<code>core/domain/entity</code></td>
             <td><span class="pill partial">Partial</span></td>
-            <td><span class="pill partial">Read-side only</span></td>
+            <td><span class="pill done">Done</span></td>
             <td><span class="flag">postgresEntities</span></td>
             <td class="note">
-              Table + RLS exist, but only <code>PostgresUnrestrictedEntitiesQuery</code> and a row
-              type are built — there is no <code>PostgresEntitiesDataSource</code>, and
-              <code>EntitiesDataSourceFactory</code> is Mongo-only. Writes are still Mongo
-              everywhere. Three code generations coexist: <code>app/api/entities</code>,
-              <code>entities.v2</code>, and core.
+              <code>PostgresEntitiesDataSource</code> now covers the full read/write path (#9608),
+              and <code>EntitiesDataSourceFactory</code>/<code>EntitiesDAOFactory</code> dispatch to
+              it behind the flag — the search indexer already reads through it too. Schema, mapper,
+              factory wiring and backfill config are all in place. V2 is still partial: three code
+              generations coexist and both <code>app/api/entities/routes.js</code> and
+              <code>entities.v2/routes</code> are registered in <code>api.js</code> alongside core.
             </td>
           </tr>
 
@@ -883,8 +884,11 @@
             <td><span class="flag none">—</span></td>
             <td class="note">
               Large module (~4.5k lines) with its own contracts/services, plus V1
-              <code>app/api/relationships</code> still routed. Coupled to entities, so it follows
-              entities in the queue.
+              <code>app/api/relationships</code> still routed. Its own persistence
+              (<code>MongoRelationshipsDataSource</code>, <code>MongoGraphQueryCompiler</code>) is
+              untouched Mongo — no Postgres table or data source exists yet. Was blocked on
+              entities; that block is clear now that entities is done, but no Postgres work has
+              started here.
             </td>
           </tr>
 
@@ -894,8 +898,13 @@
             <td><span class="pill todo">Not started</span></td>
             <td><span class="flag none">—</span></td>
             <td class="note">
-              Biggest non-core module (~9k lines). Writes go through entity paths, so its
-              persistence follows whatever entities land on.
+              Biggest non-core module (~9k lines). Entity writes already go through
+              <code>EntitiesDataSourceFactory</code>
+              (<code>CsvImportEntitiesJobFactory</code>,
+              <code>CsvCreateRelationshipEntitiesJobFactory</code>), so those rows are
+              Postgres-backed under <code>postgresEntities</code> already; the rest of the module
+              (parsing, template/thesaurus handling, its own contracts) is still untouched V1-ish
+              code with no Postgres work of its own.
             </td>
           </tr>
 
@@ -906,8 +915,13 @@
             <td><span class="flag none">—</span></td>
             <td class="note">
               Query building and permission filters moved; V1 <code>app/api/search</code> and its
-              deprecated routes still carry most of the surface. Backed by Elasticsearch, so
-              Postgres affects it only through indexing sources.
+              deprecated routes still carry most of the surface. Backed by Elasticsearch, so query
+              execution itself is untouched, but the indexer (<code>entitiesIndex.js</code>) already
+              reads through <code>EntitiesDAOFactory</code>, which is Postgres-backed now that
+              entities is done — covered by <code>indexEntitiesParity.spec.ts</code>. Gap:
+              <code>entityFiltersFromQuery</code> only supports flat filters and a narrow
+              <code>$and</code>/<code>$or</code> metadata-value shape; unsupported query shapes
+              throw.
             </td>
           </tr>
 
@@ -1058,21 +1072,21 @@
         </p>
       </li>
       <li>
-        <h3>Build <code>PostgresEntitiesDataSource</code></h3>
+        <h3>Move the entity access policy to Postgres</h3>
         <p>
-          The entities table, RLS policies and backfill config exist, but only a read-side
-          unrestricted query is wired. This is the largest remaining piece of the Postgres migration
-          and the gate for suggestions, CSV import, relationships and sync.
-        </p>
-        <p class="why">
-          Expect the same shape as users: DAO + mapper + data source + consistency suite.
+          The permission RLS infrastructure is already in the schema; the data source is not. This
+          is now the largest gap on the core data model — entities itself shipped (#9608,
+          <code>PostgresEntitiesDataSource</code>, full read/write path) — and doing it keeps
+          permission checks on one backend.
         </p>
       </li>
       <li>
-        <h3>Move the entity access policy to Postgres</h3>
+        <h3>Give consumers of <code>EntitiesDataSourceFactory</code> a consistency suite</h3>
         <p>
-          The permission RLS infrastructure is already in the schema; the data source is not. Doing
-          this alongside entities keeps permission checks on one backend.
+          CSV import and the search indexer already write/read entities through the factory, so they
+          inherit Postgres correctness from entities — but entities itself shipped without a
+          cross-backend consistency suite, unlike files/user-groups/captcha. That gap is now
+          upstream of every consumer, not just entities.
         </p>
       </li>
       <li>
@@ -1087,8 +1101,8 @@
         <p>
           Pages, relationships, CSV and search are layered but sit outside the core and its
           conventions (ExecutionContext, factories, use cases). Until they move, they cannot follow
-          the Postgres pattern. Translations just made this trip — consolidation first, then the
-          table — and it is the template for the rest.
+          the Postgres pattern for their own tables. Translations and entities made this trip
+          already — consolidation first, then the table — and are the template for the rest.
         </p>
       </li>
     </ol>
@@ -1105,8 +1119,10 @@
         <h3>Independent flags, coupled data</h3>
         <p>
           Users and user groups are joined in a single read, so
-          <code>resolveUsersBackend</code> now throws when only one of the two flags is set. The
-          guard covers the contracts that join; every other flag pair is still uncoordinated.
+          <code>resolveUsersBackend</code> now throws when only one of the two flags is set.
+          <code>EntitiesDataSourceFactory</code>/<code>EntitiesDAOFactory</code> now do the same for
+          <code>postgresEntities</code>/<code>postgresFiles</code> — entities requires files. Every
+          other flag pair is still uncoordinated.
         </p>
       </article>
       <article class="card">
@@ -1123,9 +1139,11 @@
         <p>
           Files, user groups and captcha run the same assertions against both backends, and have
           already caught real divergences. Users, translations, templates, thesauri, relationship
-          types and password recoveries shipped without one — they have a spec per backend instead,
-          which cannot catch the two drifting apart. The gap grows with each area that ships
-          flagged-off.
+          types, password recoveries and now entities shipped without one — they have a spec per
+          backend instead, which cannot catch the two drifting apart. Entities is the highest-risk
+          gap in this group: CSV import and the search indexer both inherit its correctness through
+          <code>EntitiesDataSourceFactory</code>/<code>EntitiesDAOFactory</code> without a suite to
+          catch drift. The gap grows with each area that ships flagged-off.
         </p>
       </article>
       <article class="card">

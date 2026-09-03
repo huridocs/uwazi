@@ -5,6 +5,7 @@ export { LinkProperty } from './LinkProperty.js';
 export { Markdown } from './Markdown.js';
 export { Media } from './Media.js';
 export { MetadataCard } from './MetadataCard.js';
+export { DocumentPreviewCard } from './DocumentPreviewCard.js';
 export { MetadataItemsTable } from './MetadataItemsTable.js';
 export { PropertyLabel } from './PropertyLabel.js';
 export { PropertyValue } from './PropertyValue.js';

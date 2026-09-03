@@ -161,6 +161,7 @@ export const config = {
       postgresRelationshipTypes: FEATURE_FLAG_POSTGRES_RELATIONSHIP_TYPES === 'true' || false,
       postgresTranslations: FEATURE_FLAG_POSTGRES_TRANSLATIONS === 'true' || false,
       postgresSettings: FEATURE_FLAG_POSTGRES_SETTINGS === 'true' || false,
+      postgresPages: false,
       postgresPasswordRecoveries: false,
       postgresUsers: false,
       postgresCaptchas: false,

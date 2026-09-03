@@ -1,6 +1,8 @@
 import db, { DBFixture } from '#api/utils/testing_db.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-import pages from '#api/pages/index.js';
+import { GetPageUseCaseFactory } from '#api/pages.v2/infrastructure/factories/GetPageUseCaseFactory.js';
+import { ListPagesUseCaseFactory } from '#api/pages.v2/infrastructure/factories/ListPagesUseCaseFactory.js';
+import { PageNotFoundError } from '#api/pages.v2/domain/errors.js';
 import { UserRole } from '#api/core/domain/user/User.js';
 import { DeleteLanguagePagesListener } from '../DeleteLanguagePagesListener.js';
 
@@ -64,10 +66,12 @@ describe('DeleteLanguagePagesListener', () => {
     await dispatch(listener, 'es');
 
     await expect(
-      testingEnvironment.runWithContext(async () => pages.getById('page1', 'es'))
-    ).rejects.toMatchObject({ code: 404 });
+      testingEnvironment.runWithContext(async () =>
+        GetPageUseCaseFactory.default().execute({ lookup: 'page1', language: 'es' })
+      )
+    ).rejects.toThrow(PageNotFoundError);
     const enPage = await testingEnvironment.runWithContext(async () =>
-      pages.getById('page1', 'en')
+      GetPageUseCaseFactory.default().execute({ lookup: 'page1', language: 'en' })
     );
     expect(enPage.title).toBe('Test page');
   });
@@ -77,7 +81,7 @@ describe('DeleteLanguagePagesListener', () => {
     await dispatch(listener, 'es');
 
     const enPages = await testingEnvironment.runWithContext(async () =>
-      pages.get({ language: 'en' })
+      ListPagesUseCaseFactory.default().execute({ language: 'en' })
     );
     expect(enPages).toHaveLength(1);
     expect(enPages[0].sharedId).toBe('page1');

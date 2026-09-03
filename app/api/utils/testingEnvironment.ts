@@ -35,6 +35,10 @@ import { SettingsDataSource } from '#api/core/application/contracts/SettingsData
 import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
 import { PostgresSettingsMapper } from '#api/core/infrastructure/postgresql/settings/PostgresSettingsMapper.js';
 import { Settings as SettingsType } from '#shared/types/settingsType.js';
+import {
+  PageLocalesMigrationConfig,
+  PageMigrationConfig,
+} from '#api/core/infrastructure/postgresql/migrations/configs/index.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -100,6 +104,14 @@ const sanitizeTranslationForPostgres = (translation: Record<string, unknown>) =>
 const sanitizeSettingsForPostgres = (settings: Record<string, unknown>) =>
   PostgresSettingsMapper.toRow(settings as SettingsType);
 
+// A mongo pages document holds its locales nested; in postgres they are their own table.
+const PG_FANOUT_BY_MONGO_COLLECTION: Record<
+  string,
+  { table: string; mapRows: (doc: Record<string, unknown>) => Record<string, unknown>[] }
+> = {
+  pages: { table: 'page_locales', mapRows: PageLocalesMigrationConfig.mapRows },
+};
+
 const PG_SANITIZER_BY_MONGO_COLLECTION: Record<
   string,
   (row: Record<string, unknown>) => Record<string, unknown>
@@ -109,6 +121,7 @@ const PG_SANITIZER_BY_MONGO_COLLECTION: Record<
   usergroups: sanitizeUserGroupForPostgres,
   translationsV2: sanitizeTranslationForPostgres,
   settings: sanitizeSettingsForPostgres,
+  pages: PageMigrationConfig.mapDocument,
 };
 
 const MIRRORED_COLLECTIONS = [
@@ -256,16 +269,27 @@ const testingEnvironment = {
         Object.fromEntries(
           Object.entries(fixtures)
             .filter(([table]) => (this.postgresMirror ?? MIRRORED_COLLECTIONS).includes(table))
-            .map(([table, fixture]) => {
+            .flatMap(([table, fixture]) => {
               const pgTable = PG_TABLE_BY_MONGO_COLLECTION[table] ?? table;
               const sanitizeForPostgres = PG_SANITIZER_BY_MONGO_COLLECTION[table];
+              const fanOut = PG_FANOUT_BY_MONGO_COLLECTION[table];
+              const docs: Record<string, unknown>[] = fixture.map((f: any) =>
+                JSON.parse(JSON.stringify(ObjectUtils.sanitize(f, ['__v'])))
+              );
 
               return [
-                pgTable,
-                fixture.map((f: any) => {
-                  const sanitized = JSON.parse(JSON.stringify(ObjectUtils.sanitize(f, ['__v'])));
-                  return sanitizeForPostgres ? sanitizeForPostgres(sanitized) : sanitized;
-                }),
+                [
+                  pgTable,
+                  docs.map(doc => (sanitizeForPostgres ? sanitizeForPostgres(doc) : doc)),
+                ] as [string, Record<string, unknown>[]],
+                ...(fanOut
+                  ? [
+                      [fanOut.table, docs.flatMap(fanOut.mapRows)] as [
+                        string,
+                        Record<string, unknown>[],
+                      ],
+                    ]
+                  : []),
               ];
             })
         )

@@ -101,7 +101,8 @@ describe('MetadataDisplay', () => {
 
     it('shows media image without Document', () => {
       cy.contains('Document').should('not.exist');
-      cy.get('img[src="/batman.jpg"]').should('exist');
+      cy.get('img[src="/batman.jpg"]').should('not.exist');
+      cy.get('[data-field-key="preview_document"]').should('not.exist');
 
       cy.contains('Media with an image').should('exist');
       cy.get('img[alt="/short-video-thumbnail.jpg"]').should(

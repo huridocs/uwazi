@@ -12,7 +12,7 @@ This is the planning doc for both phases. Pattern sources: [`../Relationship Typ
 ## Status
 
 - **Phase 1 (V2 hex, Mongo)** — **done.** Review queue below is all `[x]`. Core owns reads/writes. Factory uses `ExecutionContext.transactionManager` only (no TM fallback). Tests that need a settings DS outside HTTP/jobs use `SettingsDSWithContext` from `testingEnvironment` — they do **not** wrap Jest globally and they do **not** import `SettingsDataSourceFactory` for fixture patches. V2 adapters that already have a TM take an injected `settingsDS`.
-- **Phase 2 (Postgres)** — **in progress.** Contract is locked (`readFields` / `readFeature` / `readSyncConfig`, slice columns not `SELECT document`). Schema is **017** (016 is entities published default).
+- **Phase 2 (Postgres)** — **in progress.** Contract is locked (`readFields` / `readFeature` / `readSyncConfig`, slice columns not `SELECT document`). Schema is **018** (production took **017** for pages).
 
 Do not re-investigate these; they are done and should stay this way:
 
@@ -29,7 +29,7 @@ Do not re-investigate these; they are done and should stay this way:
 
 ### Phase 2 progress
 
-- [x] Schema `017-create-settings-table.sql` (`settings` + RLS in the same migration)
+- [x] Schema `018-create-settings-table.sql` (`settings` + RLS in the same migration)
 - [x] `PostgresSettingsMapper` + specs (columns, JSONB groups, `extras`, drop `__v`)
 - [x] `PostgresSettingsDataSource` + specs (CRUD, singleton `tenant_id`, RLS as `app_user`, projections)
 - [x] Feature flag `postgresSettings` (config / tenantContext / tenantsModel; local via `FEATURE_FLAG_POSTGRES_SETTINGS=true`)
@@ -330,7 +330,7 @@ Integration-first: save + Menu/Filters translation keys, links merge, default la
 | S2  | **`tenant_id` is PRIMARY KEY** (singleton identity). RLS is `tenant_id = current_tenant()` only — never `AND _id`.                                                                                                                                                                                                                                                    |
 | S3  | **`_id TEXT NOT NULL` is a sync surrogate**, not identity. 24-char ObjectId hex. Copy **preserves** Mongo `_id`. `SyncLogWriter` / updatelogs still use it. Inbound settings handler **ignores** payload `_id` and patches the tenant row. Do not special-case the settings namespace to drop `_id`. `PostgresTable` upsert conflict is `{ columns: ['tenant_id'] }`. |
 | S4  | **No single `document` blob.** Slice columns + semantic JSONB groups (mail, analytics, map, branding, site_preferences). Unknown Mongo keys go in **`extras JSONB`**, not `custom`. `__v` dropped on copy.                                                                                                                                                            |
-| S5  | RLS + `tenant_isolation` in the **same** schema migration as `CREATE TABLE` (next delta: **017** — 016 is entities published default).                                                                                                                                                                                                                                |
+| S5  | RLS + `tenant_isolation` in the **same** schema migration as `CREATE TABLE` (delta **018** — production took **017** for pages).                                                                                                                                                                                                                                       |
 | S6  | One store. Copy Mongo → PG, flip `postgresSettings`. No dual-write of the settings row. Flag is **one-way** after any PG write.                                                                                                                                                                                                                                       |
 | S7  | New **document** `_id` (blank tenant) is minted via `IdGenerator` in the use case — **not** `new ObjectId()` inside the PG DS. Nested `links[]` mint **`id`** via `toPersistableMenuItems` (Menu translation identity). Nested `filters[]` do **not** mint `_id`; identity is `id`; persist strips mongoose leftovers (`toPersistableFilters`).                       |
 | S8  | Language `$push`/`$pull` become read-modify-write of the **`languages` JSONB column** inside the PG TM (singleton). Do not add a `settings_languages` table in v1.                                                                                                                                                                                                    |
@@ -341,7 +341,7 @@ Integration-first: save + Menu/Filters translation keys, links merge, default la
 
 ### Schema (locked)
 
-`app/api/core/infrastructure/postgresql/schema_migrations/017-create-settings-table.sql`
+`app/api/core/infrastructure/postgresql/schema_migrations/018-create-settings-table.sql`
 
 ```sql
 CREATE TABLE IF NOT EXISTS settings (
@@ -469,7 +469,7 @@ Same class of risk as translations P12. Notable:
 
 ### Phase 2 (Postgres)
 
-1. Schema `017` + RLS.
+1. Schema `018` + RLS.
 2. Mapper + PG DS + specs (CRUD, singleton unique, RLS as `app_user`, JSONB extras).
 3. Flag `postgresSettings` + factory + `cached()`.
 4. Sync handler PG branch.
@@ -518,7 +518,7 @@ Same class of risk as translations P12. Notable:
 | Outbound sync subset                   | `app/api/sync/processNamespaces.ts` (`settings()`)                                                                            |
 | Copy engine / CLI                      | `…/postgresql/migrations/MigrateCollectionToPostgres.ts`, `scripts/scripts.v2/migrateToPostgres.ts` (`--collection settings`) |
 | Settings copy map                      | `…/postgresql/migrations/configs/SettingsMigrationConfig.ts`                                                                  |
-| Settings PG schema                     | `…/schema_migrations/017-create-settings-table.sql`                                                                           |
+| Settings PG schema                     | `…/schema_migrations/018-create-settings-table.sql`                                                                           |
 | Settings PG adapter                    | `…/postgresql/settings/PostgresSettingsMapper.ts`, `PostgresSettingsDataSource.ts`                                            |
 | RLS pattern                            | `…/schema_migrations/015-create-translations-table.sql`                                                                       |
 | Tenant flags                           | `app/api/config.ts`, `tenants/tenantContext.ts`, `tenants/tenantsModel.ts`                                                    |

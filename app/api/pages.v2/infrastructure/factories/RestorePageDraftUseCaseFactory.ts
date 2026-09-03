@@ -1,21 +1,22 @@
 import { RestorePageDraftUseCase } from '#api/pages.v2/application/useCases/RestorePageDraft.js';
-import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
+import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
+import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { PagesDataSourceFactory } from './PagesDataSourceFactory.js';
 import { PageReleasesDataSourceFactory } from './PageReleasesDataSourceFactory.js';
-import { pageUseCaseExecutionContext } from './pageUseCaseExecutionContext.js';
 
 export class RestorePageDraftUseCaseFactory {
   static default() {
-    const transactionManager = TransactionManagerFactory.default();
-    const { actor, tenant } = pageUseCaseExecutionContext();
+    const { actor } = ExecutionContext;
+    const tenant = ExecutionContext.currentTenant;
+    const transactionManager = ExecutionContext.transactionManager as MongoTransactionManager;
 
     return new RestorePageDraftUseCase(
       {
         transactionManager,
-        pagesDS: PagesDataSourceFactory.default({ transactionManager }),
-        pageReleasesDS: PageReleasesDataSourceFactory.default({ transactionManager }),
-        settingsDS: SettingsDataSourceFactory.default({ transactionManager }),
+        pagesDS: PagesDataSourceFactory.default(),
+        pageReleasesDS: PageReleasesDataSourceFactory.default(),
+        settingsDS: SettingsDataSourceFactory.default(),
       },
       { actor, tenant }
     );

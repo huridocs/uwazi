@@ -11,8 +11,8 @@ import { DB } from '#api/odm/index.js';
 import { tenants } from '#api/tenants/index.js';
 import { config } from '#api/config.js';
 import {
+  AnyMigrationConfig,
   MigrateCollectionToPostgres,
-  MigrationConfig,
 } from '#api/core/infrastructure/postgresql/migrations/MigrateCollectionToPostgres.js';
 import { PostgresDB } from '#api/infrastructure/PostgresDB.js';
 import { TemplateMigrationConfig } from '#api/core/infrastructure/postgresql/migrations/configs/TemplateMigrationConfig.js';
@@ -25,8 +25,13 @@ import { PasswordRecoveryMigrationConfig } from '#api/core/infrastructure/postgr
 import { TranslationsMigrationConfig } from '#api/core/infrastructure/postgresql/migrations/configs/TranslationsMigrationConfig.js';
 import { EntitiesMigrationConfig } from '#api/core/infrastructure/postgresql/migrations/configs/EntitiesMigrationConfig.js';
 import { SettingsMigrationConfig } from '#api/core/infrastructure/postgresql/migrations/configs/SettingsMigrationConfig.js';
+import {
+  PageLocalesMigrationConfig,
+  PageMigrationConfig,
+} from '#api/core/infrastructure/postgresql/migrations/configs/PageMigrationConfig.js';
+import { PageReleaseMigrationConfig } from '#api/core/infrastructure/postgresql/migrations/configs/PageReleaseMigrationConfig.js';
 
-const COLLECTIONS: Record<string, MigrationConfig> = {
+const COLLECTIONS: Record<string, AnyMigrationConfig> = {
   thesauri: ThesaurusMigrationConfig,
   templates: TemplateMigrationConfig,
   files: FilesMigrationConfig,
@@ -37,6 +42,10 @@ const COLLECTIONS: Record<string, MigrationConfig> = {
   translations: TranslationsMigrationConfig,
   entities: EntitiesMigrationConfig,
   settings: SettingsMigrationConfig,
+  pages: PageMigrationConfig,
+  // A page's locales are nested in the mongo document, so they are their own pass.
+  page_locales: PageLocalesMigrationConfig,
+  page_releases: PageReleaseMigrationConfig,
 };
 
 function log(message: string) {
@@ -82,7 +91,7 @@ const argv = yargs(hideBin(process.argv))
 async function migrateCollection(
   tenantName: string,
   collectionName: string,
-  migrationConfig: MigrationConfig
+  migrationConfig: AnyMigrationConfig
 ): Promise<void> {
   await tenants.run(async () => {
     const mongoDb = DB.mongodb_Db(tenants.current().dbName);

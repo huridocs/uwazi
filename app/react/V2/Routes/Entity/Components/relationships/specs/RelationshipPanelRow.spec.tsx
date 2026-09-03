@@ -6,6 +6,7 @@ import { render, screen } from '@testing-library/react';
 import { createStore, Provider } from 'jotai';
 import type { RelationshipMarker } from '#V2/Components/Relationships/types.js';
 import { templatesAtom } from '#V2/atoms/index.js';
+import { EntityOverlayProvider } from '../../context/EntityOverlayContext.js';
 import { RelationshipsSelectionProvider } from '../../context/RelationshipsSelectionContext.js';
 import { groupNestedEvidence } from '../rows/RelationshipPanelRow.js';
 import { RelationshipRowNestedEvidence } from '../rows/RelationshipRowNestedEvidence.js';
@@ -183,16 +184,18 @@ describe('RelationshipPanelRow', () => {
 
     render(
       <Provider store={store}>
-        <RelationshipsSelectionProvider>
-          <RelationshipRowNestedEvidence
-            rowRef={React.createRef<HTMLDivElement>()}
-            marker={emptyTextMarker}
-            referenceText=""
-            referencePage={2}
-            editMode={false}
-            representedIds={[emptyTextMarker._id]}
-          />
-        </RelationshipsSelectionProvider>
+        <EntityOverlayProvider>
+          <RelationshipsSelectionProvider>
+            <RelationshipRowNestedEvidence
+              rowRef={React.createRef<HTMLDivElement>()}
+              marker={emptyTextMarker}
+              referenceText=""
+              referencePage={2}
+              editMode={false}
+              representedIds={[emptyTextMarker._id]}
+            />
+          </RelationshipsSelectionProvider>
+        </EntityOverlayProvider>
       </Provider>
     );
 

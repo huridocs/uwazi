@@ -2,6 +2,7 @@
 import { captureException } from '@sentry/node-core/light';
 import Ajv from 'ajv';
 import { ZodError } from 'zod';
+import { errors as elasticErrors } from '@elastic/elasticsearch';
 import util, { inspect } from 'node:util';
 import { UnauthorizedError } from '#api/authorization.v2/errors/UnauthorizedError.js';
 import { OperationalError } from '#api/common.v2/errors/OperationalError.js';
@@ -101,6 +102,12 @@ const prettifyError = (error, { req = {}, uncaught = false } = {}) => {
 
   if (error instanceof S3Error) {
     result = { code: error.httpStatusCode || 503, message: util.inspect(error), logLevel: 'debug' };
+  }
+
+  // Elasticsearch's search thread pool queue is full and rejected the request under load;
+  // this is transient backpressure, not a client mistake, so it maps to 503 rather than 400/500.
+  if (error instanceof elasticErrors.ResponseError && error.statusCode === 429) {
+    result = { code: 503, message: util.inspect(error), logLevel: 'debug' };
   }
 
   if (error instanceof Ajv.ValidationError) {
