@@ -1,3 +1,4 @@
+// oxlint-disable max-statements
 export default async (app, server) => {
   // Load TypeScript modules dynamically
   const [
