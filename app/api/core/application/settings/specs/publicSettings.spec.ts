@@ -35,32 +35,14 @@ describe('publicSettings', () => {
   });
 
   describe('shapeSettingsForSSR', () => {
-    it('should whitelist settings for non-admin users and preserve features', () => {
-      const result = shapeSettingsForSSR(
-        { ...fullSettings, features: { newHeader: true, paragraphExtraction: true } },
-        { role: 'editor' }
-      );
+    it('should keep the already-projected settings and features', () => {
+      const projected = {
+        site_name: 'Uwazi',
+        features: { newHeader: true, paragraphExtraction: true },
+        themeCustomization: true,
+      };
 
-      expect(result.site_name).toBe('Uwazi');
-      expect(result.mailerConfig).toBeUndefined();
-      expect(result.features).toEqual({ newHeader: true, paragraphExtraction: true });
-      expect(result.themeCustomization).toBe(true);
-    });
-
-    it('should keep full settings for admins while ensuring public fields and features', () => {
-      const result = shapeSettingsForSSR(fullSettings, { role: 'admin' });
-
-      expect(result.mailerConfig).toBe('smtp://secret');
-      expect(result.contactEmail).toBe('admin@example.com');
-      expect(result.features).toEqual({ newHeader: true, ocr: { url: 'http://ocr' } });
-      expect(result.themeCustomization).toBe(true);
-    });
-
-    it('should whitelist settings for anonymous users and preserve features', () => {
-      const result = shapeSettingsForSSR(fullSettings, null);
-      expect(result.mailerConfig).toBeUndefined();
-      expect(result.site_name).toBe('Uwazi');
-      expect(result.features).toEqual({ newHeader: true, ocr: { url: 'http://ocr' } });
+      expect(shapeSettingsForSSR(projected)).toEqual(projected);
     });
   });
 

@@ -7,6 +7,7 @@ class SetDefaultLanguageUseCaseFactory {
     return new SetDefaultLanguageUseCase({
       transactionManager: ExecutionContext.transactionManager,
       settingsDS: SettingsDataSourceFactory.default(),
+      eventEmitter: ExecutionContext.eventEmitter,
     });
   }
 }

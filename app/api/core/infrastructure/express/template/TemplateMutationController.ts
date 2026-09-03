@@ -1,7 +1,5 @@
 import { inspect } from 'util';
 import { AbstractController } from '#api/common.v2/infrastructure/AbstractController.js';
-import { UpdateFilterNameUseCaseFactory } from '../../factories/UpdateFilterNameUseCaseFactory.js';
-import { SettingsQueryServiceFactory } from '../../factories/SettingsQueryServiceFactory.js';
 import { createError } from '#api/utils/index.js';
 import { TemplateFacade } from '../../facades/TemplateFacade.js';
 import { TemplateDBO } from '../../mongodb/template/DBOs/TemplateDBO.js';
@@ -17,16 +15,6 @@ class TemplateMutationController extends AbstractController {
         response = await TemplateFacade.create(this.request.body);
       } else {
         response = await TemplateFacade.update(this.request.body, this.language);
-      }
-
-      const updatedFilters = await UpdateFilterNameUseCaseFactory.default().execute({
-        filterId: response._id.toString(),
-        name: response.name,
-      });
-
-      if (updatedFilters) {
-        const publicSettings = await SettingsQueryServiceFactory.default().getPublic();
-        this.request.sockets.emitToCurrentTenant('updateSettings', publicSettings);
       }
 
       this.request.sockets.emitToCurrentTenant('templateChange', response);

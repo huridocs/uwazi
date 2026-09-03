@@ -11,6 +11,7 @@ import { DeleteLanguageEntitiesJobFactory } from '#api/core/infrastructure/facto
 import { FilesDataSourceFactory } from '#api/core/infrastructure/factories/FilesDataSourceFactory.js';
 import { PDFPostProcessJobFactory } from '#api/core/infrastructure/factories/PDFPostProcessJobFactory.js';
 import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
+import { SettingsQueryServiceFactory } from '#api/core/infrastructure/factories/SettingsQueryServiceFactory.js';
 import { TemplatesDataSourceFactory } from '#api/core/infrastructure/factories/TemplatesDataSourceFactory.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { FileStorageFactory } from '#api/core/infrastructure/files/FileStorageFactory.js';
@@ -26,6 +27,7 @@ import { RelationshipSyncJob } from '#api/core/infrastructure/jobs/RelationshipS
 import { TemplatePostProcessEntitiesJob } from '#api/core/infrastructure/jobs/TemplatePostProcessEntitiesJob.js';
 import { DenormalizeEntityUpdatedListener } from '#api/core/infrastructure/listeners/DenormalizeEntityUpdatedListener.js';
 import { ProcessRelationshipAfterEntityUpdatedListener } from '#api/core/infrastructure/listeners/ProcessRelationshipAfterEntityUpdatedListener.js';
+import { BroadcastSettingsChanged } from '#api/core/infrastructure/listeners/BroadcastSettingsChanged.js';
 import { AddLanguagePagesListener } from '#api/pages.v2/infrastructure/listeners/AddLanguagePagesListener.js';
 import { DeleteLanguagePagesListener } from '#api/pages.v2/infrastructure/listeners/DeleteLanguagePagesListener.js';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
@@ -335,6 +337,15 @@ export function registerJobs(register: Register) {
   register(
     AddLanguagePagesListener.asJob(),
     async () => new AddLanguagePagesListener({ settingsDS: SettingsDataSourceFactory.default() })
+  );
+
+  register(
+    BroadcastSettingsChanged.asJob(),
+    async () =>
+      new BroadcastSettingsChanged({
+        settingsQuery: SettingsQueryServiceFactory.default(),
+        sockets: new V1WebSocketsWrapper(),
+      })
   );
 
   register(DeleteLanguagePagesListener.asJob(), async () => new DeleteLanguagePagesListener({}));

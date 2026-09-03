@@ -3,9 +3,6 @@ import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { SettingsDataSourceFactory } from '../SettingsDataSourceFactory.js';
 import { SaveSettingsUseCaseFactory } from '../SaveSettingsUseCaseFactory.js';
 import { SetDefaultLanguageUseCaseFactory } from '../SetDefaultLanguageUseCaseFactory.js';
-import { UpdateFilterNameUseCaseFactory } from '../UpdateFilterNameUseCaseFactory.js';
-import { RemoveTemplateFromFiltersUseCaseFactory } from '../RemoveTemplateFromFiltersUseCaseFactory.js';
-import { SaveMenuItemsUseCaseFactory } from '../SaveMenuItemsUseCaseFactory.js';
 import { AddLanguageUseCaseFactory } from '../AddLanguageUseCaseFactory.js';
 import { DeleteLanguageUseCaseFactory } from '../DeleteLanguageUseCaseFactory.js';
 
@@ -13,7 +10,7 @@ type FactoryDeps = {
   transactionManager: unknown;
   settingsDS?: { transactionManager?: unknown };
   translationsService?: { deps?: { transactionManager?: unknown } };
-  saveSettings?: object;
+  settingsService?: { deps?: { transactionManager?: unknown } };
 };
 
 const depsOf = (uc: object): FactoryDeps => (uc as unknown as { deps: FactoryDeps }).deps;
@@ -21,12 +18,6 @@ const depsOf = (uc: object): FactoryDeps => (uc as unknown as { deps: FactoryDep
 const factories = [
   ['SaveSettingsUseCaseFactory', () => SaveSettingsUseCaseFactory.default()],
   ['SetDefaultLanguageUseCaseFactory', () => SetDefaultLanguageUseCaseFactory.default()],
-  ['UpdateFilterNameUseCaseFactory', () => UpdateFilterNameUseCaseFactory.default()],
-  [
-    'RemoveTemplateFromFiltersUseCaseFactory',
-    () => RemoveTemplateFromFiltersUseCaseFactory.default(),
-  ],
-  ['SaveMenuItemsUseCaseFactory', () => SaveMenuItemsUseCaseFactory.default()],
   ['AddLanguageUseCaseFactory', () => AddLanguageUseCaseFactory.default()],
   ['DeleteLanguageUseCaseFactory', () => DeleteLanguageUseCaseFactory.default()],
 ] as const;
@@ -39,8 +30,8 @@ const assertDepsUseContext = (deps: FactoryDeps, fromContext: unknown) => {
   if (deps.translationsService?.deps) {
     expect(deps.translationsService.deps.transactionManager === fromContext).toBe(true);
   }
-  if (deps.saveSettings) {
-    expect(depsOf(deps.saveSettings).transactionManager === fromContext).toBe(true);
+  if (deps.settingsService?.deps) {
+    expect(deps.settingsService.deps.transactionManager === fromContext).toBe(true);
   }
 };
 

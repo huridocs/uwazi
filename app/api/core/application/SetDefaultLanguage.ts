@@ -2,6 +2,7 @@ import { z } from 'zod';
 import { AbstractUseCase } from '../libs/UseCase.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import { Settings } from '#shared/types/settingsType.js';
+import { SettingsChangedEvent } from '#api/core/domain/settings/events/SettingsChangedEvent.js';
 import { SettingsDataSource } from './contracts/SettingsDataSource.js';
 import { applySettingsDefaults } from './settings/settingsDefaults.js';
 import { pickAdminFields } from './settings/publicSettings.js';
@@ -31,9 +32,11 @@ class SetDefaultLanguageUseCase extends AbstractUseCase<Input, Output, Deps> {
       default: language.key === key,
     }));
 
-    const saved = await this.transactionManager.run(async () =>
-      this.deps.settingsDS.patch({ languages })
-    );
+    const saved = await this.transactionManager.run(async () => {
+      const patched = await this.deps.settingsDS.patch({ languages });
+      await this.eventEmitter.emit(new SettingsChangedEvent({}));
+      return patched;
+    });
 
     return pickAdminFields(applySettingsDefaults(saved));
   }

@@ -139,9 +139,7 @@ describe('AddLanguage use case', () => {
       it('should present catalog language fields on GET without storing them', async () => {
         await createSut().execute({ languages: [{ key: 'es', label: 'Spanish' }] });
 
-        const settings = await withFlag(async () =>
-          SettingsQueryServiceFactory.default().getForAdmin()
-        );
+        const settings = await withFlag(async () => SettingsQueryServiceFactory.default().get());
         expect(settings.languages?.find(language => language.key === 'es')).toEqual(
           expect.objectContaining({
             key: 'es',

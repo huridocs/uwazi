@@ -3,7 +3,7 @@ import { SettingsQueryServiceFactory } from '#api/core/infrastructure/factories/
 
 class GetSettingsLinksController extends AbstractController {
   protected async handle(): Promise<void> {
-    const settings = await SettingsQueryServiceFactory.default().getPublic();
+    const settings = await SettingsQueryServiceFactory.default().forBroadcast();
     this.response.json(settings.links);
   }
 }

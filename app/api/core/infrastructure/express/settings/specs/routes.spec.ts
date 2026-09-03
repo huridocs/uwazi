@@ -10,7 +10,7 @@ import { permissionsContext } from '#api/permissions/permissionsContext.js';
 import { search } from '#api/search/index.js';
 import { UsersDirectoryFactory } from '#api/core/infrastructure/factories/UsersDirectoryFactory.js';
 import { Result } from '#api/core/libs/Result.js';
-import { iosocket, setUpApp, TestEmitSources } from '#api/utils/testingRoutes.js';
+import { setUpApp } from '#api/utils/testingRoutes.js';
 import * as setupSockets from '#api/socketio/setupSockets.js';
 import { testingEnvironment, SettingsDSWithContext } from '#api/utils/testingEnvironment.js';
 import { testingTenants } from '#api/utils/testingTenants.js';
@@ -120,8 +120,6 @@ describe('Settings routes', () => {
       const app = getApp('admin');
 
       it('should save settings', async () => {
-        iosocket.emit.mockClear();
-
         const response = await request(app)
           .post('/api/settings')
           .send({
@@ -138,16 +136,6 @@ describe('Settings routes', () => {
             site_name: 'my new name',
             mailerConfig: 'smtp://user:password@example.com',
             features: { favorites: true },
-          })
-        );
-        expect(iosocket.emit).toHaveBeenCalledWith(
-          'updateSettings',
-          TestEmitSources.currentTenant,
-          expect.not.objectContaining({
-            features: expect.anything(),
-            mailerConfig: expect.anything(),
-            contactEmail: expect.anything(),
-            senderEmail: expect.anything(),
           })
         );
       });

@@ -3,7 +3,6 @@ import { TestUtils } from '#api/common.v2/utils/Test.js';
 import { tenants } from '#api/tenants/index.js';
 import { DeleteLanguageUseCaseFactory } from '#api/core/infrastructure/factories/DeleteLanguageUseCaseFactory.js';
 import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
-import { SettingsQueryServiceFactory } from '#api/core/infrastructure/factories/SettingsQueryServiceFactory.js';
 import { DeleteLanguageController } from '../DeleteLanguageController.js';
 
 const createSut = (query?: Record<string, string>) => {
@@ -37,10 +36,6 @@ describe('DeleteLanguageController', () => {
 
     jest.spyOn(SettingsDataSourceFactory, 'default').mockReturnValue({
       readFields: settingsGetSpy,
-    } as any);
-
-    jest.spyOn(SettingsQueryServiceFactory, 'default').mockReturnValue({
-      getPublic: jest.fn().mockResolvedValue({ languages: [] }),
     } as any);
   });
 
@@ -98,21 +93,15 @@ describe('DeleteLanguageController', () => {
     expect(response.sendStatus).toHaveBeenCalledWith(204);
   });
 
-  it('should emit updateSettings and translationsDelete after successful deletion', async () => {
-    const fakeSettings = { languages: [{ key: 'en', label: 'English' }] };
+  it('should emit translationsDelete after successful deletion', async () => {
     settingsGetSpy.mockResolvedValue({
       languages: [{ key: 'es', label: 'Spanish', installing: false }],
     });
-    const getSettings = jest.fn().mockResolvedValue(fakeSettings);
-    jest.spyOn(SettingsQueryServiceFactory, 'default').mockReturnValue({
-      getPublic: getSettings,
-    } as any);
 
     const { sut, emitToCurrentTenant } = createSut({ key: 'es' });
 
     await sut.handleAsync();
 
-    expect(emitToCurrentTenant).toHaveBeenCalledWith('updateSettings', fakeSettings);
     expect(emitToCurrentTenant).toHaveBeenCalledWith('translationsDelete', 'es');
   });
 });

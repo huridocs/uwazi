@@ -2,11 +2,10 @@ import { z } from 'zod';
 import { AbstractUseCase } from '../libs/UseCase.js';
 import { Settings } from '#shared/types/settingsType.js';
 import { SettingsDataSource } from './contracts/SettingsDataSource.js';
-import { TranslationsService } from './translation/TranslationsService.js';
-import { persistMenuAndFilterTranslations } from './settings/menuAndFilterTranslations.js';
 import { applySettingsDefaults } from './settings/settingsDefaults.js';
 import { pickAdminFields } from './settings/publicSettings.js';
 import { SaveSettingsInputSchema } from './settings/saveSettingsInput.js';
+import { SettingsService } from './settings/SettingsService.js';
 import { TemplateFacade } from '#api/core/infrastructure/facades/TemplateFacade.js';
 
 type Input = z.infer<typeof SaveSettingsInputSchema>;
@@ -15,7 +14,7 @@ type Output = Partial<Settings>;
 
 type Deps = {
   settingsDS: SettingsDataSource;
-  translationsService: TranslationsService;
+  settingsService: SettingsService;
 };
 
 class SaveSettingsUseCase extends AbstractUseCase<Input, Output, Deps> {
@@ -25,10 +24,9 @@ class SaveSettingsUseCase extends AbstractUseCase<Input, Output, Deps> {
     const incoming = SaveSettingsUseCase.InputSchema.parse(raw);
     const current = await this.deps.settingsDS.get();
 
-    const saved = await this.transactionManager.run(async () => {
-      await persistMenuAndFilterTranslations(this.deps.translationsService, incoming, current);
-      return this.deps.settingsDS.patch(incoming);
-    });
+    const saved = await this.transactionManager.run(async () =>
+      this.deps.settingsService.save(incoming, current)
+    );
 
     if (!current.newNameGeneration && incoming.newNameGeneration) {
       const defaultLanguage = current.languages?.find(language => language.default)?.key;

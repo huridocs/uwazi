@@ -1,13 +1,13 @@
-// oxlint-disable max-statements
+// oxlint-disable max-statements, max-lines
 import { TestUtils } from '#api/common.v2/utils/Test.js';
 import { TranslationsService } from '#api/core/application/translation/TranslationsService.js';
 import { TranslationsServiceFactory } from '#api/core/infrastructure/factories/TranslationsServiceFactory.js';
 import { SaveSettingsUseCaseFactory } from '#api/core/infrastructure/factories/SaveSettingsUseCaseFactory.js';
-import { SaveMenuItemsUseCaseFactory } from '#api/core/infrastructure/factories/SaveMenuItemsUseCaseFactory.js';
 import { SetDefaultLanguageUseCaseFactory } from '#api/core/infrastructure/factories/SetDefaultLanguageUseCaseFactory.js';
 import { SettingsQueryServiceFactory } from '#api/core/infrastructure/factories/SettingsQueryServiceFactory.js';
-import { RemoveTemplateFromFiltersUseCaseFactory } from '#api/core/infrastructure/factories/RemoveTemplateFromFiltersUseCaseFactory.js';
-import { UpdateFilterNameUseCaseFactory } from '#api/core/infrastructure/factories/UpdateFilterNameUseCaseFactory.js';
+import { SettingsServiceFactory } from '#api/core/infrastructure/factories/SettingsServiceFactory.js';
+import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
+import { User } from '#api/users.v2/model/User.js';
 import db from '#api/utils/testing_db.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { testingPG } from '#api/utils/testing_pg.js';
@@ -40,13 +40,19 @@ describe('settings', () => {
           }
         : undefined;
 
+    const adminActor = User.createFrom({
+      _id: 'aaaaaaaaaaaaaaaaaaaaaaaa',
+      role: 'admin',
+      groups: [],
+    });
+
     const withSettings = <T>(fn: () => T) =>
-      testingEnvironment.runWithContext(fn, settingsContext());
+      testingEnvironment.runWithContext(fn, { ...settingsContext(), actor: adminActor });
 
     const saveSettings = async (input: SaveSettingsInput) =>
       withSettings(async () => SaveSettingsUseCaseFactory.default().execute(input));
     const getSettings = async () =>
-      withSettings(async () => SettingsQueryServiceFactory.default().getForAdmin());
+      withSettings(async () => SettingsQueryServiceFactory.default().get());
 
     const setUpSettings = async (data = fixtures) => {
       await testingEnvironment.setUp(data, {
@@ -425,7 +431,7 @@ describe('settings', () => {
       });
     });
 
-    describe('getPublic / getForAdmin()', () => {
+    describe('get() / forBroadcast()', () => {
       describe('if there is no settings on the DB', () => {
         it('should return the public payload with tenant flags only', async () => {
           await db.clear(['settings']);
@@ -434,7 +440,7 @@ describe('settings', () => {
           }
 
           const result = await withSettings(async () =>
-            SettingsQueryServiceFactory.default().getPublic()
+            SettingsQueryServiceFactory.default().forBroadcast()
           );
           expect(result.site_name).toBeUndefined();
           expect(result.mailerConfig).toBeUndefined();
@@ -444,16 +450,16 @@ describe('settings', () => {
         });
       });
 
-      it('should not return secrets on getPublic', async () => {
+      it('should not return secrets on forBroadcast', async () => {
         const values = await withSettings(async () =>
-          SettingsQueryServiceFactory.default().getPublic()
+          SettingsQueryServiceFactory.default().forBroadcast()
         );
         expect(values.publicFormDestination).not.toBeDefined();
         expect(values.mailerConfig).not.toBeDefined();
         expect(values).not.toHaveProperty('sync');
       });
 
-      it('should include admin-only fields on getForAdmin but never sync', async () => {
+      it('should include admin-only fields on get() but never sync', async () => {
         const values = await getSettings();
         expect(values.publicFormDestination).toBe('http://example.com/submit');
         expect(values.mailerConfig).toBeDefined();
@@ -498,7 +504,9 @@ describe('settings', () => {
           ],
         });
         await withSettings(async () =>
-          RemoveTemplateFromFiltersUseCaseFactory.default().execute({ templateId: '123' })
+          ExecutionContext.transactionManager.run(async () =>
+            SettingsServiceFactory.default().removeTemplateFromFilters('123')
+          )
         );
         expect((await getSettings()).filters).toEqual([{ id: 'axz', name: 'Group', items: [] }]);
       });
@@ -508,10 +516,9 @@ describe('settings', () => {
       it('should update a filter name', async () => {
         await saveSettings({ filters: [{ id: '123', name: 'Batman' }] });
         const updated = await withSettings(async () =>
-          UpdateFilterNameUseCaseFactory.default().execute({
-            filterId: '123',
-            name: 'The dark knight',
-          })
+          ExecutionContext.transactionManager.run(async () =>
+            SettingsServiceFactory.default().updateFilterName('123', 'The dark knight')
+          )
         );
 
         expect(updated).toBe(true);
@@ -521,10 +528,9 @@ describe('settings', () => {
       it('should do nothing when filter does not exist', async () => {
         await saveSettings({ filters: [{ id: '123', name: 'Batman' }] });
         const updated = await withSettings(async () =>
-          UpdateFilterNameUseCaseFactory.default().execute({
-            filterId: '321',
-            name: 'Filter not present',
-          })
+          ExecutionContext.transactionManager.run(async () =>
+            SettingsServiceFactory.default().updateFilterName('321', 'Filter not present')
+          )
         );
 
         expect(updated).toBe(false);
@@ -562,7 +568,7 @@ describe('settings', () => {
       it('should save the links', async () => {
         await setUpSettings();
         await withSettings(async () =>
-          SaveMenuItemsUseCaseFactory.default().execute({ links: newLinks })
+          SaveSettingsUseCaseFactory.default().execute({ links: newLinks })
         );
         const result = (await getSettings()).links || [];
         const serialize = (value: unknown) => JSON.parse(JSON.stringify(value));

@@ -99,7 +99,7 @@ describe('api/settings/links', () => {
         const storedLinks =
           (
             await testingEnvironment.runWithContext(
-              async () => SettingsQueryServiceFactory.default().getPublic(),
+              async () => SettingsQueryServiceFactory.default().forBroadcast(),
               postgresSettings
                 ? {
                     tenant: {

@@ -214,7 +214,7 @@ const prepareStores = async (req: ExpressRequest, settings: ClientSettings, lang
       : [];
 
   // Match GET /api/settings: non-admins only get the public whitelist.
-  const shapedSettings = shapeSettingsForSSR(settingsApiResponse as any, req.user);
+  const shapedSettings = shapeSettingsForSSR(settingsApiResponse as any);
   // Keep customCSS/JS in Redux for <head> inlining; omit them from the atom blob.
   const atomSettings = omitInlineCustomization(shapedSettings as Record<string, unknown>);
 
@@ -347,12 +347,7 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
   RouteHandler.renderedFromServer = true;
   const [settings, assets] = await withSpan('settings_and_assets', async () => {
     const query = SettingsQueryServiceFactory.default();
-    return Promise.all([
-      (req.user?.role === 'admin'
-        ? query.getForAdmin()
-        : query.getPublic()) as Promise<ClientSettings>,
-      getAssets(),
-    ]);
+    return Promise.all([query.get() as Promise<ClientSettings>, getAssets()]);
   });
   const { connection, ...headers } = req.headers;
 

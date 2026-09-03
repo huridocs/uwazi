@@ -70,21 +70,10 @@ const getPublicSettingsPayload = (settingsData: Settings) => ({
  * `features` must already be the audience-safe set (admin allowlist or tenant flags only).
  */
 const shapeSettingsForSSR = (
-  settingsData: Settings & { features?: Settings['features']; themeCustomization?: boolean },
-  user?: { role?: string } | null
-) => {
-  if (user?.role === 'admin') {
-    return {
-      ...pickAdminFields(settingsData),
-      ...getPublicSettingsPayload(settingsData),
-      features: settingsData.features,
-    };
-  }
-
-  return {
-    ...getPublicSettingsPayload(settingsData),
-    features: settingsData.features,
-  };
-};
+  settingsData: Settings & { features?: Settings['features']; themeCustomization?: boolean }
+) => ({
+  ...settingsData,
+  features: settingsData.features,
+});
 
 export { pickAdminFields, getPublicSettingsPayload, shapeSettingsForSSR };

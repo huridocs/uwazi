@@ -13,13 +13,17 @@ type FilterOrLink = SettingsFilterSchema | SettingsLinkSchema | SettingsSublinkS
 const isLink = (item: FilterOrLink): item is SettingsLinkSchema =>
   'type' in item && Boolean((item as SettingsLinkSchema).type) && 'title' in item;
 
-// oxlint-disable-next-line max-params
-const getUpdatesAndDeletes = <T extends FilterOrLink>(
-  matchProperty: keyof T,
-  propertyName: keyof T,
-  newValues: T[] = [],
-  currentValues: T[] = []
-) => {
+const getUpdatesAndDeletes = <T extends FilterOrLink>({
+  matchProperty,
+  propertyName,
+  newValues = [],
+  currentValues = [],
+}: {
+  matchProperty: keyof T;
+  propertyName: keyof T;
+  newValues?: T[];
+  currentValues?: T[];
+}) => {
   const updatedValues: { [k: string]: string } = {};
   const deletedValues: string[] = [];
   const values: { [k: string]: string } = {};
@@ -67,64 +71,59 @@ const getUpdatesAndDeletes = <T extends FilterOrLink>(
   return { updatedValues, deletedValues, values };
 };
 
-const saveLinksTranslations = async (
-  translationsService: TranslationsService,
-  newLinks: Settings['links'],
-  currentLinks: Settings['links'] = []
-) => {
-  if (!newLinks) {
-    return;
+class SettingsTranslationService {
+  constructor(private translationsService: TranslationsService) {}
+
+  async reconcile(incoming: Settings, current: Settings) {
+    await this.reconcileLinks(incoming.links, current.links);
+    await this.reconcileFilters(incoming.filters, current.filters);
   }
 
-  const { updatedValues, deletedValues, values } = getUpdatesAndDeletes(
-    'id',
-    'title',
-    toReadableMenuItems(newLinks) ?? [],
-    toReadableMenuItems(currentLinks) ?? []
-  );
+  async reconcileLinks(newLinks: Settings['links'], currentLinks: Settings['links'] = []) {
+    if (!newLinks) {
+      return;
+    }
 
-  await translationsService.updateContext({
-    context: { id: 'Menu', label: 'Menu', type: 'Uwazi UI' },
-    keyChanges: updatedValues,
-    keysToDelete: deletedValues,
-    valueChanges: values,
-  });
-};
+    const { updatedValues, deletedValues, values } = getUpdatesAndDeletes({
+      matchProperty: 'id',
+      propertyName: 'title',
+      newValues: toReadableMenuItems(newLinks) ?? [],
+      currentValues: toReadableMenuItems(currentLinks) ?? [],
+    });
 
-const saveFiltersTranslations = async (
-  translationsService: TranslationsService,
-  newFiltersInput: Settings['filters'],
-  currentFiltersInput: Settings['filters'] = []
-) => {
-  if (!newFiltersInput) {
-    return;
+    await this.translationsService.updateContext({
+      context: { id: 'Menu', label: 'Menu', type: 'Uwazi UI' },
+      keyChanges: updatedValues,
+      keysToDelete: deletedValues,
+      valueChanges: values,
+    });
   }
 
-  const newFilters = newFiltersInput.filter(item => item.items);
-  const currentFilters = currentFiltersInput.filter(item => item.items);
+  async reconcileFilters(
+    newFiltersInput: Settings['filters'],
+    currentFiltersInput: Settings['filters'] = []
+  ) {
+    if (!newFiltersInput) {
+      return;
+    }
 
-  const { updatedValues, deletedValues, values } = getUpdatesAndDeletes(
-    'id',
-    'name',
-    newFilters,
-    currentFilters
-  );
+    const newFilters = newFiltersInput.filter(item => item.items);
+    const currentFilters = currentFiltersInput.filter(item => item.items);
 
-  await translationsService.updateContext({
-    context: { id: 'Filters', label: 'Filters', type: 'Uwazi UI' },
-    keyChanges: updatedValues,
-    keysToDelete: deletedValues,
-    valueChanges: values,
-  });
-};
+    const { updatedValues, deletedValues, values } = getUpdatesAndDeletes({
+      matchProperty: 'id',
+      propertyName: 'name',
+      newValues: newFilters,
+      currentValues: currentFilters,
+    });
 
-const persistMenuAndFilterTranslations = async (
-  translationsService: TranslationsService,
-  incoming: Settings,
-  current: Settings
-) => {
-  await saveLinksTranslations(translationsService, incoming.links, current.links);
-  await saveFiltersTranslations(translationsService, incoming.filters, current.filters);
-};
+    await this.translationsService.updateContext({
+      context: { id: 'Filters', label: 'Filters', type: 'Uwazi UI' },
+      keyChanges: updatedValues,
+      keysToDelete: deletedValues,
+      valueChanges: values,
+    });
+  }
+}
 
-export { persistMenuAndFilterTranslations };
+export { SettingsTranslationService };

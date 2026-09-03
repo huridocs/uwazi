@@ -1,10 +1,15 @@
 import { toReadableMenuItems } from '#api/core/infrastructure/settings/persistableMenuItems.js';
 import { toPersistableFilters } from '#api/core/infrastructure/settings/persistableFilters.js';
 import { toReadableLanguages } from '#api/core/infrastructure/settings/persistableLanguages.js';
+import { User } from '#api/users.v2/model/User.js';
 import { Settings } from '#shared/types/settingsType.js';
 import { SettingsDataSource } from '../contracts/SettingsDataSource.js';
 import { applySettingsDefaults } from './settingsDefaults.js';
 import { getPublicSettingsPayload, pickAdminFields } from './publicSettings.js';
+
+type Options = {
+  actor?: User;
+};
 
 const presentSettings = (stored: Settings): Settings => ({
   ...stored,
@@ -14,25 +19,40 @@ const presentSettings = (stored: Settings): Settings => ({
 });
 
 class SettingsQueryService {
-  constructor(private settingsDS: SettingsDataSource) {}
+  constructor(
+    private settingsDS: SettingsDataSource,
+    private options: Options = {}
+  ) {}
 
-  async getPublic(): Promise<ReturnType<typeof getPublicSettingsPayload>> {
-    const stored = await this.settingsDS.find();
-    if (!stored) {
-      return getPublicSettingsPayload({});
-    }
-    return getPublicSettingsPayload(applySettingsDefaults(presentSettings(stored)));
+  async get() {
+    return this.options.actor?.role === 'admin' ? this.adminProjection() : this.publicProjection();
   }
 
-  async getForAdmin(): Promise<Partial<Settings> & { themeCustomization: boolean }> {
+  async forBroadcast() {
+    return this.publicProjection();
+  }
+
+  private async loadPresented() {
     const stored = await this.settingsDS.find();
     if (!stored) {
+      return undefined;
+    }
+    return applySettingsDefaults(presentSettings(stored));
+  }
+
+  private async publicProjection() {
+    const presented = await this.loadPresented();
+    return getPublicSettingsPayload(presented ?? {});
+  }
+
+  private async adminProjection() {
+    const presented = await this.loadPresented();
+    if (!presented) {
       return getPublicSettingsPayload({});
     }
-    const withDefaults = applySettingsDefaults(presentSettings(stored));
     return {
-      ...pickAdminFields(withDefaults),
-      ...getPublicSettingsPayload(withDefaults),
+      ...pickAdminFields(presented),
+      ...getPublicSettingsPayload(presented),
     };
   }
 }
