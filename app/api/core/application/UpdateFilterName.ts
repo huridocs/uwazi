@@ -27,7 +27,7 @@ class UpdateFilterNameUseCase extends AbstractUseCase<Input, Output, Deps> {
 
   async execute(raw: Input): Promise<Output> {
     const { filterId, name } = UpdateFilterNameUseCase.InputSchema.parse(raw);
-    const current = (await this.deps.settingsDS.find()) ?? {};
+    const current = await this.deps.settingsDS.get();
     const filters = renameFilter(current.filters || [], filterId, name);
     if (!filters) {
       return false;

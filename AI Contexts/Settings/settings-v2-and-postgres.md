@@ -569,9 +569,9 @@ Existing Phase 1 locks that the review reopens — keep both notes, do not silen
 | # | This PR? | How |
 | --- | --- | --- |
 | 1 | **Done** | Settings UC factories read `ExecutionContext.transactionManager`; do not drill `{ transactionManager }` into `SettingsDataSourceFactory`. Kept the DS override for non-settings callers. `TranslationsServiceFactory` fallback is EC TM. AddLanguage / DeleteLanguage dropped the settings DS drill. CloneLanguage job stopped drilling settings DS. |
-| 2 | **Yes, with §4** | `get()` not `find() ?? {}`. DS mints `_id` on insert only. Keep `current` for translations and `newNameGeneration`. |
-| 3 | **Yes, with §4** | TDD: `undefined` = omit, `null` = clear. |
-| 4 | **Yes** | Shared pure functions under `infrastructure/`. Collapse `toReadableFilters`. `idGenerator` leaves SaveSettings. |
+| 2 | **Done** | `SaveSettings` / `UpdateFilterName` / `RemoveTemplateFromFilters` use `get()`. Mongo and PG mint an ObjectId on empty insert only; an incoming `_id` (copy) is preserved. `current` still used for translations and `newNameGeneration`. Empty GET still uses `find()`. |
+| 3 | **Done** | Mapper: `undefined` omits the column; `null` persists a clear and comes back as `null`. `SettingsRow` optional columns allow `null`. |
+| 4 | **Done** | Persistable/readable helpers under `infrastructure/settings/`. Mongo `patch`/`addLanguage` and PG `toRow` share them. Use cases no longer map. QueryService and menu translations import infra. `idGenerator` left SaveSettings. Application keeps Zod/`refineMenuItems` and filter domain ops. |
 | 5 | **Yes, after wave 2** | SettingsService + SettingsTranslationService. Delete SaveMenuItemsUseCase. Template cleanup listeners. |
 | 6 | **No** | Tech-debt issue after merge. |
 | 7 | **One parse if we touch those controllers; contract/rename later** | Do not swap `IdSchema`. |

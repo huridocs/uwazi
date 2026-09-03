@@ -26,7 +26,7 @@ class RemoveTemplateFromFiltersUseCase extends AbstractUseCase<Input, Output, De
 
   async execute(raw: Input): Promise<Output> {
     const { templateId } = RemoveTemplateFromFiltersUseCase.InputSchema.parse(raw);
-    const current = (await this.deps.settingsDS.find()) ?? {};
+    const current = await this.deps.settingsDS.get();
     if (!current.filters) {
       return false;
     }

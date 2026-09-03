@@ -5,12 +5,24 @@ import { LanguageUtils } from '#shared/language/index.js';
 import { LanguageISO6391, LanguageSchema, LanguagesListSchema } from '#shared/types/commonTypes.js';
 import { Settings as SettingsType } from '#shared/types/settingsType.js';
 import { SettingsDataSource } from '../../application/contracts/SettingsDataSource.js';
+import { toPersistableLanguage } from '../settings/persistableLanguages.js';
+import { toPersistableSettingsFields } from '../settings/persistableSettingsFields.js';
 import { DefaultLanguageMissingError } from './errors/settingsErrors.js';
 import { MongoTransactionManager } from './common/MongoTransactionManager.js';
 
 type MongoSettingsDataSourceDeps = {
   db: Db;
   transactionManager: MongoTransactionManager;
+};
+
+const resolveInsertId = (incomingId: SettingsType['_id']): ObjectId => {
+  if (incomingId instanceof ObjectId) {
+    return incomingId;
+  }
+  if (incomingId != null && String(incomingId)) {
+    return MongoIdHandler.mapToDb(String(incomingId));
+  }
+  return new ObjectId();
 };
 
 export class MongoSettingsDataSource
@@ -24,9 +36,10 @@ export class MongoSettingsDataSource
   }
 
   async addLanguage(language: LanguageSchema): Promise<void> {
+    const persistable = toPersistableLanguage(language);
     await this.getCollection().updateOne(
-      { languages: { $not: { $elemMatch: { key: language.key } } } },
-      { $push: { languages: language } }
+      { languages: { $not: { $elemMatch: { key: persistable.key } } } },
+      { $push: { languages: persistable } }
     );
   }
 
@@ -88,7 +101,11 @@ export class MongoSettingsDataSource
 
   async patch(partial: SettingsType): Promise<SettingsType> {
     const current = await this.find();
-    const { _id: incomingId, __v: _version, ...fields } = partial;
+    const {
+      _id: incomingId,
+      __v: _version,
+      ...fields
+    } = toPersistableSettingsFields(partial, MongoIdHandler.generate);
 
     if (current?._id) {
       return this.mergeOntoExisting(current._id, fields);
@@ -111,13 +128,7 @@ export class MongoSettingsDataSource
     incomingId: SettingsType['_id'],
     fields: Omit<SettingsType, '_id' | '__v'>
   ): Promise<SettingsType> {
-    const id =
-      incomingId instanceof ObjectId
-        ? incomingId
-        : MongoIdHandler.mapToDb(String(incomingId ?? ''));
-    if (!id || !String(id)) {
-      throw new Error('Cannot create settings without an _id');
-    }
+    const id = resolveInsertId(incomingId);
 
     await this.getCollection().insertOne({ ...fields, _id: id });
     return this.get();

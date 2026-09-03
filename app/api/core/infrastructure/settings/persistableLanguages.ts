@@ -38,4 +38,4 @@ const toReadableLanguages = (
   return languages.map(toReadableLanguage);
 };
 
-export { toPersistableLanguages, toReadableLanguages };
+export { toPersistableLanguage, toPersistableLanguages, toReadableLanguages };

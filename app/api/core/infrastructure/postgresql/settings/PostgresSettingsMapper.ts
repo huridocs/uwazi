@@ -1,5 +1,5 @@
 import { Settings as SettingsType } from '#shared/types/settingsType.js';
-import { toReadableMenuItems } from '#api/core/application/settings/menuItems.js';
+import { toPersistableSettingsFields } from '../../settings/persistableSettingsFields.js';
 
 const COLUMN_FIELDS = {
   languages: 'languages',
@@ -45,31 +45,31 @@ type GroupName = keyof typeof GROUP_FIELDS;
 
 type SettingsRow = {
   _id: string;
-  languages?: SettingsType['languages'];
-  links?: SettingsType['links'];
-  filters?: SettingsType['filters'];
-  features?: SettingsType['features'];
-  theme_vars?: SettingsType['themeVars'];
-  theme_assets?: SettingsType['themeAssets'];
-  site_name?: string;
-  custom_css?: string;
-  custom_js?: string;
-  sync?: SettingsType['sync'];
-  private?: boolean;
-  new_name_generation?: boolean;
-  open_public_endpoint?: boolean;
-  allowed_public_templates?: SettingsType['allowedPublicTemplates'];
-  public_form_destination?: string;
-  ocr_service_enabled?: boolean;
-  filter_unauthorized_related?: boolean;
-  project?: string;
-  custom?: SettingsType['custom'];
-  mail?: Record<string, unknown>;
-  analytics?: Record<string, unknown>;
-  map?: Record<string, unknown>;
-  branding?: Record<string, unknown>;
-  site_preferences?: Record<string, unknown>;
-  extras?: Record<string, unknown>;
+  languages?: SettingsType['languages'] | null;
+  links?: SettingsType['links'] | null;
+  filters?: SettingsType['filters'] | null;
+  features?: SettingsType['features'] | null;
+  theme_vars?: SettingsType['themeVars'] | null;
+  theme_assets?: SettingsType['themeAssets'] | null;
+  site_name?: string | null;
+  custom_css?: string | null;
+  custom_js?: string | null;
+  sync?: SettingsType['sync'] | null;
+  private?: boolean | null;
+  new_name_generation?: boolean | null;
+  open_public_endpoint?: boolean | null;
+  allowed_public_templates?: SettingsType['allowedPublicTemplates'] | null;
+  public_form_destination?: string | null;
+  ocr_service_enabled?: boolean | null;
+  filter_unauthorized_related?: boolean | null;
+  project?: string | null;
+  custom?: SettingsType['custom'] | null;
+  mail?: Record<string, unknown> | null;
+  analytics?: Record<string, unknown> | null;
+  map?: Record<string, unknown> | null;
+  branding?: Record<string, unknown> | null;
+  site_preferences?: Record<string, unknown> | null;
+  extras?: Record<string, unknown> | null;
 };
 
 const asIdString = (id: SettingsType['_id']): string => {
@@ -95,14 +95,12 @@ const pickDefined = (source: Record<string, unknown>, keys: readonly string[]) =
   return Object.keys(picked).length ? picked : undefined;
 };
 
-const withReadableMenuItems = (row: SettingsRow): SettingsRow => {
-  const links = toReadableMenuItems(row.links);
-  return links ? { ...row, links } : row;
-};
-
 export class PostgresSettingsMapper {
-  static toRow(settings: SettingsType): SettingsRow {
-    const source = { ...(settings as SettingsType & Record<string, unknown>) };
+  static toRow(settings: SettingsType, generateId: () => string): SettingsRow {
+    const source = {
+      ...(toPersistableSettingsFields(settings, generateId) as SettingsType &
+        Record<string, unknown>),
+    };
     delete source.__v;
     delete source.tenant_id;
 
@@ -130,7 +128,7 @@ export class PostgresSettingsMapper {
     });
 
     row.extras = { ...source };
-    return withReadableMenuItems(row);
+    return row;
   }
 
   static toSettings(row: SettingsRow): SettingsType {
@@ -141,7 +139,7 @@ export class PostgresSettingsMapper {
 
     Object.entries(SETTINGS_KEY_BY_COLUMN).forEach(([column, settingsKey]) => {
       const value = (row as Record<string, unknown>)[column];
-      if (value !== undefined && value !== null) {
+      if (value !== undefined) {
         settings[settingsKey] = value;
       }
     });

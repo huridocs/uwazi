@@ -87,6 +87,15 @@ describe('settings', () => {
         expect(createdDocument.allowedPublicTemplates?.[1]).toBe('id2');
       });
 
+      it('should throw when the singleton does not exist', async () => {
+        await db.clear(['settings']);
+        if (postgresSettings) {
+          await testingPG.clear(['settings']);
+        }
+
+        await expect(saveSettings({ site_name: 'Nope' })).rejects.toThrow('Settings not found');
+      });
+
       describe('when there are Links', () => {
         const baseLink = { title: 'Page one', type: 'link' as 'link', url: 'url' };
         const baseConfig = {

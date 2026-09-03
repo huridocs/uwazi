@@ -1,15 +1,15 @@
+import { toReadableMenuItems } from '#api/core/infrastructure/settings/persistableMenuItems.js';
+import { toPersistableFilters } from '#api/core/infrastructure/settings/persistableFilters.js';
+import { toReadableLanguages } from '#api/core/infrastructure/settings/persistableLanguages.js';
 import { Settings } from '#shared/types/settingsType.js';
 import { SettingsDataSource } from '../contracts/SettingsDataSource.js';
 import { applySettingsDefaults } from './settingsDefaults.js';
 import { getPublicSettingsPayload, pickAdminFields } from './publicSettings.js';
-import { toReadableMenuItems } from './menuItems.js';
-import { toReadableFilters } from './libraryFilters.js';
-import { toReadableLanguages } from './settingsLanguages.js';
 
 const presentSettings = (stored: Settings): Settings => ({
   ...stored,
   ...(stored.links ? { links: toReadableMenuItems(stored.links) } : {}),
-  ...(stored.filters ? { filters: toReadableFilters(stored.filters) } : {}),
+  ...(stored.filters ? { filters: toPersistableFilters(stored.filters) } : {}),
   ...(stored.languages ? { languages: toReadableLanguages(stored.languages) } : {}),
 });
 

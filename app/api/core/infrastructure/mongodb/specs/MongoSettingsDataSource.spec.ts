@@ -1,3 +1,4 @@
+import { ObjectId } from 'mongodb';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { DBFixture } from '#api/utils/testing_db.js';
 import { SettingsDataSourceFactory } from '../../factories/SettingsDataSourceFactory.js';
@@ -45,6 +46,24 @@ describe('MongoSettingsDataSource', () => {
       const settings = await testingEnvironment.db.getCollection('settings')!.findOne({});
       const frEntries = settings?.languages?.filter((l: any) => l.key === 'fr');
       expect(frEntries).toHaveLength(1);
+    });
+
+    it('should persist tenant language fields and not catalog copies', async () => {
+      const sut = createSut();
+      await sut.addLanguage({
+        key: 'fr',
+        label: 'French',
+        ISO639_3: 'fra',
+        ISO639_1: 'fr',
+        localized_label: 'Français',
+        elastic: 'french',
+        translationAvailable: true,
+      });
+
+      const settings = await testingEnvironment.db.getCollection('settings')!.findOne({});
+      expect(
+        settings?.languages?.find((language: { key: string }) => language.key === 'fr')
+      ).toEqual({ key: 'fr', label: 'French' });
     });
   });
 
@@ -125,6 +144,33 @@ describe('MongoSettingsDataSource', () => {
       const stored = await sut.find();
       expect(stored?.site_name).toBe('Patched collection');
       expect(stored?.languages?.map(l => l.key)).toEqual(['en', 'es']);
+    });
+
+    it('should persist nested collections without catalog copies or leftover _id', async () => {
+      const sut = createSut();
+      await sut.patch({
+        languages: [{ key: 'en', label: 'English', default: true, ISO639_3: 'eng' }],
+        links: [{ title: 'Home', type: 'link', url: '/' }],
+        filters: [{ _id: 'noise', id: 't1', name: 'Cases' }],
+      });
+
+      const stored = await testingEnvironment.db.getCollection('settings')!.findOne({});
+      expect(stored?.languages).toEqual([{ key: 'en', label: 'English', default: true }]);
+      expect(stored?.links).toEqual([
+        { id: expect.stringMatching(/^[0-9a-f]{24}$/i), title: 'Home', type: 'link', url: '/' },
+      ]);
+      expect(stored?.links?.[0]).not.toHaveProperty('_id');
+      expect(stored?.filters).toEqual([{ id: 't1', name: 'Cases' }]);
+    });
+
+    it('should mint an ObjectId _id when creating a singleton without one', async () => {
+      await testingEnvironment.db.getCollection('settings')!.deleteMany({});
+      const sut = createSut();
+      await sut.patch({ site_name: 'Minted' });
+
+      const stored = await sut.get();
+      expect(stored._id).toBeInstanceOf(ObjectId);
+      expect(stored.site_name).toBe('Minted');
     });
   });
 

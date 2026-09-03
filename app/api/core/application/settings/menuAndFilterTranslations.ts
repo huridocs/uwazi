@@ -6,13 +6,14 @@ import {
 } from '#shared/types/settingsType.js';
 import { ensure } from '#shared/tsUtils.js';
 import { TranslationsService } from '#api/core/application/translation/TranslationsService.js';
-import { toReadableMenuItems } from './menuItems.js';
+import { toReadableMenuItems } from '#api/core/infrastructure/settings/persistableMenuItems.js';
 
 type FilterOrLink = SettingsFilterSchema | SettingsLinkSchema | SettingsSublinkSchema;
 
 const isLink = (item: FilterOrLink): item is SettingsLinkSchema =>
   'type' in item && Boolean((item as SettingsLinkSchema).type) && 'title' in item;
 
+// oxlint-disable-next-line max-params
 const getUpdatesAndDeletes = <T extends FilterOrLink>(
   matchProperty: keyof T,
   propertyName: keyof T,

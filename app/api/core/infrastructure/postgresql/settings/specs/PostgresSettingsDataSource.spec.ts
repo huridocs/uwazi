@@ -1,5 +1,6 @@
 import { ObjectId } from 'mongodb';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
+import { IdGeneratorFactory } from '#api/core/infrastructure/factories/IdGeneratorFactory.js';
 import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
 import { PostgresDB } from '#api/infrastructure/PostgresDB.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
@@ -15,11 +16,16 @@ const SETTINGS_ID = new ObjectId().toHexString();
 const managerFor = (tenantId: string) =>
   new PostgresTransactionManager(PostgresDB.knex, tenantId, LoggerFactory.forTests());
 
-const makeDS = (tenantId = TENANT_ID) =>
+const makeDS = (
+  tenantId = TENANT_ID,
+  overrides?: Partial<ConstructorParameters<typeof PostgresSettingsDataSource>[0]>
+) =>
   new PostgresSettingsDataSource({
     tenantId,
     mongoDb: getConnection(),
     pgTransactionManager: managerFor(tenantId),
+    idGenerator: IdGeneratorFactory.default(),
+    ...overrides,
   });
 
 const seedEnglish = async () => {
@@ -70,10 +76,13 @@ describe('PostgresSettingsDataSource', () => {
     await expect(makeDS().get()).rejects.toThrow('Settings not found');
   });
 
-  it('should throw when creating a singleton without _id', async () => {
-    await expect(makeDS().patch({ site_name: 'Nope' })).rejects.toThrow(
-      'Cannot create settings without an _id'
-    );
+  it('should mint an id from IdGenerator when creating a singleton without one', async () => {
+    const ds = makeDS(TENANT_ID, { idGenerator: { generate: () => 'aaaaaaaaaaaaaaaaaaaaaaaa' } });
+    await ds.patch({ site_name: 'Minted' });
+
+    const settings = await ds.get();
+    expect(settings._id).toBe('aaaaaaaaaaaaaaaaaaaaaaaa');
+    expect(settings.site_name).toBe('Minted');
   });
 
   it('should project requested fields without loading customCSS', async () => {

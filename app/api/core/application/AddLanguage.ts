@@ -5,7 +5,6 @@ import { SettingsDataSource } from '#api/core/application/contracts/SettingsData
 import { ImportPredefinedTranslations } from '#api/core/application/translation/ImportPredefinedTranslationsService.js';
 import { LanguageAddedEvent } from '#api/core/domain/language/events/LanguageAddedEvent.js';
 import { AbstractUseCase } from '../libs/UseCase.js';
-import { toPersistableLanguages } from './settings/settingsLanguages.js';
 
 type Input = {
   languages: LanguageSchema[];
@@ -23,9 +22,9 @@ class AddLanguageUseCase extends AbstractUseCase<Input, Output, Deps> {
   async execute({ languages }: Input): Promise<Output> {
     const defaultLanguage = await this.deps.settingsDS.getDefaultLanguageKey();
     const installedKeys = new Set(await this.deps.settingsDS.getLanguageKeys());
-    const newLanguages = toPersistableLanguages([
+    const newLanguages = [
       ...new Map(languages.filter(l => !installedKeys.has(l.key)).map(l => [l.key, l])).values(),
-    ]);
+    ];
 
     if (newLanguages.length === 0) return [];
 

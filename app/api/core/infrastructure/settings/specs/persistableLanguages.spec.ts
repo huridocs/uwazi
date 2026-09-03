@@ -1,4 +1,4 @@
-import { toPersistableLanguages, toReadableLanguages } from '../settingsLanguages.js';
+import { toPersistableLanguages, toReadableLanguages } from '../persistableLanguages.js';
 
 describe('toPersistableLanguages', () => {
   it('should keep tenant fields and drop catalog fields and leftover _id', () => {

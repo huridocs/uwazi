@@ -26,23 +26,4 @@ const renameFilter = (
   return filters.map(filter => (filter.id === filterId ? { ...filter, name } : filter));
 };
 
-const omitNestedId = <T extends object>(item: T): Omit<T, '_id'> => {
-  const { _id: _nestedId, ...rest } = item as T & { _id?: unknown };
-  return rest;
-};
-
-const toPersistableFilters = (filters: SettingsFilterSchema[]): SettingsFilterSchema[] =>
-  filters.map(filter => {
-    const withoutId = omitNestedId(filter);
-    if (!withoutId.items) {
-      return withoutId;
-    }
-    return {
-      ...withoutId,
-      items: withoutId.items.map(item => omitNestedId(item)),
-    };
-  });
-
-const toReadableFilters = toPersistableFilters;
-
-export { removeTemplateFromFilters, renameFilter, toPersistableFilters, toReadableFilters };
+export { removeTemplateFromFilters, renameFilter };

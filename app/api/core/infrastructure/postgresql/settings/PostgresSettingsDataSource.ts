@@ -1,4 +1,5 @@
 import { Db } from 'mongodb';
+import { IdGenerator } from '#api/core/application/contracts/IdGenerator.js';
 import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js';
 import { DefaultLanguageMissingError } from '#api/core/infrastructure/mongodb/errors/settingsErrors.js';
 import { LanguageUtils } from '#shared/language/index.js';
@@ -17,16 +18,20 @@ export class PostgresSettingsDataSource
   extends PostgresDataSource<SettingsRow>
   implements SettingsDataSource
 {
+  private readonly idGenerator: IdGenerator;
+
   constructor(deps: {
     tenantId: string;
     mongoDb: Db;
     pgTransactionManager: PostgresTransactionManager;
+    idGenerator: IdGenerator;
   }) {
     super('settings', {
       tenantId: deps.tenantId,
       pgTransactionManager: deps.pgTransactionManager,
       sync: { syncDb: deps.mongoDb, syncNamespace: 'settings' },
     });
+    this.idGenerator = deps.idGenerator;
   }
 
   async find(): Promise<SettingsType | null> {
@@ -51,10 +56,8 @@ export class PostgresSettingsDataSource
       return this.get();
     }
 
-    const id = incomingId != null ? String(incomingId) : '';
-    if (!id) {
-      throw new Error('Cannot create settings without an _id');
-    }
+    const id =
+      incomingId != null && String(incomingId) ? String(incomingId) : this.idGenerator.generate();
 
     await this.writeRow({ ...fields, _id: id });
     return this.get();
@@ -188,7 +191,10 @@ export class PostgresSettingsDataSource
   }
 
   private async writeRow(settings: SettingsType) {
-    await this.table.upsert(PostgresSettingsMapper.toRow(settings), { columns: ['tenant_id'] });
+    await this.table.upsert(
+      PostgresSettingsMapper.toRow(settings, () => this.idGenerator.generate()),
+      { columns: ['tenant_id'] }
+    );
   }
 
   private async requireSettings(): Promise<SettingsType> {

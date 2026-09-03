@@ -1,6 +1,4 @@
-import { toPersistableMenuItems, toReadableMenuItems } from '../menuItems.js';
-
-const generateId = () => 'generated-id';
+import { toPersistableMenuItems, toReadableMenuItems } from '../persistableMenuItems.js';
 
 describe('toReadableMenuItems', () => {
   it('should lift leftover mongoose _id onto id and drop _id', () => {
@@ -43,10 +41,17 @@ describe('toReadableMenuItems', () => {
 });
 
 describe('toPersistableMenuItems', () => {
-  it('should assign id for new items and not mint mongoose _id', () => {
-    expect(toPersistableMenuItems([{ title: 'Home', type: 'link', url: '/' }], generateId)).toEqual(
-      [{ id: 'generated-id', title: 'Home', type: 'link', url: '/' }]
-    );
+  const generateId = () => 'generated-id';
+
+  it('should assign an id from generateId for new items and not mint mongoose _id', () => {
+    const [item] = toPersistableMenuItems([{ title: 'Home', type: 'link', url: '/' }], generateId)!;
+    expect(item).toEqual({
+      id: 'generated-id',
+      title: 'Home',
+      type: 'link',
+      url: '/',
+    });
+    expect(item).not.toHaveProperty('_id');
   });
 
   it('should preserve existing id and drop leftover _id', () => {

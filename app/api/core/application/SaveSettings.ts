@@ -6,9 +6,6 @@ import { TranslationsService } from './translation/TranslationsService.js';
 import { persistMenuAndFilterTranslations } from './settings/menuAndFilterTranslations.js';
 import { applySettingsDefaults } from './settings/settingsDefaults.js';
 import { pickAdminFields } from './settings/publicSettings.js';
-import { toPersistableFilters } from './settings/libraryFilters.js';
-import { toPersistableMenuItems } from './settings/menuItems.js';
-import { toPersistableLanguages } from './settings/settingsLanguages.js';
 import { SaveSettingsInputSchema } from './settings/saveSettingsInput.js';
 import { TemplateFacade } from '#api/core/infrastructure/facades/TemplateFacade.js';
 
@@ -26,20 +23,11 @@ class SaveSettingsUseCase extends AbstractUseCase<Input, Output, Deps> {
 
   async execute(raw: Input): Promise<Output> {
     const incoming = SaveSettingsUseCase.InputSchema.parse(raw);
-    const current = (await this.deps.settingsDS.find()) ?? {};
-    const id = current._id ?? this.idGenerator.generate();
-    const toPersist = {
-      ...incoming,
-      ...(incoming.links
-        ? { links: toPersistableMenuItems(incoming.links, () => this.idGenerator.generate()) }
-        : {}),
-      ...(incoming.filters ? { filters: toPersistableFilters(incoming.filters) } : {}),
-      ...(incoming.languages ? { languages: toPersistableLanguages(incoming.languages) } : {}),
-    };
+    const current = await this.deps.settingsDS.get();
 
     const saved = await this.transactionManager.run(async () => {
-      await persistMenuAndFilterTranslations(this.deps.translationsService, toPersist, current);
-      return this.deps.settingsDS.patch({ ...toPersist, _id: id });
+      await persistMenuAndFilterTranslations(this.deps.translationsService, incoming, current);
+      return this.deps.settingsDS.patch(incoming);
     });
 
     if (!current.newNameGeneration && incoming.newNameGeneration) {

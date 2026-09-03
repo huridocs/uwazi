@@ -47,10 +47,13 @@ const sampleSettings = (id: string): SettingsType =>
     evidencesVault: { token: 'secret' },
   }) as SettingsType;
 
+const generateId = () => 'generated-id';
+const toRow = (settings: SettingsType) => PostgresSettingsMapper.toRow(settings, generateId);
+
 describe('PostgresSettingsMapper', () => {
   it('should map known columns', () => {
     const id = sampleId();
-    const row = PostgresSettingsMapper.toRow(sampleSettings(id));
+    const row = toRow(sampleSettings(id));
 
     expect(row._id).toBe(id);
     expect(row.site_name).toBe('Uwazi');
@@ -62,7 +65,7 @@ describe('PostgresSettingsMapper', () => {
   });
 
   it('should map JSONB groups', () => {
-    const row = PostgresSettingsMapper.toRow(sampleSettings(sampleId()));
+    const row = toRow(sampleSettings(sampleId()));
 
     expect(row.mail).toEqual({
       mailerConfig: 'smtp://x',
@@ -86,7 +89,7 @@ describe('PostgresSettingsMapper', () => {
   });
 
   it('should drop __v and put unknown keys in extras', () => {
-    const row = PostgresSettingsMapper.toRow(sampleSettings(sampleId()));
+    const row = toRow(sampleSettings(sampleId()));
 
     expect(row).not.toHaveProperty('__v');
     expect(row).not.toHaveProperty('tenant_id');
@@ -103,13 +106,11 @@ describe('PostgresSettingsMapper', () => {
       languages: [{ key: 'es', label: 'Spanish', default: true }],
     } as SettingsType;
 
-    expect(PostgresSettingsMapper.toSettings(PostgresSettingsMapper.toRow(settings))).toEqual(
-      settings
-    );
+    expect(PostgresSettingsMapper.toSettings(toRow(settings))).toEqual(settings);
   });
 
   it('should lift leftover menu _id onto id when mapping a row', () => {
-    const row = PostgresSettingsMapper.toRow({
+    const row = toRow({
       _id: sampleId(),
       links: [
         {
@@ -138,9 +139,27 @@ describe('PostgresSettingsMapper', () => {
     ]);
   });
 
+  it('should persist languages without catalog copies', () => {
+    const row = toRow({
+      _id: sampleId(),
+      languages: [{ key: 'en', label: 'English', default: true, ISO639_3: 'eng' }],
+    });
+
+    expect(row.languages).toEqual([{ key: 'en', label: 'English', default: true }]);
+  });
+
+  it('should mint menu ids from generateId', () => {
+    const row = toRow({
+      _id: sampleId(),
+      links: [{ title: 'Home', type: 'link', url: '/' }],
+    });
+
+    expect(row.links).toEqual([{ id: 'generated-id', title: 'Home', type: 'link', url: '/' }]);
+  });
+
   it('should stringify ObjectId _id and omit empty groups', () => {
     const objectId = new ObjectId();
-    const row = PostgresSettingsMapper.toRow({
+    const row = toRow({
       _id: objectId,
       site_name: 'Ids',
     });
@@ -148,5 +167,22 @@ describe('PostgresSettingsMapper', () => {
     expect(row._id).toBe(objectId.toHexString());
     expect(row.mail).toBeUndefined();
     expect(row.extras).toEqual({});
+  });
+
+  it('should omit undefined columns and persist null as a clear', () => {
+    expect(toRow({ _id: sampleId(), site_name: undefined })).not.toHaveProperty('site_name');
+    expect(toRow({ _id: sampleId(), site_name: null as unknown as string })).toHaveProperty(
+      'site_name',
+      null
+    );
+  });
+
+  it('should keep null columns when mapping a row back to settings', () => {
+    expect(
+      PostgresSettingsMapper.toSettings({
+        _id: sampleId(),
+        site_name: null,
+      })
+    ).toEqual(expect.objectContaining({ site_name: null }));
   });
 });

@@ -1,6 +1,5 @@
 import { SaveSettingsUseCase } from '#api/core/application/SaveSettings.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
-import { IdGeneratorFactory } from './IdGeneratorFactory.js';
 import { SettingsDataSourceFactory } from './SettingsDataSourceFactory.js';
 import { TranslationsServiceFactory } from './TranslationsServiceFactory.js';
 
@@ -10,7 +9,6 @@ class SaveSettingsUseCaseFactory {
   ): SaveSettingsUseCase {
     return new SaveSettingsUseCase({
       transactionManager: ExecutionContext.transactionManager,
-      idGenerator: IdGeneratorFactory.default(),
       settingsDS: SettingsDataSourceFactory.default(),
       translationsService: TranslationsServiceFactory.default(),
       ...overrides,

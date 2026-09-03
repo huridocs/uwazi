@@ -6,6 +6,7 @@ import { MongoSettingsDataSource } from '../mongodb/MongoSettingsDataSource.js';
 import { CachedMongoSettingsDataSource } from '../mongodb/CachedMongoSettingsDataSource.js';
 import { PostgresSettingsDataSource } from '../postgresql/settings/PostgresSettingsDataSource.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
+import { IdGeneratorFactory } from './IdGeneratorFactory.js';
 
 type Overrides = { transactionManager?: TransactionManager };
 
@@ -25,6 +26,7 @@ export class SettingsDataSourceFactory {
         tenantId: tenant.name,
         mongoDb: getConnection(),
         pgTransactionManager: ExecutionContext.postgresTransactionManager,
+        idGenerator: IdGeneratorFactory.default(),
       });
     }
 
@@ -39,6 +41,7 @@ export class SettingsDataSourceFactory {
         tenantId: tenant.name,
         mongoDb: getConnection(),
         pgTransactionManager: ExecutionContext.postgresTransactionManager,
+        idGenerator: IdGeneratorFactory.default(),
       });
     }
 
