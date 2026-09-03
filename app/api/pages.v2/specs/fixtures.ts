@@ -1,10 +1,10 @@
 import db, { DBFixture } from '#api/utils/testing_db.js';
 
-export const pageToUpdate = db.id();
+const pageToUpdate = db.id();
 
 const emptyDraft = { content: '', script: '', css: '' };
 
-export const fixtures: DBFixture = {
+const fixtures: DBFixture = {
   pages: [
     {
       _id: db.id(),
@@ -62,3 +62,5 @@ export const fixtures: DBFixture = {
     },
   ],
 };
+
+export { fixtures, pageToUpdate };

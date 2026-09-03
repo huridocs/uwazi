@@ -12,7 +12,7 @@ import { TranslationsDataSource } from '#api/core/application/contracts/Translat
 import { LocaleTranslationInput } from '#api/core/application/translation/localeTranslationDto.js';
 import { TranslationsService } from '#api/core/application/translation/TranslationsService.js';
 import { Translation } from '#api/core/domain/translation/Translation.js';
-import pages from '#api/pages/index.js';
+import { ListPagesUseCaseFactory } from '#api/pages.v2/infrastructure/factories/ListPagesUseCaseFactory.js';
 import settings from '#api/settings/index.js';
 import { AddLanguageUseCaseFactory } from '#api/core/infrastructure/factories/AddLanguageUseCaseFactory.js';
 import { SaveLocaleTranslationsUseCaseFactory } from '#api/core/infrastructure/factories/SaveLocaleTranslationsUseCaseFactory.js';
@@ -605,7 +605,11 @@ describe('translations', () => {
           const firstEntitiesCount = (
             await testingEnvironment.runWithContext(async () => entities.get({ language: 'fr' }))
           ).length;
-          const firstPagesCount = (await pages.get({ language: 'fr' })).length;
+          const firstPagesCount = (
+            await testingEnvironment.runWithContext(async () =>
+              ListPagesUseCaseFactory.default().execute({ language: 'fr' })
+            )
+          ).length;
 
           await addLanguage({ key: 'fr', label: 'french' });
 
@@ -619,7 +623,11 @@ describe('translations', () => {
           const secondEntitiesCount = (
             await testingEnvironment.runWithContext(async () => entities.get({ language: 'fr' }))
           ).length;
-          const secondPagesCount = (await pages.get({ language: 'fr' })).length;
+          const secondPagesCount = (
+            await testingEnvironment.runWithContext(async () =>
+              ListPagesUseCaseFactory.default().execute({ language: 'fr' })
+            )
+          ).length;
           expect(firstEntitiesCount).toBe(secondEntitiesCount);
           expect(firstPagesCount).toBe(secondPagesCount);
         });
