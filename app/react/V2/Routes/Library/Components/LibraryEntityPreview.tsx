@@ -113,7 +113,7 @@ const LibraryEntityPreviewView = ({
             <button
               type="button"
               onClick={onClose}
-              className="absolute end-2 top-2.5 shrink-0 rounded-md p-1.5 text-ink-muted transition-colors hover:bg-warm hover:text-ink"
+              className="absolute inset-e-2 top-2.5 shrink-0 rounded-md p-1.5 text-ink-muted transition-colors hover:bg-warm hover:text-ink"
               aria-label={t('System', 'Close', null, false)}
             >
               <XMarkIcon className="h-4 w-4" />

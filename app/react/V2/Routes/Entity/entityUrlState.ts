@@ -90,6 +90,18 @@ const mergePageIntoHash = (hash: string, page: string) => {
   return serializeEntityHash(params);
 };
 
+const fallbackWithAtomPage = (fallback: LocationFallback): LocationFallback => {
+  if (!atomStoreRef) {
+    return fallback;
+  }
+  const atomPage = atomStoreRef.get(entityPageAtom);
+  const fallbackPage = splitEntityHash(fallback.hash).page;
+  if (atomPage === fallbackPage) {
+    return fallback;
+  }
+  return { ...fallback, hash: mergePageIntoHash(fallback.hash, atomPage) };
+};
+
 const flushEntityUrlUpdates = (navigate: NavigateFunction, fallback: LocationFallback) => {
   flushScheduled = false;
   const batch = pendingBatch;
@@ -105,19 +117,20 @@ const flushEntityUrlUpdates = (navigate: NavigateFunction, fallback: LocationFal
     return;
   }
 
-  const patched = applyPatches(fallback, batch);
+  const current = fallbackWithAtomPage(fallback);
+  const patched = applyPatches(current, batch);
   const { search } = patched;
   let { hash, page } = patched;
   if (
     fallback.pathname === locationRef.pathname &&
-    search === fallback.search &&
-    hash === fallback.hash
+    search === current.search &&
+    hash === current.hash
   ) {
     return;
   }
 
   const canUseWindowHistory = typeof window !== 'undefined' && live.pathname === fallback.pathname;
-  const pageOnly = canUseWindowHistory && isPageOnlyChange(fallback, search, hash);
+  const pageOnly = canUseWindowHistory && isPageOnlyChange(current, search, hash);
 
   if (pageOnly) {
     replaceUrlWithoutRouter(`${fallback.pathname}${search}${hash}`);
@@ -129,8 +142,8 @@ const flushEntityUrlUpdates = (navigate: NavigateFunction, fallback: LocationFal
 
   if (atomStoreRef) {
     const atomPage = atomStoreRef.get(entityPageAtom);
-    const fallbackPage = splitEntityHash(fallback.hash).page;
-    if (page === fallbackPage) {
+    const currentPage = splitEntityHash(current.hash).page;
+    if (page === currentPage) {
       hash = mergePageIntoHash(hash, atomPage);
       page = atomPage;
     } else {

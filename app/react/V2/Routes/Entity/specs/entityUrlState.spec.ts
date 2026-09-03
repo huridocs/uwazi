@@ -117,6 +117,76 @@ describe('entityUrlState', () => {
       replaceStateSpy.mockRestore();
     });
 
+    it('can return to the router-stale page after a page-only replaceState', async () => {
+      const initial = '/entity/1?m=metadata#s=search&page=3';
+      window.history.replaceState({}, '', initial);
+      const { result } = renderHook(() => useUpdateEntityUrl(), {
+        wrapper: wrapper(initial),
+      });
+
+      act(() => {
+        result.current({
+          hash: next => {
+            next.set('page', '2');
+          },
+        });
+      });
+      await act(async () => {
+        await Promise.resolve();
+      });
+      mockNavigate.mockClear();
+
+      act(() => {
+        result.current({
+          hash: next => {
+            next.set('page', '3');
+          },
+        });
+      });
+      await act(async () => {
+        await Promise.resolve();
+      });
+
+      expect(mockNavigate).not.toHaveBeenCalled();
+      expect(window.location.hash).toContain('page=3');
+    });
+
+    it('keeps the atom page when changing hash ui after a page-only replaceState', async () => {
+      const initial = '/entity/1?m=metadata#s=search&page=3';
+      window.history.replaceState({}, '', initial);
+      const { result } = renderHook(() => useUpdateEntityUrl(), {
+        wrapper: wrapper(initial),
+      });
+
+      act(() => {
+        result.current({
+          hash: next => {
+            next.set('page', '2');
+          },
+        });
+      });
+      await act(async () => {
+        await Promise.resolve();
+      });
+      mockNavigate.mockClear();
+
+      act(() => {
+        result.current({
+          hash: next => {
+            next.set('s', 'toc');
+          },
+        });
+      });
+      await act(async () => {
+        await Promise.resolve();
+      });
+
+      expect(mockNavigate).toHaveBeenCalledTimes(1);
+      const [to] = mockNavigate.mock.calls[0];
+      expect(to.hash).toContain('page=2');
+      expect(to.hash).toContain('s=toc');
+    });
+
     it('drops pending batch when pathname changes before flush', async () => {
       window.history.replaceState({}, '', '/entity/1#s=search');
       const { result } = renderHook(() => useUpdateEntityUrl(), {
