@@ -61,6 +61,17 @@ describe.each(testConfigs)('Pages V2 HTTP routes - $name', ({ postgresPages }) =
       expect(response.status).toBe(422);
       expect(response.text).toContain('validation failed');
     });
+
+    it('should update an existing page when sharedId is present', async () => {
+      const response = await request(app)
+        .post('/api/pages')
+        .set('content-language', 'es')
+        .send({ sharedId: '2', title: 'Penguin almost done - updated' });
+
+      expect(response.status).toBe(200);
+      expect(response.body.sharedId).toBe('2');
+      expect(response.body.title).toBe('Penguin almost done - updated');
+    });
   });
 
   describe('GET /api/pages', () => {

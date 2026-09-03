@@ -1,7 +1,8 @@
 import db, { DBFixture } from '#api/utils/testing_db.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { NonRetryableJobError } from '#api/core/libs/queue/infrastructure/errors.js';
-import pages from '#api/pages.v2/application/services/PagesService.js';
+import { GetPageUseCaseFactory } from '#api/pages.v2/infrastructure/factories/GetPageUseCaseFactory.js';
+import { ListPagesUseCaseFactory } from '#api/pages.v2/infrastructure/factories/ListPagesUseCaseFactory.js';
 import { PageNotFoundError } from '#api/pages.v2/domain/errors.js';
 import { AddLanguagePagesListener } from '../AddLanguagePagesListener.js';
 
@@ -61,12 +62,12 @@ describe('AddLanguagePagesListener', () => {
       await dispatch(listener, 'es');
 
       const page = await testingEnvironment.runWithContext(async () =>
-        pages.getById('page1', 'es')
+        GetPageUseCaseFactory.default().execute({ lookup: 'page1', language: 'es' })
       );
       expect(page.title).toBe('Test page');
       expect(page.draft?.content).toBe('<p>en</p>');
       const all = await testingEnvironment.runWithContext(async () =>
-        pages.get({ language: 'en' })
+        ListPagesUseCaseFactory.default().execute({ language: 'en' })
       );
       expect(all).toHaveLength(1);
     });
@@ -78,7 +79,9 @@ describe('AddLanguagePagesListener', () => {
       await expect(dispatch(listener, 'fr')).rejects.toThrow(NonRetryableJobError);
 
       await expect(
-        testingEnvironment.runWithContext(async () => pages.getById('page1', 'fr'))
+        testingEnvironment.runWithContext(async () =>
+          GetPageUseCaseFactory.default().execute({ lookup: 'page1', language: 'fr' })
+        )
       ).rejects.toThrow(PageNotFoundError);
     });
   });

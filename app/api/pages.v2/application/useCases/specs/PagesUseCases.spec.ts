@@ -14,10 +14,10 @@ import { DeletePageUseCaseFactory } from '#api/pages.v2/infrastructure/factories
 import { TemplatesPageUsageDataSourceFactory } from '#api/pages.v2/infrastructure/factories/TemplatesPageUsageDataSourceFactory.js';
 import { DeletePageUseCase } from '#api/pages.v2/application/useCases/DeletePage.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
-import { pageUseCaseExecutionContext } from '#api/pages.v2/infrastructure/factories/pageUseCaseExecutionContext.js';
-import pages from '#api/pages.v2/application/services/PagesService.js';
+import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
+import { CreatePageUseCaseFactory } from '#api/pages.v2/infrastructure/factories/CreatePageUseCaseFactory.js';
+import { GetPageUseCaseFactory } from '#api/pages.v2/infrastructure/factories/GetPageUseCaseFactory.js';
 import { mockID } from '#shared/uniqueID.js';
-import db from '#api/utils/testing_db.js';
 
 const testConfigs = [
   { name: 'Mongo', postgresPages: false },
@@ -221,7 +221,8 @@ describe.each(testConfigs)('Pages use cases (integration) - $name', ({ postgresP
           .spyOn(pageReleasesDS, 'deleteByPageId')
           .mockRejectedValueOnce(new Error('release delete failed'));
 
-        const { actor, tenant } = pageUseCaseExecutionContext();
+        const { actor } = ExecutionContext;
+        const tenant = ExecutionContext.currentTenant;
 
         const sut = new DeletePageUseCase(
           {
@@ -242,20 +243,18 @@ describe.each(testConfigs)('Pages use cases (integration) - $name', ({ postgresP
     });
   });
 
-  describe('pages service with data layer', () => {
-    it('should save, publish, and resolve by sharedId through pages service', async () => {
+  describe('CreatePage + PublishPageRelease + GetPage', () => {
+    it('should create, publish, and resolve by sharedId', async () => {
       await withContext(async () => {
         mockID('pages-flow-id');
-        const user = { _id: db.id() };
 
-        const created = await pages.save(
-          {
+        const created = await CreatePageUseCaseFactory.default().execute({
+          page: {
             title: 'Flow Page',
             draft: { content: '<p>Flow</p>', script: '', css: '' },
           },
-          user,
-          'en'
-        );
+          language: 'en',
+        });
 
         const sharedId = created.sharedId!;
         await PublishPageReleaseUseCaseFactory.default().execute({
@@ -264,7 +263,10 @@ describe.each(testConfigs)('Pages use cases (integration) - $name', ({ postgresP
           language: 'en',
         });
 
-        const loaded = await pages.getById(sharedId, 'en');
+        const loaded = await GetPageUseCaseFactory.default().execute({
+          lookup: sharedId,
+          language: 'en',
+        });
         expect(loaded.sharedId).toBe(sharedId);
 
         const pagesDS = PagesDataSourceFactory.default();

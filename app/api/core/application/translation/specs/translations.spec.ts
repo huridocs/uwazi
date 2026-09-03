@@ -606,7 +606,9 @@ describe('translations', () => {
             await testingEnvironment.runWithContext(async () => entities.get({ language: 'fr' }))
           ).length;
           const firstPagesCount = (
-            await ListPagesUseCaseFactory.default().execute({ language: 'fr' })
+            await testingEnvironment.runWithContext(async () =>
+              ListPagesUseCaseFactory.default().execute({ language: 'fr' })
+            )
           ).length;
 
           await addLanguage({ key: 'fr', label: 'french' });
@@ -622,7 +624,9 @@ describe('translations', () => {
             await testingEnvironment.runWithContext(async () => entities.get({ language: 'fr' }))
           ).length;
           const secondPagesCount = (
-            await ListPagesUseCaseFactory.default().execute({ language: 'fr' })
+            await testingEnvironment.runWithContext(async () =>
+              ListPagesUseCaseFactory.default().execute({ language: 'fr' })
+            )
           ).length;
           expect(firstEntitiesCount).toBe(secondEntitiesCount);
           expect(firstPagesCount).toBe(secondPagesCount);

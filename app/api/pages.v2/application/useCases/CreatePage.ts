@@ -3,7 +3,6 @@ import ID from '#shared/uniqueID.js';
 import { PageType } from '#shared/types/pageType.js';
 import { validatePage, validatePageEditor } from '#shared/types/pageSchemaValidator.js';
 import date from '#api/utils/date.js';
-import { User } from '#api/users/usersModel.js';
 import { AbstractUseCase } from '#api/core/libs/UseCase.js';
 import { Page } from '#api/pages.v2/domain/Page.js';
 import { PagesDataSource } from '../contracts/PagesDataSource.js';
@@ -19,7 +18,6 @@ import { loadClientPage } from '../services/pageClientLoader.js';
 
 type Input = {
   page: PageType;
-  user?: User;
   language?: string;
   editorResponse?: boolean;
 };
@@ -32,7 +30,7 @@ type Deps = {
   settingsDS: SettingsDataSource;
 };
 
-class SavePageUseCase extends AbstractUseCase<Input, Output, Deps> {
+class CreatePageUseCase extends AbstractUseCase<Input, Output, Deps> {
   async execute(input: Input): Promise<Output> {
     const lang = input.language ?? input.page.language ?? 'en';
     const clientPage: PageType = { ...input.page };
@@ -44,38 +42,12 @@ class SavePageUseCase extends AbstractUseCase<Input, Output, Deps> {
       await validatePage(clientPage);
     }
 
-    const languageKeys = await this.deps.settingsDS.getLanguageKeys();
-    const returnEditorShape = input.editorResponse ?? useEditorPayload;
-
-    if (clientPage.sharedId) {
-      const page = (await this.deps.pagesDS.getBySharedId(clientPage.sharedId)).getDataOrThrow();
-
-      if (useEditorPayload) {
-        applyEditorClientToPage(page, clientPage, languageKeys);
-      } else {
-        page.entityView = clientPage.entityView ?? page.entityView;
-        page.markdownSupport = clientPage.markdownSupport ?? page.markdownSupport;
-        applyClientToPage(page, clientPage, lang);
-      }
-      await this.transactionManager.run(async () => {
-        await this.deps.pagesDS.update(page);
-      });
-
-      if (returnEditorShape) {
-        const releases = await this.deps.pageReleasesDS.listByPageId(page.id);
-        return pageToEditorClient(page, languageKeys, releases);
-      }
-      return loadClientPage(
-        { sharedId: clientPage.sharedId },
-        lang,
-        this.deps.pagesDS,
-        this.deps.pageReleasesDS
-      );
-    }
-
-    if (!input.user) {
+    if (this.getActor().isAnonymous()) {
       throw new Error('missing user');
     }
+
+    const languageKeys = await this.deps.settingsDS.getLanguageKeys();
+    const returnEditorShape = input.editorResponse ?? useEditorPayload;
 
     const sharedId = ID();
     const defaultTitle =
@@ -111,5 +83,5 @@ class SavePageUseCase extends AbstractUseCase<Input, Output, Deps> {
   }
 }
 
-export { SavePageUseCase };
-export type { Input as SavePageInput };
+export { CreatePageUseCase };
+export type { Input as CreatePageInput };
