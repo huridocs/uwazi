@@ -1,6 +1,8 @@
 import { AbstractUseCase } from '#api/core/libs/UseCase.js';
 import { PageReleasesDataSource } from '../contracts/PageReleasesDataSource.js';
 import { PagesDataSource } from '../contracts/PagesDataSource.js';
+import { TemplatesPageUsageDataSource } from '../contracts/TemplatesPageUsageDataSource.js';
+import { PageInUseByTemplatesError } from '../../domain/errors.js';
 
 type Input = {
   sharedId: string;
@@ -11,15 +13,19 @@ type Output = { ok: true };
 type Deps = {
   pagesDS: PagesDataSource;
   pageReleasesDS: PageReleasesDataSource;
+  templatesDS: TemplatesPageUsageDataSource;
 };
 
 class DeletePageUseCase extends AbstractUseCase<Input, Output, Deps> {
   async execute(input: Input): Promise<Output> {
-    const pageResult = await this.deps.pagesDS.getBySharedId(input.sharedId);
-    if (pageResult.isError()) {
-      throw pageResult.getError();
+    const page = (await this.deps.pagesDS.getBySharedId(input.sharedId)).getDataOrThrow();
+
+    const templateNames = await this.deps.templatesDS.getTemplateNamesUsingPageAsEntityView(
+      input.sharedId
+    );
+    if (templateNames.length > 0) {
+      throw new PageInUseByTemplatesError(templateNames);
     }
-    const page = pageResult.getDataOrThrow();
 
     await this.transactionManager.run(async () => {
       await this.deps.pagesDS.deleteBySharedId(input.sharedId);

@@ -7,3 +7,5 @@ export { PasswordRecoveryMigrationConfig } from './PasswordRecoveryMigrationConf
 export { UsersMigrationConfig } from './UsersMigrationConfig.js';
 export { UserGroupsMigrationConfig } from './UserGroupsMigrationConfig.js';
 export { TranslationsMigrationConfig } from './TranslationsMigrationConfig.js';
+export { PageMigrationConfig, PageLocalesMigrationConfig } from './PageMigrationConfig.js';
+export { PageReleaseMigrationConfig } from './PageReleaseMigrationConfig.js';
