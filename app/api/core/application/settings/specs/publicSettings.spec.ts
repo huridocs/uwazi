@@ -1,10 +1,6 @@
 import type { Settings } from '#shared/types/settingsType.js';
-import {
-  getPublicSettingsPayload,
-  omitInlineCustomization,
-  pickPublicFields,
-  shapeSettingsForSSR,
-} from '../publicSettings.js';
+import { omitInlineCustomization } from '#shared/settings/omitInlineCustomization.js';
+import { getPublicSettingsPayload, shapeSettingsForSSR } from '../publicSettings.js';
 
 jest.mock('#api/tenants/index.js', () => ({
   tenants: {
@@ -25,21 +21,16 @@ describe('publicSettings', () => {
     features: { newHeader: true, ocr: { url: 'http://ocr' } },
   } as unknown as Settings;
 
-  describe('pickPublicFields', () => {
-    it('should keep only whitelisted fields', () => {
-      const result = pickPublicFields(fullSettings);
+  describe('getPublicSettingsPayload', () => {
+    it('should keep only whitelisted fields and the tenant themeCustomization flag', () => {
+      const result = getPublicSettingsPayload(fullSettings);
       expect(result.site_name).toBe('Uwazi');
       expect(result.customCSS).toBe('body { color: red; }');
       expect(result.allowcustomJS).toBe(true);
+      expect(result.themeCustomization).toBe(true);
       expect((result as Settings).mailerConfig).toBeUndefined();
       expect((result as Settings).contactEmail).toBeUndefined();
       expect((result as Settings).features).toBeUndefined();
-    });
-  });
-
-  describe('getPublicSettingsPayload', () => {
-    it('should include themeCustomization from the tenant', () => {
-      expect(getPublicSettingsPayload(fullSettings).themeCustomization).toBe(true);
     });
   });
 

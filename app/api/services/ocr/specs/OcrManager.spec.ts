@@ -6,6 +6,7 @@ import { files, storage } from '#api/files/index.js';
 import { tenants } from '#api/tenants/tenantContext.js';
 import { FilesDAOFactory } from '#api/core/infrastructure/factories/FilesDAOFactory.js';
 import { testingEnvironment, SettingsDSWithContext } from '#api/utils/testingEnvironment.js';
+import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import request from '#shared/JSONRequest.js';
 import * as sockets from '#api/socketio/setupSockets.js';
 import * as handleError from '#api/utils/handleError.js';
@@ -141,6 +142,13 @@ describe('OcrManager', () => {
         });
         expect(lastRecord).not.toHaveProperty('resultFile');
       });
+    });
+
+    it('should not nest ExecutionContext.run when TaskManager already opened the store', async () => {
+      const runSpy = jest.spyOn(ExecutionContext, 'run');
+      await mocks.taskManagerMock.trigger(mockedMessageFromRedis);
+      expect(runSpy).toHaveBeenCalledTimes(1);
+      runSpy.mockRestore();
     });
 
     describe('when there are results', () => {

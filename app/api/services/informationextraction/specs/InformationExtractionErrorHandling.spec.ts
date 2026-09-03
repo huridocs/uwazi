@@ -13,6 +13,9 @@ import { IXModelsModel } from '../IXModelsModel.js';
 let informationExtraction: InformationExtraction;
 let IXExternalService: ExternalDummyService;
 
+const processResults = async (...args: Parameters<InformationExtraction['processResults']>) =>
+  testingEnvironment.runWithContext(async () => informationExtraction.processResults(...args));
+
 jest.mock('api/services/tasksmanager/TaskManager.ts');
 jest.mock('api/socketio/setupSockets');
 jest.mock('api/core/libs/queue/configuration/factories', () => ({
@@ -70,7 +73,7 @@ describe('InformationExtraction Error Handling', () => {
 
       await IXSuggestionsModel.delete({ extractorId });
 
-      await informationExtraction.processResults({
+      await processResults({
         tenant: 'tenant1',
         task: 'create_model',
         params: { id: extractorId.toString() },
@@ -116,7 +119,7 @@ describe('InformationExtraction Error Handling', () => {
         },
       });
 
-      await informationExtraction.processResults({
+      await processResults({
         tenant: 'tenant1',
         task: 'suggestions',
         params: { id: extractorId.toString() },
@@ -169,7 +172,7 @@ describe('InformationExtraction Error Handling', () => {
         state: initialState,
       });
 
-      await informationExtraction.processResults({
+      await processResults({
         tenant: 'tenant1',
         task: 'suggestions',
         params: { id: extractorId.toString() },
@@ -201,7 +204,7 @@ describe('InformationExtraction Error Handling', () => {
         creationDate: Date.now(),
       });
 
-      await informationExtraction.processResults({
+      await processResults({
         tenant: 'tenant1',
         task: 'create_model',
         params: { id: extractorId.toString() },
@@ -247,7 +250,7 @@ describe('InformationExtraction Error Handling', () => {
         },
       });
 
-      await informationExtraction.processResults({
+      await processResults({
         tenant: 'tenant1',
         task: 'create_model',
         params: { id: extractorId.toString() },
@@ -278,7 +281,7 @@ describe('InformationExtraction Error Handling', () => {
 
       IXExternalService.simulateConnectionError('ECONNREFUSED');
 
-      await informationExtraction.processResults({
+      await processResults({
         tenant: 'tenant1',
         task: 'create_model',
         params: { id: extractorId.toString() },
@@ -304,7 +307,7 @@ describe('InformationExtraction Error Handling', () => {
 
       IXExternalService.simulateConnectionError('ETIMEDOUT');
 
-      await informationExtraction.processResults({
+      await processResults({
         tenant: 'tenant1',
         task: 'create_model',
         params: { id: extractorId.toString() },
@@ -330,7 +333,7 @@ describe('InformationExtraction Error Handling', () => {
 
       IXExternalService.simulateServiceError(503);
 
-      await informationExtraction.processResults({
+      await processResults({
         tenant: 'tenant1',
         task: 'create_model',
         params: { id: extractorId.toString() },
@@ -358,7 +361,7 @@ describe('InformationExtraction Error Handling', () => {
       IXExternalService.simulateServiceError(503);
       IXExternalService.simulateSuccess();
 
-      await informationExtraction.processResults({
+      await processResults({
         tenant: 'tenant1',
         task: 'create_model',
         params: { id: extractorId.toString() },
@@ -382,7 +385,7 @@ describe('InformationExtraction Error Handling', () => {
 
       IXExternalService.simulateServiceError(413);
 
-      await informationExtraction.processResults({
+      await processResults({
         tenant: 'tenant1',
         task: 'create_model',
         params: { id: extractorId.toString() },
@@ -408,7 +411,7 @@ describe('InformationExtraction Error Handling', () => {
 
       IXExternalService.simulateServiceError(404);
 
-      await informationExtraction.processResults({
+      await processResults({
         tenant: 'tenant1',
         task: 'create_model',
         params: { id: extractorId.toString() },
@@ -434,7 +437,7 @@ describe('InformationExtraction Error Handling', () => {
 
       IXExternalService.simulateServiceError(400);
 
-      await informationExtraction.processResults({
+      await processResults({
         tenant: 'tenant1',
         task: 'create_model',
         params: { id: extractorId.toString() },

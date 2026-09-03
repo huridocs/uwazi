@@ -1,13 +1,12 @@
 import { SetDefaultLanguageUseCase } from '#api/core/application/SetDefaultLanguage.js';
-import { TransactionManagerFactory } from './TransactionManagerFactory.js';
+import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { SettingsDataSourceFactory } from './SettingsDataSourceFactory.js';
 
 class SetDefaultLanguageUseCaseFactory {
   static default(): SetDefaultLanguageUseCase {
-    const transactionManager = TransactionManagerFactory.default();
     return new SetDefaultLanguageUseCase({
-      transactionManager,
-      settingsDS: SettingsDataSourceFactory.default({ transactionManager }),
+      transactionManager: ExecutionContext.transactionManager,
+      settingsDS: SettingsDataSourceFactory.default(),
     });
   }
 }

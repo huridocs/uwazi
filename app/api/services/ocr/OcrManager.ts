@@ -16,7 +16,6 @@ import { permissionsContext } from '#api/permissions/permissionsContext.js';
 import relationships from '#api/relationships/relationships.js';
 import { ResultsMessage, TaskManager } from '#api/services/tasksmanager/TaskManager.js';
 import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
-import { runInJobContext } from '#api/services/tasksmanager/runInJobContext.js';
 import { emitToSession } from '#api/socketio/setupSockets.js';
 import { tenants } from '#api/tenants/tenantContext.js';
 import { UsersDirectoryFactory } from '#api/core/infrastructure/factories/UsersDirectoryFactory.js';
@@ -195,30 +194,28 @@ const handleOcrError = async (
 };
 
 const processResults = async (message: ResultsMessage): Promise<void> => {
-  await runInJobContext(message.tenant, async () => {
-    try {
-      const originalFile = (
-        await FilesDAOFactory.default().getByFilename(message.params!.filename)
-      ).getDataOrThrow();
-      const [record] = await getForSourceFile(originalFile);
+  try {
+    const originalFile = (
+      await FilesDAOFactory.default().getByFilename(message.params!.filename)
+    ).getDataOrThrow();
+    const [record] = await getForSourceFile(originalFile);
 
-      if (!record) return;
+    if (!record) return;
 
-      if (!message.success) {
-        await handleOcrError(record, originalFile, message);
-        return;
-      }
-
-      await processFiles(record, message, originalFile);
-      const sessionId =
-        typeof message.params?.sessionId === 'string' ? message.params.sessionId : undefined;
-      if (sessionId) {
-        emitToSession(sessionId, 'ocr:ready', originalFile._id.toHexString());
-      }
-    } catch (e) {
-      handleError(e);
+    if (!message.success) {
+      await handleOcrError(record, originalFile, message);
+      return;
     }
-  });
+
+    await processFiles(record, message, originalFile);
+    const sessionId =
+      typeof message.params?.sessionId === 'string' ? message.params.sessionId : undefined;
+    if (sessionId) {
+      emitToSession(sessionId, 'ocr:ready', originalFile._id.toHexString());
+    }
+  } catch (e) {
+    handleError(e);
+  }
 };
 
 const validateLanguage = async (language: string, ocrSettings?: { url: string }) => {

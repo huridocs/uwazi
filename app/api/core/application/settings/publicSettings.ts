@@ -1,6 +1,5 @@
 import { tenants } from '#api/tenants/index.js';
 import type { Settings } from '#shared/types/settingsType.js';
-import { omitInlineCustomization } from '#shared/settings/omitInlineCustomization.js';
 
 /** Fields safe to expose to unauthenticated / non-admin users. */
 const PUBLIC_ALLOWED_FIELDS: (keyof Settings)[] = [
@@ -88,12 +87,4 @@ const shapeSettingsForSSR = (
   };
 };
 
-export {
-  PUBLIC_ALLOWED_FIELDS,
-  ADMIN_ALLOWED_FIELDS,
-  pickPublicFields,
-  pickAdminFields,
-  getPublicSettingsPayload,
-  shapeSettingsForSSR,
-  omitInlineCustomization,
-};
+export { pickAdminFields, getPublicSettingsPayload, shapeSettingsForSSR };

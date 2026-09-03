@@ -378,33 +378,31 @@ class PDFSegmentation {
   processResults = async (message: ResultsMessage): Promise<void> => {
     const start = Date.now();
 
-    await tenants.run(async () => {
-      // Completion rate. Compared against Segmentation_Dispatch it shows whether the segmentation
-      // service is keeping up with the worker or falling behind it.
-      const logResult = (success: boolean, errorName?: string) =>
-        LoggerFactory.default().info('Segmentation result processed', {
-          namespace: 'Segmentation_Result',
-          success,
-          durationMs: Date.now() - start,
-          ...(errorName ? { errorName } : {}),
-        });
+    // Completion rate. Compared against Segmentation_Dispatch it shows whether the segmentation
+    // service is keeping up with the worker or falling behind it.
+    const logResult = (success: boolean, errorName?: string) =>
+      LoggerFactory.default().info('Segmentation result processed', {
+        namespace: 'Segmentation_Result',
+        success,
+        durationMs: Date.now() - start,
+        ...(errorName ? { errorName } : {}),
+      });
 
-      try {
-        if (!message.success) {
-          await this.saveSegmentationError(message.params?.filename);
-          logResult(false, 'SegmentationServiceFailure');
-          return;
-        }
-
-        const { data, fileStream } = await this.requestResults(message);
-        await this.storeXML(message.params!.filename, fileStream);
-        await this.saveSegmentation(message.params!.filename, data);
-        logResult(true);
-      } catch (error) {
-        logResult(false, error?.constructor?.name ?? 'Unknown');
-        handleError(error);
+    try {
+      if (!message.success) {
+        await this.saveSegmentationError(message.params?.filename);
+        logResult(false, 'SegmentationServiceFailure');
+        return;
       }
-    }, message.tenant);
+
+      const { data, fileStream } = await this.requestResults(message);
+      await this.storeXML(message.params!.filename, fileStream);
+      await this.saveSegmentation(message.params!.filename, data);
+      logResult(true);
+    } catch (error) {
+      logResult(false, error?.constructor?.name ?? 'Unknown');
+      handleError(error);
+    }
   };
 }
 

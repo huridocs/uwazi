@@ -16,7 +16,7 @@ This is the planning doc for both phases. Pattern sources: [`../Relationship Typ
 
 Do not re-investigate these; they are done and should stay this way:
 
-- No `SettingsService`. Inject `settingsDS` (with the TM you already have).
+- No `SettingsService` as a TM/factory wrapper. Inject `settingsDS` (with the TM you already have). Peer review §5 proposes a *different* SettingsService (filter/menu translation orchestration). That is not this decision; see Peer review below.
 - Factory uses `ExecutionContext.transactionManager` only (no TM fallback).
 - Tests that patch settings fixtures use `SettingsDSWithContext`. Do not wrap Jest globally. Do not import the factory just to seed fixtures.
 - PG DS does not mint the **document** `_id`. Copy preserves Mongo `_id`. Upsert conflict is `tenant_id`.
@@ -534,9 +534,984 @@ Same class of risk as translations P12. Notable:
 
 ## Open (do not block schema / DS)
 
-Phase 1 is closed. Remaining items are cutover, not contract.
+Phase 1 is closed. Remaining items are cutover, not contract — plus the peer-review queue below.
 
 - Staging collision: any tenant with **zero or multiple** `settings` docs — copy must fail; fix data before flag.
 - Outbound sync remaining `{ languages }` only — never `password` without a separate design (aligns with opt-in `readSyncConfig()`).
 - Templates ticket: `applyNewNameGeneration` ownership (named debt; not this slice).
+- **Peer review §6:** dispatch `newNameGeneration` rewrite as a **job**. **Do not implement in this PR.** File a tech-debt issue after merge. Durability/retry, not throughput.
 - AddLanguage / Mongo TM vs PG settings: failed clone does not roll back the PG languages column (hybrid pitfall above).
+- Peer review items 1–12: full original below. Working decisions in the next subsection; not all are this PR.
+
+---
+
+## Peer review (2026-09-03)
+
+Source: chat attachment `settings-v2-pg-review.txt`. The numbered review is **verbatim** in the last subsection. The attachment intro mentions a final “looked at, deliberately not changing” section; that section is **not in the file** (it ends at Suggested sequencing).
+
+### Our working decisions (confirmed 2026-09-03)
+
+Reviewer sequencing: **§1 + §11 + §12** first → **§4 + §2** (with **§3**) → **§5 + §9 + §10** (skip §6) → **§7** (one parse if we touch controllers) / **§8 after merge**.
+
+Confirmed with Rafael:
+
+1. **Settings only.** Other modules only if this PR already drilled TM / Context into them. Not Entities, Templates, Files, etc.
+2. **§12 is in** — small, same two-TM class as §1.
+3. **§4 shared helpers under `infrastructure/`**, imported by Mongo + PG.
+4. **§5, §9, §10 after wave 2, still this PR**, then stop. **§6 and §8 stay after merge.**
+
+Existing Phase 1 locks that the review reopens — keep both notes, do not silently overwrite:
+
+- “No SettingsService” was **no TM/factory wrapper**. §5 is a different thing: filter/menu write + translation reconcile as one operation.
+- “PG DS does not mint the document `_id`” was **copy preserves Mongo `_id`**. §2 is the empty-insert branch minting `_id` in the DS instead of `SaveSettings`. Copy still must not invent a new document id.
+- Mapping helpers in `application/settings/` (menu / filters / languages) were an explicit Phase 2 choice. §4 says they belong in infrastructure. That is a move, not a revert of identity rules (`id` / `key`).
+
+| # | This PR? | How |
+| --- | --- | --- |
+| 1 | **Done** | Settings UC factories read `ExecutionContext.transactionManager`; do not drill `{ transactionManager }` into `SettingsDataSourceFactory`. Kept the DS override for non-settings callers. `TranslationsServiceFactory` fallback is EC TM. AddLanguage / DeleteLanguage dropped the settings DS drill. CloneLanguage job stopped drilling settings DS. |
+| 2 | **Yes, with §4** | `get()` not `find() ?? {}`. DS mints `_id` on insert only. Keep `current` for translations and `newNameGeneration`. |
+| 3 | **Yes, with §4** | TDD: `undefined` = omit, `null` = clear. |
+| 4 | **Yes** | Shared pure functions under `infrastructure/`. Collapse `toReadableFilters`. `idGenerator` leaves SaveSettings. |
+| 5 | **Yes, after wave 2** | SettingsService + SettingsTranslationService. Delete SaveMenuItemsUseCase. Template cleanup listeners. |
+| 6 | **No** | Tech-debt issue after merge. |
+| 7 | **One parse if we touch those controllers; contract/rename later** | Do not swap `IdSchema`. |
+| 8 | **After merge** | Stage languages cluster first. |
+| 9 | **Yes, after wave 2 (with §5)** | One broadcast listener. Always-public payload. |
+| 10 | **Yes, after wave 2** | Factory-injected actor; `get()`; `forBroadcast()`. |
+| 11 | **Done** | Dead exports removed. `pickAdminFields` stays until §10. |
+| 12 | **Done** | Dropped nested `runInJobContext` in IX/OCR `processResults`. PDFSegmentation handler no longer calls `tenants.run`. Tests that were the entry point now open context (`runWithContext` / `runInJobContext`). Tenant-loop at PDFSegmentation ~247 stays. |
+
+### Original review (verbatim)
+
+# Settings V2 / Postgres — Code Review
+
+> **Status: review complete.** This covers the whole PR. Items 1-12 are pending work; the
+> section at the end records one thing we looked at and deliberately decided not to change.
+
+## How to read this
+
+Items 1-12 are **pending work**. Questions that came up while I was reviewing and that we
+resolved as "no change needed" are deliberately left out, so if it's numbered here it's
+something I want us to change. The one exception is the last section, which records a
+problem we found and consciously chose to leave alone — flagged so it doesn't look like
+something I missed.
+
+Every item follows the same order: **the code I'm talking about**, then **what I'm seeing**,
+then a **proposed solution**. The snippets are shape and intent only — not drop-in code, and
+naming is open to discussion. Several of these are questions more than verdicts; where I'm
+unsure I say so.
+
+## Summary
+
+| # | Topic | Scope | Effort |
+|---|-------|-------|--------|
+| 1 | Transaction manager must come from `ExecutionContext` | 9 factories | S |
+| 2 | Is `Settings` really nullable? And who should create `_id`? | 4 use cases + PG data source | S |
+| 3 | `PostgresSettingsMapper` — `null` vs `undefined` is untested | 1 spec | S |
+| 4 | Client→persistence mapping is in the application layer | 5 files | M |
+| 5 | Use cases calling use cases → `SettingsService` + `SettingsTranslationService` | 4 use cases, 2 controllers | L |
+| 6 | `newNameGeneration` fan-out should be a job | 1 use case | S |
+| 7 | Validating twice, and no API contract | 4 controllers + schemas | S |
+| 8 | `SettingsDirectory` — a read side for internal modules | new contract, 26 call sites | L |
+| 9 | The same socket broadcast written 5 times | 5 call sites | M |
+| 10 | The admin/public decision is made in 3 places | query service + 2 entry points | M |
+| 11 | Dead exports in `publicSettings.ts` | 1 file | XS |
+| 12 | `runInJobContext` nested — the caller already opened the context | 3 services | S |
+
+---
+
+## 1. Transaction manager must come from `ExecutionContext`
+
+**The code.**
+
+```ts
+// SaveSettingsUseCaseFactory.ts:11-14
+const transactionManager = TransactionManagerFactory.default();
+const settingsDS = SettingsDataSourceFactory.default({ transactionManager });
+const translationsService = TranslationsServiceFactory.default({ transactionManager });
+```
+
+**What I'm seeing.** Two things here, and they're related. The factory is building its own
+transaction manager, and then prop drilling it into every child factory.
+
+The transaction manager is a cross-cutting concern. It's scoped to the request, not to the
+component, so each factory should get its own from the execution context instead of
+receiving it as an argument. When we pass it down like this the call site *looks* like it's
+wiring something meaningful, and it isn't — it's just moving a request-scoped object around
+by hand.
+
+**To be fair to you:** `TransactionManagerFactory.default()` shows up around 130 times
+across `app/api`, so this is the older pattern and not something you invented. The
+convention for new code is the execution context — see
+[AddLanguageUseCaseFactory.ts:19](app/api/core/infrastructure/factories/AddLanguageUseCaseFactory.ts#L19)
+and [BulkCleanupEntityUseCaseFactory.ts:15](app/api/core/infrastructure/factories/BulkCleanupEntityUseCaseFactory.ts#L15).
+I only want what this PR adds to follow it.
+
+**Where it happens — building its own manager:**
+
+- [SaveSettingsUseCaseFactory.ts:11](app/api/core/infrastructure/factories/SaveSettingsUseCaseFactory.ts#L11)
+- [SetDefaultLanguageUseCaseFactory.ts:7](app/api/core/infrastructure/factories/SetDefaultLanguageUseCaseFactory.ts#L7)
+- [UpdateFilterNameUseCaseFactory.ts:8](app/api/core/infrastructure/factories/UpdateFilterNameUseCaseFactory.ts#L8)
+- [RemoveTemplateFromFiltersUseCaseFactory.ts:8](app/api/core/infrastructure/factories/RemoveTemplateFromFiltersUseCaseFactory.ts#L8)
+- [SaveMenuItemsUseCaseFactory.ts:8](app/api/core/infrastructure/factories/SaveMenuItemsUseCaseFactory.ts#L8)
+- [EntitiesQueryServiceFactory.ts:22](app/api/core/infrastructure/factories/EntitiesQueryServiceFactory.ts#L22)
+
+**Where it happens — reads the context correctly, but then drills it:**
+
+- [FilesServiceFactory.ts:34](app/api/core/infrastructure/factories/FilesServiceFactory.ts#L34)
+- [MongoRelationshipsV1DataSourceFactory.ts:15](app/api/core/infrastructure/factories/MongoRelationshipsV1DataSourceFactory.ts#L15)
+- [BulkCleanupEntityUseCaseFactory.ts:17,23](app/api/core/infrastructure/factories/BulkCleanupEntityUseCaseFactory.ts#L17)
+- [EntitiesQueryServiceFactory.ts:37,39](app/api/core/infrastructure/factories/EntitiesQueryServiceFactory.ts#L37)
+
+### Proposed solution
+
+```ts
+class SaveSettingsUseCaseFactory {
+  static default(overrides?) {
+    return new SaveSettingsUseCase({
+      transactionManager: ExecutionContext.transactionManager,
+      settingsDS: SettingsDataSourceFactory.default(),        // gets its own from the context
+      translationsService: TranslationsServiceFactory.default(),
+      ...overrides,
+    });
+  }
+}
+```
+
+The good news is that the second group is nearly free: `SettingsDataSourceFactory` already
+falls back to `ExecutionContext.transactionManager` when no override is passed, so there we
+just **delete the argument** and nothing changes behaviourally.
+
+Once the call sites are clean I'd like us to drop the `{ transactionManager? }` override
+from `SettingsDataSourceFactory` entirely, so the drilled form isn't even expressible
+anymore.
+
+---
+
+## 2. Is `Settings` really nullable? And who should create `_id`?
+
+**The code.** Three of the new use cases start the same way:
+
+```ts
+// UpdateFilterName.ts:30 · RemoveTemplateFromFilters.ts:32 · SaveSettings.ts:31
+const current = (await this.deps.settingsDS.find()) ?? {};
+```
+
+**What I'm seeing.** `find()` is typed `Promise<SettingsType | null>`, so that `?? {}` looks
+like it's handling a real case. But is it? Can the settings really be missing? Settings is a
+singleton and it's provisioned when the tenant is created — I don't think there's any moment
+where a tenant exists and its settings don't.
+
+So where is this `null` actually coming from? I think it's the driver. Mongo's `findOne` and
+Postgres' `first()` both return `null` for "no row", and we're passing that straight up
+through the data source into the application layer. So we're not handling a business case
+here, we're absorbing a persistence detail — and worse, we're inventing an empty `Settings`
+object that claims a tenant has no settings at all.
+
+And that invented object doesn't stay put. Look at what it already forced downstream:
+
+```ts
+// settingsDefaults.ts:8 — this branch only exists to survive the fabricated {}
+const applySettingsDefaults = (settings: Settings): Settings => {
+  if (!Object.keys(settings).length) {
+    return {};
+  }
+  ...
+```
+
+That's the cost, made concrete. A `null` that was never a real case gets absorbed at one
+boundary, and three files away we have a special case defending against it
+([settingsDefaults.ts:8](app/api/core/application/settings/settingsDefaults.ts#L8)).
+
+The contract already makes the distinction for us
+([SettingsDataSource.ts:13-14](app/api/core/application/contracts/SettingsDataSource.ts#L13-L14)):
+`find()` returns `null` for the genuinely optional case, `get()` throws when settings are
+really absent. And you already reach for `get()` in this same PR at
+[SetDefaultLanguage.ts:29](app/api/core/application/SetDefaultLanguage.ts#L29) — it's the
+other three that are inconsistent.
+
+**About the ResultType idea.** I floated it while reviewing and then talked myself out of
+it, so let me record why: `Result` earns its place when absence is a legitimate outcome the
+caller has to branch on. Settings can't be absent, so a `Result` would encode an impossible
+case and leave us doing the same shrug in nicer clothing. Compare with `UsersDirectory`,
+which uses `ResultType` correctly — a user genuinely can be missing. That contrast is the
+test.
+
+### The `_id` half of the same problem
+
+**The code.**
+
+```ts
+// SaveSettings.ts:31-32
+const current = (await this.deps.settingsDS.find()) ?? {};
+const id = current._id ?? this.idGenerator.generate();
+```
+
+```ts
+// PostgresSettingsDataSource.ts:49-57 — what the data source does with it
+if (current?._id) { /* update branch */ }
+const id = incomingId != null ? String(incomingId) : '';
+if (!id) {
+  throw new Error('Cannot create settings without an _id');
+}
+```
+
+**What I'm seeing.** The data source re-reads the settings, works out for itself whether
+this is an insert or an update, and then throws because the caller didn't pre-generate an id
+— for a branch that the data source is the one identifying. Both sides are asking the same
+question and only one of them is in a position to answer it. Creating the id belongs where
+the insert happens.
+
+### Proposed solution
+
+Use `get()` in the three use cases, and let the data source create the id.
+
+```ts
+// application — absence is a fault, not a branch
+const current = await this.deps.settingsDS.get();
+...
+return this.deps.settingsDS.patch(toPersist);       // no _id passed in
+
+// infrastructure — the insert branch mints its own id
+if (!current?._id) {
+  await this.writeRow({ ...fields, _id: new ObjectId().toHexString() });
+}
+```
+
+What we get out of it: the `?? {}` disappears from the three use cases, `idGenerator` leaves
+`SaveSettings` entirely (together with §4), the defensive branch in `settingsDefaults.ts`
+can be deleted, and `find()` stays on the contract for the genuine bootstrap path where a
+`null` really does mean something.
+
+**One thing to be careful with.** Don't delete the read at
+[SaveSettings.ts:31](app/api/core/application/SaveSettings.ts#L31). My original note said we
+could remove the check at this level and I was only half right — `current` is still needed at
+[line 53](app/api/core/application/SaveSettings.ts#L53) for the translation diff and at
+[line 60](app/api/core/application/SaveSettings.ts#L60) for the `newNameGeneration` guard.
+Only the `_id` *reason* for reading goes away. Removing the fetch would silently break menu
+and filter translations.
+
+---
+
+## 3. `PostgresSettingsMapper` — `null` vs `undefined` is untested
+
+**The code.**
+
+```ts
+// PostgresSettingsMapper.ts — toRow keeps undefined out
+keys.forEach(key => {
+  if (source[key] !== undefined) { picked[key] = source[key]; }
+});
+
+// PostgresSettingsMapper.ts:145-147 — but toSettings drops null as well
+if (value !== undefined && value !== null) {
+  settings[settingsKey] = value;
+}
+```
+
+**What I'm seeing.** I hope this class is unit tested, especially because we accept partial
+updates. With partial updates the two absent-ish values mean different things: `undefined`
+should mean "don't overwrite, leave it alone", and `null` should mean "remove this value,
+please".
+
+Right now the two directions don't agree. `toRow` skips `undefined`, which is correct — it
+never overwrites. But `toSettings` skips **both** `undefined` and `null`, so a column we
+deliberately cleared comes back as an absent key instead of an explicit removal.
+
+There is a spec — `PostgresSettingsMapper.spec.ts`, six tests: known columns, JSONB groups,
+`__v`/extras, round-trip, menu `_id` lift, ObjectId stringify. None of them covers this. So
+the semantic we most depend on is the one we're not testing, and I'd rather pin it now than
+after more code starts depending on whatever it happens to do today.
+
+### Proposed solution
+
+Decide what `null` means on the way out, make `toSettings` agree with `toRow`, and pin both
+directions with tests so the rule stops being implicit.
+
+```ts
+it('leaves a field untouched when undefined and clears it when null', () => {
+  expect(PostgresSettingsMapper.toRow({ site_name: undefined })).not.toHaveProperty('site_name');
+  expect(PostgresSettingsMapper.toRow({ site_name: null })).toHaveProperty('site_name', null);
+});
+```
+
+---
+
+## 4. Client→persistence mapping is in the application layer
+
+**The code.**
+
+```ts
+// SaveSettings.ts:41-48
+const toPersist = {
+  ...incoming,
+  ...(incoming.links
+    ? { links: toPersistableMenuItems(incoming.links, () => this.idGenerator.generate()) }
+    : {}),
+  ...(incoming.filters ? { filters: toPersistableFilters(incoming.filters) } : {}),
+  ...(incoming.languages ? { languages: toPersistableLanguages(incoming.languages) } : {}),
+};
+```
+
+```ts
+// SetDefaultLanguage.ts:31-36 — another mapping that wouldn't be needed here
+const languages = toPersistableLanguages(
+  (current.languages || []).map(language => ({ ...language, default: language.key === key }))
+);
+```
+
+**What I'm seeing.** You can think of this like a mapper — we're mapping client-side data
+shape to persistence data shape, at the application layer level. Strip `_id`, mint `id`,
+reduce a language to the fields worth storing, re-hydrate catalogue metadata on the way
+back. Every one of those decisions is about *how rows are stored*.
+
+I'm not saying it's wrong, because settings doesn't need a domain layer — it's pure CRUD
+operations, and the only rule we enforce is the shape of the input, which the schema already
+handles. There's no domain model being hidden here. My question is narrower: given that this
+is a mapper, is the application layer the one interested in it? I don't think so. The data
+sources are essentially the guys interested on the mapping.
+
+And the imports already agree with me:
+
+```ts
+// PostgresSettingsMapper.ts:2 — infrastructure importing from application
+import { toReadableMenuItems } from '#api/core/application/settings/menuItems.js';
+```
+
+That arrow points backwards. Infrastructure needed this mapping badly enough to import it
+across a layer boundary, which is about as clear a signal as we're going to get
+([PostgresSettingsMapper.ts:2](app/api/core/infrastructure/postgresql/settings/PostgresSettingsMapper.ts#L2)).
+
+**What it's costing us.** Three files exist in `application/settings/` only to host this
+mapping — [menuItems.ts](app/api/core/application/settings/menuItems.ts),
+[libraryFilters.ts](app/api/core/application/settings/libraryFilters.ts),
+[settingsLanguages.ts](app/api/core/application/settings/settingsLanguages.ts) — so it's
+back-and-forth across files to follow one write. And `idGenerator` is prop drilled into the
+use case for exactly one reason: `toPersistableMenuItems` needs it
+([SaveSettings.ts:44](app/api/core/application/SaveSettings.ts#L44)). In infra the mapper
+can call `ObjectId` directly and that dependency just disappears — which is also what
+unblocks §2.
+
+**One more thing while we're here.** `toReadableFilters` isn't a second mapping:
+
+```ts
+// libraryFilters.ts:48
+const toReadableFilters = toPersistableFilters;
+```
+
+Same function, two names. The read/write symmetry that justifies a
+`toPersistable`/`toReadable` pair doesn't exist for filters — both directions only strip
+`_id`. The second name suggests a distinction that isn't there.
+
+### Proposed solution
+
+Move the mapping into the data source, so the layer that owns the row shape also owns how
+it's built. Postgres already has the right home for it in `PostgresSettingsMapper`; the
+Mongo data source gets the equivalent.
+
+```ts
+// infrastructure/postgresql/settings/PostgresSettingsMapper.ts
+static toRow(settings: SettingsType): SettingsRow {
+  return {
+    ...columns(settings),
+    links:     persistableMenuItems(settings.links),   // ObjectId directly, no idGenerator
+    filters:   persistableFilters(settings.filters),
+    languages: persistableLanguages(settings.languages),
+  };
+}
+```
+
+The use case then says what it does and nothing else:
+
+```ts
+async execute(raw: Input): Promise<Output> {
+  const incoming = SaveSettingsUseCase.InputSchema.parse(raw);
+  const current  = await this.deps.settingsDS.get();
+
+  return this.transactionManager.run(async () => {
+    await this.deps.settingsTranslations.reconcile(incoming, current);
+    return this.deps.settingsDS.patch(incoming);       // no reshaping, no idGenerator
+  });
+}
+```
+
+**What moves where:**
+
+| File | Destination |
+|---|---|
+| [menuItems.ts](app/api/core/application/settings/menuItems.ts) — mapping half | data source mappers (schemas stay, see §7) |
+| [libraryFilters.ts](app/api/core/application/settings/libraryFilters.ts) | data source mappers (collapses to one function) |
+| [settingsLanguages.ts](app/api/core/application/settings/settingsLanguages.ts) | data source mappers |
+| [settingsDefaults.ts](app/api/core/application/settings/settingsDefaults.ts) | `SettingsQueryService` — read side, not persistence |
+| `idGenerator` dep in `SaveSettings` | deleted |
+
+**Something we should decide explicitly**, not by accident: there are two data source
+implementations, and today these helpers served both. Once the mapping moves down, either
+each implementation owns its own version, or the pure functions live somewhere shared under
+`infrastructure/` and both import them. The second is less duplication; the first is honest
+about Mongo and Postgres genuinely storing these differently. I don't have a strong
+preference — I just want it to be a decision.
+
+**And be careful with `applySettingsDefaults`.** It's not persistence mapping at all. The
+`mapStartingPoint` fallback is a read-side presentation default, so it belongs with the
+component that shapes data for the UI — the query service — which gives us one less file and
+better cohesion. But it can't just move: it's currently also applied on the **write** path
+to shape what the endpoint returns ([SaveSettings.ts:67](app/api/core/application/SaveSettings.ts#L67),
+[SetDefaultLanguage.ts:42](app/api/core/application/SetDefaultLanguage.ts#L42)). Moving it
+before the write path stops shaping its own response would silently change what
+`POST /api/settings` returns. Order matters here.
+
+---
+
+## 5. Use cases calling use cases
+
+**The code.**
+
+```ts
+// SaveMenuItems.ts:21
+return this.deps.saveSettings.execute({ links });
+
+// UpdateFilterName.ts:39
+await this.deps.saveSettings.execute({ filters });
+
+// RemoveTemplateFromFilters.ts:38
+await this.deps.saveSettings.execute({ filters: removeTemplateFromFilters(current.filters, templateId) });
+```
+
+**What I'm seeing.** A use case shouldn't be another use case's building block — it
+represents one complete application operation. Here three of them delegate to `SaveSettings`
+just to write one field, and we end up validating twice as needed. Does a filter rename
+really need to go through the full save settings logic?
+
+The cost isn't theoretical. A template rename drags full input re-validation, menu item id
+minting, language mapping, *and* the `newNameGeneration` check
+([SaveSettings.ts:60](app/api/core/application/SaveSettings.ts#L60)) behind it — and that
+last one loops every template in the tenant. It's harmless today only because
+`incoming.newNameGeneration` is `undefined` when the caller passes `{ filters }`. That's one
+careless edit away from a template rename triggering a tenant-wide template rewrite.
+
+**On `SaveMenuItems` specifically.** It's a pure pass-through — validate, then delegate. The
+only thing it adds over calling `SaveSettings` directly is making `links` required instead
+of optional, and that's a controller-level concern. I'm also not happy with its input type:
+
+```ts
+// SaveMenuItems.ts:7
+links: NonNullable<Settings['links']>;
+```
+
+That shape is defined by the Mongoose model, and the input type should be derived from the
+schema definition instead. If we delete the use case the problem goes away with it — there's
+no type left to derive.
+
+**On the template cleanup.** This one is a question for us as much as for you. Today:
+
+```ts
+// DeleteTemplateController.ts:9-14
+const output = await TemplateFacade.delete(...);
+const filtersChanged = await RemoveTemplateFromFiltersUseCaseFactory.default().execute({
+  templateId: output._id,
+});
+```
+
+The cleanup runs in a separate transaction after the delete. If it throws, the template is
+gone and the filters still point at a template that doesn't exist. So it's either
+transactional or it's async — right now it's neither, it just happens to run inline while
+the request waits. Same shape in
+[TemplateMutationController.ts:22-25](app/api/core/infrastructure/express/template/TemplateMutationController.ts#L22-L25).
+I'm favouring the event.
+
+### Proposed solution
+
+Two collaborators, not one. Persisting settings and reconciling translations are different
+concerns, so they stay in different components — but composing them is the service's job,
+not the caller's. That's the whole point of having an application service: abstraction and
+reuse, so no client has to remember both steps.
+
+```ts
+class SettingsService {
+  constructor(private settingsDS, private translations: SettingsTranslationService) {}
+
+  async saveFilters(filters: SettingsFilterSchema[]) {
+    const current = await this.settingsDS.get();
+    await this.translations.reconcileFilters(filters, current.filters);  // never the caller's job
+    return this.settingsDS.patch({ filters });
+  }
+}
+```
+
+`UpdateFilterName` and the cleanup listener depend on `SettingsService`; neither touches
+`SaveSettings`. This also drops `translationsService` out of `SaveSettings`'s deps
+([SaveSettings.ts:52](app/api/core/application/SaveSettings.ts#L52)) and dissolves
+`menuAndFilterTranslations.ts` into `SettingsTranslationService`.
+
+Then: **delete `SaveMenuItemsUseCase`** and have the controller call `SaveSettings` with a
+links-required schema.
+
+And make the cleanup event-driven. Good news — `TemplateDeletedEvent` and
+`TemplateUpdatedEvent` **already exist** in
+[domain/template/events/](app/api/core/domain/template/events/) and are already emitted, so
+this is a listener, not new plumbing. The controllers lose the cleanup call entirely.
+
+```ts
+class ReconcileFiltersOnTemplateChange {
+  async handle(event: TemplateDeletedEvent) {
+    await this.settingsService.removeTemplateFromFilters(event.templateId);
+  }
+}
+```
+
+---
+
+## 6. `newNameGeneration` fan-out should be a job
+
+**The code.**
+
+```ts
+// SaveSettings.ts:57-65 — note this is outside the transaction
+const saved = await this.transactionManager.run(async () => { ... });
+
+if (!current.newNameGeneration && incoming.newNameGeneration) {
+  const defaultLanguage = current.languages?.find(language => language.default)?.key;
+  if (defaultLanguage) {
+    await TemplateFacade.applyNewNameGeneration(defaultLanguage);
+  }
+}
+```
+
+**What I'm seeing.** Maybe we could trigger this outside of the use case. It's already
+outside the transaction, and it can potentially trigger a fan-out process — it loops every
+template in the tenant with an update template use case, which by itself can trigger more
+fan-out.
+
+
+The real problem is that it runs *after the transaction committed*, inside the request. If
+it throws, settings permanently say `newNameGeneration: true` while the templates were never
+rewritten, and nothing retries. So the reason to move it is durability and retry, not
+throughput.
+
+### Proposed solution
+
+Dispatch a job instead of running the rewrite inline, so a failure is retried and observable
+instead of leaving settings and templates permanently out of step.
+
+```ts
+// the use case records the intent only
+if (!current.newNameGeneration && incoming.newNameGeneration) {
+  await this.dispatcher.applyNewNameGeneration({ defaultLanguage });   // retried, observable
+}
+```
+
+---
+
+## 7. Validating twice, and no API contract
+
+**The code.**
+
+```ts
+// SaveSettingsController.ts:9
+const input = SaveSettingsUseCase.InputSchema.parse(this.request.body);
+const saved = await SaveSettingsUseCaseFactory.default().execute(input);
+```
+
+```ts
+// SaveSettings.ts:28 — and the use case parses it again
+const incoming = SaveSettingsUseCase.InputSchema.parse(raw);
+```
+
+**What I'm seeing.** The use case already validates the input, so we can safely drop it from
+the controller. In this settings module it's simpler than usual: both the API contract and
+the use case contract share the same input validation. So it's up to us where we place the
+schema and call it — controller or use case, it doesn't really matter, since the contract
+breaks through all layers. What matters is that it's **one** place. Two parses is two things
+to keep in sync and no clarity about which one is authoritative.
+
+Same thing at
+[SaveSettingsLinksController.ts:8](app/api/core/infrastructure/express/settings/SaveSettingsLinksController.ts#L8).
+
+**Where is the API contract defined?** It should be written in the `shared/contracts` folder.
+That folder already exists and holds `Entities.ts`, `Template.ts`, `Users.ts`,
+`Thesaurus.ts`, `Relationships.ts`, `UserGroups.ts` — there's no `Settings.ts`, so the
+settings endpoints are the exception to a convention we already follow. Affects
+[GetSettingsController.ts:4](app/api/core/infrastructure/express/settings/GetSettingsController.ts#L4),
+[GetSettingsLinksController.ts:4](app/api/core/infrastructure/express/settings/GetSettingsLinksController.ts#L4),
+[SaveSettingsController.ts:6](app/api/core/infrastructure/express/settings/SaveSettingsController.ts#L6).
+
+**On the schemas file** ([saveSettingsInput.ts](app/api/core/application/settings/saveSettingsInput.ts)).
+Two smaller things. Schemas should follow PascalCase, and this file is overloaded with
+schemas used by different use cases with similar validation requirements — so
+`saveSettingsInput` is a misleading name for it. Something like `SettingsSchemas` describes
+what's actually in there. Related, `objectIdValue` lives in
+[menuItems.ts:6](app/api/core/application/settings/menuItems.ts#L6) but is imported by
+`saveSettingsInput.ts` for filters, preserve tokens and feature configs, and by
+`RemoveTemplateFromFilters.ts`. It's a generic id validator hiding in a menu module.
+
+I also wondered about reusing the `IdSchema` we have in `/api/core/libs`, but having looked
+at it I don't think it's a straight swap:
+
+```ts
+// Id.ts:20
+const IdSchema = z.string().regex(/^[0-9a-f]{24}$/i, 'must be a valid id');
+// vs. menuItems.ts:6
+const objectIdValue = z.union([z.string(), z.instanceof(ObjectId)]);
+```
+
+`IdSchema` rejects `ObjectId` instances and non-hex strings that currently pass. Worth doing
+as a deliberate tightening with its own tests, but not as a drive-by rename.
+
+### Proposed solution
+
+Four independent changes:
+
+```ts
+// 1. one parse, not two — the use case already validates
+class SaveSettingsController extends AbstractController {
+  protected async handle() {
+    const saved = await SaveSettingsUseCaseFactory.default().execute(this.request.body);
+    this.response.json(saved);
+  }
+}
+```
+
+2. Add `app/shared/contracts/Settings.ts` next to the six that are already there, and have
+   the controllers and the front end reference it.
+3. Rename `saveSettingsInput.ts` → `SettingsSchemas.ts`.
+4. Move `objectIdValue` out of `menuItems.ts` into that schema module.
+
+---
+
+## 8. `SettingsDirectory` — a read side for internal modules
+
+**The code.** Three different modules, three hand-rolled projections:
+
+```ts
+// publicAPIMiddleware.ts:7 — auth
+(await SettingsDataSourceFactory.default().readFields(['openPublicEndpoint'])) ?? {};
+
+// contact.js:7 — mail
+(await SettingsDataSourceFactory.default().readFields(['contactEmail','senderEmail','site_name'])) ?? {};
+
+// exportRoutes.ts:51 — csv export
+(await SettingsDataSourceFactory.default().readFields(['dateFormat','site_name'])) ?? {};
+```
+
+**What I'm seeing.** These are data sources being used as a read model to feed the needs of
+internal modules — here auth, mail and export. Ideally a data source should only contain
+methods that support the needs of use cases directly connected with the settings life-cycle.
+
+I'm also not a fan of using projections of the settings like this. Regarding read
+projections generally, I really think it's an anti-pattern to let clients define thousands
+of their own shapes. Instead let's define a small set of data shapes that clients really
+need. The trade-off is delivering more columns than a given caller needs, but that's okay —
+we avoid exposing a lot of stuff and it stays controllable in the future.
+
+There are **26 of these call sites** across the codebase today, so nobody can answer "what
+does the rest of the system read from settings?" without grepping, and every column rename
+becomes an open-ended search.
+
+The ones I marked directly in the code, so you can see the spread — auth, mail, export,
+relationships, and three of the external services:
+[preserve.ts:17](app/api/preserve/preserve.ts#L17),
+[relationships.js:339](app/api/relationships/relationships.js#L339),
+[InformationExtraction.ts:631](app/api/services/informationextraction/InformationExtraction.ts#L631),
+[OcrManager.ts:64](app/api/services/ocr/OcrManager.ts#L64),
+[PDFSegmentation.ts:249](app/api/services/pdfsegmentation/PDFSegmentation.ts#L249).
+
+`preserve.ts:17` is the one I like least, and it isn't even part of the 26 — it doesn't
+project at all, it pulls the **entire settings object** with `find()` just to read
+`features.preserve`:
+
+```ts
+// preserve.ts:17
+const currentSettings = (await SettingsDataSourceFactory.default().find()) ?? {};
+const preserve: PreserveConfig | undefined = currentSettings?.features?.preserve;
+```
+
+That's the end state of having no defined shapes: when there's no method that says what you
+want, taking everything is the easiest thing to do.
+
+And here's the part that convinced me this is structural and not just untidy:
+`SettingsDataSource` **already has** `getInstalledLanguages()`, `getLanguageKeys()` and
+`getDefaultLanguageKey()` — and **nine** call sites bypass all three to hand-roll
+`readFields(['languages'])`, because `readFields` is the path of least resistance. As long
+as an open projection method exists, the intention-revealing ones get ignored.
+
+**The clustering**, if we look at what those 26 sites actually want: languages ×9 ·
+integrations (`metadataExtraction` ×4, `ocr` ×2, `segmentation`, `preserve`,
+`tocGeneration`) ×9 · collection policy ×5 · mail ×2.
+
+**The audience is the point.** The client of this directory is **not the UI**. It exists to
+serve other backend modules — use cases, other application services, middleware. Three
+components, three audiences:
+
+| Component | Audience | Shape |
+|---|---|---|
+| `SettingsDataSource` | settings' own life-cycle use cases | full write model |
+| **`SettingsDirectory`** | **other backend modules** | **internal read models, no role filtering** |
+| `SettingsQueryService` | HTTP / SSR clients | allowlisted, role-aware (§10) |
+
+A module reaching for the wrong one is the bug. Today there's only one door, so everyone
+walks through it.
+
+### Proposed solution
+
+A directory, designed the same way we did the user directory — few methods, deliberately
+broad shapes, and a standard for the format. Four methods cover all 26 call sites.
+
+```ts
+// app/api/core/application/contracts/SettingsDirectory.ts
+// Internal read side. Serves use cases, application services and middleware.
+// NOT the UI — clients are served by SettingsQueryService.
+interface SettingsDirectory {
+  getLanguages(): Promise<LanguageSettings>;
+  getIntegration<K extends IntegrationName>(name: K): Promise<Integrations[K]>;
+  getCollectionPolicy(): Promise<CollectionPolicy>;
+  getMailerIdentity(): Promise<MailerIdentity>;
+}
+
+// app/api/core/application/contracts/SettingsReadModels.ts   (mirrors UserReadModels.ts)
+type LanguageSettings = { list: LanguageSchema[]; defaultKey: LanguageISO6391; keys: LanguageISO6391[] };
+type CollectionPolicy = {
+  siteName: string; dateFormat: string; newNameGeneration: boolean;
+  openPublicEndpoint: boolean; allowedPublicTemplates: string[]; ocrServiceEnabled: boolean;
+};
+type MailerIdentity = { mailerConfig?: string; contactEmail?: string; senderEmail?: string; siteName: string };
+```
+
+Three rules behind the shapes:
+
+1. **The method names the need, not the columns.** `getMailerIdentity()` survives a column
+   rename; `readFields(['senderEmail'])` spread across modules doesn't.
+2. **The set of shapes is finite and reviewable.** "What does the system read from settings?"
+   should be answered by reading the interface.
+3. **Deliberately over-deliver.** `publicAPIMiddleware` wants one boolean and gets the whole
+   `CollectionPolicy`. That's the trade-off I mentioned — more columns than needed, in
+   exchange for a small controllable set of shapes.
+
+The directory does **no** role filtering and holds nothing back — `getIntegration('preserve')`
+returns `masterToken`, which is right for backend callers and exactly why it must never be
+reachable from a controller response.
+
+**No `ResultType` here**, unlike `UsersDirectory` — same reasoning as §2. A user can
+genuinely be missing; settings can't. So it returns plain shapes and the `?? {}` disappears
+from all 26 sites.
+
+---
+
+## 9. The same socket broadcast written 5 times
+
+**The code.**
+
+```ts
+// TemplateMutationController.ts:28-31 · DeleteTemplateController.ts:16-19 · translation/routes.ts:157-158
+if (updatedFilters) {
+  const publicSettings = await SettingsQueryServiceFactory.default().getPublic();
+  this.request.sockets.emitToCurrentTenant('updateSettings', publicSettings);
+}
+```
+
+Plus [SaveSettingsController.ts:11](app/api/core/infrastructure/express/settings/SaveSettingsController.ts#L11)
+and [SaveSettingsLinksController.ts:10](app/api/core/infrastructure/express/settings/SaveSettingsLinksController.ts#L10).
+
+**What I'm seeing.** I believe this kind of logic — updating the client — is a solid
+candidate to be done async through events. There are several places that need to update the
+same thing, so we could create a single listener listening to the events. Five copies of
+"tell the clients settings changed" is five places to keep consistent, and three of them
+re-query settings inside the request purely to build a payload nobody is waiting on.
+
+### Proposed solution
+
+One listener owns the broadcast; the controllers stop emitting. This rides along with the
+event work in §5.
+
+```ts
+class BroadcastSettingsChanged {
+  async handle(_event: SettingsChangedEvent) {
+    this.sockets.emitToCurrentTenant('updateSettings', await this.settingsQuery.forBroadcast());
+  }
+}
+```
+
+**Separate and mechanical:** [translation/routes.ts:135-160](app/api/core/infrastructure/express/translation/routes.ts#L135-L160)
+is still an inline route handler and should be refactored into a controller class —
+`AddLanguageController` is used twelve lines below it as the pattern to copy.
+
+---
+
+## 10. The admin/public decision is made in 3 places
+
+**The code.**
+
+```ts
+// GetSettingsController.ts:10
+const payload =
+  this.request.user?.role === 'admin' ? await query.getForAdmin() : await query.getPublic();
+
+// entry-server.tsx:351-353 — the same ternary again
+(req.user?.role === 'admin' ? query.getForAdmin() : query.getPublic())
+
+// publicSettings.ts:80 — and a third time
+if (user?.role === 'admin') { return { ...pickAdminFields(settingsData), ... }; }
+```
+
+**What I'm seeing.** What are your thoughts on this — a model with permission restrictions
+on columns? I'm asking implementation-wise: where should this be enforced? Right now the
+answer is "in three places", which is the one answer we definitely don't want.
+
+My position is that this is a role/claims check, so it belongs in the application layer —
+not in an express controller, and not in the React SSR entry point. Those are delivery
+mechanisms; they shouldn't be the ones deciding what a caller is allowed to see.
+
+**I checked whether this currently leaks, and it doesn't — but only by luck.**
+`shapeSettingsForSSR` appends `features` outside the public allowlist on *both* branches. It
+happens to be safe because its input was already filtered by the second copy of the check.
+That correctness rests on a precondition recorded only in a JSDoc comment, and the call site
+casts it away with `as any` ([entry-server.tsx:217](app/react/entry-server.tsx#L217)), so the
+type system can't hold the line for us. One future caller passing unfiltered settings turns
+this into a real exposure — `features.preserve.masterToken` lives in that object.
+
+### Proposed solution
+
+One entry point, and the projection choice isn't the caller's to make. Following the
+convention in [AddLanguageUseCaseFactory.ts:47](app/api/core/infrastructure/factories/AddLanguageUseCaseFactory.ts#L47),
+the **factory** reads the actor from the execution context and injects it — I don't want the
+service reaching into request-scoped state itself, that just hides the dependency and makes
+it painful to test.
+
+```ts
+// factory — the one place the context is read
+new SettingsQueryService(settingsDS, { actor: ExecutionContext.actor });
+
+class SettingsQueryService {
+  async get() {                                  // the only actor-resolved way in
+    return this.actor?.role === 'admin' ? this.adminProjection() : this.publicProjection();
+  }
+  private async adminProjection()  { /* ... */ }
+  private async publicProjection() { /* ... */ }
+}
+```
+
+Controller and SSR both call `get()`, and `shapeSettingsForSSR` loses its role branch
+entirely.
+
+**One deliberate exception.** The socket broadcast from §9 must be public **regardless of
+who triggered the save** — it goes to every connected client in the tenant. If it resolved by
+current actor, an admin pressing save would broadcast admin fields to every logged-in
+visitor. So `get()` needs a companion method that is explicitly actor-independent. After §9
+collapses the five emit sites into one listener there's exactly one caller of it, which
+makes it easy to name and hard to misuse.
+
+---
+
+## 11. Dead exports in `publicSettings.ts`
+
+**The code.**
+
+```ts
+// publicSettings.ts:94-102
+export {
+  PUBLIC_ALLOWED_FIELDS,      // not used outside this file
+  ADMIN_ALLOWED_FIELDS,       // not used outside this file
+  pickPublicFields,           // only the spec
+  pickAdminFields,
+  getPublicSettingsPayload,
+  shapeSettingsForSSR,
+  omitInlineCustomization,    // re-export; real consumers import it from #shared directly
+};
+```
+
+**What I'm seeing.** I checked these and they have no consumers. Exported symbols read as
+public API and constrain future refactors, so I'd rather not carry them.
+
+`omitInlineCustomization` is the odd one — it's re-exported here, but every real consumer
+imports it from `#shared/settings/omitInlineCustomization.js` directly. Only the spec goes
+through the pass-through, so we have two import paths for one function.
+
+### Proposed solution
+
+Make the first two module-private and drop the `omitInlineCustomization` re-export so
+there's a single import path. `pickPublicFields` becomes private once §10 makes the
+projections internal to the query service.
+
+---
+
+## 12. `runInJobContext` nested — the caller already opened the context
+
+**The code.**
+
+```ts
+// InformationExtraction.ts:990-992
+processResults = async (_message: IXResultsMessage): Promise<void> => {
+  await runInJobContext(_message.tenant, async () => {
+    ...
+```
+
+```ts
+// TaskManager.ts:123-125 — but this is who calls processResults, and it already did it
+await runInJobContext(processedMessage.tenant, async () =>
+  this.service.processResults!(processedMessage)
+);
+```
+
+**What I'm seeing.** I was quite sure this was already called somewhere up on the callstack
+for `processResults`, and it is. `processResults` is registered on the task manager at
+[InformationExtraction.ts:153](app/api/services/informationextraction/InformationExtraction.ts#L153)
+and has **no other caller** — the only way in is `TaskManager.checkForResults()`, which
+already wraps it. So the inner call is a second, nested context.
+
+It isn't harmless redundancy, which is why I want it fixed rather than just tidied.
+`runInJobContext` calls `ExecutionContext.run`, and that creates a **new store**. Since
+`getOrInitialize` memoises instances per store, the inner scope builds a **fresh transaction
+manager**, different from the one the outer scope is holding. That's §1 all over again,
+arriving from a different direction: two transaction managers inside one logical operation,
+and nothing tells us about it.
+
+**Two more I found while checking this.**
+
+[OcrManager.ts:198](app/api/services/ocr/OcrManager.ts#L198) has exactly the same nesting —
+`processResults` is registered on a `TaskManager` at
+[line 266](app/api/services/ocr/OcrManager.ts#L266) and still opens its own context.
+
+[PDFSegmentation.ts:378](app/api/services/pdfsegmentation/PDFSegmentation.ts#L378) does a
+third thing: its `processResults` calls `tenants.run(...)` directly instead of
+`runInJobContext`, so it re-enters the tenant context but not the execution context. Three
+services, three different behaviours for the same hook.
+
+**Not this one:** the `runInJobContext` at
+[PDFSegmentation.ts:247](app/api/services/pdfsegmentation/PDFSegmentation.ts#L247) is
+correct and should stay — it's inside a loop over every tenant, a batch entry point that
+doesn't come through the task manager and genuinely has no context yet.
+
+### Proposed solution
+
+Drop the inner call wherever the task manager is the entry point, and let the one context
+the caller already opened be the only one.
+
+```ts
+// InformationExtraction.ts and OcrManager.ts
+processResults = async (message: IXResultsMessage): Promise<void> => {
+  // TaskManager.checkForResults already runs us inside runInJobContext
+  ...
+};
+```
+
+Then normalise `PDFSegmentation.processResults` onto whatever we settle on, so the three
+services agree. The rule worth writing down: **whoever owns the entry point opens the
+context; the handler never opens its own.**
+
+---
+
+## Suggested sequencing
+
+Several of these are the same refactor seen from different files:
+
+1. **§1, §11, §12** — independent and cheap, land first. §12 is the same class of problem
+   as §1, so they read well together.
+2. **§4 + §2** — one change. Moving the mapping into infrastructure removes the
+   `idGenerator` drill, which is what lets the data source create `_id`. §3 pins the
+   mapper's behaviour and should land alongside.
+3. **§5 + §6 + §9** — the service extraction, the job and the broadcast listener share the
+   event work. §5 depends on §4 landing first.
+4. **§10, §7, §8** — independent of the above and of each other. §8 is the biggest and
+   touches the most call sites; it can be staged (contract + the languages cluster first).
+
+---

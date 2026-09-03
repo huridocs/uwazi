@@ -24,6 +24,7 @@ import { IXSuggestionType } from '#shared/types/suggestionType.js';
 import { SegmentationModel } from '#api/services/pdfsegmentation/segmentationModel.js';
 import { filesModel } from '#api/files/filesModel.js';
 import { factory, fixtures } from './fixtures.js';
+import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import {
   CommonSuggestion,
   IXResultsMessage,
@@ -1730,6 +1731,30 @@ describe('InformationExtraction', () => {
   });
 
   describe('processResults', () => {
+    it('should not open a nested job context', async () => {
+      const [model] = await IXModelsModel.get({ extractorId: factory.id('prop2extractor') });
+      model.findingSuggestions = false;
+      await IXModelsModel.save(model);
+
+      await testingEnvironment.runWithContext(async () => {
+        const runSpy = jest.spyOn(ExecutionContext, 'run');
+        await informationExtraction.processResults({
+          // @ts-expect-error - this is a test for a cancel that happens outside of the flow, so we don't care about the task
+          task: 'any_task',
+          data_url: 'some/url',
+          error_message: '',
+          params: {
+            id: factory.id('prop2extractor').toString(),
+          },
+          tenant: 'tenant1',
+          file_url: '',
+          success: true,
+        });
+        expect(runSpy).not.toHaveBeenCalled();
+        runSpy.mockRestore();
+      });
+    });
+
     it('should not continue sending suggestions if flag is not set', async () => {
       const [model] = await IXModelsModel.get({ extractorId: factory.id('prop2extractor') });
       model.findingSuggestions = false;

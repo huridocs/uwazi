@@ -1,14 +1,13 @@
 import { RemoveTemplateFromFiltersUseCase } from '#api/core/application/RemoveTemplateFromFilters.js';
-import { TransactionManagerFactory } from './TransactionManagerFactory.js';
+import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { SettingsDataSourceFactory } from './SettingsDataSourceFactory.js';
 import { SaveSettingsUseCaseFactory } from './SaveSettingsUseCaseFactory.js';
 
 class RemoveTemplateFromFiltersUseCaseFactory {
   static default(): RemoveTemplateFromFiltersUseCase {
-    const transactionManager = TransactionManagerFactory.default();
     return new RemoveTemplateFromFiltersUseCase({
-      transactionManager,
-      settingsDS: SettingsDataSourceFactory.default({ transactionManager }),
+      transactionManager: ExecutionContext.transactionManager,
+      settingsDS: SettingsDataSourceFactory.default(),
       saveSettings: SaveSettingsUseCaseFactory.default(),
     });
   }
