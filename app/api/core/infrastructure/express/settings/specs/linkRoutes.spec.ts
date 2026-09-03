@@ -1,10 +1,12 @@
 import { ObjectId } from 'mongodb';
 import request from 'supertest';
 
-import { DBFixture } from '#api/utils/testing_db.js';
+import { SettingsQueryServiceFactory } from '#api/core/infrastructure/factories/SettingsQueryServiceFactory.js';
+import { getSharedConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-import { testingTenants } from '#api/utils/testingTenants.js';
 import { setUpApp } from '#api/utils/testingRoutes.js';
+import { testingTenants } from '#api/utils/testingTenants.js';
+import { DBFixture } from '#api/utils/testing_db.js';
 import { UserRole } from '#shared/types/userSchema.js';
 import { UserSchema } from '#shared/types/userType.js';
 import {
@@ -12,8 +14,12 @@ import {
   linkFixtures,
   newLinks,
 } from '../../../../application/settings/specs/fixtures.js';
+import {
+  clearJobs,
+  ensureBroadcastSettingsChangedRegistered,
+  expectSettingsChangedJob,
+} from '../../../../application/settings/specs/settingsChangedJob.js';
 import { settingsRoutes } from '../routes.js';
-import { SettingsQueryServiceFactory } from '#api/core/infrastructure/factories/SettingsQueryServiceFactory.js';
 
 const testConfigs = [
   { name: 'Mongo', postgresSettings: false },
@@ -76,6 +82,7 @@ describe('api/settings/links', () => {
           featureFlags: { postgresSettings: true },
         });
       }
+      ensureBroadcastSettingsChangedRegistered();
     });
     describe('GET', () => {
       it('should respond with links', async () => {
@@ -134,6 +141,15 @@ describe('api/settings/links', () => {
           };
         };
         expect(serialize(storedLinks)).toEqual(serialize(newLinks).map(asPersistedMenuItem));
+      });
+
+      it('should enqueue BroadcastSettingsChanged after save', async () => {
+        currentUser = adminUser;
+        await clearJobs(getSharedConnection());
+
+        await request(app).post('/api/settings/links').send(newLinks).expect(200);
+
+        await expectSettingsChangedJob(getSharedConnection());
       });
 
       it.each([

@@ -9,6 +9,7 @@ import templates from '#api/core/v1_layer/templates/index.js';
 import { permissionsContext } from '#api/permissions/permissionsContext.js';
 import { search } from '#api/search/index.js';
 import { UsersDirectoryFactory } from '#api/core/infrastructure/factories/UsersDirectoryFactory.js';
+import { getSharedConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { Result } from '#api/core/libs/Result.js';
 import { setUpApp } from '#api/utils/testingRoutes.js';
 import * as setupSockets from '#api/socketio/setupSockets.js';
@@ -16,6 +17,11 @@ import { testingEnvironment, SettingsDSWithContext } from '#api/utils/testingEnv
 import { testingTenants } from '#api/utils/testingTenants.js';
 import { settingsRoutes } from '../routes.js';
 import fixtures from '../../../../application/settings/specs/fixtures.js';
+import {
+  clearJobs,
+  ensureBroadcastSettingsChangedRegistered,
+  expectSettingsChangedJob,
+} from '../../../../application/settings/specs/settingsChangedJob.js';
 
 jest.mock(
   '#api/auth/authMiddleware.js',
@@ -68,6 +74,7 @@ describe('Settings routes', () => {
           featureFlags: { postgresSettings: true },
         });
       }
+      ensureBroadcastSettingsChangedRegistered();
     });
 
     describe('GET', () => {
@@ -138,6 +145,17 @@ describe('Settings routes', () => {
             features: { favorites: true },
           })
         );
+      });
+
+      it('should enqueue BroadcastSettingsChanged after save', async () => {
+        await clearJobs(getSharedConnection());
+
+        await request(app)
+          .post('/api/settings')
+          .send({ site_name: 'broadcasted name' })
+          .expect(200);
+
+        await expectSettingsChangedJob(getSharedConnection());
       });
 
       describe('newNameGeneration', () => {

@@ -6,6 +6,7 @@ import { TranslationDBO } from '#api/core/infrastructure/mongodb/translation/sch
 import { AddLanguageUseCase } from '#api/core/application/AddLanguage.js';
 import { AddLanguageUseCaseFactory } from '#api/core/infrastructure/factories/AddLanguageUseCaseFactory.js';
 import { LanguageAddedEvent } from '#api/core/domain/language/events/LanguageAddedEvent.js';
+import { EventEmitterFactory } from '#api/core/libs/eventEmitter/EventEmitterFactory.js';
 import { search } from '#api/search/index.js';
 import { Dispatcher } from '#api/core/application/contracts/Dispatcher.js';
 import { ImportPredefinedTranslations } from '#api/core/application/translation/ImportPredefinedTranslationsService.js';
@@ -13,6 +14,11 @@ import { TranslationsDataSourceFactory } from '#api/core/infrastructure/factorie
 import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
 import { SettingsQueryServiceFactory } from '#api/core/infrastructure/factories/SettingsQueryServiceFactory.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import {
+  clearJobs,
+  ensureBroadcastSettingsChangedRegistered,
+  expectSettingsChangedJob,
+} from '../settings/specs/settingsChangedJob.js';
 import {
   languageBackendConfigs,
   languageBackendPostgresMirror,
@@ -225,6 +231,19 @@ describe('AddLanguage use case', () => {
             { from: 'en', to: 'zh' },
           ],
         });
+      });
+
+      it('should enqueue BroadcastSettingsChanged when languages are added', async () => {
+        await clearJobs();
+        ensureBroadcastSettingsChangedRegistered();
+        await withFlag(async () => {
+          await AddLanguageUseCaseFactory.default({
+            dispatcher: mockDispatcher,
+            importPredefinedTranslations: mockImportPredefinedTranslations,
+            eventEmitter: EventEmitterFactory.default(),
+          }).execute({ languages: [{ key: 'es', label: 'Spanish' }] });
+        });
+        await expectSettingsChangedJob();
       });
 
       it('should emit a LanguageAddedEvent for each new language', async () => {

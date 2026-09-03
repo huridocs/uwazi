@@ -5,11 +5,17 @@ import { TranslationDBO } from '#api/core/infrastructure/mongodb/translation/sch
 import { DeleteLanguageUseCase } from '#api/core/application/DeleteLanguage.js';
 import { DeleteLanguageUseCaseFactory } from '#api/core/infrastructure/factories/DeleteLanguageUseCaseFactory.js';
 import { LanguageDeletedEvent } from '#api/core/domain/language/events/LanguageDeletedEvent.js';
+import { EventEmitterFactory } from '#api/core/libs/eventEmitter/EventEmitterFactory.js';
 import { search } from '#api/search/index.js';
 import { Dispatcher } from '#api/core/application/contracts/Dispatcher.js';
 import { TranslationsDataSourceFactory } from '#api/core/infrastructure/factories/TranslationsDataSourceFactory.js';
 import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import {
+  clearJobs,
+  ensureBroadcastSettingsChangedRegistered,
+  expectSettingsChangedJob,
+} from '../settings/specs/settingsChangedJob.js';
 import {
   languageBackendConfigs,
   languageBackendPostgresMirror,
@@ -135,6 +141,18 @@ describe('DeleteLanguage use case', () => {
         await createSut().execute({ key: 'es' });
 
         expect(deleteLanguageEntitiesSpy).toHaveBeenCalledWith({ language: 'es' });
+      });
+
+      it('should enqueue BroadcastSettingsChanged when a language is deleted', async () => {
+        await clearJobs();
+        ensureBroadcastSettingsChangedRegistered();
+        await withFlag(async () => {
+          await DeleteLanguageUseCaseFactory.default({
+            dispatcher: mockDispatcher,
+            eventEmitter: EventEmitterFactory.default(),
+          }).execute({ key: 'es' });
+        });
+        await expectSettingsChangedJob();
       });
 
       it('should emit a LanguageDeletedEvent for the language', async () => {

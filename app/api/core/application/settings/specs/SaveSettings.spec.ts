@@ -7,6 +7,7 @@ import { SetDefaultLanguageUseCaseFactory } from '#api/core/infrastructure/facto
 import { SettingsQueryServiceFactory } from '#api/core/infrastructure/factories/SettingsQueryServiceFactory.js';
 import { SettingsServiceFactory } from '#api/core/infrastructure/factories/SettingsServiceFactory.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
+import { EventEmitterFactory } from '#api/core/libs/eventEmitter/EventEmitterFactory.js';
 import { User } from '#api/users.v2/model/User.js';
 import db from '#api/utils/testing_db.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
@@ -14,6 +15,11 @@ import { testingPG } from '#api/utils/testing_pg.js';
 import { testingTenants } from '#api/utils/testingTenants.js';
 import { SaveSettingsInput } from '../../SaveSettings.js';
 import fixtures, { factory, linkFixtures, newLinks } from './fixtures.js';
+import {
+  clearJobs,
+  ensureBroadcastSettingsChangedRegistered,
+  expectSettingsChangedJob,
+} from './settingsChangedJob.js';
 
 const testConfigs = [
   { name: 'Mongo', postgresSettings: false },
@@ -48,6 +54,13 @@ describe('settings', () => {
 
     const withSettings = <T>(fn: () => T) =>
       testingEnvironment.runWithContext(fn, { ...settingsContext(), actor: adminActor });
+
+    const withRealEmitter = <T>(fn: () => T) =>
+      testingEnvironment.runWithContext(fn, {
+        ...settingsContext(),
+        actor: adminActor,
+        factories: { eventEmitter: () => EventEmitterFactory.default() },
+      });
 
     const saveSettings = async (input: SaveSettingsInput) =>
       withSettings(async () => SaveSettingsUseCaseFactory.default().execute(input));
@@ -492,6 +505,41 @@ describe('settings', () => {
         const result = await getSettings();
         expect(result.languages?.[1].key).toBe('en');
         expect(result.languages?.[1].default).toBe(true);
+      });
+    });
+
+    describe('SettingsChangedEvent', () => {
+      beforeEach(() => {
+        ensureBroadcastSettingsChangedRegistered();
+      });
+
+      it('should enqueue BroadcastSettingsChanged when settings are saved', async () => {
+        await clearJobs();
+        await withRealEmitter(async () =>
+          SaveSettingsUseCaseFactory.default().execute({
+            site_name: 'Broadcasted collection',
+          })
+        );
+        await expectSettingsChangedJob();
+      });
+
+      it('should enqueue BroadcastSettingsChanged when the default language changes', async () => {
+        await clearJobs();
+        await withRealEmitter(async () =>
+          SetDefaultLanguageUseCaseFactory.default().execute({ key: 'en' })
+        );
+        await expectSettingsChangedJob();
+      });
+
+      it('should enqueue BroadcastSettingsChanged when a filter is renamed', async () => {
+        await saveSettings({ filters: [{ id: '123', name: 'Batman' }] });
+        await clearJobs();
+        await withRealEmitter(async () =>
+          ExecutionContext.transactionManager.run(async () =>
+            SettingsServiceFactory.default().updateFilterName('123', 'The dark knight')
+          )
+        );
+        await expectSettingsChangedJob();
       });
     });
 
