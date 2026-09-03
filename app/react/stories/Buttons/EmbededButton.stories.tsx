@@ -1,18 +1,23 @@
 import React from 'react';
+import preview from '#storybook/preview';
+import { storyExtend } from '#app/stories/storyExtend.js';
 import { CheckCircleIcon } from '@heroicons/react/24/outline';
-import type { Meta, StoryObj } from '@storybook/react-webpack5';
 import { EmbededButton } from '#V2/Components/UI/EmbededButton.js';
 import { Translate } from '#app/I18N/index.js';
 
-const meta: Meta<typeof EmbededButton> = {
+const meta = preview.meta({
   title: 'Components/Buttons/EmbededButton',
   component: EmbededButton,
-};
-export default meta;
+});
 
-type Story = StoryObj<typeof EmbededButton>;
-
-const Primary: Story = {
+const Primary = meta.story({
+  args: {
+    icon: <CheckCircleIcon />,
+    collapsed: false,
+    color: 'orange',
+    disabled: false,
+    children: <Translate>Accept</Translate>,
+  },
   render: args => (
     <div className="tw-content">
       <EmbededButton
@@ -25,10 +30,9 @@ const Primary: Story = {
       </EmbededButton>
     </div>
   ),
-};
+});
 
-const Basic: Story = {
-  ...Primary,
+const Basic = storyExtend(Primary, {
   args: {
     icon: <CheckCircleIcon />,
     collapsed: false,
@@ -36,5 +40,5 @@ const Basic: Story = {
     disabled: false,
     children: <Translate>Accept</Translate>,
   },
-};
+});
 export { Basic };

@@ -1,16 +1,13 @@
 import React, { useState } from 'react';
-import { Meta, StoryObj } from '@storybook/react-webpack5';
+import preview from '#storybook/preview';
+import { storyExtend } from '#app/stories/storyExtend.js';
 import { defaultSearch, MultiselectList } from '#V2/Components/Forms/index.js';
 import { items, remoteLookupFunction } from './MultiselectListSotoryFixtures.js';
 
-const meta: Meta<typeof MultiselectList> = {
+const meta = preview.meta({
   title: 'Forms/MultiselectList',
   component: MultiselectList,
-};
-
-export default meta;
-
-type Story = StoryObj<typeof MultiselectList>;
+});
 
 const StoryComponent = ({ args }: any) => {
   const [searchAndFocus, setSearchAndFocus] = useState('');
@@ -47,12 +44,7 @@ const StoryComponent = ({ args }: any) => {
   );
 };
 
-const Primary: Story = {
-  render: args => <StoryComponent args={args} />,
-};
-
-const Basic: Story = {
-  ...Primary,
+const Primary = meta.story({
   args: {
     label: 'Search for something',
     checkboxes: true,
@@ -63,20 +55,32 @@ const Basic: Story = {
     items,
     onSearch: defaultSearch,
   },
-};
+  render: args => <StoryComponent args={args} />,
+});
 
-const WithError: Story = {
-  ...Primary,
+const Basic = storyExtend(Primary, {
   args: {
-    ...Basic.args,
+    label: 'Search for something',
+    checkboxes: true,
+    foldableGroups: true,
+    hasErrors: false,
+    allowSelelectAll: false,
+    startOnSelected: false,
+    items,
+    onSearch: defaultSearch,
+  },
+});
+
+const WithError = storyExtend(Primary, {
+  args: {
+    ...Basic.composed.args,
     hasErrors: true,
   },
-};
+});
 
-const WithGroups: Story = {
-  ...Primary,
+const WithGroups = storyExtend(Primary, {
   args: {
-    ...Basic.args,
+    ...Basic.composed.args,
     items: [
       {
         searchLabel: 'Colors',
@@ -110,12 +114,11 @@ const WithGroups: Story = {
       },
     ],
   },
-};
+});
 
-const InitialState: Story = {
-  ...Primary,
+const InitialState = storyExtend(Primary, {
   args: {
-    ...Basic.args,
+    ...Basic.composed.args,
     selectedValues: ['red', 'orange', 'banana'],
     startOnSelected: true,
     items: [
@@ -151,23 +154,21 @@ const InitialState: Story = {
       },
     ],
   },
-};
+});
 
-const BlankState: Story = {
-  ...Primary,
+const BlankState = storyExtend(Primary, {
   args: {
-    ...Basic.args,
+    ...Basic.composed.args,
     items: [],
   },
-};
+});
 
-const RemoteSearch: Story = {
-  ...Primary,
+const RemoteSearch = storyExtend(Primary, {
   args: {
-    ...Basic.args,
+    ...Basic.composed.args,
     items: [],
     onSearch: remoteLookupFunction,
   },
-};
+});
 
 export { Basic, WithError, WithGroups, InitialState, BlankState, RemoteSearch };

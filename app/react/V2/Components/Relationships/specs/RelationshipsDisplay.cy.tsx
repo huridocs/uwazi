@@ -289,7 +289,7 @@ describe('References Display', () => {
 
   describe('handler interactions', () => {
     it('calls onClusterClick with cluster markers', () => {
-      Basic.args.onClusterClick = cy.stub().as('onClusterClick');
+      Basic.composed.args.onClusterClick = cy.stub().as('onClusterClick');
       mountBasicStory();
 
       getMainClusterCount().then(count => {
@@ -308,7 +308,7 @@ describe('References Display', () => {
     });
 
     it('calls onPointClick when a cluster point is clicked', () => {
-      Basic.args.onPointClick = cy.stub().as('onPointClick');
+      Basic.composed.args.onPointClick = cy.stub().as('onPointClick');
       mountBasicStory();
 
       openMainCluster();
@@ -319,7 +319,7 @@ describe('References Display', () => {
     });
 
     it('calls onPointClick when a standalone marker is clicked', () => {
-      Basic.args.onPointClick = cy.stub().as('onPointClick');
+      Basic.composed.args.onPointClick = cy.stub().as('onPointClick');
       mountBasicStory();
 
       clickStandalonePerson2();
@@ -331,11 +331,11 @@ describe('References Display', () => {
     it('renders the active marker with expanded styling', () => {
       mount(
         <ThemeProvider>
-          {Basic({
-            locale: 'en',
-            fileUrl: '/api/files/sample.pdf',
-            activeRelationshipId: 'ref-partner-1',
-          })}
+          <Basic.Component
+            locale="en"
+            fileUrl="/api/files/sample.pdf"
+            activeRelationshipId="ref-partner-1"
+          />
         </ThemeProvider>
       );
       cy.get('.page[data-page-number="1"]', { timeout: 20000 }).should('exist');

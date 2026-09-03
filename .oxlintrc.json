@@ -303,12 +303,18 @@
       }
     },
     {
+      "files": [".storybook/**"],
+      "rules": {
+        "import/no-default-export": "off"
+      }
+    },
+    {
       "files": ["**/*.stories.{ts,tsx,js,jsx}"],
       "rules": {
         "react/rules-of-hooks": "off",
         "storybook/await-interactions": "error",
         "storybook/context-in-play-function": "error",
-        "storybook/default-exports": "error",
+        "storybook/default-exports": "off",
         "storybook/hierarchy-separator": "warn",
         "storybook/no-redundant-story-name": "warn",
         "storybook/no-renderer-packages": "error",
@@ -316,7 +322,25 @@
         "storybook/story-exports": "error",
         "storybook/use-storybook-expect": "error",
         "storybook/use-storybook-testing-library": "error",
-        "storybook/no-uninstalled-addons": "error"
+        "storybook/no-uninstalled-addons": "error",
+        "react/jsx-props-no-spreading": "off",
+        "react/no-multi-comp": "off",
+        "react/jsx-pascal-case": "off",
+        "react/exhaustive-deps": "off",
+        "import/exports-last": "off",
+        "eslint/max-statements": "off",
+        "eslint/max-params": "off",
+        "eslint/max-lines": "off"
+      }
+    },
+    {
+      "files": ["**/*.{cy.ts,cy.tsx}"],
+      "rules": {
+        "eslint/max-statements": "off",
+        "eslint/max-lines": "off",
+        "eslint/prefer-destructuring": "off",
+        "eslint/class-methods-use-this": "off",
+        "react/no-multi-comp": "off"
       }
     }
   ]

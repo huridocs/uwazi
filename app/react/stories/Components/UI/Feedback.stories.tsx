@@ -1,5 +1,5 @@
 import React from 'react';
-import { Meta, StoryObj } from '@storybook/react-webpack5';
+import preview from '#storybook/preview';
 import { AlertBanner, ProgressBar, StatusBadge } from '#V2/Components/UI/index.js';
 
 const FeedbackSheet = () => (
@@ -26,13 +26,10 @@ const FeedbackSheet = () => (
   </div>
 );
 
-const meta: Meta<typeof FeedbackSheet> = {
+const meta = preview.meta({
   title: 'Design System/Shared/Feedback',
   component: FeedbackSheet,
   parameters: { layout: 'padded' },
-};
+});
 
-type Story = StoryObj<typeof FeedbackSheet>;
-
-export const ProgressAndAlerts: Story = {};
-export default meta;
+export const ProgressAndAlerts = meta.story({});

@@ -1,17 +1,15 @@
 import React from 'react';
-import type { Meta, StoryObj } from '@storybook/react-webpack5';
+import preview from '#storybook/preview';
 import { MagnifyingGlassIcon } from '@heroicons/react/20/solid';
 import { BlankState } from '#V2/Components/UI/index.js';
 import { Translate } from '#app/I18N/index.js';
 
-const meta: Meta<typeof BlankState> = {
+const meta = preview.meta({
   title: 'Components/UI/BlankState',
   component: BlankState,
-};
+});
 
-type Story = StoryObj<typeof BlankState>;
-
-const Basic: Story = {
+const Basic = meta.story({
   render: () => (
     <div className="tw-content">
       <BlankState
@@ -27,7 +25,6 @@ const Basic: Story = {
       />
     </div>
   ),
-};
+});
 
 export { Basic };
-export default meta;

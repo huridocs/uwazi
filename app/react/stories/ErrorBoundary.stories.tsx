@@ -1,27 +1,22 @@
-import React, { ComponentClass } from 'react';
-import type { Meta, StoryObj } from '@storybook/react-webpack5';
+import React from 'react';
+import preview from '#storybook/preview';
+import { storyExtend } from '#app/stories/storyExtend.js';
 import { ErrorBoundary } from '#V2/Components/ErrorHandling/index.js';
-import type { ErrorBoundaryProps } from '#V2/Components/ErrorHandling/index.js';
 
-const meta: Meta<ComponentClass<ErrorBoundaryProps, any>> = {
+const meta = preview.meta({
   title: 'Components/ErrorBoundary',
   component: ErrorBoundary,
-};
+});
 
-export default meta;
-
-type Story = StoryObj<typeof ErrorBoundary>;
-
-const Primary: Story = {
+const Primary = meta.story({
   render: args => (
     <div className="tw-content">
       <ErrorBoundary error={args.error}>{args.children}</ErrorBoundary>
     </div>
   ),
-};
+});
 
-const BasicErrorBoundary: Story = {
-  ...Primary,
+const BasicErrorBoundary = storyExtend(Primary, {
   args: {
     error: {
       status: 500,
@@ -30,6 +25,6 @@ const BasicErrorBoundary: Story = {
     },
     children: <span className="mb-8 text-3xl font-extrabold text-gray-900 ">Error-Free</span>,
   },
-};
+});
 
 export { BasicErrorBoundary };

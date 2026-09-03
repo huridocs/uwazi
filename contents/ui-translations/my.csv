@@ -425,6 +425,7 @@ Edit item,Edit item
 Edit metadata of entities,Edit metadata of entities
 Edit theme,Edit theme
 Edit user,Edit user
+Edited,Edited
 Editor,အယ်ဒီတာ
 editor,အယ်ဒီတာ
 Editors,Editors
@@ -591,7 +592,6 @@ Imported translations from file,Imported translations from file
 in,၌
 "In a group, either all relationships must have a hub or none of them.","In a group, either all relationships must have a hub or none of them."
 In OCR queue,In OCR queue
-in this document,in this document
 In use,In use
 Include all entities,Include all entities
 Include only public,Include only public
@@ -942,7 +942,6 @@ Preserve Extension,Preserve Extension
 Preserve Setup Description,"If you know your Uwazi URL and TOKEN click the link below, and fill the required information."
 Press enter to add,ထည့်ရန် enter ကို နှိပ်ပါ
 Preview,ကြိုကြည့်ရန်
-Preview entity,Preview entity
 Preview updates automatically (300ms debounce),Preview updates automatically (300ms debounce)
 Preview updates when the JSON is valid.,Preview updates when the JSON is valid.
 Previous,ယခင်
@@ -1015,7 +1014,6 @@ Recommended,Recommended
 Reference,Reference
 References,ကိုးကားချက်များ
 references,references
-References in document,References in document
 Refresh,Refresh
 "Refresh manually when you have added data and cannot wait for the next
                         scheduled run.","Refresh manually when you have added data and cannot wait for the next
@@ -1358,6 +1356,7 @@ To,To
 "To complete the account creation process, please create a password for your account",အကောင့်ဖန်တီးခြင်း လုပ်ငန်းစဉ် ပြီးမြောက်စေရန် ကျေးဇူးပြု၍ သင့်အကောင့်အတွက် စကားဝှက် ဖန်တီးပါ
 to view your authentication code and verify your identity.,သင်၏ စစ်မှန်ကြောင်း အတည်ပြုကုဒ်ကို ကြည့်ရန်နှင့် သင့်ကိုယ်ပိုင်သင်္ကေတကို မှန်ကန်ကြောင်း စစ်ဆေးရန်။
 Today,Today
+Toggle relationship details,Toggle relationship details
 Toggle timeline mode,Toggle timeline mode
 Tools,ကိရိယာများ
 total entities,total entities

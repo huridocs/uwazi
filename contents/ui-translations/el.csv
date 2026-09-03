@@ -426,6 +426,7 @@ Edit item,Επεξεργασία στοιχείου
 Edit metadata of entities,Επεξεργασία μεταδεδομένων οντοτήτων
 Edit theme,Edit theme
 Edit user,Επεξεργασία χρήστη
+Edited,Edited
 Editor,Επιμελητής
 editor,Επιμελητής
 Editors,Επιμελητές
@@ -592,7 +593,6 @@ Imported translations from file,Εισήχθησαν μεταφράσεις απ
 in,σε
 "In a group, either all relationships must have a hub or none of them.","Σε μια ομάδα, είτε όλες οι σχέσεις πρέπει να έχουν έναν κόμβο είτε καμία από αυτές."
 In OCR queue,Στην ουρά OCR
-in this document,in this document
 In use,In use
 Include all entities,Include all entities
 Include only public,Include only public
@@ -943,7 +943,6 @@ Preserve Extension,Preserve επέκταση
 Preserve Setup Description,"Εάν γνωρίζετε το URL και το TOKEN του Uwazi σας, κάντε κλικ στον παρακάτω σύνδεσμο και συμπληρώστε τις απαιτούμενες πληροφορίες."
 Press enter to add,Πατήστε Enter για προσθήκη
 Preview,Προεπισκόπηση
-Preview entity,Preview entity
 Preview updates automatically (300ms debounce),Preview updates automatically (300ms debounce)
 Preview updates when the JSON is valid.,Preview updates when the JSON is valid.
 Previous,Προηγούμενο
@@ -1016,7 +1015,6 @@ Recommended,Recommended
 Reference,Αναφορά
 References,Αναφορές
 references,Αναφορές
-References in document,References in document
 Refresh,Refresh
 "Refresh manually when you have added data and cannot wait for the next
                         scheduled run.","Refresh manually when you have added data and cannot wait for the next
@@ -1359,6 +1357,7 @@ To,Έως
 "To complete the account creation process, please create a password for your account","Για να ολοκληρώσετε τη διαδικασία δημιουργίας λογαριασμού, δημιουργήστε έναν κωδικό πρόσβασης για το λογαριασμό σας."
 to view your authentication code and verify your identity.,για να δείτε τον κωδικό πιστοποίησης και να επαληθεύσετε την ταυτότητά σας.
 Today,Σήμερα
+Toggle relationship details,Toggle relationship details
 Toggle timeline mode,Toggle timeline mode
 Tools,Εργαλεία
 total entities,σύνολο οντοτήτων
