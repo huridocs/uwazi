@@ -31,6 +31,7 @@ import {
   isValidMainTab,
 } from './Tabs/index.js';
 import { EntityMainTabsProvider, useEntityTabNavigation } from './Tabs/EntityTabsContext.js';
+import { translationsFilesSideTabs } from './Tabs/sideTabSets.js';
 import { useEntityMainTabs } from './Tabs/hooks/useEntityMainTabs.js';
 import { LoaderResponse } from './types.js';
 import { EntityUrlSync } from './entityUrlState.js';
@@ -101,10 +102,7 @@ const EntityView = () => {
   const { primaryRows } = useEntityFiles();
   const hasMainDocument = Boolean(mainDocument?.filename);
   const filesSideTabs = useMemo(
-    () => ({
-      showTranslationsTab: true,
-      translationsCount: primaryRows.length,
-    }),
+    () => translationsFilesSideTabs(primaryRows.length),
     [primaryRows.length]
   );
   const entityTabs = useEntityMainTabs({

@@ -32,9 +32,6 @@ const DocumentViewModeSelect = () => {
     (value: ViewMode) => {
       const currentPage = String(pageNumber);
       updateEntityUrl({
-        search: next => {
-          next.delete(VIEW_MODE_PARAM);
-        },
         hash: next => {
           if (value === 'raw') {
             next.set(VIEW_MODE_PARAM, 'true');

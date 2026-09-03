@@ -44,7 +44,6 @@ const noop = () => undefined;
 const libraryPreviewTabs = (mainTabId: MainTabId): EntityTabsState => ({
   activeMainTab: mainTabId,
   activeSideTab: undefined,
-  explicitSideTab: undefined,
   syncSideTabId: undefined,
   sideButtons: [],
   relationshipsOnMain: mainTabId === MAIN_TAB.RELATIONSHIPS,

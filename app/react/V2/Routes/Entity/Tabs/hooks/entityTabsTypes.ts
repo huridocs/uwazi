@@ -23,7 +23,6 @@ type EntityMainTabsState = {
 
 type EntitySideTabsState = {
   activeSideTab: SideTabId | undefined;
-  explicitSideTab: SideTabId | undefined;
   syncSideTabId: SideTabId | undefined;
   sideButtons: TabButtonDef[];
   onSideTabChange: (selectedSideTab: string) => void;

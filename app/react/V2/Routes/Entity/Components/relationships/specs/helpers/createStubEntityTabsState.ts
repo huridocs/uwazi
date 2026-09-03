@@ -6,7 +6,6 @@ const noop = () => undefined;
 const createStubEntityTabsState = (overrides: Partial<EntityTabsState> = {}): EntityTabsState => ({
   activeMainTab: MAIN_TAB.DOCUMENT,
   activeSideTab: SIDE_TAB.RELATIONSHIPS,
-  explicitSideTab: SIDE_TAB.RELATIONSHIPS,
   syncSideTabId: SIDE_TAB.RELATIONSHIPS,
   sideButtons: [],
   relationshipsOnMain: false,

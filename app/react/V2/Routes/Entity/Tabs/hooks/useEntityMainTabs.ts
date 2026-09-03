@@ -116,4 +116,3 @@ const useEntityMainTabs = ({
 };
 
 export { useEntityMainTabs };
-export type { EntityMainTabsState, UseEntityTabsParams } from './entityTabsTypes.js';

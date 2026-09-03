@@ -1,5 +1,5 @@
 /* eslint-disable max-statements */
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useMemo, useRef } from 'react';
 import Leaflet from 'leaflet';
 import { useAtomValue } from 'jotai';
 import 'leaflet.markercluster';
@@ -64,7 +64,10 @@ const LMap = ({
   const deletedEntity = useAtomValue(deletedEntityAtom);
   const containerId = useRef(uniqueID()).current;
   const attributionControlRef = useRef<Leaflet.Control.Attribution | null>(null);
-  const syncKey = markerSyncKey(pointMarkers, deletedEntity);
+  const syncKey = useMemo(
+    () => markerSyncKey(pointMarkers, deletedEntity),
+    [deletedEntity, pointMarkers]
+  );
 
   const clickHandler = (markerPoint: any) => {
     if (!map.dragging.enabled()) {
@@ -209,10 +212,10 @@ const LMap = ({
     let cancelled = false;
     checkMapInitialization(map, containerId);
     if (props.tilesProvider === 'google') {
-        // GoogleMutant layers require window.google to exist BEFORE they are
-        // constructed — wait for the Maps JS API, and on failure surface the
-        // real error and fall back to the other provider instead of leaving
-        // a dead map.
+      // GoogleMutant layers require window.google to exist BEFORE they are
+      // constructed — wait for the Maps JS API, and on failure surface the
+      // real error and fall back to the other provider instead of leaving
+      // a dead map.
       ensureGoogleMaps(props.mapApiKey)
         .then(() => {
           if (!cancelled) initMap();

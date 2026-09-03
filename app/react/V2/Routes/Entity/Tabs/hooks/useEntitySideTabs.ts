@@ -34,7 +34,7 @@ const useEntitySideTabs = ({
   const setTabGroups = useSetAtom(tabGroupsAtom);
   const { activeTabId: atomSideTab } = useTabGroup('entity-side');
   const [pendingSideTab, setPendingSideTab] = useAtom(pendingSideTabAtom);
-  const { metadataDirty, filesCount, relationshipsCount, buttonsFor } = useEntitySideButtonModel({
+  const { buttonsFor } = useEntitySideButtonModel({
     entity,
     hasMainDocument,
     mainDocumentId,
@@ -79,13 +79,8 @@ const useEntitySideTabs = ({
     entity,
     activeMainTab,
     mainTabIds,
-    hasMainDocument,
-    mainDocumentId,
-    filesSideTabs,
-    metadataDirty,
+    buttonsFor,
     searchDirty,
-    filesCount,
-    relationshipsCount,
     hashParams,
     searchParams,
     pendingSideTabId: pendingSideTab,
@@ -115,12 +110,11 @@ const useEntitySideTabs = ({
   return useMemo(
     () => ({
       activeSideTab,
-      explicitSideTab,
       syncSideTabId,
       sideButtons,
       onSideTabChange,
     }),
-    [activeSideTab, explicitSideTab, onSideTabChange, sideButtons, syncSideTabId]
+    [activeSideTab, onSideTabChange, sideButtons, syncSideTabId]
   );
 };
 
