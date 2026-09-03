@@ -1,6 +1,7 @@
 /**
  * @jest-environment jsdom
  */
+/* eslint-disable max-statements */
 import React from 'react';
 import { act, renderHook } from '@testing-library/react';
 import { MemoryRouter } from 'react-router';
@@ -8,6 +9,7 @@ import { Provider } from 'jotai';
 import {
   parseEntityHash,
   serializeEntityHash,
+  useEntityDocumentPage,
   useUpdateEntityUrl,
   EntityUrlSync,
 } from '../entityUrlState.js';
@@ -84,12 +86,26 @@ describe('entityUrlState', () => {
       });
 
       expect(mockNavigate).toHaveBeenCalledTimes(1);
-      const [to, opts] = mockNavigate.mock.calls[0];
+      const [[to, opts]] = mockNavigate.mock.calls;
       expect(to.pathname).toBe('/entity/1');
       expect(to.search).not.toContain('m=');
       expect(to.hash).toContain('page=4');
       expect(to.hash).toContain('s=search');
       expect(opts).toEqual({ replace: true, preventScrollReset: true });
+    });
+
+    it('exposes the hash page on the first render', () => {
+      const pages: number[] = [];
+      const { result } = renderHook(
+        () => {
+          const page = useEntityDocumentPage();
+          pages.push(page);
+          return page;
+        },
+        { wrapper: wrapper('/entity/1#page=5') }
+      );
+      expect(pages[0]).toBe(5);
+      expect(result.current).toBe(5);
     });
 
     it('uses history.replaceState for page-only hash updates', async () => {
@@ -115,6 +131,28 @@ describe('entityUrlState', () => {
       expect(mockNavigate).not.toHaveBeenCalled();
       expect(replaceStateSpy).toHaveBeenCalled();
       replaceStateSpy.mockRestore();
+    });
+
+    it('keeps the atom page after a page-only replaceState', async () => {
+      const initial = '/entity/1?m=metadata#s=search&page=3';
+      window.history.replaceState({}, '', initial);
+      const { result } = renderHook(
+        () => ({ update: useUpdateEntityUrl(), page: useEntityDocumentPage() }),
+        { wrapper: wrapper(initial) }
+      );
+
+      act(() => {
+        result.current.update({
+          hash: next => {
+            next.set('page', '2');
+          },
+        });
+      });
+      await act(async () => {
+        await Promise.resolve();
+      });
+
+      expect(result.current.page).toBe(2);
     });
 
     it('can return to the router-stale page after a page-only replaceState', async () => {
@@ -182,7 +220,7 @@ describe('entityUrlState', () => {
       });
 
       expect(mockNavigate).toHaveBeenCalledTimes(1);
-      const [to] = mockNavigate.mock.calls[0];
+      const [[to]] = mockNavigate.mock.calls;
       expect(to.hash).toContain('page=2');
       expect(to.hash).toContain('s=toc');
     });
@@ -229,7 +267,7 @@ describe('entityUrlState', () => {
       });
 
       expect(mockNavigate).toHaveBeenCalledTimes(1);
-      const [to] = mockNavigate.mock.calls[0];
+      const [[to]] = mockNavigate.mock.calls;
       expect(to.pathname).toBe('/');
       expect(to.search).toContain('m=files');
     });
@@ -254,7 +292,7 @@ describe('entityUrlState', () => {
       });
 
       expect(mockNavigate).toHaveBeenCalledTimes(1);
-      const [to] = mockNavigate.mock.calls[0];
+      const [[to]] = mockNavigate.mock.calls;
       expect(to.search).not.toContain('m=');
       expect(to.hash).toContain('s=relationships');
     });

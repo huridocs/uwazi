@@ -1,8 +1,7 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { ChevronDownIcon } from '@heroicons/react/20/solid';
 import { Bars3BottomLeftIcon, DocumentTextIcon } from '@heroicons/react/24/outline';
 import { t } from '#app/I18N/index.js';
-import { isClient } from '#app/utils/index.js';
 import {
   useEntityDocumentPage,
   useEntityRawView,
@@ -10,45 +9,51 @@ import {
 } from '../../entityUrlState.js';
 import { VIEW_MODE_PARAM } from '../../urlParams.js';
 import { useDocumentPdf } from '#V2/Routes/Entity/Components/context/index.js';
+import { useSsrOnlyContent } from '../relationships/hooks/useSsrOnlyContent.js';
 
 type ViewMode = 'raw' | 'normal';
 
-const DocumentViewModeSelect = () => {
+const applyViewMode = ({
+  value,
+  pageNumber,
+  updateEntityUrl,
+  pdfControls,
+  setOpen,
+}: {
+  value: ViewMode;
+  pageNumber: number;
+  updateEntityUrl: ReturnType<typeof useUpdateEntityUrl>;
+  pdfControls: ReturnType<typeof useDocumentPdf>['pdfController'];
+  setOpen: (open: boolean) => void;
+}) => {
+  updateEntityUrl({
+    hash: next => {
+      if (value === 'raw') next.set(VIEW_MODE_PARAM, 'true');
+      else next.delete(VIEW_MODE_PARAM);
+    },
+  });
+  if (value !== 'raw') {
+    pdfControls?.goToPage(pageNumber);
+  }
+  setOpen(false);
+};
+
+const useDocumentViewMode = () => {
   const updateEntityUrl = useUpdateEntityUrl();
   const { pdfController: pdfControls } = useDocumentPdf();
-  const [ready, setReady] = useState(false);
   const [open, setOpen] = useState(false);
   const pageNumber = useEntityDocumentPage();
-  const isRawView = useEntityRawView();
-  const initialPage = useRef(pageNumber);
-
-  useEffect(() => {
-    setReady(true);
-  }, []);
-
-  const isRaw = !isClient || !ready || isRawView;
-
+  const isRaw = [useSsrOnlyContent(), useEntityRawView()].some(Boolean);
   const selectMode = useCallback(
-    (value: ViewMode) => {
-      const currentPage = String(pageNumber);
-      updateEntityUrl({
-        hash: next => {
-          if (value === 'raw') {
-            next.set(VIEW_MODE_PARAM, 'true');
-          } else {
-            next.delete(VIEW_MODE_PARAM);
-          }
-        },
-      });
-      initialPage.current = Number(currentPage);
-      if (value !== 'raw') {
-        pdfControls?.goToPage(Number(currentPage));
-      }
-      setOpen(false);
-    },
+    (value: ViewMode) =>
+      applyViewMode({ value, pageNumber, updateEntityUrl, pdfControls, setOpen }),
     [pdfControls, pageNumber, updateEntityUrl]
   );
+  return { open, setOpen, isRaw, selectMode };
+};
 
+const DocumentViewModeSelect = () => {
+  const { open, setOpen, isRaw, selectMode } = useDocumentViewMode();
   const modes = [
     { id: 'normal' as const, label: t('System', 'PDF', null, false), Icon: DocumentTextIcon },
     {

@@ -147,7 +147,7 @@ describe('Map', () => {
 
     it('should call onClick when clicking somewhere on the map', async () => {
       await waitFor(async () => {
-        const data = renderResult.container.getElementsByClassName('leaflet-pane')[0];
+        const [data] = renderResult.container.getElementsByClassName('leaflet-pane');
         fireEvent.click(data);
         expect(onClick).toHaveBeenCalled();
       });

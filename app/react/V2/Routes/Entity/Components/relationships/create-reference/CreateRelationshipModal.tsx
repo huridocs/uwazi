@@ -4,7 +4,6 @@ import { t } from '#app/I18N/index.js';
 import type { FileType } from '#V2/api/entities/types.js';
 import { create as createEntity, searchByTitle } from '#V2/api/entities/index.js';
 import { relationshipTypesAtom, templatesAtom } from '#V2/atoms/index.js';
-import { Modal } from '#V2/Components/UI/index.js';
 import { notify } from '#V2/utils/notifyBridge.js';
 import {
   useEntityScopedEntity,
@@ -12,12 +11,7 @@ import {
   useRelationshipsActions,
 } from '#V2/Routes/Entity/Components/context/index.js';
 import { useCreateRelationshipModalState } from './useCreateRelationshipModalState.js';
-import { EntitySearchStep } from './EntitySearchStep.js';
-import { NewEntityStep } from './NewEntityStep.js';
-import { TargetFileStep } from './TargetFileStep.js';
-import { RelationTypeStep } from './RelationTypeStep.js';
-import { TargetTextStep } from './TargetTextStep.js';
-import { CreateRelationshipModalHeader } from './CreateRelationshipModalHeader.js';
+import { CreateRelationshipModalBody } from './CreateRelationshipModalBody.js';
 import { useRelationshipSave } from '../hooks/useRelationshipSave.js';
 import { entityPageAtom } from '#V2/Routes/Entity/entityUrlAtoms.js';
 
@@ -25,66 +19,52 @@ type CreateRelationshipModalProps = {
   mainDocument?: FileType;
 };
 
-const CreateRelationshipModal = ({ mainDocument }: CreateRelationshipModalProps) => {
-  const entity = useEntityScopedEntity();
-  const { createReferenceSelection, createRelationshipModalOpen } = useRelationships();
-  const { closeCreateRelationship } = useRelationshipsActions();
-  const relationshipTypes = useAtomValue(relationshipTypesAtom);
-  const templates = useAtomValue(templatesAtom);
-  const { handleSaveReference } = useRelationshipSave(mainDocument);
-  const store = useStore();
-  const [isSaving, setIsSaving] = useState(false);
-
-  const lookup = useCallback(
-    async (searchString: string) =>
-      searchByTitle({
-        title: searchString,
-        fields: ['title', 'template', 'creationDate', 'sharedId'],
-        includeFiles: true,
-      }),
-    []
-  );
-
-  const {
-    step,
-    setStep,
-    searchQuery,
-    setSearchQuery,
-    searchResults,
-    isSearching,
-    hasSearched,
-    groupedResults,
-    selectedEntity,
-    selectedFile,
-    targetSelection,
-    targetPdfFiles,
-    isTextAnchored,
-    selectedRelationshipType,
-    newEntityTitle,
-    setNewEntityTitle,
-    newEntityTemplateId,
-    setNewEntityTemplateId,
-    reset,
-    handleStartNewEntity,
-    handleEntitySelect,
-    handleTargetFileSelect,
-    handleSkipTargetFile,
-    handleRelationshipTypeSelect,
-    handleContinueToTargetText,
-    handleTargetPdfSelect,
-    handleTargetPdfDeselect,
-    templateName,
-  } = useCreateRelationshipModalState({
-    selection: createReferenceSelection,
-    relationshipTypes,
-    templates,
-    searchFunction: lookup,
+const lookupEntitiesByTitle = async (searchString: string) =>
+  searchByTitle({
+    title: searchString,
+    fields: ['title', 'template', 'creationDate', 'sharedId'],
+    includeFiles: true,
   });
 
-  useEffect(() => {
-    if (!createRelationshipModalOpen) reset();
-  }, [createRelationshipModalOpen, reset]);
-
+const useCreateRelationshipActions = ({
+  closeCreateRelationship,
+  reset,
+  newEntityTitle,
+  newEntityTemplateId,
+  handleEntitySelect,
+  selectedEntity,
+  selectedRelationshipType,
+  entity,
+  handleSaveReference,
+  createReferenceSelection,
+  selectedFile,
+  targetSelection,
+  store,
+  setIsSaving,
+  isTextAnchored,
+  targetPdfFiles,
+  setStep,
+}: {
+  closeCreateRelationship: () => void;
+  reset: () => void;
+  newEntityTitle: string;
+  newEntityTemplateId: string;
+  handleEntitySelect: ReturnType<typeof useCreateRelationshipModalState>['handleEntitySelect'];
+  selectedEntity: ReturnType<typeof useCreateRelationshipModalState>['selectedEntity'];
+  selectedRelationshipType: ReturnType<
+    typeof useCreateRelationshipModalState
+  >['selectedRelationshipType'];
+  entity: ReturnType<typeof useEntityScopedEntity>;
+  handleSaveReference: ReturnType<typeof useRelationshipSave>['handleSaveReference'];
+  createReferenceSelection: ReturnType<typeof useRelationships>['createReferenceSelection'];
+  selectedFile: ReturnType<typeof useCreateRelationshipModalState>['selectedFile'];
+  targetSelection: ReturnType<typeof useCreateRelationshipModalState>['targetSelection'];
+  store: ReturnType<typeof useStore>;
+  setIsSaving: (value: boolean) => void;
+  isTextAnchored: boolean;
+  targetPdfFiles: ReturnType<typeof useCreateRelationshipModalState>['targetPdfFiles'];
+  setStep: ReturnType<typeof useCreateRelationshipModalState>['setStep'];
+}) => {
   const handleClose = useCallback(() => {
     closeCreateRelationship();
     reset();
@@ -107,7 +87,15 @@ const CreateRelationshipModal = ({ mainDocument }: CreateRelationshipModalProps)
       return;
     }
     handleEntitySelect(created);
-  }, [handleEntitySelect, newEntityTemplateId, newEntityTitle]);
+  }, [handleEntitySelect, newEntityTemplateId, newEntityTitle, setIsSaving]);
+
+  const notifyCreateError = () => {
+    notify(
+      t('System', 'Error', null, false),
+      'error',
+      t('System', 'An error occurred', null, false)
+    );
+  };
 
   const handleCreate = useCallback(async () => {
     if (!selectedEntity?.sharedId || !selectedRelationshipType || !entity) return;
@@ -122,11 +110,7 @@ const CreateRelationshipModal = ({ mainDocument }: CreateRelationshipModalProps)
         ...(targetSelection && { targetSelection }),
       });
       if (!saved) {
-        notify(
-          t('System', 'Error', null, false),
-          'error',
-          t('System', 'An error occurred', null, false)
-        );
+        notifyCreateError();
         return;
       }
       notify(t('System', 'Relationship created', null, false), 'success', selectedEntity.title);
@@ -142,6 +126,7 @@ const CreateRelationshipModal = ({ mainDocument }: CreateRelationshipModalProps)
     selectedEntity,
     selectedFile,
     selectedRelationshipType,
+    setIsSaving,
     store,
     targetSelection,
   ]);
@@ -154,86 +139,81 @@ const CreateRelationshipModal = ({ mainDocument }: CreateRelationshipModalProps)
     setStep('entity');
   }, [isTextAnchored, setStep, targetPdfFiles.length]);
 
-  if (!createRelationshipModalOpen) return null;
+  return { handleClose, handleConfirmNewEntity, handleCreate, handleRelationBack };
+};
 
+const useCreateRelationshipDeps = (mainDocument?: FileType) => {
+  const entity = useEntityScopedEntity();
+  const relationships = useRelationships();
+  const { closeCreateRelationship } = useRelationshipsActions();
+  const relationshipTypes = useAtomValue(relationshipTypesAtom);
+  const templates = useAtomValue(templatesAtom);
+  const { handleSaveReference } = useRelationshipSave(mainDocument);
+  const store = useStore();
+  const [isSaving, setIsSaving] = useState(false);
+  return {
+    entity,
+    relationships,
+    closeCreateRelationship,
+    relationshipTypes,
+    templates,
+    handleSaveReference,
+    store,
+    isSaving,
+    setIsSaving,
+  };
+};
+
+const useCreateRelationshipModal = (mainDocument?: FileType) => {
+  const deps = useCreateRelationshipDeps(mainDocument);
+  const state = useCreateRelationshipModalState({
+    selection: deps.relationships.createReferenceSelection,
+    relationshipTypes: deps.relationshipTypes,
+    templates: deps.templates,
+    searchFunction: lookupEntitiesByTitle,
+  });
+  const handlers = useCreateRelationshipActions({
+    closeCreateRelationship: deps.closeCreateRelationship,
+    reset: state.reset,
+    newEntityTitle: state.newEntityTitle,
+    newEntityTemplateId: state.newEntityTemplateId,
+    handleEntitySelect: state.handleEntitySelect,
+    selectedEntity: state.selectedEntity,
+    selectedRelationshipType: state.selectedRelationshipType,
+    entity: deps.entity,
+    handleSaveReference: deps.handleSaveReference,
+    createReferenceSelection: deps.relationships.createReferenceSelection,
+    selectedFile: state.selectedFile,
+    targetSelection: state.targetSelection,
+    store: deps.store,
+    setIsSaving: deps.setIsSaving,
+    isTextAnchored: state.isTextAnchored,
+    targetPdfFiles: state.targetPdfFiles,
+    setStep: state.setStep,
+  });
+  const { reset } = state;
+  const isOpen = deps.relationships.createRelationshipModalOpen;
+  useEffect(() => {
+    if (!isOpen) reset();
+  }, [isOpen, reset]);
+  return { isOpen, deps, state, handlers };
+};
+
+const CreateRelationshipModal = ({ mainDocument }: CreateRelationshipModalProps) => {
+  const { isOpen, deps, state, handlers } = useCreateRelationshipModal(mainDocument);
+  if (!isOpen) return null;
   return (
-    <Modal
-      size={step === 'target-text' ? 'xxxxl' : 'lg'}
-      ariaLabel={t('System', 'Create relationship', null, false)}
-    >
-      <CreateRelationshipModalHeader
-        step={step}
-        selectionPreview={createReferenceSelection?.text?.trim()}
-        isSaving={isSaving}
-        onClose={handleClose}
-      />
-
-      {step === 'entity' && (
-        <EntitySearchStep
-          searchQuery={searchQuery}
-          setSearchQuery={setSearchQuery}
-          isSearching={isSearching}
-          hasSearched={hasSearched}
-          groupedResults={groupedResults}
-          searchResults={searchResults}
-          templateName={templateName}
-          onStartNewEntity={handleStartNewEntity}
-          onEntitySelect={handleEntitySelect}
-        />
-      )}
-
-      {step === 'new-entity' && (
-        <NewEntityStep
-          newEntityTitle={newEntityTitle}
-          setNewEntityTitle={setNewEntityTitle}
-          newEntityTemplateId={newEntityTemplateId}
-          setNewEntityTemplateId={setNewEntityTemplateId}
-          templates={templates}
-          isSaving={isSaving}
-          onBack={() => setStep('entity')}
-          onConfirm={handleConfirmNewEntity}
-        />
-      )}
-
-      {step === 'target-file' && selectedEntity && (
-        <TargetFileStep
-          selectedEntity={selectedEntity}
-          targetPdfFiles={targetPdfFiles}
-          isSaving={isSaving}
-          onBack={() => setStep('entity')}
-          onFileSelect={handleTargetFileSelect}
-          onSkip={handleSkipTargetFile}
-        />
-      )}
-
-      {step === 'relation' && selectedEntity && (
-        <RelationTypeStep
-          selectedEntity={selectedEntity}
-          selectedFile={selectedFile}
-          relationshipTypes={relationshipTypes}
-          selectedRelationshipType={selectedRelationshipType}
-          isSaving={isSaving}
-          onBack={handleRelationBack}
-          onRelationshipTypeSelect={handleRelationshipTypeSelect}
-          onContinueToTargetText={handleContinueToTargetText}
-          onCreate={handleCreate}
-        />
-      )}
-
-      {step === 'target-text' && selectedEntity && selectedFile && (
-        <TargetTextStep
-          selectedEntity={selectedEntity}
-          selectedFile={selectedFile}
-          selectedRelationshipType={selectedRelationshipType}
-          targetSelection={targetSelection}
-          isSaving={isSaving}
-          onBack={() => setStep('relation')}
-          onCreate={handleCreate}
-          onTargetPdfSelect={handleTargetPdfSelect}
-          onTargetPdfDeselect={handleTargetPdfDeselect}
-        />
-      )}
-    </Modal>
+    <CreateRelationshipModalBody
+      state={state}
+      isSaving={deps.isSaving}
+      templates={deps.templates}
+      relationshipTypes={deps.relationshipTypes}
+      selectionPreview={deps.relationships.createReferenceSelection?.text?.trim()}
+      onClose={handlers.handleClose}
+      onConfirmNewEntity={handlers.handleConfirmNewEntity}
+      onCreate={handlers.handleCreate}
+      onRelationBack={handlers.handleRelationBack}
+    />
   );
 };
 

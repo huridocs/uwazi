@@ -1,4 +1,4 @@
-import type { EntityTabsState } from '../../../../Tabs/hooks/entityTabsTypes.js';
+import type { EntityTabsState } from '../../../../Tabs/EntityTabsContext.js';
 import { MAIN_TAB, SIDE_TAB } from '../../../../Tabs/tabIds.js';
 
 const noop = () => undefined;

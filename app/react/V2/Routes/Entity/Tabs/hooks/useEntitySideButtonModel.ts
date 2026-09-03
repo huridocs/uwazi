@@ -6,7 +6,7 @@ import { countEntityFiles, countEntityRelationships } from '#V2/formatters/index
 import { useDirectedRelationships, useMetadataEditing } from '../../Components/context/index.js';
 import { getSideTabButtons } from '../sideTabSets.js';
 import type { MainTabId } from '../tabIds.js';
-import type { UseEntityTabsParams } from './entityTabsTypes.js';
+import type { UseEntityTabsParams } from '../EntityTabsContext.js';
 
 const useEntitySideButtonModel = ({
   entity,

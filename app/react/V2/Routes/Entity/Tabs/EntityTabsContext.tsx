@@ -1,6 +1,36 @@
 /* eslint-disable react/no-multi-comp */
 import React, { createContext, useContext, useMemo } from 'react';
-import type { EntityMainTabsState, EntityTabsState } from './hooks/entityTabsTypes.js';
+import type { TabButtonDef } from '#V2/Components/UI/Tabs/tabsAtoms.js';
+import type { Entity as EntityType } from '#V2/api/entities/types.js';
+import type { FilesSideTabsOptions } from './sideTabSets.js';
+import type { MainTabId, SideTabId } from './tabIds.js';
+
+type UseEntityTabsParams = {
+  entity: EntityType;
+  hasMainDocument: boolean;
+  mainDocumentId?: string;
+  filesSideTabs: FilesSideTabsOptions;
+};
+
+type EntityMainTabsState = {
+  activeMainTab: MainTabId;
+  relationshipsOnMain: boolean;
+  documentOnMain: boolean;
+  onMainTabChange: (selectedMainTab: string) => void;
+  focusSideTab: (sideTab: SideTabId) => void;
+  stageSideTab: (sideTab: SideTabId) => void;
+  focusRelationshipsPanel: () => void;
+  focusDocumentPanel: () => void;
+};
+
+type EntitySideTabsState = {
+  activeSideTab: SideTabId | undefined;
+  syncSideTabId: SideTabId | undefined;
+  sideButtons: TabButtonDef[];
+  onSideTabChange: (selectedSideTab: string) => void;
+};
+
+type EntityTabsState = EntityMainTabsState & EntitySideTabsState;
 
 const EntityMainTabsContext = createContext<EntityMainTabsState | null>(null);
 
@@ -53,3 +83,4 @@ const useEntityTabNavigation = () => {
 };
 
 export { EntityMainTabsProvider, EntityTabsProvider, useEntityTabNavigation };
+export type { EntityMainTabsState, EntitySideTabsState, EntityTabsState, UseEntityTabsParams };

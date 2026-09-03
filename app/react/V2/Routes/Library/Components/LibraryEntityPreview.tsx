@@ -8,6 +8,7 @@ import { settingsAtom } from '#V2/atoms/index.js';
 import { ErrorBoundary } from '#V2/Components/ErrorHandling/ErrorBoundary.js';
 import { useTabGroup } from '#V2/Components/UI/index.js';
 import { getMainDocument } from '#V2/formatters/index.js';
+import type { Entity } from '#V2/api/entities/types.js';
 import {
   AddFileModal,
   EntityFilesProvider,
@@ -20,15 +21,18 @@ import {
 } from '#V2/Routes/Entity/Components/index.js';
 import { CreateRelationshipModal } from '#V2/Routes/Entity/Components/relationships/create-reference/CreateRelationshipModal.js';
 import { useResetRelationshipsOnDocumentChange } from '#V2/Routes/Entity/Components/relationships/hooks/useDocumentRelationships.js';
+import { EntityUrlSync } from '#V2/Routes/Entity/entityUrlState.js';
+import { pickMainTab } from '#V2/Routes/Entity/Tabs/entityTabState.js';
 import {
   MAIN_TAB,
   MainTabsContent,
   TabsMainButtons,
-  isValidMainTab,
   type MainTabId,
 } from '#V2/Routes/Entity/Tabs/index.js';
-import { EntityTabsProvider } from '#V2/Routes/Entity/Tabs/EntityTabsContext.js';
-import type { EntityTabsState } from '#V2/Routes/Entity/Tabs/hooks/entityTabsTypes.js';
+import {
+  EntityTabsProvider,
+  type EntityTabsState,
+} from '#V2/Routes/Entity/Tabs/EntityTabsContext.js';
 import { LibraryEntityPreviewFooter } from './LibraryEntityPreviewFooter.js';
 import { LibraryFooterButton } from './LibraryFooterButton.js';
 import { useLibraryPreviewEntity } from './useLibraryPreviewEntity.js';
@@ -77,6 +81,13 @@ const LibraryMetadataCopyFrom = () => (
   </div>
 );
 
+const useLibraryPreviewTab = () => {
+  const { mainDocument } = useEntityLanguage();
+  const hasMainDocument = Boolean(mainDocument?.filename);
+  const { activeTabId: atomMainTabId } = useTabGroup('entity-main');
+  return pickMainTab(atomMainTabId, hasMainDocument);
+};
+
 const LibraryEntityPreviewView = ({
   entityBasePath,
   onClose,
@@ -87,13 +98,7 @@ const LibraryEntityPreviewView = ({
   const entity = useEntityScopedEntity();
   const { mainDocument, pagePlaintext, isRtl } = useEntityLanguage();
   useResetRelationshipsOnDocumentChange();
-  const hasMainDocument = Boolean(mainDocument?.filename);
-  const defaultMainTab = hasMainDocument ? MAIN_TAB.DOCUMENT : MAIN_TAB.METADATA;
-  const { activeTabId: atomMainTabId } = useTabGroup('entity-main');
-  const mainTabId =
-    isValidMainTab(atomMainTabId) && (atomMainTabId !== MAIN_TAB.DOCUMENT || hasMainDocument)
-      ? atomMainTabId
-      : defaultMainTab;
+  const mainTabId = useLibraryPreviewTab();
   const { isEditing, formMountHost } = useMetadataEditing();
   const showCopyFrom = isEditing && formMountHost === 'main' && mainTabId === MAIN_TAB.METADATA;
   const entityTabs = useMemo(() => libraryPreviewTabs(mainTabId), [mainTabId]);
@@ -157,11 +162,7 @@ const PreviewStatus = ({ children }: { children: React.ReactNode }) => (
   </div>
 );
 
-const LibraryEntityPreview = ({ sharedId, entityBasePath, onClose }: LibraryEntityPreviewProps) => {
-  const { entity, loading, error } = useLibraryPreviewEntity(sharedId);
-  const settings = useAtomValue(settingsAtom);
-  const defaultLanguage = settings?.languages?.find(language => language.default)?.key;
-
+const useEscapeClose = (onClose: () => void) => {
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') onClose();
@@ -169,7 +170,47 @@ const LibraryEntityPreview = ({ sharedId, entityBasePath, onClose }: LibraryEnti
     document.addEventListener('keydown', onKeyDown);
     return () => document.removeEventListener('keydown', onKeyDown);
   }, [onClose]);
+};
 
+const LibraryPreviewReady = ({
+  entity,
+  defaultLanguage,
+  entityBasePath,
+  onClose,
+}: {
+  entity: Entity;
+  defaultLanguage: string | undefined;
+  entityBasePath: string;
+  onClose: () => void;
+}) => {
+  const { language } = entity;
+  const mainDocument = getMainDocument(readyDocuments(entity.documents), language, defaultLanguage);
+  return (
+    <ErrorBoundary>
+      <EntityUrlSync>
+        <EntityScopedProvider
+          key={entity.sharedId}
+          entity={entity}
+          language={language}
+          mainDocument={mainDocument}
+        >
+          <EntityFilesFromEntity>
+            <FilesDeleteConfirmationModal />
+            <AddFileModal />
+            <LibraryEntityPreviewView entityBasePath={entityBasePath} onClose={onClose} />
+          </EntityFilesFromEntity>
+          <EntityCreateRelationshipModal />
+        </EntityScopedProvider>
+      </EntityUrlSync>
+    </ErrorBoundary>
+  );
+};
+
+const LibraryEntityPreview = ({ sharedId, entityBasePath, onClose }: LibraryEntityPreviewProps) => {
+  const { entity, loading, error } = useLibraryPreviewEntity(sharedId);
+  const settings = useAtomValue(settingsAtom);
+  const defaultLanguage = settings?.languages?.find(language => language.default)?.key;
+  useEscapeClose(onClose);
   if (loading) {
     return (
       <PreviewStatus>
@@ -179,7 +220,6 @@ const LibraryEntityPreview = ({ sharedId, entityBasePath, onClose }: LibraryEnti
       </PreviewStatus>
     );
   }
-
   if (error || !entity) {
     return (
       <PreviewStatus>
@@ -189,26 +229,13 @@ const LibraryEntityPreview = ({ sharedId, entityBasePath, onClose }: LibraryEnti
       </PreviewStatus>
     );
   }
-
-  const { language } = entity;
-  const mainDocument = getMainDocument(readyDocuments(entity.documents), language, defaultLanguage);
-
   return (
-    <ErrorBoundary>
-      <EntityScopedProvider
-        key={entity.sharedId}
-        entity={entity}
-        language={language}
-        mainDocument={mainDocument}
-      >
-        <EntityFilesFromEntity>
-          <FilesDeleteConfirmationModal />
-          <AddFileModal />
-          <LibraryEntityPreviewView entityBasePath={entityBasePath} onClose={onClose} />
-        </EntityFilesFromEntity>
-        <EntityCreateRelationshipModal />
-      </EntityScopedProvider>
-    </ErrorBoundary>
+    <LibraryPreviewReady
+      entity={entity}
+      defaultLanguage={defaultLanguage}
+      entityBasePath={entityBasePath}
+      onClose={onClose}
+    />
   );
 };
 

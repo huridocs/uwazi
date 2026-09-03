@@ -19,8 +19,10 @@ jest.mock('#V2/Routes/Entity/Components/context/index.js', () => ({
 }));
 
 jest.mock('#V2/Routes/Entity/Tabs/EntityTabsContext.js', () => {
+  /* eslint-disable global-require, node/global-require */
   const { mergeTabGroup, tabGroupsAtom: groupsAtom } =
     require('#V2/Components/UI/Tabs/tabsAtoms.js') as typeof import('#V2/Components/UI/Tabs/tabsAtoms.js');
+  /* eslint-enable global-require, node/global-require */
   return {
     useEntityTabNavigation: () => ({
       stageSideTab: (sideTab: string) => {

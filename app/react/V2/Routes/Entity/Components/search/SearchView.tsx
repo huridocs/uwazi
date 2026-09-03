@@ -8,39 +8,79 @@ import {
   useEntityLanguage,
   useEntityScopedEntity,
 } from '#V2/Routes/Entity/Components/context/index.js';
-import { MAIN_TAB } from '../../Tabs/tabIds.js';
 import {
   useEntityHashUiParams,
   useEntityRawView,
   useUpdateEntityUrl,
 } from '../../entityUrlState.js';
-import { PAGE_PARAM, SEARCH_PARAM } from '../../urlParams.js';
-import { scrollToPlaintextPage } from '../document/scrollToPlaintextPage.js';
+import { SEARCH_PARAM } from '../../urlParams.js';
 import { SearchResultsPanel } from './SearchResultsPanel.js';
 import { useEntitySearchSnippets } from './useEntitySearchSnippets.js';
 import { useJumpToSearchHit } from './useJumpToSearchHit.js';
+import { activateSearchSnippet, type PendingSnippet } from './searchSnippetActivate.js';
 
 const URL_SYNC_MS = 250;
 
-type PendingSnippet = { text: string; page: number };
+const writeSearchHash = (updateEntityUrl: ReturnType<typeof useUpdateEntityUrl>, value: string) => {
+  const trimmed = value.trim();
+  updateEntityUrl({
+    hash: next => {
+      if (trimmed) {
+        next.set(SEARCH_PARAM, trimmed);
+      } else {
+        next.delete(SEARCH_PARAM);
+      }
+    },
+  });
+};
 
-// eslint-disable-next-line max-statements
-const SearchView = () => {
+const useSearchViewEffects = ({
+  urlTerm,
+  searchTerm,
+  draft,
+  writeSearchTerm,
+  mainDocumentId,
+  clearSnippetSelection,
+  isRaw,
+  pendingSnippet,
+  mainPdfController,
+  setDraft,
+}: {
+  urlTerm: string;
+  searchTerm: string;
+  draft: string;
+  writeSearchTerm: (value: string) => void;
+  mainDocumentId: string | undefined;
+  clearSnippetSelection: () => void;
+  isRaw: boolean;
+  pendingSnippet: PendingSnippet | null;
+  mainPdfController: ReturnType<typeof useDocumentPdf>['pdfController'];
+  setDraft: (value: string) => void;
+}) => {
+  useEffect(() => {
+    setDraft(urlTerm);
+  }, [setDraft, urlTerm]);
+  useEffect(() => {
+    if (draft.trim() === searchTerm) return undefined;
+    const timer = setTimeout(() => writeSearchTerm(draft), URL_SYNC_MS);
+    return () => clearTimeout(timer);
+  }, [draft, searchTerm, writeSearchTerm]);
+  useEffect(() => {
+    clearSnippetSelection();
+  }, [mainDocumentId, searchTerm, clearSnippetSelection]);
+  useEffect(() => {
+    if (isRaw || !pendingSnippet || !mainPdfController) return;
+    mainPdfController.activateSnippet(pendingSnippet);
+  }, [isRaw, pendingSnippet, mainPdfController]);
+};
+
+const useSearchViewQuery = () => {
   const entity = useEntityScopedEntity();
   const { language, mainDocument } = useEntityLanguage();
   const hashParams = useEntityHashUiParams();
-  const updateEntityUrl = useUpdateEntityUrl();
   const urlTerm = hashParams.get(SEARCH_PARAM) || '';
   const searchTerm = urlTerm.trim();
-  const isRaw = useEntityRawView();
   const templates = useAtomValue(templatesAtom);
-  const { pdfController: mainPdfController } = useDocumentPdf();
-  const mainPdfControllerRef = useRef(mainPdfController);
-  mainPdfControllerRef.current = mainPdfController;
-  const { ensureMainTab } = useJumpToSearchHit();
-  const [activeSnippet, setActiveSnippet] = useState<string | null>(null);
-  const [pendingSnippet, setPendingSnippet] = useState<PendingSnippet | null>(null);
-  const [draft, setDraft] = useState(urlTerm);
   const { searchResults, searchError } = useEntitySearchSnippets({
     searchTerm,
     sharedId: entity.sharedId,
@@ -48,100 +88,139 @@ const SearchView = () => {
     mainDocumentId: mainDocument?._id,
     documentFilename: mainDocument?.filename,
   });
-
   const template = useMemo(
     () => templates.find(temp => temp._id === entity.template),
     [entity.template, templates]
   );
+  return {
+    entity,
+    mainDocument,
+    urlTerm,
+    searchTerm,
+    searchResults,
+    searchError,
+    template,
+  };
+};
 
+const useSearchSnippetControls = (args: {
+  urlTerm: string;
+  updateEntityUrl: ReturnType<typeof useUpdateEntityUrl>;
+  mainPdfControllerRef: React.MutableRefObject<ReturnType<typeof useDocumentPdf>['pdfController']>;
+  isRaw: boolean;
+  ensureMainTab: ReturnType<typeof useJumpToSearchHit>['ensureMainTab'];
+}) => {
+  const { urlTerm, updateEntityUrl, mainPdfControllerRef, isRaw, ensureMainTab } = args;
+  const [activeSnippet, setActiveSnippet] = useState<string | null>(null);
+  const [pendingSnippet, setPendingSnippet] = useState<PendingSnippet | null>(null);
+  const [draft, setDraft] = useState(urlTerm);
   const writeSearchTerm = useCallback(
-    (value: string) => {
-      const trimmed = value.trim();
-      updateEntityUrl({
-        hash: next => {
-          if (trimmed) {
-            next.set(SEARCH_PARAM, trimmed);
-          } else {
-            next.delete(SEARCH_PARAM);
-          }
-        },
-      });
-    },
+    (value: string) => writeSearchHash(updateEntityUrl, value),
     [updateEntityUrl]
   );
-
   const clearSnippetSelection = useCallback(() => {
     setActiveSnippet(null);
     setPendingSnippet(null);
     mainPdfControllerRef.current?.deactivateSnippet();
-  }, []);
+  }, [mainPdfControllerRef]);
+  const activateSnippet = useCallback(
+    (snippetKey: string, pageText: PendingSnippet) =>
+      activateSearchSnippet({
+        snippetKey,
+        pageText,
+        activeSnippet,
+        isRaw,
+        ensureMainTab,
+        setActiveSnippet,
+        setPendingSnippet,
+        pdfController: mainPdfControllerRef.current,
+      }),
+    [activeSnippet, ensureMainTab, isRaw, mainPdfControllerRef]
+  );
+  return {
+    activeSnippet,
+    pendingSnippet,
+    draft,
+    setDraft,
+    writeSearchTerm,
+    clearSnippetSelection,
+    activateSnippet,
+  };
+};
 
-  useEffect(() => {
-    setDraft(urlTerm);
-  }, [urlTerm]);
+const useSearchViewControls = ({
+  urlTerm,
+  searchTerm,
+  isRaw,
+  mainDocumentId,
+  mainPdfController,
+}: {
+  urlTerm: string;
+  searchTerm: string;
+  isRaw: boolean;
+  mainDocumentId: string | undefined;
+  mainPdfController: ReturnType<typeof useDocumentPdf>['pdfController'];
+}) => {
+  const updateEntityUrl = useUpdateEntityUrl();
+  const mainPdfControllerRef = useRef(mainPdfController);
+  mainPdfControllerRef.current = mainPdfController;
+  const { ensureMainTab } = useJumpToSearchHit();
+  const snippets = useSearchSnippetControls({
+    urlTerm,
+    updateEntityUrl,
+    mainPdfControllerRef,
+    isRaw,
+    ensureMainTab,
+  });
+  useSearchViewEffects({
+    urlTerm,
+    searchTerm,
+    draft: snippets.draft,
+    writeSearchTerm: snippets.writeSearchTerm,
+    mainDocumentId,
+    clearSnippetSelection: snippets.clearSnippetSelection,
+    isRaw,
+    pendingSnippet: snippets.pendingSnippet,
+    mainPdfController,
+    setDraft: snippets.setDraft,
+  });
+  return {
+    draft: snippets.draft,
+    activeSnippet: snippets.activeSnippet,
+    setDraft: snippets.setDraft,
+    writeSearchTerm: snippets.writeSearchTerm,
+    clearSnippetSelection: snippets.clearSnippetSelection,
+    activateSnippet: snippets.activateSnippet,
+  };
+};
 
-  useEffect(() => {
-    if (draft.trim() === searchTerm) return undefined;
-    const timer = setTimeout(() => writeSearchTerm(draft), URL_SYNC_MS);
-    return () => clearTimeout(timer);
-  }, [draft, searchTerm, writeSearchTerm]);
-
-  useEffect(() => {
-    // Reset selection only when the document changes, not when PDF remounts.
-    clearSnippetSelection();
-  }, [mainDocument?._id, clearSnippetSelection]);
-
-  useEffect(() => {
-    clearSnippetSelection();
-  }, [searchTerm, clearSnippetSelection]);
-
-  useEffect(() => {
-    if (isRaw || !pendingSnippet || !mainPdfController) return;
-    // Keep pending across Document remounts: re-activate when controller is replaced.
-    mainPdfController.activateSnippet(pendingSnippet);
-  }, [isRaw, pendingSnippet, mainPdfController]);
-
+const SearchView = () => {
+  const query = useSearchViewQuery();
+  const isRaw = useEntityRawView();
+  const { pdfController: mainPdfController } = useDocumentPdf();
+  const controls = useSearchViewControls({
+    urlTerm: query.urlTerm,
+    searchTerm: query.searchTerm,
+    isRaw,
+    mainDocumentId: query.mainDocument?._id,
+    mainPdfController,
+  });
   const onChange = (value: string) => {
-    setDraft(value);
+    controls.setDraft(value);
     if (!value.trim()) {
-      clearSnippetSelection();
-      writeSearchTerm('');
+      controls.clearSnippetSelection();
+      controls.writeSearchTerm('');
     }
   };
-
   const onClear = () => {
-    setDraft('');
-    clearSnippetSelection();
-    writeSearchTerm('');
+    controls.setDraft('');
+    controls.clearSnippetSelection();
+    controls.writeSearchTerm('');
   };
-
   const flushOnEnter = (event: React.KeyboardEvent) => {
     if (event.key !== 'Enter') return;
     event.preventDefault();
-    writeSearchTerm(draft);
-  };
-
-  const activateSnippet = (snippetKey: string, pageText: PendingSnippet) => {
-    const newActive = activeSnippet === snippetKey ? null : snippetKey;
-    setActiveSnippet(newActive);
-    if (newActive) {
-      ensureMainTab(MAIN_TAB.DOCUMENT, {
-        hash: next => {
-          next.set(PAGE_PARAM, String(pageText.page));
-        },
-      });
-      if (isRaw) {
-        setPendingSnippet(null);
-        scrollToPlaintextPage(pageText.page);
-        return;
-      }
-      // Always queue; Document remount clears a stale controller after an immediate activate.
-      setPendingSnippet(pageText);
-      mainPdfControllerRef.current?.goToPage(pageText.page);
-      return;
-    }
-    setPendingSnippet(null);
-    mainPdfControllerRef.current?.deactivateSnippet();
+    controls.writeSearchTerm(controls.draft);
   };
 
   return (
@@ -152,7 +231,7 @@ const SearchView = () => {
         role="presentation"
       >
         <QuerySearchBar
-          value={draft}
+          value={controls.draft}
           onChange={onChange}
           placeholder={t('System', 'Search this document', null, false)}
           ariaLabel={t('System', 'Search this document', null, false)}
@@ -162,13 +241,13 @@ const SearchView = () => {
       </div>
       <div className="flex min-h-0 flex-1 flex-col overflow-y-auto px-3 py-3">
         <SearchResultsPanel
-          searchError={searchError}
-          searchResults={searchResults}
-          searchTerm={searchTerm}
-          entityTemplateId={entity.template || ''}
-          template={template}
-          activeSnippet={activeSnippet}
-          onActivate={activateSnippet}
+          searchError={query.searchError}
+          searchResults={query.searchResults}
+          searchTerm={query.searchTerm}
+          entityTemplateId={query.entity.template || ''}
+          template={query.template}
+          activeSnippet={controls.activeSnippet}
+          onActivate={controls.activateSnippet}
           onClear={onClear}
         />
       </div>

@@ -1,42 +1,42 @@
 import { useCallback, useMemo } from 'react';
 import { useSetAtom } from 'jotai';
-import { mergeTabGroup, tabGroupsAtom } from '#V2/Components/UI/Tabs/tabsAtoms.js';
+import {
+  mergeTabGroup,
+  tabGroupsAtom,
+  type TabGroupsState,
+} from '#V2/Components/UI/Tabs/tabsAtoms.js';
 import { SEARCH_PARAM } from '../../urlParams.js';
 import { useEntitySearchParams, useUpdateEntityUrl } from '../../entityUrlState.js';
+import type { EntityMainTabsState, UseEntityTabsParams } from '../EntityTabsContext.js';
 import {
   applyMainTabSearchParam,
+  pendingSideTabAtom,
   pruneSideTabIfInvalidForMain,
   resolveMainTabFromUrl,
   setEntitySideTabInUrl,
 } from '../entityTabState.js';
-import { MAIN_TAB, SIDE_TAB, isValidMainTab, type SideTabId } from '../tabIds.js';
-import { pendingSideTabAtom } from '../pendingSideTabAtom.js';
-import type { EntityMainTabsState, UseEntityTabsParams } from './entityTabsTypes.js';
+import { MAIN_TAB, SIDE_TAB, isValidMainTab, type MainTabId, type SideTabId } from '../tabIds.js';
 import { useEntitySideButtonModel } from './useEntitySideButtonModel.js';
 
-const useEntityMainTabs = ({
-  entity,
+const useMainTabActions = ({
+  activeMainTab,
+  buttonsFor,
+  documentOnMain,
   hasMainDocument,
-  mainDocumentId,
-  filesSideTabs,
-}: UseEntityTabsParams): EntityMainTabsState => {
-  const searchParams = useEntitySearchParams();
-  const updateEntityUrl = useUpdateEntityUrl();
-  const setPendingSideTab = useSetAtom(pendingSideTabAtom);
-  const setTabGroups = useSetAtom(tabGroupsAtom);
-  const { buttonsFor } = useEntitySideButtonModel({
-    entity,
-    hasMainDocument,
-    mainDocumentId,
-    filesSideTabs,
-  });
-  const activeMainTab = useMemo(
-    () => resolveMainTabFromUrl(searchParams, hasMainDocument),
-    [searchParams, hasMainDocument]
-  );
-  const relationshipsOnMain = activeMainTab === MAIN_TAB.RELATIONSHIPS;
-  const documentOnMain = activeMainTab === MAIN_TAB.DOCUMENT;
-
+  relationshipsOnMain,
+  setPendingSideTab,
+  setTabGroups,
+  updateEntityUrl,
+}: {
+  activeMainTab: MainTabId;
+  buttonsFor: ReturnType<typeof useEntitySideButtonModel>['buttonsFor'];
+  documentOnMain: boolean;
+  hasMainDocument: boolean;
+  relationshipsOnMain: boolean;
+  setPendingSideTab: (value: SideTabId | null) => void;
+  setTabGroups: (updater: TabGroupsState | ((prev: TabGroupsState) => TabGroupsState)) => void;
+  updateEntityUrl: ReturnType<typeof useUpdateEntityUrl>;
+}) => {
   const selectSideTab = useCallback(
     (sideTab: SideTabId) => {
       setTabGroups(prev => mergeTabGroup(prev, 'entity-side', { activeTabId: sideTab }));
@@ -93,25 +93,56 @@ const useEntityMainTabs = ({
 
   return useMemo(
     () => ({
-      activeMainTab,
-      relationshipsOnMain,
-      documentOnMain,
       onMainTabChange,
       focusSideTab,
       stageSideTab,
       focusRelationshipsPanel,
       focusDocumentPanel,
     }),
-    [
+    [focusDocumentPanel, focusRelationshipsPanel, focusSideTab, onMainTabChange, stageSideTab]
+  );
+};
+
+const useEntityMainTabs = ({
+  entity,
+  hasMainDocument,
+  mainDocumentId,
+  filesSideTabs,
+}: UseEntityTabsParams): EntityMainTabsState => {
+  const searchParams = useEntitySearchParams();
+  const updateEntityUrl = useUpdateEntityUrl();
+  const setPendingSideTab = useSetAtom(pendingSideTabAtom);
+  const setTabGroups = useSetAtom(tabGroupsAtom);
+  const { buttonsFor } = useEntitySideButtonModel({
+    entity,
+    hasMainDocument,
+    mainDocumentId,
+    filesSideTabs,
+  });
+  const activeMainTab = useMemo(
+    () => resolveMainTabFromUrl(searchParams, hasMainDocument),
+    [searchParams, hasMainDocument]
+  );
+  const relationshipsOnMain = activeMainTab === MAIN_TAB.RELATIONSHIPS;
+  const documentOnMain = activeMainTab === MAIN_TAB.DOCUMENT;
+  const actions = useMainTabActions({
+    activeMainTab,
+    buttonsFor,
+    documentOnMain,
+    hasMainDocument,
+    relationshipsOnMain,
+    setPendingSideTab,
+    setTabGroups,
+    updateEntityUrl,
+  });
+  return useMemo(
+    () => ({
       activeMainTab,
       relationshipsOnMain,
       documentOnMain,
-      onMainTabChange,
-      focusSideTab,
-      stageSideTab,
-      focusRelationshipsPanel,
-      focusDocumentPanel,
-    ]
+      ...actions,
+    }),
+    [actions, activeMainTab, documentOnMain, relationshipsOnMain]
   );
 };
 
