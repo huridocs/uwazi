@@ -84,9 +84,28 @@ const setEntitySideTabInUrl = (
   });
 };
 
+const pruneSideTabIfInvalidForMain = ({
+  hash,
+  selectedMainTab,
+  activeMainTab,
+  isSideTabAvailable,
+}: {
+  hash: URLSearchParams;
+  selectedMainTab: MainTabId;
+  activeMainTab: MainTabId;
+  isSideTabAvailable: (sideTab: string) => boolean;
+}) => {
+  if (selectedMainTab === activeMainTab) return;
+  const rawS = hash.get(SIDE_TAB_PARAM);
+  if (!rawS || !isValidSideTab(rawS) || !isSideTabAvailable(rawS)) {
+    hash.delete(SIDE_TAB_PARAM);
+  }
+};
+
 export {
   applyMainTabSearchParam,
   getMainTabIds,
+  pruneSideTabIfInvalidForMain,
   resolveExplicitSideTab,
   resolveMainTabFromUrl,
   resolveSideTabId,

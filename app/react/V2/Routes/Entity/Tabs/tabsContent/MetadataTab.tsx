@@ -11,7 +11,7 @@ import {
 } from '#V2/Components/Metadata/EntityEditor/index.js';
 import {
   useMetadataEditing,
-  useEntityOverlay,
+  useEntityOverlayActions,
   useEntityContext,
   useEntityLanguage,
   useDocumentPdf,
@@ -63,7 +63,7 @@ const MetadataTab = ({ entity, host }: MetadataTabProps) => {
     setDocumentPdfSelection,
     setPdfSelectionMenuOpen,
   } = useDocumentPdf();
-  const { openEntityOverlayTarget } = useEntityOverlay();
+  const { openEntityOverlayTarget } = useEntityOverlayActions();
   const revalidator = useRevalidator();
   const showEditor = isEditing && formMountHost === host;
 

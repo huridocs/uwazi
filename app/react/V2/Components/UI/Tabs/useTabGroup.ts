@@ -1,6 +1,7 @@
-import { useCallback } from 'react';
-import { useAtom } from 'jotai';
+import { useCallback, useMemo } from 'react';
+import { atom, useAtomValue, useSetAtom } from 'jotai';
 import {
+  EMPTY_TAB_GROUP,
   createEmptyGroup,
   mergeTabGroup,
   resolveActiveTabId,
@@ -10,8 +11,12 @@ import {
 } from './tabsAtoms.js';
 
 const useTabGroup = (groupId: string) => {
-  const [groups, setGroups] = useAtom(tabGroupsAtom);
-  const group = groups[groupId] ?? createEmptyGroup();
+  const groupAtom = useMemo(
+    () => atom(get => get(tabGroupsAtom)[groupId] ?? EMPTY_TAB_GROUP),
+    [groupId]
+  );
+  const group = useAtomValue(groupAtom);
+  const setGroups = useSetAtom(tabGroupsAtom);
 
   const mergeGroup = useCallback(
     (patch: Parameters<typeof mergeTabGroup>[2]) => {

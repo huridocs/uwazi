@@ -48,7 +48,8 @@ jest.mock('#V2/Routes/Entity/Components/context/index.js', () => ({
 }));
 
 jest.mock('#V2/Routes/Entity/entityUrlState.js', () => ({
-  useEntityHashParams: () => mockHashParams,
+  useEntityHashUiParams: () => mockHashParams,
+  useEntityRawView: () => mockHashParams.get('raw') === 'true',
   useUpdateEntityUrl: () => mockUpdateEntityUrl,
 }));
 

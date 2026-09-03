@@ -1,9 +1,15 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { useStore } from 'jotai';
 import { isClient } from '#app/utils/index.js';
 import type { PDFControls } from '#V2/Components/PDFViewer/index.js';
 import type { FileType } from '#V2/api/entities/types.js';
-import { useEntityHashParams, useUpdateEntityUrl } from '#V2/Routes/Entity/entityUrlState.js';
-import { PAGE_PARAM, VIEW_MODE_PARAM } from '../../urlParams.js';
+import {
+  useEntityDocumentPage,
+  useEntityRawView,
+  useUpdateEntityUrl,
+} from '#V2/Routes/Entity/entityUrlState.js';
+import { entityPageAtom } from '../../entityUrlAtoms.js';
+import { PAGE_PARAM } from '../../urlParams.js';
 
 type UseDocumentPdfPageParams = {
   mainDocument: FileType;
@@ -16,11 +22,11 @@ function useDocumentPdfPage({
   mainPdfController,
   setPdfController,
 }: UseDocumentPdfPageParams) {
-  const hashParams = useEntityHashParams();
   const updateEntityUrl = useUpdateEntityUrl();
+  const store = useStore();
   const [ready, setReady] = useState(false);
-  const page = hashParams.get(PAGE_PARAM) || '1';
-  const pageNumber = Number.parseInt(page || '1', 10);
+  const pageNumber = useEntityDocumentPage();
+  const isRawView = useEntityRawView();
   const targetPageRef = useRef(pageNumber);
   const pageSyncEnabledRef = useRef(false);
   const pendingVisiblePageRef = useRef(0);
@@ -29,7 +35,7 @@ function useDocumentPdfPage({
   const ownedControllerRef = useRef<PDFControls | null>(null);
   const mainPdfControllerRef = useRef(mainPdfController);
   mainPdfControllerRef.current = mainPdfController;
-  const isRaw = !isClient || !ready || hashParams.get(VIEW_MODE_PARAM) === 'true';
+  const isRaw = !isClient || !ready || isRawView;
 
   useEffect(() => {
     setReady(true);
@@ -62,24 +68,27 @@ function useDocumentPdfPage({
     pendingVisiblePageRef.current = 0;
     ownedControllerRef.current = null;
     setPdfController(null);
-    if (hashParams.get(PAGE_PARAM) && hashParams.get(PAGE_PARAM) !== '1') {
+    if (store.get(entityPageAtom) !== '1') {
       updateEntityUrl({
         hash: next => {
           next.set(PAGE_PARAM, '1');
         },
       });
     }
-  }, [mainDocument._id, hashParams, setPdfController, updateEntityUrl]);
+  }, [mainDocument._id, setPdfController, store, updateEntityUrl]);
 
   const updatePageParam = useCallback(
     (pageParam: number | string) => {
+      if (String(pageParam) === store.get(entityPageAtom)) {
+        return;
+      }
       updateEntityUrl({
         hash: next => {
           next.set(PAGE_PARAM, String(pageParam));
         },
       });
     },
-    [updateEntityUrl]
+    [store, updateEntityUrl]
   );
 
   const unlockPageSync = useCallback(() => {

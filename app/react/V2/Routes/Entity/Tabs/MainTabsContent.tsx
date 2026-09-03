@@ -27,7 +27,7 @@ type MainTabsContentProps = {
   pagePlaintext?: string;
 };
 
-const MainTabsContent = ({
+const MainTabsContentComponent = ({
   activeTabId: urlActiveTabId,
   entity,
   mainDocument,
@@ -100,5 +100,7 @@ const MainTabsContent = ({
     </div>
   );
 };
+
+const MainTabsContent = React.memo(MainTabsContentComponent);
 
 export { MainTabsContent };

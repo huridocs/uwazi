@@ -10,20 +10,25 @@ type UseEntityTabsParams = {
   filesSideTabs: FilesSideTabsOptions;
 };
 
-type EntityTabsState = {
+type EntityMainTabsState = {
   activeMainTab: MainTabId;
-  activeSideTab: SideTabId | undefined;
-  explicitSideTab: SideTabId | undefined;
-  syncSideTabId: SideTabId | undefined;
-  sideButtons: TabButtonDef[];
   relationshipsOnMain: boolean;
   documentOnMain: boolean;
   onMainTabChange: (selectedMainTab: string) => void;
-  onSideTabChange: (selectedSideTab: string) => void;
   focusSideTab: (sideTab: SideTabId) => void;
   stageSideTab: (sideTab: SideTabId) => void;
   focusRelationshipsPanel: () => void;
   focusDocumentPanel: () => void;
 };
 
-export type { EntityTabsState, UseEntityTabsParams };
+type EntitySideTabsState = {
+  activeSideTab: SideTabId | undefined;
+  explicitSideTab: SideTabId | undefined;
+  syncSideTabId: SideTabId | undefined;
+  sideButtons: TabButtonDef[];
+  onSideTabChange: (selectedSideTab: string) => void;
+};
+
+type EntityTabsState = EntityMainTabsState & EntitySideTabsState;
+
+export type { EntityMainTabsState, EntitySideTabsState, EntityTabsState, UseEntityTabsParams };

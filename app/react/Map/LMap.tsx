@@ -1,5 +1,5 @@
 /* eslint-disable max-statements */
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 import Leaflet from 'leaflet';
 import { useAtomValue } from 'jotai';
 import 'leaflet.markercluster';
@@ -42,8 +42,18 @@ type LMapProps = {
   layers?: Layer[];
 };
 
+const EMPTY_MARKERS: MarkerInput[] = [];
+
+const markerSyncKey = (markers: MarkerInput[], deletedEntity?: string) =>
+  `${deletedEntity || ''}|${markers
+    .map(
+      marker =>
+        `${marker.latitude},${marker.longitude},${marker.label ?? ''},${marker.properties?.info ?? ''},${marker.properties?.color ?? ''},${marker.properties?.entity?.sharedId ?? ''}`
+    )
+    .join(';')}`;
+
 const LMap = ({
-  markers: pointMarkers = [],
+  markers: pointMarkers = EMPTY_MARKERS,
   showControls = true,
   zoom = 6,
   layers,
@@ -51,11 +61,10 @@ const LMap = ({
 }: LMapProps) => {
   let map: Leaflet.Map;
   let markerGroup: Leaflet.MarkerClusterGroup;
-  const [currentMarkers, setCurrentMarkers] = useState<MarkerInput[]>();
-  const [currentTilesProvider, setCurrentTilesProvider] = useState(props.tilesProvider);
   const deletedEntity = useAtomValue(deletedEntityAtom);
-  const containerId = uniqueID();
+  const containerId = useRef(uniqueID()).current;
   const attributionControlRef = useRef<Leaflet.Control.Attribution | null>(null);
+  const syncKey = markerSyncKey(pointMarkers, deletedEntity);
 
   const clickHandler = (markerPoint: any) => {
     if (!map.dragging.enabled()) {
@@ -197,41 +206,35 @@ const LMap = ({
   };
 
   useEffect(() => {
-    const reRender = currentTilesProvider !== props.tilesProvider || !props.onClick;
-
     let cancelled = false;
-    if (reRender || currentMarkers === undefined) {
-      setCurrentMarkers(pointMarkers);
-      setCurrentTilesProvider(props.tilesProvider);
-      checkMapInitialization(map, containerId);
-      if (props.tilesProvider === 'google') {
+    checkMapInitialization(map, containerId);
+    if (props.tilesProvider === 'google') {
         // GoogleMutant layers require window.google to exist BEFORE they are
         // constructed — wait for the Maps JS API, and on failure surface the
         // real error and fall back to the other provider instead of leaving
         // a dead map.
-        ensureGoogleMaps(props.mapApiKey)
-          .then(() => {
-            if (!cancelled) initMap();
-          })
-          .catch((err: unknown) => {
-            // eslint-disable-next-line no-console
-            console.error('Google Maps failed to load, falling back:', err);
-            if (!cancelled) initMap('mapbox');
-          });
-      } else {
-        initMap();
-      }
+      ensureGoogleMaps(props.mapApiKey)
+        .then(() => {
+          if (!cancelled) initMap();
+        })
+        .catch((err: unknown) => {
+          // eslint-disable-next-line no-console
+          console.error('Google Maps failed to load, falling back:', err);
+          if (!cancelled) initMap('mapbox');
+        });
+    } else {
+      initMap();
     }
     return () => {
       cancelled = true;
-      if (map && reRender) {
+      if (map) {
         map.off('click', enableMapGestures);
         document.removeEventListener('click', disableMapGestures);
         map.remove();
       }
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pointMarkers, props.tilesProvider, props.mapApiKey]);
+  }, [syncKey, props.tilesProvider, props.mapApiKey]);
 
   return (
     <div className="map-container" data-testid="map-container">

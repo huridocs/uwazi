@@ -7,6 +7,7 @@ import { createStore, Provider } from 'jotai';
 import { MemoryRouter, useLocation, type Location } from 'react-router';
 import { tabGroupsAtom } from '#V2/Components/UI/Tabs/tabsAtoms.js';
 import { focusMetadataFieldAtom } from '#V2/Components/Metadata/focusMetadataFieldAtom.js';
+import { EntityUrlSync } from '../../../entityUrlState.js';
 import { useJumpToSearchHit } from '../useJumpToSearchHit.js';
 
 let mockTestStore: ReturnType<typeof createStore> | null = null;
@@ -44,8 +45,10 @@ describe('useJumpToSearchHit', () => {
   const wrapper = ({ children }: { children: React.ReactNode }) => (
     <MemoryRouter initialEntries={['/?m=relationships#s=toc']}>
       <Provider store={store}>
-        <LocationProbe />
-        {children}
+        <EntityUrlSync>
+          <LocationProbe />
+          {children}
+        </EntityUrlSync>
       </Provider>
     </MemoryRouter>
   );

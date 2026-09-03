@@ -9,8 +9,12 @@ import {
   useEntityScopedEntity,
 } from '#V2/Routes/Entity/Components/context/index.js';
 import { MAIN_TAB } from '../../Tabs/tabIds.js';
-import { useEntityHashParams, useUpdateEntityUrl } from '../../entityUrlState.js';
-import { PAGE_PARAM, SEARCH_PARAM, VIEW_MODE_PARAM } from '../../urlParams.js';
+import {
+  useEntityHashUiParams,
+  useEntityRawView,
+  useUpdateEntityUrl,
+} from '../../entityUrlState.js';
+import { PAGE_PARAM, SEARCH_PARAM } from '../../urlParams.js';
 import { scrollToPlaintextPage } from '../document/scrollToPlaintextPage.js';
 import { SearchResultsPanel } from './SearchResultsPanel.js';
 import { useEntitySearchSnippets } from './useEntitySearchSnippets.js';
@@ -24,11 +28,11 @@ type PendingSnippet = { text: string; page: number };
 const SearchView = () => {
   const entity = useEntityScopedEntity();
   const { language, mainDocument } = useEntityLanguage();
-  const hashParams = useEntityHashParams();
+  const hashParams = useEntityHashUiParams();
   const updateEntityUrl = useUpdateEntityUrl();
   const urlTerm = hashParams.get(SEARCH_PARAM) || '';
   const searchTerm = urlTerm.trim();
-  const isRaw = hashParams.get(VIEW_MODE_PARAM) === 'true';
+  const isRaw = useEntityRawView();
   const templates = useAtomValue(templatesAtom);
   const { pdfController: mainPdfController } = useDocumentPdf();
   const mainPdfControllerRef = useRef(mainPdfController);

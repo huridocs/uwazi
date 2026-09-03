@@ -4,7 +4,13 @@
 import React from 'react';
 import { act, renderHook } from '@testing-library/react';
 import { MemoryRouter } from 'react-router';
-import { parseEntityHash, serializeEntityHash, useUpdateEntityUrl } from '../entityUrlState.js';
+import { Provider } from 'jotai';
+import {
+  parseEntityHash,
+  serializeEntityHash,
+  useUpdateEntityUrl,
+  EntityUrlSync,
+} from '../entityUrlState.js';
 
 const mockNavigate = jest.fn();
 
@@ -31,6 +37,15 @@ describe('entityUrlState', () => {
   });
 
   describe('useUpdateEntityUrl coalescing', () => {
+    const wrapper =
+      (initial: string) =>
+      ({ children }: { children: React.ReactNode }) =>
+        React.createElement(
+          MemoryRouter,
+          { initialEntries: [initial] },
+          React.createElement(Provider, null, React.createElement(EntityUrlSync, null, children))
+        );
+
     beforeEach(() => {
       mockNavigate.mockClear();
       window.history.replaceState({}, '', '/entity/1?m=metadata#s=search&page=3');
@@ -45,8 +60,7 @@ describe('entityUrlState', () => {
       const initial = '/entity/1?m=metadata#s=search&page=3';
       window.history.replaceState({}, '', initial);
       const { result } = renderHook(() => useUpdateEntityUrl(), {
-        wrapper: ({ children }: { children: React.ReactNode }) =>
-          React.createElement(MemoryRouter, { initialEntries: [initial] }, children),
+        wrapper: wrapper(initial),
       });
 
       act(() => {
@@ -78,13 +92,12 @@ describe('entityUrlState', () => {
       expect(opts).toEqual({ replace: true, preventScrollReset: true });
     });
 
-    it('does not call history.replaceState', async () => {
+    it('uses history.replaceState for page-only hash updates', async () => {
       const initial = '/entity/1?m=metadata#s=search&page=3';
       window.history.replaceState({}, '', initial);
-      const replaceStateSpy = jest.spyOn(window.history, 'replaceState');
+      const replaceStateSpy = jest.spyOn(History.prototype, 'replaceState');
       const { result } = renderHook(() => useUpdateEntityUrl(), {
-        wrapper: ({ children }: { children: React.ReactNode }) =>
-          React.createElement(MemoryRouter, { initialEntries: [initial] }, children),
+        wrapper: wrapper(initial),
       });
 
       act(() => {
@@ -99,15 +112,15 @@ describe('entityUrlState', () => {
         await Promise.resolve();
       });
 
-      expect(replaceStateSpy).not.toHaveBeenCalled();
+      expect(mockNavigate).not.toHaveBeenCalled();
+      expect(replaceStateSpy).toHaveBeenCalled();
       replaceStateSpy.mockRestore();
     });
 
     it('drops pending batch when pathname changes before flush', async () => {
       window.history.replaceState({}, '', '/entity/1#s=search');
       const { result } = renderHook(() => useUpdateEntityUrl(), {
-        wrapper: ({ children }: { children: React.ReactNode }) =>
-          React.createElement(MemoryRouter, { initialEntries: ['/entity/1#s=search'] }, children),
+        wrapper: wrapper('/entity/1#s=search'),
       });
 
       act(() => {
@@ -130,8 +143,7 @@ describe('entityUrlState', () => {
     it('applies against React location when window path differs but is stable (MemoryRouter)', async () => {
       window.history.replaceState({}, '', '/__cypress/src/index.html');
       const { result } = renderHook(() => useUpdateEntityUrl(), {
-        wrapper: ({ children }: { children: React.ReactNode }) =>
-          React.createElement(MemoryRouter, { initialEntries: ['/'] }, children),
+        wrapper: wrapper('/'),
       });
 
       act(() => {
@@ -156,8 +168,7 @@ describe('entityUrlState', () => {
       window.history.replaceState({}, '', '/entity/1');
       const initial = '/entity/1?m=metadata#s=relationships';
       const { result } = renderHook(() => useUpdateEntityUrl(), {
-        wrapper: ({ children }: { children: React.ReactNode }) =>
-          React.createElement(MemoryRouter, { initialEntries: [initial] }, children),
+        wrapper: wrapper(initial),
       });
 
       act(() => {

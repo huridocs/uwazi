@@ -3,8 +3,12 @@ import { ChevronDownIcon } from '@heroicons/react/20/solid';
 import { Bars3BottomLeftIcon, DocumentTextIcon } from '@heroicons/react/24/outline';
 import { t } from '#app/I18N/index.js';
 import { isClient } from '#app/utils/index.js';
-import { useEntityHashParams, useUpdateEntityUrl } from '../../entityUrlState.js';
-import { PAGE_PARAM, VIEW_MODE_PARAM } from '../../urlParams.js';
+import {
+  useEntityDocumentPage,
+  useEntityRawView,
+  useUpdateEntityUrl,
+} from '../../entityUrlState.js';
+import { VIEW_MODE_PARAM } from '../../urlParams.js';
 import { useDocumentPdf } from '#V2/Routes/Entity/Components/context/index.js';
 
 type ViewMode = 'raw' | 'normal';
@@ -14,18 +18,19 @@ const DocumentViewModeSelect = () => {
   const { pdfController: pdfControls } = useDocumentPdf();
   const [ready, setReady] = useState(false);
   const [open, setOpen] = useState(false);
-  const hashParams = useEntityHashParams();
-  const initialPage = useRef(Number.parseInt(hashParams.get(PAGE_PARAM) || '1', 10));
+  const pageNumber = useEntityDocumentPage();
+  const isRawView = useEntityRawView();
+  const initialPage = useRef(pageNumber);
 
   useEffect(() => {
     setReady(true);
   }, []);
 
-  const isRaw = !isClient || !ready || hashParams.get(VIEW_MODE_PARAM) === 'true';
+  const isRaw = !isClient || !ready || isRawView;
 
   const selectMode = useCallback(
     (value: ViewMode) => {
-      const currentPage = hashParams.get(PAGE_PARAM) || '1';
+      const currentPage = String(pageNumber);
       updateEntityUrl({
         search: next => {
           next.delete(VIEW_MODE_PARAM);
@@ -44,7 +49,7 @@ const DocumentViewModeSelect = () => {
       }
       setOpen(false);
     },
-    [pdfControls, hashParams, updateEntityUrl]
+    [pdfControls, pageNumber, updateEntityUrl]
   );
 
   const modes = [

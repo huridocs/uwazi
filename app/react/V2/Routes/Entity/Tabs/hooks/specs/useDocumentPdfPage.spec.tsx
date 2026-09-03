@@ -10,7 +10,8 @@ const mockUpdateEntityUrl = jest.fn();
 let mockHashParams = new URLSearchParams();
 
 jest.mock('#V2/Routes/Entity/entityUrlState.js', () => ({
-  useEntityHashParams: () => mockHashParams,
+  useEntityDocumentPage: () => Number.parseInt(mockHashParams.get('page') || '1', 10),
+  useEntityRawView: () => mockHashParams.get('raw') === 'true',
   useUpdateEntityUrl: () => mockUpdateEntityUrl,
 }));
 

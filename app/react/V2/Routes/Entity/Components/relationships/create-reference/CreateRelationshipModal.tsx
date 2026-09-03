@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { useAtomValue } from 'jotai';
+import { useAtomValue, useStore } from 'jotai';
 import { t } from '#app/I18N/index.js';
 import type { FileType } from '#V2/api/entities/types.js';
 import { create as createEntity, searchByTitle } from '#V2/api/entities/index.js';
@@ -19,8 +19,7 @@ import { RelationTypeStep } from './RelationTypeStep.js';
 import { TargetTextStep } from './TargetTextStep.js';
 import { CreateRelationshipModalHeader } from './CreateRelationshipModalHeader.js';
 import { useRelationshipSave } from '../hooks/useRelationshipSave.js';
-import { useEntityHashParams } from '#V2/Routes/Entity/entityUrlState.js';
-import { PAGE_PARAM } from '#V2/Routes/Entity/urlParams.js';
+import { entityPageAtom } from '#V2/Routes/Entity/entityUrlAtoms.js';
 
 type CreateRelationshipModalProps = {
   mainDocument?: FileType;
@@ -33,7 +32,7 @@ const CreateRelationshipModal = ({ mainDocument }: CreateRelationshipModalProps)
   const relationshipTypes = useAtomValue(relationshipTypesAtom);
   const templates = useAtomValue(templatesAtom);
   const { handleSaveReference } = useRelationshipSave(mainDocument);
-  const hashParams = useEntityHashParams();
+  const store = useStore();
   const [isSaving, setIsSaving] = useState(false);
 
   const lookup = useCallback(
@@ -118,7 +117,7 @@ const CreateRelationshipModal = ({ mainDocument }: CreateRelationshipModalProps)
         selection: createReferenceSelection,
         targetEntityId: selectedEntity.sharedId,
         relationshipType: selectedRelationshipType,
-        sourcePage: hashParams.get(PAGE_PARAM) ?? '1',
+        sourcePage: store.get(entityPageAtom),
         ...(selectedFile && { targetFileId: String(selectedFile._id) }),
         ...(targetSelection && { targetSelection }),
       });
@@ -140,10 +139,10 @@ const CreateRelationshipModal = ({ mainDocument }: CreateRelationshipModalProps)
     entity,
     handleSaveReference,
     reset,
-    hashParams,
     selectedEntity,
     selectedFile,
     selectedRelationshipType,
+    store,
     targetSelection,
   ]);
 

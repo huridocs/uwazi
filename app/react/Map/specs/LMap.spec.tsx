@@ -167,6 +167,64 @@ describe('Map', () => {
   });
 
   describe('render options', () => {
+    it('should update markers when values change even with onClick', async () => {
+      testStore.set(deletedEntityAtom, '');
+      const { rerender } = renderComponent(
+        <Provider store={testStore}>
+          <Map
+            markers={clusterMarkers}
+            onClick={onClick}
+            clickOnCluster={clickOnCluster}
+            renderPopupInfo
+          />
+        </Provider>
+      );
+      await waitFor(() => {
+        expect(screen.getByText('3')).toBeInTheDocument();
+      });
+      rerender(
+        <Provider store={testStore}>
+          <Map
+            markers={clusterMarkers.slice(0, 2)}
+            onClick={onClick}
+            clickOnCluster={clickOnCluster}
+            renderPopupInfo
+          />
+        </Provider>
+      );
+      await waitFor(() => {
+        expect(screen.queryByText('3')).not.toBeInTheDocument();
+      });
+    });
+
+    it('should keep the leaflet container when markers are the same values', async () => {
+      const { container, rerender } = renderComponent(
+        <Provider store={testStore}>
+          <Map
+            markers={[...clusterMarkers]}
+            onClick={onClick}
+            clickOnCluster={clickOnCluster}
+            renderPopupInfo
+          />
+        </Provider>
+      );
+      await waitFor(() => {
+        expect(container.querySelector('.leafletmap')).toBeTruthy();
+      });
+      const mapId = container.querySelector('.leafletmap')?.id;
+      rerender(
+        <Provider store={testStore}>
+          <Map
+            markers={[...clusterMarkers]}
+            onClick={onClick}
+            clickOnCluster={clickOnCluster}
+            renderPopupInfo
+          />
+        </Provider>
+      );
+      expect(container.querySelector('.leafletmap')?.id).toBe(mapId);
+    });
+
     it('should render controls if showControls is false', async () => {
       await waitFor(async () => {
         render([singleMarker], undefined, false);

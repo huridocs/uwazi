@@ -4,7 +4,7 @@ import { useAtomValue } from 'jotai';
 import type { Entity } from '#V2/api/entities/types.js';
 import { localeAtom } from '#V2/atoms/index.js';
 import {
-  useEntityOverlay,
+  useEntityOverlayActions,
   useEntityRelationshipMarkers,
 } from '#V2/Routes/Entity/Components/context/index.js';
 import { entityLoaderCache } from '#V2/Routes/Entity/EntityLoaderCache.js';
@@ -20,7 +20,7 @@ const SeedOverlayEntityCache = ({ entity }: { entity: Entity }) => {
 };
 
 const OpenEntityOverlayOnMount = ({ targetSharedId }: { targetSharedId: string }) => {
-  const { openEntityOverlay } = useEntityOverlay();
+  const { openEntityOverlay } = useEntityOverlayActions();
   const markers = useEntityRelationshipMarkers();
   const opened = useRef(false);
 

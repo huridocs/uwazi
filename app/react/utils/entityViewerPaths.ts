@@ -1,4 +1,4 @@
-import { serializeEntityHash } from '#V2/Routes/Entity/entityUrlState.js';
+import { serializeEntityHash } from '#V2/Routes/Entity/entityUrlAtoms.js';
 import { SIDE_TAB } from '#V2/Routes/Entity/Tabs/tabIds.js';
 import { PAGE_PARAM, SEARCH_PARAM, SIDE_TAB_PARAM } from '#V2/Routes/Entity/urlParams.js';
 

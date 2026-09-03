@@ -4,7 +4,11 @@ import { XMarkIcon } from '@heroicons/react/24/outline';
 import { I18NLinkV2, t, Translate } from '#app/I18N/index.js';
 import { templatesAtom } from '#V2/atoms/templatesAtom.js';
 import { ErrorBoundary } from '#V2/Components/ErrorHandling/ErrorBoundary.js';
-import { useEntityOverlay, useEnsureResolved } from '#V2/Routes/Entity/Components/context/index.js';
+import {
+  useEntityOverlayActions,
+  useEntityOverlayTarget,
+  useEnsureResolved,
+} from '#V2/Routes/Entity/Components/context/index.js';
 import { EntityOverlayContent } from './EntityOverlayContent.js';
 import { useOverlayEntity } from './useOverlayEntity.js';
 import { settingsAtom } from '#V2/atoms/settingsAtom.js';
@@ -67,7 +71,8 @@ const overlayHeading = (
 });
 
 const useEntityOverlayState = () => {
-  const { target, closeEntityOverlay } = useEntityOverlay();
+  const { target } = useEntityOverlayTarget();
+  const { closeEntityOverlay } = useEntityOverlayActions();
   const ensureResolved = useEnsureResolved();
   const templates = useAtomValue(templatesAtom);
   const settings = useAtomValue(settingsAtom);

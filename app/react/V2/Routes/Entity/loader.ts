@@ -14,7 +14,7 @@ import { getMainDocument } from '#V2/formatters/index.js';
 import type { Entity } from '#V2/api/entities/types.js';
 import type { RelationshipQueryPayload } from '#V2/api/relationships/types.js';
 import { entityLoaderCache } from './EntityLoaderCache.js';
-import { parseEntityHash } from './entityUrlState.js';
+import { parseEntityHash } from './entityUrlAtoms.js';
 import { MAIN_TAB_PARAM, SIDE_TAB_PARAM, VIEW_MODE_PARAM } from './Components/index.js';
 import { MAIN_TAB, isValidMainTab } from './Tabs/tabIds.js';
 import { getSideTabButtons } from './Tabs/sideTabSets.js';
