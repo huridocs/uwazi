@@ -104,6 +104,33 @@ describe('handleError', () => {
       });
     });
 
+    describe('and is a ResponseError caused by an ES search thread pool rejection (429)', () => {
+      it('should be a 503 debug logLevel and not expose the original ES error message', () => {
+        const errorInstance = new elasticErrors.ResponseError({
+          statusCode: 429,
+          body: {
+            error: {
+              type: 'search_phase_execution_exception',
+              root_cause: [
+                {
+                  type: 'es_rejected_execution_exception',
+                  reason: 'rejected execution of search',
+                },
+              ],
+            },
+          },
+        });
+        const error = handleError(errorInstance);
+        expect(error).toMatchObject({
+          code: 503,
+          logLevel: 'debug',
+          error: 'A server side error has occurred',
+        });
+        expect(error.error).not.toContain('es_rejected_execution_exception');
+        expect(error.stack).toBeUndefined();
+      });
+    });
+
     describe('when error is instance of Error', () => {
       it('should return the error with 500 code without the original error and error stack', () => {
         const errorInstance = new Error('error');
