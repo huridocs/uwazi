@@ -20,6 +20,11 @@ const handledErrors: { [k: string]: RequestError } = {
     message: 'Something went wrong',
     status: 500,
   },
+  503: {
+    name: 'Service busy',
+    message: 'The service is temporarily busy. Please try again in a moment.',
+    status: 503,
+  },
 };
 
 interface RequestError extends Error {
