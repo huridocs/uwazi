@@ -1,8 +1,7 @@
 import { useEffect, useRef, type MutableRefObject } from 'react';
 import type { Entity, FileType } from '#V2/api/entities/types.js';
 import { entityLoaderCache } from '../../../EntityLoaderCache.js';
-import { useEntityHashParams } from '../../../entityUrlState.js';
-import { VIEW_MODE_PARAM } from '../../../urlParams.js';
+import { useEntityRawView } from '../../../entityUrlState.js';
 import { useMetadataEditing } from '../MetadataEditingContext.js';
 import {
   resolvePlaintext,
@@ -98,8 +97,7 @@ const useSyncPagePlaintext = ({
   mainDocument?: FileType;
   setPagePlaintext: (text: string | undefined) => void;
 }) => {
-  const hashParams = useEntityHashParams();
-  const isRawView = hashParams.get(VIEW_MODE_PARAM) === 'true';
+  const isRawView = useEntityRawView();
 
   useEffect(() => {
     let cancelled = false;

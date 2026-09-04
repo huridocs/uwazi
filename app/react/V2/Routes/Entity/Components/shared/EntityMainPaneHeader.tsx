@@ -10,7 +10,7 @@ type EntityMainPaneHeaderProps = {
   showDocumentViewMode?: boolean;
 };
 
-const EntityMainPaneHeader = ({
+const EntityMainPaneHeaderComponent = ({
   entity,
   showDocumentViewMode = false,
 }: EntityMainPaneHeaderProps) => {
@@ -50,5 +50,7 @@ const EntityMainPaneHeader = ({
     </div>
   );
 };
+
+const EntityMainPaneHeader = React.memo(EntityMainPaneHeaderComponent);
 
 export { EntityMainPaneHeader };
