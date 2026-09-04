@@ -1,4 +1,4 @@
-import type { EntityTabsState } from '../../../../Tabs/hooks/entityTabsTypes.js';
+import type { EntityTabsState } from '../../../../Tabs/EntityTabsContext.js';
 import { MAIN_TAB, SIDE_TAB } from '../../../../Tabs/tabIds.js';
 
 const noop = () => undefined;
@@ -6,7 +6,6 @@ const noop = () => undefined;
 const createStubEntityTabsState = (overrides: Partial<EntityTabsState> = {}): EntityTabsState => ({
   activeMainTab: MAIN_TAB.DOCUMENT,
   activeSideTab: SIDE_TAB.RELATIONSHIPS,
-  explicitSideTab: SIDE_TAB.RELATIONSHIPS,
   syncSideTabId: SIDE_TAB.RELATIONSHIPS,
   sideButtons: [],
   relationshipsOnMain: false,

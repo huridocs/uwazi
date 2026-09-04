@@ -4,10 +4,8 @@ import { Translate } from '#app/I18N/index.js';
 import { ColorDot } from '#V2/Components/UI/ColorDot.js';
 import { FacetSection } from '#V2/Components/UI/FacetSection.js';
 import { relationshipTypesAtom, templatesAtom } from '#V2/atoms/index.js';
-import {
-  useRelationshipsPanelData,
-  useRelationshipsPanelFacetFilters,
-} from '#V2/Routes/Entity/Components/context/index.js';
+import { useRelationshipsPanelFacetFilters } from '#V2/Routes/Entity/Components/context/index.js';
+import { useRelationshipsPanelData } from '../hooks/useRelationshipsPanelData.js';
 
 const RelationshipsFilterDrawerContent = () => {
   const { relTypeFilters, setRelTypeFilters, entityTypeFilters, setEntityTypeFilters } =

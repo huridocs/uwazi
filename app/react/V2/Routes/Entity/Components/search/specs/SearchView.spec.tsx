@@ -1,6 +1,7 @@
 /**
  * @jest-environment jsdom
  */
+/* eslint-disable max-statements */
 import React from 'react';
 import { act, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -48,7 +49,8 @@ jest.mock('#V2/Routes/Entity/Components/context/index.js', () => ({
 }));
 
 jest.mock('#V2/Routes/Entity/entityUrlState.js', () => ({
-  useEntityHashParams: () => mockHashParams,
+  useEntityHashUiParams: () => mockHashParams,
+  useEntityRawView: () => mockHashParams.get('raw') === 'true',
   useUpdateEntityUrl: () => mockUpdateEntityUrl,
 }));
 
@@ -213,7 +215,7 @@ describe('SearchView activateSnippet pending flush', () => {
     });
 
     expect(mockUpdateEntityUrl).toHaveBeenCalledTimes(1);
-    const patch = mockUpdateEntityUrl.mock.calls[0][0];
+    const [[patch]] = mockUpdateEntityUrl.mock.calls;
     const next = new URLSearchParams();
     patch.hash(next);
     expect(next.get('searchTerm')).toBe('new term');

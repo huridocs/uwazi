@@ -1,10 +1,18 @@
 /**
  * @jest-environment jsdom
  */
+/* eslint-disable max-statements */
 import React from 'react';
 import { act, renderHook } from '@testing-library/react';
 import { MemoryRouter } from 'react-router';
-import { parseEntityHash, serializeEntityHash, useUpdateEntityUrl } from '../entityUrlState.js';
+import { Provider } from 'jotai';
+import {
+  parseEntityHash,
+  serializeEntityHash,
+  useEntityDocumentPage,
+  useUpdateEntityUrl,
+  EntityUrlSync,
+} from '../entityUrlState.js';
 
 const mockNavigate = jest.fn();
 
@@ -31,6 +39,15 @@ describe('entityUrlState', () => {
   });
 
   describe('useUpdateEntityUrl coalescing', () => {
+    const wrapper =
+      (initial: string) =>
+      ({ children }: { children: React.ReactNode }) =>
+        React.createElement(
+          MemoryRouter,
+          { initialEntries: [initial] },
+          React.createElement(Provider, null, React.createElement(EntityUrlSync, null, children))
+        );
+
     beforeEach(() => {
       mockNavigate.mockClear();
       window.history.replaceState({}, '', '/entity/1?m=metadata#s=search&page=3');
@@ -45,8 +62,7 @@ describe('entityUrlState', () => {
       const initial = '/entity/1?m=metadata#s=search&page=3';
       window.history.replaceState({}, '', initial);
       const { result } = renderHook(() => useUpdateEntityUrl(), {
-        wrapper: ({ children }: { children: React.ReactNode }) =>
-          React.createElement(MemoryRouter, { initialEntries: [initial] }, children),
+        wrapper: wrapper(initial),
       });
 
       act(() => {
@@ -70,7 +86,7 @@ describe('entityUrlState', () => {
       });
 
       expect(mockNavigate).toHaveBeenCalledTimes(1);
-      const [to, opts] = mockNavigate.mock.calls[0];
+      const [[to, opts]] = mockNavigate.mock.calls;
       expect(to.pathname).toBe('/entity/1');
       expect(to.search).not.toContain('m=');
       expect(to.hash).toContain('page=4');
@@ -78,13 +94,26 @@ describe('entityUrlState', () => {
       expect(opts).toEqual({ replace: true, preventScrollReset: true });
     });
 
-    it('does not call history.replaceState', async () => {
+    it('exposes the hash page on the first render', () => {
+      const pages: number[] = [];
+      const { result } = renderHook(
+        () => {
+          const page = useEntityDocumentPage();
+          pages.push(page);
+          return page;
+        },
+        { wrapper: wrapper('/entity/1#page=5') }
+      );
+      expect(pages[0]).toBe(5);
+      expect(result.current).toBe(5);
+    });
+
+    it('uses history.replaceState for page-only hash updates', async () => {
       const initial = '/entity/1?m=metadata#s=search&page=3';
       window.history.replaceState({}, '', initial);
-      const replaceStateSpy = jest.spyOn(window.history, 'replaceState');
+      const replaceStateSpy = jest.spyOn(History.prototype, 'replaceState');
       const { result } = renderHook(() => useUpdateEntityUrl(), {
-        wrapper: ({ children }: { children: React.ReactNode }) =>
-          React.createElement(MemoryRouter, { initialEntries: [initial] }, children),
+        wrapper: wrapper(initial),
       });
 
       act(() => {
@@ -99,15 +128,107 @@ describe('entityUrlState', () => {
         await Promise.resolve();
       });
 
-      expect(replaceStateSpy).not.toHaveBeenCalled();
+      expect(mockNavigate).not.toHaveBeenCalled();
+      expect(replaceStateSpy).toHaveBeenCalled();
       replaceStateSpy.mockRestore();
+    });
+
+    it('keeps the atom page after a page-only replaceState', async () => {
+      const initial = '/entity/1?m=metadata#s=search&page=3';
+      window.history.replaceState({}, '', initial);
+      const { result } = renderHook(
+        () => ({ update: useUpdateEntityUrl(), page: useEntityDocumentPage() }),
+        { wrapper: wrapper(initial) }
+      );
+
+      act(() => {
+        result.current.update({
+          hash: next => {
+            next.set('page', '2');
+          },
+        });
+      });
+      await act(async () => {
+        await Promise.resolve();
+      });
+
+      expect(result.current.page).toBe(2);
+    });
+
+    it('can return to the router-stale page after a page-only replaceState', async () => {
+      const initial = '/entity/1?m=metadata#s=search&page=3';
+      window.history.replaceState({}, '', initial);
+      const { result } = renderHook(() => useUpdateEntityUrl(), {
+        wrapper: wrapper(initial),
+      });
+
+      act(() => {
+        result.current({
+          hash: next => {
+            next.set('page', '2');
+          },
+        });
+      });
+      await act(async () => {
+        await Promise.resolve();
+      });
+      mockNavigate.mockClear();
+
+      act(() => {
+        result.current({
+          hash: next => {
+            next.set('page', '3');
+          },
+        });
+      });
+      await act(async () => {
+        await Promise.resolve();
+      });
+
+      expect(mockNavigate).not.toHaveBeenCalled();
+      expect(window.location.hash).toContain('page=3');
+    });
+
+    it('keeps the atom page when changing hash ui after a page-only replaceState', async () => {
+      const initial = '/entity/1?m=metadata#s=search&page=3';
+      window.history.replaceState({}, '', initial);
+      const { result } = renderHook(() => useUpdateEntityUrl(), {
+        wrapper: wrapper(initial),
+      });
+
+      act(() => {
+        result.current({
+          hash: next => {
+            next.set('page', '2');
+          },
+        });
+      });
+      await act(async () => {
+        await Promise.resolve();
+      });
+      mockNavigate.mockClear();
+
+      act(() => {
+        result.current({
+          hash: next => {
+            next.set('s', 'toc');
+          },
+        });
+      });
+      await act(async () => {
+        await Promise.resolve();
+      });
+
+      expect(mockNavigate).toHaveBeenCalledTimes(1);
+      const [[to]] = mockNavigate.mock.calls;
+      expect(to.hash).toContain('page=2');
+      expect(to.hash).toContain('s=toc');
     });
 
     it('drops pending batch when pathname changes before flush', async () => {
       window.history.replaceState({}, '', '/entity/1#s=search');
       const { result } = renderHook(() => useUpdateEntityUrl(), {
-        wrapper: ({ children }: { children: React.ReactNode }) =>
-          React.createElement(MemoryRouter, { initialEntries: ['/entity/1#s=search'] }, children),
+        wrapper: wrapper('/entity/1#s=search'),
       });
 
       act(() => {
@@ -130,8 +251,7 @@ describe('entityUrlState', () => {
     it('applies against React location when window path differs but is stable (MemoryRouter)', async () => {
       window.history.replaceState({}, '', '/__cypress/src/index.html');
       const { result } = renderHook(() => useUpdateEntityUrl(), {
-        wrapper: ({ children }: { children: React.ReactNode }) =>
-          React.createElement(MemoryRouter, { initialEntries: ['/'] }, children),
+        wrapper: wrapper('/'),
       });
 
       act(() => {
@@ -147,7 +267,7 @@ describe('entityUrlState', () => {
       });
 
       expect(mockNavigate).toHaveBeenCalledTimes(1);
-      const [to] = mockNavigate.mock.calls[0];
+      const [[to]] = mockNavigate.mock.calls;
       expect(to.pathname).toBe('/');
       expect(to.search).toContain('m=files');
     });
@@ -156,8 +276,7 @@ describe('entityUrlState', () => {
       window.history.replaceState({}, '', '/entity/1');
       const initial = '/entity/1?m=metadata#s=relationships';
       const { result } = renderHook(() => useUpdateEntityUrl(), {
-        wrapper: ({ children }: { children: React.ReactNode }) =>
-          React.createElement(MemoryRouter, { initialEntries: [initial] }, children),
+        wrapper: wrapper(initial),
       });
 
       act(() => {
@@ -173,7 +292,7 @@ describe('entityUrlState', () => {
       });
 
       expect(mockNavigate).toHaveBeenCalledTimes(1);
-      const [to] = mockNavigate.mock.calls[0];
+      const [[to]] = mockNavigate.mock.calls;
       expect(to.search).not.toContain('m=');
       expect(to.hash).toContain('s=relationships');
     });
