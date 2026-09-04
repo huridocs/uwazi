@@ -3,7 +3,6 @@ import { TestUtils } from '#api/common.v2/utils/Test.js';
 import { tenants } from '#api/tenants/index.js';
 import { AddLanguageUseCaseFactory } from '#api/core/infrastructure/factories/AddLanguageUseCaseFactory.js';
 import { AddLanguageUseCase } from '#api/core/application/AddLanguage.js';
-import settings from '#api/settings/index.js';
 import { TranslationsQueryServiceFactory } from '#api/core/infrastructure/factories/TranslationsQueryServiceFactory.js';
 import { TranslationsQueryService } from '#api/core/application/translation/TranslationsQueryService.js';
 import { AddLanguageController } from '../AddLanguageController.js';
@@ -41,7 +40,6 @@ describe('AddLanguageController', () => {
         getLegacy: getLegacySpy,
       })
     );
-    jest.spyOn(settings, 'get').mockResolvedValue({ languages: [] } as any);
   });
 
   afterEach(() => {
@@ -79,7 +77,6 @@ describe('AddLanguageController', () => {
 
     expect(getLegacySpy).not.toHaveBeenCalled();
     expect(emitToCurrentTenant).not.toHaveBeenCalledWith('translationsChange', expect.anything());
-    expect(emitToCurrentTenant).toHaveBeenCalledWith('updateSettings', expect.anything());
     expect(response.sendStatus).toHaveBeenCalledWith(204);
   });
 
@@ -104,17 +101,5 @@ describe('AddLanguageController', () => {
       'translationsChange',
       expect.objectContaining({ locale: 'en' })
     );
-  });
-
-  it('should emit updateSettings after execution', async () => {
-    const fakeSettings = { languages: [{ key: 'es', label: 'Spanish' }] };
-    useCaseExecuteSpy.mockResolvedValue([]);
-    jest.spyOn(settings, 'get').mockResolvedValue(fakeSettings as any);
-
-    const { sut, emitToCurrentTenant } = createSut([{ key: 'es', label: 'Spanish' }]);
-
-    await sut.handleAsync();
-
-    expect(emitToCurrentTenant).toHaveBeenCalledWith('updateSettings', fakeSettings);
   });
 });

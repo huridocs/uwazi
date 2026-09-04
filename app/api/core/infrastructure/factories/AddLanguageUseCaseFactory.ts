@@ -11,37 +11,40 @@ import { CloneLanguageEntitiesJobFactory } from './CloneLanguageEntitiesJobFacto
 import { UwaziDispatcherFactory } from '#api/core/infrastructure/jobs/UwaziDispatcherFactory.js';
 import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
 
+const ONE_HOUR_MS = 60 * 60 * 1000;
+
+const createAddLanguageJobsDispatcher = (
+  tenantName: string,
+  transactionManager: MongoTransactionManager
+): JobsDispatcher => {
+  if (process.env.NODE_ENV !== 'test') {
+    return UwaziDispatcherFactory(tenantName, transactionManager, { lockWindow: ONE_HOUR_MS });
+  }
+
+  const innerDispatcher = new SyncDispatcherForTests({});
+  const cloneJob = CloneLanguageEntitiesJobFactory.default({ jobsDispatcher: innerDispatcher });
+  return new SyncDispatcherForTests({
+    [CloneLanguageEntitiesJob.name]: async () => cloneJob,
+  });
+};
+
 class AddLanguageUseCaseFactory {
   static default(
     overrides?: Partial<ConstructorParameters<typeof AddLanguageUseCase>[0]>
   ): AddLanguageUseCase {
     const { actor, tenant, eventEmitter } = ExecutionContext;
     const transactionManager = ExecutionContext.transactionManager as MongoTransactionManager;
-    const settingsDS = SettingsDataSourceFactory.default({ transactionManager });
-    const translationsDS = TranslationsDataSourceFactory.default({ transactionManager });
-    const importPredefinedTranslations = ImportPredefinedTranslationsService;
-
-    const minutes60 = 60 * 60 * 1000;
-    let jobsDispatcher: JobsDispatcher = UwaziDispatcherFactory(tenant.name, transactionManager, {
-      lockWindow: minutes60,
-    });
-    if (process.env.NODE_ENV === 'test') {
-      const innerDispatcher = new SyncDispatcherForTests({});
-      const cloneJob = CloneLanguageEntitiesJobFactory.default({ jobsDispatcher: innerDispatcher });
-      jobsDispatcher = new SyncDispatcherForTests({
-        [CloneLanguageEntitiesJob.name]: async () => cloneJob,
-      });
-    }
-    const dispatcher = new DispatcherAdapter(jobsDispatcher);
 
     return new AddLanguageUseCase(
       {
         transactionManager,
-        settingsDS,
-        translationsDS,
-        importPredefinedTranslations,
+        settingsDS: SettingsDataSourceFactory.default(),
+        translationsDS: TranslationsDataSourceFactory.default({ transactionManager }),
+        importPredefinedTranslations: ImportPredefinedTranslationsService,
         eventEmitter,
-        dispatcher,
+        dispatcher: new DispatcherAdapter(
+          createAddLanguageJobsDispatcher(tenant.name, transactionManager)
+        ),
         ...overrides,
       },
       { actor, tenant }

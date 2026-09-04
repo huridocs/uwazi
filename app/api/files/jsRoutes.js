@@ -6,7 +6,7 @@ import { EntityFacade } from '#api/core/infrastructure/facades/EntitiesFacade.js
 import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
 import { EntitiesDAOFactory } from '#api/core/infrastructure/factories/EntitiesDAOFactory.js';
 import { permissionsContext } from '#api/permissions/permissionsContext.js';
-import settings from '#api/settings/index.js';
+import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
 import { UsersDirectoryFactory } from '#api/core/infrastructure/factories/UsersDirectoryFactory.js';
 import { publicAPIMiddleware } from '../auth/publicAPIMiddleware.js';
 import { createError } from '../utils/index.js';
@@ -49,7 +49,8 @@ const routes = app => {
       next();
     },
     async (req, res, next) => {
-      const { allowedPublicTemplates } = await settings.get();
+      const { allowedPublicTemplates } =
+        (await SettingsDataSourceFactory.default().readFields(['allowedPublicTemplates'])) ?? {};
       const { entity } = req.body;
 
       if (entity._id) {
@@ -88,7 +89,7 @@ const routes = app => {
   );
 
   app.post('/api/remotepublic', async (req, res, next) => {
-    const { publicFormDestination } = await settings.get({}, { publicFormDestination: 1 });
+    const { publicFormDestination } = (await SettingsDataSourceFactory.default().find()) || {};
     proxy(publicFormDestination, {
       limit: '500mb',
       proxyReqPathResolver() {

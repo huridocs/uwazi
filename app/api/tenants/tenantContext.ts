@@ -31,6 +31,7 @@ type Tenant = {
     postgresEntities?: boolean;
     postgresRelationshipTypes?: boolean;
     postgresTranslations?: boolean;
+    postgresSettings?: boolean;
     postgresPages?: boolean;
     postgresPasswordRecoveries?: boolean;
     postgresUsers?: boolean;

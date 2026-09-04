@@ -11,6 +11,7 @@ import { DeleteLanguageEntitiesJobFactory } from '#api/core/infrastructure/facto
 import { FilesDataSourceFactory } from '#api/core/infrastructure/factories/FilesDataSourceFactory.js';
 import { PDFPostProcessJobFactory } from '#api/core/infrastructure/factories/PDFPostProcessJobFactory.js';
 import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
+import { SettingsQueryServiceFactory } from '#api/core/infrastructure/factories/SettingsQueryServiceFactory.js';
 import { TemplatesDataSourceFactory } from '#api/core/infrastructure/factories/TemplatesDataSourceFactory.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { FileStorageFactory } from '#api/core/infrastructure/files/FileStorageFactory.js';
@@ -26,6 +27,7 @@ import { RelationshipSyncJob } from '#api/core/infrastructure/jobs/RelationshipS
 import { TemplatePostProcessEntitiesJob } from '#api/core/infrastructure/jobs/TemplatePostProcessEntitiesJob.js';
 import { DenormalizeEntityUpdatedListener } from '#api/core/infrastructure/listeners/DenormalizeEntityUpdatedListener.js';
 import { ProcessRelationshipAfterEntityUpdatedListener } from '#api/core/infrastructure/listeners/ProcessRelationshipAfterEntityUpdatedListener.js';
+import { BroadcastSettingsChanged } from '#api/core/infrastructure/listeners/BroadcastSettingsChanged.js';
 import { AddLanguagePagesListener } from '#api/pages.v2/infrastructure/listeners/AddLanguagePagesListener.js';
 import { DeleteLanguagePagesListener } from '#api/pages.v2/infrastructure/listeners/DeleteLanguagePagesListener.js';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
@@ -71,7 +73,6 @@ import { IXTaskService } from '#api/services/informationextraction/TaskService.j
 import { TrainModelForPDF } from '#api/services/informationextraction/TrainModelForPDF.js';
 import { TrainModelForText } from '#api/services/informationextraction/TrainModelForText.js';
 import { IXTrainModelJob } from '#api/services/informationextraction/TrainModelJob.js';
-import settings from '#api/settings/index.js';
 import { AcceptSuggestionsFactory } from '#api/suggestions/infrastructure/AcceptSuggestionsFactory.js';
 import { AcceptSuggestionsJob } from '#api/suggestions/jobs/AcceptSuggestionsJob.js';
 import { CreateBlankStateSuggestionsJob } from '#api/suggestions/jobs/CreateBlankStateSuggestionsJob.js';
@@ -182,8 +183,9 @@ export function registerJobs(register: Register) {
 
   const informationExtraction = new InformationExtraction();
   register(IXTrainModelJob, async (tenantName: string) => {
-    const settingsValues = await settings.get();
-    const serviceUrl = settingsValues.features?.metadataExtraction?.url;
+    const metadataExtraction =
+      await SettingsDataSourceFactory.default().readFeature('metadataExtraction');
+    const serviceUrl = metadataExtraction?.url;
     const iXTaskService = new IXTaskService({
       tenantName,
       taskManager: informationExtraction.taskManager,
@@ -234,7 +236,8 @@ export function registerJobs(register: Register) {
         relationshipsV1DS: new MongoRelationshipsV1DataSource(
           getConnection(),
           transactionManager,
-          EntitiesDAOFactory.default()
+          EntitiesDAOFactory.default(),
+          SettingsDataSourceFactory.default({ transactionManager })
         ),
         templatesDS: TemplatesDataSourceFactory.default({ transactionManager }),
         transactionManager,
@@ -334,6 +337,15 @@ export function registerJobs(register: Register) {
   register(
     AddLanguagePagesListener.asJob(),
     async () => new AddLanguagePagesListener({ settingsDS: SettingsDataSourceFactory.default() })
+  );
+
+  register(
+    BroadcastSettingsChanged.asJob(),
+    async () =>
+      new BroadcastSettingsChanged({
+        settingsQuery: SettingsQueryServiceFactory.default(),
+        sockets: new V1WebSocketsWrapper(),
+      })
   );
 
   register(DeleteLanguagePagesListener.asJob(), async () => new DeleteLanguagePagesListener({}));

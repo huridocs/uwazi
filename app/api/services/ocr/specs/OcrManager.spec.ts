@@ -4,9 +4,9 @@ import fetchMock from 'fetch-mock';
 import { Readable } from 'stream';
 import { files, storage } from '#api/files/index.js';
 import { tenants } from '#api/tenants/tenantContext.js';
-import settings from '#api/settings/settings.js';
 import { FilesDAOFactory } from '#api/core/infrastructure/factories/FilesDAOFactory.js';
-import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { testingEnvironment, SettingsDSWithContext } from '#api/utils/testingEnvironment.js';
+import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import request from '#shared/JSONRequest.js';
 import * as sockets from '#api/socketio/setupSockets.js';
 import * as handleError from '#api/utils/handleError.js';
@@ -84,6 +84,11 @@ describe('OcrManager', () => {
 
     ocrManager = new OcrManager();
     ocrManager.start();
+    const originalAddToQueue = ocrManager.addToQueue.bind(ocrManager);
+    ocrManager.addToQueue = (async (...args: Parameters<OcrManager['addToQueue']>) =>
+      testingEnvironment.runWithContext(async () =>
+        originalAddToQueue(...args)
+      )) as OcrManager['addToQueue'];
   });
 
   afterEach(async () => {
@@ -137,6 +142,13 @@ describe('OcrManager', () => {
         });
         expect(lastRecord).not.toHaveProperty('resultFile');
       });
+    });
+
+    it('should not nest ExecutionContext.run when TaskManager already opened the store', async () => {
+      const runSpy = jest.spyOn(ExecutionContext, 'run');
+      await mocks.taskManagerMock.trigger(mockedMessageFromRedis);
+      expect(runSpy).toHaveBeenCalledTimes(1);
+      runSpy.mockRestore();
     });
 
     describe('when there are results', () => {
@@ -249,8 +261,8 @@ describe('OcrManager', () => {
     });
 
     it('should throw an error when settings are missing from the database', async () => {
-      const oldSettings = await settings.get();
-      await settings.save({ features: {} });
+      const oldSettings = await SettingsDSWithContext.default().find();
+      await SettingsDSWithContext.default().patch({ features: {} });
 
       const [sourceFile] = await files.get({ _id: fixturesFactory.id('erroringSourceFile') });
 
@@ -258,7 +270,7 @@ describe('OcrManager', () => {
         'Ocr settings are missing from the database'
       );
 
-      await settings.save(oldSettings);
+      await SettingsDSWithContext.default().patch(oldSettings!);
     });
 
     it('should throw an error when language is not supported', async () => {

@@ -52,7 +52,7 @@ const EntityLanguageProvider = ({
     () => ({
       language,
       languages,
-      isRtl: resolveRtl(language, languages),
+      isRtl: resolveRtl(language),
       isLoading,
       mainDocument,
       pagePlaintext,

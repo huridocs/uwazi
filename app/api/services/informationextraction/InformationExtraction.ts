@@ -16,7 +16,7 @@ import { emitToTenantAdminsAndEditors } from '#api/socketio/setupSockets.js';
 import { FilesDAOFactory } from '#api/core/infrastructure/factories/FilesDAOFactory.js';
 import { EntityDBO } from '#api/core/infrastructure/mongodb/entity/EntityDBO.js';
 import entities from '#api/entities/entities.js';
-import settings from '#api/settings/settings.js';
+import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
 import request from '#shared/JSONRequest.js';
 import { EntitySchema } from '#shared/types/entityType.js';
 import {
@@ -477,10 +477,10 @@ class InformationExtraction {
     });
 
     if (!entity) {
-      const defaultLanguage = await settings.getDefaultLanguage();
+      const defaultLanguageKey = await SettingsDataSourceFactory.default().getDefaultLanguageKey();
       [entity] = await entities.getUnrestricted({
         sharedId: file.entity,
-        language: defaultLanguage?.key,
+        language: defaultLanguageKey,
       });
     }
     return entity;
@@ -626,8 +626,9 @@ class InformationExtraction {
   };
 
   serviceUrl = async () => {
-    const settingsValues = await settings.get();
-    const serviceUrl = settingsValues.features?.metadataExtraction?.url;
+    const metadataExtraction =
+      await SettingsDataSourceFactory.default().readFeature('metadataExtraction');
+    const serviceUrl = metadataExtraction?.url;
     if (!serviceUrl) {
       throw new Error('No url for metadata extraction service');
     }
@@ -986,66 +987,64 @@ class InformationExtraction {
   };
 
   processResults = async (_message: IXResultsMessage): Promise<void> => {
-    await tenants.run(async () => {
-      const message: InternalIXResultsMessage = {
-        ..._message,
-        params: { ..._message.params, id: new ObjectId(_message.params!.id) },
-      };
+    const message: InternalIXResultsMessage = {
+      ..._message,
+      params: { ..._message.params, id: new ObjectId(_message.params!.id) },
+    };
 
-      const [currentModel] = await IXModelsModel.get({
-        extractorId: message.params!.id,
-      });
+    const [currentModel] = await IXModelsModel.get({
+      extractorId: message.params!.id,
+    });
 
-      try {
-        if (message.task === 'create_model' && message.success) {
-          await IXServices.saveModelProcess(message.params!.id, ModelStatus.ready, {
-            computeTotalSuggestions: true,
-          });
-
-          const [updatedModel] = await IXModelsModel.get({ extractorId: message.params!.id });
-
-          await this.updateSuggestionStatus(message, updatedModel);
-        }
-
-        if (!message.success) {
-          await this.handleFailedStatus(message, currentModel);
-          return;
-        }
-
-        if (message.task === 'suggestions') {
-          await this.saveSuggestionsManager(message);
-          await this.updateSuggestionStatus(message, currentModel);
-
-          // If a process run requested auto-accept and the find phase just completed,
-          // emit transition to auto-accept and dispatch the accept job. Do not emit 'ready'.
-          const [freshModel] = await IXModelsModel.get({ extractorId: message.params!.id });
-          const autoAccept = freshModel?.processRun?.autoAccept;
-          if (autoAccept?.enabled && freshModel?.totalSuggestionsToFind != null) {
-            const status = await this.getSuggestionsStatus(message.params!.id, freshModel);
-            if (status.processed >= freshModel.totalSuggestionsToFind) {
-              await this.startAutoAcceptIfEnabled(message.params!.id.toString());
-              return;
-            }
-          }
-        }
+    try {
+      if (message.task === 'create_model' && message.success) {
+        await IXServices.saveModelProcess(message.params!.id, ModelStatus.ready, {
+          computeTotalSuggestions: true,
+        });
 
         const [updatedModel] = await IXModelsModel.get({ extractorId: message.params!.id });
-        if (!updatedModel.findingSuggestions) {
-          emitToTenantAdminsAndEditors(
-            message.tenant,
-            'ix_model_status',
-            _message.params!.id,
-            'ready',
-            'Canceled'
-          );
-          return;
-        }
-      } catch (_) {
-        await this.handleFailedStatus(message, currentModel);
+
+        await this.updateSuggestionStatus(message, updatedModel);
       }
 
-      await this.getSuggestions(message.params!.id);
-    }, _message.tenant);
+      if (!message.success) {
+        await this.handleFailedStatus(message, currentModel);
+        return;
+      }
+
+      if (message.task === 'suggestions') {
+        await this.saveSuggestionsManager(message);
+        await this.updateSuggestionStatus(message, currentModel);
+
+        // If a process run requested auto-accept and the find phase just completed,
+        // emit transition to auto-accept and dispatch the accept job. Do not emit 'ready'.
+        const [freshModel] = await IXModelsModel.get({ extractorId: message.params!.id });
+        const autoAccept = freshModel?.processRun?.autoAccept;
+        if (autoAccept?.enabled && freshModel?.totalSuggestionsToFind != null) {
+          const status = await this.getSuggestionsStatus(message.params!.id, freshModel);
+          if (status.processed >= freshModel.totalSuggestionsToFind) {
+            await this.startAutoAcceptIfEnabled(message.params!.id.toString());
+            return;
+          }
+        }
+      }
+
+      const [updatedModel] = await IXModelsModel.get({ extractorId: message.params!.id });
+      if (!updatedModel.findingSuggestions) {
+        emitToTenantAdminsAndEditors(
+          message.tenant,
+          'ix_model_status',
+          _message.params!.id,
+          'ready',
+          'Canceled'
+        );
+        return;
+      }
+    } catch (_) {
+      await this.handleFailedStatus(message, currentModel);
+    }
+
+    await this.getSuggestions(message.params!.id);
   };
 }
 

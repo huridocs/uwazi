@@ -8,6 +8,7 @@ import { localeAtom, settingsAtom } from '../../../atoms/index.js';
 import { BaseDropdown } from './BaseDropdown.js';
 
 type HeaderLink = {
+  id?: string;
   _id?: string;
   localId?: string;
   title: string;
@@ -45,7 +46,7 @@ const MobileMenuDropdown: React.FC<MobileMenuDropdownProps> = ({ links }) => {
     const isExternal = url.startsWith('http');
 
     if (link.group) {
-      const key = String(link._id ?? link.localId ?? link.title);
+      const key = String(link.id ?? link._id ?? link.localId ?? link.title);
       return (
         <div key={`mobile-group-${key}`}>
           <div
@@ -58,7 +59,7 @@ const MobileMenuDropdown: React.FC<MobileMenuDropdownProps> = ({ links }) => {
     }
 
     return (
-      <div key={`mobile-link-${String(link._id ?? link.localId ?? link.title)}`}>
+      <div key={`mobile-link-${String(link.id ?? link._id ?? link.localId ?? link.title)}`}>
         {isExternal ? (
           <a
             href={url}

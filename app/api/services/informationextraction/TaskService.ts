@@ -1,10 +1,10 @@
+import { ObjectId } from 'mongodb';
+import _ from 'lodash';
 import { IXExtractorType } from '#shared/types/extractorType.js';
 import { PropertySchema } from '#shared/types/commonTypes.js';
-import settings from '#api/settings/index.js';
-import { ObjectId } from 'mongodb';
+import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
 import entities from '#api/entities/index.js';
 import thesauri from '#api/core/v1_layer/thesauri/index.js';
-import _ from 'lodash';
 import { EnforcedWithId } from '#api/odm/index.js';
 import { IXTaskManager, TaskParameters } from './InformationExtraction.js';
 import { propertyTypeIsSelectOrMultiSelect } from './ixMaterials.js';
@@ -62,7 +62,7 @@ export class IXTaskService {
 
   // eslint-disable-next-line class-methods-use-this
   private async fetchCandidates(targetProperty: PropertySchema) {
-    const defaultLanguageKey = (await settings.getDefaultLanguage()).key;
+    const defaultLanguageKey = await SettingsDataSourceFactory.default().getDefaultLanguageKey();
     const query: { template?: ObjectId; language: string } = {
       language: defaultLanguageKey,
     };

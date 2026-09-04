@@ -10,6 +10,7 @@ interface MigrationConfig {
   mongoCollection: string;
   pgTable: string;
   mapDocument(doc: Record<string, unknown>): Record<string, unknown>;
+  assertDocumentCount?(count: number): void;
 }
 
 /** For collections where one mongo document becomes several postgres rows. */
@@ -99,6 +100,11 @@ class MigrateCollectionToPostgres {
 
     if (existingRow !== undefined) {
       return { migrated: 0, skipped: true };
+    }
+
+    if ('assertDocumentCount' in config && config.assertDocumentCount) {
+      const count = await this.mongoDb.collection(config.mongoCollection).countDocuments();
+      config.assertDocumentCount(count);
     }
 
     const migrated = await this.fetchAndInsert(config, table, rowsMapperOf(config));

@@ -8,13 +8,14 @@ import QueryString from 'qs';
 import { legacyLogger } from '#api/log/index.js';
 import { search } from '#api/search/index.js';
 import { CSVExporter } from '#api/csv/index.js';
-import settings from '#api/settings/index.js';
+import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
 import { captchaMiddleware } from '#api/core/infrastructure/express/captcha/CaptchaMiddleware.js';
 import { csvExportParamsSchema } from '#shared/types/searchParameterSchema.js';
 import { CsvExportBody } from '#shared/types/searchParameterType.js';
 import { temporalFilesPath, generateFileName } from './filesystem.js';
 import { validation } from '../utils/index.js';
 
+// eslint-disable-next-line import/no-default-export
 export default (app: Application) => {
   const generateExportFileName = (databaseName: string = '') =>
     `${databaseName}-${new Date().toISOString()}.csv`;
@@ -44,7 +45,8 @@ export default (app: Application) => {
 
         const results = await search.search(query, req.language, req.user);
         // eslint-disable-next-line camelcase
-        const { dateFormat = '', site_name } = await settings.get();
+        const { dateFormat = '', site_name } =
+          (await SettingsDataSourceFactory.default().readFields(['dateFormat', 'site_name'])) ?? {};
 
         const exporter = new CSVExporter();
 

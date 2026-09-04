@@ -1,5 +1,5 @@
 import mailerConfig from '#api/config/mailer.js';
-import settings from '#api/settings/settings.js';
+import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
 import { getMailerTransport } from '#api/utils/mailerTransport.js';
 
 let transporterOptions = {
@@ -16,16 +16,17 @@ if (Object.keys(mailerConfig).length) {
   transporterOptions = mailerConfig;
 }
 
+// eslint-disable-next-line import/no-default-export
 export default {
   async send(mailOptions) {
     let transporter;
     return new Promise((resolve, reject) => {
-      settings
-        .get()
+      SettingsDataSourceFactory.default()
+        .readFields(['mailerConfig'])
         .then(config => {
           try {
             transporter = getMailerTransport().createTransport(
-              config.mailerConfig ? JSON.parse(config.mailerConfig) : transporterOptions
+              config?.mailerConfig ? JSON.parse(config.mailerConfig) : transporterOptions
             );
             transporter.sendMail(mailOptions, (error, info) => {
               if (error) {

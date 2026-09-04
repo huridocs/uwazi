@@ -29,7 +29,7 @@ const baseSettings: ClientSettings = {
   site_name: 'Uwazi',
   private: false,
   defaultLibraryView: 'cards',
-  links: [{ _id: '1', title: 'Library', url: '/library', type: 'link' }],
+  links: [{ id: '1', title: 'Library', url: '/library', type: 'link' }],
   languages: [{ key: 'en', label: 'English', default: true }],
 };
 

@@ -6,6 +6,7 @@ import { Dropdown, type DropdownItem } from './Dropdown.js';
 import { MoreMenu } from './MoreMenu.js';
 
 type HeaderLink = {
+  id?: string;
   _id?: string;
   localId?: string;
   title: string;
@@ -29,7 +30,7 @@ const labelClasses = 'max-w-[12rem] truncate';
 
 const useIsomorphicLayoutEffect = typeof document !== 'undefined' ? useLayoutEffect : useEffect;
 
-const linkKey = (link: HeaderLink) => String(link._id ?? link.localId ?? link.title);
+const linkKey = (link: HeaderLink) => String(link.id ?? link._id ?? link.localId ?? link.title);
 const hasContent = (link: HeaderLink) => link.type !== 'group' || (link.sublinks?.length ?? 0) > 0;
 const menuLabel = (title: string): string => t('Menu', title, null, false);
 

@@ -15,7 +15,7 @@ import { storage } from '#api/files/index.js';
 import { permissionsContext } from '#api/permissions/permissionsContext.js';
 import relationships from '#api/relationships/relationships.js';
 import { ResultsMessage, TaskManager } from '#api/services/tasksmanager/TaskManager.js';
-import settings from '#api/settings/settings.js';
+import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
 import { emitToSession } from '#api/socketio/setupSockets.js';
 import { tenants } from '#api/tenants/tenantContext.js';
 import { UsersDirectoryFactory } from '#api/core/infrastructure/factories/UsersDirectoryFactory.js';
@@ -39,8 +39,10 @@ interface OcrSettings {
 }
 
 const isEnabled = async () => {
-  const settingsObject = await settings.get();
-  return Boolean(settingsObject.features?.ocr?.url) && Boolean(settingsObject.ocrServiceEnabled);
+  const settingsDS = SettingsDataSourceFactory.default();
+  const ocr = await settingsDS.readFeature('ocr');
+  const slice = await settingsDS.readFields(['ocrServiceEnabled']);
+  return Boolean(ocr?.url) && Boolean(slice?.ocrServiceEnabled);
 };
 
 const validateNotInQueue = async (file: EnforcedWithId<FileType>) => {
@@ -58,8 +60,7 @@ const validateFileIsDocument = (file: FileType) => {
 };
 
 const getSettings = async (): Promise<OcrSettings> => {
-  const settingsValues = await settings.get();
-  const ocrServiceConfig = settingsValues?.features?.ocr;
+  const ocrServiceConfig = await SettingsDataSourceFactory.default().readFeature('ocr');
 
   if (!ocrServiceConfig) {
     throw Error('Ocr settings are missing from the database (settings.features.ocr).');
@@ -193,30 +194,28 @@ const handleOcrError = async (
 };
 
 const processResults = async (message: ResultsMessage): Promise<void> => {
-  await tenants.run(async () => {
-    try {
-      const originalFile = (
-        await FilesDAOFactory.default().getByFilename(message.params!.filename)
-      ).getDataOrThrow();
-      const [record] = await getForSourceFile(originalFile);
+  try {
+    const originalFile = (
+      await FilesDAOFactory.default().getByFilename(message.params!.filename)
+    ).getDataOrThrow();
+    const [record] = await getForSourceFile(originalFile);
 
-      if (!record) return;
+    if (!record) return;
 
-      if (!message.success) {
-        await handleOcrError(record, originalFile, message);
-        return;
-      }
-
-      await processFiles(record, message, originalFile);
-      const sessionId =
-        typeof message.params?.sessionId === 'string' ? message.params.sessionId : undefined;
-      if (sessionId) {
-        emitToSession(sessionId, 'ocr:ready', originalFile._id.toHexString());
-      }
-    } catch (e) {
-      handleError(e);
+    if (!message.success) {
+      await handleOcrError(record, originalFile, message);
+      return;
     }
-  }, message.tenant);
+
+    await processFiles(record, message, originalFile);
+    const sessionId =
+      typeof message.params?.sessionId === 'string' ? message.params.sessionId : undefined;
+    if (sessionId) {
+      emitToSession(sessionId, 'ocr:ready', originalFile._id.toHexString());
+    }
+  } catch (e) {
+    handleError(e);
+  }
 };
 
 const validateLanguage = async (language: string, ocrSettings?: { url: string }) => {

@@ -4,8 +4,7 @@ import request from '#shared/JSONRequest.js';
 import { SettingsSyncSchema } from '#shared/types/settingsType.js';
 import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
 import { tenants } from '#api/tenants/index.js';
-import settings from '#api/settings/index.js';
-import { settingsModel } from '#api/settings/settingsModel.js';
+import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
 import { permissionsContext } from '#api/permissions/permissionsContext.js';
 import { runInJobContext } from '#api/services/tasksmanager/runInJobContext.js';
 import { handleError } from '#api/utils/handleError.js';
@@ -34,13 +33,9 @@ const disableConfigAndNotify = async (
   error: unknown,
   consecutiveFailures: number
 ) => {
-  const disableResult = await settingsModel.updateMany(
-    {},
-    { $set: { 'sync.$[c].active': false } },
-    { arrayFilters: [{ 'c.name': config.name, 'c.active': true }] }
-  );
+  const modifiedCount = await SettingsDataSourceFactory.default().deactivateSyncConfig(config.name);
 
-  if (disableResult.modifiedCount !== 1) {
+  if (modifiedCount !== 1) {
     return;
   }
 
@@ -141,7 +136,7 @@ export const syncWorker = {
         await runInJobContext(tenant.name, async () => {
           try {
             permissionsContext.setCommandContext();
-            const { sync } = await settings.get({}, 'sync');
+            const sync = await SettingsDataSourceFactory.default().readSyncConfig();
             if (sync) {
               await this.syncronize(sync);
             }

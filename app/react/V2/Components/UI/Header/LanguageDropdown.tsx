@@ -3,6 +3,7 @@ import { useAtom, useAtomValue } from 'jotai';
 import { useLocation } from 'react-router';
 import { ChevronDownIcon, ChevronUpIcon, LanguageIcon } from '@heroicons/react/20/solid';
 import { LanguagesListSchema } from '#shared/types/commonTypes.js';
+import { LanguageUtils } from '#shared/language/index.js';
 import { inlineEditAtom, localeAtom, settingsAtom } from '#V2/atoms/index.js';
 import { Translate } from '#app/I18N/index.js';
 import { useIsMobile } from '#app/V2/CustomHooks/useIsMobile.js';
@@ -13,6 +14,9 @@ import { buildLanguageSwitchUrl } from './buildLanguageSwitchUrl.js';
 interface LanguageDropdownProps {
   className?: string;
 }
+
+const languageAutonym = (language: { key: string; label?: string }) =>
+  LanguageUtils.fromISO639_1(language.key).localized_label || language.label;
 
 const getSelectedLanguage = (locale: string, languages?: LanguagesListSchema) =>
   languages?.find(lang => lang.key === locale) || languages?.find(lang => lang.default);
@@ -78,7 +82,7 @@ export const LanguageDropdown: React.FC<LanguageDropdownProps> = ({ className = 
         </span>
       ) : (
         <span className={isTablet ? 'uppercase' : ''}>
-          {isTablet ? selectedLanguage?.key : selectedLanguage?.localized_label}
+          {isTablet ? selectedLanguage?.key : selectedLanguage && languageAutonym(selectedLanguage)}
         </span>
       )}
       {dropdownOpen ? (
@@ -128,7 +132,7 @@ export const LanguageDropdown: React.FC<LanguageDropdownProps> = ({ className = 
           const roundedClasses = getRoundedClasses(isFirst, isLast);
 
           return (
-            <li key={String(language._id ?? language.key)} role="none">
+            <li key={language.key} role="none">
               <a
                 href={url}
                 role="menuitem"
@@ -137,7 +141,7 @@ export const LanguageDropdown: React.FC<LanguageDropdownProps> = ({ className = 
                 }`}
                 tabIndex={dropdownOpen ? 0 : -1}
               >
-                {language.localized_label || language.label}
+                {languageAutonym(language)}
               </a>
             </li>
           );

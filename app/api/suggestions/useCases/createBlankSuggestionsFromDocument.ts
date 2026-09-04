@@ -1,7 +1,7 @@
 import { UseCase } from '#api/core/libs/UseCase.js';
 import entities from '#api/entities/index.js';
 import { Extractors } from '#api/services/informationextraction/ixextractors.js';
-import settings from '#api/settings/index.js';
+import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
 import { LanguageUtils } from '#shared/language/index.js';
 import { EntitySchema } from '#shared/types/entityType.js';
 import { FileType } from '#shared/types/fileType.js';
@@ -27,7 +27,8 @@ export class CreateBlankSuggestionsFromDocument implements UseCase<Input, void> 
       throw new FileTypeNotSupportedError(file.type!);
     }
 
-    const { languages } = await settings.get();
+    const { languages } =
+      (await SettingsDataSourceFactory.default().readFields(['languages'])) ?? {};
     const isLanguageSupported = languages?.some(
       l => l.key === LanguageUtils.fromISO639_3(file.language!).key
     );

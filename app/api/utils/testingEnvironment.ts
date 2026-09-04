@@ -31,6 +31,10 @@ import { User } from '#api/users.v2/model/User.js';
 import { UserSchema } from '#shared/types/userType.js';
 import { ObjectUtils } from '#api/common.v2/utils/Object.js';
 import { UwaziDispatcherFactory } from '#api/core/infrastructure/jobs/UwaziDispatcherFactory.js';
+import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js';
+import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
+import { PostgresSettingsMapper } from '#api/core/infrastructure/postgresql/settings/PostgresSettingsMapper.js';
+import { Settings as SettingsType } from '#shared/types/settingsType.js';
 import {
   PageLocalesMigrationConfig,
   PageMigrationConfig,
@@ -97,6 +101,11 @@ const sanitizeTranslationForPostgres = (translation: Record<string, unknown>) =>
   };
 };
 
+const sanitizeSettingsForPostgres = (settings: Record<string, unknown>) =>
+  PostgresSettingsMapper.toRow(settings as SettingsType, () =>
+    IdGeneratorFactory.default().generate()
+  );
+
 // A mongo pages document holds its locales nested; in postgres they are their own table.
 const PG_FANOUT_BY_MONGO_COLLECTION: Record<
   string,
@@ -113,6 +122,7 @@ const PG_SANITIZER_BY_MONGO_COLLECTION: Record<
   users: sanitizeUserForPostgres,
   usergroups: sanitizeUserGroupForPostgres,
   translationsV2: sanitizeTranslationForPostgres,
+  settings: sanitizeSettingsForPostgres,
   pages: PageMigrationConfig.mapDocument,
 };
 
@@ -426,4 +436,33 @@ const testingEnvironment = {
   },
 };
 
-export { testingEnvironment };
+function settingsDataSourceWithContext(create: () => SettingsDataSource): SettingsDataSource {
+  return new Proxy({} as SettingsDataSource, {
+    get(_target, property) {
+      if (property === 'then' || typeof property === 'symbol') {
+        return undefined;
+      }
+
+      return async (...args: unknown[]) =>
+        testingEnvironment.runWithContext(async () => {
+          const dataSource = create();
+          const member = dataSource[property as keyof SettingsDataSource];
+          if (typeof member !== 'function') {
+            return member;
+          }
+          return (member as (...methodArgs: unknown[]) => unknown).call(dataSource, ...args);
+        });
+    },
+  });
+}
+
+const SettingsDSWithContext = {
+  default(overrides?: Parameters<typeof SettingsDataSourceFactory.default>[0]) {
+    return settingsDataSourceWithContext(() => SettingsDataSourceFactory.default(overrides));
+  },
+  cached(overrides?: Parameters<typeof SettingsDataSourceFactory.cached>[0]) {
+    return settingsDataSourceWithContext(() => SettingsDataSourceFactory.cached(overrides));
+  },
+};
+
+export { testingEnvironment, SettingsDSWithContext };

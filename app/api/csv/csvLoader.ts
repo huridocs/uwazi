@@ -4,7 +4,7 @@ import { TransactionManagerFactory } from '#api/core/infrastructure/factories/Tr
 import { SaveLocaleTranslationsUseCaseFactory } from '#api/core/infrastructure/factories/SaveLocaleTranslationsUseCaseFactory.js';
 import { UpdateEntriesByContextUseCaseFactory } from '#api/core/infrastructure/factories/UpdateEntriesByContextUseCaseFactory.js';
 import { IndexedTranslations } from '#api/core/application/translation/localeTranslationDto.js';
-import settings from '#api/settings/index.js';
+import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
 import thesauri from '#api/core/v1_layer/thesauri/index.js';
 import { ensure } from '#shared/tsUtils.js';
 import { LanguageISO6391, LanguageSchema, ObjectIdSchema } from '#shared/types/commonTypes.js';
@@ -28,12 +28,12 @@ export class CSVLoader {
     { language }: { language: string }
   ) {
     const file = importFile(csvPath);
-    const settingsData = await settings.get();
-    const defaultLanguage = settingsData.languages?.find(l => l.default)?.key;
+    const settingsData = await SettingsDataSourceFactory.default().readFields(['languages']);
+    const defaultLanguage = settingsData?.languages?.find(l => l.default)?.key;
 
     const languageToUse = defaultLanguage || language;
 
-    const availableLanguages: string[] = ensure<LanguageSchema[]>(settingsData.languages)
+    const availableLanguages: string[] = ensure<LanguageSchema[]>(settingsData?.languages)
       .map((l: LanguageSchema) => l.key)
       .filter((l: string) => l !== languageToUse);
 
@@ -78,7 +78,9 @@ export class CSVLoader {
       })
       .read();
 
-    const languagesToTranslate = ensure<LanguageSchema[]>((await settings.get()).languages)
+    const languagesToTranslate = ensure<LanguageSchema[]>(
+      (await SettingsDataSourceFactory.default().readFields(['languages']))?.languages
+    )
       .map((l: LanguageSchema) => ({ label: l.label, language: l.key }))
       .filter(lang => Object.keys(intermediateTranslation).includes(lang.label));
 

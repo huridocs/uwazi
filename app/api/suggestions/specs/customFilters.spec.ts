@@ -6,7 +6,7 @@ import { Suggestions } from '../suggestions.js';
 
 beforeAll(async () => {
   await testingEnvironment.setUp(stateFilterFixtures);
-  await Suggestions.updateStates({});
+  await testingEnvironment.runWithContext(async () => Suggestions.updateStates({}));
 });
 
 afterAll(async () => testingEnvironment.tearDown());

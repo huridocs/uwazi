@@ -280,16 +280,6 @@ describe('i18n translations routes', () => {
           let response: request.Response;
           let mockCalls: any[];
 
-          const newSettings = expect.objectContaining({
-            languages: [
-              expect.objectContaining({ key: 'en', label: 'English', default: true }),
-              expect.objectContaining({ key: 'es', label: 'Spanish', default: false }),
-              expect.objectContaining({ key: 'zh', label: 'Chinese' }),
-              expect.objectContaining({ key: 'ja', label: 'Japanese' }),
-            ],
-            mapStartingPoint: [{ lon: 6, lat: 46 }],
-          });
-
           beforeAll(async () => {
             await testingEnvironment.setFixtures(createFixtures());
             applyBackendTenant();
@@ -302,10 +292,14 @@ describe('i18n translations routes', () => {
                 { key: 'zh', label: 'Chinese' },
                 { key: 'ja', label: 'Japanese' },
               ]);
-            mockCalls = iosocket.emit.mock.calls;
             await waitForExpect(() => {
-              expect(mockCalls.length).toBe(4);
+              expect(
+                iosocket.emit.mock.calls.some(
+                  ([eventName]) => eventName === 'translationsInstallDone'
+                )
+              ).toBe(true);
             });
+            mockCalls = iosocket.emit.mock.calls;
           });
 
           it('should return a 204', async () => {
@@ -361,15 +355,6 @@ describe('i18n translations routes', () => {
                   ]),
                 },
               ],
-            ]);
-          });
-
-          it('should emit an updateSettings event', async () => {
-            const eventCandidate = mockCalls.find(([eventName]) => eventName === 'updateSettings');
-            expect(eventCandidate).toMatchObject([
-              'updateSettings',
-              TestEmitSources.currentTenant,
-              newSettings,
             ]);
           });
 
@@ -459,7 +444,6 @@ describe('i18n translations routes', () => {
             languages: [
               {
                 key: 'en',
-                default: false,
               },
               {
                 key: 'es',
@@ -467,16 +451,7 @@ describe('i18n translations routes', () => {
               },
             ],
           });
-          expect(iosocket.emit).toHaveBeenCalledWith(
-            'updateSettings',
-            TestEmitSources.currentTenant,
-            expect.objectContaining({
-              languages: [
-                expect.objectContaining({ default: false, key: 'en', label: 'English' }),
-                expect.objectContaining({ default: true, key: 'es', label: 'Spanish' }),
-              ],
-            })
-          );
+          expect(response.body.languages[0]).not.toHaveProperty('default');
         });
       });
 
@@ -564,28 +539,6 @@ describe('i18n translations routes', () => {
 
           it('should return a 204', async () => {
             expect(response).toHaveStatus(204);
-          });
-
-          it('should emit an updateSettings event', async () => {
-            await waitForExpect(() => {
-              const eventCandidate = iosocket.emit.mock.calls.find(
-                ([eventName]) => eventName === 'updateSettings'
-              );
-              expect(eventCandidate).toMatchObject([
-                'updateSettings',
-                TestEmitSources.currentTenant,
-                {
-                  languages: [
-                    {
-                      default: true,
-                      key: 'en',
-                      label: 'English',
-                    },
-                  ],
-                  mapStartingPoint: [{ lat: 46, lon: 6 }],
-                },
-              ]);
-            });
           });
 
           it('should emit a translationsDelete event', async () => {

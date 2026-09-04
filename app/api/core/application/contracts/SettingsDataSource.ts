@@ -10,7 +10,17 @@ export interface SettingsDataSource {
   readNewRelationshipsAllowed(): Promise<boolean>;
   readFilterUnauthorizedRelated(): Promise<boolean>;
   getInstalledLanguages(): Promise<LanguagesListSchema>;
+  find(): Promise<SettingsType | null>;
   get(): Promise<SettingsType>;
+  patch(partial: SettingsType): Promise<SettingsType>;
+  deactivateSyncConfig(name: string): Promise<number>;
+  readFields<K extends keyof SettingsType>(
+    fields: readonly K[]
+  ): Promise<(Pick<SettingsType, K> & { _id?: SettingsType['_id'] }) | null>;
+  readFeature<K extends keyof NonNullable<SettingsType['features']>>(
+    name: K
+  ): Promise<NonNullable<SettingsType['features']>[K] | undefined>;
+  readSyncConfig(): Promise<SettingsType['sync']>;
   getNewRelationshipsConfiguration(): Promise<
     Exclude<Partial<Required<SettingsType>['features']['newRelationships']>, boolean | undefined>
   >;

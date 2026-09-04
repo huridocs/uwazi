@@ -89,7 +89,7 @@ const sanitizeFilters = (filters?: Filter[]) => {
   const sanitizedFilters: ClientSettingsFilterSchema[] = [];
 
   filters?.forEach(filter => {
-    const { rowId, subRows, ...sanitizedFilter } = { ...filter };
+    const { rowId, subRows, _id: _mongooseId, ...sanitizedFilter } = { ...filter };
 
     if (subRows && subRows.length === 0) {
       return;
@@ -109,12 +109,13 @@ const sanitizeFilters = (filters?: Filter[]) => {
 
 const formatFilters = (filters: ClientSettingsFilterSchema[]): Filter[] =>
   filters?.map(filter => {
+    const { _id: _mongooseId, ...rest } = filter;
     const tableFilter: Filter = {
-      ...filter,
-      rowId: filter._id!,
+      ...rest,
+      rowId: rest.id!,
     };
-    if (filter.items) {
-      const subRows = filter.items.map(item => ({ ...item, rowId: item.id! }));
+    if (rest.items) {
+      const subRows = rest.items.map(item => ({ ...item, rowId: item.id! }));
       tableFilter.subRows = subRows;
     }
     return tableFilter;

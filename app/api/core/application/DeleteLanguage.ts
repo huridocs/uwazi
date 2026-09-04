@@ -2,6 +2,7 @@ import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import { TranslationsDataSource } from '#api/core/application/contracts/TranslationsDataSource.js';
 import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js';
 import { LanguageDeletedEvent } from '#api/core/domain/language/events/LanguageDeletedEvent.js';
+import { SettingsChangedEvent } from '#api/core/domain/settings/events/SettingsChangedEvent.js';
 import { AbstractUseCase } from '../libs/UseCase.js';
 
 type Input = {
@@ -28,6 +29,7 @@ class DeleteLanguageUseCase extends AbstractUseCase<Input, Output, Deps> {
       await this.eventEmitter.emit(
         new LanguageDeletedEvent({ language: key, userId: this.actorId })
       );
+      await this.eventEmitter.emit(new SettingsChangedEvent({}));
       await this.dispatcher.deleteLanguageEntities({ language: key });
     });
   }

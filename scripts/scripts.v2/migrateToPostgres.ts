@@ -24,6 +24,7 @@ import { UserGroupsMigrationConfig } from '#api/core/infrastructure/postgresql/m
 import { PasswordRecoveryMigrationConfig } from '#api/core/infrastructure/postgresql/migrations/configs/PasswordRecoveryMigrationConfig.js';
 import { TranslationsMigrationConfig } from '#api/core/infrastructure/postgresql/migrations/configs/TranslationsMigrationConfig.js';
 import { EntitiesMigrationConfig } from '#api/core/infrastructure/postgresql/migrations/configs/EntitiesMigrationConfig.js';
+import { SettingsMigrationConfig } from '#api/core/infrastructure/postgresql/migrations/configs/SettingsMigrationConfig.js';
 import {
   PageLocalesMigrationConfig,
   PageMigrationConfig,
@@ -40,6 +41,7 @@ const COLLECTIONS: Record<string, AnyMigrationConfig> = {
   password_recoveries: PasswordRecoveryMigrationConfig,
   translations: TranslationsMigrationConfig,
   entities: EntitiesMigrationConfig,
+  settings: SettingsMigrationConfig,
   pages: PageMigrationConfig,
   // A page's locales are nested in the mongo document, so they are their own pass.
   page_locales: PageLocalesMigrationConfig,
