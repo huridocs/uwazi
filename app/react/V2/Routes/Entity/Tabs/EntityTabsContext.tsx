@@ -1,7 +1,46 @@
-import React, { createContext, useContext } from 'react';
-import type { EntityTabsState } from './hooks/useEntityTabs.js';
+/* eslint-disable react/no-multi-comp */
+import React, { createContext, useContext, useMemo } from 'react';
+import type { TabButtonDef } from '#V2/Components/UI/Tabs/tabsAtoms.js';
+import type { Entity as EntityType } from '#V2/api/entities/types.js';
+import type { FilesSideTabsOptions } from './sideTabSets.js';
+import type { MainTabId, SideTabId } from './tabIds.js';
 
-const EntityTabsContext = createContext<EntityTabsState | null>(null);
+type UseEntityTabsParams = {
+  entity: EntityType;
+  hasMainDocument: boolean;
+  mainDocumentId?: string;
+  filesSideTabs: FilesSideTabsOptions;
+};
+
+type EntityMainTabsState = {
+  activeMainTab: MainTabId;
+  relationshipsOnMain: boolean;
+  documentOnMain: boolean;
+  onMainTabChange: (selectedMainTab: string) => void;
+  focusSideTab: (sideTab: SideTabId) => void;
+  stageSideTab: (sideTab: SideTabId) => void;
+  focusRelationshipsPanel: () => void;
+  focusDocumentPanel: () => void;
+};
+
+type EntitySideTabsState = {
+  activeSideTab: SideTabId | undefined;
+  syncSideTabId: SideTabId | undefined;
+  sideButtons: TabButtonDef[];
+  onSideTabChange: (selectedSideTab: string) => void;
+};
+
+type EntityTabsState = EntityMainTabsState & EntitySideTabsState;
+
+const EntityMainTabsContext = createContext<EntityMainTabsState | null>(null);
+
+const EntityMainTabsProvider = ({
+  value,
+  children,
+}: {
+  value: EntityMainTabsState;
+  children: React.ReactNode;
+}) => <EntityMainTabsContext.Provider value={value}>{children}</EntityMainTabsContext.Provider>;
 
 const EntityTabsProvider = ({
   value,
@@ -9,35 +48,39 @@ const EntityTabsProvider = ({
 }: {
   value: EntityTabsState;
   children: React.ReactNode;
-}) => <EntityTabsContext.Provider value={value}>{children}</EntityTabsContext.Provider>;
+}) => {
+  const main = useMemo(
+    (): EntityMainTabsState => ({
+      activeMainTab: value.activeMainTab,
+      relationshipsOnMain: value.relationshipsOnMain,
+      documentOnMain: value.documentOnMain,
+      onMainTabChange: value.onMainTabChange,
+      focusSideTab: value.focusSideTab,
+      stageSideTab: value.stageSideTab,
+      focusRelationshipsPanel: value.focusRelationshipsPanel,
+      focusDocumentPanel: value.focusDocumentPanel,
+    }),
+    [
+      value.activeMainTab,
+      value.documentOnMain,
+      value.focusDocumentPanel,
+      value.focusRelationshipsPanel,
+      value.focusSideTab,
+      value.onMainTabChange,
+      value.relationshipsOnMain,
+      value.stageSideTab,
+    ]
+  );
+  return <EntityMainTabsProvider value={main}>{children}</EntityMainTabsProvider>;
+};
 
-const useEntityTabsContext = (): EntityTabsState => {
-  const value = useContext(EntityTabsContext);
+const useEntityTabNavigation = () => {
+  const value = useContext(EntityMainTabsContext);
   if (!value) {
-    throw new Error('useEntityTabsContext must be used within EntityTabsProvider');
+    throw new Error('useEntityTabNavigation must be used within EntityMainTabsProvider');
   }
   return value;
 };
 
-const useEntityTabNavigation = () => {
-  const {
-    activeMainTab,
-    relationshipsOnMain,
-    documentOnMain,
-    focusSideTab,
-    stageSideTab,
-    focusRelationshipsPanel,
-    focusDocumentPanel,
-  } = useEntityTabsContext();
-  return {
-    activeMainTab,
-    relationshipsOnMain,
-    documentOnMain,
-    focusSideTab,
-    stageSideTab,
-    focusRelationshipsPanel,
-    focusDocumentPanel,
-  };
-};
-
-export { EntityTabsProvider, useEntityTabsContext, useEntityTabNavigation };
+export { EntityMainTabsProvider, EntityTabsProvider, useEntityTabNavigation };
+export type { EntityMainTabsState, EntitySideTabsState, EntityTabsState, UseEntityTabsParams };

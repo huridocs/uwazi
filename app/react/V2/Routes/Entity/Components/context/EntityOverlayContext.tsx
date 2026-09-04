@@ -54,7 +54,7 @@ const EntityOverlayProvider = ({ children }: { children: React.ReactNode }) => {
   );
 };
 
-const useEntityOverlayState = () => {
+const useEntityOverlayTarget = () => {
   const context = useContext(EntityOverlayStateContext);
   if (!context) throw new Error('Entity overlay state context not found');
   return context;
@@ -67,8 +67,8 @@ const useEntityOverlayActions = () => {
 };
 
 const useEntityOverlay = () => ({
-  ...useEntityOverlayState(),
+  ...useEntityOverlayTarget(),
   ...useEntityOverlayActions(),
 });
 
-export { EntityOverlayProvider, useEntityOverlay };
+export { EntityOverlayProvider, useEntityOverlay, useEntityOverlayTarget, useEntityOverlayActions };

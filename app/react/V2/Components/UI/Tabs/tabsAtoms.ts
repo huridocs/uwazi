@@ -27,6 +27,8 @@ const createEmptyGroup = (): TabGroupState => ({
   unmountInactive: true,
 });
 
+const EMPTY_TAB_GROUP = createEmptyGroup();
+
 const tabGroupsAtom = atom<TabGroupsState>({});
 
 type TabGroupPatch = Partial<Omit<TabGroupState, 'buttons' | 'panels'>> & {
@@ -40,14 +42,22 @@ const mergeTabGroup = (
   patch: TabGroupPatch
 ): TabGroupsState => {
   const current = groups[groupId] ?? createEmptyGroup();
+  const buttons = patch.buttons ?? current.buttons;
+  const panels = patch.panels ?? current.panels;
+  const activeTabId = patch.activeTabId ?? current.activeTabId;
+  const unmountInactive = patch.unmountInactive ?? current.unmountInactive;
+  if (
+    groups[groupId] &&
+    current.activeTabId === activeTabId &&
+    current.unmountInactive === unmountInactive &&
+    current.buttons === buttons &&
+    current.panels === panels
+  ) {
+    return groups;
+  }
   return {
     ...groups,
-    [groupId]: {
-      ...current,
-      ...patch,
-      buttons: patch.buttons ?? current.buttons,
-      panels: patch.panels ?? current.panels,
-    },
+    [groupId]: { ...current, ...patch, buttons, panels },
   };
 };
 
@@ -62,4 +72,4 @@ const resolveActiveTabId = (group: TabGroupState, activeTabId: string | undefine
 };
 
 export type { TabButtonDef, TabPanelDef, TabGroupState, TabGroupsState, TabGroupPatch };
-export { tabGroupsAtom, createEmptyGroup, mergeTabGroup, resolveActiveTabId };
+export { tabGroupsAtom, createEmptyGroup, EMPTY_TAB_GROUP, mergeTabGroup, resolveActiveTabId };

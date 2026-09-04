@@ -1,3 +1,4 @@
+import { atom } from 'jotai';
 import type { UpdateEntityUrlOptions } from '../entityUrlState.js';
 import { MAIN_TAB_PARAM, SIDE_TAB_PARAM } from '../urlParams.js';
 import {
@@ -8,6 +9,8 @@ import {
   type SideTabId,
 } from './tabIds.js';
 
+const pendingSideTabAtom = atom<SideTabId | null>(null);
+
 type SideTabButton = { id: string };
 type UpdateEntityUrl = (options: UpdateEntityUrlOptions) => void;
 
@@ -17,15 +20,16 @@ const getMainTabIds = (hasMainDocument: boolean): Set<MainTabId> => {
   return ids;
 };
 
+const pickMainTab = (candidate: string | null, hasMainDocument: boolean): MainTabId => {
+  const mainTabIds = getMainTabIds(hasMainDocument);
+  if (isValidMainTab(candidate) && mainTabIds.has(candidate)) return candidate;
+  return hasMainDocument ? MAIN_TAB.DOCUMENT : MAIN_TAB.METADATA;
+};
+
 const resolveMainTabFromUrl = (
   searchParams: URLSearchParams,
   hasMainDocument: boolean
-): MainTabId => {
-  const mainTabIds = getMainTabIds(hasMainDocument);
-  const mainTab = searchParams.get(MAIN_TAB_PARAM);
-  if (isValidMainTab(mainTab) && mainTabIds.has(mainTab)) return mainTab;
-  return hasMainDocument ? MAIN_TAB.DOCUMENT : MAIN_TAB.METADATA;
-};
+): MainTabId => pickMainTab(searchParams.get(MAIN_TAB_PARAM), hasMainDocument);
 
 const resolveSideTabId = (
   sideFromUrl: string | null,
@@ -84,9 +88,30 @@ const setEntitySideTabInUrl = (
   });
 };
 
+const pruneSideTabIfInvalidForMain = ({
+  hash,
+  selectedMainTab,
+  activeMainTab,
+  isSideTabAvailable,
+}: {
+  hash: URLSearchParams;
+  selectedMainTab: MainTabId;
+  activeMainTab: MainTabId;
+  isSideTabAvailable: (sideTab: string) => boolean;
+}) => {
+  if (selectedMainTab === activeMainTab) return;
+  const rawS = hash.get(SIDE_TAB_PARAM);
+  if (!rawS || !isValidSideTab(rawS) || !isSideTabAvailable(rawS)) {
+    hash.delete(SIDE_TAB_PARAM);
+  }
+};
+
 export {
   applyMainTabSearchParam,
   getMainTabIds,
+  pendingSideTabAtom,
+  pickMainTab,
+  pruneSideTabIfInvalidForMain,
   resolveExplicitSideTab,
   resolveMainTabFromUrl,
   resolveSideTabId,

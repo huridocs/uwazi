@@ -1,16 +1,13 @@
 import React, { useEffect, type ReactNode } from 'react';
-import { useTabGroup } from '#V2/Components/UI/index.js';
 import type { Entity as EntityType, FileType } from '#V2/api/entities/types.js';
 import {
   useMetadataEditing,
   useEntityPageView,
   EntityPageViewer,
 } from '../Components/context/index.js';
-import { MAIN_TAB, isValidMainTab, type MainTabId } from './tabIds.js';
-import {
-  keepMetadataTab,
-  resolveActiveTabId,
-} from '../Components/context/metadataEditingSession.js';
+import { MAIN_TAB, type MainTabId } from './tabIds.js';
+import { keepMetadataTab } from '../Components/context/metadataEditingSession.js';
+import { useResolvedEntityMainTab } from './hooks/useResolvedEntityMainTab.js';
 import { useEntityTabNavigation } from './EntityTabsContext.js';
 import { DocumentTab } from './tabsContent/DocumentTab.js';
 import { MetadataTab } from './tabsContent/MetadataTab.js';
@@ -27,44 +24,26 @@ type MainTabsContentProps = {
   pagePlaintext?: string;
 };
 
-const MainTabsContent = ({
-  activeTabId: urlActiveTabId,
+const mainTabSwitchContent = ({
+  activeTabId,
   entity,
   mainDocument,
   pagePlaintext,
-}: MainTabsContentProps) => {
-  const { activeTabId: atomActiveTabId } = useTabGroup('entity-main');
-  const resolvedTabId = resolveActiveTabId(atomActiveTabId, urlActiveTabId);
-  const activeTabId = isValidMainTab(resolvedTabId) ? resolvedTabId : urlActiveTabId;
-  const { focusDocumentPanel, relationshipsOnMain } = useEntityTabNavigation();
-  const { isEditing, formMountHost, registerMetadataActive } = useMetadataEditing();
-  const { hasEntityPageView } = useEntityPageView();
-  const metadataActive = activeTabId === MAIN_TAB.METADATA;
-  const keepMetadata = keepMetadataTab(metadataActive, isEditing, formMountHost, 'main');
-  // When the template uses an entity view page, the main Metadata tab shows the page
-  // instead of MetadataTab. Side panel Metadata is unchanged.
-  const showEntityPageOnMain = hasEntityPageView && metadataActive;
-  const showMetadataOnMain = keepMetadata && !hasEntityPageView;
-
-  useEffect(() => {
-    registerMetadataActive('main', metadataActive && !hasEntityPageView);
-    return () => registerMetadataActive('main', false);
-  }, [metadataActive, hasEntityPageView, registerMetadataActive]);
-
-  let content: ReactNode = null;
-
+  relationshipsOnMain,
+  focusDocumentPanel,
+}: MainTabsContentProps & {
+  relationshipsOnMain: boolean;
+  focusDocumentPanel: () => void;
+}): ReactNode => {
   switch (activeTabId) {
     case MAIN_TAB.DOCUMENT:
-      if (mainDocument?.filename) {
-        content = (
-          <DocumentTab entity={entity} mainDocument={mainDocument} pagePlaintext={pagePlaintext} />
-        );
-      }
-      break;
+      return mainDocument?.filename ? (
+        <DocumentTab entity={entity} mainDocument={mainDocument} pagePlaintext={pagePlaintext} />
+      ) : null;
     case MAIN_TAB.METADATA:
-      break;
+      return null;
     case MAIN_TAB.RELATIONSHIPS:
-      content = (
+      return (
         <div className="flex min-h-0 flex-1 flex-col px-4 pt-2">
           <RelationshipsPanel
             focusDocumentOnSelect={relationshipsOnMain}
@@ -72,33 +51,69 @@ const MainTabsContent = ({
           />
         </div>
       );
-      break;
     case MAIN_TAB.FILES:
-      content = <FilesTab />;
-      break;
+      return <FilesTab />;
     default:
-      break;
+      return null;
   }
+};
 
-  if (!content && !showMetadataOnMain && !showEntityPageOnMain) return null;
+const useMainTabsPanel = ({
+  activeTabId: urlActiveTabId,
+  entity,
+  mainDocument,
+  pagePlaintext,
+}: MainTabsContentProps) => {
+  const activeTabId = useResolvedEntityMainTab(urlActiveTabId);
+  const { focusDocumentPanel, relationshipsOnMain } = useEntityTabNavigation();
+  const { isEditing, formMountHost, registerMetadataActive } = useMetadataEditing();
+  const { hasEntityPageView } = useEntityPageView();
+  const metadataActive = activeTabId === MAIN_TAB.METADATA;
+  useEffect(() => {
+    registerMetadataActive('main', metadataActive && !hasEntityPageView);
+    return () => registerMetadataActive('main', false);
+  }, [metadataActive, hasEntityPageView, registerMetadataActive]);
+  return {
+    activeTabId,
+    metadataActive,
+    // When the template uses an entity view page, the main Metadata tab shows the page
+    // instead of MetadataTab. Side panel Metadata is unchanged.
+    showEntityPageOnMain: hasEntityPageView && metadataActive,
+    showMetadataOnMain:
+      keepMetadataTab(metadataActive, isEditing, formMountHost, 'main') && !hasEntityPageView,
+    content: mainTabSwitchContent({
+      activeTabId,
+      entity,
+      mainDocument,
+      pagePlaintext,
+      relationshipsOnMain,
+      focusDocumentPanel,
+    }),
+  };
+};
 
+const MainTabsContentComponent = (props: MainTabsContentProps) => {
+  const panel = useMainTabsPanel(props);
+  if (!panel.content && !panel.showMetadataOnMain && !panel.showEntityPageOnMain) return null;
   return (
     <div
       role="tabpanel"
-      id={`entity-main-panel-${activeTabId}`}
-      aria-labelledby={`entity-main-tab-${activeTabId}`}
-      className={`flex h-full min-h-0 w-full flex-col ${metadataActive ? 'bg-paper' : 'bg-warm'}`}
+      id={`entity-main-panel-${panel.activeTabId}`}
+      aria-labelledby={`entity-main-tab-${panel.activeTabId}`}
+      className={`flex h-full min-h-0 w-full flex-col ${panel.metadataActive ? 'bg-paper' : 'bg-warm'}`}
     >
-      {showMetadataOnMain ? (
-        <div className={metadataActive ? 'flex min-h-0 flex-1 flex-col' : 'hidden'}>
-          <MetadataTab entity={entity} host="main" />
+      {panel.showMetadataOnMain ? (
+        <div className={panel.metadataActive ? 'flex min-h-0 flex-1 flex-col' : 'hidden'}>
+          <MetadataTab entity={props.entity} host="main" />
         </div>
       ) : null}
-      {showEntityPageOnMain ? <EntityPageViewer /> : null}
-      {!metadataActive ? content : null}
-      {activeTabId === MAIN_TAB.RELATIONSHIPS && <RelationshipsFiltersDrawer />}
+      {panel.showEntityPageOnMain ? <EntityPageViewer /> : null}
+      {!panel.metadataActive ? panel.content : null}
+      {panel.activeTabId === MAIN_TAB.RELATIONSHIPS && <RelationshipsFiltersDrawer />}
     </div>
   );
 };
+
+const MainTabsContent = React.memo(MainTabsContentComponent);
 
 export { MainTabsContent };

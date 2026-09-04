@@ -37,10 +37,12 @@ export { useToCFileSync } from './ToCFileSync.js';
 export { useMetadataEditing } from './MetadataEditingContext.js';
 export type { MetadataEditingHost } from './metadataEditingSession.js';
 export { EntityWriteAuthorization, useEntityWriteAuthorized } from './EntityWriteAuthorization.js';
-export { useEntityOverlay } from './EntityOverlayContext.js';
+export {
+  useEntityOverlay,
+  useEntityOverlayActions,
+  useEntityOverlayTarget,
+} from './EntityOverlayContext.js';
 export type { RelationshipsPanelView, RelationshipsPanelZoom } from './types.js';
-export { useRelationshipsPanelData } from '../relationships/hooks/useRelationshipsPanelData.js';
-export { useEntityRelationshipMarkers } from '../relationships/hooks/useDocumentRelationships.js';
 export {
   EntityPageViewProvider,
   EntityPageViewer,

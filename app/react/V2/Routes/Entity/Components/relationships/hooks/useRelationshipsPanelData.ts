@@ -6,10 +6,8 @@ import {
   filterAndSortMarkers,
 } from '#V2/formatters/relationships/relationshipsPanelProjection.js';
 import { computeFacetCounts } from '#V2/formatters/relationships/relationshipsPanelFacets.js';
-import {
-  useEntityScopedEntity,
-  useRelationshipsPanelFilterInputs,
-} from '#V2/Routes/Entity/Components/context/index.js';
+import { useEntityScopedEntity } from '#V2/Routes/Entity/Components/context/EntityContext.js';
+import { useRelationshipsPanelFilterInputs } from '#V2/Routes/Entity/Components/context/RelationshipsPanelFiltersContext.js';
 import { useEntityRelationshipMarkers } from './useDocumentRelationships.js';
 
 const useRelationshipsPanelData = () => {

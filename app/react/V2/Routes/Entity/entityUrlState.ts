@@ -1,145 +1,85 @@
-import { useCallback, useMemo } from 'react';
-import { useLocation, useNavigate, type NavigateFunction } from 'react-router';
+import {
+  createContext,
+  createElement,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  type ReactNode,
+} from 'react';
+import { useAtomValue, useStore } from 'jotai';
+import { useLocation, useNavigate } from 'react-router';
+import {
+  bindEntityUrlSession,
+  unbindEntityUrlSession,
+  entityPageAtom,
+  parseEntityHash,
+  serializeEntityHash,
+  setEntityPageAtom,
+  splitEntityHash,
+  stripSearch,
+  updateEntityUrl,
+  type UpdateEntityUrlOptions,
+} from './entityUrlAtoms.js';
 
-type UpdateEntityUrlOptions = {
-  replace?: boolean;
-  search?: (params: URLSearchParams) => void;
-  hash?: (params: URLSearchParams) => void;
-};
+const EntityUrlSearchContext = createContext('');
+const EntityUrlHashUiContext = createContext('');
+const EntityUrlRawContext = createContext(false);
 
-type LocationFallback = {
-  pathname: string;
-  search: string;
-  hash: string;
-};
-
-type PendingBatch = {
-  replace: boolean;
-  searchPatches: Array<(params: URLSearchParams) => void>;
-  hashPatches: Array<(params: URLSearchParams) => void>;
-};
-
-let pendingBatch: PendingBatch | null = null;
-let flushScheduled = false;
-let pathnameAtEnqueue: string | null = null;
-
-const parseEntityHash = (hash: string = ''): URLSearchParams => {
-  const raw = hash.startsWith('#') ? hash.slice(1) : hash;
-  return new URLSearchParams(raw);
-};
-
-const serializeEntityHash = (params: URLSearchParams): string => {
-  const str = params.toString();
-  return str ? `#${str}` : '';
-};
-
-const readLiveLocation = (fallback: LocationFallback): LocationFallback => {
-  if (typeof window === 'undefined') {
-    return fallback;
+const useRouterPageAtom = (page: string, store: ReturnType<typeof useStore>) => {
+  const routerPageRef = useRef<string | undefined>();
+  if (routerPageRef.current !== page) {
+    routerPageRef.current = page;
+    setEntityPageAtom(page, store);
   }
-  return {
-    pathname: window.location.pathname,
-    search: window.location.search,
-    hash: window.location.hash,
-  };
 };
 
-// eslint-disable-next-line max-statements
-const flushEntityUrlUpdates = (navigate: NavigateFunction, fallback: LocationFallback) => {
-  flushScheduled = false;
-  const batch = pendingBatch;
-  const enqueuedPath = pathnameAtEnqueue;
-  pendingBatch = null;
-  pathnameAtEnqueue = null;
-  if (!batch) {
-    return;
-  }
-
-  const live = readLiveLocation(fallback);
-  // Drop only when the browser path changed during the microtask (left the page).
-  if (enqueuedPath !== null && live.pathname !== enqueuedPath) {
-    return;
-  }
-
-  // Prefer React location: window can lag MemoryRouter / RR navigate on search+hash.
-  const nextSearch = new URLSearchParams(
-    fallback.search.startsWith('?') ? fallback.search.slice(1) : fallback.search
-  );
-  const nextHash = parseEntityHash(fallback.hash);
-  batch.searchPatches.forEach(patch => patch(nextSearch));
-  batch.hashPatches.forEach(patch => patch(nextHash));
-  const search = nextSearch.toString();
-  const hash = serializeEntityHash(nextHash);
-
-  // eslint-disable-next-line no-void -- RR navigate may return a Promise; fire-and-forget flush
-  void navigate(
-    {
-      pathname: fallback.pathname,
-      search: search ? `?${search}` : '',
-      hash,
-    },
-    { replace: batch.replace, preventScrollReset: true }
-  );
-};
-
-const scheduleEntityUrlFlush = (navigate: NavigateFunction, fallback: LocationFallback) => {
-  if (flushScheduled) {
-    return;
-  }
-  flushScheduled = true;
-  queueMicrotask(() => flushEntityUrlUpdates(navigate, fallback));
-};
-
-const enqueueEntityUrlUpdate = (
-  options: UpdateEntityUrlOptions,
-  navigate: NavigateFunction,
-  fallback: LocationFallback
-) => {
-  if (!pendingBatch) {
-    pendingBatch = {
-      replace: options.replace ?? true,
-      searchPatches: [],
-      hashPatches: [],
-    };
-    pathnameAtEnqueue =
-      typeof window !== 'undefined' ? window.location.pathname : fallback.pathname;
-  }
-  if (options.search) {
-    pendingBatch.searchPatches.push(options.search);
-  }
-  if (options.hash) {
-    pendingBatch.hashPatches.push(options.hash);
-  }
-  if (options.replace === false) {
-    pendingBatch.replace = false;
-  }
-  scheduleEntityUrlFlush(navigate, fallback);
-};
-
-const useEntityHashParams = () => {
-  const { hash } = useLocation();
-  return useMemo(() => parseEntityHash(hash), [hash]);
-};
-
-const useUpdateEntityUrl = () => {
+const EntityUrlSync = ({ children }: { children: ReactNode }) => {
   const location = useLocation();
   const navigate = useNavigate();
-  const fallback = useMemo<LocationFallback>(
-    () => ({
-      pathname: location.pathname,
-      search: location.search,
-      hash: location.hash,
-    }),
-    [location.hash, location.pathname, location.search]
-  );
-
-  return useCallback(
-    (options: UpdateEntityUrlOptions) => {
-      enqueueEntityUrlUpdate(options, navigate, fallback);
-    },
-    [fallback, navigate]
+  const store = useStore();
+  bindEntityUrlSession(navigate, store, {
+    pathname: location.pathname,
+    search: location.search,
+    hash: location.hash,
+  });
+  const split = useMemo(() => splitEntityHash(location.hash), [location.hash]);
+  const search = stripSearch(location.search);
+  useRouterPageAtom(split.page, store);
+  useEffect(() => () => unbindEntityUrlSession(), []);
+  return createElement(
+    EntityUrlSearchContext.Provider,
+    { value: search },
+    createElement(
+      EntityUrlHashUiContext.Provider,
+      { value: split.ui },
+      createElement(EntityUrlRawContext.Provider, { value: split.raw }, children)
+    )
   );
 };
 
-export { parseEntityHash, serializeEntityHash, useEntityHashParams, useUpdateEntityUrl };
+const useEntityHashUiParams = () => {
+  const hashUi = useContext(EntityUrlHashUiContext);
+  return useMemo(() => new URLSearchParams(hashUi), [hashUi]);
+};
+
+const useEntitySearchParams = () => {
+  const search = useContext(EntityUrlSearchContext);
+  return useMemo(() => new URLSearchParams(search), [search]);
+};
+
+const useEntityDocumentPage = () => Number.parseInt(useAtomValue(entityPageAtom), 10) || 1;
+const useEntityRawView = () => useContext(EntityUrlRawContext);
+const useUpdateEntityUrl = () => updateEntityUrl;
+
+export {
+  parseEntityHash,
+  serializeEntityHash,
+  useEntityHashUiParams,
+  useEntitySearchParams,
+  useEntityDocumentPage,
+  useEntityRawView,
+  useUpdateEntityUrl,
+  EntityUrlSync,
+};
 export type { UpdateEntityUrlOptions };
