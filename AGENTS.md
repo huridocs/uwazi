@@ -1,32 +1,35 @@
 # Uwazi
 
-Flexible database application for capturing and organising document collections (HURIDOCS).
+Flexible database application for capturing and organizing document collections (HURIDOCS).
+React SPA (server-side rendered) + Express API running in a single process; MongoDB (legacy)
+and PostgreSQL (V2). Two migrations are in flight — back-end V1→V2 and Mongo→Postgres,
+front-end Redux→Jotai. New code follows V2 patterns; the area docs say what that means.
 
-## Read first
+## Rules
 
-- **Stack:** React SPA (SSR) + Express API + MongoDB (legacy) / PostgreSQL (V2).
-- **Back-end Mid-migration:** V1 (legacy, `app/api/entities`) → V2 (hexagonal/DDD, `app/api/core`); Mongo → Postgres.
-- **Front-end Mid-migration:** V1 (Redux, `api`) → V2 (Jotai, `apiClient`).
-- Shared front-end/back-end code lives in `app/shared/` (import alias `#shared/*`).
+These always apply. Do not skip one because a task looks small.
+
+1. **Read the area doc before touching that area's code — and only that area's doc.**
+   - Back-end — `app/api/**`, migrations (`app/api/migrations/**`), queue workers
+     (`app/worker.ts`, `app/queueWorker.ts`, `app/setupQueueWorker.ts`), `scripts/**`,
+     `database/**` → read `docs/backend/AGENTS.md` first.
+   - Front-end — `app/react/**` → read `docs/frontend.md` first.
+   - Do not load the other area's doc. A task that genuinely spans both loads both.
+2. **TDD.** Write the test first and watch it fail for the expected reason before implementing.
+3. **Verify before finishing.** Run test, type check, lint and format on the affected scope.
+   Report what actually happened — never claim a green you did not see.
+4. **Do not stage or commit** unless asked.
+5. **Do not edit `AGENTS.md`, `CLAUDE.md` or anything under `docs/`** unless asked.
 
 ## Commands
 
-- **Test:** `yarn test <path-or-pattern>` — defaults to 4 workers; override with `-w=N` or `-w=%`
+- **Test:** `yarn test <path-or-pattern>` — 4 workers by default; override with `-w=N` or `-w=%`
 - **Type check:** `yarn check-types`
-- **Lint:** `yarn lint --type-aware <paths>` — `--type-aware` activates the type-aware rules (e.g. `no-floating-promises`)
-- **Format:** `yarn prettier --write` (use `yarn prettier` to check only)
+- **Lint:** `yarn lint --type-aware <paths>` — `--type-aware` enables type-aware rules (e.g. `no-floating-promises`)
+- **Format:** `yarn prettier --write` (omit `--write` to check only)
 
-## Rules and instructions
+## Layout
 
-- Do not modify `AGENTS.md` or any `/docs` files unless explicitly asked.
-- When working on back-end (`app/api`) or migrations read the `docs/backend.md`.
-- When working on front-end (`app/react`) read the `docs/frontend.md`.
-- You must execute test, type check, lint and format on affected scopes before finishing a task.
-- When finishing a task, do not stage or commit.
-- When writing tests use TDD, make sure you see a red for the expected reasons, before implementing.
-
-## Additional resources
-
-- Migration dashboard: `docs/migration-status.html` (refresh via `yarn migration-status`)
-
-
+- `app/api/` — Express API. `app/react/` — React SPA.
+- `app/shared/` — code used by both, import alias `#shared/*`. Changes here affect both teams.
+- `e2e/`, `cypress/`, `playwright/` — end-to-end tests.
