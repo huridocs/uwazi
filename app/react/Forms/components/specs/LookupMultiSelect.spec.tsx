@@ -71,7 +71,6 @@ describe('LookupMultiSelect (React Testing Library)', () => {
 
   it('options should also include selectedOptions', async () => {
     render(<LookupMultiSelect {...(props as LookupMultiSelectProps)} />);
-    // Wait for lookup to complete and Option2 to be rendered
     await waitFor(() => expect(screen.getByLabelText('Selected')).toBeInTheDocument());
     // Select an option
     const optionCheckbox = screen.getByLabelText('Selected');
@@ -79,8 +78,21 @@ describe('LookupMultiSelect (React Testing Library)', () => {
     expect(props.onChange).toHaveBeenCalledWith([]);
   });
 
-  it('should call onFilter (lookup) on mount', async () => {
+  it('should not call lookup on mount when options are already provided', async () => {
     render(<LookupMultiSelect {...(props as LookupMultiSelectProps)} />);
+    await waitFor(() => expect(screen.getByLabelText('Selected')).toBeInTheDocument());
+    expect(lookupSpy).not.toHaveBeenCalled();
+  });
+
+  it('should call lookup on mount when options are empty', async () => {
+    render(<LookupMultiSelect lookup={lookupSpy} options={[]} value={[]} onChange={jest.fn()} />);
+    await waitFor(() => {
+      expect(lookupSpy).toHaveBeenCalledWith('');
+    });
+  });
+
+  it('should call lookup on mount when forceUpdate is true even if options are provided', async () => {
+    render(<LookupMultiSelect {...(props as LookupMultiSelectProps)} forceUpdate />);
     await waitFor(() => {
       expect(lookupSpy).toHaveBeenCalledWith('');
     });
@@ -111,6 +123,7 @@ describe('LookupMultiSelect (React Testing Library)', () => {
         lookup={lookup}
         value={[]}
         onChange={jest.fn()}
+        forceUpdate
       />
     );
     // Wait for lookup to complete
@@ -180,7 +193,11 @@ describe('LookupMultiSelect (React Testing Library)', () => {
       count: 2,
     });
     render(
-      <LookupMultiSelect {...(props as LookupMultiSelectProps)} lookup={lookupWithDuplicates} />
+      <LookupMultiSelect
+        {...(props as LookupMultiSelectProps)}
+        lookup={lookupWithDuplicates}
+        forceUpdate
+      />
     );
     await waitFor(() => expect(lookupWithDuplicates).toHaveBeenCalled());
     expect(screen.getAllByLabelText('Option1').length).toBe(1);
@@ -209,6 +226,7 @@ describe('LookupMultiSelect (React Testing Library)', () => {
         {...(props as LookupMultiSelectProps)}
         optionsToShow={5}
         totalPossibleOptions={8}
+        forceUpdate
       />
     );
     // Wait for the show more button to appear
@@ -277,7 +295,7 @@ describe('LookupMultiSelect (React Testing Library)', () => {
     });
   });
 
-  it('should update displayed aggregation counts when props.options change with the same lookup ref', async () => {
+  it('should update displayed aggregation counts from props.options without calling lookup', async () => {
     const lookup = jest.fn(async () => ({
       options: [{ label: 'Organization 001', value: 'org-1', results: 999 }],
       count: 1,
@@ -292,8 +310,8 @@ describe('LookupMultiSelect (React Testing Library)', () => {
       <LookupMultiSelect options={initialOptions} lookup={lookup} value={[]} onChange={jest.fn()} />
     );
 
-    await waitFor(() => expect(lookup).toHaveBeenCalledWith(''));
-    expect(screen.getByText('400')).toBeInTheDocument();
+    await waitFor(() => expect(screen.getByText('400')).toBeInTheDocument());
+    expect(lookup).not.toHaveBeenCalled();
     expect(screen.getByText('300')).toBeInTheDocument();
 
     rerender(
@@ -312,8 +330,64 @@ describe('LookupMultiSelect (React Testing Library)', () => {
       expect(screen.getByText('40')).toBeInTheDocument();
       expect(screen.getByText('30')).toBeInTheDocument();
     });
+    expect(lookup).not.toHaveBeenCalled();
     expect(screen.queryByText('400')).not.toBeInTheDocument();
     expect(screen.queryByText('300')).not.toBeInTheDocument();
+  });
+
+  it('should call lookup again when options change if forceUpdate is true', async () => {
+    const lookup = jest.fn(async () => ({
+      options: [{ label: 'Extra', value: 'extra', results: 1 }],
+      count: 3,
+    }));
+
+    const { rerender } = render(
+      <LookupMultiSelect
+        options={[{ label: 'Selected', value: 'selected', results: 1 }]}
+        lookup={lookup}
+        value={[]}
+        onChange={jest.fn()}
+        forceUpdate
+      />
+    );
+
+    await waitFor(() => expect(lookup).toHaveBeenCalledTimes(1));
+
+    rerender(
+      <LookupMultiSelect
+        options={[{ label: 'Selected', value: 'selected', results: 2 }]}
+        lookup={lookup}
+        value={[]}
+        onChange={jest.fn()}
+        forceUpdate
+      />
+    );
+
+    await waitFor(() => expect(lookup).toHaveBeenCalledTimes(2));
+    expect(lookup).toHaveBeenCalledWith('');
+  });
+
+  it('should call lookup when options become empty even without forceUpdate', async () => {
+    const lookup = jest.fn(async () => ({
+      options: [{ label: 'Option1', value: 'option1', results: 1 }],
+      count: 1,
+    }));
+
+    const { rerender } = render(
+      <LookupMultiSelect
+        options={[{ label: 'Selected', value: 'selected', results: 1 }]}
+        lookup={lookup}
+        value={[]}
+        onChange={jest.fn()}
+      />
+    );
+
+    await waitFor(() => expect(screen.getByLabelText('Selected')).toBeInTheDocument());
+    expect(lookup).not.toHaveBeenCalled();
+
+    rerender(<LookupMultiSelect options={[]} lookup={lookup} value={[]} onChange={jest.fn()} />);
+
+    await waitFor(() => expect(lookup).toHaveBeenCalledWith(''));
   });
 
   it('should update displayed labels when props.options labels change with same value/results', async () => {
@@ -331,8 +405,8 @@ describe('LookupMultiSelect (React Testing Library)', () => {
       />
     );
 
-    await waitFor(() => expect(lookup).toHaveBeenCalledWith(''));
-    expect(screen.getByLabelText('Colombia')).toBeInTheDocument();
+    await waitFor(() => expect(screen.getByLabelText('Colombia')).toBeInTheDocument());
+    expect(lookup).not.toHaveBeenCalled();
 
     rerender(
       <LookupMultiSelect
