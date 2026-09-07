@@ -1,25 +1,19 @@
-import { AbstractController } from '#api/common.v2/infrastructure/AbstractController.js';
+import { RestorePageDraftSchema } from '#shared/contracts/Pages.js';
+import type { RestorePageDraftRequest, RestorePageDraftResponse } from '#shared/contracts/Pages.js';
 import { RestorePageDraftUseCaseFactory } from '../factories/RestorePageDraftUseCaseFactory.js';
-import { RestorePageDraftSchema, RestorePageDraftRequest } from './Schemas.js';
-import { mapPageHttpErrors } from './mapPageHttpErrors.js';
+import { AbstractPagesController } from './AbstractPagesController.js';
 
-class RestorePageDraftController extends AbstractController<RestorePageDraftRequest> {
-  protected async handle(): Promise<void> {
+class RestorePageDraftController extends AbstractPagesController<RestorePageDraftRequest> {
+  protected async perform(): Promise<void> {
     const parsed = RestorePageDraftSchema.parse(this.request.body);
 
-    try {
-      const output = await RestorePageDraftUseCaseFactory.default().execute({
+    const response: RestorePageDraftResponse =
+      await RestorePageDraftUseCaseFactory.default().execute({
         ...parsed,
         language: this.language,
       });
 
-      this.response.json(output);
-    } catch (error: unknown) {
-      if (mapPageHttpErrors(error, this.response)) {
-        return;
-      }
-      throw error;
-    }
+    this.response.json(response);
   }
 }
 

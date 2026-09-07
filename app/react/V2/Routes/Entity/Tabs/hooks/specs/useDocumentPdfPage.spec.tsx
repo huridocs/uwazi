@@ -1,6 +1,7 @@
 /**
  * @jest-environment jsdom
  */
+/* eslint-disable max-statements */
 import { act, renderHook } from '@testing-library/react';
 import type { PDFControls } from '#V2/Components/PDFViewer/index.js';
 import type { FileType } from '#V2/api/entities/types.js';
@@ -10,7 +11,8 @@ const mockUpdateEntityUrl = jest.fn();
 let mockHashParams = new URLSearchParams();
 
 jest.mock('#V2/Routes/Entity/entityUrlState.js', () => ({
-  useEntityHashParams: () => mockHashParams,
+  useEntityDocumentPage: () => Number.parseInt(mockHashParams.get('page') || '1', 10),
+  useEntityRawView: () => mockHashParams.get('raw') === 'true',
   useUpdateEntityUrl: () => mockUpdateEntityUrl,
 }));
 

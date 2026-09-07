@@ -1,16 +1,14 @@
 import React, { useState } from 'react';
-import type { Meta, StoryObj } from '@storybook/react-webpack5';
+import preview from '#storybook/preview';
 import { ActiveFilterChip } from '#V2/Components/UI/ActiveFilterChip.js';
 import { QuerySearchBar } from '#V2/Components/UI/QuerySearchBar.js';
 
 const searchTips = <p className="text-micro text-ink-secondary">AND OR NOT</p>;
 
-const meta: Meta<typeof QuerySearchBar> = {
+const meta = preview.meta({
   title: 'Components/UI/QuerySearchBar',
   component: QuerySearchBar,
-};
-
-type Story = StoryObj<typeof QuerySearchBar>;
+});
 
 const BasicPreview = () => {
   const [value, setValue] = useState('');
@@ -53,13 +51,11 @@ const WithChipsPreview = () => {
   );
 };
 
-const Basic: Story = {
+const Basic = meta.story({
   render: () => <BasicPreview />,
-};
+});
 
-const WithChips: Story = {
+const WithChips = meta.story({
   render: () => <WithChipsPreview />,
-};
-
-export default meta;
+});
 export { Basic, WithChips };

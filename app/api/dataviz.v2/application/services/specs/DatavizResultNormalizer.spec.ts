@@ -6,6 +6,7 @@ import {
   normalizeBuckets,
   normalizeCompareSeries,
   mergeUnionBuckets,
+  normalizeMetricCount,
 } from '../DatavizResultNormalizer.js';
 
 const missingBucketLabels = { en: DATAVIZ_MISSING_BUCKET_LABEL };
@@ -279,5 +280,48 @@ describe('mergeUnionBuckets', () => {
         breakdown: expect.arrayContaining([expect.objectContaining({ key: 'male', value: 4 })]),
       })
     );
+  });
+});
+
+describe('normalizeMetricCount', () => {
+  const base = {
+    sourceLabels: ['Mecanismo', 'Causa'],
+    datavizId: 'dv',
+    queryDurationMs: 1,
+  };
+
+  it('should return a single series for one source', () => {
+    const dto = normalizeMetricCount({
+      ...base,
+      counts: [12],
+      sourceLabels: ['Cars'],
+    });
+
+    expect(dto.series).toHaveLength(1);
+    expect(dto.series[0]).toEqual(
+      expect.objectContaining({
+        id: 'total',
+        label: 'Cars',
+        points: [{ key: 'total', label: 'Total', value: 12 }],
+      })
+    );
+    expect(dto.meta.totalEntities).toBe(12);
+  });
+
+  it('should always combine multiple sources into one series', () => {
+    const dto = normalizeMetricCount({
+      ...base,
+      counts: [3, 12],
+    });
+
+    expect(dto.series).toHaveLength(1);
+    expect(dto.series[0]).toEqual(
+      expect.objectContaining({
+        id: 'union',
+        label: 'Union',
+        points: [{ key: 'total', label: 'Total', value: 15 }],
+      })
+    );
+    expect(dto.meta.totalEntities).toBe(15);
   });
 });

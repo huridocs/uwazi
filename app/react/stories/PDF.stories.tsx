@@ -1,5 +1,6 @@
 import React, { useRef, useState } from 'react';
-import type { Meta, StoryObj } from '@storybook/react-webpack5';
+import preview from '#storybook/preview';
+import { storyExtend } from '#app/stories/storyExtend.js';
 import { fn } from 'storybook/test';
 import { TextSelection } from '@huridocs/react-text-selection-handler';
 import { PDF, PDFControls, Snippet } from '#V2/Components/PDFViewer/index.js';
@@ -165,7 +166,7 @@ const PdfStoryContent: React.FC<PDFStoryProps> = ({ startOnPage, ...args }) => {
   );
 };
 
-const meta = {
+const meta = preview.type<{ args: PDFStoryProps }>().meta({
   title: 'Viewers/PDF',
   component: PdfStoryContent,
   args: {
@@ -180,30 +181,23 @@ const meta = {
       description: 'Page to navigate to after the PDF is ready',
     },
   },
-} satisfies Meta<PDFStoryProps>;
+});
 
-type Story = StoryObj<typeof meta>;
-
-const Primary: Story = {
+const Primary = meta.story({
   // eslint-disable-next-line react/jsx-props-no-spreading
   render: args => <PdfStoryContent {...args} />,
-};
+});
 
-const Basic: Story = {
-  ...Primary,
-};
+const Basic = storyExtend(Primary, {});
 
-const WithSelections: Story = {
-  ...Primary,
+const WithSelections = storyExtend(Primary, {
   args: {
     highlights,
   },
-};
+});
 
-const WithAutoScroll: Story = {
-  ...Primary,
+const WithAutoScroll = storyExtend(Primary, {
   args: { startOnPage: 10 },
-};
+});
 
 export { Basic, WithSelections, WithAutoScroll };
-export default meta;

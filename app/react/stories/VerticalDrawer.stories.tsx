@@ -1,17 +1,28 @@
 import React from 'react';
-import type { Meta, StoryObj } from '@storybook/react-webpack5';
+import preview from '#storybook/preview';
+import { storyExtend } from '#app/stories/storyExtend.js';
 import { VerticalDrawer } from '#V2/Components/UI/VerticalDrawer.js';
 
-const meta: Meta<typeof VerticalDrawer> = {
+const meta = preview.meta({
   title: 'Components/VerticalDrawer',
   component: VerticalDrawer,
-};
+});
 
-export default meta;
-
-type Story = StoryObj<typeof VerticalDrawer>;
-
-const Primary: Story = {
+const Primary = meta.story({
+  args: {
+    title: 'Resolución de la Corte IDH. Supervisión de cumplimient',
+    children: (
+      <div className="p-4" data-testid="drawer-content">
+        <ul>
+          <li>1 - item 1</li>
+          <li>2 - item 2</li>
+          <li>3 - item 3</li>
+        </ul>
+      </div>
+    ),
+    maxHeight: '',
+    defaultOpen: false,
+  },
   render: args => (
     <div className="tw-content">
       <div className="h-96 flex flex-col">
@@ -47,10 +58,9 @@ const Primary: Story = {
       </div>
     </div>
   ),
-};
+});
 
-const Basic: Story = {
-  ...Primary,
+const Basic = storyExtend(Primary, {
   args: {
     title: 'Resolución de la Corte IDH. Supervisión de cumplimient',
     children: (
@@ -65,6 +75,6 @@ const Basic: Story = {
     maxHeight: '',
     defaultOpen: false,
   },
-};
+});
 
 export { Basic };

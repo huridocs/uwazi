@@ -32,7 +32,9 @@ type RelationshipsDisplayProps = {
   showRail?: boolean;
   activeRelationshipId?: string | null;
   onPointClick?: (marker: RelationshipMarker) => void;
+  onPointHover?: (marker: RelationshipMarker) => void;
   onClusterClick?: (markers: RelationshipMarker[]) => void;
+  onClusterHover?: (markers: RelationshipMarker[]) => void;
   onMoreClick?: (markers: RelationshipMarker[]) => void;
 };
 
@@ -46,7 +48,9 @@ const RelationshipsDisplay = ({
   showRail = true,
   activeRelationshipId = null,
   onPointClick,
+  onPointHover,
   onClusterClick,
+  onClusterHover,
   onMoreClick,
 }: RelationshipsDisplayProps) => {
   const [fullMode, setFullMode] = useState(true);
@@ -157,7 +161,9 @@ const RelationshipsDisplay = ({
               documentClusters={documentClusters}
               activeRelationshipId={activeRelationshipId}
               onPointClick={onPointClick}
+              onPointHover={onPointHover}
               onClusterClick={onClusterClick}
+              onClusterHover={onClusterHover}
               onMoreClick={onMoreClick}
             />
           ) : (
@@ -169,6 +175,8 @@ const RelationshipsDisplay = ({
               pageHeight={pageHeight}
               activeRelationshipId={activeRelationshipId}
               onPointClick={onPointClick}
+              onPointHover={onPointHover}
+              onClusterHover={onClusterHover}
               onMoreClick={onMoreClick}
             />
           )}

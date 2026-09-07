@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import type { RelationshipHubRow, RelationshipQueryPayload } from '#V2/api/relationships/types.js';
 import { queryKey, useQueryStore } from './useQueryStore.js';
 
@@ -9,6 +9,12 @@ type UseRelationshipsQueryStoreParams = {
   fileId?: string;
 };
 
+const hubRowsFingerprint = (rows: RelationshipHubRow[]): string =>
+  rows
+    .map(row => row._id)
+    .sort()
+    .join('\0');
+
 const useRelationshipsQueryStore = ({
   seed,
   sharedId,
@@ -16,6 +22,9 @@ const useRelationshipsQueryStore = ({
   fileId,
 }: UseRelationshipsQueryStoreParams) => {
   const currentKey = queryKey(sharedId, language, fileId);
+  const prevKeyRef = useRef(currentKey);
+  const prevSeedFingerprintRef = useRef<string | null>(null);
+  const prevSeedRevisionRef = useRef<number | null>(null);
   const store = useQueryStore(seed, currentKey);
   const {
     seedFits,
@@ -73,6 +82,32 @@ const useRelationshipsQueryStore = ({
   ]);
 
   useEffect(() => {
+    const keyChanged = prevKeyRef.current !== currentKey;
+    prevKeyRef.current = currentKey;
+
+    const seedFingerprint = seed ? hubRowsFingerprint(seed.hubRows) : null;
+    const seedRevision = seed?.seedRevision ?? 0;
+    const preserveResolved =
+      seedFits &&
+      seed &&
+      !keyChanged &&
+      seedFingerprint !== null &&
+      seedFingerprint === prevSeedFingerprintRef.current &&
+      seedRevision === prevSeedRevisionRef.current;
+
+    if (preserveResolved) {
+      summaryInflight.current = null;
+      summaryLoadedKey.current = currentKey;
+      if (seed.anchorsLoaded) {
+        anchorsLoadedKey.current = currentKey;
+        anchorsOverlayRef.current = undefined;
+      } else if (anchorsLoadedKey.current !== currentKey) {
+        anchorsLoadedKey.current = null;
+      }
+      publish(generationRef.current, seed.hubRows);
+      return undefined;
+    }
+
     generationRef.current += 1;
     const generation = generationRef.current;
     resolvedKey.current = null;
@@ -87,10 +122,14 @@ const useRelationshipsQueryStore = ({
     if (seedFits && seed) {
       summaryLoadedKey.current = currentKey;
       anchorsLoadedKey.current = seed.anchorsLoaded ? currentKey : null;
+      prevSeedFingerprintRef.current = seedFingerprint;
+      prevSeedRevisionRef.current = seedRevision;
       publish(generation, seed.hubRows);
       return undefined;
     }
 
+    prevSeedFingerprintRef.current = null;
+    prevSeedRevisionRef.current = null;
     summaryLoadedKey.current = null;
     anchorsLoadedKey.current = null;
     publish(generation, []);

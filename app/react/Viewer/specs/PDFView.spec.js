@@ -180,7 +180,7 @@ describe('PDFView', () => {
         page: 4,
         raw: 'true',
       });
-      PDFView.requestState(requestParams, 'globalResources');
+      void PDFView.requestState(requestParams, 'globalResources');
       expect(routeActions.requestViewerState).toHaveBeenCalledWith(
         new RequestParams({ documentId: 'documentId', lang: 'es', raw: true, page: 4 }),
         'globalResources'
@@ -195,7 +195,7 @@ describe('PDFView', () => {
         lang: 'es',
         raw: 'false',
       });
-      PDFView.requestState(requestParams, 'globalResources');
+      void PDFView.requestState(requestParams, 'globalResources');
       expect(routeActions.requestViewerState).toHaveBeenCalledWith(
         new RequestParams({ documentId: 'documentId', lang: 'es', raw: true }),
         'globalResources'

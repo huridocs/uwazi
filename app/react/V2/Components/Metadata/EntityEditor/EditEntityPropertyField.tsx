@@ -1,6 +1,5 @@
 /* eslint-disable max-lines */
-import React from 'react';
-import { Translate } from '#app/I18N/index.js';
+import React, { useMemo } from 'react';
 import type { ClientThesaurus } from '#app/apiResponseTypes.js';
 import type { ClientFile } from '#app/istore.js';
 import type { FileType } from '#shared/types/fileType.js';
@@ -27,11 +26,10 @@ import type { EditEntityFormValues } from './functions/buildEditEntityDefaultVal
 import { getMetadataFieldPath } from './functions/editEntityErrors.js';
 import type { FormMetadataProperty } from './functions/formatMetadataForForm.js';
 import type { DisplayProperty } from './functions/relationshipGrouping.js';
+import { buildInheritColumns, type InheritColumnTemplate } from '../relationshipInherit.js';
 import {
-  buildInheritColumns,
   DEFAULT_RELATIONSHIP_LOOKUP_LIMIT,
   thesaurusToOptions,
-  type InheritColumnTemplate,
 } from './functions/relationshipFieldHelpers.js';
 
 type EditEntityPropertyFieldProps = {
@@ -44,7 +42,6 @@ type EditEntityPropertyFieldProps = {
   metadata?: EditEntityFormValues['metadata'];
   entityMetadata?: Entity['metadata'];
   entitySharedId: string;
-  firstEditableRelationshipId?: string;
   entityAttachments: FileType[];
   pendingAttachments: ClientFile[];
   registerPendingAttachment: (attachment: ClientFile) => void;
@@ -77,7 +74,6 @@ const EditEntityPropertyField = ({
   metadata,
   entityMetadata,
   entitySharedId,
-  firstEditableRelationshipId,
   entityAttachments,
   pendingAttachments,
   registerPendingAttachment,
@@ -89,6 +85,13 @@ const EditEntityPropertyField = ({
   const field = getMetadataFieldPath(property);
   const registerOptions = { required: property.required };
   const context = activeTemplateId;
+  const inheritColumns = useMemo(
+    () =>
+      property.type === 'relationship'
+        ? buildInheritColumns(property, metadataProperties, templates, entityMetadata)
+        : [],
+    [property, metadataProperties, templates, entityMetadata]
+  );
 
   if (property.type === 'text' || property.type === 'numeric') {
     return (
@@ -151,56 +154,44 @@ const EditEntityPropertyField = ({
   if (property.type === 'relationship') {
     const fieldName = property.groupedRelationshipNames?.[0] ?? property.name;
     return (
-      <>
-        {property._id === firstEditableRelationshipId ? (
-          <div className="pt-2 text-xs font-semibold uppercase tracking-wide text-ink-tertiary">
-            <Translate>Relationships</Translate>
-          </div>
-        ) : null}
-        <RelationshipField<EditEntityFormValues>
-          context={context}
-          label={property.label}
-          field={`metadata.${fieldName}`}
-          registerOptions={registerOptions}
-          disabled={disabled}
-          targetTemplateId={property.content}
-          relationTypeId={property.relationType}
-          inheritColumns={buildInheritColumns(
+      <RelationshipField<EditEntityFormValues>
+        context={context}
+        label={property.label}
+        field={`metadata.${fieldName}`}
+        registerOptions={registerOptions}
+        disabled={disabled}
+        targetTemplateId={property.content}
+        relationTypeId={property.relationType}
+        inheritColumns={inheritColumns}
+        onEditSource={
+          onEditSource
+            ? (entityId, label) => onEditSource(entityId, label, property.content)
+            : undefined
+        }
+        lookupSearch={async search => {
+          const selectedValues = metadata?.[fieldName] ?? [];
+          const lookedUp = await relationshipLookup({
+            search,
+            template: property.content,
+            limit: DEFAULT_RELATIONSHIP_LOOKUP_LIMIT,
+          });
+          const lookedUpOptions = lookedUp.map(option => ({
+            label: option.label,
+            searchLabel: option.label,
+            value: option.value,
+          }));
+          return relationshipLookupSearch(
             property,
-            metadataProperties,
-            templates,
-            entityMetadata
-          )}
-          onEditSource={
-            onEditSource
-              ? (entityId, label) => onEditSource(entityId, label, property.content)
-              : undefined
-          }
-          lookupSearch={async search => {
-            const selectedValues = metadata?.[fieldName] ?? [];
-            const lookedUp = await relationshipLookup({
-              search,
-              template: property.content,
-              limit: DEFAULT_RELATIONSHIP_LOOKUP_LIMIT,
-            });
-            const lookedUpOptions = lookedUp.map(option => ({
-              label: option.label,
-              searchLabel: option.label,
-              value: option.value,
-            }));
-            return relationshipLookupSearch(
-              property,
-              selectedValues,
-              lookedUpOptions.filter(
-                option =>
-                  !search.trim() ||
-                  option.searchLabel.toLowerCase().includes(search.trim().toLowerCase())
-              ),
-              !search.trim()
-            );
-          }}
-        />
-      </>
+            selectedValues,
+            lookedUpOptions.filter(
+              option =>
+                !search.trim() ||
+                option.searchLabel.toLowerCase().includes(search.trim().toLowerCase())
+            ),
+            !search.trim()
+          );
+        }}
+      />
     );
   }
 

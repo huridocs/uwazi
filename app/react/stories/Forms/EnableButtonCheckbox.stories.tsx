@@ -1,17 +1,20 @@
 import React from 'react';
-import { Meta, StoryObj } from '@storybook/react-webpack5';
+import preview from '#storybook/preview';
+import { storyExtend } from '#app/stories/storyExtend.js';
 import { EnableButtonCheckbox } from '#V2/Components/Forms/index.js';
 
-const meta: Meta<typeof EnableButtonCheckbox> = {
+const meta = preview.meta({
   title: 'Forms/EnableButtonCheckbox',
   component: EnableButtonCheckbox,
-};
+});
 
-export default meta;
-
-type Story = StoryObj<typeof EnableButtonCheckbox>;
-
-const Primary: Story = {
+const Primary = meta.story({
+  args: {
+    name: 'option',
+    disabled: false,
+    defaultChecked: false,
+    onChange: () => {},
+  },
   render: args => (
     <div className="tw-content">
       <EnableButtonCheckbox
@@ -22,16 +25,15 @@ const Primary: Story = {
       />
     </div>
   ),
-};
+});
 
-const Basic: Story = {
-  ...Primary,
+const Basic = storyExtend(Primary, {
   args: {
     name: 'option',
     disabled: false,
     defaultChecked: false,
     onChange: () => {},
   },
-};
+});
 
 export { Basic };

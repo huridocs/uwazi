@@ -114,5 +114,10 @@ const getSideTabButtons = ({
   return buttons;
 };
 
-export { getSideTabButtons };
+const translationsFilesSideTabs = (translationsCount: number): FilesSideTabsOptions => ({
+  showTranslationsTab: true,
+  translationsCount,
+});
+
+export { getSideTabButtons, translationsFilesSideTabs };
 export type { FilesSideTabsOptions };

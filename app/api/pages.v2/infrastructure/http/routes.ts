@@ -3,8 +3,20 @@ import type { Application } from 'express';
 import needsAuthorization from '#api/auth/authMiddleware.js';
 import { PublishPageReleaseController } from './PublishPageReleaseController.js';
 import { RestorePageDraftController } from './RestorePageDraftController.js';
+import { SavePageController } from './SavePageController.js';
+import { ListPagesController } from './ListPagesController.js';
+import { GetPageController } from './GetPageController.js';
+import { DeletePageController } from './DeletePageController.js';
 
 const pagesV2Routes = (app: Application) => {
+  app.post('/api/pages', needsAuthorization(['admin']), SavePageController.createHandler());
+
+  app.get('/api/pages', ListPagesController.createHandler());
+
+  app.get('/api/page', GetPageController.createHandler());
+
+  app.delete('/api/pages', needsAuthorization(), DeletePageController.createHandler());
+
   app.post(
     '/api/pages/release',
     needsAuthorization(['admin']),

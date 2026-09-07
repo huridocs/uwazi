@@ -12,6 +12,20 @@ interface MigrationConfig {
   mapDocument(doc: Record<string, unknown>): Record<string, unknown>;
 }
 
+/** For collections where one mongo document becomes several postgres rows. */
+interface RowsMigrationConfig {
+  mongoCollection: string;
+  pgTable: string;
+  mapRows(doc: Record<string, unknown>): Record<string, unknown>[];
+}
+
+type AnyMigrationConfig = MigrationConfig | RowsMigrationConfig;
+
+const rowsMapperOf = (
+  config: AnyMigrationConfig
+): ((doc: Record<string, unknown>) => Record<string, unknown>[]) =>
+  'mapRows' in config ? doc => config.mapRows(doc) : doc => [config.mapDocument(doc)];
+
 const insertBatch = async (
   table: PostgresTable,
   batch: Record<string, unknown>[]
@@ -45,7 +59,11 @@ class MigrateCollectionToPostgres {
     private tenantId: string
   ) {}
 
-  private async fetchAndInsert(config: MigrationConfig, table: PostgresTable): Promise<number> {
+  private async fetchAndInsert(
+    config: AnyMigrationConfig,
+    table: PostgresTable,
+    mapRows: (doc: Record<string, unknown>) => Record<string, unknown>[]
+  ): Promise<number> {
     const cursor = this.mongoDb
       .collection<Record<string, unknown>>(config.mongoCollection)
       .find({})
@@ -55,9 +73,9 @@ class MigrateCollectionToPostgres {
     let batch: Record<string, unknown>[] = [];
 
     for await (const doc of cursor) {
-      batch.push(config.mapDocument(doc));
+      batch.push(...mapRows(doc));
       migrated += 1;
-      if (batch.length === BATCH_SIZE) {
+      if (batch.length >= BATCH_SIZE) {
         batch = await flushBatch(table, batch);
       }
     }
@@ -66,7 +84,7 @@ class MigrateCollectionToPostgres {
     return migrated;
   }
 
-  async migrate(config: MigrationConfig): Promise<{ migrated: number; skipped: boolean }> {
+  async migrate(config: AnyMigrationConfig): Promise<{ migrated: number; skipped: boolean }> {
     const pgTransactionManager = new PostgresTransactionManager(
       PostgresDB.knex,
       this.tenantId,
@@ -83,10 +101,10 @@ class MigrateCollectionToPostgres {
       return { migrated: 0, skipped: true };
     }
 
-    const migrated = await this.fetchAndInsert(config, table);
+    const migrated = await this.fetchAndInsert(config, table, rowsMapperOf(config));
     return { migrated, skipped: false };
   }
 }
 
-export type { MigrationConfig };
+export type { AnyMigrationConfig, MigrationConfig, RowsMigrationConfig };
 export { BATCH_SIZE, MigrateCollectionToPostgres };

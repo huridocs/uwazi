@@ -10,7 +10,7 @@ type PreviewFieldProps = {
 
 const PreviewField = ({ context, label, value }: PreviewFieldProps) => (
   <EntityField>
-    <div className="text-sm font-bold text-ink">
+    <div className="text-sm font-normal text-ink">
       <Translate context={context}>{label}</Translate>
     </div>
     <p className="mb-3 text-sm text-ink-secondary">

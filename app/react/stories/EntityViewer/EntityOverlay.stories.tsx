@@ -1,5 +1,5 @@
 import React from 'react';
-import type { Meta, StoryObj } from '@storybook/react-webpack5';
+import preview from '#storybook/preview';
 import { RelationshipsPanel } from '#V2/Routes/Entity/Components/relationships/index.js';
 import {
   overlayTargetEntity,
@@ -9,13 +9,11 @@ import {
 import { OpenEntityOverlayOnMount, SeedOverlayEntityCache } from './entityOverlayStoryHelpers.js';
 import { RelationshipsStoryShell } from './relationshipsStoryShell.js';
 
-const meta: Meta = {
+const meta = preview.meta({
   title: 'EntityViewer/EntityOverlay',
-};
+});
 
-type Story = StoryObj;
-
-const SplitViewOpen: Story = {
+const SplitViewOpen = meta.story({
   render: () => (
     <RelationshipsStoryShell locale="en" layout="split" storyTemplates={overlayTemplates}>
       <SeedOverlayEntityCache entity={overlayTargetEntity} />
@@ -23,9 +21,9 @@ const SplitViewOpen: Story = {
       <RelationshipsPanel />
     </RelationshipsStoryShell>
   ),
-};
+});
 
-const PanelOpen: Story = {
+const PanelOpen = meta.story({
   render: () => (
     <RelationshipsStoryShell locale="en" layout="panel" storyTemplates={overlayTemplates}>
       <SeedOverlayEntityCache entity={overlayTargetEntity} />
@@ -33,7 +31,6 @@ const PanelOpen: Story = {
       <RelationshipsPanel />
     </RelationshipsStoryShell>
   ),
-};
+});
 
-export default meta;
 export { SplitViewOpen, PanelOpen };

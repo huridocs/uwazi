@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Meta, StoryObj } from '@storybook/react-webpack5';
+import preview from '#storybook/preview';
+import { storyExtend } from '#app/stories/storyExtend.js';
 import { useAtomValue } from 'jotai';
 import { TextSelection } from '@huridocs/react-text-selection-handler';
 import type { ClientUserSchema } from '#app/apiResponseTypes.js';
@@ -66,18 +67,16 @@ const RelationTypeStepPreview = () => {
   );
 };
 
-const meta: Meta<typeof CreateRelationshipModal> = {
+const meta = preview.meta({
   title: 'EntityViewer/CreateRelationshipModal',
   component: CreateRelationshipModal,
-};
+});
 
-type Story = StoryObj<typeof CreateRelationshipModal>;
-
-const openModalPlay: Story['play'] = async ({ canvasElement }) => {
+const openModalPlay = async ({ canvasElement }: { canvasElement: HTMLElement }) => {
   canvasElement.querySelector('button')?.click();
 };
 
-const Primary: Story = {
+const Primary = meta.story({
   render: () => (
     <RelationshipsStoryShell locale="en">
       <>
@@ -86,14 +85,13 @@ const Primary: Story = {
       </>
     </RelationshipsStoryShell>
   ),
-};
+});
 
-const WithSelection: Story = {
-  ...Primary,
+const WithSelection = storyExtend(Primary, {
   play: openModalPlay,
-};
+});
 
-const EntityLevel: Story = {
+const EntityLevel = meta.story({
   render: () => (
     <RelationshipsStoryShell locale="en">
       <>
@@ -102,9 +100,9 @@ const EntityLevel: Story = {
       </>
     </RelationshipsStoryShell>
   ),
-};
+});
 
-const EmptyTypes: Story = {
+const EmptyTypes = meta.story({
   render: () => (
     <RelationshipsStoryShell locale="en" relationshipTypes={[]} user={adminUser}>
       <>
@@ -114,9 +112,9 @@ const EmptyTypes: Story = {
     </RelationshipsStoryShell>
   ),
   play: openModalPlay,
-};
+});
 
-const EmptyTypesEditor: Story = {
+const EmptyTypesEditor = meta.story({
   render: () => (
     <RelationshipsStoryShell locale="en" relationshipTypes={[]} user={editorUser}>
       <>
@@ -126,23 +124,23 @@ const EmptyTypesEditor: Story = {
     </RelationshipsStoryShell>
   ),
   play: openModalPlay,
-};
+});
 
-const ChooseRelationType: Story = {
+const ChooseRelationType = meta.story({
   render: () => (
     <RelationshipsStoryShell locale="en" user={adminUser}>
       <RelationTypeStepPreview />
     </RelationshipsStoryShell>
   ),
-};
+});
 
-const ChooseRelationTypeEmpty: Story = {
+const ChooseRelationTypeEmpty = meta.story({
   render: () => (
     <RelationshipsStoryShell locale="en" relationshipTypes={[]} user={adminUser}>
       <RelationTypeStepPreview />
     </RelationshipsStoryShell>
   ),
-};
+});
 
 export {
   WithSelection,
@@ -152,4 +150,3 @@ export {
   ChooseRelationType,
   ChooseRelationTypeEmpty,
 };
-export default meta;

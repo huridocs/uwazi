@@ -1,6 +1,62 @@
-import { RefObject, useEffect, useState } from 'react';
+import { RefObject, useEffect, useLayoutEffect, useState } from 'react';
 
 type Options = { borderWidth?: number; safetyBuffer?: number; debounce?: number };
+
+const useIsomorphicLayoutEffect = typeof document !== 'undefined' ? useLayoutEffect : useEffect;
+
+const availableWidth = (container: HTMLElement, borderWidth: number, safetyBuffer: number) =>
+  Math.max(0, Math.floor(container.clientWidth - borderWidth * 2 - safetyBuffer));
+
+const connectResizeObserver = (onResize: () => void, debounce: number) => {
+  let timeoutId: ReturnType<typeof setTimeout> | null = null;
+  const observer = new ResizeObserver(entries => {
+    const [entry] = entries;
+    if (!entry || !entry.contentRect) {
+      return;
+    }
+    if (timeoutId) {
+      clearTimeout(timeoutId);
+    }
+    timeoutId = setTimeout(() => {
+      onResize();
+      timeoutId = null;
+    }, debounce);
+  });
+  return {
+    observer,
+    disconnect: () => {
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
+      observer.disconnect();
+    },
+  };
+};
+
+type ObserveArgs = {
+  container: HTMLElement;
+  onWidth: (width: number) => void;
+  borderWidth: number;
+  safetyBuffer: number;
+  debounce: number;
+};
+
+const observeContainerWidth = ({
+  container,
+  onWidth,
+  borderWidth,
+  safetyBuffer,
+  debounce,
+}: ObserveArgs) => {
+  const readWidth = () => onWidth(availableWidth(container, borderWidth, safetyBuffer));
+  readWidth();
+  if (typeof ResizeObserver === 'undefined') {
+    return undefined;
+  }
+  const { observer, disconnect } = connectResizeObserver(readWidth, debounce);
+  observer.observe(container);
+  return disconnect;
+};
 
 const useContainerWidth = (
   containerRef: RefObject<HTMLElement | null>,
@@ -8,42 +64,20 @@ const useContainerWidth = (
 ) => {
   const [width, setWidth] = useState<number | undefined>(undefined);
 
-  useEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     const container = containerRef.current;
-
     if (!container) {
       return undefined;
     }
-
-    const getAvailableWidth = () =>
-      Math.max(0, Math.floor(container.clientWidth - borderWidth * 2 - safetyBuffer));
-
-    setWidth(getAvailableWidth());
-
-    let timeoutId: ReturnType<typeof setTimeout> | null = null;
-
-    const observer = new ResizeObserver(entries => {
-      const [entry] = entries;
-      if (entry && entry.contentRect) {
-        if (timeoutId) {
-          clearTimeout(timeoutId);
-        }
-
-        timeoutId = setTimeout(() => {
-          setWidth(getAvailableWidth());
-          timeoutId = null;
-        }, debounce);
-      }
+    return observeContainerWidth({
+      container,
+      onWidth: next => {
+        setWidth(current => (current === next ? current : next));
+      },
+      borderWidth,
+      safetyBuffer,
+      debounce,
     });
-
-    observer.observe(container);
-
-    return () => {
-      if (timeoutId) {
-        clearTimeout(timeoutId);
-      }
-      observer.disconnect();
-    };
   }, [containerRef, borderWidth, safetyBuffer, debounce]);
 
   return width;

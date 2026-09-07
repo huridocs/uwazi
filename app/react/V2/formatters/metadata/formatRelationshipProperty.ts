@@ -8,8 +8,7 @@ import {
   resolvePropertyMetadataValues,
   resolvePropertyType,
 } from './resolvePropertyMetadataValues.js';
-
-const TYPE_NAMES = new Set(['entity', 'document', 'relationship', 'newRelationship']);
+import { relationshipEntityValueFromMetadata } from './relationshipEntityValue.js';
 
 const readOptionalString = (value: unknown): string | undefined =>
   typeof value === 'string' && value ? value : undefined;
@@ -28,48 +27,17 @@ const templateIdBySharedId = (
   return map;
 };
 
-const readRelationshipIcon = (
-  icon: unknown
-): { _id: string; label?: string; type?: string } | undefined => {
-  if (!icon || typeof icon !== 'object') {
-    return undefined;
-  }
-  if (!('_id' in icon)) {
-    return undefined;
-  }
-  const id = icon._id;
-  if (typeof id !== 'string' || !id) {
-    return undefined;
-  }
-  const label = 'label' in icon ? readOptionalString(icon.label) : undefined;
-  const type = 'type' in icon ? readOptionalString(icon.type) : undefined;
-  return {
-    _id: id,
-    ...(label !== undefined && { label }),
-    ...(type !== undefined && { type }),
-  };
-};
-
-const templateIdFromType = (type: string | undefined): string | undefined =>
-  type && !TYPE_NAMES.has(type) ? type : undefined;
-
 const mapRelationshipValue = (
   metadataValue: MetadataValue,
   templateIds: ReadonlyMap<string, string>
-) => {
-  const icon = readRelationshipIcon(metadataValue.icon);
-  const sharedId = String(metadataValue.value || '');
-  const templateId =
-    templateIds.get(sharedId) || templateIdFromType(readOptionalString(metadataValue.type));
-
-  return {
-    _id: sharedId,
+) =>
+  relationshipEntityValueFromMetadata(metadataValue, {
+    templateIds,
+    titleFallback: 'empty',
+  }) ?? {
+    _id: String(metadataValue.value ?? ''),
     title: metadataValue.label || '',
-    ...(templateId && { templateId }),
-    ...(metadataValue.authorized === false && { authorized: false as const }),
-    ...(icon && { icon }),
   };
-};
 
 const isRelationshipLike = (t: BaseMetadataProperty['type']) =>
   t === 'relationship' || t === 'newRelationship';

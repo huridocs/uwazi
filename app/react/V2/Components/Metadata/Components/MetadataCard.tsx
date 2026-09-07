@@ -8,9 +8,9 @@ type MetadataCardProps = PropsWithChildren<{
 
 const MetadataCard = ({ title, icon, children, className = '' }: MetadataCardProps) => (
   <div
-    className={`overflow-hidden rounded-lg border border-border-40 bg-paper ${className}`.trim()}
+    className={`flex min-h-0 flex-1 flex-col overflow-hidden rounded-lg border border-border-40 bg-paper ${className}`.trim()}
   >
-    <div className="flex flex-col gap-1.5 px-4 py-3">
+    <div className="flex min-h-0 flex-1 flex-col gap-1.5 px-4 py-3">
       {title != null && (
         <div className="flex items-center gap-1.5">
           {icon}

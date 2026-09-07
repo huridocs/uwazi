@@ -1,5 +1,8 @@
-import React from 'react';
-import { SegmentedControl } from '#V2/Components/UI/SegmentedControl/index.js';
+import React, { useMemo } from 'react';
+import { useAtomValue } from 'jotai';
+import { formatLanguageName } from '#shared/language/index.js';
+import { localeAtom } from '#V2/atoms/index.js';
+import { LanguageSelect } from '#V2/Components/UI/index.js';
 import type { PageEditorLanguage } from '../pageEditorForm.js';
 
 type PageEditorLanguageSelectorProps = {
@@ -13,7 +16,21 @@ const PageEditorLanguageSelector = ({
   activeLanguage,
   onChange,
 }: PageEditorLanguageSelectorProps) => {
-  if (languages.length === 0) {
+  const uiLocale = useAtomValue(localeAtom) || 'en';
+
+  const languageOptions = useMemo(
+    () =>
+      languages
+        .map(lang => ({
+          value: lang.key,
+          label: formatLanguageName(lang.key, uiLocale),
+          iso6391: lang.key,
+        }))
+        .sort((a, b) => a.label.localeCompare(b.label, uiLocale)),
+    [languages, uiLocale]
+  );
+
+  if (languages.length < 2) {
     return null;
   }
 
@@ -22,16 +39,13 @@ const PageEditorLanguageSelector = ({
       className="flex shrink-0 flex-wrap items-center justify-end"
       data-testid="page-editor-language-selector"
     >
-      <SegmentedControl
+      <LanguageSelect
         value={activeLanguage}
+        options={languageOptions}
         onChange={onChange}
-        ariaLabel="Page language"
-        showLabels
-        options={languages.map(lang => ({
-          id: lang.key,
-          title: lang.label ?? lang.key,
-          label: lang.key.toUpperCase(),
-        }))}
+        aria-label="Page language"
+        align="end"
+        appearance="default"
       />
     </div>
   );

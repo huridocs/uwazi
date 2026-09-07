@@ -74,6 +74,7 @@ type ClientFeatureFlags = {
   themeCustomization?: boolean;
   newHeader?: boolean;
   featureFlagEntityViewerv2?: boolean;
+  featureFlagLibraryV2?: boolean;
   aiAssistant?: boolean;
 };
 

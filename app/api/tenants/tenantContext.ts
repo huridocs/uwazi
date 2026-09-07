@@ -24,12 +24,14 @@ type Tenant = {
     themeCustomization?: boolean;
     newHeader?: boolean;
     featureFlagEntityViewerv2?: boolean;
+    featureFlagLibraryV2?: boolean;
     postgresThesauri?: boolean;
     postgresFiles?: boolean;
     postgresTemplates?: boolean;
     postgresEntities?: boolean;
     postgresRelationshipTypes?: boolean;
     postgresTranslations?: boolean;
+    postgresPages?: boolean;
     postgresPasswordRecoveries?: boolean;
     postgresUsers?: boolean;
     postgresCaptchas?: boolean;

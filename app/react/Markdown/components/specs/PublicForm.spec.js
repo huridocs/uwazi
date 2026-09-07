@@ -209,14 +209,14 @@ describe('PublicForm', () => {
     const formSubmit = component.find(LocalForm).props().onSubmit;
     await formSubmit({ title: 'test' });
 
-    request.then(uploadCompletePromise => {
+    await request.then(uploadCompletePromise =>
       uploadCompletePromise.promise
         .then(() => fail('should throw error'))
         .catch(() => {
           expect(instance.formDispatch).not.toHaveBeenCalledWith();
           expect(instance.refreshCaptcha).toHaveBeenCalled();
-        });
-    });
+        })
+    );
   });
 
   it('should NOT clear the form attachments on submission error', async () => {

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Meta, StoryObj } from '@storybook/react-webpack5';
+import preview from '#storybook/preview';
 import { StatusBadge } from '#V2/Components/UI/index.js';
 
 const STATUSES = [
@@ -35,13 +35,10 @@ const ComparisonSheet = () => (
   </div>
 );
 
-const meta: Meta<typeof ComparisonSheet> = {
+const meta = preview.meta({
   title: 'Design System/Proposals/Status tint contrast',
   component: ComparisonSheet,
   parameters: { layout: 'padded' },
-};
+});
 
-type Story = StoryObj<typeof ComparisonSheet>;
-
-export const SideBySide: Story = {};
-export default meta;
+export const SideBySide = meta.story({});

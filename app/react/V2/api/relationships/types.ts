@@ -18,6 +18,7 @@ type RelationshipQueryPayload = {
   fileId?: string;
   hubRows: RelationshipHubRow[];
   anchorsLoaded: boolean;
+  seedRevision?: number;
 };
 
 export type {

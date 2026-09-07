@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Meta, StoryObj } from '@storybook/react-webpack5';
+import preview from '#storybook/preview';
 import { ManageRelationTypesModal } from '#V2/Routes/Entity/Components/relationships/index.js';
 import { useRelationshipsActions } from '#V2/Routes/Entity/Components/context/index.js';
 import { RelationshipsStoryShell } from './relationshipsStoryShell.js';
@@ -12,14 +12,12 @@ const OpenOnMount = () => {
   return null;
 };
 
-const meta: Meta<typeof ManageRelationTypesModal> = {
+const meta = preview.meta({
   title: 'EntityViewer/ManageRelationTypesModal',
   component: ManageRelationTypesModal,
-};
+});
 
-type Story = StoryObj<typeof ManageRelationTypesModal>;
-
-const Primary: Story = {
+const Primary = meta.story({
   render: () => (
     <RelationshipsStoryShell
       locale="en"
@@ -31,7 +29,6 @@ const Primary: Story = {
       </>
     </RelationshipsStoryShell>
   ),
-};
+});
 
 export { Primary };
-export default meta;

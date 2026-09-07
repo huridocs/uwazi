@@ -17,8 +17,8 @@ import {
 } from '#V2/Components/Metadata/Components/RelationshipConnectionsTable.js';
 import type { MetadataValue } from '#V2/formatters/types.js';
 import type { MultiselectListOption } from '#V2/Components/Forms/index.js';
-import { inheritedCellContent } from '../../Components/inheritedCellContent.js';
-import type { RelationshipInheritColumn } from '../functions/relationshipFieldHelpers.js';
+import type { InheritColumn } from '../../relationshipInherit.js';
+import { EntityFieldLabel } from '../functions/fieldErrorState.js';
 
 type RelationshipFieldEditorProps = {
   title: string;
@@ -27,25 +27,13 @@ type RelationshipFieldEditorProps = {
   targetTemplateId?: string;
   values: MetadataValue[];
   onChange: (values: MetadataValue[]) => void;
-  columns?: RelationshipInheritColumn[];
+  columns?: InheritColumn[];
   lookupSearch?: (search: string) => Promise<MultiselectListOption[]>;
   onEditSource?: (entityId: string, label: string) => void;
   disabled?: boolean;
   searchId?: string;
+  showError?: boolean;
 };
-
-const toTableColumns = (columns: RelationshipInheritColumn[], values: MetadataValue[]) =>
-  columns.map(column => ({
-    label: column.label,
-    cellsByEntityId:
-      column.cellsByEntityId ??
-      Object.fromEntries(
-        values.map(row => {
-          const entityId = String(row.value ?? '');
-          return [entityId, inheritedCellContent([row], entityId)];
-        })
-      ),
-  }));
 
 const RelationshipFieldEditor = ({
   title,
@@ -59,6 +47,7 @@ const RelationshipFieldEditor = ({
   onEditSource,
   disabled = false,
   searchId,
+  showError = false,
 }: RelationshipFieldEditorProps) => {
   const [adding, setAdding] = useState(false);
   const [query, setQuery] = useState('');
@@ -78,8 +67,6 @@ const RelationshipFieldEditor = ({
       })),
     [targetTemplateId, values]
   );
-
-  const tableColumns = useMemo(() => toTableColumns(columns, values), [columns, values]);
 
   const runSearch = async (search: string) => {
     if (!lookupSearch) {
@@ -133,21 +120,22 @@ const RelationshipFieldEditor = ({
 
   return (
     <div className="space-y-1.5">
-      <div className="flex flex-wrap items-baseline gap-1.5">
-        <LinkIcon className="h-3.5 w-3.5 text-carbon" aria-hidden />
-        <span className="text-sm font-bold text-ink">
-          <Translate context={translationContext}>{title}</Translate>
-        </span>
+      <div>
+        <div className="flex items-center gap-1.5">
+          <LinkIcon className="h-3.5 w-3.5 shrink-0 text-carbon" aria-hidden />
+          <EntityFieldLabel context={translationContext} label={title} showError={showError} />
+        </div>
         {relationLabel ? (
-          <div className="mt-1">
-            <RelationCaption relationLabel={relationLabel} />
-          </div>
+          <RelationCaption
+            relationLabel={relationLabel}
+            inheritLabels={columns.map(column => column.label)}
+          />
         ) : null}
       </div>
 
       <RelationshipConnectionsTable
         rows={rows}
-        columns={tableColumns}
+        columns={columns}
         translationContext={translationContext}
         targetTemplateId={targetTemplateId}
         renderActions={row => (
@@ -236,4 +224,4 @@ const RelationshipFieldEditor = ({
 };
 
 export { RelationshipFieldEditor };
-export type { RelationshipFieldEditorProps, RelationshipInheritColumn };
+export type { RelationshipFieldEditorProps };

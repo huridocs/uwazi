@@ -1,11 +1,10 @@
 import React from 'react';
 import 'cypress-axe';
 import { mount } from 'cypress/react';
-import { composeStories } from '@storybook/react';
 import * as stories from '#app/stories/Tabs.stories.js';
 import { Tabs, TabButtons, TabPanels } from '#V2/Components/UI/Tabs/index.js';
 
-const { Basic } = composeStories(stories);
+const { Basic } = stories;
 
 const splitTestTabs = [
   { id: 'tab1', label: 'Tab 1', content: <h2>Tab 1 Content</h2> },
@@ -14,7 +13,7 @@ const splitTestTabs = [
 
 describe('Tabs', () => {
   beforeEach(() => {
-    mount(<Basic />);
+    mount(<Basic.Component />);
   });
 
   it('should be accessible', () => {
@@ -68,15 +67,15 @@ describe('Tabs', () => {
 
   describe('unmounting', () => {
     it('should not render other tabs by default', () => {
-      mount(<Basic />);
+      mount(<Basic.Component />);
       cy.contains('button', 'Tab 2').click();
       cy.contains('h2', 'Tab 3 Content').should('not.exist');
       cy.contains('h2', 'Tab 1 Content').should('not.exist');
     });
 
     it('should hide tabs if unmounting is disabled', () => {
-      Basic.args.unmountTabs = false;
-      mount(<Basic />);
+      Basic.composed.args.unmountTabs = false;
+      mount(<Basic.Component />);
       cy.contains('button', 'Tab 2').click();
       cy.contains('h2', 'Tab 3 Content').should('be.hidden');
       cy.contains('h2', 'Tab 1 Content').should('be.hidden');

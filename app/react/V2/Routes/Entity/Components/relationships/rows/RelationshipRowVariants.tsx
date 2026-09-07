@@ -1,15 +1,15 @@
 /* eslint-disable react/no-multi-comp */
 import React from 'react';
-import { EyeIcon, TrashIcon } from '@heroicons/react/24/outline';
+import { TrashIcon } from '@heroicons/react/24/outline';
 import { t } from '#app/I18N/index.js';
 import { ListCardRow } from '#V2/Components/UI/ListCardRow.js';
 import { IconButton } from '#V2/Components/UI/IconButton.js';
-import { TemplatePill } from '#V2/Components/UI/TemplatePill.js';
 import { ExpandableText } from '#V2/Components/UI/ExpandableText.js';
 import { DirectionGlyph } from './DirectionGlyph.js';
 import { PageTag } from './PageTag.js';
 import { RelationshipRowNestedEvidence } from './RelationshipRowNestedEvidence.js';
 import { RelationshipRowCheckbox } from './RelationshipRowCheckbox.js';
+import { EntityTemplateLink } from './EntityTemplateLink.js';
 import { useRelationshipRowData } from './useRelationshipRowData.js';
 
 type RowData = ReturnType<typeof useRelationshipRowData>;
@@ -21,7 +21,6 @@ type RelationshipRowBaseProps = RowData & {
 };
 
 type RelationshipRowDetailProps = RelationshipRowBaseProps & {
-  onView?: () => void;
   onDelete?: () => void;
   nested?: boolean;
   representedCount?: number;
@@ -29,7 +28,11 @@ type RelationshipRowDetailProps = RelationshipRowBaseProps & {
 
 const TargetPill = ({ marker, hideTargetPill }: Pick<RowData, 'marker' | 'hideTargetPill'>) =>
   hideTargetPill ? null : (
-    <TemplatePill templateId={marker.target.templateId} label={marker.target.title || '-'} />
+    <EntityTemplateLink
+      sharedId={marker.target.sharedId}
+      templateId={marker.target.templateId}
+      label={marker.target.title || '-'}
+    />
   );
 
 const RelationshipRowOverview = ({
@@ -41,7 +44,7 @@ const RelationshipRowOverview = ({
   isSelected,
   onClick,
 }: RelationshipRowBaseProps) => (
-  <ListCardRow ref={rowRef} selected={Boolean(isSelected)} onClick={onClick} className="py-1.5!">
+  <ListCardRow ref={rowRef} selected={Boolean(isSelected)} className="py-1.5!">
     <div className="flex items-center justify-between gap-2">
       <div className="flex min-w-0 items-center gap-1.5">
         <RelationshipRowCheckbox relationshipIds={representedIds} />
@@ -63,7 +66,7 @@ const RelationshipRowCompact = ({
   isSelected,
   onClick,
 }: RelationshipRowBaseProps) => (
-  <ListCardRow ref={rowRef} selected={Boolean(isSelected)} onClick={onClick} className="py-2!">
+  <ListCardRow ref={rowRef} selected={Boolean(isSelected)} className="py-2!">
     <div className="flex items-center justify-between gap-2">
       <div className="flex min-w-0 items-center gap-1.5">
         <RelationshipRowCheckbox relationshipIds={representedIds} />
@@ -95,7 +98,6 @@ const RelationshipRowDetail = ({
   isSelected,
   representedCount,
   onClick,
-  onView,
   onDelete,
   nested = false,
 }: RelationshipRowDetailProps) => {
@@ -111,14 +113,13 @@ const RelationshipRowDetail = ({
         representedIds={representedIds}
         representedCount={representedCount}
         onClick={onClick}
-        onView={onView}
         onDelete={onDelete}
       />
     );
   }
 
   return (
-    <ListCardRow ref={rowRef} selected={Boolean(isSelected)} onClick={onClick}>
+    <ListCardRow ref={rowRef} selected={Boolean(isSelected)}>
       <div className="mb-1.5 flex items-start justify-between gap-2">
         <div className="flex min-w-0 items-center gap-1.5">
           <RelationshipRowCheckbox relationshipIds={representedIds} />
@@ -135,6 +136,7 @@ const RelationshipRowDetail = ({
         <ExpandableText
           text={referenceText}
           quoted
+          onActivate={onClick}
           textClassName="min-w-0 text-xs italic leading-relaxed text-ink-secondary"
         />
       )}
@@ -144,19 +146,6 @@ const RelationshipRowDetail = ({
           {relationshipTypeName && <span className="capitalize">{relationshipTypeName}</span>}
         </span>
         <div className="flex items-center gap-0.5">
-          {!editMode && onView && (
-            <IconButton
-              variant="ghost"
-              showOnGroupHover
-              aria-label={t('System', 'Preview entity', null, false)}
-              onClick={e => {
-                e.stopPropagation();
-                onView();
-              }}
-            >
-              <EyeIcon className="h-3 w-3" />
-            </IconButton>
-          )}
           {!editMode && onDelete && (
             <IconButton
               variant="danger"

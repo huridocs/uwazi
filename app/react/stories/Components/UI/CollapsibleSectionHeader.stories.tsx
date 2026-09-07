@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import type { Meta, StoryObj } from '@storybook/react-webpack5';
+import preview from '#storybook/preview';
 import { ColorDot } from '#V2/Components/UI/ColorDot.js';
 import { CollapsibleSectionHeader } from '#V2/Components/UI/CollapsibleSectionHeader.js';
 import { FacetSection } from '#V2/Components/UI/FacetSection.js';
@@ -104,35 +104,31 @@ const TreePreview = () => {
   );
 };
 
-const meta: Meta = {
+const meta = preview.meta({
   title: 'Components/UI/CollapsibleSectionHeader',
-};
+});
 
-type Story = StoryObj;
-
-const Facet: Story = {
+const Facet = meta.story({
   render: () => (
     <div className="tw-content p-4">
       <FacetPreview />
     </div>
   ),
-};
+});
 
-const Grouped: Story = {
+const Grouped = meta.story({
   render: () => (
     <div className="tw-content p-4">
       <GroupedPreview />
     </div>
   ),
-};
+});
 
-const Tree: Story = {
+const Tree = meta.story({
   render: () => (
     <div className="tw-content p-4">
       <TreePreview />
     </div>
   ),
-};
-
-export default meta;
+});
 export { Facet, Grouped, Tree };

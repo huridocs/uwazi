@@ -13,13 +13,10 @@ import { expandAllRelationships } from '#V2/Components/Relationships/specs/relat
 
 const openOverlay = () => {
   expandAllRelationships();
-  cy.contains('.group', 'Person 1')
-    .first()
-    .find('[aria-label="Preview entity"]')
-    .click({ force: true });
+  cy.contains('button', 'Person 1').click();
   cy.get('[data-testid="entity-overlay"]').should('be.visible');
   cy.get('[data-testid="entity-overlay"]')
-    .contains('Metadata', { timeout: 15000 })
+    .find('[data-testid="metadata-record"]', { timeout: 15000 })
     .should('be.visible');
 };
 
@@ -48,8 +45,7 @@ describe('Entity preview overlay', () => {
     openOverlay();
     cy.get('[data-testid="entity-overlay"]').within(() => {
       cy.contains('Person 1').should('be.visible');
-      cy.contains('Metadata').should('be.visible');
-      cy.contains('References in document').should('be.visible');
+      cy.get('[data-testid="metadata-record"]').should('be.visible');
       cy.contains('Open entity').should('be.visible');
     });
     cy.get('@windowOpen').should('not.have.been.called');
@@ -63,7 +59,7 @@ describe('Entity preview overlay', () => {
     openOverlay();
     cy.get('[data-testid="entity-overlay"]').within(() => {
       cy.contains('Person').should('be.visible');
-      cy.contains('Properties').should('be.visible');
+      cy.get('[data-testid="metadata-record"]').should('be.visible');
       cy.contains('Gender').should('be.visible');
       cy.contains('Male').should('be.visible');
       cy.contains('Date of birth').should('be.visible');

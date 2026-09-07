@@ -1,4 +1,5 @@
 export { createServerServices, buildContextFromRequest } from './createServerServices.js';
+export { createServerSearchService } from './ServerSearchService.js';
 export { createServerThesaurusService } from './ServerThesaurusService.js';
 export { createServerTemplatesService } from './ServerTemplatesService.js';
 export { createServerUsersService } from './ServerUsersService.js';

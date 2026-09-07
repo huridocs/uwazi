@@ -1,6 +1,7 @@
 /**
  * @jest-environment jsdom
  */
+/* eslint-disable max-statements */
 import { screen, within, waitFor } from '@testing-library/react';
 import userEvent, { type UserEvent } from '@testing-library/user-event';
 import { defaultPdf, renderRelationshipsPanel } from './helpers/renderRelationshipsPanel.js';
@@ -17,13 +18,18 @@ const expandAll = async (user: UserEvent) => {
   await user.click(screen.getByRole('button', { name: 'Expand all' }));
 };
 
+const clickReference = async (user: UserEvent) => {
+  await user.click(screen.getByText(/target quoted text/));
+};
+
 describe('Relationships panel', () => {
   it('lists the relationships connected to the current entity', async () => {
     const user = userEvent.setup();
-    renderRelationshipsPanel();
+    const { waitForResolved } = renderRelationshipsPanel();
 
     expect(screen.getByRole('button', { name: 'Expand all' })).toBeEnabled();
     await expandAll(user);
+    await waitForResolved();
 
     expect(screen.getByText(/target quoted text/)).toBeInTheDocument();
     expect(screen.getByText('Related Entity')).toBeInTheDocument();
@@ -33,10 +39,13 @@ describe('Relationships panel', () => {
   describe('document navigation', () => {
     it('switches to the document when a text reference is selected', async () => {
       const user = userEvent.setup();
-      const { onFocusDocument } = renderRelationshipsPanel({ focusDocumentOnSelect: true });
+      const { onFocusDocument, waitForResolved } = renderRelationshipsPanel({
+        focusDocumentOnSelect: true,
+      });
 
       await expandAll(user);
-      await user.click(screen.getByText('Related Entity'));
+      await waitForResolved();
+      await clickReference(user);
 
       expect(onFocusDocument).toHaveBeenCalledTimes(1);
     });
@@ -44,10 +53,14 @@ describe('Relationships panel', () => {
     it('stays on the relationships tab when document navigation is disabled', async () => {
       const user = userEvent.setup();
       const onFocusDocument = jest.fn();
-      renderRelationshipsPanel({ focusDocumentOnSelect: false, onFocusDocument });
+      const { waitForResolved } = renderRelationshipsPanel({
+        focusDocumentOnSelect: false,
+        onFocusDocument,
+      });
 
       await expandAll(user);
-      await user.click(screen.getByText('Related Entity'));
+      await waitForResolved();
+      await clickReference(user);
 
       expect(onFocusDocument).not.toHaveBeenCalled();
     });
@@ -58,10 +71,10 @@ describe('Relationships panel', () => {
       const user = userEvent.setup();
       const pdf = defaultPdf();
       const { waitForResolved } = renderRelationshipsPanel({ pdf });
-      await waitForResolved();
 
       await expandAll(user);
-      await user.click(screen.getByText('Related Entity'));
+      await waitForResolved();
+      await clickReference(user);
 
       expect(pdf.goToPage).toHaveBeenCalledWith(2);
       expect(
@@ -79,10 +92,10 @@ describe('Relationships panel', () => {
         pdf,
         mainDocument: { _id: 'f1', filename: 'doc.pdf' },
       });
-      await waitForResolved();
 
       await expandAll(user);
-      await user.click(screen.getByText('Related Entity'));
+      await waitForResolved();
+      await clickReference(user);
 
       await waitFor(() => {
         const multiRectCall = pdf.toggleHighlights.mock.calls.find(([highlights]) => {
@@ -97,13 +110,13 @@ describe('Relationships panel', () => {
       const user = userEvent.setup();
       const pdf = defaultPdf();
       const { waitForResolved } = renderRelationshipsPanel({ pdf });
-      await waitForResolved();
 
       await expandAll(user);
-      await user.click(screen.getByText('Related Entity'));
+      await waitForResolved();
+      await clickReference(user);
       expect(getSelectionState().getAttribute('data-active')).not.toBe('');
 
-      await user.click(screen.getByText('Related Entity'));
+      await clickReference(user);
 
       expect(getSelectionState().getAttribute('data-active')).toBe('');
       expect(pdf.toggleHighlights).toHaveBeenLastCalledWith([]);
@@ -111,21 +124,19 @@ describe('Relationships panel', () => {
   });
 
   describe('resolved fetch triggers', () => {
-    it('loads resolved hubs when the relationships panel mounts', async () => {
-      const { loadResolved, waitForResolved } = renderRelationshipsPanel();
-      await waitForResolved();
-      expect(loadResolved).toHaveBeenCalledTimes(1);
+    it('does not load resolved hubs when the relationships panel mounts', () => {
+      const { loadResolved } = renderRelationshipsPanel();
+      expect(loadResolved).not.toHaveBeenCalled();
     });
 
-    it('does not re-fetch resolved when Expand all is clicked after mount', async () => {
+    it('loads resolved when Expand all is clicked', async () => {
       const user = userEvent.setup();
       const { loadResolved, waitForResolved } = renderRelationshipsPanel();
-      await waitForResolved();
-      loadResolved.mockClear();
 
       await expandAll(user);
+      await waitForResolved();
 
-      expect(loadResolved).not.toHaveBeenCalled();
+      expect(loadResolved).toHaveBeenCalledTimes(1);
       expect(screen.getByText(/target quoted text/)).toBeInTheDocument();
     });
 
@@ -133,10 +144,19 @@ describe('Relationships panel', () => {
       const user = userEvent.setup();
       const { waitForResolved } = renderRelationshipsPanel();
 
-      await user.click(screen.getAllByRole('button', { name: /Related/ })[0]);
+      await user.click(screen.getByRole('button', { name: 'Related 2' }));
       await waitForResolved();
 
       expect(screen.getByText(/target quoted text/)).toBeInTheDocument();
+    });
+
+    it('does not load resolved when switching to tree view', async () => {
+      const user = userEvent.setup();
+      const { loadResolved } = renderRelationshipsPanel();
+
+      await user.click(screen.getByRole('radio', { name: 'Tree' }));
+
+      expect(loadResolved).not.toHaveBeenCalled();
     });
   });
 
@@ -146,8 +166,9 @@ describe('Relationships panel', () => {
       renderRelationshipsPanel();
 
       await user.click(screen.getByRole('radio', { name: 'Tree' }));
+      await expandAll(user);
 
-      expect(screen.getByRole('button', { name: 'Collapse all' })).toBeEnabled();
+      expect(screen.getByRole('button', { name: 'Expand all' })).toBeEnabled();
       expect(screen.getAllByText('Related Entity').length).toBeGreaterThanOrEqual(1);
       expect(screen.getAllByText('Other Entity').length).toBeGreaterThanOrEqual(1);
     });
@@ -159,10 +180,11 @@ describe('Relationships panel', () => {
 
     it('narrows the list to matching relationships and shows the active search', async () => {
       const user = userEvent.setup();
-      renderRelationshipsPanel();
+      const { waitForResolved } = renderRelationshipsPanel();
 
       await user.type(searchInput(), 'alpha');
       await expandAll(user);
+      await waitForResolved();
 
       expect(screen.getByText(/target quoted text/)).toBeInTheDocument();
       expect(screen.queryByText('Other Entity')).not.toBeInTheDocument();
@@ -173,12 +195,13 @@ describe('Relationships panel', () => {
 
     it('restores the full list when the search chip is cleared', async () => {
       const user = userEvent.setup();
-      renderRelationshipsPanel();
+      const { waitForResolved } = renderRelationshipsPanel();
 
       await user.type(searchInput(), 'alpha');
       const chip = screen.getByText('"alpha"').parentElement;
       await user.click(within(chip!).getByRole('button', { name: 'Clear search' }));
       await expandAll(user);
+      await waitForResolved();
 
       expect(screen.getByText(/target quoted text/)).toBeInTheDocument();
       expect(screen.getByText('Other Entity')).toBeInTheDocument();
@@ -188,12 +211,13 @@ describe('Relationships panel', () => {
 
     it('restores the full list when all filters are cleared', async () => {
       const user = userEvent.setup();
-      renderRelationshipsPanel({ withFiltersDrawer: true });
+      const { waitForResolved } = renderRelationshipsPanel({ withFiltersDrawer: true });
 
       await user.type(searchInput(), 'alpha');
       await user.click(filtersButton());
       await user.click(screen.getByRole('button', { name: /clear all filters/i }));
       await expandAll(user);
+      await waitForResolved();
 
       expect(screen.getByText(/target quoted text/)).toBeInTheDocument();
       expect(screen.getByText('Other Entity')).toBeInTheDocument();

@@ -31,6 +31,10 @@ import { User } from '#api/users.v2/model/User.js';
 import { UserSchema } from '#shared/types/userType.js';
 import { ObjectUtils } from '#api/common.v2/utils/Object.js';
 import { UwaziDispatcherFactory } from '#api/core/infrastructure/jobs/UwaziDispatcherFactory.js';
+import {
+  PageLocalesMigrationConfig,
+  PageMigrationConfig,
+} from '#api/core/infrastructure/postgresql/migrations/configs/index.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -93,6 +97,14 @@ const sanitizeTranslationForPostgres = (translation: Record<string, unknown>) =>
   };
 };
 
+// A mongo pages document holds its locales nested; in postgres they are their own table.
+const PG_FANOUT_BY_MONGO_COLLECTION: Record<
+  string,
+  { table: string; mapRows: (doc: Record<string, unknown>) => Record<string, unknown>[] }
+> = {
+  pages: { table: 'page_locales', mapRows: PageLocalesMigrationConfig.mapRows },
+};
+
 const PG_SANITIZER_BY_MONGO_COLLECTION: Record<
   string,
   (row: Record<string, unknown>) => Record<string, unknown>
@@ -101,6 +113,7 @@ const PG_SANITIZER_BY_MONGO_COLLECTION: Record<
   users: sanitizeUserForPostgres,
   usergroups: sanitizeUserGroupForPostgres,
   translationsV2: sanitizeTranslationForPostgres,
+  pages: PageMigrationConfig.mapDocument,
 };
 
 const MIRRORED_COLLECTIONS = [
@@ -248,16 +261,27 @@ const testingEnvironment = {
         Object.fromEntries(
           Object.entries(fixtures)
             .filter(([table]) => (this.postgresMirror ?? MIRRORED_COLLECTIONS).includes(table))
-            .map(([table, fixture]) => {
+            .flatMap(([table, fixture]) => {
               const pgTable = PG_TABLE_BY_MONGO_COLLECTION[table] ?? table;
               const sanitizeForPostgres = PG_SANITIZER_BY_MONGO_COLLECTION[table];
+              const fanOut = PG_FANOUT_BY_MONGO_COLLECTION[table];
+              const docs: Record<string, unknown>[] = fixture.map((f: any) =>
+                JSON.parse(JSON.stringify(ObjectUtils.sanitize(f, ['__v'])))
+              );
 
               return [
-                pgTable,
-                fixture.map((f: any) => {
-                  const sanitized = JSON.parse(JSON.stringify(ObjectUtils.sanitize(f, ['__v'])));
-                  return sanitizeForPostgres ? sanitizeForPostgres(sanitized) : sanitized;
-                }),
+                [
+                  pgTable,
+                  docs.map(doc => (sanitizeForPostgres ? sanitizeForPostgres(doc) : doc)),
+                ] as [string, Record<string, unknown>[]],
+                ...(fanOut
+                  ? [
+                      [fanOut.table, docs.flatMap(fanOut.mapRows)] as [
+                        string,
+                        Record<string, unknown>[],
+                      ],
+                    ]
+                  : []),
               ];
             })
         )

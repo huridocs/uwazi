@@ -1,5 +1,5 @@
 import React from 'react';
-import type { Meta, StoryObj } from '@storybook/react-webpack5';
+import preview from '#storybook/preview';
 import { Provider, createStore } from 'jotai';
 import { localeAtom, templatesAtom, translationsAtom } from '#V2/atoms/index.js';
 import { TemplatePill } from '#V2/Components/UI/TemplatePill.js';
@@ -20,25 +20,21 @@ const TemplatePillWithStore = ({ templateId, label }: { templateId: string; labe
   );
 };
 
-const meta: Meta<typeof TemplatePillWithStore> = {
+const meta = preview.meta({
   title: 'Components/UI/TemplatePill',
   component: TemplatePillWithStore,
-};
+});
 
-type Story = StoryObj<typeof TemplatePillWithStore>;
-
-const WithCustomLabel: Story = {
+const WithCustomLabel = meta.story({
   args: {
     templateId: 'template2',
     label: 'Person',
   },
-};
+});
 
-const WithTemplateName: Story = {
+const WithTemplateName = meta.story({
   args: {
     templateId: 'template3',
   },
-};
-
-export default meta;
+});
 export { WithCustomLabel, WithTemplateName };

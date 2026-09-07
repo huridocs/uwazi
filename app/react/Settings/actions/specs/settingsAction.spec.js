@@ -10,7 +10,7 @@ describe('saveSettings', () => {
   });
 
   it('should save the settings using the api', () => {
-    saveSettings({ customSettings: 'anything' })(dispatch);
+    void saveSettings({ customSettings: 'anything' })(dispatch);
 
     expect(SettingsAPI.save).toHaveBeenCalledWith({
       data: { customSettings: 'anything' },
@@ -18,10 +18,8 @@ describe('saveSettings', () => {
     });
   });
 
-  it('should call notify after saving settings', done => {
-    saveSettings({ customSettings: 'anything' })(dispatch).then(() => {
-      expect(dispatch).toHaveBeenCalled();
-      done();
-    });
+  it('should call notify after saving settings', async () => {
+    await saveSettings({ customSettings: 'anything' })(dispatch);
+    expect(dispatch).toHaveBeenCalled();
   });
 });

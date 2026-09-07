@@ -79,7 +79,8 @@ import {
   TemplatesEditor,
   createTemplatesEditorLoader,
 } from '#V2/Routes/Settings/Templates/index.js';
-import { Entity, entityLoader } from '#V2/Routes/Entity/index.js';
+import { Entity, entityLoader, shouldRevalidateEntity } from '#V2/Routes/Entity/index.js';
+import { Library, createLibraryLoader } from '#V2/Routes/Library/index.js';
 import {
   loggedInUsersRoute,
   adminsOnlyRoute,
@@ -104,6 +105,7 @@ import {
   RedirectEntityTabToEntity,
 } from './Viewer/entityViewerRedirects.js';
 import { isEntityViewerV2Enabled } from './utils/entityViewerPaths.js';
+import { isLibraryV2Enabled } from './utils/libraryPaths.js';
 
 const deconstructSearchQuery = (query?: string) => {
   if (!query) return '';
@@ -134,6 +136,9 @@ const buildIndexElement = (
     case 'libraryDefault': {
       const { userId, defaultLibraryView, private: privateInstance } = descriptor.libraryDefault;
       if (privateInstance && !userId) return <LoginComp />;
+      if (isLibraryV2Enabled(settings?.features)) {
+        return <Navigate to="library" replace />;
+      }
       const params = { q: '(includeUnpublished:!t)' };
       switch (defaultLibraryView) {
         case 'table':
@@ -160,6 +165,16 @@ const buildIndexElement = (
       const { customHomePage } = descriptor.libraryCustom;
       const [query] = customHomePage.filter((path: string) => path.startsWith('?'));
       const queryString = query ? deconstructSearchQuery(query) : '';
+      const querySuffix = queryString ? `?q=${queryString}` : '';
+      if (isLibraryV2Enabled(settings?.features)) {
+        if (customHomePage.includes('map')) {
+          return <Navigate to={`legacy-library/map${querySuffix}`} replace />;
+        }
+        if (customHomePage.includes('table')) {
+          return <Navigate to={`legacy-library/table${querySuffix}`} replace />;
+        }
+        return <Navigate to={`library${querySuffix}`} replace />;
+      }
       if (customHomePage.includes('map')) {
         return (
           <Root>
@@ -208,19 +223,59 @@ const getRoutesLayout = (
       {...(defaultToLibrary ? { handle: { library: true } } : {})}
     />
     <Route path="login" element={<Login />} />
-    <Route path="library/*" element={privateRoute(<LibraryRoot />, settings)}>
-      <Route index element={privateRoute(<LibraryCards />, settings)} handle={{ library: true }} />
-      <Route
-        path="map"
-        element={privateRoute(<LibraryMap />, settings)}
-        handle={{ library: true }}
-      />
-      <Route
-        path="table"
-        element={privateRoute(<LibraryTable />, settings)}
-        handle={{ library: true }}
-      />
-    </Route>
+    {isLibraryV2Enabled(settings?.features) ? (
+      <>
+        <Route
+          path="library"
+          element={<Library />}
+          loader={createLibraryLoader(services)(headers)}
+          handle={{ library: true }}
+        />
+        <Route path="legacy-library/*" element={privateRoute(<LibraryRoot />, settings)}>
+          <Route
+            index
+            element={privateRoute(<LibraryCards />, settings)}
+            handle={{ library: true }}
+          />
+          <Route
+            path="map"
+            element={privateRoute(<LibraryMap />, settings)}
+            handle={{ library: true }}
+          />
+          <Route
+            path="table"
+            element={privateRoute(<LibraryTable />, settings)}
+            handle={{ library: true }}
+          />
+        </Route>
+      </>
+    ) : (
+      <>
+        <Route path="library/*" element={privateRoute(<LibraryRoot />, settings)}>
+          <Route
+            index
+            element={privateRoute(<LibraryCards />, settings)}
+            handle={{ library: true }}
+          />
+          <Route
+            path="map"
+            element={privateRoute(<LibraryMap />, settings)}
+            handle={{ library: true }}
+          />
+          <Route
+            path="table"
+            element={privateRoute(<LibraryTable />, settings)}
+            handle={{ library: true }}
+          />
+        </Route>
+        <Route
+          path="libraryv2"
+          element={<Library />}
+          loader={createLibraryLoader(services)(headers)}
+          handle={{ library: true }}
+        />
+      </>
+    )}
     <Route path="document/:sharedId/*" element={<RedirectDocumentToEntity />} />
     {/*
       TEMPORARY soft-deploy (issue #9522): when featureFlagEntityViewerv2 is on, V2 owns
@@ -229,7 +284,12 @@ const getRoutesLayout = (
     */}
     {isEntityViewerV2Enabled(settings?.features) ? (
       <>
-        <Route path="entity/:sharedId" element={<Entity />} loader={entityLoader(headers)} />
+        <Route
+          path="entity/:sharedId"
+          element={<Entity />}
+          loader={entityLoader(headers)}
+          shouldRevalidate={shouldRevalidateEntity}
+        />
         <Route path="entity/:sharedId/*" element={<RedirectEntityTabToEntity />} />
         <Route path="legacy-entity/:sharedId" element={privateRoute(<ViewerRoute />, settings)}>
           <Route path="*" element={privateRoute(<ViewerRoute />, settings)} />
@@ -245,7 +305,12 @@ const getRoutesLayout = (
           <Route path="*" element={privateRoute(<ViewerRoute />, settings)} />
         </Route>
         <Route path="entity/:sharedId/:tabView" element={privateRoute(<ViewerRoute />, settings)} />
-        <Route path="entityv2/:sharedId" element={<Entity />} loader={entityLoader(headers)} />
+        <Route
+          path="entityv2/:sharedId"
+          element={<Entity />}
+          loader={entityLoader(headers)}
+          shouldRevalidate={shouldRevalidateEntity}
+        />
       </>
     )}
     <Route path="error/:errorCode" element={<GeneralError />} />

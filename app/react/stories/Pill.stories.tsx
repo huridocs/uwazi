@@ -1,16 +1,19 @@
 import React from 'react';
-import { Meta, StoryObj } from '@storybook/react-webpack5';
+import preview from '#storybook/preview';
+import { storyExtend } from '#app/stories/storyExtend.js';
 import { Pill } from '#V2/Components/UI/Pill.js';
 
-const meta: Meta<typeof Pill> = {
+const meta = preview.meta({
   title: 'Components/Pill',
   component: Pill,
-};
-export default meta;
+});
 
-type Story = StoryObj<typeof Pill>;
-
-const Primary: Story = {
+const Primary = meta.story({
+  args: {
+    children: <span>Pill Content</span>,
+    color: 'gray',
+    className: '',
+  },
   render: args => (
     <div className="tw-content">
       <Pill color={args.color} className={args.className}>
@@ -18,15 +21,14 @@ const Primary: Story = {
       </Pill>
     </div>
   ),
-};
+});
 
-const Basic = {
-  ...Primary,
+const Basic = storyExtend(Primary, {
   args: {
     children: <span>Pill Content</span>,
     color: 'gray',
     className: '',
   },
-};
+});
 
 export { Basic };

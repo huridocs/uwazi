@@ -221,6 +221,36 @@ describe('Entity loader with cache integration', () => {
         })
       );
     });
+
+    it('reuses cached relationship seeds and refetches after invalidate', async () => {
+      await loadEntity('http://localhost/entity/shared1', 'en');
+      expect(loadSummary).toHaveBeenCalledTimes(1);
+      expect(loadAnchors).toHaveBeenCalledTimes(1);
+
+      await loadEntity('http://localhost/entity/shared1', 'en');
+      expect(loadSummary).toHaveBeenCalledTimes(1);
+      expect(loadAnchors).toHaveBeenCalledTimes(1);
+
+      entityLoaderCache.invalidateEntity('shared1');
+      await loadEntity('http://localhost/entity/shared1', 'en');
+
+      expect(loadSummary).toHaveBeenCalledTimes(2);
+      expect(loadAnchors).toHaveBeenCalledTimes(2);
+    });
+
+    it('upgrades a summary-only cache when anchors are needed', async () => {
+      await loadEntity('http://localhost/entity/shared1?m=metadata', 'en');
+      expect(loadSummary).toHaveBeenCalledTimes(1);
+      expect(loadAnchors).not.toHaveBeenCalled();
+
+      await loadEntity('http://localhost/entity/shared1', 'en');
+      expect(loadSummary).toHaveBeenCalledTimes(2);
+      expect(loadAnchors).toHaveBeenCalledTimes(1);
+
+      await loadEntity('http://localhost/entity/shared1?m=files', 'en');
+      expect(loadSummary).toHaveBeenCalledTimes(2);
+      expect(loadAnchors).toHaveBeenCalledTimes(1);
+    });
   });
 
   describe('Plaintext loading', () => {

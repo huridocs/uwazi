@@ -18,8 +18,6 @@ const FilesTab = () => {
     requestDeleteRow,
   } = useEntityFiles();
 
-  const allRows = [...primaryRows, ...supportingRows];
-
   const onFocus = useCallback(
     (row: EntityFileRow) => {
       setFocusedRowId(row.rowId);
@@ -59,6 +57,11 @@ const FilesTab = () => {
         rows={primaryRows}
         selectedRowIds={selectedRowIds}
         focusedRowId={focusedRow?.rowId}
+        emptyDescription={
+          <Translate>
+            No primary documents yet. Promote a supporting file or add a new one.
+          </Translate>
+        }
         onSelectRows={setSelectedRowIds}
         onFocusRow={onFocus}
         onViewRow={onView}
@@ -72,6 +75,9 @@ const FilesTab = () => {
         selectedRowIds={selectedRowIds}
         focusedRowId={focusedRow?.rowId}
         showLanguageColumn={false}
+        emptyDescription={
+          <Translate>No supporting files yet. Add a file to get started.</Translate>
+        }
         onSelectRows={setSelectedRowIds}
         onFocusRow={onFocus}
         onViewRow={onView}
@@ -79,11 +85,6 @@ const FilesTab = () => {
         onChangeLanguageRow={onChangeLanguage}
         onDeleteRow={requestDeleteRow}
       />
-      {allRows.length === 0 ? (
-        <div className="flex h-full items-center justify-center text-ink-muted">
-          <Translate>No files available</Translate>
-        </div>
-      ) : null}
     </div>
   );
 };

@@ -22,15 +22,17 @@ const TitleField = <TFormValues extends FieldValues = FieldValues>({
 }: TitleFieldProps<TFormValues>) => {
   const { register, setValue, getFieldState, formState } = useFormContext<TFormValues>();
   const fieldState = getFieldState(field, formState);
+  const registration = register(field, registerOptions);
 
   return (
     <EntityPdfFillField
       field={field}
       setValue={setValue}
+      label={label}
       disabled={disabled}
       pdfFill={{ name: 'title', coerceType: 'text' }}
     >
-      {overlay => (
+      {slot => (
         <Textarea
           id={field}
           label={
@@ -44,9 +46,13 @@ const TitleField = <TFormValues extends FieldValues = FieldValues>({
           errorMessage={getFieldErrorMessage(fieldState.error)}
           rows={2}
           resize="none"
-          overlay={overlay}
+          overlay={slot?.overlay}
+          labelAccessory={slot?.labelAccessory}
+          latched={slot?.latched}
+          onClick={slot?.onClick}
           // eslint-disable-next-line react/jsx-props-no-spreading
-          {...register(field, registerOptions)}
+          {...registration}
+          onFocus={() => slot?.onFocus()}
         />
       )}
     </EntityPdfFillField>

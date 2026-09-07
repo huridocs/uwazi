@@ -21,12 +21,7 @@ type Deps = {
 
 class PublishPageReleaseUseCase extends AbstractUseCase<Input, Output, Deps> {
   async execute(input: Input): Promise<Output> {
-    const pageResult = await this.deps.pagesDS.getBySharedId(input.sharedId);
-    if (pageResult.isError()) {
-      throw pageResult.getError();
-    }
-
-    const page = pageResult.getDataOrThrow();
+    const page = (await this.deps.pagesDS.getBySharedId(input.sharedId)).getDataOrThrow();
     const languageKeys = await this.deps.settingsDS.getLanguageKeys();
     const nextVersion = (await this.deps.pageReleasesDS.getMaxVersion(page.id)) + 1;
 

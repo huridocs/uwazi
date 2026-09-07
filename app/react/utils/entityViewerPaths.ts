@@ -1,4 +1,4 @@
-import { serializeEntityHash } from '#V2/Routes/Entity/entityUrlState.js';
+import { serializeEntityHash } from '#V2/Routes/Entity/entityUrlAtoms.js';
 import { SIDE_TAB } from '#V2/Routes/Entity/Tabs/tabIds.js';
 import { PAGE_PARAM, SEARCH_PARAM, SIDE_TAB_PARAM } from '#V2/Routes/Entity/urlParams.js';
 
@@ -48,6 +48,12 @@ const isEntityPath = (pathname: string): boolean =>
 const getV1EntityBasePathFromLocation = (pathname: string): string =>
   isLegacyEntityPath(pathname) ? LEGACY_ENTITY_PATH : ENTITY_PATH;
 
+const setIfPresent = (params: URLSearchParams, key: string, value: string | number | undefined) => {
+  if (value !== undefined && value !== null && value !== '') {
+    params.set(key, String(value));
+  }
+};
+
 const buildV1SnippetLink = ({
   sharedId,
   searchTerm,
@@ -56,15 +62,9 @@ const buildV1SnippetLink = ({
   legacyBasePath = ENTITY_PATH,
 }: SnippetLinkParams): string => {
   const params = new URLSearchParams();
-  if (page !== undefined && page !== null && page !== '') {
-    params.set(PAGE_PARAM, String(page));
-  }
-  if (searchTerm) {
-    params.set(SEARCH_PARAM, searchTerm);
-  }
-  if (filename) {
-    params.set('file', filename);
-  }
+  setIfPresent(params, PAGE_PARAM, page);
+  if (searchTerm) params.set(SEARCH_PARAM, searchTerm);
+  if (filename) params.set('file', filename);
   const query = params.toString();
   return `${legacyBasePath}/${sharedId}/text-search${query ? `?${query}` : ''}`;
 };
@@ -77,12 +77,8 @@ const buildV2SnippetLink = ({
 }: SnippetLinkParams): string => {
   const hash = new URLSearchParams();
   hash.set(SIDE_TAB_PARAM, SIDE_TAB.SEARCH);
-  if (searchTerm) {
-    hash.set(SEARCH_PARAM, searchTerm);
-  }
-  if (page !== undefined && page !== null && page !== '') {
-    hash.set(PAGE_PARAM, String(page));
-  }
+  if (searchTerm) hash.set(SEARCH_PARAM, searchTerm);
+  setIfPresent(hash, PAGE_PARAM, page);
   return `${getEntityViewerV2Path(sharedId, Boolean(entityViewerV2))}${serializeEntityHash(hash)}`;
 };
 
@@ -114,19 +110,13 @@ const buildEntityViewLink = ({
   refId?: string;
 }): string => {
   if (entityViewerV2) {
-    if (searchTerm) {
-      return buildV2SnippetLink({ sharedId, searchTerm, entityViewerV2: true });
-    }
-    return getEntityViewerV2Path(sharedId, true);
+    return searchTerm
+      ? buildV2SnippetLink({ sharedId, searchTerm, entityViewerV2: true })
+      : getEntityViewerV2Path(sharedId, true);
   }
-
   const params = new URLSearchParams();
-  if (searchTerm) {
-    params.set(SEARCH_PARAM, searchTerm);
-  }
-  if (refId) {
-    params.set('ref', refId);
-  }
+  if (searchTerm) params.set(SEARCH_PARAM, searchTerm);
+  if (refId) params.set('ref', refId);
   const query = params.toString();
   return `${ENTITY_PATH}/${sharedId}${query ? `?${query}` : ''}`;
 };

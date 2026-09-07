@@ -1,5 +1,6 @@
 /* eslint-disable max-lines */
 import _ from 'lodash';
+import { errors as elasticErrors } from '@elastic/elasticsearch';
 
 import { OperationalError } from '#api/common.v2/errors/OperationalError.js';
 import { TranslationsQueryServiceFactory } from '#api/core/infrastructure/factories/TranslationsQueryServiceFactory.js';
@@ -851,6 +852,9 @@ const search = {
         return processed;
       })
       .catch(e => {
+        if (e instanceof elasticErrors.ResponseError && e.statusCode === 429) {
+          throw e;
+        }
         throw createError(e, 400);
       });
   },

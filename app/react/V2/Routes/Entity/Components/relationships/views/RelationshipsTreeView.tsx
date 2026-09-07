@@ -17,10 +17,9 @@ const RelationshipsTreeView = ({
   selfSharedId,
   activeRelationshipId,
   onClick,
-  onView,
   onDelete,
 }: RelationshipsTreeViewProps) => {
-  const rowProps = { selfSharedId, activeRelationshipId, onClick, onView, onDelete };
+  const rowProps = { selfSharedId, activeRelationshipId, onClick, onDelete };
 
   if (markers.length === 0) {
     return (

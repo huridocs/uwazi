@@ -1,16 +1,15 @@
 import React from 'react';
 import 'cypress-axe';
 import { mount } from 'cypress/react';
-import { composeStories } from '@storybook/react-webpack5';
 import * as requestStatusStories from '#app/stories/RequestStatus.stories.js';
 import * as notificationsStories from '#app/stories/NotificationsPanel.stories.js';
 
-const { Playground } = composeStories(requestStatusStories);
-const { Mixed } = composeStories(notificationsStories);
+const { Playground } = requestStatusStories;
+const { Mixed } = notificationsStories;
 
 describe('Notifications stories accessibility', () => {
   it('opens and closes the notifications panel from RequestStatus playground', () => {
-    mount(<Playground />);
+    mount(<Playground.Component />);
 
     cy.get('[data-testid="status-dot"]').click();
     cy.get('#notifications-panel-dialog').should('exist');
@@ -20,7 +19,7 @@ describe('Notifications stories accessibility', () => {
   });
 
   it('has no critical axe violations when panel is open', () => {
-    mount(<Mixed />);
+    mount(<Mixed.Component />);
 
     cy.injectAxe();
     cy.get('#notifications-panel-dialog').should('exist');
@@ -28,7 +27,7 @@ describe('Notifications stories accessibility', () => {
   });
 
   it('expands notification details and clears completed history', () => {
-    mount(<Mixed />);
+    mount(<Mixed.Component />);
 
     cy.contains('button', 'Show details').click();
     cy.contains('ETIMEDOUT').should('exist');

@@ -1,10 +1,9 @@
 import React from 'react';
 import 'cypress-axe';
 import { mount } from 'cypress/react';
-import { composeStories } from '@storybook/react';
 import * as stories from '#app/stories/MediaPlayer.stories.js';
 
-const { LocalFile, LocalFileWithThumbnail, InvalidMedia } = composeStories(stories);
+const { LocalFile, LocalFileWithThumbnail, InvalidMedia } = stories;
 
 describe('Media player', () => {
   before(() => {
@@ -35,7 +34,7 @@ describe('Media player', () => {
 
   describe('Local files', () => {
     beforeEach(() => {
-      mount(<LocalFile />);
+      mount(<LocalFile.Component />);
     });
 
     it('should be accessible', () => {
@@ -54,7 +53,7 @@ describe('Media player', () => {
 
   describe('Local file with image thumbnail', () => {
     beforeEach(() => {
-      mount(<LocalFileWithThumbnail />);
+      mount(<LocalFileWithThumbnail.Component />);
     });
 
     it('should be accessible', () => {
@@ -89,7 +88,7 @@ describe('Media player', () => {
         });
       }).as('getInvalidMedia');
 
-      mount(<InvalidMedia />);
+      mount(<InvalidMedia.Component />);
       cy.contains('This file type is not supported on media fields');
       cy.checkA11y();
     });

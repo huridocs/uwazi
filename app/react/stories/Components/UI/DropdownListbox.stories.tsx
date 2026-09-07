@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import type { Meta, StoryObj } from '@storybook/react-webpack5';
+import preview from '#storybook/preview';
 import { Translate } from '#app/I18N/index.js';
 import { DropdownListbox } from '#V2/Components/UI/DropdownListbox.js';
 
@@ -10,12 +10,10 @@ const sortOptions = [
   { id: 'desc' as const, label: 'Z → A' },
 ];
 
-const meta: Meta<typeof DropdownListbox> = {
+const meta = preview.meta({
   title: 'Components/UI/DropdownListbox',
   component: DropdownListbox,
-};
-
-type Story = StoryObj<typeof DropdownListbox>;
+});
 
 const SortPreview = () => {
   const [value, setValue] = useState<(typeof sortOptions)[number]['id']>('appearance');
@@ -35,11 +33,11 @@ const SortPreview = () => {
   );
 };
 
-const Sort: Story = {
+const Sort = meta.story({
   render: () => <SortPreview />,
-};
+});
 
-const Disabled: Story = {
+const Disabled = meta.story({
   render: () => (
     <div className="tw-content p-4">
       <DropdownListbox
@@ -53,7 +51,5 @@ const Disabled: Story = {
       />
     </div>
   ),
-};
-
-export default meta;
+});
 export { Sort, Disabled };

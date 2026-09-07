@@ -1,34 +1,33 @@
 import React from 'react';
 import 'cypress-axe';
 import { mount } from 'cypress/react';
-import { composeStories } from '@storybook/react';
 import * as stories from '#app/stories/VerticalDrawer.stories.js';
 
-const { Basic } = composeStories(stories);
+const { Basic } = stories;
 
 describe('VerticalDrawer', () => {
   it('should be accessible', () => {
     cy.injectAxe();
-    mount(<Basic />);
+    mount(<Basic.Component />);
     cy.checkA11y();
   });
 
   it('should render closed by default', () => {
-    mount(<Basic />);
+    mount(<Basic.Component />);
     cy.contains('button', 'Open').should('be.visible');
     cy.get('[data-testid="drawer-content"]').should('not.be.visible');
   });
 
   it('should render open based on props', () => {
-    Basic.args.defaultOpen = true;
-    mount(<Basic />);
+    Basic.composed.args.defaultOpen = true;
+    mount(<Basic.Component />);
     cy.contains('button', 'Close').should('be.visible');
     cy.get('[data-testid="drawer-content"]').should('be.visible');
   });
 
   it('should toggle content visibility when button is clicked', () => {
-    Basic.args.defaultOpen = false;
-    mount(<Basic />);
+    Basic.composed.args.defaultOpen = false;
+    mount(<Basic.Component />);
     cy.contains('button', 'Open').click();
     cy.get('[data-testid="drawer-content"]').should('be.visible');
     cy.contains('button', 'Close').click();

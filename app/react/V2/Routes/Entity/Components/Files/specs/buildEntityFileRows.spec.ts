@@ -95,8 +95,8 @@ describe('buildEntityFileRows', () => {
     const result = buildEntityFileRows(entity, templates, 'es', 'en');
     const byId = Object.fromEntries(result.primaryRows.map(row => [row.rowId, row]));
 
-    expect(byId['doc-en']?.languageKey).toBe('Inglés - EN');
-    expect(byId['doc-es']?.languageKey).toBe('Español - ES');
+    expect(byId['doc-en']?.languageKey).toBe('Inglés');
+    expect(byId['doc-es']?.languageKey).toBe('Español');
   });
 
   it('should map stable kinds and type labels to design kinds', () => {
