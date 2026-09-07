@@ -20,7 +20,7 @@ export class EntityAccessPolicyDataSourceFactory {
         ? ExecutionContext.transactionManager
         : TransactionManagerFactory.default())) as MongoTransactionManager;
 
-    if (tenant.featureFlags?.postgresEntities) {
+    if (tenant.featureFlags?.postgresCore) {
       return new PostgresEntityAccessPolicyDataSource({
         tenantId: tenant.name,
         pgTransactionManager: ExecutionContext.getStore()

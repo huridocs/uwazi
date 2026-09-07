@@ -64,7 +64,7 @@ const buildFixtures = async () => {
 
 const createSut = () => {
   // The factory's mongo branch builds exactly this data source, and these fixtures run
-  // with postgresUsers off — so the wiring is unchanged, without the spec reaching past
+  // with postgresCore off — so the wiring is unchanged, without the spec reaching past
   // UsersDataSource into the private DAO (D4).
   const usersDS = UsersDataSourceFactory.default();
   const dispatcher = { sendAccountLockedEmail: jest.fn() } as unknown as Dispatcher;

@@ -98,7 +98,7 @@ describe('PXFilesDeletedListener', () => {
   describe.each(testConfigs)('$name', ({ usePostgres }) => {
     beforeEach(async () => {
       testingTenants.changeCurrentTenant({
-        featureFlags: { postgresFiles: usePostgres },
+        featureFlags: { postgresCore: usePostgres },
       });
       await testingEnvironment.setFixtures(createFixtures());
       tenants.current().featureFlags!.paragraphExtraction = true;

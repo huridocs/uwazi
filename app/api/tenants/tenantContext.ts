@@ -24,16 +24,9 @@ type Tenant = {
     themeCustomization?: boolean;
     newHeader?: boolean;
     featureFlagEntityViewerv2?: boolean;
-    postgresThesauri?: boolean;
-    postgresFiles?: boolean;
-    postgresTemplates?: boolean;
-    postgresEntities?: boolean;
-    postgresRelationshipTypes?: boolean;
-    postgresTranslations?: boolean;
-    postgresPasswordRecoveries?: boolean;
-    postgresUsers?: boolean;
-    postgresCaptchas?: boolean;
-    postgresUsergroups?: boolean;
+    featureFlagLibraryV2?: boolean;
+    postgresCore?: boolean;
+    postgresPages?: boolean;
     aiAssistant?: boolean;
     aiAssistantServiceUrl?: string;
     telemetry?: {

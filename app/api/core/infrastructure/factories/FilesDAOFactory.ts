@@ -9,7 +9,7 @@ class FilesDAOFactory {
   static default(): MongoFilesDAO {
     const tenant = ExecutionContext.currentTenant;
 
-    if (tenant.featureFlags?.postgresFiles) {
+    if (tenant.featureFlags?.postgresCore) {
       const pgTM = ExecutionContext.getStore()
         ? ExecutionContext.postgresTransactionManager
         : PostgresTransactionManagerFactory.default();

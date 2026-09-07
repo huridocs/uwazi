@@ -667,7 +667,7 @@ describe('MongoFilesDAO', () => {
   });
 
   describe('FilesDAOFactory', () => {
-    it('returns a MongoFilesDAO instance when postgresFiles feature flag is not set', async () => {
+    it('returns a MongoFilesDAO instance when postgresCore feature flag is not set', async () => {
       await testingEnvironment.runWithContext(async () => {
         const dao = FilesDAOFactory.default();
         expect(dao).toBeInstanceOf(MongoFilesDAO);

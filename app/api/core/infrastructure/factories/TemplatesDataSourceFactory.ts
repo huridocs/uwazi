@@ -23,7 +23,7 @@ export class TemplatesDataSourceFactory {
       ExecutionContext.transactionManager) as MongoTransactionManager;
     const { transactionManager: _ignored, ...restOverrides } = overrides ?? {};
 
-    if (tenant.featureFlags?.postgresTemplates) {
+    if (tenant.featureFlags?.postgresCore) {
       const dao = TemplatesDAOFactory.default() as PostgresTemplatesDAO;
       return new PostgresTemplatesDataSource({
         tenantId: tenant.name,
@@ -50,7 +50,7 @@ export class TemplatesDataSourceFactory {
       ExecutionContext.transactionManager) as MongoTransactionManager;
     const { transactionManager: _ignored, ...restOverrides } = overrides ?? {};
 
-    if (tenant.featureFlags?.postgresTemplates) {
+    if (tenant.featureFlags?.postgresCore) {
       const dao = TemplatesDAOFactory.default() as PostgresTemplatesDAO;
       return new PostgresTemplatesDataSource({
         tenantId: tenant.name,

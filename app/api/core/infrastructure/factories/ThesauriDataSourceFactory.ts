@@ -14,7 +14,7 @@ export class ThesauriDataSourceFactory {
     const db = getConnection();
     const { tenant } = ExecutionContext;
 
-    if (tenant.featureFlags?.postgresThesauri) {
+    if (tenant.featureFlags?.postgresCore) {
       const pgTM = ExecutionContext.postgresTransactionManager;
 
       return new PostgresThesauriDataSource({
@@ -33,7 +33,7 @@ export class ThesauriDataSourceFactory {
     const db = getConnection();
     const { tenant } = ExecutionContext;
 
-    if (tenant.featureFlags?.postgresThesauri) {
+    if (tenant.featureFlags?.postgresCore) {
       const pgTM = ExecutionContext.postgresTransactionManager;
 
       return new PostgresThesauriDataSource({
