@@ -2,8 +2,10 @@
  * Copies Mongo collections into Postgres for one tenant (idempotent per table).
  *
  * Usage:
- *   node scripts/runner.js scripts/scripts.v2/migrateToPostgres.ts --tenant <name> --collection relationship_types
- *   node scripts/runner.js scripts/scripts.v2/migrateToPostgres.ts --tenant <name> --all
+ *   node scripts/runner.js scripts/scripts.v2/migrateToPostgres.ts --tenant <name>
+ *
+ * Migrates the collections gated by the tenant's active Postgres feature flags
+ * (postgresCore, postgresPages).
  */
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
@@ -37,6 +39,23 @@ const COLLECTIONS: Record<string, MigrationConfig> = {
   entities: EntitiesMigrationConfig,
 };
 
+// Collections grouped by the feature flag that gates their migration. A group is
+// migrated only when its flag is active on the tenant.
+const FLAG_GROUPS: Record<'postgresCore' | 'postgresPages', string[]> = {
+  postgresCore: [
+    'thesauri',
+    'templates',
+    'files',
+    'relationship_types',
+    'users',
+    'usergroups',
+    'password_recoveries',
+    'translations',
+    'entities',
+  ],
+  postgresPages: ['pages', 'page_locales', 'page_releases'],
+};
+
 function log(message: string) {
   process.stdout.write(`${message}\n`);
 }
@@ -51,28 +70,6 @@ const argv = yargs(hideBin(process.argv))
     type: 'string',
     describe: 'Tenant to migrate collections for',
     demandOption: true,
-  })
-  .option('collection', {
-    alias: 'c',
-    type: 'string',
-    describe: `Collection to migrate (${Object.keys(COLLECTIONS).join('|')})`,
-  })
-  .option('all', {
-    alias: 'a',
-    type: 'boolean',
-    describe: 'Migrate all supported collections',
-    default: false,
-  })
-  .check(args => {
-    if (!args.all && !args.collection) {
-      throw new Error('Please specify --collection or --all');
-    }
-    if (args.collection && !COLLECTIONS[args.collection]) {
-      throw new Error(
-        `Unknown collection: ${args.collection}. Supported: ${Object.keys(COLLECTIONS).join(', ')}`
-      );
-    }
-    return true;
   })
   .strict()
   .parseSync();
@@ -119,7 +116,25 @@ async function run(): Promise<void> {
   await tenants.setupTenants();
   assertKnownTenant(argv.tenant);
 
-  const collectionsToMigrate = argv.all ? Object.keys(COLLECTIONS) : [argv.collection!];
+  const tenant = tenants.tenants[argv.tenant];
+  const flags = Object.keys(FLAG_GROUPS) as (keyof typeof FLAG_GROUPS)[];
+
+  for (const flag of flags) {
+    if (!tenant.featureFlags?.[flag]) {
+      log(`[${argv.tenant}] Skipping ${flag} group: feature flag is not active`);
+    }
+  }
+
+  const collectionsToMigrate = flags
+    .filter(flag => tenant.featureFlags?.[flag])
+    .flatMap(flag => FLAG_GROUPS[flag]);
+
+  if (collectionsToMigrate.length === 0) {
+    log(`[${argv.tenant}] No collections to migrate: no active Postgres feature flags`);
+    await cleanup();
+    return;
+  }
+
   for (const collectionName of collectionsToMigrate) {
     // eslint-disable-next-line no-await-in-loop
     await migrateCollection(argv.tenant, collectionName, COLLECTIONS[collectionName]);
