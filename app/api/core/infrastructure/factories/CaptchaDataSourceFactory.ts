@@ -9,7 +9,7 @@ class CaptchaDataSourceFactory {
   static default(): CaptchaDataSource {
     const tenant = ExecutionContext.currentTenant;
 
-    if (tenant.featureFlags?.postgresCaptchas) {
+    if (tenant.featureFlags?.postgresCore) {
       return new PostgresCaptchaDataSource({
         tenantId: tenant.name,
         pgTransactionManager: ExecutionContext.postgresTransactionManager,

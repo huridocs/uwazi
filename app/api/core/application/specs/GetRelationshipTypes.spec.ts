@@ -14,12 +14,12 @@ const fixtures = {
 
 type TestConfig = {
   name: string;
-  postgresRelationshipTypes: boolean;
+  postgresCore: boolean;
 };
 
 const testConfigs: TestConfig[] = [
-  { name: 'Mongo', postgresRelationshipTypes: false },
-  { name: 'Postgres', postgresRelationshipTypes: true },
+  { name: 'Mongo', postgresCore: false },
+  { name: 'Postgres', postgresCore: true },
 ];
 
 describe('GetRelationshipTypesUseCase', () => {
@@ -31,15 +31,15 @@ describe('GetRelationshipTypesUseCase', () => {
     await testingEnvironment.tearDown();
   });
 
-  describe.each(testConfigs)('$name', ({ postgresRelationshipTypes }) => {
+  describe.each(testConfigs)('$name', ({ postgresCore }) => {
     const withFlag = <T>(fn: () => T) =>
       testingEnvironment.runWithContext(
         fn,
-        postgresRelationshipTypes
+        postgresCore
           ? {
               tenant: {
                 ...testingTenants.current(),
-                featureFlags: { postgresRelationshipTypes: true },
+                featureFlags: { postgresCore: true },
               },
             }
           : undefined

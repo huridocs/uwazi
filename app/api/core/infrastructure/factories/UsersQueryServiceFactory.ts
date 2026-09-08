@@ -6,7 +6,6 @@ import { MongoUsersQueryService } from '../mongodb/user/MongoUsersQueryService.j
 import { PostgresUsersDAO } from '../postgresql/user/PostgresUsersDAO.js';
 import { PostgresUsersQueryService } from '../postgresql/user/PostgresUsersQueryService.js';
 import { TransactionManagerFactory } from './TransactionManagerFactory.js';
-import { resolveUsersBackend } from './usersBackendFlags.js';
 
 class UsersQueryServiceFactory {
   /**
@@ -21,7 +20,7 @@ class UsersQueryServiceFactory {
   static default(): UsersQueryService {
     const tenant = ExecutionContext.currentTenant;
 
-    if (resolveUsersBackend('UsersQueryService') === 'postgres') {
+    if (tenant.featureFlags?.postgresCore) {
       return new PostgresUsersQueryService({
         usersDAO: new PostgresUsersDAO({
           tenantId: tenant.name,

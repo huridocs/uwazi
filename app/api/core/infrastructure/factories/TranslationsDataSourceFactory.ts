@@ -15,7 +15,7 @@ export class TranslationsDataSourceFactory {
     const db = getConnection();
     const tenant = ExecutionContext.currentTenant;
 
-    if (tenant.featureFlags?.postgresTranslations) {
+    if (tenant.featureFlags?.postgresCore) {
       return new PostgresTranslationsDataSource({
         tenantId: tenant.name,
         mongoDb: db,
@@ -33,7 +33,7 @@ export class TranslationsDataSourceFactory {
     const db = getConnection();
     const tenant = ExecutionContext.currentTenant;
 
-    if (tenant.featureFlags?.postgresTranslations) {
+    if (tenant.featureFlags?.postgresCore) {
       return new PostgresTranslationsDataSource({
         tenantId: tenant.name,
         mongoDb: db,
