@@ -727,6 +727,7 @@ Members,Μέλη
 Menu,Μενού
 Message,Μήνυμα
 Message sent,Το μήνυμα στάλθηκε
+Meta description,Meta description
 Metadata,Μεταδεδομένα
 Metadata Extraction,Εξαγωγή μεταδεδομένων
 "Metric shows a single total count. Select Pie, Bar, or another chart type above to
@@ -864,6 +865,9 @@ OCR error,Σφάλμα OCR
 OCR error tip,Η υπηρεσία OCR δεν μπόρεσε να διαβάσει το έγγραφο λόγω εσφαλμένης μορφής. Τελευταία ενημέρωση:
 OCR PDF,OCR PDF
 of,από
+og:description,og:description
+og:image,og:image
+og:title,og:title
 Ok,Εντάξει
 OK,Εντάξει
 On this entity,On this entity
@@ -882,6 +886,7 @@ Only published entities are counted.,Only published entities are counted.
 "Only the extractor will be deleted, all created entities will remain on the library.","Μόνο ο εξαγωγέας θα διαγραφεί, όλες οι δημιουργημένες οντότητες θα παραμείνουν στη βιβλιοθήκη."
 Open,Άνοιγμα
 Open entity,Open entity
+Open Graph,Open Graph
 Open group,Άνοιγμα ομάδας
 Open link,Open link
 Open PDF,Άνοιγμα PDF
@@ -901,6 +906,7 @@ p.,p.
 Page,Σελίδα
 Page not found,Η σελίδα δεν βρέθηκε
 Page published successfully.,Page published successfully.
+Page title,Page title
 Pages,Σελίδες
 Paragrap number extraction property (numeric),Ιδιότητα εξαγωγής αριθμού παραγράφου (αριθμός)
 Paragraph,Παράγραφος
@@ -1129,6 +1135,7 @@ Select files on your device,Επιλογή αρχείων στη συσκευή 
 Select from computer,Επιλογή από τον υπολογιστή
 Select image,Select image
 Select media,Select media
+Select Open Graph image,Select Open Graph image
 Select relationship,Select relationship
 Select relationship type,Επιλογή τύπου σχέσης
 Select site logo image,Επιλογή εικόνας λογότυπου ιστότοπου
@@ -1150,6 +1157,12 @@ Send recovery email,Αποστολή email ανάκτησης
 Sending email,Αποστολή email
 Sending email description,"Αυτή είναι η διεύθυνση email που θα εμφανίζεται ως αποστολέας όταν αποστέλλεται ένα μήνυμα email από την Uwazi συλλογή σας σε εγγεγραμμένους χρήστες. Η προεπιλεγμένη διεύθυνση είναι *uwazi@uwazi.io*. Μπορείτε να ορίσετε μια προσαρμοσμένη διεύθυνση, εισάγοντας εδώ τη διεύθυνση email που επιθυμείτε."
 Sending labeled data,Αποστολή επισημασμένων δεδομένων
+SEO,SEO
+SEO meta description,A short description of what this collection provides. Search engines may show this text in results. Aim for about 150–160 characters.
+SEO og description,"Description used in social media previews. If empty, the meta description is used."
+SEO og image description,"Image shown in social media previews (LinkedIn, Facebook, and others). Recommended size is 1200×630 pixels."
+SEO og title description,"Title used when this collection is shared on platforms such as LinkedIn, Facebook, and other social media. If empty, the page title is used."
+SEO page title description,A clear and descriptive title for the website. This is used as the default HTML page title in browser tabs and search results.
 Series,Series
 Services,Υπηρεσίες
 Set as default,Ορισμός ως προεπιλογή
