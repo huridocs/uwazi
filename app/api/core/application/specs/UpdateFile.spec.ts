@@ -104,7 +104,7 @@ describe('UpdateFile', () => {
 
   describe.each(testConfigs)('$name', ({ usePostgres }) => {
     beforeEach(async () => {
-      testingTenants.changeCurrentTenant({ featureFlags: { postgresFiles: usePostgres } });
+      testingTenants.changeCurrentTenant({ featureFlags: { postgresCore: usePostgres } });
 
       await testingEnvironment.setFixtures(fixtures);
     });

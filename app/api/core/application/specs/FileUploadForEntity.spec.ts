@@ -60,7 +60,7 @@ describe('FileUploadForEntity', () => {
     beforeEach(async () => {
       testingTenants.changeCurrentTenant({
         name: 'tenant',
-        featureFlags: { postgresFiles: usePostgres },
+        featureFlags: { postgresCore: usePostgres },
       });
       await testingEnvironment.setFixtures(fixtures);
     });

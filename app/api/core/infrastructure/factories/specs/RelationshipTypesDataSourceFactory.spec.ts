@@ -30,7 +30,7 @@ describe('RelationshipTypesDataSourceFactory', () => {
       {
         tenant: {
           ...testingTenants.current(),
-          featureFlags: { postgresRelationshipTypes: true },
+          featureFlags: { postgresCore: true },
         },
       }
     );

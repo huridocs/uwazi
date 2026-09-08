@@ -25,13 +25,7 @@ export class EntitiesDAOFactory {
         ? ExecutionContext.transactionManager
         : TransactionManagerFactory.default());
 
-    if (ExecutionContext.currentTenant.featureFlags?.postgresEntities) {
-      if (!ExecutionContext.currentTenant.featureFlags?.postgresFiles) {
-        throw new Error(
-          'PostgresEntitiesDAO only works along with PostgresFilesDAO, please enable postgresFiles feature flag.'
-        );
-      }
-
+    if (ExecutionContext.currentTenant.featureFlags?.postgresCore) {
       return new PostgresEntitiesDAO({
         tenantId: ExecutionContext.currentTenant.name,
         pgTransactionManager: ExecutionContext.getStore()
@@ -42,12 +36,7 @@ export class EntitiesDAOFactory {
       });
     }
 
-    const filesDAO = ExecutionContext.currentTenant.featureFlags?.postgresFiles
-      ? FilesDAOFactory.default()
-      : undefined;
-
     return new MongoEntitiesDAO(getConnection(), transactionManager, {
-      filesDAO,
       accessContext,
     });
   }

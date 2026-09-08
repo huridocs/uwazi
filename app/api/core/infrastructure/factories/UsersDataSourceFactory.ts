@@ -8,7 +8,7 @@ class UsersDataSourceFactory {
   static default(): UsersDataSource {
     const tenant = ExecutionContext.currentTenant;
 
-    if (tenant.featureFlags?.postgresUsers) {
+    if (tenant.featureFlags?.postgresCore) {
       return new PostgresUsersDataSource({
         tenantId: tenant.name,
         pgTransactionManager: ExecutionContext.postgresTransactionManager,

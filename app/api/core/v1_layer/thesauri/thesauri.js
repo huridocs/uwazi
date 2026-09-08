@@ -4,7 +4,7 @@ import partition from 'lodash/partition.js';
 import flatMapDeep from 'lodash/flatMapDeep.js';
 import { preloadOptionsLimit } from '#shared/config.js';
 import templates from '#api/core/v1_layer/templates/templates.js';
-import { isPostgresEntitiesActive } from '#api/core/libs/featureFlags.js';
+import { isPostgresCoreActive } from '#api/core/libs/featureFlags.js';
 import { denormalizeThesauriLabelInMetadata } from '#api/entities/denormalize.js';
 import { search } from '#api/search/index.js';
 import { objectIndex } from '#shared/data_utils/objectIndex.js';
@@ -150,7 +150,7 @@ const thesauri = {
   },
 
   async renameThesaurusInMetadata(valueId, newLabel, thesaurusId, language) {
-    if (isPostgresEntitiesActive()) {
+    if (isPostgresCoreActive()) {
       return;
     }
     return denormalizeThesauriLabelInMetadata(valueId, newLabel, thesaurusId, language);

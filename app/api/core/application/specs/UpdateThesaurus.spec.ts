@@ -31,23 +31,41 @@ type CreateSutProps = {
 
 type TestConfig = {
   name: string;
-  postgresThesauri: boolean;
+  postgresCore: boolean;
   getThesauri: () => Promise<Record<string, unknown>[]>;
+  getTranslations: () => Promise<any[]>;
 };
+
+const mapTranslationRow = ({
+  tenant_id: _,
+  context_id,
+  context_type,
+  context_label,
+  ...rest
+}: any) => ({
+  ...rest,
+  _id: new ObjectId(rest._id),
+  context: { id: context_id, type: context_type, label: context_label },
+});
 
 const testConfigs: TestConfig[] = [
   {
     name: 'Mongo',
-    postgresThesauri: false,
+    postgresCore: false,
     getThesauri: async () => testingEnvironment.db.getAllFrom('dictionaries'),
+    getTranslations: async () => testingEnvironment.db.getAllFrom('translationsV2'),
   },
   {
     name: 'Postgres',
-    postgresThesauri: true,
+    postgresCore: true,
     getThesauri: async () =>
       testingEnvironment.pg
         .getAllFrom('thesauri')
         .then(rows => rows.map(({ tenant_id: _, ...rest }) => rest)),
+    getTranslations: async () =>
+      testingEnvironment.pg
+        .getAllFrom<any>('translations')
+        .then(rows => rows.map(mapTranslationRow)),
   },
 ];
 
@@ -60,7 +78,7 @@ describe('UpdateThesaurusUseCase', () => {
     await testingEnvironment.tearDown();
   });
 
-  describe.each(testConfigs)('$name', ({ postgresThesauri, getThesauri }) => {
+  describe.each(testConfigs)('$name', ({ postgresCore, getThesauri, getTranslations }) => {
     const getJobs = async () => testingEnvironment.db.getCollection('jobs')!.find().toArray();
 
     const sortByLanguageAndKey = <T>(rows: T[]) =>
@@ -114,11 +132,11 @@ describe('UpdateThesaurusUseCase', () => {
             role: 'admin',
             groups: [],
           }),
-          ...(postgresThesauri
+          ...(postgresCore
             ? {
                 tenant: {
                   ...testingTenants.current(),
-                  featureFlags: { postgresThesauri: true },
+                  featureFlags: { postgresCore: true },
                 },
               }
             : {}),
@@ -153,7 +171,7 @@ describe('UpdateThesaurusUseCase', () => {
 
       const jobs = await getJobs();
       const after = (await getThesauri()).find((t: any) => t.name === 'Updated Countries')!;
-      const translations = await testingEnvironment.db.getAllFrom('translationsV2');
+      const translations = await getTranslations();
 
       expect(after).toEqual({
         _id: before._id,
@@ -450,8 +468,8 @@ describe('UpdateThesaurusUseCase', () => {
             .getById(factory.id('countries').toString())
             .then(r => r.getDataOrThrow());
         },
-        postgresThesauri
-          ? { tenant: { ...testingTenants.current(), featureFlags: { postgresThesauri: true } } }
+        postgresCore
+          ? { tenant: { ...testingTenants.current(), featureFlags: { postgresCore: true } } }
           : undefined
       );
 
@@ -467,7 +485,7 @@ describe('UpdateThesaurusUseCase', () => {
 
       const thesauri = await getThesauri();
       const thesaurusBefore = thesauri.find((t: any) => t.name === 'Countries')!;
-      const translationsBefore = await testingEnvironment.db.getAllFrom('translationsV2');
+      const translationsBefore = await getTranslations();
       const jobsBefore = await getJobs();
 
       await expect(
@@ -479,7 +497,7 @@ describe('UpdateThesaurusUseCase', () => {
       ).rejects.toThrow('update error');
 
       const thesauriAfter = (await getThesauri()).find((t: any) => t.name === 'Countries')!;
-      const translationsAfter = await testingEnvironment.db.getAllFrom('translationsV2');
+      const translationsAfter = await getTranslations();
       const jobsAfter = await getJobs();
 
       expect(thesauriAfter).toEqual(thesaurusBefore);
@@ -487,7 +505,7 @@ describe('UpdateThesaurusUseCase', () => {
       expect(jobsAfter).toEqual(jobsBefore);
     });
 
-    if (!postgresThesauri) {
+    if (!postgresCore) {
       it('should revert when translations update fails', async () => {
         const thesaurusTranslationService = TestUtils.mockClass<ThesaurusTranslationService>({
           update: jest.fn().mockRejectedValue(new Error('translation update error')),

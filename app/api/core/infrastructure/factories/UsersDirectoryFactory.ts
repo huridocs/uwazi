@@ -8,7 +8,6 @@ import { PostgresUserGroupsDAO } from '../postgresql/user/PostgresUserGroupsDAO.
 import { PostgresUsersDAO } from '../postgresql/user/PostgresUsersDAO.js';
 import { PostgresUsersDirectory } from '../postgresql/user/PostgresUsersDirectory.js';
 import { TransactionManagerFactory } from './TransactionManagerFactory.js';
-import { resolveUsersBackend } from './usersBackendFlags.js';
 
 class UsersDirectoryFactory {
   /**
@@ -22,7 +21,7 @@ class UsersDirectoryFactory {
   static default(): UsersDirectory {
     const tenant = ExecutionContext.currentTenant;
 
-    if (resolveUsersBackend('UsersDirectory') === 'postgres') {
+    if (tenant.featureFlags?.postgresCore) {
       const usersDAO = new PostgresUsersDAO({
         tenantId: tenant.name,
         pgTransactionManager: ExecutionContext.postgresTransactionManager,

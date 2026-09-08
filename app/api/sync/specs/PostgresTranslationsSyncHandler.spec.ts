@@ -113,7 +113,7 @@ describe('PostgresTranslationsSyncHandler', () => {
         {
           tenant: {
             ...testingTenants.current(),
-            featureFlags: { postgresTranslations: true },
+            featureFlags: { postgresCore: true },
           },
         }
       );

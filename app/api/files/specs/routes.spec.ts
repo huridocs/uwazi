@@ -100,7 +100,7 @@ describe('files routes', () => {
 
     beforeEach(async () => {
       testingTenants.changeCurrentTenant({
-        featureFlags: { postgresFiles: usePostgres },
+        featureFlags: { postgresCore: usePostgres },
       });
       await testingEnvironment.setFixtures(fixtures);
       mockCurrentUser(collabUser);
@@ -555,6 +555,12 @@ describe('files routes', () => {
   });
 
   describe('api/public', () => {
+    beforeAll(async () => {
+      testingTenants.changeCurrentTenant({
+        featureFlags: { ...testingTenants.current().featureFlags, postgresCore: false },
+      });
+    });
+
     it('should run as a transaction', async () => {
       const jsRoutesApp: Application = setUpApp(
         jsRoutes,
