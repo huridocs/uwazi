@@ -1,9 +1,11 @@
 import React from 'react';
 import { ArrowRightIcon } from '@heroicons/react/20/solid';
+import { PlusIcon } from '@heroicons/react/24/outline';
 import { I18NLinkV2, Translate } from '#app/I18N/index.js';
 import { Button } from '#V2/Components/UI/index.js';
 import {
   EntityWriteAuthorization,
+  useEntityFiles,
   useEntityScopedEntity,
   useMetadataEditing,
 } from '#V2/Routes/Entity/Components/index.js';
@@ -23,11 +25,13 @@ const LibraryEntityPreviewFooter = ({
   mainTabId,
 }: LibraryEntityPreviewFooterProps) => {
   const entity = useEntityScopedEntity();
+  const { requestAddFile } = useEntityFiles();
   const { isEditing, isSaving, formMountHost, formId, cancelEdit, startEditing } =
     useMetadataEditing();
   const href = `${entityBasePath.replace(/^\//, '')}/${entity.sharedId}`;
   const editingMetadata = isEditing && formMountHost === 'main';
   const showEdit = mainTabId === MAIN_TAB.METADATA && !editingMetadata;
+  const showAddFile = mainTabId === MAIN_TAB.FILES;
 
   return (
     <EntityTabFooter inset="side">
@@ -54,6 +58,16 @@ const LibraryEntityPreviewFooter = ({
                 <EntityWriteAuthorization>
                   <LibraryFooterButton onClick={() => startEditing('main')}>
                     <Translate>Edit</Translate>
+                  </LibraryFooterButton>
+                </EntityWriteAuthorization>
+              ) : null}
+              {showAddFile ? (
+                <EntityWriteAuthorization>
+                  <LibraryFooterButton
+                    icon={<PlusIcon className="h-3.5 w-3.5 shrink-0 text-ink-tertiary" />}
+                    onClick={() => requestAddFile('main')}
+                  >
+                    <Translate>Add file</Translate>
                   </LibraryFooterButton>
                 </EntityWriteAuthorization>
               ) : null}

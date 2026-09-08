@@ -11,19 +11,19 @@ import { ThesauriDataSource } from '../contracts/ThesauriDataSource.js';
 
 type TestConfig = {
   name: string;
-  postgresTemplates: boolean;
+  postgresCore: boolean;
   getTemplates: () => Promise<any[]>;
 };
 
 const testConfigs: TestConfig[] = [
   {
     name: 'Mongo',
-    postgresTemplates: false,
+    postgresCore: false,
     getTemplates: async () => testingEnvironment.db.getAllFrom('templates') as Promise<any[]>,
   },
   {
     name: 'Postgres',
-    postgresTemplates: true,
+    postgresCore: true,
     getTemplates: async () =>
       testingEnvironment.pg
         .getAllFrom('templates')
@@ -36,7 +36,7 @@ type CreateProps = {
   templateTranslationService?: TemplateTranslationService;
 };
 
-const createSut = (props?: CreateProps, postgresTemplates = false) =>
+const createSut = (props?: CreateProps, postgresCore = false) =>
   testingEnvironment.runWithContext(
     () => {
       const sut = CreateTemplateUseCaseFactory.default({
@@ -47,11 +47,11 @@ const createSut = (props?: CreateProps, postgresTemplates = false) =>
 
       return { sut };
     },
-    postgresTemplates
+    postgresCore
       ? {
           tenant: {
             ...testingTenants.current(),
-            featureFlags: { postgresTemplates: true },
+            featureFlags: { postgresCore: true },
           },
         }
       : undefined
@@ -128,9 +128,9 @@ describe('CreateTemplateUseCase', () => {
     await testingEnvironment.tearDown();
   });
 
-  describe.each(testConfigs)('$name', ({ postgresTemplates, getTemplates }) => {
+  describe.each(testConfigs)('$name', ({ postgresCore, getTemplates }) => {
     it('should create a Template', async () => {
-      const { sut } = createSut(undefined, postgresTemplates);
+      const { sut } = createSut(undefined, postgresCore);
 
       const output = await sut.execute({
         name: 'Template Name',
@@ -504,7 +504,7 @@ describe('CreateTemplateUseCase', () => {
         ],
       });
 
-      const { sut } = createSut(undefined, postgresTemplates);
+      const { sut } = createSut(undefined, postgresCore);
 
       await expect(
         sut.execute({
@@ -535,7 +535,7 @@ describe('CreateTemplateUseCase', () => {
     });
 
     it('should throw if entity view page does not exist', async () => {
-      const { sut } = createSut(undefined, postgresTemplates);
+      const { sut } = createSut(undefined, postgresCore);
       await expect(
         sut.execute({
           name: 'Template Name',
@@ -569,7 +569,7 @@ describe('CreateTemplateUseCase', () => {
     });
 
     it('should throw if entity view page is not enabled', async () => {
-      const { sut } = createSut(undefined, postgresTemplates);
+      const { sut } = createSut(undefined, postgresCore);
       await expect(
         sut.execute({
           name: 'Template Name',
@@ -602,13 +602,13 @@ describe('CreateTemplateUseCase', () => {
       });
     });
 
-    if (postgresTemplates) {
+    if (postgresCore) {
       it('should NOT revert the PG write when the Mongo transaction rolls back', async () => {
         const templateTranslationService = TestUtils.mockClass<TemplateTranslationService>({
           createTemplateTranslation: jest.fn().mockRejectedValue(new Error('Creation failed')),
         });
 
-        const { sut } = createSut({ templateTranslationService }, postgresTemplates);
+        const { sut } = createSut({ templateTranslationService }, postgresCore);
 
         await expect(
           sut.execute({

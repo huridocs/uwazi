@@ -64,11 +64,23 @@ import { User } from '#api/users.v2/model/User.js';
 type TestConfig = {
   name: string;
   usePostgres: boolean;
+  getEntities: () => Promise<any[]>;
 };
 
 const testConfigs: TestConfig[] = [
-  { name: 'Mongo', usePostgres: false },
-  { name: 'Postgres', usePostgres: true },
+  {
+    name: 'Mongo',
+    usePostgres: false,
+    getEntities: async () => testingEnvironment.db.getAllFrom('entities'),
+  },
+  {
+    name: 'Postgres',
+    usePostgres: true,
+    getEntities: async () =>
+      (await testingEnvironment.db.getAllFrom('entities')).sort((a, b) =>
+        `${a.sharedId}\u0000${a.language}` < `${b.sharedId}\u0000${b.language}` ? -1 : 1
+      ),
+  },
 ];
 
 const createFixtures = (): DBFixture => ({
@@ -162,10 +174,10 @@ describe('PXExtractParagraphsFromEntity', () => {
     await testingEnvironment.tearDown();
   });
 
-  describe.each(testConfigs)('$name', ({ usePostgres }) => {
+  describe.each(testConfigs)('$name', ({ usePostgres, getEntities }) => {
     beforeEach(async () => {
       testingTenants.changeCurrentTenant({
-        featureFlags: { postgresFiles: usePostgres },
+        featureFlags: { postgresCore: usePostgres },
       });
       await testingEnvironment.setFixtures(createFixtures());
     });
@@ -366,7 +378,7 @@ describe('PXExtractParagraphsFromEntity', () => {
         entityStatusId: entityStatus1._id.toString(),
       });
 
-      const entities = await testingEnvironment.db.getAllFrom('entities');
+      const entities = await getEntities();
 
       // Entities (paragraphs) should be deleted synchronously
       expect(entities).toMatchObject([entity1, entity2, entity3, paragraph4, paragraph5]);

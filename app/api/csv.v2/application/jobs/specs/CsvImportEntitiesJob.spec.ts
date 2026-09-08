@@ -4,6 +4,7 @@ import { FileSystemStorage } from '#api/core/infrastructure/files/FileSystemStor
 import { PathManager } from '#api/core/infrastructure/files/PathManager.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { testingPG } from '#api/utils/testing_pg.js';
 import { testingTenants } from '#api/utils/testingTenants.js';
 import { tenants } from '#api/tenants/tenantContext.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
@@ -240,7 +241,7 @@ describe('CsvImportEntitiesJob (integration)', () => {
   describe.each(testConfigs)('$name', ({ usePostgres }) => {
     beforeEach(async () => {
       testingTenants.changeCurrentTenant({
-        featureFlags: { postgresFiles: usePostgres },
+        featureFlags: { postgresCore: usePostgres },
       });
       jest.clearAllMocks();
       await testingEnvironment.setFixtures(fixtures);
@@ -261,6 +262,7 @@ describe('CsvImportEntitiesJob (integration)', () => {
           }
         })
       );
+      await testingPG.clear(['entities', 'files']);
     });
 
     it('should create entities from staged rows and update stats', async () => {
@@ -603,32 +605,35 @@ describe('CsvImportEntitiesJob (integration)', () => {
       const userId = fixturesFactory.idString('import-entities-update-by-id-user');
       const sharedId = fixturesFactory.idString('existing-entity-shared-id');
 
-      await testingEnvironment.db.getCollection('entities')!.insertMany([
-        {
-          _id: fixturesFactory.id('existing-entity-en'),
-          sharedId,
-          title: 'Old title',
-          language: 'en',
-          template: fixtures.templates[0]._id,
-          metadata: { description: [{ value: 'Old description' }] },
-          user: fixturesFactory.id('import-entities-update-by-id-user'),
-          creationDate: Date.now(),
-          editDate: Date.now(),
-          published: false,
-        },
-        {
-          _id: fixturesFactory.id('existing-entity-es'),
-          sharedId,
-          title: 'Titulo viejo',
-          language: 'es',
-          template: fixtures.templates[0]._id,
-          metadata: { description: [{ value: 'Descripcion vieja' }] },
-          user: fixturesFactory.id('import-entities-update-by-id-user'),
-          creationDate: Date.now(),
-          editDate: Date.now(),
-          published: false,
-        },
-      ]);
+      await testingEnvironment.setFixtures({
+        ...fixtures,
+        entities: [
+          {
+            _id: fixturesFactory.id('existing-entity-en'),
+            sharedId,
+            title: 'Old title',
+            language: 'en',
+            template: fixtures.templates[0]._id,
+            metadata: { description: [{ value: 'Old description' }] },
+            user: fixturesFactory.id('import-entities-update-by-id-user'),
+            creationDate: Date.now(),
+            editDate: Date.now(),
+            published: false,
+          },
+          {
+            _id: fixturesFactory.id('existing-entity-es'),
+            sharedId,
+            title: 'Titulo viejo',
+            language: 'es',
+            template: fixtures.templates[0]._id,
+            metadata: { description: [{ value: 'Descripcion vieja' }] },
+            user: fixturesFactory.id('import-entities-update-by-id-user'),
+            creationDate: Date.now(),
+            editDate: Date.now(),
+            published: false,
+          },
+        ],
+      });
 
       await insertImport(csvImportsDS, {
         importId,
@@ -742,32 +747,35 @@ describe('CsvImportEntitiesJob (integration)', () => {
       const userId = fixturesFactory.idString('import-entities-any-user');
       const relatedSharedId = fixturesFactory.idString('related-any-shared');
 
-      await testingEnvironment.db.getCollection('entities')!.insertMany([
-        {
-          _id: fixturesFactory.id('related-any-en'),
-          sharedId: relatedSharedId,
-          title: 'Related Any',
-          language: 'en',
-          template: fixtures.templates[1]._id,
-          metadata: {},
-          user: fixturesFactory.id('import-entities-any-user'),
-          creationDate: Date.now(),
-          editDate: Date.now(),
-          published: false,
-        },
-        {
-          _id: fixturesFactory.id('related-any-es'),
-          sharedId: relatedSharedId,
-          title: 'Related Any',
-          language: 'es',
-          template: fixtures.templates[1]._id,
-          metadata: {},
-          user: fixturesFactory.id('import-entities-any-user'),
-          creationDate: Date.now(),
-          editDate: Date.now(),
-          published: false,
-        },
-      ]);
+      await testingEnvironment.setFixtures({
+        ...fixtures,
+        entities: [
+          {
+            _id: fixturesFactory.id('related-any-en'),
+            sharedId: relatedSharedId,
+            title: 'Related Any',
+            language: 'en',
+            template: fixtures.templates[1]._id,
+            metadata: {},
+            user: fixturesFactory.id('import-entities-any-user'),
+            creationDate: Date.now(),
+            editDate: Date.now(),
+            published: false,
+          },
+          {
+            _id: fixturesFactory.id('related-any-es'),
+            sharedId: relatedSharedId,
+            title: 'Related Any',
+            language: 'es',
+            template: fixtures.templates[1]._id,
+            metadata: {},
+            user: fixturesFactory.id('import-entities-any-user'),
+            creationDate: Date.now(),
+            editDate: Date.now(),
+            published: false,
+          },
+        ],
+      });
 
       await testingEnvironment.db.getCollection('csv_import_relationships_values')!.insertOne({
         importId,
@@ -825,56 +833,59 @@ describe('CsvImportEntitiesJob (integration)', () => {
       const relatedSharedIdA = fixturesFactory.idString('related-any-shared-a');
       const relatedSharedIdB = fixturesFactory.idString('related-any-shared-b');
 
-      await testingEnvironment.db.getCollection('entities')!.insertMany([
-        {
-          _id: fixturesFactory.id('related-any-a-en'),
-          sharedId: relatedSharedIdA,
-          title: 'Related Any A',
-          language: 'en',
-          template: fixtures.templates[1]._id,
-          metadata: {},
-          user: fixturesFactory.id('import-entities-any-multi-user'),
-          creationDate: Date.now(),
-          editDate: Date.now(),
-          published: false,
-        },
-        {
-          _id: fixturesFactory.id('related-any-a-es'),
-          sharedId: relatedSharedIdA,
-          title: 'Related Any A',
-          language: 'es',
-          template: fixtures.templates[1]._id,
-          metadata: {},
-          user: fixturesFactory.id('import-entities-any-multi-user'),
-          creationDate: Date.now(),
-          editDate: Date.now(),
-          published: false,
-        },
-        {
-          _id: fixturesFactory.id('related-any-b-en'),
-          sharedId: relatedSharedIdB,
-          title: 'Related Any B',
-          language: 'en',
-          template: fixtures.templates[1]._id,
-          metadata: {},
-          user: fixturesFactory.id('import-entities-any-multi-user'),
-          creationDate: Date.now(),
-          editDate: Date.now(),
-          published: false,
-        },
-        {
-          _id: fixturesFactory.id('related-any-b-es'),
-          sharedId: relatedSharedIdB,
-          title: 'Related Any B',
-          language: 'es',
-          template: fixtures.templates[1]._id,
-          metadata: {},
-          user: fixturesFactory.id('import-entities-any-multi-user'),
-          creationDate: Date.now(),
-          editDate: Date.now(),
-          published: false,
-        },
-      ]);
+      await testingEnvironment.setFixtures({
+        ...fixtures,
+        entities: [
+          {
+            _id: fixturesFactory.id('related-any-a-en'),
+            sharedId: relatedSharedIdA,
+            title: 'Related Any A',
+            language: 'en',
+            template: fixtures.templates[1]._id,
+            metadata: {},
+            user: fixturesFactory.id('import-entities-any-multi-user'),
+            creationDate: Date.now(),
+            editDate: Date.now(),
+            published: false,
+          },
+          {
+            _id: fixturesFactory.id('related-any-a-es'),
+            sharedId: relatedSharedIdA,
+            title: 'Related Any A',
+            language: 'es',
+            template: fixtures.templates[1]._id,
+            metadata: {},
+            user: fixturesFactory.id('import-entities-any-multi-user'),
+            creationDate: Date.now(),
+            editDate: Date.now(),
+            published: false,
+          },
+          {
+            _id: fixturesFactory.id('related-any-b-en'),
+            sharedId: relatedSharedIdB,
+            title: 'Related Any B',
+            language: 'en',
+            template: fixtures.templates[1]._id,
+            metadata: {},
+            user: fixturesFactory.id('import-entities-any-multi-user'),
+            creationDate: Date.now(),
+            editDate: Date.now(),
+            published: false,
+          },
+          {
+            _id: fixturesFactory.id('related-any-b-es'),
+            sharedId: relatedSharedIdB,
+            title: 'Related Any B',
+            language: 'es',
+            template: fixtures.templates[1]._id,
+            metadata: {},
+            user: fixturesFactory.id('import-entities-any-multi-user'),
+            creationDate: Date.now(),
+            editDate: Date.now(),
+            published: false,
+          },
+        ],
+      });
 
       await testingEnvironment.db.getCollection('csv_import_relationships_values')!.insertOne({
         importId,

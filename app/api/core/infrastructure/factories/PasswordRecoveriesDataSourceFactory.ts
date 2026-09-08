@@ -9,7 +9,7 @@ class PasswordRecoveriesDataSourceFactory {
   static default(): PasswordRecoveriesDataSource {
     const tenant = ExecutionContext.currentTenant;
 
-    if (tenant.featureFlags?.postgresPasswordRecoveries) {
+    if (tenant.featureFlags?.postgresCore) {
       return new PostgresPasswordRecoveriesDataSource({
         tenantId: tenant.name,
         pgTransactionManager: ExecutionContext.postgresTransactionManager,

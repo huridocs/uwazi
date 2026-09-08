@@ -40,9 +40,7 @@ describe('RetrieveStats', () => {
     beforeEach(async () => {
       testingTenants.changeCurrentTenant({
         featureFlags: {
-          postgresFiles: usePostgres,
-          postgresUsers: usePostgres,
-          postgresUsergroups: usePostgres,
+          postgresCore: usePostgres,
         },
       });
       jest.spyOn(db, 'stats').mockResolvedValue({ storageSize: 15000 });

@@ -155,7 +155,7 @@ describe('PDFPostProcessJob - setPreview (real DB)', () => {
     beforeEach(async () => {
       testingTenants.changeCurrentTenant({
         name: 'test',
-        featureFlags: { postgresFiles: usePostgres },
+        featureFlags: { postgresCore: usePostgres },
       });
       await testingEnvironment.setFixtures(allFixtures);
     });

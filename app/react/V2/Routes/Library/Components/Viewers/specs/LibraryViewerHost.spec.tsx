@@ -10,6 +10,12 @@ import { templates, translations } from '#app/stories/fixtures/referencesFixture
 import type { LibrarySearchHit } from '#shared/types/librarySearch.js';
 import { LibraryViewerHost } from '../LibraryViewerHost.js';
 
+jest.mock('#app/Map/index.js', () => ({
+  Map: ({ markers }: { markers?: unknown[] }) => (
+    <div data-testid="library-map" data-marker-count={markers?.length ?? 0} />
+  ),
+}));
+
 const rows: LibrarySearchHit[] = [
   {
     _id: '1',
@@ -50,9 +56,14 @@ describe('LibraryViewerHost', () => {
     expect(screen.getByText('The State v. Example')).toBeInTheDocument();
   });
 
-  it('renders placeholders for views that are not implemented yet', () => {
+  it('renders the map viewer for the map view', () => {
     renderViewer('map');
-    expect(screen.getByText('Map')).toBeInTheDocument();
-    expect(screen.getByText('Map view is not available yet.')).toBeInTheDocument();
+    expect(screen.getByTestId('library-map')).toBeInTheDocument();
+    expect(screen.queryByText('Map view is not available yet.')).not.toBeInTheDocument();
+  });
+
+  it('renders placeholders for views that are not implemented yet', () => {
+    renderViewer('table');
+    expect(screen.getByText('Table view is not available yet.')).toBeInTheDocument();
   });
 });

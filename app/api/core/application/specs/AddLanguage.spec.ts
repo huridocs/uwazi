@@ -54,8 +54,8 @@ const mockImportPredefinedTranslations: ImportPredefinedTranslations = {
 };
 
 const testConfigs = [
-  { name: 'Mongo', postgresTranslations: false },
-  { name: 'Postgres', postgresTranslations: true },
+  { name: 'Mongo', postgresCore: false },
+  { name: 'Postgres', postgresCore: true },
 ];
 
 describe('AddLanguage use case', () => {
@@ -67,15 +67,15 @@ describe('AddLanguage use case', () => {
     await testingEnvironment.tearDown();
   });
 
-  describe.each(testConfigs)('$name', ({ postgresTranslations }) => {
+  describe.each(testConfigs)('$name', ({ postgresCore }) => {
     const withFlag = <T>(fn: () => T) =>
       testingEnvironment.runWithContext(
         fn,
-        postgresTranslations
+        postgresCore
           ? {
               tenant: {
                 ...testingTenants.current(),
-                featureFlags: { postgresTranslations: true },
+                featureFlags: { postgresCore: true },
               },
             }
           : undefined
@@ -311,7 +311,7 @@ describe('AddLanguage use case', () => {
           expect.objectContaining({ key: 'en', label: 'English', default: true }),
         ]);
 
-        if (!postgresTranslations) {
+        if (!postgresCore) {
           const esCount = (
             await withFlag(async () => TranslationsDataSourceFactory.default().getByLanguage('es'))
           ).length;

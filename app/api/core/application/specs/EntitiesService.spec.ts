@@ -5,6 +5,7 @@ import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { DBFixture } from '#api/utils/testing_db.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { testingTenants } from '#api/utils/testingTenants.js';
+import { testingPG } from '#api/utils/testing_pg.js';
 import { TestUtils } from '#api/common.v2/utils/Test.js';
 import { Dispatcher } from '#api/core/application/contracts/Dispatcher.js';
 import { Entity } from '#api/core/domain/entity/Entity.js';
@@ -51,12 +52,12 @@ const fixtures: DBFixture = {
 
 type TestConfig = {
   name: string;
-  postgresTemplates: boolean;
+  postgresCore: boolean;
 };
 
 const testConfigs: TestConfig[] = [
-  { name: 'Mongo', postgresTemplates: false },
-  { name: 'Postgres', postgresTemplates: true },
+  { name: 'Mongo', postgresCore: false },
+  { name: 'Postgres', postgresCore: true },
 ];
 
 const createMockDeps = () => ({
@@ -77,12 +78,12 @@ const createMockDeps = () => ({
   }),
 });
 
-const createSut = (deps?: Partial<EntitiesServiceDeps>, postgresTemplates = false) => {
+const createSut = (deps?: Partial<EntitiesServiceDeps>, postgresCore = false) => {
   const contextOverrides: any = {};
-  if (postgresTemplates) {
+  if (postgresCore) {
     contextOverrides.tenant = {
       ...testingTenants.current(),
-      featureFlags: { postgresTemplates: true },
+      featureFlags: { postgresCore: true },
     };
   }
 
@@ -130,9 +131,15 @@ const createEntitySample = () => {
   return entity;
 };
 
-const loadEntities = async (sharedIds: string[]) => {
-  const ds = testingEnvironment.runWithContext(() =>
-    EntitiesDataSourceFactory.default({ transactionManager: TransactionManagerFactory.default() })
+const loadEntities = async (sharedIds: string[], postgresCore = false) => {
+  const ds = testingEnvironment.runWithContext(
+    () =>
+      EntitiesDataSourceFactory.default({
+        transactionManager: TransactionManagerFactory.default(),
+      }),
+    postgresCore
+      ? { tenant: { ...testingTenants.current(), featureFlags: { postgresCore: true } } }
+      : undefined
   );
   return (await ds.getEntitiesBySharedIds(sharedIds)).all();
 };
@@ -152,6 +159,10 @@ describe('EntitiesService', () => {
   });
 
   beforeEach(async () => {
+    // fixtures have no entities, so testingPG.setFixtures skips clearing the entities
+    // table — without this, Postgres rows leak across tests (and across the Mongo/
+    // Postgres variants, which share the suite).
+    await testingPG.clear(['entities']);
     await testingEnvironment.setFixtures(fixtures);
   });
 
@@ -159,10 +170,14 @@ describe('EntitiesService', () => {
     await testingEnvironment.tearDown();
   });
 
-  describe.each(testConfigs)('$name', ({ postgresTemplates }) => {
+  describe.each(testConfigs)('$name', ({ postgresCore }) => {
+    beforeEach(async () => {
+      testingTenants.changeCurrentTenant({ featureFlags: { postgresCore } });
+    });
+
     describe('when inserting an Entity', () => {
       it('should emit an EntityCreatedEvent', async () => {
-        const { sut, eventBus, transactionManager } = createSut(undefined, postgresTemplates);
+        const { sut, eventBus, transactionManager } = createSut(undefined, postgresCore);
         const entity = createEntitySample();
 
         await transactionManager.run(async () => {
@@ -186,7 +201,7 @@ describe('EntitiesService', () => {
       });
 
       it('should emit an EntityCreatedEvent inside onCommit handler', async () => {
-        const { sut, transactionManager, eventBus } = createSut(undefined, postgresTemplates);
+        const { sut, transactionManager, eventBus } = createSut(undefined, postgresCore);
         const entity = createEntitySample();
         let emitCalledDuringTransaction = false;
 
@@ -204,7 +219,7 @@ describe('EntitiesService', () => {
       });
 
       it('should provision grant access to the entity', async () => {
-        const { sut, transactionManager } = createSut(undefined, postgresTemplates);
+        const { sut, transactionManager } = createSut(undefined, postgresCore);
         const entity = createEntitySample();
 
         await transactionManager.run(async () =>
@@ -215,9 +230,9 @@ describe('EntitiesService', () => {
           })
         );
 
-        const entityCreated = await testingEnvironment.db
-          .getCollection('entities')
-          ?.findOne({ sharedId: entity.sharedId });
+        const entityCreated = (await testingEnvironment.db.getAllFrom('entities')).find(
+          doc => doc.sharedId === entity.sharedId
+        );
 
         expect(entityCreated).toMatchObject({
           language: 'en',
@@ -228,7 +243,7 @@ describe('EntitiesService', () => {
       });
 
       it('should dispatch a RelationshipSyncJob', async () => {
-        const { sut, dispatcher, transactionManager } = createSut(undefined, postgresTemplates);
+        const { sut, dispatcher, transactionManager } = createSut(undefined, postgresCore);
         const entity = createEntitySample();
 
         await transactionManager.run(async () => {
@@ -252,7 +267,7 @@ describe('EntitiesService', () => {
 
     describe('when bulk inserting Entities', () => {
       it('should insert multiple entities into the database', async () => {
-        const { sut, transactionManager } = createSut(undefined, postgresTemplates);
+        const { sut, transactionManager } = createSut(undefined, postgresCore);
         const entity1 = createEntitySample();
         const entity2 = createEntitySample();
         const entity3 = createEntitySample();
@@ -276,7 +291,7 @@ describe('EntitiesService', () => {
       });
 
       it('should dispatch RelationshipSyncJob for each entity with correct context', async () => {
-        const { sut, dispatcher, transactionManager } = createSut(undefined, postgresTemplates);
+        const { sut, dispatcher, transactionManager } = createSut(undefined, postgresCore);
         const entity1 = createEntitySample();
         const entity2 = createEntitySample();
         const entity3 = createEntitySample();
@@ -313,7 +328,7 @@ describe('EntitiesService', () => {
       });
 
       it('should emit EntityCreatedEvent for each entity on commit', async () => {
-        const { sut, eventBus, transactionManager } = createSut(undefined, postgresTemplates);
+        const { sut, eventBus, transactionManager } = createSut(undefined, postgresCore);
         const entity1 = createEntitySample();
         const entity2 = createEntitySample();
 
@@ -343,7 +358,7 @@ describe('EntitiesService', () => {
       });
 
       it('should NOT emit events before transaction commit', async () => {
-        const { sut, eventBus, transactionManager } = createSut(undefined, postgresTemplates);
+        const { sut, eventBus, transactionManager } = createSut(undefined, postgresCore);
         const entity1 = createEntitySample();
         const entity2 = createEntitySample();
         let emitCalledDuringTransaction = false;
@@ -362,7 +377,7 @@ describe('EntitiesService', () => {
       });
 
       it('should provision access to all entities', async () => {
-        const { sut, transactionManager } = createSut(undefined, postgresTemplates);
+        const { sut, transactionManager } = createSut(undefined, postgresCore);
         const entity1 = createEntitySample();
         const entity2 = createEntitySample();
         const entity3 = createEntitySample();
@@ -377,31 +392,34 @@ describe('EntitiesService', () => {
 
         const entitiesCreated = await testingEnvironment.db.getAllFrom('entities');
 
-        expect(entitiesCreated).toMatchObject([
-          {
-            language: 'en',
-            sharedId: entity1.sharedId,
-            permissions: [{ refId: 'actorId', type: GrantType.User, level: AccessLevel.Write }],
-            published: false,
-          },
-          {
-            language: 'en',
-            sharedId: entity2.sharedId,
-            permissions: [{ refId: 'actorId', type: GrantType.User, level: AccessLevel.Write }],
-            published: false,
-          },
-          {
-            sharedId: entity3.sharedId,
-            permissions: [{ refId: 'actorId', type: GrantType.User, level: AccessLevel.Write }],
-            published: false,
-          },
-        ]);
+        expect(entitiesCreated).toHaveLength(3);
+        expect(entitiesCreated).toEqual(
+          expect.arrayContaining([
+            expect.objectContaining({
+              language: 'en',
+              sharedId: entity1.sharedId,
+              permissions: [{ refId: 'actorId', type: GrantType.User, level: AccessLevel.Write }],
+              published: false,
+            }),
+            expect.objectContaining({
+              language: 'en',
+              sharedId: entity2.sharedId,
+              permissions: [{ refId: 'actorId', type: GrantType.User, level: AccessLevel.Write }],
+              published: false,
+            }),
+            expect.objectContaining({
+              sharedId: entity3.sharedId,
+              permissions: [{ refId: 'actorId', type: GrantType.User, level: AccessLevel.Write }],
+              published: false,
+            }),
+          ])
+        );
       });
 
       it('should handle empty array gracefully', async () => {
         const { sut, dispatcher, eventBus, transactionManager } = createSut(
           undefined,
-          postgresTemplates
+          postgresCore
         );
 
         await transactionManager.run(async () => {
@@ -422,7 +440,7 @@ describe('EntitiesService', () => {
 
     describe('when creating an Entity', () => {
       it('should create an entity', async () => {
-        const { sut } = createSut(undefined, postgresTemplates);
+        const { sut } = createSut(undefined, postgresCore);
         const template = await getTemplate(factory.id('Document'));
 
         const expectedEntity = Entity.create({
@@ -445,7 +463,7 @@ describe('EntitiesService', () => {
       });
 
       it('should use default template when none is provided', async () => {
-        const { sut } = createSut(undefined, postgresTemplates);
+        const { sut } = createSut(undefined, postgresCore);
         const template = await getTemplate(factory.id('Document'));
 
         const expectedEntity = Entity.create({
@@ -470,7 +488,7 @@ describe('EntitiesService', () => {
         });
         const { sut, transactionManager, eventBus, actor } = createSut(
           { eventEmitter, entitiesDS },
-          postgresTemplates
+          postgresCore
         );
         await testingEnvironment.setFixtures({
           ...fixtures,
@@ -489,7 +507,7 @@ describe('EntitiesService', () => {
           ],
         });
 
-        const [entity] = await loadEntities(['entity-1']);
+        const [entity] = await loadEntities(['entity-1'], postgresCore);
 
         await transactionManager.run(async () =>
           sut.update([entity], {
@@ -559,10 +577,10 @@ describe('EntitiesService', () => {
 
       it('should persist changes for all changed entities in the database', async () => {
         const eventEmitter = TestUtils.mockClass<EventEmitter>({ emit: jest.fn() });
-        const { sut, transactionManager, actor } = createSut({ eventEmitter }, postgresTemplates);
+        const { sut, transactionManager, actor } = createSut({ eventEmitter }, postgresCore);
         const template = await getTemplate(factory.id('Document'));
 
-        const entities = await loadEntities(['entity-1', 'entity-2']);
+        const entities = await loadEntities(['entity-1', 'entity-2'], postgresCore);
         const entity1 = entities.find(e => e.sharedId === 'entity-1')!;
         const entity2 = entities.find(e => e.sharedId === 'entity-2')!;
 
@@ -630,10 +648,10 @@ describe('EntitiesService', () => {
 
       it('should skip entities that have not changed and only update the changed ones', async () => {
         const eventEmitter = TestUtils.mockClass<EventEmitter>({ emit: jest.fn() });
-        const { sut, transactionManager, actor } = createSut({ eventEmitter }, postgresTemplates);
+        const { sut, transactionManager, actor } = createSut({ eventEmitter }, postgresCore);
         const template = await getTemplate(factory.id('Document'));
 
-        const entities = await loadEntities(['entity-1', 'entity-2']);
+        const entities = await loadEntities(['entity-1', 'entity-2'], postgresCore);
         const entity1 = entities.find(e => e.sharedId === 'entity-1')!;
         const entity2 = entities.find(e => e.sharedId === 'entity-2')!;
 
@@ -683,11 +701,11 @@ describe('EntitiesService', () => {
         const eventEmitter = TestUtils.mockClass<EventEmitter>({ emit: jest.fn() });
         const { sut, transactionManager, eventBus, actor } = createSut(
           { eventEmitter },
-          postgresTemplates
+          postgresCore
         );
         const template = await getTemplate(factory.id('Document'));
 
-        const entities = await loadEntities(['entity-1', 'entity-2']);
+        const entities = await loadEntities(['entity-1', 'entity-2'], postgresCore);
         const entity1 = entities.find(e => e.sharedId === 'entity-1')!;
         const entity2 = entities.find(e => e.sharedId === 'entity-2')!;
 
@@ -750,10 +768,10 @@ describe('EntitiesService', () => {
         const eventEmitter = TestUtils.mockClass<EventEmitter>({ emit: jest.fn() });
         const { sut, transactionManager, eventBus, actor } = createSut(
           { eventEmitter },
-          postgresTemplates
+          postgresCore
         );
 
-        const entities = await loadEntities(['entity-1', 'entity-2']);
+        const entities = await loadEntities(['entity-1', 'entity-2'], postgresCore);
 
         await transactionManager.run(async () => {
           await sut.update(entities, {
@@ -792,7 +810,7 @@ describe('EntitiesService', () => {
         const eventEmitter = TestUtils.mockClass<EventEmitter>({ emit: jest.fn() });
         const { sut, transactionManager, eventBus, actor } = createSut(
           { eventEmitter },
-          postgresTemplates
+          postgresCore
         );
 
         await transactionManager.run(async () => {
@@ -812,7 +830,7 @@ describe('EntitiesService', () => {
       });
 
       it('should throw when called outside a transaction', async () => {
-        const { sut, actor } = createSut(undefined, postgresTemplates);
+        const { sut, actor } = createSut(undefined, postgresCore);
 
         await expect(
           sut.update([], {

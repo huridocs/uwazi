@@ -8,7 +8,7 @@ class UsersDAOFactory {
   static default(): MongoUsersDAO {
     const tenant = ExecutionContext.currentTenant;
 
-    if (tenant.featureFlags?.postgresUsers) {
+    if (tenant.featureFlags?.postgresCore) {
       return new PostgresUsersDAO({
         tenantId: tenant.name,
         pgTransactionManager: ExecutionContext.postgresTransactionManager,

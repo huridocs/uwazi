@@ -117,19 +117,19 @@ const fixtures: DBFixture = {
 
 type TestConfig = {
   name: string;
-  postgresTemplates: boolean;
+  postgresCore: boolean;
   getTemplates: () => Promise<any[]>;
 };
 
 const testConfigs: TestConfig[] = [
   {
     name: 'Mongo',
-    postgresTemplates: false,
+    postgresCore: false,
     getTemplates: async () => testingEnvironment.db.getAllFrom('templates') as Promise<any[]>,
   },
   {
     name: 'Postgres',
-    postgresTemplates: true,
+    postgresCore: true,
     getTemplates: async () =>
       testingEnvironment.pg
         .getAllFrom('templates')
@@ -139,7 +139,7 @@ const testConfigs: TestConfig[] = [
 
 const createSut = (
   overrides?: { templateTranslationService?: TemplateTranslationService; dispatcher?: Dispatcher },
-  postgresTemplates = false
+  postgresCore = false
 ) =>
   testingEnvironment.runWithContext(
     () => {
@@ -152,11 +152,11 @@ const createSut = (
 
       return { sut };
     },
-    postgresTemplates
+    postgresCore
       ? {
           tenant: {
             ...testingTenants.current(),
-            featureFlags: { postgresTemplates: true },
+            featureFlags: { postgresCore: true },
           },
         }
       : undefined
@@ -176,9 +176,9 @@ describe('UpdateTemplateUseCase', () => {
     await testingEnvironment.tearDown();
   });
 
-  describe.each(testConfigs)('$name', ({ postgresTemplates, getTemplates }) => {
+  describe.each(testConfigs)('$name', ({ postgresCore, getTemplates }) => {
     it('should update a template name', async () => {
-      const { sut } = createSut(undefined, postgresTemplates);
+      const { sut } = createSut(undefined, postgresCore);
 
       await sut.execute(
         {
@@ -207,7 +207,7 @@ describe('UpdateTemplateUseCase', () => {
     });
 
     it('should update template properties', async () => {
-      const { sut } = createSut(undefined, postgresTemplates);
+      const { sut } = createSut(undefined, postgresCore);
 
       await sut.execute(
         {
@@ -246,7 +246,7 @@ describe('UpdateTemplateUseCase', () => {
     });
 
     it('should throw when trying to delete an inherited property', async () => {
-      const { sut } = createSut(undefined, postgresTemplates);
+      const { sut } = createSut(undefined, postgresCore);
 
       await expect(
         sut.execute(
@@ -262,7 +262,7 @@ describe('UpdateTemplateUseCase', () => {
     });
 
     it('should not allow to swap property names', async () => {
-      const { sut } = createSut(undefined, postgresTemplates);
+      const { sut } = createSut(undefined, postgresCore);
 
       await expect(
         sut.execute(
@@ -291,7 +291,7 @@ describe('UpdateTemplateUseCase', () => {
     });
 
     it('should preserve property order when properties are reordered', async () => {
-      const { sut } = createSut(undefined, postgresTemplates);
+      const { sut } = createSut(undefined, postgresCore);
 
       await sut.execute(
         {
@@ -353,7 +353,7 @@ describe('UpdateTemplateUseCase', () => {
         }),
       });
 
-      const { sut } = createSut({ dispatcher }, postgresTemplates);
+      const { sut } = createSut({ dispatcher }, postgresCore);
 
       await sut.execute(
         {
@@ -386,7 +386,7 @@ describe('UpdateTemplateUseCase', () => {
 
     it(`should emit a ${TemplateUpdatedEvent.name} event`, async () => {
       const emitSpy = spyOnEmit();
-      const { sut } = createSut(undefined, postgresTemplates);
+      const { sut } = createSut(undefined, postgresCore);
 
       await sut.execute(
         {
@@ -416,7 +416,7 @@ describe('UpdateTemplateUseCase', () => {
       const dispatcher = TestUtils.mockClass<Dispatcher>({
         postProcessTemplateEntities: jest.fn(),
       });
-      const { sut } = createSut({ dispatcher }, postgresTemplates);
+      const { sut } = createSut({ dispatcher }, postgresCore);
 
       await sut.execute(
         {
@@ -437,13 +437,13 @@ describe('UpdateTemplateUseCase', () => {
       expect(dispatcher.postProcessTemplateEntities).toHaveBeenCalled();
     });
 
-    if (postgresTemplates) {
+    if (postgresCore) {
       it('should NOT revert the PG write when the Mongo transaction rolls back', async () => {
         const templateTranslationService = TestUtils.mockClass<TemplateTranslationService>({
           updateTemplateTranslation: jest.fn().mockRejectedValue(new Error('Update failed')),
         });
 
-        const { sut } = createSut({ templateTranslationService }, postgresTemplates);
+        const { sut } = createSut({ templateTranslationService }, postgresCore);
 
         await expect(
           sut.execute(

@@ -7,7 +7,7 @@ export class TemplatesSyncHandlerFactory {
   static default(): MongoTemplatesSyncHandler | PostgresTemplatesSyncHandler {
     const tenant = ExecutionContext.currentTenant;
 
-    if (tenant.featureFlags?.postgresTemplates) {
+    if (tenant.featureFlags?.postgresCore) {
       return new PostgresTemplatesSyncHandler({
         tenantId: tenant.name,
         mongoDb: getConnection(),

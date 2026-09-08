@@ -31,6 +31,8 @@ import { User } from '#api/users.v2/model/User.js';
 import { UserSchema } from '#shared/types/userType.js';
 import { ObjectUtils } from '#api/common.v2/utils/Object.js';
 import { UwaziDispatcherFactory } from '#api/core/infrastructure/jobs/UwaziDispatcherFactory.js';
+import { PostgresEntityMapper } from '#api/core/infrastructure/postgresql/entity/PostgresEntityMapper.js';
+import type { EntityRow } from '#api/core/infrastructure/postgresql/entity/PostgresEntityRow.js';
 import {
   PageLocalesMigrationConfig,
   PageMigrationConfig,
@@ -160,12 +162,15 @@ const testingEnvironment = {
     await this.setTenant();
     this.setPermissions();
     this.setFakeContext();
-    await this.setFixtures(fixtures);
-    await this.setElastic(elasticIndex);
+    // Connect Postgres before mirroring fixtures: setFixtures mirrors to Postgres only
+    // when pgEnabled is true, so the first setUp(fixtures, { postgres: true }) would
+    // otherwise silently skip the mirror.
     if (postgres && !this.pgEnabled) {
       await testingPG.connect();
       this.pgEnabled = true;
     }
+    await this.setFixtures(fixtures);
+    await this.setElastic(elasticIndex);
   },
 
   testingFilesPath(fileName: string) {
@@ -394,13 +399,15 @@ const testingEnvironment = {
   },
 
   db: {
-    async getAllFrom(collectionName: string) {
-      if (
-        testingEnvironment.pgEnabled &&
-        testingTenants.current().featureFlags?.postgresFiles &&
-        ['files', 'templates', 'thesauri'].includes(collectionName)
-      ) {
-        return testingPG.getAllFrom(collectionName);
+    async getAllFrom(collectionName: string): Promise<any[]> {
+      if (testingEnvironment.pgEnabled && testingTenants.current().featureFlags?.postgresCore) {
+        if (collectionName === 'entities') {
+          const rows = await testingPG.getAllFrom<EntityRow>('entities');
+          return rows.map(row => PostgresEntityMapper.toEntityDBO(row));
+        }
+        if (['files', 'templates', 'thesauri'].includes(collectionName)) {
+          return testingPG.getAllFrom(collectionName);
+        }
       }
       if (!testingDB.mongodb) {
         throw new Error('Testing mongodb not connected');
