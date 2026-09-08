@@ -1,4 +1,5 @@
 /** @jest-environment jsdom */
+/* eslint-disable max-lines, max-statements */
 import React from 'react';
 import { render, screen, fireEvent, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -36,8 +37,6 @@ class ResizeObserverMock {
   unobserve = jest.fn();
 
   disconnect = jest.fn();
-
-  constructor(_callback: ResizeObserverCallback) {}
 }
 
 global.ResizeObserver = ResizeObserverMock as typeof ResizeObserver;
@@ -52,7 +51,7 @@ const sampleEntity: Partial<EntityType> = {
   metadata: {},
 };
 
-const sampleMainDocument = sampleEntity.documents![0];
+const [sampleMainDocument] = sampleEntity.documents!;
 
 const sampleTemplate = [
   { _id: 'template1', name: 'Template 1', properties: [], commonProperties: [] },
@@ -341,6 +340,7 @@ describe('Entity view', () => {
       expect(titleInput).toHaveValue('Dirty from side');
 
       fireEvent.click(mainTablist().getByRole('tab', { name: 'Metadata' }));
+      expect(screen.queryByText('Unsaved changes')).not.toBeInTheDocument();
       await waitFor(() => {
         expect(screen.getByTestId('entity-edit-form')).toBeInTheDocument();
         expect(screen.getByRole('textbox', { name: /Title/ })).toHaveValue('Dirty from side');
@@ -349,6 +349,36 @@ describe('Entity view', () => {
 
       const metadataTab = mainTablist().getByRole('tab', { name: /Metadata/ });
       expect(within(metadataTab).getByTestId('accent-dot')).toBeInTheDocument();
+    });
+
+    it('does not prompt to discard when switching main or side tabs with dirty edits', async () => {
+      renderEntity({ user: adminUser, withServices: true });
+      await checkEntityRendered();
+
+      fireEvent.click(sideTablist().getByRole('tab', { name: 'Metadata' }));
+      fireEvent.click(await screen.findByRole('button', { name: 'Edit' }));
+      fireEvent.change(await screen.findByRole('textbox', { name: /Title/ }), {
+        target: { value: 'Dirty draft' },
+      });
+
+      fireEvent.click(mainTablist().getByRole('tab', { name: relationshipsMainTab }));
+      expect(screen.queryByText('Unsaved changes')).not.toBeInTheDocument();
+      await waitFor(() => {
+        expect(mainTablist().getByRole('tab', { name: relationshipsMainTab })).toHaveAttribute(
+          'aria-selected',
+          'true'
+        );
+      });
+
+      fireEvent.click(sideTablist().getByRole('tab', { name: 'Metadata' }));
+      expect(screen.queryByText('Unsaved changes')).not.toBeInTheDocument();
+      await waitFor(() => {
+        expect(sideTablist().getByRole('tab', { name: 'Metadata' })).toHaveAttribute(
+          'aria-selected',
+          'true'
+        );
+      });
+      expect(screen.getByRole('textbox', { name: /Title/ })).toHaveValue('Dirty draft');
     });
   });
 

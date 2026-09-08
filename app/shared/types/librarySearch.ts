@@ -12,6 +12,8 @@ type LibrarySearchQuery = {
   limit?: number;
   sort?: string;
   order?: LibrarySortOrder;
+  /** Geo-only projection used by the library map (GET /api/search?geolocation=true). */
+  geolocation?: boolean;
 };
 
 type LibraryFacetBucket = {

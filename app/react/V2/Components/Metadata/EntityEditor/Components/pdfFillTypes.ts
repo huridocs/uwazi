@@ -15,6 +15,7 @@ type PdfFillHost = {
   isEditing: boolean;
   language: string;
   documentLanguage?: string;
+  hasMainDocument: boolean;
   savedPropertySelections?: PropertySelectionSchema[];
   documentPdfSelection: TextSelection | undefined;
   draftPropertySelections: PropertySelectionSchema[];

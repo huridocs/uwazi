@@ -1,13 +1,12 @@
 import React from 'react';
 import { Controller, FieldValues, Path, RegisterOptions, useFormContext } from 'react-hook-form';
-import { Translate } from '#app/I18N/index.js';
-import { InputField } from '#V2/Components/Forms/index.js';
 import { secondsToISODate, parseLocalizedDate } from '#V2/shared/dateHelpers.js';
 import {
   EntityFieldError,
   EntityFieldLabel,
   getFieldErrorState,
 } from '../functions/fieldErrorState.js';
+import { DateRangeInputs } from './DateRangeInputs.js';
 import { EntityField } from './EntityField.js';
 
 type DateRangeFieldProps<TFormValues extends FieldValues = FieldValues> = {
@@ -57,48 +56,27 @@ const DateRangeField = <TFormValues extends FieldValues = FieldValues>({
                 required={Boolean(registerOptions?.required)}
                 showError={showError}
               />
-              <div className="flex flex-wrap gap-2 md:flex-row md:gap-4">
-                <div className="flex max-w-48 flex-row items-center gap-1">
-                  <label htmlFor={`${field}.from`} aria-hidden>
-                    <Translate>From</Translate>:
-                  </label>
-                  <InputField
-                    id={`${field}.from`}
-                    hideLabel
-                    type="date"
-                    disabled={disabled}
-                    ref={ref}
-                    onBlur={onBlur}
-                    value={fromISODate || ''}
-                    hasErrors={showError}
-                    max={toISODate ?? undefined}
-                    className="min-w-0 flex-1"
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                      const seconds = e.target.value ? parseLocalizedDate(e.target.value) : null;
-                      onChange({ from: seconds, to });
-                    }}
-                  />
-                </div>
-                <div className="flex max-w-48 flex-row items-center gap-1">
-                  <label htmlFor={`${field}.to`} aria-hidden>
-                    <Translate>To</Translate>:
-                  </label>
-                  <InputField
-                    id={`${field}.to`}
-                    hideLabel
-                    type="date"
-                    disabled={disabled}
-                    onBlur={onBlur}
-                    value={toISODate || ''}
-                    hasErrors={showError}
-                    min={fromISODate ?? undefined}
-                    className="min-w-0 flex-1"
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                      const seconds = e.target.value ? parseLocalizedDate(e.target.value) : null;
-                      onChange({ from, to: seconds });
-                    }}
-                  />
-                </div>
+              <div className="flex gap-2">
+                <DateRangeInputs
+                  fromId={`${field}.from`}
+                  toId={`${field}.to`}
+                  fromValue={fromISODate || ''}
+                  toValue={toISODate || ''}
+                  disabled={disabled}
+                  fromRef={ref}
+                  onBlur={onBlur}
+                  hasErrors={showError}
+                  fromMax={toISODate ?? undefined}
+                  toMin={fromISODate ?? undefined}
+                  onFromChange={e => {
+                    const seconds = e.target.value ? parseLocalizedDate(e.target.value) : null;
+                    onChange({ from: seconds, to });
+                  }}
+                  onToChange={e => {
+                    const seconds = e.target.value ? parseLocalizedDate(e.target.value) : null;
+                    onChange({ from, to: seconds });
+                  }}
+                />
               </div>
               <EntityFieldError showError={showError} message={message} />
             </div>

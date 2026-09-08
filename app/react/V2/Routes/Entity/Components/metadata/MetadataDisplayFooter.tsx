@@ -19,7 +19,7 @@ type MetadataDisplayFooterProps = {
 
 const MetadataDisplayFooter = ({ host }: MetadataDisplayFooterProps) => {
   const entity = useEntityScopedEntity();
-  const { isEditing, isSaving, formMountHost, formId, cancelEdit, startEditing } =
+  const { isEditing, isSaving, formMountHost, formId, startEditing, requestDiscard } =
     useMetadataEditing();
   const [sharing, setSharing] = useState(false);
   const { confirming, isDeleting, requestDelete, cancelDelete, confirmDelete } = useDeleteEntity();
@@ -30,7 +30,7 @@ const MetadataDisplayFooter = ({ host }: MetadataDisplayFooterProps) => {
       {showSaveCancel ? (
         <div className="flex w-full items-center gap-3">
           <div className="flex-1" />
-          <Button type="button" variant="warm" onClick={cancelEdit}>
+          <Button type="button" variant="warm" onClick={() => requestDiscard('discard')}>
             <Translate>Cancel</Translate>
           </Button>
           <Button type="submit" variant="success" form={formId} disabled={isSaving}>
