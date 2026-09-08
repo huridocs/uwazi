@@ -103,6 +103,15 @@ describe('HttpSearchService', () => {
     );
   });
 
+  it('forwards geolocation to GET /api/search', async () => {
+    await httpSearchService.searchLibrary({ geolocation: true, from: 0, limit: 9999 });
+    expect(getJson).toHaveBeenCalledWith(
+      'search',
+      expect.objectContaining({ geolocation: true, from: 0, limit: 9999 }),
+      expect.any(Object)
+    );
+  });
+
   it('returns the apiClient error without mapping', async () => {
     const apiError = new ApiError('unavailable', { kind: 'http', status: 503, retryable: true });
     getJson.mockResolvedValue([undefined, apiError]);

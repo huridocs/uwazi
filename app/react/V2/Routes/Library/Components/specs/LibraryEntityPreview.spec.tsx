@@ -201,6 +201,9 @@ describe('LibraryEntityPreview', () => {
     renderPreview(entityWithDocument.sharedId, jest.fn(), adminUser);
     fireEvent.click(await screen.findByRole('tab', { name: /^Relationships/ }));
     expect(screen.queryByRole('button', { name: 'Edit' })).not.toBeInTheDocument();
+    const panel = screen.getByRole('tabpanel');
+    expect(panel).toHaveClass('bg-paper');
+    expect(panel).not.toHaveClass('bg-warm');
   });
 
   it('shows file empty copy instead of empty tables when there are no files', async () => {
@@ -216,6 +219,31 @@ describe('LibraryEntityPreview', () => {
     ).toBeInTheDocument();
     expect(screen.queryByRole('checkbox', { name: 'Select all files' })).not.toBeInTheDocument();
     expect(screen.queryByRole('button', { name: 'Edit' })).not.toBeInTheDocument();
+  });
+
+  it('shows Add file on Files and opens the same add-file modal as entity viewer', async () => {
+    renderPreview(entityWithoutDocument.sharedId, jest.fn(), adminUser);
+    fireEvent.click(await screen.findByRole('tab', { name: /Files/ }));
+
+    const footer = await screen.findByTestId('library-entity-preview-footer');
+    fireEvent.click(within(footer).getByRole('button', { name: /Add file/ }));
+
+    expect(await screen.findByText('Click to select files')).toBeInTheDocument();
+    expect(screen.getByText('or drag and drop here')).toBeInTheDocument();
+  });
+
+  it('does not offer Add file on Metadata', async () => {
+    renderPreview(entityWithoutDocument.sharedId, jest.fn(), adminUser);
+    fireEvent.click(await screen.findByRole('tab', { name: 'Metadata' }));
+    const footer = await screen.findByTestId('library-entity-preview-footer');
+    expect(within(footer).queryByRole('button', { name: /Add file/ })).not.toBeInTheDocument();
+  });
+
+  it('does not offer Add file to guests on Files', async () => {
+    renderPreview(entityWithoutDocument.sharedId);
+    fireEvent.click(await screen.findByRole('tab', { name: /Files/ }));
+    const footer = await screen.findByTestId('library-entity-preview-footer');
+    expect(within(footer).queryByRole('button', { name: /Add file/ })).not.toBeInTheDocument();
   });
 
   it('shows an empty state when the entity cannot be loaded', async () => {

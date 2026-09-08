@@ -28,6 +28,7 @@ import {
   PdfFillProvider,
   type PdfFillHost,
 } from '#V2/Components/Metadata/EntityEditor/Components/EntityPdfFill.js';
+import { MAIN_TAB_PAPER_PADDING } from '#V2/Routes/Entity/Tabs/tabSurface.js';
 
 type MetadataTabProps = {
   entity: Entity;
@@ -219,8 +220,8 @@ const MetadataTab = ({ entity, host }: MetadataTabProps) => {
 
   return (
     <div
-      className={`min-h-0 min-w-0 flex-1 overflow-y-auto py-3 pb-8 ${
-        host === 'side' ? 'px-3' : 'px-4'
+      className={`min-h-0 min-w-0 flex-1 overflow-y-auto ${
+        host === 'side' ? 'px-3 py-3 pb-8' : MAIN_TAB_PAPER_PADDING
       }`}
     >
       {!showEditor && <MetadataRecord entity={entity} onOpenEntity={openEntityOverlayTarget} />}
