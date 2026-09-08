@@ -6,6 +6,7 @@ import {
   EntityPageViewer,
 } from '../Components/context/index.js';
 import { MAIN_TAB, type MainTabId } from './tabIds.js';
+import { MAIN_TAB_PAPER_PADDING, mainTabPanelSurfaceClass } from './tabSurface.js';
 import { keepMetadataTab } from '../Components/context/metadataEditingSession.js';
 import { useResolvedEntityMainTab } from './hooks/useResolvedEntityMainTab.js';
 import { useEntityTabNavigation } from './EntityTabsContext.js';
@@ -44,7 +45,7 @@ const mainTabSwitchContent = ({
       return null;
     case MAIN_TAB.RELATIONSHIPS:
       return (
-        <div className="flex min-h-0 flex-1 flex-col px-4 pt-2">
+        <div className={`flex min-h-0 min-w-0 flex-1 flex-col ${MAIN_TAB_PAPER_PADDING}`}>
           <RelationshipsPanel
             focusDocumentOnSelect={relationshipsOnMain}
             onFocusDocument={focusDocumentPanel}
@@ -100,7 +101,7 @@ const MainTabsContentComponent = (props: MainTabsContentProps) => {
       role="tabpanel"
       id={`entity-main-panel-${panel.activeTabId}`}
       aria-labelledby={`entity-main-tab-${panel.activeTabId}`}
-      className={`flex h-full min-h-0 w-full flex-col ${panel.metadataActive ? 'bg-paper' : 'bg-warm'}`}
+      className={`flex h-full min-h-0 w-full flex-col ${mainTabPanelSurfaceClass(panel.activeTabId, panel.metadataActive)}`}
     >
       {panel.showMetadataOnMain ? (
         <div className={panel.metadataActive ? 'flex min-h-0 flex-1 flex-col' : 'hidden'}>

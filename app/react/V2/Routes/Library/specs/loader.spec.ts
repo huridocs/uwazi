@@ -79,4 +79,44 @@ describe('library loader', () => {
       expect.anything()
     );
   });
+
+  it('fetches geolocation rows for map view while keeping list aggregations', async () => {
+    const listResult = {
+      rows: [{ title: 'Entity 1', sharedId: 'abc', template: 't1' }],
+      totalRows: 8,
+      aggregations: {
+        templates: [{ id: 't1', count: 8 }],
+        published: { published: 8, restricted: 0 },
+        properties: {},
+      },
+    };
+    const geoResult = {
+      rows: [{ title: 'Geo entity', sharedId: 'geo-1', template: 't1' }],
+      totalRows: 2,
+      aggregations: { templates: [], published: { published: 0, restricted: 0 }, properties: {} },
+    };
+    searchLibrary.mockImplementation(async query => [query.geolocation ? geoResult : listResult]);
+
+    const result = await runLoader('http://localhost/en/libraryv2?view=map&search=batman');
+
+    expect(searchLibrary).toHaveBeenCalledWith(
+      expect.not.objectContaining({ geolocation: true }),
+      expect.anything()
+    );
+    expect(searchLibrary).toHaveBeenCalledWith(
+      expect.objectContaining({
+        searchTerm: 'batman',
+        geolocation: true,
+        from: 0,
+        limit: 9999,
+      }),
+      expect.anything()
+    );
+    expect(result).toMatchObject({
+      rows: geoResult.rows,
+      totalRows: 2,
+      aggregations: listResult.aggregations,
+      urlState: expect.objectContaining({ view: 'map', search: 'batman' }),
+    });
+  });
 });
