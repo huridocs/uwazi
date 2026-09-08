@@ -342,7 +342,7 @@ describe('InformationExtraction Error Handling', () => {
       expect(model.findingSuggestions).toBe(false);
     });
 
-    it('should retry on transient failures', async () => {
+    it('should retry the results request on a transient 5xx', async () => {
       const extractorId = factory.id('prop1extractor');
 
       await ixTestAccess.writeModel({
@@ -352,25 +352,23 @@ describe('InformationExtraction Error Handling', () => {
         creationDate: Date.now(),
       });
 
-      // Simulate two transient failures followed by success
-      IXExternalService.simulateServiceError(503);
-      IXExternalService.simulateServiceError(503);
-      IXExternalService.simulateSuccess();
+      IXExternalService.setResults([]);
+      IXExternalService.failNextResultsRequests(2, 503);
 
       await informationExtraction.processResults({
         tenant: 'tenant1',
-        task: 'create_model',
+        task: 'suggestions',
         params: { id: extractorId.toString() },
+        data_url: `http://localhost:${IXExternalService.actualPort}/suggestions_results`,
         success: true,
       });
 
-      const model = await ixTestAccess.readModel(extractorId);
-      expect(model.status).toBe(ModelStatus.ready);
+      // two failures then a success: the request must actually be re-issued
+      expect(IXExternalService.requestCounts.resultsData).toBe(3);
     });
 
-    it('should not retry on non-retryable errors', async () => {
+    it('should not retry the results request on a non-retryable 4xx', async () => {
       const extractorId = factory.id('prop1extractor');
-      const errorMessage = 'File size exceeds maximum allowed limit';
 
       await ixTestAccess.writeModel({
         extractorId,
@@ -379,19 +377,18 @@ describe('InformationExtraction Error Handling', () => {
         creationDate: Date.now(),
       });
 
-      IXExternalService.simulateServiceError(413);
+      IXExternalService.setResults([]);
+      IXExternalService.failNextResultsRequests(1, 400);
 
       await informationExtraction.processResults({
         tenant: 'tenant1',
-        task: 'create_model',
+        task: 'suggestions',
         params: { id: extractorId.toString() },
-        success: false,
-        error_message: errorMessage,
+        data_url: `http://localhost:${IXExternalService.actualPort}/suggestions_results`,
+        success: true,
       });
 
-      const model = await ixTestAccess.readModel(extractorId);
-      expect(model.status).toBe(ModelStatus.failed);
-      expect(model.findingSuggestions).toBe(false);
+      expect(IXExternalService.requestCounts.resultsData).toBe(1);
     });
 
     it('should handle file not found errors', async () => {
