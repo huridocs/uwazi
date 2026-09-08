@@ -6,10 +6,11 @@ import * as csvApi from '#api/csv/csvLoader.js';
 import { TranslationDBO } from '#api/core/infrastructure/mongodb/translation/schemas/TranslationDBO.js';
 import { translationsRoutes as i18nRoutes } from '#api/core/infrastructure/express/translation/routes.js';
 import { MongoSettingsDataSource } from '#api/core/infrastructure/mongodb/MongoSettingsDataSource.js';
+import { PostgresSettingsDataSource } from '#api/core/infrastructure/postgresql/settings/PostgresSettingsDataSource.js';
 import '#api/pages.v2/infrastructure/listeners/AddLanguagePagesListener.js';
 import '#api/pages.v2/infrastructure/listeners/DeleteLanguagePagesListener.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
-import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { testingEnvironment, SettingsDSWithContext } from '#api/utils/testingEnvironment.js';
 import { testingTenants } from '#api/utils/testingTenants.js';
 import type { DBFixture } from '#api/utils/testing_db.js';
 import { TestEmitSources, iosocket, setUpApp } from '#api/utils/testingRoutes.js';
@@ -82,6 +83,7 @@ describe('i18n translations routes', () => {
     jest.spyOn(search, 'deleteLanguage').mockResolvedValue(undefined as any);
     await testingEnvironment.setUp(createFixtures(), {
       postgres: true,
+      postgresMirror: ['translationsV2', 'settings'],
     });
   });
 
@@ -95,6 +97,9 @@ describe('i18n translations routes', () => {
         featureFlags: postgresCore ? { postgresCore: true } : {},
       });
     };
+
+    const settingsDataSourceClass = () =>
+      postgresCore ? PostgresSettingsDataSource : MongoSettingsDataSource;
 
     beforeEach(async () => {
       await testingEnvironment.setFixtures(createFixtures());
@@ -381,7 +386,7 @@ describe('i18n translations routes', () => {
             iosocket.emit.mockReset();
 
             errorMock = jest
-              .spyOn(MongoSettingsDataSource.prototype, 'addLanguage')
+              .spyOn(settingsDataSourceClass().prototype, 'addLanguage')
               .mockImplementation(() => {
                 throw new Error('error message');
               });
@@ -578,7 +583,7 @@ describe('i18n translations routes', () => {
             iosocket.emit.mockReset();
 
             settingsDeleteLanguageMock = jest
-              .spyOn(MongoSettingsDataSource.prototype, 'deleteLanguage')
+              .spyOn(settingsDataSourceClass().prototype, 'deleteLanguage')
               .mockImplementation(() => {
                 throw new Error('error message');
               });
@@ -598,9 +603,7 @@ describe('i18n translations routes', () => {
         describe('when the language is still being installed', () => {
           it('should return 409 and not start the delete operation', async () => {
             applyBackendTenant();
-            await testingEnvironment.db
-              .getCollection('settings')!
-              .updateOne({ 'languages.key': 'es' }, { $set: { 'languages.$.installing': true } });
+            await SettingsDSWithContext.default().setLanguageInstalling('es', true);
 
             const response = await request(app).delete('/api/translations/languages?key=es').send();
 

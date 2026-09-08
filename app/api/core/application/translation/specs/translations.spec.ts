@@ -112,7 +112,7 @@ describe('translations', () => {
   beforeAll(async () => {
     await testingEnvironment.setUp(fixtures, {
       postgres: true,
-      postgresMirror: ['translationsV2'],
+      postgresMirror: ['translationsV2', 'settings'],
     });
   });
 
@@ -136,6 +136,12 @@ describe('translations', () => {
     beforeEach(async () => {
       jest.spyOn(setupSockets, 'emitToTenant').mockImplementation();
       await testingEnvironment.setFixtures(fixtures);
+      if (postgresCore) {
+        testingTenants.changeCurrentTenant({
+          ...testingTenants.current(),
+          featureFlags: { postgresCore: true },
+        });
+      }
     });
 
     describe('get()', () => {
