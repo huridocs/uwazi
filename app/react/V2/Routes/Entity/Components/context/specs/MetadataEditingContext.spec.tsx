@@ -83,11 +83,11 @@ describe('MetadataEditingContext', () => {
       result.current.setIsDirty(true);
     });
     act(() => {
-      result.current.requestDiscard('tab', proceed, onStay);
+      result.current.requestDiscard('discard', proceed, onStay);
     });
 
     expect(proceed).not.toHaveBeenCalled();
-    expect(result.current.pendingDiscardAction).toBe('tab');
+    expect(result.current.pendingDiscardAction).toBe('discard');
     expect(result.current.isEditing).toBe(true);
 
     act(() => {

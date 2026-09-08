@@ -9,7 +9,7 @@ import type { MetadataEditingHost } from './metadataEditingSession.js';
 
 const EDIT_ENTITY_FORM_ID = 'edit-entity-form' as const;
 
-type MetadataDirtyLeaveAction = 'discard' | 'tab';
+type MetadataDirtyLeaveAction = 'discard';
 
 type MetadataEditingState = {
   isEditing: boolean;
