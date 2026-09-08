@@ -1,11 +1,10 @@
 import React, { Fragment, useEffect, useMemo, useRef } from 'react';
 import { useAtomValue } from 'jotai';
-import { useWatch } from 'react-hook-form';
+import { useFormState, useWatch } from 'react-hook-form';
 import { t } from '#app/I18N/index.js';
 import { extractUploadIdFromMediaValue } from '#shared/entitySave/mediaMetadata.js';
 import { templatesAtom } from '#V2/atoms/templatesAtom.js';
 import { thesauriAtom } from '#V2/atoms/thesauriAtom.js';
-import type { MetadataValue } from '#V2/formatters/types.js';
 import { MultiselectListOption } from '../../Forms/index.js';
 import { TitleField, IconField, TemplateField } from './Components/index.js';
 import { EditEntityPropertyField } from './EditEntityPropertyField.js';
@@ -28,12 +27,12 @@ import { findFirstErrorPath, focusAndScrollToInvalidField } from './functions/fo
 import {
   getGroupedRelationshipSyncPairs,
   groupRelationshipProperties,
-  type DisplayProperty,
 } from './functions/relationshipGrouping.js';
 import { sortByTemplatePropertyOrder } from '../sortByTemplatePropertyOrder.js';
 import {
   defaultRelationshipLookup,
   mergeRelationshipLookupOptions,
+  type RelationshipLookupSearchArgs,
 } from './functions/relationshipFieldHelpers.js';
 import { usePdfFill } from './Components/EntityPdfFill.js';
 
@@ -53,15 +52,17 @@ const EditEntity = ({
 }: EditEntityProps) => {
   const templates = useAtomValue(templatesAtom);
   const thesauri = useAtomValue(thesauriAtom);
-  const { handleSubmit, control, getValues, setValue, reset, setError, formState } = formContext;
+  const { handleSubmit, control, getValues, setValue, reset, setError } = formContext;
+  const { isDirty, dirtyFields } = useFormState({ control });
   const selectedTemplate = useWatch({ control, name: 'template' });
   const metadata = useWatch({ control, name: 'metadata' });
   const previousTemplateRef = useRef(selectedTemplate);
   const { draftPropertySelections } = usePdfFill();
+  const hasDirtyFields = Object.keys(dirtyFields).length > 0;
 
   useEffect(() => {
-    onDirtyChange?.(isEntityEditorDirty(formState.isDirty, draftPropertySelections.length));
-  }, [formState.isDirty, draftPropertySelections.length, onDirtyChange]);
+    onDirtyChange?.(isEntityEditorDirty(isDirty || hasDirtyFields, draftPropertySelections.length));
+  }, [hasDirtyFields, isDirty, draftPropertySelections.length, onDirtyChange]);
 
   const availableTemplates = useMemo(
     () =>
@@ -150,21 +151,8 @@ const EditEntity = ({
     [entity?._id, activeTemplate?._id]
   );
 
-  const relationshipLookupSearch = async (
-    property: DisplayProperty,
-    selectedValues: MetadataValue[],
-    lookedUpOptions: MultiselectListOption[] = [],
-    includeCachedOptions = true
-  ) =>
-    Promise.resolve(
-      mergeRelationshipLookupOptions({
-        property,
-        selectedValues,
-        lookedUpOptions,
-        cache: relationshipLookupCache,
-        includeCachedOptions,
-      })
-    );
+  const relationshipLookupSearch = async (args: RelationshipLookupSearchArgs) =>
+    Promise.resolve(mergeRelationshipLookupOptions({ ...args, cache: relationshipLookupCache }));
 
   useEffect(() => {
     if (!errors) return;

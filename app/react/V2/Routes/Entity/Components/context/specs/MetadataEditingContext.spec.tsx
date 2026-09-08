@@ -1,4 +1,5 @@
 /** @jest-environment jsdom */
+/* eslint-disable max-statements */
 import React, { type ReactNode } from 'react';
 import { act, renderHook } from '@testing-library/react';
 import type { ClientFile } from '#app/istore.js';
@@ -58,6 +59,53 @@ describe('MetadataEditingContext', () => {
     });
     expect(result.current.isEditing).toBe(true);
     expect(result.current.lastMetadataAnchor).toBe('side');
+  });
+
+  it('requestDiscard cancels immediately when the form is clean', () => {
+    const { result } = renderHook(() => useMetadataEditing(), { wrapper });
+
+    act(() => {
+      result.current.startEditing('main');
+      result.current.requestDiscard('discard');
+    });
+
+    expect(result.current.isEditing).toBe(false);
+    expect(result.current.pendingDiscardAction).toBeUndefined();
+  });
+
+  it('requestDiscard confirms before leaving a dirty form', () => {
+    const { result } = renderHook(() => useMetadataEditing(), { wrapper });
+    const proceed = jest.fn();
+    const onStay = jest.fn();
+
+    act(() => {
+      result.current.startEditing('main');
+      result.current.setIsDirty(true);
+    });
+    act(() => {
+      result.current.requestDiscard('tab', proceed, onStay);
+    });
+
+    expect(proceed).not.toHaveBeenCalled();
+    expect(result.current.pendingDiscardAction).toBe('tab');
+    expect(result.current.isEditing).toBe(true);
+
+    act(() => {
+      result.current.dismissDiscard();
+    });
+    expect(proceed).not.toHaveBeenCalled();
+    expect(onStay).toHaveBeenCalledTimes(1);
+    expect(result.current.pendingDiscardAction).toBeUndefined();
+    expect(result.current.isEditing).toBe(true);
+
+    act(() => {
+      result.current.requestDiscard('discard', proceed);
+      result.current.confirmDiscard();
+    });
+    expect(proceed).toHaveBeenCalledTimes(1);
+    expect(result.current.isEditing).toBe(false);
+    expect(result.current.isDirty).toBe(false);
+    expect(result.current.pendingDiscardAction).toBeUndefined();
   });
 
   it('cancelEdit clears editing, dirty, and saving state', () => {

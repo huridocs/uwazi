@@ -1,6 +1,7 @@
 /**
  * @jest-environment jsdom
  */
+// oxlint-disable max-statements
 import React from 'react';
 import { fireEvent, render, screen, within } from '@testing-library/react';
 import { Entity as EntityType } from '#V2/api/entities/types.js';
@@ -207,9 +208,7 @@ describe('LibraryEntityPreview', () => {
     renderPreview(entityWithoutDocument.sharedId);
     fireEvent.click(await screen.findByRole('tab', { name: /Files/ }));
     expect(
-      await screen.findByText(
-        'No primary documents yet. Promote a supporting file or add a new one.'
-      )
+      await screen.findByText('No primary documents yet. Add a file to get started.')
     ).toBeInTheDocument();
     expect(
       screen.getByText('No supporting files yet. Add a file to get started.')

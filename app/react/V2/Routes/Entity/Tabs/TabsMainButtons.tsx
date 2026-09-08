@@ -1,12 +1,13 @@
 import React, { useMemo } from 'react';
 import { useAtomValue } from 'jotai';
-import { TabButtons } from '#V2/Components/UI/index.js';
+import { TabButtons, useTabGroup } from '#V2/Components/UI/index.js';
 import type { Entity as EntityType, FileType } from '#V2/api/entities/types.js';
 import { settingsAtom, templatesAtom } from '#V2/atoms/index.js';
 import { localeAtom } from '#V2/atoms/translationsAtoms.js';
 import { countEntityFiles, countEntityRelationships } from '#V2/formatters/index.js';
 import { useMetadataEditing, useDirectedRelationships } from '../Components/context/index.js';
 import { EntityLanguageBar, TabLabel } from '../Components/shared/index.js';
+import { guardDirtyTabChange } from './guardDirtyTabChange.js';
 import { MAIN_TAB } from './tabIds.js';
 
 type TabsMainButtonsProps = {
@@ -16,7 +17,8 @@ type TabsMainButtonsProps = {
 };
 
 const TabsMainButtons = ({ entity, mainDocument, onTabChange }: TabsMainButtonsProps) => {
-  const { isDirty } = useMetadataEditing();
+  const { isDirty, requestDiscard } = useMetadataEditing();
+  const { activeTabId, selectTab } = useTabGroup('entity-main');
   const relationships = useDirectedRelationships();
   const templates = useAtomValue(templatesAtom);
   const locale = useAtomValue(localeAtom);
@@ -71,7 +73,15 @@ const TabsMainButtons = ({ entity, mainDocument, onTabChange }: TabsMainButtonsP
         <TabButtons
           groupId="entity-main"
           buttons={buttons}
-          onTabChange={onTabChange}
+          onTabChange={tabId =>
+            guardDirtyTabChange({
+              currentTab: activeTabId,
+              nextTab: tabId,
+              requestDiscard,
+              apply: onTabChange,
+              revert: selectTab,
+            })
+          }
           tabListAriaLabel="Entity primary"
         />
       </div>

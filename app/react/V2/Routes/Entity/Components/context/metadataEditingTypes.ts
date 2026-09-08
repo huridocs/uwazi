@@ -9,10 +9,13 @@ import type { MetadataEditingHost } from './metadataEditingSession.js';
 
 const EDIT_ENTITY_FORM_ID = 'edit-entity-form' as const;
 
+type MetadataDirtyLeaveAction = 'discard' | 'tab';
+
 type MetadataEditingState = {
   isEditing: boolean;
   isSaving: boolean;
   isDirty: boolean;
+  pendingDiscardAction?: MetadataDirtyLeaveAction;
   lastMetadataAnchor: MetadataEditingHost | null;
   formMountHost: MetadataEditingHost | null;
   form: UseFormReturn<EditEntityFormValues>;
@@ -34,7 +37,14 @@ type MetadataEditingActions = {
   tryBeginSave: () => AbortController | null;
   endSave: () => void;
   cancelEdit: () => void;
+  requestDiscard: (
+    action: MetadataDirtyLeaveAction,
+    proceed?: () => void,
+    onStay?: () => void
+  ) => void;
+  confirmDiscard: () => void;
+  dismissDiscard: () => void;
 };
 
 export { EDIT_ENTITY_FORM_ID };
-export type { MetadataEditingState, MetadataEditingActions };
+export type { MetadataDirtyLeaveAction, MetadataEditingState, MetadataEditingActions };

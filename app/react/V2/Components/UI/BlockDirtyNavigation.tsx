@@ -25,7 +25,6 @@ const BlockDirtyNavigation = ({ when, onDiscard }: BlockDirtyNavigationProps) =>
 
   return (
     <DirtyDiscardModal
-      action="leave"
       onDiscard={() => {
         onDiscard?.();
         blocker.proceed?.();

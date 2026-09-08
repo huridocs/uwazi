@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react';
 import type { Entity as EntityType, FileType } from '#V2/api/entities/types.js';
-import { useEntityFiles } from '../Components/index.js';
+import { useTabGroup } from '#V2/Components/UI/index.js';
+import { useEntityFiles, useMetadataEditing } from '../Components/index.js';
 import { SIDE_TAB } from './tabIds.js';
 import { TabsSideButtons } from './TabsSideButtons.js';
 import { SideTabsContent } from './SideTabsContent.js';
@@ -9,6 +10,7 @@ import { RelationshipsFiltersDrawer } from '../Components/relationships/index.js
 import { EntityOverlay } from '../Components/relationships/overlay/EntityOverlay.js';
 import { useEntitySideTabs } from './hooks/useEntitySideTabs.js';
 import { translationsFilesSideTabs } from './sideTabSets.js';
+import { guardDirtyTabChange } from './guardDirtyTabChange.js';
 
 type SideTabsPanelProps = {
   entity: EntityType;
@@ -22,6 +24,8 @@ const SideTabsPanel = ({ entity, mainDocument, pagePlaintext }: SideTabsPanelPro
     () => translationsFilesSideTabs(primaryRows.length),
     [primaryRows.length]
   );
+  const { requestDiscard } = useMetadataEditing();
+  const { selectTab } = useTabGroup('entity-side');
   const sideTabs = useEntitySideTabs({
     entity,
     hasMainDocument: Boolean(mainDocument?.filename),
@@ -37,7 +41,15 @@ const SideTabsPanel = ({ entity, mainDocument, pagePlaintext }: SideTabsPanelPro
           buttons={sideTabs.sideButtons}
           activeTabId={sideTabs.activeSideTab}
           syncActiveTabId={sideTabs.syncSideTabId}
-          onTabChange={sideTabs.onSideTabChange}
+          onTabChange={tabId =>
+            guardDirtyTabChange({
+              currentTab: sideTabs.activeSideTab,
+              nextTab: tabId,
+              requestDiscard,
+              apply: sideTabs.onSideTabChange,
+              revert: selectTab,
+            })
+          }
         />
       </div>
       <div className="flex min-h-0 flex-1 flex-col overflow-hidden">

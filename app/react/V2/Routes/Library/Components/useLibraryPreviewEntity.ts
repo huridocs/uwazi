@@ -16,7 +16,7 @@ const pickEntity = (rows: Entity[] | undefined, language: string): Entity | unde
 const useLibraryPreviewEntity = (sharedId: string): LibraryPreviewEntityState => {
   const { entities } = useServices();
   const language = useAtomValue(localeAtom);
-  const getBySharedId = entities.getBySharedId;
+  const { getBySharedId } = entities;
   const [entity, setEntity] = useState<Entity | undefined>();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
