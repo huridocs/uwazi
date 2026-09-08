@@ -8,13 +8,12 @@ import { PostgresUserGroupsDAO } from '../postgresql/user/PostgresUserGroupsDAO.
 import { PostgresUserGroupsQueryService } from '../postgresql/user/PostgresUserGroupsQueryService.js';
 import { PostgresUsersDAO } from '../postgresql/user/PostgresUsersDAO.js';
 import { TransactionManagerFactory } from './TransactionManagerFactory.js';
-import { resolveUsersBackend } from './usersBackendFlags.js';
 
 class UserGroupsQueryServiceFactory {
   static default(): UserGroupsQueryService {
     const tenant = ExecutionContext.currentTenant;
 
-    if (resolveUsersBackend('UserGroupsQueryService') === 'postgres') {
+    if (tenant.featureFlags?.postgresCore) {
       const deps = {
         tenantId: tenant.name,
         pgTransactionManager: ExecutionContext.postgresTransactionManager,

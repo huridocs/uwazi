@@ -42,19 +42,19 @@ const fixtures: DBFixture = {
 
 type TestConfig = {
   name: string;
-  postgresRelationshipTypes: boolean;
+  postgresCore: boolean;
   getRelationshipTypes: () => Promise<Record<string, unknown>[]>;
 };
 
 const testConfigs: TestConfig[] = [
   {
     name: 'Mongo',
-    postgresRelationshipTypes: false,
+    postgresCore: false,
     getRelationshipTypes: async () => testingEnvironment.db.getAllFrom('relationtypes'),
   },
   {
     name: 'Postgres',
-    postgresRelationshipTypes: true,
+    postgresCore: true,
     getRelationshipTypes: async () =>
       testingEnvironment.pg
         .getAllFrom('relationship_types')
@@ -71,15 +71,15 @@ describe('DeleteRelationshipTypeUseCase', () => {
     await testingEnvironment.tearDown();
   });
 
-  describe.each(testConfigs)('$name', ({ postgresRelationshipTypes, getRelationshipTypes }) => {
+  describe.each(testConfigs)('$name', ({ postgresCore, getRelationshipTypes }) => {
     const withFlag = <T>(fn: () => T) =>
       testingEnvironment.runWithContext(
         fn,
-        postgresRelationshipTypes
+        postgresCore
           ? {
               tenant: {
                 ...testingTenants.current(),
-                featureFlags: { postgresRelationshipTypes: true },
+                featureFlags: { postgresCore: true },
               },
             }
           : undefined

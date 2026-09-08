@@ -91,7 +91,7 @@ describe('entitiesIndex', () => {
     });
   });
 
-  describe('indexEntities by query (postgresEntities flag on)', () => {
+  describe('indexEntities by query (postgresCore flag on)', () => {
     const factory = getFixturesFactory({ convertIdToString: true });
 
     const pgFixtures = {
@@ -104,21 +104,19 @@ describe('entitiesIndex', () => {
     };
 
     beforeAll(async () => {
-      // Enables Postgres fixture mirroring before the first beforeEach runs -
-      // otherwise the very first test's fixtures never make it into Postgres.
-      // Pass the file's own elasticIndex constant explicitly so this never
-      // resets/regenerates testingEnvironment.elasticIndex for the rest of the file.
-      await testingEnvironment.setUp({}, { elasticIndex, postgres: true });
+      // The tests only index, they never mutate fixtures, so this can live in beforeAll.
+      await testingEnvironment.setUp(pgFixtures, { elasticIndex, postgres: true });
+      testingTenants.changeCurrentTenant({ featureFlags: { postgresCore: true } });
+      // setUp's own reindex ran with the flag still off (indexing every entity via Mongo);
+      // clear it so the first test starts from a clean index.
+      await testingEnvironment.runWithContext(async () => elasticTesting.resetIndex());
     });
 
     beforeEach(async () => {
-      await testingEnvironment.setUp(pgFixtures, { elasticIndex, postgres: true });
-      testingTenants.changeCurrentTenant({
-        featureFlags: { postgresEntities: true, postgresFiles: true },
-      });
-      // setUp's own reindex ran with the flag still off (indexing every entity via Mongo);
-      // clear the index so each test only sees what it indexes itself.
-      await elasticTesting.resetIndex();
+      // The outer beforeEach resets the tenant flag and reindexes (empty); restore the
+      // flag and clear the index so each test only sees what it indexes itself.
+      testingTenants.changeCurrentTenant({ featureFlags: { postgresCore: true } });
+      await testingEnvironment.runWithContext(async () => elasticTesting.resetIndex());
     });
 
     it('indexes every entity when the query is empty', async () => {

@@ -7,7 +7,7 @@ export class TranslationsSyncHandlerFactory {
   static default(): MongoTranslationsSyncHandler | PostgresTranslationsSyncHandler {
     const tenant = ExecutionContext.currentTenant;
 
-    if (tenant.featureFlags?.postgresTranslations) {
+    if (tenant.featureFlags?.postgresCore) {
       return new PostgresTranslationsSyncHandler({
         tenantId: tenant.name,
         mongoDb: getConnection(),

@@ -19,7 +19,7 @@ export class EntityPermissionCheckerFactory {
         ? ExecutionContext.transactionManager
         : TransactionManagerFactory.default())) as MongoTransactionManager;
 
-    if (tenant.featureFlags?.postgresEntities) {
+    if (tenant.featureFlags?.postgresCore) {
       return new PostgresEntityPermissionChecker({
         tenantId: tenant.name,
         pgTransactionManager: ExecutionContext.getStore()

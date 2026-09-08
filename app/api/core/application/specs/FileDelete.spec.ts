@@ -108,7 +108,7 @@ describe('FileDelete - setPreview (real DB)', () => {
     beforeEach(async () => {
       testingTenants.changeCurrentTenant({
         name: 'tenant',
-        featureFlags: { postgresFiles: usePostgres },
+        featureFlags: { postgresCore: usePostgres },
       });
 
       await testingEnvironment.setFixtures(allFixtures);
