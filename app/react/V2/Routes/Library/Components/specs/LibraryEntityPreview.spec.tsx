@@ -1,6 +1,9 @@
 /**
  * @jest-environment jsdom
  */
+// oxlint-disable max-lines
+// oxlint-disable max-statements
+// oxlint-disable react/jsx-props-no-spreading
 import React from 'react';
 import { fireEvent, render, screen, within } from '@testing-library/react';
 import { Entity as EntityType } from '#V2/api/entities/types.js';
@@ -39,8 +42,6 @@ class ResizeObserverMock {
   unobserve = jest.fn();
 
   disconnect = jest.fn();
-
-  constructor(_callback: ResizeObserverCallback) {}
 }
 
 global.ResizeObserver = ResizeObserverMock as typeof ResizeObserver;
@@ -197,6 +198,25 @@ describe('LibraryEntityPreview', () => {
     expect(screen.queryByRole('button', { name: 'Save' })).not.toBeInTheDocument();
   });
 
+  it('confirms before canceling dirty metadata edits', async () => {
+    renderPreview(entityWithoutDocument.sharedId, jest.fn(), adminUser);
+
+    fireEvent.click(await screen.findByRole('tab', { name: 'Metadata' }));
+    fireEvent.click(await screen.findByRole('button', { name: 'Edit' }));
+    fireEvent.change(await screen.findByLabelText(/Title/), { target: { value: 'Changed' } });
+
+    fireEvent.click(screen.getByRole('button', { name: 'Cancel' }));
+    expect(await screen.findByText('Unsaved changes')).toBeInTheDocument();
+
+    fireEvent.click(screen.getByTestId('cancel-button'));
+    expect(screen.queryByText('Unsaved changes')).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Save' })).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: 'Cancel' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Discard' }));
+    expect(await screen.findByRole('button', { name: 'Edit' })).toBeInTheDocument();
+  });
+
   it('does not offer Edit on Relationships', async () => {
     renderPreview(entityWithDocument.sharedId, jest.fn(), adminUser);
     fireEvent.click(await screen.findByRole('tab', { name: /^Relationships/ }));
@@ -210,9 +230,7 @@ describe('LibraryEntityPreview', () => {
     renderPreview(entityWithoutDocument.sharedId);
     fireEvent.click(await screen.findByRole('tab', { name: /Files/ }));
     expect(
-      await screen.findByText(
-        'No primary documents yet. Promote a supporting file or add a new one.'
-      )
+      await screen.findByText('No primary documents yet. Add a file to get started.')
     ).toBeInTheDocument();
     expect(
       screen.getByText('No supporting files yet. Add a file to get started.')
