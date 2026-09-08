@@ -67,8 +67,8 @@ const EditEntity = ({
   const availableTemplates = useMemo(
     () =>
       templates.map(template => {
-        const label = t(template._id, template.name, null, false);
-        return { label, searchLabel: label, value: template._id };
+        const name = t(template._id, template.name, null, false);
+        return { searchLabel: name, value: template._id, color: template.color };
       }),
     [templates]
   );

@@ -26,7 +26,7 @@ const LibraryEntityPreviewFooter = ({
 }: LibraryEntityPreviewFooterProps) => {
   const entity = useEntityScopedEntity();
   const { requestAddFile } = useEntityFiles();
-  const { isEditing, isSaving, formMountHost, formId, cancelEdit, startEditing } =
+  const { isEditing, isSaving, formMountHost, formId, requestDiscard, startEditing } =
     useMetadataEditing();
   const href = `${entityBasePath.replace(/^\//, '')}/${entity.sharedId}`;
   const editingMetadata = isEditing && formMountHost === 'main';
@@ -43,7 +43,12 @@ const LibraryEntityPreviewFooter = ({
           <>
             <span />
             <div className="flex items-center gap-2">
-              <Button type="button" variant="warm" onClick={cancelEdit} disabled={isSaving}>
+              <Button
+                type="button"
+                variant="warm"
+                onClick={() => requestDiscard('discard')}
+                disabled={isSaving}
+              >
                 <Translate>Cancel</Translate>
               </Button>
               <Button type="submit" variant="success" form={formId} disabled={isSaving}>

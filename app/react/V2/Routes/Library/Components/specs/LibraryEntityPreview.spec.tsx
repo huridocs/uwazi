@@ -198,6 +198,25 @@ describe('LibraryEntityPreview', () => {
     expect(screen.queryByRole('button', { name: 'Save' })).not.toBeInTheDocument();
   });
 
+  it('confirms before canceling dirty metadata edits', async () => {
+    renderPreview(entityWithoutDocument.sharedId, jest.fn(), adminUser);
+
+    fireEvent.click(await screen.findByRole('tab', { name: 'Metadata' }));
+    fireEvent.click(await screen.findByRole('button', { name: 'Edit' }));
+    fireEvent.change(await screen.findByLabelText(/Title/), { target: { value: 'Changed' } });
+
+    fireEvent.click(screen.getByRole('button', { name: 'Cancel' }));
+    expect(await screen.findByText('Unsaved changes')).toBeInTheDocument();
+
+    fireEvent.click(screen.getByTestId('cancel-button'));
+    expect(screen.queryByText('Unsaved changes')).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Save' })).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: 'Cancel' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Discard' }));
+    expect(await screen.findByRole('button', { name: 'Edit' })).toBeInTheDocument();
+  });
+
   it('does not offer Edit on Relationships', async () => {
     renderPreview(entityWithDocument.sharedId, jest.fn(), adminUser);
     fireEvent.click(await screen.findByRole('tab', { name: /^Relationships/ }));
