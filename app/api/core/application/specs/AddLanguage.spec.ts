@@ -1,6 +1,7 @@
 /* eslint-disable max-statements, max-lines */
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { testingTenants } from '#api/utils/testingTenants.js';
 import { DBFixture } from '#api/utils/testing_db.js';
 import { TranslationDBO } from '#api/core/infrastructure/mongodb/translation/schemas/TranslationDBO.js';
 import { AddLanguageUseCase } from '#api/core/application/AddLanguage.js';
@@ -19,11 +20,6 @@ import {
   ensureBroadcastSettingsChangedRegistered,
   expectSettingsChangedJob,
 } from '../settings/specs/settingsChangedJob.js';
-import {
-  languageBackendConfigs,
-  languageBackendPostgresMirror,
-  withLanguageBackendFlags,
-} from './languageBackendTest.js';
 
 jest.mock('#api/core/infrastructure/services/V1WebSocketsWrapper.js', () => ({
   V1WebSocketsWrapper: jest.fn().mockImplementation(() => ({
@@ -65,6 +61,11 @@ const mockImportPredefinedTranslations: ImportPredefinedTranslations = {
   execute: importPredefinedSpy,
 };
 
+const testConfigs = [
+  { name: 'Mongo', postgresCore: false },
+  { name: 'Postgres', postgresCore: true },
+];
+
 describe('AddLanguage use case', () => {
   beforeAll(async () => {
     await testingEnvironment.setUp(fixtures, { postgres: true });
@@ -74,9 +75,19 @@ describe('AddLanguage use case', () => {
     await testingEnvironment.tearDown();
   });
 
-  describe.each(languageBackendConfigs)('$name', ({ postgresSettings, postgresTranslations }) => {
+  describe.each(testConfigs)('$name', ({ postgresCore }) => {
     const withFlag = <T>(fn: () => T) =>
-      withLanguageBackendFlags(postgresSettings, postgresTranslations, fn);
+      testingEnvironment.runWithContext(
+        fn,
+        postgresCore
+          ? {
+              tenant: {
+                ...testingTenants.current(),
+                featureFlags: { postgresCore: true },
+              },
+            }
+          : undefined
+      );
 
     const readLanguages = async () =>
       withFlag(async () => (await SettingsDataSourceFactory.default().get()).languages ?? []);
@@ -96,7 +107,6 @@ describe('AddLanguage use case', () => {
       jest.spyOn(search, 'indexEntities').mockResolvedValue(undefined as any);
       await testingEnvironment.setUp(fixtures, {
         postgres: true,
-        postgresMirror: languageBackendPostgresMirror(postgresSettings, postgresTranslations),
       });
     });
 
@@ -356,7 +366,7 @@ describe('AddLanguage use case', () => {
         });
 
         const languages = await readLanguages();
-        if (postgresSettings) {
+        if (postgresCore) {
           expect(languages.map(language => language.key)).toEqual(
             expect.arrayContaining(['en', 'es'])
           );
@@ -366,7 +376,7 @@ describe('AddLanguage use case', () => {
           ]);
         }
 
-        if (!postgresTranslations) {
+        if (!postgresCore) {
           const esCount = (
             await withFlag(async () => TranslationsDataSourceFactory.default().getByLanguage('es'))
           ).length;

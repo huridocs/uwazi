@@ -11,7 +11,7 @@ class UserGroupsDirectoryFactory {
   static default(): UserGroupsDirectory {
     const tenant = ExecutionContext.currentTenant;
 
-    if (tenant.featureFlags?.postgresUsergroups) {
+    if (tenant.featureFlags?.postgresCore) {
       return new PostgresUserGroupsDirectory({
         dao: new PostgresUserGroupsDAO({
           tenantId: tenant.name,

@@ -30,44 +30,30 @@ import {
   MAIN_TAB,
   isValidMainTab,
 } from './Tabs/index.js';
-import { EntityTabsProvider } from './Tabs/EntityTabsContext.js';
-import { useEntityTabs } from './Tabs/hooks/useEntityTabs.js';
+import { EntityMainTabsProvider, useEntityTabNavigation } from './Tabs/EntityTabsContext.js';
+import { translationsFilesSideTabs } from './Tabs/sideTabSets.js';
+import { useEntityMainTabs } from './Tabs/hooks/useEntityMainTabs.js';
 import { LoaderResponse } from './types.js';
+import { EntityUrlSync } from './entityUrlState.js';
 
 const EntityCreateRelationshipModal = () => {
   const { mainDocument } = useEntityLanguage();
   return <CreateRelationshipModal mainDocument={mainDocument} />;
 };
 
-const EntityFilesFromEntity = ({ children }: { children: React.ReactNode }) => {
+const EntityFilesFromEntity = React.memo(({ children }: { children: React.ReactNode }) => {
   const entity = useEntityScopedEntity();
   return <EntityFilesProvider entity={entity}>{children}</EntityFilesProvider>;
-};
+});
 
-const EntityView = () => {
+const EntityMainColumn = React.memo(() => {
   const entity = useEntityScopedEntity();
-  const { mainDocument, pagePlaintext, isRtl } = useEntityLanguage();
-  useResetRelationshipsOnDocumentChange();
-  const { primaryRows } = useEntityFiles();
-  const hasMainDocument = Boolean(mainDocument?.filename);
-
-  const filesSideTabs = useMemo(
-    () => ({
-      showTranslationsTab: true,
-      translationsCount: primaryRows.length,
-    }),
-    [primaryRows.length]
-  );
-
-  const entityTabs = useEntityTabs({
-    entity,
-    hasMainDocument,
-    mainDocumentId: mainDocument?._id,
-    filesSideTabs,
-  });
+  const { mainDocument, pagePlaintext } = useEntityLanguage();
+  const { onMainTabChange, activeMainTab } = useEntityTabNavigation();
   const { activeTabId: atomMainTabId } = useTabGroup('entity-main');
-  const mainTabId = isValidMainTab(atomMainTabId) ? atomMainTabId : entityTabs.activeMainTab;
-  const { isEditing, isDirty, isSaving, cancelEdit, formMountHost } = useMetadataEditing();
+  const hasMainDocument = Boolean(mainDocument?.filename);
+  const mainTabId = isValidMainTab(atomMainTabId) ? atomMainTabId : activeMainTab;
+  const { isEditing, formMountHost } = useMetadataEditing();
   const showMainPaneHeader = !(
     mainTabId === MAIN_TAB.METADATA &&
     isEditing &&
@@ -75,7 +61,60 @@ const EntityView = () => {
   );
 
   return (
-    <EntityTabsProvider value={entityTabs}>
+    <div
+      className="flex h-full min-h-0 w-full min-w-0 flex-col overflow-hidden bg-paper"
+      data-testid="entity-v2"
+    >
+      <div className="shrink-0">
+        <div className="px-3 pt-2 pb-1 md:pt-2.5">
+          <TabsMainButtons
+            entity={entity}
+            mainDocument={mainDocument}
+            onTabChange={onMainTabChange}
+          />
+        </div>
+        {showMainPaneHeader ? (
+          <EntityMainPaneHeader
+            entity={entity}
+            showDocumentViewMode={mainTabId === MAIN_TAB.DOCUMENT && hasMainDocument}
+          />
+        ) : null}
+      </div>
+      <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
+        <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
+          <MainTabsContent
+            activeTabId={mainTabId}
+            entity={entity}
+            mainDocument={mainDocument}
+            pagePlaintext={pagePlaintext}
+          />
+        </div>
+        <MainTabsFooters activeTabId={mainTabId} mainDocument={mainDocument} />
+      </div>
+    </div>
+  );
+});
+
+const EntityView = () => {
+  const entity = useEntityScopedEntity();
+  const { mainDocument, pagePlaintext, isRtl } = useEntityLanguage();
+  useResetRelationshipsOnDocumentChange();
+  const { primaryRows } = useEntityFiles();
+  const hasMainDocument = Boolean(mainDocument?.filename);
+  const filesSideTabs = useMemo(
+    () => translationsFilesSideTabs(primaryRows.length),
+    [primaryRows.length]
+  );
+  const entityTabs = useEntityMainTabs({
+    entity,
+    hasMainDocument,
+    mainDocumentId: mainDocument?._id,
+    filesSideTabs,
+  });
+  const { isDirty, isSaving, isEditing, cancelEdit } = useMetadataEditing();
+
+  return (
+    <EntityMainTabsProvider value={entityTabs}>
       <EntitySeo entity={entity} />
       <FilesDeleteConfirmationModal />
       <AddFileModal />
@@ -87,44 +126,10 @@ const EntityView = () => {
           className="bg-parchment text-ink"
         >
           <PaneLayout.Pane>
-            <div
-              className="flex h-full min-h-0 w-full min-w-0 flex-col overflow-hidden bg-paper"
-              data-testid="entity-v2"
-            >
-              <div className="shrink-0">
-                <div className="px-3 pt-2 pb-1 md:pt-2.5">
-                  <TabsMainButtons
-                    entity={entity}
-                    mainDocument={mainDocument}
-                    onTabChange={entityTabs.onMainTabChange}
-                  />
-                </div>
-                {showMainPaneHeader ? (
-                  <EntityMainPaneHeader
-                    entity={entity}
-                    showDocumentViewMode={mainTabId === MAIN_TAB.DOCUMENT && hasMainDocument}
-                  />
-                ) : null}
-              </div>
-              <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
-                <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
-                  <MainTabsContent
-                    activeTabId={mainTabId}
-                    entity={entity}
-                    mainDocument={mainDocument}
-                    pagePlaintext={pagePlaintext}
-                  />
-                </div>
-                <MainTabsFooters activeTabId={mainTabId} mainDocument={mainDocument} />
-              </div>
-            </div>
+            <EntityMainColumn />
           </PaneLayout.Pane>
           <PaneLayout.Pane key="entity-side-pane">
             <SideTabsPanel
-              activeSideTab={entityTabs.activeSideTab}
-              syncSideTabId={entityTabs.syncSideTabId}
-              sideButtons={entityTabs.sideButtons}
-              onSideTabChange={entityTabs.onSideTabChange}
               entity={entity}
               mainDocument={mainDocument}
               pagePlaintext={pagePlaintext}
@@ -132,7 +137,7 @@ const EntityView = () => {
           </PaneLayout.Pane>
         </PaneLayout>
       </div>
-    </EntityTabsProvider>
+    </EntityMainTabsProvider>
   );
 };
 
@@ -151,21 +156,23 @@ const Entity = () => {
 
   return (
     <ThemeProvider className="h-full min-h-0">
-      <EntityScopedProvider
-        key={entity.sharedId}
-        entity={entity}
-        language={language}
-        mainDocument={mainDocument}
-        pagePlaintext={pagePlaintext}
-        entityPageView={entityPageView}
-        relationshipQuery={loaderData?.relationshipQuery}
-      >
-        <EntityFilesFromEntity>
-          <EntityView />
-        </EntityFilesFromEntity>
-        <EntityCreateRelationshipModal />
-        <ManageRelationTypesModal />
-      </EntityScopedProvider>
+      <EntityUrlSync>
+        <EntityScopedProvider
+          key={entity.sharedId}
+          entity={entity}
+          language={language}
+          mainDocument={mainDocument}
+          pagePlaintext={pagePlaintext}
+          entityPageView={entityPageView}
+          relationshipQuery={loaderData?.relationshipQuery}
+        >
+          <EntityFilesFromEntity>
+            <EntityView />
+          </EntityFilesFromEntity>
+          <EntityCreateRelationshipModal />
+          <ManageRelationTypesModal />
+        </EntityScopedProvider>
+      </EntityUrlSync>
     </ThemeProvider>
   );
 };

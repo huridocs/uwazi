@@ -45,7 +45,7 @@ describe('UsersDirectory', () => {
     beforeEach(async () => {
       testingTenants.changeCurrentTenant({
         name: TENANT_ID,
-        featureFlags: { postgresUsers: usePostgres, postgresUsergroups: usePostgres },
+        featureFlags: { postgresCore: usePostgres },
       });
 
       await testingEnvironment.setFixtures(fixtures);

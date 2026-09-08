@@ -32,7 +32,7 @@ describe('SettingsDataSourceFactory', () => {
     const sut = testingEnvironment.runWithContext(() => SettingsDataSourceFactory.default(), {
       tenant: {
         ...testingTenants.current(),
-        featureFlags: { postgresSettings: true },
+        featureFlags: { postgresCore: true },
       },
     });
 
@@ -45,7 +45,7 @@ describe('SettingsDataSourceFactory', () => {
     const sut = testingEnvironment.runWithContext(() => SettingsDataSourceFactory.cached(), {
       tenant: {
         ...testingTenants.current(),
-        featureFlags: { postgresSettings: true },
+        featureFlags: { postgresCore: true },
       },
     });
 

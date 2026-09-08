@@ -29,8 +29,8 @@ const fixtures: DBFixture = {
 };
 
 const testConfigs = [
-  { name: 'Mongo', postgresTranslations: false },
-  { name: 'Postgres', postgresTranslations: true },
+  { name: 'Mongo', postgresCore: false },
+  { name: 'Postgres', postgresCore: true },
 ];
 
 describe('UpdateEntriesByContextUseCase', () => {
@@ -42,15 +42,15 @@ describe('UpdateEntriesByContextUseCase', () => {
     await testingEnvironment.tearDown();
   });
 
-  describe.each(testConfigs)('$name', ({ postgresTranslations }) => {
+  describe.each(testConfigs)('$name', ({ postgresCore }) => {
     const withFlag = <T>(fn: () => T) =>
       testingEnvironment.runWithContext(
         fn,
-        postgresTranslations
+        postgresCore
           ? {
               tenant: {
                 ...testingTenants.current(),
-                featureFlags: { postgresTranslations: true },
+                featureFlags: { postgresCore: true },
               },
             }
           : undefined

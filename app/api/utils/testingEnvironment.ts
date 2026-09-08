@@ -33,6 +33,8 @@ import { ObjectUtils } from '#api/common.v2/utils/Object.js';
 import { UwaziDispatcherFactory } from '#api/core/infrastructure/jobs/UwaziDispatcherFactory.js';
 import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js';
 import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
+import { PostgresEntityMapper } from '#api/core/infrastructure/postgresql/entity/PostgresEntityMapper.js';
+import type { EntityRow } from '#api/core/infrastructure/postgresql/entity/PostgresEntityRow.js';
 import { PostgresSettingsMapper } from '#api/core/infrastructure/postgresql/settings/PostgresSettingsMapper.js';
 import { Settings as SettingsType } from '#shared/types/settingsType.js';
 import {
@@ -136,6 +138,7 @@ const MIRRORED_COLLECTIONS = [
   'users',
   'usergroups',
   'translationsV2',
+  'settings',
 ];
 
 const PG_TABLE_BY_MONGO_COLLECTION: Record<string, string> = {
@@ -170,12 +173,15 @@ const testingEnvironment = {
     await this.setTenant();
     this.setPermissions();
     this.setFakeContext();
-    await this.setFixtures(fixtures);
-    await this.setElastic(elasticIndex);
+    // Connect Postgres before mirroring fixtures: setFixtures mirrors to Postgres only
+    // when pgEnabled is true, so the first setUp(fixtures, { postgres: true }) would
+    // otherwise silently skip the mirror.
     if (postgres && !this.pgEnabled) {
       await testingPG.connect();
       this.pgEnabled = true;
     }
+    await this.setFixtures(fixtures);
+    await this.setElastic(elasticIndex);
   },
 
   testingFilesPath(fileName: string) {
@@ -404,13 +410,15 @@ const testingEnvironment = {
   },
 
   db: {
-    async getAllFrom(collectionName: string) {
-      if (
-        testingEnvironment.pgEnabled &&
-        testingTenants.current().featureFlags?.postgresFiles &&
-        ['files', 'templates', 'thesauri'].includes(collectionName)
-      ) {
-        return testingPG.getAllFrom(collectionName);
+    async getAllFrom(collectionName: string): Promise<any[]> {
+      if (testingEnvironment.pgEnabled && testingTenants.current().featureFlags?.postgresCore) {
+        if (collectionName === 'entities') {
+          const rows = await testingPG.getAllFrom<EntityRow>('entities');
+          return rows.map(row => PostgresEntityMapper.toEntityDBO(row));
+        }
+        if (['files', 'templates', 'thesauri'].includes(collectionName)) {
+          return testingPG.getAllFrom(collectionName);
+        }
       }
       if (!testingDB.mongodb) {
         throw new Error('Testing mongodb not connected');

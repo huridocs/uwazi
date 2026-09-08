@@ -1,6 +1,6 @@
 import React from 'react';
 import { EntityOverlayPill } from '#V2/Components/Metadata/Components/EntityOverlayPill.js';
-import { useEntityOverlay } from '#V2/Routes/Entity/Components/context/index.js';
+import { useEntityOverlayActions } from '#V2/Routes/Entity/Components/context/index.js';
 
 type EntityTemplateLinkProps = {
   sharedId: string;
@@ -8,8 +8,8 @@ type EntityTemplateLinkProps = {
   label: string;
 };
 
-const EntityTemplateLink = ({ sharedId, templateId, label }: EntityTemplateLinkProps) => {
-  const { openEntityOverlayTarget } = useEntityOverlay();
+const EntityTemplateLinkComponent = ({ sharedId, templateId, label }: EntityTemplateLinkProps) => {
+  const { openEntityOverlayTarget } = useEntityOverlayActions();
   return (
     <EntityOverlayPill
       sharedId={sharedId}
@@ -19,5 +19,7 @@ const EntityTemplateLink = ({ sharedId, templateId, label }: EntityTemplateLinkP
     />
   );
 };
+
+const EntityTemplateLink = React.memo(EntityTemplateLinkComponent);
 
 export { EntityTemplateLink };

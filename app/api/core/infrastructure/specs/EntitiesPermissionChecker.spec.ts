@@ -150,7 +150,7 @@ describe('EntitiesPermissionChecker', () => {
   describe.each(backends)('$name backend', ({ usePostgres }) => {
     beforeEach(async () => {
       testingTenants.changeCurrentTenant({
-        featureFlags: { postgresEntities: usePostgres, postgresFiles: usePostgres },
+        featureFlags: { postgresCore: usePostgres },
       });
       await testingPG.clear(['entities']);
       await testingEnvironment.setFixtures(fixtures);

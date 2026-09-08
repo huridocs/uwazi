@@ -88,7 +88,7 @@ describe('preserveSync', () => {
       dbName: db.dbName,
       indexName: 'preserveSync_index',
       ...(await testingUploadPaths()),
-      featureFlags: { postgresThesauri: false },
+      featureFlags: { postgresCore: false },
       domain: 'test-tenant',
     };
 

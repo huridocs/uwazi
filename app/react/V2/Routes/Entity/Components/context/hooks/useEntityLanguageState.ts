@@ -2,8 +2,7 @@ import { useCallback, useMemo, useRef, useState } from 'react';
 import { t } from '#app/I18N/index.js';
 import type { Entity, FileType } from '#V2/api/entities/types.js';
 import { notify } from '#V2/utils/notifyBridge.js';
-import { useEntityHashParams } from '../../../entityUrlState.js';
-import { VIEW_MODE_PARAM } from '../../../urlParams.js';
+import { useEntityRawView } from '../../../entityUrlState.js';
 import {
   applyLanguageSnapshot,
   fetchEntityForLanguage,
@@ -28,7 +27,9 @@ const useApplyLanguage = (
   defaultLanguage: string | undefined,
   setters: LanguageSnapshotSetters
 ) => {
-  const hashParams = useEntityHashParams();
+  const isRawView = useEntityRawView();
+  const isRawViewRef = useRef(isRawView);
+  isRawViewRef.current = isRawView;
   const applyGenerationRef = useRef(0);
   const invalidateApply = useCallback(() => {
     applyGenerationRef.current += 1;
@@ -54,7 +55,7 @@ const useApplyLanguage = (
         defaultLanguage
       );
       const nextPlaintext = await resolvePlaintext(nextMainDocument, {
-        isRaw: hashParams.get(VIEW_MODE_PARAM) === 'true',
+        isRaw: isRawViewRef.current,
       });
       if (!isCurrent()) return 'stale';
 
@@ -69,7 +70,7 @@ const useApplyLanguage = (
       );
       return 'applied';
     },
-    [loaderEntity, defaultLanguage, setters, hashParams]
+    [loaderEntity, defaultLanguage, setters]
   );
 
   return { applyLanguage, invalidateApply };

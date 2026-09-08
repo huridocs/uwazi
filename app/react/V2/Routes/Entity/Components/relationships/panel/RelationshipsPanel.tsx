@@ -9,11 +9,11 @@ import { RelationshipsPanelBody } from './RelationshipsPanelBody.js';
 import { RelationshipsListInfoRow } from './RelationshipsListInfoRow.js';
 import { RelationshipsSearchBar } from '../filters/RelationshipsSearchBar.js';
 import {
-  useRelationshipsPanelData,
   useRelationshipsPanelLayout,
   useRelationshipsSelectionActions,
   useEntityWriteAuthorized,
 } from '#V2/Routes/Entity/Components/context/index.js';
+import { useRelationshipsPanelData } from '../hooks/useRelationshipsPanelData.js';
 import { useActiveRelationshipHighlight } from '#V2/Routes/Entity/Components/document/index.js';
 import { useGroupLabelContext } from '../hooks/useGroupLabelContext.js';
 import { useRelationshipDelete } from '../hooks/useRelationshipDelete.js';

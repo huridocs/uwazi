@@ -1,5 +1,6 @@
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { testingTenants } from '#api/utils/testingTenants.js';
 import { DBFixture } from '#api/utils/testing_db.js';
 import { TranslationDBO } from '#api/core/infrastructure/mongodb/translation/schemas/TranslationDBO.js';
 import { DeleteLanguageUseCase } from '#api/core/application/DeleteLanguage.js';
@@ -16,11 +17,6 @@ import {
   ensureBroadcastSettingsChangedRegistered,
   expectSettingsChangedJob,
 } from '../settings/specs/settingsChangedJob.js';
-import {
-  languageBackendConfigs,
-  languageBackendPostgresMirror,
-  withLanguageBackendFlags,
-} from './languageBackendTest.js';
 
 jest.mock('#api/core/infrastructure/services/V1WebSocketsWrapper.js', () => ({
   V1WebSocketsWrapper: jest.fn().mockImplementation(() => ({
@@ -62,6 +58,11 @@ const mockDispatcher = {
   deleteLanguageEntities: deleteLanguageEntitiesSpy,
 } as unknown as Dispatcher;
 
+const testConfigs = [
+  { name: 'Mongo', postgresCore: false },
+  { name: 'Postgres', postgresCore: true },
+];
+
 describe('DeleteLanguage use case', () => {
   beforeAll(async () => {
     await testingEnvironment.setUp(fixtures, { postgres: true });
@@ -71,9 +72,19 @@ describe('DeleteLanguage use case', () => {
     await testingEnvironment.tearDown();
   });
 
-  describe.each(languageBackendConfigs)('$name', ({ postgresSettings, postgresTranslations }) => {
+  describe.each(testConfigs)('$name', ({ postgresCore }) => {
     const withFlag = <T>(fn: () => T) =>
-      withLanguageBackendFlags(postgresSettings, postgresTranslations, fn);
+      testingEnvironment.runWithContext(
+        fn,
+        postgresCore
+          ? {
+              tenant: {
+                ...testingTenants.current(),
+                featureFlags: { postgresCore: true },
+              },
+            }
+          : undefined
+      );
 
     const readLanguageKeys = async () =>
       withFlag(async () => SettingsDataSourceFactory.default().getLanguageKeys());
@@ -93,7 +104,6 @@ describe('DeleteLanguage use case', () => {
       jest.spyOn(search, 'deleteLanguage').mockResolvedValue(undefined as any);
       await testingEnvironment.setUp(fixtures, {
         postgres: true,
-        postgresMirror: languageBackendPostgresMirror(postgresSettings, postgresTranslations),
       });
     });
 

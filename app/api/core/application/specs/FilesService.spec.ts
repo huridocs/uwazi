@@ -187,7 +187,7 @@ describe('FilesService', () => {
     beforeEach(async () => {
       testingTenants.changeCurrentTenant({
         name: 'tenant',
-        featureFlags: { postgresFiles: usePostgres },
+        featureFlags: { postgresCore: usePostgres },
       });
       await testingEnvironment.setFixtures(allFixtures);
       dispatchedDeletes.length = 0;
@@ -297,7 +297,7 @@ describe('FilesService', () => {
         testingTenants.changeCurrentTenant({
           name: 'tenant',
           uploadedDocuments: 'tenant/uploads',
-          featureFlags: { postgresFiles: usePostgres },
+          featureFlags: { postgresCore: usePostgres },
         });
         const { service, transactionManager } = createService();
 

@@ -14,8 +14,8 @@ import { translationsRoutes } from '../routes.js';
 type UploadedFileRequest = Request & { file?: Express.Multer.File };
 
 const testConfigs = [
-  { name: 'Mongo', postgresTranslations: false },
-  { name: 'Postgres', postgresTranslations: true },
+  { name: 'Mongo', postgresCore: false },
+  { name: 'Postgres', postgresCore: true },
 ];
 
 const createTranslationDBO = getFixturesFactory().v2.database.translationDBO;
@@ -69,10 +69,10 @@ describe('core translations by-item routes', () => {
     await testingEnvironment.tearDown();
   });
 
-  describe.each(testConfigs)('$name', ({ postgresTranslations }) => {
+  describe.each(testConfigs)('$name', ({ postgresCore }) => {
     const applyBackendTenant = () => {
       testingTenants.changeCurrentTenant({
-        featureFlags: postgresTranslations ? { postgresTranslations: true } : {},
+        featureFlags: postgresCore ? { postgresCore: true } : {},
       });
     };
 

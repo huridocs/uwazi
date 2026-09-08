@@ -261,6 +261,63 @@ describe('MigrateCollectionToPostgres', () => {
     expect(rowsForTenant[0].name).toBe('Existing');
   });
 
+  it('should migrate when forced even if PostgreSQL table already contains data for tenant', async () => {
+    const mongoDb = testingDB.db(testingDB.dbName);
+
+    await testingPG.setFixtures({
+      thesauri: [
+        {
+          _id: '64a1b2c3d4e5f6a7b8c9d0e7',
+          name: 'Existing',
+          values: JSON.stringify([{ id: 'v1', label: 'Existing' }]),
+          tenant_id: TENANT,
+        },
+      ],
+    });
+
+    await mongoDb.collection('dictionaries').insertMany([
+      {
+        _id: new ObjectId('64a1b2c3d4e5f6a7b8c9d0e7'),
+        name: 'Existing Updated',
+        values: [{ id: 'v1', label: 'Existing Updated' }],
+      },
+      {
+        _id: new ObjectId('64a1b2c3d4e5f6a7b8c9d0e8'),
+        name: 'New',
+        values: [{ id: 'v2', label: 'New' }],
+      },
+    ]);
+
+    const config: MigrationConfig = {
+      mongoCollection: 'dictionaries',
+      pgTable: 'thesauri',
+      mapDocument(doc: Record<string, unknown>) {
+        return {
+          _id: doc._id instanceof ObjectId ? doc._id.toHexString() : String(doc._id),
+          name: doc.name,
+          values: JSON.stringify(doc.values ?? []),
+        };
+      },
+    };
+
+    const migrator = makeMigrator();
+    const result = await migrator.migrate(config, { force: true });
+
+    expect(result.skipped).toBe(false);
+
+    const pgRows = await testingPG.getAllFrom('thesauri');
+    const rowsForTenant = pgRows.filter(r => r.tenant_id === TENANT);
+    expect(rowsForTenant).toHaveLength(2);
+
+    const existing = rowsForTenant.find(r => r._id === '64a1b2c3d4e5f6a7b8c9d0e7');
+    expect(existing).toBeDefined();
+    expect(existing!.name).toBe('Existing');
+
+    const added = rowsForTenant.find(r => r._id === '64a1b2c3d4e5f6a7b8c9d0e8');
+    expect(added).toBeDefined();
+    expect(added!.name).toBe('New');
+  });
+
   describe('FilesMigrationConfig', () => {
     beforeEach(async () => {
       await testingDB.clear(['files']);

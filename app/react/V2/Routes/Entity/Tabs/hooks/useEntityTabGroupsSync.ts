@@ -1,23 +1,20 @@
 import { useEffect, useRef } from 'react';
-import type { TabGroupsState } from '#V2/Components/UI/Tabs/tabsAtoms.js';
-import { mergeTabGroup } from '#V2/Components/UI/Tabs/tabsAtoms.js';
+import {
+  mergeTabGroup,
+  type TabButtonDef,
+  type TabGroupsState,
+} from '#V2/Components/UI/Tabs/tabsAtoms.js';
 import type { Entity as EntityType } from '#V2/api/entities/types.js';
 import { MAIN_TAB_PARAM, SIDE_TAB_PARAM } from '../../urlParams.js';
 import { resolveSideTabId } from '../entityTabState.js';
-import { getSideTabButtons, type FilesSideTabsOptions } from '../sideTabSets.js';
 import { isValidMainTab, type MainTabId, type SideTabId } from '../tabIds.js';
 
 type UseEntityTabGroupsSyncParams = {
   entity: EntityType;
   activeMainTab: MainTabId;
   mainTabIds: Set<MainTabId>;
-  hasMainDocument: boolean;
-  mainDocumentId?: string;
-  filesSideTabs: FilesSideTabsOptions;
-  metadataDirty: boolean;
+  buttonsFor: (mainTab: MainTabId, searchDirty: boolean) => TabButtonDef[];
   searchDirty: boolean;
-  filesCount: number;
-  relationshipsCount: number;
   hashParams: URLSearchParams;
   searchParams: URLSearchParams;
   pendingSideTabId: SideTabId | null;
@@ -29,13 +26,8 @@ const useEntityTabGroupsSync = ({
   entity,
   activeMainTab,
   mainTabIds,
-  hasMainDocument,
-  mainDocumentId,
-  filesSideTabs,
-  metadataDirty,
+  buttonsFor,
   searchDirty,
-  filesCount,
-  relationshipsCount,
   hashParams,
   searchParams,
   pendingSideTabId,
@@ -59,17 +51,7 @@ const useEntityTabGroupsSync = ({
       const mainFromUrl = searchParams.get(MAIN_TAB_PARAM);
       const mainId =
         isValidMainTab(mainFromUrl) && mainTabIds.has(mainFromUrl) ? mainFromUrl : activeMainTab;
-      const sideButtonsForMain = getSideTabButtons({
-        activeMainTab: mainId,
-        entity,
-        hasMainDocument,
-        mainDocumentId,
-        filesSideTabs,
-        metadataDirty,
-        searchDirty,
-        filesCount,
-        relationshipsCount,
-      });
+      const sideButtonsForMain = buttonsFor(mainId, searchDirty);
       const sideFromHash = hashParams.get(SIDE_TAB_PARAM);
       const sideId =
         pendingSideTabId && sideButtonsForMain.some(button => button.id === pendingSideTabId)
@@ -83,16 +65,10 @@ const useEntityTabGroupsSync = ({
     });
   }, [
     activeMainTab,
-    entity,
-    filesCount,
-    filesSideTabs,
+    buttonsFor,
     hashParams,
-    hasMainDocument,
-    mainDocumentId,
     mainTabIds,
-    metadataDirty,
     pendingSideTabId,
-    relationshipsCount,
     searchDirty,
     searchParams,
     setTabGroups,

@@ -12,19 +12,19 @@ const factory = getFixturesFactory();
 
 type TestConfig = {
   name: string;
-  postgresTemplates: boolean;
+  postgresCore: boolean;
   getTemplates: () => Promise<{ _id: { toString(): string }; default?: boolean }[]>;
 };
 
 const testConfigs: TestConfig[] = [
   {
     name: 'Mongo',
-    postgresTemplates: false,
+    postgresCore: false,
     getTemplates: async () => testingEnvironment.db.getAllFrom('templates') as Promise<any[]>,
   },
   {
     name: 'Postgres',
-    postgresTemplates: true,
+    postgresCore: true,
     getTemplates: async () =>
       testingEnvironment.pg
         .getAllFrom('templates')
@@ -41,15 +41,15 @@ describe('SetTemplateAsDefaultUseCase', () => {
     await testingEnvironment.tearDown();
   });
 
-  describe.each(testConfigs)('$name', ({ postgresTemplates, getTemplates }) => {
+  describe.each(testConfigs)('$name', ({ postgresCore, getTemplates }) => {
     const createSut = () =>
       testingEnvironment.runWithContext(
         () => SetTemplateAsDefaultUseCaseFactory.default(),
-        postgresTemplates
+        postgresCore
           ? {
               tenant: {
                 ...testingTenants.current(),
-                featureFlags: { postgresTemplates: true },
+                featureFlags: { postgresCore: true },
               },
             }
           : undefined

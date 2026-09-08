@@ -6,7 +6,7 @@ export class FilesSyncHandlerFactory {
   static default(): MongoFilesSyncHandler | PostgresFilesSyncHandler {
     const tenant = ExecutionContext.currentTenant;
 
-    if (tenant.featureFlags?.postgresFiles) {
+    if (tenant.featureFlags?.postgresCore) {
       return new PostgresFilesSyncHandler({
         tenantId: tenant.name,
         pgTransactionManager: ExecutionContext.postgresTransactionManager,

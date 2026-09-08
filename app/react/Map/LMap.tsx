@@ -1,28 +1,17 @@
-/* eslint-disable max-statements */
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef } from 'react';
 import Leaflet from 'leaflet';
 import { useAtomValue } from 'jotai';
 import 'leaflet.markercluster';
+import { captureException } from '@sentry/react';
 import { GeolocationSchema } from '#shared/types/commonTypes.js';
 import uniqueID from '#shared/uniqueID.js';
 import 'leaflet/dist/leaflet.css';
 import 'leaflet.markercluster/dist/MarkerCluster.Default.css';
 import { deletedEntityAtom } from '#V2/atoms/index.js';
-import {
-  DataMarker,
-  getClusterMarker,
-  MarkerInput,
-  parseMarkerPoint,
-  TemplatesInfo,
-  checkMapInitialization,
-} from './MapHelper.js';
+import { DataMarker, MarkerInput, TemplatesInfo, checkMapInitialization } from './MapHelper.js';
 import { getMapProvider } from './TilesProviderFactory.js';
 import { ensureGoogleMaps } from './GoogleMapLayer.js';
-import {
-  streetAttribution,
-  satelliteAttribution,
-  getImproveThisMapLegend,
-} from './MapBoxAttributions.js';
+import { addMapMarkers, finishMapSetup, handleMapClick, mapGestureHandlers } from './LMapSetup.js';
 
 type Layer = 'Dark' | 'Streets' | 'Satellite' | 'Hybrid';
 
@@ -42,197 +31,155 @@ type LMapProps = {
   layers?: Layer[];
 };
 
+const EMPTY_MARKERS: MarkerInput[] = [];
+
+const markerSyncKey = (markers: MarkerInput[], deletedEntity?: string) =>
+  `${deletedEntity || ''}|${markers
+    .map(
+      marker =>
+        `${marker.latitude},${marker.longitude},${marker.label ?? ''},${marker.properties?.info ?? ''},${marker.properties?.color ?? ''},${marker.properties?.entity?.sharedId ?? ''}`
+    )
+    .join(';')}`;
+
+const pickMapLayers = (
+  baseMaps: ReturnType<typeof getMapProvider>,
+  layers: Layer[] | undefined
+) => {
+  const mapLayers: { [k: string]: Leaflet.TileLayer } = {};
+  Object.keys(baseMaps).forEach(key => {
+    const mapKey = baseMaps[key].key;
+    if (layers && layers.length && !layers.includes(mapKey as Layer)) {
+      return;
+    }
+    mapLayers[key] = baseMaps[key].layer;
+  });
+  return mapLayers;
+};
+
+const leafletMapOptions = (
+  startingPoint: GeolocationSchema,
+  zoom: number,
+  provider: 'google' | 'mapbox'
+) => ({
+  center: [startingPoint[0].lat, startingPoint[0].lon] as [number, number],
+  zoom,
+  maxZoom: 20,
+  minZoom: 2,
+  zoomControl: false,
+  preferCanvas: true,
+  scrollWheelZoom: false,
+  wheelDebounceTime: 100,
+  dragging: false,
+  attributionControl: provider === 'google',
+});
+
+const useMarkerSyncKey = (pointMarkers: MarkerInput[]) => {
+  const deletedEntity = useAtomValue(deletedEntityAtom);
+  const syncKey = useMemo(
+    () => markerSyncKey(pointMarkers, deletedEntity),
+    [deletedEntity, pointMarkers]
+  );
+  return { deletedEntity, syncKey };
+};
+
+const useLeafletMap = ({
+  pointMarkers,
+  showControls,
+  zoom,
+  layers,
+  props,
+  containerId,
+}: {
+  pointMarkers: MarkerInput[];
+  showControls: boolean;
+  zoom: number;
+  layers: Layer[] | undefined;
+  props: Omit<LMapProps, 'markers' | 'showControls' | 'zoom' | 'layers'>;
+  containerId: string;
+}) => {
+  let map: Leaflet.Map;
+  let markerGroup: Leaflet.MarkerClusterGroup;
+  const { deletedEntity, syncKey } = useMarkerSyncKey(pointMarkers);
+  const attributionControlRef = useRef<Leaflet.Control.Attribution | null>(null);
+  const shouldScroll = Boolean(props.renderPopupInfo || props.onClick);
+  const gestures = mapGestureHandlers(() => map, shouldScroll);
+
+  const initMap = (providerOverride?: 'google' | 'mapbox') => {
+    const provider = providerOverride ?? props.tilesProvider;
+    const baseMaps = getMapProvider(provider, props.mapApiKey);
+    const mapLayers = pickMapLayers(baseMaps, layers);
+    map = Leaflet.map(containerId, leafletMapOptions(props.startingPoint, zoom, provider));
+    markerGroup = Leaflet.markerClusterGroup();
+    map.on('click', gestures.enable);
+    document.addEventListener('click', gestures.disable);
+    map.getPanes().mapPane.style.zIndex = '0';
+    finishMapSetup({
+      map,
+      mapLayers,
+      baseMaps,
+      provider,
+      showControls,
+      attributionControlRef,
+      initMarkers: () =>
+        addMapMarkers({
+          map,
+          markerGroup,
+          pointMarkers,
+          deletedEntity,
+          templatesInfo: props.templatesInfo,
+          renderPopupInfo: props.renderPopupInfo,
+          zoom,
+          clickOnCluster: props.clickOnCluster,
+          clickOnMarker: props.clickOnMarker,
+        }),
+      clickHandler: markerPoint =>
+        handleMapClick({ map, markerGroup, onClick: props.onClick, markerPoint }),
+    });
+  };
+
+  useEffect(() => {
+    let cancelled = false;
+    checkMapInitialization(map, containerId);
+    if (props.tilesProvider === 'google') {
+      ensureGoogleMaps(props.mapApiKey)
+        .then(() => {
+          if (!cancelled) initMap();
+        })
+        .catch((err: unknown) => {
+          captureException(err);
+          if (!cancelled) initMap('mapbox');
+        });
+    } else {
+      initMap();
+    }
+    return () => {
+      cancelled = true;
+      if (map) {
+        map.off('click', gestures.enable);
+        document.removeEventListener('click', gestures.disable);
+        map.remove();
+      }
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [syncKey, props.tilesProvider, props.mapApiKey]);
+};
+
 const LMap = ({
-  markers: pointMarkers = [],
+  markers: pointMarkers = EMPTY_MARKERS,
   showControls = true,
   zoom = 6,
   layers,
   ...props
 }: LMapProps) => {
-  let map: Leaflet.Map;
-  let markerGroup: Leaflet.MarkerClusterGroup;
-  const [currentMarkers, setCurrentMarkers] = useState<MarkerInput[]>();
-  const [currentTilesProvider, setCurrentTilesProvider] = useState(props.tilesProvider);
-  const deletedEntity = useAtomValue(deletedEntityAtom);
-  const containerId = uniqueID();
-  const attributionControlRef = useRef<Leaflet.Control.Attribution | null>(null);
-
-  const clickHandler = (markerPoint: any) => {
-    if (!map.dragging.enabled()) {
-      map.dragging.enable();
-      return;
-    }
-    if (!props.onClick) {
-      return;
-    }
-    markerGroup.clearLayers();
-    getClusterMarker({ ...markerPoint, properties: {} }).addTo(markerGroup);
-    const event = { lngLat: [markerPoint.latlng.lng, markerPoint.latlng.lat] };
-    props.onClick(event);
-  };
-
-  const initMarkers = () => {
-    const markers = pointMarkers
-      .map(pointMarker => parseMarkerPoint(pointMarker, props.templatesInfo, props.renderPopupInfo))
-      .filter(marker => {
-        const entityId = marker.properties.entity?.sharedId;
-        return entityId !== deletedEntity;
-      });
-
-    markers.forEach(m => getClusterMarker(m).addTo(markerGroup));
-    markerGroup.on('clusterclick', cluster => {
-      props.clickOnCluster?.(cluster.layer.getAllChildMarkers());
-    });
-    markerGroup.on('click', marker => {
-      props.clickOnMarker?.(marker.layer);
-    });
-    if (pointMarkers.length) {
-      map.fitBounds(markerGroup.getBounds(), { maxZoom: zoom });
-    }
-    markerGroup.addTo(map);
-  };
-
-  const shouldScroll: boolean = props.renderPopupInfo || props.onClick !== undefined;
-  const enableMapGestures = () => {
-    if (!map.scrollWheelZoom.enabled()) {
-      if (shouldScroll) {
-        map.scrollWheelZoom.enable();
-      }
-    }
-  };
-
-  const disableMapGestures = (event: MouseEvent) => {
-    if (event.target && !map.getContainer().contains(event.target as Node)) {
-      map.scrollWheelZoom.disable();
-      map.dragging.disable();
-    }
-  };
-
-  const initMap = (providerOverride?: 'google' | 'mapbox') => {
-    const provider = providerOverride ?? props.tilesProvider;
-    const baseMaps = getMapProvider(provider, props.mapApiKey);
-    const mapLayers: { [k: string]: Leaflet.TileLayer } = {};
-    Object.keys(baseMaps).forEach(key => {
-      const mapKey = baseMaps[key].key;
-      if (layers && layers.length && !layers.includes(mapKey as Layer)) {
-        return;
-      }
-      mapLayers[key] = baseMaps[key].layer;
-    });
-
-    map = Leaflet.map(containerId, {
-      center: [props.startingPoint[0].lat, props.startingPoint[0].lon],
-      zoom,
-      maxZoom: 20,
-      minZoom: 2,
-      zoomControl: false,
-      preferCanvas: true,
-      scrollWheelZoom: false,
-      wheelDebounceTime: 100,
-      dragging: false,
-      attributionControl: provider === 'google',
-    });
-
-    map.on('click', enableMapGestures);
-    document.addEventListener('click', disableMapGestures);
-    map.getPanes().mapPane.style.zIndex = '0';
-    markerGroup = Leaflet.markerClusterGroup();
-
-    attributionControlRef.current = Leaflet.control
-      .attribution({ prefix: false, position: 'bottomright' })
-      .addTo(map);
-
-    if (showControls) {
-      Leaflet.control.zoom({ position: 'bottomright' }).addTo(map);
-    }
-
-    if (showControls && Object.values(mapLayers).length > 1) {
-      Leaflet.control
-        .layers(mapLayers, {}, { position: 'bottomright', autoZIndex: false })
-        .addTo(map);
-    }
-
-    const initialLayer = Object.values(mapLayers)[0];
-    initialLayer.options.zIndex = 0;
-    initialLayer.addTo(map);
-    initMarkers();
-    map.on('click', clickHandler);
-
-    const updateAttribution = (layerKey?: string) => {
-      if (!attributionControlRef.current || provider === 'google') {
-        return;
-      }
-
-      const center = map.getCenter();
-      const currentZoom = map.getZoom();
-      const improveThisMapLink = getImproveThisMapLegend(center.lng, center.lat, currentZoom);
-
-      let attribution = streetAttribution;
-
-      if (layerKey) {
-        const layer = baseMaps[layerKey].key as Layer;
-        if (layer === 'Satellite' || layer === 'Hybrid') {
-          attribution = satelliteAttribution;
-        }
-      }
-
-      const container = attributionControlRef.current.getContainer();
-      if (container) {
-        container.innerHTML = `${attribution} - ${improveThisMapLink}`;
-      }
-    };
-
-    const initialLayerKey = Object.keys(mapLayers)[0];
-    updateAttribution(initialLayerKey);
-
-    map.on('baselayerchange', (e: Leaflet.LayersControlEvent) => {
-      const layerKey = Object.keys(mapLayers).find(key => mapLayers[key] === e.layer);
-      updateAttribution(layerKey);
-    });
-
-    map.on('moveend', () => {
-      const layerKey = Object.keys(mapLayers).find(key => map.hasLayer(mapLayers[key]));
-      updateAttribution(layerKey);
-    });
-  };
-
-  useEffect(() => {
-    const reRender = currentTilesProvider !== props.tilesProvider || !props.onClick;
-
-    let cancelled = false;
-    if (reRender || currentMarkers === undefined) {
-      setCurrentMarkers(pointMarkers);
-      setCurrentTilesProvider(props.tilesProvider);
-      checkMapInitialization(map, containerId);
-      if (props.tilesProvider === 'google') {
-        // GoogleMutant layers require window.google to exist BEFORE they are
-        // constructed — wait for the Maps JS API, and on failure surface the
-        // real error and fall back to the other provider instead of leaving
-        // a dead map.
-        ensureGoogleMaps(props.mapApiKey)
-          .then(() => {
-            if (!cancelled) initMap();
-          })
-          .catch((err: unknown) => {
-            // eslint-disable-next-line no-console
-            console.error('Google Maps failed to load, falling back:', err);
-            if (!cancelled) initMap('mapbox');
-          });
-      } else {
-        initMap();
-      }
-    }
-    return () => {
-      cancelled = true;
-      if (map && reRender) {
-        map.off('click', enableMapGestures);
-        document.removeEventListener('click', disableMapGestures);
-        map.remove();
-      }
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pointMarkers, props.tilesProvider, props.mapApiKey]);
-
+  const containerId = useRef(uniqueID()).current;
+  useLeafletMap({
+    pointMarkers,
+    showControls,
+    zoom,
+    layers,
+    props,
+    containerId,
+  });
   return (
     <div className="map-container" data-testid="map-container">
       <div

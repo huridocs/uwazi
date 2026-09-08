@@ -18,7 +18,7 @@ export class FilesDataSourceFactory {
     const tm = (overrides?.transactionManager ??
       ExecutionContext.transactionManager) as MongoTransactionManager;
 
-    if (tenant.featureFlags?.postgresFiles) {
+    if (tenant.featureFlags?.postgresCore) {
       const pgTM = ExecutionContext.postgresTransactionManager;
 
       return new PostgresFilesDataSource({

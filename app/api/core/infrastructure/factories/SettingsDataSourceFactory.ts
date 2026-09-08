@@ -21,7 +21,7 @@ export class SettingsDataSourceFactory {
   static default(overrides?: Overrides): SettingsDataSource {
     const tenant = ExecutionContext.currentTenant;
 
-    if (tenant.featureFlags?.postgresSettings) {
+    if (tenant.featureFlags?.postgresCore) {
       return new PostgresSettingsDataSource({
         tenantId: tenant.name,
         mongoDb: getConnection(),
@@ -36,7 +36,7 @@ export class SettingsDataSourceFactory {
   static cached(overrides?: Overrides): SettingsDataSource {
     const tenant = ExecutionContext.currentTenant;
 
-    if (tenant.featureFlags?.postgresSettings) {
+    if (tenant.featureFlags?.postgresCore) {
       return new PostgresSettingsDataSource({
         tenantId: tenant.name,
         mongoDb: getConnection(),

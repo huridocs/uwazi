@@ -83,7 +83,11 @@ const LibraryView = ({
               onShowMetadataChange={setShowMetadata}
             />
             <div
-              className="min-h-0 flex-1 overflow-auto bg-warm p-3"
+              className={
+                view === 'map'
+                  ? 'relative min-h-0 flex-1 overflow-hidden bg-warm'
+                  : 'min-h-0 flex-1 overflow-auto bg-warm p-3'
+              }
               role="region"
               aria-label="Library results"
             >

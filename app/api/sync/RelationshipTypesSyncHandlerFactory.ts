@@ -7,7 +7,7 @@ export class RelationshipTypesSyncHandlerFactory {
   static default(): MongoRelationshipTypesSyncHandler | PostgresRelationshipTypesSyncHandler {
     const tenant = ExecutionContext.currentTenant;
 
-    if (tenant.featureFlags?.postgresRelationshipTypes) {
+    if (tenant.featureFlags?.postgresCore) {
       return new PostgresRelationshipTypesSyncHandler({
         tenantId: tenant.name,
         mongoDb: getConnection(),

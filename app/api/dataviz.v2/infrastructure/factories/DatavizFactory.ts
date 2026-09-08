@@ -58,7 +58,7 @@ class DatavizFactory {
       entitiesDAO: EntitiesDAOFactory.default() as EntitiesReadDAO,
     };
 
-    const strategy = ExecutionContext.tenant.featureFlags?.postgresEntities
+    const strategy = ExecutionContext.tenant.featureFlags?.postgresCore
       ? new PostgresDatavizQueryExecutor({
           tenantId: ExecutionContext.tenant.name,
           pgTransactionManager: ExecutionContext.postgresTransactionManager,

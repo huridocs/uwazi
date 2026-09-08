@@ -14,15 +14,15 @@ describe('ThesaurusMetadataRenamerAdapter', () => {
     mockedDenormalize.mockClear();
   });
 
-  it('should be a no-op when postgresEntities is active', async () => {
-    testingTenants.changeCurrentTenant({ featureFlags: { postgresEntities: true } });
+  it('should be a no-op when postgresCore is active', async () => {
+    testingTenants.changeCurrentTenant({ featureFlags: { postgresCore: true } });
 
     await thesaurusMetadataRenamerAdapter.renameInMetadata('valueId', 'New label', 'th1', 'en');
 
     expect(mockedDenormalize).not.toHaveBeenCalled();
   });
 
-  it('should denormalize labels when postgresEntities is not active', async () => {
+  it('should denormalize labels when postgresCore is not active', async () => {
     testingTenants.changeCurrentTenant({ featureFlags: {} });
 
     await thesaurusMetadataRenamerAdapter.renameInMetadata('valueId', 'New label', 'th1', 'en');

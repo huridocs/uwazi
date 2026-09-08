@@ -14,7 +14,7 @@ import { getMainDocument } from '#V2/formatters/index.js';
 import type { Entity } from '#V2/api/entities/types.js';
 import type { RelationshipQueryPayload } from '#V2/api/relationships/types.js';
 import { entityLoaderCache } from './EntityLoaderCache.js';
-import { parseEntityHash } from './entityUrlState.js';
+import { parseEntityHash } from './entityUrlAtoms.js';
 import { MAIN_TAB_PARAM, SIDE_TAB_PARAM, VIEW_MODE_PARAM } from './Components/index.js';
 import { MAIN_TAB, isValidMainTab } from './Tabs/tabIds.js';
 import { getSideTabButtons } from './Tabs/sideTabSets.js';
@@ -119,6 +119,20 @@ const loadSummaryAndAnchorsSeed = async (
   });
 };
 
+const fetchRelationshipPayload = async (
+  services: V2Services,
+  input: RelationshipQueryInput,
+  needAnchors: boolean
+) => {
+  if (needAnchors && input.fileId) {
+    return loadSummaryAndAnchorsSeed(services.relationshipsQuery, {
+      ...input,
+      fileId: input.fileId,
+    });
+  }
+  return loadSummarySeed(services.relationshipsQuery, input);
+};
+
 const loadRelationshipQuery = async (services: V2Services, input: RelationshipQueryInput) => {
   const needAnchors = Boolean(
     input.fileId && needAnchorsForRequest(input.requestUrl, input.fileId, input.entity)
@@ -132,107 +146,123 @@ const loadRelationshipQuery = async (services: V2Services, input: RelationshipQu
   if (cached) {
     return cached;
   }
-
-  const query = services.relationshipsQuery;
-  let payload: RelationshipQueryPayload;
-  if (needAnchors && input.fileId) {
-    payload = await loadSummaryAndAnchorsSeed(query, { ...input, fileId: input.fileId });
-  } else {
-    payload = await loadSummarySeed(query, input);
-  }
-
+  const payload = await fetchRelationshipPayload(services, input, needAnchors);
   entityLoaderCache.setRelationshipQuery(input.sharedId, input.language, input.fileId, payload);
   return payload;
+};
+
+const loadEntityForRequest = async ({
+  services,
+  entitySharedId,
+  language,
+  headers,
+}: {
+  services: V2Services;
+  entitySharedId: string;
+  language: string;
+  headers?: IncomingHttpHeaders;
+}) => {
+  const cached = entityLoaderCache.getEntity(entitySharedId, language);
+  if (cached?._id) {
+    return cached;
+  }
+  const [fetchedEntity, error] = await services.entities.getBySharedId(entitySharedId, {
+    language,
+    omitRelationships: true,
+    headers,
+  });
+  if (error) throwApiError(error);
+  const [entity] = fetchedEntity ?? [];
+  if (!entity?._id) {
+    throwApiError(entityNotFoundError(entitySharedId));
+  }
+  entityLoaderCache.setEntity(entitySharedId, language, entity);
+  return entity;
+};
+
+const syncMainDocument = (
+  entity: Entity,
+  language: string,
+  defaultLanguage: string | undefined
+) => {
+  const cached = entityLoaderCache.getMainDocument(entity.sharedId, language);
+  const derived = getMainDocument(readyDocuments(entity.documents), language, defaultLanguage);
+  if (!derived) {
+    entityLoaderCache.clearMainDocument(entity.sharedId, language);
+    return undefined;
+  }
+  if (cached?._id !== derived._id || cached?.originalname !== derived.originalname) {
+    entityLoaderCache.setMainDocument(entity.sharedId, language, derived);
+  }
+  return derived;
+};
+
+const loadCachedOrFetchPlaintext = async (fileId: string, headers?: IncomingHttpHeaders) => {
+  const cached = entityLoaderCache.getPlaintext(fileId);
+  if (cached) {
+    return cached;
+  }
+  const response = await getDocumentPlaintext(fileId, headers);
+  if (response instanceof FetchResponseError) {
+    throwApiError(
+      new ApiError('Failed to load plaintext', {
+        kind: 'http',
+        status: 404,
+        detail: response.message,
+      })
+    );
+    return '';
+  }
+  entityLoaderCache.setPlaintext(fileId, response);
+  return response;
+};
+
+const loadPlaintextIfNeeded = async (
+  fileId: string,
+  isRaw: boolean,
+  headers?: IncomingHttpHeaders
+) => {
+  if (!isRaw && isClient) {
+    return '';
+  }
+  return loadCachedOrFetchPlaintext(fileId, headers);
 };
 
 const createEntityLoader =
   (services: V2Services) =>
   (headers?: IncomingHttpHeaders): LoaderFunction =>
-  // eslint-disable-next-line max-statements
   async ({ params, request }): Promise<LoaderResponse> => {
     const entitySharedId = params.sharedId;
-    const atomStore = getStore();
-    const language = params.lang || atomStore.get(localeAtom);
-    const defaultLanguage = atomStore.get(settingsAtom)?.languages?.find(l => l.default)?.key;
-    const isRaw = isRawFromRequest(request.url);
-
     if (!entitySharedId) {
       return undefined;
     }
-
-    let entity = entityLoaderCache.getEntity(entitySharedId, language);
-    let pagePlaintext: string | undefined = '';
-
-    if (!entity?._id) {
-      const [fetchedEntity, error] = await services.entities.getBySharedId(entitySharedId, {
-        language,
-        omitRelationships: true,
-        headers,
-      });
-
-      if (error) throwApiError(error);
-
-      if (!fetchedEntity?.[0]?._id) {
-        throwApiError(entityNotFoundError(entitySharedId));
-      }
-
-      entity = fetchedEntity?.[0]!;
-      entityLoaderCache.setEntity(entitySharedId, language, entity);
-    }
-
-    let mainDocument = entityLoaderCache.getMainDocument(entitySharedId, language);
-    if (entity?.sharedId) {
-      const derivedMainDocument = getMainDocument(
-        readyDocuments(entity.documents),
-        language,
-        defaultLanguage
-      );
-      if (derivedMainDocument) {
-        if (
-          mainDocument?._id !== derivedMainDocument._id ||
-          mainDocument?.originalname !== derivedMainDocument.originalname
-        ) {
-          entityLoaderCache.setMainDocument(entity.sharedId, language, derivedMainDocument);
-        }
-        mainDocument = derivedMainDocument;
-      } else {
-        entityLoaderCache.clearMainDocument(entity.sharedId, language);
-        mainDocument = undefined;
-      }
-    }
-
-    if (mainDocument?._id && (isRaw || !isClient)) {
-      pagePlaintext = entityLoaderCache.getPlaintext(mainDocument._id);
-
-      if (!pagePlaintext) {
-        const response = await getDocumentPlaintext(mainDocument._id, headers);
-
-        if (response instanceof FetchResponseError) {
-          throwApiError(
-            new ApiError('Failed to load plaintext', {
-              kind: 'http',
-              status: 404,
-              detail: response.message,
-            })
-          );
-        } else {
-          pagePlaintext = response;
-          entityLoaderCache.setPlaintext(mainDocument._id, pagePlaintext);
-        }
-      }
-    }
-
-    const entityPageView = entity ? await loadEntityPageView(entity, headers) : undefined;
-    const relationshipQuery = await loadRelationshipQuery(services, {
-      sharedId: entity.sharedId,
+    const atomStore = getStore();
+    const language = params.lang || atomStore.get(localeAtom);
+    const defaultLanguage = atomStore.get(settingsAtom)?.languages?.find(l => l.default)?.key;
+    const entity = await loadEntityForRequest({
+      services,
+      entitySharedId,
       language,
-      fileId: mainDocument?._id,
       headers,
-      requestUrl: request.url,
-      entity,
     });
-
-    return { entity, mainDocument, pagePlaintext, entityPageView, relationshipQuery };
+    const mainDocument = syncMainDocument(entity, language, defaultLanguage);
+    const pagePlaintext = mainDocument?._id
+      ? await loadPlaintextIfNeeded(mainDocument._id, isRawFromRequest(request.url), headers)
+      : '';
+    return {
+      entity,
+      mainDocument,
+      pagePlaintext,
+      entityPageView: await loadEntityPageView(entity, headers),
+      relationshipQuery: await loadRelationshipQuery(services, {
+        sharedId: entity.sharedId,
+        language,
+        fileId: mainDocument?._id,
+        headers,
+        requestUrl: request.url,
+        entity,
+      }),
+    };
   };
 
 const entityLoader = createEntityLoader(httpServices);

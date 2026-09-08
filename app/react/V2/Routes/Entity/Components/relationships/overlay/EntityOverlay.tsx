@@ -1,10 +1,15 @@
+/* eslint-disable react/no-multi-comp */
 import React, { useEffect, useId, useRef, useState } from 'react';
 import { useAtomValue } from 'jotai';
 import { XMarkIcon } from '@heroicons/react/24/outline';
 import { I18NLinkV2, t, Translate } from '#app/I18N/index.js';
 import { templatesAtom } from '#V2/atoms/templatesAtom.js';
 import { ErrorBoundary } from '#V2/Components/ErrorHandling/ErrorBoundary.js';
-import { useEntityOverlay, useEnsureResolved } from '#V2/Routes/Entity/Components/context/index.js';
+import {
+  useEntityOverlayActions,
+  useEntityOverlayTarget,
+  useEnsureResolved,
+} from '#V2/Routes/Entity/Components/context/index.js';
 import { EntityOverlayContent } from './EntityOverlayContent.js';
 import { useOverlayEntity } from './useOverlayEntity.js';
 import { settingsAtom } from '#V2/atoms/settingsAtom.js';
@@ -66,34 +71,35 @@ const overlayHeading = (
     '#6B7280',
 });
 
+const useOverlayChrome = () => ({
+  settings: useAtomValue(settingsAtom),
+  templates: useAtomValue(templatesAtom),
+  titleId: useId(),
+});
+
 const useEntityOverlayState = () => {
-  const { target, closeEntityOverlay } = useEntityOverlay();
+  const { target } = useEntityOverlayTarget();
+  const { closeEntityOverlay } = useEntityOverlayActions();
+  const overlayEntity = useOverlayEntity(target?.sharedId ?? null);
   const ensureResolved = useEnsureResolved();
-  const templates = useAtomValue(templatesAtom);
-  const settings = useAtomValue(settingsAtom);
-  const panelRef = useRef<HTMLDivElement>(null);
-  const titleId = useId();
-  const { entity, loading, error } = useOverlayEntity(target?.sharedId ?? null);
   const entered = useOverlayEnter(target !== null, ensureResolved);
+  const panelRef = useRef<HTMLDivElement>(null);
+  const { settings, templates, titleId } = useOverlayChrome();
   useOverlayDismiss(target !== null, closeEntityOverlay, panelRef);
   return {
+    ...overlayEntity,
     target,
     closeEntityOverlay,
     settings,
     panelRef,
     titleId,
-    entity,
-    loading,
-    error,
     isOpen: target !== null,
     entered,
-    ...overlayHeading(entity, target, templates),
+    ...overlayHeading(overlayEntity.entity, target, templates),
   };
 };
 
-const EntityOverlay = () => {
-  const overlay = useEntityOverlayState();
-  if (!overlay.isOpen) return null;
+const EntityOverlayPanel = ({ overlay }: { overlay: ReturnType<typeof useEntityOverlayState> }) => {
   const {
     target,
     closeEntityOverlay,
@@ -205,6 +211,12 @@ const EntityOverlay = () => {
       </div>
     </>
   );
+};
+
+const EntityOverlay = () => {
+  const overlay = useEntityOverlayState();
+  if (!overlay.isOpen) return null;
+  return <EntityOverlayPanel overlay={overlay} />;
 };
 
 export { EntityOverlay };
