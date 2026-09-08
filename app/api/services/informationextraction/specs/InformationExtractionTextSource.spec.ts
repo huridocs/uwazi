@@ -1,6 +1,5 @@
 /* eslint-disable global-require */
 /* eslint-disable max-statements */
-import moment from 'moment';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { testingTenants } from '#api/utils/testingTenants.js';
 import { ExternalDummyService } from '#api/services/tasksmanager/specs/ExternalDummyService.js';
@@ -326,7 +325,9 @@ describe('Information Extraction: Extracting from text source', () => {
       );
 
       expect(IXExternalService.materials.length).toBe(2);
-      const testDate = moment.utc('2004-07-05T00:00:00+00:00');
+      // The fixture stores 1088985600 === 2004-07-05T00:00:00Z. Date properties are stored as
+      // UTC midnight and formatted with .utc(), so the calendar date is timezone independent.
+      const expectedLabelText = '2004-07-05';
 
       expect(suggestion1).toEqual({
         entity_name: extractionKeyEn.key,
@@ -334,7 +335,7 @@ describe('Information Extraction: Extracting from text source', () => {
         id: factory.id('extractor_target_date_source_text').toString(),
         tenant: 'tenant1',
         source_text: 'any_source_text',
-        label_text: moment(testDate).local().format('YYYY-MM-DD'),
+        label_text: expectedLabelText,
       });
 
       expect(suggestion2).toEqual({
@@ -343,7 +344,7 @@ describe('Information Extraction: Extracting from text source', () => {
         id: factory.id('extractor_target_date_source_text').toString(),
         tenant: 'tenant1',
         source_text: 'any_source_text',
-        label_text: moment(testDate).local().format('YYYY-MM-DD'),
+        label_text: expectedLabelText,
       });
     });
 
