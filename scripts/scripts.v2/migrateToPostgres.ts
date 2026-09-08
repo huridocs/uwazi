@@ -2,10 +2,14 @@
  * Copies Mongo collections into Postgres for one tenant (idempotent per table).
  *
  * Usage:
- *   node scripts/runner.js scripts/scripts.v2/migrateToPostgres.ts --tenant <name>
+ *   node scripts/runner.js scripts/scripts.v2/migrateToPostgres.ts --tenant <name> [--force]
  *
  * Migrates the collections gated by the tenant's active Postgres feature flags
  * (postgresCore, postgresPages).
+ *
+ * By default a collection is skipped when its PostgreSQL table already contains
+ * data for the tenant. Pass --force to migrate anyway (non-destructive: existing
+ * rows are left untouched and conflicting rows are ignored).
  */
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
@@ -80,6 +84,13 @@ const argv = yargs(hideBin(process.argv))
     describe: 'Tenant to migrate collections for',
     demandOption: true,
   })
+  .option('force', {
+    alias: 'f',
+    type: 'boolean',
+    describe:
+      'Migrate collections even if the PostgreSQL table already contains data (non-destructive)',
+    default: false,
+  })
   .strict()
   .parseSync();
 
@@ -95,7 +106,8 @@ async function migrateCollection(
     log(`[${tenantName}] PostgreSQL table: ${migrationConfig.pgTable}`);
 
     const result = await new MigrateCollectionToPostgres(mongoDb, tenantName).migrate(
-      migrationConfig
+      migrationConfig,
+      { force: argv.force }
     );
 
     const summary = result.skipped
