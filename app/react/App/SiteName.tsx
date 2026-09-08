@@ -77,8 +77,6 @@ export const SiteName: React.FC<SiteNameProps> = ({
   return (
     <>
       <Helmet
-        titleTemplate={`%s • ${siteName}`}
-        meta={[{ charSet: 'utf-8' }, { name: 'description', content: 'Uwazi docs' }]}
         link={
           faviconUrl
             ? [

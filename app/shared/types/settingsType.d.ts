@@ -55,6 +55,13 @@ export interface Settings {
   __v?: number;
   project?: string;
   site_name?: string;
+  seo?: {
+    title?: string;
+    description?: string;
+    ogTitle?: string;
+    ogDescription?: string;
+    ogImage?: string;
+  };
   favicon?: string;
   site_logo?: string;
   themeAssets?: {

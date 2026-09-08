@@ -238,6 +238,7 @@ const prepareStores = async (req: ExpressRequest, settings: ClientSettings, lang
       translations: translationsApiResponse,
       relationTypes: sortBy(relationTypesApiResponse, 'name'),
       isMobile: isMobileDevice(userAgent),
+      origin: `${req.protocol}://${req.get('host')}`,
     },
   });
 

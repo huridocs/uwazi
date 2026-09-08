@@ -45,6 +45,20 @@ describe('settings', () => {
       expect(createdDocument.allowedPublicTemplates?.[1]).toBe('id2');
     });
 
+    it('should persist instance SEO metadata', async () => {
+      const seo = {
+        title: 'Human rights database',
+        description: 'A collection of documents and cases.',
+        ogTitle: 'Share this collection',
+        ogDescription: 'Open data on human rights.',
+        ogImage: '/assets/og-image.png',
+      };
+
+      await settings.save({ site_name: 'My collection', seo });
+      const result = await settings.get();
+      expect(result.seo).toEqual(seo);
+    });
+
     describe('when there are Links', () => {
       const baseLink = { title: 'Page one', type: 'link' as 'link', url: 'url' };
       const baseConfig = {
