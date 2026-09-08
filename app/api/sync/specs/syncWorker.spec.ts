@@ -171,7 +171,7 @@ describe('syncWorker', () => {
       name: 'target1',
       dbName: 'target1',
       indexName: 'target1',
-      featureFlags: { postgresThesauri: false },
+      featureFlags: { postgresCore: false },
       ...(await testingUploadPaths('syncWorker_target1_files')),
     });
 

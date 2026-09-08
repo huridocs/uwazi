@@ -16,7 +16,7 @@ export class RelationshipTypesDataSourceFactory {
     // currentTenant falls back to tenants.current() for legacy call sites outside EC
     const tenant = ExecutionContext.currentTenant;
 
-    if (tenant.featureFlags?.postgresRelationshipTypes) {
+    if (tenant.featureFlags?.postgresCore) {
       return new PostgresRelationshipTypesDataSource({
         tenantId: tenant.name,
         mongoDb: db,

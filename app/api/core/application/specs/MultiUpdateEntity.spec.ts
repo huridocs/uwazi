@@ -8,29 +8,29 @@ import { factory, fixtures, permissionsFixtures } from './MultiUpdateEntityFixtu
 
 type TestConfig = {
   name: string;
-  postgresTemplates: boolean;
+  postgresCore: boolean;
 };
 
 const testConfigs: TestConfig[] = [
-  { name: 'Mongo', postgresTemplates: false },
-  { name: 'Postgres', postgresTemplates: true },
+  { name: 'Mongo', postgresCore: false },
+  { name: 'Postgres', postgresCore: true },
 ];
 
-const createSut = (actor?: User, postgresTemplates = false) =>
+const createSut = (actor?: User, postgresCore = false) =>
   testingEnvironment.runWithContext(() => ({ sut: MultiUpdateEntityUseCaseFactory.default() }), {
     actor,
-    ...(postgresTemplates
+    ...(postgresCore
       ? {
           tenant: {
             ...testingTenants.current(),
-            featureFlags: { postgresTemplates: true },
+            featureFlags: { postgresCore: true },
           },
         }
       : {}),
   });
 
 const getAllDocs = async (sharedId: string) =>
-  testingEnvironment.db.getCollection('entities')!.find({ sharedId }).toArray();
+  (await testingEnvironment.db.getAllFrom('entities')).filter(row => row.sharedId === sharedId);
 
 const adminUser = () =>
   User.createFrom({
@@ -84,10 +84,14 @@ describe('MultiUpdateEntity', () => {
     await testingEnvironment.tearDown();
   });
 
-  describe.each(testConfigs)('$name', ({ postgresTemplates }) => {
+  describe.each(testConfigs)('$name', ({ postgresCore }) => {
+    beforeEach(async () => {
+      testingTenants.changeCurrentTenant({ featureFlags: { postgresCore } });
+    });
+
     describe('when updating property assignments', () => {
       it('should update numeric (non-translatable) across all languages and text (translatable) only in the target language', async () => {
-        const { sut } = createSut(undefined, postgresTemplates);
+        const { sut } = createSut(undefined, postgresCore);
 
         await sut.execute({
           ids: ['entity-1', 'entity-2'],
@@ -118,7 +122,7 @@ describe('MultiUpdateEntity', () => {
       });
 
       it('should update multiselect (non-translatable) across all languages', async () => {
-        const { sut } = createSut(undefined, postgresTemplates);
+        const { sut } = createSut(undefined, postgresCore);
 
         await sut.execute({
           ids: ['entity-1'],
@@ -142,7 +146,7 @@ describe('MultiUpdateEntity', () => {
       });
 
       it('should return the mutated Entity array', async () => {
-        const { sut } = createSut(undefined, postgresTemplates);
+        const { sut } = createSut(undefined, postgresCore);
 
         const result = await sut.execute({
           ids: ['entity-1'],
@@ -158,7 +162,7 @@ describe('MultiUpdateEntity', () => {
       });
 
       it('should do nothing when ids array is empty', async () => {
-        const { sut } = createSut(undefined, postgresTemplates);
+        const { sut } = createSut(undefined, postgresCore);
 
         const result = await sut.execute({
           ids: [],
@@ -179,7 +183,7 @@ describe('MultiUpdateEntity', () => {
 
     describe('when changing template', () => {
       it('should change template and clear metadata not present in the new template', async () => {
-        const { sut } = createSut(undefined, postgresTemplates);
+        const { sut } = createSut(undefined, postgresCore);
 
         await sut.execute({
           ids: ['entity-1'],
@@ -209,7 +213,7 @@ describe('MultiUpdateEntity', () => {
       });
 
       it('should change template on each entity individually, regardless of the other entities current template', async () => {
-        const { sut } = createSut(undefined, postgresTemplates);
+        const { sut } = createSut(undefined, postgresCore);
 
         // entity-other is already on Other Template; entity-1 is on Full Template.
         // With a single templateHasChanged flag derived from entities[0], if entity-other
@@ -239,7 +243,7 @@ describe('MultiUpdateEntity', () => {
       });
 
       it('should not change template when templateId matches current template', async () => {
-        const { sut } = createSut(undefined, postgresTemplates);
+        const { sut } = createSut(undefined, postgresCore);
 
         await sut.execute({
           ids: ['entity-1'],
@@ -264,7 +268,7 @@ describe('MultiUpdateEntity', () => {
 
     describe('when no mutations are applied', () => {
       it('should not write to the database if nothing was mutated', async () => {
-        const { sut } = createSut(undefined, postgresTemplates);
+        const { sut } = createSut(undefined, postgresCore);
 
         // Execute with no icon, no published, no templateId change, no propertyAssignments
         await sut.execute({
@@ -293,7 +297,7 @@ describe('MultiUpdateEntity', () => {
 
       describe('Admin role', () => {
         it('should update all entities regardless of permissions', async () => {
-          const { sut } = createSut(adminUser(), postgresTemplates);
+          const { sut } = createSut(adminUser(), postgresCore);
 
           await sut.execute({
             ids: ALL_PERM_IDS,
@@ -309,7 +313,7 @@ describe('MultiUpdateEntity', () => {
 
       describe('Editor role', () => {
         it('should update all entities regardless of permissions', async () => {
-          const { sut } = createSut(editorUser(), postgresTemplates);
+          const { sut } = createSut(editorUser(), postgresCore);
 
           await sut.execute({
             ids: ALL_PERM_IDS,
@@ -325,7 +329,7 @@ describe('MultiUpdateEntity', () => {
 
       describe('Collaborator role', () => {
         it('should update only entities with write permission via user', async () => {
-          const { sut } = createSut(collaboratorUser(), postgresTemplates);
+          const { sut } = createSut(collaboratorUser(), postgresCore);
 
           const result = await sut.execute({
             ids: ['entity_write', 'entity_read', 'entity_no_perm'],
@@ -351,7 +355,7 @@ describe('MultiUpdateEntity', () => {
         it('should update only entities with write permission via group', async () => {
           const { sut } = createSut(
             collaboratorUser([{ _id: factory.id('group1'), name: 'group1' }]),
-            postgresTemplates
+            postgresCore
           );
 
           const result = await sut.execute({
@@ -372,7 +376,7 @@ describe('MultiUpdateEntity', () => {
         });
 
         it('should return empty array and write nothing when no entities are permitted', async () => {
-          const { sut } = createSut(collaboratorUser(), postgresTemplates);
+          const { sut } = createSut(collaboratorUser(), postgresCore);
 
           const result = await sut.execute({
             ids: ['entity_read', 'entity_no_perm'],

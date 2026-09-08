@@ -46,7 +46,7 @@ describe('UsersQueryService', () => {
     beforeEach(async () => {
       testingTenants.changeCurrentTenant({
         name: TENANT_ID,
-        featureFlags: { postgresUsers: usePostgres, postgresUsergroups: usePostgres },
+        featureFlags: { postgresCore: usePostgres },
       });
 
       await testingEnvironment.setFixtures(fixtures);
@@ -159,7 +159,7 @@ describe('UsersQueryService', () => {
     beforeEach(async () => {
       testingTenants.changeCurrentTenant({
         name: TENANT_ID,
-        featureFlags: { postgresUsers: true, postgresUsergroups: true },
+        featureFlags: { postgresCore: true },
       });
 
       await testingEnvironment.setFixtures(fixtures);

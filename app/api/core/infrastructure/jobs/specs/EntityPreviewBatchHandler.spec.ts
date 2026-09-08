@@ -158,7 +158,7 @@ describe('EntityPreviewBatchHandler', () => {
   describe.each(testConfigs)('$name', ({ usePostgres }) => {
     beforeEach(async () => {
       testingTenants.changeCurrentTenant({
-        featureFlags: { postgresFiles: usePostgres },
+        featureFlags: { postgresCore: usePostgres },
       });
       await testingEnvironment.setFixtures(fixtures);
     });
@@ -167,12 +167,10 @@ describe('EntityPreviewBatchHandler', () => {
       it('should set each translation preview to its own language thumbnail', async () => {
         await dispatch(createSUT(), ['entity1']);
 
-        const entities = await testingEnvironment.db.getAllFrom('entities');
-        const en = entities.find(e => e.sharedId === 'entity1' && e.language === 'en');
-        const es = entities.find(e => e.sharedId === 'entity1' && e.language === 'es');
+        const { en, es } = await getEntityPreviews('entity1');
 
-        expect(en?.preview).toBe(`${f.idString('doc1-en')}.jpg`);
-        expect(es?.preview).toBe(`${f.idString('doc1-es')}.jpg`);
+        expect(en).toBe(`${f.idString('doc1-en')}.jpg`);
+        expect(es).toBe(`${f.idString('doc1-es')}.jpg`);
       });
     });
 
@@ -180,12 +178,10 @@ describe('EntityPreviewBatchHandler', () => {
       it('should set all translations to the default-language thumbnail', async () => {
         await dispatch(createSUT(), ['entity2']);
 
-        const entities = await testingEnvironment.db.getAllFrom('entities');
-        const en = entities.find(e => e.sharedId === 'entity2' && e.language === 'en');
-        const es = entities.find(e => e.sharedId === 'entity2' && e.language === 'es');
+        const { en, es } = await getEntityPreviews('entity2');
 
-        expect(en?.preview).toBe(`${f.idString('doc2-en')}.jpg`);
-        expect(es?.preview).toBe(`${f.idString('doc2-en')}.jpg`);
+        expect(en).toBe(`${f.idString('doc2-en')}.jpg`);
+        expect(es).toBe(`${f.idString('doc2-en')}.jpg`);
       });
     });
 
@@ -193,12 +189,10 @@ describe('EntityPreviewBatchHandler', () => {
       it('should clear preview on all translations', async () => {
         await dispatch(createSUT(), ['entity3']);
 
-        const entities = await testingEnvironment.db.getAllFrom('entities');
-        const en = entities.find(e => e.sharedId === 'entity3' && e.language === 'en');
-        const es = entities.find(e => e.sharedId === 'entity3' && e.language === 'es');
+        const { en, es } = await getEntityPreviews('entity3');
 
-        expect(en?.preview).toBeUndefined();
-        expect(es?.preview).toBeUndefined();
+        expect(en).toBeUndefined();
+        expect(es).toBeUndefined();
       });
     });
 

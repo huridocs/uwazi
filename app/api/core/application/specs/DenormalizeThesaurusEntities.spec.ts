@@ -13,20 +13,32 @@ import {
 
 type TestConfig = {
   name: string;
-  postgresThesauri: boolean;
+  postgresCore: boolean;
+  getEntities: () => Promise<any[]>;
 };
 
 const testConfigs: TestConfig[] = [
-  { name: 'Mongo', postgresThesauri: false },
-  { name: 'Postgres', postgresThesauri: true },
+  {
+    name: 'Mongo',
+    postgresCore: false,
+    getEntities: async () => testingEnvironment.db.getAllFrom('entities'),
+  },
+  {
+    name: 'Postgres',
+    postgresCore: true,
+    getEntities: async () =>
+      (await testingEnvironment.db.getAllFrom('entities')).sort((a, b) =>
+        `${a.sharedId}:${a.language}`.localeCompare(`${b.sharedId}:${b.language}`)
+      ),
+  },
 ];
 
-const createSut = (postgresThesauri = false) => {
+const createSut = (postgresCore = false) => {
   const contextOverrides: any = {};
-  if (postgresThesauri) {
+  if (postgresCore) {
     contextOverrides.tenant = {
       ...testingTenants.current(),
-      featureFlags: { postgresThesauri: true },
+      featureFlags: { postgresCore: true },
     };
   }
 
@@ -54,9 +66,13 @@ describe('DenormalizeThesaurusEntities', () => {
     await testingEnvironment.tearDown();
   });
 
-  describe.each(testConfigs)('$name', ({ postgresThesauri }) => {
+  describe.each(testConfigs)('$name', ({ postgresCore, getEntities }) => {
+    beforeEach(async () => {
+      testingTenants.changeCurrentTenant({ featureFlags: { postgresCore } });
+    });
+
     it('should update thesaurus labels on entities', async () => {
-      const { sut, eventEmitter } = createSut(postgresThesauri);
+      const { sut, eventEmitter } = createSut(postgresCore);
 
       await sut.execute({
         thesaurusId: factory.id('countries').toString(),
@@ -65,7 +81,7 @@ describe('DenormalizeThesaurusEntities', () => {
 
       expect(eventEmitter.emit).toHaveBeenCalledWith(expect.any(EntityUpdatedEvent));
 
-      const after = await testingEnvironment.db.getAllFrom('entities');
+      const after = await getEntities();
 
       expect(after).toMatchObject([
         {
@@ -210,7 +226,7 @@ describe('DenormalizeThesaurusEntities', () => {
     });
 
     it('should remove deleted thesaurus values from entities', async () => {
-      const { sut } = createSut(postgresThesauri);
+      const { sut } = createSut(postgresCore);
 
       // Use fixture swap instead of raw Mongo update so PG state is also updated
       await testingEnvironment.setFixtures(fixturesWithDeletedValue);
@@ -220,7 +236,7 @@ describe('DenormalizeThesaurusEntities', () => {
         sharedIds: ['entity_4', 'entity_5'],
       });
 
-      const after = await testingEnvironment.db.getAllFrom('entities');
+      const after = await getEntities();
 
       expect(after).toEqual(
         TestUtils.arrayIncludesObjects([

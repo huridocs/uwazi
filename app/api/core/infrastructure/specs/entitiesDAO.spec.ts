@@ -109,7 +109,7 @@ describe('EntitiesDAO', () => {
   describe.each(backends)('$name backend', ({ usePostgres }) => {
     beforeEach(async () => {
       testingTenants.changeCurrentTenant({
-        featureFlags: { postgresEntities: usePostgres, postgresFiles: usePostgres },
+        featureFlags: { postgresCore: usePostgres },
       });
       await testingEnvironment.setFixtures(createFixtures());
     });

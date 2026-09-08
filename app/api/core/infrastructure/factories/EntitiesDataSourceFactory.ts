@@ -28,13 +28,7 @@ export class EntitiesDataSourceFactory {
       overrides?.accessContext ??
       (ExecutionContext.actor ? AccessContext.forActor(ExecutionContext.actor) : undefined);
 
-    if (tenant.featureFlags?.postgresEntities) {
-      if (!tenant.featureFlags?.postgresFiles) {
-        throw new Error(
-          'PostgresEntitiesDataSource only works along with PostgresFilesDAO, please enable postgresFiles feature flag.'
-        );
-      }
-
+    if (tenant.featureFlags?.postgresCore) {
       return new PostgresEntitiesDataSource({
         tenantId: tenant.name,
         transactionManager,
