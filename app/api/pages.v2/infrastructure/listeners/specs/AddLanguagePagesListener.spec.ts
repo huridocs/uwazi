@@ -58,13 +58,13 @@ afterAll(async () => {
 
 describe.each(pagesBackendConfigs)(
   'AddLanguagePagesListener - $name',
-  ({ postgresPages, postgresSettings }) => {
+  ({ postgresPages, postgresCore }) => {
     beforeEach(async () => {
       await testingEnvironment.setUp(fixtures, {
         postgres: true,
-        postgresMirror: pagesBackendPostgresMirror(postgresSettings),
+        postgresMirror: pagesBackendPostgresMirror(postgresCore),
       });
-      applyPagesBackendFlags(postgresPages, postgresSettings);
+      applyPagesBackendFlags(postgresPages, postgresCore);
     });
     describe('when the language still exists in settings', () => {
       it('should add locale to existing pages', async () => {

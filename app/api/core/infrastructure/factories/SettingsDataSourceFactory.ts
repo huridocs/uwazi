@@ -7,6 +7,7 @@ import { CachedMongoSettingsDataSource } from '../mongodb/CachedMongoSettingsDat
 import { PostgresSettingsDataSource } from '../postgresql/settings/PostgresSettingsDataSource.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { IdGeneratorFactory } from './IdGeneratorFactory.js';
+import { PostgresTransactionManagerFactory } from './PostgresTransactionManagerFactory.js';
 
 type Overrides = { transactionManager?: TransactionManager };
 
@@ -17,32 +18,32 @@ const mongoSettings = (DataSource: typeof MongoSettingsDataSource, overrides?: O
       ExecutionContext.transactionManager) as MongoTransactionManager,
   });
 
+const buildPostgresSettingsDataSource = () => {
+  const tenant = ExecutionContext.currentTenant;
+  const pgTransactionManager = ExecutionContext.getStore()
+    ? ExecutionContext.postgresTransactionManager
+    : PostgresTransactionManagerFactory.default();
+
+  return new PostgresSettingsDataSource({
+    tenantId: tenant.name,
+    mongoDb: getConnection(),
+    pgTransactionManager,
+    idGenerator: IdGeneratorFactory.default(),
+  });
+};
+
 export class SettingsDataSourceFactory {
   static default(overrides?: Overrides): SettingsDataSource {
-    const tenant = ExecutionContext.currentTenant;
-
-    if (tenant.featureFlags?.postgresCore) {
-      return new PostgresSettingsDataSource({
-        tenantId: tenant.name,
-        mongoDb: getConnection(),
-        pgTransactionManager: ExecutionContext.postgresTransactionManager,
-        idGenerator: IdGeneratorFactory.default(),
-      });
+    if (ExecutionContext.currentTenant.featureFlags?.postgresCore) {
+      return buildPostgresSettingsDataSource();
     }
 
     return mongoSettings(MongoSettingsDataSource, overrides);
   }
 
   static cached(overrides?: Overrides): SettingsDataSource {
-    const tenant = ExecutionContext.currentTenant;
-
-    if (tenant.featureFlags?.postgresCore) {
-      return new PostgresSettingsDataSource({
-        tenantId: tenant.name,
-        mongoDb: getConnection(),
-        pgTransactionManager: ExecutionContext.postgresTransactionManager,
-        idGenerator: IdGeneratorFactory.default(),
-      });
+    if (ExecutionContext.currentTenant.featureFlags?.postgresCore) {
+      return buildPostgresSettingsDataSource();
     }
 
     return mongoSettings(CachedMongoSettingsDataSource, overrides);

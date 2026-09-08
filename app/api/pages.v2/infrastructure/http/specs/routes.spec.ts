@@ -26,13 +26,13 @@ afterAll(async () => {
 
 describe.each(pagesBackendConfigs)(
   'Pages V2 HTTP routes - $name',
-  ({ postgresPages, postgresSettings }) => {
+  ({ postgresPages, postgresCore }) => {
     beforeEach(async () => {
       await testingEnvironment.setUp(fixtures, {
         postgres: true,
-        postgresMirror: pagesBackendPostgresMirror(postgresSettings),
+        postgresMirror: pagesBackendPostgresMirror(postgresCore),
       });
-      applyPagesBackendFlags(postgresPages, postgresSettings);
+      applyPagesBackendFlags(postgresPages, postgresCore);
       await testingPG.clear(['page_releases']);
     });
 

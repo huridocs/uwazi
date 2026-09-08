@@ -21,14 +21,14 @@ afterAll(async () => {
 
 describe.each(pagesBackendConfigs)(
   'UpdatePage (integration) - $name',
-  ({ postgresPages, postgresSettings }) => {
+  ({ postgresPages, postgresCore }) => {
     beforeEach(async () => {
       jest.restoreAllMocks();
       await testingEnvironment.setUp(fixtures, {
         postgres: true,
-        postgresMirror: pagesBackendPostgresMirror(postgresSettings),
+        postgresMirror: pagesBackendPostgresMirror(postgresCore),
       });
-      applyPagesBackendFlags(postgresPages, postgresSettings);
+      applyPagesBackendFlags(postgresPages, postgresCore);
     });
 
     it('should update a page from a flat client payload and return it in client shape', async () => {

@@ -63,13 +63,13 @@ afterAll(async () => {
 
 describe.each(pagesBackendConfigs)(
   'DeleteLanguagePagesListener - $name',
-  ({ postgresPages, postgresSettings }) => {
+  ({ postgresPages, postgresCore }) => {
     beforeEach(async () => {
       await testingEnvironment.setUp(fixtures, {
         postgres: true,
-        postgresMirror: pagesBackendPostgresMirror(postgresSettings),
+        postgresMirror: pagesBackendPostgresMirror(postgresCore),
       });
-      applyPagesBackendFlags(postgresPages, postgresSettings);
+      applyPagesBackendFlags(postgresPages, postgresCore);
     });
     it('should remove locale for the deleted language', async () => {
       const listener = await createSUT();

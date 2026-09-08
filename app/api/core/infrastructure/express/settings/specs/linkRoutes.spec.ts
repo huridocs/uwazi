@@ -22,8 +22,8 @@ import {
 import { settingsRoutes } from '../routes.js';
 
 const testConfigs = [
-  { name: 'Mongo', postgresSettings: false },
-  { name: 'Postgres', postgresSettings: true },
+  { name: 'Mongo', postgresCore: false },
+  { name: 'Postgres', postgresCore: true },
 ];
 
 let currentUser: UserSchema;
@@ -70,16 +70,16 @@ describe('api/settings/links', () => {
 
   afterAll(async () => testingEnvironment.tearDown());
 
-  describe.each(testConfigs)('$name', ({ postgresSettings }) => {
+  describe.each(testConfigs)('$name', ({ postgresCore }) => {
     beforeEach(async () => {
       await testingEnvironment.setUp(fixtures, {
         postgres: true,
-        postgresMirror: postgresSettings ? ['settings'] : [],
+        postgresMirror: postgresCore ? ['settings'] : [],
       });
-      if (postgresSettings) {
+      if (postgresCore) {
         testingTenants.changeCurrentTenant({
           ...testingTenants.current(),
-          featureFlags: { postgresSettings: true },
+          featureFlags: { postgresCore: true },
         });
       }
       ensureBroadcastSettingsChangedRegistered();
@@ -107,11 +107,11 @@ describe('api/settings/links', () => {
           (
             await testingEnvironment.runWithContext(
               async () => SettingsQueryServiceFactory.default().forBroadcast(),
-              postgresSettings
+              postgresCore
                 ? {
                     tenant: {
                       ...testingTenants.current(),
-                      featureFlags: { postgresSettings: true },
+                      featureFlags: { postgresCore: true },
                     },
                   }
                 : undefined

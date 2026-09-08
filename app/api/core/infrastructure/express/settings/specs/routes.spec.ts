@@ -33,8 +33,8 @@ jest.mock(
 jest.spyOn(setupSockets, 'emitToTenant').mockImplementation();
 
 const testConfigs = [
-  { name: 'Mongo', postgresSettings: false },
-  { name: 'Postgres', postgresSettings: true },
+  { name: 'Mongo', postgresCore: false },
+  { name: 'Postgres', postgresCore: true },
 ];
 
 describe('Settings routes', () => {
@@ -56,22 +56,23 @@ describe('Settings routes', () => {
     await testingEnvironment.setUp(fixtures, {
       elasticIndex: 'settings_index',
       postgres: true,
+      postgresMirror: [],
     });
   });
 
   afterAll(async () => testingEnvironment.tearDown());
 
-  describe.each(testConfigs)('$name', ({ postgresSettings }) => {
+  describe.each(testConfigs)('$name', ({ postgresCore }) => {
     beforeEach(async () => {
       await testingEnvironment.setUp(fixtures, {
         elasticIndex: 'settings_index',
         postgres: true,
-        postgresMirror: postgresSettings ? ['settings'] : [],
+        postgresMirror: postgresCore ? ['settings', 'templates'] : [],
       });
-      if (postgresSettings) {
+      if (postgresCore) {
         testingTenants.changeCurrentTenant({
           ...testingTenants.current(),
-          featureFlags: { postgresSettings: true },
+          featureFlags: { postgresCore: true },
         });
       }
       ensureBroadcastSettingsChangedRegistered();
@@ -183,7 +184,7 @@ describe('Settings routes', () => {
         it('should migrate all entity names when newNameGeneration is saved as true', async () => {
           await request(app).post('/api/settings').send({ newNameGeneration: true }).expect(200);
 
-          expect(await templates.get()).toEqual([
+          expect(await testingEnvironment.runWithContext(async () => templates.get())).toEqual([
             expect.objectContaining({ properties: [expect.objectContaining({ name: 'براي' })] }),
             expect.objectContaining({ properties: [expect.objectContaining({ name: 'país' })] }),
           ]);

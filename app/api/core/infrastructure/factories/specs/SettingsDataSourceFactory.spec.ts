@@ -51,4 +51,15 @@ describe('SettingsDataSourceFactory', () => {
 
     expect(sut).toBeInstanceOf(PostgresSettingsDataSource);
   });
+
+  it('should build the postgres data source without an ExecutionContext store', async () => {
+    await testingEnvironment.setUp({ settings: [{ site_name: 'PG' }] }, { postgres: true });
+    testingTenants.changeCurrentTenant({
+      ...testingTenants.current(),
+      featureFlags: { postgresCore: true },
+    });
+
+    expect(SettingsDataSourceFactory.default()).toBeInstanceOf(PostgresSettingsDataSource);
+    expect(SettingsDataSourceFactory.cached()).toBeInstanceOf(PostgresSettingsDataSource);
+  });
 });

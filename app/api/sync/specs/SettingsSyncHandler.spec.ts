@@ -14,8 +14,8 @@ const fixtures: DBFixture = {
 };
 
 const testConfigs = [
-  { name: 'Mongo', postgresSettings: false },
-  { name: 'Postgres', postgresSettings: true },
+  { name: 'Mongo', postgresCore: false },
+  { name: 'Postgres', postgresCore: true },
 ];
 
 describe('SettingsSyncHandler', () => {
@@ -27,13 +27,13 @@ describe('SettingsSyncHandler', () => {
     await testingEnvironment.tearDown();
   });
 
-  describe.each(testConfigs)('$name', ({ postgresSettings }) => {
+  describe.each(testConfigs)('$name', ({ postgresCore }) => {
     const settingsContext = () =>
-      postgresSettings
+      postgresCore
         ? {
             tenant: {
               ...testingTenants.current(),
-              featureFlags: { postgresSettings: true },
+              featureFlags: { postgresCore: true },
             },
           }
         : undefined;
@@ -47,7 +47,7 @@ describe('SettingsSyncHandler', () => {
     beforeEach(async () => {
       await testingEnvironment.setUp(fixtures, {
         postgres: true,
-        postgresMirror: postgresSettings ? ['settings'] : [],
+        postgresMirror: postgresCore ? ['settings'] : [],
       });
     });
 

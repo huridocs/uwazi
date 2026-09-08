@@ -49,14 +49,14 @@ afterAll(async () => {
 
 describe.each(pagesBackendConfigs)(
   'Pages use cases (integration) - $name',
-  ({ postgresPages, postgresSettings }) => {
+  ({ postgresPages, postgresCore }) => {
     beforeEach(async () => {
       jest.restoreAllMocks();
       await testingEnvironment.setUp(fixtures, {
         postgres: true,
-        postgresMirror: pagesBackendPostgresMirror(postgresSettings),
+        postgresMirror: pagesBackendPostgresMirror(postgresCore),
       });
-      applyPagesBackendFlags(postgresPages, postgresSettings);
+      applyPagesBackendFlags(postgresPages, postgresCore);
       await testingPG.clear(['page_releases']);
       await seedPublishableDraft();
     });

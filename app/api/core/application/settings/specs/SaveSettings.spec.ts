@@ -2,6 +2,7 @@
 import { TestUtils } from '#api/common.v2/utils/Test.js';
 import { TranslationsService } from '#api/core/application/translation/TranslationsService.js';
 import { TranslationsServiceFactory } from '#api/core/infrastructure/factories/TranslationsServiceFactory.js';
+import { TranslationsDataSourceFactory } from '#api/core/infrastructure/factories/TranslationsDataSourceFactory.js';
 import { SaveSettingsUseCaseFactory } from '#api/core/infrastructure/factories/SaveSettingsUseCaseFactory.js';
 import { SetDefaultLanguageUseCaseFactory } from '#api/core/infrastructure/factories/SetDefaultLanguageUseCaseFactory.js';
 import { SettingsQueryServiceFactory } from '#api/core/infrastructure/factories/SettingsQueryServiceFactory.js';
@@ -22,8 +23,8 @@ import {
 } from './settingsChangedJob.js';
 
 const testConfigs = [
-  { name: 'Mongo', postgresSettings: false },
-  { name: 'Postgres', postgresSettings: true },
+  { name: 'Mongo', postgresCore: false },
+  { name: 'Postgres', postgresCore: true },
 ];
 
 describe('settings', () => {
@@ -35,13 +36,13 @@ describe('settings', () => {
     await testingEnvironment.tearDown();
   });
 
-  describe.each(testConfigs)('$name', ({ postgresSettings }) => {
+  describe.each(testConfigs)('$name', ({ postgresCore }) => {
     const settingsContext = () =>
-      postgresSettings
+      postgresCore
         ? {
             tenant: {
               ...testingTenants.current(),
-              featureFlags: { postgresSettings: true },
+              featureFlags: { postgresCore: true },
             },
           }
         : undefined;
@@ -70,7 +71,7 @@ describe('settings', () => {
     const setUpSettings = async (data = fixtures) => {
       await testingEnvironment.setUp(data, {
         postgres: true,
-        postgresMirror: postgresSettings ? ['settings'] : [],
+        postgresMirror: postgresCore ? ['settings'] : [],
       });
     };
 
@@ -108,7 +109,7 @@ describe('settings', () => {
 
       it('should throw when the singleton does not exist', async () => {
         await db.clear(['settings']);
-        if (postgresSettings) {
+        if (postgresCore) {
           await testingPG.clear(['settings']);
         }
 
@@ -169,11 +170,10 @@ describe('settings', () => {
             await saveSettings(baseConfig);
           });
 
-          const rows = await testingEnvironment.db.getAllFrom('translationsV2');
-          const menuKeys = rows
-            .filter(row => (row.context as { id?: string } | undefined)?.id === 'Menu')
-            .map(row => `${row.language}:${row.key}:${row.value}`)
-            .sort();
+          const rows = await withSettings(async () =>
+            TranslationsDataSourceFactory.default().getByContext('Menu')
+          );
+          const menuKeys = rows.map(row => `${row.language}:${row.key}:${row.value}`).sort();
 
           expect(menuKeys).toEqual(['en:Page one:Page one', 'es:Page one:Page one']);
         });
@@ -448,7 +448,7 @@ describe('settings', () => {
       describe('if there is no settings on the DB', () => {
         it('should return the public payload with tenant flags only', async () => {
           await db.clear(['settings']);
-          if (postgresSettings) {
+          if (postgresCore) {
             await testingPG.clear(['settings']);
           }
 

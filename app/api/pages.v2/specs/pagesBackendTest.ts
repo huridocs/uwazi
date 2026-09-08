@@ -1,19 +1,19 @@
 import { testingTenants } from '#api/utils/testingTenants.js';
 
 export const pagesBackendConfigs = [
-  { name: 'Mongo', postgresPages: false, postgresSettings: false },
-  { name: 'Postgres pages', postgresPages: true, postgresSettings: false },
-  { name: 'Postgres settings', postgresPages: false, postgresSettings: true },
-  { name: 'Postgres', postgresPages: true, postgresSettings: true },
+  { name: 'Mongo', postgresPages: false, postgresCore: false },
+  { name: 'Postgres pages', postgresPages: true, postgresCore: false },
+  { name: 'Postgres core', postgresPages: false, postgresCore: true },
+  { name: 'Postgres', postgresPages: true, postgresCore: true },
 ];
 
-export const pagesBackendPostgresMirror = (postgresSettings: boolean): string[] => [
+export const pagesBackendPostgresMirror = (postgresCore: boolean): string[] => [
   'pages',
-  ...(postgresSettings ? ['settings'] : []),
+  ...(postgresCore ? ['settings', 'templates'] : []),
 ];
 
-export const applyPagesBackendFlags = (postgresPages: boolean, postgresSettings: boolean) => {
+export const applyPagesBackendFlags = (postgresPages: boolean, postgresCore: boolean) => {
   testingTenants.changeCurrentTenant({
-    featureFlags: { postgresPages, postgresSettings },
+    featureFlags: { postgresPages, postgresCore },
   });
 };
