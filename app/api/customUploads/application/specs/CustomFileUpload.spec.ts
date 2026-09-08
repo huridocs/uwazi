@@ -54,7 +54,7 @@ describe('CustomFileUpload', () => {
 
     beforeEach(() => {
       testingTenants.changeCurrentTenant({
-        featureFlags: { postgresFiles: usePostgres },
+        featureFlags: { postgresCore: usePostgres },
       });
       useCase = testingEnvironment.runWithContext(() =>
         CustomFileUploadFactory.default(TransactionManagerFactory.fake())

@@ -62,7 +62,7 @@ describe('EntityAccessPolicyDataSource', () => {
   describe.each(backends)('$name backend', ({ usePostgres }) => {
     beforeEach(async () => {
       testingTenants.changeCurrentTenant({
-        featureFlags: { postgresEntities: usePostgres, postgresFiles: usePostgres },
+        featureFlags: { postgresCore: usePostgres },
       });
       await testingPG.clear(['entities']);
       await testingEnvironment.setFixtures(createFixtures());
@@ -77,16 +77,6 @@ describe('EntityAccessPolicyDataSource', () => {
         };
       });
 
-    const getAllEntities = async () => {
-      if (usePostgres) {
-        const rows = await testingPG.getAllFrom<Record<string, unknown>>('entities');
-        return rows.map(row =>
-          Object.fromEntries(Object.entries(row).filter(([, v]) => v !== null))
-        );
-      }
-      return testingEnvironment.db.getAllFrom('entities');
-    };
-
     describe('update()', () => {
       it('replaces the existing permissions array on all language documents', async () => {
         const { sut } = createSut();
@@ -99,7 +89,9 @@ describe('EntityAccessPolicyDataSource', () => {
           })
         );
 
-        const docs = (await getAllEntities()).filter(d => d.sharedId === sharedId);
+        const docs = (await testingEnvironment.db.getAllFrom('entities')).filter(
+          d => d.sharedId === sharedId
+        );
         expect(docs).toHaveLength(2);
         docs.forEach(doc => {
           expect(doc.permissions).toEqual([{ refId: 'new-user', type: 'group', level: 'read' }]);
@@ -111,7 +103,9 @@ describe('EntityAccessPolicyDataSource', () => {
 
         await sut.update(new EntityAccessPolicy({ sharedId, grants: [], isPublic: false }));
 
-        const docs = (await getAllEntities()).filter(d => d.sharedId === sharedId);
+        const docs = (await testingEnvironment.db.getAllFrom('entities')).filter(
+          d => d.sharedId === sharedId
+        );
         expect(docs).toHaveLength(2);
         // language and sharedId must be preserved on every language document
         expect(docs.map(d => d.language).sort()).toEqual(['en', 'es']);
@@ -138,14 +132,18 @@ describe('EntityAccessPolicyDataSource', () => {
 
         await sut.bulkUpdate([policy1, policy2]);
 
-        const docs1 = (await getAllEntities()).filter(d => d.sharedId === sharedId);
+        const docs1 = (await testingEnvironment.db.getAllFrom('entities')).filter(
+          d => d.sharedId === sharedId
+        );
         expect(docs1).toHaveLength(2);
         docs1.forEach(doc => {
           expect(doc.permissions).toEqual([{ refId: 'u1', type: 'user', level: 'write' }]);
           expect(doc.published).toBe(false);
         });
 
-        const docs2 = (await getAllEntities()).filter(d => d.sharedId === 'other-entity');
+        const docs2 = (await testingEnvironment.db.getAllFrom('entities')).filter(
+          d => d.sharedId === 'other-entity'
+        );
         expect(docs2).toHaveLength(1);
         expect(docs2[0].published).toBe(true);
       });
@@ -173,14 +171,18 @@ describe('EntityAccessPolicyDataSource', () => {
 
         await sut.bulkCreate([policy1, policy2]);
 
-        const docs1 = (await getAllEntities()).filter(d => d.sharedId === sharedId);
+        const docs1 = (await testingEnvironment.db.getAllFrom('entities')).filter(
+          d => d.sharedId === sharedId
+        );
         expect(docs1).toHaveLength(2);
         docs1.forEach(doc => {
           expect(doc.permissions).toEqual([{ refId: 'u2', type: 'user', level: 'read' }]);
           expect(doc.published).toBe(false);
         });
 
-        const docs2 = (await getAllEntities()).filter(d => d.sharedId === 'other-entity');
+        const docs2 = (await testingEnvironment.db.getAllFrom('entities')).filter(
+          d => d.sharedId === 'other-entity'
+        );
         expect(docs2).toHaveLength(1);
         expect(docs2[0].published).toBe(true);
       });
@@ -190,7 +192,9 @@ describe('EntityAccessPolicyDataSource', () => {
 
         await sut.bulkCreate([new EntityAccessPolicy({ sharedId, grants: [], isPublic: false })]);
 
-        const other = (await getAllEntities()).filter(d => d.sharedId === 'other-entity');
+        const other = (await testingEnvironment.db.getAllFrom('entities')).filter(
+          d => d.sharedId === 'other-entity'
+        );
         expect(other).toHaveLength(1);
         expect(other[0].published).toBe(true);
         expect(other[0].permissions).toEqual([{ refId: 'user-x', type: 'user', level: 'write' }]);
@@ -303,7 +307,9 @@ describe('EntityAccessPolicyDataSource', () => {
         const { sut, transactionManager } = createSut();
 
         // Ensure ES reflects the current DB fixtures before exercising bulkCreate.
-        await elasticTesting.reindex();
+        // Runs inside a context: updateTemplatesMapping reads templates via
+        // TemplatesDAOFactory, which routes to Postgres while postgresCore is on.
+        await testingEnvironment.runWithContext(async () => elasticTesting.reindex());
 
         await transactionManager.run(async () => {
           await sut.bulkCreate([

@@ -7,8 +7,8 @@ import { MongoUsersDirectory } from '../mongodb/user/MongoUsersDirectory.js';
 import { PostgresUserGroupsDAO } from '../postgresql/user/PostgresUserGroupsDAO.js';
 import { PostgresUsersDAO } from '../postgresql/user/PostgresUsersDAO.js';
 import { PostgresUsersDirectory } from '../postgresql/user/PostgresUsersDirectory.js';
+import { PostgresTransactionManagerFactory } from './PostgresTransactionManagerFactory.js';
 import { TransactionManagerFactory } from './TransactionManagerFactory.js';
-import { resolveUsersBackend } from './usersBackendFlags.js';
 
 class UsersDirectoryFactory {
   /**
@@ -22,17 +22,24 @@ class UsersDirectoryFactory {
   static default(): UsersDirectory {
     const tenant = ExecutionContext.currentTenant;
 
-    if (resolveUsersBackend('UsersDirectory') === 'postgres') {
+    if (tenant.featureFlags?.postgresCore) {
+      // Use the shared TM from the active ExecutionContext; callers that run outside a
+      // context (session deserialization, socket handlers, queue workers) have no shared
+      // TM, so build a fresh one — same fallback as FilesDAOFactory/EntitiesDAOFactory.
+      // Both DAOs share the instance, as they must.
+      const tm = ExecutionContext.getStore()
+        ? ExecutionContext.postgresTransactionManager
+        : PostgresTransactionManagerFactory.default();
       const usersDAO = new PostgresUsersDAO({
         tenantId: tenant.name,
-        pgTransactionManager: ExecutionContext.postgresTransactionManager,
+        pgTransactionManager: tm,
       });
 
       return new PostgresUsersDirectory({
         usersDAO,
         userGroupsDAO: new PostgresUserGroupsDAO({
           tenantId: tenant.name,
-          pgTransactionManager: ExecutionContext.postgresTransactionManager,
+          pgTransactionManager: tm,
         }),
       });
     }

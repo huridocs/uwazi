@@ -19,22 +19,29 @@ import { testingTenants } from '#api/utils/testingTenants.js';
 
 type TestConfig = {
   name: string;
-  postgresTemplates: boolean;
+  postgresCore: boolean;
   getTemplates: () => Promise<any[]>;
+  getTranslations: () => Promise<any[]>;
 };
 
 const testConfigs: TestConfig[] = [
   {
     name: 'Mongo',
-    postgresTemplates: false,
+    postgresCore: false,
     getTemplates: async () => testingEnvironment.db.getAllFrom('templates') as Promise<any[]>,
+    getTranslations: async () =>
+      testingEnvironment.db.getAllFrom('translationsV2') as Promise<any[]>,
   },
   {
     name: 'Postgres',
-    postgresTemplates: true,
+    postgresCore: true,
     getTemplates: async () =>
       testingEnvironment.pg
         .getAllFrom('templates')
+        .then(rows => rows.map(({ tenant_id: _, ...rest }) => rest) as any[]),
+    getTranslations: async () =>
+      testingEnvironment.pg
+        .getAllFrom('translations')
         .then(rows => rows.map(({ tenant_id: _, ...rest }) => rest) as any[]),
   },
 ];
@@ -56,14 +63,14 @@ describe('DeleteTemplateUseCase', () => {
     await testingEnvironment.tearDown();
   });
 
-  describe.each(testConfigs)('$name', ({ postgresTemplates, getTemplates }) => {
+  describe.each(testConfigs)('$name', ({ postgresCore, getTemplates, getTranslations }) => {
     const createSut = () =>
       testingEnvironment.runWithContext(() => DeleteTemplateUseCaseFactory.default(), {
-        ...(postgresTemplates
+        ...(postgresCore
           ? {
               tenant: {
                 ...testingTenants.current(),
-                featureFlags: { postgresTemplates: true },
+                featureFlags: { postgresCore: true },
               },
             }
           : {}),
@@ -128,11 +135,12 @@ describe('DeleteTemplateUseCase', () => {
 
     it('should delete the template translation', async () => {
       await createSut().execute({ templateId: templateToBeDeleted.toString() });
-      const translation = await testingEnvironment.db
-        .getCollection('translationsV2')
-        ?.findOne({ 'context.id': templateToBeDeleted });
+      const translations = await getTranslations();
+      const translation = translations.find(
+        t => t.context_id === templateToBeDeleted || t.context?.id === templateToBeDeleted
+      );
 
-      expect(translation).toBeNull();
+      expect(translation).not.toBeDefined();
     });
 
     it(`should emit a ${TemplateDeletedEvent.name} event`, async () => {

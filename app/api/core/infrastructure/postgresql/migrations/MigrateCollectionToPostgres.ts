@@ -21,6 +21,14 @@ interface RowsMigrationConfig {
 
 type AnyMigrationConfig = MigrationConfig | RowsMigrationConfig;
 
+type MigrateOptions = {
+  /**
+   * Migrate even when the PostgreSQL table already contains rows for the
+   * tenant. Existing rows are left untouched; conflicting rows are ignored.
+   */
+  force?: boolean;
+};
+
 const rowsMapperOf = (
   config: AnyMigrationConfig
 ): ((doc: Record<string, unknown>) => Record<string, unknown>[]) =>
@@ -28,13 +36,18 @@ const rowsMapperOf = (
 
 const insertBatch = async (
   table: PostgresTable,
-  batch: Record<string, unknown>[]
+  batch: Record<string, unknown>[],
+  force: boolean
 ): Promise<void> => {
   if (!batch.length) {
     return;
   }
   try {
-    await table.insert(batch);
+    if (force) {
+      await table.upsert(batch, { ignore: true });
+    } else {
+      await table.insert(batch);
+    }
   } catch (err: unknown) {
     // eslint-disable-next-line no-console
     console.error(
@@ -47,9 +60,10 @@ const insertBatch = async (
 
 const flushBatch = async (
   table: PostgresTable,
-  batch: Record<string, unknown>[]
+  batch: Record<string, unknown>[],
+  force: boolean
 ): Promise<Record<string, unknown>[]> => {
-  await insertBatch(table, batch);
+  await insertBatch(table, batch, force);
   return [];
 };
 
@@ -62,7 +76,10 @@ class MigrateCollectionToPostgres {
   private async fetchAndInsert(
     config: AnyMigrationConfig,
     table: PostgresTable,
-    mapRows: (doc: Record<string, unknown>) => Record<string, unknown>[]
+    options: {
+      mapRows: (doc: Record<string, unknown>) => Record<string, unknown>[];
+      force: boolean;
+    }
   ): Promise<number> {
     const cursor = this.mongoDb
       .collection<Record<string, unknown>>(config.mongoCollection)
@@ -73,18 +90,21 @@ class MigrateCollectionToPostgres {
     let batch: Record<string, unknown>[] = [];
 
     for await (const doc of cursor) {
-      batch.push(...mapRows(doc));
+      batch.push(...options.mapRows(doc));
       migrated += 1;
       if (batch.length >= BATCH_SIZE) {
-        batch = await flushBatch(table, batch);
+        batch = await flushBatch(table, batch, options.force);
       }
     }
 
-    await insertBatch(table, batch);
+    await insertBatch(table, batch, options.force);
     return migrated;
   }
 
-  async migrate(config: AnyMigrationConfig): Promise<{ migrated: number; skipped: boolean }> {
+  async migrate(
+    config: AnyMigrationConfig,
+    options: MigrateOptions = {}
+  ): Promise<{ migrated: number; skipped: boolean }> {
     const pgTransactionManager = new PostgresTransactionManager(
       PostgresDB.knex,
       this.tenantId,
@@ -95,16 +115,22 @@ class MigrateCollectionToPostgres {
       tenantId: this.tenantId,
       transactionManager: pgTransactionManager,
     });
-    const existingRow = await table.first();
 
-    if (existingRow !== undefined) {
-      return { migrated: 0, skipped: true };
+    if (!options.force) {
+      const existingRow = await table.first();
+
+      if (existingRow !== undefined) {
+        return { migrated: 0, skipped: true };
+      }
     }
 
-    const migrated = await this.fetchAndInsert(config, table, rowsMapperOf(config));
+    const migrated = await this.fetchAndInsert(config, table, {
+      mapRows: rowsMapperOf(config),
+      force: options.force ?? false,
+    });
     return { migrated, skipped: false };
   }
 }
 
-export type { AnyMigrationConfig, MigrationConfig, RowsMigrationConfig };
+export type { AnyMigrationConfig, MigrateOptions, MigrationConfig, RowsMigrationConfig };
 export { BATCH_SIZE, MigrateCollectionToPostgres };

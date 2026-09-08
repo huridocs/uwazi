@@ -108,7 +108,7 @@ describe('UserGroups read contract consistency', () => {
     beforeEach(async () => {
       testingTenants.changeCurrentTenant({
         name: TENANT_ID,
-        featureFlags: { postgresUsergroups: usePostgres, postgresUsers: usePostgres },
+        featureFlags: { postgresCore: usePostgres },
       });
 
       if (usePostgres) {

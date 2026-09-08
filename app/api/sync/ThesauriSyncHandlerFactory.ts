@@ -7,7 +7,7 @@ export class ThesauriSyncHandlerFactory {
   static default(): MongoThesauriSyncHandler | PostgresThesauriSyncHandler {
     const { tenant } = ExecutionContext;
 
-    if (tenant.featureFlags?.postgresThesauri) {
+    if (tenant.featureFlags?.postgresCore) {
       return new PostgresThesauriSyncHandler({
         tenantId: tenant.name,
         mongoDb: getConnection(),

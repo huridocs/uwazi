@@ -94,23 +94,40 @@ const fixtures: DBFixture = {
 
 type TestConfig = {
   name: string;
-  postgresThesauri: boolean;
+  postgresCore: boolean;
   getThesauri: () => Promise<Record<string, unknown>[]>;
+  getTranslations: () => Promise<any[]>;
 };
+
+const mapTranslationRow = ({
+  tenant_id: _,
+  context_id,
+  context_type,
+  context_label,
+  ...rest
+}: any) => ({
+  ...rest,
+  context: { id: context_id, type: context_type, label: context_label },
+});
 
 const testConfigs: TestConfig[] = [
   {
     name: 'Mongo',
-    postgresThesauri: false,
+    postgresCore: false,
     getThesauri: async () => testingEnvironment.db.getAllFrom('dictionaries'),
+    getTranslations: async () => testingEnvironment.db.getAllFrom('translationsV2'),
   },
   {
     name: 'Postgres',
-    postgresThesauri: true,
+    postgresCore: true,
     getThesauri: async () =>
       testingEnvironment.pg
         .getAllFrom('thesauri')
         .then(rows => rows.map(({ tenant_id: _, ...rest }) => rest)),
+    getTranslations: async () =>
+      testingEnvironment.pg
+        .getAllFrom<any>('translations')
+        .then(rows => rows.map(mapTranslationRow)),
   },
 ];
 
@@ -123,7 +140,7 @@ describe('DeleteThesaurusUseCase', () => {
     await testingEnvironment.tearDown();
   });
 
-  describe.each(testConfigs)('$name', ({ postgresThesauri, getThesauri }) => {
+  describe.each(testConfigs)('$name', ({ postgresCore, getThesauri, getTranslations }) => {
     const createSut = () =>
       testingEnvironment.runWithContext(
         () => {
@@ -157,11 +174,11 @@ describe('DeleteThesaurusUseCase', () => {
             role: 'admin',
             groups: [],
           }),
-          ...(postgresThesauri
+          ...(postgresCore
             ? {
                 tenant: {
                   ...testingTenants.current(),
-                  featureFlags: { postgresThesauri: true },
+                  featureFlags: { postgresCore: true },
                 },
               }
             : {}),
@@ -210,14 +227,14 @@ describe('DeleteThesaurusUseCase', () => {
       const thesauri = await getThesauri();
       const existing = thesauri.find((t: any) => t.name === 'Fruits')! as any;
 
-      const translationsBefore = await testingEnvironment.db.getAllFrom('translationsV2');
+      const translationsBefore = await getTranslations();
       expect(
         translationsBefore.filter((t: any) => t.context.id === existing._id.toString())
       ).toHaveLength(2);
 
       await sut.execute({ thesaurusId: existing._id.toString() });
 
-      const translationsAfter = await testingEnvironment.db.getAllFrom('translationsV2');
+      const translationsAfter = await getTranslations();
       expect(
         translationsAfter.filter((t: any) => t.context.id === existing._id.toString())
       ).toHaveLength(0);

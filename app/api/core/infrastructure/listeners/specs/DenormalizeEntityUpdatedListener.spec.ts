@@ -87,8 +87,8 @@ describe('DenormalizeEntityUpdatedListener', () => {
     testingTenants.mockCurrentTenant({ name: 'tenant', dbName: 'db', indexName: 'index' });
   });
 
-  it('should be a no-op when postgresEntities is active', async () => {
-    testingTenants.changeCurrentTenant({ featureFlags: { postgresEntities: true } });
+  it('should be a no-op when postgresCore is active', async () => {
+    testingTenants.changeCurrentTenant({ featureFlags: { postgresCore: true } });
     const { listener, denormalizeRelated } = createSut();
 
     await listener.handle(jest.fn() as never, params, {} as never);
@@ -96,7 +96,7 @@ describe('DenormalizeEntityUpdatedListener', () => {
     expect(denormalizeRelated).not.toHaveBeenCalled();
   });
 
-  it('should denormalize related entities when postgresEntities is not active', async () => {
+  it('should denormalize related entities when postgresCore is not active', async () => {
     testingTenants.changeCurrentTenant({ featureFlags: {} });
     const { listener, denormalizeRelated } = createSut();
 
