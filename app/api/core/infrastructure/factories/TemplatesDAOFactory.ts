@@ -8,7 +8,7 @@ class TemplatesDAOFactory {
   static default(): MongoTemplatesDAO | PostgresTemplatesDAO {
     const tenant = ExecutionContext.currentTenant;
 
-    if (tenant.featureFlags?.postgresTemplates) {
+    if (tenant.featureFlags?.postgresCore) {
       const pgTM = ExecutionContext.postgresTransactionManager;
 
       return new PostgresTemplatesDAO({

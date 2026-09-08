@@ -341,7 +341,7 @@ describe('DatavizQueryExecutor', () => {
   describe.each(backends)('$name backend', ({ usePostgres }) => {
     beforeEach(async () => {
       testingTenants.changeCurrentTenant({
-        featureFlags: { postgresEntities: usePostgres, postgresFiles: usePostgres },
+        featureFlags: { postgresCore: usePostgres },
       });
       // The default fixtures have no entities, so testingPG.setFixtures does not
       // clear the entities table — without this, PG rows leak across tests.

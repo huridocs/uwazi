@@ -2,7 +2,6 @@ import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { testingTenants } from '#api/utils/testingTenants.js';
 import { elasticTesting } from '#api/utils/elastic_testing.js';
-import { EntitiesDAOFactory } from '#api/core/infrastructure/factories/EntitiesDAOFactory.js';
 import { search } from '../search.js';
 
 const factory = getFixturesFactory({ convertIdToString: true });
@@ -111,10 +110,12 @@ describe('indexEntities parity: Mongo vs Postgres', () => {
 
   const collectIndexed = async (usePostgres: boolean, query: Record<string, unknown>) => {
     testingTenants.changeCurrentTenant({
-      featureFlags: { postgresEntities: usePostgres, postgresFiles: usePostgres },
+      featureFlags: { postgresCore: usePostgres },
     });
     await testingEnvironment.setFixtures(fixtures);
-    await elasticTesting.resetIndex();
+    // updateTemplatesMapping reads templates via TemplatesDAOFactory, which routes to
+    // Postgres (and needs the ExecutionContext) while postgresCore is on.
+    await testingEnvironment.runWithContext(async () => elasticTesting.resetIndex());
     await testingEnvironment.runWithContext(async () => search.indexEntities(query));
     await elasticTesting.refresh();
     return elasticTesting.getIndexedEntities();
@@ -127,20 +128,12 @@ describe('indexEntities parity: Mongo vs Postgres', () => {
     expect(postgresResult).toEqual(mongoResult);
   });
 
-  it('EntitiesDAOFactory throws when postgresEntities is on but postgresFiles is off', async () => {
-    testingTenants.changeCurrentTenant({
-      featureFlags: { postgresEntities: true, postgresFiles: false },
-    });
-
-    expect(() => testingEnvironment.runWithContext(() => EntitiesDAOFactory.default())).toThrow();
-  });
-
   it('rejects an unrecognized query shape under Postgres instead of silently sweeping the tenant', async () => {
     testingTenants.changeCurrentTenant({
-      featureFlags: { postgresEntities: true, postgresFiles: true },
+      featureFlags: { postgresCore: true },
     });
     await testingEnvironment.setFixtures(fixtures);
-    await elasticTesting.resetIndex();
+    await testingEnvironment.runWithContext(async () => elasticTesting.resetIndex());
 
     await expect(
       testingEnvironment.runWithContext(async () => search.indexEntities({ obsoleteField: 'x' }))

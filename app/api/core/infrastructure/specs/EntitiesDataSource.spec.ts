@@ -116,7 +116,7 @@ describe('EntitiesDataSource', () => {
   describe.each(backends)('$name backend', ({ usePostgres }) => {
     beforeEach(async () => {
       testingTenants.changeCurrentTenant({
-        featureFlags: { postgresEntities: usePostgres, postgresFiles: usePostgres },
+        featureFlags: { postgresCore: usePostgres },
       });
       // The default fixtures have no entities, so testingPG.setFixtures does not
       // clear the entities table — without this, PG rows leak across tests.
@@ -135,16 +135,6 @@ describe('EntitiesDataSource', () => {
         };
       });
 
-    const getAllEntities = async () => {
-      if (usePostgres) {
-        const rows = await testingPG.getAllFrom<Record<string, unknown>>('entities');
-        return rows.map(row =>
-          Object.fromEntries(Object.entries(row).filter(([, v]) => v !== null))
-        );
-      }
-      return testingEnvironment.db.getAllFrom('entities');
-    };
-
     describe('bulkInsert', () => {
       it('should insert multiple entities with all their translations', async () => {
         const { sut } = createSut();
@@ -156,7 +146,7 @@ describe('EntitiesDataSource', () => {
 
         await sut.bulkInsert([entity1, entity2, entity3]);
 
-        const dbEntities = await getAllEntities();
+        const dbEntities = await testingEnvironment.db.getAllFrom('entities');
 
         expect(dbEntities.length).toBe(6);
 
@@ -215,7 +205,7 @@ describe('EntitiesDataSource', () => {
 
         await sut.bulkInsert([entity1, entity2]);
 
-        const dbEntities = await getAllEntities();
+        const dbEntities = await testingEnvironment.db.getAllFrom('entities');
 
         expect(dbEntities.length).toBe(4);
 
@@ -244,7 +234,7 @@ describe('EntitiesDataSource', () => {
 
         await sut.bulkInsert([entity]);
 
-        const dbEntities = await getAllEntities();
+        const dbEntities = await testingEnvironment.db.getAllFrom('entities');
 
         expect(dbEntities.length).toBe(2);
 
@@ -275,7 +265,7 @@ describe('EntitiesDataSource', () => {
 
         await sut.bulkInsert([]);
 
-        const dbEntities = await getAllEntities();
+        const dbEntities = await testingEnvironment.db.getAllFrom('entities');
         expect(dbEntities.length).toBe(0);
       });
     });
@@ -477,7 +467,7 @@ describe('EntitiesDataSource', () => {
           await sut.update([entity]);
         });
 
-        const stored = await getAllEntities();
+        const stored = await testingEnvironment.db.getAllFrom('entities');
         const entityDocs = stored.filter(e => e.sharedId === 'bulk-update-entity');
 
         expect(entityDocs).toHaveLength(2);
@@ -513,7 +503,7 @@ describe('EntitiesDataSource', () => {
           await sut.update([entity]);
         });
 
-        const [stored] = await getAllEntities();
+        const [stored] = await testingEnvironment.db.getAllFrom('entities');
         expect(stored.preview).toBeUndefined();
       });
     });
@@ -588,7 +578,7 @@ describe('EntitiesDataSource', () => {
 
         await sut.create(entity);
 
-        const dbEntities = await getAllEntities();
+        const dbEntities = await testingEnvironment.db.getAllFrom('entities');
 
         expect(dbEntities.length).toBe(2);
         expect(dbEntities.map(e => e.sharedId)).toEqual([entity.sharedId, entity.sharedId]);
@@ -632,7 +622,7 @@ describe('EntitiesDataSource', () => {
           await sut.update(entity);
         });
 
-        const [stored] = await getAllEntities();
+        const [stored] = await testingEnvironment.db.getAllFrom('entities');
         expect(stored.title).toBe('Updated Title');
 
         await elasticTesting.refresh();
@@ -877,7 +867,7 @@ describe('EntitiesDataSource', () => {
           await sut.deleteReferencesToSharedIds(['deleted-1']);
         });
 
-        const stored = await getAllEntities();
+        const stored = await testingEnvironment.db.getAllFrom('entities');
         const entityA = stored.find(e => e.sharedId === 'entity-a');
         const entityB = stored.find(e => e.sharedId === 'entity-b');
 
@@ -906,7 +896,7 @@ describe('EntitiesDataSource', () => {
           await sut.touchEntitiesBySharedIds([entity.sharedId]);
         });
 
-        const [stored] = await getAllEntities();
+        const [stored] = await testingEnvironment.db.getAllFrom('entities');
         expect(typeof stored.editDate).toBe('number');
 
         await elasticTesting.refresh();
@@ -936,7 +926,7 @@ describe('EntitiesDataSource', () => {
           await sut.deleteMetadataProperties(['text'], [entity.sharedId]);
         });
 
-        const [stored] = await getAllEntities();
+        const [stored] = await testingEnvironment.db.getAllFrom('entities');
         expect(stored.metadata.text).toBeUndefined();
         expect(stored.metadata.numeric).toEqual([{ value: 42 }]);
 
@@ -967,7 +957,7 @@ describe('EntitiesDataSource', () => {
           await sut.renameMetadataProperties({ text: 'renamed' }, [entity.sharedId]);
         });
 
-        const [stored] = await getAllEntities();
+        const [stored] = await testingEnvironment.db.getAllFrom('entities');
         expect(stored.metadata.text).toBeUndefined();
         expect(stored.metadata.renamed).toEqual([{ value: 'Text' }]);
 
@@ -1001,7 +991,7 @@ describe('EntitiesDataSource', () => {
           await sut.bulkUpdateDeprecated([entity], [textProperty]);
         });
 
-        const stored = await getAllEntities();
+        const stored = await testingEnvironment.db.getAllFrom('entities');
         stored.forEach(doc => {
           expect(doc.metadata.text).toEqual([{ value: 'New Text' }]);
         });
@@ -1030,7 +1020,7 @@ describe('EntitiesDataSource', () => {
 
         await sut.bulkDelete([entity1.sharedId]);
 
-        const stored = await getAllEntities();
+        const stored = await testingEnvironment.db.getAllFrom('entities');
         expect(stored.map(e => e.sharedId)).toEqual([entity2.sharedId]);
         expect(bulkDeleteBySharedIdSpy).toHaveBeenCalledWith([entity1.sharedId]);
 

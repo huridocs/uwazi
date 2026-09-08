@@ -46,25 +46,43 @@ const fixtures: DBFixture = {
 
 type TestConfig = {
   name: string;
-  postgresThesauri: boolean;
+  postgresCore: boolean;
   getThesauri: () => Promise<Record<string, unknown>[]>;
+  getTranslations: () => Promise<any[]>;
   thesaurusIdMatcher: unknown;
 };
+
+const mapTranslationRow = ({
+  tenant_id: _,
+  context_id,
+  context_type,
+  context_label,
+  ...rest
+}: any) => ({
+  ...rest,
+  _id: new ObjectId(rest._id),
+  context: { id: context_id, type: context_type, label: context_label },
+});
 
 const testConfigs: TestConfig[] = [
   {
     name: 'Mongo',
-    postgresThesauri: false,
+    postgresCore: false,
     getThesauri: async () => testingEnvironment.db.getAllFrom('dictionaries'),
+    getTranslations: async () => testingEnvironment.db.getAllFrom('translationsV2'),
     thesaurusIdMatcher: expect.any(ObjectId),
   },
   {
     name: 'Postgres',
-    postgresThesauri: true,
+    postgresCore: true,
     getThesauri: async () =>
       testingEnvironment.pg
         .getAllFrom('thesauri')
         .then(rows => rows.map(({ tenant_id: _, ...rest }) => rest)),
+    getTranslations: async () =>
+      testingEnvironment.pg
+        .getAllFrom<any>('translations')
+        .then(rows => rows.map(mapTranslationRow)),
     thesaurusIdMatcher: expect.any(String),
   },
 ];
@@ -83,153 +101,134 @@ describe('CreateThesaurusUseCase', () => {
     await testingEnvironment.tearDown();
   });
 
-  describe.each(testConfigs)('$name', ({ postgresThesauri, getThesauri, thesaurusIdMatcher }) => {
-    const createSut = (props?: CreateProps) =>
-      testingEnvironment.runWithContext(
-        () => {
-          const transactionManager = ExecutionContext.transactionManager as MongoTransactionManager;
+  describe.each(testConfigs)(
+    '$name',
+    ({ postgresCore, getThesauri, getTranslations, thesaurusIdMatcher }) => {
+      const createSut = (props?: CreateProps) =>
+        testingEnvironment.runWithContext(
+          () => {
+            const transactionManager =
+              ExecutionContext.transactionManager as MongoTransactionManager;
 
-          const thesauriDS =
-            props?.thesauriDS ?? ThesauriDataSourceFactory.default({ transactionManager });
-          const settingsDS = SettingsDataSourceFactory.default({ transactionManager });
-          const translationsDS = TranslationsDataSourceFactory.default({ transactionManager });
-          const thesaurusTranslationService =
-            props?.thesaurusTranslationService ??
-            new ThesaurusTranslationService({
-              settingsDS,
-              translationsDS,
+            const thesauriDS =
+              props?.thesauriDS ?? ThesauriDataSourceFactory.default({ transactionManager });
+            const settingsDS = SettingsDataSourceFactory.default({ transactionManager });
+            const translationsDS = TranslationsDataSourceFactory.default({ transactionManager });
+            const thesaurusTranslationService =
+              props?.thesaurusTranslationService ??
+              new ThesaurusTranslationService({
+                settingsDS,
+                translationsDS,
+              });
+
+            const thesauriService = new ThesauriService({
+              thesauriDS,
+              thesaurusTranslationService,
+              dispatcher: new DispatcherAdapter(ExecutionContext.jobsDispatcher),
             });
 
-          const thesauriService = new ThesauriService({
-            thesauriDS,
-            thesaurusTranslationService,
-            dispatcher: new DispatcherAdapter(ExecutionContext.jobsDispatcher),
-          });
+            const sut = new CreateThesaurusUseCase({
+              transactionManager,
+              thesauriService,
+            });
 
-          const sut = new CreateThesaurusUseCase({
-            transactionManager,
-            thesauriService,
-          });
-
-          return { sut };
-        },
-        postgresThesauri
-          ? { tenant: { ...testingTenants.current(), featureFlags: { postgresThesauri: true } } }
-          : undefined
-      );
-
-    beforeEach(async () => testingEnvironment.setFixtures(fixtures));
-
-    it('should create a new thesaurus', async () => {
-      const { sut } = createSut();
-
-      await sut.execute({
-        name: 'Vegetables',
-        values: [{ label: 'Carrot' }, { label: 'Broccoli' }],
-      });
-
-      const thesauri = await getThesauri();
-
-      expect(thesauri).toHaveLength(2);
-      expect(thesauri[1]).toEqual({
-        _id: thesaurusIdMatcher,
-        name: 'Vegetables',
-        values: [
-          { id: expect.any(String), label: 'Carrot' },
-          { id: expect.any(String), label: 'Broccoli' },
-        ],
-      });
-    });
-
-    it('should create translations for the new thesaurus', async () => {
-      const { sut } = createSut();
-
-      const output = await sut.execute({
-        name: 'Vehicles',
-        values: [{ label: 'Car' }, { label: 'Bike' }],
-      });
-
-      const translations = await testingEnvironment.db.getAllFrom('translationsV2');
-
-      expect(translations).toEqual(
-        TestUtils.arrayIncludesObjects([
-          {
-            _id: expect.any(ObjectId),
-            key: 'Vehicles',
-            value: 'Vehicles',
-            language: 'en',
-            context: { type: 'Thesaurus', label: 'Vehicles', id: output.id },
+            return { sut };
           },
-          {
-            _id: expect.any(ObjectId),
-            key: 'Car',
-            value: 'Car',
-            language: 'en',
-            context: { type: 'Thesaurus', label: 'Vehicles', id: output.id },
-          },
-          {
-            _id: expect.any(ObjectId),
-            key: 'Bike',
-            value: 'Bike',
-            language: 'en',
-            context: { type: 'Thesaurus', label: 'Vehicles', id: output.id },
-          },
-          {
-            _id: expect.any(ObjectId),
-            key: 'Vehicles',
-            value: 'Vehicles',
-            language: 'es',
-            context: { type: 'Thesaurus', label: 'Vehicles', id: output.id },
-          },
-          {
-            _id: expect.any(ObjectId),
-            key: 'Car',
-            value: 'Car',
-            language: 'es',
-            context: { type: 'Thesaurus', label: 'Vehicles', id: output.id },
-          },
-          {
-            _id: expect.any(ObjectId),
-            key: 'Bike',
-            value: 'Bike',
-            language: 'es',
-            context: { type: 'Thesaurus', label: 'Vehicles', id: output.id },
-          },
-        ])
-      );
-    });
+          postgresCore
+            ? { tenant: { ...testingTenants.current(), featureFlags: { postgresCore: true } } }
+            : undefined
+        );
 
-    it('should revert when creating the thesaurus fails', async () => {
-      const thesauriDS = TestUtils.mockClass<ThesauriDataSource>({
-        create: jest.fn().mockRejectedValue(new Error('Creation failed')),
-        exists: jest.fn().mockResolvedValue({ getDataOrThrow: jest.fn() }),
-      });
+      beforeEach(async () => testingEnvironment.setFixtures(fixtures));
 
-      const { sut } = createSut({ thesauriDS });
+      it('should create a new thesaurus', async () => {
+        const { sut } = createSut();
 
-      const before = await testingEnvironment.db.getAllFrom('translationsV2');
-
-      await expect(
-        sut.execute({
-          name: 'Animals',
-          values: [{ label: 'Dog' }, { label: 'Cat' }],
-        })
-      ).rejects.toThrowError('Creation failed');
-
-      const after = await testingEnvironment.db.getAllFrom('translationsV2');
-
-      expect(after).toEqual(before);
-    });
-
-    if (!postgresThesauri) {
-      it('should revert when creating the translations fails', async () => {
-        const thesaurusTranslationService = TestUtils.mockClass<ThesaurusTranslationService>({
-          create: jest.fn().mockRejectedValue(new Error('Creation failed')),
+        await sut.execute({
+          name: 'Vegetables',
+          values: [{ label: 'Carrot' }, { label: 'Broccoli' }],
         });
 
-        const { sut } = createSut({ thesaurusTranslationService });
+        const thesauri = await getThesauri();
 
-        const before = await getThesauri();
+        expect(thesauri).toHaveLength(2);
+        expect(thesauri[1]).toEqual({
+          _id: thesaurusIdMatcher,
+          name: 'Vegetables',
+          values: [
+            { id: expect.any(String), label: 'Carrot' },
+            { id: expect.any(String), label: 'Broccoli' },
+          ],
+        });
+      });
+
+      it('should create translations for the new thesaurus', async () => {
+        const { sut } = createSut();
+
+        const output = await sut.execute({
+          name: 'Vehicles',
+          values: [{ label: 'Car' }, { label: 'Bike' }],
+        });
+
+        const translations = await getTranslations();
+
+        expect(translations).toEqual(
+          TestUtils.arrayIncludesObjects([
+            {
+              _id: expect.any(ObjectId),
+              key: 'Vehicles',
+              value: 'Vehicles',
+              language: 'en',
+              context: { type: 'Thesaurus', label: 'Vehicles', id: output.id },
+            },
+            {
+              _id: expect.any(ObjectId),
+              key: 'Car',
+              value: 'Car',
+              language: 'en',
+              context: { type: 'Thesaurus', label: 'Vehicles', id: output.id },
+            },
+            {
+              _id: expect.any(ObjectId),
+              key: 'Bike',
+              value: 'Bike',
+              language: 'en',
+              context: { type: 'Thesaurus', label: 'Vehicles', id: output.id },
+            },
+            {
+              _id: expect.any(ObjectId),
+              key: 'Vehicles',
+              value: 'Vehicles',
+              language: 'es',
+              context: { type: 'Thesaurus', label: 'Vehicles', id: output.id },
+            },
+            {
+              _id: expect.any(ObjectId),
+              key: 'Car',
+              value: 'Car',
+              language: 'es',
+              context: { type: 'Thesaurus', label: 'Vehicles', id: output.id },
+            },
+            {
+              _id: expect.any(ObjectId),
+              key: 'Bike',
+              value: 'Bike',
+              language: 'es',
+              context: { type: 'Thesaurus', label: 'Vehicles', id: output.id },
+            },
+          ])
+        );
+      });
+
+      it('should revert when creating the thesaurus fails', async () => {
+        const thesauriDS = TestUtils.mockClass<ThesauriDataSource>({
+          create: jest.fn().mockRejectedValue(new Error('Creation failed')),
+          exists: jest.fn().mockResolvedValue({ getDataOrThrow: jest.fn() }),
+        });
+
+        const { sut } = createSut({ thesauriDS });
+
+        const before = await getTranslations();
 
         await expect(
           sut.execute({
@@ -237,56 +236,79 @@ describe('CreateThesaurusUseCase', () => {
             values: [{ label: 'Dog' }, { label: 'Cat' }],
           })
         ).rejects.toThrowError('Creation failed');
+
+        const after = await getTranslations();
+
+        expect(after).toEqual(before);
+      });
+
+      if (!postgresCore) {
+        it('should revert when creating the translations fails', async () => {
+          const thesaurusTranslationService = TestUtils.mockClass<ThesaurusTranslationService>({
+            create: jest.fn().mockRejectedValue(new Error('Creation failed')),
+          });
+
+          const { sut } = createSut({ thesaurusTranslationService });
+
+          const before = await getThesauri();
+
+          await expect(
+            sut.execute({
+              name: 'Animals',
+              values: [{ label: 'Dog' }, { label: 'Cat' }],
+            })
+          ).rejects.toThrowError('Creation failed');
+
+          const after = await getThesauri();
+
+          expect(after).toEqual(before);
+        });
+      }
+
+      if (postgresCore) {
+        /**
+         * With the Postgres datasource, thesaurus writes go directly to PG with no
+         * cross-database atomicity. If the Mongo transaction (which handles translations)
+         * rolls back, the PG write is already committed and is NOT reverted.
+         * This is a known, intentional trade-off during the Mongo→Postgres migration.
+         * Once all datasources are on Postgres, a PostgresTransactionManager will restore
+         * proper transactional boundaries.
+         */
+        it('should NOT revert the PG write when the Mongo transaction rolls back', async () => {
+          const thesaurusTranslationService = TestUtils.mockClass<ThesaurusTranslationService>({
+            create: jest.fn().mockRejectedValue(new Error('Creation failed')),
+          });
+
+          const { sut } = createSut({ thesaurusTranslationService });
+
+          await expect(
+            sut.execute({
+              name: 'Animals',
+              values: [{ label: 'Dog' }, { label: 'Cat' }],
+            })
+          ).rejects.toThrowError('Creation failed');
+
+          const thesauri = await getThesauri();
+          expect(thesauri.some(t => t.name === 'Animals')).toBe(true);
+        });
+      }
+
+      it('should not allow creating a thesaurus with an existing name', async () => {
+        const { sut } = createSut();
+
+        const before = await getThesauri();
+
+        await expect(
+          sut.execute({
+            name: 'Fruits',
+            values: [{ label: 'Strawberry' }],
+          })
+        ).rejects.toEqual(new ThesaurusNameAlreadyExistsError('Fruits'));
 
         const after = await getThesauri();
 
         expect(after).toEqual(before);
       });
     }
-
-    if (postgresThesauri) {
-      /**
-       * With the Postgres datasource, thesaurus writes go directly to PG with no
-       * cross-database atomicity. If the Mongo transaction (which handles translations)
-       * rolls back, the PG write is already committed and is NOT reverted.
-       * This is a known, intentional trade-off during the Mongo→Postgres migration.
-       * Once all datasources are on Postgres, a PostgresTransactionManager will restore
-       * proper transactional boundaries.
-       */
-      it('should NOT revert the PG write when the Mongo transaction rolls back', async () => {
-        const thesaurusTranslationService = TestUtils.mockClass<ThesaurusTranslationService>({
-          create: jest.fn().mockRejectedValue(new Error('Creation failed')),
-        });
-
-        const { sut } = createSut({ thesaurusTranslationService });
-
-        await expect(
-          sut.execute({
-            name: 'Animals',
-            values: [{ label: 'Dog' }, { label: 'Cat' }],
-          })
-        ).rejects.toThrowError('Creation failed');
-
-        const thesauri = await getThesauri();
-        expect(thesauri.some(t => t.name === 'Animals')).toBe(true);
-      });
-    }
-
-    it('should not allow creating a thesaurus with an existing name', async () => {
-      const { sut } = createSut();
-
-      const before = await getThesauri();
-
-      await expect(
-        sut.execute({
-          name: 'Fruits',
-          values: [{ label: 'Strawberry' }],
-        })
-      ).rejects.toEqual(new ThesaurusNameAlreadyExistsError('Fruits'));
-
-      const after = await getThesauri();
-
-      expect(after).toEqual(before);
-    });
-  });
+  );
 });

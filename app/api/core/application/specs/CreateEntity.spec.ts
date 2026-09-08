@@ -208,12 +208,12 @@ const fixtures: DBFixture = {
 
 type TestConfig = {
   name: string;
-  postgresTemplates: boolean;
+  postgresCore: boolean;
 };
 
 const testConfigs: TestConfig[] = [
-  { name: 'Mongo', postgresTemplates: false },
-  { name: 'Postgres', postgresTemplates: true },
+  { name: 'Mongo', postgresCore: false },
+  { name: 'Postgres', postgresCore: true },
 ];
 
 type CreateSutProps = {
@@ -221,7 +221,7 @@ type CreateSutProps = {
   targetLanguage?: LanguageISO6391;
 };
 
-const createSut = (props: CreateSutProps = {}, postgresTemplates = false) => {
+const createSut = (props: CreateSutProps = {}, postgresCore = false) => {
   const actor =
     props.actor ??
     User.createFrom({
@@ -233,10 +233,10 @@ const createSut = (props: CreateSutProps = {}, postgresTemplates = false) => {
     });
 
   const contextOverrides: any = { actor };
-  if (postgresTemplates) {
+  if (postgresCore) {
     contextOverrides.tenant = {
       ...testingTenants.current(),
-      featureFlags: { postgresTemplates: true },
+      featureFlags: { postgresCore: true },
     };
   }
 
@@ -269,7 +269,11 @@ describe('CreateEntityUseCase', () => {
     await testingEnvironment.tearDown();
   });
 
-  describe.each(testConfigs)('$name', ({ postgresTemplates }) => {
+  describe.each(testConfigs)('$name', ({ postgresCore }) => {
+    beforeEach(async () => {
+      testingTenants.changeCurrentTenant({ featureFlags: { postgresCore } });
+    });
+
     it('should create an Entity', async () => {
       const actor = User.createFrom({
         _id: factory.id('user1').toString(),
@@ -278,7 +282,7 @@ describe('CreateEntityUseCase', () => {
         role: 'admin',
       });
 
-      const { sut, fileService } = createSut({ actor, targetLanguage: 'en' }, postgresTemplates);
+      const { sut, fileService } = createSut({ actor, targetLanguage: 'en' }, postgresCore);
 
       const entity = await sut.execute({
         templateId: factory.id('Document').toHexString(),
@@ -374,10 +378,9 @@ describe('CreateEntityUseCase', () => {
         icon: { id: 'iconId', label: 'iconLabel', type: 'iconType' },
       });
 
-      const entities = await testingEnvironment.db
-        .getCollection('entities')
-        ?.find({ sharedId: entity.sharedId })
-        .toArray();
+      const entities = (await testingEnvironment.db.getAllFrom('entities'))
+        .filter(row => row.sharedId === entity.sharedId)
+        .sort((a, b) => (a.language < b.language ? -1 : 1));
 
       const commonFields = {
         template: factory.id('Document'),
@@ -509,7 +512,7 @@ describe('CreateEntityUseCase', () => {
 
       const emitSpy = jest.spyOn(applicationEventsBus, 'emit');
 
-      const { sut } = createSut({ actor, targetLanguage: 'es' }, postgresTemplates);
+      const { sut } = createSut({ actor, targetLanguage: 'es' }, postgresCore);
 
       await sut.execute({
         templateId: factory.id('Document').toHexString(),
@@ -527,7 +530,7 @@ describe('CreateEntityUseCase', () => {
     });
 
     it('should throw when a required property has no value', async () => {
-      const { sut } = createSut({}, postgresTemplates);
+      const { sut } = createSut({}, postgresCore);
 
       await expect(
         sut.execute({

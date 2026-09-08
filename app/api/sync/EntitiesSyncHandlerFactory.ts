@@ -9,7 +9,7 @@ export class EntitiesSyncHandlerFactory {
   static default(): MongoEntitiesSyncHandler | PostgresEntitiesSyncHandler {
     const tenant = ExecutionContext.currentTenant;
 
-    if (tenant.featureFlags?.postgresEntities) {
+    if (tenant.featureFlags?.postgresCore) {
       const user = ExecutionContext.actor ?? User.createFrom(null);
       return new PostgresEntitiesSyncHandler({
         tenantId: tenant.name,

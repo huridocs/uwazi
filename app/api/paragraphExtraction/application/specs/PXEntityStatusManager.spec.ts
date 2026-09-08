@@ -65,7 +65,7 @@ describe('PXEntityStatusManager', () => {
   describe.each(testConfigs)('$name', ({ usePostgres }) => {
     beforeEach(async () => {
       testingTenants.changeCurrentTenant({
-        featureFlags: { postgresFiles: usePostgres },
+        featureFlags: { postgresCore: usePostgres },
       });
       await testingEnvironment.setFixtures(createFixtures());
     });

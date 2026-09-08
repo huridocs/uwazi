@@ -36,6 +36,7 @@ type SearchEndpointQuery = {
   unpublished: boolean;
   aggregatePublishingStatus: true;
   include: ['permissions'];
+  geolocation?: boolean;
 };
 
 type RawBucket = {
@@ -126,6 +127,7 @@ const toSearchEndpointQuery = (query: LibrarySearchQuery): SearchEndpointQuery =
     unpublished,
     aggregatePublishingStatus: true,
     include: ['permissions'],
+    ...(query.geolocation ? { geolocation: true } : {}),
   };
 };
 
