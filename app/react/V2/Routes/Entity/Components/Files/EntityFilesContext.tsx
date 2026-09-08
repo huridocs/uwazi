@@ -7,8 +7,8 @@ import { Entity } from '#V2/api/entities/types.js';
 import { update } from '#V2/api/files/index.js';
 import { settingsAtom, templatesAtom } from '#V2/atoms/index.js';
 import { localeAtom } from '#V2/atoms/translationsAtoms.js';
-import { entityLoaderCache } from '../../EntityLoaderCache.js';
 import { buildEntityFileRows } from './buildEntityFileRows.js';
+import { refreshEntityFiles } from './refreshEntityFiles.js';
 import { useEntityFilesAdd } from './useEntityFilesAdd.js';
 import { useEntityFilesDelete } from './useEntityFilesDelete.js';
 import { useEntityFilesPanel } from './useEntityFilesPanel.js';
@@ -19,9 +19,11 @@ const EntityFilesContext = createContext<EntityFilesContextValue | null>(null);
 
 const EntityFilesProvider = ({
   entity,
+  onRefreshEntity,
   children,
 }: {
   entity: Entity;
+  onRefreshEntity?: () => Promise<void>;
   children: React.ReactNode;
 }) => {
   const templates = useAtomValue(templatesAtom);
@@ -55,10 +57,10 @@ const EntityFilesProvider = ({
   const resolvedFocusedRowId = focusedRowId || mainDocumentId || allRows[0]?.rowId;
   const focusedRow = allRows.find(row => row.rowId === resolvedFocusedRowId);
 
-  const refreshEntity = useCallback(async () => {
-    entityLoaderCache.invalidateEntity(entity.sharedId);
-    await revalidate();
-  }, [entity.sharedId, revalidate]);
+  const refreshEntity = useCallback(
+    async () => refreshEntityFiles(entity.sharedId, revalidate, onRefreshEntity),
+    [entity.sharedId, onRefreshEntity, revalidate]
+  );
 
   const saveRow = useCallback(
     async (payload: { _id: string; originalname: string; language?: string }) => {

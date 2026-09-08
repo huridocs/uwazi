@@ -6,6 +6,7 @@ const noop = () => undefined;
 const defaultPdfFillHost: PdfFillHost = {
   isEditing: false,
   language: 'en',
+  hasMainDocument: false,
   documentPdfSelection: undefined,
   draftPropertySelections: [],
   upsertPropertySelection: noop,

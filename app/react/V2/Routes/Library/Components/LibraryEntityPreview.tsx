@@ -60,9 +60,19 @@ const libraryPreviewTabs = (mainTabId: MainTabId): EntityTabsState => ({
   focusDocumentPanel: noop,
 });
 
-const EntityFilesFromEntity = ({ children }: { children: React.ReactNode }) => {
+const EntityFilesFromEntity = ({
+  onRefreshEntity,
+  children,
+}: {
+  onRefreshEntity: () => Promise<void>;
+  children: React.ReactNode;
+}) => {
   const entity = useEntityScopedEntity();
-  return <EntityFilesProvider entity={entity}>{children}</EntityFilesProvider>;
+  return (
+    <EntityFilesProvider entity={entity} onRefreshEntity={onRefreshEntity}>
+      {children}
+    </EntityFilesProvider>
+  );
 };
 
 const EntityCreateRelationshipModal = () => {
@@ -177,11 +187,13 @@ const LibraryPreviewReady = ({
   defaultLanguage,
   entityBasePath,
   onClose,
+  onRefreshEntity,
 }: {
   entity: Entity;
   defaultLanguage: string | undefined;
   entityBasePath: string;
   onClose: () => void;
+  onRefreshEntity: () => Promise<void>;
 }) => {
   const { language } = entity;
   const mainDocument = getMainDocument(readyDocuments(entity.documents), language, defaultLanguage);
@@ -194,7 +206,7 @@ const LibraryPreviewReady = ({
           language={language}
           mainDocument={mainDocument}
         >
-          <EntityFilesFromEntity>
+          <EntityFilesFromEntity onRefreshEntity={onRefreshEntity}>
             <FilesDeleteConfirmationModal />
             <AddFileModal />
             <LibraryEntityPreviewView entityBasePath={entityBasePath} onClose={onClose} />
@@ -207,7 +219,7 @@ const LibraryPreviewReady = ({
 };
 
 const LibraryEntityPreview = ({ sharedId, entityBasePath, onClose }: LibraryEntityPreviewProps) => {
-  const { entity, loading, error } = useLibraryPreviewEntity(sharedId);
+  const { entity, loading, error, reload } = useLibraryPreviewEntity(sharedId);
   const settings = useAtomValue(settingsAtom);
   const defaultLanguage = settings?.languages?.find(language => language.default)?.key;
   useEscapeClose(onClose);
@@ -235,6 +247,7 @@ const LibraryEntityPreview = ({ sharedId, entityBasePath, onClose }: LibraryEnti
       defaultLanguage={defaultLanguage}
       entityBasePath={entityBasePath}
       onClose={onClose}
+      onRefreshEntity={reload}
     />
   );
 };
