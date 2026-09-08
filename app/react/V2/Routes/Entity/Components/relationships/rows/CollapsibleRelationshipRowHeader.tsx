@@ -1,5 +1,6 @@
 import React, { Children, type ReactNode } from 'react';
 import { TemplatePill } from '#V2/Components/UI/TemplatePill.js';
+import { EntityTemplateLink } from './EntityTemplateLink.js';
 import type {
   RelationshipsPanelView,
   RelationshipsPanelZoom,
@@ -15,6 +16,7 @@ type HeaderContext = {
   zoom: RelationshipsPanelZoom;
   header: ReactNode;
   targetTemplateId?: string;
+  targetSharedId?: string;
   entityTitle?: string;
   templateName?: string;
   glyphDirection?: Direction;
@@ -38,16 +40,32 @@ const resolveAggregateHeader = (ctx: HeaderContext): ReactNode => {
         {!ctx.hideTemplateName && (
           <TemplatePill templateId={ctx.targetTemplateId} label={ctx.templateName} />
         )}
-        <span
-          title={ctx.entityTitle}
-          className={`min-w-0 truncate font-medium text-ink ${entityTitleClass[ctx.zoom]}`}
-        >
-          {ctx.entityTitle}
-        </span>
+        {ctx.targetSharedId ? (
+          <EntityTemplateLink
+            sharedId={ctx.targetSharedId}
+            templateId={ctx.targetTemplateId}
+            label={ctx.entityTitle}
+          />
+        ) : (
+          <span
+            title={ctx.entityTitle}
+            className={`min-w-0 truncate font-medium text-ink ${entityTitleClass[ctx.zoom]}`}
+          >
+            {ctx.entityTitle}
+          </span>
+        )}
       </>
     );
   }
-  return <TemplatePill templateId={ctx.targetTemplateId} label={ctx.entityTitle} />;
+  return ctx.targetSharedId ? (
+    <EntityTemplateLink
+      sharedId={ctx.targetSharedId}
+      templateId={ctx.targetTemplateId}
+      label={ctx.entityTitle}
+    />
+  ) : (
+    <TemplatePill templateId={ctx.targetTemplateId} label={ctx.entityTitle} />
+  );
 };
 
 const resolveHeader = (ctx: HeaderContext): ReactNode => {

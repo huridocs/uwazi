@@ -1,15 +1,14 @@
 import React, { useRef } from 'react';
+import preview from '#storybook/preview';
+import { storyExtend } from '#app/stories/storyExtend.js';
 import { createStore, Provider } from 'jotai';
-import type { Meta, StoryObj } from '@storybook/react-webpack5';
 import { NotificationsPanel } from '#V2/Components/UI/Notifications/NotificationsPanel.js';
 import { requestStatusAtom, type RequestStatusState } from '#V2/atoms/requestStatusAtom.js';
 
-const meta: Meta<typeof NotificationsPanel> = {
+const meta = preview.meta({
   title: 'Components/Notifications/NotificationsPanel',
   component: NotificationsPanel,
-};
-
-type Story = StoryObj<typeof NotificationsPanel>;
+});
 
 const ago = (ms: number) => new Date(Date.now() - ms);
 const SEC = 1000;
@@ -108,26 +107,22 @@ const DemoPanel = ({ state }: { state: RequestStatusState }) => {
   );
 };
 
-const Primary: Story = {
+const Primary = meta.story({
   render: () => <DemoPanel state={mixedState} />,
-};
+});
 
-const Empty: Story = {
+const Empty = meta.story({
   render: () => <DemoPanel state={baseState} />,
-};
+});
 
-const WithNotifications: Story = {
+const WithNotifications = meta.story({
   render: () => <DemoPanel state={notificationsState} />,
-};
+});
 
-const WithTasks: Story = {
+const WithTasks = meta.story({
   render: () => <DemoPanel state={tasksState} />,
-};
+});
 
-const Mixed: Story = {
-  ...Primary,
-};
-
-export default meta;
+const Mixed = storyExtend(Primary, {});
 
 export { Empty, WithNotifications, WithTasks, Mixed };

@@ -6,8 +6,8 @@ import {
 import { useEntityScopedEntity } from '#V2/Routes/Entity/Components/context/EntityContext.js';
 import { useEntityLanguage } from '#V2/Routes/Entity/Components/context/EntityLanguageContext.js';
 import { useDirectedRelationships } from '#V2/Routes/Entity/Components/context/RelationshipsQueryProvider.js';
-import { useRelationshipsPanelFacetFilters } from '#V2/Routes/Entity/Components/context/index.js';
-import { useActiveRelationshipHighlight } from '#V2/Routes/Entity/Components/document/index.js';
+import { useRelationshipsPanelFacetFilters } from '#V2/Routes/Entity/Components/context/RelationshipsPanelFiltersContext.js';
+import { useActiveRelationshipHighlight } from '#V2/Routes/Entity/Components/document/useActiveRelationshipHighlight.js';
 
 const useEntityRelationshipMarkers = () => {
   const entity = useEntityScopedEntity();

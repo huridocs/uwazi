@@ -1,12 +1,13 @@
 import React from 'react';
-import { Meta, StoryObj } from '@storybook/react-webpack5';
+import preview from '#storybook/preview';
+import { storyExtend } from '#app/stories/storyExtend.js';
 import { action } from 'storybook/actions';
 import { fn } from 'storybook/test';
 import { DatePicker } from '#V2/Components/Forms/index.js';
 import { TestAtomStoreProvider } from '#V2/testing/index.js';
 import { settingsAtom } from '#V2/atoms/index.js';
 
-const meta: Meta<typeof DatePicker> = {
+const meta = preview.meta({
   title: 'Forms/DatePicker',
   component: DatePicker,
   args: {
@@ -19,12 +20,22 @@ const meta: Meta<typeof DatePicker> = {
       handles: ['change'],
     },
   },
-};
-export default meta;
+});
 
-type Story = StoryObj<typeof DatePicker>;
-
-const Primary: Story = {
+const Primary = meta.story({
+  args: {
+    name: 'dateField',
+    label: 'Fecha',
+    language: 'es',
+    labelToday: 'Hoy',
+    labelClear: 'Limpiar',
+    placeholder: 'Seleccione una fecha',
+    hideLabel: true,
+    className: '',
+    onChange: fn(),
+    onBlur: fn(),
+    clearFieldAction: fn(),
+  },
   render: args => (
     <TestAtomStoreProvider initialValues={[[settingsAtom, {}]]}>
       <DatePicker
@@ -43,10 +54,9 @@ const Primary: Story = {
       />
     </TestAtomStoreProvider>
   ),
-};
+});
 
-const Basic: Story = {
-  ...Primary,
+const Basic = storyExtend(Primary, {
   args: {
     name: 'dateField',
     label: 'Fecha',
@@ -60,6 +70,6 @@ const Basic: Story = {
     onBlur: action('blurred'),
     clearFieldAction: action('cleared'),
   },
-};
+});
 
 export { Basic };

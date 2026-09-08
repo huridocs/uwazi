@@ -1,14 +1,12 @@
 import React, { useState } from 'react';
-import { Meta, StoryObj } from '@storybook/react-webpack5';
+import preview from '#storybook/preview';
+import { storyExtend } from '#app/stories/storyExtend.js';
 import { Select, SelectProps } from '#V2/Components/Forms/index.js';
 
-const meta: Meta<typeof Select> = {
+const meta = preview.meta({
   title: 'Forms/Select',
   component: Select,
-};
-export default meta;
-
-type Story = StoryObj<typeof Select>;
+});
 
 const ComponentWithSelect = ({ args }: { args: SelectProps }) => {
   const [value, setValue] = useState<string>(args.value || '');
@@ -33,12 +31,27 @@ const ComponentWithSelect = ({ args }: { args: SelectProps }) => {
   );
 };
 
-const Primary: Story = {
+const Primary = meta.story({
+  args: {
+    id: '1',
+    label: 'Please select an option',
+    disabled: false,
+    hideLabel: false,
+    hasErrors: false,
+    value: 'Argentina',
+    options: [
+      { key: '1', value: 'Algeria' },
+      { key: '2', value: 'Argentina' },
+      { key: '3', value: 'Bavaria' },
+      { key: '4', value: 'Bolivia' },
+      { key: '5', value: 'Colombia' },
+      { key: '6', value: 'Dinamarca' },
+    ],
+  },
   render: args => <ComponentWithSelect args={args} />,
-};
+});
 
-const Basic = {
-  ...Primary,
+const Basic = storyExtend(Primary, {
   args: {
     label: 'Please select an option',
     disabled: false,
@@ -54,6 +67,6 @@ const Basic = {
       { key: '6', value: 'Dinamarca' },
     ],
   },
-};
+});
 
 export { Basic };

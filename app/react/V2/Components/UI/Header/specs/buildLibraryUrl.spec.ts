@@ -51,4 +51,15 @@ describe('buildLibraryUrl', () => {
     });
     expect(path.startsWith('/library/')).toBe(true);
   });
+
+  it('points at /library when Library V2 owns the canonical path', () => {
+    const path = buildLibraryUrl({
+      location: { search: '?q=(searchTerm:%27asd%27)' },
+      librarySearch: { sort: 'asc' },
+      libraryFilters: emptyFilters,
+      defaultLibraryView: 'table',
+      libraryV2: true,
+    });
+    expect(path).toBe('/library');
+  });
 });

@@ -14,11 +14,11 @@ export class EntityFacade {
   static async create(
     dto: CreateEntityDTO,
     targetLanguage: LanguageISO6391,
-    inputFiles?: InputFile[]
+    { inputFiles, sessionId }: { inputFiles?: InputFile[]; sessionId?: string } = {}
   ) {
     const parsed = CreateEntitySchema.parse(dto);
     const input = ExpressEntityMapper.toEntityCreateInput({ dto: parsed, inputFiles });
-    const useCase = CreateEntityUseCaseFactory.default({ targetLanguage });
+    const useCase = CreateEntityUseCaseFactory.default({ targetLanguage, sessionId });
     const entity = await useCase.execute(input);
     return entity;
   }

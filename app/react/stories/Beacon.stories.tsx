@@ -1,11 +1,19 @@
 import React from 'react';
-import type { Meta, StoryObj } from '@storybook/react-webpack5';
+import preview from '#storybook/preview';
+import { storyExtend } from '#app/stories/storyExtend.js';
 import { action } from 'storybook/actions';
 import { userEvent, within } from 'storybook/test';
 import { ThemedBeacon, LegacyBeacon } from '#V2/Components/UI/Notifications/Beacon.js';
+import type { ThemedBeaconProps } from '#V2/Components/UI/Notifications/Beacon.js';
 import type { StatusNotification, StatusTask } from '#V2/atoms/requestStatusAtom.js';
 
-const meta: Meta<typeof ThemedBeacon> = {
+type BeaconStoryArgs = ThemedBeaconProps & {
+  chromeForeground?: string;
+  chromeFadeColor?: string;
+  chromeFadeStartColor?: string;
+};
+
+const meta = preview.type<{ args: BeaconStoryArgs }>().meta({
   title: 'Components/Notifications/Beacon',
   component: ThemedBeacon,
   argTypes: {
@@ -18,9 +26,7 @@ const meta: Meta<typeof ThemedBeacon> = {
     isLoading: { control: { type: 'boolean' } },
     isPanelOpen: { control: { type: 'boolean' } },
   },
-};
-
-type Story = StoryObj<typeof ThemedBeacon>;
+});
 
 const baseArgs = {
   isConnected: true,
@@ -34,7 +40,8 @@ const baseArgs = {
   controlsId: 'notifications-panel-dialog',
 };
 
-const Primary: Story = {
+const Primary = meta.story({
+  args: { ...baseArgs, overallStatus: 'success' },
   render: args => (
     <div className="tw-content">
       <div className="flex w-[20rem] justify-end rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
@@ -42,45 +49,38 @@ const Primary: Story = {
       </div>
     </div>
   ),
-};
+});
 
-const Success: Story = {
-  ...Primary,
+const Success = storyExtend(Primary, {
   args: { ...baseArgs, overallStatus: 'success' },
-};
+});
 
-const Warning: Story = {
-  ...Primary,
+const Warning = storyExtend(Primary, {
   args: { ...baseArgs, overallStatus: 'warning' },
-};
+});
 
-const Error: Story = {
-  ...Primary,
+const Error = storyExtend(Primary, {
   args: { ...baseArgs, overallStatus: 'error' },
-};
+});
 
-const Loading: Story = {
-  ...Primary,
+const Loading = storyExtend(Primary, {
   args: { ...baseArgs, overallStatus: 'loading', hasRunningTasks: true, isLoading: true },
-};
+});
 
-const Disconnected: Story = {
-  ...Primary,
+const Disconnected = storyExtend(Primary, {
   args: { ...baseArgs, overallStatus: 'error', isConnected: false },
-};
+});
 
-const WithRunningTasks: Story = {
-  ...Primary,
+const WithRunningTasks = storyExtend(Primary, {
   args: {
     ...baseArgs,
     overallStatus: 'success',
     hasRunningTasks: true,
     tasks: [{ id: '1', status: 'running', label: 'Uploading document batch...', progress: 42 }],
   },
-};
+});
 
-const WithNotifications: Story = {
-  ...Primary,
+const WithNotifications = storyExtend(Primary, {
   args: {
     ...baseArgs,
     overallStatus: 'success',
@@ -103,9 +103,9 @@ const WithNotifications: Story = {
     const beacon = within(canvasElement).getByTestId('status-dot');
     await userEvent.hover(beacon);
   },
-};
+});
 
-const WithFlash: Story = {
+const WithFlash = meta.story({
   render: args => (
     <div className="tw-content">
       <div className="flex w-[20rem] justify-end rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
@@ -118,19 +118,39 @@ const WithFlash: Story = {
     overallStatus: 'success',
     flash: { id: '1', type: 'success', title: 'Entity saved successfully.', phase: 'showing' },
   },
-};
+});
 
-const WithFlashOnCustomHeader: StoryObj<typeof LegacyBeacon> = {
-  render: args => (
-    <div className="tw-content">
-      <div
-        className="flex h-12 w-[24rem] items-center justify-end px-3"
-        style={{ background: '#2f4f6f' }}
-      >
-        <LegacyBeacon {...args} />
+const WithFlashOnCustomHeader = meta.story({
+  render: args => {
+    const chromeForeground = args.chromeForeground ?? '#ffffff';
+    const chromeFadeColor = args.chromeFadeColor ?? '#2f4f6f';
+    const chromeFadeStartColor = args.chromeFadeStartColor ?? '#2f4f6f';
+    return (
+      <div className="tw-content">
+        <div
+          className="flex h-12 w-[24rem] items-center justify-end px-3"
+          style={{ background: '#2f4f6f' }}
+        >
+          <LegacyBeacon
+            overallStatus={args.overallStatus}
+            isConnected={args.isConnected}
+            hasRunningTasks={args.hasRunningTasks}
+            isLoading={args.isLoading}
+            isPanelOpen={args.isPanelOpen}
+            tasks={args.tasks}
+            notifications={args.notifications}
+            flash={args.flash}
+            popKey={args.popKey}
+            onClick={args.onClick}
+            controlsId={args.controlsId}
+            chromeForeground={chromeForeground}
+            chromeFadeColor={chromeFadeColor}
+            chromeFadeStartColor={chromeFadeStartColor}
+          />
+        </div>
       </div>
-    </div>
-  ),
+    );
+  },
   args: {
     ...baseArgs,
     overallStatus: 'success',
@@ -139,9 +159,7 @@ const WithFlashOnCustomHeader: StoryObj<typeof LegacyBeacon> = {
     chromeFadeStartColor: '#2f4f6f',
     flash: { id: '1', type: 'success', title: 'Entity updated', phase: 'showing' },
   },
-};
-
-export default meta;
+});
 
 export {
   Success,

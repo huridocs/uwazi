@@ -27,6 +27,7 @@
       "#UI": ["./app/react/UI"],
       "#UI/*": ["./app/react/UI/*"],
       "#V2/*": ["./app/react/V2/*"],
+      "#storybook/preview": ["./.storybook/preview.js"],
       "#api/utils/*": ["./app/api/utils/*"],
       "#app/utils/*": ["./app/react/utils/*"],
       "*": ["./*"]
@@ -41,7 +42,8 @@
     "e2e",
     "playwright",
     "scripts/scripts.v2/*",
-    "scripts/elasticSearch/*"
+    "scripts/elasticSearch/*",
+    ".storybook"
   ],
   "exclude": ["fixtures", "dist", "prod", "**/*.cy.tsx"]
 }

@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { CheckIcon } from '@heroicons/react/24/outline';
 import { Translate } from '#app/I18N/index.js';
+import { LanguageSelect } from '#V2/Components/UI/index.js';
 import { EntityWriteAuthorization } from '#V2/Routes/Entity/Components/context/index.js';
 import { getRowIcon } from './fileRowIcon.js';
 import { FileDeleteAction } from './FileDeleteAction.js';
@@ -8,7 +9,6 @@ import { FileDetailsField } from './FileDetailsField.js';
 import { FileDetailsCard } from './FileDetailsCard.js';
 import { FileDetailsReadonlyMeta } from './FileDetailsReadonlyMeta.js';
 import { FileDocumentContextBadge } from './FileDocumentContextBadge.js';
-import { FileLanguageSelect } from './FileLanguageSelect.js';
 import { useFileRowDraft } from './useFileRowDraft.js';
 import { EntityFileRow, FileEditFocus } from './types.js';
 
@@ -33,7 +33,7 @@ const FileDetailsEditor = ({
     resetDraft,
     commit,
   } = useFileRowDraft(row);
-  const languageSelectRef = useRef<HTMLSelectElement>(null);
+  const languageSelectRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     resetDraft();
@@ -92,13 +92,14 @@ const FileDetailsEditor = ({
         <div className="grid grid-cols-2 gap-3">
           {showLanguage ? (
             <FileDetailsField label={<Translate>Language</Translate>}>
-              <FileLanguageSelect
-                selectRef={languageSelectRef}
+              <LanguageSelect
+                triggerRef={languageSelectRef}
                 id={`file-language-${row.raw._id}`}
                 value={draftLanguage}
                 onChange={setDraftLanguage}
                 options={languageOptions}
                 aria-label="File language"
+                appearance="default"
               />
             </FileDetailsField>
           ) : null}

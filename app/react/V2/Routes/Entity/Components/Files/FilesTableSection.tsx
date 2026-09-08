@@ -11,6 +11,7 @@ type FilesTableSectionProps = {
   selectedRowIds: string[];
   focusedRowId?: string;
   showLanguageColumn?: boolean;
+  emptyDescription?: React.ReactNode;
   onSelectRows: (ids: string[]) => void;
   onFocusRow: (row: EntityFileRow) => void;
   onViewRow: (row: EntityFileRow) => void;
@@ -25,6 +26,7 @@ const FilesTableSection = ({
   selectedRowIds,
   focusedRowId,
   showLanguageColumn = true,
+  emptyDescription,
   onSelectRows,
   onFocusRow,
   onViewRow,
@@ -96,11 +98,26 @@ const FilesTableSection = ({
       ? `${rows.length} ${t('System', 'file', null, false)}`
       : `${rows.length} ${t('System', 'files', null, false)}`;
 
+  const heading = (
+    <p className="mb-2 px-1 text-xs font-semibold uppercase tracking-wider text-ink-tertiary">
+      <Translate>{title}</Translate>
+    </p>
+  );
+
+  if (rows.length === 0) {
+    return (
+      <section className="flex flex-col">
+        {heading}
+        <p className="px-1 text-sm italic text-ink-muted">
+          {emptyDescription ?? <Translate>No files available</Translate>}
+        </p>
+      </section>
+    );
+  }
+
   return (
     <section className="flex flex-col">
-      <p className="mb-2 px-1 text-xs font-semibold uppercase tracking-wider text-ink-tertiary">
-        <Translate>{title}</Translate>
-      </p>
+      {heading}
       <DataTable
         columns={columns}
         data={rows}

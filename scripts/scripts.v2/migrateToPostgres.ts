@@ -13,8 +13,8 @@ import { DB } from '#api/odm/index.js';
 import { tenants } from '#api/tenants/index.js';
 import { config } from '#api/config.js';
 import {
+  AnyMigrationConfig,
   MigrateCollectionToPostgres,
-  MigrationConfig,
 } from '#api/core/infrastructure/postgresql/migrations/MigrateCollectionToPostgres.js';
 import { PostgresDB } from '#api/infrastructure/PostgresDB.js';
 import { TemplateMigrationConfig } from '#api/core/infrastructure/postgresql/migrations/configs/TemplateMigrationConfig.js';
@@ -26,8 +26,13 @@ import { UserGroupsMigrationConfig } from '#api/core/infrastructure/postgresql/m
 import { PasswordRecoveryMigrationConfig } from '#api/core/infrastructure/postgresql/migrations/configs/PasswordRecoveryMigrationConfig.js';
 import { TranslationsMigrationConfig } from '#api/core/infrastructure/postgresql/migrations/configs/TranslationsMigrationConfig.js';
 import { EntitiesMigrationConfig } from '#api/core/infrastructure/postgresql/migrations/configs/EntitiesMigrationConfig.js';
+import {
+  PageLocalesMigrationConfig,
+  PageMigrationConfig,
+} from '#api/core/infrastructure/postgresql/migrations/configs/PageMigrationConfig.js';
+import { PageReleaseMigrationConfig } from '#api/core/infrastructure/postgresql/migrations/configs/PageReleaseMigrationConfig.js';
 
-const COLLECTIONS: Record<string, MigrationConfig> = {
+const COLLECTIONS: Record<string, AnyMigrationConfig> = {
   thesauri: ThesaurusMigrationConfig,
   templates: TemplateMigrationConfig,
   files: FilesMigrationConfig,
@@ -37,6 +42,10 @@ const COLLECTIONS: Record<string, MigrationConfig> = {
   password_recoveries: PasswordRecoveryMigrationConfig,
   translations: TranslationsMigrationConfig,
   entities: EntitiesMigrationConfig,
+  pages: PageMigrationConfig,
+  // A page's locales are nested in the mongo document, so they are their own pass.
+  page_locales: PageLocalesMigrationConfig,
+  page_releases: PageReleaseMigrationConfig,
 };
 
 // Collections grouped by the feature flag that gates their migration. A group is
@@ -77,7 +86,7 @@ const argv = yargs(hideBin(process.argv))
 async function migrateCollection(
   tenantName: string,
   collectionName: string,
-  migrationConfig: MigrationConfig
+  migrationConfig: AnyMigrationConfig
 ): Promise<void> {
   await tenants.run(async () => {
     const mongoDb = DB.mongodb_Db(tenants.current().dbName);

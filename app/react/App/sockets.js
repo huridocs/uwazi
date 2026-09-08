@@ -186,9 +186,9 @@ ${errorMessage}`;
 });
 
 socket.on('documentProcessed', sharedId => {
-  store.dispatch(documentProcessed(sharedId, 'library'));
+  void store.dispatch(documentProcessed(sharedId, 'library'));
 });
 
 socket.on('conversionFailed', sharedId => {
-  store.dispatch(documentProcessed(sharedId, 'library'));
+  void store.dispatch(documentProcessed(sharedId, 'library'));
 });

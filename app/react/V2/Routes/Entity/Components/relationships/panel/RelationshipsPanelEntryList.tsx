@@ -45,7 +45,6 @@ const renderPanelEntryRows = ({
   selfSharedId,
   activeRelationshipId,
   onClick,
-  onView,
   onDelete,
   flat = false,
   variant = 'list',
@@ -58,7 +57,7 @@ const renderPanelEntryRows = ({
   } else {
     entries = buildPanelListEntries(markers, selfSharedId);
   }
-  const rowProps = { selfSharedId, activeRelationshipId, onClick, onView, onDelete };
+  const rowProps = { selfSharedId, activeRelationshipId, onClick, onDelete };
 
   return entries.map(entry => (
     <RelationshipPanelRow
@@ -79,7 +78,6 @@ const RelationshipsPanelEntryList = ({
   selfSharedId,
   activeRelationshipId,
   onClick,
-  onView,
   onDelete,
 }: RelationshipsPanelEntryListProps) => {
   const { scrollToRelationshipPanel } = useDocumentRelationshipNav();
@@ -90,7 +88,7 @@ const RelationshipsPanelEntryList = ({
     return buildPanelListEntries(markers, selfSharedId);
   }, [flat, variant, markers, selfSharedId]);
 
-  const rowProps = { selfSharedId, activeRelationshipId, onClick, onView, onDelete };
+  const rowProps = { selfSharedId, activeRelationshipId, onClick, onDelete };
 
   const content = entries.map(entry => {
     const key = panelEntryKey(entry);

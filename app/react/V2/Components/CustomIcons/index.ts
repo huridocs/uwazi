@@ -23,6 +23,7 @@ export {
   PlusStrokeIcon,
   CloudUploadStrokeIcon,
   Settings2StrokeIcon,
+  TextCursorInputStrokeIcon,
 } from './LucideStrokeIcons.js';
 export {
   CircleDotIcon,

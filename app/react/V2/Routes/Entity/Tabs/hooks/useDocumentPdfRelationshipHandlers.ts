@@ -17,19 +17,25 @@ function useDocumentPdfRelationshipHandlers({
     useActiveRelationshipHighlight();
   const { activeClusterRefIds, setActiveClusterRefIds, findMarkerById } =
     useDocumentPdfClusterHighlight({ entity, mainPdfController });
-  const { handleRailPointClick, handleClusterClick, handleClusterMoreClick, handleHighlightClick } =
-    useDocumentPdfRelationshipClicks({
-      entity,
-      mainPdfController,
-      activeClusterRefIds,
-      setActiveClusterRefIds,
-      findMarkerById,
-      selectRelationship,
-      clearRelationshipSelection,
-    });
+  const {
+    handleRailHover,
+    handleRailPointClick,
+    handleClusterClick,
+    handleClusterMoreClick,
+    handleHighlightClick,
+  } = useDocumentPdfRelationshipClicks({
+    entity,
+    mainPdfController,
+    activeClusterRefIds,
+    setActiveClusterRefIds,
+    findMarkerById,
+    selectRelationship,
+    clearRelationshipSelection,
+  });
 
   return {
     activeRelationshipId,
+    handleRailHover,
     handleRailPointClick,
     handleClusterClick,
     handleClusterMoreClick,

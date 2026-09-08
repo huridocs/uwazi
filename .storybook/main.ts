@@ -1,4 +1,4 @@
-import type { StorybookConfig } from '@storybook/react-webpack5';
+import { defineMain } from '@storybook/react-webpack5/node';
 import type { Configuration, WebpackPluginInstance } from 'webpack';
 import uwaziWebpackConfig from '../webpack/config.cjs';
 
@@ -10,7 +10,7 @@ const STORYBOOK_INCOMPATIBLE_PLUGINS = new Set([
   'RtlCssPlugin',
 ]);
 
-const config: StorybookConfig = {
+export default defineMain({
   framework: '@storybook/react-webpack5',
   stories: ['../app/react/stories/**/*.stories.tsx'],
   staticDirs: [
@@ -51,6 +51,4 @@ const config: StorybookConfig = {
       plugins: [...(storybookConfig.plugins ?? []), ...uwaziPlugins],
     };
   },
-};
-
-export default config;
+});

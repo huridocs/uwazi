@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import type { Meta, StoryObj } from '@storybook/react-webpack5';
+import preview from '#storybook/preview';
 import { MemoryRouter } from 'react-router';
 import { Provider as ReduxProvider } from 'react-redux';
 import { createStore, Provider } from 'jotai';
@@ -112,7 +112,7 @@ const ThemePickerWithPreview = ({
   );
 };
 
-const meta: Meta<typeof ThemePickerWithPreview> = {
+const meta = preview.meta({
   title: 'Settings/ThemePicker',
   component: ThemePickerWithPreview,
   args: { themeCustomization: true, themeMode: 'light', themePreset: 'default' },
@@ -134,16 +134,12 @@ const meta: Meta<typeof ThemePickerWithPreview> = {
       </MemoryRouter>
     ),
   ],
-};
+});
 
-type Story = StoryObj<typeof ThemePickerWithPreview>;
+export const NamedThemesAndPalette = meta.story({
+  args: { themeCustomization: true, themeMode: 'light', themePreset: 'default' },
+});
 
-export const NamedThemesAndPalette: Story = {
-  args: { themeCustomization: true },
-};
-
-export const FlagOff: Story = {
-  args: { themeCustomization: false },
-};
-
-export default meta;
+export const FlagOff = meta.story({
+  args: { themeCustomization: false, themeMode: 'light', themePreset: 'default' },
+});

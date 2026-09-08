@@ -88,9 +88,8 @@ describe('RelationshipsDisplay WithPanel', () => {
     it('marks the selected reference on the rail when clicked from a cluster', () => {
       openMainCluster();
       clickPerson1InMainCluster();
-      cy.get('[data-testid="relationships-rail"] [data-marker-id]')
-        .filter(':contains("Person 1")')
-        .first()
+      cy.get('[data-testid="cluster-subtree"]')
+        .contains('[data-testid="rail-marker"]', 'Person 1')
         .find('[data-testid="rail-marker-dot"]')
         .should('have.css', 'width', '12px');
     });
@@ -105,7 +104,7 @@ describe('RelationshipsDisplay WithPanel', () => {
       openMainCluster();
       clickPerson1InMainCluster();
       openMainCluster();
-      cy.contains('From selection').should('not.exist');
+      cy.get('[aria-label="Clear selection filter"]').should('not.exist');
       cy.get('[data-testid="cluster-subtree"]').should('not.exist');
     });
 

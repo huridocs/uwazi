@@ -1,5 +1,6 @@
 import React from 'react';
-import { Meta, StoryObj } from '@storybook/react-webpack5';
+import preview from '#storybook/preview';
+import { storyExtend } from '#app/stories/storyExtend.js';
 import { createStore, Provider } from 'jotai';
 import { TemplateLabel } from '#V2/Components/Metadata/Components/index.js';
 import { templatesAtom } from '#V2/atoms/index.js';
@@ -40,14 +41,12 @@ const templates = [
 const store = createStore();
 store.set(templatesAtom, templates);
 
-const meta: Meta<typeof TemplateLabel> = {
+const meta = preview.meta({
   title: 'EntityViewer/TemplateLabel',
   component: TemplateLabel,
-};
+});
 
-type Story = StoryObj<typeof TemplateLabel>;
-
-const Primary: Story = {
+const Primary = meta.story({
   render: args => (
     <div className="tw-content">
       <Provider store={store}>
@@ -55,49 +54,41 @@ const Primary: Story = {
       </Provider>
     </div>
   ),
-};
+});
 
-const Basic: Story = {
-  ...Primary,
+const Basic = storyExtend(Primary, {
   args: {
     templateId: 'template-case',
   },
-};
+});
 
-const LightBlue: Story = {
-  ...Primary,
+const LightBlue = storyExtend(Primary, {
   args: {
     templateId: 'template-light-blue',
   },
-};
+});
 
-const Red: Story = {
-  ...Primary,
+const Red = storyExtend(Primary, {
   args: {
     templateId: 'template-red',
   },
-};
+});
 
-const Purple: Story = {
-  ...Primary,
+const Purple = storyExtend(Primary, {
   args: {
     templateId: 'template-purple',
   },
-};
+});
 
-const Dark: Story = {
-  ...Primary,
+const Dark = storyExtend(Primary, {
   args: {
     templateId: 'template-dark',
   },
-};
+});
 
-const Green: Story = {
-  ...Primary,
+const Green = storyExtend(Primary, {
   args: {
     templateId: 'template-green',
   },
-};
-
-export default meta;
+});
 export { Basic, LightBlue, Red, Purple, Dark, Green };

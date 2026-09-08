@@ -1,15 +1,13 @@
 import React, { useState } from 'react';
-import { Meta, StoryObj } from '@storybook/react-webpack5';
+import preview from '#storybook/preview';
+import { storyExtend } from '#app/stories/storyExtend.js';
 import { action } from 'storybook/actions';
 import { InputColorPicker } from '#V2/Components/Forms/index.js';
 
-const meta: Meta<typeof InputColorPicker> = {
+const meta = preview.meta({
   title: 'Forms/InputColorPicker',
   component: InputColorPicker,
-};
-export default meta;
-
-type Story = StoryObj<typeof InputColorPicker>;
+});
 
 const InteractiveWrapper = ({
   initialValue = '#C03B22',
@@ -36,7 +34,11 @@ const InteractiveWrapper = ({
   );
 };
 
-const Primary: Story = {
+const Primary = meta.story({
+  args: {
+    value: '#C03B22',
+    disabled: false,
+  },
   render: args => (
     <div className="tw-content p-4">
       <InteractiveWrapper
@@ -46,32 +48,29 @@ const Primary: Story = {
       />
     </div>
   ),
-};
+});
 
-const Basic: Story = {
-  ...Primary,
+const Basic = storyExtend(Primary, {
   args: {
     value: '#C03B22',
     disabled: false,
   },
-};
+});
 
-const WithLabel: Story = {
-  ...Primary,
+const WithLabel = storyExtend(Primary, {
   args: {
     value: '#359990',
     label: 'Background',
     disabled: false,
   },
-};
+});
 
-const Disabled: Story = {
-  ...Primary,
+const Disabled = storyExtend(Primary, {
   args: {
     value: '#3F51B5',
     label: 'Foreground',
     disabled: true,
   },
-};
+});
 
 export { Basic, WithLabel, Disabled };

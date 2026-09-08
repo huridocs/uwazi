@@ -6,6 +6,7 @@ import { t } from '#app/I18N/index.js';
 
 import { CejilChart } from './CejilChart.js';
 import parsingUtils from '../utils/parsingUtils.js';
+
 const casesTemplate = '58b2f3a35d59f31e1345b48a';
 const provisionalMeasuresTemplate = '58b2f3a35d59f31e1345b4a4';
 const countryKey = 'pa_s';

@@ -410,48 +410,30 @@ export const mergeUnionBuckets = (
 
 export const normalizeMetricCount = (params: {
   counts: number[];
-  sourceIds: string[];
   sourceLabels: string[];
   sourceLocalizedLabels?: LocalizedLabels[];
   datavizId: string;
   queryDurationMs: number;
 }): DatavizDataDTO => {
-  const { counts, sourceIds, sourceLabels, sourceLocalizedLabels, datavizId, queryDurationMs } =
-    params;
+  const { counts, sourceLabels, sourceLocalizedLabels, datavizId, queryDurationMs } = params;
 
-  const joinType = counts.length > 1 ? 'compare' : 'single';
   const totalEntities = counts.reduce((sum, count) => sum + count, 0);
+  const isMultiSource = counts.length > 1;
+  const value = isMultiSource ? totalEntities : (counts[0] ?? 0);
 
-  if (joinType === 'single') {
-    const value = counts[0] ?? 0;
-    return {
-      datavizId,
-      generatedAt: new Date().toISOString(),
-      stale: false,
-      meta: { totalEntities: value, truncated: false, queryDurationMs },
-      series: [
-        {
-          id: 'total',
-          label: sourceLabels[0] ?? 'Total',
-          labels: sourceLocalizedLabels?.[0],
-          points: [{ key: 'total', label: 'Total', value }],
-        },
-      ],
-    };
-  }
-
-  const series: DataSeries[] = counts.map((count, index) => ({
-    id: sourceIds[index] ?? `series-${index}`,
-    label: sourceLabels[index] ?? `Series ${index + 1}`,
-    labels: sourceLocalizedLabels?.[index],
-    points: [{ key: 'total', label: 'Total', value: count }],
-  }));
-
+  // Metric can only display one number — multiple sources are always combined.
   return {
     datavizId,
     generatedAt: new Date().toISOString(),
     stale: false,
-    meta: { totalEntities, truncated: false, queryDurationMs },
-    series,
+    meta: { totalEntities: value, truncated: false, queryDurationMs },
+    series: [
+      {
+        id: isMultiSource ? 'union' : 'total',
+        label: isMultiSource ? 'Union' : (sourceLabels[0] ?? 'Total'),
+        labels: isMultiSource ? undefined : sourceLocalizedLabels?.[0],
+        points: [{ key: 'total', label: 'Total', value }],
+      },
+    ],
   };
 };

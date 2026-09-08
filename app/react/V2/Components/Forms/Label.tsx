@@ -18,7 +18,7 @@ const renderChild = (child: string | React.ReactNode) =>
   isString(child) ? <Translate>{child}</Translate> : child;
 
 const variantClass: Record<LabelVariant, string> = {
-  primary: 'block text-sm font-bold',
+  primary: 'block text-sm font-normal',
   secondary: 'block text-xs',
 };
 

@@ -1,3 +1,4 @@
+import { errors as elasticErrors } from '@elastic/elasticsearch';
 import { ValidationError } from '#api/common.v2/validation/ValidationError.js';
 import { EntitiesQueryServiceFactory } from '#api/core/infrastructure/factories/EntitiesQueryServiceFactory.js';
 import { elastic } from '#api/search/index.js';
@@ -1532,6 +1533,28 @@ describe('search', () => {
       expect(aggregationKeys).not.toContain('relationship');
       expect(aggregationKeys).not.toContain('date');
       expect(aggregationKeys).not.toContain('text');
+    });
+  });
+
+  describe('when elastic.search rejects with a 429 (search thread pool rejection)', () => {
+    it('should rethrow the original ResponseError instead of wrapping it as a 400', async () => {
+      const rejection = new elasticErrors.ResponseError({
+        statusCode: 429,
+        body: {
+          error: {
+            type: 'search_phase_execution_exception',
+            root_cause: [
+              { type: 'es_rejected_execution_exception', reason: 'rejected execution of search' },
+            ],
+          },
+        },
+      });
+
+      mocks.elasticSearch = jest
+        .spyOn(elastic, 'search')
+        .mockImplementationOnce(async () => Promise.reject(rejection));
+
+      await expect(searchEntities({ searchTerm: 'Batman' }, 'en')).rejects.toBe(rejection);
     });
   });
 

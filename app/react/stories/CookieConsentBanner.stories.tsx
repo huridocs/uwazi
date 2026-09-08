@@ -1,11 +1,11 @@
 import React from 'react';
-import type { Meta, StoryObj } from '@storybook/react-webpack5';
+import preview from '#storybook/preview';
 import { fn } from 'storybook/test';
 import { action } from 'storybook/actions';
 import { CookieConsentBanner } from '#V2/Components/UI/CookieConsentBanner.js';
 import { ThemeProvider } from '#V2/theme/ThemeProvider.js';
 
-const meta: Meta<typeof CookieConsentBanner> = {
+const meta = preview.meta({
   title: 'Components/CookieConsentBanner',
   component: CookieConsentBanner,
   parameters: {
@@ -16,9 +16,7 @@ const meta: Meta<typeof CookieConsentBanner> = {
     onEssentialOnly: fn(),
     onRejectAll: fn(),
   },
-};
-
-type Story = StoryObj<typeof CookieConsentBanner>;
+});
 
 const PagePreview = ({
   onAcceptAll,
@@ -48,7 +46,7 @@ const PagePreview = ({
   </ThemeProvider>
 );
 
-const Default: Story = {
+const Default = meta.story({
   render: args => (
     <PagePreview
       onAcceptAll={args.onAcceptAll ?? action('accept-all')}
@@ -56,9 +54,9 @@ const Default: Story = {
       onRejectAll={args.onRejectAll ?? action('reject-all')}
     />
   ),
-};
+});
 
-const LegacyTheme: Story = {
+const LegacyTheme = meta.story({
   render: args => (
     <PagePreview
       legacyChrome
@@ -67,7 +65,6 @@ const LegacyTheme: Story = {
       onRejectAll={args.onRejectAll ?? action('reject-all')}
     />
   ),
-};
+});
 
 export { Default, LegacyTheme };
-export default meta;

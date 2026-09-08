@@ -1,11 +1,12 @@
 import React from 'react';
-import type { Meta, StoryObj } from '@storybook/react-webpack5';
+import preview from '#storybook/preview';
+import { storyExtend } from '#app/stories/storyExtend.js';
 import { fn } from 'storybook/test';
 import { action } from 'storybook/actions';
 import { ConfirmationModal } from '#V2/Components/UI/ConfirmationModal.js';
 import { Translate } from '#app/I18N/index.js';
 
-const meta: Meta<typeof ConfirmationModal> = {
+const meta = preview.meta({
   title: 'Components/Modal/ConfirmationModal',
   component: ConfirmationModal,
   args: { onAcceptClick: fn(), onCancelClick: fn() },
@@ -14,11 +15,9 @@ const meta: Meta<typeof ConfirmationModal> = {
       handles: ['change'],
     },
   },
-};
+});
 
-type Story = StoryObj<typeof ConfirmationModal>;
-
-const Primary: Story = {
+const Primary = meta.story({
   render: args => (
     <div className="tw-content">
       <div className="container w-10 h-10">
@@ -38,20 +37,18 @@ const Primary: Story = {
       </div>
     </div>
   ),
-};
+});
 
-const BasicConfirmation: Story = {
-  ...Primary,
+const BasicConfirmation = storyExtend(Primary, {
   args: {
     header: 'Delete Confirmation',
     body: 'Are you sure you want to delete this product?',
     onAcceptClick: action('accepted'),
     onCancelClick: action('canceled'),
   },
-};
+});
 
-const TextConfirmation: Story = {
-  ...Primary,
+const TextConfirmation = storyExtend(Primary, {
   args: {
     header: 'Delete Confirmation',
     body: 'Are you sure you want to delete this product?',
@@ -61,10 +58,9 @@ const TextConfirmation: Story = {
     onAcceptClick: action('accepted'),
     onCancelClick: action('canceled'),
   },
-};
+});
 
-const WarningConfirmation: Story = {
-  ...Primary,
+const WarningConfirmation = storyExtend(Primary, {
   args: {
     header: <Translate>Are you sure</Translate>,
     body: "You can't undo this action",
@@ -75,20 +71,18 @@ const WarningConfirmation: Story = {
     onAcceptClick: action('accepted'),
     onCancelClick: action('canceled'),
   },
-};
+});
 
-const PasswordConfirm: Story = {
-  ...Primary,
+const PasswordConfirm = storyExtend(Primary, {
   args: {
     header: 'Confirm action',
     usePassword: true,
     onAcceptClick: action('accepted'),
     onCancelClick: action('canceled'),
   },
-};
+});
 
-const DangerConfirmation: Story = {
-  ...Primary,
+const DangerConfirmation = storyExtend(Primary, {
   args: {
     header: 'Delete file?',
     body: "Removes this file. If it's the last translation in its document, the document is removed too.",
@@ -97,7 +91,7 @@ const DangerConfirmation: Story = {
     onAcceptClick: action('accepted'),
     onCancelClick: action('canceled'),
   },
-};
+});
 
 export {
   BasicConfirmation,
@@ -106,4 +100,3 @@ export {
   PasswordConfirm,
   DangerConfirmation,
 };
-export default meta;

@@ -1,10 +1,11 @@
 import React from 'react';
-import { Meta, StoryObj } from '@storybook/react-webpack5';
+import preview from '#storybook/preview';
+import { storyExtend } from '#app/stories/storyExtend.js';
 import { action } from 'storybook/actions';
 import { fn } from 'storybook/test';
 import { DateRangePicker } from '#V2/Components/Forms/index.js';
 
-const meta: Meta<typeof DateRangePicker> = {
+const meta = preview.meta({
   title: 'Forms/DateRangePicker',
   component: DateRangePicker,
   args: {
@@ -16,12 +17,19 @@ const meta: Meta<typeof DateRangePicker> = {
       handles: ['change'],
     },
   },
-};
-export default meta;
+});
 
-type Story = StoryObj<typeof DateRangePicker>;
-
-const Primary: Story = {
+const Primary = meta.story({
+  args: {
+    language: 'es',
+    labelToday: 'Hoy',
+    labelClear: 'Limpiar',
+    placeholderStart: 'Inicio',
+    placeholderEnd: 'Fin',
+    onFromDateSelected: fn(),
+    onToDateSelected: fn(),
+    onClear: fn(),
+  },
   render: args => (
     <div className="tw-container">
       <div className="mx-2">
@@ -41,10 +49,9 @@ const Primary: Story = {
       </div>
     </div>
   ),
-};
+});
 
-const Basic: Story = {
-  ...Primary,
+const Basic = storyExtend(Primary, {
   args: {
     language: 'es',
     labelToday: 'Hoy',
@@ -55,6 +62,6 @@ const Basic: Story = {
     onToDateSelected: action('to-changed'),
     onClear: action('cleared'),
   },
-};
+});
 
 export { Basic };

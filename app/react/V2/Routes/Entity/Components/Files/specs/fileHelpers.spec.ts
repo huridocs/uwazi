@@ -9,20 +9,20 @@ jest.mock('#app/I18N/index.js', () => ({
 }));
 
 describe('fileLanguageSelectOptions', () => {
-  it('labels languages in the UI locale and sorts by that label', () => {
+  it('labels languages with translated names and iso6391', () => {
     const options = fileLanguageSelectOptions('es');
     const spanish = options.find(option => option.value === 'spa');
     const english = options.find(option => option.value === 'eng');
-    const other = options[options.length - 1];
 
-    expect(spanish?.label).toBe('Español - ES');
-    expect(english?.label).toBe('Inglés - EN');
-    expect(other).toEqual({ key: 'other', value: 'other', label: 'other' });
+    expect(spanish).toMatchObject({ label: 'Español', iso6391: 'es' });
+    expect(english).toMatchObject({ label: 'Inglés', iso6391: 'en' });
+    expect(options[options.length - 1]).toEqual({ value: 'other', label: 'other' });
+  });
 
-    const labels = options
+  it('sorts language options by the UI-locale label', () => {
+    const labels = fileLanguageSelectOptions('es')
       .slice(0, -1)
-      .map(option => option.label)
-      .filter((label): label is string => typeof label === 'string');
+      .map(option => option.label);
     expect(labels).toEqual([...labels].sort((a, b) => a.localeCompare(b, 'es')));
   });
 });

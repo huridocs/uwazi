@@ -9,6 +9,7 @@ const PaneLayout = ({
   children,
   localStorageKey,
   defaultRatios,
+  minPaneRatios,
   className = '',
 }: PaneLayoutProps) => {
   const isMobile = useIsMobile();
@@ -22,6 +23,7 @@ const PaneLayout = ({
       localStorageKey={localStorageKey}
       className={className}
       defaultRatios={defaultRatios}
+      minPaneRatios={minPaneRatios}
     >
       {children}
     </PaneLayoutDesktop>

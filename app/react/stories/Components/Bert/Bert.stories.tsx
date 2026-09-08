@@ -1,6 +1,6 @@
 /* eslint-disable import/exports-last, import/no-default-export, no-empty-function, react/jsx-props-no-spreading, react/no-multi-comp */
 import React, { useMemo } from 'react';
-import type { Meta, StoryObj } from '@storybook/react-webpack5';
+import preview from '#storybook/preview';
 import { createStore, Provider } from 'jotai';
 import { AskBertButton } from '#V2/Components/AIAssistant/AskBertButton.js';
 import { BertHost } from '#V2/Components/AIAssistant/BertHost.js';
@@ -12,17 +12,13 @@ import {
 } from '#V2/Components/AIAssistant/mockBertData.js';
 import { settingsAtom } from '#V2/atoms/settingsAtom.js';
 
-const meta: Meta<typeof BertHost> = {
+const meta = preview.meta({
   title: 'Components/Bert',
   component: BertHost,
   parameters: {
     layout: 'fullscreen',
   },
-};
-
-export default meta;
-
-type Story = StoryObj<typeof BertHost>;
+});
 
 const DocumentBackdrop = ({ children }: { children: React.ReactNode }) => (
   <div className="tw-content relative min-h-[44rem] bg-vellum" data-storybook-theme-checks>
@@ -65,13 +61,13 @@ const MockModalStory = ({
   return <BertModal open onClose={() => {}} {...bertState} />;
 };
 
-const Basic: Story = {
+const Basic = meta.story({
   render: () => (
     <DocumentBackdrop>
       <MockModalStory />
     </DocumentBackdrop>
   ),
-};
+});
 
 const PlaygroundStory = () => {
   const store = useMemo(() => {
@@ -98,8 +94,8 @@ const PlaygroundStory = () => {
   );
 };
 
-const Playground: Story = {
+const Playground = meta.story({
   render: () => <PlaygroundStory />,
-};
+});
 
 export { Basic, Playground };

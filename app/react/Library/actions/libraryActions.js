@@ -392,10 +392,12 @@ function deleteEntity(entity) {
 }
 
 function loadMoreDocuments(amount, from, location, navigate) {
-  return (dispatch, getState) => {
-    const { search } = getState().library;
-    searchDocuments({ search, location, navigate }, amount, from)(dispatch, getState);
-  };
+  return async (dispatch, getState) =>
+    searchDocuments(
+      { search: getState().library.search, location, navigate },
+      amount,
+      from
+    )(dispatch, getState);
 }
 
 function getSuggestions() {

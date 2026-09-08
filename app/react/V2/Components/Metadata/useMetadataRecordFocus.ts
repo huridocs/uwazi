@@ -8,7 +8,11 @@ import {
 
 const useIsomorphicLayoutEffect = typeof document !== 'undefined' ? useLayoutEffect : useEffect;
 
-const useMetadataRecordFocus = (sharedId: string, rootRef: RefObject<HTMLDivElement | null>) => {
+const useMetadataRecordFocus = (
+  sharedId: string,
+  rootRef: RefObject<HTMLDivElement | null>,
+  layoutReady: boolean
+) => {
   const focusField = useAtomValue(focusMetadataFieldAtom);
   const clearFocus = useSetAtom(focusMetadataFieldAtom);
   const prevSharedIdRef = useRef(sharedId);
@@ -33,10 +37,10 @@ const useMetadataRecordFocus = (sharedId: string, rootRef: RefObject<HTMLDivElem
   );
 
   useIsomorphicLayoutEffect(() => {
-    if (!focusField) return undefined;
+    if (!focusField || !layoutReady) return undefined;
     let clearTimer: number | undefined;
     const cleanup = applyMetadataFieldFocus(
-      () => rootRef.current,
+      () => rootRef.current?.closest('[data-testid="entity-v2"]') ?? rootRef.current,
       focusField.fieldKey,
       () => {
         ownsFocusRef.current = true;
@@ -50,7 +54,7 @@ const useMetadataRecordFocus = (sharedId: string, rootRef: RefObject<HTMLDivElem
       cleanup();
       if (clearTimer !== undefined) window.clearTimeout(clearTimer);
     };
-  }, [focusField, clearFocus, rootRef]);
+  }, [focusField, clearFocus, rootRef, layoutReady]);
 };
 
 export { useMetadataRecordFocus };

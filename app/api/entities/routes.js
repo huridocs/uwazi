@@ -1,5 +1,6 @@
 /* eslint-disable max-lines */
 /* eslint-disable max-statements */
+import * as cookie from 'cookie';
 import activitylogMiddleware from '#api/activitylog/activitylogMiddleware.js';
 import { UploadMiddleware } from '#api/core/infrastructure/express/middlewares/UploadMiddleware.js';
 import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
@@ -79,7 +80,11 @@ export default app => {
       const entityToSave = req.body.entity ? JSON.parse(req.body.entity) : req.body;
 
       if (!entityToSave?.sharedId) {
-        const result = await EntityFacade.create(entityToSave, req.language, req.inputFiles);
+        const sessionId = cookie.parse(req.get('cookie') || '')['connect.sid'];
+        const result = await EntityFacade.create(entityToSave, req.language, {
+          inputFiles: req.inputFiles,
+          sessionId,
+        });
         const [entityInTargetLanguage] = await EntitiesDAOFactory.default({
           user: User.createFrom(req.user),
         }).find({ language: req.language, sharedId: result.sharedId }, { withFiles: true });

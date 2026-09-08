@@ -27,10 +27,17 @@ const TextField = <TFormValues extends FieldValues = FieldValues>({
   const { register, setValue, getFieldState, formState } = useFormContext<TFormValues>();
   const fieldState = getFieldState(field, formState);
   const { showError, message } = getFieldErrorState(fieldState);
+  const registration = register(field, registerOptions);
 
   return (
-    <EntityPdfFillField field={field} setValue={setValue} disabled={disabled} pdfFill={pdfFill}>
-      {overlay => (
+    <EntityPdfFillField
+      field={field}
+      setValue={setValue}
+      label={label}
+      disabled={disabled}
+      pdfFill={pdfFill}
+    >
+      {slot => (
         <InputField
           id={field}
           label={
@@ -43,9 +50,13 @@ const TextField = <TFormValues extends FieldValues = FieldValues>({
           disabled={disabled}
           hasErrors={showError}
           errorMessage={message}
-          overlay={overlay}
+          overlay={slot?.overlay}
+          labelAccessory={slot?.labelAccessory}
+          latched={slot?.latched}
+          onClick={slot?.onClick}
           // eslint-disable-next-line react/jsx-props-no-spreading
-          {...register(field, registerOptions)}
+          {...registration}
+          onFocus={() => slot?.onFocus()}
         />
       )}
     </EntityPdfFillField>

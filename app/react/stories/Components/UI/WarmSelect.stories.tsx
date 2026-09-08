@@ -1,14 +1,12 @@
 import React, { useState } from 'react';
-import { Meta, StoryObj } from '@storybook/react-webpack5';
+import preview from '#storybook/preview';
 import { WarmSelect } from '#V2/Components/UI/index.js';
 
-const meta: Meta<typeof WarmSelect> = {
+const meta = preview.meta({
   title: 'Design System/Shared/WarmSelect',
   component: WarmSelect,
   parameters: { layout: 'centered' },
-};
-
-type Story = StoryObj<typeof WarmSelect>;
+});
 
 const Demo = () => {
   const [value, setValue] = useState('all');
@@ -27,8 +25,6 @@ const Demo = () => {
   );
 };
 
-export const Default: Story = {
+export const Default = meta.story({
   render: () => <Demo />,
-};
-
-export default meta;
+});

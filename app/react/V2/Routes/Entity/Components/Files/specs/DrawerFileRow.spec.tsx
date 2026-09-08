@@ -27,8 +27,8 @@ jest.mock('../ViewFileButton', () => ({
   ),
 }));
 
-jest.mock('../FileLanguageSelect', () => ({
-  FileLanguageSelect: ({
+jest.mock('#V2/Components/UI/index.js', () => ({
+  LanguageSelect: ({
     value,
     onChange,
     'aria-label': ariaLabel,

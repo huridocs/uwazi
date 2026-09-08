@@ -1,7 +1,8 @@
 /* eslint-disable react/require-default-props */
-import React, { ChangeEventHandler, Ref } from 'react';
+import React, { ChangeEventHandler, FocusEventHandler, MouseEventHandler, Ref } from 'react';
 import { XMarkIcon } from '@heroicons/react/20/solid';
 import { Translate } from '#app/I18N/index.js';
+import { FieldLabelRow } from './FieldLabelRow.js';
 import { InputError } from './InputError.js';
 import { Label } from './Label.js';
 import type { LabelVariant } from './Label.js';
@@ -29,9 +30,13 @@ interface InputFieldProps {
   clearFieldAction?: () => void;
   icon?: React.ReactNode;
   overlay?: React.ReactNode;
+  labelAccessory?: React.ReactNode;
+  latched?: boolean;
   onChange?: ChangeEventHandler<HTMLInputElement>;
   onSelect?: ChangeEventHandler<HTMLInputElement>;
   onBlur?: ChangeEventHandler<HTMLInputElement>;
+  onFocus?: FocusEventHandler<HTMLInputElement>;
+  onClick?: MouseEventHandler<HTMLInputElement>;
   min?: string | number;
   max?: string | number;
   step?: string | number;
@@ -45,9 +50,14 @@ const searchReset =
 const inputBase =
   'w-full rounded-lg border border-border bg-paper px-3 py-2 text-sm font-normal text-ink placeholder:text-sm placeholder:font-normal placeholder:text-ink-muted focus:border-carbon/40 focus:outline-none focus:ring-2 focus:ring-carbon/20';
 
-const inputClass = (state: FieldState, ...extra: Array<string | false | undefined>) =>
+const inputClass = (
+  state: FieldState,
+  latched: boolean,
+  ...extra: Array<string | false | undefined>
+) =>
   cx(
     inputBase,
+    latched && 'border-carbon/40 ring-2 ring-carbon/20',
     state.hasError && 'border-emphasis bg-seal-tint text-seal',
     state.disabled && 'cursor-not-allowed bg-warm text-ink-muted',
     ...extra
@@ -81,9 +91,13 @@ const InputField = React.forwardRef(
       clearFieldAction,
       icon,
       overlay,
+      labelAccessory,
+      latched = false,
       onChange = noop,
       onSelect = noop,
       onBlur = noop,
+      onFocus = noop,
+      onClick = noop,
       min,
       max,
       step,
@@ -95,17 +109,21 @@ const InputField = React.forwardRef(
     const hasClearOrIcon = Boolean(clearFieldAction || icon);
     const showClearButton = Boolean(clearFieldAction) && (hasValue || !icon);
     const showIcon = icon && (!clearFieldAction || !hasValue);
-
     return (
       <div className={cx('flex flex-col gap-1.5', className)}>
-        <Label
-          htmlFor={id}
-          hideLabel={!label || hideLabel}
-          hasErrors={state.hasError}
-          variant={labelVariant}
-        >
-          {label}
-        </Label>
+        <FieldLabelRow
+          accessory={labelAccessory}
+          label={
+            <Label
+              htmlFor={id}
+              hideLabel={!label || hideLabel}
+              hasErrors={state.hasError}
+              variant={labelVariant}
+            >
+              {label}
+            </Label>
+          }
+        />
         <div className="relative flex w-full">
           {preText && <span className={preTextClass}>{preText}</span>}
           <input
@@ -115,12 +133,15 @@ const InputField = React.forwardRef(
             onSelect={onSelect}
             onChange={onChange}
             onBlur={onBlur}
+            onFocus={onFocus}
+            onClick={onClick}
             name={name}
             ref={ref}
             disabled={disabled}
             value={value}
             className={inputClass(
               state,
+              latched,
               hasClearOrIcon && 'pr-10',
               Boolean(preText) && 'rounded-none rounded-e-md',
               type === 'search' && searchReset

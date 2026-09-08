@@ -3,10 +3,9 @@ import 'cypress-axe';
 // @ts-ignore
 import { SinonSpy } from 'cypress/types/sinon';
 import { mount } from 'cypress/react';
-import { composeStories } from '@storybook/react';
 import * as stories from '#app/stories/Forms/FileDropzone.stories.js';
 
-const { Basic } = composeStories(stories);
+const { Basic } = stories;
 
 const files = [
   {
@@ -31,7 +30,8 @@ describe('File dropzone', () => {
 
   beforeEach(() => {
     onChangeSpy = cy.spy().as('onChangeSpy');
-    mount(<Basic onChange={onChangeSpy} />);
+    Basic.composed.args.onChange = onChangeSpy;
+    mount(<Basic.Component />);
     cy.get('input[type=file]').selectFile(files, { force: true });
   });
 

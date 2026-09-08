@@ -1,7 +1,19 @@
 import {
   formatLanguageLabelFromCode,
+  formatLanguageName,
   formatLanguageOptionLabel,
 } from '../language/formatLanguageOptionLabel.js';
+
+describe('formatLanguageName', () => {
+  it('returns the translated language name only', () => {
+    expect(formatLanguageName('es', 'en')).toBe('Spanish');
+    expect(formatLanguageName('es', 'es')).toBe('Español');
+  });
+
+  it('falls back to English names when the UI locale is missing', () => {
+    expect(formatLanguageName('en', '')).toBe('English');
+  });
+});
 
 describe('formatLanguageOptionLabel', () => {
   it('formats the language name in the UI locale with its ISO code', () => {
@@ -12,10 +24,12 @@ describe('formatLanguageOptionLabel', () => {
   it('falls back to English names when the UI locale is missing', () => {
     expect(formatLanguageOptionLabel('en', '')).toBe('English - EN');
   });
+});
 
-  it('accepts ISO 639-1 or 639-3 codes', () => {
-    expect(formatLanguageLabelFromCode('spa', 'es')).toBe('Español - ES');
-    expect(formatLanguageLabelFromCode('es', 'en')).toBe('Spanish - ES');
+describe('formatLanguageLabelFromCode', () => {
+  it('returns the translated name only for ISO 639-1 or 639-3 codes', () => {
+    expect(formatLanguageLabelFromCode('spa', 'es')).toBe('Español');
+    expect(formatLanguageLabelFromCode('es', 'en')).toBe('Spanish');
     expect(formatLanguageLabelFromCode(undefined, 'en')).toBe('—');
   });
 });

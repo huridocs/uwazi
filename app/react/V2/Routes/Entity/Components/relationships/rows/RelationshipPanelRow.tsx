@@ -8,7 +8,7 @@ import {
   type RelationshipMarker,
 } from '#V2/Components/Relationships/types.js';
 import { DirectionGlyph } from './DirectionGlyph.js';
-import { TemplatePill } from '#V2/Components/UI/TemplatePill.js';
+import { EntityTemplateLink } from './EntityTemplateLink.js';
 import { RelationshipRow } from '../rows/RelationshipRow.js';
 import { CollapsibleRelationshipRow } from './CollapsibleRelationshipRow.js';
 import { useRelationshipRowVisibility } from '../hooks/useRelationshipRowVisibility.js';
@@ -18,7 +18,6 @@ type RelationshipPanelRowHandlers = {
   selfSharedId: string;
   activeRelationshipId?: string;
   onClick: (marker: RelationshipMarker) => void;
-  onView: (marker: RelationshipMarker) => void;
   onDelete?: (marker: RelationshipMarker, relationshipIds?: string[]) => void;
 };
 
@@ -76,7 +75,6 @@ const renderNestedRows = (
           representedIds={representedIds}
           representedCount={representedMarkers.length}
           onClick={() => handlers.onClick(marker)}
-          onView={() => handlers.onView(marker)}
           onDelete={
             handlers.onDelete ? () => handlers.onDelete?.(marker, representedIds) : undefined
           }
@@ -86,63 +84,61 @@ const renderNestedRows = (
   });
 };
 
-const RelationshipPanelRowComponent = ({
+const renderAggregateRow = ({
   entry,
   groupContext,
-  ...handlers
-}: RelationshipPanelRowProps) => {
-  const { hideTargetPill, hideRelationType } = useRelationshipRowVisibility();
+  handlers,
+  hideTargetPill,
+  hideRelationType,
+}: {
+  entry: Extract<PanelListEntry, { kind: 'aggregate' }>;
+  groupContext: GroupLabelContext;
+  handlers: RelationshipPanelRowHandlers;
+  hideTargetPill: boolean;
+  hideRelationType: boolean;
+}) => {
+  const { aggregate, markers } = entry;
+  const relationshipTypeName = groupContext.relationshipTypeName(aggregate.relationType);
+  const glyphDirection =
+    aggregate.directions.length > 1 ? 'both' : (aggregate.directions[0] ?? 'outgoing');
+  return (
+    <CollapsibleRelationshipRow
+      checkboxIds={aggregate.markerIds}
+      evidenceCount={nestedEvidenceCount(markers)}
+      glyphDirection={glyphDirection}
+      relationshipTypeName={hideRelationType ? undefined : relationshipTypeName}
+      targetTemplateId={aggregate.targetTemplateId}
+      entityTitle={hideTargetPill ? undefined : aggregate.targetTitle}
+      targetSharedId={aggregate.targetSharedId}
+      templateName={groupContext.templateName(aggregate.targetTemplateId)}
+      header={null}
+      meta={
+        !hideRelationType && relationshipTypeName ? (
+          <>
+            <DirectionGlyph direction={glyphDirection} />
+            <span className="capitalize">{relationshipTypeName}</span>
+          </>
+        ) : undefined
+      }
+    >
+      {renderNestedRows(markers, handlers, groupContext)}
+    </CollapsibleRelationshipRow>
+  );
+};
 
-  if (entry.kind === 'reference') {
-    return (
-      <RelationshipRow
-        marker={entry.marker}
-        selfSharedId={handlers.selfSharedId}
-        relationshipTypeName={groupContext.relationshipTypeName(entry.marker.relationship.type)}
-        isSelected={handlers.activeRelationshipId === entry.marker._id}
-        onClick={() => handlers.onClick(entry.marker)}
-        onView={() => handlers.onView(entry.marker)}
-        onDelete={handlers.onDelete ? () => handlers.onDelete?.(entry.marker) : undefined}
-      />
-    );
-  }
-
-  if (entry.kind === 'aggregate') {
-    const { aggregate, markers } = entry;
-    const relationshipTypeName = groupContext.relationshipTypeName(aggregate.relationType);
-    const glyphDirection =
-      aggregate.directions.length > 1 ? 'both' : (aggregate.directions[0] ?? 'outgoing');
-
-    const soleMarker = markers.length === 1 ? markers[0] : undefined;
-
-    return (
-      <CollapsibleRelationshipRow
-        checkboxIds={aggregate.markerIds}
-        evidenceCount={nestedEvidenceCount(markers)}
-        glyphDirection={glyphDirection}
-        relationshipTypeName={hideRelationType ? undefined : relationshipTypeName}
-        targetTemplateId={aggregate.targetTemplateId}
-        entityTitle={hideTargetPill ? undefined : aggregate.targetTitle}
-        templateName={groupContext.templateName(aggregate.targetTemplateId)}
-        onHeaderClick={soleMarker ? () => handlers.onClick(soleMarker) : undefined}
-        header={null}
-        meta={
-          !hideRelationType && relationshipTypeName ? (
-            <>
-              <DirectionGlyph direction={glyphDirection} />
-              <span className="capitalize">{relationshipTypeName}</span>
-            </>
-          ) : undefined
-        }
-      >
-        {renderNestedRows(markers, handlers, groupContext)}
-      </CollapsibleRelationshipRow>
-    );
-  }
-
+const renderHubRow = ({
+  entry,
+  groupContext,
+  handlers,
+  hideRelationType,
+}: {
+  entry: Extract<PanelListEntry, { kind: 'hub' }>;
+  groupContext: GroupLabelContext;
+  handlers: RelationshipPanelRowHandlers;
+  hideRelationType: boolean;
+}) => {
   const { hub, markers } = entry;
   const relationshipTypeName = groupContext.relationshipTypeName(hub.relationType);
-
   return (
     <CollapsibleRelationshipRow
       checkboxIds={hub.markerIds}
@@ -154,8 +150,9 @@ const RelationshipPanelRowComponent = ({
       header={
         <>
           {hub.members.map(member => (
-            <TemplatePill
+            <EntityTemplateLink
               key={member.sharedId}
+              sharedId={member.sharedId}
               templateId={member.templateId}
               label={member.title}
             />
@@ -181,6 +178,39 @@ const RelationshipPanelRowComponent = ({
       {renderNestedRows(markers, handlers, groupContext)}
     </CollapsibleRelationshipRow>
   );
+};
+
+const RelationshipPanelRowComponent = ({
+  entry,
+  groupContext,
+  ...handlers
+}: RelationshipPanelRowProps) => {
+  const { hideTargetPill, hideRelationType } = useRelationshipRowVisibility();
+
+  if (entry.kind === 'reference') {
+    return (
+      <RelationshipRow
+        marker={entry.marker}
+        selfSharedId={handlers.selfSharedId}
+        relationshipTypeName={groupContext.relationshipTypeName(entry.marker.relationship.type)}
+        isSelected={handlers.activeRelationshipId === entry.marker._id}
+        onClick={() => handlers.onClick(entry.marker)}
+        onDelete={handlers.onDelete ? () => handlers.onDelete?.(entry.marker) : undefined}
+      />
+    );
+  }
+
+  if (entry.kind === 'aggregate') {
+    return renderAggregateRow({
+      entry,
+      groupContext,
+      handlers,
+      hideTargetPill,
+      hideRelationType,
+    });
+  }
+
+  return renderHubRow({ entry, groupContext, handlers, hideRelationType });
 };
 
 const RelationshipPanelRow = React.memo(RelationshipPanelRowComponent);

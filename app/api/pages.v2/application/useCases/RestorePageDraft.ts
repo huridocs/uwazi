@@ -21,22 +21,13 @@ type Deps = {
 
 class RestorePageDraftUseCase extends AbstractUseCase<Input, Output, Deps> {
   async execute(input: Input): Promise<Output> {
-    const pageResult = await this.deps.pagesDS.getBySharedId(input.sharedId);
-    if (pageResult.isError()) {
-      throw pageResult.getError();
-    }
-
-    const page = pageResult.getDataOrThrow();
-    const releaseResult = await this.deps.pageReleasesDS.getByPageIdAndVersion(
-      page.id,
-      input.version
-    );
-    if (releaseResult.isError()) {
-      throw releaseResult.getError();
-    }
+    const page = (await this.deps.pagesDS.getBySharedId(input.sharedId)).getDataOrThrow();
+    const release = (
+      await this.deps.pageReleasesDS.getByPageIdAndVersion(page.id, input.version)
+    ).getDataOrThrow();
 
     const installedKeys = await this.deps.settingsDS.getLanguageKeys();
-    page.applyReleaseToDraft(releaseResult.getDataOrThrow(), installedKeys);
+    page.applyReleaseToDraft(release, installedKeys);
 
     await this.transactionManager.run(async () => {
       await this.deps.pagesDS.update(page);

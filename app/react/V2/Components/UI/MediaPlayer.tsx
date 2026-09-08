@@ -76,9 +76,19 @@ const MediaPlayer = ({
     mediaType === 'internal' ? <ThumbnailOverlay thumbnail={thumbnail} /> : false;
 
   useEffect(() => {
-    if (containerRef.current?.clientHeight) {
-      setPlayerHeight(containerRef.current.clientHeight);
+    const node = containerRef.current;
+    if (!node) {
+      return undefined;
     }
+
+    const updateHeight = () => {
+      setPlayerHeight(node.clientHeight);
+    };
+
+    updateHeight();
+    const observer = new ResizeObserver(updateHeight);
+    observer.observe(node);
+    return () => observer.disconnect();
   }, []);
 
   return (
@@ -86,6 +96,7 @@ const MediaPlayer = ({
       style={{ width: width || '100%', height: height || '100%' }}
       className={`relative ${className ?? ''}`}
       ref={containerRef}
+      data-testid="media-player-container"
     >
       {mediaType === 'invalid' && (
         <div className="flex absolute top-0 left-0 justify-center items-center p-4 w-full h-full bg-gray-50 rounded-sm border">
@@ -109,7 +120,10 @@ const MediaPlayer = ({
             facebook: { attributes: { 'data-height': playerHeight } },
           }}
           playIcon={
-            <PlayIcon className={`absolute w-1/5 min-w-[20px] max-w-[120px] ${playIconColor}`} />
+            <PlayIcon
+              className={`absolute w-1/5 min-w-5 max-w-30 ${playIconColor}`}
+              aria-label="Play video"
+            />
           }
           onClickPreview={() => !playing && setPlaying(true)}
           // eslint-disable-next-line react/jsx-props-no-spreading

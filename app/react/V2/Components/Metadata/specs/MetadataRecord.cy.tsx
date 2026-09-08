@@ -1,32 +1,52 @@
 import React from 'react';
 import 'cypress-axe';
 import { mount } from 'cypress/react';
-import { composeStories } from '@storybook/react';
 import * as stories from '#app/stories/EntityViewer/Metadata.stories.js';
 
-describe('Metadata Record', () => {
-  const { Basic } = composeStories(stories);
+const inheritingRelationshipCard = (label: string) =>
+  cy.contains(label).parents('.rounded-lg.border-border-40').first();
+
+const assertInheritedTableScroll = (card: Cypress.Chainable<JQuery<HTMLElement>>) => {
+  card.within(() => {
+    cy.get('.overflow-x-auto').should('exist').and('not.have.class', 'max-h-60');
+    cy.get('table').should('have.class', 'w-max').and('have.class', 'min-w-full');
+  });
+};
+
+const compactField = (name: string) =>
+  cy.get(`[data-field-key="${name}"]`).should('have.class', 'flex-1');
+
+const fullRowField = (name: string) =>
+  cy.get(`[data-field-key="${name}"]`).should('have.class', 'basis-full');
+
+// eslint-disable-next-line max-statements
+describe('MetadataDisplay', () => {
+  const { Basic } = stories;
 
   describe('General', () => {
     beforeEach(() => {
-      mount(<Basic showGeolocationProperties={false} />);
+      mount(<Basic.Component showGeolocationProperties={false} />);
     });
 
-    it('shows creation and edit dates in Details', () => {
+    it('shows created and edited dates as a footer line', () => {
       cy.get('[data-testid="metadata-record"]').should('exist');
-      cy.contains('th', 'Creation Date').should('exist');
-      cy.contains('th', 'Edit Date').should('exist');
+      cy.get('[data-testid="entity-system-dates"]').should(
+        'contain',
+        'Created Oct 2, 2025 · Edited Oct 13, 2025'
+      );
     });
 
-    it('shows simple text in Details', () => {
-      cy.contains('th', 'A basic simple text').should('exist');
-      cy.contains('td', 'Emergency incident report from downtown area').should('exist');
+    it('shows simple text as a compact card', () => {
+      cy.contains('h2', 'A basic simple text').should('exist');
+      cy.contains('Emergency incident report from downtown area').should('exist');
+      compactField('simple_text');
     });
 
     it('shows markdown field with link', () => {
       cy.contains('Markdown field using sanitized HTML tags').should('exist');
       cy.contains('This Markdown field includes').should('exist');
       cy.get('a[href="https://example.com"]').should('have.attr', 'target', '_blank');
+      fullRowField('markdown_html');
     });
 
     it('shows markdown bold and italic', () => {
@@ -36,35 +56,53 @@ describe('Metadata Record', () => {
     });
 
     it('shows select and multiselect labels', () => {
-      cy.contains('th', 'Single select').should('exist');
-      cy.contains('th', 'Multiple selector').should('exist');
+      cy.contains('h2', 'Single select').should('exist');
+      cy.contains('h2', 'Multiple selector').should('exist');
       cy.contains('span', 'Again').should('exist');
       cy.contains('span', 'Acknowledging').should('exist');
       cy.contains('span', 'Grouped verbs › verb1').should('exist');
+      compactField('status_selection');
     });
 
-    it('shows relationship links under Relationships', () => {
-      cy.contains('Relationships').should('exist');
-      cy.contains('Relationship with inheritance').should('exist');
-      cy.contains('via').should('exist');
-      cy.contains('inherits').should('exist');
+    it('shows link-only connections as masonry cards', () => {
+      cy.contains('h2', 'Regular relationship with no inheritance').should('exist');
       cy.contains('a', 'Traffic Accident - Main Street')
         .should('have.attr', 'href', '/entityv2/entity4')
         .should('have.attr', 'target', '_blank');
       cy.contains('This value should not display').should('not.have.attr', 'href');
     });
 
-    it('shows external link in Details', () => {
-      cy.contains('th', 'External link').should('exist');
-      cy.contains('td', 'Police Report')
-        .find('a')
+    it('shows inheriting connections as scrollable tables in property order', () => {
+      cy.contains('p', 'Relationships').should('not.exist');
+
+      const multiselectInherit = inheritingRelationshipCard('Relationship with inheritance');
+      multiselectInherit.within(() => {
+        cy.contains('via').should('exist');
+        cy.contains('inherits Multiselect from events').should('exist');
+        cy.contains('th', 'Entity').should('exist');
+        cy.contains('th', 'Multiselect from events').should('exist');
+        cy.contains('Maria Rodriguez - Witness').should('exist');
+        cy.contains('Again').should('exist');
+        cy.contains('Acknowledging').should('exist');
+      });
+      assertInheritedTableScroll(multiselectInherit);
+
+      cy.contains('Grouped geolocation 3 (inherited)').should('not.exist');
+    });
+
+    it('shows external link as a masonry card', () => {
+      cy.contains('h2', 'External link').should('exist');
+      cy.contains('Police Report')
+        .closest('a')
         .should('have.attr', 'href', 'https://police.gov/reports/incident-2024-001')
         .should('have.attr', 'target', '_blank');
+      compactField('external_link');
     });
 
     it('shows media image without Document', () => {
       cy.contains('Document').should('not.exist');
-      cy.get('img[src="/batman.jpg"]').should('exist');
+      cy.get('img[src="/batman.jpg"]').should('not.exist');
+      cy.get('[data-field-key="preview_document"]').should('not.exist');
 
       cy.contains('Media with an image').should('exist');
       cy.get('img[alt="/short-video-thumbnail.jpg"]').should(
@@ -72,6 +110,15 @@ describe('Metadata Record', () => {
         'src',
         '/short-video-thumbnail.jpg'
       );
+      compactField('selected_image');
+      compactField('video_of_event');
+      cy.get('[data-field-key="selected_image"] .aspect-video').should('exist');
+      cy.get('[data-field-key="video_of_event"] .aspect-video').should('exist');
+      cy.get('[data-field-key="selected_image"]')
+        .closest('[data-property-row]')
+        .invoke('attr', 'data-property-row')
+        .should('include', 'selected_image')
+        .and('include', 'video_of_event');
     });
 
     it('shows media timelinks', () => {
@@ -81,34 +128,53 @@ describe('Metadata Record', () => {
     });
   });
 
+  describe('Grouped geolocation', () => {
+    it('shows adjacent inherited geolocation on the grouped map', () => {
+      mount(<Basic.Component showGeolocationProperties />);
+
+      cy.contains('Grouped geolocation properties').should('exist');
+      cy.contains('Grouped geolocation 3 (inherited)').should('not.exist');
+      cy.get('[data-testid="map-container"]').should('exist');
+    });
+  });
+
   describe('accessibility', () => {
     it('should be accessible', () => {
-      cy.injectAxe();
-      mount(<Basic showGeolocationProperties={false} />);
-      cy.checkA11y(undefined, {
-        rules: {
-          'color-contrast': { enabled: false },
-          'heading-order': { enabled: false },
-          dlitem: { enabled: false },
-          'definition-list': { enabled: false },
-        },
+      cy.on('uncaught:exception', err => {
+        if (err.message.includes('_leaflet_pos')) {
+          return false;
+        }
+        return true;
       });
+      mount(<Basic.Component showGeolocationProperties={false} />);
+      cy.injectAxe();
+      cy.checkA11y(
+        { exclude: ['.leaflet-container'] },
+        {
+          rules: {
+            'color-contrast': { enabled: false },
+            'heading-order': { enabled: false },
+            dlitem: { enabled: false },
+            'definition-list': { enabled: false },
+          },
+        }
+      );
     });
   });
 
   describe('dates', () => {
     it('shows dates in English locale', () => {
-      mount(<Basic showGeolocationProperties={false} locale="en" />);
+      mount(<Basic.Component showGeolocationProperties={false} locale="en" />);
 
-      cy.contains('td', 'Jan 1, 2024').should('exist');
-      cy.contains('td', 'From Jan 1, 2024 ~ To Jan 2, 2024').should('exist');
+      cy.contains('Jan 1, 2024').should('exist');
+      cy.contains('From Jan 1, 2024 ~ To Jan 2, 2024').should('exist');
     });
 
     it('shows dates in Russian locale', () => {
-      mount(<Basic showGeolocationProperties={false} locale="ru" />);
+      mount(<Basic.Component showGeolocationProperties={false} locale="ru" />);
 
-      cy.contains('td', '1 янв. 2024').should('exist');
-      cy.contains('td', 'From 1 янв. 2024 г. ~ To 2 янв. 2024 г.').should('exist');
+      cy.contains('1 янв. 2024').should('exist');
+      cy.contains('From 1 янв. 2024 г. ~ To 2 янв. 2024 г.').should('exist');
     });
   });
 
@@ -140,26 +206,33 @@ describe('Metadata Record', () => {
     };
 
     const checkProperties = () => {
-      cy.contains('td', 'Oct 2, 2025');
-      cy.contains('td', 'Oct 13, 2025');
+      cy.get('[data-testid="entity-system-dates"]').should(
+        'contain',
+        'Created Oct 2, 2025 · Edited Oct 13, 2025'
+      );
 
-      cy.contains('th', 'A basic simple text').should('not.exist');
-      cy.contains('th', 'Single Date').should('not.exist');
+      cy.contains('h2', 'A basic simple text').should('not.exist');
+      cy.contains('h2', 'Single Date').should('not.exist');
       cy.contains('Markdown field using sanitized HTML tags').should('not.exist');
       cy.contains('Media with an image').should('not.exist');
       cy.contains('Grouped geolocation 1').should('not.exist');
-      cy.contains('th', 'External link').should('not.exist');
-      cy.contains('th', 'Single select').should('not.exist');
+      cy.contains('h2', 'External link').should('not.exist');
+      cy.contains('h2', 'Single select').should('not.exist');
       cy.contains('Relationship with inheritance').should('not.exist');
     };
 
     it('hides empty metadata fields', () => {
-      mount(<Basic showGeolocationProperties={false} locale="en" entity={emptyEntity} />);
+      mount(<Basic.Component showGeolocationProperties={false} locale="en" entity={emptyEntity} />);
       checkProperties();
     });
 
     it('hides missing metadata fields', () => {
-      mount(<Basic showGeolocationProperties={false} entity={{ ...emptyEntity, metadata: {} }} />);
+      mount(
+        <Basic.Component
+          showGeolocationProperties={false}
+          entity={{ ...emptyEntity, metadata: {} }}
+        />
+      );
       checkProperties();
     });
   });

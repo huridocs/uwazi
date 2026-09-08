@@ -42,8 +42,7 @@ class Confirm extends Component {
       const actionResponse = this.props.accept();
       if (actionResponse && actionResponse instanceof Promise) {
         this.setState({ isLoading: true });
-        actionResponse.then(this.close);
-        actionResponse.catch(this.close);
+        void actionResponse.then(this.close).catch(this.close);
         return;
       }
     }

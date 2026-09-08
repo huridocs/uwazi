@@ -1,10 +1,11 @@
 import React from 'react';
-import { Meta, StoryObj } from '@storybook/react-webpack5';
+import preview from '#storybook/preview';
+import { storyExtend } from '#app/stories/storyExtend.js';
 import { action } from 'storybook/actions';
 import { fn } from 'storybook/test';
 import { ColorPicker } from '#V2/Components/Forms/index.js';
 
-const meta: Meta<typeof ColorPicker> = {
+const meta = preview.meta({
   title: 'Forms/ColorPicker',
   component: ColorPicker,
   args: {
@@ -15,12 +16,16 @@ const meta: Meta<typeof ColorPicker> = {
       handles: ['change'],
     },
   },
-};
-export default meta;
+});
 
-type Story = StoryObj<typeof ColorPicker>;
-
-const Primary: Story = {
+const Primary = meta.story({
+  args: {
+    name: 'color',
+    value: '#C03B22',
+    className: '',
+    hasErrors: false,
+    onChange: fn(),
+  },
   render: args => (
     <div style={{ minHeight: '250px' }} className="tw-content">
       <ColorPicker
@@ -32,10 +37,9 @@ const Primary: Story = {
       />
     </div>
   ),
-};
+});
 
-const Basic: Story = {
-  ...Primary,
+const Basic = storyExtend(Primary, {
   args: {
     name: 'color',
     value: '#C03B22',
@@ -43,6 +47,6 @@ const Basic: Story = {
     hasErrors: false,
     onChange: action('changed'),
   },
-};
+});
 
 export { Basic };

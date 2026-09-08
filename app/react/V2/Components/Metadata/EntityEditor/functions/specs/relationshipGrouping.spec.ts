@@ -3,17 +3,9 @@ import type { FormMetadataProperty } from '../formatMetadataForForm.js';
 import {
   getGroupedRelationshipSyncPairs,
   groupRelationshipProperties,
-  relationshipGroupKey,
   syncGroupedRelationshipMetadata,
   type DisplayProperty,
 } from '../relationshipGrouping.js';
-
-describe('relationshipGroupKey', () => {
-  it('should join content and relationType with a separator', () => {
-    expect(relationshipGroupKey({ content: 'tpl', relationType: 'rel' })).toBe('tpl::rel');
-    expect(relationshipGroupKey({})).toBe('::');
-  });
-});
 
 describe('groupRelationshipProperties', () => {
   const properties: FormMetadataProperty[] = [
@@ -52,7 +44,7 @@ describe('groupRelationshipProperties', () => {
     expect(grouped[0]).toMatchObject({ name: 'title_text', type: 'text' });
     expect(grouped[1]).toMatchObject({
       name: 'related_people',
-      label: 'Owner / Residents',
+      label: 'Owner',
       required: true,
       groupedRelationshipNames: ['related_people', 'related_residents'],
     });

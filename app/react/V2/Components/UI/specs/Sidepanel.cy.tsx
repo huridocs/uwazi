@@ -1,20 +1,19 @@
 import React from 'react';
 import 'cypress-axe';
 import { mount } from 'cypress/react';
-import { composeStories } from '@storybook/react';
 import * as stories from '#app/stories/Sidepanel.stories.js';
 
-const { Basic } = composeStories(stories);
+const { Basic } = stories;
 
 describe('Sidepanel', () => {
   it('should be accessible', () => {
-    mount(<Basic />);
+    mount(<Basic.Component />);
     cy.injectAxe();
     cy.checkA11y();
   });
 
   it('should open and close the sidepanel using the button on the page', () => {
-    mount(<Basic />);
+    mount(<Basic.Component />);
     cy.contains('button', 'Open/Close sidepanel').click();
     cy.contains('h1', 'My sidepanel').should('exist');
 
@@ -23,7 +22,7 @@ describe('Sidepanel', () => {
   });
 
   it('should close the sidepanel using the button on top of the sidepanel', () => {
-    mount(<Basic />);
+    mount(<Basic.Component />);
     cy.contains('button', 'Open/Close sidepanel').click();
     cy.getByTestId('close-sidepanel').click();
     cy.contains('h1', 'My sidepanel').should('not.exist');
@@ -31,7 +30,7 @@ describe('Sidepanel', () => {
 
   describe('with overlay', () => {
     beforeEach(() => {
-      mount(<Basic withOverlay />);
+      mount(<Basic.Component withOverlay />);
       cy.contains('button', 'Open/Close sidepanel').click();
       cy.contains('h1', 'My sidepanel').should('exist');
     });

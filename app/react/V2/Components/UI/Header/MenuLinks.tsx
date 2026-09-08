@@ -23,7 +23,7 @@ type MenuLinksProps = {
 const GAP = 8;
 
 const navButtonClasses =
-  'header-bar-button flex shrink-0 items-center gap-1.5 rounded-md border px-3 py-1 text-[0.8125rem] font-medium transition-colors';
+  'header-bar-button flex shrink-0 items-center gap-1.5 rounded-md border px-3 py-1 text-tab font-medium transition-colors';
 const activeClasses = 'header-bar-button-active';
 const labelClasses = 'max-w-[12rem] truncate';
 

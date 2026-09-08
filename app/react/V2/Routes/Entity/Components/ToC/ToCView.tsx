@@ -2,8 +2,7 @@ import React from 'react';
 import { Tooltip } from 'flowbite-react';
 import { ListBulletIcon, SparklesIcon } from '@heroicons/react/24/outline';
 import { Translate } from '#app/I18N/index.js';
-import { useEntityHashParams } from '../../entityUrlState.js';
-import { PAGE_PARAM } from '../../urlParams.js';
+import { useEntityDocumentPage } from '../../entityUrlState.js';
 import { ToC } from './ToC.js';
 import { findItemsWithChildren, normalizeToc } from './utils.js';
 import type { useToCPanel } from './useToCPanel.js';
@@ -28,8 +27,7 @@ const ToCView = ({ generatedToc, panel }: ToCViewProps) => {
     handleLabelChange,
   } = panel;
 
-  const hashParams = useEntityHashParams();
-  const currentPage = Number.parseInt(hashParams.get(PAGE_PARAM) || '1', 10);
+  const currentPage = useEntityDocumentPage();
   const hasEntries = Boolean(tocState.toc && tocState.toc.length > 0);
   const hasAnyChildren = hasEntries
     ? findItemsWithChildren(normalizeToc(tocState.toc)).length > 0

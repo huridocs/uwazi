@@ -1,3 +1,4 @@
+import * as cookie from 'cookie';
 import { AbstractController } from '#api/common.v2/infrastructure/AbstractController.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { UpdateEntityRequest, UpdateEntitySchema } from './Schemas.js';
@@ -12,7 +13,8 @@ type Request = UpdateEntityRequest | { entity: string };
 
 class UpdateEntityController extends AbstractController<Request> {
   protected async handle(): Promise<void> {
-    const useCase = UpdateEntityUseCaseFactory.default();
+    const sessionId = cookie.parse(this.request.get('cookie') || '')['connect.sid'];
+    const useCase = UpdateEntityUseCaseFactory.default(undefined, sessionId);
     const entityDAO = EntitiesDAOFactory.default({ user: this.user });
 
     let parsed: UpdateEntityRequest;

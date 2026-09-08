@@ -1,14 +1,13 @@
 import React from 'react';
 import 'cypress-axe';
 import { mount } from 'cypress/react';
-import { composeStories } from '@storybook/react-webpack5';
 import * as stories from '#app/stories/Components/UI/Drawer.stories.js';
 
-const { Playground, Open } = composeStories(stories);
+const { Playground, Open } = stories;
 
 describe('Drawer', () => {
   it('opens from the trigger and closes via the header button', () => {
-    mount(<Playground />);
+    mount(<Playground.Component />);
 
     cy.get('#demo-drawer-dialog').should('have.attr', 'aria-hidden', 'true');
     cy.get('[data-testid="open-drawer"]').click();
@@ -20,7 +19,7 @@ describe('Drawer', () => {
   });
 
   it('closes when Escape is pressed', () => {
-    mount(<Open />);
+    mount(<Open.Component />);
 
     cy.get('#demo-drawer-dialog').should('have.attr', 'aria-hidden', 'false');
     cy.get('body').trigger('keydown', { key: 'Escape' });
@@ -28,14 +27,14 @@ describe('Drawer', () => {
   });
 
   it('closes when the overlay is clicked', () => {
-    mount(<Open />);
+    mount(<Open.Component />);
 
     cy.get('[data-testid="drawer-overlay"]').click({ force: true });
     cy.get('#demo-drawer-dialog').should('have.attr', 'aria-hidden', 'true');
   });
 
   it('has no critical axe violations when open', () => {
-    mount(<Open />);
+    mount(<Open.Component />);
 
     cy.injectAxe();
     cy.get('#demo-drawer-dialog').should('have.attr', 'aria-hidden', 'false');

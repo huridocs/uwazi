@@ -26,7 +26,7 @@ module.exports = {
     '^app/UI/(.*)': '<rootDir>/react/UI/$1',
   },
   transformIgnorePatterns: [
-    '/node_modules/(?!(somePkg)|react-dnd|dnd-core|@react-dnd|@huridocs/react-text-selection-handler)',
+    '/node_modules/(?!(somePkg)|react-dnd|dnd-core|@react-dnd|@huridocs/react-text-selection-handler|nuqs)',
   ],
   snapshotSerializers: ['enzyme-to-json/serializer'],
 };

@@ -1,7 +1,9 @@
 import { ObjectId } from 'mongodb';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { testingTenants } from '#api/utils/testingTenants.js';
+import { testingPG } from '#api/utils/testing_pg.js';
 import { User } from '#api/users.v2/model/User.js';
-import { fixtures } from '#api/pages/specs/fixtures.js';
+import { fixtures, pageToUpdate } from '#api/pages.v2/specs/fixtures.js';
 import { PublishPageReleaseUseCaseFactory } from '#api/pages.v2/infrastructure/factories/PublishPageReleaseUseCaseFactory.js';
 import { RestorePageDraftUseCaseFactory } from '#api/pages.v2/infrastructure/factories/RestorePageDraftUseCaseFactory.js';
 import { AddLanguageToPagesUseCaseFactory } from '#api/pages.v2/infrastructure/factories/AddLanguageToPagesUseCaseFactory.js';
@@ -9,13 +11,18 @@ import { RemoveLanguageFromPagesUseCaseFactory } from '#api/pages.v2/infrastruct
 import { PagesDataSourceFactory } from '#api/pages.v2/infrastructure/factories/PagesDataSourceFactory.js';
 import { PageReleasesDataSourceFactory } from '#api/pages.v2/infrastructure/factories/PageReleasesDataSourceFactory.js';
 import { DeletePageUseCaseFactory } from '#api/pages.v2/infrastructure/factories/DeletePageUseCaseFactory.js';
+import { TemplatesPageUsageDataSourceFactory } from '#api/pages.v2/infrastructure/factories/TemplatesPageUsageDataSourceFactory.js';
 import { DeletePageUseCase } from '#api/pages.v2/application/useCases/DeletePage.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
-import { pageUseCaseExecutionContext } from '#api/pages.v2/infrastructure/factories/pageUseCaseExecutionContext.js';
-import { pageToUpdate } from '#api/pages/specs/fixtures.js';
-import pages from '#api/pages/pages.js';
+import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
+import { CreatePageUseCaseFactory } from '#api/pages.v2/infrastructure/factories/CreatePageUseCaseFactory.js';
+import { GetPageUseCaseFactory } from '#api/pages.v2/infrastructure/factories/GetPageUseCaseFactory.js';
 import { mockID } from '#shared/uniqueID.js';
-import db from '#api/utils/testing_db.js';
+
+const testConfigs = [
+  { name: 'Mongo', postgresPages: false },
+  { name: 'Postgres', postgresPages: true },
+];
 
 const PUBLISHABLE_SHARED_ID = '3';
 const editor = new User(new ObjectId().toString(), 'editor', []);
@@ -37,15 +44,17 @@ const seedPublishableDraft = async () => {
   });
 };
 
-describe('Pages use cases (integration)', () => {
+afterAll(async () => {
+  await testingEnvironment.tearDown();
+});
+
+describe.each(testConfigs)('Pages use cases (integration) - $name', ({ postgresPages }) => {
   beforeEach(async () => {
     jest.restoreAllMocks();
-    await testingEnvironment.setUp(fixtures);
+    await testingEnvironment.setUp(fixtures, { postgres: true, postgresMirror: ['pages'] });
+    testingTenants.changeCurrentTenant({ featureFlags: { postgresPages } });
+    await testingPG.clear(['page_releases']);
     await seedPublishableDraft();
-  });
-
-  afterAll(async () => {
-    await testingEnvironment.tearDown();
   });
 
   describe('PublishPageRelease', () => {
@@ -62,17 +71,12 @@ describe('Pages use cases (integration)', () => {
 
         const pagesDS = PagesDataSourceFactory.default();
         const page = (await pagesDS.getBySharedId(PUBLISHABLE_SHARED_ID)).getDataOrThrow();
-        const releases = await testingEnvironment.db
-          .getCollection('page_releases')!
-          .find({
-            page: ObjectId.createFromHexString(page.id),
-          })
-          .toArray();
+        const releases = await PageReleasesDataSourceFactory.default().listByPageId(page.id);
 
         expect(releases).toHaveLength(1);
         expect(releases[0].version).toBe(1);
-        expect(releases[0].release_message).toBe('First release');
-        expect(releases[0].user?.toString()).toBe(editor._id.toString());
+        expect(releases[0].releaseMessage).toBe('First release');
+        expect(releases[0].userId).toBe(editor._id.toString());
       });
     });
 
@@ -184,18 +188,29 @@ describe('Pages use cases (integration)', () => {
         const missing = await pagesDS.getBySharedId('2');
         expect(missing.isError()).toBe(true);
 
-        const releases = await testingEnvironment.db
-          .getCollection('page_releases')!
-          .find({})
-          .toArray();
-        const pageTwoReleases = releases.filter(
-          r => r.page?.toString() === pageToUpdate.toString()
+        const releases = await PageReleasesDataSourceFactory.default().listByPageId(
+          pageToUpdate.toString()
         );
-        expect(pageTwoReleases).toHaveLength(0);
+        expect(releases).toHaveLength(0);
       });
     });
 
-    it('should not delete the page when release deletion fails', async () => {
+    it('should not delete a page that is used as entity view by templates', async () => {
+      await withContext(async () => {
+        await expect(DeletePageUseCaseFactory.default().execute({ sharedId: '1' })).rejects.toThrow(
+          'This page is in use by the following templates:'
+        );
+
+        const pagesDS = PagesDataSourceFactory.default();
+        const stillThere = await pagesDS.getBySharedId('1');
+        expect(stillThere.isError()).toBe(false);
+      });
+    });
+
+    // Mongo only: DeletePage rolls back through the mongo transaction manager, which does not
+    // enrol the postgres one, so a failing release delete cannot undo the page delete there.
+    const itRollsBack = postgresPages ? it.skip : it;
+    itRollsBack('should not delete the page when release deletion fails', async () => {
       await withContext(async () => {
         const transactionManager = TransactionManagerFactory.default();
         const pagesDS = PagesDataSourceFactory.default({ transactionManager });
@@ -206,13 +221,15 @@ describe('Pages use cases (integration)', () => {
           .spyOn(pageReleasesDS, 'deleteByPageId')
           .mockRejectedValueOnce(new Error('release delete failed'));
 
-        const { actor, tenant } = pageUseCaseExecutionContext();
+        const { actor } = ExecutionContext;
+        const tenant = ExecutionContext.currentTenant;
 
         const sut = new DeletePageUseCase(
           {
             transactionManager,
             pagesDS,
             pageReleasesDS,
+            templatesDS: TemplatesPageUsageDataSourceFactory.default(),
           },
           { actor, tenant }
         );
@@ -226,20 +243,18 @@ describe('Pages use cases (integration)', () => {
     });
   });
 
-  describe('pages service with data layer', () => {
-    it('should save, publish, and resolve by sharedId through pages service', async () => {
+  describe('CreatePage + PublishPageRelease + GetPage', () => {
+    it('should create, publish, and resolve by sharedId', async () => {
       await withContext(async () => {
         mockID('pages-flow-id');
-        const user = { _id: db.id() };
 
-        const created = await pages.save(
-          {
+        const created = await CreatePageUseCaseFactory.default().execute({
+          page: {
             title: 'Flow Page',
             draft: { content: '<p>Flow</p>', script: '', css: '' },
           },
-          user,
-          'en'
-        );
+          language: 'en',
+        });
 
         const sharedId = created.sharedId!;
         await PublishPageReleaseUseCaseFactory.default().execute({
@@ -248,7 +263,10 @@ describe('Pages use cases (integration)', () => {
           language: 'en',
         });
 
-        const loaded = await pages.getById(sharedId, 'en');
+        const loaded = await GetPageUseCaseFactory.default().execute({
+          lookup: sharedId,
+          language: 'en',
+        });
         expect(loaded.sharedId).toBe(sharedId);
 
         const pagesDS = PagesDataSourceFactory.default();

@@ -1,15 +1,15 @@
+// oxlint-disable react/jsx-props-no-spreading
 import React from 'react';
-import type { Meta, StoryObj } from '@storybook/react-webpack5';
+import preview from '#storybook/preview';
+import { storyExtend } from '#app/stories/storyExtend.js';
 import { action } from 'storybook/actions';
 import { NotificationItem } from '#V2/Components/UI/Notifications/NotificationItem.js';
 import { StatusNotification } from '#V2/atoms/requestStatusAtom.js';
 
-const meta: Meta<typeof NotificationItem> = {
+const meta = preview.meta({
   title: 'Components/Notifications/NotificationItem',
   component: NotificationItem,
-};
-
-type Story = StoryObj<typeof NotificationItem>;
+});
 
 const makeNotification = (
   type: StatusNotification['type'],
@@ -25,7 +25,15 @@ const makeNotification = (
   timestamp: new Date(),
 });
 
-const Primary: Story = {
+const Primary = meta.story({
+  args: {
+    notification: makeNotification(
+      'success',
+      'Entity saved successfully.',
+      'All fields were valid.'
+    ),
+    onDismiss: action('dismiss'),
+  },
   render: args => (
     <div className="tw-content">
       <div className="max-w-sm p-4">
@@ -33,10 +41,9 @@ const Primary: Story = {
       </div>
     </div>
   ),
-};
+});
 
-const SuccessNotification: Story = {
-  ...Primary,
+const SuccessNotification = storyExtend(Primary, {
   args: {
     notification: makeNotification(
       'success',
@@ -44,10 +51,9 @@ const SuccessNotification: Story = {
       'All fields were valid.'
     ),
   },
-};
+});
 
-const WarningNotification: Story = {
-  ...Primary,
+const WarningNotification = storyExtend(Primary, {
   args: {
     notification: makeNotification(
       'warning',
@@ -55,10 +61,9 @@ const WarningNotification: Story = {
       'Check the highlighted fields and try again.'
     ),
   },
-};
+});
 
-const ErrorNotification: Story = {
-  ...Primary,
+const ErrorNotification = storyExtend(Primary, {
   args: {
     notification: makeNotification(
       'error',
@@ -66,10 +71,9 @@ const ErrorNotification: Story = {
       'Please check your network connection and try again.'
     ),
   },
-};
+});
 
-const ErrorWithDetails: Story = {
-  ...Primary,
+const ErrorWithDetails = storyExtend(Primary, {
   args: {
     notification: makeNotification(
       'error',
@@ -81,14 +85,13 @@ const ErrorWithDetails: Story = {
   at importBatch (import-worker.js:201:5)`
     ),
   },
-};
+});
 
-const InfoNotification: Story = {
-  ...Primary,
+const InfoNotification = storyExtend(Primary, {
   args: {
     notification: makeNotification('info', 'A new version of Uwazi is available.'),
   },
-};
+});
 
 export {
   SuccessNotification,
@@ -97,5 +100,3 @@ export {
   ErrorWithDetails,
   InfoNotification,
 };
-
-export default meta;

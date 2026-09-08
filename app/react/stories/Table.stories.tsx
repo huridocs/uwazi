@@ -1,6 +1,7 @@
 /* eslint-disable max-lines */
 import React, { useRef, useState } from 'react';
-import { Meta, StoryObj } from '@storybook/react-webpack5';
+import preview from '#storybook/preview';
+import { storyExtend } from '#app/stories/storyExtend.js';
 import { action } from 'storybook/actions';
 import { Cell, createColumnHelper, SortingState } from '@tanstack/react-table';
 import { Button, Table } from '#V2/Components/UI/index.js';
@@ -241,16 +242,22 @@ const StoryComponent = ({
   );
 };
 
-const meta: Meta<StoryProps> = {
+const meta = preview.type<{ args: StoryProps }>().meta({
   title: 'Components/Table',
   component: StoryComponent,
-};
+});
 
-export default meta;
-
-type Story = StoryObj<StoryProps>;
-
-const Primary: Story = {
+const Primary = meta.story({
+  args: {
+    dnd: { enable: true, disableEditingGroups: false },
+    enableSelections: true,
+    defaultSorting: undefined,
+    tableData: basicData,
+    columnType: 'basic',
+    actionFn: undefined,
+    controlledSorting: false,
+    focusedRowId: undefined,
+  },
   render: args => (
     <StoryComponent
       tableData={args.tableData}
@@ -263,10 +270,9 @@ const Primary: Story = {
       focusedRowId={args.focusedRowId}
     />
   ),
-};
+});
 
-const Basic = {
-  ...Primary,
+const Basic = storyExtend(Primary, {
   args: {
     dnd: { enable: true, disableEditingGroups: false },
     enableSelections: true,
@@ -278,12 +284,11 @@ const Basic = {
     controlledSorting: false,
     focusedRowId: undefined,
   },
-};
+});
 
-const BasicWithDisabledDnD = {
-  ...Primary,
+const BasicWithDisabledDnD = storyExtend(Primary, {
   args: {
-    ...Basic.args,
+    ...Basic.composed.args,
     tableData: [
       { ...basicData[0], disableRowDnD: true },
       { ...basicData[2], disableRowDnD: true },
@@ -292,21 +297,19 @@ const BasicWithDisabledDnD = {
       { ...basicData[4] },
     ],
   },
-};
+});
 
-const Nested = {
-  ...Primary,
+const Nested = storyExtend(Primary, {
   args: {
-    ...Basic.args,
+    ...Basic.composed.args,
     tableData: dataWithGroups,
     columnType: 'nested',
   },
-};
+});
 
-const NestedWithDisabledDnD = {
-  ...Primary,
+const NestedWithDisabledDnD = storyExtend(Primary, {
   args: {
-    ...Basic.args,
+    ...Basic.composed.args,
     tableData: [
       { ...dataWithGroups[0], disableRowDnD: true },
       {
@@ -321,16 +324,15 @@ const NestedWithDisabledDnD = {
     ],
     columnType: 'nested',
   },
-};
+});
 
-const Custom = {
-  ...Primary,
+const Custom = storyExtend(Primary, {
   args: {
-    ...Basic.args,
+    ...Basic.composed.args,
     enableSelections: false,
     dnd: undefined,
     columnType: 'custom',
   },
-};
+});
 
 export { Basic, BasicWithDisabledDnD, Nested, NestedWithDisabledDnD, Custom };

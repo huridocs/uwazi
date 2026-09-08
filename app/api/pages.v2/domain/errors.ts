@@ -44,3 +44,14 @@ export class PageUnauthorizedError extends DomainError {
     super('Unauthorized', 'page.unauthorized');
   }
 }
+
+export class PageInUseByTemplatesError extends DomainError {
+  constructor(templateNames: string[]) {
+    super(
+      `This page is in use by the following templates: ${templateNames.join(
+        ', '
+      )}. Remove the page from the templates before trying again.`,
+      'page.in_use_by_templates'
+    );
+  }
+}

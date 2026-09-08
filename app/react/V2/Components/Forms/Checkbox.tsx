@@ -18,16 +18,20 @@ interface CheckboxProps {
 
 const cx = (...classes: Array<string | false | undefined>) => classes.filter(Boolean).join(' ');
 
-const checkboxInputBase =
-  'h-3.5 w-3.5 shrink-0 cursor-pointer rounded disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-carbon/30';
+const nativeCheckboxClassName = (tone: CheckboxTone = 'ink'): string =>
+  cx(
+    'm-0 h-3.5 w-3.5 shrink-0 cursor-pointer rounded',
+    tone === 'carbon' ? 'accent-carbon' : 'accent-ink',
+    'disabled:cursor-not-allowed disabled:opacity-50',
+    'focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-carbon/30'
+  );
 
+const checkboxInputClassName = nativeCheckboxClassName('ink');
+const filterCheckboxClassName = nativeCheckboxClassName('carbon');
 const checkboxToneClass: Record<CheckboxTone, string> = {
-  ink: cx(checkboxInputBase, 'accent-ink'),
-  carbon: cx(checkboxInputBase, 'accent-carbon'),
+  ink: checkboxInputClassName,
+  carbon: filterCheckboxClassName,
 };
-
-const checkboxInputClassName = checkboxToneClass.ink;
-const filterCheckboxClassName = checkboxToneClass.carbon;
 
 const Checkbox = React.forwardRef(
   (
@@ -54,24 +58,24 @@ const Checkbox = React.forwardRef(
     }, [indeterminate, checked]);
 
     return (
-      <fieldset className={cx('flex items-center gap-1.5 border-0 p-0 m-0', className)}>
-        <input
-          type="checkbox"
-          checked={checked}
-          id={name}
-          name={name}
-          disabled={disabled}
-          onChange={onChange}
-          ref={inputRef}
-          className={checkboxToneClass[tone]}
-        />
+      <fieldset className={cx('m-0 min-w-0 border-0 p-0', className)}>
         <label
           htmlFor={name}
           className={cx(
-            'flex cursor-pointer items-center gap-1.5 text-xs text-ink-secondary',
+            'flex min-w-0 cursor-pointer items-center gap-2 text-sm leading-none text-ink-secondary',
             disabled && 'cursor-not-allowed text-ink-muted'
           )}
         >
+          <input
+            type="checkbox"
+            checked={checked}
+            id={name}
+            name={name}
+            disabled={disabled}
+            onChange={onChange}
+            ref={inputRef}
+            className={nativeCheckboxClassName(tone)}
+          />
           {isString(label) ? <Translate>{label}</Translate> : label}
         </label>
       </fieldset>
@@ -79,5 +83,11 @@ const Checkbox = React.forwardRef(
   }
 );
 
-export { Checkbox, checkboxInputClassName, filterCheckboxClassName, checkboxToneClass };
+export {
+  Checkbox,
+  checkboxInputClassName,
+  filterCheckboxClassName,
+  checkboxToneClass,
+  nativeCheckboxClassName,
+};
 export type { CheckboxTone };

@@ -123,7 +123,7 @@ describe('RelationshipsQueryProvider', () => {
 
   const mocks = (): QueryMocks => ({ loadSummary, loadAnchors, loadResolved });
 
-  it('replaces same-key revalidated seed and coalesces loadResolved', async () => {
+  it('preserves resolved overlays on same-key revalidated seed with unchanged hub rows', async () => {
     const harness: Harness = { seed, language: 'en', mainDocument };
     const { result, rerender } = renderQuery(harness, mocks());
 
@@ -136,16 +136,116 @@ describe('RelationshipsQueryProvider', () => {
     expect(result.current.status.resolved).toBe(true);
     expect(hasQuoteText(result.current.relationships)).toBe(true);
 
-    harness.seed = revalidatedSeed;
+    harness.seed = { ...seed, hubRows: [...seed.hubRows] };
     rerender();
 
     expect(loadSummary).not.toHaveBeenCalled();
     expect(loadResolved).toHaveBeenCalledTimes(1);
+    expect(result.current.status.resolved).toBe(true);
+    expect(hasQuoteText(result.current.relationships)).toBe(true);
+  });
+
+  it('clears resolved overlays when same-key seed hub rows change after a mutation refresh', async () => {
+    const harness: Harness = { seed, language: 'en', mainDocument };
+    const { result, rerender } = renderQuery(harness, mocks());
+
+    await act(async () => {
+      await result.current.ensureResolved();
+    });
+    expect(loadResolved).toHaveBeenCalledTimes(1);
+    expect(result.current.status.resolved).toBe(true);
+
+    harness.seed = { ...revalidatedSeed, seedRevision: 1 };
+    rerender();
+
     expect(result.current.status.resolved).toBe(false);
     expect(
       result.current.relationships.some(relationship => relationship.to.entity === 'new-entity')
     ).toBe(true);
-    expect(hasQuoteText(result.current.relationships)).toBe(false);
+
+    await act(async () => {
+      await result.current.ensureResolved();
+    });
+
+    expect(loadResolved).toHaveBeenCalledTimes(2);
+    expect(result.current.status.resolved).toBe(true);
+    expect(hasQuoteText(result.current.relationships)).toBe(true);
+  });
+
+  it('clears resolved overlays when hub rows are unchanged but seed revision changes after invalidate', async () => {
+    const updatedResolved = resolved.map(row =>
+      row._id === 'c2'
+        ? {
+            ...row,
+            reference: { ...row.reference, text: 'updated quoted text' },
+          }
+        : row
+    );
+    loadResolved.mockResolvedValueOnce([resolved]).mockResolvedValueOnce([updatedResolved]);
+
+    const harness: Harness = { seed, language: 'en', mainDocument };
+    const { result, rerender } = renderQuery(harness, mocks());
+
+    await act(async () => {
+      await result.current.ensureResolved();
+    });
+    expect(loadResolved).toHaveBeenCalledTimes(1);
+    expect(result.current.status.resolved).toBe(true);
+    expect(
+      result.current.relationships.some(
+        relationship =>
+          relationship.to.type === 'textReference' && relationship.to.text === 'target quoted text'
+      )
+    ).toBe(true);
+
+    harness.seed = { ...seed, hubRows: [...seed.hubRows], seedRevision: 1 };
+    rerender();
+
+    expect(result.current.status.resolved).toBe(false);
+    expect(
+      result.current.relationships.some(
+        relationship =>
+          relationship.to.type === 'textReference' && relationship.to.text === 'target quoted text'
+      )
+    ).toBe(false);
+
+    await act(async () => {
+      await result.current.ensureResolved();
+    });
+
+    expect(loadResolved).toHaveBeenCalledTimes(2);
+    expect(result.current.status.resolved).toBe(true);
+    expect(
+      result.current.relationships.some(
+        relationship =>
+          relationship.to.type === 'textReference' && relationship.to.text === 'updated quoted text'
+      )
+    ).toBe(true);
+  });
+
+  it('keeps client anchors when a summary-only same-key seed arrives with unchanged hub rows', async () => {
+    const summarySeed: RelationshipQueryPayload = {
+      ...relationshipQueryFromEntity(entityWithRelations),
+      fileId: mainDocument._id,
+      anchorsLoaded: false,
+    };
+    const harness: Harness = { seed: summarySeed, language: 'en', mainDocument };
+    const { result, rerender } = renderQuery(harness, mocks());
+
+    await act(async () => {
+      await result.current.ensureAnchors();
+    });
+    expect(loadAnchors).toHaveBeenCalledTimes(1);
+
+    harness.seed = { ...summarySeed, hubRows: [...summarySeed.hubRows] };
+    rerender();
+
+    await act(async () => {
+      await result.current.ensureAnchors();
+    });
+
+    expect(loadAnchors).toHaveBeenCalledTimes(1);
+    expect(loadSummary).not.toHaveBeenCalled();
   });
 
   it('loads summary only when UI language does not match seed', async () => {

@@ -1,5 +1,5 @@
 import React from 'react';
-import type { Meta, StoryObj } from '@storybook/react-webpack5';
+import preview from '#storybook/preview';
 import { BrowserRouter } from 'react-router';
 import { Provider as ReduxProvider } from 'react-redux';
 import { createStore, Provider } from 'jotai';
@@ -123,7 +123,7 @@ const HeaderWithTheme = ({
   );
 };
 
-const meta: Meta<typeof HeaderWithTheme> = {
+const meta = preview.meta({
   title: 'Components/UI/Header',
   component: HeaderWithTheme,
   args: {
@@ -155,22 +155,33 @@ const meta: Meta<typeof HeaderWithTheme> = {
       </BrowserRouter>
     ),
   ],
-};
+});
 
-export default meta;
+const Default = meta.story({
+  args: {
+    themeVarsKey: THEME_NONE,
+    authenticated: true,
+    themeMode: 'light',
+    themePreset: 'default',
+  },
+});
 
-type Story = StoryObj<typeof HeaderWithTheme>;
+const WithThemeSelector = meta.story({
+  args: {
+    themeVarsKey: 'accent-primary',
+    authenticated: true,
+    themeMode: 'light',
+    themePreset: 'default',
+  },
+});
 
-const Default: Story = {
-  args: { themeVarsKey: THEME_NONE, authenticated: true },
-};
-
-const WithThemeSelector: Story = {
-  args: { themeVarsKey: 'accent-primary', authenticated: true },
-};
-
-const Unauthenticated: Story = {
-  args: { themeVarsKey: THEME_NONE, authenticated: false },
-};
+const Unauthenticated = meta.story({
+  args: {
+    themeVarsKey: THEME_NONE,
+    authenticated: false,
+    themeMode: 'light',
+    themePreset: 'default',
+  },
+});
 
 export { Default, WithThemeSelector, Unauthenticated };

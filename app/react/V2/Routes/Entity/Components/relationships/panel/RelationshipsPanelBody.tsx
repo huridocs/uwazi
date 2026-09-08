@@ -19,11 +19,10 @@ const RelationshipsPanelBody = ({
   selfSharedId,
   activeRelationshipId,
   onClick,
-  onView,
   onDelete,
 }: RelationshipsPanelBodyProps) => {
   const { view } = useRelationshipsPanelLayout();
-  const rowProps = { selfSharedId, activeRelationshipId, onClick, onView, onDelete };
+  const rowProps = { selfSharedId, activeRelationshipId, onClick, onDelete };
 
   if (view === 'tree') {
     return <RelationshipsTreeView markers={markers} groupContext={groupContext} {...rowProps} />;
@@ -39,7 +38,6 @@ const RelationshipsPanelBody = ({
           const marker = markers.find(item => item._id === markerId);
           if (marker) {
             onClick(marker);
-            onView(marker);
           }
         }}
       />

@@ -4,9 +4,7 @@ import type { MultiselectListOption } from '../../../../Forms/index.js';
 import type { FormMetadataProperty } from '../formatMetadataForForm.js';
 import type { DisplayProperty } from '../relationshipGrouping.js';
 import {
-  buildInheritColumns,
   defaultRelationshipLookup,
-  inheritColumnLabel,
   mergeRelationshipLookupOptions,
   thesaurusToOptions,
 } from '../relationshipFieldHelpers.js';
@@ -102,68 +100,6 @@ describe('mergeRelationshipLookupOptions', () => {
       includeCachedOptions: false,
     });
     expect(cache.size).toBe(0);
-  });
-});
-
-describe('buildInheritColumns', () => {
-  const templates = [
-    {
-      _id: 'target-template',
-      properties: [{ _id: 'inherited-prop-id', label: 'Inherited label' }],
-    },
-  ];
-
-  const metadataProperties: FormMetadataProperty[] = [
-    {
-      _id: '1',
-      type: 'relationship',
-      name: 'related',
-      label: 'Related',
-      content: 'target-template',
-      relationType: 'rel1',
-    },
-    {
-      _id: '2',
-      type: 'relationship',
-      name: 'inherited_tags',
-      label: 'Fallback label',
-      content: 'target-template',
-      relationType: 'rel1',
-      inherited: true,
-      inherit: { property: 'inherited-prop-id' },
-    },
-  ];
-
-  const property: DisplayProperty = {
-    ...metadataProperties[0],
-    groupedRelationshipNames: ['related'],
-  };
-
-  it('should resolve the inherited property label from the target template', () => {
-    expect(inheritColumnLabel(metadataProperties[1], templates)).toBe('Inherited label');
-  });
-
-  it('should build columns for matching inherited relationship properties', () => {
-    expect(
-      buildInheritColumns(property, metadataProperties, templates, {
-        inherited_tags: [
-          {
-            value: 'entity-1',
-            inheritedValue: [
-              {
-                label: 'Nested',
-                value: null,
-              },
-            ],
-          },
-        ],
-      })
-    ).toEqual([
-      {
-        label: 'Inherited label',
-        cellsByEntityId: { 'entity-1': 'Nested' },
-      },
-    ]);
   });
 });
 
