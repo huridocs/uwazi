@@ -41,10 +41,9 @@ const registerEventListeners = (eventsBus: EventsBus) => {
   eventsBus.on(EntityCreatedEvent, async ({ entities }) => {
     if (!(await featureIsEnabled())) return;
 
-    const extractors = await Extractors.get({
-      templates: { $in: [entities[0].template] },
-      'source.property': { $exists: true },
-    });
+    const extractors = await Extractors.getPropertySourceExtractorsForTemplate(
+      entities[0].template!
+    );
 
     if (!extractors.length) return;
 

@@ -9,6 +9,7 @@ import { testingTenants } from '#api/utils/testingTenants.js';
 import { IXSuggestionStateType } from '#shared/types/suggestionType.js';
 import { Extractors } from '../ixextractors.js';
 import { IXValidationError } from '../IXValidationError.js';
+import { ixTestAccess } from './ixTestAccess.js';
 
 const fixtureFactory = getFixturesFactory();
 
@@ -248,7 +249,7 @@ describe('ixextractors', () => {
         source: { pdf: true },
         templates: [fixtureFactory.id('personTemplate').toString()],
       });
-      const [ixextractor] = await Extractors.get({ name: 'age_test' });
+      const ixextractor = await ixTestAccess.readExtractorByName('age_test');
       expect(ixextractor).toMatchObject({
         name: 'age_test',
         property: 'age',
@@ -540,7 +541,7 @@ describe('ixextractors', () => {
       'should create empty suggestions for $case',
       async ({ name, property, source, templates, expectedSuggestions }) => {
         await Extractors.create({ name, property, source, templates });
-        const [extractor] = await Extractors.get({ name });
+        const extractor = await ixTestAccess.readExtractorByName(name);
         const suggestions = _.orderBy(await Suggestions.getByExtractor(extractor._id), [
           'entityId',
           'language',
@@ -654,7 +655,7 @@ describe('ixextractors', () => {
       ).rejects.toMatchObject({
         code: IXValidationError.codes.PROPERTY_MISSING,
       });
-      const [extractor] = await Extractors.get({ name: 'invalid extractor' });
+      const extractor = await ixTestAccess.readExtractorByName('invalid extractor');
       expect(extractor).toBe(undefined);
     });
 
@@ -669,7 +670,7 @@ describe('ixextractors', () => {
       ).rejects.toMatchObject({
         code: IXValidationError.codes.PROPERTY_TYPE_NOT_ALLOWED,
       });
-      const [extractor] = await Extractors.get({ name: 'invalid extractor' });
+      const extractor = await ixTestAccess.readExtractorByName('invalid extractor');
       expect(extractor).toBe(undefined);
     });
   });
@@ -684,7 +685,7 @@ describe('ixextractors', () => {
         templates: [fixtureFactory.id('animalTemplate').toString()],
       });
 
-      const [extractor] = await Extractors.get({ name: 'existingExtractor' });
+      const extractor = await ixTestAccess.readExtractorByName('existingExtractor');
       expect(extractor.templates).toEqual([fixtureFactory.id('animalTemplate')]);
 
       let suggestions = await testingDB.mongodb
@@ -751,7 +752,7 @@ describe('ixextractors', () => {
     });
 
     it('should delete existing suggestions when the property is changed, and create new blank suggestions', async () => {
-      const [existing] = await Extractors.get({ name: 'existingExtractor' });
+      const existing = await ixTestAccess.readExtractorByName('existingExtractor');
       await Extractors.update({
         _id: existing._id,
         source: { pdf: true },
@@ -792,7 +793,7 @@ describe('ixextractors', () => {
     });
 
     it('should throw if the property does not exist', async () => {
-      const [existing] = await Extractors.get({ name: 'fungusKindExtractor' });
+      const existing = await ixTestAccess.readExtractorByName('fungusKindExtractor');
       await expect(async () =>
         Extractors.update({
           _id: existing._id,
@@ -804,12 +805,12 @@ describe('ixextractors', () => {
       ).rejects.toMatchObject({
         code: IXValidationError.codes.PROPERTY_MISSING,
       });
-      const [extractor] = await Extractors.get({ name: 'fungusKindExtractor' });
+      const extractor = await ixTestAccess.readExtractorByName('fungusKindExtractor');
       expect(extractor).toEqual(existing);
     });
 
     it('should throw if the property is not of an allowed type', async () => {
-      const [existing] = await Extractors.get({ name: 'fungusKindExtractor' });
+      const existing = await ixTestAccess.readExtractorByName('fungusKindExtractor');
       await expect(async () =>
         Extractors.update({
           _id: existing._id,
@@ -821,7 +822,7 @@ describe('ixextractors', () => {
       ).rejects.toMatchObject({
         code: IXValidationError.codes.PROPERTY_TYPE_NOT_ALLOWED,
       });
-      const [extractor] = await Extractors.get({ name: 'fungusKindExtractor' });
+      const extractor = await ixTestAccess.readExtractorByName('fungusKindExtractor');
       expect(extractor).toEqual(existing);
     });
   });
@@ -832,7 +833,7 @@ describe('ixextractors', () => {
         fixtureFactory.id('existingExtractor').toString(),
         fixtureFactory.id('fungusKindExtractor').toString(),
       ]);
-      const extractors = await Extractors.get();
+      const extractors = await ixTestAccess.readExtractors();
       expect(extractors).toEqual([]);
       const suggestions = await testingDB.mongodb?.collection('ixsuggestions').find().toArray();
       expect(suggestions).toEqual([]);

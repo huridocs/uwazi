@@ -10,9 +10,9 @@ import {
   createBlankSuggestionsForPartialExtractor,
 } from '#api/suggestions/blankSuggestions.js';
 import { Subset } from '#shared/tsUtils.js';
-import { PropertyTypeSchema } from '#shared/types/commonTypes.js';
+import { ObjectIdSchema, PropertyTypeSchema } from '#shared/types/commonTypes.js';
 import { DomainError } from '#api/core/domain/error/DomainError.js';
-import { IXExtractorModel as model } from './IXExtractorModel.js';
+import { IXExtractorsDAOFactory } from './infrastructure/IXExtractorsDAOFactory.js';
 import { IXErrorCode, IXValidationError } from './IXValidationError.js';
 
 type AllowedPropertyTypes =
@@ -118,21 +118,27 @@ class MissingExtractorError extends DomainError {
   }
 }
 
+const dao = () => IXExtractorsDAOFactory.default();
+
 const Extractors = {
-  get: model.get.bind(model),
-  getById: model.getById.bind(model),
-  get_all: async () => model.get({}),
+  getById: async (id: ObjectIdSchema) => dao().getById(id),
+  getByTemplate: async (templateId: ObjectIdSchema) => dao().getByTemplate(templateId),
+  getPropertySourceExtractorsForTemplate: async (templateId: ObjectIdSchema) =>
+    dao().getPropertySourceExtractorsForTemplate(templateId),
+  getPdfSourceExtractorsForTemplate: async (templateId: ObjectIdSchema) =>
+    dao().getPdfSourceExtractorsForTemplate(templateId),
+  get_all: async () => dao().getAll(),
   delete: async (_ids: string[]) => {
     const ids = _ids.map(id => new ObjectId(id));
-    const extractors = await model.get({ _id: { $in: ids } });
+    const extractors = await dao().getByIds(ids);
     if (extractors.length !== ids.length) throw new MissingExtractorError();
-    await model.delete({ _id: { $in: ids } });
+    await dao().deleteByIds(ids);
     await Suggestions.delete({ extractorId: { $in: ids } });
   },
   create: async (extractor: NewExtractorType) => {
     const { name, source, property, templates: templateIds } = extractor;
     await templatePropertyExistenceCheck(property, templateIds);
-    const saved = await model.save({
+    const saved = await dao().create({
       name,
       source,
       property,
@@ -143,11 +149,11 @@ const Extractors = {
   },
   update: async (extractor: ExtractorType) => {
     const { _id, name, source, property, templates: templateIds } = extractor;
-    const [curentExtractor] = await model.get({ _id });
+    const curentExtractor = await dao().getById(_id);
     if (!curentExtractor) throw new MissingExtractorError();
     await templatePropertyExistenceCheck(property, templateIds);
 
-    const updated = await model.save({
+    const updated = await dao().update({
       ...curentExtractor,
       name,
       source,
@@ -168,17 +174,17 @@ const Extractors = {
     templateId: string,
     propertyNamesToKeep: string[]
   ) => {
-    const extractorsToUpdate = await model.get({
-      templates: templateId,
-      property: { $nin: propertyNamesToKeep },
-    });
+    const extractorsToUpdate = await dao().getByTemplateExcludingProperties(
+      templateId,
+      propertyNamesToKeep
+    );
 
     const extractorIds = extractorsToUpdate.map(extractor => extractor._id);
 
-    await model.updateMany({ _id: { $in: extractorIds } }, { $pull: { templates: templateId } });
+    await dao().removeTemplateFromExtractors(extractorIds, templateId);
 
     await Suggestions.delete({ entityTemplate: templateId, extractorId: { $in: extractorIds } });
-    await model.delete({ _id: { $in: extractorIds }, templates: { $size: 0 } });
+    await dao().deleteEmptyByIds(extractorIds);
   },
 };
 

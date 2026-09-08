@@ -17,6 +17,7 @@ import { IXSuggestionType } from '#shared/types/suggestionType.js';
 import { IXModelType } from '#shared/types/IXModelType.js';
 import { ObjectIdSchema } from '#shared/types/commonTypes.js';
 import { IXModelsModel } from '../IXModelsModel.js';
+import { IXExtractorsDAOFactory } from '../infrastructure/IXExtractorsDAOFactory.js';
 
 type SuggestionFilter = {
   extractorId?: ObjectIdSchema;
@@ -92,6 +93,22 @@ const setSamplePolicy = async (
     { $set: { 'processRun.samplePolicy': samplePolicy } }
   );
 
+/* ----------------------------------------------------------------- extractors -- */
+
+/**
+ * Specs looked extractors up by `name`, a query shape no production code uses. Rather than
+ * put a `getByName` on the DAO that only tests would call, the lookup lives here: read all
+ * and pick. Fixtures are small, and the port stays derived from real usage.
+ */
+const readExtractorByName = async (name: string) => {
+  const extractors = await IXExtractorsDAOFactory.default().getAll();
+  return extractors.find(extractor => extractor.name === name)!;
+};
+
+const readExtractors = async () => IXExtractorsDAOFactory.default().getAll();
+
+const readExtractor = async (id: ObjectIdSchema) => IXExtractorsDAOFactory.default().getById(id);
+
 export type { SuggestionFilter };
 export const ixTestAccess = {
   readSuggestions,
@@ -105,4 +122,7 @@ export const ixTestAccess = {
   readModel,
   writeModel,
   setSamplePolicy,
+  readExtractor,
+  readExtractorByName,
+  readExtractors,
 };

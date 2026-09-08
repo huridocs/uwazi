@@ -22,7 +22,7 @@ class ProcessSuggestionsAfterTemplateChanged implements UseCase<Input, void> {
       entityTemplate: oldTemplateId.toString(),
     });
 
-    const extractorsOfNewTemplate = await Extractors.get({ templates: { $in: [newTemplateId] } });
+    const extractorsOfNewTemplate = await Extractors.getByTemplate(newTemplateId);
 
     if (!extractorsOfNewTemplate.length) return;
 

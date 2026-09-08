@@ -207,7 +207,7 @@ describe('InformationExtraction', () => {
     // eslint-disable-next-line max-params
   ) => {
     const extractorId = factory.id(extractorName);
-    const [extractor] = await Extractors.get({ _id: extractorId });
+    const extractor = (await ixTestAccess.readExtractor(extractorId))!;
     await _saveSuggestionProcess(
       {
         _id: factory.id(id),

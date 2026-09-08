@@ -244,9 +244,9 @@ async function getEntitiesForSuggestionsQuery(
 }
 
 async function getEntitiesForSuggestions(extractorId: ObjectIdSchema, limit?: number) {
-  const [[model], [extractor]] = await Promise.all([
+  const [[model], extractor] = await Promise.all([
     ixmodels.get({ extractorId }),
-    Extractors.get({ _id: extractorId }),
+    Extractors.getById(extractorId),
   ]);
 
   if (!extractor?.property) {
@@ -612,9 +612,9 @@ async function getFilesForSuggestionsQuery(extractorId: ObjectIdSchema, BATCH_SI
 }
 
 async function getFilesForSuggestions(extractorId: ObjectIdSchema, limit?: number) {
-  const [[model], [extractor]] = await Promise.all([
+  const [[model], extractor] = await Promise.all([
     ixmodels.get({ extractorId }),
-    Extractors.get({ _id: extractorId }),
+    Extractors.getById(extractorId),
   ]);
 
   if (!extractor) {

@@ -31,8 +31,8 @@ describe('FetchMaterialsForTraining selection', () => {
     await testingEnvironment.setUp(fixtures);
     testingTenants.changeCurrentTenant({ name: 'tenant1' });
     // Load extractors used by tests
-    [extractorProp] = await Extractors.get({ _id: factory.id('prop1extractor') });
-    [extractorPdf] = await Extractors.get({ _id: factory.id('prop1extractor') });
+    extractorProp = (await ixTestAccess.readExtractor(factory.id('prop1extractor')))!;
+    extractorPdf = (await ixTestAccess.readExtractor(factory.id('prop1extractor')))!;
   });
 
   afterAll(async () => {

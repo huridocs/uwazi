@@ -8,7 +8,7 @@ import {
 } from '#shared/getIXSuggestionState.js';
 import { propertyIsMultiselect, propertyIsRelationship } from '#shared/propertyTypes.js';
 import { LanguagesListSchema, PropertyTypeSchema } from '#shared/types/commonTypes.js';
-import { IXExtractorModel } from '#api/services/informationextraction/IXExtractorModel.js';
+import { IXExtractorsDAOFactory } from '#api/services/informationextraction/infrastructure/IXExtractorsDAOFactory.js';
 import { IXSuggestionsModel } from './IXSuggestionsModel.js';
 import {
   getCurrentValueStage,
@@ -127,11 +127,19 @@ export const updateStates = async (query: Record<string, unknown>) => {
 
   const cursor = findSuggestions(query, languages || []);
 
+  // The loop used to re-read the extractor once per suggestion, which for a run of thousands
+  // of rows meant thousands of reads of the same handful of documents (stage-1 finding 5).
+  // There are only ever a few extractors, so index them once up front.
+  const extractorsById = objectIndex(
+    await IXExtractorsDAOFactory.default().getAll(),
+    extractor => extractor._id.toString(),
+    extractor => extractor
+  );
+
   const writeStream = IXSuggestionsModel.openBulkWriteStream();
   let suggestion: SuggestionsAggregationResult = await cursor.next();
   while (suggestion) {
-    // eslint-disable-next-line no-await-in-loop
-    const extractor = await IXExtractorModel.getById((suggestion as any).extractorId);
+    const extractor = extractorsById[(suggestion as any).extractorId?.toString()];
 
     const propertyType = propertyTypes[suggestion.propertyName];
     const _suggestion = postProcessCurrentValue(suggestion, propertyType);

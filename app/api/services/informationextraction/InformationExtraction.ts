@@ -618,7 +618,7 @@ class InformationExtraction {
 
   saveSuggestionsManager = async (message: InternalIXResultsMessage) => {
     const [extractor, rawSuggestions] = await Promise.all([
-      Extractors.getById({ _id: message.params?.id }),
+      Extractors.getById(message.params!.id),
       this.requestResults(message),
     ]);
 
@@ -830,7 +830,7 @@ class InformationExtraction {
   };
 
   getSuggestions = async (extractorId: ObjectIdSchema) => {
-    const [extractor] = await Extractors.get({ _id: extractorId });
+    const extractor = await Extractors.getById(extractorId);
     if (!extractor) return;
 
     const [model] = await IXModelsModel.get({ extractorId });

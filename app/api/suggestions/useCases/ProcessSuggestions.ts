@@ -51,8 +51,8 @@ export class ProcessSuggestions implements UseCase<Input, Output> {
 
   private static async getExtractorAndModel(extractorId: string) {
     const extractorObjectId = ObjectId.createFromHexString(extractorId);
-    const [[extractor], [model]] = await Promise.all([
-      Extractors.get({ _id: extractorObjectId }),
+    const [extractor, [model]] = await Promise.all([
+      Extractors.getById(extractorObjectId),
       ixmodels.get({ extractorId: extractorObjectId }),
     ]);
     return [extractor, model] as const;

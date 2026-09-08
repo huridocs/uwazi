@@ -47,8 +47,8 @@ export class FindSuggestionsForIds implements UseCase<Input, Output> {
   }
 
   private static async getExtractorAndModel(extractorId: ObjectIdSchema) {
-    const [[extractor], [model]] = await Promise.all([
-      Extractors.get({ _id: extractorId }),
+    const [extractor, [model]] = await Promise.all([
+      Extractors.getById(extractorId),
       ixmodels.get({ extractorId }),
     ]);
     return [extractor, model] as const;
