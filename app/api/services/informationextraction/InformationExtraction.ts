@@ -545,6 +545,14 @@ class InformationExtraction {
         language: extractionKey.language,
       });
 
+      // The batch comes from a destructive read on the ML service, so one entry we cannot
+      // place must not abort the rest of it. Without a blank suggestion to update there is
+      // no linkage (entityId / extractorId / language) to write, and saving anyway inserts
+      // the malformed rows migration 196 has to delete. Matches the pdf source path.
+      if (!originalSuggestion) {
+        return;
+      }
+
       const currentSuggestion = await this.appendSuggestionModelData(extractor, originalSuggestion);
 
       const suggestion = formatSuggestionFacade.formatSuggestionTextSource(

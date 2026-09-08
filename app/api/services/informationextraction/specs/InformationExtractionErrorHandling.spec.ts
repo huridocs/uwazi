@@ -6,6 +6,7 @@ import { ModelStatus } from '#shared/types/IXModelSchema.js';
 
 import { factory, fixtures, patchFixturesWithPort } from './fixtures.js';
 import { ixTestAccess } from './ixTestAccess.js';
+import { ExtractionKey } from '../ExtractionKey.js';
 import { InformationExtraction } from '../InformationExtraction.js';
 import { ExternalDummyService } from '../../tasksmanager/specs/ExternalDummyService.js';
 
@@ -441,6 +442,63 @@ describe('InformationExtraction Error Handling', () => {
       const model = await ixTestAccess.readModel(extractorId);
       expect(model.status).toBe(ModelStatus.failed);
       expect(model.findingSuggestions).toBe(false);
+    });
+  });
+
+  describe('ML service contract failure modes', () => {
+    // PME's `GET /get_suggestions` is destructive: it reads and then deletes. Whatever is
+    // dropped on the floor after that read is gone for good, so a single unusable entry in
+    // the batch must not be able to take the rest of the batch with it.
+    it('should save the suggestions it can when the batch contains an unknown entity', async () => {
+      const extractorId = factory.id('sourceTextExtractor1');
+      const knownKey = ExtractionKey.create({ entitySharedId: 'A1', language: 'en' });
+      const unknownKey = ExtractionKey.create({
+        entitySharedId: 'entity_that_no_longer_exists',
+        language: 'en',
+      });
+
+      await ixTestAccess.writeModel({
+        extractorId,
+        status: ModelStatus.ready,
+        findingSuggestions: true,
+        creationDate: Date.now(),
+      });
+
+      // The unknown entity comes first: PME does not order its batch for us.
+      IXExternalService.setResults([
+        {
+          text: 'suggestion_for_a_vanished_entity',
+          segment_text: 'segment_for_a_vanished_entity',
+          entity_name: unknownKey.key,
+        },
+        {
+          text: 'suggestion_for_a_live_entity',
+          segment_text: 'segment_for_a_live_entity',
+          entity_name: knownKey.key,
+        },
+      ]);
+
+      await informationExtraction.processResults({
+        tenant: 'tenant1',
+        task: 'suggestions',
+        params: { id: extractorId.toString() },
+        data_url: `http://localhost:${IXExternalService.actualPort}/suggestions_results`,
+        success: true,
+      });
+
+      const saved = await ixTestAccess.readOneSuggestion({
+        extractorId,
+        entityId: 'A1',
+        language: 'en',
+      });
+      expect(saved.suggestedValue).toBe('suggestion_for_a_live_entity');
+
+      // ...and the unusable entry must not become a row of its own. A suggestion with no
+      // entityId / extractorId is exactly what migration 196 exists to clean up.
+      const orphans = (await ixTestAccess.readSuggestions({})).filter(
+        suggestion => !suggestion.entityId || !suggestion.extractorId
+      );
+      expect(orphans).toEqual([]);
     });
   });
 });
