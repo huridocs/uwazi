@@ -1,14 +1,13 @@
 /* eslint-disable max-statements */
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { testingTenants } from '#api/utils/testingTenants.js';
-import { IXSuggestionsModel } from '#api/suggestions/IXSuggestionsModel.js';
 import * as setupSockets from '#api/socketio/setupSockets.js';
 import { ModelStatus } from '#shared/types/IXModelSchema.js';
 
 import { factory, fixtures, patchFixturesWithPort } from './fixtures.js';
+import { ixTestAccess } from './ixTestAccess.js';
 import { InformationExtraction } from '../InformationExtraction.js';
 import { ExternalDummyService } from '../../tasksmanager/specs/ExternalDummyService.js';
-import { IXModelsModel } from '../IXModelsModel.js';
 
 let informationExtraction: InformationExtraction;
 let IXExternalService: ExternalDummyService;
@@ -61,14 +60,14 @@ describe('InformationExtraction Error Handling', () => {
       const extractorId = factory.id('prop1extractor');
       const errorMessage = 'Model training failed';
 
-      await IXModelsModel.save({
+      await ixTestAccess.writeModel({
         extractorId,
         status: ModelStatus.processing,
         findingSuggestions: true,
         creationDate: Date.now(),
       });
 
-      await IXSuggestionsModel.delete({ extractorId });
+      await ixTestAccess.removeSuggestions({ extractorId });
 
       await informationExtraction.processResults({
         tenant: 'tenant1',
@@ -78,11 +77,11 @@ describe('InformationExtraction Error Handling', () => {
         error_message: errorMessage,
       });
 
-      const [model] = await IXModelsModel.get({ extractorId });
+      const model = await ixTestAccess.readModel(extractorId);
       expect(model.status).toBe(ModelStatus.failed);
       expect(model.findingSuggestions).toBe(false);
 
-      const suggestions = await IXSuggestionsModel.get({ extractorId });
+      const suggestions = await ixTestAccess.readSuggestions({ extractorId });
       expect(suggestions).toHaveLength(0);
     });
 
@@ -90,14 +89,14 @@ describe('InformationExtraction Error Handling', () => {
       const extractorId = factory.id('prop2extractor');
       const errorMessage = 'Suggestion generation failed';
 
-      await IXModelsModel.save({
+      await ixTestAccess.writeModel({
         extractorId,
         status: ModelStatus.ready,
         findingSuggestions: true,
         creationDate: Date.now(),
       });
 
-      await IXSuggestionsModel.save({
+      await ixTestAccess.writeSuggestion({
         entityId: 'A1',
         language: 'en',
         extractorId,
@@ -124,11 +123,11 @@ describe('InformationExtraction Error Handling', () => {
         error_message: errorMessage,
       });
 
-      const [model] = await IXModelsModel.get({ extractorId });
+      const model = await ixTestAccess.readModel(extractorId);
       expect(model.status).toBe(ModelStatus.ready);
       expect(model.findingSuggestions).toBe(false);
 
-      const allSuggestions = await IXSuggestionsModel.get({ extractorId });
+      const allSuggestions = await ixTestAccess.readSuggestions({ extractorId });
       const failedSuggestion = allSuggestions.find(s => s.status === 'failed');
       expect(failedSuggestion).toBeDefined();
       expect(failedSuggestion!.status).toBe('failed');
@@ -141,7 +140,7 @@ describe('InformationExtraction Error Handling', () => {
       const extractorId = factory.id('prop2extractor');
       const errorMessage = 'Suggestion generation failed';
 
-      await IXModelsModel.save({
+      await ixTestAccess.writeModel({
         extractorId,
         status: ModelStatus.ready,
         findingSuggestions: true,
@@ -159,7 +158,7 @@ describe('InformationExtraction Error Handling', () => {
         error: false,
       };
 
-      await IXSuggestionsModel.save({
+      await ixTestAccess.writeSuggestion({
         entityId: 'A1',
         language: 'en',
         extractorId,
@@ -177,7 +176,7 @@ describe('InformationExtraction Error Handling', () => {
         error_message: errorMessage,
       });
 
-      const allSuggestions = await IXSuggestionsModel.get({ extractorId });
+      const allSuggestions = await ixTestAccess.readSuggestions({ extractorId });
       const failedSuggestion = allSuggestions.find(s => s.status === 'failed');
       expect(failedSuggestion).toBeDefined();
       expect(failedSuggestion!.status).toBe('failed');
@@ -194,7 +193,7 @@ describe('InformationExtraction Error Handling', () => {
         'emitToTenantAdminsAndEditors'
       );
 
-      await IXModelsModel.save({
+      await ixTestAccess.writeModel({
         extractorId,
         status: ModelStatus.processing,
         findingSuggestions: true,
@@ -221,14 +220,14 @@ describe('InformationExtraction Error Handling', () => {
     it('should handle task failure with no error message', async () => {
       const extractorId = factory.id('prop1extractor');
 
-      await IXModelsModel.save({
+      await ixTestAccess.writeModel({
         extractorId,
         status: ModelStatus.processing,
         findingSuggestions: true,
         creationDate: Date.now(),
       });
 
-      await IXSuggestionsModel.save({
+      await ixTestAccess.writeSuggestion({
         entityId: 'A1',
         language: 'en',
         extractorId,
@@ -254,7 +253,7 @@ describe('InformationExtraction Error Handling', () => {
         success: false,
       });
 
-      const allSuggestions = await IXSuggestionsModel.get({ extractorId });
+      const allSuggestions = await ixTestAccess.readSuggestions({ extractorId });
       const failedSuggestion = allSuggestions.find(s => s.status === 'failed');
       expect(failedSuggestion).toBeDefined();
       expect(failedSuggestion!.status).toBe('failed');
@@ -269,7 +268,7 @@ describe('InformationExtraction Error Handling', () => {
       const extractorId = factory.id('prop1extractor');
       const errorMessage = 'Failed to connect to external service: connect ECONNREFUSED';
 
-      await IXModelsModel.save({
+      await ixTestAccess.writeModel({
         extractorId,
         status: ModelStatus.processing,
         findingSuggestions: true,
@@ -286,7 +285,7 @@ describe('InformationExtraction Error Handling', () => {
         error_message: errorMessage,
       });
 
-      const [model] = await IXModelsModel.get({ extractorId });
+      const model = await ixTestAccess.readModel(extractorId);
       expect(model.status).toBe(ModelStatus.failed);
       expect(model.findingSuggestions).toBe(false);
     });
@@ -295,7 +294,7 @@ describe('InformationExtraction Error Handling', () => {
       const extractorId = factory.id('prop1extractor');
       const errorMessage = 'Failed to connect to external service: connect ETIMEDOUT';
 
-      await IXModelsModel.save({
+      await ixTestAccess.writeModel({
         extractorId,
         status: ModelStatus.processing,
         findingSuggestions: true,
@@ -312,7 +311,7 @@ describe('InformationExtraction Error Handling', () => {
         error_message: errorMessage,
       });
 
-      const [model] = await IXModelsModel.get({ extractorId });
+      const model = await ixTestAccess.readModel(extractorId);
       expect(model.status).toBe(ModelStatus.failed);
       expect(model.findingSuggestions).toBe(false);
     });
@@ -321,7 +320,7 @@ describe('InformationExtraction Error Handling', () => {
       const extractorId = factory.id('prop1extractor');
       const errorMessage = 'External service is currently unavailable';
 
-      await IXModelsModel.save({
+      await ixTestAccess.writeModel({
         extractorId,
         status: ModelStatus.processing,
         findingSuggestions: true,
@@ -338,7 +337,7 @@ describe('InformationExtraction Error Handling', () => {
         error_message: errorMessage,
       });
 
-      const [model] = await IXModelsModel.get({ extractorId });
+      const model = await ixTestAccess.readModel(extractorId);
       expect(model.status).toBe(ModelStatus.failed);
       expect(model.findingSuggestions).toBe(false);
     });
@@ -346,7 +345,7 @@ describe('InformationExtraction Error Handling', () => {
     it('should retry on transient failures', async () => {
       const extractorId = factory.id('prop1extractor');
 
-      await IXModelsModel.save({
+      await ixTestAccess.writeModel({
         extractorId,
         status: ModelStatus.processing,
         findingSuggestions: true,
@@ -365,7 +364,7 @@ describe('InformationExtraction Error Handling', () => {
         success: true,
       });
 
-      const [model] = await IXModelsModel.get({ extractorId });
+      const model = await ixTestAccess.readModel(extractorId);
       expect(model.status).toBe(ModelStatus.ready);
     });
 
@@ -373,7 +372,7 @@ describe('InformationExtraction Error Handling', () => {
       const extractorId = factory.id('prop1extractor');
       const errorMessage = 'File size exceeds maximum allowed limit';
 
-      await IXModelsModel.save({
+      await ixTestAccess.writeModel({
         extractorId,
         status: ModelStatus.processing,
         findingSuggestions: true,
@@ -390,7 +389,7 @@ describe('InformationExtraction Error Handling', () => {
         error_message: errorMessage,
       });
 
-      const [model] = await IXModelsModel.get({ extractorId });
+      const model = await ixTestAccess.readModel(extractorId);
       expect(model.status).toBe(ModelStatus.failed);
       expect(model.findingSuggestions).toBe(false);
     });
@@ -399,7 +398,7 @@ describe('InformationExtraction Error Handling', () => {
       const extractorId = factory.id('prop1extractor');
       const errorMessage = 'File not found';
 
-      await IXModelsModel.save({
+      await ixTestAccess.writeModel({
         extractorId,
         status: ModelStatus.processing,
         findingSuggestions: true,
@@ -416,7 +415,7 @@ describe('InformationExtraction Error Handling', () => {
         error_message: errorMessage,
       });
 
-      const [model] = await IXModelsModel.get({ extractorId });
+      const model = await ixTestAccess.readModel(extractorId);
       expect(model.status).toBe(ModelStatus.failed);
       expect(model.findingSuggestions).toBe(false);
     });
@@ -425,7 +424,7 @@ describe('InformationExtraction Error Handling', () => {
       const extractorId = factory.id('prop1extractor');
       const errorMessage = 'Invalid request';
 
-      await IXModelsModel.save({
+      await ixTestAccess.writeModel({
         extractorId,
         status: ModelStatus.processing,
         findingSuggestions: true,
@@ -442,7 +441,7 @@ describe('InformationExtraction Error Handling', () => {
         error_message: errorMessage,
       });
 
-      const [model] = await IXModelsModel.get({ extractorId });
+      const model = await ixTestAccess.readModel(extractorId);
       expect(model.status).toBe(ModelStatus.failed);
       expect(model.findingSuggestions).toBe(false);
     });
