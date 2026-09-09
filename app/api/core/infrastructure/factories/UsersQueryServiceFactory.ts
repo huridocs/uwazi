@@ -32,7 +32,9 @@ class UsersQueryServiceFactory {
     return new MongoUsersQueryService({
       dao: new MongoUsersDAO({
         db: getConnection(),
-        transactionManager: TransactionManagerFactory.default(),
+        transactionManager: ExecutionContext.getStore()
+          ? ExecutionContext.transactionManager
+          : TransactionManagerFactory.default(),
       }),
     });
   }

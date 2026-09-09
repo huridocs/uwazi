@@ -2,8 +2,8 @@ import {
   EntitiesQueryService,
   EntitiesQueryServiceDeps,
 } from '#api/core/application/EntitiesQueryService.js';
+import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { User } from '#api/users.v2/model/User.js';
-import { TransactionManagerFactory } from './TransactionManagerFactory.js';
 import { MongoTransactionManager } from '../mongodb/common/MongoTransactionManager.js';
 import { EntityPermissionCheckerFactory } from './EntityPermissionCheckerFactory.js';
 import { MongoRelationshipsV1DataSource } from '../mongodb/MongoRelationshipsV1DataSource.js';
@@ -19,7 +19,8 @@ type FactoryDeps = Partial<EntitiesQueryServiceDeps> & {
 
 class EntitiesQueryServiceFactory {
   static default(user: User, deps?: FactoryDeps) {
-    const transactionManager = deps?.transactionManager ?? TransactionManagerFactory.default();
+    const transactionManager =
+      deps?.transactionManager ?? (ExecutionContext.transactionManager as MongoTransactionManager);
 
     return new EntitiesQueryService({
       entityPermissionChecker:

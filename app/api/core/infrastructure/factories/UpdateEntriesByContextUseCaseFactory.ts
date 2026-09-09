@@ -1,13 +1,13 @@
 import { UpdateEntriesByContextUseCase } from '#api/core/application/UpdateEntriesByContext.js';
+import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { PropagateThesaurusTranslationServiceFactory } from './PropagateThesaurusTranslationServiceFactory.js';
 import { SettingsDataSourceFactory } from './SettingsDataSourceFactory.js';
 import { TranslationsDataSourceFactory } from './TranslationsDataSourceFactory.js';
 import { TranslationsServiceFactory } from './TranslationsServiceFactory.js';
-import { TransactionManagerFactory } from './TransactionManagerFactory.js';
 
 export class UpdateEntriesByContextUseCaseFactory {
   static default() {
-    const transactionManager = TransactionManagerFactory.default();
+    const { transactionManager } = ExecutionContext;
 
     return new UpdateEntriesByContextUseCase({
       transactionManager,

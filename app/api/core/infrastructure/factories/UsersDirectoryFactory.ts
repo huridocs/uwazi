@@ -45,10 +45,12 @@ class UsersDirectoryFactory {
     }
 
     const db = getConnection();
-    // Built here rather than taken off ExecutionContext, which throws when there is no
-    // context: plan 05 calls this from legacy paths (session deserialization, jobs) that do
-    // not all run inside one. Both DAOs share the instance, as they must.
-    const transactionManager = TransactionManagerFactory.default();
+    // Prefer the shared TM from the active ExecutionContext; fall back to a fresh one for
+    // legacy paths (session deserialization, jobs) that do not all run inside a context.
+    // Both DAOs share the instance, as they must.
+    const transactionManager = ExecutionContext.getStore()
+      ? ExecutionContext.transactionManager
+      : TransactionManagerFactory.default();
 
     return new MongoUsersDirectory({
       usersDAO: new MongoUsersDAO({ db, transactionManager }),

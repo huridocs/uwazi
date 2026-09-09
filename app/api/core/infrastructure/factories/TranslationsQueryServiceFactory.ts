@@ -1,11 +1,11 @@
 import { TranslationsQueryService } from '#api/core/application/translation/TranslationsQueryService.js';
+import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { SettingsDataSourceFactory } from './SettingsDataSourceFactory.js';
 import { TranslationsDataSourceFactory } from './TranslationsDataSourceFactory.js';
-import { TransactionManagerFactory } from './TransactionManagerFactory.js';
 
 export class TranslationsQueryServiceFactory {
   static default() {
-    const transactionManager = TransactionManagerFactory.default();
+    const { transactionManager } = ExecutionContext;
     const translationsDS = TranslationsDataSourceFactory.default({ transactionManager });
     const settingsDS = SettingsDataSourceFactory.default({ transactionManager });
 
