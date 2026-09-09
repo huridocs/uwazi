@@ -542,10 +542,10 @@ describe('ixextractors', () => {
       async ({ name, property, source, templates, expectedSuggestions }) => {
         await Extractors.create({ name, property, source, templates });
         const extractor = await ixTestAccess.readExtractorByName(name);
-        const suggestions = _.orderBy(await Suggestions.getByExtractor(extractor._id), [
-          'entityId',
-          'language',
-        ]);
+        const suggestions = _.orderBy(
+          await ixTestAccess.readSuggestions({ extractorId: extractor._id }),
+          ['entityId', 'language']
+        );
         expect(suggestions.length).toBe(expectedSuggestions.length);
         expect(suggestions).toMatchObject(expectedSuggestions);
       }
@@ -611,7 +611,7 @@ describe('ixextractors', () => {
         templates: [fixtureFactory.id('extractor_source_pdf_target_text_template').toString()],
       });
 
-      const suggestions = await Suggestions.getByExtractor(extractor._id);
+      const suggestions = await ixTestAccess.readSuggestions({ extractorId: extractor._id });
       const sorted = _.orderBy(suggestions, ['entityId', 'language']);
 
       expect(suggestions.length).toBe(5);
@@ -760,10 +760,10 @@ describe('ixextractors', () => {
         property: 'title',
         templates: existing.templates.map(t => t.toString()),
       });
-      const suggestions = _.orderBy(await Suggestions.getByExtractor(existing._id), [
-        'entityId',
-        'language',
-      ]);
+      const suggestions = _.orderBy(
+        await ixTestAccess.readSuggestions({ extractorId: existing._id }),
+        ['entityId', 'language']
+      );
       expect(suggestions).toMatchObject([
         {
           entityId: 'shared1',

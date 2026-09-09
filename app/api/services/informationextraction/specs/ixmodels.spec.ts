@@ -51,7 +51,7 @@ describe('save()', () => {
       status: ModelStatus.ready,
     });
 
-    expect(setSpy).toHaveBeenCalledWith({ extractorId: fixtureFactory.id('extractor') });
+    expect(setSpy).toHaveBeenCalledWith(fixtureFactory.id('extractor'));
 
     setSpy.mockRestore();
   });

@@ -681,7 +681,7 @@ describe(`On ${FilesDeletedEvent.name}`, () => {
     if (!enabled) {
       await disableFeatures();
     }
-    const deleteSpy = jest.spyOn(Suggestions, 'delete');
+    const deleteSpy = jest.spyOn(Suggestions, 'deleteByFileIds');
 
     const file1Id = db.id();
     const file2Id = db.id();
@@ -712,7 +712,7 @@ describe(`On ${FilesDeletedEvent.name}`, () => {
     );
 
     if (enabled) {
-      expect(deleteSpy).toHaveBeenCalledWith({ fileId: { $in: [file1Id, file2Id] } });
+      expect(deleteSpy).toHaveBeenCalledWith([file1Id, file2Id]);
     } else {
       expect(deleteSpy).not.toHaveBeenCalled();
     }

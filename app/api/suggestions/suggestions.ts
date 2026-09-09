@@ -3,8 +3,9 @@
 /* eslint-disable max-lines */
 import { ObjectId } from 'mongodb';
 
-import { EnforcedWithId, UwaziFilterQuery } from '#api/odm/index.js';
+import { EnforcedWithId } from '#api/odm/index.js';
 import { IXSuggestionsModel } from '#api/suggestions/IXSuggestionsModel.js';
+import { IXSuggestionsDAOFactory } from './infrastructure/IXSuggestionsDAOFactory.js';
 import templates from '#api/core/v1_layer/templates/index.js';
 import { ObjectIdSchema, PropertySchema } from '#shared/types/commonTypes.js';
 import { BaseFile } from '#api/core/domain/files/BaseFile.js';
@@ -13,10 +14,7 @@ import { FilesServiceFactory } from '#api/core/infrastructure/factories/FilesSer
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { IXSuggestionAggregation, IXSuggestionType } from '#shared/types/suggestionType.js';
 import { objectIndex } from '#shared/data_utils/objectIndex.js';
-import {
-  getSegmentedFilesIds,
-  propertyTypeIsWithoutPropertySelections,
-} from '#api/services/informationextraction/ixMaterials.js';
+import { propertyTypeIsWithoutPropertySelections } from '#api/services/informationextraction/ixMaterials.js';
 import { ArrayUtils } from '#api/common.v2/utils/Array.js';
 import { IXModelType } from '#shared/types/IXModelType.js';
 import { registerEventListeners } from './eventListeners.js';
@@ -81,6 +79,8 @@ const updatePropertySelections = async (
   }
 };
 
+const dao = () => IXSuggestionsDAOFactory.default();
+
 const propertyTypesWithAllLanguages = new Set(['numeric', 'date', 'select', 'multiselect']);
 
 const needsAllLanguages = (propertyType: PropertySchema['type']) =>
@@ -106,76 +106,6 @@ const validatePartialAcceptanceTypeConstraint = (
 };
 
 const Suggestions = {
-  getById: async (id: ObjectIdSchema) => IXSuggestionsModel.getById(id),
-  getByEntityId: async (sharedId: string) => IXSuggestionsModel.get({ entityId: sharedId }),
-  getByExtractor: async (extractorId: ObjectIdSchema) => IXSuggestionsModel.get({ extractorId }),
-
-  // Balanced sampling for suggestion finding (both test runs and regular runs)
-  getBalancedSample: async (
-    extractorId: ObjectIdSchema,
-    model: EnforcedWithId<IXModelType>,
-    maxTotal: number
-  ): Promise<IXSuggestionType[]> => {
-    const since = model.processRun?.suggestionsRunTimestamp || model.creationDate;
-    const baseQuery = {
-      extractorId,
-      $or: [{ date: null }, { date: { $lt: since } }],
-      'state.error': { $ne: true },
-    };
-
-    // Get counts for balanced allocation
-    const [unlabeledCount, labeledCount] = await Promise.all([
-      IXSuggestionsModel.db.countDocuments({ ...baseQuery, 'state.labeled': { $ne: true } }),
-      IXSuggestionsModel.db.countDocuments({ ...baseQuery, 'state.labeled': true }),
-    ]);
-
-    // Calculate optimal allocation
-    const idealHalf = Math.floor(maxTotal / 2);
-    let unlabeledSampleSize = Math.min(idealHalf, unlabeledCount);
-    let labeledSampleSize = Math.min(idealHalf, labeledCount);
-
-    // Reallocate unused slots
-    const totalUsed = unlabeledSampleSize + labeledSampleSize;
-    const remainingSlots = maxTotal - totalUsed;
-
-    if (remainingSlots > 0) {
-      if (unlabeledCount > unlabeledSampleSize) {
-        unlabeledSampleSize = Math.min(unlabeledCount, unlabeledSampleSize + remainingSlots);
-      } else if (labeledCount > labeledSampleSize) {
-        labeledSampleSize = Math.min(labeledCount, labeledSampleSize + remainingSlots);
-      }
-    }
-
-    const pipeline = [
-      {
-        $facet: {
-          unlabeled: [
-            { $match: { ...baseQuery, 'state.labeled': { $ne: true } } },
-            { $sample: { size: unlabeledSampleSize } },
-          ],
-          labeled: [
-            { $match: { ...baseQuery, 'state.labeled': true } },
-            { $sample: { size: labeledSampleSize } },
-          ],
-        },
-      },
-      {
-        $project: {
-          suggestions: { $concatArrays: ['$unlabeled', '$labeled'] },
-        },
-      },
-      {
-        $unwind: '$suggestions',
-      },
-      {
-        $replaceRoot: { newRoot: '$suggestions' },
-      },
-    ];
-
-    const result = (await IXSuggestionsModel.db.aggregate(pipeline)) as IXSuggestionType[];
-    return result;
-  },
-
   // Balanced sampling honoring process-run filters stored in the model. If filters are not provided,
   // default to sampling from the three non-ready statuses: nonProcessed, obsolete, error.
   getSampleForProcess: async (
@@ -380,33 +310,16 @@ const Suggestions = {
 
   updateStates,
 
-  setObsolete: async (query: any) =>
-    IXSuggestionsModel.updateMany(query, {
-      $set: { 'state.obsolete': true, 'state.match': null },
-    }),
-
-  markSuggestionsWithoutSegmentation: async (query: UwaziFilterQuery<IXSuggestionType>) => {
-    const segmentedFilesIds = await getSegmentedFilesIds();
-    await IXSuggestionsModel.updateMany(
-      {
-        ...query,
-        fileId: { $nin: segmentedFilesIds },
-      },
-      { $set: { 'state.error': true, 'state.match': null } }
-    );
-  },
+  setObsolete: async (extractorId: ObjectIdSchema) => dao().markObsoleteForExtractor(extractorId),
 
   markSuggestionsAsTrainingSamples: async (entities: string[], extractorIdString: string) => {
     const extractorId = ObjectId.createFromHexString(extractorIdString);
-    await IXSuggestionsModel.updateMany({ extractorId }, { $set: { trainingSample: false } });
+    await dao().clearTrainingSamplesForExtractor(extractorId);
 
     const chunks = ArrayUtils.splitInChunks(entities, 1000);
     await chunks.reduce(async (promise, chunk) => {
       await promise;
-      await IXSuggestionsModel.updateMany(
-        { entityId: { $in: chunk }, extractorId },
-        { $set: { trainingSample: true } }
-      );
+      await dao().markTrainingSamples(extractorId, chunk);
     }, Promise.resolve());
   },
 
@@ -414,35 +327,19 @@ const Suggestions = {
     extractorId: ObjectIdSchema,
     candidateIds: string[],
     runTimestamp: number
-  ): Promise<Set<string>> => {
-    const [queuedNow, readyThisRun] = await Promise.all([
-      IXSuggestionsModel.db.distinct('entityId', {
-        extractorId,
-        entityId: { $in: candidateIds },
-        status: 'processing',
-      }),
-      IXSuggestionsModel.db.distinct('entityId', {
-        extractorId,
-        entityId: { $in: candidateIds },
-        'modelData.suggestionsRunTimestamp': runTimestamp,
-        status: 'ready',
-      }),
-    ]);
-
-    return new Set<string>([...queuedNow, ...readyThisRun]);
-  },
+  ): Promise<Set<string>> =>
+    new Set(await dao().getEntityIdsSeenInRun(extractorId, candidateIds, runTimestamp)),
 
   save: async (suggestion: IXSuggestionType) => Suggestions.saveMultiple([suggestion]),
 
-  saveMultiple: async (_suggestions: IXSuggestionType[]) =>
-    IXSuggestionsModel.saveMultiple(_suggestions),
+  saveMultiple: async (_suggestions: Partial<IXSuggestionType>[]) =>
+    dao().saveMultiple(_suggestions),
 
-  createMultiple: async (_suggestions: IXSuggestionType[]) =>
-    IXSuggestionsModel.db.createMany(_suggestions),
+  createMultiple: async (_suggestions: IXSuggestionType[]) => dao().createMultiple(_suggestions),
 
   accept: async (acceptedSuggestions: AcceptedSuggestion[]) => {
     const acceptedIds = Array.from(new Set(acceptedSuggestions.map(s => s._id.toString())));
-    const suggestions = await IXSuggestionsModel.get({ _id: { $in: acceptedIds } });
+    const suggestions = await dao().getByIds(acceptedIds);
     const extractors = new Set(suggestions.map(s => s.extractorId.toString()));
     if (extractors.size > 1) {
       throw new Error('All suggestions must come from the same extractor');
@@ -464,11 +361,16 @@ const Suggestions = {
     await updatePropertySelections(suggestions, property);
   },
 
-  deleteByEntityId: async (sharedId: string) => {
-    await IXSuggestionsModel.delete({ entityId: sharedId });
-  },
-
-  delete: IXSuggestionsModel.delete.bind(IXSuggestionsModel),
+  deleteByEntityId: async (sharedId: string) => dao().deleteByEntityId(sharedId),
+  deleteByEntityAndTemplate: async (sharedId: string, templateId: string) =>
+    dao().deleteByEntityAndTemplate(sharedId, templateId),
+  deleteByExtractorId: async (extractorId: ObjectIdSchema) =>
+    dao().deleteByExtractorId(extractorId),
+  deleteByExtractorIds: async (extractorIds: ObjectIdSchema[]) =>
+    dao().deleteByExtractorIds(extractorIds),
+  deleteByTemplatesAndExtractors: async (templateIds: string[], extractorIds: ObjectIdSchema[]) =>
+    dao().deleteByTemplatesAndExtractors(templateIds, extractorIds),
+  deleteByFileIds: async (fileIds: ObjectIdSchema[]) => dao().deleteByFileIds(fileIds),
   registerEventListeners,
 };
 

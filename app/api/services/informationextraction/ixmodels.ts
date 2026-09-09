@@ -1,5 +1,5 @@
 import { Suggestions } from '#api/suggestions/suggestions.js';
-import { IXSuggestionsModel } from '#api/suggestions/IXSuggestionsModel.js';
+import { IXSuggestionsDAOFactory } from '#api/suggestions/infrastructure/IXSuggestionsDAOFactory.js';
 import { ModelStatus } from '#shared/types/IXModelSchema.js';
 import { IXModelType } from '#shared/types/IXModelType.js';
 import { ObjectIdSchema } from '#shared/types/commonTypes.js';
@@ -12,6 +12,7 @@ type StartTrainingOptions = {
 };
 
 const dao = () => IXModelsDAOFactory.default();
+const suggestionsDao = () => IXSuggestionsDAOFactory.default();
 
 const unsetFindSuggestionsData = async (ixModelId: ObjectIdSchema) =>
   dao().clearFindRunQueue(ixModelId);
@@ -25,21 +26,10 @@ const findPendingSharedIds = async (extractorId: ObjectIdSchema, sharedIds: stri
   // Keep IDs pending when:
   // - they have any obsolete suggestion, OR
   // - they have no valid non-obsolete/non-error suggestion yet.
-  const [validNonObsoleteIds, obsoleteIds] = (await Promise.all([
-    IXSuggestionsModel.db.distinct('entityId', {
-      extractorId,
-      entityId: { $in: sharedIds },
-      date: { $ne: null },
-      'state.obsolete': { $ne: true },
-      'state.error': { $ne: true },
-    }),
-    IXSuggestionsModel.db.distinct('entityId', {
-      extractorId,
-      entityId: { $in: sharedIds },
-      date: { $ne: null },
-      'state.obsolete': true,
-    }),
-  ])) as [string[], string[]];
+  const [validNonObsoleteIds, obsoleteIds] = await Promise.all([
+    suggestionsDao().getEntityIdsWithHealthySuggestions(extractorId, sharedIds),
+    suggestionsDao().getEntityIdsWithObsoleteSuggestions(extractorId, sharedIds),
+  ]);
   const validSet = new Set(validNonObsoleteIds);
   const obsoleteSet = new Set(obsoleteIds);
   return sharedIds.filter(id => obsoleteSet.has(id) || !validSet.has(id));
@@ -64,7 +54,7 @@ export default {
   saveAndObsoleteSuggestions: async (ixmodel: Partial<IXModelType>) => {
     const saved = await dao().save(ixmodel);
     if (ixmodel.status === ModelStatus.ready) {
-      await Suggestions.setObsolete({ extractorId: saved.extractorId });
+      await Suggestions.setObsolete(saved.extractorId);
     }
     return saved;
   },

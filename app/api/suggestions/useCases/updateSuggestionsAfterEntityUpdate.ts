@@ -4,6 +4,7 @@ import { IXServices } from '#api/services/informationextraction/IXServices.js';
 import { IXSuggestionType } from '#shared/types/suggestionType.js';
 import { PipelineBuilder } from '../queryBuilder.js';
 import { IXSuggestionsModel } from '../IXSuggestionsModel.js';
+import { IXSuggestionsDAOFactory } from '../infrastructure/IXSuggestionsDAOFactory.js';
 import { SuggestionFactory } from '../suggestionFactory.js';
 import { TemplatesDAOFactory } from '#api/core/infrastructure/factories/TemplatesDAOFactory.js';
 
@@ -76,7 +77,7 @@ class UpdateSuggestionsAfterEntityUpdate implements UseCase<Input, Output> {
       );
     });
 
-    await IXSuggestionsModel.saveMultiple(updatedSuggestions);
+    await IXSuggestionsDAOFactory.default().saveMultiple(updatedSuggestions);
   }
 }
 

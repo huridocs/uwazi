@@ -8,7 +8,7 @@ import moment from 'moment';
 import { storage } from '#api/files/index.js';
 import { TaskManager } from '#api/services/tasksmanager/TaskManager.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
-import { IXSuggestionsModel } from '#api/suggestions/IXSuggestionsModel.js';
+import { IXSuggestionsDAOFactory } from '#api/suggestions/infrastructure/IXSuggestionsDAOFactory.js';
 import { SegmentationModel } from '#api/services/pdfsegmentation/segmentationModel.js';
 import { EnforcedWithId } from '#api/odm/index.js';
 import { tenants } from '#api/tenants/index.js';
@@ -60,6 +60,8 @@ import { IXTrainModelJob } from './TrainModelJob.js';
 import { IXServices } from './IXServices.js';
 
 const defaultTrainingLanguage = 'en';
+
+const suggestionsDao = () => IXSuggestionsDAOFactory.default();
 
 type TaskTypes = 'suggestions' | 'create_model';
 
@@ -176,23 +178,7 @@ class InformationExtraction {
       }
 
       if (currentModel?.findingSuggestions) {
-        await IXSuggestionsModel.updateMany(
-          {
-            extractorId: message.params!.id,
-            status: 'processing',
-          },
-          {
-            $set: {
-              status: 'failed',
-              error: errorMessage,
-              'state.processing': false,
-              'state.error': true,
-              'state.match': null,
-              'state.withSuggestion': false,
-              'state.hasContext': false,
-            },
-          }
-        );
+        await suggestionsDao().markProcessingAsFailed(message.params!.id, errorMessage);
       }
 
       emitToTenantAdminsAndEditors(
@@ -210,23 +196,7 @@ class InformationExtraction {
     await this.stopModel(message.params!.id);
 
     if (currentModel?.findingSuggestions) {
-      await IXSuggestionsModel.updateMany(
-        {
-          extractorId: message.params!.id,
-          status: 'processing',
-        },
-        {
-          $set: {
-            status: 'failed',
-            error: errorMessage,
-            'state.processing': false,
-            'state.error': true,
-            'state.match': null,
-            'state.withSuggestion': false,
-            'state.hasContext': false,
-          },
-        }
-      );
+      await suggestionsDao().markProcessingAsFailed(message.params!.id, errorMessage);
     }
 
     // Inform UI the run ended without flipping model to error
@@ -359,12 +329,10 @@ class InformationExtraction {
     );
 
     if (type === 'prediction_data') {
-      const suggestions = await IXSuggestionsModel.db
-        .find({
-          fileId: { $in: files.map(f => f._id) },
-          extractorId: extractor._id,
-        })
-        .lean();
+      const suggestions = await suggestionsDao().getByFileIds(
+        extractor._id,
+        files.map(f => f._id)
+      );
 
       await Suggestions.saveMultiple(
         suggestions.map(suggestion =>
@@ -451,15 +419,10 @@ class InformationExtraction {
     });
 
     if (type === 'prediction_data') {
-      const suggestions = await IXSuggestionsModel.db
-        .find({
-          extractorId: extractor._id,
-          $or: entitiesForTraining.map(e => ({
-            entityId: e.sharedId,
-            language: e.language,
-          })),
-        })
-        .lean();
+      const suggestions = await suggestionsDao().getByEntityLanguagePairs(
+        extractor._id,
+        entitiesForTraining.map(e => ({ sharedId: e.sharedId!, language: e.language! }))
+      );
 
       await Suggestions.saveMultiple(
         suggestions.map(suggestion =>
@@ -538,9 +501,9 @@ class InformationExtraction {
 
       const extractionKey = new ExtractionKey(rawSuggestion.entity_name);
 
-      const [originalSuggestion] = await IXSuggestionsModel.get({
-        entityId: extractionKey.entitySharedId,
+      const originalSuggestion = await suggestionsDao().getOneForEntity({
         extractorId: extractor._id,
+        entityId: extractionKey.entitySharedId,
         language: extractionKey.language,
       });
 
@@ -587,10 +550,10 @@ class InformationExtraction {
           return Promise.resolve();
         }
 
-        const [originalSuggestion] = await IXSuggestionsModel.get({
-          entityId: entity.sharedId,
+        const originalSuggestion = await suggestionsDao().getOneForFile({
           extractorId: extractor._id,
-          fileId: segmentation.fileID,
+          entityId: entity.sharedId!,
+          fileId: segmentation.fileID!,
         });
 
         if (!originalSuggestion) {
@@ -660,20 +623,13 @@ class InformationExtraction {
     // where 'date' may not be updated (e.g., re-suggesting obsolete items).
     let processedSuggestions = 0;
     if (model.processRun?.suggestionsRunTimestamp) {
-      processedSuggestions = await IXSuggestionsModel.db.countDocuments({
+      processedSuggestions = await suggestionsDao().countProcessedInRun(
         extractorId,
-        status: 'ready',
-        date: { $ne: null },
-        'state.obsolete': { $ne: true },
-        'state.error': { $ne: true },
-        'modelData.suggestionsRunTimestamp': model.processRun.suggestionsRunTimestamp,
-      });
+        model.processRun.suggestionsRunTimestamp
+      );
     } else {
       const since = model.creationDate;
-      processedSuggestions = await IXSuggestionsModel.count({
-        extractorId,
-        $and: [{ date: { $ne: null } }, { date: { $gt: since } }],
-      });
+      processedSuggestions = await suggestionsDao().countProcessedSince(extractorId, since);
     }
     const status = {
       total: model.totalSuggestionsToFind,

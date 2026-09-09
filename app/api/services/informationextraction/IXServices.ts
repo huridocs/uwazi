@@ -6,10 +6,12 @@ import { ModelStatus } from '#shared/types/IXModelSchema.js';
 import { EntitySchema } from '#shared/types/entityType.js';
 import { FileType } from '#shared/types/fileType.js';
 import { propertyIsMultiValued } from '#shared/getIXSuggestionState.js';
-import { IXSuggestionsModel } from '#api/suggestions/IXSuggestionsModel.js';
+import { IXSuggestionsDAOFactory } from '#api/suggestions/infrastructure/IXSuggestionsDAOFactory.js';
 import { IXModelType } from '#shared/types/IXModelType.js';
 import { TemplateSchema } from '#shared/types/templateType.js';
 import ixmodels, { DEFAULT_MAX_SUGGESTIONS_SIZE } from './ixmodels.js';
+
+const suggestionsDao = () => IXSuggestionsDAOFactory.default();
 
 type GetTargetPropertyInput = {
   extractor: IXExtractorType;
@@ -59,7 +61,7 @@ export class IXServices {
     extractorId: ObjectIdSchema,
     model: EnforcedWithId<IXModelType>
   ) {
-    const allPossibleSuggestions = await IXSuggestionsModel.count({ extractorId });
+    const allPossibleSuggestions = await suggestionsDao().countAllForExtractor(extractorId);
     const maxCap = model.maxSuggestionsToFind ?? DEFAULT_MAX_SUGGESTIONS_SIZE;
     const totalSuggestions = Math.min(maxCap, allPossibleSuggestions);
     return totalSuggestions;
@@ -70,31 +72,8 @@ export class IXServices {
     model: EnforcedWithId<IXModelType>,
     filters?: { nonProcessed?: boolean; obsolete?: boolean; error?: boolean }
   ) {
-    const statuses = {
-      nonProcessed: filters?.nonProcessed ?? false,
-      obsolete: filters?.obsolete ?? false,
-      error: filters?.error ?? false,
-    };
-
-    const usingAnyFilter = statuses.nonProcessed || statuses.obsolete || statuses.error;
-
-    // Default to all three statuses if no explicit filter selection
-    const matchAny = usingAnyFilter
-      ? [
-          statuses.nonProcessed ? { date: null } : null,
-          statuses.obsolete ? { date: { $ne: null }, 'state.obsolete': true } : null,
-          statuses.error ? { date: { $ne: null }, 'state.error': true } : null,
-        ].filter(Boolean)
-      : [
-          { date: null },
-          { date: { $ne: null }, 'state.obsolete': true },
-          { date: { $ne: null }, 'state.error': true },
-        ];
-
-    const count = await IXSuggestionsModel.db.countDocuments({
-      extractorId,
-      $or: matchAny as any[],
-    });
+    // An empty filter means all three statuses; the DAO owns that rule now.
+    const count = await suggestionsDao().countPendingForExtractor(extractorId, filters);
 
     const maxCap = model.maxSuggestionsToFind ?? DEFAULT_MAX_SUGGESTIONS_SIZE;
     const total = Math.min(maxCap, count);

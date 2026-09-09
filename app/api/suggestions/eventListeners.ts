@@ -80,7 +80,7 @@ const registerEventListeners = (eventsBus: EventsBus) => {
 
   eventsBus.on(FilesDeletedEvent, async ({ files: _files }) => {
     if (!(await featureIsEnabled())) return;
-    await Suggestions.delete({ fileId: { $in: _files.map(f => f._id) } });
+    await Suggestions.deleteByFileIds(_files.map(f => f._id!));
   });
 
   eventsBus.on(TemplateUpdatedEvent, async ({ after }) => {

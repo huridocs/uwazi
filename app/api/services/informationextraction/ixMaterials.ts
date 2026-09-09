@@ -492,7 +492,7 @@ async function getFileIdsWithReadySegmentations(
       status: 'failed' as IXSuggestionType['status'],
     })) as Partial<IXSuggestionType>[];
 
-    await IXSuggestionsModel.saveMultiple(modifiedSuggestions);
+    await Suggestions.saveMultiple(modifiedSuggestions);
   }
 
   // Balance selection: take up to half from each bucket, then fill the remainder

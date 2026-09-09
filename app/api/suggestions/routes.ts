@@ -244,7 +244,10 @@ export const suggestionsRoutes = (app: Application) => {
         .then(() => req.emitToSessionSocket('ACCEPT_SUGGESTION_SUCCESS'))
         .catch(e => {
           const error = handleError(e);
-          req.emitToSessionSocket('ACCEPT_SUGGESTION_ERROR', error.message);
+          // `handleError` deletes `message` for generic errors and puts the text in `error`
+          // (see simplifyError), so reading only `message` emitted `undefined` for every
+          // acceptance failure that was not a mongoose cast error.
+          req.emitToSessionSocket('ACCEPT_SUGGESTION_ERROR', error.message || error.error);
         });
     }
   );

@@ -1,8 +1,8 @@
 import { ObjectId } from 'mongodb';
-import { IXSuggestionsModel } from '#api/suggestions/IXSuggestionsModel.js';
+import { IXSuggestionsDAOFactory } from '#api/suggestions/infrastructure/IXSuggestionsDAOFactory.js';
+import { RunScope } from '#api/suggestions/domain/IXSuggestionsDataSource.js';
 import ixmodels from '#api/services/informationextraction/ixmodels.js';
 import { Suggestions } from '#api/suggestions/suggestions.js';
-import { DataType, UwaziFilterQuery } from '#api/odm/index.js';
 import { IXSuggestionType } from '#shared/types/suggestionType.js';
 import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
 import { updateStates } from '../updateState.js';
@@ -24,46 +24,28 @@ export class AcceptSuggestionsUseCase {
     const overwriteAll = autoAccept?.overwriteMode === 'overwrite_all';
     const source = autoAccept?.source === 'all' ? 'all' : 'previous';
 
-    const baseMatch: UwaziFilterQuery<DataType<IXSuggestionType>> = {
-      extractorId: ObjectId.createFromHexString(extractorId),
-      status: 'ready',
-      date: { $ne: null },
-      'state.withSuggestion': true,
-      'state.obsolete': { $ne: true },
-      'state.error': { $ne: true },
-    };
-    if (!overwriteAll) (baseMatch as any)['state.withValue'] = { $ne: true };
-
     // Scope to this run
     // - process_selected: strictly selected cohort (no OR with run timestamp)
     // - others (process_extractor/accept-only with source 'previous'): scope by run timestamp
-    let match: UwaziFilterQuery<DataType<IXSuggestionType>> = baseMatch;
+    let scope: RunScope = { kind: 'all' };
     if (source !== 'all') {
       if (mode === 'process_selected') {
-        if (
-          Array.isArray(selectedSharedIdsForAutoAccept) &&
-          selectedSharedIdsForAutoAccept.length
-        ) {
-          match = {
-            ...baseMatch,
-            entityId: { $in: selectedSharedIdsForAutoAccept },
-          };
-        } else {
-          // Empty cohort: nothing to accept
-          match = { ...baseMatch, entityId: { $in: [] } };
-        }
+        scope = { kind: 'entities', entityIds: selectedSharedIdsForAutoAccept ?? [] };
       } else if (suggestionsRunTimestamp) {
-        match = {
-          ...baseMatch,
-          'modelData.suggestionsRunTimestamp': suggestionsRunTimestamp,
-        };
+        scope = { kind: 'run', runTimestamp: suggestionsRunTimestamp };
       }
     }
+
+    const acceptanceQuery = {
+      extractorId: ObjectId.createFromHexString(extractorId),
+      scope,
+      includeAlreadyValued: overwriteAll,
+    };
 
     // initialize progress if missing
     let total = model.processRun.autoAcceptProgress?.total;
     if (typeof total !== 'number') {
-      total = await IXSuggestionsModel.db.countDocuments(match);
+      total = await IXSuggestionsDAOFactory.default().countAcceptable(acceptanceQuery);
       await ixmodels.setAutoAcceptProgress(extractorId, { total, processed: 0 });
     } else {
       /* empty */
@@ -77,12 +59,9 @@ export class AcceptSuggestionsUseCase {
     // Use skip paging for non-shrinking sets: overwrite_all (regardless of source)
     const useSkipPaging = overwriteAll === true;
 
-    const suggestions = await IXSuggestionsModel.get(
-      match,
-      '_id entityId entityLanguageId state modelData',
-      useSkipPaging
-        ? ({ skip: alreadyProcessed, limit: batchSize, sort: { _id: 1 } } as any)
-        : ({ limit: batchSize, sort: { _id: 1 } } as any)
+    const suggestions = await IXSuggestionsDAOFactory.default().getAcceptable(
+      acceptanceQuery,
+      useSkipPaging ? { skip: alreadyProcessed, limit: batchSize } : { limit: batchSize }
     );
     const toAccept = suggestions.map(s => ({
       _id: s._id,

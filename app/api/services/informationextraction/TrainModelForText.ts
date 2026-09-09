@@ -10,7 +10,7 @@ import { emitToTenantAdminsAndEditors } from '#api/socketio/setupSockets.js';
 import { EnforcedWithId } from '#api/odm/index.js';
 import { IXExtractorType } from '#shared/types/extractorType.js';
 import { Suggestions } from '#api/suggestions/suggestions.js';
-import { IXSuggestionsModel } from '#api/suggestions/IXSuggestionsModel.js';
+import { IXSuggestionsDAOFactory } from '#api/suggestions/infrastructure/IXSuggestionsDAOFactory.js';
 import { getPropertyTrainingEntities } from './FetchMaterialsForTraining.js';
 import { PropertySourceMaterials } from './InformationExtraction.js';
 import { IXTaskService } from './TaskService.js';
@@ -72,16 +72,11 @@ class TrainModelForText implements UseCase<Input, Output> {
         }
 
         // Attach useForTraining flag for this entity-language if any suggestion is marked
-        const [marked] = await IXSuggestionsModel.db
-          .find({
-            extractorId: extractor._id,
-            entityId: entity.sharedId,
-            language: entity.language,
-            useForTraining: true,
-          })
-          .limit(1)
-          .select({ _id: 1 })
-          .lean();
+        const marked = await IXSuggestionsDAOFactory.default().isMarkedForTraining(
+          extractor._id,
+          entity.sharedId!,
+          entity.language!
+        );
         if (marked) {
           data.useForTraining = true;
         }

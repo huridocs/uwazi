@@ -980,42 +980,12 @@ describe('suggestions', () => {
       await testingEnvironment.setUp(fixtures);
     });
 
-    it('should set the queried suggestions to obsolete state', async () => {
-      const query = { entityId: 'shared1' };
-      await Suggestions.setObsolete(query);
+    it("should set the extractor's suggestions to obsolete state", async () => {
+      const query = { extractorId: factory.id('age_extractor') };
+      await Suggestions.setObsolete(query.extractorId);
       const obsoletes = await db.mongodb?.collection('ixsuggestions').find(query).toArray();
+      expect(obsoletes?.length).toBeGreaterThan(0);
       expect(obsoletes?.every(s => s.state.obsolete && s.state.match === null)).toBe(true);
-      expect(obsoletes?.length).toBe(4);
-    });
-  });
-
-  describe('markSuggestionsWithoutSegmentation()', () => {
-    beforeEach(async () => {
-      await testingEnvironment.setUp(fixtures);
-    });
-
-    it('should mark the suggestions without segmentation to error state', async () => {
-      const query = { entityId: 'shared1' };
-      await Suggestions.markSuggestionsWithoutSegmentation(query);
-      const notSegmented = await db.mongodb?.collection('ixsuggestions').find(query).toArray();
-      expect(notSegmented?.every(s => s.state.error && s.state.match === null)).toBe(true);
-    });
-
-    it('should not mark suggestions when segmentations are correct', async () => {
-      const query = { entityId: 'shared2' };
-      await Suggestions.markSuggestionsWithoutSegmentation(query);
-      const segmented = await db.mongodb
-        ?.collection('ixsuggestions')
-        .find({ _id: suggestionId })
-        .toArray();
-      const notSegmented = await db.mongodb
-        ?.collection('ixsuggestions')
-        .find({ _id: shared2AgeSuggestionId })
-        .toArray();
-      expect(segmented?.length).toBe(1);
-      expect(segmented?.every(s => s.state?.error)).toBe(false);
-      expect(notSegmented?.length).toBe(1);
-      expect(notSegmented?.every(s => s.state.error && s.state.match === null)).toBe(true);
     });
   });
 

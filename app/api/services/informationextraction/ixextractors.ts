@@ -86,7 +86,7 @@ const templatePropertyExistenceCheck = async (propertyName: string, templateIds:
 };
 
 const handlePropertyUpdate = async (updatedExtractor: IXExtractorType) => {
-  await Suggestions.delete({ extractorId: updatedExtractor._id });
+  await Suggestions.deleteByExtractorId(updatedExtractor._id);
   await createBlankSuggestionsForExtractor(updatedExtractor);
 };
 
@@ -102,10 +102,7 @@ const handleTemplateUpdate = async (
     templateId => !oldExtractor.templates.find(template => template.toString() === templateId)
   );
 
-  await Suggestions.delete({
-    entityTemplate: { $in: templatesRemoved },
-    extractorId: oldExtractor._id,
-  });
+  await Suggestions.deleteByTemplatesAndExtractors(templatesRemoved, [oldExtractor._id]);
 
   if (templatesAdded.length) {
     await createBlankSuggestionsForPartialExtractor(newExtractor, templatesAdded);
@@ -133,7 +130,7 @@ const Extractors = {
     const extractors = await dao().getByIds(ids);
     if (extractors.length !== ids.length) throw new MissingExtractorError();
     await dao().deleteByIds(ids);
-    await Suggestions.delete({ extractorId: { $in: ids } });
+    await Suggestions.deleteByExtractorIds(ids);
   },
   create: async (extractor: NewExtractorType) => {
     const { name, source, property, templates: templateIds } = extractor;
@@ -183,7 +180,7 @@ const Extractors = {
 
     await dao().removeTemplateFromExtractors(extractorIds, templateId);
 
-    await Suggestions.delete({ entityTemplate: templateId, extractorId: { $in: extractorIds } });
+    await Suggestions.deleteByTemplatesAndExtractors([templateId], extractorIds);
     await dao().deleteEmptyByIds(extractorIds);
   },
 };
