@@ -365,6 +365,20 @@ export class MongoIXSuggestionsDataSource
     );
   }
 
+  async markProcessingAsObsolete(extractorId: ObjectIdSchema) {
+    await this.getCollection().updateMany(
+      { extractorId: toObjectId(extractorId), status: 'processing' } as any,
+      {
+        $set: {
+          status: 'ready',
+          'state.processing': false,
+          'state.obsolete': true,
+          'state.match': null,
+        },
+      } as any
+    );
+  }
+
   async setUseForTraining(ids: ObjectIdSchema[], useForTraining: boolean) {
     await this.getCollection().updateMany({ _id: { $in: toObjectIds(ids) } as any }, {
       $set: { useForTraining },

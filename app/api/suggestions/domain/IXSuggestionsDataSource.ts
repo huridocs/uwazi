@@ -169,6 +169,13 @@ export interface IXSuggestionsDataSource {
   /** Fail whatever is still `processing` for this extractor, with the run's error message. */
   markProcessingAsFailed(extractorId: ObjectIdSchema, errorMessage: string): Promise<void>;
 
+  /**
+   * Release whatever is still `processing` for this extractor without calling it an error — the
+   * cancel counterpart of `markProcessingAsFailed`. The rows keep no result, so they stay
+   * `obsolete` and get picked up by the next run rather than lingering as in-flight forever.
+   */
+  markProcessingAsObsolete(extractorId: ObjectIdSchema): Promise<void>;
+
   setUseForTraining(ids: ObjectIdSchema[], useForTraining: boolean): Promise<void>;
 
   /**

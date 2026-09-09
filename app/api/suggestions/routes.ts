@@ -125,7 +125,7 @@ export const suggestionsRoutes = (app: Application) => {
     needsAuthorization(['admin', 'editor']),
     extractorIdRequestValidation('body'),
     async (req, res, _next) => {
-      const status = await IX.stopModel(ObjectId.createFromHexString(req.body.extractorId));
+      const status = await IX.cancelModel(ObjectId.createFromHexString(req.body.extractorId));
       res.json(status);
     }
   );

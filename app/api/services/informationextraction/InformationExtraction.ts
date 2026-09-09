@@ -904,6 +904,29 @@ class InformationExtraction {
     return { status: 'ready', message: 'Ready' };
   };
 
+  /**
+   * User-initiated cancel, as opposed to `stopModel`, which the run's own completion and failure
+   * paths use. The ML service has no cancel protocol — nothing can call a dispatched task back —
+   * so cancelling means making the run stop affecting this tenant's data: release the model, drop
+   * the run configuration, and release the rows the run had marked in flight. `processResults`
+   * then discards whatever the service eventually returns for it.
+   *
+   * `processRun` is cleared here and not in `stopModel` on purpose: the completion path still has
+   * to read `processRun.autoAccept` after the find phase ends.
+   */
+  cancelModel = async (extractorId: ObjectIdSchema) => {
+    const model = await ixmodels.markReady(extractorId);
+
+    if (!model) {
+      return { status: 'error', message: 'No model found' };
+    }
+
+    await ixmodels.unsetProcessRun(extractorId.toString());
+    await suggestionsDao().markProcessingAsObsolete(extractorId);
+
+    return { status: 'ready', message: 'Ready' };
+  };
+
   startAutoAcceptIfEnabled = async (extractorId: string): Promise<boolean> => {
     const tenant = tenants.current();
     const model = await ixmodels.getByExtractorId(new ObjectId(extractorId));
@@ -970,6 +993,23 @@ class InformationExtraction {
         }
 
         if (message.task === 'suggestions') {
+          // A run only clears `findingSuggestions` when it is cancelled or already over, so
+          // reaching here without it means these results belong to a run that no longer exists.
+          // Writing them is what made "Cancel" a lie: the batch already in flight landed anyway.
+          // Discard it, release anything the run had left marked in flight, and stop.
+          if (!currentModel?.findingSuggestions) {
+            await suggestionsDao().markProcessingAsObsolete(message.params!.id);
+
+            emitToTenantAdminsAndEditors(
+              message.tenant,
+              'ix_model_status',
+              _message.params!.id,
+              'ready',
+              'Canceled'
+            );
+            return;
+          }
+
           await this.saveSuggestionsManager(message);
           await this.updateSuggestionStatus(message, currentModel!);
 

@@ -35,6 +35,7 @@ import {
 } from '../InformationExtraction.js';
 import { ExternalDummyService } from '../../tasksmanager/specs/ExternalDummyService.js';
 import { Extractors } from '../ixextractors.js';
+import ixmodels from '../ixmodels.js';
 import { IXWebSocketEvents } from '../WebSocketEvents.js';
 import { FileWithAggregation, NoFilesForTraining, NoLabeledEntities } from '../ixMaterials.js';
 
@@ -1753,6 +1754,91 @@ describe('InformationExtraction', () => {
         'Canceled'
       );
       expect(informationExtraction.taskManager?.startTask).not.toHaveBeenCalled();
+    });
+
+    it('should discard the results of a run that was cancelled while it was in flight', async () => {
+      setIXServiceResults([
+        { text: 'text_from_cancelled_run', segment_text: 'segment_from_cancelled_run' },
+        {
+          text: 'more_text_from_cancelled_run',
+          xml_file_name: 'documentC.xml',
+          segment_text: 'more_segment_from_cancelled_run',
+        },
+      ]);
+
+      await saveSuggestionProcess('F1', 'A1', 'eng', 'prop1extractor');
+      await saveSuggestionProcess('F3', 'A3', 'eng', 'prop1extractor');
+
+      const model = await ixTestAccess.readModel(factory.id('prop1extractor'));
+      model.findingSuggestions = false;
+      await ixTestAccess.writeModel(model);
+
+      await informationExtraction.processResults({
+        params: { id: factory.id('prop1extractor').toString() },
+        tenant: 'tenant1',
+        task: 'suggestions',
+        success: true,
+        data_url: 'http://localhost:1234/suggestions_results',
+      });
+
+      const suggestions = await ixTestAccess.readSuggestions({
+        extractorId: factory.id('prop1extractor'),
+      });
+
+      expect(suggestions.map(suggestion => suggestion.suggestedValue)).not.toContain(
+        'text_from_cancelled_run'
+      );
+      expect(suggestions.map(suggestion => suggestion.segment)).not.toContain(
+        'segment_from_cancelled_run'
+      );
+      expect(informationExtraction.taskManager?.startTask).not.toHaveBeenCalled();
+    });
+
+    it('should leave no suggestion processing after a cancelled run reports back', async () => {
+      setIXServiceResults([{ text: 'suggestion_text_1', segment_text: 'segment_text_1' }]);
+
+      await saveSuggestionProcess('F1', 'A1', 'eng', 'prop1extractor');
+
+      const model = await ixTestAccess.readModel(factory.id('prop1extractor'));
+      model.findingSuggestions = false;
+      await ixTestAccess.writeModel(model);
+
+      await informationExtraction.processResults({
+        params: { id: factory.id('prop1extractor').toString() },
+        tenant: 'tenant1',
+        task: 'suggestions',
+        success: true,
+        data_url: 'http://localhost:1234/suggestions_results',
+      });
+
+      const stillProcessing = await ixTestAccess.readSuggestions({
+        extractorId: factory.id('prop1extractor'),
+        status: 'processing',
+      });
+
+      expect(stillProcessing).toEqual([]);
+    });
+  });
+
+  describe('cancelModel', () => {
+    it('should release the model, clear the run and leave nothing processing', async () => {
+      await saveSuggestionProcess('F1', 'A1', 'eng', 'prop1extractor');
+      await ixmodels.setProcessRun(factory.id('prop1extractor').toString(), {
+        mode: 'process_extractor',
+      } as any);
+
+      await informationExtraction.cancelModel(factory.id('prop1extractor'));
+
+      const model = await ixTestAccess.readModel(factory.id('prop1extractor'));
+      expect(model.findingSuggestions).toBe(false);
+      expect(model.status).toBe('ready');
+      expect(model.processRun).toBeUndefined();
+
+      const suggestions = await ixTestAccess.readSuggestions({
+        extractorId: factory.id('prop1extractor'),
+      });
+      expect(suggestions.every(suggestion => suggestion.status !== 'processing')).toBe(true);
+      expect(suggestions.every(suggestion => !suggestion.state?.processing)).toBe(true);
     });
   });
 
