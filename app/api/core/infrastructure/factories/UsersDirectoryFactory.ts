@@ -50,7 +50,7 @@ class UsersDirectoryFactory {
     // Both DAOs share the instance, as they must.
     const transactionManager = ExecutionContext.getStore()
       ? ExecutionContext.transactionManager
-      : TransactionManagerFactory.default();
+      : TransactionManagerFactory.mongo();
 
     return new MongoUsersDirectory({
       usersDAO: new MongoUsersDAO({ db, transactionManager }),

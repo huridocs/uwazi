@@ -6,7 +6,6 @@ import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
 import { TransactionManagerFactory } from './TransactionManagerFactory.js';
 import { EntitiesDataSourceFactory } from './EntitiesDataSourceFactory.js';
-import { MongoTransactionManager } from '../mongodb/common/MongoTransactionManager.js';
 import { EntityPermissionCheckerFactory } from './EntityPermissionCheckerFactory.js';
 import { SettingsDataSourceFactory } from './SettingsDataSourceFactory.js';
 import { TemplatesDataSourceFactory } from './TemplatesDataSourceFactory.js';
@@ -26,18 +25,20 @@ class EntitiesServiceFactory {
       entitiesDS: EntitiesDataSourceFactory.default({ transactionManager }),
       entityPermissionChecker: EntityPermissionCheckerFactory.default(),
       eventBus: applicationEventsBus,
-      settingsDS: SettingsDataSourceFactory.default({ transactionManager }),
+      settingsDS: SettingsDataSourceFactory.default({
+        transactionManager: ExecutionContext.mongoTransactionManager,
+      }),
       templatesDS: TemplatesDataSourceFactory.default({ transactionManager }),
       transactionManager,
       entityAccessPolicyDS: EntityAccessPolicyDataSourceFactory.default({
-        transactionManager: transactionManager as MongoTransactionManager,
+        transactionManager,
       }),
       ...deps,
     });
   }
 
   static forTesting(_deps?: Partial<EntitiesServiceDeps>) {
-    const transactionManager = TransactionManagerFactory.default();
+    const transactionManager = TransactionManagerFactory.mongo();
 
     const deps: EntitiesServiceDeps = {
       eventEmitter: EventEmitterFactory.forTesting(),

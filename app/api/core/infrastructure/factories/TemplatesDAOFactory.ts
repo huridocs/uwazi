@@ -23,7 +23,7 @@ class TemplatesDAOFactory {
       db: getConnection(),
       transactionManager: ExecutionContext.getStore()
         ? (ExecutionContext.transactionManager as MongoTransactionManager)
-        : TransactionManagerFactory.default(),
+        : TransactionManagerFactory.mongo(),
     });
   }
 }

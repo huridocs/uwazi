@@ -3,7 +3,7 @@ import type { NextFunction, Request, Response } from 'express';
 import { tenants } from '#api/tenants/index.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { TransactionManagerFactory } from '../../factories/TransactionManagerFactory.js';
-import { PostgresTransactionManagerFactory } from '../../factories/PostgresTransactionManagerFactory.js';
+import { isPostgresCoreActive } from '#api/core/libs/featureFlags.js';
 import { UwaziDispatcherFactory } from '#api/core/infrastructure/jobs/UwaziDispatcherFactory.js';
 import { EventEmitterFactory } from '#api/core/libs/eventEmitter/EventEmitterFactory.js';
 import { IdGeneratorFactory } from '../../factories/IdGeneratorFactory.js';
@@ -46,10 +46,14 @@ const dependenciesContextMiddleware = (
       actor,
       correlationId,
       factories: {
-        transactionManager: TransactionManagerFactory.default,
-        postgresTransactionManager: PostgresTransactionManagerFactory.default,
+        transactionManager: () =>
+          isPostgresCoreActive()
+            ? ExecutionContext.postgresTransactionManager
+            : ExecutionContext.mongoTransactionManager,
+        mongoTransactionManager: TransactionManagerFactory.mongo,
+        postgresTransactionManager: TransactionManagerFactory.postgres,
         jobsDispatcher: () =>
-          UwaziDispatcherFactory(tenant.name, ExecutionContext.transactionManager),
+          UwaziDispatcherFactory(tenant.name, ExecutionContext.mongoTransactionManager),
         eventEmitter: EventEmitterFactory.default,
         idGenerator: IdGeneratorFactory.default,
         logger: LoggerFactory.default,

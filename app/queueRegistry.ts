@@ -142,7 +142,7 @@ export function registerJobs(register: Register) {
   register(AIAssistantPollRequestJob, async () => AIAssistantFactory.createPollRequestJob());
 
   register(PXCreateParagraphsJob, async () => {
-    const transactionManager = TransactionManagerFactory.default();
+    const transactionManager = TransactionManagerFactory.mongo();
     const connection = getConnection();
     const extractorsQueryService = PXExtractorsQueryServiceFactory.createDefault({
       connection,
@@ -167,7 +167,7 @@ export function registerJobs(register: Register) {
     const useCase = PXCreateEntityStatusesFactory.createDefault({
       batchSize,
     });
-    const dispatcher = UwaziDispatcherFactory(namespace, TransactionManagerFactory.default(), {
+    const dispatcher = UwaziDispatcherFactory(namespace, TransactionManagerFactory.mongo(), {
       lockWindow: 1000 * 60,
     });
 
@@ -224,7 +224,7 @@ export function registerJobs(register: Register) {
   });
 
   register(TemplatePostProcessEntitiesJob, async () => {
-    const transactionManager = ExecutionContext.transactionManager as MongoTransactionManager;
+    const transactionManager = ExecutionContext.mongoTransactionManager;
 
     return new TemplatePostProcessEntitiesJob({
       templatesDS: TemplatesDataSourceFactory.default({ transactionManager }),
@@ -233,7 +233,7 @@ export function registerJobs(register: Register) {
         filesDS: FilesDataSourceFactory.default(),
         relationshipsV1DS: new MongoRelationshipsV1DataSource(
           getConnection(),
-          transactionManager,
+          ExecutionContext.mongoTransactionManager,
           EntitiesDAOFactory.default()
         ),
         templatesDS: TemplatesDataSourceFactory.default({ transactionManager }),
@@ -307,7 +307,7 @@ export function registerJobs(register: Register) {
   );
 
   register(DenormalizeThesaurusEntitiesHandler, async () => {
-    const transactionManager = TransactionManagerFactory.default();
+    const transactionManager = TransactionManagerFactory.mongo();
 
     const entitiesDS = EntitiesDataSourceFactory.default({ transactionManager });
     const jobsDispatcher = UwaziDispatcherFactory(tenants.current().name, transactionManager);

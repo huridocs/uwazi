@@ -12,7 +12,9 @@ class CreateThesaurusUseCaseFactory {
     const { transactionManager } = ExecutionContext;
     const thesauriDS = ThesauriDataSourceFactory.default({ transactionManager });
 
-    const settingsDS = SettingsDataSourceFactory.default({ transactionManager });
+    const settingsDS = SettingsDataSourceFactory.default({
+      transactionManager: ExecutionContext.mongoTransactionManager,
+    });
     const translationsDS = TranslationsDataSourceFactory.default({ transactionManager });
 
     const thesaurusTranslationService = new ThesaurusTranslationService({

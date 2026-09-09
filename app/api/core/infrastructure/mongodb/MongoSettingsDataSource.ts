@@ -5,11 +5,11 @@ import { LanguageISO6391, LanguageSchema, LanguagesListSchema } from '#shared/ty
 import { Settings as SettingsType } from '#shared/types/settingsType.js';
 import { SettingsDataSource } from '../../application/contracts/SettingsDataSource.js';
 import { DefaultLanguageMissingError } from './errors/settingsErrors.js';
-import { MongoTransactionManager } from './common/MongoTransactionManager.js';
+import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
 
 export type MongoSettingsDataSourceDeps = {
   db: Db;
-  transactionManager: MongoTransactionManager;
+  transactionManager: TransactionManager;
 };
 
 export class MongoSettingsDataSource

@@ -7,7 +7,7 @@ export class RemoveLanguageFromPagesUseCaseFactory {
   static default() {
     const { actor } = ExecutionContext;
     const tenant = ExecutionContext.currentTenant;
-    const transactionManager = ExecutionContext.transactionManager as MongoTransactionManager;
+    const transactionManager = ExecutionContext.mongoTransactionManager;
 
     return new RemoveLanguageFromPagesUseCase(
       {

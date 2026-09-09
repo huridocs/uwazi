@@ -18,7 +18,7 @@ import { IdGeneratorFactory } from '#api/core/infrastructure/factories/IdGenerat
 import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
 import { TelemetryCollector } from '#api/core/libs/logger/TelemetryCollector.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
-import { PostgresTransactionManagerFactory } from '#api/core/infrastructure/factories/PostgresTransactionManagerFactory.js';
+import { isPostgresCoreActive } from '#api/core/libs/featureFlags.js';
 import { DefaultTestingQueueAdapter } from '#api/core/libs/queue/configuration/factories.js';
 import { appContext } from '#api/utils/AppContext.js';
 import { elasticTesting } from '#api/utils/elastic_testing.js';
@@ -351,15 +351,19 @@ const testingEnvironment = {
     });
 
     const defaultFactories: ExecutionContextDeps['factories'] = {
-      transactionManager: TransactionManagerFactory.default,
-      postgresTransactionManager: PostgresTransactionManagerFactory.default,
+      transactionManager: () =>
+        isPostgresCoreActive()
+          ? ExecutionContext.postgresTransactionManager
+          : ExecutionContext.mongoTransactionManager,
+      mongoTransactionManager: TransactionManagerFactory.mongo,
+      postgresTransactionManager: TransactionManagerFactory.postgres,
       eventEmitter: EventEmitterFactory.forTesting,
       jobsDispatcher: () =>
         UwaziDispatcherFactory(
           tenant.name,
-          ExecutionContext.transactionManager,
+          ExecutionContext.mongoTransactionManager,
           undefined,
-          DefaultTestingQueueAdapter(ExecutionContext.transactionManager)
+          DefaultTestingQueueAdapter(ExecutionContext.mongoTransactionManager)
         ),
       idGenerator: IdGeneratorFactory.default,
       logger: LoggerFactory.default,

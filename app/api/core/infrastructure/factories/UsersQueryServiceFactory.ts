@@ -34,7 +34,7 @@ class UsersQueryServiceFactory {
         db: getConnection(),
         transactionManager: ExecutionContext.getStore()
           ? ExecutionContext.transactionManager
-          : TransactionManagerFactory.default(),
+          : TransactionManagerFactory.mongo(),
       }),
     });
   }

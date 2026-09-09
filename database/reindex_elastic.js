@@ -143,10 +143,10 @@ DB.connect(config.DBHOST, config.DBAUTH).then(async () => {
     await ExecutionContext.run(
       {
         factories: {
-          transactionManager: TransactionManagerFactory.default,
+          transactionManager: TransactionManagerFactory.mongo,
           postgresTransactionManager: PostgresTransactionManagerFactory.default,
           jobsDispatcher: () =>
-            DefaultDispatcher(tenants.current().name, TransactionManagerFactory.default()),
+            DefaultDispatcher(tenants.current().name, TransactionManagerFactory.mongo()),
           eventEmitter: EventEmitterFactory.default,
           idGenerator: IdGeneratorFactory.default,
           logger: LoggerFactory.default,

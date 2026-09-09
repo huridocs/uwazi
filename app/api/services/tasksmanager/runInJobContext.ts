@@ -4,7 +4,7 @@ import { EventEmitterFactory } from '#api/core/libs/eventEmitter/EventEmitterFac
 import { IdGeneratorFactory } from '#api/core/infrastructure/factories/IdGeneratorFactory.js';
 import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
-import { PostgresTransactionManagerFactory } from '#api/core/infrastructure/factories/PostgresTransactionManagerFactory.js';
+import { isPostgresCoreActive } from '#api/core/libs/featureFlags.js';
 import { TelemetryCollector } from '#api/core/libs/logger/TelemetryCollector.js';
 import { tenants } from '#api/tenants/tenantContext.js';
 
@@ -15,9 +15,14 @@ const runInJobContext = async (tenantName: string, fn: () => Promise<void>): Pro
       {
         tenant,
         factories: {
-          transactionManager: TransactionManagerFactory.default,
-          postgresTransactionManager: PostgresTransactionManagerFactory.default,
-          jobsDispatcher: () => DefaultDispatcher(tenant.name, ExecutionContext.transactionManager),
+          transactionManager: () =>
+            isPostgresCoreActive()
+              ? ExecutionContext.postgresTransactionManager
+              : ExecutionContext.mongoTransactionManager,
+          mongoTransactionManager: TransactionManagerFactory.mongo,
+          postgresTransactionManager: TransactionManagerFactory.postgres,
+          jobsDispatcher: () =>
+            DefaultDispatcher(tenant.name, ExecutionContext.mongoTransactionManager),
           eventEmitter: () => EventEmitterFactory.default(),
           idGenerator: IdGeneratorFactory.default,
           logger: LoggerFactory.default,

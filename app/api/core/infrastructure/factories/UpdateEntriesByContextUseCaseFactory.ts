@@ -11,7 +11,9 @@ export class UpdateEntriesByContextUseCaseFactory {
 
     return new UpdateEntriesByContextUseCase({
       transactionManager,
-      settingsDS: SettingsDataSourceFactory.default({ transactionManager }),
+      settingsDS: SettingsDataSourceFactory.default({
+        transactionManager: ExecutionContext.mongoTransactionManager,
+      }),
       translationsDS: TranslationsDataSourceFactory.default({ transactionManager }),
       translationsService: TranslationsServiceFactory.default({ transactionManager }),
       propagateThesaurusTranslation: PropagateThesaurusTranslationServiceFactory.default(),

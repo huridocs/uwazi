@@ -351,7 +351,7 @@ describe('DatavizQueryExecutor', () => {
 
     const createExecutor = () =>
       testingEnvironment.runWithContext(() => {
-        const tm = ExecutionContext.transactionManager as MongoTransactionManager;
+        const tm = ExecutionContext.mongoTransactionManager;
         const deps = {
           settingsDS: SettingsDataSourceFactory.cached({ transactionManager: tm }),
           translationsDS: TranslationsDataSourceFactory.cached({ transactionManager: tm }),

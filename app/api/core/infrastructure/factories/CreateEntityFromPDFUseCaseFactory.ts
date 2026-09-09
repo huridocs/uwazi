@@ -7,7 +7,6 @@ import { IdGeneratorFactory } from './IdGeneratorFactory.js';
 import { ThesauriDataSourceFactory } from './ThesauriDataSourceFactory.js';
 import { EntitiesDataSourceFactory } from './EntitiesDataSourceFactory.js';
 import { EntitiesServiceFactory } from './EntitiesServiceFactory.js';
-import { MongoTransactionManager } from '../mongodb/common/MongoTransactionManager.js';
 import { CreateEntityFromPDFUseCase } from '#api/core/application/CreateEntityFromPDF.js';
 import { permissionsContext } from '#api/permissions/permissionsContext.js';
 import { User } from '#api/users.v2/model/User.js';
@@ -32,10 +31,12 @@ class CreateEntityFromPDFUseCaseFactory {
       actor = User.createFrom(permissionsContext.getUserInContext()!);
     }
 
-    const transactionManager = ExecutionContext.transactionManager as MongoTransactionManager;
+    const { transactionManager } = ExecutionContext;
     const idGenerator = IdGeneratorFactory.default();
 
-    const settingsDS = SettingsDataSourceFactory.default({ transactionManager });
+    const settingsDS = SettingsDataSourceFactory.default({
+      transactionManager: ExecutionContext.mongoTransactionManager,
+    });
     const thesauriDS = ThesauriDataSourceFactory.default({ transactionManager });
     const entitiesDS = EntitiesDataSourceFactory.default({ transactionManager });
     const translationsDS = TranslationsDataSourceFactory.default({ transactionManager });

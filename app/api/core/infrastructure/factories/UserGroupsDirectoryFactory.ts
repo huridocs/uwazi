@@ -25,7 +25,7 @@ class UserGroupsDirectoryFactory {
         getConnection(),
         ExecutionContext.getStore()
           ? ExecutionContext.transactionManager
-          : TransactionManagerFactory.default()
+          : TransactionManagerFactory.mongo()
       ),
     });
   }

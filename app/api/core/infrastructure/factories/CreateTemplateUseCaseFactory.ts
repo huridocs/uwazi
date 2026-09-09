@@ -17,9 +17,13 @@ class CreateTemplateUseCaseFactory {
     const templateTranslationService = new TemplateTranslationService({
       translationsService: TranslationsServiceFactory.default({ transactionManager }),
     });
-    const settingsDS = SettingsDataSourceFactory.default({ transactionManager });
+    const settingsDS = SettingsDataSourceFactory.default({
+      transactionManager: ExecutionContext.mongoTransactionManager,
+    });
     const idGenerator = IdGeneratorFactory.default();
-    const pageService = LegacyPageServiceFactory.default({ transactionManager });
+    const pageService = LegacyPageServiceFactory.default({
+      transactionManager: ExecutionContext.mongoTransactionManager,
+    });
     const relationshipTypesDS = RelationshipTypesDataSourceFactory.default({ transactionManager });
 
     return new CreateTemplateUseCase({

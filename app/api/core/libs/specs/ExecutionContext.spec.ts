@@ -16,7 +16,8 @@ const buildContext = (): ExecutionContextDeps => ({
     domain: '127.0.0.1',
   } as ExecutionContextDeps['tenant'],
   factories: {
-    transactionManager: TransactionManagerFactory.default,
+    transactionManager: TransactionManagerFactory.mongo,
+    mongoTransactionManager: TransactionManagerFactory.mongo,
     postgresTransactionManager: PostgresTransactionManagerFactory.default,
     eventEmitter: EventEmitterFactory.forTesting,
     jobsDispatcher: (() => ({})) as unknown as ExecutionContextDeps['factories']['jobsDispatcher'],

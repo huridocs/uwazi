@@ -19,7 +19,7 @@ class DownloadFileSegmentationController extends AbstractController {
       params: { id },
     } = requestSchema.parse(this.request);
 
-    const transactionManager = TransactionManagerFactory.default();
+    const transactionManager = TransactionManagerFactory.mongo();
     const segmentationDS = new MongoSegmentationDataSource(getConnection(), transactionManager);
     const useCase = new DownloadFileSegmentation({
       filesDS: FilesDataSourceFactory.default({ transactionManager }),

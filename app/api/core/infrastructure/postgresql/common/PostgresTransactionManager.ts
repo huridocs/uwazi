@@ -260,4 +260,17 @@ export class PostgresTransactionManager implements TransactionManager {
     }
     return this;
   }
+
+  /**
+   * TEMPORARY migration shim: Mongo-backed data sources (settings, pages,
+   * relationships v1, ...) call getSession() on whatever transaction manager they
+   * receive. While postgresCore routes the shared transactionManager to Postgres,
+   * those data sources may still receive it; returning undefined makes their
+   * writes run session-less (auto-commit) instead of crashing.
+   * Remove once all Mongo consumers use mongoTransactionManager explicitly.
+   */
+  // eslint-disable-next-line class-methods-use-this
+  getSession() {
+    return undefined;
+  }
 }

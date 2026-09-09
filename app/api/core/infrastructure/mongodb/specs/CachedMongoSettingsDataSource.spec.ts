@@ -42,7 +42,7 @@ describe('CachedMongoSettingsDataSource', () => {
       const transactionManager = TransactionManagerFactory.default();
       const dataSource = testingEnvironment.runWithContext(
         () => SettingsDataSourceFactory.cached(),
-        { factories: { transactionManager: () => transactionManager } }
+        { factories: { mongoTransactionManager: () => transactionManager } }
       );
 
       const result1 = await dataSource.getLanguageKeys();

@@ -66,7 +66,7 @@ const runWithV2Context = async (actor, callback) => {
       tenant,
       actor,
       factories: {
-        transactionManager: TransactionManagerFactory.default,
+        transactionManager: TransactionManagerFactory.mongo,
         postgresTransactionManager: PostgresTransactionManagerFactory.default,
         jobsDispatcher: () => DefaultDispatcher(tenant.name, ExecutionContext.transactionManager),
         eventEmitter: EventEmitterFactory.default,

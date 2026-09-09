@@ -12,7 +12,6 @@ import {
 import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
 import { ThesauriDataSourceFactory } from '#api/core/infrastructure/factories/ThesauriDataSourceFactory.js';
 import { DispatcherAdapter } from '#api/core/infrastructure/jobs/DispatcherAdapter.js';
-import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { TranslationsDataSourceFactory } from '#api/core/infrastructure/factories/TranslationsDataSourceFactory.js';
 import { tenants } from '#api/tenants/index.js';
@@ -91,14 +90,16 @@ describe('UpdateThesaurusUseCase', () => {
     const createSut = (props?: CreateSutProps) =>
       testingEnvironment.runWithContext(
         () => {
-          const transactionManager = ExecutionContext.transactionManager as MongoTransactionManager;
+          const { transactionManager } = ExecutionContext;
 
           const dispatcher =
             props?.dispatcher ?? new DispatcherAdapter(ExecutionContext.jobsDispatcher);
 
           const thesauriDS =
             props?.thesauriDS ?? ThesauriDataSourceFactory.default({ transactionManager });
-          const settingsDS = SettingsDataSourceFactory.default({ transactionManager });
+          const settingsDS = SettingsDataSourceFactory.default({
+            transactionManager: ExecutionContext.mongoTransactionManager,
+          });
           const translationsDS = TranslationsDataSourceFactory.default({ transactionManager });
           const thesaurusTranslationService =
             props?.thesaurusTranslationService ??
@@ -463,7 +464,7 @@ describe('UpdateThesaurusUseCase', () => {
     it('should revert when thesaurus update fails', async () => {
       const thesaurus = await testingEnvironment.runWithContext(
         async () => {
-          const tm = ExecutionContext.transactionManager as MongoTransactionManager;
+          const { transactionManager: tm } = ExecutionContext;
           return ThesauriDataSourceFactory.default({ transactionManager: tm })
             .getById(factory.id('countries').toString())
             .then(r => r.getDataOrThrow());

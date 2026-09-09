@@ -10,6 +10,7 @@ import type { Relation } from '../../../relationships/RelationsV1Collection.js';
 import type { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import { TimedMethod } from '#api/core/libs/logger/TimedMethodDecorator.js';
 import { EntitiesDAO } from '#api/core/application/contracts/EntitiesDAO.js';
+import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
 
 type SelectionRect = {
   top: number;
@@ -48,7 +49,7 @@ export class MongoRelationshipsV1DataSource extends MongoDataSource<Relation> {
 
   constructor(
     db: any,
-    transactionManager: any,
+    transactionManager: TransactionManager,
     private entitiesDAO: EntitiesDAO
   ) {
     super(db, transactionManager);
