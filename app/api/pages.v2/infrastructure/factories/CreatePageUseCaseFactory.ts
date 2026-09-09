@@ -1,6 +1,5 @@
 import { CreatePageUseCase } from '#api/pages.v2/application/useCases/CreatePage.js';
 import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
-import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { PagesDataSourceFactory } from './PagesDataSourceFactory.js';
 import { PageReleasesDataSourceFactory } from './PageReleasesDataSourceFactory.js';
