@@ -241,6 +241,19 @@ describe('InformationExtraction', () => {
       const resp = await informationExtraction.status(factory.id('prop1extractor'));
       expect(resp.status).toEqual('ready');
     });
+
+    // The find loop stops on `processed >= total`, so a run whose count stepped *over* its cap is
+    // finished by the only definition that drives the loop. Testing `===` here instead reported
+    // such a run as still finding suggestions with nothing left to advance it.
+    it('should return status: ready when processed has stepped over the total', async () => {
+      const model = await ixTestAccess.readModel(factory.id('prop2extractor'));
+      model.totalSuggestionsToFind = 1;
+      await ixTestAccess.writeModel(model);
+
+      const resp = await informationExtraction.status(factory.id('prop2extractor'));
+
+      expect(resp).toMatchObject({ status: 'ready' });
+    });
   });
 
   describe('trainModel', () => {

@@ -859,7 +859,12 @@ class InformationExtraction {
     if (currentModel.status === ModelStatus.ready && currentModel.findingSuggestions) {
       const suggestionStatus = await this.getSuggestionsStatus(extractorId, currentModel);
 
-      if (suggestionStatus.processed === suggestionStatus.total) {
+      // `>=`, not `===`, to match the find loop's own termination test. `processed` is a count
+      // query while the batch is drawn per entity or file, and one of those can yield several
+      // suggestion rows, so the count can step over an odd remainder without landing on it.
+      // The loop then stops and nothing is left to advance the count — `===` reported that as
+      // "finding suggestions" for as long as the run flag stayed set.
+      if (suggestionStatus.total != null && suggestionStatus.processed >= suggestionStatus.total) {
         // If auto-accept is enabled for this process run, transition status to
         // processing_auto_accept instead of ready to avoid UI flicker and clearly
         // indicate the next phase. Provide progress snapshot if available.
