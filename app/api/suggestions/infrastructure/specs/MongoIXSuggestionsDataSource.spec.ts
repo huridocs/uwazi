@@ -162,6 +162,19 @@ describe('MongoIXSuggestionsDataSource', () => {
     });
   });
 
+  describe('getByEntityId', () => {
+    it('should return every suggestion of that entity, in every language and extractor', async () => {
+      const found = await dao().getByEntityId('entity1');
+
+      expect(found).toHaveLength(1);
+      expect(found[0]._id).toEqual(factory.id('accepted'));
+    });
+
+    it('should return nothing for an entity with no suggestions', async () => {
+      expect(await dao().getByEntityId('no-such-entity')).toEqual([]);
+    });
+  });
+
   describe('acceptance', () => {
     const query = (overrides = {}) => ({
       extractorId,
@@ -242,6 +255,34 @@ describe('MongoIXSuggestionsDataSource', () => {
     });
   });
 
+  describe('countPendingByLabel', () => {
+    it('should split the pending suggestions into labeled and unlabeled', async () => {
+      // fixtures: 'pending' is undated; 'obsolete' is dated and obsolete. Both are pending.
+      await dao().setStates([
+        { id: factory.id('pending'), state: { labeled: true } as any },
+        { id: factory.id('obsolete'), state: { obsolete: true, labeled: false } as any },
+      ]);
+
+      expect(await dao().countPendingByLabel(extractorId)).toEqual({ labeled: 1, unlabeled: 1 });
+    });
+
+    /** A suggestion with no labeled state counts as unlabeled, unlike in the stats bar. */
+    it('should count a suggestion with no labeled state as unlabeled', async () => {
+      await dao().setStates([{ id: factory.id('pending'), state: {} as any }]);
+
+      const counts = await dao().countPendingByLabel(extractorId, { nonProcessed: true });
+
+      expect(counts).toEqual({ labeled: 0, unlabeled: 1 });
+    });
+
+    it('should honour the status filter', async () => {
+      expect(await dao().countPendingByLabel(extractorId, { nonProcessed: true })).toEqual({
+        labeled: 0,
+        unlabeled: 1,
+      });
+    });
+  });
+
   describe('entity id sets', () => {
     it('should report entities already queued or answered in this run', async () => {
       const seen = await dao().getEntityIdsSeenInRun(
@@ -264,6 +305,49 @@ describe('MongoIXSuggestionsDataSource', () => {
       expect(await dao().getEntityIdsWithObsoleteSuggestions(extractorId, ids)).toEqual([
         'entity3',
       ]);
+    });
+  });
+
+  /**
+   * The state recompute used to write through the odm's `ModelBulkWriteStream`, which reaches the
+   * driver directly and so logged nothing to `updatelogs`, unlike every other write to this
+   * collection. Going through the data source makes it consistent with them, and this pins that.
+   *
+   * Consistency is the whole of the argument: `ixsuggestions` is not a syncable collection —
+   * `syncConfig`'s approved collections never include it — so nothing reads these rows either
+   * way. Whether IX data sources should log at all is a stage-5 question, not a 4c-2 one.
+   */
+  describe('setStates', () => {
+    it('should overwrite the state of the given suggestions only', async () => {
+      await dao().setStates([
+        { id: factory.id('pending'), state: { labeled: true, match: true } as any },
+      ]);
+
+      expect((await readRaw(factory.id('pending')))?.state).toEqual({
+        labeled: true,
+        match: true,
+      });
+      expect((await readRaw(factory.id('accepted')))?.state).toMatchObject({
+        withSuggestion: true,
+      });
+    });
+
+    it('should record a sync log for every suggestion it touches', async () => {
+      await dao().setStates([
+        { id: factory.id('pending'), state: { labeled: true } as any },
+        { id: factory.id('accepted'), state: { labeled: false } as any },
+      ]);
+
+      const logged = await readSyncLogs();
+      expect(logged.map(l => l.mongoId.toString()).sort()).toEqual(
+        [factory.id('accepted').toString(), factory.id('pending').toString()].sort()
+      );
+    });
+
+    it('should do nothing when given no updates', async () => {
+      await dao().setStates([]);
+
+      expect(await readSyncLogs()).toEqual([]);
     });
   });
 

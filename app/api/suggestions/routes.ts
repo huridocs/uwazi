@@ -15,7 +15,7 @@ import {
 } from '#shared/types/suggestionType.js';
 import { handleError } from '#api/utils/index.js';
 import { serviceMiddleware } from './serviceMiddleware.js';
-import { GetSuggestionsForTableQuery } from './getSuggestionsForTableQuery/getSuggestionsForTableQuery.js';
+import { GetSuggestionsForTableQueryFactory } from './infrastructure/GetSuggestionsForTableQueryFactory.js';
 import { ProcessSuggestionsController } from './adapters/ProcessSuggestionsController.js';
 import { TrainingSetController } from './adapters/TrainingSetController.js';
 
@@ -75,7 +75,7 @@ export const suggestionsRoutes = (app: Application) => {
       },
       res: Response
     ) => {
-      const query = new GetSuggestionsForTableQuery();
+      const query = GetSuggestionsForTableQueryFactory.default();
 
       const result = await query.execute({
         extractorId: req.query.filter.extractorId.toString(),

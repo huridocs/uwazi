@@ -167,6 +167,24 @@ const fixtures: DBFixture = {
         withSuggestion: false,
       },
     }),
+    /**
+     * Its extractor no longer exists. The `$unwind` of the join this use case used to run
+     * dropped such rows silently; pinned here so the behaviour survives the move off the
+     * aggregation.
+     */
+    factory.ixSuggestion({
+      _id: factory.id('orphaned_suggestion'),
+      extractorId: factory.id('deleted_extractor'),
+      entityId: 'extractor_source_text_target_text_entity_1',
+      entityTemplate: factory.id('extractor_source_text_target_text_template').toString(),
+      propertyName: 'target_text',
+      language: 'en',
+      status: 'ready',
+      currentValue: 'untouched',
+      entityTitle: 'untouched',
+      suggestedValue: '',
+      date: 1,
+    }),
   ],
 };
 
@@ -328,6 +346,26 @@ describe('UpdateSuggestionsAfterEntityUpdate', () => {
           currentValue: 'text_target_1_value_es',
         },
       ]);
+    });
+  });
+
+  describe('given a suggestion whose extractor no longer exists', () => {
+    it('should skip it rather than throwing', async () => {
+      const input: Input = {
+        entities: [
+          { ...extractorSourceTextTargetTextEntity1[0], title: 'Another title' },
+          { ...extractorSourceTextTargetTextEntity1[1], title: 'Another title (es)' },
+        ],
+      };
+      const { sut } = createSut();
+
+      await sut.execute(input);
+
+      const orphaned = await testingEnvironment.db
+        .getCollection('ixsuggestions')
+        ?.findOne({ _id: factory.id('orphaned_suggestion') });
+
+      expect(orphaned).toMatchObject({ entityTitle: 'untouched', currentValue: 'untouched' });
     });
   });
 });

@@ -1,5 +1,5 @@
 import { ObjectId } from 'mongodb';
-import { IXSuggestionType } from '#shared/types/suggestionType.js';
+import { IXSuggestionStateType, IXSuggestionType } from '#shared/types/suggestionType.js';
 import { ObjectIdSchema } from '#shared/types/commonTypes.js';
 
 /**
@@ -80,6 +80,9 @@ export interface IXSuggestionsDataSource {
 
   getByFileIds(extractorId: ObjectIdSchema, fileIds: ObjectIdSchema[]): Promise<Suggestion[]>;
 
+  /** Every suggestion of an entity, across languages and extractors. */
+  getByEntityId(sharedId: string): Promise<Suggestion[]>;
+
   getByEntityLanguagePairs(
     extractorId: ObjectIdSchema,
     pairs: EntityLanguagePair[]
@@ -113,6 +116,16 @@ export interface IXSuggestionsDataSource {
     extractorId: ObjectIdSchema,
     filter?: PendingStatusFilter
   ): Promise<number>;
+
+  /**
+   * The same pending set as `countPendingForExtractor`, split by whether the entity already
+   * carries a value. The process run's batch allocation needs both halves; see
+   * `balancedSampleSizes`.
+   */
+  countPendingByLabel(
+    extractorId: ObjectIdSchema,
+    filter?: PendingStatusFilter
+  ): Promise<{ labeled: number; unlabeled: number }>;
 
   /** Completed in this run: ready, dated, not obsolete, not errored, tagged with the run. */
   countProcessedInRun(extractorId: ObjectIdSchema, runTimestamp: number): Promise<number>;
@@ -157,6 +170,12 @@ export interface IXSuggestionsDataSource {
   markProcessingAsFailed(extractorId: ObjectIdSchema, errorMessage: string): Promise<void>;
 
   setUseForTraining(ids: ObjectIdSchema[], useForTraining: boolean): Promise<void>;
+
+  /**
+   * Overwrite the computed `state` of many suggestions at once. The write half of the state
+   * recompute, whose read half is `IXSuggestionsStateQueryService`.
+   */
+  setStates(updates: { id: ObjectIdSchema; state: IXSuggestionStateType }[]): Promise<void>;
 
   clearTrainingSamplesForExtractor(extractorId: ObjectIdSchema): Promise<void>;
   markTrainingSamples(extractorId: ObjectIdSchema, entityIds: string[]): Promise<void>;

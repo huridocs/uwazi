@@ -5,7 +5,7 @@ import ixmodels from '#api/services/informationextraction/ixmodels.js';
 import { Suggestions } from '#api/suggestions/suggestions.js';
 import { IXSuggestionType } from '#shared/types/suggestionType.js';
 import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
-import { updateStates } from '../updateState.js';
+import { recomputeStatesForIds } from '../updateState.js';
 
 type Input = { extractorId: string; batchSize: number; tenantName?: string };
 
@@ -81,8 +81,7 @@ export class AcceptSuggestionsUseCase {
     // Recompute states so accepted ones stop matching subsequent iterations
     const acceptedIds = toAccept.map(a => a._id);
     try {
-      const acceptedQuery = { _id: { $in: acceptedIds } };
-      await updateStates(acceptedQuery);
+      await recomputeStatesForIds(acceptedIds);
     } catch (e) {
       LoggerFactory.default().info('IX accept: state recompute failed', {
         acceptedIdsCount: acceptedIds.length,

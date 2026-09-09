@@ -12,7 +12,8 @@
  * - name the operation after what the test means, not how mongo does it
  */
 import { ObjectId } from 'mongodb';
-import { IXSuggestionsModel } from '#api/suggestions/IXSuggestionsModel.js';
+import { IXSuggestionsDAOFactory } from '#api/suggestions/infrastructure/IXSuggestionsDAOFactory.js';
+import { MongoIXSuggestionsTestAccess } from './MongoIXSuggestionsTestAccess.js';
 import { IXSuggestionType } from '#shared/types/suggestionType.js';
 import { IXModelType } from '#shared/types/IXModelType.js';
 import { ObjectIdSchema } from '#shared/types/commonTypes.js';
@@ -32,10 +33,12 @@ type SuggestionFilter = {
 const toQuery = (filter: SuggestionFilter) =>
   Object.fromEntries(Object.entries(filter).filter(([, value]) => value !== undefined));
 
+const suggestionsCollection = () => MongoIXSuggestionsTestAccess.default();
+
 /* ---------------------------------------------------------------- suggestions -- */
 
 const readSuggestions = async (filter: SuggestionFilter = {}) =>
-  IXSuggestionsModel.get(toQuery(filter));
+  suggestionsCollection().find(toQuery(filter));
 
 // Returns the element type, not `T | undefined`, so these read exactly like the
 // `const [x] = await Model.get(...)` destructure they replace.
@@ -50,30 +53,30 @@ const readSuggestionIds = async (filter: SuggestionFilter, limit?: number) => {
   return selected.map(suggestion => suggestion._id.toString());
 };
 
-const writeSuggestion = async (suggestion: Partial<IXSuggestionType>) =>
-  IXSuggestionsModel.save(suggestion as IXSuggestionType);
+const writeSuggestion = async (suggestion: Partial<IXSuggestionType>) => {
+  const [saved] = await IXSuggestionsDAOFactory.default().saveMultiple([suggestion]);
+  return saved;
+};
 
-const writeSuggestions = async (suggestions: Partial<IXSuggestionType>[]) =>
-  IXSuggestionsModel.saveMultiple(suggestions as IXSuggestionType[]);
+const writeSuggestions = async (toSave: Partial<IXSuggestionType>[]) =>
+  IXSuggestionsDAOFactory.default().saveMultiple(toSave);
 
 const removeSuggestions = async (filter: SuggestionFilter = {}) =>
-  IXSuggestionsModel.delete(toQuery(filter));
+  suggestionsCollection().deleteMany(toQuery(filter));
 
 const markUseForTraining = async (filter: SuggestionFilter, useForTraining = true) =>
-  IXSuggestionsModel.updateMany(toQuery(filter), { $set: { useForTraining } });
+  suggestionsCollection().setOnMany(toQuery(filter), { useForTraining });
 
 /**
  * Put suggestions into the state a completed, healthy run of `runTimestamp` would leave
  * them in: dated, not obsolete, not errored, and tagged with the run.
  */
 const markProcessedInRun = async (filter: SuggestionFilter, runTimestamp: number, date = 1) =>
-  IXSuggestionsModel.updateMany(toQuery(filter), {
-    $set: {
-      date,
-      'state.obsolete': false,
-      'state.error': false,
-      'modelData.suggestionsRunTimestamp': runTimestamp,
-    },
+  suggestionsCollection().setOnMany(toQuery(filter), {
+    date,
+    'state.obsolete': false,
+    'state.error': false,
+    'modelData.suggestionsRunTimestamp': runTimestamp,
   });
 
 /* --------------------------------------------------------------------- models -- */

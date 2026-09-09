@@ -218,7 +218,7 @@ describe(`On ${EntityUpdatedEvent.name}`, () => {
   let updateSpy: jest.SpyInstance;
 
   beforeAll(async () => {
-    updateSpy = jest.spyOn(Suggestions, 'updateStates');
+    updateSpy = jest.spyOn(Suggestions, 'recomputeAllStates');
   });
 
   beforeEach(() => {
@@ -636,7 +636,7 @@ describe(`On ${FileUpdatedEvent.name}`, () => {
   };
 
   it('should not update the ix suggestion state if propertySelections does not change', async () => {
-    const updateSpy = jest.spyOn(Suggestions, 'updateStates');
+    const updateSpy = jest.spyOn(Suggestions, 'recomputeAllStates');
 
     await applicationEventsBus.emit(new FileUpdatedEvent({ before: original, after: original }));
 
@@ -657,7 +657,7 @@ describe(`On ${FileUpdatedEvent.name}`, () => {
 
   it('should not act if the feature is not enabled', async () => {
     await disableFeatures();
-    const updateSpy = jest.spyOn(Suggestions, 'updateStates');
+    const updateSpy = jest.spyOn(Suggestions, 'recomputeAllStates');
 
     await applicationEventsBus.emit(
       new FileUpdatedEvent({ before: original, after: { ...original, ...propertySelections } })

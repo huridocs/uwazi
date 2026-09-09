@@ -2,7 +2,7 @@
 import { Db, Filter, ObjectId } from 'mongodb';
 import { MongoDataSource } from '#api/core/infrastructure/mongodb/common/MongoDataSource.js';
 import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
-import { IXSuggestionType } from '#shared/types/suggestionType.js';
+import { IXSuggestionStateType, IXSuggestionType } from '#shared/types/suggestionType.js';
 import { ObjectIdSchema } from '#shared/types/commonTypes.js';
 import {
   AcceptanceQuery,
@@ -75,6 +75,23 @@ const acceptanceMatch = ({ extractorId, scope, includeAlreadyValued }: Acceptanc
   }
 
   return match as Filter<Suggestion>;
+};
+
+/**
+ * The three non-ready statuses, as a mongo filter. An empty filter means all three. Shared with
+ * the process-run sampler, which must select from exactly the same set the counts describe.
+ */
+export const pendingMatch = (extractorId: ObjectIdSchema, filter: PendingStatusFilter = {}) => {
+  const selected = filter.nonProcessed || filter.obsolete || filter.error;
+  const include = (status: keyof PendingStatusFilter) => !selected || filter[status];
+
+  const matchAny = [
+    include('nonProcessed') ? { date: null } : null,
+    include('obsolete') ? { date: { $ne: null }, 'state.obsolete': true } : null,
+    include('error') ? { date: { $ne: null }, 'state.error': true } : null,
+  ].filter(Boolean);
+
+  return { extractorId: toObjectId(extractorId), $or: matchAny } as Record<string, unknown>;
 };
 
 /**
@@ -156,6 +173,10 @@ export class MongoIXSuggestionsDataSource
       .toArray();
   }
 
+  async getByEntityId(sharedId: string) {
+    return this.getCollection().find({ entityId: sharedId }).toArray();
+  }
+
   async getByEntityLanguagePairs(extractorId: ObjectIdSchema, pairs: EntityLanguagePair[]) {
     return this.getCollection()
       .find({
@@ -202,19 +223,19 @@ export class MongoIXSuggestionsDataSource
   }
 
   async countPendingForExtractor(extractorId: ObjectIdSchema, filter: PendingStatusFilter = {}) {
-    const selected = filter.nonProcessed || filter.obsolete || filter.error;
-    const include = (status: keyof PendingStatusFilter) => !selected || filter[status];
+    return this.getCollection().countDocuments(pendingMatch(extractorId, filter) as any);
+  }
 
-    const matchAny = [
-      include('nonProcessed') ? { date: null } : null,
-      include('obsolete') ? { date: { $ne: null }, 'state.obsolete': true } : null,
-      include('error') ? { date: { $ne: null }, 'state.error': true } : null,
-    ].filter(Boolean);
+  async countPendingByLabel(extractorId: ObjectIdSchema, filter: PendingStatusFilter = {}) {
+    const base = pendingMatch(extractorId, filter);
+    const collection = this.getCollection();
 
-    return this.getCollection().countDocuments({
-      extractorId: toObjectId(extractorId),
-      $or: matchAny,
-    } as any);
+    const [labeled, unlabeled] = await Promise.all([
+      collection.countDocuments({ ...base, 'state.labeled': true } as any),
+      collection.countDocuments({ ...base, 'state.labeled': { $ne: true } } as any),
+    ]);
+
+    return { labeled, unlabeled };
   }
 
   async countProcessedInRun(extractorId: ObjectIdSchema, runTimestamp: number) {
@@ -348,6 +369,16 @@ export class MongoIXSuggestionsDataSource
     await this.getCollection().updateMany({ _id: { $in: toObjectIds(ids) } as any }, {
       $set: { useForTraining },
     } as any);
+  }
+
+  async setStates(updates: { id: ObjectIdSchema; state: IXSuggestionStateType }[]) {
+    if (!updates.length) return;
+
+    await this.getCollection().bulkWrite(
+      updates.map(({ id, state }) => ({
+        updateOne: { filter: { _id: toObjectId(id) } as any, update: { $set: { state } } as any },
+      }))
+    );
   }
 
   async clearTrainingSamplesForExtractor(extractorId: ObjectIdSchema) {

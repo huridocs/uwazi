@@ -26,13 +26,13 @@ import {
   shared2esId,
   suggestionId,
 } from './fixtures.js';
-import { GetSuggestionsForTableQuery } from '../getSuggestionsForTableQuery/getSuggestionsForTableQuery.js';
+import { GetSuggestionsForTableQueryFactory } from '../infrastructure/GetSuggestionsForTableQueryFactory.js';
 
 const _getSuggestions = async (query: any) =>
   testingEnvironment.db.getCollection('ixsuggestions')?.find(query).toArray() || [];
 
 const getSuggestions = async (filter: IXSuggestionsFilter, size = 50) => {
-  const query = new GetSuggestionsForTableQuery();
+  const query = GetSuggestionsForTableQueryFactory.default();
   const result = query.execute({
     extractorId: filter.extractorId.toString(),
     filter: filter.customFilter,

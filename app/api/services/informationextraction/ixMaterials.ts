@@ -12,7 +12,7 @@ import {
 import { FilesDAOFactory } from '#api/core/infrastructure/factories/FilesDAOFactory.js';
 import { SegmentationType } from '#shared/types/segmentationType.js';
 import { SegmentationModel } from '#api/services/pdfsegmentation/segmentationModel.js';
-import { IXSuggestionsModel } from '#api/suggestions/IXSuggestionsModel.js';
+import { IXTrainingMaterialsQueryServiceFactory } from '#api/suggestions/infrastructure/IXTrainingMaterialsQueryServiceFactory.js';
 import ixmodels from '#api/services/informationextraction/ixmodels.js';
 import { FileType } from '#shared/types/fileType.js';
 import templatesService from '#api/core/v1_layer/templates/templates.js';
@@ -29,7 +29,6 @@ import {
 } from '#api/core/application/contracts/EntitiesDAO.js';
 import { IXModelType } from '#shared/types/IXModelType.js';
 import { IXSuggestionType } from '#shared/types/suggestionType.js';
-import { PipelineBuilder } from '#api/suggestions/queryBuilder.js';
 import { IXExtractorType } from '#shared/types/extractorType.js';
 import { Suggestions } from '#api/suggestions/suggestions.js';
 import { Extractors } from './ixextractors.js';
@@ -289,79 +288,12 @@ async function getEntitiesForSuggestions(extractorId: ObjectIdSchema, limit?: nu
 }
 
 async function getFilesForTraining(extractor: IXExtractorType) {
-  const pipeline = new PipelineBuilder();
-  pipeline.add({
-    $match: {
-      extractorId: extractor._id,
-      currentValue: { $nin: ['', null, undefined], $ne: [] },
-    },
-  });
-  pipeline.add({ $limit: MAX_TRAINING_FILES_NUMBER });
-
-  pipeline.add({
-    $lookup: {
-      from: 'entities',
-      localField: 'entityLanguageId',
-      foreignField: '_id',
-      as: 'entityLanguage',
-      pipeline: [
-        {
-          $project: {
-            metadata: `$metadata.${extractor.property}`,
-          },
-        },
-      ],
-    },
-  });
-  pipeline.add({
-    $unwind: '$entityLanguage',
-  });
-
-  pipeline.add({
-    $lookup: {
-      from: 'files',
-      localField: 'fileId',
-      foreignField: '_id',
-      as: 'file',
-      pipeline: [
-        { $match: { status: 'ready' } },
-        {
-          $project: {
-            propertySelections: {
-              $filter: {
-                input: '$propertySelections',
-                as: 'item',
-                cond: { $eq: ['$$item.name', extractor.property] },
-              },
-            },
-            filename: 1,
-          },
-        },
-      ],
-    },
-  });
-  pipeline.add({
-    $unwind: '$file',
-  });
-
-  pipeline.add({
-    $lookup: {
-      from: 'segmentations',
-      localField: 'fileId',
-      foreignField: 'fileID',
-      as: 'segmentation',
-      pipeline: [
-        { $match: { status: 'ready' } },
-        { $project: { propertySelections: 1, filename: 1, xmlname: 1, segmentation: 1 } },
-      ],
-    },
-  });
-  pipeline.add({
-    $unwind: '$segmentation',
-  });
-
   const targetProperty = await IXServices.getTargetProperty({ extractor });
-  const cursor = IXSuggestionsModel.db.aggregateCursor(pipeline.build()).cursor();
+  const rows = IXTrainingMaterialsQueryServiceFactory.default().streamFilesForTraining({
+    extractorId: extractor._id!,
+    property: extractor.property,
+    limit: MAX_TRAINING_FILES_NUMBER,
+  });
 
   const process = async (
     callback: (item: {
@@ -374,29 +306,34 @@ async function getFilesForTraining(extractor: IXExtractorType) {
       propertyType: PropertyTypeSchema;
     }) => Promise<void>
   ) => {
-    await cursor.eachAsync(
-      async ({ fileId, language, file, entityId, entityLanguage, segmentation, currentValue }) => {
-        const propertyValue = deriveTrainingPropertyValue(targetProperty.type, {
-          currentValue,
-          selectionText: file?.propertySelections?.[0]?.selection?.text,
-          entityValues: entityLanguage.metadata?.map(({ value, label }: any) => ({
-            value,
-            label,
-          })),
-        });
-        const parsed = {
-          _id: fileId,
-          language,
-          propertySelections: file?.propertySelections || [],
-          entity: entityId,
-          segmentation,
-          propertyValue,
-          propertyType: targetProperty.type,
-        };
+    for await (const {
+      fileId,
+      language,
+      file,
+      entityId,
+      entityLanguage,
+      segmentation,
+      currentValue,
+    } of rows) {
+      const propertyValue = deriveTrainingPropertyValue(targetProperty.type, {
+        currentValue,
+        selectionText: file?.propertySelections?.[0]?.selection?.text,
+        entityValues: entityLanguage.metadata?.map(({ value, label }: any) => ({
+          value,
+          label,
+        })),
+      });
 
-        await callback(parsed);
-      }
-    );
+      await callback({
+        _id: fileId,
+        language,
+        propertySelections: file?.propertySelections || [],
+        entity: entityId,
+        segmentation,
+        propertyValue,
+        propertyType: targetProperty.type,
+      });
+    }
   };
 
   return { process };
