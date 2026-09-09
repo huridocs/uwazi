@@ -53,6 +53,7 @@ Add from URL,Додати з URL
 Add from web,Додати з інтернету
 Add group,Додати групу
 add icon,додати піктограму
+Add icon,Add icon
 Add item,Додати елемент
 Add link,Додати посилання
 Add or remove relationship types for this collection.,Add or remove relationship types for this collection.
@@ -377,8 +378,7 @@ Direction,Direction
 Disable,Вимкнути
 Disable highlights,Вимкнути підсвічування
 Disabled 2FA,Відключений 2FA
-Discard and leave,Discard and leave
-Discard and switch,Discard and switch
+Discard,Discard
 Discard changes,Відмінити зміни
 Discard changes?,Відкинути зміни?
 Dismiss,Звільнити.
@@ -814,7 +814,7 @@ No options found,Варіантів не знайдено
 No page,No page
 No people or groups added yet,No people or groups added yet
 No primary documents,No primary documents
-No primary documents yet. Promote a supporting file or add a new one.,No primary documents yet. Promote a supporting file or add a new one.
+No primary documents yet. Add a file to get started.,No primary documents yet. Add a file to get started.
 No property,Товар не має цієї властивості
 No References,Немає посилань
 No References description,"Посилання - це частини цього документа, пов'язані з іншими документами та об'єктами."
@@ -1053,6 +1053,7 @@ Remove,Видалити
 Remove from connection,Remove from connection
 Remove from training set,Видалити з тренувального набору
 remove icon,видалити піктограму
+Remove icon,Remove icon
 Removed language,Вилучена мова
 Rename,Перейменувати
 Renamed attachment,Перейменовано вкладення
@@ -1519,10 +1520,7 @@ You can also enter this secret key into your Authenticator app.,Ви також 
 You can create metadata templates in,Ви можете створювати шаблони метаданих у
 "You can embed advanced components like maps, charts and entity lists in your page.","You can embed advanced components like maps, charts and entity lists in your page."
 You do not have write permission on all entities,You do not have write permission on all entities
-You have unsaved changes. Discard them and leave this page? This action cannot be undone.,You have unsaved changes. Discard them and leave this page? This action cannot be undone.
-"You have unsaved changes. Discard them and switch language? This action cannot be
-              undone.","You have unsaved changes. Discard them and switch language? This action cannot be
-              undone."
+You have unsaved changes. Discard them? This action cannot be undone.,You have unsaved changes. Discard them? This action cannot be undone.
 You have unsaved changes. Do you want to continue?,У вас є незбережені зміни. Ви хочете продовжити?
 You should activate this feature for enhanced account security,Ви маєте активувати цю функцію для посилення безпеки облікового запису
 You should activate this feature for enhanced account security.,Вам слід активувати цю функцію для посилення безпеки акаунта.

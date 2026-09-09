@@ -1,5 +1,6 @@
 import React, { createContext, useContext } from 'react';
 import { FormProvider } from 'react-hook-form';
+import { DirtyDiscardModal } from '#V2/Components/UI/index.js';
 import { useMetadataEditingController } from './hooks/useMetadataEditingController.js';
 import type { MetadataEditingActions, MetadataEditingState } from './metadataEditingTypes.js';
 
@@ -14,7 +15,15 @@ const MetadataEditingProvider = ({ children }: { children: React.ReactNode }) =>
       <MetadataEditingStateContext.Provider value={state}>
         {/* FormProvider stays entity-scoped so host remounts keep the same RHF subscription tree. */}
         {/* eslint-disable-next-line react/jsx-props-no-spreading */}
-        <FormProvider {...state.form}>{children}</FormProvider>
+        <FormProvider {...state.form}>
+          {children}
+          {state.pendingDiscardAction ? (
+            <DirtyDiscardModal
+              onDiscard={actions.confirmDiscard}
+              onCancel={actions.dismissDiscard}
+            />
+          ) : null}
+        </FormProvider>
       </MetadataEditingStateContext.Provider>
     </MetadataEditingActionsContext.Provider>
   );

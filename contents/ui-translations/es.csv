@@ -53,6 +53,7 @@ Add from URL,Añadir desde URL
 Add from web,Añadir desde la web
 Add group,Añadir grupo
 add icon,Añadir ícono
+Add icon,Añadir ícono
 Add item,Add item
 Add link,Añadir enlace
 Add or remove relationship types for this collection.,Añadir o eliminar tipos de relación para esta colección.
@@ -373,8 +374,7 @@ Direction,Direction
 Disable,Disable
 Disable highlights,Disable highlights
 Disabled 2FA,Disabled 2FA
-Discard and leave,Descartar y salir
-Discard and switch,Descartar y cambiar
+Discard,Descartar
 Discard changes,Descartar cambios
 Discard changes?,Descartar cambios?
 Dismiss,Descartar
@@ -810,7 +810,7 @@ No options found,Opciones no encontradas
 No page,No hay página
 No people or groups added yet,No people or groups added yet
 No primary documents,Sin documentos primarios
-No primary documents yet. Promote a supporting file or add a new one.,No primary documents yet. Promote a supporting file or add a new one.
+No primary documents yet. Add a file to get started.,Sin documentos primarios. Añade un archivo para empezar.
 No property,Ninguna propiedad
 No References,Sin referencias
 No References description,Las referencias son partes de este documento relacionadas con otros documentos y entidades.
@@ -1048,6 +1048,7 @@ Remove,Eliminar
 Remove from connection,Eliminar de la conexión
 Remove from training set,Eliminar del conjunto de entrenamiento
 remove icon,eliminar ícono
+Remove icon,Eliminar ícono
 Removed language,Idioma eliminado
 Rename,Renombrar
 Renamed attachment,Archivo adjunto eliminado
@@ -1513,10 +1514,7 @@ You can also enter this secret key into your Authenticator app.,You can also ent
 You can create metadata templates in,Puedes crear plantillas de metadatos en
 "You can embed advanced components like maps, charts and entity lists in your page.","You can embed advanced components like maps, charts and entity lists in your page."
 You do not have write permission on all entities,You do not have write permission on all entities
-You have unsaved changes. Discard them and leave this page? This action cannot be undone.,Hay cambios sin guardar. ¿Desecharlos y salir de esta página? Esta acción no puede revertirse.
-"You have unsaved changes. Discard them and switch language? This action cannot be
-              undone.","You have unsaved changes. Discard them and switch language? This action cannot be
-              undone."
+You have unsaved changes. Discard them? This action cannot be undone.,You have unsaved changes. Discard them? This action cannot be undone.
 You have unsaved changes. Do you want to continue?,Tienes cambios sin guardar. Quieres continuar??
 You should activate this feature for enhanced account security,Activa esta función para mejorar la seguridad de la cuenta.
 You should activate this feature for enhanced account security.,You should activate this feature for enhanced account security.

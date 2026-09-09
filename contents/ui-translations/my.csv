@@ -53,6 +53,7 @@ Add from URL,url မှ ထည့်ရန်
 Add from web,ဝက်ဘ်မှ ထည့်ရန်
 Add group,အုပ်စု ထည့်ရန်
 add icon,အိုင်ကွန် ထည့်ရန်
+Add icon,Add icon
 Add item,Add item
 Add link,လင့်ခ် ထည့်ရန်
 Add or remove relationship types for this collection.,Add or remove relationship types for this collection.
@@ -375,8 +376,7 @@ Direction,Direction
 Disable,Disable
 Disable highlights,Disable highlights
 Disabled 2FA,Disabled 2FA
-Discard and leave,Discard and leave
-Discard and switch,Discard and switch
+Discard,Discard
 Discard changes,အပြောင်းအလဲများကို ပယ်ရန်
 Discard changes?,Discard changes?
 Dismiss,Dismiss
@@ -812,7 +812,7 @@ No options found,ရွေးချယ်စရာ မရှိပါ
 No page,No page
 No people or groups added yet,No people or groups added yet
 No primary documents,No primary documents
-No primary documents yet. Promote a supporting file or add a new one.,No primary documents yet. Promote a supporting file or add a new one.
+No primary documents yet. Add a file to get started.,No primary documents yet. Add a file to get started.
 No property,ထူးခြားချက် မရှိပါ
 No References,ကိုးကားချက် မရှိပါ
 No References description,References are parts of this document related with other documents and entities.
@@ -1051,6 +1051,7 @@ Remove,ဖယ်ရှားရန်
 Remove from connection,Remove from connection
 Remove from training set,Remove from training set
 remove icon,အိုင်ကွန် ဖယ်ရှားရန်
+Remove icon,Remove icon
 Removed language,Removed language
 Rename,အမည် ပြန်ပေးရန်
 Renamed attachment,Renamed attachment
@@ -1517,10 +1518,7 @@ You can also enter this secret key into your Authenticator app.,You can also ent
 You can create metadata templates in,သင်သည် ဤနေရာတွင် မီတာဒေတာ ပုံစံပြားများကို ဖန်တီးနိုင်သည်
 "You can embed advanced components like maps, charts and entity lists in your page.","You can embed advanced components like maps, charts and entity lists in your page."
 You do not have write permission on all entities,You do not have write permission on all entities
-You have unsaved changes. Discard them and leave this page? This action cannot be undone.,You have unsaved changes. Discard them and leave this page? This action cannot be undone.
-"You have unsaved changes. Discard them and switch language? This action cannot be
-              undone.","You have unsaved changes. Discard them and switch language? This action cannot be
-              undone."
+You have unsaved changes. Discard them? This action cannot be undone.,You have unsaved changes. Discard them? This action cannot be undone.
 You have unsaved changes. Do you want to continue?,You have unsaved changes. Do you want to continue?
 You should activate this feature for enhanced account security,အကောင့် လုံခြုံရေး ပိုမိုကောင်းမွန်စေရန် ဤအပြင်အဆင်ကို သင် သက်ဝင်လုပ်ဆောင်သင့်သည်
 You should activate this feature for enhanced account security.,You should activate this feature for enhanced account security.

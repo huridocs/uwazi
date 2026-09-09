@@ -13,7 +13,7 @@ type LibraryViewerHostProps = Omit<LibraryViewerProps, 'layout'> & {
 const LibraryViewerHost = ({ view, ...viewerProps }: LibraryViewerHostProps) => {
   switch (view) {
     case 'map':
-      return <MapViewer />;
+      return <MapViewer {...viewerProps} />;
     case 'table':
       return <TableViewer />;
     case 'timeline':
