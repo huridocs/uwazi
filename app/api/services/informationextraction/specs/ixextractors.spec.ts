@@ -673,6 +673,80 @@ describe('ixextractors', () => {
       const extractor = await ixTestAccess.readExtractorByName('invalid extractor');
       expect(extractor).toBe(undefined);
     });
+
+    // The target property was validated but the source was not, so an extractor could be created
+    // pointing at a source that can never yield text. It then failed only at train time, or —
+    // for a source that is neither pdf nor property — hung the model indefinitely.
+    it('should throw if the source property does not exist', async () => {
+      await expect(async () =>
+        Extractors.create({
+          name: 'invalid extractor',
+          source: { property: 'does_not_exist' },
+          property: 'enemy',
+          templates: [fixtureFactory.id('personTemplate').toString()],
+        })
+      ).rejects.toMatchObject({
+        code: IXValidationError.codes.PROPERTY_MISSING,
+      });
+      const extractor = await ixTestAccess.readExtractorByName('invalid extractor');
+      expect(extractor).toBe(undefined);
+    });
+
+    it('should throw if the source property is not of an allowed type', async () => {
+      await expect(async () =>
+        Extractors.create({
+          name: 'invalid extractor',
+          source: { property: 'location' },
+          property: 'enemy',
+          templates: [fixtureFactory.id('personTemplate').toString()],
+        })
+      ).rejects.toMatchObject({
+        code: IXValidationError.codes.PROPERTY_TYPE_NOT_ALLOWED,
+      });
+      const extractor = await ixTestAccess.readExtractorByName('invalid extractor');
+      expect(extractor).toBe(undefined);
+    });
+
+    it('should throw if the source is neither a pdf nor a property', async () => {
+      await expect(async () =>
+        Extractors.create({
+          name: 'invalid extractor',
+          source: {},
+          property: 'enemy',
+          templates: [fixtureFactory.id('personTemplate').toString()],
+        })
+      ).rejects.toMatchObject({
+        code: IXValidationError.codes.SOURCE_REQUIRED,
+      });
+      const extractor = await ixTestAccess.readExtractorByName('invalid extractor');
+      expect(extractor).toBe(undefined);
+    });
+
+    it('should throw if no templates are given', async () => {
+      await expect(async () =>
+        Extractors.create({
+          name: 'invalid extractor',
+          source: { pdf: true },
+          property: 'enemy',
+          templates: [],
+        })
+      ).rejects.toMatchObject({
+        code: IXValidationError.codes.TEMPLATES_REQUIRED,
+      });
+      const extractor = await ixTestAccess.readExtractorByName('invalid extractor');
+      expect(extractor).toBe(undefined);
+    });
+
+    it('should accept title as a source property', async () => {
+      const created = await Extractors.create({
+        name: 'title source extractor',
+        source: { property: 'title' },
+        property: 'enemy',
+        templates: [fixtureFactory.id('personTemplate').toString()],
+      });
+
+      expect(created).toMatchObject({ source: { property: 'title' } });
+    });
   });
 
   describe('update()', () => {

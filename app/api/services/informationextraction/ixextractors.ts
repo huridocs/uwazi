@@ -54,7 +54,11 @@ const checkTypeIsAllowed = (type: string) => {
   return type;
 };
 
-const templatePropertyExistenceCheck = async (propertyName: string, templateIds: string[]) => {
+const templatePropertyExistenceCheck = async (
+  propertyName: string,
+  templateIds: string[],
+  role: 'property' | 'source property' = 'property'
+) => {
   const tArray = await templates.get(templateIds);
   const usedTemplates = objectIndex(
     tArray,
@@ -77,12 +81,48 @@ const templatePropertyExistenceCheck = async (propertyName: string, templateIds:
     if (!property) {
       throw new IXValidationError(
         IXErrorCode.PROPERTY_MISSING,
-        `property "${propertyName}" does not exist in template "${id}"`
+        `${role} "${propertyName}" does not exist in template "${id}"`
       );
     }
 
     checkTypeIsAllowed(property.type);
   });
+};
+
+/**
+ * Only the target property used to be checked. An extractor could therefore be saved with a
+ * source that can never produce text — a property missing from the templates, or a `source` that
+ * is neither `pdf` nor `property`, which the route schema permits because it declares no
+ * `required` inside `source`. The latter left the model stuck at `processing` (see the job's
+ * `UntrainableExtractorSource`); this rejects it at the point the user can still fix it.
+ */
+const extractorValidityCheck = async ({
+  source,
+  property,
+  templates: templateIds,
+}: Pick<NewExtractorType, 'source' | 'property'> & { templates: string[] }) => {
+  if (!templateIds.length) {
+    throw new IXValidationError(
+      IXErrorCode.TEMPLATES_REQUIRED,
+      'an extractor must target at least one template'
+    );
+  }
+
+  await templatePropertyExistenceCheck(property, templateIds);
+
+  if (source.pdf) {
+    return;
+  }
+
+  if (source.property) {
+    await templatePropertyExistenceCheck(source.property, templateIds, 'source property');
+    return;
+  }
+
+  throw new IXValidationError(
+    IXErrorCode.SOURCE_REQUIRED,
+    'an extractor source must be either a pdf or a property'
+  );
 };
 
 const handlePropertyUpdate = async (updatedExtractor: IXExtractorType) => {
@@ -141,7 +181,7 @@ const Extractors = {
   },
   create: async (extractor: NewExtractorType) => {
     const { name, source, property, templates: templateIds } = extractor;
-    await templatePropertyExistenceCheck(property, templateIds);
+    await extractorValidityCheck({ source, property, templates: templateIds });
     const saved = await dao().create({
       name,
       source,
@@ -155,7 +195,7 @@ const Extractors = {
     const { _id, name, source, property, templates: templateIds } = extractor;
     const curentExtractor = await dao().getById(_id);
     if (!curentExtractor) throw new MissingExtractorError();
-    await templatePropertyExistenceCheck(property, templateIds);
+    await extractorValidityCheck({ source, property, templates: templateIds });
 
     const updated = await dao().update({
       ...curentExtractor,
