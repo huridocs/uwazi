@@ -1,10 +1,9 @@
-import { ObjectId } from 'mongodb';
 import { Suggestions } from '#api/suggestions/suggestions.js';
 import { IXSuggestionsModel } from '#api/suggestions/IXSuggestionsModel.js';
 import { ModelStatus } from '#shared/types/IXModelSchema.js';
 import { IXModelType } from '#shared/types/IXModelType.js';
 import { ObjectIdSchema } from '#shared/types/commonTypes.js';
-import { IXModelsModel as model } from './IXModelsModel.js';
+import { IXModelsDAOFactory } from './infrastructure/IXModelsDAOFactory.js';
 
 const DEFAULT_MAX_SUGGESTIONS_SIZE = 1000;
 
@@ -12,23 +11,16 @@ type StartTrainingOptions = {
   suggestionsToFind?: number;
 };
 
-const unsetFindSuggestionsData = async (ixModelId: ObjectIdSchema) => {
-  await model.updateMany(
-    { _id: ixModelId },
-    {
-      $unset: {
-        'processRun.suggestionsRunTimestamp': '',
-        'processRun.findSuggestionsSharedIds': '',
-        'processRun.findSuggestionsInitialSharedIdsCount': '',
-      },
-    }
-  );
-};
+const dao = () => IXModelsDAOFactory.default();
 
-const initializeFindRunQueue = async (modelId: ObjectIdSchema, sharedIds: string[]) => {
-  const [current] = await model.get({ _id: modelId });
-  const { extractorId } = current;
+const unsetFindSuggestionsData = async (ixModelId: ObjectIdSchema) =>
+  dao().clearFindRunQueue(ixModelId);
 
+/**
+ * Reads `ixsuggestions` directly, which the models DAO cannot do. It stays here until stage 4c
+ * gives suggestions a port of its own; the models port only receives the ids this computes.
+ */
+const findPendingSharedIds = async (extractorId: ObjectIdSchema, sharedIds: string[]) => {
   // Trim pre-processed sharedIds only when they are fully healthy.
   // Keep IDs pending when:
   // - they have any obsolete suggestion, OR
@@ -50,63 +42,27 @@ const initializeFindRunQueue = async (modelId: ObjectIdSchema, sharedIds: string
   ])) as [string[], string[]];
   const validSet = new Set(validNonObsoleteIds);
   const obsoleteSet = new Set(obsoleteIds);
-  const pendingIds = sharedIds.filter(id => obsoleteSet.has(id) || !validSet.has(id));
-
-  // Establish a run timestamp for this selection
-  const runTimestamp = Date.now();
-
-  await model.updateMany(
-    { _id: modelId },
-    {
-      $set: {
-        'processRun.suggestionsRunTimestamp': runTimestamp,
-        'processRun.findSuggestionsSharedIds': pendingIds,
-        findingSuggestions: true,
-        'processRun.findSuggestionsInitialSharedIdsCount': sharedIds.length,
-        // Persist the entire cohort to support auto-accept of pre-existing ready suggestions
-        'processRun.selectedSharedIdsForAutoAccept': sharedIds,
-      },
-    }
-  );
+  return sharedIds.filter(id => obsoleteSet.has(id) || !validSet.has(id));
 };
 
-const appendToFindRunQueue = async (modelId: ObjectIdSchema, newSharedIds: string[]) => {
-  await model.updateMany({ _id: modelId }, [
-    {
-      $set: {
-        'processRun.findSuggestionsSharedIds': {
-          $setUnion: [{ $ifNull: ['$processRun.findSuggestionsSharedIds', []] }, newSharedIds],
-        },
-        findingSuggestions: true,
-        'processRun.findSuggestionsInitialSharedIdsCount': {
-          $add: [
-            { $ifNull: ['$processRun.findSuggestionsInitialSharedIdsCount', 0] },
-            {
-              $subtract: [
-                {
-                  $size: {
-                    $setUnion: [
-                      { $ifNull: ['$processRun.findSuggestionsSharedIds', []] },
-                      newSharedIds,
-                    ],
-                  },
-                },
-                { $size: { $ifNull: ['$processRun.findSuggestionsSharedIds', []] } },
-              ],
-            },
-          ],
-        },
-      },
-    },
-  ]);
+const initializeFindRunQueue = async (modelId: ObjectIdSchema, sharedIds: string[]) => {
+  const current = await dao().getById(modelId);
+  const pendingIds = await findPendingSharedIds(current!.extractorId, sharedIds);
+
+  await dao().initializeFindRunQueue(modelId, {
+    pendingIds,
+    selectedSharedIds: sharedIds,
+    // Establish a run timestamp for this selection
+    runTimestamp: Date.now(),
+  });
 };
 
 export default {
-  get: model.get.bind(model),
-  delete: model.delete.bind(model),
-  save: model.save.bind(model),
-  saveAndObsoleteSuggestions: async (ixmodel: IXModelType) => {
-    const saved = await model.save(ixmodel);
+  getByExtractorId: async (extractorId: ObjectIdSchema) => dao().getByExtractorId(extractorId),
+  getById: async (id: ObjectIdSchema) => dao().getById(id),
+  save: async (ixmodel: Partial<IXModelType>) => dao().save(ixmodel),
+  saveAndObsoleteSuggestions: async (ixmodel: Partial<IXModelType>) => {
+    const saved = await dao().save(ixmodel);
     if (ixmodel.status === ModelStatus.ready) {
       await Suggestions.setObsolete({ extractorId: saved.extractorId });
     }
@@ -115,95 +71,44 @@ export default {
   startTraining: async (
     extractorId: ObjectIdSchema,
     { suggestionsToFind }: StartTrainingOptions = {}
-  ) => {
-    const [current] = await model.get({ extractorId });
-
-    const updatedModel = await model.save({
-      ...current,
-      extractorId,
-      findingSuggestions: true,
-      status: ModelStatus.processing,
+  ) =>
+    dao().markTraining(extractorId, {
       maxSuggestionsToFind: suggestionsToFind ?? DEFAULT_MAX_SUGGESTIONS_SIZE,
-    });
-    await model.updateMany({ extractorId }, { $unset: { processRun: '' } });
-
-    await unsetFindSuggestionsData(updatedModel._id);
-  },
+    }),
   startFindingSuggestions: async (extractorId: ObjectIdSchema) => {
-    const [current] = await model.get({ extractorId });
+    const updated = await dao().markFindingSuggestions(extractorId);
 
-    if (!current) {
+    if (!updated) {
       throw new Error(`Model with extractorId ${extractorId} not found.`);
     }
-
-    await model.updateMany(
-      { _id: current._id },
-      {
-        $set: {
-          findingSuggestions: true,
-          status: ModelStatus.processing,
-        },
-      }
-    );
   },
   stopTraining: async (extractorId: ObjectIdSchema) => {
-    const [current] = await model.get({ extractorId });
+    const updated = await dao().markReady(extractorId);
 
-    if (!current) {
+    if (!updated) {
       throw new Error(`Model with extractorId ${extractorId} not found.`);
     }
-
-    await model.save({
-      ...current,
-      findingSuggestions: false,
-      status: ModelStatus.ready,
-    });
-
-    await unsetFindSuggestionsData(current._id);
   },
-  updateMany: model.updateMany.bind(model),
+  /** Same transition as `stopTraining`, for the caller that reports a missing model instead of throwing. */
+  markReady: async (extractorId: ObjectIdSchema) => dao().markReady(extractorId),
   unsetFindSuggestionsData,
   initializeFindRunQueue,
-  appendToFindRunQueue,
-  setProcessRun: async (extractorId: string, processRun: any) => {
-    const extractorObjectId = ObjectId.createFromHexString(extractorId);
-    const processRunToSet = {
+  appendToFindRunQueue: async (modelId: ObjectIdSchema, newSharedIds: string[]) =>
+    dao().appendToFindRunQueue(modelId, newSharedIds),
+  takeFromFindRunQueue: async (modelId: ObjectIdSchema, batchSize: number) =>
+    dao().takeFromFindRunQueue(modelId, batchSize),
+  setProcessRun: async (extractorId: ObjectIdSchema, processRun: IXModelType['processRun']) =>
+    dao().setProcessRun(extractorId, {
       ...processRun,
       suggestionsRunTimestamp: processRun?.suggestionsRunTimestamp || Date.now(),
-    };
-    await model.updateMany(
-      { extractorId: extractorObjectId },
-      { $set: { processRun: processRunToSet } }
-    );
-  },
-  unsetProcessRun: async (extractorId: string) => {
-    const extractorObjectId = ObjectId.createFromHexString(extractorId);
-    await model.updateMany({ extractorId: extractorObjectId }, { $unset: { processRun: '' } });
-  },
+    }),
+  unsetProcessRun: async (extractorId: ObjectIdSchema) => dao().clearProcessRun(extractorId),
   setAutoAcceptProgress: async (
-    extractorId: ObjectIdSchema | string,
+    extractorId: ObjectIdSchema,
     progress: { total?: number; processed?: number }
-  ) => {
-    const extractorObjectId =
-      typeof extractorId === 'string' ? ObjectId.createFromHexString(extractorId) : extractorId;
-    const update: any = {};
-    if (typeof progress.total === 'number') {
-      update['processRun.autoAcceptProgress.total'] = progress.total;
-    }
-    if (typeof progress.processed === 'number') {
-      update['processRun.autoAcceptProgress.processed'] = progress.processed;
-    }
-    if (Object.keys(update).length) {
-      await model.updateMany({ extractorId: extractorObjectId }, { $set: update });
-    }
-  },
-  incAutoAcceptProcessed: async (extractorId: string, incBy: number) => {
-    const extractorObjectId = ObjectId.createFromHexString(extractorId);
-    await model.updateMany(
-      { extractorId: extractorObjectId },
-      { $inc: { 'processRun.autoAcceptProgress.processed': incBy } }
-    );
-  },
+  ) => dao().setAutoAcceptProgress(extractorId, progress),
+  incAutoAcceptProcessed: async (extractorId: ObjectIdSchema, incBy: number) =>
+    dao().incrementAutoAcceptProcessed(extractorId, incBy),
 };
 
 export { DEFAULT_MAX_SUGGESTIONS_SIZE };

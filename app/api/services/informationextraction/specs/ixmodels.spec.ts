@@ -65,7 +65,7 @@ describe('save()', () => {
       it('should unset findSuggestionsRunTimestamp and findSuggestionsSharedIds', async () => {
         await ixmodels.startTraining(fixtureFactory.id('extractor'));
 
-        const [updatedModel] = await ixmodels.get({ extractorId: fixtureFactory.id('extractor') });
+        const updatedModel = await ixTestAccess.readModel(fixtureFactory.id('extractor'));
 
         expect(updatedModel.processRun?.suggestionsRunTimestamp).toBeUndefined();
         expect(updatedModel.processRun?.findSuggestionsSharedIds).toBeUndefined();
@@ -77,7 +77,7 @@ describe('save()', () => {
       it('should unset findSuggestionsRunTimestamp and findSuggestionsSharedIds', async () => {
         await ixmodels.stopTraining(fixtureFactory.id('extractor'));
 
-        const [updatedModel] = await ixmodels.get({ extractorId: fixtureFactory.id('extractor') });
+        const updatedModel = await ixTestAccess.readModel(fixtureFactory.id('extractor'));
 
         expect(updatedModel.processRun?.suggestionsRunTimestamp).toBeUndefined();
         expect(updatedModel.processRun?.findSuggestionsSharedIds).toBeUndefined();
@@ -88,7 +88,7 @@ describe('save()', () => {
       it('should unset findSuggestionsRunTimestamp and findSuggestionsSharedIds', async () => {
         await ixmodels.unsetFindSuggestionsData(model._id!);
 
-        const [updatedModel] = await ixmodels.get({ extractorId: fixtureFactory.id('extractor') });
+        const updatedModel = await ixTestAccess.readModel(fixtureFactory.id('extractor'));
 
         expect(updatedModel.processRun?.suggestionsRunTimestamp).toBeUndefined();
         expect(updatedModel.processRun?.findSuggestionsSharedIds).toBeUndefined();
@@ -124,7 +124,7 @@ describe('save()', () => {
           'shared_without_suggestions',
         ]);
 
-        const [updatedModel] = await ixmodels.get({ extractorId: fixtureFactory.id('extractor') });
+        const updatedModel = await ixTestAccess.readModel(fixtureFactory.id('extractor'));
         expect(updatedModel.processRun?.findSuggestionsSharedIds).toEqual([
           'shared_mixed',
           'shared_without_suggestions',

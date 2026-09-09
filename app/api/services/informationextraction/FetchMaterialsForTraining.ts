@@ -19,7 +19,7 @@ import {
   PropertyValue,
 } from './ixMaterials.js';
 import { IXServices } from './IXServices.js';
-import { IXModelsModel } from './IXModelsModel.js';
+import ixmodels from './ixmodels.js';
 import { deriveTrainingPropertyValue } from './propertyValue.js';
 
 // Stage A — fetch marked for training
@@ -41,7 +41,7 @@ const entitiesDao = () => EntitiesDAOFactory.default().unrestricted();
 
 const getPropertyTrainingEntities = async (extractor: EnforcedWithId<IXExtractorType>) => {
   const extractorId = extractor._id as ObjectId;
-  const [model] = await IXModelsModel.get({ extractorId });
+  const model = await ixmodels.getByExtractorId(extractorId);
   const samplePolicy = model?.processRun?.samplePolicy;
   const pairs = await getMarkedEntityPairs(extractorId);
 
@@ -166,7 +166,7 @@ const buildPdfMaterialsForFiles = async (
 
 const getPdfTrainingProcess = async (extractor: EnforcedWithId<IXExtractorType>) => {
   const extractorId = extractor._id as ObjectId;
-  const [model] = await IXModelsModel.get({ extractorId });
+  const model = await ixmodels.getByExtractorId(extractorId);
   const samplePolicy = model?.processRun?.samplePolicy;
   // Stage A: marked files
   const stageAFileIds = await getMarkedFileIds(extractorId);

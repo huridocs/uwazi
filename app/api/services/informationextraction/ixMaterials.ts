@@ -200,18 +200,11 @@ async function getEntitiesForTraining(
 }
 
 async function getEntitiesForIdsQuery(model: EnforcedWithId<IXModelType>, BATCH_SIZE: number) {
-  const runIds = model.processRun?.findSuggestionsSharedIds as string[] | undefined;
-  if (!runIds?.length) {
+  const sharedIdsToProcess = await ixmodels.takeFromFindRunQueue(model._id, BATCH_SIZE);
+  if (!sharedIdsToProcess.length) {
     await ixmodels.unsetFindSuggestionsData(model._id);
     return null;
   }
-
-  const sharedIdsToProcess = runIds.slice(0, BATCH_SIZE);
-
-  await ixmodels.updateMany(
-    { _id: model._id },
-    { $set: { 'processRun.findSuggestionsSharedIds': runIds.slice(BATCH_SIZE) } }
-  );
 
   const entityFilters: EntityFilters = { sharedIds: sharedIdsToProcess };
 
@@ -244,14 +237,18 @@ async function getEntitiesForSuggestionsQuery(
 }
 
 async function getEntitiesForSuggestions(extractorId: ObjectIdSchema, limit?: number) {
-  const [[model], extractor] = await Promise.all([
-    ixmodels.get({ extractorId }),
+  const [currentModel, extractor] = await Promise.all([
+    ixmodels.getByExtractorId(extractorId),
     Extractors.getById(extractorId),
   ]);
 
   if (!extractor?.property) {
     return [];
   }
+
+  // Re-read of the model the caller already holds; `sendMaterialsAndTaskSuggestions` cannot
+  // reach here without one.
+  const model = currentModel!;
 
   // Validate that the property exists in the template (throws if not found)
   await getPropertyType(extractor.templates, extractor.property);
@@ -409,14 +406,14 @@ async function getFileIdsWithReadySegmentations(
   extractorId: ObjectIdSchema,
   limit: number
 ): Promise<ObjectIdSchema[]> {
-  const [currentModel] = await ixmodels.get({ extractorId });
+  const currentModel = await ixmodels.getByExtractorId(extractorId);
   const targetLimit = typeof limit === 'number' ? limit : BATCH_SIZE_FOR_PDF;
 
   // Use process-aware sampling when filters are set; otherwise balanced sampling
   // Get extra suggestions since some might have failed segmentations
   const suggestions = await Suggestions.getSampleForProcess(
     extractorId,
-    currentModel,
+    currentModel!,
     targetLimit * 3
   );
 
@@ -563,18 +560,11 @@ async function getNextSharedIdsBatch(
   model: EnforcedWithId<IXModelType>,
   batchSize: number
 ): Promise<string[] | null> {
-  const runIds = model.processRun?.findSuggestionsSharedIds || [];
-  if (!runIds.length) {
+  const sharedIdsToProcess = await ixmodels.takeFromFindRunQueue(model._id, batchSize);
+  if (!sharedIdsToProcess.length) {
     await ixmodels.unsetFindSuggestionsData(model._id);
     return null;
   }
-
-  const sharedIdsToProcess = runIds.slice(0, batchSize);
-
-  await ixmodels.updateMany(
-    { _id: model._id },
-    { $set: { 'processRun.findSuggestionsSharedIds': runIds.slice(batchSize) } }
-  );
 
   return sharedIdsToProcess;
 }
@@ -612,14 +602,18 @@ async function getFilesForSuggestionsQuery(extractorId: ObjectIdSchema, BATCH_SI
 }
 
 async function getFilesForSuggestions(extractorId: ObjectIdSchema, limit?: number) {
-  const [[model], extractor] = await Promise.all([
-    ixmodels.get({ extractorId }),
+  const [currentModel, extractor] = await Promise.all([
+    ixmodels.getByExtractorId(extractorId),
     Extractors.getById(extractorId),
   ]);
 
   if (!extractor) {
     return [];
   }
+
+  // Re-read of the model the caller already holds; `sendMaterialsAndTaskSuggestions` cannot
+  // reach here without one.
+  const model = currentModel!;
 
   const BATCH_SIZE = typeof limit === 'number' ? limit : BATCH_SIZE_FOR_PDF;
 

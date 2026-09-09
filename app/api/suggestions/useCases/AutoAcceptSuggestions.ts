@@ -51,7 +51,7 @@ export class AutoAcceptSuggestions implements UseCase<Input, Output> {
   }
 
   async execute({ extractorId }: Input): Promise<Output> {
-    const [model] = await ixmodels.get({ extractorId });
+    const model = await ixmodels.getByExtractorId(extractorId);
     if (!model) return { queued: 0 };
 
     const toAccept = await AutoAcceptSuggestions.buildAcceptanceSet(model as any);

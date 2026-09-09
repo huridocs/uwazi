@@ -14,7 +14,7 @@ type Output = { processed: number; progress?: { total: number; processed: number
 export class AcceptSuggestionsUseCase {
   // eslint-disable-next-line class-methods-use-this
   async execute({ extractorId, batchSize }: Input): Promise<Output> {
-    const [model] = await ixmodels.get({ extractorId: ObjectId.createFromHexString(extractorId) });
+    const model = await ixmodels.getByExtractorId(ObjectId.createFromHexString(extractorId));
     if (!model?.processRun) {
       return { processed: 0 };
     }

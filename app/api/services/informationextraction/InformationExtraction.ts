@@ -47,7 +47,6 @@ import { SuggestionFactory } from '#api/suggestions/suggestionFactory.js';
 import { AcceptSuggestionsFactory } from '#api/suggestions/infrastructure/AcceptSuggestionsFactory.js';
 import { IXSuggestionType } from '#shared/types/suggestionType.js';
 import ixmodels from './ixmodels.js';
-import { IXModelsModel } from './IXModelsModel.js';
 import { Extractors } from './ixextractors.js';
 import {
   CommonSuggestion,
@@ -510,9 +509,9 @@ class InformationExtraction {
     extractor: EnforcedWithId<IXExtractorType>,
     currentSuggestion: EnforcedWithId<IXSuggestionType>
   ) {
-    const [model] = await ixmodels.get({ extractorId: extractor._id });
+    const model = await ixmodels.getByExtractorId(extractor._id);
 
-    if (model.processRun?.suggestionsRunTimestamp) {
+    if (model?.processRun?.suggestionsRunTimestamp) {
       return {
         ...currentSuggestion,
         modelData: {
@@ -684,7 +683,7 @@ class InformationExtraction {
   };
 
   updateSuggestionStatus = async (message: InternalIXResultsMessage, passedModel: IXModelType) => {
-    const [currentModel] = await IXModelsModel.get({ _id: passedModel._id });
+    const currentModel = passedModel._id ? await ixmodels.getById(passedModel._id) : undefined;
     const suggestionsStatus = await this.getSuggestionsStatus(
       message.params!.id,
       currentModel || passedModel
@@ -833,7 +832,7 @@ class InformationExtraction {
     const extractor = await Extractors.getById(extractorId);
     if (!extractor) return;
 
-    const [model] = await IXModelsModel.get({ extractorId });
+    const model = (await ixmodels.getByExtractorId(extractorId))!;
 
     if (model?.totalSuggestionsToFind === 0) {
       await this.stopModelAndEmitReadyMessage(extractorId, 'Completed');
@@ -883,7 +882,7 @@ class InformationExtraction {
   };
 
   status = async (extractorId: ObjectIdSchema) => {
-    const [currentModel] = await ixmodels.get({ extractorId });
+    const currentModel = await ixmodels.getByExtractorId(extractorId);
 
     if (!currentModel) {
       return { status: 'ready', message: 'Ready' };
@@ -935,27 +934,18 @@ class InformationExtraction {
   };
 
   stopModel = async (extractorId: ObjectIdSchema) => {
-    const res = await IXModelsModel.db.findOneAndUpdate(
-      { extractorId },
-      { $set: { findingSuggestions: false, status: ModelStatus.ready } },
-      {}
-    );
+    const model = await ixmodels.markReady(extractorId);
 
-    if (res) {
-      const [model] = await IXModelsModel.get({ extractorId });
-      // TEST!!!
-      if (model?._id) {
-        await ixmodels.unsetFindSuggestionsData(model._id);
-      }
-      return { status: 'ready', message: 'Ready' };
+    if (!model) {
+      return { status: 'error', message: 'No model found' };
     }
 
-    return { status: 'error', message: 'No model found' };
+    return { status: 'ready', message: 'Ready' };
   };
 
   startAutoAcceptIfEnabled = async (extractorId: string): Promise<boolean> => {
     const tenant = tenants.current();
-    const [model] = await IXModelsModel.get({ extractorId: new ObjectId(extractorId) });
+    const model = await ixmodels.getByExtractorId(new ObjectId(extractorId));
     if (!model) {
       return false;
     }
@@ -1000,9 +990,7 @@ class InformationExtraction {
         params: { ..._message.params, id: new ObjectId(_message.params!.id) },
       };
 
-      const [currentModel] = await IXModelsModel.get({
-        extractorId: message.params!.id,
-      });
+      const currentModel = await ixmodels.getByExtractorId(message.params!.id);
 
       try {
         if (message.task === 'create_model' && message.success) {
@@ -1010,9 +998,9 @@ class InformationExtraction {
             computeTotalSuggestions: true,
           });
 
-          const [updatedModel] = await IXModelsModel.get({ extractorId: message.params!.id });
+          const updatedModel = await ixmodels.getByExtractorId(message.params!.id);
 
-          await this.updateSuggestionStatus(message, updatedModel);
+          await this.updateSuggestionStatus(message, updatedModel!);
         }
 
         if (!message.success) {
@@ -1022,11 +1010,11 @@ class InformationExtraction {
 
         if (message.task === 'suggestions') {
           await this.saveSuggestionsManager(message);
-          await this.updateSuggestionStatus(message, currentModel);
+          await this.updateSuggestionStatus(message, currentModel!);
 
           // If a process run requested auto-accept and the find phase just completed,
           // emit transition to auto-accept and dispatch the accept job. Do not emit 'ready'.
-          const [freshModel] = await IXModelsModel.get({ extractorId: message.params!.id });
+          const freshModel = await ixmodels.getByExtractorId(message.params!.id);
           const autoAccept = freshModel?.processRun?.autoAccept;
           if (autoAccept?.enabled && freshModel?.totalSuggestionsToFind != null) {
             const status = await this.getSuggestionsStatus(message.params!.id, freshModel);
@@ -1037,8 +1025,8 @@ class InformationExtraction {
           }
         }
 
-        const [updatedModel] = await IXModelsModel.get({ extractorId: message.params!.id });
-        if (!updatedModel.findingSuggestions) {
+        const updatedModel = await ixmodels.getByExtractorId(message.params!.id);
+        if (!updatedModel!.findingSuggestions) {
           emitToTenantAdminsAndEditors(
             message.tenant,
             'ix_model_status',

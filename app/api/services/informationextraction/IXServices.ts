@@ -106,7 +106,7 @@ export class IXServices {
     status: ModelStatus = ModelStatus.processing,
     { findingSuggestions = true, computeTotalSuggestions = false }: SaveModelProcessOptions = {}
   ) {
-    const [model] = await ixmodels.get({ extractorId });
+    const model = await ixmodels.getByExtractorId(extractorId);
 
     const newModel = {
       ...model,
@@ -117,7 +117,7 @@ export class IXServices {
     };
 
     if (computeTotalSuggestions) {
-      const totalSuggestions = await this.computeTotalSuggestionsToFind(extractorId, model);
+      const totalSuggestions = await this.computeTotalSuggestionsToFind(extractorId, model!);
       newModel.totalSuggestionsToFind = totalSuggestions;
     }
 

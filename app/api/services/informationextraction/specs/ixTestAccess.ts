@@ -16,8 +16,9 @@ import { IXSuggestionsModel } from '#api/suggestions/IXSuggestionsModel.js';
 import { IXSuggestionType } from '#shared/types/suggestionType.js';
 import { IXModelType } from '#shared/types/IXModelType.js';
 import { ObjectIdSchema } from '#shared/types/commonTypes.js';
-import { IXModelsModel } from '../IXModelsModel.js';
 import { IXExtractorsDAOFactory } from '../infrastructure/IXExtractorsDAOFactory.js';
+import { IXModelsDAOFactory } from '../infrastructure/IXModelsDAOFactory.js';
+import { IXModel } from '../domain/IXModelsDataSource.js';
 
 type SuggestionFilter = {
   extractorId?: ObjectIdSchema;
@@ -77,21 +78,19 @@ const markProcessedInRun = async (filter: SuggestionFilter, runTimestamp: number
 
 /* --------------------------------------------------------------------- models -- */
 
+// Returns the element type, not `IXModel | undefined`, for the same reason
+// `readOneSuggestion` does: specs destructured an array here before.
 const readModel = async (extractorId: ObjectIdSchema) => {
-  const [model] = await IXModelsModel.get({ extractorId });
-  return model;
+  const model = await IXModelsDAOFactory.default().getByExtractorId(extractorId);
+  return model as IXModel;
 };
 
-const writeModel = async (model: Partial<IXModelType>) => IXModelsModel.save(model as IXModelType);
+const writeModel = async (model: Partial<IXModelType>) => IXModelsDAOFactory.default().save(model);
 
 const setSamplePolicy = async (
   extractorId: ObjectId,
   samplePolicy: 'only_marked' | 'marked_plus_labeled'
-) =>
-  IXModelsModel.db.updateOne(
-    { extractorId },
-    { $set: { 'processRun.samplePolicy': samplePolicy } }
-  );
+) => IXModelsDAOFactory.default().setSamplePolicy(extractorId, samplePolicy);
 
 /* ----------------------------------------------------------------- extractors -- */
 
