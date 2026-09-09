@@ -1,13 +1,9 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React from 'react';
 import { t, Translate } from '#app/I18N/index.js';
 import { TextCursorInputStrokeIcon } from '#V2/Components/CustomIcons/index.js';
-import { useDocumentPdf } from '#V2/Routes/Entity/Components/context/index.js';
-import { notify } from '#V2/utils/notifyBridge.js';
-import { propertyHasSelection } from '../functions/propertySelectionHelpers.js';
 import { ListeningChip } from './ListeningChip.js';
-import { usePdfFill } from './PdfFillContext.js';
+import { usePdfFillField } from './usePdfFillField.js';
 import type { PdfFillPlacement, PdfFillTarget } from './pdfFillTypes.js';
-import { resolveFillValue } from './resolvePdfFillValue.js';
 
 type EntityPdfFillSlot = {
   overlay?: React.ReactNode;
@@ -34,135 +30,8 @@ const EntityPdfFill = ({
   applyValue,
   children,
 }: EntityPdfFillProps) => {
-  const {
-    isEditing,
-    language,
-    documentLanguage,
-    savedPropertySelections,
-    documentPdfSelection,
-    draftPropertySelections,
-    upsertPropertySelection,
-    clearPropertySelection,
-    setDocumentPdfSelection,
-    setPdfSelectionMenuOpen,
-  } = usePdfFill();
-  const { armedPdfFill, pdfFillCommitNonce, armPdfFill, disarmPdfFill } = useDocumentPdf();
-  const [isFilling, setIsFilling] = useState(false);
-  const fillInFlight = useRef(false);
-  const lastNonceOnArm = useRef(pdfFillCommitNonce);
-
-  const { name: propertyName, propertyId, coerceType } = target;
-  const armedRef = useRef(armedPdfFill);
-  armedRef.current = armedPdfFill;
-  const targetRef = useRef({ name: propertyName, propertyId });
-  targetRef.current = { name: propertyName, propertyId };
-  const isArmed = Boolean(
-    armedPdfFill && armedPdfFill.name === propertyName && armedPdfFill.propertyId === propertyId
-  );
-  const showFill = Boolean(isEditing && documentPdfSelection && !disabled && !armedPdfFill);
-  const showClear =
-    Boolean(isEditing && !disabled) &&
-    propertyHasSelection(savedPropertySelections, draftPropertySelections, {
-      name: propertyName,
-      id: propertyId,
-    });
-
-  const onArm = useCallback(() => {
-    if (!isEditing || disabled) return;
-    lastNonceOnArm.current = pdfFillCommitNonce;
-    armPdfFill({ name: propertyName, propertyId, label });
-  }, [armPdfFill, disabled, isEditing, label, pdfFillCommitNonce, propertyId, propertyName]);
-
-  const onFill = useCallback(async () => {
-    if (!documentPdfSelection || fillInFlight.current) return;
-
-    if (!documentPdfSelection.selectionRectangles?.length) {
-      notify(
-        t('System', 'Could not detect the area for the selected text', null, false),
-        'warning'
-      );
-      return;
-    }
-
-    const armedAtStart = armedRef.current;
-    const startedArmedForThis =
-      armedAtStart?.name === propertyName && armedAtStart.propertyId === propertyId;
-
-    fillInFlight.current = true;
-    setIsFilling(true);
-
-    try {
-      const filled = await resolveFillValue(
-        coerceType,
-        documentPdfSelection.text || '',
-        language,
-        documentLanguage
-      );
-      if (!filled.success) {
-        notify(
-          t('System', 'Value cannot be transformed to the correct type', null, false),
-          'danger'
-        );
-        return;
-      }
-
-      if (startedArmedForThis) {
-        const armedNow = armedRef.current;
-        if (armedNow?.name !== propertyName || armedNow.propertyId !== propertyId) {
-          return;
-        }
-      }
-
-      applyValue(filled.value);
-      upsertPropertySelection({ name: propertyName, id: propertyId }, documentPdfSelection);
-      setDocumentPdfSelection(undefined);
-      setPdfSelectionMenuOpen(false);
-      if (
-        startedArmedForThis ||
-        (armedRef.current?.name === propertyName && armedRef.current.propertyId === propertyId)
-      ) {
-        disarmPdfFill();
-      }
-    } catch {
-      notify(t('System', 'Value cannot be transformed to the correct type', null, false), 'danger');
-    } finally {
-      fillInFlight.current = false;
-      setIsFilling(false);
-    }
-  }, [
-    applyValue,
-    coerceType,
-    disarmPdfFill,
-    documentLanguage,
-    documentPdfSelection,
-    language,
-    propertyId,
-    propertyName,
-    setDocumentPdfSelection,
-    setPdfSelectionMenuOpen,
-    upsertPropertySelection,
-  ]);
-
-  useEffect(() => {
-    if (!isArmed || pdfFillCommitNonce === lastNonceOnArm.current) return;
-    lastNonceOnArm.current = pdfFillCommitNonce;
-    onFill().catch(() => undefined);
-  }, [isArmed, onFill, pdfFillCommitNonce]);
-
-  useEffect(
-    () => () => {
-      const armed = armedRef.current;
-      const key = targetRef.current;
-      if (armed?.name === key.name && armed.propertyId === key.propertyId) {
-        disarmPdfFill();
-      }
-    },
-    [disarmPdfFill]
-  );
-
-  const onClear = useCallback(() => {
-    clearPropertySelection({ name: propertyName, id: propertyId });
-  }, [clearPropertySelection, propertyId, propertyName]);
+  const { isArmed, isFilling, showFill, showClear, onArm, onFill, onClear, disarmPdfFill } =
+    usePdfFillField({ target, label, disabled, applyValue });
 
   const fillButton = showFill ? (
     <button
@@ -226,6 +95,7 @@ const EntityPdfFill = ({
 };
 
 export { EntityPdfFill };
+export type { EntityPdfFillSlot };
 export { PdfFillProvider, usePdfFill, defaultPdfFillHost } from './PdfFillContext.js';
 export type {
   PdfFillTarget,
@@ -233,4 +103,3 @@ export type {
   PdfFillHost,
   PdfFillPlacement,
 } from './pdfFillTypes.js';
-export type { EntityPdfFillSlot };
