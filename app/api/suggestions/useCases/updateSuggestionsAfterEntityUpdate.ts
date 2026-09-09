@@ -4,7 +4,9 @@ import { IXServices } from '#api/services/informationextraction/IXServices.js';
 import { IXSuggestionType } from '#shared/types/suggestionType.js';
 import { IXExtractorsDAOFactory } from '#api/services/informationextraction/infrastructure/IXExtractorsDAOFactory.js';
 import { objectIndex } from '#shared/data_utils/objectIndex.js';
+import { Extractor } from '#api/services/informationextraction/domain/IXExtractorsDataSource.js';
 import { IXSuggestionsDAOFactory } from '../infrastructure/IXSuggestionsDAOFactory.js';
+import { Suggestion } from '../domain/IXSuggestionsDataSource.js';
 import { SuggestionFactory } from '../suggestionFactory.js';
 import { TemplatesDAOFactory } from '#api/core/infrastructure/factories/TemplatesDAOFactory.js';
 
@@ -13,6 +15,12 @@ type TemplatesDAO = Awaited<ReturnType<typeof TemplatesDAOFactory.default>>;
 
 type Input = {
   entities: EntitySchema[];
+  /**
+   * The same entities as they were before the update, so a source-property change can be told
+   * apart from any other edit. Optional only so a caller that genuinely cannot know the previous
+   * state degrades to refreshing entity data without invalidating anything.
+   */
+  previousEntities?: EntitySchema[];
 };
 
 type Output = void;
@@ -25,6 +33,38 @@ class UpdateSuggestionsAfterEntityUpdate implements UseCase<Input, Output> {
   }
 
   /**
+   * A suggestion's `suggestedValue` and `segment` were extracted from the entity's source text.
+   * Once that text changes they describe something the entity no longer says, so the row is stale
+   * and has to be marked obsolete: the review table then shows it as such, and the next run
+   * re-extracts it (obsolete rows are in the default process filters).
+   *
+   * A pdf-source extractor never matches here — `extractSourceText` is empty for those, so before
+   * and after compare equal. Their invalidation belongs to the file listener.
+   */
+  private static sourceChanged({
+    suggestion,
+    extractor,
+    entity,
+    previousEntities,
+  }: {
+    suggestion: Suggestion;
+    extractor: Extractor;
+    entity: EntitySchema;
+    previousEntities?: EntitySchema[];
+  }): boolean {
+    const previousEntity = previousEntities?.find(
+      e => e.language === suggestion.language && e.sharedId === suggestion.entityId
+    );
+
+    if (!previousEntity) return false;
+
+    return (
+      IXServices.extractSourceText({ entity, extractor }) !==
+      IXServices.extractSourceText({ entity: previousEntity, extractor })
+    );
+  }
+
+  /**
    * This used to be an aggregation that `$lookup`ed the extractor onto every suggestion and
    * `$unwind`ed it away again. The join carried no store-specific logic — it is a foreign key
    * and there are only ever a handful of extractors — so it is two named reads instead of a
@@ -32,7 +72,7 @@ class UpdateSuggestionsAfterEntityUpdate implements UseCase<Input, Output> {
    * suggestions whose extractor no longer exists; the `if (!extractor)` below is that rule,
    * written down.
    */
-  async execute({ entities }: Input): Promise<void> {
+  async execute({ entities, previousEntities }: Input): Promise<void> {
     // Every entity reaching this listener has been persisted, so it carries a sharedId.
     const suggestions = await IXSuggestionsDAOFactory.default().getByEntityId(
       entities[0].sharedId!
@@ -67,16 +107,25 @@ class UpdateSuggestionsAfterEntityUpdate implements UseCase<Input, Output> {
         return;
       }
 
-      updatedSuggestions.push(
-        SuggestionFactory.updateEntityData({
-          suggestion,
-          targetProperty,
+      const updated = SuggestionFactory.updateEntityData({
+        suggestion,
+        targetProperty,
 
-          update: {
-            entityTitle: entity?.title,
-            currentValue: IXServices.extractCurrentValue({ entity, targetProperty }),
-          },
+        update: {
+          entityTitle: entity?.title,
+          currentValue: IXServices.extractCurrentValue({ entity, targetProperty }),
+        },
+      });
+
+      updatedSuggestions.push(
+        UpdateSuggestionsAfterEntityUpdate.sourceChanged({
+          suggestion,
+          extractor,
+          entity,
+          previousEntities,
         })
+          ? SuggestionFactory.markAsObsolete({ suggestion: updated, targetProperty })
+          : updated
       );
     });
 

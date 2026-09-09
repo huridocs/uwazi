@@ -374,12 +374,8 @@ class InformationExtraction {
         language_iso: extractionKey.language,
         id: extractor._id.toString(),
         tenant: tenants.current().name,
-        source_text: (entity.metadata?.[extractor.source.property]?.[0]?.value as string) || '',
+        source_text: IXServices.extractSourceText({ entity, extractor }),
       };
-
-      if (extractor.source.property === 'title') {
-        data.source_text = entity.title || '';
-      }
 
       if (type === 'labeled_data') {
         if (['multiselect', 'relationship', 'select'].includes(targetProperty.type)) {

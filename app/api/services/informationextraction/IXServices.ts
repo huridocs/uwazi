@@ -22,6 +22,11 @@ type ExtractCurrentValueInput = {
   targetProperty: PropertySchema;
 };
 
+type ExtractSourceTextInput = {
+  entity: Partial<EntitySchema>;
+  extractor: IXExtractorType;
+};
+
 type ExtractLabelTextForPDFInput = {
   file: FileType;
   targetProperty: PropertySchema;
@@ -116,6 +121,23 @@ export class IXServices {
     }
 
     return isMultiValued ? values : values[0];
+  }
+
+  /**
+   * The text a property-source extractor actually reads from an entity — the single definition of
+   * it, so that whatever decides a suggestion is stale cannot drift from what produced it. Empty
+   * for a pdf-source extractor, which reads files rather than metadata.
+   */
+  static extractSourceText({ entity, extractor }: ExtractSourceTextInput): string {
+    if (!extractor.source.property) {
+      return '';
+    }
+
+    if (extractor.source.property === 'title') {
+      return entity.title || '';
+    }
+
+    return (entity.metadata?.[extractor.source.property]?.[0]?.value as string) || '';
   }
 
   static extractLabeledValueFromFile({ file, targetProperty }: ExtractLabelTextForPDFInput) {
