@@ -139,7 +139,8 @@ describe('MongoTemplatesDAO', () => {
       const { sut, transactionManager } = createSut();
 
       await transactionManager.run(async () => {
-        const session = transactionManager.getSession()!;
+        //@ts-ignore
+        const session = transactionManager.getSession();
         await getConnection()
           .collection('templates')
           .insertOne(
@@ -204,6 +205,7 @@ describe('MongoTemplatesDAO', () => {
       const { sut, transactionManager } = createSut();
 
       await transactionManager.run(async () => {
+        //@ts-ignore
         const session = transactionManager.getSession()!;
         await getConnection()
           .collection('templates')

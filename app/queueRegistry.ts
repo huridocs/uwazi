@@ -29,7 +29,6 @@ import { ProcessRelationshipAfterEntityUpdatedListener } from '#api/core/infrast
 import { AddLanguagePagesListener } from '#api/pages.v2/infrastructure/listeners/AddLanguagePagesListener.js';
 import { DeleteLanguagePagesListener } from '#api/pages.v2/infrastructure/listeners/DeleteLanguagePagesListener.js';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
-import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
 import { MongoRelationshipsV1DataSource } from '#api/core/infrastructure/mongodb/MongoRelationshipsV1DataSource.js';
 import { EntitiesDAOFactory } from '#api/core/infrastructure/factories/EntitiesDAOFactory.js';
 import { V1WebSocketsWrapper } from '#api/core/infrastructure/services/V1WebSocketsWrapper.js';
@@ -142,7 +141,7 @@ export function registerJobs(register: Register) {
   register(AIAssistantPollRequestJob, async () => AIAssistantFactory.createPollRequestJob());
 
   register(PXCreateParagraphsJob, async () => {
-    const transactionManager = TransactionManagerFactory.mongo();
+    const transactionManager = TransactionManagerFactory.default();
     const connection = getConnection();
     const extractorsQueryService = PXExtractorsQueryServiceFactory.createDefault({
       connection,
@@ -167,7 +166,7 @@ export function registerJobs(register: Register) {
     const useCase = PXCreateEntityStatusesFactory.createDefault({
       batchSize,
     });
-    const dispatcher = UwaziDispatcherFactory(namespace, TransactionManagerFactory.mongo(), {
+    const dispatcher = UwaziDispatcherFactory(namespace, TransactionManagerFactory.default(), {
       lockWindow: 1000 * 60,
     });
 
@@ -224,19 +223,19 @@ export function registerJobs(register: Register) {
   });
 
   register(TemplatePostProcessEntitiesJob, async () => {
-    const transactionManager = ExecutionContext.mongoTransactionManager;
+    const { transactionManager } = ExecutionContext;
 
     return new TemplatePostProcessEntitiesJob({
-      templatesDS: TemplatesDataSourceFactory.default({ transactionManager }),
+      templatesDS: TemplatesDataSourceFactory.default(),
       useCase: new TemplateUpdateDenormalizeEntitiesBatch({
-        entitiesDS: EntitiesDataSourceFactory.default({ transactionManager }),
+        entitiesDS: EntitiesDataSourceFactory.default(),
         filesDS: FilesDataSourceFactory.default(),
         relationshipsV1DS: new MongoRelationshipsV1DataSource(
           getConnection(),
-          ExecutionContext.mongoTransactionManager,
+          transactionManager,
           EntitiesDAOFactory.default()
         ),
-        templatesDS: TemplatesDataSourceFactory.default({ transactionManager }),
+        templatesDS: TemplatesDataSourceFactory.default(),
         transactionManager,
       }),
     });
@@ -307,7 +306,7 @@ export function registerJobs(register: Register) {
   );
 
   register(DenormalizeThesaurusEntitiesHandler, async () => {
-    const transactionManager = TransactionManagerFactory.mongo();
+    const transactionManager = TransactionManagerFactory.default();
 
     const entitiesDS = EntitiesDataSourceFactory.default({ transactionManager });
     const jobsDispatcher = UwaziDispatcherFactory(tenants.current().name, transactionManager);

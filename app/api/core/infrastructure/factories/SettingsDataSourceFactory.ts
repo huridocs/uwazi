@@ -10,7 +10,7 @@ type Overrides = { transactionManager?: TransactionManager };
 export class SettingsDataSourceFactory {
   static default(overrides?: Overrides): SettingsDataSource {
     const db = getConnection();
-    const tm = overrides?.transactionManager ?? ExecutionContext.mongoTransactionManager;
+    const tm = overrides?.transactionManager ?? ExecutionContext.transactionManager;
     return new MongoSettingsDataSource({
       db,
       transactionManager: tm,
@@ -19,7 +19,7 @@ export class SettingsDataSourceFactory {
 
   static cached(overrides?: Overrides): SettingsDataSource {
     const db = getConnection();
-    const tm = overrides?.transactionManager ?? ExecutionContext.mongoTransactionManager;
+    const tm = overrides?.transactionManager ?? ExecutionContext.transactionManager;
     return new CachedMongoSettingsDataSource({
       db,
       transactionManager: tm,
