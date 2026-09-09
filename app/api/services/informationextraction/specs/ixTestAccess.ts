@@ -1,11 +1,14 @@
 /**
  * Test-side access seam for the information extraction collections.
  *
- * Specs must not reach for `IXSuggestionsModel` / `IXModelsModel` directly: those mongoose
- * models are being retired in favour of a DAO (see plans/information-extraction-rewrite).
- * Everything the specs need is expressed here as a named operation over a narrow filter,
- * so when the models go away only this file changes, not the ~4,000 lines of specs that
- * use it.
+ * The three IX mongoose models are gone (stages 4a–4c). This file is what kept their removal a
+ * one-file edit instead of a change to ~4,000 lines of specs, and it serves the same purpose for
+ * stage 6: everything the specs need is a named operation over a narrow filter, so pointing them
+ * at a Postgres-backed store means changing this file, not them.
+ *
+ * Reads and writes that map onto the port use it. The filter-shaped ones go through
+ * `MongoIXSuggestionsTestAccess`, which is store-specific and test-only — a general
+ * filter-taking method on the port would reopen the leak the port exists to close.
  *
  * Rules for adding to this file:
  * - no mongo query objects, `$set`, or dotted paths in a parameter
