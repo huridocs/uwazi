@@ -676,6 +676,34 @@ describe('ixextractors', () => {
   });
 
   describe('update()', () => {
+    it('should keep the existing suggestions when neither the property nor the templates change', async () => {
+      const existing = await ixTestAccess.readExtractorByName('existingExtractor');
+
+      await Extractors.update({
+        _id: existing._id,
+        name: 'renamed extractor',
+        source: { pdf: true },
+        property: 'kind',
+        templates: existing.templates.map(templateId => templateId.toString()),
+      });
+
+      const suggestions = await testingDB.mongodb
+        ?.collection('ixsuggestions')
+        .find({ extractorId: fixtureFactory.id('existingExtractor') }, { sort: { _id: 1 } })
+        .toArray();
+
+      // A rename must not touch the suggestions: same rows, same results. Recreating them
+      // blank would keep the count identical while silently discarding every extraction.
+      expect(suggestions?.map(suggestion => suggestion._id)).toEqual(
+        [
+          fixtureFactory.id('sh1_en'),
+          fixtureFactory.id('sh1_es'),
+          fixtureFactory.id('sh3_en'),
+        ].sort((a, b) => a.toString().localeCompare(b.toString()))
+      );
+      expect(suggestions?.map(suggestion => suggestion.date)).toEqual([1, 1, 1]);
+    });
+
     it('should delete the existing suggestions when removing a template and add an empty suggestion when adding a template', async () => {
       await Extractors.update({
         _id: fixtureFactory.id('existingExtractor'),

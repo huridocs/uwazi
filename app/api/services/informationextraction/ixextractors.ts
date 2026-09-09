@@ -94,15 +94,22 @@ const handleTemplateUpdate = async (
   oldExtractor: IXExtractorType,
   newExtractor: IXExtractorType
 ) => {
-  const templatesRemoved = oldExtractor.templates
-    .filter(templateId => !newExtractor.templates.includes(templateId.toString()))
-    .map(templateId => templateId.toString());
+  // Both sides are normalised to strings before diffing. `templates` reaches here as ObjectIds
+  // on a plain array, so comparing an ObjectId against a string silently reports *every*
+  // template as both removed and added — which deleted every suggestion and recreated it blank
+  // on any update that left the templates alone, a rename included. Mongoose's arrays used to
+  // cast on `includes`, which is why this only surfaced once the DAO replaced the model.
+  const oldTemplateIds = oldExtractor.templates.map(templateId => templateId.toString());
+  const newTemplateIds = newExtractor.templates.map(templateId => templateId.toString());
 
-  const templatesAdded = newExtractor.templates.filter(
-    templateId => !oldExtractor.templates.find(template => template.toString() === templateId)
+  const templatesRemoved = oldTemplateIds.filter(
+    templateId => !newTemplateIds.includes(templateId)
   );
+  const templatesAdded = newTemplateIds.filter(templateId => !oldTemplateIds.includes(templateId));
 
-  await Suggestions.deleteByTemplatesAndExtractors(templatesRemoved, [oldExtractor._id]);
+  if (templatesRemoved.length) {
+    await Suggestions.deleteByTemplatesAndExtractors(templatesRemoved, [oldExtractor._id]);
+  }
 
   if (templatesAdded.length) {
     await createBlankSuggestionsForPartialExtractor(newExtractor, templatesAdded);
