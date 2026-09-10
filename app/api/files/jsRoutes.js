@@ -49,8 +49,8 @@ const routes = app => {
       next();
     },
     async (req, res, next) => {
-      const { allowedPublicTemplates } =
-        (await SettingsDataSourceFactory.default().readFields(['allowedPublicTemplates'])) ?? {};
+      const allowedPublicTemplates =
+        (await SettingsDataSourceFactory.default().readAllowedPublicTemplates()) ?? [];
       const { entity } = req.body;
 
       if (entity._id) {
@@ -89,7 +89,8 @@ const routes = app => {
   );
 
   app.post('/api/remotepublic', async (req, res, next) => {
-    const { publicFormDestination } = (await SettingsDataSourceFactory.default().find()) || {};
+    const publicFormDestination =
+      await SettingsDataSourceFactory.default().readPublicFormDestination();
     proxy(publicFormDestination, {
       limit: '500mb',
       proxyReqPathResolver() {

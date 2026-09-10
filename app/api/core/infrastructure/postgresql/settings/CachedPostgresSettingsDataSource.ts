@@ -1,12 +1,12 @@
 import { LanguageISO6391, LanguagesListSchema } from '#shared/types/commonTypes.js';
-import { MongoSettingsDataSource, MongoSettingsDataSourceDeps } from './MongoSettingsDataSource.js';
+import { PostgresSettingsDataSource } from './PostgresSettingsDataSource.js';
 
-export class CachedMongoSettingsDataSource extends MongoSettingsDataSource {
+export class CachedPostgresSettingsDataSource extends PostgresSettingsDataSource {
   private cache = new Map<string, unknown>();
 
-  constructor(deps: MongoSettingsDataSourceDeps) {
+  constructor(deps: ConstructorParameters<typeof PostgresSettingsDataSource>[0]) {
     super(deps);
-    deps.transactionManager.onCommitted(async () => {
+    deps.pgTransactionManager.onCommitted(async () => {
       this.cache.clear();
     });
   }

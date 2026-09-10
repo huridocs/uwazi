@@ -1,12 +1,14 @@
 import { AbstractController } from '#api/common.v2/infrastructure/AbstractController.js';
 import { SetDefaultLanguageUseCaseFactory } from '#api/core/infrastructure/factories/SetDefaultLanguageUseCaseFactory.js';
+import { SettingsQueryServiceFactory } from '#api/core/infrastructure/factories/SettingsQueryServiceFactory.js';
 
 class SetDefaultLanguageController extends AbstractController {
   protected async handle(): Promise<void> {
-    const saved = await SetDefaultLanguageUseCaseFactory.default().execute({
+    await SetDefaultLanguageUseCaseFactory.default().execute({
       key: this.request.body.key,
     });
-    this.response.json(saved);
+    const payload = await SettingsQueryServiceFactory.default().get();
+    this.response.json(payload);
   }
 }
 

@@ -96,10 +96,10 @@ describe('languageMiddleware', () => {
 
   describe('public dataviz embed routes', () => {
     it('should prefer ?locale= query param on /api/public/dataviz paths', async () => {
-      const current = await SettingsDSWithContext.default().readFields(['languages']);
+      const current = await SettingsDSWithContext.default().readLanguages();
       await testingEnvironment.runWithContext(async () =>
         SaveSettingsUseCaseFactory.default().execute({
-          languages: [...(current?.languages ?? []), { key: 'pt', label: 'Portuguese' }],
+          languages: [...(current ?? []), { key: 'pt', label: 'Portuguese' }],
         })
       );
 

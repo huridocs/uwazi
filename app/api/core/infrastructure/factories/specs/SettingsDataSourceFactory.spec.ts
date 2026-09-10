@@ -3,6 +3,7 @@ import { testingTenants } from '#api/utils/testingTenants.js';
 import { CachedMongoSettingsDataSource } from '#api/core/infrastructure/mongodb/CachedMongoSettingsDataSource.js';
 import { MongoSettingsDataSource } from '#api/core/infrastructure/mongodb/MongoSettingsDataSource.js';
 import { PostgresSettingsDataSource } from '#api/core/infrastructure/postgresql/settings/PostgresSettingsDataSource.js';
+import { CachedPostgresSettingsDataSource } from '#api/core/infrastructure/postgresql/settings/CachedPostgresSettingsDataSource.js';
 import { SettingsDataSourceFactory } from '../SettingsDataSourceFactory.js';
 
 describe('SettingsDataSourceFactory', () => {
@@ -39,7 +40,7 @@ describe('SettingsDataSourceFactory', () => {
     expect(sut).toBeInstanceOf(PostgresSettingsDataSource);
   });
 
-  it('should return the postgres data source from cached() when postgres flag is on', async () => {
+  it('should return the cached postgres data source when postgres flag is on', async () => {
     await testingEnvironment.setUp({ settings: [{ site_name: 'PG' }] }, { postgres: true });
 
     const sut = testingEnvironment.runWithContext(() => SettingsDataSourceFactory.cached(), {
@@ -49,7 +50,7 @@ describe('SettingsDataSourceFactory', () => {
       },
     });
 
-    expect(sut).toBeInstanceOf(PostgresSettingsDataSource);
+    expect(sut).toBeInstanceOf(CachedPostgresSettingsDataSource);
   });
 
   it('should build the postgres data source without an ExecutionContext store', async () => {
@@ -60,6 +61,6 @@ describe('SettingsDataSourceFactory', () => {
     });
 
     expect(SettingsDataSourceFactory.default()).toBeInstanceOf(PostgresSettingsDataSource);
-    expect(SettingsDataSourceFactory.cached()).toBeInstanceOf(PostgresSettingsDataSource);
+    expect(SettingsDataSourceFactory.cached()).toBeInstanceOf(CachedPostgresSettingsDataSource);
   });
 });

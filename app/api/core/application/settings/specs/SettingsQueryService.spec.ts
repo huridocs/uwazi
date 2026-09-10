@@ -1,7 +1,8 @@
 import { TestUtils } from '#api/common.v2/utils/Test.js';
 import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js';
 import { User } from '#api/users.v2/model/User.js';
-import { Settings } from '#shared/types/settingsType.js';
+import { Settings as SettingsType } from '#shared/types/settingsType.js';
+import { Settings } from '#api/core/domain/settings/Settings.js';
 import { SettingsQueryService } from '../SettingsQueryService.js';
 
 jest.mock('#api/tenants/index.js', () => ({
@@ -15,11 +16,11 @@ const stored = {
   mailerConfig: 'smtp://secret',
   contactEmail: 'admin@example.com',
   languages: [{ key: 'en', label: 'English', default: true }],
-} as unknown as Settings;
+} as SettingsType;
 
 const createSut = (actor?: User) => {
   const settingsDS = TestUtils.mockClass<SettingsDataSource>({
-    find: jest.fn().mockResolvedValue(stored),
+    readPresentation: jest.fn().mockResolvedValue(new Settings(stored)),
   });
   return {
     settingsDS,

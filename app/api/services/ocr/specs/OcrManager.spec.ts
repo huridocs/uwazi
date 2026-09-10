@@ -5,7 +5,11 @@ import { Readable } from 'stream';
 import { files, storage } from '#api/files/index.js';
 import { tenants } from '#api/tenants/tenantContext.js';
 import { FilesDAOFactory } from '#api/core/infrastructure/factories/FilesDAOFactory.js';
-import { testingEnvironment, SettingsDSWithContext } from '#api/utils/testingEnvironment.js';
+import {
+  testingEnvironment,
+  SettingsDSWithContext,
+  mutatePersistedSettings,
+} from '#api/utils/testingEnvironment.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import request from '#shared/JSONRequest.js';
 import * as sockets from '#api/socketio/setupSockets.js';
@@ -262,7 +266,7 @@ describe('OcrManager', () => {
 
     it('should throw an error when settings are missing from the database', async () => {
       const oldSettings = await SettingsDSWithContext.default().find();
-      await SettingsDSWithContext.default().patch({ features: {} });
+      await mutatePersistedSettings(settings => settings.apply({ features: {} }, () => ''));
 
       const [sourceFile] = await files.get({ _id: fixturesFactory.id('erroringSourceFile') });
 
@@ -270,7 +274,7 @@ describe('OcrManager', () => {
         'Ocr settings are missing from the database'
       );
 
-      await SettingsDSWithContext.default().patch(oldSettings!);
+      await SettingsDSWithContext.default().update(oldSettings!);
     });
 
     it('should throw an error when language is not supported', async () => {

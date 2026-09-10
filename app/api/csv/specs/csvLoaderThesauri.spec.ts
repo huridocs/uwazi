@@ -66,10 +66,14 @@ describe('csvLoader thesauri', () => {
     beforeAll(async () => {
       await testingEnvironment.setUp(fixtures);
 
-      await SettingsDSWithContext.default().addLanguage({ key: 'es', label: 'spanish' });
+      const settings = await SettingsDSWithContext.default().get();
+      settings.addLanguage({ key: 'es', label: 'spanish' });
+      await SettingsDSWithContext.default().update(settings);
       await addLanguageTranslations('es');
 
-      await SettingsDSWithContext.default().addLanguage({ key: 'fr', label: 'french' });
+      const frenchSettings = await SettingsDSWithContext.default().get();
+      frenchSettings.addLanguage({ key: 'fr', label: 'french' });
+      await SettingsDSWithContext.default().update(frenchSettings);
       await addLanguageTranslations('fr');
 
       const { _id } = await saveThesauri({

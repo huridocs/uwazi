@@ -1,6 +1,6 @@
 import type { Application, NextFunction, Request, Response } from 'express';
 import request from 'supertest';
-import { testingEnvironment, SettingsDSWithContext } from '#api/utils/testingEnvironment.js';
+import { testingEnvironment, mutatePersistedSettings } from '#api/utils/testingEnvironment.js';
 import { setUpApp } from '#api/utils/testingRoutes.js';
 import { UserSchema } from '#shared/types/userType.js';
 import { adminUser, collabUser, fixtures, uploadId } from '#api/files/specs/fixtures.js';
@@ -28,9 +28,9 @@ describe('segmentation v2 routes', () => {
   });
 
   it('should return segmentation data stored for the file when feature is enabled', async () => {
-    await SettingsDSWithContext.default().patch({
-      features: { segmentation: { url: 'http://localhost:1235' } },
-    });
+    await mutatePersistedSettings(settings =>
+      settings.apply({ features: { segmentation: { url: 'http://localhost:1235' } } }, () => '')
+    );
     await testingEnvironment.db.getCollection('segmentations')?.updateOne(
       { fileID: uploadId },
       {
@@ -80,7 +80,7 @@ describe('segmentation v2 routes', () => {
   });
 
   it('should return 404 when segmentation feature is disabled on settings', async () => {
-    await SettingsDSWithContext.default().patch({ features: {} });
+    await mutatePersistedSettings(settings => settings.apply({ features: {} }, () => ''));
 
     const response = await request(app).get(`/api/v2/files/${uploadId.toString()}/segmentation`);
 

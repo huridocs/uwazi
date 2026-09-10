@@ -1,4 +1,5 @@
 import { ObjectId } from 'mongodb';
+import { Settings } from '#api/core/domain/settings/Settings.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { DBFixture } from '#api/utils/testing_db.js';
 import { SettingsDataSourceFactory } from '../../factories/SettingsDataSourceFactory.js';
@@ -25,100 +26,135 @@ afterAll(async () => {
 const createSut = () =>
   testingEnvironment.runWithContext(() => SettingsDataSourceFactory.default());
 
+const persist = async (mutate: (settings: Settings) => void) => {
+  const sut = createSut();
+  const settings = await sut.get();
+  mutate(settings);
+  await sut.update(settings);
+  return sut;
+};
+
 describe('MongoSettingsDataSource', () => {
-  describe('addLanguage()', () => {
-    it('should add a new language', async () => {
-      const sut = createSut();
-      await sut.addLanguage({ key: 'fr', label: 'French' });
+  describe('update()', () => {
+    it('should persist a language added on the model', async () => {
+      await persist(settings => {
+        settings.addLanguage({ key: 'fr', label: 'French' });
+      });
 
-      const settings = await testingEnvironment.db.getCollection('settings')!.findOne({});
-      expect(settings?.languages?.map((l: any) => l.key)).toContain('fr');
-    });
-
-    it('should be idempotent: concurrent calls for the same key produce exactly one entry', async () => {
-      const sut = createSut();
-      await Promise.all([
-        sut.addLanguage({ key: 'fr', label: 'French' }),
-        sut.addLanguage({ key: 'fr', label: 'French' }),
-        sut.addLanguage({ key: 'fr', label: 'French' }),
-      ]);
-
-      const settings = await testingEnvironment.db.getCollection('settings')!.findOne({});
-      const frEntries = settings?.languages?.filter((l: any) => l.key === 'fr');
-      expect(frEntries).toHaveLength(1);
+      const stored = await testingEnvironment.db.getCollection('settings')!.findOne({});
+      expect(stored?.languages?.map((language: { key: string }) => language.key)).toContain('fr');
     });
 
     it('should persist tenant language fields and not catalog copies', async () => {
-      const sut = createSut();
-      await sut.addLanguage({
-        key: 'fr',
-        label: 'French',
-        ISO639_3: 'fra',
-        ISO639_1: 'fr',
-        localized_label: 'Français',
-        elastic: 'french',
-        translationAvailable: true,
+      await persist(settings => {
+        settings.addLanguage({
+          key: 'fr',
+          label: 'French',
+          ISO639_3: 'fra',
+          ISO639_1: 'fr',
+          localized_label: 'Français',
+          elastic: 'french',
+          translationAvailable: true,
+        });
       });
 
-      const settings = await testingEnvironment.db.getCollection('settings')!.findOne({});
-      expect(
-        settings?.languages?.find((language: { key: string }) => language.key === 'fr')
-      ).toEqual({ key: 'fr', label: 'French' });
+      const stored = await testingEnvironment.db.getCollection('settings')!.findOne({});
+      expect(stored?.languages?.find((language: { key: string }) => language.key === 'fr')).toEqual(
+        { key: 'fr', label: 'French' }
+      );
+    });
+
+    it('should persist installing on the targeted language', async () => {
+      await persist(settings => {
+        settings.setLanguageInstalling('es', true);
+      });
+
+      const stored = await testingEnvironment.db.getCollection('settings')!.findOne({});
+      const spanish = stored?.languages?.find((language: { key: string }) => language.key === 'es');
+      expect(spanish?.installing).toBe(true);
+    });
+
+    it('should persist a deleted language', async () => {
+      await persist(settings => {
+        settings.deleteLanguage('es');
+      });
+
+      const stored = await testingEnvironment.db.getCollection('settings')!.findOne({});
+      expect(stored?.languages?.map((language: { key: string }) => language.key)).toEqual(['en']);
+    });
+
+    it('should merge applied fields onto the existing singleton', async () => {
+      const sut = await persist(settings => {
+        settings.apply({ site_name: 'Patched collection' }, () => 'unused');
+      });
+
+      const stored = await sut.find();
+      expect(stored?.site_name).toBe('Patched collection');
+      expect(stored?.languages?.map(language => language.key)).toEqual(['en', 'es']);
+    });
+
+    it('should persist nested collections without catalog copies or leftover _id', async () => {
+      await persist(settings => {
+        settings.apply(
+          {
+            languages: [{ key: 'en', label: 'English', default: true, ISO639_3: 'eng' }],
+            links: [{ title: 'Home', type: 'link', url: '/' }],
+            filters: [{ _id: 'noise', id: 't1', name: 'Cases' }],
+          },
+          () => 'aaaaaaaaaaaaaaaaaaaaaaaa'
+        );
+      });
+
+      const stored = await testingEnvironment.db.getCollection('settings')!.findOne({});
+      expect(stored?.languages).toEqual([{ key: 'en', label: 'English', default: true }]);
+      expect(stored?.links).toEqual([
+        { id: 'aaaaaaaaaaaaaaaaaaaaaaaa', title: 'Home', type: 'link', url: '/' },
+      ]);
+      expect(stored?.links?.[0]).not.toHaveProperty('_id');
+      expect(stored?.filters).toEqual([{ id: 't1', name: 'Cases' }]);
+    });
+
+    it('should mint an ObjectId _id when creating a singleton without one', async () => {
+      await testingEnvironment.db.getCollection('settings')!.deleteMany({});
+      const sut = createSut();
+      await sut.update(new Settings({ site_name: 'Minted' }));
+
+      const stored = await sut.get();
+      expect(stored._id).toBeInstanceOf(ObjectId);
+      expect(stored.site_name).toBe('Minted');
     });
   });
 
-  describe('setLanguageInstalling()', () => {
-    it('should set installing to true for the given language key', async () => {
-      const sut = createSut();
-      await sut.setLanguageInstalling('es', true);
-
-      const settings = await testingEnvironment.db.getCollection('settings')!.findOne({});
-      const esLanguage = settings?.languages?.find((l: any) => l.key === 'es');
-      expect(esLanguage?.installing).toBe(true);
-    });
-
-    it('should set installing to false for the given language key', async () => {
-      const sut = createSut();
-      await sut.setLanguageInstalling('es', true);
-      await sut.setLanguageInstalling('es', false);
-
-      const settings = await testingEnvironment.db.getCollection('settings')!.findOne({});
-      const esLanguage = settings?.languages?.find((l: any) => l.key === 'es');
-      expect(esLanguage?.installing).toBe(false);
-    });
-
-    it('should only affect the targeted language', async () => {
-      const sut = createSut();
-      await sut.setLanguageInstalling('es', true);
-
-      const settings = await testingEnvironment.db.getCollection('settings')!.findOne({});
-      const enLanguage = settings?.languages?.find((l: any) => l.key === 'en');
-      expect(enLanguage?.installing).toBeUndefined();
-    });
-  });
-
-  describe('deleteLanguage()', () => {
-    it('should remove the language from the list', async () => {
-      const sut = createSut();
-      await sut.deleteLanguage('en');
-
-      const settings = await testingEnvironment.db.getCollection('settings')!.findOne({});
-      expect(settings?.languages?.map((l: any) => l.key)).toEqual(['es']);
-    });
-  });
-
-  describe('find() and patch()', () => {
+  describe('reads', () => {
     it('should return null when no settings document exists', async () => {
       await testingEnvironment.db.getCollection('settings')!.deleteMany({});
       const sut = createSut();
       expect(await sut.find()).toBeNull();
     });
 
-    it('readFields() should return only the requested keys', async () => {
+    it('readLanguages() should not load customCSS', async () => {
       const sut = createSut();
-      const slice = await sut.readFields(['languages']);
-      expect(slice?.languages?.map(l => l.key)).toEqual(['en', 'es']);
-      expect((slice as { site_name?: string } | null)?.site_name).toBeUndefined();
+      await persist(settings => {
+        settings.apply({ customCSS: 'HUGE' }, () => 'unused');
+      });
+      const languages = await sut.readLanguages();
+      expect(languages?.map(language => language.key)).toEqual(['en', 'es']);
+    });
+
+    it('readPresentation() should omit sync', async () => {
+      await testingEnvironment.db.getCollection('settings')!.updateOne(
+        {},
+        {
+          $set: {
+            site_name: 'Public',
+            sync: [{ name: 'peer', url: 'http://a', username: 'u', password: 'p', config: {} }],
+          },
+        }
+      );
+      const sut = createSut();
+      const presented = await sut.readPresentation();
+      expect(presented?.site_name).toBe('Public');
+      expect(presented?.sync).toBeUndefined();
     });
 
     it('readSyncConfig() should return only the sync slice', async () => {
@@ -136,46 +172,10 @@ describe('MongoSettingsDataSource', () => {
         expect.objectContaining({ name: 'peer', url: 'http://a' }),
       ]);
     });
-
-    it('should merge incoming fields onto the existing singleton', async () => {
-      const sut = createSut();
-      await sut.patch({ site_name: 'Patched collection' });
-
-      const stored = await sut.find();
-      expect(stored?.site_name).toBe('Patched collection');
-      expect(stored?.languages?.map(l => l.key)).toEqual(['en', 'es']);
-    });
-
-    it('should persist nested collections without catalog copies or leftover _id', async () => {
-      const sut = createSut();
-      await sut.patch({
-        languages: [{ key: 'en', label: 'English', default: true, ISO639_3: 'eng' }],
-        links: [{ title: 'Home', type: 'link', url: '/' }],
-        filters: [{ _id: 'noise', id: 't1', name: 'Cases' }],
-      });
-
-      const stored = await testingEnvironment.db.getCollection('settings')!.findOne({});
-      expect(stored?.languages).toEqual([{ key: 'en', label: 'English', default: true }]);
-      expect(stored?.links).toEqual([
-        { id: expect.stringMatching(/^[0-9a-f]{24}$/i), title: 'Home', type: 'link', url: '/' },
-      ]);
-      expect(stored?.links?.[0]).not.toHaveProperty('_id');
-      expect(stored?.filters).toEqual([{ id: 't1', name: 'Cases' }]);
-    });
-
-    it('should mint an ObjectId _id when creating a singleton without one', async () => {
-      await testingEnvironment.db.getCollection('settings')!.deleteMany({});
-      const sut = createSut();
-      await sut.patch({ site_name: 'Minted' });
-
-      const stored = await sut.get();
-      expect(stored._id).toBeInstanceOf(ObjectId);
-      expect(stored.site_name).toBe('Minted');
-    });
   });
 
-  describe('deactivateSyncConfig()', () => {
-    it('should disable the named sync config', async () => {
+  describe('deactivateSyncConfig on the model', () => {
+    it('should disable the named sync config when persisted', async () => {
       await testingEnvironment.db.getCollection('settings')!.updateOne(
         {},
         {
@@ -188,8 +188,9 @@ describe('MongoSettingsDataSource', () => {
         }
       );
 
-      const sut = createSut();
-      expect(await sut.deactivateSyncConfig('disable-me')).toBe(1);
+      const sut = await persist(settings => {
+        settings.deactivateSyncConfig('disable-me');
+      });
 
       const stored = await sut.find();
       expect(stored?.sync).toEqual([

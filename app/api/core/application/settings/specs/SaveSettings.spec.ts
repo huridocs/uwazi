@@ -63,10 +63,12 @@ describe('settings', () => {
         factories: { eventEmitter: () => EventEmitterFactory.default() },
       });
 
-    const saveSettings = async (input: SaveSettingsInput) =>
-      withSettings(async () => SaveSettingsUseCaseFactory.default().execute(input));
     const getSettings = async () =>
       withSettings(async () => SettingsQueryServiceFactory.default().get());
+    const saveSettings = async (input: SaveSettingsInput) => {
+      await withSettings(async () => SaveSettingsUseCaseFactory.default().execute(input));
+      return getSettings();
+    };
 
     const setUpSettings = async (data = fixtures) => {
       await testingEnvironment.setUp(data, {

@@ -16,10 +16,12 @@ describe('SettingsDSWithContext', () => {
     await testingEnvironment.tearDown();
   });
 
-  it('should patch settings without the caller wrapping runWithContext', async () => {
-    await SettingsDSWithContext.default().patch({ private: true });
+  it('should get and update settings without the caller wrapping runWithContext', async () => {
+    const dataSource = SettingsDSWithContext.default();
+    const settings = await dataSource.get();
+    settings.apply({ private: true }, () => '');
+    await dataSource.update(settings);
 
-    const settings = await SettingsDSWithContext.default().find();
-    expect(settings?.private).toBe(true);
+    expect((await dataSource.find())?.isPrivate).toBe(true);
   });
 });

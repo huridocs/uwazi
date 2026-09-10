@@ -158,6 +158,15 @@ export class PostgresSettingsMapper {
     return settings as SettingsType;
   }
 
+  static presentationColumnNames(): string[] {
+    return [
+      '_id',
+      ...Object.values(COLUMN_FIELDS).filter(column => column !== 'sync'),
+      ...Object.keys(GROUP_FIELDS),
+      'extras',
+    ];
+  }
+
   static columnForField(field: keyof SettingsType): string | undefined {
     if (field === '_id') {
       return '_id';

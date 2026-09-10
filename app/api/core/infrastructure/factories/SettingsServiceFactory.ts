@@ -3,6 +3,7 @@ import { SettingsTranslationService } from '#api/core/application/settings/Setti
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { SettingsDataSourceFactory } from './SettingsDataSourceFactory.js';
 import { TranslationsServiceFactory } from './TranslationsServiceFactory.js';
+import { IdGeneratorFactory } from './IdGeneratorFactory.js';
 
 class SettingsServiceFactory {
   static default(): SettingsService {
@@ -11,6 +12,7 @@ class SettingsServiceFactory {
       translations: new SettingsTranslationService(TranslationsServiceFactory.default()),
       transactionManager: ExecutionContext.transactionManager,
       eventEmitter: ExecutionContext.eventEmitter,
+      idGenerator: IdGeneratorFactory.default(),
     });
   }
 }

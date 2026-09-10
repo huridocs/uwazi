@@ -5,8 +5,7 @@ import waitForExpect from 'wait-for-expect';
 import * as csvApi from '#api/csv/csvLoader.js';
 import { TranslationDBO } from '#api/core/infrastructure/mongodb/translation/schemas/TranslationDBO.js';
 import { translationsRoutes as i18nRoutes } from '#api/core/infrastructure/express/translation/routes.js';
-import { MongoSettingsDataSource } from '#api/core/infrastructure/mongodb/MongoSettingsDataSource.js';
-import { PostgresSettingsDataSource } from '#api/core/infrastructure/postgresql/settings/PostgresSettingsDataSource.js';
+import { Settings } from '#api/core/domain/settings/Settings.js';
 import '#api/pages.v2/infrastructure/listeners/AddLanguagePagesListener.js';
 import '#api/pages.v2/infrastructure/listeners/DeleteLanguagePagesListener.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
@@ -97,9 +96,6 @@ describe('i18n translations routes', () => {
         featureFlags: postgresCore ? { postgresCore: true } : {},
       });
     };
-
-    const settingsDataSourceClass = () =>
-      postgresCore ? PostgresSettingsDataSource : MongoSettingsDataSource;
 
     beforeEach(async () => {
       await testingEnvironment.setFixtures(createFixtures());
@@ -385,11 +381,9 @@ describe('i18n translations routes', () => {
             DefaultTranslations.CONTENTS_DIRECTORY = `${I18N_SPECS_DIR}/test_contents/3`;
             iosocket.emit.mockReset();
 
-            errorMock = jest
-              .spyOn(settingsDataSourceClass().prototype, 'addLanguage')
-              .mockImplementation(() => {
-                throw new Error('error message');
-              });
+            errorMock = jest.spyOn(Settings.prototype, 'addLanguage').mockImplementation(() => {
+              throw new Error('error message');
+            });
 
             response = await request(app)
               .post('/api/translations/languages')
@@ -583,7 +577,7 @@ describe('i18n translations routes', () => {
             iosocket.emit.mockReset();
 
             settingsDeleteLanguageMock = jest
-              .spyOn(settingsDataSourceClass().prototype, 'deleteLanguage')
+              .spyOn(Settings.prototype, 'deleteLanguage')
               .mockImplementation(() => {
                 throw new Error('error message');
               });
@@ -603,7 +597,9 @@ describe('i18n translations routes', () => {
         describe('when the language is still being installed', () => {
           it('should return 409 and not start the delete operation', async () => {
             applyBackendTenant();
-            await SettingsDSWithContext.default().setLanguageInstalling('es', true);
+            const settings = await SettingsDSWithContext.default().get();
+            settings.setLanguageInstalling('es', true);
+            await SettingsDSWithContext.default().update(settings);
 
             const response = await request(app).delete('/api/translations/languages?key=es').send();
 

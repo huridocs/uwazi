@@ -1,22 +1,29 @@
-import { LanguageISO6391, LanguageSchema, LanguagesListSchema } from '#shared/types/commonTypes.js';
+import { Settings } from '#api/core/domain/settings/Settings.js';
+import { LanguageISO6391, LanguagesListSchema } from '#shared/types/commonTypes.js';
 import { Settings as SettingsType } from '#shared/types/settingsType.js';
+
+type ContactMailSettings = Pick<SettingsType, 'contactEmail' | 'senderEmail' | 'site_name'>;
+type ExportFormatSettings = Pick<SettingsType, 'dateFormat' | 'site_name'>;
 
 export interface SettingsDataSource {
   getLanguageKeys(): Promise<LanguageISO6391[]>;
-  addLanguage(language: LanguageSchema): Promise<void>;
-  setLanguageInstalling(key: LanguageISO6391, installing: boolean): Promise<void>;
-  deleteLanguage(key: LanguageISO6391): Promise<void>;
   getDefaultLanguageKey(): Promise<LanguageISO6391>;
+  getInstalledLanguages(): Promise<LanguagesListSchema>;
+  find(): Promise<Settings | null>;
+  get(): Promise<Settings>;
+  update(settings: Settings): Promise<Settings>;
+  readPresentation(): Promise<Settings | null>;
+  readLanguages(): Promise<LanguagesListSchema | undefined>;
+  readNewNameGeneration(): Promise<boolean>;
+  readOpenPublicEndpoint(): Promise<boolean>;
+  readOcrServiceEnabled(): Promise<boolean>;
+  readAllowedPublicTemplates(): Promise<SettingsType['allowedPublicTemplates']>;
+  readContactMail(): Promise<ContactMailSettings>;
+  readExportFormat(): Promise<ExportFormatSettings>;
+  readPublicFormDestination(): Promise<string | undefined>;
+  readMailerConfig(): Promise<string | undefined>;
   readNewRelationshipsAllowed(): Promise<boolean>;
   readFilterUnauthorizedRelated(): Promise<boolean>;
-  getInstalledLanguages(): Promise<LanguagesListSchema>;
-  find(): Promise<SettingsType | null>;
-  get(): Promise<SettingsType>;
-  patch(partial: SettingsType): Promise<SettingsType>;
-  deactivateSyncConfig(name: string): Promise<number>;
-  readFields<K extends keyof SettingsType>(
-    fields: readonly K[]
-  ): Promise<(Pick<SettingsType, K> & { _id?: SettingsType['_id'] }) | null>;
   readFeature<K extends keyof NonNullable<SettingsType['features']>>(
     name: K
   ): Promise<NonNullable<SettingsType['features']>[K] | undefined>;
@@ -25,3 +32,5 @@ export interface SettingsDataSource {
     Exclude<Partial<Required<SettingsType>['features']['newRelationships']>, boolean | undefined>
   >;
 }
+
+export type { ContactMailSettings, ExportFormatSettings };

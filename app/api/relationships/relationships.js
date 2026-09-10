@@ -335,8 +335,7 @@ export default {
     await model.delete({ hub: { $in: hubsToDelete.map(h => h._id) } });
 
     if (updateMetdata) {
-      const { languages } =
-        (await SettingsDataSourceFactory.default().readFields(['languages'])) ?? {};
+      const languages = (await SettingsDataSourceFactory.default().readLanguages()) ?? [];
       await ArrayUtils.sequentialFor(languages, async l =>
         this.updateEntitiesMetadata(
           entitiesAffected.map(e => e._id),

@@ -1,4 +1,4 @@
-import { testingEnvironment, SettingsDSWithContext } from '#api/utils/testingEnvironment.js';
+import { testingEnvironment, mutatePersistedSettings } from '#api/utils/testingEnvironment.js';
 import { DBFixture } from '#api/utils/testing_db.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
@@ -128,13 +128,13 @@ describe('GetPublicDatavizEmbedUseCase', () => {
       refresh: { refreshMode: 'live' },
     });
 
-    await SettingsDSWithContext.default().patch({ private: true });
+    await mutatePersistedSettings(settings => settings.apply({ private: true }, () => ''));
 
     await expect(getPublicEmbed(User.createFrom(null)).execute({ id: dataviz.id })).rejects.toThrow(
       DatavizUnauthorizedError
     );
 
-    await SettingsDSWithContext.default().patch({ private: false });
+    await mutatePersistedSettings(settings => settings.apply({ private: false }, () => ''));
   });
 
   it('should allow anonymous access on private instances when embedPublic is enabled', async () => {
@@ -154,13 +154,13 @@ describe('GetPublicDatavizEmbedUseCase', () => {
       embedPublic: true,
     });
 
-    await SettingsDSWithContext.default().patch({ private: true });
+    await mutatePersistedSettings(settings => settings.apply({ private: true }, () => ''));
 
     const payload = await getPublicEmbed(User.createFrom(null)).execute({ id: dataviz.id });
 
     expect(payload.data.series[0].points[0].label).toBe('Category A');
 
-    await SettingsDSWithContext.default().patch({ private: false });
+    await mutatePersistedSettings(settings => settings.apply({ private: false }, () => ''));
   });
 
   it('should allow authenticated users on private instances', async () => {
@@ -179,7 +179,7 @@ describe('GetPublicDatavizEmbedUseCase', () => {
       refresh: { refreshMode: 'live' },
     });
 
-    await SettingsDSWithContext.default().patch({ private: true });
+    await mutatePersistedSettings(settings => settings.apply({ private: true }, () => ''));
 
     const payload = await getPublicEmbed(User.createFrom({ _id: 'admin1', role: 'admin' })).execute(
       {
@@ -189,7 +189,7 @@ describe('GetPublicDatavizEmbedUseCase', () => {
 
     expect(payload.data.series).toHaveLength(1);
 
-    await SettingsDSWithContext.default().patch({ private: false });
+    await mutatePersistedSettings(settings => settings.apply({ private: false }, () => ''));
   });
 
   it('should reject when snapshot refresh is in progress', async () => {

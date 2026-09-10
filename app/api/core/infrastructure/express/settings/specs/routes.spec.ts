@@ -13,7 +13,7 @@ import { getSharedConnection } from '#api/core/infrastructure/mongodb/common/get
 import { Result } from '#api/core/libs/Result.js';
 import { setUpApp } from '#api/utils/testingRoutes.js';
 import * as setupSockets from '#api/socketio/setupSockets.js';
-import { testingEnvironment, SettingsDSWithContext } from '#api/utils/testingEnvironment.js';
+import { testingEnvironment, mutatePersistedSettings } from '#api/utils/testingEnvironment.js';
 import { testingTenants } from '#api/utils/testingTenants.js';
 import { settingsRoutes } from '../routes.js';
 import fixtures from '../../../../application/settings/specs/fixtures.js';
@@ -192,7 +192,9 @@ describe('Settings routes', () => {
 
         it('should only migrate in the newNameGeneration false to true scenario', async () => {
           jest.spyOn(templates, 'save');
-          await SettingsDSWithContext.default().patch({ newNameGeneration: true });
+          await mutatePersistedSettings(settings =>
+            settings.apply({ newNameGeneration: true }, () => '')
+          );
 
           await request(app).post('/api/settings').send({}).expect(200);
 

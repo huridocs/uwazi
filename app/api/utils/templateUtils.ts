@@ -16,8 +16,7 @@ const generateName = (property: PropertySchema, newNameGeneration: boolean) => {
 };
 
 const generateNames = async (properties: PropertySchema[]) => {
-  const { newNameGeneration = false } =
-    (await SettingsDataSourceFactory.default().readFields(['newNameGeneration'])) ?? {};
+  const newNameGeneration = await SettingsDataSourceFactory.default().readNewNameGeneration();
   return properties.map(property => ({
     ...property,
     name: generateName(property, newNameGeneration),

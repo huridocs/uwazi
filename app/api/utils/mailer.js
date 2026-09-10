@@ -22,11 +22,11 @@ export default {
     let transporter;
     return new Promise((resolve, reject) => {
       SettingsDataSourceFactory.default()
-        .readFields(['mailerConfig'])
-        .then(config => {
+        .readMailerConfig()
+        .then(mailerConfigValue => {
           try {
             transporter = getMailerTransport().createTransport(
-              config?.mailerConfig ? JSON.parse(config.mailerConfig) : transporterOptions
+              mailerConfigValue ? JSON.parse(mailerConfigValue) : transporterOptions
             );
             transporter.sendMail(mailOptions, (error, info) => {
               if (error) {

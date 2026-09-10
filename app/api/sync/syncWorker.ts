@@ -33,7 +33,11 @@ const disableConfigAndNotify = async (
   error: unknown,
   consecutiveFailures: number
 ) => {
-  const modifiedCount = await SettingsDataSourceFactory.default().deactivateSyncConfig(config.name);
+  const settings = await SettingsDataSourceFactory.default().get();
+  const modifiedCount = settings.deactivateSyncConfig(config.name);
+  if (modifiedCount) {
+    await SettingsDataSourceFactory.default().update(settings);
+  }
 
   if (modifiedCount !== 1) {
     return;

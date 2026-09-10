@@ -33,11 +33,11 @@ class SettingsQueryService {
   }
 
   private async loadPresented() {
-    const stored = await this.settingsDS.find();
+    const stored = await this.settingsDS.readPresentation();
     if (!stored) {
       return undefined;
     }
-    return applySettingsDefaults(presentSettings(stored));
+    return applySettingsDefaults(presentSettings(stored.toState()));
   }
 
   private async publicProjection() {

@@ -25,8 +25,7 @@ const parseLocaleQuery = (locale: Request['query']['locale']): string | string[]
 // eslint-disable-next-line import/no-default-export
 export default async (req: Request, _res: Response, next: NextFunction) => {
   try {
-    const { languages = [] } =
-      (await SettingsDataSourceFactory.default().readFields(['languages'])) ?? {};
+    const languages = (await SettingsDataSourceFactory.cached().readLanguages()) ?? [];
 
     if (usesEmbedLocaleResolution(req.path)) {
       req.language = resolveEmbedLocale({

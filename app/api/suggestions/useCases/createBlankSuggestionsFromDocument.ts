@@ -27,8 +27,7 @@ export class CreateBlankSuggestionsFromDocument implements UseCase<Input, void> 
       throw new FileTypeNotSupportedError(file.type!);
     }
 
-    const { languages } =
-      (await SettingsDataSourceFactory.default().readFields(['languages'])) ?? {};
+    const languages = (await SettingsDataSourceFactory.default().readLanguages()) ?? [];
     const isLanguageSupported = languages?.some(
       l => l.key === LanguageUtils.fromISO639_3(file.language!).key
     );

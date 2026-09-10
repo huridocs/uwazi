@@ -1,6 +1,7 @@
 import { Db } from 'mongodb';
 import { IdGenerator } from '#api/core/application/contracts/IdGenerator.js';
 import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js';
+import { Settings } from '#api/core/domain/settings/Settings.js';
 import { DefaultLanguageMissingError } from '#api/core/infrastructure/mongodb/errors/settingsErrors.js';
 import { LanguageUtils } from '#shared/language/index.js';
 import { LanguageISO6391, LanguageSchema, LanguagesListSchema } from '#shared/types/commonTypes.js';
@@ -34,12 +35,12 @@ export class PostgresSettingsDataSource
     this.idGenerator = deps.idGenerator;
   }
 
-  async find(): Promise<SettingsType | null> {
+  async find(): Promise<Settings | null> {
     const row = await this.table.first();
-    return row ? PostgresSettingsMapper.toSettings(withExtras(row)) : null;
+    return row ? new Settings(PostgresSettingsMapper.toSettings(withExtras(row))) : null;
   }
 
-  async get(): Promise<SettingsType> {
+  async get(): Promise<Settings> {
     const settings = await this.find();
     if (!settings) {
       throw new Error('Settings not found');
@@ -47,23 +48,28 @@ export class PostgresSettingsDataSource
     return settings;
   }
 
-  async patch(partial: SettingsType): Promise<SettingsType> {
+  async update(settings: Settings): Promise<Settings> {
     const current = await this.find();
-    const { _id: incomingId, __v: _version, ...fields } = partial;
+    const state = settings.toState();
+    const { _id: incomingId, __v: _version, ...fields } = state;
 
     if (current?._id) {
-      await this.writeRow({ ...current, ...fields, _id: current._id });
+      await this.writeRow({ ...current.toState(), ...fields, _id: current._id });
       return this.get();
     }
 
     const id =
       incomingId != null && String(incomingId) ? String(incomingId) : this.idGenerator.generate();
-
     await this.writeRow({ ...fields, _id: id });
     return this.get();
   }
 
-  async readFields<K extends keyof SettingsType>(
+  async readPresentation(): Promise<Settings | null> {
+    const row = await this.table.select(PostgresSettingsMapper.presentationColumnNames()).first();
+    return row ? new Settings(PostgresSettingsMapper.toSettings(withExtras(row))) : null;
+  }
+
+  private async readSlice<K extends keyof SettingsType>(
     fields: readonly K[]
   ): Promise<(Pick<SettingsType, K> & { _id?: SettingsType['_id'] }) | null> {
     const columns = [
@@ -75,52 +81,68 @@ export class PostgresSettingsDataSource
     if (!row) {
       return null;
     }
-
-    const settings = PostgresSettingsMapper.toSettings(withExtras(row));
-    const picked = { _id: settings._id } as Pick<SettingsType, K> & { _id?: SettingsType['_id'] };
+    const mapped = PostgresSettingsMapper.toSettings(withExtras(row));
+    const picked = { _id: mapped._id } as Pick<SettingsType, K> & { _id?: SettingsType['_id'] };
     fields.forEach(field => {
-      if (settings[field] !== undefined) {
-        picked[field] = settings[field];
+      if (mapped[field] !== undefined) {
+        picked[field] = mapped[field];
       }
     });
     return picked;
   }
 
+  async readLanguages(): Promise<LanguagesListSchema | undefined> {
+    return (await this.readSlice(['languages']))?.languages;
+  }
+
+  async readNewNameGeneration(): Promise<boolean> {
+    return Boolean((await this.readSlice(['newNameGeneration']))?.newNameGeneration);
+  }
+
+  async readOpenPublicEndpoint(): Promise<boolean> {
+    return Boolean((await this.readSlice(['openPublicEndpoint']))?.openPublicEndpoint);
+  }
+
+  async readOcrServiceEnabled(): Promise<boolean> {
+    return Boolean((await this.readSlice(['ocrServiceEnabled']))?.ocrServiceEnabled);
+  }
+
+  async readAllowedPublicTemplates(): Promise<SettingsType['allowedPublicTemplates']> {
+    return (await this.readSlice(['allowedPublicTemplates']))?.allowedPublicTemplates;
+  }
+
+  async readContactMail() {
+    const slice = await this.readSlice(['contactEmail', 'senderEmail', 'site_name']);
+    return {
+      contactEmail: slice?.contactEmail,
+      senderEmail: slice?.senderEmail,
+      site_name: slice?.site_name,
+    };
+  }
+
+  async readExportFormat() {
+    const slice = await this.readSlice(['dateFormat', 'site_name']);
+    return { dateFormat: slice?.dateFormat, site_name: slice?.site_name };
+  }
+
+  async readPublicFormDestination(): Promise<string | undefined> {
+    return (await this.readSlice(['publicFormDestination']))?.publicFormDestination;
+  }
+
+  async readMailerConfig(): Promise<string | undefined> {
+    return (await this.readSlice(['mailerConfig']))?.mailerConfig;
+  }
+
   async readFeature<K extends keyof NonNullable<SettingsType['features']>>(
     name: K
   ): Promise<NonNullable<SettingsType['features']>[K] | undefined> {
-    const fields = await this.readFields(['features']);
+    const fields = await this.readSlice(['features']);
     return fields?.features?.[name];
   }
 
   async readSyncConfig(): Promise<SettingsType['sync']> {
-    const fields = await this.readFields(['sync']);
+    const fields = await this.readSlice(['sync']);
     return fields?.sync;
-  }
-
-  async addLanguage(language: LanguageSchema): Promise<void> {
-    const current = await this.requireSettings();
-    const languages = current.languages ?? [];
-    if (languages.some(item => item.key === language.key)) {
-      return;
-    }
-    await this.patch({ languages: [...languages, language] });
-  }
-
-  async setLanguageInstalling(key: LanguageISO6391, installing: boolean): Promise<void> {
-    const current = await this.requireSettings();
-    await this.patch({
-      languages: (current.languages ?? []).map(language =>
-        language.key === key ? { ...language, installing } : language
-      ),
-    });
-  }
-
-  async deleteLanguage(key: LanguageISO6391): Promise<void> {
-    const current = await this.requireSettings();
-    await this.patch({
-      languages: (current.languages ?? []).filter(language => language.key !== key),
-    });
   }
 
   async getLanguageKeys(): Promise<LanguageISO6391[]> {
@@ -132,7 +154,7 @@ export class PostgresSettingsDataSource
     const languages = await this.readLanguages();
     const defaultLanguage = languages?.find(language => language.default);
     if (!defaultLanguage) {
-      throw new DefaultLanguageMissingError('Default language needs to be defined.');
+      throw new DefaultLanguageMissingError();
     }
     return defaultLanguage.key;
   }
@@ -156,7 +178,7 @@ export class PostgresSettingsDataSource
   }
 
   async readFilterUnauthorizedRelated(): Promise<boolean> {
-    const fields = await this.readFields(['filterUnauthorizedRelated']);
+    const fields = await this.readSlice(['filterUnauthorizedRelated']);
     return !!fields?.filterUnauthorizedRelated;
   }
 
@@ -173,36 +195,10 @@ export class PostgresSettingsDataSource
     return {};
   }
 
-  async deactivateSyncConfig(name: string): Promise<number> {
-    const current = await this.find();
-    const sync = current?.sync ?? [];
-    let modified = 0;
-    const next = sync.map(config => {
-      if (config.name === name && config.active) {
-        modified += 1;
-        return { ...config, active: false };
-      }
-      return config;
-    });
-    if (modified) {
-      await this.patch({ sync: next });
-    }
-    return modified;
-  }
-
   private async writeRow(settings: SettingsType) {
     await this.table.upsert(
       PostgresSettingsMapper.toRow(settings, () => this.idGenerator.generate()),
       { columns: ['tenant_id'] }
     );
-  }
-
-  private async requireSettings(): Promise<SettingsType> {
-    return this.get();
-  }
-
-  private async readLanguages(): Promise<SettingsType['languages']> {
-    const fields = await this.readFields(['languages']);
-    return fields?.languages;
   }
 }

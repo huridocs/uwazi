@@ -1,6 +1,6 @@
 import type { Application, NextFunction } from 'express';
 import request from 'supertest';
-import { testingEnvironment, SettingsDSWithContext } from '#api/utils/testingEnvironment.js';
+import { testingEnvironment, mutatePersistedSettings } from '#api/utils/testingEnvironment.js';
 import { setUpApp } from '#api/utils/testingRoutes.js';
 import { DBFixture } from '#api/utils/testing_db.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
@@ -87,17 +87,17 @@ describe('public dataviz embed routes', () => {
   });
 
   it('should reject anonymous access when the instance is private', async () => {
-    await SettingsDSWithContext.default().patch({ private: true });
+    await mutatePersistedSettings(settings => settings.apply({ private: true }, () => ''));
 
     const response = await request(app).get(`/api/public/dataviz/${datavizId}/data`).expect(401);
 
     expect(response.body.error).toBe('Unauthorized');
 
-    await SettingsDSWithContext.default().patch({ private: false });
+    await mutatePersistedSettings(settings => settings.apply({ private: false }, () => ''));
   });
 
   it('should allow anonymous access when embedPublic is enabled on a private instance', async () => {
-    await SettingsDSWithContext.default().patch({ private: true });
+    await mutatePersistedSettings(settings => settings.apply({ private: true }, () => ''));
 
     await testingEnvironment.runWithContext(async () => {
       const transactionManager = ExecutionContext.transactionManager as MongoTransactionManager;
@@ -123,11 +123,11 @@ describe('public dataviz embed routes', () => {
 
     expect(response.body.data.series[0].points[0].label).toBe('Category A');
 
-    await SettingsDSWithContext.default().patch({ private: false });
+    await mutatePersistedSettings(settings => settings.apply({ private: false }, () => ''));
   });
 
   it('should allow authenticated users on a private instance', async () => {
-    await SettingsDSWithContext.default().patch({ private: true });
+    await mutatePersistedSettings(settings => settings.apply({ private: true }, () => ''));
 
     const authedApp = setUpApp(datavizRoutes, (req, _res, next) => {
       req.user = { _id: 'adminUser', role: 'admin' };
@@ -141,7 +141,7 @@ describe('public dataviz embed routes', () => {
 
     expect(response.body.data.series[0].points[0].label).toBe('Category A');
 
-    await SettingsDSWithContext.default().patch({ private: false });
+    await mutatePersistedSettings(settings => settings.apply({ private: false }, () => ''));
   });
 
   it('should return 503 when a snapshot chart has no snapshot', async () => {

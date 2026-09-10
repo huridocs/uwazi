@@ -3,7 +3,7 @@ import { TranslationsService } from '#api/core/application/translation/Translati
 import { TranslationsServiceFactory } from '#api/core/infrastructure/factories/TranslationsServiceFactory.js';
 import { SaveSettingsUseCaseFactory } from '#api/core/infrastructure/factories/SaveSettingsUseCaseFactory.js';
 import { TemplateFacade } from '#api/core/infrastructure/facades/TemplateFacade.js';
-import { testingEnvironment, SettingsDSWithContext } from '#api/utils/testingEnvironment.js';
+import { testingEnvironment, mutatePersistedSettings } from '#api/utils/testingEnvironment.js';
 import { testingTenants } from '#api/utils/testingTenants.js';
 import { SaveSettingsInput } from '../../SaveSettings.js';
 import fixtures from './fixtures.js';
@@ -69,7 +69,9 @@ describe('SaveSettings newNameGeneration', () => {
     });
 
     it('should not apply when the flag is already enabled', async () => {
-      await SettingsDSWithContext.default().patch({ newNameGeneration: true });
+      await mutatePersistedSettings(settings =>
+        settings.apply({ newNameGeneration: true }, () => '')
+      );
       const apply = jest
         .spyOn(TemplateFacade, 'applyNewNameGeneration')
         .mockResolvedValue(undefined);

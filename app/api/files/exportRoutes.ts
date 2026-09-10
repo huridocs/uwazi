@@ -46,7 +46,7 @@ export default (app: Application) => {
         const results = await search.search(query, req.language, req.user);
         // eslint-disable-next-line camelcase
         const { dateFormat = '', site_name } =
-          (await SettingsDataSourceFactory.default().readFields(['dateFormat', 'site_name'])) ?? {};
+          await SettingsDataSourceFactory.default().readExportFormat();
 
         const exporter = new CSVExporter();
 

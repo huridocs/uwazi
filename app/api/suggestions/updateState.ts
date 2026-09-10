@@ -118,7 +118,7 @@ export const postProcessCurrentValues = (
 
 // eslint-disable-next-line max-statements
 export const updateStates = async (query: Record<string, unknown>) => {
-  const { languages } = (await SettingsDataSourceFactory.default().readFields(['languages'])) ?? {};
+  const languages = (await SettingsDataSourceFactory.default().readLanguages()) ?? [];
   const propertyTypes = objectIndex(
     (await templates.get()).map(t => t.properties || []).flat(),
     p => p.name,

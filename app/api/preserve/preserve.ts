@@ -14,7 +14,7 @@ import { MongoThesaurusMapper } from '#api/core/infrastructure/mongodb/thesauri/
 
 export const Preserve = {
   async setup(language: string, user: User) {
-    const currentSettings = (await SettingsDataSourceFactory.default().find()) ?? {};
+    const currentSettings = (await SettingsDataSourceFactory.default().find())?.toState() ?? {};
     const preserve: PreserveConfig | undefined = currentSettings?.features?.preserve;
 
     if (!preserve) {

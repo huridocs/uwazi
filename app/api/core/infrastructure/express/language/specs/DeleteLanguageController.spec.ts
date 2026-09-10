@@ -35,7 +35,7 @@ describe('DeleteLanguageController', () => {
     } as any);
 
     jest.spyOn(SettingsDataSourceFactory, 'default').mockReturnValue({
-      readFields: settingsGetSpy,
+      readLanguages: settingsGetSpy,
     } as any);
   });
 
@@ -44,7 +44,7 @@ describe('DeleteLanguageController', () => {
   });
 
   it('should throw when key query param is missing', async () => {
-    settingsGetSpy.mockResolvedValue({ languages: [] });
+    settingsGetSpy.mockResolvedValue([]);
 
     const { sut } = createSut({});
 
@@ -52,7 +52,7 @@ describe('DeleteLanguageController', () => {
   });
 
   it('should return 409 when language does not exist in settings', async () => {
-    settingsGetSpy.mockResolvedValue({ languages: [{ key: 'en', label: 'English' }] });
+    settingsGetSpy.mockResolvedValue([{ key: 'en', label: 'English' }]);
 
     const { sut, response, emitToCurrentTenant } = createSut({ key: 'es' });
 
@@ -67,9 +67,7 @@ describe('DeleteLanguageController', () => {
   });
 
   it('should return 409 when language is still installing', async () => {
-    settingsGetSpy.mockResolvedValue({
-      languages: [{ key: 'es', label: 'Spanish', installing: true }],
-    });
+    settingsGetSpy.mockResolvedValue([{ key: 'es', label: 'Spanish', installing: true }]);
 
     const { sut, response, emitToCurrentTenant } = createSut({ key: 'es' });
 
@@ -81,9 +79,7 @@ describe('DeleteLanguageController', () => {
   });
 
   it('should call use case and respond 204 when language is installed', async () => {
-    settingsGetSpy.mockResolvedValue({
-      languages: [{ key: 'es', label: 'Spanish', installing: false }],
-    });
+    settingsGetSpy.mockResolvedValue([{ key: 'es', label: 'Spanish', installing: false }]);
 
     const { sut, response } = createSut({ key: 'es' });
 
@@ -94,9 +90,7 @@ describe('DeleteLanguageController', () => {
   });
 
   it('should emit translationsDelete after successful deletion', async () => {
-    settingsGetSpy.mockResolvedValue({
-      languages: [{ key: 'es', label: 'Spanish', installing: false }],
-    });
+    settingsGetSpy.mockResolvedValue([{ key: 'es', label: 'Spanish', installing: false }]);
 
     const { sut, emitToCurrentTenant } = createSut({ key: 'es' });
 

@@ -648,7 +648,9 @@ describe('translations', () => {
 
     describe('removeLanguage', () => {
       it('should remove translation for the language passed', async () => {
-        await SettingsDSWithContext.default().deleteLanguage('es');
+        const settings = await SettingsDSWithContext.default().get();
+        settings.deleteLanguage('es');
+        await SettingsDSWithContext.default().update(settings);
         await withTranslationWrites(async ({ translationsDS }) =>
           translationsDS.deleteByLanguage('es')
         );

@@ -3,12 +3,7 @@ import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/Se
 
 export default {
   async sendMessage({ email, name, message }) {
-    const siteSettings =
-      (await SettingsDataSourceFactory.default().readFields([
-        'contactEmail',
-        'senderEmail',
-        'site_name',
-      ])) ?? {};
+    const siteSettings = await SettingsDataSourceFactory.default().readContactMail();
     const emailSender = mailer.createSenderDetails(siteSettings);
     const mailOptions = {
       from: emailSender,

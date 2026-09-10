@@ -3,19 +3,18 @@ import { SettingsDataSource } from '#api/core/application/contracts/SettingsData
 import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
 import { EventEmitter } from '#api/core/libs/eventEmitter/EventEmitter.js';
 import { SettingsChangedEvent } from '#api/core/domain/settings/events/SettingsChangedEvent.js';
+import { Settings } from '#api/core/domain/settings/Settings.js';
 import { SettingsService } from '../SettingsService.js';
 import { SettingsTranslationService } from '../SettingsTranslationService.js';
 
 const createSut = (isRunning = true) => {
+  const stored = new Settings({
+    filters: [{ id: '123', name: 'Batman' }],
+    links: [{ id: 'menu1', title: 'Home', type: 'link', url: '/' }],
+  });
   const settingsDS = TestUtils.mockClass<SettingsDataSource>({
-    get: jest.fn().mockResolvedValue({
-      filters: [{ id: '123', name: 'Batman' }],
-      links: [{ id: 'menu1', title: 'Home', type: 'link', url: '/' }],
-    }),
-    patch: jest.fn().mockImplementation(async partial => ({
-      filters: [{ id: '123', name: 'Batman' }],
-      ...partial,
-    })),
+    get: jest.fn().mockResolvedValue(stored),
+    update: jest.fn().mockImplementation(async settings => settings),
   });
   const translations = TestUtils.mockClass<SettingsTranslationService>({
     reconcile: jest.fn().mockResolvedValue(undefined),
@@ -39,12 +38,13 @@ const createSut = (isRunning = true) => {
       translations,
       transactionManager,
       eventEmitter,
+      idGenerator: { generate: () => 'generated-id' },
     }),
   };
 };
 
 describe('SettingsService', () => {
-  it('should patch filters and reconcile filter translations without going through SaveSettings', async () => {
+  it('should persist filters and reconcile filter translations without going through SaveSettings', async () => {
     const { service, settingsDS, translations, eventEmitter } = createSut();
     const filters = [{ id: '123', name: 'The dark knight' }];
 
@@ -54,7 +54,7 @@ describe('SettingsService', () => {
       { id: '123', name: 'Batman' },
     ]);
     expect(translations.reconcileLinks).not.toHaveBeenCalled();
-    expect(settingsDS.patch).toHaveBeenCalledWith({ filters });
+    expect(settingsDS.update).toHaveBeenCalledWith(expect.any(Settings));
     expect(eventEmitter.emit).toHaveBeenCalledWith(expect.any(SettingsChangedEvent));
   });
 
@@ -70,9 +70,7 @@ describe('SettingsService', () => {
     const { service, settingsDS } = createSut();
 
     expect(await service.updateFilterName('123', 'The dark knight')).toBe(true);
-    expect(settingsDS.patch).toHaveBeenCalledWith({
-      filters: [{ id: '123', name: 'The dark knight' }],
-    });
+    expect(settingsDS.update).toHaveBeenCalledWith(expect.any(Settings));
 
     expect(await service.updateFilterName('missing', 'Nope')).toBe(false);
   });
@@ -81,10 +79,10 @@ describe('SettingsService', () => {
     const { service, settingsDS } = createSut();
 
     expect(await service.removeTemplateFromFilters('123')).toBe(true);
-    expect(settingsDS.patch).toHaveBeenCalledWith({ filters: [] });
+    expect(settingsDS.update).toHaveBeenCalled();
 
-    settingsDS.get = jest.fn().mockResolvedValue({});
+    settingsDS.get = jest.fn().mockResolvedValue(new Settings({}));
     expect(await service.removeTemplateFromFilters('123')).toBe(false);
-    expect(settingsDS.patch).toHaveBeenCalledTimes(1);
+    expect(settingsDS.update).toHaveBeenCalledTimes(1);
   });
 });

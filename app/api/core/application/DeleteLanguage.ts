@@ -18,13 +18,11 @@ type Deps = {
 
 class DeleteLanguageUseCase extends AbstractUseCase<Input, Output, Deps> {
   async execute({ key }: Input): Promise<Output> {
-    const defaultLanguage = await this.deps.settingsDS.getDefaultLanguageKey();
-    if (key === defaultLanguage) {
-      throw new Error('Cannot delete the default language.');
-    }
+    const settings = await this.deps.settingsDS.get();
+    settings.deleteLanguage(key);
 
     await this.transactionManager.run(async () => {
-      await this.deps.settingsDS.deleteLanguage(key);
+      await this.deps.settingsDS.update(settings);
       await this.deps.translationsDS.deleteByLanguage(key);
       await this.eventEmitter.emit(
         new LanguageDeletedEvent({ language: key, userId: this.actorId })

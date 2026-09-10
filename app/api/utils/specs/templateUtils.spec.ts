@@ -1,5 +1,5 @@
 import db from '#api/utils/testing_db.js';
-import { testingEnvironment, SettingsDSWithContext } from '#api/utils/testingEnvironment.js';
+import { testingEnvironment, mutatePersistedSettings } from '#api/utils/testingEnvironment.js';
 import { PropertySchema } from '#shared/types/commonTypes.js';
 import {
   generateIds,
@@ -20,7 +20,6 @@ describe('templates utils', () => {
   describe('name generation', () => {
     describe('default name generation', () => {
       it('should sanitize the labels and append the type', async () => {
-        await SettingsDSWithContext.default().patch({});
         const result = await testingEnvironment.runWithContext(async () =>
           generateNames([
             { label: ' my prop ', name: '', type: 'text' },
@@ -37,7 +36,9 @@ describe('templates utils', () => {
 
     describe('less restrictive name generation', () => {
       it('should not contain the characters #, \\, /, *, ?, ", <, >, |, , :, ., and should be lowercase', async () => {
-        await SettingsDSWithContext.default().patch({ newNameGeneration: true });
+        await mutatePersistedSettings(settings =>
+          settings.apply({ newNameGeneration: true }, () => '')
+        );
         const result = await testingEnvironment.runWithContext(async () =>
           generateNames([
             { label: ' my prop ', name: '', type: 'text' },
@@ -78,7 +79,9 @@ describe('templates utils', () => {
       });
 
       it('should not start with _, -, +, $', async () => {
-        await SettingsDSWithContext.default().patch({ newNameGeneration: true });
+        await mutatePersistedSettings(settings =>
+          settings.apply({ newNameGeneration: true }, () => '')
+        );
         const result = await testingEnvironment.runWithContext(async () =>
           generateNames([
             { label: '.test ', name: '', type: 'text' },

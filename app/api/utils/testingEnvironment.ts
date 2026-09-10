@@ -32,6 +32,7 @@ import { UserSchema } from '#shared/types/userType.js';
 import { ObjectUtils } from '#api/common.v2/utils/Object.js';
 import { UwaziDispatcherFactory } from '#api/core/infrastructure/jobs/UwaziDispatcherFactory.js';
 import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js';
+import { Settings } from '#api/core/domain/settings/Settings.js';
 import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
 import { PostgresEntityMapper } from '#api/core/infrastructure/postgresql/entity/PostgresEntityMapper.js';
 import type { EntityRow } from '#api/core/infrastructure/postgresql/entity/PostgresEntityRow.js';
@@ -473,4 +474,11 @@ const SettingsDSWithContext = {
   },
 };
 
-export { testingEnvironment, SettingsDSWithContext };
+const mutatePersistedSettings = async (mutate: (settings: Settings) => void) => {
+  const dataSource = SettingsDSWithContext.default();
+  const settings = await dataSource.get();
+  mutate(settings);
+  await dataSource.update(settings);
+};
+
+export { testingEnvironment, SettingsDSWithContext, mutatePersistedSettings };

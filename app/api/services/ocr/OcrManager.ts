@@ -41,8 +41,8 @@ interface OcrSettings {
 const isEnabled = async () => {
   const settingsDS = SettingsDataSourceFactory.default();
   const ocr = await settingsDS.readFeature('ocr');
-  const slice = await settingsDS.readFields(['ocrServiceEnabled']);
-  return Boolean(ocr?.url) && Boolean(slice?.ocrServiceEnabled);
+  const ocrServiceEnabled = await settingsDS.readOcrServiceEnabled();
+  return Boolean(ocr?.url) && Boolean(ocrServiceEnabled);
 };
 
 const validateNotInQueue = async (file: EnforcedWithId<FileType>) => {

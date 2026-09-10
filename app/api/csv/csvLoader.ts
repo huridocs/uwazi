@@ -28,7 +28,7 @@ export class CSVLoader {
     { language }: { language: string }
   ) {
     const file = importFile(csvPath);
-    const settingsData = await SettingsDataSourceFactory.default().readFields(['languages']);
+    const settingsData = { languages: await SettingsDataSourceFactory.default().readLanguages() };
     const defaultLanguage = settingsData?.languages?.find(l => l.default)?.key;
 
     const languageToUse = defaultLanguage || language;
@@ -79,7 +79,7 @@ export class CSVLoader {
       .read();
 
     const languagesToTranslate = ensure<LanguageSchema[]>(
-      (await SettingsDataSourceFactory.default().readFields(['languages']))?.languages
+      await SettingsDataSourceFactory.default().readLanguages()
     )
       .map((l: LanguageSchema) => ({ label: l.label, language: l.key }))
       .filter(lang => Object.keys(intermediateTranslation).includes(lang.label));

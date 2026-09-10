@@ -10,7 +10,7 @@ describe('mailer', () => {
   beforeEach(() => {
     testingTenants.mockCurrentTenant({ name: 'default' });
     jest.spyOn(SettingsDataSourceFactory, 'default').mockReturnValue({
-      readFields: async () => ({ mailerConfig: '{}' }),
+      readMailerConfig: async () => '{}',
     } as any);
     process.env = { ...ORIGINAL_ENV };
   });
