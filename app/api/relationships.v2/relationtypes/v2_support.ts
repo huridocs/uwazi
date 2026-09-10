@@ -5,7 +5,7 @@ import { CreateTemplateService } from '../templates.v2/services/service_factorie
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 
 const getNewRelationshipCount = async (id: ObjectId) => {
-  const transactionManager = TransactionManagerFactory.default();
+  const transactionManager = TransactionManagerFactory.mongo();
   const newRelationshipsAllowed = await SettingsDataSourceFactory.default({
     transactionManager,
   }).readNewRelationshipsAllowed();
@@ -15,7 +15,7 @@ const getNewRelationshipCount = async (id: ObjectId) => {
 };
 
 const relationTypeIsUsedInQueries = async (id: ObjectId): Promise<boolean> => {
-  const transactionManager = TransactionManagerFactory.default();
+  const transactionManager = TransactionManagerFactory.mongo();
   const newRelationshipsAllowed = await SettingsDataSourceFactory.default({
     transactionManager,
   }).readNewRelationshipsAllowed();

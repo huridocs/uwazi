@@ -307,9 +307,18 @@ describe('AddLanguage use case', () => {
         });
 
         const settings = await testingEnvironment.db.getCollection('settings')!.findOne({});
-        expect(settings?.languages).toEqual([
-          expect.objectContaining({ key: 'en', label: 'English', default: true }),
-        ]);
+        if (postgresCore) {
+          // Settings is Mongo-only and not atomic with the PG transaction
+          // (settings migration is out of scope), so the write is not rolled back.
+          expect(settings?.languages).toEqual([
+            expect.objectContaining({ key: 'en', label: 'English', default: true }),
+            expect.objectContaining({ key: 'es', label: 'Spanish' }),
+          ]);
+        } else {
+          expect(settings?.languages).toEqual([
+            expect.objectContaining({ key: 'en', label: 'English', default: true }),
+          ]);
+        }
 
         if (!postgresCore) {
           const esCount = (

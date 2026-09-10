@@ -1,6 +1,6 @@
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
-import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
+import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
 import { EntitiesDataSourceFactory } from '#api/core/infrastructure/factories/EntitiesDataSourceFactory.js';
 import { entityInputDataSchema } from '#api/entities.v2/types/EntityInputDataSchema.js';
 import { EntityInputModel } from '#api/entities.v2/types/EntityInputDataType.js';
@@ -20,7 +20,7 @@ import { SemanticConfig, semanticConfigSchema } from './types/SemanticConfig.js'
 import { TranslationResult, translationResultSchema } from './types/TranslationResult.js';
 
 const AutomaticTranslationFactory = {
-  defaultATConfigDataSource(transactionManager: MongoTransactionManager) {
+  defaultATConfigDataSource(transactionManager: TransactionManager) {
     const db = getConnection();
     return new MongoATConfigDataSource(
       db,
@@ -32,7 +32,7 @@ const AutomaticTranslationFactory = {
   },
 
   defaultGenerateATConfig() {
-    const transactionManager = TransactionManagerFactory.default();
+    const transactionManager = TransactionManagerFactory.mongo();
     return new GenerateAutomaticTranslationsCofig(
       AutomaticTranslationFactory.defaultATConfigDataSource(transactionManager),
       TemplatesDataSourceFactory.default({ transactionManager }),
@@ -41,7 +41,7 @@ const AutomaticTranslationFactory = {
   },
 
   defaultSaveEntityTranslations() {
-    const transactionManager = TransactionManagerFactory.default();
+    const transactionManager = TransactionManagerFactory.mongo();
     return new SaveEntityTranslations(
       TemplatesDataSourceFactory.default({ transactionManager }),
       EntitiesDataSourceFactory.default({ transactionManager }),
@@ -52,7 +52,7 @@ const AutomaticTranslationFactory = {
   },
 
   defaultRequestEntityTranslation() {
-    const transactionManager = TransactionManagerFactory.default();
+    const transactionManager = TransactionManagerFactory.mongo();
     return new RequestEntityTranslation(
       new TaskManager<ATTaskMessage>({
         serviceName: RequestEntityTranslation.SERVICE_NAME,

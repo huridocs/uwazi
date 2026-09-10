@@ -4,14 +4,14 @@ import { TransactionManagerFactory } from '#api/core/infrastructure/factories/Tr
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { TemplatesDAOFactory } from '#api/core/infrastructure/factories/TemplatesDAOFactory.js';
 
-import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
+import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
 import { MongoPXExtractorsDataSource } from './MongoPXExtractorsDataSource.js';
 import { PXExtractorsQueryServiceFactory } from './PXExtractorsQueryServiceFactory.js';
 import { PXExtractorsQueryService } from '../domain/PXExtractorsQueryService.js';
 
 type Props = {
   connection?: Db;
-  mongoTransactionManager?: MongoTransactionManager;
+  mongoTransactionManager?: TransactionManager;
   extractorsQueryService?: PXExtractorsQueryService;
 };
 
@@ -19,7 +19,7 @@ export class PXExtractorsDataSourceFactory {
   static createDefault(props: Props) {
     const connection = props.connection ?? getConnection();
     const mongoTransactionManager =
-      props.mongoTransactionManager ?? TransactionManagerFactory.default();
+      props.mongoTransactionManager ?? TransactionManagerFactory.mongo();
 
     const extractorsQueryService =
       props.extractorsQueryService ??

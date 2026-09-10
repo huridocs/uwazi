@@ -14,7 +14,10 @@ export class CreateUserUseCaseFactory {
       idGenerator: IdGeneratorFactory.default(),
       transactionManager: ExecutionContext.transactionManager,
       dispatcher: new DispatcherAdapter(
-        UwaziDispatcherFactory(ExecutionContext.tenant.name, ExecutionContext.transactionManager)
+        UwaziDispatcherFactory(
+          ExecutionContext.tenant.name,
+          ExecutionContext.mongoTransactionManager
+        )
       ),
       ...overrides,
     });

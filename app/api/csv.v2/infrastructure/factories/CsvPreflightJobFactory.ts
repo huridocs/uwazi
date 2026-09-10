@@ -5,7 +5,7 @@ import { UwaziDispatcherFactory } from '#api/core/infrastructure/jobs/UwaziDispa
 import { ThesauriDataSource } from '#api/core/application/contracts/ThesauriDataSource.js';
 import { ThesauriDataSourceFactory } from '#api/core/infrastructure/factories/ThesauriDataSourceFactory.js';
 import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
-import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
+import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
 import { tenants } from '#api/tenants/tenantContext.js';
 import { TemplatesDataSource } from '#api/core/application/contracts/TemplatesDataSource.js';
 import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js';
@@ -17,7 +17,7 @@ import { CsvImportThesauriValuesDataSource } from '../../application/contracts/C
 import { CsvImportRelationshipPendingValuesDataSource } from '../../application/contracts/CsvImportRelationshipPendingValuesDataSource.js';
 
 type FactoryOptions = {
-  transactionManager?: MongoTransactionManager;
+  transactionManager?: TransactionManager;
   jobsDispatcher?: JobsDispatcher;
   csvImportsDS?: CsvImportsDataSource;
   rowsDS?: CsvImportRowsDataSource;
@@ -34,7 +34,7 @@ class CsvPreflightJobFactory {
   }
 
   static build(options: FactoryOptions = {}) {
-    const transactionManager = options.transactionManager ?? TransactionManagerFactory.default();
+    const transactionManager = options.transactionManager ?? TransactionManagerFactory.mongo();
     const csvImportsDS =
       options.csvImportsDS ?? CSVImportEntitiesFactories.CSVImportDSDefault(transactionManager);
     const rowsDS =

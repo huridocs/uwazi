@@ -6,7 +6,7 @@ import { TemplatesDataSourceFactory } from '#api/core/infrastructure/factories/T
 import { CreateTemplateService as GenericCreateTemplateService } from './CreateTemplateService.js';
 
 const CreateTemplateService = async () => {
-  const transactionManager = TransactionManagerFactory.default();
+  const transactionManager = TransactionManagerFactory.mongo();
 
   const templatesDataSource = TemplatesDataSourceFactory.default({ transactionManager });
   const relTypesDataSource = RelationshipTypesDataSourceFactory.default({ transactionManager });

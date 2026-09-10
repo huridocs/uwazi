@@ -6,7 +6,7 @@ import { DefaultPermissionsDataSource } from '../database/data_source_defaults.j
 import { AuthorizationService as GenericAuthorizationService } from './AuthorizationService.js';
 
 const AuthorizationService = (user: User, _transactionManager?: MongoTransactionManager) => {
-  const transactionManager = _transactionManager || TransactionManagerFactory.default();
+  const transactionManager = _transactionManager || TransactionManagerFactory.mongo();
   const permissionDS = DefaultPermissionsDataSource(transactionManager);
   return new GenericAuthorizationService(permissionDS, user);
 };
