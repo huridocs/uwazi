@@ -85,10 +85,7 @@ const CopyFromSearchView = ({
         }
       />
     </div>
-    <div
-      className="min-h-0 flex-1 overflow-y-auto bg-parchment px-2 pb-2"
-      data-testid="copy-from-results"
-    >
+    <div className="min-h-0 flex-1 overflow-y-auto px-2 pb-2" data-testid="copy-from-results">
       {isSearching ? (
         <p className="px-3 py-8 text-center text-sm text-ink-secondary">
           <Translate>Searching...</Translate>
@@ -107,7 +104,7 @@ const CopyFromSearchView = ({
               type="button"
               aria-label={entity.title}
               onClick={() => onSelect(entity)}
-              className="flex w-full items-center gap-3 rounded-md px-3 py-2 text-left transition-colors hover:bg-warm"
+              className="flex w-full items-center gap-3 rounded-md px-3 py-2 text-left transition-colors hover:bg-parchment"
             >
               <span className="min-w-0 flex-1">
                 <span className="block truncate text-xs font-medium text-ink">{entity.title}</span>
