@@ -52,7 +52,7 @@ const CopyFromModal = ({
     });
 
   return (
-    <Modal size="md" ariaLabel="Copy from">
+    <Modal size="xl" ariaLabel="Copy from">
       <div className="flex h-[min(80vh,40rem)] flex-col" data-testid="copy-from-modal">
         <Modal.Header>
           {source ? (
