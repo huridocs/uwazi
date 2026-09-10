@@ -1,4 +1,3 @@
-import { MongoTransactionManager } from '../mongodb/common/MongoTransactionManager.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { V1WebSocketsWrapper } from '../services/V1WebSocketsWrapper.js';
 import { DeleteLanguageEntitiesJob } from '../jobs/DeleteLanguageEntitiesJob.js';
@@ -8,7 +7,7 @@ class DeleteLanguageEntitiesJobFactory {
   static default(
     overrides?: Partial<ConstructorParameters<typeof DeleteLanguageEntitiesJob>[0]>
   ): DeleteLanguageEntitiesJob {
-    const transactionManager = ExecutionContext.transactionManager as MongoTransactionManager;
+    const { transactionManager } = ExecutionContext;
     const entityDAO = EntitiesDAOFactory.default({
       transactionManager,
     });

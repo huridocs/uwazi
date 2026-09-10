@@ -1,7 +1,6 @@
 import { PostgresTemplatesDAO } from '#api/core/infrastructure/postgresql/template/PostgresTemplatesDAO.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { getConnection } from '../mongodb/common/getConnectionForCurrentTenant.js';
-import { MongoTransactionManager } from '../mongodb/common/MongoTransactionManager.js';
 import { MongoTemplatesDAO } from '../mongodb/template/MongoTemplatesDAO.js';
 import { TransactionManagerFactory } from './TransactionManagerFactory.js';
 
@@ -22,7 +21,7 @@ class TemplatesDAOFactory {
     return new MongoTemplatesDAO({
       db: getConnection(),
       transactionManager: ExecutionContext.getStore()
-        ? (ExecutionContext.transactionManager as MongoTransactionManager)
+        ? ExecutionContext.transactionManager
         : TransactionManagerFactory.mongo(),
     });
   }

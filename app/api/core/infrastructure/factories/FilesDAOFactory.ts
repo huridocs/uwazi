@@ -1,5 +1,4 @@
 import { getConnection } from '../mongodb/common/getConnectionForCurrentTenant.js';
-import { MongoTransactionManager } from '../mongodb/common/MongoTransactionManager.js';
 import { MongoFilesDAO } from '../mongodb/files/MongoFilesDAO.js';
 import { PostgresFilesDAO } from '../postgresql/files/PostgresFilesDAO.js';
 import { TransactionManagerFactory } from './TransactionManagerFactory.js';
@@ -24,7 +23,7 @@ class FilesDAOFactory {
     return new MongoFilesDAO({
       db: getConnection(),
       transactionManager: ExecutionContext.getStore()
-        ? (ExecutionContext.transactionManager as MongoTransactionManager)
+        ? ExecutionContext.transactionManager
         : TransactionManagerFactory.mongo(),
     });
   }
