@@ -14,7 +14,7 @@ const accentRgba = (hex: string, alpha: number): string => {
 
 type TemplateLabelProps = {
   templateId?: string;
-  variant?: 'pill' | 'tag';
+  variant?: 'pill' | 'tag' | 'parchment';
 };
 
 const TemplateLabel = ({ templateId, variant = 'pill' }: TemplateLabelProps) => {
@@ -44,6 +44,19 @@ const TemplateLabel = ({ templateId, variant = 'pill' }: TemplateLabelProps) => 
     template.color
   );
   const swatchStyle = { backgroundColor: accentHex } as const;
+
+  if (variant === 'parchment') {
+    return (
+      <span className="inline-flex w-fit shrink-0 items-center gap-1.5 whitespace-nowrap rounded-md bg-parchment px-2 py-0.5 text-xs font-medium text-ink">
+        <span
+          className="h-1.5 w-1.5 shrink-0 rounded-[2px]"
+          style={swatchStyle}
+          aria-hidden="true"
+        />
+        <Translate context={template._id}>{template.name}</Translate>
+      </span>
+    );
+  }
 
   if (variant === 'tag') {
     return (

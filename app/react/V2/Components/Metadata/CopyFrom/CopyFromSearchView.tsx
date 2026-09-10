@@ -1,10 +1,10 @@
+/* eslint-disable react/no-multi-comp */
 import React from 'react';
-import { MagnifyingGlassIcon } from '@heroicons/react/24/outline';
 import { Translate, t } from '#app/I18N/index.js';
 import type { Template } from '#app/apiResponseTypes.js';
 import type { Entity } from '#V2/api/entities/types.js';
 import { TemplateLabel } from '#V2/Components/Metadata/Components/index.js';
-import { InputField } from '#V2/Components/Forms/index.js';
+import { QuerySearchBar } from '#V2/Components/UI/index.js';
 import { copyFromMatchingProperties } from './copyFromMatchingProperties.js';
 
 type CopyFromSearchViewProps = {
@@ -23,8 +23,39 @@ type CopyFromSearchViewProps = {
 const typeChipClass = (active: boolean) =>
   [
     'shrink-0 rounded-md px-2.5 py-1.5 text-xs font-medium transition-colors',
-    active ? 'bg-warm text-ink' : 'border border-border bg-paper text-ink-secondary hover:bg-warm',
+    active
+      ? 'bg-parchment text-ink'
+      : 'border border-border bg-paper text-ink-secondary hover:bg-parchment',
   ].join(' ');
+
+const CopyFromTypeFilters = ({
+  currentTemplate,
+  sameTypeOnly,
+  onSameTypeOnlyChange,
+}: {
+  currentTemplate?: Template;
+  sameTypeOnly: boolean;
+  onSameTypeOnlyChange: (value: boolean) => void;
+}) => (
+  <div className="flex shrink-0 items-center gap-2">
+    {currentTemplate ? (
+      <button
+        type="button"
+        className={typeChipClass(sameTypeOnly)}
+        onClick={() => onSameTypeOnlyChange(true)}
+      >
+        <Translate context={currentTemplate._id}>{currentTemplate.name}</Translate>
+      </button>
+    ) : null}
+    <button
+      type="button"
+      className={typeChipClass(!sameTypeOnly)}
+      onClick={() => onSameTypeOnlyChange(false)}
+    >
+      <Translate>Any type</Translate>
+    </button>
+  </div>
+);
 
 const CopyFromSearchView = ({
   query,
@@ -39,36 +70,22 @@ const CopyFromSearchView = ({
   onSelect,
 }: CopyFromSearchViewProps) => (
   <>
-    <div className="flex items-center gap-2 px-5 py-3">
-      <div className="min-w-0 flex-1">
-        <InputField
-          id="copy-from-search"
-          type="search"
-          hideLabel
-          label={t('System', 'Search by title', null, false)}
-          placeholder={t('System', 'Search by title', null, false)}
-          value={query}
-          onChange={event => onQueryChange(event.target.value)}
-          icon={<MagnifyingGlassIcon className="h-4 w-4 text-ink-muted" aria-hidden="true" />}
-          clearFieldAction={query ? () => onQueryChange('') : undefined}
-        />
-      </div>
-      {currentTemplate ? (
-        <button
-          type="button"
-          className={typeChipClass(sameTypeOnly)}
-          onClick={() => onSameTypeOnlyChange(true)}
-        >
-          <Translate context={currentTemplate._id}>{currentTemplate.name}</Translate>
-        </button>
-      ) : null}
-      <button
-        type="button"
-        className={typeChipClass(!sameTypeOnly)}
-        onClick={() => onSameTypeOnlyChange(false)}
-      >
-        <Translate>Any type</Translate>
-      </button>
+    <div className="border-b border-border px-5 py-3">
+      <QuerySearchBar
+        value={query}
+        onChange={onQueryChange}
+        placeholder={t('System', 'Search by title', null, false)}
+        ariaLabel={t('System', 'Search by title', null, false)}
+        clearAriaLabel={t('System', 'Clear search', null, false)}
+        className="p-0"
+        rightSlot={
+          <CopyFromTypeFilters
+            currentTemplate={currentTemplate}
+            sameTypeOnly={sameTypeOnly}
+            onSameTypeOnlyChange={onSameTypeOnlyChange}
+          />
+        }
+      />
     </div>
     <div className="min-h-0 flex-1 overflow-y-auto px-2 pb-2" data-testid="copy-from-results">
       {isSearching ? (
@@ -92,13 +109,16 @@ const CopyFromSearchView = ({
               className="flex w-full items-center gap-3 rounded-md px-3 py-2 text-left transition-colors hover:bg-warm"
             >
               <span className="min-w-0 flex-1">
-                <span className="block truncate text-sm font-medium text-ink">{entity.title}</span>
+                <span className="block truncate text-xs font-medium text-ink">{entity.title}</span>
                 <span className="mt-1 block">
-                  <TemplateLabel templateId={entity.template} />
+                  <TemplateLabel templateId={entity.template} variant="parchment" />
                 </span>
               </span>
-              <span className="shrink-0 rounded-md bg-warm px-2 py-0.5 text-micro text-ink-tertiary">
-                {fieldCount} <Translate>{fieldCount === 1 ? 'field' : 'fields'}</Translate>
+              <span className="shrink-0 text-micro text-ink-tertiary">
+                <span className="rounded-md bg-parchment px-1.5 py-0.5 font-medium text-ink-secondary">
+                  {fieldCount}
+                </span>{' '}
+                <Translate>{fieldCount === 1 ? 'field' : 'fields'}</Translate>
               </span>
             </button>
           );

@@ -176,6 +176,13 @@ describe('CopyFromModal', () => {
     expect(screen.queryByText('Ada Lovelace')).not.toBeInTheDocument();
     expect(screen.getByText(withText('2 candidates'))).toBeInTheDocument();
     expect(screen.getAllByText(withText('3 fields'))).toHaveLength(2);
+    const fieldCountBadges = screen
+      .getAllByText('3')
+      .filter(node => node.classList.contains('bg-parchment'));
+    expect(fieldCountBadges).toHaveLength(2);
+    fieldCountBadges.forEach(badge => {
+      expect(badge).not.toHaveTextContent(/fields/i);
+    });
     expect(searchCandidates).toHaveBeenCalledWith(
       expect.objectContaining({ template: ['country'] })
     );
