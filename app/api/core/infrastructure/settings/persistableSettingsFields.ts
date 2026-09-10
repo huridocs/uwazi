@@ -3,12 +3,9 @@ import { toPersistableFilters } from './persistableFilters.js';
 import { toPersistableLanguages } from './persistableLanguages.js';
 import { toPersistableMenuItems } from './persistableMenuItems.js';
 
-const toPersistableSettingsFields = (
-  fields: SettingsType,
-  generateId: () => string
-): SettingsType => ({
+const toPersistableSettingsFields = (fields: SettingsType): SettingsType => ({
   ...fields,
-  ...(fields.links ? { links: toPersistableMenuItems(fields.links, generateId) } : {}),
+  ...(fields.links ? { links: toPersistableMenuItems(fields.links) } : {}),
   ...(fields.filters ? { filters: toPersistableFilters(fields.filters) } : {}),
   ...(fields.languages ? { languages: toPersistableLanguages(fields.languages) } : {}),
 });

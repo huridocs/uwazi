@@ -64,7 +64,7 @@ export class MongoSettingsDataSource
       _id: incomingId,
       __v: _version,
       ...fields
-    } = toPersistableSettingsFields(settings.toState(), MongoIdHandler.generate);
+    } = toPersistableSettingsFields(settings.toState());
     const current = await this.readSettings();
 
     if (current?._id) {

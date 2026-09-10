@@ -96,10 +96,9 @@ const pickDefined = (source: Record<string, unknown>, keys: readonly string[]) =
 };
 
 export class PostgresSettingsMapper {
-  static toRow(settings: SettingsType, generateId: () => string): SettingsRow {
+  static toRow(settings: SettingsType): SettingsRow {
     const source = {
-      ...(toPersistableSettingsFields(settings, generateId) as SettingsType &
-        Record<string, unknown>),
+      ...(toPersistableSettingsFields(settings) as SettingsType & Record<string, unknown>),
     };
     delete source.__v;
     delete source.tenant_id;

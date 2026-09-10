@@ -26,15 +26,7 @@ const withReadableId = <T extends MenuItemIdentity>(item: T): Omit<T, '_id'> => 
   return id ? { ...withoutId, id } : withoutId;
 };
 
-const withPersistedId = <T extends MenuItemIdentity>(
-  item: T,
-  generateId: () => string
-): Omit<T, '_id'> & { id: string } => ({
-  ...omitNestedId(item),
-  id: asMenuItemId(item) ?? generateId(),
-});
-
-const toReadableMenuItems = (
+const mapMenuItems = (
   links: SettingsLinkSchema[] | undefined
 ): SettingsLinkSchema[] | undefined => {
   if (!links) {
@@ -53,19 +45,12 @@ const toReadableMenuItems = (
   });
 };
 
+const toReadableMenuItems = (
+  links: SettingsLinkSchema[] | undefined
+): SettingsLinkSchema[] | undefined => mapMenuItems(links);
+
 const toPersistableMenuItems = (
-  links: NonNullable<Settings['links']>,
-  generateId: () => string
-): NonNullable<Settings['links']> =>
-  links.map(link => {
-    const persisted = withPersistedId(link, generateId);
-    if (!link.sublinks) {
-      return persisted;
-    }
-    return {
-      ...persisted,
-      sublinks: link.sublinks.map(sublink => withPersistedId(sublink, generateId)),
-    };
-  });
+  links: NonNullable<Settings['links']>
+): NonNullable<Settings['links']> => mapMenuItems(links) ?? links;
 
 export { toPersistableMenuItems, toReadableMenuItems };

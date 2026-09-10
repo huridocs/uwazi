@@ -11,22 +11,25 @@ This is the planning doc for both phases. Pattern sources: [`../Relationship Typ
 
 ## Status
 
-- **Phase 1 (V2 hex, Mongo)** — **done.** Core owns reads/writes. Tests that need a settings DS outside HTTP/jobs use `SettingsDSWithContext` from `testingEnvironment` — they do **not** wrap Jest globally and they do **not** import `SettingsDataSourceFactory` for fixture patches. V2 adapters that already have a TM take an injected `settingsDS`.
-- **Phase 2 (Postgres)** — **done for dual-store.** Contract is locked (`readFields` / `readFeature` / `readSyncConfig`, slice columns not `SELECT document`). Schema is **018**. Tenant flag is production’s **`postgresCore`** (not a settings-only flag). Default off = V2 Settings on Mongo; on = Settings (and the rest of core) on Postgres. Leftover is named tech debt after merge (§6, §7, §8), not more Settings storage work.
+- **Phase 1 (V2 hex, Mongo)** — **done.** Core owns reads/writes.
+- **Phase 2 (Postgres)** — **done for dual-store.** Schema is **018**. Tenant flag is production’s **`postgresCore`**. Default off = V2 Settings on Mongo; on = Settings (and the rest of core) on Postgres.
+- **Domain alignment (2026-09 team review)** — **done.** There is a DB-free `Settings` model. The DS port is `get()` / `update(Settings)` plus **named** reads. No `patch`, language `$push`/`$pull`, or open `readFields` on the port. Use cases load → mutate on the model → persist → emit. Commands return `void`; HTTP JSON comes from `SettingsQueryService` (`readPresentation` omits `sync`, then public/admin pick). Menu `id` is minted on `Settings.apply`. Persist helpers only serialize (lift leftover `_id`, strip it). They do not mint.
+- **After merge (named tech debt, already ticketed)** — **§6** `newNameGeneration` job, **§7** contracts/one-parse, **§8** remaining internal `get()` readers / Directory. Not part of “is the domain review done.” Hybrid TM (EventEmitter/jobs still Mongo `run()`) is the same bucket.
 
 Do not re-investigate these; they are done and should stay this way:
 
-- No `SettingsService` as a TM/factory wrapper. Inject `settingsDS` (with the TM you already have). Peer review §5 is a *different* SettingsService (filter/menu translation orchestration) — **done** in this PR.
+- No `SettingsService` as a TM/factory wrapper. Inject `settingsDS` (with the TM you already have). The SettingsService that exists is **filter/menu + translation reconcile** (peer review §5) — not a factory.
 - **Use-case TM stays Mongo** (`ExecutionContext.transactionManager`). EventEmitter / jobs require it. Do not pass `postgresTransactionManager` as the use-case TM without also retargeting EventEmitter.
 - **PG DS TM:** when `postgresCore` is on, `SettingsDataSourceFactory` uses `ExecutionContext.postgresTransactionManager` if a store exists, otherwise `PostgresTransactionManagerFactory.default()` (same as Files/Users). That fallback is only for the PG DS, not a Mongo TM shim.
-- Tests that patch settings fixtures use `SettingsDSWithContext`. Do not wrap Jest globally. Do not import the factory just to seed fixtures.
+- Tests that need a settings DS outside HTTP/jobs use `SettingsDSWithContext` — a **context wrapper** around the real DS (`runWithContext`). Fixture writes are `get` + domain method + `update` (or `mutatePersistedSettings`). Do **not** wrap Jest globally. Do **not** import the factory just to seed fixtures. Do **not** put `patch` / `addLanguage` / `deleteLanguage` on the test helper.
 - PG DS mints the **document** `_id` only on empty insert; copy preserves Mongo `_id`. Upsert conflict is `tenant_id`.
-- Nested **menu items** identity is `id`. `toPersistableMenuItems` mints `id` for new items and strips leftover mongoose `_id`. `toReadableMenuItems` lifts stored `_id` → `id` on GET (does **not** generate). Menu translations match `id` after that lift, so leftover Mongo `_id` still diffs correctly before the next save. Menu table `rowId` is `id`.
+- Nested **menu items** identity is `id`. **`Settings.apply` mints `id`** for new items (via `assignMenuIds`). `toPersistableMenuItems` / `toReadableMenuItems` only lift leftover mongoose `_id` onto `id` and drop `_id`. They do **not** take `generateId` and do **not** mint. Menu translations match `id` after that lift. Menu table `rowId` is `id`.
 - Nested **filters** identity is `id` (template id or group id) — same as thesaurus values / template property domain `id`. Translations, rename, and remove-template already use `id`. Do **not** mint filter `_id`. `toPersistableFilters` strips leftover mongoose `_id` on save. Filters table `rowId` is `id`.
 - Languages table `rowId` is `key` (the language identity). Do not mint language `_id` for the UI.
-- Sync handler is DS-backed (`SettingsSyncHandler`). Factory branches on `postgresCore`; there is no Mongo-specific handler.
+- Sync handler is DS-backed (`SettingsSyncHandler`): `get` → domain `apply` (languages) → `update`. Factory branches on `postgresCore`; there is no Mongo-specific handler.
 - `'settings'` is in default `MIRRORED_COLLECTIONS`. Dual-backend tests whose fixtures include incomplete entities (no `sharedId`) **must** pass an explicit `postgresMirror` (`[]` or `['settings']`, plus `'templates'` only when the case actually needs PG templates). Empty `[]` means mirror nothing.
-- JSONB `links` store `id` as strings. Copy/`toRow` lifts leftover menu `_id` onto `id`. `custom` is JSONB — objects only, not a string.
+- JSONB `links` store `id` as strings. Copy/`toRow` lifts leftover menu `_id` onto `id` and does **not** mint missing ids. `custom` is JSONB — objects only, not a string.
+- `SettingsDataSourceFactory.cached()` memos `getLanguageKeys` + `readLanguages` on **both** Mongo and Postgres (`CachedPostgresSettingsDataSource`). HTTP QueryService uses `default()` / `readPresentation()`, not the language cache.
 
 ### Phase 2 progress
 
@@ -34,12 +37,13 @@ Do not re-investigate these; they are done and should stay this way:
 - [x] `PostgresSettingsMapper` + specs (columns, JSONB groups, `extras`, drop `__v`)
 - [x] `PostgresSettingsDataSource` + specs (CRUD, singleton `tenant_id`, RLS as `app_user`, projections)
 - [x] Feature flag is production **`postgresCore`** (`FEATURE_FLAG_POSTGRES_CORE`). Settings has no private flag.
-- [x] `SettingsDataSourceFactory` branches on `postgresCore`; `cached()` returns the PG DS when on; PG TM fallback when there is no ExecutionContext store
-- [x] Sync handler is DS-backed (`SettingsSyncHandler` + factory). No separate PG class — inbound still patches the tenant singleton via `SettingsDataSource`.
+- [x] `SettingsDataSourceFactory` branches on `postgresCore`; `cached()` is `CachedPostgresSettingsDataSource` when on (memos language keys / languages); PG TM fallback when there is no ExecutionContext store
+- [x] Sync handler is DS-backed (`SettingsSyncHandler` + factory). No separate PG class — inbound `get` / `apply` / `update` on the tenant singleton.
 - [x] `SettingsMigrationConfig` + CLI `--collection settings` (fail on 0 or >1 Mongo docs)
 - [x] Dual-backend: `SaveSettings.spec`, `SaveSettings.newNameGeneration.spec`, settings HTTP routes + links, `AddLanguage` / `DeleteLanguage`, sync (`describe.each` on `postgresCore`).
-- [x] Filter identity is `id` (`formatFilters` / `toPersistableFilters`). No `assignFilterIds`. Menu identity is `id` (`formatMenuLinks` / `toPersistableMenuItems` / `toReadableMenuItems`). Languages table `rowId` is `key`.
+- [x] Filter identity is `id` (`toPersistableFilters`). No `assignFilterIds`. Menu identity is `id` (`Settings.apply` / `assignMenuIds`; persist/read helpers only lift leftover `_id`). Languages table `rowId` is `key`.
 - [x] Peer review waves 1–3: §1+§11+§12, §4+§2+§3, §5+§9+§10.
+- [x] Domain alignment: `Settings` model, DS `get`/`update`, named reads, commands do not `pickAdminFields`, HTTP from QueryService.
 - [x] Local dry-run: schema → copy → flag → GET/POST / links / languages / filters / public vs admin
 
 ---
@@ -224,24 +228,24 @@ HTTP /api/settings*                    Other callers (mailer, IX, templates, …
  Mongo collection `settings`
 ```
 
-- **`SettingsQueryService.getPublic()` / `getForAdmin()`** — allowlisted reads. No `get()`, no omit-after-read.
-- **`SettingsDataSource.find()` / `get()` / `patch()`** — persistence; full row including secrets. `find()` returns null; `get()` throws if missing; `patch()` is a `$set` merge onto the singleton. Document projections are `read*` (`readFields`, `readFeature`, `readSyncConfig`). Derived values stay `get*` (`getDefaultLanguageKey`, `getLanguageKeys`).
-- **Language HTTP** uses `AddLanguageUseCase` / `DeleteLanguageUseCase`, then `getPublic()` for `updateSettings`.
-- **Template HTTP** uses `UpdateFilterNameUseCase` / `RemoveTemplateFromFiltersUseCase` (boolean); sockets emit `getPublic()` when filters changed.
-- **Secrets** live in Mongo. Nothing above the DS returns them unless the call is explicitly `readSyncConfig()` (or a future destination/vault getter).
+- **`SettingsQueryService.get()`** — presenter for HTTP. `readPresentation()` (omit `sync`) then `presentSettings` + public/admin pick. `forBroadcast()` is always public.
+- **`SettingsDataSource.find()` / `get()` / `update(Settings)`** — persistence of the **domain** model. Write `get()` is the full aggregate (including CSS/JS/`sync`) so commands can mutate then persist `toState()`. `find()` returns null; `get()` throws if missing. Named reads (`readLanguages`, `readFeature`, `readSyncConfig`, `readMailerConfig`, …) are for callers that are not mutating. There is no `patch` and no `readFields`.
+- **Language HTTP** uses `AddLanguageUseCase` / `DeleteLanguageUseCase` (mutate on the model). DeleteLanguageController checks `readLanguages()` for installing. Save/SetDefault controllers re-read via QueryService after the command.
+- **Template HTTP** uses SettingsService `updateFilterName` / `removeTemplateFromFilters` (boolean); sockets emit the public payload when filters changed.
+- **Secrets** live in storage. Nothing above the DS returns `sync` unless the call is explicitly `readSyncConfig()`. QueryService never loads `sync`.
 
 ### Public HTTP (must stay)
 
 | Method | Path                  | Notes                                                                                                                                              |
 | ------ | --------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
 | GET    | `/api/settings`       | Admin: stored doc (minus `sync`/`evidencesVault`) + `publicFormDestination` + public payload overlay. Others: `getPublicSettingsPayload` whitelist |
-| POST   | `/api/settings`       | Admin. Socket `updateSettings` with **public** payload                                                                                             |
+| POST   | `/api/settings`       | Admin. Sparse body applied onto the loaded aggregate (`Settings.apply`), then `update`. Socket `updateSettings` with **public** payload                                                                                             |
 | GET    | `/api/settings/links` | `settings.links`                                                                                                                                   |
-| POST   | `/api/settings/links` | Body is the links array; **partial** `$set` of `links` onto the stored singleton                                                                   |
+| POST   | `/api/settings/links` | Body is the links array; applied onto the loaded aggregate then `update`                                                                   |
 
 Socket: `updateSettings`.
 
-Callers that previously imported `#api/settings` now use `SettingsQueryServiceFactory` (safe reads), `SettingsDataSourceFactory` (secrets / language mutators / sync), or the save/filter/links use-case factories.
+Callers that previously imported `#api/settings` now use `SettingsQueryServiceFactory` (HTTP/safe reads), `SettingsDataSourceFactory` (named reads / write `get`+`update`), or the save/filter/language use-case factories.
 
 ---
 
@@ -508,29 +512,30 @@ Same class of risk as translations P12. Notable:
 | V1 façade                              | `app/api/settings/settings.ts`                                                                                                |
 | V1 mongoose                            | `app/api/settings/settingsModel.ts`                                                                                           |
 | Save + Menu/Filters translations       | `app/api/settings/settingsTranslations.ts`                                                                                    |
-| Public GET whitelist                   | `app/api/settings/publicSettings.ts`                                                                                          |
-| HTTP                                   | `app/api/settings/routes.ts`                                                                                                  |
+| Public GET whitelist                   | `app/api/core/application/settings/publicSettings.ts`                                                                         |
+| HTTP                                   | `app/api/core/infrastructure/express/settings/`                                                                               |
 | Shared Settings types                  | `app/shared/types/settingsType.ts`                                                                                            |
-| V2 DS + cache                          | `app/api/core/infrastructure/mongodb/MongoSettingsDataSource.ts`, `CachedMongoSettingsDataSource.ts`                          |
+| Domain model                           | `app/api/core/domain/settings/Settings.ts` (`apply`, languages, filters, sync deactivate)                                     |
+| V2 DS + cache                          | `MongoSettingsDataSource.ts`, `CachedMongoSettingsDataSource.ts`, `PostgresSettingsDataSource.ts`, `CachedPostgresSettingsDataSource.ts` |
 | Contract / factory                     | `app/api/core/application/contracts/SettingsDataSource.ts`, `…/factories/SettingsDataSourceFactory.ts`                        |
 | Language UCs                           | `app/api/core/application/AddLanguage.ts`, `DeleteLanguage.ts`                                                                |
-| Filter identity                        | `app/api/core/application/settings/libraryFilters.ts` (`toPersistableFilters`)                                                |
-| Menu nested ids                        | `app/api/core/application/settings/menuItems.ts` (`toPersistableMenuItems`, `toReadableMenuItems`)                            |
+| Filter identity                        | `app/api/core/infrastructure/settings/persistableFilters.ts`                                                                  |
+| Menu nested ids                        | Domain `assignMenuIds` on `apply`; persist/read `toPersistableMenuItems` / `toReadableMenuItems` (no mint)                    |
 | Inbound sync                           | `app/api/sync/SettingsSyncHandler.ts` + factory                                                                               |
-| Outbound sync subset                   | `app/api/sync/processNamespaces.ts` (`settings()`)                                                                            |
+| Outbound sync subset                   | `app/api/sync/processNamespaces.ts` (`settings()` via `readPresentation`)                                                     |
 | Copy engine / CLI                      | `…/postgresql/migrations/MigrateCollectionToPostgres.ts`, `scripts/scripts.v2/migrateToPostgres.ts` (`--collection settings`) |
 | Settings copy map                      | `…/postgresql/migrations/configs/SettingsMigrationConfig.ts`                                                                  |
 | Settings PG schema                     | `…/schema_migrations/018-create-settings-table.sql`                                                                           |
 | Settings PG adapter                    | `…/postgresql/settings/PostgresSettingsMapper.ts`, `PostgresSettingsDataSource.ts`                                            |
 | RLS pattern                            | `…/schema_migrations/015-create-translations-table.sql`                                                                       |
 | Tenant flags                           | `app/api/config.ts`, `tenants/tenantContext.ts`, `tenants/tenantsModel.ts`                                                    |
-| Test helper (settings fixture patches) | `SettingsDSWithContext` in `app/api/utils/testingEnvironment.ts`                                                              |
+| Test helper (DS + context)             | `SettingsDSWithContext` / `mutatePersistedSettings` in `app/api/utils/testingEnvironment.ts`                                  |
 
 ---
 
 **Hybrid pitfall:** Settings use cases still `run()` the **Mongo** TM (EventEmitter / jobs). When `postgresCore` is on, settings and translations writes go through the **PG** TM on the data sources and auto-commit relative to that Mongo `run()`. `AddLanguage` asserts: if `cloneForLanguage` throws after `addLanguage`, the PG languages column is **not** rolled back. Acceptable while production stays Mongo. Do not “fix” by making the use-case TM the PG TM without retargeting EventEmitter.
 
-**Nested identity:** mongoose used to auto-`_id` array subdocs. Native Mongo / PG JSONB do not. That is not a reason to reimplement mongoose. **Filters** already have domain `id` (translations match `id`). **Menu** identity is also `id`: persist mints `id` for new items, GET lifts leftover mongoose `_id` without generating, translations match `id` after that lift. Copy/`toRow` lifts menu `_id` → `id` so PG JSON is clean; leftover `_id` in Mongo (flag off) still works because the same V2 read/write path is used. Next save drops leftover `_id` (lazy cleanup, not required for GET/Delete). **Languages** identity is `key`. Tenant storage is `key`, `label`, `default`, `installing` — not catalog copies (`ISO639_3`, `localized_label`, `rtl`, `elastic`, `ISO639_1`, `translationAvailable`) and not leftover mongoose `_id`. GET / QueryService **joins** `LanguageUtils.fromISO639_1(key)` so `/api/settings` still presents those fields. Sync copies stored languages as they are (no catalog join, no persistable rewrite). Our UI does not treat stored catalog fields as source of truth (autonyms and RTL from the catalog). SaveSettings/SetDefaultLanguage run the persistable shape so an application save does not write catalog fields back. Do not backfill `ISO639_3` onto seeded English. A Filters Delete bug during dry-run was the table using leftover mongoose `_id` as `rowId`; the fix is `rowId = id`, not minting `_id`. Same for Menu.
+**Nested identity:** mongoose used to auto-`_id` array subdocs. Native Mongo / PG JSONB do not. That is not a reason to reimplement mongoose. **Filters** already have domain `id` (translations match `id`). **Menu** identity is also `id`: **`Settings.apply` mints `id` for new items**. Persist/read helpers lift leftover mongoose `_id` without generating. Translations match `id` after that lift. Copy/`toRow` lifts menu `_id` → `id` so PG JSON is clean and does **not** invent ids for items that had none. Leftover `_id` in Mongo (flag off) still works because the same V2 read/write path is used. Next save drops leftover `_id` (lazy cleanup, not required for GET/Delete). **Languages** identity is `key`. Tenant storage is `key`, `label`, `default`, `installing` — not catalog copies (`ISO639_3`, `localized_label`, `rtl`, `elastic`, `ISO639_1`, `translationAvailable`) and not leftover mongoose `_id`. GET / QueryService **joins** `LanguageUtils.fromISO639_1(key)` so `/api/settings` still presents those fields. Sync copies stored languages as they are (no catalog join, no persistable rewrite). Our UI does not treat stored catalog fields as source of truth (autonyms and RTL from the catalog). SaveSettings/SetDefaultLanguage run the persistable shape so an application save does not write catalog fields back. Do not backfill `ISO639_3` onto seeded English. A Filters Delete bug during dry-run was the table using leftover mongoose `_id` as `rowId`; the fix is `rowId = id`, not minting `_id`. Same for Menu.
 
 ---
 
@@ -540,10 +545,11 @@ Dual-store Settings is mergeable. Remaining items are named debt, not more stora
 
 - Staging collision: any tenant with **zero or multiple** `settings` docs — copy must fail; fix data before flag.
 - Outbound sync remaining `{ languages }` only — never `password` without a separate design (aligns with opt-in `readSyncConfig()`).
-- **§6** — dispatch `newNameGeneration` rewrite as a **job** (durability/retry). Inline `TemplateFacade.applyNewNameGeneration` stays for this PR. Templates should own the algorithm (separate ticket).
+- **§6** — dispatch `newNameGeneration` rewrite as a **job** (durability/retry). Inline `TemplateFacade.applyNewNameGeneration` stays. Templates should own the algorithm (separate ticket).
 - **§7** — one parse (drop controller parse or use-case parse), `app/shared/contracts/Settings.ts`, rename `saveSettingsInput.ts` → `SettingsSchemas`, move `objectIdValue` out of `menuItems.ts`. Do not swap `IdSchema`.
-- **§8** — `SettingsDirectory` for internal readers (26 call sites). Stage languages cluster first.
+- **§8** — remaining internal readers that still call write `get()`/`find()` for a flag or blob (named reads already exist for the old `readFields` cluster). `SettingsDirectory` / Users-style DAO field groups were **not** a prerequisite for the domain/DS fix; park them here.
 - Hybrid TM (AddLanguage / Mongo `run()` vs PG DS auto-commit) — documented above; only bites a `postgresCore` tenant.
+- Slim-GET column inventory (CSS/JS and similar off the default internal load) — not locked; HTTP `/api/settings` JSON stays today’s body.
 
 ---
 
@@ -573,7 +579,7 @@ Existing Phase 1 locks that the review reopens — keep both notes, do not silen
 | 1 | **Done** | Settings UC factories read `ExecutionContext.transactionManager`; do not drill `{ transactionManager }` into `SettingsDataSourceFactory`. Kept the DS override for non-settings callers. `TranslationsServiceFactory` fallback is EC TM. AddLanguage / DeleteLanguage dropped the settings DS drill. CloneLanguage job stopped drilling settings DS. |
 | 2 | **Done** | `SaveSettings` / `UpdateFilterName` / `RemoveTemplateFromFilters` use `get()`. Mongo and PG mint an ObjectId on empty insert only; an incoming `_id` (copy) is preserved. `current` still used for translations and `newNameGeneration`. Empty GET still uses `find()`. |
 | 3 | **Done** | Mapper: `undefined` omits the column; `null` persists a clear and comes back as `null`. `SettingsRow` optional columns allow `null`. |
-| 4 | **Done** | Persistable/readable helpers under `infrastructure/settings/`. Mongo `patch`/`addLanguage` and PG `toRow` share them. Use cases no longer map. QueryService and menu translations import infra. `idGenerator` left SaveSettings. Application keeps Zod/`refineMenuItems` and filter domain ops. |
+| 4 | **Done** | Persistable/readable helpers under `infrastructure/settings/`. They **serialize** (strip leftover `_id`, languages without catalog copies). Menu `id` is minted on `Settings.apply`, not in `toPersistableMenuItems`. QueryService and menu translations import infra. Application keeps Zod/`refineMenuItems` and domain mutations. |
 | 5 | **Done** | SettingsService + SettingsTranslationService. Delete SaveMenuItemsUseCase. Template cleanup listeners. |
 | 6 | **After merge** | Job for `newNameGeneration` fan-out. Durability/retry, not throughput. |
 | 7 | **After merge** | One parse; `shared/contracts/Settings.ts`; schema rename. Do not swap `IdSchema`. |
@@ -1520,3 +1526,30 @@ Original order (historical):
    (**§10 done.**)
 
 ---
+
+## Domain alignment (2026-09 team review)
+
+Source: in-repo plan `settings_domain_alignment`. Dual-store was not the complaint; V2 **shape** was: a shared bag, `patch` on the DS, Settings rules in use cases, open `readFields`, commands that knew HTTP audience.
+
+**Shipped**
+
+- Domain `Settings` (`app/api/core/domain/settings/`): `setDefaultLanguage`, `addLanguage`, `setLanguageInstalling`, `deleteLanguage`, `defaultLanguageKey`, `renameFilter`, `removeTemplateFromFilters`, `apply` (sparse HTTP onto a loaded aggregate; mints menu `id`), `didEnableNewNameGeneration`, `deactivateSyncConfig`. `isPrivate` getter (`private` is a reserved word).
+- DS port: `get()` / `find()` / `update(Settings)`. Named reads instead of `readFields`. No `patch`, no language mutation verbs, no `deactivateSyncConfig` on the port. Adapters map model ↔ DBO (`toPersistableSettingsFields` serializes; does not mint menu ids).
+- Use cases orchestrate (TM, events, translations, jobs, CSV import). They do not encode language/filter/menu identity rules. `SaveSettings` / `SetDefaultLanguage` return `void`; controllers `SettingsQueryService.get()`.
+- QueryService: `readPresentation()` (omit `sync`) → present (menu lift, language catalog, filter `_id` strip) → public/admin pick. `pickAdminFields` stays on the **read** side only.
+- HTTP `/api/settings` JSON stays compatible except already-aligned `id` / `_id` / `key`. CSS/JS stay on the HTTP body.
+- Write `get()` is the **full** aggregate so a command never `update`s a partial constructed without `get()`.
+- `cached()` memos language keys/languages on Mongo **and** Postgres. HTTP does not cache the fat GET.
+- Tests: `SettingsDSWithContext` only wraps the real DS in `runWithContext`. No test-only `patch` / `addLanguage` / `deleteLanguage` / `setLanguageInstalling` on that helper.
+
+**Deliberately not in this slice (tech debt / not locked)**
+
+- Users-style Settings DAO / Directory as a write-side prerequisite — stopped. Audience pick stays in QueryService for now.
+- Exact inventory of columns to omit from an internal base GET (CSS/JS are examples).
+- §6 job, §7 contracts, §8 leftover `get()` readers, hybrid TM.
+- Cloning Entities GET or Users DAO field groups as “the Settings design.”
+
+**Write `get()` vs named reads**
+
+Commands: `settingsDS.get()` → mutate → `update`. Internal readers that only need a flag or blob should use a named read (that conversion of remaining `get()` call sites is §8).
+

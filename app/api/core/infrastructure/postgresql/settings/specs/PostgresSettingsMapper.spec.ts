@@ -47,8 +47,7 @@ const sampleSettings = (id: string): SettingsType =>
     evidencesVault: { token: 'secret' },
   }) as SettingsType;
 
-const generateId = () => 'generated-id';
-const toRow = (settings: SettingsType) => PostgresSettingsMapper.toRow(settings, generateId);
+const toRow = (settings: SettingsType) => PostgresSettingsMapper.toRow(settings);
 
 describe('PostgresSettingsMapper', () => {
   it('should map known columns', () => {
@@ -148,13 +147,13 @@ describe('PostgresSettingsMapper', () => {
     expect(row.languages).toEqual([{ key: 'en', label: 'English', default: true }]);
   });
 
-  it('should mint menu ids from generateId', () => {
+  it('should not mint menu ids', () => {
     const row = toRow({
       _id: sampleId(),
       links: [{ title: 'Home', type: 'link', url: '/' }],
     });
 
-    expect(row.links).toEqual([{ id: 'generated-id', title: 'Home', type: 'link', url: '/' }]);
+    expect(row.links).toEqual([{ title: 'Home', type: 'link', url: '/' }]);
   });
 
   it('should stringify ObjectId _id and omit empty groups', () => {

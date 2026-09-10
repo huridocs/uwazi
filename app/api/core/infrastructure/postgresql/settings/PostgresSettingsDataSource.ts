@@ -196,9 +196,6 @@ export class PostgresSettingsDataSource
   }
 
   private async writeRow(settings: SettingsType) {
-    await this.table.upsert(
-      PostgresSettingsMapper.toRow(settings, () => this.idGenerator.generate()),
-      { columns: ['tenant_id'] }
-    );
+    await this.table.upsert(PostgresSettingsMapper.toRow(settings), { columns: ['tenant_id'] });
   }
 }

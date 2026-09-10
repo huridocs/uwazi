@@ -41,41 +41,28 @@ describe('toReadableMenuItems', () => {
 });
 
 describe('toPersistableMenuItems', () => {
-  const generateId = () => 'generated-id';
-
-  it('should assign an id from generateId for new items and not mint mongoose _id', () => {
-    const [item] = toPersistableMenuItems([{ title: 'Home', type: 'link', url: '/' }], generateId)!;
-    expect(item).toEqual({
-      id: 'generated-id',
-      title: 'Home',
-      type: 'link',
-      url: '/',
-    });
-    expect(item).not.toHaveProperty('_id');
+  it('should not mint an id when neither id nor _id is present', () => {
+    expect(toPersistableMenuItems([{ title: 'Home', type: 'link', url: '/' }])).toEqual([
+      { title: 'Home', type: 'link', url: '/' },
+    ]);
   });
 
   it('should preserve existing id and drop leftover _id', () => {
     expect(
-      toPersistableMenuItems(
-        [{ id: 'keep', _id: 'noise', title: 'Home', type: 'link', url: '/' }],
-        generateId
-      )
+      toPersistableMenuItems([{ id: 'keep', _id: 'noise', title: 'Home', type: 'link', url: '/' }])
     ).toEqual([{ id: 'keep', title: 'Home', type: 'link', url: '/' }]);
   });
 
   it('should lift leftover _id onto id for items and sublinks', () => {
     expect(
-      toPersistableMenuItems(
-        [
-          {
-            _id: 'group1',
-            title: 'Group',
-            type: 'group',
-            sublinks: [{ _id: 'sub1', title: 'Child', type: 'link', url: '/child' }],
-          },
-        ],
-        generateId
-      )
+      toPersistableMenuItems([
+        {
+          _id: 'group1',
+          title: 'Group',
+          type: 'group',
+          sublinks: [{ _id: 'sub1', title: 'Child', type: 'link', url: '/child' }],
+        },
+      ])
     ).toEqual([
       {
         id: 'group1',

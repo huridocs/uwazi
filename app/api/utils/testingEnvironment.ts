@@ -105,9 +105,7 @@ const sanitizeTranslationForPostgres = (translation: Record<string, unknown>) =>
 };
 
 const sanitizeSettingsForPostgres = (settings: Record<string, unknown>) =>
-  PostgresSettingsMapper.toRow(settings as SettingsType, () =>
-    IdGeneratorFactory.default().generate()
-  );
+  PostgresSettingsMapper.toRow(settings as SettingsType);
 
 // A mongo pages document holds its locales nested; in postgres they are their own table.
 const PG_FANOUT_BY_MONGO_COLLECTION: Record<
