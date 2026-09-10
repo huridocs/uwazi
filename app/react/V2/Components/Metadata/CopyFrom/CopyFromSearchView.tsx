@@ -138,6 +138,8 @@ const CopyFromSearchView = ({
     </div>
     <div className="border-t border-border px-5 py-2 text-xs text-ink-tertiary">
       {results.length} <Translate>{results.length === 1 ? 'candidate' : 'candidates'}</Translate>
+      {' - '}
+      <Translate>values are staged, not saved</Translate>
     </div>
   </>
 );

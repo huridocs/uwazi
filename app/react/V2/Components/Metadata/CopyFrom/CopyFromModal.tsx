@@ -62,9 +62,6 @@ const CopyFromModal = ({
               <h2 className="text-base font-semibold text-ink">
                 <Translate>Copy from</Translate>
               </h2>
-              <p className="text-xs text-ink-tertiary">
-                <Translate>values are staged, not saved</Translate>
-              </p>
             </div>
           )}
           <Modal.CloseButton onClick={onClose} />
