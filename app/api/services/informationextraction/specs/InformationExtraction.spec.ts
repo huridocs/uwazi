@@ -34,7 +34,6 @@ import {
   ValuesSelectionSuggestion,
 } from '../InformationExtraction.js';
 import { ExternalDummyService } from '../../tasksmanager/specs/ExternalDummyService.js';
-import { Extractors } from '../ixextractors.js';
 import ixmodels from '../ixmodels.js';
 import { IXWebSocketEvents } from '../WebSocketEvents.js';
 import { FileWithAggregation, NoFilesForTraining, NoLabeledEntities } from '../ixMaterials.js';

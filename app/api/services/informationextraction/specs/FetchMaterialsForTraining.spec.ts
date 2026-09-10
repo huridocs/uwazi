@@ -2,7 +2,6 @@
 import { ObjectId } from 'mongodb';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { testingTenants } from '#api/utils/testingTenants.js';
-import { Extractors } from '#api/services/informationextraction/ixextractors.js';
 import { EnforcedWithId } from '#api/odm/index.js';
 import { IXExtractorType } from '#shared/types/extractorType.js';
 import { factory, fixtures } from './fixtures.js';

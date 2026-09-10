@@ -1,7 +1,6 @@
 /* eslint-disable max-statements */
 import _ from 'lodash';
 
-import { Suggestions } from '#api/suggestions/suggestions.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import db, { DBFixture, testingDB } from '#api/utils/testing_db.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';

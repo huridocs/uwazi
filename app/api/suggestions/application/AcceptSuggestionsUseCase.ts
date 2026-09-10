@@ -3,7 +3,6 @@ import { IXSuggestionsDAOFactory } from '#api/suggestions/infrastructure/IXSugge
 import { RunScope } from '#api/suggestions/domain/IXSuggestionsDataSource.js';
 import ixmodels from '#api/services/informationextraction/ixmodels.js';
 import { Suggestions } from '#api/suggestions/suggestions.js';
-import { IXSuggestionType } from '#shared/types/suggestionType.js';
 import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
 import { recomputeStatesForIds } from '../updateState.js';
 
