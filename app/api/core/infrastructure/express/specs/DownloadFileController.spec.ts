@@ -87,7 +87,7 @@ const createSut = (props?: CreateSutProps) => {
 
   jest.spyOn(FileStorageFactory, 'default').mockReturnValue(mockFileStorage as any);
   jest.spyOn(FilesDataSourceFactory, 'default').mockReturnValue(mockFilesDS);
-  jest.spyOn(TransactionManagerFactory, 'default').mockReturnValue({} as any);
+  jest.spyOn(TransactionManagerFactory, 'mongo').mockReturnValue({} as any);
   jest.spyOn(tenants, 'current').mockReturnValue({ featureFlags: {} } as any);
 
   const {

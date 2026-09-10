@@ -37,7 +37,7 @@ const updatePropertySelections = async (
 
   const filesDS = FilesDataSourceFactory.default();
   const filesService = FilesServiceFactory.default();
-  const transactionManager = TransactionManagerFactory.default();
+  const transactionManager = TransactionManagerFactory.mongo();
 
   const suggestionFileIds = suggestions.map(s => s.fileId).filter(Boolean);
   if (!suggestionFileIds.length) return;

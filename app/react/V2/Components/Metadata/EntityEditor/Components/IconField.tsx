@@ -1,11 +1,11 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Controller, FieldValues, useFormContext } from 'react-hook-form';
 import { iconNames } from '#UI/Icon/library.js';
 import { CountryList } from '#app/UI/index.js';
 import { Icon } from '#UI/Icon/Icon.js';
 import { Translate } from '#app/I18N/index.js';
 import { CountryFlag } from '#V2/Components/CustomIcons/CoutryFlags.js';
-import { Checkbox, SearchSelect } from '#V2/Components/Forms/index.js';
+import { SearchSelect } from '#V2/Components/Forms/index.js';
 import { EntityField } from './EntityField.js';
 
 type EntityIcon = {
@@ -16,7 +16,7 @@ type EntityIcon = {
 
 const EMPTY_ICON: EntityIcon = { _id: null, type: 'Empty', label: '' };
 
-const hasEntityIcon = (icon?: EntityIcon | null): boolean =>
+const hasEntityIcon = (icon?: EntityIcon | null): icon is EntityIcon & { _id: string } =>
   Boolean(icon?._id && icon.type !== 'Empty');
 
 const selectionFromIcon = (icon?: EntityIcon | null): string => {
@@ -24,7 +24,7 @@ const selectionFromIcon = (icon?: EntityIcon | null): string => {
     return '';
   }
 
-  return `${icon!.type}:${icon!._id}`;
+  return `${icon.type}:${icon._id}`;
 };
 
 const iconFromSelection = (value: string): EntityIcon => {
@@ -82,15 +82,51 @@ type IconFieldProps = {
   disabled?: boolean;
 };
 
+const iconChipClassName =
+  'inline-flex h-4 items-center rounded-md border-0 bg-warm px-1.5 text-meta text-ink-tertiary cursor-pointer disabled:cursor-not-allowed disabled:opacity-50';
+
 const IconField = ({ disabled = false }: IconFieldProps) => {
   const { control, setValue, watch } = useFormContext<IconFieldFormValues>();
   const showIcon = watch('showIcon');
-  const selectorDisabled = disabled || !showIcon;
+  const shouldFocusPicker = useRef(false);
 
   const clearIcon = () => {
-    setValue('showIcon', false);
-    setValue('icon', EMPTY_ICON);
+    setValue('showIcon', false, { shouldDirty: true });
+    setValue('icon', EMPTY_ICON, { shouldDirty: true });
   };
+
+  const addIcon = () => {
+    shouldFocusPicker.current = true;
+    setValue('showIcon', true, { shouldDirty: true });
+  };
+
+  useEffect(() => {
+    if (!showIcon || !shouldFocusPicker.current) {
+      return;
+    }
+
+    shouldFocusPicker.current = false;
+    document.getElementById('entity-icon')?.focus();
+  }, [showIcon]);
+
+  if (!showIcon) {
+    return (
+      <EntityField>
+        <div className="flex justify-end">
+          <button
+            type="button"
+            className={iconChipClassName}
+            disabled={disabled}
+            aria-expanded={false}
+            aria-controls="entity-icon"
+            onClick={addIcon}
+          >
+            <Translate>Add icon</Translate>
+          </button>
+        </div>
+      </EntityField>
+    );
+  }
 
   return (
     <EntityField>
@@ -108,38 +144,24 @@ const IconField = ({ disabled = false }: IconFieldProps) => {
             placeholder="Select icon..."
             groups={iconSelectGroups}
             value={selectionFromIcon(field.value)}
-            disabled={selectorDisabled}
+            disabled={disabled}
             onChange={selectedValue => {
               field.onChange(iconFromSelection(selectedValue));
-              setValue('showIcon', Boolean(selectedValue));
             }}
           />
         )}
       />
 
-      <div className="flex items-center justify-between">
-        <Controller
-          control={control}
-          name="showIcon"
-          render={({ field }) => (
-            <Checkbox
-              name="showIcon"
-              label="Show icon"
-              checked={field.value}
-              disabled={disabled}
-              onChange={event => {
-                field.onChange(event.currentTarget.checked);
-              }}
-            />
-          )}
-        />
+      <div className="flex justify-end">
         <button
           type="button"
-          className="cursor-pointer text-xs text-ink-muted transition-colors hover:text-ink-secondary"
+          className={iconChipClassName}
           disabled={disabled}
+          aria-expanded
+          aria-controls="entity-icon"
           onClick={clearIcon}
         >
-          <Translate>Clear</Translate>
+          <Translate>Remove icon</Translate>
         </button>
       </div>
     </EntityField>

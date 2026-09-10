@@ -824,7 +824,7 @@ class InformationExtraction {
       'processing_model'
     );
 
-    const dispatcher = UwaziDispatcherFactory(tenant.name, TransactionManagerFactory.default(), {
+    const dispatcher = UwaziDispatcherFactory(tenant.name, TransactionManagerFactory.mongo(), {
       lockWindow: 1000 * 60 * 20,
     });
 
@@ -948,7 +948,7 @@ class InformationExtraction {
       'processing_auto_accept'
     );
 
-    const dispatcher = UwaziDispatcherFactory(tenant.name, TransactionManagerFactory.default(), {
+    const dispatcher = UwaziDispatcherFactory(tenant.name, TransactionManagerFactory.mongo(), {
       lockWindow: 1000 * 60 * 10,
     });
     const { job } = await AcceptSuggestionsFactory.createDefault({

@@ -6,7 +6,7 @@ import { TemplateSchema } from '#shared/types/templateType.js';
 import { propertyMappings } from './mappings.js';
 
 const createNewRelationshipMappingFactory = async () => {
-  const transactionManager = TransactionManagerFactory.default();
+  const transactionManager = TransactionManagerFactory.mongo();
   const settingsDataSource = SettingsDataSourceFactory.default({ transactionManager });
 
   if (!(await settingsDataSource.readNewRelationshipsAllowed())) {

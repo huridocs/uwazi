@@ -4,7 +4,6 @@ import type { ClientThesaurus } from '#app/apiResponseTypes.js';
 import type { ClientFile } from '#app/istore.js';
 import type { FileType } from '#shared/types/fileType.js';
 import type { Entity } from '#V2/api/entities/types.js';
-import type { MetadataValue } from '#V2/formatters/types.js';
 import { MultiselectListOption } from '../../Forms/index.js';
 import {
   TextField,
@@ -30,6 +29,7 @@ import { buildInheritColumns, type InheritColumnTemplate } from '../relationship
 import {
   DEFAULT_RELATIONSHIP_LOOKUP_LIMIT,
   thesaurusToOptions,
+  type RelationshipLookupSearchArgs,
 } from './functions/relationshipFieldHelpers.js';
 
 type EditEntityPropertyFieldProps = {
@@ -53,10 +53,7 @@ type EditEntityPropertyFieldProps = {
     limit?: number;
   }) => Promise<{ value: string; label: string }[]>;
   relationshipLookupSearch: (
-    property: DisplayProperty,
-    selectedValues: MetadataValue[],
-    lookedUpOptions?: MultiselectListOption[],
-    includeCachedOptions?: boolean
+    args: RelationshipLookupSearchArgs
   ) => Promise<MultiselectListOption[]>;
 };
 
@@ -180,16 +177,16 @@ const EditEntityPropertyField = ({
             searchLabel: option.label,
             value: option.value,
           }));
-          return relationshipLookupSearch(
+          return relationshipLookupSearch({
             property,
             selectedValues,
-            lookedUpOptions.filter(
+            lookedUpOptions: lookedUpOptions.filter(
               option =>
                 !search.trim() ||
                 option.searchLabel.toLowerCase().includes(search.trim().toLowerCase())
             ),
-            !search.trim()
-          );
+            includeCachedOptions: !search.trim(),
+          });
         }}
       />
     );

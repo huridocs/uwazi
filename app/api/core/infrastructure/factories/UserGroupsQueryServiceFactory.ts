@@ -26,7 +26,9 @@ class UserGroupsQueryServiceFactory {
     }
 
     const db = getConnection();
-    const transactionManager = TransactionManagerFactory.default();
+    const transactionManager = ExecutionContext.getStore()
+      ? ExecutionContext.transactionManager
+      : TransactionManagerFactory.mongo();
 
     return new MongoUserGroupsQueryService({
       dao: new MongoUserGroupsDAO(db, transactionManager),

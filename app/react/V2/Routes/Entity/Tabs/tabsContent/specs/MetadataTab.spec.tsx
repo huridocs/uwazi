@@ -1,5 +1,5 @@
 /** @jest-environment jsdom */
-/* eslint-disable react/no-multi-comp */
+/* eslint-disable max-statements, react/no-multi-comp */
 import React, { useEffect } from 'react';
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { ApiError } from '#shared/apiClient/index.js';
@@ -91,6 +91,58 @@ const renderSession = async (upsert: jest.Mock) => {
 };
 
 describe('MetadataTab shared session', () => {
+  it('marks the session dirty when the title changes', async () => {
+    const { getSession } = await renderSession(jest.fn());
+
+    await act(async () => {
+      getSession().registerMetadataActive('main', true);
+      getSession().startEditing('main');
+    });
+
+    await screen.findByTestId('entity-edit-form');
+    expect(getSession().isDirty).toBe(false);
+
+    fireEvent.change(screen.getByLabelText(/Title/), { target: { value: 'Changed title' } });
+
+    await waitFor(() => {
+      expect(getSession().isDirty).toBe(true);
+    });
+
+    await act(async () => {
+      const { form } = getSession();
+      form.reset(form.getValues(), { keepDirty: true });
+    });
+    fireEvent.blur(screen.getByLabelText(/Title/));
+
+    await waitFor(() => {
+      expect(getSession().isDirty).toBe(true);
+    });
+  });
+
+  it('confirms before canceling a dirty title edit', async () => {
+    const { getSession } = await renderSession(jest.fn());
+
+    await act(async () => {
+      getSession().registerMetadataActive('main', true);
+      getSession().startEditing('main');
+    });
+    await screen.findByTestId('entity-edit-form');
+    fireEvent.change(screen.getByLabelText(/Title/), { target: { value: 'Changed title' } });
+    await waitFor(() => expect(getSession().isDirty).toBe(true));
+
+    fireEvent.click(screen.getByRole('button', { name: 'Cancel' }));
+    expect(screen.getByText('Unsaved changes')).toBeInTheDocument();
+    expect(getSession().isEditing).toBe(true);
+
+    fireEvent.click(screen.getByTestId('cancel-button'));
+    expect(screen.queryByText('Unsaved changes')).not.toBeInTheDocument();
+    expect(getSession().isEditing).toBe(true);
+
+    fireEvent.click(screen.getByRole('button', { name: 'Cancel' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Discard' }));
+    expect(getSession().isEditing).toBe(false);
+  });
+
   it('renders MetadataRecord on both side and main hosts when not editing', async () => {
     await renderSession(jest.fn());
     expect(screen.getAllByTestId('metadata-record')).toHaveLength(2);

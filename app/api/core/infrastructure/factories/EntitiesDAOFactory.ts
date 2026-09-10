@@ -23,7 +23,7 @@ export class EntitiesDAOFactory {
       overrides?.transactionManager ??
       (ExecutionContext.getStore()
         ? ExecutionContext.transactionManager
-        : TransactionManagerFactory.default());
+        : TransactionManagerFactory.mongo());
 
     if (ExecutionContext.currentTenant.featureFlags?.postgresCore) {
       return new PostgresEntitiesDAO({
