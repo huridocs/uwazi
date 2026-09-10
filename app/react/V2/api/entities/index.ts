@@ -3,7 +3,7 @@ import qs from 'qs';
 import { api } from '#app/utils/api.js';
 import { RequestParams } from '#app/utils/RequestParams.js';
 import { FetchResponseError } from '#shared/JSONRequest.js';
-import { SearchQuery, CompoundFilter } from '#shared/types/SearchQueryType.js';
+import { SearchQuery } from '#shared/types/SearchQueryType.js';
 import { apiClient } from '../client.js';
 import { requestHeaders } from '../requestHeaders.js';
 import { EntitySearchResponse } from '../types.js';
@@ -133,11 +133,8 @@ const searchByTitle = async (
   }
 
   if (template && template.length > 0) {
-    const templateFilter: CompoundFilter = {
-      values: template,
-      operator: 'OR',
-    };
-    filter.template = templateFilter;
+    const [templateId] = template;
+    filter.template = templateId;
   }
 
   const searchQuery: SearchQuery = {

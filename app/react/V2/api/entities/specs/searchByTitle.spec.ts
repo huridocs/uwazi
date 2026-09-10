@@ -29,7 +29,7 @@ describe('searchByTitle', () => {
       'v2/search',
       qs.stringify({
         fields: ['title', 'sharedId', 'template'],
-        filter: { template: { values: ['country'], operator: 'OR' } },
+        filter: { template: 'country' },
         page: { limit: 50 },
       }),
       expect.any(Object)
@@ -48,7 +48,7 @@ describe('searchByTitle', () => {
         fields: ['title', 'sharedId', 'template'],
         filter: {
           searchString: 'title:Colom~2',
-          template: { values: ['country'], operator: 'OR' },
+          template: 'country',
         },
       }),
       expect.any(Object)
