@@ -120,7 +120,7 @@ const createSUT = () =>
           transactionManager: ExecutionContext.transactionManager,
         }),
         settingsDS: SettingsDataSourceFactory.default({
-          transactionManager: ExecutionContext.transactionManager,
+          transactionManager: ExecutionContext.mongoTransactionManager,
         }),
       })
   );

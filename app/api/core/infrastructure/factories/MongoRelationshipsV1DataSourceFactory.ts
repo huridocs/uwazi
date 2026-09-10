@@ -7,8 +7,8 @@ import { TransactionManagerFactory } from './TransactionManagerFactory.js';
 class MongoRelationshipsV1DataSourceFactory {
   static default() {
     const transactionManager = ExecutionContext.getStore()
-      ? ExecutionContext.transactionManager
-      : TransactionManagerFactory.default();
+      ? ExecutionContext.mongoTransactionManager
+      : TransactionManagerFactory.mongo();
 
     return new MongoRelationshipsV1DataSource(
       getConnection(),

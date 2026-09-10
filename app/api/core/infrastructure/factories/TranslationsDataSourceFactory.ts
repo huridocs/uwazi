@@ -1,6 +1,5 @@
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
-import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
 import { TranslationsDataSource } from '#api/core/application/contracts/TranslationsDataSource.js';
 import { MongoTranslationsDataSource } from '../mongodb/translation/MongoTranslationsDataSource.js';
 import { CachedMongoTranslationsDataSource } from '../mongodb/translation/CachedMongoTranslationsDataSource.js';
@@ -24,8 +23,7 @@ export class TranslationsDataSourceFactory {
       });
     }
 
-    const tm = (overrides?.transactionManager ??
-      ExecutionContext.transactionManager) as MongoTransactionManager;
+    const tm = overrides?.transactionManager ?? ExecutionContext.transactionManager;
     return new MongoTranslationsDataSource(db, tm);
   }
 
@@ -42,8 +40,7 @@ export class TranslationsDataSourceFactory {
       });
     }
 
-    const tm = (overrides?.transactionManager ??
-      ExecutionContext.transactionManager) as MongoTransactionManager;
+    const tm = overrides?.transactionManager ?? ExecutionContext.transactionManager;
     return new CachedMongoTranslationsDataSource(db, tm);
   }
 }

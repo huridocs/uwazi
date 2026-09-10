@@ -1,7 +1,7 @@
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
 import { UwaziDispatcherFactory } from '#api/core/infrastructure/jobs/UwaziDispatcherFactory.js';
-import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
+import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
 import { tenants } from '#api/tenants/tenantContext.js';
 import { EntitiesServiceFactory } from '#api/core/infrastructure/factories/EntitiesServiceFactory.js';
 import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
@@ -11,7 +11,7 @@ import { CSVImportEntitiesFactories } from './CSVImportEntitiesFactories.js';
 import { EntitiesDataSourceFactory } from '#api/core/infrastructure/factories/EntitiesDataSourceFactory.js';
 
 type FactoryOptions = {
-  transactionManager?: MongoTransactionManager;
+  transactionManager?: TransactionManager;
   jobsDispatcher?: JobsDispatcher;
 };
 
@@ -22,7 +22,7 @@ class CsvCreateRelationshipEntitiesJobFactory {
 
   // eslint-disable-next-line max-statements
   static build(options: FactoryOptions = {}) {
-    const transactionManager = options.transactionManager ?? TransactionManagerFactory.default();
+    const transactionManager = options.transactionManager ?? TransactionManagerFactory.mongo();
     const csvImportsDS = CSVImportEntitiesFactories.CSVImportDSDefault(transactionManager);
     const relationshipValuesDS =
       CSVImportEntitiesFactories.CSVImportRelationshipValuesDSDefault(transactionManager);

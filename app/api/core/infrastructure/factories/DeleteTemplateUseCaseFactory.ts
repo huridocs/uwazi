@@ -5,13 +5,12 @@ import { TranslationsDataSourceFactory } from '#api/core/infrastructure/factorie
 import { applicationEventsBus } from '#api/core/libs/eventsbus/index.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { DispatcherAdapter } from '../jobs/DispatcherAdapter.js';
-import { MongoTransactionManager } from '../mongodb/common/MongoTransactionManager.js';
 import { EntitiesDataSourceFactory } from './EntitiesDataSourceFactory.js';
 
 class DeleteTemplateUseCaseFactory {
   static default(overrides?: Partial<ConstructorParameters<typeof DeleteTemplateUseCase>[0]>) {
     const { tenant, actor } = ExecutionContext;
-    const transactionManager = ExecutionContext.transactionManager as MongoTransactionManager;
+    const { transactionManager } = ExecutionContext;
     const eventBus = applicationEventsBus;
     const templatesDS = TemplatesDataSourceFactory.default();
     const settingsDS = SettingsDataSourceFactory.default();

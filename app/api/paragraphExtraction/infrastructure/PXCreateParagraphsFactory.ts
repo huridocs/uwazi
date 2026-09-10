@@ -19,7 +19,7 @@ import { EntitiesDataSourceFactory } from '#api/core/infrastructure/factories/En
 export class PXCreateParagraphsFactory {
   static createDefault(batchSize?: number) {
     const connection = getConnection();
-    const mongoTransactionManager = TransactionManagerFactory.default();
+    const mongoTransactionManager = TransactionManagerFactory.mongo();
     const tenant = tenants.current();
 
     const settingsDS = SettingsDataSourceFactory.cached({

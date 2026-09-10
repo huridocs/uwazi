@@ -15,10 +15,7 @@ import { RoundRobinMongoQueueAdapter } from '../infrastructure/RoundRobinQueueAd
 import { QueueAdapter } from '../infrastructure/QueueAdapter.js';
 
 export function DefaultQueueAdapter(transactionManager: TransactionManager) {
-  return new MongoQueueAdapter(
-    getSharedConnection(),
-    transactionManager as MongoTransactionManager
-  );
+  return new MongoQueueAdapter(getSharedConnection(), transactionManager);
 }
 
 export function RoundRobinQueueAdapter() {
@@ -31,8 +28,7 @@ export function RoundRobinQueueAdapter() {
 export function DefaultTestingQueueAdapter(transactionManager?: TransactionManager) {
   return new MongoQueueAdapter(
     getConnection(),
-    (transactionManager as MongoTransactionManager) ??
-      new MongoTransactionManager(getClient(), LoggerFactory.default())
+    transactionManager ?? new MongoTransactionManager(getClient(), LoggerFactory.default())
   );
 }
 

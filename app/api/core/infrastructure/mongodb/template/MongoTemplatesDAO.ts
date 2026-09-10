@@ -1,6 +1,6 @@
 import { Db, ObjectId } from 'mongodb';
 import { MongoDataSource } from '#api/core/infrastructure/mongodb/common/MongoDataSource.js';
-import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
+import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
 import { TemplateDBO } from './DBOs/TemplateDBO.js';
 import { PropertyType } from '#api/core/domain/template/PropertyType.js';
 import { PropertySchema } from '#shared/types/commonTypes.js';
@@ -13,7 +13,7 @@ const asStrings = (ids: (string | ObjectId)[]): string[] => ids.map(asString);
 
 type Deps = {
   db: Db;
-  transactionManager: MongoTransactionManager;
+  transactionManager: TransactionManager;
 };
 
 class MongoTemplatesDAO extends MongoDataSource<TemplateDBO> {

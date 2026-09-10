@@ -1,13 +1,12 @@
 import { UpdateFile, UpdateFileDeps } from '#api/core/application/UpdateFile.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
-import { MongoTransactionManager } from '../mongodb/common/MongoTransactionManager.js';
 import { EntityPermissionCheckerFactory } from './EntityPermissionCheckerFactory.js';
 import { FilesDataSourceFactory } from './FilesDataSourceFactory.js';
 import { FilesServiceFactory } from './FilesServiceFactory.js';
 
 class UpdateFileUseCaseFactory {
   static default(overrides?: Partial<UpdateFileDeps>) {
-    const transactionManager = ExecutionContext.transactionManager as MongoTransactionManager;
+    const { transactionManager } = ExecutionContext;
 
     return new UpdateFile(
       {
