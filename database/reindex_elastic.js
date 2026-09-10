@@ -11,13 +11,12 @@ import templatesApi from '#api/core/v1_layer/templates/templates.js';
 import elasticMapFactory from './elastic_mapping/elasticMapFactory.js';
 import { tenantsModel } from '#api/tenants/tenantsModel.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
-import { isPostgresCoreActive } from '#api/core/libs/featureFlags.js';
+import { transactionManagerFactories } from '#api/core/libs/transactionManagerFactories.js';
 import { EventEmitterFactory } from '#api/core/libs/eventEmitter/EventEmitterFactory.js';
 import { TelemetryCollector } from '#api/core/libs/logger/TelemetryCollector.js';
 import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
 import { IdGeneratorFactory } from '#api/core/infrastructure/factories/IdGeneratorFactory.js';
 import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
-import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 
 const setReindexSettings = async (refreshInterval, numberOfReplicas, translogDurability) =>
   elastic.indices.putSettings({
@@ -143,12 +142,7 @@ DB.connect(config.DBHOST, config.DBAUTH).then(async () => {
     await ExecutionContext.run(
       {
         factories: {
-          transactionManager: () =>
-            isPostgresCoreActive()
-              ? ExecutionContext.postgresTransactionManager
-              : ExecutionContext.mongoTransactionManager,
-          mongoTransactionManager: TransactionManagerFactory.mongo,
-          postgresTransactionManager: TransactionManagerFactory.postgres,
+          ...transactionManagerFactories(),
           jobsDispatcher: () =>
             DefaultDispatcher(tenants.current().name, ExecutionContext.mongoTransactionManager),
           eventEmitter: EventEmitterFactory.default,

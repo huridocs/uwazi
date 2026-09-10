@@ -1,11 +1,10 @@
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
-import { isPostgresCoreActive } from '#api/core/libs/featureFlags.js';
+import { transactionManagerFactories } from '#api/core/libs/transactionManagerFactories.js';
 import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
 import { EventEmitterFactory } from '#api/core/libs/eventEmitter/EventEmitterFactory.js';
 import { User } from '#api/users.v2/model/User.js';
 import { IdGeneratorFactory } from '#api/core/infrastructure/factories/IdGeneratorFactory.js';
 import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
-import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { tenants } from '#api/tenants/tenantContext.js';
 import {
   normalizeAttachments,
@@ -66,12 +65,7 @@ const runWithV2Context = async (actor, callback) => {
       tenant,
       actor,
       factories: {
-        transactionManager: () =>
-          isPostgresCoreActive()
-            ? ExecutionContext.postgresTransactionManager
-            : ExecutionContext.mongoTransactionManager,
-        mongoTransactionManager: TransactionManagerFactory.mongo,
-        postgresTransactionManager: TransactionManagerFactory.postgres,
+        ...transactionManagerFactories(),
         jobsDispatcher: () =>
           DefaultDispatcher(tenant.name, ExecutionContext.mongoTransactionManager),
         eventEmitter: EventEmitterFactory.default,

@@ -28,8 +28,7 @@ import { prettifyError } from '#api/utils/handleError.js';
 import { initSentry } from './initSentry.js';
 import { registerJobs } from './queueRegistry.js';
 import { IdGeneratorFactory } from '#api/core/infrastructure/factories/IdGeneratorFactory.js';
-import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
-import { isPostgresCoreActive } from '#api/core/libs/featureFlags.js';
+import { transactionManagerFactories } from '#api/core/libs/transactionManagerFactories.js';
 import { ExecutionContext, ExecutionContextDeps } from '#api/core/libs/ExecutionContext.js';
 import { EventEmitterFactory } from '#api/core/libs/eventEmitter/EventEmitterFactory.js';
 import { Job } from '#api/core/libs/queue/infrastructure/QueueAdapter.js';
@@ -75,12 +74,7 @@ function register<T extends Dispatchable>(
       deps = {
         tenant: tenants.current(),
         factories: {
-          transactionManager: () =>
-            isPostgresCoreActive()
-              ? ExecutionContext.postgresTransactionManager
-              : ExecutionContext.mongoTransactionManager,
-          mongoTransactionManager: TransactionManagerFactory.mongo,
-          postgresTransactionManager: TransactionManagerFactory.postgres,
+          ...transactionManagerFactories(),
           jobsDispatcher: () =>
             DefaultDispatcher(namespace, ExecutionContext.mongoTransactionManager),
           eventEmitter: EventEmitterFactory.default,

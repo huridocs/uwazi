@@ -17,8 +17,7 @@ import { EventEmitterFactory } from '#api/core/libs/eventEmitter/EventEmitterFac
 import { IdGeneratorFactory } from '#api/core/infrastructure/factories/IdGeneratorFactory.js';
 import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
 import { TelemetryCollector } from '#api/core/libs/logger/TelemetryCollector.js';
-import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
-import { isPostgresCoreActive } from '#api/core/libs/featureFlags.js';
+import { transactionManagerFactories } from '#api/core/libs/transactionManagerFactories.js';
 import { DefaultTestingQueueAdapter } from '#api/core/libs/queue/configuration/factories.js';
 import { appContext } from '#api/utils/AppContext.js';
 import { elasticTesting } from '#api/utils/elastic_testing.js';
@@ -351,12 +350,7 @@ const testingEnvironment = {
     });
 
     const defaultFactories: ExecutionContextDeps['factories'] = {
-      transactionManager: () =>
-        isPostgresCoreActive()
-          ? ExecutionContext.postgresTransactionManager
-          : ExecutionContext.mongoTransactionManager,
-      mongoTransactionManager: TransactionManagerFactory.mongo,
-      postgresTransactionManager: TransactionManagerFactory.postgres,
+      ...transactionManagerFactories(),
       eventEmitter: EventEmitterFactory.forTesting,
       jobsDispatcher: () =>
         UwaziDispatcherFactory(
