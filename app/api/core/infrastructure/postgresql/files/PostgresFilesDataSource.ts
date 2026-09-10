@@ -3,7 +3,6 @@ import { Db } from 'mongodb';
 import { PostgresDataSource, PostgresDataSourceDeps } from '../common/PostgresDataSource.js';
 import { FileStorage } from '../../../application/contracts/FileStorage.js';
 import { TransactionManager } from '../../../application/contracts/TransactionManager.js';
-import { MongoTransactionManager } from '../../mongodb/common/MongoTransactionManager.js';
 import { FilesDataSource } from '../../../application/contracts/FilesDataSource.js';
 import type { GetDocumentsForEntityOptions } from '../../../application/contracts/FilesDataSource.js';
 import { BaseFile, FileContentLoader } from '../../../domain/files/BaseFile.js';
@@ -30,7 +29,7 @@ export class PostgresFilesDataSource
   extends PostgresDataSource<FilesRow>
   implements FilesDataSource
 {
-  private transactionManager: MongoTransactionManager;
+  private transactionManager: TransactionManager;
 
   private fileStorage: FileStorage;
 
@@ -42,7 +41,7 @@ export class PostgresFilesDataSource
       sync: { syncDb: deps.mongoDb, syncNamespace: 'files' },
     });
 
-    this.transactionManager = deps.transactionManager as MongoTransactionManager;
+    this.transactionManager = deps.transactionManager;
     this.fileStorage = deps.fileStorage;
 
     this.transactionManager.onCommitted(async () => {

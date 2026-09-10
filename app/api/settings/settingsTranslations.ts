@@ -118,7 +118,7 @@ export async function persistSettingsAndTranslations(
   settings: Settings,
   currentSettings: Settings
 ) {
-  const transactionManager = TransactionManagerFactory.default();
+  const transactionManager = TransactionManagerFactory.mongo();
   const translationsService = TranslationsServiceFactory.default({ transactionManager });
 
   return transactionManager.run(async () => {
