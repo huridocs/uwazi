@@ -115,6 +115,7 @@ AND OR NOT,AND OR NOT
 Any,Any
 Any entity,Any entity
 any single character,any single character
+Any type,Any type
 Anyone can see this entity,Anyone can see this entity
 Appearance,Appearance
 Apply,Apply
@@ -255,6 +256,8 @@ Copied,Copied
 Copied to clipboard,Copied to clipboard
 Copy,Copy
 Copy From,คัดลอกจาก
+Copy from,Copy from
+Copy from this entity,Copy from this entity
 Copy from...,Copy from...
 Copy Highlighted,คัดลอกสิ่งที่ถูกเน้นสี
 Copy link,คัดลอกลิงค์
@@ -929,6 +932,7 @@ Permission on entities explicitly shared with the user,สิทธิการ�
 Permissions,สิทธิการเข้าถึง
 Permissions updated,Permissions updated
 Pick a color,Pick a color
+Pick another,Pick another
 Plain text,ข้อความธรรมดา
 Please contact an admin for details.,กรุณาติดต่อผู้ดูแลระบบเพื่อดูรายละเอียดเพิ่มเติม
 Please type in,Please type in
@@ -1095,6 +1099,7 @@ Scanning rows before import.,Scanning rows before import.
 Schedule,Schedule
 Schedules run in UTC (Coordinated Universal Time).,Schedules run in UTC (Coordinated Universal Time).
 Search,ค้นหา
+Search by title,Search by title
 "Search  •  AND, OR, NOT, ""exact"", wild*","Search  •  AND, OR, NOT, ""exact"", wild*"
 Search entities...,Search entities...
 Search entities…,Search entities…
@@ -1466,6 +1471,7 @@ Validating file structure and headers.,Validating file structure and headers.
 Value,Value
 Value cannot be transformed to the correct type,Value cannot be transformed to the correct type
 values,values
+"values are staged, not saved","values are staged, not saved"
 Verify,ตรวจสอบ
 Verifying...,กำลังตรวจสอบ....
 via,via

@@ -115,6 +115,7 @@ AND OR NOT,AND OR NOT
 Any,Any
 Any entity,Any entity
 any single character,any single character
+Any type,Any type
 Anyone can see this entity,Anyone can see this entity
 Appearance,Appearance
 Apply,Apply
@@ -257,6 +258,8 @@ Copied,Copied
 Copied to clipboard,Copied to clipboard
 Copy,Copy
 Copy From,Copy From
+Copy from,Copy from
+Copy from this entity,Copy from this entity
 Copy from...,Copy from...
 Copy Highlighted,Copy Highlighted
 Copy link,Copy link
@@ -931,6 +934,7 @@ Permission on entities explicitly shared with the user,Permission on entities ex
 Permissions,Permissions
 Permissions updated,Permissions updated
 Pick a color,Pick a color
+Pick another,Pick another
 Plain text,Plain text
 Please contact an admin for details.,Please contact an admin for details.
 Please type in,Please type in
@@ -1097,6 +1101,7 @@ Scanning rows before import.,Scanning rows before import.
 Schedule,Schedule
 Schedules run in UTC (Coordinated Universal Time).,Schedules run in UTC (Coordinated Universal Time).
 Search,Search
+Search by title,Search by title
 "Search  •  AND, OR, NOT, ""exact"", wild*","Search  •  AND, OR, NOT, ""exact"", wild*"
 Search entities...,Search entities...
 Search entities…,Search entities…
@@ -1468,6 +1473,7 @@ Validating file structure and headers.,Validating file structure and headers.
 Value,Value
 Value cannot be transformed to the correct type,Value cannot be transformed to the correct type
 values,values
+"values are staged, not saved","values are staged, not saved"
 Verify,Verify
 Verifying...,Verifying...
 via,via
