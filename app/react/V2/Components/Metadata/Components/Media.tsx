@@ -2,19 +2,44 @@ import React, { useId, useRef } from 'react';
 import { PlayIcon } from '@heroicons/react/20/solid';
 import { t } from '#app/I18N/index.js';
 import { MediaMetadataProperty } from '#V2/formatters/types.js';
+import { getMimetypeFromUrl } from '#V2/shared/formatHelpers.js';
 import { MediaPlayer } from '../../UI/index.js';
+import { Image } from './Image.js';
 
 type MediaProps = {
   values: MediaMetadataProperty['values'];
   width?: number | string;
   height?: number | string;
   frame?: 'natural' | 'video';
+  imageStyle?: 'contain' | 'cover';
+  fullWidth?: boolean;
+  density?: 'default' | 'compact';
 };
 
 type PlayerRef = NonNullable<React.ComponentProps<typeof MediaPlayer>['playerRef']>;
 type PlayerInstance = PlayerRef extends React.RefObject<infer T> ? T : never;
 
-const Media = ({ values, width = '100%', height = 300, frame = 'natural' }: MediaProps) => {
+const isImageMedia = (value: string, mimetype?: string, fileType?: string) =>
+  fileType === 'image' ||
+  Boolean(mimetype?.startsWith('image/')) ||
+  getMimetypeFromUrl(value).startsWith('image/');
+
+const videoMaxHeightClass = (density: 'default' | 'compact', fullWidth: boolean) => {
+  if (density === 'compact') {
+    return 'max-h-[140px]';
+  }
+  return fullWidth ? 'max-h-96' : 'max-h-48';
+};
+
+const Media = ({
+  values,
+  width = '100%',
+  height = 300,
+  frame = 'natural',
+  imageStyle = 'cover',
+  fullWidth = false,
+  density = 'default',
+}: MediaProps) => {
   const baseId = useId();
   const playerRefs = useRef<React.RefObject<PlayerInstance>[]>([]);
   if (playerRefs.current.length !== values.length) {
@@ -35,7 +60,19 @@ const Media = ({ values, width = '100%', height = 300, frame = 'natural' }: Medi
         frame === 'video' ? ' min-h-0 flex-1' : ''
       }`}
     >
-      {nonEmptyValues.map(({ value, alt, timelinks = [] }, index) => {
+      {nonEmptyValues.map(({ value, alt, timelinks = [], mimetype, fileType }, index) => {
+        if (isImageMedia(value, mimetype, fileType)) {
+          return (
+            <Image
+              key={value}
+              values={[{ value, alt }]}
+              imageStyle={imageStyle}
+              density={density}
+              fullWidth={fullWidth}
+            />
+          );
+        }
+
         const playerRef = playerRefs.current[index];
         const handleTimelinkClick = (time: number) => {
           playerRef?.current?.seekTo(time, 'seconds');
@@ -52,7 +89,7 @@ const Media = ({ values, width = '100%', height = 300, frame = 'natural' }: Medi
           >
             <figure
               aria-labelledby={figId}
-              className={`w-full min-w-0 max-w-full overflow-hidden rounded-md bg-(--color-theme-surface-warm) ${
+              className={`w-full min-w-0 max-w-full overflow-hidden rounded-md bg-(--color-theme-surface-warm) ${videoMaxHeightClass(density, fullWidth)} ${
                 frame === 'video' ? 'relative min-h-0 flex-1 aspect-video' : ''
               }`.trim()}
             >

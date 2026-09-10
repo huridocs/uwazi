@@ -98,7 +98,7 @@ const packClassForProperty = (data: MetadataProperty): MasonryPackClass => {
     return 'block';
   }
   if (isMediaPackType(data.type)) {
-    return 'media';
+    return data.fullWidth ? 'block' : 'media';
   }
   return 'short';
 };

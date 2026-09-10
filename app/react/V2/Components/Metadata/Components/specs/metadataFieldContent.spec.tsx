@@ -3,7 +3,11 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import { renderFieldContent } from '../metadataFieldContent.js';
-import type { MetadataProperty } from '#V2/formatters/types.js';
+import type {
+  ImageMetadataProperty,
+  MediaMetadataProperty,
+  MetadataProperty,
+} from '#V2/formatters/types.js';
 
 jest.mock('#app/I18N/index.js', () => ({
   Translate: ({ children }: { children: React.ReactNode }) => children,
@@ -26,20 +30,23 @@ jest.mock('#V2/Components/UI/index.js', () => ({
   ),
 }));
 
-const imageProp: MetadataProperty = {
+const imageProp: ImageMetadataProperty = {
   _id: 'p-image',
   name: 'photo',
   type: 'image',
   label: 'Photo',
   style: 'contain',
+  fullWidth: false,
   values: [{ value: '/api/files/photo.jpg', alt: 'Cover' }],
 };
 
-const mediaProp: MetadataProperty = {
+const mediaProp: MediaMetadataProperty = {
   _id: 'p-media',
   name: 'clip',
   type: 'media',
   label: 'Clip',
+  style: 'cover',
+  fullWidth: false,
   values: [{ value: '/api/files/clip.mp4' }],
 };
 
@@ -52,25 +59,53 @@ const geoProp: MetadataProperty = {
 };
 
 describe('renderFieldContent density', () => {
-  it('uses default image/media/geo sizes when density omitted', () => {
+  it('uses Fit, Fill, and fullWidth image sizes when density omitted', () => {
     const { rerender } = render(<>{renderFieldContent(imageProp)}</>);
-    expect(screen.getByRole('img').className).toContain('absolute inset-0 h-full w-full');
+    expect(screen.getByRole('img').className).toContain('max-h-48');
+    expect(screen.getByRole('img')).toHaveStyle({ objectFit: 'contain' });
 
-    rerender(<>{renderFieldContent(mediaProp)}</>);
+    rerender(<>{renderFieldContent({ ...imageProp, style: 'cover' })}</>);
+    expect(screen.getByRole('img')).toHaveStyle({ objectFit: 'cover' });
+    expect(screen.getByRole('img').className).toContain('w-full');
+
+    rerender(<>{renderFieldContent({ ...imageProp, fullWidth: true })}</>);
+    expect(screen.getByRole('img').className).toContain('max-h-96');
+  });
+
+  it('uses default media and geo sizes when density omitted', () => {
+    const { rerender } = render(<>{renderFieldContent(mediaProp)}</>);
     expect(screen.getByTestId('media-player')).toHaveAttribute('data-height', '100%');
+    expect(screen.getByTestId('media-player').parentElement?.className).toContain('max-h-48');
+    expect(screen.getByTestId('media-player').parentElement?.className).toContain('aspect-video');
+
+    rerender(<>{renderFieldContent({ ...mediaProp, fullWidth: true })}</>);
+    expect(screen.getByTestId('media-player').parentElement?.className).toContain('max-h-96');
 
     rerender(<>{renderFieldContent(geoProp)}</>);
     expect(screen.getByTestId('map')).toHaveAttribute('data-height', '220');
     expect(screen.getByTestId('map')).toHaveAttribute('data-show-controls', 'undefined');
   });
 
-  it('uses compact image/media/geo sizes', () => {
+  it('uses compact image sizes including media-as-image', () => {
     const { rerender } = render(<>{renderFieldContent(imageProp, { density: 'compact' })}</>);
     expect(screen.getByRole('img').className).toContain('max-h-32');
-    expect(screen.getByRole('img').className).toContain('w-full');
 
-    rerender(<>{renderFieldContent(mediaProp, { density: 'compact' })}</>);
+    rerender(
+      <>
+        {renderFieldContent(
+          { ...mediaProp, values: [{ value: '/api/files/photo.png' }] },
+          { density: 'compact' }
+        )}
+      </>
+    );
+    expect(screen.getByRole('img').className).toContain('max-h-32');
+  });
+
+  it('uses compact video and geo sizes', () => {
+    const { rerender } = render(<>{renderFieldContent(mediaProp, { density: 'compact' })}</>);
     expect(screen.getByTestId('media-player')).toHaveAttribute('data-height', '140');
+    expect(screen.getByTestId('media-player').parentElement?.className).toContain('max-h-[140px]');
+    expect(screen.getByTestId('media-player').parentElement?.className).not.toContain('max-h-32');
 
     rerender(<>{renderFieldContent(geoProp, { density: 'compact' })}</>);
     expect(screen.getByTestId('map')).toHaveAttribute('data-height', '160');

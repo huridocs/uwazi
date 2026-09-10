@@ -112,7 +112,8 @@ describe('MetadataDisplay', () => {
       );
       compactField('selected_image');
       compactField('video_of_event');
-      cy.get('[data-field-key="selected_image"] .aspect-video').should('exist');
+      cy.get('[data-field-key="selected_image"] .aspect-video').should('not.exist');
+      cy.get('[data-field-key="selected_image"] img').should('have.css', 'object-fit', 'cover');
       cy.get('[data-field-key="video_of_event"] .aspect-video').should('exist');
       cy.get('[data-field-key="selected_image"]')
         .closest('[data-property-row]')

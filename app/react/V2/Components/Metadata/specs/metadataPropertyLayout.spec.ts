@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import type {
   MetadataProperty,
   PreviewMetadataProperty,
@@ -70,6 +71,10 @@ describe('metadataPropertyLayout', () => {
         packClassForProperty(numericField('x'.repeat(LONG_FIELD_CHAR_THRESHOLD + 1), 'mid'))
       ).toBe('block');
       expect(packClassForProperty(imageField)).toBe('media');
+      expect(packClassForProperty({ ...imageField, fullWidth: true })).toBe('block');
+      expect(metadataGridClassForProperty({ ...imageField, fullWidth: true })).toBe(
+        FULL_ROW_METADATA_FIELD_LAYOUT
+      );
       expect(packClassForProperty(mediaField)).toBe('media');
       expect(packClassForProperty(previewField)).toBe('media');
       expect(packClassForProperty(markdownField('md'))).toBe('block');
@@ -166,6 +171,7 @@ describe('metadataPropertyLayout', () => {
         label: 'Previewg',
         type: 'preview',
         style: 'cover',
+        fullWidth: false,
         values: [],
       };
       const emptyImage: ImageMetadataProperty = {
@@ -174,6 +180,7 @@ describe('metadataPropertyLayout', () => {
         label: 'Imaged',
         type: 'image',
         style: 'contain',
+        fullWidth: false,
         values: [{ value: '', alt: '' }],
       };
       expect(
@@ -187,14 +194,11 @@ describe('metadataPropertyLayout', () => {
   });
 
   describe('packPropertyRows', () => {
-    it('puts one compact card per row when the panel is narrower than two cards', () => {
+    it('puts one compact card per row when the panel is too narrow or width is unknown', () => {
       expect(rowIds([textField('1987', 't1'), textField('ABC', 't2')], 300)).toEqual([
         ['t1'],
         ['t2'],
       ]);
-    });
-
-    it('puts one compact card per row when width is unknown', () => {
       expect(rowIds([textField('1987', 't1'), textField('ABC', 't2')], 0)).toEqual([
         ['t1'],
         ['t2'],
@@ -205,6 +209,10 @@ describe('metadataPropertyLayout', () => {
       const twoCol = MEDIA_CARD_MIN_PX * 2 + PROPERTY_ROW_GAP_PX;
       expect(rowIds([imageField, mediaField], twoCol - 1)).toEqual([['img1'], ['med1']]);
       expect(rowIds([imageField, mediaField], twoCol)).toEqual([['img1', 'med1']]);
+      expect(rowIds([{ ...imageField, fullWidth: true }, mediaField], 800)).toEqual([
+        ['img1'],
+        ['med1'],
+      ]);
     });
 
     it('packs three media cards when they fit', () => {

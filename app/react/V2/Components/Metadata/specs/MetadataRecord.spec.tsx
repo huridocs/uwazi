@@ -312,6 +312,46 @@ describe('MetadataRecord', () => {
     expect(fieldEl('code').className).toContain(COMPACT_METADATA_FIELD_LAYOUT);
   });
 
+  it('packs image with fullWidth as a full row', () => {
+    const imageTemplate = {
+      ...template,
+      properties: [
+        {
+          _id: 'p-img',
+          name: 'photo',
+          type: 'image' as const,
+          label: 'Image',
+          style: 'contain' as const,
+          fullWidth: true,
+        },
+        { _id: 'p-short', name: 'code', type: 'text' as const, label: 'Code' },
+      ],
+    };
+    const imageEntity: Entity = {
+      ...withoutRels,
+      metadata: {
+        photo: [{ value: '/plant.jpg', alt: 'plant' }],
+        code: [{ value: 'ABC' }],
+      },
+      documents: [],
+    };
+
+    render(
+      <TestAtomStoreProvider
+        initialValues={[
+          [templatesAtom, [imageTemplate, relatedTemplate, relatedEntityTemplate]],
+          [relationshipTypesAtom, [{ _id: 'rel-type-1', name: 'Relates to' }]],
+        ]}
+      >
+        <MetadataRecord entity={imageEntity} />
+      </TestAtomStoreProvider>
+    );
+
+    expect(fieldEl('photo').className).toContain(FULL_ROW_METADATA_FIELD_LAYOUT);
+    expect(screen.getByRole('img')).toHaveStyle({ objectFit: 'contain' });
+    expect(screen.getByRole('img').className).toContain('max-h-96');
+  });
+
   // eslint-disable-next-line max-statements
   it('repacks image and media onto one row when the panel widens', async () => {
     mockClientWidth = 300;
