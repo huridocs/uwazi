@@ -5,11 +5,11 @@ import { AddLanguageUseCase } from '#api/core/application/AddLanguage.js';
 import { ImportPredefinedTranslationsService } from '#api/core/application/translation/ImportPredefinedTranslationsService.js';
 import { SyncDispatcherForTests } from '#api/core/libs/queue/infrastructure/SyncDispatcherForTests.js';
 import { DispatcherAdapter } from '../jobs/DispatcherAdapter.js';
-import { MongoTransactionManager } from '../mongodb/common/MongoTransactionManager.js';
 import { CloneLanguageEntitiesJob } from '../jobs/CloneLanguageEntitiesJob.js';
 import { CloneLanguageEntitiesJobFactory } from './CloneLanguageEntitiesJobFactory.js';
 import { UwaziDispatcherFactory } from '#api/core/infrastructure/jobs/UwaziDispatcherFactory.js';
 import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
+import { MongoTransactionManager } from '../mongodb/common/MongoTransactionManager.js';
 
 const ONE_HOUR_MS = 60 * 60 * 1000;
 
@@ -32,8 +32,7 @@ class AddLanguageUseCaseFactory {
   static default(
     overrides?: Partial<ConstructorParameters<typeof AddLanguageUseCase>[0]>
   ): AddLanguageUseCase {
-    const { actor, tenant, eventEmitter } = ExecutionContext;
-    const transactionManager = ExecutionContext.transactionManager as MongoTransactionManager;
+    const { actor, tenant, eventEmitter, transactionManager } = ExecutionContext;
 
     return new AddLanguageUseCase(
       {
@@ -43,7 +42,7 @@ class AddLanguageUseCaseFactory {
         importPredefinedTranslations: ImportPredefinedTranslationsService,
         eventEmitter,
         dispatcher: new DispatcherAdapter(
-          createAddLanguageJobsDispatcher(tenant.name, transactionManager)
+          createAddLanguageJobsDispatcher(tenant.name, ExecutionContext.mongoTransactionManager)
         ),
         ...overrides,
       },

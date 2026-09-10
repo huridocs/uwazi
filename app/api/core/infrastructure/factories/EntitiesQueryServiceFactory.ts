@@ -2,9 +2,9 @@ import {
   EntitiesQueryService,
   EntitiesQueryServiceDeps,
 } from '#api/core/application/EntitiesQueryService.js';
+import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { User } from '#api/users.v2/model/User.js';
-import { TransactionManagerFactory } from './TransactionManagerFactory.js';
-import { MongoTransactionManager } from '../mongodb/common/MongoTransactionManager.js';
+import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
 import { EntityPermissionCheckerFactory } from './EntityPermissionCheckerFactory.js';
 import { MongoRelationshipsV1DataSource } from '../mongodb/MongoRelationshipsV1DataSource.js';
 import { getConnection } from '../mongodb/common/getConnectionForCurrentTenant.js';
@@ -14,18 +14,18 @@ import { EntitiesDAOFactory } from './EntitiesDAOFactory.js';
 import { TemplatesDAOFactory } from './TemplatesDAOFactory.js';
 
 type FactoryDeps = Partial<EntitiesQueryServiceDeps> & {
-  transactionManager?: MongoTransactionManager;
+  transactionManager?: TransactionManager;
 };
 
 class EntitiesQueryServiceFactory {
   static default(user: User, deps?: FactoryDeps) {
-    const transactionManager = deps?.transactionManager ?? TransactionManagerFactory.default();
+    const transactionManager = deps?.transactionManager ?? ExecutionContext.transactionManager;
 
     return new EntitiesQueryService({
       entityPermissionChecker:
         deps?.entityPermissionChecker ??
         EntityPermissionCheckerFactory.default({ transactionManager }),
-      settingsDS: deps?.settingsDS ?? SettingsDataSourceFactory.cached({ transactionManager }),
+      settingsDS: deps?.settingsDS ?? SettingsDataSourceFactory.cached(),
       templatesDS: deps?.templatesDS ?? TemplatesDataSourceFactory.cached({ transactionManager }),
       templatesDAO: deps?.templatesDAO ?? TemplatesDAOFactory.default(),
       entityDAO: deps?.entityDAO ?? EntitiesDAOFactory.default({ user, transactionManager }),
@@ -33,9 +33,9 @@ class EntitiesQueryServiceFactory {
         deps?.relationshipsDataSource ??
         new MongoRelationshipsV1DataSource(
           getConnection(),
-          transactionManager,
+          ExecutionContext.mongoTransactionManager,
           EntitiesDAOFactory.default({ user, transactionManager }),
-          SettingsDataSourceFactory.default({ transactionManager })
+          SettingsDataSourceFactory.default()
         ),
     });
   }

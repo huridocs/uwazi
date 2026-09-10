@@ -57,7 +57,7 @@ describe('SearchSelect', () => {
     );
     expect(screen.getByRole('group', { name: 'Africa' })).toBeInTheDocument();
     expect(screen.getByText('Africa')).toHaveClass('text-sm');
-    expect(screen.getByRole('option', { name: 'Egypt' })).toHaveClass('text-sm');
+    expect(screen.getByRole('option', { name: 'Egypt' })).toHaveClass('text-sm', 'normal-case');
     expect(screen.getByRole('combobox')).toHaveClass('text-sm');
   });
 
@@ -69,5 +69,31 @@ describe('SearchSelect', () => {
 
     fireEvent.keyDown(screen.getByRole('combobox'), { key: 'Escape' });
     expect(screen.queryByRole('listbox')).not.toBeInTheDocument();
+  });
+
+  it('shows prefix and colored label when closed and in the list', () => {
+    render(
+      <SearchSelect
+        id="template"
+        label="Template"
+        value="person"
+        options={[
+          {
+            value: 'person',
+            searchLabel: 'Person',
+            label: <span style={{ color: 'rgb(126, 34, 206)' }}>Person</span>,
+            prefix: <span data-testid="template-swatch" />,
+          },
+        ]}
+      />
+    );
+
+    expect(screen.getByTestId('template-swatch')).toBeInTheDocument();
+    expect(screen.getByText('Person')).toHaveStyle({ color: 'rgb(126, 34, 206)' });
+
+    fireEvent.click(screen.getByRole('button', { name: 'Template' }));
+
+    expect(screen.getByRole('option', { name: 'Person' })).toHaveTextContent('Person');
+    expect(screen.getByTestId('template-swatch')).toBeInTheDocument();
   });
 });

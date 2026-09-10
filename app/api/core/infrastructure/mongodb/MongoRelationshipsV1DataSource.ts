@@ -1,4 +1,4 @@
-import { ObjectId } from 'mongodb';
+import { Db, ObjectId } from 'mongodb';
 import { BaseFile } from '#api/core/domain/files/BaseFile.js';
 import { MongoDataSource } from '#api/core/infrastructure/mongodb/common/MongoDataSource.js';
 import { dbSessionContext } from '#api/odm/sessionsContext.js';
@@ -10,6 +10,7 @@ import type { Relation } from '../../../relationships/RelationsV1Collection.js';
 import type { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import { TimedMethod } from '#api/core/libs/logger/TimedMethodDecorator.js';
 import { EntitiesDAO } from '#api/core/application/contracts/EntitiesDAO.js';
+import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
 
 type SelectionRect = {
   top: number;
@@ -47,8 +48,8 @@ export class MongoRelationshipsV1DataSource extends MongoDataSource<Relation> {
   protected collectionName = 'connections';
 
   constructor(
-    db: any,
-    transactionManager: any,
+    db: Db,
+    transactionManager: TransactionManager,
     private entitiesDAO: EntitiesDAO,
     private settingsDS: SettingsDataSource
   ) {

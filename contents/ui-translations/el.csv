@@ -53,6 +53,7 @@ Add from URL,Προσθήκη από URL
 Add from web,Προσθήκη από το διαδίκτυο
 Add group,Προσθήκη ομάδας
 add icon,προσθήκη εικονιδίου
+Add icon,Add icon
 Add item,Προσθήκη αντικειμένου
 Add link,Προσθήκη συνδέσμου
 Add or remove relationship types for this collection.,Add or remove relationship types for this collection.
@@ -376,8 +377,7 @@ Direction,Direction
 Disable,Απενεργοποίηση
 Disable highlights,Απενεργοποίηση επισημάνσεων
 Disabled 2FA,Απενεργοποιημένο 2FA
-Discard and leave,Discard and leave
-Discard and switch,Discard and switch
+Discard,Discard
 Discard changes,Απόρριψη αλλαγών
 Discard changes?,Απόρριψη αλλαγών;
 Dismiss,Απόκρυψη
@@ -812,7 +812,7 @@ No options found,Δεν βρέθηκαν επιλογές
 No page,No page
 No people or groups added yet,No people or groups added yet
 No primary documents,No primary documents
-No primary documents yet. Promote a supporting file or add a new one.,No primary documents yet. Promote a supporting file or add a new one.
+No primary documents yet. Add a file to get started.,No primary documents yet. Add a file to get started.
 No property,Το στοιχείο δεν έχει αυτήν την ιδιότητα
 No References,Δεν υπάρχουν αναφορές
 No References description,Οι αναφορές είναι τμήματα αυτού του εγγράφου που σχετίζονται με άλλα έγγραφα και οντότητες.
@@ -1046,6 +1046,7 @@ Remove,Αφαίρεση
 Remove from connection,Remove from connection
 Remove from training set,Αφαίρεση από το σύνολο εκπαίδευσης
 remove icon,αφαιρέση εικονίδιου
+Remove icon,Remove icon
 Removed language,Αφαίρεση γλώσσας
 Rename,Μετονομασία
 Renamed attachment,Το συνημμένο αρχείο μετονομάστηκε
@@ -1505,10 +1506,7 @@ You can also enter this secret key into your Authenticator app.,Μπορείτε
 You can create metadata templates in,Μπορείτε να δημιουργήσετε πρότυπα μεταδεδομένων στο
 "You can embed advanced components like maps, charts and entity lists in your page.","You can embed advanced components like maps, charts and entity lists in your page."
 You do not have write permission on all entities,You do not have write permission on all entities
-You have unsaved changes. Discard them and leave this page? This action cannot be undone.,You have unsaved changes. Discard them and leave this page? This action cannot be undone.
-"You have unsaved changes. Discard them and switch language? This action cannot be
-              undone.","You have unsaved changes. Discard them and switch language? This action cannot be
-              undone."
+You have unsaved changes. Discard them? This action cannot be undone.,You have unsaved changes. Discard them? This action cannot be undone.
 You have unsaved changes. Do you want to continue?,Έχετε μη αποθηκευμένες αλλαγές. Θέλετε να συνεχίσετε;
 You should activate this feature for enhanced account security,Θα πρέπει να ενεργοποιήσετε αυτή τη λειτουργία για αυξημένη ασφάλεια λογαριασμού
 You should activate this feature for enhanced account security.,Θα πρέπει να ενεργοποιήσετε αυτή τη λειτουργία για αυξημένη ασφάλεια λογαριασμού.

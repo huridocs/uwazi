@@ -3,16 +3,19 @@ import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnec
 import { MongoRelationshipsV1DataSource } from '#api/core/infrastructure/mongodb/MongoRelationshipsV1DataSource.js';
 import { EntitiesDAOFactory } from './EntitiesDAOFactory.js';
 import { SettingsDataSourceFactory } from './SettingsDataSourceFactory.js';
+import { TransactionManagerFactory } from './TransactionManagerFactory.js';
 
 class MongoRelationshipsV1DataSourceFactory {
   static default() {
-    const { transactionManager } = ExecutionContext;
+    const transactionManager = ExecutionContext.getStore()
+      ? ExecutionContext.mongoTransactionManager
+      : TransactionManagerFactory.mongo();
 
     return new MongoRelationshipsV1DataSource(
       getConnection(),
       transactionManager,
       EntitiesDAOFactory.default(),
-      SettingsDataSourceFactory.default({ transactionManager })
+      SettingsDataSourceFactory.default()
     );
   }
 }

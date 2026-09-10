@@ -4,11 +4,11 @@ import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { DeleteLanguageUseCase } from '#api/core/application/DeleteLanguage.js';
 import { SyncDispatcherForTests } from '#api/core/libs/queue/infrastructure/SyncDispatcherForTests.js';
 import { DispatcherAdapter } from '../jobs/DispatcherAdapter.js';
-import { MongoTransactionManager } from '../mongodb/common/MongoTransactionManager.js';
 import { DeleteLanguageEntitiesJob } from '../jobs/DeleteLanguageEntitiesJob.js';
 import { DeleteLanguageEntitiesJobFactory } from './DeleteLanguageEntitiesJobFactory.js';
 import { UwaziDispatcherFactory } from '#api/core/infrastructure/jobs/UwaziDispatcherFactory.js';
 import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
+import { MongoTransactionManager } from '../mongodb/common/MongoTransactionManager.js';
 
 const ONE_HOUR_MS = 60 * 60 * 1000;
 
@@ -30,8 +30,7 @@ class DeleteLanguageUseCaseFactory {
   static default(
     overrides?: Partial<ConstructorParameters<typeof DeleteLanguageUseCase>[0]>
   ): DeleteLanguageUseCase {
-    const { actor, tenant, eventEmitter } = ExecutionContext;
-    const transactionManager = ExecutionContext.transactionManager as MongoTransactionManager;
+    const { actor, tenant, eventEmitter, transactionManager } = ExecutionContext;
 
     return new DeleteLanguageUseCase(
       {
@@ -40,7 +39,7 @@ class DeleteLanguageUseCaseFactory {
         translationsDS: TranslationsDataSourceFactory.default({ transactionManager }),
         eventEmitter,
         dispatcher: new DispatcherAdapter(
-          createDeleteLanguageJobsDispatcher(tenant.name, transactionManager)
+          createDeleteLanguageJobsDispatcher(tenant.name, ExecutionContext.mongoTransactionManager)
         ),
         ...overrides,
       },

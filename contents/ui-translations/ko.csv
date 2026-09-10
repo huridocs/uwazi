@@ -53,6 +53,7 @@ Add from URL,URL 에서 추가
 Add from web,웹에서 추가
 Add group,그룹 추가
 add icon,아이콘 추가
+Add icon,Add icon
 Add item,Add item
 Add link,링크 추가
 Add or remove relationship types for this collection.,Add or remove relationship types for this collection.
@@ -375,8 +376,7 @@ Direction,Direction
 Disable,Disable
 Disable highlights,Disable highlights
 Disabled 2FA,Disabled 2FA
-Discard and leave,Discard and leave
-Discard and switch,Discard and switch
+Discard,Discard
 Discard changes,변경 취소
 Discard changes?,Discard changes?
 Dismiss,Dismiss
@@ -811,7 +811,7 @@ No options found,검색된 옵션 없음
 No page,No page
 No people or groups added yet,No people or groups added yet
 No primary documents,No primary documents
-No primary documents yet. Promote a supporting file or add a new one.,No primary documents yet. Promote a supporting file or add a new one.
+No primary documents yet. Add a file to get started.,No primary documents yet. Add a file to get started.
 No property,속성 없음
 No References,참고문헌 없음
 No References description,References are parts of this document related with other documents and entities.
@@ -1045,6 +1045,7 @@ Remove,제거
 Remove from connection,Remove from connection
 Remove from training set,Remove from training set
 remove icon,아이콘 제거
+Remove icon,Remove icon
 Removed language,Removed language
 Rename,이름 재설정
 Renamed attachment,Renamed attachment
@@ -1504,10 +1505,7 @@ You can also enter this secret key into your Authenticator app.,You can also ent
 You can create metadata templates in,메타데이터 템플릿을 작성할 수 있습니다:
 "You can embed advanced components like maps, charts and entity lists in your page.","You can embed advanced components like maps, charts and entity lists in your page."
 You do not have write permission on all entities,You do not have write permission on all entities
-You have unsaved changes. Discard them and leave this page? This action cannot be undone.,You have unsaved changes. Discard them and leave this page? This action cannot be undone.
-"You have unsaved changes. Discard them and switch language? This action cannot be
-              undone.","You have unsaved changes. Discard them and switch language? This action cannot be
-              undone."
+You have unsaved changes. Discard them? This action cannot be undone.,You have unsaved changes. Discard them? This action cannot be undone.
 You have unsaved changes. Do you want to continue?,You have unsaved changes. Do you want to continue?
 You should activate this feature for enhanced account security,계정 보안 향상이 필요한 경우 이 기능을 활성화해야 합니다.
 You should activate this feature for enhanced account security.,You should activate this feature for enhanced account security.

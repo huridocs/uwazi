@@ -26,7 +26,7 @@ const registerEventListeners = (eventsBus: EventsBus) => {
   new AfterEntityUpdatedListener(eventsBus, () => ({
     eventBus: eventsBus,
     settingsDS: SettingsDataSourceFactory.default({
-      transactionManager: TransactionManagerFactory.default(),
+      transactionManager: TransactionManagerFactory.mongo(),
     }),
     logger: LoggerFactory.default(),
     updateSuggestionsAfterEntityUpdate: new UpdateSuggestionsAfterEntityUpdate(
@@ -70,7 +70,7 @@ const registerEventListeners = (eventsBus: EventsBus) => {
   new AfterFileUpdatedListener(eventsBus, () => ({
     eventBus: eventsBus,
     settingsDS: SettingsDataSourceFactory.default({
-      transactionManager: TransactionManagerFactory.default(),
+      transactionManager: TransactionManagerFactory.mongo(),
     }),
     createBlankSuggestionsFromDocument: new CreateBlankSuggestionsFromDocument(),
     logger: LoggerFactory.default(),

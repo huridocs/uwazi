@@ -63,7 +63,7 @@ export class CSVLoader {
     translationContext: string
   ): Promise<IndexedTranslations[]> {
     const file = importFile(csvPath);
-    const transactionManager = TransactionManagerFactory.default();
+    const transactionManager = TransactionManagerFactory.mongo();
     const translationsDS = TranslationsDataSourceFactory.default({ transactionManager });
     const query = TranslationsQueryServiceFactory.default();
 

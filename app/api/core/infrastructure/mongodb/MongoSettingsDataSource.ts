@@ -8,11 +8,11 @@ import { Settings } from '#api/core/domain/settings/Settings.js';
 import { SettingsDataSource } from '../../application/contracts/SettingsDataSource.js';
 import { toPersistableSettingsFields } from '../settings/persistableSettingsFields.js';
 import { DefaultLanguageMissingError } from './errors/settingsErrors.js';
-import { MongoTransactionManager } from './common/MongoTransactionManager.js';
+import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
 
 type MongoSettingsDataSourceDeps = {
   db: Db;
-  transactionManager: MongoTransactionManager;
+  transactionManager: TransactionManager;
 };
 
 const resolveInsertId = (incomingId: SettingsType['_id']): ObjectId => {

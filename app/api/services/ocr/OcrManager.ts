@@ -124,7 +124,7 @@ const saveResultFile = async (message: ResultsMessage, originalFile: FileType) =
   const sessionId =
     typeof message.params?.sessionId === 'string' ? message.params.sessionId : undefined;
 
-  const transactionManager = TransactionManagerFactory.default();
+  const transactionManager = TransactionManagerFactory.mongo();
   const filesService = FilesServiceFactory.default(
     {},
     {

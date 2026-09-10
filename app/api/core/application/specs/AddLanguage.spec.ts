@@ -366,22 +366,14 @@ describe('AddLanguage use case', () => {
         });
 
         const languages = await readLanguages();
-        if (postgresCore) {
-          expect(languages.map(language => language.key)).toEqual(
-            expect.arrayContaining(['en', 'es'])
-          );
-        } else {
-          expect(languages).toEqual([
-            expect.objectContaining({ key: 'en', label: 'English', default: true }),
-          ]);
-        }
+        expect(languages).toEqual([
+          expect.objectContaining({ key: 'en', label: 'English', default: true }),
+        ]);
 
-        if (!postgresCore) {
-          const esCount = (
-            await withFlag(async () => TranslationsDataSourceFactory.default().getByLanguage('es'))
-          ).length;
-          expect(esCount).toBe(0);
-        }
+        const esCount = (
+          await withFlag(async () => TranslationsDataSourceFactory.default().getByLanguage('es'))
+        ).length;
+        expect(esCount).toBe(0);
       });
 
       it('should deduplicate input languages with the same key', async () => {

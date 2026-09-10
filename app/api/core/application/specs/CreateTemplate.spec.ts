@@ -602,44 +602,42 @@ describe('CreateTemplateUseCase', () => {
       });
     });
 
-    if (postgresCore) {
-      it('should NOT revert the PG write when the Mongo transaction rolls back', async () => {
-        const templateTranslationService = TestUtils.mockClass<TemplateTranslationService>({
-          createTemplateTranslation: jest.fn().mockRejectedValue(new Error('Creation failed')),
-        });
-
-        const { sut } = createSut({ templateTranslationService }, postgresCore);
-
-        await expect(
-          sut.execute({
-            name: 'Failing Template',
-            properties: [{ label: 'Text', type: PropertyTypeEnum.Text }],
-            commonProperties: [
-              {
-                label: 'Title',
-                type: PropertyTypeEnum.Text,
-                name: 'title',
-                isCommonProperty: true,
-              },
-              {
-                label: 'Creation Date',
-                type: PropertyTypeEnum.Date,
-                name: 'creationDate',
-                isCommonProperty: true,
-              },
-              {
-                label: 'Edit Date',
-                type: PropertyTypeEnum.Date,
-                name: 'editDate',
-                isCommonProperty: true,
-              },
-            ],
-          })
-        ).rejects.toThrow('Creation failed');
-
-        const templates = await getTemplates();
-        expect(templates.some(t => t.name === 'Failing Template')).toBe(true);
+    it('should revert the write when the transaction rolls back', async () => {
+      const templateTranslationService = TestUtils.mockClass<TemplateTranslationService>({
+        createTemplateTranslation: jest.fn().mockRejectedValue(new Error('Creation failed')),
       });
-    }
+
+      const { sut } = createSut({ templateTranslationService }, postgresCore);
+
+      await expect(
+        sut.execute({
+          name: 'Failing Template',
+          properties: [{ label: 'Text', type: PropertyTypeEnum.Text }],
+          commonProperties: [
+            {
+              label: 'Title',
+              type: PropertyTypeEnum.Text,
+              name: 'title',
+              isCommonProperty: true,
+            },
+            {
+              label: 'Creation Date',
+              type: PropertyTypeEnum.Date,
+              name: 'creationDate',
+              isCommonProperty: true,
+            },
+            {
+              label: 'Edit Date',
+              type: PropertyTypeEnum.Date,
+              name: 'editDate',
+              isCommonProperty: true,
+            },
+          ],
+        })
+      ).rejects.toThrow('Creation failed');
+
+      const templates = await getTemplates();
+      expect(templates.some(t => t.name === 'Failing Template')).toBe(false);
+    });
   });
 });

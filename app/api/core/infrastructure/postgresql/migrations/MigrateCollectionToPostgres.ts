@@ -35,6 +35,19 @@ const rowsMapperOf = (
 ): ((doc: Record<string, unknown>) => Record<string, unknown>[]) =>
   'mapRows' in config ? doc => config.mapRows(doc) : doc => [config.mapDocument(doc)];
 
+const SYSTEM_PERMISSION_CONTEXT = { bypass: true, refIds: [] as string[] };
+
+const serializeRow = (row: Record<string, unknown>): Record<string, unknown> => {
+  const serialized = { ...row };
+  for (const key of Object.keys(serialized)) {
+    const value = serialized[key];
+    if (typeof value === 'object' && value !== null) {
+      serialized[key] = JSON.stringify(value);
+    }
+  }
+  return serialized;
+};
+
 const insertBatch = async (
   table: PostgresTable,
   batch: Record<string, unknown>[],
@@ -43,12 +56,15 @@ const insertBatch = async (
   if (!batch.length) {
     return;
   }
+  const rows = batch.map(row => serializeRow({ ...row, tenant_id: table.tenantId }));
   try {
-    if (force) {
-      await table.upsert(batch, { ignore: true });
-    } else {
-      await table.insert(batch);
-    }
+    await table.transactionManager.withConnection(async trx => {
+      if (force) {
+        await trx(table.tableName).insert(rows).onConflict(['_id', 'tenant_id']).ignore();
+      } else {
+        await trx(table.tableName).insert(rows);
+      }
+    }, SYSTEM_PERMISSION_CONTEXT);
   } catch (err: unknown) {
     // eslint-disable-next-line no-console
     console.error(

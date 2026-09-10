@@ -1,5 +1,4 @@
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
-import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
 import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
 import { MongoEntitiesDataSource } from '#api/core/infrastructure/mongodb/entity/MongoEntitiesDataSource.js';
 import { PostgresEntitiesDataSource } from '#api/core/infrastructure/postgresql/entity/PostgresEntitiesDataSource.js';
@@ -22,8 +21,7 @@ type Overrides = {
 export class EntitiesDataSourceFactory {
   static default(overrides?: Overrides): EntitiesDataSource {
     const tenant = ExecutionContext.currentTenant;
-    const transactionManager = (overrides?.transactionManager ??
-      ExecutionContext.transactionManager) as MongoTransactionManager;
+    const transactionManager = overrides?.transactionManager ?? ExecutionContext.transactionManager;
     const accessContext =
       overrides?.accessContext ??
       (ExecutionContext.actor ? AccessContext.forActor(ExecutionContext.actor) : undefined);

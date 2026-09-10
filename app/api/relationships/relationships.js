@@ -34,7 +34,7 @@ class RequiredParameters extends ValidationError {}
 
 const getRelationshipTypesDS = () =>
   RelationshipTypesDataSourceFactory.default({
-    transactionManager: TransactionManagerFactory.default(),
+    transactionManager: TransactionManagerFactory.mongo(),
   });
 
 export default {

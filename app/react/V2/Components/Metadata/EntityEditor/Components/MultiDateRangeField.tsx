@@ -2,13 +2,13 @@ import React from 'react';
 import { Controller, FieldValues, Path, RegisterOptions, useFormContext } from 'react-hook-form';
 import { XCircleIcon } from '@heroicons/react/24/outline';
 import { Translate } from '#app/I18N/index.js';
-import { InputField } from '#V2/Components/Forms/index.js';
 import { secondsToISODate, parseLocalizedDate } from '#V2/shared/dateHelpers.js';
 import {
   EntityFieldError,
   EntityFieldLabel,
   getFieldErrorState,
 } from '../functions/fieldErrorState.js';
+import { DateRangeInputs } from './DateRangeInputs.js';
 import { EntityField } from './EntityField.js';
 
 type MultiDateRangeFieldProps<TFormValues extends FieldValues = FieldValues> = {
@@ -99,63 +99,40 @@ const MultiDateRangeField = <TFormValues extends FieldValues = FieldValues>({
                   return (
                     <div
                       key={`${field}-${from ?? 'empty'}-${to ?? 'empty'}-${entries.length}`}
-                      className="flex flex-col gap-2 md:flex-row md:items-center"
+                      className="flex flex-col gap-2 md:flex-row md:items-end"
                     >
-                      <div className="flex max-w-48 items-center gap-2">
-                        <label htmlFor={`${field}.${index}.value.from`} aria-hidden>
-                          <Translate>From</Translate>:
-                        </label>
-                        <InputField
-                          id={`${field}.${index}.value.from`}
-                          hideLabel
-                          type="date"
-                          disabled={disabled}
-                          ref={index === 0 ? ref : undefined}
-                          onBlur={onBlur}
-                          value={fromISODate}
-                          hasErrors={showError}
-                          max={toISODate || undefined}
-                          className="min-w-0 flex-1"
-                          onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                            const nextFrom = e.target.value
-                              ? parseLocalizedDate(e.target.value)
-                              : null;
-                            const nextEntries = entries.map((current, currentIndex) =>
-                              currentIndex === index
-                                ? { value: { from: nextFrom, to: current.value.to } }
-                                : current
-                            );
-                            onChange(nextEntries);
-                          }}
-                        />
-                      </div>
-                      <div className="flex max-w-48 items-center gap-2">
-                        <label htmlFor={`${field}.${index}.value.to`} aria-hidden>
-                          <Translate>To</Translate>:
-                        </label>
-                        <InputField
-                          id={`${field}.${index}.value.to`}
-                          hideLabel
-                          type="date"
-                          disabled={disabled}
-                          onBlur={onBlur}
-                          value={toISODate}
-                          hasErrors={showError}
-                          min={fromISODate || undefined}
-                          className="min-w-0 flex-1"
-                          onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                            const nextTo = e.target.value
-                              ? parseLocalizedDate(e.target.value)
-                              : null;
-                            const nextEntries = entries.map((current, currentIndex) =>
-                              currentIndex === index
-                                ? { value: { from: current.value.from, to: nextTo } }
-                                : current
-                            );
-                            onChange(nextEntries);
-                          }}
-                        />
-                      </div>
+                      <DateRangeInputs
+                        fromId={`${field}.${index}.value.from`}
+                        toId={`${field}.${index}.value.to`}
+                        fromValue={fromISODate}
+                        toValue={toISODate}
+                        disabled={disabled}
+                        fromRef={index === 0 ? ref : undefined}
+                        onBlur={onBlur}
+                        hasErrors={showError}
+                        fromMax={toISODate || undefined}
+                        toMin={fromISODate || undefined}
+                        onFromChange={e => {
+                          const nextFrom = e.target.value
+                            ? parseLocalizedDate(e.target.value)
+                            : null;
+                          const nextEntries = entries.map((current, currentIndex) =>
+                            currentIndex === index
+                              ? { value: { from: nextFrom, to: current.value.to } }
+                              : current
+                          );
+                          onChange(nextEntries);
+                        }}
+                        onToChange={e => {
+                          const nextTo = e.target.value ? parseLocalizedDate(e.target.value) : null;
+                          const nextEntries = entries.map((current, currentIndex) =>
+                            currentIndex === index
+                              ? { value: { from: current.value.from, to: nextTo } }
+                              : current
+                          );
+                          onChange(nextEntries);
+                        }}
+                      />
 
                       <button
                         type="button"
