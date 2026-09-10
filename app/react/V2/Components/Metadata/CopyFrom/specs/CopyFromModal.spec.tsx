@@ -114,22 +114,22 @@ const FormProbe = () => {
   );
 };
 
-const searchCandidates = jest.fn(
-  async ({
-    title,
-    template,
-  }: {
-    title?: string;
-    template?: string[];
-  }): Promise<ApiResponse<Entity[] | undefined>> => {
-    const pool = template?.includes('country')
-      ? [mexico, argentina, colombia]
-      : [mexico, argentina, colombia, person];
-    const term = title?.trim().toLowerCase();
-    const rows = term ? pool.filter(entity => entity.title.toLowerCase().includes(term)) : pool;
-    return [rows];
-  }
-);
+const searchCandidatesImpl = async ({
+  title,
+  template,
+}: {
+  title?: string;
+  template?: string[];
+}): Promise<ApiResponse<Entity[] | undefined>> => {
+  const pool = template?.includes('country')
+    ? [mexico, argentina, colombia]
+    : [mexico, argentina, colombia, person];
+  const term = title?.trim().toLowerCase();
+  const rows = term ? pool.filter(entity => entity.title.toLowerCase().includes(term)) : pool;
+  return [rows];
+};
+
+const searchCandidates = jest.fn(searchCandidatesImpl);
 
 const getBySharedId: EntitiesService['getBySharedId'] = async sharedId => {
   if (sharedId === colombia.sharedId) return [[colombia]];
@@ -165,7 +165,8 @@ const renderModal = (onClose = jest.fn()) =>
 
 describe('CopyFromModal', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    searchCandidates.mockReset();
+    searchCandidates.mockImplementation(searchCandidatesImpl);
   });
 
   it('lists candidates of the current type, excluding the entity being edited', async () => {
@@ -189,6 +190,30 @@ describe('CopyFromModal', () => {
     expect(searchCandidates).toHaveBeenCalledWith(
       expect.objectContaining({ template: ['country'] })
     );
+  });
+
+  it('keeps a fixed height while candidates load and shows the square loader', async () => {
+    let finish: (value: ApiResponse<Entity[] | undefined>) => void = () => undefined;
+    searchCandidates.mockImplementation(
+      async () =>
+        new Promise<ApiResponse<Entity[] | undefined>>(resolve => {
+          finish = resolve;
+        })
+    );
+    renderModal();
+    expect(screen.getByTestId('copy-from-modal')).toHaveClass('h-[min(80vh,40rem)]');
+    expect(screen.getByTestId('copy-from-results')).toHaveClass('h-80');
+    expect(await screen.findByRole('status', { name: 'Loading' })).toBeInTheDocument();
+    expect(screen.queryByText('Searching...')).not.toBeInTheDocument();
+    finish([[argentina, colombia, mexico]]);
+    expect(await screen.findByText('Argentina')).toBeInTheDocument();
+  });
+
+  it('shows a blank state when there are no candidates', async () => {
+    searchCandidates.mockResolvedValue([[]]);
+    renderModal();
+    expect(await screen.findByText('No results found')).toBeInTheDocument();
+    expect(screen.getByText('No results found').closest('div.border-dashed')).toBeTruthy();
   });
 
   it('searches any type and filters by title', async () => {

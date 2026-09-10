@@ -1,10 +1,12 @@
 /* eslint-disable react/no-multi-comp */
 import React from 'react';
+import { MagnifyingGlassIcon } from '@heroicons/react/24/outline';
 import { Translate, t } from '#app/I18N/index.js';
 import type { Template } from '#app/apiResponseTypes.js';
 import type { Entity } from '#V2/api/entities/types.js';
 import { TemplateLabel } from '#V2/Components/Metadata/Components/index.js';
-import { QuerySearchBar } from '#V2/Components/UI/index.js';
+import { BlankState, QuerySearchBar } from '#V2/Components/UI/index.js';
+import { DatavizLoadingIndicator } from '#V2/Dataviz/components/DatavizLoadingIndicator.js';
 import { copyFromMatchingProperties } from './copyFromMatchingProperties.js';
 
 type CopyFromSearchViewProps = {
@@ -85,11 +87,23 @@ const CopyFromSearchView = ({
         }
       />
     </div>
-    <div className="min-h-0 flex-1 overflow-y-auto px-2 pb-2" data-testid="copy-from-results">
+    <div
+      className="flex h-80 min-h-0 flex-1 flex-col overflow-y-auto px-2 pb-2"
+      data-testid="copy-from-results"
+    >
       {isSearching ? (
-        <p className="px-3 py-8 text-center text-sm text-ink-secondary">
-          <Translate>Searching...</Translate>
-        </p>
+        <div className="flex h-full flex-1 items-center justify-center">
+          <DatavizLoadingIndicator />
+        </div>
+      ) : null}
+      {!isSearching && results.length === 0 ? (
+        <BlankState
+          icon={
+            <MagnifyingGlassIcon className="h-7 w-7 rounded-full bg-[color-mix(in_srgb,var(--color-theme-border-default)_70%,transparent)] p-1 text-ink" />
+          }
+          title={<Translate>No results found</Translate>}
+          description={<Translate>Try a different search or clear filters.</Translate>}
+        />
       ) : null}
       {!isSearching &&
         results.map(entity => {
@@ -121,11 +135,6 @@ const CopyFromSearchView = ({
             </button>
           );
         })}
-      {!isSearching && results.length === 0 ? (
-        <p className="px-3 py-8 text-center text-sm text-ink-muted">
-          <Translate>No results found</Translate>
-        </p>
-      ) : null}
     </div>
     <div className="border-t border-border px-5 py-2 text-xs text-ink-tertiary">
       {results.length} <Translate>{results.length === 1 ? 'candidate' : 'candidates'}</Translate>

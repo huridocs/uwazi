@@ -4,6 +4,7 @@ import { useWatch } from 'react-hook-form';
 import { Translate } from '#app/I18N/index.js';
 import { templatesAtom } from '#V2/atoms/templatesAtom.js';
 import { Modal } from '#V2/Components/UI/index.js';
+import { DatavizLoadingIndicator } from '#V2/Dataviz/components/DatavizLoadingIndicator.js';
 import {
   useEntityScopedEntity,
   useMetadataEditing,
@@ -52,7 +53,7 @@ const CopyFromModal = ({
 
   return (
     <Modal size="md" ariaLabel="Copy from">
-      <div className="flex max-h-[min(80vh,40rem)] min-h-80 flex-col" data-testid="copy-from-modal">
+      <div className="flex h-[min(80vh,40rem)] flex-col" data-testid="copy-from-modal">
         <Modal.Header>
           {source ? (
             <CopyFromSourceHeader source={source} />
@@ -69,9 +70,9 @@ const CopyFromModal = ({
           <Modal.CloseButton onClick={onClose} />
         </Modal.Header>
         {isLoadingSource ? (
-          <p className="px-5 py-8 text-center text-sm text-ink-secondary">
-            <Translate>Loading</Translate>
-          </p>
+          <div className="flex min-h-0 flex-1 items-center justify-center">
+            <DatavizLoadingIndicator centered />
+          </div>
         ) : null}
         {!isLoadingSource && source ? (
           <CopyFromSourcePreview
