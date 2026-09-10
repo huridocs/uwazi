@@ -3,32 +3,29 @@
 The Express API in `app/api`, plus queue workers (`app/worker.ts`, `app/queueWorker.ts`,
 `app/setupQueueWorker.ts`), `scripts/` and `database/`.
 
-**Multi-tenant.** Every request, job and script runs for one tenant. Data and feature flags are
-per tenant; code that ignores this leaks data across tenants. Get the current tenant from
-`ExecutionContext.tenant` (V1 code uses `tenants.current()`).
+**Multi-tenant.** Nothing runs globally: every request, job and script executes inside an
+execution context scoped to a single tenant, and data and feature flags are read through it. Code
+that steps outside that context leaks data across tenants.
 
 ## Where code lives
 
-Three generations coexist. **All new work goes in `app/api/core`.**
+`app/api` is the back end. Alongside it sit the workers, which run the same code outside the
+request cycle: `app/worker.ts`, `app/queueWorker.ts` and `app/setupQueueWorker.ts`, with jobs
+registered in `app/queueRegistry.ts`.
 
-- **`app/api/core`** — the target. Hexagonal/DDD: domain, application (use cases), infrastructure
-  (adapters), libs. Covers entities, templates, files, thesauri, relationships, users.
-- **`app/api/*.v2`** — an earlier V2 generation (`entities.v2`, `authorization.v2`, `common.v2`, …)
-  with its own `model`/`services`/`database` layout. Still in use; do not extend it with new
-  features, and do not treat its layout as the pattern to copy.
-- **Everything else in `app/api`** — V1 legacy (e.g. `app/api/entities`). CRUD-centric, with
-  business rules, persistence and HTTP mixed together.
+Generations coexist inside `app/api`. `core/` is the target architecture and the place new work
+belongs unless there is a reason otherwise; `*.v2/` is an earlier V2 generation, still in use but
+not a pattern to copy or extend; everything else is V1 legacy, with business rules, persistence and
+HTTP mixed together.
 
-Not every module earns the full hexagon. **Full DDD applies to templates, entities +
-`entityAccessPolicy`, and users + user groups** — these have real invariants and are the modules to
-copy from. Others are deliberately thinner; `architecture.md` says which and why. Do not impose full
-layering on a module that does not need it.
+**Prefer full DDD.** A module gets the whole hexagon — domain, application, infrastructure — even
+when its domain model is thin, a bag of properties with little behaviour. Thinness is not a reason
+to collapse layers; the model is expected to grow into them. `architecture.md` defines what each
+layer holds.
 
-Two databases: MongoDB (legacy) and PostgreSQL (V2). The Mongo→Postgres migration is gated per
-tenant by feature flags; **the flag names differ per module** (`postgresEntities`,
-`postgresTemplates`, `postgresUsers` + `postgresUsergroups`, …) — check the module's own factory
-before assuming. `isPostgresEntitiesActive()` (`core/libs/featureFlags.ts`) tells you which is the
-source of truth. Both paths must keep working.
+Two databases: MongoDB (legacy) and PostgreSQL (V2), and a Mongo→Postgres migration is in progress.
+Which one backs a given module is decided per tenant by feature flags — read the module's own
+factory to find out rather than assuming, and keep both paths working.
 
 Elasticsearch backs search. A change to indexed data may require a reindex — say so in your summary.
 
@@ -42,13 +39,7 @@ Elasticsearch backs search. A change to indexed data may require a reindex — s
 
 ## Commands
 
-**Test** — `yarn test <path-or-pattern>`. Needs Mongo and Postgres running. Target specific specs;
-do not run broad sweeps of `app/api/core`. See `testing.md`.
-
 **Run** — `yarn hot` (server + webpack + types), `yarn dev-worker`, `yarn dev-queue`.
-
-**Database** — `yarn blank-state` (reset), `yarn fixtures` (restore fixture dataset),
-`yarn provision-postgres`, `yarn describe-database`, `yarn admin-user`.
 
 **Migrations** — `yarn add-migration schema|data <name> <description>` to scaffold, `yarn migrate` to
 run, `yarn migrate-and-reindex` when indexed data changed, `yarn reindex` for Elasticsearch alone.

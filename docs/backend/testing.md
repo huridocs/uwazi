@@ -1,165 +1,76 @@
 # Testing
 
-Tests are co-located in `specs/` directories next to the code they test — with one exception:
-a component that has a contract and several implementations is tested **once, against the
-contract**. See _Contract specs_.
+**Read this when:** you are writing or changing a spec.
 
-**Write the test first.** Watch it fail, and read the failure — it must fail for the reason you
-expect. A test that has never been red proves nothing.
+The rules below are the whole contract. Where a rule needs a shape, it names a spec to copy rather
+than reproducing the code here — open the reference, it is the source of truth.
 
-## The two shapes
+## The rules
 
-Almost everything here is one of two kinds of test, and the component tells you which.
+1. **Write the test first.** Watch it fail, and read the failure — it must fail for the reason you
+   expect. A test that has never been red proves nothing.
 
-**Unit, DB-free** — domain models. Construct the object, exercise the behavior, assert on the
-object. No `testingEnvironment`, no fixtures, no database.
+2. **Co-locate specs in a `specs/` directory next to the code they test.** One exception: a
+   component with a contract and several implementations is tested once, against the contract
+   (rule 8).
 
-```ts
-const user = new User({ _id: 'user1', username: 'user1', role: UserRole.EDITOR, email: '…' });
+3. **Pick the shape from the component.** Domain models get unit tests — no `testingEnvironment`,
+   no fixtures, no database. Everything else — use cases, application services, jobs, DAOs,
+   DataSources, directories, query services — gets an integration test, with a real database and
+   real wiring.
+   _Unit reference:_ `domain/user/specs/User.spec.ts`.
+   _Integration reference:_ `application/specs/CreateUserGroup.spec.ts`.
 
-user.updateProfile({ username: 'renamed', role: UserRole.ADMIN, email: '…' });
+4. **Build the system under test through its production factory**, inside
+   `testingEnvironment.runWithContext()`. The factory is where the real dependency graph is wired,
+   so a hand-assembled object tests a graph that does not ship. See the integration reference.
 
-expect(user.username).toBe('renamed');
-```
+5. **Never use production code to create fixtures, or to build or verify a test's expectations.** No
+   DataSource, DAO, directory, query service, mapper, use case or domain model on either end of a
+   test — that includes the arrange step. Fixtures are declared as plain data through
+   `getFixturesFactory()` and loaded with `testingEnvironment.setUp`; stored state is asserted
+   through `testingEnvironment`. Seeding through the code under test, or reading back through it,
+   makes a test that passes when both ends are wrong in the same way — it proves self-consistency,
+   not behaviour. The exception is a test _of_ one of those components; fixtures and
+   `testingEnvironment` are still what set it up and verify it.
 
-**Integration** — use cases, application services, jobs, DAOs, DataSources, directories, query
-services. Real database, real wiring, fixtures in and stored state out.
+6. **Mock only across a real boundary.** An external HTTP service, the clock, the filesystem, or a
+   collaborator that makes the test slow or non-deterministic. Substitute through `runWithContext`
+   overrides or the factory's dependencies — never by monkey-patching a module. Mocking a DataSource
+   in a use case test is almost always wrong: it deletes the integration the test existed to prove.
 
-## The integration shape
+7. **Test permissions by overriding the actor** passed to `runWithContext`, which otherwise defaults
+   to an editor and a tenant derived from `testingDB`. `setPermissions()` is deprecated — it
+   predates the execution context and carries neither tenant nor actor.
 
-Every integration spec follows the same skeleton. Copy it rather than inventing one.
+8. **Write one contract spec, not one spec per implementation.** Directories, query services and
+   DataSources have a contract and an implementation per backend. Put the suite next to the contract
+   in `application/specs/` and run it over every backend, sharing fixtures in a single file. Assert
+   order-insensitively — Mongo and Postgres share no natural ordering. Adding a method to a contract
+   is the red step: `yarn check-types` fails on every implementation until each is written.
+   _Reference:_ `application/specs/UsersDirectory.spec.ts`,
+   `application/specs/UsersQueryService.spec.ts`, fixtures in
+   `application/specs/UsersContractFixtures.ts`.
 
-```ts
-const f = getFixturesFactory();
+9. **Opt into Postgres and Elasticsearch only when the test needs them.** Both are off by default
+   and enabled through `testingEnvironment.setUp` options; each costs setup time on every run. Where
+   a feature is gated by a Mongo→Postgres feature flag, both paths need coverage.
 
-const fixtures = {
-  usergroups: [f.usergroup('Existing')],
-};
+10. **Stop at the async job boundary.** A use case that dispatches a job asserts only that the job
+    was dispatched, never the work the job goes on to do. The job gets its own test.
 
-const createSut = () =>
-  testingEnvironment.runWithContext(() => CreateUserGroupUseCaseFactory.default());
+11. **Target specific specs when running them.** Do not sweep `app/api/core` — it is too slow to be
+    a feedback loop. Run what you changed, then widen if something looks related.
 
-describe('CreateUserGroupUseCase', () => {
-  beforeEach(async () => {
-    await testingEnvironment.setUp(fixtures);
-  });
+## What each component gets
 
-  afterAll(async () => testingEnvironment.tearDown());
-
-  it('should create a group with the given name and members', async () => {
-    const created = await createSut().execute({ name: 'New group', memberIds: [] });
-
-    expect(created.name).toBe('New group');
-    const stored = await testingEnvironment.db.getAllFrom('usergroups');
-    expect(stored).toContainEqual(expect.objectContaining({ name: 'New group' }));
-  });
-});
-```
-
-Reference: `application/specs/CreateUserGroup.spec.ts`.
-
-### Build the SUT with the real factory
-
-`createSut()` builds the system under test **through its production factory**, inside
-`testingEnvironment.runWithContext()`. This is not a formality — the factory is where the real
-dependency graph is wired, so a test that hand-assembles the object is testing a graph that does not
-ship.
-
-Name it `createSut`, and call it inside the `it`, not in a `beforeEach`. Each test gets its own
-instance and the context is live at the moment of construction.
-
-### Fixtures in, database out
-
-Set up state with `testingEnvironment.setUp(fixtures)` and build the fixtures with
-`getFixturesFactory()`. Assert on stored state with `testingEnvironment.db.getAllFrom(collection)`
-(or `testingEnvironment.pg.getAllFrom(table)`).
-
-> **Never use production code to build or verify a test's expectations.** No DataSource, DAO,
-> directory, query service or mapper on either end of a test. Reading back through the same
-> component you just wrote through makes a test that passes when both are wrong in the same way —
-> it verifies self-consistency, not behavior. Fixtures and `testingEnvironment` exist so that a
-> test's setup and assertions never travel through the code under test.
-
-The exception is a test _of_ one of those components: a DataSource spec exercises the DataSource,
-and then fixtures and `testingEnvironment.db` are still what set up and verify it.
-
-### Mocks only when necessary
-
-The database is real, the wiring is real. Reach for a mock only when the collaborator is genuinely
-outside the boundary — an external HTTP service, the clock, the filesystem — or when the real thing
-makes the test slow or non-deterministic. Substitute through `runWithContext` overrides or the
-factory's dependencies; never by monkey-patching a module.
-
-Mocking a DataSource in a use case test is almost always wrong: it deletes the integration the test
-existed to prove.
-
-### Actors and permissions
-
-`runWithContext` defaults to an **editor** actor and a tenant derived from `testingDB`. Test
-permission behaviour by overriding the actor:
-
-```ts
-const createSut = (actor?: User) =>
-  testingEnvironment.runWithContext(() => DeleteUsersUseCaseFactory.default(), { actor });
-```
-
-`setPermissions()` is deprecated — it predates `ExecutionContext` and carries no tenant or actor.
-Use `runWithContext`.
-
-### Postgres and Elasticsearch
-
-Off by default. Opt in through `setUp` options: `{ postgres: true }`, `{ elasticIndex: 'name' }`,
-`{ postgresMirror: [...] }`. Only opt in when the test needs them — each one costs setup time on
-every run.
-
-Where a feature is gated by a Mongo→Postgres feature flag, both paths need coverage.
-
-### Contract specs
-
-Directories, query services and DataSources have one contract and one implementation per backend.
-Do not write a spec per implementation — write one suite next to the **contract**, in
-`application/specs/`, and run it over every backend:
-
-```ts
-describe.each(testConfigs)('$backend', ({ featureFlags }) => {
-  beforeEach(async () => {
-    testingTenants.changeCurrentTenant({ featureFlags });
-    await testingEnvironment.setUp(fixtures, { postgres: true });
-  });
-  ...
-});
-```
-
-Share the fixtures across backends in a single file (`application/specs/UsersContractFixtures.ts`).
-Assert order-insensitively — Mongo and Postgres share no natural ordering.
-
-Reference: `application/specs/UsersDirectory.spec.ts`, `application/specs/UsersQueryService.spec.ts`.
-
-Adding a method to a contract is the red step: `yarn check-types` fails on every implementation
-until each one is written.
-
-## What to test, per component
-
-- **Domain model** — unit, DB-free. This is where invariants and state transitions are proven.
-- **Use case** — integration, through the factory. The main event: this is where a feature is
-  actually verified.
+- **Domain model** — unit. This is where invariants and state transitions are proven.
+- **Use case** — integration, through the factory. Where a feature is actually verified.
 - **Application service** — integration, same shape as a use case.
-- **DAO** — integration. If it has a read vocabulary, its guards deserve direct tests: the default
-  scope excludes what it should, a new field is not exposed until grouped.
-- **DataSource, directory, query service** — integration.
+- **DAO** — integration. If it has a read vocabulary, test its guards directly: the default scope
+  excludes what it should, a new field is not exposed until grouped.
+- **DataSource, directory, query service** — integration, against the contract (rule 8).
 - **Job** — integration, testing the job use case directly.
-- **Controller / route** — only when it holds meaningful logic, such as error mapping or a retry
-  decision. Not for pass-through.
-- **Factory, mapper** — no direct tests; they are covered by the components that use them.
-
-### The async job boundary
-
-A use case that dispatches a job asserts **only that the job was dispatched** — never the work the
-job goes on to do. The job gets its own test. Crossing that boundary produces slow tests that fail
-for reasons unrelated to the use case.
-
-## Running tests
-
-**Target specific specs.** Do not run broad sweeps of `app/api/core` — it is slow enough to be
-unusable as a feedback loop. Run the specs for what you changed, then widen if something looks
-related.
+- **Controller / route** — only when it holds real logic, such as error mapping or a retry decision.
+  Not for pass-through.
+- **Factory, mapper** — no direct tests; covered by the components that use them.

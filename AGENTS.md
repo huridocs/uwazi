@@ -18,8 +18,13 @@ These always apply. Do not skip one because a task looks small.
 2. **TDD.** Write the test first and watch it fail for the expected reason before implementing.
 3. **Verify before finishing.** Run test, type check, lint and format on the affected scope.
    Report what actually happened — never claim a green you did not see.
-4. **Do not stage or commit** unless asked.
-5. **Do not edit `AGENTS.md`, `CLAUDE.md` or anything under `docs/`** unless asked.
+4. **Fix every lint warning your change raises — never silence one.** A warning on code you wrote
+   or touched is fixed at its cause. Do not add an `eslint-disable`, do not loosen a type to make
+   the rule stop firing, do not delete the check. Warnings already present in code you did not
+   touch are not yours — leave them. If a rule looks genuinely wrong for the case at hand, say so
+   and ask; do not disable it on your own judgement.
+5. **Do not stage or commit** unless asked.
+6. **Do not edit `AGENTS.md`, `CLAUDE.md` or anything under `docs/`** unless asked.
 
 ## Commands
 
