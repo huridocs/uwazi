@@ -181,7 +181,7 @@ describe('LibraryEntityPreview', () => {
     expect(link).toHaveAttribute('href', '/en/entityv2/shared-doc');
   });
 
-  it('shows Edit on Metadata, then Cancel, Save and a no-op Copy from when editing', async () => {
+  it('shows Edit on Metadata, then Copy from, Cancel and Save when editing', async () => {
     renderPreview(entityWithoutDocument.sharedId, jest.fn(), adminUser);
 
     fireEvent.click(await screen.findByRole('tab', { name: 'Metadata' }));

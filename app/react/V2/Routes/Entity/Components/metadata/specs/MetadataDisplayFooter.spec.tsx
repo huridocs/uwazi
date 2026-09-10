@@ -100,6 +100,14 @@ describe('MetadataDisplayFooter', () => {
     expect(screen.queryByTestId('accept-button')).not.toBeInTheDocument();
   });
 
+  it('shows Copy from with Cancel and Save while editing', async () => {
+    await renderFooters(jest.fn().mockResolvedValue([undefined]));
+    fireEvent.click(screen.getAllByRole('button', { name: 'Edit' })[0]);
+    expect(await screen.findByRole('button', { name: /Copy from/ })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Cancel' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Save' })).toBeInTheDocument();
+  });
+
   it('opens a danger confirmation with locked copy and cancels without deleting', async () => {
     const deleteFn = jest.fn().mockResolvedValue([undefined]);
     await renderFooters(deleteFn);

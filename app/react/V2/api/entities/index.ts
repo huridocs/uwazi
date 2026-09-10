@@ -116,7 +116,7 @@ const searchByTitle = async (
     limit,
     includeFiles = false,
   }: {
-    title: string;
+    title?: string;
     fields?: string[];
     template?: string[];
     limit?: number;
@@ -126,9 +126,11 @@ const searchByTitle = async (
 ): Promise<ApiResponse<Entity[] | undefined>> => {
   const finalFields = includeFiles ? [...new Set([...fields, 'documents', 'attachments'])] : fields;
 
-  const filter: SearchQuery['filter'] = {
-    searchString: `title:${title}~2`,
-  };
+  const filter: SearchQuery['filter'] = {};
+  const trimmedTitle = title?.trim();
+  if (trimmedTitle) {
+    filter.searchString = `title:${trimmedTitle}~2`;
+  }
 
   if (template && template.length > 0) {
     const templateFilter: CompoundFilter = {
