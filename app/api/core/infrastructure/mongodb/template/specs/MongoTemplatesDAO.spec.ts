@@ -139,7 +139,6 @@ describe('MongoTemplatesDAO', () => {
       const { sut, transactionManager } = createSut();
 
       await transactionManager.run(async () => {
-        //@ts-ignore
         const session = transactionManager.getSession();
         await getConnection()
           .collection('templates')
@@ -205,7 +204,6 @@ describe('MongoTemplatesDAO', () => {
       const { sut, transactionManager } = createSut();
 
       await transactionManager.run(async () => {
-        //@ts-ignore
         const session = transactionManager.getSession()!;
         await getConnection()
           .collection('templates')

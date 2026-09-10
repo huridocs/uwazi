@@ -3,7 +3,6 @@ import { DocumentTracker } from '#api/core/infrastructure/mongodb/documentTracke
 import { AccessContext } from '#api/core/domain/entityAccessPolicy/AccessContext.js';
 import { BulkWriteStream } from './BulkWriteStream.js';
 import { MongoPermissionEnforcedCollection } from './MongoPermissionEnforcedCollection.js';
-import { MongoTransactionManager } from './MongoTransactionManager.js';
 import { SessionScopedCollection } from './SessionScopedCollection.js';
 import { SyncedCollection } from './SyncedCollection.js';
 import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
@@ -28,19 +27,15 @@ export abstract class MongoDataSource<TSchema extends Document = Document> {
 
   protected abstract collectionName: string;
 
-  transactionManager: MongoTransactionManager;
+  transactionManager: TransactionManager;
 
   private useSyncedCollection: boolean;
 
   protected accessContext?: AccessContext;
 
-  constructor(
-    db: Db,
-    transactionManager: MongoTransactionManager | TransactionManager,
-    options: MongoDSOptions = {}
-  ) {
+  constructor(db: Db, transactionManager: TransactionManager, options: MongoDSOptions = {}) {
     this.db = db;
-    this.transactionManager = transactionManager as MongoTransactionManager;
+    this.transactionManager = transactionManager;
     this.useSyncedCollection =
       options.useSyncedCollection !== undefined ? options.useSyncedCollection : true;
     this.accessContext = options.accessContext;
