@@ -111,6 +111,14 @@ const validatePartialAcceptanceTypeConstraint = (
 
 const Suggestions = {
   /**
+   * Single-suggestion read, kept because the activity log's `loadSuggestionData` needs it to
+   * resolve an accepted suggestion into its extractor name. Backed by the port's existing
+   * `getByIds` rather than a new port method, so it adds no surface for the Postgres sibling.
+   */
+  getById: async (id: ObjectIdSchema): Promise<IXSuggestionType | undefined> =>
+    (await dao().getByIds([id]))[0],
+
+  /**
    * A process run's next batch: half already-labeled, half not, honouring the status filters the
    * model's process run stored. Split three ways in 4c-2 — the counts are a data source call, the
    * allocation is `balancedSampleSizes`, and only the random draw is store-specific.
