@@ -23,9 +23,7 @@ type CopyFromSearchViewProps = {
 const typeChipClass = (active: boolean) =>
   [
     'shrink-0 rounded-md px-2.5 py-1.5 text-xs font-medium transition-colors',
-    active
-      ? 'bg-parchment text-ink'
-      : 'border border-border bg-paper text-ink-secondary hover:bg-parchment',
+    active ? 'bg-warm text-ink' : 'border border-border bg-paper text-ink-secondary hover:bg-warm',
   ].join(' ');
 
 const CopyFromTypeFilters = ({
@@ -87,7 +85,10 @@ const CopyFromSearchView = ({
         }
       />
     </div>
-    <div className="min-h-0 flex-1 overflow-y-auto px-2 pb-2" data-testid="copy-from-results">
+    <div
+      className="min-h-0 flex-1 overflow-y-auto bg-parchment px-2 pb-2"
+      data-testid="copy-from-results"
+    >
       {isSearching ? (
         <p className="px-3 py-8 text-center text-sm text-ink-secondary">
           <Translate>Searching...</Translate>
@@ -111,7 +112,7 @@ const CopyFromSearchView = ({
               <span className="min-w-0 flex-1">
                 <span className="block truncate text-xs font-medium text-ink">{entity.title}</span>
                 <span className="mt-1 block">
-                  <TemplateLabel templateId={entity.template} variant="parchment" />
+                  <TemplateLabel templateId={entity.template} />
                 </span>
               </span>
               <span className="shrink-0 text-micro text-ink-tertiary">

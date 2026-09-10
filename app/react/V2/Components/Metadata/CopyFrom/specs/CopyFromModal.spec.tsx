@@ -175,6 +175,7 @@ describe('CopyFromModal', () => {
     expect(screen.queryByText('Mexico')).not.toBeInTheDocument();
     expect(screen.queryByText('Ada Lovelace')).not.toBeInTheDocument();
     expect(screen.getByText(withText('2 candidates'))).toBeInTheDocument();
+    expect(screen.getByTestId('copy-from-results')).toHaveClass('bg-parchment');
     expect(screen.getAllByText(withText('3 fields'))).toHaveLength(2);
     const fieldCountBadges = screen
       .getAllByText('3')
