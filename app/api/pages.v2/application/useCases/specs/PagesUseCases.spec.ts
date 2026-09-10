@@ -211,12 +211,13 @@ describe.each(pagesBackendConfigs)(
         });
       });
 
-      // Mongo only: DeletePage rolls back through the mongo transaction manager, which does not
-      // enrol the postgres one, so a failing release delete cannot undo the page delete there.
+      // Mongo only: pages/releases still use the mongo TM. When postgresPages is on, a failing
+      // release delete cannot undo the page delete (separate PG TM). When postgresCore is on,
+      // TransactionManagerFactory.default() is Postgres — use mongo() so the DS enrolls.
       const itRollsBack = postgresPages ? it.skip : it;
       itRollsBack('should not delete the page when release deletion fails', async () => {
         await withContext(async () => {
-          const transactionManager = TransactionManagerFactory.default();
+          const transactionManager = TransactionManagerFactory.mongo();
           const pagesDS = PagesDataSourceFactory.default({ transactionManager });
           const pageReleasesDS = PageReleasesDataSourceFactory.default({ transactionManager });
           const page = (await pagesDS.getBySharedId('2')).getDataOrThrow();
