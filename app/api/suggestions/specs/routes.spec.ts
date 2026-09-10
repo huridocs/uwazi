@@ -11,6 +11,7 @@ import {
   fixtures,
   shared6enId,
   stateFilterFixtures,
+  suggestionSharedId6Enemy,
   suggestionSharedId6Title,
 } from '#api/suggestions/specs/fixtures.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
@@ -236,6 +237,32 @@ describe('POST /api/suggestions/accept', () => {
       );
 
       expect(iosocket.emit).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  it.each([
+    {
+      case: 'a suggestion that does not exist',
+      suggestions: [{ _id: new ObjectId().toString(), sharedId: 'shared6', entityId: shared6enId }],
+      message: 'Suggestion(s) not found.',
+    },
+    {
+      case: 'a batch spanning two extractors',
+      suggestions: [
+        { _id: suggestionSharedId6Title.toString(), sharedId: 'shared6', entityId: shared6enId },
+        { _id: suggestionSharedId6Enemy.toString(), sharedId: 'shared6', entityId: shared6enId },
+      ],
+      message: 'All suggestions must come from the same extractor',
+    },
+  ])('should emit the reason "$message" for $case', async ({ suggestions, message }) => {
+    await request(app).post('/api/suggestions/accept').send({ suggestions }).expect(202);
+
+    await waitForExpect(() => {
+      expect(iosocket.emit).toHaveBeenCalledWith(
+        'ACCEPT_SUGGESTION_ERROR',
+        TestEmitSources.session,
+        message
+      );
     });
   });
 });

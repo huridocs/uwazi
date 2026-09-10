@@ -169,14 +169,14 @@ const Suggestions = {
     const suggestions = await dao().getByIds(acceptedIds);
     const extractors = new Set(suggestions.map(s => s.extractorId.toString()));
     if (extractors.size > 1) {
-      throw new Error('All suggestions must come from the same extractor');
+      throw new SuggestionAcceptanceError('All suggestions must come from the same extractor');
     }
     const foundIds = new Set(suggestions.map(s => s._id.toString()));
     if (!acceptedIds.every(id => foundIds.has(id))) {
-      throw new Error('Suggestion(s) not found.');
+      throw new SuggestionAcceptanceError('Suggestion(s) not found.');
     }
     if (suggestions.some(s => s.error !== '')) {
-      throw new Error('Some Suggestions have an error.');
+      throw new SuggestionAcceptanceError('Some Suggestions have an error.');
     }
 
     const { propertyName } = suggestions[0];
