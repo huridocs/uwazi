@@ -1,6 +1,6 @@
 import { Db } from 'mongodb';
 import { MongoDataSource } from '../common/MongoDataSource.js';
-import { MongoTransactionManager } from '../common/MongoTransactionManager.js';
+import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
 import { EntityAccessPolicy } from '#api/core/domain/entityAccessPolicy/EntityAccessPolicy.js';
 import { EntityAccessPolicyNotFoundError } from '#api/core/domain/entityAccessPolicy/errors.js';
 import { EntityAccessPolicyDataSource } from '#api/core/application/contracts/EntityAccessPolicyDataSource.js';
@@ -11,7 +11,7 @@ import { search } from '#api/search/search.js';
 
 type Deps = {
   db: Db;
-  transactionManager: MongoTransactionManager;
+  transactionManager: TransactionManager;
   searchV1: typeof search;
 };
 

@@ -18,13 +18,13 @@ import { EntitySchema } from '#shared/types/entityType.js';
 import { TemplateSchema } from '#shared/types/templateType.js';
 
 const newRelationshipsEnabled = async () => {
-  const transactionManager = TransactionManagerFactory.default();
+  const transactionManager = TransactionManagerFactory.mongo();
   return SettingsDataSourceFactory.default({ transactionManager }).readNewRelationshipsAllowed();
 };
 
 const deleteRelatedNewRelationships = async (sharedId: string) => {
   if (await newRelationshipsEnabled()) {
-    const datasource = DefaultRelationshipDataSource(TransactionManagerFactory.default());
+    const datasource = DefaultRelationshipDataSource(TransactionManagerFactory.mongo());
     await datasource.deleteByEntities([sharedId]);
   }
 };
@@ -33,7 +33,7 @@ const withDenormalizationService = async (
   cb: (service: DenormalizationService) => Promise<void>
 ) => {
   if (await newRelationshipsEnabled()) {
-    const transactionManager = TransactionManagerFactory.default();
+    const transactionManager = TransactionManagerFactory.mongo();
     const denormalizationService = await CreateDenormalizationService(transactionManager);
     await cb(denormalizationService);
     await transactionManager.executeOnCommitHandlers(undefined);
@@ -98,9 +98,7 @@ const ignoreNewRelationshipsMetadata = async (
 ): Promise<DefinitionsToUpdate> => {
   const newRelationships: RelationshipDefinition[] = [];
   const removedRelationships: RelationshipDefinition[] = [];
-  const entitiesDataSource = DefaultDeprecatedEntitiesDataSource(
-    TransactionManagerFactory.default()
-  );
+  const entitiesDataSource = DefaultDeprecatedEntitiesDataSource(TransactionManagerFactory.mongo());
   if (await newRelationshipsEnabled()) {
     const templateModel = MongoTemplateMapper.toDomain(template as TemplateDBO);
     await Promise.all(
@@ -159,7 +157,7 @@ const deleteRemovedRelationships = async (
   relationships: { type: string; to: string; from: string }[]
 ) => {
   if (relationships.length) {
-    const transactionManager = TransactionManagerFactory.default();
+    const transactionManager = TransactionManagerFactory.mongo();
     const dataSource = DefaultRelationshipDataSource(transactionManager);
     const service = await DeleteRelationshipService();
     const toDelete: string[] = [];

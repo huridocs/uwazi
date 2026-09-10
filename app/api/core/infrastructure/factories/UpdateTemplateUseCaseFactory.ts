@@ -3,7 +3,6 @@ import { TemplateTranslationService } from '#api/core/application/templateTransl
 import { IdGeneratorFactory } from '#api/core/infrastructure/factories/IdGeneratorFactory.js';
 import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
 import { TemplatesDataSourceFactory } from '#api/core/infrastructure/factories/TemplatesDataSourceFactory.js';
-import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { applicationEventsBus } from '#api/core/libs/eventsbus/index.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { RelationshipTypesDataSourceFactory } from '#api/core/infrastructure/factories/RelationshipTypesDataSourceFactory.js';
@@ -14,14 +13,14 @@ import { TranslationsServiceFactory } from './TranslationsServiceFactory.js';
 
 class UpdateTemplateUseCaseFactory {
   static default(overrides?: Partial<ConstructorParameters<typeof UpdateTemplateUseCase>[0]>) {
-    const transactionManager = TransactionManagerFactory.default();
+    const { transactionManager } = ExecutionContext;
     const templatesDS = TemplatesDataSourceFactory.default({ transactionManager });
     const entitiesDS = EntitiesDataSourceFactory.default({ transactionManager });
     const thesauriDS = ThesauriDataSourceFactory.default({ transactionManager });
     const templateTranslationService = new TemplateTranslationService({
       translationsService: TranslationsServiceFactory.default({ transactionManager }),
     });
-    const settingsDS = SettingsDataSourceFactory.default({ transactionManager });
+    const settingsDS = SettingsDataSourceFactory.default();
     const relationshipTypesDS = RelationshipTypesDataSourceFactory.default({ transactionManager });
     const idGenerator = IdGeneratorFactory.default();
     const eventBus = applicationEventsBus;

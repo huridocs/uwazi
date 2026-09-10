@@ -139,7 +139,7 @@ describe('MongoTemplatesDAO', () => {
       const { sut, transactionManager } = createSut();
 
       await transactionManager.run(async () => {
-        const session = transactionManager.getSession()!;
+        const session = transactionManager.getSession();
         await getConnection()
           .collection('templates')
           .insertOne(

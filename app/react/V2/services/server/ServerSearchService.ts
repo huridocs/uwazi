@@ -10,11 +10,10 @@ import type { ServerServiceContext } from './types.js';
 const createServerSearchService = (ctx: ServerServiceContext): SearchService => ({
   searchLibrary: async (query, { language } = {}) => {
     try {
-      const result = await search.search(
-        toSearchEndpointQuery(query),
-        language || ctx.language,
-        ctx.user
-      );
+      const endpointQuery = toSearchEndpointQuery(query);
+      const result = await (endpointQuery.geolocation
+        ? search.searchGeolocations(endpointQuery, language || ctx.language, ctx.user)
+        : search.search(endpointQuery, language || ctx.language, ctx.user));
       return [fromSearchEndpointResult(result)];
     } catch (error) {
       return [undefined as never, toApiError(error)];

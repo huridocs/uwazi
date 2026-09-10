@@ -1,6 +1,7 @@
 /**
  * @jest-environment jsdom
  */
+/* eslint-disable max-lines, react/no-multi-comp, max-statements */
 import React from 'react';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { FormProvider, useForm } from 'react-hook-form';
@@ -67,6 +68,7 @@ jest.mock('#V2/Routes/Entity/Components/context/MetadataEditingContext.js', () =
 const pdfFillHost = (overrides: Partial<PdfFillHost> = {}): PdfFillHost => ({
   isEditing: true,
   language: 'en',
+  hasMainDocument: true,
   savedPropertySelections: mockSaved,
   documentPdfSelection: mockSelection,
   draftPropertySelections: mockDraft,
@@ -127,6 +129,7 @@ const commitFill = () => {
   fireEvent.click(screen.getByTestId('commit-pdf-fill'));
 };
 
+// oxlint-disable-next-line max-statements
 describe('Entity PDF fill', () => {
   beforeEach(() => {
     jest.clearAllMocks();
@@ -387,6 +390,7 @@ describe('Entity PDF fill', () => {
     });
   });
 
+  // oxlint-disable-next-line max-statements
   it('arms on focus, keeps chip on blur, and fills title on commit', async () => {
     render(
       <Host>
@@ -430,6 +434,17 @@ describe('Entity PDF fill', () => {
     arm(screen.getByRole('textbox'));
     expect(screen.getByTestId('listening-chip')).toBeInTheDocument();
     fireEvent.keyDown(window, { key: 'Escape' });
+    expect(screen.queryByTestId('listening-chip')).not.toBeInTheDocument();
+  });
+
+  it('does not show listening chip when the entity has no main document', () => {
+    render(
+      <Host pdfFillOverrides={{ hasMainDocument: false }}>
+        <TitleField<EditEntityFormValues> context="System" label="Title" field="title" />
+      </Host>
+    );
+
+    arm(screen.getByRole('textbox'));
     expect(screen.queryByTestId('listening-chip')).not.toBeInTheDocument();
   });
 
@@ -522,6 +537,7 @@ describe('Entity PDF fill', () => {
     });
   });
 
+  // oxlint-disable-next-line max-statements
   it('does not apply after coerce if the field was disarmed mid-flight', async () => {
     let resolveCoerce: (value: { success: string; value: number }) => void = () => undefined;
     jest.mocked(entitiesAPI.coerceValue).mockImplementation(

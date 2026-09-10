@@ -14,6 +14,8 @@ type MergeRelationshipLookupArgs = {
   includeCachedOptions?: boolean;
 };
 
+type RelationshipLookupSearchArgs = Omit<MergeRelationshipLookupArgs, 'cache'>;
+
 const DEFAULT_RELATIONSHIP_LOOKUP_LIMIT = 50;
 
 const thesaurusToOptions = (
@@ -110,3 +112,4 @@ export {
   DEFAULT_RELATIONSHIP_LOOKUP_LIMIT,
   defaultRelationshipLookup,
 };
+export type { RelationshipLookupSearchArgs };

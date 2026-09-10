@@ -58,9 +58,7 @@ const FilesTab = () => {
         selectedRowIds={selectedRowIds}
         focusedRowId={focusedRow?.rowId}
         emptyDescription={
-          <Translate>
-            No primary documents yet. Promote a supporting file or add a new one.
-          </Translate>
+          <Translate>No primary documents yet. Add a file to get started.</Translate>
         }
         onSelectRows={setSelectedRowIds}
         onFocusRow={onFocus}

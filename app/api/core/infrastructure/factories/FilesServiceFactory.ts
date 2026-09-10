@@ -28,7 +28,7 @@ class FilesServiceFactory {
           deps.relV1DS ??
           new MongoRelationshipsV1DataSource(
             getConnection(),
-            transactionManager,
+            ExecutionContext.mongoTransactionManager,
             EntitiesDAOFactory.default()
           ),
         pathManager: new PathManager({ tenant: ExecutionContext.tenant }),

@@ -133,6 +133,15 @@ describe('librarySearchEndpoint', () => {
     });
   });
 
+  it('passes geolocation through to GET /api/search', () => {
+    expect(toSearchEndpointQuery({ geolocation: true, from: 0, limit: 9999 })).toMatchObject({
+      geolocation: true,
+      from: 0,
+      limit: 9999,
+    });
+    expect(toSearchEndpointQuery({ searchTerm: 'batman' }).geolocation).toBeUndefined();
+  });
+
   it('sets and:true on list filters named in andFilters (V1 AND)', () => {
     expect(
       toSearchEndpointQuery({

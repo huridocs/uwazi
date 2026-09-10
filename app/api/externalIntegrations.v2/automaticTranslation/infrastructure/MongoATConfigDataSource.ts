@@ -1,5 +1,5 @@
 import { MongoDataSource } from '#api/core/infrastructure/mongodb/common/MongoDataSource.js';
-import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
+import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
 import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js';
 import { TemplatesDataSource } from '#api/core/application/contracts/TemplatesDataSource.js';
 import { CommonProperty } from '#api/core/domain/template/CommonProperty.js';
@@ -24,7 +24,7 @@ export class MongoATConfigDataSource
 
   constructor(
     db: Db,
-    transactionManager: MongoTransactionManager,
+    transactionManager: TransactionManager,
     settings: SettingsDataSource,
     templates: TemplatesDataSource,
     automaticTranslation: ATGateway

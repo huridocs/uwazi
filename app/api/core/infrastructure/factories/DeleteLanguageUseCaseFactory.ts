@@ -4,7 +4,6 @@ import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { DeleteLanguageUseCase } from '#api/core/application/DeleteLanguage.js';
 import { SyncDispatcherForTests } from '#api/core/libs/queue/infrastructure/SyncDispatcherForTests.js';
 import { DispatcherAdapter } from '../jobs/DispatcherAdapter.js';
-import { MongoTransactionManager } from '../mongodb/common/MongoTransactionManager.js';
 import { DeleteLanguageEntitiesJob } from '../jobs/DeleteLanguageEntitiesJob.js';
 import { DeleteLanguageEntitiesJobFactory } from './DeleteLanguageEntitiesJobFactory.js';
 import { UwaziDispatcherFactory } from '#api/core/infrastructure/jobs/UwaziDispatcherFactory.js';
@@ -15,14 +14,18 @@ class DeleteLanguageUseCaseFactory {
     overrides?: Partial<ConstructorParameters<typeof DeleteLanguageUseCase>[0]>
   ): DeleteLanguageUseCase {
     const { actor, tenant, eventEmitter } = ExecutionContext;
-    const transactionManager = ExecutionContext.transactionManager as MongoTransactionManager;
-    const settingsDS = SettingsDataSourceFactory.default({ transactionManager });
+    const { transactionManager } = ExecutionContext;
+    const settingsDS = SettingsDataSourceFactory.default();
     const translationsDS = TranslationsDataSourceFactory.default({ transactionManager });
 
     const minutes60 = 60 * 60 * 1000;
-    let jobsDispatcher: JobsDispatcher = UwaziDispatcherFactory(tenant.name, transactionManager, {
-      lockWindow: minutes60,
-    });
+    let jobsDispatcher: JobsDispatcher = UwaziDispatcherFactory(
+      tenant.name,
+      ExecutionContext.mongoTransactionManager,
+      {
+        lockWindow: minutes60,
+      }
+    );
     if (process.env.NODE_ENV === 'test') {
       const deleteJob = DeleteLanguageEntitiesJobFactory.default();
       jobsDispatcher = new SyncDispatcherForTests({

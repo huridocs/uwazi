@@ -29,7 +29,6 @@ import { ProcessRelationshipAfterEntityUpdatedListener } from '#api/core/infrast
 import { AddLanguagePagesListener } from '#api/pages.v2/infrastructure/listeners/AddLanguagePagesListener.js';
 import { DeleteLanguagePagesListener } from '#api/pages.v2/infrastructure/listeners/DeleteLanguagePagesListener.js';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
-import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
 import { MongoRelationshipsV1DataSource } from '#api/core/infrastructure/mongodb/MongoRelationshipsV1DataSource.js';
 import { EntitiesDAOFactory } from '#api/core/infrastructure/factories/EntitiesDAOFactory.js';
 import { V1WebSocketsWrapper } from '#api/core/infrastructure/services/V1WebSocketsWrapper.js';
@@ -224,19 +223,19 @@ export function registerJobs(register: Register) {
   });
 
   register(TemplatePostProcessEntitiesJob, async () => {
-    const transactionManager = ExecutionContext.transactionManager as MongoTransactionManager;
+    const { transactionManager } = ExecutionContext;
 
     return new TemplatePostProcessEntitiesJob({
-      templatesDS: TemplatesDataSourceFactory.default({ transactionManager }),
+      templatesDS: TemplatesDataSourceFactory.default(),
       useCase: new TemplateUpdateDenormalizeEntitiesBatch({
-        entitiesDS: EntitiesDataSourceFactory.default({ transactionManager }),
+        entitiesDS: EntitiesDataSourceFactory.default(),
         filesDS: FilesDataSourceFactory.default(),
         relationshipsV1DS: new MongoRelationshipsV1DataSource(
           getConnection(),
           transactionManager,
           EntitiesDAOFactory.default()
         ),
-        templatesDS: TemplatesDataSourceFactory.default({ transactionManager }),
+        templatesDS: TemplatesDataSourceFactory.default(),
         transactionManager,
       }),
     });

@@ -1,12 +1,12 @@
 import { SaveLocaleTranslationsUseCase } from '#api/core/application/SaveLocaleTranslations.js';
+import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { PropagateThesaurusTranslationServiceFactory } from './PropagateThesaurusTranslationServiceFactory.js';
 import { TranslationsDataSourceFactory } from './TranslationsDataSourceFactory.js';
 import { TranslationsServiceFactory } from './TranslationsServiceFactory.js';
-import { TransactionManagerFactory } from './TransactionManagerFactory.js';
 
 export class SaveLocaleTranslationsUseCaseFactory {
   static default() {
-    const transactionManager = TransactionManagerFactory.default();
+    const { transactionManager } = ExecutionContext;
 
     return new SaveLocaleTranslationsUseCase({
       transactionManager,

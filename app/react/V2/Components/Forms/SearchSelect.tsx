@@ -22,13 +22,13 @@ const compactSelectInputClassName =
   'w-full min-w-0 flex-1 border-0 bg-transparent px-3 py-2 text-sm font-normal text-ink placeholder:text-sm placeholder:font-normal placeholder:text-ink-muted focus:outline-none disabled:cursor-not-allowed';
 
 const compactSelectValueClassName =
-  'relative flex min-w-0 flex-1 items-center gap-1.5 px-3 py-2 text-left text-sm font-normal text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-carbon/20 disabled:cursor-not-allowed';
+  'relative flex min-w-0 flex-1 items-center gap-1.5 px-3 py-2 text-left text-sm font-normal normal-case text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-carbon/20 disabled:cursor-not-allowed';
 
 const compactSelectDropdownClassName =
   'mt-1.5 max-h-60 w-full overflow-y-auto rounded-lg border border-border bg-paper shadow-sm';
 
 const compactSelectOptionClassName =
-  'w-full px-3 py-2 text-left text-sm font-normal text-ink transition-colors hover:bg-warm';
+  'w-full px-3 py-2 text-left text-sm font-normal normal-case text-ink transition-colors hover:bg-warm';
 
 const compactSelectOptionSelectedClassName = 'bg-carbon-tint hover:bg-carbon-tint';
 
@@ -84,7 +84,7 @@ const filterOptions = (options: SearchSelectOption[], search: string) => {
   return options.filter(option => normalizeSearch(option.searchLabel).includes(normalizedSearch));
 };
 
-const CaretIcon = ({ open }: { open: boolean }) => {
+const renderCaretIcon = (open: boolean) => {
   const Icon = open ? ChevronUpIcon : ChevronDownIcon;
   return (
     <span
@@ -202,9 +202,9 @@ const SearchSelect = ({
   const renderOptionLabel = (option: SearchSelectOption) => {
     if (option.prefix) {
       return (
-        <span className="flex items-center gap-2 text-sm">
+        <span className="flex min-w-0 items-center gap-2 text-sm">
           <span className="inline-flex shrink-0 justify-center">{option.prefix}</span>
-          <span>{option.label}</span>
+          <span className="min-w-0 truncate">{option.label}</span>
         </span>
       );
     }
@@ -227,7 +227,7 @@ const SearchSelect = ({
             aria-controls={listboxId}
           >
             <span className="min-w-0 flex-1 truncate">{placeholder}</span>
-            <CaretIcon open={false} />
+            {renderCaretIcon(false)}
           </button>
         </div>
       );
@@ -246,10 +246,9 @@ const SearchSelect = ({
             aria-haspopup="listbox"
             aria-controls={listboxId}
           >
-            {selectedOption?.prefix && (
-              <span className="inline-flex shrink-0 items-center">{selectedOption.prefix}</span>
-            )}
-            <span className="min-w-0 flex-1 truncate">{selectedOption?.searchLabel}</span>
+            <span className="min-w-0 flex-1 truncate">
+              {selectedOption && renderOptionLabel(selectedOption)}
+            </span>
           </button>
           {showClearButton && (
             <button
@@ -286,7 +285,7 @@ const SearchSelect = ({
           aria-haspopup="listbox"
           aria-controls={listboxId}
         />
-        {!hasSelection && <CaretIcon open />}
+        {!hasSelection && renderCaretIcon(true)}
       </div>
     );
   };

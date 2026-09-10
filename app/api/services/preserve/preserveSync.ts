@@ -107,7 +107,7 @@ const saveEvidence =
         null;
 
       // Set up V2 services
-      const transactionManager = TransactionManagerFactory.default();
+      const transactionManager = TransactionManagerFactory.mongo();
       const entitiesDS = EntitiesDataSourceFactory.default({ transactionManager });
       const settingsDS = SettingsDataSourceFactory.default({ transactionManager });
       const thesauriDS = ThesauriDataSourceFactory.default({ transactionManager });
