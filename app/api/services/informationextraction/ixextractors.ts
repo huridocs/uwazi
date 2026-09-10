@@ -1,4 +1,3 @@
-/* eslint-disable max-classes-per-file */
 import { ObjectId } from 'mongodb';
 
 import { Suggestions } from '#api/suggestions/suggestions.js';
@@ -14,6 +13,7 @@ import { ObjectIdSchema, PropertyTypeSchema } from '#shared/types/commonTypes.js
 import { DomainError } from '#api/core/domain/error/DomainError.js';
 import { IXExtractorsDAOFactory } from './infrastructure/IXExtractorsDAOFactory.js';
 import { IXErrorCode, IXValidationError } from './IXValidationError.js';
+import { ExtractorNotFound, ModelNotReadyError } from './errors.js';
 
 type AllowedPropertyTypes =
   | Subset<
@@ -231,18 +231,6 @@ const Extractors = {
     await dao().deleteEmptyByIds(extractorIds);
   },
 };
-
-class ExtractorNotFound extends Error {
-  constructor(extractorId: string) {
-    super(`Extractor with ID ${extractorId} not found.`);
-  }
-}
-
-class ModelNotReadyError extends Error {
-  constructor(extractorId: string) {
-    super(`Model for extractor with ID ${extractorId} is not ready.`);
-  }
-}
 
 export type { AllowedPropertyTypes };
 export {

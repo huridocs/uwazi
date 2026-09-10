@@ -14,6 +14,7 @@ import { S3Error } from '#api/files/S3Storage.js';
 import { legacyLogger } from '#api/log/index.js';
 import { PXValidationError } from '#api/paragraphExtraction/domain/PXValidationError.js';
 import { IXValidationError } from '#api/services/informationextraction/IXValidationError.js';
+import { ModelNotReadyError } from '#api/services/informationextraction/errors.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { createError } from '#api/utils/index.js';
 import { FileNotFound as FileNotFoundV2 } from '../core/domain/files/errors.js';
@@ -151,6 +152,11 @@ const prettifyError = (error, { req = {}, uncaught = false } = {}) => {
   // The frontend login form branches on this exact status to switch to the 2FA prompt
   // (see app/react/Users/Login.jsx), matching the legacy `createError(..., 409)` behavior.
   if (error instanceof TwoFactorTokenRequired) {
+    result = { code: 409, message: error.message, logLevel: 'debug' };
+  }
+
+  // A concurrent process/train run is a user-caused conflict, not a server failure.
+  if (error instanceof ModelNotReadyError) {
     result = { code: 409, message: error.message, logLevel: 'debug' };
   }
 
