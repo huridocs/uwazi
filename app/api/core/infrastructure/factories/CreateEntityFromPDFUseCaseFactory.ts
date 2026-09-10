@@ -34,9 +34,7 @@ class CreateEntityFromPDFUseCaseFactory {
     const { transactionManager } = ExecutionContext;
     const idGenerator = IdGeneratorFactory.default();
 
-    const settingsDS = SettingsDataSourceFactory.default({
-      transactionManager: ExecutionContext.mongoTransactionManager,
-    });
+    const settingsDS = SettingsDataSourceFactory.default();
     const thesauriDS = ThesauriDataSourceFactory.default({ transactionManager });
     const entitiesDS = EntitiesDataSourceFactory.default({ transactionManager });
     const translationsDS = TranslationsDataSourceFactory.default({ transactionManager });

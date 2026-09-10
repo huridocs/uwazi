@@ -20,9 +20,7 @@ class UpdateTemplateUseCaseFactory {
     const templateTranslationService = new TemplateTranslationService({
       translationsService: TranslationsServiceFactory.default({ transactionManager }),
     });
-    const settingsDS = SettingsDataSourceFactory.default({
-      transactionManager: ExecutionContext.mongoTransactionManager,
-    });
+    const settingsDS = SettingsDataSourceFactory.default();
     const relationshipTypesDS = RelationshipTypesDataSourceFactory.default({ transactionManager });
     const idGenerator = IdGeneratorFactory.default();
     const eventBus = applicationEventsBus;

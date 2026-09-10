@@ -25,9 +25,7 @@ class EntitiesServiceFactory {
       entitiesDS: EntitiesDataSourceFactory.default({ transactionManager }),
       entityPermissionChecker: EntityPermissionCheckerFactory.default(),
       eventBus: applicationEventsBus,
-      settingsDS: SettingsDataSourceFactory.default({
-        transactionManager: ExecutionContext.mongoTransactionManager,
-      }),
+      settingsDS: SettingsDataSourceFactory.default(),
       templatesDS: TemplatesDataSourceFactory.default({ transactionManager }),
       transactionManager,
       entityAccessPolicyDS: EntityAccessPolicyDataSourceFactory.default({

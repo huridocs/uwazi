@@ -25,11 +25,7 @@ class EntitiesQueryServiceFactory {
       entityPermissionChecker:
         deps?.entityPermissionChecker ??
         EntityPermissionCheckerFactory.default({ transactionManager }),
-      settingsDS:
-        deps?.settingsDS ??
-        SettingsDataSourceFactory.cached({
-          transactionManager: ExecutionContext.mongoTransactionManager,
-        }),
+      settingsDS: deps?.settingsDS ?? SettingsDataSourceFactory.cached(),
       templatesDS: deps?.templatesDS ?? TemplatesDataSourceFactory.cached({ transactionManager }),
       templatesDAO: deps?.templatesDAO ?? TemplatesDAOFactory.default(),
       entityDAO: deps?.entityDAO ?? EntitiesDAOFactory.default({ user, transactionManager }),

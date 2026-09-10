@@ -13,9 +13,7 @@ class DenormalizeThesaurusEntitiesUseCaseFactory {
   ) {
     const { transactionManager } = ExecutionContext;
 
-    const settingsDS = SettingsDataSourceFactory.cached({
-      transactionManager: ExecutionContext.mongoTransactionManager,
-    });
+    const settingsDS = SettingsDataSourceFactory.cached();
     const thesauriDS = ThesauriDataSourceFactory.cached({ transactionManager });
     const entitiesDS = EntitiesDataSourceFactory.default({ transactionManager });
     const translationsDS = TranslationsDataSourceFactory.cached({ transactionManager });

@@ -15,9 +15,7 @@ class DeleteLanguageUseCaseFactory {
   ): DeleteLanguageUseCase {
     const { actor, tenant, eventEmitter } = ExecutionContext;
     const { transactionManager } = ExecutionContext;
-    const settingsDS = SettingsDataSourceFactory.default({
-      transactionManager: ExecutionContext.mongoTransactionManager,
-    });
+    const settingsDS = SettingsDataSourceFactory.default();
     const translationsDS = TranslationsDataSourceFactory.default({ transactionManager });
 
     const minutes60 = 60 * 60 * 1000;

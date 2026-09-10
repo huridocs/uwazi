@@ -16,9 +16,7 @@ class AddLanguageUseCaseFactory {
   ): AddLanguageUseCase {
     const { actor, tenant, eventEmitter } = ExecutionContext;
     const { transactionManager } = ExecutionContext;
-    const settingsDS = SettingsDataSourceFactory.default({
-      transactionManager: ExecutionContext.mongoTransactionManager,
-    });
+    const settingsDS = SettingsDataSourceFactory.default();
     const translationsDS = TranslationsDataSourceFactory.default({ transactionManager });
     const importPredefinedTranslations = ImportPredefinedTranslationsService;
 

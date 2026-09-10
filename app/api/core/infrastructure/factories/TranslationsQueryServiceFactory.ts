@@ -7,9 +7,7 @@ export class TranslationsQueryServiceFactory {
   static default() {
     const { transactionManager } = ExecutionContext;
     const translationsDS = TranslationsDataSourceFactory.default({ transactionManager });
-    const settingsDS = SettingsDataSourceFactory.default({
-      transactionManager: ExecutionContext.mongoTransactionManager,
-    });
+    const settingsDS = SettingsDataSourceFactory.default();
 
     return new TranslationsQueryService(translationsDS, settingsDS);
   }

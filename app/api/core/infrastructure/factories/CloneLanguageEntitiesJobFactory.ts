@@ -15,9 +15,7 @@ class CloneLanguageEntitiesJobFactory {
     });
     const filesDAO = FilesDAOFactory.default();
     const { jobsDispatcher } = ExecutionContext;
-    const settingsDS = SettingsDataSourceFactory.default({
-      transactionManager: ExecutionContext.mongoTransactionManager,
-    });
+    const settingsDS = SettingsDataSourceFactory.default();
     return new CloneLanguageEntitiesJob({
       entityDAO,
       filesDAO,
