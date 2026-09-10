@@ -8,7 +8,7 @@ class IXTrainingMaterialsQueryServiceFactory {
   static default(): IXTrainingMaterialsQueryService {
     return new MongoIXTrainingMaterialsQueryService({
       db: getConnection(),
-      transactionManager: TransactionManagerFactory.default(),
+      transactionManager: TransactionManagerFactory.mongo(),
     });
   }
 }

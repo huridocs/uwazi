@@ -12,7 +12,7 @@ class IXExtractorsDAOFactory {
   static default(): IXExtractorsDataSource {
     return new MongoIXExtractorsDataSource({
       db: getConnection(),
-      transactionManager: TransactionManagerFactory.default(),
+      transactionManager: TransactionManagerFactory.mongo(),
     });
   }
 }

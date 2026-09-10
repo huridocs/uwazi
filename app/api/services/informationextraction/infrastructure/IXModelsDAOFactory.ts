@@ -12,7 +12,7 @@ class IXModelsDAOFactory {
   static default(): IXModelsDataSource {
     return new MongoIXModelsDataSource({
       db: getConnection(),
-      transactionManager: TransactionManagerFactory.default(),
+      transactionManager: TransactionManagerFactory.mongo(),
     });
   }
 }

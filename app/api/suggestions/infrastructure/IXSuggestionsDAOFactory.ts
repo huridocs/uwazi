@@ -11,7 +11,7 @@ class IXSuggestionsDAOFactory {
   static default(): IXSuggestionsDataSource {
     return new MongoIXSuggestionsDataSource({
       db: getConnection(),
-      transactionManager: TransactionManagerFactory.default(),
+      transactionManager: TransactionManagerFactory.mongo(),
     });
   }
 }

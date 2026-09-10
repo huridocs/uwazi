@@ -8,7 +8,7 @@ class IXSuggestionsSampleQueryServiceFactory {
   static default(): IXSuggestionsSampleQueryService {
     return new MongoIXSuggestionsSampleQueryService({
       db: getConnection(),
-      transactionManager: TransactionManagerFactory.default(),
+      transactionManager: TransactionManagerFactory.mongo(),
     });
   }
 }

@@ -11,7 +11,7 @@ class IXSuggestionsStatsQueryServiceFactory {
   static default(): IXSuggestionsStatsQueryService {
     return new MongoIXSuggestionsStatsQueryService({
       db: getConnection(),
-      transactionManager: TransactionManagerFactory.default(),
+      transactionManager: TransactionManagerFactory.mongo(),
     });
   }
 }

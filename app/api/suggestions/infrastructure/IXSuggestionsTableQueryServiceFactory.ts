@@ -8,7 +8,7 @@ class IXSuggestionsTableQueryServiceFactory {
   static default(): IXSuggestionsTableQueryService {
     return new MongoIXSuggestionsTableQueryService({
       db: getConnection(),
-      transactionManager: TransactionManagerFactory.default(),
+      transactionManager: TransactionManagerFactory.mongo(),
     });
   }
 }
