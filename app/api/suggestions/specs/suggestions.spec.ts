@@ -23,9 +23,7 @@ import {
   fixtures,
   relationshipAcceptanceFixtureBase,
   selectAcceptanceFixtureBase,
-  shared2AgeSuggestionId,
   shared2esId,
-  suggestionId,
 } from './fixtures.js';
 import { GetSuggestionsForTableQueryFactory } from '../infrastructure/GetSuggestionsForTableQueryFactory.js';
 
