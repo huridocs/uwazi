@@ -33,6 +33,7 @@ import { UwaziDispatcherFactory } from '#api/core/infrastructure/jobs/UwaziDispa
 import { PostgresEntityMapper } from '#api/core/infrastructure/postgresql/entity/PostgresEntityMapper.js';
 import type { EntityRow } from '#api/core/infrastructure/postgresql/entity/PostgresEntityRow.js';
 import {
+  IXExtractorsMigrationConfig,
   PageLocalesMigrationConfig,
   PageMigrationConfig,
 } from '#api/core/infrastructure/postgresql/migrations/configs/index.js';
@@ -115,6 +116,7 @@ const PG_SANITIZER_BY_MONGO_COLLECTION: Record<
   usergroups: sanitizeUserGroupForPostgres,
   translationsV2: sanitizeTranslationForPostgres,
   pages: PageMigrationConfig.mapDocument,
+  ixextractors: IXExtractorsMigrationConfig.mapDocument,
 };
 
 const MIRRORED_COLLECTIONS = [
@@ -127,12 +129,14 @@ const MIRRORED_COLLECTIONS = [
   'users',
   'usergroups',
   'translationsV2',
+  'ixextractors',
 ];
 
 const PG_TABLE_BY_MONGO_COLLECTION: Record<string, string> = {
   dictionaries: 'thesauri',
   relationtypes: 'relationship_types',
   translationsV2: 'translations',
+  ixextractors: 'ix_extractors',
 };
 
 type SetUpOptions = {
