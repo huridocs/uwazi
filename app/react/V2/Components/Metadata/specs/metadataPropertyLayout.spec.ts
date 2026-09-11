@@ -230,6 +230,15 @@ describe('metadataPropertyLayout', () => {
       expect(mediaMasonryRowClass(twoCol, [imageField, mediaField])).toBe(
         'grid w-full min-w-0 items-stretch gap-3 max-h-96 auto-rows-[minmax(12rem,auto)] grid-cols-2'
       );
+      expect(mediaMasonryRowClass(twoCol, [{ ...mediaField, values: [{ value: '/a.png' }] }])).toBe(
+        'grid w-full min-w-0 items-stretch gap-3 max-h-48 auto-rows-[12rem] grid-cols-2'
+      );
+      expect(mediaMasonryRowClass(twoCol, [geolocationField])).toBe(
+        'grid w-full min-w-0 items-stretch gap-3 auto-rows-[minmax(18rem,auto)] grid-cols-2'
+      );
+      expect(mediaMasonryRowClass(twoCol, [imageField, geolocationField])).not.toContain(
+        'max-h-48'
+      );
     });
 
     it('packs two media cards when they fit', () => {

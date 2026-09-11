@@ -1,5 +1,6 @@
 import type { ClientProperty } from '#V2/shared/types.js';
 import type { MetadataProperty, RelationshipMetadataProperty } from '#V2/formatters/types.js';
+import { getMimetypeFromUrl } from '#V2/shared/formatHelpers.js';
 import { sortByTemplatePropertyOrder } from './sortByTemplatePropertyOrder.js';
 import { relationshipGroupKey } from './relationshipInherit.js';
 
@@ -21,6 +22,8 @@ const MEDIA_MASONRY_IMAGE_ROW =
   'grid w-full min-w-0 items-stretch gap-3 max-h-48 auto-rows-[12rem]';
 const MEDIA_MASONRY_VIDEO_ROW =
   'grid w-full min-w-0 items-stretch gap-3 max-h-96 auto-rows-[minmax(12rem,auto)]';
+const MEDIA_MASONRY_GEO_ROW =
+  'grid w-full min-w-0 items-stretch gap-3 auto-rows-[minmax(18rem,auto)]';
 const MEDIA_ROW_COLS = {
   1: 'grid-cols-1',
   2: 'grid-cols-2',
@@ -77,9 +80,6 @@ const inheritGroupKey = (
   return relationshipGroupKey({ content: property?.content, relationType: property?.relationType });
 };
 
-const isMediaPackType = (type: MetadataProperty['type']): boolean =>
-  MEDIA_PACK_TYPES.includes(type);
-
 const contentLength = (data: MetadataProperty): number => {
   if (
     data.type === 'text' ||
@@ -107,17 +107,8 @@ const packClassForProperty = (data: MetadataProperty): MasonryPackClass => {
   ) {
     return 'block';
   }
-  if (isMediaPackType(data.type)) {
-    return 'media';
-  }
-  return 'short';
+  return MEDIA_PACK_TYPES.includes(data.type) ? 'media' : 'short';
 };
-
-const isImageMediaValue = (value: { fileType?: string; mimetype?: string }): boolean =>
-  value.fileType === 'image' || Boolean(value.mimetype?.startsWith('image/'));
-
-const isVideoMediaField = (data: MetadataProperty): boolean =>
-  data.type === 'media' && data.values.some(value => !isImageMediaValue(value));
 
 const metadataGridClassForProperty = (data: MetadataProperty): string => {
   const packClass = packClassForProperty(data);
@@ -140,15 +131,27 @@ const mediaRowTrackCount = (widthPx: number): 1 | 2 | 3 => {
   return MEDIA_MAX_PER_ROW;
 };
 
-const mediaMasonryRowClass = (widthPx: number, fields: MetadataProperty[]): string =>
-  `${fields.some(isVideoMediaField) ? MEDIA_MASONRY_VIDEO_ROW : MEDIA_MASONRY_IMAGE_ROW} ${
-    MEDIA_ROW_COLS[mediaRowTrackCount(widthPx)]
-  }`;
+const isImageMediaValue = (v: { value?: string; fileType?: string; mimetype?: string }) => {
+  const mime = v.mimetype || (v.value && getMimetypeFromUrl(v.value)) || '';
+  return v.fileType === 'image' || mime.startsWith('image/');
+};
+
+const isVideoMediaField = (data: MetadataProperty) =>
+  data.type === 'media' && data.values.some(value => !isImageMediaValue(value));
+
+const mediaMasonryRowClass = (widthPx: number, fields: MetadataProperty[]): string => {
+  const cols = MEDIA_ROW_COLS[mediaRowTrackCount(widthPx)];
+  if (fields.some(isVideoMediaField)) {
+    return `${MEDIA_MASONRY_VIDEO_ROW} ${cols}`;
+  }
+  if (fields.some(field => field.type === 'geolocation')) {
+    return `${MEDIA_MASONRY_GEO_ROW} ${cols}`;
+  }
+  return `${MEDIA_MASONRY_IMAGE_ROW} ${cols}`;
+};
 
 type PackRow = { current: MetadataProperty[]; used: number };
 type PackWork = { rows: PropertyRow[]; row: PackRow; widthPx: number };
-
-const emptyRow = (): PackRow => ({ current: [], used: 0 });
 
 const flushPackedRow = (rows: PropertyRow[], current: MetadataProperty[]) => {
   if (current.length > 0) {
@@ -177,7 +180,7 @@ const packOneField = (field: MetadataProperty, work: PackWork) => {
   const minPx = packClass === 'media' ? MEDIA_CARD_MIN_PX : COMPACT_CARD_MIN_PX;
   if (!canJoin(field, work)) {
     flushPackedRow(work.rows, work.row.current);
-    work.row = emptyRow();
+    work.row = { current: [], used: 0 };
   }
   if (packClass === 'block') {
     work.rows.push({ fields: [field] });
@@ -189,7 +192,7 @@ const packOneField = (field: MetadataProperty, work: PackWork) => {
 };
 
 const packPropertyRows = (fields: MetadataProperty[], widthPx: number): PropertyRow[] => {
-  const work: PackWork = { rows: [], row: emptyRow(), widthPx };
+  const work: PackWork = { rows: [], row: { current: [], used: 0 }, widthPx };
   fields.forEach(field => packOneField(field, work));
   flushPackedRow(work.rows, work.row.current);
   return work.rows;
@@ -231,12 +234,7 @@ const groupInheritingRelationships = (
       return;
     }
     const groupKey = inheritGroupKey(field, templatePropertyById);
-    const group = groups.get(groupKey);
-    if (group) {
-      group.push(field);
-    } else {
-      groups.set(groupKey, [field]);
-    }
+    groups.set(groupKey, [...(groups.get(groupKey) ?? []), field]);
   });
   return groups;
 };
@@ -244,16 +242,10 @@ const groupInheritingRelationships = (
 const inheritGroupPrimaries = (
   inheritingRels: RelationshipMetadataProperty[],
   templatePropertyById: Map<string, ClientProperty>
-): RelationshipMetadataProperty[] => {
-  const primaries: RelationshipMetadataProperty[] = [];
-  groupInheritingRelationships(inheritingRels, templatePropertyById).forEach(siblings => {
-    const primary = siblings.find(field => field.values.length > 0);
-    if (primary) {
-      primaries.push(primary);
-    }
-  });
-  return primaries;
-};
+): RelationshipMetadataProperty[] =>
+  [...groupInheritingRelationships(inheritingRels, templatePropertyById).values()].flatMap(
+    siblings => siblings.find(field => field.values.length > 0) ?? []
+  );
 
 const partitionMetadataRecord = (
   otherFields: MetadataProperty[],
