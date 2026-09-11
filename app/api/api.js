@@ -62,4 +62,7 @@ export default async (app, server) => {
   (await import('./aiAssistant/infrastructure/express/AIAssistantRoutes.js')).aiAssistantRoutes(
     app
   );
+  (
+    await import('./translationService/infrastructure/express/TranslationServiceRoutes.js')
+  ).translationServiceRoutes(app);
 };
