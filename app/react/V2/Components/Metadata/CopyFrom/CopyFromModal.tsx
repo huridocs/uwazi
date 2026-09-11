@@ -12,22 +12,14 @@ import {
 import { useServices } from '#V2/services/index.js';
 import { CopyFromSearchView } from './CopyFromSearchView.js';
 import { CopyFromSourceHeader, CopyFromSourcePreview } from './CopyFromSourcePreview.js';
-import {
-  searchCopyFromCandidates,
-  useCopyFromSearch,
-  type CopyFromSearchCandidates,
-} from './useCopyFromSearch.js';
+import { useCopyFromSearch } from './useCopyFromSearch.js';
 import { useCopyFromSource } from './useCopyFromSource.js';
 
 type CopyFromModalProps = {
   onClose: () => void;
-  searchCandidates?: CopyFromSearchCandidates;
 };
 
-const CopyFromModal = ({
-  onClose,
-  searchCandidates = searchCopyFromCandidates,
-}: CopyFromModalProps) => {
+const CopyFromModal = ({ onClose }: CopyFromModalProps) => {
   const entity = useEntityScopedEntity();
   const templates = useAtomValue(templatesAtom);
   const { form, setIsDirty } = useMetadataEditing();
@@ -38,7 +30,6 @@ const CopyFromModal = ({
   const search = useCopyFromSearch({
     currentTemplateId,
     excludeSharedId: entity.sharedId,
-    searchCandidates,
   });
   const { source, isLoadingSource, matchingProperties, selectCandidate, stageFields, pickAnother } =
     useCopyFromSource({

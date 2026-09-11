@@ -104,49 +104,6 @@ const coerceValue = async (
   }
 };
 
-const searchByTitle = async (
-  {
-    title,
-    fields = ['title', 'sharedId', 'template'],
-    template,
-    limit,
-    includeFiles = false,
-  }: {
-    title?: string;
-    fields?: string[];
-    template?: string[];
-    limit?: number;
-    includeFiles?: boolean;
-  },
-  headers?: IncomingHttpHeaders
-): Promise<ApiResponse<Entity[] | undefined>> => {
-  const finalFields = includeFiles ? [...new Set([...fields, 'documents', 'attachments'])] : fields;
-  const trimmedTitle = title?.trim();
-
-  const [data, error] = await apiClient.getJson<{ rows?: Entity[] }>(
-    'search',
-    {
-      fields: finalFields,
-      includeUnpublished: true,
-      ...(trimmedTitle ? { searchTerm: trimmedTitle } : {}),
-      ...(template && template.length > 0 ? { types: template } : {}),
-      ...(limit ? { limit } : {}),
-    },
-    { headers: requestHeaders(headers) }
-  );
-
-  if (error) {
-    return [undefined, error];
-  }
-
-  const rows = (data?.rows ?? []).filter(isEntity);
-  if (!rows.length) {
-    return [undefined, undefined];
-  }
-
-  return [rows];
-};
-
 const create = async (
   { title, template }: { title: string; template: string },
   headers?: IncomingHttpHeaders
@@ -204,7 +161,6 @@ export {
   coerceValue,
   formatter,
   getBySharedId,
-  searchByTitle,
   saveWithFiles,
   remove,
   getPermissions,

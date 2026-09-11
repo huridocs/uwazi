@@ -13,10 +13,11 @@ import {
   MetadataEditingProvider,
   useMetadataEditing,
 } from '#V2/Routes/Entity/Components/context/MetadataEditingContext.js';
+import type { LibrarySearchResult } from '#shared/types/librarySearch.js';
 import { ServicesProvider } from '#V2/services/index.js';
 import { TestAtomStoreProvider } from '#V2/testing/index.js';
 import { createTestServices } from '#V2/testing/createTestServices.js';
-import type { EntitiesService } from '#V2/services/index.js';
+import type { EntitiesService, SearchService } from '#V2/services/index.js';
 import { CopyFromModal } from '../CopyFromModal.js';
 import type { ApiResponse } from '#V2/api/ApiResponse.js';
 
@@ -114,22 +115,22 @@ const FormProbe = () => {
   );
 };
 
-const searchCandidatesImpl = async ({
-  title,
-  template,
-}: {
-  title?: string;
-  template?: string[];
-}): Promise<ApiResponse<Entity[] | undefined>> => {
-  const pool = template?.includes('country')
+const emptySearchResult = (rows: Entity[]): LibrarySearchResult => ({
+  rows,
+  totalRows: rows.length,
+  aggregations: { templates: [], published: { published: 0, restricted: 0 }, properties: {} },
+});
+
+const searchImpl: SearchService['search'] = async ({ searchTerm, templateIds }) => {
+  const pool = templateIds?.includes('country')
     ? [mexico, argentina, colombia]
     : [mexico, argentina, colombia, person];
-  const term = title?.trim().toLowerCase();
+  const term = searchTerm?.trim().toLowerCase();
   const rows = term ? pool.filter(entity => entity.title.toLowerCase().includes(term)) : pool;
-  return [rows];
+  return [emptySearchResult(rows)];
 };
 
-const searchCandidates = jest.fn(searchCandidatesImpl);
+const searchEntities = jest.fn(searchImpl);
 
 const getBySharedId: EntitiesService['getBySharedId'] = async sharedId => {
   if (sharedId === colombia.sharedId) return [[colombia]];
@@ -146,7 +147,12 @@ const withText = (text: string) => (_content: string, node: Element | null) => {
 
 const renderModal = (onClose = jest.fn()) =>
   render(
-    <ServicesProvider value={createTestServices({ entities: { getBySharedId } })}>
+    <ServicesProvider
+      value={createTestServices({
+        entities: { getBySharedId },
+        search: { search: searchEntities },
+      })}
+    >
       <TestAtomStoreProvider
         initialValues={[
           [templatesAtom, [countryTemplate, personTemplate]],
@@ -156,7 +162,7 @@ const renderModal = (onClose = jest.fn()) =>
         <EntityProvider entity={mexico}>
           <MetadataEditingProvider>
             <FormProbe />
-            <CopyFromModal onClose={onClose} searchCandidates={searchCandidates} />
+            <CopyFromModal onClose={onClose} />
           </MetadataEditingProvider>
         </EntityProvider>
       </TestAtomStoreProvider>
@@ -165,8 +171,8 @@ const renderModal = (onClose = jest.fn()) =>
 
 describe('CopyFromModal', () => {
   beforeEach(() => {
-    searchCandidates.mockReset();
-    searchCandidates.mockImplementation(searchCandidatesImpl);
+    searchEntities.mockReset();
+    searchEntities.mockImplementation(searchImpl);
   });
 
   it('lists candidates of the current type, excluding the entity being edited', async () => {
@@ -189,16 +195,16 @@ describe('CopyFromModal', () => {
     fieldCountBadges.forEach(badge => {
       expect(badge).not.toHaveTextContent(/fields/i);
     });
-    expect(searchCandidates).toHaveBeenCalledWith(
-      expect.objectContaining({ template: ['country'] })
+    expect(searchEntities).toHaveBeenCalledWith(
+      expect.objectContaining({ templateIds: ['country'] })
     );
   });
 
   it('keeps a fixed height while candidates load and shows the square loader', async () => {
-    let finish: (value: ApiResponse<Entity[] | undefined>) => void = () => undefined;
-    searchCandidates.mockImplementation(
+    let finish: (value: ApiResponse<LibrarySearchResult>) => void = () => undefined;
+    searchEntities.mockImplementation(
       async () =>
-        new Promise<ApiResponse<Entity[] | undefined>>(resolve => {
+        new Promise<ApiResponse<LibrarySearchResult>>(resolve => {
           finish = resolve;
         })
     );
@@ -207,12 +213,12 @@ describe('CopyFromModal', () => {
     expect(screen.getByTestId('copy-from-results')).toHaveClass('h-80');
     expect(await screen.findByRole('status', { name: 'Loading' })).toBeInTheDocument();
     expect(screen.queryByText('Searching...')).not.toBeInTheDocument();
-    finish([[argentina, colombia, mexico]]);
+    finish([emptySearchResult([argentina, colombia, mexico])]);
     expect(await screen.findByText('Argentina')).toBeInTheDocument();
   });
 
   it('shows a blank state when there are no candidates', async () => {
-    searchCandidates.mockResolvedValue([[]]);
+    searchEntities.mockResolvedValue([emptySearchResult([])]);
     renderModal();
     expect(await screen.findByText('No results found')).toBeInTheDocument();
     expect(screen.getByText('No results found').closest('div.border-dashed')).toBeTruthy();

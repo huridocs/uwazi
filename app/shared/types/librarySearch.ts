@@ -12,6 +12,10 @@ type LibrarySearchQuery = {
   limit?: number;
   sort?: string;
   order?: LibrarySortOrder;
+  /** Restrict `_source` fields on GET /api/search. */
+  fields?: string[];
+  /** When `fields` is set, also request documents and attachments. */
+  includeFiles?: boolean;
   /** Geo-only projection used by the library map (GET /api/search?geolocation=true). */
   geolocation?: boolean;
 };

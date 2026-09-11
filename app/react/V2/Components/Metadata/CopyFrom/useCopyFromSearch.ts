@@ -1,35 +1,17 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { searchByTitle } from '#V2/api/entities/index.js';
 import type { Entity } from '#V2/api/entities/types.js';
-import type { ApiResponse } from '#V2/api/ApiResponse.js';
+import { useServices } from '#V2/services/index.js';
 
 const COPY_FROM_SEARCH_LIMIT = 50;
 const COPY_FROM_SEARCH_DEBOUNCE_MS = 300;
 
-type CopyFromSearchArgs = {
-  title?: string;
-  template?: string[];
-  limit?: number;
-};
-
-type CopyFromSearchCandidates = (
-  args: CopyFromSearchArgs
-) => Promise<ApiResponse<Entity[] | undefined>>;
-
-const searchCopyFromCandidates: CopyFromSearchCandidates = async ({ title, template, limit }) =>
-  searchByTitle({ title, template, limit });
-
 type UseCopyFromSearchParams = {
   currentTemplateId?: string;
   excludeSharedId?: string;
-  searchCandidates?: CopyFromSearchCandidates;
 };
 
-const useCopyFromSearch = ({
-  currentTemplateId,
-  excludeSharedId,
-  searchCandidates = searchCopyFromCandidates,
-}: UseCopyFromSearchParams) => {
+const useCopyFromSearch = ({ currentTemplateId, excludeSharedId }: UseCopyFromSearchParams) => {
+  const { search } = useServices();
   const [query, setQuery] = useState('');
   const [sameTypeOnly, setSameTypeOnly] = useState(Boolean(currentTemplateId));
   const [results, setResults] = useState<Entity[]>([]);
@@ -38,16 +20,19 @@ const useCopyFromSearch = ({
 
   const runSearch = useCallback(
     async (searchQuery: string, restrictToCurrentType: boolean, requestId: number) => {
-      const [rows] = await searchCandidates({
-        title: searchQuery,
-        template: restrictToCurrentType && currentTemplateId ? [currentTemplateId] : undefined,
+      const [result] = await search.search({
+        searchTerm: searchQuery.trim() || undefined,
+        templateIds: restrictToCurrentType && currentTemplateId ? [currentTemplateId] : undefined,
+        publishedStatus: 'all',
         limit: COPY_FROM_SEARCH_LIMIT,
+        fields: ['title', 'sharedId', 'template'],
       });
       if (requestId !== generation.current) return;
-      setResults((rows ?? []).filter(entity => entity.sharedId !== excludeSharedId));
+      const rows = (result?.rows ?? []) as Entity[];
+      setResults(rows.filter(entity => entity.sharedId !== excludeSharedId));
       setIsSearching(false);
     },
-    [currentTemplateId, excludeSharedId, searchCandidates]
+    [currentTemplateId, excludeSharedId, search]
   );
 
   useEffect(() => {
@@ -75,5 +60,5 @@ const useCopyFromSearch = ({
   };
 };
 
-export { searchCopyFromCandidates, useCopyFromSearch };
-export type { CopyFromSearchArgs, CopyFromSearchCandidates };
+export { useCopyFromSearch };
+export type { UseCopyFromSearchParams };
