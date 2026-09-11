@@ -1,7 +1,7 @@
 import type { Application, Request } from 'express';
 
 import { validation } from '#api/utils/index.js';
-import settings from '#api/settings/index.js';
+import { SetDefaultLanguageController } from '#api/core/infrastructure/express/language/SetDefaultLanguageController.js';
 import { CSVLoader } from '#api/csv/index.js';
 import { uploadMiddleware } from '#api/files/index.js';
 import { LanguageISO6391Schema, languageSchema } from '#shared/types/commonSchemas.js';
@@ -148,11 +148,7 @@ const translationsRoutes = (app: Application) => {
       required: ['body'],
     }),
 
-    async (req, res) => {
-      const response = await settings.setDefaultLanguage(req.body.key);
-      req.sockets.emitToCurrentTenant('updateSettings', response);
-      res.json(response);
-    }
+    SetDefaultLanguageController.createHandler()
   );
 
   app.post(

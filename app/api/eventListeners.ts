@@ -1,4 +1,7 @@
 import { EventsBus } from './core/libs/eventsbus/index.js';
+import { ExecutionContext } from './core/libs/ExecutionContext.js';
+import { SettingsServiceFactory } from './core/infrastructure/factories/SettingsServiceFactory.js';
+import { ReconcileFiltersOnTemplateChange } from './core/infrastructure/settings/ReconcileFiltersOnTemplateChange.js';
 import { AutomaticTranslationFactory } from './externalIntegrations.v2/automaticTranslation/AutomaticTranslationFactory.js';
 import { PXEntityDeletedListener } from './paragraphExtraction/infrastructure/PXEntityDeletedListener.js';
 import { PXEntityUpdatedListener } from './paragraphExtraction/infrastructure/PXEntityUpdatedListener.js';
@@ -17,6 +20,10 @@ const registerEventListeners = (eventsBus: EventsBus) => {
   new PXFilesDeletedListener(eventsBus).start();
   new PXEntityDeletedListener(eventsBus).start();
   new PXEntityUpdatedListener(eventsBus).start();
+  new ReconcileFiltersOnTemplateChange(eventsBus, () => ({
+    settingsService: SettingsServiceFactory.default(),
+    transactionManager: ExecutionContext.transactionManager,
+  })).start();
 };
 
 export { registerEventListeners };

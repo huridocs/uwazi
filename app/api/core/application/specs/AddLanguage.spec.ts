@@ -1,4 +1,4 @@
-/* eslint-disable max-statements */
+/* eslint-disable max-statements, max-lines */
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { testingTenants } from '#api/utils/testingTenants.js';
@@ -7,11 +7,19 @@ import { TranslationDBO } from '#api/core/infrastructure/mongodb/translation/sch
 import { AddLanguageUseCase } from '#api/core/application/AddLanguage.js';
 import { AddLanguageUseCaseFactory } from '#api/core/infrastructure/factories/AddLanguageUseCaseFactory.js';
 import { LanguageAddedEvent } from '#api/core/domain/language/events/LanguageAddedEvent.js';
+import { EventEmitterFactory } from '#api/core/libs/eventEmitter/EventEmitterFactory.js';
 import { search } from '#api/search/index.js';
 import { Dispatcher } from '#api/core/application/contracts/Dispatcher.js';
 import { ImportPredefinedTranslations } from '#api/core/application/translation/ImportPredefinedTranslationsService.js';
 import { TranslationsDataSourceFactory } from '#api/core/infrastructure/factories/TranslationsDataSourceFactory.js';
+import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
+import { SettingsQueryServiceFactory } from '#api/core/infrastructure/factories/SettingsQueryServiceFactory.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import {
+  clearJobs,
+  ensureBroadcastSettingsChangedRegistered,
+  expectSettingsChangedJob,
+} from '../settings/specs/settingsChangedJob.js';
 
 jest.mock('#api/core/infrastructure/services/V1WebSocketsWrapper.js', () => ({
   V1WebSocketsWrapper: jest.fn().mockImplementation(() => ({
@@ -81,6 +89,9 @@ describe('AddLanguage use case', () => {
           : undefined
       );
 
+    const readLanguages = async () =>
+      withFlag(async () => (await SettingsDataSourceFactory.default().get()).languages ?? []);
+
     const createSut = (overrides?: Partial<ConstructorParameters<typeof AddLanguageUseCase>[0]>) =>
       withFlag(() =>
         AddLanguageUseCaseFactory.default({
@@ -94,7 +105,9 @@ describe('AddLanguage use case', () => {
       cloneLanguageEntitiesSpy.mockClear();
       importPredefinedSpy.mockClear();
       jest.spyOn(search, 'indexEntities').mockResolvedValue(undefined as any);
-      await testingEnvironment.setFixtures(fixtures);
+      await testingEnvironment.setUp(fixtures, {
+        postgres: true,
+      });
     });
 
     afterEach(() => {
@@ -110,13 +123,47 @@ describe('AddLanguage use case', () => {
           ],
         });
 
-        const settings = await testingEnvironment.db.getCollection('settings')!.findOne({});
-        expect(settings?.languages).toEqual(
+        const languages = await readLanguages();
+        expect(languages).toEqual(
           expect.arrayContaining([
             expect.objectContaining({ key: 'en', label: 'English', default: true }),
             expect.objectContaining({ key: 'es', label: 'Spanish', installing: true }),
             expect.objectContaining({ key: 'zh', label: 'Chinese', installing: true }),
           ])
+        );
+      });
+
+      it('should persist tenant language fields and not catalog fields', async () => {
+        await createSut().execute({
+          languages: [
+            {
+              key: 'es',
+              label: 'Spanish',
+              ISO639_3: 'spa',
+              ISO639_1: 'es',
+              localized_label: 'Español',
+              elastic: 'spanish',
+              translationAvailable: true,
+            },
+          ],
+        });
+
+        const [spanish] = (await readLanguages()).filter(language => language.key === 'es');
+        expect(spanish).toEqual({ key: 'es', label: 'Spanish', installing: true });
+      });
+
+      it('should present catalog language fields on GET without storing them', async () => {
+        await createSut().execute({ languages: [{ key: 'es', label: 'Spanish' }] });
+
+        const settings = await withFlag(async () => SettingsQueryServiceFactory.default().get());
+        expect(settings.languages?.find(language => language.key === 'es')).toEqual(
+          expect.objectContaining({
+            key: 'es',
+            label: 'Spanish',
+            ISO639_3: 'spa',
+            localized_label: 'Español',
+            installing: true,
+          })
         );
       });
 
@@ -196,6 +243,19 @@ describe('AddLanguage use case', () => {
         });
       });
 
+      it('should enqueue BroadcastSettingsChanged when languages are added', async () => {
+        await clearJobs();
+        ensureBroadcastSettingsChangedRegistered();
+        await withFlag(async () => {
+          await AddLanguageUseCaseFactory.default({
+            dispatcher: mockDispatcher,
+            importPredefinedTranslations: mockImportPredefinedTranslations,
+            eventEmitter: EventEmitterFactory.default(),
+          }).execute({ languages: [{ key: 'es', label: 'Spanish' }] });
+        });
+        await expectSettingsChangedJob();
+      });
+
       it('should emit a LanguageAddedEvent for each new language', async () => {
         const emitSpy = jest.fn().mockResolvedValue(undefined);
         await createSut({ eventEmitter: { emit: emitSpy } }).execute({
@@ -246,8 +306,7 @@ describe('AddLanguage use case', () => {
         expect(importPredefinedSpy).toHaveBeenCalledWith('es');
 
         // 'en' entry in settings unchanged (no duplicate)
-        const settings = await testingEnvironment.db.getCollection('settings')!.findOne({});
-        const enEntries = settings?.languages?.filter((l: any) => l.key === 'en');
+        const enEntries = (await readLanguages()).filter(language => language.key === 'en');
         expect(enEntries).toHaveLength(1);
       });
 
@@ -306,26 +365,15 @@ describe('AddLanguage use case', () => {
           ).rejects.toThrow('clone failed');
         });
 
-        const settings = await testingEnvironment.db.getCollection('settings')!.findOne({});
-        if (postgresCore) {
-          // Settings is Mongo-only and not atomic with the PG transaction
-          // (settings migration is out of scope), so the write is not rolled back.
-          expect(settings?.languages).toEqual([
-            expect.objectContaining({ key: 'en', label: 'English', default: true }),
-            expect.objectContaining({ key: 'es', label: 'Spanish' }),
-          ]);
-        } else {
-          expect(settings?.languages).toEqual([
-            expect.objectContaining({ key: 'en', label: 'English', default: true }),
-          ]);
-        }
+        const languages = await readLanguages();
+        expect(languages).toEqual([
+          expect.objectContaining({ key: 'en', label: 'English', default: true }),
+        ]);
 
-        if (!postgresCore) {
-          const esCount = (
-            await withFlag(async () => TranslationsDataSourceFactory.default().getByLanguage('es'))
-          ).length;
-          expect(esCount).toBe(0);
-        }
+        const esCount = (
+          await withFlag(async () => TranslationsDataSourceFactory.default().getByLanguage('es'))
+        ).length;
+        expect(esCount).toBe(0);
       });
 
       it('should deduplicate input languages with the same key', async () => {
@@ -353,8 +401,7 @@ describe('AddLanguage use case', () => {
         expect(importPredefinedSpy).toHaveBeenCalledWith('es');
 
         // Only one 'es' entry in settings
-        const settings = await testingEnvironment.db.getCollection('settings')!.findOne({});
-        const esEntries = settings?.languages?.filter((l: any) => l.key === 'es');
+        const esEntries = (await readLanguages()).filter(language => language.key === 'es');
         expect(esEntries).toHaveLength(1);
       });
     });

@@ -4,6 +4,7 @@ import { TranslationsDataSource } from '#api/core/application/contracts/Translat
 import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js';
 import { ImportPredefinedTranslations } from '#api/core/application/translation/ImportPredefinedTranslationsService.js';
 import { LanguageAddedEvent } from '#api/core/domain/language/events/LanguageAddedEvent.js';
+import { SettingsChangedEvent } from '#api/core/domain/settings/events/SettingsChangedEvent.js';
 import { AbstractUseCase } from '../libs/UseCase.js';
 
 type Input = {
@@ -20,18 +21,19 @@ type Deps = {
 
 class AddLanguageUseCase extends AbstractUseCase<Input, Output, Deps> {
   async execute({ languages }: Input): Promise<Output> {
-    const defaultLanguage = await this.deps.settingsDS.getDefaultLanguageKey();
-    const installedKeys = new Set(await this.deps.settingsDS.getLanguageKeys());
-    const newLanguages = [
-      ...new Map(languages.filter(l => !installedKeys.has(l.key)).map(l => [l.key, l])).values(),
-    ];
+    const settings = await this.deps.settingsDS.get();
+    const defaultLanguage = settings.defaultLanguageKey();
+    const newLanguages = languages.filter(language => settings.addLanguage(language));
 
     if (newLanguages.length === 0) return [];
 
+    newLanguages.forEach(language => {
+      settings.setLanguageInstalling(language.key, true);
+    });
+
     await this.transactionManager.run(async () => {
+      await this.deps.settingsDS.update(settings);
       for (const language of newLanguages) {
-        await this.deps.settingsDS.addLanguage(language);
-        await this.deps.settingsDS.setLanguageInstalling(language.key, true);
         await this.deps.translationsDS.cloneForLanguage(defaultLanguage, language.key);
         await this.eventEmitter.emit(
           new LanguageAddedEvent({
@@ -43,11 +45,11 @@ class AddLanguageUseCase extends AbstractUseCase<Input, Output, Deps> {
       }
 
       await this.dispatcher.cloneLanguageEntities({
-        pairs: newLanguages.map(l => ({ from: defaultLanguage, to: l.key })),
+        pairs: newLanguages.map(language => ({ from: defaultLanguage, to: language.key })),
       });
+      await this.eventEmitter.emit(new SettingsChangedEvent({}));
     });
 
-    // Outside transaction — predefined import uses FS/CSV path that is not transaction-aware
     for (const language of newLanguages) {
       await this.deps.importPredefinedTranslations.execute(language.key);
     }
