@@ -446,7 +446,7 @@ describe('formatSuggestion', () => {
     const currentSuggestion = {
       ...currentSuggestions.text,
       modelData: {
-        findSuggestionsRunTimestamp: 1234,
+        suggestionsRunTimestamp: 1234,
       },
     };
 
@@ -466,7 +466,7 @@ describe('formatSuggestion', () => {
       ...currentSuggestions.text,
       date: expect.any(Number),
       modelData: {
-        findSuggestionsRunTimestamp: 1234,
+        suggestionsRunTimestamp: 1234,
       },
       suggestedValue: 'recommended_value',
       segment: 'new context',

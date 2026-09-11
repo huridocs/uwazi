@@ -62,7 +62,7 @@ describe('save()', () => {
     });
     describe('startTraining', () => {
       // TODO: test that the model is updated with the new values
-      it('should unset findSuggestionsRunTimestamp and findSuggestionsSharedIds', async () => {
+      it('should unset suggestionsRunTimestamp and findSuggestionsSharedIds', async () => {
         await ixmodels.startTraining(fixtureFactory.id('extractor'));
 
         const updatedModel = await ixTestAccess.readModel(fixtureFactory.id('extractor'));
@@ -74,7 +74,7 @@ describe('save()', () => {
 
     describe('stopTraining', () => {
       // TODO: test that the model is updated with the new values
-      it('should unset findSuggestionsRunTimestamp and findSuggestionsSharedIds', async () => {
+      it('should unset suggestionsRunTimestamp and findSuggestionsSharedIds', async () => {
         await ixmodels.stopTraining(fixtureFactory.id('extractor'));
 
         const updatedModel = await ixTestAccess.readModel(fixtureFactory.id('extractor'));
@@ -85,7 +85,7 @@ describe('save()', () => {
     });
 
     describe('unsetFindSuggestionsData', () => {
-      it('should unset findSuggestionsRunTimestamp and findSuggestionsSharedIds', async () => {
+      it('should unset suggestionsRunTimestamp and findSuggestionsSharedIds', async () => {
         await ixmodels.unsetFindSuggestionsData(model._id!);
 
         const updatedModel = await ixTestAccess.readModel(fixtureFactory.id('extractor'));
