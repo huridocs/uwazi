@@ -2293,17 +2293,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@chromatic-com/storybook@npm:^5.3.0":
-  version: 5.3.0
-  resolution: "@chromatic-com/storybook@npm:5.3.0"
+"@chromatic-com/storybook@npm:^5.3.1":
+  version: 5.3.1
+  resolution: "@chromatic-com/storybook@npm:5.3.1"
   dependencies:
     "@neoconfetti/react": "npm:^1.0.0"
     chromatic: "npm:^18.0.1"
     jsonfile: "npm:^6.1.0"
     strip-ansi: "npm:^7.1.0"
   peerDependencies:
-    storybook: ^0.0.0-0 || ^10.1.0 || ^10.1.0-0 || ^10.2.0-0 || ^10.3.0-0 || ^10.4.0-0 || ^10.5.0-0 || ^10.6.0-0
-  checksum: 10c0/2fd2034f04469d8e8cd37dbea379a854e265c4ff0b6d6512785f54ec16837b3fea66bc06eea3952a5fd612684c0a1e458ada670a7bf47b1177e5bd85ceed2f5c
+    storybook: ^0.0.0-0 || ^10.1.0 || ^10.1.0-0 || ^10.2.0-0 || ^10.3.0-0 || ^10.4.0-0 || ^10.5.0-0 || ^10.6.0-0 || ^11.0.0-0
+  checksum: 10c0/17b1a1abd2dede6f6f55e378e4e2765a1c262de7f1358c0f225b27d57db014de9293b17d823393efdce1d315b4c802d8c7bc9fc8d32a35db16e767821491cd0e
   languageName: node
   linkType: hard
 
@@ -6430,12 +6430,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@testing-library/user-event@npm:^14.6.1, @testing-library/user-event@npm:^14.6.6":
-  version: 14.6.6
-  resolution: "@testing-library/user-event@npm:14.6.6"
+"@testing-library/user-event@npm:^14.6.3, @testing-library/user-event@npm:^14.6.6":
+  version: 14.6.7
+  resolution: "@testing-library/user-event@npm:14.6.7"
   peerDependencies:
     "@testing-library/dom": ">=7.21.4"
-  checksum: 10c0/2cb82d3a364a2a29da19bb5d2a614aedaa474ac6f599a42fc28c1926056f7b91f5cec37b33452bafcb3f6b37a950024da289dea88ead3c2056c6005c91c7f942
+  checksum: 10c0/21f5e01bea2699b069947ae06d0b0fbabe0e90d2a2206b8f56a3f46126d09bd85320cba3fd3910c4d18710b1873e6966fb9021668966c615aaa14bf35d7df3ef
   languageName: node
   linkType: hard
 
@@ -7123,16 +7123,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:*, @types/node@npm:>=10.0.0":
-  version: 22.7.5
-  resolution: "@types/node@npm:22.7.5"
-  dependencies:
-    undici-types: "npm:~6.19.2"
-  checksum: 10c0/cf11f74f1a26053ec58066616e3a8685b6bcd7259bc569738b8f752009f9f0f7f85a1b2d24908e5b0f752482d1e8b6babdf1fbb25758711ec7bb9500bfcd6e60
-  languageName: node
-  linkType: hard
-
-"@types/node@npm:22.20.1":
+"@types/node@npm:*, @types/node@npm:22.20.1, @types/node@npm:>=10.0.0":
   version: 22.20.1
   resolution: "@types/node@npm:22.20.1"
   dependencies:
@@ -12415,15 +12406,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-plugin-storybook@npm:10.5.10":
-  version: 10.5.10
-  resolution: "eslint-plugin-storybook@npm:10.5.10"
+"eslint-plugin-storybook@npm:10.6.0":
+  version: 10.6.0
+  resolution: "eslint-plugin-storybook@npm:10.6.0"
   dependencies:
     "@typescript-eslint/types": "npm:^8.60.0"
     "@typescript-eslint/utils": "npm:^8.60.0"
   peerDependencies:
     eslint: ">=8"
-  checksum: 10c0/a70a4c9ab48e9a2fff3d51304951d91c32545ab52b15adf1f75e5056954415b9a9fc4de3fa9c820b7450c107985ce55689e6269867da4a787868ab462f292c9c
+  checksum: 10c0/f9036605c63b2e30546ac5d5a65310e19c38fd52919ca34d26a64a007c7ec69cd39d5325aeb539ac3e37502fcd69ac374b7198b4b9eee756eddb913bbbcd78e8
   languageName: node
   linkType: hard
 
@@ -22515,15 +22506,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"storybook@npm:10.5.10":
-  version: 10.5.10
-  resolution: "storybook@npm:10.5.10"
+"storybook@npm:10.6.0":
+  version: 10.6.0
+  resolution: "storybook@npm:10.6.0"
   dependencies:
     "@storybook/global": "npm:^5.0.0"
     "@storybook/icons": "npm:^2.0.2"
     "@testing-library/dom": "npm:^10.4.1"
     "@testing-library/jest-dom": "npm:6.9.1"
-    "@testing-library/user-event": "npm:^14.6.1"
+    "@testing-library/user-event": "npm:^14.6.3"
     "@vitest/expect": "npm:3.2.4"
     "@vitest/spy": "npm:3.2.4"
     "@webcontainer/env": "npm:^1.1.1"
@@ -22549,7 +22540,7 @@ __metadata:
       optional: true
   bin:
     storybook: ./dist/bin/dispatcher.js
-  checksum: 10c0/057081585c44ad183ddae97e3b1e8aaaa748bd10336667d7c92698108806a687ead7e082b88962e7255e8b2cc0622b9598a653e5f0d84a807f96677ec0340be8
+  checksum: 10c0/ffd7a513b088e206232c0206229fe05893c8c78e5e4a3b40647326111b608d79851f3b8f986616b6b585979d3a10c6c3081c0cd86a752329e2af309632bd7e3a
   languageName: node
   linkType: hard
 
@@ -23892,13 +23883,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"undici-types@npm:~6.19.2":
-  version: 6.19.8
-  resolution: "undici-types@npm:6.19.8"
-  checksum: 10c0/078afa5990fba110f6824823ace86073b4638f1d5112ee26e790155f481f2a868cc3e0615505b6f4282bdf74a3d8caad715fd809e870c2bb0704e3ea6082f344
-  languageName: node
-  linkType: hard
-
 "undici-types@npm:~6.21.0":
   version: 6.21.0
   resolution: "undici-types@npm:6.21.0"
@@ -24168,7 +24152,7 @@ __metadata:
     "@babel/register": "npm:^7.29.3"
     "@babel/traverse": "npm:^7.28.8"
     "@cfaester/enzyme-adapter-react-18": "npm:^0.8.0"
-    "@chromatic-com/storybook": "npm:^5.3.0"
+    "@chromatic-com/storybook": "npm:^5.3.1"
     "@cypress/webpack-preprocessor": "npm:7.1.2"
     "@dnd-kit/core": "npm:^6.3.1"
     "@dnd-kit/modifiers": "npm:^9.0.0"
@@ -24299,7 +24283,7 @@ __metadata:
     enzyme: "npm:3.11.0"
     enzyme-to-json: "npm:^3.6.2"
     eslint-plugin-cypress: "npm:^7.0.1"
-    eslint-plugin-storybook: "npm:10.5.10"
+    eslint-plugin-storybook: "npm:10.6.0"
     express: "npm:4.22.2"
     express-http-proxy: "npm:^2.1.2"
     express-session: "npm:^1.19.0"
@@ -24416,7 +24400,7 @@ __metadata:
     socket.io: "npm:4.8.3"
     socket.io-client: "npm:4.8.3"
     stopword: "npm:3.1.5"
-    storybook: "npm:10.5.10"
+    storybook: "npm:10.6.0"
     stream-mock: "npm:^2.0.5"
     superagent: "npm:^10.3.0"
     supertest: "npm:7.2.2"
