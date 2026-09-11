@@ -14,13 +14,13 @@ This is the planning doc for both phases. Pattern sources: [`../Relationship Typ
 - **Phase 1 (V2 hex, Mongo)** — **done.** Core owns reads/writes.
 - **Phase 2 (Postgres)** — **done for dual-store.** Schema is **018**. Tenant flag is production’s **`postgresCore`**. Default off = V2 Settings on Mongo; on = Settings (and the rest of core) on Postgres.
 - **Domain alignment (2026-09 team review)** — **done.** There is a DB-free `Settings` model. The DS port is `get()` / `update(Settings)` plus **named** reads. No `patch`, language `$push`/`$pull`, or open `readFields` on the port. Use cases load → mutate on the model → persist → emit. Commands return `void`; HTTP JSON comes from `SettingsQueryService` (`readPresentation` omits `sync`, then public/admin pick). Menu `id` is minted on `Settings.apply`. Persist helpers only serialize (lift leftover `_id`, strip it). They do not mint.
-- **After merge (named tech debt, already ticketed)** — **§6** `newNameGeneration` job, **§7** contracts/one-parse, **§8** remaining internal `get()` readers / Directory. Not part of “is the domain review done.” Hybrid TM (EventEmitter/jobs still Mongo `run()`) is the same bucket.
+- **After merge (named tech debt, already ticketed)** — **§6** `newNameGeneration` job, **§7** contracts/one-parse, **§8** remaining internal `get()` readers / Directory. Not part of “is the domain review done.” Jobs that still need Mongo use `mongoTransactionManager` while the flag-aware use-case TM is PG under `postgresCore` — keep that split explicit.
 
 Do not re-investigate these; they are done and should stay this way:
 
 - No `SettingsService` as a TM/factory wrapper. Inject `settingsDS` (with the TM you already have). The SettingsService that exists is **filter/menu + translation reconcile** (peer review §5) — not a factory.
-- **Use-case TM stays Mongo** (`ExecutionContext.transactionManager`). EventEmitter / jobs require it. Do not pass `postgresTransactionManager` as the use-case TM without also retargeting EventEmitter.
-- **PG DS TM:** when `postgresCore` is on, `SettingsDataSourceFactory` uses `ExecutionContext.postgresTransactionManager` if a store exists, otherwise `PostgresTransactionManagerFactory.default()` (same as Files/Users). That fallback is only for the PG DS, not a Mongo TM shim.
+- **Use-case TM is flag-aware** (`transactionManagerFactories`): when `postgresCore` is on, `ExecutionContext.transactionManager` is the **same** Postgres TM instance as `postgresTransactionManager` (settings + translations share one `run()`). When off, it is Mongo. Jobs that still need Mongo (dispatcher / queue) use `ExecutionContext.mongoTransactionManager` explicitly — do not pass the PG TM there.
+- **PG DS TM:** when `postgresCore` is on, `SettingsDataSourceFactory` uses `ExecutionContext.postgresTransactionManager` if a store exists, otherwise `PostgresTransactionManagerFactory.default()` (same as Files/Users). That fallback is only for the PG DS.
 - Tests that need a settings DS outside HTTP/jobs use `SettingsDSWithContext` — a **context wrapper** around the real DS (`runWithContext`). Fixture writes are `get` + domain method + `update` (or `mutatePersistedSettings`). Do **not** wrap Jest globally. Do **not** import the factory just to seed fixtures. Do **not** put `patch` / `addLanguage` / `deleteLanguage` on the test helper.
 - PG DS mints the **document** `_id` only on empty insert; copy preserves Mongo `_id`. Upsert conflict is `tenant_id`.
 - Nested **menu items** identity is `id`. **`Settings.apply` mints `id`** for new items (via `assignMenuIds`). `toPersistableMenuItems` / `toReadableMenuItems` only lift leftover mongoose `_id` onto `id` and drop `_id`. They do **not** take `generateId` and do **not** mint. Menu translations match `id` after that lift. Menu table `rowId` is `id`.
@@ -45,6 +45,7 @@ Do not re-investigate these; they are done and should stay this way:
 - [x] Peer review waves 1–3: §1+§11+§12, §4+§2+§3, §5+§9+§10.
 - [x] Domain alignment: `Settings` model, DS `get`/`update`, named reads, commands do not `pickAdminFields`, HTTP from QueryService.
 - [x] Local dry-run: schema → copy → flag → GET/POST / links / languages / filters / public vs admin
+- [x] Dry-run fixes (2026-09-11): settings in `FLAG_GROUPS.postgresCore`; `--force` uses `conflictColumns: ['tenant_id']` for settings; `SaveSettingsLinksController` re-reads via QueryService after void command; `PostgresTranslationsDataSource.cloneForLanguage` paginates (no stream+write on the shared PG connection)
 
 ---
 
@@ -343,7 +344,7 @@ Integration-first: save + Menu/Filters translation keys, links merge, default la
 | S9  | `cached()`: when the flag is on, return the same PG DS as `default()` (translations pattern). Optional later: cache `languageKeys` with `onCommitted` clear — not required to ship.                                                                                                                                                                                   |
 | S10 | Sync handler factory branches on the same flag. Inbound still applies onto the tenant singleton (ignore payload `_id`). Outbound still `{ _id, languages }` until a separate product change.                                                                                                                                                                          |
 | S11 | Public/admin field filtering stays in HTTP (`publicSettings.ts`), not in SQL column grants. Secrets live in `sync` / `mail` / `public_form_destination`; GET still omits them for non-admin.                                                                                                                                                                          |
-| S12 | Mixed store is P12: one use-case `run()`. Use-case TM stays **Mongo** (EventEmitter / jobs). When `postgresCore` is on, PG settings + translations writes auto-commit on the PG TM. No DualStore. Staging-only hybrid. Do not pass `postgresTransactionManager` as `this.transactionManager` without retargeting EventEmitter. |
+| S12 | Mixed store is P12: one use-case `run()`. `ExecutionContext.transactionManager` is **flag-aware** (PG when `postgresCore`, Mongo otherwise) and is the same instance settings/translations DS use for PG. Jobs that still need Mongo take `mongoTransactionManager`. No DualStore. |
 
 ### Schema (locked)
 
@@ -441,6 +442,8 @@ Cutover per tenant: schema (cluster-wide) → copy → flip flag → smoke GET/P
 - Map `_id` to hex (sync surrogate); peel known keys into columns; remainder → `extras` JSONB (keep former `select:false` fields in their columns; copy is ops, not GET)
 - Tenant must have **exactly one** Mongo settings doc; fail loudly if 0 or >1
 - Idempotent skip if the tenant already has any PG row (engine default)
+- **`--force` is non-destructive** for every collection: skip the empty-table gate, then `ON CONFLICT … DO NOTHING`. Default conflict target is `('_id', 'tenant_id')`. Settings PK is **`tenant_id` only**, so `SettingsMigrationConfig.conflictColumns` is `['tenant_id']`. Without that, `--force` always fails for settings (`no unique or exclusion constraint matching the ON CONFLICT specification`) even when there is no real conflict. Existing PG settings rows are **not** overwritten — for a blank-state local re-test, `DELETE FROM settings WHERE tenant_id = …` (or reset the DB) then copy again.
+- `'settings'` must be in `FLAG_GROUPS.postgresCore` in `migrateToPostgres.ts` (not only in `COLLECTIONS`) or the copy CLI skips it when the tenant flag is on.
 - CLI: `--collection settings` on `scripts/scripts.v2/migrateToPostgres.ts`
 
 ### Hybrid inventory (after flag on, other collections maybe Mongo)
@@ -533,7 +536,13 @@ Same class of risk as translations P12. Notable:
 
 ---
 
-**Hybrid pitfall:** Settings use cases still `run()` the **Mongo** TM (EventEmitter / jobs). When `postgresCore` is on, settings and translations writes go through the **PG** TM on the data sources and auto-commit relative to that Mongo `run()`. `AddLanguage` asserts: if `cloneForLanguage` throws after `addLanguage`, the PG languages column is **not** rolled back. Acceptable while production stays Mongo. Do not “fix” by making the use-case TM the PG TM without retargeting EventEmitter.
+---
+
+**Local dry-run pitfalls (2026-09-11, `postgresCore` on):**
+
+1. **Add Language hung inside `cloneForLanguage`.** With enough EN translation rows (> `CLONE_BATCH_SIZE` = 500), PG clone streamed source rows on the outer `TM.run()` connection, then upserted a batch **while the stream still held that connection**. Postgres will not run a second query on a busy connection → hang forever. Specs missed it (fewer than one batch, or stream buffer finished before the write). **Fix:** paginated `LIMIT`/`OFFSET` reads that complete before each upsert (`PostgresTranslationsDataSource.cloneForLanguage`). A hung Add Language leaves the open transaction (and often the pool connection) held, so later Settings writes (including Links) stall on the same row/connection — that was the “links failed after language failed” sequence, not a separate Links persistence bug.
+2. **Links HTTP returned empty after a successful save.** Commands return `void`; `SaveSettingsLinksController` still did `response.json(saved)`. UI expected a full settings body like `POST /api/settings`. **Fix:** after the command, `SettingsQueryServiceFactory.default().get()` then `response.json(payload)` (same as `SaveSettingsController`). Checking Mongo while `postgresCore` is on also looks like “links stayed `[]`” — reads/writes are PG.
+3. **`--force` copy failed only on settings.** See Data copy above (`conflictColumns: ['tenant_id']`). Non-destructive force does **not** refresh an existing settings row from Mongo.
 
 **Nested identity:** mongoose used to auto-`_id` array subdocs. Native Mongo / PG JSONB do not. That is not a reason to reimplement mongoose. **Filters** already have domain `id` (translations match `id`). **Menu** identity is also `id`: **`Settings.apply` mints `id` for new items**. Persist/read helpers lift leftover mongoose `_id` without generating. Translations match `id` after that lift. Copy/`toRow` lifts menu `_id` → `id` so PG JSON is clean and does **not** invent ids for items that had none. Leftover `_id` in Mongo (flag off) still works because the same V2 read/write path is used. Next save drops leftover `_id` (lazy cleanup, not required for GET/Delete). **Languages** identity is `key`. Tenant storage is `key`, `label`, `default`, `installing` — not catalog copies (`ISO639_3`, `localized_label`, `rtl`, `elastic`, `ISO639_1`, `translationAvailable`) and not leftover mongoose `_id`. GET / QueryService **joins** `LanguageUtils.fromISO639_1(key)` so `/api/settings` still presents those fields. Sync copies stored languages as they are (no catalog join, no persistable rewrite). Our UI does not treat stored catalog fields as source of truth (autonyms and RTL from the catalog). SaveSettings/SetDefaultLanguage run the persistable shape so an application save does not write catalog fields back. Do not backfill `ISO639_3` onto seeded English. A Filters Delete bug during dry-run was the table using leftover mongoose `_id` as `rowId`; the fix is `rowId = id`, not minting `_id`. Same for Menu.
 
@@ -548,8 +557,8 @@ Dual-store Settings is mergeable. Remaining items are named debt, not more stora
 - **§6** — dispatch `newNameGeneration` rewrite as a **job** (durability/retry). Inline `TemplateFacade.applyNewNameGeneration` stays. Templates should own the algorithm (separate ticket).
 - **§7** — one parse (drop controller parse or use-case parse), `app/shared/contracts/Settings.ts`, rename `saveSettingsInput.ts` → `SettingsSchemas`, move `objectIdValue` out of `menuItems.ts`. Do not swap `IdSchema`.
 - **§8** — remaining internal readers that still call write `get()`/`find()` for a flag or blob (named reads already exist for the old `readFields` cluster). `SettingsDirectory` / Users-style DAO field groups were **not** a prerequisite for the domain/DS fix; park them here.
-- Hybrid TM (AddLanguage / Mongo `run()` vs PG DS auto-commit) — documented above; only bites a `postgresCore` tenant.
 - Slim-GET column inventory (CSS/JS and similar off the default internal load) — not locked; HTTP `/api/settings` JSON stays today’s body.
+- Jobs that still need Mongo take `mongoTransactionManager` while the use-case TM is PG under `postgresCore` — keep that split explicit; do not “unify” by passing the PG TM into the queue adapter.
 
 ---
 
@@ -1546,10 +1555,11 @@ Source: in-repo plan `settings_domain_alignment`. Dual-store was not the complai
 
 - Users-style Settings DAO / Directory as a write-side prerequisite — stopped. Audience pick stays in QueryService for now.
 - Exact inventory of columns to omit from an internal base GET (CSS/JS are examples).
-- §6 job, §7 contracts, §8 leftover `get()` readers, hybrid TM.
+- §6 job, §7 contracts, §8 leftover `get()` readers.
 - Cloning Entities GET or Users DAO field groups as “the Settings design.”
 
 **Write `get()` vs named reads**
 
 Commands: `settingsDS.get()` → mutate → `update`. Internal readers that only need a flag or blob should use a named read (that conversion of remaining `get()` call sites is §8).
 
+**Local dry-run (2026-09-11)** — see Status / Data copy / “Local dry-run pitfalls” above. Language + Links work with `postgresCore` after the clone pagination, Links QueryService response, and settings `--force` conflict target fixes.
