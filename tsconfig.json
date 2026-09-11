@@ -30,6 +30,10 @@
       "#storybook/preview": ["./.storybook/preview.js"],
       "#api/utils/*": ["./app/api/utils/*"],
       "#app/utils/*": ["./app/react/utils/*"],
+      // react-datepicker@9 ships an ESM build (dist/index.es.js) but its package.json
+      // lacks "type": "module", so Node 22 loads it as CJS and throws
+      // ERR_REQUIRE_CYCLE_MODULE. Force the CJS build for the tsx dev server.
+      "react-datepicker": ["./node_modules/react-datepicker/dist/index.js"],
       "*": ["./*"]
     },
     //TODO: solve conflict between @types from react dependencies
