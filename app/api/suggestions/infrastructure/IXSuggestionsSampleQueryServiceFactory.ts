@@ -1,5 +1,5 @@
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
-import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { mongoTransactionManager } from '#api/services/informationextraction/infrastructure/contextTransactionManagers.js';
 import { IXSuggestionsSampleQueryService } from '../domain/IXSuggestionsSampleQueryService.js';
 import { MongoIXSuggestionsSampleQueryService } from './MongoIXSuggestionsSampleQueryService.js';
 
@@ -8,7 +8,7 @@ class IXSuggestionsSampleQueryServiceFactory {
   static default(): IXSuggestionsSampleQueryService {
     return new MongoIXSuggestionsSampleQueryService({
       db: getConnection(),
-      transactionManager: TransactionManagerFactory.mongo(),
+      transactionManager: mongoTransactionManager(),
     });
   }
 }

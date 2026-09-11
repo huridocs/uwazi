@@ -1,5 +1,6 @@
 import db from '#api/utils/testing_db.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { testingPG } from '#api/utils/testing_pg.js';
 import { testingTenants } from '#api/utils/testingTenants.js';
 import { IXExtractorsDataSource } from '../IXExtractorsDataSource.js';
 import { IXExtractorsDAOFactory } from '../../infrastructure/IXExtractorsDAOFactory.js';
@@ -195,6 +196,32 @@ const syncLogCases = (sut: Sut) => {
 };
 
 /**
+ * Fixtures are mirrored into both stores, so every other case would pass against the wrong one.
+ * This pins that the factory routes writes to the store the tenant's `postgresCore` flag selects.
+ */
+const routingCases = (sut: Sut, usePostgres: boolean) => {
+  describe('routing', () => {
+    it("should write to the tenant's store only", async () => {
+      const created = await sut().create({
+        name: 'routed',
+        property: 'target_e',
+        source: { pdf: true },
+        templates: [],
+      });
+
+      const inPostgres = (await testingPG.getAllFrom('ix_extractors')).some(
+        row => row._id === created._id.toString()
+      );
+      const inMongo = Boolean(
+        await db.mongodb!.collection('ixextractors').findOne({ _id: created._id })
+      );
+
+      expect({ inPostgres, inMongo }).toEqual({ inPostgres: usePostgres, inMongo: !usePostgres });
+    });
+  });
+};
+
+/**
  * The IXExtractorsDataSource contract suite: one set of cases, run against the Mongo and the
  * Postgres implementation. Expectations are the fixture documents themselves, compared with
  * `toEqual`, so a field present on one backend and absent on the other fails.
@@ -219,12 +246,11 @@ describe('IXExtractorsDataSource', () => {
     });
 
     const sut: Sut = () =>
-      testingEnvironment.runWithContext(() =>
-        usePostgres ? IXExtractorsDAOFactory.postgres() : IXExtractorsDAOFactory.mongo()
-      );
+      testingEnvironment.runWithContext(() => IXExtractorsDAOFactory.default());
 
     readCases(sut);
     writeCases(sut);
     syncLogCases(sut);
+    routingCases(sut, usePostgres);
   });
 });
