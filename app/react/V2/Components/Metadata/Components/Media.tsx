@@ -24,6 +24,12 @@ const isImageMedia = (value: string, mimetype?: string, fileType?: string) =>
   Boolean(mimetype?.startsWith('image/')) ||
   getMimetypeFromUrl(value).startsWith('image/');
 
+const syncPlayerRefs = (refs: { current: React.RefObject<PlayerInstance>[] }, count: number) => {
+  if (refs.current.length !== count) {
+    refs.current = Array.from({ length: count }, () => React.createRef<PlayerInstance>());
+  }
+};
+
 const Media = ({
   values,
   width = '100%',
@@ -35,23 +41,21 @@ const Media = ({
 }: MediaProps) => {
   const baseId = useId();
   const playerRefs = useRef<React.RefObject<PlayerInstance>[]>([]);
-  if (playerRefs.current.length !== values.length) {
-    playerRefs.current = Array.from({ length: values.length }, () =>
-      React.createRef<PlayerInstance>()
-    );
-  }
+  syncPlayerRefs(playerRefs, values.length);
 
   const nonEmptyValues = values.filter(v => v.value);
-  const cover = imageStyle === 'cover';
-  const framed = frame === 'video';
-  const compact = density === 'compact';
-  const stack = compact
-    ? 'flex min-w-0 max-w-full flex-col'
-    : 'flex h-full min-h-0 min-w-0 max-w-full flex-1 flex-col';
-
   if (nonEmptyValues.length === 0) {
     return null;
   }
+
+  const { cover, framed, compact } = {
+    cover: imageStyle === 'cover',
+    framed: frame === 'video',
+    compact: density === 'compact',
+  };
+  const stack = compact
+    ? 'flex min-w-0 max-w-full flex-col'
+    : 'flex h-full min-h-0 min-w-0 max-w-full flex-1 flex-col';
 
   return (
     <div className={`${stack} gap-4 overflow-hidden`}>

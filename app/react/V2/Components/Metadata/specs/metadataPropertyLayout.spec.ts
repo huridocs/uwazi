@@ -218,6 +218,11 @@ describe('metadataPropertyLayout', () => {
       expect(mediaRowTrackCount(twoCol)).toBe(2);
       expect(mediaRowTrackCount(threeCol - 1)).toBe(2);
       expect(mediaRowTrackCount(threeCol)).toBe(3);
+    });
+
+    it('picks image, video, and geo masonry row classes from field types', () => {
+      const twoCol = MEDIA_CARD_MIN_PX * 2 + PROPERTY_ROW_GAP_PX;
+      const threeCol = MEDIA_CARD_MIN_PX * 3 + PROPERTY_ROW_GAP_PX * 2;
       expect(mediaMasonryRowClass(twoCol - 1, [imageField])).toBe(
         'grid w-full min-w-0 items-stretch gap-3 max-h-48 auto-rows-[12rem] grid-cols-1'
       );

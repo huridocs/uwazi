@@ -59,14 +59,16 @@ const geoProp: MetadataProperty = {
 };
 
 describe('renderFieldContent density', () => {
-  it('uses Fit and Fill object-fit; fullWidth does not set image height', () => {
-    const { rerender } = render(<>{renderFieldContent(imageProp)}</>);
+  it('uses Fit object-fit without image height caps', () => {
+    render(<>{renderFieldContent(imageProp)}</>);
     expect(screen.getByRole('img').className).toContain('h-full');
     expect(screen.getByRole('img').className).not.toContain('max-h-96');
     expect(screen.getByRole('img').className).not.toContain('max-h-48');
     expect(screen.getByRole('img')).toHaveStyle({ objectFit: 'contain' });
+  });
 
-    rerender(<>{renderFieldContent({ ...imageProp, style: 'cover' })}</>);
+  it('uses Fill object-fit; fullWidth does not set image height', () => {
+    const { rerender } = render(<>{renderFieldContent({ ...imageProp, style: 'cover' })}</>);
     expect(screen.getByRole('img')).toHaveStyle({ objectFit: 'cover' });
     expect(screen.getByRole('img').className).toContain('w-full');
     expect(screen.getByRole('img').className).toContain('h-full');
@@ -78,21 +80,27 @@ describe('renderFieldContent density', () => {
     expect(screen.getByRole('img').className).not.toContain('max-h-48');
   });
 
-  it('uses Fill and Fit video object-fit in parent height; fullWidth does not set height', () => {
-    const { rerender } = render(<>{renderFieldContent(mediaProp)}</>);
+  it('uses Fill video object-fit in parent height', () => {
+    render(<>{renderFieldContent(mediaProp)}</>);
+    const player = screen.getByTestId('media-player');
+    expect(player).toHaveAttribute('data-height', '100%');
+    expect(player).toHaveStyle({ objectFit: 'cover' });
+    expect(player.parentElement?.className).toContain('h-full');
+    expect(player.parentElement?.className).not.toContain('aspect-video');
+    expect(player.parentElement?.className).not.toContain('max-h-96');
+  });
+
+  it('keeps Fill video object-fit when fullWidth; does not set height', () => {
+    render(<>{renderFieldContent({ ...mediaProp, fullWidth: true })}</>);
+    const player = screen.getByTestId('media-player');
+    expect(player).toHaveStyle({ objectFit: 'cover' });
+    expect(player.parentElement?.className).toContain('h-full');
+    expect(player.parentElement?.className).not.toContain('max-h-96');
+  });
+
+  it('uses Fit video object-fit in parent height; fullWidth does not set height', () => {
+    const { rerender } = render(<>{renderFieldContent({ ...mediaProp, style: 'contain' })}</>);
     const player = () => screen.getByTestId('media-player');
-    expect(player()).toHaveAttribute('data-height', '100%');
-    expect(player()).toHaveStyle({ objectFit: 'cover' });
-    expect(player().parentElement?.className).toContain('h-full');
-    expect(player().parentElement?.className).not.toContain('aspect-video');
-    expect(player().parentElement?.className).not.toContain('max-h-96');
-
-    rerender(<>{renderFieldContent({ ...mediaProp, fullWidth: true })}</>);
-    expect(player()).toHaveStyle({ objectFit: 'cover' });
-    expect(player().parentElement?.className).toContain('h-full');
-    expect(player().parentElement?.className).not.toContain('max-h-96');
-
-    rerender(<>{renderFieldContent({ ...mediaProp, style: 'contain' })}</>);
     expect(player()).toHaveStyle({ objectFit: 'contain' });
     expect(player().parentElement?.className).toContain('h-full');
 
