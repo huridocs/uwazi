@@ -215,6 +215,54 @@ describe('MigrateCollectionToPostgres', () => {
     ]);
   });
 
+  it('should skip and count documents whose parent reference is not in the parent collection', async () => {
+    const mongoDb = testingDB.db(testingDB.dbName);
+    await testingDB.clear(['templates']);
+    await mongoDb
+      .collection('templates')
+      .insertMany([
+        { _id: new ObjectId('64a1b2c3d4e5f6a7b8c9a001') },
+        { _id: new ObjectId('64a1b2c3d4e5f6a7b8c9a002') },
+      ]);
+    await mongoDb.collection('dictionaries').insertMany([
+      {
+        _id: new ObjectId('64a1b2c3d4e5f6a7b8c9d0f1'),
+        name: 'Parent as ObjectId',
+        parent: new ObjectId('64a1b2c3d4e5f6a7b8c9a001'),
+      },
+      {
+        _id: new ObjectId('64a1b2c3d4e5f6a7b8c9d0f2'),
+        name: 'Parent as hex string',
+        parent: '64a1b2c3d4e5f6a7b8c9a002',
+      },
+      {
+        _id: new ObjectId('64a1b2c3d4e5f6a7b8c9d0f3'),
+        name: 'Orphan',
+        parent: new ObjectId('64a1b2c3d4e5f6a7b8c9a999'),
+      },
+    ]);
+
+    const config: MigrationConfig = {
+      mongoCollection: 'dictionaries',
+      pgTable: 'thesauri',
+      excludeOrphansOf: { field: 'parent', collection: 'templates' },
+      mapDocument(doc: Record<string, unknown>) {
+        return { _id: String(doc._id), name: doc.name, values: JSON.stringify([]) };
+      },
+    };
+
+    const result = await makeMigrator().migrate(config);
+
+    expect(result).toEqual({ migrated: 2, orphansSkipped: 1, skipped: false });
+    const rowsForTenant = (await testingPG.getAllFrom('thesauri')).filter(
+      r => r.tenant_id === TENANT
+    );
+    expect(rowsForTenant.map(r => r.name).sort()).toEqual([
+      'Parent as ObjectId',
+      'Parent as hex string',
+    ]);
+  });
+
   it('should skip migration when PostgreSQL table already contains data for tenant', async () => {
     const mongoDb = testingDB.db(testingDB.dbName);
 

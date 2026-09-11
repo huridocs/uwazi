@@ -110,9 +110,10 @@ async function migrateCollection(
       { force: argv.force }
     );
 
+    const orphans = result.orphansSkipped ? `, skipped ${result.orphansSkipped} orphans` : '';
     const summary = result.skipped
       ? `Skipped ${collectionName}: PostgreSQL table already contains data for tenant`
-      : `Migrated ${result.migrated} rows for ${collectionName}`;
+      : `Migrated ${result.migrated} rows for ${collectionName}${orphans}`;
     log(`[${tenantName}] ${summary}`);
   }, tenantName);
 }

@@ -34,6 +34,7 @@ import { PostgresEntityMapper } from '#api/core/infrastructure/postgresql/entity
 import type { EntityRow } from '#api/core/infrastructure/postgresql/entity/PostgresEntityRow.js';
 import {
   IXExtractorsMigrationConfig,
+  IXModelsMigrationConfig,
   PageLocalesMigrationConfig,
   PageMigrationConfig,
 } from '#api/core/infrastructure/postgresql/migrations/configs/index.js';
@@ -117,6 +118,7 @@ const PG_SANITIZER_BY_MONGO_COLLECTION: Record<
   translationsV2: sanitizeTranslationForPostgres,
   pages: PageMigrationConfig.mapDocument,
   ixextractors: IXExtractorsMigrationConfig.mapDocument,
+  ixmodels: IXModelsMigrationConfig.mapDocument,
 };
 
 const MIRRORED_COLLECTIONS = [
@@ -130,6 +132,7 @@ const MIRRORED_COLLECTIONS = [
   'usergroups',
   'translationsV2',
   'ixextractors',
+  'ixmodels',
 ];
 
 const PG_TABLE_BY_MONGO_COLLECTION: Record<string, string> = {
@@ -137,6 +140,7 @@ const PG_TABLE_BY_MONGO_COLLECTION: Record<string, string> = {
   relationtypes: 'relationship_types',
   translationsV2: 'translations',
   ixextractors: 'ix_extractors',
+  ixmodels: 'ix_models',
 };
 
 type SetUpOptions = {

@@ -10,6 +10,11 @@ interface MigrationConfig {
   mongoCollection: string;
   pgTable: string;
   mapDocument(doc: Record<string, unknown>): Record<string, unknown>;
+  /**
+   * Skip documents whose `field` is not the `_id` of a document in `collection`, which a
+   * foreign key on the Postgres table would reject. Skipped documents are counted, not migrated.
+   */
+  excludeOrphansOf?: { field: string; collection: string };
 }
 
 /** For collections where one mongo document becomes several postgres rows. */
@@ -83,44 +88,80 @@ const flushBatch = async (
   return [];
 };
 
+/** The rows a document becomes, or none when it is an orphan; counts it either way. */
+const rowsToMigrate = (
+  doc: Record<string, unknown>,
+  options: {
+    mapRows: (doc: Record<string, unknown>) => Record<string, unknown>[];
+    isOrphan: (doc: Record<string, unknown>) => boolean;
+  },
+  counts: { migrated: number; orphansSkipped: number }
+): Record<string, unknown>[] => {
+  if (options.isOrphan(doc)) {
+    counts.orphansSkipped += 1;
+    return [];
+  }
+  counts.migrated += 1;
+  return options.mapRows(doc);
+};
+
 class MigrateCollectionToPostgres {
   constructor(
     private mongoDb: Db,
     private tenantId: string
   ) {}
 
+  /** Parent `_id`s are read once per run and compared as hex strings. */
+  private async orphanCheckFor(
+    config: AnyMigrationConfig
+  ): Promise<(doc: Record<string, unknown>) => boolean> {
+    if (!('excludeOrphansOf' in config) || !config.excludeOrphansOf) {
+      return () => false;
+    }
+
+    const { field, collection } = config.excludeOrphansOf;
+    const parentIds = new Set(
+      await this.mongoDb
+        .collection(collection)
+        .find({}, { projection: { _id: 1 } })
+        .map(parent => String(parent._id))
+        .toArray()
+    );
+    return doc => !parentIds.has(String(doc[field]));
+  }
+
   private async fetchAndInsert(
     config: AnyMigrationConfig,
     table: PostgresTable,
     options: {
       mapRows: (doc: Record<string, unknown>) => Record<string, unknown>[];
+      isOrphan: (doc: Record<string, unknown>) => boolean;
       force: boolean;
     }
-  ): Promise<number> {
+  ): Promise<{ migrated: number; orphansSkipped: number }> {
     const cursor = this.mongoDb
       .collection<Record<string, unknown>>(config.mongoCollection)
       .find({})
       .batchSize(BATCH_SIZE);
 
-    let migrated = 0;
+    const counts = { migrated: 0, orphansSkipped: 0 };
     let batch: Record<string, unknown>[] = [];
 
     for await (const doc of cursor) {
-      batch.push(...options.mapRows(doc));
-      migrated += 1;
+      batch.push(...rowsToMigrate(doc, options, counts));
       if (batch.length >= BATCH_SIZE) {
         batch = await flushBatch(table, batch, options.force);
       }
     }
 
     await insertBatch(table, batch, options.force);
-    return migrated;
+    return counts;
   }
 
   async migrate(
     config: AnyMigrationConfig,
     options: MigrateOptions = {}
-  ): Promise<{ migrated: number; skipped: boolean }> {
+  ): Promise<{ migrated: number; orphansSkipped: number; skipped: boolean }> {
     const pgTransactionManager = new PostgresTransactionManager(
       PostgresDB.knex,
       this.tenantId,
@@ -136,15 +177,16 @@ class MigrateCollectionToPostgres {
       const existingRow = await table.first();
 
       if (existingRow !== undefined) {
-        return { migrated: 0, skipped: true };
+        return { migrated: 0, orphansSkipped: 0, skipped: true };
       }
     }
 
-    const migrated = await this.fetchAndInsert(config, table, {
+    const counts = await this.fetchAndInsert(config, table, {
       mapRows: rowsMapperOf(config),
+      isOrphan: await this.orphanCheckFor(config),
       force: options.force ?? false,
     });
-    return { migrated, skipped: false };
+    return { ...counts, skipped: false };
   }
 }
 
