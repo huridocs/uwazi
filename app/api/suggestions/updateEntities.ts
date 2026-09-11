@@ -22,8 +22,7 @@ import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { UsersDirectoryFactory } from '#api/core/infrastructure/factories/UsersDirectoryFactory.js';
 import { User } from '#api/users.v2/model/User.js';
 import type { LanguageISO6391, MetadataSchema } from '#shared/types/commonTypes.js';
-
-class SuggestionAcceptanceError extends Error {}
+import { SuggestionAcceptanceError } from './errors.js';
 
 interface AcceptedSuggestion {
   _id: ObjectIdSchema;
