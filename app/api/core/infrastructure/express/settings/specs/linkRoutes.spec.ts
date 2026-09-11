@@ -103,6 +103,19 @@ describe('api/settings/links', () => {
         currentUser = adminUser;
         const response = await request(app).post('/api/settings/links').send(newLinks);
         expect(response.status).toEqual(200);
+        // Command returns void; HTTP must re-read via QueryService (same as POST /api/settings).
+        expect(response.body.links).toEqual(
+          expect.arrayContaining(
+            newLinks.map(link =>
+              expect.objectContaining({
+                title: link.title,
+                type: link.type,
+                id: expect.any(String),
+              })
+            )
+          )
+        );
+        expect(response.body.links).toHaveLength(newLinks.length);
         const storedLinks =
           (
             await testingEnvironment.runWithContext(
