@@ -1,6 +1,5 @@
 import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
-import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
 import { PostgresPagesDataSource } from '#api/core/infrastructure/postgresql/page/PostgresPagesDataSource.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { PagesDataSource } from '#api/pages.v2/application/contracts/PagesDataSource.js';
@@ -20,8 +19,7 @@ export class PagesDataSourceFactory {
     }
 
     const db = getConnection();
-    const tm = (overrides?.transactionManager ??
-      ExecutionContext.transactionManager) as MongoTransactionManager;
+    const tm = overrides?.transactionManager ?? ExecutionContext.transactionManager;
     return new MongoPagesDataSource(db, tm);
   }
 }

@@ -7156,12 +7156,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:20.19.6":
-  version: 20.19.6
-  resolution: "@types/node@npm:20.19.6"
+"@types/node@npm:22.20.1":
+  version: 22.20.1
+  resolution: "@types/node@npm:22.20.1"
   dependencies:
     undici-types: "npm:~6.21.0"
-  checksum: 10c0/207272e83b0397959d434c901b71539d7e8316ddc2b27fe51f977e3210dc2b504796b29e46d389010f04767cf9b384f19ae5991ea87102c07c74d368c58e2f0b
+  checksum: 10c0/f2ba54d3d1fb92e1c57c78d32c3a17655b1e87363b707136f55c422b4838d4054901ce5d27f75bb0e5ecb7ebfee3804e0987822d22b473473008091857a09353
   languageName: node
   linkType: hard
 
@@ -24244,7 +24244,7 @@ __metadata:
     "@types/luxon": "npm:^3.7.1"
     "@types/mime-types": "npm:^2.1.1"
     "@types/multer": "npm:^2.2.0"
-    "@types/node": "npm:20.19.6"
+    "@types/node": "npm:22.20.1"
     "@types/node-uuid": "npm:^0.0.28"
     "@types/nodemailer": "npm:^8.0.0"
     "@types/pg": "npm:^8.21.0"

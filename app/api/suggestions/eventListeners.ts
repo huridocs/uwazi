@@ -29,7 +29,7 @@ const registerEventListeners = (eventsBus: EventsBus) => {
   new AfterEntityUpdatedListener(eventsBus, () => ({
     eventBus: eventsBus,
     settingsDS: SettingsDataSourceFactory.default({
-      transactionManager: TransactionManagerFactory.default(),
+      transactionManager: TransactionManagerFactory.mongo(),
     }),
     logger: LoggerFactory.default(),
     updateSuggestionsAfterEntityUpdate: new UpdateSuggestionsAfterEntityUpdate(
@@ -41,10 +41,9 @@ const registerEventListeners = (eventsBus: EventsBus) => {
   eventsBus.on(EntityCreatedEvent, async ({ entities }) => {
     if (!(await featureIsEnabled())) return;
 
-    const extractors = await Extractors.get({
-      templates: { $in: [entities[0].template] },
-      'source.property': { $exists: true },
-    });
+    const extractors = await Extractors.getPropertySourceExtractorsForTemplate(
+      entities[0].template!
+    );
 
     if (!extractors.length) return;
 
@@ -73,7 +72,7 @@ const registerEventListeners = (eventsBus: EventsBus) => {
   new AfterFileUpdatedListener(eventsBus, () => ({
     eventBus: eventsBus,
     settingsDS: SettingsDataSourceFactory.default({
-      transactionManager: TransactionManagerFactory.default(),
+      transactionManager: TransactionManagerFactory.mongo(),
     }),
     createBlankSuggestionsFromDocument: new CreateBlankSuggestionsFromDocument(),
     logger: LoggerFactory.default(),
@@ -81,7 +80,7 @@ const registerEventListeners = (eventsBus: EventsBus) => {
 
   eventsBus.on(FilesDeletedEvent, async ({ files: _files }) => {
     if (!(await featureIsEnabled())) return;
-    await Suggestions.delete({ fileId: { $in: _files.map(f => f._id) } });
+    await Suggestions.deleteByFileIds(_files.map(f => f._id!));
   });
 
   eventsBus.on(TemplateUpdatedEvent, async ({ after }) => {

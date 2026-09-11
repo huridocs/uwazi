@@ -3,7 +3,7 @@ import { Db } from 'mongodb';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { UwaziDispatcherFactory } from '#api/core/infrastructure/jobs/UwaziDispatcherFactory.js';
-import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
+import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
 
 import { PXExtractParagraphsFromEntities } from '../application/PXExtractParagraphFromEntities.js';
 import { PXEntitiesStatusDataSourceFactory } from './PXEntityStatusDataSourceFactory.js';
@@ -12,7 +12,7 @@ import { PXEntitiesStatusDataSource } from '../domain/PXEntitiesStatusDataSource
 type Props = {
   tenantName: string;
   connection?: Db;
-  mongoTransactionManager?: MongoTransactionManager;
+  mongoTransactionManager?: TransactionManager;
   entitiesStatusDS?: PXEntitiesStatusDataSource;
 };
 
@@ -20,7 +20,7 @@ export class PXExtractParagraphsFromEntitiesFactory {
   static async createDefault(props: Props) {
     const connection = props.connection ?? getConnection();
     const mongoTransactionManager =
-      props.mongoTransactionManager ?? TransactionManagerFactory.default();
+      props.mongoTransactionManager ?? TransactionManagerFactory.mongo();
 
     const entitiesStatusDS =
       props.entitiesStatusDS ??

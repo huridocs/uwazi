@@ -8,7 +8,7 @@ import { TransactionManagerFactory } from '#api/core/infrastructure/factories/Tr
 import templates from '#api/core/v1_layer/templates/templates.js';
 
 const processNewRelationshipProperties = async (template: TemplateSchema) => {
-  const transactionManager = TransactionManagerFactory.default();
+  const transactionManager = TransactionManagerFactory.mongo();
   if (
     !(await SettingsDataSourceFactory.default({ transactionManager }).readNewRelationshipsAllowed())
   ) {
@@ -42,14 +42,14 @@ const processNewRelationshipProperties = async (template: TemplateSchema) => {
 
 const newRelationshipsAllowed = async () =>
   SettingsDataSourceFactory.default({
-    transactionManager: TransactionManagerFactory.default(),
+    transactionManager: TransactionManagerFactory.mongo(),
   }).readNewRelationshipsAllowed();
 
 const processNewRelationshipPropertiesOnUpdate = async (
   _oldTemplate: TemplateSchema,
   _newTemplate: TemplateSchema
 ) => {
-  const transactionManager = TransactionManagerFactory.default();
+  const transactionManager = TransactionManagerFactory.mongo();
   if (
     !(await SettingsDataSourceFactory.default({ transactionManager }).readNewRelationshipsAllowed())
   ) {
@@ -63,7 +63,7 @@ const processNewRelationshipPropertiesOnUpdate = async (
 };
 
 const processNewRelationshipPropertiesOnDelete = async (templateId: TemplateSchema['_id']) => {
-  const transactionManager = TransactionManagerFactory.default();
+  const transactionManager = TransactionManagerFactory.mongo();
   if (
     !(await SettingsDataSourceFactory.default({ transactionManager }).readNewRelationshipsAllowed())
   ) {

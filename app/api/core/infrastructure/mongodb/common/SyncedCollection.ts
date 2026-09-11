@@ -33,7 +33,7 @@ import {
   WithId,
   WithoutId,
 } from 'mongodb';
-import { MongoTransactionManager } from './MongoTransactionManager.js';
+import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
 import { SessionScopedCollection } from './SessionScopedCollection.js';
 import { BulkWriteStream } from './BulkWriteStream.js';
 import { MongoResultSet } from './MongoResultSet.js';
@@ -43,17 +43,13 @@ export class SyncedCollection<TSchema extends Document = Document>
   extends CollectionWrapper<TSchema>
   implements Collection<TSchema>
 {
-  private transactionManager: MongoTransactionManager;
+  private transactionManager: TransactionManager;
 
   private db: Db;
 
   private sessionScopedCollection: SessionScopedCollection;
 
-  constructor(
-    collection: Collection<TSchema>,
-    transactionManager: MongoTransactionManager,
-    db: Db
-  ) {
+  constructor(collection: Collection<TSchema>, transactionManager: TransactionManager, db: Db) {
     super(collection);
     this.transactionManager = transactionManager;
     this.db = db;

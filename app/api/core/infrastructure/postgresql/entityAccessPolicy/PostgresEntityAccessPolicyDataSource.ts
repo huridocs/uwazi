@@ -10,7 +10,7 @@ import { PermissionDBO } from '#api/core/infrastructure/mongodb/entityAccessPoli
 import { PostgresDataSource, PostgresDataSourceDeps } from '../common/PostgresDataSource.js';
 import { PostgresPermissionEnforcedTable } from '../common/PostgresPermissionEnforcedTable.js';
 import { PostgresTable } from '../common/PostgresTable.js';
-import { MongoTransactionManager } from '../../mongodb/common/MongoTransactionManager.js';
+import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
 
 type EntityAccessPolicyRow = {
   sharedId: string;
@@ -19,7 +19,7 @@ type EntityAccessPolicyRow = {
 };
 
 type Deps = PostgresDataSourceDeps & {
-  transactionManager: MongoTransactionManager;
+  transactionManager: TransactionManager;
   mongoDb: Db;
 };
 
@@ -27,7 +27,7 @@ class PostgresEntityAccessPolicyDataSource
   extends PostgresDataSource<EntityAccessPolicyRow>
   implements EntityAccessPolicyDataSource
 {
-  private transactionManager: MongoTransactionManager;
+  private transactionManager: TransactionManager;
 
   private permissionTable: PostgresPermissionEnforcedTable<EntityAccessPolicyRow>;
 

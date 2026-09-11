@@ -59,7 +59,10 @@ const formatExtractors = (
       namedTemplates,
       propertyType,
       propertyLabel,
-      source: sourceLabel || t('System', 'PDF', 'PDF', false),
+      // `sourceLabel`, not `source`: the row is passed straight back to ExtractorModal when the
+      // user edits it, and overwriting `source` with its label left the modal with a string where
+      // it expected `{pdf}`/`{property}` — so it fell back to pdf and a rename rewrote the source.
+      sourceLabel: sourceLabel || t('System', 'PDF', 'PDF', false),
     };
   });
 

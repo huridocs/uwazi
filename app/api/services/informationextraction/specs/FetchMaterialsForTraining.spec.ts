@@ -2,12 +2,10 @@
 import { ObjectId } from 'mongodb';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { testingTenants } from '#api/utils/testingTenants.js';
-import { IXSuggestionsModel } from '#api/suggestions/IXSuggestionsModel.js';
-import { IXModelsModel } from '#api/services/informationextraction/IXModelsModel.js';
-import { Extractors } from '#api/services/informationextraction/ixextractors.js';
 import { EnforcedWithId } from '#api/odm/index.js';
 import { IXExtractorType } from '#shared/types/extractorType.js';
 import { factory, fixtures } from './fixtures.js';
+import { ixTestAccess } from './ixTestAccess.js';
 import {
   getPropertyTrainingEntities,
   getPdfTrainingProcess,
@@ -21,22 +19,19 @@ describe('FetchMaterialsForTraining selection', () => {
     extractorId: ObjectId,
     samplePolicy: 'only_marked' | 'marked_plus_labeled'
   ) => {
-    await IXModelsModel.db.updateOne(
-      { extractorId },
-      { $set: { 'processRun.samplePolicy': samplePolicy } }
-    );
+    await ixTestAccess.setSamplePolicy(extractorId, samplePolicy);
   };
 
   const markUseForTraining = async (criteria: any) => {
-    await IXSuggestionsModel.updateMany(criteria, { $set: { useForTraining: true } });
+    await ixTestAccess.markUseForTraining(criteria);
   };
 
   beforeAll(async () => {
     await testingEnvironment.setUp(fixtures);
     testingTenants.changeCurrentTenant({ name: 'tenant1' });
     // Load extractors used by tests
-    [extractorProp] = await Extractors.get({ _id: factory.id('prop1extractor') });
-    [extractorPdf] = await Extractors.get({ _id: factory.id('prop1extractor') });
+    extractorProp = (await ixTestAccess.readExtractor(factory.id('prop1extractor')))!;
+    extractorPdf = (await ixTestAccess.readExtractor(factory.id('prop1extractor')))!;
   });
 
   afterAll(async () => {
