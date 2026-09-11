@@ -2,68 +2,98 @@ import React, { useId, useRef } from 'react';
 import { PlayIcon } from '@heroicons/react/20/solid';
 import { t } from '#app/I18N/index.js';
 import { MediaMetadataProperty } from '#V2/formatters/types.js';
+import { getMimetypeFromUrl } from '#V2/shared/formatHelpers.js';
 import { MediaPlayer } from '../../UI/index.js';
+import { Image, MEDIA_SURFACE } from './Image.js';
 
 type MediaProps = {
   values: MediaMetadataProperty['values'];
   width?: number | string;
   height?: number | string;
   frame?: 'natural' | 'video';
+  imageStyle?: 'contain' | 'cover';
+  fullWidth?: boolean;
+  density?: 'default' | 'compact';
 };
 
 type PlayerRef = NonNullable<React.ComponentProps<typeof MediaPlayer>['playerRef']>;
 type PlayerInstance = PlayerRef extends React.RefObject<infer T> ? T : never;
 
-const Media = ({ values, width = '100%', height = 300, frame = 'natural' }: MediaProps) => {
+const isImageMedia = (value: string, mimetype?: string, fileType?: string) =>
+  fileType === 'image' ||
+  Boolean(mimetype?.startsWith('image/')) ||
+  getMimetypeFromUrl(value).startsWith('image/');
+
+const syncPlayerRefs = (refs: { current: React.RefObject<PlayerInstance>[] }, count: number) => {
+  if (refs.current.length !== count) {
+    refs.current = Array.from({ length: count }, () => React.createRef<PlayerInstance>());
+  }
+};
+
+const Media = ({
+  values,
+  width = '100%',
+  height = 300,
+  frame = 'natural',
+  imageStyle = 'cover',
+  fullWidth = false,
+  density = 'default',
+}: MediaProps) => {
   const baseId = useId();
   const playerRefs = useRef<React.RefObject<PlayerInstance>[]>([]);
-  if (playerRefs.current.length !== values.length) {
-    playerRefs.current = Array.from({ length: values.length }, () =>
-      React.createRef<PlayerInstance>()
-    );
-  }
+  syncPlayerRefs(playerRefs, values.length);
 
-  const nonEmptyValues = values?.filter(v => v.value) ?? [];
-
+  const nonEmptyValues = values.filter(v => v.value);
   if (nonEmptyValues.length === 0) {
     return null;
   }
 
+  const { cover, framed, compact } = {
+    cover: imageStyle === 'cover',
+    framed: frame === 'video',
+    compact: density === 'compact',
+  };
+  const stack = compact
+    ? 'flex min-w-0 max-w-full flex-col'
+    : 'flex h-full min-h-0 min-w-0 max-w-full flex-1 flex-col';
+
   return (
-    <div
-      className={`flex min-w-0 max-w-full flex-col gap-4 overflow-hidden${
-        frame === 'video' ? ' min-h-0 flex-1' : ''
-      }`}
-    >
-      {nonEmptyValues.map(({ value, alt, timelinks = [] }, index) => {
+    <div className={`${stack} gap-4 overflow-hidden`}>
+      {nonEmptyValues.map(({ value, alt, timelinks = [], mimetype, fileType }, index) => {
+        if (isImageMedia(value, mimetype, fileType)) {
+          return (
+            <Image
+              key={value}
+              values={[{ value, alt }]}
+              imageStyle={imageStyle}
+              density={density}
+              fullWidth={fullWidth}
+            />
+          );
+        }
+
         const playerRef = playerRefs.current[index];
         const handleTimelinkClick = (time: number) => {
           playerRef?.current?.seekTo(time, 'seconds');
         };
 
         const figId = `${baseId}-${index}`;
-
+        const hasTimelinks = timelinks.length > 0;
+        const box = compact
+          ? 'max-h-[140px]'
+          : `min-h-48 ${hasTimelinks ? 'shrink-0' : 'h-full min-h-0'}${framed && cover ? ' relative' : ''}`;
         return (
-          <div
-            key={value}
-            className={`flex min-w-0 max-w-full flex-col gap-2${
-              frame === 'video' ? ' min-h-0 flex-1' : ''
-            }`}
-          >
-            <figure
-              aria-labelledby={figId}
-              className={`w-full min-w-0 max-w-full overflow-hidden rounded-md bg-(--color-theme-surface-warm) ${
-                frame === 'video' ? 'relative min-h-0 flex-1 aspect-video' : ''
-              }`.trim()}
-            >
+          <div key={value} className={`${stack} gap-2`}>
+            <figure aria-labelledby={figId} className={`${MEDIA_SURFACE} ${box}`}>
               <MediaPlayer
                 className={
-                  frame === 'video' ? 'absolute inset-0 h-full w-full' : 'h-full w-full max-w-full'
+                  framed && cover ? 'absolute inset-0 h-full w-full' : 'h-full w-full max-w-full'
                 }
                 playerRef={playerRef}
                 url={value}
                 width={width}
-                height={frame === 'video' ? '100%' : height}
+                height={framed ? '100%' : height}
+                style={framed ? { objectFit: cover ? 'cover' : 'contain' } : undefined}
               />
               {alt && (
                 <figcaption className="sr-only" id={figId}>
@@ -72,9 +102,9 @@ const Media = ({ values, width = '100%', height = 300, frame = 'natural' }: Medi
               )}
             </figure>
 
-            {timelinks.length > 0 && (
-              <nav className="w-full" aria-label={t('System', 'Timelinks', null, false)}>
-                <ul className="flex flex-col gap-2">
+            {hasTimelinks && (
+              <nav className="min-h-0 w-full" aria-label={t('System', 'Timelinks', null, false)}>
+                <ul className="flex max-h-32 flex-col gap-2 overflow-y-auto">
                   {timelinks.map(({ time, hh, mm, ss, label: timelinkLabel }) => (
                     <li key={timelinkLabel + time}>
                       <button
