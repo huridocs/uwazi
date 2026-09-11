@@ -11,6 +11,12 @@ interface MigrationConfig {
   pgTable: string;
   mapDocument(doc: Record<string, unknown>): Record<string, unknown>;
   assertDocumentCount?(count: number): void;
+  /**
+   * Columns for `ON CONFLICT ... DO NOTHING` when `--force` is set.
+   * Defaults to `['_id', 'tenant_id']` (most core tables).
+   * Settings is a singleton keyed only by `tenant_id`.
+   */
+  conflictColumns?: string[];
 }
 
 /** For collections where one mongo document becomes several postgres rows. */
@@ -18,6 +24,7 @@ interface RowsMigrationConfig {
   mongoCollection: string;
   pgTable: string;
   mapRows(doc: Record<string, unknown>): Record<string, unknown>[];
+  conflictColumns?: string[];
 }
 
 type AnyMigrationConfig = MigrationConfig | RowsMigrationConfig;
@@ -48,10 +55,17 @@ const serializeRow = (row: Record<string, unknown>): Record<string, unknown> => 
   return serialized;
 };
 
+const DEFAULT_CONFLICT_COLUMNS = ['_id', 'tenant_id'];
+
+type InsertBatchOptions = {
+  force: boolean;
+  conflictColumns: string[];
+};
+
 const insertBatch = async (
   table: PostgresTable,
   batch: Record<string, unknown>[],
-  force: boolean
+  { force, conflictColumns }: InsertBatchOptions
 ): Promise<void> => {
   if (!batch.length) {
     return;
@@ -60,7 +74,7 @@ const insertBatch = async (
   try {
     await table.transactionManager.withConnection(async trx => {
       if (force) {
-        await trx(table.tableName).insert(rows).onConflict(['_id', 'tenant_id']).ignore();
+        await trx(table.tableName).insert(rows).onConflict(conflictColumns).ignore();
       } else {
         await trx(table.tableName).insert(rows);
       }
@@ -78,10 +92,38 @@ const insertBatch = async (
 const flushBatch = async (
   table: PostgresTable,
   batch: Record<string, unknown>[],
-  force: boolean
+  options: InsertBatchOptions
 ): Promise<Record<string, unknown>[]> => {
-  await insertBatch(table, batch, force);
+  await insertBatch(table, batch, options);
   return [];
+};
+
+type AccumulateDocArgs = {
+  doc: Record<string, unknown>;
+  mapRows: (doc: Record<string, unknown>) => Record<string, unknown>[];
+  table: PostgresTable;
+  batch: Record<string, unknown>[];
+  migrated: number;
+  insertOptions: InsertBatchOptions;
+};
+
+const accumulateDoc = async ({
+  doc,
+  mapRows,
+  table,
+  batch,
+  migrated,
+  insertOptions,
+}: AccumulateDocArgs): Promise<{ batch: Record<string, unknown>[]; migrated: number }> => {
+  const nextBatch = [...batch, ...mapRows(doc)];
+  const nextMigrated = migrated + 1;
+  if (nextBatch.length < BATCH_SIZE) {
+    return { batch: nextBatch, migrated: nextMigrated };
+  }
+  return {
+    batch: await flushBatch(table, nextBatch, insertOptions),
+    migrated: nextMigrated,
+  };
 };
 
 class MigrateCollectionToPostgres {
@@ -90,14 +132,35 @@ class MigrateCollectionToPostgres {
     private tenantId: string
   ) {}
 
+  private tableFor(pgTable: string) {
+    const pgTransactionManager = new PostgresTransactionManager(
+      PostgresDB.knex,
+      this.tenantId,
+      LoggerFactory.systemLogger()
+    );
+    return PostgresTable.for({
+      tableName: pgTable,
+      tenantId: this.tenantId,
+      transactionManager: pgTransactionManager,
+    });
+  }
+
+  private async assertConfiguredCount(config: AnyMigrationConfig): Promise<void> {
+    if (!('assertDocumentCount' in config) || !config.assertDocumentCount) {
+      return;
+    }
+    const count = await this.mongoDb.collection(config.mongoCollection).countDocuments();
+    config.assertDocumentCount(count);
+  }
+
   private async fetchAndInsert(
     config: AnyMigrationConfig,
     table: PostgresTable,
-    options: {
+    options: InsertBatchOptions & {
       mapRows: (doc: Record<string, unknown>) => Record<string, unknown>[];
-      force: boolean;
     }
   ): Promise<number> {
+    const insertOptions = { force: options.force, conflictColumns: options.conflictColumns };
     const cursor = this.mongoDb
       .collection<Record<string, unknown>>(config.mongoCollection)
       .find({})
@@ -107,14 +170,17 @@ class MigrateCollectionToPostgres {
     let batch: Record<string, unknown>[] = [];
 
     for await (const doc of cursor) {
-      batch.push(...options.mapRows(doc));
-      migrated += 1;
-      if (batch.length >= BATCH_SIZE) {
-        batch = await flushBatch(table, batch, options.force);
-      }
+      ({ batch, migrated } = await accumulateDoc({
+        doc,
+        mapRows: options.mapRows,
+        table,
+        batch,
+        migrated,
+        insertOptions,
+      }));
     }
 
-    await insertBatch(table, batch, options.force);
+    await insertBatch(table, batch, insertOptions);
     return migrated;
   }
 
@@ -122,33 +188,18 @@ class MigrateCollectionToPostgres {
     config: AnyMigrationConfig,
     options: MigrateOptions = {}
   ): Promise<{ migrated: number; skipped: boolean }> {
-    const pgTransactionManager = new PostgresTransactionManager(
-      PostgresDB.knex,
-      this.tenantId,
-      LoggerFactory.systemLogger()
-    );
-    const table = PostgresTable.for({
-      tableName: config.pgTable,
-      tenantId: this.tenantId,
-      transactionManager: pgTransactionManager,
-    });
+    const table = this.tableFor(config.pgTable);
 
-    if (!options.force) {
-      const existingRow = await table.first();
-
-      if (existingRow !== undefined) {
-        return { migrated: 0, skipped: true };
-      }
+    if (!options.force && (await table.first()) !== undefined) {
+      return { migrated: 0, skipped: true };
     }
 
-    if ('assertDocumentCount' in config && config.assertDocumentCount) {
-      const count = await this.mongoDb.collection(config.mongoCollection).countDocuments();
-      config.assertDocumentCount(count);
-    }
+    await this.assertConfiguredCount(config);
 
     const migrated = await this.fetchAndInsert(config, table, {
       mapRows: rowsMapperOf(config),
       force: options.force ?? false,
+      conflictColumns: config.conflictColumns ?? DEFAULT_CONFLICT_COLUMNS,
     });
     return { migrated, skipped: false };
   }

@@ -5,6 +5,8 @@ import { MigrationConfig } from '../MigrateCollectionToPostgres.js';
 export const SettingsMigrationConfig: MigrationConfig = {
   mongoCollection: 'settings',
   pgTable: 'settings',
+  // Singleton: PRIMARY KEY is tenant_id only (see 018-create-settings-table.sql).
+  conflictColumns: ['tenant_id'],
   mapDocument(doc: Record<string, unknown>) {
     return PostgresSettingsMapper.toRow(doc as SettingsType);
   },

@@ -107,4 +107,24 @@ describe('SettingsMigrationConfig copy', () => {
       /exactly one settings document/
     );
   });
+
+  it('should ignore an existing tenant row when forced (singleton PK is tenant_id)', async () => {
+    const id = new ObjectId();
+    await testingDB.db(testingDB.dbName).collection('settings').insertOne({
+      _id: id,
+      site_name: 'FromMongo',
+    });
+    await testingPG.pool!.query(
+      `INSERT INTO settings (_id, tenant_id, site_name, extras) VALUES ($1, $2, $3, '{}'::jsonb)`,
+      [id.toHexString(), TENANT, 'AlreadyInPg']
+    );
+
+    const result = await makeMigrator().migrate(SettingsMigrationConfig, { force: true });
+
+    expect(result).toEqual({ migrated: 1, skipped: false });
+    const rows = (await testingPG.getAllFrom('settings')).filter(row => row.tenant_id === TENANT);
+    expect(rows).toHaveLength(1);
+    // Non-destructive: existing PG row wins on conflict
+    expect(rows[0].site_name).toBe('AlreadyInPg');
+  });
 });
