@@ -1,15 +1,13 @@
 /* eslint-disable global-require */
 /* eslint-disable max-statements */
-import moment from 'moment';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { testingTenants } from '#api/utils/testingTenants.js';
 import { ExternalDummyService } from '#api/services/tasksmanager/specs/ExternalDummyService.js';
 import * as setupSockets from '#api/socketio/setupSockets.js';
-import { IXSuggestionsModel } from '#api/suggestions/IXSuggestionsModel.js';
 import { EntitiesDAOFactory } from '#api/core/infrastructure/factories/EntitiesDAOFactory.js';
 import { InformationExtraction } from '../InformationExtraction.js';
 import { factory, fixtures } from './fixtures.js';
-import { IXModelsModel } from '../IXModelsModel.js';
+import { ixTestAccess } from './ixTestAccess.js';
 import { ExtractionKey } from '../ExtractionKey.js';
 import { IXWebSocketEvents } from '../WebSocketEvents.js';
 import { NoEntitiesForTraining } from '../TrainModelForText.js';
@@ -327,7 +325,9 @@ describe('Information Extraction: Extracting from text source', () => {
       );
 
       expect(IXExternalService.materials.length).toBe(2);
-      const testDate = moment.utc('2004-07-05T00:00:00+00:00');
+      // The fixture stores 1088985600 === 2004-07-05T00:00:00Z. Date properties are stored as
+      // UTC midnight and formatted with .utc(), so the calendar date is timezone independent.
+      const expectedLabelText = '2004-07-05';
 
       expect(suggestion1).toEqual({
         entity_name: extractionKeyEn.key,
@@ -335,7 +335,7 @@ describe('Information Extraction: Extracting from text source', () => {
         id: factory.id('extractor_target_date_source_text').toString(),
         tenant: 'tenant1',
         source_text: 'any_source_text',
-        label_text: moment(testDate).local().format('YYYY-MM-DD'),
+        label_text: expectedLabelText,
       });
 
       expect(suggestion2).toEqual({
@@ -344,7 +344,7 @@ describe('Information Extraction: Extracting from text source', () => {
         id: factory.id('extractor_target_date_source_text').toString(),
         tenant: 'tenant1',
         source_text: 'any_source_text',
-        label_text: moment(testDate).local().format('YYYY-MM-DD'),
+        label_text: expectedLabelText,
       });
     });
 
@@ -397,9 +397,7 @@ describe('Information Extraction: Extracting from text source', () => {
       );
 
       await expect(promise).rejects.toThrow();
-      const [model] = await IXModelsModel.get({
-        extractorId: factory.id('extract_source_text_no_entities'),
-      });
+      const model = await ixTestAccess.readModel(factory.id('extract_source_text_no_entities'));
 
       expect(setupSockets.emitToTenantAdminsAndEditors).toHaveBeenCalledWith(
         'tenant1',
@@ -528,23 +526,16 @@ describe('Information Extraction: Extracting from text source', () => {
       await informationExtraction.getSuggestions(factory.id('sourceTextExtractor1'));
 
       // Make second call have no eligible materials
-      const [m] = await IXModelsModel.get({ extractorId: factory.id('sourceTextExtractor1') });
+      const m = await ixTestAccess.readModel(factory.id('sourceTextExtractor1'));
       const runTs = m?.processRun?.suggestionsRunTimestamp || Date.now();
-      await IXSuggestionsModel.updateMany(
+      await ixTestAccess.markProcessedInRun(
         { extractorId: factory.id('sourceTextExtractor1') },
-        {
-          $set: {
-            date: 1,
-            'state.obsolete': false,
-            'state.error': false,
-            'modelData.suggestionsRunTimestamp': runTs,
-          },
-        }
+        runTs
       );
 
       await informationExtraction.getSuggestions(factory.id('sourceTextExtractor1'));
 
-      const [model] = await IXModelsModel.get({ extractorId: factory.id('sourceTextExtractor1') });
+      const model = await ixTestAccess.readModel(factory.id('sourceTextExtractor1'));
       expect(model.findingSuggestions).toBe(false);
     });
   });
@@ -604,7 +595,7 @@ describe('Information Extraction: Extracting from text source', () => {
         data_url: `http://localhost:${SERVICE_PORT}/suggestions_results`,
       });
 
-      const suggestions = await IXSuggestionsModel.get({
+      const suggestions = await ixTestAccess.readSuggestions({
         extractorId,
       });
 
@@ -675,7 +666,7 @@ describe('Information Extraction: Extracting from text source', () => {
         data_url: `http://localhost:${SERVICE_PORT}/suggestions_results`,
       });
 
-      const [suggestion] = await IXSuggestionsModel.get({
+      const suggestion = await ixTestAccess.readOneSuggestion({
         extractorId,
       });
 
@@ -723,7 +714,7 @@ describe('Information Extraction: Extracting from text source', () => {
         data_url: `http://localhost:${SERVICE_PORT}/suggestions_results`,
       });
 
-      const [suggestion] = await IXSuggestionsModel.get({
+      const suggestion = await ixTestAccess.readOneSuggestion({
         extractorId,
       });
 
@@ -771,7 +762,7 @@ describe('Information Extraction: Extracting from text source', () => {
         data_url: `http://localhost:${SERVICE_PORT}/suggestions_results`,
       });
 
-      const [suggestion] = await IXSuggestionsModel.get({
+      const suggestion = await ixTestAccess.readOneSuggestion({
         extractorId,
       });
 
@@ -819,7 +810,7 @@ describe('Information Extraction: Extracting from text source', () => {
         data_url: `http://localhost:${SERVICE_PORT}/suggestions_results`,
       });
 
-      const [suggestion] = await IXSuggestionsModel.get({
+      const suggestion = await ixTestAccess.readOneSuggestion({
         extractorId,
       });
 
@@ -870,7 +861,7 @@ describe('Information Extraction: Extracting from text source', () => {
         data_url: `http://localhost:${SERVICE_PORT}/suggestions_results`,
       });
 
-      const [suggestion] = await IXSuggestionsModel.get({
+      const suggestion = await ixTestAccess.readOneSuggestion({
         extractorId,
       });
 
@@ -924,7 +915,7 @@ describe('Information Extraction: Extracting from text source', () => {
         data_url: `http://localhost:${SERVICE_PORT}/suggestions_results`,
       });
 
-      const [suggestion] = await IXSuggestionsModel.get({
+      const suggestion = await ixTestAccess.readOneSuggestion({
         extractorId,
       });
 
@@ -984,7 +975,7 @@ describe('Information Extraction: Extracting from text source', () => {
         data_url: `http://localhost:${SERVICE_PORT}/suggestions_results`,
       });
 
-      const suggestions = await IXSuggestionsModel.get({
+      const suggestions = await ixTestAccess.readSuggestions({
         extractorId,
       });
 
