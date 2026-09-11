@@ -67,6 +67,7 @@ const FLAG_GROUPS: Record<'postgresCore' | 'postgresPages', string[]> = {
     'password_recoveries',
     'translations',
     'entities',
+    'settings',
   ],
   postgresPages: ['pages', 'page_locales', 'page_releases'],
 };
@@ -134,6 +135,7 @@ function assertKnownTenant(tenantName: string): void {
   process.exit(1);
 }
 
+// oxlint-disable-next-line max-statements
 async function run(): Promise<void> {
   await DB.connect(config.DBHOST, config.DBAUTH);
   await tenants.setupTenants();
