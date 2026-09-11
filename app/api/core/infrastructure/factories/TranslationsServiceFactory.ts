@@ -1,9 +1,9 @@
 import { TranslationsService } from '#api/core/application/translation/TranslationsService.js';
+import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { ValidateTranslationsService } from '#api/core/application/translation/ValidateTranslationsService.js';
 import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
 import { SettingsDataSourceFactory } from './SettingsDataSourceFactory.js';
 import { TranslationsDataSourceFactory } from './TranslationsDataSourceFactory.js';
-import { TransactionManagerFactory } from './TransactionManagerFactory.js';
 
 export class TranslationsServiceFactory {
   static default(
@@ -11,9 +11,11 @@ export class TranslationsServiceFactory {
       transactionManager?: TransactionManager;
     } = {}
   ) {
-    const transactionManager = overrides.transactionManager ?? TransactionManagerFactory.default();
+    const transactionManager = overrides.transactionManager ?? ExecutionContext.transactionManager;
     const translationsDS = TranslationsDataSourceFactory.default({ transactionManager });
-    const settingsDS = SettingsDataSourceFactory.default({ transactionManager });
+    const settingsDS = SettingsDataSourceFactory.default({
+      transactionManager,
+    });
 
     return new TranslationsService({
       transactionManager,

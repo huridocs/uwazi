@@ -16,7 +16,7 @@ export class MongoTranslationsSyncHandler implements SyncHandler<TranslationSyO>
   constructor() {
     this.dataSource = new MongoTranslationsSyncDataSource(
       getConnection(),
-      TransactionManagerFactory.default()
+      TransactionManagerFactory.mongo()
     );
   }
 

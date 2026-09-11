@@ -5,7 +5,7 @@ import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/Se
 
 export const V2 = {
   async deleteTextReferencesToFiles(_ids: string[]) {
-    const transactionManager = TransactionManagerFactory.default();
+    const transactionManager = TransactionManagerFactory.mongo();
 
     if (
       !(await SettingsDataSourceFactory.default({

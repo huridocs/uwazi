@@ -1,11 +1,11 @@
 import { Db } from 'mongodb';
-import { MongoTransactionManager } from '../common/MongoTransactionManager.js';
+import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
 import { MongoThesauriDataSource } from './MongoThesauriDataSource.js';
 
 export class CachedMongoThesauriDataSource extends MongoThesauriDataSource {
   private cache = new Map<string, any>();
 
-  constructor(db: Db, transactionManager: MongoTransactionManager) {
+  constructor(db: Db, transactionManager: TransactionManager) {
     super(db, transactionManager);
     transactionManager.onCommitted(async () => {
       this.cache.clear();

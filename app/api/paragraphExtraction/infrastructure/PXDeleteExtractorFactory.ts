@@ -6,7 +6,7 @@ import { PXExtractorsDataSourceFactory } from './PXExtractorsDataSourceFactory.j
 export class PXDeleteExtractorFactory {
   static createDefault() {
     const connection = getConnection();
-    const mongoTransactionManager = TransactionManagerFactory.default();
+    const mongoTransactionManager = TransactionManagerFactory.mongo();
 
     return new PXDeleteExtractor({
       extractorsDS: PXExtractorsDataSourceFactory.createDefault({
