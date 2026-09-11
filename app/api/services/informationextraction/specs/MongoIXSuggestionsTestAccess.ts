@@ -3,6 +3,30 @@ import { MongoDataSource } from '#api/core/infrastructure/mongodb/common/MongoDa
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { Suggestion } from '#api/suggestions/domain/IXSuggestionsDataSource.js';
+import {
+  definedOnly,
+  IXSuggestionsTestAccess,
+  SuggestionFilter,
+  SuggestionPatch,
+} from './IXSuggestionsTestAccess.js';
+
+/** The patch as a `$set`: the flags live under `state`, the run under `modelData`. */
+const setFor = ({
+  useForTraining,
+  trainingSample,
+  date,
+  obsolete,
+  error,
+  suggestionsRunTimestamp,
+}: SuggestionPatch) =>
+  definedOnly({
+    useForTraining,
+    trainingSample,
+    date,
+    'state.obsolete': obsolete,
+    'state.error': error,
+    'modelData.suggestionsRunTimestamp': suggestionsRunTimestamp,
+  });
 
 /**
  * Test-only access to `ixsuggestions`, for the handful of filter-shaped reads and writes the
@@ -15,7 +39,10 @@ import { Suggestion } from '#api/suggestions/domain/IXSuggestionsDataSource.js';
  *
  * **Not for production code.** Everything production needs is a named operation on the port.
  */
-export class MongoIXSuggestionsTestAccess extends MongoDataSource<Suggestion> {
+export class MongoIXSuggestionsTestAccess
+  extends MongoDataSource<Suggestion>
+  implements IXSuggestionsTestAccess
+{
   protected collectionName = 'ixsuggestions';
 
   static default() {
@@ -24,15 +51,19 @@ export class MongoIXSuggestionsTestAccess extends MongoDataSource<Suggestion> {
     });
   }
 
-  async find(filter: Filter<Suggestion>) {
-    return this.getCollection().find(filter).toArray();
+  async find(filter: SuggestionFilter) {
+    return this.getCollection()
+      .find(definedOnly(filter) as Filter<Suggestion>)
+      .toArray();
   }
 
-  async deleteMany(filter: Filter<Suggestion>) {
-    await this.getCollection().deleteMany(filter);
+  async deleteMany(filter: SuggestionFilter) {
+    await this.getCollection().deleteMany(definedOnly(filter) as Filter<Suggestion>);
   }
 
-  async setOnMany(filter: Filter<Suggestion>, values: Record<string, unknown>) {
-    await this.getCollection().updateMany(filter, { $set: values } as any);
+  async setOnMany(filter: SuggestionFilter, patch: SuggestionPatch) {
+    await this.getCollection().updateMany(definedOnly(filter) as Filter<Suggestion>, {
+      $set: setFor(patch),
+    });
   }
 }

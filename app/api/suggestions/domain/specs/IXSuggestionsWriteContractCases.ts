@@ -39,6 +39,23 @@ const saveCases = (sut: Sut) => {
       expect(await reload(sut, accepted)).toEqual(expected);
     });
 
+    /**
+     * `markAsProcessing` leaves `match` undefined, which Mongo stores as null. The stats tell the
+     * two apart — an absent `match` counts as a mismatch, a null one does not — so a flag given as
+     * undefined must be stored as null.
+     */
+    it('should store a nested value given as undefined as null', async () => {
+      await sut().saveMultiple([
+        {
+          _id: accepted._id,
+          state: { ...accepted.state!, match: undefined as unknown as boolean },
+        },
+      ]);
+
+      const [stored] = await sut().getByIds([accepted._id]);
+      expect(stored.state).toHaveProperty('match', null);
+    });
+
     it('should insert the rest with the insert defaults, with or without a given id', async () => {
       const saved = await sut().saveMultiple([
         { _id: blank._id, suggestedValue: ['a', 'b'] },

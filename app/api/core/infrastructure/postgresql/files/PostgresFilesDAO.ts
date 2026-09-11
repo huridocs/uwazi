@@ -186,7 +186,16 @@ class PostgresFilesDAO extends PostgresDataSource<FilesRow> {
 
     let qb = this.table.select(columns);
 
-    for (const [key, value] of Object.entries(query)) {
+    // Callers written against the Mongo DAO pass ObjectIds; the ids are stored as hex strings.
+    const asColumnValue = (candidate: unknown) =>
+      candidate !== null &&
+      typeof candidate === 'object' &&
+      typeof (candidate as { toHexString?: unknown }).toHexString === 'function'
+        ? (candidate as { toHexString: () => string }).toHexString()
+        : candidate;
+
+    for (const [key, rawValue] of Object.entries(query)) {
+      const value = asColumnValue(rawValue);
       if (value !== null && typeof value === 'object' && !Array.isArray(value)) {
         const obj = value as Record<string, unknown>;
         if ('$exists' in obj) {
@@ -198,11 +207,13 @@ class PostgresFilesDAO extends PostgresDataSource<FilesRow> {
           continue;
         }
         if ('$in' in obj) {
-          qb = applyArrayOperator(qb, key, obj.$in as Knex.Value[], false);
+          const values = (obj.$in as unknown[]).map(asColumnValue) as Knex.Value[];
+          qb = applyArrayOperator(qb, key, values, false);
           continue;
         }
         if ('$nin' in obj) {
-          qb = applyArrayOperator(qb, key, obj.$nin as Knex.Value[], true);
+          const values = (obj.$nin as unknown[]).map(asColumnValue) as Knex.Value[];
+          qb = applyArrayOperator(qb, key, values, true);
           continue;
         }
       }

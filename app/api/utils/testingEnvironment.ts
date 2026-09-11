@@ -63,6 +63,18 @@ const sanitizeEntityForPostgres = (entity: Record<string, unknown>) => {
   return { ...ENTITY_POSTGRES_DEFAULTS, ...cleaned };
 };
 
+// `mimetype` and `type` are NOT NULL in 003-create_files_table.sql, but `factory.file` sets
+// neither, and plain `factory.file` fixtures carry no `type`.
+const FILE_POSTGRES_DEFAULTS = {
+  mimetype: 'application/pdf',
+  type: 'document',
+};
+
+const sanitizeFileForPostgres = (file: Record<string, unknown>) => ({
+  ...FILE_POSTGRES_DEFAULTS,
+  ...file,
+});
+
 // `password` and `using2fa` are NOT NULL in 009-create-users-table.sql but optional in
 // Mongo fixtures. The password sentinel is deliberately not a hash: a fixture that omits
 // a password must never accidentally satisfy a password comparison.
@@ -114,6 +126,7 @@ const PG_SANITIZER_BY_MONGO_COLLECTION: Record<
   (row: Record<string, unknown>) => Record<string, unknown>
 > = {
   entities: sanitizeEntityForPostgres,
+  files: sanitizeFileForPostgres,
   users: sanitizeUserForPostgres,
   usergroups: sanitizeUserGroupForPostgres,
   translationsV2: sanitizeTranslationForPostgres,

@@ -11,6 +11,7 @@ import { testingTenants } from '#api/utils/testingTenants.js';
 import ixmodels from '#api/services/informationextraction/ixmodels.js';
 import { ixTestAccess } from '#api/services/informationextraction/specs/ixTestAccess.js';
 import { FindSuggestionsForIds } from '../useCases/FindSuggestionsForIds.js';
+import { testConfigs } from '../domain/specs/IXSuggestionsContractFixtures.js';
 
 // Mock only the TaskManager to make startTask calls work without real Redis
 jest.mock('api/services/tasksmanager/TaskManager.ts');
@@ -25,6 +26,7 @@ const factory = getFixturesFactory();
 
 const extractorId = factory.id('extractor_1');
 const modelId = factory.id('model_1');
+const propertyExtractorId = factory.id('property_extractor');
 
 const fixtures: DBFixture = {
   settings: [
@@ -39,15 +41,33 @@ const fixtures: DBFixture = {
   ],
   ixextractors: [
     factory.ixExtractor('extractor_1', 'target_text', ['template_1'], { property: 'target_text' }),
+    {
+      _id: propertyExtractorId,
+      name: 'Property Extractor',
+      property: 'target_text',
+      templates: [factory.id('template_1')],
+      source: { property: 'source_text' }, // Property-based, not PDF
+    },
   ],
   ixmodels: [
+    // A trained, idle model stores `findingSuggestions: false`; the Postgres copy of a model
+    // without the field takes the old mongoose default, true, which reads as a run in flight.
     {
       _id: modelId,
       extractorId,
       status: ModelStatus.ready, // Already trained model!
+      findingSuggestions: false,
       creationDate: Date.now(),
       totalSuggestionsToFind: 2,
       maxSuggestionsToFind: 100,
+    },
+    {
+      _id: factory.id('property_model'),
+      extractorId: propertyExtractorId,
+      status: ModelStatus.ready,
+      findingSuggestions: false,
+      creationDate: Date.now(),
+      totalSuggestionsToFind: 50,
     },
   ],
   templates: [factory.template('template_1', [factory.property('target_text', 'text')])],
@@ -88,8 +108,14 @@ const fixtures: DBFixture = {
   ],
 };
 
+/** Runs the use case inside the context, as a request does: it reads templates through it. */
+const inContext = (useCase: FindSuggestionsForIds) => ({
+  execute: async (input: Parameters<FindSuggestionsForIds['execute']>[0]) =>
+    testingEnvironment.runWithContext(async () => useCase.execute(input)),
+});
+
 describe('FindSuggestionsForIds', () => {
-  let useCase: FindSuggestionsForIds;
+  let useCase: ReturnType<typeof inContext>;
   let informationExtraction: InformationExtraction;
   let IXExternalService: ExternalDummyService;
 
@@ -108,7 +134,7 @@ describe('FindSuggestionsForIds', () => {
 
     // Use REAL InformationExtraction - true e2e!
     informationExtraction = new InformationExtraction();
-    useCase = new FindSuggestionsForIds(informationExtraction);
+    useCase = inContext(new FindSuggestionsForIds(informationExtraction));
   });
 
   afterAll(async () => {
@@ -116,226 +142,212 @@ describe('FindSuggestionsForIds', () => {
     await testingEnvironment.tearDown();
   });
 
-  beforeEach(async () => {
-    IXExternalService.reset();
-    await testingEnvironment.setUp(fixtures);
-  });
-
-  describe('execute', () => {
-    it('should throw error when extractor not found', async () => {
-      const nonExistentExtractorId = new ObjectId();
-
-      await expect(
-        useCase.execute({
-          extractorId: nonExistentExtractorId,
-          sharedIds: ['entity1', 'entity2'],
-        })
-      ).rejects.toThrow('Extractor not found');
+  /** Over both stores: the IX factories pick the one the tenant's `postgresCore` flag selects. */
+  describe.each(testConfigs)('$name', ({ usePostgres }) => {
+    beforeEach(async () => {
+      IXExternalService.reset();
+      await testingEnvironment.setUp(fixtures, { postgres: true });
+      testingTenants.changeCurrentTenant({ featureFlags: { postgresCore: usePostgres } });
     });
 
-    it('should throw ModelNotReadyError when model is not ready', async () => {
-      // Update the existing model to be in processing state
-      await ixmodels.save({
-        _id: modelId,
-        extractorId,
-        status: ModelStatus.processing, // Not ready
-        creationDate: Date.now(),
-        totalSuggestionsToFind: 100,
+    describe('execute', () => {
+      it('should throw error when extractor not found', async () => {
+        const nonExistentExtractorId = new ObjectId();
+
+        await expect(
+          useCase.execute({
+            extractorId: nonExistentExtractorId,
+            sharedIds: ['entity1', 'entity2'],
+          })
+        ).rejects.toThrow('Extractor not found');
       });
 
-      await expect(
-        useCase.execute({
+      it('should throw ModelNotReadyError when model is not ready', async () => {
+        // Update the existing model to be in processing state
+        await ixmodels.save({
+          _id: modelId,
+          extractorId,
+          status: ModelStatus.processing, // Not ready
+          creationDate: Date.now(),
+          totalSuggestionsToFind: 100,
+        });
+
+        await expect(
+          useCase.execute({
+            extractorId,
+            sharedIds: ['entity1', 'entity2'],
+          })
+        ).rejects.toThrow(ModelNotReadyError);
+      });
+
+      it('should throw error when training / test-run process is already running', async () => {
+        // Set the model to have a running process
+        await ixmodels.save({
+          _id: modelId,
+          extractorId,
+          status: ModelStatus.ready,
+          creationDate: Date.now(),
+          findingSuggestions: true,
+        });
+
+        await expect(
+          useCase.execute({
+            extractorId,
+            sharedIds: ['entity1', 'entity2'],
+          })
+        ).rejects.toThrow("Model is training. Individual 'Find suggestions' is disabled.");
+      });
+
+      it('should start find suggestions process, update model state, and return status', async () => {
+        // Before: Verify we have 5 entities total in fixtures
+        const allEntities = await testingEnvironment.db
+          .getCollection('entities')
+          ?.find({ template: factory.id('template_1') })
+          .toArray();
+        expect(allEntities?.length).toBe(5); // entity1, entity2, entity3, entity4, entity5
+
+        const result = await useCase.execute({
+          extractorId,
+          sharedIds: ['entity1', 'entity2'], // Only requesting 2 out of 5
+        });
+
+        // Verify the process initiated correctly
+        expect(result).toEqual({
+          total: 2,
+          processed: expect.any(Number),
+        });
+
+        // CRITICAL: Verify materials were sent ONLY for the 2 specified entities
+        expect(IXExternalService.materials.length).toBe(2); // Exactly 2 materials
+
+        // For property-based extraction, materials should contain entity data
+        const sentMaterials = IXExternalService.materials;
+
+        // Should contain data for entity1 and entity2 only (with language suffix)
+        const sentEntityNames = sentMaterials.map(material => material.entity_name);
+        expect(sentEntityNames).toEqual(expect.arrayContaining(['entity1___en', 'entity2___en']));
+
+        // Extract the base entity IDs (without language suffix)
+        const sentEntityIds = sentEntityNames.map(name => name.split('___')[0]);
+        expect(sentEntityIds).toEqual(expect.arrayContaining(['entity1', 'entity2']));
+
+        // Should NOT contain entity3, entity4, or entity5
+        expect(sentEntityIds).not.toContain('entity3');
+        expect(sentEntityIds).not.toContain('entity4');
+        expect(sentEntityIds).not.toContain('entity5');
+
+        // Should contain the actual text content for the specified entities
+        const entity1Material = sentMaterials.find(m => m.entity_name === 'entity1___en');
+        const entity2Material = sentMaterials.find(m => m.entity_name === 'entity2___en');
+
+        expect(entity1Material).toBeDefined();
+        expect(entity2Material).toBeDefined();
+
+        // Verify the materials contain the expected text content
+        expect(entity1Material.source_text).toBe('some text content for entity1');
+        expect(entity2Material.source_text).toBe('other text content for entity2');
+
+        // Verify the model state after the process has been initiated
+        const testStartTime = Date.now() - 10000; // 10 seconds ago
+        const finalModel = await ixTestAccess.readModel(extractorId);
+        expect(finalModel.processRun?.suggestionsRunTimestamp).toBeGreaterThan(testStartTime);
+
+        // In an async process, sharedIds get processed and cleared, but process flag remains true
+        expect(finalModel.processRun?.findSuggestionsSharedIds).toEqual([]); // Entities have been processed
+        expect(finalModel.findingSuggestions).toBe(true); // Process still running
+      });
+
+      it('should handle entity-based suggestions flow (property source)', async () => {
+        const propertyUseCase = inContext(new FindSuggestionsForIds(informationExtraction));
+
+        const result = await propertyUseCase.execute({
+          extractorId: propertyExtractorId,
+          sharedIds: ['entity1'],
+        });
+
+        // Verify the process started
+        const updatedModel = await ixTestAccess.readModel(propertyExtractorId);
+        expect(updatedModel.processRun?.suggestionsRunTimestamp).toBeDefined();
+        expect(updatedModel.processRun?.findSuggestionsSharedIds).toEqual([]);
+
+        expect(result).toEqual({ processed: 1, total: 1 });
+      });
+
+      it('should append new IDs to an ongoing per-id run and increase totals without resetting processed', async () => {
+        // First request: 2 IDs
+        const first = await useCase.execute({
           extractorId,
           sharedIds: ['entity1', 'entity2'],
-        })
-      ).rejects.toThrow(ModelNotReadyError);
-    });
+        });
 
-    it('should throw error when training / test-run process is already running', async () => {
-      // Set the model to have a running process
-      await ixmodels.save({
-        _id: modelId,
-        extractorId,
-        status: ModelStatus.ready,
-        creationDate: Date.now(),
-        findingSuggestions: true,
-      });
-
-      await expect(
-        useCase.execute({
+        // Second request: 1 new + 1 duplicate
+        const second = await useCase.execute({
           extractorId,
-          sharedIds: ['entity1', 'entity2'],
-        })
-      ).rejects.toThrow("Model is training. Individual 'Find suggestions' is disabled.");
-    });
+          sharedIds: ['entity2', 'entity3'],
+        });
 
-    it('should start find suggestions process, update model state, and return status', async () => {
-      // Before: Verify we have 5 entities total in fixtures
-      const allEntities = await testingEnvironment.db
-        .getCollection('entities')
-        ?.find({ template: factory.id('template_1') })
-        .toArray();
-      expect(allEntities?.length).toBe(5); // entity1, entity2, entity3, entity4, entity5
+        // Materials should have been sent for entity1, entity2, entity3 (no duplicates)
+        const sentEntityNames = IXExternalService.materials.map(m => m.entity_name);
+        const sentEntityIds = sentEntityNames.map(name => name.split('___')[0]);
 
-      const result = await useCase.execute({
-        extractorId,
-        sharedIds: ['entity1', 'entity2'], // Only requesting 2 out of 5
+        expect(sentEntityIds).toEqual(expect.arrayContaining(['entity1', 'entity2', 'entity3']));
+        // No duplicates
+        expect(new Set(sentEntityIds).size).toBe(3);
+
+        // The API status should reflect total count increased by the new unique ID
+        expect(first.total).toBe(2);
+        expect(second.total).toBe(3);
+
+        // Model should keep the correct initial count (delta-increment), queue is drained by the flow
+        const finalModel = await ixTestAccess.readModel(extractorId);
+        expect(finalModel.processRun?.findSuggestionsInitialSharedIdsCount).toBe(3);
+        expect(finalModel.processRun?.findSuggestionsSharedIds).toEqual([]);
       });
 
-      // Verify the process initiated correctly
-      expect(result).toEqual({
-        total: 2,
-        processed: expect.any(Number),
+      it('should not re-send materials when no new IDs are provided during an ongoing per-id run', async () => {
+        // Kick off with a single ID
+        await useCase.execute({
+          extractorId,
+          sharedIds: ['entity1'],
+        });
+        const materialsAfterFirst = IXExternalService.materials.length;
+
+        // Try to append only duplicates
+        const result = await useCase.execute({
+          extractorId,
+          sharedIds: ['entity1'],
+        });
+
+        // No additional materials were sent
+        expect(IXExternalService.materials.length).toBe(materialsAfterFirst);
+
+        // Totals remain the same
+        expect(result.total).toBe(1);
+
+        // Model initial total stays the same (no delta)
+        const finalModel = await ixTestAccess.readModel(extractorId);
+        expect(finalModel.processRun?.findSuggestionsInitialSharedIdsCount).toBe(1);
       });
 
-      // CRITICAL: Verify materials were sent ONLY for the 2 specified entities
-      expect(IXExternalService.materials.length).toBe(2); // Exactly 2 materials
+      it('should increase initial total exactly by the number of new unique IDs when appending', async () => {
+        // Start with 1
+        await useCase.execute({
+          extractorId,
+          sharedIds: ['entity1'],
+        });
+        const afterFirst = await ixTestAccess.readModel(extractorId);
+        expect(afterFirst.processRun?.findSuggestionsInitialSharedIdsCount).toBe(1);
 
-      // For property-based extraction, materials should contain entity data
-      const sentMaterials = IXExternalService.materials;
+        // Append 1 new (entity3) and 1 duplicate (entity1)
+        await useCase.execute({
+          extractorId,
+          sharedIds: ['entity1', 'entity3'],
+        });
 
-      // Should contain data for entity1 and entity2 only (with language suffix)
-      const sentEntityNames = sentMaterials.map(material => material.entity_name);
-      expect(sentEntityNames).toEqual(expect.arrayContaining(['entity1___en', 'entity2___en']));
-
-      // Extract the base entity IDs (without language suffix)
-      const sentEntityIds = sentEntityNames.map(name => name.split('___')[0]);
-      expect(sentEntityIds).toEqual(expect.arrayContaining(['entity1', 'entity2']));
-
-      // Should NOT contain entity3, entity4, or entity5
-      expect(sentEntityIds).not.toContain('entity3');
-      expect(sentEntityIds).not.toContain('entity4');
-      expect(sentEntityIds).not.toContain('entity5');
-
-      // Should contain the actual text content for the specified entities
-      const entity1Material = sentMaterials.find(m => m.entity_name === 'entity1___en');
-      const entity2Material = sentMaterials.find(m => m.entity_name === 'entity2___en');
-
-      expect(entity1Material).toBeDefined();
-      expect(entity2Material).toBeDefined();
-
-      // Verify the materials contain the expected text content
-      expect(entity1Material.source_text).toBe('some text content for entity1');
-      expect(entity2Material.source_text).toBe('other text content for entity2');
-
-      // Verify the model state after the process has been initiated
-      const testStartTime = Date.now() - 10000; // 10 seconds ago
-      const finalModel = await ixTestAccess.readModel(extractorId);
-      expect(finalModel.processRun?.suggestionsRunTimestamp).toBeGreaterThan(testStartTime);
-
-      // In an async process, sharedIds get processed and cleared, but process flag remains true
-      expect(finalModel.processRun?.findSuggestionsSharedIds).toEqual([]); // Entities have been processed
-      expect(finalModel.findingSuggestions).toBe(true); // Process still running
-    });
-
-    it('should handle entity-based suggestions flow (property source)', async () => {
-      // Create an extractor for property-based extraction
-      const propertyExtractorId = factory.id('property_extractor');
-      await testingEnvironment.db.getCollection('ixextractors')?.insertOne({
-        _id: propertyExtractorId,
-        name: 'Property Extractor',
-        property: 'target_text',
-        templates: [factory.id('template_1')],
-        source: { property: 'source_text' }, // Property-based, not PDF
+        const afterSecond = await ixTestAccess.readModel(extractorId);
+        // Only delta of 1 should be added
+        expect(afterSecond.processRun?.findSuggestionsInitialSharedIdsCount).toBe(2);
       });
-
-      await testingEnvironment.db.getCollection('ixmodels')?.insertOne({
-        _id: factory.id('property_model'),
-        extractorId: propertyExtractorId,
-        status: ModelStatus.ready,
-        creationDate: Date.now(),
-        totalSuggestionsToFind: 50,
-      });
-
-      const propertyUseCase = new FindSuggestionsForIds(informationExtraction);
-
-      const result = await propertyUseCase.execute({
-        extractorId: propertyExtractorId,
-        sharedIds: ['entity1'],
-      });
-
-      // Verify the process started
-      const updatedModel = await ixTestAccess.readModel(propertyExtractorId);
-      expect(updatedModel.processRun?.suggestionsRunTimestamp).toBeDefined();
-      expect(updatedModel.processRun?.findSuggestionsSharedIds).toEqual([]);
-
-      expect(result).toEqual({ processed: 1, total: 1 });
-    });
-
-    it('should append new IDs to an ongoing per-id run and increase totals without resetting processed', async () => {
-      // First request: 2 IDs
-      const first = await useCase.execute({
-        extractorId,
-        sharedIds: ['entity1', 'entity2'],
-      });
-
-      // Second request: 1 new + 1 duplicate
-      const second = await useCase.execute({
-        extractorId,
-        sharedIds: ['entity2', 'entity3'],
-      });
-
-      // Materials should have been sent for entity1, entity2, entity3 (no duplicates)
-      const sentEntityNames = IXExternalService.materials.map(m => m.entity_name);
-      const sentEntityIds = sentEntityNames.map(name => name.split('___')[0]);
-
-      expect(sentEntityIds).toEqual(expect.arrayContaining(['entity1', 'entity2', 'entity3']));
-      // No duplicates
-      expect(new Set(sentEntityIds).size).toBe(3);
-
-      // The API status should reflect total count increased by the new unique ID
-      expect(first.total).toBe(2);
-      expect(second.total).toBe(3);
-
-      // Model should keep the correct initial count (delta-increment), queue is drained by the flow
-      const finalModel = await ixTestAccess.readModel(extractorId);
-      expect(finalModel.processRun?.findSuggestionsInitialSharedIdsCount).toBe(3);
-      expect(finalModel.processRun?.findSuggestionsSharedIds).toEqual([]);
-    });
-
-    it('should not re-send materials when no new IDs are provided during an ongoing per-id run', async () => {
-      // Kick off with a single ID
-      await useCase.execute({
-        extractorId,
-        sharedIds: ['entity1'],
-      });
-      const materialsAfterFirst = IXExternalService.materials.length;
-
-      // Try to append only duplicates
-      const result = await useCase.execute({
-        extractorId,
-        sharedIds: ['entity1'],
-      });
-
-      // No additional materials were sent
-      expect(IXExternalService.materials.length).toBe(materialsAfterFirst);
-
-      // Totals remain the same
-      expect(result.total).toBe(1);
-
-      // Model initial total stays the same (no delta)
-      const finalModel = await ixTestAccess.readModel(extractorId);
-      expect(finalModel.processRun?.findSuggestionsInitialSharedIdsCount).toBe(1);
-    });
-
-    it('should increase initial total exactly by the number of new unique IDs when appending', async () => {
-      // Start with 1
-      await useCase.execute({
-        extractorId,
-        sharedIds: ['entity1'],
-      });
-      const afterFirst = await ixTestAccess.readModel(extractorId);
-      expect(afterFirst.processRun?.findSuggestionsInitialSharedIdsCount).toBe(1);
-
-      // Append 1 new (entity3) and 1 duplicate (entity1)
-      await useCase.execute({
-        extractorId,
-        sharedIds: ['entity1', 'entity3'],
-      });
-
-      const afterSecond = await ixTestAccess.readModel(extractorId);
-      // Only delta of 1 should be added
-      expect(afterSecond.processRun?.findSuggestionsInitialSharedIdsCount).toBe(2);
     });
   });
 });

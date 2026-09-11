@@ -1,13 +1,15 @@
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { DBFixture } from '#api/utils/testing_db.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
-import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
-import { MongoTemplatesDAO } from '#api/core/infrastructure/mongodb/template/MongoTemplatesDAO.js';
-import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { testingTenants } from '#api/utils/testingTenants.js';
+import { TemplatesDAOFactory } from '#api/core/infrastructure/factories/TemplatesDAOFactory.js';
+import { ixTestAccess } from '#api/services/informationextraction/specs/ixTestAccess.js';
+import { IXSuggestionType } from '#shared/types/suggestionType.js';
 import {
   Input,
   UpdateSuggestionsAfterEntityUpdate,
 } from '../useCases/updateSuggestionsAfterEntityUpdate.js';
+import { testConfigs } from '../domain/specs/IXSuggestionsContractFixtures.js';
 
 const factory = getFixturesFactory();
 
@@ -222,244 +224,232 @@ const fixtures: DBFixture = {
   ],
 };
 
+/** Postgres rejects the orphan through its foreign key, so its store never holds one. */
+const fixturesWithoutOrphan: DBFixture = {
+  ...fixtures,
+  ixsuggestions: (fixtures.ixsuggestions as IXSuggestionType[]).filter(
+    suggestion => !factory.id('orphaned_suggestion').equals(suggestion._id!)
+  ),
+};
+
+/** Built and run inside the context, as the entity-updated listener does. */
 const createSut = () => {
-  const db = getConnection();
-  const tm = TransactionManagerFactory.default();
-  const sut = new UpdateSuggestionsAfterEntityUpdate(
-    new MongoTemplatesDAO({ db, transactionManager: tm })
-  );
+  const sut = {
+    execute: async (input: Input) =>
+      testingEnvironment.runWithContext(async () =>
+        new UpdateSuggestionsAfterEntityUpdate(TemplatesDAOFactory.default()).execute(input)
+      ),
+  };
 
   return {
     sut,
   };
 };
 
-describe('UpdateSuggestionsAfterEntityUpdate', () => {
-  beforeAll(async () => {
-    await testingEnvironment.setUp(fixtures);
-  });
+const byLanguage = (suggestions: IXSuggestionType[]) =>
+  [...suggestions].sort((a, b) => a.language.localeCompare(b.language));
 
+const suggestionsOf = async (extractorName: string) =>
+  byLanguage(
+    await ixTestAccess.readSuggestions({
+      entityId: extractorSourceTextTargetTextEntity1[0].sharedId,
+      extractorId: factory.id(extractorName),
+    })
+  );
+
+describe('UpdateSuggestionsAfterEntityUpdate', () => {
   afterAll(async () => {
     await testingEnvironment.tearDown();
   });
 
-  describe('given Entity title is updated', () => {
-    it('should update Suggestion correctly', async () => {
-      const input: Input = {
-        entities: [
-          { ...extractorSourceTextTargetTextEntity1[0], title: 'Title changed' },
-          { ...extractorSourceTextTargetTextEntity1[1], title: 'Title changed (es)' },
-        ],
-      };
-      const { sut } = createSut();
+  describe.each(testConfigs)('$name', ({ usePostgres }) => {
+    // Both stores get the same data: fixtures are mirrored into Postgres on either run.
+    const setUpStore = async () => {
+      await testingEnvironment.setUp(fixturesWithoutOrphan, { postgres: true });
+      testingTenants.changeCurrentTenant({ featureFlags: { postgresCore: usePostgres } });
+    };
 
-      await sut.execute(input);
+    beforeAll(setUpStore);
 
-      const suggestions = await testingEnvironment.db
-        .getCollection('ixsuggestions')
-        ?.find({ entityId: extractorSourceTextTargetTextEntity1[0].sharedId })
-        .toArray();
+    describe('given Entity title is updated', () => {
+      it('should update Suggestion correctly', async () => {
+        const input: Input = {
+          entities: [
+            { ...extractorSourceTextTargetTextEntity1[0], title: 'Title changed' },
+            { ...extractorSourceTextTargetTextEntity1[1], title: 'Title changed (es)' },
+          ],
+        };
+        const { sut } = createSut();
 
-      const suggestionsFromExtractor1 = suggestions?.filter(
-        s => s.extractorId.toString() === factory.id('extractor_source_text_target_text').toString()
-      );
+        await sut.execute(input);
 
-      const suggestionsFromExtractor2 = suggestions?.filter(
-        s =>
-          s.extractorId.toString() === factory.id('extractor_source_text_target_text_1').toString()
-      );
-
-      expect(suggestionsFromExtractor1).toMatchObject([
-        {
-          extractorId: factory.id('extractor_source_text_target_text'),
-          entityId: 'extractor_source_text_target_text_entity_1',
-          language: 'en',
-          entityTitle: 'Title changed',
-          currentValue: 'text_target_value',
-        },
-
-        {
-          extractorId: factory.id('extractor_source_text_target_text'),
-          entityId: 'extractor_source_text_target_text_entity_1',
-          language: 'es',
-          entityTitle: 'Title changed (es)',
-          currentValue: 'text_target_value_es',
-        },
-      ]);
-
-      expect(suggestionsFromExtractor2).toMatchObject([
-        {
-          extractorId: factory.id('extractor_source_text_target_text_1'),
-          entityId: 'extractor_source_text_target_text_entity_1',
-          language: 'en',
-          entityTitle: 'Title changed',
-          currentValue: 'text_target_1_value',
-        },
-
-        {
-          extractorId: factory.id('extractor_source_text_target_text_1'),
-          entityId: 'extractor_source_text_target_text_entity_1',
-          language: 'es',
-          entityTitle: 'Title changed (es)',
-          currentValue: 'text_target_1_value_es',
-        },
-      ]);
-    });
-  });
-
-  describe('given target Property is updated', () => {
-    it('should update Suggestion correctly', async () => {
-      const input: Input = {
-        entities: [
+        expect(await suggestionsOf('extractor_source_text_target_text')).toMatchObject([
           {
-            ...extractorSourceTextTargetTextEntity1[0],
-            metadata: {
-              ...extractorSourceTextTargetTextEntity1[0].metadata,
-              target_text: [{ value: 'Text target Changed' }],
-            },
+            extractorId: factory.id('extractor_source_text_target_text'),
+            entityId: 'extractor_source_text_target_text_entity_1',
+            language: 'en',
+            entityTitle: 'Title changed',
+            currentValue: 'text_target_value',
           },
+
           {
-            ...extractorSourceTextTargetTextEntity1[1],
-            metadata: {
-              ...extractorSourceTextTargetTextEntity1[1].metadata,
-              target_text: [{ value: 'Text target Changed (es)' }],
-            },
+            extractorId: factory.id('extractor_source_text_target_text'),
+            entityId: 'extractor_source_text_target_text_entity_1',
+            language: 'es',
+            entityTitle: 'Title changed (es)',
+            currentValue: 'text_target_value_es',
           },
-        ],
-      };
-      const { sut } = createSut();
+        ]);
 
-      await sut.execute(input);
+        expect(await suggestionsOf('extractor_source_text_target_text_1')).toMatchObject([
+          {
+            extractorId: factory.id('extractor_source_text_target_text_1'),
+            entityId: 'extractor_source_text_target_text_entity_1',
+            language: 'en',
+            entityTitle: 'Title changed',
+            currentValue: 'text_target_1_value',
+          },
 
-      const suggestions = await testingEnvironment.db
-        .getCollection('ixsuggestions')
-        ?.find({ entityId: extractorSourceTextTargetTextEntity1[0].sharedId })
-        .toArray();
-
-      const suggestionsFromExtractor1 = suggestions?.filter(
-        s => s.extractorId.toString() === factory.id('extractor_source_text_target_text').toString()
-      );
-
-      const suggestionsFromExtractor2 = suggestions?.filter(
-        s =>
-          s.extractorId.toString() === factory.id('extractor_source_text_target_text_1').toString()
-      );
-
-      expect(suggestionsFromExtractor1).toMatchObject([
-        {
-          extractorId: factory.id('extractor_source_text_target_text'),
-          entityId: 'extractor_source_text_target_text_entity_1',
-          language: 'en',
-          entityTitle: 'extractor_source_text_target_text_entity_1',
-          currentValue: 'Text target Changed',
-        },
-
-        {
-          extractorId: factory.id('extractor_source_text_target_text'),
-          entityId: 'extractor_source_text_target_text_entity_1',
-          language: 'es',
-          entityTitle: 'extractor_source_text_target_text_entity_1',
-          currentValue: 'Text target Changed (es)',
-        },
-      ]);
-
-      expect(suggestionsFromExtractor2).toMatchObject([
-        {
-          extractorId: factory.id('extractor_source_text_target_text_1'),
-          entityId: 'extractor_source_text_target_text_entity_1',
-          language: 'en',
-          entityTitle: 'extractor_source_text_target_text_entity_1',
-          currentValue: 'text_target_1_value',
-        },
-
-        {
-          extractorId: factory.id('extractor_source_text_target_text_1'),
-          entityId: 'extractor_source_text_target_text_entity_1',
-          language: 'es',
-          entityTitle: 'extractor_source_text_target_text_entity_1',
-          currentValue: 'text_target_1_value_es',
-        },
-      ]);
-    });
-  });
-
-  describe('given the source Property is updated', () => {
-    // These three assert on `state.obsolete`, which is sticky once set — the recompute carries a
-    // row's own `obsolete` forward. Without a reset they would depend on each other's order.
-    beforeEach(async () => {
-      await testingEnvironment.setUp(fixtures);
+          {
+            extractorId: factory.id('extractor_source_text_target_text_1'),
+            entityId: 'extractor_source_text_target_text_entity_1',
+            language: 'es',
+            entityTitle: 'Title changed (es)',
+            currentValue: 'text_target_1_value_es',
+          },
+        ]);
+      });
     });
 
-    const withSource = (entity: any, sourceText: string) => ({
-      ...entity,
-      metadata: { ...entity.metadata, source_text: [{ value: sourceText }] },
+    describe('given target Property is updated', () => {
+      it('should update Suggestion correctly', async () => {
+        const input: Input = {
+          entities: [
+            {
+              ...extractorSourceTextTargetTextEntity1[0],
+              metadata: {
+                ...extractorSourceTextTargetTextEntity1[0].metadata,
+                target_text: [{ value: 'Text target Changed' }],
+              },
+            },
+            {
+              ...extractorSourceTextTargetTextEntity1[1],
+              metadata: {
+                ...extractorSourceTextTargetTextEntity1[1].metadata,
+                target_text: [{ value: 'Text target Changed (es)' }],
+              },
+            },
+          ],
+        };
+        const { sut } = createSut();
+
+        await sut.execute(input);
+
+        expect(await suggestionsOf('extractor_source_text_target_text')).toMatchObject([
+          {
+            extractorId: factory.id('extractor_source_text_target_text'),
+            entityId: 'extractor_source_text_target_text_entity_1',
+            language: 'en',
+            entityTitle: 'extractor_source_text_target_text_entity_1',
+            currentValue: 'Text target Changed',
+          },
+
+          {
+            extractorId: factory.id('extractor_source_text_target_text'),
+            entityId: 'extractor_source_text_target_text_entity_1',
+            language: 'es',
+            entityTitle: 'extractor_source_text_target_text_entity_1',
+            currentValue: 'Text target Changed (es)',
+          },
+        ]);
+
+        expect(await suggestionsOf('extractor_source_text_target_text_1')).toMatchObject([
+          {
+            extractorId: factory.id('extractor_source_text_target_text_1'),
+            entityId: 'extractor_source_text_target_text_entity_1',
+            language: 'en',
+            entityTitle: 'extractor_source_text_target_text_entity_1',
+            currentValue: 'text_target_1_value',
+          },
+
+          {
+            extractorId: factory.id('extractor_source_text_target_text_1'),
+            entityId: 'extractor_source_text_target_text_entity_1',
+            language: 'es',
+            entityTitle: 'extractor_source_text_target_text_entity_1',
+            currentValue: 'text_target_1_value_es',
+          },
+        ]);
+      });
     });
 
-    it('should mark the suggestion obsolete, because its result no longer describes the source', async () => {
-      const before = extractorSourceTextTargetTextEntity1.map(entity =>
-        withSource(entity, 'the original source text')
-      );
-      const after = extractorSourceTextTargetTextEntity1.map(entity =>
-        withSource(entity, 'a completely different source text')
-      );
+    describe('given the source Property is updated', () => {
+      // These three assert on `state.obsolete`, which is sticky once set — the recompute carries a
+      // row's own `obsolete` forward. Without a reset they would depend on each other's order.
+      beforeEach(setUpStore);
 
-      const { sut } = createSut();
-      await sut.execute({ entities: after, previousEntities: before });
-
-      const suggestions = await testingEnvironment.db
-        .getCollection('ixsuggestions')
-        ?.find({
-          entityId: extractorSourceTextTargetTextEntity1[0].sharedId,
-          extractorId: factory.id('extractor_source_text_target_text'),
-        })
-        .toArray();
-
-      expect(suggestions?.map(suggestion => suggestion.state.obsolete)).toEqual([true, true]);
-    });
-
-    it('should leave the suggestion alone when the source did not change', async () => {
-      const before = extractorSourceTextTargetTextEntity1.map(entity =>
-        withSource(entity, 'an unchanged source text')
-      );
-      const after = before.map(entity => ({ ...entity, title: 'only the title moved' }));
-
-      const { sut } = createSut();
-      await sut.execute({ entities: after, previousEntities: before });
-
-      const suggestions = await testingEnvironment.db
-        .getCollection('ixsuggestions')
-        ?.find({
-          entityId: extractorSourceTextTargetTextEntity1[0].sharedId,
-          extractorId: factory.id('extractor_source_text_target_text'),
-        })
-        .toArray();
-
-      expect(suggestions?.map(suggestion => suggestion.state.obsolete)).toEqual([false, false]);
-      expect(suggestions?.map(suggestion => suggestion.entityTitle)).toEqual([
-        'only the title moved',
-        'only the title moved',
-      ]);
-    });
-
-    it('should treat the title as the source when the extractor reads from it', async () => {
-      const before = extractorSourceTextTargetTextEntity1;
-      const after = extractorSourceTextTargetTextEntity1.map(entity => ({
+      const withSource = (entity: any, sourceText: string) => ({
         ...entity,
-        title: 'a brand new title',
-      }));
+        metadata: { ...entity.metadata, source_text: [{ value: sourceText }] },
+      });
 
-      const { sut } = createSut();
-      await sut.execute({ entities: after, previousEntities: before });
+      it('should mark the suggestion obsolete, because its result no longer describes the source', async () => {
+        const before = extractorSourceTextTargetTextEntity1.map(entity =>
+          withSource(entity, 'the original source text')
+        );
+        const after = extractorSourceTextTargetTextEntity1.map(entity =>
+          withSource(entity, 'a completely different source text')
+        );
 
-      const suggestion = await testingEnvironment.db
-        .getCollection('ixsuggestions')
-        ?.findOne({ _id: factory.id('title_source_suggestion') });
+        const { sut } = createSut();
+        await sut.execute({ entities: after, previousEntities: before });
 
-      expect(suggestion?.state.obsolete).toBe(true);
+        const suggestions = await suggestionsOf('extractor_source_text_target_text');
+
+        expect(suggestions.map(suggestion => suggestion.state?.obsolete)).toEqual([true, true]);
+      });
+
+      it('should leave the suggestion alone when the source did not change', async () => {
+        const before = extractorSourceTextTargetTextEntity1.map(entity =>
+          withSource(entity, 'an unchanged source text')
+        );
+        const after = before.map(entity => ({ ...entity, title: 'only the title moved' }));
+
+        const { sut } = createSut();
+        await sut.execute({ entities: after, previousEntities: before });
+
+        const suggestions = await suggestionsOf('extractor_source_text_target_text');
+
+        expect(suggestions.map(suggestion => suggestion.state?.obsolete)).toEqual([false, false]);
+        expect(suggestions.map(suggestion => suggestion.entityTitle)).toEqual([
+          'only the title moved',
+          'only the title moved',
+        ]);
+      });
+
+      it('should treat the title as the source when the extractor reads from it', async () => {
+        const before = extractorSourceTextTargetTextEntity1;
+        const after = extractorSourceTextTargetTextEntity1.map(entity => ({
+          ...entity,
+          title: 'a brand new title',
+        }));
+
+        const { sut } = createSut();
+        await sut.execute({ entities: after, previousEntities: before });
+
+        const [suggestion] = await suggestionsOf('extractor_source_title_target_text');
+
+        expect(suggestion?.state?.obsolete).toBe(true);
+      });
     });
   });
 
+  /** Mongo only: Postgres cannot hold a suggestion whose extractor is gone. */
   describe('given a suggestion whose extractor no longer exists', () => {
+    beforeAll(async () => {
+      await testingEnvironment.setUp(fixtures, { postgresMirror: [] });
+    });
+
     it('should skip it rather than throwing', async () => {
       const input: Input = {
         entities: [
@@ -471,9 +461,9 @@ describe('UpdateSuggestionsAfterEntityUpdate', () => {
 
       await sut.execute(input);
 
-      const orphaned = await testingEnvironment.db
-        .getCollection('ixsuggestions')
-        ?.findOne({ _id: factory.id('orphaned_suggestion') });
+      const orphaned = await ixTestAccess.readOneSuggestion({
+        extractorId: factory.id('deleted_extractor'),
+      });
 
       expect(orphaned).toMatchObject({ entityTitle: 'untouched', currentValue: 'untouched' });
     });

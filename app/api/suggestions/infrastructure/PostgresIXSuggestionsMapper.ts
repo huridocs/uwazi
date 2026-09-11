@@ -45,7 +45,8 @@ const toColumnValue = (column: string, value: unknown) => {
     return String(value);
   }
   if (IX_SUGGESTIONS_COLUMN_TYPES[column as SuggestionColumn] === 'jsonb') {
-    return JSON.stringify(value);
+    // Mongo stores a nested undefined as null; JSON.stringify would drop the key instead.
+    return JSON.stringify(value, (_key, nested) => (nested === undefined ? null : nested));
   }
   return value;
 };

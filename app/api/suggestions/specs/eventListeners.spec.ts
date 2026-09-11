@@ -1,5 +1,6 @@
 import entities from '#api/entities/index.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { testingTenants } from '#api/utils/testingTenants.js';
 import { EntityWithFilesSchema } from '#shared/types/entityType.js';
 import { EntityDeletedEvent } from '#api/entities/events/EntityDeletedEvent.js';
 import { EntityUpdatedEvent } from '#api/entities/events/EntityUpdatedEvent.js';
@@ -11,6 +12,7 @@ import { search } from '#api/search/index.js';
 import { TemplateDeletedEvent } from '#api/core/domain/template/events/TemplateDeletedEvent.js';
 import { TemplateUpdatedEvent } from '#api/core/domain/template/events/TemplateUpdatedEvent.js';
 import { EntityFacade } from '#api/core/infrastructure/facades/EntitiesFacade.js';
+import { ixTestAccess } from '#api/services/informationextraction/specs/ixTestAccess.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import db, { DBFixture, testingDB } from '#api/utils/testing_db.js';
 import { propertyTypes } from '#shared/propertyTypes.js';
@@ -18,6 +20,7 @@ import { FileType } from '#shared/types/fileType.js';
 import { EntityCreatedEvent } from '#api/entities/events/EntityCreatedEvent.js';
 import { registerEventListeners } from '../eventListeners.js';
 import { Suggestions } from '../suggestions.js';
+import { testConfigs } from '../domain/specs/IXSuggestionsContractFixtures.js';
 
 const fixturesFactory = getFixturesFactory();
 
@@ -198,874 +201,884 @@ const fixtures: DBFixture = {
   ],
 };
 
+// Settings stay in Mongo whatever the tenant's store.
 const disableFeatures = async () =>
   testingDB.mongodb?.collection('settings').updateOne({}, { $set: { features: {} } });
 
+/** Neither store has a natural order, so reads are compared sorted. */
+const byId = <T extends { _id?: unknown }>(list: T[]) =>
+  [...list].sort((a, b) => String(a._id).localeCompare(String(b._id)));
+
+const byName = <T extends { name: string }>(list: T[]) =>
+  [...list].sort((a, b) => a.name.localeCompare(b.name));
+
+const byPropertyName = <T extends { propertyName: string }>(list: T[]) =>
+  [...list].sort((a, b) => a.propertyName.localeCompare(b.propertyName));
+
+const storedSuggestions = async () => byId(await ixTestAccess.readSuggestions());
+
+const storedExtractors = async () => byId(await ixTestAccess.readExtractors());
+
+/** The stored extractors extracting from any of the named templates. */
+const extractorsForTemplates = async (templateNames: string[]) => {
+  const templateIds = templateNames.map(name => fixturesFactory.id(name).toString());
+  return byName(
+    (await ixTestAccess.readExtractors()).filter(extractor =>
+      extractor.templates.some(template => templateIds.includes(template.toString()))
+    )
+  );
+};
+
+const countExtractorsWithoutTemplates = async () =>
+  (await ixTestAccess.readExtractors()).filter(extractor => extractor.templates.length === 0)
+    .length;
+
 beforeAll(() => {
   registerEventListeners(applicationEventsBus);
-});
-
-beforeEach(async () => {
-  jest.spyOn(search, 'indexEntities').mockReturnValue(Promise.resolve());
-  await testingEnvironment.setUp(fixtures);
 });
 
 afterAll(async () => {
   await testingEnvironment.tearDown();
 });
 
-describe(`On ${EntityUpdatedEvent.name}`, () => {
-  let updateSpy: jest.SpyInstance;
-
-  beforeAll(async () => {
-    updateSpy = jest.spyOn(Suggestions, 'recomputeAllStates');
+/** Over both stores: the IX factories pick the one the tenant's `postgresCore` flag selects. */
+describe.each(testConfigs)('$name', ({ usePostgres }) => {
+  beforeEach(async () => {
+    jest.spyOn(search, 'indexEntities').mockReturnValue(Promise.resolve());
+    await testingEnvironment.setUp(fixtures, { postgres: true });
+    testingTenants.changeCurrentTenant({ featureFlags: { postgresCore: usePostgres } });
   });
 
-  beforeEach(() => {
-    updateSpy.mockClear();
-  });
+  describe(`On ${EntityUpdatedEvent.name}`, () => {
+    let updateSpy: jest.SpyInstance;
 
-  afterAll(() => {
-    updateSpy.mockRestore();
-  });
+    beforeAll(async () => {
+      updateSpy = jest.spyOn(Suggestions, 'recomputeAllStates');
+    });
 
-  it.each([
-    {
-      case: 'should not update suggestions if template is not changed',
-      sharedId: 'entity for new file',
-      newTemplate: fixturesFactory.id(extractedTemplateName),
-      expectedSuggestions: [
-        {
-          entityId: 'entity for new file',
-          entityTemplate: fixturesFactory.id(extractedTemplateName).toString(),
-          propertyName: 'extracted_property_1',
-          fileId: fixturesFactory.id('entfile'),
-        },
-        {
-          entityId: 'entity for new file',
-          entityTemplate: fixturesFactory.id(extractedTemplateName).toString(),
-          propertyName: 'extracted_property_2',
-          fileId: fixturesFactory.id('entfile'),
-        },
-        {
-          entityId: 'entity for new file',
-          entityTemplate: fixturesFactory.id(extractedTemplateName).toString(),
-          propertyName: 'multiselect_property',
-          fileId: fixturesFactory.id('entfile'),
-        },
-        {
-          entityId: 'entity for new file',
-          entityTemplate: fixturesFactory.id(extractedTemplateName).toString(),
-          propertyName: 'relationship_property',
-          fileId: fixturesFactory.id('entfile'),
-        },
-        {
-          entityId: 'entity for new file',
-          entityTemplate: fixturesFactory.id(extractedTemplateName).toString(),
-          propertyName: 'select_property',
-          fileId: fixturesFactory.id('entfile'),
-        },
-        {
-          entityId: 'entity for new file',
-          entityTemplate: fixturesFactory.id(extractedTemplateName).toString(),
-          propertyName: 'title',
-          fileId: fixturesFactory.id('entfile'),
-        },
-      ],
-    },
-    {
-      case: 'should update suggestions if template is changed from configured to not configured',
-      sharedId: 'entity for new file',
-      newTemplate: fixturesFactory.id(notExtractedTemplateName),
-      expectedSuggestions: [],
-    },
-  ])('$case', async ({ sharedId, newTemplate, expectedSuggestions }) => {
-    await testingEnvironment.runWithContext(async () => {
-      const [current] = (await entities.get(
-        { sharedId, language: 'en' },
-        '+permissions'
-      )) as unknown as EntityWithFilesSchema[];
-      if (!current) {
-        throw new Error(`Entity ${sharedId} not found`);
-      }
+    beforeEach(() => {
+      updateSpy.mockClear();
+    });
 
-      const documents = (current.documents || [])
-        .filter(
-          (
-            document: FileType
-          ): document is FileType & { _id: NonNullable<FileType['_id']>; originalname: string } =>
-            Boolean(document?._id && document?.originalname)
-        )
-        .map(
-          (document: FileType & { _id: NonNullable<FileType['_id']>; originalname: string }) => ({
-            _id: document._id.toString(),
-            originalname: document.originalname,
-          })
+    afterAll(() => {
+      updateSpy.mockRestore();
+    });
+
+    it.each([
+      {
+        case: 'should not update suggestions if template is not changed',
+        sharedId: 'entity for new file',
+        newTemplate: fixturesFactory.id(extractedTemplateName),
+        expectedSuggestions: [
+          {
+            entityId: 'entity for new file',
+            entityTemplate: fixturesFactory.id(extractedTemplateName).toString(),
+            propertyName: 'extracted_property_1',
+            fileId: fixturesFactory.id('entfile'),
+          },
+          {
+            entityId: 'entity for new file',
+            entityTemplate: fixturesFactory.id(extractedTemplateName).toString(),
+            propertyName: 'extracted_property_2',
+            fileId: fixturesFactory.id('entfile'),
+          },
+          {
+            entityId: 'entity for new file',
+            entityTemplate: fixturesFactory.id(extractedTemplateName).toString(),
+            propertyName: 'multiselect_property',
+            fileId: fixturesFactory.id('entfile'),
+          },
+          {
+            entityId: 'entity for new file',
+            entityTemplate: fixturesFactory.id(extractedTemplateName).toString(),
+            propertyName: 'relationship_property',
+            fileId: fixturesFactory.id('entfile'),
+          },
+          {
+            entityId: 'entity for new file',
+            entityTemplate: fixturesFactory.id(extractedTemplateName).toString(),
+            propertyName: 'select_property',
+            fileId: fixturesFactory.id('entfile'),
+          },
+          {
+            entityId: 'entity for new file',
+            entityTemplate: fixturesFactory.id(extractedTemplateName).toString(),
+            propertyName: 'title',
+            fileId: fixturesFactory.id('entfile'),
+          },
+        ],
+      },
+      {
+        case: 'should update suggestions if template is changed from configured to not configured',
+        sharedId: 'entity for new file',
+        newTemplate: fixturesFactory.id(notExtractedTemplateName),
+        expectedSuggestions: [],
+      },
+    ])('$case', async ({ sharedId, newTemplate, expectedSuggestions }) => {
+      await testingEnvironment.runWithContext(async () => {
+        const [current] = (await entities.get(
+          { sharedId, language: 'en' },
+          '+permissions'
+        )) as unknown as EntityWithFilesSchema[];
+        if (!current) {
+          throw new Error(`Entity ${sharedId} not found`);
+        }
+
+        const documents = (current.documents || [])
+          .filter(
+            (
+              document: FileType
+            ): document is FileType & {
+              _id: NonNullable<FileType['_id']>;
+              originalname: string;
+            } => Boolean(document?._id && document?.originalname)
+          )
+          .map(
+            (document: FileType & { _id: NonNullable<FileType['_id']>; originalname: string }) => ({
+              _id: document._id.toString(),
+              originalname: document.originalname,
+            })
+          );
+
+        const attachments = (current.attachments || [])
+          .filter((attachment: FileType): attachment is FileType & { originalname: string } =>
+            Boolean(attachment?.originalname)
+          )
+          .map((attachment: FileType & { originalname: string }) => ({
+            _id: attachment._id?.toString(),
+            originalname: attachment.originalname,
+            ...(attachment.url ? { url: attachment.url } : {}),
+          }));
+
+        await EntityFacade.update(
+          {
+            _id: current._id!.toString(),
+            sharedId: current.sharedId!,
+            language: current.language!,
+            title: current.title!,
+            template: newTemplate.toString(),
+            user: current.user?.toString?.(),
+            metadata: (current.metadata || {}) as any,
+            icon: current.icon,
+            documents,
+            attachments,
+          },
+          'en'
         );
-
-      const attachments = (current.attachments || [])
-        .filter((attachment: FileType): attachment is FileType & { originalname: string } =>
-          Boolean(attachment?.originalname)
-        )
-        .map((attachment: FileType & { originalname: string }) => ({
-          _id: attachment._id?.toString(),
-          originalname: attachment.originalname,
-          ...(attachment.url ? { url: attachment.url } : {}),
-        }));
-
-      await EntityFacade.update(
-        {
-          _id: current._id!.toString(),
-          sharedId: current.sharedId!,
-          language: current.language!,
-          title: current.title!,
-          template: newTemplate.toString(),
-          user: current.user?.toString?.(),
-          metadata: (current.metadata || {}) as any,
-          icon: current.icon,
-          documents,
-          attachments,
-        },
-        'en'
-      );
-      const allSuggestions =
-        (await db.mongodb
-          ?.collection('ixsuggestions')
-          .find({}, { sort: { propertyName: 1 } })
-          .toArray()) || [];
-      expect(allSuggestions).toHaveLength(expectedSuggestions.length);
-      expect(allSuggestions).toMatchObject(expectedSuggestions);
+        const allSuggestions = byPropertyName(await ixTestAccess.readSuggestions());
+        expect(allSuggestions).toHaveLength(expectedSuggestions.length);
+        expect(allSuggestions).toMatchObject(expectedSuggestions);
+      });
     });
   });
-});
 
-describe(`On ${EntityDeletedEvent.name}`, () => {
-  it.each([
-    {
-      message: 'should not act if the feature is not enabled',
-      featureEnabled: false,
-    },
-    {
-      message: 'should delete all suggestions related to entities that triggered the event',
-      featureEnabled: true,
-      calledWith: 'shared',
-    },
-  ])('$message', async ({ featureEnabled, calledWith }) => {
-    if (!featureEnabled) {
-      await disableFeatures();
-    }
+  describe(`On ${EntityDeletedEvent.name}`, () => {
+    it.each([
+      {
+        message: 'should not act if the feature is not enabled',
+        featureEnabled: false,
+      },
+      {
+        message: 'should delete all suggestions related to entities that triggered the event',
+        featureEnabled: true,
+        calledWith: 'shared',
+      },
+    ])('$message', async ({ featureEnabled, calledWith }) => {
+      if (!featureEnabled) {
+        await disableFeatures();
+      }
 
-    const deleteSpy = jest.spyOn(Suggestions, 'deleteByEntityId');
+      const deleteSpy = jest.spyOn(Suggestions, 'deleteByEntityId');
 
-    const doc1Id = db.id();
-    const doc2Id = db.id();
+      const doc1Id = db.id();
+      const doc2Id = db.id();
 
-    await applicationEventsBus.emit(
-      new EntityDeletedEvent({
-        entity: [
-          {
-            _id: doc1Id,
-            sharedId: 'shared',
-          },
-          {
-            _id: doc2Id,
-            sharedId: 'shared',
-          },
-        ],
-      })
-    );
-
-    if (calledWith) {
-      expect(deleteSpy).toHaveBeenCalledWith(calledWith);
-    } else {
-      expect(deleteSpy).not.toHaveBeenCalled();
-    }
-    deleteSpy.mockRestore();
-  });
-});
-
-describe(`On ${FileCreatedEvent.name}`, () => {
-  it('should not act if the feature is not enabled', async () => {
-    await disableFeatures();
-
-    const saveSpy = jest.spyOn(Suggestions, 'saveMultiple');
-
-    const fileInfo = fixturesFactory.fileDeprecated(
-      'new file',
-      'entity for new file',
-      'document',
-      'new_file.pdf'
-    );
-
-    await applicationEventsBus.emit(
-      new FileCreatedEvent({
-        newFile: fileInfo,
-      })
-    );
-
-    expect(saveSpy).not.toHaveBeenCalled();
-  });
-
-  it('should only create suggestions if Extractors extracts from pdf', async () => {
-    const saveSpy = jest.spyOn(Suggestions, 'saveMultiple');
-
-    const fileInfo = fixturesFactory.fileDeprecated(
-      'new file',
-      'extractor_source_text_target_text_entity_1',
-      'document',
-      'new_file.pdf'
-    );
-
-    await applicationEventsBus.emit(
-      new FileCreatedEvent({
-        newFile: fileInfo,
-      })
-    );
-
-    expect(saveSpy).not.toHaveBeenCalled();
-
-    saveSpy.mockRestore();
-  });
-
-  it('should not fail on not configured templates', async () => {
-    const saveSpy = jest.spyOn(Suggestions, 'saveMultiple');
-
-    const fileInfo = fixturesFactory.fileDeprecated(
-      'new file',
-      'entity with template not in config',
-      'document',
-      'new_file.pdf'
-    );
-
-    await applicationEventsBus.emit(
-      new FileCreatedEvent({
-        newFile: fileInfo,
-      })
-    );
-
-    expect(saveSpy).not.toHaveBeenCalled();
-
-    saveSpy.mockRestore();
-  });
-});
-
-describe('On EntityCreatedEvent', () => {
-  it('should only create suggestions if Extractors extracts from text', async () => {
-    const saveSpy = jest.spyOn(Suggestions, 'saveMultiple');
-
-    await applicationEventsBus.emit(
-      new EntityCreatedEvent({
-        targetLanguageKey: 'en',
-        entities: [
-          {
-            title: 'any_title',
-            sharedId: 'any_shared_id_1',
-            template: fixturesFactory.id('extractor_source_text_target_text_template'),
-            metadata: {
-              target_text: [{ value: 'target_text_value' }],
+      await applicationEventsBus.emit(
+        new EntityDeletedEvent({
+          entity: [
+            {
+              _id: doc1Id,
+              sharedId: 'shared',
             },
-            language: 'en',
-          },
-          {
-            title: 'any_title',
-            sharedId: 'any_shared_id_1',
-            template: fixturesFactory.id('extractor_source_text_target_text_template'),
-            metadata: {
-              target_text: [{ value: 'target_text_value' }],
+            {
+              _id: doc2Id,
+              sharedId: 'shared',
             },
-            language: 'pt',
-          },
-        ],
-      })
-    );
+          ],
+        })
+      );
 
-    expect(saveSpy.mock.calls[0][0]).toEqual([
-      {
-        language: 'en',
-        entityId: 'any_shared_id_1',
-        entityTemplate: fixturesFactory.id('extractor_source_text_target_text_template').toString(),
-        extractorId: fixturesFactory.id('extractor_source_text_target_text'),
-        propertyName: 'target_text',
-        status: 'ready',
-        error: '',
-        segment: '',
-        suggestedValue: '',
-        date: null,
-        state: {
-          labeled: true,
-          withValue: true,
-          withSuggestion: false,
-          match: false,
-          hasContext: false,
-          obsolete: false,
-          processing: false,
-          error: false,
-        },
-        currentValue: 'target_text_value',
-        entityTitle: 'any_title',
-        trainingSample: false,
-        suggestedText: '',
-      },
-      {
-        language: 'pt',
-        entityId: 'any_shared_id_1',
-        entityTemplate: fixturesFactory.id('extractor_source_text_target_text_template').toString(),
-        extractorId: fixturesFactory.id('extractor_source_text_target_text'),
-        propertyName: 'target_text',
-        status: 'ready',
-        error: '',
-        segment: '',
-        suggestedValue: '',
-        date: null,
-        state: {
-          labeled: true,
-          withValue: true,
-          withSuggestion: false,
-          match: false,
-          hasContext: false,
-          obsolete: false,
-          processing: false,
-          error: false,
-        },
-        currentValue: 'target_text_value',
-        entityTitle: 'any_title',
-        trainingSample: false,
-        suggestedText: '',
-      },
-
-      {
-        language: 'en',
-        entityId: 'any_shared_id_1',
-        entityTemplate: fixturesFactory.id('extractor_source_text_target_text_template').toString(),
-        extractorId: fixturesFactory.id('extractor_source_text_target_text_2'),
-        propertyName: 'target_text',
-        status: 'ready',
-        error: '',
-        segment: '',
-        suggestedValue: '',
-        date: null,
-        state: {
-          labeled: true,
-          withValue: true,
-          withSuggestion: false,
-          match: false,
-          hasContext: false,
-          obsolete: false,
-          processing: false,
-          error: false,
-        },
-        currentValue: 'target_text_value',
-        entityTitle: 'any_title',
-        trainingSample: false,
-        suggestedText: '',
-      },
-      {
-        language: 'pt',
-        entityId: 'any_shared_id_1',
-        entityTemplate: fixturesFactory.id('extractor_source_text_target_text_template').toString(),
-        extractorId: fixturesFactory.id('extractor_source_text_target_text_2'),
-        propertyName: 'target_text',
-        status: 'ready',
-        error: '',
-        segment: '',
-        suggestedValue: '',
-        date: null,
-        state: {
-          labeled: true,
-          withValue: true,
-          withSuggestion: false,
-          match: false,
-          hasContext: false,
-          obsolete: false,
-          processing: false,
-          error: false,
-        },
-        currentValue: 'target_text_value',
-        entityTitle: 'any_title',
-        trainingSample: false,
-        suggestedText: '',
-      },
-    ]);
-
-    saveSpy.mockRestore();
+      if (calledWith) {
+        expect(deleteSpy).toHaveBeenCalledWith(calledWith);
+      } else {
+        expect(deleteSpy).not.toHaveBeenCalled();
+      }
+      deleteSpy.mockRestore();
+    });
   });
 
-  it('should not create Suggestions if there are no Extractors', async () => {
-    const saveSpy = jest.spyOn(Suggestions, 'saveMultiple');
-    await applicationEventsBus.emit(
-      new EntityCreatedEvent({
-        targetLanguageKey: 'en',
-        entities: [
-          {
-            template: fixturesFactory.id('template_without_extractors'),
-          },
-          {
-            template: fixturesFactory.id('template_without_extractors'),
-          },
-        ],
-      })
-    );
-
-    expect(saveSpy).not.toHaveBeenCalled();
-  });
-});
-
-describe(`On ${FileUpdatedEvent.name}`, () => {
-  const fileId = db.id();
-
-  const propertySelections = {
-    propertySelections: [
-      {
-        name: 'propertyName',
-        selection: {
-          text: 'something',
-          selectionRectangles: [{ top: 0, left: 0, width: 0, height: 0, page: '1' }],
-        },
-      },
-    ],
-  };
-
-  const original: FileType = {
-    _id: fileId,
-    creationDate: 1,
-    entity: 'sharedId1',
-    generatedToc: true,
-    originalname: 'upload1',
-    type: 'custom',
-    language: 'eng',
-  };
-
-  it('should not update the ix suggestion state if propertySelections does not change', async () => {
-    const updateSpy = jest.spyOn(Suggestions, 'recomputeAllStates');
-
-    await applicationEventsBus.emit(new FileUpdatedEvent({ before: original, after: original }));
-
-    expect(updateSpy).not.toHaveBeenCalled();
-
-    updateSpy.mockClear();
-
-    await applicationEventsBus.emit(
-      new FileUpdatedEvent({
-        before: { ...original, ...propertySelections },
-        after: { ...original, ...propertySelections },
-      })
-    );
-
-    expect(updateSpy).not.toHaveBeenCalled();
-    updateSpy.mockRestore();
-  });
-
-  it('should not act if the feature is not enabled', async () => {
-    await disableFeatures();
-    const updateSpy = jest.spyOn(Suggestions, 'recomputeAllStates');
-
-    await applicationEventsBus.emit(
-      new FileUpdatedEvent({ before: original, after: { ...original, ...propertySelections } })
-    );
-
-    expect(updateSpy).not.toHaveBeenCalled();
-  });
-});
-
-describe(`On ${FilesDeletedEvent.name}`, () => {
-  it.each([
-    {
-      message: 'should delete all suggestions related to files that triggered the event',
-      enabled: true,
-    },
-    {
-      message: 'should not act if the feature is not enabled',
-      enabled: false,
-    },
-  ])('$message', async ({ enabled }) => {
-    if (!enabled) {
+  describe(`On ${FileCreatedEvent.name}`, () => {
+    it('should not act if the feature is not enabled', async () => {
       await disableFeatures();
-    }
-    const deleteSpy = jest.spyOn(Suggestions, 'deleteByFileIds');
 
-    const file1Id = db.id();
-    const file2Id = db.id();
+      const saveSpy = jest.spyOn(Suggestions, 'saveMultiple');
 
-    await applicationEventsBus.emit(
-      new FilesDeletedEvent({
-        files: [
+      const fileInfo = fixturesFactory.fileDeprecated(
+        'new file',
+        'entity for new file',
+        'document',
+        'new_file.pdf'
+      );
+
+      await applicationEventsBus.emit(
+        new FileCreatedEvent({
+          newFile: fileInfo,
+        })
+      );
+
+      expect(saveSpy).not.toHaveBeenCalled();
+    });
+
+    it('should only create suggestions if Extractors extracts from pdf', async () => {
+      const saveSpy = jest.spyOn(Suggestions, 'saveMultiple');
+
+      const fileInfo = fixturesFactory.fileDeprecated(
+        'new file',
+        'extractor_source_text_target_text_entity_1',
+        'document',
+        'new_file.pdf'
+      );
+
+      await applicationEventsBus.emit(
+        new FileCreatedEvent({
+          newFile: fileInfo,
+        })
+      );
+
+      expect(saveSpy).not.toHaveBeenCalled();
+
+      saveSpy.mockRestore();
+    });
+
+    it('should not fail on not configured templates', async () => {
+      const saveSpy = jest.spyOn(Suggestions, 'saveMultiple');
+
+      const fileInfo = fixturesFactory.fileDeprecated(
+        'new file',
+        'entity with template not in config',
+        'document',
+        'new_file.pdf'
+      );
+
+      await applicationEventsBus.emit(
+        new FileCreatedEvent({
+          newFile: fileInfo,
+        })
+      );
+
+      expect(saveSpy).not.toHaveBeenCalled();
+
+      saveSpy.mockRestore();
+    });
+  });
+
+  describe('On EntityCreatedEvent', () => {
+    it('should only create suggestions if Extractors extracts from text', async () => {
+      const saveSpy = jest.spyOn(Suggestions, 'saveMultiple');
+
+      // Emitted inside the context, as a request does: the listener reads templates through it.
+      await testingEnvironment.runWithContext(async () =>
+        applicationEventsBus.emit(
+          new EntityCreatedEvent({
+            targetLanguageKey: 'en',
+            entities: [
+              {
+                title: 'any_title',
+                sharedId: 'any_shared_id_1',
+                template: fixturesFactory.id('extractor_source_text_target_text_template'),
+                metadata: {
+                  target_text: [{ value: 'target_text_value' }],
+                },
+                language: 'en',
+              },
+              {
+                title: 'any_title',
+                sharedId: 'any_shared_id_1',
+                template: fixturesFactory.id('extractor_source_text_target_text_template'),
+                metadata: {
+                  target_text: [{ value: 'target_text_value' }],
+                },
+                language: 'pt',
+              },
+            ],
+          })
+        )
+      );
+
+      expect(saveSpy.mock.calls[0][0]).toEqual([
+        {
+          language: 'en',
+          entityId: 'any_shared_id_1',
+          entityTemplate: fixturesFactory
+            .id('extractor_source_text_target_text_template')
+            .toString(),
+          extractorId: fixturesFactory.id('extractor_source_text_target_text'),
+          propertyName: 'target_text',
+          status: 'ready',
+          error: '',
+          segment: '',
+          suggestedValue: '',
+          date: null,
+          state: {
+            labeled: true,
+            withValue: true,
+            withSuggestion: false,
+            match: false,
+            hasContext: false,
+            obsolete: false,
+            processing: false,
+            error: false,
+          },
+          currentValue: 'target_text_value',
+          entityTitle: 'any_title',
+          trainingSample: false,
+          suggestedText: '',
+        },
+        {
+          language: 'pt',
+          entityId: 'any_shared_id_1',
+          entityTemplate: fixturesFactory
+            .id('extractor_source_text_target_text_template')
+            .toString(),
+          extractorId: fixturesFactory.id('extractor_source_text_target_text'),
+          propertyName: 'target_text',
+          status: 'ready',
+          error: '',
+          segment: '',
+          suggestedValue: '',
+          date: null,
+          state: {
+            labeled: true,
+            withValue: true,
+            withSuggestion: false,
+            match: false,
+            hasContext: false,
+            obsolete: false,
+            processing: false,
+            error: false,
+          },
+          currentValue: 'target_text_value',
+          entityTitle: 'any_title',
+          trainingSample: false,
+          suggestedText: '',
+        },
+
+        {
+          language: 'en',
+          entityId: 'any_shared_id_1',
+          entityTemplate: fixturesFactory
+            .id('extractor_source_text_target_text_template')
+            .toString(),
+          extractorId: fixturesFactory.id('extractor_source_text_target_text_2'),
+          propertyName: 'target_text',
+          status: 'ready',
+          error: '',
+          segment: '',
+          suggestedValue: '',
+          date: null,
+          state: {
+            labeled: true,
+            withValue: true,
+            withSuggestion: false,
+            match: false,
+            hasContext: false,
+            obsolete: false,
+            processing: false,
+            error: false,
+          },
+          currentValue: 'target_text_value',
+          entityTitle: 'any_title',
+          trainingSample: false,
+          suggestedText: '',
+        },
+        {
+          language: 'pt',
+          entityId: 'any_shared_id_1',
+          entityTemplate: fixturesFactory
+            .id('extractor_source_text_target_text_template')
+            .toString(),
+          extractorId: fixturesFactory.id('extractor_source_text_target_text_2'),
+          propertyName: 'target_text',
+          status: 'ready',
+          error: '',
+          segment: '',
+          suggestedValue: '',
+          date: null,
+          state: {
+            labeled: true,
+            withValue: true,
+            withSuggestion: false,
+            match: false,
+            hasContext: false,
+            obsolete: false,
+            processing: false,
+            error: false,
+          },
+          currentValue: 'target_text_value',
+          entityTitle: 'any_title',
+          trainingSample: false,
+          suggestedText: '',
+        },
+      ]);
+
+      saveSpy.mockRestore();
+    });
+
+    it('should not create Suggestions if there are no Extractors', async () => {
+      const saveSpy = jest.spyOn(Suggestions, 'saveMultiple');
+      await applicationEventsBus.emit(
+        new EntityCreatedEvent({
+          targetLanguageKey: 'en',
+          entities: [
+            {
+              template: fixturesFactory.id('template_without_extractors'),
+            },
+            {
+              template: fixturesFactory.id('template_without_extractors'),
+            },
+          ],
+        })
+      );
+
+      expect(saveSpy).not.toHaveBeenCalled();
+    });
+  });
+
+  describe(`On ${FileUpdatedEvent.name}`, () => {
+    const fileId = db.id();
+
+    const propertySelections = {
+      propertySelections: [
+        {
+          name: 'propertyName',
+          selection: {
+            text: 'something',
+            selectionRectangles: [{ top: 0, left: 0, width: 0, height: 0, page: '1' }],
+          },
+        },
+      ],
+    };
+
+    const original: FileType = {
+      _id: fileId,
+      creationDate: 1,
+      entity: 'sharedId1',
+      generatedToc: true,
+      originalname: 'upload1',
+      type: 'custom',
+      language: 'eng',
+    };
+
+    it('should not update the ix suggestion state if propertySelections does not change', async () => {
+      const updateSpy = jest.spyOn(Suggestions, 'recomputeAllStates');
+
+      await applicationEventsBus.emit(new FileUpdatedEvent({ before: original, after: original }));
+
+      expect(updateSpy).not.toHaveBeenCalled();
+
+      updateSpy.mockClear();
+
+      await applicationEventsBus.emit(
+        new FileUpdatedEvent({
+          before: { ...original, ...propertySelections },
+          after: { ...original, ...propertySelections },
+        })
+      );
+
+      expect(updateSpy).not.toHaveBeenCalled();
+      updateSpy.mockRestore();
+    });
+
+    it('should not act if the feature is not enabled', async () => {
+      await disableFeatures();
+      const updateSpy = jest.spyOn(Suggestions, 'recomputeAllStates');
+
+      await applicationEventsBus.emit(
+        new FileUpdatedEvent({ before: original, after: { ...original, ...propertySelections } })
+      );
+
+      expect(updateSpy).not.toHaveBeenCalled();
+    });
+  });
+
+  describe(`On ${FilesDeletedEvent.name}`, () => {
+    it.each([
+      {
+        message: 'should delete all suggestions related to files that triggered the event',
+        enabled: true,
+      },
+      {
+        message: 'should not act if the feature is not enabled',
+        enabled: false,
+      },
+    ])('$message', async ({ enabled }) => {
+      if (!enabled) {
+        await disableFeatures();
+      }
+      const deleteSpy = jest.spyOn(Suggestions, 'deleteByFileIds');
+
+      const file1Id = db.id();
+      const file2Id = db.id();
+
+      await applicationEventsBus.emit(
+        new FilesDeletedEvent({
+          files: [
+            {
+              _id: file1Id,
+              creationDate: 1,
+              entity: 'sharedId1',
+              generatedToc: true,
+              originalname: 'upload1',
+              type: 'document',
+              language: 'eng',
+            },
+            {
+              _id: file2Id,
+              creationDate: 1,
+              entity: 'sharedId2',
+              generatedToc: true,
+              originalname: 'upload2',
+              type: 'document',
+              language: 'eng',
+            },
+          ],
+        })
+      );
+
+      if (enabled) {
+        expect(deleteSpy).toHaveBeenCalledWith([file1Id, file2Id]);
+      } else {
+        expect(deleteSpy).not.toHaveBeenCalled();
+      }
+
+      deleteSpy.mockRestore();
+    });
+  });
+
+  describe(`On ${TemplateUpdatedEvent.name}`, () => {
+    it('should not act if the feature is not enabled', async () => {
+      await disableFeatures();
+
+      const extractors = await storedExtractors();
+      const suggestions = await storedSuggestions();
+
+      await applicationEventsBus.emit(
+        new TemplateUpdatedEvent({
+          before: {
+            _id: fixturesFactory.id(extractedTemplateName),
+            name: extractedTemplateName,
+            properties: [
+              fixturesFactory.property('not_extracted_property_1', propertyTypes.text),
+              fixturesFactory.property('not_extracted_property_2', propertyTypes.numeric),
+              fixturesFactory.property('extracted_property_1', propertyTypes.text),
+              fixturesFactory.property('extracted_property_2', propertyTypes.numeric),
+            ],
+          },
+          after: {
+            _id: fixturesFactory.id(extractedTemplateName),
+            name: extractedTemplateName,
+            properties: [
+              fixturesFactory.property('not_extracted_property_1', propertyTypes.text),
+              fixturesFactory.property('not_extracted_property_2', propertyTypes.numeric),
+              fixturesFactory.property('extracted_property_1', propertyTypes.text),
+            ],
+          },
+        })
+      );
+
+      expect(extractors).toEqual(await storedExtractors());
+      expect(suggestions).toEqual(await storedSuggestions());
+    });
+
+    it('should delete the template from the extractor if the property not longer exists', async () => {
+      await applicationEventsBus.emit(
+        new TemplateUpdatedEvent({
+          before: {
+            _id: fixturesFactory.id(extractedTemplateName),
+            name: extractedTemplateName,
+            properties: [
+              fixturesFactory.property('not_extracted_property_1', propertyTypes.text),
+              fixturesFactory.property('not_extracted_property_2', propertyTypes.numeric),
+              fixturesFactory.property('extracted_property_1', propertyTypes.text),
+              fixturesFactory.property('extracted_property_2', propertyTypes.numeric),
+              fixturesFactory.property('select_property', propertyTypes.select),
+              fixturesFactory.property('multiselect_property', propertyTypes.multiselect),
+              fixturesFactory.property('relationship_property', propertyTypes.relationship),
+            ],
+          },
+          after: {
+            _id: fixturesFactory.id(extractedTemplateName),
+            name: extractedTemplateName,
+            properties: [
+              fixturesFactory.property('not_extracted_property_1', propertyTypes.text),
+              fixturesFactory.property('not_extracted_property_2', propertyTypes.numeric),
+              fixturesFactory.property('extracted_property_1', propertyTypes.text),
+              fixturesFactory.property('select_property', propertyTypes.select),
+              fixturesFactory.property('multiselect_property', propertyTypes.multiselect),
+            ],
+          },
+        })
+      );
+
+      expect(
+        await extractorsForTemplates([
+          otherExtractedTemplateName,
+          extractedTemplateName,
+          'some_other_template',
+        ])
+      ).toMatchObject(
+        byName([
+          fixturesFactory.ixExtractor('title_extractor', 'title', [
+            extractedTemplateName,
+            otherExtractedTemplateName,
+          ]),
+          fixturesFactory.ixExtractor('extractor1', 'extracted_property_1', [
+            extractedTemplateName,
+            otherExtractedTemplateName,
+          ]),
+          fixturesFactory.ixExtractor('extractor3', 'some_property', ['some_other_template']),
+          fixturesFactory.ixExtractor('extractor4', 'extracted_property_2_1', [
+            otherExtractedTemplateName,
+          ]),
+          fixturesFactory.ixExtractor('extractor5', 'extracted_property_2_2', [
+            otherExtractedTemplateName,
+          ]),
+          fixturesFactory.ixExtractor('extractor6', 'select_property', [extractedTemplateName]),
+          fixturesFactory.ixExtractor('extractor7', 'multiselect_property', [
+            extractedTemplateName,
+          ]),
+        ])
+      );
+
+      expect(byPropertyName(await ixTestAccess.readSuggestions())).toMatchObject(
+        byPropertyName([
           {
-            _id: file1Id,
-            creationDate: 1,
-            entity: 'sharedId1',
-            generatedToc: true,
-            originalname: 'upload1',
-            type: 'document',
-            language: 'eng',
+            entityId: 'entity for new file',
+            entityTemplate: fixturesFactory.id(extractedTemplateName).toString(),
+            propertyName: 'extracted_property_1',
+            extractorId: fixturesFactory.id('extractor1'),
           },
           {
-            _id: file2Id,
-            creationDate: 1,
-            entity: 'sharedId2',
-            generatedToc: true,
-            originalname: 'upload2',
-            type: 'document',
-            language: 'eng',
+            entityId: 'entity for new file',
+            entityTemplate: fixturesFactory.id(extractedTemplateName).toString(),
+            propertyName: 'title',
+            extractorId: fixturesFactory.id('title_extractor'),
           },
-        ],
-      })
-    );
+          {
+            entityId: 'entity for new file',
+            entityTemplate: fixturesFactory.id(extractedTemplateName).toString(),
+            propertyName: 'select_property',
+            extractorId: fixturesFactory.id('extractor6'),
+          },
+          {
+            entityId: 'entity for new file',
+            entityTemplate: fixturesFactory.id(extractedTemplateName).toString(),
+            propertyName: 'multiselect_property',
+            extractorId: fixturesFactory.id('extractor7'),
+          },
+        ])
+      );
+    });
 
-    if (enabled) {
-      expect(deleteSpy).toHaveBeenCalledWith([file1Id, file2Id]);
-    } else {
-      expect(deleteSpy).not.toHaveBeenCalled();
-    }
+    it('should remove the template from the extractor if the property changed names', async () => {
+      await applicationEventsBus.emit(
+        new TemplateUpdatedEvent({
+          before: {
+            _id: fixturesFactory.id(extractedTemplateName),
+            name: extractedTemplateName,
+            properties: [
+              fixturesFactory.property('not_extracted_property_1', propertyTypes.text),
+              fixturesFactory.property('not_extracted_property_2', propertyTypes.numeric),
+              fixturesFactory.property('extracted_property_1', propertyTypes.text),
+              fixturesFactory.property('extracted_property_2', propertyTypes.numeric),
+              fixturesFactory.property('select_property', propertyTypes.select),
+              fixturesFactory.property('multiselect_property', propertyTypes.multiselect),
+              fixturesFactory.property('relationship_property', propertyTypes.relationship),
+            ],
+          },
+          after: {
+            _id: fixturesFactory.id(extractedTemplateName),
+            name: extractedTemplateName,
+            properties: [
+              fixturesFactory.property('not_extracted_property_1', propertyTypes.text),
+              fixturesFactory.property('not_extracted_property_2', propertyTypes.numeric),
+              fixturesFactory.property('extracted_property_1', propertyTypes.text),
+              fixturesFactory.property('extracted_property_2_renamed', propertyTypes.numeric),
+              fixturesFactory.property('select_property', propertyTypes.select),
+              fixturesFactory.property('multiselect_property_renamed', propertyTypes.multiselect),
+              fixturesFactory.property('relationship_property', propertyTypes.relationship),
+            ],
+          },
+        })
+      );
 
-    deleteSpy.mockRestore();
-  });
-});
+      expect(
+        await extractorsForTemplates([
+          otherExtractedTemplateName,
+          extractedTemplateName,
+          'some_other_template',
+        ])
+      ).toMatchObject(
+        byName([
+          fixturesFactory.ixExtractor('title_extractor', 'title', [
+            extractedTemplateName,
+            otherExtractedTemplateName,
+          ]),
+          fixturesFactory.ixExtractor('extractor1', 'extracted_property_1', [
+            extractedTemplateName,
+            otherExtractedTemplateName,
+          ]),
+          fixturesFactory.ixExtractor('extractor3', 'some_property', ['some_other_template']),
+          fixturesFactory.ixExtractor('extractor4', 'extracted_property_2_1', [
+            otherExtractedTemplateName,
+          ]),
+          fixturesFactory.ixExtractor('extractor5', 'extracted_property_2_2', [
+            otherExtractedTemplateName,
+          ]),
+          fixturesFactory.ixExtractor('extractor6', 'select_property', [extractedTemplateName]),
+          fixturesFactory.ixExtractor('extractor8', 'relationship_property', [
+            extractedTemplateName,
+          ]),
+        ])
+      );
 
-describe(`On ${TemplateUpdatedEvent.name}`, () => {
-  it('should not act if the feature is not enabled', async () => {
-    await disableFeatures();
+      expect(byPropertyName(await ixTestAccess.readSuggestions())).toMatchObject(
+        byPropertyName([
+          {
+            entityId: 'entity for new file',
+            entityTemplate: fixturesFactory.id(extractedTemplateName).toString(),
+            propertyName: 'extracted_property_1',
+            extractorId: fixturesFactory.id('extractor1'),
+          },
+          {
+            entityId: 'entity for new file',
+            entityTemplate: fixturesFactory.id(extractedTemplateName).toString(),
+            propertyName: 'title',
+            extractorId: fixturesFactory.id('title_extractor'),
+          },
+          {
+            entityId: 'entity for new file',
+            entityTemplate: fixturesFactory.id(extractedTemplateName).toString(),
+            propertyName: 'select_property',
+            extractorId: fixturesFactory.id('extractor6'),
+          },
+          {
+            entityId: 'entity for new file',
+            entityTemplate: fixturesFactory.id(extractedTemplateName).toString(),
+            propertyName: 'relationship_property',
+            extractorId: fixturesFactory.id('extractor8'),
+          },
+        ])
+      );
+    });
 
-    const extractors = await testingDB.mongodb?.collection('ixextractors').find({}).toArray();
-    const suggestions = await testingDB.mongodb?.collection('ixsuggestions').find({}).toArray();
+    it('should delete the extractor itself if it does not contain any templates', async () => {
+      await applicationEventsBus.emit(
+        new TemplateUpdatedEvent({
+          before: {
+            _id: fixturesFactory.id(extractedTemplateName),
+            name: extractedTemplateName,
+            properties: [
+              fixturesFactory.property('not_extracted_property_1', propertyTypes.text),
+              fixturesFactory.property('not_extracted_property_2', propertyTypes.numeric),
+              fixturesFactory.property('extracted_property_1', propertyTypes.text),
+              fixturesFactory.property('extracted_property_2', propertyTypes.numeric),
+              fixturesFactory.property('select_property', propertyTypes.select),
+              fixturesFactory.property('multiselect_property', propertyTypes.multiselect),
+              fixturesFactory.property('relationship_property', propertyTypes.relationship),
+            ],
+          },
+          after: {
+            _id: fixturesFactory.id(extractedTemplateName),
+            name: extractedTemplateName,
+            properties: [
+              fixturesFactory.property('not_extracted_property_1', propertyTypes.text),
+              fixturesFactory.property('not_extracted_property_2', propertyTypes.numeric),
+              fixturesFactory.property('extracted_property_1', propertyTypes.text),
+              fixturesFactory.property('extracted_property_2_renamed', propertyTypes.numeric),
+              fixturesFactory.property('select_property', propertyTypes.select),
+              fixturesFactory.property('multiselect_property_renamed', propertyTypes.multiselect),
+              fixturesFactory.property('relationship_property', propertyTypes.relationship),
+            ],
+          },
+        })
+      );
 
-    await applicationEventsBus.emit(
-      new TemplateUpdatedEvent({
-        before: {
-          _id: fixturesFactory.id(extractedTemplateName),
-          name: extractedTemplateName,
-          properties: [
-            fixturesFactory.property('not_extracted_property_1', propertyTypes.text),
-            fixturesFactory.property('not_extracted_property_2', propertyTypes.numeric),
-            fixturesFactory.property('extracted_property_1', propertyTypes.text),
-            fixturesFactory.property('extracted_property_2', propertyTypes.numeric),
-          ],
-        },
-        after: {
-          _id: fixturesFactory.id(extractedTemplateName),
-          name: extractedTemplateName,
-          properties: [
-            fixturesFactory.property('not_extracted_property_1', propertyTypes.text),
-            fixturesFactory.property('not_extracted_property_2', propertyTypes.numeric),
-            fixturesFactory.property('extracted_property_1', propertyTypes.text),
-          ],
-        },
-      })
-    );
-
-    expect(extractors).toEqual(
-      await testingDB.mongodb?.collection('ixextractors').find({}).toArray()
-    );
-    expect(suggestions).toEqual(
-      await testingDB.mongodb?.collection('ixsuggestions').find({}).toArray()
-    );
-  });
-
-  it('should delete the template from the extractor if the property not longer exists', async () => {
-    await applicationEventsBus.emit(
-      new TemplateUpdatedEvent({
-        before: {
-          _id: fixturesFactory.id(extractedTemplateName),
-          name: extractedTemplateName,
-          properties: [
-            fixturesFactory.property('not_extracted_property_1', propertyTypes.text),
-            fixturesFactory.property('not_extracted_property_2', propertyTypes.numeric),
-            fixturesFactory.property('extracted_property_1', propertyTypes.text),
-            fixturesFactory.property('extracted_property_2', propertyTypes.numeric),
-            fixturesFactory.property('select_property', propertyTypes.select),
-            fixturesFactory.property('multiselect_property', propertyTypes.multiselect),
-            fixturesFactory.property('relationship_property', propertyTypes.relationship),
-          ],
-        },
-        after: {
-          _id: fixturesFactory.id(extractedTemplateName),
-          name: extractedTemplateName,
-          properties: [
-            fixturesFactory.property('not_extracted_property_1', propertyTypes.text),
-            fixturesFactory.property('not_extracted_property_2', propertyTypes.numeric),
-            fixturesFactory.property('extracted_property_1', propertyTypes.text),
-            fixturesFactory.property('select_property', propertyTypes.select),
-            fixturesFactory.property('multiselect_property', propertyTypes.multiselect),
-          ],
-        },
-      })
-    );
-
-    const extractors = await testingDB.mongodb
-      ?.collection('ixextractors')
-      .find({
-        templates: {
-          $in: [
-            fixturesFactory.id(otherExtractedTemplateName),
-            fixturesFactory.id(extractedTemplateName),
-            fixturesFactory.id('some_other_template'),
-          ],
-        },
-      })
-      .toArray();
-
-    expect(extractors).toMatchObject([
-      fixturesFactory.ixExtractor('title_extractor', 'title', [
-        extractedTemplateName,
-        otherExtractedTemplateName,
-      ]),
-      fixturesFactory.ixExtractor('extractor1', 'extracted_property_1', [
-        extractedTemplateName,
-        otherExtractedTemplateName,
-      ]),
-      fixturesFactory.ixExtractor('extractor3', 'some_property', ['some_other_template']),
-      fixturesFactory.ixExtractor('extractor4', 'extracted_property_2_1', [
-        otherExtractedTemplateName,
-      ]),
-      fixturesFactory.ixExtractor('extractor5', 'extracted_property_2_2', [
-        otherExtractedTemplateName,
-      ]),
-      fixturesFactory.ixExtractor('extractor6', 'select_property', [extractedTemplateName]),
-      fixturesFactory.ixExtractor('extractor7', 'multiselect_property', [extractedTemplateName]),
-    ]);
-
-    const suggestions = await testingDB.mongodb?.collection('ixsuggestions').find({}).toArray();
-
-    expect(suggestions).toMatchObject([
-      {
-        entityId: 'entity for new file',
-        entityTemplate: fixturesFactory.id(extractedTemplateName).toString(),
-        propertyName: 'extracted_property_1',
-        extractorId: fixturesFactory.id('extractor1'),
-      },
-      {
-        entityId: 'entity for new file',
-        entityTemplate: fixturesFactory.id(extractedTemplateName).toString(),
-        propertyName: 'title',
-        extractorId: fixturesFactory.id('title_extractor'),
-      },
-      {
-        entityId: 'entity for new file',
-        entityTemplate: fixturesFactory.id(extractedTemplateName).toString(),
-        propertyName: 'select_property',
-        extractorId: fixturesFactory.id('extractor6'),
-      },
-      {
-        entityId: 'entity for new file',
-        entityTemplate: fixturesFactory.id(extractedTemplateName).toString(),
-        propertyName: 'multiselect_property',
-        extractorId: fixturesFactory.id('extractor7'),
-      },
-    ]);
+      expect(await countExtractorsWithoutTemplates()).toEqual(0);
+    });
   });
 
-  it('should remove the template from the extractor if the property changed names', async () => {
-    await applicationEventsBus.emit(
-      new TemplateUpdatedEvent({
-        before: {
-          _id: fixturesFactory.id(extractedTemplateName),
-          name: extractedTemplateName,
-          properties: [
-            fixturesFactory.property('not_extracted_property_1', propertyTypes.text),
-            fixturesFactory.property('not_extracted_property_2', propertyTypes.numeric),
-            fixturesFactory.property('extracted_property_1', propertyTypes.text),
-            fixturesFactory.property('extracted_property_2', propertyTypes.numeric),
-            fixturesFactory.property('select_property', propertyTypes.select),
-            fixturesFactory.property('multiselect_property', propertyTypes.multiselect),
-            fixturesFactory.property('relationship_property', propertyTypes.relationship),
-          ],
-        },
-        after: {
-          _id: fixturesFactory.id(extractedTemplateName),
-          name: extractedTemplateName,
-          properties: [
-            fixturesFactory.property('not_extracted_property_1', propertyTypes.text),
-            fixturesFactory.property('not_extracted_property_2', propertyTypes.numeric),
-            fixturesFactory.property('extracted_property_1', propertyTypes.text),
-            fixturesFactory.property('extracted_property_2_renamed', propertyTypes.numeric),
-            fixturesFactory.property('select_property', propertyTypes.select),
-            fixturesFactory.property('multiselect_property_renamed', propertyTypes.multiselect),
-            fixturesFactory.property('relationship_property', propertyTypes.relationship),
-          ],
-        },
-      })
-    );
+  describe(`On ${TemplateDeletedEvent.name}`, () => {
+    it('should delete the template from the extractor if the property not longer exists', async () => {
+      await applicationEventsBus.emit(
+        new TemplateDeletedEvent({
+          templateId: fixturesFactory.id(extractedTemplateName).toString(),
+        })
+      );
 
-    const extractors = await testingDB.mongodb
-      ?.collection('ixextractors')
-      .find({
-        templates: {
-          $in: [
-            fixturesFactory.id(otherExtractedTemplateName),
-            fixturesFactory.id(extractedTemplateName),
-            fixturesFactory.id('some_other_template'),
-          ],
-        },
-      })
-      .toArray();
+      expect(
+        await extractorsForTemplates([otherExtractedTemplateName, 'some_other_template'])
+      ).toEqual(
+        byName([
+          fixturesFactory.ixExtractor('title_extractor', 'title', [otherExtractedTemplateName]),
+          fixturesFactory.ixExtractor('extractor1', 'extracted_property_1', [
+            otherExtractedTemplateName,
+          ]),
+          fixturesFactory.ixExtractor('extractor3', 'some_property', ['some_other_template']),
+          fixturesFactory.ixExtractor('extractor4', 'extracted_property_2_1', [
+            otherExtractedTemplateName,
+          ]),
+          fixturesFactory.ixExtractor('extractor5', 'extracted_property_2_2', [
+            otherExtractedTemplateName,
+          ]),
+        ])
+      );
+    });
 
-    expect(extractors).toMatchObject([
-      fixturesFactory.ixExtractor('title_extractor', 'title', [
-        extractedTemplateName,
-        otherExtractedTemplateName,
-      ]),
-      fixturesFactory.ixExtractor('extractor1', 'extracted_property_1', [
-        extractedTemplateName,
-        otherExtractedTemplateName,
-      ]),
-      fixturesFactory.ixExtractor('extractor3', 'some_property', ['some_other_template']),
-      fixturesFactory.ixExtractor('extractor4', 'extracted_property_2_1', [
-        otherExtractedTemplateName,
-      ]),
-      fixturesFactory.ixExtractor('extractor5', 'extracted_property_2_2', [
-        otherExtractedTemplateName,
-      ]),
-      fixturesFactory.ixExtractor('extractor6', 'select_property', [extractedTemplateName]),
-      fixturesFactory.ixExtractor('extractor8', 'relationship_property', [extractedTemplateName]),
-    ]);
+    it('should delete the extractor itself if it does not contain any templates', async () => {
+      await applicationEventsBus.emit(
+        new TemplateDeletedEvent({
+          templateId: fixturesFactory.id(extractedTemplateName).toString(),
+        })
+      );
 
-    const suggestions = await testingDB.mongodb?.collection('ixsuggestions').find({}).toArray();
+      expect(await countExtractorsWithoutTemplates()).toEqual(0);
+    });
 
-    expect(suggestions).toMatchObject([
-      {
-        entityId: 'entity for new file',
-        entityTemplate: fixturesFactory.id(extractedTemplateName).toString(),
-        propertyName: 'extracted_property_1',
-        extractorId: fixturesFactory.id('extractor1'),
-      },
-      {
-        entityId: 'entity for new file',
-        entityTemplate: fixturesFactory.id(extractedTemplateName).toString(),
-        propertyName: 'title',
-        extractorId: fixturesFactory.id('title_extractor'),
-      },
-      {
-        entityId: 'entity for new file',
-        entityTemplate: fixturesFactory.id(extractedTemplateName).toString(),
-        propertyName: 'select_property',
-        extractorId: fixturesFactory.id('extractor6'),
-      },
-      {
-        entityId: 'entity for new file',
-        entityTemplate: fixturesFactory.id(extractedTemplateName).toString(),
-        propertyName: 'relationship_property',
-        extractorId: fixturesFactory.id('extractor8'),
-      },
-    ]);
-  });
+    it('should delete the suggestions related to the template', async () => {
+      await applicationEventsBus.emit(
+        new TemplateDeletedEvent({
+          templateId: fixturesFactory.id(extractedTemplateName).toString(),
+        })
+      );
 
-  it('should delete the extractor itself if it does not contain any templates', async () => {
-    await applicationEventsBus.emit(
-      new TemplateUpdatedEvent({
-        before: {
-          _id: fixturesFactory.id(extractedTemplateName),
-          name: extractedTemplateName,
-          properties: [
-            fixturesFactory.property('not_extracted_property_1', propertyTypes.text),
-            fixturesFactory.property('not_extracted_property_2', propertyTypes.numeric),
-            fixturesFactory.property('extracted_property_1', propertyTypes.text),
-            fixturesFactory.property('extracted_property_2', propertyTypes.numeric),
-            fixturesFactory.property('select_property', propertyTypes.select),
-            fixturesFactory.property('multiselect_property', propertyTypes.multiselect),
-            fixturesFactory.property('relationship_property', propertyTypes.relationship),
-          ],
-        },
-        after: {
-          _id: fixturesFactory.id(extractedTemplateName),
-          name: extractedTemplateName,
-          properties: [
-            fixturesFactory.property('not_extracted_property_1', propertyTypes.text),
-            fixturesFactory.property('not_extracted_property_2', propertyTypes.numeric),
-            fixturesFactory.property('extracted_property_1', propertyTypes.text),
-            fixturesFactory.property('extracted_property_2_renamed', propertyTypes.numeric),
-            fixturesFactory.property('select_property', propertyTypes.select),
-            fixturesFactory.property('multiselect_property_renamed', propertyTypes.multiselect),
-            fixturesFactory.property('relationship_property', propertyTypes.relationship),
-          ],
-        },
-      })
-    );
+      expect(await storedSuggestions()).toEqual([]);
+    });
 
-    const extractorsWithoutTemplates = await testingDB.mongodb
-      ?.collection('ixextractors')
-      .countDocuments({ templates: { $size: 0 } });
+    it('should not act if the feature is not enabld', async () => {
+      await disableFeatures();
 
-    expect(extractorsWithoutTemplates).toEqual(0);
-  });
-});
+      const suggestions = await storedSuggestions();
+      const extractors = await storedExtractors();
 
-describe(`On ${TemplateDeletedEvent.name}`, () => {
-  it('should delete the template from the extractor if the property not longer exists', async () => {
-    await applicationEventsBus.emit(
-      new TemplateDeletedEvent({
-        templateId: fixturesFactory.id(extractedTemplateName).toString(),
-      })
-    );
+      await applicationEventsBus.emit(
+        new TemplateDeletedEvent({
+          templateId: fixturesFactory.id(extractedTemplateName).toString(),
+        })
+      );
 
-    const extractors = await testingDB.mongodb
-      ?.collection('ixextractors')
-      .find({
-        templates: {
-          $in: [
-            fixturesFactory.id(otherExtractedTemplateName),
-            fixturesFactory.id('some_other_template'),
-          ],
-        },
-      })
-      .toArray();
-
-    expect(extractors).toEqual([
-      fixturesFactory.ixExtractor('title_extractor', 'title', [otherExtractedTemplateName]),
-      fixturesFactory.ixExtractor('extractor1', 'extracted_property_1', [
-        otherExtractedTemplateName,
-      ]),
-      fixturesFactory.ixExtractor('extractor3', 'some_property', ['some_other_template']),
-      fixturesFactory.ixExtractor('extractor4', 'extracted_property_2_1', [
-        otherExtractedTemplateName,
-      ]),
-      fixturesFactory.ixExtractor('extractor5', 'extracted_property_2_2', [
-        otherExtractedTemplateName,
-      ]),
-    ]);
-  });
-
-  it('should delete the extractor itself if it does not contain any templates', async () => {
-    await applicationEventsBus.emit(
-      new TemplateDeletedEvent({
-        templateId: fixturesFactory.id(extractedTemplateName).toString(),
-      })
-    );
-
-    const extractorsWithoutTemplates = await testingDB.mongodb
-      ?.collection('ixextractors')
-      .countDocuments({ templates: { $size: 0 } });
-
-    expect(extractorsWithoutTemplates).toEqual(0);
-  });
-
-  it('should delete the suggestions related to the template', async () => {
-    await applicationEventsBus.emit(
-      new TemplateDeletedEvent({
-        templateId: fixturesFactory.id(extractedTemplateName).toString(),
-      })
-    );
-
-    const suggestions = await testingDB.mongodb?.collection('ixsuggestions').find({}).toArray();
-
-    expect(suggestions).toEqual([]);
-  });
-
-  it('should not act if the feature is not enabld', async () => {
-    await disableFeatures();
-
-    const suggestions = await testingDB.mongodb?.collection('ixsuggestions').find({}).toArray();
-    const extractors = await testingDB.mongodb?.collection('ixextractors').find({}).toArray();
-
-    await applicationEventsBus.emit(
-      new TemplateDeletedEvent({
-        templateId: fixturesFactory.id(extractedTemplateName).toString(),
-      })
-    );
-
-    expect(suggestions).toEqual(
-      await testingDB.mongodb?.collection('ixsuggestions').find({}).toArray()
-    );
-    expect(extractors).toEqual(
-      await testingDB.mongodb?.collection('ixextractors').find({}).toArray()
-    );
+      expect(suggestions).toEqual(await storedSuggestions());
+      expect(extractors).toEqual(await storedExtractors());
+    });
   });
 });

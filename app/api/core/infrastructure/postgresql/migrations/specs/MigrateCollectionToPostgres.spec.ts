@@ -4,7 +4,12 @@ import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { testingDB } from '#api/utils/testing_db.js';
 import { testingPG } from '#api/utils/testing_pg.js';
 import { MigrateCollectionToPostgres, MigrationConfig } from '../MigrateCollectionToPostgres.js';
-import { FilesMigrationConfig } from '../configs/index.js';
+import {
+  FilesMigrationConfig,
+  IXExtractorsMigrationConfig,
+  IXModelsMigrationConfig,
+  IXSuggestionsMigrationConfig,
+} from '../configs/index.js';
 
 describe('MigrateCollectionToPostgres', () => {
   const TENANT = 'migration-tenant';
@@ -630,6 +635,142 @@ describe('MigrateCollectionToPostgres', () => {
       const pgRows = await testingPG.getAllFrom('files');
       const rowsForTenant = pgRows.filter(r => r.tenant_id === TENANT);
       expect(rowsForTenant).toHaveLength(100);
+    });
+  });
+
+  /**
+   * The three IX tables are copied in foreign key order: models and suggestions reference their
+   * extractor, so a run that inserted them first would fail. Orphans, whose extractor is gone from
+   * Mongo, are skipped rather than failing the batch.
+   */
+  describe('IX collections', () => {
+    const extractorA = '64a1b2c3d4e5f6a7b8c9e001';
+    const extractorB = '64a1b2c3d4e5f6a7b8c9e002';
+    const deletedExtractor = '64a1b2c3d4e5f6a7b8c9e0ff';
+
+    const suggestion = (hexId: string, extractorId: string, entityId: string) => ({
+      _id: new ObjectId(hexId),
+      extractorId: new ObjectId(extractorId),
+      entityId,
+      entityTemplate: '64a1b2c3d4e5f6a7b8c9e301',
+      propertyName: 'target',
+      language: 'en',
+      suggestedValue: `${entityId} value`,
+      status: 'ready',
+      date: 1000,
+      state: { labeled: false },
+    });
+
+    const rowsOf = async (table: string) =>
+      (await testingPG.getAllFrom(table)).filter(row => row.tenant_id === TENANT);
+
+    const idsOf = async (table: string) => (await rowsOf(table)).map(row => row._id).sort();
+
+    const migrateIX = async () => {
+      const migrator = makeMigrator();
+      const extractors = await migrator.migrate(IXExtractorsMigrationConfig);
+      const models = await migrator.migrate(IXModelsMigrationConfig);
+      const suggestions = await migrator.migrate(IXSuggestionsMigrationConfig);
+      return { extractors, models, suggestions };
+    };
+
+    beforeEach(async () => {
+      await testingDB.clear(['ixextractors', 'ixmodels', 'ixsuggestions']);
+      await testingPG.clear(['ix_suggestions', 'ix_models', 'ix_extractors']);
+
+      const mongoDb = testingDB.db(testingDB.dbName);
+      await mongoDb.collection('ixextractors').insertMany([
+        {
+          _id: new ObjectId(extractorA),
+          name: 'Text extractor',
+          property: 'target',
+          source: { property: 'source_text' },
+          templates: [new ObjectId('64a1b2c3d4e5f6a7b8c9e301')],
+        },
+        {
+          _id: new ObjectId(extractorB),
+          name: 'Pdf extractor',
+          property: 'target',
+          source: { pdf: true },
+          templates: [new ObjectId('64a1b2c3d4e5f6a7b8c9e301')],
+        },
+      ]);
+      await mongoDb.collection('ixmodels').insertMany([
+        {
+          _id: new ObjectId('64a1b2c3d4e5f6a7b8c9e101'),
+          extractorId: new ObjectId(extractorA),
+          creationDate: 1000,
+          status: 'ready',
+          findingSuggestions: false,
+        },
+        {
+          _id: new ObjectId('64a1b2c3d4e5f6a7b8c9e102'),
+          extractorId: new ObjectId(deletedExtractor),
+          creationDate: 1000,
+          status: 'ready',
+          findingSuggestions: false,
+        },
+      ]);
+      await mongoDb.collection('ixsuggestions').insertMany([
+        suggestion('64a1b2c3d4e5f6a7b8c9e201', extractorA, 'text entity'),
+        {
+          ...suggestion('64a1b2c3d4e5f6a7b8c9e202', extractorB, 'pdf entity'),
+          entityLanguageId: new ObjectId('64a1b2c3d4e5f6a7b8c9e401'),
+          fileId: new ObjectId('64a1b2c3d4e5f6a7b8c9e501'),
+          selectionRectangles: [{ top: 1, left: 2, width: 3, height: 4, page: '1' }],
+        },
+        suggestion('64a1b2c3d4e5f6a7b8c9e203', deletedExtractor, 'orphan entity'),
+      ]);
+    });
+
+    it('copies ixextractors, then ixmodels and ixsuggestions, with FKs satisfied', async () => {
+      const { extractors } = await migrateIX();
+
+      expect(extractors).toEqual({ migrated: 2, orphansSkipped: 0, skipped: false });
+      expect(await idsOf('ix_extractors')).toEqual([extractorA, extractorB]);
+      expect(await rowsOf('ix_models')).toMatchObject([
+        { _id: '64a1b2c3d4e5f6a7b8c9e101', extractorId: extractorA, status: 'ready' },
+      ]);
+
+      const suggestions = await rowsOf('ix_suggestions');
+      expect(suggestions.find(row => row.extractorId === extractorA)).toMatchObject({
+        _id: '64a1b2c3d4e5f6a7b8c9e201',
+        entityId: 'text entity',
+        fileId: null,
+        suggestedValue: 'text entity value',
+      });
+      expect(suggestions.find(row => row.extractorId === extractorB)).toMatchObject({
+        _id: '64a1b2c3d4e5f6a7b8c9e202',
+        entityLanguageId: '64a1b2c3d4e5f6a7b8c9e401',
+        fileId: '64a1b2c3d4e5f6a7b8c9e501',
+        selectionRectangles: [{ top: 1, left: 2, width: 3, height: 4, page: '1' }],
+      });
+    });
+
+    it('skips the orphan model and the orphan suggestion', async () => {
+      const { models, suggestions } = await migrateIX();
+
+      expect(models).toEqual({ migrated: 1, orphansSkipped: 1, skipped: false });
+      expect(suggestions).toEqual({ migrated: 2, orphansSkipped: 1, skipped: false });
+      expect(await idsOf('ix_models')).toEqual(['64a1b2c3d4e5f6a7b8c9e101']);
+      expect(await idsOf('ix_suggestions')).toEqual([
+        '64a1b2c3d4e5f6a7b8c9e201',
+        '64a1b2c3d4e5f6a7b8c9e202',
+      ]);
+    });
+
+    it('is idempotent: a second run without force skips non-empty tables', async () => {
+      await migrateIX();
+
+      const skipped = { migrated: 0, orphansSkipped: 0, skipped: true };
+      expect(await migrateIX()).toEqual({
+        extractors: skipped,
+        models: skipped,
+        suggestions: skipped,
+      });
+      expect(await idsOf('ix_extractors')).toHaveLength(2);
+      expect(await idsOf('ix_models')).toHaveLength(1);
+      expect(await idsOf('ix_suggestions')).toHaveLength(2);
     });
   });
 });

@@ -15,7 +15,7 @@ import { ObjectIdSchema, PropertySchema } from '#shared/types/commonTypes.js';
 import { BaseFile } from '#api/core/domain/files/BaseFile.js';
 import { FilesDataSourceFactory } from '#api/core/infrastructure/factories/FilesDataSourceFactory.js';
 import { FilesServiceFactory } from '#api/core/infrastructure/factories/FilesServiceFactory.js';
-import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { IXSuggestionType } from '#shared/types/suggestionType.js';
 import { objectIndex } from '#shared/data_utils/objectIndex.js';
 import { propertyTypeIsWithoutPropertySelections } from '#api/services/informationextraction/ixMaterials.js';
@@ -37,7 +37,9 @@ const updatePropertySelections = async (
 
   const filesDS = FilesDataSourceFactory.default();
   const filesService = FilesServiceFactory.default();
-  const transactionManager = TransactionManagerFactory.mongo();
+  // The files write lands in Postgres under postgresCore, so it runs in the context's
+  // flag-aware transaction, as FilesService's own writes do.
+  const { transactionManager } = ExecutionContext;
 
   const suggestionFileIds = suggestions.map(s => s.fileId).filter(Boolean);
   if (!suggestionFileIds.length) return;
