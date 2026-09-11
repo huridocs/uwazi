@@ -338,7 +338,7 @@ const extractorsTableColumns = [
     cell: PropertyCell,
     meta: { headerClassName: 'w-1/6' },
   }),
-  extractorColumnHelper.accessor('source', {
+  extractorColumnHelper.accessor('sourceLabel', {
     header: SourceHeader,
     meta: { headerClassName: 'w-1/6' },
   }),

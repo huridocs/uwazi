@@ -51,9 +51,9 @@ export class ProcessSuggestions implements UseCase<Input, Output> {
 
   private static async getExtractorAndModel(extractorId: string) {
     const extractorObjectId = ObjectId.createFromHexString(extractorId);
-    const [[extractor], [model]] = await Promise.all([
-      Extractors.get({ _id: extractorObjectId }),
-      ixmodels.get({ extractorId: extractorObjectId }),
+    const [extractor, model] = await Promise.all([
+      Extractors.getById(extractorObjectId),
+      ixmodels.getByExtractorId(extractorObjectId),
     ]);
     return [extractor, model] as const;
   }
@@ -108,7 +108,7 @@ export class ProcessSuggestions implements UseCase<Input, Output> {
       await ixmodels.startFindingSuggestions(extractorObjectId);
 
       // Set maxSuggestionsToFind from user request and compute filter-aware total
-      const [current] = await ixmodels.get({ extractorId: extractorObjectId });
+      const current = await ixmodels.getByExtractorId(extractorObjectId);
       const updated = await ixmodels.save({
         ...current,
         extractorId,
@@ -183,9 +183,7 @@ export class ProcessSuggestions implements UseCase<Input, Output> {
     }
 
     // If find disabled, set totals to 0 and transition centrally
-    const [currentModel] = await ixmodels.get({
-      extractorId: extractorObjectId,
-    });
+    const currentModel = await ixmodels.getByExtractorId(extractorObjectId);
 
     await ixmodels.save({
       ...currentModel,

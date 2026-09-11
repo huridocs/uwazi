@@ -57,6 +57,15 @@ const fixtures: DBFixture = {
         property: 'source_text',
       }
     ),
+
+    factory.ixExtractor(
+      'extractor_source_title_target_text',
+      'target_text',
+      ['extractor_source_text_target_text_template'],
+      {
+        property: 'title',
+      }
+    ),
   ],
   templates: [
     factory.template('extractor_source_text_target_text_template', [
@@ -166,6 +175,49 @@ const fixtures: DBFixture = {
         processing: false,
         withSuggestion: false,
       },
+    }),
+    factory.ixSuggestion({
+      _id: factory.id('title_source_suggestion'),
+      extractorId: factory.id('extractor_source_title_target_text'),
+      entityId: 'extractor_source_text_target_text_entity_1',
+      entityTemplate: factory.id('extractor_source_text_target_text_template').toString(),
+      propertyName: 'target_text',
+      language: 'en',
+      status: 'ready',
+      segment: 'a segment extracted from the old title',
+      error: '',
+      currentValue: 'text_target_value',
+      entityTitle: 'extractor_source_text_target_text_entity_1',
+      suggestedValue: 'from_the_old_title',
+      date: 1,
+      state: {
+        error: false,
+        hasContext: true,
+        match: false,
+        labeled: true,
+        withValue: true,
+        obsolete: false,
+        processing: false,
+        withSuggestion: true,
+      },
+    }),
+    /**
+     * Its extractor no longer exists. The `$unwind` of the join this use case used to run
+     * dropped such rows silently; pinned here so the behaviour survives the move off the
+     * aggregation.
+     */
+    factory.ixSuggestion({
+      _id: factory.id('orphaned_suggestion'),
+      extractorId: factory.id('deleted_extractor'),
+      entityId: 'extractor_source_text_target_text_entity_1',
+      entityTemplate: factory.id('extractor_source_text_target_text_template').toString(),
+      propertyName: 'target_text',
+      language: 'en',
+      status: 'ready',
+      currentValue: 'untouched',
+      entityTitle: 'untouched',
+      suggestedValue: '',
+      date: 1,
     }),
   ],
 };
@@ -328,6 +380,102 @@ describe('UpdateSuggestionsAfterEntityUpdate', () => {
           currentValue: 'text_target_1_value_es',
         },
       ]);
+    });
+  });
+
+  describe('given the source Property is updated', () => {
+    // These three assert on `state.obsolete`, which is sticky once set — the recompute carries a
+    // row's own `obsolete` forward. Without a reset they would depend on each other's order.
+    beforeEach(async () => {
+      await testingEnvironment.setUp(fixtures);
+    });
+
+    const withSource = (entity: any, sourceText: string) => ({
+      ...entity,
+      metadata: { ...entity.metadata, source_text: [{ value: sourceText }] },
+    });
+
+    it('should mark the suggestion obsolete, because its result no longer describes the source', async () => {
+      const before = extractorSourceTextTargetTextEntity1.map(entity =>
+        withSource(entity, 'the original source text')
+      );
+      const after = extractorSourceTextTargetTextEntity1.map(entity =>
+        withSource(entity, 'a completely different source text')
+      );
+
+      const { sut } = createSut();
+      await sut.execute({ entities: after, previousEntities: before });
+
+      const suggestions = await testingEnvironment.db
+        .getCollection('ixsuggestions')
+        ?.find({
+          entityId: extractorSourceTextTargetTextEntity1[0].sharedId,
+          extractorId: factory.id('extractor_source_text_target_text'),
+        })
+        .toArray();
+
+      expect(suggestions?.map(suggestion => suggestion.state.obsolete)).toEqual([true, true]);
+    });
+
+    it('should leave the suggestion alone when the source did not change', async () => {
+      const before = extractorSourceTextTargetTextEntity1.map(entity =>
+        withSource(entity, 'an unchanged source text')
+      );
+      const after = before.map(entity => ({ ...entity, title: 'only the title moved' }));
+
+      const { sut } = createSut();
+      await sut.execute({ entities: after, previousEntities: before });
+
+      const suggestions = await testingEnvironment.db
+        .getCollection('ixsuggestions')
+        ?.find({
+          entityId: extractorSourceTextTargetTextEntity1[0].sharedId,
+          extractorId: factory.id('extractor_source_text_target_text'),
+        })
+        .toArray();
+
+      expect(suggestions?.map(suggestion => suggestion.state.obsolete)).toEqual([false, false]);
+      expect(suggestions?.map(suggestion => suggestion.entityTitle)).toEqual([
+        'only the title moved',
+        'only the title moved',
+      ]);
+    });
+
+    it('should treat the title as the source when the extractor reads from it', async () => {
+      const before = extractorSourceTextTargetTextEntity1;
+      const after = extractorSourceTextTargetTextEntity1.map(entity => ({
+        ...entity,
+        title: 'a brand new title',
+      }));
+
+      const { sut } = createSut();
+      await sut.execute({ entities: after, previousEntities: before });
+
+      const suggestion = await testingEnvironment.db
+        .getCollection('ixsuggestions')
+        ?.findOne({ _id: factory.id('title_source_suggestion') });
+
+      expect(suggestion?.state.obsolete).toBe(true);
+    });
+  });
+
+  describe('given a suggestion whose extractor no longer exists', () => {
+    it('should skip it rather than throwing', async () => {
+      const input: Input = {
+        entities: [
+          { ...extractorSourceTextTargetTextEntity1[0], title: 'Another title' },
+          { ...extractorSourceTextTargetTextEntity1[1], title: 'Another title (es)' },
+        ],
+      };
+      const { sut } = createSut();
+
+      await sut.execute(input);
+
+      const orphaned = await testingEnvironment.db
+        .getCollection('ixsuggestions')
+        ?.findOne({ _id: factory.id('orphaned_suggestion') });
+
+      expect(orphaned).toMatchObject({ entityTitle: 'untouched', currentValue: 'untouched' });
     });
   });
 });
