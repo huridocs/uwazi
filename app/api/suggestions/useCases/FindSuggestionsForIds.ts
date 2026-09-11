@@ -34,22 +34,22 @@ export class FindSuggestionsForIds implements UseCase<Input, Output> {
     FindSuggestionsForIds.validateExtractorAndModel(extractor, model, extractorId);
 
     const { foundNewIds } = await FindSuggestionsForIds.processNewOrAppendSharedIds(
-      model,
+      model!,
       sharedIds
     );
 
     if (foundNewIds) {
-      await this.informationExtraction.sendMaterialsAndTaskSuggestions(extractor!, model, false);
+      await this.informationExtraction.sendMaterialsAndTaskSuggestions(extractor!, model!, false);
     }
 
-    const [updatedModel] = await ixmodels.get({ extractorId });
+    const updatedModel = await ixmodels.getByExtractorId(extractorId);
     return this.informationExtraction.getSuggestionsStatus(extractorId, updatedModel!);
   }
 
   private static async getExtractorAndModel(extractorId: ObjectIdSchema) {
-    const [[extractor], [model]] = await Promise.all([
-      Extractors.get({ _id: extractorId }),
-      ixmodels.get({ extractorId }),
+    const [extractor, model] = await Promise.all([
+      Extractors.getById(extractorId),
+      ixmodels.getByExtractorId(extractorId),
     ]);
     return [extractor, model] as const;
   }

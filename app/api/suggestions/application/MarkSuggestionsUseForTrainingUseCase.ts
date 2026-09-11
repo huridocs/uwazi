@@ -1,5 +1,5 @@
 import { ObjectId } from 'mongodb';
-import { IXSuggestionsModel } from '../IXSuggestionsModel.js';
+import { IXSuggestionsDAOFactory } from '../infrastructure/IXSuggestionsDAOFactory.js';
 
 type Input = {
   extractorId: string;
@@ -18,18 +18,11 @@ class MarkSuggestionsUseForTrainingUseCase {
     const extractorId = new ObjectId(input.extractorId);
     const ids = input.suggestionIds.map(id => new ObjectId(id));
 
-    const suggestions = await IXSuggestionsModel.db
-      .find({ _id: { $in: ids }, extractorId })
-      .select({ _id: 1 })
-      .lean();
-
-    const ownedIds = suggestions.map(s => s._id);
+    const dao = IXSuggestionsDAOFactory.default();
+    const ownedIds = await dao.getIdsOwnedByExtractor(extractorId, ids);
 
     if (ownedIds.length > 0) {
-      await IXSuggestionsModel.updateMany(
-        { _id: { $in: ownedIds } },
-        { $set: { useForTraining: input.useForTraining } }
-      );
+      await dao.setUseForTraining(ownedIds, input.useForTraining);
     }
 
     return { updated: ownedIds.map(id => id.toString()), useForTraining: input.useForTraining };
