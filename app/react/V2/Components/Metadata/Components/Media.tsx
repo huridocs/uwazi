@@ -4,7 +4,7 @@ import { t } from '#app/I18N/index.js';
 import { MediaMetadataProperty } from '#V2/formatters/types.js';
 import { getMimetypeFromUrl } from '#V2/shared/formatHelpers.js';
 import { MediaPlayer } from '../../UI/index.js';
-import { Image } from './Image.js';
+import { Image, MEDIA_SURFACE } from './Image.js';
 
 type MediaProps = {
   values: MediaMetadataProperty['values'];
@@ -24,13 +24,6 @@ const isImageMedia = (value: string, mimetype?: string, fileType?: string) =>
   Boolean(mimetype?.startsWith('image/')) ||
   getMimetypeFromUrl(value).startsWith('image/');
 
-const videoMaxHeightClass = (density: 'default' | 'compact', fullWidth: boolean) => {
-  if (density === 'compact') {
-    return 'max-h-[140px]';
-  }
-  return fullWidth ? 'max-h-96' : 'max-h-48';
-};
-
 const Media = ({
   values,
   width = '100%',
@@ -48,18 +41,20 @@ const Media = ({
     );
   }
 
-  const nonEmptyValues = values?.filter(v => v.value) ?? [];
+  const nonEmptyValues = values.filter(v => v.value);
+  const cover = imageStyle === 'cover';
+  const framed = frame === 'video';
+  const compact = density === 'compact';
+  const stack = compact
+    ? 'flex min-w-0 max-w-full flex-col'
+    : 'flex h-full min-h-0 min-w-0 max-w-full flex-1 flex-col';
 
   if (nonEmptyValues.length === 0) {
     return null;
   }
 
   return (
-    <div
-      className={`flex min-w-0 max-w-full flex-col gap-4 overflow-hidden${
-        frame === 'video' ? ' min-h-0 flex-1' : ''
-      }`}
-    >
+    <div className={`${stack} gap-4 overflow-hidden`}>
       {nonEmptyValues.map(({ value, alt, timelinks = [], mimetype, fileType }, index) => {
         if (isImageMedia(value, mimetype, fileType)) {
           return (
@@ -79,28 +74,22 @@ const Media = ({
         };
 
         const figId = `${baseId}-${index}`;
-
+        const hasTimelinks = timelinks.length > 0;
+        const box = compact
+          ? 'max-h-[140px]'
+          : `min-h-48 ${hasTimelinks ? 'shrink-0' : 'h-full min-h-0'}${framed && cover ? ' relative' : ''}`;
         return (
-          <div
-            key={value}
-            className={`flex min-w-0 max-w-full flex-col gap-2${
-              frame === 'video' ? ' min-h-0 flex-1' : ''
-            }`}
-          >
-            <figure
-              aria-labelledby={figId}
-              className={`w-full min-w-0 max-w-full overflow-hidden rounded-md bg-(--color-theme-surface-warm) ${videoMaxHeightClass(density, fullWidth)} ${
-                frame === 'video' ? 'relative min-h-0 flex-1 aspect-video' : ''
-              }`.trim()}
-            >
+          <div key={value} className={`${stack} gap-2`}>
+            <figure aria-labelledby={figId} className={`${MEDIA_SURFACE} ${box}`}>
               <MediaPlayer
                 className={
-                  frame === 'video' ? 'absolute inset-0 h-full w-full' : 'h-full w-full max-w-full'
+                  framed && cover ? 'absolute inset-0 h-full w-full' : 'h-full w-full max-w-full'
                 }
                 playerRef={playerRef}
                 url={value}
                 width={width}
-                height={frame === 'video' ? '100%' : height}
+                height={framed ? '100%' : height}
+                style={framed ? { objectFit: cover ? 'cover' : 'contain' } : undefined}
               />
               {alt && (
                 <figcaption className="sr-only" id={figId}>
@@ -109,9 +98,9 @@ const Media = ({
               )}
             </figure>
 
-            {timelinks.length > 0 && (
-              <nav className="w-full" aria-label={t('System', 'Timelinks', null, false)}>
-                <ul className="flex flex-col gap-2">
+            {hasTimelinks && (
+              <nav className="min-h-0 w-full" aria-label={t('System', 'Timelinks', null, false)}>
+                <ul className="flex max-h-32 flex-col gap-2 overflow-y-auto">
                   {timelinks.map(({ time, hh, mm, ss, label: timelinkLabel }) => (
                     <li key={timelinkLabel + time}>
                       <button

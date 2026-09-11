@@ -15,7 +15,17 @@ const SPECIALIZED_FULL_WIDTH_TYPES: ReadonlyArray<MetadataProperty['type']> = [
 
 const METADATA_FIELD_COLUMN = 'flex min-h-0 min-w-0 flex-col self-stretch';
 const COMPACT_METADATA_FIELD_LAYOUT = `${METADATA_FIELD_COLUMN} flex-1`;
+const MEDIA_METADATA_FIELD_LAYOUT = METADATA_FIELD_COLUMN;
 const FULL_ROW_METADATA_FIELD_LAYOUT = `${METADATA_FIELD_COLUMN} w-full shrink-0 basis-full`;
+const MEDIA_MASONRY_IMAGE_ROW =
+  'grid w-full min-w-0 items-stretch gap-3 max-h-48 auto-rows-[12rem]';
+const MEDIA_MASONRY_VIDEO_ROW =
+  'grid w-full min-w-0 items-stretch gap-3 max-h-96 auto-rows-[minmax(12rem,auto)]';
+const MEDIA_ROW_COLS = {
+  1: 'grid-cols-1',
+  2: 'grid-cols-2',
+  3: 'grid-cols-3',
+} as const;
 const COMPACT_CARD_MIN_PX = 160;
 const MEDIA_CARD_MIN_PX = 288;
 const PROPERTY_ROW_GAP_PX = 12;
@@ -98,15 +108,42 @@ const packClassForProperty = (data: MetadataProperty): MasonryPackClass => {
     return 'block';
   }
   if (isMediaPackType(data.type)) {
-    return data.fullWidth ? 'block' : 'media';
+    return 'media';
   }
   return 'short';
 };
 
-const metadataGridClassForProperty = (data: MetadataProperty): string =>
-  packClassForProperty(data) === 'block'
-    ? FULL_ROW_METADATA_FIELD_LAYOUT
-    : COMPACT_METADATA_FIELD_LAYOUT;
+const isImageMediaValue = (value: { fileType?: string; mimetype?: string }): boolean =>
+  value.fileType === 'image' || Boolean(value.mimetype?.startsWith('image/'));
+
+const isVideoMediaField = (data: MetadataProperty): boolean =>
+  data.type === 'media' && data.values.some(value => !isImageMediaValue(value));
+
+const metadataGridClassForProperty = (data: MetadataProperty): string => {
+  const packClass = packClassForProperty(data);
+  if (packClass === 'block') {
+    return FULL_ROW_METADATA_FIELD_LAYOUT;
+  }
+  if (packClass === 'media') {
+    return MEDIA_METADATA_FIELD_LAYOUT;
+  }
+  return COMPACT_METADATA_FIELD_LAYOUT;
+};
+
+const mediaRowTrackCount = (widthPx: number): 1 | 2 | 3 => {
+  if (widthPx < MEDIA_CARD_MIN_PX * 2 + PROPERTY_ROW_GAP_PX) {
+    return 1;
+  }
+  if (widthPx < MEDIA_CARD_MIN_PX * 3 + PROPERTY_ROW_GAP_PX * 2) {
+    return 2;
+  }
+  return MEDIA_MAX_PER_ROW;
+};
+
+const mediaMasonryRowClass = (widthPx: number, fields: MetadataProperty[]): string =>
+  `${fields.some(isVideoMediaField) ? MEDIA_MASONRY_VIDEO_ROW : MEDIA_MASONRY_IMAGE_ROW} ${
+    MEDIA_ROW_COLS[mediaRowTrackCount(widthPx)]
+  }`;
 
 type PackRow = { current: MetadataProperty[]; used: number };
 type PackWork = { rows: PropertyRow[]; row: PackRow; widthPx: number };
@@ -245,9 +282,11 @@ const partitionMetadataRecord = (
 export {
   LONG_FIELD_CHAR_THRESHOLD,
   COMPACT_METADATA_FIELD_LAYOUT,
+  MEDIA_METADATA_FIELD_LAYOUT,
   FULL_ROW_METADATA_FIELD_LAYOUT,
   COMPACT_CARD_MIN_PX,
   MEDIA_CARD_MIN_PX,
+  MEDIA_MAX_PER_ROW,
   PROPERTY_ROW_GAP_PX,
   isSpecializedFullWidthField,
   isLongField,
@@ -257,6 +296,8 @@ export {
   inheritGroupKey,
   groupInheritingRelationships,
   metadataGridClassForProperty,
+  mediaMasonryRowClass,
+  mediaRowTrackCount,
   packClassForProperty,
   packPropertyRows,
   partitionMetadataRecord,

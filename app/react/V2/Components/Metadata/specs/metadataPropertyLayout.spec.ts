@@ -14,8 +14,11 @@ import {
   COMPACT_METADATA_FIELD_LAYOUT,
   FULL_ROW_METADATA_FIELD_LAYOUT,
   MEDIA_CARD_MIN_PX,
+  MEDIA_METADATA_FIELD_LAYOUT,
   PROPERTY_ROW_GAP_PX,
   metadataGridClassForProperty,
+  mediaMasonryRowClass,
+  mediaRowTrackCount,
   partitionMetadataRecord,
   packPropertyRows,
   packClassForProperty,
@@ -71,11 +74,9 @@ describe('metadataPropertyLayout', () => {
         packClassForProperty(numericField('x'.repeat(LONG_FIELD_CHAR_THRESHOLD + 1), 'mid'))
       ).toBe('block');
       expect(packClassForProperty(imageField)).toBe('media');
-      expect(packClassForProperty({ ...imageField, fullWidth: true })).toBe('block');
-      expect(metadataGridClassForProperty({ ...imageField, fullWidth: true })).toBe(
-        FULL_ROW_METADATA_FIELD_LAYOUT
-      );
+      expect(packClassForProperty({ ...imageField, fullWidth: true })).toBe('media');
       expect(packClassForProperty(mediaField)).toBe('media');
+      expect(packClassForProperty({ ...mediaField, fullWidth: true })).toBe('media');
       expect(packClassForProperty(previewField)).toBe('media');
       expect(packClassForProperty(markdownField('md'))).toBe('block');
       expect(packClassForProperty(geolocationField)).toBe('media');
@@ -83,18 +84,22 @@ describe('metadataPropertyLayout', () => {
   });
 
   describe('grid classes', () => {
-    it('packs short fields, images, and media compact', () => {
+    it('packs short fields compact and media cells without flex-1', () => {
       expect(metadataGridClassForProperty(linkOnlyRel())).toBe(COMPACT_METADATA_FIELD_LAYOUT);
-      expect(metadataGridClassForProperty(imageField)).toBe(COMPACT_METADATA_FIELD_LAYOUT);
-      expect(metadataGridClassForProperty(mediaField)).toBe(COMPACT_METADATA_FIELD_LAYOUT);
-      expect(metadataGridClassForProperty(previewField)).toBe(COMPACT_METADATA_FIELD_LAYOUT);
-      expect(metadataGridClassForProperty(geolocationField)).toBe(COMPACT_METADATA_FIELD_LAYOUT);
+      expect(metadataGridClassForProperty(imageField)).toBe(MEDIA_METADATA_FIELD_LAYOUT);
+      expect(metadataGridClassForProperty({ ...imageField, fullWidth: true })).toBe(
+        MEDIA_METADATA_FIELD_LAYOUT
+      );
+      expect(metadataGridClassForProperty(mediaField)).toBe(MEDIA_METADATA_FIELD_LAYOUT);
+      expect(metadataGridClassForProperty(previewField)).toBe(MEDIA_METADATA_FIELD_LAYOUT);
+      expect(metadataGridClassForProperty(geolocationField)).toBe(MEDIA_METADATA_FIELD_LAYOUT);
+      expect(MEDIA_METADATA_FIELD_LAYOUT).not.toContain('flex-1');
       expect(COMPACT_METADATA_FIELD_LAYOUT).toContain('self-stretch');
+      expect(COMPACT_METADATA_FIELD_LAYOUT).toContain('flex-1');
       expect(COMPACT_METADATA_FIELD_LAYOUT).not.toContain('h-full');
     });
 
-    it('packs long text and markdown full-row; media stays compact so it can share a row', () => {
-      expect(metadataGridClassForProperty(imageField)).toBe(COMPACT_METADATA_FIELD_LAYOUT);
+    it('packs long text and markdown full-row; media stays in media tracks so it can share a row', () => {
       expect(metadataGridClassForProperty(markdownField('md'))).toBe(
         FULL_ROW_METADATA_FIELD_LAYOUT
       );
@@ -205,13 +210,34 @@ describe('metadataPropertyLayout', () => {
       ]);
     });
 
+    it('counts media tracks from pane width, not leftover cell count', () => {
+      const twoCol = MEDIA_CARD_MIN_PX * 2 + PROPERTY_ROW_GAP_PX;
+      const threeCol = MEDIA_CARD_MIN_PX * 3 + PROPERTY_ROW_GAP_PX * 2;
+      expect(mediaRowTrackCount(0)).toBe(1);
+      expect(mediaRowTrackCount(twoCol - 1)).toBe(1);
+      expect(mediaRowTrackCount(twoCol)).toBe(2);
+      expect(mediaRowTrackCount(threeCol - 1)).toBe(2);
+      expect(mediaRowTrackCount(threeCol)).toBe(3);
+      expect(mediaMasonryRowClass(twoCol - 1, [imageField])).toBe(
+        'grid w-full min-w-0 items-stretch gap-3 max-h-48 auto-rows-[12rem] grid-cols-1'
+      );
+      expect(mediaMasonryRowClass(twoCol, [imageField])).toBe(
+        'grid w-full min-w-0 items-stretch gap-3 max-h-48 auto-rows-[12rem] grid-cols-2'
+      );
+      expect(mediaMasonryRowClass(threeCol, [imageField])).toBe(
+        'grid w-full min-w-0 items-stretch gap-3 max-h-48 auto-rows-[12rem] grid-cols-3'
+      );
+      expect(mediaMasonryRowClass(twoCol, [imageField, mediaField])).toBe(
+        'grid w-full min-w-0 items-stretch gap-3 max-h-96 auto-rows-[minmax(12rem,auto)] grid-cols-2'
+      );
+    });
+
     it('packs two media cards when they fit', () => {
       const twoCol = MEDIA_CARD_MIN_PX * 2 + PROPERTY_ROW_GAP_PX;
       expect(rowIds([imageField, mediaField], twoCol - 1)).toEqual([['img1'], ['med1']]);
       expect(rowIds([imageField, mediaField], twoCol)).toEqual([['img1', 'med1']]);
-      expect(rowIds([{ ...imageField, fullWidth: true }, mediaField], 800)).toEqual([
-        ['img1'],
-        ['med1'],
+      expect(rowIds([{ ...imageField, fullWidth: true }, mediaField], twoCol)).toEqual([
+        ['img1', 'med1'],
       ]);
     });
 
