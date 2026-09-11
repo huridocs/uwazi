@@ -41,10 +41,7 @@ export class CreateBlankSuggestionsFromDocument implements UseCase<Input, void> 
       { withoutDocuments: true }
     );
 
-    const extractors = await Extractors.get({
-      templates: { $in: [entity.template] },
-      'source.pdf': { $exists: true },
-    });
+    const extractors = await Extractors.getPdfSourceExtractorsForTemplate(entity.template!);
 
     if (!extractors.length) {
       throw new ExtractorsNotAvailableError(entity.template.toString());
