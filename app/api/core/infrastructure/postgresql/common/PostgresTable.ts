@@ -167,6 +167,11 @@ export class PostgresTable<TRow = Record<string, unknown>> {
     return this.chain(this.qb.clone().orderByRaw(sql, bindings));
   }
 
+  /** Escape hatch for projections `select` can't express, e.g. `count(*) FILTER (WHERE …)`. */
+  selectRaw(sql: string, bindings: readonly Knex.RawBinding[] = []): PostgresTable<TRow> {
+    return this.chain(this.qb.clone().select(this.cfg.knex.raw(sql, bindings)));
+  }
+
   limit(n: number): PostgresTable<TRow> {
     return this.chain(this.qb.clone().limit(n));
   }

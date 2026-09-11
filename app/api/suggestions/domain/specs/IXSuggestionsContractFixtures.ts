@@ -147,6 +147,7 @@ export {
   TENANT_ID,
   testConfigs,
   extractors,
+  textSuggestion,
   suggestions,
   fixtures,
   withoutNulls,

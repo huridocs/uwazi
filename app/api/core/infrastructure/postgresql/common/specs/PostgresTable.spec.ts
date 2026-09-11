@@ -603,6 +603,22 @@ describe('PostgresTable', () => {
       expect(rows.map((r: TestRow) => r.name)).toEqual(['longest', 'mid']);
     });
 
+    it('should support selectRaw for projections select cannot express', async () => {
+      const table = createTable();
+      await table.insert({ _id: 'sr-1', name: 'alpha', values: jsonVal([]) });
+      await table.insert({ _id: 'sr-2', name: 'avocado', values: jsonVal([]) });
+      await table.insert({ _id: 'sr-3', name: 'beta', values: jsonVal([]) });
+
+      const counts = await table
+        .query<{ total: number; matching: number }>()
+        .selectRaw('count(*) AS "total", count(*) FILTER (WHERE "name" LIKE ?) AS "matching"', [
+          'a%',
+        ])
+        .first();
+
+      expect(counts).toEqual({ total: 3, matching: 2 });
+    });
+
     it('should support whereRaw for conditions where* cannot express', async () => {
       const table = createTable();
       await table.insert({ _id: 'wr-1', name: 'alpha', values: jsonVal([]) });
