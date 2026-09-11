@@ -592,6 +592,17 @@ describe('PostgresTable', () => {
       expect(rows[0].name).toBe('b');
     });
 
+    it('should support orderByRaw for orderings orderBy cannot express', async () => {
+      const table = createTable();
+      await table.insert({ _id: 'obr-1', name: 'mid', values: jsonVal([]) });
+      await table.insert({ _id: 'obr-2', name: 'longest', values: jsonVal([]) });
+      await table.insert({ _id: 'obr-3', name: 'a', values: jsonVal([]) });
+
+      const rows = await table.orderByRaw('length("name") DESC').limit(2).all();
+
+      expect(rows.map((r: TestRow) => r.name)).toEqual(['longest', 'mid']);
+    });
+
     it('should support whereRaw for conditions where* cannot express', async () => {
       const table = createTable();
       await table.insert({ _id: 'wr-1', name: 'alpha', values: jsonVal([]) });

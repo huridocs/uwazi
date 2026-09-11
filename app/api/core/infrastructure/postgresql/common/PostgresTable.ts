@@ -162,6 +162,11 @@ export class PostgresTable<TRow = Record<string, unknown>> {
     return this.chain(this.qb.clone().orderBy(column, direction));
   }
 
+  /** Escape hatch for orderings `orderBy` can't express, e.g. `random()`. */
+  orderByRaw(sql: string, bindings: readonly Knex.RawBinding[] = []): PostgresTable<TRow> {
+    return this.chain(this.qb.clone().orderByRaw(sql, bindings));
+  }
+
   limit(n: number): PostgresTable<TRow> {
     return this.chain(this.qb.clone().limit(n));
   }
