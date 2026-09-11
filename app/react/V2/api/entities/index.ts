@@ -1,12 +1,9 @@
 import { IncomingHttpHeaders } from 'http';
-import qs from 'qs';
 import { api } from '#app/utils/api.js';
 import { RequestParams } from '#app/utils/RequestParams.js';
 import { FetchResponseError } from '#shared/JSONRequest.js';
-import { SearchQuery } from '#shared/types/SearchQueryType.js';
 import { apiClient } from '../client.js';
 import { requestHeaders } from '../requestHeaders.js';
-import { EntitySearchResponse } from '../types.js';
 import { ApiResponse } from '../ApiResponse.js';
 import * as formatter from './formatter.js';
 import { Entity } from './types.js';
@@ -107,7 +104,6 @@ const coerceValue = async (
   }
 };
 
-// eslint-disable-next-line max-statements
 const searchByTitle = async (
   {
     title,
@@ -125,27 +121,17 @@ const searchByTitle = async (
   headers?: IncomingHttpHeaders
 ): Promise<ApiResponse<Entity[] | undefined>> => {
   const finalFields = includeFiles ? [...new Set([...fields, 'documents', 'attachments'])] : fields;
-
-  const filter: SearchQuery['filter'] = {};
   const trimmedTitle = title?.trim();
-  if (trimmedTitle) {
-    filter.searchString = `title:${trimmedTitle}~2`;
-  }
 
-  if (template && template.length > 0) {
-    const [templateId] = template;
-    filter.template = templateId;
-  }
-
-  const searchQuery: SearchQuery = {
-    fields: finalFields,
-    filter,
-    ...(limit && { page: { limit } }),
-  };
-
-  const [data, error] = await apiClient.getJson<EntitySearchResponse>(
-    'v2/search',
-    qs.stringify(searchQuery),
+  const [data, error] = await apiClient.getJson<{ rows?: Entity[] }>(
+    'search',
+    {
+      fields: finalFields,
+      includeUnpublished: true,
+      ...(trimmedTitle ? { searchTerm: trimmedTitle } : {}),
+      ...(template && template.length > 0 ? { types: template } : {}),
+      ...(limit ? { limit } : {}),
+    },
     { headers: requestHeaders(headers) }
   );
 
@@ -153,11 +139,7 @@ const searchByTitle = async (
     return [undefined, error];
   }
 
-  if (!data?.data?.length) {
-    return [undefined, undefined];
-  }
-
-  const rows = data.data.filter(isEntity);
+  const rows = (data?.rows ?? []).filter(isEntity);
   if (!rows.length) {
     return [undefined, undefined];
   }
