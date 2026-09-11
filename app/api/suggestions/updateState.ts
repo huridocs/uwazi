@@ -1,4 +1,4 @@
-import settings from '#api/settings/index.js';
+import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
 import templates from '#api/core/v1_layer/templates/index.js';
 import { objectIndex } from '#shared/data_utils/objectIndex.js';
 import { getSuggestionState, SuggestionValues } from '#shared/getIXSuggestionState.js';
@@ -30,6 +30,49 @@ const collapseCurrentValue = (
   } as unknown as SuggestionValues;
 };
 
+type StateWrite = { id: ObjectIdSchema; state: IXSuggestionStateType };
+
+const loadPropertyTypesByName = async () =>
+  objectIndex(
+    (await templates.get()).map(t => t.properties || []).flat(),
+    p => p.name,
+    p => p.type
+  );
+
+const flushStates = async (
+  dao: ReturnType<typeof IXSuggestionsDAOFactory.default>,
+  batch: StateWrite[]
+) => {
+  if (batch.length === 0) {
+    return;
+  }
+  await dao.setStates(batch);
+};
+
+const streamAndWriteStates = async (
+  rows: AsyncIterable<StateRecomputeRow>,
+  propertyTypes: Record<string, PropertyTypeSchema>,
+  dao: ReturnType<typeof IXSuggestionsDAOFactory.default>
+) => {
+  let batch: StateWrite[] = [];
+
+  for await (const row of rows) {
+    const propertyType = propertyTypes[row.propertyName];
+    batch.push({
+      id: row._id,
+      state: getSuggestionState(collapseCurrentValue(row, propertyType), propertyType),
+    });
+
+    if (batch.length >= WRITE_BATCH_SIZE) {
+      // eslint-disable-next-line no-await-in-loop
+      await flushStates(dao, batch);
+      batch = [];
+    }
+  }
+
+  await flushStates(dao, batch);
+};
+
 /**
  * Recompute the `state` of the suggestions the scope selects.
  *
@@ -43,36 +86,15 @@ const collapseCurrentValue = (
  * `getSuggestionState` does not look at `labeledValue`.
  */
 const recompute = async (scope: StateRecomputeScope) => {
-  const { languages } = await settings.get();
-  const propertyTypes = objectIndex(
-    (await templates.get()).map(t => t.properties || []).flat(),
-    p => p.name,
-    p => p.type
-  );
-
+  const languages = (await SettingsDataSourceFactory.default().readLanguages()) ?? [];
+  const propertyTypes = await loadPropertyTypesByName();
   const dao = IXSuggestionsDAOFactory.default();
   const rows = IXSuggestionsStateQueryServiceFactory.default().streamForStateRecompute({
     scope,
-    languages: languages || [],
+    languages,
   });
 
-  let batch: { id: ObjectIdSchema; state: IXSuggestionStateType }[] = [];
-
-  for await (const row of rows) {
-    const propertyType = propertyTypes[row.propertyName];
-    batch.push({
-      id: row._id,
-      state: getSuggestionState(collapseCurrentValue(row, propertyType), propertyType),
-    });
-
-    if (batch.length >= WRITE_BATCH_SIZE) {
-      // eslint-disable-next-line no-await-in-loop
-      await dao.setStates(batch);
-      batch = [];
-    }
-  }
-
-  await dao.setStates(batch);
+  await streamAndWriteStates(rows, propertyTypes, dao);
 };
 
 /** After accepting suggestions, so the accepted ones stop matching subsequent iterations. */

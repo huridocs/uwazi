@@ -1,14 +1,12 @@
-import { AbstractController } from '#api/common.v2/infrastructure/AbstractController.js';
-import settings from '#api/settings/index.js';
-import { createError } from '#api/utils/index.js';
 import { inspect } from 'util';
+import { AbstractController } from '#api/common.v2/infrastructure/AbstractController.js';
+import { createError } from '#api/utils/index.js';
 import { TemplateFacade } from '../../facades/TemplateFacade.js';
 import { TemplateDBO } from '../../mongodb/template/DBOs/TemplateDBO.js';
 
 type TemplateMutationResponseDTO = TemplateDBO;
 
 class TemplateMutationController extends AbstractController {
-  // eslint-disable-next-line max-statements
   protected async handle(): Promise<void> {
     try {
       let response: TemplateMutationResponseDTO;
@@ -17,15 +15,6 @@ class TemplateMutationController extends AbstractController {
         response = await TemplateFacade.create(this.request.body);
       } else {
         response = await TemplateFacade.update(this.request.body, this.language);
-      }
-
-      const updatedSettings = await settings.updateFilterName(
-        response._id.toString(),
-        response.name
-      );
-
-      if (updatedSettings) {
-        this.request.sockets.emitToCurrentTenant('updateSettings', updatedSettings);
       }
 
       this.request.sockets.emitToCurrentTenant('templateChange', response);

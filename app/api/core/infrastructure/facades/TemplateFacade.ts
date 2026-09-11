@@ -20,6 +20,8 @@ import {
 } from '../express/template/SetTemplateAsDefaultController/DTO.js';
 import { SetTemplateAsDefaultUseCaseFactory } from '../factories/SetTemplateAsDefaultUseCaseFactory.js';
 import { ExpressTemplateMapper } from '../express/template/ExpressTemplateMapper.js';
+import { ArrayUtils } from '#api/common.v2/utils/Array.js';
+import { TemplatesDAOFactory } from '../factories/TemplatesDAOFactory.js';
 
 type CreateDTO = Omit<TemplateDBO, '_id'>;
 type UpdateDTO = TemplateDBO & { reindex: boolean };
@@ -103,5 +105,14 @@ export class TemplateFacade {
       MongoTemplateMapper.toSchema(output.current),
       output.previous && MongoTemplateMapper.toSchema(output.previous),
     ];
+  }
+
+  static async applyNewNameGeneration(defaultLanguage: LanguageISO6391) {
+    const dao = TemplatesDAOFactory.default();
+    const templates = (await dao.get()) as TemplateDBO[];
+
+    await ArrayUtils.sequentialFor(templates, async (template: TemplateDBO) => {
+      await TemplateFacade.update({ ...template, reindex: false }, defaultLanguage);
+    });
   }
 }

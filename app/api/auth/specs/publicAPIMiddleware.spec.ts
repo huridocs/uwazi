@@ -38,7 +38,9 @@ describe('publicAPIMiddleware', () => {
     const res = {};
     const next = jest.fn();
 
-    await publicAPIMiddleware(req as any, res as any, next);
+    await testingEnvironment.runWithContext(async () =>
+      publicAPIMiddleware(req as any, res as any, next)
+    );
 
     expect(next).toHaveBeenCalled();
     expect(captchaMock).not.toHaveBeenCalled();
@@ -56,7 +58,9 @@ describe('publicAPIMiddleware', () => {
     const res = {};
     const next = jest.fn();
 
-    await publicAPIMiddleware(req as any, res as any, next);
+    await testingEnvironment.runWithContext(async () =>
+      publicAPIMiddleware(req as any, res as any, next)
+    );
 
     expect(next).not.toHaveBeenCalled();
     expect(captchaMock).toHaveBeenCalledWith(req, res, next);
@@ -72,7 +76,9 @@ describe('publicAPIMiddleware', () => {
     const res = {};
     const next = jest.fn();
 
-    await publicAPIMiddleware(req as any, res as any, next);
+    await testingEnvironment.runWithContext(async () =>
+      publicAPIMiddleware(req as any, res as any, next)
+    );
 
     expect(next).not.toHaveBeenCalled();
     expect(captchaMock).toHaveBeenCalledWith(req, res, next);

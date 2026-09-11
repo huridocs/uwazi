@@ -39,10 +39,11 @@ describe('CachedMongoSettingsDataSource', () => {
     });
 
     it('should clear cache after transaction commit', async () => {
-      const transactionManager = TransactionManagerFactory.default();
-      const dataSource = testingEnvironment.runWithContext(
-        () => SettingsDataSourceFactory.cached(),
-        { factories: { transactionManager: () => transactionManager } }
+      // Mongo Settings DS binds onCommitted to the mongo TM (or an explicit override), not the
+      // flag-aware ExecutionContext.transactionManager factory slot.
+      const transactionManager = TransactionManagerFactory.mongo();
+      const dataSource = testingEnvironment.runWithContext(() =>
+        SettingsDataSourceFactory.cached({ transactionManager })
       );
 
       const result1 = await dataSource.getLanguageKeys();

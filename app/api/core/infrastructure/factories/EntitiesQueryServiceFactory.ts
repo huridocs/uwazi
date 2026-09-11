@@ -34,7 +34,8 @@ class EntitiesQueryServiceFactory {
         new MongoRelationshipsV1DataSource(
           getConnection(),
           ExecutionContext.mongoTransactionManager,
-          EntitiesDAOFactory.default({ user, transactionManager })
+          EntitiesDAOFactory.default({ user, transactionManager }),
+          SettingsDataSourceFactory.default()
         ),
     });
   }

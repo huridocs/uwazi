@@ -10,7 +10,7 @@ const navButtonClasses =
   'header-bar-button flex shrink-0 items-center gap-1.5 rounded-md border px-3 py-1 text-tab font-medium transition-colors';
 const activeClasses = 'header-bar-button-active';
 
-const linkKey = (link: HeaderLink) => String(link._id ?? link.localId ?? link.title);
+const linkKey = (link: HeaderLink) => String(link.id ?? link._id ?? link.localId ?? link.title);
 const menuLabel = (title: string): string => t('Menu', title, null, false);
 
 const toDropdownItem = (sublink: HeaderLink): DropdownItem => {

@@ -59,7 +59,7 @@ afterAll(async () => {
 describe('suggestions routes', () => {
   beforeAll(async () => {
     await testingEnvironment.setUp(fixtures);
-    await Suggestions.recomputeAllStates();
+    await testingEnvironment.runWithContext(async () => Suggestions.recomputeAllStates());
   });
 
   describe('validation', () => {
