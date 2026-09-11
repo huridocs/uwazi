@@ -11,3 +11,4 @@ export { PageMigrationConfig, PageLocalesMigrationConfig } from './PageMigration
 export { PageReleaseMigrationConfig } from './PageReleaseMigrationConfig.js';
 export { IXExtractorsMigrationConfig } from './IXExtractorsMigrationConfig.js';
 export { IXModelsMigrationConfig } from './IXModelsMigrationConfig.js';
+export { IXSuggestionsMigrationConfig } from './IXSuggestionsMigrationConfig.js';
