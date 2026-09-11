@@ -54,6 +54,15 @@ describe('Collection', () => {
     cy.get('#matomo-analytics').type('matomo-analytics-key', { delay: 0 });
   });
 
+  it('should save SEO metadata', () => {
+    cy.get('[data-testid="settings-seo"]').scrollIntoView();
+    cy.get('#seo-page-title').clear();
+    cy.get('#seo-page-title').type('Human rights database', { delay: 0 });
+    cy.get('#seo-meta-description').type('A collection of documents and cases.', { delay: 0 });
+    cy.get('#seo-og-title').type('Share this collection', { delay: 0 });
+    cy.get('#seo-og-description').type('Open data on human rights.', { delay: 0 });
+  });
+
   it('should save Forms and email configurations successfully', () => {
     cy.get('#sending-email').type('email@mailer.com', { delay: 0 });
     cy.get('#receiving-email').type('reciever@mailer.com', { delay: 0 });
@@ -97,6 +106,10 @@ describe('Collection', () => {
 
   it('should have saved values in all collection inputs', () => {
     cy.get('#collection-name').should('have.value', 'New Collection Name');
+    cy.get('#seo-page-title').should('have.value', 'Human rights database');
+    cy.get('#seo-meta-description').should('have.value', 'A collection of documents and cases.');
+    cy.get('#seo-og-title').should('have.value', 'Share this collection');
+    cy.get('#seo-og-description').should('have.value', 'Open data on human rights.');
     cy.get('#google-analytics').should('have.value', 'google-analytics-key');
     cy.get('#matomo-analytics').should('have.value', 'matomo-analytics-key');
     cy.get('#sending-email').should('have.value', 'email@mailer.com');

@@ -724,6 +724,7 @@ Members,Miembros
 Menu,Menú
 Message,Mensaje
 Message sent,Mensaje enviado
+Meta description,Meta description
 Metadata,Metadatos
 Metadata Extraction,Extracción de metadatos
 "Metric shows a single total count. Select Pie, Bar, or another chart type above to
@@ -860,6 +861,9 @@ OCR error,Error ROC
 OCR error tip,El motor de OCR no pudo leer el documento debido a un formato incorrecto. Última actualización
 OCR PDF,ROC PDF
 of,de
+og:description,og:description
+og:image,og:image
+og:title,og:title
 Ok,De acuerdo
 OK,OK
 On this entity,En esta entidad
@@ -878,6 +882,7 @@ Only published entities are counted.,Only published entities are counted.
 "Only the extractor will be deleted, all created entities will remain on the library.","Only the extractor will be deleted, all created entities will remain on the library."
 Open,Open
 Open entity,Abrir entidad
+Open Graph,Open Graph
 Open group,Open group
 Open link,Open link
 Open PDF,Open PDF
@@ -897,6 +902,7 @@ p.,p.
 Page,Página
 Page not found,Página no encontrada
 Page published successfully.,Page published successfully.
+Page title,Page title
 Pages,Páginas
 Paragrap number extraction property (numeric),Paragrap number extraction property (numeric)
 Paragraph,Paragraph
@@ -1126,6 +1132,7 @@ Select files on your device,Seleccionar archivos de tu dispositivo
 Select from computer,Seleccionar desde la computadora
 Select image,Seleccionar imagen
 Select media,Seleccionar media
+Select Open Graph image,Select Open Graph image
 Select relationship,Seleccionar relación
 Select relationship type,Seleccionar tipo de relación
 Select site logo image,Seleccionar imagen del logotipo del sitio
@@ -1147,6 +1154,12 @@ Send recovery email,Enviar correo electrónico de recuperación
 Sending email,Correo electrónico de envío
 Sending email description,Esta es la dirección de correo electrónico que aparecerá como remitente cuando se envíe un correo electrónico desde tu colección Uwazi a usuarios registrados. La dirección predeterminada es *no-reply@uwazi.io*. Puedes configurar una dirección personalizada aquí.
 Sending labeled data,Enviando datos etiquetados
+SEO,SEO
+SEO meta description,A short description of what this collection provides. Search engines may show this text in results. Aim for about 150–160 characters.
+SEO og description,"Description used in social media previews. If empty, the meta description is used."
+SEO og image description,"Image shown in social media previews (LinkedIn, Facebook, and others). Recommended size is 1200×630 pixels."
+SEO og title description,"Title used when this collection is shared on platforms such as LinkedIn, Facebook, and other social media. If empty, the page title is used."
+SEO page title description,A clear and descriptive title for the website. This is used as the default HTML page title in browser tabs and search results.
 Series,Series
 Services,Servicios
 Set as default,Establecer como predeterminado

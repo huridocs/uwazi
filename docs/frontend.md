@@ -19,3 +19,15 @@ Frontend is in `app/react`
 - **Monolith:** the SSR entry imports backend modules directly (`templatesApi`, `thesauriApi`, `ExecutionContext`, `tenants`) — frontend and backend run in the same Express process.
 - **Two state systems coexist:** Redux (legacy, deprecated) + Jotai (V2), kept in sync via `V2/atoms/syncReduxFromAtoms.js`. Target Jotai for new work.
 - **Two API clients:** `api` (`#app/utils/api.js`, legacy) + `apiClient` (`#V2/api/client.js`, V2). Target `apiClient` for new work.
+
+## Translations
+
+UI copy is collected from `<Translate>` and `t('System', …)` into CSV files under `contents/ui-translations/`.
+
+After a change that **adds, edits, or removes** translatable strings, run:
+
+```sh
+yarn update-translations-csv
+```
+
+That command scans `app/react`, reports missing/obsolete keys, and updates the locale CSVs. Commit those CSV diffs with the feature. Use `yarn update-translations-csv --dry` to inspect the report without writing files.

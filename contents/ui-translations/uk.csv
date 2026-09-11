@@ -728,6 +728,7 @@ Members,Учасники
 Menu,Меню
 Message,Повідомлення
 Message sent,Повідомлення надіслано
+Meta description,Meta description
 Metadata,Метадані
 Metadata Extraction,Видобування метаданих
 "Metric shows a single total count. Select Pie, Bar, or another chart type above to
@@ -865,6 +866,9 @@ OCR error,Помилка оптичного розпізнавання симв�
 OCR error tip,модуль оптичного розпізнавання символів не зміг прочитати документ через неправильно сформований формат. Останнє оновлення
 OCR PDF,Оптичне розпізнавання символів PDF
 of,з
+og:description,og:description
+og:image,og:image
+og:title,og:title
 Ok,Гаразд
 OK,ГАРАЗД.
 On this entity,On this entity
@@ -883,6 +887,7 @@ Only published entities are counted.,Only published entities are counted.
 "Only the extractor will be deleted, all created entities will remain on the library.","Буде видалено лише розпакувальник, всі створені сутності залишаться у бібліотеці."
 Open,Відкрито
 Open entity,Open entity
+Open Graph,Open Graph
 Open group,Відкрита група
 Open link,Open link
 Open PDF,Відкрити PDF
@@ -902,6 +907,7 @@ p.,p.
 Page,Сторінка
 Page not found,Сторінку не знайдено
 Page published successfully.,Page published successfully.
+Page title,Page title
 Pages,Сторінки
 Paragrap number extraction property (numeric),Властивість вилучення номера абзацу (числова)
 Paragraph,Абзац
@@ -1131,6 +1137,7 @@ Select files on your device,Вибрати файли на вашому прис
 Select from computer,Виберіть з комп'ютера
 Select image,Select image
 Select media,Select media
+Select Open Graph image,Select Open Graph image
 Select relationship,Select relationship
 Select relationship type,Виберіть тип взаємозв'язків
 Select site logo image,Вибрати зображення логотипу сайту
@@ -1152,6 +1159,12 @@ Send recovery email,Відправити лист для відновлення 
 Sending email,Електронна пошта відправника
 Sending email description,"Це адреса електронної пошти, яка буде вказана як відправник при надсиланні листа з вашої колекції Uwazi зареєстрованим користувачам. Адреса за замовчуванням - *no-reply@uwazi.io*. Ви можете встановити власну, ввівши тут бажану адресу електронної пошти."
 Sending labeled data,Відправлення маркованих даних
+SEO,SEO
+SEO meta description,A short description of what this collection provides. Search engines may show this text in results. Aim for about 150–160 characters.
+SEO og description,"Description used in social media previews. If empty, the meta description is used."
+SEO og image description,"Image shown in social media previews (LinkedIn, Facebook, and others). Recommended size is 1200×630 pixels."
+SEO og title description,"Title used when this collection is shared on platforms such as LinkedIn, Facebook, and other social media. If empty, the page title is used."
+SEO page title description,A clear and descriptive title for the website. This is used as the default HTML page title in browser tabs and search results.
 Series,Series
 Services,Послуги
 Set as default,Встановити за замовчуванням

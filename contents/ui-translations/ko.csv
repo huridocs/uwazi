@@ -726,6 +726,7 @@ Members,멤버
 Menu,메뉴
 Message,메세지
 Message sent,Message sent
+Meta description,Meta description
 Metadata,메타데이터
 Metadata Extraction,메타데이터 추출
 "Metric shows a single total count. Select Pie, Bar, or another chart type above to
@@ -863,6 +864,9 @@ OCR error,OCR 에러
 OCR error tip,The OCR engine couldn't read the document due to a malformed format. Last updated
 OCR PDF,PDF OCR 읽기
 of,의
+og:description,og:description
+og:image,og:image
+og:title,og:title
 Ok,확인
 OK,확인
 On this entity,On this entity
@@ -881,6 +885,7 @@ Only published entities are counted.,Only published entities are counted.
 "Only the extractor will be deleted, all created entities will remain on the library.","Only the extractor will be deleted, all created entities will remain on the library."
 Open,Open
 Open entity,Open entity
+Open Graph,Open Graph
 Open group,Open group
 Open link,Open link
 Open PDF,Open PDF
@@ -900,6 +905,7 @@ p.,p.
 Page,페이지
 Page not found,Page not found
 Page published successfully.,Page published successfully.
+Page title,Page title
 Pages,페이지
 Paragrap number extraction property (numeric),Paragrap number extraction property (numeric)
 Paragraph,Paragraph
@@ -1129,6 +1135,7 @@ Select files on your device,기기에서 파일을 선택하십시오.
 Select from computer,Select from computer
 Select image,Select image
 Select media,Select media
+Select Open Graph image,Select Open Graph image
 Select relationship,Select relationship
 Select relationship type,연결 유형 선택
 Select site logo image,Select site logo image
@@ -1150,6 +1157,12 @@ Send recovery email,복구 이메일 전송
 Sending email,발신 이메일 주소
 Sending email description,This is the email address that will appear as the sender when an email is sent from your Uwazi collection to registered users. The default address is *no-reply@uwazi.io*. You can set a custom one by including your desired email address here.
 Sending labeled data,Sending labeled data
+SEO,SEO
+SEO meta description,A short description of what this collection provides. Search engines may show this text in results. Aim for about 150–160 characters.
+SEO og description,"Description used in social media previews. If empty, the meta description is used."
+SEO og image description,"Image shown in social media previews (LinkedIn, Facebook, and others). Recommended size is 1200×630 pixels."
+SEO og title description,"Title used when this collection is shared on platforms such as LinkedIn, Facebook, and other social media. If empty, the page title is used."
+SEO page title description,A clear and descriptive title for the website. This is used as the default HTML page title in browser tabs and search results.
 Series,Series
 Services,Services
 Set as default,기본으로 설정

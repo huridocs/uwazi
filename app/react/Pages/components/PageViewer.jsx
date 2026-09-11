@@ -106,6 +106,10 @@ class PageViewer extends Component {
               {setBrowserTitle && (
                 <Helmet>
                   <title>{page.get('title') ? page.get('title') : 'Page'}</title>
+                  <meta
+                    property="og:title"
+                    content={page.get('title') ? page.get('title') : 'Page'}
+                  />
                 </Helmet>
               )}
               <main className="page-viewer document-viewer">

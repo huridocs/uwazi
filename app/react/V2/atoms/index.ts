@@ -10,6 +10,7 @@ export { relationshipTypesAtom } from './relationshipTypes.js';
 export { deletedEntityAtom } from './deletedEntityAtom.js';
 export { entityPageViewAtom } from './entityPageViewAtom.js';
 export { serverIsMobileAtom, isMobileOverrideAtom } from './isMobileAtom.js';
+export { requestOriginAtom } from './requestOriginAtom.js';
 export { themeModeAtom } from './themeModeAtom.js';
 export { aiAssistantOpenAtom } from './aiAssistantOpenAtom.js';
 export {

@@ -324,6 +324,17 @@ const settingsSchema = {
     __v: { type: 'number' },
     project: { type: 'string' },
     site_name: { type: 'string' },
+    seo: {
+      type: 'object',
+      additionalProperties: false,
+      properties: {
+        title: { type: 'string', maxLength: 200 },
+        description: { type: 'string', maxLength: 320 },
+        ogTitle: { type: 'string', maxLength: 200 },
+        ogDescription: { type: 'string', maxLength: 320 },
+        ogImage: { type: 'string', maxLength: 2048 },
+      },
+    },
     favicon: { type: 'string' },
     site_logo: { type: 'string' },
     themeAssets: {

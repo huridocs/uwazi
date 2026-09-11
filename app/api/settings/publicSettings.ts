@@ -7,6 +7,7 @@ const PUBLIC_ALLOWED_FIELDS: (keyof Settings)[] = [
   '_id',
   'project',
   'site_name',
+  'seo',
   'favicon',
   'site_logo',
   'themeAssets',
