@@ -12,7 +12,7 @@ import {
 import { FilesDAOFactory } from '#api/core/infrastructure/factories/FilesDAOFactory.js';
 import { SegmentationType } from '#shared/types/segmentationType.js';
 import { SegmentationModel } from '#api/services/pdfsegmentation/segmentationModel.js';
-import { IXSuggestionsModel } from '#api/suggestions/IXSuggestionsModel.js';
+import { IXTrainingMaterialsQueryServiceFactory } from '#api/suggestions/infrastructure/IXTrainingMaterialsQueryServiceFactory.js';
 import ixmodels from '#api/services/informationextraction/ixmodels.js';
 import { FileType } from '#shared/types/fileType.js';
 import templatesService from '#api/core/v1_layer/templates/templates.js';
@@ -29,7 +29,6 @@ import {
 } from '#api/core/application/contracts/EntitiesDAO.js';
 import { IXModelType } from '#shared/types/IXModelType.js';
 import { IXSuggestionType } from '#shared/types/suggestionType.js';
-import { PipelineBuilder } from '#api/suggestions/queryBuilder.js';
 import { IXExtractorType } from '#shared/types/extractorType.js';
 import { Suggestions } from '#api/suggestions/suggestions.js';
 import { Extractors } from './ixextractors.js';
@@ -200,18 +199,11 @@ async function getEntitiesForTraining(
 }
 
 async function getEntitiesForIdsQuery(model: EnforcedWithId<IXModelType>, BATCH_SIZE: number) {
-  const runIds = model.processRun?.findSuggestionsSharedIds as string[] | undefined;
-  if (!runIds?.length) {
+  const sharedIdsToProcess = await ixmodels.takeFromFindRunQueue(model._id, BATCH_SIZE);
+  if (!sharedIdsToProcess.length) {
     await ixmodels.unsetFindSuggestionsData(model._id);
     return null;
   }
-
-  const sharedIdsToProcess = runIds.slice(0, BATCH_SIZE);
-
-  await ixmodels.updateMany(
-    { _id: model._id },
-    { $set: { 'processRun.findSuggestionsSharedIds': runIds.slice(BATCH_SIZE) } }
-  );
 
   const entityFilters: EntityFilters = { sharedIds: sharedIdsToProcess };
 
@@ -244,14 +236,18 @@ async function getEntitiesForSuggestionsQuery(
 }
 
 async function getEntitiesForSuggestions(extractorId: ObjectIdSchema, limit?: number) {
-  const [[model], [extractor]] = await Promise.all([
-    ixmodels.get({ extractorId }),
-    Extractors.get({ _id: extractorId }),
+  const [currentModel, extractor] = await Promise.all([
+    ixmodels.getByExtractorId(extractorId),
+    Extractors.getById(extractorId),
   ]);
 
   if (!extractor?.property) {
     return [];
   }
+
+  // Re-read of the model the caller already holds; `sendMaterialsAndTaskSuggestions` cannot
+  // reach here without one.
+  const model = currentModel!;
 
   // Validate that the property exists in the template (throws if not found)
   await getPropertyType(extractor.templates, extractor.property);
@@ -292,79 +288,12 @@ async function getEntitiesForSuggestions(extractorId: ObjectIdSchema, limit?: nu
 }
 
 async function getFilesForTraining(extractor: IXExtractorType) {
-  const pipeline = new PipelineBuilder();
-  pipeline.add({
-    $match: {
-      extractorId: extractor._id,
-      currentValue: { $nin: ['', null, undefined], $ne: [] },
-    },
-  });
-  pipeline.add({ $limit: MAX_TRAINING_FILES_NUMBER });
-
-  pipeline.add({
-    $lookup: {
-      from: 'entities',
-      localField: 'entityLanguageId',
-      foreignField: '_id',
-      as: 'entityLanguage',
-      pipeline: [
-        {
-          $project: {
-            metadata: `$metadata.${extractor.property}`,
-          },
-        },
-      ],
-    },
-  });
-  pipeline.add({
-    $unwind: '$entityLanguage',
-  });
-
-  pipeline.add({
-    $lookup: {
-      from: 'files',
-      localField: 'fileId',
-      foreignField: '_id',
-      as: 'file',
-      pipeline: [
-        { $match: { status: 'ready' } },
-        {
-          $project: {
-            propertySelections: {
-              $filter: {
-                input: '$propertySelections',
-                as: 'item',
-                cond: { $eq: ['$$item.name', extractor.property] },
-              },
-            },
-            filename: 1,
-          },
-        },
-      ],
-    },
-  });
-  pipeline.add({
-    $unwind: '$file',
-  });
-
-  pipeline.add({
-    $lookup: {
-      from: 'segmentations',
-      localField: 'fileId',
-      foreignField: 'fileID',
-      as: 'segmentation',
-      pipeline: [
-        { $match: { status: 'ready' } },
-        { $project: { propertySelections: 1, filename: 1, xmlname: 1, segmentation: 1 } },
-      ],
-    },
-  });
-  pipeline.add({
-    $unwind: '$segmentation',
-  });
-
   const targetProperty = await IXServices.getTargetProperty({ extractor });
-  const cursor = IXSuggestionsModel.db.aggregateCursor(pipeline.build()).cursor();
+  const rows = IXTrainingMaterialsQueryServiceFactory.default().streamFilesForTraining({
+    extractorId: extractor._id!,
+    property: extractor.property,
+    limit: MAX_TRAINING_FILES_NUMBER,
+  });
 
   const process = async (
     callback: (item: {
@@ -377,29 +306,34 @@ async function getFilesForTraining(extractor: IXExtractorType) {
       propertyType: PropertyTypeSchema;
     }) => Promise<void>
   ) => {
-    await cursor.eachAsync(
-      async ({ fileId, language, file, entityId, entityLanguage, segmentation, currentValue }) => {
-        const propertyValue = deriveTrainingPropertyValue(targetProperty.type, {
-          currentValue,
-          selectionText: file?.propertySelections?.[0]?.selection?.text,
-          entityValues: entityLanguage.metadata?.map(({ value, label }: any) => ({
-            value,
-            label,
-          })),
-        });
-        const parsed = {
-          _id: fileId,
-          language,
-          propertySelections: file?.propertySelections || [],
-          entity: entityId,
-          segmentation,
-          propertyValue,
-          propertyType: targetProperty.type,
-        };
+    for await (const {
+      fileId,
+      language,
+      file,
+      entityId,
+      entityLanguage,
+      segmentation,
+      currentValue,
+    } of rows) {
+      const propertyValue = deriveTrainingPropertyValue(targetProperty.type, {
+        currentValue,
+        selectionText: file?.propertySelections?.[0]?.selection?.text,
+        entityValues: entityLanguage.metadata?.map(({ value, label }: any) => ({
+          value,
+          label,
+        })),
+      });
 
-        await callback(parsed);
-      }
-    );
+      await callback({
+        _id: fileId,
+        language,
+        propertySelections: file?.propertySelections || [],
+        entity: entityId,
+        segmentation,
+        propertyValue,
+        propertyType: targetProperty.type,
+      });
+    }
   };
 
   return { process };
@@ -409,14 +343,14 @@ async function getFileIdsWithReadySegmentations(
   extractorId: ObjectIdSchema,
   limit: number
 ): Promise<ObjectIdSchema[]> {
-  const [currentModel] = await ixmodels.get({ extractorId });
+  const currentModel = await ixmodels.getByExtractorId(extractorId);
   const targetLimit = typeof limit === 'number' ? limit : BATCH_SIZE_FOR_PDF;
 
   // Use process-aware sampling when filters are set; otherwise balanced sampling
   // Get extra suggestions since some might have failed segmentations
   const suggestions = await Suggestions.getSampleForProcess(
     extractorId,
-    currentModel,
+    currentModel!,
     targetLimit * 3
   );
 
@@ -495,7 +429,7 @@ async function getFileIdsWithReadySegmentations(
       status: 'failed' as IXSuggestionType['status'],
     })) as Partial<IXSuggestionType>[];
 
-    await IXSuggestionsModel.saveMultiple(modifiedSuggestions);
+    await Suggestions.saveMultiple(modifiedSuggestions);
   }
 
   // Balance selection: take up to half from each bucket, then fill the remainder
@@ -563,18 +497,11 @@ async function getNextSharedIdsBatch(
   model: EnforcedWithId<IXModelType>,
   batchSize: number
 ): Promise<string[] | null> {
-  const runIds = model.processRun?.findSuggestionsSharedIds || [];
-  if (!runIds.length) {
+  const sharedIdsToProcess = await ixmodels.takeFromFindRunQueue(model._id, batchSize);
+  if (!sharedIdsToProcess.length) {
     await ixmodels.unsetFindSuggestionsData(model._id);
     return null;
   }
-
-  const sharedIdsToProcess = runIds.slice(0, batchSize);
-
-  await ixmodels.updateMany(
-    { _id: model._id },
-    { $set: { 'processRun.findSuggestionsSharedIds': runIds.slice(batchSize) } }
-  );
 
   return sharedIdsToProcess;
 }
@@ -612,14 +539,18 @@ async function getFilesForSuggestionsQuery(extractorId: ObjectIdSchema, BATCH_SI
 }
 
 async function getFilesForSuggestions(extractorId: ObjectIdSchema, limit?: number) {
-  const [[model], [extractor]] = await Promise.all([
-    ixmodels.get({ extractorId }),
-    Extractors.get({ _id: extractorId }),
+  const [currentModel, extractor] = await Promise.all([
+    ixmodels.getByExtractorId(extractorId),
+    Extractors.getById(extractorId),
   ]);
 
   if (!extractor) {
     return [];
   }
+
+  // Re-read of the model the caller already holds; `sendMaterialsAndTaskSuggestions` cannot
+  // reach here without one.
+  const model = currentModel!;
 
   const BATCH_SIZE = typeof limit === 'number' ? limit : BATCH_SIZE_FOR_PDF;
 

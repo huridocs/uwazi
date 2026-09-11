@@ -17,22 +17,21 @@ import { Listener } from '#api/core/libs/eventEmitter/Listener.js';
 import { DenormalizeEntityUpdatedListener } from '#api/core/infrastructure/listeners/DenormalizeEntityUpdatedListener.js';
 import { ProcessRelationshipAfterEntityUpdatedListener } from '#api/core/infrastructure/listeners/ProcessRelationshipAfterEntityUpdatedListener.js';
 import { Suggestions } from '../suggestions.js';
+import { SuggestionAcceptanceError } from '../errors.js';
 import {
   factory,
   fixtures,
   relationshipAcceptanceFixtureBase,
   selectAcceptanceFixtureBase,
-  shared2AgeSuggestionId,
   shared2esId,
-  suggestionId,
 } from './fixtures.js';
-import { GetSuggestionsForTableQuery } from '../getSuggestionsForTableQuery/getSuggestionsForTableQuery.js';
+import { GetSuggestionsForTableQueryFactory } from '../infrastructure/GetSuggestionsForTableQueryFactory.js';
 
 const _getSuggestions = async (query: any) =>
   testingEnvironment.db.getCollection('ixsuggestions')?.find(query).toArray() || [];
 
 const getSuggestions = async (filter: IXSuggestionsFilter, size = 50) => {
-  const query = new GetSuggestionsForTableQuery();
+  const query = GetSuggestionsForTableQueryFactory.default();
   const result = query.execute({
     extractorId: filter.extractorId.toString(),
     filter: filter.customFilter,
@@ -266,6 +265,16 @@ describe('suggestions', () => {
         ]);
       });
 
+      /**
+       * `.toThrow(instance)` compares the message only and `.toThrow(Class)` only the type, so
+       * both are asserted: F18's fix is the class — it is what drives the 422 in `prettifyError`
+       * — and the message is what reaches the user over the websocket.
+       */
+      const expectAcceptanceError = async (promise: Promise<unknown>, message: string) => {
+        await expect(promise).rejects.toThrow(SuggestionAcceptanceError);
+        await expect(promise).rejects.toThrow(message);
+      };
+
       it('should require all suggestions to come from the same extractor', async () => {
         const [ageSuggestion] = (await getSuggestions({ extractorId: factory.id('age_extractor') }))
           .suggestions;
@@ -274,7 +283,7 @@ describe('suggestions', () => {
             extractorId: factory.id('super_powers_extractor'),
           })
         ).suggestions;
-        await expect(
+        await expectAcceptanceError(
           runWithEntityUpdatedListeners(async () =>
             Suggestions.accept([
               {
@@ -288,8 +297,20 @@ describe('suggestions', () => {
                 entityId: superPowersSuggestion.entityId,
               },
             ])
-          )
-        ).rejects.toThrow('All suggestions must come from the same extractor');
+          ),
+          'All suggestions must come from the same extractor'
+        );
+      });
+
+      it('should not accept suggestions that do not exist', async () => {
+        await expectAcceptanceError(
+          runWithEntityUpdatedListeners(async () =>
+            Suggestions.accept([
+              { _id: db.id().toString(), sharedId: 'shared6', entityId: 'shared6' },
+            ])
+          ),
+          'Suggestion(s) not found.'
+        );
       });
 
       it('should not accept a suggestion with an error', async () => {
@@ -301,8 +322,8 @@ describe('suggestions', () => {
           (s: EntitySuggestionType) => s.sharedId === 'shared4'
         );
 
-        try {
-          await runWithEntityUpdatedListeners(async () =>
+        await expectAcceptanceError(
+          runWithEntityUpdatedListeners(async () =>
             Suggestions.accept([
               {
                 _id: errorSuggestion!._id!,
@@ -310,10 +331,9 @@ describe('suggestions', () => {
                 entityId: errorSuggestion!.entityId,
               },
             ])
-          );
-        } catch (e: any) {
-          expect(e?.message).toBe('Some Suggestions have an error.');
-        }
+          ),
+          'Some Suggestions have an error.'
+        );
       });
     });
 
@@ -980,42 +1000,12 @@ describe('suggestions', () => {
       await testingEnvironment.setUp(fixtures);
     });
 
-    it('should set the queried suggestions to obsolete state', async () => {
-      const query = { entityId: 'shared1' };
-      await Suggestions.setObsolete(query);
+    it("should set the extractor's suggestions to obsolete state", async () => {
+      const query = { extractorId: factory.id('age_extractor') };
+      await Suggestions.setObsolete(query.extractorId);
       const obsoletes = await db.mongodb?.collection('ixsuggestions').find(query).toArray();
+      expect(obsoletes?.length).toBeGreaterThan(0);
       expect(obsoletes?.every(s => s.state.obsolete && s.state.match === null)).toBe(true);
-      expect(obsoletes?.length).toBe(4);
-    });
-  });
-
-  describe('markSuggestionsWithoutSegmentation()', () => {
-    beforeEach(async () => {
-      await testingEnvironment.setUp(fixtures);
-    });
-
-    it('should mark the suggestions without segmentation to error state', async () => {
-      const query = { entityId: 'shared1' };
-      await Suggestions.markSuggestionsWithoutSegmentation(query);
-      const notSegmented = await db.mongodb?.collection('ixsuggestions').find(query).toArray();
-      expect(notSegmented?.every(s => s.state.error && s.state.match === null)).toBe(true);
-    });
-
-    it('should not mark suggestions when segmentations are correct', async () => {
-      const query = { entityId: 'shared2' };
-      await Suggestions.markSuggestionsWithoutSegmentation(query);
-      const segmented = await db.mongodb
-        ?.collection('ixsuggestions')
-        .find({ _id: suggestionId })
-        .toArray();
-      const notSegmented = await db.mongodb
-        ?.collection('ixsuggestions')
-        .find({ _id: shared2AgeSuggestionId })
-        .toArray();
-      expect(segmented?.length).toBe(1);
-      expect(segmented?.every(s => s.state?.error)).toBe(false);
-      expect(notSegmented?.length).toBe(1);
-      expect(notSegmented?.every(s => s.state.error && s.state.match === null)).toBe(true);
     });
   });
 

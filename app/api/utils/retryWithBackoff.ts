@@ -72,21 +72,29 @@ export async function retryWithBackoff<T>(
   return retryWithBackoffHelper(operation, config, 0, config.initialDelay);
 }
 
-export const descriptiveError = (error: { code: string; message: any; status: number }) => {
-  if (error.code === 'ECONNREFUSED' || error.code === 'ETIMEDOUT') {
-    throw new Error(`Failed to connect to external service: ${error.message}`);
-  }
-  if (error.status === 404) {
-    throw new Error('Results data not found');
-  }
-  if (error.status === 413) {
-    throw new Error('File size exceeds maximum allowed limit');
-  }
-  if (error.status === 400) {
-    throw new Error('Invalid request');
-  }
-  if (error.status >= 500) {
-    throw new Error('External service is currently unavailable');
-  }
-  throw new Error(`Failed to fetch results: ${error.message}`);
+/**
+ * Rethrows an external-service failure with a human readable message, preserving the original
+ * `code` / `status`. Preserving them matters: `shouldRetry` above decides on those fields, so a
+ * bare `new Error(message)` here would silently disable every retry at the call sites that wrap
+ * their request in `retryWithBackoff` and funnel failures through this function.
+ */
+export const descriptiveError = (error: { code?: string; message?: any; status?: number }) => {
+  const describe = () => {
+    if (error.code === 'ECONNREFUSED' || error.code === 'ETIMEDOUT') {
+      return `Failed to connect to external service: ${error.message}`;
+    }
+    if (error.status === 404) return 'Results data not found';
+    if (error.status === 413) return 'File size exceeds maximum allowed limit';
+    if (error.status === 400) return 'Invalid request';
+    if (error.status !== undefined && error.status >= 500) {
+      return 'External service is currently unavailable';
+    }
+    return `Failed to fetch results: ${error.message}`;
+  };
+
+  const described = new Error(describe()) as Error & { code?: string; status?: number };
+  if (error.code !== undefined) described.code = error.code;
+  if (error.status !== undefined) described.status = error.status;
+
+  throw described;
 };
