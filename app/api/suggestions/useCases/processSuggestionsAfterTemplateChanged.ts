@@ -17,12 +17,9 @@ type Input = {
 class ProcessSuggestionsAfterTemplateChanged implements UseCase<Input, void> {
   // eslint-disable-next-line class-methods-use-this
   async execute({ oldTemplateId, newTemplateId, entities }: Input): Promise<void> {
-    await Suggestions.delete({
-      entityId: entities[0].sharedId,
-      entityTemplate: oldTemplateId.toString(),
-    });
+    await Suggestions.deleteByEntityAndTemplate(entities[0].sharedId!, oldTemplateId.toString());
 
-    const extractorsOfNewTemplate = await Extractors.get({ templates: { $in: [newTemplateId] } });
+    const extractorsOfNewTemplate = await Extractors.getByTemplate(newTemplateId);
 
     if (!extractorsOfNewTemplate.length) return;
 

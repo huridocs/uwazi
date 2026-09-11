@@ -2,10 +2,10 @@
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { DBFixture } from '#api/utils/testing_db.js';
 import { factory } from './fixtures.js';
-import { GetSuggestionsForTableQuery } from '../getSuggestionsForTableQuery/getSuggestionsForTableQuery.js';
+import { GetSuggestionsForTableQueryFactory } from '../infrastructure/GetSuggestionsForTableQueryFactory.js';
 
 const createSut = () => {
-  const sut = new GetSuggestionsForTableQuery();
+  const sut = GetSuggestionsForTableQueryFactory.default();
 
   return { sut };
 };

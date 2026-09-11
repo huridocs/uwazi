@@ -95,6 +95,31 @@ describe('AfterEntityUpdatedListener', () => {
     expect(updateSuggestionsAfterEntityUpdate.execute).not.toHaveBeenCalled();
   });
 
+  it('should hand the previous entities to UpdateSuggestionsAfterEntityUpdate, so it can tell what changed', async () => {
+    const { updateSuggestionsAfterEntityUpdate, eventBus } = createSut();
+
+    const entities = factory.entityInMultipleLanguages(['en', 'es'], 'any_entity', 'template_a', {
+      text: [{ value: 'before' }],
+    });
+    const entitiesChanged = factory.entityInMultipleLanguages(
+      ['en', 'es'],
+      'any_entity',
+      'template_a',
+      {
+        text: [{ value: 'after' }],
+      }
+    );
+
+    await eventBus.emit(
+      new EntityUpdatedEvent({ before: entities, after: entitiesChanged, targetLanguageKey: 'en' })
+    );
+
+    expect(updateSuggestionsAfterEntityUpdate.execute).toHaveBeenCalledWith({
+      entities: entitiesChanged,
+      previousEntities: entities,
+    });
+  });
+
   it('should call ProcessSuggestionsAfterTemplateChanged if template changed', async () => {
     const { processSuggestionsAfterTemplateChanged, eventBus } = createSut();
 
