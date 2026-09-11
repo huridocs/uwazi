@@ -102,10 +102,10 @@ const setUpApp = (
       )
       .catch(next);
   });
-  app.use(languageMiddleware);
   app.use(lazyAuthenticatedUserMiddlewares());
   customMiddleware.forEach(middlewareElement => app.use(middlewareElement));
   app.use(dependenciesContextMiddleware);
+  app.use(languageMiddleware);
 
   route(app);
   app.use(errorHandlingMiddleware);

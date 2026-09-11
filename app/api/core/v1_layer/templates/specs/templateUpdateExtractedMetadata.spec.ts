@@ -8,6 +8,7 @@ import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnec
 import { MongoRelationshipsV1DataSource } from '#api/core/infrastructure/mongodb/MongoRelationshipsV1DataSource.js';
 import { SyncDispatcherForTests } from '#api/core/libs/queue/infrastructure/SyncDispatcherForTests.js';
 import { EntitiesDAOFactory } from '#api/core/infrastructure/factories/EntitiesDAOFactory.js';
+import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
 import { files } from '#api/files/index.js';
 import * as setupSockets from '#api/socketio/setupSockets.js';
 import { testingDB } from '#api/utils/testing_db.js';
@@ -35,7 +36,8 @@ async function updateTemplate(template: TemplateSchema) {
           relationshipsV1DS: new MongoRelationshipsV1DataSource(
             getConnection(),
             transactionManager,
-            EntitiesDAOFactory.default()
+            EntitiesDAOFactory.default(),
+            SettingsDataSourceFactory.default({ transactionManager })
           ),
           templatesDS: TemplatesDataSourceFactory.default({ transactionManager }),
           transactionManager,
