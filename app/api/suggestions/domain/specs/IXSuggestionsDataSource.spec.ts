@@ -1,14 +1,7 @@
-import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
-import { postgresTransactionManager } from '#api/services/informationextraction/infrastructure/contextTransactionManagers.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { testingTenants } from '#api/utils/testingTenants.js';
-import {
-  AcceptanceQuery,
-  IXSuggestionsDataSource,
-  Suggestion,
-} from '../IXSuggestionsDataSource.js';
+import { AcceptanceQuery, Suggestion } from '../IXSuggestionsDataSource.js';
 import { IXSuggestionsDAOFactory } from '../../infrastructure/IXSuggestionsDAOFactory.js';
-import { PostgresIXSuggestionsDataSource } from '../../infrastructure/PostgresIXSuggestionsDataSource.js';
 import {
   comparable,
   extractors,
@@ -20,8 +13,7 @@ import {
   testConfigs,
   withoutNulls,
 } from './IXSuggestionsContractFixtures.js';
-
-type Sut = () => IXSuggestionsDataSource;
+import { Sut, writeContractCases } from './IXSuggestionsWriteContractCases.js';
 
 const { accepted, blank, obsolete, spanish, otherExtractor, pdfFile1, pdfFile2 } = suggestions;
 
@@ -259,8 +251,8 @@ const entityIdSetCases = (sut: Sut) => {
 };
 
 /**
- * The IXSuggestionsDataSource contract suite, read half: one set of cases, run against the Mongo
- * and the Postgres implementation. The write half moves here in slice 4b.
+ * The IXSuggestionsDataSource contract suite: one set of cases, run against the Mongo and the
+ * Postgres implementation, both built through the factory under the tenant's flag.
  */
 describe('IXSuggestionsDataSource', () => {
   beforeAll(async () => {
@@ -279,21 +271,13 @@ describe('IXSuggestionsDataSource', () => {
       await testingEnvironment.setFixtures(fixtures);
     });
 
-    // Temporary until slice 4b routes IXSuggestionsDAOFactory, adds the routing case and builds
-    // both runs through default(): the Postgres run constructs its implementation here.
     const sut: Sut = () =>
-      testingEnvironment.runWithContext(() =>
-        usePostgres
-          ? new PostgresIXSuggestionsDataSource({
-              tenantId: ExecutionContext.currentTenant.name,
-              pgTransactionManager: postgresTransactionManager(),
-            })
-          : IXSuggestionsDAOFactory.default()
-      );
+      testingEnvironment.runWithContext(() => IXSuggestionsDAOFactory.default());
 
     readCases(sut);
     acceptanceCases(sut);
     countCases(sut);
     entityIdSetCases(sut);
+    writeContractCases(sut, usePostgres);
   });
 });

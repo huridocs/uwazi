@@ -3,8 +3,8 @@ import {
   PostgresDataSource,
   PostgresDataSourceDeps,
 } from '#api/core/infrastructure/postgresql/common/PostgresDataSource.js';
-import { PostgresTable } from '#api/core/infrastructure/postgresql/common/PostgresTable.js';
 import { ObjectIdSchema } from '#shared/types/commonTypes.js';
+import { IXSuggestionStateType, IXSuggestionType } from '#shared/types/suggestionType.js';
 import {
   AcceptanceQuery,
   EntityLanguagePair,
@@ -16,44 +16,35 @@ import type { IXSuggestionsRow } from './PostgresIXSuggestionsRow.js';
 import {
   acceptancePredicate,
   healthyPredicate,
+  obsoletePredicate,
   pendingPredicate,
   runPredicate,
-  SqlFragment,
   stateFlagPredicate,
 } from './postgresSuggestionPredicates.js';
+import {
+  satisfying,
+  toEntityIds,
+  toHex,
+  toMatchableHex,
+  toSuggestions,
+} from './postgresSuggestionQueries.js';
+import {
+  failProcessing,
+  insertRows,
+  markObsolete,
+  releaseProcessingAsObsolete,
+  updateRows,
+  upsertRows,
+} from './postgresSuggestionWrites.js';
 
 type Deps = Omit<PostgresDataSourceDeps, 'sync'>;
 
-type Query = PostgresTable<IXSuggestionsRow>;
-
-const toHex = (id: ObjectIdSchema) => id.toString();
-
 /**
- * For ids that arrive from outside. One that cannot be an ObjectId cannot match a stored row, so
- * it is dropped, as `MongoIXSuggestionsDataSource.toMatchableObjectIds` does.
- */
-const toMatchableHex = (ids: ObjectIdSchema[]) =>
-  ids
-    .filter(id => ObjectId.isValid(id))
-    .map(id => (id instanceof ObjectId ? id : new ObjectId(id.toString())).toHexString());
-
-/** Parenthesised: `whereRaw` does not group, and a fragment may be an `OR` chain. */
-const satisfying = (query: Query, { sql, bindings }: SqlFragment) =>
-  query.whereRaw(`(${sql})`, bindings);
-
-const toSuggestions = async (query: Query) =>
-  (await query.all()).map(row => PostgresIXSuggestionsMapper.toDomain(row));
-
-const toEntityIds = async (query: Query) =>
-  (await query.distinct(['entityId']).all()).map(row => row.entityId);
-
-/**
- * Postgres implementation of {@link IXSuggestionsDataSource}: the reads, counts and entity-id
- * sets. The writes and deletes arrive in slice 4b; until then they throw, and the factory does
- * not route here.
+ * Postgres implementation of {@link IXSuggestionsDataSource}.
  *
- * Nested values are JSONB, as Mongo stores them. Information extraction data is not synced
- * between instances, so no write records an `updatelogs` row.
+ * Nested values are JSONB, as Mongo stores them; state merges are single JSONB `||` updates.
+ * Information extraction data is not synced between instances, so no write records an
+ * `updatelogs` row.
  */
 export class PostgresIXSuggestionsDataSource
   extends PostgresDataSource<IXSuggestionsRow>
@@ -211,82 +202,96 @@ export class PostgresIXSuggestionsDataSource
 
   async getEntityIdsWithObsoleteSuggestions(extractorId: ObjectIdSchema, entityIds: string[]) {
     return toEntityIds(
-      satisfying(
-        this.forExtractor(extractorId)
-          .whereIn('entityId', entityIds)
-          .whereRaw('"date" IS NOT NULL'),
-        stateFlagPredicate('obsolete', true)
-      )
+      satisfying(this.forExtractor(extractorId).whereIn('entityId', entityIds), obsoletePredicate)
     );
   }
 
-  /* --------------------------------------------------------- writes, until slice 4b -- */
+  /* ------------------------------------------------------------------------ writes -- */
 
-  async saveMultiple() {
-    return this.notImplemented('saveMultiple');
+  /** Upsert by `_id`: existing rows take only the given fields, the rest are inserted. */
+  async saveMultiple(suggestions: Partial<IXSuggestionType>[]) {
+    const rows = suggestions.map(suggestion =>
+      PostgresIXSuggestionsMapper.toRow({ ...suggestion, _id: suggestion._id ?? new ObjectId() })
+    );
+    await upsertRows(this.table, rows);
+    return rows.length ? this.getByIds(rows.map(({ _id }) => _id!)) : [];
   }
 
-  async createMultiple() {
-    return this.notImplemented('createMultiple');
+  /**
+   * Insert only. A row repeating a natural key — one suggestion per entity and language for a text
+   * source, one per file for a pdf source — fails on the unique index here, where Mongo stored the
+   * duplicate. That failure is left to surface.
+   */
+  async createMultiple(suggestions: Partial<IXSuggestionType>[]) {
+    await insertRows(
+      this.table,
+      suggestions.map(s => PostgresIXSuggestionsMapper.toRow(s))
+    );
   }
 
-  async markObsoleteForExtractor() {
-    return this.notImplemented('markObsoleteForExtractor');
+  async markObsoleteForExtractor(extractorId: ObjectIdSchema) {
+    await markObsolete(this.table, toHex(extractorId));
   }
 
-  async markProcessingAsFailed() {
-    return this.notImplemented('markProcessingAsFailed');
+  async markProcessingAsFailed(extractorId: ObjectIdSchema, errorMessage: string) {
+    await failProcessing(this.table, toHex(extractorId), errorMessage);
   }
 
-  async markProcessingAsObsolete() {
-    return this.notImplemented('markProcessingAsObsolete');
+  async markProcessingAsObsolete(extractorId: ObjectIdSchema) {
+    await releaseProcessingAsObsolete(this.table, toHex(extractorId));
   }
 
-  async setUseForTraining() {
-    return this.notImplemented('setUseForTraining');
+  async setUseForTraining(ids: ObjectIdSchema[], useForTraining: boolean) {
+    await this.table.whereIn('_id', ids.map(toHex)).update({ useForTraining });
   }
 
-  async setStates() {
-    return this.notImplemented('setStates');
+  async setStates(updates: { id: ObjectIdSchema; state: IXSuggestionStateType }[]) {
+    await updateRows(
+      this.table,
+      updates.map(({ id, state }) => PostgresIXSuggestionsMapper.toRow({ _id: id, state }))
+    );
   }
 
-  async clearTrainingSamplesForExtractor() {
-    return this.notImplemented('clearTrainingSamplesForExtractor');
+  async clearTrainingSamplesForExtractor(extractorId: ObjectIdSchema) {
+    await this.forExtractor(extractorId).update({ trainingSample: false });
   }
 
-  async markTrainingSamples() {
-    return this.notImplemented('markTrainingSamples');
+  async markTrainingSamples(extractorId: ObjectIdSchema, entityIds: string[]) {
+    await this.forExtractor(extractorId)
+      .whereIn('entityId', entityIds)
+      .update({ trainingSample: true });
   }
 
-  async deleteByExtractorId() {
-    return this.notImplemented('deleteByExtractorId');
+  /* ----------------------------------------------------------------------- deletes -- */
+
+  async deleteByExtractorId(extractorId: ObjectIdSchema) {
+    await this.forExtractor(extractorId).delete();
   }
 
-  async deleteByExtractorIds() {
-    return this.notImplemented('deleteByExtractorIds');
+  async deleteByExtractorIds(extractorIds: ObjectIdSchema[]) {
+    await this.table.whereIn('extractorId', extractorIds.map(toHex)).delete();
   }
 
-  async deleteByTemplatesAndExtractors() {
-    return this.notImplemented('deleteByTemplatesAndExtractors');
+  async deleteByTemplatesAndExtractors(templateIds: string[], extractorIds: ObjectIdSchema[]) {
+    await this.table
+      .whereIn('entityTemplate', templateIds)
+      .whereIn('extractorId', extractorIds.map(toHex))
+      .delete();
   }
 
-  async deleteByFileIds() {
-    return this.notImplemented('deleteByFileIds');
+  async deleteByFileIds(fileIds: ObjectIdSchema[]) {
+    await this.table.whereIn('fileId', fileIds.map(toHex)).delete();
   }
 
-  async deleteByEntityId() {
-    return this.notImplemented('deleteByEntityId');
+  async deleteByEntityId(sharedId: string) {
+    await this.table.where({ entityId: sharedId }).delete();
   }
 
-  async deleteByEntityAndTemplate() {
-    return this.notImplemented('deleteByEntityAndTemplate');
+  async deleteByEntityAndTemplate(sharedId: string, templateId: string) {
+    await this.table.where({ entityId: sharedId, entityTemplate: templateId }).delete();
   }
 
   private forExtractor(extractorId: ObjectIdSchema) {
     return this.table.where({ extractorId: toHex(extractorId) });
-  }
-
-  private notImplemented(method: string): never {
-    throw new Error(`${this.constructor.name}.${method} is not implemented until slice 4b`);
   }
 }

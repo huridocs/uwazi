@@ -36,6 +36,12 @@ const healthyPredicate = allOf(
   stateFlagPredicate('error', false)
 );
 
+/** Dated and obsolete: a suggestion a run answered, since made stale. */
+const obsoletePredicate = allOf(
+  fragment('"date" IS NOT NULL'),
+  stateFlagPredicate('obsolete', true)
+);
+
 /** Tagged with this process run. */
 const runPredicate = (runTimestamp: number) =>
   fragment(`("modelData"->>'suggestionsRunTimestamp')::bigint = ?`, [runTimestamp]);
@@ -48,7 +54,7 @@ const pendingPredicate = (filter: PendingStatusFilter = {}): SqlFragment => {
 
   const matchAny = [
     include('nonProcessed') ? fragment('"date" IS NULL') : null,
-    include('obsolete') ? allOf(dated, stateFlagPredicate('obsolete', true)) : null,
+    include('obsolete') ? obsoletePredicate : null,
     include('error') ? allOf(dated, stateFlagPredicate('error', true)) : null,
   ].filter((match): match is SqlFragment => match !== null);
 
@@ -84,6 +90,7 @@ export type { SqlFragment };
 export {
   acceptancePredicate,
   healthyPredicate,
+  obsoletePredicate,
   pendingPredicate,
   runPredicate,
   stateFlagPredicate,

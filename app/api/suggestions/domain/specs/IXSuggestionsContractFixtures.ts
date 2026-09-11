@@ -136,7 +136,7 @@ const withoutNulls = (suggestion: object) =>
   );
 
 /** Order-insensitive, null-insensitive comparison form of a list of suggestions. */
-const comparable = (list: { _id: unknown }[]) =>
+const comparable = <T extends { _id: unknown }>(list: T[]) =>
   list.map(withoutNulls).sort((a, b) => String(a._id).localeCompare(String(b._id)));
 
 const inIdOrder = <T extends { _id: { toHexString(): string } }>(list: T[]) =>
