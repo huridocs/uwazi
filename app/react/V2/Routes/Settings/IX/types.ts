@@ -24,7 +24,7 @@ type TableExtractor = ClientIXExtractorType & {
   namedTemplates: string[];
   propertyLabel: string;
   propertyType: IXProperty['type'];
-  source: string;
+  sourceLabel: string;
 };
 
 type Highlights = { [page: string]: TextHighlight[] };

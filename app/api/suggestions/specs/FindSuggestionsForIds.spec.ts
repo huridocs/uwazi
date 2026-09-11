@@ -9,6 +9,7 @@ import { ModelNotReadyError } from '#api/services/informationextraction/ixextrac
 import { ExternalDummyService } from '#api/services/tasksmanager/specs/ExternalDummyService.js';
 import { testingTenants } from '#api/utils/testingTenants.js';
 import ixmodels from '#api/services/informationextraction/ixmodels.js';
+import { ixTestAccess } from '#api/services/informationextraction/specs/ixTestAccess.js';
 import { FindSuggestionsForIds } from '../useCases/FindSuggestionsForIds.js';
 
 // Mock only the TaskManager to make startTask calls work without real Redis
@@ -224,7 +225,7 @@ describe('FindSuggestionsForIds', () => {
 
       // Verify the model state after the process has been initiated
       const testStartTime = Date.now() - 10000; // 10 seconds ago
-      const [finalModel] = await ixmodels.get({ extractorId });
+      const finalModel = await ixTestAccess.readModel(extractorId);
       expect(finalModel.processRun?.suggestionsRunTimestamp).toBeGreaterThan(testStartTime);
 
       // In an async process, sharedIds get processed and cleared, but process flag remains true
@@ -262,7 +263,7 @@ describe('FindSuggestionsForIds', () => {
       );
 
       // Verify the process started
-      const [updatedModel] = await ixmodels.get({ extractorId: propertyExtractorId });
+      const updatedModel = await ixTestAccess.readModel(propertyExtractorId);
       expect(updatedModel.processRun?.suggestionsRunTimestamp).toBeDefined();
       expect(updatedModel.processRun?.findSuggestionsSharedIds).toEqual([]);
 
@@ -295,7 +296,7 @@ describe('FindSuggestionsForIds', () => {
       expect(second.total).toBe(3);
 
       // Model should keep the correct initial count (delta-increment), queue is drained by the flow
-      const [finalModel] = await ixmodels.get({ extractorId });
+      const finalModel = await ixTestAccess.readModel(extractorId);
       expect(finalModel.processRun?.findSuggestionsInitialSharedIdsCount).toBe(3);
       expect(finalModel.processRun?.findSuggestionsSharedIds).toEqual([]);
     });
@@ -321,7 +322,7 @@ describe('FindSuggestionsForIds', () => {
       expect(result.total).toBe(1);
 
       // Model initial total stays the same (no delta)
-      const [finalModel] = await ixmodels.get({ extractorId });
+      const finalModel = await ixTestAccess.readModel(extractorId);
       expect(finalModel.processRun?.findSuggestionsInitialSharedIdsCount).toBe(1);
     });
 
@@ -331,7 +332,7 @@ describe('FindSuggestionsForIds', () => {
         extractorId,
         sharedIds: ['entity1'],
       });
-      const [afterFirst] = await ixmodels.get({ extractorId });
+      const afterFirst = await ixTestAccess.readModel(extractorId);
       expect(afterFirst.processRun?.findSuggestionsInitialSharedIdsCount).toBe(1);
 
       // Append 1 new (entity3) and 1 duplicate (entity1)
@@ -340,7 +341,7 @@ describe('FindSuggestionsForIds', () => {
         sharedIds: ['entity1', 'entity3'],
       });
 
-      const [afterSecond] = await ixmodels.get({ extractorId });
+      const afterSecond = await ixTestAccess.readModel(extractorId);
       // Only delta of 1 should be added
       expect(afterSecond.processRun?.findSuggestionsInitialSharedIdsCount).toBe(2);
     });
