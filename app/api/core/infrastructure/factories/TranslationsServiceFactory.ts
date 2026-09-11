@@ -13,9 +13,7 @@ export class TranslationsServiceFactory {
   ) {
     const transactionManager = overrides.transactionManager ?? ExecutionContext.transactionManager;
     const translationsDS = TranslationsDataSourceFactory.default({ transactionManager });
-    const settingsDS = SettingsDataSourceFactory.default({
-      transactionManager,
-    });
+    const settingsDS = SettingsDataSourceFactory.default();
 
     return new TranslationsService({
       transactionManager,

@@ -5,7 +5,7 @@ import React from 'react';
 import { act, fireEvent, RenderResult, screen, render } from '@testing-library/react';
 import { Location, MemoryRouter } from 'react-router';
 import { createStore, Provider } from 'jotai';
-import { ClientUserSchema } from '#app/apiResponseTypes.js';
+import { ClientSettings, ClientUserSchema } from '#app/apiResponseTypes.js';
 import { inlineEditAtom, localeAtom, settingsAtom, userAtom } from '#V2/atoms/index.js';
 import { TestAtomStoreProvider } from '#V2/testing/index.js';
 import { UserRole } from '#shared/types/userSchema.js';
@@ -38,7 +38,7 @@ describe('I18NMenu', () => {
   const initialEntry: Partial<Location> = { pathname: '/library' };
   const inlineEditAtomValue = { inlineEdit: false };
   let renderResult: RenderResult;
-  let settingsAtomValue = { languages: defaultLanguages };
+  let settingsAtomValue: ClientSettings = { languages: defaultLanguages };
   let localeAtomValue = 'en';
 
   Object.defineProperty(window, 'location', {
@@ -75,6 +75,20 @@ describe('I18NMenu', () => {
     renderComponent();
     const links = screen.getAllByRole('link');
     expect(links.map(link => link.getAttribute('href'))).toEqual(
+      expect.arrayContaining(['/en/library', '/es/library'])
+    );
+  });
+
+  it('should show catalog autonyms when settings languages have only tenant fields', () => {
+    settingsAtomValue = {
+      languages: [
+        { key: 'en' as LanguageISO6391, label: 'English', default: true },
+        { key: 'es' as LanguageISO6391, label: 'Spanish' },
+      ],
+    };
+    renderComponent();
+    expect(screen.getByText('Español')).toBeInTheDocument();
+    expect(screen.getAllByRole('link').map(link => link.getAttribute('href'))).toEqual(
       expect.arrayContaining(['/en/library', '/es/library'])
     );
   });
