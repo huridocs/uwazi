@@ -20,7 +20,11 @@ export class SuperAgentHttpClient implements HttpClient {
   }
 
   async postJson<Response>(input: PostJsonInput): Promise<Response> {
-    const response = await this.client.post(input.url).send(input.body);
+    const request = this.client.post(input.url).send(input.body);
+    if (input.timeoutMs !== undefined) {
+      request.timeout(input.timeoutMs);
+    }
+    const response = await request;
 
     return response.body as Response;
   }

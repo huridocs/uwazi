@@ -44,6 +44,8 @@ const mongoSchema = new mongoose.Schema({
     postgresPages: Boolean,
     aiAssistant: Boolean,
     aiAssistantServiceUrl: String,
+    translationService: Boolean,
+    translationServiceUrl: String,
     telemetry: {
       enabled: Boolean,
       sampleRate: Number,
