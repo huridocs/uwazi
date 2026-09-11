@@ -29,7 +29,6 @@ class IXExtractorsDAOFactory {
       pgTransactionManager: ExecutionContext.getStore()
         ? ExecutionContext.postgresTransactionManager
         : PostgresTransactionManagerFactory.default(),
-      mongoDb: getConnection(),
     });
   }
 }

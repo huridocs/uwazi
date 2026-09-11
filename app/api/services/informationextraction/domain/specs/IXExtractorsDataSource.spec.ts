@@ -14,11 +14,7 @@ import {
 
 type Sut = () => IXExtractorsDataSource;
 
-const readSyncLogs = async () =>
-  db.mongodb!.collection('updatelogs').find({ namespace: 'ixextractors' }).toArray();
-
-const syncLogFor = async (id: unknown) =>
-  (await readSyncLogs()).find(log => String(log.mongoId) === String(id));
+const readSyncLogs = async () => db.mongodb!.collection('updatelogs').find().toArray();
 
 const readCases = (sut: Sut) => {
   describe('getById()', () => {
@@ -177,45 +173,23 @@ const writeCases = (sut: Sut) => {
 };
 
 /**
- * Every write must reach `updatelogs`, which is what instance-to-instance sync consumes. If it
- * silently stopped, sync would break with every other test still green.
+ * Information extraction data is not synced between instances, so no IX write may leave an
+ * `updatelogs` row behind, on either backend.
  */
 const syncLogCases = (sut: Sut) => {
   describe('sync logging', () => {
-    it('should start from no sync logs, since fixtures are inserted directly', async () => {
-      expect(await readSyncLogs()).toEqual([]);
-    });
-
-    it('should record a sync log when an extractor is created', async () => {
-      const created = await sut().create({
+    it('should not record sync logs on create, update, template removal or delete', async () => {
+      await sut().create({
         name: 'created',
         property: 'target_e',
         source: { property: 'source_e' },
         templates: [f.idString('template A')],
       });
-
-      expect(await syncLogFor(created._id)).toMatchObject({
-        namespace: 'ixextractors',
-        deleted: false,
-      });
-    });
-
-    it('should record a sync log when an extractor is updated', async () => {
       await sut().update({ ...extractors.textOnA, name: 'renamed' });
-
-      expect(await syncLogFor(extractors.textOnA._id)).toMatchObject({ deleted: false });
-    });
-
-    it('should record a sync log when a template is removed from an extractor', async () => {
       await sut().removeTemplateFromExtractors([extractors.pdfOnA._id], f.id('template A'));
-
-      expect(await syncLogFor(extractors.pdfOnA._id)).toMatchObject({ deleted: false });
-    });
-
-    it('should record a sync log when an extractor is deleted', async () => {
       await sut().deleteByIds([extractors.pdfOnB._id]);
 
-      expect(await syncLogFor(extractors.pdfOnB._id)).toMatchObject({ deleted: true });
+      expect(await readSyncLogs()).toEqual([]);
     });
   });
 };

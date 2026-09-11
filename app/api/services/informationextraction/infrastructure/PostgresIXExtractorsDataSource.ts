@@ -1,4 +1,4 @@
-import { Db, ObjectId } from 'mongodb';
+import { ObjectId } from 'mongodb';
 import {
   PostgresDataSource,
   PostgresDataSourceDeps,
@@ -10,7 +10,7 @@ import { Extractor, IXExtractorsDataSource } from '../domain/IXExtractorsDataSou
 import { PostgresIXExtractorsMapper } from './PostgresIXExtractorsMapper.js';
 import type { IXExtractorsRow } from './PostgresIXExtractorsRow.js';
 
-type Deps = Omit<PostgresDataSourceDeps, 'sync'> & { mongoDb: Db };
+type Deps = Omit<PostgresDataSourceDeps, 'sync'>;
 
 const toHex = (id: ObjectIdSchema) => id.toString();
 
@@ -22,15 +22,15 @@ const toExtractors = async (query: PostgresTable<IXExtractorsRow>): Promise<Extr
 /**
  * Postgres implementation of {@link IXExtractorsDataSource}.
  *
- * `source` and `templates` are JSONB, as Mongo stores them. Every write records an `updatelogs`
- * row under the `ixextractors` namespace, as the Mongo implementation does.
+ * `source` and `templates` are JSONB, as Mongo stores them. Information extraction data is not
+ * synced between instances, so no write records an `updatelogs` row.
  */
 export class PostgresIXExtractorsDataSource
   extends PostgresDataSource<IXExtractorsRow>
   implements IXExtractorsDataSource
 {
-  constructor({ mongoDb, ...deps }: Deps) {
-    super('ix_extractors', { ...deps, sync: { syncDb: mongoDb, syncNamespace: 'ixextractors' } });
+  constructor(deps: Deps) {
+    super('ix_extractors', deps);
   }
 
   async getById(id: ObjectIdSchema) {
@@ -82,18 +82,11 @@ export class PostgresIXExtractorsDataSource
     await this.table.whereIn('_id', ids.map(toHex)).delete();
   }
 
-  /**
-   * Read, filter, write back: `update` serialises its values, so it cannot carry a JSONB
-   * expression, and a raw statement would skip the sync log. `bulkUpdate` writes the log.
-   */
+  /** One atomic statement, as Mongo's `$pull`: `jsonb - text` drops every matching element. */
   async removeTemplateFromExtractors(ids: ObjectIdSchema[], templateId: ObjectIdSchema) {
-    const template = toHex(templateId);
-    const rows = await this.table.whereIn('_id', ids.map(toHex)).all();
-
-    await this.table.bulkUpdate(
-      rows
-        .filter(row => row.templates.includes(template))
-        .map(row => ({ _id: row._id, templates: row.templates.filter(id => id !== template) }))
+    await this.table.raw(
+      'UPDATE ?? SET "templates" = "templates" - ?::text WHERE "_id" = ANY(?::text[]) AND "tenant_id" = ?',
+      [this.table.tableName, toHex(templateId), ids.map(toHex), this.table.tenantId]
     );
   }
 

@@ -7,8 +7,7 @@ const factory = getFixturesFactory();
 
 const dao = () => IXModelsDAOFactory.default();
 
-const readSyncLogs = async () =>
-  db.mongodb!.collection('updatelogs').find({ namespace: 'ixmodels' }).toArray();
+const readSyncLogs = async () => db.mongodb!.collection('updatelogs').find().toArray();
 
 const readRawModel = async () =>
   db.mongodb!.collection('ixmodels').findOne({ _id: factory.id('model') as any });
@@ -36,33 +35,15 @@ describe('MongoIXModelsDataSource', () => {
   afterAll(async () => testingEnvironment.tearDown());
 
   /**
-   * The odm model this data source replaced wrapped every write in `UpdateLogHelper`, which is
-   * what instance-to-instance sync consumes. `MongoDataSource`'s `SyncedCollection` is the
-   * equivalent, but nothing else asserts it for this collection — and if it silently stopped,
-   * sync would break with every other test still green.
+   * Information extraction data is not synced between instances, so no IX write may leave an
+   * `updatelogs` row behind.
    */
   describe('sync logging', () => {
-    it('should record a sync log when a model is created', async () => {
-      const created = await dao().save({ extractorId: factory.id('other'), creationDate: 1 });
-
-      const logged = await readSyncLogs();
-      expect(logged.find(log => String(log.mongoId) === String(created._id))).toMatchObject({
-        namespace: 'ixmodels',
-        deleted: false,
-      });
-    });
-
-    it('should record a sync log when a model is updated', async () => {
-      // Fixtures are inserted straight into mongo, so nothing is logged yet. Without this the
-      // assertion below could pass simply because an unrelated log already existed.
-      expect(await readSyncLogs()).toEqual([]);
-
+    it('should not record sync logs when a model is created or updated', async () => {
+      await dao().save({ extractorId: factory.id('other'), creationDate: 1 });
       await dao().markReady(factory.id('extractor'));
 
-      const logged = await readSyncLogs();
-      expect(logged.find(log => String(log.mongoId) === String(factory.id('model')))).toMatchObject(
-        { namespace: 'ixmodels', deleted: false }
-      );
+      expect(await readSyncLogs()).toEqual([]);
     });
   });
 

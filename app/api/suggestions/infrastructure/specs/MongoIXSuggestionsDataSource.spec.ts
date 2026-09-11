@@ -63,40 +63,18 @@ describe('MongoIXSuggestionsDataSource', () => {
   afterAll(async () => testingEnvironment.tearDown());
 
   /**
-   * The odm model this data source replaces wraps every write in `UpdateLogHelper`, which is what
-   * instance-to-instance sync consumes. `MongoDataSource`'s `SyncedCollection` is the equivalent,
-   * but nothing else asserts it for this collection — and if it silently stopped, sync would
-   * break with every other test still green.
+   * Information extraction data is not synced between instances, so no IX write may leave an
+   * `updatelogs` row behind.
    */
   describe('sync logging', () => {
-    it('should record a sync log on insert', async () => {
+    it('should not record sync logs on insert, update or delete', async () => {
       await dao().createMultiple([
         { extractorId, entityId: 'new', language: 'en', propertyName: 'p' } as any,
       ]);
-
-      const logged = await readSyncLogs();
-      expect(logged).toHaveLength(1);
-      expect(logged[0]).toMatchObject({ namespace: 'ixsuggestions', deleted: false });
-    });
-
-    it('should record a sync log on update', async () => {
-      // Fixtures are inserted straight into mongo, so nothing is logged yet.
-      expect(await readSyncLogs()).toEqual([]);
-
       await dao().markObsoleteForExtractor(extractorId);
-
-      expect((await readSyncLogs()).length).toBeGreaterThan(0);
-    });
-
-    it('should record a sync log on delete', async () => {
-      expect(await readSyncLogs()).toEqual([]);
-
       await dao().deleteByEntityId('entity1');
 
-      const logged = await readSyncLogs();
-      expect(
-        logged.find(log => String(log.mongoId) === String(factory.id('accepted')))
-      ).toMatchObject({ deleted: true });
+      expect(await readSyncLogs()).toEqual([]);
     });
   });
 
@@ -308,15 +286,6 @@ describe('MongoIXSuggestionsDataSource', () => {
     });
   });
 
-  /**
-   * The state recompute used to write through the odm's `ModelBulkWriteStream`, which reaches the
-   * driver directly and so logged nothing to `updatelogs`, unlike every other write to this
-   * collection. Going through the data source makes it consistent with them, and this pins that.
-   *
-   * Consistency is the whole of the argument: `ixsuggestions` is not a syncable collection —
-   * `syncConfig`'s approved collections never include it — so nothing reads these rows either
-   * way. Whether IX data sources should log at all is a stage-5 question, not a 4c-2 one.
-   */
   describe('setStates', () => {
     it('should overwrite the state of the given suggestions only', async () => {
       await dao().setStates([
@@ -332,22 +301,22 @@ describe('MongoIXSuggestionsDataSource', () => {
       });
     });
 
-    it('should record a sync log for every suggestion it touches', async () => {
+    it('should not record sync logs for the suggestions it touches', async () => {
       await dao().setStates([
         { id: factory.id('pending'), state: { labeled: true } as any },
         { id: factory.id('accepted'), state: { labeled: false } as any },
       ]);
 
-      const logged = await readSyncLogs();
-      expect(logged.map(l => l.mongoId.toString()).sort()).toEqual(
-        [factory.id('accepted').toString(), factory.id('pending').toString()].sort()
-      );
+      expect(await readSyncLogs()).toEqual([]);
     });
 
     it('should do nothing when given no updates', async () => {
       await dao().setStates([]);
 
-      expect(await readSyncLogs()).toEqual([]);
+      expect((await readRaw(factory.id('pending')))?.state).toMatchObject({
+        withSuggestion: false,
+        obsolete: false,
+      });
     });
   });
 

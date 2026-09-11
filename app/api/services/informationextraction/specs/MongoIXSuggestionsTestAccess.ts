@@ -19,7 +19,9 @@ export class MongoIXSuggestionsTestAccess extends MongoDataSource<Suggestion> {
   protected collectionName = 'ixsuggestions';
 
   static default() {
-    return new MongoIXSuggestionsTestAccess(getConnection(), TransactionManagerFactory.default());
+    return new MongoIXSuggestionsTestAccess(getConnection(), TransactionManagerFactory.default(), {
+      useSyncedCollection: false,
+    });
   }
 
   async find(filter: Filter<Suggestion>) {

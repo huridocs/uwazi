@@ -97,10 +97,8 @@ export const pendingMatch = (extractorId: ObjectIdSchema, filter: PendingStatusF
 /**
  * Mongo implementation of {@link IXSuggestionsDataSource}.
  *
- * Extends `MongoDataSource` rather than wrapping the mongoose model: its `SyncedCollection`
- * writes the same `{namespace, mongoId, timestamp, deleted}` rows to `updatelogs` that the odm's
- * `UpdateLogHelper` did, so instance-to-instance sync is preserved. Pinned by the spec beside
- * this file.
+ * Opts out of `MongoDataSource`'s synced collection: information extraction data is not synced
+ * between instances, so its writes leave no `updatelogs` rows.
  */
 export class MongoIXSuggestionsDataSource
   extends MongoDataSource<Suggestion>
@@ -109,7 +107,7 @@ export class MongoIXSuggestionsDataSource
   protected collectionName = ixSuggestionsCollection;
 
   constructor(deps: Deps) {
-    super(deps.db, deps.transactionManager);
+    super(deps.db, deps.transactionManager, { useSyncedCollection: false });
   }
 
   /* ------------------------------------------------------------------------- reads -- */
