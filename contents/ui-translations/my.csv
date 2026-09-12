@@ -115,6 +115,7 @@ AND OR NOT,AND OR NOT
 Any,Any
 Any entity,Any entity
 any single character,any single character
+Any type,Any type
 Anyone can see this entity,Anyone can see this entity
 Appearance,Appearance
 Apply,Apply
@@ -255,6 +256,8 @@ Copied,Copied
 Copied to clipboard,Copied to clipboard
 Copy,Copy
 Copy From,ဤမှ ကူးပါ
+Copy from,Copy from
+Copy from this entity,Copy from this entity
 Copy from...,Copy from...
 Copy Highlighted,အရောင်ခြယ်ထားသည်ကို ကူးပါ
 Copy link,လင့်ခ်ကို ကူးပါ
@@ -929,6 +932,7 @@ Permission on entities explicitly shared with the user,အသုံးပြု�
 Permissions,ခွင့်ပြုချက်များ
 Permissions updated,Permissions updated
 Pick a color,Pick a color
+Pick another,Pick another
 Plain text,ရိုးရိုးစာသား
 Please contact an admin for details.,ကျေးဇူးပြု၍ အသေးစိတ်များ သိရန် အက်မင်ကို ဆက်သွယ်ပါ။
 Please type in,Please type in
@@ -1096,6 +1100,7 @@ Schedule,Schedule
 Schedules run in UTC (Coordinated Universal Time).,Schedules run in UTC (Coordinated Universal Time).
 Search,ရှာဖွေရန်
 "Search  •  AND, OR, NOT, ""exact"", wild*","Search  •  AND, OR, NOT, ""exact"", wild*"
+Search by title,Search by title
 Search entities...,Search entities...
 Search entities…,Search entities…
 Search item,အိုင်တမ် ရှာရန်
@@ -1466,6 +1471,7 @@ Validating file structure and headers.,Validating file structure and headers.
 Value,Value
 Value cannot be transformed to the correct type,Value cannot be transformed to the correct type
 values,values
+"values are staged, not saved","values are staged, not saved"
 Verify,မှန်ကန်ကြောင်း စစ်ဆေးရန်
 Verifying...,မှန်ကန်ကြောင်း စစ်ဆေးဆဲ...
 via,via

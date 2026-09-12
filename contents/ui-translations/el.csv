@@ -115,6 +115,7 @@ AND OR NOT,AND OR NOT
 Any,Any
 Any entity,Οποιαδήποτε οντότητα
 any single character,any single character
+Any type,Any type
 Anyone can see this entity,Anyone can see this entity
 Appearance,Appearance
 Apply,Εφαρμογή
@@ -256,6 +257,8 @@ Copied,Copied
 Copied to clipboard,Αντιγράφηκε στο πρόχειρο
 Copy,Copy
 Copy From,Αντιγραφή από
+Copy from,Copy from
+Copy from this entity,Copy from this entity
 Copy from...,Copy from...
 Copy Highlighted,Αντιγραφή επισημασμένου
 Copy link,Αντιγραφή συνδέσμου
@@ -930,6 +933,7 @@ Permission on entities explicitly shared with the user,Άδεια σε οντό�
 Permissions,Άδειες
 Permissions updated,Permissions updated
 Pick a color,Pick a color
+Pick another,Pick another
 Plain text,Απλό κείμενο
 Please contact an admin for details.,Επικοινωνήστε με έναν διαχειριστή για λεπτομέρειες.
 Please type in,Πληκτρολογήστε
@@ -1097,6 +1101,7 @@ Schedule,Schedule
 Schedules run in UTC (Coordinated Universal Time).,Schedules run in UTC (Coordinated Universal Time).
 Search,Αναζήτηση
 "Search  •  AND, OR, NOT, ""exact"", wild*","Search  •  AND, OR, NOT, ""exact"", wild*"
+Search by title,Search by title
 Search entities...,Search entities...
 Search entities…,Search entities…
 Search item,Αναζήτηση στοιχείου
@@ -1467,6 +1472,7 @@ Validating file structure and headers.,Validating file structure and headers.
 Value,Αξία
 Value cannot be transformed to the correct type,Η τιμή δεν μπορεί να μετατραπεί στον σωστό τύπο
 values,τιμές
+"values are staged, not saved","values are staged, not saved"
 Verify,Επαλήθευση
 Verifying...,Επαλήθευση...
 via,via

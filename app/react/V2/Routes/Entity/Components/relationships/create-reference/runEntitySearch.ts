@@ -1,11 +1,11 @@
-import { searchByTitle } from '#V2/api/entities/index.js';
 import type { Entity } from '#V2/api/entities/types.js';
+import type { SearchService } from '#V2/services/contracts/SearchService.js';
 
 type RunEntitySearchParams = {
   searchString: string;
   generation: number;
   searchGeneration: { current: number };
-  searchFunction: (search: string) => ReturnType<typeof searchByTitle>;
+  searchFunction: SearchService['search'];
   setSearchResults: (results: Entity[]) => void;
   setIsSearching: (searching: boolean) => void;
 };
@@ -19,9 +19,14 @@ async function runEntitySearch({
   setIsSearching,
 }: RunEntitySearchParams) {
   try {
-    const [result] = await searchFunction(searchString);
+    const [result] = await searchFunction({
+      searchTerm: searchString,
+      publishedStatus: 'all',
+      fields: ['title', 'template', 'creationDate', 'sharedId'],
+      includeFiles: true,
+    });
     if (generation !== searchGeneration.current) return;
-    setSearchResults(result ?? []);
+    setSearchResults((result?.rows ?? []) as Entity[]);
   } catch {
     if (generation !== searchGeneration.current) return;
     setSearchResults([]);

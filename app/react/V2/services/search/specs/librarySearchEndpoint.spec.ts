@@ -155,4 +155,26 @@ describe('librarySearchEndpoint', () => {
       },
     });
   });
+
+  it('forwards field projection and includeFiles to GET /api/search', () => {
+    expect(
+      toSearchEndpointQuery({
+        searchTerm: 'Colom',
+        templateIds: ['country'],
+        fields: ['title', 'sharedId', 'template'],
+      })
+    ).toMatchObject({
+      searchTerm: 'Colom',
+      types: ['country'],
+      fields: ['title', 'sharedId', 'template'],
+    });
+    expect(
+      toSearchEndpointQuery({
+        fields: ['title', 'sharedId'],
+        includeFiles: true,
+      })
+    ).toMatchObject({
+      fields: ['title', 'sharedId', 'documents', 'attachments'],
+    });
+  });
 });

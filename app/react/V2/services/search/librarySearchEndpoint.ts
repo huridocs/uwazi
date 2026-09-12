@@ -36,6 +36,7 @@ type SearchEndpointQuery = {
   unpublished: boolean;
   aggregatePublishingStatus: true;
   include: ['permissions'];
+  fields?: string[];
   geolocation?: boolean;
 };
 
@@ -99,6 +100,16 @@ const setNestedFilter = (
   filters[parent] = { properties };
 };
 
+const projectedFields = (query: LibrarySearchQuery) => {
+  if (!query.fields?.length) {
+    return undefined;
+  }
+  if (!query.includeFiles) {
+    return query.fields;
+  }
+  return [...new Set([...query.fields, 'documents', 'attachments'])];
+};
+
 const toSearchEndpointQuery = (query: LibrarySearchQuery): SearchEndpointQuery => {
   const { includeUnpublished, unpublished } = statusToEndpointFlags(query.publishedStatus);
   const andKeys = new Set(query.andFilters ?? []);
@@ -114,6 +125,7 @@ const toSearchEndpointQuery = (query: LibrarySearchQuery): SearchEndpointQuery =
     }
     filters[key] = toEndpointFilterValue(values, andKeys.has(key));
   });
+  const fields = projectedFields(query);
 
   return {
     searchTerm: query.searchTerm || '',
@@ -127,6 +139,7 @@ const toSearchEndpointQuery = (query: LibrarySearchQuery): SearchEndpointQuery =
     unpublished,
     aggregatePublishingStatus: true,
     include: ['permissions'],
+    ...(fields?.length ? { fields } : {}),
     ...(query.geolocation ? { geolocation: true } : {}),
   };
 };

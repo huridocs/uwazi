@@ -115,6 +115,7 @@ AND OR NOT,AND OR NOT
 Any,Any
 Any entity,Any entity
 any single character,any single character
+Any type,Any type
 Anyone can see this entity,Anyone can see this entity
 Appearance,Appearance
 Apply,Apply
@@ -255,6 +256,8 @@ Copied,Copied
 Copied to clipboard,Copied to clipboard
 Copy,Copy
 Copy From,외부 복사
+Copy from,Copy from
+Copy from this entity,Copy from this entity
 Copy from...,Copy from...
 Copy Highlighted,하이라이트 복사
 Copy link,링크 복사
@@ -929,6 +932,7 @@ Permission on entities explicitly shared with the user,특정 사용자에게 �
 Permissions,권한
 Permissions updated,Permissions updated
 Pick a color,Pick a color
+Pick another,Pick another
 Plain text,일반 텍스트
 Please contact an admin for details.,자세한 내용은 관리자에게 문의하십시오.
 Please type in,Please type in
@@ -1096,6 +1100,7 @@ Schedule,Schedule
 Schedules run in UTC (Coordinated Universal Time).,Schedules run in UTC (Coordinated Universal Time).
 Search,검색
 "Search  •  AND, OR, NOT, ""exact"", wild*","Search  •  AND, OR, NOT, ""exact"", wild*"
+Search by title,Search by title
 Search entities...,Search entities...
 Search entities…,Search entities…
 Search item,아이템 검색
@@ -1466,6 +1471,7 @@ Validating file structure and headers.,Validating file structure and headers.
 Value,Value
 Value cannot be transformed to the correct type,Value cannot be transformed to the correct type
 values,values
+"values are staged, not saved","values are staged, not saved"
 Verify,검증
 Verifying...,검증 중
 via,via
