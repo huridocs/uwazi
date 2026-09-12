@@ -1,5 +1,6 @@
-import React, { useCallback, useEffect, useState } from 'react';
-import { PDF, type PDFControls } from '#V2/Components/PDFViewer/index.js';
+// oxlint-disable react/jsx-pascal-case
+import React from 'react';
+import { PDF } from '#V2/Components/PDFViewer/index.js';
 import { RelationshipsDisplay } from '#V2/Components/Relationships/index.js';
 import type { Entity as EntityType, FileType } from '#V2/api/entities/types.js';
 import { useIsMobile } from '#V2/CustomHooks/useIsMobile.js';
@@ -16,7 +17,7 @@ import {
   useDocumentPdf,
 } from '#V2/Routes/Entity/Components/context/index.js';
 import { useDocumentPdfView } from '../hooks/useDocumentPdfView.js';
-import { useRailInset } from '../hooks/useRailInset.js';
+import { useDocumentPdfLayout } from '../hooks/useDocumentPdfLayout.js';
 
 type DocumentTabProps = {
   entity: EntityType;
@@ -46,7 +47,7 @@ const DocumentTab = ({
     handleAddToToC,
     selectedText,
     pdfSelectionMenuOpen,
-    userIsAdminOrEditor,
+    canWrite,
     handlePageChange,
     handleHighlightClick,
     handleRailHover,
@@ -57,57 +58,17 @@ const DocumentTab = ({
     propertySelectionHighlights,
   } = useDocumentPdfView({ mainDocument, entity });
   const { armedPdfFill, requestPdfFillCommit } = useDocumentPdf();
-
   const isMobile = useIsMobile();
   const { isRtl } = useEntityLanguage();
-  const [pdfScrollRoot, setPdfScrollRoot] = useState<HTMLDivElement | null>(null);
-  const [pageHeight, setPageHeight] = useState<number | undefined>();
-  const { railInsetRight, measureRailInset } = useRailInset(pdfScrollRoot, !isRaw && showRail);
-
-  useEffect(() => {
-    if (!mainDocument._id || !showRail || isRaw) return;
-    ensureAnchors().catch(() => undefined);
-  }, [ensureAnchors, isRaw, mainDocument._id, showRail]);
-
-  useEffect(() => {
-    if (isRaw) {
-      setPageHeight(undefined);
-      return undefined;
-    }
-
-    const pageElement = document.querySelector<HTMLDivElement>(
-      `.page[data-page-number="${pageNumber}"]`
-    );
-
-    if (!pageElement) {
-      // Warn users in case the way pages are represented changes since it will interfere with calculation for marker positions in page view.
-      // eslint-disable-next-line no-console
-      console.warn('Page element could not be found');
-      setPageHeight(undefined);
-      return undefined;
-    }
-
-    const updateHeight = () => {
-      const { height } = pageElement.getBoundingClientRect();
-      setPageHeight(height > 0 ? height : undefined);
-    };
-
-    updateHeight();
-    const observer = new ResizeObserver(updateHeight);
-    observer.observe(pageElement);
-
-    return () => {
-      observer.disconnect();
-    };
-  }, [isRaw, pageNumber]);
-
-  const handlePdfReady = useCallback(
-    (controls: PDFControls) => {
-      onPdfReady(controls);
-      measureRailInset();
-    },
-    [onPdfReady, measureRailInset]
-  );
+  const { pdfScrollRoot, setPdfScrollRoot, pageHeight, railInsetRight, handlePdfReady } =
+    useDocumentPdfLayout({
+      isRaw,
+      pageNumber,
+      showRail,
+      documentId: mainDocument._id,
+      ensureAnchors,
+      onPdfReady,
+    });
 
   return (
     <div className="flex h-full min-h-0 flex-1 flex-col gap-3 overflow-hidden">
@@ -157,7 +118,7 @@ const DocumentTab = ({
               onMoreClick={handleClusterMoreClick}
             />
           )}
-          {selectedText && pdfSelectionMenuOpen && userIsAdminOrEditor && !isRaw ? (
+          {selectedText && pdfSelectionMenuOpen && canWrite && !isRaw ? (
             <DocumentSelectionFloatingMenu
               selection={selectedText}
               onCreateRelationship={() => handleCreateRelationship(selectedText)}
