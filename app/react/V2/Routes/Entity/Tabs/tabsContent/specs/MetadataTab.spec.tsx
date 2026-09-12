@@ -4,6 +4,7 @@ import React, { useEffect } from 'react';
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { ApiError } from '#shared/apiClient/index.js';
 import type { Entity } from '#V2/api/entities/types.js';
+import { AccessLevels, PermissionType } from '#shared/types/permissionSchema.js';
 import { TestAtomStoreProvider, TestRouterContext } from '#V2/testing/index.js';
 import { createTestServices } from '#V2/testing/createTestServices.js';
 import { ServicesProvider } from '#V2/services/ServicesProvider.js';
@@ -26,6 +27,7 @@ const entity: Entity = {
   creationDate: 0,
   user: 'user1',
   relations: [{ entity: 'other', entityData: { title: 'Other', template: 't2' } }],
+  permissions: [{ refId: '1', type: PermissionType.USER, level: AccessLevels.WRITE }],
 };
 
 type SessionApi = ReturnType<typeof useMetadataEditing>;
@@ -40,7 +42,12 @@ const SessionBridge = ({ onSession }: { onSession: (session: SessionApi) => void
 
 const RelProbe = () => {
   const { entity: scoped } = useEntityContext();
-  return <span data-testid="rel-entity">{scoped.relations?.[0]?.entity ?? ''}</span>;
+  return (
+    <>
+      <span data-testid="rel-entity">{scoped.relations?.[0]?.entity ?? ''}</span>
+      <span data-testid="perm-level">{scoped.permissions?.[0]?.level ?? 'none'}</span>
+    </>
+  );
 };
 
 const HostPair = ({ onSession }: { onSession: (session: SessionApi) => void }) => (
@@ -217,6 +224,35 @@ describe('MetadataTab shared session', () => {
     await waitFor(() => {
       expect(getSession().isEditing).toBe(false);
       expect(screen.getByTestId('rel-entity')).toHaveTextContent('other');
+    });
+  });
+
+  it('keeps permissions on the in-memory entity when save omits them', async () => {
+    const upsert = jest
+      .fn()
+      .mockResolvedValue([
+        {
+          _id: 'e1',
+          sharedId: 's1',
+          title: 'Saved',
+          template: 't1',
+          language: 'en',
+          metadata: {},
+          creationDate: 0,
+          user: 'user1',
+        },
+        undefined,
+      ]);
+    const { getSession } = await renderSession(upsert);
+    await act(async () => {
+      getSession().registerMetadataActive('main', true);
+      getSession().startEditing('main');
+    });
+    await screen.findByTestId('entity-edit-form');
+    fireEvent.click(screen.getByRole('button', { name: 'Save' }));
+    await waitFor(() => {
+      expect(getSession().isEditing).toBe(false);
+      expect(screen.getByTestId('perm-level')).toHaveTextContent('write');
     });
   });
 

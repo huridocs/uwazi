@@ -46,7 +46,7 @@ const DocumentTab = ({
     handleAddToToC,
     selectedText,
     pdfSelectionMenuOpen,
-    userIsAdminOrEditor,
+    canWrite,
     handlePageChange,
     handleHighlightClick,
     handleRailHover,
@@ -157,7 +157,7 @@ const DocumentTab = ({
               onMoreClick={handleClusterMoreClick}
             />
           )}
-          {selectedText && pdfSelectionMenuOpen && userIsAdminOrEditor && !isRaw ? (
+          {selectedText && pdfSelectionMenuOpen && canWrite && !isRaw ? (
             <DocumentSelectionFloatingMenu
               selection={selectedText}
               onCreateRelationship={() => handleCreateRelationship(selectedText)}
