@@ -198,7 +198,7 @@ describe('MetadataTab shared session', () => {
     });
   });
 
-  it('keeps relations on the in-memory entity when save omits them', async () => {
+  it('keeps relations and permissions on the in-memory entity when save omits them', async () => {
     const upsert = jest.fn().mockResolvedValue([
       {
         _id: 'e1',
@@ -213,45 +213,15 @@ describe('MetadataTab shared session', () => {
       undefined,
     ]);
     const { getSession } = await renderSession(upsert);
-
     await act(async () => {
       getSession().registerMetadataActive('main', true);
       getSession().startEditing('main');
     });
     await screen.findByTestId('entity-edit-form');
     fireEvent.click(screen.getByRole('button', { name: 'Save' }));
-
     await waitFor(() => {
       expect(getSession().isEditing).toBe(false);
       expect(screen.getByTestId('rel-entity')).toHaveTextContent('other');
-    });
-  });
-
-  it('keeps permissions on the in-memory entity when save omits them', async () => {
-    const upsert = jest
-      .fn()
-      .mockResolvedValue([
-        {
-          _id: 'e1',
-          sharedId: 's1',
-          title: 'Saved',
-          template: 't1',
-          language: 'en',
-          metadata: {},
-          creationDate: 0,
-          user: 'user1',
-        },
-        undefined,
-      ]);
-    const { getSession } = await renderSession(upsert);
-    await act(async () => {
-      getSession().registerMetadataActive('main', true);
-      getSession().startEditing('main');
-    });
-    await screen.findByTestId('entity-edit-form');
-    fireEvent.click(screen.getByRole('button', { name: 'Save' }));
-    await waitFor(() => {
-      expect(getSession().isEditing).toBe(false);
       expect(screen.getByTestId('perm-level')).toHaveTextContent('write');
     });
   });
