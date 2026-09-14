@@ -70,24 +70,37 @@ export class PostgresIXModelsDataSource
 
   /* ------------------------------------------------------------- status transitions -- */
 
+  /**
+   * Claims the model only when no run holds it, in one statement: the conflict update carries the
+   * `status` test, so a row already processing is left untouched and nothing is returned.
+   */
   async markTraining(
     extractorId: ObjectIdSchema,
     { maxSuggestionsToFind }: { maxSuggestionsToFind: number }
   ) {
-    await this.table.upsert(
-      {
-        _id: new ObjectId().toString(),
-        extractorId: toHex(extractorId),
-        status: ModelStatus.processing,
-        findingSuggestions: true,
+    const claimed = await this.table.raw<{ rows: { _id: string }[] }>(
+      `INSERT INTO ?? ("_id", "tenant_id", "extractorId", "status", "findingSuggestions",
+                       "maxSuggestionsToFind", "processRun")
+       VALUES (?, ?, ?, ?, true, ?, NULL)
+       ON CONFLICT ("tenant_id", "extractorId") DO UPDATE
+         SET "status" = EXCLUDED."status",
+             "findingSuggestions" = EXCLUDED."findingSuggestions",
+             "maxSuggestionsToFind" = EXCLUDED."maxSuggestionsToFind",
+             "processRun" = NULL
+         WHERE ix_models."status" <> ?
+       RETURNING "_id"`,
+      [
+        this.table.tableName,
+        new ObjectId().toString(),
+        this.table.tenantId,
+        toHex(extractorId),
+        ModelStatus.processing,
         maxSuggestionsToFind,
-        processRun: null,
-      },
-      {
-        columns: ['tenant_id', 'extractorId'],
-        merge: ['status', 'findingSuggestions', 'maxSuggestionsToFind', 'processRun'],
-      }
+        ModelStatus.processing,
+      ]
     );
+
+    return claimed.rows.length > 0;
   }
 
   async markFindingSuggestions(extractorId: ObjectIdSchema) {

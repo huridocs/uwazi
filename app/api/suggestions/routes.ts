@@ -158,7 +158,7 @@ export const suggestionsRoutes = (app: Application) => {
         },
       },
     }),
-    async (req, res, _next) => {
+    async (req, res, next) => {
       try {
         const { extractorId, suggestionsToFind, options } = req.body;
         const output = await IX.trainModel(
@@ -167,8 +167,10 @@ export const suggestionsRoutes = (app: Application) => {
           options
         );
         res.status(202).json(output);
-      } catch (e: any) {
-        res.status(500).json({ error: e?.message || 'Internal Server Error' });
+      } catch (e: unknown) {
+        // The error middleware decides the status: a run already in flight is a 409 conflict, not
+        // the 500 this route used to answer for everything it caught (F52).
+        next(e);
       }
     }
   );

@@ -818,6 +818,12 @@ describe.each(testConfigs)('InformationExtraction $name', ({ usePostgres }) => {
     });
 
     it('should emit error status and stop finding suggestions, when there is no labaled data', async () => {
+      // The fixture leaves this model mid-run, for the `status()` case above. A new run may not
+      // claim a model another run holds (F52), so release it first — what is under test here is
+      // the failure once training starts, not the claim.
+      const held = await ixTestAccess.readModel(factory.id('prop3extractor'));
+      await ixTestAccess.writeModel({ ...held, status: 'ready', findingSuggestions: false });
+
       const promise1 = informationExtraction.trainModel(factory.id('prop3extractor'));
       await expect(promise1).rejects.toThrow();
       expect(setupSockets.emitToTenantAdminsAndEditors).toHaveBeenNthCalledWith(

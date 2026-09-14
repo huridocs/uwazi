@@ -80,23 +80,38 @@ export class MongoIXModelsDataSource
 
   /* ------------------------------------------------------------- status transitions -- */
 
+  /**
+   * Claims the model only when no run holds it, in one atomic `findOneAndUpdate`.
+   *
+   * The update is a pipeline so the condition travels with it: a document already processing keeps
+   * every field it has, any other document (or none at all, which upserts) takes the new run. A
+   * plain conditional upsert cannot express this — excluding the processing row from the filter
+   * makes Mongo try to insert a second one — and a read-then-write would let two callers
+   * milliseconds apart both pass.
+   */
   async markTraining(
     extractorId: ObjectIdSchema,
     { maxSuggestionsToFind }: { maxSuggestionsToFind: number }
   ) {
-    await this.getCollection().updateOne(
-      { extractorId: toObjectId(extractorId) },
-      {
-        $set: {
-          extractorId: toObjectId(extractorId),
-          findingSuggestions: true,
-          status: ModelStatus.processing,
-          maxSuggestionsToFind,
+    const held = { $eq: ['$status', ModelStatus.processing] };
+    const keepOrTake = (field: string, value: unknown) => ({ $cond: [held, `$${field}`, value] });
+
+    const before = await this.getCollection().findOneAndUpdate(
+      { extractorId: toObjectId(extractorId) } as any,
+      [
+        {
+          $set: {
+            status: keepOrTake('status', ModelStatus.processing),
+            findingSuggestions: keepOrTake('findingSuggestions', true),
+            maxSuggestionsToFind: keepOrTake('maxSuggestionsToFind', maxSuggestionsToFind),
+            processRun: keepOrTake('processRun', '$$REMOVE'),
+          },
         },
-        $unset: { processRun: '' },
-      } as any,
-      { upsert: true }
+      ] as any,
+      { upsert: true, returnDocument: 'before' }
     );
+
+    return !before || before.status !== ModelStatus.processing;
   }
 
   async markFindingSuggestions(extractorId: ObjectIdSchema) {

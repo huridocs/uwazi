@@ -75,8 +75,24 @@ const statusCases = (sut: Sut) => {
       });
     });
 
+    /**
+     * Two trains landing together used to be two runs: the upsert re-stamped the row whatever
+     * state it was in, and the second `create_model` tore down the model the first run's find was
+     * about to use, so every good suggestion came back empty (F52). Claiming the model is the
+     * store's decision, not a check the caller can win a race against.
+     */
+    it('should refuse the run when the model is already training, leaving it untouched', async () => {
+      expect(await sut().markTraining(f.id('training'), { maxSuggestionsToFind: 99 })).toBe(false);
+
+      expect(await sut().getByExtractorId(f.id('training'))).toEqual(models.training);
+    });
+
+    it('should claim a model that is not training', async () => {
+      expect(await sut().markTraining(f.id('running'), { maxSuggestionsToFind: 25 })).toBe(true);
+    });
+
     it('should create the model row, without a creation date, when the extractor has never been trained', async () => {
-      await sut().markTraining(f.id('untrained'), { maxSuggestionsToFind: 5 });
+      expect(await sut().markTraining(f.id('untrained'), { maxSuggestionsToFind: 5 })).toBe(true);
 
       const created = await sut().getByExtractorId(f.id('untrained'));
       expect(created).toMatchObject({

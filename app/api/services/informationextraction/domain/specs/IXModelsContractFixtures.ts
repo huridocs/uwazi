@@ -23,7 +23,7 @@ const testConfigs: TestConfig[] = [
   { name: 'Postgres', usePostgres: true },
 ];
 
-const extractorNames = ['running', 'idle', 'untrained', 'fresh', 'routed'];
+const extractorNames = ['running', 'idle', 'training', 'untrained', 'fresh', 'routed'];
 
 const models = {
   running: {
@@ -42,6 +42,12 @@ const models = {
     ...f.ixModel('idle model', 'idle'),
     findingSuggestions: false,
     totalSuggestionsToFind: 4,
+  } as IXModel,
+  /** A run already in flight: the one state a new run may not claim. */
+  training: {
+    ...f.ixModel('training model', 'training', 1, 'processing'),
+    findingSuggestions: true,
+    maxSuggestionsToFind: 7,
   } as IXModel,
 };
 
