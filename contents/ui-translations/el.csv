@@ -162,7 +162,7 @@ Can edit,Μπορεί να επεξεργαστεί
 Can see,Μπορεί να δει
 Can view,Μπορεί να δει
 Cancel,Ακύρωση
-cancel csv import,Cancel the import process. This will stop the creation of new entities. Already created entities will not be affected
+cancel csv import,Ακύρωση της διαδικασίας εισαγωγής. Αυτό θα διακόψει τη δημιουργία νέων οντοτήτων. Οι οντότητες που έχουν ήδη δημιουργηθεί δεν θα επηρεαστούν
 Canceling,Ακύρωση
 Canceling...,Ακύρωση σε εξέλιξη...
 Cancelled,Ακυρώθηκε
@@ -190,7 +190,7 @@ Chart theme,Θέμα γραφήματος
 Chart type,Τύπος γραφήματος
 Chart type uses a custom view,Ο τύπος γραφήματος χρησιμοποιεί μια προσαρμοσμένη προβολή
 Check to make this instance public (non-logged in users can see public documents and entities),Ενεργοποιήστε αυτή την επιλογή για να κάνετε αυτή την εγκατάσταση δημόσια (οι μη συνδεδεμένοι χρήστες μπορούν να δουν δημόσια έγγραφα και οντότητες)
-Checking which images fit the requirements,Checking which images fit the requirements...
+Checking which images fit the requirements,Έλεγχος ποιες εικόνες πληρούν τις απαιτήσεις...
 Choose,Επιλέξτε
 Choose relation type,Επιλέξτε τον τύπο σχέσης
 Choose which data to use for training,Επιλέξτε ποια δεδομένα θα χρησιμοποιήσετε για την εκπαίδευση
@@ -297,7 +297,7 @@ Creating entities,Δημιουργία οντοτήτων
 Creating relationships,Δημιουργία σχέσεων
 Creating thesauri,Δημιουργία θησαυρών όρων
 CSS,CSS
-csv blank state message,Import CSV or ZIP files to create entities in bulk. Select **+ Import CSV** to get started.
+csv blank state message,Εισαγάγετε αρχεία CSV ή ZIP για να δημιουργήσετε οντότητες μαζικά. Επιλέξτε **+ Εισαγωγή CSV** για να ξεκινήσετε.
 CSV Import,Εισαγωγή αρχείου CSV
 CSV import cancelled,Η εισαγωγή CSV ακυρώθηκε
 CSV import completed,Η εισαγωγή CSV ολοκληρώθηκε
@@ -485,8 +485,8 @@ Failed to save table of contents,Δεν κατέστη δυνατή η αποθ�
 Failure details,Λεπτομέρειες σφάλματος
 Favicon description,"Το favicon είναι ένα μικρό εικονίδιο που αντιπροσωπεύει τη συλλογή σας στις καρτέλες του προγράμματος περιήγησης και στους σελιδοδείκτες. Το προεπιλεγμένο favicon είναι το λογότυπο του Uwazi. Για να χρησιμοποιήσετε το δικό σας:
 
-1. Μεταφορτώστε το εικονίδιό σας στις ""Προσαρμοσμένες μεταφορτώσεις"" αν χρειάζεται.
-2. Κάντε κλικ στο ""Επιλογή εικόνας favicon"" και επιλέξτε αρχείο (μόνο εικόνες από τις Προσαρμοσμένες μεταφορτώσεις).
+1. Μεταφορτώστε το εικονίδιό σας στις «Προσαρμοσμένες μεταφορτώσεις» αν χρειάζεται.
+2. Κάντε κλικ στο «Επιλογή εικόνας favicon» και επιλέξτε αρχείο (μόνο εικόνες από τις Προσαρμοσμένες μεταφορτώσεις).
 3. Ανανεώστε τη σελίδα για να δείτε το favicon σας σε λειτουργία."
 Favicon no images hint,Δεν υπάρχει εικόνα για το favicon
 FEATURED,ΕΠΙΛΕΓΜΕΝΑ
@@ -503,12 +503,12 @@ files,αρχεία
 Files and database usage,Χρήση αρχείων και βάσης δεδομένων
 Fill,Συμπλήρωση
 Filter,Φίλτρο
-Filter unauthorized relationships,"By default, relationships pointing to restricted entities are visible to anonymous users but not linked. When enabled, these relationships are completely hidden, preventing public users from knowing restricted content exists."
+Filter unauthorized relationships,"Από προεπιλογή, οι σχέσεις που οδηγούν σε οντότητες με περιορισμένη πρόσβαση είναι ορατές σε ανώνυμους χρήστες αλλά χωρίς σύνδεσμο. Όταν είναι ενεργοποιημένο, αυτές οι σχέσεις αποκρύπτονται πλήρως, εμποδίζοντας τους δημόσιους χρήστες να γνωρίζουν ότι υπάρχει περιορισμένο περιεχόμενο."
 Filters,Φίλτρα
 Filters AND operator,ΚΑΙ
 Filters configuration,Φίλτρα
 Filters configuration description,"Από προεπιλογή, οι χρήστες μπορούν να φιλτράρουν τις οντότητες στη βιβλιοθήκη με βάση τους τύπους που έχετε ορίσει. Ωστόσο, μπορείτε να διαμορφώσετε τον τρόπο εμφάνισης αυτών των τύπων οντοτήτων:"
-Filters configuration example,"επιλέξτε ""Προσθήκη ομάδας"" παρακάτω για να ομαδοποιήσετε φίλτρα κάτω από μια ετικέτα π.χ. (""Έγγραφα"" ή ""Άτομα"")"
+Filters configuration example,"επιλέξτε «Προσθήκη ομάδας» παρακάτω για να ομαδοποιήσετε φίλτρα κάτω από μια ετικέτα π.χ. («Έγγραφα» ή «Άτομα»)"
 Filters OR operator,Ή
 Filters saved,Τα φίλτρα αποθηκεύτηκαν
 Find,Εύρεση
@@ -826,22 +826,21 @@ No results found,Δεν βρέθηκαν αποτελέσματα
 No supporting files yet. Add a file to get started.,Δεν υπάρχουν ακόμη υποστηρικτικά αρχεία. Προσθέστε ένα αρχείο για να ξεκινήσετε.
 No table of contents,Δεν υπάρχει πίνακας περιεχομένων
 No Table of contents,Δεν υπάρχει πίνακας περιεχομένων
-No table of contents description,"Ο πίνακας περιεχομένων εμφανίζει τη δομή του εγγράφου για εύκολη πλοήγηση. Μπορείτε να ξεκινήσετε επιλέγοντας κείμενο στο έγγραφο και κάνοντας κλικ στο κουμπί ""Προσθήκη στον πίνακα περιεχομένων""."
+No table of contents description,"Ο πίνακας περιεχομένων εμφανίζει τη δομή του εγγράφου για εύκολη πλοήγηση. Μπορείτε να ξεκινήσετε επιλέγοντας κείμενο στο έγγραφο και κάνοντας κλικ στο κουμπί «Προσθήκη στον πίνακα περιεχομένων»."
 No templates available to add.,Δεν υπάρχουν διαθέσιμα πρότυπα για προσθήκη.
 No text match,Δεν υπάρχει αντιστοιχία κειμένου
 No text match description,Μπορείτε να πληκτρολογήσετε κάτι διαφορετικό στο πλαίσιο αναζήτησης για να λάβετε αποτελέσματα.
 No timelinks added,Δεν έχουν προστεθεί χρονικοί σύνδεσμοι
 No translation in,Δεν υπάρχει μετάφραση σε
 No type,Κανένας τύπος
-No uploaded images fit the requirements,No uploaded images match these size requirements. Upload a new image or use an editor to resize an existing file.
+No uploaded images fit the requirements,Καμία από τις μεταφορτωμένες εικόνες δεν πληροί αυτές τις απαιτήσεις μεγέθους. Μεταφορτώστε μια νέα εικόνα ή χρησιμοποιήστε ένα πρόγραμμα επεξεργασίας για να αλλάξετε το μέγεθος ενός υπάρχοντος αρχείου.
 No user or group found,Δεν βρέθηκε κανένας χρήστης ή ομάδα
 No valid target template available,Δεν υπάρχει διαθέσιμο έγκυρο πρότυπο στόχου
 No value,Χωρίς τιμή
 No Value,Χωρίς τιμή
 No visualization data available.,Δεν υπάρχουν διαθέσιμα δεδομένα απεικόνισης.
 "No, cancel","Όχι, ακύρωση"
-no-toc-description,"You can start by selecting text in the document and clicking the ""Add to
-              ToC"" button."
+no-toc-description,Μπορείτε να ξεκινήσετε επιλέγοντας κείμενο στο έγγραφο και κάνοντας κλικ στο κουμπί «Προσθήκη στον πίνακα περιεχομένων».
 Non processed,Μη επεξεργασμένο
 Non-labeled,Χωρίς ετικέτα
 Non-latin characters support,Υποστήριξη μη λατινικών χαρακτήρων
@@ -1096,7 +1095,7 @@ Scanning rows before import.,Σάρωση σειρών πριν από την ε
 Schedule,Πρόγραμμα
 Schedules run in UTC (Coordinated Universal Time).,Τα προγράμματα ακολουθούν το UTC (Συντονισμένη Παγκόσμια Ώρα).
 Search,Αναζήτηση
-"Search  •  AND, OR, NOT, ""exact"", wild*","Αναζήτηση  •  AND, OR, NOT, «ακριβής», μπαλαντέρ*"
+"Search  •  AND, OR, NOT, ""exact"", wild*","Αναζήτηση  •  AND, OR, NOT, ""ακριβής"", μπαλαντέρ*"
 Search entities...,Αναζήτηση οντοτήτων...
 Search entities…,Αναζήτηση οντοτήτων…
 Search item,Αναζήτηση στοιχείου
@@ -1186,8 +1185,8 @@ Simple mode,Απλή λειτουργία
 Single relationships must have a hub,Οι μεμονωμένες σχέσεις πρέπει να έχουν έναν κόμβο
 Site logo description,"Το λογότυπο εμφανίζεται στη γραμμή επάνω δίπλα στο όνομα της συλλογής σας (περίπου 200×32 εικονοστοιχεία).
 
-1. Μεταφορτώστε εικόνες στις ""Προσαρμοσμένες μεταφορτώσεις"" αν χρειάζεται.
-2. Κάντε κλικ στο ""Επιλογή εικόνας λογότυπου ιστότοπου"" και επιλέξτε αρχείο· εμφανίζονται μόνο εικόνες από τις Προσαρμοσμένες μεταφορτώσεις."
+1. Μεταφορτώστε εικόνες στις «Προσαρμοσμένες μεταφορτώσεις» αν χρειάζεται.
+2. Κάντε κλικ στο «Επιλογή εικόνας λογότυπου ιστότοπου» και επιλέξτε αρχείο· εμφανίζονται μόνο εικόνες από τις Προσαρμοσμένες μεταφορτώσεις."
 Site logo no images hint,"Δεν υπάρχουν ακόμα αρχεία εικόνας στις Προσαρμοσμένες μεταφορτώσεις. Προσθέστε πρώτα εικόνες PNG, SVG ή JPEG εκεί."
 Size,Μέγεθος
 Skip to main content,Μετάβαση στο κύριο περιεχόμενο
