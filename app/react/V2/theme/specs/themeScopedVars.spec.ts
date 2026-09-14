@@ -1,4 +1,4 @@
-import { EMPHASIS_SOLID_BG, EMPHASIS_SOLID_FG } from '#V2/theme/roleTokens.js';
+import { EMPHASIS_LABEL, EMPHASIS_SOLID_BG, EMPHASIS_SOLID_FG } from '#V2/theme/roleTokens.js';
 import { getScopedThemeVars } from '#V2/theme/themeScopedVars.js';
 import { appliedTheme } from '#V2/theme/themes.js';
 import type { ResolvedThemeVars } from '#V2/theme/themes.js';
@@ -61,6 +61,7 @@ describe('getScopedThemeVars merge contract', () => {
     const scoped = getScopedThemeVars('default', resolved);
     expect(scoped[EMPHASIS_SOLID_BG].startsWith('#')).toBe(true);
     expect(scoped[EMPHASIS_SOLID_FG].startsWith('#')).toBe(true);
+    expect(scoped[EMPHASIS_LABEL]).toContain('color-mix');
   });
 
   it('does not pin Legacy dark button surfaces to light #FFFFFF', () => {

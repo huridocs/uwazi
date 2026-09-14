@@ -485,6 +485,14 @@
   background-color: var(--color-theme-accent-emphasis-tint);
 }
 
+@utility bg-seal-tint-40 {
+  background-color: color-mix(in srgb, var(--color-theme-accent-emphasis-tint) 40%, transparent);
+}
+
+@utility text-seal-label {
+  color: var(--color-theme-accent-emphasis-label);
+}
+
 @utility border-ink {
   border-color: var(--color-theme-border-interactive, var(--color-theme-text-primary));
 }

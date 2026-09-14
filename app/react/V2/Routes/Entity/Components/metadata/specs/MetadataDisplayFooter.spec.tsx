@@ -97,6 +97,10 @@ describe('MetadataDisplayFooter', () => {
     expect(screen.getAllByRole('button', { name: 'Edit' })).toHaveLength(2);
     expect(screen.getAllByRole('button', { name: 'Share' })).toHaveLength(2);
     expect(screen.getAllByRole('button', { name: 'Delete' })).toHaveLength(2);
+    screen.getAllByRole('button', { name: 'Delete' }).forEach(button => {
+      expect(button.className).toContain('text-seal-label');
+      expect(button.className).toContain('bg-seal-tint-40');
+    });
     expect(screen.queryByTestId('accept-button')).not.toBeInTheDocument();
   });
 
