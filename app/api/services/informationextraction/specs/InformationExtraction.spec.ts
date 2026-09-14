@@ -1844,7 +1844,9 @@ describe.each(testConfigs)('InformationExtraction $name', ({ usePostgres }) => {
 
       await testingEnvironment.runWithContext(async () => {
         const runSpy = jest.spyOn(ExecutionContext, 'run');
-        await informationExtraction.processResults({
+        // Unwrapped: `informationExtraction` runs each call in its own context, which is the
+        // nesting this case asserts processResults does not do.
+        await new InformationExtraction().processResults({
           // @ts-expect-error - this is a test for a cancel that happens outside of the flow, so we don't care about the task
           task: 'any_task',
           data_url: 'some/url',

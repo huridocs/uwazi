@@ -1,5 +1,5 @@
 import entities from '#api/entities/index.js';
-import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { testingEnvironment, mutatePersistedSettings } from '#api/utils/testingEnvironment.js';
 import { testingTenants } from '#api/utils/testingTenants.js';
 import { EntityWithFilesSchema } from '#shared/types/entityType.js';
 import { EntityDeletedEvent } from '#api/entities/events/EntityDeletedEvent.js';
@@ -14,7 +14,7 @@ import { TemplateUpdatedEvent } from '#api/core/domain/template/events/TemplateU
 import { EntityFacade } from '#api/core/infrastructure/facades/EntitiesFacade.js';
 import { ixTestAccess } from '#api/services/informationextraction/specs/ixTestAccess.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
-import db, { DBFixture, testingDB } from '#api/utils/testing_db.js';
+import db, { DBFixture } from '#api/utils/testing_db.js';
 import { propertyTypes } from '#shared/propertyTypes.js';
 import { FileType } from '#shared/types/fileType.js';
 import { EntityCreatedEvent } from '#api/entities/events/EntityCreatedEvent.js';
@@ -201,9 +201,8 @@ const fixtures: DBFixture = {
   ],
 };
 
-// Settings stay in Mongo whatever the tenant's store.
 const disableFeatures = async () =>
-  testingDB.mongodb?.collection('settings').updateOne({}, { $set: { features: {} } });
+  mutatePersistedSettings(settings => settings.apply({ features: {} }, () => ''));
 
 /** Neither store has a natural order, so reads are compared sorted. */
 const byId = <T extends { _id?: unknown }>(list: T[]) =>
