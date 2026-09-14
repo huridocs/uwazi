@@ -2,7 +2,7 @@
 // eslint-disable-next-line no-restricted-imports
 import * as fs from 'fs';
 
-import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { testingEnvironment, SettingsDSWithContext } from '#api/utils/testingEnvironment.js';
 import { testingTenants } from '#api/utils/testingTenants.js';
 
 import entities from '#api/entities/index.js';
@@ -13,7 +13,6 @@ import { LocaleTranslationInput } from '#api/core/application/translation/locale
 import { TranslationsService } from '#api/core/application/translation/TranslationsService.js';
 import { Translation } from '#api/core/domain/translation/Translation.js';
 import { ListPagesUseCaseFactory } from '#api/pages.v2/infrastructure/factories/ListPagesUseCaseFactory.js';
-import settings from '#api/settings/index.js';
 import { AddLanguageUseCaseFactory } from '#api/core/infrastructure/factories/AddLanguageUseCaseFactory.js';
 import { SaveLocaleTranslationsUseCaseFactory } from '#api/core/infrastructure/factories/SaveLocaleTranslationsUseCaseFactory.js';
 import { SaveTranslationEntriesUseCaseFactory } from '#api/core/infrastructure/factories/SaveTranslationEntriesUseCaseFactory.js';
@@ -113,7 +112,7 @@ describe('translations', () => {
   beforeAll(async () => {
     await testingEnvironment.setUp(fixtures, {
       postgres: true,
-      postgresMirror: ['translationsV2'],
+      postgresMirror: ['translationsV2', 'settings'],
     });
   });
 
@@ -137,6 +136,12 @@ describe('translations', () => {
     beforeEach(async () => {
       jest.spyOn(setupSockets, 'emitToTenant').mockImplementation();
       await testingEnvironment.setFixtures(fixtures);
+      if (postgresCore) {
+        testingTenants.changeCurrentTenant({
+          ...testingTenants.current(),
+          featureFlags: { postgresCore: true },
+        });
+      }
     });
 
     describe('get()', () => {
@@ -620,7 +625,7 @@ describe('translations', () => {
 
           await addLanguage({ key: 'fr', label: 'french' });
 
-          const settingsLanguages = (await settings.get()).languages?.map(l => l.key);
+          const settingsLanguages = await SettingsDSWithContext.default().getLanguageKeys();
           expect(settingsLanguages).toEqual(['es', 'en', 'zh', 'fr']);
 
           const allTranslations = await getLegacyTranslations();
@@ -643,7 +648,9 @@ describe('translations', () => {
 
     describe('removeLanguage', () => {
       it('should remove translation for the language passed', async () => {
-        await settings.deleteLanguage('es');
+        const settings = await SettingsDSWithContext.default().get();
+        settings.deleteLanguage('es');
+        await SettingsDSWithContext.default().update(settings);
         await withTranslationWrites(async ({ translationsDS }) =>
           translationsDS.deleteByLanguage('es')
         );

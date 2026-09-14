@@ -133,9 +133,16 @@ const ExtractorModal = ({
   const [step, setStep] = useState(1);
   const [name, setName] = useState(extractor?.name || '');
   const [values, setValues] = useState<string[]>(initialValues);
-  const [source, setSource] = useState<string>('0');
+  const [source, setSource] = useState<string>(extractor?.source.property || '0');
   const [options, setOptions] = useState<any[]>([]);
   const [hasNameError, setNameError] = useState(false);
+
+  const availableSources = getAvailableSources(templates, values, extractor);
+
+  // The selected property can stop being an available source — picking it as the target property
+  // removes it from the list. Deriving the selection instead of holding it in state alone keeps
+  // what the radios show and what `handleSubmit` sends the same value in that case.
+  const selectedSource = availableSources.some(option => option.value === source) ? source : '0';
 
   const handleClose = () => {
     setName('');
@@ -153,7 +160,7 @@ const ExtractorModal = ({
       return;
     }
 
-    const extractorSource = source === '0' ? { pdf: true } : { property: source };
+    const extractorSource = selectedSource === '0' ? { pdf: true } : { property: selectedSource };
 
     const result: null | ClientIXExtractorType = values.length
       ? ({
@@ -241,7 +248,10 @@ const ExtractorModal = ({
             <div className="flex flex-wrap p-3">
               <RadioSelect
                 name="pdf"
-                options={getAvailableSources(templates, values, extractor)}
+                options={availableSources.map(({ defaultChecked, ...option }) => ({
+                  ...option,
+                  checked: option.value === selectedSource,
+                }))}
                 onChange={selected => {
                   setSource(selected.currentTarget.value);
                 }}

@@ -5,7 +5,7 @@ import { ObjectId } from 'mongodb';
 import { setUpApp } from '#api/utils/testingRoutes.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { suggestionsRoutes } from '#api/suggestions/routes.js';
-import { IXSuggestionsModel } from '#api/suggestions/IXSuggestionsModel.js';
+import { ixTestAccess } from '#api/services/informationextraction/specs/ixTestAccess.js';
 import { factory, fixtures, suggestionSharedId6Title } from '#api/suggestions/specs/fixtures.js';
 
 // Mock IX external service to avoid Redis/task manager initialization via routes import
@@ -136,10 +136,10 @@ describe('POST /api/suggestions/training-set', () => {
 
   it('should support bulk marking across multiple suggestions', async () => {
     const extractorId = factory.id('title_extractor').toString();
-    const sampled = await IXSuggestionsModel.db
-      .find({ extractorId: factory.id('title_extractor') })
-      .limit(2);
-    const ids = sampled.map((doc: any) => doc._id!.toString());
+    const ids = await ixTestAccess.readSuggestionIds(
+      { extractorId: factory.id('title_extractor') },
+      2
+    );
 
     const response = await request(app)
       .post('/api/suggestions/training-set')

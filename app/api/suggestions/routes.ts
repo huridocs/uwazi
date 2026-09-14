@@ -15,7 +15,7 @@ import {
 } from '#shared/types/suggestionType.js';
 import { handleError } from '#api/utils/index.js';
 import { serviceMiddleware } from './serviceMiddleware.js';
-import { GetSuggestionsForTableQuery } from './getSuggestionsForTableQuery/getSuggestionsForTableQuery.js';
+import { GetSuggestionsForTableQueryFactory } from './infrastructure/GetSuggestionsForTableQueryFactory.js';
 import { ProcessSuggestionsController } from './adapters/ProcessSuggestionsController.js';
 import { TrainingSetController } from './adapters/TrainingSetController.js';
 
@@ -75,7 +75,7 @@ export const suggestionsRoutes = (app: Application) => {
       },
       res: Response
     ) => {
-      const query = new GetSuggestionsForTableQuery();
+      const query = GetSuggestionsForTableQueryFactory.default();
 
       const result = await query.execute({
         extractorId: req.query.filter.extractorId.toString(),
@@ -125,7 +125,7 @@ export const suggestionsRoutes = (app: Application) => {
     needsAuthorization(['admin', 'editor']),
     extractorIdRequestValidation('body'),
     async (req, res, _next) => {
-      const status = await IX.stopModel(ObjectId.createFromHexString(req.body.extractorId));
+      const status = await IX.cancelModel(ObjectId.createFromHexString(req.body.extractorId));
       res.json(status);
     }
   );
@@ -244,7 +244,10 @@ export const suggestionsRoutes = (app: Application) => {
         .then(() => req.emitToSessionSocket('ACCEPT_SUGGESTION_SUCCESS'))
         .catch(e => {
           const error = handleError(e);
-          req.emitToSessionSocket('ACCEPT_SUGGESTION_ERROR', error.message);
+          // `handleError` deletes `message` for generic errors and puts the text in `error`
+          // (see simplifyError), so reading only `message` emitted `undefined` for every
+          // acceptance failure that was not a mongoose cast error.
+          req.emitToSessionSocket('ACCEPT_SUGGESTION_ERROR', error.message || error.error);
         });
     }
   );

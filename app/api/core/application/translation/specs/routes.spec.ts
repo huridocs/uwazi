@@ -5,11 +5,11 @@ import waitForExpect from 'wait-for-expect';
 import * as csvApi from '#api/csv/csvLoader.js';
 import { TranslationDBO } from '#api/core/infrastructure/mongodb/translation/schemas/TranslationDBO.js';
 import { translationsRoutes as i18nRoutes } from '#api/core/infrastructure/express/translation/routes.js';
-import { MongoSettingsDataSource } from '#api/core/infrastructure/mongodb/MongoSettingsDataSource.js';
+import { Settings } from '#api/core/domain/settings/Settings.js';
 import '#api/pages.v2/infrastructure/listeners/AddLanguagePagesListener.js';
 import '#api/pages.v2/infrastructure/listeners/DeleteLanguagePagesListener.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
-import { testingEnvironment } from '#api/utils/testingEnvironment.js';
+import { testingEnvironment, SettingsDSWithContext } from '#api/utils/testingEnvironment.js';
 import { testingTenants } from '#api/utils/testingTenants.js';
 import type { DBFixture } from '#api/utils/testing_db.js';
 import { TestEmitSources, iosocket, setUpApp } from '#api/utils/testingRoutes.js';
@@ -82,6 +82,7 @@ describe('i18n translations routes', () => {
     jest.spyOn(search, 'deleteLanguage').mockResolvedValue(undefined as any);
     await testingEnvironment.setUp(createFixtures(), {
       postgres: true,
+      postgresMirror: ['translationsV2', 'settings'],
     });
   });
 
@@ -280,16 +281,6 @@ describe('i18n translations routes', () => {
           let response: request.Response;
           let mockCalls: any[];
 
-          const newSettings = expect.objectContaining({
-            languages: [
-              expect.objectContaining({ key: 'en', label: 'English', default: true }),
-              expect.objectContaining({ key: 'es', label: 'Spanish', default: false }),
-              expect.objectContaining({ key: 'zh', label: 'Chinese' }),
-              expect.objectContaining({ key: 'ja', label: 'Japanese' }),
-            ],
-            mapStartingPoint: [{ lon: 6, lat: 46 }],
-          });
-
           beforeAll(async () => {
             await testingEnvironment.setFixtures(createFixtures());
             applyBackendTenant();
@@ -302,10 +293,14 @@ describe('i18n translations routes', () => {
                 { key: 'zh', label: 'Chinese' },
                 { key: 'ja', label: 'Japanese' },
               ]);
-            mockCalls = iosocket.emit.mock.calls;
             await waitForExpect(() => {
-              expect(mockCalls.length).toBe(4);
+              expect(
+                iosocket.emit.mock.calls.some(
+                  ([eventName]) => eventName === 'translationsInstallDone'
+                )
+              ).toBe(true);
             });
+            mockCalls = iosocket.emit.mock.calls;
           });
 
           it('should return a 204', async () => {
@@ -364,15 +359,6 @@ describe('i18n translations routes', () => {
             ]);
           });
 
-          it('should emit an updateSettings event', async () => {
-            const eventCandidate = mockCalls.find(([eventName]) => eventName === 'updateSettings');
-            expect(eventCandidate).toMatchObject([
-              'updateSettings',
-              TestEmitSources.currentTenant,
-              newSettings,
-            ]);
-          });
-
           it('should emit a translationsInstallDone event', async () => {
             const eventCandidate = mockCalls.find(
               ([eventName]) => eventName === 'translationsInstallDone'
@@ -395,11 +381,9 @@ describe('i18n translations routes', () => {
             DefaultTranslations.CONTENTS_DIRECTORY = `${I18N_SPECS_DIR}/test_contents/3`;
             iosocket.emit.mockReset();
 
-            errorMock = jest
-              .spyOn(MongoSettingsDataSource.prototype, 'addLanguage')
-              .mockImplementation(() => {
-                throw new Error('error message');
-              });
+            errorMock = jest.spyOn(Settings.prototype, 'addLanguage').mockImplementation(() => {
+              throw new Error('error message');
+            });
 
             response = await request(app)
               .post('/api/translations/languages')
@@ -459,7 +443,6 @@ describe('i18n translations routes', () => {
             languages: [
               {
                 key: 'en',
-                default: false,
               },
               {
                 key: 'es',
@@ -467,16 +450,7 @@ describe('i18n translations routes', () => {
               },
             ],
           });
-          expect(iosocket.emit).toHaveBeenCalledWith(
-            'updateSettings',
-            TestEmitSources.currentTenant,
-            expect.objectContaining({
-              languages: [
-                expect.objectContaining({ default: false, key: 'en', label: 'English' }),
-                expect.objectContaining({ default: true, key: 'es', label: 'Spanish' }),
-              ],
-            })
-          );
+          expect(response.body.languages[0]).not.toHaveProperty('default');
         });
       });
 
@@ -566,28 +540,6 @@ describe('i18n translations routes', () => {
             expect(response).toHaveStatus(204);
           });
 
-          it('should emit an updateSettings event', async () => {
-            await waitForExpect(() => {
-              const eventCandidate = iosocket.emit.mock.calls.find(
-                ([eventName]) => eventName === 'updateSettings'
-              );
-              expect(eventCandidate).toMatchObject([
-                'updateSettings',
-                TestEmitSources.currentTenant,
-                {
-                  languages: [
-                    {
-                      default: true,
-                      key: 'en',
-                      label: 'English',
-                    },
-                  ],
-                  mapStartingPoint: [{ lat: 46, lon: 6 }],
-                },
-              ]);
-            });
-          });
-
           it('should emit a translationsDelete event', async () => {
             await waitForExpect(() => {
               const eventCandidate = iosocket.emit.mock.calls.find(
@@ -625,7 +577,7 @@ describe('i18n translations routes', () => {
             iosocket.emit.mockReset();
 
             settingsDeleteLanguageMock = jest
-              .spyOn(MongoSettingsDataSource.prototype, 'deleteLanguage')
+              .spyOn(Settings.prototype, 'deleteLanguage')
               .mockImplementation(() => {
                 throw new Error('error message');
               });
@@ -645,9 +597,9 @@ describe('i18n translations routes', () => {
         describe('when the language is still being installed', () => {
           it('should return 409 and not start the delete operation', async () => {
             applyBackendTenant();
-            await testingEnvironment.db
-              .getCollection('settings')!
-              .updateOne({ 'languages.key': 'es' }, { $set: { 'languages.$.installing': true } });
+            const settings = await SettingsDSWithContext.default().get();
+            settings.setLanguageInstalling('es', true);
+            await SettingsDSWithContext.default().update(settings);
 
             const response = await request(app).delete('/api/translations/languages?key=es').send();
 

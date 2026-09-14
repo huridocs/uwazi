@@ -1,9 +1,10 @@
 import type { Request, Response, NextFunction } from 'express';
-import settings from '#api/settings/settings.js';
+import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
 
 const serviceMiddleware = async (_req: Request, res: Response, next: NextFunction) => {
-  const { features } = await settings.get();
-  if (features?.metadataExtraction?.url) {
+  const metadataExtraction =
+    await SettingsDataSourceFactory.default().readFeature('metadataExtraction');
+  if (metadataExtraction?.url) {
     next();
     return;
   }

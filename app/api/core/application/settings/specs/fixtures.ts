@@ -1,0 +1,206 @@
+import { templateUtils } from '#api/core/v1_layer/templates/index.js';
+import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
+import db, { DBFixture } from '#api/utils/testing_db.js';
+import { propertyTypes } from '#shared/propertyTypes.js';
+
+const factory = getFixturesFactory();
+
+const fixtures: DBFixture = {
+  settings: [
+    {
+      _id: db.id(),
+      site_name: 'Uwazi',
+      allowedPublicTemplates: ['id1', 'id2'],
+      languages: [
+        { key: 'es', label: 'Spanish', default: true },
+        { key: 'en', label: 'English' },
+      ],
+      features: {
+        'metadata-extraction': true,
+        metadataExtraction: {
+          url: 'http:someurl',
+        },
+        segmentation: {
+          url: 'http://otherurl',
+        },
+      },
+      mailerConfig: 'smtp://user:password@smtp.example.com',
+      contactEmail: 'admin@uwazi.com',
+      senderEmail: 'noreply@uwazi.com',
+      publicFormDestination: 'http://example.com/submit',
+      mapApiKey: 'testMapApiKey123',
+      site_logo: 'http://localhost:3000/assets/test-logo.png',
+    },
+  ],
+  templates: [
+    factory.template('template1', [
+      {
+        _id: db.id(),
+        type: propertyTypes.numeric,
+        label: 'براي',
+        name: templateUtils.safeName('براي'),
+      },
+    ]),
+    factory.template('template2', [
+      {
+        _id: db.id(),
+        type: propertyTypes.text,
+        label: 'país',
+        name: 'pa_s',
+      },
+    ]),
+  ],
+  entities: [
+    {
+      template: factory.id('template1'),
+      language: 'en',
+      metadata: {
+        [templateUtils.safeName('براي')]: [{ value: 'value' }],
+      },
+    },
+    {
+      template: factory.id('template1'),
+      language: 'es',
+      metadata: {
+        [templateUtils.safeName('براي')]: [{ value: 'value' }],
+      },
+    },
+    {
+      template: factory.id('template2'),
+      language: 'en',
+      metadata: {
+        pa_s: [{ value: 'pais' }],
+      },
+    },
+    {
+      template: factory.id('template2'),
+      language: 'es',
+      metadata: {
+        pa_s: [{ value: 'pais' }],
+      },
+    },
+  ],
+};
+
+const baseSettingsFixture: DBFixture = {
+  settings: [
+    {
+      _id: db.id(),
+      site_name: 'Uwazi',
+      languages: [{ key: 'en', label: 'English', default: true }],
+    },
+  ],
+};
+
+const linkFixtures: DBFixture = {
+  settings: [
+    {
+      ...baseSettingsFixture.settings?.[0],
+      links: [
+        {
+          _id: factory.id('link'),
+          title: 'Link',
+          url: 'http://uwazi.io',
+          sublinks: [],
+          type: 'link',
+        },
+        {
+          _id: factory.id('group'),
+          title: 'Group',
+          type: 'group',
+          sublinks: [
+            {
+              _id: factory.id('sublink1'),
+              title: 'Sublink1',
+              url: 'page/pageid/sublink1',
+              type: 'link',
+              localId: 'sublink1',
+            },
+            {
+              _id: factory.id('sublink2'),
+              title: 'Sublink2',
+              url: 'page/pageid2/sublink2',
+              type: 'link',
+              localId: 'sublink2',
+            },
+          ],
+        },
+      ],
+    },
+  ],
+};
+
+const expectedLinks = [
+  {
+    id: factory.idString('link'),
+    title: 'Link',
+    url: 'http://uwazi.io',
+    sublinks: [],
+    type: 'link',
+  },
+  {
+    id: factory.idString('group'),
+    title: 'Group',
+    type: 'group',
+    sublinks: [
+      {
+        id: factory.idString('sublink1'),
+        title: 'Sublink1',
+        url: 'page/pageid/sublink1',
+        type: 'link',
+        localId: 'sublink1',
+      },
+      {
+        id: factory.idString('sublink2'),
+        title: 'Sublink2',
+        url: 'page/pageid2/sublink2',
+        type: 'link',
+        localId: 'sublink2',
+      },
+    ],
+  },
+];
+
+const newLinks = [
+  {
+    _id: factory.id('newLink'),
+    title: 'newLink',
+    type: 'link' as 'link',
+    url: 'http://uwazi.io',
+    sublinks: [],
+  },
+  {
+    _id: factory.id('newGroup'),
+    title: 'newGroup',
+    type: 'group' as 'group',
+    sublinks: [
+      {
+        title: 'newSubLink1',
+        url: 'page/pageid/newSubLink1',
+        type: 'link' as 'link',
+        localId: 'newSubLink1Id',
+      },
+      {
+        title: 'newSubLink2',
+        url: 'page/pageid2/newSubLink2',
+        type: 'link' as 'link',
+      },
+    ],
+  },
+  {
+    _id: factory.id('newGroup2'),
+    title: 'newGroup with empty sublinks',
+    type: 'group' as 'group',
+    sublinks: [],
+  },
+  {
+    _id: factory.id('newLink2'),
+    title: 'newLink with optional localId',
+    type: 'link' as 'link',
+    url: 'http://uwazi.io',
+    localId: 'newLink2LocalId',
+  },
+];
+
+export default fixtures;
+export { baseSettingsFixture, expectedLinks, factory, linkFixtures, newLinks };

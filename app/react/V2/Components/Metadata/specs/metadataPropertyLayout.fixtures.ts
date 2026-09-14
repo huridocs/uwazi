@@ -46,6 +46,8 @@ const mediaField: MediaMetadataProperty = {
   name: 'video',
   label: 'Video',
   type: 'media',
+  style: 'cover',
+  fullWidth: false,
   values: [{ value: '/a.mp4' }],
 };
 
@@ -55,6 +57,7 @@ const imageField: ImageMetadataProperty = {
   label: 'Photo',
   type: 'image',
   style: 'contain',
+  fullWidth: false,
   values: [{ value: '/a.jpg', alt: 'a' }],
 };
 
@@ -64,6 +67,7 @@ const previewField: PreviewMetadataProperty = {
   label: 'Preview',
   type: 'preview',
   style: 'cover',
+  fullWidth: false,
   values: [{ value: '/p.jpg', alt: 'p' }],
 };
 

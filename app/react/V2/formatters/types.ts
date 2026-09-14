@@ -50,6 +50,8 @@ interface BaseMetadataProperty {
   readonly relationShipTarget?: string;
   readonly denormalizedProperty?: string;
   readonly hideLabel?: boolean;
+  readonly style?: 'contain' | 'cover';
+  readonly fullWidth?: boolean;
 }
 
 interface SimpleMetadataProperty extends BaseMetadataProperty {
@@ -92,6 +94,8 @@ interface GeolocationMetadataProperty extends Omit<BaseMetadataProperty, 'values
 
 interface MediaMetadataProperty extends Omit<BaseMetadataProperty, 'values'> {
   readonly type: 'media';
+  readonly style: 'contain' | 'cover';
+  readonly fullWidth: boolean;
   readonly values: Array<{
     value: string;
     alt?: string;
@@ -104,6 +108,7 @@ interface MediaMetadataProperty extends Omit<BaseMetadataProperty, 'values'> {
 interface ImageMetadataProperty extends Omit<BaseMetadataProperty, 'values'> {
   readonly type: 'image';
   readonly style: 'contain' | 'cover';
+  readonly fullWidth: boolean;
   readonly values: Array<{
     value: string;
     alt?: string;
@@ -113,6 +118,7 @@ interface ImageMetadataProperty extends Omit<BaseMetadataProperty, 'values'> {
 interface PreviewMetadataProperty extends Omit<BaseMetadataProperty, 'values'> {
   readonly type: 'preview';
   readonly style: 'contain' | 'cover';
+  readonly fullWidth: boolean;
   readonly values: Array<{
     value: string;
     alt: string;

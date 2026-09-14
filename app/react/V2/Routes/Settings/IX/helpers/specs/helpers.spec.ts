@@ -245,6 +245,20 @@ describe('helpers', () => {
   });
 
   describe('formatExtractors', () => {
+    it('should keep the structured source, so the edit modal receives the real one', () => {
+      const result = formatExtractors(extractors, templates);
+      expect(result.map(extractor => extractor.source)).toEqual([
+        { pdf: true },
+        { property: 'descripcion' },
+        { property: 'title' },
+      ]);
+      expect(result.map(extractor => extractor.sourceLabel)).toEqual([
+        'PDF',
+        'Descripción',
+        'Title',
+      ]);
+    });
+
     it('should return the extractor formatted for the table', () => {
       const result = formatExtractors(extractors, templates);
       expect(result).toEqual([
@@ -262,7 +276,8 @@ describe('helpers', () => {
           propertyType: 'text',
           propertyLabel: 'Title',
           rowId: 'exractor1',
-          source: 'PDF',
+          source: { pdf: true },
+          sourceLabel: 'PDF',
         },
         {
           _id: 'exractor2',
@@ -273,7 +288,8 @@ describe('helpers', () => {
           propertyType: 'date',
           propertyLabel: 'Fecha',
           rowId: 'exractor2',
-          source: 'Descripción',
+          source: { property: 'descripcion' },
+          sourceLabel: 'Descripción',
         },
         {
           _id: 'exractor3',
@@ -289,7 +305,8 @@ describe('helpers', () => {
           propertyType: 'date',
           propertyLabel: 'Fecha',
           rowId: 'exractor3',
-          source: 'Title',
+          source: { property: 'title' },
+          sourceLabel: 'Title',
         },
       ]);
     });

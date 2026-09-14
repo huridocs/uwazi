@@ -71,12 +71,16 @@ class CloneLanguageEntitiesJob extends UwaziJobHandler<Params> {
             });
           }
         }
-        await this.deps.settingsDS.setLanguageInstalling(to, false);
+        const settings = await this.deps.settingsDS.get();
+        settings.setLanguageInstalling(to, false);
+        await this.deps.settingsDS.update(settings);
       }
     } catch (e) {
       if (isLastAttempt) {
         for (const { to } of params.pairs) {
-          await this.deps.settingsDS.setLanguageInstalling(to, false);
+          const settings = await this.deps.settingsDS.get();
+          settings.setLanguageInstalling(to, false);
+          await this.deps.settingsDS.update(settings);
         }
       }
       throw e;
