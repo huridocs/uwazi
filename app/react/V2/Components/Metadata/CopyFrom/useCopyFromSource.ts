@@ -55,22 +55,28 @@ const useCopyFromSource = ({
     [entities, language]
   );
 
-  const stageFields = useCallback(() => {
-    if (!source || matchingProperties.length === 0) return;
-    const nextMetadata = applyCopyFromMetadata({
-      currentMetadata: form.getValues('metadata') ?? {},
-      sourceMetadata: source.metadata,
-      matchingProperties,
-    });
-    matchingProperties.forEach(property => {
-      form.setValue(`metadata.${property.name}`, nextMetadata[property.name], {
-        shouldDirty: true,
-        shouldTouch: true,
+  const stageFields = useCallback(
+    (selectedNames: string[]) => {
+      const selectedProperties = matchingProperties.filter(property =>
+        selectedNames.includes(property.name)
+      );
+      if (!source || selectedProperties.length === 0) return;
+      const nextMetadata = applyCopyFromMetadata({
+        currentMetadata: form.getValues('metadata') ?? {},
+        sourceMetadata: source.metadata,
+        matchingProperties: selectedProperties,
       });
-    });
-    setIsDirty(true);
-    onClose();
-  }, [form, matchingProperties, onClose, setIsDirty, source]);
+      selectedProperties.forEach(property => {
+        form.setValue(`metadata.${property.name}`, nextMetadata[property.name], {
+          shouldDirty: true,
+          shouldTouch: true,
+        });
+      });
+      setIsDirty(true);
+      onClose();
+    },
+    [form, matchingProperties, onClose, setIsDirty, source]
+  );
 
   return {
     source,

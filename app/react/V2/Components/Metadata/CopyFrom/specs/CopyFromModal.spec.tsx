@@ -21,12 +21,6 @@ import type { EntitiesService, SearchService } from '#V2/services/index.js';
 import { CopyFromModal } from '../CopyFromModal.js';
 import type { ApiResponse } from '#V2/api/ApiResponse.js';
 
-jest.mock('#V2/Components/Metadata/MetadataRecord.js', () => ({
-  MetadataRecord: ({ entity }: { entity: Entity }) => (
-    <div data-testid="source-metadata-preview">{entity.title}</div>
-  ),
-}));
-
 const countryTemplate: Template = {
   _id: 'country',
   name: 'Country',
@@ -239,21 +233,36 @@ describe('CopyFromModal', () => {
     });
   });
 
-  it('previews matching fields and stages them into the form', async () => {
+  it('previews matching fields as selectable diffs and stages only checked fields', async () => {
     const onClose = jest.fn();
     renderModal(onClose);
     fireEvent.click(await screen.findByRole('button', { name: 'Colombia' }));
     expect(await screen.findByText(/copy from this entity/i)).toBeInTheDocument();
     expect(screen.getByText(withText('3 fields match'))).toBeInTheDocument();
-    expect(screen.getByText('Region')).toBeInTheDocument();
-    expect(screen.getByText('Ratified ACHR')).toBeInTheDocument();
-    expect(screen.getByTestId('source-metadata-preview')).toHaveTextContent('Colombia');
-    fireEvent.click(screen.getByRole('button', { name: 'Stage 3 fields' }));
+    expect(screen.queryByText('Metadata')).not.toBeInTheDocument();
+    expect(screen.queryByText('Relationships')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('source-metadata-preview')).not.toBeInTheDocument();
+
+    const region = screen.getByRole('checkbox', { name: /Region/i });
+    const ratified = screen.getByRole('checkbox', { name: /Ratified ACHR/i });
+    const accepts = screen.getByRole('checkbox', { name: /Accepts Court jurisdiction/i });
+    expect(region).toBeChecked();
+    expect(ratified).toBeChecked();
+    expect(accepts).toBeChecked();
+    expect(screen.getByText('North America')).toHaveClass('line-through');
+    expect(screen.getByText('South America')).toBeInTheDocument();
+    expect(screen.getByText('1981')).toHaveClass('line-through');
+    expect(screen.getByText('1973')).toBeInTheDocument();
+    expect(screen.getByText('Already the same value.')).toBeInTheDocument();
+
+    fireEvent.click(ratified);
+    expect(ratified).not.toBeChecked();
+    fireEvent.click(screen.getByRole('button', { name: 'Stage 2 fields' }));
     await waitFor(() => {
       expect(onClose).toHaveBeenCalled();
     });
     expect(screen.getByTestId('form-region')).toHaveTextContent('South America');
-    expect(screen.getByTestId('form-ratified')).toHaveTextContent('1973');
+    expect(screen.getByTestId('form-ratified')).toHaveTextContent('1981');
   });
 
   it('returns to search from pick another', async () => {

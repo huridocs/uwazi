@@ -100,6 +100,7 @@ All of the previously created paragraphs will be deleted and recreated after the
 Allow captcha bypass,Permitir la omisión de captcha
 Allow public embedding without login,Allow public embedding without login
 Already exists,Already exists
+Already the same value.,Already the same value.
 Amount,Amount
 An admin needs to add relationship types before you can create a relationship.,Un administrador necesita añadir tipos de relación para poder crear una relación.
 An error has occured while deleting a language:,An error has occured while deleting a language:

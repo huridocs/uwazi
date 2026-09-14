@@ -1,19 +1,79 @@
 /* eslint-disable react/no-multi-comp */
-import React from 'react';
-import { CheckIcon } from '@heroicons/react/20/solid';
+import React, { useEffect, useState } from 'react';
+import { useWatch } from 'react-hook-form';
+import { ArrowRightIcon } from '@heroicons/react/20/solid';
 import { Translate } from '#app/I18N/index.js';
 import type { Entity } from '#V2/api/entities/types.js';
+import type { MetadataValue } from '#V2/formatters/types.js';
 import { TemplateLabel } from '#V2/Components/Metadata/Components/index.js';
 import { Button } from '#V2/Components/UI/index.js';
-import { MetadataRecord } from '#V2/Components/Metadata/MetadataRecord.js';
+import { copyFromValuesAreEqual, formatCopyFromValue } from './copyFromFieldValue.js';
 import type { CopyFromMatchingProperty } from './copyFromMatchingProperties.js';
 
 type CopyFromSourcePreviewProps = {
   source: Entity;
   matchingProperties: CopyFromMatchingProperty[];
   templateId?: string;
-  onStage: () => void;
+  onStage: (selectedNames: string[]) => void;
   onPickAnother: () => void;
+};
+
+type CopyFromFieldDiffProps = {
+  property: CopyFromMatchingProperty;
+  templateId?: string;
+  currentValue?: MetadataValue[];
+  sourceValue?: MetadataValue[];
+  checked: boolean;
+  onToggle: () => void;
+};
+
+const CopyFromFieldDiff = ({
+  property,
+  templateId,
+  currentValue,
+  sourceValue,
+  checked,
+  onToggle,
+}: CopyFromFieldDiffProps) => {
+  const currentFormatted = formatCopyFromValue(currentValue);
+  const sourceFormatted = formatCopyFromValue(sourceValue);
+  const sameValue = copyFromValuesAreEqual(currentValue, sourceValue);
+
+  return (
+    <li className="rounded-md bg-paper/80 px-3 py-3">
+      <label className="flex min-w-0 items-start gap-3">
+        <input
+          type="checkbox"
+          className="mt-0.5 h-3.5 w-3.5 shrink-0 cursor-pointer rounded accent-ink"
+          aria-label={property.label}
+          checked={checked}
+          onChange={onToggle}
+        />
+        <span className="flex min-w-0 flex-1 items-start justify-between gap-3">
+          <span className="min-w-0 text-sm font-medium text-ink">
+            <Translate context={templateId}>{property.label}</Translate>
+          </span>
+          <span className="flex min-w-0 max-w-[65%] flex-col items-end gap-1">
+            <span className="flex flex-wrap items-center justify-end gap-2 text-sm">
+              {currentFormatted ? (
+                <span className="text-ink-muted line-through">{currentFormatted}</span>
+              ) : null}
+              <ArrowRightIcon
+                className="h-3.5 w-3.5 shrink-0 text-ink-tertiary"
+                aria-hidden="true"
+              />
+              <span className="font-semibold text-ink">{sourceFormatted}</span>
+            </span>
+            {sameValue ? (
+              <span className="text-xs text-ink-muted">
+                <Translate>Already the same value.</Translate>
+              </span>
+            ) : null}
+          </span>
+        </span>
+      </label>
+    </li>
+  );
 };
 
 const CopyFromSourcePreview = ({
@@ -23,51 +83,64 @@ const CopyFromSourcePreview = ({
   onStage,
   onPickAnother,
 }: CopyFromSourcePreviewProps) => {
+  const currentMetadata =
+    (useWatch({ name: 'metadata' }) as Record<string, MetadataValue[]> | undefined) ?? {};
+  const [selectedNames, setSelectedNames] = useState<string[]>([]);
+  const selectedCount = selectedNames.length;
   const matchCount = matchingProperties.length;
 
+  useEffect(() => {
+    setSelectedNames(matchingProperties.map(property => property.name));
+  }, [matchingProperties]);
+
+  const toggleProperty = (name: string) => {
+    setSelectedNames(current =>
+      current.includes(name) ? current.filter(selected => selected !== name) : [...current, name]
+    );
+  };
+
   return (
-    <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
-      <div className="px-5 pt-4">
-        <div className="rounded-lg bg-warm px-4 py-3">
-          <div className="flex items-start justify-between gap-3">
-            <p className="text-micro font-semibold uppercase tracking-[0.08em] text-ink-tertiary">
-              <Translate>Copy from this entity</Translate>
-            </p>
-            <p className="text-xs text-ink-secondary">
-              {matchCount}{' '}
-              <Translate>{matchCount === 1 ? 'field matches' : 'fields match'}</Translate>
-            </p>
-          </div>
-          <ul className="mt-2 space-y-1">
-            {matchingProperties.map(property => (
-              <li key={property.name} className="flex items-center gap-2 text-sm text-ink">
-                <CheckIcon className="h-4 w-4 shrink-0 text-success" aria-hidden="true" />
-                <Translate context={templateId}>{property.label}</Translate>
-              </li>
-            ))}
-          </ul>
-          <div className="mt-3 flex items-center gap-3">
-            <Button variant="primary" disabled={matchCount === 0} onClick={onStage}>
-              <Translate>Stage</Translate> {matchCount}{' '}
-              <Translate>{matchCount === 1 ? 'field' : 'fields'}</Translate>
-            </Button>
-            <button
-              type="button"
-              className="text-xs font-medium text-ink-secondary hover:text-ink"
-              onClick={onPickAnother}
-            >
-              <Translate>Pick another</Translate>
-            </button>
-          </div>
+    <div className="flex min-h-0 flex-1 flex-col overflow-hidden px-5 py-4">
+      <div className="flex min-h-0 flex-1 flex-col rounded-lg bg-warm p-4">
+        <div className="flex shrink-0 items-start justify-between gap-3">
+          <p className="text-micro font-semibold uppercase tracking-[0.08em] text-ink-tertiary">
+            <Translate>Copy from this entity</Translate>
+          </p>
+          <p className="text-xs text-ink-secondary">
+            {matchCount}{' '}
+            <Translate>{matchCount === 1 ? 'field matches' : 'fields match'}</Translate>
+          </p>
         </div>
-      </div>
-      <div className="min-h-0 flex-1 overflow-y-auto px-5 py-4">
-        <div className="mb-3">
-          <span className="inline-flex rounded-md bg-warm px-2 py-1 text-xs font-medium text-ink">
-            <Translate>Metadata</Translate>
-          </span>
+        <ul className="mt-4 min-h-0 flex-1 space-y-3 overflow-y-auto">
+          {matchingProperties.map(property => (
+            <CopyFromFieldDiff
+              key={property.name}
+              property={property}
+              templateId={templateId}
+              currentValue={currentMetadata[property.name]}
+              sourceValue={source.metadata?.[property.name]}
+              checked={selectedNames.includes(property.name)}
+              onToggle={() => toggleProperty(property.name)}
+            />
+          ))}
+        </ul>
+        <div className="mt-4 flex shrink-0 items-center gap-3">
+          <Button
+            variant="primary"
+            disabled={selectedCount === 0}
+            onClick={() => onStage(selectedNames)}
+          >
+            <Translate>Stage</Translate> {selectedCount}{' '}
+            <Translate>{selectedCount === 1 ? 'field' : 'fields'}</Translate>
+          </Button>
+          <button
+            type="button"
+            className="text-xs font-medium text-ink-secondary hover:text-ink"
+            onClick={onPickAnother}
+          >
+            <Translate>Pick another</Translate>
+          </button>
         </div>
-        <MetadataRecord entity={source} showDocumentPreview={false} />
       </div>
     </div>
   );
