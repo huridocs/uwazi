@@ -25,27 +25,28 @@ jest.mock('react-player', () => ({
   canPlay: () => true,
 }));
 
-const resizeObservers: Array<{ callback: ResizeObserverCallback; node?: Element }> = [];
+type ObservedResize = { callback: ResizeObserverCallback; node?: Element };
 
-class ResizeObserverMock {
-  callback: ResizeObserverCallback;
+const resizeObservers: ObservedResize[] = [];
 
-  constructor(callback: ResizeObserverCallback) {
-    this.callback = callback;
-    resizeObservers.push({ callback });
-  }
-
-  observe = (node: Element) => {
-    const entry = resizeObservers.find(observer => observer.callback === this.callback);
-    if (entry) {
+const ResizeObserverMock = function ResizeObserverMock(callback: ResizeObserverCallback) {
+  const entry: ObservedResize = { callback };
+  resizeObservers.push(entry);
+  return {
+    observe: (node: Element) => {
       entry.node = node;
-    }
+    },
+    unobserve: () => {
+      entry.node = undefined;
+    },
+    disconnect: () => {
+      const index = resizeObservers.indexOf(entry);
+      if (index >= 0) {
+        resizeObservers.splice(index, 1);
+      }
+    },
   };
-
-  unobserve = () => undefined;
-
-  disconnect = () => undefined;
-}
+};
 
 const setClientHeight = (node: HTMLElement, height: number) => {
   Object.defineProperty(node, 'clientHeight', { configurable: true, value: height });
