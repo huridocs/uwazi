@@ -6,7 +6,7 @@ import { comparable, extractors, f, suggestions } from './IXSuggestionsContractF
 
 type Sut = () => IXSuggestionsDataSource;
 
-const { accepted, blank, obsolete, pending, spanish, stateless } = suggestions;
+const { accepted, blank, obsolete, pending, pdfFile1, spanish, stateless } = suggestions;
 
 const template = f.idString('template');
 
@@ -110,6 +110,52 @@ const saveCases = (sut: Sut) => {
         status: 'ready',
         useForTraining: true,
       });
+    });
+
+    /**
+     * Blank creation regularly repeats a key another writer already covered: the extractor sweep
+     * and the entity-created listener overlap on new entities (F48). A repeated key must cost only
+     * its own row — the stored suggestion is kept, since it may already be trained or accepted, and
+     * every other blank in the batch still lands.
+     *
+     * Postgres enforces the key with a partial unique index; Mongo has none and stores the
+     * duplicate, which is a known and deliberate divergence.
+     */
+    it('should insert the rest of the batch when a row repeats a stored entity key', async () => {
+      await sut().createMultiple([
+        newSuggestion(accepted.entityId, { suggestedValue: 'repeated' }),
+        newSuggestion('fresh1'),
+        newSuggestion('fresh2'),
+      ]);
+
+      const forEntity = async (entityId: string) =>
+        sut().getOneForEntity({ extractorId: extractors.text, entityId, language: 'en' });
+
+      expect(await forEntity('fresh1')).toBeDefined();
+      expect(await forEntity('fresh2')).toBeDefined();
+      expect(await reload(sut, accepted)).toEqual(comparable([accepted]));
+    });
+
+    it('should insert the rest of the batch when a row repeats a stored file key', async () => {
+      const pdfBlank = (entityId: string, fileId: Suggestion['fileId']) => ({
+        ...newSuggestion(entityId, { propertyName: 'pdf_property' }),
+        extractorId: extractors.pdf,
+        fileId,
+      });
+
+      await sut().createMultiple([
+        pdfBlank(pdfFile1.entityId, pdfFile1.fileId),
+        pdfBlank('entity8', f.id('file 3')),
+      ]);
+
+      expect(
+        await sut().getOneForFile({
+          extractorId: extractors.pdf,
+          entityId: 'entity8',
+          fileId: f.id('file 3'),
+        })
+      ).toBeDefined();
+      expect(await reload(sut, pdfFile1)).toEqual(comparable([pdfFile1]));
     });
   });
 };

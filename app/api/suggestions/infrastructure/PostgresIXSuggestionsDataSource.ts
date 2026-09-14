@@ -30,7 +30,7 @@ import {
 } from './postgresSuggestionQueries.js';
 import {
   failProcessing,
-  insertRows,
+  insertNewKeys,
   markObsolete,
   releaseProcessingAsObsolete,
   updateRows,
@@ -218,12 +218,13 @@ export class PostgresIXSuggestionsDataSource
   }
 
   /**
-   * Insert only. A row repeating a natural key — one suggestion per entity and language for a text
-   * source, one per file for a pdf source — fails on the unique index here, where Mongo stored the
-   * duplicate. That failure is left to surface.
+   * Creates a suggestion for every natural key not already stored — one per entity and language
+   * for a text source, one per file for a pdf source. A key already taken is left as it is, since
+   * its suggestion may already be trained or accepted, and costs no other row in the batch (F48).
+   * Mongo, which has no such index, stores the duplicate instead.
    */
   async createMultiple(suggestions: Partial<IXSuggestionType>[]) {
-    await insertRows(
+    await insertNewKeys(
       this.table,
       suggestions.map(s => PostgresIXSuggestionsMapper.toRow(s))
     );

@@ -55,6 +55,45 @@ const existingIds = async (table: Table, ids: string[]) =>
 const insertRows = async (table: Table, rows: Row[]) =>
   sequentially(inBatches(rows.map(withInsertDefaults)), async batch => table.insert(batch));
 
+/**
+ * The natural keys `018-create-ix-tables.sql` enforces, as `ON CONFLICT` targets: one suggestion
+ * per entity and language for a text source, one per file for a pdf source. Both indexes are
+ * partial, so their predicate is repeated here — Postgres infers a partial index only from a
+ * target that carries it.
+ */
+const TEXT_KEY = '("tenant_id", "extractorId", "entityId", "language") WHERE "fileId" IS NULL';
+const PDF_KEY = '("tenant_id", "extractorId", "fileId") WHERE "fileId" IS NOT NULL';
+
+const naturalKey = (row: Row) =>
+  row.fileId
+    ? `pdf:${row.extractorId}:${row.fileId}`
+    : `text:${row.extractorId}:${row.entityId}:${row.language}`;
+
+const byNaturalKey = (rows: Row[]) => [
+  ...new Map(rows.map(row => [naturalKey(row), row])).values(),
+];
+
+/**
+ * Inserts the rows whose natural key is not taken yet. Blank suggestions are created for keys
+ * another writer may already have covered — the extractor sweep and the entity-created listener
+ * overlap on a new entity — and a repeated key must cost only its own row, not the batch it
+ * travels in (F48). The stored suggestion wins: it may already be trained or accepted.
+ *
+ * Rows repeating a key within one batch are collapsed first, so the statement never asks Postgres
+ * to resolve a conflict against a row it is inserting in the same command.
+ */
+const insertNewKeys = async (table: Table, rows: Row[]) =>
+  sequentially(
+    [
+      { target: TEXT_KEY, group: byNaturalKey(rows.filter(row => !row.fileId)) },
+      { target: PDF_KEY, group: byNaturalKey(rows.filter(row => row.fileId)) },
+    ].filter(({ group }) => group.length),
+    async ({ target, group }) =>
+      sequentially(inBatches(group.map(withInsertDefaults)), async batch =>
+        table.upsert(batch, { targetRaw: target, ignore: true })
+      )
+  );
+
 const updateBatch = async (table: Table, rows: Row[]) => {
   const columns = Object.keys(rows[0]).filter(column => column !== '_id') as SuggestionColumn[];
   if (!columns.length) {
@@ -157,6 +196,7 @@ const releaseProcessingAsObsolete = async (table: Table, extractorId: string) =>
 
 export {
   failProcessing,
+  insertNewKeys,
   insertRows,
   markObsolete,
   releaseProcessingAsObsolete,

@@ -484,7 +484,7 @@ describe.each(testConfigs)('$name', ({ usePostgres }) => {
 
   describe('On EntityCreatedEvent', () => {
     it('should only create suggestions if Extractors extracts from text', async () => {
-      const saveSpy = jest.spyOn(Suggestions, 'saveMultiple');
+      const saveSpy = jest.spyOn(Suggestions, 'createMultiple');
 
       // Emitted inside the context, as a request does: the listener reads templates through it.
       await testingEnvironment.runWithContext(async () =>
@@ -634,8 +634,47 @@ describe.each(testConfigs)('$name', ({ usePostgres }) => {
       saveSpy.mockRestore();
     });
 
+    /**
+     * The listener covers keys the extractor sweep covers too, so it regularly meets a blank that
+     * is already there (F48). It must leave that one alone rather than fail the entity creation.
+     */
+    it('should keep the stored blank when one already covers the entity and language', async () => {
+      const entityCreated = async () =>
+        testingEnvironment.runWithContext(async () =>
+          applicationEventsBus.emit(
+            new EntityCreatedEvent({
+              targetLanguageKey: 'en',
+              entities: [
+                {
+                  title: 'any_title',
+                  sharedId: 'already_covered',
+                  template: fixturesFactory.id('extractor_source_text_target_text_template'),
+                  metadata: { target_text: [{ value: 'target_text_value' }] },
+                  language: 'en',
+                },
+              ],
+            })
+          )
+        );
+
+      const covered = {
+        entityId: 'already_covered',
+        extractorId: fixturesFactory.id('extractor_source_text_target_text'),
+      };
+
+      await entityCreated();
+      const [first] = await ixTestAccess.readSuggestions(covered);
+
+      await expect(entityCreated()).resolves.not.toThrow();
+
+      const stored = await ixTestAccess.readSuggestions(covered);
+      // Postgres skips the repeated key; Mongo, having no such index, stores the duplicate.
+      expect(stored).toHaveLength(usePostgres ? 1 : 2);
+      expect(stored.map(({ _id }) => _id.toString())).toContain(first._id.toString());
+    });
+
     it('should not create Suggestions if there are no Extractors', async () => {
-      const saveSpy = jest.spyOn(Suggestions, 'saveMultiple');
+      const saveSpy = jest.spyOn(Suggestions, 'createMultiple');
       await applicationEventsBus.emit(
         new EntityCreatedEvent({
           targetLanguageKey: 'en',
