@@ -10,6 +10,7 @@ export type TableConfig = {
   tenantId: string;
   transactionManager: PostgresTransactionManager;
   syncWriter?: SyncLogWriter;
+  identityColumn?: string | null;
 };
 
 type ForParams = {
@@ -18,6 +19,19 @@ type ForParams = {
   transactionManager: PostgresTransactionManager;
   knex?: Knex;
   syncWriter?: SyncLogWriter;
+  identityColumn?: string | null;
+};
+
+/**
+ * What the chain has been asked for so far, carried from one immutable link to the next. It exists
+ * so a terminal can tell a projected row read from an aggregate: only the first may take the
+ * identity column.
+ */
+export type QueryState = {
+  /** Columns passed to `select()`, in order. Raw projections do not count. */
+  projected?: string[];
+  /** A join, groupBy or distinct is in play, so the identity column must not be added. */
+  compound?: boolean;
 };
 
 /**
@@ -35,9 +49,12 @@ export class PostgresTable<TRow = Record<string, unknown>> {
 
   private readonly qb: Knex.QueryBuilder;
 
-  protected constructor(cfg: TableConfig, qb: Knex.QueryBuilder) {
+  protected readonly state: QueryState;
+
+  protected constructor(cfg: TableConfig, qb: Knex.QueryBuilder, state: QueryState = {}) {
     this.cfg = cfg;
     this.qb = qb;
+    this.state = state;
   }
 
   static for<T = Record<string, unknown>>(params: ForParams): PostgresTable<T> {
@@ -48,6 +65,7 @@ export class PostgresTable<TRow = Record<string, unknown>> {
       tenantId: params.tenantId,
       transactionManager: params.transactionManager,
       syncWriter: params.syncWriter,
+      identityColumn: params.identityColumn,
     };
     return new PostgresTable<T>(cfg, knexInstance(params.tableName));
   }
@@ -65,11 +83,11 @@ export class PostgresTable<TRow = Record<string, unknown>> {
   }
 
   query<T = TRow>(): PostgresTable<T> {
-    return this.chain(this.cfg.knex(this.cfg.tableName)) as any;
+    return this.chain(this.cfg.knex(this.cfg.tableName), {}) as any;
   }
 
-  protected chain(qb: Knex.QueryBuilder): this {
-    return new (this.constructor as any)(this.cfg, qb) as this;
+  protected chain(qb: Knex.QueryBuilder, state: QueryState = this.state): this {
+    return new (this.constructor as any)(this.cfg, qb, state) as this;
   }
 
   where(condition: Record<string, unknown>): PostgresTable<TRow> {
@@ -181,23 +199,32 @@ export class PostgresTable<TRow = Record<string, unknown>> {
   }
 
   select(columns: string[]): PostgresTable<TRow> {
-    return this.chain(this.qb.clone().select(columns));
+    return this.chain(this.qb.clone().select(columns), {
+      ...this.state,
+      projected: [...(this.state.projected ?? []), ...columns],
+    });
   }
 
   join(tableName: string, leftColumn: string, rightColumn: string): PostgresTable<TRow> {
-    return this.chain(this.qb.clone().join(tableName, leftColumn, '=', rightColumn));
+    return this.chain(this.qb.clone().join(tableName, leftColumn, '=', rightColumn), {
+      ...this.state,
+      compound: true,
+    });
   }
 
   leftJoin(tableName: string, leftColumn: string, rightColumn: string): PostgresTable<TRow> {
-    return this.chain(this.qb.clone().leftJoin(tableName, leftColumn, '=', rightColumn));
+    return this.chain(this.qb.clone().leftJoin(tableName, leftColumn, '=', rightColumn), {
+      ...this.state,
+      compound: true,
+    });
   }
 
   groupBy(columns: string[]): PostgresTable<TRow> {
-    return this.chain(this.qb.clone().groupBy(columns));
+    return this.chain(this.qb.clone().groupBy(columns), { ...this.state, compound: true });
   }
 
   distinct(columns: string[]): PostgresTable<TRow> {
-    return this.chain(this.qb.clone().distinct(columns));
+    return this.chain(this.qb.clone().distinct(columns), { ...this.state, compound: true });
   }
 
   returning(columns: string[]): PostgresTable<TRow> {
@@ -251,7 +278,7 @@ export class PostgresTable<TRow = Record<string, unknown>> {
     const handle = await this.cfg.transactionManager.beginTransaction(permissionContext);
     let completed = false;
     try {
-      const readable = this.qb.clone().transacting(handle.trx).stream();
+      const readable = this.withIdentity(this.qb.clone()).transacting(handle.trx).stream();
       for await (const row of readable) {
         yield this.cleanRow(row) as TRow;
       }
@@ -268,13 +295,36 @@ export class PostgresTable<TRow = Record<string, unknown>> {
     }
   }
 
+  /**
+   * Identity is not projectable: a caller reading rows still has to know which rows it read, and
+   * Mongo returns `_id` on any inclusion projection. A projected read therefore takes the table's
+   * identity column on top of what it asked for.
+   *
+   * Three queries cannot: one that joins (a bare column is ambiguous), one that groups or takes
+   * distinct rows (the extra column changes the result set), and one over a table that has no
+   * identity column, such as `page_locales`. Those are left exactly as the caller built them.
+   */
+  private withIdentity(qb: Knex.QueryBuilder): Knex.QueryBuilder {
+    const identity = this.cfg.identityColumn === undefined ? '_id' : this.cfg.identityColumn;
+    const projected = this.state.projected ?? [];
+
+    if (!identity || this.state.compound || !projected.length || projected.includes(identity)) {
+      return qb;
+    }
+
+    return qb.select(identity);
+  }
+
   async first(): Promise<TRow | undefined> {
-    const row = await this.run(qb => this.applyPolicy(qb, 'read').first());
+    const row = await this.run(qb => this.applyPolicy(this.withIdentity(qb), 'read').first());
     return row ? (this.cleanRow(row) as TRow) : undefined;
   }
 
   async all(): Promise<TRow[]> {
-    const rows = (await this.run(qb => this.applyPolicy(qb, 'read'))) as Record<string, unknown>[];
+    const rows = (await this.run(qb => this.applyPolicy(this.withIdentity(qb), 'read'))) as Record<
+      string,
+      unknown
+    >[];
     return rows.map(r => this.cleanRow(r)) as TRow[];
   }
 

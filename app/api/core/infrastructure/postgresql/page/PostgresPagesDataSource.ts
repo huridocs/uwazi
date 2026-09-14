@@ -28,6 +28,7 @@ export class PostgresPagesDataSource
       tableName: LOCALES_TABLE,
       tenantId: deps.tenantId,
       transactionManager: deps.pgTransactionManager,
+      identityColumn: null,
     });
   }
 

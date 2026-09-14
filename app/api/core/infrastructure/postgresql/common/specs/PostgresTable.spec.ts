@@ -923,6 +923,56 @@ describe('PostgresTable', () => {
     });
   });
 
+  describe('identity column', () => {
+    it('should add it to a projected read, so the caller knows which rows it read', async () => {
+      const table = createTable();
+      await table.insert({ _id: 'id-1', name: 'projected', values: jsonVal([]) });
+
+      const [row] = await table.query<TestRow>().where({ _id: 'id-1' }).select(['name']).all();
+      const first = await table.query<TestRow>().where({ _id: 'id-1' }).select(['name']).first();
+
+      expect(row).toEqual({ _id: 'id-1', name: 'projected' });
+      expect(first).toEqual({ _id: 'id-1', name: 'projected' });
+    });
+
+    it('should not add it twice when the caller already asked for it', async () => {
+      const table = createTable();
+      await table.insert({ _id: 'id-2', name: 'explicit', values: jsonVal([]) });
+
+      const [row] = await table
+        .query<TestRow>()
+        .where({ _id: 'id-2' })
+        .select(['_id', 'name'])
+        .all();
+
+      expect(row).toEqual({ _id: 'id-2', name: 'explicit' });
+    });
+
+    it('should leave an unprojected read alone', async () => {
+      const table = createTable();
+      await table.insert({ _id: 'id-3', name: 'whole row', values: jsonVal([]) });
+
+      const row = await table.where({ _id: 'id-3' }).first();
+
+      expect(row).toMatchObject({ _id: 'id-3', name: 'whole row' });
+    });
+
+    /** A table keyed by something else declares it, and its projections stay untouched. */
+    it('should add nothing to a table that has none', async () => {
+      const locales = PostgresTable.for<{ page_id: string; language: string; title: string }>({
+        tableName: 'page_locales',
+        tenantId: DEFAULT_TENANT,
+        transactionManager: managerFor(DEFAULT_TENANT),
+        identityColumn: null,
+      });
+      await locales.insert({ page_id: 'p-1', language: 'en', title: 'Home' });
+
+      const [row] = await locales.where({ page_id: 'p-1' }).select(['title']).all();
+
+      expect(row).toEqual({ title: 'Home' });
+    });
+  });
+
   describe('distinct', () => {
     it('should return distinct values for the current tenant', async () => {
       const table = createTable();

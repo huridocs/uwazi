@@ -85,6 +85,27 @@ describe('createBlankStateSuggestionsBatch()', () => {
       );
     });
 
+    /**
+     * `entityLanguageId` is the row accept loads to write the entity. A projected read that lost
+     * `_id` used to hand the factory an invented one, so every swept suggestion reported success
+     * and changed nothing (F49).
+     */
+    it('should point each suggestion at the entity of its own language', async () => {
+      await sweep();
+
+      const stored = await ixTestAccess.readSuggestions({ extractorId: f.id('extractor') });
+
+      expect(
+        stored
+          .filter(({ entityId }) => entityId !== 'entity2')
+          .map(({ entityId, entityLanguageId }) => [entityId, entityLanguageId?.toString()])
+          .sort()
+      ).toEqual([
+        ['entity1', f.idString('entity1-en')],
+        ['entity3', f.idString('entity3-en')],
+      ]);
+    });
+
     it('should keep the suggestion already covering an entity', async () => {
       await sweep();
 
