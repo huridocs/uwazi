@@ -31,7 +31,7 @@ class CsvCreateThesauriValuesJobFactory {
 
   // eslint-disable-next-line max-statements
   static build(options: FactoryOptions = {}) {
-    const transactionManager = options.transactionManager ?? TransactionManagerFactory.default();
+    const transactionManager = options.transactionManager ?? TransactionManagerFactory.mongo();
     let mongoTransactionManager: MongoTransactionManager | undefined;
     const getMongoTransactionManager = () => {
       if (mongoTransactionManager) {
@@ -40,7 +40,7 @@ class CsvCreateThesauriValuesJobFactory {
       mongoTransactionManager =
         transactionManager instanceof MongoTransactionManager
           ? transactionManager
-          : TransactionManagerFactory.default();
+          : TransactionManagerFactory.mongo();
       return mongoTransactionManager;
     };
     const csvImportsDS =

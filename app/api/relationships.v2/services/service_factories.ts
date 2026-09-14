@@ -15,7 +15,7 @@ import { User } from '#api/users.v2/model/User.js';
 import { UserRole } from '#shared/types/userSchema.js';
 
 import { MongoIdHandler } from '#api/core/infrastructure/mongodb/common/MongoIdGenerator.js';
-import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
+import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
 import { DefaultDispatcher } from '#api/core/libs/queue/configuration/factories.js';
 import { EntityRelationshipsUpdateService as GenericEntityRelationshipsUpdateService } from '#api/entities.v2/services/EntityRelationshipsUpdateService.js';
 import { EntityRelationshipsUpdateService } from '#api/entities.v2/services/service_factories.js';
@@ -64,7 +64,7 @@ const userFromRequest = () => {
 
 const buildQueuedRelationshipPropertyUpdateStrategy: () => Promise<QueuedRelationshipPropertyUpdateStrategy> =
   async () => {
-    const transactionManager = TransactionManagerFactory.default();
+    const transactionManager = TransactionManagerFactory.mongo();
     return new QueuedRelationshipPropertyUpdateStrategy(
       DefaultDispatcher(tenants.current().name, transactionManager)
     );
@@ -74,7 +74,7 @@ const createUpdateStrategy = async (
   strategyKey: string | undefined,
   updater: GenericEntityRelationshipsUpdateService
 ) => {
-  const transactionManager = TransactionManagerFactory.default();
+  const transactionManager = TransactionManagerFactory.mongo();
 
   switch (strategyKey) {
     case QueuedRelationshipPropertyUpdateStrategy.name:
@@ -92,7 +92,7 @@ const createUpdateStrategy = async (
   }
 };
 
-const DenormalizationService = async (transactionManager: MongoTransactionManager) => {
+const DenormalizationService = async (transactionManager: TransactionManager) => {
   const relationshipsDS = DefaultRelationshipDataSource(transactionManager);
   const entitiesDS = DefaultDeprecatedEntitiesDataSource(transactionManager);
   const settingsDS = SettingsDataSourceFactory.default({ transactionManager });
@@ -115,7 +115,7 @@ const DenormalizationService = async (transactionManager: MongoTransactionManage
 };
 
 const GetRelationshipService = () => {
-  const transactionManager = TransactionManagerFactory.default();
+  const transactionManager = TransactionManagerFactory.mongo();
   const relationshipsDS = DefaultRelationshipDataSource(transactionManager);
   const permissionsDS = DefaultPermissionsDataSource(transactionManager);
   const entitiesDS = DefaultDeprecatedEntitiesDataSource(transactionManager);
@@ -136,7 +136,7 @@ const GetRelationshipService = () => {
 };
 
 const CreateRelationshipService = async () => {
-  const transactionManager = TransactionManagerFactory.default();
+  const transactionManager = TransactionManagerFactory.mongo();
   const relationshipsDS = DefaultRelationshipDataSource(transactionManager);
   const relationshipTypesDS = RelationshipTypesDataSourceFactory.default({ transactionManager });
   const entitiesDS = DefaultDeprecatedEntitiesDataSource(transactionManager);
@@ -162,7 +162,7 @@ const CreateRelationshipService = async () => {
 };
 
 const DeleteRelationshipService = async () => {
-  const transactionManager = TransactionManagerFactory.default();
+  const transactionManager = TransactionManagerFactory.mongo();
   const relationshipsDS = DefaultRelationshipDataSource(transactionManager);
   const permissionsDS = DefaultPermissionsDataSource(transactionManager);
 
@@ -181,7 +181,7 @@ const DeleteRelationshipService = async () => {
 
 const MigrationService = () => {
   const logger = LoggerFactory.default();
-  const transactionManager = TransactionManagerFactory.default();
+  const transactionManager = TransactionManagerFactory.mongo();
   const hubDS = DefaultHubsDataSource(transactionManager);
   const v1ConnectionsDS = DefaultV1ConnectionsDataSource(transactionManager);
   const templatesDS = TemplatesDataSourceFactory.default({ transactionManager });
@@ -200,14 +200,14 @@ const MigrationService = () => {
 };
 
 const DeleteRelationshipMigrationFieldService = () => {
-  const transactionManager = TransactionManagerFactory.default();
+  const transactionManager = TransactionManagerFactory.mongo();
   const fieldDS = DefaultRelationshipMigrationFieldsDataSource(transactionManager);
   const service = new GenericDeleteRelationshipMigrationFieldService(transactionManager, fieldDS);
   return service;
 };
 
 const GetRelationshipMigrationFieldsService = () => {
-  const transactionManager = TransactionManagerFactory.default();
+  const transactionManager = TransactionManagerFactory.mongo();
   const fieldDS = DefaultRelationshipMigrationFieldsDataSource(transactionManager);
   const templatesDS = TemplatesDataSourceFactory.default({ transactionManager });
   const service = new GenericGetRelationshipMigrationFieldsService(
@@ -219,21 +219,21 @@ const GetRelationshipMigrationFieldsService = () => {
 };
 
 const CreateRelationshipMigrationFieldService = () => {
-  const transactionManager = TransactionManagerFactory.default();
+  const transactionManager = TransactionManagerFactory.mongo();
   const fieldDS = DefaultRelationshipMigrationFieldsDataSource(transactionManager);
   const service = new GenericCreateRelationshipMigrationFieldService(transactionManager, fieldDS);
   return service;
 };
 
 const UpsertRelationshipMigrationFieldService = () => {
-  const transactionManager = TransactionManagerFactory.default();
+  const transactionManager = TransactionManagerFactory.mongo();
   const fieldDS = DefaultRelationshipMigrationFieldsDataSource(transactionManager);
   const service = new GenericUpsertRelationshipMigrationFieldService(transactionManager, fieldDS);
   return service;
 };
 
 const GetMigrationHubRecordsService = () => {
-  const transactionManager = TransactionManagerFactory.default();
+  const transactionManager = TransactionManagerFactory.mongo();
   const hubRecordDS = DefaultMigrationHubRecordDataSource(transactionManager);
   const service = new GenericGetMigrationHubRecordsService(hubRecordDS);
   return service;
@@ -241,7 +241,7 @@ const GetMigrationHubRecordsService = () => {
 
 const UpdateRelationshipPropertiesJob = () => {
   const tenant = tenants.current().name;
-  const transactionManager = TransactionManagerFactory.default();
+  const transactionManager = TransactionManagerFactory.mongo();
   const updater = EntityRelationshipsUpdateService(transactionManager);
   const indexEntity = async (sharedIds: string[]) =>
     tenants.run(async () => search.indexEntities({ sharedId: { $in: sharedIds } }), tenant);
@@ -250,7 +250,7 @@ const UpdateRelationshipPropertiesJob = () => {
 };
 
 const UpdateTemplateRelationshipPropertiesJob = async () => {
-  const transactionManager = TransactionManagerFactory.default();
+  const transactionManager = TransactionManagerFactory.mongo();
   return new GenericUpdateTemplateRelationshipPropertiesJob(
     DefaultDeprecatedEntitiesDataSource(transactionManager),
     await DefaultDispatcher(tenants.current().name, transactionManager)

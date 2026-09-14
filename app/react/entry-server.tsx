@@ -32,8 +32,8 @@ import templatesApi from '#api/core/v1_layer/templates/templates.js';
 import { GetRelationshipTypesUseCaseFactory } from '#api/core/infrastructure/factories/GetRelationshipTypesUseCaseFactory.js';
 import thesauriApi from '../api/core/v1_layer/thesauri/thesauri.js';
 import { TranslationsQueryServiceFactory } from '#api/core/infrastructure/factories/TranslationsQueryServiceFactory.js';
-import settingsApi from '../api/settings/settings.js';
-import { shapeSettingsForSSR } from '../api/settings/publicSettings.js';
+import { SettingsQueryServiceFactory } from '#api/core/infrastructure/factories/SettingsQueryServiceFactory.js';
+import { shapeSettingsForSSR } from '#api/core/application/settings/publicSettings.js';
 import { omitInlineCustomization } from '#shared/settings/omitInlineCustomization.js';
 import { tenants } from '../api/tenants/index.js';
 import { CustomProvider } from './App/Provider.js';
@@ -214,7 +214,7 @@ const prepareStores = async (req: ExpressRequest, settings: ClientSettings, lang
       : [];
 
   // Match GET /api/settings: non-admins only get the public whitelist.
-  const shapedSettings = shapeSettingsForSSR(settingsApiResponse as any, req.user);
+  const shapedSettings = shapeSettingsForSSR(settingsApiResponse as any);
   // Keep customCSS/JS in Redux for <head> inlining; omit them from the atom blob.
   const atomSettings = omitInlineCustomization(shapedSettings as Record<string, unknown>);
 
@@ -345,9 +345,10 @@ const prepareRouteData = async (req: ExpressRequest, routes: RouteObject[]) => {
 const EntryServer = async (req: ExpressRequest, res: Response) => {
   const ssrStart = process.hrtime.bigint();
   RouteHandler.renderedFromServer = true;
-  const [settings, assets] = await withSpan('settings_and_assets', async () =>
-    Promise.all([settingsApi.get() as Promise<ClientSettings>, getAssets()])
-  );
+  const [settings, assets] = await withSpan('settings_and_assets', async () => {
+    const query = SettingsQueryServiceFactory.default();
+    return Promise.all([query.get() as Promise<ClientSettings>, getAssets()]);
+  });
   const { connection, ...headers } = req.headers;
 
   const languageKeys = (settings?.languages?.map(lang => lang.key) as string[]) || [];

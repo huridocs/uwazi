@@ -15,6 +15,7 @@ import { PDFService } from '../services/PDFService.js';
 import { IdGeneratorFactory } from './IdGeneratorFactory.js';
 import { DispatcherAdapter } from '../jobs/DispatcherAdapter.js';
 import { EntitiesDAOFactory } from './EntitiesDAOFactory.js';
+import { SettingsDataSourceFactory } from './SettingsDataSourceFactory.js';
 
 class FilesServiceFactory {
   static default(deps: Partial<FilesServiceDeps> = {}, context?: FilesServiceContext) {
@@ -28,8 +29,9 @@ class FilesServiceFactory {
           deps.relV1DS ??
           new MongoRelationshipsV1DataSource(
             getConnection(),
-            transactionManager,
-            EntitiesDAOFactory.default()
+            ExecutionContext.mongoTransactionManager,
+            EntitiesDAOFactory.default(),
+            SettingsDataSourceFactory.default()
           ),
         pathManager: new PathManager({ tenant: ExecutionContext.tenant }),
         idGenerator: IdGeneratorFactory.default(),

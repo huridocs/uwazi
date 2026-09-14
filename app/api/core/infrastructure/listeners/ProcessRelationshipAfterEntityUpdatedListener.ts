@@ -1,4 +1,5 @@
 import { Listener } from '#api/core/libs/eventEmitter/Listener.js';
+import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { PrivilegedJob } from '#api/core/infrastructure/jobs/PrivilegedJob.js';
 import { EventEmitterFactory } from '#api/core/libs/eventEmitter/EventEmitterFactory.js';
 import { EntityUpdatedEvent } from '#api/core/domain/entity/EntityUpdatedEvent.js';
@@ -7,7 +8,6 @@ import relationships from '#api/relationships/relationships.js';
 import { MongoEntityMapper } from '../mongodb/entity/MongoEntityMapper.js';
 import { MongoTemplateMapper } from '../mongodb/template/MongoTemplateMapper.js';
 import { TemplatesDataSourceFactory } from '../factories/TemplatesDataSourceFactory.js';
-import { TransactionManagerFactory } from '../factories/TransactionManagerFactory.js';
 import {
   HeartbeatCallback,
   JobInfo,
@@ -23,7 +23,7 @@ class ProcessRelationshipAfterEntityUpdatedListener extends Listener<EntityUpdat
     _jobInfo?: JobInfo
   ): Promise<void> {
     const templateDS = TemplatesDataSourceFactory.default({
-      transactionManager: TransactionManagerFactory.default(),
+      transactionManager: ExecutionContext.transactionManager,
     });
 
     const template = (await templateDS.getById(params.after.templateId)).getDataOrThrow();

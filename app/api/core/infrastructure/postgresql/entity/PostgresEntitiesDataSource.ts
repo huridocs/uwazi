@@ -15,7 +15,7 @@ import { PostgresTable } from '../common/PostgresTable.js';
 import { PostgresPermissionEnforcedTable } from '../common/PostgresPermissionEnforcedTable.js';
 import { PostgresResultSet } from '../common/PostgresResultSet.js';
 import { PostgresTransactionManager } from '../common/PostgresTransactionManager.js';
-import { MongoTransactionManager } from '../../mongodb/common/MongoTransactionManager.js';
+import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
 import { MongoEntityMapper } from '../../mongodb/entity/MongoEntityMapper.js';
 import { TemplatesDAOFactory } from '../../factories/TemplatesDAOFactory.js';
 import { EntityRow } from './PostgresEntityRow.js';
@@ -25,7 +25,7 @@ import { ArrayUtils } from '#api/common.v2/utils/Array.js';
 type TemplatesDAO = Awaited<ReturnType<typeof TemplatesDAOFactory.default>>;
 
 type Deps = PostgresDataSourceDeps & {
-  transactionManager: MongoTransactionManager;
+  transactionManager: TransactionManager;
   templatesDAO: TemplatesDAO;
   settingsDataSource: SettingsDataSource;
   mongoDb: Db;
@@ -37,7 +37,7 @@ export class PostgresEntitiesDataSource
   extends PostgresDataSource<EntityRow>
   implements EntitiesDataSource
 {
-  private transactionManager: MongoTransactionManager;
+  private transactionManager: TransactionManager;
 
   private pgTransactionManager: PostgresTransactionManager;
 

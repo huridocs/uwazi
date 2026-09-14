@@ -1,7 +1,6 @@
 import { ExecutionContext, ExecutionContextDeps } from '../ExecutionContext.js';
 import { PostgresTransactionManager } from '#api/core/infrastructure/postgresql/common/PostgresTransactionManager.js';
-import { PostgresTransactionManagerFactory } from '#api/core/infrastructure/factories/PostgresTransactionManagerFactory.js';
-import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { transactionManagerFactories } from '#api/core/libs/transactionManagerFactories.js';
 import { EventEmitterFactory } from '#api/core/libs/eventEmitter/EventEmitterFactory.js';
 import { IdGeneratorFactory } from '#api/core/infrastructure/factories/IdGeneratorFactory.js';
 import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
@@ -16,8 +15,7 @@ const buildContext = (): ExecutionContextDeps => ({
     domain: '127.0.0.1',
   } as ExecutionContextDeps['tenant'],
   factories: {
-    transactionManager: TransactionManagerFactory.default,
-    postgresTransactionManager: PostgresTransactionManagerFactory.default,
+    ...transactionManagerFactories(),
     eventEmitter: EventEmitterFactory.forTesting,
     jobsDispatcher: (() => ({})) as unknown as ExecutionContextDeps['factories']['jobsDispatcher'],
     idGenerator: IdGeneratorFactory.default,

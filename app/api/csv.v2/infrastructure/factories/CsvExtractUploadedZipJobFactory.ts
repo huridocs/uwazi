@@ -4,7 +4,7 @@ import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsD
 import { FileContentsIO } from '#api/core/infrastructure/files/FileContentIO.js';
 import { FileStorage } from '#api/core/application/contracts/FileStorage.js';
 import { FileStorageFactory } from '#api/core/infrastructure/files/FileStorageFactory.js';
-import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
+import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
 import { tenants } from '#api/tenants/tenantContext.js';
 import { CsvImportRowsStager } from '../../application/services/CsvImportRowsStager.js';
 import { CsvImportFileNormalizer } from '../../application/services/CsvImportFileNormalizer.js';
@@ -12,7 +12,7 @@ import { CsvExtractUploadedZipJob } from '../../application/jobs/CsvExtractUploa
 import { CSVImportEntitiesFactories } from './CSVImportEntitiesFactories.js';
 
 type FactoryOptions = {
-  transactionManager?: MongoTransactionManager;
+  transactionManager?: TransactionManager;
   fileStorage?: FileStorage;
   batchSize?: number;
   jobsDispatcher?: JobsDispatcher;
@@ -24,7 +24,7 @@ class CsvExtractUploadedZipJobFactory {
   }
 
   static build(options: FactoryOptions = {}) {
-    const transactionManager = options.transactionManager ?? TransactionManagerFactory.default();
+    const transactionManager = options.transactionManager ?? TransactionManagerFactory.mongo();
     const csvImportsDS = CSVImportEntitiesFactories.CSVImportDSDefault(transactionManager);
     const rowsDS = CSVImportEntitiesFactories.CSVImportRowsDSDefault(transactionManager);
     const fileStorage = options.fileStorage ?? FileStorageFactory.default();

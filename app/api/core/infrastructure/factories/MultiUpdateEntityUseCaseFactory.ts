@@ -6,14 +6,13 @@ import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { ThesauriDataSourceFactory } from './ThesauriDataSourceFactory.js';
 import { EntitiesDataSourceFactory } from './EntitiesDataSourceFactory.js';
 import { TemplatesDataSourceFactory } from './TemplatesDataSourceFactory.js';
-import { MongoTransactionManager } from '../mongodb/common/MongoTransactionManager.js';
 import { EntitiesServiceFactory } from './EntitiesServiceFactory.js';
 
 class MultiUpdateEntityUseCaseFactory {
   static default() {
     const { tenant } = ExecutionContext;
 
-    const transactionManager = ExecutionContext.transactionManager as MongoTransactionManager;
+    const { transactionManager } = ExecutionContext;
 
     const settingsDS = SettingsDataSourceFactory.default();
     const thesauriDS = ThesauriDataSourceFactory.default();

@@ -69,7 +69,7 @@ describe('MigrationService', () => {
       createDispatcher: jest.fn().mockResolvedValue(createFakeDispatcher(dispatchedCalls)),
       createLogger: jest.fn().mockReturnValue(createFakeLogger()),
       pgMigratorFactory: jest.fn().mockReturnValue(fakePgMigrator),
-      transactionManagerFactory: TransactionManagerFactory.default,
+      transactionManagerFactory: TransactionManagerFactory.mongo,
       eventEmitterFactory: EventEmitterFactory.default,
       idGeneratorFactory: IdGeneratorFactory.default,
       ...overrides,

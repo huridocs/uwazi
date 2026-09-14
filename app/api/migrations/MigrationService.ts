@@ -117,7 +117,7 @@ const defaultDeps: MigrationServiceDeps = {
   createDispatcher: createDefaultDispatcher,
   createLogger: createDefaultLogger,
   pgMigratorFactory: createDefaultPgMigrator,
-  transactionManagerFactory: TransactionManagerFactory.default,
+  transactionManagerFactory: TransactionManagerFactory.mongo,
   postgresTransactionManagerFactory: PostgresTransactionManagerFactory.default,
   eventEmitterFactory: EventEmitterFactory.default,
   idGeneratorFactory: IdGeneratorFactory.default,
@@ -151,6 +151,7 @@ class MigrationService {
       {
         factories: {
           transactionManager: this.deps.transactionManagerFactory,
+          mongoTransactionManager: this.deps.transactionManagerFactory,
           postgresTransactionManager: this.deps.postgresTransactionManagerFactory,
           jobsDispatcher: () => dispatcher,
           eventEmitter: this.deps.eventEmitterFactory,

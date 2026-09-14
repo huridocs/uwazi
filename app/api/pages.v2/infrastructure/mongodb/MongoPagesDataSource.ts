@@ -1,19 +1,13 @@
-import { Db } from 'mongodb';
 import { PagesDataSource } from '#api/pages.v2/application/contracts/PagesDataSource.js';
 import { Page } from '#api/pages.v2/domain/Page.js';
 import { PageNotFoundError } from '#api/pages.v2/domain/errors.js';
 import { Result } from '#api/core/libs/Result.js';
 import { MongoDataSource } from '#api/core/infrastructure/mongodb/common/MongoDataSource.js';
-import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
 import { PageDBO } from './PageDBO.js';
 import { PageMapper } from './PageMapper.js';
 
 class MongoPagesDataSource extends MongoDataSource<PageDBO> implements PagesDataSource {
   protected collectionName = 'pages';
-
-  constructor(db: Db, transactionManager: MongoTransactionManager) {
-    super(db, transactionManager);
-  }
 
   async getBySharedId(sharedId: string) {
     const dbo = await this.getCollection().findOne({ sharedId });

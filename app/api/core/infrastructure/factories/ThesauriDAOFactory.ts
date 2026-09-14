@@ -1,7 +1,6 @@
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { getConnection } from '../mongodb/common/getConnectionForCurrentTenant.js';
 import { MongoThesauriDAO } from '../mongodb/thesauri/MongoThesauriDAO.js';
-import { MongoTransactionManager } from '../mongodb/common/MongoTransactionManager.js';
 import { PostgresThesauriDAO } from '../postgresql/thesaurus/PostgresThesauriDAO.js';
 
 class ThesauriDAOFactory {
@@ -19,7 +18,7 @@ class ThesauriDAOFactory {
 
     return new MongoThesauriDAO({
       db: getConnection(),
-      transactionManager: ExecutionContext.transactionManager as MongoTransactionManager,
+      transactionManager: ExecutionContext.transactionManager,
     });
   }
 }

@@ -112,7 +112,9 @@ describe('CreateThesaurusUseCase', () => {
 
             const thesauriDS =
               props?.thesauriDS ?? ThesauriDataSourceFactory.default({ transactionManager });
-            const settingsDS = SettingsDataSourceFactory.default({ transactionManager });
+            const settingsDS = SettingsDataSourceFactory.default({
+              transactionManager: ExecutionContext.mongoTransactionManager,
+            });
             const translationsDS = TranslationsDataSourceFactory.default({ transactionManager });
             const thesaurusTranslationService =
               props?.thesaurusTranslationService ??
@@ -274,7 +276,7 @@ describe('CreateThesaurusUseCase', () => {
          * Once all datasources are on Postgres, a PostgresTransactionManager will restore
          * proper transactional boundaries.
          */
-        it('should NOT revert the PG write when the Mongo transaction rolls back', async () => {
+        it('should revert the PG write when the transaction rolls back', async () => {
           const thesaurusTranslationService = TestUtils.mockClass<ThesaurusTranslationService>({
             create: jest.fn().mockRejectedValue(new Error('Creation failed')),
           });
@@ -289,7 +291,7 @@ describe('CreateThesaurusUseCase', () => {
           ).rejects.toThrowError('Creation failed');
 
           const thesauri = await getThesauri();
-          expect(thesauri.some(t => t.name === 'Animals')).toBe(true);
+          expect(thesauri.some(t => t.name === 'Animals')).toBe(false);
         });
       }
 

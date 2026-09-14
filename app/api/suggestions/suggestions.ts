@@ -3,24 +3,26 @@
 /* eslint-disable max-lines */
 import { ObjectId } from 'mongodb';
 
-import { EnforcedWithId, UwaziFilterQuery } from '#api/odm/index.js';
-import { IXSuggestionsModel } from '#api/suggestions/IXSuggestionsModel.js';
+import { EnforcedWithId } from '#api/odm/index.js';
+import { IXSuggestionsDAOFactory } from './infrastructure/IXSuggestionsDAOFactory.js';
+import { IXSuggestionsStatsQueryServiceFactory } from './infrastructure/IXSuggestionsStatsQueryServiceFactory.js';
+import { IXSuggestionsSampleQueryServiceFactory } from './infrastructure/IXSuggestionsSampleQueryServiceFactory.js';
+import { balancedSampleSizes } from './domain/balancedSampleSizes.js';
+import { PendingStatusFilter } from './domain/IXSuggestionsDataSource.js';
+import { SuggestionStats } from './domain/IXSuggestionsStatsQueryService.js';
 import templates from '#api/core/v1_layer/templates/index.js';
 import { ObjectIdSchema, PropertySchema } from '#shared/types/commonTypes.js';
 import { BaseFile } from '#api/core/domain/files/BaseFile.js';
 import { FilesDataSourceFactory } from '#api/core/infrastructure/factories/FilesDataSourceFactory.js';
 import { FilesServiceFactory } from '#api/core/infrastructure/factories/FilesServiceFactory.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
-import { IXSuggestionAggregation, IXSuggestionType } from '#shared/types/suggestionType.js';
+import { IXSuggestionType } from '#shared/types/suggestionType.js';
 import { objectIndex } from '#shared/data_utils/objectIndex.js';
-import {
-  getSegmentedFilesIds,
-  propertyTypeIsWithoutPropertySelections,
-} from '#api/services/informationextraction/ixMaterials.js';
+import { propertyTypeIsWithoutPropertySelections } from '#api/services/informationextraction/ixMaterials.js';
 import { ArrayUtils } from '#api/common.v2/utils/Array.js';
 import { IXModelType } from '#shared/types/IXModelType.js';
 import { registerEventListeners } from './eventListeners.js';
-import { updateStates } from './updateState.js';
+import { recomputeAllStates } from './updateState.js';
 import {
   AcceptedSuggestion,
   SuggestionAcceptanceError,
@@ -35,7 +37,7 @@ const updatePropertySelections = async (
 
   const filesDS = FilesDataSourceFactory.default();
   const filesService = FilesServiceFactory.default();
-  const transactionManager = TransactionManagerFactory.default();
+  const transactionManager = TransactionManagerFactory.mongo();
 
   const suggestionFileIds = suggestions.map(s => s.fileId).filter(Boolean);
   if (!suggestionFileIds.length) return;
@@ -81,6 +83,8 @@ const updatePropertySelections = async (
   }
 };
 
+const dao = () => IXSuggestionsDAOFactory.default();
+
 const propertyTypesWithAllLanguages = new Set(['numeric', 'date', 'select', 'multiselect']);
 
 const needsAllLanguages = (propertyType: PropertySchema['type']) =>
@@ -106,307 +110,51 @@ const validatePartialAcceptanceTypeConstraint = (
 };
 
 const Suggestions = {
-  getById: async (id: ObjectIdSchema) => IXSuggestionsModel.getById(id),
-  getByEntityId: async (sharedId: string) => IXSuggestionsModel.get({ entityId: sharedId }),
-  getByExtractor: async (extractorId: ObjectIdSchema) => IXSuggestionsModel.get({ extractorId }),
+  /**
+   * Single-suggestion read, kept because the activity log's `loadSuggestionData` needs it to
+   * resolve an accepted suggestion into its extractor name. Backed by the port's existing
+   * `getByIds` rather than a new port method, so it adds no surface for the Postgres sibling.
+   */
+  getById: async (id: ObjectIdSchema): Promise<IXSuggestionType | undefined> =>
+    (await dao().getByIds([id]))[0],
 
-  // Balanced sampling for suggestion finding (both test runs and regular runs)
-  getBalancedSample: async (
-    extractorId: ObjectIdSchema,
-    model: EnforcedWithId<IXModelType>,
-    maxTotal: number
-  ): Promise<IXSuggestionType[]> => {
-    const since = model.processRun?.suggestionsRunTimestamp || model.creationDate;
-    const baseQuery = {
-      extractorId,
-      $or: [{ date: null }, { date: { $lt: since } }],
-      'state.error': { $ne: true },
-    };
-
-    // Get counts for balanced allocation
-    const [unlabeledCount, labeledCount] = await Promise.all([
-      IXSuggestionsModel.db.countDocuments({ ...baseQuery, 'state.labeled': { $ne: true } }),
-      IXSuggestionsModel.db.countDocuments({ ...baseQuery, 'state.labeled': true }),
-    ]);
-
-    // Calculate optimal allocation
-    const idealHalf = Math.floor(maxTotal / 2);
-    let unlabeledSampleSize = Math.min(idealHalf, unlabeledCount);
-    let labeledSampleSize = Math.min(idealHalf, labeledCount);
-
-    // Reallocate unused slots
-    const totalUsed = unlabeledSampleSize + labeledSampleSize;
-    const remainingSlots = maxTotal - totalUsed;
-
-    if (remainingSlots > 0) {
-      if (unlabeledCount > unlabeledSampleSize) {
-        unlabeledSampleSize = Math.min(unlabeledCount, unlabeledSampleSize + remainingSlots);
-      } else if (labeledCount > labeledSampleSize) {
-        labeledSampleSize = Math.min(labeledCount, labeledSampleSize + remainingSlots);
-      }
-    }
-
-    const pipeline = [
-      {
-        $facet: {
-          unlabeled: [
-            { $match: { ...baseQuery, 'state.labeled': { $ne: true } } },
-            { $sample: { size: unlabeledSampleSize } },
-          ],
-          labeled: [
-            { $match: { ...baseQuery, 'state.labeled': true } },
-            { $sample: { size: labeledSampleSize } },
-          ],
-        },
-      },
-      {
-        $project: {
-          suggestions: { $concatArrays: ['$unlabeled', '$labeled'] },
-        },
-      },
-      {
-        $unwind: '$suggestions',
-      },
-      {
-        $replaceRoot: { newRoot: '$suggestions' },
-      },
-    ];
-
-    const result = (await IXSuggestionsModel.db.aggregate(pipeline)) as IXSuggestionType[];
-    return result;
-  },
-
-  // Balanced sampling honoring process-run filters stored in the model. If filters are not provided,
-  // default to sampling from the three non-ready statuses: nonProcessed, obsolete, error.
+  /**
+   * A process run's next batch: half already-labeled, half not, honouring the status filters the
+   * model's process run stored. Split three ways in 4c-2 — the counts are a data source call, the
+   * allocation is `balancedSampleSizes`, and only the random draw is store-specific.
+   */
   getSampleForProcess: async (
     extractorId: ObjectIdSchema,
     model: EnforcedWithId<IXModelType>,
     maxTotal: number
   ): Promise<IXSuggestionType[]> => {
-    const processRun: any = (model as any)?.processRun || {};
-    const filters = processRun?.find?.filters || {};
+    const statusFilter: PendingStatusFilter = (model as any)?.processRun?.find?.filters || {};
 
-    const selectedFilters = ['nonProcessed', 'obsolete', 'error'].filter(f => filters?.[f]);
-    const useFilters = selectedFilters.length > 0;
+    const available = await dao().countPendingByLabel(extractorId, statusFilter);
+    const sizes = balancedSampleSizes({ ...available, maxTotal });
 
-    const matchConditions: any[] = [];
-
-    if (filters.nonProcessed || !useFilters) {
-      matchConditions.push({ date: null });
-    }
-    if (filters.obsolete || !useFilters) {
-      matchConditions.push({ date: { $ne: null }, 'state.obsolete': true });
-    }
-    if (filters.error || !useFilters) {
-      matchConditions.push({ date: { $ne: null }, 'state.error': true });
-    }
-
-    const baseMatch = { extractorId, $or: matchConditions } as any;
-
-    // Count labeled/unlabeled within filtered subset
-    const [unlabeledCount, labeledCount] = await Promise.all([
-      IXSuggestionsModel.db.countDocuments({ ...baseMatch, 'state.labeled': { $ne: true } }),
-      IXSuggestionsModel.db.countDocuments({ ...baseMatch, 'state.labeled': true }),
-    ]);
-
-    const idealHalf = Math.floor(maxTotal / 2);
-    let unlabeledSampleSize = Math.min(idealHalf, unlabeledCount);
-    let labeledSampleSize = Math.min(idealHalf, labeledCount);
-    const totalUsed = unlabeledSampleSize + labeledSampleSize;
-    const remainingSlots = maxTotal - totalUsed;
-    if (remainingSlots > 0) {
-      if (unlabeledCount > unlabeledSampleSize) {
-        unlabeledSampleSize = Math.min(unlabeledCount, unlabeledSampleSize + remainingSlots);
-      } else if (labeledCount > labeledSampleSize) {
-        labeledSampleSize = Math.min(labeledCount, labeledSampleSize + remainingSlots);
-      }
-    }
-
-    const pipeline: any[] = [
-      {
-        $facet: {
-          unlabeled: [
-            { $match: { ...baseMatch, 'state.labeled': { $ne: true } } },
-            { $sample: { size: unlabeledSampleSize } },
-          ],
-          labeled: [
-            { $match: { ...baseMatch, 'state.labeled': true } },
-            { $sample: { size: labeledSampleSize } },
-          ],
-        },
-      },
-      { $project: { suggestions: { $concatArrays: ['$unlabeled', '$labeled'] } } },
-      { $unwind: '$suggestions' },
-      { $replaceRoot: { newRoot: '$suggestions' } },
-    ];
-
-    const result = (await IXSuggestionsModel.db.aggregate(pipeline)) as IXSuggestionType[];
-    return result;
+    return IXSuggestionsSampleQueryServiceFactory.default().sampleForProcess({
+      extractorId,
+      statusFilter,
+      sizes,
+    });
   },
 
-  aggregate: async (_extractorId: ObjectIdSchema): Promise<IXSuggestionAggregation> => {
-    const extractorId = new ObjectId(_extractorId);
+  aggregate: async (extractorId: ObjectIdSchema): Promise<SuggestionStats> =>
+    IXSuggestionsStatsQueryServiceFactory.default().getStatsForExtractor(extractorId),
 
-    const aggregations: (IXSuggestionAggregation & { _id: ObjectId })[] =
-      await IXSuggestionsModel.db.aggregate([
-        {
-          $match: { extractorId },
-        },
-        {
-          // processed = has a date AND not obsolete AND not error
-          $set: {
-            processed: {
-              $and: [
-                { $ne: ['$date', null] },
-                { $not: '$state.obsolete' },
-                { $not: '$state.error' },
-              ],
-            },
-          },
-        },
-        {
-          $group: {
-            _id: null,
-            total: { $sum: 1 },
-            // All data
-            labeled: { $sum: { $cond: ['$state.labeled', 1, 0] } },
-            nonLabeled: {
-              $sum: {
-                $cond: [
-                  {
-                    $and: [
-                      { $ne: ['$state.labeled', undefined] },
-                      { $ne: ['$state.labeled', null] },
-                      { $not: '$state.labeled' },
-                    ],
-                  },
-                  1,
-                  0,
-                ],
-              },
-            },
-            useForTraining: { $sum: { $cond: ['$useForTraining', 1, 0] } },
-            // Status
-            nonProcessed: {
-              $sum: {
-                $cond: [{ $eq: ['$date', null] }, 1, 0],
-              },
-            },
-            obsolete: {
-              $sum: {
-                $cond: [
-                  {
-                    $and: [{ $ne: ['$date', null] }, '$state.obsolete'],
-                  },
-                  1,
-                  0,
-                ],
-              },
-            },
-            error: {
-              $sum: {
-                $cond: [
-                  {
-                    $and: [{ $ne: ['$date', null] }, '$state.error'],
-                  },
-                  1,
-                  0,
-                ],
-              },
-            },
-            // Processed (exclude nonProcessed, obsolete, and error)
-            match: {
-              $sum: {
-                $cond: [{ $and: ['$processed', '$state.match'] }, 1, 0],
-              },
-            },
-            mismatch: {
-              $sum: {
-                $cond: [
-                  {
-                    $and: [
-                      '$processed',
-                      { $ne: ['$state.match', undefined] },
-                      { $ne: ['$state.match', null] },
-                      { $not: '$state.match' },
-                    ],
-                  },
-                  1,
-                  0,
-                ],
-              },
-            },
-            noContext: {
-              $sum: {
-                $cond: [{ $and: ['$processed', { $not: '$state.hasContext' }] }, 1, 0],
-              },
-            },
-            // Support for accuracy calculation
-            processedLabeled: {
-              $sum: { $cond: [{ $and: ['$processed', '$state.labeled'] }, 1, 0] },
-            },
-          },
-        },
-        {
-          $set: {
-            accuracy: {
-              $cond: [
-                { $gt: ['$processedLabeled', 0] },
-                { $round: [{ $multiply: [{ $divide: ['$match', '$processedLabeled'] }, 100] }, 2] },
-                0,
-              ],
-            },
-          },
-        },
-        { $unset: 'processedLabeled' },
-      ]);
+  recomputeAllStates,
 
-    const { _id, ...results } = aggregations[0] || {
-      _id: null,
-      total: 0,
-      labeled: 0,
-      nonLabeled: 0,
-      match: 0,
-      mismatch: 0,
-      obsolete: 0,
-      error: 0,
-      noContext: 0,
-      nonProcessed: 0,
-      accuracy: 0,
-    };
-
-    return results;
-  },
-
-  updateStates,
-
-  setObsolete: async (query: any) =>
-    IXSuggestionsModel.updateMany(query, {
-      $set: { 'state.obsolete': true, 'state.match': null },
-    }),
-
-  markSuggestionsWithoutSegmentation: async (query: UwaziFilterQuery<IXSuggestionType>) => {
-    const segmentedFilesIds = await getSegmentedFilesIds();
-    await IXSuggestionsModel.updateMany(
-      {
-        ...query,
-        fileId: { $nin: segmentedFilesIds },
-      },
-      { $set: { 'state.error': true, 'state.match': null } }
-    );
-  },
+  setObsolete: async (extractorId: ObjectIdSchema) => dao().markObsoleteForExtractor(extractorId),
 
   markSuggestionsAsTrainingSamples: async (entities: string[], extractorIdString: string) => {
     const extractorId = ObjectId.createFromHexString(extractorIdString);
-    await IXSuggestionsModel.updateMany({ extractorId }, { $set: { trainingSample: false } });
+    await dao().clearTrainingSamplesForExtractor(extractorId);
 
     const chunks = ArrayUtils.splitInChunks(entities, 1000);
     await chunks.reduce(async (promise, chunk) => {
       await promise;
-      await IXSuggestionsModel.updateMany(
-        { entityId: { $in: chunk }, extractorId },
-        { $set: { trainingSample: true } }
-      );
+      await dao().markTrainingSamples(extractorId, chunk);
     }, Promise.resolve());
   },
 
@@ -414,45 +162,29 @@ const Suggestions = {
     extractorId: ObjectIdSchema,
     candidateIds: string[],
     runTimestamp: number
-  ): Promise<Set<string>> => {
-    const [queuedNow, readyThisRun] = await Promise.all([
-      IXSuggestionsModel.db.distinct('entityId', {
-        extractorId,
-        entityId: { $in: candidateIds },
-        status: 'processing',
-      }),
-      IXSuggestionsModel.db.distinct('entityId', {
-        extractorId,
-        entityId: { $in: candidateIds },
-        'modelData.suggestionsRunTimestamp': runTimestamp,
-        status: 'ready',
-      }),
-    ]);
-
-    return new Set<string>([...queuedNow, ...readyThisRun]);
-  },
+  ): Promise<Set<string>> =>
+    new Set(await dao().getEntityIdsSeenInRun(extractorId, candidateIds, runTimestamp)),
 
   save: async (suggestion: IXSuggestionType) => Suggestions.saveMultiple([suggestion]),
 
-  saveMultiple: async (_suggestions: IXSuggestionType[]) =>
-    IXSuggestionsModel.saveMultiple(_suggestions),
+  saveMultiple: async (_suggestions: Partial<IXSuggestionType>[]) =>
+    dao().saveMultiple(_suggestions),
 
-  createMultiple: async (_suggestions: IXSuggestionType[]) =>
-    IXSuggestionsModel.db.createMany(_suggestions),
+  createMultiple: async (_suggestions: IXSuggestionType[]) => dao().createMultiple(_suggestions),
 
   accept: async (acceptedSuggestions: AcceptedSuggestion[]) => {
     const acceptedIds = Array.from(new Set(acceptedSuggestions.map(s => s._id.toString())));
-    const suggestions = await IXSuggestionsModel.get({ _id: { $in: acceptedIds } });
+    const suggestions = await dao().getByIds(acceptedIds);
     const extractors = new Set(suggestions.map(s => s.extractorId.toString()));
     if (extractors.size > 1) {
-      throw new Error('All suggestions must come from the same extractor');
+      throw new SuggestionAcceptanceError('All suggestions must come from the same extractor');
     }
     const foundIds = new Set(suggestions.map(s => s._id.toString()));
     if (!acceptedIds.every(id => foundIds.has(id))) {
-      throw new Error('Suggestion(s) not found.');
+      throw new SuggestionAcceptanceError('Suggestion(s) not found.');
     }
     if (suggestions.some(s => s.error !== '')) {
-      throw new Error('Some Suggestions have an error.');
+      throw new SuggestionAcceptanceError('Some Suggestions have an error.');
     }
 
     const { propertyName } = suggestions[0];
@@ -464,11 +196,16 @@ const Suggestions = {
     await updatePropertySelections(suggestions, property);
   },
 
-  deleteByEntityId: async (sharedId: string) => {
-    await IXSuggestionsModel.delete({ entityId: sharedId });
-  },
-
-  delete: IXSuggestionsModel.delete.bind(IXSuggestionsModel),
+  deleteByEntityId: async (sharedId: string) => dao().deleteByEntityId(sharedId),
+  deleteByEntityAndTemplate: async (sharedId: string, templateId: string) =>
+    dao().deleteByEntityAndTemplate(sharedId, templateId),
+  deleteByExtractorId: async (extractorId: ObjectIdSchema) =>
+    dao().deleteByExtractorId(extractorId),
+  deleteByExtractorIds: async (extractorIds: ObjectIdSchema[]) =>
+    dao().deleteByExtractorIds(extractorIds),
+  deleteByTemplatesAndExtractors: async (templateIds: string[], extractorIds: ObjectIdSchema[]) =>
+    dao().deleteByTemplatesAndExtractors(templateIds, extractorIds),
+  deleteByFileIds: async (fileIds: ObjectIdSchema[]) => dao().deleteByFileIds(fileIds),
   registerEventListeners,
 };
 

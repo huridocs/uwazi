@@ -80,9 +80,9 @@ class EntityFileUploadController extends AbstractController {
   }
 
   private useCase() {
-    let transactionManager = TransactionManagerFactory.default();
+    let { transactionManager } = ExecutionContext;
     let jobsDispatcher: Dispatcher = new DispatcherAdapter(
-      UwaziDispatcherFactory(this.tenantName, transactionManager)
+      UwaziDispatcherFactory(this.tenantName, ExecutionContext.mongoTransactionManager)
     );
     if (process.env.NODE_ENV === 'test') {
       transactionManager = TransactionManagerFactory.fake();

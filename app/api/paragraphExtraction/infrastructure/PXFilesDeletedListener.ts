@@ -34,7 +34,7 @@ export class PXFilesDeletedListener {
 
   private setupDependencies() {
     const connection = getConnection();
-    const mongoTransactionManager = TransactionManagerFactory.default();
+    const mongoTransactionManager = TransactionManagerFactory.mongo();
     const entitiesStatusDS = PXEntitiesStatusDataSourceFactory.createDefault({
       connection,
       mongoTransactionManager,

@@ -1,5 +1,5 @@
 import { MongoDataSource } from '#api/core/infrastructure/mongodb/common/MongoDataSource.js';
-import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
+import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
 import { Db } from 'mongodb';
 import { CsvImportRelationshipValuesDataSource } from '../../application/contracts/CsvImportRelationshipValuesDataSource.js';
 import { CsvImportRelationshipValues } from '../../domain/CsvImportRelationshipValues.js';
@@ -17,7 +17,7 @@ class MongoCsvImportRelationshipValuesDataSource
 {
   protected collectionName = 'csv_import_relationships_values';
 
-  constructor(db: Db, transactionManager: MongoTransactionManager) {
+  constructor(db: Db, transactionManager: TransactionManager) {
     super(db, transactionManager);
   }
 

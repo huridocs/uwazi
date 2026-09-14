@@ -6,7 +6,7 @@ import {
   MongoDSOptions,
 } from '#api/core/infrastructure/mongodb/common/MongoDataSource.js';
 import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js';
-import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
+import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
 
 import { ResultSet } from '#api/core/application/contracts/ResultSet.js';
 import { MongoResultSet } from '#api/core/infrastructure/mongodb/common/MongoResultSet.js';
@@ -32,7 +32,7 @@ export class MongoPXEntitiesStatusDataSource
   // eslint-disable-next-line max-params
   constructor(
     db: Db,
-    transaction: MongoTransactionManager,
+    transaction: TransactionManager,
     private settingsDS: SettingsDataSource,
     private extractorsQueryService: PXExtractorsQueryService,
     options?: MongoDSOptions

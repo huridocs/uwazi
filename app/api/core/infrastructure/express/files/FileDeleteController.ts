@@ -45,9 +45,9 @@ class FileDeleteController extends AbstractController {
   }
 
   private useCase() {
-    const { transactionManager } = ExecutionContext;
+    const { mongoTransactionManager } = ExecutionContext;
     let jobsDispatcher: Dispatcher = new DispatcherAdapter(
-      UwaziDispatcherFactory(this.tenantName, transactionManager)
+      UwaziDispatcherFactory(this.tenantName, mongoTransactionManager)
     );
     if (process.env.NODE_ENV === 'test') {
       jobsDispatcher = new DispatcherAdapter(

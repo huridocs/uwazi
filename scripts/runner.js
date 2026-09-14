@@ -18,6 +18,9 @@ if (!script) {
 const tsxPath = join(__dirname, '../node_modules/.bin/tsx');
 const useTsx = existsSync(tsxPath);
 
+// Keep --no-experimental-fetch: it was added when fetch was still experimental, and
+// production relies on node-fetch (via isomorphic-fetch) being the global fetch.
+// Native fetch is stable since Node 21; removing this flag is tracked in #9632.
 const nodeArgs = ['--no-experimental-fetch'];
 if (useTsx) {
   nodeArgs.push('--import', 'tsx');

@@ -4,20 +4,21 @@ import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { BulkCleanupEntityUseCase } from '#api/core/application/BulkCleanupEntity.js';
 import { getConnection } from '../mongodb/common/getConnectionForCurrentTenant.js';
 import { MongoRelationshipsV1DataSource } from '../mongodb/MongoRelationshipsV1DataSource.js';
-import { MongoTransactionManager } from '../mongodb/common/MongoTransactionManager.js';
 import { EntitiesDataSourceFactory } from './EntitiesDataSourceFactory.js';
 import { FilesServiceFactory } from './FilesServiceFactory.js';
 import { EntitiesDAOFactory } from './EntitiesDAOFactory.js';
+import { SettingsDataSourceFactory } from './SettingsDataSourceFactory.js';
 
 class BulkCleanupEntityUseCaseFactory {
   static default(overrides?: Partial<ConstructorParameters<typeof BulkCleanupEntityUseCase>[0]>) {
-    const transactionManager = ExecutionContext.transactionManager as MongoTransactionManager;
+    const { transactionManager } = ExecutionContext;
     const idGenerator = IdGeneratorFactory.default();
     const entitiesDS = EntitiesDataSourceFactory.default({ transactionManager });
     const relationshipsDS = new MongoRelationshipsV1DataSource(
       getConnection(),
-      transactionManager,
-      EntitiesDAOFactory.default()
+      ExecutionContext.mongoTransactionManager,
+      EntitiesDAOFactory.default(),
+      SettingsDataSourceFactory.default()
     );
     const eventBus = applicationEventsBus;
     const filesService = FilesServiceFactory.default();

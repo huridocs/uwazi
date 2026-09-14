@@ -10,7 +10,7 @@ export class LoginUseCaseFactory {
       {
         usersDS: UsersDataSourceFactory.default(),
         dispatcher: new DispatcherAdapter(
-          DefaultDispatcher(ExecutionContext.tenant.name, ExecutionContext.transactionManager)
+          DefaultDispatcher(ExecutionContext.tenant.name, ExecutionContext.mongoTransactionManager)
         ),
       },
       { tenant: ExecutionContext.tenant }

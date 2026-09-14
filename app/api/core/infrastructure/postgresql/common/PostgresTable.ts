@@ -60,6 +60,10 @@ export class PostgresTable<TRow = Record<string, unknown>> {
     return this.cfg.tenantId;
   }
 
+  get transactionManager(): PostgresTransactionManager {
+    return this.cfg.transactionManager;
+  }
+
   query<T = TRow>(): PostgresTable<T> {
     return this.chain(this.cfg.knex(this.cfg.tableName)) as any;
   }

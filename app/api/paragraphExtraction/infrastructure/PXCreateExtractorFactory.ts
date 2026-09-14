@@ -15,7 +15,7 @@ interface PXCreateExtractorFactoryProps {
 export class PXCreateExtractorFactory {
   static async createDefault(props: PXCreateExtractorFactoryProps) {
     const connection = getConnection();
-    const mongoTransactionManager = TransactionManagerFactory.default();
+    const mongoTransactionManager = TransactionManagerFactory.mongo();
 
     const dispatcher = UwaziDispatcherFactory(props.tenantName, mongoTransactionManager, {
       lockWindow: 1000 * 60,

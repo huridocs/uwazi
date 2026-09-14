@@ -22,7 +22,9 @@ class FilesDAOFactory {
 
     return new MongoFilesDAO({
       db: getConnection(),
-      transactionManager: TransactionManagerFactory.default(),
+      transactionManager: ExecutionContext.getStore()
+        ? ExecutionContext.transactionManager
+        : TransactionManagerFactory.mongo(),
     });
   }
 }

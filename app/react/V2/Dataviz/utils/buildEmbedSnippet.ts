@@ -1,4 +1,7 @@
-export const buildPageEmbedSnippet = (id: string): string => `<Dataviz id="${id}" />`;
+const DEFAULT_PAGE_EMBED_HEIGHT = 320;
+
+export const buildPageEmbedSnippet = (id: string): string =>
+  `<Dataviz id="${id}" height="${DEFAULT_PAGE_EMBED_HEIGHT}"/>`;
 
 export const buildEmbedSnippet = buildPageEmbedSnippet;
 

@@ -1,5 +1,5 @@
 import { MongoDataSource } from '#api/core/infrastructure/mongodb/common/MongoDataSource.js';
-import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
+import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
 import { Db } from 'mongodb';
 import { CsvImportRelationshipPendingValuesDataSource } from '../../application/contracts/CsvImportRelationshipPendingValuesDataSource.js';
 import { CsvImportRelationshipPendingValues } from '../../domain/CsvImportRelationshipPendingValues.js';
@@ -17,7 +17,7 @@ class MongoCsvImportRelationshipPendingValuesDataSource
 {
   protected collectionName = 'csv_import_relationships_pending_values';
 
-  constructor(db: Db, transactionManager: MongoTransactionManager) {
+  constructor(db: Db, transactionManager: TransactionManager) {
     super(db, transactionManager);
   }
 

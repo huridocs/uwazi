@@ -1,5 +1,7 @@
 import db, { DBFixture } from '#api/utils/testing_db.js';
+import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 
+const factory = getFixturesFactory();
 const pageToUpdate = db.id();
 
 const emptyDraft = { content: '', script: '', css: '' };
@@ -50,16 +52,8 @@ const fixtures: DBFixture = {
     },
   ],
   templates: [
-    {
-      _id: db.id(),
-      title: 'Template with custom page 1',
-      entityViewPage: '1',
-    },
-    {
-      _id: db.id(),
-      title: 'Template with custom page 2',
-      entityViewPage: '1',
-    },
+    factory.template('Template with custom page 1', [], { entityViewPage: '1' }),
+    factory.template('Template with custom page 2', [], { entityViewPage: '1' }),
   ],
 };
 

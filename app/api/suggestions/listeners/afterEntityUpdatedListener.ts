@@ -43,7 +43,10 @@ export class AfterEntityUpdatedListener {
         return;
       }
 
-      await this.deps.updateSuggestionsAfterEntityUpdate.execute({ entities: after });
+      await this.deps.updateSuggestionsAfterEntityUpdate.execute({
+        entities: after,
+        previousEntities: before,
+      });
     } else {
       await this.deps.processSuggestionsAfterTemplateChanged.execute({
         entities: after,

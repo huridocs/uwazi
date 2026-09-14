@@ -10,6 +10,7 @@ import { EntityPreviewBatchHandler } from '../EntityPreviewBatchHandler.js';
 import { search } from '#api/search/index.js';
 import { WebSockets } from '#api/core/application/contracts/WebSockets.js';
 import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js';
+import { Settings } from '#api/core/domain/settings/Settings.js';
 
 const f = getFixturesFactory();
 
@@ -19,6 +20,8 @@ const fixtures: DBFixture = {
       languages: [
         { default: true, key: 'en', label: 'English' },
         { key: 'es', label: 'Spanish' },
+        { key: 'ja', label: 'Japanese', installing: true },
+        { key: 'zh', label: 'Chinese', installing: true },
       ],
     },
   ],
@@ -40,12 +43,30 @@ const fixtures: DBFixture = {
   ],
 };
 
+const createSettingsDSMock = () => {
+  const settings = new Settings({
+    languages: [
+      { key: 'en', label: 'English', default: true },
+      { key: 'ja', label: 'Japanese', installing: true },
+      { key: 'zh', label: 'Chinese', installing: true },
+    ],
+  });
+  jest.spyOn(settings, 'setLanguageInstalling');
+  return {
+    settings,
+    ds: {
+      get: jest.fn().mockResolvedValue(settings),
+      update: jest.fn().mockImplementation(async value => value),
+    } as jest.Mocked<Pick<SettingsDataSource, 'get' | 'update'>>,
+  };
+};
+
 const heartbeat = jest.fn();
 
 const createSUT = (
   mockWebSockets: jest.Mocked<WebSockets>,
   innerDispatcher: SyncDispatcherForTests = new SyncDispatcherForTests({}),
-  mockSettingsDS?: jest.Mocked<Pick<SettingsDataSource, 'setLanguageInstalling'>>
+  mockSettingsDS?: jest.Mocked<Pick<SettingsDataSource, 'get' | 'update'>>
 ) =>
   testingEnvironment.runWithContext(() =>
     CloneLanguageEntitiesJobFactory.default({
@@ -213,22 +234,23 @@ describe('CloneLanguageEntitiesJob', () => {
 
   describe('installing flag management', () => {
     it('should clear installing flag for each target language on success', async () => {
-      const mockSettingsDS = { setLanguageInstalling: jest.fn().mockResolvedValue(undefined) };
+      const { settings, ds } = createSettingsDSMock();
 
-      await dispatch(createSUT(mockWebSockets, new SyncDispatcherForTests({}), mockSettingsDS), [
+      await dispatch(createSUT(mockWebSockets, new SyncDispatcherForTests({}), ds), [
         { from: 'en', to: 'ja' },
         { from: 'en', to: 'zh' },
       ]);
 
-      expect(mockSettingsDS.setLanguageInstalling).toHaveBeenCalledWith('ja', false);
-      expect(mockSettingsDS.setLanguageInstalling).toHaveBeenCalledWith('zh', false);
+      expect(settings.setLanguageInstalling).toHaveBeenCalledWith('ja', false);
+      expect(settings.setLanguageInstalling).toHaveBeenCalledWith('zh', false);
+      expect(ds.update).toHaveBeenCalledWith(settings);
     });
 
     it('should clear installing flag on final retry failure', async () => {
-      const mockSettingsDS = { setLanguageInstalling: jest.fn().mockResolvedValue(undefined) };
+      const { settings, ds } = createSettingsDSMock();
       jest.spyOn(search, 'indexEntities').mockRejectedValue(new Error('index failed'));
 
-      const job = createSUT(mockWebSockets, new SyncDispatcherForTests({}), mockSettingsDS);
+      const job = createSUT(mockWebSockets, new SyncDispatcherForTests({}), ds);
       await expect(
         job.handleDispatch(heartbeat, { pairs: [{ from: 'en', to: 'ja' }] } as any, {
           namespace: tenants.current().name,
@@ -237,14 +259,14 @@ describe('CloneLanguageEntitiesJob', () => {
         })
       ).rejects.toThrow('index failed');
 
-      expect(mockSettingsDS.setLanguageInstalling).toHaveBeenCalledWith('ja', false);
+      expect(settings.setLanguageInstalling).toHaveBeenCalledWith('ja', false);
     });
 
     it('should NOT clear installing flag on non-final retry failure', async () => {
-      const mockSettingsDS = { setLanguageInstalling: jest.fn().mockResolvedValue(undefined) };
+      const { settings, ds } = createSettingsDSMock();
       jest.spyOn(search, 'indexEntities').mockRejectedValue(new Error('index failed'));
 
-      const job = createSUT(mockWebSockets, new SyncDispatcherForTests({}), mockSettingsDS);
+      const job = createSUT(mockWebSockets, new SyncDispatcherForTests({}), ds);
       await expect(
         job.handleDispatch(heartbeat, { pairs: [{ from: 'en', to: 'ja' }] } as any, {
           namespace: tenants.current().name,
@@ -253,7 +275,7 @@ describe('CloneLanguageEntitiesJob', () => {
         })
       ).rejects.toThrow('index failed');
 
-      expect(mockSettingsDS.setLanguageInstalling).not.toHaveBeenCalled();
+      expect(settings.setLanguageInstalling).not.toHaveBeenCalled();
     });
   });
 });

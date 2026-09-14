@@ -37,7 +37,7 @@ export class PXEntityUpdatedListener {
 
   private setupDependencies() {
     const connection = getConnection();
-    const mongoTransactionManager = TransactionManagerFactory.default();
+    const mongoTransactionManager = TransactionManagerFactory.mongo();
 
     const extractorsDS = PXExtractorsDataSourceFactory.createDefault({
       connection,

@@ -1,6 +1,6 @@
 import { Db, ObjectId } from 'mongodb';
 import { MongoDataSource } from '#api/core/infrastructure/mongodb/common/MongoDataSource.js';
-import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
+import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
 import { Job, PushJobInput, QueueAdapter } from './QueueAdapter.js';
 import { Params } from '../application/contracts/Dispatchable.js';
 
@@ -23,7 +23,7 @@ export interface JobDBO {
 export class MongoQueueAdapter extends MongoDataSource<JobDBO> implements QueueAdapter {
   protected collectionName = 'jobs';
 
-  constructor(db: Db, transactionManager: MongoTransactionManager) {
+  constructor(db: Db, transactionManager: TransactionManager) {
     super(db, transactionManager, { useSyncedCollection: false });
   }
 

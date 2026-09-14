@@ -1,29 +1,37 @@
-import { Extractors } from '#api/services/informationextraction/ixextractors.js';
-import { IXSuggestionsQuery, SuggestionCustomFilter } from '#shared/types/suggestionType.js';
 import { ObjectId } from 'mongodb';
+import { Extractors } from '#api/services/informationextraction/ixextractors.js';
+import { IXSuggestionsQuery } from '#shared/types/suggestionType.js';
 import templates from '#api/core/v1_layer/templates/index.js';
 import { propertyTypeIsMultiValued } from '#api/services/informationextraction/ixMaterials.js';
-import { getMatchStage } from '../pipelineStages.js';
-import { IXSuggestionsModel } from '../IXSuggestionsModel.js';
-import { PipelineBuilder } from '../queryBuilder.js';
+import {
+  IXSuggestionsTableQueryService,
+  SuggestionStatusFilter,
+} from '../domain/IXSuggestionsTableQueryService.js';
 import { Pagination } from '../pagination.js';
 import { Sorter } from './sorter.js';
 
 type InputDto = {
   extractorId: string;
-  filter?: SuggestionCustomFilter;
+  filter?: SuggestionStatusFilter;
   sort?: IXSuggestionsQuery['sort'];
   pagination?: IXSuggestionsQuery['page'];
 };
 
+/**
+ * The store-independent half of the settings suggestions table: which extractor and property the
+ * table is showing, and what an absent `suggestedValue` should read as.
+ *
+ * Split out of the mongo pipeline it used to be fused with so that a second store implements
+ * `IXSuggestionsTableQueryService` alone. Everything asserted by
+ * `specs/getSuggestionsForTableQuery.spec.ts` therefore holds for every store.
+ */
 export class GetSuggestionsForTableQuery {
-  private pipelineBuilder: PipelineBuilder;
+  private queryService: IXSuggestionsTableQueryService;
 
-  constructor() {
-    this.pipelineBuilder = new PipelineBuilder();
+  constructor(queryService: IXSuggestionsTableQueryService) {
+    this.queryService = queryService;
   }
 
-  // eslint-disable-next-line max-statements
   async execute(input: InputDto) {
     const extractorId = new ObjectId(input.extractorId);
     const extractor = await Extractors.getById(extractorId);
@@ -42,70 +50,24 @@ export class GetSuggestionsForTableQuery {
       currentPage: input?.pagination?.number,
     });
 
-    const { matchStage } = getMatchStage(new ObjectId(extractorId), input.filter, false);
-    const total = await IXSuggestionsModel.db.countDocuments(matchStage[0].$match!);
-
-    this.pipelineBuilder.add(matchStage[0]);
-
-    this.pipelineBuilder.add({
-      $sort: sorter.$sort,
+    const { rows, total } = await this.queryService.getForTable({
+      extractorId,
+      statusFilter: input.filter,
+      sort: { field: sorter.field, order: sorter.order },
+      page: { skip: pagination.skip, limit: pagination.pageSize },
     });
 
-    this.pipelineBuilder.add({
-      $skip: pagination.skip,
-    });
+    const isMultiValue = propertyTypeIsMultiValued(targetProperty.type);
 
-    this.pipelineBuilder.add({
-      $limit: pagination.pageSize,
-    });
-
-    this.applyPropertiesProjectStage();
-
-    const pipeline = this.pipelineBuilder.build();
-
-    let suggestions = await IXSuggestionsModel.db.aggregate(pipeline);
-
-    suggestions = suggestions.map(s => {
-      const isMultiValue = propertyTypeIsMultiValued(targetProperty.type);
-      const suggestedValue = s.suggestedValue || (isMultiValue ? [] : '');
-
-      const _s = {
-        ...s,
-        suggestedValue,
-      };
-
-      return _s;
-    });
+    const suggestions = rows.map(row => ({
+      ...row,
+      suggestedValue: row.suggestedValue || (isMultiValue ? [] : ''),
+    }));
 
     return {
       suggestions,
       total,
       totalPages: pagination.calculateNumberOfPages(total),
     };
-  }
-
-  private applyPropertiesProjectStage() {
-    this.pipelineBuilder.add({
-      $project: {
-        sharedId: '$entityId',
-        entityId: '$entityLanguageId',
-        entityTemplateId: '$entityTemplate',
-        currentValue: 1,
-        entityTitle: 1,
-        language: 1,
-
-        _id: 1,
-        propertyName: 1,
-        extractorId: 1,
-        suggestedValue: 1,
-        segment: 1,
-        state: 1,
-        date: 1,
-        error: 1,
-        fileId: 1,
-        status: 1,
-        useForTraining: { $ifNull: ['$useForTraining', false] },
-      },
-    });
   }
 }

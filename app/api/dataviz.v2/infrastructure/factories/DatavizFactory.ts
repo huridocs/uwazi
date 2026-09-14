@@ -31,7 +31,7 @@ import { DatavizScheduledRefreshJobHandler } from '../jobHandlers/DatavizSchedul
 
 class DatavizFactory {
   private static getTransactionManager(): MongoTransactionManager {
-    return ExecutionContext.transactionManager as MongoTransactionManager;
+    return ExecutionContext.mongoTransactionManager;
   }
 
   private static getExecutionScope() {

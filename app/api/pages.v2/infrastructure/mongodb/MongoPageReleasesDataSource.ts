@@ -1,10 +1,9 @@
-import { Db, ObjectId } from 'mongodb';
+import { ObjectId } from 'mongodb';
 import { PageReleasesDataSource } from '#api/pages.v2/application/contracts/PageReleasesDataSource.js';
 import { PageReleaseSnapshot } from '#api/pages.v2/domain/Page.js';
 import { PageReleaseNotFoundError } from '#api/pages.v2/domain/errors.js';
 import { Result } from '#api/core/libs/Result.js';
 import { MongoDataSource } from '#api/core/infrastructure/mongodb/common/MongoDataSource.js';
-import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
 import { PageReleaseDBO } from './PageDBO.js';
 import { PageMapper } from './PageMapper.js';
 
@@ -13,10 +12,6 @@ class MongoPageReleasesDataSource
   implements PageReleasesDataSource
 {
   protected collectionName = 'page_releases';
-
-  constructor(db: Db, transactionManager: MongoTransactionManager) {
-    super(db, transactionManager);
-  }
 
   async getMaxVersion(pageId: string): Promise<number> {
     const doc = await this.getCollection()

@@ -15,10 +15,10 @@ export class MongoTemplatesSyncHandler
   private dao: MongoTemplatesDAO;
 
   constructor() {
-    super(getConnection(), TransactionManagerFactory.default(), { useSyncedCollection: false });
+    super(getConnection(), TransactionManagerFactory.mongo(), { useSyncedCollection: false });
     this.dao = new MongoTemplatesDAO({
       db: getConnection(),
-      transactionManager: TransactionManagerFactory.default(),
+      transactionManager: TransactionManagerFactory.mongo(),
     });
   }
 

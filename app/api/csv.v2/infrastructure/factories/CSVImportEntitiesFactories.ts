@@ -8,7 +8,7 @@ import { TemplatesDataSourceFactory } from '#api/core/infrastructure/factories/T
 import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
 import { ThesauriDataSourceFactory } from '#api/core/infrastructure/factories/ThesauriDataSourceFactory.js';
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
-import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
+import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
 import { CsvImportEntities } from '../../CsvImportEntities.js';
 import { ListCsvImportEntitiesImportsUseCase } from '../../application/useCases/ListCsvImportEntitiesImportsUseCase.js';
 import { GetCsvImportEntitiesImportUseCase } from '../../application/useCases/GetCsvImportEntitiesImportUseCase.js';
@@ -23,38 +23,38 @@ import { MongoCsvImportRelationshipValuesDataSource } from '../mongodb/MongoCsvI
 import { MongoCsvImportRelationshipPendingValuesDataSource } from '../mongodb/MongoCsvImportRelationshipPendingValuesDataSource.js';
 
 export class CSVImportEntitiesFactories {
-  static CSVImportDSDefault(transactionManager: MongoTransactionManager) {
+  static CSVImportDSDefault(transactionManager: TransactionManager) {
     const db = getConnection();
     return new MongoCsvImportsDataSource(db, transactionManager);
   }
 
-  static CSVImportRowsDSDefault(transactionManager: MongoTransactionManager) {
+  static CSVImportRowsDSDefault(transactionManager: TransactionManager) {
     const db = getConnection();
     return new MongoCsvImportRowsDataSource(db, transactionManager);
   }
 
-  static CSVImportThesauriValuesDSDefault(transactionManager: MongoTransactionManager) {
+  static CSVImportThesauriValuesDSDefault(transactionManager: TransactionManager) {
     const db = getConnection();
     return new MongoCsvImportThesauriValuesDataSource(db, transactionManager);
   }
 
-  static CSVImportRowErrorsDSDefault(transactionManager: MongoTransactionManager) {
+  static CSVImportRowErrorsDSDefault(transactionManager: TransactionManager) {
     const db = getConnection();
     return new MongoCsvImportRowErrorsDataSource(db, transactionManager);
   }
 
-  static CSVImportRelationshipValuesDSDefault(transactionManager: MongoTransactionManager) {
+  static CSVImportRelationshipValuesDSDefault(transactionManager: TransactionManager) {
     const db = getConnection();
     return new MongoCsvImportRelationshipValuesDataSource(db, transactionManager);
   }
 
-  static CSVImportRelationshipPendingValuesDSDefault(transactionManager: MongoTransactionManager) {
+  static CSVImportRelationshipPendingValuesDSDefault(transactionManager: TransactionManager) {
     const db = getConnection();
     return new MongoCsvImportRelationshipPendingValuesDataSource(db, transactionManager);
   }
 
   static default() {
-    const transactionManager = TransactionManagerFactory.default();
+    const transactionManager = TransactionManagerFactory.mongo();
     const csvImportsDS = this.CSVImportDSDefault(transactionManager);
     const tenant = tenants.current();
     const fileStorage = FileStorageFactory.default();
@@ -70,7 +70,7 @@ export class CSVImportEntitiesFactories {
   }
 
   static CSVPreflightJobDefault() {
-    const transactionManager = TransactionManagerFactory.default();
+    const transactionManager = TransactionManagerFactory.mongo();
     const csvImportsDS = this.CSVImportDSDefault(transactionManager);
     const templatesDS = TemplatesDataSourceFactory.default({ transactionManager });
     const settingsDS = SettingsDataSourceFactory.default({ transactionManager });
@@ -92,7 +92,7 @@ export class CSVImportEntitiesFactories {
   }
 
   static listCsvImportEntitiesImportsUseCaseDefault() {
-    const transactionManager = TransactionManagerFactory.default();
+    const transactionManager = TransactionManagerFactory.mongo();
     const csvImportEntitiesImportsDS = this.CSVImportDSDefault(transactionManager);
 
     return new ListCsvImportEntitiesImportsUseCase({
@@ -101,7 +101,7 @@ export class CSVImportEntitiesFactories {
   }
 
   static getCsvImportEntitiesImportUseCaseDefault() {
-    const transactionManager = TransactionManagerFactory.default();
+    const transactionManager = TransactionManagerFactory.mongo();
     const csvImportEntitiesImportsDS = this.CSVImportDSDefault(transactionManager);
     const rowErrorsDS = this.CSVImportRowErrorsDSDefault(transactionManager);
 
@@ -112,7 +112,7 @@ export class CSVImportEntitiesFactories {
   }
 
   static cancelCsvImportEntitiesImportUseCaseDefault() {
-    const transactionManager = TransactionManagerFactory.default();
+    const transactionManager = TransactionManagerFactory.mongo();
     const csvImportEntitiesImportsDS = this.CSVImportDSDefault(transactionManager);
 
     return new CancelCsvImportEntitiesImportUseCase({
@@ -122,7 +122,7 @@ export class CSVImportEntitiesFactories {
   }
 
   static downloadCsvImportFailedRowsCsvUseCaseDefault() {
-    const transactionManager = TransactionManagerFactory.default();
+    const transactionManager = TransactionManagerFactory.mongo();
     const csvImportEntitiesImportsDS = this.CSVImportDSDefault(transactionManager);
     const fileStorage = FileStorageFactory.default();
 

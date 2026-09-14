@@ -13,7 +13,7 @@ import { ThesauriDataSourceFactory } from '#api/core/infrastructure/factories/Th
 import { FilesServiceFactory } from '#api/core/infrastructure/factories/FilesServiceFactory.js';
 import { FilesDataSourceFactory } from '#api/core/infrastructure/factories/FilesDataSourceFactory.js';
 import { EntitiesServiceFactory } from '#api/core/infrastructure/factories/EntitiesServiceFactory.js';
-import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
+import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
 import { tenants } from '#api/tenants/tenantContext.js';
 import { CsvImportEntitiesJob } from '../../application/jobs/CsvImportEntitiesJob.js';
 import { CsvEntitiesImportMapper } from '../../application/services/CsvEntitiesImportMapper.js';
@@ -21,13 +21,13 @@ import { CSVImportEntitiesFactories } from './CSVImportEntitiesFactories.js';
 import { EntitiesDataSourceFactory } from '#api/core/infrastructure/factories/EntitiesDataSourceFactory.js';
 
 type FactoryOptions = {
-  transactionManager?: MongoTransactionManager;
+  transactionManager?: TransactionManager;
   fileStorage?: FileStorage;
   batchSize?: number;
   jobsDispatcher?: JobsDispatcher;
 };
 
-const buildCsvDataSources = (transactionManager: MongoTransactionManager) => {
+const buildCsvDataSources = (transactionManager: TransactionManager) => {
   const csvImportsDS = CSVImportEntitiesFactories.CSVImportDSDefault(transactionManager);
   const rowsDS = CSVImportEntitiesFactories.CSVImportRowsDSDefault(transactionManager);
   const rowErrorsDS = CSVImportEntitiesFactories.CSVImportRowErrorsDSDefault(transactionManager);
@@ -46,7 +46,7 @@ const buildCsvDataSources = (transactionManager: MongoTransactionManager) => {
 };
 
 const buildPropertyAssignmentCreator = (params: {
-  transactionManager: MongoTransactionManager;
+  transactionManager: TransactionManager;
   settingsDS: ReturnType<typeof SettingsDataSourceFactory.default>;
   entitiesDS: ReturnType<typeof EntitiesDataSourceFactory.default>;
 }) => {
@@ -65,7 +65,7 @@ const buildPropertyAssignmentCreator = (params: {
 };
 
 const buildEntitiesService = (params: {
-  transactionManager: MongoTransactionManager;
+  transactionManager: TransactionManager;
   jobsDispatcher: JobsDispatcher;
   settingsDS: ReturnType<typeof SettingsDataSourceFactory.default>;
   templatesDS: ReturnType<typeof TemplatesDataSourceFactory.default>;
@@ -80,7 +80,7 @@ const buildEntitiesService = (params: {
   });
 
 const buildEntityServices = (
-  transactionManager: MongoTransactionManager,
+  transactionManager: TransactionManager,
   fileStorage: FileStorage,
   jobsDispatcher: JobsDispatcher
 ) => {
@@ -120,7 +120,7 @@ class CsvImportEntitiesJobFactory {
   }
 
   static build(options: FactoryOptions = {}) {
-    const transactionManager = options.transactionManager ?? TransactionManagerFactory.default();
+    const transactionManager = options.transactionManager ?? TransactionManagerFactory.mongo();
     const fileStorage = options.fileStorage ?? FileStorageFactory.default();
     const jobsDispatcher =
       options.jobsDispatcher ?? UwaziDispatcherFactory(tenants.current().name, transactionManager);

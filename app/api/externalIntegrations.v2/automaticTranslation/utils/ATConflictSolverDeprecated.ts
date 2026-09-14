@@ -33,7 +33,7 @@ export const ATSolveVersionConflict = async (
   _newEntity: EntitySchema
 ) => {
   const ATConfig = await AutomaticTranslationFactory.defaultATConfigDataSource(
-    TransactionManagerFactory.default()
+    TransactionManagerFactory.mongo()
   ).get();
 
   if (!ATConfig.active) {

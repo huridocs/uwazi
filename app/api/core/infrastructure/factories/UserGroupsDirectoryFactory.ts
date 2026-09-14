@@ -21,7 +21,12 @@ class UserGroupsDirectoryFactory {
     }
 
     return new MongoUserGroupsDirectory({
-      dao: new MongoUserGroupsDAO(getConnection(), TransactionManagerFactory.default()),
+      dao: new MongoUserGroupsDAO(
+        getConnection(),
+        ExecutionContext.getStore()
+          ? ExecutionContext.transactionManager
+          : TransactionManagerFactory.mongo()
+      ),
     });
   }
 }
