@@ -41,10 +41,11 @@ const updatePropertySelections = async (
   // flag-aware transaction, as FilesService's own writes do.
   const { transactionManager } = ExecutionContext;
 
-  const suggestionFileIds = suggestions.map(s => s.fileId).filter(Boolean);
+  // Suggestions carry their ids the way Mongo stores them; the port takes strings.
+  const suggestionFileIds = suggestions.map(s => s.fileId).filter(Boolean).map(String);
   if (!suggestionFileIds.length) return;
 
-  const fetchedFiles = await filesDS.getByIds(suggestionFileIds as string[]);
+  const fetchedFiles = await filesDS.getByIds(suggestionFileIds);
   const filesById = objectIndex(
     fetchedFiles,
     f => f.id.toString() || '',

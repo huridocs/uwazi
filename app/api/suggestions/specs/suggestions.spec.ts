@@ -1017,6 +1017,29 @@ describe('suggestions', () => {
         await setUpStore(fixtures);
       });
 
+      /**
+       * The selection the user accepted has to reach the file, or the pdf keeps highlighting the
+       * value that was replaced. The ids travel from the suggestion, which carries them the way
+       * Mongo stores them (F50).
+       */
+      it('should write the accepted selection to the file of a pdf suggestion', async () => {
+        const { suggestions } = await getSuggestions({ extractorId: factory.id('age_extractor') });
+        const suggestion = suggestions.find(
+          (s: any) => s.fileId?.toString() === factory.idString('F1')
+        );
+
+        await runWithEntityUpdatedListeners(async () =>
+          Suggestions.accept([
+            { _id: suggestion._id, sharedId: suggestion.sharedId, entityId: suggestion.entityId },
+          ])
+        );
+
+        const file = (await storedFiles()).find(f => f._id === factory.idString('F1'));
+        const accepted = file!.propertySelections.find((p: any) => p.name === 'age');
+
+        expect(accepted.selection.text).toBe('17');
+      });
+
       it('should update file property selections directly via V2 infrastructure', async () => {
         const fileId = factory.id('fileForentityWithSelects');
 

@@ -923,6 +923,34 @@ describe('PostgresTable', () => {
     });
   });
 
+  describe('object ids in conditions', () => {
+    /**
+     * Ids arrive as ObjectIds from anything that still speaks Mongo. `pg` would serialise one with
+     * `JSON.stringify` and bind `'"<hex>"'`, matching nothing and reporting nothing (F50).
+     */
+    it('should match a row when the id is given as an ObjectId', async () => {
+      const table = createTable();
+      const id = new ObjectId();
+      await table.insert({ _id: id.toString(), name: 'by object id', values: jsonVal([]) });
+
+      const found = await table.where({ _id: id }).first();
+      const foundIn = await table.whereIn('_id', [id as any]).all();
+
+      expect(found).toMatchObject({ name: 'by object id' });
+      expect(foundIn).toHaveLength(1);
+    });
+
+    it('should store an id given as an ObjectId as its hex string', async () => {
+      const table = createTable();
+      const id = new ObjectId();
+      await table.insert({ _id: id as any, name: 'written by object id', values: jsonVal([]) });
+
+      const found = await table.where({ _id: id.toString() }).first();
+
+      expect(found).toMatchObject({ _id: id.toString(), name: 'written by object id' });
+    });
+  });
+
   describe('identity column', () => {
     it('should add it to a projected read, so the caller knows which rows it read', async () => {
       const table = createTable();

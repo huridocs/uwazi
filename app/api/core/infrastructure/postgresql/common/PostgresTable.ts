@@ -35,6 +35,25 @@ export type QueryState = {
 };
 
 /**
+ * Mongo's id type reaching a bind. Postgres keeps ids as TEXT hex, which is exactly what an
+ * ObjectId spells, but `pg` serialises an unknown object with `JSON.stringify` — so an ObjectId
+ * binds as `'"6aa4…"'`, quotes included, and matches nothing at all. No error, no row: accepting a
+ * pdf suggestion silently stopped writing its file selection that way (F50).
+ *
+ * Checked by `_bsontype` rather than `instanceof`, which fails across two copies of the driver.
+ */
+const isObjectId = (value: unknown): boolean =>
+  typeof value === 'object' &&
+  value !== null &&
+  (value as { _bsontype?: string })._bsontype === 'ObjectId';
+
+/** An ObjectId binds as its hex string; everything else binds as it is. */
+const bindable = (value: unknown): unknown => (isObjectId(value) ? String(value) : value);
+
+const bindableCondition = (condition: Record<string, unknown>): Record<string, unknown> =>
+  Object.fromEntries(Object.entries(condition).map(([key, value]) => [key, bindable(value)]));
+
+/**
  * Immutable, tenant-scoped query builder over a single Postgres table.
  *
  * Tenant isolation is enforced by Row-Level Security (see migration 004): every
@@ -91,7 +110,7 @@ export class PostgresTable<TRow = Record<string, unknown>> {
   }
 
   where(condition: Record<string, unknown>): PostgresTable<TRow> {
-    return this.chain(this.qb.clone().where(condition));
+    return this.chain(this.qb.clone().where(bindableCondition(condition)));
   }
 
   whereAny(conditions: Record<string, unknown>[]): PostgresTable<TRow> {
@@ -152,7 +171,7 @@ export class PostgresTable<TRow = Record<string, unknown>> {
   }
 
   whereNot(column: string, value: Knex.Value): PostgresTable<TRow> {
-    return this.chain(this.qb.clone().whereNot(column, value));
+    return this.chain(this.qb.clone().whereNot(column, bindable(value) as Knex.Value));
   }
 
   whereNull(column: string): PostgresTable<TRow> {
@@ -164,11 +183,11 @@ export class PostgresTable<TRow = Record<string, unknown>> {
   }
 
   whereIn(column: string, values: Knex.Value[]): PostgresTable<TRow> {
-    return this.chain(this.qb.clone().whereIn(column, values));
+    return this.chain(this.qb.clone().whereIn(column, values.map(bindable) as Knex.Value[]));
   }
 
   whereNotIn(column: string, values: Knex.Value[]): PostgresTable<TRow> {
-    return this.chain(this.qb.clone().whereNotIn(column, values));
+    return this.chain(this.qb.clone().whereNotIn(column, values.map(bindable) as Knex.Value[]));
   }
 
   /** Escape hatch for conditions `where*` can't express, e.g. `"expiresAt" > now()`. */
@@ -479,7 +498,9 @@ export class PostgresTable<TRow = Record<string, unknown>> {
     const serialized = { ...row };
     for (const key of Object.keys(serialized)) {
       const value = serialized[key];
-      if (typeof value === 'object' && value !== null) {
+      if (isObjectId(value)) {
+        serialized[key] = String(value);
+      } else if (typeof value === 'object' && value !== null) {
         serialized[key] = JSON.stringify(value);
       }
     }
