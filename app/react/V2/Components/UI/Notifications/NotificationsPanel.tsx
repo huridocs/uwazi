@@ -69,10 +69,7 @@ const NotificationsPanel = () => {
             <Translate>Notifications</Translate>
           </h1>
           {itemCount > 0 && (
-            <span
-              className="flex h-[18px] min-w-[18px] items-center justify-center rounded-full px-1.5 text-[11px] font-bold tabular-nums text-white"
-              style={{ backgroundColor: 'var(--color-theme-accent-supporting)' }}
-            >
+            <span className="flex h-4.5 min-w-4.5 items-center justify-center rounded-full bg-ink px-1.5 text-[11px] font-bold tabular-nums text-parchment">
               {itemCount}
             </span>
           )}

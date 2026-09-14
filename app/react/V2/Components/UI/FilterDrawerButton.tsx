@@ -34,7 +34,7 @@ const FilterDrawerButton = ({ activeCount, onClick, size = 'sm' }: FilterDrawerB
         <Translate>Filters</Translate>
       </span>
       {active && (
-        <span className="inline-flex h-3.5 min-w-3.5 items-center justify-center rounded-full bg-ink px-1 text-[9px] font-semibold leading-none text-white tabular-nums">
+        <span className="inline-flex h-3.5 min-w-3.5 items-center justify-center rounded-full bg-ink px-1 text-[9px] font-semibold leading-none text-parchment tabular-nums">
           {activeCount}
         </span>
       )}

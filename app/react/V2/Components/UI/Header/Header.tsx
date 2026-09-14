@@ -126,7 +126,7 @@ const HeaderView = ({ librarySearch, libraryFilters, setSidePanelView }: HeaderR
             <button
               type="button"
               className="header-bar-icon-button flex h-9 w-9 items-center justify-center rounded-md transition-colors"
-              onClick={() => setThemeMode(themeMode === 'light' ? 'dark' : 'light')}
+              onClick={() => setThemeMode(mode => (mode === 'light' ? 'dark' : 'light'))}
               aria-label={themeMode === 'light' ? 'Toggle dark theme' : 'Toggle light theme'}
               title={themeMode === 'light' ? 'Toggle dark theme' : 'Toggle light theme'}
             >
