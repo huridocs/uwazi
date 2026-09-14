@@ -1027,6 +1027,9 @@ describe('suggestions', () => {
         const suggestion = suggestions.find(
           (s: any) => s.fileId?.toString() === factory.idString('F1')
         );
+        if (!suggestion) {
+          throw new Error('fixture missing the age suggestion on file F1');
+        }
 
         await runWithEntityUpdatedListeners(async () =>
           Suggestions.accept([

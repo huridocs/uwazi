@@ -42,7 +42,10 @@ const updatePropertySelections = async (
   const { transactionManager } = ExecutionContext;
 
   // Suggestions carry their ids the way Mongo stores them; the port takes strings.
-  const suggestionFileIds = suggestions.map(s => s.fileId).filter(Boolean).map(String);
+  const suggestionFileIds = suggestions
+    .map(s => s.fileId)
+    .filter(Boolean)
+    .map(String);
   if (!suggestionFileIds.length) return;
 
   const fetchedFiles = await filesDS.getByIds(suggestionFileIds);
