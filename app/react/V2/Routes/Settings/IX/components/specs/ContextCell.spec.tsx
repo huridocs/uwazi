@@ -47,7 +47,7 @@ describe('ContextCell', () => {
       'ix_matching_paragraph px-1 text-ink'
     );
     expect(screen.getAllByText('with matching')[0].className).toBe(
-      'ix_match bg-[#FFE29A] text-ink'
+      'ix_match bg-highlight text-ink'
     );
   });
 

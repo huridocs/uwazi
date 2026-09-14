@@ -100,12 +100,12 @@ const SuggestedValue = ({
 
   return (
     <div className="flex flex-col gap-1">
-      <Truncate maxLength={100} ellipsisPosition="center" tooltipClassname="text-xs text-gray-500">
-        <span className="text-gray-500">{getCurrentValue()}</span>
+      <Truncate maxLength={100} ellipsisPosition="center" tooltipClassname="text-xs text-ink-muted">
+        <span className="text-ink-muted">{getCurrentValue()}</span>
       </Truncate>
       <Truncate maxLength={100} ellipsisPosition="center" tooltipClassname="text-xs">
         {suggestion.state.obsolete && (
-          <span className="text-gray-400 italic">
+          <span className="text-ink-muted italic">
             (<Translate>obsolete</Translate>) {getSuggestedValue()}
           </span>
         )}

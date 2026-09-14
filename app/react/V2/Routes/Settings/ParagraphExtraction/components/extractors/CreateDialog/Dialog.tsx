@@ -14,8 +14,8 @@ const Dialog = () => {
     <Modal size="xxl" ariaLabel="Paragraph extractor wizard">
       <Modal.Header>
         <div className="flex flex-col">
-          <h1 className="text-lg font-semibold text-gray-900">{AddExtractorSteps[step].title()}</h1>
-          <p className="mt-1 text-sm font-light text-gray-500">
+          <h1 className="text-lg font-semibold text-ink">{AddExtractorSteps[step].title()}</h1>
+          <p className="mt-1 text-sm font-light text-ink-muted">
             {AddExtractorSteps[step].description()}
           </p>
         </div>
@@ -31,7 +31,7 @@ const Dialog = () => {
             isDisabled={targetTemplateOptions.length === 0}
           />
           {step === 1 && (
-            <span className="mt-5 text-xs font-light text-gray-500 max-w-[500px]">
+            <span className="mt-5 text-xs font-light text-ink-muted max-w-[500px]">
               <Translate>
                 Only templates with at least one rich text property and one numeric property are
                 available for selection.
@@ -39,7 +39,7 @@ const Dialog = () => {
             </span>
           )}
           {step === 2 && (
-            <span className="mt-5 text-xs font-light text-gray-500 max-w-[500px]">
+            <span className="mt-5 text-xs font-light text-ink-muted max-w-[500px]">
               <Translate>
                 Only templates that are not used as source in any other extractor and are not
                 selected as target in this extractor are available for selection.

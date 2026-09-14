@@ -368,7 +368,7 @@ const PageEditor = () => {
                       >
                         <div className="flex gap-2 hover:font-bold hover:cursor-pointer">
                           <ArrowTopRightOnSquareIcon className="w-4" />
-                          <Translate className="underline hover:text-primary-700">
+                          <Translate className="underline hover:text-ink">
                             View page
                           </Translate>
                         </div>

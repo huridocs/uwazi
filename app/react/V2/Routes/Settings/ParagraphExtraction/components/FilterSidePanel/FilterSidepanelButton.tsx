@@ -21,7 +21,7 @@ const FilterSidepanelButton = () => {
       />
       <Translate>Filters</Translate>
       {activeFilters > 0 && (
-        <span className="px-3 py-[2px] ml-2 text-xs text-white rounded-md bg-primary-900">
+        <span className="px-3 py-0.5 ml-2 text-xs text-parchment rounded-md bg-ink">
           {activeFilters}
         </span>
       )}

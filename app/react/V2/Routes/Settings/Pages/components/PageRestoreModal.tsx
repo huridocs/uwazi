@@ -35,7 +35,7 @@ const PageRestoreModal = ({
           label: (
             <div className="flex justify-between">
               <span>{message || '-'}</span>
-              <span className="text-sm text-gray-500">{date}</span>
+              <span className="text-sm text-ink-muted">{date}</span>
             </div>
           ),
           searchLabel: `${r.version} ${date} ${r.release_message ?? ''}`,

@@ -22,7 +22,7 @@ const ViewParagraph = ({ paragraphData }: { paragraphData: TablePXEntityParagrap
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="rounded-md bg-gray-50 text-sm font-bold flex gap-2 justify-between p-3">
+      <div className="rounded-md bg-warm text-sm font-bold flex gap-2 justify-between p-3">
         <div>{paragraphData.title}</div>
         <div>
           <DisplayPill color={paragraphTemplate?.color}>
@@ -30,20 +30,20 @@ const ViewParagraph = ({ paragraphData }: { paragraphData: TablePXEntityParagrap
           </DisplayPill>
         </div>
       </div>
-      <div className="rounded-md leading-tight text-sm font-bold border border-gray-100 p-3">
+      <div className="rounded-md leading-tight text-sm font-bold border border-border p-3">
         <Translate>Language</Translate>: {language?.localized_label}
       </div>
-      <div className="rounded-md leading-tight text-sm font-bold border border-gray-100 p-3">
+      <div className="rounded-md leading-tight text-sm font-bold border border-border p-3">
         <Translate>Document</Translate>: {sourceDocument?.originalname}
       </div>
-      <div className="rounded-md leading-tight text-sm font-bold border border-gray-100 p-3">
+      <div className="rounded-md leading-tight text-sm font-bold border border-border p-3">
         <Translate>Paragraph</Translate>: {paragraphData.paragraphNumber}
       </div>
-      <div className="grow rounded-md border border-gray-100 flex flex-col gap-2 p-3">
+      <div className="grow rounded-md border border-border flex flex-col gap-2 p-3">
         <div className="leading-tight text-sm font-bold">
           <Translate>Text</Translate>
         </div>
-        <div className="text-sm text-gray-900 leading-[21px]">{paragraphData.paragraphText}</div>
+        <div className="text-sm text-ink leading-[21px]">{paragraphData.paragraphText}</div>
       </div>
     </div>
   );

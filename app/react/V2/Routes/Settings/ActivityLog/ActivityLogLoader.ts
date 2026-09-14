@@ -8,9 +8,9 @@ import * as activityLogAPI from '#V2/api/activityLog/index.js';
 import type { ActivityLogResponse } from '#V2/api/activityLog/index.js';
 import { ActivityLogEntryType } from '#shared/types/activityLogEntryType.js';
 
-const isArray = _.isArray;
-const isEqual = _.isEqual;
-const isObject = _.isObject;
+const {isArray} = _;
+const {isEqual} = _;
+const {isObject} = _;
 const ITEMS_PER_PAGE = 100;
 
 type LogEntry = ActivityLogEntryType & { rowId: string };

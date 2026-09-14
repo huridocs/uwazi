@@ -11,14 +11,14 @@ interface PaginationStateProps {
 const PaginationState = ({ page = 1, size, currentLength, total }: PaginationStateProps) => {
   const from = (page - 1) * size + 1;
   return (
-    <div className="text-sm font-semibold text-center text-gray-900">
-      <span className="font-light text-gray-500">
+    <div className="text-sm font-semibold text-center text-ink">
+      <span className="font-light text-ink-muted">
         <Translate>Showing</Translate>
       </span>
       &nbsp;
       {from}-{from + currentLength - 1}
       &nbsp;
-      <span className="font-light text-gray-500">
+      <span className="font-light text-ink-muted">
         <Translate>of</Translate>
       </span>
       &nbsp;

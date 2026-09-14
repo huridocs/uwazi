@@ -255,7 +255,7 @@ const OpenSidepanelButton = ({
 };
 
 const TitleCell = ({ cell, row }: CellContext<TableSuggestion, TableSuggestion['fileId']>) => (
-  <div className="text-sm font-normal text-primary-700">
+  <div className="text-sm font-normal text-ink">
     <a href={`/entity/${row.original.sharedId}`} target="_blank" rel="noreferrer">
       {cell.getValue()} ({row.original.language})
     </a>
@@ -319,7 +319,7 @@ const UsedForTrainingCell = ({
       ) : (
         <>
           <PlusCircleIcon
-            className={`w-6 h-6 ${disabled ? 'text-primary-300' : 'text-primary-900'}`}
+            className={`w-6 h-6 ${disabled ? 'text-ink-muted' : 'text-ink'}`}
           />
           <Translate className="sr-only">Add to training set</Translate>
         </>

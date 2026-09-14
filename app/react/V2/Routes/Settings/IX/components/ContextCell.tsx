@@ -15,7 +15,7 @@ const ixContextClassnames: { [key: string]: string } = {
   ix_paragraph: 'ix_paragraph text-ink-muted',
   ix_adjacent_paragraph: 'ix_adjacent_paragraph text-ink-secondary',
   ix_matching_paragraph: 'ix_matching_paragraph px-1 text-ink',
-  ix_match: 'ix_match bg-[#FFE29A] text-ink',
+  ix_match: 'ix_match bg-highlight text-ink',
 };
 
 const truncateMatching = (matchingParagraph: React.ReactElement) => {

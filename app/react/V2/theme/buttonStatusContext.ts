@@ -3,8 +3,7 @@ import {
   mixHex,
   WCAG_AA_LARGE_UI,
 } from '#shared/utils/contrast.js';
-import { LEGACY_BUTTON_VALUES, getAccessibleForeground } from '#V2/theme/buttonThemeShared.js';
-import { getPresetValue } from '#V2/theme/themePresetUtils.js';
+import { getAccessibleForeground } from '#V2/theme/buttonThemeShared.js';
 import type { ThemeRoles } from '#V2/theme/themeRoles.js';
 import type { ThemePresetId } from '#V2/theme/themes.js';
 
@@ -45,25 +44,17 @@ const getStatusSecondaryTheme = ({
 });
 
 const getStatusButtonContext = (
-  presetId: ThemePresetId,
+  _presetId: ThemePresetId,
   secondaryBackground: string,
   roles: ThemeRoles
 ): ButtonStatusContext => {
-  const successSolidBackground = getPresetValue(
-    presetId,
-    LEGACY_BUTTON_VALUES.success,
-    roles.feedback.success
-  );
+  const successSolidBackground = roles.feedback.success;
   const successSolidForeground = getAccessibleForegroundOnBackground(
     successSolidBackground,
     '#FFFFFF',
     WCAG_AA_LARGE_UI
   ).foreground;
-  const successDisabledBackground = getPresetValue(
-    presetId,
-    LEGACY_BUTTON_VALUES.successDisabled,
-    mixHex(successSolidBackground, roles.surface.raised, 0.35)
-  );
+  const successDisabledBackground = mixHex(successSolidBackground, roles.surface.raised, 0.35);
   const successSecondaryTheme = getStatusSecondaryTheme({
     roles,
     secondaryBackground,
@@ -78,16 +69,11 @@ const getStatusButtonContext = (
   return {
     successSolidBackground,
     successSolidForeground,
-    successHoverBackground: getPresetValue(
-      presetId,
-      LEGACY_BUTTON_VALUES.successHover,
-      mixHex(successSolidBackground, '#000000', 0.08)
-    ),
+    successHoverBackground: mixHex(successSolidBackground, '#000000', 0.08),
     successDisabledBackground,
-    successDisabledForeground: getPresetValue(
-      presetId,
-      LEGACY_BUTTON_VALUES.successHover,
-      getAccessibleForeground(successDisabledBackground, successSolidForeground)
+    successDisabledForeground: getAccessibleForeground(
+      successDisabledBackground,
+      successSolidForeground
     ),
     successSecondaryBackground: secondaryBackground,
     successOnSecondaryBackground: successSecondaryTheme.foregroundOnSecondary,

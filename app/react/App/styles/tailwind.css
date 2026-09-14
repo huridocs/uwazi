@@ -27,6 +27,9 @@
   --text-8xl: calc(6rem * var(--v2-text-scale));
   --text-9xl: calc(8rem * var(--v2-text-scale));
   color-scheme: light;
+  --color-ink: var(--color-theme-action-primary, var(--color-theme-text-primary));
+  --color-warm: var(--color-theme-surface-warm, var(--color-theme-bg-warm));
+  --color-border: var(--color-theme-border-primary);
   --tw-shadow-color: rgba(15, 23, 42, 0.12);
   font-family: var(--font-theme-sans, var(--font-sans));
   color: var(--text-primary, var(--color-theme-text-primary, #1a1a1a));
@@ -67,6 +70,10 @@
 
 /* Portals (.fixed) and header chrome embeds reuse .tw-content for theme vars —
    do not paint canvas there or they cover the host surface. */
+.tw-content.dark {
+  color-scheme: dark;
+}
+
 .tw-content:not(.fixed):not(.tw-content--chrome) {
   background: var(--bg-primary, var(--color-theme-bg-primary, #f5f3f0));
 }
@@ -248,10 +255,10 @@
   --spacing-micro: 11px;
   --border-width-arrow: 7px;
 
-  /* Concrete fallbacks: nested theme vars alone resolve invalid on :root (ink currentColor). */
-  --color-border: var(--color-theme-border-primary, #e0d9c8);
+  /* Concrete fallbacks: nested theme vars alone resolve invalid on :root (OS dark → Canvas). */
+  --color-border: var(--color-theme-border-primary, #ede7db);
   --color-warm: var(--color-theme-surface-warm, var(--color-theme-bg-warm, #fcfaf8));
-  --color-ink: var(--color-theme-action-primary, var(--color-theme-text-primary, #1c1917));
+  --color-ink: var(--color-theme-action-primary, var(--color-theme-text-primary, #1a1a1a));
 }
 
 @layer theme {
@@ -279,26 +286,26 @@
 @utility bg-parchment {
   background-color: var(
     --color-theme-surface-parchment,
-    var(--color-theme-surface-page, var(--color-theme-bg-primary))
+    var(--color-theme-surface-page, var(--color-theme-bg-primary, #f5f0e8))
   );
 }
 
 @utility bg-warm {
-  background-color: var(--color-theme-surface-warm, var(--color-theme-bg-warm));
+  background-color: var(--color-theme-surface-warm, var(--color-theme-bg-warm, #fcfaf8));
 }
 
 @utility bg-vellum {
-  background-color: var(--color-theme-surface-muted, var(--color-theme-bg-muted));
+  background-color: var(--color-theme-surface-muted, var(--color-theme-bg-muted, #f5eed7));
 }
 
 @utility bg-ink {
-  background-color: var(--color-theme-action-primary, var(--color-theme-text-primary));
+  background-color: var(--color-theme-action-primary, var(--color-theme-text-primary, #1a1a1a));
 }
 
 @utility bg-ink-70 {
   background-color: color-mix(
     in srgb,
-    var(--color-theme-action-primary, var(--color-theme-text-primary, #1c1917)) 70%,
+    var(--color-theme-action-primary, var(--color-theme-text-primary, #1a1a1a)) 70%,
     transparent
   );
 }
@@ -395,19 +402,19 @@
 }
 
 @utility text-ink {
-  color: var(--color-theme-text-primary);
+  color: var(--color-theme-text-primary, #1a1a1a);
 }
 
 @utility text-ink-secondary {
-  color: var(--color-theme-text-secondary);
+  color: var(--color-theme-text-secondary, #333333);
 }
 
 @utility text-ink-tertiary {
-  color: var(--color-theme-text-tertiary);
+  color: var(--color-theme-text-tertiary, #555555);
 }
 
 @utility text-ink-muted {
-  color: var(--color-theme-text-muted);
+  color: var(--color-theme-text-muted, #777777);
 }
 
 @utility text-supporting {

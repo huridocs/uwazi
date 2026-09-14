@@ -71,12 +71,12 @@ const FileCard = ({ file, index, onFileSelect = () => {}, translations = [] }: F
         }
       }}
       aria-label={ariaLabel}
-      className={`border border-gray-100 rounded-lg flex flex-col gap-0 items-start justify-start cursor-pointer transition-colors 
-                            overflow-hidden focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 
+      className={`border border-border rounded-lg flex flex-col gap-0 items-start justify-start cursor-pointer transition-colors 
+                            overflow-hidden focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink/40 
                             focus-visible:ring-inset ${
                               isSelected
-                                ? 'border-indigo-200 bg-indigo-50'
-                                : 'border-gray-100 hover:border-gray-200 bg-white'
+                                ? 'border-border bg-parchment'
+                                : 'border-border hover:border-border bg-paper'
                             }`}
     >
       <div className="relative w-full h-48 overflow-hidden" aria-hidden="true">
@@ -87,39 +87,39 @@ const FileCard = ({ file, index, onFileSelect = () => {}, translations = [] }: F
         />
       </div>
       <div className="p-4 flex flex-col gap-2 items-start justify-start w-full">
-        <div className="text-gray-900 text-sm font-bold truncate w-full text-ellipsis whitespace-nowrap">
+        <div className="text-ink text-sm font-bold truncate w-full text-ellipsis whitespace-nowrap">
           {fileName}
         </div>
         <div className="flex flex-row gap-1 items-end justify-end w-full">
           <div className="flex flex-row gap-6 items-center justify-start flex-1">
             <div className="flex flex-col gap-0 items-start">
-              <div className="text-gray-500 text-xs">
+              <div className="text-ink-muted text-xs">
                 <Translate>Type</Translate>
               </div>
-              <div className="text-gray-800 text-sm font-medium truncate max-w-[100px]">
+              <div className="text-ink text-sm font-medium truncate max-w-[100px]">
                 {fileTypeLabel}
               </div>
             </div>
             <div className="flex flex-col gap-0 items-start">
-              <div className="text-gray-500 text-xs">
+              <div className="text-ink-muted text-xs">
                 <Translate>Size</Translate>
               </div>
-              <div className="text-gray-800 text-sm font-medium">{fileSize}</div>
+              <div className="text-ink text-sm font-medium">{fileSize}</div>
             </div>
             {isMediaFile && (
               <div className="flex flex-col gap-0 items-start">
-                <div className="text-gray-500 text-xs">
+                <div className="text-ink-muted text-xs">
                   <Translate>Duration</Translate>
                 </div>
-                <div className="text-gray-800 text-sm font-medium">{fileDuration}</div>
+                <div className="text-ink text-sm font-medium">{fileDuration}</div>
               </div>
             )}
             {translations && translations.length > 0 && (
               <div className="flex flex-col gap-0 items-start">
-                <div className="text-gray-500 text-xs">
+                <div className="text-ink-muted text-xs">
                   <Translate>Translations</Translate>
                 </div>
-                <div className="text-gray-800 text-sm font-medium">
+                <div className="text-ink text-sm font-medium">
                   {translations.length}/{languages?.length}
                 </div>
               </div>
@@ -131,7 +131,7 @@ const FileCard = ({ file, index, onFileSelect = () => {}, translations = [] }: F
             onClick={e => e.stopPropagation()}
             onKeyDown={e => e.stopPropagation()}
             aria-label={`Download ${fileName}`}
-            className="text-gray-700 hover:text-gray-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 focus-visible:ring-inset rounded"
+            className="text-ink-secondary hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink/40 focus-visible:ring-inset rounded"
           >
             <ArrowDownTrayIcon className="w-5 h-5" aria-hidden="true" />
           </a>
