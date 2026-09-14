@@ -265,6 +265,18 @@ describe('CopyFromModal', () => {
     expect(screen.getByTestId('form-ratified')).toHaveTextContent('1981');
   });
 
+  it('disables Stage when every matching field is unchecked', async () => {
+    renderModal();
+    fireEvent.click(await screen.findByRole('button', { name: 'Colombia' }));
+    await screen.findByText(/copy from this entity/i);
+
+    fireEvent.click(screen.getByRole('checkbox', { name: /Region/i }));
+    fireEvent.click(screen.getByRole('checkbox', { name: /Ratified ACHR/i }));
+    fireEvent.click(screen.getByRole('checkbox', { name: /Accepts Court jurisdiction/i }));
+
+    expect(screen.getByRole('button', { name: 'Stage 0 fields' })).toBeDisabled();
+  });
+
   it('returns to search from pick another', async () => {
     renderModal();
     fireEvent.click(await screen.findByRole('button', { name: 'Colombia' }));

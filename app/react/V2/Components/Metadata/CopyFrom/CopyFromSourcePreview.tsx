@@ -48,32 +48,27 @@ const CopyFromFieldDiff = ({
       <label className="flex min-w-0 items-start gap-3">
         <input
           type="checkbox"
-          className="mt-0.5 h-3.5 w-3.5 shrink-0 cursor-pointer rounded accent-ink"
+          className="mt-1 h-3.5 w-3.5 shrink-0 cursor-pointer rounded accent-ink"
           aria-label={property.label}
           checked={checked}
           onChange={onToggle}
         />
-        <span className="flex min-w-0 flex-1 items-start justify-between gap-3">
-          <span className="min-w-0 text-sm font-medium text-ink">
+        <span className="min-w-0 flex-1">
+          <span className="block text-sm font-medium text-ink">
             <Translate context={templateId}>{property.label}</Translate>
           </span>
-          <span className="flex min-w-0 max-w-[65%] flex-col items-end gap-1">
-            <span className="flex flex-wrap items-center justify-end gap-2 text-sm">
-              {currentFormatted ? (
-                <span className="text-ink-muted line-through">{currentFormatted}</span>
-              ) : null}
-              <ArrowRightIcon
-                className="h-3.5 w-3.5 shrink-0 text-ink-tertiary"
-                aria-hidden="true"
-              />
-              <span className="font-semibold text-ink">{sourceFormatted}</span>
-            </span>
-            {sameValue ? (
-              <span className="text-xs text-ink-muted">
-                <Translate>Already the same value.</Translate>
-              </span>
+          <span className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm">
+            {currentFormatted ? (
+              <span className="text-ink-muted line-through">{currentFormatted}</span>
             ) : null}
+            <ArrowRightIcon className="h-3.5 w-3.5 shrink-0 text-ink-tertiary" aria-hidden="true" />
+            <span className="font-semibold text-ink">{sourceFormatted}</span>
           </span>
+          {sameValue ? (
+            <span className="mt-1 block text-xs text-ink-muted">
+              <Translate>Already the same value.</Translate>
+            </span>
+          ) : null}
         </span>
       </label>
     </li>
@@ -115,7 +110,7 @@ const CopyFromSourcePreview = ({
             <Translate>{matchCount === 1 ? 'field matches' : 'fields match'}</Translate>
           </p>
         </div>
-        <ul className="mt-4 min-h-0 flex-1 space-y-3 overflow-y-auto">
+        <ul className="mt-4 min-h-0 flex-1 space-y-4 overflow-y-auto">
           {matchingProperties.map(property => (
             <CopyFromFieldDiff
               key={property.name}
