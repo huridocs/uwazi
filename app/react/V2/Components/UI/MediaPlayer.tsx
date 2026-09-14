@@ -1,11 +1,11 @@
 /* eslint-disable react/no-multi-comp */
 import React, { useEffect, useRef, useState } from 'react';
 import ReactPlayerModule, { ReactPlayerProps } from 'react-player';
+import { PlayIcon } from '@heroicons/react/20/solid';
+import { Translate } from '#app/I18N/index.js';
 import { resolveDefaultExport } from '#shared/resolveDefaultExport.js';
 
 const ReactPlayer = resolveDefaultExport(ReactPlayerModule);
-import { PlayIcon } from '@heroicons/react/20/solid';
-import { Translate } from '#app/I18N/index.js';
 
 type MediaType = 'embedded' | 'internal' | 'invalid';
 
@@ -53,6 +53,31 @@ const ThumbnailOverlay = ({ thumbnail }: { thumbnail?: MediaPlayerProps['thumbna
   );
 };
 
+const filePlayerConfig = (
+  objectFit: React.CSSProperties['objectFit'] | undefined,
+  config: ReactPlayerProps['config'],
+  playerHeight: number
+): ReactPlayerProps['config'] => ({
+  ...config,
+  facebook: { attributes: { 'data-height': playerHeight }, ...config?.facebook },
+  ...(objectFit
+    ? {
+        file: {
+          ...config?.file,
+          attributes: {
+            ...config?.file?.attributes,
+            style: {
+              width: '100%',
+              height: '100%',
+              objectFit,
+              ...config?.file?.attributes?.style,
+            },
+          },
+        },
+      }
+    : {}),
+});
+
 const MediaPlayer = ({
   url,
   width,
@@ -60,6 +85,8 @@ const MediaPlayer = ({
   thumbnail,
   playerRef,
   className,
+  style,
+  config,
   ...props
 }: MediaPlayerProps) => {
   const [playing, setPlaying] = useState(false);
@@ -116,9 +143,7 @@ const MediaPlayer = ({
           url={url}
           playing={playing}
           light={renderThumbnail}
-          config={{
-            facebook: { attributes: { 'data-height': playerHeight } },
-          }}
+          config={filePlayerConfig(style?.objectFit, config, playerHeight)}
           playIcon={
             <PlayIcon
               className={`absolute w-1/5 min-w-5 max-w-30 ${playIconColor}`}

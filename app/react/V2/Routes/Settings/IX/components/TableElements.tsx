@@ -318,9 +318,7 @@ const UsedForTrainingCell = ({
         </>
       ) : (
         <>
-          <PlusCircleIcon
-            className={`w-6 h-6 ${disabled ? 'text-ink-muted' : 'text-ink'}`}
-          />
+          <PlusCircleIcon className={`w-6 h-6 ${disabled ? 'text-ink-muted' : 'text-ink'}`} />
           <Translate className="sr-only">Add to training set</Translate>
         </>
       )}

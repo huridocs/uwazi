@@ -65,84 +65,78 @@ const FileCard = ({ file, index, onFileSelect = () => {}, translations = [] }: F
   return (
     <div
       key={`${file._id || file.filename || index}`}
-      role="button"
-      tabIndex={0}
-      onClick={() => onFileSelect(file)}
-      onKeyDown={e => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault();
-          onFileSelect(file);
-        }
-      }}
-      aria-label={card.ariaLabel}
-      className="border border-border rounded-lg flex flex-col gap-0 items-start justify-start cursor-pointer transition-colors overflow-hidden focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink/40 focus-visible:ring-inset bg-paper hover:border-border"
+      role="listitem"
+      className="relative overflow-hidden rounded-lg border border-border bg-paper"
     >
-      <div className="relative w-full h-48 overflow-hidden" aria-hidden="true">
-        <FilePreview
-          className="w-full h-full object-cover"
-          file={file}
-          onDuration={
-            card.isMediaFile && !card.isExternalUrl && !file.duration
-              ? dur => {
-                  if (dur && Number.isFinite(dur) && dur > 0) {
-                    setDuration(dur);
+      <button
+        type="button"
+        aria-label={card.ariaLabel}
+        onClick={() => onFileSelect(file)}
+        className="flex w-full cursor-pointer flex-col items-start justify-start gap-0 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink/40 focus-visible:ring-inset"
+      >
+        <div className="relative h-48 w-full overflow-hidden" aria-hidden="true">
+          <FilePreview
+            className="h-full w-full object-cover"
+            file={file}
+            onDuration={
+              card.isMediaFile && !card.isExternalUrl && !file.duration
+                ? dur => {
+                    if (dur && Number.isFinite(dur) && dur > 0) {
+                      setDuration(dur);
+                    }
                   }
-                }
-              : undefined
-          }
-        />
-      </div>
-      <div className="p-4 flex flex-col gap-2 items-start justify-start w-full">
-        <div className="text-ink text-sm font-bold truncate w-full text-ellipsis whitespace-nowrap">
-          {card.fileName}
+                : undefined
+            }
+          />
         </div>
-        <div className="flex flex-row gap-1 items-end justify-end w-full">
-          <div className="flex flex-row gap-6 items-center justify-start flex-1">
-            <div className="flex flex-col gap-0 items-start">
-              <div className="text-ink-muted text-xs">
+        <div className="flex w-full flex-col items-start justify-start gap-2 p-4 pr-12">
+          <div className="w-full truncate text-ellipsis whitespace-nowrap text-sm font-bold text-ink">
+            {card.fileName}
+          </div>
+          <div className="flex w-full flex-1 flex-row items-center justify-start gap-6">
+            <div className="flex flex-col items-start gap-0">
+              <div className="text-xs text-ink-muted">
                 <Translate>Type</Translate>
               </div>
-              <div className="text-ink text-sm font-medium truncate max-w-25">
+              <div className="max-w-25 truncate text-sm font-medium text-ink">
                 {card.fileTypeLabel}
               </div>
             </div>
-            <div className="flex flex-col gap-0 items-start">
-              <div className="text-ink-muted text-xs">
+            <div className="flex flex-col items-start gap-0">
+              <div className="text-xs text-ink-muted">
                 <Translate>Size</Translate>
               </div>
-              <div className="text-ink text-sm font-medium">{card.fileSize}</div>
+              <div className="text-sm font-medium text-ink">{card.fileSize}</div>
             </div>
             {card.isMediaFile && (
-              <div className="flex flex-col gap-0 items-start">
-                <div className="text-ink-muted text-xs">
+              <div className="flex flex-col items-start gap-0">
+                <div className="text-xs text-ink-muted">
                   <Translate>Duration</Translate>
                 </div>
-                <div className="text-ink text-sm font-medium">{card.fileDuration}</div>
+                <div className="text-sm font-medium text-ink">{card.fileDuration}</div>
               </div>
             )}
             {translations.length > 0 && (
-              <div className="flex flex-col gap-0 items-start">
-                <div className="text-ink-muted text-xs">
+              <div className="flex flex-col items-start gap-0">
+                <div className="text-xs text-ink-muted">
                   <Translate>Translations</Translate>
                 </div>
-                <div className="text-ink text-sm font-medium">
+                <div className="text-sm font-medium text-ink">
                   {translations.length}/{languages?.length}
                 </div>
               </div>
             )}
           </div>
-          <a
-            href={card.downloadUrl}
-            download={!file.url}
-            onClick={e => e.stopPropagation()}
-            onKeyDown={e => e.stopPropagation()}
-            aria-label={`Download ${card.fileName}`}
-            className="text-ink-secondary hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink/40 focus-visible:ring-inset rounded"
-          >
-            <ArrowDownTrayIcon className="w-5 h-5" aria-hidden="true" />
-          </a>
         </div>
-      </div>
+      </button>
+      <a
+        href={card.downloadUrl}
+        download={!file.url}
+        aria-label={`Download ${card.fileName}`}
+        className="absolute right-4 bottom-4 z-10 rounded text-ink-secondary hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink/40 focus-visible:ring-inset"
+      >
+        <ArrowDownTrayIcon className="h-5 w-5" aria-hidden="true" />
+      </a>
     </div>
   );
 };

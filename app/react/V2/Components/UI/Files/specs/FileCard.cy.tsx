@@ -56,23 +56,23 @@ describe('FileCard', () => {
   it('should call onFileSelect when clicked', () => {
     const stub = createOnFileSelectStub().as('onFileSelect');
     mount(<FileCardComponent file={mockPdfFile} index={0} onFileSelect={stub} />);
-    cy.get('[role="listitem"]').click({ force: true });
+    cy.get('[aria-label^="Select "]').click({ force: true });
     cy.get('@onFileSelect').should('have.been.calledWith', Cypress.sinon.match.object);
   });
 
   it('should call onFileSelect when Enter key is pressed', () => {
     const stub = createOnFileSelectStub().as('onFileSelect');
     mount(<FileCardComponent file={mockPdfFile} index={0} onFileSelect={stub} />);
-    cy.get('[role="listitem"]').focus();
-    cy.get('[role="listitem"]').type('{enter}');
+    cy.get('[aria-label^="Select "]').focus();
+    cy.get('[aria-label^="Select "]').type('{enter}');
     cy.get('@onFileSelect').should('have.been.called');
   });
 
   it('should call onFileSelect when Space key is pressed', () => {
     const stub = createOnFileSelectStub().as('onFileSelect');
     mount(<FileCardComponent file={mockPdfFile} index={0} onFileSelect={stub} />);
-    cy.get('[role="listitem"]').focus();
-    cy.get('[role="listitem"]').type(' ');
+    cy.get('[aria-label^="Select "]').focus();
+    cy.get('[aria-label^="Select "]').type(' ');
     cy.get('@onFileSelect').should('have.been.called');
   });
 
@@ -141,7 +141,7 @@ describe('FileCard', () => {
     mount(
       <FileCardComponent file={mockPdfFile} index={0} onFileSelect={createOnFileSelectStub()} />
     );
-    cy.get('[role="listitem"]')
+    cy.get('[aria-label^="Select "]')
       .should('have.attr', 'aria-label')
       .and('include', 'Select Sample Document.pdf')
       .and('include', 'PDF')

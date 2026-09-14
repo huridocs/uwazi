@@ -9,7 +9,19 @@ jest.mock('#app/I18N/index.js', () => ({
 
 jest.mock('react-player', () => ({
   __esModule: true,
-  default: ({ url }: { url: string }) => <div data-testid="react-player" data-url={url} />,
+  default: ({
+    url,
+    config,
+  }: {
+    url: string;
+    config?: { file?: { attributes?: { style?: { objectFit?: string } } } };
+  }) => (
+    <div
+      data-testid="react-player"
+      data-url={url}
+      data-object-fit={config?.file?.attributes?.style?.objectFit}
+    />
+  ),
   canPlay: () => true,
 }));
 
@@ -60,5 +72,18 @@ describe('MediaPlayer', () => {
     });
 
     expect(screen.getByTestId('react-player')).toHaveAttribute('data-url', '/file.wav');
+  });
+
+  it('applies object-fit on the file video element, not only the wrapper', () => {
+    render(<MediaPlayer url="/file.mp4" height="100%" style={{ objectFit: 'cover' }} />);
+    const container = screen.getByTestId('media-player-container');
+    act(() => {
+      setClientHeight(container, 180);
+      resizeObservers[0]?.callback(
+        [{ contentRect: { height: 180 } } as ResizeObserverEntry],
+        resizeObservers[0] as unknown as ResizeObserver
+      );
+    });
+    expect(screen.getByTestId('react-player')).toHaveAttribute('data-object-fit', 'cover');
   });
 });
