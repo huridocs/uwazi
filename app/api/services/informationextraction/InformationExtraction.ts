@@ -16,7 +16,7 @@ import { emitToTenantAdminsAndEditors } from '#api/socketio/setupSockets.js';
 import { FilesDAOFactory } from '#api/core/infrastructure/factories/FilesDAOFactory.js';
 import { EntityDBO } from '#api/core/infrastructure/mongodb/entity/EntityDBO.js';
 import entities from '#api/entities/entities.js';
-import settings from '#api/settings/settings.js';
+import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
 import request from '#shared/JSONRequest.js';
 import { EntitySchema } from '#shared/types/entityType.js';
 import {
@@ -435,10 +435,10 @@ class InformationExtraction {
     });
 
     if (!entity) {
-      const defaultLanguage = await settings.getDefaultLanguage();
+      const defaultLanguageKey = await SettingsDataSourceFactory.default().getDefaultLanguageKey();
       [entity] = await entities.getUnrestricted({
         sharedId: file.entity,
-        language: defaultLanguage?.key,
+        language: defaultLanguageKey,
       });
     }
     return entity;
@@ -592,8 +592,9 @@ class InformationExtraction {
   };
 
   serviceUrl = async () => {
-    const settingsValues = await settings.get();
-    const serviceUrl = settingsValues.features?.metadataExtraction?.url;
+    const metadataExtraction =
+      await SettingsDataSourceFactory.default().readFeature('metadataExtraction');
+    const serviceUrl = metadataExtraction?.url;
     if (!serviceUrl) {
       throw new Error('No url for metadata extraction service');
     }
@@ -964,66 +965,38 @@ class InformationExtraction {
   };
 
   processResults = async (_message: IXResultsMessage): Promise<void> => {
-    await tenants.run(async () => {
-      const message: InternalIXResultsMessage = {
-        ..._message,
-        params: { ..._message.params, id: new ObjectId(_message.params!.id) },
-      };
+    // TaskManager already opens runInJobContext; do not wrap tenants.run / ExecutionContext.run here.
+    const message: InternalIXResultsMessage = {
+      ..._message,
+      params: { ..._message.params, id: new ObjectId(_message.params!.id) },
+    };
 
-      const currentModel = await ixmodels.getByExtractorId(message.params!.id);
+    const currentModel = await ixmodels.getByExtractorId(message.params!.id);
 
-      try {
-        if (message.task === 'create_model' && message.success) {
-          await IXServices.saveModelProcess(message.params!.id, ModelStatus.ready, {
-            computeTotalSuggestions: true,
-          });
-
-          const updatedModel = await ixmodels.getByExtractorId(message.params!.id);
-
-          await this.updateSuggestionStatus(message, updatedModel!);
-        }
-
-        if (!message.success) {
-          await this.handleFailedStatus(message, currentModel);
-          return;
-        }
-
-        if (message.task === 'suggestions') {
-          // A run only clears `findingSuggestions` when it is cancelled or already over, so
-          // reaching here without it means these results belong to a run that no longer exists.
-          // Writing them is what made "Cancel" a lie: the batch already in flight landed anyway.
-          // Discard it, release anything the run had left marked in flight, and stop.
-          if (!currentModel?.findingSuggestions) {
-            await suggestionsDao().markProcessingAsObsolete(message.params!.id);
-
-            emitToTenantAdminsAndEditors(
-              message.tenant,
-              'ix_model_status',
-              _message.params!.id,
-              'ready',
-              'Canceled'
-            );
-            return;
-          }
-
-          await this.saveSuggestionsManager(message);
-          await this.updateSuggestionStatus(message, currentModel!);
-
-          // If a process run requested auto-accept and the find phase just completed,
-          // emit transition to auto-accept and dispatch the accept job. Do not emit 'ready'.
-          const freshModel = await ixmodels.getByExtractorId(message.params!.id);
-          const autoAccept = freshModel?.processRun?.autoAccept;
-          if (autoAccept?.enabled && freshModel?.totalSuggestionsToFind != null) {
-            const status = await this.getSuggestionsStatus(message.params!.id, freshModel);
-            if (status.processed >= freshModel.totalSuggestionsToFind) {
-              await this.startAutoAcceptIfEnabled(message.params!.id.toString());
-              return;
-            }
-          }
-        }
+    try {
+      if (message.task === 'create_model' && message.success) {
+        await IXServices.saveModelProcess(message.params!.id, ModelStatus.ready, {
+          computeTotalSuggestions: true,
+        });
 
         const updatedModel = await ixmodels.getByExtractorId(message.params!.id);
-        if (!updatedModel!.findingSuggestions) {
+
+        await this.updateSuggestionStatus(message, updatedModel!);
+      }
+
+      if (!message.success) {
+        await this.handleFailedStatus(message, currentModel);
+        return;
+      }
+
+      if (message.task === 'suggestions') {
+        // A run only clears `findingSuggestions` when it is cancelled or already over, so
+        // reaching here without it means these results belong to a run that no longer exists.
+        // Writing them is what made "Cancel" a lie: the batch already in flight landed anyway.
+        // Discard it, release anything the run had left marked in flight, and stop.
+        if (!currentModel?.findingSuggestions) {
+          await suggestionsDao().markProcessingAsObsolete(message.params!.id);
+
           emitToTenantAdminsAndEditors(
             message.tenant,
             'ix_model_status',
@@ -1033,12 +1006,39 @@ class InformationExtraction {
           );
           return;
         }
-      } catch (_) {
-        await this.handleFailedStatus(message, currentModel);
+
+        await this.saveSuggestionsManager(message);
+        await this.updateSuggestionStatus(message, currentModel!);
+
+        // If a process run requested auto-accept and the find phase just completed,
+        // emit transition to auto-accept and dispatch the accept job. Do not emit 'ready'.
+        const freshModel = await ixmodels.getByExtractorId(message.params!.id);
+        const autoAccept = freshModel?.processRun?.autoAccept;
+        if (autoAccept?.enabled && freshModel?.totalSuggestionsToFind != null) {
+          const status = await this.getSuggestionsStatus(message.params!.id, freshModel);
+          if (status.processed >= freshModel.totalSuggestionsToFind) {
+            await this.startAutoAcceptIfEnabled(message.params!.id.toString());
+            return;
+          }
+        }
       }
 
-      await this.getSuggestions(message.params!.id);
-    }, _message.tenant);
+      const updatedModel = await ixmodels.getByExtractorId(message.params!.id);
+      if (!updatedModel!.findingSuggestions) {
+        emitToTenantAdminsAndEditors(
+          message.tenant,
+          'ix_model_status',
+          _message.params!.id,
+          'ready',
+          'Canceled'
+        );
+        return;
+      }
+    } catch (_) {
+      await this.handleFailedStatus(message, currentModel);
+    }
+
+    await this.getSuggestions(message.params!.id);
   };
 }
 

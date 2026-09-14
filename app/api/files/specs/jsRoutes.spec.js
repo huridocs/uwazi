@@ -7,7 +7,6 @@ import { appContext } from '#api/utils/AppContext.js';
 import mailer from '#api/utils/mailer.js';
 import entities from '#api/entities/index.js';
 import { search } from '#api/search/index.js';
-import { settingsModel } from '#api/settings/settingsModel.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import uploadRoutes from '../jsRoutes.js';
 import { allowedPublicTemplate, fixtures, templateId, writerUser } from './fixtures.js';
@@ -98,9 +97,9 @@ describe('upload routes', () => {
     });
 
     it('should not create entity if settings has no allowedPublicTemplates option', async () => {
-      const [settingsObject] = await settingsModel.get();
+      const settingsObject = await testingEnvironment.db.getCollection('settings').findOne({});
       delete settingsObject.allowedPublicTemplates;
-      await settingsModel.db.replaceOne({}, settingsObject);
+      await testingEnvironment.db.getCollection('settings').replaceOne({}, settingsObject);
 
       const response = await request(app)
         .post('/api/public')

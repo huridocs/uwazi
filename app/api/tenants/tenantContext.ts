@@ -29,6 +29,8 @@ type Tenant = {
     postgresPages?: boolean;
     aiAssistant?: boolean;
     aiAssistantServiceUrl?: string;
+    translationService?: boolean;
+    translationServiceUrl?: string;
     telemetry?: {
       enabled?: boolean;
       sampleRate?: number;

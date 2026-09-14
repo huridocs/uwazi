@@ -1,10 +1,10 @@
-import { ObjectId } from 'mongodb';
+import { Db, ObjectId } from 'mongodb';
 import { BaseFile } from '#api/core/domain/files/BaseFile.js';
 import { MongoDataSource } from '#api/core/infrastructure/mongodb/common/MongoDataSource.js';
 import { dbSessionContext } from '#api/odm/sessionsContext.js';
 import relationships from '#api/relationships/relationships.js';
 import { withConnectedData } from '#api/relationships/relationshipsHelpers.js';
-import settings from '#api/settings/index.js';
+import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js';
 import { Entity } from '#api/core/domain/entity/Entity.js';
 import type { Relation } from '../../../relationships/RelationsV1Collection.js';
 import type { LanguageISO6391 } from '#shared/types/commonTypes.js';
@@ -48,9 +48,10 @@ export class MongoRelationshipsV1DataSource extends MongoDataSource<Relation> {
   protected collectionName = 'connections';
 
   constructor(
-    db: any,
+    db: Db,
     transactionManager: TransactionManager,
-    private entitiesDAO: EntitiesDAO
+    private entitiesDAO: EntitiesDAO,
+    private settingsDS: SettingsDataSource
   ) {
     super(db, transactionManager);
   }
@@ -98,7 +99,7 @@ export class MongoRelationshipsV1DataSource extends MongoDataSource<Relation> {
 
     const _connectedDocuments = await this.entitiesDAO.find({
       sharedIds: dbRelationships.map(r => r.entity),
-      language: (await settings.getDefaultLanguage()).key,
+      language: await this.settingsDS.getDefaultLanguageKey(),
     });
 
     const connectedDocuments = _connectedDocuments.reduce((res, doc) => {

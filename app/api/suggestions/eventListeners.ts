@@ -2,13 +2,12 @@ import { EntityDeletedEvent } from '#api/entities/events/EntityDeletedEvent.js';
 import { EventsBus } from '#api/core/libs/eventsbus/index.js';
 import { FilesDeletedEvent } from '#api/files/events/FilesDeletedEvent.js';
 import { Extractors } from '#api/services/informationextraction/ixextractors.js';
-import settings from '#api/settings/index.js';
+import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
 import templates from '#api/core/v1_layer/templates/index.js';
 import { TemplateDeletedEvent } from '#api/core/domain/template/events/TemplateDeletedEvent.js';
 import { TemplateUpdatedEvent } from '#api/core/domain/template/events/TemplateUpdatedEvent.js';
 import { IXSuggestionType } from '#shared/types/suggestionType.js';
 import { EntityCreatedEvent } from '#api/entities/events/EntityCreatedEvent.js';
-import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
 import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
 import { TemplatesDAOFactory } from '#api/core/infrastructure/factories/TemplatesDAOFactory.js';
@@ -20,10 +19,8 @@ import { AfterEntityUpdatedListener } from './listeners/afterEntityUpdatedListen
 import { UpdateSuggestionsAfterEntityUpdate } from './useCases/updateSuggestionsAfterEntityUpdate.js';
 import { ProcessSuggestionsAfterTemplateChanged } from './useCases/processSuggestionsAfterTemplateChanged.js';
 
-const featureIsEnabled = async () => {
-  const configuration = await settings.get();
-  return !!configuration.features?.metadataExtraction;
-};
+const featureIsEnabled = async () =>
+  Boolean(await SettingsDataSourceFactory.default().readFeature('metadataExtraction'));
 
 const registerEventListeners = (eventsBus: EventsBus) => {
   new AfterEntityUpdatedListener(eventsBus, () => ({

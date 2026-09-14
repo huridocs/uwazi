@@ -69,11 +69,6 @@ export default (app: Application) => {
 
   app.post('/api/sync', needsAuthorization(['admin']), async (req, res, next) => {
     try {
-      if (req.body.namespace === 'settings') {
-        const [settings] = await models.settings().get({});
-        req.body.data._id = settings._id;
-      }
-
       if (req.body.namespace === 'translations') {
         req.body.data = await preserveTranslations(req.body.data);
       }

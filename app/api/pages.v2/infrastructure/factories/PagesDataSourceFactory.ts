@@ -19,7 +19,7 @@ export class PagesDataSourceFactory {
     }
 
     const db = getConnection();
-    const tm = overrides?.transactionManager ?? ExecutionContext.transactionManager;
+    const tm = overrides?.transactionManager ?? ExecutionContext.mongoTransactionManager;
     return new MongoPagesDataSource(db, tm);
   }
 }

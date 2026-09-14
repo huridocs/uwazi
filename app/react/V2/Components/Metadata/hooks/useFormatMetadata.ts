@@ -51,9 +51,12 @@ register(['date', 'daterange', 'multidate', 'multidaterange'], withMetadata(form
 register(['geolocation'], ctx => formatGeolocationProperty(ctx.field, ctx.entity, ctx.templates));
 register(['select', 'multiselect'], withMetadata(formatSelectProperty));
 register(['link'], withMetadata(formatLinkProperty));
-register(['media'], withMetadata(formatMediaProperty));
+register(['media'], ctx => formatMediaProperty(ctx.field, ctx.metadata, ctx.entityTemplate));
 register(['image', 'preview'], ctx =>
-  formatImageProperty(ctx.field, ctx.metadata, ctx.entityTemplate, ctx.entity)
+  formatImageProperty(ctx.field, ctx.metadata, {
+    template: ctx.entityTemplate,
+    entity: ctx.entity,
+  })
 );
 register(['relationship'], ctx =>
   formatRelationshipProperty(ctx.field, ctx.metadata, ctx.entity.relations)
@@ -66,14 +69,11 @@ register(['nested'], ctx => formatNestedProperty(ctx.field, ctx.metadata, ctx.en
 
 function mapFieldToMetadataProperty(
   field: BaseMetadataProperty,
-  entity: Entity,
-  templates: ClientTemplateSchema[],
-  entityTemplate: ClientTemplateSchema | undefined
+  ctx: Omit<FormatCtx, 'field'>
 ): MetadataProperty | null {
-  const { metadata } = entity;
-  const type = resolvePropertyType(field, metadata);
+  const type = resolvePropertyType(field, ctx.metadata);
   const handler = DISPATCH.get(type);
-  return handler ? handler({ field, metadata, entity, templates, entityTemplate }) : null;
+  return handler ? handler({ field, ...ctx }) : null;
 }
 
 const useFormatMetadata = (
@@ -99,7 +99,14 @@ const useFormatMetadata = (
   const metadata: MetadataProperty[] = useMemo(
     () =>
       metadataFields
-        .map(field => mapFieldToMetadataProperty(field, entity, templates, entityTemplate))
+        .map(field =>
+          mapFieldToMetadataProperty(field, {
+            metadata: entity.metadata,
+            entity,
+            templates,
+            entityTemplate,
+          })
+        )
         .filter(m => m) as MetadataProperty[],
     [entity, metadataFields, entityTemplate, templates]
   );

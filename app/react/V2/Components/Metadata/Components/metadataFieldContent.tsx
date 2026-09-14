@@ -46,23 +46,22 @@ const renderMediaOrImage = (
   compact: boolean,
   density: FieldContentOptions['density']
 ): ReactNode => {
+  const { fullWidth } = data;
   if (data.type === 'media') {
     return hasFilledText(data.values) ? (
       <Media
         values={data.values}
         height={compact ? 140 : '100%'}
         frame={compact ? 'natural' : 'video'}
+        imageStyle={data.style}
+        fullWidth={fullWidth}
+        density={density}
       />
     ) : null;
   }
   if (data.type === 'image' || data.type === 'preview') {
     return hasFilledText(data.values) ? (
-      <Image
-        values={data.values}
-        imageStyle={data.style}
-        density={density ?? 'default'}
-        frame={compact ? 'natural' : 'video'}
-      />
+      <Image values={data.values} imageStyle={data.style} density={density} fullWidth={fullWidth} />
     ) : null;
   }
   return null;

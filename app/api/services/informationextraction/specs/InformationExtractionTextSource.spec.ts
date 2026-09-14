@@ -59,6 +59,12 @@ jest.mock('api/core/infrastructure/jobs/UwaziDispatcherFactory', () => ({
 describe('Information Extraction: Extracting from text source', () => {
   const SERVICE_PORT = 4321;
   let informationExtraction: InformationExtraction;
+  const trainModel = async (...args: Parameters<InformationExtraction['trainModel']>) =>
+    testingEnvironment.runWithContext(async () => informationExtraction.trainModel(...args));
+  const getSuggestions = async (...args: Parameters<InformationExtraction['getSuggestions']>) =>
+    testingEnvironment.runWithContext(async () => informationExtraction.getSuggestions(...args));
+  const processResults = async (...args: Parameters<InformationExtraction['processResults']>) =>
+    testingEnvironment.runWithContext(async () => informationExtraction.processResults(...args));
   let IXExternalService: ExternalDummyService;
 
   beforeAll(async () => {
@@ -112,7 +118,7 @@ describe('Information Extraction: Extracting from text source', () => {
   describe('when training the model', () => {
     it('should not send xmls', async () => {
       await testingEnvironment.runWithContext(async () =>
-        informationExtraction.trainModel(factory.id('sourceTextExtractor1'))
+        trainModel(factory.id('sourceTextExtractor1'))
       );
 
       expect(IXExternalService.materialsFileParams).toEqual(undefined);
@@ -127,7 +133,7 @@ describe('Information Extraction: Extracting from text source', () => {
       });
 
       await testingEnvironment.runWithContext(async () =>
-        informationExtraction.trainModel(factory.id('sourceTextExtractor1'))
+        trainModel(factory.id('sourceTextExtractor1'))
       );
 
       expect(IXExternalService.materials.length).toBe(2);
@@ -155,7 +161,7 @@ describe('Information Extraction: Extracting from text source', () => {
       const extractionKeyA18 = ExtractionKey.create({ entitySharedId: 'A18', language: 'en' });
 
       await testingEnvironment.runWithContext(async () =>
-        informationExtraction.trainModel(factory.id('extractor_target_multiselect_source_text'))
+        trainModel(factory.id('extractor_target_multiselect_source_text'))
       );
 
       const suggestion1 = IXExternalService.materials.find(
@@ -208,9 +214,7 @@ describe('Information Extraction: Extracting from text source', () => {
 
       const extractorId = factory.id('extractor_target_select_source_text');
 
-      await testingEnvironment.runWithContext(async () =>
-        informationExtraction.trainModel(extractorId)
-      );
+      await testingEnvironment.runWithContext(async () => trainModel(extractorId));
 
       const suggestion3 = IXExternalService.materials.find(m => m.entity_name === extraction3.key);
 
@@ -238,9 +242,7 @@ describe('Information Extraction: Extracting from text source', () => {
 
       const extractorId = factory.id('extractor_target_title_source_text');
 
-      await testingEnvironment.runWithContext(async () =>
-        informationExtraction.trainModel(extractorId)
-      );
+      await testingEnvironment.runWithContext(async () => trainModel(extractorId));
 
       const suggestion1 = IXExternalService.materials.find(m => m.entity_name === extraction1.key);
 
@@ -261,7 +263,7 @@ describe('Information Extraction: Extracting from text source', () => {
       const extractionKeyA22 = ExtractionKey.create({ entitySharedId: 'A22', language: 'en' });
 
       await testingEnvironment.runWithContext(async () =>
-        informationExtraction.trainModel(factory.id('extractor_target_relationship_source_text'))
+        trainModel(factory.id('extractor_target_relationship_source_text'))
       );
 
       const suggestion1 = IXExternalService.materials.find(
@@ -314,7 +316,7 @@ describe('Information Extraction: Extracting from text source', () => {
       });
 
       await testingEnvironment.runWithContext(async () =>
-        informationExtraction.trainModel(factory.id('extractor_target_date_source_text'))
+        trainModel(factory.id('extractor_target_date_source_text'))
       );
 
       const suggestion1 = IXExternalService.materials.find(
@@ -359,9 +361,7 @@ describe('Information Extraction: Extracting from text source', () => {
       });
       const extractorId = factory.id('extractor_target_rich_text_source_text');
 
-      await testingEnvironment.runWithContext(async () =>
-        informationExtraction.trainModel(extractorId)
-      );
+      await testingEnvironment.runWithContext(async () => trainModel(extractorId));
 
       const suggestion1En = IXExternalService.materials.find(
         m => m.entity_name === extractionKey1En.key
@@ -392,9 +392,7 @@ describe('Information Extraction: Extracting from text source', () => {
     });
 
     it('should emit error status and stop finding suggestions', async () => {
-      const promise = informationExtraction.trainModel(
-        factory.id('extract_source_text_no_entities')
-      );
+      const promise = trainModel(factory.id('extract_source_text_no_entities'));
 
       await expect(promise).rejects.toThrow();
       const model = await ixTestAccess.readModel(factory.id('extract_source_text_no_entities'));
@@ -452,7 +450,7 @@ describe('Information Extraction: Extracting from text source', () => {
 
       const extractorId = factory.id('extractor_target_select_source_text');
 
-      await informationExtraction.getSuggestions(extractorId);
+      await getSuggestions(extractorId);
 
       const material1 = IXExternalService.materials.find(
         m => m.entity_name === extractionKeyEn1.key
@@ -506,7 +504,7 @@ describe('Information Extraction: Extracting from text source', () => {
     });
 
     it('should create the task for the suggestions', async () => {
-      await informationExtraction.getSuggestions(factory.id('sourceTextExtractor1'));
+      await getSuggestions(factory.id('sourceTextExtractor1'));
 
       expect(informationExtraction.taskManager?.startTask).toHaveBeenCalledWith({
         params: {
@@ -523,7 +521,7 @@ describe('Information Extraction: Extracting from text source', () => {
     });
 
     it('should stop the model when there are no materials left to send', async () => {
-      await informationExtraction.getSuggestions(factory.id('sourceTextExtractor1'));
+      await getSuggestions(factory.id('sourceTextExtractor1'));
 
       // Make second call have no eligible materials
       const m = await ixTestAccess.readModel(factory.id('sourceTextExtractor1'));
@@ -533,7 +531,7 @@ describe('Information Extraction: Extracting from text source', () => {
         runTs
       );
 
-      await informationExtraction.getSuggestions(factory.id('sourceTextExtractor1'));
+      await getSuggestions(factory.id('sourceTextExtractor1'));
 
       const model = await ixTestAccess.readModel(factory.id('sourceTextExtractor1'));
       expect(model.findingSuggestions).toBe(false);
@@ -554,7 +552,7 @@ describe('Information Extraction: Extracting from text source', () => {
         'saveSuggestionsForTextSource'
       );
 
-      await informationExtraction.processResults({
+      await processResults({
         params: { id: factory.id('sourceTextExtractor1').toString() },
         tenant: 'tenant1',
         task: 'suggestions',
@@ -587,7 +585,7 @@ describe('Information Extraction: Extracting from text source', () => {
         },
       ]);
 
-      await informationExtraction.processResults({
+      await processResults({
         params: { id: extractorId.toString() },
         tenant: 'tenant1',
         task: 'suggestions',
@@ -658,7 +656,7 @@ describe('Information Extraction: Extracting from text source', () => {
         },
       ]);
 
-      await informationExtraction.processResults({
+      await processResults({
         params: { id: extractorId.toString() },
         tenant: 'tenant1',
         task: 'suggestions',
@@ -706,7 +704,7 @@ describe('Information Extraction: Extracting from text source', () => {
         },
       ]);
 
-      await informationExtraction.processResults({
+      await processResults({
         params: { id: extractorId.toString() },
         tenant: 'tenant1',
         task: 'suggestions',
@@ -754,7 +752,7 @@ describe('Information Extraction: Extracting from text source', () => {
         },
       ]);
 
-      await informationExtraction.processResults({
+      await processResults({
         params: { id: extractorId.toString() },
         tenant: 'tenant1',
         task: 'suggestions',
@@ -802,7 +800,7 @@ describe('Information Extraction: Extracting from text source', () => {
         },
       ]);
 
-      await informationExtraction.processResults({
+      await processResults({
         params: { id: extractorId.toString() },
         tenant: 'tenant1',
         task: 'suggestions',
@@ -853,7 +851,7 @@ describe('Information Extraction: Extracting from text source', () => {
         },
       ]);
 
-      await informationExtraction.processResults({
+      await processResults({
         params: { id: extractorId.toString() },
         tenant: 'tenant1',
         task: 'suggestions',
@@ -907,7 +905,7 @@ describe('Information Extraction: Extracting from text source', () => {
         },
       ]);
 
-      await informationExtraction.processResults({
+      await processResults({
         params: { id: extractorId.toString() },
         tenant: 'tenant1',
         task: 'suggestions',
@@ -967,7 +965,7 @@ describe('Information Extraction: Extracting from text source', () => {
         },
       ]);
 
-      await informationExtraction.processResults({
+      await processResults({
         params: { id: extractorId.toString() },
         tenant: 'tenant1',
         task: 'suggestions',

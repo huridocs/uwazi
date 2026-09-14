@@ -1,4 +1,4 @@
-/* eslint-disable max-lines */
+/* eslint-disable max-lines, max-statements */
 import React, { useEffect } from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
 import { Sidepanel } from '#V2/Components/UI/Sidepanel.js';
@@ -45,7 +45,8 @@ const emptyProperty = {
   filter: false,
   defaultfilter: false,
   prioritySorting: false,
-  style: '',
+  style: 'cover',
+  fullWidth: false,
   content: undefined,
   relationType: undefined,
   inherit: undefined,
@@ -89,7 +90,8 @@ export const ConfigPropertyPanel: React.FC<ConfigPropertyPanelProps> = ({
           filter: propertyToEdit.filter || false,
           defaultfilter: propertyToEdit.defaultfilter || false,
           prioritySorting: propertyToEdit.prioritySorting || false,
-          style: propertyToEdit.style || '',
+          style: propertyToEdit.style || 'cover',
+          fullWidth: propertyToEdit.fullWidth || false,
           content: propertyToEdit.content || '',
           relationType: propertyToEdit.relationType || '',
           inherit: propertyToEdit.inherit,
@@ -118,16 +120,12 @@ export const ConfigPropertyPanel: React.FC<ConfigPropertyPanelProps> = ({
   const isTitleProperty = propertyToEdit?.name === 'title';
 
   const isSelectOrMultiselect = type === 'select' || type === 'multiselect';
-  const isImageOrPreview = type === 'image' || type === 'preview';
   const isRelationship = type === 'relationship';
 
   // eslint-disable-next-line max-statements
   useEffect(() => {
     if (!propertyToEdit) {
       reset({ ...emptyProperty, type, label: type.charAt(0).toUpperCase() + type.slice(1) });
-      if (type === 'image' || type === 'preview') {
-        setValue('style', 'fill');
-      }
       if (type === 'relationship') {
         setValue('relationType', '');
         setValue('content', '');
@@ -215,6 +213,7 @@ export const ConfigPropertyPanel: React.FC<ConfigPropertyPanelProps> = ({
       }
       closeSidepanelFunction={onClose}
     >
+      {/* eslint-disable-next-line react/jsx-props-no-spreading */}
       <FormProvider {...form}>
         <form onSubmit={handleSubmit(submitForm)} className="flex flex-col h-full">
           <Sidepanel.Body>
@@ -248,7 +247,7 @@ export const ConfigPropertyPanel: React.FC<ConfigPropertyPanelProps> = ({
                   template={template}
                   propertyToEdit={propertyToEdit}
                 />
-                {isImageOrPreview && <StyleField control={control} />}
+                {fullWidthTypes.includes(type) && <StyleField control={control} />}
 
                 {isSelectOrMultiselect && <ThesaurusField control={control} />}
                 {isRelationship && (

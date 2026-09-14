@@ -779,8 +779,11 @@ describe('relationships', () => {
   });
 
   describe('delete()', () => {
+    const deleteRelationships = async (...args) =>
+      testingEnvironment.runWithContext(async () => relationships.delete(...args));
+
     it('should delete the relationship', async () => {
-      const response = await relationships.delete({ _id: connectionID1 }, 'en');
+      const response = await deleteRelationships({ _id: connectionID1 }, 'en');
       const hub7Connections = await relationships.get({ hub: hub7 });
       expect(
         hub7Connections.filter(c => c._id.toString() === connectionID1.toString()).length
@@ -789,9 +792,9 @@ describe('relationships', () => {
     });
 
     it('should not leave a lone connection in the hub', async () => {
-      await relationships.delete({ _id: connectionID1 }, 'en');
-      await relationships.delete({ _id: connectionID3 }, 'en');
-      await relationships.delete({ _id: connectionID2 }, 'en');
+      await deleteRelationships({ _id: connectionID1 }, 'en');
+      await deleteRelationships({ _id: connectionID3 }, 'en');
+      await deleteRelationships({ _id: connectionID2 }, 'en');
 
       const hubRelationships = await relationships.get({ hub: hub7 });
 
@@ -800,7 +803,7 @@ describe('relationships', () => {
 
     describe('when deleting relations for an entity', () => {
       it('should not leave single relationship hubs', async () => {
-        await relationships.delete({ entity: 'entity3' }, 'en');
+        await deleteRelationships({ entity: 'entity3' }, 'en');
 
         const hub2Relationships = await relationships.get({ hub: hub2 });
         const hub11Relationships = await relationships.get({ hub: hub11 });
@@ -811,7 +814,7 @@ describe('relationships', () => {
     });
 
     it('should not delete the hub when specific combos yield a hub with less than 2 connections', async () => {
-      await relationships.delete({ _id: connectionID4 }, 'es');
+      await deleteRelationships({ _id: connectionID4 }, 'es');
 
       const hubRelationships = await relationships.get({ hub: hub12 });
 
@@ -821,7 +824,7 @@ describe('relationships', () => {
     });
 
     it('should call entities to update the metadata', async () => {
-      await relationships.delete({ entity: 'bruceWayne' }, 'en');
+      await deleteRelationships({ entity: 'bruceWayne' }, 'en');
 
       const { calls } = updateEntityUseCaseExecuteMock.mock;
       expect(calls.length).toBeGreaterThan(0);
