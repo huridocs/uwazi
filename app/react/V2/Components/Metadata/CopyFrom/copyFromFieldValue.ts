@@ -1,4 +1,8 @@
-import type { MetadataValue } from '#V2/formatters/types.js';
+type CopyFromDisplayValue = {
+  value?: unknown;
+  label?: string;
+  parent?: { value?: unknown; label?: string };
+};
 
 const isPrimitive = (value: unknown): value is string | number | boolean =>
   typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean';
@@ -24,7 +28,7 @@ const formatRange = (record: Record<string, unknown>): string => {
   return from || to;
 };
 
-const formatCopyFromEntry = (entry: MetadataValue): string => {
+const formatCopyFromEntry = (entry: CopyFromDisplayValue): string => {
   if (typeof entry.label === 'string' && entry.label) {
     return entry.parent?.label ? `${entry.parent.label} › ${entry.label}` : entry.label;
   }
@@ -41,10 +45,10 @@ const formatCopyFromEntry = (entry: MetadataValue): string => {
   return formatLinkOrGeo(record) ?? formatRange(record);
 };
 
-const formatCopyFromValue = (entries?: MetadataValue[]): string =>
+const formatCopyFromValue = (entries?: CopyFromDisplayValue[]): string =>
   (entries ?? []).map(formatCopyFromEntry).filter(Boolean).join(', ');
 
-const copyFromValueKey = (entries?: MetadataValue[]) =>
+const copyFromValueKey = (entries?: CopyFromDisplayValue[]) =>
   JSON.stringify(
     (entries ?? []).map(entry => ({
       value: entry.value ?? null,
@@ -53,7 +57,8 @@ const copyFromValueKey = (entries?: MetadataValue[]) =>
     }))
   );
 
-const copyFromValuesAreEqual = (current?: MetadataValue[], next?: MetadataValue[]) =>
+const copyFromValuesAreEqual = (current?: CopyFromDisplayValue[], next?: CopyFromDisplayValue[]) =>
   copyFromValueKey(current) === copyFromValueKey(next);
 
 export { copyFromValuesAreEqual, formatCopyFromValue };
+export type { CopyFromDisplayValue };

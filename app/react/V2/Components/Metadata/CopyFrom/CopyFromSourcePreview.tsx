@@ -7,7 +7,11 @@ import type { Entity } from '#V2/api/entities/types.js';
 import type { MetadataValue } from '#V2/formatters/types.js';
 import { TemplateLabel } from '#V2/Components/Metadata/Components/index.js';
 import { Button } from '#V2/Components/UI/index.js';
-import { copyFromValuesAreEqual, formatCopyFromValue } from './copyFromFieldValue.js';
+import {
+  copyFromValuesAreEqual,
+  formatCopyFromValue,
+  type CopyFromDisplayValue,
+} from './copyFromFieldValue.js';
 import type { CopyFromMatchingProperty } from './copyFromMatchingProperties.js';
 
 type CopyFromSourcePreviewProps = {
@@ -21,8 +25,8 @@ type CopyFromSourcePreviewProps = {
 type CopyFromFieldDiffProps = {
   property: CopyFromMatchingProperty;
   templateId?: string;
-  currentValue?: MetadataValue[];
-  sourceValue?: MetadataValue[];
+  currentValue?: CopyFromDisplayValue[];
+  sourceValue?: CopyFromDisplayValue[];
   checked: boolean;
   onToggle: () => void;
 };
