@@ -33,35 +33,39 @@ const getFileTypeLabel = (file: EntityFile) => {
     : t('System', 'Attachment', null, false);
 };
 
-const FileCard = ({ file, index, onFileSelect = () => {}, translations = [] }: FileCardProps) => {
+const getFileCardModel = (file: EntityFile, duration: number | undefined) => {
   const fileUrl = file.url || (file.filename ? `/api/files/${file.filename}` : '');
-  const downloadUrl = file.filename ? `${fileUrl}?download=true` : fileUrl;
-  const fileSize = file.size ? formatBytes(file.size) : 'n/a';
-  const isSelected = false;
-  const fileName = file.originalname || file.url || 'Untitled';
-  const fileTypeLabel = getFileTypeLabel(file);
   const isMediaFile = file.fileType === 'media' || /^(audio|video)\//.test(file.mimetype || '');
   const isExternalUrl = fileUrl.startsWith('http://') || fileUrl.startsWith('https://');
-  const [duration, setDuration] = useState<number | undefined>(file.duration);
-  const { languages } = useAtomValue(settingsAtom);
-
-  const handleDuration = (dur: number) => {
-    if (dur && Number.isFinite(dur) && dur > 0) {
-      setDuration(dur);
-    }
-  };
-
+  const fileName = file.originalname || file.url || 'Untitled';
+  const fileTypeLabel = getFileTypeLabel(file);
+  const fileSize = file.size ? formatBytes(file.size) : 'n/a';
   let fileDuration: string | null = null;
   if (isMediaFile) {
     fileDuration = isExternalUrl ? 'n/a' : formatDuration(duration);
   }
-  const ariaLabel = `Select ${fileName}, ${fileTypeLabel}, ${fileSize}${fileDuration ? `, ${fileDuration}` : ''}${isSelected ? ', selected' : ''}`;
+  return {
+    fileUrl,
+    downloadUrl: file.filename ? `${fileUrl}?download=true` : fileUrl,
+    isMediaFile,
+    isExternalUrl,
+    fileName,
+    fileTypeLabel,
+    fileSize,
+    fileDuration,
+    ariaLabel: `Select ${fileName}, ${fileTypeLabel}, ${fileSize}${fileDuration ? `, ${fileDuration}` : ''}`,
+  };
+};
+
+const FileCard = ({ file, index, onFileSelect = () => {}, translations = [] }: FileCardProps) => {
+  const [duration, setDuration] = useState<number | undefined>(file.duration);
+  const { languages } = useAtomValue(settingsAtom);
+  const card = getFileCardModel(file, duration);
 
   return (
     <div
       key={`${file._id || file.filename || index}`}
-      role="listitem"
-      // eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex
+      role="button"
       tabIndex={0}
       onClick={() => onFileSelect(file)}
       onKeyDown={e => {
@@ -70,25 +74,27 @@ const FileCard = ({ file, index, onFileSelect = () => {}, translations = [] }: F
           onFileSelect(file);
         }
       }}
-      aria-label={ariaLabel}
-      className={`border border-border rounded-lg flex flex-col gap-0 items-start justify-start cursor-pointer transition-colors 
-                            overflow-hidden focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink/40 
-                            focus-visible:ring-inset ${
-                              isSelected
-                                ? 'border-border bg-parchment'
-                                : 'border-border hover:border-border bg-paper'
-                            }`}
+      aria-label={card.ariaLabel}
+      className="border border-border rounded-lg flex flex-col gap-0 items-start justify-start cursor-pointer transition-colors overflow-hidden focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink/40 focus-visible:ring-inset bg-paper hover:border-border"
     >
       <div className="relative w-full h-48 overflow-hidden" aria-hidden="true">
         <FilePreview
           className="w-full h-full object-cover"
           file={file}
-          onDuration={isMediaFile && !isExternalUrl && !file.duration ? handleDuration : undefined}
+          onDuration={
+            card.isMediaFile && !card.isExternalUrl && !file.duration
+              ? dur => {
+                  if (dur && Number.isFinite(dur) && dur > 0) {
+                    setDuration(dur);
+                  }
+                }
+              : undefined
+          }
         />
       </div>
       <div className="p-4 flex flex-col gap-2 items-start justify-start w-full">
         <div className="text-ink text-sm font-bold truncate w-full text-ellipsis whitespace-nowrap">
-          {fileName}
+          {card.fileName}
         </div>
         <div className="flex flex-row gap-1 items-end justify-end w-full">
           <div className="flex flex-row gap-6 items-center justify-start flex-1">
@@ -96,25 +102,25 @@ const FileCard = ({ file, index, onFileSelect = () => {}, translations = [] }: F
               <div className="text-ink-muted text-xs">
                 <Translate>Type</Translate>
               </div>
-              <div className="text-ink text-sm font-medium truncate max-w-[100px]">
-                {fileTypeLabel}
+              <div className="text-ink text-sm font-medium truncate max-w-25">
+                {card.fileTypeLabel}
               </div>
             </div>
             <div className="flex flex-col gap-0 items-start">
               <div className="text-ink-muted text-xs">
                 <Translate>Size</Translate>
               </div>
-              <div className="text-ink text-sm font-medium">{fileSize}</div>
+              <div className="text-ink text-sm font-medium">{card.fileSize}</div>
             </div>
-            {isMediaFile && (
+            {card.isMediaFile && (
               <div className="flex flex-col gap-0 items-start">
                 <div className="text-ink-muted text-xs">
                   <Translate>Duration</Translate>
                 </div>
-                <div className="text-ink text-sm font-medium">{fileDuration}</div>
+                <div className="text-ink text-sm font-medium">{card.fileDuration}</div>
               </div>
             )}
-            {translations && translations.length > 0 && (
+            {translations.length > 0 && (
               <div className="flex flex-col gap-0 items-start">
                 <div className="text-ink-muted text-xs">
                   <Translate>Translations</Translate>
@@ -126,11 +132,11 @@ const FileCard = ({ file, index, onFileSelect = () => {}, translations = [] }: F
             )}
           </div>
           <a
-            href={downloadUrl}
+            href={card.downloadUrl}
             download={!file.url}
             onClick={e => e.stopPropagation()}
             onKeyDown={e => e.stopPropagation()}
-            aria-label={`Download ${fileName}`}
+            aria-label={`Download ${card.fileName}`}
             className="text-ink-secondary hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink/40 focus-visible:ring-inset rounded"
           >
             <ArrowDownTrayIcon className="w-5 h-5" aria-hidden="true" />

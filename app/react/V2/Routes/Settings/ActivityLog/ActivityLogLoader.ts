@@ -8,9 +8,9 @@ import * as activityLogAPI from '#V2/api/activityLog/index.js';
 import type { ActivityLogResponse } from '#V2/api/activityLog/index.js';
 import { ActivityLogEntryType } from '#shared/types/activityLogEntryType.js';
 
-const {isArray} = _;
-const {isEqual} = _;
-const {isObject} = _;
+const { isArray } = _;
+const { isEqual } = _;
+const { isObject } = _;
 const ITEMS_PER_PAGE = 100;
 
 type LogEntry = ActivityLogEntryType & { rowId: string };
@@ -121,7 +121,7 @@ const activityLogLoader =
     };
   };
 
-export interface ActivityLogSearch {
+interface ActivityLogSearch {
   username?: string;
   search?: string;
   method?: string[];
@@ -206,7 +206,7 @@ const buildPageURL = (appliedFilters: any, pageTo: string | number, location: Lo
   return `${location.pathname}?${createSearchParams(newParams)}`;
 };
 
-export type { LoaderData, LogEntry };
+export type { LoaderData, LogEntry, ActivityLogSearch };
 export {
   activityLogLoader,
   getAppliedFilters,

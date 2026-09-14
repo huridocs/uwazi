@@ -31,7 +31,7 @@ const Dialog = () => {
             isDisabled={targetTemplateOptions.length === 0}
           />
           {step === 1 && (
-            <span className="mt-5 text-xs font-light text-ink-muted max-w-[500px]">
+            <span className="mt-5 text-xs font-light text-ink-muted max-w-125">
               <Translate>
                 Only templates with at least one rich text property and one numeric property are
                 available for selection.
@@ -39,7 +39,7 @@ const Dialog = () => {
             </span>
           )}
           {step === 2 && (
-            <span className="mt-5 text-xs font-light text-ink-muted max-w-[500px]">
+            <span className="mt-5 text-xs font-light text-ink-muted max-w-125">
               <Translate>
                 Only templates that are not used as source in any other extractor and are not
                 selected as target in this extractor are available for selection.

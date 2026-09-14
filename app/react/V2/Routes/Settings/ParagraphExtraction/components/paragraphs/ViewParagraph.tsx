@@ -43,7 +43,7 @@ const ViewParagraph = ({ paragraphData }: { paragraphData: TablePXEntityParagrap
         <div className="leading-tight text-sm font-bold">
           <Translate>Text</Translate>
         </div>
-        <div className="text-sm text-ink leading-[21px]">{paragraphData.paragraphText}</div>
+        <div className="text-sm text-ink leading-5.25">{paragraphData.paragraphText}</div>
       </div>
     </div>
   );

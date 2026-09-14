@@ -49,7 +49,7 @@ const RowDragHandleCell = <T extends TableRow<T>>({ row }: { row: Row<T> }) => {
     if (canExpand && expanded && isDragging) {
       row.toggleExpanded();
     }
-  }, [isDragging]);
+  }, [isDragging, canExpand, expanded, row]);
 
   if (row.original.disableRowDnD) {
     return (

@@ -275,7 +275,7 @@ const IXSuggestions = () => {
         });
       }
     } else {
-      const sortingObject = sortingState[0];
+      const [sortingObject] = sortingState;
       const sortingParams = {
         property: sortingObject.id || '',
         order: sortingObject.desc ? 'desc' : 'asc',

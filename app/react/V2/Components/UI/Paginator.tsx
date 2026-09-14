@@ -41,7 +41,7 @@ const Paginator = ({ currentPage, totalPages, buildUrl, preventScrollReset }: Pa
       <ul className="flex flex-wrap items-center">
         <li key="previous">
           {isFirstPage ? (
-            <button type="button" disabled className={`${pageEdgeClass} ml-0 rounded-l-[4px]`}>
+            <button type="button" disabled className={`${pageEdgeClass} ml-0 rounded-l-sm`}>
               <ChevronLeftIcon className="w-4.25" />
               <Translate className="sr-only">Previous</Translate>
             </button>

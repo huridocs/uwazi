@@ -121,7 +121,7 @@ const TemplatesEditor = () => {
     if (loadedTemplate.processing?.active) {
       notifyTemplateProcessing();
     }
-  }, [loadedTemplate]);
+  }, [loadedTemplate, notifyTemplateProcessing]);
 
   const getCurrentStatus = useCallback((): ClientTemplateSchema => {
     const cleanedCommonProperties = commonProperties.map(cleanProperty);

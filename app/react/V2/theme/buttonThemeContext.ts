@@ -41,12 +41,7 @@ const getPrimaryButtonContext = (
   };
 };
 
-const getSurfaceButtonContext = (
-  presetId: ThemePresetId,
-  _resolved: ResolvedThemeVars,
-  _primaryBackground: string,
-  roles: ThemeRoles
-) => {
+const getSurfaceButtonContext = (presetId: ThemePresetId, roles: ThemeRoles) => {
   const isLegacy = presetId === 'legacy';
   const secondaryBackground = roles.action.secondaryBg;
   const compactBackground = roles.surface.warm;
@@ -71,12 +66,7 @@ const getButtonThemeContext = (
   roles: ThemeRoles
 ): ButtonThemeContext => {
   const primaryContext = getPrimaryButtonContext(presetId, resolved, roles);
-  const surfaceContext = getSurfaceButtonContext(
-    presetId,
-    resolved,
-    primaryContext.primaryBackground,
-    roles
-  );
+  const surfaceContext = getSurfaceButtonContext(presetId, roles);
 
   return {
     isLegacy: presetId === 'legacy',

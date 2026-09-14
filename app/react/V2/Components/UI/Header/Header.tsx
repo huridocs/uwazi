@@ -40,28 +40,23 @@ const connector = connect(mapStateToProps, mapDispatchToProps);
 type HeaderReduxProps = ConnectedProps<typeof connector>;
 
 const HeaderView = ({ librarySearch, libraryFilters, setSidePanelView }: HeaderReduxProps) => {
-  const user = useAtomValue(userAtom);
   const [themeMode, setThemeMode] = useAtom(themeModeAtom);
-  const authenticatedUser = Boolean(user?._id);
+  const authenticatedUser = Boolean(useAtomValue(userAtom)?._id);
   const settings = useAtomValue(settingsAtom);
   const isMobile = useIsMobile();
   const location = useLocation();
-
-  const { private: privateInstance, defaultLibraryView, themeCustomization } = settings;
-
   const libraryUrl = useMemo(
     () =>
       buildLibraryUrl({
         location,
         librarySearch,
         libraryFilters,
-        defaultLibraryView,
+        defaultLibraryView: settings.defaultLibraryView,
         libraryV2: Boolean(settings.features?.featureFlagLibraryV2),
       }),
-    [location, librarySearch, libraryFilters, defaultLibraryView, settings.features]
+    [location, librarySearch, libraryFilters, settings.defaultLibraryView, settings.features]
   );
-
-  const shouldShowLibrary = !privateInstance || authenticatedUser;
+  const shouldShowLibrary = !settings.private || authenticatedUser;
   const headerLinks = settings.links ?? [];
 
   return (
@@ -122,7 +117,7 @@ const HeaderView = ({ librarySearch, libraryFilters, setSidePanelView }: HeaderR
               {!isMobile ? <Translate>Sign in</Translate> : null}
             </I18NLink>
           )}
-          {themeCustomization ? (
+          {settings.themeCustomization ? (
             <button
               type="button"
               className="header-bar-icon-button flex h-9 w-9 items-center justify-center rounded-md transition-colors"

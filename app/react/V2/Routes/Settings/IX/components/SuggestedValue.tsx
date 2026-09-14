@@ -11,7 +11,76 @@ import { thesauriAtom } from '#V2/atoms/index.js';
 import { ClientThesaurus, ClientThesaurusValue } from '#app/apiResponseTypes.js';
 import { EntitySuggestion } from '../types.js';
 
-// eslint-disable-next-line max-statements
+const getLabelFromThesaurus = (id: string, thesaurus?: ClientThesaurus) => {
+  const flattenedValues = (thesaurus?.values ?? []).flatMap(entry =>
+    entry.values ? entry.values : [entry]
+  );
+  return flattenedValues.find((entry: ClientThesaurusValue) => entry.id === id)?.label || '';
+};
+
+const selectValueLabel = (
+  value: EntitySuggestion['suggestedValue'],
+  thesaurus?: ClientThesaurus
+) => {
+  if (isArray(value)) {
+    return value
+      .map(item =>
+        thesaurus ? getLabelFromThesaurus(item as string, thesaurus) : get(value, 'label')
+      )
+      .join(', ');
+  }
+  return thesaurus ? getLabelFromThesaurus(value as string, thesaurus) : get(value, 'label');
+};
+
+type DisplayContext = {
+  type: string | undefined;
+  locale: string | undefined;
+  content: string | undefined;
+  thesaurus?: ClientThesaurus;
+};
+
+const currentValueDisplay = ({
+  value,
+  type,
+  locale,
+  content,
+  thesaurus,
+}: DisplayContext & { value?: EntitySuggestion['suggestedValue'] }) => {
+  if (value === '' || value === undefined) {
+    return '-';
+  }
+  if (type === 'date') {
+    return secondsToDate(value as string | number, locale);
+  }
+  if (type === 'select' || type === 'multiselect' || type === 'relationship') {
+    return <Translate context={content}>{selectValueLabel(value, thesaurus)}</Translate>;
+  }
+  return value?.toString();
+};
+
+const suggestedValueDisplay = ({
+  suggestion,
+  type,
+  locale,
+  content,
+  thesaurus,
+}: DisplayContext & { suggestion: EntitySuggestion }) => {
+  if (suggestion.suggestedValue === '') {
+    return '-';
+  }
+  if (type === 'date') {
+    return secondsToDate((suggestion.suggestedValue as string | number) || '', locale);
+  }
+  if (type === 'select' || type === 'multiselect' || type === 'relationship') {
+    const suggestedValueId =
+      get(suggestion.suggestedValue, 'id') || (suggestion.suggestedValue as string);
+    const label =
+      get(suggestion.suggestedValue, 'label') || getLabelFromThesaurus(suggestedValueId, thesaurus);
+    return <Translate context={content}>{label}</Translate>;
+  }
+  return suggestion.suggestedValue!.toString();
+};
+
 const SuggestedValue = ({
   value,
   suggestion,
@@ -23,95 +92,33 @@ const SuggestedValue = ({
 }) => {
   const locale = useParams().lang;
   const thesauris = useAtomValue(thesauriAtom);
-
-  const mismatchColor = 'text-alert-800';
-  const matchColor = 'text-success-600';
-
-  let colorClass = mismatchColor;
-  if (
-    value === suggestion.suggestedValue ||
-    (get(value, 'id') !== undefined && get(value, 'id') === get(suggestion.suggestedValue, 'id'))
-  ) {
-    colorClass = matchColor;
-  }
-
   const property = templateProperties.find(prop => prop.name === suggestion.propertyName);
   const { content, type } = property || {};
-  const thesaurus = thesauris.find(t => t._id === content);
-
-  const getLabelFromThesaurus = (id: string, _thesaurus: ClientThesaurus | undefined) => {
-    if (!_thesaurus) {
-      return '';
-    }
-
-    const flattenedValues = _thesaurus.values.reduce((acc: any, v) => {
-      if (v.values) {
-        return [...acc, ...v.values];
-      }
-      return [...acc, v];
-    }, []);
-
-    const thesaurusValue = flattenedValues.find((v: ClientThesaurusValue) => v.id === id);
-
-    return thesaurusValue?.label || '';
-  };
-
-  const getCurrentValue = () => {
-    if (value === '' || value === undefined) {
-      return '-';
-    }
-    if (type === 'date') {
-      return secondsToDate(value as string | number, locale);
-    }
-
-    if (type === 'select' || type === 'multiselect' || type === 'relationship') {
-      if (isArray(value)) {
-        const labelCurrentValue = value.map(v =>
-          thesaurus ? getLabelFromThesaurus(v as string, thesaurus) : get(value, 'label')
-        );
-        return <Translate context={content}>{labelCurrentValue.join(', ')}</Translate>;
-      }
-      const label = thesaurus
-        ? getLabelFromThesaurus(value as string, thesaurus)
-        : get(value, 'label');
-      return <Translate context={content}>{label}</Translate>;
-    }
-
-    return value?.toString();
-  };
-
-  const getSuggestedValue = () => {
-    if (suggestion.suggestedValue === '') {
-      return '-';
-    }
-    if (type === 'date') {
-      return secondsToDate((suggestion.suggestedValue as string | number) || '', locale);
-    }
-    if (type === 'select' || type === 'multiselect' || type === 'relationship') {
-      const suggestedValueId =
-        get(suggestion.suggestedValue, 'id') || (suggestion.suggestedValue as string);
-      const label =
-        get(suggestion.suggestedValue, 'label') ||
-        getLabelFromThesaurus(suggestedValueId, thesaurus);
-      return <Translate context={content}>{label}</Translate>;
-    }
-    return suggestion.suggestedValue!.toString();
-  };
+  const thesaurus = thesauris.find(item => item._id === content);
+  const valuesMatch =
+    value === suggestion.suggestedValue ||
+    (get(value, 'id') !== undefined && get(value, 'id') === get(suggestion.suggestedValue, 'id'));
+  const colorClass = valuesMatch ? 'text-success-600' : 'text-alert-800';
 
   return (
     <div className="flex flex-col gap-1">
       <Truncate maxLength={100} ellipsisPosition="center" tooltipClassname="text-xs text-ink-muted">
-        <span className="text-ink-muted">{getCurrentValue()}</span>
+        <span className="text-ink-muted">
+          {currentValueDisplay({ value, type, locale, content, thesaurus })}
+        </span>
       </Truncate>
       <Truncate maxLength={100} ellipsisPosition="center" tooltipClassname="text-xs">
         {suggestion.state.obsolete && (
           <span className="text-ink-muted italic">
-            (<Translate>obsolete</Translate>) {getSuggestedValue()}
+            (<Translate>obsolete</Translate>){' '}
+            {suggestedValueDisplay({ suggestion, type, locale, content, thesaurus })}
           </span>
         )}
 
         {!suggestion.state.obsolete && !suggestion.state.error && (
-          <span className={`text-left ${colorClass}`}>{getSuggestedValue()}</span>
+          <span className={`text-left ${colorClass}`}>
+            {suggestedValueDisplay({ suggestion, type, locale, content, thesaurus })}
+          </span>
         )}
       </Truncate>
     </div>

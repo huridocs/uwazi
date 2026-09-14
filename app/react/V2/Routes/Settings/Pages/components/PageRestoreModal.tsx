@@ -3,20 +3,20 @@ import { Translate } from '#app/I18N/index.js';
 import { Button, Modal } from '#V2/Components/UI/index.js';
 import { MultiselectList } from '#app/V2/Components/Forms/index.js';
 
-export type PageRestoreReleaseRow = {
+type PageRestoreReleaseRow = {
   version: number;
   date: number;
   release_message?: string;
 };
 
-export interface PageRestoreModalProps {
+type PageRestoreModalProps = {
   isOpen: boolean;
   onClose: () => void;
   releases: PageRestoreReleaseRow[];
   selectedValues: string[];
   onSelectionChange: (values: string[]) => void;
   onRestore: () => void;
-}
+};
 
 const PageRestoreModal = ({
   isOpen,
@@ -86,3 +86,4 @@ const PageRestoreModal = ({
 };
 
 export { PageRestoreModal };
+export type { PageRestoreReleaseRow, PageRestoreModalProps };

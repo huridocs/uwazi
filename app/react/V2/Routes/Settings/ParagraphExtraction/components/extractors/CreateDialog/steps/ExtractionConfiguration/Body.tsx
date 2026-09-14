@@ -105,7 +105,7 @@ const Body = () => {
                 Target relationship type
               </Translate>
               <Translate className="text-sm font-light text-ink-muted">
-                Target's role in the relationship Source-Target.
+                Target&apos;s role in the relationship Source-Target.
               </Translate>
             </div>
           }
@@ -127,7 +127,7 @@ const Body = () => {
                 Source relationship type
               </Translate>
               <Translate className="text-sm font-light text-ink-muted">
-                Source's role in the relationship Source-Target.
+                Source&apos;s role in the relationship Source-Target.
               </Translate>
             </div>
           }

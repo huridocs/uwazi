@@ -95,7 +95,7 @@ const PageEditor = () => {
 
   const serverFormSeed = useMemo(
     () => buildPageEditorFormValues(page, languages),
-    [pageLoaderSignature, languages, page]
+    [languages, page]
   );
 
   useEffect(() => {
@@ -273,7 +273,7 @@ const PageEditor = () => {
   };
 
   const handleRestoreConfirm = async () => {
-    const versionStr = restoreSelected[0];
+    const [versionStr] = restoreSelected;
     if (!versionStr) {
       return;
     }
@@ -368,9 +368,7 @@ const PageEditor = () => {
                       >
                         <div className="flex gap-2 hover:font-bold hover:cursor-pointer">
                           <ArrowTopRightOnSquareIcon className="w-4" />
-                          <Translate className="underline hover:text-ink">
-                            View page
-                          </Translate>
+                          <Translate className="underline hover:text-ink">View page</Translate>
                         </div>
                       </Link>
                     )}
