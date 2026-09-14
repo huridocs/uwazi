@@ -1,4 +1,8 @@
 import { z } from 'zod';
+import type {
+  RequestTranslationRequest,
+  RequestTranslationResponse,
+} from '#shared/contracts/TranslationService.js';
 import { AbstractController } from '#api/common.v2/infrastructure/AbstractController.js';
 import { TranslationServiceModuleFactory } from '../TranslationServiceModuleFactory.js';
 
@@ -8,9 +12,7 @@ const RequestSchema = z.object({
   language_to: z.string().trim().min(1),
 });
 
-type RequestBody = z.infer<typeof RequestSchema>;
-
-class RequestTranslationController extends AbstractController<RequestBody> {
+class RequestTranslationController extends AbstractController<RequestTranslationRequest> {
   async handle(): Promise<void> {
     const dto = RequestSchema.parse(this.request.body);
 
@@ -19,7 +21,8 @@ class RequestTranslationController extends AbstractController<RequestBody> {
     const useCase = TranslationServiceModuleFactory.createRequestTranslation();
     const result = await useCase.execute(dto);
 
-    this.response.status(200).json(result);
+    const response: RequestTranslationResponse = result;
+    this.response.status(200).json(response);
   }
 }
 
