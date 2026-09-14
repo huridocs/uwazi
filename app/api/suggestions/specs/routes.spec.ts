@@ -120,7 +120,7 @@ describe('POST /api/suggestions/train', () => {
       .send({ extractorId: factory.id('super_powers_extractor').toString() });
 
     expect(response.status).toBe(409);
-    expect(response.body.error).toMatch(/not ready|processing|training/i);
+    await expect(response.body.error).toMatch(/not ready|processing|training/i);
   });
 
   it('should accept options.samplePolicy', async () => {
