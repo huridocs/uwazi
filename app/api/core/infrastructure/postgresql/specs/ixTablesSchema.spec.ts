@@ -58,7 +58,7 @@ const idsIn = async (table: string, where = 'TRUE', params: unknown[] = []) => {
   return rows.map(row => row._id);
 };
 
-describe('018-create-ix-tables', () => {
+describe('019-create-ix-tables', () => {
   beforeAll(async () => {
     await testingEnvironment.setUp({}, { postgres: true });
   });

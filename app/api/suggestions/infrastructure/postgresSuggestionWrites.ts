@@ -56,7 +56,7 @@ const insertRows = async (table: Table, rows: Row[]) =>
   sequentially(inBatches(rows.map(withInsertDefaults)), async batch => table.insert(batch));
 
 /**
- * The natural keys `018-create-ix-tables.sql` enforces, as `ON CONFLICT` targets: one suggestion
+ * The natural keys `019-create-ix-tables.sql` enforces, as `ON CONFLICT` targets: one suggestion
  * per entity and language for a text source, one per file for a pdf source. Both indexes are
  * partial, so their predicate is repeated here — Postgres infers a partial index only from a
  * target that carries it.
