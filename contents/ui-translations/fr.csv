@@ -169,7 +169,10 @@ Cancelled,Annulé
 Cannot connect to server,Impossible de se connecter au serveur
 Cannot find extractor,Impossible de trouver l'extracteur
 Captcha,Captcha
-Captcha bypass,Contournement du captcha
+Captcha bypass,"En activant cette option, vous autorisez les utilisateurs à soumettre vos modèles en liste blanche sans avoir à remplir de CAPTCHA. 
+Le formulaire continuera d'afficher le captcha aux utilisateurs finaux, mais le point de terminaison de l'API acceptera les soumissions sans validation CAPTCHA si un 
+en-tête ""Bypass-Captcha: true"" est envoyé. Cette option n'est pas sécurisée et peut être exploitée pour inonder votre instance de spam ou de 
+contenu malveillant."
 Cards,Cartes
 Cards view,Vue en cartes
 Category,Catégorie
@@ -228,7 +231,7 @@ Confirm,Confirmer
 CONFIRM,CONFIRMER
 Confirm action,Confirmer l'action
 Confirm delete connection,Confirmer la suppression de la connexion
-Confirm delete multiple items,Confirmer supprimer plusieurs éléments
+Confirm delete multiple items,Êtes-vous sûr de vouloir supprimer tous les éléments sélectionnés ?
 Confirm deletion,Confirmer la suppression
 Confirm deletion of,Confirmer la suppression de
 Confirm deletion of entity,Confirmer la suppression de l'entité
@@ -306,7 +309,7 @@ Current Value/Suggestion,Valeur actuelle / Suggestion
 "Custom colors are not available for this chart type. Use the chart palette or template
             colors instead.","Les couleurs personnalisées ne sont pas disponibles pour ce type de graphique. Utilisez plutôt la palette de couleurs du graphique ou les
 couleurs du modèle."
-Custom component error,Erreur de composant personnalisé
+Custom component error,Erreur de balisage du composant personnalisé : valeurs non prises en charge ! Veuillez vérifier votre configuration
 Custom CSS,CSS personnalisé
 Custom Favicon,Favicon personnalisée
 Custom JS,JS personnalisé
@@ -506,7 +509,7 @@ Filters,Filtres
 Filters AND operator,ET
 Filters configuration,Configuration des filtres
 Filters configuration description,"Par défaut, les utilisateurs peuvent filtrer les entités de la bibliothèque en fonction des types que vous avez définis. Vous pouvez toutefois configurer la manière dont ces types d'entités seront affichés :"
-Filters configuration example,Exemple de configuration des filtres
+Filters configuration example,"Sélectionnez ""Ajouter un groupe"" ci-dessous pour regrouper les filtres sous une étiquette, par exemple (""Documents"" ou ""Personnes"")"
 Filters OR operator,OU
 Filters saved,Filtres enregistrés
 Find,Trouver
@@ -614,7 +617,7 @@ Instructions to reset the password were sent to the user,Les instructions permet
 Invalid captcha,Captcha invalide
 Invalid csv: all the values for a row must be either nested or non-nested,"Fichier CSV non valide : toutes les valeurs d'une ligne doivent être soit imbriquées, soit non imbriquées"
 Invalid csv: nested value need to be under a non-nested value,Fichier CSV non valide : les valeurs imbriquées doivent se trouver sous une valeur non imbriquée
-Invalid form,Formulaire invalide
+Invalid form,Une saisie est obligatoire ou contient une valeur invalide. Veuillez corriger et réessayer.
 Invalid URL,URL non valide
 It could also very easily break the app. Only write code here if you know exactly what you are doing.,Cela pourrait aussi très facilement casser l'application. N'écrivez du code ici que si vous savez exactement ce que vous faites.
 it has been logged with request id #,elle a été enregistrée sous le numéro de demande #
@@ -811,7 +814,7 @@ No page,Aucune page
 No people or groups added yet,Aucune personne ni aucun groupe n'a encore été ajouté
 No primary documents,Aucun document source
 No primary documents yet. Add a file to get started.,Il n'y a pas encore de documents sources. Ajoutez un fichier pour commencer.
-No property,Aucune propriété
+No property,Cet élément ne possède pas cette propriété
 No References,Pas de références
 No References description,Les références sont des parties de ce document liées à d'autres documents et entités.
 No relationship types,Aucun type de relation
@@ -824,7 +827,7 @@ No results found,Aucun résultat trouvé
 No supporting files yet. Add a file to get started.,Il n'y a pas encore de fichiers joints. Ajoutez un fichier pour commencer.
 No table of contents,Aucune table des matières
 No Table of contents,Pas de table des matières
-No table of contents description,Aucune description de Table des matières
+No table of contents description,"Vous pouvez commencer par sélectionner du texte dans le document, puis cliquer sur le bouton ""Ajouter à la table des matières""."
 No templates available to add.,Aucun modèle disponible à ajouter.
 No text match,Aucune correspondance de texte
 No text match description,Vous pouvez saisir autre chose dans la zone de recherche pour obtenir des résultats.
@@ -967,21 +970,21 @@ Properties from other templates in the collection using the same label.,Proprié
 Property,Propriété
 Property as filter description,"Cette propriété sera utilisée pour filtrer les résultats de la bibliothèque. Lorsque des propriétés portent le même nom et le même type de champ que celles d'autres types d'entités, elles seront combinées pour le filtrage."
 property date,Date
-property daterange,Date range
-property generatedid,Generated ID
-property geolocation,Geolocation
+property daterange,Plage de dates
+property generatedid,ID généré
+property geolocation,Géolocalisation
 property image,Image
-property link,Link
-property markdown,Rich text
-property media,Media
-property multidate,Multiple date
-property multidaterange,Multiple date range
-property multiselect,Multiple select
-property numeric,Numeric
-property preview,Preview
-property relationship,Relationship
-property select,Select
-property text,Text
+property link,Lien
+property markdown,Texte enrichi
+property media,Média
+property multidate,Dates multiples
+property multidaterange,Plages de dates multiples
+property multiselect,Sélection multiple
+property numeric,Numérique
+property preview,Aperçu
+property relationship,Relation
+property select,Sélection
+property text,Texte
 Property type,Type de propriété
 Protection,Protection
 ProTip!,ProTip !
@@ -1105,11 +1108,11 @@ Search text description,Saisissez quelque chose dans la zone de recherche pour o
 Search this document,Rechercher dans ce document
 Search Tips,Astuces de recherche
 Search tips,Conseils de recherche
-Search Tips: boolean,Astuces de recherche: Booléen
-Search Tips: exact term,Astuces de recherche: Terme exact
-Search Tips: one char wildcard,Astuces de recherche: terme générique a un caractère
-Search Tips: proximity,Astuces de recherche: proximité
-Search Tips: wildcard,Astuces de recherche: caractère générique
+Search Tips: boolean,"AND, OR et NOT pour les recherches booléennes. Par exemple, ""statut AND femmes NOT Nicaragua"" correspondra à tout élément contenant à la fois les mots statut et femmes, et ne contenant pas le mot Nicaragua."
+Search Tips: exact term,"Correspondance exacte des termes en plaçant votre chaîne de recherche entre guillemets. Par exemple, ""Costa Rica"" donnera des résultats différents de Costa Rica sans guillemets."
+Search Tips: one char wildcard,"? pour un caractère générique unique. Par exemple : ""198 ?"" correspondra à 1980 à 1989, ainsi qu'à 198a, 198b, etc."
+Search Tips: proximity,"~ pour les recherches de proximité. Par exemple : ""le statut""~5 trouvera tout contenu ayant ""le"" et ""statut"" à une distance de 5 mots, comme ""le statut procédural"", ""le statut juridique spécifique""."
+Search Tips: wildcard,"Utilisez un * pour la recherche par caractère générique. Par exemple : ""juri*"" correspondra à des mots comme juridiction, juridique, juriste, jurisprudence, etc."
 Search title & metadata,Rechercher dans le titre et les métadonnées
 Searching...,Recherche en cours...
 Secondary button,Bouton secondaire

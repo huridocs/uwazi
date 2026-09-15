@@ -178,7 +178,9 @@ Change,Cambiar
 Change Password,Cambiar contraseña
 Changes in the thesaurus will impact all the entities using these values.,Los cambios en Tesauros impactarán en todas las entidades que usen esos valores.
 Changing the type will erase all relationships to this entity.,Cambiar el tipo borrará todas las relaciones de esta entidad.
-Character support description,"Esta opción mejora la compatibilidad con idiomas no latinos como idiomas predeterminados de tu colección. Al seleccionar esta opción, todas las propiedades de la plantilla se actualizarán automáticamente. El proceso puede tardar varios minutos. Seleccionar esta opción probablemente cambiará las URL de los filtros de la colección. Como consecuencia, si tienes menús o enlaces que usan dichas URL, probablemente dejarán de funcionar. Deberás actualizarlos manualmente. Después de seleccionar esta opción, no podrás volver a usar los nombres de la  propiedad heredada. Si no tienes problemas con los nombres de las propiedades de tu plantilla, recomendamos no marcar esta opción."
+Character support description,"Esta opción mejora la compatibilidad con idiomas no latinos como idiomas predeterminados de tu colección.
+Al seleccionar esta opción, todas las propiedades de la plantilla se actualizarán automáticamente. El proceso puede tardar varios minutos. Seleccionar esta opción probablemente cambiará las URL de los filtros de la colección. Como consecuencia, si tienes menús o enlaces que usan dichas URL, probablemente dejarán de funcionar.
+Deberás actualizarlos manualmente. Después de seleccionar esta opción, no podrás volver a usar los nombres de la propiedad heredada. Si no tienes problemas con los nombres de las propiedades de tu plantilla, recomendamos no marcar esta opción."
 Character support process warning,"Este proceso podría demorar varios minutos y probablemente cambiará las URL a los filtros de la colección. Si tienes menús o enlaces que usan dichas URL, probablemente dejarán de funcionar después de la actualización. Deberás actualizarlos manualmente."
 Character support revert warning,"Después de seleccionar esta opción, no podrás volver a usar los nombres de propiedad heredada. Si no tienes problemas con los nombres de las propiedades de tu plantilla, recomendamos no marcar esta opción."
 Chart,Gráfico
@@ -506,7 +508,7 @@ Filters AND operator,Y
 Filters configuration,Configuración de filtros
 Filters configuration description,"Por omisión, los usuarios pueden filtrar las entidades en la colección basados en los tipos que has definido. Sin embargo, puedes configurar cómo estos tipos de entidades se mostrarán."
 Filters configuration example,"selecciona ""Crear grupo"" a continuación, para agrupar filtros bajo una etiqueta, por ejemplo (""Documentos"" o ""Personas"")"
-Filters OR operator,OR
+Filters OR operator,O
 Filters saved,Filtros guardados
 Find,Encontrar
 Find suggestions,Encontrar sugerencias
@@ -613,7 +615,7 @@ Instructions to reset the password were sent to the user,Se han enviado al usuar
 Invalid captcha,Captcha no válido
 Invalid csv: all the values for a row must be either nested or non-nested,CSV no válido: o todos o ninguno de los valores para una fila deben estar anidados
 Invalid csv: nested value need to be under a non-nested value,CSV no válido: los valores anidados necesitan estar bajo un valor no anidado
-Invalid form,Formulario no válido
+Invalid form,Es necesario introducir un valor o el valor introducido no es válido. Corrígelo e inténtalo de nuevo.
 Invalid URL,URL no válida
 It could also very easily break the app. Only write code here if you know exactly what you are doing.,La aplicación incluso podría dejar de funcionar. Escribe código aquí únicamente si sabes exactamente lo que estás haciendo.
 it has been logged with request id #,ha sido registrado con el id de solicitud #
@@ -810,7 +812,7 @@ No page,No hay página
 No people or groups added yet,Aún no se ha añadido ninguna persona ni grupo
 No primary documents,Sin documentos primarios
 No primary documents yet. Add a file to get started.,Sin documentos primarios. Añade un archivo para empezar.
-No property,Ninguna propiedad
+No property,El elemento no tiene esta propiedad
 No References,Sin referencias
 No References description,Las referencias son partes de este documento relacionadas con otros documentos y entidades.
 No relationship types,Sin tipos de relación
@@ -823,7 +825,7 @@ No results found,No se encontraron resultados
 No supporting files yet. Add a file to get started.,Sin archivos de soporte. Añade un archivo para empezar.
 No table of contents,Sin Tabla de Contenidos
 No Table of contents,Sin Tabla de Contenidos
-No table of contents description,Sin descripción de Tabla de Contenidos
+No table of contents description,"Puedes empezar seleccionando texto en el documento y haciendo clic en el botón ""Añadir a TdC""."
 No templates available to add.,No hay plantillas disponibles para añadir.
 No text match,Sin coincidencias de texto
 No text match description,Puedes escribir algo diferente en la barra de búsqueda para obtener algunos resultados.
@@ -971,7 +973,7 @@ property geolocation,Geolocalización
 property image,Imagen
 property link,Enlace
 property markdown,Texto enriquecido
-property media,Media
+property media,Medios
 property multidate,Fecha múltiple
 property multidaterange,Rango de fechas múltiple
 property multiselect,Selección múltiple
