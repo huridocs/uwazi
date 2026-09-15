@@ -8,9 +8,44 @@ import * as suggestionsAPI from '#V2/api/ix/suggestions.js';
 import { api } from '#app/utils/api.js';
 import { TestAtomStoreProvider, TestRouterContext } from '#V2/testing/index.js';
 import { thesauriAtom } from '#V2/atoms/index.js';
+import { useRequestStatus } from '#V2/atoms/requestStatusAtom.js';
 import { IXSuggestions } from '../IXSuggestions.js';
 import { loaderData, thesauri, entity1, entity2, nestedSuggestions } from './fixtures.js';
 import { ixStatus, IXSuggestionsLoaderResponse } from '../types.js';
+
+const mockSocketListeners = new Map<string, Set<(...args: any[]) => void>>();
+
+jest.mock('#app/socket.js', () => ({
+  socket: {
+    on: (event: string, listener: (...args: any[]) => void) => {
+      if (!mockSocketListeners.has(event)) mockSocketListeners.set(event, new Set());
+      mockSocketListeners.get(event)!.add(listener);
+    },
+    off: (event: string, listener: (...args: any[]) => void) => {
+      mockSocketListeners.get(event)?.delete(listener);
+    },
+  },
+}));
+
+const emitSocketEvent = (event: string, ...args: any[]) => {
+  mockSocketListeners.get(event)?.forEach(listener => listener(...args));
+};
+
+const RequestStatusProbe = () => {
+  const { tasks, notifications } = useRequestStatus();
+  return (
+    <ul data-testid="request-status">
+      {tasks.map(task => (
+        <li key={task.id}>{`task ${task.status}: ${task.details ?? ''}`}</li>
+      ))}
+      {notifications.map(notification => (
+        <li key={notification.id}>
+          {`notification ${notification.type}: ${notification.details ?? ''}`}
+        </li>
+      ))}
+    </ul>
+  );
+};
 
 jest.mock('#V2/api/entities', () => ({
   ...jest.requireActual('#V2/api/entities'),
@@ -85,6 +120,7 @@ describe('IX suggestions', () => {
     <TestRouterContext loaderData={data}>
       <TestAtomStoreProvider initialValues={[[thesauriAtom, thesauri]]}>
         <IXSuggestions />
+        <RequestStatusProbe />
       </TestAtomStoreProvider>
     </TestRouterContext>
   );
@@ -376,6 +412,55 @@ describe('IX suggestions', () => {
           mode: 'process_extractor',
         });
       });
+    });
+  });
+
+  describe('when the process run ends before the request resolves', () => {
+    const notSegmented =
+      'Documents are not segmented yet. Try again once PDF segmentation has finished.';
+
+    const processExtractorFromModal = async () => {
+      render(<Component />);
+      fireEvent.click(await screen.findByText('Process extractor'));
+      const modal = screen.getByRole('dialog');
+      const processButton = within(modal).getByText('Process').parentElement;
+      await act(async () => {
+        fireEvent.click(processButton!);
+      });
+    };
+
+    it('should not let the response overwrite the status the socket already delivered', async () => {
+      jest.spyOn(suggestionsAPI, 'process').mockImplementation(async () => {
+        emitSocketEvent('ix_model_status', 'extractor1', ixStatus.ready, 'Completed');
+        return {
+          status: ixStatus.processing_suggestions,
+          message: 'Finding suggestions',
+          data: { total: 4 },
+        };
+      });
+
+      await processExtractorFromModal();
+
+      expect(screen.queryByText(/Finding suggestions\.\.\./)).not.toBeInTheDocument();
+      expect(screen.getByText('Process extractor').parentElement).not.toBeDisabled();
+    });
+
+    it('should report why the run ended on the task and as an error notification', async () => {
+      jest.spyOn(suggestionsAPI, 'process').mockImplementation(async () => {
+        emitSocketEvent('ix_model_status', 'extractor1', ixStatus.ready, notSegmented, {
+          error: true,
+        });
+        return { status: ixStatus.ready, message: notSegmented };
+      });
+
+      await processExtractorFromModal();
+
+      const requestStatus = screen.getByTestId('request-status');
+      expect(within(requestStatus).getByText(`task failed: ${notSegmented}`)).toBeInTheDocument();
+      expect(
+        within(requestStatus).getByText(`notification error: ${notSegmented}`)
+      ).toBeInTheDocument();
+      expect(screen.queryByText(/Finding suggestions\.\.\./)).not.toBeInTheDocument();
     });
   });
 

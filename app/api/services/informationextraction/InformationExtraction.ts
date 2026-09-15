@@ -32,7 +32,7 @@ import {
   BATCH_SIZE_FOR_PROPERTY,
   FileWithAggregation,
   getEntitiesForSuggestions,
-  getFilesForSuggestions,
+  getFilesForSuggestionsBatch,
   propertyTypeIsWithoutPropertySelections,
 } from '#api/services/informationextraction/ixMaterials.js';
 import { Suggestions } from '#api/suggestions/suggestions.js';
@@ -60,6 +60,18 @@ import { IXTrainModelJob } from './TrainModelJob.js';
 import { IXServices } from './IXServices.js';
 
 const defaultTrainingLanguage = 'en';
+
+const NOT_SEGMENTED_MESSAGE =
+  'Documents are not segmented yet. Try again once PDF segmentation has finished.';
+
+/**
+ * What an attempt to send the next batch of a find run actually did. A run that stopped has
+ * already emitted its terminal status; callers answering a request must report the same thing.
+ */
+type SuggestionsBatchOutcome = { started: true } | { started: false; message: string };
+
+/** Marks a terminal `ready` status as a run that ended without doing its work. */
+type ReadyStatusData = { error: true };
 
 const suggestionsDao = () => IXSuggestionsDAOFactory.default();
 
@@ -205,7 +217,8 @@ class InformationExtraction {
       'ix_model_status',
       message.params!.id.toString(),
       'ready',
-      'Suggestions run failed'
+      'Suggestions run failed',
+      { error: true }
     );
   }
 
@@ -668,14 +681,19 @@ class InformationExtraction {
     return batchSize;
   };
 
-  stopModelAndEmitReadyMessage = async (extractorId: ObjectIdSchema, message: string) => {
+  stopModelAndEmitReadyMessage = async (
+    extractorId: ObjectIdSchema,
+    message: string,
+    data?: ReadyStatusData
+  ) => {
     await this.stopModel(extractorId);
     emitToTenantAdminsAndEditors(
       tenants.current().name,
       'ix_model_status',
       extractorId,
       'ready',
-      message
+      message,
+      ...(data ? [data] : [])
     );
   };
 
@@ -689,29 +707,40 @@ class InformationExtraction {
     model: IXModelType;
     targetProperty: PropertySchema;
     computedBatch: boolean;
-  }) => {
+  }): Promise<SuggestionsBatchOutcome> => {
     const extractorId = extractor._id;
     const batchSize = await this.determineBatchSize(extractorId, model, 'pdf', computedBatch);
-    const filesForSuggestions = await getFilesForSuggestions(extractorId, batchSize);
+    const { files: filesForSuggestions, awaitingSegmentation } = await getFilesForSuggestionsBatch(
+      extractorId,
+      batchSize
+    );
 
     if (!filesForSuggestions.length) {
-      await this.stopModelAndEmitReadyMessage(extractorId, 'Completed');
-      return [];
+      return this.stopRun(extractorId, awaitingSegmentation);
     }
 
     try {
       await this.sendMaterialsForPDF(filesForSuggestions, extractor, targetProperty);
     } catch (error) {
       if (error.message === 'No files with segmentations to be used for training') {
-        await this.stopModelAndEmitReadyMessage(
-          extractorId,
-          'No files with segmentations to be used for training'
-        );
-        return [];
+        return this.stopRun(extractorId, true);
       }
       throw error;
     }
-    return filesForSuggestions;
+    return { started: true };
+  };
+
+  private stopRun = async (
+    extractorId: ObjectIdSchema,
+    awaitingSegmentation: boolean
+  ): Promise<SuggestionsBatchOutcome> => {
+    if (awaitingSegmentation) {
+      await this.stopModelAndEmitReadyMessage(extractorId, NOT_SEGMENTED_MESSAGE, { error: true });
+      return { started: false, message: NOT_SEGMENTED_MESSAGE };
+    }
+
+    await this.stopModelAndEmitReadyMessage(extractorId, 'Completed');
+    return { started: false, message: 'Completed' };
   };
 
   getAndSendMaterialsForProperty = async ({
@@ -724,14 +753,13 @@ class InformationExtraction {
     model: IXModelType;
     targetProperty: PropertySchema;
     computedBatch: boolean;
-  }) => {
+  }): Promise<SuggestionsBatchOutcome> => {
     const extractorId = extractor._id;
     const batchSize = await this.determineBatchSize(extractorId, model, 'property', computedBatch);
     const entitiesForSuggestions = await getEntitiesForSuggestions(extractorId, batchSize);
 
     if (!entitiesForSuggestions.length) {
-      await this.stopModelAndEmitReadyMessage(extractorId, 'Completed');
-      return [];
+      return this.stopRun(extractorId, false);
     }
 
     await this.sendMaterialsForProperty(
@@ -742,7 +770,7 @@ class InformationExtraction {
       'prediction_data'
     );
 
-    return entitiesForSuggestions;
+    return { started: true };
   };
 
   startSuggestionsTask = async (extractor: EnforcedWithId<IXExtractorType>) => {
@@ -764,21 +792,22 @@ class InformationExtraction {
     extractor: EnforcedWithId<IXExtractorType>,
     model: IXModelType,
     computedBatch: boolean = true
-  ) => {
+  ): Promise<SuggestionsBatchOutcome> => {
     const targetProperty = await IXServices.getTargetProperty({ extractor });
     const processingParams = { extractor, model, targetProperty, computedBatch };
 
     if (extractor.source.pdf) {
-      const filesForSuggestions = await this.getAndSendMaterialsForPDF(processingParams);
-      if (!filesForSuggestions.length) return;
+      const outcome = await this.getAndSendMaterialsForPDF(processingParams);
+      if (!outcome.started) return outcome;
     }
 
     if (extractor.source.property) {
-      const entitiesForSuggestions = await this.getAndSendMaterialsForProperty(processingParams);
-      if (!entitiesForSuggestions.length) return;
+      const outcome = await this.getAndSendMaterialsForProperty(processingParams);
+      if (!outcome.started) return outcome;
     }
 
     await this.startSuggestionsTask(extractor);
+    return { started: true };
   };
 
   getSuggestions = async (extractorId: ObjectIdSchema) => {
