@@ -187,25 +187,29 @@ describe('DenormalizeThesaurusEntitiesHandler', () => {
     const userId = new ObjectId().toHexString();
     await sut.handleDispatch(
       jest.fn(),
-      { tenantName: tenants.current().name, userId, thesaurusId },
+      {
+        tenantName: tenants.current().name,
+        userId,
+        thesaurusId,
+        valueIds: [factory.id('countries_canada').toString()],
+      },
       { namespace: tenants.current().name, maxRetries: 3, retryCount: 0 }
     );
 
     const jobs = await getJobs();
 
-    expect(jobs).toMatchObject([
-      {
-        queue: 'uwazi_jobs',
-        name: 'DenormalizeThesaurusEntitiesChunkHandler',
-        params: {
-          sharedIds: ['entity_1', 'entity_2', 'entity_6', 'entity_9'],
-          tenantName: tenants.current().name,
-          userId,
-          thesaurusId,
-        },
-        namespace: tenants.current().name,
+    expect(jobs).toHaveLength(1);
+    expect(jobs[0]).toMatchObject({
+      queue: 'uwazi_jobs',
+      name: 'DenormalizeThesaurusEntitiesChunkHandler',
+      params: {
+        tenantName: tenants.current().name,
+        userId,
+        thesaurusId,
       },
-    ]);
+      namespace: tenants.current().name,
+    });
+    expect([...jobs[0].params.sharedIds].sort()).toEqual(['entity_1', 'entity_6', 'entity_9']);
   });
 
   it('should do nothing when there are no affected entities', async () => {
@@ -216,7 +220,7 @@ describe('DenormalizeThesaurusEntitiesHandler', () => {
     const userId = new ObjectId().toHexString();
     await sut.handleDispatch(
       jest.fn(),
-      { tenantName: tenants.current().name, userId, thesaurusId },
+      { tenantName: tenants.current().name, userId, thesaurusId, valueIds: [] },
       { namespace: tenants.current().name, maxRetries: 3, retryCount: 0 }
     );
 
