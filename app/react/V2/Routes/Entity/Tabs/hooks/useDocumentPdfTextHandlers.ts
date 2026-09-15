@@ -1,21 +1,19 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useCallback } from 'react';
 import { useAtomValue } from 'jotai';
 import type { TextSelection } from '@huridocs/react-text-selection-handler';
-import { settingsAtom, userAtom } from '#V2/atoms/index.js';
+import { settingsAtom } from '#V2/atoms/index.js';
 import { convertTextSelectionToTocEntry } from '#V2/Routes/Entity/Components/ToC/index.js';
 import {
   useDocumentPdf,
   useMetadataEditing,
   useRelationshipsActions,
   useTocActions,
+  useEntityWriteAuthorized,
 } from '#V2/Routes/Entity/Components/context/index.js';
 import { useEntityTabNavigation } from '../EntityTabsContext.js';
 import { SIDE_TAB } from '../tabIds.js';
 
-function useDocumentPdfTextHandlers() {
-  const { ocrServiceEnabled } = useAtomValue(settingsAtom);
-  const user = useAtomValue(userAtom);
-  const [userIsAdminOrEditor, setUserIsAdminOrEditor] = useState(false);
+function usePdfTextSelection() {
   const {
     documentPdfSelection: selectedText,
     pdfSelectionMenuOpen,
@@ -23,13 +21,6 @@ function useDocumentPdfTextHandlers() {
     setPdfSelectionMenuOpen,
   } = useDocumentPdf();
   const { isEditing } = useMetadataEditing();
-  const { addEntry } = useTocActions();
-  const { openCreateRelationship } = useRelationshipsActions();
-  const { focusRelationshipsPanel, focusSideTab } = useEntityTabNavigation();
-
-  useEffect(() => {
-    setUserIsAdminOrEditor((user?._id && ['admin', 'editor'].includes(user.role)) || false);
-  }, [user]);
 
   const handleTextSelect = useCallback(
     (selection: TextSelection) => {
@@ -51,6 +42,17 @@ function useDocumentPdfTextHandlers() {
     }
   }, [isEditing, setPdfSelectionMenuOpen, setSelectedText]);
 
+  return { selectedText, pdfSelectionMenuOpen, handleTextSelect, handleTextDeselect };
+}
+
+function useDocumentPdfTextHandlers() {
+  const { ocrServiceEnabled } = useAtomValue(settingsAtom);
+  const canWrite = useEntityWriteAuthorized();
+  const pdfSelection = usePdfTextSelection();
+  const { addEntry } = useTocActions();
+  const { openCreateRelationship } = useRelationshipsActions();
+  const { focusRelationshipsPanel, focusSideTab } = useEntityTabNavigation();
+
   const handleCreateRelationship = useCallback(
     (selection: TextSelection) => {
       openCreateRelationship(selection);
@@ -61,20 +63,16 @@ function useDocumentPdfTextHandlers() {
 
   const handleAddToToC = useCallback(
     (selection: TextSelection) => {
-      const tocEntry = convertTextSelectionToTocEntry(selection);
-      addEntry(tocEntry);
+      addEntry(convertTextSelectionToTocEntry(selection));
       focusSideTab(SIDE_TAB.TOC);
     },
     [addEntry, focusSideTab]
   );
 
   return {
-    selectedText,
-    pdfSelectionMenuOpen,
-    userIsAdminOrEditor,
+    canWrite,
     ocrServiceEnabled,
-    handleTextSelect,
-    handleTextDeselect,
+    ...pdfSelection,
     handleCreateRelationship,
     handleAddToToC,
   };
