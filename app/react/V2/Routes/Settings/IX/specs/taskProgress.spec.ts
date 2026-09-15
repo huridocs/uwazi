@@ -145,6 +145,24 @@ describe('taskProgress helper', () => {
     expect(complete).toHaveBeenCalled();
   });
 
+  it('calls fail with the reason on a ready status that ended the run without doing its work', () => {
+    const complete = jest.fn();
+    const fail = jest.fn();
+    const setup = createIXTaskListenerSetup({
+      extractorId: 'ext1',
+      extractorName: 'Extractor A',
+      taskType: 'process',
+      labels,
+    });
+    setup(jest.fn(), complete, fail);
+
+    const statusCb = mockOn.mock.calls.find(call => call[0] === ModelEvents.MODEL_STATUS)?.[1];
+    statusCb('ext1', ixStatus.ready, 'Documents are not segmented yet.', { error: true });
+
+    expect(fail).toHaveBeenCalledWith('Documents are not segmented yet.');
+    expect(complete).not.toHaveBeenCalled();
+  });
+
   it('calls fail on model error', () => {
     const fail = jest.fn();
     const setup = createIXTaskListenerSetup({
