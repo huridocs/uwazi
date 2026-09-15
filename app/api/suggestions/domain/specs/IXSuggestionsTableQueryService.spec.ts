@@ -4,7 +4,11 @@ import { testingPG } from '#api/utils/testing_pg.js';
 import { testingTenants } from '#api/utils/testingTenants.js';
 import { SuggestionCustomFilter } from '#shared/types/suggestionType.js';
 import { Suggestion } from '../IXSuggestionsDataSource.js';
-import { IXSuggestionsTableQueryService, TableQuery } from '../IXSuggestionsTableQueryService.js';
+import {
+  IXSuggestionsTableQueryService,
+  SuggestionSort,
+  TableQuery,
+} from '../IXSuggestionsTableQueryService.js';
 import { IXSuggestionsTableQueryServiceFactory } from '../../infrastructure/IXSuggestionsTableQueryServiceFactory.js';
 import {
   extractors,
@@ -184,6 +188,15 @@ const sortCases = (sut: Sut) => {
 
     expect(idsOf(rows)).toEqual(idsOf(Object.values(table)));
     expect(total).toBe(5);
+  });
+
+  /** The sort order is caller input too; anything but ascending sorts descending, as in Mongo. */
+  it('should sort descending for a sort order that is not asc, without running it', async () => {
+    expect(
+      await titlesOf(sut, {
+        sort: { field: 'entityTitle', order: 'asc, (select 1/0)' as SuggestionSort['order'] },
+      })
+    ).toEqual(['b', 'a', 'B', 'A', null]);
   });
 };
 

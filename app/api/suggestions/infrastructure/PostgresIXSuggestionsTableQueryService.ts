@@ -57,8 +57,12 @@ const statusPredicate = (statusFilter?: SuggestionStatusFilter) => {
     : undefined;
 };
 
-const isSortColumn = (field: string): field is SuggestionColumn | '_id' =>
-  field === '_id' || Object.hasOwn(IX_SUGGESTIONS_COLUMN_TYPES, field);
+const sortColumns = ['_id', ...Object.keys(IX_SUGGESTIONS_COLUMN_TYPES)] as (
+  SuggestionColumn | '_id'
+)[];
+
+/** The stored column a sort field names, taken from the list so the caller's string never is. */
+const sortColumn = (field?: string) => sortColumns.find(column => column === field);
 
 /**
  * Mongo's ordering for one stored column: strings compared byte by byte, as `COLLATE "C"` does
@@ -67,7 +71,7 @@ const isSortColumn = (field: string): field is SuggestionColumn | '_id' =>
  * Columns are qualified so none resolves to a projected alias: `entityId` is one.
  */
 const orderTermsFor = (column: SuggestionColumn | '_id', order: 'asc' | 'desc') => {
-  const direction = `${order.toUpperCase()} NULLS ${order === 'asc' ? 'FIRST' : 'LAST'}`;
+  const direction = order === 'asc' ? 'ASC NULLS FIRST' : 'DESC NULLS LAST';
   const qualified = `"${tableName}"."${column}"`;
   const type = column === '_id' ? 'text' : IX_SUGGESTIONS_COLUMN_TYPES[column];
 
@@ -85,14 +89,14 @@ const orderTermsFor = (column: SuggestionColumn | '_id', order: 'asc' | 'desc') 
 
 /**
  * The requested order, or entityTitle ascending when there is none or its field is not a stored
- * column: the field reaches SQL, so nothing else may name it. `_id` breaks ties, so a page holds
- * the same rows every time it is asked for.
+ * column: the field reaches SQL, so nothing else may name it. Nor may the order: any order but
+ * `asc` sorts descending, as in the Mongo sibling, and is never spliced into the clause. `_id`
+ * breaks ties, so a page holds the same rows every time it is asked for.
  */
 const orderClause = (sort?: SuggestionSort) => {
+  const column = sortColumn(sort?.field);
   const terms =
-    sort?.field && sort.order && isSortColumn(sort.field)
-      ? orderTermsFor(sort.field, sort.order)
-      : orderTermsFor('entityTitle', 'asc');
+    column && sort?.order ? orderTermsFor(column, sort.order) : orderTermsFor('entityTitle', 'asc');
 
   return [...terms, `"${tableName}"."_id" ASC`].join(', ');
 };

@@ -75,6 +75,18 @@ describe('suggestions routes', () => {
       const response = await request(app).get('/api/suggestions/').query(invalidQuery);
       expect(response.status).toBe(400);
     });
+
+    /** The sort order reaches the Postgres ORDER BY, so only a known direction may pass. */
+    it('should return a validation error for a sort order that is not asc or desc', async () => {
+      const response = await request(app)
+        .get('/api/suggestions/')
+        .query({
+          filter: JSON.stringify({ extractorId: factory.id('age_extractor').toString() }),
+          sort: JSON.stringify({ property: 'entityTitle', order: 'asc, (select 1/0)' }),
+        });
+
+      expect(response.status).toBe(400);
+    });
   });
 });
 

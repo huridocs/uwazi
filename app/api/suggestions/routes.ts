@@ -62,7 +62,7 @@ export const suggestionsRoutes = (app: Application) => {
               type: 'object',
               properties: {
                 property: { type: 'string' },
-                order: { type: 'string' },
+                order: { type: 'string', enum: ['asc', 'desc'] },
               },
             },
           },
