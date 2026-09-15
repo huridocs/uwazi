@@ -11,6 +11,7 @@ import { PrivilegedJob } from '#api/core/infrastructure/jobs/PrivilegedJob.js';
 
 type Params = {
   thesaurusId: string;
+  valueIds: string[];
 } & UwaziJobParams;
 
 type JobDependencies = {
@@ -25,7 +26,10 @@ class DenormalizeThesaurusEntitiesHandler extends UwaziJobHandler<Params> {
   }
 
   protected async handle(_heartbeat: HeartbeatCallback, params: Params, _jobInfo: JobInfo) {
-    const sharedIds = await this.deps.entitiesDS.getSharedIdsUsingThesaurus(params.thesaurusId);
+    const sharedIds = await this.deps.entitiesDS.getSharedIdsUsingThesaurus(
+      params.thesaurusId,
+      params.valueIds
+    );
 
     const chunks = ArrayUtils.splitInChunks(sharedIds, 100);
 

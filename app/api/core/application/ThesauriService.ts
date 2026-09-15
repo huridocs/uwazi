@@ -42,6 +42,22 @@ class ThesauriService {
     }
   }
 
+  private async denormalizeChangedValues(
+    thesaurus: Thesaurus,
+    diff: ReturnType<Thesaurus['getDiff']>,
+    tenantName: string
+  ) {
+    const valueIds = [...diff.updatedValues, ...diff.removedValues].map(value => value.id);
+
+    if (valueIds.length) {
+      await this.deps.dispatcher.denormalizeThesaurus({
+        tenantName,
+        thesaurusId: thesaurus.id,
+        valueIds,
+      });
+    }
+  }
+
   async insert(thesaurus: Thesaurus): Promise<void> {
     (await this.deps.thesauriDS.exists(thesaurus)).getDataOrThrow();
 
@@ -66,10 +82,7 @@ class ThesauriService {
 
     await this.deps.thesaurusTranslationService.update(diff);
 
-    await this.deps.dispatcher.denormalizeThesaurus({
-      tenantName: context.tenantName,
-      thesaurusId: thesaurus.id,
-    });
+    await this.denormalizeChangedValues(thesaurus, diff, context.tenantName);
   }
 }
 

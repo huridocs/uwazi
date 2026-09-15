@@ -198,23 +198,39 @@ class MongoTemplatesDAO extends MongoDataSource<TemplateDBO> {
     return result.map((doc: any) => doc._id);
   }
 
-  async findTemplateIdsUsingThesaurus(thesaurusId: string): Promise<ObjectId[]> {
+  async findPropertyNamesUsingThesaurus(thesaurusId: string): Promise<{
+    selectPropertyNames: string[];
+    inheritedPropertyNames: string[];
+  }> {
     const directTemplates = await this.getCollection()
       .find({ 'properties.content': thesaurusId })
-      .project({ _id: 1 })
       .toArray();
+
+    const selectPropertyNames = directTemplates.flatMap(template =>
+      (template.properties || [])
+        .filter(property => property.content === thesaurusId)
+        .map(property => property.name)
+    );
+
+    const directTemplateIds = directTemplates.map(template => template._id.toString());
 
     const relatedTemplates = await this.getCollection()
       .find({
         'properties.type': 'relationship',
-        'properties.content': { $in: directTemplates.map(t => t._id.toString()) },
+        'properties.content': { $in: directTemplateIds },
       })
-      .project({ _id: 1 })
       .toArray();
 
-    const allTemplates = [...directTemplates, ...relatedTemplates];
+    const inheritedPropertyNames = relatedTemplates.flatMap(template =>
+      (template.properties || [])
+        .filter(
+          property =>
+            property.type === 'relationship' && directTemplateIds.includes(property.content || '')
+        )
+        .map(property => property.name)
+    );
 
-    return Array.from(new Set(allTemplates.map(t => t._id)));
+    return { selectPropertyNames, inheritedPropertyNames };
   }
 }
 
