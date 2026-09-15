@@ -142,6 +142,21 @@ describe('PostgresEntityMapper', () => {
       expect(dbo.user).toEqual(factory.id('user_id'));
     });
 
+    /**
+     * A row that lost its identity to a projection used to mint a fresh ObjectId here, and the
+     * invented id was written to suggestions that could then never be accepted (F49). Identity is
+     * not something a mapper may invent: a row without one is a programming error upstream.
+     */
+    it('refuses a row with no identity rather than inventing one', () => {
+      const entity = createDomainEntity();
+      const [row] = PostgresEntityMapper.toDBO(entity);
+      const { _id, ...projected } = row;
+
+      expect(() => PostgresEntityMapper.toEntityDBO(projected as typeof row)).toThrow(
+        /identity|_id/i
+      );
+    });
+
     it('converts null user, generatedToc and preview to undefined', () => {
       const entity = createDomainEntity({ creationDate: 1000000, editDate: 2000000 });
       const [row] = PostgresEntityMapper.toDBO(entity);
