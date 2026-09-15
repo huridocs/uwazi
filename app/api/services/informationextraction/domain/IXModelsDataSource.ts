@@ -43,14 +43,20 @@ export interface IXModelsDataSource {
   /* ------------------------------------------------------------- status transitions -- */
 
   /**
-   * Begin a training run: mark the model processing and discard any previous `processRun`,
-   * in one atomic write. Upserts, because the very first training of an extractor is what
-   * creates its model row.
+   * Claim the model for a training run: mark it processing and discard any previous `processRun`,
+   * in one atomic write. Upserts, because the very first training of an extractor is what creates
+   * its model row.
+   *
+   * Answers whether the run was claimed. A model already processing is left exactly as it is and
+   * the answer is `false` — two runs at once tear down each other's model on the ML service and
+   * the survivor's results overwrite good suggestions with empty ones (F52). The decision is the
+   * store's for that reason: callers arriving milliseconds apart would both pass a read-then-write
+   * check.
    */
   markTraining(
     extractorId: ObjectIdSchema,
     options: { maxSuggestionsToFind: number }
-  ): Promise<void>;
+  ): Promise<boolean>;
 
   /** Flip an existing model into the finding-suggestions phase. Undefined when none exists. */
   markFindingSuggestions(extractorId: ObjectIdSchema): Promise<IXModel | undefined>;

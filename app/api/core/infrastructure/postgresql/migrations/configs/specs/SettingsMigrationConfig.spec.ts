@@ -79,7 +79,7 @@ describe('SettingsMigrationConfig copy', () => {
 
     const result = await makeMigrator().migrate(SettingsMigrationConfig);
 
-    expect(result).toEqual({ migrated: 1, skipped: false });
+    expect(result).toEqual({ migrated: 1, orphansSkipped: 0, skipped: false });
 
     const rows = (await testingPG.getAllFrom('settings')).filter(row => row.tenant_id === TENANT);
     expect(rows).toHaveLength(1);
@@ -121,7 +121,7 @@ describe('SettingsMigrationConfig copy', () => {
 
     const result = await makeMigrator().migrate(SettingsMigrationConfig, { force: true });
 
-    expect(result).toEqual({ migrated: 1, skipped: false });
+    expect(result).toEqual({ migrated: 1, orphansSkipped: 0, skipped: false });
     const rows = (await testingPG.getAllFrom('settings')).filter(row => row.tenant_id === TENANT);
     expect(rows).toHaveLength(1);
     // Non-destructive: existing PG row wins on conflict

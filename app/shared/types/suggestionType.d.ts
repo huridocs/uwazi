@@ -101,7 +101,7 @@ export interface IXSuggestionStateType {
 }
 
 export interface IXSuggestionsModelData {
-  findSuggestionsRunTimestamp?: number;
+  suggestionsRunTimestamp?: number;
 }
 
 export interface IXSuggestionsQuery {

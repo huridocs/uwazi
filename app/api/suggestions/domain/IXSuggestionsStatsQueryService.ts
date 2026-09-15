@@ -10,6 +10,20 @@ import { IXSuggestionAggregation } from '#shared/types/suggestionType.js';
  */
 export type SuggestionStats = IXSuggestionAggregation & { accuracy: number };
 
+/** The stats of an extractor with no suggestions. Unlike any other result, it has no `useForTraining`. */
+export const emptyStats: SuggestionStats = {
+  total: 0,
+  labeled: 0,
+  nonLabeled: 0,
+  match: 0,
+  mismatch: 0,
+  obsolete: 0,
+  error: 0,
+  noContext: 0,
+  nonProcessed: 0,
+  accuracy: 0,
+};
+
 /**
  * Read side of the stats bar. A query service rather than a method on
  * `IXSuggestionsDataSource`: it is a read-only projection with no counterpart write, so it

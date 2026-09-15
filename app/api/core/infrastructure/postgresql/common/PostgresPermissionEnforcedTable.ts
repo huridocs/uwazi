@@ -1,6 +1,6 @@
 import type { Knex } from 'knex';
 import { PostgresDB } from '#api/infrastructure/PostgresDB.js';
-import { PostgresTable, type TableConfig } from './PostgresTable.js';
+import { PostgresTable, type QueryState, type TableConfig } from './PostgresTable.js';
 import { PostgresTransactionManager } from './PostgresTransactionManager.js';
 import { SyncLogWriter } from './SyncLogWriter.js';
 import { AccessContext } from '#api/core/domain/entityAccessPolicy/AccessContext.js';
@@ -14,6 +14,7 @@ type ForParams = {
   accessContext: AccessContext;
   knex?: Knex;
   syncWriter?: SyncLogWriter;
+  identityColumn?: string | null;
 };
 
 class PermissionDeniedError extends Error {
@@ -43,9 +44,13 @@ class PermissionDeniedError extends Error {
 class PostgresPermissionEnforcedTable<TRow = Record<string, unknown>> extends PostgresTable<TRow> {
   private readonly accessContext: AccessContext;
 
-  protected constructor(cfg: TableConfig, qb: Knex.QueryBuilder, accessContext: AccessContext) {
-    super(cfg, qb);
-    this.accessContext = accessContext;
+  protected constructor(
+    cfg: TableConfig,
+    qb: Knex.QueryBuilder,
+    scope: { accessContext: AccessContext; state?: QueryState }
+  ) {
+    super(cfg, qb, scope.state);
+    this.accessContext = scope.accessContext;
   }
 
   static for<TRow = Record<string, unknown>>(
@@ -58,16 +63,18 @@ class PostgresPermissionEnforcedTable<TRow = Record<string, unknown>> extends Po
       tenantId: params.tenantId,
       transactionManager: params.transactionManager,
       syncWriter: params.syncWriter,
+      identityColumn: params.identityColumn,
     };
-    return new PostgresPermissionEnforcedTable<TRow>(
-      cfg,
-      knexInstance(params.tableName),
-      params.accessContext
-    );
+    return new PostgresPermissionEnforcedTable<TRow>(cfg, knexInstance(params.tableName), {
+      accessContext: params.accessContext,
+    });
   }
 
-  protected chain(qb: Knex.QueryBuilder): this {
-    return new PostgresPermissionEnforcedTable(this.cfg, qb, this.accessContext) as any as this;
+  protected chain(qb: Knex.QueryBuilder, state: QueryState = this.state): this {
+    return new PostgresPermissionEnforcedTable(this.cfg, qb, {
+      accessContext: this.accessContext,
+      state,
+    }) as any as this;
   }
 
   /**
