@@ -8,7 +8,7 @@ import * as uploadsActionTypes from '#app/Uploads/actions/actionTypes.js';
 import { constructFile, readFileAsBase64 } from '#shared/fileUploadUtils.js';
 import { loadingProgressBar as loadingBar } from '#app/App/LoadingProgressBar.js';
 
-const saveEntityWithFiles = async (entity: ClientEntitySchema, dispatch?: Dispatch<{}>) => {
+const saveEntityWithFiles = async (entity: ClientEntitySchema, dispatch?: Dispatch) => {
   const [attachments, supportingFiles] = entity.attachments
     ? entity.attachments.reduce(
         (accumulator, attachmentInfo) => {

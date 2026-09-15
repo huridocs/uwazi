@@ -35,7 +35,7 @@ class PDFViewComponent extends Component {
   componentDidMount() {
     const query = searchParamsFromSearchParams(this.props.searchParams);
     if (query.searchTerm) {
-      this.context.store.dispatch(actions.set('viewer.sidepanel.tab', 'text-search'));
+      this.props.dispatch(actions.set('viewer.sidepanel.tab', 'text-search'));
     }
   }
 
@@ -53,7 +53,7 @@ class PDFViewComponent extends Component {
       void entitiesAPI
         .getRawPage(new RequestParams({ _id: defaultDoc(props.entity)._id, page: query.page }))
         .then(pageText => {
-          this.context.store.dispatch(actions.set('viewer/rawText', pageText));
+          this.props.dispatch(actions.set('viewer/rawText', pageText));
         });
     }
   }
@@ -75,7 +75,7 @@ class PDFViewComponent extends Component {
     const { ref } = query;
     if (ref) {
       const reference = doc.get('relations').find(r => r.get('_id') === ref);
-      this.context.store.dispatch(activateReference(reference.toJS()));
+      this.props.dispatch(activateReference(reference.toJS()));
     }
   }
 
@@ -125,10 +125,6 @@ class PDFViewComponent extends Component {
   }
 }
 
-PDFViewComponent.contextTypes = {
-  store: PropTypes.instanceOf(Object),
-};
-
 PDFViewComponent.propTypes = {
   entity: PropTypes.instanceOf(Object).isRequired,
   leaveEditMode: PropTypes.func,
@@ -138,6 +134,7 @@ PDFViewComponent.propTypes = {
   }).isRequired,
   navigate: PropTypes.func.isRequired,
   searchParams: PropTypes.instanceOf(Object).isRequired,
+  dispatch: PropTypes.func.isRequired,
 };
 
 PDFViewComponent.defaultProps = {
@@ -145,7 +142,7 @@ PDFViewComponent.defaultProps = {
 };
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({ leaveEditMode }, dispatch);
+  return { dispatch, ...bindActionCreators({ leaveEditMode }, dispatch) };
 }
 
 const SSRPDFView = connect(null, mapDispatchToProps)(withRouter(PDFViewComponent));

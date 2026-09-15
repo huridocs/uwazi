@@ -16,7 +16,7 @@ type MountedRelationshipTypesSettings = {
   services: V2Services;
   relationshipTypes: TestingRelationshipTypesService;
   router: DataRouter;
-  tree: React.ReactElement;
+  tree: React.ReactElement<any>;
 };
 
 const createRelationshipTypesSettingsTree = (

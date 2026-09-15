@@ -20,7 +20,7 @@ type MountedUsersSettings = {
   users: TestingUsersService;
   userGroups: TestingUserGroupsService;
   router: DataRouter;
-  tree: React.ReactElement;
+  tree: React.ReactElement<any>;
 };
 
 const createUsersSettingsTree = (initialEntry = '/settings/users'): MountedUsersSettings => {

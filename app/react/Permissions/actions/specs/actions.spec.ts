@@ -11,7 +11,7 @@ import * as api from '../../PermissionsAPI.js';
 import * as actions from '../actions.js';
 
 describe('Permissions actions', () => {
-  let dispatch: Dispatch<IStore>;
+  let dispatch: Dispatch;
 
   beforeEach(() => {
     dispatch = jasmine.createSpy('dispatch');

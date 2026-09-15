@@ -38,7 +38,7 @@ const updateSelection = (
 
 const deleteSelection =
   (entityDocument: IImmutable<ClientFile> | undefined, propertyName: string, propertyID?: string) =>
-  (dispatch: Dispatch<{}>) => {
+  (dispatch: Dispatch) => {
     const document = entityDocument?.toJS();
 
     const updatedSelections = document?.propertySelections?.filter(

@@ -25,7 +25,7 @@ interface HideColumnsComponentProps {
 const mapStateToProps = (state: IStore) => ({
   columns: state.library.ui.get('tableViewColumns'),
 });
-const mapDispatchToProps = (dispatch: Dispatch<IStore>) =>
+const mapDispatchToProps = (dispatch: Dispatch) =>
   bindActionCreators(
     { setTableViewColumnHidden, setTableViewAllColumnsHidden },
     wrapDispatch(dispatch, 'library')
@@ -65,7 +65,7 @@ export const HideColumnsComponent = ({
 
   const { sortedColumns, hiddenColumns } = processColumns(columnsMap);
   const dropdownContainerRef = useRef(null);
-  const dropdownRef: RefObject<React.Component & React.ReactElement> = useRef(null);
+  const dropdownRef: RefObject<(React.Component & React.ReactElement<any>) | null> = useRef(null);
 
   const onClickOutside = useCallback((event: MouseEvent) => {
     const target = event.target as HTMLElement;

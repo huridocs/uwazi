@@ -1,7 +1,6 @@
 import React from 'react';
 import { shallow, ShallowWrapper } from 'enzyme';
 import configureMockStore, { MockStore, MockStoreCreator } from 'redux-mock-store';
-import { Provider } from 'react-redux';
 import { ClientFile } from '#app/istore.js';
 import { ReviewTocButton } from '../ReviewTocButton.js';
 
@@ -12,14 +11,10 @@ describe('ReviewTocButton', () => {
   const render = (file: Partial<ClientFile>) => {
     const store: MockStore<object> = mockStoreCreator({});
     component = shallow(
-      <Provider store={store}>
-        <ReviewTocButton file={{ ...file, _id: 'id' }}>
-          <span>test</span>
-        </ReviewTocButton>
-      </Provider>
-    )
-      .dive()
-      .dive();
+      <ReviewTocButton file={{ ...file, _id: 'id' }} store={store}>
+        <span>test</span>
+      </ReviewTocButton>
+    ).dive();
   };
 
   it('should render nothing if file generatedToc is false', () => {

@@ -16,7 +16,7 @@ type MountRouteOptions = {
 };
 
 type MountedRoute = {
-  tree: ReactElement;
+  tree: ReactElement<any>;
   router: DataRouter;
 };
 
@@ -61,7 +61,8 @@ const createMountedRoute = ({
   };
 };
 
-const mountRoute = (options: MountRouteOptions): ReactElement => createMountedRoute(options).tree;
+const mountRoute = (options: MountRouteOptions): ReactElement<any> =>
+  createMountedRoute(options).tree;
 
 export { createMountedRoute, mountRoute };
 export type { MountRouteOptions, MountedRoute };

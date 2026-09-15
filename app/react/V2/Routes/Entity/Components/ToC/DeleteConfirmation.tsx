@@ -6,7 +6,7 @@ import { Button } from '#V2/Components/UI/Button.js';
 type DeleteConfirmationProps = {
   onConfirm: () => void;
   onCancel?: () => void;
-  triggerButton: React.ReactElement;
+  triggerButton: React.ReactElement<any>;
 };
 
 export const DeleteConfirmation = ({

@@ -26,7 +26,7 @@ const mapStateToProps = (state: IStore) => ({
   libraryFilters: state.library.filters,
 });
 
-function mapDispatchToProps(dispatch: Dispatch<IStore>) {
+function mapDispatchToProps(dispatch: Dispatch) {
   return bindActionCreators({ filterDocumentTypes }, dispatch);
 }
 

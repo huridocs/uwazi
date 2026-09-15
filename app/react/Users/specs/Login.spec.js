@@ -3,6 +3,10 @@
  */
 import React from 'react';
 import { shallow } from 'enzyme';
+import { render as renderRtl } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { Provider } from 'react-redux';
+import { createStore } from 'redux';
 import { actions as formActions } from 'react-redux-form';
 
 import { LoginComponent } from '../Login.js';
@@ -75,6 +79,17 @@ describe('Login', () => {
           done();
         })
         .catch(done.fail);
+    });
+
+    it('should send named input values when the form model is empty', async () => {
+      const form = document.createElement('form');
+      form.innerHTML =
+        '<input name="username" value="admin" /><input name="password" value="secret" />';
+      const event = { currentTarget: form, target: form, preventDefault() {} };
+      await instance.submit({}, event);
+      expect(props.login).toHaveBeenCalledWith(
+        expect.objectContaining({ username: 'admin', password: 'secret' })
+      );
     });
 
     describe('when recoverPassword is true', () => {
@@ -175,5 +190,41 @@ describe('Login', () => {
       expect(instance.state.error).toBe(false);
       expect(instance.state.recoverPassword).toBe(true);
     });
+  });
+});
+
+describe('Login LocalForm', () => {
+  const { location } = window;
+
+  beforeAll(() => {
+    delete window.location;
+    window.location = { ...location, assign: jest.fn() };
+  });
+
+  afterAll(() => {
+    window.location = location;
+  });
+
+  it('should submit username and password from LocalForm fields', async () => {
+    const login = jasmine.createSpy('login').and.callFake(async () => Promise.resolve());
+    const store = createStore(() => ({ locale: 'en' }));
+    renderRtl(
+      <Provider store={store}>
+        <LoginComponent
+          login={login}
+          recoverPassword={async () => undefined}
+          reloadThesauris={() => undefined}
+          change={() => undefined}
+          matches={[]}
+        />
+      </Provider>
+    );
+    const user = userEvent.setup();
+    await user.type(document.getElementById('username'), 'admin');
+    await user.type(document.getElementById('password'), 'secret');
+    await user.click(document.querySelector('button[type="submit"]'));
+    expect(login).toHaveBeenCalledWith(
+      expect.objectContaining({ username: 'admin', password: 'secret' })
+    );
   });
 });

@@ -12,6 +12,7 @@ import { RouteHandler } from '#app/App/RouteHandler.js';
 import { reloadThesauri } from '#app/Thesauri/actions/thesaurisActions.js';
 import { withRouter } from '#app/componentWrappers.js';
 import auth from '#app/Auth/index.js';
+import { loginValues } from './loginValues.js';
 
 const reloadHome = () => {
   window.location.assign('/');
@@ -36,12 +37,13 @@ class LoginComponent extends RouteHandler {
     this.formDispatch = dispatch;
   }
 
-  submit(credentials) {
+  submit(credentials, event) {
+    const values = loginValues(credentials, event);
     if (this.state.recoverPassword) {
-      return this.recoverPassword(credentials.username);
+      return this.recoverPassword(values.username);
     }
 
-    return this.login(credentials);
+    return this.login(values);
   }
 
   recoverPassword(email) {

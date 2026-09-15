@@ -1,7 +1,7 @@
-import React, { LegacyRef, ReactElement, useEffect } from 'react';
+import React, { Ref, ReactElement, useEffect } from 'react';
 
 interface StickyHeaderProps {
-  children: ReactElement;
+  children: ReactElement<any>;
   scrollElementSelector: string;
   stickyElementSelector: string;
 }
@@ -40,7 +40,7 @@ const eventHandler = (self: any, stickyElementSelector: string, event: Event) =>
 
 const StickyHeader = (props: StickyHeaderProps) => {
   const { children, scrollElementSelector, stickyElementSelector } = props;
-  const self: LegacyRef<HTMLDivElement> = React.createRef();
+  const self: Ref<HTMLDivElement> = React.createRef();
   const body = document.querySelector<HTMLDivElement>(scrollElementSelector);
   useEffect(() => {
     body?.addEventListener('scroll', event => {

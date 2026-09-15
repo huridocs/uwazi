@@ -20,7 +20,7 @@ import { IImmutable } from '#shared/types/Immutable.js';
 import { HiddenColumnsDropdown } from './HiddenColumnsDropdown.js';
 
 interface LibraryHeaderOwnProps {
-  counter: React.ReactElement;
+  counter: React.ReactElement<any>;
   selectAllDocuments: () => {};
   SearchBar?: typeof SearchBarComponent;
   searchCentered?: boolean;
@@ -37,7 +37,7 @@ const mapStateToProps = (state: IStore) => ({
   rowListZoomLevel: state.library.ui.get('zoomLevel'),
 });
 
-const mapDispatchToProps = (dispatch: Dispatch<IStore>) =>
+const mapDispatchToProps = (dispatch: Dispatch) =>
   bindActionCreators(
     { zoomIn: zoomInAction, zoomOut: zoomOutAction, showFilters: showFiltersAction },
     wrapDispatch(dispatch, 'library')

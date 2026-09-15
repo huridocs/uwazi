@@ -3,9 +3,7 @@
  */
 import React from 'react';
 import { ApiError } from '#shared/apiClient/index.js';
-import { renderConnectedMount } from '#app/utils/test/renderConnected.js';
-import type { RequestError } from '#V2/shared/errorUtils.js';
-import { ErrorFallback } from '../ErrorFallback.js';
+import { defaultState, renderConnectedContainer } from '#app/utils/test/renderConnected.js';
 import { RouteErrorBoundary } from '../RouteErrorBoundary.js';
 
 let error: any = null;
@@ -18,27 +16,28 @@ jest.mock('react-router', () => ({
 }));
 
 describe('ErrorBoundary', () => {
-  const controlledComponent = (
-    <RouteErrorBoundary>
-      <span>Content</span>
-    </RouteErrorBoundary>
-  );
-
   beforeEach(() => {
     error = null;
   });
 
+  const renderBoundary = () =>
+    renderConnectedContainer(
+      <RouteErrorBoundary>
+        <span>Content</span>
+      </RouteErrorBoundary>,
+      () => defaultState
+    );
+
   it('should show the nested children if no errors', () => {
-    const component = renderConnectedMount(() => controlledComponent, {}, {}, true);
-    expect(component.text()).toContain('Content');
+    const { renderResult } = renderBoundary();
+    expect(renderResult.getByText('Content')).toBeInTheDocument();
   });
 
   it('should show a fallback component when a nested component fails', () => {
     error = { message: 'error at rendering' };
-    const component = renderConnectedMount(() => controlledComponent, {}, {}, true);
-    expect(component.text()).not.toContain('Content');
-    const errorProps = component.find(ErrorFallback).at(0).props();
-    expect(errorProps.error.message).toEqual('error at rendering');
+    const { renderResult } = renderBoundary();
+    expect(renderResult.queryByText('Content')).toBeNull();
+    expect(renderResult.container.textContent).toContain('error at rendering');
   });
 
   it('should normalize ApiError for ErrorFallback', () => {
@@ -48,12 +47,8 @@ describe('ErrorBoundary', () => {
       detail: 'Thesauri missing',
       requestId: 'req-1',
     });
-    const component = renderConnectedMount(() => controlledComponent, {}, {}, true);
-    const errorProps = component.find(ErrorFallback).at(0).props();
-    const normalized = errorProps.error as RequestError;
-    expect(normalized.status).toBe(404);
-    expect(normalized.message).toBe('Thesauri missing');
-    expect(normalized.name).toBe('Not Found');
+    const { renderResult } = renderBoundary();
+    expect(renderResult.getByText('Thesauri missing')).toBeInTheDocument();
   });
 
   it('should normalize route ErrorResponse for ErrorFallback', () => {
@@ -63,11 +58,7 @@ describe('ErrorBoundary', () => {
       data: { error: 'Failed to load plaintext', message: 'Plaintext missing' },
       internal: true,
     };
-    const component = renderConnectedMount(() => controlledComponent, {}, {}, true);
-    const errorProps = component.find(ErrorFallback).at(0).props();
-    const normalized = errorProps.error as RequestError;
-    expect(normalized.status).toBe(404);
-    expect(normalized.message).toBe('Plaintext missing');
-    expect(normalized.name).toBe('Not Found');
+    const { renderResult } = renderBoundary();
+    expect(renderResult.getByText('Plaintext missing')).toBeInTheDocument();
   });
 });

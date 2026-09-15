@@ -1,4 +1,4 @@
-import React, { ChangeEvent, Dispatch, useState } from 'react';
+import React, { ChangeEvent, useState } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { CloudArrowUpIcon } from '@heroicons/react/24/solid';
@@ -7,6 +7,7 @@ import { Icon } from '#app/UI/index.js';
 import { uploadAndCreate as uploadDocumentAction } from '#app/Uploads/actions/uploadsActions.js';
 import { Truncate } from '#V2/Components/UI/Truncate.js';
 import { Tooltip } from '#V2/Components/UI/index.js';
+import { AppDispatch } from '#app/thunkDispatch.js';
 
 interface PDFUploadActions {
   uploadDocument: (
@@ -113,7 +114,7 @@ const PDFUploadButtonComponent = ({ uploadDocument }: PDFUploadButtonProps) => {
   );
 };
 
-const mapDispatchToProps = (dispatch: Dispatch<any>) =>
+const mapDispatchToProps = (dispatch: AppDispatch) =>
   bindActionCreators(
     {
       uploadDocument: uploadDocumentAction,

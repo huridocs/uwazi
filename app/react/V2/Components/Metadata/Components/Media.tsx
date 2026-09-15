@@ -17,14 +17,17 @@ type MediaProps = {
 };
 
 type PlayerRef = NonNullable<React.ComponentProps<typeof MediaPlayer>['playerRef']>;
-type PlayerInstance = PlayerRef extends React.RefObject<infer T> ? T : never;
+type PlayerInstance = PlayerRef extends React.RefObject<infer T | null> ? T : never;
 
 const isImageMedia = (value: string, mimetype?: string, fileType?: string) =>
   fileType === 'image' ||
   Boolean(mimetype?.startsWith('image/')) ||
   getMimetypeFromUrl(value).startsWith('image/');
 
-const syncPlayerRefs = (refs: { current: React.RefObject<PlayerInstance>[] }, count: number) => {
+const syncPlayerRefs = (
+  refs: { current: React.RefObject<PlayerInstance | null>[] },
+  count: number
+) => {
   if (refs.current.length !== count) {
     refs.current = Array.from({ length: count }, () => React.createRef<PlayerInstance>());
   }
@@ -40,7 +43,7 @@ const Media = ({
   density = 'default',
 }: MediaProps) => {
   const baseId = useId();
-  const playerRefs = useRef<React.RefObject<PlayerInstance>[]>([]);
+  const playerRefs = useRef<React.RefObject<PlayerInstance | null>[]>([]);
   syncPlayerRefs(playerRefs, values.length);
 
   const nonEmptyValues = values.filter(v => v.value);

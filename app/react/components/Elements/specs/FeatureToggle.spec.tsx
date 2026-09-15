@@ -1,5 +1,4 @@
 import React from 'react';
-import { Provider } from 'react-redux';
 import Immutable from 'immutable';
 import { shallow } from 'enzyme';
 import configureMockStore, { MockStore, MockStoreCreator } from 'redux-mock-store';
@@ -11,15 +10,13 @@ const mockStoreCreator: MockStoreCreator<object> = configureMockStore<object>([]
 const renderComponent = (store: MockStore<object>, feature: string = 'testFeature') => {
   const ownProps: OwnPropTypes = { feature };
 
-  return shallow(
-    <Provider store={store}>
-      <FeatureToggle {...ownProps}>
-        <span>test</span>
-      </FeatureToggle>
-    </Provider>
-  )
-    .dive({ context: { store } })
-    .dive();
+  const wrapper = shallow(
+    <FeatureToggle {...ownProps} store={store}>
+      <span>test</span>
+    </FeatureToggle>
+  );
+  const inner = wrapper.name() === 'ContextProvider' ? wrapper.childAt(0) : wrapper;
+  return inner.dive();
 };
 
 describe('FeatureToggle', () => {

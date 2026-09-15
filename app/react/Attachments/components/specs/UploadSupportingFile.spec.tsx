@@ -7,11 +7,11 @@ import { UploadSupportingFile } from '#app/Attachments/components/UploadSupporti
 import { Provider } from 'react-redux';
 import { fireEvent, screen, RenderResult } from '@testing-library/react';
 import { defaultState, renderConnectedContainer } from '#app/utils/test/renderConnected.js';
-import { MockStoreEnhanced } from 'redux-mock-store';
+import configureMockStore from 'redux-mock-store';
+import thunk from 'redux-thunk';
 
 describe('UploadSupportingFile', () => {
   let renderResult: RenderResult;
-  let store: MockStoreEnhanced;
   let reduxStore: {};
 
   function updateProgress(progressPercentage?: number) {
@@ -19,7 +19,7 @@ describe('UploadSupportingFile', () => {
   }
   function renderComponent() {
     reduxStore = { ...defaultState, ...updateProgress() };
-    ({ renderResult, store } = renderConnectedContainer(
+    ({ renderResult } = renderConnectedContainer(
       <UploadSupportingFile entitySharedId="entity1" storeKey="library" />,
       () => reduxStore
     ));
@@ -48,8 +48,9 @@ describe('UploadSupportingFile', () => {
       expect(uploadFromComputerTab).not.toBe(null);
 
       reduxStore = { ...defaultState, ...updateProgress(100) };
+      const nextStore = configureMockStore([thunk])(reduxStore);
       renderResult.rerender(
-        <Provider store={store}>
+        <Provider store={nextStore}>
           <UploadSupportingFile entitySharedId="entity1" storeKey="library" />
         </Provider>
       );

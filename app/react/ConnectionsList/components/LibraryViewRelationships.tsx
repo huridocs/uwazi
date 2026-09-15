@@ -25,7 +25,7 @@ function mapStateToProps(state: IStore) {
   };
 }
 
-function mapDispatchToProps(dispatch: Dispatch<{}>) {
+function mapDispatchToProps(dispatch: Dispatch) {
   return bindActionCreators(
     {
       selectConnection: actions.selectConnection,

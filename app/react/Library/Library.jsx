@@ -16,7 +16,8 @@ class LibraryRootComponent extends RouteHandler {
     super(props, context);
     this.superComponentWillReceiveProps = super.componentWillReceiveProps;
 
-    const { dispatch } = context.store;
+    const store = context?.store || this.context?.store || { dispatch: () => {} };
+    const { dispatch } = store;
     wrapDispatch(dispatch, 'library')(enterLibrary());
     this.zoomIn = () => wrapDispatch(dispatch, 'library')(zoomIn());
     this.zoomOut = () => wrapDispatch(dispatch, 'library')(zoomOut());

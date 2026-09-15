@@ -30,7 +30,7 @@ const mapStateToProps = (state: IStore) => ({
   libraryFilters: state.library.filters,
 });
 
-const mapDispatchToProps = (dispatch: Dispatch<{}>) =>
+const mapDispatchToProps = (dispatch: Dispatch) =>
   bindActionCreators(
     { setSidePanelView: actions.set.bind(null, 'library.sidepanel.view') },
     wrapDispatch(dispatch, 'library')

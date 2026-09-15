@@ -71,7 +71,7 @@ const mapStateToProps = (state: IStore, ownProps: SortDropdownOwnProps) => {
   };
 };
 
-const mapDispatchToProps = (dispatch: Dispatch<{}>) =>
+const mapDispatchToProps = (dispatch: Dispatch) =>
   bindActionCreators({ merge: actions.merge }, wrapDispatch(dispatch, 'library'));
 
 const connector = connect(mapStateToProps, mapDispatchToProps);

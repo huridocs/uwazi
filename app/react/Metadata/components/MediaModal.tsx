@@ -59,7 +59,7 @@ const mapStateToProps = (state: IStore, ownProps: MediaModalProps) => {
   };
 };
 
-const mapDispatchToProps = (dispatch: Dispatch<{}>) =>
+const mapDispatchToProps = (dispatch: Dispatch) =>
   bindActionCreators(
     { localAttachmentAction: uploadLocalAttachment, rrfChange: formActions.change },
     dispatch

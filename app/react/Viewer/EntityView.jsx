@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
+import { ReactReduxContext } from 'react-redux';
 
 import { actions } from '#app/BasicReducer/index.js';
 import relationTypesAPI from '#app/RelationTypes/RelationTypesAPI.js';
@@ -13,6 +13,7 @@ import { EntitiesAPI as entitiesAPI } from '../Entities/EntitiesAPI.js';
 import { prepareAssets } from './pageAssets.js';
 
 class Entity extends Component {
+  static contextType = ReactReduxContext;
   static async requestState(requestParams, state) {
     const [[entity], relationTypes, [connectionsGroups, searchResults, sort, filters]] =
       await Promise.all([
@@ -78,9 +79,5 @@ class Entity extends Component {
     return <EntityViewer {...this.props} />;
   }
 }
-
-Entity.contextTypes = {
-  store: PropTypes.object,
-};
 
 export { Entity, Entity as EntityView };

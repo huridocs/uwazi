@@ -259,7 +259,7 @@ const setReduxState = async (
     ?.map(({ route, params }) => {
       routeParams = { ...routeParams, ...params };
       if (route.element) {
-        const component = route.element as React.ReactElement & {
+        const component = route.element as React.ReactElement<any> & {
           type: { requestState: Function };
         };
         routeParams = { ...routeParams, ...component.props.params };
@@ -427,7 +427,7 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
   }
 
   const lastRouteMatched = matched ? matched[matched.length - 1] : null;
-  const lastRouteElement = lastRouteMatched?.route.element as React.ReactElement | undefined;
+  const lastRouteElement = lastRouteMatched?.route.element as React.ReactElement<any> | undefined;
   const isProtectedRoute = lastRouteElement?.type === ProtectedRoute;
   const routeName = lastRouteMatched?.route?.path || 'library';
 

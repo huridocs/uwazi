@@ -1,8 +1,9 @@
 /**
  * @jest-environment jsdom
  */
-import React from 'react';
-import { shallow } from 'enzyme';
+import React, { act } from 'react';
+import { createRoot } from 'react-dom/client';
+import { Provider } from 'react-redux';
 import { LibraryRootComponent } from '#app/Library/Library.js';
 import { RouteHandler } from '#app/App/RouteHandler.js';
 import { create as createStore } from '#app/store.js';
@@ -67,11 +68,37 @@ describe('Library', () => {
   ];
   const thesauris = [{ name: 'countries', _id: '1', values: [] }];
   createStore({ templates, thesauris });
-  let component;
   let instance;
-  let context;
+  let root;
+  let currentProps;
   const props = { location: { search: { q: '(a:1)' } } };
   let dispatchCallsOrder = [];
+  let context;
+
+  const renderLibrary = nextProps => {
+    currentProps = nextProps;
+    const el = document.createElement('div');
+    document.body.appendChild(el);
+    root = createRoot(el);
+    act(() => {
+      root.render(
+        <Provider store={context.store}>
+          <LibraryRootComponent ref={ref => (instance = ref)} {...nextProps} />
+        </Provider>
+      );
+    });
+  };
+
+  const setProps = nextProps => {
+    currentProps = { ...currentProps, ...nextProps };
+    act(() => {
+      root.render(
+        <Provider store={context.store}>
+          <LibraryRootComponent ref={ref => (instance = ref)} {...currentProps} />
+        </Provider>
+      );
+    });
+  };
 
   beforeEach(() => {
     RouteHandler.renderedFromServer = true;
@@ -82,11 +109,20 @@ describe('Library', () => {
         dispatch: jasmine.createSpy('dispatch').and.callFake(action => {
           dispatchCallsOrder.push(action.type);
         }),
+        subscribe: () => () => {},
       },
     };
 
-    component = shallow(<LibraryRootComponent {...props} />, { context });
-    instance = component.instance();
+    renderLibrary(props);
+  });
+
+  afterEach(() => {
+    if (root) {
+      act(() => {
+        root.unmount();
+      });
+      root = undefined;
+    }
   });
 
   describe('urlHasChanged', () => {
@@ -105,22 +141,20 @@ describe('Library', () => {
     it('should request the new state when the url changes', () => {
       spyOn(instance, 'getClientState');
       const nextProps = { location: { search: { q: '(a:2)' } } };
-      component.setProps(nextProps);
+      setProps(nextProps);
       expect(instance.getClientState).toHaveBeenCalled();
     });
 
     it('should not request the new state when the url hasnt change', () => {
       spyOn(instance, 'getClientState');
       const nextProps = { location: { search: { q: '(a:1)' } } };
-      component.setProps(nextProps);
+      setProps(nextProps);
       expect(instance.getClientState).not.toHaveBeenCalled();
     });
   });
 
   describe('cleanup', () => {
     beforeEach(() => {
-      component = shallow(<LibraryRootComponent {...props} />, { context });
-      instance = component.instance();
       spyOn(instance, 'emptyState');
     });
 
@@ -143,14 +177,18 @@ describe('Library', () => {
           value: { pathname },
         });
 
-        component.unmount();
+        const { emptyState } = instance;
+        act(() => {
+          root.unmount();
+        });
+        root = undefined;
         await new Promise(resolve => {
           setTimeout(resolve, 0);
         });
         if (shouldCall) {
-          expect(instance.emptyState).toHaveBeenCalled();
+          expect(emptyState).toHaveBeenCalled();
         } else {
-          expect(instance.emptyState).not.toHaveBeenCalled();
+          expect(emptyState).not.toHaveBeenCalled();
         }
       }
     );

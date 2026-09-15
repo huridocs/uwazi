@@ -10,7 +10,7 @@ const file = new File(['testFile'], 'testFile.txt', {
 });
 
 describe('upload supporting files', () => {
-  let dispatch: Dispatch<{}>;
+  let dispatch: Dispatch;
 
   beforeEach(() => {
     dispatch = jasmine.createSpy('dispatch');

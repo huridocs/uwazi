@@ -11,7 +11,7 @@ import {
 
 interface ErrorBoundaryProps {
   error?: Error;
-  children?: React.ReactElement;
+  children?: React.ReactElement<any>;
 }
 
 const RouteErrorBoundary = ({ error: elementError, children = <> </> }: ErrorBoundaryProps) => {

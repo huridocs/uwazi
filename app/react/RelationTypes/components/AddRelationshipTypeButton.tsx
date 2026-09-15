@@ -12,7 +12,7 @@ type FormInputs = {
   relationshipType: string;
 };
 
-const mapDispatchToProps = (dispatch: Dispatch<{}>) =>
+const mapDispatchToProps = (dispatch: Dispatch) =>
   bindActionCreators(
     {
       relationshipTypeSave: saveRelationType,

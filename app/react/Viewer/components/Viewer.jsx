@@ -46,13 +46,12 @@ class Viewer extends Component {
   }
 
   componentDidMount() {
-    const { store } = this.context;
-    const { sidepanelTab } = this.props;
-    store.dispatch(openPanel('viewMetadataPanel'));
+    const { dispatch, sidepanelTab } = this.props;
+    dispatch(openPanel('viewMetadataPanel'));
     if (sidepanelTab === 'connections') {
-      store.dispatch(actions.set('viewer.sidepanel.tab', ''));
+      dispatch(actions.set('viewer.sidepanel.tab', ''));
     }
-    store.dispatch(loadDefaultViewerMenu());
+    dispatch(loadDefaultViewerMenu());
     Marker.init('div.main-wrapper');
     this.setState({ firstRender: false }); // eslint-disable-line react/no-did-mount-set-state
   }
@@ -263,10 +262,7 @@ Viewer.propTypes = {
   // relationships v2
   newRelationshipsEnabled: PropTypes.bool,
   toggleReferences: PropTypes.func,
-};
-
-Viewer.contextTypes = {
-  store: PropTypes.object,
+  dispatch: PropTypes.func,
 };
 
 const mapStateToProps = state => {
@@ -291,8 +287,9 @@ const mapStateToProps = state => {
   };
 };
 
-const mapDispatchToProps = dispatch =>
-  bindActionCreators(
+const mapDispatchToProps = dispatch => ({
+  dispatch,
+  ...bindActionCreators(
     {
       addReference: addReferenceAction,
       loadTargetDocument: loadTargetDocumentAction,
@@ -300,7 +297,8 @@ const mapDispatchToProps = dispatch =>
       toggleReferences,
     },
     dispatch
-  );
+  ),
+});
 
 const ConnectedViewer = connect(mapStateToProps, mapDispatchToProps)(Viewer);
 export { ConnectedViewer };

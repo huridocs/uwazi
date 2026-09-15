@@ -87,7 +87,7 @@ describe('Routes', () => {
             <LibraryMap />
           </LibraryRoot>
         );
-        const el = element as React.ReactElement | null | undefined;
+        const el = element as React.ReactElement<any> | null | undefined;
         const child = el?.props?.children;
         expect(
           child &&

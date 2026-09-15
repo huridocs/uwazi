@@ -36,7 +36,7 @@ const mapStateToProps = (state: IStore) => {
   };
 };
 
-const mapDispatchToProps = (dispatch: Dispatch<{}>) =>
+const mapDispatchToProps = (dispatch: Dispatch) =>
   bindActionCreators(
     {
       setSidePanelView: actions.set.bind(null, 'library.sidepanel.view'),

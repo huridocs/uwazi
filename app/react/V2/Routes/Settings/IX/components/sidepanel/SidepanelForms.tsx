@@ -36,12 +36,12 @@ const updateOptionsWithSelection = (
 ): MultiselectListOption[] =>
   options.map(option => ({
     ...option,
-    label: React.cloneElement(option.label as React.ReactElement, {
+    label: React.cloneElement(option.label as React.ReactElement<any>, {
       isSelected: selectedValues?.includes(option.value),
     }),
     items: option.items?.map(subItem => ({
       ...subItem,
-      label: React.cloneElement(subItem.label as React.ReactElement, {
+      label: React.cloneElement(subItem.label as React.ReactElement<any>, {
         isSelected: selectedValues?.includes(subItem.value),
       }),
     })),

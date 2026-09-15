@@ -7,7 +7,7 @@ const ProtectedRoute = ({
   children,
   allowedRoles,
 }: {
-  children: ReactElement;
+  children: ReactElement<any>;
   allowedRoles?: string[];
 }) => {
   const userId = store?.getState().user.get('_id');
@@ -23,12 +23,14 @@ const ProtectedRoute = ({
   return <Navigate to="/login" replace />;
 };
 
-const adminsOnlyRoute = (element: ReactElement) => (
+const adminsOnlyRoute = (element: ReactElement<any>) => (
   <ProtectedRoute allowedRoles={['admin']}>{element}</ProtectedRoute>
 );
 
-const privateRoute = (element: ReactElement, settings: ClientSettings | undefined) =>
+const privateRoute = (element: ReactElement<any>, settings: ClientSettings | undefined) =>
   !settings?.private ? element : <ProtectedRoute>{element}</ProtectedRoute>;
 
-const loggedInUsersRoute = (element: ReactElement) => <ProtectedRoute>{element}</ProtectedRoute>;
+const loggedInUsersRoute = (element: ReactElement<any>) => (
+  <ProtectedRoute>{element}</ProtectedRoute>
+);
 export { loggedInUsersRoute, adminsOnlyRoute, privateRoute, ProtectedRoute };

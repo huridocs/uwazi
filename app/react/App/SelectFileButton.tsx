@@ -1,4 +1,4 @@
-import React, { MutableRefObject, useRef } from 'react';
+import React, { useRef } from 'react';
 
 export type SelectFileButtonProps = {
   onFileImported: (file: File) => any;
@@ -7,8 +7,7 @@ export type SelectFileButtonProps = {
 };
 
 export const SelectFileButton = ({ onFileImported, children, id }: SelectFileButtonProps) => {
-  // @ts-ignore
-  const fileInputRef: MutableRefObject<HTMLInputElement> = useRef();
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const show = () => {
     if (fileInputRef.current !== null) {

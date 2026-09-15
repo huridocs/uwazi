@@ -18,8 +18,8 @@ interface AttachmentsModalProps {
   storeKey: string;
   model: string;
   onClose(): void;
-  uploadAttachment: (...args: any[]) => (dispatch: Dispatch<{}>) => Promise<any>;
-  uploadAttachmentFromUrl: (...args: any[]) => (dispatch: Dispatch<{}>) => void;
+  uploadAttachment: (...args: any[]) => (dispatch: Dispatch) => Promise<any>;
+  uploadAttachmentFromUrl: (...args: any[]) => (dispatch: Dispatch) => void;
   getPercentage?: number;
 }
 
@@ -154,7 +154,7 @@ const AttachmentsModalCmp = ({
   );
 };
 
-const mapDispatchToProps = (dispatch: Dispatch<{}>, ownProps: AttachmentsModalProps) =>
+const mapDispatchToProps = (dispatch: Dispatch, ownProps: AttachmentsModalProps) =>
   bindActionCreators(
     {
       uploadAttachment: ownProps.uploadAttachment,

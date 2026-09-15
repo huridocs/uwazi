@@ -7,8 +7,9 @@ import { RequestParams } from '#app/utils/RequestParams.js';
 import { Settings } from 'luxon';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
+import { ReactReduxContext } from 'react-redux';
 
-const getLocale = ({ store }) => store.getState().locale;
+const getLocale = context => context?.store?.getState?.()?.locale;
 
 const setLocale = locale => {
   Settings.defaultLocale = locale;
@@ -17,6 +18,7 @@ const setLocale = locale => {
 };
 
 class RouteHandler extends Component {
+  static contextType = ReactReduxContext;
   static async requestState(_requestParams, _state) {
     return new Promise((resolve, _reject) => {
       resolve([]);
@@ -64,7 +66,7 @@ class RouteHandler extends Component {
       query = Object.fromEntries(params.entries());
     }
 
-    const { store = { getState: () => {} } } = this.context;
+    const { store = { getState: () => {} } } = this.context || {};
 
     const headers = {};
     const requestParams = new RequestParams({ ...query, ...routeParams }, headers);
@@ -99,13 +101,6 @@ RouteHandler.renderedFromServer = true;
 
 RouteHandler.defaultProps = {
   params: {},
-};
-
-RouteHandler.contextTypes = {
-  getInitialData: PropTypes.func,
-  isRenderedFromServer: PropTypes.func,
-  router: PropTypes.object,
-  store: PropTypes.object,
 };
 
 RouteHandler.propTypes = {

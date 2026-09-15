@@ -3,7 +3,7 @@ import React, { ReactElement, useEffect, useState } from 'react';
 
 interface CollapsibleProps {
   className?: string;
-  header: string | ReactElement;
+  header: string | ReactElement<any>;
   headerInfo?: string;
   children: ReactElement<any, any>;
   collapse?: boolean;

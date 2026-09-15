@@ -28,11 +28,11 @@ const mapStateToProps = (state: IStore) => ({
     .get('sourceRange') as unknown as Selection,
 });
 
-const mapDispatchToProps = (dispatch: Dispatch<{}>, ownProps: OwnPropTypes) => {
+const mapDispatchToProps = (dispatch: Dispatch, ownProps: OwnPropTypes) => {
   const { fieldName, fieldId, model, fieldType, locale } = ownProps;
   return bindActionCreators(
     {
-      updateField: value => async (dis: Dispatch<{}>) => {
+      updateField: value => async (dis: Dispatch) => {
         const action = await updateFormField(value, model, fieldType, locale);
         dis(action as ModelAction);
       },

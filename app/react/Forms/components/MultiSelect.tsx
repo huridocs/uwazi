@@ -77,7 +77,7 @@ abstract class MultiSelectBase<ValueType> extends Component<
 > {
   static defaultProps = defaultProps;
 
-  private searchInputRef: RefObject<HTMLInputElement>;
+  private searchInputRef: RefObject<HTMLInputElement | null>;
 
   constructor(props: MultiSelectProps<ValueType>) {
     super(props);

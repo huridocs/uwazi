@@ -12,9 +12,9 @@ interface UploadSupportingFileProps {
   storeKey: string;
   model?: string;
   progress?: any;
-  uploadAttachment?: (...args: any[]) => (dispatch: Dispatch<{}>) => Promise<any>;
-  uploadAttachmentFromUrl?: (...args: any[]) => (dispatch: Dispatch<{}>) => void;
-  attachmentCompleted: (entity: string) => (dispatch: Dispatch<{}>) => void;
+  uploadAttachment?: (...args: any[]) => (dispatch: Dispatch) => Promise<any>;
+  uploadAttachmentFromUrl?: (...args: any[]) => (dispatch: Dispatch) => void;
+  attachmentCompleted: (entity: string) => (dispatch: Dispatch) => void;
 }
 
 function mapStateToProps({ attachments }: { attachments: any }) {
@@ -23,7 +23,7 @@ function mapStateToProps({ attachments }: { attachments: any }) {
   };
 }
 
-const mapDispatchToProps = (dispatch: Dispatch<{}>) =>
+const mapDispatchToProps = (dispatch: Dispatch) =>
   bindActionCreators({ attachmentCompleted }, dispatch);
 
 const connector = connect(mapStateToProps, mapDispatchToProps);

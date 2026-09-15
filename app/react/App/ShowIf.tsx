@@ -2,7 +2,7 @@ import React from 'react';
 
 type ShowIfProps = {
   if: boolean;
-  children: React.ReactElement;
+  children: React.ReactElement<any>;
 };
 
 // eslint-disable-next-line react/jsx-no-useless-fragment

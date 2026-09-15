@@ -32,7 +32,7 @@ const mapStateToProps = (state: IStore) => {
   };
 };
 
-const mapDispatchToProps = (dispatch: Dispatch<{}>) =>
+const mapDispatchToProps = (dispatch: Dispatch) =>
   bindActionCreators(
     {
       deleteSelectionAction: deleteSelection,

@@ -29,7 +29,7 @@ interface PageReferencesProps {
 const PageReferencesComponent: FunctionComponent<PageReferencesProps> = (
   props: PageReferencesProps
 ) => {
-  const referenceGroup = useRef<string[]>();
+  const referenceGroup = useRef<string[]>(undefined);
   // Stored references are in scale=1; multiply by renderScale to get display coordinates
   const pdfScaleFactor = props.renderScale ?? 1;
 

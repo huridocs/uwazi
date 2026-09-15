@@ -32,9 +32,10 @@ const ActionCell = ({ cell }: CellContext<TablePage, string>) => {
 };
 
 const YesNoPill = ({ cell }: CellContext<TablePage, boolean>) => {
-  const { color, label }: { color: 'primary' | 'gray'; label: React.ReactElement } = cell.getValue()
-    ? { color: 'primary', label: <Translate>Yes</Translate> }
-    : { color: 'gray', label: <Translate>No</Translate> };
+  const { color, label }: { color: 'primary' | 'gray'; label: React.ReactElement<any> } =
+    cell.getValue()
+      ? { color: 'primary', label: <Translate>Yes</Translate> }
+      : { color: 'gray', label: <Translate>No</Translate> };
 
   return <Pill color={color}>{label}</Pill>;
 };
