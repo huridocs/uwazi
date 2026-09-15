@@ -1,7 +1,7 @@
 /* eslint-disable react/no-multi-comp */
 import React, { useEffect, useMemo } from 'react';
 import { useAtomValue } from 'jotai';
-import { DocumentPlusIcon, XMarkIcon } from '@heroicons/react/24/outline';
+import { XMarkIcon } from '@heroicons/react/24/outline';
 import { t, Translate } from '#app/I18N/index.js';
 import { readyDocuments } from '#shared/entityDefaultDocument.js';
 import { settingsAtom } from '#V2/atoms/index.js';
@@ -17,7 +17,6 @@ import {
   FilesDeleteConfirmationModal,
   useEntityLanguage,
   useEntityScopedEntity,
-  useMetadataEditing,
 } from '#V2/Routes/Entity/Components/index.js';
 import { CreateRelationshipModal } from '#V2/Routes/Entity/Components/relationships/create-reference/CreateRelationshipModal.js';
 import { useResetRelationshipsOnDocumentChange } from '#V2/Routes/Entity/Components/relationships/hooks/useDocumentRelationships.js';
@@ -34,7 +33,6 @@ import {
   type EntityTabsState,
 } from '#V2/Routes/Entity/Tabs/EntityTabsContext.js';
 import { LibraryEntityPreviewFooter } from './LibraryEntityPreviewFooter.js';
-import { LibraryFooterButton } from './LibraryFooterButton.js';
 import { useLibraryPreviewEntity } from './useLibraryPreviewEntity.js';
 
 type LibraryEntityPreviewProps = {
@@ -80,17 +78,6 @@ const EntityCreateRelationshipModal = () => {
   return <CreateRelationshipModal mainDocument={mainDocument} />;
 };
 
-const LibraryMetadataCopyFrom = () => (
-  <div className="shrink-0 px-4 pt-3">
-    <LibraryFooterButton
-      icon={<DocumentPlusIcon className="h-3.5 w-3.5 shrink-0 text-ink-tertiary" />}
-      onClick={() => undefined}
-    >
-      <Translate>Copy from...</Translate>
-    </LibraryFooterButton>
-  </div>
-);
-
 const useLibraryPreviewTab = () => {
   const { mainDocument } = useEntityLanguage();
   const hasMainDocument = Boolean(mainDocument?.filename);
@@ -109,8 +96,6 @@ const LibraryEntityPreviewView = ({
   const { mainDocument, pagePlaintext, isRtl } = useEntityLanguage();
   useResetRelationshipsOnDocumentChange();
   const mainTabId = useLibraryPreviewTab();
-  const { isEditing, formMountHost } = useMetadataEditing();
-  const showCopyFrom = isEditing && formMountHost === 'main' && mainTabId === MAIN_TAB.METADATA;
   const entityTabs = useMemo(() => libraryPreviewTabs(mainTabId), [mainTabId]);
 
   return (
@@ -143,7 +128,6 @@ const LibraryEntityPreviewView = ({
           </div>
         </div>
         <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
-          {showCopyFrom ? <LibraryMetadataCopyFrom /> : null}
           <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
             <MainTabsContent
               activeTabId={mainTabId}
