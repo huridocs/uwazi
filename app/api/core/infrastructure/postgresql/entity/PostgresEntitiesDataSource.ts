@@ -142,17 +142,29 @@ export class PostgresEntitiesDataSource
     entities.forEach(entity => this.modifiedSharedIds.add(entity.sharedId));
   }
 
-  async getSharedIdsUsingThesaurus(thesaurusId: string) {
+  async getSharedIdsUsingThesaurus(thesaurusId: string, valueIds: string[]) {
+    if (valueIds.length === 0) {
+      return [];
+    }
+
     const defaultLanguage = await this.settingsDataSource.getDefaultLanguageKey();
-    const uniqueTemplateIds = await this.templatesDAO.findTemplateIdsUsingThesaurus(thesaurusId);
-    const templateIdStrings = uniqueTemplateIds.map(id => id.toHexString());
+    const { selectPropertyNames, inheritedPropertyNames } =
+      await this.templatesDAO.findPropertyNamesUsingThesaurus(thesaurusId);
+
+    const conditions = [
+      ...selectPropertyNames.flatMap(name => valueIds.map(id => ({ [name]: [{ value: id }] }))),
+      ...inheritedPropertyNames.flatMap(name =>
+        valueIds.map(id => ({ [name]: [{ inheritedValue: [{ value: id }] }] }))
+      ),
+    ];
+
+    if (conditions.length === 0) {
+      return [];
+    }
 
     const rows = await this.table
       .where({ language: defaultLanguage })
-      .whereIn('template', templateIdStrings)
-      .whereRaw(
-        'EXISTS (SELECT 1 FROM jsonb_each(metadata) AS e WHERE jsonb_array_length(e.value) > 0)'
-      )
+      .whereJsonSupersetOfAny('metadata', conditions)
       .select(['sharedId'])
       .all();
 

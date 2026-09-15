@@ -117,7 +117,11 @@ export class MongoEntitiesDataSource
     entities.forEach(entity => this.modifiedSharedIds.add(entity.sharedId));
   }
 
-  async getSharedIdsUsingThesaurus(thesaurusId: string) {
+  async getSharedIdsUsingThesaurus(thesaurusId: string, valueIds: string[]) {
+    if (valueIds.length === 0) {
+      return [];
+    }
+
     const settings = await this.getCollection<SettingsType>('settings').findOne();
     const defaultLanguage = settings?.languages?.find(l => l.default)?.key;
 
@@ -125,40 +129,41 @@ export class MongoEntitiesDataSource
       throw new Error('Default language not found in settings when trying to delete references');
     }
 
-    const uniqueTemplateIds = await this.templatesDAO.findTemplateIdsUsingThesaurus(thesaurusId);
+    const { selectPropertyNames, inheritedPropertyNames } =
+      await this.templatesDAO.findPropertyNamesUsingThesaurus(thesaurusId);
+
+    return this.findSharedIdsByThesaurusValues({
+      defaultLanguage,
+      selectPropertyNames,
+      inheritedPropertyNames,
+      valueIds,
+    });
+  }
+
+  private async findSharedIdsByThesaurusValues({
+    defaultLanguage,
+    selectPropertyNames,
+    inheritedPropertyNames,
+    valueIds,
+  }: {
+    defaultLanguage: string;
+    selectPropertyNames: string[];
+    inheritedPropertyNames: string[];
+    valueIds: string[];
+  }) {
+    const orConditions = [
+      ...selectPropertyNames.map(name => ({ [`metadata.${name}.value`]: { $in: valueIds } })),
+      ...inheritedPropertyNames.map(name => ({
+        [`metadata.${name}.inheritedValue.value`]: { $in: valueIds },
+      })),
+    ];
+
+    if (orConditions.length === 0) {
+      return [];
+    }
 
     const entities = await this.getCollection()
-      .aggregate([
-        {
-          $match: {
-            language: defaultLanguage,
-            template: { $in: uniqueTemplateIds },
-          },
-        },
-        {
-          $addFields: {
-            hasNonEmptyMetadata: {
-              $anyElementTrue: {
-                $map: {
-                  input: { $objectToArray: '$metadata' },
-                  as: 'field',
-                  in: { $gt: [{ $size: '$$field.v' }, 0] },
-                },
-              },
-            },
-          },
-        },
-        {
-          $match: {
-            hasNonEmptyMetadata: true,
-          },
-        },
-        {
-          $project: {
-            sharedId: 1,
-          },
-        },
-      ])
+      .find({ language: defaultLanguage, $or: orConditions }, { projection: { sharedId: 1 } })
       .toArray();
 
     return entities.map(e => e.sharedId);
