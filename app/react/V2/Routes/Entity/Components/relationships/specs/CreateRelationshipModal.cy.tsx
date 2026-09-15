@@ -103,8 +103,8 @@ const openModal = () => {
 };
 
 const searchEntity = (query: string) => {
-  cy.intercept('GET', '/api/v2/search*', {
-    body: { data: [simpleSearchEntity, pdfSearchEntity] },
+  cy.intercept('GET', '/api/search?*', {
+    body: { rows: [simpleSearchEntity, pdfSearchEntity] },
   }).as('searchEntities');
   cy.get('#create-relationship-search').type(query);
   cy.wait('@searchEntities');

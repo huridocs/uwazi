@@ -74,34 +74,34 @@ const DocumentSelectionFloatingMenu = ({
       }}
       data-testid="document-selection-floating-menu"
     >
-      <div className="flex items-center gap-0.5 rounded-md bg-[#1A1A1A] px-1 py-1 shadow-xl">
+      <div className="flex items-center gap-0.5 rounded-md bg-ink px-1 py-1 shadow-xl">
         {armedLabel ? (
           <>
             <button
               type="button"
               onClick={onFillFromSelection}
-              className="flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium text-white transition-colors hover:bg-white/15"
+              className="flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium text-parchment transition-colors hover:bg-paper/15"
               data-testid="fill-from-selection"
             >
               <Translate>Fill</Translate> {armedLabel}
               <TextCursorInputStrokeIcon className="h-3.5 w-3.5" aria-hidden />
             </button>
-            <div className="h-4 w-px bg-white/20" aria-hidden="true" />
+            <div className="h-4 w-px bg-paper/20" aria-hidden="true" />
           </>
         ) : null}
         <button
           type="button"
           onClick={onCreateRelationship}
-          className="flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium text-white transition-colors hover:bg-white/15"
+          className="flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium text-parchment transition-colors hover:bg-paper/15"
         >
           <LinkIcon className="h-3.5 w-3.5" aria-hidden />
           <Translate>Create relationship</Translate>
         </button>
-        <div className="h-4 w-px bg-white/20" aria-hidden="true" />
+        <div className="h-4 w-px bg-paper/20" aria-hidden="true" />
         <button
           type="button"
           onClick={onAddToToC}
-          className="flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium text-white/80 transition-colors hover:bg-white/15 hover:text-white"
+          className="flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium text-parchment/80 transition-colors hover:bg-paper/15 hover:text-parchment"
         >
           <ListBulletIcon className="h-3.5 w-3.5" aria-hidden />
           <Translate>Add to ToC</Translate>

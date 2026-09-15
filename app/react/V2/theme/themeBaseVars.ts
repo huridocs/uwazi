@@ -1,5 +1,6 @@
 import { getAccessibleColorPair } from '#shared/utils/contrast.js';
 import {
+  EMPHASIS_LABEL,
   EMPHASIS_SOLID_BG,
   EMPHASIS_SOLID_FG,
   THEME_ACTIVE_BG,
@@ -24,10 +25,13 @@ const getDerivedThemeVars = (chrome: ThemeRoles['chrome']): Record<string, strin
 
 const getActionThemeVars = (roles: ThemeRoles): Record<string, string> => {
   const emphasis = getAccessibleColorPair(roles.feedback.danger);
+  const sealLabel =
+    'color-mix(in srgb, var(--color-theme-accent-emphasis) 55%, var(--color-theme-text-primary))';
 
   return {
     [EMPHASIS_SOLID_BG]: emphasis.background,
     [EMPHASIS_SOLID_FG]: emphasis.foreground,
+    [EMPHASIS_LABEL]: sealLabel,
   };
 };
 

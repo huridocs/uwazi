@@ -261,12 +261,8 @@ const ExtractorModal = ({
         </div>
 
         <div className="flex justify-center w-full gap-2">
-          <div
-            className={`w-2 h-2 rounded-full ${step === 1 ? 'bg-primary-700' : 'bg-primary-200'}`}
-          />
-          <div
-            className={`w-2 h-2 rounded-full ${step === 2 ? 'bg-primary-700' : 'bg-primary-200'}`}
-          />
+          <div className={`w-2 h-2 rounded-full ${step === 1 ? 'bg-ink' : 'bg-vellum'}`} />
+          <div className={`w-2 h-2 rounded-full ${step === 2 ? 'bg-ink' : 'bg-vellum'}`} />
         </div>
       </Modal.Body>
 

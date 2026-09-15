@@ -5,16 +5,14 @@ import { useRailInset } from './useRailInset.js';
 const pageElementFor = (pageNumber: number) =>
   document.querySelector<HTMLDivElement>(`.page[data-page-number="${pageNumber}"]`);
 
-const heightOf = (pageElement: HTMLDivElement) => {
-  const { height } = pageElement.getBoundingClientRect();
-  return height > 0 ? height : undefined;
-};
-
 const observePageHeight = (
   pageElement: HTMLDivElement,
   setPageHeight: (height: number | undefined) => void
 ) => {
-  const updateHeight = () => setPageHeight(heightOf(pageElement));
+  const updateHeight = () => {
+    const { height } = pageElement.getBoundingClientRect();
+    setPageHeight(height > 0 ? height : undefined);
+  };
   updateHeight();
   const observer = new ResizeObserver(updateHeight);
   observer.observe(pageElement);

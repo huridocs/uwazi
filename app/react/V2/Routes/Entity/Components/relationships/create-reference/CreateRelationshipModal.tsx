@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { useAtomValue, useStore } from 'jotai';
 import { t } from '#app/I18N/index.js';
 import type { FileType } from '#V2/api/entities/types.js';
-import { create as createEntity, searchByTitle } from '#V2/api/entities/index.js';
+import { create as createEntity } from '#V2/api/entities/index.js';
 import { relationshipTypesAtom, templatesAtom } from '#V2/atoms/index.js';
 import { notify } from '#V2/utils/notifyBridge.js';
 import {
@@ -14,17 +14,11 @@ import { useCreateRelationshipModalState } from './useCreateRelationshipModalSta
 import { CreateRelationshipModalBody } from './CreateRelationshipModalBody.js';
 import { useRelationshipSave } from '../hooks/useRelationshipSave.js';
 import { entityPageAtom } from '#V2/Routes/Entity/entityUrlAtoms.js';
+import { useServices } from '#V2/services/index.js';
 
 type CreateRelationshipModalProps = {
   mainDocument?: FileType;
 };
-
-const lookupEntitiesByTitle = async (searchString: string) =>
-  searchByTitle({
-    title: searchString,
-    fields: ['title', 'template', 'creationDate', 'sharedId'],
-    includeFiles: true,
-  });
 
 const useCreateRelationshipActions = ({
   closeCreateRelationship,
@@ -165,12 +159,13 @@ const useCreateRelationshipDeps = (mainDocument?: FileType) => {
 };
 
 const useCreateRelationshipModal = (mainDocument?: FileType) => {
+  const { search } = useServices();
   const deps = useCreateRelationshipDeps(mainDocument);
   const state = useCreateRelationshipModalState({
     selection: deps.relationships.createReferenceSelection,
     relationshipTypes: deps.relationshipTypes,
     templates: deps.templates,
-    searchFunction: lookupEntitiesByTitle,
+    searchFunction: search.search,
   });
   const handlers = useCreateRelationshipActions({
     closeCreateRelationship: deps.closeCreateRelationship,
