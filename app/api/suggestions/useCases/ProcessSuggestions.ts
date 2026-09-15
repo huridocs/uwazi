@@ -169,11 +169,17 @@ export class ProcessSuggestions implements UseCase<Input, Output> {
       }
 
       // Start the suggestions loop
-      await this.deps.informationExtraction.sendMaterialsAndTaskSuggestions(
+      const outcome = await this.deps.informationExtraction.sendMaterialsAndTaskSuggestions(
         extractor!,
         updatedWithTotal,
         mode === 'process_extractor'
       );
+
+      // The run may have stopped before sending anything, e.g. no file segmented yet. It has
+      // already emitted `ready`, so the response must not claim the run is in progress.
+      if (!outcome.started) {
+        return { status: 'ready', message: outcome.message };
+      }
 
       return {
         status: 'processing_suggestions',
