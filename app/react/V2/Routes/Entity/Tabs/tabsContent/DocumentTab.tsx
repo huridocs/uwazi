@@ -1,5 +1,6 @@
-import React, { useCallback, useEffect, useState } from 'react';
-import { PDF, type PDFControls } from '#V2/Components/PDFViewer/index.js';
+// oxlint-disable react/jsx-pascal-case
+import React, { useEffect, useState } from 'react';
+import { PDF } from '#V2/Components/PDFViewer/index.js';
 import { RelationshipsDisplay } from '#V2/Components/Relationships/index.js';
 import type { Entity as EntityType, FileType } from '#V2/api/entities/types.js';
 import { useIsMobile } from '#V2/CustomHooks/useIsMobile.js';
@@ -15,6 +16,7 @@ import {
   useDirectedRelationships,
   useDocumentPdf,
 } from '#V2/Routes/Entity/Components/context/index.js';
+import { useDocumentPageHeight } from '../hooks/useDocumentPageHeight.js';
 import { useDocumentPdfView } from '../hooks/useDocumentPdfView.js';
 import { useRailInset } from '../hooks/useRailInset.js';
 
@@ -26,6 +28,24 @@ type DocumentTabProps = {
   showRail?: boolean;
 };
 
+const useEnsureDocumentAnchors = (
+  documentId: string | undefined,
+  showRail: boolean,
+  isRaw: boolean
+) => {
+  const ensureAnchors = useEnsureAnchors();
+  useEffect(() => {
+    if (!documentId || !showRail || isRaw) return;
+    ensureAnchors().catch(() => undefined);
+  }, [documentId, ensureAnchors, isRaw, showRail]);
+};
+
+const usePdfScrollRail = (showRail: boolean, isRaw: boolean) => {
+  const [pdfScrollRoot, setPdfScrollRoot] = useState<HTMLDivElement | null>(null);
+  const { railInsetRight, measureRailInset } = useRailInset(pdfScrollRoot, !isRaw && showRail);
+  return { pdfScrollRoot, setPdfScrollRoot, railInsetRight, measureRailInset };
+};
+
 const DocumentTab = ({
   entity,
   mainDocument,
@@ -34,80 +54,17 @@ const DocumentTab = ({
   showRail = true,
 }: DocumentTabProps) => {
   const relationships = useDirectedRelationships();
-  const ensureAnchors = useEnsureAnchors();
-  const {
-    filename,
-    isRaw,
-    pageNumber,
-    activeRelationshipId,
-    handleTextSelect,
-    handleTextDeselect,
-    handleCreateRelationship,
-    handleAddToToC,
-    selectedText,
-    pdfSelectionMenuOpen,
-    userIsAdminOrEditor,
-    handlePageChange,
-    handleHighlightClick,
-    handleRailHover,
-    handleRailPointClick,
-    handleClusterClick,
-    handleClusterMoreClick,
-    onPdfReady,
-    propertySelectionHighlights,
-  } = useDocumentPdfView({ mainDocument, entity });
+  const view = useDocumentPdfView({ mainDocument, entity });
   const { armedPdfFill, requestPdfFillCommit } = useDocumentPdf();
-
   const isMobile = useIsMobile();
   const { isRtl } = useEntityLanguage();
-  const [pdfScrollRoot, setPdfScrollRoot] = useState<HTMLDivElement | null>(null);
-  const [pageHeight, setPageHeight] = useState<number | undefined>();
-  const { railInsetRight, measureRailInset } = useRailInset(pdfScrollRoot, !isRaw && showRail);
-
-  useEffect(() => {
-    if (!mainDocument._id || !showRail || isRaw) return;
-    ensureAnchors().catch(() => undefined);
-  }, [ensureAnchors, isRaw, mainDocument._id, showRail]);
-
-  useEffect(() => {
-    if (isRaw) {
-      setPageHeight(undefined);
-      return undefined;
-    }
-
-    const pageElement = document.querySelector<HTMLDivElement>(
-      `.page[data-page-number="${pageNumber}"]`
-    );
-
-    if (!pageElement) {
-      // Warn users in case the way pages are represented changes since it will interfere with calculation for marker positions in page view.
-      // eslint-disable-next-line no-console
-      console.warn('Page element could not be found');
-      setPageHeight(undefined);
-      return undefined;
-    }
-
-    const updateHeight = () => {
-      const { height } = pageElement.getBoundingClientRect();
-      setPageHeight(height > 0 ? height : undefined);
-    };
-
-    updateHeight();
-    const observer = new ResizeObserver(updateHeight);
-    observer.observe(pageElement);
-
-    return () => {
-      observer.disconnect();
-    };
-  }, [isRaw, pageNumber]);
-
-  const handlePdfReady = useCallback(
-    (controls: PDFControls) => {
-      onPdfReady(controls);
-      measureRailInset();
-    },
-    [onPdfReady, measureRailInset]
+  const { pdfScrollRoot, setPdfScrollRoot, railInsetRight, measureRailInset } = usePdfScrollRail(
+    showRail,
+    view.isRaw
   );
+  useEnsureDocumentAnchors(mainDocument._id, showRail, view.isRaw);
+  const pageHeight = useDocumentPageHeight(view.isRaw, view.pageNumber);
+  const { selectedText } = view;
 
   return (
     <div className="flex h-full min-h-0 flex-1 flex-col gap-3 overflow-hidden">
@@ -118,7 +75,7 @@ const DocumentTab = ({
       ) : null}
       <div className="relative min-h-0 flex-1 overflow-hidden">
         <DocumentLanguageFallbackNotice document={mainDocument} />
-        <div className={`relative h-full min-h-0 rounded-md ${isRaw ? 'hidden' : 'block'}`}>
+        <div className={`relative h-full min-h-0 rounded-md ${view.isRaw ? 'hidden' : 'block'}`}>
           <div
             ref={setPdfScrollRoot}
             data-testid="pdf-scroll-container"
@@ -127,17 +84,20 @@ const DocumentTab = ({
             }`}
           >
             <PDF
-              key={mainDocument._id || filename}
-              fileUrl={`/api/files/${filename}`}
+              key={mainDocument._id || view.filename}
+              fileUrl={`/api/files/${view.filename}`}
               size={{ height: '100%', width: '100%' }}
               scrollRoot={pdfScrollRoot}
-              onSelect={handleTextSelect}
-              onDeselect={handleTextDeselect}
-              onPageChange={handlePageChange}
-              onHighlightClick={handleHighlightClick}
-              onPdfReady={handlePdfReady}
-              highlights={propertySelectionHighlights}
-              initialPage={pageNumber}
+              onSelect={view.handleTextSelect}
+              onDeselect={view.handleTextDeselect}
+              onPageChange={view.handlePageChange}
+              onHighlightClick={view.handleHighlightClick}
+              onPdfReady={controls => {
+                view.onPdfReady(controls);
+                measureRailInset();
+              }}
+              highlights={view.propertySelectionHighlights}
+              initialPage={view.pageNumber}
             />
           </div>
           {!isMobile && (
@@ -145,34 +105,34 @@ const DocumentTab = ({
               selfSharedId={entity.sharedId}
               relationships={relationships}
               document={mainDocument}
-              currentPage={pageNumber}
+              currentPage={view.pageNumber}
               pageHeight={pageHeight}
               railInsetRight={railInsetRight}
               showRail={showRail}
-              activeRelationshipId={activeRelationshipId}
-              onPointClick={handleRailPointClick}
-              onPointHover={handleRailHover}
-              onClusterClick={handleClusterClick}
-              onClusterHover={handleRailHover}
-              onMoreClick={handleClusterMoreClick}
+              activeRelationshipId={view.activeRelationshipId}
+              onPointClick={view.handleRailPointClick}
+              onPointHover={view.handleRailHover}
+              onClusterClick={view.handleClusterClick}
+              onClusterHover={view.handleRailHover}
+              onMoreClick={view.handleClusterMoreClick}
             />
           )}
-          {selectedText && pdfSelectionMenuOpen && userIsAdminOrEditor && !isRaw ? (
+          {selectedText && view.pdfSelectionMenuOpen && view.userIsAdminOrEditor && !view.isRaw ? (
             <DocumentSelectionFloatingMenu
               selection={selectedText}
-              onCreateRelationship={() => handleCreateRelationship(selectedText)}
-              onAddToToC={() => handleAddToToC(selectedText)}
+              onCreateRelationship={() => view.handleCreateRelationship(selectedText)}
+              onAddToToC={() => view.handleAddToToC(selectedText)}
               armedLabel={armedPdfFill?.label}
               onFillFromSelection={requestPdfFillCommit}
               scrollRoot={pdfScrollRoot}
             />
           ) : null}
         </div>
-        <div className={`h-full min-h-0 overflow-auto ${isRaw ? 'block' : 'hidden'}`}>
+        <div className={`h-full min-h-0 overflow-auto ${view.isRaw ? 'block' : 'hidden'}`}>
           <PlainText
             text={pagePlaintext || ''}
             dir={isRtl ? 'rtl' : 'ltr'}
-            page={isRaw ? pageNumber : undefined}
+            page={view.isRaw ? view.pageNumber : undefined}
           />
         </div>
       </div>
