@@ -230,41 +230,6 @@ const denormalizeRelated = async (
   return reindexUpdates(newEntity.sharedId, newEntity.language, updates);
 };
 
-const denormalizeThesauriLabelInMetadata = async (
-  valueId: string,
-  newLabel: string,
-  thesaurusId: string,
-  language: string,
-  parent?: { id: string; label: string }
-  // eslint-disable-next-line max-params
-) => {
-  const updates = await denormalizationUpdates(thesaurusId.toString(), ['label']);
-
-  await updates.reduce(async (previous, entry) => {
-    await previous;
-    await model.updateMany(
-      {
-        [entry.filterPath]: valueId,
-        language,
-        ...(entry.template ? { template: entry.template } : {}),
-      },
-      {
-        $set: {
-          [`${entry.valuePath}.$[valueIndex].label`]: newLabel,
-          ...(parent
-            ? {
-                [`${entry.valuePath}.$[valueIndex].parent.label`]: parent.label,
-              }
-            : {}),
-        },
-      },
-      { arrayFilters: [{ 'valueIndex.value': valueId }] }
-    );
-  }, Promise.resolve());
-
-  await reindexUpdates(valueId, language, updates);
-};
-
 const denormalizeSelectProperty = async (
   property: PropertySchema,
   values: MetadataObjectSchema[],
@@ -459,4 +424,4 @@ async function denormalizeMetadata(
   return denormalizedMetadata;
 }
 
-export { denormalizeMetadata, denormalizeRelated, denormalizeThesauriLabelInMetadata };
+export { denormalizeMetadata, denormalizeRelated };
