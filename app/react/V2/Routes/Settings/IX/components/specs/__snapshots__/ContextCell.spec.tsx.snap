@@ -6,7 +6,7 @@ exports[`ContextCell Truncation Logic should truncate html with multiple matchin
 >
   ...thats part of the matching paragraph 
   <span
-    class="ix_match bg-[#FFE29A] text-ink"
+    class="ix_match bg-highlight text-ink"
   >
     Praesent sed molestie risus, vitae laoreet elit.
   </span>
@@ -19,7 +19,7 @@ exports[`ContextCell Truncation Logic should truncate html with single matching 
 >
   ...cus dapibus euismod. 
   <span
-    class="ix_match bg-[#FFE29A] text-ink"
+    class="ix_match bg-highlight text-ink"
   >
      Praesent sed molestie risus, vitae laoreet elit.
   </span>
@@ -33,19 +33,19 @@ exports[`ContextCell Truncation Logic should work when a matching paragraph has 
 >
   The quarterly report shows 
   <span
-    class="ix_match bg-[#FFE29A] text-ink"
+    class="ix_match bg-highlight text-ink"
   >
     Revenue: $1.2M
   </span>
   ,
   <span
-    class="ix_match bg-[#FFE29A] text-ink"
+    class="ix_match bg-highlight text-ink"
   >
     Expenses: $800K
   </span>
   ,and a net profit of 
   <span
-    class="ix_match bg-[#FFE29A] text-ink"
+    class="ix_match bg-highlight text-ink"
   >
     $400K
   </span>

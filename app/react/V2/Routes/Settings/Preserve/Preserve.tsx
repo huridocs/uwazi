@@ -28,7 +28,7 @@ const Preserve = () => {
   }, [settings, user]);
 
   return (
-    <div className="w-full min-h-screen bg-gray-50 flex flex-col">
+    <div className="w-full min-h-screen bg-warm flex flex-col">
       <SettingsContent>
         <SettingsContent.Header title="Preserve Extension" />
         <SettingsContent.Body>
@@ -36,7 +36,7 @@ const Preserve = () => {
             title={
               <div className="flex items-center gap-2">
                 <Translate>Preserve Extension</Translate>
-                <PreserveIcon color="#D20D6C" />
+                <PreserveIcon color="var(--color-theme-accent-emphasis)" />
               </div>
             }
           >
@@ -53,9 +53,9 @@ const Preserve = () => {
                 </Translate>
               </div>
             </div>
-            <hr className="my-2 border-gray-200" />
+            <hr className="my-2 border-border" />
             <div className="flex flex-col gap-4">
-              <div className="font-semibold text-gray-700 mb-2">
+              <div className="font-semibold text-ink mb-2">
                 <Translate>Configuration</Translate>
               </div>
               <div className="flex flex-col gap-1">

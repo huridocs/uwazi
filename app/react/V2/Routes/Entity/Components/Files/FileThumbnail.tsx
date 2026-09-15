@@ -14,7 +14,7 @@ const FileThumbnail = ({ kind }: { kind: FileKind }) => {
   if (kind === 'link') {
     return (
       <div className={`${wrap} bg-seal`}>
-        <span className="text-tiny font-bold text-white">
+        <span className="text-tiny font-bold text-parchment">
           <Translate>Link</Translate>
         </span>
       </div>
