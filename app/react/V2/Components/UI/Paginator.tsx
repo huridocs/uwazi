@@ -4,8 +4,9 @@ import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/20/solid';
 import { Translate } from '#app/I18N/index.js';
 
 const pageLinkClass =
-  'px-3 py-1.5 leading-snug text-ink-muted bg-paper border-r border-border border-y hover:bg-warm hover:text-ink';
-const pageEdgeClass = 'block px-3 py-1.5 leading-snug text-ink-muted bg-paper border border-border';
+  'px-3 py-1.5 leading-snug text-ink-secondary bg-paper border-r border-border border-y hover:bg-warm hover:text-ink';
+const pageEdgeClass =
+  'block px-3 py-1.5 leading-snug text-ink-secondary bg-paper border border-border';
 
 interface PaginatorProps {
   currentPage: number;
@@ -138,7 +139,7 @@ const Paginator = ({ currentPage, totalPages, buildUrl, preventScrollReset }: Pa
             <Link
               to={buildUrl(totalPages.toString())}
               preventScrollReset={preventScrollReset}
-              className="px-3 py-1.5 leading-snug text-ink-muted bg-paper border-border border-y hover:bg-warm hover:text-ink"
+              className="px-3 py-1.5 leading-snug text-ink-secondary bg-paper border-border border-y hover:bg-warm hover:text-ink"
             >
               {totalPages}
             </Link>

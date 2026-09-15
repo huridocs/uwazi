@@ -6,6 +6,7 @@ import { FileCard, EntityFile } from '../FileCard.js';
 import { settingsAtom } from '../../../../../../../app/react/V2/atoms/index.js';
 import { FileType } from '../../../../../../shared/types/fileType.js';
 import { logA11yViolations } from '../../../../../../../cypress/support/helpers/a11y.js';
+import { ThemeProvider } from '#V2/theme/ThemeProvider.js';
 import { mockPdfFile, mockAudioFile } from './testHelpers.js';
 
 describe('FileCard', () => {
@@ -24,12 +25,14 @@ describe('FileCard', () => {
   }) => {
     return (
       <div className="tw-content">
-        <FileCard
-          file={file}
-          index={index}
-          onFileSelect={onFileSelect}
-          translations={translations}
-        />
+        <ThemeProvider>
+          <FileCard
+            file={file}
+            index={index}
+            onFileSelect={onFileSelect}
+            translations={translations}
+          />
+        </ThemeProvider>
       </div>
     );
   };
@@ -64,7 +67,7 @@ describe('FileCard', () => {
     const stub = createOnFileSelectStub().as('onFileSelect');
     mount(<FileCardComponent file={mockPdfFile} index={0} onFileSelect={stub} />);
     cy.get('[aria-label^="Select "]').focus();
-    cy.get('[aria-label^="Select "]').type('{enter}');
+    cy.realPress('Enter');
     cy.get('@onFileSelect').should('have.been.called');
   });
 
@@ -72,7 +75,7 @@ describe('FileCard', () => {
     const stub = createOnFileSelectStub().as('onFileSelect');
     mount(<FileCardComponent file={mockPdfFile} index={0} onFileSelect={stub} />);
     cy.get('[aria-label^="Select "]').focus();
-    cy.get('[aria-label^="Select "]').type(' ');
+    cy.realPress('Space');
     cy.get('@onFileSelect').should('have.been.called');
   });
 

@@ -34,7 +34,7 @@ describe('FilterDrawerButton', () => {
       .should('have.attr', 'aria-pressed', 'true')
       .and('contain', '3');
     cy.get('[data-testid="filter-active-count"]')
-      .should('have.class', 'grid')
+      .should('have.class', 'inline-grid')
       .and('have.class', 'place-items-center');
   });
 });
