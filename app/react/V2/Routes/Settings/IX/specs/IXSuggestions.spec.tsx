@@ -2,7 +2,7 @@
  * @jest-environment jsdom
  */
 import React from 'react';
-import { act, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
+import { act, fireEvent, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import * as suggestionsAPI from '#V2/api/ix/suggestions.js';
 import { api } from '#app/utils/api.js';
@@ -149,12 +149,10 @@ describe('IX suggestions', () => {
     });
 
     it('should only allow accepting parent elements', async () => {
-      await waitFor(async () => {
-        render(<Component data={nestedSuggestions} />);
-        const row1 = (await screen.findByText('Entity 1 (en)')).closest('tr');
-        expect(within(row1!).getByText('Add to training set')).toBeInTheDocument();
-        within(row1!).getByText('Group').click();
-      });
+      render(<Component data={nestedSuggestions} />);
+      const row1 = (await screen.findByText('Entity 1 (en)')).closest('tr');
+      expect(within(row1!).getByText('Add to training set')).toBeInTheDocument();
+      fireEvent.click(await within(row1!).findByText('Group'));
       const subrow = (await screen.findByText('Blue')).closest('tr');
       expect(within(subrow!).queryByText('Add to training set')).not.toBeInTheDocument();
     });

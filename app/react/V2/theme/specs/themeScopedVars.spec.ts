@@ -1,4 +1,4 @@
-import { EMPHASIS_SOLID_BG, EMPHASIS_SOLID_FG } from '#V2/theme/roleTokens.js';
+import { EMPHASIS_LABEL, EMPHASIS_SOLID_BG, EMPHASIS_SOLID_FG } from '#V2/theme/roleTokens.js';
 import { getScopedThemeVars } from '#V2/theme/themeScopedVars.js';
 import { appliedTheme } from '#V2/theme/themes.js';
 import type { ResolvedThemeVars } from '#V2/theme/themes.js';
@@ -45,6 +45,8 @@ describe('getScopedThemeVars merge contract', () => {
     const scoped = getScopedThemeVars('default', resolved);
     expect(scoped['--text-primary']).toBe(resolved['--color-theme-text-primary']);
     expect(scoped['--bg-primary']).toBe(resolved['--color-theme-bg-primary']);
+    expect(scoped['--color-ink']).toBe(resolved['--color-theme-text-primary']);
+    expect(scoped['--color-warm']).toBe(resolved['--color-theme-bg-warm']);
   });
 
   it('adds embedded button tokens not present on resolved alone', () => {
@@ -59,5 +61,16 @@ describe('getScopedThemeVars merge contract', () => {
     const scoped = getScopedThemeVars('default', resolved);
     expect(scoped[EMPHASIS_SOLID_BG].startsWith('#')).toBe(true);
     expect(scoped[EMPHASIS_SOLID_FG].startsWith('#')).toBe(true);
+    expect(scoped[EMPHASIS_LABEL]).toContain('color-mix');
+  });
+
+  it('does not pin Legacy dark button surfaces to light #FFFFFF', () => {
+    const resolved = appliedTheme({ __preset: 'legacy' }, 'dark', true);
+    const scoped = getScopedThemeVars('legacy', resolved);
+    expect(scoped['--color-theme-button-embedded-white-bg']).toBe(
+      resolved['--color-theme-bg-surface']
+    );
+    expect(scoped['--color-theme-button-embedded-white-bg']).not.toBe('#FFFFFF');
+    expect(scoped['--color-theme-text-on-solid']).not.toBe('#FFFFFF');
   });
 });

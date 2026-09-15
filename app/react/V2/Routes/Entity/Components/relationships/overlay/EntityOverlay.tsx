@@ -1,6 +1,7 @@
 /* eslint-disable react/no-multi-comp */
 import React, { useEffect, useId, useRef, useState } from 'react';
 import { useAtomValue } from 'jotai';
+import { ArrowRightIcon } from '@heroicons/react/20/solid';
 import { XMarkIcon } from '@heroicons/react/24/outline';
 import { I18NLinkV2, t, Translate } from '#app/I18N/index.js';
 import { templatesAtom } from '#V2/atoms/templatesAtom.js';
@@ -184,7 +185,7 @@ const EntityOverlayPanel = ({ overlay }: { overlay: ReturnType<typeof useEntityO
           </ErrorBoundary>
         )}
         <div
-          className="flex h-12 shrink-0 items-center justify-between px-3"
+          className="flex h-12 shrink-0 items-center justify-end gap-2 px-3"
           style={{ borderTop: '1px solid var(--border-primary)' }}
         >
           <button
@@ -201,10 +202,10 @@ const EntityOverlayPanel = ({ overlay }: { overlay: ReturnType<typeof useEntityO
                 isEntityViewerV2Enabled(settings.features)
               ).replace(/^\//, '')}
               onClick={closeEntityOverlay}
-              className="cursor-pointer rounded-md px-3 py-1.5 text-tab font-medium text-parchment transition-colors"
-              style={{ backgroundColor: 'var(--text-primary)' }}
+              className="inline-flex cursor-pointer items-center gap-1.5 rounded-md border border-ink px-3 py-1.5 text-tab font-medium text-ink transition-colors hover:bg-warm"
             >
               <Translate>Open entity</Translate>
+              <ArrowRightIcon className="h-3.5 w-3.5 rtl:rotate-180" aria-hidden />
             </I18NLinkV2>
           )}
         </div>

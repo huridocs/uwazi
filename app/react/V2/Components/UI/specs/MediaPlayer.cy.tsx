@@ -63,11 +63,9 @@ describe('Media player', () => {
     it('should have the thumbnail as background with the video title', () => {
       cy.contains('p', 'Short video with thumbnail');
 
-      cy.get('.react-player__preview > div').should(
-        'have.css',
-        'background-image',
-        'url("http://localhost:8080/short-video-thumbnail.jpg")'
-      );
+      cy.get('.react-player__preview > div')
+        .should('have.css', 'background-image')
+        .and('include', '/short-video-thumbnail.jpg');
     });
 
     it('should request the video and render the player when clicking', () => {

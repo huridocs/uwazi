@@ -2,6 +2,7 @@ import React from 'react';
 import 'cypress-axe';
 import { mount } from 'cypress/react';
 import * as stories from '#app/stories/Paginator.stories.js';
+import { logA11yViolations } from '../../../../../../cypress/support/helpers/a11y.js';
 
 const { Basic } = stories;
 
@@ -9,7 +10,7 @@ describe('Paginator', () => {
   it('should be accessible', () => {
     mount(<Basic.Component />);
     cy.injectAxe();
-    cy.checkA11y();
+    cy.checkA11y(undefined, undefined, logA11yViolations);
   });
 
   it('should render with the current page and the correct basic links', () => {

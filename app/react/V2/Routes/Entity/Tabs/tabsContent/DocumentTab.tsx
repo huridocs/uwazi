@@ -1,4 +1,3 @@
-// oxlint-disable react/jsx-pascal-case
 import React from 'react';
 import { PDF } from '#V2/Components/PDFViewer/index.js';
 import { RelationshipsDisplay } from '#V2/Components/Relationships/index.js';
@@ -87,6 +86,7 @@ const DocumentTab = ({
               showRail ? 'pr-15' : ''
             }`}
           >
+            {/* oxlint-disable-next-line react/jsx-pascal-case */}
             <PDF
               key={mainDocument._id || filename}
               fileUrl={`/api/files/${filename}`}

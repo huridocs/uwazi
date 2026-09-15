@@ -64,12 +64,12 @@ const Body = () => {
   );
 
   return (
-    <div className="flex flex-col gap-4 min-h-[400px] my-4">
+    <div className="flex flex-col gap-4 min-h-100 my-4">
       <div>
         <Select
           id="rich-text-property"
           label={
-            <Translate className="text-sm font-semibold text-gray-900">
+            <Translate className="text-sm font-semibold text-ink">
               Paragraph text extraction property (rich text)
             </Translate>
           }
@@ -84,7 +84,7 @@ const Body = () => {
         <Select
           id="numeric-text-property"
           label={
-            <Translate className="text-sm font-semibold text-gray-900">
+            <Translate className="text-sm font-semibold text-ink">
               Paragrap number extraction property (numeric)
             </Translate>
           }
@@ -95,17 +95,17 @@ const Body = () => {
           }}
         />
       </div>
-      <hr className="self-center w-5 my-4 border-t-2 border-gray-200" />
+      <hr className="self-center w-5 my-4 border-t-2 border-border" />
       <div>
         <Select
           id="target-relationship-type"
           label={
             <div className="flex flex-col gap-1">
-              <Translate className="text-sm font-semibold text-gray-900">
+              <Translate className="text-sm font-semibold text-ink">
                 Target relationship type
               </Translate>
-              <Translate className="text-sm font-light text-gray-500">
-                Target's role in the relationship Source-Target.
+              <Translate className="text-sm font-light text-ink-muted">
+                Target&apos;s role in the relationship Source-Target.
               </Translate>
             </div>
           }
@@ -123,11 +123,11 @@ const Body = () => {
           id="source-relationship-type"
           label={
             <div className="flex flex-col gap-1">
-              <Translate className="text-sm font-semibold text-gray-900">
+              <Translate className="text-sm font-semibold text-ink">
                 Source relationship type
               </Translate>
-              <Translate className="text-sm font-light text-gray-500">
-                Source's role in the relationship Source-Target.
+              <Translate className="text-sm font-light text-ink-muted">
+                Source&apos;s role in the relationship Source-Target.
               </Translate>
             </div>
           }

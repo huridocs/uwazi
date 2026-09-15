@@ -12,11 +12,10 @@ import { ActivityLogEntryType } from '#shared/types/activityLogEntryType.js';
 import { getActivityLogColumns } from './components/TableElements.js';
 import { ActivityLogSidePanel } from './components/ActivityLogSidePanel.js';
 import { FiltersSidePanel } from './components/FiltersSidePanel.js';
-import type { LoaderData } from './ActivityLogLoader.js';
+import type { LoaderData, ActivityLogSearch } from './ActivityLogLoader.js';
 import {
   getAppliedFilters,
   updateSearch,
-  ActivityLogSearch,
   ITEMS_PER_PAGE,
   buildPageURL,
 } from './ActivityLogLoader.js';

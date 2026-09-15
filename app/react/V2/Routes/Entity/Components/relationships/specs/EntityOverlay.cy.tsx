@@ -93,8 +93,11 @@ describe('Entity preview overlay', () => {
   it('offers a link to open the full entity page', () => {
     openOverlay();
     cy.get('[data-testid="entity-overlay"]')
-      .contains('Open entity')
-      .should('have.attr', 'href', '/en/entityv2/a2pe98qmqb');
+      .contains('a', 'Open entity')
+      .should('have.attr', 'href', '/en/entityv2/a2pe98qmqb')
+      .parent()
+      .should('have.class', 'justify-end')
+      .and('have.class', 'gap-2');
   });
 
   it('can be dismissed from the footer', () => {
