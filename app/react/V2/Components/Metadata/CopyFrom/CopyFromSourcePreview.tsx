@@ -1,10 +1,13 @@
 /* eslint-disable react/no-multi-comp */
 import React, { useEffect, useState } from 'react';
+import { useAtomValue } from 'jotai';
 import { useWatch } from 'react-hook-form';
 import { ArrowRightIcon } from '@heroicons/react/20/solid';
 import { Translate } from '#app/I18N/index.js';
+import { localeAtom } from '#V2/atoms/translationsAtoms.js';
 import type { Entity } from '#V2/api/entities/types.js';
 import type { MetadataValue } from '#V2/formatters/types.js';
+import { metadataDisplayPresets } from '#V2/Components/Metadata/display/index.js';
 import { TemplateLabel } from '#V2/Components/Metadata/Components/index.js';
 import { Button } from '#V2/Components/UI/index.js';
 import {
@@ -39,8 +42,10 @@ const CopyFromFieldDiff = ({
   checked,
   onToggle,
 }: CopyFromFieldDiffProps) => {
-  const currentFormatted = formatCopyFromValue(currentValue);
-  const sourceFormatted = formatCopyFromValue(sourceValue);
+  const locale = useAtomValue(localeAtom);
+  const displayContext = { ...metadataDisplayPresets.rich, locale };
+  const currentFormatted = formatCopyFromValue(currentValue, property, displayContext);
+  const sourceFormatted = formatCopyFromValue(sourceValue, property, displayContext);
   const sameValue = copyFromValuesAreEqual(currentValue, sourceValue);
 
   return (
