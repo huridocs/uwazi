@@ -134,7 +134,7 @@ const CopyFromSourcePreview = ({
             disabled={selectedCount === 0}
             onClick={() => onStage(selectedNames)}
           >
-            <Translate>Stage</Translate> {selectedCount}{' '}
+            <Translate>Copy</Translate> {selectedCount}{' '}
             <Translate>{selectedCount === 1 ? 'field' : 'fields'}</Translate>
           </Button>
           <button

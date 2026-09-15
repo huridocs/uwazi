@@ -257,7 +257,7 @@ describe('CopyFromModal', () => {
 
     fireEvent.click(ratified);
     expect(ratified).not.toBeChecked();
-    fireEvent.click(screen.getByRole('button', { name: 'Stage 2 fields' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Copy 2 fields' }));
     await waitFor(() => {
       expect(onClose).toHaveBeenCalled();
     });
@@ -265,7 +265,7 @@ describe('CopyFromModal', () => {
     expect(screen.getByTestId('form-ratified')).toHaveTextContent('1981');
   });
 
-  it('disables Stage when every matching field is unchecked', async () => {
+  it('disables Copy when every matching field is unchecked', async () => {
     renderModal();
     fireEvent.click(await screen.findByRole('button', { name: 'Colombia' }));
     await screen.findByText(/copy from this entity/i);
@@ -274,7 +274,7 @@ describe('CopyFromModal', () => {
     fireEvent.click(screen.getByRole('checkbox', { name: /Ratified ACHR/i }));
     fireEvent.click(screen.getByRole('checkbox', { name: /Accepts Court jurisdiction/i }));
 
-    expect(screen.getByRole('button', { name: 'Stage 0 fields' })).toBeDisabled();
+    expect(screen.getByRole('button', { name: 'Copy 0 fields' })).toBeDisabled();
   });
 
   it('returns to search from pick another', async () => {
