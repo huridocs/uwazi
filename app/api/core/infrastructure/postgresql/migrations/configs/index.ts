@@ -10,3 +10,6 @@ export { TranslationsMigrationConfig } from './TranslationsMigrationConfig.js';
 export { SettingsMigrationConfig } from './SettingsMigrationConfig.js';
 export { PageMigrationConfig, PageLocalesMigrationConfig } from './PageMigrationConfig.js';
 export { PageReleaseMigrationConfig } from './PageReleaseMigrationConfig.js';
+export { IXExtractorsMigrationConfig } from './IXExtractorsMigrationConfig.js';
+export { IXModelsMigrationConfig } from './IXModelsMigrationConfig.js';
+export { IXSuggestionsMigrationConfig } from './IXSuggestionsMigrationConfig.js';

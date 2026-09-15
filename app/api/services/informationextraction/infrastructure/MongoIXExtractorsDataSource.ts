@@ -20,10 +20,8 @@ export const ixExtractorsCollection = 'ixextractors';
 /**
  * Mongo implementation of {@link IXExtractorsDataSource}.
  *
- * Extends `MongoDataSource` rather than wrapping the mongoose model: its `SyncedCollection`
- * writes the same `{namespace, mongoId, timestamp, deleted}` rows to `updatelogs` that the
- * odm's `UpdateLogHelper` did, so instance-to-instance sync is preserved across the swap.
- * `MongoFilesDAO` is the precedent for the same migration on `files`.
+ * Opts out of `MongoDataSource`'s synced collection: information extraction data is not synced
+ * between instances, so its writes leave no `updatelogs` rows.
  */
 export class MongoIXExtractorsDataSource
   extends MongoDataSource<Extractor>
@@ -32,7 +30,7 @@ export class MongoIXExtractorsDataSource
   protected collectionName = ixExtractorsCollection;
 
   constructor(deps: Deps) {
-    super(deps.db, deps.transactionManager);
+    super(deps.db, deps.transactionManager, { useSyncedCollection: false });
   }
 
   async getById(id: ObjectIdSchema) {

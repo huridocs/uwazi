@@ -58,7 +58,9 @@ const registerEventListeners = (eventsBus: EventsBus) => {
 
     if (!suggestionsToSave.length) return;
 
-    await Suggestions.saveMultiple(suggestionsToSave);
+    // Blank creation, the same door the extractor sweep uses: a key another writer already
+    // covered is left as it is rather than failing the batch (F48).
+    await Suggestions.createMultiple(suggestionsToSave);
   });
 
   eventsBus.on(EntityDeletedEvent, async ({ entity }) => {
