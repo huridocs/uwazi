@@ -1472,6 +1472,40 @@ describe.each(testConfigs)('InformationExtraction $name', ({ usePostgres }) => {
       );
     });
 
+    it('should report the pending segmentation, not a completed run, when no pending file has been segmented at all', async () => {
+      await SegmentationModel.delete({});
+
+      await getSuggestions(factory.id('prop1extractor'));
+
+      const model = await ixTestAccess.readModel(factory.id('prop1extractor'));
+      expect(model.findingSuggestions).toBe(false);
+
+      expect(setupSockets.emitToTenantAdminsAndEditors).toHaveBeenCalledTimes(1);
+      expect(setupSockets.emitToTenantAdminsAndEditors).toHaveBeenCalledWith(
+        'tenant1',
+        'ix_model_status',
+        factory.id('prop1extractor'),
+        'ready',
+        'Documents are not segmented yet. Try again once PDF segmentation has finished.',
+        { error: true }
+      );
+    });
+
+    it('should report a completed run when a pdf extractor has nothing left to find', async () => {
+      await ixTestAccess.removeSuggestions();
+
+      await getSuggestions(factory.id('prop1extractor'));
+
+      expect(setupSockets.emitToTenantAdminsAndEditors).toHaveBeenCalledTimes(1);
+      expect(setupSockets.emitToTenantAdminsAndEditors).toHaveBeenCalledWith(
+        'tenant1',
+        'ix_model_status',
+        factory.id('prop1extractor'),
+        'ready',
+        'Completed'
+      );
+    });
+
     it('should avoid non-ready segmentations when duplicates exist for the same file', async () => {
       await SegmentationModel.delete({});
       await ixTestAccess.removeSuggestions();
