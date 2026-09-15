@@ -57,6 +57,30 @@ describe('ServerSearchService', () => {
     });
   });
 
+  it('search() sends text, template and property filters', async () => {
+    const [data, error] = await service.search({
+      searchTerm: 'batman',
+      templateIds: ['t1'],
+      filters: { country: ['ES'] },
+      publishedStatus: 'all',
+      limit: 50,
+      fields: ['title', 'sharedId', 'template'],
+    });
+
+    expect(error).toBeUndefined();
+    expect(searchMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        searchTerm: 'batman',
+        types: ['t1'],
+        filters: { country: { values: ['ES'] } },
+        fields: ['title', 'sharedId', 'template'],
+      }),
+      'en',
+      expect.objectContaining({ _id: 'u1' })
+    );
+    expect(data?.rows[0]?.title).toBe('Batman');
+  });
+
   it('uses searchGeolocations when the library query asks for a map', async () => {
     searchGeolocationsMock.mockResolvedValue({
       rows: [{ title: 'Geo', sharedId: 'g1', template: 't1', language: 'en' }],
