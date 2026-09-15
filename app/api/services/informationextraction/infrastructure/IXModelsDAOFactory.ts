@@ -1,18 +1,26 @@
 import { getConnection } from '#api/core/infrastructure/mongodb/common/getConnectionForCurrentTenant.js';
-import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
+import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
+import { isPostgresCoreActive } from '#api/core/libs/featureFlags.js';
 import { IXModelsDataSource } from '../domain/IXModelsDataSource.js';
+import {
+  mongoTransactionManager,
+  postgresTransactionManager,
+} from './contextTransactionManagers.js';
 import { MongoIXModelsDataSource } from './MongoIXModelsDataSource.js';
+import { PostgresIXModelsDataSource } from './PostgresIXModelsDataSource.js';
 
-/**
- * Stage 6 adds the Postgres implementation here, behind the same port, the way
- * `FilesDAOFactory` switches on `tenant.featureFlags.postgresCore`. Until then there is one
- * implementation and no flag to read.
- */
 class IXModelsDAOFactory {
   static default(): IXModelsDataSource {
+    if (isPostgresCoreActive()) {
+      return new PostgresIXModelsDataSource({
+        tenantId: ExecutionContext.currentTenant.name,
+        pgTransactionManager: postgresTransactionManager(),
+      });
+    }
+
     return new MongoIXModelsDataSource({
       db: getConnection(),
-      transactionManager: TransactionManagerFactory.mongo(),
+      transactionManager: mongoTransactionManager(),
     });
   }
 }

@@ -4,6 +4,7 @@ import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common
 import { ObjectIdSchema } from '#shared/types/commonTypes.js';
 import { Suggestion } from '../domain/IXSuggestionsDataSource.js';
 import {
+  emptyStats,
   IXSuggestionsStatsQueryService,
   SuggestionStats,
 } from '../domain/IXSuggestionsStatsQueryService.js';
@@ -14,19 +15,6 @@ type Deps = {
 };
 
 const ixSuggestionsCollection = 'ixsuggestions';
-
-const emptyStats: SuggestionStats = {
-  total: 0,
-  labeled: 0,
-  nonLabeled: 0,
-  match: 0,
-  mismatch: 0,
-  obsolete: 0,
-  error: 0,
-  noContext: 0,
-  nonProcessed: 0,
-  accuracy: 0,
-};
 
 /** Present and falsy — as opposed to absent, which counts towards neither side of a tally. */
 const presentAndFalse = (field: string) => ({

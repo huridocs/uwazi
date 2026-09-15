@@ -12,7 +12,6 @@ import * as setupSockets from '#api/socketio/setupSockets.js';
 import { sortByStrings } from '#shared/data_utils/objectSorting.js';
 import { PropertyTypeSchema } from '#shared/types/commonTypes.js';
 
-import { testingDB } from '#api/utils/testing_db.js';
 import entities from '#api/entities/index.js';
 import { EnforcedWithId } from '#api/odm/index.js';
 import { Suggestions } from '#api/suggestions/suggestions.js';
@@ -22,6 +21,7 @@ import { FileType } from '#shared/types/fileType.js';
 import { IXSuggestionType } from '#shared/types/suggestionType.js';
 import { SegmentationModel } from '#api/services/pdfsegmentation/segmentationModel.js';
 import { filesModel } from '#api/files/filesModel.js';
+import { testConfigs } from '#api/suggestions/domain/specs/IXSuggestionsContractFixtures.js';
 import { factory, fixtures } from './fixtures.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { ixTestAccess } from './ixTestAccess.js';
@@ -109,6 +109,9 @@ const _saveSuggestionProcess = async (file: FileWithAggregation, extractor: IXEx
 
   const suggestion: IXSuggestionType = {
     ...existingSuggestions,
+    // Every stored suggestion names its entity's template; Postgres requires it.
+    entityTemplate: existingSuggestions?.entityTemplate ?? entity.template?.toString(),
+    suggestedValue: existingSuggestions?.suggestedValue ?? '',
     entityId: entity.sharedId!,
     fileId: file._id,
     language: LanguageUtils.fromISO639_3(file.language)?.ISO639_1 || 'other',
@@ -136,7 +139,9 @@ const getSuggestions = async (...args: Parameters<InformationExtraction['getSugg
   testingEnvironment.runWithContext(async () => informationExtraction.getSuggestions(...args));
 const processResults = async (...args: Parameters<InformationExtraction['processResults']>) =>
   testingEnvironment.runWithContext(async () => informationExtraction.processResults(...args));
-describe('InformationExtraction', () => {
+
+/** Over both stores: the IX factories pick the one the tenant's `postgresCore` flag selects. */
+describe.each(testConfigs)('InformationExtraction $name', ({ usePostgres }) => {
   let IXExternalService: ExternalDummyService;
 
   const setIXServiceResults = (
@@ -178,6 +183,95 @@ describe('InformationExtraction', () => {
     IXExternalService.setResults(IXResults);
   };
 
+  const fileColumns = [
+    '_id',
+    'originalname',
+    'filename',
+    'mimetype',
+    'size',
+    'creationDate',
+    'type',
+    'entity',
+    'status',
+    'totalPages',
+    'language',
+    'generatedToc',
+    'url',
+    'toc',
+    'propertySelections',
+    'fullText',
+  ];
+
+  /**
+   * A file write as the case means it: in Mongo and, on the Postgres run, in `files` too, which is
+   * where the tenant's file reads go under postgresCore.
+   */
+  const saveFile = async (file: Parameters<typeof filesModel.save>[0]) => {
+    await filesModel.save(file);
+    if (!usePostgres) return;
+
+    const row: Record<string, unknown> = {
+      originalname: file.filename,
+      mimetype: 'application/pdf',
+      ...file,
+      _id: String(file._id),
+    };
+    const columns = fileColumns.filter(column => row[column] !== undefined);
+    const values = columns.map(column =>
+      typeof row[column] === 'object' && row[column] !== null
+        ? JSON.stringify(row[column])
+        : row[column]
+    );
+    const quoted = columns.map(column => `"${column}"`);
+    const placeholders = [...columns, 'tenant_id'].map((_column, index) => `$${index + 1}`);
+    const updates = quoted
+      .filter(column => column !== '"_id"')
+      .map(column => `${column} = EXCLUDED.${column}`);
+
+    await testingEnvironment.pg.pool!.query(
+      `INSERT INTO files (${[...quoted, '"tenant_id"'].join(', ')})
+       VALUES (${placeholders.join(', ')})
+       ON CONFLICT ("_id", "tenant_id") DO UPDATE SET ${updates.join(', ')}`,
+      [...values, testingTenants.current().name]
+    );
+  };
+
+  const removeAllFiles = async () => {
+    await filesModel.delete({});
+    if (usePostgres) {
+      await testingEnvironment.pg.pool!.query('DELETE FROM files');
+    }
+  };
+
+  /**
+   * Stored suggestions always carry a template, a property, a language and a suggested value, as
+   * blank ones are created; Postgres requires them. The defaults are prop1extractor's.
+   */
+  const writeSuggestion = async (suggestion: Partial<IXSuggestionType>) =>
+    ixTestAccess.writeSuggestion({
+      entityTemplate: factory.id('templateToSegmentA').toString(),
+      propertyName: 'property1',
+      language: 'en',
+      suggestedValue: '',
+      ...suggestion,
+    });
+
+  /**
+   * Runs every method inside the context, as a request or a job does. Jest mocks pass through
+   * unwrapped, so a case can still spy on a method and assert on the spy.
+   */
+  const inContext = <T extends object>(target: T): T =>
+    new Proxy(target, {
+      get(object, property, receiver) {
+        const value = Reflect.get(object, property, receiver);
+        if (typeof value !== 'function' || jest.isMockFunction(value)) {
+          return value;
+        }
+        return (...args: unknown[]) =>
+          testingEnvironment.runWithContext(() => value.apply(object, args));
+      },
+    });
+
   beforeEach(async () => {
     IXExternalService = new ExternalDummyService(1234, 'informationExtraction', {
       materialsFiles: '(/xml_to_train/:tenant/:id|/xml_to_predict/:tenant/:id)',
@@ -185,12 +279,16 @@ describe('InformationExtraction', () => {
       resultsData: '/suggestions_results',
     });
     await IXExternalService.start();
-    informationExtraction = new InformationExtraction();
-    await testingEnvironment.setUp(fixtures);
+    informationExtraction = inContext(new InformationExtraction());
+    // The tenant is renamed before the fixtures load, so the Postgres copies carry the tenant the
+    // factories read.
+    await testingEnvironment.setUp({}, { postgres: true });
     testingTenants.changeCurrentTenant({
       name: 'tenant1',
       uploadedDocuments: `${__dirname}/uploads/`,
+      featureFlags: { postgresCore: usePostgres },
     });
+    await testingEnvironment.setFixtures(fixtures);
     IXExternalService.reset();
     jest.clearAllMocks();
     // eslint-disable-next-line no-empty-function
@@ -201,8 +299,11 @@ describe('InformationExtraction', () => {
     await IXExternalService.stop();
   });
 
+  // A teardown closes the Mongo client for good, so it runs once, after the last store's run.
   afterAll(async () => {
-    await testingEnvironment.tearDown();
+    if (usePostgres) {
+      await testingEnvironment.tearDown();
+    }
   });
 
   const saveSuggestionProcess = async (
@@ -355,7 +456,10 @@ describe('InformationExtraction', () => {
 
       expect(IXExternalService.materials.length).toBe(2);
 
-      expect(IXExternalService.materials).toMatchObject([
+      // Neither store orders the training walk, so the materials are compared by file.
+      expect(
+        sortByStrings(IXExternalService.materials, [(material: any) => material.xml_file_name])
+      ).toMatchObject([
         {
           xml_file_name: 'extractor_source_pdf_target_text_entity_1_f1_en.xml',
           id: expect.any(String),
@@ -629,80 +733,83 @@ describe('InformationExtraction', () => {
     it('should start the task to train the model (relationship to any template)', async () => {
       await trainModel(factory.id('extractorWithRelationshipToAny'));
 
+      // The options are a set: neither store orders the entities they are read from.
+      const expectedOptions = [
+        {
+          id: 'P1sharedId',
+          label: 'P1',
+        },
+        {
+          id: 'P2sharedId',
+          label: 'P2',
+        },
+        {
+          id: 'P3sharedId',
+          label: 'P3',
+        },
+        {
+          id: 'extractor_target_title_source_text_entity',
+          label: 'extractor_target_title_source_text_entity',
+        },
+        {
+          id: 'extractor_target_numeric_source_text_entity',
+          label: 'extractor_target_numeric_source_text_entity',
+        },
+        {
+          id: 'extractor_target_select_source_text_entity_1',
+          label: 'extractor_target_select_source_text_entity_1',
+        },
+        {
+          id: 'extractor_target_select_source_text_entity_2',
+          label: 'extractor_target_select_source_text_entity_2',
+        },
+        {
+          id: 'extractor_target_select_source_text_entity_3',
+          label: 'extractor_target_select_source_text_entity_3',
+        },
+        {
+          id: 'A1',
+          label: 'A1',
+        },
+        {
+          id: 'entity_without_label_data',
+          label: 'entity_without_label_data',
+        },
+        ...Array.from({ length: 22 }, (_, i) => ({
+          id: `A${i + 2}`,
+          label: `A${i + 2}`,
+        })),
+        {
+          id: 'entityWithoutSegmentation',
+          label: 'entityWithoutSegmentation',
+        },
+        {
+          id: 'extractor_target_rich_text_source_text_entity_1',
+          label: 'extractor_target_rich_text_source_text_entity_1',
+        },
+        {
+          id: 'extractor_target_rich_text_source_text_entity_2',
+          label: 'extractor_target_rich_text_source_text_entity_2',
+        },
+        {
+          id: 'extractor_target_rich_text_source_pdf_entity_1',
+          label: 'extractor_target_rich_text_source_pdf_entity_1',
+        },
+        {
+          id: 'extractor_source_pdf_target_text_entity_1',
+          label: 'extractor_source_pdf_target_text_entity_1',
+        },
+        {
+          id: 'extractor_source_pdf_target_text_entity_2',
+          label: 'extractor_source_pdf_target_text_entity_2',
+        },
+      ];
+
       expect(informationExtractionForJob.taskManager?.startTask).toHaveBeenCalledWith({
         params: {
           id: factory.id('extractorWithRelationshipToAny').toString(),
           multi_value: true,
-          options: [
-            {
-              id: 'P1sharedId',
-              label: 'P1',
-            },
-            {
-              id: 'P2sharedId',
-              label: 'P2',
-            },
-            {
-              id: 'P3sharedId',
-              label: 'P3',
-            },
-            {
-              id: 'extractor_target_title_source_text_entity',
-              label: 'extractor_target_title_source_text_entity',
-            },
-            {
-              id: 'extractor_target_numeric_source_text_entity',
-              label: 'extractor_target_numeric_source_text_entity',
-            },
-            {
-              id: 'extractor_target_select_source_text_entity_1',
-              label: 'extractor_target_select_source_text_entity_1',
-            },
-            {
-              id: 'extractor_target_select_source_text_entity_2',
-              label: 'extractor_target_select_source_text_entity_2',
-            },
-            {
-              id: 'extractor_target_select_source_text_entity_3',
-              label: 'extractor_target_select_source_text_entity_3',
-            },
-            {
-              id: 'A1',
-              label: 'A1',
-            },
-            {
-              id: 'entity_without_label_data',
-              label: 'entity_without_label_data',
-            },
-            ...Array.from({ length: 22 }, (_, i) => ({
-              id: `A${i + 2}`,
-              label: `A${i + 2}`,
-            })),
-            {
-              id: 'entityWithoutSegmentation',
-              label: 'entityWithoutSegmentation',
-            },
-            {
-              id: 'extractor_target_rich_text_source_text_entity_1',
-              label: 'extractor_target_rich_text_source_text_entity_1',
-            },
-            {
-              id: 'extractor_target_rich_text_source_text_entity_2',
-              label: 'extractor_target_rich_text_source_text_entity_2',
-            },
-            {
-              id: 'extractor_target_rich_text_source_pdf_entity_1',
-              label: 'extractor_target_rich_text_source_pdf_entity_1',
-            },
-            {
-              id: 'extractor_source_pdf_target_text_entity_1',
-              label: 'extractor_source_pdf_target_text_entity_1',
-            },
-            {
-              id: 'extractor_source_pdf_target_text_entity_2',
-              label: 'extractor_source_pdf_target_text_entity_2',
-            },
-          ],
+          options: expect.arrayContaining(expectedOptions),
           metadata: {
             extractor_name: 'extractorWithRelationshipToAny',
             property: 'property_relationship_to_any',
@@ -712,9 +819,18 @@ describe('InformationExtraction', () => {
         tenant: 'tenant1',
         task: 'create_model',
       });
+      const [[{ params }]] = (informationExtractionForJob.taskManager!.startTask as jest.Mock).mock
+        .calls;
+      expect(params.options).toHaveLength(expectedOptions.length);
     });
 
     it('should emit error status and stop finding suggestions, when there is no labaled data', async () => {
+      // The fixture leaves this model mid-run, for the `status()` case above. A new run may not
+      // claim a model another run holds (F52), so release it first — what is under test here is
+      // the failure once training starts, not the claim.
+      const held = await ixTestAccess.readModel(factory.id('prop3extractor'));
+      await ixTestAccess.writeModel({ ...held, status: 'ready', findingSuggestions: false });
+
       const promise1 = trainModel(factory.id('prop3extractor'));
       await expect(promise1).rejects.toThrow();
       expect(setupSockets.emitToTenantAdminsAndEditors).toHaveBeenNthCalledWith(
@@ -1106,7 +1222,7 @@ describe('InformationExtraction', () => {
       await SegmentationModel.delete({});
       await ixTestAccess.removeSuggestions();
 
-      await filesModel.save({
+      await saveFile({
         _id: factory.id('F1'),
         filename: 'documentA.pdf',
         type: 'document',
@@ -1115,7 +1231,7 @@ describe('InformationExtraction', () => {
         propertySelections: [],
       });
 
-      await filesModel.save({
+      await saveFile({
         _id: factory.id('F2'),
         filename: 'documentB.pdf',
         type: 'document',
@@ -1124,7 +1240,7 @@ describe('InformationExtraction', () => {
         propertySelections: [],
       });
 
-      await ixTestAccess.writeSuggestion({
+      await writeSuggestion({
         fileId: factory.id('F1'),
         entityId: 'entity1',
         language: 'en',
@@ -1143,7 +1259,7 @@ describe('InformationExtraction', () => {
         },
       });
 
-      await ixTestAccess.writeSuggestion({
+      await writeSuggestion({
         fileId: factory.id('F2'),
         entityId: 'entity2',
         language: 'en',
@@ -1273,7 +1389,7 @@ describe('InformationExtraction', () => {
       await SegmentationModel.delete({});
       await ixTestAccess.removeSuggestions();
 
-      await filesModel.save({
+      await saveFile({
         _id: factory.id('F1'),
         filename: 'documentA.pdf',
         type: 'document',
@@ -1282,7 +1398,7 @@ describe('InformationExtraction', () => {
         propertySelections: [],
       });
 
-      await filesModel.save({
+      await saveFile({
         _id: factory.id('F3'),
         filename: 'documentC.pdf',
         type: 'document',
@@ -1291,7 +1407,7 @@ describe('InformationExtraction', () => {
         propertySelections: [],
       });
 
-      await ixTestAccess.writeSuggestion({
+      await writeSuggestion({
         fileId: factory.id('F1'),
         entityId: 'entity1',
         language: 'en',
@@ -1310,7 +1426,7 @@ describe('InformationExtraction', () => {
         },
       });
 
-      await ixTestAccess.writeSuggestion({
+      await writeSuggestion({
         fileId: factory.id('F3'),
         entityId: 'entity3',
         language: 'en',
@@ -1359,9 +1475,9 @@ describe('InformationExtraction', () => {
     it('should avoid non-ready segmentations when duplicates exist for the same file', async () => {
       await SegmentationModel.delete({});
       await ixTestAccess.removeSuggestions();
-      await filesModel.delete({});
+      await removeAllFiles();
 
-      await filesModel.save({
+      await saveFile({
         _id: factory.id('F1'),
         filename: 'document1.pdf',
         type: 'document',
@@ -1370,7 +1486,7 @@ describe('InformationExtraction', () => {
         propertySelections: [],
       });
 
-      await filesModel.save({
+      await saveFile({
         _id: factory.id('F2'),
         filename: 'document2.pdf',
         type: 'document',
@@ -1409,7 +1525,7 @@ describe('InformationExtraction', () => {
       });
 
       // Suggestion placeholders for both files
-      await ixTestAccess.writeSuggestion({
+      await writeSuggestion({
         _id: factory.id('S1'),
         extractorId: factory.id('prop1extractor'),
         entityId: 'entity1',
@@ -1420,7 +1536,7 @@ describe('InformationExtraction', () => {
         state: { error: false } as any,
       });
 
-      await ixTestAccess.writeSuggestion({
+      await writeSuggestion({
         _id: factory.id('S2'),
         extractorId: factory.id('prop1extractor'),
         entityId: 'entity2',
@@ -1485,7 +1601,7 @@ describe('InformationExtraction', () => {
       await SegmentationModel.delete({});
       await ixTestAccess.removeSuggestions();
 
-      await filesModel.save({
+      await saveFile({
         _id: factory.id('F1'),
         filename: 'document1.pdf',
         type: 'document',
@@ -1494,7 +1610,7 @@ describe('InformationExtraction', () => {
         propertySelections: [],
       });
 
-      await filesModel.save({
+      await saveFile({
         _id: factory.id('F2'),
         filename: 'document2.pdf',
         type: 'document',
@@ -1530,7 +1646,7 @@ describe('InformationExtraction', () => {
         xmlname: 'document2.xml',
       });
 
-      await ixTestAccess.writeSuggestion({
+      await writeSuggestion({
         _id: factory.id('S1'),
         extractorId: factory.id('prop1extractor'),
         entityId: 'entity1',
@@ -1548,7 +1664,7 @@ describe('InformationExtraction', () => {
         },
       });
 
-      await ixTestAccess.writeSuggestion({
+      await writeSuggestion({
         _id: factory.id('S2'),
         extractorId: factory.id('prop1extractor'),
         entityId: 'entity2',
@@ -1670,27 +1786,21 @@ describe('InformationExtraction', () => {
     });
 
     describe('Limited runs', () => {
+      // `testRun` and `testRunSuggestionsToFind` used to be set here as well; nothing reads either.
       beforeEach(async () => {
-        await testingDB.mongodb
-          ?.collection('ixmodels')
-          .updateOne(
-            { extractorId: factory.id('sourceTextExtractor1') },
-            { $set: { testRun: true, testRunSuggestionsToFind: 1, totalSuggestionsToFind: 1 } }
-          );
-        await testingDB.mongodb
-          ?.collection('ixmodels')
-          .updateOne(
-            { extractorId: factory.id('prop1extractor') },
-            { $set: { testRun: true, testRunSuggestionsToFind: 1, totalSuggestionsToFind: 1 } }
-          );
+        const limitToOneSuggestion = async (extractorName: string) => {
+          const model = await ixTestAccess.readModel(factory.id(extractorName));
+          model.totalSuggestionsToFind = 1;
+          await ixTestAccess.writeModel(model);
+        };
 
-        await testingDB.mongodb?.collection('ixsuggestions').updateMany(
-          {
-            extractorId: factory.id('sourceTextExtractor1'),
-            entityId: 'A1',
-          },
-          { $set: { trainingSample: true } }
-        );
+        await limitToOneSuggestion('sourceTextExtractor1');
+        await limitToOneSuggestion('prop1extractor');
+
+        await ixTestAccess.markTrainingSample({
+          extractorId: factory.id('sourceTextExtractor1'),
+          entityId: 'A1',
+        });
       });
 
       it('should only process a subset of suggestions', async () => {
@@ -1734,7 +1844,9 @@ describe('InformationExtraction', () => {
 
       await testingEnvironment.runWithContext(async () => {
         const runSpy = jest.spyOn(ExecutionContext, 'run');
-        await informationExtraction.processResults({
+        // Unwrapped: `informationExtraction` runs each call in its own context, which is the
+        // nesting this case asserts processResults does not do.
+        await new InformationExtraction().processResults({
           // @ts-expect-error - this is a test for a cancel that happens outside of the flow, so we don't care about the task
           task: 'any_task',
           data_url: 'some/url',
@@ -2059,13 +2171,11 @@ describe('InformationExtraction', () => {
         data_url: 'http://localhost:1234/suggestions_results',
       });
 
-      const malformedSuggestions = await testingDB
-        .mongodb!.collection('ixsuggestions')
-        .find({
-          suggestedValue: orphanSuggestionText,
-          extractorId: { $exists: false },
-        })
-        .toArray();
+      // Postgres cannot hold a suggestion without an extractor, so the check is that no stored
+      // suggestion carries the orphan result at all.
+      const malformedSuggestions = (await ixTestAccess.readSuggestions()).filter(
+        suggestion => suggestion.suggestedValue === orphanSuggestionText
+      );
 
       expect(malformedSuggestions).toHaveLength(0);
     });
@@ -2231,7 +2341,6 @@ describe('InformationExtraction', () => {
           propertyName: 'property_select',
           extractorId: factory.id('extractorWithSelect'),
           status: 'ready',
-          page: 1,
           date: expect.any(Number),
           error: '',
           state: {
@@ -2334,7 +2443,6 @@ describe('InformationExtraction', () => {
           propertyName: 'property_multiselect',
           extractorId: factory.id('extractorWithMultiselect'),
           status: 'ready',
-          page: 1,
           date: expect.any(Number),
           error: '',
           state: {
@@ -2444,7 +2552,6 @@ describe('InformationExtraction', () => {
           propertyName: 'property_relationship',
           extractorId: factory.id('extractorWithRelationship'),
           status: 'ready',
-          page: 1,
           date: expect.any(Number),
           error: '',
           state: {

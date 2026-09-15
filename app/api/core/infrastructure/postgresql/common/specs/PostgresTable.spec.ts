@@ -592,6 +592,33 @@ describe('PostgresTable', () => {
       expect(rows[0].name).toBe('b');
     });
 
+    it('should support orderByRaw for orderings orderBy cannot express', async () => {
+      const table = createTable();
+      await table.insert({ _id: 'obr-1', name: 'mid', values: jsonVal([]) });
+      await table.insert({ _id: 'obr-2', name: 'longest', values: jsonVal([]) });
+      await table.insert({ _id: 'obr-3', name: 'a', values: jsonVal([]) });
+
+      const rows = await table.orderByRaw('length("name") DESC').limit(2).all();
+
+      expect(rows.map((r: TestRow) => r.name)).toEqual(['longest', 'mid']);
+    });
+
+    it('should support selectRaw for projections select cannot express', async () => {
+      const table = createTable();
+      await table.insert({ _id: 'sr-1', name: 'alpha', values: jsonVal([]) });
+      await table.insert({ _id: 'sr-2', name: 'avocado', values: jsonVal([]) });
+      await table.insert({ _id: 'sr-3', name: 'beta', values: jsonVal([]) });
+
+      const counts = await table
+        .query<{ total: number; matching: number }>()
+        .selectRaw('count(*) AS "total", count(*) FILTER (WHERE "name" LIKE ?) AS "matching"', [
+          'a%',
+        ])
+        .first();
+
+      expect(counts).toEqual({ total: 3, matching: 2 });
+    });
+
     it('should support whereRaw for conditions where* cannot express', async () => {
       const table = createTable();
       await table.insert({ _id: 'wr-1', name: 'alpha', values: jsonVal([]) });
@@ -893,6 +920,84 @@ describe('PostgresTable', () => {
       expect(rowsFromA).toHaveLength(1);
       expect(rowsFromA[0].name).toBe('Isolated');
       expect(rowsFromA[0].label).toBeUndefined();
+    });
+  });
+
+  describe('object ids in conditions', () => {
+    /**
+     * Ids arrive as ObjectIds from anything that still speaks Mongo. `pg` would serialise one with
+     * `JSON.stringify` and bind `'"<hex>"'`, matching nothing and reporting nothing (F50).
+     */
+    it('should match a row when the id is given as an ObjectId', async () => {
+      const table = createTable();
+      const id = new ObjectId();
+      await table.insert({ _id: id.toString(), name: 'by object id', values: jsonVal([]) });
+
+      const found = await table.where({ _id: id }).first();
+      const foundIn = await table.whereIn('_id', [id as any]).all();
+
+      expect(found).toMatchObject({ name: 'by object id' });
+      expect(foundIn).toHaveLength(1);
+    });
+
+    it('should store an id given as an ObjectId as its hex string', async () => {
+      const table = createTable();
+      const id = new ObjectId();
+      await table.insert({ _id: id as any, name: 'written by object id', values: jsonVal([]) });
+
+      const found = await table.where({ _id: id.toString() }).first();
+
+      expect(found).toMatchObject({ _id: id.toString(), name: 'written by object id' });
+    });
+  });
+
+  describe('identity column', () => {
+    it('should add it to a projected read, so the caller knows which rows it read', async () => {
+      const table = createTable();
+      await table.insert({ _id: 'id-1', name: 'projected', values: jsonVal([]) });
+
+      const [row] = await table.query<TestRow>().where({ _id: 'id-1' }).select(['name']).all();
+      const first = await table.query<TestRow>().where({ _id: 'id-1' }).select(['name']).first();
+
+      expect(row).toEqual({ _id: 'id-1', name: 'projected' });
+      expect(first).toEqual({ _id: 'id-1', name: 'projected' });
+    });
+
+    it('should not add it twice when the caller already asked for it', async () => {
+      const table = createTable();
+      await table.insert({ _id: 'id-2', name: 'explicit', values: jsonVal([]) });
+
+      const [row] = await table
+        .query<TestRow>()
+        .where({ _id: 'id-2' })
+        .select(['_id', 'name'])
+        .all();
+
+      expect(row).toEqual({ _id: 'id-2', name: 'explicit' });
+    });
+
+    it('should leave an unprojected read alone', async () => {
+      const table = createTable();
+      await table.insert({ _id: 'id-3', name: 'whole row', values: jsonVal([]) });
+
+      const row = await table.where({ _id: 'id-3' }).first();
+
+      expect(row).toMatchObject({ _id: 'id-3', name: 'whole row' });
+    });
+
+    /** A table keyed by something else declares it, and its projections stay untouched. */
+    it('should add nothing to a table that has none', async () => {
+      const locales = PostgresTable.for<{ page_id: string; language: string; title: string }>({
+        tableName: 'page_locales',
+        tenantId: DEFAULT_TENANT,
+        transactionManager: managerFor(DEFAULT_TENANT),
+        identityColumn: null,
+      });
+      await locales.insert({ page_id: 'p-1', language: 'en', title: 'Home' });
+
+      const [row] = await locales.where({ page_id: 'p-1' }).select(['title']).all();
+
+      expect(row).toEqual({ title: 'Home' });
     });
   });
 

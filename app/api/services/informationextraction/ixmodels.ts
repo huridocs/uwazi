@@ -3,6 +3,7 @@ import { IXSuggestionsDAOFactory } from '#api/suggestions/infrastructure/IXSugge
 import { ModelStatus } from '#shared/types/IXModelSchema.js';
 import { IXModelType } from '#shared/types/IXModelType.js';
 import { ObjectIdSchema } from '#shared/types/commonTypes.js';
+import { ModelNotReadyError } from './errors.js';
 import { IXModelsDAOFactory } from './infrastructure/IXModelsDAOFactory.js';
 
 const DEFAULT_MAX_SUGGESTIONS_SIZE = 1000;
@@ -58,13 +59,19 @@ export default {
     }
     return saved;
   },
+  /** Refuses when a run already holds the model: two at once destroy each other's work (F52). */
   startTraining: async (
     extractorId: ObjectIdSchema,
     { suggestionsToFind }: StartTrainingOptions = {}
-  ) =>
-    dao().markTraining(extractorId, {
+  ) => {
+    const claimed = await dao().markTraining(extractorId, {
       maxSuggestionsToFind: suggestionsToFind ?? DEFAULT_MAX_SUGGESTIONS_SIZE,
-    }),
+    });
+
+    if (!claimed) {
+      throw new ModelNotReadyError(extractorId.toString());
+    }
+  },
   startFindingSuggestions: async (extractorId: ObjectIdSchema) => {
     const updated = await dao().markFindingSuggestions(extractorId);
 

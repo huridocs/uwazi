@@ -41,7 +41,7 @@ export const FilesMigrationConfig: MigrationConfig = {
       creationDate: doc.creationDate,
       filename: doc.filename,
       mimetype: doc.mimetype,
-      originalname: doc.originalname,
+      originalname: doc.originalname || doc.filename,
       size: doc.size,
       type: doc.type,
 
