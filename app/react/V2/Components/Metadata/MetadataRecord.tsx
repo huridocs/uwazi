@@ -12,7 +12,9 @@ import {
   isInheritingRelationship,
   isLongField,
   isRelationshipProperty,
+  mediaMasonryRowClass,
   metadataGridClassForProperty,
+  packClassForProperty,
   packPropertyRows,
   partitionMetadataRecord,
 } from './metadataPropertyLayout.js';
@@ -37,6 +39,13 @@ const fieldCard = (field: MetadataProperty, layoutClass: string, children: React
     {children}
   </div>
 );
+
+const masonryRowClassName = (fields: MetadataProperty[], widthPx: number): string => {
+  const [first] = fields;
+  return first && packClassForProperty(first) === 'media'
+    ? mediaMasonryRowClass(widthPx, fields)
+    : 'flex w-full min-w-0 items-stretch gap-3';
+};
 
 type InheritingCardArgs = {
   field: RelationshipMetadataProperty;
@@ -218,7 +227,7 @@ const MetadataRecord = ({
         <div
           key={row.fields.map(field => field._id).join('-')}
           data-property-row={row.fields.map(field => field.name).join(' ')}
-          className="flex w-full min-w-0 items-stretch gap-3"
+          className={masonryRowClassName(row.fields, panelWidth ?? 0)}
         >
           {row.fields.map(renderPropertyCard)}
         </div>
