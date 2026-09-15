@@ -1,13 +1,14 @@
 import { useCallback } from 'react';
 import { useAtomValue } from 'jotai';
 import type { TextSelection } from '@huridocs/react-text-selection-handler';
-import { settingsAtom, userAtom } from '#V2/atoms/index.js';
+import { settingsAtom } from '#V2/atoms/index.js';
 import { convertTextSelectionToTocEntry } from '#V2/Routes/Entity/Components/ToC/index.js';
 import {
   useDocumentPdf,
   useMetadataEditing,
   useRelationshipsActions,
   useTocActions,
+  useEntityWriteAuthorized,
 } from '#V2/Routes/Entity/Components/context/index.js';
 import { useEntityTabNavigation } from '../EntityTabsContext.js';
 import { SIDE_TAB } from '../tabIds.js';
@@ -64,11 +65,10 @@ const usePdfTextNavigation = () => {
 
 const useDocumentPdfTextHandlers = () => {
   const { ocrServiceEnabled } = useAtomValue(settingsAtom);
-  const user = useAtomValue(userAtom);
-  const userIsAdminOrEditor = Boolean(user?._id && ['admin', 'editor'].includes(user.role));
+  const canWrite = useEntityWriteAuthorized();
   return {
+    canWrite,
     ocrServiceEnabled,
-    userIsAdminOrEditor,
     ...usePdfTextSelection(),
     ...usePdfTextNavigation(),
   };
