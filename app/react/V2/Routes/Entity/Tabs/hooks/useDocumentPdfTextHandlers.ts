@@ -66,12 +66,9 @@ const usePdfTextNavigation = () => {
 const useDocumentPdfTextHandlers = () => {
   const { ocrServiceEnabled } = useAtomValue(settingsAtom);
   const canWrite = useEntityWriteAuthorized();
-  return {
-    canWrite,
-    ocrServiceEnabled,
-    ...usePdfTextSelection(),
-    ...usePdfTextNavigation(),
-  };
+  const selection = usePdfTextSelection();
+  const navigation = usePdfTextNavigation();
+  return { canWrite, ocrServiceEnabled, ...selection, ...navigation };
 };
 
 export { useDocumentPdfTextHandlers };
