@@ -71,9 +71,9 @@ const FiltersSidepanel = ({
   const handleSave = (values: Omit<Filter, 'subRows'> & { subRows: string[] }) => {
     const result = { ...values, subRows: formatSelected(values.subRows) };
 
-    if (!filter?._id) delete result._id;
     if (!filter?.id) result.id = uniqueID();
-    if (result.rowId === defaultValues.rowId) result.rowId = uniqueID();
+    result.rowId = result.id!;
+    delete result._id;
 
     onSave(result);
     closeSidepanel();
@@ -88,7 +88,6 @@ const FiltersSidepanel = ({
     >
       <Sidepanel.Body>
         <form onSubmit={handleSubmit(handleSave)} id="group-edit-form">
-          <input className="hidden" {...register('_id')} />
           <input className="hidden" {...register('id')} />
           <input className="hidden" {...register('rowId')} />
 

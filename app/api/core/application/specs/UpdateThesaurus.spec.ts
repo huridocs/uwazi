@@ -359,6 +359,12 @@ describe('UpdateThesaurusUseCase', () => {
           params: {
             tenantName: tenants.current().name,
             thesaurusId: before._id.toString(),
+            valueIds: [
+              before.values[0].id,
+              before.values[2].id,
+              before.values[1].id,
+              before.values[2].values![1].id,
+            ],
           },
         },
       ]);

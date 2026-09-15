@@ -3,15 +3,15 @@
 import sift from 'sift';
 import { EntitiesDAOFactory } from '#api/core/infrastructure/factories/EntitiesDAOFactory.js';
 import { DataType, models, WithId } from '#api/odm/index.js';
-import { settingsModel } from '#api/settings/settingsModel.js';
 import templates from '#api/core/v1_layer/templates/templates.js';
+import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
+import { Settings as SettingsModel } from '#api/core/domain/settings/Settings.js';
 import { UpdateLog } from '#api/updatelogs/index.js';
 import { SyncHandlerRegistry } from './SyncHandlerRegistry.js';
 import { ensure } from '#shared/tsUtils.js';
 import { EntitySchema } from '#shared/types/entityType.js';
 import { FileType } from '#shared/types/fileType.js';
 import {
-  Settings,
   SettingsSyncRelationtypesSchema,
   SettingsSyncTemplateSchema,
 } from '#shared/types/settingsType.js';
@@ -198,10 +198,14 @@ class ProcessNamespaces {
     return { data };
   }
 
+  // Settings is a singleton; sync does not look up by this.change.mongoId.
+  // eslint-disable-next-line class-methods-use-this
   private async settings() {
-    const { mongoId } = this.change;
-    const data = ensure<WithId<Settings>>(await settingsModel.getById(mongoId), noDataFound);
-    return { data: { _id: data._id, languages: data.languages } };
+    const settings = ensure<SettingsModel>(
+      await SettingsDataSourceFactory.default().readPresentation(),
+      noDataFound
+    );
+    return { data: { _id: settings._id, languages: settings.languages } };
   }
 
   private async templates() {

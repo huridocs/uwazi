@@ -9,6 +9,7 @@ import { ModelNotReadyError } from '#api/services/informationextraction/ixextrac
 import { ExternalDummyService } from '#api/services/tasksmanager/specs/ExternalDummyService.js';
 import { testingTenants } from '#api/utils/testingTenants.js';
 import ixmodels from '#api/services/informationextraction/ixmodels.js';
+import { ixTestAccess } from '#api/services/informationextraction/specs/ixTestAccess.js';
 import { FindSuggestionsForIds } from '../useCases/FindSuggestionsForIds.js';
 
 // Mock only the TaskManager to make startTask calls work without real Redis
@@ -92,6 +93,11 @@ describe('FindSuggestionsForIds', () => {
   let informationExtraction: InformationExtraction;
   let IXExternalService: ExternalDummyService;
 
+  const execute = async (
+    input: Parameters<FindSuggestionsForIds['execute']>[0],
+    uc: FindSuggestionsForIds = useCase
+  ) => testingEnvironment.runWithContext(async () => uc.execute(input));
+
   beforeAll(async () => {
     // Set up external service mock
     IXExternalService = new ExternalDummyService(2308, 'information_extraction', {
@@ -125,7 +131,7 @@ describe('FindSuggestionsForIds', () => {
       const nonExistentExtractorId = new ObjectId();
 
       await expect(
-        useCase.execute({
+        execute({
           extractorId: nonExistentExtractorId,
           sharedIds: ['entity1', 'entity2'],
         })
@@ -143,7 +149,7 @@ describe('FindSuggestionsForIds', () => {
       });
 
       await expect(
-        useCase.execute({
+        execute({
           extractorId,
           sharedIds: ['entity1', 'entity2'],
         })
@@ -161,7 +167,7 @@ describe('FindSuggestionsForIds', () => {
       });
 
       await expect(
-        useCase.execute({
+        execute({
           extractorId,
           sharedIds: ['entity1', 'entity2'],
         })
@@ -176,7 +182,7 @@ describe('FindSuggestionsForIds', () => {
         .toArray();
       expect(allEntities?.length).toBe(5); // entity1, entity2, entity3, entity4, entity5
 
-      const result = await useCase.execute({
+      const result = await execute({
         extractorId,
         sharedIds: ['entity1', 'entity2'], // Only requesting 2 out of 5
       });
@@ -219,7 +225,7 @@ describe('FindSuggestionsForIds', () => {
 
       // Verify the model state after the process has been initiated
       const testStartTime = Date.now() - 10000; // 10 seconds ago
-      const [finalModel] = await ixmodels.get({ extractorId });
+      const finalModel = await ixTestAccess.readModel(extractorId);
       expect(finalModel.processRun?.suggestionsRunTimestamp).toBeGreaterThan(testStartTime);
 
       // In an async process, sharedIds get processed and cleared, but process flag remains true
@@ -248,13 +254,16 @@ describe('FindSuggestionsForIds', () => {
 
       const propertyUseCase = new FindSuggestionsForIds(informationExtraction);
 
-      const result = await propertyUseCase.execute({
-        extractorId: propertyExtractorId,
-        sharedIds: ['entity1'],
-      });
+      const result = await execute(
+        {
+          extractorId: propertyExtractorId,
+          sharedIds: ['entity1'],
+        },
+        propertyUseCase
+      );
 
       // Verify the process started
-      const [updatedModel] = await ixmodels.get({ extractorId: propertyExtractorId });
+      const updatedModel = await ixTestAccess.readModel(propertyExtractorId);
       expect(updatedModel.processRun?.suggestionsRunTimestamp).toBeDefined();
       expect(updatedModel.processRun?.findSuggestionsSharedIds).toEqual([]);
 
@@ -263,13 +272,13 @@ describe('FindSuggestionsForIds', () => {
 
     it('should append new IDs to an ongoing per-id run and increase totals without resetting processed', async () => {
       // First request: 2 IDs
-      const first = await useCase.execute({
+      const first = await execute({
         extractorId,
         sharedIds: ['entity1', 'entity2'],
       });
 
       // Second request: 1 new + 1 duplicate
-      const second = await useCase.execute({
+      const second = await execute({
         extractorId,
         sharedIds: ['entity2', 'entity3'],
       });
@@ -287,21 +296,21 @@ describe('FindSuggestionsForIds', () => {
       expect(second.total).toBe(3);
 
       // Model should keep the correct initial count (delta-increment), queue is drained by the flow
-      const [finalModel] = await ixmodels.get({ extractorId });
+      const finalModel = await ixTestAccess.readModel(extractorId);
       expect(finalModel.processRun?.findSuggestionsInitialSharedIdsCount).toBe(3);
       expect(finalModel.processRun?.findSuggestionsSharedIds).toEqual([]);
     });
 
     it('should not re-send materials when no new IDs are provided during an ongoing per-id run', async () => {
       // Kick off with a single ID
-      await useCase.execute({
+      await execute({
         extractorId,
         sharedIds: ['entity1'],
       });
       const materialsAfterFirst = IXExternalService.materials.length;
 
       // Try to append only duplicates
-      const result = await useCase.execute({
+      const result = await execute({
         extractorId,
         sharedIds: ['entity1'],
       });
@@ -313,26 +322,26 @@ describe('FindSuggestionsForIds', () => {
       expect(result.total).toBe(1);
 
       // Model initial total stays the same (no delta)
-      const [finalModel] = await ixmodels.get({ extractorId });
+      const finalModel = await ixTestAccess.readModel(extractorId);
       expect(finalModel.processRun?.findSuggestionsInitialSharedIdsCount).toBe(1);
     });
 
     it('should increase initial total exactly by the number of new unique IDs when appending', async () => {
       // Start with 1
-      await useCase.execute({
+      await execute({
         extractorId,
         sharedIds: ['entity1'],
       });
-      const [afterFirst] = await ixmodels.get({ extractorId });
+      const afterFirst = await ixTestAccess.readModel(extractorId);
       expect(afterFirst.processRun?.findSuggestionsInitialSharedIdsCount).toBe(1);
 
       // Append 1 new (entity3) and 1 duplicate (entity1)
-      await useCase.execute({
+      await execute({
         extractorId,
         sharedIds: ['entity1', 'entity3'],
       });
 
-      const [afterSecond] = await ixmodels.get({ extractorId });
+      const afterSecond = await ixTestAccess.readModel(extractorId);
       // Only delta of 1 should be added
       expect(afterSecond.processRun?.findSuggestionsInitialSharedIdsCount).toBe(2);
     });

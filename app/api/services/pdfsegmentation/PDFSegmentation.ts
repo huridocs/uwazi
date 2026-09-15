@@ -9,7 +9,8 @@ import { ArrayUtils } from '#api/common.v2/utils/Array.js';
 import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
 import { Logger } from '#api/core/libs/logger/contracts/Logger.js';
 import { ResultsMessage, TaskManager } from '#api/services/tasksmanager/TaskManager.js';
-import settings from '#api/settings/settings.js';
+import { SettingsDataSourceFactory } from '#api/core/infrastructure/factories/SettingsDataSourceFactory.js';
+import { runInJobContext } from '#api/services/tasksmanager/runInJobContext.js';
 import { tenants } from '#api/tenants/tenantContext.js';
 import { handleError } from '#api/utils/index.js';
 import request from '#shared/JSONRequest.js';
@@ -243,9 +244,9 @@ class PDFSegmentation {
     try {
       await Promise.all(
         Object.keys(tenants.tenants).map(async tenant => {
-          await tenants.run(async () => {
-            const settingsValues = await settings.get();
-            const segmentationServiceConfig = settingsValues?.features?.segmentation;
+          await runInJobContext(tenant, async () => {
+            const segmentationServiceConfig =
+              await SettingsDataSourceFactory.default().readFeature('segmentation');
 
             if (!segmentationServiceConfig) {
               return;
@@ -273,7 +274,7 @@ class PDFSegmentation {
               uploadConcurrency: this.uploadConcurrency,
               durationMs: Date.now() - tenantStart,
             });
-          }, tenant);
+          });
         })
       );
     } catch (err) {
@@ -377,33 +378,31 @@ class PDFSegmentation {
   processResults = async (message: ResultsMessage): Promise<void> => {
     const start = Date.now();
 
-    await tenants.run(async () => {
-      // Completion rate. Compared against Segmentation_Dispatch it shows whether the segmentation
-      // service is keeping up with the worker or falling behind it.
-      const logResult = (success: boolean, errorName?: string) =>
-        LoggerFactory.default().info('Segmentation result processed', {
-          namespace: 'Segmentation_Result',
-          success,
-          durationMs: Date.now() - start,
-          ...(errorName ? { errorName } : {}),
-        });
+    // Completion rate. Compared against Segmentation_Dispatch it shows whether the segmentation
+    // service is keeping up with the worker or falling behind it.
+    const logResult = (success: boolean, errorName?: string) =>
+      LoggerFactory.default().info('Segmentation result processed', {
+        namespace: 'Segmentation_Result',
+        success,
+        durationMs: Date.now() - start,
+        ...(errorName ? { errorName } : {}),
+      });
 
-      try {
-        if (!message.success) {
-          await this.saveSegmentationError(message.params?.filename);
-          logResult(false, 'SegmentationServiceFailure');
-          return;
-        }
-
-        const { data, fileStream } = await this.requestResults(message);
-        await this.storeXML(message.params!.filename, fileStream);
-        await this.saveSegmentation(message.params!.filename, data);
-        logResult(true);
-      } catch (error) {
-        logResult(false, error?.constructor?.name ?? 'Unknown');
-        handleError(error);
+    try {
+      if (!message.success) {
+        await this.saveSegmentationError(message.params?.filename);
+        logResult(false, 'SegmentationServiceFailure');
+        return;
       }
-    }, message.tenant);
+
+      const { data, fileStream } = await this.requestResults(message);
+      await this.storeXML(message.params!.filename, fileStream);
+      await this.saveSegmentation(message.params!.filename, data);
+      logResult(true);
+    } catch (error) {
+      logResult(false, error?.constructor?.name ?? 'Unknown');
+      handleError(error);
+    }
   };
 }
 

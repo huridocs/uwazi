@@ -817,27 +817,82 @@ describe('EntitiesDataSource', () => {
     });
 
     describe('getSharedIdsUsingThesaurus', () => {
-      it('should return sharedIds of entities with non-empty metadata using thesaurus templates', async () => {
+      it('should return only sharedIds of entities referencing the given thesaurus values', async () => {
         await testingEnvironment.setFixtures({
           settings: [{ languages: [{ default: true, key: 'en', label: 'English' }] }],
           templates: [
-            factory.template('ThesaurusTemplate', [factory.relationshipProp('rel', 'thesaurus1')]),
+            factory.template('SelectTemplate', [
+              factory.property('select', 'select', {
+                content: factory.id('thesaurus1').toString(),
+              }),
+              factory.property('multiselect', 'multiselect', {
+                content: factory.id('thesaurus1').toString(),
+              }),
+            ]),
+            factory.template('InheritTemplate', [
+              factory.inherit('rel', 'SelectTemplate', 'select'),
+            ]),
             factory.template('OtherTemplate', [factory.property('text', 'text')]),
           ],
           entities: [
-            factory.entity('with-metadata', 'ThesaurusTemplate', {
-              rel: [{ value: 'value1', label: 'value1' }],
+            factory.entity('ref-value1', 'SelectTemplate', {
+              select: [{ value: 'value1', label: 'value1' }],
             }),
-            factory.entity('empty-metadata', 'ThesaurusTemplate', {}),
+            factory.entity('ref-value2', 'SelectTemplate', {
+              select: [{ value: 'value2', label: 'value2' }],
+            }),
+            factory.entity('ref-multiselect', 'SelectTemplate', {
+              multiselect: [{ value: 'value1', label: 'value1' }],
+            }),
+            factory.entity('empty-select', 'SelectTemplate', {}),
+            factory.entity('ref-inherited', 'InheritTemplate', {
+              rel: [
+                {
+                  value: 'ref-value1',
+                  label: 'ref-value1',
+                  inheritedValue: [{ value: 'value1', label: 'value1' }],
+                },
+              ],
+            }),
             factory.entity('other-template', 'OtherTemplate', { text: [{ value: 'x' }] }),
           ],
         });
 
         const { sut } = createSut();
 
-        const sharedIds = await sut.getSharedIdsUsingThesaurus(factory.id('thesaurus1').toString());
+        const sharedIds = await sut.getSharedIdsUsingThesaurus(
+          factory.id('thesaurus1').toString(),
+          ['value1']
+        );
 
-        expect(sharedIds).toEqual(['with-metadata']);
+        expect([...sharedIds].sort()).toEqual(['ref-inherited', 'ref-multiselect', 'ref-value1']);
+      });
+
+      it('should return no sharedIds when no value ids are provided', async () => {
+        await testingEnvironment.setFixtures({
+          settings: [{ languages: [{ default: true, key: 'en', label: 'English' }] }],
+          templates: [
+            factory.template('SelectTemplate', [
+              factory.property('select', 'select', {
+                content: factory.id('thesaurus1').toString(),
+              }),
+            ]),
+          ],
+          entities: [
+            factory.entity('ref-value1', 'SelectTemplate', {
+              select: [{ value: 'value1', label: 'value1' }],
+            }),
+          ],
+        });
+
+        const { sut } = createSut();
+
+        const sharedIds = await sut.getSharedIdsUsingThesaurus(
+          factory.id('thesaurus1').toString(),
+          []
+        );
+
+        expect(sharedIds).toEqual([]);
       });
     });
 

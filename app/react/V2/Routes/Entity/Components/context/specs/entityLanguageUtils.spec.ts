@@ -3,7 +3,19 @@
  */
 import type { Entity, FileType } from '#V2/api/entities/types.js';
 import { entityLoaderCache } from '../../../EntityLoaderCache.js';
-import { resolveMainDocument, resolveSyncMode, seedLoaderCache } from '../entityLanguageUtils.js';
+import {
+  resolveMainDocument,
+  resolveRtl,
+  resolveSyncMode,
+  seedLoaderCache,
+} from '../entityLanguageUtils.js';
+
+describe('resolveRtl', () => {
+  it('should resolve RTL from the language catalog by key', () => {
+    expect(resolveRtl('ar')).toBe(true);
+    expect(resolveRtl('en')).toBe(false);
+  });
+});
 
 describe('resolveSyncMode', () => {
   it('seeds only and marks pending adopt when dirty/saving', () => {

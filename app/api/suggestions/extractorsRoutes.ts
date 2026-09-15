@@ -128,8 +128,10 @@ export const extractorsRoutes = (app: Application) => {
     }),
     async (req, res, _next) => {
       if (req.query.id) {
-        const extractor = await Extractors.get({ _id: new ObjectId(req.query.id as string) });
-        res.json(extractor);
+        // The endpoint has always answered with a list, even for a single id. `getById`
+        // returns one extractor or nothing, so re-wrap to keep the response shape.
+        const extractor = await Extractors.getById(new ObjectId(req.query.id as string));
+        res.json(extractor ? [extractor] : []);
       } else {
         const extractors = await Extractors.get_all();
         res.json(extractors);

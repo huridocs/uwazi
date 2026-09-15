@@ -1,5 +1,6 @@
 import type { ClientProperty } from '#V2/shared/types.js';
 import type { MetadataProperty, RelationshipMetadataProperty } from '#V2/formatters/types.js';
+import { getMimetypeFromUrl } from '#V2/shared/formatHelpers.js';
 import { sortByTemplatePropertyOrder } from './sortByTemplatePropertyOrder.js';
 import { relationshipGroupKey } from './relationshipInherit.js';
 
@@ -15,7 +16,19 @@ const SPECIALIZED_FULL_WIDTH_TYPES: ReadonlyArray<MetadataProperty['type']> = [
 
 const METADATA_FIELD_COLUMN = 'flex min-h-0 min-w-0 flex-col self-stretch';
 const COMPACT_METADATA_FIELD_LAYOUT = `${METADATA_FIELD_COLUMN} flex-1`;
+const MEDIA_METADATA_FIELD_LAYOUT = METADATA_FIELD_COLUMN;
 const FULL_ROW_METADATA_FIELD_LAYOUT = `${METADATA_FIELD_COLUMN} w-full shrink-0 basis-full`;
+const MEDIA_MASONRY_IMAGE_ROW =
+  'grid w-full min-w-0 items-stretch gap-3 max-h-48 auto-rows-[12rem]';
+const MEDIA_MASONRY_VIDEO_ROW =
+  'grid w-full min-w-0 items-stretch gap-3 max-h-96 auto-rows-[minmax(12rem,auto)]';
+const MEDIA_MASONRY_GEO_ROW =
+  'grid w-full min-w-0 items-stretch gap-3 auto-rows-[minmax(18rem,auto)]';
+const MEDIA_ROW_COLS = {
+  1: 'grid-cols-1',
+  2: 'grid-cols-2',
+  3: 'grid-cols-3',
+} as const;
 const COMPACT_CARD_MIN_PX = 160;
 const MEDIA_CARD_MIN_PX = 288;
 const PROPERTY_ROW_GAP_PX = 12;
@@ -67,9 +80,6 @@ const inheritGroupKey = (
   return relationshipGroupKey({ content: property?.content, relationType: property?.relationType });
 };
 
-const isMediaPackType = (type: MetadataProperty['type']): boolean =>
-  MEDIA_PACK_TYPES.includes(type);
-
 const contentLength = (data: MetadataProperty): number => {
   if (
     data.type === 'text' ||
@@ -97,21 +107,51 @@ const packClassForProperty = (data: MetadataProperty): MasonryPackClass => {
   ) {
     return 'block';
   }
-  if (isMediaPackType(data.type)) {
-    return 'media';
-  }
-  return 'short';
+  return MEDIA_PACK_TYPES.includes(data.type) ? 'media' : 'short';
 };
 
-const metadataGridClassForProperty = (data: MetadataProperty): string =>
-  packClassForProperty(data) === 'block'
-    ? FULL_ROW_METADATA_FIELD_LAYOUT
-    : COMPACT_METADATA_FIELD_LAYOUT;
+const metadataGridClassForProperty = (data: MetadataProperty): string => {
+  const packClass = packClassForProperty(data);
+  if (packClass === 'block') {
+    return FULL_ROW_METADATA_FIELD_LAYOUT;
+  }
+  if (packClass === 'media') {
+    return MEDIA_METADATA_FIELD_LAYOUT;
+  }
+  return COMPACT_METADATA_FIELD_LAYOUT;
+};
+
+const mediaRowTrackCount = (widthPx: number): 1 | 2 | 3 => {
+  if (widthPx < MEDIA_CARD_MIN_PX * 2 + PROPERTY_ROW_GAP_PX) {
+    return 1;
+  }
+  if (widthPx < MEDIA_CARD_MIN_PX * 3 + PROPERTY_ROW_GAP_PX * 2) {
+    return 2;
+  }
+  return MEDIA_MAX_PER_ROW;
+};
+
+const isImageMediaValue = (v: { value?: string; fileType?: string; mimetype?: string }) => {
+  const mime = v.mimetype || (v.value && getMimetypeFromUrl(v.value)) || '';
+  return v.fileType === 'image' || mime.startsWith('image/');
+};
+
+const isVideoMediaField = (data: MetadataProperty) =>
+  data.type === 'media' && data.values.some(value => !isImageMediaValue(value));
+
+const mediaMasonryRowClass = (widthPx: number, fields: MetadataProperty[]): string => {
+  const cols = MEDIA_ROW_COLS[mediaRowTrackCount(widthPx)];
+  if (fields.some(isVideoMediaField)) {
+    return `${MEDIA_MASONRY_VIDEO_ROW} ${cols}`;
+  }
+  if (fields.some(field => field.type === 'geolocation')) {
+    return `${MEDIA_MASONRY_GEO_ROW} ${cols}`;
+  }
+  return `${MEDIA_MASONRY_IMAGE_ROW} ${cols}`;
+};
 
 type PackRow = { current: MetadataProperty[]; used: number };
 type PackWork = { rows: PropertyRow[]; row: PackRow; widthPx: number };
-
-const emptyRow = (): PackRow => ({ current: [], used: 0 });
 
 const flushPackedRow = (rows: PropertyRow[], current: MetadataProperty[]) => {
   if (current.length > 0) {
@@ -140,7 +180,7 @@ const packOneField = (field: MetadataProperty, work: PackWork) => {
   const minPx = packClass === 'media' ? MEDIA_CARD_MIN_PX : COMPACT_CARD_MIN_PX;
   if (!canJoin(field, work)) {
     flushPackedRow(work.rows, work.row.current);
-    work.row = emptyRow();
+    work.row = { current: [], used: 0 };
   }
   if (packClass === 'block') {
     work.rows.push({ fields: [field] });
@@ -152,7 +192,7 @@ const packOneField = (field: MetadataProperty, work: PackWork) => {
 };
 
 const packPropertyRows = (fields: MetadataProperty[], widthPx: number): PropertyRow[] => {
-  const work: PackWork = { rows: [], row: emptyRow(), widthPx };
+  const work: PackWork = { rows: [], row: { current: [], used: 0 }, widthPx };
   fields.forEach(field => packOneField(field, work));
   flushPackedRow(work.rows, work.row.current);
   return work.rows;
@@ -194,12 +234,7 @@ const groupInheritingRelationships = (
       return;
     }
     const groupKey = inheritGroupKey(field, templatePropertyById);
-    const group = groups.get(groupKey);
-    if (group) {
-      group.push(field);
-    } else {
-      groups.set(groupKey, [field]);
-    }
+    groups.set(groupKey, [...(groups.get(groupKey) ?? []), field]);
   });
   return groups;
 };
@@ -207,16 +242,10 @@ const groupInheritingRelationships = (
 const inheritGroupPrimaries = (
   inheritingRels: RelationshipMetadataProperty[],
   templatePropertyById: Map<string, ClientProperty>
-): RelationshipMetadataProperty[] => {
-  const primaries: RelationshipMetadataProperty[] = [];
-  groupInheritingRelationships(inheritingRels, templatePropertyById).forEach(siblings => {
-    const primary = siblings.find(field => field.values.length > 0);
-    if (primary) {
-      primaries.push(primary);
-    }
-  });
-  return primaries;
-};
+): RelationshipMetadataProperty[] =>
+  [...groupInheritingRelationships(inheritingRels, templatePropertyById).values()].flatMap(
+    siblings => siblings.find(field => field.values.length > 0) ?? []
+  );
 
 const partitionMetadataRecord = (
   otherFields: MetadataProperty[],
@@ -245,9 +274,11 @@ const partitionMetadataRecord = (
 export {
   LONG_FIELD_CHAR_THRESHOLD,
   COMPACT_METADATA_FIELD_LAYOUT,
+  MEDIA_METADATA_FIELD_LAYOUT,
   FULL_ROW_METADATA_FIELD_LAYOUT,
   COMPACT_CARD_MIN_PX,
   MEDIA_CARD_MIN_PX,
+  MEDIA_MAX_PER_ROW,
   PROPERTY_ROW_GAP_PX,
   isSpecializedFullWidthField,
   isLongField,
@@ -257,6 +288,8 @@ export {
   inheritGroupKey,
   groupInheritingRelationships,
   metadataGridClassForProperty,
+  mediaMasonryRowClass,
+  mediaRowTrackCount,
   packClassForProperty,
   packPropertyRows,
   partitionMetadataRecord,
