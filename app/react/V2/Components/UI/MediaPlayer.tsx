@@ -32,21 +32,26 @@ const verifyUrl = (url: string): MediaType => {
 };
 
 const ThumbnailOverlay = ({ thumbnail }: { thumbnail?: MediaPlayerProps['thumbnail'] }) => {
-  const overlayBackgroundStyle = thumbnail?.url
-    ? {
-        backgroundImage: `url("${thumbnail.url}")`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-      }
-    : { background: 'linear-gradient(180deg, rgba(0,0,0,0.4) 6%, rgba(156,163,175,0.6) 50%)' };
-
-  const mediaTitleStyle = thumbnail?.url ? 'text-gray-100' : '';
+  if (thumbnail?.url) {
+    return (
+      <div
+        className="relative h-full w-full"
+        style={{
+          backgroundImage: `url("${thumbnail.url}")`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+        }}
+      >
+        <p className="overflow-hidden p-4 text-left font-normal text-ellipsis whitespace-nowrap text-gray-100">
+          {thumbnail.fileName}
+        </p>
+      </div>
+    );
+  }
 
   return (
-    <div className="relative w-full h-full" style={overlayBackgroundStyle}>
-      <p
-        className={`overflow-hidden p-4 font-normal text-left text-ellipsis whitespace-nowrap opacity-1 ${mediaTitleStyle}`}
-      >
+    <div className="relative h-full w-full bg-warm">
+      <p className="overflow-hidden p-4 text-left font-normal text-ellipsis whitespace-nowrap text-ink-muted">
         {thumbnail?.fileName}
       </p>
     </div>
@@ -97,7 +102,7 @@ const MediaPlayer = ({
 
   const playIconColor = thumbnail?.url
     ? 'text-gray-100 hover:text-white'
-    : 'text-gray-500 hover:text-gray-700';
+    : 'text-ink-muted hover:text-ink';
 
   const renderThumbnail =
     mediaType === 'internal' ? <ThumbnailOverlay thumbnail={thumbnail} /> : false;

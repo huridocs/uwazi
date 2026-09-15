@@ -12,15 +12,22 @@ jest.mock('react-player', () => ({
   default: ({
     url,
     config,
+    light,
+    playIcon,
   }: {
     url: string;
     config?: { file?: { attributes?: { style?: { objectFit?: string } } } };
+    light?: React.ReactNode;
+    playIcon?: React.ReactNode;
   }) => (
     <div
       data-testid="react-player"
       data-url={url}
       data-object-fit={config?.file?.attributes?.style?.objectFit}
-    />
+    >
+      {light}
+      {playIcon}
+    </div>
   ),
   canPlay: () => true,
 }));
@@ -86,5 +93,20 @@ describe('MediaPlayer', () => {
       );
     });
     expect(screen.getByTestId('react-player')).toHaveAttribute('data-object-fit', 'cover');
+  });
+
+  it('uses theme surface colors for a generic thumbnail', () => {
+    render(<MediaPlayer url="/file.mp4" height="100%" thumbnail={{ fileName: 'Short video' }} />);
+    const container = screen.getByTestId('media-player-container');
+    act(() => {
+      setClientHeight(container, 180);
+      resizeObservers[0]?.callback(
+        [{ contentRect: { height: 180 } } as ResizeObserverEntry],
+        resizeObservers[0] as unknown as ResizeObserver
+      );
+    });
+    const overlay = screen.getByText('Short video').parentElement;
+    expect(overlay?.className).toContain('bg-warm');
+    expect(overlay?.getAttribute('style') ?? '').not.toContain('156,163,175');
   });
 });
