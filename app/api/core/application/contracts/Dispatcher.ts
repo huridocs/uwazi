@@ -34,6 +34,7 @@ type TemplatePostProcessParams = {
 type DenormalizeThesaurusParams = {
   tenantName: string;
   thesaurusId: string;
+  valueIds: string[];
 };
 
 type CloneLanguageEntitiesParams = {

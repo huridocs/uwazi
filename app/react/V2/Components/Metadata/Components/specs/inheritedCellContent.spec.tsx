@@ -133,7 +133,7 @@ describe('inheritedCellContent', () => {
     expect(screen.getByTestId('media-player')).toHaveAttribute('data-height', '140');
   });
 
-  it('renders image inherited values with default density', () => {
+  it('renders image inherited values with compact density', () => {
     renderCell(
       inheritedCellContent(
         [
@@ -148,8 +148,8 @@ describe('inheritedCellContent', () => {
     );
     const img = screen.getByRole('img');
     expect(img).toHaveAttribute('src', '/api/files/photo.png');
-    expect(img.parentElement?.className).toContain('aspect-video');
-    expect(img.className).not.toContain('max-h-32');
+    expect(img).toHaveStyle({ objectFit: 'contain' });
+    expect(img.className).toContain('max-h-32');
   });
 
   it('renders inherited relationship values as entity pills with overlay handler', () => {

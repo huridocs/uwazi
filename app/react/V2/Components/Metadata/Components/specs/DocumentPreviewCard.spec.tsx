@@ -47,6 +47,7 @@ const previewField = (src: string, label = 'Preview'): MetadataProperty => ({
   label,
   type: 'preview',
   style: 'cover',
+  fullWidth: false,
   values: [{ value: src, alt: 'preview' }],
 });
 
