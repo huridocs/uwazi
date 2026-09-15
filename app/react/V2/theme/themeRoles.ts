@@ -59,7 +59,7 @@ const getThemeRoles = (presetId: ThemePresetId, resolved: ResolvedThemeVars): Th
   const actionPrimary = resolved['--color-theme-accent-primary'];
   const primaryFg = getAccessibleForegroundOnBackground(
     actionPrimary,
-    presetId === 'legacy' ? '#FFFFFF' : resolved['--color-theme-bg-primary']
+    resolved['--color-theme-bg-primary']
   ).foreground;
   const chromeAppBar = resolved['--color-theme-bg-surface'];
   const appBarFg = getAccessibleForegroundOnBackground(
@@ -99,7 +99,10 @@ const getThemeRoles = (presetId: ThemePresetId, resolved: ResolvedThemeVars): Th
       primaryFg,
       secondaryBg: resolved['--color-theme-bg-surface'],
       secondaryFg: presetId === 'legacy' ? actionPrimary : resolved['--color-theme-text-secondary'],
-      secondaryHover: presetId === 'legacy' ? '#EEF2FF' : resolved['--color-theme-bg-warm'],
+      secondaryHover:
+        presetId === 'legacy'
+          ? mixHex(actionPrimary, resolved['--color-theme-bg-surface'], 0.88)
+          : resolved['--color-theme-bg-warm'],
     },
     feedback: {
       info: resolved['--color-theme-accent-supporting'],

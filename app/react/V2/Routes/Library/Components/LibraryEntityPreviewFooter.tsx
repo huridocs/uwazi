@@ -11,6 +11,7 @@ import {
 } from '#V2/Routes/Entity/Components/index.js';
 import { EntityTabFooter } from '#V2/Routes/Entity/Tabs/EntityTabFooter.js';
 import { MAIN_TAB, type MainTabId } from '#V2/Routes/Entity/Tabs/index.js';
+import { CopyFromTrigger } from '#V2/Components/Metadata/CopyFrom/index.js';
 import { LibraryFooterButton } from './LibraryFooterButton.js';
 
 type LibraryEntityPreviewFooterProps = {
@@ -41,7 +42,7 @@ const LibraryEntityPreviewFooter = ({
       >
         {editingMetadata ? (
           <>
-            <span />
+            <CopyFromTrigger disabled={isSaving} />
             <div className="flex items-center gap-2">
               <Button
                 type="button"

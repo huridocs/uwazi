@@ -3,6 +3,7 @@ import preview from '#storybook/preview';
 import { storyExtend } from '#app/stories/storyExtend.js';
 import { MemoryRouter } from 'react-router';
 import { Paginator } from '#V2/Components/UI/index.js';
+import { ThemeProvider } from '#V2/theme/ThemeProvider.js';
 
 const meta = preview.meta({
   title: 'Components/Paginator',
@@ -18,16 +19,18 @@ const Primary = meta.story({
   },
   render: args => (
     <MemoryRouter>
-      <div className="tw-content">
-        <div className="container w-full">
-          <Paginator
-            currentPage={args.currentPage}
-            totalPages={args.totalPages}
-            buildUrl={args.buildUrl}
-            preventScrollReset={args.preventScrollReset}
-          />
+      <ThemeProvider>
+        <div className="tw-content">
+          <div className="container w-full">
+            <Paginator
+              currentPage={args.currentPage}
+              totalPages={args.totalPages}
+              buildUrl={args.buildUrl}
+              preventScrollReset={args.preventScrollReset}
+            />
+          </div>
         </div>
-      </div>
+      </ThemeProvider>
     </MemoryRouter>
   ),
 });

@@ -119,7 +119,7 @@ const Button = ({
     successSecondary:
       'border-success bg-transparent text-success enabled:hover:bg-success-light disabled:border-border-soft disabled:text-ink-muted',
     dangerSubtle:
-      'border-transparent bg-emphasis-tint text-emphasis enabled:hover:opacity-90 disabled:text-ink-muted',
+      'border-transparent bg-seal-tint-40 text-seal-label enabled:hover:bg-seal-tint disabled:text-ink-muted',
     successSubtle:
       'border-transparent bg-success-light text-success enabled:hover:opacity-90 disabled:text-ink-muted',
   };

@@ -13,7 +13,7 @@ import {
 import { useEntityTabNavigation } from '../EntityTabsContext.js';
 import { SIDE_TAB } from '../tabIds.js';
 
-function usePdfTextSelection() {
+const usePdfTextSelection = () => {
   const {
     documentPdfSelection: selectedText,
     pdfSelectionMenuOpen,
@@ -24,31 +24,22 @@ function usePdfTextSelection() {
 
   const handleTextSelect = useCallback(
     (selection: TextSelection) => {
-      if (selection.selectionRectangles && selection.selectionRectangles.length > 0) {
-        setSelectedText(selection);
-        setPdfSelectionMenuOpen(true);
-      } else {
-        setSelectedText(undefined);
-        setPdfSelectionMenuOpen(false);
-      }
+      const hasRects = Boolean(selection.selectionRectangles?.length);
+      setSelectedText(hasRects ? selection : undefined);
+      setPdfSelectionMenuOpen(hasRects);
     },
     [setPdfSelectionMenuOpen, setSelectedText]
   );
 
   const handleTextDeselect = useCallback(() => {
     setPdfSelectionMenuOpen(false);
-    if (!isEditing) {
-      setSelectedText(undefined);
-    }
+    if (!isEditing) setSelectedText(undefined);
   }, [isEditing, setPdfSelectionMenuOpen, setSelectedText]);
 
   return { selectedText, pdfSelectionMenuOpen, handleTextSelect, handleTextDeselect };
-}
+};
 
-function useDocumentPdfTextHandlers() {
-  const { ocrServiceEnabled } = useAtomValue(settingsAtom);
-  const canWrite = useEntityWriteAuthorized();
-  const pdfSelection = usePdfTextSelection();
+const usePdfTextNavigation = () => {
   const { addEntry } = useTocActions();
   const { openCreateRelationship } = useRelationshipsActions();
   const { focusRelationshipsPanel, focusSideTab } = useEntityTabNavigation();
@@ -69,13 +60,15 @@ function useDocumentPdfTextHandlers() {
     [addEntry, focusSideTab]
   );
 
-  return {
-    canWrite,
-    ocrServiceEnabled,
-    ...pdfSelection,
-    handleCreateRelationship,
-    handleAddToToC,
-  };
-}
+  return { handleCreateRelationship, handleAddToToC };
+};
+
+const useDocumentPdfTextHandlers = () => {
+  const { ocrServiceEnabled } = useAtomValue(settingsAtom);
+  const canWrite = useEntityWriteAuthorized();
+  const selection = usePdfTextSelection();
+  const navigation = usePdfTextNavigation();
+  return { canWrite, ocrServiceEnabled, ...selection, ...navigation };
+};
 
 export { useDocumentPdfTextHandlers };
