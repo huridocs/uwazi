@@ -183,7 +183,7 @@ describe('entities routes', () => {
 
       expect(response).toHaveStatus(422);
       expect(response.body.validations).toEqual([
-        { instancePath: 'title', message: expect.any(String) },
+        { instancePath: '/title', message: expect.any(String) },
       ]);
     });
 
@@ -517,7 +517,7 @@ describe('entities routes', () => {
 
         expect(response).toHaveStatus(422);
         expect(response.body.validations).toEqual([
-          { instancePath: 'title', message: expect.any(String) },
+          { instancePath: '/title', message: expect.any(String) },
         ]);
       });
 
@@ -725,6 +725,21 @@ describe('entities routes', () => {
         expect(response.body.validations).toEqual([expect.objectContaining({ instancePath })]);
       });
 
+      it('should report request shape errors with slash paths', async () => {
+        const response: SuperTestResponse = await request(app)
+          .post('/api/entities')
+          .send({
+            title: 'Nuevo',
+            template: templateId.toString(),
+            translations: { portuguese: { title: [{ value: 'Novo' }] } },
+          });
+
+        expect(response).toHaveStatus(422);
+        expect(response.body.validations).toEqual([
+          expect.objectContaining({ instancePath: '/translations/portuguese' }),
+        ]);
+      });
+
       it('should accept partial translations on create', async () => {
         const response: SuperTestResponse = await request(app)
           .post('/api/entities')
@@ -748,6 +763,11 @@ describe('entities routes', () => {
           'a missing translatable property',
           { en: { title: [{ value: 'New' }] }, pt: translated('Novo', 'texto') },
           '/translations/en/text',
+        ],
+        [
+          'an empty title',
+          { en: { ...translated('New', 'text'), title: [] }, pt: translated('Novo', 'texto') },
+          '/translations/en/title',
         ],
       ])('should respond 422 on update for %s', async (_case, translations, instancePath) => {
         const created: SuperTestResponse = await request(app)

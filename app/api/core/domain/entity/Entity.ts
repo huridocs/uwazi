@@ -22,6 +22,7 @@ import {
   EntityTranslationDoesNotExistError,
   MissingTranslatedPropertyError,
   PropertyNotTranslatableError,
+  RequiredTranslatedPropertyError,
 } from './errors.js';
 import { AbstractSelectProperty } from '../template/select/AbstractSelectProperty.js';
 import { EntityDTO } from './EntityDTO.js';
@@ -129,7 +130,15 @@ class Entity {
     partial = false,
   }: SetTranslatedPropertyAssignmentsParams) {
     const translation = this.getTranslation(language);
+    this.validateTranslatedAssignments({ language, assignments, partial });
+    assignments.forEach(assignment => translation.setValue(assignment));
+  }
 
+  private validateTranslatedAssignments({
+    language,
+    assignments,
+    partial,
+  }: SetTranslatedPropertyAssignmentsParams) {
     const notTranslatable = assignments.find(assignment => !assignment.isTranslatable);
     if (notTranslatable) {
       throw new PropertyNotTranslatableError(language, notTranslatable.name);
@@ -144,7 +153,26 @@ class Entity {
       throw new MissingTranslatedPropertyError(language, missing.name);
     }
 
-    assignments.forEach(assignment => translation.setValue(assignment));
+    const emptyRequired = assignments.find(
+      assignment => this.isRequired(assignment.name) && Entity.isEmpty(assignment)
+    );
+    if (emptyRequired) {
+      throw new RequiredTranslatedPropertyError(language, emptyRequired.name);
+    }
+  }
+
+  // The title has no required flag but every entity must have one.
+  private isRequired(propertyName: string) {
+    return (
+      propertyName === 'title' ||
+      this.template.allProperties.some(({ name, required }) => name === propertyName && required)
+    );
+  }
+
+  private static isEmpty({ value }: PropertyAssignment) {
+    return !value.some(
+      entry => entry.value !== undefined && entry.value !== null && entry.value !== ''
+    );
   }
 
   private validatePropertyAssignments() {

@@ -19,7 +19,11 @@ import { PreviewProperty } from '../../template/PreviewProperty.js';
 import { NestedProperty } from '../../template/NestedProperty.js';
 import { V1RelationshipProperty } from '../../template/V1RelationshipProperty.js';
 import { EntityTranslation } from '../EntityTranslation.js';
-import { MissingTranslatedPropertyError, PropertyNotTranslatableError } from '../errors.js';
+import {
+  MissingTranslatedPropertyError,
+  PropertyNotTranslatableError,
+  RequiredTranslatedPropertyError,
+} from '../errors.js';
 import { GenerateIdProperty } from '../../template/GenerateIdProperty.js';
 
 const createSampleTemplate = () =>
@@ -2040,6 +2044,24 @@ describe('Entity', () => {
             assignments: [assignment(entity, 'title', 'Título')],
           })
         ).toThrow(new MissingTranslatedPropertyError('es', 'summary'));
+      });
+
+      it.each([
+        ['the title', 'title', 'summary'],
+        ['a required property', 'summary', 'title'],
+      ])('should reject %s sent empty', (_case, emptyProperty, filledProperty) => {
+        const entity = loadedEntity();
+
+        expect(() =>
+          entity.setTranslatedPropertyAssignments({
+            language: 'es',
+            assignments: [
+              entity.template.createPropertyAssignment(emptyProperty, { value: [] }),
+              assignment(entity, filledProperty, 'Texto'),
+            ],
+            partial: true,
+          })
+        ).toThrow(new RequiredTranslatedPropertyError('es', emptyProperty));
       });
 
       describe('when partial translations are allowed', () => {

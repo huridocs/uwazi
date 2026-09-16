@@ -1,5 +1,6 @@
 import * as cookie from 'cookie';
 import { ValidationError as AJVValidationError } from 'ajv';
+import { ZodError } from 'zod';
 import { AbstractController } from '#api/common.v2/infrastructure/AbstractController.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { ATConflictSolver } from '#api/externalIntegrations.v2/automaticTranslation/utils/ATConflictSolver.js';
@@ -15,6 +16,7 @@ import {
 import {
   MissingTranslatedPropertyError,
   PropertyNotTranslatableError,
+  RequiredTranslatedPropertyError,
 } from '#api/core/domain/entity/errors.js';
 import {
   MissingTranslationLanguageError,
@@ -36,8 +38,15 @@ type ParsedBody = {
 
 class MutateEntityController extends AbstractController<Request> {
   protected async handle(): Promise<void> {
-    const body = this.parseBody();
+    try {
+      await this.mutate(this.parseBody());
+    } catch (error) {
+      if (error instanceof ZodError) throw MutateEntityController.withSlashPaths(error);
+      throw error;
+    }
+  }
 
+  private async mutate(body: ParsedBody) {
     if ('translations' in body.payload) {
       return body.payload.sharedId
         ? this.updateWithTranslations(body)
@@ -49,6 +58,18 @@ class MutateEntityController extends AbstractController<Request> {
     }
 
     return this.create(body);
+  }
+
+  // Same format as the translation errors (`/translations/<lang>/<property>`).
+  private static withSlashPaths(error: ZodError) {
+    const converted = new AJVValidationError(
+      error.errors.map(issue => ({
+        instancePath: `/${issue.path.join('/')}`,
+        message: issue.message,
+      }))
+    );
+    converted.message = error.message;
+    return converted;
   }
 
   private parseBody(): ParsedBody {
@@ -159,7 +180,8 @@ class MutateEntityController extends AbstractController<Request> {
   private static translationErrorPath(error: unknown) {
     if (
       error instanceof PropertyNotTranslatableError ||
-      error instanceof MissingTranslatedPropertyError
+      error instanceof MissingTranslatedPropertyError ||
+      error instanceof RequiredTranslatedPropertyError
     ) {
       return `/translations/${error.language}/${error.property}`;
     }

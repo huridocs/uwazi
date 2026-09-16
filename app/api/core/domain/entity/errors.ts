@@ -120,3 +120,19 @@ export class MissingTranslatedPropertyError extends ValidationError {
     return { message: this.message, keyword: 'missingTranslatedProperty' };
   }
 }
+
+export class RequiredTranslatedPropertyError extends ValidationError {
+  constructor(
+    readonly language: LanguageISO6391,
+    readonly property: string
+  ) {
+    super(
+      `Property "${property}" is required and cannot be empty in translation "${language}".`,
+      'entity.entity.required_translated_property_error'
+    );
+  }
+
+  asAJV(): AJVObject {
+    return { message: this.message, keyword: 'requiredTranslatedProperty' };
+  }
+}
