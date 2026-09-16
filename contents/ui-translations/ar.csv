@@ -1,1496 +1,1498 @@
 Key,Arabic
-"""Costa Rica""","""Costa Rica"""
-"""the status""~5","""the status""~5"
-*please keep this key secret and don't share it.,*please keep this key secret and don't share it.
-+ Add data source,+ Add data source
-+ Add filter,+ Add filter
-+ click to select multiple cards.,+ click to select multiple cards.
+"""Costa Rica""","""كوستاريكا"""
+"""the status""~5","""الوضع القانوني""~5"
+*please keep this key secret and don't share it.,*يرجى الحفاظ على سرية هذا الرمز وعدم مشاركته مع أي شخص.
++ Add data source,+ إضافة مصدر بيانات
++ Add filter,+ إضافة مرشح
++ click to select multiple cards.,+ انقر لتحديد عدة بطاقات.
 198?,198?
-2FA,2FA
-2FA Enabled,2FA Enabled
-A default template cannot be deleted.,A default template cannot be deleted.
-A friendly hand for serious work — I'll act in the context shown above.,A friendly hand for serious work — I'll act in the context shown above.
+2FA,التوثيق الثنائي (2FA)
+2FA Enabled,تم تمكين المصادقة الثنائية (2FA)
+A default template cannot be deleted.,لا يمكن حذف القالب الافتراضي.
+A friendly hand for serious work — I'll act in the context shown above.,يد ودودة لعمل جاد — سأتصرف وفقاً للسياق الموضح أعلاه.
 A generated ID will be the default title.,سيكون معرف تم إنشاؤه العنوان.
-A source template must,A source template must
-A target template needs to have the following properties,A target template needs to have the following properties
+A source template must,يجب أن يستوفي القالب المصدر ما يلي:
+A target template needs to have the following properties,يجب أن يتضمن القالب المستهدف الخصائص التالية
 A valid email is required,البريد الإلكتروني مطلوب
-A → Z,A → Z
+A → Z,أ → ي
 Accept,قبول
-Accept all,Accept all
-Accepted suggestion on entity,Accepted suggestion on entity
-Accepting suggestions,Accepting suggestions
-Accessibility checks need attention,Accessibility checks need attention
+Accept all,قبول الكل
+Accepted suggestion on entity,اقتراح مقبول بشأن الكيان
+Accepting suggestions,قبول الاقتراحات
+Accessibility checks need attention,تحتاج عمليات التحقق من إمكانية الوصول إلى مزيد من الاهتمام
 Account,حساب
-Account locked,Account locked
-Account unlocked successfully,Account unlocked successfully
-Account updated,Account updated
-Accuracy,Accuracy
-Accuracy tooltip,Accuracy is defined by the amount of matches vs mismatches for labeled samples that have been processed.
+Account locked,الحساب مقفل
+Account unlocked successfully,تم إلغاء قفل الحساب بنجاح
+Account updated,تم تحديث الحساب
+Accuracy,الدقة
+Accuracy tooltip,تُعرَّف الدقة بعدد حالات التطابق مقابل حالات عدم التطابق في العينات المصنفة التي تمت معالجتها.
 Action,عمل/ إجراء
-Actions,Actions
-Activate,Activate
-Activated,Activated
-Active filters,Active filters
+Actions,الإجراءات
+Activate,تفعيل
+Activated,تم تنشيطه
+Active filters,المرشحات النشطة
 Active languages,اللغات النشطة
-Active primary,Active primary
-Activity,Activity
+Active primary,الملف الأساسي النشط
+Activity,النشاط
 Activity log,سجل النشاطات
 Activity Log,سجل النشاطات
 Add,ضف
 Add / remove favorite,إضافة/ إزالة المفضلة
-Add a type below.,Add a type below.
-Add an account to the app by scanning the provided QR code with your mobile device or by inserting the provided key.,Add an account to the app by scanning the provided QR code with your mobile device or by inserting the provided key.
-Add as,Add as
-Add data source,Add data source
+Add a type below.,أضف نوعًا أدناه.
+Add an account to the app by scanning the provided QR code with your mobile device or by inserting the provided key.,أضف حسابًا إلى التطبيق عن طريق مسح رمز الاستجابة السريعة (QR) المرفق باستخدام جهازك المحمول أو عن طريق إدخال المفتاح المرفق.
+Add as,إضافة كـ
+Add data source,إضافة مصدر بيانات
 Add date,إضافة تاريخ
 Add entities / documents,إضافة كيانات (أو إدخالات)/ مستندات
-Add entity,Add entity
-Add entity type,Add entity type
-Add Extractor,Add Extractor
-Add extractor,Add extractor
+Add entity,إضافة كيان
+Add entity type,إضافة نوع الكيان
+Add Extractor,إضافة أداة استخراج
+Add extractor,إضافة أداة استخراج
 Add file,اضف ملف
 Add from URL,إضافة من عنوان URL
 Add from web,أضف من الويب
 Add group,إضافة مجموعة
 add icon,أضف أيقونة
-Add icon,Add icon
-Add item,Add item
+Add icon,إضافة رمز
+Add item,إضافة عنصر
 Add link,إضافة رابط
-Add or remove relationship types for this collection.,Add or remove relationship types for this collection.
+Add or remove relationship types for this collection.,إضافة أنواع العلاقات أو إزالتها من هذه المجموعة.
 Add page,إضافة صفحة
-Add PDF,Add PDF
+Add PDF,إضافة ملف PDF
 Add people or groups,إضافة أشخاص أو مجموعات
-Add property,Add property
-Add relationship,Add relationship
-Add relationship type,Add relationship type
+Add property,إضافة خاصية
+Add relationship,إضافة علاقة
+Add relationship type,إضافة نوع العلاقة
 Add template,إضافة قالب
 Add thesaurus,أضف قائمة المفردات
-Add thesaurus value,Add thesaurus value
-Add timelink,Add timelink
+Add thesaurus value,إضافة قيمة إلى المكنز
+Add timelink,إضافة رابط زمني
 Add to all languages,إضافة إلى جميع اللغات
 Add to table of contents,أضف إلى جدول المحتويات
-Add to ToC,Add to ToC
-Add to training set,Add to training set
-Add translation,Add translation
+Add to ToC,إضافة إلى جدول المحتويات
+Add to training set,إضافة إلى مجموعة التدريب
+Add translation,إضافة ترجمة
 Add user,إضافة مستخدم
-add value,add value
+add value,إضافة قيمة
 Add/delete users and assign roles,إضافة / حذف المستخدمين وتعيين الأدوار
 Add/edit translations,إضافة / تحرير الترجمات
-Added language,Added language
-Added new user,Added new user
-"Added relation type ""{name}""","Added relation type ""{name}"""
-added to hub with the following errors:,added to hub with the following errors:
-added to hub.,added to hub.
-Adding a group and its items.,Adding a group and its items.
-Adding items to the thesauri,Adding items to the thesauri
-Adjust a few colors; secondary text and muted backgrounds update automatically.,Adjust a few colors; secondary text and muted backgrounds update automatically.
+Added language,لغة مضافة
+Added new user,تمت إضافة مستخدم جديد
+"Added relation type ""{name}""","تمت إضافة نوع العلاقة ""{name}"""
+added to hub with the following errors:,تمت إضافته إلى المركز مع الأخطاء التالية:
+added to hub.,أُضيفت إلى المركز.
+Adding a group and its items.,إضافة مجموعة وعناصرها.
+Adding items to the thesauri,إضافة عناصر إلى المكنز
+Adjust a few colors; secondary text and muted backgrounds update automatically.,قم بتعديل بعض الألوان؛ وسيتم تحديث النص الثانوي والخلفيات ذات الألوان الهادئة تلقائيًا.
 Admin,مشرف
 Administrators and Editors,المشرفون (أو المسؤولون) والمحررون
-Administrators and Editors always have edit access,Administrators and Editors always have edit access
-Admins,Admins
-Advanced colors,Advanced colors
-Advanced ECharts overrides,Advanced ECharts overrides
-ALL,ALL
-All,All
+Administrators and Editors always have edit access,يتمتع المسؤولون والمحررون دائمًا بحق الوصول للتحرير
+Admins,المسؤولون
+Advanced colors,ألوان متقدمة
+Advanced ECharts overrides,تجاوزات ECharts المتقدمة
+ALL,الكل
+All,الكل
 "All changes will be lost, are you sure you want to proceed?",ستحذف جميع التغييرات، هل أنت متأكد أنك تريد المتابعة؟
-All data,All data
-All editing options will be disabled.,All editing options will be disabled.
-All of the paragraphs will be deleted,All of the paragraphs will be deleted
-All of the previously created paragraphs will be deleted and recreated after the process.,All of the previously created paragraphs will be deleted and recreated after the process.
-Allow captcha bypass,Allow captcha bypass
-Allow public embedding without login,Allow public embedding without login
-Already exists,Already exists
-Amount,Amount
-An admin needs to add relationship types before you can create a relationship.,An admin needs to add relationship types before you can create a relationship.
-An error has occured while deleting a language:,An error has occured while deleting a language:
-An error has occured while installing languages:,An error has occured while installing languages:
-An error has occurred,An error has occurred
-An error has occurred during data export,An error has occurred during data export
-An error has occurred while installing languages:,An error has occurred while installing languages:
-An error has occurred while uninstalling a language:,An error has occurred while uninstalling a language:
-An error occurred,An error occurred
-Analytics,Analytics
-Analytics description,"If you want to track analytics related to your collection visits, Uwazi supports both Google Analytics and Matomo."
+All data,جميع البيانات
+All editing options will be disabled.,سيتم تعطيل جميع خيارات التحرير.
+All of the paragraphs will be deleted,سيتم حذف جميع الفقرات
+All of the previously created paragraphs will be deleted and recreated after the process.,سيتم حذف جميع الفقرات التي تم إنشاؤها سابقًا وإعادة إنشائها بعد انتهاء العملية.
+Allow captcha bypass,السماح بتجاوز اختبار كابتشا
+Allow public embedding without login,السماح بالتضمين العام دون تسجيل الدخول
+Already exists,موجود بالفعل
+Amount,العدد
+An admin needs to add relationship types before you can create a relationship.,يجب على المسؤول إضافة أنواع العلاقات قبل أن تتمكن من إنشاء علاقة.
+An error has occured while deleting a language:,حدث خطأ أثناء حذف إحدى اللغات:
+An error has occured while installing languages:,حدث خطأ أثناء تثبيت اللغات:
+An error has occurred,حدث خطأ
+An error has occurred during data export,حدث خطأ أثناء تصدير البيانات
+An error has occurred while installing languages:,حدث خطأ أثناء تثبيت اللغات:
+An error has occurred while uninstalling a language:,حدث خطأ أثناء إلغاء تثبيت إحدى اللغات:
+An error occurred,حدث خطأ
+Analytics,التحليلات
+Analytics description,إذا كنت ترغب في تتبع الإحصاءات المتعلقة بزيارات مجموعتك، فإن Uwazi يدعم كل من Google Analytics وMatomo.
 AND OR NOT,AND OR NOT
-Any,Any
-Any entity,Any entity
-any single character,any single character
-Anyone can see this entity,Anyone can see this entity
-Appearance,Appearance
-Apply,Apply
-Are you sure you want to continue?,Are you sure you want to continue?
-Are you sure you want to delete,Are you sure you want to delete
+Any,أي
+Any entity,أي كيان
+any single character,أي حرف واحد
+Anyone can see this entity,يمكن لأي شخص رؤية هذا الكيان
+Appearance,الظهور
+Apply,تطبيق
+Are you sure you want to continue?,هل أنت متأكد من أنك تريد المتابعة؟
+Are you sure you want to delete,هل أنت متأكد من أنك تريد حذف
 "Are you sure you want to delete the selected visualizations? This action cannot be
-              undone.","Are you sure you want to delete the selected visualizations? This action cannot be
-              undone."
-Are you sure you want to delete this attachment?,Are you sure you want to delete this attachment?
-Are you sure you want to delete this connection?,Are you sure you want to delete this connection?
-Are you sure you want to delete this entity?,Are you sure you want to delete this entity?
-Are you sure you want to delete this file?,Are you sure you want to delete this file?
-Are you sure you want to delete this item?,Are you sure you want to delete this item?
-Are you sure you want to delete this relationship? This action cannot be undone.,Are you sure you want to delete this relationship? This action cannot be undone.
-Are you sure you want to delete this visualization? This action cannot be undone.,Are you sure you want to delete this visualization? This action cannot be undone.
-Are you sure?,Are you sure?
-Ascending,Ascending
-Ask Bert,Ask Bert
-Attachment,Attachment
-Attachment deleted,Attachment deleted
-Attachment renamed,Attachment renamed
-Attachment uploaded,Attachment uploaded
+              undone.","هل أنت متأكد من رغبتك في حذف العروض المرئية المحددة؟ لا يمكن
+ التراجع عن هذا الإجراء."
+Are you sure you want to delete this attachment?,هل أنت متأكد من رغبتك في حذف هذا المرفق؟
+Are you sure you want to delete this connection?,هل أنت متأكد من رغبتك في حذف هذا الاتصال؟
+Are you sure you want to delete this entity?,هل أنت متأكد من أنك تريد حذف هذا الكيان؟
+Are you sure you want to delete this file?,هل أنت متأكد من رغبتك في حذف هذا الملف؟
+Are you sure you want to delete this item?,هل أنت متأكد من أنك تريد حذف هذا العنصر؟
+Are you sure you want to delete this relationship? This action cannot be undone.,هل أنت متأكد من رغبتك في حذف هذه العلاقة؟ لا يمكن التراجع عن هذا الإجراء.
+Are you sure you want to delete this visualization? This action cannot be undone.,هل أنت متأكد من رغبتك في حذف هذا العرض المرئي؟ لا يمكن التراجع عن هذا الإجراء.
+Are you sure?,هل أنت متأكد؟
+Ascending,تصاعدي
+Ask Bert,اسأل Bert
+Attachment,المرفق
+Attachment deleted,تم حذف المرفق
+Attachment renamed,تم تغيير اسم المرفق
+Attachment uploaded,تم تحميل المرفق
 Attachments,المرفقات
 Authentication code,رمز المصادقة
-auto created,auto created
-Auto-accept suggestions,Auto-accept suggestions
+auto created,تم إنشاؤه تلقائيًا
+Auto-accept suggestions,القبول التلقائي للاقتراحات
 auto-created,منشأ تلقائياً
 Automatic Table of Contents,جدول محتويات تلقائي
 Automatically generated,منشأ تلقائياً
-Available default translation,Available default translation
+Available default translation,الترجمة الافتراضية المتاحة
 Back,عودة
 Back to,العودة إلى
-Back to details,Back to details
+Back to details,العودة إلى التفاصيل
 Back to search,العودة إلى البحث
-Bad Request,Bad Request
-Basic,Basic
+Bad Request,طلب غير صحيح
+Basic,أساسي
 Bert,Bert
-Bidirectional,Bidirectional
+Bidirectional,ثنائي الاتجاه
 Body,يجب الاطلاع على السياق لتحديد الترجمة الأنسب
-boolean,boolean
+boolean,منطقية
 Browse files to upload,تصفح الملفات المراد تحميلها
-"by ids, methods, keywords, etc.","by ids, methods, keywords, etc."
-By logging in you accept the essential session cookie required to stay signed in.,By logging in you accept the essential session cookie required to stay signed in.
+"by ids, methods, keywords, etc.",حسب معرّفات الهوية (IDs) والطرق والكلمات المفتاحية، وما إلى ذلك.
+By logging in you accept the essential session cookie required to stay signed in.,بمجرد تسجيل الدخول، فإنك توافق على ملف تعريف الارتباط الضروري للجلسة والمطلوب للحفاظ على حالة تسجيل الدخول.
 Can edit,إمكانية التحرير
 Can see,إمكانية الرؤية
 Can view,إمكانية المعاينة
 Cancel,الغاء
-cancel csv import,Cancel the import process. This will stop the creation of new entities. Already created entities will not be affected
-Canceling,Canceling
-Canceling...,Canceling...
-Cancelled,Cancelled
-Cannot connect to server,Cannot connect to server
-Cannot find extractor,Cannot find extractor
+cancel csv import,قم بإلغاء عملية الاستيراد. سيؤدي ذلك إلى إيقاف إنشاء كيانات جديدة. ولن تتأثر الكيانات التي تم إنشاؤها بالفعل
+Canceling,الإلغاء
+Canceling...,جاري الإلغاء...
+Cancelled,تم إلغاؤه
+Cannot connect to server,يتعذر الاتصال بالخادم
+Cannot find extractor,تعذر العثور على أداة الاستخراج
 Captcha,حروف التحقق
-Captcha bypass,تخطى كلمة التحقق (Captcha)
+Captcha bypass,"بتفعيل هذا الخيار، يمكنك السماح للمستخدمين بالإرسال إلى القوالب المدرجة في القائمة البيضاء دون الحاجة إلى تعبئة رمز التحقق (CAPTCHA).
+سيظل النموذج يعرض رمز التحقق للمستخدمين النهائيين، لكن نقطة نهاية API ستسمح بعمليات الإرسال دون التحقق من CAPTCHA إذا تم إرسال
+ترويسة ""Bypass-Captcha: true"" مع الطلب. هذا الخيار غير آمن ويمكن استغلاله لإغراق نسختك من التطبيق برسائل غير مرغوب فيها أو محتوى ضار."
 Cards,بطاقات
 Cards view,معاينة البطاقات
-Category,Category
-Change,Change
-Change Password,Change Password
-Changes in the thesaurus will impact all the entities using these values.,Changes in the thesaurus will impact all the entities using these values.
-Changing the type will erase all relationships to this entity.,Changing the type will erase all relationships to this entity.
-Character support description,"This option enhances support for non-Latin languages as the default languages of your collection.
-Selecting this option will update all template properties automatically. The process could take several minutes. Selecting this option will likely change the URLs of library filters. As a consequence, if you have menus or links using such URLs, they will probably stop working.
-You will need to update them manually. After selecting this option, you will not be able to revert back to using legacy property naming. If you are not facing issues with your template property names, we recommend leaving this unchecked."
-Character support process warning,"This process could take several minutes and will likely change URLs to library filters. If you have menus or links using such URLs, they will probably stop working after the update. You will need to update them manually."
-Character support revert warning,"After selecting this option, you will not be able to revert back to using legacy property naming. If you are not facing issues with your template property names, we recommend leaving this unchecked."
-Chart,Chart
-Chart options,Chart options
-Chart theme,Chart theme
-Chart type,Chart type
-Chart type uses a custom view,Chart type uses a custom view
-Check to make this instance public (non-logged in users can see public documents and entities),Check to make this instance public (non-logged in users can see public documents and entities)
-Checking which images fit the requirements,Checking which images fit the requirements...
-Choose,Choose
-Choose relation type,Choose relation type
-Choose which data to use for training,Choose which data to use for training
-Chrome header,Chrome header
-Clear,Clear
-Clear all,Clear all
-Clear All,Clear All
-Clear all filters,Clear all filters
+Category,الفئة
+Change,تغيير
+Change Password,تغيير كلمة المرور
+Changes in the thesaurus will impact all the entities using these values.,ستؤثر التغييرات التي تُجرى على المكنز اللغوي على جميع الكيانات التي تستخدم هذه القيم.
+Changing the type will erase all relationships to this entity.,سيؤدي تغيير النوع إلى محو جميع العلاقات المرتبطة بهذا الكيان.
+Character support description,"يعزز هذا الخيار دعم اللغات غير اللاتينية كلغات افتراضية لمجموعتك.
+سيؤدي تحديد هذا الخيار إلى تحديث جميع خصائص القالب تلقائيًا. وقد تستغرق العملية عدة دقائق. ومن المرجح أن يؤدي تحديد هذا الخيار إلى تغيير عناوين URL الخاصة بفلاتر المكتبة. ونتيجة لذلك، إذا كانت لديك قوائم أو روابط تستخدم هذه العناوين، فمن المحتمل أن تتوقف عن العمل.
+وستحتاج إلى تحديثها يدويًّا. بعد تحديد هذا الخيار، لن تتمكن من العودة إلى استخدام طريقة تسمية الخصائص القديمة. إذا لم تكن تواجه مشكلات مع أسماء خصائص القالب، فننصحك بترك هذا الخيار غير محدد."
+Character support process warning,قد تستغرق هذه العملية عدة دقائق، ومن المرجح أن تؤدي إلى تغيير عناوين URL لتتوافق مع فلاتر المكتبة. إذا كانت لديك قوائم أو روابط تستخدم مثل هذه العناوين، فمن المحتمل أن تتوقف عن العمل بعد التحديث. وسيتعين عليك تحديثها يدويًّا.
+Character support revert warning,بعد تحديد هذا الخيار، لن تتمكن من العودة إلى استخدام طريقة التسمية القديمة للخصائص. إذا لم تكن تواجه أي مشكلات تتعلق بأسماء خصائص القالب، فننصحك بترك هذا الخيار غير محدد.
+Chart,الرسم البياني
+Chart options,خيارات الرسم البياني
+Chart theme,سمة المخطط
+Chart type,نوع المخطط
+Chart type uses a custom view,يستخدم نوع المخطط طريقة عرض مخصصة
+Check to make this instance public (non-logged in users can see public documents and entities),حدد هذا الخيار لجعل هذه الحالة عامة (يمكن للمستخدمين غير المسجلين الاطلاع على المستندات والكيانات العامة)
+Checking which images fit the requirements,التحقق من الصور التي تتوافق مع المتطلبات...
+Choose,اختر
+Choose relation type,اختر نوع العلاقة
+Choose which data to use for training,اختر البيانات التي تريد استخدامها للتدريب
+Chrome header,الشريط العلوي
+Clear,مسح
+Clear all,مسح الكل
+Clear All,مسح الكل
+Clear all filters,مسح جميع عوامل التصفية
 Clear coordinates,مسح الإحداثيات
 Clear Filters,مسح عوامل التصفية
-Clear PDF selection,Clear PDF selection
-Clear search,Clear search
-Click,Click
+Clear PDF selection,مسح التحديد في ملف PDF
+Clear search,مسح البحث
+Click,انقر
 Click to fill,انقر للتعبئة
-Click to select an image,Click to select an image
-Click to select audio or video,Click to select audio or video
-Click to select files,Click to select files
+Click to select an image,انقر لاختيار صورة
+Click to select audio or video,انقر لاختيار ملف صوتي أو فيديو
+Click to select files,انقر لاختيار الملفات
 Close,غلق
-Code,Code
+Code,الكود
 Collaborator,متعاون/ مساهم
-Collaborators,Collaborators
-Collapse all,Collapse all
-Collapse All,Collapse All
+Collaborators,المتعاونون
+Collapse all,طي الكل
+Collapse All,طي الكل
 Collection,المجموعة
-Collection Name,Collection Name
-Colors,Colors
-Colors come from the server data layer. Preview shows assigned bucket colors when available.,Colors come from the server data layer. Preview shows assigned bucket colors when available.
-combine or exclude terms,combine or exclude terms
-Common sources,Common sources
-Completed,Completed
-Completed with errors,Completed with errors
-Config,Config
-Configuration,Configuration
+Collection Name,اسم المجموعة
+Colors,الألوان
+Colors come from the server data layer. Preview shows assigned bucket colors when available.,تأتي الألوان من طبقة بيانات الخادم. تعرض المعاينة ألوان المجموعات المخصصة، إن وجدت.
+combine or exclude terms,دمج المصطلحات أو استبعادها
+Common sources,المصادر الشائعة
+Completed,مكتمل
+Completed with errors,مكتمل مع وجود أخطاء
+Config,الإعدادات
+Configuration,الإعدادات
 Configure filters,ضبط قوائم تصفيه البيانات
-Configure templates,Configure templates
+Configure templates,تكوين القوالب
 Confirm,تأكيد
 CONFIRM,تأكيد
-Confirm action,Confirm action
-Confirm delete connection,Confirm delete connection
+Confirm action,تأكيد الإجراء
+Confirm delete connection,تأكيد حذف الاتصال
 Confirm delete multiple items,هل ترغب في حذف كل العناصر المختارة؟
 Confirm deletion,تأكيد الحذف
-Confirm deletion of,Confirm deletion of
-Confirm deletion of entity,Confirm deletion of entity
-Confirm deletion of file,Confirm deletion of file
+Confirm deletion of,تأكيد حذف
+Confirm deletion of entity,تأكيد حذف الكيان
+Confirm deletion of file,تأكيد حذف الملف
 Confirm new password,تأكيد كلمة المرور الجديدة
-Confirm your password,Confirm your password
+Confirm your password,تأكيد كلمة المرور
 Connect to a paragraph,الاتصال بفقرة
-Connect to an entity,Connect to an entity
-Connect to entity,Connect to entity
-Connected entities,Connected entities
-Connected to server,Connected to server
+Connect to an entity,الاتصال بكيان ما
+Connect to entity,الاتصال بالكيان
+Connected entities,الكيانات المرتبطة
+Connected to server,متصل بالخادم
 Connection type,نوع الاتصال
-Contact email description,Here you can set up the contact email and the email that appears when Uwazi sends a notification to a user
+Contact email description,هنا يمكنك إعداد عنوان البريد الإلكتروني الخاص بالجهة المسؤولة وعنوان البريد الإلكتروني الذي يظهر عندما ترسل Uwazi إشعارًا إلى أحد المستخدمين
 Contact Form,استمارة اتصال
-Contact form email,Contact form email
-Contains,Contains
-Content translations,Content translations
-Context,Context
-Continue,Continue
+Contact form email,البريد الإلكتروني الخاص بنموذج الاتصال
+Contains,يحتوي على
+Content translations,ترجمة المحتوى
+Context,السياق
+Continue,تابع
 Conversion failed,فشل التحويل
-Cookie preferences,Cookie preferences
-Copied,Copied
-Copied to clipboard,Copied to clipboard
-Copy,Copy
+Cookie preferences,تفضيلات ملفات تعريف الارتباط
+Copied,تم النسخ
+Copied to clipboard,تم نسخه إلى الحافظة
+Copy,نسخ
 Copy From,النسخ من
-Copy from...,Copy from...
+Copy from...,نسخ من...
 Copy Highlighted,نسخ المظلل
 Copy link,نسخ الرابط
 Copy properties to this entity from,انسخ الخصائص إلى هذا الكيان (الإدخال) من
-Copy to clipboard,Copy to clipboard
-Could not add media. Please try again.,Could not add media. Please try again.
+Copy to clipboard,نسخ إلى الحافظة
+Could not add media. Please try again.,تعذر إضافة الملفات. يرجى المحاولة مرة أخرى.
 Could not be processed,لا يمكن معالجتها
-Could not create entity,Could not create entity
-Could not detect the area for the selected text,"Could not detect the area for the selected text, please try selecting again."
-Could not load suggestions.,Could not load suggestions.
-Could not reach server. Please try again later.,Could not reach server. Please try again later.
-Count,Count
+Could not create entity,تعذر إنشاء الكيان
+Could not detect the area for the selected text,تعذر تحديد منطقة النص المحدد، يرجى محاولة التحديد مرة أخرى.
+Could not load suggestions.,تعذر تحميل الاقتراحات.
+Could not reach server. Please try again later.,تعذر الاتصال بالخادم. يرجى المحاولة مرة أخرى لاحقًا.
+Count,العدد
 Create,أنشئ
 CREATE,أنشئ
-Create a type to continue.,Create a type to continue.
-Create and edit thesauri,Create and edit thesauri
-Create Connection,Create Connection
+Create a type to continue.,أنشئ نوعًا للمتابعة.
+Create and edit thesauri,إنشاء وتحرير قوائم المرادفات
+Create Connection,إنشاء اتصال
 Create entity,إنشاء كيان
 Create Entity,إنشاء كيان
-Create Extractor,Create Extractor
-Create new entities and upload documents,Create new entities and upload documents
-Create new entity from selection,Create new entity from selection
-Create Reference,Create Reference
-Create relationship,Create relationship
-Create relationship types,Create relationship types
-Create relationships and references,Create relationships and references
-Create table of contents,Create table of contents
-Create visualization,Create visualization
-Created,Created
-Created entity,Created entity
-Created entity coming from a public form,Created entity coming from a public form
-Created page,Created page
-Created relation type,Created relation type
-Created relationship,Created relationship
-Created template,Created template
-Created thesaurus,Created thesaurus
-Created user group,Created user group
-Creating entities,Creating entities
-Creating relationships,Creating relationships
-Creating thesauri,Creating thesauri
+Create Extractor,إنشاء أداة استخراج
+Create new entities and upload documents,إنشاء كيانات جديدة وتحميل المستندات
+Create new entity from selection,إنشاء كيان جديد من العناصر المحددة
+Create Reference,إنشاء مرجع
+Create relationship,إنشاء علاقة
+Create relationship types,إنشاء أنواع العلاقات
+Create relationships and references,إنشاء العلاقات والمراجع
+Create table of contents,إنشاء فهرس
+Create visualization,إنشاء عرض مرئي
+Created,تم إنشاؤه
+Created entity,الكيان الذي تم إنشاؤه
+Created entity coming from a public form,كيان تم إنشاؤه من نموذج عام
+Created page,تم إنشاء الصفحة
+Created relation type,نوع العلاقة التي تم إنشاؤها
+Created relationship,علاقة تم إنشاؤها
+Created template,تم إنشاء القالب
+Created thesaurus,تم إنشاء قاموس المرادفات
+Created user group,تم إنشاء مجموعة مستخدمين
+Creating entities,إنشاء الكيانات
+Creating relationships,إنشاء العلاقات
+Creating thesauri,إنشاء قواميس المرادفات
 CSS,CSS
-csv blank state message,Import CSV or ZIP files to create entities in bulk. Select **+ Import CSV** to get started.
-CSV Import,CSV Import
-CSV import cancelled,CSV import cancelled
-CSV import completed,CSV import completed
-CSV import failed,CSV import failed
-CSV or ZIP up to 50MB,CSV or ZIP up to 50MB
+csv blank state message,استيراد ملفات CSV أو ZIP لإنشاء كيانات بشكل جماعي. حدد **+ استيراد CSV** للبدء.
+CSV Import,استيراد ملف CSV
+CSV import cancelled,تم إلغاء استيراد ملف CSV
+CSV import completed,اكتمل استيراد ملف CSV
+CSV import failed,فشل استيراد ملف CSV
+CSV or ZIP up to 50MB,ملف CSV أو ZIP بحجم يصل إلى 50 ميغابايت
 Ctrl K,Ctrl K
-Current Value/Suggestion,Current Value/Suggestion
+Current Value/Suggestion,القيمة الحالية/الاقتراح
 "Custom colors are not available for this chart type. Use the chart palette or template
-            colors instead.","Custom colors are not available for this chart type. Use the chart palette or template
-            colors instead."
-Custom component error,خطأ في المكون المخصص
+            colors instead.","الألوان المخصصة غير متوفرة لهذا النوع من المخططات. استخدم لوحة ألوان المخطط أو
+ألوان القوالب بدلاً من ذلك."
+Custom component error,خطأ في ترميز المكوّن المخصص: قيم غير مدعومة! يرجى التحقق من إعداداتك
 Custom CSS,CSS تنسيق
-Custom Favicon,Custom Favicon
-Custom JS,Custom JS
-Custom landing page,Custom landing page
-custom page error warning,"There is an unexpected error on this custom page, it may not work properly. Please contact an admin for details."
+Custom Favicon,أيقونة مفضلة مخصصة
+Custom JS,جافا سكريبت مخصص
+Custom landing page,صفحة هبوط مخصصة
+custom page error warning,حدث خطأ غير متوقع في هذه الصفحة المخصصة، وقد لا تعمل بشكل صحيح. يرجى الاتصال بأحد المسؤولين للحصول على مزيد من التفاصيل.
 Custom Uploads,تحميل مخصص
-Customize,Customize
-Customized,Customized
-Dark,Dark
-Dark Theme,Dark Theme
-Dashboard,Dashboard
-Data may be outdated.,Data may be outdated.
-Data source,Data source
-Data sources,Data sources
-Data visualizations,Data visualizations
-Data was updated recently. You can refresh again in a few seconds.,Data was updated recently. You can refresh again in a few seconds.
-Date,Date
+Customize,تخصيص
+Customized,مخصّص
+Dark,مظلم
+Dark Theme,السمة الداكنة
+Dashboard,لوحة التحكم
+Data may be outdated.,قد تكون البيانات قديمة.
+Data source,مصدر البيانات
+Data sources,مصادر البيانات
+Data visualizations,تصورات البيانات
+Data was updated recently. You can refresh again in a few seconds.,تم تحديث البيانات مؤخرًا. يمكنك تحديث الصفحة مرة أخرى بعد بضع ثوانٍ.
+Date,التاريخ
 Date added,تم إضافة التاريخ
 Date modified,تاريخ التعديل
 "Date or numeric × numeric enables scatter and heatmap. Line, area, and bar plot the
-                measure over the primary dimension (e.g. max engine size per registration date).","Date or numeric × numeric enables scatter and heatmap. Line, area, and bar plot the
-                measure over the primary dimension (e.g. max engine size per registration date)."
+                measure over the primary dimension (e.g. max engine size per registration date).","يتيح استخدام «التاريخ» أو «رقم × رقم» عرض مخطط الانتشار وخريطة الحرارة. أما مخططات الخطوط والمساحة والأعمدة، فترسم
+القيمة وفقًا للبعد الأساسي (مثل: الحجم الأقصى للمحرك حسب تاريخ التسجيل)."
 "Date or numeric × select enables line and area charts with one line per breakdown
-                value over time.","Date or numeric × select enables line and area charts with one line per breakdown
-                value over time."
-Date range,Date range
+                value over time.","التاريخ أو الرقم × ""تحديد"" يتيح إنشاء مخططات خطية ومساحية بخط واحد لكل قيمة تفصيلية
+على مدار الزمن."
+Date range,النطاق الزمني
 Day,يوم
 "Deep-merged onto the generated ECharts option. Use for fine-tuning options not exposed in
-          the Chart tab.","Deep-merged onto the generated ECharts option. Use for fine-tuning options not exposed in
-          the Chart tab."
-Default,Default
-Default date format,Default date format
-Default filter,Default filter
-Default language,Default language
+          the Chart tab.","مدمجة بشكل عميق في خيار ECharts الذي تم إنشاؤه. تُستخدم لضبط الخيارات التي لا تظهر في
+علامة التبويب «الرسم البياني»."
+Default,الافتراضي
+Default date format,تنسيق التاريخ الافتراضي
+Default filter,عامل تصفية افتراضي
+Default language,اللغة الافتراضية
 Default language change success,نجاح تغيير اللغة الافتراضية
 Default template,القالب الافتراضي
-Default template set successfully.,Default template set successfully.
-Default View,Default View
+Default template set successfully.,تم تعيين القالب الافتراضي بنجاح.
+Default View,العرض الافتراضي
 Delete,حذف
 DELETE,حذف
-Delete entities and documents,Delete entities and documents
+Delete entities and documents,حذف الكيانات والمستندات
 Delete file,مسح الملف
-Delete relationship,Delete relationship
-Delete relationships,Delete relationships
-Delete?,Delete?
-Deleted attachment,Deleted attachment
-Deleted custom file,Deleted custom file
-Deleted entity,Deleted entity
-Deleted file,Deleted file
-Deleted multiple entities,Deleted multiple entities
-Deleted page,Deleted page
-Deleted relation type,Deleted relation type
-Deleted relationship,Deleted relationship
-Deleted successfully.,Deleted successfully.
-Deleted template,Deleted template
-Deleted thesaurus,Deleted thesaurus
-Deleted user,Deleted user
-Deleted user group,Deleted user group
-Deletion success,Deletion success
-Density,Density
-Descending,Descending
+Delete relationship,حذف العلاقة
+Delete relationships,حذف العلاقات
+Delete?,حذف؟
+Deleted attachment,ملحق محذوف
+Deleted custom file,تم حذف ملف مخصص
+Deleted entity,كيان محذوف
+Deleted file,ملف محذوف
+Deleted multiple entities,تم حذف عدة كيانات
+Deleted page,صفحة محذوفة
+Deleted relation type,نوع العلاقة المحذوف
+Deleted relationship,علاقة محذوفة
+Deleted successfully.,تم الحذف بنجاح.
+Deleted template,قالب محذوف
+Deleted thesaurus,قاموس مرادفات محذوف
+Deleted user,مستخدم محذوف
+Deleted user group,مجموعة مستخدمين محذوفة
+Deletion success,تم الحذف بنجاح
+Density,الكثافة
+Descending,تنازلي
 Description,وصف
-Deselect all,Deselect all
-Details,Details
-Direction,Direction
-Disable,Disable
-Disable highlights,Disable highlights
-Disabled 2FA,Disabled 2FA
-Discard,Discard
+Deselect all,إلغاء تحديد الكل
+Details,التفاصيل
+Direction,الاتجاه
+Disable,تعطيل
+Disable highlights,تعطيل التمييز بالألوان
+Disabled 2FA,تم تعطيل المصادقة الثنائية (2FA)
+Discard,تجاهل
 Discard changes,تجاهل التغييرات
-Discard changes?,Discard changes?
-Dismiss,Dismiss
+Discard changes?,هل تريد إلغاء التغييرات؟
+Dismiss,إغلاق
 Display entity view from page,عرض معاينة الكيان (الإدخال) من الصفحة
-Display options,Display options
-Do you want disable 2FA for the following users?,Do you want disable 2FA for the following users?
-Do you want reset the password for the following users?,Do you want reset the password for the following users?
-Do you want to delete the following items?,Do you want to delete the following items?
+Display options,خيارات العرض
+Do you want disable 2FA for the following users?,هل تريد تعطيل المصادقة الثنائية (2FA) للمستخدمين التاليين؟
+Do you want reset the password for the following users?,هل تريد إعادة تعيين كلمة المرور للمستخدمين التاليين؟
+Do you want to delete the following items?,هل تريد حذف العناصر التالية؟
 Document,مستند
 Document contents,محتويات المستند
-Document OCR trigger,Document OCR trigger
+Document OCR trigger,مشغل التعرف الضوئي على الحروف (OCR) للوثيقة
 Document Title,عنوان المستند
-Document updated,Document updated
+Document updated,تم تحديث الوثيقة
 Documentation,توثيق
 documents,وثائق
 Documents,وثائق
 documents.,مستندات
-Done,Done
-Done creating entities,Done creating entities
-Done creating relationships,Done creating relationships
-Done creating thesauri,Done creating thesauri
-Done extracting files,Done extracting files
-Done scanning,Done scanning
+Done,تم
+Done creating entities,تم الانتهاء من إنشاء الكيانات
+Done creating relationships,تم إنشاء العلاقات
+Done creating thesauri,تم الانتهاء من إنشاء قوائم المرادفات
+Done extracting files,تم استخراج الملفات
+Done scanning,انتهى المسح
 Download,تحميل
-Download a third-party authenticator app from your mobile store.,Download a third-party authenticator app from your mobile store.
-Download all,Download all
-Download failed rows,Download failed rows
-Draft restored from release.,Draft restored from release.
+Download a third-party authenticator app from your mobile store.,قم بتنزيل تطبيق مصادقة تابع لجهة خارجية من متجر التطبيقات على هاتفك المحمول.
+Download all,تنزيل الكل
+Download failed rows,تنزيل الصفوف التي فشل تحميلها
+Draft restored from release.,تم استعادة المسودة من الإصدار.
 Drag and drop file in this window to upload,اسحب الملف وأفلته في هذه النافذة للتحميل
-Drag row,Drag row
+Drag row,سحب الصف
 Drop your files here to upload or,اسحب ملفاتك هنا للتحميل أو
-Duplicate values not allowed.,Duplicate values not allowed.
+Duplicate values not allowed.,لا يُسمح بتكرار القيم.
 Duplicated email,بريد إلكتروني مكرر
 Duplicated name,اسم مكرر
 Duplicated username,اسم المستخدم مكرر
 Duration,المدة
-e.g.,e.g.
-Each series uses the template brand color when comparing data sources.,Each series uses the template brand color when comparing data sources.
-Earlier,Earlier
+e.g.,على سبيل المثال:
+Each series uses the template brand color when comparing data sources.,تستخدم كل سلسلة لون العلامة التجارية النموذجي عند مقارنة مصادر البيانات.
+Earlier,في وقت سابق
 Edit,تحرير
-Edit at source,Edit at source
-Edit Extractor,Edit Extractor
-Edit File,Edit File
-Edit group,Edit group
-Edit item,Edit item
-Edit metadata of entities,Edit metadata of entities
-Edit theme,Edit theme
-Edit user,Edit user
-Edited,Edited
+Edit at source,التحرير من المصدر
+Edit Extractor,تحرير المستخرج
+Edit File,تحرير الملف
+Edit group,تحرير المجموعة
+Edit item,تحرير العنصر
+Edit metadata of entities,تحرير البيانات الوصفية للكيانات
+Edit theme,تعديل السمة
+Edit user,تعديل المستخدم
+Edited,تم تحريره
 Editor,محرر
 editor,محرر
-Editors,Editors
+Editors,المحررون
 Email,بريد إلكتروني
-Embed,Embed
-Embed in pages,Embed in pages
+Embed,تضمين
+Embed in pages,تضمين في الصفحات
 Empty,فارغة
-Empty group. Drop here to add,Empty group. Drop here to add
-empty property tip,You won't be able to save an entity if this property is empty.
-Enable,Enable
-Enable public embedding to use this chart in external sites on private instances.,Enable public embedding to use this chart in external sites on private instances.
+Empty group. Drop here to add,مجموعة فارغة. اسحب هنا لإضافة
+empty property tip,لن تتمكن من حفظ الكيان إذا كانت هذه الخاصية فارغة.
+Enable,تمكين
+Enable public embedding to use this chart in external sites on private instances.,قم بتمكين ميزة التضمين العام لاستخدام هذا المخطط في مواقع خارجية على مثيلات خاصة.
 Enable this page to be used as an entity view page:,مكن هذه الصفحة لاستخدامها صفحة معاينة الكيان/ الإدخال
-Enter the 6-digit verification code generated by your Authenticator app,Enter the 6-digit verification code generated by your Authenticator app
-"Enter the full username, email, or group name. Suggestions are not shown.","Enter the full username, email, or group name. Suggestions are not shown."
-Enter your current password to confirm,Enter your current password to confirm
+Enter the 6-digit verification code generated by your Authenticator app,أدخل رمز التحقق المكون من 6 أرقام الذي أنشأه تطبيق Authenticator الخاص بك
+"Enter the full username, email, or group name. Suggestions are not shown.",أدخل اسم المستخدم الكامل أو عنوان البريد الإلكتروني أو اسم المجموعة. لا تظهر الاقتراحات.
+Enter your current password to confirm,أدخل كلمة مرورك الحالية للتأكيد
 Entities,الكيانات
 entities,الكيانات
-Entities across all languages,Entities across all languages
-Entities created,Entities created
-Entities updated,Entities updated
-entities · generated,entities · generated
+Entities across all languages,الكيانات في جميع اللغات
+Entities created,الكيانات التي تم إنشاؤها
+Entities updated,الكيانات التي تم تحديثها
+entities · generated,الكيانات · تم إنشاؤها
 Entity,كيان
-Entity creation stage completed.,Entity creation stage completed.
-Entity deleted,Entity deleted
-Entity Page,Entity Page
-Entity saved,Entity saved
-Entity scope,Entity scope
-Entity type,Entity type
+Entity creation stage completed.,اكتملت مرحلة إنشاء الكيان.
+Entity deleted,تم حذف الكيان
+Entity Page,صفحة الكيان
+Entity saved,تم حفظ الكيان
+Entity scope,نطاق الكيان
+Entity type,نوع الكيان
 Entity types,أنواع الكيانات
-Entity updated,Entity updated
+Entity updated,تم تحديث الكيان
 Error,خطأ
-Error adding thesauri.,Error adding thesauri.
-Error loading your image,Error loading your image
-Error saving template.,Error saving template.
-Error updating thesauri.,Error updating thesauri.
-evidence,evidence
-exact phrase,exact phrase
-Expand all,Expand all
-Expand All,Expand All
+Error adding thesauri.,حدث خطأ أثناء إضافة قواميس المرادفات.
+Error loading your image,حدث خطأ أثناء تحميل صورتك
+Error saving template.,حدث خطأ أثناء حفظ القالب.
+Error updating thesauri.,حدث خطأ أثناء تحديث قوائم المرادفات.
+evidence,دليل
+exact phrase,العبارة بالضبط
+Expand all,توسيع كل العناصر
+Expand All,توسيع الكل
 Export CSV,تصدير ملف القيم المفصولة بفواصل
 Exporting entities to CSV,تصدير كيانات (إدخالات) إلى ملف القيم المفصولة بفواصل
-Extension Token,Extension Token
-External embed,External embed
-Extract new paragraphs,Extract new paragraphs
-Extract paragraphs,Extract paragraphs
-Extracting files,Extracting files
-Extracting files from uploaded package.,Extracting files from uploaded package.
-Extraction configuration,Extraction configuration
-Extractor Name,Extractor Name
-Extractor name,Extractor name
-Extractor/s deleted,Extractor/s deleted
-Extractors,Extractors
-Failed,Failed
-Failed to mark table of contents as reviewed,Failed to mark table of contents as reviewed
-Failed to save table of contents,Failed to save table of contents
-Failure details,Failure details
-Favicon description,"A favicon is a small icon that represents your collection in browser tabs and bookmarks. The default favicon is the Uwazi logo. To use your own:
+Extension Token,رمز الإضافة
+External embed,التضمين الخارجي
+Extract new paragraphs,استخراج فقرات جديدة
+Extract paragraphs,استخراج الفقرات
+Extracting files,استخراج الملفات
+Extracting files from uploaded package.,جاري استخراج الملفات من الحزمة التي تم تحميلها.
+Extraction configuration,إعدادات الاستخراج
+Extractor Name,اسم المستخرج
+Extractor name,اسم المستخرج
+Extractor/s deleted,تم حذف المُستخرج/المُستخرجات
+Extractors,المستخرجات
+Failed,فشل
+Failed to mark table of contents as reviewed,فشل وضع علامة «تمت مراجعته» على جدول المحتويات
+Failed to save table of contents,فشل حفظ جدول المحتويات
+Failure details,تفاصيل الفشل
+Favicon description,"الرمز المفضل (favicon) هو رمز صغير يمثل مجموعتك في علامات تبويب المتصفح والإشارات المرجعية. الرمز المفضل الافتراضي هو شعار Uwazi. لاستخدام رمزك الخاص:
 
-1. Upload your icon in Custom Uploads if needed.
-2. Click ""Select favicon image"" and pick a file (images from Custom Uploads only).
-3. Reload the page to see your favicon in action."
-Favicon no images hint,Favicon no images hint
-FEATURED,FEATURED
+1. قم بتحميل الرمز الخاص بك في قسم «التحميلات المخصصة» إذا لزم الأمر.
+2. انقر على «تحديد صورة الرمز المفضل» واختر ملفًا (الصور من «التحميلات المخصصة» فقط).
+3. أعد تحميل الصفحة لترى الرمز المفضل الخاص بك قيد الاستخدام."
+Favicon no images hint,تلميح بشأن عدم وجود صور لرمز الموقع (Favicon)
+FEATURED,مميز
 File,ملف
-file,file
-File deleted,File deleted
-File details,File details
-File extraction completed successfully.,File extraction completed successfully.
-File name,File name
-File preview unavailable,File preview unavailable
-File updated,File updated
-Files,Files
-files,files
-Files and database usage,Files and database usage
+file,ملف
+File deleted,تم حذف الملف
+File details,تفاصيل الملف
+File extraction completed successfully.,تم استخراج الملف بنجاح.
+File name,اسم الملف
+File preview unavailable,معاينة الملف غير متاحة
+File updated,تم تحديث الملف
+Files,الملفات
+files,الملفات
+Files and database usage,استخدام الملفات وقواعد البيانات
 Fill,تعبئة
-Filter,Filter
-Filter unauthorized relationships,"By default, relationships pointing to restricted entities are visible to anonymous users but not linked. When enabled, these relationships are completely hidden, preventing public users from knowing restricted content exists."
+Filter,تصفية
+Filter unauthorized relationships,بشكل افتراضي، تكون العلاقات التي تشير إلى كيانات محظورة مرئية للمستخدمين المجهولين، لكنها غير مرتبطة. وعند تمكين هذه الميزة، تُخفى هذه العلاقات تمامًا، مما يمنع المستخدمين العاديين من معرفة وجود محتوى محظور.
 Filters,قوائم تصفيه البيانات
 Filters AND operator,و
 Filters configuration,ضبط قوائم تصفية البيانات
-Filters configuration description,"By default, users can filter the entities in the library based on the types you have defined. However, you can configure how these entity types will be displayed:"
-Filters configuration example,مثال على تكوين عامل التصفية
+Filters configuration description,بشكل افتراضي، يمكن للمستخدمين تصفية الكيانات الموجودة في المكتبة استنادًا إلى الأنواع التي قمت بتعريفها. ومع ذلك، يمكنك تكوين طريقة عرض أنواع الكيانات هذه:
+Filters configuration example,"اختر ""إضافة مجموعة"" أدناه لتجميع عوامل التصفية تحت تسمية، مثل (""مستندات"" أو ""أشخاص"")"
 Filters OR operator,او
-Filters saved,Filters saved
+Filters saved,تم حفظ المرشحات
 Find,بحث
 Find suggestions,العثور على اقتراحات
-Find suggestions after training,Find suggestions after training
-Find suggestions for,Find suggestions for
-Find suggestions for selected,Find suggestions for selected
-Finding suggestions,Finding suggestions
+Find suggestions after training,اطلع على الاقتراحات بعد التدريب
+Find suggestions for,اطلع على اقتراحات بشأن
+Find suggestions for selected,اطلع على اقتراحات بشأن مجموعة مختارة من
+Finding suggestions,البحث عن اقتراحات
 Fit,متوافق
 Flag,علم
-for,for
-For all entities,For all entities
-For entities with blank values,For entities with blank values
-Forgot Password or Username?,Forgot Password or Username?
+for,من أجل
+For all entities,لجميع الكيانات
+For entities with blank values,بالنسبة للكيانات التي تحتوي على قيم فارغة
+Forgot Password or Username?,هل نسيت كلمة المرور أو اسم المستخدم؟
 Forms and email configuration,تكوين النماذج والبريد الإلكتروني
-From,From
-From all suggestions,From all suggestions
-From previous step,From previous step
-From selection,From selection
-From:,From:
-Full mode,Full mode
-Full width,Full width
+From,من
+From all suggestions,من بين جميع الاقتراحات
+From previous step,من الخطوة السابقة
+From selection,من قائمة الاختيار
+From:,من:
+Full mode,الوضع الكامل
+Full width,العرض الكامل
 General,عام
-General access,General access
-General Information,General Information
-Generated ID,Generated ID
+General access,الوصول العام
+General Information,معلومات عامة
+Generated ID,المعرّف الذي تم إنشاؤه
 Global CSS,خاصية CSS العالمية
-Global CSS & JS,Global CSS & JS
-Global JS,Global JS
-Google,Google
-Google Analytics,Google Analytics
+Global CSS & JS,CSS و JS العالمية
+Global JS,JS العام
+Google,جوجل
+Google Analytics,جوجل أناليتيكس
 Google Maps,خرائط جوجل
-Group,Group
-Group by,Group by
-group expressions,group expressions
-Group Options,Group Options
-Group saved,Group saved
-Group updated,Group updated
-Grouped geolocation properties,Grouped geolocation properties
+Group,المجموعة
+Group by,التجميع حسب
+group expressions,تجميع التعبيرات
+Group Options,خيارات المجموعة
+Group saved,تم حفظ المجموعة
+Group updated,تم تحديث المجموعة
+Grouped geolocation properties,خصائص تحديد الموقع الجغرافي المجمعة
 Groups,مجموعات
-Header and button preview,Header and button preview
-Header bar active background,Header bar active background
-Header bar background,Header bar background
-Header bar divider,Header bar divider
-Header bar hover background,Header bar hover background
-Header bar text,Header bar text
+Header and button preview,معاينة العنوان والزر
+Header bar active background,خلفية شريط العنوان النشط
+Header bar background,خلفية شريط العنوان
+Header bar divider,فاصل شريط العنوان
+Header bar hover background,خلفية شريط العنوان عند تمرير المؤشر فوقه
+Header bar text,نص شريط العنوان
 help,مساعدة
-here,here
-"Hi, I'm Bert.","Hi, I'm Bert."
-Hide,Hide
-Hide actions,Hide actions
-Hide details,Hide details
+here,هنا
+"Hi, I'm Bert.",مرحبًا، أنا Bert.
+Hide,إخفاء
+Hide actions,إخفاء الإجراءات
+Hide details,إخفاء التفاصيل
 Hide label,إخفاء التسمية
-Hide restricted relationships from public,Hide restricted relationships from public
-Hide toolbar,Hide toolbar
+Hide restricted relationships from public,إخفاء العلاقات المقيدة عن الجمهور
+Hide toolbar,إخفاء شريط الأدوات
 HTML,HTML
 https://yourdomain,https://yourdomain
-hub,hub
+hub,المحور
 hubs,محاور
 Hybrid,هجين
 Icon,أيقونة
-ID,ID
-ID:,ID:
+ID,رقم التعريف
+ID:,رقم التعريف:
 "If an account exists with the email you provided, you will receive an email
-                        with instructions to reset your password.","If an account exists with the email you provided, you will receive an email
-                        with instructions to reset your password."
-"If it is an external URL, use a fully formed URL. Ie. http://www.uwazi.io.","If it is an external URL, use a fully formed URL. Ie. http://www.uwazi.io."
+                        with instructions to reset your password.","إذا كان هناك حساب مسجل بالبريد الإلكتروني الذي أدخلته، فستتلقى رسالة بريد إلكتروني
+تحتوي على إرشادات لإعادة تعيين كلمة مرورك."
+"If it is an external URL, use a fully formed URL. Ie. http://www.uwazi.io.",إذا كان الرابط خارجيًا، فاستخدم رابطًا كاملاً. على سبيل المثال: http://www.uwazi.io.
 "If you want to continue, please type",إذا كنت ترغب في المتابعة، يرجى كتابة
-Image doesn't match the required size.,Image doesn't match the required size.
+Image doesn't match the required size.,الصورة لا تتوافق مع الحجم المطلوب.
 Import,استيراد
-Import / Export CSV,Import / Export CSV
-Import asset,Import asset
+Import / Export CSV,استيراد / تصدير ملفات CSV
+Import asset,استيراد الأصول
 Import CSV,استيراد ملف القيم المفصولة بفواصل
-Import failed. Review details below.,Import failed. Review details below.
-Import finished successfully.,Import finished successfully.
-Import finished with errors. Review details below.,Import finished with errors. Review details below.
-Import is currently processing rows.,Import is currently processing rows.
-Import is retrying after an error.,Import is retrying after an error.
-Import theme instance file,Import theme instance file
-Import was cancelled.,Import was cancelled.
-Imported translations from file,Imported translations from file
+Import failed. Review details below.,فشل الاستيراد. راجع التفاصيل أدناه.
+Import finished successfully.,تمت عملية الاستيراد بنجاح.
+Import finished with errors. Review details below.,انتهى الاستيراد وحدثت أخطاء. يرجى مراجعة التفاصيل أدناه.
+Import is currently processing rows.,تجري عملية الاستيراد حالياً معالجة الصفوف.
+Import is retrying after an error.,يتم إعادة محاولة الاستيراد بعد حدوث خطأ.
+Import theme instance file,استيراد ملف مثيل السمة
+Import was cancelled.,تم إلغاء عملية الاستيراد.
+Imported translations from file,ترجمات مستوردة من ملف
 in,في
-"In a group, either all relationships must have a hub or none of them.","In a group, either all relationships must have a hub or none of them."
+"In a group, either all relationships must have a hub or none of them.",في أي مجموعة، إما أن تكون جميع العلاقات مرتبطة بمحور واحد، أو لا تكون أي منها مرتبطة بأي محور.
 In OCR queue,جاري التعرف الضوئي علي الحروف
-In use,In use
-Include all entities,Include all entities
-Include only public,Include only public
-Incoming,Incoming
+In use,قيد الاستخدام
+Include all entities,تضمين جميع الكيانات
+Include only public,تضمين الكيانات العامة فقط
+Incoming,الواردة
 Info,معلومات
-Information extraction training,Information extraction training
-Inherit,Inherit
+Information extraction training,التدريب على استخراج المعلومات
+Inherit,توريث
 Inherit property,وراثة خاصية
-Inherit type,Inherit type
-"Inherited values are read-only. Change the connection above, or edit the source entity.","Inherited values are read-only. Change the connection above, or edit the source entity."
-inherits,inherits
-Input,Input
-Input type,Input type
-Install,Install
-Install Language(s),Install Language(s)
-Install the browser extension.,Install the browser extension.
-Installing languages,Installing languages
-"Instructions on how to achieve this will vary according to the app used, please refer to the app's documentation.","Instructions on how to achieve this will vary according to the app used, please refer to the app's documentation."
-Instructions to reset password,"If the email address supplied is correct, we will send instructions to reset the password."
-Instructions to reset the password were sent to the user,Instructions to reset the password were sent to the user
+Inherit type,نوع التوريث
+"Inherited values are read-only. Change the connection above, or edit the source entity.",القيم الموروثة هي قيم للقراءة فقط. قم بتعديل الاتصال المذكور أعلاه، أو قم بتحرير الكيان المصدر.
+inherits,يرث
+Input,الإدخال
+Input type,نوع الإدخال
+Install,تثبيت
+Install Language(s),تثبيت اللغة (اللغات)
+Install the browser extension.,قم بتثبيت ملحق المتصفح.
+Installing languages,تثبيت اللغات
+"Instructions on how to achieve this will vary according to the app used, please refer to the app's documentation.",ستختلف الإرشادات المتعلقة بكيفية القيام بذلك باختلاف التطبيق المستخدم، لذا يرجى الرجوع إلى وثائق التطبيق.
+Instructions to reset password,إذا كان عنوان البريد الإلكتروني المُقدم صحيحًا، فسنرسل إليك تعليمات لإعادة تعيين كلمة المرور.
+Instructions to reset the password were sent to the user,تم إرسال تعليمات إعادة تعيين كلمة المرور إلى المستخدم
 Invalid captcha,حروف التحقق غير صحيحة
-Invalid csv: all the values for a row must be either nested or non-nested,Invalid csv: all the values for a row must be either nested or non-nested
-Invalid csv: nested value need to be under a non-nested value,Invalid csv: nested value need to be under a non-nested value
+Invalid csv: all the values for a row must be either nested or non-nested,ملف CSV غير صالح: يجب أن تكون جميع القيم في كل صف إما متداخلة أو غير متداخلة
+Invalid csv: nested value need to be under a non-nested value,ملف CSV غير صالح: يجب أن تكون القيمة المتداخلة تحت قيمة غير متداخلة
 Invalid form,المدخلات غير صحيحة او غير مكتمله. رجاء التصحيح واعادج المحاولة
-Invalid URL,Invalid URL
+Invalid URL,عنوان URL غير صالح
 It could also very easily break the app. Only write code here if you know exactly what you are doing.,من الممكن أيضاً كسر التطبيق بسهولة بالغة. اكتب فقط الرمز هنا إذا كنت على دراية تامة بما تفعله
-it has been logged with request id #,it has been logged with request id #
-Item,Item
+it has been logged with request id #,تم تسجيله برقم الطلب #
+Item,العنصر
 Items:,العناصر:
-Javascript,Javascript
-juris*,juris*
-key,Arabic
+Javascript,جافا سكريبت
+juris*,قانون*
+key,مفتاح
 Label,التسمية
 "Label date ""From""",من:
 "Label date ""to""",إلى:
-Labeled,Labeled
+Labeled,مُصنَّفة
 Landing page,الصفحة الرئيسية
-Landing page description,"The landing page is the first page that visitors see when they come to your collection. The default landing page is your collection's library. You can set a different landing page by adding its relative URL here. For example:
-      
-A page: */page/dicxg0oagy3xgr7ixef80k9*
-A filtered view in Uwazi: */library/?searchTerm=test*
-An entity: */entity/9htbkgpkyy7j5rk9*
-A document: */document/4y9i99fadjp833di*
-      
-Important: You must use relative URLs. These start with a forward slash and do not include the domain name. For example: In the address *https://yoursite.com/landingpage*, the relative URL is /landingpage"
+Landing page description,"الصفحة المقصودة هي أول صفحة يراها الزوار عند وصولهم إلى مجموعتك. الصفحة المقصودة الافتراضية هي مكتبة مجموعتك. يمكنك تعيين صفحة مقصودة مختلفة بإضافة رابطها النسبي هنا. على سبيل المثال:
+
+صفحة: */page/dicxg0oagy3xgr7ixef80k9*
+عرض مُصفّى في Uwazi: */library/?searchTerm=test*
+كيان: */entity/9htbkgpkyy7j5rk9*
+مستند: */document/4y9i99fadjp833di*
+
+مهم: يجب استخدام روابط نسبية. تبدأ هذه الروابط بشرطة مائلة ولا تتضمن اسم النطاق. على سبيل المثال: في العنوان *https://yoursite.com/landingpage*، الرابط النسبي هو /landingpage"
 Language,لغة
-Language Code,Language Code
+Language Code,رمز اللغة
 Language deleted,حذفت اللغة
-Language reset success,Language reset success
-Language uninstalled successfully,Language uninstalled successfully
-Language(s),Language(s)
-Language:,Language:
+Language reset success,تمت إعادة ضبط اللغة بنجاح
+Language uninstalled successfully,تم إلغاء تثبيت اللغة بنجاح
+Language(s),اللغة (اللغات)
+Language:,اللغة:
 Languages,اللغات
-Languages installed successfully,Languages installed successfully
-Last updated,Last updated
-Last updated from collection:,Last updated from collection:
+Languages installed successfully,تم تثبيت اللغات بنجاح
+Last updated,آخر تحديث
+Last updated from collection:,آخر تحديث من المجموعة:
 Latitude,خط العرض
-Latitude must be between -90 and 90,Latitude must be between -90 and 90
-Learn how to add and configure a contact form on a webpage.,Learn how to add and configure a contact form on a webpage.
-Learn how to build your first collection,Learn how to build your first collection
+Latitude must be between -90 and 90,يجب أن يكون خط العرض بين -90 و90
+Learn how to add and configure a contact form on a webpage.,تعرف على كيفية إضافة نموذج اتصال وتهيئته على صفحة ويب.
+Learn how to build your first collection,تعرف على كيفية إنشاء مجموعتك الأولى
 Learn more,اعرف المزيد
-Learn more about the components.,Learn more about the components.
+Learn more about the components.,تعرف على المزيد عن المكونات.
 Legend,مفتاح مصطلحات الخريطة
-Lengthy reindex process,Lengthy reindex process
+Lengthy reindex process,عملية إعادة الفهرسة المطولة
 Library,مكتبة
 library list view,معاينة القائمة المكتبية
 library map view,معاينة خريطة المكتبة
 library table view,معاينة جدول المكتبة
-Light,Light
-Light Theme,Light Theme
-Link,Link
+Light,فاتح
+Light Theme,السمة الفاتحة
+Link,رابط
 linked,مرتبط
-List,List
-List renders as a table. Use the options below to filter empty or zero values.,List renders as a table. Use the options below to filter empty or zero values.
-Live preview,Live preview
-Live translate,Live translate
-Load,Load
-Load example,Load example
-Load more,Load more
-Loading,Loading
-Local time,Local time
+List,قائمة
+List renders as a table. Use the options below to filter empty or zero values.,يتم عرض القائمة في شكل جدول. استخدم الخيارات أدناه لتصفية القيم الفارغة أو التي تساوي صفرًا.
+Live preview,معاينة مباشرة
+Live translate,الترجمة الفورية
+Load,تحميل
+Load example,تحميل مثال
+Load more,تحميل المزيد
+Loading,جاري التحميل
+Local time,التوقيت المحلي
 Login,تسجيل الدخول
 Login button,زر تسجيل الدخول
 Login failed,فشل عملية الدخول
 Logout,تسجيل خروج
 Longitude,خط الطول
-Longitude must be between -180 and 180,Longitude must be between -180 and 180
-Lookup help,Lookup help
-Lost connection to the server. Your changes may be lost,Lost connection to the server. Your changes may be lost
+Longitude must be between -180 and 180,يجب أن يكون خط الطول بين -180 و180
+Lookup help,مساعدة في البحث
+Lost connection to the server. Your changes may be lost,انقطع الاتصال بالخادم. قد تُفقد التغييرات التي أجريتها
 low,منخفض/ أدنى/ قليل/ صغير
-Manage relationship types,Manage relationship types
+Manage relationship types,إدارة أنواع العلاقات
 Manage site settings and configuration,إدارة إعدادات الموقع
-Manage types,Manage types
-Manual data,Manual data
-Manually set a color,Manually set a color
+Manage types,إدارة الأنواع
+Manual data,البيانات اليدوية
+Manually set a color,تعيين لون يدويًّا
 Map,خريطة
-Map api key,Map api key
-Map API key,Map API key
-Map api key tooltip,An API key is required to use Mapbox or Google Maps.
-Map Layers,Map Layers
-Map layers description,Map layers description
-Map Provider,Map Provider
+Map api key,مفتاح واجهة برمجة تطبيقات الخرائط
+Map API key,مفتاح واجهة برمجة تطبيقات الخرائط
+Map api key tooltip,يلزم وجود مفتاح واجهة برمجة التطبيقات (API) لاستخدام Mapbox أو خرائط Google.
+Map Layers,طبقات الخريطة
+Map layers description,وصف طبقات الخريطة
+Map Provider,مزود الخرائط
 Map view,عرض الخريطة
 Mapbox,Mapbox
-Mapping conflict error,"A reindex of your collection is necessary. The reason may vary 
-        -- from certain changes made to a template's property to new fields
-        that need to be populated across entities. 
-        This process will not negatively affect the data in your collection. 
-        It can last a few minutes and some parts of your collection might take
-        some time to reappear in the Library, but this is temporary. Do you want to continue?"
+Mapping conflict error,"يلزم إعادة فهرسة مجموعتك. قد يختلف السبب
+        -- بدءًا من تغييرات معينة أُجريت على إحدى خصائص القالب وصولًا إلى حقول جديدة
+        يلزم تعبئتها عبر الكيانات.
+        لن تؤثر هذه العملية سلبًا على البيانات في مجموعتك.
+        قد تستغرق بضع دقائق، وقد تحتاج بعض أجزاء مجموعتك إلى بعض الوقت
+        لتظهر مجددًا في المكتبة، لكن هذا أمر مؤقت. هل تريد المتابعة؟"
 Maps,خرائط
 Mark as Reviewed,ضع علامة للإشارة إلى خضوعه للمراجعة
-Mark as reviewed,Mark as reviewed
+Mark as reviewed,"وضع علامة ""تمت المراجعة"""
 Markdown,ماركداون
 "Markdown support in custom pages will be discontinued starting in 2027. Upgrade this page
-          when its content no longer relies on Markdown syntax.","Markdown support in custom pages will be discontinued starting in 2027. Upgrade this page
-          when its content no longer relies on Markdown syntax."
-marked and labeled,marked and labeled
-marked for training,marked for training
-Marked for training + all labeled entries,Marked for training + all labeled entries
-Marked for training only,Marked for training only
-Match,Match
-match,match
-match verbatim,match verbatim
-matches,matches
-"matches jurisdiction, jurists, jurisprudence","matches jurisdiction, jurists, jurisprudence"
-Matches show the passage and the page they are on.,Matches show the passage and the page they are on.
-Matching,Matching
-matching,matching
-Matomo,Matomo
+          when its content no longer relies on Markdown syntax.","سيتم إيقاف دعم لغة «ماركداون» في الصفحات المخصصة اعتبارًا من عام 2027. قم بتحديث هذه الصفحة
+عندما لا يعتمد محتواها بعد الآن على صيغة «ماركداون»."
+marked and labeled,مميزة وموسومة
+marked for training,مُحدد للتدريب
+Marked for training + all labeled entries,المحددة للتدريب + جميع الإدخالات المُصنَّفة
+Marked for training only,محدد للتدريب فقط
+Match,مطابق
+match,نتيجة
+match verbatim,مطابقة حرفية
+matches,نتائج
+"matches jurisdiction, jurists, jurisprudence",يطابق: قانون، قانوني، قانونية
+Matches show the passage and the page they are on.,تُظهر النتائج المقطع والصفحة التي توجد فيها.
+Matching,المطابقة
+matching,المطابقة
+Matomo,ماتومو
 Members,أعضاء
 Menu,قائمة التحكم
 Message,رسالة
-Message sent,Message sent
+Message sent,تم إرسال الرسالة
 Metadata,البيانات الوصفية
 Metadata Extraction,استخلاص البيانات الوصفية
 "Metric shows a single total count. Select Pie, Bar, or another chart type above to
-            configure categories, labels, and slices. Use the Appearance tab for colors.","Metric shows a single total count. Select Pie, Bar, or another chart type above to
-            configure categories, labels, and slices. Use the Appearance tab for colors."
-MIGRATE,MIGRATE
+            configure categories, labels, and slices. Use the Appearance tab for colors.","يعرض المقياس الرقم الإجمالي مرة واحدة. حدد «دائرة» أو «شريط» أو أي نوع آخر من المخططات أعلاه من أجل
+تكوين الفئات والتسميات والشرائح. استخدم علامة التبويب «المظهر» لتعيين الألوان."
+MIGRATE,الترحيل
 Minimum,الحد الأدنى
-Mismatch,Mismatch
-mismatched passwords,Passwords don't match
-mismatching,mismatching
+Mismatch,عدم التطابق
+mismatched passwords,كلمات المرور غير متطابقة
+mismatching,عدم التطابق
 Mixed access,وصول مختلط
-ML TOC,ML TOC
-Modified,Modified
+ML TOC,جدول محتويات ML
+Modified,آخر تعديل
 Month,شهر
-Months,Months
-More,More
-more,more
+Months,الأشهر
+More,المزيد
+more,المزيد
 more options.,مزيد من الخيارات
-Multi-source mode,Multi-source mode
-Multiple date,Multiple date
-Multiple date range,Multiple date range
+Multi-source mode,وضع المصادر المتعددة
+Multiple date,تواريخ متعددة
+Multiple date range,نطاق تواريخ متعددة
 Multiple inherited properties warning ([property 1] affects [property 2]),يؤثر
-Multiple matches found,Multiple matches found
-Multiple relationships edit description,Making changes to this property will affect other properties on this template because they all share relationships with the same configuration.
-Multiple select,Multiple select
+Multiple matches found,تم العثور على عدة نتائج
+Multiple relationships edit description,سيؤثر إجراء تغييرات على هذه الخاصية على الخصائص الأخرى في هذا القالب، لأنها جميعًا ترتبط بنفس التكوين.
+Multiple select,التحديد المتعدد
 Name,اسم
 Name is required,الاسم مطلوب
 Name is too long,الاسم طويل جداً
 Name is too short,الاسم قصير جداً
 Narrow down your searches,ضيق نطاقات بحثك
 "Narrow entities before aggregation. With multiple sources, pick the property under the
-        source alias so each filter applies only to that series.","Narrow entities before aggregation. With multiple sources, pick the property under the
-        source alias so each filter applies only to that series."
+        source alias so each filter applies only to that series.","قم بتحديد الكيانات قبل التجميع. في حالة وجود مصادر متعددة، اختر الخاصية الموجودة تحت
+الاسم المستعار للمصدر بحيث ينطبق كل مرشح على تلك السلسلة فقط."
 Narrow your search,ضيق نطاق بحثك
-Navigate back,Navigate back
-Navigation menu tool tip part 1,"If it is an internal URL within this website, be sure to delete the first part"
-Navigation menu tool tip part 2,leaving only a relative URL starting with a slash character. Ie. /some_url.
-New,New
-New activity will show up here.,New activity will show up here.
-New conversation,New conversation
+Navigate back,الرجوع
+Navigation menu tool tip part 1,إذا كان الرابط (URL) داخليًّا ضمن هذا الموقع الإلكتروني، فاحرص على حذف الجزء الأول منه
+Navigation menu tool tip part 2,بحيث لا يتبقى سوى عنوان URL نسبي يبدأ بعلامة الشرطة المائلة. على سبيل المثال: /some_url.
+New,جديد
+New activity will show up here.,ستظهر الأنشطة الجديدة هنا.
+New conversation,محادثة جديدة
 New entity,كيان جديد
-New group,New group
+New group,مجموعة جديدة
 New language added,أضيفت لغة جديدة
-New page,New page
+New page,صفحة جديدة
 New password,كلمة المرور الجديدة
-New primary doc,New primary doc
-New relation type label…,New relation type label…
-New relationship type,New relationship type
+New primary doc,مستند أساسي جديد
+New relation type label…,تسمية جديدة لنوع العلاقة…
+New relationship type,نوع جديد من العلاقات
 New relationships group,مجموعة علاقات جديدة
-New Relationships Migration,New Relationships Migration
-New user,New user
+New Relationships Migration,ترحيل العلاقات الجديدة
+New user,مستخدم جديد
 Next,التالي
 No,لا
 No attachments,لا توجد مرفقات
-No audio or video on this entity,No audio or video on this entity
-No chart types match your search.,No chart types match your search.
+No audio or video on this entity,لا يوجد صوت أو فيديو لهذا الكيان
+No chart types match your search.,لا توجد أنواع من الرسوم البيانية تتطابق مع بحثك.
 No common filters,لا مشترك بين قوائم التصفيه
-No connected entities yet.,No connected entities yet.
+No connected entities yet.,لا توجد كيانات مرتبطة حتى الآن.
 No Connections,لا اتصالات
 No Connections description,الاتصالات هل العلاقات المباشرة بين تلك الوثيقة و الوثائق والكيانات الاخرد
-No context,No context
-No CSVs yet,No CSVs yet
-No data,No data
-NO DATA AVAILABLE,NO DATA AVAILABLE
-No entities found,No entities found
-NO EXTRACTORS,NO EXTRACTORS
-No files available,No files available
-No files queued yet.,No files queued yet.
-no filters for templates,The combination of entity types doesn't have any filters in common.
-No Group,No Group
+No context,لا يوجد سياق
+No CSVs yet,لا توجد ملفات CSV حتى الآن
+No data,لا توجد بيانات
+NO DATA AVAILABLE,لا توجد بيانات متاحة
+No entities found,لم يتم العثور على أي كيانات
+NO EXTRACTORS,لا توجد أدوات استخراج
+No files available,لا توجد ملفات متاحة
+No files queued yet.,لا توجد ملفات في قائمة الانتظار حتى الآن.
+no filters for templates,لا توجد أي عوامل تصفية مشتركة بين مجموعات أنواع الكيانات.
+No Group,لا توجد مجموعة
 No icon / flag,لا توجد أيقونة/ علامة
-No images on this entity,No images on this entity
-No items available,No items available
+No images on this entity,لا توجد صور لهذا الكيان
+No items available,لا توجد عناصر متوفرة
 No Label,لا تسمية
-No label,No label
-No matches for,No matches for
-No matches.,No matches.
-No matching entities.,No matching entities.
-No media selected,No media selected
-No metadata for this entity yet.,No metadata for this entity yet.
-No options,No options
+No label,بدون تسمية
+No matches for,لا توجد نتائج مطابقة لـ
+No matches.,لا توجد نتائج.
+No matching entities.,لا توجد كيانات مطابقة.
+No media selected,لم يتم تحديد أي وسائط
+No metadata for this entity yet.,لا توجد بيانات وصفية لهذا الكيان حتى الآن.
+No options,لا توجد خيارات
 No options found,لم يتم العثور على خيارات
-No page,No page
-No people or groups added yet,No people or groups added yet
-No primary documents,No primary documents
-No primary documents yet. Add a file to get started.,No primary documents yet. Add a file to get started.
+No page,لا توجد صفحة
+No people or groups added yet,لم تتم إضافة أي أشخاص أو مجموعات حتى الآن
+No primary documents,لا توجد مستندات أساسية
+No primary documents yet. Add a file to get started.,لا توجد مستندات أساسية حتى الآن. أضف ملفًا لتبدأ.
 No property,هذه الخاصية غير متوفرة
 No References,لا مرجع
 No References description,المراجع هي اجزاء من الوثيقة التي لها علاقة بوثائق وكيانات أخرى
-No relationship types,No relationship types
+No relationship types,لا توجد أنواع علاقات
 No Relationships,لا توجد علاقات
 No Relationships description,العلاقات هي الروابط بين الكيانات
-No relationships found,No relationships found
-No relationships to graph,No relationships to graph
-No releases yet,No releases yet
-No results found,No results found
-No supporting files yet. Add a file to get started.,No supporting files yet. Add a file to get started.
+No relationships found,لم يتم العثور على أي علاقات
+No relationships to graph,لا توجد علاقات يمكن تمثيلها بيانيًّا
+No releases yet,لم تصدر أي إصدارات حتى الآن
+No results found,لم يتم العثور على أي نتائج
+No supporting files yet. Add a file to get started.,لا توجد ملفات داعمة حتى الآن. أضف ملفًا لتبدأ.
 No table of contents,لا يوجد جدول المحتويات
-No Table of contents,No Table of contents
-No table of contents description,لا جدول محتويات الوصف
-No templates available to add.,No templates available to add.
+No Table of contents,لا يوجد جدول محتويات
+No table of contents description,"يمكنك البدء بتحديد نص في المستند والنقر على زر ""إضافة إلى جدول المحتويات""."
+No templates available to add.,لا توجد قوالب متاحة للإضافة.
 No text match,لا يوجد نص تطابق
 No text match description,يمكنك كتابه نص مختلف للحصول على بعض النتائج
-No timelinks added,No timelinks added
-No translation in,No translation in
+No timelinks added,لم تتم إضافة أي روابط زمنية
+No translation in,لا توجد ترجمة في
 No type,لا نوع
-No uploaded images fit the requirements,No uploaded images match these size requirements. Upload a new image or use an editor to resize an existing file.
-No user or group found,No user or group found
-No valid target template available,No valid target template available
+No uploaded images fit the requirements,لا توجد صور تم تحميلها تتوافق مع متطلبات الحجم هذه. قم بتحميل صورة جديدة أو استخدم أداة تحرير لتغيير حجم الملف الموجود.
+No user or group found,لم يتم العثور على أي مستخدم أو مجموعة
+No valid target template available,لا يوجد قالب هدف صالح متاح
 No value,لا قيمة
 No Value,لا قيمة
-No visualization data available.,No visualization data available.
-"No, cancel","No, cancel"
-no-toc-description,"You can start by selecting text in the document and clicking the ""Add to
-              ToC"" button."
-Non processed,Non processed
-Non-labeled,Non-labeled
-Non-latin characters support,Non-latin characters support
-None,None
+No visualization data available.,لا توجد بيانات تصويرية متاحة.
+"No, cancel",لا، إلغاء
+no-toc-description,"يمكنك البدء بتحديد نص في المستند والنقر على زر «إضافة إلى
+جدول المحتويات»."
+Non processed,غير معالج
+Non-labeled,غير مُصنَّف
+Non-latin characters support,دعم الأحرف غير اللاتينية
+None,لا شيء
 Normal view,معاينة عادية
-Not already been use as source template in another extractor,Not already been use as source template in another extractor
-Not already been use as target template,Not already been use as target template
-Not Found,Not Found
-Nothing here yet.,Nothing here yet.
-Nothing selected,Nothing selected
-Notifications,Notifications
-Obsolete,Obsolete
-obsolete,obsolete
+Not already been use as source template in another extractor,لم يُستخدم بعد كقالب مصدر في أداة استخراج أخرى
+Not already been use as target template,لم يُستخدم بعد كقالب مستهدف
+Not Found,غير موجود
+Nothing here yet.,لا يوجد شيء هنا حتى الآن.
+Nothing selected,لم يتم تحديد أي شيء
+Notifications,الإشعارات
+Obsolete,عفا عليه الزمن
+obsolete,متقادم
 OCR,OCR
-OCR button tip,This will process the document to recognize it's text. The original file will be added as a supporting file.
+OCR button tip,سيقوم هذا بمعالجة المستند للتعرف على نصه. ستتم إضافة الملف الأصلي كملف داعم.
 OCR completed,تم التعرف الضوئي على الحروف
-OCR description tip 1,"This will enable the Optical Character Recognition (OCR) functionality for PDF documents. This service will recognize text inside images, such as scanned documents and photos, and convert it into machine-readable text data."
-OCR description tip 2,"When activated, this will enable administrator and editor users to send PDF documents to the OCR service."
+OCR description tip 1,سيؤدي ذلك إلى تمكين وظيفة التعرف الضوئي على الحروف (OCR) لمستندات PDF. وستقوم هذه الخدمة بالتعرف على النص الموجود داخل الصور، مثل المستندات الممسوحة ضوئيًا والصور الفوتوغرافية، وتحويله إلى بيانات نصية يمكن قراءتها آليًّا.
+OCR description tip 2,عند تفعيل هذه الميزة، سيتمكن المستخدمون من فئتي «المسؤول» و«المحرر» من إرسال مستندات PDF إلى خدمة التعرف الضوئي على الحروف (OCR).
 OCR error,خطأ في الOCR
-OCR error tip,The OCR engine couldn't read the document due to a malformed format. Last updated
+OCR error tip,لم يتمكن محرك التعرف الضوئي على الحروف (OCR) من قراءة المستند بسبب وجود خلل في تنسيقه. آخر تحديث
 OCR PDF,تشغيل خاصية الOCR على الPDF
 of,من
 Ok,موافق
 OK,موافق
-On this entity,On this entity
-one character,one character
-Only essential,Only essential
+On this entity,بشأن هذا الكيان
+one character,حرف واحد
+Only essential,الأمور الضرورية فقط
 "Only properties with the same name and configuration in every data source are available
-            for both dimensions.","Only properties with the same name and configuration in every data source are available
-            for both dimensions."
-Only published entities are counted.,Only published entities are counted.
+            for both dimensions.","لا تتوفر سوى الخصائص التي تحمل الاسم نفسه وتتمتع بنفس التكوين في كل مصدر بيانات
+ لكلا البعدين."
+Only published entities are counted.,يتم احتساب الكيانات المنشورة فقط.
 "Only templates that are not used as source in any other extractor and are not
-                selected as target in this extractor are available for selection.","Only templates that are not used as source in any other extractor and are not
-                selected as target in this extractor are available for selection."
+                selected as target in this extractor are available for selection.","لا تتاح للاختيار سوى القوالب التي لم تُستخدم كمصدر في أي أداة استخراج أخرى، ولم
+تُحدد كهدف في أداة الاستخراج هذه."
 "Only templates with at least one rich text property and one numeric property are
-                available for selection.","Only templates with at least one rich text property and one numeric property are
-                available for selection."
-"Only the extractor will be deleted, all created entities will remain on the library.","Only the extractor will be deleted, all created entities will remain on the library."
-Open,Open
-Open entity,Open entity
-Open group,Open group
-Open link,Open link
-Open PDF,Open PDF
+                available for selection.","لا تتوفر للاختيار سوى القوالب التي تحتوي على خاصية نص منسق واحدة على الأقل وخاصية رقمية واحدة
+."
+"Only the extractor will be deleted, all created entities will remain on the library.",سيتم حذف المستخرج فقط، وستبقى جميع الكيانات التي تم إنشاؤها في المكتبة.
+Open,فتح
+Open entity,فتح الكيان
+Open group,فتح المجموعة
+Open link,فتح الرابط
+Open PDF,فتح ملف PDF
 Open the two-factor Authenticator app on your device,افتح تطبيق المصادقة الثنائية في جهازك
-Options,Options
+Options,خيارات
 or,أو
-or drag and drop here,or drag and drop here
+or drag and drop here,أو اسحب وأسقط هنا
 or drop your files here.,أو أفلت ملفاتك هنا
-Or paste a URL,Or paste a URL
+Or paste a URL,أو الصق عنوان URL
 Order,ترتيب
 Other,آخر
 other,آخر
-Other users will be affected by this action!,Other users will be affected by this action!
-Others,Others
-Outgoing,Outgoing
-p.,p.
+Other users will be affected by this action!,سيتأثر مستخدمون آخرون بهذا الإجراء!
+Others,أخرى
+Outgoing,صادر
+p.,ص.
 Page,صفحة
 Page not found,لم يتم العثور على الصفحة
-Page published successfully.,Page published successfully.
+Page published successfully.,تم نشر الصفحة بنجاح.
 Pages,الصفحات
-Paragrap number extraction property (numeric),Paragrap number extraction property (numeric)
-Paragraph,Paragraph
-Paragraph Extraction,Paragraph Extraction
-Paragraph Extractor added,Paragraph Extractor added
-Paragraph text extraction property (rich text),Paragraph text extraction property (rich text)
-Paragraphs,Paragraphs
-Paragraphs deleted,Paragraphs deleted
-parties,parties
+Paragrap number extraction property (numeric),خاصية استخراج رقم الفقرة (رقمي)
+Paragraph,فقرة
+Paragraph Extraction,استخراج الفقرات
+Paragraph Extractor added,تمت إضافة أداة استخراج الفقرات
+Paragraph text extraction property (rich text),خاصية استخراج نص الفقرة (نص منسق)
+Paragraphs,الفقرات
+Paragraphs deleted,تم حذف الفقرات
+parties,الأطراف
 Password,كلمه المرور
-Password + 2fa,Password + 2fa
-Password changed success,Password changed success
+Password + 2fa,كلمة المرور + المصادقة الثنائية
+Password changed success,تم تغيير كلمة المرور بنجاح
 Password is too long,كلمة المرور طويلة جداً
-Passwords do not match,Passwords do not match
-Paste an audio or video URL to use it as this property without uploading a file. Press Enter to apply.,Paste an audio or video URL to use it as this property without uploading a file. Press Enter to apply.
-Paste an image URL to use it as this property without uploading a file. Press Enter to apply.,Paste an image URL to use it as this property without uploading a file. Press Enter to apply.
-Paste this tag in a page HTML. The chart uses the page language.,Paste this tag in a page HTML. The chart uses the page language.
-Paste URL,Paste URL
-Paste URL here,Paste URL here
+Passwords do not match,كلمات المرور غير متطابقة
+Paste an audio or video URL to use it as this property without uploading a file. Press Enter to apply.,الصق رابط ملف صوتي أو فيديو لاستخدامه كقيمة لهذه الخاصية دون تحميل ملف. اضغط على مفتاح Enter لتطبيق التغيير.
+Paste an image URL to use it as this property without uploading a file. Press Enter to apply.,الصق عنوان URL للصورة لاستخدامها كقيمة لهذه الخاصية دون تحميل ملف. اضغط على مفتاح Enter لتطبيق التغيير.
+Paste this tag in a page HTML. The chart uses the page language.,الصق هذه العلامة في كود HTML للصفحة. يستخدم المخطط لغة الصفحة.
+Paste URL,الصق عنوان URL
+Paste URL here,الصق عنوان URL هنا
 PDF,PDF
-Pending,Pending
-People and groups,People and groups
-per page,per page
+Pending,قيد الانتظار
+People and groups,الأفراد والجماعات
+per page,لكل صفحة
 Permission,إذن
-Permission level,Permission level
+Permission level,مستوى الإذن
 Permission on entities explicitly shared with the user,الإذن للكيانات (للإدخالات) التي تم مشاركتها صراحة مع المستخدم
 Permissions,الأذونات
-Permissions updated,Permissions updated
-Pick a color,Pick a color
+Permissions updated,تم تحديث الأذونات
+Pick a color,اختر لونًا
 Plain text,نص عادي
 Please contact an admin for details.,يرجى الاتصال بالمشرف (المسؤول) للحصول على التفاصيل.
-Please type in,Please type in
+Please type in,يرجى كتابة
 Please type in letters and numbers from the image to start the export.,يرجى كتابة الحروف والأرقام من الصورة لبدء التصدير.
-Pre-filled from your selection. Edit as needed.,Pre-filled from your selection. Edit as needed.
-Preflight scan completed.,Preflight scan completed.
-Preparing required relationships.,Preparing required relationships.
-Preparing required thesauri values.,Preparing required thesauri values.
+Pre-filled from your selection. Edit as needed.,تم ملؤها مسبقًا وفقًا لاختيارك. قم بتعديلها حسب الحاجة.
+Preflight scan completed.,اكتمل الفحص التمهيدي.
+Preparing required relationships.,إعداد العلاقات المطلوبة.
+Preparing required thesauri values.,إعداد قيم المعجم المصطلحي المطلوبة.
 Preserve,Preserve
-Preserve Extension,Preserve Extension
-Preserve Setup Description,"If you know your Uwazi URL and TOKEN click the link below, and fill the required information."
+Preserve Extension,امتداد Preserve
+Preserve Setup Description,إذا كنت تعرف عنوان URL الخاص بحسابك على Uwazi ورمز TOKEN، فانقر على الرابط أدناه، وقم بملء المعلومات المطلوبة.
 Press enter to add,اضغط على مفتاح الإدخال لإضافة
 Preview,معاينة
-Preview updates automatically (300ms debounce),Preview updates automatically (300ms debounce)
-Preview updates when the JSON is valid.,Preview updates when the JSON is valid.
+Preview updates automatically (300ms debounce),معاينة التحديثات تلقائيًا (فترة تأخير 300 مللي ثانية)
+Preview updates when the JSON is valid.,تُحدَّث المعاينة تلقائيًا عند صحة ملف JSON.
 Previous,سابق
-Primary,Primary
-Primary button,Primary button
-Primary document,Primary document
+Primary,أصلي
+Primary button,الزر الرئيسي
+Primary document,الوثيقة الأصلية
 Primary Documents,المستندات الأولية
-Primary documents,Primary documents
+Primary documents,المستندات الأصلية
 Priority sorting,تصنيف حسب الأولوية
-Priority sorting description,"Properties marked as priority sorting will be used as default sorting criteria. If more than one property is marked as priority sorting the system will try to pick-up the best fit. When listing mixed template types, the system will pick-up the best combined priority sorting."
-Private,Private
+Priority sorting description,سيتم استخدام الخصائص التي تم تحديدها على أنها «فرز ذو أولوية» كمعايير فرز افتراضية. وفي حالة تحديد أكثر من خاصية واحدة على أنها «فرز ذو أولوية»، سيحاول النظام اختيار الخيار الأنسب. وعند عرض أنواع قوالب مختلطة، سيختار النظام أفضل مزيج من معايير الفرز ذات الأولوية.
+Private,خاص
 Private entities description,تنبيه: الكيانات (الإدخالات) المختارة سوف .لن تتاح رؤيتها إلا للمستخدمين المسموح لهم
-Process,Process
-Process extractor,Process extractor
-Process selected,Process selected
-Processed,Processed
-Processed rows,Processed rows
+Process,معالجة
+Process extractor,معالجة المستخرج
+Process selected,معالجة العناصر المحددة
+Processed,تمت معالجته
+Processed rows,الصفوف التي تمت معالجتها
 Processing,معالجة
-Progress,Progress
+Progress,التقدم
 Properties,الخصائص
 Properties from other templates in the collection using the same label,خصائص من قوالب أخرى في المجموعة تستخدم التسمية نفسها
-Properties from other templates in the collection using the same label.,Properties from other templates in the collection using the same label.
-"Properties marked as priority sorting will be used as default sorting criteria. If more than one property is marked as priority sorting the system will try to pick-up the best fit. When listing mixed template types, the system will pick-up the best combined priority sorting.","Properties marked as priority sorting will be used as default sorting criteria. If more than one property is marked as priority sorting the system will try to pick-up the best fit. When listing mixed template types, the system will pick-up the best combined priority sorting."
-Property,Property
-Property as filter description,"This property will be used for filtering the library results. When properties match in equal name and field type with other entity types, they will be combined for filtering."
-property date,Date
-property daterange,Date range
-property generatedid,Generated ID
-property geolocation,Geolocation
-property image,Image
-property link,Link
-property markdown,Rich text
-property media,Media
-property multidate,Multiple date
-property multidaterange,Multiple date range
-property multiselect,Multiple select
-property numeric,Numeric
-property preview,Preview
-property relationship,Relationship
-property select,Select
-property text,Text
-Property type,Property type
+Properties from other templates in the collection using the same label.,الخصائص الموجودة في قوالب أخرى ضمن المجموعة والتي تستخدم نفس التسمية.
+"Properties marked as priority sorting will be used as default sorting criteria. If more than one property is marked as priority sorting the system will try to pick-up the best fit. When listing mixed template types, the system will pick-up the best combined priority sorting.",سيتم استخدام الخصائص التي تم تحديدها على أنها «فرز ذو أولوية» كمعايير فرز افتراضية. وفي حالة تحديد أكثر من خاصية واحدة على أنها «فرز ذو أولوية»، سيحاول النظام اختيار الخيار الأنسب. وعند عرض أنواع قوالب مختلطة، سيختار النظام أفضل مزيج من معايير الفرز ذات الأولوية.
+Property,الخاصية
+Property as filter description,ستُستخدم هذه الخاصية لتصفية نتائج المكتبة. وعندما تتطابق الخصائص من حيث الاسم ونوع الحقل مع أنواع كيانات أخرى، سيتم دمجها معًا لأغراض التصفية.
+property date,التاريخ
+property daterange,النطاق الزمني
+property generatedid,المعرّف الذي تم إنشاؤه
+property geolocation,الموقع الجغرافي
+property image,صورة
+property link,رابط
+property markdown,نص منسق
+property media,وسائط
+property multidate,تواريخ متعددة
+property multidaterange,نطاق تواريخ متعددة
+property multiselect,التحديد المتعدد
+property numeric,رقمي
+property preview,معاينة
+property relationship,العلاقة
+property select,تحديد
+property text,النص
+Property type,نوع الخاصية
 Protection,حماية
 ProTip!,نصيحة احترافية!
 "Provide chart-ready data as JSON. Each series needs id, label, and a points array with
-              label and value per row. Optional key on points helps stable colors.","Provide chart-ready data as JSON. Each series needs id, label, and a points array with
-              label and value per row. Optional key on points helps stable colors."
-Public entities description,Caution: the selected entities will be **public**. Anyone will be able to see them.
-Public form settings description,Here you can configure the public form destination and the whitelisted templates
-Public Form submit URL,Public Form submit URL
-Public form URL description,"If you have configured a public form and would like a different Uwazi collection to receive the submissions, enter its URL here."
-Public form whitelist description,"If you wish to include Public Forms on your pages, you must white-list the template IDs for which Public Forms are expected."
-Public instance,Public instance
+              label and value per row. Optional key on points helps stable colors.","قم بتوفير البيانات الجاهزة للعرض في الرسوم البيانية بتنسيق JSON. يجب أن تحتوي كل سلسلة على معرّف (id) وتسمية (label) ومصفوفة من النقاط تتضمن
+التسمية والقيمة في كل صف. ويساعد وجود مفتاح اختياري في النقاط على تثبيت الألوان."
+Public entities description,تنبيه: ستكون الكيانات المحددة **عامة**. وسيتمكن أي شخص من رؤيتها.
+Public form settings description,هنا يمكنك تكوين وجهة النموذج العام والقوالب المدرجة في القائمة البيضاء
+Public Form submit URL,عنوان URL لإرسال النموذج العام
+Public form URL description,إذا كنت قد قمت بإعداد نموذج عام وترغب في أن تتلقى مجموعة Uwazi أخرى الإرسالات، فأدخل عنوان URL الخاص بها هنا.
+Public form whitelist description,إذا كنت ترغب في تضمين «النماذج العامة» في صفحاتك، فيجب عليك إدراج معرّفات القوالب التي يُتوقع ظهور «النماذج العامة» فيها في القائمة البيضاء.
+Public instance,مثيل عام
 Publish,انشر
-Publish release,Publish release
+Publish release,نشر الإصدار
 Published,منشور
-Published and unpublished entities are counted.,Published and unpublished entities are counted.
-QR Code,QR Code
+Published and unpublished entities are counted.,يتم احتساب الكيانات المنشورة وغير المنشورة.
+QR Code,رمز الاستجابة السريعة
 Query,استعلام
-Queued,Queued
+Queued,في قائمة الانتظار
 RAW,RAW
 "Re-runs the query against your current collection. Use this after importing
-                        or editing entities—not when changing chart settings (save handles that).","Re-runs the query against your current collection. Use this after importing
-                        or editing entities—not when changing chart settings (save handles that)."
-Re-uploaded document,Re-uploaded document
-Ready,Ready
+                        or editing entities—not when changing chart settings (save handles that).","إعادة تشغيل الاستعلام على المجموعة الحالية. استخدم هذه الميزة بعد استيراد
+ أو تعديل الكيانات — وليس عند تغيير إعدادات المخطط (فعمليّة الحفظ تتولى ذلك)."
+Re-uploaded document,وثيقة أعيد تحميلها
+Ready,جاهز
 Receiving email,البريد الالكتروني المستقبل
-Receiving email description,"If you have a contact form, this is the email address that will receive the form's submissions."
-Recommended,Recommended
-Reference,Reference
+Receiving email description,إذا كان لديك نموذج اتصال، فهذا هو عنوان البريد الإلكتروني الذي سيتلقى الإرسالات المرسلة عبر النموذج.
+Recommended,موصى به
+Reference,مرجع
 References,مراجع
 references,مراجع
-Refresh,Refresh
+Refresh,تحديث
 "Refresh manually when you have added data and cannot wait for the next
-                        scheduled run.","Refresh manually when you have added data and cannot wait for the next
-                        scheduled run."
-Refresh mode,Refresh mode
+                        scheduled run.","قم بالتحديث يدويًّا عندما تضيف بيانات ولا يمكنك انتظار
+التشغيل المجدول التالي."
+Refresh mode,وضع التحديث
 Reject,رفض
-Reject all,Reject all
-Related entities created,Related entities created
-Relation type,Relation type
+Reject all,رفض الكل
+Related entities created,تم إنشاء الكيانات ذات الصلة
+Relation type,نوع العلاقة
 Relationship,صلة
-Relationship created,Relationship created
-Relationship Type,Relationship Type
-Relationship type,Relationship type
-Relationship type created successfully.,Relationship type created successfully.
-Relationship type name,Relationship type name
-Relationship type name already exists,Relationship type name already exists
+Relationship created,تم إنشاء العلاقة
+Relationship Type,نوع العلاقة
+Relationship type,نوع العلاقة
+Relationship type created successfully.,تم إنشاء نوع العلاقة بنجاح.
+Relationship type name,اسم نوع العلاقة
+Relationship type name already exists,اسم نوع العلاقة موجود بالفعل
 Relationship types,أنواع العلاقات
 relationships,العلاقات
 Relationships,العلاقات
-Relationships saved,Relationships saved
-relationships? This action cannot be undone.,relationships? This action cannot be undone.
+Relationships saved,تم حفظ العلاقات
+relationships? This action cannot be undone.,العلاقات؟ لا يمكن التراجع عن هذا الإجراء.
 RelationType saved,تم حفظ نوع العلاقة
-Release message,Release message
-Relevance,Relevance
-remaining,remaining
-remaining files,remaining files
-Remote Server Unreachable,Remote Server Unreachable
+Release message,رسالة الإصدار
+Relevance,الأهمية
+remaining,المتبقي
+remaining files,الملفات المتبقية
+Remote Server Unreachable,لا يمكن الوصول إلى الخادم البعيد
 Remove,إزالة
-Remove from connection,Remove from connection
-Remove from training set,Remove from training set
+Remove from connection,إزالة من الارتباط
+Remove from training set,إزالة من مجموعة التدريب
 remove icon,إزالة الأيقونة
-Remove icon,Remove icon
-Removed language,Removed language
+Remove icon,إزالة الرمز
+Removed language,حذف اللغة
 Rename,إعادة تسمية
-Renamed attachment,Renamed attachment
+Renamed attachment,إعادة تسمية المرفق
 Repeat Password,إعادة كلمة المرور
 Request id #,طلب المعرف #
-Request token,Request token
-Required,Required
+Request token,طلب الرمز المميز
+Required,مطلوب
 Required property,الخاصية المطلوبة
-Required relationships were prepared.,Required relationships were prepared.
-Required thesauri values were prepared.,Required thesauri values were prepared.
+Required relationships were prepared.,تم إعداد العلاقات المطلوبة.
+Required thesauri values were prepared.,تم إعداد قيم المعاجم المطلوبة.
 Reset,إعادة ضبط
 Reset 2FA,إعادة تعيين المصادقة الثنائية
-Reset default translation,Reset default translation
-Reset language,Reset language
+Reset default translation,إعادة تعيين الترجمة الافتراضية
+Reset language,إعادة ضبط اللغة
 Reset Password,إعادة تعيين كلمة المرور
-Reset passwords,Reset passwords
-Resize panels,Resize panels
-Restore,Restore
-Restore previous version,Restore previous version
+Reset passwords,إعادة تعيين كلمات المرور
+Resize panels,تغيير حجم الألواح
+Restore,استعادة
+Restore previous version,استعادة الإصدار السابق
 Restricted,مُقَيَّد
-Retryable,Retryable
-Retrying,Retrying
+Retryable,قابل لإعادة المحاولة
+Retrying,إعادة المحاولة
 Return to login,العودة لتسجيل الدخول
-Review,Review
+Review,مراجعة
 Reviewed,تمت مراجعته
 Role,دور
 Route,مسار
-Row,Row
-Row density,Row density
-Rows failed,Rows failed
-Rows processed,Rows processed
+Row,صف
+Row density,كثافة الصفوف
+Rows failed,عدد الصفوف الفاشلة
+Rows processed,عدد الصفوف التي تمت معالجتها
 Sample,عينة
-Satellite,Satellite
+Satellite,القمر الصناعي
 Save,احفظ
-Save & Preview,Save & Preview
+Save & Preview,حفظ ومعاينة
 Save changes,حفظ التغييرات
 Save password,حفظ كلمة المرور
-Save the visualization before refreshing.,Save the visualization before refreshing.
-Save the visualization to get embed code.,Save the visualization to get embed code.
-Save your work to make change permanent,Save your work to make change permanent
-Saved successfully.,Saved successfully.
-Saved with warnings,Saved with warnings
-Saving,Saving
-Saving...,Saving...
-Scanning,Scanning
-Scanning rows before import.,Scanning rows before import.
-Schedule,Schedule
-Schedules run in UTC (Coordinated Universal Time).,Schedules run in UTC (Coordinated Universal Time).
+Save the visualization before refreshing.,احفظ التمثيل البياني قبل التحديث.
+Save the visualization to get embed code.,احفظ العرض المرئي للحصول على رمز التضمين.
+Save your work to make change permanent,احفظ عملك لتثبيت التغييرات بشكل دائم
+Saved successfully.,تم الحفظ بنجاح.
+Saved with warnings,تم الحفظ مع تحذيرات
+Saving,جارٍ الحفظ...
+Saving...,جاري الحفظ...
+Scanning,المسح
+Scanning rows before import.,مسح الصفوف قبل الاستيراد.
+Schedule,الجدول الزمني
+Schedules run in UTC (Coordinated Universal Time).,تُعرض الجداول الزمنية بتوقيت UTC (التوقيت العالمي المنسق).
 Search,ابحث
-"Search  •  AND, OR, NOT, ""exact"", wild*","Search  •  AND, OR, NOT, ""exact"", wild*"
-Search entities...,Search entities...
-Search entities…,Search entities…
+"Search  •  AND, OR, NOT, ""exact"", wild*","بحث  •  AND، OR، NOT، ""exact""، wild*"
+Search entities...,البحث عن الكيانات...
+Search entities…,البحث عن الكيانات…
 Search item,البحث عن بند
 Search related entities or documents,البحث عن الكيانات أو المستندات ذات الصلة
-Search relationships,Search relationships
+Search relationships,البحث عن العلاقات
 Search relevance,ملائمة البحث
 Search text,بحث النص
 Search text description,اكتب نص في خانة البحث لتظهر بعض النتائج
-Search this document,Search this document
+Search this document,ابحث في هذا المستند
 Search Tips,نصائح البحث
-Search tips,Search tips
-Search Tips: boolean,نصائح البحث: Boolean
-Search Tips: exact term,نصائح البحث: المصطلح الدقيق
-Search Tips: one char wildcard,نصائح البحث: واحد char wildcard
-Search Tips: proximity,بحث نصائح: القرب
-Search Tips: wildcard,نصائح البحث: Wildcard
-Search title & metadata,Search title & metadata
-Searching...,Searching...
-Secondary button,Secondary button
-Secret keys,Secret keys
-Security,Security
-Select,Select
-Select & Search,Select & Search
-"Select a dimension to see supported chart types, or use Metric for a total count.","Select a dimension to see supported chart types, or use Metric for a total count."
-Select a document to connect to a specific paragraph,Select a document to connect to a specific paragraph
-Select a file,Select a file
+Search tips,نصائح للبحث
+Search Tips: boolean,"استخدم AND وOR وNOT لعمليات البحث المنطقي (Boolean). على سبيل المثال: ستطابق ""الحالة AND النساء NOT نيكاراغوا"" أي نص يحتوي على كلمتي ""الحالة"" و""النساء"" معًا، ولا يحتوي بالضرورة على كلمة ""نيكاراغوا""."
+Search Tips: exact term,"للحصول على تطابق حرفي للمصطلح، ضع نص البحث بين علامتَي اقتباس. على سبيل المثال: ستُعطي ""كوستاريكا"" نتائج مختلفة عن كوستاريكا بدون علامتَي اقتباس."
+Search Tips: one char wildcard,"استخدم ? للبحث عن حرف واحد بديل. على سبيل المثال: ستطابق ""198?"" الأرقام من 1980 إلى 1989، وكذلك 198a و198b وغيرها."
+Search Tips: proximity,"استخدم ~ لعمليات البحث بالقرب. على سبيل المثال: ستجد ""الوضع القانوني""~5 أي نص يحتوي على كلمتَي ""الوضع"" و""القانوني"" ضمن مسافة 5 كلمات، مثل ""الوضع القانوني الإجرائي"" أو ""الوضع القانوني والاجتماعي""."
+Search Tips: wildcard,"استخدم * للبحث بحرف بديل متعدد. على سبيل المثال: ستطابق ""قانون*"" كلمات مثل قانون، وقانوني، وقانونية، وغيرها."
+Search title & metadata,البحث في العنوان والبيانات الوصفية
+Searching...,جاري البحث...
+Secondary button,الزر الثانوي
+Secret keys,المفاتيح السرية
+Security,الأمان
+Select,اختر
+Select & Search,اختر وابحث
+"Select a dimension to see supported chart types, or use Metric for a total count.",اختر بعدًا ما للاطلاع على أنواع المخططات المدعومة، أو استخدم «المقياس» للحصول على العدد الإجمالي.
+Select a document to connect to a specific paragraph,اختر مستندًا للربط بفقرة معينة
+Select a file,اختر ملفًا
 Select all,اختار الكل
-Select an existing image,Select an existing image
-Select favicon image,Select favicon image
+Select an existing image,اختر صورة موجودة
+Select favicon image,اختر صورة الرمز المفضل
 Select files on your device,اختر الملفات في جهازك
-Select from computer,Select from computer
-Select image,Select image
-Select media,Select media
-Select relationship,Select relationship
+Select from computer,اختر من جهاز الكمبيوتر
+Select image,اختر صورة
+Select media,اختر وسائط
+Select relationship,اختر العلاقة
 Select relationship type,اختر نوع العلاقة
-Select site logo image,Select site logo image
-Select target document,Select target document
-Select target entity,Select target entity
+Select site logo image,اختر صورة شعار الموقع
+Select target document,اختر المستند المستهدف
+Select target entity,اختر الكيان المستهدف
 Select target paragraph,اختر الفقرة المستهدفة
-Select text in target document,Select text in target document
-select text or a value,select text or a value
-Select the template to store the extracted paragraphs.,Select the template to store the extracted paragraphs.
-Select the template with the source documents.,Select the template with the source documents.
+Select text in target document,حدد نصًا في المستند الهدف
+select text or a value,حدد نصًا أو قيمة
+Select the template to store the extracted paragraphs.,اختر القالب الذي تريد تخزين الفقرات المستخرجة فيه.
+Select the template with the source documents.,اختر القالب الذي يحتوي على المستندات المصدر.
 Select...,اختار...
-Selected,Selected
+Selected,مُختار
 selected,المحدد
 selected of,مختار من
-Selected or suggested,Selected or suggested
-Selected templates,Selected templates
+Selected or suggested,مختارة أو مقترحة
+Selected templates,قوالب مختارة
 Send,إرسال
 Send recovery email,إرسل بريد الكتروني للاستعادة
 Sending email,البريد الالكتروني المرسل
-Sending email description,This is the email address that will appear as the sender when an email is sent from your Uwazi collection to registered users. The default address is *no-reply@uwazi.io*. You can set a custom one by including your desired email address here.
-Sending labeled data,Sending labeled data
-Series,Series
-Services,Services
+Sending email description,هذا هو عنوان البريد الإلكتروني الذي سيظهر كمرسل عند إرسال رسالة بريد إلكتروني من مجموعتك على Uwazi إلى المستخدمين المسجلين. العنوان الافتراضي هو *no-reply@uwazi.io*. يمكنك تعيين عنوان مخصص عن طريق إدخال عنوان البريد الإلكتروني الذي تريده هنا.
+Sending labeled data,إرسال البيانات المُصنَّفة
+Series,سلسلة
+Services,الخدمات
 Set as default,تعيين كافتراضي
-Set default language,Set default language
-Set default template,Set default template
+Set default language,تعيين اللغة الافتراضية
+Set default template,تعيين القالب الافتراضي
 Set the default starting point for your geolocation properties.,عين نقطة البدء الافتراضية لخصائص تحديد الموقع الجغرافي الخاصة بك
 Settings,إعدادات
 settings,إعدادات
-Settings navigation active background,Settings navigation active background
-Settings sidebar background,Settings sidebar background
+Settings navigation active background,خلفية التنقل بين الإعدادات النشطة
+Settings sidebar background,خلفية الشريط الجانبي للإعدادات
 Settings updated,تم تحديث الإعدادات
 Share,مشاركة
-Share edit access with other users,Share edit access with other users
-Share entities with the public,Share entities with the public
+Share edit access with other users,مشاركة حق الوصول للتحرير مع مستخدمين آخرين
+Share entities with the public,مشاركة الكيانات مع الجمهور
 Share with people and groups,المشاركة مع الأشخاص والمجموعات
 Shared as editor,المشاركة كمحرر
 Shared as viewer,المشاركة كمشاهد
-Show actions,Show actions
+Show actions,إظهار الإجراءات
 Show cookie policy,عرض سياسة ملف تعريف الارتباط
-Show details,Show details
+Show details,إظهار التفاصيل
 Show filters,إظهار عوامل التصفية
 Show in cards,اظهر في البطاقات
-Show information,Show information
-Show less,Show less
+Show information,عرض المعلومات
+Show less,إظهار أقل
 Show more,أظهر المزيد
-Show remaining in panel,Show remaining in panel
-Show toolbar,Show toolbar
-Showing,Showing
-Showing the top,Showing the top
+Show remaining in panel,إظهار ما تبقى في اللوحة
+Show toolbar,إظهار شريط الأدوات
+Showing,عرض
+Showing the top,عرض الجزء العلوي
 shown of,مبين
 Sign in,تسجيل الدخول
-Simple mode,Simple mode
-Single relationships must have a hub,Single relationships must have a hub
-Site logo description,"The logo appears in the top bar next to your collection name (about 200×32 pixels).
+Simple mode,الوضع البسيط
+Single relationships must have a hub,يجب أن يكون للعلاقات الفردية مركزًا
+Site logo description,"يظهر الشعار في الشريط العلوي بجوار اسم مجموعتك (بحجم 200×32 بكسل تقريبًا).
 
-1. Upload images in Custom Uploads if needed.
-2. Click ""Select site logo image"" and pick a file; only images from Custom Uploads are listed."
-Site logo no images hint,"No image files from Custom Uploads yet. Add PNG, SVG, or JPEG images there first."
+1. قم بتحميل الصور في قسم «التحميلات المخصصة» إذا لزم الأمر.
+2. انقر على «تحديد صورة شعار الموقع» واختر ملفًا؛ حيث لا تظهر في القائمة سوى الصور الموجودة في قسم «التحميلات المخصصة»."
+Site logo no images hint,لا توجد حتى الآن أي ملفات صور من قسم «التحميلات المخصصة». يرجى إضافة صور بتنسيقات PNG أو SVG أو JPEG إلى هناك أولاً.
 Size,حجم
-Skip to main content,Skip to main content
-Some tasks may take a while. Bert will reply when it's done.,Some tasks may take a while. Bert will reply when it's done.
+Skip to main content,الانتقال إلى المحتوى الرئيسي
+Some tasks may take a while. Bert will reply when it's done.,قد تستغرق بعض المهام بعض الوقت. سيقوم Bert بالرد عند الانتهاء منها.
 Something went wrong,حدث خطأ ما
 Sort,تصنيف
-Sort ascending,Sort ascending
-Sort descending,Sort descending
-Sort order,Sort order
-Sort:,Sort:
+Sort ascending,الترتيب تصاعديًّا
+Sort descending,الترتيب التنازلي
+Sort order,ترتيب الفرز
+Sort:,الترتيب:
 sorted by,مرتبة حسب
-Source,Source
-Source entity,Source entity
-Source page,Source page
-Source relationship type,Source relationship type
-Source template,Source template
-Source Template,Source Template
-Source's role in the relationship Source-Target.,Source's role in the relationship Source-Target.
-Stage,Stage
+Source,المصدر
+Source entity,الكيان المصدر
+Source page,صفحة المصدر
+Source relationship type,نوع العلاقة بين المصادر
+Source template,قالب المصدر
+Source Template,قالب المصدر
+Source's role in the relationship Source-Target.,دور المصدر في العلاقة بين المصدر والهدف.
+Stage,المرحلة
 stat*,stat*
-State,State
-Statistics,Statistics
-Stats & Filters,Stats & Filters
-Status,Status
-status AND women NOT Nicaragua,status AND women NOT Nicaragua
-Stop filling,Stop filling
-Storage,Storage
-Streets,Streets
+State,الولاية
+Statistics,الإحصاءات
+Stats & Filters,الإحصائيات والمرشحات
+Status,الحالة
+status AND women NOT Nicaragua,الحالة AND النساء NOT نيكاراغوا
+Stop filling,توقف عن التعبئة
+Storage,التخزين
+Streets,الشوارع
 Strict mode,الوضع الصارم
 Style,نمط
 Submit,إرسال
-Submitted entity to a remote instance,Submitted entity to a remote instance
-Submitting,Submitting
-Success,Success
-"Success, Upload another?","Success, Upload another?"
-Suggestion,Suggestion
-Suggestion:,Suggestion:
+Submitted entity to a remote instance,تم إرسال الكيان إلى مثيل بعيد
+Submitting,الإرسال
+Success,النجاح
+"Success, Upload another?",نجح التحميل، هل تريد تحميل ملف آخر؟
+Suggestion,اقتراح
+Suggestion:,اقتراح:
 Suggestions,اقتراحات
-suggestions,suggestions
-Suggestions sent,Suggestions sent
-Suggestions updated,Suggestions updated
-Supported chart types for manual data,Supported chart types for manual data
-Supported chart types for this configuration,Supported chart types for this configuration
-Supporting,Supporting
-Supporting file,Supporting file
+suggestions,اقتراحات
+Suggestions sent,تم إرسال الاقتراحات
+Suggestions updated,تم تحديث الاقتراحات
+Supported chart types for manual data,أنواع المخططات المدعومة للبيانات اليدوية
+Supported chart types for this configuration,أنواع المخططات المدعومة في هذا التكوين
+Supporting,الدعم
+Supporting file,ملف داعم
 Supporting files,ملفات الدعم
-Synced template,Synced template
-Synced Template,Synced Template
-Synced templates cannot be deleted.,Synced templates cannot be deleted.
-System translations,System translations
+Synced template,قالب متزامن
+Synced Template,قالب متزامن
+Synced templates cannot be deleted.,لا يمكن حذف القوالب المتزامنة.
+System translations,ترجمات النظام
 Table,جدول
 Table of Contents,جدول المحتويات
 Table of contents,جدول المحتويات
-Table of contents saved successfully,Table of contents saved successfully
+Table of contents saved successfully,تم حفظ جدول المحتويات بنجاح
 Table view,معاينة الجدول
-Target entity,Target entity
-Target entity type,Target entity type
-Target relationship type,Target relationship type
-Target Template,Target Template
-Target template,Target template
-Target's role in the relationship Source-Target.,Target's role in the relationship Source-Target.
-Target:,Target:
-Tasks,Tasks
+Target entity,الكيان المستهدف
+Target entity type,نوع الكيان المستهدف
+Target relationship type,نوع العلاقة المستهدفة
+Target Template,قالب الهدف
+Target template,قالب الهدف
+Target's role in the relationship Source-Target.,دور «الهدف» في العلاقة بين «المصدر» و«الهدف».
+Target:,الهدف:
+Tasks,المهام
 Template,قالب
-Template changes are being applied to all related entities.,Template changes are being applied to all related entities.
-Template color,Template color
+Template changes are being applied to all related entities.,يجري حالياً تطبيق التغييرات على القوالب على جميع الكيانات ذات الصلة.
+Template color,لون القالب
 "Template colors apply when comparing data sources or when the dimension is entity
-              type. Otherwise the chart palette is used as fallback.","Template colors apply when comparing data sources or when the dimension is entity
-              type. Otherwise the chart palette is used as fallback."
-Template conflict,Template conflict
-Template name,Template name
-Template name already exists,Template name already exists
-Template processing completed.,Template processing completed.
-Template saved successfully.,Template saved successfully.
-Template with a long number of entities,"The template has changed and the associated entities will be re-indexed,
-       this process may take several minutes, do you want to continue?"
-Template(s),Template(s)
-Template(s) deleted successfully.,Template(s) deleted successfully.
+              type. Otherwise the chart palette is used as fallback.","يتم تطبيق ألوان القالب عند مقارنة مصادر البيانات أو عندما يكون البعد من نوع «الكيان».
+وإلا، يتم استخدام لوحة ألوان المخطط كخيار بديل."
+Template conflict,تعارض القوالب
+Template name,اسم القالب
+Template name already exists,اسم القالب موجود بالفعل
+Template processing completed.,اكتملت معالجة القالب.
+Template saved successfully.,تم حفظ القالب بنجاح.
+Template with a long number of entities,"لقد تم تغيير القالب، وسيتم إعادة فهرسة الكيانات المرتبطة به،
+وقد تستغرق هذه العملية عدة دقائق، هل تريد المتابعة؟"
+Template(s),القالب (القوالب)
+Template(s) deleted successfully.,تم حذف القوالب بنجاح.
 Templates,قوالب
-Templates:,Templates:
+Templates:,القوالب:
 Text,نص
-Text references limit warning,Text references are temporarily limited to a maximum of 300. We are currently working on a fix for this issue.
+Text references limit warning,تم تقييد عدد المراجع النصية مؤقتًا بحد أقصى يبلغ 300 مرجع. ونحن نعمل حاليًا على إصلاح هذه المشكلة.
 "The process of extracting the paragraphs has successfully started. Check the Status
-              column for updates on the process.","The process of extracting the paragraphs has successfully started. Check the Status
-              column for updates on the process."
-The request could not be processed.,The request could not be processed.
-The source of this template is a sync.,The source of this template is a sync.
-The token does not validate against the secret key,The token does not validate against the secret key
-The token does not validate against the secret key!,The token does not validate against the secret key!
-"the words together, in that order","the words together, in that order"
-the words within 5 of each other,the words within 5 of each other
-Theme and branding,Theme and branding
-Theme colors,Theme colors
-Theme colors imported,Theme colors imported
-Theme favicon,Theme favicon
-Theme instance file invalid,Theme instance file invalid
-Theme logotype,Theme logotype
-Theme presets,Theme presets
-Theme preview,Theme preview
-Then by,Then by
+              column for updates on the process.","بدأت عملية استخراج الفقرات بنجاح. يرجى مراجعة عمود «الحالة»
+للاطلاع على آخر المستجدات بشأن هذه العملية."
+The request could not be processed.,تعذر معالجة الطلب.
+The source of this template is a sync.,مصدر هذا القالب هو عملية مزامنة.
+The token does not validate against the secret key,لا يتم التحقق من صحة الرمز المميز مقابل المفتاح السري
+The token does not validate against the secret key!,الرمز المميز لا يتطابق مع المفتاح السري!
+"the words together, in that order",الكلمات معًا، بهذا الترتيب
+the words within 5 of each other,الكلمات التي تفصل بينها مسافة لا تزيد عن 5
+Theme and branding,الموضوع والعلامة التجارية
+Theme colors,ألوان السمة
+Theme colors imported,تم استيراد ألوان السمة
+Theme favicon,أيقونة الموقع المميزة
+Theme instance file invalid,ملف مثيل السمة غير صالح
+Theme logotype,شعار الموضوع
+Theme presets,الإعدادات المسبقة للسمات
+Theme preview,معاينة السمة
+Then by,ثم بواسطة
 There are no pages enabled for entity view,لا توجد صفحات ممكنة لمعاينة الكيان (الإدخال)
-There are no untranslated terms,There are no untranslated terms
+There are no untranslated terms,لا توجد مصطلحات لم تُترجم بعد
 Thesauri,قائمة المفردات
-Thesauri added.,Thesauri added.
-Thesauri deleted,Thesauri deleted
-Thesauri name,Thesauri name
-thesauri new group desc,thesauri new group desc
-thesauri new item desc,thesauri new item desc
-Thesauri updated.,Thesauri updated.
-Thesauri values created,Thesauri values created
-Thesaurus,Thesaurus
-Thesaurus created successfully.,Thesaurus created successfully.
-Thesaurus name,Thesaurus name
-Thesaurus name already exists,Thesaurus name already exists
+Thesauri added.,تمت إضافة المعاجم.
+Thesauri deleted,تم حذف قوائم المرادفات
+Thesauri name,اسم المكنز اللغوي
+thesauri new group desc,وصف مجموعة «thesauri» الجديدة
+thesauri new item desc,وصف العنصر الجديد في المكنز اللغوي
+Thesauri updated.,تم تحديث قوائم المرادفات.
+Thesauri values created,القيم التي تم إنشاؤها في قاعدة المرادفات
+Thesaurus,قاموس المرادفات
+Thesaurus created successfully.,تم إنشاء قاموس المرادفات بنجاح.
+Thesaurus name,اسم المكنز اللغوي
+Thesaurus name already exists,اسم المكنز موجود بالفعل
 Thesaurus saved,تم حفظ قائمة المفردات
-This action may take some time while we add the extra language to the entire collection.,This action may take some time while we add the extra language to the entire collection.
+This action may take some time while we add the extra language to the entire collection.,قد يستغرق هذا الإجراء بعض الوقت، حيث نقوم بإضافة اللغة الإضافية إلى المجموعة بأكملها.
 This area allows you to append custom Javascript to the page. This opens up a new universe of possibilities.,تتيح لك هذه المنطقة أن تلحق بالصفحة جافا سكريبت مخصصة، مما يفتح عالماً جديداً من الاحتمالات.
-This chart type cannot display the current data.,This chart type cannot display the current data.
+This chart type cannot display the current data.,لا يمكن لهذا النوع من المخططات عرض البيانات الحالية.
 "This chart type cannot display the current data. Pick a supported type in the Chart
-              tab.","This chart type cannot display the current data. Pick a supported type in the Chart
-              tab."
+              tab.","لا يمكن لهذا النوع من المخططات عرض البيانات الحالية. اختر نوعًا مدعومًا في علامة التبويب «المخطط»
+."
 "This chart type has no extra options. Select another chart type above if you need
-            legend, labels, or data filters.","This chart type has no extra options. Select another chart type above if you need
-            legend, labels, or data filters."
+            legend, labels, or data filters.","لا يحتوي هذا النوع من المخططات على خيارات إضافية. اختر نوعًا آخر من المخططات أعلاه إذا كنت بحاجة
+إلى مفتاح التوضيح أو التسميات أو عوامل تصفية البيانات."
 This content is automatically generated,أنشئ هذا المحتوى تلقائياً
-This data visualization name already exists. Enter a unique name.,This data visualization name already exists. Enter a unique name.
+This data visualization name already exists. Enter a unique name.,هذا الاسم الخاص بتصور البيانات موجود بالفعل. أدخل اسمًا فريدًا.
 "This entity has no document, you probably want to see the metadata",لا يتوافر مستند لهذا الكيان (الإدخال)، ربما ترغب في رؤية البيانات الوصفية
 This entity is restricted from public view.,هذا الكيان (الإدخال) ممنوع من المعاينة العامة
-This field is required,This field is required
-This file could not be displayed. Try refreshing the page.,This file could not be displayed. Try refreshing the page.
-This file could not be opened. It may be corrupted or not a valid PDF.,This file could not be opened. It may be corrupted or not a valid PDF.
+This field is required,هذا الحقل إلزامي
+This file could not be displayed. Try refreshing the page.,تعذر عرض هذا الملف. يرجى تحديث الصفحة.
+This file could not be opened. It may be corrupted or not a valid PDF.,تعذر فتح هذا الملف. ربما يكون تالفًا أو ملف PDF غير صالح.
 "This file is currently unavailable. Please contact your administrator if the issue
-                  persists.","This file is currently unavailable. Please contact your administrator if the issue
-                  persists."
+                  persists.","هذا الملف غير متاح حاليًا. يرجى الاتصال بالمسؤول إذا استمرت
+المشكلة."
 "This file is currently unavailable. Please contact your administrator if the issue
-              persists.","This file is currently unavailable. Please contact your administrator if the issue
-              persists."
-This file type is not supported on media fields,This file type is not supported on media fields
-This group is empty,This group is empty
-This import is waiting in queue.,This import is waiting in queue.
-This label already exists in this template,This label already exists in this template
-This page does not need Markdown,This page does not need Markdown
+              persists.","هذا الملف غير متوفر حاليًا. يرجى الاتصال بالمسؤول إذا استمرت
+المشكلة."
+This file type is not supported on media fields,لا يُدعم هذا النوع من الملفات في حقول الوسائط
+This group is empty,هذه المجموعة فارغة
+This import is waiting in queue.,هذه العملية الاستيراد في انتظار دورها في قائمة الانتظار.
+This label already exists in this template,هذه العلامة موجودة بالفعل في هذا القالب
+This page does not need Markdown,هذه الصفحة لا تحتاج إلى لغة ماركداون
 "This page uses HTML only (Markdown is not processed). You can embed maps, charts, entity
-          lists, and other components.","This page uses HTML only (Markdown is not processed). You can embed maps, charts, entity
-          lists, and other components."
-This property can not be deleted,This property can not be deleted
+          lists, and other components.","تستخدم هذه الصفحة لغة HTML فقط (لا تتم معالجة لغة Markdown). يمكنك تضمين الخرائط والرسوم البيانية وقوائم الكيانات
+والمكونات الأخرى."
+This property can not be deleted,لا يمكن حذف هذا العنصر
 This property will appear in the library cards as part of the basic info.,ستظهر هذه الخاصية في بطاقات المكتبة كجزء من المعلومات الأساسية.
 This property will be shown using all the width available.,ستظهر هذه الخاصية باستخدام كل العرض المتاح
-This property will be shown without the label,This property will be shown without the label
-This property will be the default filter in the library for this template.,This property will be the default filter in the library for this template.
-"This property will be used for filtering the library results. When properties match in equal name and field type with other entity types, they will be combined for filtering.","This property will be used for filtering the library results. When properties match in equal name and field type with other entity types, they will be combined for filtering."
-This search could not be completed. Try again later.,This search could not be completed. Try again later.
+This property will be shown without the label,سيتم عرض هذا العقار دون العلامة
+This property will be the default filter in the library for this template.,ستكون هذه الخاصية هي عامل التصفية الافتراضي في المكتبة لهذا القالب.
+"This property will be used for filtering the library results. When properties match in equal name and field type with other entity types, they will be combined for filtering.",ستُستخدم هذه الخاصية لتصفية نتائج المكتبة. وعندما تتطابق الخصائص من حيث الاسم ونوع الحقل مع أنواع كيانات أخرى، سيتم دمجها معًا لأغراض التصفية.
+This search could not be completed. Try again later.,تعذر إتمام عملية البحث هذه. يرجى المحاولة مرة أخرى لاحقًا.
 "This site uses cookies for language preferences and analytics. Session cookies are only
-            set when you log in.","This site uses cookies for language preferences and analytics. Session cookies are only
-            set when you log in."
-This table of contents was automatically created by the system.,This table of contents was automatically created by the system.
-this template,this template
-This template is in use by existing entities and cannot be deleted.,This template is in use by existing entities and cannot be deleted.
-Thumbnail,Thumbnail
+            set when you log in.","يستخدم هذا الموقع ملفات تعريف الارتباط لتحديد تفضيلات اللغة ولأغراض التحليلات. ولا يتم
+تعيين ملفات تعريف الارتباط المؤقتة إلا عند تسجيل الدخول."
+This table of contents was automatically created by the system.,تم إنشاء جدول المحتويات هذا تلقائيًّا بواسطة النظام.
+this template,هذا النموذج
+This template is in use by existing entities and cannot be deleted.,هذا القالب قيد الاستخدام من قبل كيانات قائمة ولا يمكن حذفه.
+Thumbnail,صورة مصغرة
 Time,زمن
-Time (UTC),Time (UTC)
-Timeline,Timeline
-Timelinks,Timelinks
-Timestamp,Timestamp
-tips,tips
+Time (UTC),الوقت (UTC)
+Timeline,الجدول الزمني
+Timelinks,روابط زمنية
+Timestamp,الطابع الزمني
+tips,نصائح
 Title,عنوان
-To,To
+To,إلى
 "To complete the account creation process, please create a password for your account",لإكمال عملية إنشاء الحساب، يرجى إنشاء كلمة مرور لحسابك
 to view your authentication code and verify your identity.,لمعاينة رمز المصادقة الخاص بك والتحقق من هويتك.
-Today,Today
-Toggle relationship details,Toggle relationship details
-Toggle timeline mode,Toggle timeline mode
+Today,اليوم
+Toggle relationship details,إظهار/إخفاء تفاصيل العلاقة
+Toggle timeline mode,تبديل وضع الخط الزمني
 Tools,الأدوات
-total entities,total entities
-Total files,Total files
-total files,total files
-"Total files from main documents, supporting files and uploads","Total files from main documents, supporting files and uploads"
-Total imports,Total imports
-total users,total users
-Train,Train
-Train model,Train model
-Train model description,Training machine learning models may take from minutes up to a couple of hours depending on the amount of labeled data and the difficulty of the task.
-Training,Training
-Training model,Training model
-Training sample,Training sample
+total entities,إجمالي الكيانات
+Total files,إجمالي عدد الملفات
+total files,إجمالي عدد الملفات
+"Total files from main documents, supporting files and uploads",إجمالي عدد الملفات من الوثائق الرئيسية والملفات الداعمة والملفات المُحمَّلة
+Total imports,إجمالي الواردات
+total users,إجمالي عدد المستخدمين
+Train,تدريب
+Train model,تدريب النموذج
+Train model description,قد يستغرق تدريب نماذج التعلم الآلي من بضع دقائق إلى بضع ساعات، اعتمادًا على حجم البيانات المصنفة وصعوبة المهمة.
+Training,التدريب
+Training model,جارٍ تدريب النموذج
+Training sample,نموذج تدريبي
 Translate,ترجم
-Translation,Translation
+Translation,الترجمة
 Translations,الترجمات
-Translations imported.,Translations imported.
-Translations reset successfully,Translations reset successfully
+Translations imported.,تم استيراد الترجمات.
+Translations reset successfully,تم إعادة تعيين الترجمات بنجاح
 Translations saved,تم حفظ الترجمات
-Try a different search or clear filters.,Try a different search or clear filters.
-Turn off inline translation,Turn off inline translation
+Try a different search or clear filters.,جرب إجراء بحث مختلف أو امسح المعايير.
+Turn off inline translation,إيقاف الترجمة المباشرة
 "Two categorical dimensions enable stacked bar charts (e.g. country with sex
-              breakdown).","Two categorical dimensions enable stacked bar charts (e.g. country with sex
-              breakdown)."
-Two-Factor Authentication,Two-Factor Authentication
-Two-factor authentication enabled,Two-factor authentication enabled
-Two-factor authentication failed.,Two-factor authentication failed.
-Two-factor authentication secret,Two-factor authentication secret
+              breakdown).","هناك بعدان تصنيفيان يتيحان إنشاء مخططات شريطية مكدسة (مثل: البلد مع
+التوزيع حسب الجنس)."
+Two-Factor Authentication,المصادقة الثنائية
+Two-factor authentication enabled,تم تمكين المصادقة الثنائية
+Two-factor authentication failed.,فشلت عملية المصادقة الثنائية.
+Two-factor authentication secret,سر المصادقة الثنائية
 Two-factor verification failed,فشل التحقق الثنائي (التحقق بخطوتين)
 Two-step verification,التحقق الثنائي (التحقق بخطوتين)
-Two-step verification token required,Two-step verification token required
+Two-step verification token required,يلزم وجود رمز التحقق بخطوتين
 Type,نوع
 U,U
-"Unable to save, failed response","Unable to save, failed response"
+"Unable to save, failed response",تعذر الحفظ، استجابة فاشلة
 Unauthorized,غير مصرح
-Unexpected error,Unexpected error
-Uninstall,Uninstall
-Uninstall language,Uninstall language
-Uninstalling language,Uninstalling language
-Unknown entity,Unknown entity
-Unknown template,Unknown template
-Unlink,Unlink
-Unlock account,Unlock account
-Unsaved changes,Unsaved changes
+Unexpected error,خطأ غير متوقع
+Uninstall,إلغاء التثبيت
+Uninstall language,إلغاء تثبيت اللغة
+Uninstalling language,إلغاء تثبيت اللغة
+Unknown entity,كيان مجهول
+Unknown template,قالب غير معروف
+Unlink,إلغاء الارتباط
+Unlock account,إلغاء قفل الحساب
+Unsaved changes,التغييرات غير المحفوظة
 Unsupported OCR language,لغة الOCR غير مدعومة
-Untitled,Untitled
-Untranslated Terms,Untranslated Terms
+Untitled,بدون عنوان
+Untranslated Terms,المصطلحات غير المترجمة
 Update,تحديث
 UPDATE,تحديث
-Update from collection,Update from collection
-Update success,Update success
-Updated,Updated
-Updated file,Updated file
-Updated multiple entities,Updated multiple entities
-Updated permissions on entity,Updated permissions on entity
-Updated relationships,Updated relationships
-Updated settings,Updated settings
-Updated translations,Updated translations
-Updated user,Updated user
-Updating template properties across,Updating template properties across
-Updating…,Updating…
+Update from collection,تحديث من المجموعة
+Update success,تم التحديث بنجاح
+Updated,تم التحديث
+Updated file,تم تحديث الملف
+Updated multiple entities,تم تحديث عدة كيانات
+Updated permissions on entity,تم تحديث أذونات الكيان
+Updated relationships,تم تحديث العلاقات
+Updated settings,تم تحديث الإعدادات
+Updated translations,تم تحديث الترجمات
+Updated user,تم تحديث المستخدم
+Updating template properties across,تحديث خصائص القوالب في جميع أنحاء
+Updating…,جاري التحديث…
 Upload and select file,حمل الملف واختره
 Upload from computer,حمل من الحاسوب
-Upload image,Upload image
+Upload image,تحميل صورة
 Upload PDF,تحميل ملف PDF
 Upload PDF(s) to create,حمل ملف (ملفات) PDF لإنشاء
-Uploaded attachment,Uploaded attachment
-Uploaded custom file,Uploaded custom file
-Uploaded document,Uploaded document
-Uploaded file,Uploaded file
+Uploaded attachment,ملف مرفق تم تحميله
+Uploaded custom file,تم تحميل ملف مخصص
+Uploaded document,المستند الذي تم تحميله
+Uploaded file,الملف الذي تم تحميله
 Uploading,جاري التحميل
 Uploading ...,تحميل...
 Uploads,تحميلات
 URL,عنوان URL
 Use,استخدام
-Use as filter,Use as filter
-Use for training,Use for training
+Use as filter,استخدامه كمرشح
+Use for training,يُستخدم للتدريب
 "Use this iframe on external sites. Change the locale query parameter in the URL if
-                needed.","Use this iframe on external sites. Change the locale query parameter in the URL if
-                needed."
-Use URL,Use URL
-Used in templates and {n} refs — cannot delete,Used in templates and {n} refs — cannot delete
-Used in templates — cannot delete,Used in templates — cannot delete
-Used in {n} refs — cannot delete,Used in {n} refs — cannot delete
+                needed.","استخدم إطار iframe هذا على المواقع الخارجية. قم بتغيير معلمة الاستعلام الخاصة بالإعدادات المحلية في عنوان URL إذا
+ لزم الأمر."
+Use URL,استخدام عنوان URL
+Used in templates and {n} refs — cannot delete,يُستخدم في القوالب و{n} مرجعًا — لا يمكن حذفه
+Used in templates — cannot delete,يُستخدم في القوالب — لا يمكن حذفه
+Used in {n} refs — cannot delete,تم استخدامه في {n} مرجع — لا يمكن حذفه
 User,المستخدم
-User Action,User Action
-User Role,User Role
-User updated,User updated
+User Action,إجراء المستخدم
+User Role,دور المستخدم
+User updated,تم تحديث المستخدم
 Username,اسم المستخدم
 Username is required,اسم المستخدم مطلوب
 Username is too long,اسم المستخدم طويل جداً
 Username is too short,اسم المستخدم قصير جداً
-"Username, email or group","Username, email or group"
-Usernames cannot have spaces,Usernames cannot have spaces
+"Username, email or group",اسم المستخدم أو البريد الإلكتروني أو المجموعة
+Usernames cannot have spaces,لا يجوز أن تحتوي أسماء المستخدمين على مسافات
 Users,المستخدمين
-Users & Groups,Users & Groups
-Using Authenticator,Using Authenticator
-Using URLs,Using URLs
+Users & Groups,المستخدمون والمجموعات
+Using Authenticator,استخدام تطبيق Authenticator
+Using URLs,استخدام عناوين URL
 Uwazi,Uwazi
 Uwazi Docs,Uwazi Docs
 Uwazi is developed by,أوازي من إعداد:
 Uwazi UI,واجهة استخدام أوازي
-Validating,Validating
-Validating file structure and headers.,Validating file structure and headers.
+Validating,التحقق من الصحة
+Validating file structure and headers.,التحقق من صحة بنية الملف ورؤوسه.
 Value,قيمة
-Value cannot be transformed to the correct type,Value cannot be transformed to the correct type
-values,values
+Value cannot be transformed to the correct type,لا يمكن تحويل القيمة إلى النوع الصحيح
+values,القيم
 Verify,تحقق
 Verifying...,تحقق..
-via,via
+via,عبر
 View,عرض
 view,عرض
-View entities,View entities
-View entity,View entity
+View entities,عرض الكيانات
+View entity,عرض الكيان
 View in library,عرض في المكتبة
 View page,عرض الصفحة
-Visibility,Visibility
-Visualization data updated from your collection.,Visualization data updated from your collection.
-WARNING,WARNING
+Visibility,الرؤية
+Visualization data updated from your collection.,تم تحديث بيانات التصور المستمدة من مجموعتك.
+WARNING,تحذير
 Warning: you are editing multiple entities. Fields marked with a,تنبيه: أنت تحرر كيانات (إدخالات) متعددة. الحقول تحمل علامة
-We can't find the page you're looking for.,We can't find the page you're looking for.
+We can't find the page you're looking for.,لا يمكننا العثور على الصفحة التي تبحث عنها.
 Welcome to Uwazi,مرحباً بكم في أوازي
 "Well, this is awkward...",إنه لأمر محرج...
 "When enabled, visitors must accept or reject non-essential cookies before they are set.
-    Analytics and language preference cookies are blocked until accepted.","When enabled, visitors must accept or reject non-essential cookies before they are set.
-    Analytics and language preference cookies are blocked until accepted."
-Whitelisted templates,Whitelisted templates
-wildcard,wildcard
-wildcard (many chars),wildcard (many chars)
-wildcard (one char),wildcard (one char)
-"Will attempt to fill the container, using its entire width. In cards, cropping is likely to occur.","Will attempt to fill the container, using its entire width. In cards, cropping is likely to occur."
+    Analytics and language preference cookies are blocked until accepted.","عند تفعيل هذه الميزة، يتعين على الزوار قبول ملفات تعريف الارتباط غير الأساسية أو رفضها قبل تثبيتها.
+    يتم حظر ملفات تعريف الارتباط الخاصة بالتحليلات وتفضيلات اللغة إلى أن يتم قبولها."
+Whitelisted templates,القوالب المدرجة في القائمة البيضاء
+wildcard,حرف البدل
+wildcard (many chars),حرف البدل (أحرف متعددة)
+wildcard (one char),حرف البدل (حرف واحد)
+"Will attempt to fill the container, using its entire width. In cards, cropping is likely to occur.",ستتم محاولة ملء الحاوية باستخدام عرضها بالكامل. وفي حالة البطاقات، من المحتمل أن يتم اقتصاص الصورة.
 will be updated with the same value.,سيحدث بالقيمة نفسها
-Will show the entire media inside the container.,Will show the entire media inside the container.
+Will show the entire media inside the container.,سيعرض جميع الملفات المتعددة الوسائط الموجودة داخل الحاوية.
 with,مع
 With great power comes great responsibility!,كلما ازدادت القوة، ازدادت معها المسؤولية!
 wom?n,wom?n
@@ -1498,20 +1500,20 @@ x,x
 x less,X أقل
 x more,X أكثر
 Year,سنة
-Yes,Yes
-You can add one or many items in this form.,You can add one or many items in this form.
-You can also enter this secret key into your Authenticator app.,You can also enter this secret key into your Authenticator app.
+Yes,نعم
+You can add one or many items in this form.,يمكنك إضافة عنصر واحد أو عدة عناصر في هذا النموذج.
+You can also enter this secret key into your Authenticator app.,يمكنك أيضًا إدخال هذا المفتاح السري في تطبيق Authenticator الخاص بك.
 You can create metadata templates in,يمكنك إنشاء قوالب البيانات الوصفية في
-"You can embed advanced components like maps, charts and entity lists in your page.","You can embed advanced components like maps, charts and entity lists in your page."
-You do not have write permission on all entities,You do not have write permission on all entities
-You have unsaved changes. Discard them? This action cannot be undone.,You have unsaved changes. Discard them? This action cannot be undone.
-You have unsaved changes. Do you want to continue?,You have unsaved changes. Do you want to continue?
+"You can embed advanced components like maps, charts and entity lists in your page.",يمكنك تضمين مكونات متقدمة مثل الخرائط والرسوم البيانية وقوائم الكيانات في صفحتك.
+You do not have write permission on all entities,ليس لديك حق الكتابة على جميع الكيانات
+You have unsaved changes. Discard them? This action cannot be undone.,لديك تعديلات لم يتم حفظها. هل تريد تجاهلها؟ لا يمكن التراجع عن هذا الإجراء.
+You have unsaved changes. Do you want to continue?,هناك تغييرات لم يتم حفظها. هل تريد المتابعة؟
 You should activate this feature for enhanced account security,يجب عليك تفعيل هذه الميزة لتحقيق تأمين أفضل للحساب
-You should activate this feature for enhanced account security.,You should activate this feature for enhanced account security.
-You won't be able to save an entity if this property is empty.,You won't be able to save an entity if this property is empty.
-You're all caught up,You're all caught up
-Your account's security is enhanced with two-factor authentication.,Your account's security is enhanced with two-factor authentication.
-Z → A,Z → A
+You should activate this feature for enhanced account security.,يجب عليك تفعيل هذه الميزة لتعزيز أمان حسابك.
+You won't be able to save an entity if this property is empty.,لن تتمكن من حفظ الكيان إذا كانت هذه الخاصية فارغة.
+You're all caught up,لقد أصبحت على اطلاع تام
+Your account's security is enhanced with two-factor authentication.,يتم تعزيز أمان حسابك من خلال المصادقة الثنائية.
+Z → A,ي → أ
 Zoom in,تكبير
 Zoom in library view,تكبير في المعاينة المكتبية
 Zoom out,تصغير
