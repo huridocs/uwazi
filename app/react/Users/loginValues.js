@@ -1,11 +1,11 @@
-const formElement = event =>
-  event?.currentTarget?.elements ? event.currentTarget : event?.target?.closest?.('form');
-
 const fromFormData = data => ({
   username: data.get('username') || undefined,
   password: data.get('password') || undefined,
   token: data.get('token') || undefined,
 });
+
+const formFrom = event =>
+  event?.currentTarget?.elements ? event.currentTarget : event?.target?.closest?.('form');
 
 const loginValues = (values, event) => {
   if (typeof FormData !== 'undefined' && values instanceof FormData) {
@@ -19,7 +19,7 @@ const loginValues = (values, event) => {
   ) {
     return values;
   }
-  const form = formElement(event) || formElement(values);
+  const form = formFrom(event) || formFrom(values);
   return form ? fromFormData(new FormData(form)) : values;
 };
 

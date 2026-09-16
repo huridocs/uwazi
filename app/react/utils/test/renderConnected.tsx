@@ -34,8 +34,7 @@ const renderConnected = (
         },
       },
     },
-  },
-  _confirm: Function = () => {}
+  }
 ) => {
   const store: MockStore = mockStoreCreator(storeData);
   return shallow(<Component {...props} store={store} />).dive();

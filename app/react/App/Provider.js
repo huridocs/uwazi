@@ -53,12 +53,10 @@ class CustomProvider extends Component {
   }
 
   render() {
-    const { children } = this.props;
-    this.getContextValue();
     return createElement(
       AppProviderContext.Provider,
-      { value: this.providerContextValue },
-      Children.only(children)
+      { value: this.getContextValue() },
+      Children.only(this.props.children)
     );
   }
 }

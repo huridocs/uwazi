@@ -1,4 +1,3 @@
-//TODO: replace react redux form
 import PropTypes from 'prop-types';
 import { LocalForm as RRLF, Form as RRF } from 'react-redux-form';
 

@@ -14,13 +14,9 @@ const storeFromProps = props => {
   return undefined;
 };
 
-const storeFromWrapper = wrapper => {
-  try {
-    return storeFromProps(wrapper.props()) || storeFromProps(wrapper.parent?.().props?.());
-  } catch {
-    return undefined;
-  }
-};
+const storeFromWrapper = wrapper =>
+  storeFromProps(wrapper.props()) ||
+  (wrapper.parents().length ? storeFromProps(wrapper.parent().props()) : undefined);
 
 const injectStore = (node, options) => {
   const store = options?.context?.store;
