@@ -37,7 +37,9 @@ describe('EntityUpdatedEvent', () => {
     });
 
     it('should create no event when no language changed', () => {
-      expect(EntityUpdatedEvent.create({ entity: createLoadedEntity(), targetLanguage: 'en' })).toBeNull();
+      expect(
+        EntityUpdatedEvent.create({ entity: createLoadedEntity(), targetLanguage: 'en' })
+      ).toBeNull();
     });
   });
 

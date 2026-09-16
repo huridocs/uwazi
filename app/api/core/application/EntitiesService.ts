@@ -178,11 +178,13 @@ class EntitiesService {
 
     await Promise.all(
       changedEntities
-        .map(entity => EntityUpdatedEvent.create({
+        .map(entity =>
+          EntityUpdatedEvent.create({
             entity,
             userId: context.actorId,
             targetLanguage: context.targetLanguage,
-          }))
+          })
+        )
         .filter(event => event !== null)
         .map(async event => this.deps.eventEmitter.emit(event))
     );
