@@ -1,1517 +1,1519 @@
 Key,Thai
-"""Costa Rica""","""Costa Rica"""
-"""the status""~5","""the status""~5"
-*please keep this key secret and don't share it.,*please keep this key secret and don't share it.
-+ Add data source,+ Add data source
-+ Add filter,+ Add filter
-+ click to select multiple cards.,+ click to select multiple cards.
+"""Costa Rica""","""คอสตาริกา"""
+"""the status""~5","""สถานภาพ ทางกฎหมาย""~5"
+*please keep this key secret and don't share it.,*โปรดเก็บรหัสนี้ไว้เป็นความลับและอย่าเปิดเผยให้ใครทราบ
++ Add data source,+ เพิ่มแหล่งข้อมูล
++ Add filter,+ เพิ่มตัวกรอง
++ click to select multiple cards.,+ คลิกเพื่อเลือกบัตรหลายใบ
 198?,198?
 2FA,2FA
-2FA Enabled,2FA Enabled
-A default template cannot be deleted.,A default template cannot be deleted.
-A friendly hand for serious work — I'll act in the context shown above.,A friendly hand for serious work — I'll act in the context shown above.
+2FA Enabled,เปิดใช้งาน 2FA แล้ว
+A default template cannot be deleted.,ไม่สามารถลบแม่แบบเริ่มต้นได้
+A friendly hand for serious work — I'll act in the context shown above.,มือที่อบอุ่นสำหรับงานที่จริงจัง — ฉันจะดำเนินการตามบริบทที่แสดงไว้ข้างต้น
 A generated ID will be the default title.,ID ที่สร้างขึ้นจะเป็นชื่อเริ่มต้น
-A source template must,A source template must
-A target template needs to have the following properties,A target template needs to have the following properties
+A source template must,แม่แบบต้นแบบต้อง
+A target template needs to have the following properties,แม่แบบเป้าหมายต้องมีคุณสมบัติต่อไปนี้
 A valid email is required,จำเป็นต้องใช้อีเมล
 A → Z,A → Z
 Accept,ตกลง
-Accept all,Accept all
-Accepted suggestion on entity,Accepted suggestion on entity
-Accepting suggestions,Accepting suggestions
-Accessibility checks need attention,Accessibility checks need attention
+Accept all,ยอมรับทั้งหมด
+Accepted suggestion on entity,ข้อเสนอที่ได้รับการยอมรับเกี่ยวกับเอนทิตี
+Accepting suggestions,กำลังยอมรับข้อเสนอแนะ
+Accessibility checks need attention,การตรวจสอบการช่วยการเข้าถึงต้องได้รับความสนใจ
 Account,บัญชี
-Account locked,Account locked
-Account unlocked successfully,Account unlocked successfully
-Account updated,Account updated
-Accuracy,Accuracy
-Accuracy tooltip,Accuracy is defined by the amount of matches vs mismatches for labeled samples that have been processed.
+Account locked,บัญชีถูกล็อก
+Account unlocked successfully,บัญชีได้ปลดล็อกสำเร็จแล้ว
+Account updated,บัญชีได้รับการอัปเดตแล้ว
+Accuracy,ความแม่นยำ
+Accuracy tooltip,ความแม่นยำถูกกำหนดโดยสัดส่วนระหว่างจำนวนที่ตรงกันกับจำนวนที่ไม่ตรงกันของตัวอย่างที่มีป้ายกำกับซึ่งได้ผ่านกระบวนการแล้ว
 Action,เริ่มทำ
-Actions,Actions
-Activate,Activate
-Activated,Activated
-Active filters,Active filters
-Active languages,Active languages
-Active primary,Active primary
+Actions,การดำเนินการ
+Activate,เปิดใช้งาน
+Activated,เปิดใช้งานแล้ว
+Active filters,ตัวกรองที่ใช้งานอยู่
+Active languages,ภาษาที่ใช้งานอยู่
+Active primary,หลักที่ใช้งานอยู่
 Activity,กิจกรรม
 Activity log,บันทึกกิจกรรม
 Activity Log,บันทึกกิจกรรม
 Add,เพิ่ม
 Add / remove favorite,เพิ่ม / ลบรายการโปรด
-Add a type below.,Add a type below.
-Add an account to the app by scanning the provided QR code with your mobile device or by inserting the provided key.,Add an account to the app by scanning the provided QR code with your mobile device or by inserting the provided key.
-Add as,Add as
-Add data source,Add data source
+Add a type below.,เพิ่มประเภทด้านล่างนี้
+Add an account to the app by scanning the provided QR code with your mobile device or by inserting the provided key.,เพิ่มบัญชีลงในแอปโดยใช้โทรศัพท์มือถือสแกนรหัส QR ที่ให้ไว้ หรือใส่รหัสที่ให้ไว้
+Add as,เพิ่มเป็น
+Add data source,เพิ่มแหล่งข้อมูล
 Add date,เพิ่มวันที่
 Add entities / documents,เพิ่มรายการ / เอกสาร
-Add entity,Add entity
-Add entity type,Add entity type
-Add Extractor,Add Extractor
-Add extractor,Add extractor
+Add entity,เพิ่มเอนทิตี
+Add entity type,เพิ่มประเภทเอนทิตี
+Add Extractor,เพิ่มเครื่องมือสกัด
+Add extractor,เพิ่มเครื่องมือสกัด
 Add file,เพิ่มไฟล์
 Add from URL,เพิ่มจาก URL
 Add from web,เพิ่มจากเว็บ
 Add group,เพิ่มกลุ่ม
 add icon,เพิ่มไอคอน
-Add icon,Add icon
-Add item,Add item
+Add icon,เพิ่มไอคอน
+Add item,เพิ่มรายการ
 Add link,เพิ่มลิงค์
-Add or remove relationship types for this collection.,Add or remove relationship types for this collection.
+Add or remove relationship types for this collection.,เพิ่มหรือลบประเภทความสัมพันธ์สำหรับคอลเลกชันนี้
 Add page,เพิ่มหน้า
-Add PDF,Add PDF
+Add PDF,เพิ่มไฟล์ PDF
 Add people or groups,เพิ่มผู้คนหรือกลุ่ม
-Add property,Add property
-Add relationship,Add relationship
-Add relationship type,Add relationship type
+Add property,เพิ่มคุณสมบัติ
+Add relationship,เพิ่มความสัมพันธ์
+Add relationship type,เพิ่มประเภทความสัมพันธ์
 Add template,เพิ่มเทมเพลต
 Add thesaurus,เพิ่มกลุ่มคำอธิบาย
-Add thesaurus value,Add thesaurus value
-Add timelink,Add timelink
+Add thesaurus value,เพิ่มค่าในพจนานุกรมคำพ้องความหมาย
+Add timelink,เพิ่มลิงก์เวลา
 Add to all languages,เพิ่มเข้าไปในทุกภาษา
 Add to table of contents,เพิ่มลงในสารบัญ
-Add to ToC,Add to ToC
-Add to training set,Add to training set
-Add translation,Add translation
+Add to ToC,เพิ่มลงในสารบัญ
+Add to training set,เพิ่มเข้าไปในชุดข้อมูลฝึกอบรม
+Add translation,เพิ่มการแปล
 Add user,เพิ่มผู้ใช้
-add value,add value
+add value,เพิ่มค่า
 Add/delete users and assign roles,เพิ่ม / ลบผู้ใช้และกำหนดบทบาทผู้ใช้
 Add/edit translations,เพิ่ม / แก้ไขการแปล
-Added language,Added language
-Added new user,Added new user
-"Added relation type ""{name}""","Added relation type ""{name}"""
-added to hub with the following errors:,added to hub with the following errors:
-added to hub.,added to hub.
-Adding a group and its items.,Adding a group and its items.
-Adding items to the thesauri,Adding items to the thesauri
-Adjust a few colors; secondary text and muted backgrounds update automatically.,Adjust a few colors; secondary text and muted backgrounds update automatically.
+Added language,เพิ่มภาษา
+Added new user,เพิ่มผู้ใช้ใหม่
+"Added relation type ""{name}""","เพิ่มประเภทความสัมพันธ์ ""{name}"""
+added to hub with the following errors:,ได้เพิ่มเข้าไปใน hub พร้อมกับข้อผิดพลาดดังต่อไปนี้:
+added to hub.,เพิ่มเข้าไปใน hub.
+Adding a group and its items.,การเพิ่มกลุ่มและรายการในกลุ่มนั้น
+Adding items to the thesauri,การเพิ่มรายการลงในฐานข้อมูลคำพ้องความหมาย
+Adjust a few colors; secondary text and muted backgrounds update automatically.,ปรับสีไม่กี่สี; ข้อความรองและพื้นหลังสีอ่อนจะอัปเดตอัตโนมัติ
 Admin,ผู้ดูแลระบบ
 Administrators and Editors,ผู้ดูแลระบบและผู้แก้ไขข้อมูล
-Administrators and Editors always have edit access,Administrators and Editors always have edit access
-Admins,Admins
-Advanced colors,Advanced colors
-Advanced ECharts overrides,Advanced ECharts overrides
-ALL,ALL
-All,All
+Administrators and Editors always have edit access,ผู้ดูแลระบบและผู้บรรณาธิการมีสิทธิ์แก้ไขเสมอ
+Admins,ผู้ดูแลระบบ
+Advanced colors,สีขั้นสูง
+Advanced ECharts overrides,การแทนที่ Advanced ECharts
+ALL,ทั้งหมด
+All,ทั้งหมด
 "All changes will be lost, are you sure you want to proceed?",การเปลี่ยนแปลงทั้งหมดจะหายไปคุณแน่ใจหรือว่าต้องการดำเนินการต่อ?
-All data,All data
-All editing options will be disabled.,All editing options will be disabled.
-All of the paragraphs will be deleted,All of the paragraphs will be deleted
-All of the previously created paragraphs will be deleted and recreated after the process.,All of the previously created paragraphs will be deleted and recreated after the process.
-Allow captcha bypass,Allow captcha bypass
-Allow public embedding without login,Allow public embedding without login
-Already exists,Already exists
-Amount,Amount
-An admin needs to add relationship types before you can create a relationship.,An admin needs to add relationship types before you can create a relationship.
-An error has occured while deleting a language:,An error has occured while deleting a language:
-An error has occured while installing languages:,An error has occured while installing languages:
-An error has occurred,An error has occurred
-An error has occurred during data export,An error has occurred during data export
-An error has occurred while installing languages:,An error has occurred while installing languages:
-An error has occurred while uninstalling a language:,An error has occurred while uninstalling a language:
-An error occurred,An error occurred
-Analytics,Analytics
-Analytics description,"If you want to track analytics related to your collection visits, Uwazi supports both Google Analytics and Matomo."
+All data,ข้อมูลทั้งหมด
+All editing options will be disabled.,ตัวเลือกการแก้ไขทั้งหมดจะถูกปิดใช้งาน
+All of the paragraphs will be deleted,ทุกย่อหน้าจะถูกลบทั้งหมด
+All of the previously created paragraphs will be deleted and recreated after the process.,ย่อหน้าทั้งหมดที่สร้างไว้ก่อนหน้านี้ จะถูกลบและสร้างขึ้นใหม่หลังจากกระบวนการนี้เสร็จสิ้น
+Allow captcha bypass,อนุญาตให้ข้ามระบบ captcha
+Allow public embedding without login,อนุญาตให้ผู้ใช้ทั่วไปฝังเนื้อหาได้โดยไม่ต้องเข้าสู่ระบบ
+Already exists,มีอยู่แล้ว
+Amount,จำนวน
+An admin needs to add relationship types before you can create a relationship.,ผู้ดูแลระบบต้องเพิ่มประเภทความสัมพันธ์ก่อนที่คุณจะสามารถสร้างความสัมพันธ์ได้
+An error has occured while deleting a language:,เกิดข้อผิดพลาดระหว่างการลบภาษา:
+An error has occured while installing languages:,เกิดข้อผิดพลาดระหว่างการติดตั้งภาษา:
+An error has occurred,เกิดข้อผิดพลาด
+An error has occurred during data export,เกิดข้อผิดพลาดระหว่างการส่งออกข้อมูล
+An error has occurred while installing languages:,เกิดข้อผิดพลาดระหว่างการติดตั้งภาษา:
+An error has occurred while uninstalling a language:,เกิดข้อผิดพลาดระหว่างการถอนการติดตั้งภาษา:
+An error occurred,เกิดข้อผิดพลาด
+Analytics,การวิเคราะห์
+Analytics description,หากท่านต้องการติดตามข้อมูลวิเคราะห์ที่เกี่ยวข้องกับจำนวนผู้เข้าชมคอลเลกชัน Uwazi รองรับทั้ง Google Analytics และ Matomo
 AND OR NOT,AND OR NOT
-Any,Any
-Any entity,Any entity
-any single character,any single character
-Anyone can see this entity,Anyone can see this entity
-Appearance,Appearance
-Apply,Apply
-Are you sure you want to continue?,Are you sure you want to continue?
-Are you sure you want to delete,Are you sure you want to delete
+Any,ใดๆ
+Any entity,เอนทิตีใดก็ตาม
+any single character,ตัวอักษรใดก็ตาม
+Anyone can see this entity,ใครก็ตามสามารถเห็นเอนทิตีนี้ได้
+Appearance,ลำดับการปรากฏ
+Apply,นำไปใช้
+Are you sure you want to continue?,คุณแน่ใจหรือไม่ว่าต้องการดำเนินการต่อ?
+Are you sure you want to delete,คุณแน่ใจหรือไม่ว่าต้องการลบ
 "Are you sure you want to delete the selected visualizations? This action cannot be
-              undone.","Are you sure you want to delete the selected visualizations? This action cannot be
-              undone."
-Are you sure you want to delete this attachment?,Are you sure you want to delete this attachment?
-Are you sure you want to delete this connection?,Are you sure you want to delete this connection?
-Are you sure you want to delete this entity?,Are you sure you want to delete this entity?
-Are you sure you want to delete this file?,Are you sure you want to delete this file?
-Are you sure you want to delete this item?,Are you sure you want to delete this item?
-Are you sure you want to delete this relationship? This action cannot be undone.,Are you sure you want to delete this relationship? This action cannot be undone.
-Are you sure you want to delete this visualization? This action cannot be undone.,Are you sure you want to delete this visualization? This action cannot be undone.
-Are you sure?,Are you sure?
-Ascending,Ascending
-Ask Bert,Ask Bert
-Attachment,Attachment
-Attachment deleted,Attachment deleted
-Attachment renamed,Attachment renamed
-Attachment uploaded,Attachment uploaded
+              undone.","คุณแน่ใจหรือไม่ว่าต้องการลบการแสดงข้อมูลที่เลือกไว้? การดำเนินการนี้ไม่สามารถ
+ยกเลิกได้"
+Are you sure you want to delete this attachment?,คุณแน่ใจหรือไม่ว่าต้องการลบไฟล์แนบนี้?
+Are you sure you want to delete this connection?,คุณแน่ใจหรือไม่ว่าต้องการลบการเชื่อมต่อนี้?
+Are you sure you want to delete this entity?,คุณแน่ใจหรือไม่ว่าต้องการลบเอนทิตีนี้?
+Are you sure you want to delete this file?,คุณแน่ใจหรือไม่ว่าต้องการลบไฟล์นี้?
+Are you sure you want to delete this item?,คุณแน่ใจหรือไม่ว่าต้องการลบรายการนี้?
+Are you sure you want to delete this relationship? This action cannot be undone.,คุณแน่ใจหรือไม่ว่าต้องการลบความสัมพันธ์นี้? การดำเนินการนี้ไม่สามารถย้อนกลับได้
+Are you sure you want to delete this visualization? This action cannot be undone.,คุณแน่ใจหรือไม่ว่าต้องการลบการแสดงข้อมูลนี้? การดำเนินการนี้ไม่สามารถย้อนกลับได้
+Are you sure?,คุณแน่ใจไหม?
+Ascending,เพิ่มขึ้น
+Ask Bert,ถาม Bert
+Attachment,ไฟล์แนบ
+Attachment deleted,ไฟล์แนบถูกลบแล้ว
+Attachment renamed,เปลี่ยนชื่อไฟล์แนบแล้ว
+Attachment uploaded,ไฟล์แนบได้อัปโหลดแล้ว
 Attachments,สิ่งที่แนบมา
 Authentication code,รหัสผ่าน
-auto created,auto created
-Auto-accept suggestions,Auto-accept suggestions
+auto created,สร้างอัตโนมัติ
+Auto-accept suggestions,ยอมรับข้อเสนอแนะโดยอัตโนมัติ
 auto-created,สร้างขึ้นอัตโนมัติ
 Automatic Table of Contents,สารบัญอัตโนมัติ
 Automatically generated,สร้างขึ้นโดยอัตโนมัติ
-Available default translation,Available default translation
+Available default translation,การแปลตามค่าเริ่มต้นที่มีอยู่
 Back,ย้อนกลับ
 Back to,กลับไปยัง
-Back to details,Back to details
+Back to details,กลับสู่รายละเอียด
 Back to search,กลับไปที่การค้นหา
-Bad Request,Bad Request
-Basic,Basic
+Bad Request,คำขอผิดพลาด
+Basic,พื้นฐาน
 Bert,Bert
-Bidirectional,Bidirectional
+Bidirectional,สองทาง
 Body,เนื้อหา
-boolean,boolean
+boolean,บูลีน
 Browse files to upload,เรียกดูไฟล์ที่จะอัปโหลด
-"by ids, methods, keywords, etc.","by ids, methods, keywords, etc."
-By logging in you accept the essential session cookie required to stay signed in.,By logging in you accept the essential session cookie required to stay signed in.
+"by ids, methods, keywords, etc.","ตาม ID, วิธี, คำสำคัญ เป็นต้น"
+By logging in you accept the essential session cookie required to stay signed in.,เมื่อคุณเข้าสู่ระบบ คุณกำลังยอมรับคุกกี้เซสชันที่จำเป็นเพื่อรักษาสถานะการเข้าสู่ระบบไว้
 Can edit,แก้ไขได้
 Can see,มองเห็นได้
 Can view,มองเห็นได้
 Cancel,ยกเลิก
-cancel csv import,Cancel the import process. This will stop the creation of new entities. Already created entities will not be affected
-Canceling,Canceling
-Canceling...,Canceling...
-Cancelled,Cancelled
-Cannot connect to server,Cannot connect to server
-Cannot find extractor,Cannot find extractor
+cancel csv import,ยกเลิกกระบวนการนำเข้า สิ่งนี้จะหยุดการสร้างเอนทิตีใหม่ เอนทิตีที่สร้างไว้แล้วจะไม่ได้รับผลกระทบ
+Canceling,การยกเลิก
+Canceling...,กำลังยกเลิก...
+Cancelled,ถูกยกเลิก
+Cannot connect to server,ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้
+Cannot find extractor,ไม่สามารถหาเครื่องมือสกัดได้
 Captcha,captcha
-Captcha bypass,"By toggling this on you can allow users to submit to your whitelisted templates without having to fill a CAPTCHA. 
-The form will still present the captcha to end users, but API end-point will allow submissions without CAPTCHA validation if a 
-header ""Bypass-Captcha: true"" is sent along. This option is insecure and can be leveraged to flood your instance with spam or 
-malicious content."
+Captcha bypass,"เมื่อเปิดใช้งานตัวเลือกนี้ คุณสามารถอนุญาตให้ผู้ใช้ส่งข้อมูลไปยังแม่แบบที่อยู่ในรายชื่ออนุญาตของคุณได้โดยไม่ต้องกรอก CAPTCHA
+แบบฟอร์มจะยังคงแสดง CAPTCHA ให้ผู้ใช้ปลายทางเห็นอยู่ แต่ API endpoint จะอนุญาตให้ส่งข้อมูลได้โดยไม่ต้องผ่านการตรวจสอบ CAPTCHA หากมีการส่ง
+header ""Bypass-Captcha: true"" มาด้วย ตัวเลือกนี้ไม่ปลอดภัยและอาจถูกใช้ประโยชน์ในทางที่ผิดเพื่อถล่มอินสแตนซ์ของคุณด้วยสแปมหรือ
+เนื้อหาที่เป็นอันตราย"
 Cards,บัตร
 Cards view,มุมมองการ์ด
-Category,Category
-Change,Change
-Change Password,Change Password
-Changes in the thesaurus will impact all the entities using these values.,Changes in the thesaurus will impact all the entities using these values.
-Changing the type will erase all relationships to this entity.,Changing the type will erase all relationships to this entity.
-Character support description,This option enhances support for non-Latin languages as the default languages of your collection.
-Character support process warning,"This process could take several minutes and will likely change URLs to library filters. If you have menus or links using such URLs, they will probably stop working after the update. You will need to update them manually."
-Character support revert warning,"After selecting this option, you will not be able to revert back to using legacy property naming. If you are not facing issues with your template property names, we recommend leaving this unchecked."
-Chart,Chart
-Chart options,Chart options
-Chart theme,Chart theme
-Chart type,Chart type
-Chart type uses a custom view,Chart type uses a custom view
-Check to make this instance public (non-logged in users can see public documents and entities),Check to make this instance public (non-logged in users can see public documents and entities)
-Checking which images fit the requirements,Checking which images fit the requirements...
-Choose,Choose
-Choose relation type,Choose relation type
-Choose which data to use for training,Choose which data to use for training
-Chrome header,Chrome header
-Clear,Clear
-Clear all,Clear all
-Clear All,Clear All
-Clear all filters,Clear all filters
+Category,หมวดหมู่
+Change,เปลี่ยน
+Change Password,เปลี่ยนรหัสผ่าน
+Changes in the thesaurus will impact all the entities using these values.,การเปลี่ยนแปลงในพจนานุกรมคำพ้องความหมายจะส่งผลต่อทุกเอนทิตีที่ใช้ค่าเหล่านี้
+Changing the type will erase all relationships to this entity.,การเปลี่ยนประเภทจะลบความสัมพันธ์ทั้งหมดกับเอนทิตีนี้
+Character support description,"ตัวเลือกนี้ช่วยเพิ่มการรองรับภาษาที่ไม่ใช่อักษรละตินให้เป็นภาษาเริ่มต้นของคอลเลกชันของคุณ
+การเลือกตัวเลือกนี้จะอัปเดตคุณสมบัติของเทมเพลตทั้งหมดโดยอัตโนมัติ กระบวนการนี้อาจใช้เวลาหลายนาที การเลือกตัวเลือกนี้อาจเปลี่ยน URL ของตัวกรองในคลังข้อมูล ซึ่งอาจทำให้เมนูหรือลิงก์ที่ใช้ URL เหล่านั้นหยุดทำงาน
+คุณจะต้องอัปเดตลิงก์เหล่านั้นด้วยตนเอง หลังจากเลือกตัวเลือกนี้แล้ว คุณจะไม่สามารถย้อนกลับไปใช้การตั้งชื่อคุณสมบัติแบบเดิมได้ หากคุณไม่มีปัญหากับชื่อคุณสมบัติของเทมเพลต เราแนะนำให้ปล่อยตัวเลือกนี้ไว้โดยไม่ต้องเลือก"
+Character support process warning,กระบวนการนี้อาจใช้เวลาหลายนาที และอาจทำให้ URL ของตัวกรองไลบรารีเปลี่ยนแปลงไป หากคุณมีเมนูหรือลิงก์ที่ใช้ URL ดังกล่าว พวกมันอาจหยุดทำงานหลังการอัปเดต คุณจะต้องอัปเดตพวกมันด้วยตนเอง
+Character support revert warning,หลังจากเลือกตัวเลือกนี้แล้ว คุณจะไม่สามารถกลับใช้ระบบตั้งชื่อคุณสมบัติแบบเดิมได้อีก หากคุณไม่พบปัญหาใด ๆ กับชื่อคุณสมบัติในเทมเพลตของคุณ เราแนะนำให้ไม่ทำเครื่องหมายในตัวเลือกนี้
+Chart,แผนภูมิ
+Chart options,ตัวเลือกแผนภูมิ
+Chart theme,ธีมของแผนภูมิ
+Chart type,ประเภทกราฟ
+Chart type uses a custom view,ประเภทกราฟใช้มุมมองที่กำหนดเอง
+Check to make this instance public (non-logged in users can see public documents and entities),ทำเครื่องหมายเพื่อกำหนดให้อินสแตนซ์นี้เป็นสาธารณะ (ผู้ใช้ที่ยังไม่ได้เข้าสู่ระบบสามารถดูเอกสารและเอนทิตีสาธารณะได้)
+Checking which images fit the requirements,กำลังตรวจสอบภาพใดที่ตรงกับข้อกำหนด...
+Choose,เลือก
+Choose relation type,เลือกประเภทความสัมพันธ์
+Choose which data to use for training,เลือกข้อมูลที่จะใช้ในการฝึกอบรม
+Chrome header,ส่วนหัวของ Chrome
+Clear,ล้าง
+Clear all,ลบทั้งหมด
+Clear All,ลบทั้งหมด
+Clear all filters,ล้างตัวกรองทั้งหมด
 Clear coordinates,ลบจุดพิกัด
 Clear Filters,ล้างตัวกรอง
-Clear PDF selection,Clear PDF selection
-Clear search,Clear search
-Click,Click
+Clear PDF selection,ล้างการเลือก PDF
+Clear search,ล้างผลการค้นหา
+Click,คลิก
 Click to fill,คลิกเพื่อใส่ค่า
-Click to select an image,Click to select an image
-Click to select audio or video,Click to select audio or video
-Click to select files,Click to select files
+Click to select an image,คลิกเพื่อเลือกภาพ
+Click to select audio or video,คลิกเพื่อเลือกไฟล์เสียงหรือวิดีโอ
+Click to select files,คลิกเพื่อเลือกไฟล์
 Close,ปิด
-Code,Code
+Code,รหัส
 Collaborator,ผู้ประสานงาน
-Collaborators,Collaborators
-Collapse all,Collapse all
-Collapse All,Collapse All
+Collaborators,ผู้ร่วมงาน
+Collapse all,ปิดทั้งหมด
+Collapse All,ปิดทั้งหมด
 Collection,คอลเล็คชั่น
-Collection Name,Collection Name
-Colors,Colors
-Colors come from the server data layer. Preview shows assigned bucket colors when available.,Colors come from the server data layer. Preview shows assigned bucket colors when available.
-combine or exclude terms,combine or exclude terms
-Common sources,Common sources
-Completed,Completed
-Completed with errors,Completed with errors
-Config,Config
-Configuration,Configuration
+Collection Name,ชื่อคอลเลกชัน
+Colors,สี
+Colors come from the server data layer. Preview shows assigned bucket colors when available.,สีมาจากชั้นข้อมูลของเซิร์ฟเวอร์ การแสดงตัวอย่างจะแสดงสีของบัคเก็ตที่กำหนดไว้ หากมี
+combine or exclude terms,รวมหรือยกเว้นคำค้นหา
+Common sources,แหล่งข้อมูลทั่วไป
+Completed,เสร็จแล้ว
+Completed with errors,เสร็จสิ้นแล้ว แต่มีข้อผิดพลาด
+Config,การตั้งค่า
+Configuration,การตั้งค่า
 Configure filters,กำหนดค่าตัวกรอง
-Configure templates,Configure templates
+Configure templates,กำหนดค่าแม่แบบ
 Confirm,ยืนยัน
 CONFIRM,ยืนยัน
-Confirm action,Confirm action
-Confirm delete connection,Confirm delete connection
-Confirm delete multiple items,ยืนยันลบหลายรายการ
+Confirm action,ยืนยันการดำเนินการ
+Confirm delete connection,ยืนยันการลบการเชื่อมต่อ
+Confirm delete multiple items,คุณแน่ใจหรือไม่ว่าต้องการลบรายการที่เลือกทั้งหมด
 Confirm deletion,ยืนยันการลบ
-Confirm deletion of,Confirm deletion of
-Confirm deletion of entity,Confirm deletion of entity
-Confirm deletion of file,Confirm deletion of file
+Confirm deletion of,ยืนยันการลบ
+Confirm deletion of entity,ยืนยันการลบเอนทิตี
+Confirm deletion of file,ยืนยันการลบไฟล์
 Confirm new password,ยืนยันรหัสผ่านใหม่
-Confirm your password,Confirm your password
+Confirm your password,ยืนยันรหัสผ่านของคุณ
 Connect to a paragraph,เชื่อมต่อย่อหน้า
-Connect to an entity,Connect to an entity
-Connect to entity,Connect to entity
-Connected entities,Connected entities
-Connected to server,Connected to server
+Connect to an entity,เชื่อมต่อกับเอนทิตี
+Connect to entity,เชื่อมต่อกับเอนทิตี
+Connected entities,เอนทิตีที่เกี่ยวข้อง
+Connected to server,เชื่อมต่อกับเซิร์ฟเวอร์แล้ว
 Connection type,ประเภทการเชื่อมต่อ
-Contact email description,Here you can set up the contact email and the email that appears when Uwazi sends a notification to a user
-Contact Form,Contact Form
-Contact form email,Contact form email
-Contains,Contains
-Content translations,Content translations
-Context,Context
-Continue,Continue
+Contact email description,ที่นี่คุณสามารถตั้งค่าที่อยู่อีเมลติดต่อและที่อยู่อีเมลที่จะปรากฏขึ้นเมื่อ Uwazi ส่งการแจ้งเตือนไปยังผู้ใช้
+Contact Form,แบบฟอร์มติดต่อ
+Contact form email,อีเมลจากแบบฟอร์มติดต่อ
+Contains,มี
+Content translations,การแปลเนื้อหา
+Context,บริบท
+Continue,ต่อไป
 Conversion failed,การแปลงล้มเหลว
-Cookie preferences,Cookie preferences
-Copied,Copied
-Copied to clipboard,Copied to clipboard
-Copy,Copy
+Cookie preferences,การตั้งค่าคุกกี้
+Copied,คัดลอกแล้ว
+Copied to clipboard,คัดลอกไปยังคลิปบอร์ดแล้ว
+Copy,คัดลอก
 Copy From,คัดลอกจาก
-Copy from...,Copy from...
+Copy from...,คัดลอกจาก...
 Copy Highlighted,คัดลอกสิ่งที่ถูกเน้นสี
 Copy link,คัดลอกลิงค์
 Copy properties to this entity from,คัดลอกคุณสมบัติไปยังรายการนี้ จาก
-Copy to clipboard,Copy to clipboard
-Could not add media. Please try again.,Could not add media. Please try again.
-Could not be processed,Could not be processed
-Could not create entity,Could not create entity
-Could not detect the area for the selected text,"Could not detect the area for the selected text, please try selecting again."
-Could not load suggestions.,Could not load suggestions.
-Could not reach server. Please try again later.,Could not reach server. Please try again later.
-Count,Count
+Copy to clipboard,คัดลอกไปยังคลิปบอร์ด
+Could not add media. Please try again.,ไม่สามารถเพิ่มสื่อได้ โปรดลองอีกครั้ง
+Could not be processed,ไม่สามารถดำเนินการได้
+Could not create entity,ไม่สามารถสร้างเอนทิตีได้
+Could not detect the area for the selected text,ไม่สามารถตรวจพบพื้นที่ของข้อความที่เลือกได้ โปรดลองเลือกใหม่
+Could not load suggestions.,ไม่สามารถโหลดคำแนะนำได้
+Could not reach server. Please try again later.,ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้ โปรดลองอีกครั้งในภายหลัง
+Count,นับ
 Create,สร้าง
 CREATE,สร้าง
-Create a type to continue.,Create a type to continue.
-Create and edit thesauri,Create and edit thesauri
-Create Connection,Create Connection
+Create a type to continue.,สร้างประเภทข้อมูลเพื่อดำเนินการต่อ
+Create and edit thesauri,สร้างและแก้ไขพจนานุกรมคำพ้องความหมาย
+Create Connection,สร้างความสัมพันธ์
 Create entity,สร้างรายการ
 Create Entity,สร้างรายการ
-Create Extractor,Create Extractor
-Create new entities and upload documents,Create new entities and upload documents
-Create new entity from selection,Create new entity from selection
-Create Reference,Create Reference
-Create relationship,Create relationship
-Create relationship types,Create relationship types
-Create relationships and references,Create relationships and references
-Create table of contents,Create table of contents
-Create visualization,Create visualization
-Created,Created
-Created entity,Created entity
-Created entity coming from a public form,Created entity coming from a public form
-Created page,Created page
-Created relation type,Created relation type
-Created relationship,Created relationship
-Created template,Created template
-Created thesaurus,Created thesaurus
-Created user group,Created user group
-Creating entities,Creating entities
-Creating relationships,Creating relationships
-Creating thesauri,Creating thesauri
+Create Extractor,สร้างเครื่องมือสกัดข้อมูล
+Create new entities and upload documents,สร้างเอนทิตีใหม่และอัปโหลดเอกสาร
+Create new entity from selection,สร้างเอนทิตีใหม่จากรายการที่เลือก
+Create Reference,สร้างการอ้างอิง
+Create relationship,สร้างความสัมพันธ์
+Create relationship types,สร้างประเภทความสัมพันธ์
+Create relationships and references,สร้างความสัมพันธ์และข้อมูลอ้างอิง
+Create table of contents,สร้างสารบัญ
+Create visualization,สร้างภาพแสดงข้อมูล
+Created,สร้างขึ้น
+Created entity,เอนทิตีที่สร้างขึ้น
+Created entity coming from a public form,เอนทิตีที่สร้างขึ้นจากแบบฟอร์มสาธารณะ
+Created page,สร้างหน้า
+Created relation type,สร้างประเภทความสัมพันธ์
+Created relationship,สร้างความสัมพันธ์
+Created template,สร้างแม่แบบ
+Created thesaurus,สร้างพจนานุกรมคำพ้องความหมาย
+Created user group,สร้างกลุ่มผู้ใช้
+Creating entities,การสร้างเอนทิตี
+Creating relationships,การสร้างความสัมพันธ์
+Creating thesauri,การสร้างพจนานุกรมคำพ้องความหมาย
 CSS,CSS
-csv blank state message,Import CSV or ZIP files to create entities in bulk. Select **+ Import CSV** to get started.
-CSV Import,CSV Import
-CSV import cancelled,CSV import cancelled
-CSV import completed,CSV import completed
-CSV import failed,CSV import failed
-CSV or ZIP up to 50MB,CSV or ZIP up to 50MB
+csv blank state message,นำเข้าไฟล์ CSV หรือ ZIP เพื่อสร้างเอนทิตีแบบจำนวนมาก เลือก **+ นำเข้า CSV** เพื่อเริ่มต้น
+CSV Import,นำเข้าไฟล์ CSV
+CSV import cancelled,การนำเข้า CSV ถูกยกเลิก
+CSV import completed,การนำเข้าไฟล์ CSV เสร็จสิ้นแล้ว
+CSV import failed,การนำเข้าไฟล์ CSV ไม่สำเร็จ
+CSV or ZIP up to 50MB,ไฟล์ CSV หรือ ZIP ขนาดไม่เกิน 50MB
 Ctrl K,Ctrl K
-Current Value/Suggestion,Current Value/Suggestion
+Current Value/Suggestion,ค่าปัจจุบัน/ข้อเสนอแนะ
 "Custom colors are not available for this chart type. Use the chart palette or template
-            colors instead.","Custom colors are not available for this chart type. Use the chart palette or template
-            colors instead."
-Custom component error,เกิดข้อผิดพลาดในส่วนประกอบที่สร้างเอง
+            colors instead.","สีที่กำหนดเองไม่สามารถใช้ได้กับประเภทแผนภูมินี้ โปรดใช้สีจากพาเลตต์แผนภูมิหรือสีจากแม่แบบ
+แทน"
+Custom component error,เกิดข้อผิดพลาดในการมาร์กอัปของส่วนประกอบที่กำหนดเอง: มีค่าที่ไม่รองรับ กรุณาตรวจสอบการตั้งค่าของคุณ
 Custom CSS,CSS ที่กำหนดเอง
-Custom Favicon,Custom Favicon
-Custom JS,Custom JS
-Custom landing page,Custom landing page
-custom page error warning,"There is an unexpected error on this custom page, it may not work properly. Please contact an admin for details."
+Custom Favicon,ไอคอนเว็บไซต์แบบกำหนดเอง
+Custom JS,JS ที่ปรับแต่งเอง
+Custom landing page,หน้า Landing Page ที่กำหนดเอง
+custom page error warning,เกิดข้อผิดพลาดที่ไม่คาดคิดบนหน้านี้ ซึ่งอาจทำงานไม่ถูกต้อง โปรดติดต่อผู้ดูแลระบบเพื่อทราบรายละเอียดเพิ่มเติม
 Custom Uploads,อัปโหลดแบบกำหนดค่าเอง
-Customize,Customize
-Customized,Customized
-Dark,Dark
-Dark Theme,Dark Theme
-Dashboard,Dashboard
-Data may be outdated.,Data may be outdated.
-Data source,Data source
-Data sources,Data sources
-Data visualizations,Data visualizations
-Data was updated recently. You can refresh again in a few seconds.,Data was updated recently. You can refresh again in a few seconds.
-Date,Date
+Customize,ปรับแต่ง
+Customized,ตามความต้องการ
+Dark,มืด
+Dark Theme,ธีมสีมืด
+Dashboard,แดชบอร์ด
+Data may be outdated.,ข้อมูลอาจไม่ทันสมัยแล้ว
+Data source,แหล่งข้อมูล
+Data sources,แหล่งข้อมูล
+Data visualizations,การแสดงข้อมูลแบบภาพ
+Data was updated recently. You can refresh again in a few seconds.,ข้อมูลได้รับการอัปเดตเมื่อเร็วๆ นี้ คุณสามารถรีเฟรชอีกครั้งได้ภายในไม่กี่วินาที
+Date,วันที่
 Date added,เพิ่ม ณ วันที่
 Date modified,แก้ไข ณ วันที่
 "Date or numeric × numeric enables scatter and heatmap. Line, area, and bar plot the
-                measure over the primary dimension (e.g. max engine size per registration date).","Date or numeric × numeric enables scatter and heatmap. Line, area, and bar plot the
-                measure over the primary dimension (e.g. max engine size per registration date)."
+                measure over the primary dimension (e.g. max engine size per registration date).","ข้อมูลวันที่หรือตัวเลข × ตัวเลข สามารถใช้สร้างกราฟกระจายและแผนที่ความร้อนได้ ส่วนกราฟเส้น กราฟพื้นที่ และกราฟแท่งจะแสดง
+ค่าของตัวแปรตามมิติหลัก (เช่น ขนาดเครื่องยนต์สูงสุดตามวันที่จดทะเบียน)"
 "Date or numeric × select enables line and area charts with one line per breakdown
-                value over time.","Date or numeric × select enables line and area charts with one line per breakdown
-                value over time."
-Date range,Date range
+                value over time.","วันที่หรือตัวเลข × เลือก จะสร้างกราฟเส้นและกราฟพื้นที่ โดยแต่ละเส้นแสดงค่าการแบ่งประเภท
+ตามช่วงเวลา"
+Date range,ช่วงวันที่
 Day,วัน
 "Deep-merged onto the generated ECharts option. Use for fine-tuning options not exposed in
-          the Chart tab.","Deep-merged onto the generated ECharts option. Use for fine-tuning options not exposed in
-          the Chart tab."
-Default,Default
-Default date format,Default date format
-Default filter,Default filter
-Default language,Default language
+          the Chart tab.","ผสานอย่างลึกซึ้งกับตัวเลือก ECharts ที่สร้างขึ้น ใช้เพื่อปรับแต่งตัวเลือกที่ไม่ได้แสดงใน
+แท็บ Chart"
+Default,ค่าเริ่มต้น
+Default date format,รูปแบบวันที่ตามค่าเริ่มต้น
+Default filter,ตัวกรองเริ่มต้น
+Default language,ภาษาเริ่มต้น
 Default language change success,เปลี่ยนภาษาเริ่มต้น สำเร็จ
 Default template,เทมเพลตเริ่มต้น
-Default template set successfully.,Default template set successfully.
-Default View,Default View
+Default template set successfully.,ตั้งค่าแม่แบบเริ่มต้นสำเร็จแล้ว
+Default View,มุมมองเริ่มต้น
 Delete,ลบ
 DELETE,ลบ
-Delete entities and documents,Delete entities and documents
-Delete file,Delete file
-Delete relationship,Delete relationship
-Delete relationships,Delete relationships
-Delete?,Delete?
-Deleted attachment,Deleted attachment
-Deleted custom file,Deleted custom file
-Deleted entity,Deleted entity
-Deleted file,Deleted file
-Deleted multiple entities,Deleted multiple entities
-Deleted page,Deleted page
-Deleted relation type,Deleted relation type
-Deleted relationship,Deleted relationship
-Deleted successfully.,Deleted successfully.
-Deleted template,Deleted template
-Deleted thesaurus,Deleted thesaurus
-Deleted user,Deleted user
-Deleted user group,Deleted user group
-Deletion success,Deletion success
-Density,Density
-Descending,Descending
+Delete entities and documents,ลบเอนทิตีและเอกสาร
+Delete file,ลบไฟล์
+Delete relationship,ลบความสัมพันธ์
+Delete relationships,ลบความสัมพันธ์
+Delete?,ลบ?
+Deleted attachment,ไฟล์แนบที่ถูกลบ
+Deleted custom file,ไฟล์ที่กำหนดเองถูกลบแล้ว
+Deleted entity,เอนทิตีที่ถูกลบ
+Deleted file,ไฟล์ที่ถูกลบ
+Deleted multiple entities,ได้ลบเอนทิตีหลายรายการแล้ว
+Deleted page,หน้าถูกลบ
+Deleted relation type,ประเภทความสัมพันธ์ที่ถูกลบ
+Deleted relationship,ความสัมพันธ์ที่ถูกลบ
+Deleted successfully.,ลบสำเร็จแล้ว
+Deleted template,แม่แบบที่ถูกลบ
+Deleted thesaurus,ลบพจนานุกรมคำพ้องความหมาย
+Deleted user,ผู้ใช้ที่ถูกลบ
+Deleted user group,กลุ่มผู้ใช้ที่ถูกลบ
+Deletion success,การลบสำเร็จแล้ว
+Density,ความหนาแน่น
+Descending,ลดลง
 Description,คำอธิบาย
-Deselect all,Deselect all
-Details,Details
-Direction,Direction
-Disable,Disable
-Disable highlights,Disable highlights
-Disabled 2FA,Disabled 2FA
-Discard,Discard
+Deselect all,ยกเลิกการเลือกทั้งหมด
+Details,รายละเอียด
+Direction,ทิศทาง
+Disable,ปิดใช้งาน
+Disable highlights,ปิดการแสดงส่วนที่เน้น
+Disabled 2FA,ปิดใช้งานการยืนยันตัวตนสองขั้นตอน (2FA)
+Discard,ทิ้ง
 Discard changes,ยกเลิกการเปลี่ยนแปลง
-Discard changes?,Discard changes?
-Dismiss,Dismiss
+Discard changes?,จะยกเลิกการเปลี่ยนแปลงหรือไม่?
+Dismiss,ปิด
 Display entity view from page,แสดงมุมมองรายการจากหน้า
-Display options,Display options
-Do you want disable 2FA for the following users?,Do you want disable 2FA for the following users?
-Do you want reset the password for the following users?,Do you want reset the password for the following users?
-Do you want to delete the following items?,Do you want to delete the following items?
+Display options,ตัวเลือกการแสดงผล
+Do you want disable 2FA for the following users?,คุณต้องการปิดใช้งานการยืนยันตัวตนสองขั้นตอน (2FA) สำหรับผู้ใช้ต่อไปนี้หรือไม่?
+Do you want reset the password for the following users?,คุณต้องการรีเซ็ตรหัสผ่านสำหรับผู้ใช้ต่อไปนี้หรือไม่?
+Do you want to delete the following items?,คุณต้องการลบรายการต่อไปนี้หรือไม่?
 Document,เอกสาร
 Document contents,เนื้อหาของเอกสาร
-Document OCR trigger,Document OCR trigger
+Document OCR trigger,ตัวกระตุ้น OCR ของเอกสาร
 Document Title,ชื่อเอกสาร
-Document updated,Document updated
+Document updated,เอกสารได้รับการอัปเดตแล้ว
 Documentation,เอกสาร
 documents,เอกสาร
 Documents,เอกสาร
 documents.,เอกสาร.
-Done,Done
-Done creating entities,Done creating entities
-Done creating relationships,Done creating relationships
-Done creating thesauri,Done creating thesauri
-Done extracting files,Done extracting files
-Done scanning,Done scanning
+Done,เสร็จแล้ว
+Done creating entities,เสร็จสิ้นการสร้างเอนทิตีแล้ว
+Done creating relationships,เสร็จสิ้นการสร้างสัมพันธ์แล้ว
+Done creating thesauri,การสร้างพจนานุกรมคำพ้องความหมายเสร็จแล้ว
+Done extracting files,การดึงไฟล์เสร็จแล้ว
+Done scanning,การสแกนเสร็จแล้ว
 Download,ดาวน์โหลด
-Download a third-party authenticator app from your mobile store.,Download a third-party authenticator app from your mobile store.
-Download all,Download all
-Download failed rows,Download failed rows
-Draft restored from release.,Draft restored from release.
+Download a third-party authenticator app from your mobile store.,ดาวน์โหลดแอปยืนยันตัวตนของบุคคลที่สามจากร้านแอปบนมือถือของคุณ
+Download all,ดาวน์โหลดทั้งหมด
+Download failed rows,ดาวน์โหลดแถวที่ล้มเหลว
+Draft restored from release.,ฉบับร่างที่กู้คืนจากเวอร์ชันที่เผยแพร่แล้ว
 Drag and drop file in this window to upload,นำไฟล์มาวางในหน้าต่างนี้เพื่ออัปโหลด
-Drag row,Drag row
+Drag row,ลากแถว
 Drop your files here to upload or,นำไฟล์มาวางที่นี่เพื่ออัปโหลด หรือ
-Duplicate values not allowed.,Duplicate values not allowed.
+Duplicate values not allowed.,ไม่อนุญาตให้มีค่าซ้ำ
 Duplicated email,อีเมลที่ซ้ำกัน
 Duplicated name,ชื่อที่ซ้ำกัน
 Duplicated username,ชื่อผู้ใช้ที่ซ้ำกัน
-Duration,Duration
-e.g.,e.g.
-Each series uses the template brand color when comparing data sources.,Each series uses the template brand color when comparing data sources.
-Earlier,Earlier
+Duration,ระยะเวลา
+e.g.,เช่น
+Each series uses the template brand color when comparing data sources.,แต่ละชุดข้อมูลจะใช้สีแบรนด์ตามแบบอย่างเมื่อเปรียบเทียบแหล่งข้อมูล
+Earlier,ก่อนหน้านี้
 Edit,แก้ไข
-Edit at source,Edit at source
-Edit Extractor,Edit Extractor
-Edit File,Edit File
-Edit group,Edit group
-Edit item,Edit item
-Edit metadata of entities,Edit metadata of entities
-Edit theme,Edit theme
-Edit user,Edit user
-Edited,Edited
+Edit at source,แก้ไขที่ต้นฉบับ
+Edit Extractor,แก้ไขเครื่องมือสกัด
+Edit File,แก้ไขไฟล์
+Edit group,แก้ไขกลุ่ม
+Edit item,แก้ไขรายการ
+Edit metadata of entities,แก้ไขข้อมูลเมตาของเอนทิตี
+Edit theme,แก้ไขธีม
+Edit user,แก้ไขข้อมูลผู้ใช้
+Edited,แก้ไขแล้ว
 Editor,บรรณาธิการ
 editor,บรรณาธิการ
-Editors,Editors
+Editors,ผู้บรรณาธิการ
 Email,อีเมล
-Embed,Embed
-Embed in pages,Embed in pages
-Empty,Empty
-Empty group. Drop here to add,Empty group. Drop here to add
-empty property tip,You won't be able to save an entity if this property is empty.
-Enable,Enable
-Enable public embedding to use this chart in external sites on private instances.,Enable public embedding to use this chart in external sites on private instances.
+Embed,ฝัง
+Embed in pages,ฝังลงในหน้า
+Empty,ว่าง
+Empty group. Drop here to add,กลุ่มว่าง. ลากมาที่นี่เพื่อเพิ่ม
+empty property tip,คุณไม่สามารถบันทึกเอนทิตีได้หากคุณสมบัตินี้เป็นค่าว่าง
+Enable,เปิดใช้งาน
+Enable public embedding to use this chart in external sites on private instances.,เปิดใช้งานการฝังแบบสาธารณะเพื่อใช้แผนภูมินี้ในเว็บไซต์ภายนอกบนอินสแตนซ์ส่วนตัว
 Enable this page to be used as an entity view page:,เปิดหน้านี้เพื่อใช้เป็นหน้ามุมมองรายการ
-Enter the 6-digit verification code generated by your Authenticator app,Enter the 6-digit verification code generated by your Authenticator app
-"Enter the full username, email, or group name. Suggestions are not shown.","Enter the full username, email, or group name. Suggestions are not shown."
-Enter your current password to confirm,Enter your current password to confirm
+Enter the 6-digit verification code generated by your Authenticator app,ป้อนรหัสยืนยัน 6 หลักที่สร้างขึ้นโดยแอป Authenticator ของคุณ
+"Enter the full username, email, or group name. Suggestions are not shown.",กรอกชื่อผู้ใช้ อีเมล หรือชื่อกลุ่มอย่างครบถ้วน ไม่มีการแสดงคำแนะนำ
+Enter your current password to confirm,กรุณาป้อนรหัสผ่านปัจจุบันของคุณเพื่อยืนยัน
 Entities,รายการ
 entities,รายการ
-Entities across all languages,Entities across all languages
-Entities created,Entities created
-Entities updated,Entities updated
-entities · generated,entities · generated
+Entities across all languages,เอนทิตีในทุกภาษา
+Entities created,เอนทิตีที่สร้างขึ้น
+Entities updated,เอนทิตีที่อัปเดตแล้ว
+entities · generated,เอนทิตี · ที่สร้างขึ้น
 Entity,รายการ
-Entity creation stage completed.,Entity creation stage completed.
-Entity deleted,Entity deleted
-Entity Page,Entity Page
-Entity saved,Entity saved
-Entity scope,Entity scope
-Entity type,Entity type
+Entity creation stage completed.,ขั้นตอนการสร้างเอนทิตีเสร็จสิ้นแล้ว
+Entity deleted,ได้ลบเอนทิตีแล้ว
+Entity Page,หน้าเอนทิตี
+Entity saved,บันทึกเอนทิตีแล้ว
+Entity scope,ขอบเขตของเอนทิตี
+Entity type,ประเภทเอนทิตี
 Entity types,ประเภทรายการ
-Entity updated,Entity updated
+Entity updated,อัปเดตข้อมูลเอนทิตีแล้ว
 Error,ข้อผิดพลาด
-Error adding thesauri.,Error adding thesauri.
-Error loading your image,Error loading your image
-Error saving template.,Error saving template.
-Error updating thesauri.,Error updating thesauri.
-evidence,evidence
-exact phrase,exact phrase
-Expand all,Expand all
-Expand All,Expand All
+Error adding thesauri.,เกิดข้อผิดพลาดขณะเพิ่มพจนานุกรมคำพ้องความหมาย
+Error loading your image,เกิดข้อผิดพลาดขณะโหลดภาพของคุณ
+Error saving template.,เกิดข้อผิดพลาดขณะบันทึกแม่แบบ
+Error updating thesauri.,เกิดข้อผิดพลาดในการอัปเดตพจนานุกรมคำพ้องความหมาย
+evidence,หลักฐาน
+exact phrase,วลีที่ตรงกัน
+Expand all,แสดงทั้งหมด
+Expand All,แสดงทั้งหมด
 Export CSV,โหลดเป็น CSV
 Exporting entities to CSV,โหลดรายการเป็น CSV
-Extension Token,Extension Token
-External embed,External embed
-Extract new paragraphs,Extract new paragraphs
-Extract paragraphs,Extract paragraphs
-Extracting files,Extracting files
-Extracting files from uploaded package.,Extracting files from uploaded package.
-Extraction configuration,Extraction configuration
-Extractor Name,Extractor Name
-Extractor name,Extractor name
-Extractor/s deleted,Extractor/s deleted
-Extractors,Extractors
-Failed,Failed
-Failed to mark table of contents as reviewed,Failed to mark table of contents as reviewed
-Failed to save table of contents,Failed to save table of contents
-Failure details,Failure details
-Favicon description,"A favicon is a small icon that represents your collection in browser tabs and bookmarks. The default favicon is the Uwazi logo. To use your own:
+Extension Token,โทเคนส่วนขยาย
+External embed,การฝังจากแหล่งภายนอก
+Extract new paragraphs,แยกเป็นย่อหน้าใหม่
+Extract paragraphs,คัดลอกย่อหน้า
+Extracting files,การดึงไฟล์
+Extracting files from uploaded package.,กำลังดึงไฟล์จากแพ็กเกจที่อัปโหลดมา
+Extraction configuration,การตั้งค่าการสกัด
+Extractor Name,ชื่อเครื่องมือสกัด
+Extractor name,ชื่อเครื่องมือสกัด
+Extractor/s deleted,ได้ลบเครื่องมือสกัดแล้ว
+Extractors,เครื่องมือสกัด
+Failed,ล้มเหลว
+Failed to mark table of contents as reviewed,ไม่สามารถทำเครื่องหมายว่าสารบัญได้รับการตรวจสอบแล้ว
+Failed to save table of contents,ไม่สามารถบันทึกสารบัญได้
+Failure details,รายละเอียดความผิดพลาด
+Favicon description,"Favicon คือไอคอนขนาดเล็กที่แสดงคอลเลกชันของคุณในแท็บเบราว์เซอร์และบุ๊กมาร์ก Favicon ตามค่าเริ่มต้นคือโลโก้ Uwazi หากต้องการใช้ไอคอนของคุณเอง:
 
-1. Upload your icon in Custom Uploads if needed.
-2. Click ""Select favicon image"" and pick a file (images from Custom Uploads only).
-3. Reload the page to see your favicon in action."
-Favicon no images hint,Favicon no images hint
-FEATURED,FEATURED
+1. อัปโหลดไอคอนของคุณในส่วน Custom Uploads หากจำเป็น
+2. คลิก ""เลือกภาพ favicon"" และเลือกไฟล์ (ภาพจาก Custom Uploads เท่านั้น)
+3. โหลดหน้าใหม่เพื่อดู favicon ของคุณทำงาน"
+Favicon no images hint,ไม่มีภาพ Favicon
+FEATURED,แนะนำ
 File,ไฟล์
-file,file
-File deleted,File deleted
-File details,File details
-File extraction completed successfully.,File extraction completed successfully.
-File name,File name
-File preview unavailable,File preview unavailable
-File updated,File updated
-Files,Files
-files,files
-Files and database usage,Files and database usage
+file,ไฟล์
+File deleted,ไฟล์ถูกลบแล้ว
+File details,รายละเอียดไฟล์
+File extraction completed successfully.,การแยกไฟล์เสร็จสิ้นแล้ว
+File name,ชื่อไฟล์
+File preview unavailable,ไม่สามารถดูตัวอย่างไฟล์ได้
+File updated,ไฟล์ได้รับการอัปเดตแล้ว
+Files,ไฟล์
+files,ไฟล์
+Files and database usage,การใช้ไฟล์และฐานข้อมูล
 Fill,ใส่ค่า
-Filter,Filter
-Filter unauthorized relationships,"By default, relationships pointing to restricted entities are visible to anonymous users but not linked. When enabled, these relationships are completely hidden, preventing public users from knowing restricted content exists."
+Filter,ตัวกรอง
+Filter unauthorized relationships,ตามค่าเริ่มต้น ความสัมพันธ์ที่ชี้ไปยังเอนทิตีที่ถูกจำกัดจะปรากฏให้ผู้ใช้ที่ไม่ระบุตัวตนเห็นได้ แต่ไม่มีการเชื่อมโยง เมื่อเปิดใช้งาน ความสัมพันธ์เหล่านี้จะถูกซ่อนไว้อย่างสมบูรณ์ เพื่อป้องกันไม่ให้ผู้ใช้ทั่วไปทราบว่าเนื้อหาที่ถูกจำกัดนั้นมีอยู่
 Filters,ตัวกรอง
 Filters AND operator,ตัวกรอง ประเภท และ
 Filters configuration,การกำหนดค่าตัวกรอง
-Filters configuration description,"By default, users can filter the entities in the library based on the types you have defined. However, you can configure how these entity types will be displayed:"
-Filters configuration example,ตัวอย่างการกำหนดค่าตัวกรอง
+Filters configuration description,ตามค่าเริ่มต้น ผู้ใช้สามารถกรองเอนทิตีในไลบรารีได้ตามประเภทที่คุณได้กำหนดไว้ อย่างไรก็ตาม คุณสามารถกำหนดวิธีการแสดงประเภทเอนทิตีเหล่านี้ได้:
+Filters configuration example,"เลือก ""เพิ่มกลุ่ม"" ด้านล่างเพื่อจัดกลุ่มตัวกรองภายใต้ป้ายกำกับ เช่น (""เอกสาร"" หรือ ""บุคคล"")"
 Filters OR operator,ตัวกรอง ประเภท หรือ
-Filters saved,Filters saved
+Filters saved,บันทึกตัวกรองแล้ว
 Find,หา
-Find suggestions,Find suggestions
-Find suggestions after training,Find suggestions after training
-Find suggestions for,Find suggestions for
-Find suggestions for selected,Find suggestions for selected
-Finding suggestions,Finding suggestions
+Find suggestions,ค้นหาคำแนะนำ
+Find suggestions after training,ดูคำแนะนำหลังการฝึกอบรม
+Find suggestions for,ค้นหาคำแนะนำสำหรับ
+Find suggestions for selected,ค้นหาคำแนะนำสำหรับรายการที่เลือก
+Finding suggestions,ค้นหาคำแนะนำ
 Fit,พอดี
 Flag,แฟล็ก
-for,for
-For all entities,For all entities
-For entities with blank values,For entities with blank values
-Forgot Password or Username?,Forgot Password or Username?
+for,สำหรับ
+For all entities,สำหรับทุกเอนทิตี
+For entities with blank values,สำหรับเอนทิตีที่มีค่าเป็นว่าง
+Forgot Password or Username?,ลืมรหัสผ่านหรือชื่อผู้ใช้?
 Forms and email configuration,การตั้งค่าแบบฟอร์มและอีเมล
-From,From
-From all suggestions,From all suggestions
-From previous step,From previous step
-From selection,From selection
-From:,From:
-Full mode,Full mode
-Full width,Full width
+From,จาก
+From all suggestions,จากทุกข้อเสนอแนะ
+From previous step,จากขั้นตอนก่อนหน้านี้
+From selection,จากการคัดเลือก
+From:,จาก:
+Full mode,โหมดเต็ม
+Full width,ความกว้างเต็ม
 General,ข้อมูลทั่วไป
-General access,General access
-General Information,General Information
-Generated ID,Generated ID
+General access,การเข้าถึงทั่วไป
+General Information,ข้อมูลทั่วไป
+Generated ID,ID ที่สร้างขึ้น
 Global CSS,CSS ทั้งหมด
-Global CSS & JS,Global CSS & JS
+Global CSS & JS,CSS และ JS ทั่วทั้งเว็บไซต์
 Global JS,Global JS
 Google,Google
 Google Analytics,Google Analytics
 Google Maps,Google Maps
-Group,Group
-Group by,Group by
-group expressions,group expressions
-Group Options,Group Options
-Group saved,Group saved
-Group updated,Group updated
-Grouped geolocation properties,Grouped geolocation properties
+Group,กลุ่ม
+Group by,จัดกลุ่มตาม
+group expressions,นิพจน์กลุ่ม
+Group Options,ตัวเลือกกลุ่ม
+Group saved,กลุ่มถูกบันทึกแล้ว
+Group updated,กลุ่มได้รับการอัปเดตแล้ว
+Grouped geolocation properties,คุณสมบัติตำแหน่งทางภูมิศาสตร์ที่จัดกลุ่ม
 Groups,กลุ่ม
-Header and button preview,Header and button preview
-Header bar active background,Header bar active background
-Header bar background,Header bar background
-Header bar divider,Header bar divider
-Header bar hover background,Header bar hover background
-Header bar text,Header bar text
+Header and button preview,ตัวอย่างส่วนหัวและปุ่ม
+Header bar active background,พื้นหลังของแถบหัวเรื่องที่ใช้งานอยู่
+Header bar background,พื้นหลังของแถบหัวเรื่อง
+Header bar divider,เส้นแบ่งแถบหัวเรื่อง
+Header bar hover background,พื้นหลังเมื่อนำเมาส์ไปวางบนแถบหัวเรื่อง
+Header bar text,ข้อความบนแถบหัวเรื่อง
 help,ช่วยเหลือ
-here,here
-"Hi, I'm Bert.","Hi, I'm Bert."
-Hide,Hide
-Hide actions,Hide actions
-Hide details,Hide details
-Hide label,Hide label
-Hide restricted relationships from public,Hide restricted relationships from public
-Hide toolbar,Hide toolbar
+here,ที่นี่
+"Hi, I'm Bert.",สวัสดี ฉันชื่อ Bert
+Hide,ซ่อน
+Hide actions,ซ่อนการดำเนินการ
+Hide details,ซ่อนรายละเอียด
+Hide label,ซ่อนป้าย
+Hide restricted relationships from public,ซ่อนความสัมพันธ์ที่ถูกจำกัดไม่ให้แสดงต่อสาธารณะ
+Hide toolbar,ซ่อนแถบเครื่องมือ
 HTML,HTML
-https://yourdomain,https: // yourdomain
-hub,hub
+https://yourdomain,https://yourdomain
+hub,ศูนย์กลาง
 hubs,ฮับ
-Hybrid,Hybrid
+Hybrid,ไฮบริด
 Icon,ไอคอน
 ID,ID
 ID:,ID:
 "If an account exists with the email you provided, you will receive an email
-                        with instructions to reset your password.","If an account exists with the email you provided, you will receive an email
-                        with instructions to reset your password."
+                        with instructions to reset your password.","หากมีบัญชีที่ใช้ที่อยู่อีเมลที่คุณให้ไว้ คุณจะได้รับอีเมล
+ที่มีคำแนะนำสำหรับการตั้งรหัสผ่านใหม่"
 "If it is an external URL, use a fully formed URL. Ie. http://www.uwazi.io.",หากเป็น URL จากภายนอก กรุณาใช้ URL แบบเต็มเช่น http://www.uwazi.io
 "If you want to continue, please type",ถ้าคุณต้องการดำเนินการต่อ กรุณาพิมพ์
-Image doesn't match the required size.,Image doesn't match the required size.
+Image doesn't match the required size.,ภาพไม่ตรงกับขนาดที่กำหนด
 Import,นำเข้า
-Import / Export CSV,Import / Export CSV
-Import asset,Import asset
+Import / Export CSV,นำเข้า / ส่งออก CSV
+Import asset,นำเข้าสินทรัพย์
 Import CSV,นำเข้า CSV
-Import failed. Review details below.,Import failed. Review details below.
-Import finished successfully.,Import finished successfully.
-Import finished with errors. Review details below.,Import finished with errors. Review details below.
-Import is currently processing rows.,Import is currently processing rows.
-Import is retrying after an error.,Import is retrying after an error.
-Import theme instance file,Import theme instance file
-Import was cancelled.,Import was cancelled.
-Imported translations from file,Imported translations from file
+Import failed. Review details below.,การนำเข้าไม่สำเร็จ โปรดตรวจสอบรายละเอียดด้านล่าง
+Import finished successfully.,การนำเข้าเสร็จสิ้นแล้ว
+Import finished with errors. Review details below.,การนำเข้าเสร็จสิ้นแล้ว แต่มีข้อผิดพลาด โปรดตรวจสอบรายละเอียดด้านล่าง
+Import is currently processing rows.,ระบบกำลังประมวลผลแถวข้อมูลอยู่
+Import is retrying after an error.,ระบบกำลังลองอีกครั้งหลังจากเกิดข้อผิดพลาด
+Import theme instance file,นำเข้าไฟล์ตัวอย่างธีม
+Import was cancelled.,การนำเข้าถูกยกเลิกแล้ว
+Imported translations from file,นำการแปลจากไฟล์มา
 in,ใน
-"In a group, either all relationships must have a hub or none of them.","In a group, either all relationships must have a hub or none of them."
-In OCR queue,In OCR queue
-In use,In use
-Include all entities,Include all entities
-Include only public,Include only public
-Incoming,Incoming
+"In a group, either all relationships must have a hub or none of them.",ในกลุ่มนั้น ความสัมพันธ์ทั้งหมดต้องมีจุดศูนย์กลาง หรือไม่มีความสัมพันธ์ใดที่มีจุดศูนย์กลางเลย
+In OCR queue,ในคิว OCR
+In use,กำลังใช้งาน
+Include all entities,รวมทุกเอนทิตี
+Include only public,ให้รวมเฉพาะข้อมูลสาธารณะเท่านั้น
+Incoming,ขาเข้า
 Info,ข้อมูล
-Information extraction training,Information extraction training
-Inherit,Inherit
+Information extraction training,การฝึกอบรมการสกัดข้อมูล
+Inherit,สืบทอด
 Inherit property,ก็อปปี้คุณสมบัตินี้
-Inherit type,Inherit type
-"Inherited values are read-only. Change the connection above, or edit the source entity.","Inherited values are read-only. Change the connection above, or edit the source entity."
-inherits,inherits
-Input,Input
-Input type,Input type
-Install,Install
-Install Language(s),Install Language(s)
-Install the browser extension.,Install the browser extension.
-Installing languages,Installing languages
-"Instructions on how to achieve this will vary according to the app used, please refer to the app's documentation.","Instructions on how to achieve this will vary according to the app used, please refer to the app's documentation."
-Instructions to reset password,"If the email address supplied is correct, we will send instructions to reset the password."
-Instructions to reset the password were sent to the user,Instructions to reset the password were sent to the user
+Inherit type,รับสืบทอดประเภท
+"Inherited values are read-only. Change the connection above, or edit the source entity.",ค่าที่สืบทอดมาเป็นแบบอ่านเท่านั้น โปรดปรับการเชื่อมต่อข้างบน หรือแก้ไขเอนทิตีต้นทาง
+inherits,รับสืบทอด
+Input,ข้อมูลเข้า
+Input type,ประเภทข้อมูล
+Install,ติดตั้ง
+Install Language(s),ติดตั้งภาษา
+Install the browser extension.,ติดตั้งส่วนขยายของเบราว์เซอร์
+Installing languages,การติดตั้งภาษา
+"Instructions on how to achieve this will vary according to the app used, please refer to the app's documentation.",วิธีการดำเนินการจะแตกต่างกันไปตามแอปที่ใช้ โปรดอ้างอิงจากคู่มือของแอปนั้น
+Instructions to reset password,หากที่อยู่อีเมลที่ให้มาถูกต้อง เราจะส่งคำแนะนำเพื่อตั้งรหัสผ่านใหม่
+Instructions to reset the password were sent to the user,คำแนะนำสำหรับการตั้งรหัสผ่านใหม่ได้ส่งไปยังผู้ใช้แล้ว
 Invalid captcha,captcha ไม่ถูกต้อง
-Invalid csv: all the values for a row must be either nested or non-nested,Invalid csv: all the values for a row must be either nested or non-nested
-Invalid csv: nested value need to be under a non-nested value,Invalid csv: nested value need to be under a non-nested value
-Invalid form,แบบฟอร์มไม่ถูกต้อง
-Invalid URL,Invalid URL
+Invalid csv: all the values for a row must be either nested or non-nested,CSV ไม่ถูกต้อง: ค่าทั้งหมดในแถวหนึ่งต้องเป็นแบบซ้อนกันหรือแบบไม่ซ้อนกัน
+Invalid csv: nested value need to be under a non-nested value,ไฟล์ CSV ไม่ถูกต้อง: ค่าที่ซ้อนกันต้องอยู่ใต้ค่าที่ไม่ซ้อนกัน
+Invalid form,ต้องกรอกข้อมูลนี้ หรือค่าที่กรอกไม่ถูกต้อง กรุณาแก้ไขแล้วลองใหม่อีกครั้ง
+Invalid URL,URL ไม่ถูกต้อง
 It could also very easily break the app. Only write code here if you know exactly what you are doing.,มันอาจจะทำให้แอปใช้ไม่ได้ เขียนโค้ดที่นี่ในกรณีที่คุณเข้าใจสิ่งที่คุณทำเท่านั้น
-it has been logged with request id #,it has been logged with request id #
-Item,Item
+it has been logged with request id #,ได้บันทึกไว้แล้วด้วยหมายเลขคำขอ #
+Item,รายการ
 Items:,รายการ:
-Javascript,Javascript
-juris*,juris*
+Javascript,JavaScript
+juris*,นิติ*
 key,Thai
 Label,ประเภท
 "Label date ""From""","ลาเบลวันที่ ""ตั้งแต่"""
 "Label date ""to""","ลาเบลวันที่ ""ถึง"""
-Labeled,Labeled
+Labeled,มีป้ายกำกับ
 Landing page,หน้าแลนดิ้งเพจ
-Landing page description,"The landing page is the first page that visitors see when they come to your collection. The default landing page is your collection's library. You can set a different landing page by adding its relative URL here. For example:
-      
-A page: */page/dicxg0oagy3xgr7ixef80k9*
-A filtered view in Uwazi: */library/?searchTerm=test*
-An entity: */entity/9htbkgpkyy7j5rk9*
-A document: */document/4y9i99fadjp833di*
-      
-Important: You must use relative URLs. These start with a forward slash and do not include the domain name. For example: In the address *https://yoursite.com/landingpage*, the relative URL is /landingpage"
+Landing page description,"หน้า Landing Page คือหน้าแรกที่ผู้เยี่ยมชมจะเห็นเมื่อเข้ามาที่คอลเลกชันของคุณ หน้า Landing Page เริ่มต้นคือไลบรารีของคอลเลกชันของคุณ คุณสามารถกำหนดหน้า Landing Page อื่นได้โดยเพิ่ม URL แบบสัมพัทธ์ (relative URL) ของหน้านั้นที่นี่ ตัวอย่างเช่น:
+
+หน้า: */page/dicxg0oagy3xgr7ixef80k9*
+มุมมองที่กรองแล้วใน Uwazi: */library/?searchTerm=test*
+เอนทิตี: */entity/9htbkgpkyy7j5rk9*
+เอกสาร: */document/4y9i99fadjp833di*
+
+สำคัญ: คุณต้องใช้ URL แบบสัมพัทธ์เท่านั้น โดยต้องขึ้นต้นด้วยเครื่องหมายทับ (/) และไม่มีชื่อโดเมนอยู่ด้วย ตัวอย่างเช่น ในที่อยู่ *https://yoursite.com/landingpage* URL แบบสัมพัทธ์คือ /landingpage"
 Language,ภาษา
-Language Code,Language Code
+Language Code,รหัสภาษา
 Language deleted,ลบภาษาแล้ว
-Language reset success,Language reset success
-Language uninstalled successfully,Language uninstalled successfully
-Language(s),Language(s)
-Language:,Language:
+Language reset success,การตั้งค่าภาษาใหม่สำเร็จแล้ว
+Language uninstalled successfully,ภาษาได้ถอนการติดตั้งสำเร็จแล้ว
+Language(s),ภาษา
+Language:,ภาษา:
 Languages,ภาษา
-Languages installed successfully,Languages installed successfully
-Last updated,Last updated
-Last updated from collection:,Last updated from collection:
+Languages installed successfully,ภาษาได้ติดตั้งสำเร็จแล้ว
+Last updated,อัปเดตครั้งสุดท้าย
+Last updated from collection:,อัปเดตครั้งสุดท้ายจากคอลเลกชัน:
 Latitude,พิกัดละติจูด
-Latitude must be between -90 and 90,Latitude must be between -90 and 90
-Learn how to add and configure a contact form on a webpage.,Learn how to add and configure a contact form on a webpage.
-Learn how to build your first collection,Learn how to build your first collection
+Latitude must be between -90 and 90,ละติจูดต้องอยู่ระหว่าง -90 ถึง 90
+Learn how to add and configure a contact form on a webpage.,เรียนรู้วิธีเพิ่มและตั้งค่าแบบฟอร์มติดต่อบนหน้าเว็บ
+Learn how to build your first collection,เรียนรู้วิธีสร้างคอลเลกชันแรกของคุณ
 Learn more,เรียนรู้เพิ่มเติม
-Learn more about the components.,Learn more about the components.
+Learn more about the components.,เรียนรู้เพิ่มเติมเกี่ยวกับส่วนประกอบต่างๆ
 Legend,กลุ่ม
-Lengthy reindex process,Lengthy reindex process
+Lengthy reindex process,กระบวนการสร้างดัชนีใหม่ที่ใช้เวลานาน
 Library,ไลบรารี่
 library list view,มุมมองรายการไลบรารี
 library map view,มุมมองแผนที่ไลบรารี
 library table view,มุมมองตารางไลบรารี
-Light,Light
-Light Theme,Light Theme
-Link,Link
+Light,สว่าง
+Light Theme,ธีมสีอ่อน
+Link,ลิงก์
 linked,เชื่อมโยงแล้ว
-List,List
-List renders as a table. Use the options below to filter empty or zero values.,List renders as a table. Use the options below to filter empty or zero values.
-Live preview,Live preview
-Live translate,Live translate
-Load,Load
-Load example,Load example
-Load more,Load more
-Loading,Loading
-Local time,Local time
+List,รายการ
+List renders as a table. Use the options below to filter empty or zero values.,รายการจะแสดงในรูปแบบตาราง ใช้ตัวเลือกด้านล่างเพื่อกรองค่าที่ว่างหรือค่าเป็นศูนย์
+Live preview,ดูตัวอย่างแบบเรียลไทม์
+Live translate,แปลแบบเรียลไทม์
+Load,โหลด
+Load example,โหลดตัวอย่าง
+Load more,โหลดเพิ่มเติม
+Loading,กำลังโหลด
+Local time,เวลาท้องถิ่น
 Login,เข้าสู่ระบบ
 Login button,กดเพื่อเข้าสู่ระบบ
 Login failed,การเข้าสู่ระบบล้มเหลว
 Logout,ออกจากระบบ
 Longitude,พิกัดลองจิจูด
-Longitude must be between -180 and 180,Longitude must be between -180 and 180
-Lookup help,Lookup help
-Lost connection to the server. Your changes may be lost,Lost connection to the server. Your changes may be lost
+Longitude must be between -180 and 180,เส้นลองจิจูดต้องอยู่ระหว่าง -180 ถึง 180
+Lookup help,ดูวิธีใช้
+Lost connection to the server. Your changes may be lost,สูญเสียการเชื่อมต่อกับเซิร์ฟเวอร์ การเปลี่ยนแปลงของคุณอาจสูญหาย
 low,ต่ำ
-Manage relationship types,Manage relationship types
+Manage relationship types,จัดการประเภทความสัมพันธ์
 Manage site settings and configuration,จัดการการตั้งค่าไซต์และการกำหนดค่า
-Manage types,Manage types
-Manual data,Manual data
-Manually set a color,Manually set a color
+Manage types,จัดการประเภท
+Manual data,ข้อมูลที่ป้อนด้วยมือ
+Manually set a color,ตั้งค่าสีด้วยมือ
 Map,แผนที่
-Map api key,Map api key
-Map API key,Map API key
-Map api key tooltip,An API key is required to use Mapbox or Google Maps.
-Map Layers,Map Layers
-Map layers description,Map layers description
-Map Provider,Map Provider
+Map api key,API key ของแผนที่
+Map API key,API key ของแผนที่
+Map api key tooltip,จำเป็นต้องมี API key เพื่อใช้ Mapbox หรือ Google Maps
+Map Layers,ชั้นแผนที่
+Map layers description,คำอธิบายชั้นแผนที่
+Map Provider,ผู้ให้บริการแผนที่
 Map view,มุมมองแผนที่
 Mapbox,Mapbox
-Mapping conflict error,"A reindex of your collection is necessary. The reason may vary 
-        -- from certain changes made to a template's property to new fields
-        that need to be populated across entities. 
-        This process will not negatively affect the data in your collection. 
-        It can last a few minutes and some parts of your collection might take
-        some time to reappear in the Library, but this is temporary. Do you want to continue?"
+Mapping conflict error,"จำเป็นต้องสร้างดัชนีคอลเลกชันของคุณใหม่ สาเหตุอาจแตกต่างกันไป
+        -- ตั้งแต่การเปลี่ยนแปลงคุณสมบัติบางอย่างของแม่แบบ ไปจนถึงฟิลด์ใหม่
+        ที่ต้องกรอกข้อมูลในทุกเอนทิตี
+        กระบวนการนี้จะไม่ส่งผลกระทบในทางลบต่อข้อมูลในคอลเลกชันของคุณ
+        อาจใช้เวลาสักครู่ และบางส่วนของคอลเลกชันของคุณอาจใช้เวลา
+        สักระยะก่อนจะปรากฏขึ้นอีกครั้งในไลบรารี แต่นี่เป็นเพียงสถานะชั่วคราว คุณต้องการดำเนินการต่อหรือไม่?"
 Maps,แผนที่
 Mark as Reviewed,ได้ตรวจสอบแล้ว
-Mark as reviewed,Mark as reviewed
+Mark as reviewed,ทำเครื่องหมายว่าได้ตรวจสอบแล้ว
 Markdown,การทำเครื่องหมาย
 "Markdown support in custom pages will be discontinued starting in 2027. Upgrade this page
-          when its content no longer relies on Markdown syntax.","Markdown support in custom pages will be discontinued starting in 2027. Upgrade this page
-          when its content no longer relies on Markdown syntax."
-marked and labeled,marked and labeled
-marked for training,marked for training
-Marked for training + all labeled entries,Marked for training + all labeled entries
-Marked for training only,Marked for training only
-Match,Match
-match,match
-match verbatim,match verbatim
-matches,matches
-"matches jurisdiction, jurists, jurisprudence","matches jurisdiction, jurists, jurisprudence"
-Matches show the passage and the page they are on.,Matches show the passage and the page they are on.
-Matching,Matching
-matching,matching
+          when its content no longer relies on Markdown syntax.","การสนับสนุน Markdown ในหน้าแบบกำหนดเองจะถูกยกเลิกตั้งแต่ปี 2027 เป็นต้นไป โปรดอัปเกรดหน้านี้
+เมื่อเนื้อหาของหน้านี้ไม่พึ่งพาไวยากรณ์ Markdown อีกต่อไป"
+marked and labeled,ทำเครื่องหมายและติดป้าย
+marked for training,ถูกกำหนดไว้เพื่อฝึกอบรม
+Marked for training + all labeled entries,ถูกทำเครื่องหมายเพื่อฝึกอบรม + ทุกข้อมูลที่ถูกติดป้ายกำกับ
+Marked for training only,ใช้สำหรับการฝึกอบรมเท่านั้น
+Match,จับคู่
+match,ตรงกัน
+match verbatim,ตรงตามคำเดิม
+matches,ตรงกัน
+"matches jurisdiction, jurists, jurisprudence",ตรงกับคำว่า นิติศาสตร์ นิติกร นิติบุคคล
+Matches show the passage and the page they are on.,ผลการค้นหาจะแสดงข้อความและหน้าที่มีข้อความนั้นอยู่
+Matching,การจับคู่
+matching,การจับคู่
 Matomo,Matomo
 Members,สมาชิก
 Menu,เมนู
 Message,ข้อความ
-Message sent,Message sent
+Message sent,ส่งข้อความแล้ว
 Metadata,เมทาดาทา
 Metadata Extraction,ค้นหาเมตาดาต้า
 "Metric shows a single total count. Select Pie, Bar, or another chart type above to
-            configure categories, labels, and slices. Use the Appearance tab for colors.","Metric shows a single total count. Select Pie, Bar, or another chart type above to
-            configure categories, labels, and slices. Use the Appearance tab for colors."
-MIGRATE,MIGRATE
+            configure categories, labels, and slices. Use the Appearance tab for colors.","เมตริกแสดงจำนวนรวมเพียงหนึ่งเดียว ให้เลือกประเภทกราฟแบบวงกลม (Pie), แบบแท่ง (Bar) หรือประเภทอื่น ๆ ด้านบนเพื่อ
+กำหนดหมวดหมู่ ป้ายชื่อ และส่วนต่าง ๆ ใช้แท็บ ""Appearance"" เพื่อปรับสี"
+MIGRATE,ย้าย
 Minimum,ขั้นต่ำ
-Mismatch,Mismatch
-mismatched passwords,Passwords don't match
-mismatching,mismatching
+Mismatch,ไม่ตรงกัน
+mismatched passwords,รหัสผ่านไม่ตรงกัน
+mismatching,ไม่ตรงกัน
 Mixed access,การเข้าถึงแบบผสม
 ML TOC,ML TOC
-Modified,Modified
+Modified,แก้ไขแล้ว
 Month,เดือน
-Months,Months
-More,More
-more,more
+Months,เดือน
+More,เพิ่มเติม
+more,เพิ่มเติม
 more options.,ตัวเลือกเพิ่มเติม
-Multi-source mode,Multi-source mode
-Multiple date,Multiple date
-Multiple date range,Multiple date range
-Multiple inherited properties warning ([property 1] affects [property 2]),affects
-Multiple matches found,Multiple matches found
-Multiple relationships edit description,Making changes to this property will affect other properties on this template because they all share relationships with the same configuration.
-Multiple select,Multiple select
+Multi-source mode,โหมดหลายแหล่งข้อมูล
+Multiple date,หลายวัน
+Multiple date range,ช่วงวันที่หลายช่วง
+Multiple inherited properties warning ([property 1] affects [property 2]),ส่งผล
+Multiple matches found,พบผลลัพธ์หลายรายการ
+Multiple relationships edit description,การปรับเปลี่ยนคุณสมบัตินี้จะส่งผลต่อคุณสมบัติอื่น ๆ ในเทมเพลตนี้ เนื่องจากทั้งหมดมีความสัมพันธ์กันผ่านการตั้งค่าเดียวกัน
+Multiple select,เลือกหลายรายการ
 Name,ชื่อ
 Name is required,จำเป็นต้องใส่ชื่อ
 Name is too long,ชื่อยาวเกินไป
 Name is too short,ชื่อสั้นเกินไป
 Narrow down your searches,จำกัด การค้นหาของคุณให้แคบลง
 "Narrow entities before aggregation. With multiple sources, pick the property under the
-        source alias so each filter applies only to that series.","Narrow entities before aggregation. With multiple sources, pick the property under the
-        source alias so each filter applies only to that series."
+        source alias so each filter applies only to that series.","จำกัดขอบเขตของข้อมูลก่อนการรวมข้อมูล เมื่อมีหลายแหล่งข้อมูล ให้เลือกคุณสมบัติภายใต้
+ชื่อแทนของแหล่งข้อมูล เพื่อให้ตัวกรองแต่ละตัวใช้กับชุดข้อมูลนั้นเท่านั้น"
 Narrow your search,จำกัด การค้นหาของคุณ
-Navigate back,Navigate back
-Navigation menu tool tip part 1,"If it is an internal URL within this website, be sure to delete the first part"
-Navigation menu tool tip part 2,leaving only a relative URL starting with a slash character. Ie. /some_url.
-New,New
-New activity will show up here.,New activity will show up here.
-New conversation,New conversation
+Navigate back,กลับ
+Navigation menu tool tip part 1,หากเป็น URL ภายในเว็บไซต์นี้ ให้แน่ใจว่าได้ลบส่วนแรกออก
+Navigation menu tool tip part 2,เหลือเพียง URL แบบสัมพัทธ์ที่เริ่มต้นด้วยเครื่องหมายสแลช เช่น /some_url.
+New,ใหม่
+New activity will show up here.,กิจกรรมใหม่จะปรากฏขึ้นที่นี่
+New conversation,บทสนทนาใหม่
 New entity,รายการใหม่
-New group,New group
+New group,กลุ่มใหม่
 New language added,ภาษาใหม่ถูกเพิ่มแล้ว
-New page,New page
+New page,หน้าใหม่
 New password,รหัสผ่านใหม่
-New primary doc,New primary doc
-New relation type label…,New relation type label…
-New relationship type,New relationship type
+New primary doc,เอกสารหลักใหม่
+New relation type label…,ชื่อประเภทความสัมพันธ์ใหม่…
+New relationship type,ประเภทความสัมพันธ์ใหม่
 New relationships group,กลุ่มความสัมพันธ์ใหม่
-New Relationships Migration,New Relationships Migration
-New user,New user
+New Relationships Migration,การย้ายข้อมูลความสัมพันธ์ใหม่
+New user,ผู้ใช้ใหม่
 Next,ต่อไป
 No,เลขที่
 No attachments,ไม่พบสิ่งที่แนบมา
-No audio or video on this entity,No audio or video on this entity
-No chart types match your search.,No chart types match your search.
+No audio or video on this entity,ไม่มีเสียงหรือวิดีโอสำหรับข้อมูลนี้
+No chart types match your search.,ไม่มีประเภทกราฟใดที่ตรงกับผลการค้นหาของคุณ
 No common filters,ไม่มีฟิลเตอร์สามัญ
-No connected entities yet.,No connected entities yet.
+No connected entities yet.,ยังไม่มีเอนทิตีที่เกี่ยวข้อง
 No Connections,ไม่มีการเชื่อมต่อ
-No Connections description,Connections are the direct relationships between this document and other documents and entities.
-No context,No context
-No CSVs yet,No CSVs yet
-No data,No data
-NO DATA AVAILABLE,NO DATA AVAILABLE
-No entities found,No entities found
-NO EXTRACTORS,NO EXTRACTORS
-No files available,No files available
-No files queued yet.,No files queued yet.
-no filters for templates,The combination of entity types doesn't have any filters in common.
-No Group,No Group
+No Connections description,การเชื่อมโยงคือความสัมพันธ์โดยตรงระหว่างเอกสารนี้กับเอกสารและเอนทิตีอื่น ๆ
+No context,ไม่มีบริบท
+No CSVs yet,ยังไม่มีไฟล์ CSV
+No data,ไม่มีข้อมูล
+NO DATA AVAILABLE,ไม่มีข้อมูล
+No entities found,ไม่พบเอนทิตี
+NO EXTRACTORS,ไม่มีเครื่องมือสกัด
+No files available,ไม่มีไฟล์ใดเลย
+No files queued yet.,ยังไม่มีไฟล์ใดในคิว
+no filters for templates,การรวมประเภทเอนทิตีเหล่านี้ไม่มีตัวกรองใดที่เหมือนกัน
+No Group,ไม่มีกลุ่ม
 No icon / flag,ไม่พบ ไอค่อน / สิ่งที่ถูกคั่นหน้า
-No images on this entity,No images on this entity
-No items available,No items available
+No images on this entity,ไม่มีรูปภาพสำหรับเอนทิตีนี้
+No items available,ไม่มีรายการที่ใช้งานได้
 No Label,ไม่มีลาเบล
-No label,No label
-No matches for,No matches for
-No matches.,No matches.
-No matching entities.,No matching entities.
-No media selected,No media selected
-No metadata for this entity yet.,No metadata for this entity yet.
-No options,No options
+No label,ไม่มีป้าย
+No matches for,ไม่พบผลลัพธ์ที่ตรงกับ
+No matches.,ไม่พบผลลัพธ์ที่ตรงกัน
+No matching entities.,ไม่พบข้อมูลที่ตรงกัน
+No media selected,ไม่มีการเลือกสื่อใด
+No metadata for this entity yet.,ยังไม่มีข้อมูลเมตาดาต้าสำหรับเอนทิตีนี้
+No options,ไม่มีตัวเลือก
 No options found,ไม่พบตัวเลือก
-No page,No page
-No people or groups added yet,No people or groups added yet
-No primary documents,No primary documents
-No primary documents yet. Add a file to get started.,No primary documents yet. Add a file to get started.
-No property,ไม่เจอพร๊อพเพอร์ตี้
+No page,ไม่มีหน้า
+No people or groups added yet,ยังไม่มีบุคคลหรือกลุ่มใดถูกเพิ่มเข้ามา
+No primary documents,ไม่มีเอกสารต้นฉบับ
+No primary documents yet. Add a file to get started.,ยังไม่มีเอกสารต้นฉบับ โปรดเพิ่มไฟล์เพื่อเริ่มใช้งาน
+No property,รายการนี้ไม่มีคุณสมบัตินี้
 No References,ไม่มีการอ้างอิง
-No References description,References are parts of this document related with other documents and entities.
-No relationship types,No relationship types
+No References description,การอ้างอิงคือส่วนต่าง ๆ ของเอกสารนี้ที่มีความเกี่ยวข้องกับเอกสารและเอนทิตีอื่น ๆ
+No relationship types,ไม่มีประเภทความสัมพันธ์
 No Relationships,ไม่มีความสัมพันธ์
-No Relationships description,Relationships are bonds between entities.
-No relationships found,No relationships found
-No relationships to graph,No relationships to graph
-No releases yet,No releases yet
-No results found,No results found
-No supporting files yet. Add a file to get started.,No supporting files yet. Add a file to get started.
+No Relationships description,ความสัมพันธ์คือความผูกพันระหว่างเอนทิตี
+No relationships found,ไม่พบความสัมพันธ์ใด
+No relationships to graph,ไม่มีความสัมพันธ์ที่จะแสดงในกราฟ
+No releases yet,ยังไม่มีเวอร์ชันที่เผยแพร่
+No results found,ไม่พบผลลัพธ์ใด
+No supporting files yet. Add a file to get started.,ยังไม่มีไฟล์สนับสนุน เพิ่มไฟล์เพื่อเริ่มใช้งาน
 No table of contents,ไม่มีสารบัญ
-No Table of contents,No Table of contents
-No table of contents description,ไม่มีคำอธิบายสารบัญ
-No templates available to add.,No templates available to add.
+No Table of contents,ไม่มีสารบัญ
+No table of contents description,"คุณสามารถเริ่มต้นได้โดยการเลือกข้อความในเอกสารแล้วคลิกปุ่ม ""เพิ่มลงในสารบัญ"""
+No templates available to add.,ไม่มีแม่แบบใดที่สามารถเพิ่มได้
 No text match,ไม่มีการจับคู่ข้อความ
-No text match description,You can type something different in the search box to get some results.
-No timelinks added,No timelinks added
-No translation in,No translation in
+No text match description,คุณสามารถพิมพ์คำค้นหาอื่น ๆ ลงในช่องค้นหาเพื่อดูผลลัพธ์
+No timelinks added,ยังไม่มีลิงก์เวลาที่เพิ่มเข้ามา
+No translation in,ไม่มีคำแปลใน
 No type,ไม่มีประเภท
-No uploaded images fit the requirements,No uploaded images match these size requirements. Upload a new image or use an editor to resize an existing file.
-No user or group found,No user or group found
-No valid target template available,No valid target template available
+No uploaded images fit the requirements,ไม่มีรูปภาพที่อัปโหลดมาตรงกับข้อกำหนดขนาดนี้ โปรดอัปโหลดรูปภาพใหม่ หรือใช้โปรแกรมแก้ไขเพื่อปรับขนาดไฟล์ที่มีอยู่
+No user or group found,ไม่พบผู้ใช้หรือกลุ่มใด
+No valid target template available,ไม่มีแม่แบบเป้าหมายที่ถูกต้อง
 No value,ไม่มีค่า
 No Value,ไม่มีค่า
-No visualization data available.,No visualization data available.
-"No, cancel","No, cancel"
-no-toc-description,"You can start by selecting text in the document and clicking the ""Add to
-              ToC"" button."
-Non processed,Non processed
-Non-labeled,Non-labeled
-Non-latin characters support,Non-latin characters support
-None,None
+No visualization data available.,ไม่มีข้อมูลภาพแสดงผล
+"No, cancel","ไม่, ยกเลิก"
+no-toc-description,"คุณสามารถเริ่มได้โดยเลือกข้อความในเอกสารแล้วคลิกปุ่ม ""เพิ่มไปยัง
+สารบัญ"""
+Non processed,ไม่ผ่านกระบวนการแปรรูป
+Non-labeled,ไม่มีป้ายกำกับ
+Non-latin characters support,การสนับสนุนตัวอักษรที่ไม่ใช่ตัวอักษรละติน
+None,ไม่มี
 Normal view,มุมมองปกติ
-Not already been use as source template in another extractor,Not already been use as source template in another extractor
-Not already been use as target template,Not already been use as target template
-Not Found,Not Found
-Nothing here yet.,Nothing here yet.
-Nothing selected,Nothing selected
-Notifications,Notifications
-Obsolete,Obsolete
-obsolete,obsolete
+Not already been use as source template in another extractor,ยังไม่ได้ถูกใช้เป็นแม่แบบต้นฉบับในเครื่องมือสกัดข้อมูลอื่น
+Not already been use as target template,ยังไม่ได้ใช้เป็นแม่แบบเป้าหมาย
+Not Found,ไม่พบ
+Nothing here yet.,ยังไม่มีอะไรที่นี่เลย
+Nothing selected,ไม่มีการเลือกอะไรเลย
+Notifications,การแจ้งเตือน
+Obsolete,ล้าสมัย
+obsolete,ล้าสมัย
 OCR,OCR
-OCR button tip,This will process the document to recognize it's text. The original file will be added as a supporting file.
-OCR completed,OCR completed
-OCR description tip 1,"This will enable the Optical Character Recognition (OCR) functionality for PDF documents. This service will recognize text inside images, such as scanned documents and photos, and convert it into machine-readable text data."
-OCR description tip 2,"When activated, this will enable administrator and editor users to send PDF documents to the OCR service."
-OCR error,OCR error
-OCR error tip,The OCR engine couldn't read the document due to a malformed format. Last updated
+OCR button tip,การดำเนินการนี้จะประมวลผลเอกสารเพื่อรู้จำข้อความในเอกสาร ไฟล์ต้นฉบับจะถูกเพิ่มเป็นไฟล์สนับสนุน
+OCR completed,OCR เสร็จสิ้นแล้ว
+OCR description tip 1,การตั้งค่านี้จะเปิดใช้งานฟังก์ชันการรู้จำตัวอักษรด้วยแสง (OCR) สำหรับเอกสาร PDF บริการนี้จะสามารถรู้จำข้อความภายในภาพ เช่น เอกสารที่สแกนและรูปภาพ แล้วแปลงเป็นข้อมูลข้อความที่เครื่องสามารถอ่านได้
+OCR description tip 2,เมื่อเปิดใช้งานแล้ว คุณสมบัตินี้จะช่วยให้ผู้ใช้ที่มีสิทธิ์ผู้ดูแลระบบและผู้แก้ไขสามารถส่งเอกสาร PDF ไปยังบริการ OCR ได้
+OCR error,ข้อผิดพลาด OCR
+OCR error tip,ระบบ OCR ไม่สามารถอ่านเอกสารได้ เนื่องจากรูปแบบเอกสารไม่ถูกต้อง อัปเดตครั้งสุดท้าย
 OCR PDF,OCR PDF
 of,ของ
 Ok,ตกลง
 OK,ตกลง
-On this entity,On this entity
-one character,one character
-Only essential,Only essential
+On this entity,เกี่ยวกับเอนทิตีนี้
+one character,ตัวอักษรหนึ่งตัว
+Only essential,เฉพาะสิ่งที่จำเป็นเท่านั้น
 "Only properties with the same name and configuration in every data source are available
-            for both dimensions.","Only properties with the same name and configuration in every data source are available
-            for both dimensions."
-Only published entities are counted.,Only published entities are counted.
+            for both dimensions.","มีเพียงคุณสมบัติที่มีชื่อและการตั้งค่าเดียวกันในทุกแหล่งข้อมูลเท่านั้น
+ที่สามารถใช้ได้สำหรับทั้งสองมิติ"
+Only published entities are counted.,นับเฉพาะเอนทิตีที่ได้รับการเผยแพร่เท่านั้น
 "Only templates that are not used as source in any other extractor and are not
-                selected as target in this extractor are available for selection.","Only templates that are not used as source in any other extractor and are not
-                selected as target in this extractor are available for selection."
+                selected as target in this extractor are available for selection.","มีเพียงแม่แบบที่ไม่ได้ถูกใช้เป็นแหล่งข้อมูลในเครื่องมือสกัดข้อมูลอื่นใด และไม่ได้
+ถูกเลือกเป็นเป้าหมายในเครื่องมือสกัดข้อมูลนี้เท่านั้น ที่สามารถเลือกได้"
 "Only templates with at least one rich text property and one numeric property are
-                available for selection.","Only templates with at least one rich text property and one numeric property are
-                available for selection."
-"Only the extractor will be deleted, all created entities will remain on the library.","Only the extractor will be deleted, all created entities will remain on the library."
-Open,Open
-Open entity,Open entity
-Open group,Open group
-Open link,Open link
-Open PDF,Open PDF
+                available for selection.","มีเพียงแม่แบบที่มีคุณสมบัติข้อความแบบ rich text อย่างน้อยหนึ่งรายการ และคุณสมบัติตัวเลข อย่างน้อยหนึ่งรายการเท่านั้น
+ที่สามารถเลือกได้"
+"Only the extractor will be deleted, all created entities will remain on the library.",จะลบเฉพาะเครื่องมือสกัดเท่านั้น ส่วนเอนทิตีทั้งหมดที่สร้างขึ้นจะยังคงอยู่ในไลบรารี
+Open,เปิด
+Open entity,เปิดเอนทิตี
+Open group,เปิดกลุ่ม
+Open link,เปิดลิงก์
+Open PDF,เปิดไฟล์ PDF
 Open the two-factor Authenticator app on your device,กรุณาเปิดแอป Authenticator สำหรับยืนยันรหัสสองทาง บนอุปกรณ์ของคุณ
-Options,Options
+Options,ตัวเลือก
 or,หรือ
-or drag and drop here,or drag and drop here
+or drag and drop here,หรือลากและวางที่นี่
 or drop your files here.,หรือวางไฟล์ของคุณที่นี่
-Or paste a URL,Or paste a URL
+Or paste a URL,หรือวาง URL ลงมา
 Order,คำสั่ง
 Other,อื่น
 other,อื่น
-Other users will be affected by this action!,Other users will be affected by this action!
-Others,Others
-Outgoing,Outgoing
-p.,p.
+Other users will be affected by this action!,การดำเนินการนี้จะส่งผลกระทบต่อผู้ใช้คนอื่น ๆ!
+Others,อื่นๆ
+Outgoing,ขาออก
+p.,หน้า
 Page,หน้า
-Page not found,Page not found
-Page published successfully.,Page published successfully.
+Page not found,ไม่พบหน้า
+Page published successfully.,หน้าได้เผยแพร่สำเร็จแล้ว
 Pages,หน้า
-Paragrap number extraction property (numeric),Paragrap number extraction property (numeric)
-Paragraph,Paragraph
-Paragraph Extraction,Paragraph Extraction
-Paragraph Extractor added,Paragraph Extractor added
-Paragraph text extraction property (rich text),Paragraph text extraction property (rich text)
-Paragraphs,Paragraphs
-Paragraphs deleted,Paragraphs deleted
-parties,parties
+Paragrap number extraction property (numeric),คุณสมบัติการดึงหมายเลขย่อหน้า (ตัวเลข)
+Paragraph,ย่อหน้า
+Paragraph Extraction,การสกัดย่อหน้า
+Paragraph Extractor added,เพิ่มเครื่องมือสกัดย่อหน้า
+Paragraph text extraction property (rich text),คุณสมบัติการสกัดข้อความจากย่อหน้า (Rich Text)
+Paragraphs,ย่อหน้า
+Paragraphs deleted,ย่อหน้าที่ถูกลบ
+parties,ฝ่ายต่างๆ
 Password,รหัสผ่าน
-Password + 2fa,Password + 2fa
-Password changed success,Password changed success
+Password + 2fa,รหัสผ่าน + 2FA
+Password changed success,เปลี่ยนรหัสผ่านสำเร็จแล้ว
 Password is too long,รหัสผ่านยาวเกินไป
-Passwords do not match,Passwords do not match
-Paste an audio or video URL to use it as this property without uploading a file. Press Enter to apply.,Paste an audio or video URL to use it as this property without uploading a file. Press Enter to apply.
-Paste an image URL to use it as this property without uploading a file. Press Enter to apply.,Paste an image URL to use it as this property without uploading a file. Press Enter to apply.
-Paste this tag in a page HTML. The chart uses the page language.,Paste this tag in a page HTML. The chart uses the page language.
-Paste URL,Paste URL
-Paste URL here,Paste URL here
+Passwords do not match,รหัสผ่านไม่ตรงกัน
+Paste an audio or video URL to use it as this property without uploading a file. Press Enter to apply.,วาง URL ของไฟล์เสียงหรือวิดีโอเพื่อใช้มันเป็นคุณสมบัตินี้โดยไม่ต้องอัปโหลดไฟล์ กด Enter เพื่อนำไปใช้
+Paste an image URL to use it as this property without uploading a file. Press Enter to apply.,วาง URL ของรูปภาพเพื่อใช้มันเป็นคุณสมบัตินี้โดยไม่ต้องอัปโหลดไฟล์ กด Enter เพื่อนำไปใช้
+Paste this tag in a page HTML. The chart uses the page language.,คัดลอกแท็กนี้ไปวางในโค้ด HTML ของหน้าเว็บ แผนภูมิจะใช้ภาษาของหน้านั้น
+Paste URL,วาง URL
+Paste URL here,วาง URL ที่นี่
 PDF,PDF
-Pending,Pending
-People and groups,People and groups
-per page,per page
+Pending,รอดำเนินการ
+People and groups,บุคคลและกลุ่ม
+per page,ต่อหน้า
 Permission,สิทธิการเข้าถึง
-Permission level,Permission level
+Permission level,ระดับสิทธิ์
 Permission on entities explicitly shared with the user,สิทธิการเข้าถึงบนรายการถูกแชร์ให้ผู้ใช้แล้ว
 Permissions,สิทธิการเข้าถึง
-Permissions updated,Permissions updated
-Pick a color,Pick a color
+Permissions updated,อัปเดตสิทธิ์
+Pick a color,เลือกสี
 Plain text,ข้อความธรรมดา
 Please contact an admin for details.,กรุณาติดต่อผู้ดูแลระบบเพื่อดูรายละเอียดเพิ่มเติม
-Please type in,Please type in
+Please type in,กรุณาพิมพ์
 Please type in letters and numbers from the image to start the export.,กรุณาพิมพ์ตัวอักษรและตัวเลขจากภาพเพื่อเริ่มการส่งออก
-Pre-filled from your selection. Edit as needed.,Pre-filled from your selection. Edit as needed.
-Preflight scan completed.,Preflight scan completed.
-Preparing required relationships.,Preparing required relationships.
-Preparing required thesauri values.,Preparing required thesauri values.
-Preserve,Preserve
-Preserve Extension,Preserve Extension
-Preserve Setup Description,"If you know your Uwazi URL and TOKEN click the link below, and fill the required information."
+Pre-filled from your selection. Edit as needed.,ข้อมูลถูกกรอกไว้ล่วงหน้าตามการเลือกของคุณแล้ว สามารถแก้ไขได้ตามต้องการ
+Preflight scan completed.,การสแกนตรวจสอบเบื้องต้นเสร็จสิ้นแล้ว
+Preparing required relationships.,เตรียมความสัมพันธ์ที่จำเป็น
+Preparing required thesauri values.,กำลังเตรียมค่าในพจนานุกรมคำพ้องความหมายที่จำเป็น
+Preserve,รักษา
+Preserve Extension,ส่วนขยายการเก็บรักษา
+Preserve Setup Description,หากคุณทราบ URL และ TOKEN ของ Uwazi แล้ว ให้คลิกลิงก์ด้านล่าง และกรอกข้อมูลที่จำเป็น
 Press enter to add,กด Enter เพื่อเพิ่ม
 Preview,ดูตัวอย่าง
-Preview updates automatically (300ms debounce),Preview updates automatically (300ms debounce)
-Preview updates when the JSON is valid.,Preview updates when the JSON is valid.
+Preview updates automatically (300ms debounce),แสดงตัวอย่างการอัปเดตอัตโนมัติ (ระยะเวลาหน่วง 300 มิลลิวินาที)
+Preview updates when the JSON is valid.,ดูตัวอย่างการอัปเดตเมื่อ JSON เป็นข้อมูลที่ถูกต้อง
 Previous,ก่อนหน้า
-Primary,Primary
-Primary button,Primary button
-Primary document,Primary document
+Primary,หลัก
+Primary button,ปุ่มหลัก
+Primary document,เอกสารหลัก
 Primary Documents,เอกสารหลัก
-Primary documents,Primary documents
+Primary documents,เอกสารต้นฉบับ
 Priority sorting,เรียงลำดับตามลำดับความสำคัญ
-Priority sorting description,"Properties marked as priority sorting will be used as default sorting criteria. If more than one property is marked as priority sorting the system will try to pick-up the best fit. When listing mixed template types, the system will pick-up the best combined priority sorting."
-Private,Private
-Private entities description,Caution: the selected entities will be **private**. Only allowed users will be able to see them.
-Process,Process
-Process extractor,Process extractor
-Process selected,Process selected
-Processed,Processed
-Processed rows,Processed rows
+Priority sorting description,คุณสมบัติที่ถูกกำหนดให้เป็นเกณฑ์การจัดลำดับความสำคัญจะถูกใช้เป็นเกณฑ์การจัดลำดับเริ่มต้น หากมีคุณสมบัติมากกว่าหนึ่งรายการที่ถูกกำหนดให้เป็นเกณฑ์การจัดลำดับความสำคัญ ระบบจะพยายามเลือกเกณฑ์ที่เหมาะสมที่สุด เมื่อแสดงรายการที่มีประเภทเทมเพลตผสมกัน ระบบจะเลือกเกณฑ์การจัดลำดับความสำคัญที่รวมกันแล้วเหมาะสมที่สุด
+Private,ส่วนตัว
+Private entities description,คำเตือน: เอนทิตีที่เลือกไว้จะอยู่ในสถานะ **ส่วนตัว** ผู้ใช้ที่ได้รับอนุญาตเท่านั้นจึงจะสามารถดูได้
+Process,กระบวนการ
+Process extractor,ประมวลผลเครื่องมือสกัด
+Process selected,กระบวนการที่เลือกแล้ว
+Processed,ได้รับการประมวลผลแล้ว
+Processed rows,แถวที่ได้รับการประมวลผล
 Processing,กำลังประมวลผล
-Progress,Progress
+Progress,ความก้าวหน้า
 Properties,คุณสมบัติ
 Properties from other templates in the collection using the same label,คุณสมบัติจากเทมเพลตอื่นๆในคอลเลกชันที่อยู่ในประเภทเดียวกัน
-Properties from other templates in the collection using the same label.,Properties from other templates in the collection using the same label.
-"Properties marked as priority sorting will be used as default sorting criteria. If more than one property is marked as priority sorting the system will try to pick-up the best fit. When listing mixed template types, the system will pick-up the best combined priority sorting.","Properties marked as priority sorting will be used as default sorting criteria. If more than one property is marked as priority sorting the system will try to pick-up the best fit. When listing mixed template types, the system will pick-up the best combined priority sorting."
-Property,Property
-Property as filter description,"This property will be used for filtering the library results. When properties match in equal name and field type with other entity types, they will be combined for filtering."
-property date,Date
-property daterange,Date range
-property generatedid,Generated ID
-property geolocation,Geolocation
-property image,Image
-property link,Link
-property markdown,Rich text
-property media,Media
-property multidate,Multiple date
-property multidaterange,Multiple date range
-property multiselect,Multiple select
-property numeric,Numeric
-property preview,Preview
-property relationship,Relationship
-property select,Select
-property text,Text
-Property type,Property type
+Properties from other templates in the collection using the same label.,คุณสมบัติจากเทมเพลตอื่นในคอลเลกชันที่ใช้ชื่อเดียวกัน
+"Properties marked as priority sorting will be used as default sorting criteria. If more than one property is marked as priority sorting the system will try to pick-up the best fit. When listing mixed template types, the system will pick-up the best combined priority sorting.",คุณสมบัติที่ถูกกำหนดให้เป็นเกณฑ์การจัดลำดับความสำคัญจะถูกใช้เป็นเกณฑ์การจัดลำดับเริ่มต้น หากมีคุณสมบัติมากกว่าหนึ่งรายการที่ถูกกำหนดให้เป็นเกณฑ์การจัดลำดับความสำคัญ ระบบจะพยายามเลือกเกณฑ์ที่เหมาะสมที่สุด เมื่อแสดงรายการที่มีประเภทเทมเพลตผสมกัน ระบบจะเลือกเกณฑ์การจัดลำดับความสำคัญที่รวมกันแล้วเหมาะสมที่สุด
+Property,คุณสมบัติ
+Property as filter description,คุณสมบัตินี้จะถูกใช้เพื่อกรองผลการค้นหาในไลบรารี เมื่อคุณสมบัติมีชื่อและประเภทฟิลด์ที่ตรงกันกับประเภทเอนทิตีอื่น ๆ คุณสมบัติเหล่านั้นจะถูกรวมกันเพื่อใช้ในการกรอง
+property date,วันที่
+property daterange,ช่วงวันที่
+property generatedid,ID ที่สร้างขึ้น
+property geolocation,ตำแหน่งทางภูมิศาสตร์
+property image,ภาพ
+property link,ลิงก์
+property markdown,ข้อความแบบ Rich Text
+property media,สื่อ
+property multidate,หลายวัน
+property multidaterange,ช่วงวันที่หลายช่วง
+property multiselect,เลือกหลายรายการ
+property numeric,ตัวเลข
+property preview,ดูตัวอย่าง
+property relationship,ความสัมพันธ์
+property select,เลือก
+property text,ข้อความ
+Property type,ประเภทคุณสมบัติ
 Protection,การป้องกัน
 ProTip!,โปรทิป!
 "Provide chart-ready data as JSON. Each series needs id, label, and a points array with
-              label and value per row. Optional key on points helps stable colors.","Provide chart-ready data as JSON. Each series needs id, label, and a points array with
-              label and value per row. Optional key on points helps stable colors."
-Public entities description,Caution: the selected entities will be **public**. Anyone will be able to see them.
-Public form settings description,Here you can configure the public form destination and the whitelisted templates
-Public Form submit URL,Public Form submit URL
-Public form URL description,"If you have configured a public form and would like a different Uwazi collection to receive the submissions, enter its URL here."
-Public form whitelist description,"If you wish to include Public Forms on your pages, you must white-list the template IDs for which Public Forms are expected."
-Public instance,Public instance
+              label and value per row. Optional key on points helps stable colors.","ส่งข้อมูลในรูปแบบ JSON ที่พร้อมใช้สำหรับสร้างกราฟ แต่ละชุดข้อมูลต้องมี id, label และอาร์เรย์ของจุด (points) ที่แต่ละแถวมี
+ label และค่า (value) สำหรับแต่ละจุด การใช้ key (หากมี) ในอาร์เรย์ของจุดจะช่วยรักษาสีให้คงที่"
+Public entities description,คำเตือน: เอนทิตีที่เลือกไว้จะ **เป็นสาธารณะ** ใครก็ตามสามารถดูได้
+Public form settings description,ที่นี่คุณสามารถกำหนดจุดหมายปลายทางของแบบฟอร์มสาธารณะและแม่แบบที่อยู่ในรายชื่ออนุญาตได้
+Public Form submit URL,URL สำหรับการส่งแบบฟอร์มสาธารณะ
+Public form URL description,หากคุณได้ตั้งค่าแบบฟอร์มสาธารณะแล้ว และต้องการให้คอลเลกชัน Uwazi ที่ต่างออกไปรับข้อมูลที่ส่งมา ให้ป้อน URL ของคอลเลกชันนั้นที่นี่
+Public form whitelist description,หากต้องการเพิ่ม Public Forms ลงในหน้าของคุณ คุณต้องเพิ่ม ID ของเทมเพลตที่คาดว่าจะใช้ Public Forms เข้าสู่รายชื่ออนุญาต (whitelist)
+Public instance,อินสแตนซ์สาธารณะ
 Publish,เผยแพร่
-Publish release,Publish release
+Publish release,เผยแพร่เวอร์ชัน
 Published,ตีพิมพ์แล้ว
-Published and unpublished entities are counted.,Published and unpublished entities are counted.
-QR Code,QR Code
+Published and unpublished entities are counted.,นับทั้งเอนทิตีที่ได้รับการเผยแพร่และที่ยังไม่ได้รับการเผยแพร่
+QR Code,รหัส QR
 Query,สืบค้น
-Queued,Queued
+Queued,อยู่ในคิว
 RAW,RAW
 "Re-runs the query against your current collection. Use this after importing
-                        or editing entities—not when changing chart settings (save handles that).","Re-runs the query against your current collection. Use this after importing
-                        or editing entities—not when changing chart settings (save handles that)."
-Re-uploaded document,Re-uploaded document
-Ready,Ready
-Receiving email,Receiving email
-Receiving email description,"If you have a contact form, this is the email address that will receive the form's submissions."
-Recommended,Recommended
-Reference,Reference
+                        or editing entities—not when changing chart settings (save handles that).","เรียกใช้คำสั่งนี้อีกครั้งกับคอลเลกชันปัจจุบันของคุณ ใช้คำสั่งนี้หลังจากนำเข้า
+หรือแก้ไขเอนทิตี — ไม่ใช่เมื่อปรับเปลี่ยนการตั้งค่าแผนภูมิ (ระบบจะจัดการส่วนนั้นให้แล้ว)"
+Re-uploaded document,เอกสารที่อัปโหลดใหม่
+Ready,พร้อมแล้ว
+Receiving email,รับอีเมล
+Receiving email description,หากท่านมีแบบฟอร์มติดต่อ นี่คือที่อยู่อีเมลที่จะรับข้อมูลที่ส่งผ่านแบบฟอร์มดังกล่าว
+Recommended,แนะนำ
+Reference,อ้างอิง
 References,การอ้างอิง
-references,references
-Refresh,Refresh
+references,แหล่งอ้างอิง
+Refresh,รีเฟรช
 "Refresh manually when you have added data and cannot wait for the next
-                        scheduled run.","Refresh manually when you have added data and cannot wait for the next
-                        scheduled run."
-Refresh mode,Refresh mode
+                        scheduled run.","โปรดรีเฟรชด้วยตนเองเมื่อคุณได้เพิ่มข้อมูลแล้วและไม่สามารถรอจนกว่าจะถึง
+รอบการทำงานที่กำหนดไว้ครั้งต่อไป"
+Refresh mode,โหมดรีเฟรช
 Reject,ปฏิเสธ
-Reject all,Reject all
-Related entities created,Related entities created
-Relation type,Relation type
+Reject all,ปฏิเสธทั้งหมด
+Related entities created,สร้างเอนทิตีที่เกี่ยวข้อง
+Relation type,ประเภทความสัมพันธ์
 Relationship,ความสัมพันธ์
-Relationship created,Relationship created
-Relationship Type,Relationship Type
-Relationship type,Relationship type
-Relationship type created successfully.,Relationship type created successfully.
-Relationship type name,Relationship type name
-Relationship type name already exists,Relationship type name already exists
+Relationship created,สร้างความสัมพันธ์แล้ว
+Relationship Type,ประเภทความสัมพันธ์
+Relationship type,ประเภทความสัมพันธ์
+Relationship type created successfully.,ประเภทความสัมพันธ์ได้สร้างขึ้นสำเร็จแล้ว
+Relationship type name,ชื่อประเภทความสัมพันธ์
+Relationship type name already exists,ชื่อประเภทความสัมพันธ์นี้มีอยู่แล้ว
 Relationship types,ประเภทความสัมพันธ์
 relationships,ความสัมพันธ์
 Relationships,ความสัมพันธ์
-Relationships saved,Relationships saved
-relationships? This action cannot be undone.,relationships? This action cannot be undone.
+Relationships saved,บันทึกความสัมพันธ์แล้ว
+relationships? This action cannot be undone.,ความสัมพันธ์? การกระทำนี้ไม่สามารถย้อนกลับได้
 RelationType saved,บันทึกประเภทความสัมพันธ์
-Release message,Release message
-Relevance,Relevance
-remaining,remaining
-remaining files,remaining files
-Remote Server Unreachable,Remote Server Unreachable
+Release message,ข้อความประกาศ
+Relevance,ความเกี่ยวข้อง
+remaining,ที่เหลือ
+remaining files,ไฟล์ที่เหลือ
+Remote Server Unreachable,ไม่สามารถติดต่อกับเซิร์ฟเวอร์ระยะไกลได้
 Remove,ลบ
-Remove from connection,Remove from connection
-Remove from training set,Remove from training set
+Remove from connection,ตัดการเชื่อมต่อ
+Remove from training set,ลบออกจากชุดข้อมูลฝึก
 remove icon,ลบไอคอน
-Remove icon,Remove icon
-Removed language,Removed language
+Remove icon,ลบไอคอน
+Removed language,ภาษาที่ถูกลบออก
 Rename,เปลี่ยนชื่อ
-Renamed attachment,Renamed attachment
+Renamed attachment,ไฟล์แนบที่ถูกเปลี่ยนชื่อ
 Repeat Password,ใส่รหัสผ่านอีกครั้ง
 Request id #,ขอรหัส #
-Request token,Request token
-Required,Required
+Request token,ขอโทเค็น
+Required,จำเป็น
 Required property,คุณสมบัติที่จำเป็น
-Required relationships were prepared.,Required relationships were prepared.
-Required thesauri values were prepared.,Required thesauri values were prepared.
+Required relationships were prepared.,ความสัมพันธ์ที่จำเป็นได้จัดเตรียมไว้แล้ว
+Required thesauri values were prepared.,ได้จัดเตรียมค่าในพจนานุกรมคำพ้องความหมายที่จำเป็นแล้ว
 Reset,รีเซ็ต
 Reset 2FA,สร้าง 2FA ใหม่
-Reset default translation,Reset default translation
-Reset language,Reset language
+Reset default translation,ตั้งค่าการแปลกลับเป็นค่าเริ่มต้น
+Reset language,ตั้งภาษาใหม่
 Reset Password,สร้าง รหัสผ่าน ใหม่
-Reset passwords,Reset passwords
-Resize panels,Resize panels
-Restore,Restore
-Restore previous version,Restore previous version
+Reset passwords,ตั้งรหัสผ่านใหม่
+Resize panels,ปรับขนาดแผง
+Restore,กู้คืน
+Restore previous version,คืนสู่เวอร์ชันก่อนหน้า
 Restricted,ถูก จำกัด
-Retryable,Retryable
-Retrying,Retrying
+Retryable,สามารถลองใหม่ได้
+Retrying,ลองอีกครั้ง
 Return to login,กลับไปที่การเข้าสู่ระบบ
-Review,Review
+Review,ตรวจสอบ
 Reviewed,ตรวจสอบแล้ว
 Role,บทบาท
 Route,เส้นทาง
-Row,Row
-Row density,Row density
-Rows failed,Rows failed
-Rows processed,Rows processed
+Row,แถว
+Row density,ความหนาแน่นของแถว
+Rows failed,แถวไม่ผ่าน
+Rows processed,จำนวนแถวที่ประมวลผลแล้ว
 Sample,ตัวอย่าง
-Satellite,Satellite
+Satellite,ดาวเทียม
 Save,บันทึก
-Save & Preview,Save & Preview
+Save & Preview,บันทึกและดูตัวอย่าง
 Save changes,บันทึกการเปลี่ยนแปลง
 Save password,บันทึกรหัสผ่าน
-Save the visualization before refreshing.,Save the visualization before refreshing.
-Save the visualization to get embed code.,Save the visualization to get embed code.
-Save your work to make change permanent,Save your work to make change permanent
-Saved successfully.,Saved successfully.
-Saved with warnings,Saved with warnings
-Saving,Saving
-Saving...,Saving...
-Scanning,Scanning
-Scanning rows before import.,Scanning rows before import.
-Schedule,Schedule
-Schedules run in UTC (Coordinated Universal Time).,Schedules run in UTC (Coordinated Universal Time).
+Save the visualization before refreshing.,บันทึกการแสดงผลก่อนที่จะรีเฟรช
+Save the visualization to get embed code.,บันทึกภาพแสดงข้อมูลเพื่อรับรหัสฝัง
+Save your work to make change permanent,บันทึกงานของคุณเพื่อให้การเปลี่ยนแปลงมีผลถาวร
+Saved successfully.,บันทึกสำเร็จแล้ว
+Saved with warnings,บันทึกไว้พร้อมคำเตือน
+Saving,กำลังบันทึก
+Saving...,กำลังบันทึก...
+Scanning,การสแกน
+Scanning rows before import.,สแกนแถวข้อมูลก่อนการนำเข้า
+Schedule,ตารางเวลา
+Schedules run in UTC (Coordinated Universal Time).,ตารางเวลาใช้ UTC (เวลาสากลเชิงพิกัด)
 Search,ค้นหา
-"Search  •  AND, OR, NOT, ""exact"", wild*","Search  •  AND, OR, NOT, ""exact"", wild*"
-Search entities...,Search entities...
-Search entities…,Search entities…
+"Search  •  AND, OR, NOT, ""exact"", wild*","ค้นหา  •  AND, OR, NOT, ""exact"", wild*"
+Search entities...,ค้นหาเอนทิตี...
+Search entities…,ค้นหาเอนทิตี…
 Search item,ค้นหารายการ
 Search related entities or documents,ค้นหารายการหรือเอกสารที่เกี่ยวข้อง
-Search relationships,Search relationships
+Search relationships,ค้นหาความสัมพันธ์
 Search relevance,ความเกี่ยวข้องของการค้นหา
 Search text,ข้อความค้นหา
-Search text description,Type something in the search box to get some results.
-Search this document,Search this document
+Search text description,พิมพ์คำค้นหาลงในช่องค้นหาเพื่อดูผลลัพธ์
+Search this document,ค้นหาในเอกสารนี้
 Search Tips,เคล็ดลับการค้นหา
-Search tips,Search tips
-Search Tips: boolean,เคล็ดลับการค้นหา: บูลีน
-Search Tips: exact term,เคล็ดลับการค้นหา: คำที่ตรงตัว
-Search Tips: one char wildcard,เคล็ดลับการค้นหา: ตัวอักษรพิเศษ
-Search Tips: proximity,เคล็ดลับการค้นหา: คำใกล้เคียง
-Search Tips: wildcard,เคล็ดลับการค้นหา: ไวลการ์ด
-Search title & metadata,Search title & metadata
-Searching...,Searching...
-Secondary button,Secondary button
-Secret keys,Secret keys
-Security,Security
-Select,Select
-Select & Search,Select & Search
-"Select a dimension to see supported chart types, or use Metric for a total count.","Select a dimension to see supported chart types, or use Metric for a total count."
-Select a document to connect to a specific paragraph,Select a document to connect to a specific paragraph
-Select a file,Select a file
+Search tips,เคล็ดลับการค้นหา
+Search Tips: boolean,"AND, OR และ NOT สำหรับการค้นหาแบบบูลีน เช่น ""สถานะ AND ผู้หญิง NOT นิการากัว"" จะจับคู่กับสิ่งที่มีทั้งคำว่าสถานะและผู้หญิง และต้องไม่มีคำว่านิการากัวอยู่ด้วย"
+Search Tips: exact term,"ค้นหาคำที่ตรงตัวโดยใส่เครื่องหมายคำพูดครอบข้อความค้นหา เช่น ""คอสตาริกา"" จะให้ผลลัพธ์ที่แตกต่างจากการค้นหาคอสตาริกาโดยไม่มีเครื่องหมายคำพูด"
+Search Tips: one char wildcard,"ใช้ ? แทนอักขระตัวเดียว เช่น ""198?"" จะจับคู่กับ 1980 ถึง 1989 รวมถึง 198a, 198b และอื่น ๆ"
+Search Tips: proximity,"ใช้ ~ สำหรับการค้นหาแบบใกล้เคียง เช่น ""สถานภาพ ทางกฎหมาย""~5 จะค้นหาข้อความที่มีคำว่า ""สถานภาพ"" และ ""ทางกฎหมาย"" อยู่ห่างกันไม่เกิน 5 คำ"
+Search Tips: wildcard,"ใช้ * สำหรับการค้นหาแบบไวลด์การ์ด เช่น ""นิติ*"" จะจับคู่กับคำต่าง ๆ เช่น นิติศาสตร์ นิติกร นิติบุคคล เป็นต้น"
+Search title & metadata,ค้นหาชื่อและข้อมูลเมตา
+Searching...,กำลังค้นหา...
+Secondary button,ปุ่มรอง
+Secret keys,กุญแจลับ
+Security,ความปลอดภัย
+Select,เลือก
+Select & Search,เลือกและค้นหา
+"Select a dimension to see supported chart types, or use Metric for a total count.",เลือกมิติข้อมูลเพื่อดูประเภทกราฟที่รองรับ หรือใช้ Metric เพื่อดูจำนวนรวม
+Select a document to connect to a specific paragraph,เลือกเอกสารเพื่อเชื่อมโยงไปยังย่อหน้าเฉพาะ
+Select a file,เลือกไฟล์
 Select all,เลือกทั้งหมด
-Select an existing image,Select an existing image
-Select favicon image,Select favicon image
+Select an existing image,เลือกภาพที่มีอยู่
+Select favicon image,เลือกภาพ favicon
 Select files on your device,เลือกไฟล์บนอุปกรณ์ของคุณ
-Select from computer,Select from computer
-Select image,Select image
-Select media,Select media
-Select relationship,Select relationship
+Select from computer,เลือกจากคอมพิวเตอร์
+Select image,เลือกภาพ
+Select media,เลือกสื่อ
+Select relationship,เลือกความสัมพันธ์
 Select relationship type,เลือกประเภทความสัมพันธ์
-Select site logo image,Select site logo image
-Select target document,Select target document
-Select target entity,Select target entity
+Select site logo image,เลือกภาพโลโก้เว็บไซต์
+Select target document,เลือกเอกสารเป้าหมาย
+Select target entity,เลือกเอนทิตีเป้าหมาย
 Select target paragraph,เลือกย่อหน้าที่ต้องการ
-Select text in target document,Select text in target document
-select text or a value,select text or a value
-Select the template to store the extracted paragraphs.,Select the template to store the extracted paragraphs.
-Select the template with the source documents.,Select the template with the source documents.
+Select text in target document,เลือกข้อความในเอกสารเป้าหมาย
+select text or a value,เลือกข้อความหรือค่า
+Select the template to store the extracted paragraphs.,เลือกแม่แบบเพื่อเก็บย่อหน้าที่ถูกแยกออกมา
+Select the template with the source documents.,เลือกแม่แบบที่มีเอกสารต้นฉบับ
 Select...,เลือก...
-Selected,Selected
+Selected,ที่เลือกไว้
 selected,เลือกแล้ว
 selected of,ถูกเลือกโดย
-Selected or suggested,Selected or suggested
-Selected templates,Selected templates
+Selected or suggested,ที่เลือกหรือที่แนะนำ
+Selected templates,แม่แบบที่เลือกไว้
 Send,ส่ง
 Send recovery email,ส่งอีเมลการกู้คืน
-Sending email,Sending email
-Sending email description,This is the email address that will appear as the sender when an email is sent from your Uwazi collection to registered users. The default address is *no-reply@uwazi.io*. You can set a custom one by including your desired email address here.
-Sending labeled data,Sending labeled data
-Series,Series
-Services,Services
+Sending email,ส่งอีเมล
+Sending email description,นี่คือที่อยู่อีเมลที่จะปรากฏเป็นผู้ส่งเมื่อส่งอีเมลจากคอลเลกชัน Uwazi ของคุณไปยังผู้ใช้ที่ลงทะเบียน ที่อยู่อีเมลเริ่มต้นคือ *no-reply@uwazi.io* คุณสามารถตั้งค่าที่อยู่อีเมลที่กำหนดเองได้โดยใส่ที่อยู่อีเมลที่คุณต้องการที่นี่
+Sending labeled data,การส่งข้อมูลที่มีป้ายกำกับ
+Series,ซีรีส์
+Services,บริการ
 Set as default,ตั้งเป็นค่าเริ่มต้น
-Set default language,Set default language
-Set default template,Set default template
+Set default language,ตั้งภาษาหลัก
+Set default template,ตั้งแม่แบบเริ่มต้น
 Set the default starting point for your geolocation properties.,ตั้งค่าจุดเริ่มต้นอัตโนมัติสำหรับคุณสมบัติทางภูมิศาสตร์ของคุณ
 Settings,การตั้งค่า
 settings,การตั้งค่า
-Settings navigation active background,Settings navigation active background
-Settings sidebar background,Settings sidebar background
+Settings navigation active background,พื้นหลังที่ใช้งานอยู่ในการนำทางเมนูการตั้งค่า
+Settings sidebar background,พื้นหลังของแถบด้านข้างการตั้งค่า
 Settings updated,การตั้งค่าถูกอัปเดตแล้ว
 Share,แบ่งปัน
-Share edit access with other users,Share edit access with other users
-Share entities with the public,Share entities with the public
+Share edit access with other users,แบ่งปันสิทธิ์การแก้ไขกับผู้ใช้อื่น
+Share entities with the public,แบ่งปันเอนทิตีกับสาธารณชน
 Share with people and groups,แบ่งปันกับผู้คนและกลุ่ม
 Shared as editor,แบ่งปันสิทธิ์การแก้ไข
 Shared as viewer,แบ่งปันสิทธิ์การมอง
-Show actions,Show actions
+Show actions,แสดงการดำเนินการ
 Show cookie policy,แสดงนโยบายคุกกี้
-Show details,Show details
+Show details,แสดงรายละเอียด
 Show filters,แสดงตัวกรอง
-Show in cards,Show in cards
-Show information,Show information
-Show less,Show less
+Show in cards,แสดงในรูปแบบบัตร
+Show information,แสดงข้อมูล
+Show less,แสดงน้อยลง
 Show more,แสดงมากขึ้น
-Show remaining in panel,Show remaining in panel
-Show toolbar,Show toolbar
-Showing,Showing
-Showing the top,Showing the top
+Show remaining in panel,แสดงจำนวนที่เหลือในแผง
+Show toolbar,แสดงแถบเครื่องมือ
+Showing,กำลังแสดง
+Showing the top,แสดงส่วนบน
 shown of,แสดงโดย
 Sign in,เข้าสู่ระบบ
-Simple mode,Simple mode
-Single relationships must have a hub,Single relationships must have a hub
-Site logo description,"The logo appears in the top bar next to your collection name (about 200×32 pixels).
+Simple mode,โหมดง่าย
+Single relationships must have a hub,ความสัมพันธ์แบบเดี่ยวต้องมีศูนย์กลาง
+Site logo description,"โลโก้จะปรากฏในแถบด้านบนข้างชื่อคอลเลกชันของคุณ (ขนาดประมาณ 200×32 พิกเซล)
 
-1. Upload images in Custom Uploads if needed.
-2. Click ""Select site logo image"" and pick a file; only images from Custom Uploads are listed."
-Site logo no images hint,"No image files from Custom Uploads yet. Add PNG, SVG, or JPEG images there first."
+1. อัปโหลดรูปภาพในส่วน ""Custom Uploads"" หากจำเป็น
+2. คลิก ""เลือกภาพโลโก้เว็บไซต์"" และเลือกไฟล์; จะแสดงเฉพาะรูปภาพจากส่วน ""Custom Uploads"" เท่านั้น"
+Site logo no images hint,"ยังไม่มีไฟล์ภาพจากส่วน ""Custom Uploads"" โปรดเพิ่มภาพในรูปแบบ PNG, SVG หรือ JPEG ไปที่นั่นก่อน"
 Size,ขนาด
-Skip to main content,Skip to main content
-Some tasks may take a while. Bert will reply when it's done.,Some tasks may take a while. Bert will reply when it's done.
+Skip to main content,ข้ามไปยังเนื้อหาหลัก
+Some tasks may take a while. Bert will reply when it's done.,บางงานอาจใช้เวลาสักพัก Bert จะตอบกลับเมื่อเสร็จแล้ว
 Something went wrong,มีสิ่งผิดปกติเกิดขึ้น
 Sort,เรียงลำดับ
-Sort ascending,Sort ascending
-Sort descending,Sort descending
-Sort order,Sort order
-Sort:,Sort:
+Sort ascending,เรียงตามลำดับจากน้อยไปมาก
+Sort descending,เรียงลำดับจากมากไปน้อย
+Sort order,ลำดับการจัดเรียง
+Sort:,จัดเรียง:
 sorted by,เรียงลำดับโดย
-Source,Source
-Source entity,Source entity
-Source page,Source page
-Source relationship type,Source relationship type
-Source template,Source template
-Source Template,Source Template
-Source's role in the relationship Source-Target.,Source's role in the relationship Source-Target.
-Stage,Stage
+Source,แหล่งที่มา
+Source entity,เอนทิตีต้นทาง
+Source page,หน้าต้นฉบับ
+Source relationship type,ประเภทความสัมพันธ์ของแหล่งข้อมูล
+Source template,แม่แบบต้นฉบับ
+Source Template,แม่แบบต้นฉบับ
+Source's role in the relationship Source-Target.,บทบาทของ Source ในความสัมพันธ์ระหว่าง Source และ Target
+Stage,ขั้นตอน
 stat*,stat*
-State,State
-Statistics,Statistics
-Stats & Filters,Stats & Filters
-Status,Status
-status AND women NOT Nicaragua,status AND women NOT Nicaragua
-Stop filling,Stop filling
-Storage,Storage
-Streets,Streets
+State,รัฐ
+Statistics,สถิติ
+Stats & Filters,สถิติและตัวกรอง
+Status,สถานะ
+status AND women NOT Nicaragua,สถานะ AND ผู้หญิง NOT นิการากัว
+Stop filling,หยุดเติม
+Storage,พื้นที่จัดเก็บ
+Streets,ถนน
 Strict mode,โหมดแบบจำกัด
 Style,สไตล์
 Submit,ส่ง
-Submitted entity to a remote instance,Submitted entity to a remote instance
-Submitting,Submitting
-Success,Success
-"Success, Upload another?","Success, Upload another?"
-Suggestion,Suggestion
-Suggestion:,Suggestion:
+Submitted entity to a remote instance,ส่งเอนทิตีไปยังอินสแตนซ์ระยะไกล
+Submitting,ส่ง
+Success,ความสำเร็จ
+"Success, Upload another?",สำเร็จแล้ว จะอัปโหลดอีกอันไหม?
+Suggestion,ข้อเสนอแนะ
+Suggestion:,ข้อเสนอแนะ:
 Suggestions,คำแนะนำ
-suggestions,suggestions
-Suggestions sent,Suggestions sent
-Suggestions updated,Suggestions updated
-Supported chart types for manual data,Supported chart types for manual data
-Supported chart types for this configuration,Supported chart types for this configuration
-Supporting,Supporting
-Supporting file,Supporting file
+suggestions,ข้อเสนอแนะ
+Suggestions sent,ข้อเสนอแนะได้ส่งไปแล้ว
+Suggestions updated,ข้อเสนอแนะได้รับการอัปเดตแล้ว
+Supported chart types for manual data,ประเภทกราฟที่รองรับสำหรับข้อมูลที่ป้อนด้วยมือ
+Supported chart types for this configuration,ประเภทกราฟที่รองรับสำหรับการตั้งค่านี้
+Supporting,สนับสนุน
+Supporting file,ไฟล์สนับสนุน
 Supporting files,รองรับไฟล์
-Synced template,Synced template
-Synced Template,Synced Template
-Synced templates cannot be deleted.,Synced templates cannot be deleted.
-System translations,System translations
+Synced template,แม่แบบที่ซิงค์แล้ว
+Synced Template,แม่แบบที่ซิงค์แล้ว
+Synced templates cannot be deleted.,ไม่สามารถลบแม่แบบที่ซิงค์ได้
+System translations,การแปลระบบ
 Table,ตาราง
 Table of Contents,สารบัญ
 Table of contents,สารบัญ
-Table of contents saved successfully,Table of contents saved successfully
+Table of contents saved successfully,สารบัญได้รับการบันทึกสำเร็จแล้ว
 Table view,มุมมองตาราง
-Target entity,Target entity
-Target entity type,Target entity type
-Target relationship type,Target relationship type
-Target Template,Target Template
-Target template,Target template
-Target's role in the relationship Source-Target.,Target's role in the relationship Source-Target.
-Target:,Target:
-Tasks,Tasks
+Target entity,เอนทิตีเป้าหมาย
+Target entity type,ประเภทเอนทิตีเป้าหมาย
+Target relationship type,ประเภทความสัมพันธ์เป้าหมาย
+Target Template,แม่แบบเป้าหมาย
+Target template,แม่แบบเป้าหมาย
+Target's role in the relationship Source-Target.,บทบาทของ Target ในความสัมพันธ์ระหว่าง Source และ Target
+Target:,เป้าหมาย:
+Tasks,งาน
 Template,แม่แบบ
-Template changes are being applied to all related entities.,Template changes are being applied to all related entities.
-Template color,Template color
+Template changes are being applied to all related entities.,การเปลี่ยนแปลงแม่แบบกำลังถูกนำไปใช้กับทุกเอนทิตีที่เกี่ยวข้อง
+Template color,สีของแม่แบบ
 "Template colors apply when comparing data sources or when the dimension is entity
-              type. Otherwise the chart palette is used as fallback.","Template colors apply when comparing data sources or when the dimension is entity
-              type. Otherwise the chart palette is used as fallback."
-Template conflict,Template conflict
-Template name,Template name
-Template name already exists,Template name already exists
-Template processing completed.,Template processing completed.
-Template saved successfully.,Template saved successfully.
-Template with a long number of entities,"The template has changed and the associated entities will be re-indexed,
-       this process may take several minutes, do you want to continue?"
-Template(s),Template(s)
-Template(s) deleted successfully.,Template(s) deleted successfully.
+              type. Otherwise the chart palette is used as fallback.","สีของแม่แบบจะถูกใช้เมื่อเปรียบเทียบแหล่งข้อมูล หรือเมื่อมิติเป็นประเภทเอนทิตี
+ ในกรณีอื่น ๆ จะใช้ชุดสีของแผนภูมิเป็นตัวเลือกสำรอง"
+Template conflict,ความขัดแย้งระหว่างแม่แบบ
+Template name,ชื่อแม่แบบ
+Template name already exists,ชื่อแม่แบบนี้มีอยู่แล้ว
+Template processing completed.,การประมวลผลแม่แบบเสร็จสิ้นแล้ว
+Template saved successfully.,แม่แบบถูกบันทึกเรียบร้อยแล้ว
+Template with a long number of entities,"แม่แบบได้เปลี่ยนแปลงแล้ว และข้อมูลที่เกี่ยวข้องจะได้รับการจัดทำดัชนีใหม่
+กระบวนการนี้อาจใช้เวลาหลายนาที คุณต้องการดำเนินการต่อหรือไม่?"
+Template(s),แม่แบบ
+Template(s) deleted successfully.,แม่แบบถูกลบสำเร็จแล้ว
 Templates,แม่แบบ
-Templates:,Templates:
+Templates:,แม่แบบ:
 Text,ข้อความ
-Text references limit warning,Text references are temporarily limited to a maximum of 300. We are currently working on a fix for this issue.
+Text references limit warning,จำนวนการอ้างอิงข้อความถูกจำกัดไว้ชั่วคราวที่สูงสุด 300 รายการ เรากำลังดำเนินการแก้ไขปัญหานี้อยู่
 "The process of extracting the paragraphs has successfully started. Check the Status
-              column for updates on the process.","The process of extracting the paragraphs has successfully started. Check the Status
-              column for updates on the process."
-The request could not be processed.,The request could not be processed.
-The source of this template is a sync.,The source of this template is a sync.
-The token does not validate against the secret key,The token does not validate against the secret key
-The token does not validate against the secret key!,The token does not validate against the secret key!
-"the words together, in that order","the words together, in that order"
-the words within 5 of each other,the words within 5 of each other
-Theme and branding,Theme and branding
-Theme colors,Theme colors
-Theme colors imported,Theme colors imported
-Theme favicon,Theme favicon
-Theme instance file invalid,Theme instance file invalid
-Theme logotype,Theme logotype
-Theme presets,Theme presets
-Theme preview,Theme preview
-Then by,Then by
+              column for updates on the process.","กระบวนการสกัดย่อหน้าได้เริ่มขึ้นแล้วอย่างสำเร็จ โปรดตรวจสอบคอลัมน์ ""สถานะ""
+เพื่อติดตามความคืบหน้าของกระบวนการ"
+The request could not be processed.,ไม่สามารถดำเนินการตามคำขอได้
+The source of this template is a sync.,แหล่งที่มาของแม่แบบนี้มาจากการซิงค์
+The token does not validate against the secret key,โทเคนนี้ไม่ผ่านการตรวจสอบความถูกต้องกับกุญแจลับ
+The token does not validate against the secret key!,โทเคนนี้ไม่ผ่านการตรวจสอบความถูกต้องกับกุญแจลับ!
+"the words together, in that order",คำเหล่านั้นรวมกัน ตามลำดับนั้น
+the words within 5 of each other,คำที่อยู่ห่างกันไม่เกิน 5 คำ
+Theme and branding,ธีมและภาพลักษณ์แบรนด์
+Theme colors,สีธีม
+Theme colors imported,สีธีมได้ถูกนำเข้าแล้ว
+Theme favicon,ไอคอนธีม
+Theme instance file invalid,ไฟล์ตัวอย่างธีมไม่ถูกต้อง
+Theme logotype,โลโก้ธีม
+Theme presets,การตั้งค่าธีมล่วงหน้า
+Theme preview,ดูตัวอย่างธีม
+Then by,แล้วโดย
 There are no pages enabled for entity view,ไม่มีหน้าที่ถูกตั้งค่าสำหรับมุมมองรายการ
-There are no untranslated terms,There are no untranslated terms
+There are no untranslated terms,ไม่มีคำใดที่ยังไม่ได้รับการแปล
 Thesauri,thesauri
-Thesauri added.,Thesauri added.
-Thesauri deleted,Thesauri deleted
-Thesauri name,Thesauri name
-thesauri new group desc,thesauri new group desc
-thesauri new item desc,thesauri new item desc
-Thesauri updated.,Thesauri updated.
-Thesauri values created,Thesauri values created
-Thesaurus,Thesaurus
-Thesaurus created successfully.,Thesaurus created successfully.
-Thesaurus name,Thesaurus name
-Thesaurus name already exists,Thesaurus name already exists
+Thesauri added.,เพิ่มพจนานุกรมคำพ้องความหมายแล้ว
+Thesauri deleted,พจนานุกรมคำพ้องความหมายถูกลบแล้ว
+Thesauri name,ชื่อพจนานุกรมคำพ้องความหมาย
+thesauri new group desc,คำอธิบายกลุ่มใหม่ในพจนานุกรมคำพ้องความหมาย
+thesauri new item desc,คำอธิบายรายการใหม่ในพจนานุกรมคำพ้องความหมาย
+Thesauri updated.,ได้อัปเดตพจนานุกรมคำพ้องความหมายแล้ว
+Thesauri values created,ค่าพจนานุกรมคำพ้องความหมายที่สร้างขึ้น
+Thesaurus,พจนานุกรมคำพ้องความหมาย
+Thesaurus created successfully.,พจนานุกรมคำพ้องความหมายถูกสร้างขึ้นสำเร็จแล้ว
+Thesaurus name,ชื่อในพจนานุกรมคำพ้องความหมาย
+Thesaurus name already exists,ชื่อในพจนานุกรมคำพ้องความหมายมีอยู่แล้ว
 Thesaurus saved,กลุ่มคำอธิบายที่บันทึกแล้ว
-This action may take some time while we add the extra language to the entire collection.,This action may take some time while we add the extra language to the entire collection.
+This action may take some time while we add the extra language to the entire collection.,ขั้นตอนนี้อาจใช้เวลาสักพัก เนื่องจากเรากำลังเพิ่มภาษาเพิ่มเติมเข้าไปในคอลเลกชันทั้งหมด
 This area allows you to append custom Javascript to the page. This opens up a new universe of possibilities.,พื้นที่นี้อนุญาตให้คุณใส่โค้ดจาว่าสคริปได้ มันจะช่วยให้คุณสามารถค้นพบความเป็นไปได้ใหม่ๆ
-This chart type cannot display the current data.,This chart type cannot display the current data.
+This chart type cannot display the current data.,ประเภทกราฟนี้ไม่สามารถแสดงข้อมูลปัจจุบันได้
 "This chart type cannot display the current data. Pick a supported type in the Chart
-              tab.","This chart type cannot display the current data. Pick a supported type in the Chart
-              tab."
+              tab.","ประเภทกราฟนี้ไม่สามารถแสดงข้อมูลปัจจุบันได้ โปรดเลือกประเภทที่รองรับในแท็บ
+กราฟ"
 "This chart type has no extra options. Select another chart type above if you need
-            legend, labels, or data filters.","This chart type has no extra options. Select another chart type above if you need
-            legend, labels, or data filters."
+            legend, labels, or data filters.","ประเภทกราฟนี้ไม่มีตัวเลือกเพิ่มเติม หากต้องการ
+คำอธิบายในตำนานกราฟ ป้ายกำกับ หรือตัวกรองข้อมูล ให้เลือกประเภทกราฟอื่นด้านบน"
 This content is automatically generated,เนื้อหานี้ถูกสร้างขึ้นโดยอัตโนมัติ
-This data visualization name already exists. Enter a unique name.,This data visualization name already exists. Enter a unique name.
+This data visualization name already exists. Enter a unique name.,ชื่อการแสดงข้อมูลนี้มีอยู่แล้ว โปรดใส่ชื่อที่ไม่ซ้ำกัน
 "This entity has no document, you probably want to see the metadata",รายการนี้ไม่มีเอกสาร คุณอาจจะอยากดูข้อมูลเมตาดาตาเพิ่มเติม
 This entity is restricted from public view.,รายการนี้ถูกจำกัดการเข้าถึงแบบสาธารณะ
-This field is required,This field is required
-This file could not be displayed. Try refreshing the page.,This file could not be displayed. Try refreshing the page.
-This file could not be opened. It may be corrupted or not a valid PDF.,This file could not be opened. It may be corrupted or not a valid PDF.
+This field is required,ช่องนี้ต้องกรอกข้อมูล
+This file could not be displayed. Try refreshing the page.,ไม่สามารถแสดงไฟล์นี้ได้ โปรดลองรีเฟรชหน้า
+This file could not be opened. It may be corrupted or not a valid PDF.,ไม่สามารถเปิดไฟล์นี้ได้ อาจเป็นเพราะไฟล์ถูกเสียหาย หรือไม่ใช่ไฟล์ PDF ที่ถูกต้อง
 "This file is currently unavailable. Please contact your administrator if the issue
-                  persists.","This file is currently unavailable. Please contact your administrator if the issue
-                  persists."
+                  persists.","ไฟล์นี้ไม่สามารถใช้งานได้ในขณะนี้ หากปัญหานี้
+ยังคงเกิดขึ้น โปรดติดต่อผู้ดูแลระบบ"
 "This file is currently unavailable. Please contact your administrator if the issue
-              persists.","This file is currently unavailable. Please contact your administrator if the issue
-              persists."
-This file type is not supported on media fields,This file type is not supported on media fields
-This group is empty,This group is empty
-This import is waiting in queue.,This import is waiting in queue.
-This label already exists in this template,This label already exists in this template
-This page does not need Markdown,This page does not need Markdown
+              persists.","ไฟล์นี้ไม่สามารถใช้งานได้ในขณะนี้ หากปัญหานี้
+ยังคงเกิดขึ้น โปรดติดต่อผู้ดูแลระบบ"
+This file type is not supported on media fields,ประเภทไฟล์นี้ไม่ได้รับการสนับสนุนในช่องข้อมูลสื่อ
+This group is empty,กลุ่มนี้ไม่มีสมาชิก
+This import is waiting in queue.,การนำเข้านี้กำลังรออยู่ในคิว
+This label already exists in this template,ป้ายนี้อยู่แล้วในแม่แบบนี้
+This page does not need Markdown,หน้านี้ไม่จำเป็นต้องใช้ Markdown
 "This page uses HTML only (Markdown is not processed). You can embed maps, charts, entity
-          lists, and other components.","This page uses HTML only (Markdown is not processed). You can embed maps, charts, entity
-          lists, and other components."
-This property can not be deleted,This property can not be deleted
+          lists, and other components.","หน้านี้ใช้ HTML เท่านั้น (Markdown ไม่ได้รับการประมวลผล) คุณสามารถฝังแผนที่ แผนภูมิ
+รายชื่อเอนทิตี และองค์ประกอบอื่นๆ ได้"
+This property can not be deleted,ไม่สามารถลบคุณสมบัตินี้ได้
 This property will appear in the library cards as part of the basic info.,คุณสมบัตินี้จะถูกแสดงในการ์ดไลบรารีและเป็นส่วนหนึ่งของข้อมูลพื้นฐาน
 This property will be shown using all the width available.,คุณสมบัตินี้จะถูกแสดงโดยใช้พื้นที่ทั้งหมดที่มีอยู่
-This property will be shown without the label,This property will be shown without the label
-This property will be the default filter in the library for this template.,This property will be the default filter in the library for this template.
-"This property will be used for filtering the library results. When properties match in equal name and field type with other entity types, they will be combined for filtering.","This property will be used for filtering the library results. When properties match in equal name and field type with other entity types, they will be combined for filtering."
-This search could not be completed. Try again later.,This search could not be completed. Try again later.
+This property will be shown without the label,คุณสมบัตินี้จะถูกแสดงโดยไม่มีการติดป้าย
+This property will be the default filter in the library for this template.,คุณสมบัตินี้จะกลายเป็นตัวกรองเริ่มต้นในไลบรารีสำหรับเทมเพลตนี้
+"This property will be used for filtering the library results. When properties match in equal name and field type with other entity types, they will be combined for filtering.",คุณสมบัตินี้จะถูกใช้เพื่อกรองผลการค้นหาในไลบรารี เมื่อคุณสมบัติมีชื่อและประเภทฟิลด์ที่ตรงกันกับประเภทเอนทิตีอื่น ๆ คุณสมบัติเหล่านั้นจะถูกรวมกันเพื่อใช้ในการกรอง
+This search could not be completed. Try again later.,การค้นหานี้ไม่สามารถดำเนินการให้เสร็จสิ้นได้ โปรดลองอีกครั้งในภายหลัง
 "This site uses cookies for language preferences and analytics. Session cookies are only
-            set when you log in.","This site uses cookies for language preferences and analytics. Session cookies are only
-            set when you log in."
-This table of contents was automatically created by the system.,This table of contents was automatically created by the system.
-this template,this template
-This template is in use by existing entities and cannot be deleted.,This template is in use by existing entities and cannot be deleted.
-Thumbnail,Thumbnail
+            set when you log in.","เว็บไซต์นี้ใช้คุกกี้เพื่อตั้งค่าภาษาและวิเคราะห์ข้อมูล คุกกี้เซสชันจะถูก
+ตั้งค่าเฉพาะเมื่อคุณเข้าสู่ระบบเท่านั้น"
+This table of contents was automatically created by the system.,สารบัญนี้ถูกสร้างขึ้นโดยระบบอัตโนมัติ
+this template,แม่แบบนี้
+This template is in use by existing entities and cannot be deleted.,แม่แบบนี้กำลังถูกใช้โดยเอนทิตีที่มีอยู่และไม่สามารถลบได้
+Thumbnail,ภาพขนาดย่อ
 Time,เวลา
-Time (UTC),Time (UTC)
-Timeline,Timeline
+Time (UTC),เวลา (UTC)
+Timeline,เส้นเวลา
 Timelinks,Timelinks
-Timestamp,Timestamp
-tips,tips
+Timestamp,เวลา
+tips,เคล็ดลับ
 Title,ชื่อหัวข้อ
-To,To
+To,ถึง
 "To complete the account creation process, please create a password for your account",เพื่อให้การสร้างบัญชีเสร็จสมบูรณ์กรุณาสร้างรหัสผ่านสำหรับบัญชีของคุณ
 to view your authentication code and verify your identity.,ในกรณีที่ต้องการดูรหัสผ่านและยืนยันตัวตน
-Today,Today
-Toggle relationship details,Toggle relationship details
-Toggle timeline mode,Toggle timeline mode
+Today,วันนี้
+Toggle relationship details,แสดง/ซ่อนรายละเอียดความสัมพันธ์
+Toggle timeline mode,สลับโหมดไทม์ไลน์
 Tools,เครื่องมือ
-total entities,total entities
-Total files,Total files
-total files,total files
-"Total files from main documents, supporting files and uploads","Total files from main documents, supporting files and uploads"
-Total imports,Total imports
-total users,total users
-Train,Train
-Train model,Train model
-Train model description,Training machine learning models may take from minutes up to a couple of hours depending on the amount of labeled data and the difficulty of the task.
-Training,Training
-Training model,Training model
-Training sample,Training sample
+total entities,จำนวนเอนทิตีทั้งหมด
+Total files,จำนวนไฟล์ทั้งหมด
+total files,จำนวนไฟล์ทั้งหมด
+"Total files from main documents, supporting files and uploads",จำนวนไฟล์ทั้งหมดจากเอกสารหลัก เอกสารสนับสนุน และไฟล์ที่อัปโหลด
+Total imports,การนำเข้าทั้งหมด
+total users,จำนวนผู้ใช้ทั้งหมด
+Train,ฝึกอบรม
+Train model,ฝึกโมเดล
+Train model description,การฝึกโมเดลการเรียนรู้ของเครื่องอาจใช้เวลาตั้งแต่ไม่กี่นาทีจนถึงไม่กี่ชั่วโมง ขึ้นอยู่กับปริมาณข้อมูลที่มีป้ายกำกับและระดับความยากของงาน
+Training,การฝึกอบรม
+Training model,กำลังฝึกโมเดล
+Training sample,ตัวอย่างการฝึกอบรม
 Translate,แปลภาษา
-Translation,Translation
+Translation,การแปล
 Translations,การแปล
-Translations imported.,Translations imported.
-Translations reset successfully,Translations reset successfully
+Translations imported.,ได้นำเข้าการแปลแล้ว
+Translations reset successfully,การตั้งค่าการแปลได้คืนค่าสำเร็จแล้ว
 Translations saved,บันทึกการแปล
-Try a different search or clear filters.,Try a different search or clear filters.
-Turn off inline translation,Turn off inline translation
+Try a different search or clear filters.,ลองค้นหาด้วยคำค้นหาอื่น หรือล้างตัวกรอง
+Turn off inline translation,ปิดการแปลแบบทันที
 "Two categorical dimensions enable stacked bar charts (e.g. country with sex
-              breakdown).","Two categorical dimensions enable stacked bar charts (e.g. country with sex
-              breakdown)."
-Two-Factor Authentication,Two-Factor Authentication
-Two-factor authentication enabled,Two-factor authentication enabled
-Two-factor authentication failed.,Two-factor authentication failed.
-Two-factor authentication secret,Two-factor authentication secret
+              breakdown).","สองมิติแบบหมวดหมู่ช่วยให้สามารถสร้างแผนภูมิแท่งซ้อน (เช่น แผนภูมิตามประเทศและเพศ
+) ได้"
+Two-Factor Authentication,การยืนยันตัวตนสองขั้นตอน
+Two-factor authentication enabled,เปิดใช้งานการยืนยันตัวตนสองขั้นตอนแล้ว
+Two-factor authentication failed.,การยืนยันตัวตนสองขั้นตอนไม่สำเร็จ
+Two-factor authentication secret,รหัสลับสำหรับการยืนยันตัวตนสองขั้นตอน
 Two-factor verification failed,การตรวจสอบสองขั้นตอนล้มเหลว
 Two-step verification,การตรวจสอบสองขั้นตอน
-Two-step verification token required,Two-step verification token required
+Two-step verification token required,จำเป็นต้องใช้โทเค็นการยืนยันสองขั้นตอน
 Type,ประเภท
 U,U
-"Unable to save, failed response","Unable to save, failed response"
+"Unable to save, failed response","ไม่สามารถบันทึกได้, การตอบสนองล้มเหลว"
 Unauthorized,ไม่ได้รับอนุญาต
-Unexpected error,Unexpected error
-Uninstall,Uninstall
-Uninstall language,Uninstall language
-Uninstalling language,Uninstalling language
-Unknown entity,Unknown entity
-Unknown template,Unknown template
-Unlink,Unlink
-Unlock account,Unlock account
-Unsaved changes,Unsaved changes
-Unsupported OCR language,Unsupported OCR language
-Untitled,Untitled
-Untranslated Terms,Untranslated Terms
+Unexpected error,ข้อผิดพลาดที่ไม่คาดคิด
+Uninstall,ถอนการติดตั้ง
+Uninstall language,ถอนการติดตั้งภาษา
+Uninstalling language,การถอนการติดตั้งภาษา
+Unknown entity,เอนทิตีที่ไม่ทราบ
+Unknown template,แม่แบบที่ไม่ทราบชื่อ
+Unlink,ยกเลิกการเชื่อมโยง
+Unlock account,ปลดล็อกบัญชี
+Unsaved changes,การเปลี่ยนแปลงที่ยังไม่บันทึก
+Unsupported OCR language,ภาษา OCR ที่ไม่ได้รับการสนับสนุน
+Untitled,ไม่มีชื่อ
+Untranslated Terms,คำที่ยังไม่แปล
 Update,แก้ไขเมื่อ
 UPDATE,แก้ไขเมื่อ
-Update from collection,Update from collection
-Update success,Update success
-Updated,Updated
-Updated file,Updated file
-Updated multiple entities,Updated multiple entities
-Updated permissions on entity,Updated permissions on entity
-Updated relationships,Updated relationships
-Updated settings,Updated settings
-Updated translations,Updated translations
-Updated user,Updated user
-Updating template properties across,Updating template properties across
-Updating…,Updating…
+Update from collection,อัปเดตจากคอลเลกชัน
+Update success,อัปเดตสำเร็จ
+Updated,อัปเดตแล้ว
+Updated file,ไฟล์ที่อัปเดตแล้ว
+Updated multiple entities,เอนทิตีหลายรายการที่อัปเดตแล้ว
+Updated permissions on entity,สิทธิ์การเข้าถึงของเอนทิตีที่อัปเดตแล้ว
+Updated relationships,ความสัมพันธ์ที่อัปเดตแล้ว
+Updated settings,การตั้งค่าที่อัปเดตแล้ว
+Updated translations,การแปลที่อัปเดตแล้ว
+Updated user,ผู้ใช้ที่อัปเดตแล้ว
+Updating template properties across,อัปเดตคุณสมบัติของเทมเพลตในทุกส่วน
+Updating…,กำลังอัปเดต…
 Upload and select file,นำเข้าและเลือกไฟล์
 Upload from computer,นำเข้าจากคอมพิวเตอร์
-Upload image,Upload image
+Upload image,อัปโหลดรูปภาพ
 Upload PDF,นำเข้า PDF
 Upload PDF(s) to create,นำเข้า PDF เพื่อสร้าง
-Uploaded attachment,Uploaded attachment
-Uploaded custom file,Uploaded custom file
-Uploaded document,Uploaded document
-Uploaded file,Uploaded file
+Uploaded attachment,ไฟล์แนบที่อัปโหลดแล้ว
+Uploaded custom file,ได้อัปโหลดไฟล์ที่กำหนดเองแล้ว
+Uploaded document,เอกสารที่อัปโหลดแล้ว
+Uploaded file,ไฟล์ที่อัปโหลดแล้ว
 Uploading,การอัพโหลด
 Uploading ...,นำเข้า...
 Uploads,อัปโหลด
 URL,url
 Use,ใช้
-Use as filter,Use as filter
-Use for training,Use for training
+Use as filter,ใช้เป็นตัวกรอง
+Use for training,ใช้สำหรับการฝึกอบรม
 "Use this iframe on external sites. Change the locale query parameter in the URL if
-                needed.","Use this iframe on external sites. Change the locale query parameter in the URL if
-                needed."
-Use URL,Use URL
-Used in templates and {n} refs — cannot delete,Used in templates and {n} refs — cannot delete
-Used in templates — cannot delete,Used in templates — cannot delete
-Used in {n} refs — cannot delete,Used in {n} refs — cannot delete
+                needed.","ใช้ iframe นี้บนเว็บไซต์ภายนอก หากจำเป็น ให้เปลี่ยนพารามิเตอร์การค้นหาภาษา (locale) ใน URL
+ตามความจำเป็น"
+Use URL,ใช้ URL
+Used in templates and {n} refs — cannot delete,ใช้ในเทมเพลตและ {n} การอ้างอิง — ไม่สามารถลบได้
+Used in templates — cannot delete,ใช้ในเทมเพลต — ไม่สามารถลบได้
+Used in {n} refs — cannot delete,ใช้ใน {n} การอ้างอิง — ไม่สามารถลบได้
 User,ผู้ใช้
-User Action,User Action
-User Role,User Role
-User updated,User updated
+User Action,การดำเนินการของผู้ใช้
+User Role,บทบาทของผู้ใช้
+User updated,ผู้ใช้ได้รับการอัปเดตแล้ว
 Username,ชื่อผู้ใช้
 Username is required,จำเป็นต้องใส่ชื่อผู้ใช้
 Username is too long,ชื่อผู้ใช้ยาวเกินไป
 Username is too short,ชื่อผู้ใช้สั้นเกินไป
-"Username, email or group","Username, email or group"
-Usernames cannot have spaces,Usernames cannot have spaces
+"Username, email or group","ชื่อผู้ใช้, อีเมล หรือกลุ่ม"
+Usernames cannot have spaces,ชื่อผู้ใช้ไม่สามารถมีช่องว่างได้
 Users,ผู้ใช้
-Users & Groups,Users & Groups
-Using Authenticator,Using Authenticator
-Using URLs,Using URLs
+Users & Groups,ผู้ใช้และกลุ่ม
+Using Authenticator,การใช้ Authenticator
+Using URLs,การใช้ URL
 Uwazi,Uwazi
 Uwazi Docs,Uwazi Docs
 Uwazi is developed by,Uwazi ได้รับการพัฒนาโดย
 Uwazi UI,uwazi ui
-Validating,Validating
-Validating file structure and headers.,Validating file structure and headers.
-Value,Value
-Value cannot be transformed to the correct type,Value cannot be transformed to the correct type
-values,values
+Validating,การตรวจสอบความถูกต้อง
+Validating file structure and headers.,ตรวจสอบโครงสร้างไฟล์และส่วนหัว
+Value,ค่า
+Value cannot be transformed to the correct type,ไม่สามารถแปลงค่าให้เป็นประเภทที่ถูกต้องได้
+values,ค่า
 Verify,ตรวจสอบ
 Verifying...,กำลังตรวจสอบ....
-via,via
+via,ผ่าน
 View,ดู
 view,ดู
-View entities,View entities
-View entity,View entity
+View entities,ดูเอนทิตี
+View entity,ดูเอนทิตี
 View in library,ดูในไลบรารี
 View page,ดูหน้า
-Visibility,Visibility
-Visualization data updated from your collection.,Visualization data updated from your collection.
-WARNING,WARNING
+Visibility,การมองเห็น
+Visualization data updated from your collection.,ข้อมูลการแสดงภาพได้รับการอัปเดตจากคอลเลกชันของคุณ
+WARNING,คำเตือน
 Warning: you are editing multiple entities. Fields marked with a,คำเตือนซ คุณกำลังแก้ไขหลายรายการ ช่องที่ถูกทำเครื่องหมายด้วย
-We can't find the page you're looking for.,We can't find the page you're looking for.
+We can't find the page you're looking for.,เราไม่สามารถหาหน้าที่คุณกำลังค้นหาได้
 Welcome to Uwazi,ยินดีต้อนรับสู่ Uwazi
 "Well, this is awkward...",แย่หน่อยนะ...
 "When enabled, visitors must accept or reject non-essential cookies before they are set.
-    Analytics and language preference cookies are blocked until accepted.","When enabled, visitors must accept or reject non-essential cookies before they are set.
-    Analytics and language preference cookies are blocked until accepted."
-Whitelisted templates,Whitelisted templates
-wildcard,wildcard
-wildcard (many chars),wildcard (many chars)
-wildcard (one char),wildcard (one char)
-"Will attempt to fill the container, using its entire width. In cards, cropping is likely to occur.","Will attempt to fill the container, using its entire width. In cards, cropping is likely to occur."
+    Analytics and language preference cookies are blocked until accepted.","เมื่อเปิดใช้งาน ผู้เยี่ยมชมต้องยอมรับหรือปฏิเสธคุกกี้ที่ไม่จำเป็นก่อนที่จะถูกตั้งค่า
+    คุกกี้สำหรับการวิเคราะห์ข้อมูลและตั้งค่าภาษาจะถูกบล็อกจนกว่าจะได้รับการยอมรับ"
+Whitelisted templates,แม่แบบที่อยู่ในรายชื่ออนุญาต
+wildcard,ไวลด์การ์ด
+wildcard (many chars),ไวลด์การ์ด (หลายตัวอักษร)
+wildcard (one char),ไวลด์การ์ด (หนึ่งตัวอักษร)
+"Will attempt to fill the container, using its entire width. In cards, cropping is likely to occur.",จะพยายามเติมให้เต็มพื้นที่ของคอนเทนเนอร์ โดยใช้ความกว้างทั้งหมดของมัน ในกรณีของภาพการ์ด อาจเกิดการตัดภาพได้
 will be updated with the same value.,จะถูกอัปเดทด้วยค่าเดียวกัน
-Will show the entire media inside the container.,Will show the entire media inside the container.
+Will show the entire media inside the container.,จะแสดงสื่อทั้งหมดภายในคอนเทนเนอร์
 with,กับ
 With great power comes great responsibility!,พลังที่ยิ่งใหญ่มากับความรับผิดชอบที่ใหญ่ยิ่ง!
-wom?n,wom?n
+wom?n,ผู้หญิง?
 x,x
 x less,ลดขนาดลง
 x more,เพิ่มขนาดขึ้น
 Year,ปี
-Yes,Yes
-You can add one or many items in this form.,You can add one or many items in this form.
-You can also enter this secret key into your Authenticator app.,You can also enter this secret key into your Authenticator app.
+Yes,ใช่
+You can add one or many items in this form.,คุณสามารถเพิ่มรายการหนึ่งรายการหรือหลายรายการในแบบฟอร์มนี้ได้
+You can also enter this secret key into your Authenticator app.,คุณยังสามารถป้อนรหัสลับนี้ลงในแอป Authenticator ของคุณได้อีกด้วย
 You can create metadata templates in,คุณสามารถสร้างแม่แบบเมตาดาต้าได้
-"You can embed advanced components like maps, charts and entity lists in your page.","You can embed advanced components like maps, charts and entity lists in your page."
-You do not have write permission on all entities,You do not have write permission on all entities
-You have unsaved changes. Discard them? This action cannot be undone.,You have unsaved changes. Discard them? This action cannot be undone.
-You have unsaved changes. Do you want to continue?,You have unsaved changes. Do you want to continue?
+"You can embed advanced components like maps, charts and entity lists in your page.",คุณสามารถฝังองค์ประกอบขั้นสูง เช่น แผนที่ แผนภูมิ และรายชื่อเอนทิตี ลงในหน้าของคุณได้
+You do not have write permission on all entities,คุณไม่มีสิทธิ์การเขียนสำหรับทุกเอนทิตี
+You have unsaved changes. Discard them? This action cannot be undone.,มีการเปลี่ยนแปลงที่ยังไม่ได้บันทึก คุณต้องการยกเลิกการเปลี่ยนแปลงเหล่านี้หรือไม่? การดำเนินการนี้ไม่สามารถย้อนกลับได้
+You have unsaved changes. Do you want to continue?,มีการเปลี่ยนแปลงที่ยังไม่ถูกบันทึก คุณต้องการดำเนินการต่อหรือไม่?
 You should activate this feature for enhanced account security,คุณควรเปิดใช้งานคุณสมบัตินี้เพื่อเพิ่มความปลอกภัยให้กับบัญชีของคุณ
-You should activate this feature for enhanced account security.,You should activate this feature for enhanced account security.
-You won't be able to save an entity if this property is empty.,You won't be able to save an entity if this property is empty.
-You're all caught up,You're all caught up
-Your account's security is enhanced with two-factor authentication.,Your account's security is enhanced with two-factor authentication.
+You should activate this feature for enhanced account security.,คุณควรเปิดใช้งานคุณสมบัตินี้เพื่อเพิ่มความปลอดภัยให้กับบัญชีของคุณ
+You won't be able to save an entity if this property is empty.,คุณไม่สามารถบันทึกเอนทิตีได้หากคุณสมบัติตัวนี้ว่างเปล่า
+You're all caught up,คุณได้ติดตามครบถ้วนแล้ว
+Your account's security is enhanced with two-factor authentication.,ความปลอดภัยของบัญชีของคุณได้รับการเสริมความปลอดภัยด้วยระบบการยืนยันตัวตนสองขั้นตอน
 Z → A,Z → A
 Zoom in,ขยายเข้า
 Zoom in library view,ขยายเข้าไปยังมุมมองไลบรารี
