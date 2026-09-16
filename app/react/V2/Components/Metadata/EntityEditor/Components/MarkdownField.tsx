@@ -89,7 +89,7 @@ const MarkdownField = <TFormValues extends FieldValues = FieldValues>({
                         className={tabClass(mode === 'write')}
                         onClick={() => setMode('write')}
                       >
-                        <Translate>Write</Translate>
+                        <Translate>Edit</Translate>
                       </button>
                       <button
                         type="button"
