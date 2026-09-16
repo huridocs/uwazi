@@ -57,7 +57,7 @@ const Harness = ({ value = '', required }: { value?: string; required?: boolean 
 const HELP_HREF = 'https://guides.github.com/features/mastering-markdown/';
 
 describe('MarkdownField', () => {
-  it('starts on Write with label, tablist, textarea, help icon, and pdf-fill overlay', () => {
+  it('starts on Write with textarea, tabs, and pdf-fill overlay', () => {
     render(<Harness value="**hello**" />);
 
     const textarea = screen.getByRole('textbox');
@@ -69,6 +69,10 @@ describe('MarkdownField', () => {
     expect(screen.getByRole('tab', { name: 'Write' })).toHaveAttribute('aria-selected', 'true');
     expect(screen.getByRole('tab', { name: 'Preview' })).toHaveAttribute('aria-selected', 'false');
     expect(screen.queryByTestId('markdown-preview')).not.toBeInTheDocument();
+  });
+
+  it('renders a help icon linking to the markdown guide', () => {
+    render(<Harness value="**hello**" />);
 
     const help = screen.getByRole('link', { name: 'help' });
     expect(help).toHaveAttribute('href', HELP_HREF);

@@ -1,4 +1,5 @@
-import { readFileSync } from 'fs';
+import { readFileSync } from 'node:fs';
+import { describe, expect, it } from '@jest/globals';
 
 const theme = readFileSync('app/react/App/styles/tailwind.css', 'utf8');
 const inputField = readFileSync('app/react/V2/Components/Forms/InputField.tsx', 'utf8');
