@@ -1,6 +1,6 @@
 /* eslint-disable max-lines */
 /* eslint-disable max-statements */
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { IncomingHttpHeaders } from 'http';
 import {
   LoaderFunction,
@@ -91,6 +91,9 @@ const IXSuggestions = () => {
     message?: string;
     data?: { processed: number; total: number };
   }>({ status: currentStatus });
+  // Counts status updates delivered over the socket. The server can emit a run's terminal status
+  // before the request that started it has answered, and a stale answer must not overwrite it.
+  const socketStatusUpdates = useRef(0);
   const [selected, setSelected] = useState<TableSuggestion[]>([]);
   const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -210,7 +213,12 @@ const IXSuggestions = () => {
       try {
         const params = { ...data, extractorId };
 
+        const socketStatusUpdatesBefore = socketStatusUpdates.current;
         const response = await suggestionsAPI.process(params);
+
+        if (socketStatusUpdates.current !== socketStatusUpdatesBefore) {
+          return;
+        }
 
         const autoAccepting = data.autoAccept?.enabled;
 
@@ -275,7 +283,7 @@ const IXSuggestions = () => {
         });
       }
     } else {
-      const sortingObject = sortingState[0];
+      const [sortingObject] = sortingState;
       const sortingParams = {
         property: sortingObject.id || '',
         order: sortingObject.desc ? 'desc' : 'asc',
@@ -314,7 +322,10 @@ const IXSuggestions = () => {
 
   useEventHandler({
     extractorId: extractor._id!,
-    updateStatus: (newStatus, data) => setStatus({ status: newStatus, data }),
+    updateStatus: (newStatus, data) => {
+      socketStatusUpdates.current += 1;
+      setStatus({ status: newStatus, data });
+    },
   });
 
   return (
@@ -355,7 +366,7 @@ const IXSuggestions = () => {
                 />
                 <Translate>Stats & Filters</Translate>
                 {activeFilters > 0 && (
-                  <span className="px-3 py-[2px] ml-2 text-xs text-white rounded-md bg-primary-900">
+                  <span className="px-3 py-0.5 ml-2 text-xs text-parchment rounded-md bg-ink">
                     {activeFilters}
                   </span>
                 )}

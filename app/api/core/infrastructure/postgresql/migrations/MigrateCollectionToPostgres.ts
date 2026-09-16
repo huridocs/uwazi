@@ -17,6 +17,11 @@ interface MigrationConfig {
    * Settings is a singleton keyed only by `tenant_id`.
    */
   conflictColumns?: string[];
+  /**
+   * Skip documents whose `field` is not the `_id` of a document in `collection`, which a
+   * foreign key on the Postgres table would reject. Skipped documents are counted, not migrated.
+   */
+  excludeOrphansOf?: { field: string; collection: string };
 }
 
 /** For collections where one mongo document becomes several postgres rows. */
@@ -62,6 +67,8 @@ type InsertBatchOptions = {
   conflictColumns: string[];
 };
 
+type Counts = { migrated: number; orphansSkipped: number };
+
 const insertBatch = async (
   table: PostgresTable,
   batch: Record<string, unknown>[],
@@ -101,28 +108,37 @@ const flushBatch = async (
 type AccumulateDocArgs = {
   doc: Record<string, unknown>;
   mapRows: (doc: Record<string, unknown>) => Record<string, unknown>[];
+  isOrphan: (doc: Record<string, unknown>) => boolean;
   table: PostgresTable;
   batch: Record<string, unknown>[];
-  migrated: number;
+  counts: Counts;
   insertOptions: InsertBatchOptions;
 };
 
+/**
+ * Adds the rows a document becomes to the batch — none when it is an orphan, counted either way —
+ * and flushes the batch once it is full.
+ */
 const accumulateDoc = async ({
   doc,
   mapRows,
+  isOrphan,
   table,
   batch,
-  migrated,
+  counts,
   insertOptions,
-}: AccumulateDocArgs): Promise<{ batch: Record<string, unknown>[]; migrated: number }> => {
+}: AccumulateDocArgs): Promise<{ batch: Record<string, unknown>[]; counts: Counts }> => {
+  if (isOrphan(doc)) {
+    return { batch, counts: { ...counts, orphansSkipped: counts.orphansSkipped + 1 } };
+  }
   const nextBatch = [...batch, ...mapRows(doc)];
-  const nextMigrated = migrated + 1;
+  const nextCounts = { ...counts, migrated: counts.migrated + 1 };
   if (nextBatch.length < BATCH_SIZE) {
-    return { batch: nextBatch, migrated: nextMigrated };
+    return { batch: nextBatch, counts: nextCounts };
   }
   return {
     batch: await flushBatch(table, nextBatch, insertOptions),
-    migrated: nextMigrated,
+    counts: nextCounts,
   };
 };
 
@@ -153,55 +169,84 @@ class MigrateCollectionToPostgres {
     config.assertDocumentCount(count);
   }
 
+  /** Parent `_id`s are read once per run and compared as hex strings. */
+  private async orphanCheckFor(
+    config: AnyMigrationConfig
+  ): Promise<(doc: Record<string, unknown>) => boolean> {
+    if (!('excludeOrphansOf' in config) || !config.excludeOrphansOf) {
+      return () => false;
+    }
+
+    const { field, collection } = config.excludeOrphansOf;
+    const parentIds = new Set(
+      await this.mongoDb
+        .collection(collection)
+        .find({}, { projection: { _id: 1 } })
+        .map(parent => String(parent._id))
+        .toArray()
+    );
+    return doc => !parentIds.has(String(doc[field]));
+  }
+
   private async fetchAndInsert(
     config: AnyMigrationConfig,
     table: PostgresTable,
     options: InsertBatchOptions & {
       mapRows: (doc: Record<string, unknown>) => Record<string, unknown>[];
+      isOrphan: (doc: Record<string, unknown>) => boolean;
     }
-  ): Promise<number> {
+  ): Promise<Counts> {
     const insertOptions = { force: options.force, conflictColumns: options.conflictColumns };
     const cursor = this.mongoDb
       .collection<Record<string, unknown>>(config.mongoCollection)
       .find({})
       .batchSize(BATCH_SIZE);
 
-    let migrated = 0;
+    let counts: Counts = { migrated: 0, orphansSkipped: 0 };
     let batch: Record<string, unknown>[] = [];
 
     for await (const doc of cursor) {
-      ({ batch, migrated } = await accumulateDoc({
+      ({ batch, counts } = await accumulateDoc({
         doc,
         mapRows: options.mapRows,
+        isOrphan: options.isOrphan,
         table,
         batch,
-        migrated,
+        counts,
         insertOptions,
       }));
     }
 
     await insertBatch(table, batch, insertOptions);
-    return migrated;
+    return counts;
   }
 
   async migrate(
     config: AnyMigrationConfig,
     options: MigrateOptions = {}
-  ): Promise<{ migrated: number; skipped: boolean }> {
+  ): Promise<{ migrated: number; orphansSkipped: number; skipped: boolean }> {
     const table = this.tableFor(config.pgTable);
 
-    if (!options.force && (await table.first()) !== undefined) {
-      return { migrated: 0, skipped: true };
+    if (!options.force) {
+      const existingRow = await table.transactionManager.withConnection(
+        trx => trx(config.pgTable).first(),
+        SYSTEM_PERMISSION_CONTEXT
+      );
+
+      if (existingRow !== undefined) {
+        return { migrated: 0, orphansSkipped: 0, skipped: true };
+      }
     }
 
     await this.assertConfiguredCount(config);
 
-    const migrated = await this.fetchAndInsert(config, table, {
+    const counts = await this.fetchAndInsert(config, table, {
       mapRows: rowsMapperOf(config),
+      isOrphan: await this.orphanCheckFor(config),
       force: options.force ?? false,
       conflictColumns: config.conflictColumns ?? DEFAULT_CONFLICT_COLUMNS,
     });
-    return { migrated, skipped: false };
+    return { ...counts, skipped: false };
   }
 }
 

@@ -4,9 +4,9 @@ import React from 'react';
 const NoQualifiedTemplatesMessage = () => (
   <div className="flex flex-col items-center gap-10 text-xs font-semibold uppercase lead">
     <p>
-      <Translate className="text-gray-900">No valid target template available</Translate>
+      <Translate className="text-ink">No valid target template available</Translate>
     </p>
-    <p className="flex flex-col items-center gap-5 text-gray-500">
+    <p className="flex flex-col items-center gap-5 text-ink-muted">
       <div id="label-template-requirements">
         <Translate>A source template must</Translate>:
       </div>

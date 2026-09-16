@@ -1,5 +1,5 @@
 /* eslint-disable react/require-default-props */
-import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import React, { useEffect, useLayoutEffect, useRef, useState, type CSSProperties } from 'react';
 import { createPortal } from 'react-dom';
 import { LinkIcon, ListBulletIcon } from '@heroicons/react/24/outline';
 import type { TextSelection } from '@huridocs/react-text-selection-handler';
@@ -7,6 +7,28 @@ import { Translate } from '#app/I18N/index.js';
 import { TextCursorInputStrokeIcon } from '#V2/Components/CustomIcons/index.js';
 import { getSelectionMenuPosition } from './getSelectionMenuPosition.js';
 import { placeSelectionMenu } from './placeSelectionMenu.js';
+
+const actionClass =
+  'flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium text-parchment transition-colors hover:bg-white/15';
+
+const mutedActionClass =
+  'flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium text-white/80 transition-colors hover:bg-white/15 hover:text-parchment';
+
+const copyThemeScopeStyle = (from?: HTMLElement | null): CSSProperties => {
+  if (typeof document === 'undefined') return {};
+  const scope =
+    from?.closest<HTMLElement>('.tw-content') ||
+    document.querySelector<HTMLElement>('.tw-content[data-theme-mode]') ||
+    document.querySelector<HTMLElement>('.tw-content');
+  if (!scope) return {};
+  const copied: CSSProperties & Record<string, string> = {};
+  const { style } = scope;
+  for (let i = 0; i < style.length; i += 1) {
+    const name = style.item(i);
+    if (name.startsWith('--')) copied[name] = style.getPropertyValue(name);
+  }
+  return copied;
+};
 
 type DocumentSelectionFloatingMenuProps = {
   selection: TextSelection;
@@ -61,6 +83,8 @@ const DocumentSelectionFloatingMenu = ({
     height: window.innerHeight,
   });
 
+  const themeStyle = copyThemeScopeStyle(scrollRoot);
+
   return createPortal(
     <div
       ref={menuRef}
@@ -71,16 +95,17 @@ const DocumentSelectionFloatingMenu = ({
         top,
         display: 'inline-flex',
         zIndex: 50,
+        ...themeStyle,
       }}
       data-testid="document-selection-floating-menu"
     >
-      <div className="flex items-center gap-0.5 rounded-md bg-[#1A1A1A] px-1 py-1 shadow-xl">
+      <div className="flex items-center gap-0.5 rounded-md bg-ink px-1 py-1 shadow-xl">
         {armedLabel ? (
           <>
             <button
               type="button"
               onClick={onFillFromSelection}
-              className="flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium text-white transition-colors hover:bg-white/15"
+              className={actionClass}
               data-testid="fill-from-selection"
             >
               <Translate>Fill</Translate> {armedLabel}
@@ -89,20 +114,12 @@ const DocumentSelectionFloatingMenu = ({
             <div className="h-4 w-px bg-white/20" aria-hidden="true" />
           </>
         ) : null}
-        <button
-          type="button"
-          onClick={onCreateRelationship}
-          className="flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium text-white transition-colors hover:bg-white/15"
-        >
+        <button type="button" onClick={onCreateRelationship} className={actionClass}>
           <LinkIcon className="h-3.5 w-3.5" aria-hidden />
           <Translate>Create relationship</Translate>
         </button>
         <div className="h-4 w-px bg-white/20" aria-hidden="true" />
-        <button
-          type="button"
-          onClick={onAddToToC}
-          className="flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium text-white/80 transition-colors hover:bg-white/15 hover:text-white"
-        >
+        <button type="button" onClick={onAddToToC} className={mutedActionClass}>
           <ListBulletIcon className="h-3.5 w-3.5" aria-hidden />
           <Translate>Add to ToC</Translate>
         </button>

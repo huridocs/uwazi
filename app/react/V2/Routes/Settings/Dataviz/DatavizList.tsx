@@ -21,6 +21,7 @@ import {
   UpdatedAtCell,
   UpdatedHeader,
 } from './components/TableComponents.js';
+
 type DatavizRow = DatavizDefinition & { rowId: string };
 
 const datavizListLoader =

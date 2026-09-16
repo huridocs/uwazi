@@ -121,4 +121,32 @@ describe('HttpSearchService', () => {
     expect(data).toBeUndefined();
     expect(error).toBe(apiError);
   });
+
+  it('search() sends text, template and property filters to GET /api/search', async () => {
+    const [data, error] = await httpSearchService.search({
+      searchTerm: 'Colom',
+      templateIds: ['country'],
+      filters: { region: ['south'] },
+      publishedStatus: 'all',
+      limit: 50,
+      fields: ['title', 'sharedId', 'template'],
+    });
+
+    expect(error).toBeUndefined();
+    expect(getJson).toHaveBeenCalledWith(
+      'search',
+      expect.objectContaining({
+        searchTerm: 'Colom',
+        types: ['country'],
+        filters: { region: { values: ['south'] } },
+        limit: 50,
+        fields: ['title', 'sharedId', 'template'],
+        includeUnpublished: true,
+      }),
+      expect.any(Object)
+    );
+    expect(data?.rows).toEqual([
+      { _id: '1', sharedId: 'a', title: 'Case', template: 't1', language: 'en' },
+    ]);
+  });
 });

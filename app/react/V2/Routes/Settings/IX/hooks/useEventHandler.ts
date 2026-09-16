@@ -54,6 +54,9 @@ const useEventHandler = ({ extractorId, updateStatus }: useEventHandlerProps) =>
         });
       } else if (modelStatus === ixStatus.processing_auto_accept) {
         updateStatus(ixStatus.processing_auto_accept);
+      } else if (modelStatus === ixStatus.ready && data?.error) {
+        updateStatus(ixStatus.ready);
+        notify('error', t('System', 'An error occurred', null, false), undefined, message);
       } else if (isCompleted) {
         updateStatus(ixStatus.ready);
       } else {

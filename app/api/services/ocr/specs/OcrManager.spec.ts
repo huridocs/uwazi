@@ -143,6 +143,7 @@ describe('OcrManager', () => {
           sourceFile: fixturesFactory.id('sourceFile'),
           language: 'eng',
           lastUpdated: 1000,
+          sessionId: 'ocr-session-id',
         });
         expect(lastRecord).not.toHaveProperty('resultFile');
       });
@@ -204,6 +205,24 @@ describe('OcrManager', () => {
       });
 
       it('should emit through the sockets', async () => {
+        const [file] = await files.get({ _id: fixturesFactory.id('sourceFile') });
+        expect(sockets.emitToSession).toHaveBeenCalledWith(
+          'ocr-session-id',
+          'ocr:ready',
+          file._id.toHexString()
+        );
+      });
+    });
+
+    describe('when the service does not echo the sessionId', () => {
+      it('should emit ocr:ready using the sessionId persisted on the record', async () => {
+        mocks.clearJestMocks();
+
+        await mocks.taskManagerMock.trigger({
+          ...mockedMessageFromRedis,
+          params: { filename: 'sourceFileName.pdf', language: 'en' },
+        });
+
         const [file] = await files.get({ _id: fixturesFactory.id('sourceFile') });
         expect(sockets.emitToSession).toHaveBeenCalledWith(
           'ocr-session-id',
@@ -323,6 +342,26 @@ describe('OcrManager', () => {
         language: 'eng',
         lastUpdated: 1002,
       });
+      expect(sockets.emitToSession).toHaveBeenCalledWith(
+        'ocr-session-id',
+        'ocr:error',
+        sourceFile._id.toHexString()
+      );
+    });
+
+    it('should emit ocr:error using the sessionId persisted on the record when the service does not echo it', async () => {
+      mocks.clearJestMocks();
+      await OcrModel.delete({ sourceFile: fixturesFactory.id('sourceFile') });
+
+      const [sourceFile] = await files.get({ _id: fixturesFactory.id('sourceFile') });
+      await ocrManager.addToQueue(sourceFile, 'ocr-session-id');
+      await mocks.taskManagerMock.trigger({
+        ...mockedMessageFromRedis,
+        params: { filename: 'sourceFileName.pdf', language: 'en' },
+        success: false,
+        error_message: 'some error message',
+      });
+
       expect(sockets.emitToSession).toHaveBeenCalledWith(
         'ocr-session-id',
         'ocr:error',

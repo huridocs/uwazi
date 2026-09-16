@@ -1,4 +1,4 @@
-import { Db, ObjectId } from 'mongodb';
+import { Db } from 'mongodb';
 import { PostgresDataSource } from '#api/core/infrastructure/postgresql/common/PostgresDataSource.js';
 import { PostgresTransactionManager } from '#api/core/infrastructure/postgresql/common/PostgresTransactionManager.js';
 import { PropertyType } from '#api/core/domain/template/PropertyType.js';
@@ -150,11 +150,32 @@ class PostgresTemplatesDAO extends PostgresDataSource<TemplateRow> {
     return [...names];
   }
 
-  async findTemplateIdsUsingThesaurus(thesaurusId: string): Promise<ObjectId[]> {
+  async findPropertyNamesUsingThesaurus(thesaurusId: string): Promise<{
+    selectPropertyNames: string[];
+    inheritedPropertyNames: string[];
+  }> {
     const directTemplates = await this.getByContent(thesaurusId);
-    const relatedTemplates = await this.getByContents(directTemplates.map(t => t._id.toString()));
-    const allTemplates = [...directTemplates, ...relatedTemplates];
-    return Array.from(new Set(allTemplates.map(t => new ObjectId(t._id))));
+
+    const selectPropertyNames = directTemplates.flatMap(template =>
+      (template.properties || [])
+        .filter(property => property.content === thesaurusId)
+        .map(property => property.name)
+    );
+
+    const directTemplateIds = directTemplates.map(template => template._id.toString());
+
+    const relatedTemplates = await this.getByContents(directTemplateIds);
+
+    const inheritedPropertyNames = relatedTemplates.flatMap(template =>
+      (template.properties || [])
+        .filter(
+          property =>
+            property.type === 'relationship' && directTemplateIds.includes(property.content || '')
+        )
+        .map(property => property.name)
+    );
+
+    return { selectPropertyNames, inheritedPropertyNames };
   }
 
   async getAllFilterableProperties(): Promise<PropertyDescriptor[]> {

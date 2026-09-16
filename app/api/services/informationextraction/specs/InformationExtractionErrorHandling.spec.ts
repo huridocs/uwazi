@@ -138,6 +138,15 @@ describe('InformationExtraction Error Handling', () => {
       expect(failedSuggestion!.error).toBe(errorMessage);
       expect(failedSuggestion!.state && failedSuggestion!.state.processing).toBe(false);
       expect(failedSuggestion!.state && failedSuggestion!.state.error).toBe(true);
+
+      expect(setupSockets.emitToTenantAdminsAndEditors).toHaveBeenCalledWith(
+        'tenant1',
+        'ix_model_status',
+        extractorId.toString(),
+        'ready',
+        'Suggestions run failed',
+        { error: true }
+      );
     });
 
     it('should preserve existing state values when handling errors', async () => {

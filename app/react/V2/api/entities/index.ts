@@ -1,12 +1,9 @@
 import { IncomingHttpHeaders } from 'http';
-import qs from 'qs';
 import { api } from '#app/utils/api.js';
 import { RequestParams } from '#app/utils/RequestParams.js';
 import { FetchResponseError } from '#shared/JSONRequest.js';
-import { SearchQuery, CompoundFilter } from '#shared/types/SearchQueryType.js';
 import { apiClient } from '../client.js';
 import { requestHeaders } from '../requestHeaders.js';
-import { EntitySearchResponse } from '../types.js';
 import { ApiResponse } from '../ApiResponse.js';
 import * as formatter from './formatter.js';
 import { Entity } from './types.js';
@@ -17,6 +14,8 @@ const withLanguage = (language: string, headers?: IncomingHttpHeaders) => ({
   ...requestHeaders(headers),
   'Content-Language': language,
 });
+
+const includePermissions = ['permissions'] as const;
 
 const isEntity = (value: unknown): value is Entity =>
   typeof value === 'object' &&
@@ -39,7 +38,7 @@ const getById = async ({
 }): Promise<ApiResponse<Entity | undefined>> => {
   const [data, error] = await apiClient.getJson<{ rows: Entity[] }>(
     'entities',
-    { _id, omitRelationships },
+    { _id, omitRelationships, include: includePermissions },
     { headers: withLanguage(language, headers), language }
   );
 
@@ -65,7 +64,7 @@ const getBySharedId = async (
 ): Promise<ApiResponse<Entity[] | undefined>> => {
   const [data, error] = await apiClient.getJson<{ rows: Entity[] }>(
     'entities',
-    { sharedId, omitRelationships },
+    { sharedId, omitRelationships, include: includePermissions },
     { headers: withLanguage(language, headers), language }
   );
 
@@ -105,65 +104,6 @@ const coerceValue = async (
   } catch (e) {
     return e;
   }
-};
-
-// eslint-disable-next-line max-statements
-const searchByTitle = async (
-  {
-    title,
-    fields = ['title', 'sharedId', 'template'],
-    template,
-    limit,
-    includeFiles = false,
-  }: {
-    title: string;
-    fields?: string[];
-    template?: string[];
-    limit?: number;
-    includeFiles?: boolean;
-  },
-  headers?: IncomingHttpHeaders
-): Promise<ApiResponse<Entity[] | undefined>> => {
-  const finalFields = includeFiles ? [...new Set([...fields, 'documents', 'attachments'])] : fields;
-
-  const filter: SearchQuery['filter'] = {
-    searchString: `title:${title}~2`,
-  };
-
-  if (template && template.length > 0) {
-    const templateFilter: CompoundFilter = {
-      values: template,
-      operator: 'OR',
-    };
-    filter.template = templateFilter;
-  }
-
-  const searchQuery: SearchQuery = {
-    fields: finalFields,
-    filter,
-    ...(limit && { page: { limit } }),
-  };
-
-  const [data, error] = await apiClient.getJson<EntitySearchResponse>(
-    'v2/search',
-    qs.stringify(searchQuery),
-    { headers: requestHeaders(headers) }
-  );
-
-  if (error) {
-    return [undefined, error];
-  }
-
-  if (!data?.data?.length) {
-    return [undefined, undefined];
-  }
-
-  const rows = data.data.filter(isEntity);
-  if (!rows.length) {
-    return [undefined, undefined];
-  }
-
-  return [rows];
 };
 
 const create = async (
@@ -223,7 +163,6 @@ export {
   coerceValue,
   formatter,
   getBySharedId,
-  searchByTitle,
   saveWithFiles,
   remove,
   getPermissions,

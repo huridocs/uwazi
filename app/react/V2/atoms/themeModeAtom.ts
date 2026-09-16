@@ -8,26 +8,20 @@ const noop = () => undefined;
 const isThemeMode = (value: string | null): value is ThemeMode =>
   value === 'light' || value === 'dark';
 
-const getPreferredThemeMode = (): ThemeMode => {
+const readStoredThemeMode = (initialValue: ThemeMode = 'light'): ThemeMode => {
   if (typeof window === 'undefined') {
-    return 'light';
+    return initialValue;
   }
 
-  return window.matchMedia('(prefers-color-scheme: dark)')?.matches === true ? 'dark' : 'light';
+  const storedThemeMode = window.localStorage.getItem(THEME_MODE_STORAGE_KEY);
+  return isThemeMode(storedThemeMode) ? storedThemeMode : initialValue;
 };
 
 const themeModeAtom = atomWithStorage<ThemeMode>(
   THEME_MODE_STORAGE_KEY,
   'light',
   {
-    getItem: (key, initialValue) => {
-      if (typeof window === 'undefined') {
-        return initialValue;
-      }
-
-      const storedThemeMode = window.localStorage.getItem(key);
-      return isThemeMode(storedThemeMode) ? storedThemeMode : getPreferredThemeMode();
-    },
+    getItem: (_key, initialValue) => readStoredThemeMode(initialValue),
     setItem: (key, newValue) => {
       if (typeof window !== 'undefined') {
         window.localStorage.setItem(key, newValue);
@@ -58,5 +52,5 @@ const themeModeAtom = atomWithStorage<ThemeMode>(
   { getOnInit: true }
 );
 
-export { themeModeAtom };
+export { readStoredThemeMode, themeModeAtom };
 export type { ThemeMode };

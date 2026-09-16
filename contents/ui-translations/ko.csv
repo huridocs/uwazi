@@ -100,6 +100,7 @@ All of the previously created paragraphs will be deleted and recreated after the
 Allow captcha bypass,캡차 우회 허용
 Allow public embedding without login,로그인 없이 공개 임베딩 허용
 Already exists,이미 존재합니다
+Already the same value.,Already the same value.
 Amount,수량
 An admin needs to add relationship types before you can create a relationship.,관계를 생성하려면 관리자가 먼저 관계 유형을 추가해야 합니다.
 An error has occured while deleting a language:,언어를 삭제하는 과정에서 오류가 발생했습니다:
@@ -115,6 +116,7 @@ AND OR NOT,AND OR NOT
 Any,전체
 Any entity,모든 엔티티
 any single character,어떤 한 글자라도
+Any type,Any type
 Anyone can see this entity,누구나 이 개체를 볼 수 있습니다
 Appearance,등장 순서
 Apply,적용
@@ -254,6 +256,8 @@ Copied,복사됨
 Copied to clipboard,클립보드에 복사됨
 Copy,복사
 Copy From,외부 복사
+Copy from,Copy from
+Copy from this entity,Copy from this entity
 Copy from...,다음에서 복사...
 Copy Highlighted,하이라이트 복사
 Copy link,링크 복사
@@ -923,6 +927,7 @@ Permission on entities explicitly shared with the user,특정 사용자에게 �
 Permissions,권한
 Permissions updated,권한이 업데이트되었습니다.
 Pick a color,색상을 선택하세요
+Pick another,Pick another
 Plain text,일반 텍스트
 Please contact an admin for details.,자세한 내용은 관리자에게 문의하십시오.
 Please type in,다음 내용을 입력해 주세요
@@ -1090,6 +1095,7 @@ Schedule,일정
 Schedules run in UTC (Coordinated Universal Time).,일정은 UTC(협정 세계시) 기준으로 운영됩니다.
 Search,검색
 "Search  •  AND, OR, NOT, ""exact"", wild*","검색  •  AND, OR, NOT, ""정확 일치"", 와일드카드*"
+Search by title,Search by title
 Search entities...,엔티티 검색...
 Search entities…,엔티티 검색…
 Search item,아이템 검색
@@ -1460,6 +1466,7 @@ Validating file structure and headers.,파일 구조 및 헤더를 검증 중입
 Value,값
 Value cannot be transformed to the correct type,값을 올바른 형식으로 변환할 수 없습니다.
 values,값
+"values are staged, not saved","values are staged, not saved"
 Verify,검증
 Verifying...,검증 중
 via,~을 통해

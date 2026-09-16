@@ -1,5 +1,4 @@
 import type { ButtonThemeContext } from '#V2/theme/buttonThemeContext.js';
-import { LEGACY_BUTTON_VALUES } from '#V2/theme/buttonThemeContext.js';
 import { setRoleTripletVars, setRoleVar } from '#V2/theme/themeRoleVarSetters.js';
 import {
   BUTTON_COMPACT_BG,
@@ -53,9 +52,9 @@ const getMainButtonThemeVars = (context: ButtonThemeContext): Record<string, str
   });
 
   setRoleTripletVars(vars, BUTTON_GHOST_BORDER, BUTTON_GHOST_BG, BUTTON_GHOST_FG, {
-    border: context.isLegacy ? LEGACY_BUTTON_VALUES.border : 'transparent',
-    bg: context.isLegacy ? LEGACY_BUTTON_VALUES.surface : 'transparent',
-    fg: context.isLegacy ? LEGACY_BUTTON_VALUES.ghostText : context.ghostTextOnSurface,
+    border: context.isLegacy ? context.resolved['--color-theme-border-primary'] : 'transparent',
+    bg: context.isLegacy ? context.resolved['--color-theme-bg-surface'] : 'transparent',
+    fg: context.ghostTextOnSurface,
   });
 
   setRoleTripletVars(
@@ -66,7 +65,7 @@ const getMainButtonThemeVars = (context: ButtonThemeContext): Record<string, str
     {
       border: context.isLegacy ? context.primaryBackground : 'transparent',
       bg: context.isLegacy
-        ? LEGACY_BUTTON_VALUES.secondaryHover
+        ? context.secondaryHoverBackground
         : context.resolved['--color-theme-bg-warm'],
       fg: context.isLegacy ? context.primaryBackground : context.ghostTextOnSurface,
     }

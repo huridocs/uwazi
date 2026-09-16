@@ -100,6 +100,7 @@ All of the previously created paragraphs will be deleted and recreated after the
 Allow captcha bypass,Autoriser le contournement du captcha
 Allow public embedding without login,Autoriser l'intégration publique sans connexion
 Already exists,Existe déjà
+Already the same value.,Already the same value.
 Amount,Montant
 An admin needs to add relationship types before you can create a relationship.,Un administrateur doit d'abord ajouter des types de relations avant que vous puissiez créer une relation.
 An error has occured while deleting a language:,Une erreur s'est produite lors de la suppression d'une langue :
@@ -115,6 +116,7 @@ AND OR NOT,ET OU NON
 Any,Peu importe
 Any entity,Toute entité
 any single character,n'importe quel caractère
+Any type,Any type
 Anyone can see this entity,Tout le monde peut voir cette entité
 Appearance,Apparition
 Apply,Appliquer
@@ -257,6 +259,8 @@ Copied,Copié
 Copied to clipboard,Copié dans le presse-papiers
 Copy,Copier
 Copy From,Copier de
+Copy from,Copy from
+Copy from this entity,Copy from this entity
 Copy from...,Copier depuis…
 Copy Highlighted,Copier surligné
 Copy link,Copier le lien
@@ -931,6 +935,7 @@ Permission on entities explicitly shared with the user,Permission sur les entit�
 Permissions,Autorisations
 Permissions updated,Mise à jour des autorisations
 Pick a color,Choisissez une couleur
+Pick another,Pick another
 Plain text,Texte brut
 Please contact an admin for details.,Veuillez contacter un administrateur pour plus de détails.
 Please type in,Veuillez saisir
@@ -1097,6 +1102,7 @@ Schedule,Planification
 Schedules run in UTC (Coordinated Universal Time).,Les horaires sont exprimés en UTC (temps universel coordonné).
 Search,Recherche
 "Search  •  AND, OR, NOT, ""exact"", wild*","Recherche  •  AND, OR, NOT, ""exact"", * (caractère générique)"
+Search by title,Search by title
 Search entities...,Rechercher des entités...
 Search entities…,Rechercher des entités…
 Search item,Recherche d'éléménts
@@ -1467,6 +1473,7 @@ Validating file structure and headers.,Vérification de la structure du fichier 
 Value,Valeur
 Value cannot be transformed to the correct type,La valeur ne peut pas être convertie dans le type approprié
 values,valeurs
+"values are staged, not saved","values are staged, not saved"
 Verify,Vérifier
 Verifying...,En cours de vérification...
 via,via

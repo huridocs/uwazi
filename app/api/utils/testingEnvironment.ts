@@ -38,6 +38,9 @@ import type { EntityRow } from '#api/core/infrastructure/postgresql/entity/Postg
 import { PostgresSettingsMapper } from '#api/core/infrastructure/postgresql/settings/PostgresSettingsMapper.js';
 import { Settings as SettingsType } from '#shared/types/settingsType.js';
 import {
+  IXExtractorsMigrationConfig,
+  IXModelsMigrationConfig,
+  IXSuggestionsMigrationConfig,
   PageLocalesMigrationConfig,
   PageMigrationConfig,
 } from '#api/core/infrastructure/postgresql/migrations/configs/index.js';
@@ -64,6 +67,18 @@ const sanitizeEntityForPostgres = (entity: Record<string, unknown>) => {
   ]);
   return { ...ENTITY_POSTGRES_DEFAULTS, ...cleaned };
 };
+
+// `mimetype` and `type` are NOT NULL in 003-create_files_table.sql, but `factory.file` sets
+// neither, and plain `factory.file` fixtures carry no `type`.
+const FILE_POSTGRES_DEFAULTS = {
+  mimetype: 'application/pdf',
+  type: 'document',
+};
+
+const sanitizeFileForPostgres = (file: Record<string, unknown>) => ({
+  ...FILE_POSTGRES_DEFAULTS,
+  ...file,
+});
 
 // `password` and `using2fa` are NOT NULL in 009-create-users-table.sql but optional in
 // Mongo fixtures. The password sentinel is deliberately not a hash: a fixture that omits
@@ -119,11 +134,15 @@ const PG_SANITIZER_BY_MONGO_COLLECTION: Record<
   (row: Record<string, unknown>) => Record<string, unknown>
 > = {
   entities: sanitizeEntityForPostgres,
+  files: sanitizeFileForPostgres,
   users: sanitizeUserForPostgres,
   usergroups: sanitizeUserGroupForPostgres,
   translationsV2: sanitizeTranslationForPostgres,
   settings: sanitizeSettingsForPostgres,
   pages: PageMigrationConfig.mapDocument,
+  ixextractors: IXExtractorsMigrationConfig.mapDocument,
+  ixmodels: IXModelsMigrationConfig.mapDocument,
+  ixsuggestions: IXSuggestionsMigrationConfig.mapDocument,
 };
 
 const MIRRORED_COLLECTIONS = [
@@ -136,6 +155,9 @@ const MIRRORED_COLLECTIONS = [
   'users',
   'usergroups',
   'translationsV2',
+  'ixextractors',
+  'ixmodels',
+  'ixsuggestions',
   'settings',
 ];
 
@@ -143,6 +165,9 @@ const PG_TABLE_BY_MONGO_COLLECTION: Record<string, string> = {
   dictionaries: 'thesauri',
   relationtypes: 'relationship_types',
   translationsV2: 'translations',
+  ixextractors: 'ix_extractors',
+  ixmodels: 'ix_models',
+  ixsuggestions: 'ix_suggestions',
 };
 
 type SetUpOptions = {

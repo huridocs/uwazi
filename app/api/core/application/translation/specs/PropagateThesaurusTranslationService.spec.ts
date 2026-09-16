@@ -3,16 +3,17 @@ import { Result } from '#api/core/libs/Result.js';
 import { Thesaurus } from '#api/core/domain/thesaurus/Thesaurus.js';
 import { ThesaurusNotFoundError } from '#api/core/domain/thesaurus/errors.js';
 import { ThesauriDataSource } from '#api/core/application/contracts/ThesauriDataSource.js';
-import { ThesaurusMetadataRenamer } from '#api/core/application/contracts/ThesaurusMetadataRenamer.js';
+import { Dispatcher } from '#api/core/application/contracts/Dispatcher.js';
 
 describe('PropagateThesaurusTranslationService', () => {
   const thesaurusId = 'thesaurus-1';
+  const tenantName = 'tenant-1';
 
   const makeThesaurus = (values: Thesaurus['values']) =>
     new Thesaurus({ id: thesaurusId, name: 'Dict', values });
 
   const createSut = (thesaurus?: Thesaurus) => {
-    const renameInMetadata = jest.fn().mockResolvedValue(undefined);
+    const denormalizeThesaurus = jest.fn().mockResolvedValue(undefined);
     const getById = jest
       .fn()
       .mockResolvedValue(
@@ -21,28 +22,36 @@ describe('PropagateThesaurusTranslationService', () => {
 
     const sut = new PropagateThesaurusTranslationService({
       thesauriDS: { getById } as unknown as ThesauriDataSource,
-      metadataRenamer: { renameInMetadata } as ThesaurusMetadataRenamer,
+      dispatcher: { denormalizeThesaurus } as unknown as Dispatcher,
+      tenantName,
     });
 
-    return { sut, renameInMetadata, getById };
+    return { sut, denormalizeThesaurus, getById };
   };
 
-  it('should rename metadata when a thesaurus translation value changes', async () => {
-    const { sut, renameInMetadata } = createSut(makeThesaurus([{ id: 'age id', label: 'Age' }]));
+  it('should dispatch denormalization when a thesaurus translation value changes', async () => {
+    const { sut, denormalizeThesaurus } = createSut(
+      makeThesaurus([{ id: 'age id', label: 'Age' }])
+    );
 
-    await sut.propagate({
-      locale: 'en',
-      contextId: thesaurusId,
-      type: 'Thesaurus',
-      previous: { Age: 'Age' },
-      next: { Age: 'Age changed' },
+    await sut.propagate([
+      {
+        contextId: thesaurusId,
+        type: 'Thesaurus',
+        previous: { Age: 'Age' },
+        next: { Age: 'Age changed' },
+      },
+    ]);
+
+    expect(denormalizeThesaurus).toHaveBeenCalledWith({
+      thesaurusId,
+      valueIds: ['age id'],
+      tenantName,
     });
-
-    expect(renameInMetadata).toHaveBeenCalledWith('age id', 'Age changed', thesaurusId, 'en');
   });
 
-  it('should rename nested thesaurus values', async () => {
-    const { sut, renameInMetadata } = createSut(
+  it('should dispatch denormalization for nested thesaurus values', async () => {
+    const { sut, denormalizeThesaurus } = createSut(
       makeThesaurus([
         {
           id: 'parent_id',
@@ -52,24 +61,24 @@ describe('PropagateThesaurusTranslationService', () => {
       ])
     );
 
-    await sut.propagate({
-      locale: 'en',
-      contextId: thesaurusId,
-      type: 'Thesaurus',
-      previous: { Age: 'Age' },
-      next: { Age: 'Age changed in child' },
-    });
+    await sut.propagate([
+      {
+        contextId: thesaurusId,
+        type: 'Thesaurus',
+        previous: { Age: 'Age' },
+        next: { Age: 'Age changed in child' },
+      },
+    ]);
 
-    expect(renameInMetadata).toHaveBeenCalledWith(
-      'child_id',
-      'Age changed in child',
+    expect(denormalizeThesaurus).toHaveBeenCalledWith({
       thesaurusId,
-      'en'
-    );
+      valueIds: ['child_id'],
+      tenantName,
+    });
   });
 
-  it('should rename duplicated child labels across parents', async () => {
-    const { sut, renameInMetadata } = createSut(
+  it('should dispatch denormalization for duplicated child labels across parents', async () => {
+    const { sut, denormalizeThesaurus } = createSut(
       makeThesaurus([
         {
           id: 'in_court',
@@ -90,42 +99,89 @@ describe('PropagateThesaurusTranslationService', () => {
       ])
     );
 
-    await sut.propagate({
-      locale: 'en',
-      contextId: thesaurusId,
-      type: 'Thesaurus',
-      previous: { Age: 'Age', Email: 'Email' },
-      next: { Age: 'Yes changed', Email: 'No changed' },
-    });
+    await sut.propagate([
+      {
+        contextId: thesaurusId,
+        type: 'Thesaurus',
+        previous: { Age: 'Age', Email: 'Email' },
+        next: { Age: 'Yes changed', Email: 'No changed' },
+      },
+    ]);
 
-    expect(renameInMetadata).toHaveBeenCalledWith('yes_in_court', 'Yes changed', thesaurusId, 'en');
-    expect(renameInMetadata).toHaveBeenCalledWith(
-      'yes_in_government',
-      'Yes changed',
+    expect(denormalizeThesaurus).toHaveBeenCalledWith({
       thesaurusId,
-      'en'
-    );
-    expect(renameInMetadata).toHaveBeenCalledWith('no_in_court', 'No changed', thesaurusId, 'en');
-    expect(renameInMetadata).toHaveBeenCalledWith(
-      'no_in_government',
-      'No changed',
-      thesaurusId,
-      'en'
-    );
+      valueIds: expect.arrayContaining([
+        'yes_in_court',
+        'yes_in_government',
+        'no_in_court',
+        'no_in_government',
+      ]),
+      tenantName,
+    });
+    expect(denormalizeThesaurus).toHaveBeenCalledTimes(1);
   });
 
-  it('should not rename when context is not Thesaurus', async () => {
-    const { sut, renameInMetadata, getById } = createSut();
+  it('should dispatch once per thesaurus, unioning changed values across locales', async () => {
+    const { sut, denormalizeThesaurus } = createSut(
+      makeThesaurus([
+        { id: 'age id', label: 'Age' },
+        { id: 'email id', label: 'Email' },
+      ])
+    );
 
-    await sut.propagate({
-      locale: 'en',
-      contextId: 'System',
-      type: 'Uwazi UI',
-      previous: { A: 'A' },
-      next: { A: 'B' },
+    await sut.propagate([
+      {
+        contextId: thesaurusId,
+        type: 'Thesaurus',
+        previous: { Age: 'Age' },
+        next: { Age: 'Age ES' },
+      },
+      {
+        contextId: thesaurusId,
+        type: 'Thesaurus',
+        previous: { Email: 'Email' },
+        next: { Email: 'Email FR' },
+      },
+    ]);
+
+    expect(denormalizeThesaurus).toHaveBeenCalledTimes(1);
+    expect(denormalizeThesaurus).toHaveBeenCalledWith({
+      thesaurusId,
+      valueIds: expect.arrayContaining(['age id', 'email id']),
+      tenantName,
     });
+  });
+
+  it('should not dispatch when no translation value changed', async () => {
+    const { sut, denormalizeThesaurus } = createSut(
+      makeThesaurus([{ id: 'age id', label: 'Age' }])
+    );
+
+    await sut.propagate([
+      {
+        contextId: thesaurusId,
+        type: 'Thesaurus',
+        previous: { Age: 'Age' },
+        next: { Age: 'Age' },
+      },
+    ]);
+
+    expect(denormalizeThesaurus).not.toHaveBeenCalled();
+  });
+
+  it('should not dispatch when context is not Thesaurus', async () => {
+    const { sut, denormalizeThesaurus, getById } = createSut();
+
+    await sut.propagate([
+      {
+        contextId: 'System',
+        type: 'Uwazi UI',
+        previous: { A: 'A' },
+        next: { A: 'B' },
+      },
+    ]);
 
     expect(getById).not.toHaveBeenCalled();
-    expect(renameInMetadata).not.toHaveBeenCalled();
+    expect(denormalizeThesaurus).not.toHaveBeenCalled();
   });
 });

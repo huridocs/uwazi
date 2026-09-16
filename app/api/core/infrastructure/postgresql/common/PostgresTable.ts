@@ -10,6 +10,7 @@ export type TableConfig = {
   tenantId: string;
   transactionManager: PostgresTransactionManager;
   syncWriter?: SyncLogWriter;
+  identityColumn?: string | null;
 };
 
 type ForParams = {
@@ -18,7 +19,39 @@ type ForParams = {
   transactionManager: PostgresTransactionManager;
   knex?: Knex;
   syncWriter?: SyncLogWriter;
+  identityColumn?: string | null;
 };
+
+/**
+ * What the chain has been asked for so far, carried from one immutable link to the next. It exists
+ * so a terminal can tell a projected row read from an aggregate: only the first may take the
+ * identity column.
+ */
+export type QueryState = {
+  /** Columns passed to `select()`, in order. Raw projections do not count. */
+  projected?: string[];
+  /** A join, groupBy or distinct is in play, so the identity column must not be added. */
+  compound?: boolean;
+};
+
+/**
+ * Mongo's id type reaching a bind. Postgres keeps ids as TEXT hex, which is exactly what an
+ * ObjectId spells, but `pg` serialises an unknown object with `JSON.stringify` — so an ObjectId
+ * binds as `'"6aa4…"'`, quotes included, and matches nothing at all. No error, no row: accepting a
+ * pdf suggestion silently stopped writing its file selection that way (F50).
+ *
+ * Checked by `_bsontype` rather than `instanceof`, which fails across two copies of the driver.
+ */
+const isObjectId = (value: unknown): boolean =>
+  typeof value === 'object' &&
+  value !== null &&
+  (value as { _bsontype?: string })._bsontype === 'ObjectId';
+
+/** An ObjectId binds as its hex string; everything else binds as it is. */
+const bindable = (value: unknown): unknown => (isObjectId(value) ? String(value) : value);
+
+const bindableCondition = (condition: Record<string, unknown>): Record<string, unknown> =>
+  Object.fromEntries(Object.entries(condition).map(([key, value]) => [key, bindable(value)]));
 
 /**
  * Immutable, tenant-scoped query builder over a single Postgres table.
@@ -35,9 +68,12 @@ export class PostgresTable<TRow = Record<string, unknown>> {
 
   private readonly qb: Knex.QueryBuilder;
 
-  protected constructor(cfg: TableConfig, qb: Knex.QueryBuilder) {
+  protected readonly state: QueryState;
+
+  protected constructor(cfg: TableConfig, qb: Knex.QueryBuilder, state: QueryState = {}) {
     this.cfg = cfg;
     this.qb = qb;
+    this.state = state;
   }
 
   static for<T = Record<string, unknown>>(params: ForParams): PostgresTable<T> {
@@ -48,6 +84,7 @@ export class PostgresTable<TRow = Record<string, unknown>> {
       tenantId: params.tenantId,
       transactionManager: params.transactionManager,
       syncWriter: params.syncWriter,
+      identityColumn: params.identityColumn,
     };
     return new PostgresTable<T>(cfg, knexInstance(params.tableName));
   }
@@ -65,15 +102,15 @@ export class PostgresTable<TRow = Record<string, unknown>> {
   }
 
   query<T = TRow>(): PostgresTable<T> {
-    return this.chain(this.cfg.knex(this.cfg.tableName)) as any;
+    return this.chain(this.cfg.knex(this.cfg.tableName), {}) as any;
   }
 
-  protected chain(qb: Knex.QueryBuilder): this {
-    return new (this.constructor as any)(this.cfg, qb) as this;
+  protected chain(qb: Knex.QueryBuilder, state: QueryState = this.state): this {
+    return new (this.constructor as any)(this.cfg, qb, state) as this;
   }
 
   where(condition: Record<string, unknown>): PostgresTable<TRow> {
-    return this.chain(this.qb.clone().where(condition));
+    return this.chain(this.qb.clone().where(bindableCondition(condition)));
   }
 
   whereAny(conditions: Record<string, unknown>[]): PostgresTable<TRow> {
@@ -134,7 +171,7 @@ export class PostgresTable<TRow = Record<string, unknown>> {
   }
 
   whereNot(column: string, value: Knex.Value): PostgresTable<TRow> {
-    return this.chain(this.qb.clone().whereNot(column, value));
+    return this.chain(this.qb.clone().whereNot(column, bindable(value) as Knex.Value));
   }
 
   whereNull(column: string): PostgresTable<TRow> {
@@ -146,11 +183,11 @@ export class PostgresTable<TRow = Record<string, unknown>> {
   }
 
   whereIn(column: string, values: Knex.Value[]): PostgresTable<TRow> {
-    return this.chain(this.qb.clone().whereIn(column, values));
+    return this.chain(this.qb.clone().whereIn(column, values.map(bindable) as Knex.Value[]));
   }
 
   whereNotIn(column: string, values: Knex.Value[]): PostgresTable<TRow> {
-    return this.chain(this.qb.clone().whereNotIn(column, values));
+    return this.chain(this.qb.clone().whereNotIn(column, values.map(bindable) as Knex.Value[]));
   }
 
   /** Escape hatch for conditions `where*` can't express, e.g. `"expiresAt" > now()`. */
@@ -162,6 +199,16 @@ export class PostgresTable<TRow = Record<string, unknown>> {
     return this.chain(this.qb.clone().orderBy(column, direction));
   }
 
+  /** Escape hatch for orderings `orderBy` can't express, e.g. `random()`. */
+  orderByRaw(sql: string, bindings: readonly Knex.RawBinding[] = []): PostgresTable<TRow> {
+    return this.chain(this.qb.clone().orderByRaw(sql, bindings));
+  }
+
+  /** Escape hatch for projections `select` can't express, e.g. `count(*) FILTER (WHERE …)`. */
+  selectRaw(sql: string, bindings: readonly Knex.RawBinding[] = []): PostgresTable<TRow> {
+    return this.chain(this.qb.clone().select(this.cfg.knex.raw(sql, bindings)));
+  }
+
   limit(n: number): PostgresTable<TRow> {
     return this.chain(this.qb.clone().limit(n));
   }
@@ -171,23 +218,32 @@ export class PostgresTable<TRow = Record<string, unknown>> {
   }
 
   select(columns: string[]): PostgresTable<TRow> {
-    return this.chain(this.qb.clone().select(columns));
+    return this.chain(this.qb.clone().select(columns), {
+      ...this.state,
+      projected: [...(this.state.projected ?? []), ...columns],
+    });
   }
 
   join(tableName: string, leftColumn: string, rightColumn: string): PostgresTable<TRow> {
-    return this.chain(this.qb.clone().join(tableName, leftColumn, '=', rightColumn));
+    return this.chain(this.qb.clone().join(tableName, leftColumn, '=', rightColumn), {
+      ...this.state,
+      compound: true,
+    });
   }
 
   leftJoin(tableName: string, leftColumn: string, rightColumn: string): PostgresTable<TRow> {
-    return this.chain(this.qb.clone().leftJoin(tableName, leftColumn, '=', rightColumn));
+    return this.chain(this.qb.clone().leftJoin(tableName, leftColumn, '=', rightColumn), {
+      ...this.state,
+      compound: true,
+    });
   }
 
   groupBy(columns: string[]): PostgresTable<TRow> {
-    return this.chain(this.qb.clone().groupBy(columns));
+    return this.chain(this.qb.clone().groupBy(columns), { ...this.state, compound: true });
   }
 
   distinct(columns: string[]): PostgresTable<TRow> {
-    return this.chain(this.qb.clone().distinct(columns));
+    return this.chain(this.qb.clone().distinct(columns), { ...this.state, compound: true });
   }
 
   returning(columns: string[]): PostgresTable<TRow> {
@@ -241,7 +297,7 @@ export class PostgresTable<TRow = Record<string, unknown>> {
     const handle = await this.cfg.transactionManager.beginTransaction(permissionContext);
     let completed = false;
     try {
-      const readable = this.qb.clone().transacting(handle.trx).stream();
+      const readable = this.withIdentity(this.qb.clone()).transacting(handle.trx).stream();
       for await (const row of readable) {
         yield this.cleanRow(row) as TRow;
       }
@@ -258,13 +314,36 @@ export class PostgresTable<TRow = Record<string, unknown>> {
     }
   }
 
+  /**
+   * Identity is not projectable: a caller reading rows still has to know which rows it read, and
+   * Mongo returns `_id` on any inclusion projection. A projected read therefore takes the table's
+   * identity column on top of what it asked for.
+   *
+   * Three queries cannot: one that joins (a bare column is ambiguous), one that groups or takes
+   * distinct rows (the extra column changes the result set), and one over a table that has no
+   * identity column, such as `page_locales`. Those are left exactly as the caller built them.
+   */
+  private withIdentity(qb: Knex.QueryBuilder): Knex.QueryBuilder {
+    const identity = this.cfg.identityColumn === undefined ? '_id' : this.cfg.identityColumn;
+    const projected = this.state.projected ?? [];
+
+    if (!identity || this.state.compound || !projected.length || projected.includes(identity)) {
+      return qb;
+    }
+
+    return qb.select(identity);
+  }
+
   async first(): Promise<TRow | undefined> {
-    const row = await this.run(qb => this.applyPolicy(qb, 'read').first());
+    const row = await this.run(qb => this.applyPolicy(this.withIdentity(qb), 'read').first());
     return row ? (this.cleanRow(row) as TRow) : undefined;
   }
 
   async all(): Promise<TRow[]> {
-    const rows = (await this.run(qb => this.applyPolicy(qb, 'read'))) as Record<string, unknown>[];
+    const rows = (await this.run(qb => this.applyPolicy(this.withIdentity(qb), 'read'))) as Record<
+      string,
+      unknown
+    >[];
     return rows.map(r => this.cleanRow(r)) as TRow[];
   }
 
@@ -291,9 +370,14 @@ export class PostgresTable<TRow = Record<string, unknown>> {
     await this.notifySync(rows, false);
   }
 
+  /**
+   * `targetRaw` is the escape hatch for a conflict target `columns` cannot express — a partial
+   * index, whose predicate Postgres needs in the target to infer it:
+   * `'("tenant_id", "extractorId") WHERE "fileId" IS NULL'`.
+   */
   async upsert(
     doc: Record<string, unknown> | Record<string, unknown>[],
-    conflict: { columns?: string[]; merge?: string[]; ignore?: boolean } = {}
+    conflict: { columns?: string[]; targetRaw?: string; merge?: string[]; ignore?: boolean } = {}
   ): Promise<void> {
     this.applyInsertPolicy();
     const rows = this.rowsWithTenant(doc);
@@ -301,9 +385,11 @@ export class PostgresTable<TRow = Record<string, unknown>> {
       return;
     }
 
-    const conflictColumns = conflict.columns ?? ['_id', 'tenant_id'];
     const result = await this.cfg.transactionManager.withConnection(async trx => {
-      const qb = trx(this.cfg.tableName).insert(rows).onConflict(conflictColumns);
+      const inserted = trx(this.cfg.tableName).insert(rows);
+      const qb = conflict.targetRaw
+        ? inserted.onConflict(this.cfg.knex.raw(conflict.targetRaw))
+        : inserted.onConflict(conflict.columns ?? ['_id', 'tenant_id']);
       const conflicting = conflict.ignore ? qb.ignore() : qb.merge(conflict.merge);
       return conflicting.returning(['_id']);
     });
@@ -412,7 +498,9 @@ export class PostgresTable<TRow = Record<string, unknown>> {
     const serialized = { ...row };
     for (const key of Object.keys(serialized)) {
       const value = serialized[key];
-      if (typeof value === 'object' && value !== null) {
+      if (isObjectId(value)) {
+        serialized[key] = String(value);
+      } else if (typeof value === 'object' && value !== null) {
         serialized[key] = JSON.stringify(value);
       }
     }

@@ -19,7 +19,7 @@ const Inactive = meta.story({
     onClick: fn(),
   },
   render: args => (
-    <div className="tw-content p-4">
+    <div className="tw-content p-4" data-storybook-theme-checks>
       <FilterDrawerButton activeCount={args.activeCount} onClick={args.onClick} />
     </div>
   ),

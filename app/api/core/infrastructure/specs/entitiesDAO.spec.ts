@@ -369,6 +369,20 @@ describe('EntitiesDAO', () => {
         expect((entities[0] as any).metadata).toBeUndefined();
       });
 
+      /**
+       * Identity is not projectable. A caller that selects a subset still has to know which row
+       * it read, and Mongo returns `_id` on any inclusion projection — Postgres must match, or
+       * the mapper invents an id that belongs to no entity (F49).
+       */
+      it('should return the real _id of the row on a select projection', async () => {
+        const [entity] = await createDao().find(
+          { sharedId: 'entity1', language: 'en' },
+          { select: ['sharedId', 'title'] }
+        );
+
+        expect(entity._id.toString()).toBe(factory.idString('entity1-en'));
+      });
+
       it('should support sort', async () => {
         const entities = await createDao().find(
           {},
@@ -406,6 +420,15 @@ describe('EntitiesDAO', () => {
         );
         expect(entity!.title).toBe('entity1');
         expect((entity as any).metadata).toBeUndefined();
+      });
+
+      it('should return the real _id of the row on a select projection', async () => {
+        const entity = await createDao().findOne(
+          { sharedId: 'entity1', language: 'en' },
+          { select: ['sharedId', 'title'] }
+        );
+
+        expect(entity!._id.toString()).toBe(factory.idString('entity1-en'));
       });
     });
 

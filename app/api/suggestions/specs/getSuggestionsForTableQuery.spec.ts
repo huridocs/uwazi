@@ -1,14 +1,31 @@
 /* eslint-disable max-statements */
+import { ObjectId } from 'mongodb';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { DBFixture } from '#api/utils/testing_db.js';
+import { testingTenants } from '#api/utils/testingTenants.js';
+import { IXSuggestionType } from '#shared/types/suggestionType.js';
 import { factory } from './fixtures.js';
 import { GetSuggestionsForTableQueryFactory } from '../infrastructure/GetSuggestionsForTableQueryFactory.js';
+import { testConfigs } from '../domain/specs/IXSuggestionsContractFixtures.js';
 
+type Input = Parameters<
+  ReturnType<typeof GetSuggestionsForTableQueryFactory.default>['execute']
+>[0];
+
+/** Runs inside the context, as a request does: the use case reads templates through it too. */
 const createSut = () => {
-  const sut = GetSuggestionsForTableQueryFactory.default();
+  const sut = {
+    execute: async (input: Input) =>
+      testingEnvironment.runWithContext(async () =>
+        GetSuggestionsForTableQueryFactory.default().execute(input)
+      ),
+  };
 
   return { sut };
 };
+
+/** Mongo hands back ObjectIds and Postgres hex strings; a client receives the same from both. */
+const onWire = <T>(value: T) => JSON.parse(JSON.stringify(value));
 
 const fixtures: DBFixture = {
   settings: [
@@ -557,503 +574,536 @@ const fixtures: DBFixture = {
   ],
 };
 
+/**
+ * Runs over both stores: `GetSuggestionsForTableQueryFactory` wires the query service the tenant's
+ * `postgresCore` flag selects, and fixtures are mirrored into both.
+ */
 describe('getSuggestionsForTableQuery', () => {
   beforeAll(async () => {
-    await testingEnvironment.setUp(fixtures);
+    await testingEnvironment.setUp(
+      {},
+      { postgres: true, postgresMirror: ['templates', 'ixextractors', 'ixsuggestions'] }
+    );
   });
 
   afterAll(async () => testingEnvironment.tearDown());
 
-  it('should paginate correctly', async () => {
-    const { sut } = createSut();
-    const { suggestions, total, totalPages } = await sut.execute({
-      extractorId: factory.id('extractor_source_text_target_text').toString(),
-      pagination: {
-        size: 2,
-        number: 2,
-      },
+  describe.each(testConfigs)('$name', ({ usePostgres }) => {
+    beforeEach(async () => {
+      testingTenants.changeCurrentTenant({ featureFlags: { postgresCore: usePostgres } });
+      await testingEnvironment.setFixtures(fixtures);
     });
 
-    expect(total).toBe(10);
-    expect(totalPages).toBe(5);
-    expect(suggestions.length).toBe(2);
-  });
+    /** Seeds both stores again, with `useForTraining` set on the given suggestions. */
+    const flagForTraining = async (suggestions: IXSuggestionType[]) =>
+      testingEnvironment.setFixtures({
+        ...fixtures,
+        ixsuggestions: fixtures.ixsuggestions!.map(suggestion =>
+          suggestions.includes(suggestion) ? { ...suggestion, useForTraining: true } : suggestion
+        ),
+      });
 
-  it('should return Suggestions for Extractor of PDF', async () => {
-    const { sut } = createSut();
-    const extractorId = factory.id('extractor_source_pdf_target_text');
-    const { suggestions } = await sut.execute({
-      extractorId: extractorId.toString(),
-      pagination: {
-        size: 10,
-        number: 1,
-      },
+    const suggestionsOf = (extractorId: ObjectId) =>
+      (fixtures.ixsuggestions as IXSuggestionType[]).filter(({ extractorId: id }) =>
+        extractorId.equals(id)
+      );
+
+    it('should paginate correctly', async () => {
+      const { sut } = createSut();
+      const { suggestions, total, totalPages } = await sut.execute({
+        extractorId: factory.id('extractor_source_text_target_text').toString(),
+        pagination: {
+          size: 2,
+          number: 2,
+        },
+      });
+
+      expect(total).toBe(10);
+      expect(totalPages).toBe(5);
+      expect(suggestions.length).toBe(2);
     });
 
-    expect(suggestions[1]).toMatchObject({
-      extractorId: factory.id('extractor_source_pdf_target_text'),
-      fileId: factory.id('extractor_source_pdf_target_text_entity_1_pdf_1'),
-      language: 'en',
-      sharedId: 'extractor_source_pdf_target_text_entity_1',
-      entityId: factory.id('extractor_source_pdf_target_text_entity_1_en'),
-      entityTemplateId: factory.id('extractor_source_pdf_target_text_template').toString(),
-      entityTitle: 'extractor_source_pdf_target_text_entity_1',
-      currentValue: 'labeled_match_context_value',
-      propertyName: 'target_text',
+    it('should return Suggestions for Extractor of PDF', async () => {
+      const { sut } = createSut();
+      const extractorId = factory.id('extractor_source_pdf_target_text');
+      const { suggestions } = await sut.execute({
+        extractorId: extractorId.toString(),
+        pagination: {
+          size: 10,
+          number: 1,
+        },
+      });
 
-      error: '',
-      segment: 'any_segment',
-      suggestedValue: 'labeled_match_context_value',
-      date: 1001,
-      state: {
-        labeled: true,
-        withValue: true,
-        withSuggestion: true,
-        hasContext: true,
-        processing: false,
-        obsolete: false,
-        error: false,
-        match: true,
-      },
-      useForTraining: false,
+      expect(onWire(suggestions[1])).toMatchObject(
+        onWire({
+          extractorId: factory.id('extractor_source_pdf_target_text'),
+          fileId: factory.id('extractor_source_pdf_target_text_entity_1_pdf_1'),
+          language: 'en',
+          sharedId: 'extractor_source_pdf_target_text_entity_1',
+          entityId: factory.id('extractor_source_pdf_target_text_entity_1_en'),
+          entityTemplateId: factory.id('extractor_source_pdf_target_text_template').toString(),
+          entityTitle: 'extractor_source_pdf_target_text_entity_1',
+          currentValue: 'labeled_match_context_value',
+          propertyName: 'target_text',
+
+          error: '',
+          segment: 'any_segment',
+          suggestedValue: 'labeled_match_context_value',
+          date: 1001,
+          state: {
+            labeled: true,
+            withValue: true,
+            withSuggestion: true,
+            hasContext: true,
+            processing: false,
+            obsolete: false,
+            error: false,
+            match: true,
+          },
+          useForTraining: false,
+        })
+      );
+
+      expect(onWire(suggestions[2])).toMatchObject(
+        onWire({
+          extractorId,
+          fileId: factory.id('extractor_source_pdf_target_text_entity_1_pdf_2'),
+          language: 'es',
+          entityTemplateId: factory.id('extractor_source_pdf_target_text_template').toString(),
+          entityId: factory.id('extractor_source_pdf_target_text_entity_1_es'),
+          sharedId: 'extractor_source_pdf_target_text_entity_1',
+          entityTitle: 'extractor_source_pdf_target_text_entity_1',
+          currentValue: 'labeled_match_context_value',
+
+          suggestedValue: 'labeled_match_context_value',
+          propertyName: 'target_text',
+          segment: 'any_segment',
+          error: '',
+          date: 1001,
+          state: {
+            match: true,
+            labeled: true,
+            hasContext: true,
+            withValue: true,
+            withSuggestion: true,
+            error: false,
+            obsolete: false,
+            processing: false,
+          },
+          useForTraining: false,
+        })
+      );
     });
 
-    expect(suggestions[2]).toMatchObject({
-      extractorId,
-      fileId: factory.id('extractor_source_pdf_target_text_entity_1_pdf_2'),
-      language: 'es',
-      entityTemplateId: factory.id('extractor_source_pdf_target_text_template').toString(),
-      entityId: factory.id('extractor_source_pdf_target_text_entity_1_es'),
-      sharedId: 'extractor_source_pdf_target_text_entity_1',
-      entityTitle: 'extractor_source_pdf_target_text_entity_1',
-      currentValue: 'labeled_match_context_value',
+    it('should return Suggestions for Extractor of Property', async () => {
+      const { sut } = createSut();
+      const extractorId = factory.id('extractor_source_text_target_text');
+      const { suggestions } = await sut.execute({
+        extractorId: extractorId.toString(),
+        pagination: {
+          size: 2,
+          number: 1,
+        },
+      });
 
-      suggestedValue: 'labeled_match_context_value',
-      propertyName: 'target_text',
-      segment: 'any_segment',
-      error: '',
-      date: 1001,
-      state: {
-        match: true,
-        labeled: true,
-        hasContext: true,
-        withValue: true,
-        withSuggestion: true,
-        error: false,
-        obsolete: false,
-        processing: false,
-      },
-      useForTraining: false,
-    });
-  });
+      expect(onWire(suggestions[1])).toMatchObject(
+        onWire({
+          entityTemplateId: factory.id('extractor_source_text_target_text_template').toString(),
+          extractorId,
+          entityId: factory.id('extractor_source_text_target_text_entity_1_es'),
+          sharedId: 'extractor_source_text_target_text_entity_1',
 
-  it('should return Suggestions for Extractor of Property', async () => {
-    const { sut } = createSut();
-    const extractorId = factory.id('extractor_source_text_target_text');
-    const { suggestions } = await sut.execute({
-      extractorId: extractorId.toString(),
-      pagination: {
-        size: 2,
-        number: 1,
-      },
-    });
-
-    expect(suggestions[1]).toMatchObject({
-      entityTemplateId: factory.id('extractor_source_text_target_text_template').toString(),
-      extractorId,
-      entityId: factory.id('extractor_source_text_target_text_entity_1_es'),
-      sharedId: 'extractor_source_text_target_text_entity_1',
-
-      language: 'es',
-      entityTitle: 'extractor_source_text_target_text_entity_1',
-      currentValue: 'labeled_match_context_value',
-      suggestedValue: 'labeled_match_context_value',
-      propertyName: 'target_text',
-      segment: 'any_segment_1',
-      error: '',
-      date: 1001,
-      state: {
-        match: true,
-        labeled: true,
-        hasContext: true,
-        withValue: true,
-        withSuggestion: true,
-        error: false,
-        obsolete: false,
-        processing: false,
-      },
-    });
-  });
-
-  it('should include useForTraining per suggestion from the DB (mixed values)', async () => {
-    const { sut } = createSut();
-    const extractorId = factory.id('extractor_source_pdf_target_text');
-
-    const collection = testingEnvironment.db.getCollection('ixsuggestions')!;
-    const one = await collection.find({ extractorId }).limit(1).project({ _id: 1 }).toArray();
-
-    await collection.updateOne({ _id: one[0]._id }, { $set: { useForTraining: true } });
-
-    const { suggestions } = await sut.execute({
-      extractorId: extractorId.toString(),
-      pagination: { size: 10, number: 1 },
+          language: 'es',
+          entityTitle: 'extractor_source_text_target_text_entity_1',
+          currentValue: 'labeled_match_context_value',
+          suggestedValue: 'labeled_match_context_value',
+          propertyName: 'target_text',
+          segment: 'any_segment_1',
+          error: '',
+          date: 1001,
+          state: {
+            match: true,
+            labeled: true,
+            hasContext: true,
+            withValue: true,
+            withSuggestion: true,
+            error: false,
+            obsolete: false,
+            processing: false,
+          },
+        })
+      );
     });
 
-    const flagged = suggestions.find(s => s._id.toString() === one[0]._id.toString());
-    expect(flagged?.useForTraining).toBe(true);
+    it('should include useForTraining per suggestion from the DB (mixed values)', async () => {
+      const { sut } = createSut();
+      const extractorId = factory.id('extractor_source_pdf_target_text');
 
-    const others = suggestions.filter(s => s._id.toString() !== one[0]._id.toString());
-    expect(others.some(s => s.useForTraining === false)).toBe(true);
-  });
+      const [one] = suggestionsOf(extractorId);
+      await flagForTraining([one]);
 
-  it('should filter by status state', async () => {
-    const { sut } = createSut();
-    const input = {
-      extractorId: factory.id('extractor_source_text_target_text').toString(),
-      pagination: {
-        size: 2,
-        number: 1,
-      },
-      filter: {
-        match: false,
-        error: false,
-        labeled: false,
-        mismatch: false,
-        nonLabeled: false,
-        obsolete: false,
-        noContext: false,
-        nonProcessed: false,
-        useForTraining: false,
-      },
-    };
+      const { suggestions } = await sut.execute({
+        extractorId: extractorId.toString(),
+        pagination: { size: 10, number: 1 },
+      });
 
-    const [
-      hasMatchOnly,
-      hasMismatchOnly,
-      hasLabeledOnly,
-      hasNonLabeledOnly,
-      hasErrorOnly,
-      hasObsoleteOnly,
-    ] = await Promise.all([
-      sut.execute({
-        ...input,
+      const flagged = suggestions.find(s => s._id.toString() === one._id!.toString());
+      expect(flagged?.useForTraining).toBe(true);
+
+      const others = suggestions.filter(s => s._id.toString() !== one._id!.toString());
+      expect(others.some(s => s.useForTraining === false)).toBe(true);
+    });
+
+    it('should filter by status state', async () => {
+      const { sut } = createSut();
+      const input = {
+        extractorId: factory.id('extractor_source_text_target_text').toString(),
+        pagination: {
+          size: 2,
+          number: 1,
+        },
         filter: {
-          ...input.filter,
+          match: false,
+          error: false,
+          labeled: false,
+          mismatch: false,
+          nonLabeled: false,
+          obsolete: false,
+          noContext: false,
+          nonProcessed: false,
+          useForTraining: false,
+        },
+      };
+
+      const [
+        hasMatchOnly,
+        hasMismatchOnly,
+        hasLabeledOnly,
+        hasNonLabeledOnly,
+        hasErrorOnly,
+        hasObsoleteOnly,
+      ] = await Promise.all([
+        sut.execute({
+          ...input,
+          filter: {
+            ...input.filter,
+            match: true,
+          },
+        }),
+        sut.execute({
+          ...input,
+          filter: {
+            ...input.filter,
+            mismatch: true,
+          },
+        }),
+        sut.execute({
+          ...input,
+          filter: {
+            ...input.filter,
+            labeled: true,
+          },
+        }),
+        sut.execute({
+          ...input,
+          filter: {
+            ...input.filter,
+            nonLabeled: true,
+          },
+        }),
+        sut.execute({
+          ...input,
+          filter: {
+            ...input.filter,
+            error: true,
+          },
+        }),
+        sut.execute({
+          ...input,
+          filter: {
+            ...input.filter,
+            obsolete: true,
+          },
+        }),
+      ]);
+
+      expect(hasMatchOnly.suggestions.filter(s => s.state.match)).toHaveLength(2);
+
+      expect(hasMismatchOnly.suggestions.filter(s => !s.state.match)).toHaveLength(2);
+
+      expect(hasLabeledOnly.suggestions.filter(s => s.state.labeled)).toHaveLength(2);
+
+      expect(hasNonLabeledOnly.suggestions.filter(s => !s.state.labeled)).toHaveLength(2);
+
+      expect(hasErrorOnly.suggestions.filter(s => s.state.error)).toHaveLength(2);
+
+      expect(hasObsoleteOnly.suggestions.filter(s => s.state.obsolete)).toHaveLength(2);
+    });
+
+    it('should sort', async () => {
+      const { sut } = createSut();
+      const input = {
+        extractorId: factory.id('extractor_source_text_target_text').toString(),
+        pagination: {
+          size: 2,
+          number: 1,
+        },
+        stateFilter: {
+          match: false,
+          error: false,
+          labeled: false,
+          mismatch: false,
+          nonLabeled: false,
+          obsolete: false,
+          noContext: false,
+          nonProcessed: false,
+        },
+      };
+
+      const [sortedByTitle, sortedBySegment, sortedByTargetPropertyValue] = await Promise.all([
+        sut.execute({ ...input, sort: { property: 'entityTitle', order: 'asc' } }),
+        sut.execute({ ...input, sort: { property: 'segment', order: 'desc' } }),
+        sut.execute({ ...input, sort: { property: 'currentValue', order: 'desc' } }),
+      ]);
+
+      // Each page is two suggestions tied on the sort field; stores break ties differently.
+      const byLanguage = (suggestions: { language: string }[]) =>
+        [...suggestions].sort((a, b) => a.language.localeCompare(b.language));
+
+      expect(byLanguage(sortedByTitle.suggestions)).toMatchObject([
+        {
+          entityTitle: 'extractor_source_text_target_text_entity_1',
+          language: 'en',
+        },
+        {
+          entityTitle: 'extractor_source_text_target_text_entity_1',
+          language: 'es',
+        },
+      ]);
+
+      expect(byLanguage(sortedBySegment.suggestions)).toMatchObject([
+        {
+          segment: 'any_segment_3',
+          language: 'en',
+        },
+        {
+          segment: 'any_segment_3',
+          language: 'es',
+        },
+      ]);
+
+      expect(byLanguage(sortedByTargetPropertyValue.suggestions)).toMatchObject([
+        {
+          currentValue: 'labeled_match_context_value',
+          language: 'en',
+        },
+        {
+          currentValue: 'labeled_match_context_value',
+          language: 'es',
+        },
+      ]);
+    });
+
+    describe('given suggestedValue is null', () => {
+      it('when target property is single value should fallback to empty string', async () => {
+        const { sut } = createSut();
+
+        const { suggestions } = await sut.execute({
+          extractorId: factory.id('extractor_source_pdf_target_text').toString(),
+        });
+
+        expect(
+          suggestions.find(
+            s =>
+              s.fileId.toString() ===
+              factory.id('extractor_source_pdf_target_text_entity_2_pdf_1').toString()
+          )
+        ).toMatchObject({ suggestedValue: '' });
+      });
+
+      it('when target property is multi value should fallback to empty array', async () => {
+        const { sut } = createSut();
+
+        const { suggestions } = await sut.execute({
+          extractorId: factory.id('extractor_source_pdf_target_multiselect').toString(),
+        });
+
+        expect(
+          suggestions.find(
+            s =>
+              s.fileId.toString() ===
+              factory.id('extractor_source_pdf_target_multiselect_entity_1_pdf_1').toString()
+          )
+        ).toMatchObject({ suggestedValue: [] });
+      });
+    });
+
+    it('should handle count filters correctly for pagination', async () => {
+      const { sut } = createSut();
+
+      const matchResult = await sut.execute({
+        extractorId: factory.id('extractor_source_text_target_text').toString(),
+        pagination: { size: 10, number: 1 },
+        filter: {
           match: true,
+          error: false,
+          labeled: false,
+          mismatch: false,
+          nonLabeled: false,
+          obsolete: false,
+          noContext: false,
+          nonProcessed: false,
+          useForTraining: false,
         },
-      }),
-      sut.execute({
-        ...input,
+      });
+
+      const errorResult = await sut.execute({
+        extractorId: factory.id('extractor_source_text_target_text').toString(),
+        pagination: { size: 10, number: 1 },
         filter: {
-          ...input.filter,
-          mismatch: true,
-        },
-      }),
-      sut.execute({
-        ...input,
-        filter: {
-          ...input.filter,
-          labeled: true,
-        },
-      }),
-      sut.execute({
-        ...input,
-        filter: {
-          ...input.filter,
-          nonLabeled: true,
-        },
-      }),
-      sut.execute({
-        ...input,
-        filter: {
-          ...input.filter,
+          match: false,
           error: true,
+          labeled: false,
+          mismatch: false,
+          nonLabeled: false,
+          obsolete: false,
+          noContext: false,
+          nonProcessed: false,
+          useForTraining: false,
         },
-      }),
-      sut.execute({
-        ...input,
+      });
+
+      const obsoleteResult = await sut.execute({
+        extractorId: factory.id('extractor_source_text_target_text').toString(),
+        pagination: { size: 10, number: 1 },
         filter: {
-          ...input.filter,
+          match: false,
+          error: false,
+          labeled: false,
+          mismatch: false,
+          nonLabeled: false,
           obsolete: true,
+          noContext: false,
+          nonProcessed: false,
+          useForTraining: false,
         },
-      }),
-    ]);
-
-    expect(hasMatchOnly.suggestions.filter(s => s.state.match)).toHaveLength(2);
-
-    expect(hasMismatchOnly.suggestions.filter(s => !s.state.match)).toHaveLength(2);
-
-    expect(hasLabeledOnly.suggestions.filter(s => s.state.labeled)).toHaveLength(2);
-
-    expect(hasNonLabeledOnly.suggestions.filter(s => !s.state.labeled)).toHaveLength(2);
-
-    expect(hasErrorOnly.suggestions.filter(s => s.state.error)).toHaveLength(2);
-
-    expect(hasObsoleteOnly.suggestions.filter(s => s.state.obsolete)).toHaveLength(2);
-  });
-
-  it('should sort', async () => {
-    const { sut } = createSut();
-    const input = {
-      extractorId: factory.id('extractor_source_text_target_text').toString(),
-      pagination: {
-        size: 2,
-        number: 1,
-      },
-      stateFilter: {
-        match: false,
-        error: false,
-        labeled: false,
-        mismatch: false,
-        nonLabeled: false,
-        obsolete: false,
-        noContext: false,
-        nonProcessed: false,
-      },
-    };
-
-    const [sortedByTitle, sortedBySegment, sortedByTargetPropertyValue] = await Promise.all([
-      sut.execute({ ...input, sort: { property: 'entityTitle', order: 'asc' } }),
-      sut.execute({ ...input, sort: { property: 'segment', order: 'desc' } }),
-      sut.execute({ ...input, sort: { property: 'currentValue', order: 'desc' } }),
-    ]);
-
-    expect(sortedByTitle.suggestions).toMatchObject([
-      {
-        entityTitle: 'extractor_source_text_target_text_entity_1',
-        language: 'en',
-      },
-      {
-        entityTitle: 'extractor_source_text_target_text_entity_1',
-        language: 'es',
-      },
-    ]);
-
-    expect(sortedBySegment.suggestions).toMatchObject([
-      {
-        segment: 'any_segment_3',
-        language: 'es',
-      },
-      {
-        segment: 'any_segment_3',
-        language: 'en',
-      },
-    ]);
-
-    expect(sortedByTargetPropertyValue.suggestions).toMatchObject([
-      {
-        currentValue: 'labeled_match_context_value',
-        language: 'en',
-      },
-      {
-        currentValue: 'labeled_match_context_value',
-        language: 'es',
-      },
-    ]);
-  });
-
-  describe('given suggestedValue is null', () => {
-    it('when target property is single value should fallback to empty string', async () => {
-      const { sut } = createSut();
-
-      const { suggestions } = await sut.execute({
-        extractorId: factory.id('extractor_source_pdf_target_text').toString(),
       });
 
-      expect(
-        suggestions.find(
-          s =>
-            s.fileId.toString() ===
-            factory.id('extractor_source_pdf_target_text_entity_2_pdf_1').toString()
-        )
-      ).toMatchObject({ suggestedValue: '' });
+      // Test that filters return the expected counts based on test data
+      expect(matchResult.total).toBe(2);
+      expect(errorResult.total).toBe(2);
+      expect(obsoleteResult.total).toBe(2);
+
+      // Test that the filter functionality works (returns proper structure)
+      expect(matchResult).toHaveProperty('total');
+      expect(matchResult).toHaveProperty('suggestions');
+      expect(errorResult).toHaveProperty('total');
+      expect(errorResult).toHaveProperty('suggestions');
+      expect(obsoleteResult).toHaveProperty('total');
+      expect(obsoleteResult).toHaveProperty('suggestions');
     });
 
-    it('when target property is multi value should fallback to empty array', async () => {
+    it('should filter by useForTraining', async () => {
+      const { sut } = createSut();
+      const extractorId = factory.id('extractor_source_text_target_text');
+
+      // Initial query: none are flagged
+      const initial = await sut.execute({
+        extractorId: extractorId.toString(),
+        pagination: { size: 50, number: 1 },
+        filter: {
+          match: false,
+          error: false,
+          labeled: false,
+          mismatch: false,
+          nonLabeled: false,
+          obsolete: false,
+          noContext: false,
+          nonProcessed: false,
+          useForTraining: true,
+        },
+      });
+      expect(initial.total).toBe(0);
+
+      // Flag two suggestions for this extractor
+      await flagForTraining(suggestionsOf(extractorId).slice(0, 2));
+
+      const filtered = await sut.execute({
+        extractorId: extractorId.toString(),
+        pagination: { size: 50, number: 1 },
+        filter: {
+          match: false,
+          error: false,
+          labeled: false,
+          mismatch: false,
+          nonLabeled: false,
+          obsolete: false,
+          noContext: false,
+          nonProcessed: false,
+          useForTraining: true,
+        },
+      });
+
+      expect(filtered.total).toBe(2);
+      expect(filtered.suggestions).toHaveLength(2);
+      expect(filtered.suggestions.every(s => s.useForTraining === true)).toBe(true);
+    });
+
+    it('should handle nonProcessed filter correctly', async () => {
       const { sut } = createSut();
 
-      const { suggestions } = await sut.execute({
+      // Test without nonProcessed filter
+      const allResults = await sut.execute({
         extractorId: factory.id('extractor_source_pdf_target_multiselect').toString(),
+        pagination: {
+          size: 20,
+          number: 1,
+        },
+        filter: {
+          match: false,
+          error: false,
+          labeled: false,
+          mismatch: false,
+          nonLabeled: false,
+          obsolete: false,
+          noContext: false,
+          nonProcessed: false,
+          useForTraining: false,
+        },
       });
 
-      expect(
-        suggestions.find(
-          s =>
-            s.fileId.toString() ===
-            factory.id('extractor_source_pdf_target_multiselect_entity_1_pdf_1').toString()
-        )
-      ).toMatchObject({ suggestedValue: [] });
+      // Test with nonProcessed filter
+      const nonProcessedResults = await sut.execute({
+        extractorId: factory.id('extractor_source_pdf_target_multiselect').toString(),
+        pagination: {
+          size: 20,
+          number: 1,
+        },
+        filter: {
+          match: false,
+          error: false,
+          labeled: false,
+          mismatch: false,
+          nonLabeled: false,
+          obsolete: false,
+          noContext: false,
+          nonProcessed: true,
+          useForTraining: false,
+        },
+      });
+
+      // Test that the filter functionality works (returns proper structure)
+      expect(allResults).toHaveProperty('total');
+      expect(allResults).toHaveProperty('suggestions');
+      expect(nonProcessedResults).toHaveProperty('total');
+      expect(nonProcessedResults).toHaveProperty('suggestions');
+
+      // Test that both filters return the expected counts based on test data
+      expect(allResults.total).toBe(4); // 1 processed + 3 nonProcessed
+      expect(nonProcessedResults.total).toBe(3);
+
+      // The nonProcessed filter should return a subset of all results (or same if no nonProcessed data)
+      expect(nonProcessedResults.total).toBeLessThanOrEqual(allResults.total);
     });
-  });
-
-  it('should handle count filters correctly for pagination', async () => {
-    const { sut } = createSut();
-
-    const matchResult = await sut.execute({
-      extractorId: factory.id('extractor_source_text_target_text').toString(),
-      pagination: { size: 10, number: 1 },
-      filter: {
-        match: true,
-        error: false,
-        labeled: false,
-        mismatch: false,
-        nonLabeled: false,
-        obsolete: false,
-        noContext: false,
-        nonProcessed: false,
-        useForTraining: false,
-      },
-    });
-
-    const errorResult = await sut.execute({
-      extractorId: factory.id('extractor_source_text_target_text').toString(),
-      pagination: { size: 10, number: 1 },
-      filter: {
-        match: false,
-        error: true,
-        labeled: false,
-        mismatch: false,
-        nonLabeled: false,
-        obsolete: false,
-        noContext: false,
-        nonProcessed: false,
-        useForTraining: false,
-      },
-    });
-
-    const obsoleteResult = await sut.execute({
-      extractorId: factory.id('extractor_source_text_target_text').toString(),
-      pagination: { size: 10, number: 1 },
-      filter: {
-        match: false,
-        error: false,
-        labeled: false,
-        mismatch: false,
-        nonLabeled: false,
-        obsolete: true,
-        noContext: false,
-        nonProcessed: false,
-        useForTraining: false,
-      },
-    });
-
-    // Test that filters return the expected counts based on test data
-    expect(matchResult.total).toBe(2);
-    expect(errorResult.total).toBe(2);
-    expect(obsoleteResult.total).toBe(2);
-
-    // Test that the filter functionality works (returns proper structure)
-    expect(matchResult).toHaveProperty('total');
-    expect(matchResult).toHaveProperty('suggestions');
-    expect(errorResult).toHaveProperty('total');
-    expect(errorResult).toHaveProperty('suggestions');
-    expect(obsoleteResult).toHaveProperty('total');
-    expect(obsoleteResult).toHaveProperty('suggestions');
-  });
-
-  it('should filter by useForTraining', async () => {
-    const { sut } = createSut();
-    const extractorId = factory.id('extractor_source_text_target_text');
-
-    // Initial query: none are flagged
-    const initial = await sut.execute({
-      extractorId: extractorId.toString(),
-      pagination: { size: 50, number: 1 },
-      filter: {
-        match: false,
-        error: false,
-        labeled: false,
-        mismatch: false,
-        nonLabeled: false,
-        obsolete: false,
-        noContext: false,
-        nonProcessed: false,
-        useForTraining: true,
-      },
-    });
-    expect(initial.total).toBe(0);
-
-    // Flag two suggestions for this extractor
-    const collection = testingEnvironment.db.getCollection('ixsuggestions')!;
-    const two = await collection.find({ extractorId }).limit(2).project({ _id: 1 }).toArray();
-    const ids = two.map(d => d._id);
-    await collection.updateMany({ _id: { $in: ids } }, { $set: { useForTraining: true } });
-
-    const filtered = await sut.execute({
-      extractorId: extractorId.toString(),
-      pagination: { size: 50, number: 1 },
-      filter: {
-        match: false,
-        error: false,
-        labeled: false,
-        mismatch: false,
-        nonLabeled: false,
-        obsolete: false,
-        noContext: false,
-        nonProcessed: false,
-        useForTraining: true,
-      },
-    });
-
-    expect(filtered.total).toBe(2);
-    expect(filtered.suggestions).toHaveLength(2);
-    expect(filtered.suggestions.every(s => s.useForTraining === true)).toBe(true);
-  });
-
-  it('should handle nonProcessed filter correctly', async () => {
-    const { sut } = createSut();
-
-    // Test without nonProcessed filter
-    const allResults = await sut.execute({
-      extractorId: factory.id('extractor_source_pdf_target_multiselect').toString(),
-      pagination: {
-        size: 20,
-        number: 1,
-      },
-      filter: {
-        match: false,
-        error: false,
-        labeled: false,
-        mismatch: false,
-        nonLabeled: false,
-        obsolete: false,
-        noContext: false,
-        nonProcessed: false,
-        useForTraining: false,
-      },
-    });
-
-    // Test with nonProcessed filter
-    const nonProcessedResults = await sut.execute({
-      extractorId: factory.id('extractor_source_pdf_target_multiselect').toString(),
-      pagination: {
-        size: 20,
-        number: 1,
-      },
-      filter: {
-        match: false,
-        error: false,
-        labeled: false,
-        mismatch: false,
-        nonLabeled: false,
-        obsolete: false,
-        noContext: false,
-        nonProcessed: true,
-        useForTraining: false,
-      },
-    });
-
-    // Test that the filter functionality works (returns proper structure)
-    expect(allResults).toHaveProperty('total');
-    expect(allResults).toHaveProperty('suggestions');
-    expect(nonProcessedResults).toHaveProperty('total');
-    expect(nonProcessedResults).toHaveProperty('suggestions');
-
-    // Test that both filters return the expected counts based on test data
-    expect(allResults.total).toBe(4); // 1 processed + 3 nonProcessed
-    expect(nonProcessedResults.total).toBe(3);
-
-    // The nonProcessed filter should return a subset of all results (or same if no nonProcessed data)
-    expect(nonProcessedResults.total).toBeLessThanOrEqual(allResults.total);
   });
 });
