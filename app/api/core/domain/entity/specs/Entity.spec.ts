@@ -1716,6 +1716,59 @@ describe('Entity', () => {
       expect(entity.hasChanged).toBe(true);
     });
 
+    it('should return FALSE when updated with an equal icon and unchanged generatedToc', () => {
+      const entity = new Entity({
+        sharedId: 'sharedId',
+        template: createSampleTemplate(),
+        icon: { id: 'icon-123', type: 'image', label: 'Icon Label' },
+        generatedToc: false,
+        translations: [{ language: 'en', id: 'id_1' }],
+      });
+
+      entity.update({ icon: { id: 'icon-123', type: 'image', label: 'Icon Label' } });
+      entity.update({ generatedToc: undefined });
+      entity.update({ generatedToc: false });
+
+      expect(entity.hasChanged).toBe(false);
+    });
+
+    it('should keep the previous version untouched by later changes', () => {
+      const entity = new Entity({
+        sharedId: 'sharedId',
+        template: createSampleTemplate(),
+        translations: [
+          {
+            language: 'en',
+            id: 'id_1',
+            metadata: {
+              text: {
+                isTranslatable: true,
+                name: 'text',
+                type: 'text',
+                value: [{ value: 'text' }],
+              },
+              editDate: {
+                isTranslatable: false,
+                name: 'editDate',
+                type: 'date',
+                value: [{ value: 1 }],
+              },
+            },
+          },
+        ],
+      });
+
+      entity.setPropertyAssignments(
+        [entity.template.createPropertyAssignment('text', { value: [{ value: 'New text' }] })],
+        'en'
+      );
+      entity.update({ icon: { id: 'icon-123', type: 'image', label: 'Icon Label' } });
+
+      const [previous] = entity.previousVersion.asDTO.translations;
+      expect(previous.metadata!.text.value).toEqual([{ value: 'text' }]);
+      expect(previous.metadata!.editDate.value).toEqual([{ value: 1 }]);
+    });
+
     it('should return TRUE when generatedToc changes', () => {
       const entity = createTestEntity();
 

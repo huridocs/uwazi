@@ -109,8 +109,10 @@ class EntityTranslation {
     this.refreshEditDate();
   }
 
+  // Replaces the assignment instead of mutating it: it is shared with the props the previous
+  // version of the entity is rebuilt from.
   refreshEditDate(value = date.currentUTC()) {
-    this.editDate.value = [{ value }];
+    this.metadata = { ...this.metadata, editDate: { ...this.editDate, value: [{ value }] } };
   }
 
   getValue<Value = PropertyValue>(name: string): PropertyAssignment<Value> {

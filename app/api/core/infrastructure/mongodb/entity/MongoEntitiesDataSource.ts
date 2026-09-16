@@ -1,6 +1,6 @@
 /* eslint-disable max-lines */
 import { Db, Filter, ObjectId } from 'mongodb';
-import { EntityNotFoundError } from '#api/core/application/errors.js';
+import { EntityNotFoundError } from '#api/core/domain/entity/errors.js';
 import { Property } from '#api/core/domain/template/Property.js';
 import { V1RelationshipProperty } from '#api/core/domain/template/V1RelationshipProperty.js';
 import {

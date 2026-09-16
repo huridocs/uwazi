@@ -69,7 +69,7 @@ export class RequestEntityTranslation {
     }
     const entity = entityResult.getDataOrThrow();
 
-    const targetLanguages = entity.languages.filter(l => l !== languageFrom);
+    const targetLanguages = entity.languages.filter(language => languagesTo.includes(language));
 
     for (const property of atTemplateConfig.properties) {
       const templateProperty = entity.template.getPropertyById(property.id);

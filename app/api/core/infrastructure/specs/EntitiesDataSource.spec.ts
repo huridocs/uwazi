@@ -16,8 +16,10 @@ import { EntitiesDataSourceFactory } from '#api/core/infrastructure/factories/En
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
 import { search } from '#api/search/index.js';
-import { EntityNotFoundError } from '#api/core/application/errors.js';
-import { EntityTemplateDoesNotExistError } from '#api/core/domain/entity/errors.js';
+import {
+  EntityNotFoundError,
+  EntityTemplateDoesNotExistError,
+} from '#api/core/domain/entity/errors.js';
 import { V1RelationshipProperty } from '#api/core/domain/template/V1RelationshipProperty.js';
 import { elasticTesting } from '#api/utils/elastic_testing.js';
 import { PermissionSchema } from '#shared/types/permissionType.js';

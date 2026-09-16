@@ -1,13 +1,15 @@
 /* eslint-disable max-lines */
 import { Db } from 'mongodb';
-import { EntityNotFoundError } from '#api/core/application/errors.js';
 import { Property } from '#api/core/domain/template/Property.js';
 import { V1RelationshipProperty } from '#api/core/domain/template/V1RelationshipProperty.js';
 import { AccessContext } from '#api/core/domain/entityAccessPolicy/AccessContext.js';
 import { Result, ResultType } from '#api/core/libs/Result.js';
 import { search } from '#api/search/index.js';
 import { Entity } from '#api/core/domain/entity/Entity.js';
-import { EntityTemplateDoesNotExistError } from '#api/core/domain/entity/errors.js';
+import {
+  EntityNotFoundError,
+  EntityTemplateDoesNotExistError,
+} from '#api/core/domain/entity/errors.js';
 import { EntitiesDataSource } from '#api/core/application/contracts/EntitiesDataSource.js';
 import { SettingsDataSource } from '#api/core/application/contracts/SettingsDataSource.js';
 import { PostgresDataSource, PostgresDataSourceDeps } from '../common/PostgresDataSource.js';

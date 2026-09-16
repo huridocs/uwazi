@@ -253,12 +253,19 @@ class Entity {
   }
 
   update(props: UpdateProps) {
-    if (props.icon !== this.icon || props.generatedToc !== this.generatedToc) {
+    const icon = 'icon' in props ? props.icon : this.icon;
+    const generatedToc = props.generatedToc ?? this.generatedToc;
+
+    if (!Entity.isSameIcon(icon, this.icon) || generatedToc !== this.generatedToc) {
       this.refreshEditDate();
     }
 
-    this.icon = 'icon' in props ? props.icon : this.icon;
-    this.generatedToc = props.generatedToc ?? this.generatedToc;
+    this.icon = icon;
+    this.generatedToc = generatedToc;
+  }
+
+  private static isSameIcon(a?: Icon, b?: Icon) {
+    return a?.id === b?.id && a?.label === b?.label && a?.type === b?.type;
   }
 
   createMetadataValuesFromRelationships(
