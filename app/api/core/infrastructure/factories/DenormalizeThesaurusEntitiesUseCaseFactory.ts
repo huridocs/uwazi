@@ -28,6 +28,7 @@ class DenormalizeThesaurusEntitiesUseCaseFactory {
 
     return new DenormalizeThesaurusEntitiesUseCase(
       {
+        settingsDS,
         propertyAssignmentCreatorServiceStrategy,
         transactionManager,
         entitiesDS,

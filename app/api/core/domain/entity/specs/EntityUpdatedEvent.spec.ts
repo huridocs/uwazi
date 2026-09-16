@@ -17,36 +17,50 @@ const createLoadedEntity = () =>
   });
 
 describe('EntityUpdatedEvent', () => {
-  describe('createForChangedLanguages', () => {
-    it('should create one event per changed language', () => {
+  describe('create', () => {
+    it('should create a single event listing every changed language', () => {
       const entity = createLoadedEntity();
       const text = (value: string) =>
         entity.template.createPropertyAssignment('text', { value: [{ value }] });
       entity.setPropertyAssignments([text('english')], 'en');
       entity.setPropertyAssignments([text('português')], 'pt');
 
-      const events = EntityUpdatedEvent.createForChangedLanguages({ entity, userId: 'user' });
+      const event = EntityUpdatedEvent.create({ entity, userId: 'user', targetLanguage: 'es' });
 
-      expect(events.map(event => event.payload)).toEqual([
-        {
-          targetLanguage: 'en',
-          userId: 'user',
-          before: entity.previousVersion.asDTO,
-          after: entity.asDTO,
-        },
-        {
-          targetLanguage: 'pt',
-          userId: 'user',
-          before: entity.previousVersion.asDTO,
-          after: entity.asDTO,
-        },
-      ]);
+      expect(event?.payload).toEqual({
+        targetLanguage: 'es',
+        changedLanguages: ['en', 'pt'],
+        userId: 'user',
+        before: entity.previousVersion.asDTO,
+        after: entity.asDTO,
+      });
     });
 
-    it('should create no events when nothing changed', () => {
+    it('should create no event when no language changed', () => {
+      expect(EntityUpdatedEvent.create({ entity: createLoadedEntity(), targetLanguage: 'en' })).toBeNull();
+    });
+  });
+
+  describe('changedLanguagesOf', () => {
+    it('should return the changed languages of the payload', () => {
+      const { asDTO } = createLoadedEntity();
+
       expect(
-        EntityUpdatedEvent.createForChangedLanguages({ entity: createLoadedEntity() })
-      ).toEqual([]);
+        EntityUpdatedEvent.changedLanguagesOf({
+          before: asDTO,
+          after: asDTO,
+          targetLanguage: 'en',
+          changedLanguages: ['es', 'pt'],
+        })
+      ).toEqual(['es', 'pt']);
+    });
+
+    it('should fall back to the target language of a payload queued before changedLanguages existed', () => {
+      const { asDTO } = createLoadedEntity();
+
+      expect(
+        EntityUpdatedEvent.changedLanguagesOf({ before: asDTO, after: asDTO, targetLanguage: 'es' })
+      ).toEqual(['es']);
     });
   });
 });

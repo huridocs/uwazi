@@ -1061,6 +1061,7 @@ describe('UpdateEntityUseCase', () => {
               before: expect.any(Object),
               userId: expect.any(String),
               targetLanguage: 'en',
+              changedLanguages: ['en'],
             }),
           }),
         ])
@@ -1136,12 +1137,11 @@ describe('UpdateEntityUseCase', () => {
       });
     });
 
-    describe('EntityUpdatedEvent per changed language', () => {
-      const listenerJobLanguages = async () =>
+    describe('EntityUpdatedEvent changed languages', () => {
+      const listenerJobsChangedLanguages = async () =>
         (await getAllJobs())
           .filter(job => job.name === 'EntityUpdatedEvent:SampleListener')
-          .map(job => job.params.targetLanguage)
-          .sort();
+          .map(job => job.params.changedLanguages);
 
       it('should not emit when the saved values are unchanged', async () => {
         const { sut } = createSut(postgresCore);
@@ -1152,10 +1152,10 @@ describe('UpdateEntityUseCase', () => {
           propertyAssignments: [{ name: 'title', value: [{ value: 'Entity 1 EN' }] }],
         });
 
-        expect(await listenerJobLanguages()).toEqual([]);
+        expect(await listenerJobsChangedLanguages()).toEqual([]);
       });
 
-      it('should emit only for the language of a changed translatable property', async () => {
+      it('should emit once, listing only the language of a changed translatable property', async () => {
         const { sut } = createSut(postgresCore);
 
         await sut.execute({
@@ -1164,10 +1164,10 @@ describe('UpdateEntityUseCase', () => {
           propertyAssignments: [{ name: 'title', value: [{ value: 'Entidade 1' }] }],
         });
 
-        expect(await listenerJobLanguages()).toEqual(['pt']);
+        expect(await listenerJobsChangedLanguages()).toEqual([['pt']]);
       });
 
-      it('should emit for every language when a language-independent property changes', async () => {
+      it('should emit once, listing every language, when a language-independent property changes', async () => {
         const { sut } = createSut(postgresCore);
 
         await sut.execute({
@@ -1176,7 +1176,20 @@ describe('UpdateEntityUseCase', () => {
           propertyAssignments: [{ name: 'numeric', value: [{ value: 43 }] }],
         });
 
-        expect(await listenerJobLanguages()).toEqual(['en', 'pt']);
+        expect(await listenerJobsChangedLanguages()).toEqual([['en', 'pt']]);
+      });
+
+      it('should emit once, listing every language, when the template changes', async () => {
+        const { sut } = createSut(postgresCore);
+
+        await sut.execute({
+          sharedId: 'entity1',
+          language: 'en',
+          templateId: factory.id('Full Template').toHexString(),
+          propertyAssignments: [{ name: 'title', value: [{ value: 'Entity 1 EN' }] }],
+        });
+
+        expect(await listenerJobsChangedLanguages()).toEqual([['en', 'pt']]);
       });
     });
 

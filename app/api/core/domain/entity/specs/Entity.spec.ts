@@ -1905,6 +1905,42 @@ describe('Entity', () => {
 
       expect(entity.changedLanguages).toEqual(['en', 'pt']);
     });
+
+    it('should include every language when the template changes', () => {
+      const entity = createLoadedEntity();
+
+      entity.changeTemplate(TemplateBuilder.aTemplate({ id: 'other-template' }).build());
+
+      expect(entity.changedLanguages).toEqual(['en', 'pt']);
+    });
+
+    it('should ignore a change to editDate only', () => {
+      const entity = createLoadedEntity();
+
+      entity.getTranslation('pt').refreshEditDate(12345);
+
+      expect(entity.hasChanged).toBe(true);
+      expect(entity.changedLanguages).toEqual([]);
+    });
+
+    it('should only include the language whose title changed', () => {
+      const entity = createLoadedEntity();
+
+      entity.setPropertyAssignments(
+        [entity.template.createPropertyAssignment('title', { value: [{ value: 'título' }] })],
+        'pt'
+      );
+
+      expect(entity.changedLanguages).toEqual(['pt']);
+    });
+
+    it('should include a language added by ensureTranslations', () => {
+      const entity = createLoadedEntity();
+
+      entity.ensureTranslations(['en', 'pt', 'es'], 'en');
+
+      expect(entity.changedLanguages).toEqual(['es']);
+    });
   });
 
   describe('translations', () => {

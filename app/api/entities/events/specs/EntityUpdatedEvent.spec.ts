@@ -29,31 +29,54 @@ const createLoadedEntity = () =>
   });
 
 describe('EntityUpdatedEvent (legacy)', () => {
-  describe('createForChangedLanguages', () => {
-    it('should create one event per changed language with every language row', () => {
+  describe('fromEntity', () => {
+    it('should create a single event with the target language, changed languages and every language row', () => {
       const entity = createLoadedEntity();
       const text = (value: string) =>
         entity.template.createPropertyAssignment('text', { value: [{ value }] });
       entity.setPropertyAssignments([text('english')], 'en');
       entity.setPropertyAssignments([text('português')], 'pt');
 
-      const events = EntityUpdatedEvent.createForChangedLanguages({ entity });
+      const { before, after, targetLanguageKey, changedLanguages } = EntityUpdatedEvent.fromEntity({
+        entity,
+        targetLanguage: 'es',
+      }).getData();
 
-      expect(events.map(event => event.getData().targetLanguageKey)).toEqual(['en', 'pt']);
-      events.forEach(event => {
-        const { before, after } = event.getData();
-        expect(before.map(row => row.language)).toEqual(['en', 'es', 'pt']);
-        expect(after.find(row => row.language === 'pt')?.metadata?.text).toEqual([
-          { value: 'português' },
-        ]);
-        expect(before.find(row => row.language === 'pt')?.metadata?.text).toEqual([]);
-      });
+      expect(targetLanguageKey).toBe('es');
+      expect(changedLanguages).toEqual(['en', 'pt']);
+      expect(before.map(row => row.language)).toEqual(['en', 'es', 'pt']);
+      expect(after.find(row => row.language === 'pt')?.metadata?.text).toEqual([
+        { value: 'português' },
+      ]);
+      expect(before.find(row => row.language === 'pt')?.metadata?.text).toEqual([]);
     });
 
-    it('should create no events when nothing changed', () => {
+    it('should list no changed languages when only editDate changed', () => {
+      const entity = createLoadedEntity();
+      entity.getTranslation('en').refreshEditDate(2);
+
       expect(
-        EntityUpdatedEvent.createForChangedLanguages({ entity: createLoadedEntity() })
+        EntityUpdatedEvent.fromEntity({ entity, targetLanguage: 'en' }).getData().changedLanguages
       ).toEqual([]);
+    });
+  });
+
+  describe('changedLanguagesOf', () => {
+    it('should return the changed languages when present', () => {
+      expect(
+        EntityUpdatedEvent.changedLanguagesOf({
+          before: [],
+          after: [],
+          targetLanguageKey: 'en',
+          changedLanguages: ['es', 'pt'],
+        })
+      ).toEqual(['es', 'pt']);
+    });
+
+    it('should fall back to the target language when the emitter sends no changed languages', () => {
+      expect(
+        EntityUpdatedEvent.changedLanguagesOf({ before: [], after: [], targetLanguageKey: 'es' })
+      ).toEqual(['es']);
     });
   });
 });

@@ -129,6 +129,7 @@ const updateEntityForImportRow = async (params: {
     await params.deps.entitiesService.update([entity], {
       actorId: params.insertContext.actorId,
       actor: ExecutionContext.actor!,
+      targetLanguage: params.insertContext.targetLanguage,
       authorize: false,
     });
     await params.deps.filesService.insert(filesToInsert);

@@ -65,6 +65,7 @@ type InsertContext = {
 type UpsertContext = {
   actorId: string;
   actor: User;
+  targetLanguage: LanguageISO6391;
   authorize?: boolean;
 };
 
@@ -177,17 +178,22 @@ class EntitiesService {
 
     await Promise.all(
       changedEntities
-        .flatMap(entity =>
-          EntityUpdatedEvent.createForChangedLanguages({ entity, userId: context.actorId })
-        )
+        .map(entity => EntityUpdatedEvent.create({
+            entity,
+            userId: context.actorId,
+            targetLanguage: context.targetLanguage,
+          }))
+        .filter(event => event !== null)
         .map(async event => this.deps.eventEmitter.emit(event))
     );
 
     this.deps.transactionManager.onCommitted(async () => {
       await Promise.all(
-        changedEntities
-          .flatMap(entity => LegacyEntityUpdatedEvent.createForChangedLanguages({ entity }))
-          .map(async event => this.deps.eventBus.emit(event))
+        changedEntities.map(async entity =>
+          this.deps.eventBus.emit(
+            LegacyEntityUpdatedEvent.fromEntity({ entity, targetLanguage: context.targetLanguage })
+          )
+        )
       );
     });
 
