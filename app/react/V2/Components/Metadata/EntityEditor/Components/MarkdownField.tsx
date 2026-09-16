@@ -23,7 +23,7 @@ type MarkdownFieldProps<TFormValues extends FieldValues = FieldValues> = {
 type MarkdownFieldMode = 'write' | 'preview';
 
 const tabClass = (active: boolean) =>
-  `border-b-2 px-3 py-2 text-sm font-medium ${
+  `border-b-2 px-3 py-2 text-xs font-medium ${
     active ? 'border-carbon text-ink' : 'border-transparent text-ink-muted'
   }`;
 
