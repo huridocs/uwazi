@@ -14,6 +14,10 @@ type CreateProps = EventPayload<{
   targetLanguage: LanguageISO6391;
 }>;
 
+type CreateForChangedLanguagesProps = EventPayload<{
+  entity: Entity;
+}>;
+
 class EntityUpdatedEvent extends Event<Payload> {
   constructor(payload: EventPayload<Payload>) {
     super(payload);
@@ -26,6 +30,12 @@ class EntityUpdatedEvent extends Event<Payload> {
       userId,
       targetLanguage,
     });
+  }
+
+  static createForChangedLanguages({ entity, userId }: CreateForChangedLanguagesProps) {
+    return entity.changedLanguages.map(targetLanguage =>
+      EntityUpdatedEvent.create({ entity, userId, targetLanguage })
+    );
   }
 }
 

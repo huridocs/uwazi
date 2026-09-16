@@ -149,6 +149,29 @@ class Entity {
     return new Entity(this.props);
   }
 
+  get changedLanguages(): LanguageISO6391[] {
+    const { translations: before, ...entityBefore } = this.previousVersion.asDTO;
+    const { translations: after, ...entityAfter } = this.asDTO;
+
+    if (stringify(entityBefore) !== stringify(entityAfter)) {
+      return this.languages;
+    }
+
+    const withoutEditDate = (translation?: EntityTranslationProps) => {
+      if (!translation) return undefined;
+      const { editDate: _editDate, ...metadata } = translation.metadata || {};
+      return stringify({ ...translation, metadata });
+    };
+
+    return after
+      .filter(
+        translation =>
+          withoutEditDate(translation) !==
+          withoutEditDate(before.find(previous => previous.language === translation.language))
+      )
+      .map(translation => translation.language);
+  }
+
   get translationsList() {
     return Object.entries(this.translations);
   }

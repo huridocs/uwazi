@@ -16,7 +16,6 @@ import {
   PermissionSpec,
 } from '../domain/entityAccessPolicy/EntityPermissionChecker.js';
 import { EntityUpdatedEvent } from '../domain/entity/EntityUpdatedEvent.js';
-import { MongoEntityMapper } from '../infrastructure/mongodb/entity/MongoEntityMapper.js';
 import { EventEmitter } from '../libs/eventEmitter/EventEmitter.js';
 import { EntityAccessPolicy } from '../domain/entityAccessPolicy/EntityAccessPolicy.js';
 import { EntityAccessPolicyDataSource } from './contracts/EntityAccessPolicyDataSource.js';
@@ -48,7 +47,6 @@ type InsertContext = {
 type UpsertContext = {
   actorId: string;
   actor: User;
-  targetLanguage: LanguageISO6391;
   authorize?: boolean;
 };
 
@@ -129,28 +127,18 @@ class EntitiesService {
     const updatedSharedIds = changedEntities.map(e => e.sharedId);
 
     await Promise.all(
-      changedEntities.map(async entity => {
-        await this.deps.eventEmitter.emit(
-          EntityUpdatedEvent.create({
-            entity,
-            targetLanguage: context.targetLanguage,
-            userId: context.actorId,
-          })
-        );
-      })
+      changedEntities
+        .flatMap(entity =>
+          EntityUpdatedEvent.createForChangedLanguages({ entity, userId: context.actorId })
+        )
+        .map(async event => this.deps.eventEmitter.emit(event))
     );
 
     this.deps.transactionManager.onCommitted(async () => {
       await Promise.all(
-        changedEntities.map(async entity =>
-          this.deps.eventBus.emit(
-            new LegacyEntityUpdatedEvent({
-              before: MongoEntityMapper.toDBO(entity.previousVersion) as any,
-              after: MongoEntityMapper.toDBO(entity) as any,
-              targetLanguageKey: context.targetLanguage,
-            })
-          )
-        )
+        changedEntities
+          .flatMap(entity => LegacyEntityUpdatedEvent.createForChangedLanguages({ entity }))
+          .map(async event => this.deps.eventBus.emit(event))
       );
     });
 

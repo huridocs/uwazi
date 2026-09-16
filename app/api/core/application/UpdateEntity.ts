@@ -119,7 +119,6 @@ class UpdateEntityUseCase extends AbstractUseCase<Input, Output, Deps> {
       await this.deps.entitiesService.update([entity], {
         actorId: this.actorId,
         actor: this.getActor(),
-        targetLanguage: input.language,
       });
       await this.deps.fileService.insert(filesCreated);
       await this.deps.fileService.delete(removedFiles);

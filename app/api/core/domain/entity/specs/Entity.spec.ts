@@ -1812,4 +1812,92 @@ describe('Entity', () => {
       expect(entity.hasChanged).toBe(true);
     });
   });
+
+  describe('changedLanguages', () => {
+    const createLoadedEntity = () =>
+      new Entity({
+        sharedId: 'sharedId',
+        template: createSampleTemplate(),
+        translations: [
+          { language: 'en', id: 'id_en' },
+          { language: 'pt', id: 'id_pt' },
+        ],
+      });
+
+    it('should be empty when nothing changed', () => {
+      const entity = createLoadedEntity();
+
+      entity.update({});
+
+      expect(entity.changedLanguages).toEqual([]);
+    });
+
+    it('should only include the language of a changed translatable property', () => {
+      const entity = createLoadedEntity();
+
+      entity.setPropertyAssignments(
+        [entity.template.createPropertyAssignment('text', { value: [{ value: 'texto' }] })],
+        'pt'
+      );
+
+      expect(entity.changedLanguages).toEqual(['pt']);
+    });
+
+    it('should include every language when a language-independent property changes', () => {
+      const entity = createLoadedEntity();
+
+      entity.setPropertyAssignments(
+        [entity.template.createPropertyAssignment('numeric', { value: [{ value: 42 }] })],
+        'pt'
+      );
+
+      expect(entity.changedLanguages).toEqual(['en', 'pt']);
+    });
+
+    it('should ignore values set again as loaded from storage', () => {
+      const entity = new Entity({
+        sharedId: 'sharedId',
+        template: createSampleTemplate(),
+        translations: (['en', 'pt'] as const).map(language => ({
+          language,
+          id: `id_${language}`,
+          metadata: {
+            text: {
+              name: 'text',
+              type: 'text',
+              isTranslatable: true,
+              language,
+              value: [{ value: 'same' }],
+            },
+            numeric: {
+              name: 'numeric',
+              type: 'numeric',
+              isTranslatable: false,
+              language,
+              value: [{ value: 1 }],
+            },
+          } as any,
+        })),
+      });
+
+      entity.setPropertyAssignments(
+        [
+          entity.template.createPropertyAssignment('text', { value: [{ value: 'same' }] }),
+          entity.template.createPropertyAssignment('numeric', { value: [{ value: 1 }] }),
+        ],
+        'pt'
+      );
+
+      expect(entity.changedLanguages).toEqual([]);
+      expect(entity.hasChanged).toBe(false);
+    });
+
+    it('should include every language when an entity-level field changes', () => {
+      const entity = createLoadedEntity();
+
+      entity.update({ icon: { id: 'icon-123', type: 'image', label: 'Icon Label' } });
+
+      expect(entity.changedLanguages).toEqual(['en', 'pt']);
+    });
+  });
 });

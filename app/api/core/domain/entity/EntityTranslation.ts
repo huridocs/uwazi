@@ -93,7 +93,7 @@ class EntityTranslation {
       );
     }
 
-    if (stringify(currentValue) === stringify(propertyValue)) {
+    if (EntityTranslation.isSameAssignment(currentValue, propertyValue)) {
       return;
     }
 
@@ -107,6 +107,16 @@ class EntityTranslation {
 
     this.metadata[propertyValue.name] = propertyValue;
     this.refreshEditDate();
+  }
+
+  // Assignments loaded from storage carry the row language; newly created ones only do for
+  // language-scoped types, so the key is not part of the comparison.
+  private static isSameAssignment(a: PropertyAssignment, b: PropertyAssignment) {
+    const withoutLanguage = ({
+      language: _language,
+      ...rest
+    }: PropertyAssignment & { language?: string }) => rest;
+    return stringify(withoutLanguage(a)) === stringify(withoutLanguage(b));
   }
 
   // Replaces the assignment instead of mutating it: it is shared with the props the previous

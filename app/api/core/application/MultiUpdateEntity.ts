@@ -72,7 +72,6 @@ class MultiUpdateEntity extends AbstractUseCase<Input, Output, Deps> {
       const updatedIds = await this.deps.entitiesService.update(entities, {
         actorId: this.actorId,
         actor: this.getActor(),
-        targetLanguage,
       });
 
       return entities.filter(e => updatedIds.includes(e.sharedId));
