@@ -1,6 +1,9 @@
 /* eslint-disable max-statements */
 import { EntitiesDataSource } from '#api/core/application/contracts/EntitiesDataSource.js';
-import { EntityCreatedEvent } from '#api/entities/events/EntityCreatedEvent.js';
+import {
+  EntityCreatedEvent,
+  ProvidedTranslations,
+} from '#api/entities/events/EntityCreatedEvent.js';
 import { EntityUpdatedEvent as LegacyEntityUpdatedEvent } from '#api/entities/events/EntityUpdatedEvent.js';
 import { ArrayUtils } from '#api/common.v2/utils/Array.js';
 import { User } from '#api/users.v2/model/User.js';
@@ -50,6 +53,7 @@ type InsertContext = {
   tenantName: string;
   actorId: string;
   targetLanguage: LanguageISO6391;
+  providedTranslations?: ProvidedTranslations;
 };
 
 type UpsertContext = {
@@ -87,12 +91,14 @@ class EntitiesService {
   }
 
   /**
-   * `translations` must hold every installed language except the root one. Languages still being
-   * installed may be sent but are not required.
+   * `translations` may only hold installed languages other than the root one. Unless `partial`,
+   * every installed language must be present, except languages still being installed.
    */
+  //cc: refactor it so it accepts ValidateTranslationLanguagesParams object.
   async validateTranslationLanguages(
     rootLanguage: LanguageISO6391,
-    translations: TranslationsInput
+    translations: TranslationsInput,
+    { partial = false }: { partial?: boolean } = {}
   ): Promise<void> {
     const installed = (await this.deps.settingsDS.readLanguages()) ?? [];
     const sent = Object.keys(translations);
@@ -101,6 +107,8 @@ class EntitiesService {
     if (unknown) throw new UnknownTranslationLanguageError(unknown);
 
     if (sent.includes(rootLanguage)) throw new RootLanguageInTranslationsError(rootLanguage);
+
+    if (partial) return;
 
     const missing = installed.find(
       ({ key, installing }) => key !== rootLanguage && !installing && !sent.includes(key)
@@ -130,7 +138,13 @@ class EntitiesService {
     this.deps.transactionManager.onCommitted(async () => {
       await Promise.all(
         entities.map(async entity =>
-          this.deps.eventBus.emit(EntityCreatedEvent.fromEntity(entity, context.targetLanguage))
+          this.deps.eventBus.emit(
+            EntityCreatedEvent.fromEntity(
+              entity,
+              context.targetLanguage,
+              context.providedTranslations
+            )
+          )
         )
       );
     });

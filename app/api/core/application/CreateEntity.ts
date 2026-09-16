@@ -29,7 +29,8 @@ class CreateEntityUseCase extends AbstractUseCase<Input, Output, Deps> {
     if (input.translations) {
       await this.deps.entitiesService.validateTranslationLanguages(
         this.targetLanguage,
-        input.translations
+        input.translations,
+        { partial: true }
       );
     }
 
@@ -65,12 +66,23 @@ class CreateEntityUseCase extends AbstractUseCase<Input, Output, Deps> {
         actorId: this.actorId,
         tenantName: this.tenant.name,
         targetLanguage: this.targetLanguage,
+        providedTranslations: CreateEntityUseCase.providedTranslations(input.translations),
       });
 
       await this.deps.fileService.insert(documentsOrAttachments);
     });
 
     return entity;
+  }
+
+  private static providedTranslations(translations?: TranslationsInput) {
+    if (!translations) return undefined;
+    return Object.fromEntries(
+      Object.entries(translations).map(([language, values]) => [
+        language,
+        (values ?? []).map(({ name }) => name),
+      ])
+    );
   }
 
   private async applyTranslations(entity: Entity, translations: TranslationsInput) {
@@ -80,7 +92,9 @@ class CreateEntityUseCase extends AbstractUseCase<Input, Output, Deps> {
           values ?? [],
           entity.template
         );
-        entity.setTranslatedPropertyAssignments(language as LanguageISO6391, assignments);
+        entity.setTranslatedPropertyAssignments(language as LanguageISO6391, assignments, {
+          partial: true,
+        });
       })
     );
   }

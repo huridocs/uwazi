@@ -113,8 +113,16 @@ class Entity {
       });
   }
 
-  /** Sets the full set of translatable values of one translation. */
-  setTranslatedPropertyAssignments(language: LanguageISO6391, assignments: PropertyAssignment[]) {
+  /**
+   * Sets translatable values of one translation. Unless `partial`, every translatable property of
+   * the template must be provided.
+   */
+  //cc: refactor it so it accepts ValidateTranslationLanguagesParams object.
+  setTranslatedPropertyAssignments(
+    language: LanguageISO6391,
+    assignments: PropertyAssignment[],
+    { partial = false }: { partial?: boolean } = {}
+  ) {
     const translation = this.getTranslation(language);
 
     const notTranslatable = assignments.find(assignment => !assignment.isTranslatable);
@@ -122,9 +130,11 @@ class Entity {
       throw new PropertyNotTranslatableError(language, notTranslatable.name);
     }
 
-    const missing = this.template.translatableProperties.find(
-      property => !assignments.some(assignment => assignment.name === property.name)
-    );
+    const missing =
+      !partial &&
+      this.template.translatableProperties.find(
+        property => !assignments.some(assignment => assignment.name === property.name)
+      );
     if (missing) {
       throw new MissingTranslatedPropertyError(language, missing.name);
     }

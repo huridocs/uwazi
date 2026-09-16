@@ -2032,6 +2032,33 @@ describe('Entity', () => {
           entity.setTranslatedPropertyAssignments('es', [assignment(entity, 'title', 'Título')])
         ).toThrow(new MissingTranslatedPropertyError('es', 'summary'));
       });
+
+      describe('when partial translations are allowed', () => {
+        it('should set the provided values and keep the rest', () => {
+          const entity = loadedEntity();
+          entity.ensureTranslations(['en', 'es', 'pt'], 'en');
+
+          entity.setTranslatedPropertyAssignments('pt', [assignment(entity, 'title', 'Título')], {
+            partial: true,
+          });
+
+          const pt = entity.getTranslation('pt');
+          expect(pt.title.value).toEqual([{ value: 'Título' }]);
+          expect(pt.getValue('summary').value).toEqual([{ value: 'Text' }]);
+        });
+
+        it('should still reject language-independent properties', () => {
+          const entity = loadedEntity();
+
+          expect(() =>
+            entity.setTranslatedPropertyAssignments(
+              'es',
+              [entity.template.createPropertyAssignment('amount', { value: [{ value: 1 }] })],
+              { partial: true }
+            )
+          ).toThrow(new PropertyNotTranslatableError('es', 'amount'));
+        });
+      });
     });
 
     describe('validateRequiredProperties', () => {

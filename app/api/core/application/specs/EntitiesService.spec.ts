@@ -490,6 +490,26 @@ describe('EntitiesService', () => {
           new MissingTranslationLanguageError('pt')
         );
       });
+
+      describe('when partial translations are allowed', () => {
+        const validatePartial = async (translations: Record<string, unknown[]>) => {
+          const { sut } = createSut({}, postgresCore);
+          return sut.validateTranslationLanguages('en', translations as any, { partial: true });
+        };
+
+        it('should accept missing installed languages', async () => {
+          await expect(validatePartial({ es: [] })).resolves.toBeUndefined();
+        });
+
+        it('should still reject the root language and languages that are not installed', async () => {
+          await expect(validatePartial({ en: [] })).rejects.toThrow(
+            new RootLanguageInTranslationsError('en')
+          );
+          await expect(validatePartial({ de: [] })).rejects.toThrow(
+            new UnknownTranslationLanguageError('de')
+          );
+        });
+      });
     });
 
     describe('when creating an Entity', () => {

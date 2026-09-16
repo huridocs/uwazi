@@ -7,6 +7,7 @@ import { AutomaticTranslationFactory } from '#api/externalIntegrations.v2/automa
 import {
   CreateEntitySchema,
   CreateEntityWithTranslationsSchema,
+  EntityTranslationsRequest,
   UpdateEntityRequest,
   UpdateEntitySchema,
   UpdateEntityWithTranslationsSchema,
@@ -82,7 +83,7 @@ class MutateEntityController extends AbstractController<Request> {
 
   private async update({ isMultipart, payload }: ParsedBody) {
     const useCase = UpdateEntityUseCaseFactory.default(undefined, this.sessionId);
-    const parsed = await this.resolveAutomaticTranslationConflicts(
+    const { root: parsed } = await this.resolveAutomaticTranslationConflicts(
       UpdateEntitySchema.parse(payload),
       isMultipart
     );
@@ -120,8 +121,13 @@ class MutateEntityController extends AbstractController<Request> {
 
   private async updateWithTranslations({ payload, isMultipart }: ParsedBody) {
     const useCase = UpdateEntityUseCaseFactory.default(undefined, this.sessionId);
-    const { translations, ...root } = UpdateEntityWithTranslationsSchema.parse(payload);
-    const parsed = await this.resolveAutomaticTranslationConflicts(root, isMultipart);
+    const { translations: sentTranslations, ...sentRoot } =
+      UpdateEntityWithTranslationsSchema.parse(payload);
+    const { root: parsed, translations } = await this.resolveAutomaticTranslationConflicts(
+      sentRoot,
+      isMultipart,
+      sentTranslations
+    );
 
     const entity = await MutateEntityController.withTranslationErrorPaths(async () =>
       useCase.execute({
@@ -129,7 +135,7 @@ class MutateEntityController extends AbstractController<Request> {
           dto: parsed,
           inputFiles: this.request.inputFiles,
         }),
-        translations: ExpressEntityMapper.toTranslationsInput(translations),
+        translations: ExpressEntityMapper.toTranslationsInput(translations!),
       })
     );
 
@@ -182,28 +188,43 @@ class MutateEntityController extends AbstractController<Request> {
 
   private async resolveAutomaticTranslationConflicts(
     parsed: UpdateEntityRequest,
-    isMultipart: boolean
-  ): Promise<UpdateEntityRequest> {
+    isMultipart: boolean,
+    translations?: EntityTranslationsRequest
+  ): Promise<{ root: UpdateEntityRequest; translations?: EntityTranslationsRequest }> {
     const currentDocs = await EntitiesDAOFactory.default({ user: this.user }).getBySharedId(
       parsed.sharedId
     );
     const currentDoc = currentDocs.find(doc => doc.language === parsed.language);
-    if (!currentDoc) return parsed;
+    if (!currentDoc) return { root: parsed, translations };
 
     const resolver = new ATConflictSolver(
       AutomaticTranslationFactory.defaultATConfigDataSource(ExecutionContext.transactionManager),
       ExecutionContext.logger
     );
-    const resolved = await resolver.execute(currentDoc, parsed);
+    const root = await resolver.execute(currentDoc, parsed);
+    const resolvedTranslations =
+      translations &&
+      (await resolver.resolveTranslations(
+        currentDocs,
+        currentDoc.template.toString(),
+        translations
+      ));
 
-    // Keep the logged request body in sync with what is actually saved.
+    this.syncLoggedBody(
+      resolvedTranslations ? { ...root, translations: resolvedTranslations } : root,
+      isMultipart
+    );
+
+    return { root, translations: resolvedTranslations };
+  }
+
+  // Keep the logged request body in sync with what is actually saved.
+  private syncLoggedBody(body: Record<string, unknown>, isMultipart: boolean) {
     if (isMultipart) {
-      this.request.body.entity = JSON.stringify(resolved);
+      this.request.body.entity = JSON.stringify(body);
     } else {
-      Object.assign(this.request.body, resolved);
+      Object.assign(this.request.body, body);
     }
-
-    return resolved;
   }
 
   private async respond(sharedId: string, isMultipart: boolean) {

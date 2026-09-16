@@ -10,11 +10,11 @@ import { FilesServiceFactory } from '#api/core/infrastructure/factories/FilesSer
 import { FileSystemStorage } from '#api/core/infrastructure/files/FileSystemStorage.js';
 import { InputFile } from '#api/core/infrastructure/files/InputFile.js';
 import { applicationEventsBus } from '#api/core/libs/eventsbus/index.js';
+import { EntityCreatedEvent } from '#api/entities/events/EntityCreatedEvent.js';
 import { User } from '#api/users.v2/model/User.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import { AccessLevel } from '#api/core/domain/entityAccessPolicy/AccessLevel.js';
 import { GrantType } from '#api/core/domain/entityAccessPolicy/GrantType.js';
-import { MissingTranslatedPropertyError } from '#api/core/domain/entity/errors.js';
 import { RootLanguageInTranslationsError } from '#api/core/application/errors.js';
 
 const factory = getFixturesFactory();
@@ -575,16 +575,39 @@ describe('CreateEntityUseCase', () => {
         ]);
       });
 
-      it('should reject a translation missing a translatable property', async () => {
+      it('should tell automatic translation which translations were provided', async () => {
+        const emitSpy = jest.spyOn(applicationEventsBus, 'emit');
         const { sut } = createSut({ targetLanguage: 'en' }, postgresCore);
 
-        await expect(
-          sut.execute({
-            templateId: factory.id('Document B').toHexString(),
-            propertyAssignments: [{ name: 'title', value: [{ value: 'Title EN' }] }],
-            translations: { es: [{ name: 'title', value: [{ value: 'Título ES' }] }] },
-          })
-        ).rejects.toThrow(new MissingTranslatedPropertyError('es', 'text_1'));
+        await sut.execute({
+          templateId: factory.id('Document B').toHexString(),
+          propertyAssignments: [{ name: 'title', value: [{ value: 'Title EN' }] }],
+          translations: { es: [{ name: 'title', value: [{ value: 'Título ES' }] }] },
+        });
+
+        const createdEvent = emitSpy.mock.calls
+          .map(([event]) => event)
+          .filter(event => event instanceof EntityCreatedEvent)
+          .pop();
+        expect(createdEvent?.getData().providedTranslations).toEqual({ es: ['title'] });
+      });
+
+      it('should keep the root values for the translations left out', async () => {
+        const { sut } = createSut({ targetLanguage: 'en' }, postgresCore);
+
+        const entity = await sut.execute({
+          templateId: factory.id('Document B').toHexString(),
+          propertyAssignments: [
+            { name: 'title', value: [{ value: 'Title EN' }] },
+            { name: 'text_1', value: [{ value: 'Text EN' }] },
+          ],
+          translations: { es: [{ name: 'title', value: [{ value: 'Título ES' }] }] },
+        });
+
+        expect(await rows(entity.sharedId)).toEqual([
+          { language: 'en', title: 'Title EN', text_1: [{ value: 'Text EN' }] },
+          { language: 'es', title: 'Título ES', text_1: [{ value: 'Text EN' }] },
+        ]);
       });
 
       it('should reject the root language inside translations', async () => {
