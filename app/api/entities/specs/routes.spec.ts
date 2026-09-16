@@ -2,7 +2,7 @@ import { Application, NextFunction, Request, Response } from 'express';
 import request, { Response as SuperTestResponse } from 'supertest';
 import path from 'path';
 
-import { setUpApp } from '#api/utils/testingRoutes.js';
+import { iosocket, setUpApp, TestEmitSources } from '#api/utils/testingRoutes.js';
 import db from '#api/utils/testing_db.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import routes from '#api/entities/routes.js';
@@ -174,6 +174,17 @@ describe('entities routes', () => {
         },
         errors: [],
       });
+    });
+
+    it('should respond 422 with ajv validations when the created entity is invalid', async () => {
+      const response: SuperTestResponse = await request(app)
+        .post('/api/entities')
+        .send({ title: '' });
+
+      expect(response).toHaveStatus(422);
+      expect(response.body.validations).toEqual([
+        { instancePath: 'title', message: expect.any(String) },
+      ]);
     });
 
     describe('V2 entity creation with files (multipart with documents and attachments)', () => {
@@ -352,7 +363,7 @@ describe('entities routes', () => {
     });
 
     describe('V2 entity update', () => {
-      it('should update an existing entity via UpdateEntityController', async () => {
+      it('should update an existing entity', async () => {
         new UserInContextMockFactory().mock(user);
 
         const entityToUpdate = {
@@ -424,7 +435,7 @@ describe('entities routes', () => {
         expect(updatedEntity?.title).toBe(`${SaveEntityTranslations.AITranslatedText} Hello`);
       });
 
-      it('should update an existing entity with files via UpdateEntityController', async () => {
+      it('should update an existing entity with files', async () => {
         new UserInContextMockFactory().mock(user);
 
         const entityToUpdate = {
@@ -470,6 +481,42 @@ describe('entities routes', () => {
         expect(response.body).toMatchObject({
           sharedId: 'shared',
         });
+      });
+
+      it('should notify the session socket with the updated sharedId', async () => {
+        iosocket.emit.mockClear();
+
+        await request(app)
+          .post('/api/entities')
+          .send({
+            _id: 'abc123',
+            sharedId: 'shared',
+            title: 'updated title',
+            language: 'en',
+            template: templateId.toString(),
+          })
+          .expect(200);
+
+        expect(iosocket.emit).toHaveBeenCalledWith(
+          'documentProcessed',
+          TestEmitSources.session,
+          'shared'
+        );
+      });
+
+      it('should respond 422 with ajv validations when the updated entity is invalid', async () => {
+        const response: SuperTestResponse = await request(app).post('/api/entities').send({
+          _id: 'abc123',
+          sharedId: 'shared',
+          title: '',
+          language: 'en',
+          template: templateId.toString(),
+        });
+
+        expect(response).toHaveStatus(422);
+        expect(response.body.validations).toEqual([
+          { instancePath: 'title', message: expect.any(String) },
+        ]);
       });
 
       it('should rollback the transaction when the update fails', async () => {

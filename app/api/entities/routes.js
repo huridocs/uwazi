@@ -1,13 +1,11 @@
 /* eslint-disable max-lines */
 /* eslint-disable max-statements */
-import * as cookie from 'cookie';
 import activitylogMiddleware from '#api/activitylog/activitylogMiddleware.js';
 import { UploadMiddleware } from '#api/core/infrastructure/express/middlewares/UploadMiddleware.js';
 import { LoggerFactory } from '#api/core/infrastructure/factories/LoggerFactory.js';
 import { BulkDeleteEntityController } from '#api/core/infrastructure/express/entity/BulkDeleteEntityController.js';
 import { EntitiesDAOFactory } from '#api/core/infrastructure/factories/EntitiesDAOFactory.js';
-import { EntityFacade } from '#api/core/infrastructure/facades/EntitiesFacade.js';
-import { UpdateEntityController } from '#api/core/infrastructure/express/entity/UpdateEntityController.js';
+import { MutateEntityController } from '#api/core/infrastructure/express/entity/MutateEntityController.js';
 import { GetEntityController } from '#api/core/infrastructure/express/entity/GetEntityController.js';
 import { MultiUpdateEntityController } from '#api/core/infrastructure/express/entity/MultiUpdateEntityController.js';
 import { DeleteEntityController } from '#api/core/infrastructure/express/entity/DeleteEntityController.js';
@@ -76,30 +74,7 @@ export default app => {
     activitylogMiddleware,
     async (req, res, next) =>
       new UploadMiddleware(LoggerFactory.default()).multiple()(req, res, next),
-    async (req, res, next) => {
-      const entityToSave = req.body.entity ? JSON.parse(req.body.entity) : req.body;
-
-      if (!entityToSave?.sharedId) {
-        const sessionId = cookie.parse(req.get('cookie') || '')['connect.sid'];
-        const result = await EntityFacade.create(entityToSave, req.language, {
-          inputFiles: req.inputFiles,
-          sessionId,
-        });
-        const [entityInTargetLanguage] = await EntitiesDAOFactory.default({
-          user: User.createFrom(req.user),
-        }).find({ language: req.language, sharedId: result.sharedId }, { withFiles: true });
-
-        const response = req.body.entity
-          ? { entity: entityInTargetLanguage, errors: [] }
-          : entityInTargetLanguage;
-
-        res.json(response);
-
-        return;
-      }
-
-      await UpdateEntityController.createHandler()(req, res, next);
-    }
+    MutateEntityController.createHandler()
   );
 
   app.post(
