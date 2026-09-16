@@ -5,6 +5,7 @@ import { toHaveBeenCalledBefore } from 'jest-extended';
 import { ModelStatus } from '#shared/types/IXModelSchema.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import ixmodels from '../ixmodels.js';
+import { ModelNotReadyError } from '../errors.js';
 import { ixTestAccess } from './ixTestAccess.js';
 
 expect.extend({ toHaveBeenCalledBefore });
@@ -62,7 +63,7 @@ describe('save()', () => {
     });
     describe('startTraining', () => {
       // TODO: test that the model is updated with the new values
-      it('should unset findSuggestionsRunTimestamp and findSuggestionsSharedIds', async () => {
+      it('should unset suggestionsRunTimestamp and findSuggestionsSharedIds', async () => {
         await ixmodels.startTraining(fixtureFactory.id('extractor'));
 
         const updatedModel = await ixTestAccess.readModel(fixtureFactory.id('extractor'));
@@ -70,11 +71,23 @@ describe('save()', () => {
         expect(updatedModel.processRun?.suggestionsRunTimestamp).toBeUndefined();
         expect(updatedModel.processRun?.findSuggestionsSharedIds).toBeUndefined();
       });
+
+      /**
+       * A second run cannot share the model: both tear down the other's model on the ML service,
+       * and the survivor's find writes empty values over good suggestions (F52).
+       */
+      it('should refuse to start a run while one is already in flight', async () => {
+        await ixmodels.startTraining(fixtureFactory.id('extractor'));
+
+        await expect(ixmodels.startTraining(fixtureFactory.id('extractor'))).rejects.toThrow(
+          ModelNotReadyError
+        );
+      });
     });
 
     describe('stopTraining', () => {
       // TODO: test that the model is updated with the new values
-      it('should unset findSuggestionsRunTimestamp and findSuggestionsSharedIds', async () => {
+      it('should unset suggestionsRunTimestamp and findSuggestionsSharedIds', async () => {
         await ixmodels.stopTraining(fixtureFactory.id('extractor'));
 
         const updatedModel = await ixTestAccess.readModel(fixtureFactory.id('extractor'));
@@ -85,7 +98,7 @@ describe('save()', () => {
     });
 
     describe('unsetFindSuggestionsData', () => {
-      it('should unset findSuggestionsRunTimestamp and findSuggestionsSharedIds', async () => {
+      it('should unset suggestionsRunTimestamp and findSuggestionsSharedIds', async () => {
         await ixmodels.unsetFindSuggestionsData(model._id!);
 
         const updatedModel = await ixTestAccess.readModel(fixtureFactory.id('extractor'));

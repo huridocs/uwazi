@@ -36,6 +36,11 @@ import {
   PageMigrationConfig,
 } from '#api/core/infrastructure/postgresql/migrations/configs/PageMigrationConfig.js';
 import { PageReleaseMigrationConfig } from '#api/core/infrastructure/postgresql/migrations/configs/PageReleaseMigrationConfig.js';
+import {
+  IXExtractorsMigrationConfig,
+  IXModelsMigrationConfig,
+  IXSuggestionsMigrationConfig,
+} from '#api/core/infrastructure/postgresql/migrations/configs/index.js';
 
 const COLLECTIONS: Record<string, AnyMigrationConfig> = {
   thesauri: ThesaurusMigrationConfig,
@@ -47,6 +52,9 @@ const COLLECTIONS: Record<string, AnyMigrationConfig> = {
   password_recoveries: PasswordRecoveryMigrationConfig,
   translations: TranslationsMigrationConfig,
   entities: EntitiesMigrationConfig,
+  ix_extractors: IXExtractorsMigrationConfig,
+  ix_models: IXModelsMigrationConfig,
+  ix_suggestions: IXSuggestionsMigrationConfig,
   settings: SettingsMigrationConfig,
   pages: PageMigrationConfig,
   // A page's locales are nested in the mongo document, so they are their own pass.
@@ -55,7 +63,8 @@ const COLLECTIONS: Record<string, AnyMigrationConfig> = {
 };
 
 // Collections grouped by the feature flag that gates their migration. A group is
-// migrated only when its flag is active on the tenant.
+// migrated only when its flag is active on the tenant, in the order listed: a table
+// comes after the tables its foreign keys reference.
 const FLAG_GROUPS: Record<'postgresCore' | 'postgresPages', string[]> = {
   postgresCore: [
     'thesauri',
@@ -67,6 +76,9 @@ const FLAG_GROUPS: Record<'postgresCore' | 'postgresPages', string[]> = {
     'password_recoveries',
     'translations',
     'entities',
+    'ix_extractors',
+    'ix_models',
+    'ix_suggestions',
     'settings',
   ],
   postgresPages: ['pages', 'page_locales', 'page_releases'],
@@ -113,9 +125,10 @@ async function migrateCollection(
       { force: argv.force }
     );
 
+    const orphans = result.orphansSkipped ? `, skipped ${result.orphansSkipped} orphans` : '';
     const summary = result.skipped
       ? `Skipped ${collectionName}: PostgreSQL table already contains data for tenant`
-      : `Migrated ${result.migrated} rows for ${collectionName}`;
+      : `Migrated ${result.migrated} rows for ${collectionName}${orphans}`;
     log(`[${tenantName}] ${summary}`);
   }, tenantName);
 }

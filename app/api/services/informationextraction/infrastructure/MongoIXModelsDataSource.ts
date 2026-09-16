@@ -29,10 +29,8 @@ const queueExpression = { $ifNull: [`$${QUEUE_FIELD}`, []] };
 /**
  * Mongo implementation of {@link IXModelsDataSource}.
  *
- * Extends `MongoDataSource` rather than wrapping the mongoose model: its `SyncedCollection`
- * writes the same `{namespace, mongoId, timestamp, deleted}` rows to `updatelogs` that the
- * odm's `UpdateLogHelper` did — on inserts, on updates *and* on `findOneAndUpdate` — so
- * instance-to-instance sync is preserved across the swap. Pinned by the spec beside this file.
+ * Opts out of `MongoDataSource`'s synced collection: information extraction data is not synced
+ * between instances, so its writes leave no `updatelogs` rows.
  *
  * `extractorId` is normalised to an `ObjectId` on the way into every query, matching what all
  * call sites already pass. It is deliberately *not* normalised in `save`, which stores the
@@ -47,7 +45,7 @@ export class MongoIXModelsDataSource
   protected collectionName = ixModelsCollection;
 
   constructor(deps: Deps) {
-    super(deps.db, deps.transactionManager);
+    super(deps.db, deps.transactionManager, { useSyncedCollection: false });
   }
 
   async getByExtractorId(extractorId: ObjectIdSchema) {
@@ -82,23 +80,38 @@ export class MongoIXModelsDataSource
 
   /* ------------------------------------------------------------- status transitions -- */
 
+  /**
+   * Claims the model only when no run holds it, in one atomic `findOneAndUpdate`.
+   *
+   * The update is a pipeline so the condition travels with it: a document already processing keeps
+   * every field it has, any other document (or none at all, which upserts) takes the new run. A
+   * plain conditional upsert cannot express this — excluding the processing row from the filter
+   * makes Mongo try to insert a second one — and a read-then-write would let two callers
+   * milliseconds apart both pass.
+   */
   async markTraining(
     extractorId: ObjectIdSchema,
     { maxSuggestionsToFind }: { maxSuggestionsToFind: number }
   ) {
-    await this.getCollection().updateOne(
-      { extractorId: toObjectId(extractorId) },
-      {
-        $set: {
-          extractorId: toObjectId(extractorId),
-          findingSuggestions: true,
-          status: ModelStatus.processing,
-          maxSuggestionsToFind,
+    const held = { $eq: ['$status', ModelStatus.processing] };
+    const keepOrTake = (field: string, value: unknown) => ({ $cond: [held, `$${field}`, value] });
+
+    const before = await this.getCollection().findOneAndUpdate(
+      { extractorId: toObjectId(extractorId) } as any,
+      [
+        {
+          $set: {
+            status: keepOrTake('status', ModelStatus.processing),
+            findingSuggestions: keepOrTake('findingSuggestions', true),
+            maxSuggestionsToFind: keepOrTake('maxSuggestionsToFind', maxSuggestionsToFind),
+            processRun: keepOrTake('processRun', '$$REMOVE'),
+          },
         },
-        $unset: { processRun: '' },
-      } as any,
-      { upsert: true }
+      ] as any,
+      { upsert: true, returnDocument: 'before' }
     );
+
+    return !before || before.status !== ModelStatus.processing;
   }
 
   async markFindingSuggestions(extractorId: ObjectIdSchema) {

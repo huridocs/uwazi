@@ -1,6 +1,5 @@
 import { mixHex } from '#shared/utils/contrast.js';
-import { LEGACY_BUTTON_VALUES, getAccessibleForeground } from '#V2/theme/buttonThemeShared.js';
-import { getPresetValue } from '#V2/theme/themePresetUtils.js';
+import { getAccessibleForeground } from '#V2/theme/buttonThemeShared.js';
 import { getStatusButtonContext } from '#V2/theme/buttonStatusContext.js';
 import type { ThemeRoles } from '#V2/theme/themeRoles.js';
 import type { ResolvedThemeVars, ThemePresetId } from '#V2/theme/themes.js';
@@ -23,36 +22,26 @@ type ButtonThemeContext = {
 } & ReturnType<typeof getStatusButtonContext>;
 
 const getPrimaryButtonContext = (
-  presetId: ThemePresetId,
+  _presetId: ThemePresetId,
   _resolved: ResolvedThemeVars,
   roles: ThemeRoles
 ) => {
-  const isLegacy = presetId === 'legacy';
   const primaryBackground = roles.action.primary;
   const primaryForeground = roles.action.primaryFg;
-  const primaryDisabledBackground = getPresetValue(
-    presetId,
-    LEGACY_BUTTON_VALUES.primaryDisabled,
-    mixHex(primaryBackground, roles.surface.raised, 0.35)
-  );
+  const primaryDisabledBackground = mixHex(primaryBackground, roles.surface.raised, 0.35);
 
   return {
-    isLegacy,
     primaryBackground,
     primaryForeground,
     primaryDisabledBackground,
-    primaryDisabledForeground: isLegacy
-      ? LEGACY_BUTTON_VALUES.surface
-      : getAccessibleForeground(primaryDisabledBackground, primaryForeground),
+    primaryDisabledForeground: getAccessibleForeground(
+      primaryDisabledBackground,
+      primaryForeground
+    ),
   };
 };
 
-const getSurfaceButtonContext = (
-  presetId: ThemePresetId,
-  _resolved: ResolvedThemeVars,
-  _primaryBackground: string,
-  roles: ThemeRoles
-) => {
+const getSurfaceButtonContext = (presetId: ThemePresetId, roles: ThemeRoles) => {
   const isLegacy = presetId === 'legacy';
   const secondaryBackground = roles.action.secondaryBg;
   const compactBackground = roles.surface.warm;
@@ -77,14 +66,10 @@ const getButtonThemeContext = (
   roles: ThemeRoles
 ): ButtonThemeContext => {
   const primaryContext = getPrimaryButtonContext(presetId, resolved, roles);
-  const surfaceContext = getSurfaceButtonContext(
-    presetId,
-    resolved,
-    primaryContext.primaryBackground,
-    roles
-  );
+  const surfaceContext = getSurfaceButtonContext(presetId, roles);
 
   return {
+    isLegacy: presetId === 'legacy',
     resolved,
     ...primaryContext,
     ...surfaceContext,
@@ -92,5 +77,5 @@ const getButtonThemeContext = (
   };
 };
 
-export { LEGACY_BUTTON_VALUES, getButtonThemeContext };
+export { getButtonThemeContext };
 export type { ButtonThemeContext };

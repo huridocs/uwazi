@@ -36,9 +36,9 @@ const Tooltip = ({ style, theme, placement = 'top', size = 'sm', ...props }: Too
           placement: '-6px',
           ...theme?.arrow,
           style: {
-            light: 'bg-white',
-            dark: 'bg-gray-900 dark:bg-gray-700',
-            auto: 'bg-white dark:bg-gray-700',
+            light: 'bg-paper',
+            dark: 'bg-ink',
+            auto: 'bg-paper',
             ...theme?.arrow?.style,
           },
         },

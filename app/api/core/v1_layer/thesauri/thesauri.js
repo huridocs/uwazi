@@ -103,7 +103,10 @@ const thesauri = {
   async templateToThesauri(template, language, countPerTemplate) {
     const _entities = await EntitiesDAOFactory.default().find(
       { template: template._id.toString(), language },
-      { select: ['title', 'icon', 'file', 'sharedId'], limit: preloadOptionsLimit() }
+      // `entitiesToThesauri` reads exactly these three. `file` used to ride along from the
+      // pre-V2 query and is not a field of an entity in either store; Mongo ignored it, Postgres
+      // answers `column "file" does not exist` for the whole request (F51).
+      { select: ['title', 'icon', 'sharedId'], limit: preloadOptionsLimit() }
     );
     const values = this.entitiesToThesauri(_entities);
     return Object.assign(template, values, {

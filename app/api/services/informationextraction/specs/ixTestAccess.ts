@@ -15,33 +15,28 @@
  * - name the operation after what the test means, not how mongo does it
  */
 import { ObjectId } from 'mongodb';
+import { isPostgresCoreActive } from '#api/core/libs/featureFlags.js';
 import { IXSuggestionsDAOFactory } from '#api/suggestions/infrastructure/IXSuggestionsDAOFactory.js';
-import { MongoIXSuggestionsTestAccess } from './MongoIXSuggestionsTestAccess.js';
 import { IXSuggestionType } from '#shared/types/suggestionType.js';
 import { IXModelType } from '#shared/types/IXModelType.js';
 import { ObjectIdSchema } from '#shared/types/commonTypes.js';
 import { IXExtractorsDAOFactory } from '../infrastructure/IXExtractorsDAOFactory.js';
 import { IXModelsDAOFactory } from '../infrastructure/IXModelsDAOFactory.js';
 import { IXModel } from '../domain/IXModelsDataSource.js';
+import type { IXSuggestionsTestAccess, SuggestionFilter } from './IXSuggestionsTestAccess.js';
+import { MongoIXSuggestionsTestAccess } from './MongoIXSuggestionsTestAccess.js';
+import { PostgresIXSuggestionsTestAccess } from './PostgresIXSuggestionsTestAccess.js';
 
-type SuggestionFilter = {
-  extractorId?: ObjectIdSchema;
-  entityId?: string;
-  fileId?: ObjectIdSchema;
-  language?: string;
-  status?: IXSuggestionType['status'];
-  propertyName?: string;
-};
-
-const toQuery = (filter: SuggestionFilter) =>
-  Object.fromEntries(Object.entries(filter).filter(([, value]) => value !== undefined));
-
-const suggestionsCollection = () => MongoIXSuggestionsTestAccess.default();
+/** The tenant's store, picked the way the IX factories pick it. */
+const suggestionsCollection = (): IXSuggestionsTestAccess =>
+  isPostgresCoreActive()
+    ? PostgresIXSuggestionsTestAccess.default()
+    : MongoIXSuggestionsTestAccess.default();
 
 /* ---------------------------------------------------------------- suggestions -- */
 
 const readSuggestions = async (filter: SuggestionFilter = {}) =>
-  suggestionsCollection().find(toQuery(filter));
+  suggestionsCollection().find(filter);
 
 // Returns the element type, not `T | undefined`, so these read exactly like the
 // `const [x] = await Model.get(...)` destructure they replace.
@@ -65,21 +60,25 @@ const writeSuggestions = async (toSave: Partial<IXSuggestionType>[]) =>
   IXSuggestionsDAOFactory.default().saveMultiple(toSave);
 
 const removeSuggestions = async (filter: SuggestionFilter = {}) =>
-  suggestionsCollection().deleteMany(toQuery(filter));
+  suggestionsCollection().deleteMany(filter);
 
 const markUseForTraining = async (filter: SuggestionFilter, useForTraining = true) =>
-  suggestionsCollection().setOnMany(toQuery(filter), { useForTraining });
+  suggestionsCollection().setOnMany(filter, { useForTraining });
+
+/** Mark suggestions as training samples, as a limited run's sampling leaves them. */
+const markTrainingSample = async (filter: SuggestionFilter) =>
+  suggestionsCollection().setOnMany(filter, { trainingSample: true });
 
 /**
  * Put suggestions into the state a completed, healthy run of `runTimestamp` would leave
  * them in: dated, not obsolete, not errored, and tagged with the run.
  */
 const markProcessedInRun = async (filter: SuggestionFilter, runTimestamp: number, date = 1) =>
-  suggestionsCollection().setOnMany(toQuery(filter), {
+  suggestionsCollection().setOnMany(filter, {
     date,
-    'state.obsolete': false,
-    'state.error': false,
-    'modelData.suggestionsRunTimestamp': runTimestamp,
+    obsolete: false,
+    error: false,
+    suggestionsRunTimestamp: runTimestamp,
   });
 
 /* --------------------------------------------------------------------- models -- */
@@ -123,6 +122,7 @@ export const ixTestAccess = {
   writeSuggestions,
   removeSuggestions,
   markUseForTraining,
+  markTrainingSample,
   markProcessedInRun,
   readModel,
   writeModel,

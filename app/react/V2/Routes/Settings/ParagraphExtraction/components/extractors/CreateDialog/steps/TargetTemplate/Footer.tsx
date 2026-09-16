@@ -12,7 +12,7 @@ const Footer = () => {
         <Translate>Cancel</Translate>
       </Button>
       <Button
-        className="grow bg-primary-800 disabled:opacity-50"
+        className="grow bg-ink disabled:opacity-50"
         onClick={() => setStep(2)}
         disabled={!targetTemplateId}
       >

@@ -1,11 +1,9 @@
 import React, { useMemo, type ReactNode } from 'react';
 import { useAtomValue } from 'jotai';
 import { templatesAtom } from '#V2/atoms/templatesAtom.js';
-import { effectiveThemeModeAtom, settingsAtom } from '#V2/atoms/index.js';
-import { Translate } from '#app/I18N/index.js';
-import { getTemplatePillColors, hexToRgb } from '#shared/utils/contrast.js';
-import { appliedThemeAsInProvider } from '#V2/theme/themes.js';
-import { getTemplatePillThemeAnchors } from '#V2/theme/templatePillTheme.js';
+import { Translate, t } from '#app/I18N/index.js';
+import { hexToRgb } from '#shared/utils/contrast.js';
+import { useTemplatePillColors } from '#V2/theme/useTemplatePillColors.js';
 import { ColorDot } from './ColorDot.js';
 
 const accentRgba = (hex: string, alpha: number): string => {
@@ -26,34 +24,19 @@ const pillSizeClasses = {
 
 const TemplatePill = ({ templateId, label, size = 'sm' }: TemplatePillProps) => {
   const templates = useAtomValue(templatesAtom);
-  const settings = useAtomValue(settingsAtom);
-  const themeMode = useAtomValue(effectiveThemeModeAtom);
   const template = useMemo(
-    () => templates.find(t => t._id === templateId),
+    () => templates.find(item => item._id === templateId),
     [templateId, templates]
   );
-  const themeColors = useMemo(
-    () =>
-      appliedThemeAsInProvider(settings.themeVars ?? undefined, themeMode, {
-        customizationOn: Boolean(settings.themeCustomization),
-      }),
-    [settings, themeMode]
-  );
-
+  const { accentHex, background, foreground } = useTemplatePillColors(template?.color);
   const displayLabel =
     label ?? (template ? <Translate context={template._id}>{template.name}</Translate> : null);
+  const titleKey = typeof label === 'string' ? label : template?.name;
+  const title = titleKey ? t(template?._id ?? 'System', titleKey, null, false) : undefined;
 
   if (!displayLabel) {
     return null;
   }
-
-  const { tintBase, accentHex } = getTemplatePillThemeAnchors(
-    themeColors,
-    themeMode,
-    template?.color
-  );
-  const { background, foreground } = getTemplatePillColors(accentHex, tintBase);
-  const title = typeof label === 'string' ? label : template?.name;
 
   return (
     <span

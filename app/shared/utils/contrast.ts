@@ -167,22 +167,19 @@ const getAccessibleForegroundOnBackground = (
   return { foreground: target, ratio: checkContrast(backgroundHex, target).ratio };
 };
 
+const LABEL_MIX_TOWARD_INK = 0.45;
+
 const getTemplatePillColors = (
   accentHex: string,
   tintBaseHex: string,
-  minimumRatio = WCAG_AA
+  inkHex: string
 ): { background: string; foreground: string; ratio: number } => {
-  for (let step = 1; step <= 100; step += 1) {
-    const w = step / 100;
-    const background = mixHex(tintBaseHex, accentHex, w);
-    const next = checkContrast(background, accentHex);
-    if (next.ratio >= minimumRatio) {
-      return { background, foreground: accentHex, ratio: next.ratio };
-    }
-  }
-
-  const background = mixHex(tintBaseHex, accentHex, 0.22);
-  const adjusted = getAccessibleForegroundOnBackground(background, accentHex, minimumRatio);
+  const background = mixHex(tintBaseHex, accentHex, 0.125);
+  const preferred =
+    getRelativeLuminanceFromHex(accentHex) > 0.6
+      ? inkHex
+      : mixHex(accentHex, inkHex, LABEL_MIX_TOWARD_INK);
+  const adjusted = getAccessibleForegroundOnBackground(background, preferred);
   return { background, foreground: adjusted.foreground, ratio: adjusted.ratio };
 };
 
