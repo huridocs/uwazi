@@ -66,7 +66,7 @@ describe('MarkdownField', () => {
     expect(textarea).toHaveValue('**hello**');
     expect(screen.getByTestId('pdf-fill-overlay')).toBeInTheDocument();
     expect(screen.getByRole('tablist', { name: 'Markdown' })).toBeInTheDocument();
-    expect(screen.getByRole('tab', { name: 'Write' })).toHaveAttribute('aria-selected', 'true');
+    expect(screen.getByRole('tab', { name: 'Edit' })).toHaveAttribute('aria-selected', 'true');
     expect(screen.getByRole('tab', { name: 'Preview' })).toHaveAttribute('aria-selected', 'false');
     expect(screen.queryByTestId('markdown-preview')).not.toBeInTheDocument();
   });
@@ -115,7 +115,7 @@ describe('MarkdownField', () => {
     fireEvent.click(screen.getByRole('tab', { name: 'Preview' }));
     expect(screen.getByText(/required/i)).toBeInTheDocument();
 
-    fireEvent.click(screen.getByRole('tab', { name: 'Write' }));
+    fireEvent.click(screen.getByRole('tab', { name: 'Edit' }));
     expect(screen.getByRole('textbox')).toBeInTheDocument();
     expect(screen.getByText(/required/i)).toBeInTheDocument();
   });
