@@ -103,7 +103,11 @@ const setUserContextForFile = async (file: FileType): Promise<void> => {
   permissionsContext.setUserInContext(user);
 };
 
-const saveResultFile = async (message: ResultsMessage, originalFile: FileType) => {
+const saveResultFile = async (
+  message: ResultsMessage,
+  originalFile: FileType,
+  sessionId?: string
+) => {
   const fileResponse = await fetch(message.file_url!);
   const fileStream = fileResponse.body as unknown as Readable;
   if (!fileStream) {
@@ -121,8 +125,6 @@ const saveResultFile = async (message: ResultsMessage, originalFile: FileType) =
 
   const fileId = IdGeneratorFactory.default().generate();
   const processingPDF = inputFile.toEntityFile(originalFile.entity!, fileId) as PDFDocument;
-  const sessionId =
-    typeof message.params?.sessionId === 'string' ? message.params.sessionId : undefined;
 
   const transactionManager = TransactionManagerFactory.mongo();
   const filesService = FilesServiceFactory.default(
@@ -155,9 +157,8 @@ const processFiles = async (
   try {
     await setUserContextForFile(originalFile);
 
-    const resultFile = await saveResultFile(message, originalFile);
-    const sessionId =
-      typeof message.params?.sessionId === 'string' ? message.params.sessionId : undefined;
+    const { sessionId } = record;
+    const resultFile = await saveResultFile(message, originalFile, sessionId);
 
     const filesService = FilesServiceFactory.default(
       {},
@@ -180,16 +181,10 @@ const processFiles = async (
   }
 };
 
-const handleOcrError = async (
-  record: OcrRecord,
-  originalFile: EnforcedWithId<FileType>,
-  message: ResultsMessage
-) => {
+const handleOcrError = async (record: OcrRecord, originalFile: EnforcedWithId<FileType>) => {
   await markError(record);
-  const sessionId =
-    typeof message.params?.sessionId === 'string' ? message.params.sessionId : undefined;
-  if (sessionId) {
-    emitToSession(sessionId, 'ocr:error', originalFile._id.toHexString());
+  if (record.sessionId) {
+    emitToSession(record.sessionId, 'ocr:error', originalFile._id.toHexString());
   }
 };
 
@@ -203,15 +198,13 @@ const processResults = async (message: ResultsMessage): Promise<void> => {
     if (!record) return;
 
     if (!message.success) {
-      await handleOcrError(record, originalFile, message);
+      await handleOcrError(record, originalFile);
       return;
     }
 
     await processFiles(record, message, originalFile);
-    const sessionId =
-      typeof message.params?.sessionId === 'string' ? message.params.sessionId : undefined;
-    if (sessionId) {
-      emitToSession(sessionId, 'ocr:ready', originalFile._id.toHexString());
+    if (record.sessionId) {
+      emitToSession(record.sessionId, 'ocr:ready', originalFile._id.toHexString());
     }
   } catch (e) {
     handleError(e);
@@ -299,7 +292,7 @@ class OcrManager {
       },
     });
 
-    await createForFile(file);
+    await createForFile(file, sessionId);
   }
 }
 
