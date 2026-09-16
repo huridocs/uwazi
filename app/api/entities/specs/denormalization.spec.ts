@@ -690,7 +690,9 @@ describe('Denormalize relationships', () => {
       );
     });
 
-    it('should update entities when translating thesauri values', async () => {
+    it('should dispatch denormalization when translating thesauri values', async () => {
+      await testingEnvironment.db.getCollection('jobs')!.deleteMany({});
+
       await testingEnvironment.runWithContext(async () =>
         SaveLocaleTranslationsUseCaseFactory.default().execute({
           locale: 'es',
@@ -708,12 +710,17 @@ describe('Denormalize relationships', () => {
           ],
         })
       );
-      await elasticTesting.refresh();
-      const results = await elasticTesting.getIndexedEntities();
-      const englishEntity = results.find(r => r.sharedId === 'A1' && r.language === 'en');
-      const spanishEntity = results.find(r => r.sharedId === 'A1' && r.language === 'es');
-      expect(englishEntity?.metadata?.select).toMatchObject([{ value: 'One', label: 'One' }]);
-      expect(spanishEntity?.metadata?.select).toMatchObject([{ value: 'One', label: 'Uno' }]);
+
+      const jobs = await testingEnvironment.db.getCollection('jobs')!.find().toArray();
+      expect(jobs).toMatchObject([
+        {
+          name: 'DenormalizeThesaurusEntitiesHandler',
+          params: {
+            thesaurusId: factory.id('Numbers').toString(),
+            valueIds: expect.arrayContaining(['One', 'Two']),
+          },
+        },
+      ]);
     });
   });
 });

@@ -61,19 +61,15 @@ class SaveLocaleTranslationsUseCase extends AbstractUseCase<Input, Output, Deps>
 
     await this.transactionManager.run(async () => {
       await this.deps.translationsService.saveEntries(entries);
-    });
-
-    await Promise.all(
-      snapshots.map(async snapshot =>
-        this.deps.propagateThesaurusTranslation.propagate({
-          locale,
+      await this.deps.propagateThesaurusTranslation.propagate(
+        snapshots.map(snapshot => ({
           contextId: snapshot.contextId,
           type: snapshot.type,
           previous: snapshot.previous,
           next: snapshot.next,
-        })
-      )
-    );
+        }))
+      );
+    });
 
     return translation;
   }
