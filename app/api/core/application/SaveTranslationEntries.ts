@@ -55,31 +55,23 @@ class SaveTranslationEntriesUseCase extends AbstractUseCase<Input, Output, Deps>
     const { context } = translations[0];
     const previousSnapshots = await this.loadContextSnapshots(context.id);
 
-    await this.transactionManager.run(async () => {
-      await this.deps.translationsService.saveEntries(translations);
-    });
-
-    if (previousSnapshots[0]?.type !== 'Thesaurus') {
-      return;
-    }
-
     const incomingByLocale: Record<string, Record<string, string>> = {};
     translations.forEach(entry => {
       incomingByLocale[entry.language] = incomingByLocale[entry.language] || {};
       incomingByLocale[entry.language][entry.key] = entry.value;
     });
 
-    await Promise.all(
-      previousSnapshots.map(async snapshot =>
-        this.deps.propagateThesaurusTranslation.propagate({
-          locale: snapshot.locale,
+    await this.transactionManager.run(async () => {
+      await this.deps.translationsService.saveEntries(translations);
+      await this.deps.propagateThesaurusTranslation.propagate(
+        previousSnapshots.map(snapshot => ({
           contextId: context.id,
           type: snapshot.type,
           previous: snapshot.values,
           next: { ...snapshot.values, ...(incomingByLocale[snapshot.locale] || {}) },
-        })
-      )
-    );
+        }))
+      );
+    });
   }
 }
 

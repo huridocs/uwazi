@@ -1,9 +1,8 @@
 import { ThesauriDataSource } from '#api/core/application/contracts/ThesauriDataSource.js';
-import { ThesaurusMetadataRenamer } from '#api/core/application/contracts/ThesaurusMetadataRenamer.js';
+import { Dispatcher } from '#api/core/application/contracts/Dispatcher.js';
 import { Thesaurus } from '#api/core/domain/thesaurus/Thesaurus.js';
 
 type ThesaurusValueChange = {
-  locale: string;
   contextId: string;
   type?: string;
   previous: Record<string, string>;
@@ -18,7 +17,8 @@ type ThesaurusOption = {
 
 type Deps = {
   thesauriDS: ThesauriDataSource;
-  metadataRenamer: ThesaurusMetadataRenamer;
+  dispatcher: Dispatcher;
+  tenantName: string;
 };
 
 const flattenThesaurusValues = (values: ThesaurusOption[] = []): ThesaurusOption[] =>
@@ -40,45 +40,59 @@ function diffChangedValues(previous: Record<string, string>, next: Record<string
 class PropagateThesaurusTranslationService {
   constructor(private deps: Deps) {}
 
-  async propagate(change: ThesaurusValueChange): Promise<void> {
-    if (change.type !== 'Thesaurus' || !change.contextId || !change.locale) {
-      return;
-    }
+  async propagate(changes: ThesaurusValueChange[]): Promise<void> {
+    const thesaurusChanges = changes.filter(
+      change => change.type === 'Thesaurus' && change.contextId
+    );
 
-    const thesaurusResult = await this.deps.thesauriDS.getById(change.contextId);
+    const changesByThesaurus = thesaurusChanges.reduce<Record<string, ThesaurusValueChange[]>>(
+      (acc, change) => ({
+        ...acc,
+        [change.contextId]: [...(acc[change.contextId] || []), change],
+      }),
+      {}
+    );
+
+    await Promise.all(
+      Object.entries(changesByThesaurus).map(async ([thesaurusId, thesaurusChangesList]) => {
+        const valueIds = await this.resolveChangedValueIds(thesaurusId, thesaurusChangesList);
+
+        if (valueIds.length === 0) {
+          return;
+        }
+
+        await this.deps.dispatcher.denormalizeThesaurus({
+          thesaurusId,
+          valueIds,
+          tenantName: this.deps.tenantName,
+        });
+      })
+    );
+  }
+
+  private async resolveChangedValueIds(
+    thesaurusId: string,
+    changes: ThesaurusValueChange[]
+  ): Promise<string[]> {
+    const thesaurusResult = await this.deps.thesauriDS.getById(thesaurusId);
     const thesaurusValues = thesaurusResult.isOk()
       ? (thesaurusResult.getDataOrThrow() as Thesaurus).values
       : [];
     const flattenedThesaurusValues = flattenThesaurusValues(thesaurusValues as ThesaurusOption[]);
 
-    const valuesChanged = diffChangedValues(change.previous, change.next);
+    const valueIds = new Set<string>();
 
-    const changesMatchingDictionaryId = Object.keys(valuesChanged).reduce(
-      (changes, valueChanged) => {
-        const matchingValues = flattenedThesaurusValues.filter(v => v.label === valueChanged);
-        const nextChanges = matchingValues
-          .filter(value => value.id)
-          .map(value => ({ id: value.id as string, value: valuesChanged[valueChanged] }));
+    changes.forEach(change => {
+      const valuesChanged = diffChangedValues(change.previous, change.next);
 
-        return changes.concat(nextChanges);
-      },
-      [] as { id: string; value: string }[]
-    );
+      Object.keys(valuesChanged).forEach(valueChanged => {
+        flattenedThesaurusValues
+          .filter(value => value.label === valueChanged && value.id)
+          .forEach(value => valueIds.add(value.id as string));
+      });
+    });
 
-    const uniqueChanges = changesMatchingDictionaryId.filter(
-      (item, index, allChanges) => allChanges.findIndex(c => c.id === item.id) === index
-    );
-
-    await Promise.all(
-      uniqueChanges.map(async item =>
-        this.deps.metadataRenamer.renameInMetadata(
-          item.id,
-          item.value,
-          change.contextId,
-          change.locale
-        )
-      )
-    );
+    return Array.from(valueIds);
   }
 }
 
