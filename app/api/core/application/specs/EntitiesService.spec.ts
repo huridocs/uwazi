@@ -27,7 +27,7 @@ import { EntityUpdatedEvent as LegacyEntityUpdatedEvent } from '#api/entities/ev
 import { EntitiesServiceDeps } from '../EntitiesService.js';
 import {
   MissingTranslationLanguageError,
-  RootLanguageInTranslationsError,
+  TargetLanguageInTranslationsError,
   UnknownTranslationLanguageError,
 } from '../errors.js';
 import { GrantType } from '#api/core/domain/entityAccessPolicy/GrantType.js';
@@ -462,10 +462,13 @@ describe('EntitiesService', () => {
 
       const validate = async (translations: Record<string, unknown[]>) => {
         const { sut } = createSut({}, postgresCore);
-        return sut.validateTranslationLanguages('en', translations as any);
+        return sut.validateTranslationLanguages({
+          targetLanguage: 'en',
+          translations: translations as any,
+        });
       };
 
-      it('should accept every installed language except the root one', async () => {
+      it('should accept every installed language except the target language', async () => {
         await expect(validate({ es: [], pt: [] })).resolves.toBeUndefined();
       });
 
@@ -473,9 +476,9 @@ describe('EntitiesService', () => {
         await expect(validate({ es: [], pt: [], fr: [] })).resolves.toBeUndefined();
       });
 
-      it('should reject the root language', async () => {
+      it('should reject the target language', async () => {
         await expect(validate({ en: [], es: [], pt: [] })).rejects.toThrow(
-          new RootLanguageInTranslationsError('en')
+          new TargetLanguageInTranslationsError('en')
         );
       });
 
@@ -494,16 +497,20 @@ describe('EntitiesService', () => {
       describe('when partial translations are allowed', () => {
         const validatePartial = async (translations: Record<string, unknown[]>) => {
           const { sut } = createSut({}, postgresCore);
-          return sut.validateTranslationLanguages('en', translations as any, { partial: true });
+          return sut.validateTranslationLanguages({
+            targetLanguage: 'en',
+            translations: translations as any,
+            partial: true,
+          });
         };
 
         it('should accept missing installed languages', async () => {
           await expect(validatePartial({ es: [] })).resolves.toBeUndefined();
         });
 
-        it('should still reject the root language and languages that are not installed', async () => {
+        it('should still reject the target language and languages that are not installed', async () => {
           await expect(validatePartial({ en: [] })).rejects.toThrow(
-            new RootLanguageInTranslationsError('en')
+            new TargetLanguageInTranslationsError('en')
           );
           await expect(validatePartial({ de: [] })).rejects.toThrow(
             new UnknownTranslationLanguageError('de')

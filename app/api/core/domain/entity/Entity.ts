@@ -50,6 +50,12 @@ type Props = {
   generatedToc?: boolean;
 };
 
+type SetTranslatedPropertyAssignmentsParams = {
+  language: LanguageISO6391;
+  assignments: PropertyAssignment[];
+  partial?: boolean;
+};
+
 type UpdateProps = {
   icon?: Icon;
   generatedToc?: boolean;
@@ -117,12 +123,11 @@ class Entity {
    * Sets translatable values of one translation. Unless `partial`, every translatable property of
    * the template must be provided.
    */
-  //cc: refactor it so it accepts ValidateTranslationLanguagesParams object.
-  setTranslatedPropertyAssignments(
-    language: LanguageISO6391,
-    assignments: PropertyAssignment[],
-    { partial = false }: { partial?: boolean } = {}
-  ) {
+  setTranslatedPropertyAssignments({
+    language,
+    assignments,
+    partial = false,
+  }: SetTranslatedPropertyAssignmentsParams) {
     const translation = this.getTranslation(language);
 
     const notTranslatable = assignments.find(assignment => !assignment.isTranslatable);

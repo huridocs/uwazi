@@ -2004,10 +2004,13 @@ describe('Entity', () => {
       it('should set translatable values only in the given language', () => {
         const entity = loadedEntity();
 
-        entity.setTranslatedPropertyAssignments('es', [
-          assignment(entity, 'title', 'Título'),
-          assignment(entity, 'summary', 'Texto'),
-        ]);
+        entity.setTranslatedPropertyAssignments({
+          language: 'es',
+          assignments: [
+            assignment(entity, 'title', 'Título'),
+            assignment(entity, 'summary', 'Texto'),
+          ],
+        });
 
         expect(entity.getTranslation('es').getValue('summary').value).toEqual([{ value: 'Texto' }]);
         expect(entity.getTranslation('en').getValue('summary').value).toEqual([{ value: 'Text' }]);
@@ -2017,11 +2020,14 @@ describe('Entity', () => {
         const entity = loadedEntity();
 
         expect(() =>
-          entity.setTranslatedPropertyAssignments('es', [
-            assignment(entity, 'title', 'Título'),
-            assignment(entity, 'summary', 'Texto'),
-            entity.template.createPropertyAssignment('amount', { value: [{ value: 1 }] }),
-          ])
+          entity.setTranslatedPropertyAssignments({
+            language: 'es',
+            assignments: [
+              assignment(entity, 'title', 'Título'),
+              assignment(entity, 'summary', 'Texto'),
+              entity.template.createPropertyAssignment('amount', { value: [{ value: 1 }] }),
+            ],
+          })
         ).toThrow(new PropertyNotTranslatableError('es', 'amount'));
       });
 
@@ -2029,7 +2035,10 @@ describe('Entity', () => {
         const entity = loadedEntity();
 
         expect(() =>
-          entity.setTranslatedPropertyAssignments('es', [assignment(entity, 'title', 'Título')])
+          entity.setTranslatedPropertyAssignments({
+            language: 'es',
+            assignments: [assignment(entity, 'title', 'Título')],
+          })
         ).toThrow(new MissingTranslatedPropertyError('es', 'summary'));
       });
 
@@ -2038,7 +2047,9 @@ describe('Entity', () => {
           const entity = loadedEntity();
           entity.ensureTranslations(['en', 'es', 'pt'], 'en');
 
-          entity.setTranslatedPropertyAssignments('pt', [assignment(entity, 'title', 'Título')], {
+          entity.setTranslatedPropertyAssignments({
+            language: 'pt',
+            assignments: [assignment(entity, 'title', 'Título')],
             partial: true,
           });
 
@@ -2051,11 +2062,13 @@ describe('Entity', () => {
           const entity = loadedEntity();
 
           expect(() =>
-            entity.setTranslatedPropertyAssignments(
-              'es',
-              [entity.template.createPropertyAssignment('amount', { value: [{ value: 1 }] })],
-              { partial: true }
-            )
+            entity.setTranslatedPropertyAssignments({
+              language: 'es',
+              assignments: [
+                entity.template.createPropertyAssignment('amount', { value: [{ value: 1 }] }),
+              ],
+              partial: true,
+            })
           ).toThrow(new PropertyNotTranslatableError('es', 'amount'));
         });
       });

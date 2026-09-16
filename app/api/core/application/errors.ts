@@ -42,16 +42,16 @@ export class UnknownTranslationLanguageError extends ValidationError {
   }
 }
 
-export class RootLanguageInTranslationsError extends ValidationError {
+export class TargetLanguageInTranslationsError extends ValidationError {
   constructor(readonly language: string) {
     super(
-      `Translations cannot include "${language}": it is the language of the root entity.`,
-      'entity.translations.root_language_error'
+      `Translations cannot include "${language}": it is the target language of the request.`,
+      'entity.translations.target_language_error'
     );
   }
 
   asAJV(): AJVObject {
-    return { message: this.message, keyword: 'rootLanguageInTranslations' };
+    return { message: this.message, keyword: 'targetLanguageInTranslations' };
   }
 }
 

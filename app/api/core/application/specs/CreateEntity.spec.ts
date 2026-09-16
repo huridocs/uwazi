@@ -15,7 +15,7 @@ import { User } from '#api/users.v2/model/User.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import { AccessLevel } from '#api/core/domain/entityAccessPolicy/AccessLevel.js';
 import { GrantType } from '#api/core/domain/entityAccessPolicy/GrantType.js';
-import { RootLanguageInTranslationsError } from '#api/core/application/errors.js';
+import { TargetLanguageInTranslationsError } from '#api/core/application/errors.js';
 
 const factory = getFixturesFactory();
 
@@ -552,7 +552,7 @@ describe('CreateEntityUseCase', () => {
           .map(row => ({ language: row.language, title: row.title, text_1: row.metadata.text_1 }))
           .sort((a, b) => a.language.localeCompare(b.language));
 
-      it('should save the root values and each translation in its own language', async () => {
+      it('should save the target language values and each translation in its own language', async () => {
         const { sut } = createSut({ targetLanguage: 'en' }, postgresCore);
 
         const entity = await sut.execute({
@@ -592,7 +592,7 @@ describe('CreateEntityUseCase', () => {
         expect(createdEvent?.getData().providedTranslations).toEqual({ es: ['title'] });
       });
 
-      it('should keep the root values for the translations left out', async () => {
+      it('should keep the target language values for the translations left out', async () => {
         const { sut } = createSut({ targetLanguage: 'en' }, postgresCore);
 
         const entity = await sut.execute({
@@ -610,7 +610,7 @@ describe('CreateEntityUseCase', () => {
         ]);
       });
 
-      it('should reject the root language inside translations', async () => {
+      it('should reject the target language inside translations', async () => {
         const { sut } = createSut({ targetLanguage: 'en' }, postgresCore);
 
         await expect(
@@ -619,7 +619,7 @@ describe('CreateEntityUseCase', () => {
             propertyAssignments: [{ name: 'title', value: [{ value: 'Title EN' }] }],
             translations: { en: [], es: [] },
           })
-        ).rejects.toThrow(new RootLanguageInTranslationsError('en'));
+        ).rejects.toThrow(new TargetLanguageInTranslationsError('en'));
       });
     });
   });

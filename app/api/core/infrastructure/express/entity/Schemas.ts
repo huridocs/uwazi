@@ -129,7 +129,7 @@ const UpdateEntitySchema = MutateEntitySchema.extend({
     .optional(),
 });
 
-// Translated values reference existing files only; uploads belong to the root entity.
+// Translated values reference existing files only; uploads belong to the target language values.
 const TranslatedValueSchema = MetadataValueSchema.omit({ attachment: true }).strict();
 
 const EntityTranslationsSchema = z.record(

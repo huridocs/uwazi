@@ -27,11 +27,11 @@ type Deps = {
 class CreateEntityUseCase extends AbstractUseCase<Input, Output, Deps> {
   async execute(input: Input): Promise<Output> {
     if (input.translations) {
-      await this.deps.entitiesService.validateTranslationLanguages(
-        this.targetLanguage,
-        input.translations,
-        { partial: true }
-      );
+      await this.deps.entitiesService.validateTranslationLanguages({
+        targetLanguage: this.targetLanguage,
+        translations: input.translations,
+        partial: true,
+      });
     }
 
     const entity = await this.deps.entitiesService.create({
@@ -48,7 +48,7 @@ class CreateEntityUseCase extends AbstractUseCase<Input, Output, Deps> {
 
     entity.setPropertyAssignmentsInAllLanguages(propertyAssignments, true);
 
-    // Root values are copied into every language first; translations overwrite theirs, so required
+    // Target language values are copied into every language first; translations overwrite theirs, so required
     // properties are validated again over the final state.
     if (input.translations) {
       await this.applyTranslations(entity, input.translations);
@@ -92,7 +92,9 @@ class CreateEntityUseCase extends AbstractUseCase<Input, Output, Deps> {
           values ?? [],
           entity.template
         );
-        entity.setTranslatedPropertyAssignments(language as LanguageISO6391, assignments, {
+        entity.setTranslatedPropertyAssignments({
+          language: language as LanguageISO6391,
+          assignments,
           partial: true,
         });
       })

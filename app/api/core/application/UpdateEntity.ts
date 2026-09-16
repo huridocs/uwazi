@@ -47,10 +47,10 @@ type Deps = {
 class UpdateEntityUseCase extends AbstractUseCase<Input, Output, Deps> {
   async execute(input: Input): Promise<Output> {
     if (input.translations) {
-      await this.deps.entitiesService.validateTranslationLanguages(
-        input.language,
-        input.translations
-      );
+      await this.deps.entitiesService.validateTranslationLanguages({
+        targetLanguage: input.language,
+        translations: input.translations,
+      });
     }
 
     const entity = (await this.deps.entitiesDS.getById(input.sharedId)).getDataOrThrow();
@@ -158,7 +158,10 @@ class UpdateEntityUseCase extends AbstractUseCase<Input, Output, Deps> {
           [],
           entity
         );
-        entity.setTranslatedPropertyAssignments(language as LanguageISO6391, assignments);
+        entity.setTranslatedPropertyAssignments({
+          language: language as LanguageISO6391,
+          assignments,
+        });
       })
     );
   }

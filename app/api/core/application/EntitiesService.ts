@@ -25,11 +25,17 @@ import { EntityAccessPolicyDataSource } from './contracts/EntityAccessPolicyData
 import { PropertyAssignmentInput } from './propertyAssignmentCreatorService/PropertyAssignmentCreatorService.js';
 import {
   MissingTranslationLanguageError,
-  RootLanguageInTranslationsError,
+  TargetLanguageInTranslationsError,
   UnknownTranslationLanguageError,
 } from './errors.js';
 
 type TranslationsInput = Partial<Record<LanguageISO6391, PropertyAssignmentInput[]>>;
+
+type ValidateTranslationLanguagesParams = {
+  targetLanguage: LanguageISO6391;
+  translations: TranslationsInput;
+  partial?: boolean;
+};
 
 type CreateInput = {
   icon?: EntityIcon;
@@ -91,27 +97,26 @@ class EntitiesService {
   }
 
   /**
-   * `translations` may only hold installed languages other than the root one. Unless `partial`,
+   * `translations` may only hold installed languages other than the target language. Unless `partial`,
    * every installed language must be present, except languages still being installed.
    */
-  //cc: refactor it so it accepts ValidateTranslationLanguagesParams object.
-  async validateTranslationLanguages(
-    rootLanguage: LanguageISO6391,
-    translations: TranslationsInput,
-    { partial = false }: { partial?: boolean } = {}
-  ): Promise<void> {
+  async validateTranslationLanguages({
+    targetLanguage,
+    translations,
+    partial = false,
+  }: ValidateTranslationLanguagesParams): Promise<void> {
     const installed = (await this.deps.settingsDS.readLanguages()) ?? [];
     const sent = Object.keys(translations);
 
     const unknown = sent.find(language => !installed.some(({ key }) => key === language));
     if (unknown) throw new UnknownTranslationLanguageError(unknown);
 
-    if (sent.includes(rootLanguage)) throw new RootLanguageInTranslationsError(rootLanguage);
+    if (sent.includes(targetLanguage)) throw new TargetLanguageInTranslationsError(targetLanguage);
 
     if (partial) return;
 
     const missing = installed.find(
-      ({ key, installing }) => key !== rootLanguage && !installing && !sent.includes(key)
+      ({ key, installing }) => key !== targetLanguage && !installing && !sent.includes(key)
     );
     if (missing) throw new MissingTranslationLanguageError(missing.key);
   }

@@ -1068,7 +1068,7 @@ describe('UpdateEntityUseCase', () => {
     });
 
     describe('with translations', () => {
-      it('should save the root language and each translation in its own language', async () => {
+      it('should save the target language and each translation in its own language', async () => {
         const { sut } = createSut(postgresCore);
 
         await sut.execute({

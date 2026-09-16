@@ -137,7 +137,7 @@ class EntitiesQueryService {
   /** Translatable values of every other language the entity has a row for. */
   private async getTranslations(
     entity: EntityDBO,
-    rootLanguage: LanguageISO6391
+    targetLanguage: LanguageISO6391
   ): Promise<EntityTranslationsDTO> {
     const [template, rows] = await Promise.all([
       this.deps.templatesDS.getById(entity.template.toString()),
@@ -147,7 +147,7 @@ class EntitiesQueryService {
 
     return Object.fromEntries(
       rows
-        .filter(row => row.language !== rootLanguage)
+        .filter(row => row.language !== targetLanguage)
         .map(row => [
           row.language,
           Object.fromEntries(

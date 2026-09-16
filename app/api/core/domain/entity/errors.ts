@@ -95,7 +95,7 @@ export class PropertyNotTranslatableError extends ValidationError {
     readonly property: string
   ) {
     super(
-      `Property "${property}" is not translatable; send it with the root entity, not under "${language}".`,
+      `Property "${property}" is not translatable; send it with the target language values, not under "${language}".`,
       'entity.entity.property_not_translatable_error'
     );
   }

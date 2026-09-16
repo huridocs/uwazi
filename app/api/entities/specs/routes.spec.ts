@@ -700,7 +700,7 @@ describe('entities routes', () => {
 
       it.each([
         [
-          'the root language',
+          'the target language',
           {
             es: translated('Nuevo', 'texto'),
             en: translated('New', 'text'),
