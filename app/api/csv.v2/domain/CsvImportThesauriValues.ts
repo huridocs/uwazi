@@ -12,6 +12,7 @@ type CsvImportThesauriStats = {
 };
 
 type CsvImportThesauriValuesProps = {
+  id: string;
   importId: string;
   thesaurusId: string;
   entries: CsvThesauriPendingEntry[];
@@ -28,6 +29,8 @@ type PendingValuesDiffSummary = {
 };
 
 class CsvImportThesauriValues {
+  readonly id: string;
+
   readonly importId: string;
 
   readonly thesaurusId: string;
@@ -43,6 +46,7 @@ class CsvImportThesauriValues {
   readonly stats?: CsvImportThesauriStats;
 
   private constructor(props: CsvImportThesauriValuesProps) {
+    this.id = props.id;
     this.importId = props.importId;
     this.thesaurusId = props.thesaurusId;
     this.entries = props.entries;
@@ -63,6 +67,7 @@ class CsvImportThesauriValues {
     const appliedValues = this.mergeAppliedValues(incoming);
     const stats = this.combineStats(summary);
     return new CsvImportThesauriValues({
+      id: this.id,
       importId: this.importId,
       thesaurusId: this.thesaurusId,
       entries: this.entries,
@@ -91,6 +96,7 @@ class CsvImportThesauriValues {
 
   toObject() {
     return {
+      id: this.id,
       importId: this.importId,
       thesaurusId: this.thesaurusId,
       entries: this.entries,

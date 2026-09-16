@@ -14,6 +14,7 @@ enum RowErrorCode {
 }
 
 type CsvImportRowErrorProps = {
+  id: string;
   importId: string;
   rowIndex: number;
   message: string;
@@ -25,6 +26,8 @@ type CsvImportRowErrorProps = {
 };
 
 class CsvImportRowError {
+  readonly id: string;
+
   readonly importId: string;
 
   readonly rowIndex: number;
@@ -42,6 +45,7 @@ class CsvImportRowError {
   readonly createdAt: number;
 
   private constructor(props: CsvImportRowErrorProps) {
+    this.id = props.id;
     this.importId = props.importId;
     this.rowIndex = props.rowIndex;
     this.message = props.message;
@@ -65,6 +69,7 @@ class CsvImportRowError {
 
   toObject() {
     return {
+      id: this.id,
       importId: this.importId,
       rowIndex: this.rowIndex,
       message: this.message,

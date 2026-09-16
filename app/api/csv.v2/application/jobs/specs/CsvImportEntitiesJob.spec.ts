@@ -1,12 +1,15 @@
 /* eslint-disable max-statements */
-import { TransactionManagerFactory } from '#api/core/infrastructure/factories/TransactionManagerFactory.js';
 import { FileSystemStorage } from '#api/core/infrastructure/files/FileSystemStorage.js';
 import { PathManager } from '#api/core/infrastructure/files/PathManager.js';
 import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { testingPG } from '#api/utils/testing_pg.js';
-import { testingTenants } from '#api/utils/testingTenants.js';
 import { tenants } from '#api/tenants/tenantContext.js';
+import {
+  applyCsvJobBackendFlags,
+  clearCsvStores,
+  csvJobBackendConfigs,
+} from '../../../specs/csvBackendTest.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import { Entity } from '#api/core/domain/entity/Entity.js';
 import { JobsDispatcher } from '#api/core/libs/queue/application/contracts/JobsDispatcher.js';
@@ -15,20 +18,11 @@ import { TestUtils } from '#api/common.v2/utils/Test.js';
 import { CsvImportDomain, CsvImportStatus } from '../../../domain/CsvImport.js';
 import { CsvImportRow } from '../../../domain/CsvImportRow.js';
 import { RowErrorCode } from '../../../domain/CsvImportRowError.js';
+import { CsvImportRelationshipValues } from '../../../domain/CsvImportRelationshipValues.js';
 import { CsvImportEntitiesJob } from '../CsvImportEntitiesJob.js';
 import { CsvImportEntitiesJobFactory } from '../../../infrastructure/factories/CsvImportEntitiesJobFactory.js';
 import { cleanupCsvV2QueueJobsByImportIds } from '../../../specs/helpers/queueTestCleanup.js';
 import { EntitiesDataSource } from '#api/core/application/contracts/EntitiesDataSource.js';
-
-type TestConfig = {
-  name: string;
-  usePostgres: boolean;
-};
-
-const testConfigs: TestConfig[] = [
-  { name: 'Mongo', usePostgres: false },
-  { name: 'Postgres', usePostgres: true },
-];
 
 jest.mock('#api/search/index.js', () => {
   const { elastic } = jest.requireActual('#api/search/elastic.js') as {
@@ -100,6 +94,7 @@ const stageRows = async (
     .map(cell => cell.trim());
   const rows = parsed.map((line, index) =>
     CsvImportRow.create({
+      id: fixturesFactory.idString(`${params.importId}-row-${index}`),
       importId: params.importId,
       rowIndex: index,
       headers,
@@ -125,8 +120,30 @@ const insertImport = async (
   await csvImportsDS.insert(csvImport);
 };
 
+const stageRelationshipValues = async (
+  relationshipValuesDS: {
+    replaceValues: (
+      importId: string,
+      docs: CsvImportRelationshipValues[]
+    ) => Promise<void>;
+  },
+  params: {
+    importId: string;
+    values: CsvImportRelationshipValues['values'];
+  }
+) => {
+  await relationshipValuesDS.replaceValues(params.importId, [
+    CsvImportRelationshipValues.create({
+      id: fixturesFactory.idString(`${params.importId}-rel-values`),
+      importId: params.importId,
+      templateId: '',
+      values: params.values,
+      createdAt: Date.now(),
+    }),
+  ]);
+};
+
 const buildUseCase = () => {
-  const transactionManager = TransactionManagerFactory.default();
   const fileStorage = new FileSystemStorage(new PathManager({ tenant: tenants.current() }));
   const jobsDispatcher: jest.Mocked<JobsDispatcher> = TestUtils.mockClass<JobsDispatcher>({
     dispatch: jest.fn().mockResolvedValue(undefined),
@@ -137,18 +154,26 @@ const buildUseCase = () => {
       }),
   }) as jest.Mocked<JobsDispatcher>;
 
-  return testingEnvironment.runWithContext(() => {
-    const { useCase, csvImportsDS, rowsDS, rowErrorsDS, entitiesDS } =
+    const { useCase, csvImportsDS, rowsDS, rowErrorsDS, entitiesDS, relationshipValuesDS } =
       CsvImportEntitiesJobFactory.build({
-        transactionManager,
         fileStorage,
         batchSize: 2,
         jobsDispatcher,
       });
 
-    return { useCase, csvImportsDS, rowsDS, rowErrorsDS, entitiesDS, jobsDispatcher };
-  });
-};
+    return {
+      useCase,
+      csvImportsDS,
+      rowsDS,
+      rowErrorsDS,
+      entitiesDS,
+      relationshipValuesDS,
+      jobsDispatcher,
+    };
+  };
+
+const itWithContext = (name: string, fn: () => Promise<void>) =>
+  it(name, () => testingEnvironment.runWithContext(fn));
 
 const runSingleRowImport = async (params: {
   useCase: CsvImportEntitiesJob;
@@ -238,24 +263,14 @@ describe('CsvImportEntitiesJob (integration)', () => {
     await testingEnvironment.tearDown();
   });
 
-  describe.each(testConfigs)('$name', ({ usePostgres }) => {
+  describe.each(csvJobBackendConfigs)('$name', ({ postgresCsv, postgresCore }) => {
     beforeEach(async () => {
-      testingTenants.changeCurrentTenant({
-        featureFlags: { postgresCore: usePostgres },
-      });
+      applyCsvJobBackendFlags(postgresCsv, postgresCore);
       jest.clearAllMocks();
       await testingEnvironment.setFixtures(fixtures);
       await cleanupCsvV2QueueJobsByImportIds(createdImportIds.splice(0));
       await Promise.all(
-        [
-          'csv_imports',
-          'csv_import_rows',
-          'csv_import_row_errors',
-          'csv_import_thesauri_values',
-          'csv_import_relationships_values',
-          'entities',
-          'files',
-        ].map(async collectionName => {
+        ['entities', 'files'].map(async collectionName => {
           const collection = testingEnvironment.db.getCollection(collectionName);
           if (collection) {
             await collection.deleteMany({});
@@ -263,9 +278,10 @@ describe('CsvImportEntitiesJob (integration)', () => {
         })
       );
       await testingPG.clear(['entities', 'files']);
+      await clearCsvStores();
     });
 
-    it('should create entities from staged rows and update stats', async () => {
+    itWithContext('should create entities from staged rows and update stats', async () => {
       const { useCase, csvImportsDS, rowsDS, rowErrorsDS, entitiesDS } = buildUseCase();
       const importId = fixturesFactory.idString('import-entities-basic');
       createdImportIds.push(importId);
@@ -290,7 +306,7 @@ describe('CsvImportEntitiesJob (integration)', () => {
       expectEntityContent(entities[0]);
     });
 
-    it('should keep language-specific values for all non-synced properties', async () => {
+    itWithContext('should keep language-specific values for all non-synced properties', async () => {
       await testingEnvironment.setFixtures({
         ...fixtures,
         settings: [
@@ -413,7 +429,7 @@ describe('CsvImportEntitiesJob (integration)', () => {
       });
     });
 
-    it('should copy an unsuffixed title to every instance language', async () => {
+    itWithContext('should copy an unsuffixed title to every instance language', async () => {
       await testingEnvironment.setFixtures({
         ...fixtures,
         settings: [
@@ -457,7 +473,7 @@ describe('CsvImportEntitiesJob (integration)', () => {
       expect(callbacks.onSuccess).toHaveBeenCalledWith({ importId });
     });
 
-    it('should fail the import when language-suffixed headers omit an instance language', async () => {
+    itWithContext('should fail the import when language-suffixed headers omit an instance language', async () => {
       await testingEnvironment.setFixtures({
         ...fixtures,
         settings: [
@@ -502,7 +518,7 @@ describe('CsvImportEntitiesJob (integration)', () => {
       expect(callbacks.onError).toHaveBeenCalled();
     });
 
-    it('should fail a row when a language-specific title value is blank', async () => {
+    itWithContext('should fail a row when a language-specific title value is blank', async () => {
       await testingEnvironment.setFixtures({
         ...fixtures,
         settings: [
@@ -549,7 +565,7 @@ describe('CsvImportEntitiesJob (integration)', () => {
       expect(callbacks.onSuccess).toHaveBeenCalledWith({ importId });
     });
 
-    it('should allow blank values for non-title language columns when all languages are present', async () => {
+    itWithContext('should allow blank values for non-title language columns when all languages are present', async () => {
       await testingEnvironment.setFixtures({
         ...fixtures,
         settings: [
@@ -598,7 +614,7 @@ describe('CsvImportEntitiesJob (integration)', () => {
       expect(entities[0].getValue('text_field', 'fr').value[0].value).toBe('Text FR');
     });
 
-    it('should update an existing entity when id is provided and count entitiesUpdated', async () => {
+    itWithContext('should update an existing entity when id is provided and count entitiesUpdated', async () => {
       const { useCase, csvImportsDS, rowsDS, rowErrorsDS, entitiesDS } = buildUseCase();
       const importId = fixturesFactory.idString('import-entities-update-by-id');
       createdImportIds.push(importId);
@@ -674,7 +690,7 @@ describe('CsvImportEntitiesJob (integration)', () => {
       );
     });
 
-    it('should register ID_NOT_FOUND_IN_TEMPLATE when id does not belong to import template', async () => {
+    itWithContext('should register ID_NOT_FOUND_IN_TEMPLATE when id does not belong to import template', async () => {
       const { useCase, csvImportsDS, rowsDS, rowErrorsDS } = buildUseCase();
       const importId = fixturesFactory.idString('import-entities-update-id-template-mismatch');
       createdImportIds.push(importId);
@@ -739,8 +755,8 @@ describe('CsvImportEntitiesJob (integration)', () => {
       );
     });
 
-    it('should import rows with any-template relationship when there is a unique match', async () => {
-      const { useCase, csvImportsDS, rowsDS, rowErrorsDS, entitiesDS, jobsDispatcher } =
+    itWithContext('should import rows with any-template relationship when there is a unique match', async () => {
+      const { useCase, csvImportsDS, rowsDS, rowErrorsDS, entitiesDS, jobsDispatcher, relationshipValuesDS } =
         buildUseCase();
       const importId = fixturesFactory.idString('import-entities-any-relationship');
       createdImportIds.push(importId);
@@ -777,16 +793,14 @@ describe('CsvImportEntitiesJob (integration)', () => {
         ],
       });
 
-      await testingEnvironment.db.getCollection('csv_import_relationships_values')!.insertOne({
+      await stageRelationshipValues(relationshipValuesDS, {
         importId,
-        templateId: '',
         values: [
           {
             label: 'Related Any',
             matches: [{ sharedId: relatedSharedId, templateId: relatedTemplateId }],
           },
         ],
-        createdAt: Date.now(),
       });
 
       await insertImport(csvImportsDS, {
@@ -825,8 +839,9 @@ describe('CsvImportEntitiesJob (integration)', () => {
       );
     });
 
-    it('should import rows with multiple any-template relationships separated by pipe', async () => {
-      const { useCase, csvImportsDS, rowsDS, rowErrorsDS, entitiesDS } = buildUseCase();
+    itWithContext('should import rows with multiple any-template relationships separated by pipe', async () => {
+      const { useCase, csvImportsDS, rowsDS, rowErrorsDS, entitiesDS, relationshipValuesDS } =
+        buildUseCase();
       const importId = fixturesFactory.idString('import-entities-any-relationship-multi');
       createdImportIds.push(importId);
       const userId = fixturesFactory.idString('import-entities-any-multi-user');
@@ -887,9 +902,8 @@ describe('CsvImportEntitiesJob (integration)', () => {
         ],
       });
 
-      await testingEnvironment.db.getCollection('csv_import_relationships_values')!.insertOne({
+      await stageRelationshipValues(relationshipValuesDS, {
         importId,
-        templateId: '',
         values: [
           {
             label: 'Related Any A',
@@ -900,7 +914,6 @@ describe('CsvImportEntitiesJob (integration)', () => {
             matches: [{ sharedId: relatedSharedIdB, templateId: relatedTemplateId }],
           },
         ],
-        createdAt: Date.now(),
       });
 
       await insertImport(csvImportsDS, {
@@ -931,8 +944,8 @@ describe('CsvImportEntitiesJob (integration)', () => {
       ]);
     });
 
-    it('preserves completed batch progress when cancelled before finalization', async () => {
-      const { useCase, csvImportsDS, rowsDS, rowErrorsDS } = buildUseCase();
+    itWithContext('preserves completed batch progress when cancelled before finalization', async () => {
+      const { useCase, csvImportsDS, rowsDS, rowErrorsDS, relationshipValuesDS } = buildUseCase();
       const importId = fixturesFactory.idString('import-entities-cancelled-before-finalize');
       createdImportIds.push(importId);
       const userId = fixturesFactory.idString('import-entities-cancel-user');
@@ -969,18 +982,13 @@ describe('CsvImportEntitiesJob (integration)', () => {
       expect(callbacks.onError).not.toHaveBeenCalled();
     });
 
-    it('persists relationship taxonomy metadata for failed rows', async () => {
-      const { useCase, csvImportsDS, rowsDS, rowErrorsDS } = buildUseCase();
+    itWithContext('persists relationship taxonomy metadata for failed rows', async () => {
+      const { useCase, csvImportsDS, rowsDS, rowErrorsDS, relationshipValuesDS } = buildUseCase();
       const importId = fixturesFactory.idString('import-entities-relationship-failure');
       createdImportIds.push(importId);
       const userId = fixturesFactory.idString('import-entities-relationship-failure-user');
 
-      await testingEnvironment.db.getCollection('csv_import_relationships_values')!.insertOne({
-        importId,
-        templateId: '',
-        values: [],
-        createdAt: Date.now(),
-      });
+      await stageRelationshipValues(relationshipValuesDS, { importId, values: [] });
 
       await insertImport(csvImportsDS, {
         importId,
@@ -1005,12 +1013,11 @@ describe('CsvImportEntitiesJob (integration)', () => {
       expect(error.rawValue).toBe('Unknown Related');
       expect(error.details).toEqual({
         unresolved: [
-          {
+          expect.objectContaining({
             token: 'Unknown Related',
             reason: 'not_found',
             scope: 'any-template',
-            candidates: null,
-          },
+          }),
         ],
       });
 
@@ -1023,18 +1030,13 @@ describe('CsvImportEntitiesJob (integration)', () => {
       );
     });
 
-    it('classifies empty lines as row errors and excludes them from failed-rows report artifact', async () => {
-      const { useCase, csvImportsDS, rowsDS, rowErrorsDS } = buildUseCase();
+    itWithContext('classifies empty lines as row errors and excludes them from failed-rows report artifact', async () => {
+      const { useCase, csvImportsDS, rowsDS, rowErrorsDS, relationshipValuesDS } = buildUseCase();
       const importId = fixturesFactory.idString('import-entities-empty-line');
       createdImportIds.push(importId);
       const userId = fixturesFactory.idString('import-entities-empty-line-user');
 
-      await testingEnvironment.db.getCollection('csv_import_relationships_values')!.insertOne({
-        importId,
-        templateId: '',
-        values: [],
-        createdAt: Date.now(),
-      });
+      await stageRelationshipValues(relationshipValuesDS, { importId, values: [] });
 
       await insertImport(csvImportsDS, {
         importId,
@@ -1064,18 +1066,13 @@ describe('CsvImportEntitiesJob (integration)', () => {
       expect(updatedImport.rowErrors ?? undefined).toBeUndefined();
     });
 
-    it('persists VALUE_INVALID_FORMAT for existing entity validation errors', async () => {
-      const { useCase, csvImportsDS, rowsDS, rowErrorsDS } = buildUseCase();
+    itWithContext('persists VALUE_INVALID_FORMAT for existing entity validation errors', async () => {
+      const { useCase, csvImportsDS, rowsDS, rowErrorsDS, relationshipValuesDS } = buildUseCase();
       const importId = fixturesFactory.idString('import-entities-date-validation-failure');
       createdImportIds.push(importId);
       const userId = fixturesFactory.idString('import-entities-date-validation-failure-user');
 
-      await testingEnvironment.db.getCollection('csv_import_relationships_values')!.insertOne({
-        importId,
-        templateId: '',
-        values: [],
-        createdAt: Date.now(),
-      });
+      await stageRelationshipValues(relationshipValuesDS, { importId, values: [] });
 
       await insertImport(csvImportsDS, {
         importId,

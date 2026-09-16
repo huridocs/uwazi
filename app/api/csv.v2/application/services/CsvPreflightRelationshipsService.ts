@@ -39,6 +39,7 @@ type BuildAppliedValuesParams = {
   importId: string;
   titlesByTemplate: Map<string, Set<string>>;
   chunkSize: number;
+  generateId: () => string;
   shouldContinue?: () => Promise<boolean>;
 };
 const MULTI_VALUE_SEPARATOR = '|';
@@ -270,6 +271,7 @@ const buildRelationshipAppliedValues = async (params: BuildAppliedValuesParams) 
       });
       docs.push(
         CsvImportRelationshipValues.create({
+          id: params.generateId(),
           importId,
           templateId,
           values,

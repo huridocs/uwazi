@@ -3,6 +3,7 @@ import { TransactionManager } from '#api/core/application/contracts/TransactionM
 import { Db } from 'mongodb';
 import { CsvImportRelationshipValuesDataSource } from '../../application/contracts/CsvImportRelationshipValuesDataSource.js';
 import { CsvImportRelationshipValues } from '../../domain/CsvImportRelationshipValues.js';
+import { fromMongoIdentity, toMongoIdentity } from './mongoIdentity.js';
 
 type RelationshipValuesDBO = {
   importId: string;
@@ -26,19 +27,12 @@ class MongoCsvImportRelationshipValuesDataSource
     if (!docs.length) {
       return;
     }
-    await this.getCollection().insertMany(docs.map(doc => doc.toPersistence()));
+    await this.getCollection().insertMany(docs.map(doc => toMongoIdentity(doc.toPersistence())));
   }
 
   async getByImport(importId: string): Promise<CsvImportRelationshipValues[]> {
     const docs = await this.getCollection().find({ importId }).toArray();
-    return docs.map(doc =>
-      CsvImportRelationshipValues.create({
-        importId: doc.importId,
-        templateId: doc.templateId,
-        values: doc.values,
-        createdAt: doc.createdAt,
-      })
-    );
+    return docs.map(doc => CsvImportRelationshipValues.create(fromMongoIdentity(doc)));
   }
 }
 
