@@ -12391,18 +12391,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-plugin-cypress@npm:^7.0.1":
-  version: 7.0.1
-  resolution: "eslint-plugin-cypress@npm:7.0.1"
+"eslint-plugin-cypress@npm:^7.0.2":
+  version: 7.0.2
+  resolution: "eslint-plugin-cypress@npm:7.0.2"
   dependencies:
-    globals: "npm:^17.11.0"
+    globals: "npm:^17.12.0"
   peerDependencies:
     "@typescript-eslint/parser": ">=8"
     eslint: ">=10"
   peerDependenciesMeta:
     "@typescript-eslint/parser":
       optional: true
-  checksum: 10c0/4bef64cbb6f033bf7fafe274b34bca2403968e1cb784b27d998ccee044690b37d8f70aef857d300df3f05a4bb5fcb2aa0ccedf94eb879cccd6ae88a7022d6a7e
+  checksum: 10c0/4105404c3cfe42c72c2ab933759d77de8f7d52db048c44d4c37e1dd5727f9abfee9b4324fdc22e2c85edeccb5627cb4c51f17f44dae3dc166ea8c9af9e93072d
   languageName: node
   linkType: hard
 
@@ -13913,10 +13913,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"globals@npm:^17.11.0":
-  version: 17.11.0
-  resolution: "globals@npm:17.11.0"
-  checksum: 10c0/5e1be3d816e04d4d0d01b1cdd40e46b5fb6b5e9f15aece9a5919b060e0fb1b3f1b9e7327dce97ef19e05513a6d65872e0834999ddea251557556dddd0f5fde30
+"globals@npm:^17.12.0":
+  version: 17.12.0
+  resolution: "globals@npm:17.12.0"
+  checksum: 10c0/8325cf8818c848871d17c32974c2c74e9c5f09c1b0e04421886f64f21e77c3e95f3ba25586743895a73acd860ada151132481d87d44a1f12993ae7758a694d03
   languageName: node
   linkType: hard
 
@@ -24282,7 +24282,7 @@ __metadata:
     echarts-for-react: "npm:^3.0.6"
     enzyme: "npm:3.11.0"
     enzyme-to-json: "npm:^3.6.2"
-    eslint-plugin-cypress: "npm:^7.0.1"
+    eslint-plugin-cypress: "npm:^7.0.2"
     eslint-plugin-storybook: "npm:10.6.0"
     express: "npm:4.22.2"
     express-http-proxy: "npm:^2.1.2"
