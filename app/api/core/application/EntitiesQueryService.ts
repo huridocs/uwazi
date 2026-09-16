@@ -6,6 +6,7 @@
 import { User } from '#api/users.v2/model/User.js';
 import { EntityDBO } from '#api/core/infrastructure/mongodb/entity/EntityDBO.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
+import type { EntityTranslationsDTO } from '#shared/types/entityWithTranslations.js';
 import { SettingsDataSource } from './contracts/SettingsDataSource.js';
 import { TemplatesDataSource } from './contracts/TemplatesDataSource.js';
 import {
@@ -54,6 +55,7 @@ class EntitiesQueryService {
     language: LanguageISO6391;
     includeRelationships: boolean;
     includePermissions: boolean;
+    includeTranslations?: boolean;
     scopeRelationshipsToMetadata?: boolean;
     user: User;
   }): Promise<GetEntityResponseDTO> {
@@ -62,6 +64,7 @@ class EntitiesQueryService {
       language,
       includeRelationships,
       includePermissions,
+      includeTranslations,
       scopeRelationshipsToMetadata,
       user,
     } = input;
@@ -125,9 +128,36 @@ class EntitiesQueryService {
       documents: entity.documents.map(doc => ({ ...doc, _id: doc._id.toString() }) as FileDTO),
       attachments: entity.attachments.map(doc => ({ ...doc, _id: doc._id.toString() }) as FileDTO),
       ...(includeRelationships && { relations: filteredRelations }),
+      ...(includeTranslations && { translations: await this.getTranslations(entity, language) }),
     };
 
     return response;
+  }
+
+  /** Translatable values of every other language the entity has a row for. */
+  private async getTranslations(
+    entity: EntityDBO,
+    rootLanguage: LanguageISO6391
+  ): Promise<EntityTranslationsDTO> {
+    const [template, rows] = await Promise.all([
+      this.deps.templatesDS.getById(entity.template.toString()),
+      this.deps.entityDAO.find({ sharedId: entity.sharedId }),
+    ]);
+    const translatable = template.getDataOrThrow().translatableProperties.map(({ name }) => name);
+
+    return Object.fromEntries(
+      rows
+        .filter(row => row.language !== rootLanguage)
+        .map(row => [
+          row.language,
+          Object.fromEntries(
+            translatable.map(name => [
+              name,
+              name === 'title' ? [{ value: row.title }] : (row.metadata?.[name] ?? []),
+            ])
+          ),
+        ])
+    );
   }
 
   /**

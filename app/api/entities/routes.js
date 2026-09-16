@@ -119,7 +119,10 @@ export default app => {
             _id: { type: 'string' },
             omitRelationships: { type: 'boolean' },
             includeMetadataRelationships: { type: 'boolean' },
-            include: { type: 'array', items: { type: 'string', enum: ['permissions'] } },
+            include: {
+              type: 'array',
+              items: { type: 'string', enum: ['permissions', 'translations'] },
+            },
           },
         },
       },

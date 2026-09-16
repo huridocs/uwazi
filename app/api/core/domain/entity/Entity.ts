@@ -18,7 +18,11 @@ import {
   EntityTranslationProps,
 } from '#api/core/domain/entity/EntityTranslation.js';
 import date from '#api/utils/date.js';
-import { EntityTranslationDoesNotExistError } from './errors.js';
+import {
+  EntityTranslationDoesNotExistError,
+  MissingTranslatedPropertyError,
+  PropertyNotTranslatableError,
+} from './errors.js';
 import { AbstractSelectProperty } from '../template/select/AbstractSelectProperty.js';
 import { EntityDTO } from './EntityDTO.js';
 import { Thumbnail } from '../files/Thumbnail.js';
@@ -89,6 +93,43 @@ class Entity {
         [translation.language]: entityTranslation,
       };
     }, {});
+  }
+
+  validateRequiredProperties() {
+    this.validatePropertyAssignments();
+  }
+
+  /**
+   * Adds the installed languages the entity has no translation for yet (a language still being
+   * installed), copying every value from the source language like the language clone job does.
+   */
+  ensureTranslations(installedLanguages: LanguageISO6391[], sourceLanguage: LanguageISO6391) {
+    const source = this.getTranslation(sourceLanguage);
+
+    installedLanguages
+      .filter(language => !this.translations[language])
+      .forEach(language => {
+        this.translations[language] = source.copyForLanguage(language);
+      });
+  }
+
+  /** Sets the full set of translatable values of one translation. */
+  setTranslatedPropertyAssignments(language: LanguageISO6391, assignments: PropertyAssignment[]) {
+    const translation = this.getTranslation(language);
+
+    const notTranslatable = assignments.find(assignment => !assignment.isTranslatable);
+    if (notTranslatable) {
+      throw new PropertyNotTranslatableError(language, notTranslatable.name);
+    }
+
+    const missing = this.template.translatableProperties.find(
+      property => !assignments.some(assignment => assignment.name === property.name)
+    );
+    if (missing) {
+      throw new MissingTranslatedPropertyError(language, missing.name);
+    }
+
+    assignments.forEach(assignment => translation.setValue(assignment));
   }
 
   private validatePropertyAssignments() {
@@ -170,6 +211,13 @@ class Entity {
           withoutEditDate(before.find(previous => previous.language === translation.language))
       )
       .map(translation => translation.language);
+  }
+
+  /** Translations added since the entity was loaded; they have no stored row yet. */
+  get newLanguages(): LanguageISO6391[] {
+    return this.languages.filter(
+      language => !this.props.translations.some(translation => translation.language === language)
+    );
   }
 
   get translationsList() {

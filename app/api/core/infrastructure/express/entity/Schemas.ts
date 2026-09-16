@@ -129,7 +129,35 @@ const UpdateEntitySchema = MutateEntitySchema.extend({
     .optional(),
 });
 
-export { CreateEntitySchema, UpdateEntitySchema };
+// Translated values reference existing files only; uploads belong to the root entity.
+const TranslatedValueSchema = MetadataValueSchema.omit({ attachment: true }).strict();
+
+const EntityTranslationsSchema = z.record(
+  z.string().length(2),
+  z.record(z.array(TranslatedValueSchema))
+);
+
+const CreateEntityWithTranslationsSchema = CreateEntitySchema.extend({
+  translations: EntityTranslationsSchema,
+});
+
+const UpdateEntityWithTranslationsSchema = UpdateEntitySchema.extend({
+  translations: EntityTranslationsSchema,
+});
+
+export {
+  CreateEntitySchema,
+  UpdateEntitySchema,
+  CreateEntityWithTranslationsSchema,
+  UpdateEntityWithTranslationsSchema,
+};
 
 export type CreateEntityDTO = z.infer<typeof CreateEntitySchema>;
 export type UpdateEntityRequest = z.infer<typeof UpdateEntitySchema>;
+export type EntityTranslationsRequest = z.infer<typeof EntityTranslationsSchema>;
+export type CreateEntityWithTranslationsRequest = z.infer<
+  typeof CreateEntityWithTranslationsSchema
+>;
+export type UpdateEntityWithTranslationsRequest = z.infer<
+  typeof UpdateEntityWithTranslationsSchema
+>;

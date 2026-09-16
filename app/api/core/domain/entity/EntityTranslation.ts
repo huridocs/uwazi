@@ -66,6 +66,18 @@ class EntityTranslation {
     };
   }
 
+  /** A copy with a new id; language-scoped values are re-stamped with the new language. */
+  copyForLanguage(language: LanguageISO6391) {
+    const metadata = Object.fromEntries(
+      Object.entries(this.metadata).map(([name, assignment]) => [
+        name,
+        'language' in assignment ? { ...assignment, language } : { ...assignment },
+      ])
+    );
+
+    return new EntityTranslation({ language, metadata, preview: this.preview });
+  }
+
   mergeMetadata(newMetadata: Record<string, PropertyAssignment>) {
     Object.values(this.metadata).forEach(propertyAssignment => {
       const ofSameName = newMetadata[propertyAssignment.name];

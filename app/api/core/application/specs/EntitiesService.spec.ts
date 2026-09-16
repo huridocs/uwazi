@@ -25,6 +25,11 @@ import { MongoEntitiesDataSource } from '#api/core/infrastructure/mongodb/entity
 import { EntityCreatedEvent } from '#api/entities/events/EntityCreatedEvent.js';
 import { EntityUpdatedEvent as LegacyEntityUpdatedEvent } from '#api/entities/events/EntityUpdatedEvent.js';
 import { EntitiesServiceDeps } from '../EntitiesService.js';
+import {
+  MissingTranslationLanguageError,
+  RootLanguageInTranslationsError,
+  UnknownTranslationLanguageError,
+} from '../errors.js';
 import { GrantType } from '#api/core/domain/entityAccessPolicy/GrantType.js';
 import { AccessLevel } from '#api/core/domain/entityAccessPolicy/AccessLevel.js';
 import { search } from '#api/search/index.js';
@@ -435,6 +440,55 @@ describe('EntitiesService', () => {
 
         expect(dispatcher.syncRelationships).not.toHaveBeenCalled();
         expect(eventBus.emit).not.toHaveBeenCalled();
+      });
+    });
+
+    describe('when validating translation languages', () => {
+      const translationFixtures: DBFixture = {
+        ...fixtures,
+        settings: [
+          {
+            languages: [
+              { default: true, key: 'en', label: 'English' },
+              { key: 'es', label: 'Spanish' },
+              { key: 'pt', label: 'Portuguese' },
+              { key: 'fr', label: 'French', installing: true },
+            ],
+          },
+        ],
+      };
+
+      beforeEach(async () => testingEnvironment.setFixtures(translationFixtures));
+
+      const validate = async (translations: Record<string, unknown[]>) => {
+        const { sut } = createSut({}, postgresCore);
+        return sut.validateTranslationLanguages('en', translations as any);
+      };
+
+      it('should accept every installed language except the root one', async () => {
+        await expect(validate({ es: [], pt: [] })).resolves.toBeUndefined();
+      });
+
+      it('should accept languages still being installed, but not require them', async () => {
+        await expect(validate({ es: [], pt: [], fr: [] })).resolves.toBeUndefined();
+      });
+
+      it('should reject the root language', async () => {
+        await expect(validate({ en: [], es: [], pt: [] })).rejects.toThrow(
+          new RootLanguageInTranslationsError('en')
+        );
+      });
+
+      it('should reject languages that are not installed', async () => {
+        await expect(validate({ es: [], pt: [], de: [] })).rejects.toThrow(
+          new UnknownTranslationLanguageError('de')
+        );
+      });
+
+      it('should reject a missing installed language', async () => {
+        await expect(validate({ es: [] })).rejects.toThrow(
+          new MissingTranslationLanguageError('pt')
+        );
       });
     });
 

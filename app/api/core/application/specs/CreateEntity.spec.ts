@@ -14,6 +14,8 @@ import { User } from '#api/users.v2/model/User.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import { AccessLevel } from '#api/core/domain/entityAccessPolicy/AccessLevel.js';
 import { GrantType } from '#api/core/domain/entityAccessPolicy/GrantType.js';
+import { MissingTranslatedPropertyError } from '#api/core/domain/entity/errors.js';
+import { RootLanguageInTranslationsError } from '#api/core/application/errors.js';
 
 const factory = getFixturesFactory();
 
@@ -541,6 +543,61 @@ describe('CreateEntityUseCase', () => {
           ],
         })
       ).rejects.toThrow('Text Property is required');
+    });
+
+    describe('with translations', () => {
+      const rows = async (sharedId: string) =>
+        (await testingEnvironment.db.getAllFrom('entities'))
+          .filter(row => row.sharedId === sharedId)
+          .map(row => ({ language: row.language, title: row.title, text_1: row.metadata.text_1 }))
+          .sort((a, b) => a.language.localeCompare(b.language));
+
+      it('should save the root values and each translation in its own language', async () => {
+        const { sut } = createSut({ targetLanguage: 'en' }, postgresCore);
+
+        const entity = await sut.execute({
+          templateId: factory.id('Document B').toHexString(),
+          propertyAssignments: [
+            { name: 'title', value: [{ value: 'Title EN' }] },
+            { name: 'text_1', value: [{ value: 'Text EN' }] },
+          ],
+          translations: {
+            es: [
+              { name: 'title', value: [{ value: 'Título ES' }] },
+              { name: 'text_1', value: [{ value: 'Texto ES' }] },
+            ],
+          },
+        });
+
+        expect(await rows(entity.sharedId)).toEqual([
+          { language: 'en', title: 'Title EN', text_1: [{ value: 'Text EN' }] },
+          { language: 'es', title: 'Título ES', text_1: [{ value: 'Texto ES' }] },
+        ]);
+      });
+
+      it('should reject a translation missing a translatable property', async () => {
+        const { sut } = createSut({ targetLanguage: 'en' }, postgresCore);
+
+        await expect(
+          sut.execute({
+            templateId: factory.id('Document B').toHexString(),
+            propertyAssignments: [{ name: 'title', value: [{ value: 'Title EN' }] }],
+            translations: { es: [{ name: 'title', value: [{ value: 'Título ES' }] }] },
+          })
+        ).rejects.toThrow(new MissingTranslatedPropertyError('es', 'text_1'));
+      });
+
+      it('should reject the root language inside translations', async () => {
+        const { sut } = createSut({ targetLanguage: 'en' }, postgresCore);
+
+        await expect(
+          sut.execute({
+            templateId: factory.id('Document B').toHexString(),
+            propertyAssignments: [{ name: 'title', value: [{ value: 'Title EN' }] }],
+            translations: { en: [], es: [] },
+          })
+        ).rejects.toThrow(new RootLanguageInTranslationsError('en'));
+      });
     });
   });
 });

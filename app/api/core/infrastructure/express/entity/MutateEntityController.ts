@@ -1,12 +1,29 @@
 import * as cookie from 'cookie';
+import { ValidationError as AJVValidationError } from 'ajv';
 import { AbstractController } from '#api/common.v2/infrastructure/AbstractController.js';
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { ATConflictSolver } from '#api/externalIntegrations.v2/automaticTranslation/utils/ATConflictSolver.js';
 import { AutomaticTranslationFactory } from '#api/externalIntegrations.v2/automaticTranslation/AutomaticTranslationFactory.js';
-import { CreateEntitySchema, UpdateEntityRequest, UpdateEntitySchema } from './Schemas.js';
+import {
+  CreateEntitySchema,
+  CreateEntityWithTranslationsSchema,
+  UpdateEntityRequest,
+  UpdateEntitySchema,
+  UpdateEntityWithTranslationsSchema,
+} from './Schemas.js';
+import {
+  MissingTranslatedPropertyError,
+  PropertyNotTranslatableError,
+} from '#api/core/domain/entity/errors.js';
+import {
+  MissingTranslationLanguageError,
+  RootLanguageInTranslationsError,
+  UnknownTranslationLanguageError,
+} from '#api/core/application/errors.js';
 import { CreateEntityUseCaseFactory } from '../../factories/CreateEntityUseCaseFactory.js';
 import { UpdateEntityUseCaseFactory } from '../../factories/UpdateEntityUseCaseFactory.js';
 import { EntitiesDAOFactory } from '../../factories/EntitiesDAOFactory.js';
+import { EntitiesQueryServiceFactory } from '../../factories/EntitiesQueryServiceFactory.js';
 import { ExpressEntityMapper } from './ExpressEntityMapper.js';
 
 type Request = Record<string, unknown> | { entity: string };
@@ -19,6 +36,12 @@ type ParsedBody = {
 class MutateEntityController extends AbstractController<Request> {
   protected async handle(): Promise<void> {
     const body = this.parseBody();
+
+    if ('translations' in body.payload) {
+      return body.payload.sharedId
+        ? this.updateWithTranslations(body)
+        : this.createWithTranslations(body);
+    }
 
     if (body.payload.sharedId) {
       return this.update(body);
@@ -73,6 +96,88 @@ class MutateEntityController extends AbstractController<Request> {
 
     await this.respond(entity.sharedId, isMultipart);
     this.request.emitToSessionSocket('documentProcessed', entity.sharedId);
+  }
+
+  private async createWithTranslations({ payload, isMultipart }: ParsedBody) {
+    const parsed = CreateEntityWithTranslationsSchema.parse(payload);
+    const useCase = CreateEntityUseCaseFactory.default({
+      targetLanguage: this.language,
+      sessionId: this.sessionId,
+    });
+
+    const entity = await MutateEntityController.withTranslationErrorPaths(async () =>
+      useCase.execute({
+        ...ExpressEntityMapper.toEntityCreateInput({
+          dto: parsed,
+          inputFiles: this.request.inputFiles,
+        }),
+        translations: ExpressEntityMapper.toTranslationsInput(parsed.translations),
+      })
+    );
+
+    await this.respondWithTranslations(entity.sharedId, isMultipart);
+  }
+
+  private async updateWithTranslations({ payload, isMultipart }: ParsedBody) {
+    const useCase = UpdateEntityUseCaseFactory.default(undefined, this.sessionId);
+    const { translations, ...root } = UpdateEntityWithTranslationsSchema.parse(payload);
+    const parsed = await this.resolveAutomaticTranslationConflicts(root, isMultipart);
+
+    const entity = await MutateEntityController.withTranslationErrorPaths(async () =>
+      useCase.execute({
+        ...ExpressEntityMapper.toEntityUpdateInput({
+          dto: parsed,
+          inputFiles: this.request.inputFiles,
+        }),
+        translations: ExpressEntityMapper.toTranslationsInput(translations),
+      })
+    );
+
+    await this.respondWithTranslations(entity.sharedId, isMultipart);
+    this.request.emitToSessionSocket('documentProcessed', entity.sharedId);
+  }
+
+  private static async withTranslationErrorPaths<T>(execute: () => Promise<T>): Promise<T> {
+    try {
+      return await execute();
+    } catch (error) {
+      const instancePath = MutateEntityController.translationErrorPath(error);
+      if (!instancePath) throw error;
+
+      throw new AJVValidationError([
+        { ...(error as PropertyNotTranslatableError).asAJV(), instancePath },
+      ]);
+    }
+  }
+
+  private static translationErrorPath(error: unknown) {
+    if (
+      error instanceof PropertyNotTranslatableError ||
+      error instanceof MissingTranslatedPropertyError
+    ) {
+      return `/translations/${error.language}/${error.property}`;
+    }
+    if (
+      error instanceof UnknownTranslationLanguageError ||
+      error instanceof RootLanguageInTranslationsError ||
+      error instanceof MissingTranslationLanguageError
+    ) {
+      return `/translations/${error.language}`;
+    }
+    return undefined;
+  }
+
+  private async respondWithTranslations(sharedId: string, isMultipart: boolean) {
+    const entity = await EntitiesQueryServiceFactory.default(this.user).getEntity({
+      sharedId,
+      language: this.language,
+      includeRelationships: false,
+      includePermissions: true,
+      includeTranslations: true,
+      user: this.user,
+    });
+
+    this.response.json(isMultipart ? { entity, errors: [] } : entity);
   }
 
   private async resolveAutomaticTranslationConflicts(

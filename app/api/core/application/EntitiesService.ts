@@ -19,6 +19,14 @@ import { EntityUpdatedEvent } from '../domain/entity/EntityUpdatedEvent.js';
 import { EventEmitter } from '../libs/eventEmitter/EventEmitter.js';
 import { EntityAccessPolicy } from '../domain/entityAccessPolicy/EntityAccessPolicy.js';
 import { EntityAccessPolicyDataSource } from './contracts/EntityAccessPolicyDataSource.js';
+import { PropertyAssignmentInput } from './propertyAssignmentCreatorService/PropertyAssignmentCreatorService.js';
+import {
+  MissingTranslationLanguageError,
+  RootLanguageInTranslationsError,
+  UnknownTranslationLanguageError,
+} from './errors.js';
+
+type TranslationsInput = Partial<Record<LanguageISO6391, PropertyAssignmentInput[]>>;
 
 type CreateInput = {
   icon?: EntityIcon;
@@ -76,6 +84,28 @@ class EntitiesService {
       template,
       icon,
     });
+  }
+
+  /**
+   * `translations` must hold every installed language except the root one. Languages still being
+   * installed may be sent but are not required.
+   */
+  async validateTranslationLanguages(
+    rootLanguage: LanguageISO6391,
+    translations: TranslationsInput
+  ): Promise<void> {
+    const installed = (await this.deps.settingsDS.readLanguages()) ?? [];
+    const sent = Object.keys(translations);
+
+    const unknown = sent.find(language => !installed.some(({ key }) => key === language));
+    if (unknown) throw new UnknownTranslationLanguageError(unknown);
+
+    if (sent.includes(rootLanguage)) throw new RootLanguageInTranslationsError(rootLanguage);
+
+    const missing = installed.find(
+      ({ key, installing }) => key !== rootLanguage && !installing && !sent.includes(key)
+    );
+    if (missing) throw new MissingTranslationLanguageError(missing.key);
   }
 
   async insert(entities: Entity[], context: InsertContext) {
@@ -185,4 +215,4 @@ class EntitiesService {
 }
 
 export { EntitiesService };
-export type { Deps as EntitiesServiceDeps };
+export type { Deps as EntitiesServiceDeps, TranslationsInput };

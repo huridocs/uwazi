@@ -20,6 +20,7 @@ import { PostgresTransactionManager } from '../common/PostgresTransactionManager
 import { TransactionManager } from '#api/core/application/contracts/TransactionManager.js';
 import { MongoEntityMapper } from '../../mongodb/entity/MongoEntityMapper.js';
 import { TemplatesDAOFactory } from '../../factories/TemplatesDAOFactory.js';
+import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import { EntityRow } from './PostgresEntityRow.js';
 import { PostgresEntityMapper } from './PostgresEntityMapper.js';
 import { ArrayUtils } from '#api/common.v2/utils/Array.js';
@@ -139,9 +140,56 @@ export class PostgresEntitiesDataSource
     const allRows = entities.flatMap(entity => PostgresEntityMapper.toDBO(entity));
     if (allRows.length === 0) return;
 
-    await this.table.bulkUpdate(allRows.map(row => this.toUpdateRow(row)));
+    const storedIds = await this.insertNewTranslations(entities);
+
+    await this.table.bulkUpdate(
+      allRows.map(row =>
+        this.toUpdateRow({
+          ...row,
+          _id: storedIds.get(`${row.sharedId}:${row.language}`) ?? row._id,
+        })
+      )
+    );
 
     entities.forEach(entity => this.modifiedSharedIds.add(entity.sharedId));
+  }
+
+  /**
+   * Inserts the rows of translations added since the entity was loaded, with the entity's access
+   * fields. Returns the stored row id of each, which differs when the language clone job created
+   * the row meanwhile.
+   */
+  private async insertNewTranslations(entities: Entity[]) {
+    const withNewLanguages = entities.filter(entity => entity.newLanguages.length > 0);
+    if (withNewLanguages.length === 0) return new Map<string, string>();
+
+    const sharedIds = withNewLanguages.map(entity => entity.sharedId);
+    const accessRows = await this.table
+      .whereIn('sharedId', sharedIds)
+      .select(['sharedId', 'published', 'permissions'])
+      .all();
+    const accessBySharedId = new Map(
+      accessRows.map(({ sharedId, published, permissions }) => [
+        sharedId,
+        { published, permissions },
+      ])
+    );
+
+    const newRows = withNewLanguages.flatMap(entity =>
+      PostgresEntityMapper.toDBO(entity)
+        .filter(row => entity.newLanguages.includes(row.language as LanguageISO6391))
+        .map(row => ({ ...row, ...accessBySharedId.get(entity.sharedId) }))
+    );
+    await this.table.upsert(newRows, {
+      columns: ['tenant_id', 'sharedId', 'language'],
+      ignore: true,
+    });
+
+    const stored = await this.table
+      .whereIn('sharedId', sharedIds)
+      .select(['_id', 'sharedId', 'language'])
+      .all();
+    return new Map(stored.map(row => [`${row.sharedId}:${row.language}`, row._id]));
   }
 
   async getSharedIdsUsingThesaurus(thesaurusId: string, valueIds: string[]) {
