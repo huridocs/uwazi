@@ -98,6 +98,7 @@ All of the previously created paragraphs will be deleted and recreated after the
 Allow captcha bypass,Toggle label,Settings > Collection,Label for the toggle that opens the public endpoint to bypass captcha checks.
 Allow public embedding without login,Toggle label,Settings > Dataviz > Embed panel,"Label next to the toggle allowing the chart to be embedded publicly without login, shown only on private instances."
 Already exists,Inline validation error,Entity view,Error message shown under the new-type input when the entered relationship type name is a duplicate.
+Already the same value.,Inline hint on a metadata field diff,Copy From dialog in Entity view or Library,Small note shown under a field's before/after comparison in the Copy From source preview when the source value matches the current value.
 Amount,Field label,Settings > Metadata extraction,"Label beside the numeric input for how many entities to find suggestions for, in the Process extractor and Train model modals."
 An admin needs to add relationship types before you can create a relationship.,Helper/error message,Entity view,"Message shown to non-admin users when no relationship types exist yet, explaining they cannot proceed."
 An error has occured while deleting a language:,Toast notification prefix,Global navigation,"Prefix text for the app-wide danger notification shown when a language deletion job fails, followed by the server's error message."
@@ -113,6 +114,7 @@ AND OR NOT,Code example,Entity view,Code-styled example of boolean search operat
 Any,Facet option label,Library,"Row at the bottom of a filter facet tree meaning ""match any value"" for that property."
 Any entity,Dropdown option / table cell text,Settings > Templates,"Default option meaning no entity-type restriction, shown in the relationship property's entity dropdown and as fallback text in the matching-properties table."
 any single character,Search tip description,Entity view,"Explanatory text next to the ""198?"" example in the search tips popover."
+Any type,Filter toggle button,Copy From dialog in Entity view or Library,Button in the Copy From search view's type-filter chip row that clears the same-type restriction so search results include entities of any template.
 Anyone can see this entity,Warning text,Entity view,Warning shown under General access in the Share modal when the entity's visibility is set to Published.
 Appearance,Dropdown option label,Entity view,"""Sort by appearance order"" option in the relationships panel's sort menu."
 Apply,Button label,Settings > Activity Log,Submit button at the bottom of the Filters side panel that applies the selected filters to the activity log.
@@ -241,7 +243,9 @@ Cookie preferences,Footer link,Global navigation,Link in the site footer that re
 Copied,Button label (temporary state),Settings > Dataviz > Preview panel,Label shown briefly on the copy button in the JSON copy panel right after the value is copied to clipboard.
 Copied to clipboard,Confirmation tooltip/toast,Shared (used across 5 views),"Confirmation shown after using a copy-to-clipboard button, used both for attachment links and the reusable Copy Value input (two-factor setup, page embed code, Preserve settings, Dataviz embed panel)."
 Copy,Button label,Settings > Dataviz > Preview panel,Default label on the button that copies the rendered ECharts JSON configuration to clipboard.
+Copy from,Modal heading,Copy From dialog in Entity view or Library,"Heading of the Copy From modal shown when no source entity is selected yet, letting the user search for an entity to copy metadata from."
 Copy From,Button label,Library / Entity view,Toolbar button shown while editing an entity's metadata that lets the user copy field values from another entity.
+Copy from this entity,Section label,Copy From dialog in Entity view or Library,"Small uppercase label above the field list in the Copy From source preview, identifying the entity whose values can be copied."
 Copy from...,Footer button label,Library,"Button shown while editing an entity's metadata in the Library preview panel, for copying values from another entity."
 Copy Highlighted,Button label,Entity view,"Confirms copying the highlighted properties in the ""copy metadata from another entity"" panel."
 Copy link,Dropdown menu item,Shared (used across 2 views),"Option in a supporting file's action dropdown (Attachment component) that copies its direct download link to the clipboard, shown in Library and Entity view."
@@ -645,6 +649,7 @@ Mapbox,Select option label,Settings > Collection,Option in the Map Provider drop
 Mapping conflict error,Confirmation modal body text,"Settings > Templates (template editor, reindex/mapping-conflict dialog)","Set as `confirmationMessages.templateConflict.key` in `helpers.ts`, used as a dynamic `translationKey` prop: `<Translate translationKey={confirmationMessages.templateConflict.key}>{...text}</Translate>` in `TemplatesEditor.tsx` — shown when a template change requires a reindex due to a mapping conflict."
 Mark as reviewed,Button label,Entity view,Button in the table-of-contents footer bar that marks the document's ToC as reviewed.
 Mark as Reviewed,Button label,Library / Entity view,Button in the document side panel's TOC tab letting an editor confirm an auto-generated table of contents is correct.
+Markdown,Accessible label for a tab list,Unresolved,"aria-label on the write/preview tab list of the Markdown field editor, identifying the tabbed control to screen reader users."
 "Markdown support in custom pages will be discontinued starting in 2027. Upgrade this page
           when its content no longer relies on Markdown syntax.",Warning banner text,Settings > Pages,Body text of the deprecation warning banner shown in the Configuration tab for pages still using Markdown.
 marked and labeled,Tooltip list item,Settings > Metadata extraction,"Tooltip bullet in the Train model modal explaining the ""Marked for training + all labeled entries"" sample option."
@@ -849,6 +854,7 @@ Permission on entities explicitly shared with the user,Tooltip,Settings > Users 
 Permissions,Filter group label,Library,"Heading of the permissions filter section in the Library filters sidebar, next to its enable/disable switcher."
 Permissions updated,Toast notification,Entity view,Success toast shown after saving entity sharing permissions.
 Pick a color,Field label,Settings > Templates,"Label for the native color input inside the ColorPicker popover, shared by the same Templates/Theme/Dataviz color-picking contexts."
+Pick another,Button label,Copy From dialog in Entity view or Library,Text button next to the Copy action in the Copy From source preview that lets the user go back and choose a different source entity.
 Plain text,Menu option label,Entity view,Option label in the document view-mode menu for switching to the raw plain-text rendering of the document.
 Please type in,Label (type-to-confirm field),Settings > Languages,"Label preceding the confirmation word (e.g. ""CONFIRM"") the user must type before deleting a language, shown in the shared confirmation modal."
 Please type in letters and numbers from the image to start the export.,Modal instructions,Library,Instructional text in the CSV export captcha modal telling the user to enter the captcha code.
@@ -1003,6 +1009,7 @@ Schedule,Section heading,Settings > Dataviz > Refresh tab,Heading above the freq
 Schedules run in UTC (Coordinated Universal Time).,Helper text,Settings > Dataviz > Refresh tab,Clarifying note placed under the schedule time picker.
 Search,Placeholder or label,Shared (used across 4 views),Generic search input placeholder and aria-label reused across search boxes and filter panels.
 "Search  •  AND, OR, NOT, ""exact"", wild*",Search input placeholder,Entity view,Placeholder text in the relationships panel's search bar input field.
+Search by title,Search input placeholder and accessible label,Copy From dialog in Entity view or Library,"Placeholder text and aria-label on the search bar in the Copy From modal, used to look up candidate entities by title."
 Search entities...,Search input placeholder,Entity view,Placeholder (and hidden label) of the entity search box at the top of the entity-search step in the create-relationship modal.
 Search entities…,Input placeholder,Entity view,Placeholder text in the search box used to find entities to add as a relationship connection in the entity metadata editor.
 Search item,Input placeholder,Library / Entity view,"Placeholder text in the search box inside multiselect dropdowns, used for both filter option lists and metadata select/relationship fields."
@@ -1343,6 +1350,7 @@ Validating file structure and headers.,Status description,Settings > Import CSV,
 Value,Table column header,Settings > Translations,Header for the input column in the untranslated-terms table where a translator types the term's value.
 Value cannot be transformed to the correct type,Toast notification,Entity view,Error shown when a value pulled from PDF text extraction cannot be coerced to the field's type.
 values,Table cell label,Settings > Metadata extraction,"Unit label after a count in the suggestions table, showing how many child rows currently hold a value for a multi-value property."
+"values are staged, not saved",Helper text in results footer,Copy From dialog in Entity view or Library,"Part of the status line at the bottom of the Copy From search results list, clarifying that selecting a value only stages it and does not save immediately."
 Verify,Submit button label,Login,Login form's submit button label when a 2FA authentication code is required.
 Verifying...,Loading message,Unlock Account,"Text shown briefly on the account-unlock page while the unlock link is being processed, before redirecting to login."
 via,Inline caption text,Entity view,"First word of the caption under a relationship value, e.g. ""via <relation type>"", shown below connected entities."
