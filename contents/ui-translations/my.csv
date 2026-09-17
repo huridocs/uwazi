@@ -100,7 +100,7 @@ All of the previously created paragraphs will be deleted and recreated after the
 Allow captcha bypass,Captcha ကျော်ခွင့်ပြုပါ
 Allow public embedding without login,ဝင်ရောက်ခြင်းမလိုဘဲ အများပြည်သူထည့်သွင်းခွင့်ပြုပါ။
 Already exists,ယခင်ကတည်းက ရှိပြီးသား
-Already the same value.,Already the same value.
+Already the same value.,ယခင်ကတည်းက တူညီသော တန်ဖိုးဖြစ်သည်။
 Amount,ပမာဏ
 An admin needs to add relationship types before you can create a relationship.,ဆက်နွယ်မှုတစ်ခုကို ဖန်တီးနိုင်ရန် မတိုင်မီ အုပ်ချုပ်သူသည် ဆက်နွယ်မှုအမျိုးအစားများကို ထည့်သွင်းရမည်။
 An error has occured while deleting a language:,ဘာသာစကား ဖျက်နေစဉ် အမှားတစ်ခု ဖြစ်ပေါ်ခဲ့သည် -
@@ -116,7 +116,7 @@ AND OR NOT,AND OR NOT
 Any,မည်သည့်
 Any entity,မည်သည့်အဖွဲ့အစည်းမဆို
 any single character,မည်သည့် တစ်လုံးတည်းသော အက္ခရာမဆို
-Any type,Any type
+Any type,မည်သည့်အမျိုးအစားမဆို
 Anyone can see this entity,မည်သူမဆို ဤအရာကို မြင်နိုင်သည်။
 Appearance,ပုံသဏ္ဍာန်
 Apply,အသုံးချပါ
@@ -256,8 +256,8 @@ Copied,ကူးယူပြီးပါပြီ
 Copied to clipboard,ကလစ်ဘုတ်သို့ မိတ္တူကူးထားသည်။
 Copy,ကူးယူ
 Copy From,ဤမှ ကူးပါ
-Copy from,Copy from
-Copy from this entity,Copy from this entity
+Copy from,ဤမှ ကူးပါ
+Copy from this entity,ဤအဖွဲ့အစည်းမှ ကူးယူပါ
 Copy from...,မှ ကူးယူပါ…
 Copy Highlighted,အရောင်ခြယ်ထားသည်ကို ကူးပါ
 Copy link,လင့်ခ်ကို ကူးပါ
@@ -920,7 +920,7 @@ Permission on entities explicitly shared with the user,အသုံးပြု�
 Permissions,ခွင့်ပြုချက်များ
 Permissions updated,ခွင့်ပြုချက်များ အပ်ဒိတ်လုပ်ပြီးပါပြီ။
 Pick a color,အရောင်တစ်ခုရွေးပါ
-Pick another,Pick another
+Pick another,နောက်တစ်ခု ရွေးပါ
 Plain text,ရိုးရိုးစာသား
 Please contact an admin for details.,ကျေးဇူးပြု၍ အသေးစိတ်များ သိရန် အက်မင်ကို ဆက်သွယ်ပါ။
 Please type in,ကျေးဇူးပြု၍ ရိုက်ထည့်ပါ။
@@ -1085,7 +1085,7 @@ Schedule,အချိန်ဇယား
 Schedules run in UTC (Coordinated Universal Time).,အချိန်ဇယားများကို UTC (ညှိနှိုင်းထားသော ကမ္ဘာလုံးဆိုင်ရာ အချိန်) အရ လည်ပတ်သည်။
 Search,ရှာဖွေရန်
 "Search  •  AND, OR, NOT, ""exact"", wild*","ရှာဖွေ • AND၊ OR၊ NOT၊ ""တိကျသော"", wild*"
-Search by title,Search by title
+Search by title,ခေါင်းစဉ်ဖြင့် ရှာဖွေရန်
 Search entities...,အဖွဲ့အစည်းများကို ရှာဖွေ...
 Search entities…,အဖွဲ့အစည်းများကို ရှာဖွေ…
 Search item,အိုင်တမ် ရှာရန်
@@ -1445,7 +1445,7 @@ Validating file structure and headers.,ဖိုင်ဖွဲ့စည်း�
 Value,တန်ဖိုး
 Value cannot be transformed to the correct type,တန်ဖိုးကို မှန်ကန်သော အမျိုးအစားသို့ ပြောင်းလဲ၍ မရနိုင်ပါ။
 values,တန်ဖိုးများ
-"values are staged, not saved","values are staged, not saved"
+"values are staged, not saved","တန်ဖိုးများ စောင့်ဆိုင်းနေဆဲဖြစ်ပြီး သိမ်းဆည်းမထားသေးပါ။"
 Verify,မှန်ကန်ကြောင်း စစ်ဆေးရန်
 Verifying...,မှန်ကန်ကြောင်း စစ်ဆေးဆဲ...
 via,မှတဆင့်

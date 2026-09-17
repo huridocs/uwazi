@@ -100,7 +100,7 @@ All of the previously created paragraphs will be deleted and recreated after the
 Allow captcha bypass,السماح بتجاوز اختبار كابتشا
 Allow public embedding without login,السماح بالتضمين العام دون تسجيل الدخول
 Already exists,موجود بالفعل
-Already the same value.,Already the same value.
+Already the same value.,القيمة نفسها بالفعل.
 Amount,العدد
 An admin needs to add relationship types before you can create a relationship.,يجب على المسؤول إضافة أنواع العلاقات قبل أن تتمكن من إنشاء علاقة.
 An error has occured while deleting a language:,حدث خطأ أثناء حذف إحدى اللغات:
@@ -116,7 +116,7 @@ AND OR NOT,AND OR NOT
 Any,أي
 Any entity,أي كيان
 any single character,أي حرف واحد
-Any type,Any type
+Any type,أي نوع
 Anyone can see this entity,يمكن لأي شخص رؤية هذا الكيان
 Appearance,الظهور
 Apply,تطبيق
@@ -258,8 +258,8 @@ Copied,تم النسخ
 Copied to clipboard,تم نسخه إلى الحافظة
 Copy,نسخ
 Copy From,النسخ من
-Copy from,Copy from
-Copy from this entity,Copy from this entity
+Copy from,النسخ من
+Copy from this entity,النسخ من هذا الكيان
 Copy from...,نسخ من...
 Copy Highlighted,نسخ المظلل
 Copy link,نسخ الرابط
@@ -934,7 +934,7 @@ Permission on entities explicitly shared with the user,الإذن للكيانا
 Permissions,الأذونات
 Permissions updated,تم تحديث الأذونات
 Pick a color,اختر لونًا
-Pick another,Pick another
+Pick another,اختر آخر
 Plain text,نص عادي
 Please contact an admin for details.,يرجى الاتصال بالمشرف (المسؤول) للحصول على التفاصيل.
 Please type in,يرجى كتابة
@@ -1102,7 +1102,7 @@ Schedule,الجدول الزمني
 Schedules run in UTC (Coordinated Universal Time).,تُعرض الجداول الزمنية بتوقيت UTC (التوقيت العالمي المنسق).
 Search,ابحث
 "Search  •  AND, OR, NOT, ""exact"", wild*","بحث  •  AND، OR، NOT، ""exact""، wild*"
-Search by title,Search by title
+Search by title,البحث حسب العنوان
 Search entities...,البحث عن الكيانات...
 Search entities…,البحث عن الكيانات…
 Search item,البحث عن بند
@@ -1473,7 +1473,7 @@ Validating file structure and headers.,التحقق من صحة بنية الم�
 Value,قيمة
 Value cannot be transformed to the correct type,لا يمكن تحويل القيمة إلى النوع الصحيح
 values,القيم
-"values are staged, not saved","values are staged, not saved"
+"values are staged, not saved","القيم قيد التجهيز، لم تُحفظ بعد"
 Verify,تحقق
 Verifying...,تحقق..
 via,عبر

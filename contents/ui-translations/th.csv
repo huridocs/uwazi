@@ -100,7 +100,7 @@ All of the previously created paragraphs will be deleted and recreated after the
 Allow captcha bypass,อนุญาตให้ข้ามระบบ captcha
 Allow public embedding without login,อนุญาตให้ผู้ใช้ทั่วไปฝังเนื้อหาได้โดยไม่ต้องเข้าสู่ระบบ
 Already exists,มีอยู่แล้ว
-Already the same value.,Already the same value.
+Already the same value.,เป็นค่าเดียวกันอยู่แล้ว
 Amount,จำนวน
 An admin needs to add relationship types before you can create a relationship.,ผู้ดูแลระบบต้องเพิ่มประเภทความสัมพันธ์ก่อนที่คุณจะสามารถสร้างความสัมพันธ์ได้
 An error has occured while deleting a language:,เกิดข้อผิดพลาดระหว่างการลบภาษา:
@@ -116,7 +116,7 @@ AND OR NOT,AND OR NOT
 Any,ใดๆ
 Any entity,เอนทิตีใดก็ตาม
 any single character,ตัวอักษรใดก็ตาม
-Any type,Any type
+Any type,ประเภทใดก็ตาม
 Anyone can see this entity,ใครก็ตามสามารถเห็นเอนทิตีนี้ได้
 Appearance,ลำดับการปรากฏ
 Apply,นำไปใช้
@@ -259,8 +259,8 @@ Copied,คัดลอกแล้ว
 Copied to clipboard,คัดลอกไปยังคลิปบอร์ดแล้ว
 Copy,คัดลอก
 Copy From,คัดลอกจาก
-Copy from,Copy from
-Copy from this entity,Copy from this entity
+Copy from,คัดลอกจาก
+Copy from this entity,คัดลอกจากเอนทิตีนี้
 Copy from...,คัดลอกจาก...
 Copy Highlighted,คัดลอกสิ่งที่ถูกเน้นสี
 Copy link,คัดลอกลิงค์
@@ -935,7 +935,7 @@ Permission on entities explicitly shared with the user,สิทธิการ�
 Permissions,สิทธิการเข้าถึง
 Permissions updated,อัปเดตสิทธิ์
 Pick a color,เลือกสี
-Pick another,Pick another
+Pick another,เลือกรายการอื่น
 Plain text,ข้อความธรรมดา
 Please contact an admin for details.,กรุณาติดต่อผู้ดูแลระบบเพื่อดูรายละเอียดเพิ่มเติม
 Please type in,กรุณาพิมพ์
@@ -1103,7 +1103,7 @@ Schedule,ตารางเวลา
 Schedules run in UTC (Coordinated Universal Time).,ตารางเวลาใช้ UTC (เวลาสากลเชิงพิกัด)
 Search,ค้นหา
 "Search  •  AND, OR, NOT, ""exact"", wild*","ค้นหา  •  AND, OR, NOT, ""exact"", wild*"
-Search by title,Search by title
+Search by title,ค้นหาตามชื่อ
 Search entities...,ค้นหาเอนทิตี...
 Search entities…,ค้นหาเอนทิตี…
 Search item,ค้นหารายการ
@@ -1474,7 +1474,7 @@ Validating file structure and headers.,ตรวจสอบโครงสร�
 Value,ค่า
 Value cannot be transformed to the correct type,ไม่สามารถแปลงค่าให้เป็นประเภทที่ถูกต้องได้
 values,ค่า
-"values are staged, not saved","values are staged, not saved"
+"values are staged, not saved","ค่าอยู่ระหว่างรอดำเนินการ ยังไม่ได้บันทึก"
 Verify,ตรวจสอบ
 Verifying...,กำลังตรวจสอบ....
 via,ผ่าน

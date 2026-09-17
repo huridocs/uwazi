@@ -100,7 +100,7 @@ All of the previously created paragraphs will be deleted and recreated after the
 Allow captcha bypass,Разрешить обход капчи
 Allow public embedding without login,Разрешить публичную вставку без входа в систему
 Already exists,Уже существует
-Already the same value.,Already the same value.
+Already the same value.,Значение уже совпадает.
 Amount,Количество
 An admin needs to add relationship types before you can create a relationship.,"Прежде чем вы сможете создать связь, администратор должен добавить типы связей."
 An error has occured while deleting a language:,При удалении языка произошла ошибка:
@@ -116,7 +116,7 @@ AND OR NOT,AND OR NOT
 Any,Любой
 Any entity,Любой объект
 any single character,любой отдельный символ
-Any type,Any type
+Any type,Любой тип
 Anyone can see this entity,Этот объект виден всем
 Appearance,Порядок появления
 Apply,Применить
@@ -259,8 +259,8 @@ Copied,Скопировано
 Copied to clipboard,Скопировано в буфер обмена
 Copy,Копировать
 Copy From,Копировать из
-Copy from,Copy from
-Copy from this entity,Copy from this entity
+Copy from,Копировать из
+Copy from this entity,Копировать из этого объекта
 Copy from...,Копировать из...
 Copy Highlighted,Копия выделена
 Copy link,Скопировать ссылку
@@ -933,7 +933,7 @@ Permission on entities explicitly shared with the user,"Разрешение н�
 Permissions,Разрешения
 Permissions updated,Права доступа обновлены
 Pick a color,Выберите цвет
-Pick another,Pick another
+Pick another,Выберите другой
 Plain text,Обычный текст
 Please contact an admin for details.,"Пожалуйста, свяжитесь с администратором для выяснения деталей."
 Please type in,Введите
@@ -1099,7 +1099,7 @@ Schedule,Расписание
 Schedules run in UTC (Coordinated Universal Time).,Расписания указаны в формате UTC (универсальное координированное время).
 Search,Искать
 "Search  •  AND, OR, NOT, ""exact"", wild*","Поиск  •  AND, OR, NOT, ""точно"", любой*"
-Search by title,Search by title
+Search by title,Поиск по названию
 Search entities...,Поиск объектов...
 Search entities…,Поиск объектов…
 Search item,Искать предмет
@@ -1469,7 +1469,7 @@ Validating file structure and headers.,Проверка структуры фа�
 Value,Значение
 Value cannot be transformed to the correct type,Значение не может быть преобразовано в нужный тип
 values,значения
-"values are staged, not saved","values are staged, not saved"
+"values are staged, not saved","значения в ожидании, не сохранены"
 Verify,Верифицировать
 Verifying...,Верифицирование...
 via,через

@@ -100,7 +100,7 @@ All of the previously created paragraphs will be deleted and recreated after the
 Allow captcha bypass,Permitir la omisión de captcha
 Allow public embedding without login,Permitir la incrustación pública sin necesidad de iniciar sesión
 Already exists,Ya existe
-Already the same value.,Already the same value.
+Already the same value.,Ya es el mismo valor.
 Amount,Cantidad
 An admin needs to add relationship types before you can create a relationship.,Un administrador necesita añadir tipos de relación para poder crear una relación.
 An error has occured while deleting a language:,Se ha producido un error al eliminar un idioma:
@@ -116,7 +116,7 @@ AND OR NOT,AND OR NOT
 Any,Cualquiera
 Any entity,Cualquier entidad
 any single character,cualquier carácter individual
-Any type,Any type
+Any type,Cualquier tipo
 Anyone can see this entity,Cualquiera puede ver esta entidad
 Appearance,Aparición
 Apply,Aplicar
@@ -257,8 +257,8 @@ Copied,Copiado
 Copied to clipboard,Copiado al clipboard
 Copy,Copiar
 Copy From,Copiar desde
-Copy from,Copy from
-Copy from this entity,Copy from this entity
+Copy from,Copiar desde
+Copy from this entity,Copiar desde esta entidad
 Copy from...,Copiar desde...
 Copy Highlighted,Copiar lo resaltado
 Copy link,Copiar enlace
@@ -932,7 +932,7 @@ Permission on entities explicitly shared with the user,Permiso sobre las entidad
 Permissions,Permisos
 Permissions updated,Se han actualizado los permisos
 Pick a color,Elige un color
-Pick another,Pick another
+Pick another,Elige otra
 Plain text,Texto sin formato
 Please contact an admin for details.,"Por favor, contacta con un administrador para más detalles."
 Please type in,Por favor digite
@@ -1099,7 +1099,7 @@ Schedule,Programación
 Schedules run in UTC (Coordinated Universal Time).,Los horarios se indican en UTC (Tiempo Universal Coordinado).
 Search,Buscar
 "Search  •  AND, OR, NOT, ""exact"", wild*","Buscar  •  AND, OR, NOT, ""exacto"", comodín*"
-Search by title,Search by title
+Search by title,Buscar por título
 Search entities...,Buscar entidades...
 Search entities…,Buscar entidades…
 Search item,Buscar elemento
@@ -1468,7 +1468,7 @@ Validating file structure and headers.,Validando la estructura del archivo y los
 Value,valor
 Value cannot be transformed to the correct type,El valor no se puede convertir al tipo correcto
 values,valores
-"values are staged, not saved","values are staged, not saved"
+"values are staged, not saved","los valores están pendientes, no guardados"
 Verify,Verificar
 Verifying...,Verificando
 via,a través de

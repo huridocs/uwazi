@@ -100,7 +100,7 @@ All of the previously created paragraphs will be deleted and recreated after the
 Allow captcha bypass,Παράκαμψη CAPTCHA
 Allow public embedding without login,Να επιτρέπεται η δημόσια ενσωμάτωση χωρίς σύνδεση
 Already exists,Υπάρχει ήδη
-Already the same value.,Already the same value.
+Already the same value.,Ήδη η ίδια τιμή.
 Amount,Ποσό
 An admin needs to add relationship types before you can create a relationship.,Ο διαχειριστής πρέπει να προσθέσει τύπους σχέσεων προτού μπορέσετε να δημιουργήσετε μια σχέση.
 An error has occured while deleting a language:,Παρουσιάστηκε σφάλμα κατά τη διαγραφή μιας γλώσσας:
@@ -116,7 +116,7 @@ AND OR NOT,AND OR NOT
 Any,Οποιοδήποτε
 Any entity,Οποιαδήποτε οντότητα
 any single character,οποιοσδήποτε χαρακτήρας
-Any type,Any type
+Any type,Οποιοσδήποτε τύπος
 Anyone can see this entity,Οποιοσδήποτε μπορεί να δει αυτή την οντότητα
 Appearance,Εμφάνιση
 Apply,Εφαρμογή
@@ -258,8 +258,8 @@ Copied,Αντιγράφηκε
 Copied to clipboard,Αντιγράφηκε στο πρόχειρο
 Copy,Αντιγραφή
 Copy From,Αντιγραφή από
-Copy from,Copy from
-Copy from this entity,Copy from this entity
+Copy from,Αντιγραφή από
+Copy from this entity,Αντιγραφή από αυτή την οντότητα
 Copy from...,Αντιγραφή από...
 Copy Highlighted,Αντιγραφή επισημασμένου
 Copy link,Αντιγραφή συνδέσμου
@@ -934,7 +934,7 @@ Permission on entities explicitly shared with the user,Άδεια σε οντό�
 Permissions,Άδειες
 Permissions updated,Τα δικαιώματα ενημερώθηκαν.
 Pick a color,Επιλέξτε ένα χρώμα
-Pick another,Pick another
+Pick another,Επιλέξτε άλλη
 Plain text,Απλό κείμενο
 Please contact an admin for details.,Επικοινωνήστε με έναν διαχειριστή για λεπτομέρειες.
 Please type in,Πληκτρολογήστε
@@ -1102,7 +1102,7 @@ Schedule,Πρόγραμμα
 Schedules run in UTC (Coordinated Universal Time).,Τα προγράμματα ακολουθούν το UTC (Συντονισμένη Παγκόσμια Ώρα).
 Search,Αναζήτηση
 "Search  •  AND, OR, NOT, ""exact"", wild*","Αναζήτηση  •  AND, OR, NOT, «ακριβής», μπαλαντέρ*"
-Search by title,Search by title
+Search by title,Αναζήτηση κατά τίτλο
 Search entities...,Αναζήτηση οντοτήτων...
 Search entities…,Αναζήτηση οντοτήτων…
 Search item,Αναζήτηση στοιχείου
@@ -1473,7 +1473,7 @@ Validating file structure and headers.,Έλεγχος της δομής του �
 Value,Αξία
 Value cannot be transformed to the correct type,Η τιμή δεν μπορεί να μετατραπεί στον σωστό τύπο
 values,τιμές
-"values are staged, not saved","values are staged, not saved"
+"values are staged, not saved","οι τιμές είναι σε αναμονή, δεν έχουν αποθηκευτεί"
 Verify,Επαλήθευση
 Verifying...,Επαλήθευση...
 via,μέσω

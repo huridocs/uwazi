@@ -100,7 +100,7 @@ All of the previously created paragraphs will be deleted and recreated after the
 Allow captcha bypass,Дозволити обхід капчі
 Allow public embedding without login,Дозволити публічне вбудовування без входу в систему
 Already exists,Вже існує
-Already the same value.,Already the same value.
+Already the same value.,Вже те саме значення.
 Amount,Сума
 An admin needs to add relationship types before you can create a relationship.,"Перш ніж ви зможете створити зв’язок, адміністратор повинен додати типи зв’язків."
 An error has occured while deleting a language:,Під час видалення мови сталася помилка:
@@ -116,7 +116,7 @@ AND OR NOT,AND OR NOT
 Any,Будь-який
 Any entity,Будь-який суб'єкт
 any single character,будь-який окремий символ
-Any type,Any type
+Any type,Будь-який тип
 Anyone can see this entity,Цей об’єкт може побачити будь-хто
 Appearance,Порядок появи
 Apply,Подати заявку
@@ -259,8 +259,8 @@ Copied,Скопійовано
 Copied to clipboard,Скопійовано в буфер обміну
 Copy,Копіювати
 Copy From,Копіювати з
-Copy from,Copy from
-Copy from this entity,Copy from this entity
+Copy from,Копіювати з
+Copy from this entity,Копіювати з цього об'єкта
 Copy from...,Скопіювати з...
 Copy Highlighted,Копію виділено
 Copy link,Скопіювати посилання
@@ -935,7 +935,7 @@ Permission on entities explicitly shared with the user,"Дозвіл на об'�
 Permissions,Дозволи
 Permissions updated,Оновлено права доступу
 Pick a color,Виберіть колір
-Pick another,Pick another
+Pick another,Виберіть інший
 Plain text,Звичайний текст
 Please contact an admin for details.,"Будь ласка, зв'яжіться з адміністратором, щоб з'ясувати деталі."
 Please type in,"Будь ласка, введіть"
@@ -1103,7 +1103,7 @@ Schedule,Розклад
 Schedules run in UTC (Coordinated Universal Time).,Розклади вказані за UTC (універсальний координований час).
 Search,Шукати
 "Search  •  AND, OR, NOT, ""exact"", wild*","Пошук  •  AND, OR, NOT, ""точний"", підстановка*"
-Search by title,Search by title
+Search by title,Пошук за назвою
 Search entities...,Пошук об’єктів...
 Search entities…,Пошук об’єктів…
 Search item,Шукати предмет
@@ -1474,7 +1474,7 @@ Validating file structure and headers.,Перевірка структури ф�
 Value,Значення
 Value cannot be transformed to the correct type,Значення не може бути перетворено до правильного типу
 values,значення
-"values are staged, not saved","values are staged, not saved"
+"values are staged, not saved","значення на розгляді, не збережені"
 Verify,Верифікувати
 Verifying...,Верифікування...
 via,через

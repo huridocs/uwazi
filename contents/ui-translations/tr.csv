@@ -100,7 +100,7 @@ All of the previously created paragraphs will be deleted and recreated after the
 Allow captcha bypass,Captcha'yı atlamaya izin ver
 Allow public embedding without login,Giriş yapmadan herkese açık gömme izni ver
 Already exists,Zaten mevcut
-Already the same value.,Already the same value.
+Already the same value.,Zaten aynı değer.
 Amount,Miktar
 An admin needs to add relationship types before you can create a relationship.,Bir ilişki oluşturabilmeniz için önce bir yöneticinin ilişki türlerini eklemesi gerekir.
 An error has occured while deleting a language:,Bir dili silerken bir hata oluştu:
@@ -116,7 +116,7 @@ AND OR NOT,AND OR NOT
 Any,Herhangi bir
 Any entity,Herhangi bir varlık
 any single character,herhangi bir tek karakter
-Any type,Any type
+Any type,Herhangi bir tür
 Anyone can see this entity,Bu varlığı herkes görebilir
 Appearance,Görünüş
 Apply,Uygula
@@ -258,9 +258,9 @@ Cookie preferences,Çerez tercihleri
 Copied,Kopyalandı
 Copied to clipboard,Panoya kopyalandı
 Copy,Kopyala
-Copy From,Formu Kopyala
-Copy from,Copy from
-Copy from this entity,Copy from this entity
+Copy From,Şuradan kopyala
+Copy from,Şuradan kopyala
+Copy from this entity,Bu varlıktan kopyala
 Copy from...,Şuradan kopyala...
 Copy Highlighted,Vurgulananları Kopyala
 Copy link,Bağlantıyı kopyala
@@ -934,7 +934,7 @@ Permission on entities explicitly shared with the user,Kullanıcıyla açıkça 
 Permissions,İzinler
 Permissions updated,İzinler güncellendi
 Pick a color,Bir renk seçin
-Pick another,Pick another
+Pick another,Başka birini seçin
 Plain text,Düz metin
 Please contact an admin for details.,Ayrıntılar için lütfen bir yöneticiyle iletişime geçin.
 Please type in,Lütfen şunu yazın
@@ -1102,7 +1102,7 @@ Schedule,Program
 Schedules run in UTC (Coordinated Universal Time).,Programlar UTC (Koordineli Evrensel Zaman) formatında yürütülür.
 Search,Ara
 "Search  •  AND, OR, NOT, ""exact"", wild*","Arama  •  AND, OR, NOT, ""tam"", wild*"
-Search by title,Search by title
+Search by title,Başlığa göre ara
 Search entities...,Varlıkları ara...
 Search entities…,Varlıkları ara…
 Search item,Öğe ara
@@ -1473,7 +1473,7 @@ Validating file structure and headers.,Dosya yapısı ve başlıklar doğrulanı
 Value,Değer
 Value cannot be transformed to the correct type,"Değer, doğru türe dönüştürülemiyor"
 values,değerler
-"values are staged, not saved","values are staged, not saved"
+"values are staged, not saved","değerler beklemede, kaydedilmedi"
 Verify,Doğrula
 Verifying...,Doğrulanıyor...
 via,üzerinden
