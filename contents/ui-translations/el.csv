@@ -133,7 +133,6 @@ Are you sure you want to delete this item?,Θέλετε σίγουρα να δι
 Are you sure you want to delete this relationship? This action cannot be undone.,Are you sure you want to delete this relationship? This action cannot be undone.
 Are you sure you want to delete this visualization? This action cannot be undone.,Are you sure you want to delete this visualization? This action cannot be undone.
 Are you sure?,Θέλετε σίγουρα να συνεχίσετε;
-Ascending,Ascending
 Ask Bert,Ask Bert
 Attachment,Το συνημμένο
 Attachment deleted,Το συνημμένο αρχείο διαγράφηκε
@@ -220,8 +219,11 @@ Collection,Συλλογή
 Collection Name,Όνομα συλλογής
 Colors,Colors
 Colors come from the server data layer. Preview shows assigned bucket colors when available.,Colors come from the server data layer. Preview shows assigned bucket colors when available.
+Columns,Columns
 combine or exclude terms,combine or exclude terms
+Comfortable,Comfortable
 Common sources,Κοινές πηγές
+Compact,Compact
 Completed,Completed
 Completed with errors,Completed with errors
 Config,Config
@@ -300,6 +302,7 @@ Created user group,Δημιουργήθηκε ομάδα χρηστών
 Creating entities,Creating entities
 Creating relationships,Creating relationships
 Creating thesauri,Creating thesauri
+Creation date,Creation date
 CSS,CSS
 csv blank state message,Import CSV or ZIP files to create entities in bulk. Select **+ Import CSV** to get started.
 CSV Import,CSV Import
@@ -373,7 +376,6 @@ Deleted user,Διαγράφηκε χρήστης
 Deleted user group,Διαγράφηκε ομάδα χρηστών
 Deletion success,Επιτυχία διαγραφής
 Density,Density
-Descending,Descending
 Description,Περιγραφή
 Deselect all,Deselect all
 Details,Details
@@ -423,6 +425,7 @@ Each series uses the template brand color when comparing data sources.,Each seri
 Earlier,Earlier
 Edit,Επεξεργασία
 Edit at source,Edit at source
+Edit date,Edit date
 Edit Extractor,Επεξεργασία εξαγωγέα
 Edit File,Επεξεργασία αρχείου
 Edit group,Επεξεργασία ομάδας
@@ -749,6 +752,7 @@ Months,Μήνες
 More,More
 more,more
 more options.,περισσότερες επιλογές.
+More rows per screen; same type size,More rows per screen; same type size
 Multi-source mode,Multi-source mode
 Multiple date,Πολλαπλή ημερομηνία
 Multiple date range,Πολλαπλό εύρος ημερομηνιών
@@ -1078,6 +1082,7 @@ Return to login,Επιστροφή στη σύνδεση
 Review,Προεπισκόπηση
 Reviewed,Προεπισκόπηθηκε
 Role,Ρόλος
+Room around every row,Room around every row
 Route,Διαδρομή
 Row,Σειρά
 Row density,Row density
@@ -1202,7 +1207,6 @@ Something went wrong,Κάτι πήγε στραβά
 Sort,Ταξινόμηση
 Sort ascending,Ταξινόμηση αύξουσα
 Sort descending,Ταξινόμηση φθίνουσα
-Sort order,Sort order
 Sort:,Sort:
 sorted by,Ταξινόμηση κατά
 Source,Πηγή

@@ -133,7 +133,6 @@ Are you sure you want to delete this item?,Are you sure you want to delete this 
 Are you sure you want to delete this relationship? This action cannot be undone.,Are you sure you want to delete this relationship? This action cannot be undone.
 Are you sure you want to delete this visualization? This action cannot be undone.,Are you sure you want to delete this visualization? This action cannot be undone.
 Are you sure?,Are you sure?
-Ascending,Ascending
 Ask Bert,Ask Bert
 Attachment,Attachment
 Attachment deleted,Attachment deleted
@@ -219,8 +218,11 @@ Collection,Koleksiyon
 Collection Name,Collection Name
 Colors,Colors
 Colors come from the server data layer. Preview shows assigned bucket colors when available.,Colors come from the server data layer. Preview shows assigned bucket colors when available.
+Columns,Columns
 combine or exclude terms,combine or exclude terms
+Comfortable,Comfortable
 Common sources,Common sources
+Compact,Compact
 Completed,Completed
 Completed with errors,Completed with errors
 Config,Config
@@ -299,6 +301,7 @@ Created user group,Created user group
 Creating entities,Creating entities
 Creating relationships,Creating relationships
 Creating thesauri,Creating thesauri
+Creation date,Creation date
 CSS,CSS
 csv blank state message,Import CSV or ZIP files to create entities in bulk. Select **+ Import CSV** to get started.
 CSV Import,CSV Import
@@ -372,7 +375,6 @@ Deleted user,Deleted user
 Deleted user group,Deleted user group
 Deletion success,Deletion success
 Density,Density
-Descending,Descending
 Description,Tanım
 Deselect all,Deselect all
 Details,Details
@@ -422,6 +424,7 @@ Each series uses the template brand color when comparing data sources.,Each seri
 Earlier,Earlier
 Edit,Düzenle
 Edit at source,Edit at source
+Edit date,Edit date
 Edit Extractor,Edit Extractor
 Edit File,Edit File
 Edit group,Edit group
@@ -748,6 +751,7 @@ Months,Months
 More,More
 more,more
 more options.,daha fazla seçenek.
+More rows per screen; same type size,More rows per screen; same type size
 Multi-source mode,Multi-source mode
 Multiple date,Multiple date
 Multiple date range,Multiple date range
@@ -1077,6 +1081,7 @@ Return to login,Girişe dön
 Review,Review
 Reviewed,İncelendi
 Role,Rol
+Room around every row,Room around every row
 Route,Rota
 Row,Row
 Row density,Row density
@@ -1201,7 +1206,6 @@ Something went wrong,Bir şey ters gitti
 Sort,Sırala
 Sort ascending,Sort ascending
 Sort descending,Sort descending
-Sort order,Sort order
 Sort:,Sort:
 sorted by,şuna göre sıralandı:
 Source,Source
