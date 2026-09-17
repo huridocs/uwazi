@@ -23,7 +23,7 @@ describe('LibraryTable', () => {
       },
     };
 
-    component = shallow(<LibraryTableComponent {...props} />, { context });
+    component = shallow(<LibraryTableComponent {...props} store={context.store} />, { context });
   });
 
   it('should render the DocumentsList (by default)', () => {

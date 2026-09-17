@@ -18,7 +18,7 @@ exports[`Connection should render the reference 1`] = `
       <ShowIf
         if={true}
       >
-        <Memo(Connect(NeedAuthorization))
+        <Connect(NeedAuthorization)
           roles={
             Array [
               "admin",
@@ -34,12 +34,12 @@ exports[`Connection should render the reference 1`] = `
               icon="trash-alt"
             />
           </a>
-        </Memo(Connect(NeedAuthorization))>
+        </Connect(NeedAuthorization)>
       </ShowIf>
       <ShowIf
         if={true}
       >
-        <Memo(Connect(I18NLink))
+        <Connect(I18NLink)
           className="item-shortcut btn btn-default"
           onClick={[Function]}
           to="/entity/undefined"
@@ -47,7 +47,7 @@ exports[`Connection should render the reference 1`] = `
           <Icon
             icon="file"
           />
-        </Memo(Connect(I18NLink))>
+        </Connect(I18NLink)>
       </ShowIf>
     </div>
   }

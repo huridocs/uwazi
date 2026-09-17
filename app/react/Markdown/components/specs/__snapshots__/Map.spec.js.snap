@@ -2,7 +2,7 @@
 
 exports[`Map Markdown component renderPopupInfo should have a correct function for rendering popus 1`] = `
 <div>
-  <Memo(Connect(TemplateLabel))
+  <Connect(TemplateLabel)
     template="t1"
   />
     
@@ -12,7 +12,7 @@ exports[`Map Markdown component renderPopupInfo should have a correct function f
 
 exports[`Map Markdown component renderPopupInfo should have a correct function for rendering popus 2`] = `
 <div>
-  <Memo(Connect(TemplateLabel))
+  <Connect(TemplateLabel)
     template="t2"
   />
     

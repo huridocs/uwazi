@@ -21,11 +21,6 @@ exports[`MultiSelect should display a not found message when there are no option
           className="form-control"
           onChange={[Function]}
           placeholder="Search item"
-          ref={
-            Object {
-              "current": null,
-            }
-          }
           type="text"
           value=""
         />
@@ -96,11 +91,6 @@ exports[`MultiSelect should not render an empty group 1`] = `
           className="form-control"
           onChange={[Function]}
           placeholder="Search item"
-          ref={
-            Object {
-              "current": null,
-            }
-          }
           type="text"
           value=""
         />

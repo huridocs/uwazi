@@ -235,7 +235,7 @@ exports[`Metadata should render links when multiple properties have url 1`] = `
           "type": "relationship",
           "value": Array [
             Object {
-              "value": <Memo(Connect(RelationshipLink))
+              "value": <Connect(RelationshipLink)
                 propValue={
                   Object {
                     "url": "url1",
@@ -245,7 +245,7 @@ exports[`Metadata should render links when multiple properties have url 1`] = `
               />,
             },
             Object {
-              "value": <Memo(Connect(RelationshipLink))
+              "value": <Connect(RelationshipLink)
                 propValue={
                   Object {
                     "url": "url2",
@@ -290,7 +290,7 @@ exports[`Metadata should render links when the property has url 1`] = `
           "url": "url",
           "value": Array [
             Object {
-              "value": <Memo(Connect(RelationshipLink))
+              "value": <Connect(RelationshipLink)
                 propValue="string value"
               />,
             },
@@ -334,7 +334,7 @@ exports[`Metadata should render links with icons if propery has url and icon 1`]
           "url": "url",
           "value": Array [
             Object {
-              "value": <Memo(Connect(RelationshipLink))
+              "value": <Connect(RelationshipLink)
                 propValue="string value"
               />,
             },
@@ -510,7 +510,7 @@ exports[`Metadata when passing compact prop should pass it to ValueList 1`] = `
           "type": "relationship",
           "value": Array [
             Object {
-              "value": <Memo(Connect(RelationshipLink))
+              "value": <Connect(RelationshipLink)
                 propValue={
                   Object {
                     "url": "url1",
@@ -520,7 +520,7 @@ exports[`Metadata when passing compact prop should pass it to ValueList 1`] = `
               />,
             },
             Object {
-              "value": <Memo(Connect(RelationshipLink))
+              "value": <Connect(RelationshipLink)
                 propValue={
                   Object {
                     "url": "url2",
