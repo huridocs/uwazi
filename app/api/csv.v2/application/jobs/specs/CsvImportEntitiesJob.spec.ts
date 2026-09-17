@@ -171,7 +171,7 @@ const buildUseCase = () => {
 };
 
 const itWithContext = (name: string, fn: () => Promise<void>) =>
-  it(name, () => testingEnvironment.runWithContext(fn));
+  it(name, async () => testingEnvironment.runWithContext(fn));
 
 const runSingleRowImport = async (params: {
   useCase: CsvImportEntitiesJob;
