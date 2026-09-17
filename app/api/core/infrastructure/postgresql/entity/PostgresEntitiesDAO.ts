@@ -464,7 +464,11 @@ class PostgresEntitiesDAO extends PostgresDataSource<EntityRow> implements Entit
       language: to,
     }));
 
-    await this.table.insert(toInsert);
+    // An entity created while the language was installing already has its row for `to`.
+    await this.table.upsert(toInsert, {
+      columns: ['tenant_id', 'sharedId', 'language'],
+      ignore: true,
+    });
     if (onBatch) {
       await onBatch(
         toInsert.map(({ _id: _discarded, ...rest }) => rest as unknown as Omit<EntityDBO, '_id'>)
