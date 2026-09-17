@@ -217,11 +217,11 @@ Collection,컬렉션
 Collection Name,컬렉션 이름
 Colors,색상
 Colors come from the server data layer. Preview shows assigned bucket colors when available.,색상은 서버 데이터 계층에서 제공됩니다. 미리보기에서는 가능한 경우 할당된 버킷 색상이 표시됩니다.
-Columns,Columns
+Columns,열
 combine or exclude terms,검색어 결합 또는 제외
-Comfortable,Comfortable
+Comfortable,편안하게
 Common sources,일반적인 출처
-Compact,Compact
+Compact,촘촘하게
 Completed,완료됨
 Completed with errors,오류가 있는 상태로 완료됨
 Config,구성
@@ -300,7 +300,7 @@ Created user group,사용자 그룹 생성
 Creating entities,엔티티 생성
 Creating relationships,관계 형성
 Creating thesauri,시소러스 작성
-Creation date,Creation date
+Creation date,생성한 날짜
 CSS,CSS
 csv blank state message,CSV 또는 ZIP 파일을 가져와 엔티티를 일괄 생성할 수 있습니다. 시작하려면 **+ CSV 가져오기**를 선택하세요.
 CSV Import,CSV 가져오기
@@ -423,7 +423,7 @@ Each series uses the template brand color when comparing data sources.,각 시�
 Earlier,이전
 Edit,편집
 Edit at source,원본에서 편집
-Edit date,Edit date
+Edit date,수정한 날짜
 Edit Extractor,추출기 편집
 Edit File,파일 편집
 Edit group,그룹 편집
@@ -745,7 +745,7 @@ Months,개월
 More,더 보기
 more,더 보기
 more options.,옵션 더보기
-More rows per screen; same type size,More rows per screen; same type size
+More rows per screen; same type size,"화면에 더 많은 행이 표시되고, 글자 크기는 동일합니다"
 Multi-source mode,다중 소스 모드
 Multiple date,여러 날짜
 Multiple date range,여러 날짜 범위
@@ -1075,7 +1075,7 @@ Return to login,로그인으로 돌아가기
 Review,검토
 Reviewed,검토 완료
 Role,권한
-Room around every row,Room around every row
+Room around every row,각 행 주위에 여유 공간이 생깁니다
 Route,루트
 Row,행
 Row density,행 밀도

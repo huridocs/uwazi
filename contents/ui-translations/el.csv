@@ -219,11 +219,11 @@ Collection,Συλλογή
 Collection Name,Όνομα συλλογής
 Colors,Χρώματα
 Colors come from the server data layer. Preview shows assigned bucket colors when available.,"Τα χρώματα προέρχονται από το επίπεδο δεδομένων του διακομιστή. Η προεπισκόπηση εμφανίζει τα χρώματα που έχουν αντιστοιχιστεί στους κάδους, όταν είναι διαθέσιμα."
-Columns,Columns
+Columns,Στήλες
 combine or exclude terms,συνδυάστε ή εξαιρέστε όρους
-Comfortable,Comfortable
+Comfortable,Άνετη
 Common sources,Κοινές πηγές
-Compact,Compact
+Compact,Συμπαγής
 Completed,Ολοκληρώθηκε
 Completed with errors,Ολοκληρώθηκε με λάθη
 Config,Ρυθμίσεις
@@ -302,7 +302,7 @@ Created user group,Δημιουργήθηκε ομάδα χρηστών
 Creating entities,Δημιουργία οντοτήτων
 Creating relationships,Δημιουργία σχέσεων
 Creating thesauri,Δημιουργία θησαυρών όρων
-Creation date,Creation date
+Creation date,Ημερομηνία δημιουργίας
 CSS,CSS
 csv blank state message,Εισαγάγετε αρχεία CSV ή ZIP για να δημιουργήσετε οντότητες μαζικά. Επιλέξτε **+ Εισαγωγή CSV** για να ξεκινήσετε.
 CSV Import,Εισαγωγή αρχείου CSV
@@ -425,7 +425,7 @@ Each series uses the template brand color when comparing data sources.,Κάθε 
 Earlier,Νωρίτερα
 Edit,Επεξεργασία
 Edit at source,Επεξεργασία στην πηγή
-Edit date,Edit date
+Edit date,Ημερομηνία τροποποίησης
 Edit Extractor,Επεξεργασία εξαγωγέα
 Edit File,Επεξεργασία αρχείου
 Edit group,Επεξεργασία ομάδας
@@ -752,7 +752,7 @@ Months,Μήνες
 More,Περισσότερα
 more,περισσότερα
 more options.,περισσότερες επιλογές.
-More rows per screen; same type size,More rows per screen; same type size
+More rows per screen; same type size,Περισσότερες σειρές στην οθόνη· ίδιο μέγεθος γραμματοσειράς
 Multi-source mode,Λειτουργία πολλαπλών πηγών
 Multiple date,Πολλαπλή ημερομηνία
 Multiple date range,Πολλαπλό εύρος ημερομηνιών
@@ -1082,7 +1082,7 @@ Return to login,Επιστροφή στη σύνδεση
 Review,Προεπισκόπηση
 Reviewed,Προεπισκόπηθηκε
 Role,Ρόλος
-Room around every row,Room around every row
+Room around every row,Περισσότερος χώρος γύρω από κάθε σειρά
 Route,Διαδρομή
 Row,Σειρά
 Row density,Πυκνότητα σειρών

@@ -217,11 +217,11 @@ Collection,စုစည်းမှု
 Collection Name,စုစည်းမှုအမည်
 Colors,အရောင်များ
 Colors come from the server data layer. Preview shows assigned bucket colors when available.,အရောင်များသည် ဆာဗာဒေတာအလွှာမှ ရရှိသည်။ Preview သည် ရနိုင်ပါက သတ်မှတ်ထားသော bucket အရောင်များကို ပြသသည်။
-Columns,Columns
+Columns,ကော်လံများ
 combine or exclude terms,စကားလုံးများကို ပေါင်းစပ် သို့မဟုတ် ထုတ်ပယ်
-Comfortable,Comfortable
+Comfortable,သက်တောင့်သက်သာ
 Common sources,အထွေထွေ ရင်းမြစ်များ
-Compact,Compact
+Compact,သိပ်သည်းသော
 Completed,ပြီးစီးပြီးပါပြီ
 Completed with errors,အမှားများပါဝင်ပြီး ပြီးစီးထားသည်။
 Config,ပြင်ဆင်ချက်များ
@@ -300,7 +300,7 @@ Created user group,အသုံးပြုသူအုပ်စုကို ဖ
 Creating entities,အဖွဲ့အစည်းများ ဖန်တီးခြင်း
 Creating relationships,ဆက်နွယ်မှုများ ဖန်တီးခြင်း
 Creating thesauri,အဓိပ္ပာယ်တူစာရင်းများ ဖန်တီးခြင်း
-Creation date,Creation date
+Creation date,ဖန်တီးသည့်ရက်စွဲ
 CSS,CSS
 csv blank state message,CSV သို့မဟုတ် ZIP ဖိုင်များကို တစ်ပြိုင်နက်အများကြီး အဖွဲ့အစည်းများ ဖန်တီးရန် အပ်လိုဒ်လုပ်ပါ။ စတင်ရန် **+ Import CSV** ကို ရွေးပါ။
 CSV Import,CSV တင်သွင်းခြင်း
@@ -419,7 +419,7 @@ Each series uses the template brand color when comparing data sources.,စီး
 Earlier,ယခင်က
 Edit,တည်းဖြတ်ရန်
 Edit at source,အရင်းအမြစ်တွင် တည်းဖြတ်ပါ
-Edit date,Edit date
+Edit date,ရက်စွဲ ပြင်ဆင်ပြီး
 Edit Extractor,ထုတ်ယူသူကို တည်းဖြတ်ပါ
 Edit File,ဖိုင် တည်းဖြတ်
 Edit group,အုပ်စုကို တည်းဖြတ်ပါ
@@ -743,7 +743,7 @@ Months,လများ
 More,ပိုမို
 more,ပို
 more options.,နောက်ထပ် ရွေးချယ်စရာများ။
-More rows per screen; same type size,More rows per screen; same type size
+More rows per screen; same type size,"စာမျက်နှာတွင် တန်းပိုမိုပြသပြီး၊ စာလုံးအရွယ်အစား တူညီပါသည်"
 Multi-source mode,အရင်းအမြစ်များစွာ မုဒ်
 Multiple date,တစ်ခုထက်ပိုသော ရက်စွဲ
 Multiple date range,အချိန်ကာလအများအပြား
@@ -1065,7 +1065,7 @@ Return to login,လော့ဂ်အင်သို့ ပြန်သွား
 Review,ပြန်လည်သုံးသပ်ချက်
 Reviewed,သုံးသပ်ပြီး
 Role,အခန်းကဏ္ဍ
-Room around every row,Room around every row
+Room around every row,တန်းတိုင်းပတ်လည်တွင် နေရာလွတ် ပိုများသည်
 Route,လမ်းကြောင်း
 Row,တန်း
 Row density,တန်း သိပ်သည်းမှု

@@ -220,11 +220,11 @@ Collection,Колекція
 Collection Name,Назва колекції
 Colors,Кольори
 Colors come from the server data layer. Preview shows assigned bucket colors when available.,"Кольори беруться з рівня даних сервера. У попередньому перегляді відображаються призначені кольори сегментів, якщо вони доступні."
-Columns,Columns
+Columns,Стовпці
 combine or exclude terms,об’єднати або виключити терміни
-Comfortable,Comfortable
+Comfortable,Комфортна
 Common sources,Загальні джерела
-Compact,Compact
+Compact,Компактна
 Completed,Завершено
 Completed with errors,Завершено з помилками
 Config,Налаштування
@@ -303,7 +303,7 @@ Created user group,Створена група користувачів
 Creating entities,Створення об’єктів
 Creating relationships,Створення зв’язків
 Creating thesauri,Створення тезаурусів
-Creation date,Creation date
+Creation date,Дата створення
 CSS,CSS
 csv blank state message,"Імпортуйте файли CSV або ZIP для масового створення об’єктів. Щоб розпочати, натисніть **+ Імпортувати CSV**."
 CSV Import,Імпорт CSV
@@ -426,7 +426,7 @@ Each series uses the template brand color when comparing data sources.,"У ко�
 Earlier,Раніше
 Edit,Редагувати
 Edit at source,Редагувати в джерелі
-Edit date,Edit date
+Edit date,Дату змінено
 Edit Extractor,Редагувати витягач
 Edit File,Редагувати файл
 Edit group,Група редагування
@@ -753,7 +753,7 @@ Months,Місяці
 More,Більше
 more,далі
 more options.,більше опцій.
-More rows per screen; same type size,More rows per screen; same type size
+More rows per screen; same type size,Більше рядків на екрані — той самий розмір шрифту
 Multi-source mode,Режим роботи з декількома джерелами
 Multiple date,Кілька дат
 Multiple date range,Діапазон кількох дат
@@ -1083,7 +1083,7 @@ Return to login,Повернутись до авторизації
 Review,Огляд
 Reviewed,Переглянуто
 Role,Роль
-Room around every row,Room around every row
+Room around every row,Більше простору навколо кожного рядка
 Route,Маршрут
 Row,Гребіть!
 Row density,Щільність рядів

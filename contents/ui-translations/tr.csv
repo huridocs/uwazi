@@ -220,11 +220,11 @@ Collection,Koleksiyon
 Collection Name,Koleksiyon Adı
 Colors,Renkler
 Colors come from the server data layer. Preview shows assigned bucket colors when available.,"Renkler, sunucu veri katmanından alınır. Önizleme, mevcut olduğunda atanan kova renklerini gösterir."
-Columns,Columns
+Columns,Sütunlar
 combine or exclude terms,terimleri birleştirmek veya hariç tutmak
-Comfortable,Comfortable
+Comfortable,Rahat
 Common sources,Yaygın kaynaklar
-Compact,Compact
+Compact,Kompakt
 Completed,Tamamlandı
 Completed with errors,Hatalarla tamamlandı
 Config,Yapılandırma
@@ -303,7 +303,7 @@ Created user group,Kullanıcı grubu oluşturuldu
 Creating entities,Varlıklar oluşturuluyor
 Creating relationships,İlişkiler oluşturuluyor
 Creating thesauri,Thesaurus oluşturuluyor
-Creation date,Creation date
+Creation date,Oluşturulma tarihi
 CSS,CSS
 csv blank state message,CSV veya ZIP dosyalarını içe aktararak varlıkları toplu olarak oluşturun. Başlamak için **+ CSV'yi İçe Aktar** seçeneğini seçin.
 CSV Import,CSV İçe Aktarma
@@ -426,7 +426,7 @@ Each series uses the template brand color when comparing data sources.,"Her seri
 Earlier,Daha önce
 Edit,Düzenle
 Edit at source,Kaynakta düzenle
-Edit date,Edit date
+Edit date,Değiştirilme tarihi
 Edit Extractor,Çıkarıcıyı Düzenle
 Edit File,Dosyayı Düzenle
 Edit group,Grubu düzenle
@@ -752,7 +752,7 @@ Months,Aylar
 More,Daha fazla
 more,daha fazla
 more options.,daha fazla seçenek.
-More rows per screen; same type size,More rows per screen; same type size
+More rows per screen; same type size,Ekranda daha fazla satır; aynı yazı tipi boyutu
 Multi-source mode,Çoklu kaynak modu
 Multiple date,Birden fazla tarih
 Multiple date range,Birden fazla tarih aralığı
@@ -1082,7 +1082,7 @@ Return to login,Girişe dön
 Review,İncele
 Reviewed,İncelendi
 Role,Rol
-Room around every row,Room around every row
+Room around every row,Her satırın çevresinde daha fazla boşluk
 Route,Rota
 Row,Satır
 Row density,Satır yoğunluğu

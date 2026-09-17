@@ -220,11 +220,11 @@ Collection,คอลเล็คชั่น
 Collection Name,ชื่อคอลเลกชัน
 Colors,สี
 Colors come from the server data layer. Preview shows assigned bucket colors when available.,สีมาจากชั้นข้อมูลของเซิร์ฟเวอร์ การแสดงตัวอย่างจะแสดงสีของบัคเก็ตที่กำหนดไว้ หากมี
-Columns,Columns
+Columns,คอลัมน์
 combine or exclude terms,รวมหรือยกเว้นคำค้นหา
-Comfortable,Comfortable
+Comfortable,สบาย
 Common sources,แหล่งข้อมูลทั่วไป
-Compact,Compact
+Compact,กระชับ
 Completed,เสร็จแล้ว
 Completed with errors,เสร็จสิ้นแล้ว แต่มีข้อผิดพลาด
 Config,การตั้งค่า
@@ -303,7 +303,7 @@ Created user group,สร้างกลุ่มผู้ใช้
 Creating entities,การสร้างเอนทิตี
 Creating relationships,การสร้างความสัมพันธ์
 Creating thesauri,การสร้างพจนานุกรมคำพ้องความหมาย
-Creation date,Creation date
+Creation date,วันที่สร้าง
 CSS,CSS
 csv blank state message,นำเข้าไฟล์ CSV หรือ ZIP เพื่อสร้างเอนทิตีแบบจำนวนมาก เลือก **+ นำเข้า CSV** เพื่อเริ่มต้น
 CSV Import,นำเข้าไฟล์ CSV
@@ -426,7 +426,7 @@ Each series uses the template brand color when comparing data sources.,แต่
 Earlier,ก่อนหน้านี้
 Edit,แก้ไข
 Edit at source,แก้ไขที่ต้นฉบับ
-Edit date,Edit date
+Edit date,แก้ไข ณ วันที่
 Edit Extractor,แก้ไขเครื่องมือสกัด
 Edit File,แก้ไขไฟล์
 Edit group,แก้ไขกลุ่ม
@@ -753,7 +753,7 @@ Months,เดือน
 More,เพิ่มเติม
 more,เพิ่มเติม
 more options.,ตัวเลือกเพิ่มเติม
-More rows per screen; same type size,More rows per screen; same type size
+More rows per screen; same type size,แสดงแถวได้มากขึ้นบนหน้าจอ; ขนาดตัวอักษรเท่าเดิม
 Multi-source mode,โหมดหลายแหล่งข้อมูล
 Multiple date,หลายวัน
 Multiple date range,ช่วงวันที่หลายช่วง
@@ -1083,7 +1083,7 @@ Return to login,กลับไปที่การเข้าสู่ระ�
 Review,ตรวจสอบ
 Reviewed,ตรวจสอบแล้ว
 Role,บทบาท
-Room around every row,Room around every row
+Room around every row,เว้นพื้นที่รอบแถวมากขึ้น
 Route,เส้นทาง
 Row,แถว
 Row density,ความหนาแน่นของแถว

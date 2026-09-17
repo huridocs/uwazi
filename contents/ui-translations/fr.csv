@@ -220,11 +220,11 @@ Collection,Collection
 Collection Name,Nom de la collection
 Colors,Couleurs
 Colors come from the server data layer. Preview shows assigned bucket colors when available.,Les couleurs proviennent de la couche de données du serveur. L'aperçu affiche les couleurs attribuées aux compartiments lorsqu'elles sont disponibles.
-Columns,Columns
+Columns,Colonnes
 combine or exclude terms,combiner ou exclure des termes
-Comfortable,Comfortable
+Comfortable,Confortable
 Common sources,Sources courantes
-Compact,Compact
+Compact,Compacte
 Completed,Terminé
 Completed with errors,Terminé avec des erreurs
 Config,Configuration
@@ -303,7 +303,7 @@ Created user group,Groupe d'utilisateurs créé
 Creating entities,Création d'entités
 Creating relationships,Création de relations
 Creating thesauri,Création de thésaurus
-Creation date,Creation date
+Creation date,Date de création
 CSS,CSS
 csv blank state message,Importez des fichiers CSV ou ZIP pour créer des entités en masse. Sélectionnez **+ Importer CSV** pour commencer.
 CSV Import,Importation CSV
@@ -426,7 +426,7 @@ Each series uses the template brand color when comparing data sources.,Chaque s�
 Earlier,Auparavant
 Edit,Éditer
 Edit at source,Modifier à la source
-Edit date,Edit date
+Edit date,Date de modification
 Edit Extractor,Modifier l'extracteur
 Edit File,Modifier le fichier
 Edit group,Modifier le groupe
@@ -753,7 +753,7 @@ Months,Mois
 More,Plus
 more,plus
 more options.,plus d'options.
-More rows per screen; same type size,More rows per screen; same type size
+More rows per screen; same type size,Plus de lignes à l'écran : même taille de police
 Multi-source mode,Mode multi-source
 Multiple date,Dates multiples
 Multiple date range,Plages de dates multiples
@@ -1082,7 +1082,7 @@ Return to login,Retourner à la connexion
 Review,Examiner
 Reviewed,Révisé
 Role,Rôle
-Room around every row,Room around every row
+Room around every row,Plus d'espace autour de chaque ligne
 Route,Itinéraire
 Row,Ligne
 Row density,Densité des lignes
