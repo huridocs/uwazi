@@ -70,7 +70,17 @@ const params: EntityUpdatedEventPayload = {
   before: entityParams,
   after: entityParams,
   targetLanguage: 'en',
+  changedLanguages: ['en'],
 };
+
+const inLanguages = (languages: LanguageISO6391[]): EntityDTO => ({
+  ...entityParams,
+  translations: languages.map((language, index) => ({
+    ...entityParams.translations[0],
+    id: `${index}`.repeat(24),
+    language,
+  })),
+});
 
 const createSut = (denormalizeRelated = jest.fn()) => {
   const listener = new DenormalizeEntityUpdatedListener({
@@ -103,5 +113,40 @@ describe('DenormalizeEntityUpdatedListener', () => {
     await listener.handle(jest.fn() as never, params, {} as never);
 
     expect(denormalizeRelated).toHaveBeenCalledTimes(1);
+  });
+
+  it('should denormalize each changed language', async () => {
+    testingTenants.changeCurrentTenant({ featureFlags: {} });
+    const { listener, denormalizeRelated } = createSut();
+    const heartbeat = jest.fn();
+    const entity = inLanguages(['en', 'es', 'pt']);
+
+    await listener.handle(
+      heartbeat as never,
+      { before: entity, after: entity, targetLanguage: 'en', changedLanguages: ['en', 'pt'] },
+      {} as never
+    );
+
+    expect(
+      denormalizeRelated.mock.calls.map(([after, , before]) => [after.language, before.language])
+    ).toEqual([
+      ['en', 'en'],
+      ['pt', 'pt'],
+    ]);
+    expect(heartbeat).toHaveBeenCalled();
+  });
+
+  it('should denormalize the target language of an event queued before changedLanguages existed', async () => {
+    testingTenants.changeCurrentTenant({ featureFlags: {} });
+    const { listener, denormalizeRelated } = createSut();
+    const entity = inLanguages(['en', 'es']);
+
+    await listener.handle(
+      jest.fn() as never,
+      { before: entity, after: entity, targetLanguage: 'es' } as never,
+      {} as never
+    );
+
+    expect(denormalizeRelated.mock.calls.map(([after]) => after.language)).toEqual(['es']);
   });
 });

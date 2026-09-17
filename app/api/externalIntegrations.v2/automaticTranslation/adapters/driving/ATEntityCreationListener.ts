@@ -28,7 +28,9 @@ export class ATEntityCreationListener {
         entityFrom._id = entityFrom._id?.toString();
         entityFrom.template = entityFrom.template?.toString();
 
-        await this.ATFactory.defaultRequestEntityTranslation().execute(entityFrom);
+        await this.ATFactory.defaultRequestEntityTranslation().execute(entityFrom, {
+          providedTranslations: event.providedTranslations,
+        });
       }
     });
   }

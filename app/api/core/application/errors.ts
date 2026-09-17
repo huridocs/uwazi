@@ -1,6 +1,6 @@
 /* eslint-disable max-classes-per-file */
 import { DomainError } from '#api/core/domain/error/DomainError.js';
-import { AJVObject, ValidationError } from '../domain/error/ValidationError.js';
+import { AJVObject, ValidationError } from '#api/core/domain/error/ValidationError.js';
 
 export class ThesaurusValueNotFoundError extends DomainError {
   constructor(value: string, thesaurusName: string) {
@@ -20,24 +20,50 @@ export class IncorrectPropertyTypeError extends DomainError {
   }
 }
 
-export class EntityNotFoundError extends ValidationError {
-  constructor(sharedId: string) {
-    super(`Entity not found: [sharedId=${sharedId}]`, 'entity.entity_not_found');
-  }
-
-  asAJV(): AJVObject {
-    return {
-      message: this.message,
-      keyword: 'notFound',
-    };
-  }
-}
-
 export class InsufficientPermissionsToPublishError extends DomainError {
   constructor() {
     super(
       'Insufficient permissions to change the published status of this entity',
       'entity_access_policy.insufficient_permissions_to_publish'
     );
+  }
+}
+
+export class UnknownTranslationLanguageError extends ValidationError {
+  constructor(readonly language: string) {
+    super(
+      `Translation language "${language}" is not installed.`,
+      'entity.translations.unknown_language_error'
+    );
+  }
+
+  asAJV(): AJVObject {
+    return { message: this.message, keyword: 'unknownTranslationLanguage' };
+  }
+}
+
+export class TargetLanguageInTranslationsError extends ValidationError {
+  constructor(readonly language: string) {
+    super(
+      `Translations cannot include "${language}": it is the target language of the request.`,
+      'entity.translations.target_language_error'
+    );
+  }
+
+  asAJV(): AJVObject {
+    return { message: this.message, keyword: 'targetLanguageInTranslations' };
+  }
+}
+
+export class MissingTranslationLanguageError extends ValidationError {
+  constructor(readonly language: string) {
+    super(
+      `Translations are missing the installed language "${language}".`,
+      'entity.translations.missing_language_error'
+    );
+  }
+
+  asAJV(): AJVObject {
+    return { message: this.message, keyword: 'missingTranslationLanguage' };
   }
 }
