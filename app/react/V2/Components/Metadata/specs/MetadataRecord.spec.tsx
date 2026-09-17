@@ -685,11 +685,12 @@ describe('MetadataRecord', () => {
     renderRecord();
 
     const rela = sectionForLabel('Relationshipa');
+    const table = within(rela).getByRole('table');
     expect(rela).toHaveTextContent('Inherited long text content for relationship a');
-    expect(within(rela).getByTestId('map')).toBeInTheDocument();
-    expect(within(rela).getByRole('link', { name: /A1/i })).toBeInTheDocument();
-    expect(within(rela).getByRole('columnheader', { name: 'Body text' })).toBeInTheDocument();
-    expect(within(rela).getByRole('columnheader', { name: 'Location' })).toBeInTheDocument();
+    expect(within(table).getByTestId('map')).toBeInTheDocument();
+    expect(within(table).getByRole('link', { name: /A1/i })).toBeInTheDocument();
+    expect(within(table).getByRole('columnheader', { name: /Body text/ })).toBeInTheDocument();
+    expect(within(table).getByRole('columnheader', { name: /Location/ })).toBeInTheDocument();
 
     expect(screen.getByText(/inherits/)).toHaveTextContent('Body text, Location');
     expect(screen.queryByText('Relationships')).not.toBeInTheDocument();
