@@ -1,1526 +1,1526 @@
 Key,Russian
-"""Costa Rica""","""Costa Rica"""
-"""the status""~5","""the status""~5"
-*please keep this key secret and don't share it.,*please keep this key secret and don't share it.
-+ Add data source,+ Add data source
-+ Add filter,+ Add filter
-+ click to select multiple cards.,+ click to select multiple cards.
+"""Costa Rica""","""Коста-Рика"""
+"""the status""~5","""статус""~5"
+*please keep this key secret and don't share it.,"*Пожалуйста, держите этот ключ в секрете и никому его не сообщайте."
++ Add data source,+ Добавить источник данных
++ Add filter,+ Добавить фильтр
++ click to select multiple cards.,"+ Нажмите, чтобы выбрать несколько карточек."
 198?,198?
 2FA,2FA
-2FA Enabled,2FA Enabled
-A default template cannot be deleted.,A default template cannot be deleted.
-A friendly hand for serious work — I'll act in the context shown above.,A friendly hand for serious work — I'll act in the context shown above.
+2FA Enabled,Включена двухфакторная аутентификация
+A default template cannot be deleted.,Шаблон по умолчанию удалить нельзя.
+A friendly hand for serious work — I'll act in the context shown above.,Дружеская помощь в серьезном деле — я буду действовать в соответствии с приведенным выше контекстом.
 A generated ID will be the default title.,Сгенерированный идентификатор будет назначен заголовком по умолчанию
-A source template must,A source template must
-A target template needs to have the following properties,A target template needs to have the following properties
+A source template must,Шаблон источника должен
+A target template needs to have the following properties,Шаблон цели должен обладать следующими свойствами
 A valid email is required,Требутся электронная почта
-A → Z,A → Z
+A → Z,А → Я
 Accept,Принять
-Accept all,Accept all
-Accepted suggestion on entity,Accepted suggestion on entity
-Accepting suggestions,Accepting suggestions
-Accessibility checks need attention,Accessibility checks need attention
+Accept all,Принять всё
+Accepted suggestion on entity,Принятое предложение по объекту
+Accepting suggestions,Принятие предложений
+Accessibility checks need attention,Необходимо уделить внимание проверкам доступности
 Account,Аккаунт
-Account locked,Account locked
-Account unlocked successfully,Account unlocked successfully
-Account updated,Account updated
-Accuracy,Accuracy
-Accuracy tooltip,Accuracy is defined by the amount of matches vs mismatches for labeled samples that have been processed.
+Account locked,Аккаунт заблокирован
+Account unlocked successfully,Аккаунт успешно разблокирован
+Account updated,Аккаунт обновлен
+Accuracy,Точность
+Accuracy tooltip,Точность определяется соотношением совпадений и несовпадений для обработанных размеченных образцов.
 Action,Действие
-Actions,Actions
-Activate,Activate
-Activated,Activated
-Active filters,Active filters
-Active languages,Active languages
-Active primary,Active primary
+Actions,Действия
+Activate,Активировать
+Activated,Активировано
+Active filters,Активные фильтры
+Active languages,Активные языки
+Active primary,Активная первичная
 Activity,активности
 Activity log,Журнал активности
 Activity Log,Журнал активности
 Add,Добавить
 Add / remove favorite,Добавить/удалить избранное
-Add a type below.,Add a type below.
-Add an account to the app by scanning the provided QR code with your mobile device or by inserting the provided key.,Add an account to the app by scanning the provided QR code with your mobile device or by inserting the provided key.
-Add as,Add as
-Add data source,Add data source
+Add a type below.,Укажите тип ниже.
+Add an account to the app by scanning the provided QR code with your mobile device or by inserting the provided key.,"Добавьте аккаунт в приложение, отсканировав предоставленный QR-код с помощью мобильного устройства или введя предоставленный ключ."
+Add as,Добавить как
+Add data source,Добавить источник данных
 Add date,Добавить дату
 Add entities / documents,Добавить объекты/документы
-Add entity,Add entity
-Add entity type,Add entity type
-Add Extractor,Add Extractor
-Add extractor,Add extractor
+Add entity,Добавить объект
+Add entity type,Добавить тип сущности
+Add Extractor,Добавить экстрактор
+Add extractor,Добавить экстрактор
 Add file,Добавить файл
 Add from URL,Добавить из URL
 Add from web,Добавить из Интернета
 Add group,Добавить группу
 add icon,добавить иконку
-Add icon,Add icon
-Add item,Add item
+Add icon,Добавить значок
+Add item,Добавить элемент
 Add link,Добавить ссылку
-Add or remove relationship types for this collection.,Add or remove relationship types for this collection.
+Add or remove relationship types for this collection.,Добавить или удалить типы связей для этой коллекции.
 Add page,Добавить страницу
-Add PDF,Add PDF
+Add PDF,Добавить PDF-файл
 Add people or groups,Добавить людей или группы
-Add property,Add property
-Add relationship,Add relationship
-Add relationship type,Add relationship type
+Add property,Добавить свойство
+Add relationship,Добавить связь
+Add relationship type,Добавить тип связи
 Add template,Добавить шаблон
 Add thesaurus,Добавить предметный указатель
-Add thesaurus value,Add thesaurus value
-Add timelink,Add timelink
+Add thesaurus value,Добавить значение из тезауруса
+Add timelink,Добавить временную ссылку
 Add to all languages,Добавить ко всем языкам
 Add to table of contents,Добавить в оглавление
-Add to ToC,Add to ToC
-Add to training set,Add to training set
-Add translation,Add translation
+Add to ToC,Добавить в оглавление
+Add to training set,Добавить в обучающую выборку
+Add translation,Добавить перевод
 Add user,Добавить пользователя
-add value,add value
+add value,Добавить значение
 Add/delete users and assign roles,Добавить/удалить пользователей и назначить роли
 Add/edit translations,Добавить / редактировать переводы
-Added language,Added language
-Added new user,Added new user
-"Added relation type ""{name}""","Added relation type ""{name}"""
-added to hub with the following errors:,added to hub with the following errors:
-added to hub.,added to hub.
-Adding a group and its items.,Adding a group and its items.
-Adding items to the thesauri,Adding items to the thesauri
-Adjust a few colors; secondary text and muted backgrounds update automatically.,Adjust a few colors; secondary text and muted backgrounds update automatically.
+Added language,Добавлен язык
+Added new user,Добавлен новый пользователь
+"Added relation type ""{name}""","Добавлен тип отношения ""{name}"""
+added to hub with the following errors:,добавлено в хаб со следующими ошибками:
+added to hub.,добавлено в хаб.
+Adding a group and its items.,Добавление группы и элементов в неё.
+Adding items to the thesauri,Добавление элементов в тезаурусы
+Adjust a few colors; secondary text and muted backgrounds update automatically.,Измените несколько цветов — второстепенный текст и приглушенные фоны обновятся автоматически.
 Admin,Админ
 Administrators and Editors,Администраторы и Редакторы
-Administrators and Editors always have edit access,Administrators and Editors always have edit access
-Admins,Admins
-Advanced colors,Advanced colors
-Advanced ECharts overrides,Advanced ECharts overrides
+Administrators and Editors always have edit access,Администраторы и редакторы всегда имеют права на редактирование
+Admins,Администраторы
+Advanced colors,Расширенные цвета
+Advanced ECharts overrides,Расширенные переопределения ECharts
 ALL,ВСЕ
 All,ВСЕ
 "All changes will be lost, are you sure you want to proceed?","Все изменения будут потеряны, вы уверены, что хотите продолжить?"
 All data,Все данные
-All editing options will be disabled.,All editing options will be disabled.
-All of the paragraphs will be deleted,All of the paragraphs will be deleted
-All of the previously created paragraphs will be deleted and recreated after the process.,All of the previously created paragraphs will be deleted and recreated after the process.
-Allow captcha bypass,Allow captcha bypass
-Allow public embedding without login,Allow public embedding without login
-Already exists,Already exists
-Already the same value.,Already the same value.
-Amount,Amount
-An admin needs to add relationship types before you can create a relationship.,An admin needs to add relationship types before you can create a relationship.
-An error has occured while deleting a language:,An error has occured while deleting a language:
-An error has occured while installing languages:,An error has occured while installing languages:
-An error has occurred,An error has occurred
-An error has occurred during data export,An error has occurred during data export
-An error has occurred while installing languages:,An error has occurred while installing languages:
-An error has occurred while uninstalling a language:,An error has occurred while uninstalling a language:
-An error occurred,An error occurred
-Analytics,Analytics
-Analytics description,"If you want to track analytics related to your collection visits, Uwazi supports both Google Analytics and Matomo."
+All editing options will be disabled.,Все параметры редактирования будут отключены.
+All of the paragraphs will be deleted,Все абзацы будут удалены
+All of the previously created paragraphs will be deleted and recreated after the process.,После завершения процесса все ранее созданные абзацы будут удалены и созданы заново.
+Allow captcha bypass,Разрешить обход капчи
+Allow public embedding without login,Разрешить публичную вставку без входа в систему
+Already exists,Уже существует
+Already the same value.,Значение уже совпадает.
+Amount,Количество
+An admin needs to add relationship types before you can create a relationship.,"Прежде чем вы сможете создать связь, администратор должен добавить типы связей."
+An error has occured while deleting a language:,При удалении языка произошла ошибка:
+An error has occured while installing languages:,При установке языков произошла ошибка:
+An error has occurred,Произошла ошибка
+An error has occurred during data export,При экспорте данных произошла ошибка
+An error has occurred while installing languages:,При установке языков произошла ошибка:
+An error has occurred while uninstalling a language:,При удалении языка произошла ошибка:
+An error occurred,Произошла ошибка
+Analytics,Аналитика
+Analytics description,"Если вы хотите отслеживать аналитику посещений вашей коллекции, Uwazi поддерживает Google Analytics и Matomo."
 AND OR NOT,AND OR NOT
-Any,Any
-Any entity,Any entity
-any single character,any single character
-Any type,Any type
-Anyone can see this entity,Anyone can see this entity
-Appearance,Appearance
-Apply,Apply
-Are you sure you want to continue?,Are you sure you want to continue?
-Are you sure you want to delete,Are you sure you want to delete
+Any,Любой
+Any entity,Любой объект
+any single character,любой отдельный символ
+Any type,Любой тип
+Anyone can see this entity,Этот объект виден всем
+Appearance,Порядок появления
+Apply,Применить
+Are you sure you want to continue?,"Вы уверены, что хотите продолжить?"
+Are you sure you want to delete,"Вы уверены, что хотите удалить"
 "Are you sure you want to delete the selected visualizations? This action cannot be
-              undone.","Are you sure you want to delete the selected visualizations? This action cannot be
-              undone."
-Are you sure you want to delete this attachment?,Are you sure you want to delete this attachment?
-Are you sure you want to delete this connection?,Are you sure you want to delete this connection?
-Are you sure you want to delete this entity?,Are you sure you want to delete this entity?
-Are you sure you want to delete this file?,Are you sure you want to delete this file?
-Are you sure you want to delete this item?,Are you sure you want to delete this item?
-Are you sure you want to delete this relationship? This action cannot be undone.,Are you sure you want to delete this relationship? This action cannot be undone.
-Are you sure you want to delete this visualization? This action cannot be undone.,Are you sure you want to delete this visualization? This action cannot be undone.
-Are you sure?,Are you sure?
-Ask Bert,Ask Bert
-Attachment,Attachment
-Attachment deleted,Attachment deleted
-Attachment renamed,Attachment renamed
-Attachment uploaded,Attachment uploaded
+              undone.","Вы уверены, что хотите удалить выбранные визуализации? Это действие нельзя
+ отменить."
+Are you sure you want to delete this attachment?,"Вы уверены, что хотите удалить это вложение?"
+Are you sure you want to delete this connection?,"Вы уверены, что хотите удалить эту связь?"
+Are you sure you want to delete this entity?,"Вы уверены, что хотите удалить этот объект?"
+Are you sure you want to delete this file?,"Вы уверены, что хотите удалить этот файл?"
+Are you sure you want to delete this item?,"Вы уверены, что хотите удалить этот элемент?"
+Are you sure you want to delete this relationship? This action cannot be undone.,"Вы уверены, что хотите удалить эту связь? Это действие нельзя отменить."
+Are you sure you want to delete this visualization? This action cannot be undone.,"Вы уверены, что хотите удалить эту визуализацию? Это действие нельзя отменить."
+Are you sure?,Вы уверены?
+Ask Bert,Спросите Bert
+Attachment,Вложение
+Attachment deleted,Вложение удалено
+Attachment renamed,Вложение переименовано
+Attachment uploaded,Вложение загружено
 Attachments,Вложения
 Authentication code,Код аутентификации
-auto created,auto created
-Auto-accept suggestions,Auto-accept suggestions
+auto created,создано автоматически
+Auto-accept suggestions,Автоматически принимать предложения
 auto-created,автоматически созданный
 Automatic Table of Contents,Автоматическое оглавление
 Automatically generated,Генерируется автоматически
-Available default translation,Available default translation
+Available default translation,Доступный перевод по умолчанию
 Back,Назад
 Back to,Назад к
-Back to details,Back to details
+Back to details,Вернуться к подробностям
 Back to search,Назад к поиску
-Bad Request,Bad Request
-Basic,Basic
+Bad Request,Неверный запрос
+Basic,Базовый
 Bert,Bert
-Bidirectional,Bidirectional
+Bidirectional,Двунаправленный
 Body,Основная часть
-boolean,boolean
+boolean,логический поиск
 Browse files to upload,Просмотрите файлы для загрузки
-"by ids, methods, keywords, etc.","by ids, methods, keywords, etc."
-By logging in you accept the essential session cookie required to stay signed in.,By logging in you accept the essential session cookie required to stay signed in.
+"by ids, methods, keywords, etc.","по идентификаторам, методам, ключевым словам и т. д."
+By logging in you accept the essential session cookie required to stay signed in.,"Войдя в систему, вы соглашаетесь на использование необходимого сессионного файла cookie, который требуется для сохранения авторизации."
 Can edit,Может редактировать
 Can see,Может видеть
 Can view,Может просматривать
 Cancel,Отмена
-cancel csv import,Cancel the import process. This will stop the creation of new entities. Already created entities will not be affected
-Canceling,Canceling
-Canceling...,Canceling...
-Cancelled,Cancelled
-Cannot connect to server,Cannot connect to server
-Cannot find extractor,Cannot find extractor
-Captcha,Captcha
-Captcha bypass,Обход Captcha
+cancel csv import,Отменить процесс импорта. Это остановит создание новых объектов. Уже созданные объекты затронуты не будут
+Canceling,Отмена
+Canceling...,Отмена...
+Cancelled,Отменено
+Cannot connect to server,Не удается установить соединение с сервером
+Cannot find extractor,Не удается найти экстрактор
+Captcha,Капча
+Captcha bypass,"Включив эту опцию, вы разрешаете пользователям отправлять данные в шаблоны из белого списка без заполнения CAPTCHA.
+Форма по-прежнему будет показывать капчу конечным пользователям, но конечная точка API будет принимать отправленные данные без проверки CAPTCHA, если передан
+заголовок ""Bypass-Captcha: true"". Эта опция небезопасна и может использоваться для того, чтобы наводнить ваш экземпляр спамом или
+вредоносным содержимым."
 Cards,Карточки
 Cards view,Просмотр в виде карточек
-Category,Category
-Change,Change
-Change Password,Change Password
-Changes in the thesaurus will impact all the entities using these values.,Changes in the thesaurus will impact all the entities using these values.
-Changing the type will erase all relationships to this entity.,Changing the type will erase all relationships to this entity.
-Character support description,This option enhances support for non-Latin languages as the default languages of your collection.
-Character support process warning,"This process could take several minutes and will likely change URLs to library filters. If you have menus or links using such URLs, they will probably stop working after the update. You will need to update them manually."
-Character support revert warning,"After selecting this option, you will not be able to revert back to using legacy property naming. If you are not facing issues with your template property names, we recommend leaving this unchecked."
-Chart,Chart
-Chart options,Chart options
-Chart theme,Chart theme
-Chart type,Chart type
-Chart type uses a custom view,Chart type uses a custom view
-Check to make this instance public (non-logged in users can see public documents and entities),Check to make this instance public (non-logged in users can see public documents and entities)
-Checking which images fit the requirements,Checking which images fit the requirements...
-Choose,Choose
-Choose relation type,Choose relation type
-Choose which data to use for training,Choose which data to use for training
-Chrome header,Chrome header
-Clear,Clear
-Clear all,Clear all
-Clear All,Clear All
-Clear all filters,Clear all filters
+Category,Категория
+Change,Изменить
+Change Password,Изменить пароль
+Changes in the thesaurus will impact all the entities using these values.,"Изменения в тезаурусе повлияют на все объекты, в которых используются эти значения."
+Changing the type will erase all relationships to this entity.,Изменение типа приведёт к удалению всех связей с этим объектом.
+Character support description,"Эта опция улучшает поддержку языков, не использующих латиницу, в качестве языков по умолчанию для вашей коллекции.
+Выбор этой опции автоматически обновит все свойства шаблонов. Этот процесс может занять несколько минут и, вероятно, изменит URL-адреса фильтров библиотеки. Если у вас есть меню или ссылки, использующие такие URL-адреса, они, скорее всего, перестанут работать.
+Вам нужно будет обновить их вручную. После выбора этой опции вы не сможете вернуться к использованию старого формата именования свойств. Если у вас нет проблем с названиями свойств шаблона, рекомендуем оставить этот параметр отключенным."
+Character support process warning,"Этот процесс может занять несколько минут и, вероятно, изменит URL-адреса фильтров библиотеки. Если у вас есть меню или ссылки, использующие такие URL-адреса, после обновления они, скорее всего, перестанут работать. Вам нужно будет обновить их вручную."
+Character support revert warning,"После выбора этой опции вы не сможете вернуться к использованию старого формата именования свойств. Если у вас нет проблем с названиями свойств шаблона, рекомендуем оставить этот параметр отключенным."
+Chart,Диаграмма
+Chart options,Параметры диаграммы
+Chart theme,Тема диаграммы
+Chart type,Тип диаграммы
+Chart type uses a custom view,В этом типе диаграммы используется настраиваемый вид
+Check to make this instance public (non-logged in users can see public documents and entities),"Установите флажок, чтобы сделать этот экземпляр общедоступным (пользователи, не вошедшие в систему, смогут просматривать общедоступные документы и объекты)"
+Checking which images fit the requirements,"Проверка того, какие изображения соответствуют требованиям..."
+Choose,Выберите
+Choose relation type,Выберите тип связи
+Choose which data to use for training,"Выберите, какие данные использовать для обучения"
+Chrome header,Заголовок верхней панели
+Clear,Очистить
+Clear all,Очистить всё
+Clear All,Очистить всё
+Clear all filters,Сбросить все фильтры
 Clear coordinates,Очистить координаты
 Clear Filters,Очистить фильтры
-Clear PDF selection,Clear PDF selection
-Clear search,Clear search
-Click,Click
+Clear PDF selection,Очистить выделенную область в PDF-файле
+Clear search,Очистить поиск
+Click,Нажмите
 Click to fill,"Нажмите, чтобы заполнить"
-Click to select an image,Click to select an image
-Click to select audio or video,Click to select audio or video
-Click to select files,Click to select files
+Click to select an image,"Нажмите, чтобы выбрать изображение"
+Click to select audio or video,"Нажмите, чтобы выбрать аудио или видео"
+Click to select files,"Нажмите, чтобы выбрать файлы"
 Close,Закрыть
-Code,Code
+Code,Код
 Collaborator,Соавтор
-Collaborators,Collaborators
-Collapse all,Collapse all
-Collapse All,Collapse All
+Collaborators,Соавторы
+Collapse all,Свернуть всё
+Collapse All,Свернуть всё
 Collection,Коллекция
-Collection Name,Collection Name
-Colors,Colors
-Colors come from the server data layer. Preview shows assigned bucket colors when available.,Colors come from the server data layer. Preview shows assigned bucket colors when available.
-Columns,Columns
-combine or exclude terms,combine or exclude terms
-Comfortable,Comfortable
-Common sources,Common sources
-Compact,Compact
-Completed,Completed
-Completed with errors,Completed with errors
-Config,Config
-Configuration,Configuration
+Collection Name,Название коллекции
+Colors,Цвета
+Colors come from the server data layer. Preview shows assigned bucket colors when available.,"Цвета берутся из уровня данных сервера. В окне предварительного просмотра отображаются цвета, назначенные корзинам, если они доступны."
+Columns,Столбцы
+combine or exclude terms,объединить или исключить термины
+Comfortable,Комфортная
+Common sources,Распространенные источники
+Compact,Компактная
+Completed,Завершено
+Completed with errors,Завершено с ошибками
+Config,Настройки
+Configuration,Настройки
 Configure filters,Настроить фильтры
-Configure templates,Configure templates
+Configure templates,Настройка шаблонов
 Confirm,Подтвердить
 CONFIRM,Подтвердить
-Confirm action,Confirm action
-Confirm delete connection,Confirm delete connection
-Confirm delete multiple items,Подтвердить удаление нескольких элементов
+Confirm action,Подтвердить действие
+Confirm delete connection,Подтвердить удаление связи
+Confirm delete multiple items,"Вы уверены, что хотите удалить все выбранные элементы?"
 Confirm deletion,Подтвердить удаление
-Confirm deletion of,Confirm deletion of
-Confirm deletion of entity,Confirm deletion of entity
-Confirm deletion of file,Confirm deletion of file
+Confirm deletion of,Подтвердить удаление
+Confirm deletion of entity,Подтвердить удаление объекта
+Confirm deletion of file,Подтвердить удаление файла
 Confirm new password,Подтвердите новый пароль
-Confirm your password,Confirm your password
+Confirm your password,Подтвердите пароль
 Connect to a paragraph,Подключиться к абзацу
-Connect to an entity,Connect to an entity
-Connect to entity,Connect to entity
-Connected entities,Connected entities
-Connected to server,Connected to server
+Connect to an entity,Подключиться к объекту
+Connect to entity,Подключиться к объекту
+Connected entities,Связанные объекты
+Connected to server,Подключено к серверу
 Connection type,Тип связи
-Contact email description,Here you can set up the contact email and the email that appears when Uwazi sends a notification to a user
+Contact email description,"Здесь вы можете настроить контактный адрес электронной почты и адрес, который отображается, когда Uwazi отправляет уведомление пользователю"
 Contact Form,Форма обратной связи
-Contact form email,Contact form email
-Contains,Contains
-Content translations,Content translations
-Context,Context
-Continue,Continue
+Contact form email,Электронная почта контактной формы
+Contains,Содержит
+Content translations,Переводы контента
+Context,Контекст
+Continue,Продолжить
 Conversion failed,Ошибка преобразования
-Cookie preferences,Cookie preferences
-Copied,Copied
-Copied to clipboard,Copied to clipboard
-Copy,Copy
+Cookie preferences,Настройки файлов cookie
+Copied,Скопировано
+Copied to clipboard,Скопировано в буфер обмена
+Copy,Копировать
 Copy From,Копировать из
-Copy from,Copy from
-Copy from this entity,Copy from this entity
-Copy from...,Copy from...
+Copy from,Копировать из
+Copy from this entity,Копировать из этого объекта
+Copy from...,Копировать из...
 Copy Highlighted,Копия выделена
 Copy link,Скопировать ссылку
 Copy properties to this entity from,Скопировать свойства к этому объекту из
-Copy to clipboard,Copy to clipboard
-Could not add media. Please try again.,Could not add media. Please try again.
+Copy to clipboard,Скопировать в буфер обмена
+Could not add media. Please try again.,"Не удалось добавить медиафайл. Пожалуйста, попробуйте ещё раз."
 Could not be processed,Не получилось обработать
-Could not create entity,Could not create entity
-Could not detect the area for the selected text,"Could not detect the area for the selected text, please try selecting again."
-Could not load suggestions.,Could not load suggestions.
-Could not reach server. Please try again later.,Could not reach server. Please try again later.
-Count,Count
+Could not create entity,Не удалось создать объект
+Could not detect the area for the selected text,"Не удалось определить область для выделенного текста, попробуйте выделить его снова."
+Could not load suggestions.,Не удалось загрузить предложения.
+Could not reach server. Please try again later.,"Не удалось подключиться к серверу. Пожалуйста, попробуйте позже."
+Count,Количество
 Create,Создать
 CREATE,Создать
-Create a type to continue.,Create a type to continue.
-Create and edit thesauri,Create and edit thesauri
-Create Connection,Create Connection
+Create a type to continue.,"Создайте тип, чтобы продолжить."
+Create and edit thesauri,Создание и редактирование тезаурусов
+Create Connection,Создать связь
 Create entity,Создать объект
 Create Entity,Создать объект
-Create Extractor,Create Extractor
-Create new entities and upload documents,Create new entities and upload documents
-Create new entity from selection,Create new entity from selection
-Create Reference,Create Reference
-Create relationship,Create relationship
-Create relationship types,Create relationship types
-Create relationships and references,Create relationships and references
-Create table of contents,Create table of contents
-Create visualization,Create visualization
-Created,Created
-Created entity,Created entity
-Created entity coming from a public form,Created entity coming from a public form
-Created page,Created page
-Created relation type,Created relation type
-Created relationship,Created relationship
-Created template,Created template
-Created thesaurus,Created thesaurus
-Created user group,Created user group
-Creating entities,Creating entities
-Creating relationships,Creating relationships
-Creating thesauri,Creating thesauri
-Creation date,Creation date
+Create Extractor,Создать экстрактор
+Create new entities and upload documents,Создать новые объекты и загрузить документы
+Create new entity from selection,Создать новый объект на основе выделенного
+Create Reference,Создать ссылку
+Create relationship,Создать связь
+Create relationship types,Создать типы отношений
+Create relationships and references,Создать связи и ссылки
+Create table of contents,Создать оглавление
+Create visualization,Создать визуализацию
+Created,Создано
+Created entity,Созданный объект
+Created entity coming from a public form,"Объект, созданный на основе общедоступной формы"
+Created page,Создана страница
+Created relation type,Созданный тип связи
+Created relationship,Созданная связь
+Created template,Создан шаблон
+Created thesaurus,Создан тезаурус
+Created user group,Создана группа пользователей
+Creating entities,Создание объектов
+Creating relationships,Создание связей
+Creating thesauri,Создание тезаурусов
+Creation date,Дата создания
 CSS,CSS
-csv blank state message,Import CSV or ZIP files to create entities in bulk. Select **+ Import CSV** to get started.
-CSV Import,CSV Import
-CSV import cancelled,CSV import cancelled
-CSV import completed,CSV import completed
-CSV import failed,CSV import failed
-CSV or ZIP up to 50MB,CSV or ZIP up to 50MB
-Ctrl K,Ctrl K
-Current Value/Suggestion,Current Value/Suggestion
+csv blank state message,"Импортируйте файлы CSV или ZIP, чтобы создать объекты массово. Выберите **+ Импортировать CSV**, чтобы начать."
+CSV Import,Импорт из CSV
+CSV import cancelled,Импорт из CSV отменен
+CSV import completed,Импорт из CSV завершён
+CSV import failed,Импорт из CSV не выполнен
+CSV or ZIP up to 50MB,"CSV или ZIP, размер до 50 МБ"
+Ctrl K,Ctrl+K
+Current Value/Suggestion,Текущее значение/предложение
 "Custom colors are not available for this chart type. Use the chart palette or template
-            colors instead.","Custom colors are not available for this chart type. Use the chart palette or template
-            colors instead."
-Custom component error,Ошибка пользовательского компонента
+            colors instead.","Для этого типа диаграммы пользовательские цвета недоступны. Вместо этого используйте цвета из палитры диаграммы или цвета шаблона
+."
+Custom component error,Ошибка разметки пользовательского компонента: неподдерживаемые значения! Проверьте настройки.
 Custom CSS,Персональные CSS
-Custom Favicon,Custom Favicon
-Custom JS,Custom JS
-Custom landing page,Custom landing page
-custom page error warning,"There is an unexpected error on this custom page, it may not work properly. Please contact an admin for details."
+Custom Favicon,Пользовательский фавикон
+Custom JS,Пользовательский JS
+Custom landing page,Пользовательская целевая страница
+custom page error warning,"На этой пользовательской странице произошла непредвиденная ошибка, она может работать некорректно. Обратитесь к администратору за подробностями."
 Custom Uploads,Пользовательские загрузки
-Customize,Customize
-Customized,Customized
-Dark,Dark
-Dark Theme,Dark Theme
-Dashboard,Dashboard
-Data may be outdated.,Data may be outdated.
-Data source,Data source
-Data sources,Data sources
-Data visualizations,Data visualizations
-Data was updated recently. You can refresh again in a few seconds.,Data was updated recently. You can refresh again in a few seconds.
-Date,Date
+Customize,Настроить
+Customized,Настроено
+Dark,Тёмный
+Dark Theme,Тёмная тема
+Dashboard,Панель управления
+Data may be outdated.,Данные могут быть устаревшими.
+Data source,Источник данных
+Data sources,Источники данных
+Data visualizations,Визуализация данных
+Data was updated recently. You can refresh again in a few seconds.,Данные были обновлены недавно. Вы сможете обновить их снова через несколько секунд.
+Date,Дата
 Date added,Дата добавления
 Date modified,Дата изменена
 "Date or numeric × numeric enables scatter and heatmap. Line, area, and bar plot the
-                measure over the primary dimension (e.g. max engine size per registration date).","Date or numeric × numeric enables scatter and heatmap. Line, area, and bar plot the
-                measure over the primary dimension (e.g. max engine size per registration date)."
+                measure over the primary dimension (e.g. max engine size per registration date).","Дата или числовое значение × числовое значение позволяют построить диаграмму рассеяния и тепловую карту. Линейные, плоскостные и столбчатые диаграммы отображают
+ показатель по основному измерению (например, максимальный размер двигателя по дате регистрации)."
 "Date or numeric × select enables line and area charts with one line per breakdown
-                value over time.","Date or numeric × select enables line and area charts with one line per breakdown
-                value over time."
-Date range,Date range
+                value over time.","Параметр ""Дата или числовое значение × выбор"" позволяет создавать линейные и плоскостные диаграммы с одной линией для каждого значения разбивки
+ по временному интервалу."
+Date range,Диапазон дат
 Day,День
 "Deep-merged onto the generated ECharts option. Use for fine-tuning options not exposed in
-          the Chart tab.","Deep-merged onto the generated ECharts option. Use for fine-tuning options not exposed in
-          the Chart tab."
-Default,Default
-Default date format,Default date format
-Default filter,Default filter
-Default language,Default language
+          the Chart tab.","Глубоко встроено в сгенерированные настройки ECharts. Используется для тонкой настройки параметров, недоступных на
+ вкладке ""Диаграмма""."
+Default,По умолчанию
+Default date format,Формат даты по умолчанию
+Default filter,Фильтр по умолчанию
+Default language,Язык по умолчанию
 Default language change success,Изменение языка по умолчанию прошло успешно
 Default template,Шаблон по умолчанию
-Default template set successfully.,Default template set successfully.
-Default View,Default View
+Default template set successfully.,Шаблон по умолчанию установлен успешно.
+Default View,Вид по умолчанию
 Delete,Удалить
 DELETE,Удалить
-Delete entities and documents,Delete entities and documents
+Delete entities and documents,Удаление объектов и документов
 Delete file,Удалить файл
-Delete relationship,Delete relationship
-Delete relationships,Delete relationships
-Delete?,Delete?
-Deleted attachment,Deleted attachment
-Deleted custom file,Deleted custom file
-Deleted entity,Deleted entity
-Deleted file,Deleted file
-Deleted multiple entities,Deleted multiple entities
-Deleted page,Deleted page
-Deleted relation type,Deleted relation type
-Deleted relationship,Deleted relationship
-Deleted successfully.,Deleted successfully.
-Deleted template,Deleted template
-Deleted thesaurus,Deleted thesaurus
-Deleted user,Deleted user
-Deleted user group,Deleted user group
-Deletion success,Deletion success
-Density,Density
+Delete relationship,Удалить связь
+Delete relationships,Удалить связи
+Delete?,Удалить?
+Deleted attachment,Удаленное вложение
+Deleted custom file,Удалённый пользовательский файл
+Deleted entity,Удалённый объект
+Deleted file,Удаленный файл
+Deleted multiple entities,Удалено несколько объектов
+Deleted page,Удаленная страница
+Deleted relation type,Удаленный тип связи
+Deleted relationship,Удаленная связь
+Deleted successfully.,Удалено успешно.
+Deleted template,Удаленный шаблон
+Deleted thesaurus,Удаленный тезаурус
+Deleted user,Удаленный пользователь
+Deleted user group,Удаленная группа пользователей
+Deletion success,Удаление выполнено успешно
+Density,Плотность
 Description,Описание
-Deselect all,Deselect all
-Details,Details
-Direction,Direction
-Disable,Disable
-Disable highlights,Disable highlights
-Disabled 2FA,Disabled 2FA
-Discard,Discard
+Deselect all,Отменить выбор всех
+Details,Подробности
+Direction,Направление
+Disable,Отключить
+Disable highlights,Отключить подсветку
+Disabled 2FA,Отключена двухфакторная аутентификация
+Discard,Отменить
 Discard changes,Отменить изменения
-Discard changes?,Discard changes?
-Dismiss,Dismiss
+Discard changes?,Отменить изменения?
+Dismiss,Отклонить
 Display entity view from page,Показывать просматриваемый объект со страницы
-Display options,Display options
-Do you want disable 2FA for the following users?,Do you want disable 2FA for the following users?
-Do you want reset the password for the following users?,Do you want reset the password for the following users?
-Do you want to delete the following items?,Do you want to delete the following items?
+Display options,Параметры отображения
+Do you want disable 2FA for the following users?,Вы хотите отключить двухфакторную аутентификацию (2FA) для следующих пользователей?
+Do you want reset the password for the following users?,Хотите сбросить пароли для следующих пользователей?
+Do you want to delete the following items?,Вы хотите удалить следующие элементы?
 Document,Документ
 Document contents,Содержание документа
-Document OCR trigger,Document OCR trigger
+Document OCR trigger,Триггер OCR документа
 Document Title,Название документа
-Document updated,Document updated
+Document updated,Документ обновлен
 Documentation,Документация
 documents,Документы
 Documents,Документы
 documents.,документы.
-Done,Done
-Done creating entities,Done creating entities
-Done creating relationships,Done creating relationships
-Done creating thesauri,Done creating thesauri
-Done extracting files,Done extracting files
-Done scanning,Done scanning
+Done,Готово
+Done creating entities,Создание объектов завершено
+Done creating relationships,Создание связей завершено
+Done creating thesauri,Создание тезаурусов завершено
+Done extracting files,Извлечение файлов завершено
+Done scanning,Сканирование завершено
 Download,Скачать
-Download a third-party authenticator app from your mobile store.,Download a third-party authenticator app from your mobile store.
-Download all,Download all
-Download failed rows,Download failed rows
-Draft restored from release.,Draft restored from release.
+Download a third-party authenticator app from your mobile store.,Загрузите приложение-аутентификатор стороннего разработчика из магазина приложений на вашем мобильном устройстве.
+Download all,Скачать всё
+Download failed rows,"Скачать строки, по которым произошла ошибка"
+Draft restored from release.,"Черновик восстановлен из версии, выпущенной ранее."
 Drag and drop file in this window to upload,"Перетащите и опустите файл в это окно, чтобы загрузить"
-Drag row,Drag row
+Drag row,Перетащить строку
 Drop your files here to upload or,"Опустите свои файлы сюда, чтобы загрузить или"
-Duplicate values not allowed.,Duplicate values not allowed.
+Duplicate values not allowed.,Повторные значения не допускаются.
 Duplicated email,Продублированный адрес электронной почты
 Duplicated name,Дублированное имя
 Duplicated username,Продублированное имя пользователя
-Duration,Duration
-e.g.,e.g.
-Each series uses the template brand color when comparing data sources.,Each series uses the template brand color when comparing data sources.
-Earlier,Earlier
+Duration,Продолжительность
+e.g.,"например,"
+Each series uses the template brand color when comparing data sources.,При сравнении источников данных в каждой серии используется цвет бренда шаблона.
+Earlier,Ранее
 Edit,Редактировать
-Edit at source,Edit at source
-Edit date,Edit date
-Edit Extractor,Edit Extractor
-Edit File,Edit File
-Edit group,Edit group
-Edit item,Edit item
-Edit metadata of entities,Edit metadata of entities
-Edit theme,Edit theme
-Edit user,Edit user
-Edited,Edited
+Edit at source,Редактировать в источнике
+Edit date,Дата изменена
+Edit Extractor,Редактировать экстрактор
+Edit File,Редактировать файл
+Edit group,Редактировать группу
+Edit item,Редактировать элемент
+Edit metadata of entities,Редактирование метаданных объектов
+Edit theme,Изменить тему
+Edit user,Редактировать пользователя
+Edited,Отредактировано
 Editor,Редактор
 editor,Редактор
-Editors,Editors
+Editors,Редакторы
 Email,Электронная почта
-Embed,Embed
-Embed in pages,Embed in pages
+Embed,Встраивание
+Embed in pages,Вставить на страницы
 Empty,Пустой
-Empty group. Drop here to add,Empty group. Drop here to add
-empty property tip,You won't be able to save an entity if this property is empty.
-Enable,Enable
-Enable public embedding to use this chart in external sites on private instances.,Enable public embedding to use this chart in external sites on private instances.
+Empty group. Drop here to add,"Пустая группа. Перетащите сюда, чтобы добавить"
+empty property tip,"Вы не сможете сохранить объект, если это свойство пустое."
+Enable,Включить
+Enable public embedding to use this chart in external sites on private instances.,"Включите публичное встраивание, чтобы использовать эту диаграмму на внешних сайтах в частных экземплярах."
 Enable this page to be used as an entity view page:,Сделайте эту страницу доступной для использования в качестве страницы для просмотра объекта:
-Enter the 6-digit verification code generated by your Authenticator app,Enter the 6-digit verification code generated by your Authenticator app
-"Enter the full username, email, or group name. Suggestions are not shown.","Enter the full username, email, or group name. Suggestions are not shown."
-Enter your current password to confirm,Enter your current password to confirm
+Enter the 6-digit verification code generated by your Authenticator app,"Введите 6-значный код подтверждения, сгенерированный приложением Authenticator"
+"Enter the full username, email, or group name. Suggestions are not shown.","Введите полное имя пользователя, адрес электронной почты или название группы. Варианты для ввода не отображаются."
+Enter your current password to confirm,Введите свой текущий пароль для подтверждения
 Entities,Объекты
 entities,Объекты
-Entities across all languages,Entities across all languages
-Entities created,Entities created
-Entities updated,Entities updated
-entities · generated,entities · generated
+Entities across all languages,Объекты во всех языках
+Entities created,Созданные объекты
+Entities updated,Обновленные объекты
+entities · generated,объектов · сгенерировано
 Entity,Объект
-Entity creation stage completed.,Entity creation stage completed.
-Entity deleted,Entity deleted
-Entity Page,Entity Page
-Entity saved,Entity saved
-Entity scope,Entity scope
-Entity type,Entity type
+Entity creation stage completed.,Этап создания объектов завершён.
+Entity deleted,Объект удален
+Entity Page,Страница объекта
+Entity saved,Объект сохранен
+Entity scope,Область действия объекта
+Entity type,Тип объекта
 Entity types,Типы объектов
-Entity updated,Entity updated
+Entity updated,Объект обновлен
 Error,Ошибка
-Error adding thesauri.,Error adding thesauri.
-Error loading your image,Error loading your image
-Error saving template.,Error saving template.
-Error updating thesauri.,Error updating thesauri.
-evidence,evidence
-exact phrase,exact phrase
-Expand all,Expand all
-Expand All,Expand All
+Error adding thesauri.,Ошибка при добавлении тезаурусов.
+Error loading your image,Ошибка при загрузке изображения
+Error saving template.,Ошибка при сохранении шаблона.
+Error updating thesauri.,Ошибка при обновлении тезаурусов.
+evidence,доказательства
+exact phrase,точная фраза
+Expand all,Развернуть всё
+Expand All,Развернуть всё
 Export CSV,Экспортировать CSV
 Exporting entities to CSV,Экспортировать объекты в CSV
-Extension Token,Extension Token
-External embed,External embed
-Extract new paragraphs,Extract new paragraphs
-Extract paragraphs,Extract paragraphs
-Extracting files,Extracting files
-Extracting files from uploaded package.,Extracting files from uploaded package.
-Extraction configuration,Extraction configuration
-Extractor Name,Extractor Name
-Extractor name,Extractor name
-Extractor/s deleted,Extractor/s deleted
-Extractors,Extractors
-Failed,Failed
-Failed to mark table of contents as reviewed,Failed to mark table of contents as reviewed
-Failed to save table of contents,Failed to save table of contents
-Failure details,Failure details
-Favicon description,"A favicon is a small icon that represents your collection in browser tabs and bookmarks. The default favicon is the Uwazi logo. To use your own:
+Extension Token,Токен расширения
+External embed,Внешнее встраивание
+Extract new paragraphs,Извлечь новые абзацы
+Extract paragraphs,Извлечь абзацы
+Extracting files,Извлечение файлов
+Extracting files from uploaded package.,Извлечение файлов из загруженного пакета.
+Extraction configuration,Конфигурация извлечения
+Extractor Name,Название экстрактора
+Extractor name,Название экстрактора
+Extractor/s deleted,Удалены экстракторы
+Extractors,Экстракторы
+Failed,Не выполнено
+Failed to mark table of contents as reviewed,"Не удалось пометить оглавление как ""просмотренное"""
+Failed to save table of contents,Не удалось сохранить оглавление
+Failure details,Подробная информация об ошибке
+Favicon description,"Favicon — это небольшой значок, который представляет вашу коллекцию на вкладках браузера и в закладках. Значок по умолчанию — логотип Uwazi. Чтобы использовать свой собственный:
 
-1. Upload your icon in Custom Uploads if needed.
-2. Click ""Select favicon image"" and pick a file (images from Custom Uploads only).
-3. Reload the page to see your favicon in action."
-Favicon no images hint,Favicon no images hint
-FEATURED,FEATURED
+1. При необходимости загрузите свою иконку в разделе ""Пользовательские загрузки"".
+2. Нажмите ""Выбрать изображение favicon"" и выберите файл (только изображения из ""Пользовательских загрузок"").
+3. Перезагрузите страницу, чтобы увидеть свой favicon в действии."
+Favicon no images hint,"Нет изображений, подходящих для favicon. Сначала добавьте их в ""Пользовательские загрузки""."
+FEATURED,В ФОКУСЕ
 File,Файл
-file,file
-File deleted,File deleted
-File details,File details
-File extraction completed successfully.,File extraction completed successfully.
-File name,File name
-File preview unavailable,File preview unavailable
-File updated,File updated
-Files,Files
-files,files
-Files and database usage,Files and database usage
+file,файл
+File deleted,Файл удален
+File details,Сведения о файле
+File extraction completed successfully.,Извлечение файлов завершено успешно.
+File name,Имя файла
+File preview unavailable,Предварительный просмотр файла недоступен
+File updated,Файл обновлен
+Files,Файлы
+files,файлы
+Files and database usage,Использование файлов и баз данных
 Fill,Заполнить
-Filter,Filter
-Filter unauthorized relationships,"By default, relationships pointing to restricted entities are visible to anonymous users but not linked. When enabled, these relationships are completely hidden, preventing public users from knowing restricted content exists."
+Filter,Фильтр
+Filter unauthorized relationships,"По умолчанию связи, указывающие на объекты с ограниченным доступом, видны анонимным пользователям, но не являются кликабельными. При включении этой опции такие связи полностью скрываются, чтобы публичные пользователи не знали о существовании ограниченного контента."
 Filters,Фильтры
 Filters AND operator,И
-Filters configuration,Конфигурация фильтров
-Filters configuration description,"By default, users can filter the entities in the library based on the types you have defined. However, you can configure how these entity types will be displayed:"
-Filters configuration example,Пример конфигураций фильтров
+Filters configuration,Фильтры
+Filters configuration description,"По умолчанию пользователи могут фильтровать объекты в библиотеке по типам, которые вы определили. Однако вы можете настроить, как эти типы объектов будут отображаться:"
+Filters configuration example,"нажмите ""Добавить группу"" ниже, чтобы объединить фильтры под общим названием, например ""Документы"" или ""Люди"""
 Filters OR operator,ИЛИ
-Filters saved,Filters saved
+Filters saved,Фильтры сохранены
 Find,Найти
 Find suggestions,Найти предложения
-Find suggestions after training,Find suggestions after training
-Find suggestions for,Find suggestions for
-Find suggestions for selected,Find suggestions for selected
-Finding suggestions,Finding suggestions
+Find suggestions after training,Искать предложения после обучения
+Find suggestions for,Искать предложения для
+Find suggestions for selected,Искать предложения для выбранных
+Finding suggestions,Поиск предложений
 Fit,Приспособить
 Flag,Флажок
-for,for
-For all entities,For all entities
-For entities with blank values,For entities with blank values
-Forgot Password or Username?,Forgot Password or Username?
+for,для
+For all entities,Для всех объектов
+For entities with blank values,Для объектов с пустыми значениями
+Forgot Password or Username?,Забыли пароль или имя пользователя?
 Forms and email configuration,Настройка форм и электронной почты
-From,From
-From all suggestions,From all suggestions
-From previous step,From previous step
-From selection,From selection
-From:,From:
-Full mode,Full mode
-Full width,Full width
+From,От
+From all suggestions,Из всех предложений
+From previous step,Из предыдущего шага
+From selection,Из выбранного
+From:,От:
+Full mode,Полный режим
+Full width,Полная ширина
 General,Общий
-General access,General access
-General Information,General Information
-Generated ID,Generated ID
+General access,Общий доступ
+General Information,Общая информация
+Generated ID,Сгенерированный идентификатор
 Global CSS,Глобальные CSS
-Global CSS & JS,Global CSS & JS
+Global CSS & JS,Глобальные CSS и JS
 Global JS,Global JS
 Google,Google
 Google Analytics,Google Analytics
 Google Maps,Google Карты
-Group,Group
-Group by,Group by
-group expressions,group expressions
-Group Options,Group Options
-Group saved,Group saved
-Group updated,Group updated
-Grouped geolocation properties,Grouped geolocation properties
+Group,Группа
+Group by,Сгруппировать по
+group expressions,групповые выражения
+Group Options,Параметры группы
+Group saved,Группа сохранена
+Group updated,Группа обновлена
+Grouped geolocation properties,Сгруппированные свойства геолокации
 Groups,Группы
-Header and button preview,Header and button preview
-Header bar active background,Header bar active background
-Header bar background,Header bar background
-Header bar divider,Header bar divider
-Header bar hover background,Header bar hover background
-Header bar text,Header bar text
+Header and button preview,Предварительный просмотр заголовка и кнопки
+Header bar active background,Активный фон верхней панели
+Header bar background,Фон верхней панели
+Header bar divider,Разделитель верхней панели
+Header bar hover background,Фон верхней панели при наведении курсора
+Header bar text,Текст в верхней панели
 help,помощь
-here,here
-"Hi, I'm Bert.","Hi, I'm Bert."
-Hide,Hide
-Hide actions,Hide actions
-Hide details,Hide details
+here,здесь
+"Hi, I'm Bert.","Привет, я Bert."
+Hide,Скрыть
+Hide actions,Скрыть действия
+Hide details,Скрыть подробности
 Hide label,Скрыть метку
-Hide restricted relationships from public,Hide restricted relationships from public
-Hide toolbar,Hide toolbar
+Hide restricted relationships from public,Скрыть связи с ограниченным доступом от публичных пользователей
+Hide toolbar,Скрыть панель инструментов
 HTML,HTML
 https://yourdomain,https://вашдомен
-hub,hub
+hub,узел
 hubs,Хаб
 Hybrid,Гибридный
 Icon,Символ
 ID,ID
 ID:,ID:
 "If an account exists with the email you provided, you will receive an email
-                        with instructions to reset your password.","If an account exists with the email you provided, you will receive an email
-                        with instructions to reset your password."
+                        with instructions to reset your password.","Если с указанным вами адресом электронной почты уже зарегистрирована учетная запись, вы получите письмо
+ с инструкциями по сбросу пароля."
 "If it is an external URL, use a fully formed URL. Ie. http://www.uwazi.io.","Если это внешний URL, используйте полностью сформированный URL. Т. е. http://www.uwazi.io."
 "If you want to continue, please type","Если вы хотите продолжить, пожалуйста, введите"
-Image doesn't match the required size.,Image doesn't match the required size.
+Image doesn't match the required size.,Изображение не соответствует требуемому размеру.
 Import,Импортировать
-Import / Export CSV,Import / Export CSV
-Import asset,Import asset
+Import / Export CSV,Импорт/экспорт CSV
+Import asset,Импортировать ресурс
 Import CSV,Импортировать CSV
-Import failed. Review details below.,Import failed. Review details below.
-Import finished successfully.,Import finished successfully.
-Import finished with errors. Review details below.,Import finished with errors. Review details below.
-Import is currently processing rows.,Import is currently processing rows.
-Import is retrying after an error.,Import is retrying after an error.
-Import theme instance file,Import theme instance file
-Import was cancelled.,Import was cancelled.
-Imported translations from file,Imported translations from file
+Import failed. Review details below.,Импорт не удался. Ознакомьтесь с подробностями ниже.
+Import finished successfully.,Импорт завершился успешно.
+Import finished with errors. Review details below.,Импорт завершился с ошибками. Ознакомьтесь с подробностями ниже.
+Import is currently processing rows.,В настоящее время выполняется импорт строк.
+Import is retrying after an error.,После ошибки выполняется повторная попытка импорта.
+Import theme instance file,Импорт файла экземпляра темы
+Import was cancelled.,Импорт был отменен.
+Imported translations from file,Импортированы переводы из файла
 in,в
-"In a group, either all relationships must have a hub or none of them.","In a group, either all relationships must have a hub or none of them."
+"In a group, either all relationships must have a hub or none of them.","В группе либо все связи должны иметь узел, либо ни одна из них."
 In OCR queue,В очереди на оптическое распознавание символов
-In use,In use
-Include all entities,Include all entities
-Include only public,Include only public
-Incoming,Incoming
+In use,Используется
+Include all entities,Включить все объекты
+Include only public,Включить только общедоступные
+Incoming,Входящие
 Info,Информация
-Information extraction training,Information extraction training
-Inherit,Inherit
+Information extraction training,Обучение извлечению информации
+Inherit,Наследовать
 Inherit property,Перенять свойство
-Inherit type,Inherit type
-"Inherited values are read-only. Change the connection above, or edit the source entity.","Inherited values are read-only. Change the connection above, or edit the source entity."
-inherits,inherits
-Input,Input
-Input type,Input type
-Install,Install
-Install Language(s),Install Language(s)
-Install the browser extension.,Install the browser extension.
-Installing languages,Installing languages
-"Instructions on how to achieve this will vary according to the app used, please refer to the app's documentation.","Instructions on how to achieve this will vary according to the app used, please refer to the app's documentation."
-Instructions to reset password,"If the email address supplied is correct, we will send instructions to reset the password."
-Instructions to reset the password were sent to the user,Instructions to reset the password were sent to the user
+Inherit type,Наследовать тип
+"Inherited values are read-only. Change the connection above, or edit the source entity.",Наследуемые значения доступны только для чтения. Измените указанную выше связь или отредактируйте исходный объект.
+inherits,наследует
+Input,Ввод
+Input type,Тип ввода
+Install,Установить
+Install Language(s),Установить язык(и)
+Install the browser extension.,Установите расширение для браузера.
+Installing languages,Установка языков
+"Instructions on how to achieve this will vary according to the app used, please refer to the app's documentation.","Инструкции по выполнению этой операции могут различаться в зависимости от используемого приложения; пожалуйста, ознакомьтесь с документацией к приложению."
+Instructions to reset password,"Если указанный адрес электронной почты верен, мы отправим инструкции по сбросу пароля."
+Instructions to reset the password were sent to the user,Пользователю были отправлены инструкции по сбросу пароля
 Invalid captcha,Неверная Captcha
-Invalid csv: all the values for a row must be either nested or non-nested,Invalid csv: all the values for a row must be either nested or non-nested
-Invalid csv: nested value need to be under a non-nested value,Invalid csv: nested value need to be under a non-nested value
-Invalid form,Недействительная форма
-Invalid URL,Invalid URL
+Invalid csv: all the values for a row must be either nested or non-nested,"Недопустимый CSV-файл: все значения в строке должны быть либо вложенными, либо не вложенными"
+Invalid csv: nested value need to be under a non-nested value,Недопустимый CSV-файл: вложенное значение должно находиться под не вложенным значением
+Invalid form,Одно из полей обязательно для заполнения или содержит недопустимое значение. Исправьте и попробуйте снова.
+Invalid URL,Неверный URL-адрес
 It could also very easily break the app. Only write code here if you know exactly what you are doing.,"Это также может с легкостью нарушить работу приложения. Введите код только в случае, если точно знаете, что делаете."
-it has been logged with request id #,it has been logged with request id #
-Item,Item
+it has been logged with request id #,это событие было зарегистрировано с идентификатором запроса №
+Item,Элемент
 Items:,Элементы
-Javascript,Javascript
-juris*,juris*
-key,Russian
+Javascript,JavaScript
+juris*,юрис*
+key,Ключ
 Label,Метка
-"Label date ""From""","Метка даты ""от"""
-"Label date ""to""","Метка даты ""до"""
-Labeled,Labeled
+"Label date ""From""",От:
+"Label date ""to""",До:
+Labeled,Размеченные
 Landing page,Целевая страница
-Landing page description,"The landing page is the first page that visitors see when they come to your collection. The default landing page is your collection's library. You can set a different landing page by adding its relative URL here. For example:
-      
-A page: */page/dicxg0oagy3xgr7ixef80k9*
-A filtered view in Uwazi: */library/?searchTerm=test*
-An entity: */entity/9htbkgpkyy7j5rk9*
-A document: */document/4y9i99fadjp833di*
-      
-Important: You must use relative URLs. These start with a forward slash and do not include the domain name. For example: In the address *https://yoursite.com/landingpage*, the relative URL is /landingpage"
+Landing page description,"Целевая страница — это первая страница, которую видят посетители при переходе в вашу коллекцию. По умолчанию целевой страницей является библиотека вашей коллекции. Вы можете задать другую целевую страницу, указав здесь её относительный URL-адрес. Например:
+
+Страница: */page/dicxg0oagy3xgr7ixef80k9*
+Отфильтрованное представление в Uwazi: */library/?searchTerm=test*
+Объект: */entity/9htbkgpkyy7j5rk9*
+Документ: */document/4y9i99fadjp833di*
+
+Важно: необходимо использовать относительные URL-адреса. Они начинаются с косой черты и не включают доменное имя. Например, в адресе *https://yoursite.com/landingpage* относительный URL-адрес — /landingpage"
 Language,Язык
-Language Code,Language Code
+Language Code,Код языка
 Language deleted,Язык удален
-Language reset success,Language reset success
-Language uninstalled successfully,Language uninstalled successfully
-Language(s),Language(s)
-Language:,Language:
+Language reset success,Сброс переводов языка выполнен успешно
+Language uninstalled successfully,Язык удален успешно
+Language(s),Язык(и)
+Language:,Язык:
 Languages,Языки
-Languages installed successfully,Languages installed successfully
-Last updated,Last updated
-Last updated from collection:,Last updated from collection:
+Languages installed successfully,Языки успешно установлены
+Last updated,Последнее обновление
+Last updated from collection:,Последнее обновление из коллекции:
 Latitude,Широта
-Latitude must be between -90 and 90,Latitude must be between -90 and 90
-Learn how to add and configure a contact form on a webpage.,Learn how to add and configure a contact form on a webpage.
-Learn how to build your first collection,Learn how to build your first collection
+Latitude must be between -90 and 90,Широта должна находиться в диапазоне от -90 до 90
+Learn how to add and configure a contact form on a webpage.,"Узнайте, как добавить и настроить форму обратной связи на веб-странице."
+Learn how to build your first collection,"Узнайте, как создать свою первую коллекцию"
 Learn more,Узнать больше
-Learn more about the components.,Learn more about the components.
+Learn more about the components.,Узнайте больше об этих компонентах.
 Legend,Подпись
-Lengthy reindex process,Lengthy reindex process
+Lengthy reindex process,Длительный процесс повторной индексации
 Library,Библиотека
 library list view,просмотр библиотеки в виде списка
 library map view,просмотр библиотеки в виде карты
 library table view,просмотр библиотеки в табличном виде
-Light,Light
-Light Theme,Light Theme
-Link,Link
+Light,Светлый
+Light Theme,Светлая тема
+Link,Ссылка
 linked,связанный
-List,List
-List renders as a table. Use the options below to filter empty or zero values.,List renders as a table. Use the options below to filter empty or zero values.
-Live preview,Live preview
-Live translate,Live translate
-Load,Load
-Load example,Load example
-Load more,Load more
-Loading,Loading
-Local time,Local time
+List,Список
+List renders as a table. Use the options below to filter empty or zero values.,"Список отображается в виде таблицы. Воспользуйтесь приведенными ниже параметрами, чтобы отфильтровать пустые значения или значения, равные нулю."
+Live preview,Предварительный просмотр в режиме реального времени
+Live translate,Перевод в режиме реального времени
+Load,Загрузить
+Load example,Загрузить пример
+Load more,Показать ещё
+Loading,Загрузка
+Local time,Местное время
 Login,Войти
-Login button,Кнопка входа
+Login button,Войти
 Login failed,Ошибка авторизации
 Logout,Выйти
 Longitude,Долгота
-Longitude must be between -180 and 180,Longitude must be between -180 and 180
-Lookup help,Lookup help
-Lost connection to the server. Your changes may be lost,Lost connection to the server. Your changes may be lost
+Longitude must be between -180 and 180,Долгота должна находиться в диапазоне от -180 до 180
+Lookup help,Справка по поиску
+Lost connection to the server. Your changes may be lost,Связь с сервером прервана. Ваши изменения могут быть утеряны
 low,низкий
-Manage relationship types,Manage relationship types
+Manage relationship types,Управление типами связей
 Manage site settings and configuration,Управление сайтом и конфигурация
-Manage types,Manage types
-Manual data,Manual data
-Manually set a color,Manually set a color
+Manage types,Управление типами
+Manual data,Ручной ввод
+Manually set a color,Установить цвет вручную
 Map,Карта
-Map api key,Map api key
-Map API key,Map API key
-Map api key tooltip,An API key is required to use Mapbox or Google Maps.
-Map Layers,Map Layers
-Map layers description,Map layers description
-Map Provider,Map Provider
+Map api key,Ключ API карты
+Map API key,Ключ API карты
+Map api key tooltip,Для использования Mapbox или Google Maps требуется API-ключ.
+Map Layers,Слои карты
+Map layers description,"Здесь можно настроить, какие слои карты будут доступны."
+Map Provider,Поставщик карт
 Map view,Просмотр карты
 Mapbox,Mapbox
-Mapping conflict error,"A reindex of your collection is necessary. The reason may vary 
-        -- from certain changes made to a template's property to new fields
-        that need to be populated across entities. 
-        This process will not negatively affect the data in your collection. 
-        It can last a few minutes and some parts of your collection might take
-        some time to reappear in the Library, but this is temporary. Do you want to continue?"
+Mapping conflict error,"Необходимо выполнить переиндексацию вашей коллекции. Причина может быть разной
+        -- от изменений свойства шаблона до новых полей,
+        которые нужно заполнить у всех объектов.
+        Этот процесс не повлияет негативно на данные в вашей коллекции.
+        Он может занять несколько минут, и некоторым частям вашей коллекции может
+        потребоваться время, чтобы снова появиться в библиотеке, но это временно. Хотите продолжить?"
 Maps,Карты
 Mark as Reviewed,Отметить как Просмотрено
-Mark as reviewed,Mark as reviewed
+Mark as reviewed,"Пометить как ""Просмотрено"""
 Markdown,Markdown
 "Markdown support in custom pages will be discontinued starting in 2027. Upgrade this page
-          when its content no longer relies on Markdown syntax.","Markdown support in custom pages will be discontinued starting in 2027. Upgrade this page
-          when its content no longer relies on Markdown syntax."
-marked and labeled,marked and labeled
-marked for training,marked for training
-Marked for training + all labeled entries,Marked for training + all labeled entries
-Marked for training only,Marked for training only
-Match,Match
-match,match
-match verbatim,match verbatim
-matches,matches
-"matches jurisdiction, jurists, jurisprudence","matches jurisdiction, jurists, jurisprudence"
-Matches show the passage and the page they are on.,Matches show the passage and the page they are on.
-Matching,Matching
-matching,matching
+          when its content no longer relies on Markdown syntax.","С 2027 года поддержка Markdown на пользовательских страницах будет прекращена. Обновите эту страницу,
+ когда её содержание перестанет зависеть от синтаксиса Markdown."
+marked and labeled,отмеченные и размеченные
+marked for training,отмечено для обучения
+Marked for training + all labeled entries,Отмечено для обучения + все размеченные записи
+Marked for training only,Только отмеченные для обучения
+Match,Совпадение
+match,совпадение
+match verbatim,дословно совпадать
+matches,совпадения
+"matches jurisdiction, jurists, jurisprudence","соответствует понятиям ""юрисдикция"", ""юристы"", ""юриспруденция"""
+Matches show the passage and the page they are on.,"В результатах поиска указаны фрагмент текста и номер страницы, на которой он находится."
+Matching,Сопоставление
+matching,соответствующий
 Matomo,Matomo
 Members,Участники
 Menu,Меню
 Message,Сообщение
-Message sent,Message sent
+Message sent,Сообщение отправлено
 Metadata,Метаданные
 Metadata Extraction,Извлечение метаданных
 "Metric shows a single total count. Select Pie, Bar, or another chart type above to
-            configure categories, labels, and slices. Use the Appearance tab for colors.","Metric shows a single total count. Select Pie, Bar, or another chart type above to
-            configure categories, labels, and slices. Use the Appearance tab for colors."
-MIGRATE,MIGRATE
+            configure categories, labels, and slices. Use the Appearance tab for colors.","Показатель ""Метрика"" отображает общее значение. Выберите выше тип диаграммы — круговую, столбчатую или другой — чтобы
+ настроить категории, метки и сегменты. Цвета можно настроить на вкладке ""Внешний вид""."
+MIGRATE,МИГРАЦИЯ
 Minimum,Минимум
-Mismatch,Mismatch
-mismatched passwords,Passwords don't match
-mismatching,mismatching
+Mismatch,Несоответствие
+mismatched passwords,Пароли не совпадают
+mismatching,несоответствие
 Mixed access,Доступ смешанного типа
 ML TOC,Оглавление для машинного обучения
-Modified,Modified
+Modified,Изменено
 Month,Месяц
-Months,Months
-More,More
-more,more
+Months,Месяцы
+More,Ещё
+more,подробнее
 more options.,больше опций.
-More rows per screen; same type size,More rows per screen; same type size
-Multi-source mode,Multi-source mode
-Multiple date,Multiple date
-Multiple date range,Multiple date range
+More rows per screen; same type size,Больше строк на экране — тот же размер шрифта
+Multi-source mode,Режим работы с несколькими источниками
+Multiple date,Несколько дат
+Multiple date range,Несколько диапазонов дат
 Multiple inherited properties warning ([property 1] affects [property 2]),влияет
-Multiple matches found,Multiple matches found
-Multiple relationships edit description,Making changes to this property will affect other properties on this template because they all share relationships with the same configuration.
-Multiple select,Multiple select
+Multiple matches found,Найдено несколько совпадений
+Multiple relationships edit description,"Изменение этого свойства повлияет на другие свойства этого шаблона, так как все они используют связи с одинаковой конфигурацией."
+Multiple select,Выбор нескольких элементов
 Name,Имя
 Name is required,Требуется имя
 Name is too long,Имя слишком длинное
 Name is too short,Имя слишком короткое
 Narrow down your searches,Сузьте область своего поиска
 "Narrow entities before aggregation. With multiple sources, pick the property under the
-        source alias so each filter applies only to that series.","Narrow entities before aggregation. With multiple sources, pick the property under the
-        source alias so each filter applies only to that series."
+        source alias so each filter applies only to that series.","Перед агрегированием сузьте круг объектов. При наличии нескольких источников выберите свойство под
+псевдонимом источника, чтобы каждый фильтр применялся только к данному ряду данных."
 Narrow your search,Ограничить свой поиск
-Navigate back,Navigate back
-Navigation menu tool tip part 1,"If it is an internal URL within this website, be sure to delete the first part"
-Navigation menu tool tip part 2,leaving only a relative URL starting with a slash character. Ie. /some_url.
-New,New
-New activity will show up here.,New activity will show up here.
-New conversation,New conversation
+Navigate back,Вернуться назад
+Navigation menu tool tip part 1,"Если это внутренняя ссылка на этом сайте, обязательно удалите первую часть"
+Navigation menu tool tip part 2,"оставив только относительный URL-адрес, начинающийся с символа косой черты. Например, /some_url."
+New,Новое
+New activity will show up here.,Здесь будут отображаться новые действия.
+New conversation,Новый разговор
 New entity,Новый объект
-New group,New group
+New group,Новая группа
 New language added,Добавлен новый язык
-New page,New page
+New page,Новая страница
 New password,Новый пароль
-New primary doc,New primary doc
-New relation type label…,New relation type label…
-New relationship type,New relationship type
+New primary doc,Новый первоисточник
+New relation type label…,Новое обозначение типа отношения…
+New relationship type,Новый тип отношений
 New relationships group,Группа новых взаимосвязей
-New Relationships Migration,New Relationships Migration
-New user,New user
+New Relationships Migration,Перенос новых отношений
+New user,Новый пользователь
 Next,Следующий
 No,Нет
 No attachments,Нет вложений
-No audio or video on this entity,No audio or video on this entity
-No chart types match your search.,No chart types match your search.
+No audio or video on this entity,Для этого объекта отсутствуют аудио- и видеоматериалы
+No chart types match your search.,Ни один из типов диаграмм не соответствует вашему запросу.
 No common filters,Нет общих фильтров
-No connected entities yet.,No connected entities yet.
+No connected entities yet.,Пока нет связанных объектов.
 No Connections,Нет связей
-No Connections description,Connections are the direct relationships between this document and other documents and entities.
-No context,No context
-No CSVs yet,No CSVs yet
-No data,No data
-NO DATA AVAILABLE,NO DATA AVAILABLE
-No entities found,No entities found
-NO EXTRACTORS,NO EXTRACTORS
-No files available,No files available
-No files queued yet.,No files queued yet.
-no filters for templates,The combination of entity types doesn't have any filters in common.
-No Group,No Group
+No Connections description,Связи — это прямые взаимосвязи между этим документом и другими документами и объектами.
+No context,Контекст отсутствует
+No CSVs yet,CSV-файлов пока нет
+No data,Данных нет
+NO DATA AVAILABLE,ДАННЫХ НЕТ
+No entities found,Объекты не найдены
+NO EXTRACTORS,НЕТ ЭКСТРАКТОРОВ
+No files available,Файлов нет
+No files queued yet.,В очереди пока нет файлов.
+no filters for templates,У выбранной комбинации типов объектов нет общих фильтров.
+No Group,Нет группы
 No icon / flag,Нет иконки/флажка
-No images on this entity,No images on this entity
-No items available,No items available
+No images on this entity,Для этого объекта изображений нет
+No items available,Нет доступных элементов
 No Label,Нет метки
-No label,No label
-No matches for,No matches for
-No matches.,No matches.
-No matching entities.,No matching entities.
-No media selected,No media selected
-No metadata for this entity yet.,No metadata for this entity yet.
-No options,No options
+No label,Без названия
+No matches for,Нет результатов по запросу
+No matches.,Результатов не найдено.
+No matching entities.,Соответствующих объектов не найдено.
+No media selected,Медиафайл не выбран
+No metadata for this entity yet.,Метаданных для этого объекта пока нет.
+No options,Нет вариантов
 No options found,Варианты не найдены
-No page,No page
-No people or groups added yet,No people or groups added yet
-No primary documents,No primary documents
-No primary documents yet. Add a file to get started.,No primary documents yet. Add a file to get started.
-No property,Нет свойства
+No page,Нет страницы
+No people or groups added yet,Пока не добавлено ни одного человека или группы
+No primary documents,Первоисточников нет
+No primary documents yet. Add a file to get started.,"Пока нет первоисточников. Добавьте файл, чтобы начать."
+No property,У элемента нет этого свойства
 No References,Нет ссылок
-No References description,References are parts of this document related with other documents and entities.
-No relationship types,No relationship types
+No References description,"Ссылки — это части этого документа, связанные с другими документами и объектами."
+No relationship types,Типы отношений отсутствуют
 No Relationships,Нет взаимосвязей
-No Relationships description,Relationships are bonds between entities.
-No relationships found,No relationships found
-No relationships to graph,No relationships to graph
-No releases yet,No releases yet
-No results found,No results found
-No supporting files yet. Add a file to get started.,No supporting files yet. Add a file to get started.
+No Relationships description,Взаимосвязи — это связи между объектами.
+No relationships found,Связей не найдено
+No relationships to graph,Нет связей для отображения на графе
+No releases yet,Пока нет версий
+No results found,Результаты не найдены
+No supporting files yet. Add a file to get started.,"Пока нет сопутствующих файлов. Добавьте файл, чтобы приступить к работе."
 No table of contents,Нет содержания
-No Table of contents,No Table of contents
-No table of contents description,Нет описания содержания
-No templates available to add.,No templates available to add.
+No Table of contents,Оглавление отсутствует
+No table of contents description,"Начните с выделения текста в документе и нажатия кнопки ""Добавить в оглавление""."
+No templates available to add.,Шаблонов для добавления нет.
 No text match,Нет совпадающего текста
-No text match description,You can type something different in the search box to get some results.
-No timelinks added,No timelinks added
-No translation in,No translation in
+No text match description,"Попробуйте ввести другой запрос в поле поиска, чтобы получить результаты."
+No timelinks added,Ссылки на временные отметки не добавлены
+No translation in,Нет перевода на
 No type,Нет типа
-No uploaded images fit the requirements,No uploaded images match these size requirements. Upload a new image or use an editor to resize an existing file.
-No user or group found,No user or group found
-No valid target template available,No valid target template available
+No uploaded images fit the requirements,Ни одно из загруженных изображений не соответствует этим требованиям к размеру. Загрузите новое изображение или измените размер существующего файла с помощью редактора.
+No user or group found,Пользователь или группа не найдены
+No valid target template available,Доступных шаблонов целей нет
 No value,Нет значения
 No Value,Нет значения
-No visualization data available.,No visualization data available.
-"No, cancel","No, cancel"
-no-toc-description,"You can start by selecting text in the document and clicking the ""Add to
-              ToC"" button."
+No visualization data available.,Данные для визуализации отсутствуют.
+"No, cancel","Нет, отменить"
+no-toc-description,"Начните с выделения текста в документе и нажатия кнопки ""Добавить в
+              оглавление""."
 Non processed,Необработанные
-Non-labeled,Non-labeled
-Non-latin characters support,Non-latin characters support
-None,None
+Non-labeled,Неразмеченные
+Non-latin characters support,Поддержка нелатинских символов
+None,Нет
 Normal view,Нормальный вид
-Not already been use as source template in another extractor,Not already been use as source template in another extractor
-Not already been use as target template,Not already been use as target template
-Not Found,Not Found
-Nothing here yet.,Nothing here yet.
-Nothing selected,Nothing selected
-Notifications,Notifications
-Obsolete,Obsolete
-obsolete,obsolete
+Not already been use as source template in another extractor,Еще не использовался в качестве исходного шаблона в другом экстракторе
+Not already been use as target template,Еще не использовался в качестве шаблона цели
+Not Found,Не найдено
+Nothing here yet.,Пока здесь ничего нет.
+Nothing selected,Ничего не выбрано
+Notifications,Уведомления
+Obsolete,Устаревшее
+obsolete,устаревший
 OCR,Оптическое распознавание символов
-OCR button tip,This will process the document to recognize it's text. The original file will be added as a supporting file.
+OCR button tip,Документ будет обработан для распознавания текста. Исходный файл будет добавлен в качестве вспомогательного файла.
 OCR completed,Оптическое распознавание символов завершено
-OCR description tip 1,"This will enable the Optical Character Recognition (OCR) functionality for PDF documents. This service will recognize text inside images, such as scanned documents and photos, and convert it into machine-readable text data."
-OCR description tip 2,"When activated, this will enable administrator and editor users to send PDF documents to the OCR service."
+OCR description tip 1,"Это включит функцию оптического распознавания символов (OCR) для PDF-документов. Эта служба распознаёт текст внутри изображений, таких как отсканированные документы и фотографии, и преобразует его в машиночитаемые текстовые данные."
+OCR description tip 2,При активации эта функция позволит пользователям с ролью администратора и редактора отправлять PDF-документы в службу OCR.
 OCR error,Ошибка оптического распознавания символов
-OCR error tip,The OCR engine couldn't read the document due to a malformed format. Last updated
+OCR error tip,Механизм OCR не смог прочитать документ из-за некорректного формата. Последнее обновление
 OCR PDF,Оптическое распознавание символов PDF
 of,из
 Ok,Окей
 OK,Окей
-On this entity,On this entity
-one character,one character
-Only essential,Only essential
+On this entity,У этого объекта
+one character,один символ
+Only essential,Только самое необходимое
 "Only properties with the same name and configuration in every data source are available
-            for both dimensions.","Only properties with the same name and configuration in every data source are available
-            for both dimensions."
-Only published entities are counted.,Only published entities are counted.
+            for both dimensions.","Доступны только свойства, имеющие одинаковое название и конфигурацию во всех источниках данных, для обоих измерений."
+Only published entities are counted.,Учитываются только опубликованные объекты.
 "Only templates that are not used as source in any other extractor and are not
-                selected as target in this extractor are available for selection.","Only templates that are not used as source in any other extractor and are not
-                selected as target in this extractor are available for selection."
+                selected as target in this extractor are available for selection.","Для выбора доступны только те шаблоны, которые не используются в качестве источника в каком-либо другом экстракторе и не
+ выбраны в качестве целевого шаблона в данном экстракторе."
 "Only templates with at least one rich text property and one numeric property are
-                available for selection.","Only templates with at least one rich text property and one numeric property are
-                available for selection."
-"Only the extractor will be deleted, all created entities will remain on the library.","Only the extractor will be deleted, all created entities will remain on the library."
-Open,Open
-Open entity,Open entity
-Open group,Open group
-Open link,Open link
-Open PDF,Open PDF
+                available for selection.","Для выбора доступны только те шаблоны, которые содержат как минимум одно свойство форматированного текста и одно числовое свойство."
+"Only the extractor will be deleted, all created entities will remain on the library.","Будет удален только экстрактор, все созданные объекты останутся в библиотеке."
+Open,Открыть
+Open entity,Открыть объект
+Open group,Открыть группу
+Open link,Открыть ссылку
+Open PDF,Открыть PDF
 Open the two-factor Authenticator app on your device,Откройте приложение для двухфакторной аутентификации на вашем устройстве
-Options,Options
+Options,Параметры
 or,или
-or drag and drop here,or drag and drop here
+or drag and drop here,или перетащите сюда
 or drop your files here.,или опустите свои файлы сюда.
-Or paste a URL,Or paste a URL
+Or paste a URL,Или вставьте URL-адрес
 Order,Последовательность
 Other,Другой
 other,Другой
-Other users will be affected by this action!,Other users will be affected by this action!
-Others,Others
-Outgoing,Outgoing
-p.,p.
+Other users will be affected by this action!,Это действие повлияет на других пользователей!
+Others,Прочее
+Outgoing,Исходящие
+p.,с.
 Page,Страница
-Page not found,Page not found
-Page published successfully.,Page published successfully.
+Page not found,Страница не найдена
+Page published successfully.,Страница успешно опубликована.
 Pages,Страницы
-Paragrap number extraction property (numeric),Paragrap number extraction property (numeric)
-Paragraph,Paragraph
-Paragraph Extraction,Paragraph Extraction
-Paragraph Extractor added,Paragraph Extractor added
-Paragraph text extraction property (rich text),Paragraph text extraction property (rich text)
-Paragraphs,Paragraphs
-Paragraphs deleted,Paragraphs deleted
-parties,parties
+Paragrap number extraction property (numeric),Свойство извлечения номера абзаца (числовое)
+Paragraph,Абзац
+Paragraph Extraction,Извлечение абзацев
+Paragraph Extractor added,Добавлен экстрактор абзацев
+Paragraph text extraction property (rich text),Свойство извлечения текста из абзаца (форматированный текст)
+Paragraphs,Абзацы
+Paragraphs deleted,Абзацы удалены
+parties,стороны
 Password,Пароль
-Password + 2fa,Password + 2fa
-Password changed success,Password changed success
+Password + 2fa,Пароль + двухфакторная аутентификация
+Password changed success,Пароль успешно изменен
 Password is too long,Пароль слишком длинный
-Passwords do not match,Passwords do not match
-Paste an audio or video URL to use it as this property without uploading a file. Press Enter to apply.,Paste an audio or video URL to use it as this property without uploading a file. Press Enter to apply.
-Paste an image URL to use it as this property without uploading a file. Press Enter to apply.,Paste an image URL to use it as this property without uploading a file. Press Enter to apply.
-Paste this tag in a page HTML. The chart uses the page language.,Paste this tag in a page HTML. The chart uses the page language.
-Paste URL,Paste URL
-Paste URL here,Paste URL here
+Passwords do not match,Пароли не совпадают
+Paste an audio or video URL to use it as this property without uploading a file. Press Enter to apply.,"Вставьте URL-адрес аудио- или видеофайла, чтобы использовать его в качестве этого свойства без загрузки файла. Нажмите Enter, чтобы применить."
+Paste an image URL to use it as this property without uploading a file. Press Enter to apply.,"Вставьте URL-адрес изображения, чтобы использовать его в качестве этого свойства без загрузки файла. Нажмите Enter, чтобы применить."
+Paste this tag in a page HTML. The chart uses the page language.,Вставьте этот тег в HTML-код страницы. В диаграмме используется язык страницы.
+Paste URL,Вставьте URL-адрес
+Paste URL here,Вставьте URL-адрес здесь
 PDF,PDF
-Pending,Pending
-People and groups,People and groups
-per page,per page
+Pending,В ожидании
+People and groups,Люди и группы
+per page,за страницу
 Permission,Разрешение
-Permission level,Permission level
+Permission level,Уровень доступа
 Permission on entities explicitly shared with the user,"Разрешение на объекты, которыми поделились с пользователем"
 Permissions,Разрешения
-Permissions updated,Permissions updated
-Pick a color,Pick a color
-Pick another,Pick another
+Permissions updated,Права доступа обновлены
+Pick a color,Выберите цвет
+Pick another,Выберите другой
 Plain text,Обычный текст
 Please contact an admin for details.,"Пожалуйста, свяжитесь с администратором для выяснения деталей."
-Please type in,Please type in
+Please type in,Введите
 Please type in letters and numbers from the image to start the export.,"Пожалуйста, введите буквы и цифры с изображения для того, чтобы начать экспорт."
-Pre-filled from your selection. Edit as needed.,Pre-filled from your selection. Edit as needed.
-Preflight scan completed.,Preflight scan completed.
-Preparing required relationships.,Preparing required relationships.
-Preparing required thesauri values.,Preparing required thesauri values.
+Pre-filled from your selection. Edit as needed.,Поле уже заполнено в соответствии с вашим выбором. При необходимости внесите изменения.
+Preflight scan completed.,Предварительное сканирование завершено.
+Preparing required relationships.,Подготовка необходимых связей.
+Preparing required thesauri values.,Подготовка необходимых значений тезауруса.
 Preserve,Preserve
-Preserve Extension,Preserve Extension
-Preserve Setup Description,"If you know your Uwazi URL and TOKEN click the link below, and fill the required information."
+Preserve Extension,"Расширение ""Preserve"""
+Preserve Setup Description,"Если вы знаете свой URL-адрес Uwazi и TOKEN, перейдите по ссылке ниже и заполните необходимую информацию."
 Press enter to add,"Нажмите Enter, чтобы добавить"
 Preview,Предварительный просмотр
-Preview updates automatically (300ms debounce),Preview updates automatically (300ms debounce)
-Preview updates when the JSON is valid.,Preview updates when the JSON is valid.
+Preview updates automatically (300ms debounce),Предварительный просмотр обновляется автоматически (задержка 300 мс)
+Preview updates when the JSON is valid.,Предварительный просмотр обновляется при корректном формате JSON.
 Previous,Предыдущий
-Primary,Primary
-Primary button,Primary button
-Primary document,Primary document
+Primary,Первичный
+Primary button,Основная кнопка
+Primary document,Первоисточник
 Primary Documents,ОСНОВНЫЕ ДОКУМЕНТЫ
-Primary documents,Primary documents
+Primary documents,Первоисточники
 Priority sorting,Приоритетная сортировка
-Priority sorting description,"Properties marked as priority sorting will be used as default sorting criteria. If more than one property is marked as priority sorting the system will try to pick-up the best fit. When listing mixed template types, the system will pick-up the best combined priority sorting."
-Private,Private
-Private entities description,Caution: the selected entities will be **private**. Only allowed users will be able to see them.
-Process,Process
-Process extractor,Process extractor
-Process selected,Process selected
-Processed,Processed
-Processed rows,Processed rows
+Priority sorting description,"Свойства, отмеченные как приоритетная сортировка, будут использоваться в качестве критерия сортировки по умолчанию. Если приоритетная сортировка отмечена для нескольких свойств, система попытается выбрать наиболее подходящее. При отображении списков с разными типами шаблонов система выберет наилучшую комбинированную приоритетную сортировку."
+Private,Частный
+Private entities description,Внимание: выбранные объекты станут **частными**. Видеть их смогут только пользователи с доступом.
+Process,Обработать
+Process extractor,Обработать экстрактор
+Process selected,Обработать выбранное
+Processed,Обработано
+Processed rows,Обработанные строки
 Processing,Обработка
-Progress,Progress
+Progress,Прогресс
 Properties,Свойства
 Properties from other templates in the collection using the same label,"Свойства из других шаблонов в коллекциях, использующих ту же метку"
-Properties from other templates in the collection using the same label.,Properties from other templates in the collection using the same label.
-"Properties marked as priority sorting will be used as default sorting criteria. If more than one property is marked as priority sorting the system will try to pick-up the best fit. When listing mixed template types, the system will pick-up the best combined priority sorting.","Properties marked as priority sorting will be used as default sorting criteria. If more than one property is marked as priority sorting the system will try to pick-up the best fit. When listing mixed template types, the system will pick-up the best combined priority sorting."
-Property,Property
-Property as filter description,"This property will be used for filtering the library results. When properties match in equal name and field type with other entity types, they will be combined for filtering."
-property date,Date
-property daterange,Date range
-property generatedid,Generated ID
-property geolocation,Geolocation
-property image,Image
-property link,Link
-property markdown,Rich text
-property media,Media
-property multidate,Multiple date
-property multidaterange,Multiple date range
-property multiselect,Multiple select
-property numeric,Numeric
-property preview,Preview
-property relationship,Relationship
-property select,Select
-property text,Text
-Property type,Property type
+Properties from other templates in the collection using the same label.,"Свойства из других шаблонов в коллекции, использующих то же название."
+"Properties marked as priority sorting will be used as default sorting criteria. If more than one property is marked as priority sorting the system will try to pick-up the best fit. When listing mixed template types, the system will pick-up the best combined priority sorting.","Свойства, отмеченные как приоритетная сортировка, будут использоваться в качестве критерия сортировки по умолчанию. Если приоритетная сортировка отмечена для нескольких свойств, система попытается выбрать наиболее подходящее. При отображении списков с разными типами шаблонов система выберет наилучшую комбинированную приоритетную сортировку."
+Property,Свойство
+Property as filter description,"Это свойство будет использоваться для фильтрации результатов в библиотеке. Если свойства других типов объектов совпадают по имени и типу поля, они будут объединены для фильтрации."
+property date,Дата
+property daterange,Диапазон дат
+property generatedid,Сгенерированный идентификатор
+property geolocation,Геолокация
+property image,Изображение
+property link,Ссылка
+property markdown,Форматированный текст
+property media,Медиа
+property multidate,Несколько дат
+property multidaterange,Несколько диапазонов дат
+property multiselect,Выбор нескольких элементов
+property numeric,Числовой
+property preview,Предварительный просмотр
+property relationship,Взаимосвязь
+property select,Список
+property text,Текст
+Property type,Тип свойства
 Protection,Защита
 ProTip!,Профессиональная подсказка!
 "Provide chart-ready data as JSON. Each series needs id, label, and a points array with
-              label and value per row. Optional key on points helps stable colors.","Provide chart-ready data as JSON. Each series needs id, label, and a points array with
-              label and value per row. Optional key on points helps stable colors."
-Public entities description,Caution: the selected entities will be **public**. Anyone will be able to see them.
-Public form settings description,Here you can configure the public form destination and the whitelisted templates
-Public Form submit URL,Public Form submit URL
-Public form URL description,"If you have configured a public form and would like a different Uwazi collection to receive the submissions, enter its URL here."
-Public form whitelist description,"If you wish to include Public Forms on your pages, you must white-list the template IDs for which Public Forms are expected."
-Public instance,Public instance
+              label and value per row. Optional key on points helps stable colors.","Предоставьте данные в формате JSON, готовые для построения графика. Каждая серия должна содержать идентификатор (id), метку (label) и массив точек, в каждой строке которого
+указываются метка и значение. Дополнительный ключ в массиве точек помогает обеспечить стабильность цветов."
+Public entities description,Внимание: выбранные объекты станут **публичными**. Видеть их сможет любой пользователь.
+Public form settings description,Здесь вы можете настроить назначение публичной формы и список разрешённых шаблонов
+Public Form submit URL,URL-адрес для отправки данных из общедоступной формы
+Public form URL description,"Если вы настроили публичную форму и хотите, чтобы отправленные данные получала другая коллекция Uwazi, укажите здесь её URL-адрес."
+Public form whitelist description,"Чтобы использовать публичные формы на своих страницах, необходимо добавить в белый список идентификаторы шаблонов, для которых предполагается использование публичных форм."
+Public instance,Публичный экземпляр
 Publish,Опубликовать
-Publish release,Publish release
+Publish release,Опубликовать версию
 Published,В открытом доступе
-Published and unpublished entities are counted.,Published and unpublished entities are counted.
-QR Code,QR Code
+Published and unpublished entities are counted.,"Учитываются как опубликованные, так и неопубликованные объекты."
+QR Code,QR-код
 Query,Запрос
-Queued,Queued
+Queued,В очереди
 RAW,RAW
 "Re-runs the query against your current collection. Use this after importing
-                        or editing entities—not when changing chart settings (save handles that).","Re-runs the query against your current collection. Use this after importing
-                        or editing entities—not when changing chart settings (save handles that)."
-Re-uploaded document,Re-uploaded document
-Ready,Ready
+                        or editing entities—not when changing chart settings (save handles that).",Повторно запускает запрос по текущей коллекции. Используйте эту функцию после импорта или редактирования объектов — но не при изменении настроек диаграммы (это уже учитывается при сохранении).
+Re-uploaded document,Повторно загруженный документ
+Ready,Готово
 Receiving email,Электронная почта получателя
-Receiving email description,"If you have a contact form, this is the email address that will receive the form's submissions."
-Recommended,Recommended
-Reference,Reference
+Receiving email description,"Если у вас есть контактная форма, это адрес электронной почты, на который будут приходить отправленные данные формы."
+Recommended,Рекомендуется
+Reference,Ссылка
 References,Ссылки
-references,references
-Refresh,Refresh
+references,ссылки
+Refresh,Обновить
 "Refresh manually when you have added data and cannot wait for the next
-                        scheduled run.","Refresh manually when you have added data and cannot wait for the next
-                        scheduled run."
-Refresh mode,Refresh mode
+                        scheduled run.","Обновите вручную, если вы добавили данные и не можете дождаться следующего запланированного запуска."
+Refresh mode,Режим обновления
 Reject,Отклонить
-Reject all,Reject all
-Related entities created,Related entities created
-Relation type,Relation type
+Reject all,Отклонить всё
+Related entities created,Созданы связанные объекты
+Relation type,Тип связи
 Relationship,Взаимосвязь
-Relationship created,Relationship created
-Relationship Type,Relationship Type
-Relationship type,Relationship type
-Relationship type created successfully.,Relationship type created successfully.
-Relationship type name,Relationship type name
-Relationship type name already exists,Relationship type name already exists
+Relationship created,Связь создана
+Relationship Type,Тип отношений
+Relationship type,Тип отношений
+Relationship type created successfully.,Тип связи создан успешно.
+Relationship type name,Название типа отношений
+Relationship type name already exists,Название типа отношений уже существует
 Relationship types,Типы взаимосвязей
 relationships,Взаимосвязи
 Relationships,Взаимосвязи
-Relationships saved,Relationships saved
-relationships? This action cannot be undone.,relationships? This action cannot be undone.
+Relationships saved,Связи сохранены
+relationships? This action cannot be undone.,связи? Это действие нельзя отменить.
 RelationType saved,Тип взаимосвязи сохранен
-Release message,Release message
-Relevance,Relevance
-remaining,remaining
-remaining files,remaining files
-Remote Server Unreachable,Remote Server Unreachable
+Release message,Сообщение о выпуске
+Relevance,Релевантность
+remaining,оставшиеся
+remaining files,оставшиеся файлы
+Remote Server Unreachable,Не удается установить соединение с удаленным сервером
 Remove,Удалить
-Remove from connection,Remove from connection
-Remove from training set,Remove from training set
+Remove from connection,Удалить связь
+Remove from training set,Исключить из обучающей выборки
 remove icon,удалить иконку
-Remove icon,Remove icon
-Removed language,Removed language
+Remove icon,Удалить значок
+Removed language,Удалённый язык
 Rename,Переименовать
-Renamed attachment,Renamed attachment
+Renamed attachment,Переименованное вложение
 Repeat Password,Повторите пароль
 Request id #,Запрос ID #
-Request token,Request token
-Required,Required
+Request token,Запросить токен
+Required,Обязательно
 Required property,Необходимое свойство
-Required relationships were prepared.,Required relationships were prepared.
-Required thesauri values were prepared.,Required thesauri values were prepared.
+Required relationships were prepared.,Были подготовлены необходимые связи.
+Required thesauri values were prepared.,Были подготовлены необходимые значения из тезауруса.
 Reset,Сброс
 Reset 2FA,Сбросить 2FA
-Reset default translation,Reset default translation
-Reset language,Reset language
+Reset default translation,Сброшен перевод по умолчанию
+Reset language,Сбросить язык
 Reset Password,Сбросить пароль
-Reset passwords,Reset passwords
-Resize panels,Resize panels
-Restore,Restore
-Restore previous version,Restore previous version
+Reset passwords,Сброс паролей
+Resize panels,Изменение размера панелей
+Restore,Восстановить
+Restore previous version,Восстановить предыдущую версию
 Restricted,Для ограниченного круга лиц
-Retryable,Retryable
-Retrying,Retrying
+Retryable,С возможностью повторной попытки
+Retrying,Повторная попытка
 Return to login,Вернуться к авторизации
-Review,Review
+Review,Просмотреть
 Reviewed,Просмотрено
 Role,Роль
-Room around every row,Room around every row
+Room around every row,Больше пространства вокруг каждой строки
 Route,Маршрут
-Row,Row
-Row density,Row density
-Rows failed,Rows failed
-Rows processed,Rows processed
+Row,Строка
+Row density,Плотность строк
+Rows failed,Строки с ошибками
+Rows processed,Обработанные строки
 Sample,Образец
-Satellite,Satellite
+Satellite,Спутник
 Save,Сохранить
-Save & Preview,Save & Preview
+Save & Preview,Сохранить и просмотреть
 Save changes,Сохранить изменения
 Save password,Сохранить пароль
-Save the visualization before refreshing.,Save the visualization before refreshing.
-Save the visualization to get embed code.,Save the visualization to get embed code.
-Save your work to make change permanent,Save your work to make change permanent
-Saved successfully.,Saved successfully.
-Saved with warnings,Saved with warnings
-Saving,Saving
-Saving...,Saving...
-Scanning,Scanning
-Scanning rows before import.,Scanning rows before import.
-Schedule,Schedule
-Schedules run in UTC (Coordinated Universal Time).,Schedules run in UTC (Coordinated Universal Time).
+Save the visualization before refreshing.,Сохраните визуализацию перед обновлением.
+Save the visualization to get embed code.,"Сохраните визуализацию, чтобы получить код для вставки."
+Save your work to make change permanent,"Сохраните результаты своей работы, чтобы изменения вступили в силу"
+Saved successfully.,Сохранено успешно.
+Saved with warnings,Сохранено с предупреждениями
+Saving,Сохранение
+Saving...,Сохранение...
+Scanning,Сканирование
+Scanning rows before import.,Сканирование строк перед импортом.
+Schedule,Расписание
+Schedules run in UTC (Coordinated Universal Time).,Расписания указаны в формате UTC (универсальное координированное время).
 Search,Искать
-"Search  •  AND, OR, NOT, ""exact"", wild*","Search  •  AND, OR, NOT, ""exact"", wild*"
-Search by title,Search by title
-Search entities...,Search entities...
-Search entities…,Search entities…
+"Search  •  AND, OR, NOT, ""exact"", wild*","Поиск  •  AND, OR, NOT, ""точно"", любой*"
+Search by title,Поиск по названию
+Search entities...,Поиск объектов...
+Search entities…,Поиск объектов…
 Search item,Искать предмет
 Search related entities or documents,Искать взаимосвязанные объекты и документы
-Search relationships,Search relationships
+Search relationships,Поиск связей
 Search relevance,Релевантность поиска
 Search text,Поиск по тексту
-Search text description,Type something in the search box to get some results.
-Search this document,Search this document
+Search text description,"Введите что-нибудь в поле поиска, чтобы получить результаты."
+Search this document,Поиск в этом документе
 Search Tips,Поиск советов
-Search tips,Search tips
-Search Tips: boolean,Советы по поиску: логический поиск
-Search Tips: exact term,Советы по поиску: точный термин
-Search Tips: one char wildcard,Советы по поиску: использование одного подстановочного знака
-Search Tips: proximity,Советы по поиску: близость
-Search Tips: wildcard,Советы по поиску: подстановочный знак
-Search title & metadata,Search title & metadata
-Searching...,Searching...
-Secondary button,Secondary button
-Secret keys,Secret keys
-Security,Security
-Select,Select
-Select & Search,Select & Search
-"Select a dimension to see supported chart types, or use Metric for a total count.","Select a dimension to see supported chart types, or use Metric for a total count."
-Select a document to connect to a specific paragraph,Select a document to connect to a specific paragraph
-Select a file,Select a file
+Search tips,Советы по поиску
+Search Tips: boolean,"AND, OR и NOT для логического поиска. Например, запрос ""статус AND женщины NOT Никарагуа"" найдёт всё, что содержит слова ""статус"" и ""женщины"", но не содержит слово ""Никарагуа""."
+Search Tips: exact term,"Точное совпадение термина — заключите поисковый запрос в кавычки. Например, ""Коста-Рика"" даст другие результаты по сравнению с Коста-Рика без кавычек."
+Search Tips: one char wildcard,"? — подстановочный знак для одного символа. Например, ""198?"" найдёт значения от 1980 до 1989, а также 198a, 198b и т. д."
+Search Tips: proximity,"~ для поиска по близости слов. Например, ""статус""~5 найдёт документы, где слово ""статус"" встречается рядом с другими словами запроса на расстоянии не более 5 слов, например ""текущий правовой статус"", ""процессуальный статус дела""."
+Search Tips: wildcard,"Используйте * для поиска с подстановочным знаком. Например, ""юрис*"" найдёт слова ""юрисдикция"", ""юрисдикционный"", ""юристы"", ""юриспруденция"" и другие."
+Search title & metadata,Поиск по названию и метаданным
+Searching...,Поиск...
+Secondary button,Дополнительная кнопка
+Secret keys,Секретные ключи
+Security,Безопасность
+Select,Выбрать
+Select & Search,Выбор и поиск
+"Select a dimension to see supported chart types, or use Metric for a total count.","Выберите измерение, чтобы увидеть поддерживаемые типы диаграмм, или воспользуйтесь типом ""Метрика"" для просмотра общего количества."
+Select a document to connect to a specific paragraph,"Выберите документ, чтобы создать связь с конкретным абзацем."
+Select a file,Выберите файл
 Select all,Выбрать все
-Select an existing image,Select an existing image
-Select favicon image,Select favicon image
+Select an existing image,Выберите существующее изображение
+Select favicon image,Выберите изображение для фавикона
 Select files on your device,Выбрать файлы на вашем устройстве
-Select from computer,Select from computer
-Select image,Select image
-Select media,Select media
-Select relationship,Select relationship
+Select from computer,Выбрать с компьютера
+Select image,Выберите изображение
+Select media,Выбрать медиафайл
+Select relationship,Выбрать связь
 Select relationship type,Выберите тип взаимосвязей
-Select site logo image,Select site logo image
-Select target document,Select target document
-Select target entity,Select target entity
+Select site logo image,Выберите изображение логотипа сайта
+Select target document,Выберите целевой документ
+Select target entity,Выберите целевой объект
 Select target paragraph,Выберите целевой абзац
-Select text in target document,Select text in target document
-select text or a value,select text or a value
-Select the template to store the extracted paragraphs.,Select the template to store the extracted paragraphs.
-Select the template with the source documents.,Select the template with the source documents.
+Select text in target document,Выделите текст в целевом документе
+select text or a value,выберите текст или значение
+Select the template to store the extracted paragraphs.,Выберите шаблон для сохранения извлеченных абзацев.
+Select the template with the source documents.,Выберите шаблон с исходными документами.
 Select...,Выбрать...
-Selected,Selected
+Selected,Выбрано
 selected,выбранный
 selected of,выбран из
-Selected or suggested,Selected or suggested
-Selected templates,Selected templates
+Selected or suggested,Выбранное или предложенное
+Selected templates,Выбранные шаблоны
 Send,Отправить
 Send recovery email,Отправить письмо для восстановления на электронную почту
 Sending email,Электронная почта отправителя
-Sending email description,This is the email address that will appear as the sender when an email is sent from your Uwazi collection to registered users. The default address is *no-reply@uwazi.io*. You can set a custom one by including your desired email address here.
-Sending labeled data,Sending labeled data
-Series,Series
-Services,Services
+Sending email description,"Это адрес электронной почты, который будет отображаться как отправитель при отправке писем от вашей коллекции Uwazi зарегистрированным пользователям. Адрес по умолчанию — *no-reply@uwazi.io*. Вы можете указать здесь свой собственный адрес."
+Sending labeled data,Отправка размеченных данных
+Series,Серия
+Services,Услуги
 Set as default,Установить по умолчанию
-Set default language,Set default language
-Set default template,Set default template
+Set default language,Установлен язык по умолчанию
+Set default template,Установлен шаблон по умолчанию
 Set the default starting point for your geolocation properties.,Установить отправную точку по умолчанию для своих свойств геологации
 Settings,Настройки
 settings,Настройки
-Settings navigation active background,Settings navigation active background
-Settings sidebar background,Settings sidebar background
+Settings navigation active background,Настройки: активный фон навигации
+Settings sidebar background,Фон боковой панели настроек
 Settings updated,Настройки обновлены
 Share,Поделиться
-Share edit access with other users,Share edit access with other users
-Share entities with the public,Share entities with the public
+Share edit access with other users,Предоставить другим пользователям права на редактирование
+Share entities with the public,Публиковать объекты для общего доступа
 Share with people and groups,Поделиться с людьми и группами
 Shared as editor,Поделились как с редактором
 Shared as viewer,Поделились как со зрителем
-Show actions,Show actions
+Show actions,Показать действия
 Show cookie policy,Показать политику cookie
-Show details,Show details
+Show details,Показать подробности
 Show filters,Показать фильтры
 Show in cards,Показать в карточках
-Show information,Show information
-Show less,Show less
+Show information,Показать информацию
+Show less,Показать меньше
 Show more,Показать больше
-Show remaining in panel,Show remaining in panel
-Show toolbar,Show toolbar
-Showing,Showing
-Showing the top,Showing the top
+Show remaining in panel,Показать оставшуюся часть в панели
+Show toolbar,Показать панель инструментов
+Showing,Показано
+Showing the top,Отображаются первые
 shown of,показано от
 Sign in,Войти
-Simple mode,Simple mode
-Single relationships must have a hub,Single relationships must have a hub
-Site logo description,"The logo appears in the top bar next to your collection name (about 200×32 pixels).
+Simple mode,Простой режим
+Single relationships must have a hub,Одиночные связи должны иметь узел
+Site logo description,"Логотип отображается в верхней панели рядом с названием вашей коллекции (примерно 200×32 пикселя).
 
-1. Upload images in Custom Uploads if needed.
-2. Click ""Select site logo image"" and pick a file; only images from Custom Uploads are listed."
-Site logo no images hint,"No image files from Custom Uploads yet. Add PNG, SVG, or JPEG images there first."
+1. При необходимости загрузите изображения в разделе ""Пользовательские загрузки"".
+2. Нажмите ""Выбрать изображение логотипа сайта"" и выберите файл; отображаются только изображения из ""Пользовательских загрузок""."
+Site logo no images hint,"Пока нет изображений в ""Пользовательских загрузках"". Сначала добавьте туда изображения в формате PNG, SVG или JPEG."
 Size,Размер
-Skip to main content,Skip to main content
-Some tasks may take a while. Bert will reply when it's done.,Some tasks may take a while. Bert will reply when it's done.
+Skip to main content,Перейти к основному содержанию
+Some tasks may take a while. Bert will reply when it's done.,"Некоторые задачи могут занять некоторое время. Bert ответит, когда они будут выполнены."
 Something went wrong,Что-то пошло не так
 Sort,Сортировать
-Sort ascending,Sort ascending
-Sort descending,Sort descending
-Sort:,Sort:
+Sort ascending,Сортировать по возрастанию
+Sort descending,Сортировать по убыванию
+Sort:,Сортировать:
 sorted by,отсортировано по
-Source,Source
-Source entity,Source entity
-Source page,Source page
-Source relationship type,Source relationship type
-Source template,Source template
-Source Template,Source Template
-Source's role in the relationship Source-Target.,Source's role in the relationship Source-Target.
-Stage,Stage
-stat*,stat*
-State,State
-Statistics,Statistics
-Stats & Filters,Stats & Filters
-Status,Status
-status AND women NOT Nicaragua,status AND women NOT Nicaragua
-Stop filling,Stop filling
-Storage,Storage
-Streets,Streets
+Source,Источник
+Source entity,Исходный объект
+Source page,Страница-источник
+Source relationship type,"Тип связи ""Источник"""
+Source template,Исходный шаблон
+Source Template,Исходный шаблон
+Source's role in the relationship Source-Target.,"Роль источника в отношениях ""источник-цель""."
+Stage,Этап
+stat*,стат*
+State,Состояние
+Statistics,Статистика
+Stats & Filters,Статистика и фильтры
+Status,Статус
+status AND women NOT Nicaragua,статус AND женщины NOT Никарагуа
+Stop filling,Остановить голосовой ввод
+Storage,Хранение
+Streets,Улицы
 Strict mode,Строгий режим
 Style,Стиль
 Submit,Отправить
-Submitted entity to a remote instance,Submitted entity to a remote instance
-Submitting,Submitting
-Success,Success
-"Success, Upload another?","Success, Upload another?"
-Suggestion,Suggestion
-Suggestion:,Suggestion:
+Submitted entity to a remote instance,Объект отправлен в удаленный экземпляр
+Submitting,Отправка
+Success,Успех
+"Success, Upload another?",Удалось! Загрузить ещё один?
+Suggestion,Предложение
+Suggestion:,Предложение:
 Suggestions,Предлагаемые варианты
-suggestions,suggestions
-Suggestions sent,Suggestions sent
-Suggestions updated,Suggestions updated
-Supported chart types for manual data,Supported chart types for manual data
-Supported chart types for this configuration,Supported chart types for this configuration
-Supporting,Supporting
-Supporting file,Supporting file
+suggestions,предложения
+Suggestions sent,Предложения отправлены
+Suggestions updated,Предложения обновлены
+Supported chart types for manual data,"Поддерживаемые типы диаграмм для данных, вводимых вручную"
+Supported chart types for this configuration,"Типы диаграмм, поддерживаемые в данной конфигурации"
+Supporting,Вспомогательный
+Supporting file,Вспомогательный файл
 Supporting files,Сопроводительные файлы
-Synced template,Synced template
-Synced Template,Synced Template
-Synced templates cannot be deleted.,Synced templates cannot be deleted.
-System translations,System translations
+Synced template,Синхронизированный шаблон
+Synced Template,Синхронизированный шаблон
+Synced templates cannot be deleted.,Синхронизированные шаблоны удалить нельзя.
+System translations,Системные переводы
 Table,Таблица
 Table of Contents,Содержание
 Table of contents,Содержание
-Table of contents saved successfully,Table of contents saved successfully
+Table of contents saved successfully,Оглавление успешно сохранено
 Table view,Табличный вид
-Target entity,Target entity
-Target entity type,Target entity type
-Target relationship type,Target relationship type
-Target Template,Target Template
-Target template,Target template
-Target's role in the relationship Source-Target.,Target's role in the relationship Source-Target.
-Target:,Target:
-Tasks,Tasks
+Target entity,Целевой объект
+Target entity type,Тип целевого объекта
+Target relationship type,Целевой тип отношений
+Target Template,Шаблон цели
+Target template,Шаблон цели
+Target's role in the relationship Source-Target.,"Роль ""цели"" в отношениях ""источник–цель""."
+Target:,Цель:
+Tasks,Задачи
 Template,Шаблон
-Template changes are being applied to all related entities.,Template changes are being applied to all related entities.
-Template color,Template color
+Template changes are being applied to all related entities.,Изменения в шаблоне применяются ко всем связанным объектам.
+Template color,Цвет шаблона
 "Template colors apply when comparing data sources or when the dimension is entity
-              type. Otherwise the chart palette is used as fallback.","Template colors apply when comparing data sources or when the dimension is entity
-              type. Otherwise the chart palette is used as fallback."
-Template conflict,Template conflict
-Template name,Template name
-Template name already exists,Template name already exists
-Template processing completed.,Template processing completed.
-Template saved successfully.,Template saved successfully.
-Template with a long number of entities,"The template has changed and the associated entities will be re-indexed,
-       this process may take several minutes, do you want to continue?"
-Template(s),Template(s)
-Template(s) deleted successfully.,Template(s) deleted successfully.
+              type. Otherwise the chart palette is used as fallback.","Цвета шаблона применяются при сравнении источников данных или если измерение имеет тип ""объект"". В остальных случаях в качестве запасного варианта используется палитра диаграммы."
+Template conflict,Конфликт шаблона
+Template name,Название шаблона
+Template name already exists,Название шаблона уже существует
+Template processing completed.,Обработка шаблона завершена.
+Template saved successfully.,Шаблон успешно сохранен.
+Template with a long number of entities,"Шаблон был изменён, и связанные с ним объекты будут переиндексированы,
+       этот процесс может занять несколько минут. Хотите продолжить?"
+Template(s),Шаблон(ы)
+Template(s) deleted successfully.,Шаблон(ы) успешно удален(ы).
 Templates,Шаблоны
-Templates:,Templates:
+Templates:,Шаблоны:
 Text,Текст
-Text references limit warning,Text references are temporarily limited to a maximum of 300. We are currently working on a fix for this issue.
+Text references limit warning,Текстовые ссылки временно ограничены до 300. Мы уже работаем над исправлением этой проблемы.
 "The process of extracting the paragraphs has successfully started. Check the Status
-              column for updates on the process.","The process of extracting the paragraphs has successfully started. Check the Status
-              column for updates on the process."
-The request could not be processed.,The request could not be processed.
-The source of this template is a sync.,The source of this template is a sync.
-The token does not validate against the secret key,The token does not validate against the secret key
-The token does not validate against the secret key!,The token does not validate against the secret key!
-"the words together, in that order","the words together, in that order"
-the words within 5 of each other,the words within 5 of each other
-Theme and branding,Theme and branding
-Theme colors,Theme colors
-Theme colors imported,Theme colors imported
-Theme favicon,Theme favicon
-Theme instance file invalid,Theme instance file invalid
-Theme logotype,Theme logotype
-Theme presets,Theme presets
-Theme preview,Theme preview
-Then by,Then by
+              column for updates on the process.","Процесс извлечения абзацев успешно запущен. Следите за обновлениями в
+ столбце ""Статус"", чтобы узнать о ходе процесса."
+The request could not be processed.,Запрос не удалось обработать.
+The source of this template is a sync.,Источником этого шаблона является синхронизация.
+The token does not validate against the secret key,Токен не проходит проверку по секретному ключу
+The token does not validate against the secret key!,Токен не подтверждается по секретному ключу!
+"the words together, in that order","эти слова вместе, именно в таком порядке"
+the words within 5 of each other,"слова, расположенные на расстоянии не более 5 друг от друга"
+Theme and branding,Тема и брендинг
+Theme colors,Цвета темы
+Theme colors imported,Цвета темы импортированы
+Theme favicon,Фавикон темы
+Theme instance file invalid,Файл экземпляра темы недействителен
+Theme logotype,Логотип темы
+Theme presets,Предустановленные темы
+Theme preview,Предварительный просмотр темы
+Then by,Затем по
 There are no pages enabled for entity view,"Нет страниц с возможностями, предоставляемыми для просмотра объекта"
-There are no untranslated terms,There are no untranslated terms
+There are no untranslated terms,Непереведенных терминов нет
 Thesauri,Предметный указатель
-Thesauri added.,Thesauri added.
-Thesauri deleted,Thesauri deleted
-Thesauri name,Thesauri name
-thesauri new group desc,thesauri new group desc
-thesauri new item desc,thesauri new item desc
-Thesauri updated.,Thesauri updated.
-Thesauri values created,Thesauri values created
-Thesaurus,Thesaurus
-Thesaurus created successfully.,Thesaurus created successfully.
-Thesaurus name,Thesaurus name
-Thesaurus name already exists,Thesaurus name already exists
+Thesauri added.,Добавлены тезаурусы.
+Thesauri deleted,Тезаурусы удалены
+Thesauri name,Название тезауруса
+thesauri new group desc,По мере ввода текста будут появляться новые строки для добавления элементов.
+thesauri new item desc,По мере ввода текста будут появляться новые строки для добавления элементов.
+Thesauri updated.,Тезаурусы обновлены.
+Thesauri values created,Созданы значения тезауруса
+Thesaurus,Тезаурус
+Thesaurus created successfully.,Тезаурус создан успешно.
+Thesaurus name,Название тезауруса
+Thesaurus name already exists,Название тезауруса уже существует
 Thesaurus saved,Предметный указатель сохранен
-This action may take some time while we add the extra language to the entire collection.,This action may take some time while we add the extra language to the entire collection.
+This action may take some time while we add the extra language to the entire collection.,"Этот процесс может занять некоторое время, поскольку нам предстоит добавить дополнительный язык ко всей коллекции."
 This area allows you to append custom Javascript to the page. This opens up a new universe of possibilities.,Эта область позволяет добавить пользовательский JavaScript на страницу. Это откроет большую сферу новых возможностей.
-This chart type cannot display the current data.,This chart type cannot display the current data.
+This chart type cannot display the current data.,Данный тип диаграммы не позволяет отображать текущие данные.
 "This chart type cannot display the current data. Pick a supported type in the Chart
-              tab.","This chart type cannot display the current data. Pick a supported type in the Chart
-              tab."
+              tab.","Данный тип диаграммы не поддерживает отображение текущих данных. Выберите поддерживаемый тип на вкладке ""Диаграмма""
+."
 "This chart type has no extra options. Select another chart type above if you need
-            legend, labels, or data filters.","This chart type has no extra options. Select another chart type above if you need
-            legend, labels, or data filters."
+            legend, labels, or data filters.","У этого типа диаграммы нет дополнительных настроек. Если вам нужны
+ легенда, метки или фильтры данных, выберите другой тип диаграммы выше."
 This content is automatically generated,Этот контент генерируется автоматически
-This data visualization name already exists. Enter a unique name.,This data visualization name already exists. Enter a unique name.
+This data visualization name already exists. Enter a unique name.,Такое название визуализации данных уже существует. Введите уникальное название.
 "This entity has no document, you probably want to see the metadata","У этого объекта нет документов, вы наверняка хотите увидеть метаданные"
 This entity is restricted from public view.,Этот объект ограничен для общедоступного просмотра.
-This field is required,This field is required
-This file could not be displayed. Try refreshing the page.,This file could not be displayed. Try refreshing the page.
-This file could not be opened. It may be corrupted or not a valid PDF.,This file could not be opened. It may be corrupted or not a valid PDF.
+This field is required,Это поле обязательно для заполнения
+This file could not be displayed. Try refreshing the page.,Этот файл не удалось отобразить. Попробуйте обновить страницу.
+This file could not be opened. It may be corrupted or not a valid PDF.,"Этот файл не удалось открыть. Возможно, он повреждён или не является действительным PDF-файлом."
 "This file is currently unavailable. Please contact your administrator if the issue
-                  persists.","This file is currently unavailable. Please contact your administrator if the issue
-                  persists."
+                  persists.","В настоящее время этот файл недоступен. Если проблема
+не устраняется, обратитесь к администратору."
 "This file is currently unavailable. Please contact your administrator if the issue
-              persists.","This file is currently unavailable. Please contact your administrator if the issue
-              persists."
-This file type is not supported on media fields,This file type is not supported on media fields
-This group is empty,This group is empty
-This import is waiting in queue.,This import is waiting in queue.
-This label already exists in this template,This label already exists in this template
-This page does not need Markdown,This page does not need Markdown
+              persists.","В настоящее время этот файл недоступен. Если проблема
+не устраняется, обратитесь к администратору."
+This file type is not supported on media fields,Этот тип файла не поддерживается в полях мультимедиа
+This group is empty,В этой группе нет элементов
+This import is waiting in queue.,Этот импорт находится в очереди.
+This label already exists in this template,Эта метка уже присутствует в этом шаблоне
+This page does not need Markdown,На этой странице не требуется использование Markdown
 "This page uses HTML only (Markdown is not processed). You can embed maps, charts, entity
-          lists, and other components.","This page uses HTML only (Markdown is not processed). You can embed maps, charts, entity
-          lists, and other components."
-This property can not be deleted,This property can not be deleted
+          lists, and other components.","На этой странице используется только HTML (Markdown не обрабатывается). Вы можете вставлять карты, диаграммы, списки объектов
+ и другие компоненты."
+This property can not be deleted,Это свойство нельзя удалить
 This property will appear in the library cards as part of the basic info.,Этот объект появится в карточках библиотеки как часть основной информации.
 This property will be shown using all the width available.,Это свойство будет отображаться с использованием всей доступной ширины.
-This property will be shown without the label,This property will be shown without the label
-This property will be the default filter in the library for this template.,This property will be the default filter in the library for this template.
-"This property will be used for filtering the library results. When properties match in equal name and field type with other entity types, they will be combined for filtering.","This property will be used for filtering the library results. When properties match in equal name and field type with other entity types, they will be combined for filtering."
-This search could not be completed. Try again later.,This search could not be completed. Try again later.
+This property will be shown without the label,Это свойство будет отображаться без метки
+This property will be the default filter in the library for this template.,Это свойство станет фильтром по умолчанию в библиотеке для данного шаблона.
+"This property will be used for filtering the library results. When properties match in equal name and field type with other entity types, they will be combined for filtering.","Это свойство будет использоваться для фильтрации результатов библиотеки. Если свойства совпадают по имени и типу поля с другими типами объектов, они будут объединены для фильтрации."
+This search could not be completed. Try again later.,Поиск не удалось завершить. Попробуйте позже.
 "This site uses cookies for language preferences and analytics. Session cookies are only
-            set when you log in.","This site uses cookies for language preferences and analytics. Session cookies are only
-            set when you log in."
-This table of contents was automatically created by the system.,This table of contents was automatically created by the system.
-this template,this template
-This template is in use by existing entities and cannot be deleted.,This template is in use by existing entities and cannot be deleted.
-Thumbnail,Thumbnail
+            set when you log in.","Данный сайт использует файлы cookie для сохранения языковых настроек и сбора аналитических данных. Сессионные файлы cookie устанавливаются только
+ при входе в систему."
+This table of contents was automatically created by the system.,Данное оглавление было автоматически сгенерировано системой.
+this template,этот шаблон
+This template is in use by existing entities and cannot be deleted.,Данный шаблон используется существующими объектами и не может быть удален.
+Thumbnail,Миниатюра
 Time,Время
-Time (UTC),Time (UTC)
-Timeline,Timeline
-Timelinks,Timelinks
-Timestamp,Timestamp
-tips,tips
+Time (UTC),Время (UTC)
+Timeline,Хронология
+Timelinks,Временные ссылки
+Timestamp,Временная метка
+tips,советы
 Title,Заголовок
-To,To
+To,До
 "To complete the account creation process, please create a password for your account","Пожалуйста, создайте пароль для того, чтобы завершить процесс создания своей учетной записи."
 to view your authentication code and verify your identity.,чтобы просмотреть свой код аутентификации и подтвердить свою личность.
-Today,Today
-Toggle relationship details,Toggle relationship details
-Toggle timeline mode,Toggle timeline mode
+Today,Сегодня
+Toggle relationship details,Показать/скрыть подробности о взаимосвязях
+Toggle timeline mode,Переключить режим временной шкалы
 Tools,Инструменты
-total entities,total entities
-Total files,Total files
-total files,total files
-"Total files from main documents, supporting files and uploads","Total files from main documents, supporting files and uploads"
-Total imports,Total imports
-total users,total users
-Train,Train
-Train model,Train model
-Train model description,Training machine learning models may take from minutes up to a couple of hours depending on the amount of labeled data and the difficulty of the task.
-Training,Training
-Training model,Training model
-Training sample,Training sample
+total entities,общее количество объектов
+Total files,Общее количество файлов
+total files,общее количество файлов
+"Total files from main documents, supporting files and uploads","Общее количество файлов, включая основные документы, вспомогательные файлы и загруженные файлы"
+Total imports,Всего импортов
+total users,общее количество пользователей
+Train,Обучить
+Train model,Обучить модель
+Train model description,Обучение моделей машинного обучения может занять от нескольких минут до пары часов в зависимости от объёма размеченных данных и сложности задачи.
+Training,Обучение
+Training model,Обучение модели
+Training sample,Обучающая выборка
 Translate,Перевести
-Translation,Translation
+Translation,Перевод
 Translations,Переводы
-Translations imported.,Translations imported.
-Translations reset successfully,Translations reset successfully
+Translations imported.,Переводы импортированы.
+Translations reset successfully,Переводы успешно сброшены
 Translations saved,Переводы сохранены
-Try a different search or clear filters.,Try a different search or clear filters.
-Turn off inline translation,Turn off inline translation
+Try a different search or clear filters.,Попробуйте ввести другой запрос или сбросить фильтры.
+Turn off inline translation,Отключить встроенный перевод
 "Two categorical dimensions enable stacked bar charts (e.g. country with sex
-              breakdown).","Two categorical dimensions enable stacked bar charts (e.g. country with sex
-              breakdown)."
-Two-Factor Authentication,Two-Factor Authentication
-Two-factor authentication enabled,Two-factor authentication enabled
-Two-factor authentication failed.,Two-factor authentication failed.
-Two-factor authentication secret,Two-factor authentication secret
+              breakdown).","Два категориальных измерения позволяют создавать многоуровневые столбчатые диаграммы (например, по странам с разбивкой по полу
+)."
+Two-Factor Authentication,Двухфакторная аутентификация
+Two-factor authentication enabled,Включена двухфакторная аутентификация
+Two-factor authentication failed.,Ошибка двухфакторной аутентификации.
+Two-factor authentication secret,Секретный ключ для двухфакторной аутентификации
 Two-factor verification failed,Двухфакторная верификация не удалась.
 Two-step verification,Двухфакторная верификация
-Two-step verification token required,Two-step verification token required
+Two-step verification token required,Требуется токен двухэтапной аутентификации
 Type,Тип
 U,U
-"Unable to save, failed response","Unable to save, failed response"
+"Unable to save, failed response","Не удалось сохранить, произошла ошибка при обработке ответа"
 Unauthorized,Не авторизован
-Unexpected error,Unexpected error
-Uninstall,Uninstall
-Uninstall language,Uninstall language
-Uninstalling language,Uninstalling language
-Unknown entity,Unknown entity
-Unknown template,Unknown template
-Unlink,Unlink
-Unlock account,Unlock account
-Unsaved changes,Unsaved changes
+Unexpected error,Неожиданная ошибка
+Uninstall,Удалить
+Uninstall language,Удалить язык
+Uninstalling language,Удаление языка
+Unknown entity,Неизвестный объект
+Unknown template,Неизвестный шаблон
+Unlink,Отменить связь
+Unlock account,Разблокировать аккаунт
+Unsaved changes,Несохраненные изменения
 Unsupported OCR language,Неподдерживаемый язык оптического распознавания символов
-Untitled,Untitled
-Untranslated Terms,Untranslated Terms
+Untitled,Без названия
+Untranslated Terms,Непереведенные термины
 Update,Обновить
 UPDATE,Обновить
-Update from collection,Update from collection
-Update success,Update success
-Updated,Updated
-Updated file,Updated file
-Updated multiple entities,Updated multiple entities
-Updated permissions on entity,Updated permissions on entity
-Updated relationships,Updated relationships
-Updated settings,Updated settings
-Updated translations,Updated translations
-Updated user,Updated user
-Updating template properties across,Updating template properties across
-Updating…,Updating…
+Update from collection,Обновить из коллекции
+Update success,Обновление прошло успешно
+Updated,Обновлено
+Updated file,Обновленный файл
+Updated multiple entities,Обновлено несколько объектов
+Updated permissions on entity,Обновлены права доступа к объекту
+Updated relationships,Обновленные взаимосвязи
+Updated settings,Обновленные настройки
+Updated translations,Обновленные переводы
+Updated user,Обновленный пользователь
+Updating template properties across,Обновление свойств шаблонов в
+Updating…,Обновляется…
 Upload and select file,Загрузить и выбрать файл
 Upload from computer,Загрузить с компьютера
-Upload image,Upload image
+Upload image,Загрузить изображение
 Upload PDF,Загрузить PDF
 Upload PDF(s) to create,"Загрузить PDF, чтобы создать"
-Uploaded attachment,Uploaded attachment
-Uploaded custom file,Uploaded custom file
-Uploaded document,Uploaded document
-Uploaded file,Uploaded file
+Uploaded attachment,Загруженное вложение
+Uploaded custom file,Загружен пользовательский файл
+Uploaded document,Загруженный документ
+Uploaded file,Загруженный файл
 Uploading,Идет загрузка
 Uploading ...,Загрузка...
 Uploads,Загрузки
 URL,URL
 Use,Использовать
-Use as filter,Use as filter
-Use for training,Use for training
+Use as filter,Использовать в качестве фильтра
+Use for training,Использовать для обучения
 "Use this iframe on external sites. Change the locale query parameter in the URL if
-                needed.","Use this iframe on external sites. Change the locale query parameter in the URL if
-                needed."
-Use URL,Use URL
-Used in templates and {n} refs — cannot delete,Used in templates and {n} refs — cannot delete
-Used in templates — cannot delete,Used in templates — cannot delete
-Used in {n} refs — cannot delete,Used in {n} refs — cannot delete
+                needed.","Используйте этот iframe на внешних сайтах. При необходимости измените параметр запроса locale в URL-адресе,
+если это требуется."
+Use URL,Использовать URL
+Used in templates and {n} refs — cannot delete,Используется в шаблонах и {n} ссылках — удалить нельзя
+Used in templates — cannot delete,Используется в шаблонах — удалить нельзя
+Used in {n} refs — cannot delete,Используется в {n} ссылках — удалить нельзя
 User,Пользователь
-User Action,User Action
-User Role,User Role
-User updated,User updated
+User Action,Действие пользователя
+User Role,Роль пользователя
+User updated,Пользователь обновлён
 Username,Имя пользователя
 Username is required,Требуется имя пользователя
 Username is too long,Имя пользователя слишком длинное
 Username is too short,Имя пользователя слишком короткое
-"Username, email or group","Username, email or group"
-Usernames cannot have spaces,Usernames cannot have spaces
+"Username, email or group","Имя пользователя, адрес электронной почты или группа"
+Usernames cannot have spaces,Имена пользователей не могут содержать пробелы
 Users,Пользователи
-Users & Groups,Users & Groups
-Using Authenticator,Using Authenticator
-Using URLs,Using URLs
+Users & Groups,Пользователи и группы
+Using Authenticator,Использование приложения Authenticator
+Using URLs,Использование URL-адресов
 Uwazi,Uwazi
 Uwazi Docs,Uwazi Docs
 Uwazi is developed by,Uwazi разработан
-Uwazi UI,Uwazi UI
-Validating,Validating
-Validating file structure and headers.,Validating file structure and headers.
-Value,Value
-Value cannot be transformed to the correct type,Value cannot be transformed to the correct type
-values,values
-"values are staged, not saved","values are staged, not saved"
+Uwazi UI,Интерфейс Uwazi
+Validating,Проверка
+Validating file structure and headers.,Проверка структуры файла и заголовков.
+Value,Значение
+Value cannot be transformed to the correct type,Значение не может быть преобразовано в нужный тип
+values,значения
+"values are staged, not saved","значения в ожидании, не сохранены"
 Verify,Верифицировать
 Verifying...,Верифицирование...
-via,via
+via,через
 View,Просмотреть
 view,Просмотреть
-View entities,View entities
-View entity,View entity
+View entities,Просмотр объектов
+View entity,Просмотреть объект
 View in library,Просмотреть в библиотеке
 View page,Просмотр страницы
-Visibility,Visibility
-Visualization data updated from your collection.,Visualization data updated from your collection.
-WARNING,WARNING
+Visibility,Видимость
+Visualization data updated from your collection.,Данные визуализации обновлены на основе вашей коллекции.
+WARNING,ПРЕДУПРЕЖДЕНИЕ
 Warning: you are editing multiple entities. Fields marked with a,"Предупреждения: вы редактируете несколько объектов. Поля, отмеченные"
-We can't find the page you're looking for.,We can't find the page you're looking for.
+We can't find the page you're looking for.,"Мы не можем найти страницу, которую вы ищете."
 Welcome to Uwazi,Добро пожаловать в Uwazi
 "Well, this is awkward...","Что ж, это неловко..."
 "When enabled, visitors must accept or reject non-essential cookies before they are set.
-    Analytics and language preference cookies are blocked until accepted.","When enabled, visitors must accept or reject non-essential cookies before they are set.
-    Analytics and language preference cookies are blocked until accepted."
-Whitelisted templates,Whitelisted templates
-wildcard,wildcard
-wildcard (many chars),wildcard (many chars)
-wildcard (one char),wildcard (one char)
-"Will attempt to fill the container, using its entire width. In cards, cropping is likely to occur.","Will attempt to fill the container, using its entire width. In cards, cropping is likely to occur."
+    Analytics and language preference cookies are blocked until accepted.","Если эта функция включена, посетители должны принять или отклонить несущественные файлы cookie до их установки.
+    Файлы cookie, используемые для аналитики и определения языковых настроек, блокируются до тех пор, пока их не примут."
+Whitelisted templates,Шаблоны из белого списка
+wildcard,подстановочный знак
+wildcard (many chars),подстановочный знак (несколько символов)
+wildcard (one char),подстановочный знак (один символ)
+"Will attempt to fill the container, using its entire width. In cards, cropping is likely to occur.","Будет предпринята попытка заполнить контейнер, используя всю его ширину. В случае с карточками, скорее всего, произойдёт обрезка."
 will be updated with the same value.,будет обновляться с тем же значением
-Will show the entire media inside the container.,Will show the entire media inside the container.
+Will show the entire media inside the container.,Полностью отобразит медиафайл внутри контейнера.
 with,с
 With great power comes great responsibility!,С большой силой приходит большая ответственность!
-wom?n,wom?n
+wom?n,кошк?
 x,x
-x less,x меньше
-x more,х больше
+x less,меньше
+x more,больше
 Year,Год
-Yes,Yes
-You can add one or many items in this form.,You can add one or many items in this form.
-You can also enter this secret key into your Authenticator app.,You can also enter this secret key into your Authenticator app.
+Yes,Да
+You can add one or many items in this form.,В этой форме вы можете добавить один или несколько элементов.
+You can also enter this secret key into your Authenticator app.,Вы также можете ввести этот секретный ключ в приложение Authenticator.
 You can create metadata templates in,Вы можете создавать шаблоны метаданных в
-"You can embed advanced components like maps, charts and entity lists in your page.","You can embed advanced components like maps, charts and entity lists in your page."
-You do not have write permission on all entities,You do not have write permission on all entities
-You have unsaved changes. Discard them? This action cannot be undone.,You have unsaved changes. Discard them? This action cannot be undone.
-You have unsaved changes. Do you want to continue?,You have unsaved changes. Do you want to continue?
+"You can embed advanced components like maps, charts and entity lists in your page.","Вы можете встраивать в свою страницу сложные компоненты, такие как карты, диаграммы и списки объектов."
+You do not have write permission on all entities,У вас нет прав на запись во все объекты
+You have unsaved changes. Discard them? This action cannot be undone.,У вас есть несохраненные изменения. Отклонить их? Это действие нельзя отменить.
+You have unsaved changes. Do you want to continue?,У вас есть несохраненные изменения. Хотите продолжить?
 You should activate this feature for enhanced account security,Вам следует активировать эту функцию для усиления безопасности аккаунта
-You should activate this feature for enhanced account security.,You should activate this feature for enhanced account security.
-You won't be able to save an entity if this property is empty.,You won't be able to save an entity if this property is empty.
-You're all caught up,You're all caught up
-Your account's security is enhanced with two-factor authentication.,Your account's security is enhanced with two-factor authentication.
-Z → A,Z → A
+You should activate this feature for enhanced account security.,Вам следует включить эту функцию для повышения безопасности учетной записи.
+You won't be able to save an entity if this property is empty.,"Вы не сможете сохранить объект, если это свойство пустое."
+You're all caught up,Вы ничего не пропустили
+Your account's security is enhanced with two-factor authentication.,Безопасность вашей учетной записи повышается благодаря двухфакторной аутентификации.
+Z → A,Я → А
 Zoom in,Увеличить масштаб
 Zoom in library view,Увеличить масштаб просмотра библиотеки
 Zoom out,Уменьшить масштаб

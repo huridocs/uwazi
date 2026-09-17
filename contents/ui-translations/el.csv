@@ -1,25 +1,25 @@
 Key,Greek
-"""Costa Rica""","""Costa Rica"""
-"""the status""~5","""the status""~5"
+"""Costa Rica""","""Κόστα Ρίκα"""
+"""the status""~5","""η κατάσταση""""~5"
 *please keep this key secret and don't share it.,*κρατήστε μυστικό αυτό το κλειδί και μην το μοιραστείτε με κανέναν.
-+ Add data source,+ Add data source
-+ Add filter,+ Add filter
++ Add data source,+ Προσθήκη πηγής δεδομένων
++ Add filter,+ Προσθήκη φίλτρου
 + click to select multiple cards.,+ κάντε κλικ για να επιλέξετε πολλαπλές κάρτες.
 198?,198?
 2FA,2FA
 2FA Enabled,Το 2FA ενεργοποιήθηκε
 A default template cannot be deleted.,Ένα προεπιλεγμένο πρότυπο δεν μπορεί να διαγραφεί.
-A friendly hand for serious work — I'll act in the context shown above.,A friendly hand for serious work — I'll act in the context shown above.
+A friendly hand for serious work — I'll act in the context shown above.,Ένα φιλικό χέρι για σοβαρή δουλειά — Θα ενεργήσω σύμφωνα με το πλαίσιο που παρουσιάζεται παραπάνω.
 A generated ID will be the default title.,Ως προεπιλεγμένος τίτλος θα χρησιμοποιηθεί ένα αυτόματα παραγόμενο αναγνωριστικό.
 A source template must,Ένα πρότυπο προέλευσης πρέπει
 A target template needs to have the following properties,Ένα πρότυπο προορισμού πρέπει να έχει τις ακόλουθες ιδιότητες
 A valid email is required,Απαιτείται έγκυρη διεύθυνση email
-A → Z,A → Z
+A → Z,Α → Ω
 Accept,Αποδοχή
-Accept all,Accept all
+Accept all,Αποδοχή όλων
 Accepted suggestion on entity,Η πρόταση για την οντότητα έγινε αποδεκτή
 Accepting suggestions,Αποδοχή προτάσεων
-Accessibility checks need attention,Accessibility checks need attention
+Accessibility checks need attention,Οι έλεγχοι προσβασιμότητας απαιτούν προσοχή
 Account,Λογαριασμός
 Account locked,Λογαριασμός κλειδωμένος
 Account unlocked successfully,Ο λογαριασμός ξεκλειδώθηκε επιτυχώς
@@ -27,24 +27,24 @@ Account updated,Ο λογαριασμός ενημερώθηκε επιτυχώ�
 Accuracy,Ακρίβεια
 Accuracy tooltip,Η ακρίβεια υπολογίζεται από την αναλογία επιτυχιών προς αστοχίες στα επεξεργασμένα δείγματα.
 Action,Ενέργεια
-Actions,Actions
+Actions,Ενέργειες
 Activate,Ενεργοποίηση
 Activated,Ενεργοποιημένο
-Active filters,Active filters
+Active filters,Ενεργά φίλτρα
 Active languages,Ενεργές γλώσσες
-Active primary,Active primary
+Active primary,Ενεργό κύριο
 Activity,Δραστηριότητα
 Activity log,Ημερολόγιο δραστηριοτήτων
 Activity Log,Ημερολόγιο δραστηριοτήτων
 Add,Προσθήκη
 Add / remove favorite,Προσθήκη / αφαίρεση αγαπημένου
-Add a type below.,Add a type below.
+Add a type below.,Προσθέστε έναν τύπο παρακάτω.
 Add an account to the app by scanning the provided QR code with your mobile device or by inserting the provided key.,Προσθέστε έναν λογαριασμό στην εφαρμογή σαρώνοντας τον παρεχόμενο κωδικό QR με την κινητή συσκευή σας ή εισάγοντας το παρεχόμενο κλειδί.
-Add as,Add as
-Add data source,Add data source
+Add as,Προσθήκη ως
+Add data source,Προσθήκη πηγής δεδομένων
 Add date,Προσθήκη ημερομηνίας
 Add entities / documents,Προσθήκη οντοτήτων / εγγράφων
-Add entity,Add entity
+Add entity,Προσθήκη οντότητας
 Add entity type,Προσθήκη τύπου οντότητας
 Add Extractor,Προσθήκη εξαγωγέα
 Add extractor,Προσθήκη εξαγωγέα
@@ -53,10 +53,10 @@ Add from URL,Προσθήκη από URL
 Add from web,Προσθήκη από το διαδίκτυο
 Add group,Προσθήκη ομάδας
 add icon,προσθήκη εικονιδίου
-Add icon,Add icon
+Add icon,Προσθήκη εικονιδίου
 Add item,Προσθήκη αντικειμένου
 Add link,Προσθήκη συνδέσμου
-Add or remove relationship types for this collection.,Add or remove relationship types for this collection.
+Add or remove relationship types for this collection.,Προσθέστε ή αφαιρέστε τύπους σχέσεων για αυτή τη συλλογή.
 Add page,Προσθήκη σελίδας
 Add PDF,Προσθήκη PDF
 Add people or groups,Προσθήκη ατόμων ή ομάδων
@@ -69,27 +69,27 @@ Add thesaurus value,Προσθήκη τιμής θησαυρού
 Add timelink,Προσθήκη χρονοσυνδέσμου
 Add to all languages,Προσθήκη σε όλες τις γλώσσες
 Add to table of contents,Προσθήκη στον πίνακα περιεχομένων
-Add to ToC,Add to ToC
+Add to ToC,Προσθήκη στον πίνακα περιεχομένων
 Add to training set,Προσθήκη στο σύνολο εκπαίδευσης
-Add translation,Add translation
+Add translation,Προσθήκη μετάφρασης
 Add user,Προσθήκη χρήστη
 add value,προσθήκη τιμής
 Add/delete users and assign roles,Προσθήκη/διαγραφή χρηστών και ανάθεση ρόλων
 Add/edit translations,Προσθήκη/επεξεργασία μεταφράσεων
 Added language,Προστέθηκε γλώσσα
 Added new user,Προστέθηκε νέος χρήστης
-"Added relation type ""{name}""","Added relation type ""{name}"""
+"Added relation type ""{name}""",Προστέθηκε ο τύπος σχέσης «{name}»
 added to hub with the following errors:,προστέθηκε στον κόμβο με τα ακόλουθα σφάλματα:
 added to hub.,προστέθηκε στον κόμβο.
 Adding a group and its items.,Προσθήκη μιας ομάδας και των στοιχείων της.
 Adding items to the thesauri,Προσθήκη στοιχείων στους θησαυρούς
-Adjust a few colors; secondary text and muted backgrounds update automatically.,Adjust a few colors; secondary text and muted backgrounds update automatically.
+Adjust a few colors; secondary text and muted backgrounds update automatically.,Προσαρμόστε μερικά χρώματα· το δευτερεύον κείμενο και τα απαλά φόντα ενημερώνονται αυτόματα.
 Admin,Διαχειριστής
 Administrators and Editors,Διαχειριστές και επιμελητές
-Administrators and Editors always have edit access,Administrators and Editors always have edit access
+Administrators and Editors always have edit access,Οι διαχειριστές και οι συντάκτες έχουν πάντα δικαιώματα επεξεργασίας
 Admins,Διαχειριστές
-Advanced colors,Advanced colors
-Advanced ECharts overrides,Advanced ECharts overrides
+Advanced colors,Προηγμένα χρώματα
+Advanced ECharts overrides,Προηγμένες παραμετροποιήσεις του ECharts
 ALL,ΟΛΑ
 All,Όλα
 "All changes will be lost, are you sure you want to proceed?","Όλες οι αλλαγές θα χαθούν, είστε σίγουροι ότι θέλετε να προχωρήσετε;"
@@ -98,42 +98,42 @@ All editing options will be disabled.,Όλες οι επιλογές επεξε�
 All of the paragraphs will be deleted,Όλες οι παράγραφοι θα διαγραφούν
 All of the previously created paragraphs will be deleted and recreated after the process.,Όλες οι παράγραφοι που έχουν δημιουργηθεί προηγουμένως θα διαγραφούν και θα δημιουργηθούν εκ νέου μετά τη διαδικασία.
 Allow captcha bypass,Παράκαμψη CAPTCHA
-Allow public embedding without login,Allow public embedding without login
+Allow public embedding without login,Να επιτρέπεται η δημόσια ενσωμάτωση χωρίς σύνδεση
 Already exists,Υπάρχει ήδη
-Already the same value.,Already the same value.
+Already the same value.,Ήδη η ίδια τιμή.
 Amount,Ποσό
-An admin needs to add relationship types before you can create a relationship.,An admin needs to add relationship types before you can create a relationship.
-An error has occured while deleting a language:,An error has occured while deleting a language:
-An error has occured while installing languages:,An error has occured while installing languages:
+An admin needs to add relationship types before you can create a relationship.,Ο διαχειριστής πρέπει να προσθέσει τύπους σχέσεων προτού μπορέσετε να δημιουργήσετε μια σχέση.
+An error has occured while deleting a language:,Παρουσιάστηκε σφάλμα κατά τη διαγραφή μιας γλώσσας:
+An error has occured while installing languages:,Παρουσιάστηκε σφάλμα κατά την εγκατάσταση των γλωσσών:
 An error has occurred,Παρουσιάστηκε σφάλμα
 An error has occurred during data export,Παρουσιάστηκε σφάλμα κατά την εξαγωγή δεδομένων
-An error has occurred while installing languages:,An error has occurred while installing languages:
-An error has occurred while uninstalling a language:,An error has occurred while uninstalling a language:
+An error has occurred while installing languages:,Παρουσιάστηκε σφάλμα κατά την εγκατάσταση των γλωσσών:
+An error has occurred while uninstalling a language:,Παρουσιάστηκε σφάλμα κατά την απεγκατάσταση μιας γλώσσας:
 An error occurred,Παρουσιάστηκε σφάλμα
 Analytics,Αναλυτικά στοιχεία
 Analytics description,"Αν θέλετε να παρακολουθείτε αναλυτικά στοιχεία σχετικά με τις επισκέψεις στη συλλογή σας, το Uwazi υποστηρίζει τόσο το Google Analytics όσο και το Matomo."
 AND OR NOT,AND OR NOT
-Any,Any
+Any,Οποιοδήποτε
 Any entity,Οποιαδήποτε οντότητα
-any single character,any single character
-Any type,Any type
-Anyone can see this entity,Anyone can see this entity
-Appearance,Appearance
+any single character,οποιοσδήποτε χαρακτήρας
+Any type,Οποιοσδήποτε τύπος
+Anyone can see this entity,Οποιοσδήποτε μπορεί να δει αυτή την οντότητα
+Appearance,Εμφάνιση
 Apply,Εφαρμογή
 Are you sure you want to continue?,Θέλετε σίγουρα να συνεχίσετε;
-Are you sure you want to delete,Are you sure you want to delete
+Are you sure you want to delete,Είστε σίγουροι ότι θέλετε να διαγράψετε
 "Are you sure you want to delete the selected visualizations? This action cannot be
-              undone.","Are you sure you want to delete the selected visualizations? This action cannot be
-              undone."
+              undone.","Είστε σίγουροι ότι θέλετε να διαγράψετε τις επιλεγμένες απεικονίσεις; Αυτή η ενέργεια δεν μπορεί να
+              αναιρεθεί."
 Are you sure you want to delete this attachment?,Θέλετε σίγουρα να διαγράψετε αυτό το συνημμένο αρχείο;
 Are you sure you want to delete this connection?,Θέλετε σίγουρα να διαγράψετε αυτή τη σύνδεση;
 Are you sure you want to delete this entity?,Θέλετε σίγουρα να διαγράψετε αυτή την οντότητα;
 Are you sure you want to delete this file?,Θέλετε σίγουρα να διαγράψετε αυτό το αρχείο;
 Are you sure you want to delete this item?,Θέλετε σίγουρα να διαγράψετε αυτό το στοιχείο;
-Are you sure you want to delete this relationship? This action cannot be undone.,Are you sure you want to delete this relationship? This action cannot be undone.
-Are you sure you want to delete this visualization? This action cannot be undone.,Are you sure you want to delete this visualization? This action cannot be undone.
+Are you sure you want to delete this relationship? This action cannot be undone.,Είστε σίγουροι ότι θέλετε να διαγράψετε αυτή τη σχέση; Αυτή η ενέργεια δεν μπορεί να αναιρεθεί.
+Are you sure you want to delete this visualization? This action cannot be undone.,Είστε σίγουροι ότι θέλετε να διαγράψετε αυτή την απεικόνιση; Αυτή η ενέργεια δεν μπορεί να αναιρεθεί.
 Are you sure?,Θέλετε σίγουρα να συνεχίσετε;
-Ask Bert,Ask Bert
+Ask Bert,Ρωτήστε τον Bert
 Attachment,Το συνημμένο
 Attachment deleted,Το συνημμένο αρχείο διαγράφηκε
 Attachment renamed,Το συνημμένο μετονομάστηκε
@@ -148,35 +148,35 @@ Automatically generated,Δημιουργήθηκε αυτόματα
 Available default translation,Διαθέσιμη προεπιλεγμένη μετάφραση
 Back,Επιστροφή
 Back to,Επιστροφή σε
-Back to details,Back to details
+Back to details,Επιστροφή στις λεπτομέρειες
 Back to search,Επιστροφή στην αναζήτηση
 Bad Request,Κακό αίτημα
 Basic,Βασικό
 Bert,Bert
-Bidirectional,Bidirectional
+Bidirectional,Αμφίδρομος
 Body,Σώμα
 boolean,boolean
 Browse files to upload,Αναζήτηση αρχείων για μεταφόρτωση
 "by ids, methods, keywords, etc.","με αναγνωριστικά, μεθόδους, λέξεις-κλειδιά, κ.λπ."
-By logging in you accept the essential session cookie required to stay signed in.,By logging in you accept the essential session cookie required to stay signed in.
+By logging in you accept the essential session cookie required to stay signed in.,Με τη σύνδεσή σας αποδέχεστε το απαραίτητο cookie περιόδου λειτουργίας που απαιτείται για να παραμείνετε συνδεδεμένοι.
 Can edit,Μπορεί να επεξεργαστεί
 Can see,Μπορεί να δει
 Can view,Μπορεί να δει
 Cancel,Ακύρωση
-cancel csv import,Cancel the import process. This will stop the creation of new entities. Already created entities will not be affected
+cancel csv import,Ακύρωση της διαδικασίας εισαγωγής. Αυτό θα διακόψει τη δημιουργία νέων οντοτήτων. Οι οντότητες που έχουν ήδη δημιουργηθεί δεν θα επηρεαστούν
 Canceling,Ακύρωση
 Canceling...,Ακύρωση σε εξέλιξη...
-Cancelled,Cancelled
-Cannot connect to server,Cannot connect to server
+Cancelled,Ακυρώθηκε
+Cannot connect to server,Δεν είναι δυνατή η σύνδεση με τον διακομιστή
 Cannot find extractor,Δεν βρέθηκε ο εξαγωγέας
 Captcha,CAPTCHA
-Captcha bypass,"Ενεργοποιώντας αυτήν την επιλογή μπορείτε να επιτρέψετε στους χρήστες να υποβάλλουν στα εγκεκριμένα σας πρότυπα χωρίς να χρειάζεται να συμπληρώσουν CAPTCHA. 
-Η φόρμα θα εξακολουθεί να εμφανίζει το CAPTCHA στους τελικούς χρήστες, αλλά το API endpoint θα επιτρέπει υποβολές χωρίς επικύρωση CAPTCHA εάν συμπεριληφθεί η 
+Captcha bypass,"Ενεργοποιώντας αυτήν την επιλογή μπορείτε να επιτρέψετε στους χρήστες να υποβάλλουν στα εγκεκριμένα σας πρότυπα χωρίς να χρειάζεται να συμπληρώσουν CAPTCHA.
+Η φόρμα θα εξακολουθεί να εμφανίζει το CAPTCHA στους τελικούς χρήστες, αλλά το API endpoint θα επιτρέπει υποβολές χωρίς επικύρωση CAPTCHA εάν συμπεριληφθεί η
 κεφαλίδα ""Bypass-Captcha: true"". Αυτή η επιλογή είναι ανασφαλής και μπορεί να χρησιμοποιηθεί για να κατακλύσει την εγκατάστασή σας με ανεπιθύμητο ή επιβλαβές περιεχόμενο."
 Cards,Κάρτες
 Cards view,Προβολή καρτών
-Category,Category
-Change,Change
+Category,Κατηγορία
+Change,Αλλαγή
 Change Password,Αλλαγή κωδικού πρόσβασης
 Changes in the thesaurus will impact all the entities using these values.,Οι αλλαγές στο θησαυρό θα επηρεάσουν όλες τις οντότητες που χρησιμοποιούν αυτές τις τιμές.
 Changing the type will erase all relationships to this entity.,Η αλλαγή του τύπου θα διαγράψει όλες τις σχέσεις με αυτή την οντότητα.
@@ -185,48 +185,48 @@ Character support description,"Αυτή η επιλογή βελτιώνει τ�
 Θα χρειαστεί να τα ενημερώσετε χειροκίνητα. Μετά την ενεργοποίηση, δεν θα μπορείτε να επιστρέψετε στην παλαιότερη ονοματολογία ιδιοτήτων. Εάν δεν αντιμετωπίζετε προβλήματα με τα ονόματα των ιδιοτήτων των προτύπων σας, συνιστούμε να μην επιλέξετε αυτήν την επιλογή."
 Character support process warning,"Η διαδικασία μπορεί να διαρκέσει αρκετά λεπτά και ενδέχεται να αλλάξει τα URL των φίλτρων της βιβλιοθήκης. Εάν έχετε μενού ή συνδέσμους που χρησιμοποιούν τέτοια URL, πιθανώς θα σταματήσουν να λειτουργούν μετά την ενημέρωση. Θα χρειαστεί να τα ενημερώσετε χειροκίνητα."
 Character support revert warning,"Μετά την ενεργοποίηση αυτής της επιλογής, δεν θα μπορείτε να επιστρέψετε στην παλαιότερη ονοματολογία ιδιοτήτων. Εάν δεν αντιμετωπίζετε προβλήματα με τα ονόματα των ιδιοτήτων των προτύπων σας, συνιστούμε να μην επιλέξετε αυτήν την επιλογή."
-Chart,Chart
-Chart options,Chart options
-Chart theme,Chart theme
-Chart type,Chart type
-Chart type uses a custom view,Chart type uses a custom view
+Chart,Γράφημα
+Chart options,Επιλογές γραφήματος
+Chart theme,Θέμα γραφήματος
+Chart type,Τύπος γραφήματος
+Chart type uses a custom view,Ο τύπος γραφήματος χρησιμοποιεί μια προσαρμοσμένη προβολή
 Check to make this instance public (non-logged in users can see public documents and entities),Ενεργοποιήστε αυτή την επιλογή για να κάνετε αυτή την εγκατάσταση δημόσια (οι μη συνδεδεμένοι χρήστες μπορούν να δουν δημόσια έγγραφα και οντότητες)
-Checking which images fit the requirements,Checking which images fit the requirements...
-Choose,Choose
-Choose relation type,Choose relation type
+Checking which images fit the requirements,Έλεγχος των εικόνων που πληρούν τις απαιτήσεις...
+Choose,Επιλέξτε
+Choose relation type,Επιλέξτε τον τύπο σχέσης
 Choose which data to use for training,Επιλέξτε ποια δεδομένα θα χρησιμοποιήσετε για την εκπαίδευση
-Chrome header,Chrome header
+Chrome header,Επικεφαλίδα Chrome
 Clear,Εκκαθάριση
 Clear all,Εκκαθάριση όλων
 Clear All,Εκκαθάριση όλων
-Clear all filters,Clear all filters
+Clear all filters,Εκκαθάριση όλων των φίλτρων
 Clear coordinates,Εκκαθάριση συντεταγμένων
 Clear Filters,Εκκαθάριση φίλτρων
 Clear PDF selection,Εκκαθάριση επιλογής PDF
-Clear search,Clear search
+Clear search,Εκκαθάριση αναζήτησης
 Click,Κάντε κλικ
 Click to fill,Κάντε κλικ για να συμπληρώσετε
-Click to select an image,Click to select an image
-Click to select audio or video,Click to select audio or video
-Click to select files,Click to select files
+Click to select an image,Κάντε κλικ για να επιλέξετε μια εικόνα
+Click to select audio or video,Κάντε κλικ για να επιλέξετε αρχείο ήχου ή βίντεο
+Click to select files,Κάντε κλικ για να επιλέξετε αρχεία
 Close,Κλείσιμο
-Code,Code
+Code,Κώδικας
 Collaborator,Συνεργάτης
 Collaborators,Συνεργάτες
 Collapse all,Σύμπτυξη όλων
-Collapse All,Collapse All
+Collapse All,Σύμπτυξη όλων
 Collection,Συλλογή
 Collection Name,Όνομα συλλογής
-Colors,Colors
-Colors come from the server data layer. Preview shows assigned bucket colors when available.,Colors come from the server data layer. Preview shows assigned bucket colors when available.
-Columns,Columns
-combine or exclude terms,combine or exclude terms
-Comfortable,Comfortable
+Colors,Χρώματα
+Colors come from the server data layer. Preview shows assigned bucket colors when available.,"Τα χρώματα προέρχονται από το επίπεδο δεδομένων του διακομιστή. Η προεπισκόπηση εμφανίζει τα χρώματα που έχουν αντιστοιχιστεί στους κάδους, όταν είναι διαθέσιμα."
+Columns,Στήλες
+combine or exclude terms,συνδυάστε ή εξαιρέστε όρους
+Comfortable,Άνετη
 Common sources,Κοινές πηγές
-Compact,Compact
-Completed,Completed
-Completed with errors,Completed with errors
-Config,Config
+Compact,Συμπαγής
+Completed,Ολοκληρώθηκε
+Completed with errors,Ολοκληρώθηκε με λάθη
+Config,Ρυθμίσεις
 Configuration,Διαμόρφωση
 Configure filters,Διαμόρφωση φίλτρων
 Configure templates,Διαμόρφωση προτύπων
@@ -240,57 +240,57 @@ Confirm deletion of,Επιβεβαίωση διαγραφής
 Confirm deletion of entity,Επιβεβαίωση διαγραφής οντότητας
 Confirm deletion of file,Επιβεβαίωση διαγραφής αρχείου
 Confirm new password,Επιβεβαίωση νέου κωδικού πρόσβασης
-Confirm your password,Confirm your password
+Confirm your password,Επιβεβαιώστε τον κωδικό πρόσβασής σας
 Connect to a paragraph,Σύνδεση με παράγραφο
 Connect to an entity,Σύνδεση με οντότητα
-Connect to entity,Connect to entity
-Connected entities,Connected entities
-Connected to server,Connected to server
+Connect to entity,Σύνδεση με οντότητα
+Connected entities,Συνδεδεμένες οντότητες
+Connected to server,Συνδεδεμένος με τον διακομιστή
 Connection type,Τύπος σύνδεσης
 Contact email description,Εδώ μπορείτε να ρυθμίσετε το email επικοινωνίας και το email που εμφανίζεται όταν το Uwazi στέλνει ειδοποίηση σε χρήστη
 Contact Form,Φόρμα επικοινωνίας
 Contact form email,Email φόρμας επικοινωνίας
-Contains,Contains
+Contains,Περιέχει
 Content translations,Μεταφράσεις περιεχομένου
 Context,Πλαίσιο
 Continue,Συνέχεια
 Conversion failed,Η μετατροπή απέτυχε
-Cookie preferences,Cookie preferences
-Copied,Copied
+Cookie preferences,Προτιμήσεις για τα cookies
+Copied,Αντιγράφηκε
 Copied to clipboard,Αντιγράφηκε στο πρόχειρο
-Copy,Copy
+Copy,Αντιγραφή
 Copy From,Αντιγραφή από
-Copy from,Copy from
-Copy from this entity,Copy from this entity
-Copy from...,Copy from...
+Copy from,Αντιγραφή από
+Copy from this entity,Αντιγραφή από αυτή την οντότητα
+Copy from...,Αντιγραφή από...
 Copy Highlighted,Αντιγραφή επισημασμένου
 Copy link,Αντιγραφή συνδέσμου
 Copy properties to this entity from,Αντιγραφή ιδιοτήτων σε αυτή την οντότητα από
 Copy to clipboard,Αντιγραφή στο πρόχειρο
-Could not add media. Please try again.,Could not add media. Please try again.
+Could not add media. Please try again.,Δεν ήταν δυνατή η προσθήκη πολυμέσων. Παρακαλώ δοκιμάστε ξανά.
 Could not be processed,Δεν ήταν δυνατή η επεξεργασία
-Could not create entity,Could not create entity
+Could not create entity,Δεν ήταν δυνατή η δημιουργία οντότητας
 Could not detect the area for the selected text,Δεν εντοπίστηκε η περιοχή του επιλεγμένου κειμένου. Επιλέξτε ξανά.
-Could not load suggestions.,Could not load suggestions.
+Could not load suggestions.,Δεν ήταν δυνατή η φόρτωση των προτάσεων.
 Could not reach server. Please try again later.,Δεν ήταν δυνατή η πρόσβαση στο διακομιστή. Προσπαθήστε ξανά αργότερα.
-Count,Count
+Count,Αριθμός
 Create,Δημιουργία
 CREATE,ΔΗΜΙΟΥΡΓΙΑ
-Create a type to continue.,Create a type to continue.
+Create a type to continue.,Δημιουργήστε έναν τύπο για να συνεχίσετε.
 Create and edit thesauri,Δημιουργία και επεξεργασία θησαυρών
 Create Connection,Δημιουργία σύνδεσης
 Create entity,Δημιουργία οντότητας
 Create Entity,Δημιουργία οντότητας
 Create Extractor,Δημιουργία εξαγωγέα
 Create new entities and upload documents,Δημιουργία νέων οντοτήτων και μεταφόρτωση εγγράφων
-Create new entity from selection,Create new entity from selection
+Create new entity from selection,Δημιουργία νέας οντότητας από την επιλογή
 Create Reference,Δημιουργία αναφοράς
-Create relationship,Create relationship
+Create relationship,Δημιουργία σχέσης
 Create relationship types,Δημιουργία τύπων σχέσεων
 Create relationships and references,Δημιουργία σχέσεων και αναφορών
 Create table of contents,Δημιουργία πίνακα περιεχομένων
-Create visualization,Create visualization
-Created,Created
+Create visualization,Δημιουργία απεικόνισης
+Created,Δημιουργημένο
 Created entity,Δημιουργήθηκε οντότητα
 Created entity coming from a public form,Δημιουργήθηκε οντότητα από δημόσια φόρμα
 Created page,Δημιουργήθηκε σελίδα
@@ -299,22 +299,22 @@ Created relationship,Δημιουργήθηκε σχέση
 Created template,Δημιουργήθηκε πρότυπο
 Created thesaurus,Δημιουργήθηκε θησαυρός
 Created user group,Δημιουργήθηκε ομάδα χρηστών
-Creating entities,Creating entities
-Creating relationships,Creating relationships
-Creating thesauri,Creating thesauri
-Creation date,Creation date
+Creating entities,Δημιουργία οντοτήτων
+Creating relationships,Δημιουργία σχέσεων
+Creating thesauri,Δημιουργία θησαυρών όρων
+Creation date,Ημερομηνία δημιουργίας
 CSS,CSS
-csv blank state message,Import CSV or ZIP files to create entities in bulk. Select **+ Import CSV** to get started.
-CSV Import,CSV Import
-CSV import cancelled,CSV import cancelled
-CSV import completed,CSV import completed
-CSV import failed,CSV import failed
-CSV or ZIP up to 50MB,CSV or ZIP up to 50MB
+csv blank state message,Εισαγάγετε αρχεία CSV ή ZIP για να δημιουργήσετε οντότητες μαζικά. Επιλέξτε **+ Εισαγωγή CSV** για να ξεκινήσετε.
+CSV Import,Εισαγωγή αρχείου CSV
+CSV import cancelled,Η εισαγωγή CSV ακυρώθηκε
+CSV import completed,Η εισαγωγή CSV ολοκληρώθηκε
+CSV import failed,Η εισαγωγή CSV απέτυχε
+CSV or ZIP up to 50MB,CSV ή ZIP έως 50 MB
 Ctrl K,Ctrl K
 Current Value/Suggestion,Τρέχουσα αξία/πρόταση
 "Custom colors are not available for this chart type. Use the chart palette or template
-            colors instead.","Custom colors are not available for this chart type. Use the chart palette or template
-            colors instead."
+            colors instead.","Τα προσαρμοσμένα χρώματα δεν είναι διαθέσιμα για αυτόν τον τύπο γραφήματος. Χρησιμοποιήστε αντ’ αυτού την παλέτα χρωμάτων του γραφήματος ή τα
+ χρώματα του προτύπου."
 Custom component error,Σφάλμα σήμανσης προσαρμοσμένου στοιχείου: μη υποστηριζόμενες τιμές! Ελέγξτε τις ρυθμίσεις σας.
 Custom CSS,Προσαρμοσμένο CSS
 Custom Favicon,Προσαρμοσμένο Favicon
@@ -322,30 +322,30 @@ Custom JS,Προσαρμοσμένο JS
 Custom landing page,Προσαρμοσμένη αρχική σελίδα
 custom page error warning,Παρουσιάστηκε απροσδόκητο σφάλμα σε αυτήν την προσαρμοσμένη σελίδα και ενδέχεται να μην λειτουργεί σωστά. Επικοινωνήστε με έναν διαχειριστή για λεπτομέρειες.
 Custom Uploads,Προσαρμοσμένες μεταφορτώσεις
-Customize,Customize
-Customized,Customized
-Dark,Σκούρο
-Dark Theme,Dark Theme
+Customize,Προσαρμογή
+Customized,Προσαρμοσμένο
+Dark,Σκουρόχρωμο
+Dark Theme,Σκουρόχρωμο θέμα
 Dashboard,Πίνακας ελέγχου
-Data may be outdated.,Data may be outdated.
-Data source,Data source
-Data sources,Data sources
-Data visualizations,Data visualizations
-Data was updated recently. You can refresh again in a few seconds.,Data was updated recently. You can refresh again in a few seconds.
-Date,Date
+Data may be outdated.,Τα δεδομένα ενδέχεται να είναι παλιά.
+Data source,Πηγή δεδομένων
+Data sources,Πηγές δεδομένων
+Data visualizations,Απεικονίσεις δεδομένων
+Data was updated recently. You can refresh again in a few seconds.,Τα δεδομένα ενημερώθηκαν πρόσφατα. Μπορείτε να ανανεώσετε ξανά σε λίγα δευτερόλεπτα.
+Date,Ημερομηνία
 Date added,Ημερομηνία προσθήκης
 Date modified,Ημερομηνία τροποποίησης
 "Date or numeric × numeric enables scatter and heatmap. Line, area, and bar plot the
-                measure over the primary dimension (e.g. max engine size per registration date).","Date or numeric × numeric enables scatter and heatmap. Line, area, and bar plot the
-                measure over the primary dimension (e.g. max engine size per registration date)."
+                measure over the primary dimension (e.g. max engine size per registration date).","Η επιλογή «Ημερομηνία» ή «Αριθμητική τιμή × αριθμητική τιμή» ενεργοποιεί το γράφημα διασποράς και τον θερμικό χάρτη. Τα γραφήματα γραμμής, περιοχής και ράβδων απεικονίζουν το
+                μέτρο ως προς την κύρια διάσταση (π.χ. μέγιστο μέγεθος κινητήρα ανά ημερομηνία ταξινόμησης)."
 "Date or numeric × select enables line and area charts with one line per breakdown
-                value over time.","Date or numeric × select enables line and area charts with one line per breakdown
-                value over time."
-Date range,Date range
+                value over time.","Η επιλογή «Ημερομηνία ή αριθμητική τιμή ×» επιτρέπει τη δημιουργία γραφημάτων γραμμής και περιοχής με μία γραμμή ανά τιμή ανάλυσης
+ ανά χρονική περίοδο."
+Date range,Χρονικό διάστημα
 Day,Ημέρα
 "Deep-merged onto the generated ECharts option. Use for fine-tuning options not exposed in
-          the Chart tab.","Deep-merged onto the generated ECharts option. Use for fine-tuning options not exposed in
-          the Chart tab."
+          the Chart tab.","Ενσωματωμένες σε βάθος στην επιλογή ECharts που δημιουργήθηκε. Χρησιμοποιήστε τις για την προσαρμογή παραμέτρων που δεν εμφανίζονται στην
+          καρτέλα «Γράφημα»."
 Default,Προεπιλογή
 Default date format,Προεπιλεγμένη μορφή ημερομηνίας
 Default filter,Προεπιλεγμένο φίλτρο
@@ -358,9 +358,9 @@ Delete,Διαγραφή
 DELETE,ΔΙΑΓΡΑΦΗ
 Delete entities and documents,Διαγραφή οντοτήτων και εγγράφων
 Delete file,Διαγραφή αρχείου
-Delete relationship,Delete relationship
-Delete relationships,Delete relationships
-Delete?,Delete?
+Delete relationship,Διαγραφή σχέσης
+Delete relationships,Διαγραφή σχέσεων
+Delete?,Διαγραφή;
 Deleted attachment,Διαγράφηκε συνημμένο αρχείο
 Deleted custom file,Διαγράφηκε προσαρμοσμένο αρχείο
 Deleted entity,Διαγράφηκε οντότητα
@@ -375,20 +375,20 @@ Deleted thesaurus,Διαγράφηκε θησαυρός
 Deleted user,Διαγράφηκε χρήστης
 Deleted user group,Διαγράφηκε ομάδα χρηστών
 Deletion success,Επιτυχία διαγραφής
-Density,Density
+Density,Πυκνότητα
 Description,Περιγραφή
-Deselect all,Deselect all
-Details,Details
-Direction,Direction
+Deselect all,Αποεπιλογή όλων
+Details,Λεπτομέρειες
+Direction,Κατεύθυνση
 Disable,Απενεργοποίηση
 Disable highlights,Απενεργοποίηση επισημάνσεων
 Disabled 2FA,Απενεργοποιημένο 2FA
-Discard,Discard
+Discard,Απόρριψη
 Discard changes,Απόρριψη αλλαγών
 Discard changes?,Απόρριψη αλλαγών;
 Dismiss,Απόκρυψη
 Display entity view from page,Προβολή οντότητας από σελίδα
-Display options,Display options
+Display options,Επιλογές εμφάνισης
 Do you want disable 2FA for the following users?,Θέλετε να απενεργοποιήσετε το 2FA για τους ακόλουθους χρήστες;
 Do you want reset the password for the following users?,Θέλετε να επαναφέρετε τον κωδικό πρόσβασης για τους ακόλουθους χρήστες;
 Do you want to delete the following items?,Θέλετε να διαγράψετε τα ακόλουθα στοιχεία;
@@ -396,22 +396,22 @@ Document,Έγγραφο
 Document contents,Περιεχόμενο εγγράφου
 Document OCR trigger,OCR εγγράφου
 Document Title,Τίτλος εγγράφου
-Document updated,Document updated
+Document updated,Το έγγραφο ενημερώθηκε
 Documentation,Τεκμηρίωση
 documents,έγγραφα
 Documents,Έγγραφα
 documents.,έγγραφα.
-Done,Done
-Done creating entities,Done creating entities
-Done creating relationships,Done creating relationships
-Done creating thesauri,Done creating thesauri
-Done extracting files,Done extracting files
-Done scanning,Done scanning
+Done,Τέλος
+Done creating entities,Ολοκληρώθηκε η δημιουργία οντοτήτων
+Done creating relationships,Ολοκληρώθηκε η δημιουργία σχέσεων
+Done creating thesauri,Ολοκληρώθηκε η δημιουργία των θησαυρών όρων
+Done extracting files,Ολοκληρώθηκε η εξαγωγή των αρχείων
+Done scanning,Ολοκληρώθηκε η σάρωση
 Download,Λήψη
 Download a third-party authenticator app from your mobile store.,Κατεβάστε μια εφαρμογή πιστοποίησης ταυτότητας από το το κατάστημα εφαρμογών της συσκευής σας.
-Download all,Download all
-Download failed rows,Download failed rows
-Draft restored from release.,Draft restored from release.
+Download all,Λήψη όλων
+Download failed rows,Λήψη σειρών που απέτυχαν
+Draft restored from release.,Το προσχέδιο αποκαταστάθηκε από την έκδοση.
 Drag and drop file in this window to upload,Σύρετε και αποθέστε αρχείο σε αυτό το παράθυρο για μεταφόρτωση
 Drag row,Σύρετε γραμμή
 Drop your files here to upload or,Αποθέστε τα αρχεία σας εδώ για μεταφόρτωση ή
@@ -419,49 +419,49 @@ Duplicate values not allowed.,Δεν επιτρέπονται διπλότυπε
 Duplicated email,Διπλότυπο email
 Duplicated name,Διπλότυπο όνομα
 Duplicated username,Διπλότυπο όνομα χρήστη
-Duration,Duration
-e.g.,e.g.
-Each series uses the template brand color when comparing data sources.,Each series uses the template brand color when comparing data sources.
-Earlier,Earlier
+Duration,Διάρκεια
+e.g.,π.χ.
+Each series uses the template brand color when comparing data sources.,Κάθε σειρά χρησιμοποιεί το χρώμα της μάρκας που ορίζεται στο πρότυπο κατά τη σύγκριση των πηγών δεδομένων.
+Earlier,Νωρίτερα
 Edit,Επεξεργασία
-Edit at source,Edit at source
-Edit date,Edit date
+Edit at source,Επεξεργασία στην πηγή
+Edit date,Ημερομηνία τροποποίησης
 Edit Extractor,Επεξεργασία εξαγωγέα
 Edit File,Επεξεργασία αρχείου
 Edit group,Επεξεργασία ομάδας
 Edit item,Επεξεργασία στοιχείου
 Edit metadata of entities,Επεξεργασία μεταδεδομένων οντοτήτων
-Edit theme,Edit theme
+Edit theme,Επεξεργασία θέματος
 Edit user,Επεξεργασία χρήστη
-Edited,Edited
+Edited,Επεξεργασμένο
 Editor,Επιμελητής
 editor,Επιμελητής
 Editors,Επιμελητές
 Email,Email
-Embed,Embed
-Embed in pages,Embed in pages
+Embed,Ενσωμάτωση
+Embed in pages,Ενσωμάτωση σε σελίδες
 Empty,Κενό
 Empty group. Drop here to add,Κενή ομάδα. Αποθέστε εδώ για προσθήκη.
 empty property tip,Δεν είναι δυνατή η αποθήκευση οντότητας εάν αυτή η ιδιότητα είναι κενή.
 Enable,Ενεργοποίηση
-Enable public embedding to use this chart in external sites on private instances.,Enable public embedding to use this chart in external sites on private instances.
+Enable public embedding to use this chart in external sites on private instances.,Ενεργοποιήστε τη δημόσια ενσωμάτωση για να χρησιμοποιήσετε αυτό το γράφημα σε εξωτερικούς ιστότοπους σε ιδιωτικές εγκαταστάσεις.
 Enable this page to be used as an entity view page:,Ενεργοποίηση αυτής της σελίδας για χρήση ως σελίδα προβολής οντοτήτων:
 Enter the 6-digit verification code generated by your Authenticator app,Εισάγετε τον 6ψήφιο κωδικό επαλήθευσης που δημιουργείται από την εφαρμογή πιστοποίησης ταυτότητας.
-"Enter the full username, email, or group name. Suggestions are not shown.","Enter the full username, email, or group name. Suggestions are not shown."
+"Enter the full username, email, or group name. Suggestions are not shown.","Πληκτρολογήστε το πλήρες όνομα χρήστη, τη διεύθυνση email ή το όνομα της ομάδας. Δεν εμφανίζονται προτάσεις."
 Enter your current password to confirm,Εισάγετε τον τρέχοντα κωδικό πρόσβασής σας για επιβεβαίωση
 Entities,Οντότητες
 entities,συνολικά
 Entities across all languages,Οντότητες σε όλες τις γλώσσες
-Entities created,Entities created
-Entities updated,Entities updated
-entities · generated,entities · generated
+Entities created,Δημιουργημένες οντότητες
+Entities updated,Ενημερωμένες οντότητες
+entities · generated,οντότητες · δημιουργημένες
 Entity,Οντότητα
-Entity creation stage completed.,Entity creation stage completed.
+Entity creation stage completed.,Ολοκληρώθηκε το στάδιο δημιουργίας της οντότητας.
 Entity deleted,Η οντότητα διαγράφηκε
 Entity Page,Σελίδα οντότητας
 Entity saved,Η οντότητα αποθηκεύτηκε
-Entity scope,Entity scope
-Entity type,Entity type
+Entity scope,Πεδίο εφαρμογής οντότητας
+Entity type,Τύπος οντότητας
 Entity types,Τύποι οντοτήτων
 Entity updated,Η οντότητα ενημερώθηκε
 Error,Σφάλμα
@@ -469,48 +469,48 @@ Error adding thesauri.,Σφάλμα προσθήκης θησαυρών.
 Error loading your image,Σφάλμα φόρτωσης της εικόνας σας
 Error saving template.,Σφάλμα αποθήκευσης προτύπου.
 Error updating thesauri.,Σφάλμα ενημέρωσης θησαυρών.
-evidence,evidence
-exact phrase,exact phrase
+evidence,αποδεικτικά στοιχεία
+exact phrase,ακριβής φράση
 Expand all,Ανάπτυξη όλων
-Expand All,Expand All
+Expand All,Ανάπτυξη όλων
 Export CSV,Εξαγωγή CSV
 Exporting entities to CSV,Εξαγωγή οντοτήτων σε CSV
 Extension Token,Token επέκτασης
-External embed,External embed
+External embed,Εξωτερική ενσωμάτωση
 Extract new paragraphs,Εξαγωγή νέων παραγράφων
 Extract paragraphs,Εξαγωγή παραγράφων
-Extracting files,Extracting files
-Extracting files from uploaded package.,Extracting files from uploaded package.
+Extracting files,Εξαγωγή αρχείων
+Extracting files from uploaded package.,Εξαγωγή αρχείων από το πακέτο που έχει μεταφορτωθεί.
 Extraction configuration,Διαμόρφωση εξαγωγής
 Extractor Name,Όνομα εξαγωγέα
 Extractor name,Όνομα εξαγωγέα
 Extractor/s deleted,Εξαγωγέας/εις διαγράφηκε/καν
 Extractors,Εξαγωγείς
-Failed,Failed
-Failed to mark table of contents as reviewed,Failed to mark table of contents as reviewed
-Failed to save table of contents,Failed to save table of contents
-Failure details,Failure details
+Failed,Αποτυχία
+Failed to mark table of contents as reviewed,Δεν κατέστη δυνατό να επισημανθεί ο πίνακας περιεχομένων ως ελεγμένος
+Failed to save table of contents,Δεν κατέστη δυνατή η αποθήκευση του πίνακα περιεχομένων
+Failure details,Λεπτομέρειες σφάλματος
 Favicon description,"Το favicon είναι ένα μικρό εικονίδιο που αντιπροσωπεύει τη συλλογή σας στις καρτέλες του προγράμματος περιήγησης και στους σελιδοδείκτες. Το προεπιλεγμένο favicon είναι το λογότυπο του Uwazi. Για να χρησιμοποιήσετε το δικό σας:
 
 1. Μεταφορτώστε το εικονίδιό σας στις ""Προσαρμοσμένες μεταφορτώσεις"" αν χρειάζεται.
 2. Κάντε κλικ στο ""Επιλογή εικόνας favicon"" και επιλέξτε αρχείο (μόνο εικόνες από τις Προσαρμοσμένες μεταφορτώσεις).
 3. Ανανεώστε τη σελίδα για να δείτε το favicon σας σε λειτουργία."
-Favicon no images hint,Favicon no images hint
+Favicon no images hint,Δεν υπάρχει εικόνα για το favicon
 FEATURED,ΕΠΙΛΕΓΜΕΝΑ
 File,Αρχείο
-file,file
+file,αρχείο
 File deleted,Το αρχείο διαγράφηκε
-File details,File details
-File extraction completed successfully.,File extraction completed successfully.
+File details,Λεπτομέρειες αρχείου
+File extraction completed successfully.,Η εξαγωγή του αρχείου ολοκληρώθηκε με επιτυχία.
 File name,Όνομα αρχείου
-File preview unavailable,File preview unavailable
+File preview unavailable,Η προεπισκόπηση του αρχείου δεν είναι διαθέσιμη
 File updated,Το αρχείο ενημερώθηκε
 Files,Αρχεία
-files,files
+files,αρχεία
 Files and database usage,Χρήση αρχείων και βάσης δεδομένων
 Fill,Συμπλήρωση
-Filter,Filter
-Filter unauthorized relationships,"By default, relationships pointing to restricted entities are visible to anonymous users but not linked. When enabled, these relationships are completely hidden, preventing public users from knowing restricted content exists."
+Filter,Φίλτρο
+Filter unauthorized relationships,"Από προεπιλογή, οι σχέσεις που οδηγούν σε περιορισμένες οντότητες είναι ορατές σε ανώνυμους χρήστες, αλλά χωρίς ενεργό σύνδεσμο. Όταν αυτή η επιλογή είναι ενεργοποιημένη, αυτές οι σχέσεις αποκρύπτονται πλήρως, εμποδίζοντας τους δημόσιους χρήστες να γνωρίζουν ότι υπάρχει περιορισμένο περιεχόμενο."
 Filters,Φίλτρα
 Filters AND operator,ΚΑΙ
 Filters configuration,Φίλτρα
@@ -529,17 +529,17 @@ Flag,Σημαία
 for,για
 For all entities,Για όλες τις οντότητες
 For entities with blank values,Για οντότητες με κενές τιμές
-Forgot Password or Username?,Forgot Password or Username?
+Forgot Password or Username?,Ξεχάσατε τον κωδικό πρόσβασης ή το όνομα χρήστη;
 Forms and email configuration,Διαμόρφωση φορμών και email
 From,Από
 From all suggestions,Από όλες τις προτάσεις
 From previous step,Από το προηγούμενο βήμα
-From selection,From selection
-From:,From:
-Full mode,Full mode
+From selection,Από την επιλογή
+From:,Από:
+Full mode,Πλήρης λειτουργία
 Full width,Πλήρες πλάτος
 General,Γενικά
-General access,General access
+General access,Γενική πρόσβαση
 General Information,Γενικές πληροφορίες
 Generated ID,Παραγόμενο aναγνωριστικό
 Global CSS,Καθολικό CSS
@@ -549,74 +549,74 @@ Google,Google
 Google Analytics,Google Analytics
 Google Maps,Χάρτες Google
 Group,Ομάδα
-Group by,Group by
-group expressions,group expressions
+Group by,Ομαδοποίηση κατά
+group expressions,ομαδικές εκφράσεις
 Group Options,Επιλογές ομάδας
 Group saved,Η ομάδα αποθηκεύτηκε
 Group updated,Η ομάδα ενημερώθηκε
-Grouped geolocation properties,Grouped geolocation properties
+Grouped geolocation properties,Ομαδοποιημένες ιδιότητες γεωγραφικής θέσης
 Groups,Ομάδες
-Header and button preview,Header and button preview
-Header bar active background,Header bar active background
-Header bar background,Header bar background
-Header bar divider,Header bar divider
-Header bar hover background,Header bar hover background
-Header bar text,Header bar text
+Header and button preview,Προεπισκόπηση επικεφαλίδας και κουμπιού
+Header bar active background,Ενεργό φόντο της γραμμής κεφαλίδας
+Header bar background,Φόντο της γραμμής κεφαλίδας
+Header bar divider,Διαχωριστικό γραμμής κεφαλίδας
+Header bar hover background,Φόντο της γραμμής κεφαλίδας κατά την τοποθέτηση του ποντικιού πάνω της
+Header bar text,Κείμενο της γραμμής κεφαλίδας
 help,βοήθεια
 here,εδώ
-"Hi, I'm Bert.","Hi, I'm Bert."
-Hide,Hide
+"Hi, I'm Bert.","Γεια, είμαι ο Bert."
+Hide,Απόκρυψη
 Hide actions,Απόκρυψη ενεργειών
-Hide details,Hide details
+Hide details,Απόκρυψη λεπτομερειών
 Hide label,Απόκρυψη ετικέτας
-Hide restricted relationships from public,Hide restricted relationships from public
+Hide restricted relationships from public,Απόκρυψη σχέσεων με περιορισμένη πρόσβαση από το κοινό
 Hide toolbar,Απόκρυψη γραμμής εργαλείων
 HTML,HTML
 https://yourdomain,https://yourdomain
-hub,hub
+hub,κόμβος
 hubs,κόμβοι
 Hybrid,Υβριδικό
 Icon,Εικονίδιο
-ID,ID
-ID:,ID:
+ID,Αναγνωριστικό
+ID:,Αναγνωριστικό:
 "If an account exists with the email you provided, you will receive an email
-                        with instructions to reset your password.","If an account exists with the email you provided, you will receive an email
-                        with instructions to reset your password."
+                        with instructions to reset your password.","Εάν υπάρχει λογαριασμός με τη διεύθυνση email που δώσατε, θα λάβετε ένα email
+ με οδηγίες για την επαναρύθμιση του κωδικού πρόσβασής σας."
 "If it is an external URL, use a fully formed URL. Ie. http://www.uwazi.io.","Εάν πρόκειται για εξωτερική διεύθυνση URL, χρησιμοποιήστε μια πλήρως σχηματισμένη διεύθυνση URL. Δηλαδή: http://www.uwazi.io."
 "If you want to continue, please type","Αν θέλετε να συνεχίσετε, πληκτρολογήστε"
-Image doesn't match the required size.,Image doesn't match the required size.
+Image doesn't match the required size.,Η εικόνα δεν έχει το απαιτούμενο μέγεθος.
 Import,Εισαγωγή
-Import / Export CSV,Import / Export CSV
+Import / Export CSV,Εισαγωγή / Εξαγωγή CSV
 Import asset,Εισαγωγή αρχείου
 Import CSV,Εισαγωγή CSV
-Import failed. Review details below.,Import failed. Review details below.
-Import finished successfully.,Import finished successfully.
-Import finished with errors. Review details below.,Import finished with errors. Review details below.
-Import is currently processing rows.,Import is currently processing rows.
-Import is retrying after an error.,Import is retrying after an error.
-Import theme instance file,Import theme instance file
-Import was cancelled.,Import was cancelled.
+Import failed. Review details below.,Η εισαγωγή απέτυχε. Δείτε τις λεπτομέρειες παρακάτω.
+Import finished successfully.,Η εισαγωγή ολοκληρώθηκε με επιτυχία.
+Import finished with errors. Review details below.,Η εισαγωγή ολοκληρώθηκε με σφάλματα. Δείτε τις λεπτομέρειες παρακάτω.
+Import is currently processing rows.,Η εισαγωγή επεξεργάζεται αυτή τη στιγμή τις σειρές.
+Import is retrying after an error.,Η εισαγωγή επιχειρείται εκ νέου μετά από σφάλμα.
+Import theme instance file,Εισαγωγή αρχείου παρουσίας θέματος
+Import was cancelled.,Η εισαγωγή ακυρώθηκε.
 Imported translations from file,Εισήχθησαν μεταφράσεις από αρχείο
 in,σε
 "In a group, either all relationships must have a hub or none of them.","Σε μια ομάδα, είτε όλες οι σχέσεις πρέπει να έχουν έναν κόμβο είτε καμία από αυτές."
 In OCR queue,Στην ουρά OCR
-In use,In use
-Include all entities,Include all entities
-Include only public,Include only public
-Incoming,Incoming
+In use,Σε χρήση
+Include all entities,Να συμπεριληφθούν όλες οι οντότητες
+Include only public,Να συμπεριληφθούν μόνο τα δημόσια
+Incoming,Εισερχόμενα
 Info,Πληροφορίες
 Information extraction training,Εκπαίδευση εξαγωγής πληροφοριών
 Inherit,Κληρονόμηση
 Inherit property,Κληρονομούμενη ιδιότητα
 Inherit type,Κληρονομούμενος τύπος
-"Inherited values are read-only. Change the connection above, or edit the source entity.","Inherited values are read-only. Change the connection above, or edit the source entity."
-inherits,inherits
+"Inherited values are read-only. Change the connection above, or edit the source entity.",Οι κληρονομούμενες τιμές είναι μόνο για ανάγνωση. Τροποποιήστε την παραπάνω σύνδεση ή επεξεργαστείτε την οντότητα προέλευσης.
+inherits,κληρονομεί
 Input,Είσοδος
-Input type,Input type
+Input type,Τύπος εισόδου
 Install,Εγκατάσταση
 Install Language(s),Εγκατάσταση γλωσσών
 Install the browser extension.,Εγκαταστήστε την επέκταση του προγράμματος περιήγησης.
-Installing languages,Installing languages
+Installing languages,Εγκατάσταση γλωσσών
 "Instructions on how to achieve this will vary according to the app used, please refer to the app's documentation.","Οι οδηγίες για το πώς να το πετύχετε αυτό διαφέρουν ανάλογα με την εφαρμογή που χρησιμοποιείται, ανατρέξτε στην τεκμηρίωση της εφαρμογής."
 Instructions to reset password,"Εάν η παρεχόμενη διεύθυνση email είναι σωστή, θα στείλουμε οδηγίες για την επαναφορά του κωδικού πρόσβασης."
 Instructions to reset the password were sent to the user,Οι οδηγίες επαναφοράς κωδικού πρόσβασης στάλθηκαν στον χρήστη
@@ -624,13 +624,13 @@ Invalid captcha,Μη έγκυρο CAPTCHA
 Invalid csv: all the values for a row must be either nested or non-nested,Μη έγκυρο CSV: όλες οι τιμές μιας γραμμής πρέπει να είναι είτε εμφωλευμένες είτε μη εμφωλευμένες
 Invalid csv: nested value need to be under a non-nested value,Μη έγκυρο CSV: οι εμφωλευμένες τιμές πρέπει να βρίσκονται κάτω από μη εμφωλευμένη τιμή
 Invalid form,Μια καταχώριση είναι υποχρεωτική ή έχει μη έγκυρη τιμή. Διορθώστε και δοκιμάστε ξανά.
-Invalid URL,Invalid URL
+Invalid URL,Μη έγκυρη διεύθυνση URL
 It could also very easily break the app. Only write code here if you know exactly what you are doing.,Μπορεί επίσης να προκαλέσει πολύ εύκολα δυσλειτουργία της εφαρμογής. Γράψτε κώδικα εδώ μόνο εάν γνωρίζετε ακριβώς τι κάνετε.
 it has been logged with request id #,έχει καταγραφεί με αναγνωριστικό αιτήματος #
 Item,Στοιχείο
 Items:,Στοιχεία:
-Javascript,Javascript
-juris*,juris*
+Javascript,JavaScript
+juris*,δικαιο*
 key,κλειδί
 Label,Ετικέτα
 "Label date ""From""",Από:
@@ -639,62 +639,62 @@ Labeled,Με ετικέτα
 Landing page,Σελίδα προορισμού
 Landing page description,"Η σελίδα προορισμού είναι η πρώτη σελίδα που βλέπουν οι επισκέπτες όταν έρχονται στη συλλογή σας. Η προεπιλεγμένη σελίδα προορισμού είναι η βιβλιοθήκη της συλλογής σας. Μπορείτε να ορίσετε διαφορετική σελίδα προορισμού προσθέτοντας το σχετικό της URL εδώ. Για παράδειγμα:
 
-Μια σελίδα: /page/dicxg0oagy3xgr7ixef80k9 
-Μια φιλτραρισμένη προβολή στο Uwazi: /library/?searchTerm=test 
-Μια οντότητα: /entity/9htbkgpkyy7j5rk9 
-Ένα έγγραφο: /document/4y9i99fadjp833di 
+Μια σελίδα: /page/dicxg0oagy3xgr7ixef80k9
+Μια φιλτραρισμένη προβολή στο Uwazi: /library/?searchTerm=test
+Μια οντότητα: /entity/9htbkgpkyy7j5rk9
+Ένα έγγραφο: /document/4y9i99fadjp833di
 
 Σημαντικό: Πρέπει να χρησιμοποιείτε σχετικά URL. Αυτά ξεκινούν με την κάθετο (/) και δεν περιλαμβάνουν το όνομα τομέα. Για παράδειγμα: στη διεύθυνση https://yoursite.com/landingpage, το σχετικό URL είναι /landingpage"
 Language,Γλώσσα
 Language Code,Κωδικός γλώσσας
 Language deleted,Η γλώσσα διαγράφηκε
 Language reset success,Επιτυχία επαναφοράς γλώσσας
-Language uninstalled successfully,Language uninstalled successfully
+Language uninstalled successfully,Η γλώσσα απεγκαταστάθηκε με επιτυχία
 Language(s),Γλώσσα(ες)
 Language:,Γλώσσα:
 Languages,Γλώσσες
-Languages installed successfully,Languages installed successfully
+Languages installed successfully,Οι γλώσσες εγκαταστάθηκαν με επιτυχία
 Last updated,Τελευταία ενημέρωση
-Last updated from collection:,Last updated from collection:
+Last updated from collection:,Τελευταία ενημέρωση από τη συλλογή:
 Latitude,Γεωγραφικό πλάτος
-Latitude must be between -90 and 90,Latitude must be between -90 and 90
-Learn how to add and configure a contact form on a webpage.,Learn how to add and configure a contact form on a webpage.
-Learn how to build your first collection,Learn how to build your first collection
+Latitude must be between -90 and 90,Το γεωγραφικό πλάτος πρέπει να κυμαίνεται μεταξύ -90 και 90
+Learn how to add and configure a contact form on a webpage.,Μάθετε πώς να προσθέτετε και να διαμορφώνετε μια φόρμα επικοινωνίας σε μια ιστοσελίδα.
+Learn how to build your first collection,Μάθετε πώς να δημιουργήσετε την πρώτη σας συλλογή
 Learn more,Μάθετε περισσότερα
-Learn more about the components.,Learn more about the components.
+Learn more about the components.,Μάθετε περισσότερα για τα στοιχεία.
 Legend,Υπόμνημα
 Lengthy reindex process,Χρονοβόρα διαδικασία επαναευρετηριοποίησης
 Library,Βιβλιοθήκη
 library list view,προβολή λίστας βιβλιοθήκης
 library map view,προβολή χάρτη βιβλιοθήκης
 library table view,προβολή πίνακα βιβλιοθήκης
-Light,Light
-Light Theme,Light Theme
+Light,Ανοιχτόχρωμο
+Light Theme,Ανοιχτόχρωμο θέμα
 Link,Σύνδεσμος
 linked,συνδεδεμένο
-List,List
-List renders as a table. Use the options below to filter empty or zero values.,List renders as a table. Use the options below to filter empty or zero values.
-Live preview,Live preview
+List,Λίστα
+List renders as a table. Use the options below to filter empty or zero values.,Η λίστα εμφανίζεται ως πίνακας. Χρησιμοποιήστε τις παρακάτω επιλογές για να φιλτράρετε τις κενές τιμές ή τις τιμές μηδέν.
+Live preview,Ζωντανή προεπισκόπηση
 Live translate,Ζωντανή μετάφραση
-Load,Load
-Load example,Load example
-Load more,Load more
+Load,Φόρτωση
+Load example,Φόρτωση παραδείγματος
+Load more,Φόρτωση περισσότερων
 Loading,Φόρτωση
-Local time,Local time
+Local time,Τοπική ώρα
 Login,Σύνδεση
 Login button,Σύνδεση
 Login failed,Η σύνδεση απέτυχε
 Logout,Αποσύνδεση
 Longitude,Γεωγραφικό μήκος
-Longitude must be between -180 and 180,Longitude must be between -180 and 180
-Lookup help,Lookup help
+Longitude must be between -180 and 180,Το γεωγραφικό μήκος πρέπει να κυμαίνεται μεταξύ -180 και 180
+Lookup help,Βοήθεια αναζήτησης
 Lost connection to the server. Your changes may be lost,Η σύνδεση με τον διακομιστή χάθηκε. Οι αλλαγές σας ενδέχεται να χαθούν.
 low,χαμηλό
-Manage relationship types,Manage relationship types
+Manage relationship types,Διαχείριση τύπων σχέσεων
 Manage site settings and configuration,Διαχείριση ρυθμίσεων και διαμόρφωσης ιστότοπου
-Manage types,Manage types
-Manual data,Manual data
-Manually set a color,Manually set a color
+Manage types,Διαχείριση τύπων
+Manual data,Δεδομένα χειροκίνητης εισαγωγής
+Manually set a color,Χειροκίνητη ρύθμιση χρώματος
 Map,Χάρτης
 Map api key,Κλειδί API χάρτη
 Map API key,Κλειδί API χάρτη
@@ -705,28 +705,28 @@ Map Provider,Πάροχος χάρτη
 Map view,Προβολή χάρτη
 Mapbox,Mapbox
 Mapping conflict error,"Είναι απαραίτητη η επαναευρετηριοποίηση της συλλογής σας. Ο λόγος μπορεί να ποικίλλει
-         -- από συγκεκριμένες αλλαγές που έγιναν σε ιδιότητα προτύπου μέχρι νέα πεδία   
-         που πρέπει να συμπληρωθούν σε όλες τις οντότητες.      
-         Αυτή η διαδικασία δεν θα επηρεάσει αρνητικά τα δεδομένα της συλλογής σας.      
-         Μπορεί να διαρκέσει μερικά λεπτά και ορισμένα τμήματα της συλλογής σας ενδέχεται       
+         -- από συγκεκριμένες αλλαγές που έγιναν σε ιδιότητα προτύπου μέχρι νέα πεδία
+         που πρέπει να συμπληρωθούν σε όλες τις οντότητες.
+         Αυτή η διαδικασία δεν θα επηρεάσει αρνητικά τα δεδομένα της συλλογής σας.
+         Μπορεί να διαρκέσει μερικά λεπτά και ορισμένα τμήματα της συλλογής σας ενδέχεται
          να χρειαστούν κάποιο χρόνο για να επανεμφανιστούν στη βιβλιοθήκη, αλλά αυτό είναι προσωρινό. Θέλετε να συνεχίσετε;"
 Maps,Χάρτες
 Mark as Reviewed,Σήμανση ως επιθεωρημένο
 Mark as reviewed,Σήμανση ως επιθεωρημένο
 Markdown,Markdown
 "Markdown support in custom pages will be discontinued starting in 2027. Upgrade this page
-          when its content no longer relies on Markdown syntax.","Markdown support in custom pages will be discontinued starting in 2027. Upgrade this page
-          when its content no longer relies on Markdown syntax."
+          when its content no longer relies on Markdown syntax.","Η υποστήριξη της σύνταξης Markdown στις προσαρμοσμένες σελίδες θα καταργηθεί από το 2027. Αναβαθμίστε αυτή τη σελίδα
+ όταν το περιεχόμενό της δεν θα βασίζεται πλέον στη σύνταξη Markdown."
 marked and labeled,επισημασμένο και με ετικέτα
 marked for training,επισημασμένο για εκπαίδευση
 Marked for training + all labeled entries,Επισημασμένα για εκπαίδευση + όλες οι καταχωρίσεις με ετικέτα
 Marked for training only,Μόνο επισημασμένα για εκπαίδευση
 Match,Αντιστοιχία
-match,match
-match verbatim,match verbatim
-matches,matches
-"matches jurisdiction, jurists, jurisprudence","matches jurisdiction, jurists, jurisprudence"
-Matches show the passage and the page they are on.,Matches show the passage and the page they are on.
+match,αποτέλεσμα
+match verbatim,ακριβής αντιστοίχιση
+matches,αποτελέσματα
+"matches jurisdiction, jurists, jurisprudence","σχετίζεται με τη δικαιοδοσία, τους νομικούς, τη νομολογία"
+Matches show the passage and the page they are on.,Τα αποτελέσματα εμφανίζουν το απόσπασμα και τη σελίδα στην οποία βρίσκονται.
 Matching,Αντιστοίχιση
 matching,αντιστοίχιση
 Matomo,Matomo
@@ -737,27 +737,27 @@ Message sent,Το μήνυμα στάλθηκε
 Metadata,Μεταδεδομένα
 Metadata Extraction,Εξαγωγή μεταδεδομένων
 "Metric shows a single total count. Select Pie, Bar, or another chart type above to
-            configure categories, labels, and slices. Use the Appearance tab for colors.","Metric shows a single total count. Select Pie, Bar, or another chart type above to
-            configure categories, labels, and slices. Use the Appearance tab for colors."
+            configure categories, labels, and slices. Use the Appearance tab for colors.","Το μετρικό γράφημα εμφανίζει έναν ενιαίο συνολικό αριθμό. Επιλέξτε «Πίτα», «Ράβδοι» ή άλλο τύπο γραφήματος παραπάνω για να
+ ρυθμίσετε τις κατηγορίες, τις ετικέτες και τα τμήματα. Χρησιμοποιήστε την καρτέλα «Εμφάνιση» για τα χρώματα."
 MIGRATE,ΜΕΤΕΓΚΑΤΑΣΤΑΣΗ
 Minimum,Ελάχιστο
 Mismatch,Αναντιστοιχία
 mismatched passwords,Οι κωδικοί δεν ταιριάζουν
 mismatching,αναντιστοίχιση
 Mixed access,Μικτή πρόσβαση
-ML TOC,ML TOC
-Modified,Modified
+ML TOC,Πίνακας περιεχομένων ML
+Modified,Τροποποιημένο
 Month,Μήνας
 Months,Μήνες
-More,More
-more,more
+More,Περισσότερα
+more,περισσότερα
 more options.,περισσότερες επιλογές.
-More rows per screen; same type size,More rows per screen; same type size
-Multi-source mode,Multi-source mode
+More rows per screen; same type size,Περισσότερες σειρές στην οθόνη· ίδιο μέγεθος γραμματοσειράς
+Multi-source mode,Λειτουργία πολλαπλών πηγών
 Multiple date,Πολλαπλή ημερομηνία
 Multiple date range,Πολλαπλό εύρος ημερομηνιών
 Multiple inherited properties warning ([property 1] affects [property 2]),επηρεάζει
-Multiple matches found,Multiple matches found
+Multiple matches found,Βρέθηκαν πολλά αποτελέσματα
 Multiple relationships edit description,Οι αλλαγές σε αυτήν την ιδιότητα θα επηρεάσουν άλλες ιδιότητες σε αυτό το πρότυπο επειδή όλες μοιράζονται σχέσεις με την ίδια διαμόρφωση.
 Multiple select,Πολλαπλή επιλογή
 Name,Όνομα
@@ -766,22 +766,22 @@ Name is too long,Το όνομα είναι πολύ μεγάλο
 Name is too short,Το όνομα είναι πολύ σύντομο
 Narrow down your searches,Περιορίστε τις αναζητήσεις σας
 "Narrow entities before aggregation. With multiple sources, pick the property under the
-        source alias so each filter applies only to that series.","Narrow entities before aggregation. With multiple sources, pick the property under the
-        source alias so each filter applies only to that series."
+        source alias so each filter applies only to that series.","Περιορίστε τις οντότητες πριν από τη συγκέντρωση. Όταν υπάρχουν πολλές πηγές, επιλέξτε την ιδιότητα κάτω από το
+ ψευδώνυμο της πηγής, ώστε κάθε φίλτρο να ισχύει μόνο για τη συγκεκριμένη σειρά."
 Narrow your search,Περιορίστε την αναζήτησή σας
 Navigate back,Πλοήγηση πίσω
 Navigation menu tool tip part 1,"Εάν είναι εσωτερικό URL εντός αυτού του ιστότοπου, φροντίστε να διαγράψετε το πρώτο τμήμα"
 Navigation menu tool tip part 2,αφήνοντας μόνο ένα σχετικό URL που ξεκινά με κάθετο (/). Δηλαδή /some_url.
 New,Νέο
-New activity will show up here.,New activity will show up here.
-New conversation,New conversation
+New activity will show up here.,Οι νέες δραστηριότητες θα εμφανίζονται εδώ.
+New conversation,Νέα συζήτηση
 New entity,Νέα οντότητα
 New group,Νέα ομάδα
 New language added,Προστέθηκε νέα γλώσσα
 New page,Νέα σελίδα
 New password,Νέος κωδικός πρόσβασης
-New primary doc,New primary doc
-New relation type label…,New relation type label…
+New primary doc,Νέο κύριο έγγραφο
+New relation type label…,Νέα ετικέτα τύπου σχέσης…
 New relationship type,Νέος τύπος σχέσης
 New relationships group,Νέα ομάδα σχέσεων
 New Relationships Migration,Μετεγκατάσταση νέων σχέσεων
@@ -789,78 +789,78 @@ New user,Νέος χρήστης
 Next,Επόμενο
 No,Όχι
 No attachments,Δεν υπάρχουν συνημμένα αρχεία
-No audio or video on this entity,No audio or video on this entity
-No chart types match your search.,No chart types match your search.
+No audio or video on this entity,Δεν υπάρχει ήχος ή βίντεο για αυτή την οντότητα
+No chart types match your search.,Δεν υπάρχουν τύποι γραφημάτων που να αντιστοιχούν στην αναζήτησή σας.
 No common filters,Δεν υπάρχουν κοινά φίλτρα
-No connected entities yet.,No connected entities yet.
+No connected entities yet.,Δεν υπάρχουν ακόμη συνδεδεμένες οντότητες.
 No Connections,Δεν υπάρχουν συνδέσεις
 No Connections description,Οι συνδέσεις είναι οι άμεσες σχέσεις μεταξύ αυτού του εγγράφου και άλλων εγγράφων και οντοτήτων.
 No context,Δεν υπάρχει πλαίσιο
-No CSVs yet,No CSVs yet
-No data,No data
+No CSVs yet,Δεν υπάρχουν ακόμη αρχεία CSV
+No data,Δεν υπάρχουν δεδομένα
 NO DATA AVAILABLE,ΔΕΝ ΥΠΑΡΧΟΥΝ ΔΙΑΘΕΣΙΜΑ ΔΕΔΟΜΕΝΑ
-No entities found,No entities found
+No entities found,Δεν βρέθηκαν οντότητες
 NO EXTRACTORS,ΔΕΝ ΥΠΑΡΧΟΥΝ ΕΞΑΓΩΓΕΙΣ
-No files available,No files available
-No files queued yet.,No files queued yet.
+No files available,Δεν υπάρχουν διαθέσιμα αρχεία
+No files queued yet.,Δεν υπάρχουν ακόμα αρχεία στην ουρά.
 no filters for templates,Ο συνδυασμός τύπων οντοτήτων δεν έχει κοινά φίλτρα.
 No Group,Δεν υπάρχει ομάδα
 No icon / flag,Χωρίς εικονίδιο/σημαία
-No images on this entity,No images on this entity
+No images on this entity,Δεν υπάρχουν εικόνες για αυτήν την οντότητα
 No items available,Δεν υπάρχουν διαθέσιμα στοιχεία
 No Label,Χωρίς ετικέτα
 No label,Χωρίς ετικέτα
-No matches for,No matches for
-No matches.,No matches.
-No matching entities.,No matching entities.
-No media selected,No media selected
-No metadata for this entity yet.,No metadata for this entity yet.
+No matches for,Δεν βρέθηκαν αποτελέσματα για
+No matches.,Δεν βρέθηκαν αποτελέσματα.
+No matching entities.,Δεν βρέθηκαν αντίστοιχες οντότητες.
+No media selected,Δεν έχει επιλεγεί κανένα μέσο
+No metadata for this entity yet.,Δεν υπάρχουν ακόμη μεταδεδομένα για αυτήν την οντότητα.
 No options,Δεν υπάρχουν επιλογές
 No options found,Δεν βρέθηκαν επιλογές
-No page,No page
-No people or groups added yet,No people or groups added yet
-No primary documents,No primary documents
-No primary documents yet. Add a file to get started.,No primary documents yet. Add a file to get started.
+No page,Δεν υπάρχει σελίδα
+No people or groups added yet,Δεν έχουν προστεθεί ακόμα άτομα ή ομάδες
+No primary documents,Δεν υπάρχουν κύρια έγγραφα
+No primary documents yet. Add a file to get started.,Δεν υπάρχουν ακόμη κύρια έγγραφα. Προσθέστε ένα αρχείο για να ξεκινήσετε.
 No property,Το στοιχείο δεν έχει αυτήν την ιδιότητα
 No References,Δεν υπάρχουν αναφορές
 No References description,Οι αναφορές είναι τμήματα αυτού του εγγράφου που σχετίζονται με άλλα έγγραφα και οντότητες.
-No relationship types,No relationship types
+No relationship types,Δεν υπάρχουν τύποι σχέσεων
 No Relationships,Δεν υπάρχουν σχέσεις
 No Relationships description,Οι σχέσεις είναι δεσμοί μεταξύ οντοτήτων.
-No relationships found,No relationships found
-No relationships to graph,No relationships to graph
-No releases yet,No releases yet
-No results found,No results found
-No supporting files yet. Add a file to get started.,No supporting files yet. Add a file to get started.
+No relationships found,Δεν βρέθηκαν σχέσεις
+No relationships to graph,Δεν υπάρχουν σχέσεις προς απεικόνιση.
+No releases yet,Δεν υπάρχουν ακόμη εκδόσεις
+No results found,Δεν βρέθηκαν αποτελέσματα
+No supporting files yet. Add a file to get started.,Δεν υπάρχουν ακόμη υποστηρικτικά αρχεία. Προσθέστε ένα αρχείο για να ξεκινήσετε.
 No table of contents,Δεν υπάρχει πίνακας περιεχομένων
-No Table of contents,No Table of contents
+No Table of contents,Δεν υπάρχει πίνακας περιεχομένων
 No table of contents description,"Ο πίνακας περιεχομένων εμφανίζει τη δομή του εγγράφου για εύκολη πλοήγηση. Μπορείτε να ξεκινήσετε επιλέγοντας κείμενο στο έγγραφο και κάνοντας κλικ στο κουμπί ""Προσθήκη στον πίνακα περιεχομένων""."
-No templates available to add.,No templates available to add.
+No templates available to add.,Δεν υπάρχουν διαθέσιμα πρότυπα για προσθήκη.
 No text match,Δεν υπάρχει αντιστοιχία κειμένου
 No text match description,Μπορείτε να πληκτρολογήσετε κάτι διαφορετικό στο πλαίσιο αναζήτησης για να λάβετε αποτελέσματα.
-No timelinks added,No timelinks added
-No translation in,No translation in
+No timelinks added,Δεν έχουν προστεθεί χρονικοί σύνδεσμοι
+No translation in,Δεν υπάρχει μετάφραση σε
 No type,Κανένας τύπος
-No uploaded images fit the requirements,No uploaded images match these size requirements. Upload a new image or use an editor to resize an existing file.
-No user or group found,No user or group found
+No uploaded images fit the requirements,Καμία από τις μεταφορτωμένες εικόνες δεν πληροί αυτές τις απαιτήσεις μεγέθους. Μεταφορτώστε μια νέα εικόνα ή χρησιμοποιήστε ένα πρόγραμμα επεξεργασίας για να αλλάξετε το μέγεθος ενός υπάρχοντος αρχείου.
+No user or group found,Δεν βρέθηκε κανένας χρήστης ή ομάδα
 No valid target template available,Δεν υπάρχει διαθέσιμο έγκυρο πρότυπο στόχου
 No value,Χωρίς τιμή
 No Value,Χωρίς τιμή
-No visualization data available.,No visualization data available.
+No visualization data available.,Δεν υπάρχουν διαθέσιμα δεδομένα απεικόνισης.
 "No, cancel","Όχι, ακύρωση"
-no-toc-description,"You can start by selecting text in the document and clicking the ""Add to
-              ToC"" button."
+no-toc-description,"Μπορείτε να ξεκινήσετε επιλέγοντας κείμενο στο έγγραφο και κάνοντας κλικ στο κουμπί
+              «Προσθήκη στον πίνακα περιεχομένων»."
 Non processed,Μη επεξεργασμένο
 Non-labeled,Χωρίς ετικέτα
-Non-latin characters support,Non-latin characters support
-None,None
+Non-latin characters support,Υποστήριξη μη λατινικών χαρακτήρων
+None,Καμία
 Normal view,Κανονική προβολή
 Not already been use as source template in another extractor,Δεν έχει ήδη χρησιμοποιηθεί ως πρότυπο πηγής σε άλλο εξαγωγέα
 Not already been use as target template,Δεν έχει ήδη χρησιμοποιηθεί ως πρότυπο στόχου
 Not Found,Δεν βρέθηκε
-Nothing here yet.,Nothing here yet.
+Nothing here yet.,Δεν υπάρχει τίποτα εδώ ακόμα.
 Nothing selected,Δεν έχει επιλεγεί τίποτα
-Notifications,Notifications
+Notifications,Ειδοποιήσεις
 Obsolete,Παρωχημένο
 obsolete,παρωχημένο
 OCR,OCR
@@ -874,41 +874,41 @@ OCR PDF,OCR PDF
 of,από
 Ok,Εντάξει
 OK,Εντάξει
-On this entity,On this entity
-one character,one character
-Only essential,Only essential
+On this entity,Σε αυτή την οντότητα
+one character,ένας χαρακτήρας
+Only essential,Μόνο τα απαραίτητα
 "Only properties with the same name and configuration in every data source are available
-            for both dimensions.","Only properties with the same name and configuration in every data source are available
-            for both dimensions."
-Only published entities are counted.,Only published entities are counted.
+            for both dimensions.","Μόνο οι ιδιότητες με το ίδιο όνομα και την ίδια διαμόρφωση σε κάθε πηγή δεδομένων είναι διαθέσιμες
+ και για τις δύο διαστάσεις."
+Only published entities are counted.,Λαμβάνονται υπόψη μόνο οι δημοσιευμένες οντότητες.
 "Only templates that are not used as source in any other extractor and are not
-                selected as target in this extractor are available for selection.","Μόνο τα πρότυπα που δεν χρησιμοποιούνται ως πηγή σε κανέναν άλλο εξαγωγέα και δεν έχουν 
+                selected as target in this extractor are available for selection.","Μόνο τα πρότυπα που δεν χρησιμοποιούνται ως πηγή σε κανέναν άλλο εξαγωγέα και δεν έχουν
                 επιλεγεί ως προορισμός σε αυτόν τον εξαγωγέα είναι διαθέσιμα για επιλογή."
 "Only templates with at least one rich text property and one numeric property are
-                available for selection.","Μόνο τα πρότυπα με τουλάχιστον μία ιδιότητα εμπλουτισμένου κειμένου 
+                available for selection.","Μόνο τα πρότυπα με τουλάχιστον μία ιδιότητα εμπλουτισμένου κειμένου
                 και μία αριθμητική ιδιότητα είναι διαθέσιμα για επιλογή."
 "Only the extractor will be deleted, all created entities will remain on the library.","Μόνο ο εξαγωγέας θα διαγραφεί, όλες οι δημιουργημένες οντότητες θα παραμείνουν στη βιβλιοθήκη."
 Open,Άνοιγμα
-Open entity,Open entity
+Open entity,Άνοιγμα οντότητας
 Open group,Άνοιγμα ομάδας
-Open link,Open link
+Open link,Άνοιγμα συνδέσμου
 Open PDF,Άνοιγμα PDF
 Open the two-factor Authenticator app on your device,Ανοίξτε την εφαρμογή πιστοποίησης δύο παραγόντων στη συσκευή σας
 Options,Επιλογές
 or,ή
-or drag and drop here,or drag and drop here
+or drag and drop here,ή σύρετε και αποθέστε εδώ
 or drop your files here.,ή αποθέστε τα αρχεία σας εδώ.
-Or paste a URL,Or paste a URL
+Or paste a URL,Ή επικολλήστε μια διεύθυνση URL
 Order,Παραγγελία
 Other,Άλλα
 other,άλλα
 Other users will be affected by this action!,Αυτή η ενέργεια θα επηρεάσει και άλλους χρήστες.
 Others,Άλλοι
-Outgoing,Outgoing
-p.,p.
+Outgoing,Εξερχόμενο
+p.,σ.
 Page,Σελίδα
 Page not found,Η σελίδα δεν βρέθηκε
-Page published successfully.,Page published successfully.
+Page published successfully.,Η σελίδα δημοσιεύθηκε με επιτυχία.
 Pages,Σελίδες
 Paragrap number extraction property (numeric),Ιδιότητα εξαγωγής αριθμού παραγράφου (αριθμός)
 Paragraph,Παράγραφος
@@ -917,60 +917,60 @@ Paragraph Extractor added,Προστέθηκε εξαγωγέας παραγρά
 Paragraph text extraction property (rich text),Ιδιότητα εξαγωγής κειμένου παραγράφου (εμπλουτισμένο κείμενο)
 Paragraphs,Παράγραφοι
 Paragraphs deleted,Οι παράγραφοι διαγράφηκαν
-parties,parties
+parties,μέρη
 Password,Κωδικός πρόσβασης
 Password + 2fa,Κωδικός πρόσβασης + 2fa
 Password changed success,Ο κωδικός πρόσβασης άλλαξε επιτυχώς
 Password is too long,Ο κωδικός πρόσβασης είναι πολύ μεγάλος
 Passwords do not match,Οι κωδικοί πρόσβασης δεν ταιριάζουν
-Paste an audio or video URL to use it as this property without uploading a file. Press Enter to apply.,Paste an audio or video URL to use it as this property without uploading a file. Press Enter to apply.
-Paste an image URL to use it as this property without uploading a file. Press Enter to apply.,Paste an image URL to use it as this property without uploading a file. Press Enter to apply.
-Paste this tag in a page HTML. The chart uses the page language.,Paste this tag in a page HTML. The chart uses the page language.
-Paste URL,Paste URL
+Paste an audio or video URL to use it as this property without uploading a file. Press Enter to apply.,"Επικολλήστε μια διεύθυνση URL αρχείου ήχου ή βίντεο για να τη χρησιμοποιήσετε ως αυτή την ιδιότητα, χωρίς να ανεβάσετε αρχείο. Πατήστε Enter για να εφαρμόσετε."
+Paste an image URL to use it as this property without uploading a file. Press Enter to apply.,Επικολλήστε τη διεύθυνση URL μιας εικόνας για να τη χρησιμοποιήσετε ως αυτή την ιδιότητα χωρίς να ανεβάσετε αρχείο. Πατήστε Enter για να εφαρμόσετε.
+Paste this tag in a page HTML. The chart uses the page language.,Επικολλήστε αυτήν την ετικέτα στον κώδικα HTML μιας σελίδας. Το γράφημα χρησιμοποιεί τη γλώσσα της σελίδας.
+Paste URL,Επικόλληση URL
 Paste URL here,Επικολλήστε το URL εδώ
 PDF,PDF
 Pending,Σε εκκρεμότητα
-People and groups,People and groups
+People and groups,Άτομα και ομάδες
 per page,ανά σελίδα
 Permission,Άδεια
-Permission level,Permission level
+Permission level,Επίπεδο δικαιωμάτων
 Permission on entities explicitly shared with the user,Άδεια σε οντότητες που έχουν κοινοποιηθεί ρητά στον χρήστη
 Permissions,Άδειες
-Permissions updated,Permissions updated
-Pick a color,Pick a color
-Pick another,Pick another
+Permissions updated,Τα δικαιώματα ενημερώθηκαν.
+Pick a color,Επιλέξτε ένα χρώμα
+Pick another,Επιλέξτε άλλη
 Plain text,Απλό κείμενο
 Please contact an admin for details.,Επικοινωνήστε με έναν διαχειριστή για λεπτομέρειες.
 Please type in,Πληκτρολογήστε
 Please type in letters and numbers from the image to start the export.,Πληκτρολογήστε γράμματα και αριθμούς από την εικόνα για να ξεκινήσει η εξαγωγή.
-Pre-filled from your selection. Edit as needed.,Pre-filled from your selection. Edit as needed.
-Preflight scan completed.,Preflight scan completed.
-Preparing required relationships.,Preparing required relationships.
-Preparing required thesauri values.,Preparing required thesauri values.
+Pre-filled from your selection. Edit as needed.,Έχει συμπληρωθεί εκ των προτέρων με βάση την επιλογή σας. Επεξεργαστείτε το όπως κρίνετε απαραίτητο.
+Preflight scan completed.,Ολοκληρώθηκε ο προκαταρκτικός έλεγχος.
+Preparing required relationships.,Προετοιμασία των απαιτούμενων σχέσεων.
+Preparing required thesauri values.,Προετοιμασία των απαιτούμενων τιμών του θησαυρού όρων.
 Preserve,Preserve
 Preserve Extension,Preserve επέκταση
 Preserve Setup Description,"Εάν γνωρίζετε το URL και το TOKEN του Uwazi σας, κάντε κλικ στον παρακάτω σύνδεσμο και συμπληρώστε τις απαιτούμενες πληροφορίες."
 Press enter to add,Πατήστε Enter για προσθήκη
 Preview,Προεπισκόπηση
-Preview updates automatically (300ms debounce),Preview updates automatically (300ms debounce)
-Preview updates when the JSON is valid.,Preview updates when the JSON is valid.
+Preview updates automatically (300ms debounce),Η προεπισκόπηση ενημερώνεται αυτόματα (καθυστέρηση 300 ms).
+Preview updates when the JSON is valid.,Η προεπισκόπηση ενημερώνεται όταν το JSON είναι έγκυρο.
 Previous,Προηγούμενο
-Primary,Primary
-Primary button,Primary button
-Primary document,Primary document
+Primary,Κύριο
+Primary button,Κύριο κουμπί
+Primary document,Κύριο έγγραφο
 Primary Documents,Κύρια έγγραφα
-Primary documents,Primary documents
+Primary documents,Κύρια έγγραφα
 Priority sorting,Ταξινόμηση προτεραιότητας
 Priority sorting description,"Οι ιδιότητες που έχουν επισημανθεί ως ταξινόμηση προτεραιότητας θα χρησιμοποιούνται ως προεπιλεγμένα κριτήρια ταξινόμησης. Εάν περισσότερες από μία ιδιότητες έχουν επισημανθεί ως ταξινόμηση προτεραιότητας, το σύστημα θα προσπαθήσει να επιλέξει την καταλληλότερη. Κατά την εμφάνιση μεικτών τύπων προτύπων, το σύστημα θα επιλέξει τον καλύτερο συνδυασμό ταξινόμησης προτεραιότητας."
-Private,Private
+Private,Ιδιωτικό
 Private entities description,Προσοχή: οι επιλεγμένες οντότητες θα είναι **ιδιωτικές**. Μόνο οι εξουσιοδοτημένοι χρήστες θα μπορούν να τις δουν.
 Process,Επεξεργασία
 Process extractor,Επεξεργασία εξαγωγέα
 Process selected,Επεξεργασία επιλεγμένων
 Processed,Επεξεργασμένο
-Processed rows,Processed rows
+Processed rows,Επεξεργασμένες σειρές
 Processing,Επεξεργασία σε εξέλιξη
-Progress,Progress
+Progress,Πρόοδος
 Properties,Ιδιότητες
 Properties from other templates in the collection using the same label,Ιδιότητες από άλλα πρότυπα της συλλογής που χρησιμοποιούν την ίδια ετικέτα
 Properties from other templates in the collection using the same label.,Ιδιότητες από άλλα πρότυπα της συλλογής που χρησιμοποιούν την ίδια ετικέτα.
@@ -997,44 +997,44 @@ Property type,Τύπος ιδιότητας
 Protection,Προστασία
 ProTip!,Συμβουλή:
 "Provide chart-ready data as JSON. Each series needs id, label, and a points array with
-              label and value per row. Optional key on points helps stable colors.","Provide chart-ready data as JSON. Each series needs id, label, and a points array with
-              label and value per row. Optional key on points helps stable colors."
+              label and value per row. Optional key on points helps stable colors.","Παρέχετε δεδομένα έτοιμα για γράφημα σε μορφή JSON. Κάθε σειρά πρέπει να περιλαμβάνει αναγνωριστικό (id), ετικέτα (label) και έναν πίνακα σημείων (points) με
+ετικέτα και τιμή σε κάθε σειρά. Ένα προαιρετικό κλειδί (key) στα σημεία βοηθά στη σταθεροποίηση των χρωμάτων."
 Public entities description,Προσοχή: οι επιλεγμένες οντότητες θα είναι **δημόσιες**. Οποιοσδήποτε θα μπορεί να τις δει.
 Public form settings description,Εδώ μπορείτε να διαμορφώσετε τον προορισμό της δημόσιας φόρμας και τα πρότυπα που περιλαμβάνονται στη λίστα επιτρεπόμενων προτύπων.
 Public Form submit URL,URL δημόσιας φόρμας υποβολής
 Public form URL description,"Εάν έχετε διαμορφώσει μια δημόσια φόρμα και θέλετε μια διαφορετική συλλογή Uwazi να λάβει τις υποβολές, εισαγάγετε το URL της εδώ."
 Public form whitelist description,"Εάν επιθυμείτε να συμπεριλάβετε δημόσιες φόρμες στις σελίδες σας, πρέπει να προσθέσετε στη λίστα επιτρεπόμενων προτύπων τα αναγνωριστικά προτύπων για τα οποία αναμένεται η χρήση δημόσιων φορμών."
-Public instance,Public instance
+Public instance,Δημόσια εγκατάσταση
 Publish,Δημοσίευση
-Publish release,Publish release
+Publish release,Δημοσίευση έκδοσης
 Published,Δημοσιευμένα
-Published and unpublished entities are counted.,Published and unpublished entities are counted.
+Published and unpublished entities are counted.,Λαμβάνονται υπόψη τόσο οι δημοσιευμένες όσο και οι αδημοσίευτες οντότητες.
 QR Code,Κωδικός QR
 Query,Ερώτημα
-Queued,Queued
+Queued,Σε αναμονή
 RAW,RAW
 "Re-runs the query against your current collection. Use this after importing
-                        or editing entities—not when changing chart settings (save handles that).","Re-runs the query against your current collection. Use this after importing
-                        or editing entities—not when changing chart settings (save handles that)."
+                        or editing entities—not when changing chart settings (save handles that).","Εκτελεί εκ νέου την ερώτηση στην τρέχουσα συλλογή σας. Χρησιμοποιήστε αυτή τη λειτουργία μετά την εισαγωγή
+ ή την επεξεργασία οντοτήτων — όχι όταν αλλάζετε τις ρυθμίσεις του γραφήματος (αυτό το χειρίζεται η αποθήκευση)."
 Re-uploaded document,Επαναφορτωμένο έγγραφο
-Ready,Ready
+Ready,Έτοιμο
 Receiving email,Λήψη email
 Receiving email description,"Εάν διαθέτετε φόρμα επικοινωνίας, αυτή είναι η διεύθυνση email στην οποία θα λαμβάνονται οι υποβολές της φόρμας."
-Recommended,Recommended
+Recommended,Συνιστάται
 Reference,Αναφορά
 References,Αναφορές
 references,Αναφορές
-Refresh,Refresh
+Refresh,Ανανέωση
 "Refresh manually when you have added data and cannot wait for the next
-                        scheduled run.","Refresh manually when you have added data and cannot wait for the next
-                        scheduled run."
-Refresh mode,Refresh mode
+                        scheduled run.","Κάντε ανανέωση χειροκίνητα όταν έχετε προσθέσει δεδομένα και δεν μπορείτε να περιμένετε την επόμενη
+ προγραμματισμένη εκτέλεση."
+Refresh mode,Λειτουργία ανανέωσης
 Reject,Απόρριψη
-Reject all,Reject all
-Related entities created,Related entities created
+Reject all,Απόρριψη όλων
+Related entities created,Δημιουργία συνδεδεμένων οντοτήτων
 Relation type,Τύπος σχέσης
 Relationship,Σχέση
-Relationship created,Relationship created
+Relationship created,Δημιουργήθηκε σχέση
 Relationship Type,Τύπος σχέσης
 Relationship type,Τύπος σχέσης
 Relationship type created successfully.,Ο τύπος σχέσης δημιουργήθηκε με επιτυχία.
@@ -1044,18 +1044,18 @@ Relationship types,Τύποι σχέσεων
 relationships,σχέσεις
 Relationships,Σχέσεις
 Relationships saved,Οι σχέσεις αποθηκεύτηκαν
-relationships? This action cannot be undone.,relationships? This action cannot be undone.
+relationships? This action cannot be undone.,σχέσεις; Αυτή η ενέργεια δεν μπορεί να αναιρεθεί.
 RelationType saved,Ο τύπος σχέσης αποθηκεύτηκε
-Release message,Release message
-Relevance,Relevance
-remaining,remaining
+Release message,Ανακοίνωση έκδοσης
+Relevance,Συνάφεια
+remaining,υπόλοιπο
 remaining files,υπόλοιπα αρχεία
 Remote Server Unreachable,Απομακρυσμένος διακομιστής μη προσβάσιμος
 Remove,Αφαίρεση
-Remove from connection,Remove from connection
+Remove from connection,Αποσύνδεση
 Remove from training set,Αφαίρεση από το σύνολο εκπαίδευσης
 remove icon,αφαιρέση εικονίδιου
-Remove icon,Remove icon
+Remove icon,Κατάργηση εικονιδίου
 Removed language,Αφαίρεση γλώσσας
 Rename,Μετονομασία
 Renamed attachment,Το συνημμένο αρχείο μετονομάστηκε
@@ -1064,91 +1064,91 @@ Request id #,Αίτηση id #
 Request token,Αίτηση token
 Required,Απαιτούμενο
 Required property,Απαιτούμενη ιδιότητα
-Required relationships were prepared.,Required relationships were prepared.
-Required thesauri values were prepared.,Required thesauri values were prepared.
+Required relationships were prepared.,Προετοιμάστηκαν οι απαιτούμενες σχέσεις.
+Required thesauri values were prepared.,Προετοιμάστηκαν οι απαιτούμενες τιμές του θησαυρού όρων.
 Reset,Επαναφορά
 Reset 2FA,Επαναφορά 2FA
 Reset default translation,Επαναφορά προεπιλεγμένης μετάφρασης
 Reset language,Επαναφορά γλώσσας
 Reset Password,Επαναφορά κωδικού πρόσβασης
 Reset passwords,Επαναφορά κωδικών πρόσβασης
-Resize panels,Resize panels
-Restore,Restore
-Restore previous version,Restore previous version
+Resize panels,Αλλαγή μεγέθους πλαισίων
+Restore,Επαναφορά
+Restore previous version,Επαναφορά προηγούμενης έκδοσης
 Restricted,Περιορισμένα
-Retryable,Retryable
-Retrying,Retrying
+Retryable,Μπορεί να επαναληφθεί
+Retrying,Επανάληψη προσπάθειας
 Return to login,Επιστροφή στη σύνδεση
 Review,Προεπισκόπηση
 Reviewed,Προεπισκόπηθηκε
 Role,Ρόλος
-Room around every row,Room around every row
+Room around every row,Περισσότερος χώρος γύρω από κάθε σειρά
 Route,Διαδρομή
 Row,Σειρά
-Row density,Row density
-Rows failed,Rows failed
-Rows processed,Rows processed
+Row density,Πυκνότητα σειρών
+Rows failed,Αποτυχία σειρών
+Rows processed,Επεξεργασμένες σειρές
 Sample,Δείγμα
 Satellite,Δορυφόρος
 Save,Αποθήκευση
 Save & Preview,Αποθήκευση & προεπισκόπηση
 Save changes,Αποθήκευση αλλαγών
 Save password,Αποθήκευση κωδικού πρόσβασης
-Save the visualization before refreshing.,Save the visualization before refreshing.
-Save the visualization to get embed code.,Save the visualization to get embed code.
+Save the visualization before refreshing.,Αποθηκεύστε την απεικόνιση πριν κάνετε ανανέωση.
+Save the visualization to get embed code.,Αποθηκεύστε την απεικόνιση για να λάβετε τον κώδικα ενσωμάτωσης.
 Save your work to make change permanent,Αποθηκεύστε την εργασία σας για να κάνετε την αλλαγή μόνιμη
 Saved successfully.,Αποθηκεύτηκε με επιτυχία.
-Saved with warnings,Saved with warnings
-Saving,Saving
-Saving...,Saving...
-Scanning,Scanning
-Scanning rows before import.,Scanning rows before import.
-Schedule,Schedule
-Schedules run in UTC (Coordinated Universal Time).,Schedules run in UTC (Coordinated Universal Time).
+Saved with warnings,Αποθηκεύτηκε με προειδοποιήσεις.
+Saving,Αποθήκευση
+Saving...,Αποθήκευση...
+Scanning,Σάρωση
+Scanning rows before import.,Σάρωση σειρών πριν από την εισαγωγή.
+Schedule,Πρόγραμμα
+Schedules run in UTC (Coordinated Universal Time).,Τα προγράμματα ακολουθούν το UTC (Συντονισμένη Παγκόσμια Ώρα).
 Search,Αναζήτηση
-"Search  •  AND, OR, NOT, ""exact"", wild*","Search  •  AND, OR, NOT, ""exact"", wild*"
-Search by title,Search by title
-Search entities...,Search entities...
-Search entities…,Search entities…
+"Search  •  AND, OR, NOT, ""exact"", wild*","Αναζήτηση  •  AND, OR, NOT, «ακριβής», μπαλαντέρ*"
+Search by title,Αναζήτηση κατά τίτλο
+Search entities...,Αναζήτηση οντοτήτων...
+Search entities…,Αναζήτηση οντοτήτων…
 Search item,Αναζήτηση στοιχείου
 Search related entities or documents,Αναζήτηση σχετικών οντοτήτων ή εγγράφων
-Search relationships,Search relationships
+Search relationships,Αναζήτηση σχέσεων
 Search relevance,Συνάφεια αναζήτησης
 Search text,Aναζήτηση κείμενου
-Search text description,Πληκτρολογήστε κάτι στο πλαίσιο αναζήτησης για να λάβετε αποτελέσματα.
-Search this document,Search this document
+Search text description,Πληκτρολογήστε κάτι στο πλαίσαναζήτησης για να λάβετε αποτελέσματα.
+Search this document,Αναζήτηση σε αυτό το έγγραφο
 Search Tips,Συμβουλές αναζήτησης
-Search tips,Search tips
-Search Tips: boolean,"AND, OR και NOT για αναζητήσεις boolean. Δηλαδή ""status AND women NOT Nicaragua"" θα αντιστοιχίσει οτιδήποτε περιέχει και τις δύο λέξεις status και women, και κατ' ανάγκη δεν περιέχει τη λέξη Nicaragua."
-Search Tips: exact term,"Ακριβής αντιστοιχία όρου περικλείοντας τη φράση αναζήτησης με εισαγωγικά. Δηλαδή ""Costa Rica"" θα δώσει διαφορετικά αποτελέσματα σε σύγκριση με Costa Rica χωρίς εισαγωγικά."
+Search tips,Συμβουλές αναζήτησης
+Search Tips: boolean,"AND, OR και NOT για αναζητήσεις boolean. Δηλαδή ""κατάσταση AND γυναίκες NOT Νικαράγουα"" θα αντιστοιχίσει οτιδήποτε περιέχει και τις δύο λέξεις κατάσταση και γυναίκες, και κατ' ανάγκη δεν περιέχει τη λέξη Νικαράγουα."
+Search Tips: exact term,"Ακριβής αντιστοιχία όρου περικλείοντας τη φράση αναζήτησης με εισαγωγικά. Δηλαδή ""Κόστα Ρίκα"" θα δώσει διαφορετικά αποτελέσματα σε σύγκριση με Κόστα Ρίκα χωρίς εισαγωγικά."
 Search Tips: one char wildcard,"? για μπαλαντέρ ενός χαρακτήρα. Δηλαδή: ""198?"" θα αντιστοιχίσει από το 1980 έως το 1989 και επίσης 198a, 198b, κ.λπ."
-Search Tips: proximity,"~ για αναζητήσεις εγγύτητας. Δηλαδή: ""the status""~5 θα βρει οτιδήποτε έχει ""the"" και ""status"" σε απόσταση 5 λέξεων, όπως ""the procedural status"", ""the specific legal status""."
-Search Tips: wildcard,"Χρησιμοποιήστε * για αναζήτηση με μπαλαντέρ. Δηλαδή: ""juris*"" θα αντιστοιχίσει λέξεις όπως jurisdiction, jurisdictional, jurists, jurisprudence, κ.λπ."
-Search title & metadata,Search title & metadata
-Searching...,Searching...
-Secondary button,Secondary button
+Search Tips: proximity,"~ για αναζητήσεις εγγύτητας. Δηλαδή: ""η κατάσταση""~5 θα βρει οτιδήποτε έχει ""η"" και ""κατάσταση"" σε απόσταση 5 λέξεων, όπως ""η διαδικαστική κατάσταση"", ""η συγκεκριμένη νομική κατάσταση""."
+Search Tips: wildcard,"Χρησιμοποιήστε * για αναζήτηση με μπαλαντέρ. Δηλαδή: ""δικαιο*"" θα αντιστοιχίσει λέξεις όπως δικαιοδοσία, δικαιοδοτικό, δικαιολογητικό, δικαιολογία, κ.λπ."
+Search title & metadata,Αναζήτηση τίτλου και μεταδεδομένων
+Searching...,Αναζήτηση...
+Secondary button,Δευτερεύον κουμπί
 Secret keys,Μυστικά κλειδιά
 Security,Ασφάλεια
 Select,Επιλογή
 Select & Search,Επιλογή & Αναζήτηση
-"Select a dimension to see supported chart types, or use Metric for a total count.","Select a dimension to see supported chart types, or use Metric for a total count."
-Select a document to connect to a specific paragraph,Select a document to connect to a specific paragraph
-Select a file,Select a file
+"Select a dimension to see supported chart types, or use Metric for a total count.",Επιλέξτε μια διάσταση για να δείτε τους υποστηριζόμενους τύπους γραφημάτων ή χρησιμοποιήστε το «Μετρικό» για τον συνολικό αριθμό.
+Select a document to connect to a specific paragraph,Επιλέξτε ένα έγγραφο για να το συνδέσετε με μια συγκεκριμένη παράγραφο
+Select a file,Επιλέξτε ένα αρχείο
 Select all,Επιλογή όλων
-Select an existing image,Select an existing image
+Select an existing image,Επιλέξτε μια υπάρχουσα εικόνα
 Select favicon image,Επιλογή εικόνας favicon
 Select files on your device,Επιλογή αρχείων στη συσκευή σας
 Select from computer,Επιλογή από τον υπολογιστή
-Select image,Select image
-Select media,Select media
-Select relationship,Select relationship
+Select image,Επιλογή εικόνας
+Select media,Επιλογή μέσων
+Select relationship,Επιλογή σχέσης
 Select relationship type,Επιλογή τύπου σχέσης
 Select site logo image,Επιλογή εικόνας λογότυπου ιστότοπου
-Select target document,Select target document
-Select target entity,Select target entity
+Select target document,Επιλογή εγγράφου-στόχου
+Select target entity,Επιλογή οντότητας-στόχου
 Select target paragraph,Επιλογή παράγραφου-στόχου
-Select text in target document,Select text in target document
-select text or a value,select text or a value
+Select text in target document,Επιλογή κειμένου στο έγγραφο προορισμού
+select text or a value,επιλέξτε κείμενο ή μια τιμή
 Select the template to store the extracted paragraphs.,Επιλέξτε το πρότυπο για την αποθήκευση των εξαγόμενων παραγράφων
 Select the template with the source documents.,Επιλέξτε το πρότυπο με τα έγγραφα προέλευσης.
 Select...,Επιλέξτε...
@@ -1162,7 +1162,7 @@ Send recovery email,Αποστολή email ανάκτησης
 Sending email,Αποστολή email
 Sending email description,"Αυτή είναι η διεύθυνση email που θα εμφανίζεται ως αποστολέας όταν αποστέλλεται ένα μήνυμα email από την Uwazi συλλογή σας σε εγγεγραμμένους χρήστες. Η προεπιλεγμένη διεύθυνση είναι *uwazi@uwazi.io*. Μπορείτε να ορίσετε μια προσαρμοσμένη διεύθυνση, εισάγοντας εδώ τη διεύθυνση email που επιθυμείτε."
 Sending labeled data,Αποστολή επισημασμένων δεδομένων
-Series,Series
+Series,Σειρά
 Services,Υπηρεσίες
 Set as default,Ορισμός ως προεπιλογή
 Set default language,Ορισμός προεπιλεγμένης γλώσσας
@@ -1170,8 +1170,8 @@ Set default template,Ορισμός προεπιλεγμένου προτύπο�
 Set the default starting point for your geolocation properties.,Ορίστε το προεπιλεγμένο σημείο εκκίνησης για τις ιδιότητες γεωγραφικής θέσης.
 Settings,Ρυθμίσεις
 settings,ρυθμίσεις
-Settings navigation active background,Settings navigation active background
-Settings sidebar background,Settings sidebar background
+Settings navigation active background,Πλοήγηση στις ρυθμίσεις – ενεργό φόντο
+Settings sidebar background,Φόντο της πλευρικής γραμμής ρυθμίσεων
 Settings updated,Οι ρυθμίσεις ενημερώθηκαν
 Share,Κοινοποίηση
 Share edit access with other users,Κοινοποίηση πρόσβασης επεξεργασίας με άλλους χρήστες
@@ -1181,19 +1181,19 @@ Shared as editor,Κοινοποιήθηκε ως επιμελητής
 Shared as viewer,Κοινοποιήθηκε ως θεατής
 Show actions,Εμφάνιση ενεργειών
 Show cookie policy,Εμφάνιση πολιτικής cookie
-Show details,Show details
+Show details,Εμφάνιση λεπτομερειών
 Show filters,Εμφάνιση φίλτρων
 Show in cards,Εμφάνιση σε κάρτες
-Show information,Show information
-Show less,Show less
+Show information,Εμφάνιση πληροφοριών
+Show less,Εμφάνιση λιγότερων
 Show more,Εμφάνιση περισσότερων
-Show remaining in panel,Show remaining in panel
+Show remaining in panel,Εμφάνιση του υπολοίπου στο πλαίσιο
 Show toolbar,Εμφάνιση γραμμής εργαλείων
 Showing,Εμφάνιση
-Showing the top,Showing the top
+Showing the top,Εμφάνιση των κορυφαίων
 shown of,εμφανιζόμενα από
 Sign in,Είσοδος
-Simple mode,Simple mode
+Simple mode,Απλή λειτουργία
 Single relationships must have a hub,Οι μεμονωμένες σχέσεις πρέπει να έχουν έναν κόμβο
 Site logo description,"Το λογότυπο εμφανίζεται στη γραμμή επάνω δίπλα στο όνομα της συλλογής σας (περίπου 200×32 εικονοστοιχεία).
 
@@ -1202,28 +1202,28 @@ Site logo description,"Το λογότυπο εμφανίζεται στη γρ�
 Site logo no images hint,"Δεν υπάρχουν ακόμα αρχεία εικόνας στις Προσαρμοσμένες μεταφορτώσεις. Προσθέστε πρώτα εικόνες PNG, SVG ή JPEG εκεί."
 Size,Μέγεθος
 Skip to main content,Μετάβαση στο κύριο περιεχόμενο
-Some tasks may take a while. Bert will reply when it's done.,Some tasks may take a while. Bert will reply when it's done.
+Some tasks may take a while. Bert will reply when it's done.,Ορισμένες εργασίες μπορεί να διαρκέσουν λίγο. Ο Bert θα απαντήσει όταν ολοκληρωθούν.
 Something went wrong,Κάτι πήγε στραβά
 Sort,Ταξινόμηση
 Sort ascending,Ταξινόμηση αύξουσα
 Sort descending,Ταξινόμηση φθίνουσα
-Sort:,Sort:
+Sort:,Ταξινόμηση:
 sorted by,Ταξινόμηση κατά
 Source,Πηγή
-Source entity,Source entity
-Source page,Source page
+Source entity,Οντότητα-πηγή
+Source page,Σελίδα-πηγή
 Source relationship type,Τύπος σχέσης πηγής
 Source template,Πρότυπο πηγής
 Source Template,Πρότυπο πηγής
 Source's role in the relationship Source-Target.,Ο ρόλος της πηγής στη σχέση πηγή-στόχος.
-Stage,Stage
-stat*,stat*
+Stage,Στάδιο
+stat*,στατ*
 State,Πολιτεία
 Statistics,Στατιστικά στοιχεία
 Stats & Filters,Στατιστικά & φίλτρα
 Status,Κατάσταση
-status AND women NOT Nicaragua,status AND women NOT Nicaragua
-Stop filling,Stop filling
+status AND women NOT Nicaragua,κατάσταση AND γυναίκες NOT Νικαράγουα
+Stop filling,Διακοπή συμπλήρωσης
 Storage,Αποθήκευση
 Streets,Δρόμοι
 Strict mode,Αυστηρή λειτουργία
@@ -1238,11 +1238,11 @@ Suggestion:,Πρόταση:
 Suggestions,Προτάσεις
 suggestions,προτάσεις
 Suggestions sent,Οι προτάσεις στάλθηκαν
-Suggestions updated,Suggestions updated
-Supported chart types for manual data,Supported chart types for manual data
-Supported chart types for this configuration,Supported chart types for this configuration
-Supporting,Supporting
-Supporting file,Supporting file
+Suggestions updated,Οι προτάσεις ενημερώθηκαν.
+Supported chart types for manual data,Υποστηριζόμενοι τύποι γραφημάτων για χειροκίνητα δεδομένα
+Supported chart types for this configuration,Υποστηριζόμενοι τύποι γραφημάτων για αυτή τη διαμόρφωση
+Supporting,Υποστηρικτικό
+Supporting file,Υποστηρικτικό αρχείο
 Supporting files,Υποστηρικτικά αρχεία
 Synced template,Συγχρονισμένο πρότυπο
 Synced Template,Συγχρονισμένο πρότυπο
@@ -1251,53 +1251,53 @@ System translations,Μεταφράσεις συστήματος
 Table,Πίνακας
 Table of Contents,Πίνακας περιεχομένων
 Table of contents,Πίνακας περιεχομένων
-Table of contents saved successfully,Table of contents saved successfully
+Table of contents saved successfully,Ο πίνακας περιεχομένων αποθηκεύτηκε με επιτυχία
 Table view,Προβολή πίνακα
-Target entity,Target entity
-Target entity type,Target entity type
+Target entity,Οντότητα-στόχος
+Target entity type,Τύπος οντότητας-στόχου
 Target relationship type,Τύπος σχέσης στόχου
 Target Template,Πρότυπο στόχου
 Target template,Πρότυπο στόχου
 Target's role in the relationship Source-Target.,Ο ρόλος του στόχου στη σχέση πηγή-στόχος.
-Target:,Target:
-Tasks,Tasks
+Target:,Στόχος:
+Tasks,Εργασίες
 Template,Πρότυπο
 Template changes are being applied to all related entities.,Οι αλλαγές προτύπων εφαρμόζονται σε όλες τις σχετικές οντότητες.
-Template color,Template color
+Template color,Χρώμα προτύπου
 "Template colors apply when comparing data sources or when the dimension is entity
-              type. Otherwise the chart palette is used as fallback.","Template colors apply when comparing data sources or when the dimension is entity
-              type. Otherwise the chart palette is used as fallback."
+              type. Otherwise the chart palette is used as fallback.","Τα χρώματα του προτύπου εφαρμόζονται κατά τη σύγκριση πηγών δεδομένων ή όταν η διάσταση είναι τύπου οντότητας.
+Σε κάθε άλλη περίπτωση, χρησιμοποιείται η παλέτα του γραφήματος ως εναλλακτική λύση."
 Template conflict,Σύγκρουση προτύπου
 Template name,Όνομα προτύπου
 Template name already exists,Το όνομα του προτύπου υπάρχει ήδη
 Template processing completed.,Η επεξεργασία του προτύπου ολοκληρώθηκε.
 Template saved successfully.,Το πρότυπο αποθηκεύτηκε με επιτυχία.
-Template with a long number of entities,"Το πρότυπο άλλαξε και οι συσχετισμένες οντότητες θα επαναευρετηριαστούν. 
+Template with a long number of entities,"Το πρότυπο άλλαξε και οι συσχετισμένες οντότητες θα επαναευρετηριαστούν.
                                         Αυτή η διαδικασία μπορεί να διαρκέσει αρκετά λεπτά. Θέλετε να συνεχίσετε;"
 Template(s),Πρότυπο(α)
 Template(s) deleted successfully.,Πρότυπο(α) διαγράφηκαν επιτυχώς.
 Templates,Πρότυπα
 Templates:,Πρότυπα:
 Text,Κείμενο
-Text references limit warning,Οι αναφορές κειμένου περιορίζονται σε μέγιστο 300.
+Text references limit warning,Οι αναφορές κειμένου περιορίζονται προσωρινά σε μέγιστο 300. Εργαζόμαστε αυτή τη στιγμή για την επίλυση του ζητήματος.
 "The process of extracting the paragraphs has successfully started. Check the Status
-              column for updates on the process.","Η διαδικασία εξαγωγής των παραγράφων ξεκίνησε επιτυχώς. Ελέγξτε τη στήλη 
+              column for updates on the process.","Η διαδικασία εξαγωγής των παραγράφων ξεκίνησε επιτυχώς. Ελέγξτε τη στήλη
               Κατάσταση για ενημερώσεις σχετικά με τη διαδικασία."
 The request could not be processed.,Το αίτημα δεν μπόρεσε να επεξεργαστεί.
 The source of this template is a sync.,Η πηγή αυτού του προτύπου είναι συγχρονισμός.
 The token does not validate against the secret key,Το token δεν επικυρώνεται με το μυστικό κλειδί
 The token does not validate against the secret key!,Το token δεν επικυρώνεται με το μυστικό κλειδί!
-"the words together, in that order","the words together, in that order"
-the words within 5 of each other,the words within 5 of each other
-Theme and branding,Theme and branding
-Theme colors,Theme colors
-Theme colors imported,Theme colors imported
-Theme favicon,Theme favicon
-Theme instance file invalid,Theme instance file invalid
-Theme logotype,Theme logotype
-Theme presets,Theme presets
-Theme preview,Theme preview
-Then by,Then by
+"the words together, in that order","τις λέξεις μαζί, με αυτή τη σειρά"
+the words within 5 of each other,οι λέξεις που απέχουν μεταξύ τους έως 5
+Theme and branding,Θέμα και εταιρική ταυτότητα
+Theme colors,Χρώματα θέματος
+Theme colors imported,Τα χρώματα θέματος εισήχθησαν.
+Theme favicon,Εικονίδιο θέματος
+Theme instance file invalid,Το αρχείο της παρουσίας του θέματος δεν είναι έγκυρο
+Theme logotype,Λογότυπο θέματος
+Theme presets,Προεπιλογές θεμάτων
+Theme preview,Προεπισκόπηση θέματος
+Then by,Στη συνέχεια κατά
 There are no pages enabled for entity view,Δεν υπάρχουν σελίδες ενεργοποιημένες για την προβολή οντότητας
 There are no untranslated terms,Δεν υπάρχουν αμετάφραστοι όροι
 Thesauri,Θησαυροί
@@ -1307,7 +1307,7 @@ Thesauri name,Όνομα θησαυρού
 thesauri new group desc,"Κάθε στοιχείο που δημιουργείται θα ανήκει σε αυτήν την ομάδα. Μόλις πληκτρολογήσετε το όνομα του πρώτου στοιχείου, μια νέα φόρμα στοιχείου θα εμφανιστεί από κάτω, ώστε να μπορείτε να συνεχίσετε να προσθέτετε όσα θέλετε."
 thesauri new item desc,"Μόλις πληκτρολογήσετε το όνομα του πρώτου στοιχείου, μια νέα φόρμα στοιχείου θα εμφανιστεί από κάτω, ώστε να μπορείτε να συνεχίσετε να προσθέτετε όσα θέλετε."
 Thesauri updated.,Ο θησαυρός ενημερώθηκε.
-Thesauri values created,Thesauri values created
+Thesauri values created,Δημιουργία τιμών θησαυρού όρων
 Thesaurus,Θησαυρός
 Thesaurus created successfully.,Ο θησαυρός δημιουργήθηκε με επιτυχία.
 Thesaurus name,Όνομα θησαυρού
@@ -1315,67 +1315,67 @@ Thesaurus name already exists,Το όνομα του θησαυρού υπάρχ
 Thesaurus saved,Ο Θησαυρός αποθηκεύτηκε.
 This action may take some time while we add the extra language to the entire collection.,Αυτή η ενέργεια μπορεί να πάρει κάποιο χρόνο καθώς προσθέτουμε την επιπλέον γλώσσα σε ολόκληρη τη συλλογή.
 This area allows you to append custom Javascript to the page. This opens up a new universe of possibilities.,Αυτή η περιοχή σας επιτρέπει να προσθέσετε προσαρμοσμένο Javascript στη σελίδα. Αυτό ανοίγει ένα νέο σύμπαν δυνατοτήτων.
-This chart type cannot display the current data.,This chart type cannot display the current data.
+This chart type cannot display the current data.,Αυτός ο τύπος γραφήματος δεν μπορεί να εμφανίσει τα τρέχοντα δεδομένα.
 "This chart type cannot display the current data. Pick a supported type in the Chart
-              tab.","This chart type cannot display the current data. Pick a supported type in the Chart
-              tab."
+              tab.","Αυτός ο τύπος γραφήματος δεν μπορεί να εμφανίσει τα τρέχοντα δεδομένα. Επιλέξτε έναν υποστηριζόμενο τύπο στην καρτέλα
+ «Γράφημα»."
 "This chart type has no extra options. Select another chart type above if you need
-            legend, labels, or data filters.","This chart type has no extra options. Select another chart type above if you need
-            legend, labels, or data filters."
+            legend, labels, or data filters.","Αυτός ο τύπος γραφήματος δεν διαθέτει επιπλέον επιλογές. Επιλέξτε έναν άλλο τύπο γραφήματος από την παραπάνω λίστα, αν χρειάζεστε
+ λεζάντα, ετικέτες ή φίλτρα δεδομένων."
 This content is automatically generated,Αυτό το περιεχόμενο δημιουργείται αυτόματα
-This data visualization name already exists. Enter a unique name.,This data visualization name already exists. Enter a unique name.
+This data visualization name already exists. Enter a unique name.,Αυτό το όνομα οπτικοποίησης δεδομένων υπάρχει ήδη. Εισάγετε ένα μοναδικό όνομα.
 "This entity has no document, you probably want to see the metadata","Αυτή η οντότητα δεν έχει έγγραφο, πιθανώς θέλετε να δείτε τα μεταδεδομένα"
 This entity is restricted from public view.,Αυτή η οντότητα δεν είναι ορατή στο κοινό.
 This field is required,Αυτό το πεδίο είναι υποχρεωτικό
-This file could not be displayed. Try refreshing the page.,This file could not be displayed. Try refreshing the page.
-This file could not be opened. It may be corrupted or not a valid PDF.,This file could not be opened. It may be corrupted or not a valid PDF.
+This file could not be displayed. Try refreshing the page.,Δεν ήταν δυνατή η εμφάνιση αυτού του αρχείου. Δοκιμάστε να ανανεώσετε τη σελίδα.
+This file could not be opened. It may be corrupted or not a valid PDF.,Δεν ήταν δυνατό να ανοιχτεί αυτό το αρχείο. Ίσως να είναι κατεστραμμένο ή να μην είναι έγκυρο αρχείο PDF.
 "This file is currently unavailable. Please contact your administrator if the issue
-                  persists.","This file is currently unavailable. Please contact your administrator if the issue
-                  persists."
+                  persists.","Αυτό το αρχείο δεν είναι διαθέσιμο προς το παρόν. Παρακαλούμε επικοινωνήστε με τον διαχειριστή σας εάν το πρόβλημα
+εξακολουθεί να υπάρχει."
 "This file is currently unavailable. Please contact your administrator if the issue
-              persists.","This file is currently unavailable. Please contact your administrator if the issue
-              persists."
+              persists.","Αυτό το αρχείο δεν είναι διαθέσιμο προς το παρόν. Παρακαλούμε επικοινωνήστε με τον διαχειριστή σας εάν το πρόβλημα
+ εξακολουθεί να υπάρχει."
 This file type is not supported on media fields,Αυτός ο τύπος αρχείου δεν υποστηρίζεται σε πεδία πολυμέσων
 This group is empty,Αυτή η ομάδα είναι κενή
-This import is waiting in queue.,This import is waiting in queue.
+This import is waiting in queue.,Αυτή η εισαγωγή βρίσκεται σε αναμονή.
 This label already exists in this template,Αυτή η ετικέτα υπάρχει ήδη σε αυτό το πρότυπο
-This page does not need Markdown,This page does not need Markdown
+This page does not need Markdown,Αυτή η σελίδα δεν απαιτεί χρήση Markdown
 "This page uses HTML only (Markdown is not processed). You can embed maps, charts, entity
-          lists, and other components.","This page uses HTML only (Markdown is not processed). You can embed maps, charts, entity
-          lists, and other components."
+          lists, and other components.","Αυτή η σελίδα χρησιμοποιεί αποκλειστικά HTML (το Markdown δεν υποβάλλεται σε επεξεργασία). Μπορείτε να ενσωματώσετε χάρτες, γραφήματα,
+ λίστες οντοτήτων και άλλα στοιχεία."
 This property can not be deleted,Αυτή η ιδιότητα δεν μπορεί να διαγραφεί
 This property will appear in the library cards as part of the basic info.,Αυτή η ιδιότητα θα εμφανίζεται στις κάρτες βιβλιοθήκης ως μέρος των βασικών πληροφοριών.
 This property will be shown using all the width available.,Αυτή η ιδιότητα θα εμφανίζεται χρησιμοποιώντας όλο το διαθέσιμο πλάτος.
 This property will be shown without the label,Αυτή η ιδιότητα θα εμφανίζεται χωρίς την ετικέτα
 This property will be the default filter in the library for this template.,Αυτή η ιδιότητα θα είναι το προεπιλεγμένο φίλτρο στη βιβλιοθήκη για αυτό το πρότυπο.
 "This property will be used for filtering the library results. When properties match in equal name and field type with other entity types, they will be combined for filtering.","Αυτή η ιδιότητα θα χρησιμοποιηθεί για το φιλτράρισμα των αποτελεσμάτων βιβλιοθήκης. Όταν οι ιδιότητες ταιριάζουν σε όνομα και τύπο πεδίου με άλλους τύπους οντοτήτων, θα συνδυαστούν για φιλτράρισμα."
-This search could not be completed. Try again later.,This search could not be completed. Try again later.
+This search could not be completed. Try again later.,Η αναζήτηση δεν μπόρεσε να ολοκληρωθεί. Δοκιμάστε ξανά αργότερα.
 "This site uses cookies for language preferences and analytics. Session cookies are only
-            set when you log in.","This site uses cookies for language preferences and analytics. Session cookies are only
-            set when you log in."
+            set when you log in.","Αυτός ο ιστότοπος χρησιμοποιεί cookies για τις προτιμήσεις γλώσσας και την ανάλυση δεδομένων. Τα cookies περιόδου λειτουργίας
+ ορίζονται μόνο όταν συνδέεστε."
 This table of contents was automatically created by the system.,Αυτός ο πίνακας περιεχομένων δημιουργήθηκε αυτόματα από το σύστημα.
 this template,αυτό το πρότυπο
 This template is in use by existing entities and cannot be deleted.,Αυτό το πρότυπο χρησιμοποιείται από υπάρχουσες οντότητες και δεν μπορεί να διαγραφεί.
-Thumbnail,Thumbnail
+Thumbnail,Μικρογραφία
 Time,Χρόνος
-Time (UTC),Time (UTC)
-Timeline,Timeline
+Time (UTC),Ώρα (UTC)
+Timeline,Χρονολόγιο
 Timelinks,Χρονοσυνδέσμος
 Timestamp,Χρονοσφραγίδα
-tips,tips
+tips,συμβουλές
 Title,Τίτλος
 To,Έως
 "To complete the account creation process, please create a password for your account","Για να ολοκληρώσετε τη διαδικασία δημιουργίας λογαριασμού, δημιουργήστε έναν κωδικό πρόσβασης για το λογαριασμό σας."
 to view your authentication code and verify your identity.,για να δείτε τον κωδικό πιστοποίησης και να επαληθεύσετε την ταυτότητά σας.
 Today,Σήμερα
-Toggle relationship details,Toggle relationship details
-Toggle timeline mode,Toggle timeline mode
+Toggle relationship details,Εμφάνιση/απόκρυψη λεπτομερειών σχέσης
+Toggle timeline mode,Εναλλαγή λειτουργίας χρονολογίου
 Tools,Εργαλεία
 total entities,σύνολο οντοτήτων
 Total files,Σύνολο αρχείων
 total files,σύνολο αρχείων
 "Total files from main documents, supporting files and uploads","Σύνολο αρχείων από κύρια έγγραφα, υποστηρικτικά αρχεία και μεταφορτώσεις"
-Total imports,Total imports
+Total imports,Συνολικές εισαγωγές
 total users,σύνολο χρηστών
 Train,Εκπαίδευση
 Train model,Εκπαίδευση μοντέλου
@@ -1389,11 +1389,11 @@ Translations,Μεταφράσεις
 Translations imported.,Οι μεταφράσεις εισήχθησαν.
 Translations reset successfully,Οι μεταφράσεις επαναφέρθηκαν επιτυχώς
 Translations saved,Οι μεταφράσεις αποθηκεύτηκαν
-Try a different search or clear filters.,Try a different search or clear filters.
+Try a different search or clear filters.,Δοκιμάστε μια διαφορετική αναζήτηση ή καταργήστε τα φίλτρα.
 Turn off inline translation,Απενεργοποίηση ενσωματωμένης μετάφρασης
 "Two categorical dimensions enable stacked bar charts (e.g. country with sex
-              breakdown).","Two categorical dimensions enable stacked bar charts (e.g. country with sex
-              breakdown)."
+              breakdown).","Δύο κατηγορικές διαστάσεις επιτρέπουν τη δημιουργία γραφημάτων με στοιβαγμένες ράβδους (π.χ. ανά χώρα με
+ανάλυση ανά φύλο)."
 Two-Factor Authentication,Πιστοποίηση δύο παραγόντων
 Two-factor authentication enabled,Η πιστοποίηση δύο παραγόντων ενεργοποιήθηκε
 Two-factor authentication failed.,Η πιστοποίηση δύο παραγόντων απέτυχε.
@@ -1408,18 +1408,18 @@ Unauthorized,Μη εξουσιοδοτημένο
 Unexpected error,Μη αναμενόμενο σφάλμα
 Uninstall,Απεγκατάσταση
 Uninstall language,Απεγκατάσταση γλώσσας
-Uninstalling language,Uninstalling language
-Unknown entity,Unknown entity
-Unknown template,Unknown template
+Uninstalling language,Απεγκατάσταση γλώσσας
+Unknown entity,Άγνωστη οντότητα
+Unknown template,Άγνωστο πρότυπο
 Unlink,Αποσύνδεση
 Unlock account,Ξεκλείδωμα λογαριασμού
-Unsaved changes,Unsaved changes
+Unsaved changes,Μη αποθηκευμένες αλλαγές
 Unsupported OCR language,Μη υποστηριζόμενη γλώσσα OCR
-Untitled,Untitled
+Untitled,Χωρίς τίτλο
 Untranslated Terms,Αμετάφραστοι όροι
 Update,Ενημέρωση
 UPDATE,ΕΝΗΜΕΡΩΣΗ
-Update from collection,Update from collection
+Update from collection,Ενημέρωση από τη συλλογή
 Update success,Επιτυχία ενημέρωσης
 Updated,Ενημερώθηκε
 Updated file,Το αρχείο ενημερώθηκε
@@ -1430,10 +1430,10 @@ Updated settings,Οι ρυθμίσεις ενημερώθηκαν
 Updated translations,Οι μεταφράσεις ενημερώθηκαν
 Updated user,Ο χρήστης ενημερώθηκε
 Updating template properties across,Ενημερώνονται ιδιότητες προτύπου σε
-Updating…,Updating…
+Updating…,Ενημέρωση…
 Upload and select file,Μεταφόρτωση και επιλογή αρχείου
 Upload from computer,Μεταφόρτωση από υπολογιστή
-Upload image,Upload image
+Upload image,Ανεβάστε εικόνα
 Upload PDF,Μεταφόρτωση PDF
 Upload PDF(s) to create,Ανεβάστε PDF(s) για να δημιουργήσετε
 Uploaded attachment,Το συνημμένο αρχείο μεταφορτώθηκε
@@ -1448,12 +1448,12 @@ Use,Χρήση
 Use as filter,Χρήση ως φίλτρο
 Use for training,Χρήση για εκπαίδευση
 "Use this iframe on external sites. Change the locale query parameter in the URL if
-                needed.","Use this iframe on external sites. Change the locale query parameter in the URL if
-                needed."
-Use URL,Use URL
-Used in templates and {n} refs — cannot delete,Used in templates and {n} refs — cannot delete
-Used in templates — cannot delete,Used in templates — cannot delete
-Used in {n} refs — cannot delete,Used in {n} refs — cannot delete
+                needed.","Χρησιμοποιήστε αυτό το iframe σε εξωτερικούς ιστότοπους. Αλλάξτε την παράμετρο ερωτήματος «locale» στη διεύθυνση URL, αν
+ χρειαστεί."
+Use URL,Χρήση URL
+Used in templates and {n} refs — cannot delete,Χρησιμοποιείται σε πρότυπα και {n} αναφορές — δεν είναι δυνατή η διαγραφή
+Used in templates — cannot delete,Χρησιμοποιείται σε πρότυπα — δεν είναι δυνατή η διαγραφή
+Used in {n} refs — cannot delete,Χρησιμοποιείται σε {n} αναφορές — δεν είναι δυνατή η διαγραφή
 User,Χρήστης
 User Action,Ενέργεια χρήστη
 User Role,Ρόλος χρήστη
@@ -1462,7 +1462,7 @@ Username,Όνομα χρήστη
 Username is required,Απαιτείται όνομα χρήστη
 Username is too long,Το όνομα χρήστη είναι πολύ μεγάλο
 Username is too short,Το όνομα χρήστη είναι πολύ μικρό
-"Username, email or group","Username, email or group"
+"Username, email or group","Όνομα χρήστη, διεύθυνση email ή ομάδα"
 Usernames cannot have spaces,Τα ονόματα χρηστών δεν μπορούν να έχουν κενά
 Users,Χρήστες
 Users & Groups,Χρήστες & Ομάδες
@@ -1472,41 +1472,41 @@ Uwazi,Uwazi
 Uwazi Docs,Uwazi Docs
 Uwazi is developed by,Το Uwazi έχει αναπτυχθεί από
 Uwazi UI,Uwazi UI
-Validating,Validating
-Validating file structure and headers.,Validating file structure and headers.
+Validating,Έλεγχος
+Validating file structure and headers.,Έλεγχος της δομής του αρχείου και των κεφαλίδων.
 Value,Αξία
 Value cannot be transformed to the correct type,Η τιμή δεν μπορεί να μετατραπεί στον σωστό τύπο
 values,τιμές
-"values are staged, not saved","values are staged, not saved"
+"values are staged, not saved","οι τιμές είναι σε αναμονή, δεν έχουν αποθηκευτεί"
 Verify,Επαλήθευση
 Verifying...,Επαλήθευση...
-via,via
+via,μέσω
 View,Προβολή
 view,προβολή
 View entities,Προβολή οντοτήτων
 View entity,Προβολή οντότητας
 View in library,Προβολή στη βιβλιοθήκη
 View page,Προβολή σελίδας
-Visibility,Visibility
-Visualization data updated from your collection.,Visualization data updated from your collection.
+Visibility,Ορατότητα
+Visualization data updated from your collection.,Τα δεδομένα οπτικοποίησης ενημερώθηκαν από τη συλλογή σας.
 WARNING,ΠΡΟΕΙΔΟΠΟΙΗΣΗ
 Warning: you are editing multiple entities. Fields marked with a,Προειδοποίηση: επεξεργάζεστε πολλαπλές οντότητες. Τα πεδία που σημειώνονται με
 We can't find the page you're looking for.,Δεν μπορούμε να βρούμε τη σελίδα που ψάχνετε.
 Welcome to Uwazi,Καλώς ήλθατε στο Uwazi
 "Well, this is awkward...","Λοιπόν, αυτό είναι άβολο..."
 "When enabled, visitors must accept or reject non-essential cookies before they are set.
-    Analytics and language preference cookies are blocked until accepted.","When enabled, visitors must accept or reject non-essential cookies before they are set.
-    Analytics and language preference cookies are blocked until accepted."
+    Analytics and language preference cookies are blocked until accepted.","Όταν είναι ενεργοποιημένη αυτή η λειτουργία, οι επισκέπτες πρέπει να αποδεχθούν ή να απορρίψουν τα μη απαραίτητα cookies πριν από την αποθήκευσή τους.
+    Τα cookies ανάλυσης και προτίμησης γλώσσας αποκλείονται έως ότου γίνουν αποδεκτά."
 Whitelisted templates,Επιτρεπόμενα πρότυπα
-wildcard,wildcard
-wildcard (many chars),wildcard (many chars)
-wildcard (one char),wildcard (one char)
+wildcard,χαρακτήρας μπαλαντέρ
+wildcard (many chars),χαρακτήρας μπαλαντέρ (πολλοί χαρακτήρες)
+wildcard (one char),χαρακτήρας μπαλαντέρ (ένας χαρακτήρας)
 "Will attempt to fill the container, using its entire width. In cards, cropping is likely to occur.","Θα επιχειρήσει να γεμίσει το περιέχον, χρησιμοποιώντας ολόκληρο το πλάτος του. Στις κάρτες, είναι πιθανό να προκύψει περικοπή."
 will be updated with the same value.,θα ενημερωθεί με την ίδια τιμή.
 Will show the entire media inside the container.,Θα εμφανίσει ολόκληρο το πολυμέσο μέσα στο περιέχον.
 with,με
 With great power comes great responsibility!,Με τη μεγάλη δύναμη έρχεται και η μεγάλη ευθύνη!
-wom?n,wom?n
+wom?n,γυναίκ?ς
 x,x
 x less,λιγότερα
 x more,περισσότερα
@@ -1515,16 +1515,16 @@ Yes,Ναι
 You can add one or many items in this form.,Μπορείτε να προσθέσετε ένα ή πολλά στοιχεία σε αυτή τη φόρμα.
 You can also enter this secret key into your Authenticator app.,Μπορείτε επίσης να εισαγάγετε αυτό το μυστικό κλειδί στην εφαρμογή πιστοποίησης ταυτότητας.
 You can create metadata templates in,Μπορείτε να δημιουργήσετε πρότυπα μεταδεδομένων στο
-"You can embed advanced components like maps, charts and entity lists in your page.","You can embed advanced components like maps, charts and entity lists in your page."
-You do not have write permission on all entities,You do not have write permission on all entities
-You have unsaved changes. Discard them? This action cannot be undone.,You have unsaved changes. Discard them? This action cannot be undone.
+"You can embed advanced components like maps, charts and entity lists in your page.","Μπορείτε να ενσωματώσετε στη σελίδα σας προηγμένα στοιχεία, όπως χάρτες, γραφήματα και λίστες οντοτήτων."
+You do not have write permission on all entities,Δεν έχετε δικαιώματα εγγραφής σε όλες τις οντότητες
+You have unsaved changes. Discard them? This action cannot be undone.,Έχετε αλλαγές που δεν έχουν αποθηκευτεί. Θέλετε να τις απορρίψετε; Αυτή η ενέργεια δεν μπορεί να αναιρεθεί.
 You have unsaved changes. Do you want to continue?,Έχετε μη αποθηκευμένες αλλαγές. Θέλετε να συνεχίσετε;
 You should activate this feature for enhanced account security,Θα πρέπει να ενεργοποιήσετε αυτή τη λειτουργία για αυξημένη ασφάλεια λογαριασμού
 You should activate this feature for enhanced account security.,Θα πρέπει να ενεργοποιήσετε αυτή τη λειτουργία για αυξημένη ασφάλεια λογαριασμού.
 You won't be able to save an entity if this property is empty.,Δεν θα μπορείτε να αποθηκεύσετε μια οντότητα αν αυτή η ιδιότητα είναι κενή.
-You're all caught up,You're all caught up
+You're all caught up,Τώρα είστε ενήμεροι για όλα
 Your account's security is enhanced with two-factor authentication.,Η ασφάλεια του λογαριασμού σας ενισχύεται με την πιστοποίηση ταυτότητας δύο παραγόντων.
-Z → A,Z → A
+Z → A,Ω → Α
 Zoom in,Μεγέθυνση
 Zoom in library view,Μεγέθυνση προβολής βιβλιοθήκης
 Zoom out,Σμίκρυνση

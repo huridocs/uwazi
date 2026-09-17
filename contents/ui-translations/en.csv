@@ -170,9 +170,9 @@ Cancelled,Cancelled
 Cannot connect to server,Cannot connect to server
 Cannot find extractor,Cannot find extractor
 Captcha,Captcha
-Captcha bypass,"By toggling this on you can allow users to submit to your whitelisted templates without having to fill a CAPTCHA. 
-The form will still present the captcha to end users, but API end-point will allow submissions without CAPTCHA validation if a 
-header ""Bypass-Captcha: true"" is sent along. This option is insecure and can be leveraged to flood your instance with spam or 
+Captcha bypass,"By toggling this on you can allow users to submit to your whitelisted templates without having to fill a CAPTCHA.
+The form will still present the captcha to end users, but API end-point will allow submissions without CAPTCHA validation if a
+header ""Bypass-Captcha: true"" is sent along. This option is insecure and can be leveraged to flood your instance with spam or
 malicious content."
 Cards,Cards
 Cards view,Cards view
@@ -639,12 +639,12 @@ Label,Label
 Labeled,Labeled
 Landing page,Landing page
 Landing page description,"The landing page is the first page that visitors see when they come to your collection. The default landing page is your collection's library. You can set a different landing page by adding its relative URL here. For example:
-      
+
 A page: */page/dicxg0oagy3xgr7ixef80k9*
 A filtered view in Uwazi: */library/?searchTerm=test*
 An entity: */entity/9htbkgpkyy7j5rk9*
 A document: */document/4y9i99fadjp833di*
-      
+
 Important: You must use relative URLs. These start with a forward slash and do not include the domain name. For example: In the address *https://yoursite.com/landingpage*, the relative URL is /landingpage"
 Language,Language
 Language Code,Language Code
@@ -705,10 +705,10 @@ Map layers description,Map layers description
 Map Provider,Map Provider
 Map view,Map view
 Mapbox,Mapbox
-Mapping conflict error,"A reindex of your collection is necessary. The reason may vary 
+Mapping conflict error,"A reindex of your collection is necessary. The reason may vary
         -- from certain changes made to a template's property to new fields
-        that need to be populated across entities. 
-        This process will not negatively affect the data in your collection. 
+        that need to be populated across entities.
+        This process will not negatively affect the data in your collection.
         It can last a few minutes and some parts of your collection might take
         some time to reappear in the Library, but this is temporary. Do you want to continue?"
 Maps,Maps
