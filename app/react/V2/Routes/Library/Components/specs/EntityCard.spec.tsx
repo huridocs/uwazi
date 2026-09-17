@@ -9,7 +9,7 @@ import { localeAtom, templatesAtom, translationsAtom } from '#V2/atoms/index.js'
 import { templates, translations } from '#app/stories/fixtures/referencesFixtures.js';
 import { EntityCard } from '../EntityCard.js';
 
-const renderCard = (layout: 'cards' | 'list', selected = false) =>
+const renderCard = (selected = false) =>
   render(
     <MemoryRouter>
       <TestAtomStoreProvider
@@ -23,7 +23,6 @@ const renderCard = (layout: 'cards' | 'list', selected = false) =>
           title="Case file"
           templateId="template1"
           fields={[{ id: 'country', label: 'Country', value: 'Spain' }]}
-          layout={layout}
           selected={selected}
           viewHref="/entityv2/abc"
         />
@@ -32,17 +31,16 @@ const renderCard = (layout: 'cards' | 'list', selected = false) =>
   );
 
 describe('EntityCard', () => {
-  it('renders title, metadata and view link in cards layout', () => {
-    renderCard('cards');
+  it('renders title, metadata and view link', () => {
+    renderCard();
     expect(screen.getByText('Case file')).toBeInTheDocument();
     expect(screen.getByText('Country')).toBeInTheDocument();
     expect(screen.getByText('Spain')).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'View' })).toHaveAttribute('href', '/en/entityv2/abc');
   });
 
-  it('renders list layout with a compact metadata snippet', () => {
-    renderCard('list', true);
+  it('marks the card as selected', () => {
+    renderCard(true);
     expect(screen.getByRole('button')).toHaveAttribute('aria-pressed', 'true');
-    expect(screen.getByText(/Country:/)).toBeInTheDocument();
   });
 });
