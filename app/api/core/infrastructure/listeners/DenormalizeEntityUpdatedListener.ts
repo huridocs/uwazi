@@ -1,3 +1,4 @@
+import { ArrayUtils } from '#api/common.v2/utils/Array.js';
 import { Listener } from '#api/core/libs/eventEmitter/Listener.js';
 import { isPostgresCoreActive } from '#api/core/libs/featureFlags.js';
 import { PrivilegedJob } from '#api/core/infrastructure/jobs/PrivilegedJob.js';
@@ -23,7 +24,7 @@ class DenormalizeEntityUpdatedListener extends Listener<EntityUpdatedEvent, Deps
   static eventName = EntityUpdatedEvent.name;
 
   async handle(
-    _heartbeat: HeartbeatCallback,
+    heartbeat: HeartbeatCallback,
     params: EntityUpdatedEvent['payload'],
     _jobInfo?: JobInfo
   ): Promise<void> {
@@ -47,25 +48,27 @@ class DenormalizeEntityUpdatedListener extends Listener<EntityUpdatedEvent, Deps
 
     const beforeEntityDbos = MongoEntityMapper.toDBO(beforeEntity);
     const afterEntityDbos = MongoEntityMapper.toDBO(afterEntity);
+    const afterTemplate = MongoTemplateMapper.toSchema(afterEntity.template);
 
-    const targetEntityDboBefore = beforeEntityDbos.find(
-      dbo => dbo.language === params.targetLanguage
-    );
+    await ArrayUtils.sequentialFor(
+      EntityUpdatedEvent.changedLanguagesOf(params),
+      async language => {
+        const targetEntityDboBefore = beforeEntityDbos.find(dbo => dbo.language === language);
+        const targetEntityDboAfter = afterEntityDbos.find(dbo => dbo.language === language);
 
-    const targetEntityDboAfter = afterEntityDbos.find(
-      dbo => dbo.language === params.targetLanguage
-    );
+        if (!targetEntityDboBefore || !targetEntityDboAfter) {
+          throw new Error(
+            `Denormalization failed: could not find entity DBO for language ${language}`
+          );
+        }
 
-    if (!targetEntityDboBefore || !targetEntityDboAfter) {
-      throw new Error(
-        `Denormalization failed: could not find entity DBO for language ${params.targetLanguage}`
-      );
-    }
-
-    await this.deps.denormalizeRelated(
-      targetEntityDboAfter as any,
-      MongoTemplateMapper.toSchema(afterEntity.template),
-      targetEntityDboBefore as any
+        await this.deps.denormalizeRelated(
+          targetEntityDboAfter as any,
+          afterTemplate,
+          targetEntityDboBefore as any
+        );
+        await heartbeat();
+      }
     );
   }
 }

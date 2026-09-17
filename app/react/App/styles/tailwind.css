@@ -39,18 +39,6 @@
     color 0.2s ease;
 }
 
-@media (min-width: 1920px) {
-  .tw-content {
-    --v2-text-scale: 1.125;
-  }
-}
-
-@media (min-width: 180rem) {
-  .tw-content {
-    --v2-text-scale: 1.25;
-  }
-}
-
 /* Beat Bootstrap/vendor.css h1–h6/p margins; :where() stays overrideable by utilities */
 .tw-content :where(h1, h2, h3, h4, h5, h6, p) {
   margin-top: 0;

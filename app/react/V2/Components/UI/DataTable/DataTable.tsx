@@ -44,6 +44,7 @@ import { Translate } from '#app/I18N/index.js';
 import { checkboxInputClassName } from '#V2/Components/Forms/Checkbox.js';
 import type {
   DataTableColumn,
+  DataTableDensity,
   DataTableReorder,
   DataTableSelection,
   DataTableSort,
@@ -61,7 +62,12 @@ const alignClass = {
 } as const;
 
 const ROW_BASE =
-  'group grid gap-3 items-center text-sm px-4 min-h-11 py-2 transition-colors focus:outline-hidden focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-[color-mix(in_srgb,var(--color-theme-text-primary)_20%,transparent)]';
+  'group grid gap-3 items-center text-sm px-4 transition-colors focus:outline-hidden focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-[color-mix(in_srgb,var(--color-theme-text-primary)_20%,transparent)]';
+
+const ROW_DENSITY: Record<DataTableDensity, string> = {
+  comfortable: 'min-h-11 py-2',
+  compact: 'min-h-8 py-1',
+};
 
 interface DataTableProps<T extends { rowId: string }> {
   columns: DataTableColumn<T>[];
@@ -75,6 +81,7 @@ interface DataTableProps<T extends { rowId: string }> {
   selection?: DataTableSelection<T>;
   reorder?: DataTableReorder<T>;
   tree?: DataTableTree<T>;
+  density?: DataTableDensity;
   /** Applies extra px offset for minimum-width scroll containment */
   minWidthRem?: number;
 }
@@ -180,6 +187,7 @@ const SortableRow = <T extends { rowId: string }>({
   treeEnabled,
   isSelected,
   isClickable,
+  density,
   depth,
   onRowClick,
 }: {
@@ -190,6 +198,7 @@ const SortableRow = <T extends { rowId: string }>({
   treeEnabled: boolean;
   isSelected: boolean;
   isClickable: boolean;
+  density: DataTableDensity;
   depth: number;
   onRowClick?: (row: T) => void;
 }) => {
@@ -220,7 +229,7 @@ const SortableRow = <T extends { rowId: string }>({
         ref={setNodeRef}
         // eslint-disable-next-line react/jsx-props-no-spreading
         {...rowInteractionProps}
-        className={`${ROW_BASE} ${isClickable ? 'cursor-pointer' : ''} ${
+        className={`${ROW_BASE} ${ROW_DENSITY[density]} ${isClickable ? 'cursor-pointer' : ''} ${
           isSelected ? 'bg-parchment [&_.text-ink-tertiary]:text-ink-secondary' : 'hover:bg-warm'
         }`}
         style={{
@@ -239,7 +248,7 @@ const SortableRow = <T extends { rowId: string }>({
         {columns.map((col, i) => (
           <div
             key={col.id}
-            className={`flex items-center min-w-0 text-ink ${alignClass[col.align ?? 'left']}`}
+            className={`flex min-w-0 items-center overflow-visible text-ink ${alignClass[col.align ?? 'left']}`}
           >
             {col.cell(row.original, i)}
           </div>
@@ -257,6 +266,7 @@ const SortableRow = <T extends { rowId: string }>({
             treeEnabled={treeEnabled}
             isSelected={false}
             isClickable={isClickable}
+            density={density}
             depth={depth + 1}
             onRowClick={onRowClick}
           />
@@ -277,6 +287,7 @@ const DataTable = <T extends { rowId: string }>({
   selection,
   reorder,
   tree,
+  density = 'comfortable',
   minWidthRem,
 }: DataTableProps<T>) => {
   const [internalData, setInternalData] = useState(data);
@@ -380,7 +391,7 @@ const DataTable = <T extends { rowId: string }>({
         className={`bg-paper ${scrolls ? 'overflow-x-auto' : 'overflow-hidden'}`}
         style={{ boxShadow: CARD_SHADOW, borderRadius: CARD_RADIUS }}
       >
-        <div style={scrolls ? { minWidth: `${minWidthRem}rem` } : undefined}>
+        <div className="w-full" style={scrolls ? { minWidth: `${minWidthRem}rem` } : undefined}>
           {/* Header strip */}
           <div
             className="grid items-center gap-3 px-4 h-10 text-[11px] font-semibold text-ink-tertiary uppercase tracking-wider shrink-0"
@@ -446,6 +457,7 @@ const DataTable = <T extends { rowId: string }>({
                       : row.getIsSelected()
                   }
                   isClickable={isClickable}
+                  density={density}
                   depth={0}
                   onRowClick={onRowClick}
                 />

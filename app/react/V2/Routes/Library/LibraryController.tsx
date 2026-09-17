@@ -1,7 +1,6 @@
 import React, { useCallback, useMemo, useState, type ReactNode } from 'react';
 import { useLoaderData } from 'react-router';
 import { useAtomValue } from 'jotai';
-import { useQueryStates } from 'nuqs';
 import { ClientThesaurus, Template } from '#app/apiResponseTypes.js';
 import { Translate } from '#app/I18N/index.js';
 import {
@@ -14,8 +13,8 @@ import { useDebouncedDraft } from '#V2/CustomHooks/useDebouncedDraft.js';
 import { LibraryView } from './Components/LibraryView.js';
 import type { Chip } from './Components/ActiveFiltersSheet.js';
 import { resolveFilterChipParts } from './filterChipLabel.js';
-import { librarySearchParams } from './librarySearchParams.js';
 import { DEFAULT_LIBRARY_URL_STATE, type LibraryFiltersState } from './libraryUrlState.js';
+import { useLibraryUrlState } from './useLibraryUrlState.js';
 import type { LoaderResponse } from './types.js';
 
 const removeFilterValue = (
@@ -55,34 +54,33 @@ const chipLabel = (
 
 /** Owns library search state (URL + selection) and the workspace chrome.
  *  Result visualization is delegated to Viewers (cards, map, table, …). */
-const LibraryController = () => {
-  const data = useLoaderData() as LoaderResponse;
-  const [urlState, setUrlState] = useQueryStates(librarySearchParams);
-  const settings = useAtomValue(settingsAtom);
-  const templates = useAtomValue(templatesAtom);
-  const thesauri = useAtomValue(thesauriAtom);
-  const [selectedId, setSelectedId] = useState<string>();
-
-  const updateUrl = useCallback(
-    (patch: Parameters<typeof setUrlState>[0]) => {
-      setUrlState(patch).catch(() => undefined);
-    },
-    [setUrlState]
-  );
-
+const useLibrarySearchInput = (
+  search: string,
+  updateUrl: (patch: { search: string | null; from: number }) => void
+) => {
   const commitSearch = useCallback(
     (value: string) => {
       updateUrl({ search: value || null, from: 0 });
     },
     [updateUrl]
   );
+  return useDebouncedDraft(search, commitSearch, {
+    shouldCommitImmediately: value => value === '',
+  });
+};
+
+const LibraryController = () => {
+  const data = useLoaderData() as LoaderResponse;
+  const { urlState, updateUrl } = useLibraryUrlState();
+  const settings = useAtomValue(settingsAtom);
+  const templates = useAtomValue(templatesAtom);
+  const thesauri = useAtomValue(thesauriAtom);
+  const [selectedId, setSelectedId] = useState<string>();
   const {
     draft: searchInput,
     setDraft: setSearchInput,
     commitNow: commitSearchNow,
-  } = useDebouncedDraft(urlState.search, commitSearch, {
-    shouldCommitImmediately: value => value === '',
-  });
+  } = useLibrarySearchInput(urlState.search, updateUrl);
 
   const entityBasePath = getEntityViewerV2BasePath(isEntityViewerV2Enabled(settings.features));
 
@@ -121,10 +119,11 @@ const LibraryController = () => {
       }}
       sort={urlState.sort}
       order={urlState.order}
-      onSortChange={(sort, order) => {
+      onSortChange={(nextSort, nextOrder) => {
         updateUrl({
-          sort: sort || null,
-          order: order === DEFAULT_LIBRARY_URL_STATE.order ? null : order,
+          sort: nextSort || null,
+          order: nextOrder === DEFAULT_LIBRARY_URL_STATE.order ? null : nextOrder,
+          from: 0,
         });
       }}
       filters={urlState.filters}

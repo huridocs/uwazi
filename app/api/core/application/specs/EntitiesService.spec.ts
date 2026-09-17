@@ -25,6 +25,11 @@ import { MongoEntitiesDataSource } from '#api/core/infrastructure/mongodb/entity
 import { EntityCreatedEvent } from '#api/entities/events/EntityCreatedEvent.js';
 import { EntityUpdatedEvent as LegacyEntityUpdatedEvent } from '#api/entities/events/EntityUpdatedEvent.js';
 import { EntitiesServiceDeps } from '../EntitiesService.js';
+import {
+  MissingTranslationLanguageError,
+  TargetLanguageInTranslationsError,
+  UnknownTranslationLanguageError,
+} from '../errors.js';
 import { GrantType } from '#api/core/domain/entityAccessPolicy/GrantType.js';
 import { AccessLevel } from '#api/core/domain/entityAccessPolicy/AccessLevel.js';
 import { search } from '#api/search/index.js';
@@ -438,6 +443,82 @@ describe('EntitiesService', () => {
       });
     });
 
+    describe('when validating translation languages', () => {
+      const translationFixtures: DBFixture = {
+        ...fixtures,
+        settings: [
+          {
+            languages: [
+              { default: true, key: 'en', label: 'English' },
+              { key: 'es', label: 'Spanish' },
+              { key: 'pt', label: 'Portuguese' },
+              { key: 'fr', label: 'French', installing: true },
+            ],
+          },
+        ],
+      };
+
+      beforeEach(async () => testingEnvironment.setFixtures(translationFixtures));
+
+      const validate = async (translations: Record<string, unknown[]>) => {
+        const { sut } = createSut({}, postgresCore);
+        return sut.validateTranslationLanguages({
+          targetLanguage: 'en',
+          translations: translations as any,
+        });
+      };
+
+      it('should accept every installed language except the target language', async () => {
+        await expect(validate({ es: [], pt: [] })).resolves.toBeUndefined();
+      });
+
+      it('should accept languages still being installed, but not require them', async () => {
+        await expect(validate({ es: [], pt: [], fr: [] })).resolves.toBeUndefined();
+      });
+
+      it('should reject the target language', async () => {
+        await expect(validate({ en: [], es: [], pt: [] })).rejects.toThrow(
+          new TargetLanguageInTranslationsError('en')
+        );
+      });
+
+      it('should reject languages that are not installed', async () => {
+        await expect(validate({ es: [], pt: [], de: [] })).rejects.toThrow(
+          new UnknownTranslationLanguageError('de')
+        );
+      });
+
+      it('should reject a missing installed language', async () => {
+        await expect(validate({ es: [] })).rejects.toThrow(
+          new MissingTranslationLanguageError('pt')
+        );
+      });
+
+      describe('when partial translations are allowed', () => {
+        const validatePartial = async (translations: Record<string, unknown[]>) => {
+          const { sut } = createSut({}, postgresCore);
+          return sut.validateTranslationLanguages({
+            targetLanguage: 'en',
+            translations: translations as any,
+            partial: true,
+          });
+        };
+
+        it('should accept missing installed languages', async () => {
+          await expect(validatePartial({ es: [] })).resolves.toBeUndefined();
+        });
+
+        it('should still reject the target language and languages that are not installed', async () => {
+          await expect(validatePartial({ en: [] })).rejects.toThrow(
+            new TargetLanguageInTranslationsError('en')
+          );
+          await expect(validatePartial({ de: [] })).rejects.toThrow(
+            new UnknownTranslationLanguageError('de')
+          );
+        });
+      });
+    });
+
     describe('when creating an Entity', () => {
       it('should create an entity', async () => {
         const { sut } = createSut(undefined, postgresCore);
@@ -512,8 +593,8 @@ describe('EntitiesService', () => {
         await transactionManager.run(async () =>
           sut.update([entity], {
             actorId: 'actorId',
-            targetLanguage: 'en',
             actor,
+            targetLanguage: 'en',
             authorize: false,
           })
         );
@@ -526,8 +607,8 @@ describe('EntitiesService', () => {
         await transactionManager.run(async () =>
           sut.update([entity], {
             actorId: 'actorId',
-            targetLanguage: 'en',
             actor,
+            targetLanguage: 'en',
             authorize: false,
           })
         );
@@ -539,6 +620,7 @@ describe('EntitiesService', () => {
             before: MongoEntityMapper.toDBO(entity.previousVersion) as any,
             after: MongoEntityMapper.toDBO(entity) as any,
             targetLanguageKey: 'en',
+            changedLanguages: ['en', 'es'],
           })
         );
       });
@@ -609,8 +691,8 @@ describe('EntitiesService', () => {
         await transactionManager.run(async () => {
           await sut.update([entity1, entity2], {
             actorId: 'actorId',
-            targetLanguage: 'en',
             actor: actor!,
+            targetLanguage: 'en',
             authorize: false,
           });
         });
@@ -670,8 +752,8 @@ describe('EntitiesService', () => {
         await transactionManager.run(async () => {
           await sut.update([entity1, entity2], {
             actorId: 'actorId',
-            targetLanguage: 'en',
             actor: actor!,
+            targetLanguage: 'en',
             authorize: false,
           });
         });
@@ -723,45 +805,99 @@ describe('EntitiesService', () => {
           template.createPropertyAssignment('numeric', { value: [{ value: 22 }] }),
         ]);
 
-        const expectedEvent1 = EntityUpdatedEvent.create({
-          entity: entity1,
-          userId: 'actorId',
-          targetLanguage: 'en',
-        });
-        const expectedEvent2 = EntityUpdatedEvent.create({
-          entity: entity2,
-          userId: 'actorId',
-          targetLanguage: 'en',
-        });
+        const expectedCoreEvents = [entity1, entity2].map(entity =>
+          EntityUpdatedEvent.create({ entity, userId: 'actorId', targetLanguage: 'en' })
+        );
 
         await transactionManager.run(async () => {
           await sut.update([entity1, entity2], {
             actorId: 'actorId',
-            targetLanguage: 'en',
             actor: actor!,
+            targetLanguage: 'en',
             authorize: false,
           });
         });
 
         expect(eventEmitter.emit).toHaveBeenCalledTimes(2);
-        expect(eventEmitter.emit).toHaveBeenCalledWith(expectedEvent1);
-        expect(eventEmitter.emit).toHaveBeenCalledWith(expectedEvent2);
+        expectedCoreEvents.forEach(event => expect(eventEmitter.emit).toHaveBeenCalledWith(event));
+        expect(expectedCoreEvents.map(event => event?.payload.changedLanguages)).toEqual([
+          ['en', 'es'],
+          ['en', 'es'],
+        ]);
 
         expect(eventBus.emit).toHaveBeenCalledTimes(2);
-        expect(eventBus.emit).toHaveBeenCalledWith(
-          new LegacyEntityUpdatedEvent({
-            before: MongoEntityMapper.toDBO(entity1.previousVersion) as any,
-            after: MongoEntityMapper.toDBO(entity1) as any,
-            targetLanguageKey: 'en',
-          })
+        [entity1, entity2].forEach(entity =>
+          expect(eventBus.emit).toHaveBeenCalledWith(
+            new LegacyEntityUpdatedEvent({
+              before: MongoEntityMapper.toDBO(entity.previousVersion) as any,
+              after: MongoEntityMapper.toDBO(entity) as any,
+              targetLanguageKey: 'en',
+              changedLanguages: ['en', 'es'],
+            })
+          )
         );
-        expect(eventBus.emit).toHaveBeenCalledWith(
-          new LegacyEntityUpdatedEvent({
-            before: MongoEntityMapper.toDBO(entity2.previousVersion) as any,
-            after: MongoEntityMapper.toDBO(entity2) as any,
-            targetLanguageKey: 'en',
-          })
+      });
+
+      it('should emit a single event per entity listing only the languages that changed', async () => {
+        const eventEmitter = TestUtils.mockClass<EventEmitter>({ emit: jest.fn() });
+        const { sut, transactionManager, eventBus, actor } = createSut(
+          { eventEmitter },
+          postgresCore
         );
+        const template = await getTemplate(factory.id('Document'));
+
+        const [entity] = await loadEntities(['entity-1'], postgresCore);
+        entity.setPropertyAssignments(
+          [template.createPropertyAssignment('text', { value: [{ value: 'Texto cambiado' }] })],
+          'es'
+        );
+
+        await transactionManager.run(async () => {
+          await sut.update([entity], {
+            actorId: 'actorId',
+            actor: actor!,
+            targetLanguage: 'es',
+            authorize: false,
+          });
+        });
+
+        expect(eventEmitter.emit).toHaveBeenCalledTimes(1);
+        expect((eventEmitter.emit as jest.Mock).mock.calls[0][0].payload).toMatchObject({
+          targetLanguage: 'es',
+          changedLanguages: ['es'],
+        });
+        expect(eventBus.emit).toHaveBeenCalledTimes(1);
+        expect((eventBus.emit as jest.Mock).mock.calls[0][0].getData()).toMatchObject({
+          targetLanguageKey: 'es',
+          changedLanguages: ['es'],
+        });
+      });
+
+      it('should emit a single event per entity when the template changes', async () => {
+        const eventEmitter = TestUtils.mockClass<EventEmitter>({ emit: jest.fn() });
+        const { sut, transactionManager, eventBus, actor } = createSut(
+          { eventEmitter },
+          postgresCore
+        );
+
+        const [entity] = await loadEntities(['entity-1'], postgresCore);
+        entity.changeTemplate(TemplateBuilder.aTemplate({ id: new ObjectId().toString() }).build());
+
+        await transactionManager.run(async () => {
+          await sut.update([entity], {
+            actorId: 'actorId',
+            actor: actor!,
+            targetLanguage: 'en',
+            authorize: false,
+          });
+        });
+
+        expect(eventEmitter.emit).toHaveBeenCalledTimes(1);
+        expect((eventEmitter.emit as jest.Mock).mock.calls[0][0].payload.changedLanguages).toEqual([
+          'en',
+          'es',
+        ]);
+        expect(eventBus.emit).toHaveBeenCalledTimes(1);
       });
 
       it('should not update the database or emit events when no entity has changed', async () => {
@@ -776,8 +912,8 @@ describe('EntitiesService', () => {
         await transactionManager.run(async () => {
           await sut.update(entities, {
             actorId: 'actorId',
-            targetLanguage: 'en',
             actor: actor!,
+            targetLanguage: 'en',
             authorize: false,
           });
         });
@@ -816,8 +952,8 @@ describe('EntitiesService', () => {
         await transactionManager.run(async () => {
           await sut.update([], {
             actorId: 'actorId',
-            targetLanguage: 'en',
             actor: actor!,
+            targetLanguage: 'en',
             authorize: false,
           });
         });
@@ -835,8 +971,8 @@ describe('EntitiesService', () => {
         await expect(
           sut.update([], {
             actorId: 'actorId',
-            targetLanguage: 'en',
             actor: actor!,
+            targetLanguage: 'en',
             authorize: false,
           })
         ).rejects.toThrow('This operation must be called within a transaction');

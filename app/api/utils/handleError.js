@@ -9,6 +9,7 @@ import { OperationalError } from '#api/common.v2/errors/OperationalError.js';
 import { ValidationError } from '#api/common.v2/validation/ValidationError.js';
 import { config } from '#api/config.js';
 import { DomainError } from '#api/core/domain/error/DomainError.js';
+import { EntityNotFoundError } from '#api/core/domain/entity/errors.js';
 import { FileNotFound } from '#api/files/FileNotFound.js';
 import { S3Error } from '#api/files/S3Storage.js';
 import { legacyLogger } from '#api/log/index.js';
@@ -140,6 +141,10 @@ const prettifyError = (error, { req = {}, uncaught = false } = {}) => {
 
   if (error instanceof DomainError) {
     result = { code: 400, message: error.message, logLevel: 'debug' };
+  }
+
+  if (error instanceof EntityNotFoundError) {
+    result = { code: 404, message: error.message, logLevel: 'debug' };
   }
 
   if (error instanceof UnauthorizedError) {

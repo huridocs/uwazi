@@ -1,6 +1,6 @@
 /* eslint-disable max-lines */
 import { Db, Filter, ObjectId } from 'mongodb';
-import { EntityNotFoundError } from '#api/core/application/errors.js';
+import { EntityNotFoundError } from '#api/core/domain/entity/errors.js';
 import { Property } from '#api/core/domain/template/Property.js';
 import { V1RelationshipProperty } from '#api/core/domain/template/V1RelationshipProperty.js';
 import {
@@ -18,6 +18,7 @@ import { Entity } from '../../../domain/entity/Entity.js';
 import { EntityTemplateDoesNotExistError } from '../../../domain/entity/errors.js';
 import { EntitiesDataSource } from '../../../application/contracts/EntitiesDataSource.js';
 import { EntityDBO, EntityTemplateAggregation } from './EntityDBO.js';
+import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import { TemplatesDAOFactory } from '../../factories/TemplatesDAOFactory.js';
 import { ArrayUtils } from '#api/common.v2/utils/Array.js';
 
@@ -95,26 +96,61 @@ export class MongoEntitiesDataSource
   }
 
   private async bulkUpdate(entities: Entity[]): Promise<void> {
-    const allDbos = entities.flatMap(entity => MongoEntityMapper.toDBO(entity));
+    const accessBySharedId = await this.getAccessOfEntitiesWithNewLanguages(entities);
 
-    const updates = allDbos.map(dbo => {
-      const { published, permissions, ...contentDbo } = dbo;
-      return {
-        updateOne: {
-          filter: { _id: dbo._id },
-          update: {
-            $set: contentDbo,
-            ...(dbo.preview === undefined ? { $unset: { preview: '' } } : {}),
+    const updates = entities.flatMap(entity =>
+      MongoEntityMapper.toDBO(entity).map(dbo => {
+        const { published, permissions, ...contentDbo } = dbo;
+        const unsetPreview = dbo.preview === undefined ? { $unset: { preview: '' } } : {};
+
+        if (!entity.newLanguages.includes(dbo.language as LanguageISO6391)) {
+          return {
+            updateOne: {
+              filter: { _id: dbo._id },
+              update: { $set: contentDbo, ...unsetPreview },
+            },
+          };
+        }
+
+        // The language clone job may have created the row meanwhile: write onto it.
+        const { _id, ...content } = contentDbo;
+        return {
+          updateOne: {
+            filter: { sharedId: dbo.sharedId, language: dbo.language },
+            update: {
+              $set: content,
+              $setOnInsert: { _id, ...accessBySharedId.get(entity.sharedId) },
+              ...unsetPreview,
+            },
+            upsert: true,
           },
-        },
-      };
-    });
+        };
+      })
+    );
 
     if (updates.length > 0) {
       await this.getCollection().bulkWrite(updates as any, { ignoreUndefined: true });
     }
 
     entities.forEach(entity => this.modifiedSharedIds.add(entity.sharedId));
+  }
+
+  private async getAccessOfEntitiesWithNewLanguages(entities: Entity[]) {
+    const sharedIds = entities
+      .filter(entity => entity.newLanguages.length > 0)
+      .map(entity => entity.sharedId);
+    if (sharedIds.length === 0) return new Map<string, Partial<EntityDBO>>();
+
+    const rows = await this.getCollection()
+      .find(
+        { sharedId: { $in: sharedIds } },
+        { projection: { sharedId: 1, published: 1, permissions: 1 } }
+      )
+      .toArray();
+
+    return new Map(
+      rows.map(({ sharedId, published, permissions }) => [sharedId, { published, permissions }])
+    );
   }
 
   async getSharedIdsUsingThesaurus(thesaurusId: string, valueIds: string[]) {

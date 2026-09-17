@@ -5,7 +5,13 @@ import React from 'react';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { TestAtomStoreProvider } from '#V2/testing/TestAtomStoreProvider.js';
-import { localeAtom, templatesAtom, translationsAtom, userAtom } from '#V2/atoms/index.js';
+import {
+  localeAtom,
+  settingsAtom,
+  templatesAtom,
+  translationsAtom,
+  userAtom,
+} from '#V2/atoms/index.js';
 import { templates, translations } from '#app/stories/fixtures/referencesFixtures.js';
 import type { LibraryAggregations } from '#shared/types/librarySearch.js';
 import type { Template } from '#app/apiResponseTypes.js';
@@ -105,6 +111,7 @@ const renderFilters = ({
         [localeAtom, 'en'],
         [templatesAtom, filterTemplates],
         [translationsAtom, translations],
+        [settingsAtom, {}],
         [userAtom, { _id: 'admin1', role: 'admin', username: 'admin' }],
       ]}
     >

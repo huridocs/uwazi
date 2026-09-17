@@ -43,6 +43,7 @@ type LibrarySearchHit = {
   template: string;
   language: string;
   creationDate?: number;
+  editDate?: number;
   published?: boolean;
   metadata?: Record<string, unknown>;
   documents?: unknown[];

@@ -133,7 +133,6 @@ Are you sure you want to delete this item?,Estás seguro que quieres eliminar es
 Are you sure you want to delete this relationship? This action cannot be undone.,Estás seguro que quieres eliminar esta relación? Esta acción no puede revertirse.
 Are you sure you want to delete this visualization? This action cannot be undone.,Are you sure you want to delete this visualization? This action cannot be undone.
 Are you sure?,Estás seguro?
-Ascending,Ascending
 Ask Bert,Ask Bert
 Attachment,Archivo
 Attachment deleted,Archivo adjunto eliminado
@@ -217,8 +216,11 @@ Collection,Colección
 Collection Name,Collection Name
 Colors,Colors
 Colors come from the server data layer. Preview shows assigned bucket colors when available.,Colors come from the server data layer. Preview shows assigned bucket colors when available.
+Columns,Columns
 combine or exclude terms,combine or exclude terms
+Comfortable,Comfortable
 Common sources,Common sources
+Compact,Compact
 Completed,Completed
 Completed with errors,Completed with errors
 Config,Config
@@ -297,6 +299,7 @@ Created user group,Grupo de usuarios creado
 Creating entities,Creating entities
 Creating relationships,Creating relationships
 Creating thesauri,Creating thesauri
+Creation date,Creation date
 CSS,CSS
 csv blank state message,"Importa archivos CSV o ZIP para crear entidades en lote. Para empezar, selecciona **+ Importar CSV**."
 CSV Import,CSV Import
@@ -370,7 +373,6 @@ Deleted user,Usuario eliminado
 Deleted user group,Grupo de usuarios eliminado
 Deletion success,Eliminación exitosa
 Density,Densidad
-Descending,Descending
 Description,Descripción
 Deselect all,Deselect all
 Details,Detalle
@@ -420,6 +422,7 @@ Each series uses the template brand color when comparing data sources.,Each seri
 Earlier,Más temprano
 Edit,Editar
 Edit at source,Editar en la fuente
+Edit date,Edit date
 Edit Extractor,Editar Extractor
 Edit File,Editar archivo
 Edit group,Editar grupo
@@ -746,6 +749,7 @@ Months,Months
 More,Más
 more,more
 more options.,más opciones.
+More rows per screen; same type size,More rows per screen; same type size
 Multi-source mode,Multi-source mode
 Multiple date,Fecha múltiple
 Multiple date range,Rango de fechas múltiple
@@ -1074,6 +1078,7 @@ Return to login,Regresar al inicio de sesión
 Review,Revisar
 Reviewed,Revisados
 Role,Rol
+Room around every row,Room around every row
 Route,Ruta
 Row,Row
 Row density,Row density
@@ -1198,7 +1203,6 @@ Something went wrong,Algo salió mal
 Sort,Ordenar
 Sort ascending,Orden ascendente
 Sort descending,Orden descendiente
-Sort order,Sort order
 Sort:,Ordenar:
 sorted by,ordenado por
 Source,Source

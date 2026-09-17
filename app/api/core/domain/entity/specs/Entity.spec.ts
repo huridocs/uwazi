@@ -1,4 +1,5 @@
 /* eslint-disable max-statements */
+import { ZodError } from 'zod';
 import { Entity } from '#api/core/domain/entity/Entity.js';
 import { TemplateBuilder } from '../../template/specs/TemplateBuilder.js';
 import { TextProperty } from '../../template/TextProperty.js';
@@ -18,6 +19,11 @@ import { PreviewProperty } from '../../template/PreviewProperty.js';
 import { NestedProperty } from '../../template/NestedProperty.js';
 import { V1RelationshipProperty } from '../../template/V1RelationshipProperty.js';
 import { EntityTranslation } from '../EntityTranslation.js';
+import {
+  MissingTranslatedPropertyError,
+  PropertyNotTranslatableError,
+  RequiredTranslatedPropertyError,
+} from '../errors.js';
 import { GenerateIdProperty } from '../../template/GenerateIdProperty.js';
 
 const createSampleTemplate = () =>
@@ -1716,6 +1722,59 @@ describe('Entity', () => {
       expect(entity.hasChanged).toBe(true);
     });
 
+    it('should return FALSE when updated with an equal icon and unchanged generatedToc', () => {
+      const entity = new Entity({
+        sharedId: 'sharedId',
+        template: createSampleTemplate(),
+        icon: { id: 'icon-123', type: 'image', label: 'Icon Label' },
+        generatedToc: false,
+        translations: [{ language: 'en', id: 'id_1' }],
+      });
+
+      entity.update({ icon: { id: 'icon-123', type: 'image', label: 'Icon Label' } });
+      entity.update({ generatedToc: undefined });
+      entity.update({ generatedToc: false });
+
+      expect(entity.hasChanged).toBe(false);
+    });
+
+    it('should keep the previous version untouched by later changes', () => {
+      const entity = new Entity({
+        sharedId: 'sharedId',
+        template: createSampleTemplate(),
+        translations: [
+          {
+            language: 'en',
+            id: 'id_1',
+            metadata: {
+              text: {
+                isTranslatable: true,
+                name: 'text',
+                type: 'text',
+                value: [{ value: 'text' }],
+              },
+              editDate: {
+                isTranslatable: false,
+                name: 'editDate',
+                type: 'date',
+                value: [{ value: 1 }],
+              },
+            },
+          },
+        ],
+      });
+
+      entity.setPropertyAssignments(
+        [entity.template.createPropertyAssignment('text', { value: [{ value: 'New text' }] })],
+        'en'
+      );
+      entity.update({ icon: { id: 'icon-123', type: 'image', label: 'Icon Label' } });
+
+      const [previous] = entity.previousVersion.asDTO.translations;
+      expect(previous.metadata!.text.value).toEqual([{ value: 'text' }]);
+      expect(previous.metadata!.editDate.value).toEqual([{ value: 1 }]);
+    });
+
     it('should return TRUE when generatedToc changes', () => {
       const entity = createTestEntity();
 
@@ -1757,6 +1816,328 @@ describe('Entity', () => {
       entity.changeTemplate(template2);
 
       expect(entity.hasChanged).toBe(true);
+    });
+  });
+
+  describe('changedLanguages', () => {
+    const createLoadedEntity = () =>
+      new Entity({
+        sharedId: 'sharedId',
+        template: createSampleTemplate(),
+        translations: [
+          { language: 'en', id: 'id_en' },
+          { language: 'pt', id: 'id_pt' },
+        ],
+      });
+
+    it('should be empty when nothing changed', () => {
+      const entity = createLoadedEntity();
+
+      entity.update({});
+
+      expect(entity.changedLanguages).toEqual([]);
+    });
+
+    it('should only include the language of a changed translatable property', () => {
+      const entity = createLoadedEntity();
+
+      entity.setPropertyAssignments(
+        [entity.template.createPropertyAssignment('text', { value: [{ value: 'texto' }] })],
+        'pt'
+      );
+
+      expect(entity.changedLanguages).toEqual(['pt']);
+    });
+
+    it('should include every language when a language-independent property changes', () => {
+      const entity = createLoadedEntity();
+
+      entity.setPropertyAssignments(
+        [entity.template.createPropertyAssignment('numeric', { value: [{ value: 42 }] })],
+        'pt'
+      );
+
+      expect(entity.changedLanguages).toEqual(['en', 'pt']);
+    });
+
+    it('should ignore values set again as loaded from storage', () => {
+      const entity = new Entity({
+        sharedId: 'sharedId',
+        template: createSampleTemplate(),
+        translations: (['en', 'pt'] as const).map(language => ({
+          language,
+          id: `id_${language}`,
+          metadata: {
+            text: {
+              name: 'text',
+              type: 'text',
+              isTranslatable: true,
+              language,
+              value: [{ value: 'same' }],
+            },
+            numeric: {
+              name: 'numeric',
+              type: 'numeric',
+              isTranslatable: false,
+              language,
+              value: [{ value: 1 }],
+            },
+          } as any,
+        })),
+      });
+
+      entity.setPropertyAssignments(
+        [
+          entity.template.createPropertyAssignment('text', { value: [{ value: 'same' }] }),
+          entity.template.createPropertyAssignment('numeric', { value: [{ value: 1 }] }),
+        ],
+        'pt'
+      );
+
+      expect(entity.changedLanguages).toEqual([]);
+      expect(entity.hasChanged).toBe(false);
+    });
+
+    it('should include every language when an entity-level field changes', () => {
+      const entity = createLoadedEntity();
+
+      entity.update({ icon: { id: 'icon-123', type: 'image', label: 'Icon Label' } });
+
+      expect(entity.changedLanguages).toEqual(['en', 'pt']);
+    });
+
+    it('should include every language when the template changes', () => {
+      const entity = createLoadedEntity();
+
+      entity.changeTemplate(TemplateBuilder.aTemplate({ id: 'other-template' }).build());
+
+      expect(entity.changedLanguages).toEqual(['en', 'pt']);
+    });
+
+    it('should ignore a change to editDate only', () => {
+      const entity = createLoadedEntity();
+
+      entity.getTranslation('pt').refreshEditDate(12345);
+
+      expect(entity.hasChanged).toBe(true);
+      expect(entity.changedLanguages).toEqual([]);
+    });
+
+    it('should only include the language whose title changed', () => {
+      const entity = createLoadedEntity();
+
+      entity.setPropertyAssignments(
+        [entity.template.createPropertyAssignment('title', { value: [{ value: 'título' }] })],
+        'pt'
+      );
+
+      expect(entity.changedLanguages).toEqual(['pt']);
+    });
+
+    it('should include a language added by ensureTranslations', () => {
+      const entity = createLoadedEntity();
+
+      entity.ensureTranslations(['en', 'pt', 'es'], 'en');
+
+      expect(entity.changedLanguages).toEqual(['es']);
+    });
+  });
+
+  describe('translations', () => {
+    const template = () =>
+      TemplateBuilder.aTemplate({ id: 'template' })
+        .withProperties([
+          new TextProperty({ id: 'text', template: 'template', label: 'Summary', required: true }),
+          new NumericProperty({ id: 'numeric', template: 'template', label: 'Amount' }),
+          new SelectProperty({
+            id: 'select',
+            template: 'template',
+            label: 'Country',
+            content: 'thesaurus',
+          }),
+        ])
+        .build();
+
+    const loadedEntity = () =>
+      new Entity({
+        sharedId: 'sharedId',
+        template: template(),
+        translations: [
+          {
+            language: 'en',
+            id: 'id_en',
+            metadata: {
+              title: {
+                name: 'title',
+                type: 'text',
+                isTranslatable: true,
+                value: [{ value: 'Title' }],
+              },
+              summary: {
+                name: 'summary',
+                type: 'text',
+                isTranslatable: true,
+                value: [{ value: 'Text' }],
+              },
+              country: {
+                name: 'country',
+                type: 'select',
+                isTranslatable: false,
+                language: 'en',
+                value: [{ value: 'fr', label: 'France' }],
+              } as any,
+            },
+          },
+          { language: 'es', id: 'id_es' },
+        ],
+      });
+
+    const assignment = (entity: Entity, name: string, value: string) =>
+      entity.template.createPropertyAssignment(name, { value: [{ value }] });
+
+    describe('ensureTranslations', () => {
+      it('should copy missing languages from the source language', () => {
+        const entity = loadedEntity();
+
+        entity.ensureTranslations(['en', 'es', 'pt'], 'en');
+
+        const pt = entity.getTranslation('pt');
+        expect(pt.id.value).not.toBe('id_en');
+        expect(pt.title.value).toEqual([{ value: 'Title' }]);
+        expect(pt.getValue('summary').value).toEqual([{ value: 'Text' }]);
+        expect(pt.getValue('country')).toMatchObject({ language: 'pt' });
+        expect(entity.getTranslation('es').title.value).toEqual([]);
+      });
+
+      it('should keep the copied language-scoped values editable in the new language', () => {
+        const entity = loadedEntity();
+        entity.ensureTranslations(['en', 'pt'], 'en');
+
+        entity.setPropertyAssignments(
+          [
+            entity.template.createPropertyAssignment('country', {
+              value: [{ value: 'fr', label: 'França' }],
+              language: 'pt',
+            }),
+          ],
+          'pt'
+        );
+
+        expect(entity.getTranslation('pt').getValue('country').value).toEqual([
+          { value: 'fr', label: 'França' },
+        ]);
+      });
+    });
+
+    describe('newLanguages', () => {
+      it('should list the translations added since the entity was loaded', () => {
+        const entity = loadedEntity();
+        expect(entity.newLanguages).toEqual([]);
+
+        entity.ensureTranslations(['en', 'es', 'pt'], 'en');
+
+        expect(entity.newLanguages).toEqual(['pt']);
+      });
+    });
+
+    describe('setTranslatedPropertyAssignments', () => {
+      it('should set translatable values only in the given language', () => {
+        const entity = loadedEntity();
+
+        entity.setTranslatedPropertyAssignments({
+          language: 'es',
+          assignments: [
+            assignment(entity, 'title', 'Título'),
+            assignment(entity, 'summary', 'Texto'),
+          ],
+        });
+
+        expect(entity.getTranslation('es').getValue('summary').value).toEqual([{ value: 'Texto' }]);
+        expect(entity.getTranslation('en').getValue('summary').value).toEqual([{ value: 'Text' }]);
+      });
+
+      it('should reject language-independent properties', () => {
+        const entity = loadedEntity();
+
+        expect(() =>
+          entity.setTranslatedPropertyAssignments({
+            language: 'es',
+            assignments: [
+              assignment(entity, 'title', 'Título'),
+              assignment(entity, 'summary', 'Texto'),
+              entity.template.createPropertyAssignment('amount', { value: [{ value: 1 }] }),
+            ],
+          })
+        ).toThrow(new PropertyNotTranslatableError('es', 'amount'));
+      });
+
+      it('should reject a translation missing a translatable property', () => {
+        const entity = loadedEntity();
+
+        expect(() =>
+          entity.setTranslatedPropertyAssignments({
+            language: 'es',
+            assignments: [assignment(entity, 'title', 'Título')],
+          })
+        ).toThrow(new MissingTranslatedPropertyError('es', 'summary'));
+      });
+
+      it.each([
+        ['the title', 'title', 'summary'],
+        ['a required property', 'summary', 'title'],
+      ])('should reject %s sent empty', (_case, emptyProperty, filledProperty) => {
+        const entity = loadedEntity();
+
+        expect(() =>
+          entity.setTranslatedPropertyAssignments({
+            language: 'es',
+            assignments: [
+              entity.template.createPropertyAssignment(emptyProperty, { value: [] }),
+              assignment(entity, filledProperty, 'Texto'),
+            ],
+            partial: true,
+          })
+        ).toThrow(new RequiredTranslatedPropertyError('es', emptyProperty));
+      });
+
+      describe('when partial translations are allowed', () => {
+        it('should set the provided values and keep the rest', () => {
+          const entity = loadedEntity();
+          entity.ensureTranslations(['en', 'es', 'pt'], 'en');
+
+          entity.setTranslatedPropertyAssignments({
+            language: 'pt',
+            assignments: [assignment(entity, 'title', 'Título')],
+            partial: true,
+          });
+
+          const pt = entity.getTranslation('pt');
+          expect(pt.title.value).toEqual([{ value: 'Título' }]);
+          expect(pt.getValue('summary').value).toEqual([{ value: 'Text' }]);
+        });
+
+        it('should still reject language-independent properties', () => {
+          const entity = loadedEntity();
+
+          expect(() =>
+            entity.setTranslatedPropertyAssignments({
+              language: 'es',
+              assignments: [
+                entity.template.createPropertyAssignment('amount', { value: [{ value: 1 }] }),
+              ],
+              partial: true,
+            })
+          ).toThrow(new PropertyNotTranslatableError('es', 'amount'));
+        });
+      });
+    });
+
+    describe('validateRequiredProperties', () => {
+      it('should fail when a required property is empty in any language', () => {
+        const entity = loadedEntity();
+
+        expect(() => entity.validateRequiredProperties()).toThrow(ZodError);
+      });
     });
   });
 });
