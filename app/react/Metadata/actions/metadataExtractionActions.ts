@@ -1,4 +1,4 @@
-import { Dispatch } from 'redux';
+import { AppDispatch } from '#app/thunkDispatch.js';
 import { actions as formActions } from 'react-redux-form';
 import { IImmutable } from '#shared/types/Immutable.js';
 import { EntitiesAPI as entitiesAPI } from '#app/Entities/EntitiesAPI.js';
@@ -38,7 +38,7 @@ const updateSelection = (
 
 const deleteSelection =
   (entityDocument: IImmutable<ClientFile> | undefined, propertyName: string, propertyID?: string) =>
-  (dispatch: Dispatch) => {
+  (dispatch: AppDispatch) => {
     const document = entityDocument?.toJS();
 
     const updatedSelections = document?.propertySelections?.filter(

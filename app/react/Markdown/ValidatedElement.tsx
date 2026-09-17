@@ -11,29 +11,23 @@ const ValidatedElement = (
   props: (React.Attributes & { children?: React.ReactNode }) | null,
   children: React.ReactNode[],
   sanitized = true
-): React.ReactElement | null => {
+): React.ReactElement<any> | null => {
   if (typeof type === 'string' && !isValidTagName(type, sanitized)) {
     return React.createElement('div', { className: 'error' }, `Invalid tag: ${type}`);
   }
 
   const validatedChildren = children.map(child => {
     if (Array.isArray(child)) {
-      return child.map(c => {
-        const childProps = c.props as React.Attributes & { children?: React.ReactNode };
-        return React.isValidElement(c)
-          ? ValidatedElement(
-              c.type,
-              childProps,
-              React.Children.toArray(childProps.children),
-              sanitized
-            )
-          : c;
-      });
+      return child.map(c =>
+        React.isValidElement<{ children?: React.ReactNode }>(c)
+          ? ValidatedElement(c.type, c.props, React.Children.toArray(c.props.children), sanitized)
+          : c
+      );
     }
-    if (React.isValidElement(child)) {
+    if (React.isValidElement<{ children?: React.ReactNode }>(child)) {
       return ValidatedElement(
         child.type,
-        child.props as React.Attributes & { children?: React.ReactNode },
+        child.props,
         React.Children.toArray(child.props.children),
         sanitized
       );

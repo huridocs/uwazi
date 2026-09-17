@@ -4,13 +4,16 @@ import superagent from 'superagent';
 import { actions } from '#app/BasicReducer/index.js';
 import { notify } from '#app/Notifications/actions/notificationsActions.js';
 import { t } from '#app/I18N/index.js';
-import { Dispatch } from 'redux';
+import { ThunkDispatch } from 'redux-thunk';
+import { AnyAction } from 'redux';
 import { IImmutable } from '#shared/types/Immutable.js';
 import { CaptchaValue } from '#shared/types/Captcha.js';
 import { EntitySchema } from '#shared/types/entityType.js';
 import { CsvExportBody } from '#shared/types/searchParameterType.js';
 import { processFilters } from './libraryActions.js';
 import { ExportStore } from '../reducers/ExportStoreType.js';
+
+type ExportDispatch = ThunkDispatch<any, unknown, AnyAction>;
 
 export function triggerLocalDownload(content: string, fileName: string) {
   const url: string = window.URL.createObjectURL(new Blob([content]));
@@ -22,14 +25,14 @@ export function triggerLocalDownload(content: string, fileName: string) {
   document.body.removeChild<HTMLAnchorElement>(link);
 }
 
-function clearState(dispatch: Dispatch<any>) {
+function clearState(dispatch: ExportDispatch) {
   dispatch(actions.set('exportSearchResultsProcessing', false));
   dispatch(actions.set('exportSearchResultsContent', ''));
   dispatch(actions.set('exportSearchResultsFileName', ''));
 }
 
 export function exportEnd() {
-  return (dispatch: Dispatch<any>, getState: () => ExportStore) => {
+  return (dispatch: ExportDispatch, getState: () => ExportStore) => {
     const { exportSearchResultsContent, exportSearchResultsFileName } =
       getState().exportSearchResults;
 
@@ -75,7 +78,7 @@ function extractFileName(contentDisposition: string) {
 
 const requestHandler = (
   _params: CsvExportBody & { ids?: Immutable.List<string> },
-  dispatch: Dispatch<any>,
+  dispatch: ExportDispatch,
   captcha?: CaptchaValue
 ) => {
   const params = { ..._params };
@@ -111,7 +114,7 @@ const requestHandler = (
 };
 
 export function exportDocuments(_storeKey: string, captcha?: CaptchaValue) {
-  return async (dispatch: Dispatch<any>, getState: any) => {
+  return async (dispatch: ExportDispatch, getState: any) => {
     const state = getState().library;
     const { search, filters } = state;
     const exportFilters = filters.toJS();

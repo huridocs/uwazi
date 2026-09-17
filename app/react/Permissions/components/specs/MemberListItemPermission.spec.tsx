@@ -3,6 +3,7 @@ import { shallow, ShallowWrapper } from 'enzyme';
 import { MemberWithPermission } from '#shared/types/entityPermisions.js';
 import { AccessLevels, PermissionType, MixedAccess } from '#shared/types/permissionSchema.js';
 import { MemberListItemPermission } from '../MemberListItemPermission.js';
+import { enzymeEl } from '#app/utils/test/renderConnected.js';
 import { data } from './testData.js';
 
 describe('MemberListItem', () => {
@@ -49,10 +50,13 @@ describe('MemberListItem', () => {
       <MemberListItemPermission value={data[1]} onChange={onChangeMock} onDelete={onDeleteMock} />
     );
 
-    component
-      .find('select')
-      .get(0)
-      .props.onChange({ target: { value: AccessLevels.WRITE } });
+    (
+      enzymeEl(component.find('select').get(0)).props.onChange as (event: {
+        target: { value: string };
+      }) => void
+    )({
+      target: { value: AccessLevels.WRITE },
+    });
 
     expect(onChangeMock).toHaveBeenCalledWith({
       ...data[1],
@@ -69,10 +73,13 @@ describe('MemberListItem', () => {
       <MemberListItemPermission value={data[1]} onChange={onChangeMock} onDelete={onDeleteMock} />
     );
 
-    component
-      .find('select')
-      .get(0)
-      .props.onChange({ target: { value: 'delete' } });
+    (
+      enzymeEl(component.find('select').get(0)).props.onChange as (event: {
+        target: { value: string };
+      }) => void
+    )({
+      target: { value: 'delete' },
+    });
 
     expect(onDeleteMock).toHaveBeenCalledWith(data[1]);
     expect(onChangeMock).not.toHaveBeenCalled();
@@ -83,6 +90,6 @@ describe('MemberListItem', () => {
       <MemberListItemPermission value={data[1]} onChange={() => {}} onDelete={() => {}} disabled />
     );
 
-    expect(component.find('select').get(0).props.disabled).toBe(true);
+    expect(enzymeEl(component.find('select').get(0)).props.disabled).toBe(true);
   });
 });

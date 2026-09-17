@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { type JSX } from 'react';
 import { mount, ReactWrapper, shallow } from 'enzyme';
 import configureMockStore, { MockStore, MockStoreCreator } from 'redux-mock-store';
 import { BrowserRouter, MemoryRouter, InitialEntry } from 'react-router';
@@ -108,4 +108,7 @@ const renderConnectedContainer = (
   };
 };
 
-export { renderConnected, renderConnectedMount, renderConnectedContainer, defaultState };
+const enzymeEl = (node: unknown): { props: { children?: unknown; [key: string]: unknown } } =>
+  node as { props: { children?: unknown; [key: string]: unknown } };
+
+export { renderConnected, renderConnectedMount, renderConnectedContainer, defaultState, enzymeEl };

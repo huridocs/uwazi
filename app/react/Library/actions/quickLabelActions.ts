@@ -1,4 +1,4 @@
-import { Dispatch } from 'redux';
+import { AppDispatch } from '#app/thunkDispatch.js';
 import { actions as formActions } from 'react-redux-form';
 import { actions } from '#app/BasicReducer/index.js';
 import { EntitiesAPI } from '#app/Entities/EntitiesAPI.js';
@@ -12,7 +12,7 @@ import { EntitySchema } from '#shared/types/entityType.js';
 import { updateEntities } from './libraryActions.js';
 
 function toggleQuickLabelAutoSave() {
-  return (dispatch: Dispatch<IStore>, getState: () => IStore) => {
+  return (dispatch: AppDispatch, getState: () => IStore) => {
     const opts = getState().library.sidepanel.quickLabelState.toJS();
     dispatch(
       actions.set('library.sidepanel.quickLabelState', {
@@ -63,7 +63,7 @@ function buildQuickLabelMetadata(docs: EntitySchema[], propNames: string[]): Qui
 }
 
 function selectedDocumentsChanged() {
-  return (dispatch: Dispatch<IStore>, getState: () => IStore) => {
+  return (dispatch: AppDispatch, getState: () => IStore) => {
     const model = 'library.sidepanel.quickLabelMetadata';
     const state = getState();
     if (!state.library?.sidepanel?.quickLabelState?.get('thesaurus')) {
@@ -96,7 +96,7 @@ function selectedDocumentsChanged() {
 }
 
 function maybeSaveQuickLabels(force?: boolean) {
-  return async (dispatch: Dispatch<IStore>, getState: () => IStore) => {
+  return async (dispatch: AppDispatch, getState: () => IStore) => {
     const state = getState();
     if (!force && !state.library?.sidepanel?.quickLabelState?.get('autoSave')) {
       return;

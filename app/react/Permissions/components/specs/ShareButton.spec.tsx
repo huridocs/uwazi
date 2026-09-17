@@ -1,6 +1,7 @@
 import { shallow } from 'enzyme';
 import React from 'react';
 import { ShareButton } from '../ShareButton.js';
+import { enzymeEl } from '#app/utils/test/renderConnected.js';
 import { ShareEntityModal } from '../ShareEntityModal.js';
 
 describe('ShareButton', () => {
@@ -14,7 +15,7 @@ describe('ShareButton', () => {
     component.find('button').simulate('click');
     const modal = component.find(ShareEntityModal);
     expect(modal.length).toBe(1);
-    expect(modal.get(0).props.sharedIds).toEqual(['id1', 'id2']);
+    expect(enzymeEl(modal.get(0)).props.sharedIds).toEqual(['id1', 'id2']);
   });
 
   it('should close the modal when onClose called', () => {
