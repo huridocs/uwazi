@@ -3,7 +3,7 @@ import relationships from '#api/relationships/relationships.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import { User } from '#api/users.v2/model/User.js';
 import { NonRetryableJobError } from '#api/core/libs/queue/infrastructure/errors.js';
-import { EntityNotFoundError } from '#api/core/application/errors.js';
+import { EntityNotFoundError } from '#api/core/domain/entity/errors.js';
 import { TemplatesDAOFactory } from '../factories/TemplatesDAOFactory.js';
 import { EntitiesDAOFactory } from '../factories/EntitiesDAOFactory.js';
 import { UwaziJobHandler, UwaziJobParams } from '#api/core/infrastructure/jobs/UwaziJobHandler.js';

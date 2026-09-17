@@ -72,6 +72,10 @@ class Template {
     return [...this.commonProperties, ...this.properties];
   }
 
+  get translatableProperties() {
+    return this.allProperties.filter(property => property.isTranslatable);
+  }
+
   set processing(
     processing: { active?: boolean; totalJobs?: number; completedJobs?: number } | undefined
   ) {

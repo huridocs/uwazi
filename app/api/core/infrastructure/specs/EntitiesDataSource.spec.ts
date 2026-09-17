@@ -16,8 +16,10 @@ import { EntitiesDataSourceFactory } from '#api/core/infrastructure/factories/En
 import { ExecutionContext } from '#api/core/libs/ExecutionContext.js';
 import { MongoTransactionManager } from '#api/core/infrastructure/mongodb/common/MongoTransactionManager.js';
 import { search } from '#api/search/index.js';
-import { EntityNotFoundError } from '#api/core/application/errors.js';
-import { EntityTemplateDoesNotExistError } from '#api/core/domain/entity/errors.js';
+import {
+  EntityNotFoundError,
+  EntityTemplateDoesNotExistError,
+} from '#api/core/domain/entity/errors.js';
 import { V1RelationshipProperty } from '#api/core/domain/template/V1RelationshipProperty.js';
 import { elasticTesting } from '#api/utils/elastic_testing.js';
 import { PermissionSchema } from '#shared/types/permissionType.js';
@@ -475,6 +477,84 @@ describe('EntitiesDataSource', () => {
           { title: 'Updated Title', published: true, permissions: existingPermissions },
           { title: 'Updated Title', published: true, permissions: existingPermissions },
         ]);
+      });
+
+      describe('when the entity gained a translation', () => {
+        const permissions: PermissionSchema[] = [
+          { refId: 'user-abc', type: 'user', level: 'write' },
+        ];
+
+        const setUpEntity = async (languages: LanguageISO6391[]) =>
+          testingEnvironment.setFixtures({
+            settings: [
+              {
+                languages: [
+                  { default: true, key: 'en', label: 'English' },
+                  { key: 'es', label: 'Spanish' },
+                  { key: 'pt', label: 'Portuguese' },
+                ],
+              },
+            ],
+            templates: [
+              factory.template('Template1', [
+                factory.property('text', 'text'),
+                factory.property('numeric', 'numeric'),
+              ]),
+            ],
+            entities: languages.map(language =>
+              factory.entity(
+                'translated',
+                'Template1',
+                {},
+                { language, title: `Stored ${language}`, published: true, permissions }
+              )
+            ),
+          });
+
+        const loadEnglishAndSpanishWithPortuguese = () => {
+          const template = createTemplateWithId(factory.idString('Template1'), 'Template1');
+          const entity = createEntityWithIds('translated', ['en', 'es'], template);
+          entity.ensureTranslations(['en', 'es', 'pt'], 'en');
+          entity.setPropertyAssignments(
+            [template.createPropertyAssignment('title', { value: [{ value: 'Saved pt' }] })],
+            'pt'
+          );
+          return entity;
+        };
+
+        const storedRows = async () =>
+          (await testingEnvironment.db.getAllFrom('entities'))
+            .filter(row => row.sharedId === 'translated')
+            .sort((a, b) => a.language.localeCompare(b.language));
+
+        it('should insert its row with the permissions of the entity', async () => {
+          await setUpEntity(['en', 'es']);
+          const { sut, transactionManager } = createSut();
+
+          await transactionManager.run(async () => {
+            await sut.update(loadEnglishAndSpanishWithPortuguese());
+          });
+
+          expect(await storedRows()).toMatchObject([
+            { language: 'en' },
+            { language: 'es' },
+            { language: 'pt', title: 'Saved pt', published: true, permissions },
+          ]);
+        });
+
+        it('should write onto the row created meanwhile by the language clone', async () => {
+          await setUpEntity(['en', 'es', 'pt']);
+          const { sut, transactionManager } = createSut();
+
+          await transactionManager.run(async () => {
+            await sut.update(loadEnglishAndSpanishWithPortuguese());
+          });
+
+          const rows = await storedRows();
+          expect(rows).toHaveLength(3);
+          expect(rows[2]).toMatchObject({ language: 'pt', title: 'Saved pt' });
+          expect(rows[2]._id.toString()).toBe(factory.idString('translated-pt'));
+        });
       });
 
       it('should unset preview when the entity has no preview', async () => {

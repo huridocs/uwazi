@@ -3,7 +3,7 @@ import { V1RelationshipProperty } from '#api/core/domain/template/V1Relationship
 import { Property } from '#api/core/domain/template/Property.js';
 import { ResultType } from '#api/core/libs/Result.js';
 import { Entity } from '#api/core/domain/entity/Entity.js';
-import { EntityNotFoundError } from '#api/core/application/errors.js';
+import { EntityNotFoundError } from '#api/core/domain/entity/errors.js';
 
 export interface EntitiesDataSource {
   /**

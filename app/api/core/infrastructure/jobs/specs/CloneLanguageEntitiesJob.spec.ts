@@ -4,6 +4,7 @@ import { getFixturesFactory } from '#api/utils/fixturesFactory.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import { DBFixture } from '#api/utils/testing_db.js';
 import { tenants } from '#api/tenants/index.js';
+import { testingTenants } from '#api/utils/testingTenants.js';
 import { SyncDispatcherForTests } from '#api/core/libs/queue/infrastructure/SyncDispatcherForTests.js';
 import { CloneLanguageEntitiesJobFactory } from '#api/core/infrastructure/factories/CloneLanguageEntitiesJobFactory.js';
 import { EntityPreviewBatchHandler } from '../EntityPreviewBatchHandler.js';
@@ -128,6 +129,47 @@ describe('CloneLanguageEntitiesJob', () => {
       await dispatch(createSUT(mockWebSockets), [{ from: 'en', to: 'ja' }]);
 
       expect(heartbeat).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe.each([
+    { name: 'Mongo', postgresCore: false },
+    { name: 'Postgres', postgresCore: true },
+  ])('when an entity already has a row for the target language ($name)', ({ postgresCore }) => {
+    const existingTranslationFixtures: DBFixture = {
+      ...fixtures,
+      entities: [
+        ...f.entityInMultipleLanguages(
+          ['en', 'ja'],
+          'entity1',
+          'template1',
+          {},
+          {},
+          {
+            ja: { title: 'entity1 already in japanese' },
+          }
+        ),
+        ...f.entityInMultipleLanguages(['en'], 'entity2', 'template1'),
+      ],
+    };
+
+    beforeEach(async () => {
+      await testingEnvironment.setUp(existingTranslationFixtures, { postgres: true });
+      testingTenants.changeCurrentTenant({ featureFlags: { postgresCore } });
+    });
+
+    it('should keep the existing row and clone the remaining entities', async () => {
+      await dispatch(createSUT(mockWebSockets), [{ from: 'en', to: 'ja' }]);
+
+      const japanese = (await testingEnvironment.db.getAllFrom('entities'))
+        .filter(entity => entity.language === 'ja')
+        .map(entity => ({ sharedId: entity.sharedId, title: entity.title }))
+        .sort((a, b) => a.sharedId.localeCompare(b.sharedId));
+
+      expect(japanese).toEqual([
+        { sharedId: 'entity1', title: 'entity1 already in japanese' },
+        { sharedId: 'entity2', title: 'entity2' },
+      ]);
     });
   });
 
