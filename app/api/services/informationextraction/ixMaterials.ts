@@ -17,7 +17,7 @@ import ixmodels from '#api/services/informationextraction/ixmodels.js';
 import { FileType } from '#shared/types/fileType.js';
 import templatesService from '#api/core/v1_layer/templates/templates.js';
 import { propertyTypes } from '#shared/propertyTypes.js';
-import { EnforcedWithId, UwaziFilterQuery } from '#api/odm/index.js';
+import { EnforcedWithId } from '#api/odm/index.js';
 import { EntitiesDAOFactory } from '#api/core/infrastructure/factories/EntitiesDAOFactory.js';
 import { EntityDBO } from '#api/core/infrastructure/mongodb/entity/EntityDBO.js';
 import {
@@ -342,7 +342,7 @@ async function getFilesForTraining(extractor: IXExtractorType) {
 async function getFileIdsWithReadySegmentations(
   extractorId: ObjectIdSchema,
   limit: number
-): Promise<ObjectIdSchema[]> {
+): Promise<{ fileIds: ObjectIdSchema[]; candidatesFound: boolean }> {
   const currentModel = await ixmodels.getByExtractorId(extractorId);
   const targetLimit = typeof limit === 'number' ? limit : BATCH_SIZE_FOR_PDF;
 
@@ -355,7 +355,7 @@ async function getFileIdsWithReadySegmentations(
   );
 
   if (!suggestions.length) {
-    return [];
+    return { fileIds: [], candidatesFound: false };
   }
 
   const readyLabeledFileIds: ObjectIdSchema[] = [];
@@ -455,7 +455,7 @@ async function getFileIdsWithReadySegmentations(
   if (chosen.length < fillTarget) takeFrom(readyLabeledFileIds, fillTarget);
   if (chosen.length < fillTarget) takeFrom(readyUnlabeledFileIds, fillTarget);
 
-  return chosen.slice(0, targetLimit);
+  return { fileIds: chosen.slice(0, targetLimit), candidatesFound: true };
 }
 
 function createBaseFileQuery() {
@@ -510,7 +510,7 @@ async function getFilesForIdsQuery(model: EnforcedWithId<IXModelType>, BATCH_SIZ
   const sharedIds = await getNextSharedIdsBatch(model, BATCH_SIZE);
 
   if (!sharedIds) {
-    return null;
+    return { query: null, awaitingSegmentation: false };
   }
 
   // Get all files for these entities
@@ -522,30 +522,48 @@ async function getFilesForIdsQuery(model: EnforcedWithId<IXModelType>, BATCH_SIZ
   const readyFileIds = await filterFileIdsByReadySegmentations(allFileIds);
 
   if (!readyFileIds.length) {
-    return null;
+    return { query: null, awaitingSegmentation: allFileIds.length > 0 };
   }
 
-  return createFilesQueryByIds(readyFileIds);
+  return { query: createFilesQueryByIds(readyFileIds), awaitingSegmentation: false };
 }
 
 async function getFilesForSuggestionsQuery(extractorId: ObjectIdSchema, BATCH_SIZE: number) {
-  const readyFileIds = await getFileIdsWithReadySegmentations(extractorId, BATCH_SIZE);
+  const { fileIds, candidatesFound } = await getFileIdsWithReadySegmentations(
+    extractorId,
+    BATCH_SIZE
+  );
 
-  if (!readyFileIds.length) {
-    return null;
+  if (!fileIds.length) {
+    return { query: null, awaitingSegmentation: candidatesFound };
   }
 
-  return createFilesQueryByIds(readyFileIds);
+  return { query: createFilesQueryByIds(fileIds), awaitingSegmentation: false };
 }
 
-async function getFilesForSuggestions(extractorId: ObjectIdSchema, limit?: number) {
+type FilesForSuggestionsBatch = {
+  files: FileWithAggregation[];
+  /**
+   * The batch is empty because none of the candidate files has a ready segmentation — as
+   * opposed to there being nothing left to find. The two must not be reported the same way:
+   * the first is not a finished run.
+   */
+  awaitingSegmentation: boolean;
+};
+
+async function getFilesForSuggestionsBatch(
+  extractorId: ObjectIdSchema,
+  limit?: number
+): Promise<FilesForSuggestionsBatch> {
+  const nothingLeft = { files: [], awaitingSegmentation: false };
+
   const [currentModel, extractor] = await Promise.all([
     ixmodels.getByExtractorId(extractorId),
     Extractors.getById(extractorId),
   ]);
 
   if (!extractor) {
-    return [];
+    return nothingLeft;
   }
 
   // Re-read of the model the caller already holds; `sendMaterialsAndTaskSuggestions` cannot
@@ -561,19 +579,16 @@ async function getFilesForSuggestions(extractorId: ObjectIdSchema, limit?: numbe
     ? model.processRun!.findSuggestionsSharedIds!.length > 0
     : false;
   if (isSelectedMode && !hasSelectedQueue) {
-    return [];
+    return nothingLeft;
   }
 
-  let filesQuery: UwaziFilterQuery<FileType> | null = {};
-
-  if (model.processRun?.findSuggestionsSharedIds?.length) {
-    filesQuery = await getFilesForIdsQuery(model, BATCH_SIZE);
-  } else {
-    filesQuery = await getFilesForSuggestionsQuery(extractorId, BATCH_SIZE);
-  }
+  const { query: filesQuery, awaitingSegmentation } = model.processRun?.findSuggestionsSharedIds
+    ?.length
+    ? await getFilesForIdsQuery(model, BATCH_SIZE)
+    : await getFilesForSuggestionsQuery(extractorId, BATCH_SIZE);
 
   if (!filesQuery) {
-    return [];
+    return { files: [], awaitingSegmentation };
   }
 
   const dao = FilesDAOFactory.default();
@@ -585,7 +600,12 @@ async function getFilesForSuggestions(extractorId: ObjectIdSchema, limit?: numbe
     filesToProcess as (FileType & FileEnforcedNotUndefined)[]
   );
 
-  return filesWithAggregation;
+  return { files: filesWithAggregation, awaitingSegmentation: false };
+}
+
+async function getFilesForSuggestions(extractorId: ObjectIdSchema, limit?: number) {
+  const { files } = await getFilesForSuggestionsBatch(extractorId, limit);
+  return files;
 }
 
 export {
@@ -596,6 +616,7 @@ export {
   getFilesForTraining,
   getEntitiesForTraining,
   getFilesForSuggestions,
+  getFilesForSuggestionsBatch,
   getEntitiesForSuggestions,
   getSegmentedFilesIds,
   getPropertyType,
