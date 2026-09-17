@@ -1,5 +1,6 @@
-import type { LibrarySearchHit } from '#shared/types/librarySearch.js';
-import type { EntityCardLayout } from '../EntityCard.js';
+import type { LibraryAggregations, LibrarySearchHit } from '#shared/types/librarySearch.js';
+import type { LibrarySortOrder } from '../../libraryUrlState.js';
+import type { LibraryTableColumnDef, LibraryTableDensity } from '../libraryTableColumns.js';
 
 type LibraryViewerProps = {
   rows: LibrarySearchHit[];
@@ -10,7 +11,13 @@ type LibraryViewerProps = {
   onLoadMore: (amount: number) => void;
   showThumbnail: boolean;
   showMetadata: boolean;
-  layout: EntityCardLayout;
+  aggregations?: LibraryAggregations;
+  sort?: string;
+  order?: LibrarySortOrder;
+  onSortChange?: (sort: string, order: LibrarySortOrder) => void;
+  onFocusProperty?: (sharedId: string, fieldKey: string) => void;
+  tableColumns?: LibraryTableColumnDef[];
+  tableDensity?: LibraryTableDensity;
 };
 
 export type { LibraryViewerProps };

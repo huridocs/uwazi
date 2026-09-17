@@ -2,6 +2,8 @@ import type { ReactNode } from 'react';
 
 export type SortDir = 'asc' | 'desc';
 
+export type DataTableDensity = 'comfortable' | 'compact';
+
 export interface DataTableColumn<T> {
   id: string;
   header: ReactNode;
