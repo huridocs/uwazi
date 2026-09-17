@@ -1,5 +1,7 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
+import { useAtom, useAtomValue } from 'jotai';
 import { PaneLayout } from '#V2/Components/Layouts/PaneLayout.js';
+import { templatesAtom } from '#V2/atoms/templatesAtom.js';
 import type { LibraryAggregations, LibrarySearchHit } from '#shared/types/librarySearch.js';
 import type { LibraryFiltersState, LibrarySortOrder, LibraryViewMode } from '../libraryUrlState.js';
 import { LibraryFilters } from './LibraryFilters.js';
@@ -8,6 +10,14 @@ import { LibraryToolbar } from './LibraryToolbar.js';
 import type { Chip } from './ActiveFiltersSheet.js';
 import { LibraryEntityPreview } from './LibraryEntityPreview.js';
 import { LibraryViewerHost } from './Viewers/index.js';
+import { libraryTableDisplayAtom } from './libraryTableDisplayAtom.js';
+import {
+  visibleLibraryTableColumns,
+  libraryTableColumnGroups,
+  libraryTableColumns,
+  toggleColumnVisibility,
+  type LibraryTableDensity,
+} from './libraryTableColumns.js';
 
 type LibraryViewProps = {
   rows: LibrarySearchHit[];
@@ -31,6 +41,56 @@ type LibraryViewProps = {
   onClosePreview: () => void;
   entityBasePath: string;
   onLoadMore: (amount: number) => void;
+};
+
+const useLibraryTableDisplay = (selectedTemplateIds: string[]) => {
+  const templates = useAtomValue(templatesAtom);
+  const [tableDisplay, setTableDisplay] = useAtom(libraryTableDisplayAtom);
+  const tableColumnGroups = useMemo(
+    () => libraryTableColumnGroups(templates, selectedTemplateIds),
+    [selectedTemplateIds, templates]
+  );
+  const tableColumns = useMemo(
+    () => libraryTableColumns(templates, selectedTemplateIds),
+    [selectedTemplateIds, templates]
+  );
+  const visibleTableColumns = useMemo(
+    () => visibleLibraryTableColumns(tableColumns, tableDisplay),
+    [tableColumns, tableDisplay]
+  );
+
+  return {
+    tableColumns,
+    tableColumnGroups,
+    visibleTableColumns,
+    tableDisplay,
+    onToggleTableColumn: (id: string) =>
+      setTableDisplay(current => toggleColumnVisibility(id, current)),
+    onTableDensityChange: (density: LibraryTableDensity) =>
+      setTableDisplay(current => ({ ...current, density })),
+  };
+};
+
+const useLibraryPreviewFocus = (
+  onSelect: (sharedId: string) => void,
+  onClosePreview: () => void
+) => {
+  const [focusFieldKey, setFocusFieldKey] = useState<string>();
+  return {
+    focusFieldKey,
+    selectRow: (sharedId: string) => {
+      setFocusFieldKey(undefined);
+      onSelect(sharedId);
+    },
+    selectProperty: (sharedId: string, fieldKey: string) => {
+      setFocusFieldKey(fieldKey);
+      onSelect(sharedId);
+    },
+    closePreview: () => {
+      setFocusFieldKey(undefined);
+      onClosePreview();
+    },
+  };
 };
 
 const LibraryView = ({
@@ -58,6 +118,18 @@ const LibraryView = ({
 }: LibraryViewProps) => {
   const [showThumbnail, setShowThumbnail] = useState(true);
   const [showMetadata, setShowMetadata] = useState(true);
+  const {
+    tableColumns,
+    tableColumnGroups,
+    visibleTableColumns,
+    tableDisplay,
+    onToggleTableColumn,
+    onTableDensityChange,
+  } = useLibraryTableDisplay(filters.type ?? []);
+  const { focusFieldKey, selectRow, selectProperty, closePreview } = useLibraryPreviewFocus(
+    onSelect,
+    onClosePreview
+  );
 
   return (
     <div className="h-full min-h-0 bg-warm" data-testid="library-v2">
@@ -81,6 +153,11 @@ const LibraryView = ({
               onShowThumbnailChange={setShowThumbnail}
               showMetadata={showMetadata}
               onShowMetadataChange={setShowMetadata}
+              tableColumns={tableColumns}
+              tableColumnGroups={tableColumnGroups}
+              tableDisplay={tableDisplay}
+              onToggleTableColumn={onToggleTableColumn}
+              onTableDensityChange={onTableDensityChange}
             />
             <div
               className={
@@ -96,11 +173,18 @@ const LibraryView = ({
                 rows={rows}
                 totalRows={totalRows}
                 selectedId={selectedId}
-                onSelect={onSelect}
+                onSelect={selectRow}
                 entityBasePath={entityBasePath}
                 onLoadMore={onLoadMore}
                 showThumbnail={showThumbnail}
                 showMetadata={showMetadata}
+                aggregations={aggregations}
+                sort={sort}
+                order={order}
+                onSortChange={onSortChange}
+                onFocusProperty={selectProperty}
+                tableColumns={visibleTableColumns}
+                tableDensity={tableDisplay.density}
               />
             </div>
             <LibraryResultsFooter />
@@ -112,7 +196,8 @@ const LibraryView = ({
               key={selectedId}
               sharedId={selectedId}
               entityBasePath={entityBasePath}
-              onClose={onClosePreview}
+              onClose={closePreview}
+              focusFieldKey={focusFieldKey}
             />
           ) : (
             <LibraryFilters

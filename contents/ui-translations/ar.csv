@@ -133,7 +133,6 @@ Are you sure you want to delete this item?,هل أنت متأكد من أنك ت
 Are you sure you want to delete this relationship? This action cannot be undone.,هل أنت متأكد من رغبتك في حذف هذه العلاقة؟ لا يمكن التراجع عن هذا الإجراء.
 Are you sure you want to delete this visualization? This action cannot be undone.,هل أنت متأكد من رغبتك في حذف هذا العرض المرئي؟ لا يمكن التراجع عن هذا الإجراء.
 Are you sure?,هل أنت متأكد؟
-Ascending,تصاعدي
 Ask Bert,اسأل Bert
 Attachment,المرفق
 Attachment deleted,تم حذف المرفق
@@ -220,8 +219,11 @@ Collection,المجموعة
 Collection Name,اسم المجموعة
 Colors,الألوان
 Colors come from the server data layer. Preview shows assigned bucket colors when available.,تأتي الألوان من طبقة بيانات الخادم. تعرض المعاينة ألوان المجموعات المخصصة، إن وجدت.
+Columns,Columns
 combine or exclude terms,دمج المصطلحات أو استبعادها
+Comfortable,Comfortable
 Common sources,المصادر الشائعة
+Compact,Compact
 Completed,مكتمل
 Completed with errors,مكتمل مع وجود أخطاء
 Config,الإعدادات
@@ -300,6 +302,7 @@ Created user group,تم إنشاء مجموعة مستخدمين
 Creating entities,إنشاء الكيانات
 Creating relationships,إنشاء العلاقات
 Creating thesauri,إنشاء قواميس المرادفات
+Creation date,Creation date
 CSS,CSS
 csv blank state message,استيراد ملفات CSV أو ZIP لإنشاء كيانات بشكل جماعي. حدد **+ استيراد CSV** للبدء.
 CSV Import,استيراد ملف CSV
@@ -373,7 +376,6 @@ Deleted user,مستخدم محذوف
 Deleted user group,مجموعة مستخدمين محذوفة
 Deletion success,تم الحذف بنجاح
 Density,الكثافة
-Descending,تنازلي
 Description,وصف
 Deselect all,إلغاء تحديد الكل
 Details,التفاصيل
@@ -422,7 +424,8 @@ e.g.,على سبيل المثال:
 Each series uses the template brand color when comparing data sources.,تستخدم كل سلسلة لون العلامة التجارية النموذجي عند مقارنة مصادر البيانات.
 Earlier,في وقت سابق
 Edit,تحرير
-Edit at source,التحرير من المصدر
+Edit at source,التحرير من
+Edit date,Edit date
 Edit Extractor,تحرير المستخرج
 Edit File,تحرير الملف
 Edit group,تحرير المجموعة
@@ -749,6 +752,7 @@ Months,الأشهر
 More,المزيد
 more,المزيد
 more options.,مزيد من الخيارات
+More rows per screen; same type size,More rows per screen; same type size
 Multi-source mode,وضع المصادر المتعددة
 Multiple date,تواريخ متعددة
 Multiple date range,نطاق تواريخ متعددة
@@ -1078,6 +1082,7 @@ Return to login,العودة لتسجيل الدخول
 Review,مراجعة
 Reviewed,تمت مراجعته
 Role,دور
+Room around every row,Room around every row
 Route,مسار
 Row,صف
 Row density,كثافة الصفوف
@@ -1202,7 +1207,6 @@ Something went wrong,حدث خطأ ما
 Sort,تصنيف
 Sort ascending,الترتيب تصاعديًّا
 Sort descending,الترتيب التنازلي
-Sort order,ترتيب الفرز
 Sort:,الترتيب:
 sorted by,مرتبة حسب
 Source,المصدر

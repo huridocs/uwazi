@@ -133,7 +133,6 @@ Are you sure you want to delete this item?,Θέλετε σίγουρα να δι
 Are you sure you want to delete this relationship? This action cannot be undone.,Είστε σίγουροι ότι θέλετε να διαγράψετε αυτή τη σχέση; Αυτή η ενέργεια δεν μπορεί να αναιρεθεί.
 Are you sure you want to delete this visualization? This action cannot be undone.,Είστε σίγουροι ότι θέλετε να διαγράψετε αυτή την απεικόνιση; Αυτή η ενέργεια δεν μπορεί να αναιρεθεί.
 Are you sure?,Θέλετε σίγουρα να συνεχίσετε;
-Ascending,Αύξουσα σειρά
 Ask Bert,Ρωτήστε τον Bert
 Attachment,Το συνημμένο
 Attachment deleted,Το συνημμένο αρχείο διαγράφηκε
@@ -220,8 +219,11 @@ Collection,Συλλογή
 Collection Name,Όνομα συλλογής
 Colors,Χρώματα
 Colors come from the server data layer. Preview shows assigned bucket colors when available.,"Τα χρώματα προέρχονται από το επίπεδο δεδομένων του διακομιστή. Η προεπισκόπηση εμφανίζει τα χρώματα που έχουν αντιστοιχιστεί στους κάδους, όταν είναι διαθέσιμα."
+Columns,Columns
 combine or exclude terms,συνδυάστε ή εξαιρέστε όρους
+Comfortable,Comfortable
 Common sources,Κοινές πηγές
+Compact,Compact
 Completed,Ολοκληρώθηκε
 Completed with errors,Ολοκληρώθηκε με λάθη
 Config,Ρυθμίσεις
@@ -300,6 +302,7 @@ Created user group,Δημιουργήθηκε ομάδα χρηστών
 Creating entities,Δημιουργία οντοτήτων
 Creating relationships,Δημιουργία σχέσεων
 Creating thesauri,Δημιουργία θησαυρών όρων
+Creation date,Creation date
 CSS,CSS
 csv blank state message,Εισαγάγετε αρχεία CSV ή ZIP για να δημιουργήσετε οντότητες μαζικά. Επιλέξτε **+ Εισαγωγή CSV** για να ξεκινήσετε.
 CSV Import,Εισαγωγή αρχείου CSV
@@ -373,7 +376,6 @@ Deleted user,Διαγράφηκε χρήστης
 Deleted user group,Διαγράφηκε ομάδα χρηστών
 Deletion success,Επιτυχία διαγραφής
 Density,Πυκνότητα
-Descending,Φθίνουσα σειρά
 Description,Περιγραφή
 Deselect all,Αποεπιλογή όλων
 Details,Λεπτομέρειες
@@ -423,6 +425,7 @@ Each series uses the template brand color when comparing data sources.,Κάθε 
 Earlier,Νωρίτερα
 Edit,Επεξεργασία
 Edit at source,Επεξεργασία στην πηγή
+Edit date,Edit date
 Edit Extractor,Επεξεργασία εξαγωγέα
 Edit File,Επεξεργασία αρχείου
 Edit group,Επεξεργασία ομάδας
@@ -749,6 +752,7 @@ Months,Μήνες
 More,Περισσότερα
 more,περισσότερα
 more options.,περισσότερες επιλογές.
+More rows per screen; same type size,More rows per screen; same type size
 Multi-source mode,Λειτουργία πολλαπλών πηγών
 Multiple date,Πολλαπλή ημερομηνία
 Multiple date range,Πολλαπλό εύρος ημερομηνιών
@@ -1078,6 +1082,7 @@ Return to login,Επιστροφή στη σύνδεση
 Review,Προεπισκόπηση
 Reviewed,Προεπισκόπηθηκε
 Role,Ρόλος
+Room around every row,Room around every row
 Route,Διαδρομή
 Row,Σειρά
 Row density,Πυκνότητα σειρών
@@ -1202,7 +1207,6 @@ Something went wrong,Κάτι πήγε στραβά
 Sort,Ταξινόμηση
 Sort ascending,Ταξινόμηση αύξουσα
 Sort descending,Ταξινόμηση φθίνουσα
-Sort order,Σειρά ταξινόμησης
 Sort:,Ταξινόμηση:
 sorted by,Ταξινόμηση κατά
 Source,Πηγή

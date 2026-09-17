@@ -133,7 +133,6 @@ Are you sure you want to delete this item?,"Ви впевнені, що хоче
 Are you sure you want to delete this relationship? This action cannot be undone.,"Ви впевнені, що хочете видалити цей зв’язок? Цю дію неможливо скасувати."
 Are you sure you want to delete this visualization? This action cannot be undone.,"Ви впевнені, що хочете видалити цю візуалізацію? Цю дію неможливо скасувати."
 Are you sure?,Ти впевнений?
-Ascending,Зростаючий
 Ask Bert,Запитай Bert
 Attachment,Вкладення
 Attachment deleted,Вкладення видалено
@@ -221,8 +220,11 @@ Collection,Колекція
 Collection Name,Назва колекції
 Colors,Кольори
 Colors come from the server data layer. Preview shows assigned bucket colors when available.,"Кольори беруться з рівня даних сервера. У попередньому перегляді відображаються призначені кольори сегментів, якщо вони доступні."
+Columns,Columns
 combine or exclude terms,об’єднати або виключити терміни
+Comfortable,Comfortable
 Common sources,Загальні джерела
+Compact,Compact
 Completed,Завершено
 Completed with errors,Завершено з помилками
 Config,Налаштування
@@ -301,6 +303,7 @@ Created user group,Створена група користувачів
 Creating entities,Створення об’єктів
 Creating relationships,Створення зв’язків
 Creating thesauri,Створення тезаурусів
+Creation date,Creation date
 CSS,CSS
 csv blank state message,"Імпортуйте файли CSV або ZIP для масового створення об’єктів. Щоб розпочати, натисніть **+ Імпортувати CSV**."
 CSV Import,Імпорт CSV
@@ -374,7 +377,6 @@ Deleted user,Видалений користувач
 Deleted user group,Видалена група користувачів
 Deletion success,Успішність видалення
 Density,Щільність
-Descending,Спадний
 Description,Опис
 Deselect all,Скасувати вибір усіх
 Details,Деталі
@@ -424,6 +426,7 @@ Each series uses the template brand color when comparing data sources.,"У ко�
 Earlier,Раніше
 Edit,Редагувати
 Edit at source,Редагувати в джерелі
+Edit date,Edit date
 Edit Extractor,Редагувати витягач
 Edit File,Редагувати файл
 Edit group,Група редагування
@@ -750,6 +753,7 @@ Months,Місяці
 More,Більше
 more,далі
 more options.,більше опцій.
+More rows per screen; same type size,More rows per screen; same type size
 Multi-source mode,Режим роботи з декількома джерелами
 Multiple date,Кілька дат
 Multiple date range,Діапазон кількох дат
@@ -1079,6 +1083,7 @@ Return to login,Повернутись до авторизації
 Review,Огляд
 Reviewed,Переглянуто
 Role,Роль
+Room around every row,Room around every row
 Route,Маршрут
 Row,Гребіть!
 Row density,Щільність рядів
@@ -1203,7 +1208,6 @@ Something went wrong,Щось пішло не так
 Sort,Сортувати
 Sort ascending,Сортування за зростанням
 Sort descending,Сортування за спаданням
-Sort order,Порядок сортування
 Sort:,Сортувати:
 sorted by,відсортовано за
 Source,Джерело

@@ -132,7 +132,6 @@ Are you sure you want to delete this item?,ဤအရာကို ဖျက်လ
 Are you sure you want to delete this relationship? This action cannot be undone.,ဤဆက်နွယ်မှုကို ဖျက်လိုပါသလား? ဤလုပ်ဆောင်ချက်ကို ပြန်မလုပ်နိုင်ပါ။
 Are you sure you want to delete this visualization? This action cannot be undone.,ဤမြင်ကွင်းကို ဖျက်လိုပါသလား? ဤလုပ်ဆောင်ချက်ကို ပြန်မလုပ်နိုင်ပါ။
 Are you sure?,သေချာပါသလား?
-Ascending,တက်လာခြင်း
 Ask Bert,Bert ကိုမေးပါ
 Attachment,ပူးတွဲစာရွက်
 Attachment deleted,ပူးတွဲဖိုင် ဖျက်သွားပါပြီ။
@@ -218,8 +217,11 @@ Collection,စုစည်းမှု
 Collection Name,စုစည်းမှုအမည်
 Colors,အရောင်များ
 Colors come from the server data layer. Preview shows assigned bucket colors when available.,အရောင်များသည် ဆာဗာဒေတာအလွှာမှ ရရှိသည်။ Preview သည် ရနိုင်ပါက သတ်မှတ်ထားသော bucket အရောင်များကို ပြသသည်။
+Columns,Columns
 combine or exclude terms,စကားလုံးများကို ပေါင်းစပ် သို့မဟုတ် ထုတ်ပယ်
+Comfortable,Comfortable
 Common sources,အထွေထွေ ရင်းမြစ်များ
+Compact,Compact
 Completed,ပြီးစီးပြီးပါပြီ
 Completed with errors,အမှားများပါဝင်ပြီး ပြီးစီးထားသည်။
 Config,ပြင်ဆင်ချက်များ
@@ -298,6 +300,7 @@ Created user group,အသုံးပြုသူအုပ်စုကို ဖ
 Creating entities,အဖွဲ့အစည်းများ ဖန်တီးခြင်း
 Creating relationships,ဆက်နွယ်မှုများ ဖန်တီးခြင်း
 Creating thesauri,အဓိပ္ပာယ်တူစာရင်းများ ဖန်တီးခြင်း
+Creation date,Creation date
 CSS,CSS
 csv blank state message,CSV သို့မဟုတ် ZIP ဖိုင်များကို တစ်ပြိုင်နက်အများကြီး အဖွဲ့အစည်းများ ဖန်တီးရန် အပ်လိုဒ်လုပ်ပါ။ စတင်ရန် **+ Import CSV** ကို ရွေးပါ။
 CSV Import,CSV တင်သွင်းခြင်း
@@ -367,7 +370,6 @@ Deleted user,ဖျက်ထားသော အသုံးပြုသူ
 Deleted user group,ဖျက်ထားသော အသုံးပြုသူအုပ်စု
 Deletion success,ဖျက်ခြင်းအောင်မြင်ပါပြီ
 Density,သိပ်သည်းမှု
-Descending,ဆင်းနေသည်
 Description,ဖော်ပြချက်
 Deselect all,အားလုံးကိုရွေးချယ်ခြင်းဖျက်ရန်
 Details,အသေးစိတ်အချက်အလက်များ
@@ -417,6 +419,7 @@ Each series uses the template brand color when comparing data sources.,စီး
 Earlier,ယခင်က
 Edit,တည်းဖြတ်ရန်
 Edit at source,အရင်းအမြစ်တွင် တည်းဖြတ်ပါ
+Edit date,Edit date
 Edit Extractor,ထုတ်ယူသူကို တည်းဖြတ်ပါ
 Edit File,ဖိုင် တည်းဖြတ်
 Edit group,အုပ်စုကို တည်းဖြတ်ပါ
@@ -740,6 +743,7 @@ Months,လများ
 More,ပိုမို
 more,ပို
 more options.,နောက်ထပ် ရွေးချယ်စရာများ။
+More rows per screen; same type size,More rows per screen; same type size
 Multi-source mode,အရင်းအမြစ်များစွာ မုဒ်
 Multiple date,တစ်ခုထက်ပိုသော ရက်စွဲ
 Multiple date range,အချိန်ကာလအများအပြား
@@ -1061,6 +1065,7 @@ Return to login,လော့ဂ်အင်သို့ ပြန်သွား
 Review,ပြန်လည်သုံးသပ်ချက်
 Reviewed,သုံးသပ်ပြီး
 Role,အခန်းကဏ္ဍ
+Room around every row,Room around every row
 Route,လမ်းကြောင်း
 Row,တန်း
 Row density,တန်း သိပ်သည်းမှု
@@ -1185,7 +1190,6 @@ Something went wrong,တစ်ခုခု မှားသွားသည်
 Sort,အမျိုးအစားခွဲရန်
 Sort ascending,တက်လာအောင် စီရန်
 Sort descending,မြင့်မှ နိမ့်အလိုက် စီရန်
-Sort order,စီစဉ်ရန် အဆင့်
 Sort:,စီစဉ်ရန်:
 sorted by,ဤသို့ အမျိုးအစားခွဲထားသည်
 Source,အရင်းအမြစ်
@@ -1445,7 +1449,7 @@ Validating file structure and headers.,ဖိုင်ဖွဲ့စည်း�
 Value,တန်ဖိုး
 Value cannot be transformed to the correct type,တန်ဖိုးကို မှန်ကန်သော အမျိုးအစားသို့ ပြောင်းလဲ၍ မရနိုင်ပါ။
 values,တန်ဖိုးများ
-"values are staged, not saved","တန်ဖိုးများ စောင့်ဆိုင်းနေဆဲဖြစ်ပြီး သိမ်းဆည်းမထားသေးပါ။"
+"values are staged, not saved",တန်ဖိုးများ စောင့်ဆိုင်းနေဆဲဖြစ်ပြီး သိမ်းဆည်းမထားသေးပါ။
 Verify,မှန်ကန်ကြောင်း စစ်ဆေးရန်
 Verifying...,မှန်ကန်ကြောင်း စစ်ဆေးဆဲ...
 via,မှတဆင့်

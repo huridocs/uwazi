@@ -20,6 +20,7 @@ import { NestedFacet, toggleValue } from './NestedFacet.js';
 import { TextFacet } from './TextFacet.js';
 import { NumericFacet } from './NumericFacet.js';
 import { DateFacet } from './DateFacet.js';
+import { TypeFacet } from './TypeFacet.js';
 import { LibraryFooterButton } from './LibraryFooterButton.js';
 import { ActiveFiltersSheet, type Chip } from './ActiveFiltersSheet.js';
 
@@ -210,7 +211,6 @@ const LibraryFilters = ({
   const locale = useAtomValue(localeAtom) || 'en';
   const typeIds = filters.type ?? [];
   const status = filters.status ?? [];
-  const templateById = new Map(templates.map(template => [template._id, template]));
   const properties = filterableProperties(templates, typeIds);
 
   const publishedCount = aggregations.published.published;
@@ -280,29 +280,12 @@ const LibraryFilters = ({
           </NeedAuthorization>
         )}
 
-        {aggregations.templates.length > 0 && (
-          <FacetCard title={<Translate>Type</Translate>} open={isOpen('type')}>
-            {aggregations.templates.map(bucket => {
-              const template = templateById.get(bucket.id);
-              return (
-                <FacetRow
-                  key={bucket.id}
-                  checked={typeIds.includes(bucket.id)}
-                  onToggle={() => setFilter('type', toggleValue(typeIds, bucket.id))}
-                  label={
-                    template ? (
-                      <Translate context={template._id}>{template.name}</Translate>
-                    ) : (
-                      bucket.id
-                    )
-                  }
-                  count={bucket.count}
-                  bold
-                />
-              );
-            })}
-          </FacetCard>
-        )}
+        <TypeFacet
+          aggregations={aggregations}
+          typeIds={typeIds}
+          setFilter={setFilter}
+          open={isOpen('type')}
+        />
 
         {propertyFacets.map(property => (
           <PropertyFacet

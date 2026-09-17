@@ -133,7 +133,6 @@ Are you sure you want to delete this item?,이 항목을 정말로 삭제하시�
 Are you sure you want to delete this relationship? This action cannot be undone.,이 관계를 정말로 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.
 Are you sure you want to delete this visualization? This action cannot be undone.,이 시각화를 정말 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.
 Are you sure?,확실하십니까?
-Ascending,오름차순
 Ask Bert,버트에게 물어보세요
 Attachment,첨부 파일
 Attachment deleted,첨부 파일 삭제됨
@@ -218,8 +217,11 @@ Collection,컬렉션
 Collection Name,컬렉션 이름
 Colors,색상
 Colors come from the server data layer. Preview shows assigned bucket colors when available.,색상은 서버 데이터 계층에서 제공됩니다. 미리보기에서는 가능한 경우 할당된 버킷 색상이 표시됩니다.
+Columns,Columns
 combine or exclude terms,검색어 결합 또는 제외
+Comfortable,Comfortable
 Common sources,일반적인 출처
+Compact,Compact
 Completed,완료됨
 Completed with errors,오류가 있는 상태로 완료됨
 Config,구성
@@ -298,6 +300,7 @@ Created user group,사용자 그룹 생성
 Creating entities,엔티티 생성
 Creating relationships,관계 형성
 Creating thesauri,시소러스 작성
+Creation date,Creation date
 CSS,CSS
 csv blank state message,CSV 또는 ZIP 파일을 가져와 엔티티를 일괄 생성할 수 있습니다. 시작하려면 **+ CSV 가져오기**를 선택하세요.
 CSV Import,CSV 가져오기
@@ -371,7 +374,6 @@ Deleted user,삭제된 사용자
 Deleted user group,삭제된 사용자 그룹
 Deletion success,삭제 성공
 Density,밀도
-Descending,내림
 Description,설명
 Deselect all,모두 선택 해제
 Details,상세 정보
@@ -421,6 +423,7 @@ Each series uses the template brand color when comparing data sources.,각 시�
 Earlier,이전
 Edit,편집
 Edit at source,원본에서 편집
+Edit date,Edit date
 Edit Extractor,추출기 편집
 Edit File,파일 편집
 Edit group,그룹 편집
@@ -742,6 +745,7 @@ Months,개월
 More,더 보기
 more,더 보기
 more options.,옵션 더보기
+More rows per screen; same type size,More rows per screen; same type size
 Multi-source mode,다중 소스 모드
 Multiple date,여러 날짜
 Multiple date range,여러 날짜 범위
@@ -1071,6 +1075,7 @@ Return to login,로그인으로 돌아가기
 Review,검토
 Reviewed,검토 완료
 Role,권한
+Room around every row,Room around every row
 Route,루트
 Row,행
 Row density,행 밀도
@@ -1195,7 +1200,6 @@ Something went wrong,오류
 Sort,분류하기
 Sort ascending,오름차순으로 정렬
 Sort descending,내림차순 정렬
-Sort order,정렬 순서
 Sort:,정렬 기준:
 sorted by,정렬 기준
 Source,출처
@@ -1466,7 +1470,7 @@ Validating file structure and headers.,파일 구조 및 헤더를 검증 중입
 Value,값
 Value cannot be transformed to the correct type,값을 올바른 형식으로 변환할 수 없습니다.
 values,값
-"values are staged, not saved","값이 대기 중이며 저장되지 않았습니다."
+"values are staged, not saved",값이 대기 중이며 저장되지 않았습니다.
 Verify,검증
 Verifying...,검증 중
 via,~을 통해
