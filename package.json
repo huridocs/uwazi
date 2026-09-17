@@ -116,6 +116,7 @@
     "@types/react": "19.3.0",
     "@types/react-dom": "19.3.0",
     "react-is": "^19.0.0",
+    "react-redux": "^9.2.0",
     "pbkdf2": "^3.1.5"
   },
   "dependencies": {
@@ -131,7 +132,7 @@
     "@fortawesome/free-solid-svg-icons": "^5.15.4",
     "@fortawesome/react-fontawesome": "^0.2.2",
     "@googlemaps/js-api-loader": "^1.16.8",
-    "@headlessui/react": "1.7.17",
+    "@headlessui/react": "^2.2.10",
     "@heroicons/react": "^2.2.0",
     "@huridocs/react-text-selection-handler": "^0.4.0",
     "@huridocs/rison": "^2.1.2",

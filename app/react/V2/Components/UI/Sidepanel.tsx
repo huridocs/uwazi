@@ -1,6 +1,6 @@
 /* eslint-disable react/no-multi-comp */
 import React, { useEffect, useId, useRef, useState, type JSX } from 'react';
-import { Transition } from '@headlessui/react';
+import { Transition, TransitionChild } from '@headlessui/react';
 import { useParams } from 'react-router';
 import { XMarkIcon } from '@heroicons/react/20/solid';
 import { useAtomValue } from 'jotai';
@@ -216,7 +216,7 @@ const Sidepanel = ({
         className={overlayContainerClass}
         style={sidepanelContainerStyle}
       >
-        <Transition.Child
+        <TransitionChild
           as="div"
           data-testid="sidepanel-overlay"
           className="w-full transition-opacity duration-200 ease-in md:grow bg-(--color-theme-surface-overlay,var(--color-theme-bg-overlay,rgba(0,0,0,0.5)))"
@@ -225,7 +225,7 @@ const Sidepanel = ({
           leaveTo="opacity-0"
           onClick={closeSidepanelFunction}
         />
-        <Transition.Child
+        <TransitionChild
           as="div"
           className={`absolute top-0 right-0 h-full w-full border-l-2 transition duration-200 ease-in transform ${width}`}
           enterFrom={transition}
@@ -251,7 +251,7 @@ const Sidepanel = ({
           >
             {panelContent}
           </aside>
-        </Transition.Child>
+        </TransitionChild>
       </Transition>
     );
   }

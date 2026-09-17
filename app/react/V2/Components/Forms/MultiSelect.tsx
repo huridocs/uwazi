@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Checkbox } from 'flowbite-react';
 import { usePopper } from 'react-popper';
-import { Popover } from '@headlessui/react';
+import { Popover, PopoverButton, PopoverPanel } from '@headlessui/react';
 import { XMarkIcon, PlusCircleIcon } from '@heroicons/react/20/solid';
 import isString from 'lodash/isString.js';
 import { t, Translate } from '#app/I18N/index.js';
@@ -38,7 +38,7 @@ const MultiSelect = ({
   value,
 }: MultiSelectProps) => {
   const [referenceElement, setReferenceElement] = useState<HTMLButtonElement | null>(null);
-  const [popperElement, setPopperElement] = useState<HTMLDivElement | null>(null);
+  const [popperElement, setPopperElement] = useState<HTMLElement | null>(null);
   const { styles, attributes } = usePopper(referenceElement, popperElement, {
     placement: 'top-end',
     strategy: 'fixed',
@@ -110,15 +110,15 @@ const MultiSelect = ({
           {renderChild(label)}
         </span>
         <Popover className="border border-(--color-theme-border-default)@20%">
-          <Popover.Button
+          <PopoverButton
             ref={setReferenceElement}
             className="disabled:opacity-40 text-(--color-theme-action-primary)"
             disabled={disabled || options.length === 0}
           >
             <span className="sr-only">{t('System', 'Select', null, false)}</span>
             <PlusCircleIcon className="w-6 text-lg" />
-          </Popover.Button>
-          <Popover.Panel
+          </PopoverButton>
+          <PopoverPanel
             ref={setPopperElement}
             style={styles.popper}
             // eslint-disable-next-line react/jsx-props-no-spreading
@@ -155,7 +155,7 @@ const MultiSelect = ({
                 </li>
               ))}
             </ul>
-          </Popover.Panel>
+          </PopoverPanel>
         </Popover>
       </div>
 
