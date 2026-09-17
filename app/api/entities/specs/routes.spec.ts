@@ -187,6 +187,28 @@ describe('entities routes', () => {
       ]);
     });
 
+    describe('target language resolution', () => {
+      it('should prefer the language sent in the body over the content-language header', async () => {
+        new UserInContextMockFactory().mock(user);
+        const response: SuperTestResponse = await request(app)
+          .post('/api/entities')
+          .set('content-language', 'en')
+          .send({ title: 'my entity', language: 'es' });
+
+        expect(response.body.language).toBe('es');
+      });
+
+      it('should fall back to the content-language header when the body has no language', async () => {
+        new UserInContextMockFactory().mock(user);
+        const response: SuperTestResponse = await request(app)
+          .post('/api/entities')
+          .set('content-language', 'es')
+          .send({ title: 'my entity' });
+
+        expect(response.body.language).toBe('es');
+      });
+    });
+
     describe('V2 entity creation with files (multipart with documents and attachments)', () => {
       const createEntityWithFiles = async () => {
         new UserInContextMockFactory().mock(user);

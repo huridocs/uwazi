@@ -89,6 +89,7 @@ const MutateEntitySchema = z.object({
 });
 
 const CreateEntitySchema = MutateEntitySchema.extend({
+  language: z.string().min(2).max(2).optional(),
   attachments: z
     .array(
       z.object({

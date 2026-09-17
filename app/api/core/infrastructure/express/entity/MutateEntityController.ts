@@ -28,6 +28,7 @@ import { UpdateEntityUseCaseFactory } from '../../factories/UpdateEntityUseCaseF
 import { EntitiesDAOFactory } from '../../factories/EntitiesDAOFactory.js';
 import { EntitiesQueryServiceFactory } from '../../factories/EntitiesQueryServiceFactory.js';
 import { ExpressEntityMapper } from './ExpressEntityMapper.js';
+import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 
 type Request = Record<string, unknown> | { entity: string };
 
@@ -85,10 +86,16 @@ class MutateEntityController extends AbstractController<Request> {
     return cookie.parse(this.request.get('cookie') || '')['connect.sid'];
   }
 
+  // Body language takes precedence over the content-language header.
+  private resolveTargetLanguage(parsed: { language?: string }) {
+    return (parsed.language as LanguageISO6391 | undefined) ?? this.language;
+  }
+
   private async create({ payload, isMultipart }: ParsedBody) {
     const parsed = CreateEntitySchema.parse(payload);
+    const targetLanguage = this.resolveTargetLanguage(parsed);
     const useCase = CreateEntityUseCaseFactory.default({
-      targetLanguage: this.language,
+      targetLanguage,
       sessionId: this.sessionId,
     });
 
@@ -99,7 +106,7 @@ class MutateEntityController extends AbstractController<Request> {
       })
     );
 
-    await this.respond(entity.sharedId, isMultipart);
+    await this.respond(entity.sharedId, isMultipart, targetLanguage);
   }
 
   private async update({ isMultipart, payload }: ParsedBody) {
@@ -122,8 +129,9 @@ class MutateEntityController extends AbstractController<Request> {
 
   private async createWithTranslations({ payload, isMultipart }: ParsedBody) {
     const parsed = CreateEntityWithTranslationsSchema.parse(payload);
+    const targetLanguage = this.resolveTargetLanguage(parsed);
     const useCase = CreateEntityUseCaseFactory.default({
-      targetLanguage: this.language,
+      targetLanguage,
       sessionId: this.sessionId,
     });
 
@@ -137,7 +145,7 @@ class MutateEntityController extends AbstractController<Request> {
       })
     );
 
-    await this.respondWithTranslations(entity.sharedId, isMultipart);
+    await this.respondWithTranslations(entity.sharedId, isMultipart, targetLanguage);
   }
 
   private async updateWithTranslations({ payload, isMultipart }: ParsedBody) {
@@ -195,10 +203,14 @@ class MutateEntityController extends AbstractController<Request> {
     return undefined;
   }
 
-  private async respondWithTranslations(sharedId: string, isMultipart: boolean) {
+  private async respondWithTranslations(
+    sharedId: string,
+    isMultipart: boolean,
+    language: LanguageISO6391 = this.language
+  ) {
     const entity = await EntitiesQueryServiceFactory.default(this.user).getEntity({
       sharedId,
-      language: this.language,
+      language,
       includeRelationships: false,
       includePermissions: true,
       includeTranslations: true,
@@ -249,9 +261,13 @@ class MutateEntityController extends AbstractController<Request> {
     }
   }
 
-  private async respond(sharedId: string, isMultipart: boolean) {
+  private async respond(
+    sharedId: string,
+    isMultipart: boolean,
+    language: LanguageISO6391 = this.language
+  ) {
     const [entity] = await EntitiesDAOFactory.default({ user: this.user }).find(
-      { sharedId, language: this.language },
+      { sharedId, language },
       { withFiles: true }
     );
 
