@@ -1,4 +1,4 @@
-const LIBRARY_VIEW_MODES = ['cards', 'list', 'map', 'table', 'timeline'] as const;
+const LIBRARY_VIEW_MODES = ['cards', 'map', 'table'] as const;
 type LibraryViewMode = (typeof LIBRARY_VIEW_MODES)[number];
 
 const isLibraryViewMode = (value: string | null | undefined): value is LibraryViewMode =>

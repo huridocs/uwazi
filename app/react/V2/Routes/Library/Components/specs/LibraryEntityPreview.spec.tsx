@@ -88,7 +88,12 @@ let mediaMock = setupMatchMediaMock();
 
 const adminUser = { _id: '1', role: 'admin', name: 'admin' };
 
-const renderPreview = (sharedId: string, onClose = jest.fn(), user?: typeof adminUser) =>
+const renderPreview = (
+  sharedId: string,
+  onClose = jest.fn(),
+  user?: typeof adminUser,
+  focusFieldKey?: string
+) =>
   render(
     <TestRouterContext>
       <ServicesProvider value={createTestServices({ entities: { getBySharedId } })}>
@@ -101,7 +106,12 @@ const renderPreview = (sharedId: string, onClose = jest.fn(), user?: typeof admi
             ...(user ? [[userAtom, user] as const] : []),
           ]}
         >
-          <LibraryEntityPreview sharedId={sharedId} entityBasePath="/entityv2" onClose={onClose} />
+          <LibraryEntityPreview
+            sharedId={sharedId}
+            entityBasePath="/entityv2"
+            onClose={onClose}
+            focusFieldKey={focusFieldKey}
+          />
         </TestAtomStoreProvider>
       </ServicesProvider>
     </TestRouterContext>
@@ -144,6 +154,14 @@ describe('LibraryEntityPreview', () => {
     fireEvent.click(screen.getByRole('tab', { name: 'Metadata' }));
     expect(screen.getByRole('tab', { name: 'Metadata' })).toHaveAttribute('aria-selected', 'true');
     expect(documentTab).toHaveAttribute('aria-selected', 'false');
+  });
+
+  it('opens the Metadata tab when a table cell asks to focus a property', async () => {
+    renderPreview(entityWithDocument.sharedId, jest.fn(), undefined, 'title');
+    expect(await screen.findByRole('tab', { name: 'Metadata' })).toHaveAttribute(
+      'aria-selected',
+      'true'
+    );
   });
 
   it('hides the Document tab when the entity has no document', async () => {

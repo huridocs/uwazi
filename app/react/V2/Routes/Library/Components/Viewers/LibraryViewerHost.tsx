@@ -3,10 +3,9 @@ import type { LibraryViewMode } from '../../libraryUrlState.js';
 import { CardViewer } from './CardViewer.js';
 import { MapViewer } from './MapViewer.js';
 import { TableViewer } from './TableViewer.js';
-import { TimelineViewer } from './TimelineViewer.js';
 import type { LibraryViewerProps } from './types.js';
 
-type LibraryViewerHostProps = Omit<LibraryViewerProps, 'layout'> & {
+type LibraryViewerHostProps = LibraryViewerProps & {
   view: LibraryViewMode;
 };
 
@@ -15,14 +14,10 @@ const LibraryViewerHost = ({ view, ...viewerProps }: LibraryViewerHostProps) => 
     case 'map':
       return <MapViewer {...viewerProps} />;
     case 'table':
-      return <TableViewer />;
-    case 'timeline':
-      return <TimelineViewer />;
-    case 'list':
-      return <CardViewer {...viewerProps} layout="list" />;
+      return <TableViewer {...viewerProps} />;
     case 'cards':
     default:
-      return <CardViewer {...viewerProps} layout="cards" />;
+      return <CardViewer {...viewerProps} />;
   }
 };
 
