@@ -259,6 +259,9 @@
   --color-border: var(--color-theme-border-primary, #ede7db);
   --color-warm: var(--color-theme-surface-warm, var(--color-theme-bg-warm, #fcfaf8));
   --color-ink: var(--color-theme-action-primary, var(--color-theme-text-primary, #1a1a1a));
+  --color-paper: var(--color-theme-surface-raised, var(--color-theme-bg-surface, #ffffff));
+  --color-ink-tertiary: var(--color-theme-text-tertiary, #555555);
+  --color-carbon: var(--color-theme-accent-supporting, #00b4f0);
 }
 
 @layer theme {

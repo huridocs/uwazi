@@ -22,8 +22,7 @@ async function runEntitySearch({
     const [result] = await searchFunction({
       searchTerm: searchString,
       publishedStatus: 'all',
-      fields: ['title', 'template', 'creationDate', 'sharedId'],
-      includeFiles: true,
+      fields: ['title', 'sharedId', 'template'],
     });
     if (generation !== searchGeneration.current) return;
     setSearchResults((result?.rows ?? []) as Entity[]);

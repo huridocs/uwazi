@@ -570,6 +570,56 @@ describe('EntitiesMigrationConfig', () => {
     expect(rowsForTenant[0]).toMatchObject({ sharedId: 'existing-entity' });
   });
 
+  it('should skip migration when existing entities are unpublished (invisible to RLS)', async () => {
+    const mongoDb = testingDB.db(testingDB.dbName);
+
+    const existingId = '64a1b2c3d4e5f6a7b8c9d0ae';
+    await testingPG.setFixtures({
+      entities: [
+        {
+          _id: existingId,
+          sharedId: 'existing-unpublished-entity',
+          language: 'eng',
+          title: 'Existing Unpublished Entity',
+          template: 'template-existing',
+          published: false,
+          generatedToc: null,
+          icon: {},
+          creationDate: 1700000000000,
+          editDate: 1700000000000,
+          metadata: {},
+          user: null,
+          permissions: [],
+          preview: null,
+          tenant_id: TENANT,
+        },
+      ],
+    });
+
+    await mongoDb.collection('entities').insertOne({
+      _id: new ObjectId(existingId),
+      sharedId: 'existing-unpublished-entity',
+      language: 'eng',
+      title: 'Existing Unpublished Entity',
+      template: new ObjectId('64a1b2c3d4e5f6a7b8c9a0ae'),
+      published: false,
+      creationDate: 1700000000000,
+      editDate: 1700000000000,
+      metadata: {},
+    });
+
+    const migrator = makeMigrator();
+    const result = await migrator.migrate(EntitiesMigrationConfig);
+
+    expect(result.migrated).toBe(0);
+    expect(result.skipped).toBe(true);
+
+    const pgRows = await testingPG.getAllFrom('entities');
+    const rowsForTenant = pgRows.filter(r => r.tenant_id === TENANT);
+    expect(rowsForTenant).toHaveLength(1);
+    expect(rowsForTenant[0]).toMatchObject({ sharedId: 'existing-unpublished-entity' });
+  });
+
   it('should migrate multiple entities in batch', async () => {
     const mongoDb = testingDB.db(testingDB.dbName);
     const entities = Array.from({ length: 150 }, (_, i) => ({

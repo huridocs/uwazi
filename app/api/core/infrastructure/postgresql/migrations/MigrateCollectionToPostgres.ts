@@ -227,8 +227,15 @@ class MigrateCollectionToPostgres {
   ): Promise<{ migrated: number; orphansSkipped: number; skipped: boolean }> {
     const table = this.tableFor(config.pgTable);
 
-    if (!options.force && (await table.first()) !== undefined) {
-      return { migrated: 0, orphansSkipped: 0, skipped: true };
+    if (!options.force) {
+      const existingRow = await table.transactionManager.withConnection(
+        trx => trx(config.pgTable).first(),
+        SYSTEM_PERMISSION_CONTEXT
+      );
+
+      if (existingRow !== undefined) {
+        return { migrated: 0, orphansSkipped: 0, skipped: true };
+      }
     }
 
     await this.assertConfiguredCount(config);
