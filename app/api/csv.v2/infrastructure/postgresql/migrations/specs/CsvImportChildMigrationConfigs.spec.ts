@@ -1,3 +1,4 @@
+// oxlint-disable max-lines
 /* eslint-disable max-statements */
 import { ObjectId } from 'mongodb';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
@@ -12,8 +13,7 @@ import { CsvImportRelationshipValuesMigrationConfig } from '../CsvImportRelation
 
 const TENANT = 'csv-child-migration-tenant';
 
-const makeMigrator = () =>
-  new MigrateCollectionToPostgres(testingDB.db(testingDB.dbName), TENANT);
+const makeMigrator = () => new MigrateCollectionToPostgres(testingDB.db(testingDB.dbName), TENANT);
 
 const rowsForTenant = async (table: string) =>
   (await testingPG.getAllFrom(table)).filter(row => row.tenant_id === TENANT);
@@ -315,11 +315,13 @@ describe('CSV child collection copy', () => {
         createdAt: 1700000000,
       });
 
-    expect(await makeMigrator().migrate(CsvImportRelationshipPendingValuesMigrationConfig)).toEqual({
-      migrated: 1,
-      orphansSkipped: 0,
-      skipped: false,
-    });
+    expect(await makeMigrator().migrate(CsvImportRelationshipPendingValuesMigrationConfig)).toEqual(
+      {
+        migrated: 1,
+        orphansSkipped: 0,
+        skipped: false,
+      }
+    );
     expect(await rowsForTenant('csv_import_relationships_pending_values')).toEqual([
       expect.objectContaining({
         _id: id.toHexString(),

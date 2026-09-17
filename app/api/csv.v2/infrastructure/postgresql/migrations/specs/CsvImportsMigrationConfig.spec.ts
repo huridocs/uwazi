@@ -113,7 +113,9 @@ describe('CsvImportsMigrationConfig copy', () => {
       skipped: false,
     });
 
-    const rows = (await testingPG.getAllFrom('csv_imports')).filter(row => row.tenant_id === TENANT);
+    const rows = (await testingPG.getAllFrom('csv_imports')).filter(
+      row => row.tenant_id === TENANT
+    );
     expect(rows).toHaveLength(1);
     expect(rows[0]).toMatchObject({
       _id: id.toHexString(),
@@ -158,7 +160,9 @@ describe('CsvImportsMigrationConfig copy', () => {
       skipped: false,
     });
 
-    const rows = (await testingPG.getAllFrom('csv_imports')).filter(row => row.tenant_id === TENANT);
+    const rows = (await testingPG.getAllFrom('csv_imports')).filter(
+      row => row.tenant_id === TENANT
+    );
     expect(rows).toHaveLength(1);
     expect(rows[0].template_id).toBe('already');
     expect(rows[0].status).toBe('completed');

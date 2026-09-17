@@ -12,8 +12,8 @@ describe('CsvImportThesauriValues', () => {
 
     expect(pending.id).toBe('thesauri-1');
     expect(pending.toObject().id).toBe('thesauri-1');
-    expect(
-      pending.withAppliedValues({ observedValues: 0, createdCount: 0 }, []).id
-    ).toBe('thesauri-1');
+    expect(pending.withAppliedValues({ observedValues: 0, createdCount: 0 }, []).id).toBe(
+      'thesauri-1'
+    );
   });
 });
