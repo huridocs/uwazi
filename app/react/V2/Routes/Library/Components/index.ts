@@ -1,5 +1,5 @@
 export { EntityCard } from './EntityCard.js';
-export type { EntityCardField, EntityCardLayout, EntityCardProps } from './EntityCard.js';
+export type { EntityCardField, EntityCardProps } from './EntityCard.js';
 export { EntityThumbnail } from './EntityThumbnail.js';
 export type { EntityThumbnailProps, ThumbnailKind } from './EntityThumbnail.js';
 export { LibraryFilters } from './LibraryFilters.js';
@@ -16,10 +16,4 @@ export type { LibraryEntityPreviewProps } from './LibraryEntityPreview.js';
 export { LoadMore } from './LoadMore.js';
 export { FacetCard, FacetRow } from './FacetCard.js';
 export { metadataFieldsForCard, thumbnailFromEntity } from './cardModel.js';
-export {
-  LibraryViewerHost,
-  CardViewer,
-  MapViewer,
-  TableViewer,
-  TimelineViewer,
-} from './Viewers/index.js';
+export { LibraryViewerHost, CardViewer, MapViewer, TableViewer } from './Viewers/index.js';

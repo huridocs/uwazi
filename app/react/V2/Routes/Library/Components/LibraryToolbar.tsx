@@ -1,15 +1,25 @@
 /* eslint-disable react/no-multi-comp */
 import React from 'react';
-import { CheckIcon } from '@heroicons/react/24/solid';
 import { Translate, t } from '#app/I18N/index.js';
 import {
   DisplayMenu,
-  DisplayMenuRow,
+  DisplayMenuCheckRow,
   QuerySearchBar,
   WarmSelect,
 } from '#V2/Components/UI/index.js';
 import { SearchTipsContent } from '#V2/Routes/Entity/Components/search/index.js';
+import { TemplateLabel } from '#V2/Components/Metadata/Components/index.js';
 import type { LibrarySortOrder, LibraryViewMode } from '../libraryUrlState.js';
+import {
+  columnMatchKey,
+  DEFAULT_LIBRARY_TABLE_DISPLAY,
+  DEFAULT_VISIBLE_COLUMN_IDS,
+  isColumnVisible,
+  type LibraryTableColumnDef,
+  type LibraryTableColumnGroup,
+  type LibraryTableDensity,
+  type LibraryTableDisplayState,
+} from './libraryTableColumns.js';
 
 type LibraryToolbarProps = {
   search: string;
@@ -25,43 +35,143 @@ type LibraryToolbarProps = {
   onShowThumbnailChange: (value: boolean) => void;
   showMetadata: boolean;
   onShowMetadataChange: (value: boolean) => void;
+  tableColumns?: LibraryTableColumnDef[];
+  tableColumnGroups?: LibraryTableColumnGroup[];
+  tableDisplay?: LibraryTableDisplayState;
+  onToggleTableColumn?: (id: string) => void;
+  onTableDensityChange?: (density: LibraryTableDensity) => void;
 };
 
 const SORT_OPTIONS = [
   { value: 'title', label: t('System', 'Title', null, false) },
-  { value: 'creationDate', label: t('System', 'Date added', null, false) },
+  { value: 'creationDate', label: t('System', 'Creation date', null, false) },
+  { value: 'editDate', label: t('System', 'Edit date', null, false) },
   { value: '_score', label: t('System', 'Relevance', null, false) },
 ];
 
 const VIEW_OPTIONS = [
   { value: 'cards', label: t('System', 'Cards', null, false) },
-  { value: 'list', label: t('System', 'List', null, false) },
   { value: 'map', label: t('System', 'Map', null, false) },
   { value: 'table', label: t('System', 'Table', null, false) },
-  { value: 'timeline', label: t('System', 'Timeline', null, false) },
 ];
 
-const DisplayCheckRow = ({
-  label,
-  checked,
-  onToggle,
+const tableDisplayModified = (
+  columns: LibraryTableColumnDef[],
+  display: LibraryTableDisplayState
+) =>
+  display.density !== DEFAULT_LIBRARY_TABLE_DISPLAY.density ||
+  columns.some(
+    column =>
+      isColumnVisible(columnMatchKey(column), display) !== DEFAULT_VISIBLE_COLUMN_IDS.has(column.id)
+  );
+
+const LibraryTableColumnGroupList = ({
+  group,
+  display,
+  onToggleColumn,
 }: {
-  label: React.ReactNode;
-  checked: boolean;
-  onToggle: () => void;
+  group: LibraryTableColumnGroup;
+  display: LibraryTableDisplayState;
+  onToggleColumn?: (id: string) => void;
 }) => (
-  <button
-    type="button"
-    role="menuitemcheckbox"
-    aria-checked={checked}
-    onClick={onToggle}
-    className="flex w-full cursor-pointer items-center gap-2 rounded px-2 py-1.5 text-start transition-colors hover:bg-warm"
-  >
-    <span className="flex w-4 shrink-0 items-center justify-center text-carbon">
-      {checked ? <CheckIcon className="h-3.5 w-3.5" /> : null}
-    </span>
-    <span className={`text-xs ${checked ? 'text-ink' : 'text-ink-tertiary'}`}>{label}</span>
-  </button>
+  <div>
+    {group.templateId ? (
+      <div className="mt-1 flex items-center gap-1.5 border-b border-border-soft px-2 pb-1 pt-2">
+        <TemplateLabel templateId={group.templateId} variant="tag" />
+      </div>
+    ) : null}
+    {group.columns.map(column => (
+      <DisplayMenuCheckRow
+        key={`${group.id}:${column.id}`}
+        label={
+          column.translationContext ? (
+            <Translate context={column.translationContext}>{column.label}</Translate>
+          ) : (
+            <Translate>{column.label}</Translate>
+          )
+        }
+        checked={isColumnVisible(columnMatchKey(column), display)}
+        onToggle={() => onToggleColumn?.(columnMatchKey(column))}
+      />
+    ))}
+  </div>
+);
+
+const LibraryTableDisplayOptions = ({
+  columns,
+  groups,
+  display,
+  onToggleColumn,
+  onDensityChange,
+}: {
+  columns: LibraryTableColumnDef[];
+  groups?: LibraryTableColumnGroup[];
+  display: LibraryTableDisplayState;
+  onToggleColumn?: (id: string) => void;
+  onDensityChange?: (density: LibraryTableDensity) => void;
+}) => {
+  const columnGroups = groups?.length ? groups : [{ id: 'builtins', columns }];
+  return (
+    <>
+      <p className="px-2 pt-1 pb-1 text-nano font-semibold uppercase tracking-wide text-ink-tertiary">
+        <Translate>Columns</Translate>
+      </p>
+      <div className="max-h-[32rem] overflow-y-auto">
+        {columnGroups.map(group => (
+          <LibraryTableColumnGroupList
+            key={group.id}
+            group={group}
+            display={display}
+            onToggleColumn={onToggleColumn}
+          />
+        ))}
+      </div>
+      <div className="my-1 h-px border-t border-border-soft" />
+      <p className="px-2 pt-1 pb-1 text-nano font-semibold uppercase tracking-wide text-ink-tertiary">
+        <Translate>Density</Translate>
+      </p>
+      <DisplayMenuCheckRow
+        label={<Translate>Comfortable</Translate>}
+        description={<Translate>Room around every row</Translate>}
+        checked={display.density === 'comfortable'}
+        onToggle={() => onDensityChange?.('comfortable')}
+      />
+      <DisplayMenuCheckRow
+        label={<Translate>Compact</Translate>}
+        description={<Translate>More rows per screen; same type size</Translate>}
+        checked={display.density === 'compact'}
+        onToggle={() => onDensityChange?.('compact')}
+      />
+    </>
+  );
+};
+
+const LibraryCardsDisplayOptions = ({
+  showThumbnail,
+  showMetadata,
+  onShowThumbnailChange,
+  onShowMetadataChange,
+}: {
+  showThumbnail: boolean;
+  showMetadata: boolean;
+  onShowThumbnailChange: (value: boolean) => void;
+  onShowMetadataChange: (value: boolean) => void;
+}) => (
+  <>
+    <p className="px-2 pt-1 pb-1 text-nano font-semibold uppercase tracking-wide text-ink-tertiary">
+      <Translate>Show information</Translate>
+    </p>
+    <DisplayMenuCheckRow
+      label={<Translate>Thumbnail</Translate>}
+      checked={showThumbnail}
+      onToggle={() => onShowThumbnailChange(!showThumbnail)}
+    />
+    <DisplayMenuCheckRow
+      label={<Translate>Metadata</Translate>}
+      checked={showMetadata}
+      onToggle={() => onShowMetadataChange(!showMetadata)}
+    />
+  </>
 );
 
 const LibraryToolbar = ({
@@ -78,9 +188,17 @@ const LibraryToolbar = ({
   onShowThumbnailChange,
   showMetadata,
   onShowMetadataChange,
+  tableColumns = [],
+  tableColumnGroups,
+  tableDisplay = DEFAULT_LIBRARY_TABLE_DISPLAY,
+  onToggleTableColumn,
+  onTableDensityChange,
 }: LibraryToolbarProps) => {
   const sortValue = sort || 'creationDate';
-  const displayModified = !showThumbnail || !showMetadata || order !== 'desc';
+  const displayModified =
+    view === 'table'
+      ? tableDisplayModified(tableColumns, tableDisplay)
+      : !showThumbnail || !showMetadata;
 
   return (
     <div className="flex shrink-0 items-center gap-2 border-b border-border bg-parchment px-3 py-2">
@@ -120,38 +238,26 @@ const LibraryToolbar = ({
         appearance="outlined"
         modified={displayModified}
       >
-        <p className="px-2 pt-1 pb-1 text-nano font-semibold uppercase tracking-wide text-ink-tertiary">
-          <Translate>Sort</Translate>
-        </p>
-        <DisplayMenuRow label={<Translate>Order</Translate>}>
-          <WarmSelect
-            ariaLabel={t('System', 'Sort order', null, false)}
-            value={order}
-            options={[
-              { value: 'desc', label: t('System', 'Descending', null, false) },
-              { value: 'asc', label: t('System', 'Ascending', null, false) },
-            ]}
-            onChange={value => onSortChange(sortValue, value as LibrarySortOrder)}
+        {view === 'table' ? (
+          <LibraryTableDisplayOptions
+            columns={tableColumns}
+            groups={tableColumnGroups}
+            display={tableDisplay}
+            onToggleColumn={onToggleTableColumn}
+            onDensityChange={onTableDensityChange}
           />
-        </DisplayMenuRow>
-        <div className="my-1 h-px border-t border-border-soft" />
-        <p className="px-2 pt-1 pb-1 text-nano font-semibold uppercase tracking-wide text-ink-tertiary">
-          <Translate>Show information</Translate>
-        </p>
-        <DisplayCheckRow
-          label={<Translate>Thumbnail</Translate>}
-          checked={showThumbnail}
-          onToggle={() => onShowThumbnailChange(!showThumbnail)}
-        />
-        <DisplayCheckRow
-          label={<Translate>Metadata</Translate>}
-          checked={showMetadata}
-          onToggle={() => onShowMetadataChange(!showMetadata)}
-        />
+        ) : (
+          <LibraryCardsDisplayOptions
+            showThumbnail={showThumbnail}
+            showMetadata={showMetadata}
+            onShowThumbnailChange={onShowThumbnailChange}
+            onShowMetadataChange={onShowMetadataChange}
+          />
+        )}
       </DisplayMenu>
     </div>
   );
 };
 
 export type { LibraryToolbarProps };
-export { LibraryToolbar };
+export { LibraryToolbar, LibraryTableDisplayOptions, VIEW_OPTIONS };
