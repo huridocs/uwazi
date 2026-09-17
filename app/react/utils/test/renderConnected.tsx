@@ -1,4 +1,4 @@
-import React, { type JSX } from 'react';
+import React from 'react';
 import { mount, ReactWrapper, shallow } from 'enzyme';
 import configureMockStore, { MockStore, MockStoreCreator } from 'redux-mock-store';
 import { BrowserRouter, MemoryRouter, InitialEntry } from 'react-router';
@@ -34,10 +34,17 @@ const renderConnected = (
         },
       },
     },
-  }
+  },
+  confirm: Function = () => {}
 ) => {
   const store: MockStore = mockStoreCreator(storeData);
-  return shallow(<Component {...props} store={store} />).dive();
+  return shallow(
+    <Provider store={store}>
+      <Component {...props} />
+    </Provider>
+  )
+    .dive({ context: { store, confirm } })
+    .dive();
 };
 
 const renderConnectedMount = (
@@ -53,12 +60,12 @@ const renderConnectedMount = (
   const WrappedComponent = useBrowserRouter ? (
     <BrowserRouter>
       <Provider store={store}>
-        <Component {...props} />
+        <Component {...props} store={store} />
       </Provider>
     </BrowserRouter>
   ) : (
     <Provider store={store}>
-      <Component {...props} />
+      <Component {...props} store={store} />
     </Provider>
   );
 
@@ -101,7 +108,4 @@ const renderConnectedContainer = (
   };
 };
 
-const enzymeEl = (node: unknown): { props: { children?: unknown; [key: string]: unknown } } =>
-  node as { props: { children?: unknown; [key: string]: unknown } };
-
-export { renderConnected, renderConnectedMount, renderConnectedContainer, defaultState, enzymeEl };
+export { renderConnected, renderConnectedMount, renderConnectedContainer, defaultState };

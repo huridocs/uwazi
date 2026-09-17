@@ -1,7 +1,6 @@
 import { shallow, ShallowWrapper } from 'enzyme';
 import React from 'react';
 import { DocumentCounter, EntityCounterProps } from '#app/Layout/DocumentCounter.js';
-import { enzymeEl } from '#app/utils/test/renderConnected.js';
 
 describe('DocumentCounter', () => {
   let component: ShallowWrapper<typeof DocumentCounter>;
@@ -25,11 +24,10 @@ describe('DocumentCounter', () => {
   describe('relationships content', () => {
     it('should show the relationships count', () => {
       render();
-      const child = (i: number) => enzymeEl(component.children().get(i)).props.children;
-      expect((child(0) as unknown[])[0]).toBe(3);
-      expect(child(1)).toBe('relationships');
-      expect((enzymeEl((child(3) as unknown[])[0]).props.children as unknown[])[1]).toBe('100');
-      expect(child(4)).toBe('entities');
+      expect(component.children().get(0).props.children[0]).toBe(3);
+      expect(component.children().get(1).props.children).toBe('relationships');
+      expect(component.children().get(3).props.children[0].props.children[1]).toBe('100');
+      expect(component.children().get(4).props.children).toBe('entities');
     });
   });
 
@@ -37,13 +35,12 @@ describe('DocumentCounter', () => {
     it('should show the number of selected, shown and total entities', () => {
       delete props.totalConnectionsCount;
       render();
-      const child = (i: number) => enzymeEl(component.children().get(i)).props.children;
-      expect((child(0) as unknown[])[1]).toBe(1);
-      expect(child(2)).toBe('selected of');
-      expect((child(3) as unknown[])[1]).toBe(5);
-      expect(child(5)).toBe('shown of');
-      expect((child(6) as unknown[])[1]).toBe('100');
-      expect(child(7)).toBe('entities');
+      expect(component.children().get(0).props.children[1]).toBe(1);
+      expect(component.children().get(2).props.children).toBe('selected of');
+      expect(component.children().get(3).props.children[1]).toBe(5);
+      expect(component.children().get(5).props.children).toBe('shown of');
+      expect(component.children().get(6).props.children[1]).toBe('100');
+      expect(component.children().get(7).props.children).toBe('entities');
     });
 
     it('should show a + sign next to the total entities when hitsTotalRelation has the gte flag', () => {

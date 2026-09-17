@@ -1,5 +1,5 @@
-import React, { Component } from 'react';
-import { ReactReduxContext } from 'react-redux';
+import React from 'react';
+import { ReduxStoreComponent } from '#app/App/reduxStoreComponent.js';
 
 import { actions } from '#app/BasicReducer/index.js';
 import relationTypesAPI from '#app/RelationTypes/RelationTypesAPI.js';
@@ -12,8 +12,7 @@ import { EntityViewerConnected as EntityViewer } from '../Entities/components/En
 import { EntitiesAPI as entitiesAPI } from '../Entities/EntitiesAPI.js';
 import { prepareAssets } from './pageAssets.js';
 
-class Entity extends Component {
-  static contextType = ReactReduxContext;
+class Entity extends ReduxStoreComponent {
   static async requestState(requestParams, state) {
     const [[entity], relationTypes, [connectionsGroups, searchResults, sort, filters]] =
       await Promise.all([
@@ -70,9 +69,9 @@ class Entity extends Component {
   }
 
   componentWillUnmount() {
-    this.context.store.dispatch(actions.unset('page/pageView'));
-    this.context.store.dispatch(actions.unset('page/itemLists'));
-    this.context.store.dispatch(actions.unset('page/datasets'));
+    this.store.dispatch(actions.unset('page/pageView'));
+    this.store.dispatch(actions.unset('page/itemLists'));
+    this.store.dispatch(actions.unset('page/datasets'));
   }
 
   render() {

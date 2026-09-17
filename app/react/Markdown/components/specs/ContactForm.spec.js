@@ -17,7 +17,7 @@ describe('ContactForm', () => {
   const formValues = { name: 'test', email: 'test@test.com', message: 'test' };
 
   const prepareMocks = () => {
-    instance = component.find(ContactForm).instance();
+    instance = component.instance();
     instance.refreshCaptcha = jest.fn();
     instance.formDispatch = jest.fn();
     component.find(LocalForm).props().getDispatch(instance.formDispatch);

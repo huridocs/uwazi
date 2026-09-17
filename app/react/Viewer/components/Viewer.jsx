@@ -46,12 +46,12 @@ class Viewer extends Component {
   }
 
   componentDidMount() {
-    const { dispatch, sidepanelTab } = this.props;
-    dispatch(openPanel('viewMetadataPanel'));
+    const { sidepanelTab, openPanel: open, loadDefaultViewerMenu: loadMenu, showTab } = this.props;
+    open('viewMetadataPanel');
     if (sidepanelTab === 'connections') {
-      dispatch(actions.set('viewer.sidepanel.tab', ''));
+      showTab('');
     }
-    dispatch(loadDefaultViewerMenu());
+    loadMenu();
     Marker.init('div.main-wrapper');
     this.setState({ firstRender: false }); // eslint-disable-line react/no-did-mount-set-state
   }
@@ -233,6 +233,9 @@ Viewer.defaultProps = {
   user: Immutable.Map({}),
   // relationships v2
   newRelationshipsEnabled: false,
+  openPanel: () => {},
+  loadDefaultViewerMenu: () => {},
+  showTab: () => {},
 };
 Viewer.propTypes = {
   searchTerm: PropTypes.string,
@@ -252,6 +255,8 @@ Viewer.propTypes = {
   selectedConnection: PropTypes.bool,
   selectedConnectionMetadata: PropTypes.object,
   showTab: PropTypes.func,
+  openPanel: PropTypes.func,
+  loadDefaultViewerMenu: PropTypes.func,
   page: PropTypes.number,
   locale: PropTypes.string.isRequired,
   file: PropTypes.object,
@@ -262,7 +267,6 @@ Viewer.propTypes = {
   // relationships v2
   newRelationshipsEnabled: PropTypes.bool,
   toggleReferences: PropTypes.func,
-  dispatch: PropTypes.func,
 };
 
 const mapStateToProps = state => {
@@ -287,18 +291,18 @@ const mapStateToProps = state => {
   };
 };
 
-const mapDispatchToProps = dispatch => ({
-  dispatch,
-  ...bindActionCreators(
+const mapDispatchToProps = dispatch =>
+  bindActionCreators(
     {
       addReference: addReferenceAction,
       loadTargetDocument: loadTargetDocumentAction,
       showTab: tab => actions.set('viewer.sidepanel.tab', tab),
       toggleReferences,
+      openPanel,
+      loadDefaultViewerMenu,
     },
     dispatch
-  ),
-});
+  );
 
 const ConnectedViewer = connect(mapStateToProps, mapDispatchToProps)(Viewer);
 export { ConnectedViewer };

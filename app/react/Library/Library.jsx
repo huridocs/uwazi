@@ -16,8 +16,7 @@ class LibraryRootComponent extends RouteHandler {
     super(props, context);
     this.superComponentWillReceiveProps = super.componentWillReceiveProps;
 
-    const store = context?.store || this.context?.store || { dispatch: () => {} };
-    const { dispatch } = store;
+    const { dispatch } = this.store;
     wrapDispatch(dispatch, 'library')(enterLibrary());
     this.zoomIn = () => wrapDispatch(dispatch, 'library')(zoomIn());
     this.zoomOut = () => wrapDispatch(dispatch, 'library')(zoomOut());
@@ -76,7 +75,7 @@ class LibraryRootComponent extends RouteHandler {
   }
 
   emptyState() {
-    wrapDispatch(this.context.store.dispatch, 'library')(unsetDocuments());
+    wrapDispatch(this.store.dispatch, 'library')(unsetDocuments());
     actions.set('library.sidepanel.quickLabelState', {});
   }
 

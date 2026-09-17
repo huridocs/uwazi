@@ -7,7 +7,6 @@ import React from 'react';
 import Immutable from 'immutable';
 import { ILink } from '#app/V2/shared/types.js';
 import { IImmutable } from '#shared/types/Immutable.js';
-import { enzymeEl } from '#app/utils/test/renderConnected.js';
 import { DropdownMenu } from '../DropdownMenu.js';
 
 const links: ILink[] = [
@@ -46,12 +45,12 @@ describe('DropdownMenu', () => {
     const mountComp = shallow(
       <DropdownMenu link={immutableLinks.get(0)} position={1} hideMobileMenu={hideMobileMenuMock} />
     );
-    expect(enzymeEl(mountComp.find('ul').get(0)).props.className).not.toContain('expanded');
+    expect(mountComp.find('ul').get(0).props.className).not.toContain('expanded');
     mountComp
       .find('li > button#navbarDropdownMenuLink')
       .first()
       .simulate('click', { stopPropagation: () => {} });
-    expect(enzymeEl(mountComp.find('ul').get(0)).props.className).toContain('expanded');
+    expect(mountComp.find('ul').get(0).props.className).toContain('expanded');
     expect(hideMobileMenuMock).not.toBeCalled();
   });
   it('should have correct link if the link is internal', () => {
@@ -69,12 +68,12 @@ describe('DropdownMenu', () => {
       .find('li > button#navbarDropdownMenuLink')
       .first()
       .simulate('click', { stopPropagation: () => {} });
-    expect(enzymeEl(mountComp.find('ul').get(0)).props.className).toContain('expanded');
+    expect(mountComp.find('ul').get(0).props.className).toContain('expanded');
     mountComp
       .find('.dropdown-item')
       .first()
       .simulate('click', { stopPropagation: () => {} });
-    expect(enzymeEl(mountComp.find('ul').get(0)).props.className).not.toContain('expanded');
+    expect(mountComp.find('ul').get(0).props.className).not.toContain('expanded');
     expect(hideMobileMenuMock).toBeCalled();
   });
 
@@ -95,7 +94,7 @@ describe('DropdownMenu', () => {
     );
     const option = mountComp.find('.dropdown-item').first();
     expect(option.prop('href')).toBe('http://google.com');
-    expect(enzymeEl(mountComp.find('ul').get(0)).props.className).not.toContain('expanded');
+    expect(mountComp.find('ul').get(0).props.className).not.toContain('expanded');
     option.simulate('click', { stopPropagation: () => {} });
   });
 });

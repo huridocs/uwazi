@@ -1,43 +1,13 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import '@testing-library/jest-dom';
 import { TextEncoder, TextDecoder } from 'util';
-import AdapterModule from '@belzile/enzyme-adapter-react-19';
+import AdapterModule from '@cfaester/enzyme-adapter-react-18';
 import Enzyme from 'enzyme';
-import * as ReactDOM from 'react-dom';
-import { MessageChannel } from 'node:worker_threads';
-import { configureEnzymeReact19 } from './setUpEnzymeReact19.js';
-
-const findDOMNode = component => {
-  if (component == null) {
-    return null;
-  }
-  if (component.nodeType === 1 || component.nodeType === 3) {
-    return component;
-  }
-  let fiber = component._reactInternals || component._reactInternalFiber;
-  while (fiber) {
-    if (fiber.stateNode && fiber.stateNode.nodeType === 1) {
-      return fiber.stateNode;
-    }
-    fiber = fiber.child;
-  }
-  return null;
-};
-
-ReactDOM.findDOMNode = findDOMNode;
-if (ReactDOM.default) {
-  ReactDOM.default.findDOMNode = findDOMNode;
-}
 
 Object.assign(global, { TextDecoder, TextEncoder });
-globalThis.IS_REACT_ACT_ENVIRONMENT = true;
-if (typeof globalThis.MessageChannel === 'undefined') {
-  globalThis.MessageChannel = MessageChannel;
-}
 
 const Adapter = AdapterModule.default || AdapterModule;
 Enzyme.configure({ adapter: new Adapter() });
-configureEnzymeReact19();
 
 const warn = console.warn.bind(console);
 console.warn = function (message) {

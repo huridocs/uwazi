@@ -8,59 +8,66 @@ import { state } from './fixture/state.js';
 import { EntitySection } from '../EntitySection.js';
 
 describe('EntitySection Markdown', () => {
-  let component: ReactWrapper;
+  let component: ReactWrapper<
+    Readonly<{}> & Readonly<{ children?: React.ReactNode }>,
+    Readonly<{}>,
+    React.Component<{}, {}, any>
+  >;
+  let consoleErrorSpy: jasmine.Spy;
 
   beforeEach(() => {
-    spyOn(console, 'error');
+    consoleErrorSpy = jasmine.createSpy('consoleErrorSpy');
+    spyOn(console, 'error').and.callFake(consoleErrorSpy);
   });
 
-  const render = (showIf: string) => {
-    component = renderConnectedMount(EntitySection, state, {
-      'show-if': showIf,
-      children: <div>test</div>,
-    });
+  const render = (innerComponent: any) => {
+    component = renderConnectedMount(() => innerComponent, state);
   };
 
-  const testShowIf = (showIf: string, visible: boolean) => {
-    render(showIf);
-    expect(component.debug().includes('test')).toBe(visible);
+  const testShowIf = (showIf: string, expected: string) => {
+    render(
+      <EntitySection show-if={showIf}>
+        <div>test</div>
+      </EntitySection>
+    );
+    expect(component.html()).toBe(expected);
   };
 
   describe('root properties Values', () => {
     it('should show if title and root dates of entity exists', () => {
-      testShowIf('{ "title": { "$exists": true }}', true);
-      testShowIf('{ "creationDate": { "$exists": true }}', true);
+      testShowIf('{ "title": { "$exists": true }}', '<div>test</div>');
+      testShowIf('{ "creationDate": { "$exists": true }}', '<div>test</div>');
     });
     it('should not show if a root property does not exist', () => {
-      testShowIf('{ "titledoesntexist": { "$exists": true }}', false);
+      testShowIf('{ "titledoesntexist": { "$exists": true }}', '');
     });
   });
 
   describe('metadata property Values', () => {
     it('should show if unwrapped metadata properties exist', () => {
-      testShowIf('{ "metadata.description": { "$exists": true }}', true);
-      testShowIf('{ "metadata.date": { "$exists": true }}', true);
-      testShowIf('{ "metadata.main_image": { "$exists": true }}', true);
+      testShowIf('{ "metadata.description": { "$exists": true }}', '<div>test</div>');
+      testShowIf('{ "metadata.date": { "$exists": true }}', '<div>test</div>');
+      testShowIf('{ "metadata.main_image": { "$exists": true }}', '<div>test</div>');
     });
     it('should show if a metadata property matches a value', () => {
-      testShowIf('{ "metadata.description": { "$eq": "A long description" }}', true);
-      testShowIf('{ "metadata.description": "A long description" }', true);
+      testShowIf('{ "metadata.description": { "$eq": "A long description" }}', '<div>test</div>');
+      testShowIf('{ "metadata.description": "A long description" }', '<div>test</div>');
     });
     it('should not show if a metadata property does not exist', () => {
-      testShowIf('{ "metadata.nonexistent": { "$exists": true }}', false);
+      testShowIf('{ "metadata.nonexistent": { "$exists": true }}', '');
     });
   });
   describe('inherited Values', () => {
     it('should show if inherited text exists', () => {
-      testShowIf('{ "metadata.inherited_text": { "$exists": true }}', true);
+      testShowIf('{ "metadata.inherited_text": { "$exists": true }}', '<div>test</div>');
     });
     it('should show if inherited text has a value', () => {
-      testShowIf('{ "metadata.inherited_text": { "$in": ["something"] }}', true);
-      testShowIf('{ "metadata.inherited_text": { "$nin": ["something"] }}', false);
+      testShowIf('{ "metadata.inherited_text": { "$in": ["something"] }}', '<div>test</div>');
+      testShowIf('{ "metadata.inherited_text": { "$nin": ["something"] }}', '');
     });
     it('should not show if inherited text has no specified value', () => {
-      testShowIf('{ "metadata.inherited_text": { "$nin": ["here"] }}', true);
-      testShowIf('{ "metadata.inherited_text": { "$in": ["here"] }}', false);
+      testShowIf('{ "metadata.inherited_text": { "$nin": ["here"] }}', '<div>test</div>');
+      testShowIf('{ "metadata.inherited_text": { "$in": ["here"] }}', '');
     });
   });
 });

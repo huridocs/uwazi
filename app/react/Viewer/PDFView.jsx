@@ -1,9 +1,10 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { Helmet } from 'react-helmet';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import PropTypes from 'prop-types';
 import { withRouter } from '#app/componentWrappers.js';
+import { ReduxStoreComponent } from '#app/App/reduxStoreComponent.js';
 import { RequestParams } from '#app/utils/RequestParams.js';
 import { actions } from '#app/BasicReducer/index.js';
 import { isClient, events } from '#app/utils/index.js';
@@ -17,7 +18,7 @@ import { requestViewerState } from './actions/routeActions.js';
 
 const defaultDoc = entity => (entity.get('defaultDoc') ? entity.get('defaultDoc').toJS() : {});
 
-class PDFViewComponent extends Component {
+class PDFViewComponent extends ReduxStoreComponent {
   static async requestState(requestParams, globalResources) {
     return requestViewerState(
       requestParams.add({ raw: requestParams.data.raw === 'true' || !isClient }),
@@ -35,7 +36,7 @@ class PDFViewComponent extends Component {
   componentDidMount() {
     const query = searchParamsFromSearchParams(this.props.searchParams);
     if (query.searchTerm) {
-      this.props.dispatch(actions.set('viewer.sidepanel.tab', 'text-search'));
+      this.store.dispatch(actions.set('viewer.sidepanel.tab', 'text-search'));
     }
   }
 
@@ -53,7 +54,7 @@ class PDFViewComponent extends Component {
       void entitiesAPI
         .getRawPage(new RequestParams({ _id: defaultDoc(props.entity)._id, page: query.page }))
         .then(pageText => {
-          this.props.dispatch(actions.set('viewer/rawText', pageText));
+          this.store.dispatch(actions.set('viewer/rawText', pageText));
         });
     }
   }
@@ -75,7 +76,7 @@ class PDFViewComponent extends Component {
     const { ref } = query;
     if (ref) {
       const reference = doc.get('relations').find(r => r.get('_id') === ref);
-      this.props.dispatch(activateReference(reference.toJS()));
+      this.store.dispatch(activateReference(reference.toJS()));
     }
   }
 
@@ -134,7 +135,6 @@ PDFViewComponent.propTypes = {
   }).isRequired,
   navigate: PropTypes.func.isRequired,
   searchParams: PropTypes.instanceOf(Object).isRequired,
-  dispatch: PropTypes.func.isRequired,
 };
 
 PDFViewComponent.defaultProps = {
@@ -142,7 +142,7 @@ PDFViewComponent.defaultProps = {
 };
 
 function mapDispatchToProps(dispatch) {
-  return { dispatch, ...bindActionCreators({ leaveEditMode }, dispatch) };
+  return bindActionCreators({ leaveEditMode }, dispatch);
 }
 
 const SSRPDFView = connect(null, mapDispatchToProps)(withRouter(PDFViewComponent));

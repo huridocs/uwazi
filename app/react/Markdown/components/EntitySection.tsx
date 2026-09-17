@@ -1,6 +1,6 @@
 /* eslint-disable react/no-multi-comp */
 import { connect, ConnectedProps } from 'react-redux';
-import React, { type JSX } from 'react';
+import React from 'react';
 import { IStore } from '#app/istore.js';
 import { logError } from '../utils.js';
 import { Section } from './Section.js';

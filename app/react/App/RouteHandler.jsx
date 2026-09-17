@@ -6,10 +6,10 @@ import { api } from '#app/utils/api.js';
 import { RequestParams } from '#app/utils/RequestParams.js';
 import { Settings } from 'luxon';
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
-import { ReactReduxContext } from 'react-redux';
+import React from 'react';
+import { ReduxStoreComponent } from './reduxStoreComponent.js';
 
-const getLocale = context => context?.store?.getState?.()?.locale;
+const getLocale = ({ store } = {}) => store?.getState?.()?.locale;
 
 const setLocale = locale => {
   Settings.defaultLocale = locale;
@@ -17,8 +17,7 @@ const setLocale = locale => {
   I18NUtils.saveLocale(locale);
 };
 
-class RouteHandler extends Component {
-  static contextType = ReactReduxContext;
+class RouteHandler extends ReduxStoreComponent {
   static async requestState(_requestParams, _state) {
     return new Promise((resolve, _reject) => {
       resolve([]);
@@ -36,7 +35,7 @@ class RouteHandler extends Component {
 
   constructor(props, context) {
     super(props, context);
-    setLocale(getLocale(context));
+    setLocale(getLocale({ store: this.store }));
     this.state = {};
     if ((!this.isRenderedFromServer() || props.location?.state?.isClient) && isClient) {
       this.getClientState(this.props).catch(ex => {
@@ -66,7 +65,7 @@ class RouteHandler extends Component {
       query = Object.fromEntries(params.entries());
     }
 
-    const { store = { getState: () => {} } } = this.context || {};
+    const store = this.store || { getState: () => {} };
 
     const headers = {};
     const requestParams = new RequestParams({ ...query, ...routeParams }, headers);

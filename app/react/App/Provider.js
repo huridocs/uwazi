@@ -1,26 +1,27 @@
-import { Component, Children, createContext, createElement } from 'react';
+import { Component, Children } from 'react';
 import PropTypes from 'prop-types';
-import { isClient } from '#app/utils/index.js';
 
-const AppProviderContext = createContext({
-  getInitialData: () => undefined,
-  isRenderedFromServer: () => false,
-  getUser: () => undefined,
-  language: undefined,
-});
+import { isClient } from '#app/utils/index.js';
 
 class CustomProvider extends Component {
   constructor(props) {
     super(props);
     this.data = isClient && window.__reduxData__ ? window.__reduxData__ : props.initialData;
     this.renderedFromServer = true;
+    // User lives in __atomStoreData__ (same source as userAtom); keep getUser for legacy context.
     this.user =
       isClient && window.__atomStoreData__?.user !== undefined
         ? window.__atomStoreData__.user
         : props.user;
-    this.getInitialData = this.getInitialData.bind(this);
-    this.isRenderedFromServer = this.isRenderedFromServer.bind(this);
-    this.getUser = this.getUser.bind(this);
+  }
+
+  getChildContext() {
+    return {
+      getInitialData: this.getInitialData.bind(this),
+      isRenderedFromServer: this.isRenderedFromServer.bind(this),
+      getUser: this.getUser.bind(this),
+      language: this.props.language,
+    };
   }
 
   getUser() {
@@ -39,25 +40,9 @@ class CustomProvider extends Component {
     return data;
   }
 
-  getContextValue() {
-    const { language } = this.props;
-    if (!this.providerContextValue || this.providerContextValue.language !== language) {
-      this.providerContextValue = {
-        getInitialData: this.getInitialData,
-        isRenderedFromServer: this.isRenderedFromServer,
-        getUser: this.getUser,
-        language,
-      };
-    }
-    return this.providerContextValue;
-  }
-
   render() {
-    return createElement(
-      AppProviderContext.Provider,
-      { value: this.getContextValue() },
-      Children.only(this.props.children)
-    );
+    const { children } = this.props;
+    return Children.only(children);
   }
 }
 
@@ -68,4 +53,11 @@ CustomProvider.propTypes = {
   language: PropTypes.string,
 };
 
-export { CustomProvider, AppProviderContext };
+CustomProvider.childContextTypes = {
+  getInitialData: PropTypes.func,
+  isRenderedFromServer: PropTypes.func,
+  getUser: PropTypes.func,
+  language: PropTypes.string,
+};
+
+export { CustomProvider };

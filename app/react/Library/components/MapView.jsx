@@ -78,7 +78,7 @@ function mapDispatchToProps(dispatch, props) {
   );
 }
 
-const MapView = connect(mapStateToProps, mapDispatchToProps, null, { forwardRef: true })(
+const MapView = connect(mapStateToProps, mapDispatchToProps, null, { withRef: true })(
   MapViewComponent
 );
 

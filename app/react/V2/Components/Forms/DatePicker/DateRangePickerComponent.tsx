@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useImperativeHandle } from 'react';
+import React, { useEffect, Ref, useRef, useImperativeHandle } from 'react';
 //@ts-ignore
 import DateRangePicker from 'flowbite-datepicker/DateRangePicker';
 //@ts-ignore
@@ -24,15 +24,15 @@ interface DateRangePickerProps extends Omit<DatePickerProps, 'dateFormat'> {
   to?: number;
   onClear?: (field: 'from' | 'to') => void;
 }
-const DateRangePickerComponent = React.forwardRef<HTMLDivElement, DateRangePickerProps>(
+const DateRangePickerComponent = React.forwardRef(
   (
     {
       labelToday,
       labelClear,
       label,
       disabled,
-      placeholderStart = 'Select start',
-      placeholderEnd = 'Select end',
+      placeholderStart,
+      placeholderEnd,
       hasErrors,
       errorMessage,
       id = uniqueID(),
@@ -46,18 +46,13 @@ const DateRangePickerComponent = React.forwardRef<HTMLDivElement, DateRangePicke
       from,
       to,
       onClear = () => {},
-    },
-    forwardedRef
+    }: DateRangePickerProps,
+    forwardedRef: Ref<HTMLInputElement | null>
   ) => {
-    const divRef = useRef<HTMLDivElement>(null);
+    const divRef = useRef(null);
     const fromRef = useRef<HTMLInputElement>(null);
     const toRef = useRef<HTMLInputElement>(null);
-    useImperativeHandle(forwardedRef, () => {
-      if (!divRef.current) {
-        throw new Error('DateRangePicker is not mounted');
-      }
-      return divRef.current;
-    });
+    useImperativeHandle(forwardedRef, () => divRef.current);
 
     const fieldStyles = inputClassName || '';
     const instance = useRef<DateRangePicker | null>(null);
@@ -240,6 +235,17 @@ const DateRangePickerComponent = React.forwardRef<HTMLDivElement, DateRangePicke
     );
   }
 );
+
+DateRangePickerComponent.defaultProps = {
+  placeholderStart: 'Select start',
+  placeholderEnd: 'Select end',
+  dateFormat: undefined,
+  onFromDateSelected: undefined,
+  onToDateSelected: undefined,
+  from: undefined,
+  to: undefined,
+  onClear: () => {},
+};
 
 export type { DateRangePickerProps };
 export { DateRangePickerComponent };

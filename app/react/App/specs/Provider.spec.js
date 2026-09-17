@@ -1,14 +1,14 @@
 /**
  * @jest-environment jsdom
  */
-import React, { Component, act } from 'react';
-import { createRoot } from 'react-dom/client';
+import PropTypes from 'prop-types';
+import React, { Component } from 'react';
+import TestUtils from 'react-dom/test-utils';
 
-import { CustomProvider as Provider, AppProviderContext } from '../Provider.js';
+import { CustomProvider as Provider } from '../Provider.js';
 
 describe('Provider', () => {
   let component;
-  let root;
   const initialData = { data: 'some data' };
   const user = { name: 'Bane' };
 
@@ -27,28 +27,16 @@ describe('Provider', () => {
     }
   }
 
-  TestController.contextType = AppProviderContext;
-
-  const render = ui => {
-    const el = document.createElement('div');
-    document.body.appendChild(el);
-    root = createRoot(el);
-    act(() => {
-      root.render(ui);
-    });
-  };
+  TestController.contextTypes = { getInitialData: PropTypes.func, getUser: PropTypes.func };
 
   afterEach(() => {
-    act(() => {
-      root?.unmount();
-    });
     delete window.__reduxData__;
     delete window.__atomStoreData__;
   });
 
   describe('context', () => {
     it('should be provided to RouteHandler with getInitialData', () => {
-      render(
+      TestUtils.renderIntoDocument(
         <Provider initialData={initialData}>
           <TestController ref={ref => (component = ref)} />
         </Provider>
@@ -57,7 +45,7 @@ describe('Provider', () => {
     });
 
     it('should be provided to RouteHandler with getUser', () => {
-      render(
+      TestUtils.renderIntoDocument(
         <Provider initialData={initialData} user={user}>
           <TestController ref={ref => (component = ref)} />
         </Provider>
@@ -69,7 +57,7 @@ describe('Provider', () => {
   describe('getInitialData()', () => {
     describe('when is in props', () => {
       beforeEach(() => {
-        render(
+        TestUtils.renderIntoDocument(
           <Provider initialData={initialData}>
             <TestController ref={ref => (component = ref)} />
           </Provider>
@@ -84,7 +72,7 @@ describe('Provider', () => {
     describe('when is on window', () => {
       beforeEach(() => {
         window.__reduxData__ = { data: 'some data' };
-        render(
+        TestUtils.renderIntoDocument(
           <Provider>
             <TestController ref={ref => (component = ref)} />
           </Provider>
@@ -100,7 +88,7 @@ describe('Provider', () => {
     describe('getUser()', () => {
       describe('when is in props', () => {
         beforeEach(() => {
-          render(
+          TestUtils.renderIntoDocument(
             <Provider initialData={initialData} user={user}>
               <TestController ref={ref => (component = ref)} />
             </Provider>
@@ -115,7 +103,7 @@ describe('Provider', () => {
       describe('when is in atomStoreData', () => {
         beforeEach(() => {
           window.__atomStoreData__ = { user, translations: [] };
-          render(
+          TestUtils.renderIntoDocument(
             <Provider initialData={initialData}>
               <TestController ref={ref => (component = ref)} />
             </Provider>

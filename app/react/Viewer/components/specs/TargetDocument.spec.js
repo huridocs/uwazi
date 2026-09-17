@@ -24,7 +24,7 @@ describe('TargetDocument', () => {
 
   const render = () => {
     store = mockStore(state);
-    component = shallow(<TargetDocument store={store} />);
+    component = shallow(<TargetDocument />, { context: { store } });
   };
 
   it('should map props', () => {

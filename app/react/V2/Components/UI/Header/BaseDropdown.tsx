@@ -47,7 +47,7 @@ export const BaseDropdown: React.FC<BaseDropdownProps> = ({
 
   return (
     <div className={`relative ${className}`} ref={dropdownRef}>
-      {React.isValidElement<{ onClick?: (event: React.MouseEvent) => void }>(trigger)
+      {React.isValidElement(trigger)
         ? React.cloneElement(trigger, {
             onClick: (event: React.MouseEvent) => {
               trigger.props.onClick?.(event);

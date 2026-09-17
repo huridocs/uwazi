@@ -33,6 +33,8 @@ describe('Viewer', () => {
       templates: Immutable.fromJS([]),
       locale: 'es',
       sidepanelTab: 'metadata',
+      openPanel: jasmine.createSpy('openPanel'),
+      loadDefaultViewerMenu: jasmine.createSpy('loadDefaultViewerMenu'),
     };
   });
 
@@ -40,7 +42,7 @@ describe('Viewer', () => {
     context = {
       store: { getState: () => ({ settings: {} }), dispatch: jasmine.createSpy('dispatch') },
     };
-    component = shallow(<ConnectedViewer.WrappedComponent {...props} />, {
+    component = shallow(<ConnectedViewer.WrappedComponent {...props} store={context.store} />, {
       context,
       disableLifecycleMethods: true,
     });
@@ -157,7 +159,7 @@ describe('Viewer', () => {
 
     it('should loadDefaultViewerMenu()', () => {
       render({ mount: true });
-      expect(context.store.dispatch).toHaveBeenCalledWith({ type: 'LOAD_DEFAULT_VIEWER_MENU' });
+      expect(props.loadDefaultViewerMenu).toHaveBeenCalled();
     });
   });
 

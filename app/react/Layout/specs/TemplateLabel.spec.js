@@ -1,6 +1,7 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 import Immutable from 'immutable';
+import { Provider } from 'react-redux';
 import configureMockStore from 'redux-mock-store';
 
 import { TemplateLabel } from '../TemplateLabel.js';
@@ -24,7 +25,13 @@ describe('TemplateLabel', () => {
 
   const render = (state = initialState, componentProps = props) => {
     const store = mockStore(state);
-    component = shallow(<TemplateLabel {...componentProps} store={store} />);
+    component = shallow(
+      <Provider store={store}>
+        <TemplateLabel {...componentProps} />
+      </Provider>
+    )
+      .find(TemplateLabel)
+      .dive();
   };
 
   it('should render the name of the template', () => {

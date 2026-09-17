@@ -1,7 +1,6 @@
 import { shallow, ShallowWrapper } from 'enzyme';
 import React from 'react';
 import { AssigneeFilterSelectUncontrolled } from '../AssigneeFilter.js';
-import { enzymeEl } from '#app/utils/test/renderConnected.js';
 
 describe('AssigneeFilter uncontrolled', () => {
   const aggregations = {
@@ -49,8 +48,8 @@ describe('AssigneeFilter uncontrolled', () => {
   it('should split the selection and options between read and write multiselects', () => {
     const multiselects = component.find('MultiSelect');
 
-    const read = enzymeEl(multiselects.get(0));
-    const write = enzymeEl(multiselects.get(1));
+    const read = multiselects.get(0);
+    const write = multiselects.get(1);
 
     expect(read.props.value).toEqual(['user1', 'user2']);
     expect(write.props.value).toEqual(['group1']);
@@ -100,9 +99,7 @@ describe('AssigneeFilter uncontrolled', () => {
   });
 
   it('should all onChange with the joined results', () => {
-    const onChangeRead = enzymeEl(component.find('MultiSelect').get(0)).props.onChange as (
-      value: string[]
-    ) => void;
+    const onChangeRead = component.find('MultiSelect').get(0).props.onChange;
 
     onChangeRead(['user1', 'user2', 'group1']);
 

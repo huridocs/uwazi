@@ -147,7 +147,7 @@ describe('EntityView', () => {
   describe('unmount', () => {
     it('should unset selected tab and all page-related store keys', () => {
       const context = { store: { dispatch: jasmine.createSpy('dispatch') } };
-      const component = shallow(<EntityView />, { context });
+      const component = shallow(<EntityView store={context.store} />, { context });
 
       component.unmount();
 

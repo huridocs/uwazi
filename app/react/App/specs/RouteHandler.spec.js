@@ -2,9 +2,9 @@
  * @jest-environment jsdom
  */
 /* eslint-disable max-statements */
-import React, { act } from 'react';
-import { createRoot } from 'react-dom/client';
+import React from 'react';
 import backend from 'fetch-mock';
+import { shallow } from 'enzyme';
 import Immutable from 'immutable';
 import { Settings } from 'luxon';
 import { api } from '#app/utils/api.js';
@@ -12,7 +12,6 @@ import { RequestParams } from '#app/utils/RequestParams.js';
 import { I18NUtils } from '#app/I18N/index.js';
 import { RouteHandler } from '../RouteHandler.js';
 import { APIURL } from '../../config.js';
-import { Provider } from 'react-redux';
 
 class TestController extends RouteHandler {
   static async requestState(_requestParams, _state) {
@@ -30,9 +29,8 @@ class TestController extends RouteHandler {
 const originalRequestState = TestController.requestState;
 
 describe('RouteHandler', () => {
+  let component;
   let instance;
-  let root;
-  let currentProps;
   const routeParams = { id: '123' };
   const headers = {};
   const location = { pathname: '/en', search: { q: 'value' } };
@@ -42,35 +40,7 @@ describe('RouteHandler', () => {
   ];
   let state;
 
-  const context = {
-    store: { getState: () => state, dispatch: jest.fn(), subscribe: () => () => {} },
-  };
-
-  const renderController = props => {
-    currentProps = props;
-    const el = document.createElement('div');
-    document.body.appendChild(el);
-    root = createRoot(el);
-    act(() => {
-      root.render(
-        <Provider store={context.store}>
-          <TestController ref={ref => (instance = ref)} {...props} />
-        </Provider>
-      );
-    });
-    instance.constructor = TestController;
-  };
-
-  const setProps = props => {
-    currentProps = { ...currentProps, ...props };
-    act(() => {
-      root.render(
-        <Provider store={context.store}>
-          <TestController ref={ref => (instance = ref)} {...currentProps} />
-        </Provider>
-      );
-    });
-  };
+  const context = { store: { getState: () => state, dispatch: jest.fn() } };
 
   beforeEach(() => {
     jest.spyOn(api, 'locale');
@@ -94,13 +64,21 @@ describe('RouteHandler', () => {
 
     RouteHandler.renderedFromServer = false;
 
-    renderController({ params: routeParams, location, matches: [{ path: '' }] });
+    component = shallow(
+      <TestController
+        params={routeParams}
+        location={location}
+        matches={[{ path: '' }]}
+        store={context.store}
+      />,
+      { context }
+    );
+
+    instance = component.instance();
+    instance.constructor = TestController;
   });
 
   afterEach(() => {
-    act(() => {
-      root?.unmount();
-    });
     jest.restoreAllMocks();
     backend.restore();
   });
@@ -145,8 +123,8 @@ describe('RouteHandler', () => {
     describe('when params change', () => {
       it('should request the clientState', () => {
         jest.spyOn(instance, 'getClientState');
-        setProps(props);
-        expect(instance.getClientState).toHaveBeenCalledWith(props);
+        component.setProps(props);
+        expect(instance.getClientState).toHaveBeenCalledWith(expect.objectContaining(props));
       });
 
       it('should call emptyState', () => {
@@ -164,15 +142,15 @@ describe('RouteHandler', () => {
           location,
           matches: [{ path: '' }, { path: 'subpath' }],
         };
-        setProps(props);
-        expect(instance.getClientState).toHaveBeenCalledWith(props);
+        component.setProps(props);
+        expect(instance.getClientState).toHaveBeenCalledWith(expect.objectContaining(props));
       });
     });
 
     describe('when params are the same', () => {
       it('should NOT request the clientState', () => {
         jest.spyOn(instance, 'getClientState');
-        setProps({ params: { ...routeParams }, location });
+        component.setProps({ params: { ...routeParams }, location });
         expect(instance.getClientState).not.toHaveBeenCalled();
       });
     });

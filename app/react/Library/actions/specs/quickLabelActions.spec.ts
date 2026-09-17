@@ -3,14 +3,13 @@ import { EntitiesAPI } from '#app/Entities/EntitiesAPI.js';
 import { QuickLabelState } from '#app/istore.js';
 import { wrapDispatch } from '#app/Multireducer/index.js';
 import { store } from '#app/store.js';
-import { AppDispatch } from '#app/thunkDispatch.js';
 import { RequestParams } from '#app/utils/RequestParams.js';
 import { actions as formActions } from 'react-redux-form';
 import * as libraryActions from '../libraryActions.js';
 import * as quickLabelActions from '../quickLabelActions.js';
 import { documents, templates, thesauri } from './fixtures.js';
 
-const libraryDispatch = wrapDispatch(store!.dispatch as AppDispatch, 'library');
+const libraryDispatch = wrapDispatch(store!.dispatch, 'library');
 
 describe('quickLabelActions', () => {
   describe('store setup sanity check', () => {

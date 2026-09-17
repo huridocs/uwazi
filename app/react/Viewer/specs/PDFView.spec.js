@@ -278,11 +278,11 @@ describe('PDFView', () => {
   const shallowComponent = searchParams =>
     shallow(
       <PDFViewComponent
+        store={context.store}
         searchParams={searchParams}
         location={{ pathname: 'pathname' }}
         entity={Immutable.fromJS({})}
         navigate={mockNavigate}
-        dispatch={context.store.dispatch}
       />
     );
 
