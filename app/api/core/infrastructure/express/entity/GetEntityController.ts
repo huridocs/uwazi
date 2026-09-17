@@ -15,7 +15,7 @@ const GetEntityQuerySchema = z.object({
   // This flag overrides omitRelationships.
   includeMetadataRelationships: z.boolean().optional(),
   include: z
-    .array(z.enum(['permissions']))
+    .array(z.enum(['permissions', 'translations']))
     .optional()
     .default([]),
 });
@@ -65,6 +65,7 @@ class GetEntityController extends AbstractController<any> {
         language: resolvedLanguage,
         includeRelationships: scopeRelationshipsToMetadata || !query.omitRelationships,
         includePermissions: query.include.includes('permissions'),
+        includeTranslations: query.include.includes('translations'),
         scopeRelationshipsToMetadata,
         user,
       });

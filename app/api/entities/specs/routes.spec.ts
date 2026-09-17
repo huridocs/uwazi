@@ -2,7 +2,7 @@ import { Application, NextFunction, Request, Response } from 'express';
 import request, { Response as SuperTestResponse } from 'supertest';
 import path from 'path';
 
-import { setUpApp } from '#api/utils/testingRoutes.js';
+import { iosocket, setUpApp, TestEmitSources } from '#api/utils/testingRoutes.js';
 import db from '#api/utils/testing_db.js';
 import { testingEnvironment } from '#api/utils/testingEnvironment.js';
 import routes from '#api/entities/routes.js';
@@ -173,6 +173,39 @@ describe('entities routes', () => {
           ],
         },
         errors: [],
+      });
+    });
+
+    it('should respond 422 with ajv validations when the created entity is invalid', async () => {
+      const response: SuperTestResponse = await request(app)
+        .post('/api/entities')
+        .send({ title: '' });
+
+      expect(response).toHaveStatus(422);
+      expect(response.body.validations).toEqual([
+        { instancePath: '/title', message: expect.any(String) },
+      ]);
+    });
+
+    describe('target language resolution', () => {
+      it('should prefer the language sent in the body over the content-language header', async () => {
+        new UserInContextMockFactory().mock(user);
+        const response: SuperTestResponse = await request(app)
+          .post('/api/entities')
+          .set('content-language', 'en')
+          .send({ title: 'my entity', language: 'es' });
+
+        expect(response.body.language).toBe('es');
+      });
+
+      it('should fall back to the content-language header when the body has no language', async () => {
+        new UserInContextMockFactory().mock(user);
+        const response: SuperTestResponse = await request(app)
+          .post('/api/entities')
+          .set('content-language', 'es')
+          .send({ title: 'my entity' });
+
+        expect(response.body.language).toBe('es');
       });
     });
 
@@ -352,7 +385,7 @@ describe('entities routes', () => {
     });
 
     describe('V2 entity update', () => {
-      it('should update an existing entity via UpdateEntityController', async () => {
+      it('should update an existing entity', async () => {
         new UserInContextMockFactory().mock(user);
 
         const entityToUpdate = {
@@ -376,7 +409,16 @@ describe('entities routes', () => {
       it('should preserve AI translated text when user edit has pending prefix (AT conflict)', async () => {
         new UserInContextMockFactory().mock(user);
 
-        // Set up AT config with template_test as an AT template
+        const created: SuperTestResponse = await request(app)
+          .post('/api/entities')
+          .send({ title: 'Hello', template: templateId.toString() })
+          .expect(200);
+
+        const template = await db.mongodb?.collection('templates').findOne({ _id: templateId });
+        const titlePropertyId = template?.commonProperties
+          .find((property: { name: string }) => property.name === 'title')
+          ._id.toString();
+
         await db.mongodb?.collection('settings').updateOne(
           {},
           {
@@ -387,7 +429,7 @@ describe('entities routes', () => {
                   {
                     template: templateId.toString(),
                     properties: [],
-                    commonProperties: ['title'],
+                    commonProperties: [titlePropertyId],
                   },
                 ],
               },
@@ -395,36 +437,29 @@ describe('entities routes', () => {
           }
         );
 
-        // Seed the entity with an AI-translated title
         await db.mongodb
           ?.collection('entities')
           .updateOne(
-            { sharedId: 'shared', language: 'en' },
+            { sharedId: created.body.sharedId, language: 'es' },
             { $set: { title: `${SaveEntityTranslations.AITranslatedText} Hello` } }
           );
 
-        const entityToUpdate = {
-          _id: 'abc123',
-          sharedId: 'shared',
-          title: `${RequestEntityTranslation.AITranslationPendingText} Hello`,
-          language: 'en',
-          template: templateId.toString(),
-        };
-
-        const response: SuperTestResponse = await request(app)
+        await request(app)
           .post('/api/entities')
-          .send(entityToUpdate)
+          .send({
+            _id: created.body._id,
+            sharedId: created.body.sharedId,
+            title: `${RequestEntityTranslation.AITranslationPendingText} Hello`,
+            language: 'es',
+            template: templateId.toString(),
+          })
           .expect(200);
 
-        expect(response.body).toMatchObject({
-          sharedId: 'shared',
-        });
-
-        const updatedEntity = await getEntityById('shared', 'en');
+        const updatedEntity = await getEntityById(created.body.sharedId, 'es');
         expect(updatedEntity?.title).toBe(`${SaveEntityTranslations.AITranslatedText} Hello`);
       });
 
-      it('should update an existing entity with files via UpdateEntityController', async () => {
+      it('should update an existing entity with files', async () => {
         new UserInContextMockFactory().mock(user);
 
         const entityToUpdate = {
@@ -472,6 +507,42 @@ describe('entities routes', () => {
         });
       });
 
+      it('should notify the session socket with the updated sharedId', async () => {
+        iosocket.emit.mockClear();
+
+        await request(app)
+          .post('/api/entities')
+          .send({
+            _id: 'abc123',
+            sharedId: 'shared',
+            title: 'updated title',
+            language: 'en',
+            template: templateId.toString(),
+          })
+          .expect(200);
+
+        expect(iosocket.emit).toHaveBeenCalledWith(
+          'documentProcessed',
+          TestEmitSources.session,
+          'shared'
+        );
+      });
+
+      it('should respond 422 with ajv validations when the updated entity is invalid', async () => {
+        const response: SuperTestResponse = await request(app).post('/api/entities').send({
+          _id: 'abc123',
+          sharedId: 'shared',
+          title: '',
+          language: 'en',
+          template: templateId.toString(),
+        });
+
+        expect(response).toHaveStatus(422);
+        expect(response.body.validations).toEqual([
+          { instancePath: '/title', message: expect.any(String) },
+        ]);
+      });
+
       it('should rollback the transaction when the update fails', async () => {
         new UserInContextMockFactory().mock(user);
 
@@ -503,6 +574,240 @@ describe('entities routes', () => {
         expect(updatedEntity?.title).toBe('Batman finishes');
 
         updateSpy.mockRestore();
+      });
+    });
+
+    describe('with translations', () => {
+      const translated = (title: string, text: string) => ({
+        title: [{ value: title }],
+        text: [{ value: text }],
+        property1: [],
+        property2: [],
+        description: [],
+      });
+
+      const titlesByLanguage = async (sharedId: string) =>
+        Object.fromEntries(
+          (await testingEnvironment.db.getAllFrom('entities'))
+            .filter(entity => entity.sharedId === sharedId)
+            .map(entity => [entity.language, entity.title])
+        );
+
+      it('should create the entity with its translations', async () => {
+        const response: SuperTestResponse = await request(app)
+          .post('/api/entities')
+          .send({
+            title: 'Nuevo',
+            template: templateId.toString(),
+            metadata: { text: [{ value: 'texto' }] },
+            translations: { en: translated('New', 'text'), pt: translated('Novo', 'texto pt') },
+          })
+          .expect(200);
+
+        expect(response.body).toMatchObject({
+          title: 'Nuevo',
+          translations: { en: translated('New', 'text'), pt: translated('Novo', 'texto pt') },
+        });
+        expect(await titlesByLanguage(response.body.sharedId)).toEqual({
+          es: 'Nuevo',
+          en: 'New',
+          pt: 'Novo',
+        });
+      });
+
+      it('should update the entity with its translations', async () => {
+        const created: SuperTestResponse = await request(app)
+          .post('/api/entities')
+          .send({
+            title: 'Nuevo',
+            template: templateId.toString(),
+            translations: { en: translated('New', 'text'), pt: translated('Novo', 'texto') },
+          })
+          .expect(200);
+
+        const response: SuperTestResponse = await request(app)
+          .post('/api/entities')
+          .send({
+            _id: created.body._id,
+            sharedId: created.body.sharedId,
+            language: 'es',
+            title: 'Pingüino',
+            template: templateId.toString(),
+            translations: { en: translated('Penguin', 'text'), pt: translated('Pinguim', 'texto') },
+          })
+          .expect(200);
+
+        expect(response.body.translations).toEqual({
+          en: expect.objectContaining({ title: [{ value: 'Penguin' }] }),
+          pt: expect.objectContaining({ title: [{ value: 'Pinguim' }] }),
+        });
+        expect(await titlesByLanguage(created.body.sharedId)).toEqual({
+          es: 'Pingüino',
+          en: 'Penguin',
+          pt: 'Pinguim',
+        });
+      });
+
+      it('should keep AI translations that the form still sends as pending', async () => {
+        const created: SuperTestResponse = await request(app)
+          .post('/api/entities')
+          .send({ title: 'Nuevo', template: templateId.toString() })
+          .expect(200);
+        const template = await db.mongodb?.collection('templates').findOne({ _id: templateId });
+        const titlePropertyId = template?.commonProperties
+          .find((property: { name: string }) => property.name === 'title')
+          ._id.toString();
+        await db.mongodb?.collection('settings').updateOne(
+          {},
+          {
+            $set: {
+              'features.automaticTranslation': {
+                active: true,
+                templates: [
+                  {
+                    template: templateId.toString(),
+                    properties: [],
+                    commonProperties: [titlePropertyId],
+                  },
+                ],
+              },
+            },
+          }
+        );
+        await db.mongodb
+          ?.collection('entities')
+          .updateOne(
+            { sharedId: created.body.sharedId, language: 'pt' },
+            { $set: { title: `${SaveEntityTranslations.AITranslatedText} Novo` } }
+          );
+
+        await request(app)
+          .post('/api/entities')
+          .send({
+            _id: created.body._id,
+            sharedId: created.body.sharedId,
+            language: 'es',
+            title: 'Nuevo',
+            template: templateId.toString(),
+            translations: {
+              en: translated('New', 'text'),
+              pt: translated(`${RequestEntityTranslation.AITranslationPendingText} Nuevo`, 'texto'),
+            },
+          })
+          .expect(200);
+
+        expect((await titlesByLanguage(created.body.sharedId)).pt).toBe(
+          `${SaveEntityTranslations.AITranslatedText} Novo`
+        );
+      });
+
+      it('should wrap the response when sent as multipart', async () => {
+        const response: SuperTestResponse = await request(app)
+          .post('/api/entities')
+          .field(
+            'entity',
+            JSON.stringify({
+              title: 'Nuevo',
+              template: templateId.toString(),
+              translations: { en: translated('New', 'text'), pt: translated('Novo', 'texto') },
+            })
+          )
+          .expect(200);
+
+        expect(response.body).toMatchObject({
+          entity: { title: 'Nuevo', translations: { en: expect.any(Object) } },
+          errors: [],
+        });
+      });
+
+      it.each([
+        [
+          'the target language',
+          {
+            es: translated('Nuevo', 'texto'),
+            en: translated('New', 'text'),
+            pt: translated('Novo', 'texto'),
+          },
+          '/translations/es',
+        ],
+        [
+          'a language-independent property',
+          {
+            en: { ...translated('New', 'text'), numeric: [{ value: 1 }] },
+            pt: translated('Novo', 'texto'),
+          },
+          '/translations/en/numeric',
+        ],
+      ])('should respond 422 on create for %s', async (_case, translations, instancePath) => {
+        const response: SuperTestResponse = await request(app)
+          .post('/api/entities')
+          .send({ title: 'Nuevo', template: templateId.toString(), translations });
+
+        expect(response).toHaveStatus(422);
+        expect(response.body.validations).toEqual([expect.objectContaining({ instancePath })]);
+      });
+
+      it('should report request shape errors with slash paths', async () => {
+        const response: SuperTestResponse = await request(app)
+          .post('/api/entities')
+          .send({
+            title: 'Nuevo',
+            template: templateId.toString(),
+            translations: { portuguese: { title: [{ value: 'Novo' }] } },
+          });
+
+        expect(response).toHaveStatus(422);
+        expect(response.body.validations).toEqual([
+          expect.objectContaining({ instancePath: '/translations/portuguese' }),
+        ]);
+      });
+
+      it('should accept partial translations on create', async () => {
+        const response: SuperTestResponse = await request(app)
+          .post('/api/entities')
+          .send({
+            title: 'Nuevo',
+            template: templateId.toString(),
+            translations: { en: { title: [{ value: 'New' }] } },
+          })
+          .expect(200);
+
+        expect(await titlesByLanguage(response.body.sharedId)).toEqual({
+          es: 'Nuevo',
+          en: 'New',
+          pt: 'Nuevo',
+        });
+      });
+
+      it.each([
+        ['a missing installed language', { en: translated('New', 'text') }, '/translations/pt'],
+        [
+          'a missing translatable property',
+          { en: { title: [{ value: 'New' }] }, pt: translated('Novo', 'texto') },
+          '/translations/en/text',
+        ],
+        [
+          'an empty title',
+          { en: { ...translated('New', 'text'), title: [] }, pt: translated('Novo', 'texto') },
+          '/translations/en/title',
+        ],
+      ])('should respond 422 on update for %s', async (_case, translations, instancePath) => {
+        const created: SuperTestResponse = await request(app)
+          .post('/api/entities')
+          .send({ title: 'Nuevo', template: templateId.toString() })
+          .expect(200);
+
+        const response: SuperTestResponse = await request(app).post('/api/entities').send({
+          _id: created.body._id,
+          sharedId: created.body.sharedId,
+          language: 'es',
+          title: 'Nuevo',
+          template: templateId.toString(),
+          translations,
+        });
+
+        expect(response).toHaveStatus(422);
+        expect(response.body.validations).toEqual([expect.objectContaining({ instancePath })]);
       });
     });
   });

@@ -4,7 +4,9 @@ import { InputFile } from '#api/core/infrastructure/files/InputFile.js';
 import { UpdateEntityUseCaseInput } from '#api/core/application/UpdateEntity.js';
 import { LanguageISO6391 } from '#shared/types/commonTypes.js';
 import { ArrayUtils } from '#api/common.v2/utils/Array.js';
-import { CreateEntityDTO, UpdateEntityRequest } from './Schemas.js';
+import { TranslationsInput } from '#api/core/application/EntitiesService.js';
+import { PropertyAssignmentInput } from '#api/core/application/propertyAssignmentCreatorService/PropertyAssignmentCreatorService.js';
+import { CreateEntityDTO, EntityTranslationsRequest, UpdateEntityRequest } from './Schemas.js';
 
 type ToEntityCreateInputProps = {
   dto: CreateEntityDTO;
@@ -106,6 +108,18 @@ class ExpressEntityMapper {
     }
 
     return input;
+  }
+
+  static toTranslationsInput(dto: EntityTranslationsRequest): TranslationsInput {
+    return Object.fromEntries(
+      Object.entries(dto).map(([language, properties]) => [
+        language,
+        Object.entries(properties).map(([name, value]) => ({
+          name,
+          value: value as PropertyAssignmentInput['value'],
+        })),
+      ])
+    );
   }
 
   static toEntityCreateInput(props: ToEntityCreateInputProps): CreateEntityUseCaseInput {
