@@ -73,6 +73,7 @@ describe('ATEntityCreationListener', () => {
         const entityCreationEvent = new EntityCreatedEvent({
           entities: [factory.entity('entity1', 'template1', {}, { language: 'es' }), entityEn],
           targetLanguageKey: 'en',
+          providedTranslations: { es: ['title'] },
         });
 
         await appContext.run(async () => {
@@ -80,8 +81,10 @@ describe('ATEntityCreationListener', () => {
         });
       });
 
-      it('should execute RequestEntityTranslation on receiving entity creation event', async () => {
-        expect(executeSpy).toHaveBeenCalledWith(entityEn);
+      it('should execute RequestEntityTranslation with the translations the client provided', async () => {
+        expect(executeSpy).toHaveBeenCalledWith(entityEn, {
+          providedTranslations: { es: ['title'] },
+        });
       });
     });
   });

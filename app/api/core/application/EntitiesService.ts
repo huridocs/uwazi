@@ -1,6 +1,9 @@
 /* eslint-disable max-statements */
 import { EntitiesDataSource } from '#api/core/application/contracts/EntitiesDataSource.js';
-import { EntityCreatedEvent } from '#api/entities/events/EntityCreatedEvent.js';
+import {
+  EntityCreatedEvent,
+  ProvidedTranslations,
+} from '#api/entities/events/EntityCreatedEvent.js';
 import { EntityUpdatedEvent as LegacyEntityUpdatedEvent } from '#api/entities/events/EntityUpdatedEvent.js';
 import { ArrayUtils } from '#api/common.v2/utils/Array.js';
 import { User } from '#api/users.v2/model/User.js';
@@ -16,10 +19,23 @@ import {
   PermissionSpec,
 } from '../domain/entityAccessPolicy/EntityPermissionChecker.js';
 import { EntityUpdatedEvent } from '../domain/entity/EntityUpdatedEvent.js';
-import { MongoEntityMapper } from '../infrastructure/mongodb/entity/MongoEntityMapper.js';
 import { EventEmitter } from '../libs/eventEmitter/EventEmitter.js';
 import { EntityAccessPolicy } from '../domain/entityAccessPolicy/EntityAccessPolicy.js';
 import { EntityAccessPolicyDataSource } from './contracts/EntityAccessPolicyDataSource.js';
+import { PropertyAssignmentInput } from './propertyAssignmentCreatorService/PropertyAssignmentCreatorService.js';
+import {
+  MissingTranslationLanguageError,
+  TargetLanguageInTranslationsError,
+  UnknownTranslationLanguageError,
+} from './errors.js';
+
+type TranslationsInput = Partial<Record<LanguageISO6391, PropertyAssignmentInput[]>>;
+
+type ValidateTranslationLanguagesParams = {
+  targetLanguage: LanguageISO6391;
+  translations: TranslationsInput;
+  partial?: boolean;
+};
 
 type CreateInput = {
   icon?: EntityIcon;
@@ -43,6 +59,7 @@ type InsertContext = {
   tenantName: string;
   actorId: string;
   targetLanguage: LanguageISO6391;
+  providedTranslations?: ProvidedTranslations;
 };
 
 type UpsertContext = {
@@ -80,6 +97,31 @@ class EntitiesService {
     });
   }
 
+  /**
+   * `translations` may only hold installed languages other than the target language. Unless `partial`,
+   * every installed language must be present, except languages still being installed.
+   */
+  async validateTranslationLanguages({
+    targetLanguage,
+    translations,
+    partial = false,
+  }: ValidateTranslationLanguagesParams): Promise<void> {
+    const installed = (await this.deps.settingsDS.readLanguages()) ?? [];
+    const sent = Object.keys(translations);
+
+    const unknown = sent.find(language => !installed.some(({ key }) => key === language));
+    if (unknown) throw new UnknownTranslationLanguageError(unknown);
+
+    if (sent.includes(targetLanguage)) throw new TargetLanguageInTranslationsError(targetLanguage);
+
+    if (partial) return;
+
+    const missing = installed.find(
+      ({ key, installing }) => key !== targetLanguage && !installing && !sent.includes(key)
+    );
+    if (missing) throw new MissingTranslationLanguageError(missing.key);
+  }
+
   async insert(entities: Entity[], context: InsertContext) {
     this.ensureTransaction();
     if (entities.length === 0) return;
@@ -102,7 +144,13 @@ class EntitiesService {
     this.deps.transactionManager.onCommitted(async () => {
       await Promise.all(
         entities.map(async entity =>
-          this.deps.eventBus.emit(EntityCreatedEvent.fromEntity(entity, context.targetLanguage))
+          this.deps.eventBus.emit(
+            EntityCreatedEvent.fromEntity(
+              entity,
+              context.targetLanguage,
+              context.providedTranslations
+            )
+          )
         )
       );
     });
@@ -129,26 +177,23 @@ class EntitiesService {
     const updatedSharedIds = changedEntities.map(e => e.sharedId);
 
     await Promise.all(
-      changedEntities.map(async entity => {
-        await this.deps.eventEmitter.emit(
+      changedEntities
+        .map(entity =>
           EntityUpdatedEvent.create({
             entity,
-            targetLanguage: context.targetLanguage,
             userId: context.actorId,
+            targetLanguage: context.targetLanguage,
           })
-        );
-      })
+        )
+        .filter(event => event !== null)
+        .map(async event => this.deps.eventEmitter.emit(event))
     );
 
     this.deps.transactionManager.onCommitted(async () => {
       await Promise.all(
         changedEntities.map(async entity =>
           this.deps.eventBus.emit(
-            new LegacyEntityUpdatedEvent({
-              before: MongoEntityMapper.toDBO(entity.previousVersion) as any,
-              after: MongoEntityMapper.toDBO(entity) as any,
-              targetLanguageKey: context.targetLanguage,
-            })
+            LegacyEntityUpdatedEvent.fromEntity({ entity, targetLanguage: context.targetLanguage })
           )
         )
       );
@@ -197,4 +242,4 @@ class EntitiesService {
 }
 
 export { EntitiesService };
-export type { Deps as EntitiesServiceDeps };
+export type { Deps as EntitiesServiceDeps, TranslationsInput };

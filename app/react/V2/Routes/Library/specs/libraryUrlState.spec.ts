@@ -76,13 +76,13 @@ describe('libraryUrlState', () => {
         from: 30,
         sort: 'title',
         order: 'asc',
-        view: 'list',
+        view: 'table',
       });
       expect(params.get('limit')).toBe('10');
       expect(params.get('from')).toBe('30');
       expect(params.get('sort')).toBe('title');
       expect(params.get('order')).toBe('asc');
-      expect(params.get('view')).toBe('list');
+      expect(params.get('view')).toBe('table');
     });
 
     it('round-trips AND properties as andFilters=(name)', () => {
@@ -106,14 +106,15 @@ describe('libraryUrlState', () => {
       expect(serializeAndFilters([])).toBe('');
     });
 
-    it('keeps map, table and timeline view params', () => {
+    it('keeps map and table view params and falls back unknown views to cards', () => {
       const params = serializeLibrarySearchParams({
         ...DEFAULT_LIBRARY_URL_STATE,
         view: 'map',
       });
       expect(params.get('view')).toBe('map');
       expect(parseLibrarySearchParams(new URLSearchParams('view=table')).view).toBe('table');
-      expect(parseLibrarySearchParams(new URLSearchParams('view=timeline')).view).toBe('timeline');
+      expect(parseLibrarySearchParams(new URLSearchParams('view=list')).view).toBe('cards');
+      expect(parseLibrarySearchParams(new URLSearchParams('view=timeline')).view).toBe('cards');
       expect(parseLibrarySearchParams(new URLSearchParams('view=bogus')).view).toBe('cards');
     });
   });

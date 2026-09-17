@@ -32,7 +32,16 @@ const FiltersPreview = () => {
   store.set(localeAtom, 'en');
   store.set(templatesAtom, templates);
   store.set(translationsAtom, translations);
-  store.set(settingsAtom, {});
+  store.set(settingsAtom, {
+    filters: [
+      { id: 'template1', name: 'Documents' },
+      {
+        id: 'group-people',
+        name: 'People & places',
+        items: [{ id: 'template2', name: 'Person' }],
+      },
+    ],
+  });
   store.set(userAtom, { _id: 'admin1', role: 'admin', email: 'admin@uwazi.io', username: 'admin' });
   const [filters, setFilters] = useState<LibraryFiltersState>({});
 

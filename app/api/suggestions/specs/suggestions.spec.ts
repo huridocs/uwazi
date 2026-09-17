@@ -996,7 +996,6 @@ describe('suggestions', () => {
           const relationshipSyncJob = await db.mongodb?.collection('jobs').findOne({
             name: 'EntityUpdatedEvent:ProcessRelationshipAfterEntityUpdatedListener',
             'params.after.sharedId': 'entityWithRelationships_sId',
-            'params.targetLanguage': 'en',
           });
 
           expect(relationshipSyncJob).toMatchObject({
@@ -1005,7 +1004,7 @@ describe('suggestions', () => {
               after: {
                 sharedId: 'entityWithRelationships_sId',
               },
-              targetLanguage: 'en',
+              changedLanguages: ['en', 'es'],
             },
           });
         });
